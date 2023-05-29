@@ -1,117 +1,98 @@
-Return-Path: <netdev+bounces-6086-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6088-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8F0DC714C71
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 16:50:09 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2448E714C83
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 16:52:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 351AA1C209BE
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 14:50:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D4039280C36
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 14:52:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D69478BF0;
-	Mon, 29 May 2023 14:50:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DFE048C10;
+	Mon, 29 May 2023 14:52:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBFE66FCF
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 14:50:06 +0000 (UTC)
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C536B7
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 07:50:05 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id 4fb4d7f45d1cf-5148e4a2f17so4689153a12.1
-        for <netdev@vger.kernel.org>; Mon, 29 May 2023 07:50:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20221208.gappssmtp.com; s=20221208; t=1685371804; x=1687963804;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=mHZZ92GJ5ZTas5TwDw4/gd16Yq3qwKu+NLw4y0txzO8=;
-        b=rzoJFhFQwd8s2j0J7YhRub5SjpCMeLl4XSuJ5tuxJ1gWgsWYZwM/IUDgQvJ33THL1Y
-         HQRpxqwQ4LQlX4SHLiJBrjNX6EvsiUVykMAlYInmQsEfkDFzqUHrbBxrMTc67zqz9tKf
-         u7hX3Nm1SBoes1oiAsIJityu5J3ca/IqYFmc7bpF32JpIeFM4hIUpkZOIqNng5oynjc4
-         fntEcEud09bnR9aniI14YdNxQ+GPcDrQyvT8owt/J5ygvrPJNfqmj8y6+kR+UVVl9cwC
-         YVJ52ohCWkgJ+cLe50SgA6CWhBYvcy/LmsSy+1yYV0Pk52jC9AXikoh8YZYBT4So0z6D
-         ksdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685371804; x=1687963804;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mHZZ92GJ5ZTas5TwDw4/gd16Yq3qwKu+NLw4y0txzO8=;
-        b=LdaW6o7tzVGrExMz6t5aw1qx0wRZOLbq6Inf199aa5x8XFAr4AdKsjzo+mfdMzE2Ht
-         qlqeDcNZn5uC1naCWbqLFKxjXO7DReIQJX7DGgI9TBPwMdvzlzGhI/gJy5x2WRDpsxjh
-         upD3AessOG/JxEtpThI3S73h90oLxpP5dbu9rxkg+fUheCBXlwa9JZNEwsJjWsMzO+bO
-         F5oS5l7+uyygAYg21Nfiww26wfR8uyDaTyVC1sTKf8J1adEBSc1jdUdbB8wQxSdEDnz1
-         kfxZnECdU8144pdfxDrf5hnHxQ2BayBoUt8tWzPO1SMxZrh8eZ6tuFt4ffeQZXru/Z3j
-         WNKA==
-X-Gm-Message-State: AC+VfDwSosStHkwaAUJyyEWAa6hNSF7kkU7c1qO9wFeVjAgjbUlIP65g
-	j7thk7T5Ftvj0va98hBCfx+MkQ==
-X-Google-Smtp-Source: ACHHUZ7Zq+bK1sQ2zvEhivXDtGUvRbpP9L9r6myOfqAciLlbpkE5eW4RFbfhISzOcXXd3xs8nIFg1w==
-X-Received: by 2002:a17:907:3187:b0:966:37b2:7354 with SMTP id xe7-20020a170907318700b0096637b27354mr10995943ejb.31.1685371803889;
-        Mon, 29 May 2023 07:50:03 -0700 (PDT)
-Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
-        by smtp.gmail.com with ESMTPSA id z11-20020a170906714b00b0096f89fd4bf8sm5957708ejj.122.2023.05.29.07.50.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 May 2023 07:50:03 -0700 (PDT)
-Message-ID: <cae7f2be-cc0b-b6bb-16c5-eb014e07e73f@blackwall.org>
-Date: Mon, 29 May 2023 17:50:01 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D58BE8C0F
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 14:52:19 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28FDEA;
+	Mon, 29 May 2023 07:52:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=oPDTzj8X9h6ry+BUfp74vEAP/HJy+DV44qS7NxZNi/8=; b=DW0CDPZ88Mk8//oqYTW32FSDGa
+	BRDRM2wVEabL4p6V9HNDVxmqOl1vFdBf+N5v7ZEFlLiueMwDQT20guuGrRfYwxuc/nfTGUmhKpP7J
+	xgA8ijAk0izy+t+kW4jS3/1M9DY8tcY/8v5E8K0BC9v9d73eO/UAP7LF7HWPBZglIq/Q=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1q3eEA-00EEhk-J0; Mon, 29 May 2023 16:52:06 +0200
+Date: Mon, 29 May 2023 16:52:06 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Bagas Sanjaya <bagasdotme@gmail.com>
+Cc: Christian Marangi <ansuelsmth@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+	Lee Jones <lee@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	linux-leds@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v3 03/13] Documentation: leds: leds-class:
+ Document new Hardware driven LEDs APIs
+Message-ID: <8f171eaa-86c9-42de-88d9-a0dbc9baeb7f@lunn.ch>
+References: <20230527112854.2366-1-ansuelsmth@gmail.com>
+ <20230527112854.2366-4-ansuelsmth@gmail.com>
+ <ZHRd5wDnMrWZlwrd@debian.me>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net-next v2 7/8] mlxsw: spectrum_flower: Add ability to
- match on layer 2 miss
-Content-Language: en-US
-To: Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
- bridge@lists.linux-foundation.org
-Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
- edumazet@google.com, taras.chornyi@plvision.eu, saeedm@nvidia.com,
- leon@kernel.org, petrm@nvidia.com, vladimir.oltean@nxp.com,
- claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
- UNGLinuxDriver@microchip.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
- jiri@resnulli.us, roopa@nvidia.com, simon.horman@corigine.com
-References: <20230529114835.372140-1-idosch@nvidia.com>
- <20230529114835.372140-8-idosch@nvidia.com>
-From: Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20230529114835.372140-8-idosch@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZHRd5wDnMrWZlwrd@debian.me>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 29/05/2023 14:48, Ido Schimmel wrote:
-> Add the 'fdb_miss' key element to supported key blocks and make use of
-> it to match on layer 2 miss.
+On Mon, May 29, 2023 at 03:10:15PM +0700, Bagas Sanjaya wrote:
+> On Sat, May 27, 2023 at 01:28:44PM +0200, Christian Marangi wrote:
+> > +     - hw_control_set:
+> > +                activate hw control. LED driver will use the provided
+> > +                flags passed from the supported trigger, parse them to
+> > +                a set of mode and setup the LED to be driven by hardware
+> > +                following the requested modes.
+> > +
+> > +                Set LED_OFF via the brightness_set to deactivate hw control.
+> > +
+> > +                Return 0 on success, a negative error number on flags apply
+> > +                fail.
+> 		   "... on failing to apply flags."
 > 
-> The key is only supported on Spectrum-{2,3,4}. An error is returned for
-> Spectrum-1 since the key element is not present in any of its key
-> blocks.
-> 
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
-> 
-> Notes:
->     v2:
->     * Use 'fdb_miss' key element instead of 'dmac_type'.
-> 
->  drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_keys.c    | 1 +
->  drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_keys.h    | 3 ++-
->  .../net/ethernet/mellanox/mlxsw/spectrum_acl_flex_keys.c    | 2 ++
->  drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c       | 6 ++----
->  4 files changed, 7 insertions(+), 5 deletions(-)
-> 
+> > +    - hw_control_get_device:
+> > +                return the device associated with the LED driver in
+> > +                hw control. A trigger might use this to match the
+> > +                returned device from this function with a configured
+> > +                device for the trigger as the source for blinking
+> > +                events and correctly enable hw control.
+> > +                (example a netdev trigger configured to blink for a
+> > +                particular dev match the returned dev from get_device
+> > +                to set hw control)
+> > +
+> > +                Return a device or NULL if nothing is currently attached.
+> Returns a device name?
 
-Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
+How about "Returns a pointer to a struct device ..."
 
-
+    Andrew
 
