@@ -1,50 +1,50 @@
-Return-Path: <netdev+bounces-6119-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6120-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 70D13714D81
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 17:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 56F89714D8B
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 17:55:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 175961C20A1A
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 15:55:21 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E39771C20A2F
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 15:55:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C7B731095D;
-	Mon, 29 May 2023 15:50:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5FF3610971;
+	Mon, 29 May 2023 15:50:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3336107A0;
-	Mon, 29 May 2023 15:50:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4954E10970;
+	Mon, 29 May 2023 15:50:58 +0000 (UTC)
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F627DE;
-	Mon, 29 May 2023 08:50:53 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC507C4;
+	Mon, 29 May 2023 08:50:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685375453; x=1716911453;
+  t=1685375455; x=1716911455;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=TfVoz87qpEFgK5ifXVQFDV2Kicze8w77gtAMOYlBW/Y=;
-  b=gzlTejf3PgV+Kh8whqj/cQvPUoC+HFExeJtL3EvJNx02LUHanFg5Xt4X
-   YXkcaN9+6qAKdH6TjMu1IifEGDb+4cRPdhVmJwR5PeIE6fqTtQJghip4Y
-   36q+1BfLA8Y38bfZcda/v4g2oC7JTPZKq4An9x8wYE3wouF31TZbyEyhm
-   ds7YY9kJN9thwUCbCcCr863u31fTj+ZfkVHUAvlNKneMGjVo2aMYUoG6G
-   8M9FamNsGLpAljrc++u8ORh9fcamfLN2+D6TRHOQyR4nslJPEX2hSrMrC
-   jNooVUNjcZUCbcop2eOF6WU4t21HT3GAzhiFxWDpOhO2r+jidnNIKy+PB
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="344229018"
+  bh=gZdqfj3szF9Jdrd5PqPZMFlJ2HmIAd2YRz3B2wZHImA=;
+  b=Aal4mFjcnPfZjSOtIalDsPyH8RtDN33jPvYPvvUA0J+u091P//12fTWG
+   0lscsteCa9BVnWwizqEdWNaWjgdKkO8wEWBEx+UA5sKXD9HF4UbejBjAT
+   T7/E+CmugJVTVqajAE3v8kDq58LN2ZdaEJosBNOtkFiSdhsjBMLF5ilxy
+   FwkqiTfR9kCnZZ6U3XJ27SWL/2lJyzHGhleWmTIjEoNiCmL1d7PmYj09I
+   BaVrY22Gaaz5AUf4GUc+EtmPFFvtQxgmWf+YSUV7ig+1Kebcj/SVcc+W9
+   E2gktou3sUoL8E9vjMjygQy05RW3s9TWrLafcloqOrBXFQr6DhRJpN8wv
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="344229025"
 X-IronPort-AV: E=Sophos;i="6.00,201,1681196400"; 
-   d="scan'208";a="344229018"
+   d="scan'208";a="344229025"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2023 08:50:52 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2023 08:50:55 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="880441099"
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="880441119"
 X-IronPort-AV: E=Sophos;i="6.00,201,1681196400"; 
-   d="scan'208";a="880441099"
+   d="scan'208";a="880441119"
 Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga005.jf.intel.com with ESMTP; 29 May 2023 08:50:50 -0700
+  by orsmga005.jf.intel.com with ESMTP; 29 May 2023 08:50:53 -0700
 From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To: bpf@vger.kernel.org,
 	ast@kernel.org,
@@ -55,9 +55,9 @@ Cc: netdev@vger.kernel.org,
 	bjorn@kernel.org,
 	tirthendu.sarkar@intel.com,
 	Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH v2 bpf-next 10/22] xsk: support mbuf on ZC RX
-Date: Mon, 29 May 2023 17:50:12 +0200
-Message-Id: <20230529155024.222213-11-maciej.fijalkowski@intel.com>
+Subject: [PATCH v2 bpf-next 11/22] ice: xsk: add RX multi-buffer support
+Date: Mon, 29 May 2023 17:50:13 +0200
+Message-Id: <20230529155024.222213-12-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230529155024.222213-1-maciej.fijalkowski@intel.com>
 References: <20230529155024.222213-1-maciej.fijalkowski@intel.com>
@@ -75,161 +75,300 @@ X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Extend xdp_buff_xsk with two new list_head members - xskb_list and
-xskb_list_node. This means that each xdp_buff_xsk can be a node in the
-chain of these structs and also each xskb can carry the list by itself.
-This is needed so ZC drivers can add frags as xskb nodes which will make
-it possible to handle it both when producing AF_XDP Rx descriptors as
-well as freeing/recycling all the frags that a single frame carries.
+This support is strongly inspired by work that introduced multi-buffer
+support to regular Rx data path in ice. There are some differences,
+though. When adding a frag, besides adding it to skb_shared_info, use
+also fresh xsk_buff_add_frag() helper. Reason for doing both things is
+that we can not rule out the fact that AF_XDP pipeline could use XDP
+program that needs to access frame fragments. Without them being in
+skb_shared_info it will not be possible. Another difference is that
+XDP_PASS has to allocate a new pages for each frags and copy contents
+from memory backed by xsk_buff_pool.
 
-Speaking of latter, update xsk_buff_free() to take care of list nodes.
-For the former (adding as frags), introduce xsk_buff_add_frag() for ZC
-drivers usage that is going to be used to add a frag to the first xskb.
-
-xsk_buff_get_frag() will be utilized by XDP_TX and, on contrary, will
-return xdp_buff.
-
-One of the previous patches added a wrapper for ZC Rx so implement xskb
-list walk and production of Rx descriptors there.
+chain_len that is used for programming HW Rx descriptors no longer has
+to be limited to 1 when xsk_pool is present - remove this restriction.
 
 Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
- include/net/xdp_sock_drv.h  | 46 +++++++++++++++++++++++++++++++++++++
- include/net/xsk_buff_pool.h |  2 ++
- net/xdp/xsk.c               | 24 ++++++++++++++++++-
- net/xdp/xsk_buff_pool.c     |  2 ++
- 4 files changed, 73 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_base.c |   9 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c  | 136 ++++++++++++++++------
+ 2 files changed, 102 insertions(+), 43 deletions(-)
 
-diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
-index a3e18b958d93..36984c7b1393 100644
---- a/include/net/xdp_sock_drv.h
-+++ b/include/net/xdp_sock_drv.h
-@@ -108,10 +108,46 @@ static inline bool xsk_buff_can_alloc(struct xsk_buff_pool *pool, u32 count)
- static inline void xsk_buff_free(struct xdp_buff *xdp)
+diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
+index 1911d644dfa8..b790e3d6be6f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_base.c
++++ b/drivers/net/ethernet/intel/ice/ice_base.c
+@@ -366,7 +366,6 @@ static unsigned int ice_rx_offset(struct ice_rx_ring *rx_ring)
+  */
+ static int ice_setup_rx_ctx(struct ice_rx_ring *ring)
  {
- 	struct xdp_buff_xsk *xskb = container_of(xdp, struct xdp_buff_xsk, xdp);
-+	struct xdp_buff_xsk *pos, *tmp;
+-	int chain_len = ICE_MAX_CHAINED_RX_BUFS;
+ 	struct ice_vsi *vsi = ring->vsi;
+ 	u32 rxdid = ICE_RXDID_FLEX_NIC;
+ 	struct ice_rlan_ctx rlan_ctx;
+@@ -430,17 +429,11 @@ static int ice_setup_rx_ctx(struct ice_rx_ring *ring)
+ 	 */
+ 	rlan_ctx.showiv = 0;
+ 
+-	/* For AF_XDP ZC, we disallow packets to span on
+-	 * multiple buffers, thus letting us skip that
+-	 * handling in the fast-path.
+-	 */
+-	if (ring->xsk_pool)
+-		chain_len = 1;
+ 	/* Max packet size for this queue - must not be set to a larger value
+ 	 * than 5 x DBUF
+ 	 */
+ 	rlan_ctx.rxmax = min_t(u32, vsi->max_frame,
+-			       chain_len * ring->rx_buf_len);
++			       ICE_MAX_CHAINED_RX_BUFS * ring->rx_buf_len);
+ 
+ 	/* Rx queue threshold in units of 64 */
+ 	rlan_ctx.lrxqthresh = 1;
+diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+index d1e489da7363..920cf2b16836 100644
+--- a/drivers/net/ethernet/intel/ice/ice_xsk.c
++++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+@@ -548,19 +548,6 @@ bool ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count)
+ 	return __ice_alloc_rx_bufs_zc(rx_ring, leftover);
+ }
+ 
+-/**
+- * ice_bump_ntc - Bump the next_to_clean counter of an Rx ring
+- * @rx_ring: Rx ring
+- */
+-static void ice_bump_ntc(struct ice_rx_ring *rx_ring)
+-{
+-	int ntc = rx_ring->next_to_clean + 1;
+-
+-	ntc = (ntc < rx_ring->count) ? ntc : 0;
+-	rx_ring->next_to_clean = ntc;
+-	prefetch(ICE_RX_DESC(rx_ring, ntc));
+-}
+-
+ /**
+  * ice_construct_skb_zc - Create an sk_buff from zero-copy buffer
+  * @rx_ring: Rx ring
+@@ -575,8 +562,14 @@ ice_construct_skb_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp)
+ {
+ 	unsigned int totalsize = xdp->data_end - xdp->data_meta;
+ 	unsigned int metasize = xdp->data - xdp->data_meta;
++	struct skb_shared_info *sinfo = NULL;
+ 	struct sk_buff *skb;
++	u32 nr_frags = 0;
+ 
++	if (unlikely(xdp_buff_has_frags(xdp))) {
++		sinfo = xdp_get_shared_info_from_buff(xdp);
++		nr_frags = sinfo->nr_frags;
++	}
+ 	net_prefetch(xdp->data_meta);
+ 
+ 	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, totalsize,
+@@ -592,6 +585,29 @@ ice_construct_skb_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp)
+ 		__skb_pull(skb, metasize);
+ 	}
  
 +	if (likely(!xdp_buff_has_frags(xdp)))
 +		goto out;
 +
-+	list_for_each_entry_safe(pos, tmp, &xskb->xskb_list, xskb_list_node) {
-+		list_del(&pos->xskb_list_node);
-+		xp_free(pos);
-+	}
++	for (int i = 0; i < nr_frags; i++) {
++		struct skb_shared_info *skinfo = skb_shinfo(skb);
++		skb_frag_t *frag = &sinfo->frags[i];
++		struct page *page;
++		void *addr;
 +
-+	xdp_get_shared_info_from_buff(xdp)->nr_frags = 0;
-+out:
- 	xp_free(xskb);
- }
- 
-+static inline void xsk_buff_add_frag(struct xdp_buff *first,
-+				     struct xdp_buff *xdp)
-+{
-+	struct xdp_buff_xsk *xskb = container_of(first, struct xdp_buff_xsk, xdp);
-+	struct xdp_buff_xsk *frag = container_of(xdp, struct xdp_buff_xsk, xdp);
++		page = dev_alloc_page();
++		if (!page) {
++			dev_kfree_skb(skb);
++			return NULL;
++		}
++		addr = page_to_virt(page);
 +
-+	list_add_tail(&frag->xskb_list_node, &xskb->xskb_list);
-+}
++		memcpy(addr, skb_frag_page(frag), skb_frag_size(frag));
 +
-+static inline struct xdp_buff *xsk_buff_get_frag(struct xdp_buff *first)
-+{
-+	struct xdp_buff_xsk *xskb = container_of(first, struct xdp_buff_xsk, xdp);
-+	struct xdp_buff *ret = NULL;
-+	struct xdp_buff_xsk *frag;
-+
-+	frag = list_first_entry_or_null(&xskb->xskb_list, struct xdp_buff_xsk,
-+					xskb_list_node);
-+	if (frag) {
-+		list_del(&frag->xskb_list_node);
-+		ret = &frag->xdp;
-+	}
-+
-+	return ret;
-+}
-+
- static inline void xsk_buff_set_size(struct xdp_buff *xdp, u32 size)
- {
- 	xdp->data = xdp->data_hard_start + XDP_PACKET_HEADROOM;
-@@ -265,6 +301,16 @@ static inline void xsk_buff_free(struct xdp_buff *xdp)
- {
- }
- 
-+static inline void xsk_buff_add_frag(struct xdp_buff *first,
-+				     struct xdp_buff *xdp)
-+{
-+}
-+
-+static inline struct xdp_buff *xsk_buff_get_frag(struct xdp_buff *first)
-+{
-+	return NULL;
-+}
-+
- static inline void xsk_buff_discard(struct xdp_buff *xdp)
- {
- }
-diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
-index 4dcca163e076..8a430163512c 100644
---- a/include/net/xsk_buff_pool.h
-+++ b/include/net/xsk_buff_pool.h
-@@ -29,6 +29,8 @@ struct xdp_buff_xsk {
- 	struct xsk_buff_pool *pool;
- 	u64 orig_addr;
- 	struct list_head free_list_node;
-+	struct list_head xskb_list_node;
-+	struct list_head xskb_list;
- };
- 
- #define XSK_CHECK_PRIV_TYPE(t) BUILD_BUG_ON(sizeof(t) > offsetofend(struct xdp_buff_xsk, cb))
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index bc8dbd9f5312..b519fe4456bc 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -155,8 +155,30 @@ static int __xsk_rcv_zc(struct xdp_sock *xs, struct xdp_buff_xsk *xskb, u32 len,
- static int xsk_rcv_zc(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len)
- {
- 	struct xdp_buff_xsk *xskb = container_of(xdp, struct xdp_buff_xsk, xdp);
-+	u32 frags = xdp_buff_has_frags(xdp);
-+	struct xdp_buff_xsk *pos, *tmp;
-+	u32 contd = 0;
-+	int err;
-+
-+	if (frags)
-+		contd = XDP_PKT_CONTD;
- 
--	return __xsk_rcv_zc(xs, xskb, len, 0);
-+	err = __xsk_rcv_zc(xs, xskb, len, contd);
-+	if (err || likely(!frags))
-+		goto out;
-+
-+	list_for_each_entry_safe(pos, tmp, &xskb->xskb_list, xskb_list_node) {
-+		if (list_is_singular(&xskb->xskb_list))
-+			contd = 0;
-+		len = pos->xdp.data_end - pos->xdp.data;
-+		err = __xsk_rcv_zc(xs, pos, len, contd);
-+		if (err)
-+			return err;
-+		list_del(&pos->xskb_list_node);
++		__skb_fill_page_desc_noacc(skinfo, skinfo->nr_frags++,
++					   addr, 0, skb_frag_size(frag));
 +	}
 +
 +out:
-+	return err;
+ 	xsk_buff_free(xdp);
+ 	return skb;
+ }
+@@ -755,6 +771,34 @@ ice_run_xdp_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp,
+ 	return result;
  }
  
- static void *xsk_copy_xdp_start(struct xdp_buff *from)
-diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-index 26f6d304451e..0a9f8ea68de3 100644
---- a/net/xdp/xsk_buff_pool.c
-+++ b/net/xdp/xsk_buff_pool.c
-@@ -99,6 +99,8 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
- 		xskb->pool = pool;
- 		xskb->xdp.frame_sz = umem->chunk_size - umem->headroom;
- 		INIT_LIST_HEAD(&xskb->free_list_node);
-+		INIT_LIST_HEAD(&xskb->xskb_list_node);
-+		INIT_LIST_HEAD(&xskb->xskb_list);
- 		if (pool->unaligned)
- 			pool->free_heads[i] = xskb;
++static int
++ice_add_xsk_frag(struct ice_rx_ring *rx_ring, struct xdp_buff *first,
++		 struct xdp_buff *xdp, const unsigned int size)
++{
++	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(first);
++
++	if (!size)
++		return 0;
++
++	if (!xdp_buff_has_frags(first)) {
++		sinfo->nr_frags = 0;
++		sinfo->xdp_frags_size = 0;
++		xdp_buff_set_frags_flag(first);
++	}
++
++	if (unlikely(sinfo->nr_frags == MAX_SKB_FRAGS)) {
++		xsk_buff_free(first);
++		return -ENOMEM;
++	}
++
++	__skb_fill_page_desc_noacc(sinfo, sinfo->nr_frags++,
++				   virt_to_page(xdp->data_hard_start), 0, size);
++	sinfo->xdp_frags_size += size;
++	xsk_buff_add_frag(first, xdp);
++
++	return 0;
++}
++
+ /**
+  * ice_clean_rx_irq_zc - consumes packets from the hardware ring
+  * @rx_ring: AF_XDP Rx ring
+@@ -765,9 +809,14 @@ ice_run_xdp_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp,
+ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
+ {
+ 	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
++	struct xsk_buff_pool *xsk_pool = rx_ring->xsk_pool;
++	u32 ntc = rx_ring->next_to_clean;
++	u32 ntu = rx_ring->next_to_use;
++	struct xdp_buff *first = NULL;
+ 	struct ice_tx_ring *xdp_ring;
+ 	unsigned int xdp_xmit = 0;
+ 	struct bpf_prog *xdp_prog;
++	u32 cnt = rx_ring->count;
+ 	bool failure = false;
+ 	int entries_to_alloc;
+ 
+@@ -777,6 +826,9 @@ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
+ 	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
+ 	xdp_ring = rx_ring->xdp_ring;
+ 
++	if (ntc != rx_ring->first_desc)
++		first = *ice_xdp_buf(rx_ring, rx_ring->first_desc);
++
+ 	while (likely(total_rx_packets < (unsigned int)budget)) {
+ 		union ice_32b_rx_flex_desc *rx_desc;
+ 		unsigned int size, xdp_res = 0;
+@@ -786,7 +838,7 @@ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
+ 		u16 vlan_tag = 0;
+ 		u16 rx_ptype;
+ 
+-		rx_desc = ICE_RX_DESC(rx_ring, rx_ring->next_to_clean);
++		rx_desc = ICE_RX_DESC(rx_ring, ntc);
+ 
+ 		stat_err_bits = BIT(ICE_RX_FLEX_DESC_STATUS0_DD_S);
+ 		if (!ice_test_staterr(rx_desc->wb.status_error0, stat_err_bits))
+@@ -798,51 +850,61 @@ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
+ 		 */
+ 		dma_rmb();
+ 
+-		if (unlikely(rx_ring->next_to_clean == rx_ring->next_to_use))
++		if (unlikely(ntc == ntu))
+ 			break;
+ 
+-		xdp = *ice_xdp_buf(rx_ring, rx_ring->next_to_clean);
++		xdp = *ice_xdp_buf(rx_ring, ntc);
+ 
+ 		size = le16_to_cpu(rx_desc->wb.pkt_len) &
+ 				   ICE_RX_FLX_DESC_PKT_LEN_M;
+-		if (!size) {
+-			xdp->data = NULL;
+-			xdp->data_end = NULL;
+-			xdp->data_hard_start = NULL;
+-			xdp->data_meta = NULL;
+-			goto construct_skb;
+-		}
+ 
+ 		xsk_buff_set_size(xdp, size);
+-		xsk_buff_dma_sync_for_cpu(xdp, rx_ring->xsk_pool);
++		xsk_buff_dma_sync_for_cpu(xdp, xsk_pool);
++
++		if (!first) {
++			first = xdp;
++			xdp_buff_clear_frags_flag(first);
++		} else if (ice_add_xsk_frag(rx_ring, first, xdp, size)) {
++			break;
++		}
++
++		if (++ntc == cnt)
++			ntc = 0;
++
++		if (ice_is_non_eop(rx_ring, rx_desc))
++			continue;
+ 
+-		xdp_res = ice_run_xdp_zc(rx_ring, xdp, xdp_prog, xdp_ring);
++		xdp_res = ice_run_xdp_zc(rx_ring, first, xdp_prog, xdp_ring);
+ 		if (likely(xdp_res & (ICE_XDP_TX | ICE_XDP_REDIR))) {
+ 			xdp_xmit |= xdp_res;
+ 		} else if (xdp_res == ICE_XDP_EXIT) {
+ 			failure = true;
++			first = NULL;
++			rx_ring->first_desc = ntc;
+ 			break;
+ 		} else if (xdp_res == ICE_XDP_CONSUMED) {
+-			xsk_buff_free(xdp);
++			xsk_buff_free(first);
+ 		} else if (xdp_res == ICE_XDP_PASS) {
+ 			goto construct_skb;
+ 		}
+ 
+-		total_rx_bytes += size;
++		total_rx_bytes += xdp_get_buff_len(first);
+ 		total_rx_packets++;
+ 
+-		ice_bump_ntc(rx_ring);
++		first = NULL;
++		rx_ring->first_desc = ntc;
+ 		continue;
+ 
+ construct_skb:
+ 		/* XDP_PASS path */
+-		skb = ice_construct_skb_zc(rx_ring, xdp);
++		skb = ice_construct_skb_zc(rx_ring, first);
+ 		if (!skb) {
+ 			rx_ring->ring_stats->rx_stats.alloc_buf_failed++;
+ 			break;
+ 		}
+ 
+-		ice_bump_ntc(rx_ring);
++		first = NULL;
++		rx_ring->first_desc = ntc;
+ 
+ 		if (eth_skb_pad(skb)) {
+ 			skb = NULL;
+@@ -861,18 +923,22 @@ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
+ 		ice_receive_skb(rx_ring, skb, vlan_tag);
+ 	}
+ 
+-	entries_to_alloc = ICE_DESC_UNUSED(rx_ring);
++	rx_ring->next_to_clean = ntc;
++	entries_to_alloc = ICE_RX_DESC_UNUSED(rx_ring);
+ 	if (entries_to_alloc > ICE_RING_QUARTER(rx_ring))
+ 		failure |= !ice_alloc_rx_bufs_zc(rx_ring, entries_to_alloc);
+ 
+ 	ice_finalize_xdp_rx(xdp_ring, xdp_xmit, 0);
+ 	ice_update_rx_ring_stats(rx_ring, total_rx_packets, total_rx_bytes);
+ 
+-	if (xsk_uses_need_wakeup(rx_ring->xsk_pool)) {
+-		if (failure || rx_ring->next_to_clean == rx_ring->next_to_use)
+-			xsk_set_rx_need_wakeup(rx_ring->xsk_pool);
++	if (xsk_uses_need_wakeup(xsk_pool)) {
++		/* ntu could have changed when allocating entries above, so
++		 * use rx_ring value instead of stack based one
++		 */
++		if (failure || ntc == rx_ring->next_to_use)
++			xsk_set_rx_need_wakeup(xsk_pool);
  		else
+-			xsk_clear_rx_need_wakeup(rx_ring->xsk_pool);
++			xsk_clear_rx_need_wakeup(xsk_pool);
+ 
+ 		return (int)total_rx_packets;
+ 	}
 -- 
 2.35.3
 
