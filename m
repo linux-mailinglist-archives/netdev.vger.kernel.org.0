@@ -1,39 +1,39 @@
-Return-Path: <netdev+bounces-6016-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6017-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8A29F7145F1
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 10:04:34 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0F7F67145F2
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 10:04:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 44341280DE5
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 08:04:33 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9E2A51C209C8
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 08:04:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0346B3D79;
-	Mon, 29 May 2023 08:02:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E8BD43D81;
+	Mon, 29 May 2023 08:02:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7A5F6AAC
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 08:02:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D76E36AAC
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 08:02:55 +0000 (UTC)
 Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B940E0;
-	Mon, 29 May 2023 01:02:45 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023BB10C;
+	Mon, 29 May 2023 01:02:46 -0700 (PDT)
 X-GND-Sasl: alexis.lothore@bootlin.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1685347364;
+	t=1685347365;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=wPLy8gbYNUrZjATOCdFHCsb4lMos6/9mDXRS3C5jaRY=;
-	b=hDPOvMJOEL+P7wtRxV4tL+n6Slr1dNc37owCWvy2bzk7bG8UrcuTPmnPU2mpR927Brn7il
-	/2ADph3OrDmom/JDu3gwuETvqiYmoSsfSMlnK8Z3zao1dpFEFIm2EarZHJrI7cq6ZWD15n
-	yECNMhRmYbJf2S8dLRxyqXEwUjESgZl659F1xoKO1TM5/OQxqs3x+vX5eldWD7NqcDpB4e
-	mKxbfWa5VBAlzOQcImJes0xeA+BXwt1QcZF8qM6B2erGQ8NSzD4YxYPboLfxPsIOKPee39
-	dVTL4LGTgTz1AZS/yZgRr9WPjNZxxf3FdNstBm1EGzCCJu94/CMI/X9UDu5lwA==
+	bh=Gyfz9uw7yVnmqHeEYkdodfqIzx9X2JCXZgx1HWY1Hnk=;
+	b=epXCy8ZZrp83XM0ekSMfPCQZcPtXQ+d4lMRiG/BXpRZn35vzQpffB0vkSOTjAbST3ZtiPf
+	skfSo6sADzfs0ofYFulLyH/lRGwMP0A7Fhsafx8HHuYguzIGHgIVUCQSYBlnWqWYV6mNBy
+	KTjXCu6zzpkQmXECUpqTqdtDbeb1Qn9f0hNbqNEuU1wpLLb144TjIZaufl4z9qSFMHXuMn
+	f26G2KmKg/1Lu0bginJszpt+bTuna4lkpF7xmJH2mAk/PQqH7d3W8ZcUjjiPdPKMWKQX4u
+	8syUJ3E45Y4yL14um1PsQb0unARVx8ZeBkuSr7/qQgGsNUhZHHNSN5Z2qOSE/A==
 X-GND-Sasl: alexis.lothore@bootlin.com
 X-GND-Sasl: alexis.lothore@bootlin.com
 X-GND-Sasl: alexis.lothore@bootlin.com
@@ -53,8 +53,8 @@ X-GND-Sasl: alexis.lothore@bootlin.com
 X-GND-Sasl: alexis.lothore@bootlin.com
 X-GND-Sasl: alexis.lothore@bootlin.com
 X-GND-Sasl: alexis.lothore@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 808696000D;
-	Mon, 29 May 2023 08:02:42 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 1BED960011;
+	Mon, 29 May 2023 08:02:44 +0000 (UTC)
 From: =?UTF-8?q?Alexis=20Lothor=C3=A9?= <alexis.lothore@bootlin.com>
 To: Andrew Lunn <andrew@lunn.ch>,
 	Florian Fainelli <f.fainelli@gmail.com>,
@@ -76,9 +76,9 @@ Cc: linux-kernel@vger.kernel.org ,
 	scott.roberts@telus.com ,
 	=?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
 	=?UTF-8?q?Alexis=20Lothor=C3=A9?= <alexis.lothore@bootlin.com>
-Subject: [PATCH net-next v4 6/7] net: dsa: mv88e6xxx: pass mv88e6xxx_chip structure to port_max_speed_mode
-Date: Mon, 29 May 2023 10:02:45 +0200
-Message-Id: <20230529080246.82953-7-alexis.lothore@bootlin.com>
+Subject: [PATCH net-next v4 7/7] net: dsa: mv88e6xxx: enable support for 88E6361 switch
+Date: Mon, 29 May 2023 10:02:46 +0200
+Message-Id: <20230529080246.82953-8-alexis.lothore@bootlin.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230529080246.82953-1-alexis.lothore@bootlin.com>
 References: <20230529080246.82953-1-alexis.lothore@bootlin.com>
@@ -97,120 +97,164 @@ X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Some switches families have minor differences on supported link speed for
-ports. Instead of redefining a new port_max_speed_mode for each different
-configuration, allow to pass mv88e6xxx_chip structure to allow
-differentiating those chips by known chip id
+Marvell 88E6361 is an 8-port switch derived from the
+88E6393X/88E9193X/88E6191X switches family. It can benefit from the
+existing mv88e6xxx driver by simply adding the proper switch description in
+the driver. Main differences with other switches from this
+family are:
+- 8 ports exposed (instead of 11): ports 1, 2 and 8 not available
+- No 5GBase-x nor SFI/USXGMII support
 
 Signed-off-by: Alexis Lothoré <alexis.lothore@bootlin.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes since v3:
 - fix SoB
+- reorder 88E6361 chip id to respect chip id list order
 
 Changes since v2:
-- add reviewed-by tag
+- rearrange some conditions to avoid long lines
 ---
- drivers/net/dsa/mv88e6xxx/chip.c |  2 +-
+ drivers/net/dsa/mv88e6xxx/chip.c | 42 ++++++++++++++++++++++++++++----
  drivers/net/dsa/mv88e6xxx/chip.h |  3 ++-
- drivers/net/dsa/mv88e6xxx/port.c | 12 ++++++++----
- drivers/net/dsa/mv88e6xxx/port.h | 12 ++++++++----
- 4 files changed, 19 insertions(+), 10 deletions(-)
+ drivers/net/dsa/mv88e6xxx/port.c | 14 ++++++++---
+ drivers/net/dsa/mv88e6xxx/port.h |  1 +
+ 4 files changed, 51 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index d3d861e55fe0..a2b5cac39507 100644
+index a2b5cac39507..624b43dd079c 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3334,7 +3334,7 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- 		caps = pl_config.mac_capabilities;
+@@ -790,6 +790,8 @@ static void mv88e6393x_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
+ 	unsigned long *supported = config->supported_interfaces;
+ 	bool is_6191x =
+ 		chip->info->prod_num == MV88E6XXX_PORT_SWITCH_ID_PROD_6191X;
++	bool is_6361 =
++		chip->info->prod_num == MV88E6XXX_PORT_SWITCH_ID_PROD_6361;
  
- 		if (chip->info->ops->port_max_speed_mode)
--			mode = chip->info->ops->port_max_speed_mode(port);
-+			mode = chip->info->ops->port_max_speed_mode(chip, port);
- 		else
- 			mode = PHY_INTERFACE_MODE_NA;
+ 	mv88e6xxx_translate_cmode(chip->ports[port].cmode, supported);
  
+@@ -804,13 +806,17 @@ static void mv88e6393x_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
+ 		/* 6191X supports >1G modes only on port 10 */
+ 		if (!is_6191x || port == 10) {
+ 			__set_bit(PHY_INTERFACE_MODE_2500BASEX, supported);
+-			__set_bit(PHY_INTERFACE_MODE_5GBASER, supported);
+-			__set_bit(PHY_INTERFACE_MODE_10GBASER, supported);
++			config->mac_capabilities |= MAC_2500FD;
++
++			/* 6361 only supports up to 2500BaseX */
++			if (!is_6361) {
++				__set_bit(PHY_INTERFACE_MODE_5GBASER, supported);
++				__set_bit(PHY_INTERFACE_MODE_10GBASER, supported);
++				config->mac_capabilities |= MAC_5000FD |
++					MAC_10000FD;
++			}
+ 			/* FIXME: USXGMII is not supported yet */
+ 			/* __set_bit(PHY_INTERFACE_MODE_USXGMII, supported); */
+-
+-			config->mac_capabilities |= MAC_2500FD | MAC_5000FD |
+-				MAC_10000FD;
+ 		}
+ 	}
+ 
+@@ -6334,6 +6340,32 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.ptp_support = true,
+ 		.ops = &mv88e6352_ops,
+ 	},
++	[MV88E6361] = {
++		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6361,
++		.family = MV88E6XXX_FAMILY_6393,
++		.name = "Marvell 88E6361",
++		.num_databases = 4096,
++		.num_macs = 16384,
++		.num_ports = 11,
++		/* Ports 1, 2 and 8 are not routed */
++		.invalid_port_mask = BIT(1) | BIT(2) | BIT(8),
++		.num_internal_phys = 5,
++		.internal_phys_offset = 3,
++		.max_vid = 4095,
++		.max_sid = 63,
++		.port_base_addr = 0x0,
++		.phy_base_addr = 0x0,
++		.global1_addr = 0x1b,
++		.global2_addr = 0x1c,
++		.age_time_coeff = 3750,
++		.g1_irqs = 10,
++		.g2_irqs = 14,
++		.atu_move_port_mask = 0x1f,
++		.pvt = true,
++		.multi_chip = true,
++		.ptp_support = true,
++		.ops = &mv88e6393x_ops,
++	},
+ 	[MV88E6390] = {
+ 		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6390,
+ 		.family = MV88E6XXX_FAMILY_6390,
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index eca51946c100..dd7c8880e987 100644
+index dd7c8880e987..79c06ba42c54 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.h
 +++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -518,7 +518,8 @@ struct mv88e6xxx_ops {
- 				     int speed, int duplex);
+@@ -82,6 +82,7 @@ enum mv88e6xxx_model {
+ 	MV88E6350,
+ 	MV88E6351,
+ 	MV88E6352,
++	MV88E6361,
+ 	MV88E6390,
+ 	MV88E6390X,
+ 	MV88E6393X,
+@@ -100,7 +101,7 @@ enum mv88e6xxx_family {
+ 	MV88E6XXX_FAMILY_6351,	/* 6171 6175 6350 6351 */
+ 	MV88E6XXX_FAMILY_6352,	/* 6172 6176 6240 6352 */
+ 	MV88E6XXX_FAMILY_6390,  /* 6190 6190X 6191 6290 6390 6390X */
+-	MV88E6XXX_FAMILY_6393,	/* 6191X 6193X 6393X */
++	MV88E6XXX_FAMILY_6393,	/* 6191X 6193X 6361 6393X */
+ };
  
- 	/* What interface mode should be used for maximum speed? */
--	phy_interface_t (*port_max_speed_mode)(int port);
-+	phy_interface_t (*port_max_speed_mode)(struct mv88e6xxx_chip *chip,
-+					       int port);
- 
- 	int (*port_tag_remap)(struct mv88e6xxx_chip *chip, int port);
- 
+ /**
 diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index f79cf716c541..66f1b40b4e96 100644
+index 66f1b40b4e96..e9b4a6ea4d09 100644
 --- a/drivers/net/dsa/mv88e6xxx/port.c
 +++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -342,7 +342,8 @@ int mv88e6341_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- 					       duplex);
+@@ -424,6 +424,10 @@ int mv88e6393x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
+ 	u16 reg, ctrl;
+ 	int err;
+ 
++	if (chip->info->prod_num == MV88E6XXX_PORT_SWITCH_ID_PROD_6361 &&
++	    speed > 2500)
++		return -EOPNOTSUPP;
++
+ 	if (speed == 200 && port != 0)
+ 		return -EOPNOTSUPP;
+ 
+@@ -506,10 +510,14 @@ int mv88e6393x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
+ phy_interface_t mv88e6393x_port_max_speed_mode(struct mv88e6xxx_chip *chip,
+ 					       int port)
+ {
+-	if (port == 0 || port == 9 || port == 10)
+-		return PHY_INTERFACE_MODE_10GBASER;
+ 
+-	return PHY_INTERFACE_MODE_NA;
++	if (port != 0 && port != 9 && port != 10)
++		return PHY_INTERFACE_MODE_NA;
++
++	if (chip->info->prod_num == MV88E6XXX_PORT_SWITCH_ID_PROD_6361)
++		return PHY_INTERFACE_MODE_2500BASEX;
++
++	return PHY_INTERFACE_MODE_10GBASER;
  }
  
--phy_interface_t mv88e6341_port_max_speed_mode(int port)
-+phy_interface_t mv88e6341_port_max_speed_mode(struct mv88e6xxx_chip *chip,
-+					      int port)
- {
- 	if (port == 5)
- 		return PHY_INTERFACE_MODE_2500BASEX;
-@@ -381,7 +382,8 @@ int mv88e6390_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- 					       duplex);
- }
- 
--phy_interface_t mv88e6390_port_max_speed_mode(int port)
-+phy_interface_t mv88e6390_port_max_speed_mode(struct mv88e6xxx_chip *chip,
-+					      int port)
- {
- 	if (port == 9 || port == 10)
- 		return PHY_INTERFACE_MODE_2500BASEX;
-@@ -403,7 +405,8 @@ int mv88e6390x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- 					       duplex);
- }
- 
--phy_interface_t mv88e6390x_port_max_speed_mode(int port)
-+phy_interface_t mv88e6390x_port_max_speed_mode(struct mv88e6xxx_chip *chip,
-+					       int port)
- {
- 	if (port == 9 || port == 10)
- 		return PHY_INTERFACE_MODE_XAUI;
-@@ -500,7 +503,8 @@ int mv88e6393x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- 	return 0;
- }
- 
--phy_interface_t mv88e6393x_port_max_speed_mode(int port)
-+phy_interface_t mv88e6393x_port_max_speed_mode(struct mv88e6xxx_chip *chip,
-+					       int port)
- {
- 	if (port == 0 || port == 9 || port == 10)
- 		return PHY_INTERFACE_MODE_10GBASER;
+ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
 diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index d19b6303b91f..8331b9a89a15 100644
+index 8331b9a89a15..ec9019004404 100644
 --- a/drivers/net/dsa/mv88e6xxx/port.h
 +++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -359,10 +359,14 @@ int mv88e6390x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- int mv88e6393x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- 				     int speed, int duplex);
- 
--phy_interface_t mv88e6341_port_max_speed_mode(int port);
--phy_interface_t mv88e6390_port_max_speed_mode(int port);
--phy_interface_t mv88e6390x_port_max_speed_mode(int port);
--phy_interface_t mv88e6393x_port_max_speed_mode(int port);
-+phy_interface_t mv88e6341_port_max_speed_mode(struct mv88e6xxx_chip *chip,
-+					      int port);
-+phy_interface_t mv88e6390_port_max_speed_mode(struct mv88e6xxx_chip *chip,
-+					      int port);
-+phy_interface_t mv88e6390x_port_max_speed_mode(struct mv88e6xxx_chip *chip,
-+					       int port);
-+phy_interface_t mv88e6393x_port_max_speed_mode(struct mv88e6xxx_chip *chip,
-+					       int port);
- 
- int mv88e6xxx_port_set_state(struct mv88e6xxx_chip *chip, int port, u8 state);
- 
+@@ -133,6 +133,7 @@
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_6220	0x2200
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_6240	0x2400
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_6250	0x2500
++#define MV88E6XXX_PORT_SWITCH_ID_PROD_6361	0x2610
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_6290	0x2900
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_6321	0x3100
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_6141	0x3400
 -- 
 2.40.1
 
