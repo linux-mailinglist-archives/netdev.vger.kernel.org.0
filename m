@@ -1,63 +1,63 @@
-Return-Path: <netdev+bounces-6065-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6066-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 89C09714A1B
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 15:18:04 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3F0D3714A1E
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 15:18:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3888C280E68
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 13:18:03 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5EE27280DA9
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 13:18:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 620B86FDA;
-	Mon, 29 May 2023 13:18:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A22546FDE;
+	Mon, 29 May 2023 13:18:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ED3D3D60
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 13:18:01 +0000 (UTC)
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B1411B
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 06:17:42 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id 4fb4d7f45d1cf-5147f5efeb5so5335898a12.0
-        for <netdev@vger.kernel.org>; Mon, 29 May 2023 06:17:42 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95DDC6FD5
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 13:18:41 +0000 (UTC)
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2478D188
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 06:18:16 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-510f525e06cso5697340a12.2
+        for <netdev@vger.kernel.org>; Mon, 29 May 2023 06:18:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20221208.gappssmtp.com; s=20221208; t=1685366258; x=1687958258;
+        d=blackwall-org.20221208.gappssmtp.com; s=20221208; t=1685366294; x=1687958294;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=KVHCP9GjMtC8qGNoGPmmcW2n7fokm+mXHG6bkqQl4dY=;
-        b=03mfx0ayiG0g5gZAkaaZrOEZcURS53wiLiY5XKrCqoqeWUopFUtoCdP3lSOwwJjq9Y
-         F0xuSja3LEukr90mGXgI48sG6D5PypA5AnBDO4iX5qMJRMjW4NxHLk+rKwqzvTYjLbFc
-         bY68vk4vmVD89r1EExry645zx5+Sq36ZvbZRixZ62MPHDjxdhHpGuTDngrwV+PNFXkU/
-         lQcQed/At5NP1pkIkTPbw7PgMUMdqQdpqm9dUrvsqKnxI6zFV6H2CpCWt4pYdg8eVCbv
-         6IiJ7BiojjEnuLXxctttXWi5m+onKPW9J4r8KQCvBxWB4L83ukO0uyC1CxN+VoQl21HN
-         2Ytw==
+        bh=ekH/XPPL11xeKHaj9D6lSLg3OZVj5G8ttFan0W5KnI8=;
+        b=g4QHDjpT4S77avoZxAHq41BxBNa4BuJgDXddpg8aHMfKgTdpn9YReZo+21hMlaD6D6
+         iItVduypcbFD1PjRrNqqS5/QWJOL91v1aEFHpy+Piv/tQOnuZ/8900d3KLD+6yDZhpm8
+         X6wsiZd+yTlVGwf81XT+iF86AUW8ST3rrYJH3d9m6JgVUaln+cfboCE/t06YMe26S0es
+         c2sU8/+VTR6vh/mJBoSD0FtL5ey707nXvJBnNTOplj/IuWYkb+eGAvC4KaabeIcV/qqn
+         cAFSzamLycnVQmnzCf3uNEYn2E5MOitp6ku2o3dUjWvxoSHLSoFR2oKaiFJPjyWHirkb
+         N+SQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685366258; x=1687958258;
+        d=1e100.net; s=20221208; t=1685366294; x=1687958294;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KVHCP9GjMtC8qGNoGPmmcW2n7fokm+mXHG6bkqQl4dY=;
-        b=ls3lWQ3wibCCB9mohC/8VDFkbAntVayy+4/0WiWgb6uhKjj/Z0Y+sMfBoROy20KYMK
-         TPI7EnFf+bZ2JL4t/9LZt5aPfaKRe7dYsE9c9FWunggp/8oA3W0dWCLVMCV7kdHsf4yT
-         i5jctGBYqonLwqUdJU9uU0Waqg4qZ6fz4h1LaaIQcw0LtLLvNJKxNG663DmW/vvQPNmU
-         55KAeAa3jI4det4HNHOBL4pGET8IdxNcY+eapPjILyB7LCqQ+j+WRE+3+4EMeA4KITkr
-         i5974DHMF0TiSFkSVd9hGMRsw8vKT1aDmTsF+ZKsAaRiV54rJvDm46BMKdqBEB4GhIgI
-         dO4g==
-X-Gm-Message-State: AC+VfDzIBsjlGPJkeEMzl9yUA59k4kZkneWyEizFTmI1ZslEtEKBgrSu
-	GJpC50KQNPfVE22EG3VYEtNGiQ==
-X-Google-Smtp-Source: ACHHUZ5ehB7xMRH1caM3gKqELrLRKVaUdfl7akJJUHSnVGiZIYbODab67lQFivuY/qj4QWXAWKpprg==
-X-Received: by 2002:a17:907:168d:b0:974:76:dcdd with SMTP id hc13-20020a170907168d00b009740076dcddmr4366969ejc.55.1685366257783;
-        Mon, 29 May 2023 06:17:37 -0700 (PDT)
+        bh=ekH/XPPL11xeKHaj9D6lSLg3OZVj5G8ttFan0W5KnI8=;
+        b=YfFXNQ6jRa4uGXfG+RCF+tcmOKHumhnohTyfRFA3MQaNfSu6ZPZPtkcRDVWkQfMumE
+         9LRSzMv9Uwd+TRXNbg3Y5jkHQc4AJGy3bREDHijYSLkd9qtYOxKsIhdVQIuR4fPZDDy0
+         PuqwKbT/lD78E8DOjIi2rCJ26F0ZxVegsgHzOna3YPH+UmQe3S88OwFZGSjUoz/tfa0p
+         pxmJrNoP100HFRJWhslWMXAt5D8VRb+TaBGuA3Vt6Oe66BU7QhzXeB0jnT8R82YbpRo/
+         ltetqbSKhIAWMZCGhylNJDPMz/+AOeFP6M3+zCJ9YAFcbfQouNTh/WRg8pg5nNuADxP6
+         3pJw==
+X-Gm-Message-State: AC+VfDyN1zb7l80VfcqdPSh+YREcl40q+grlrY8DYFIgM15NFt7iSGKD
+	QeCAR8sw1hK7Zp4JLF1efiCKDA==
+X-Google-Smtp-Source: ACHHUZ6zbhEgQPjq7oOZNBX+tPtndmda+yq2VADwzviivMW15bGWEM9qWHvOIfGuhVga4zwWuziKxw==
+X-Received: by 2002:a17:906:ee83:b0:94f:2a13:4e01 with SMTP id wt3-20020a170906ee8300b0094f2a134e01mr9124363ejb.74.1685366293633;
+        Mon, 29 May 2023 06:18:13 -0700 (PDT)
 Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
-        by smtp.gmail.com with ESMTPSA id v19-20020a1709060b5300b0096621340285sm5914547ejg.198.2023.05.29.06.17.36
+        by smtp.gmail.com with ESMTPSA id e18-20020a170906249200b0096f503ae4b0sm5912249ejb.26.2023.05.29.06.18.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 May 2023 06:17:37 -0700 (PDT)
-Message-ID: <58d3e95f-ee23-06c7-b690-64fe42b9c56b@blackwall.org>
-Date: Mon, 29 May 2023 16:17:35 +0300
+        Mon, 29 May 2023 06:18:13 -0700 (PDT)
+Message-ID: <cddf6ca0-3c9f-3ee2-1145-f68b3da73fab@blackwall.org>
+Date: Mon, 29 May 2023 16:18:11 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -66,8 +66,8 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [PATCH net-next v2 1/8] skbuff: bridge: Add layer 2 miss
- indication
+Subject: Re: [PATCH net-next v2 2/8] flow_dissector: Dissect layer 2 miss from
+ tc skb extension
 Content-Language: en-US
 To: Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
  bridge@lists.linux-foundation.org
@@ -78,9 +78,9 @@ Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
  UNGLinuxDriver@microchip.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
  jiri@resnulli.us, roopa@nvidia.com, simon.horman@corigine.com
 References: <20230529114835.372140-1-idosch@nvidia.com>
- <20230529114835.372140-2-idosch@nvidia.com>
+ <20230529114835.372140-3-idosch@nvidia.com>
 From: Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20230529114835.372140-2-idosch@nvidia.com>
+In-Reply-To: <20230529114835.372140-3-idosch@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -90,100 +90,28 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 On 29/05/2023 14:48, Ido Schimmel wrote:
-> For EVPN non-DF (Designated Forwarder) filtering we need to be able to
-> prevent decapsulated traffic from being flooded to a multi-homed host.
-> Filtering of multicast and broadcast traffic can be achieved using the
-> following flower filter:
+> Extend the 'FLOW_DISSECTOR_KEY_META' key with a new 'l2_miss' field and
+> populate it from a field with the same name in the tc skb extension.
+> This field is set by the bridge driver for packets that incur an FDB or
+> MDB miss.
 > 
->  # tc filter add dev bond0 egress pref 1 proto all flower indev vxlan0 dst_mac 01:00:00:00:00:00/01:00:00:00:00:00 action drop
-> 
-> Unlike broadcast and multicast traffic, it is not currently possible to
-> filter unknown unicast traffic. The classification into unknown unicast
-> is performed by the bridge driver, but is not visible to other layers
-> such as tc.
-> 
-> Solve this by adding a new 'l2_miss' bit to the tc skb extension. Clear
-> the bit whenever a packet enters the bridge (received from a bridge port
-> or transmitted via the bridge) and set it if the packet did not match an
-> FDB or MDB entry. If there is no skb extension and the bit needs to be
-> cleared, then do not allocate one as no extension is equivalent to the
-> bit being cleared. The bit is not set for broadcast packets as they
-> never perform a lookup and therefore never incur a miss.
-> 
-> A bit that is set for every flooded packet would also work for the
-> current use case, but it does not allow us to differentiate between
-> registered and unregistered multicast traffic, which might be useful in
-> the future.
-> 
-> To keep the performance impact to a minimum, the marking of packets is
-> guarded by the 'tc_skb_ext_tc' static key. When 'false', the skb is not
-> touched and an skb extension is not allocated. Instead, only a
-> 5 bytes nop is executed, as demonstrated below for the call site in
-> br_handle_frame().
-> 
-> Before the patch:
-> 
-> ```
->         memset(skb->cb, 0, sizeof(struct br_input_skb_cb));
->   c37b09:       49 c7 44 24 28 00 00    movq   $0x0,0x28(%r12)
->   c37b10:       00 00
-> 
->         p = br_port_get_rcu(skb->dev);
->   c37b12:       49 8b 44 24 10          mov    0x10(%r12),%rax
->         memset(skb->cb, 0, sizeof(struct br_input_skb_cb));
->   c37b17:       49 c7 44 24 30 00 00    movq   $0x0,0x30(%r12)
->   c37b1e:       00 00
->   c37b20:       49 c7 44 24 38 00 00    movq   $0x0,0x38(%r12)
->   c37b27:       00 00
-> ```
-> 
-> After the patch (when static key is disabled):
-> 
-> ```
->         memset(skb->cb, 0, sizeof(struct br_input_skb_cb));
->   c37c29:       49 c7 44 24 28 00 00    movq   $0x0,0x28(%r12)
->   c37c30:       00 00
->   c37c32:       49 8d 44 24 28          lea    0x28(%r12),%rax
->   c37c37:       48 c7 40 08 00 00 00    movq   $0x0,0x8(%rax)
->   c37c3e:       00
->   c37c3f:       48 c7 40 10 00 00 00    movq   $0x0,0x10(%rax)
->   c37c46:       00
-> 
-> #ifdef CONFIG_HAVE_JUMP_LABEL_HACK
-> 
-> static __always_inline bool arch_static_branch(struct static_key *key, bool branch)
-> {
->         asm_volatile_goto("1:"
->   c37c47:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
->         br_tc_skb_miss_set(skb, false);
-> 
->         p = br_port_get_rcu(skb->dev);
->   c37c4c:       49 8b 44 24 10          mov    0x10(%r12),%rax
-> ```
-> 
-> Subsequent patches will extend the flower classifier to be able to match
-> on the new 'l2_miss' bit and enable / disable the static key when
-> filters that match on it are added / deleted.
+> The next patch will extend the flower classifier to be able to match on
+> layer 2 misses.
 > 
 > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 > ---
 > 
 > Notes:
 >     v2:
->     * Use tc skb extension instead of adding a bit to the skb.
->     * Do not mark broadcast packets as they never perform a lookup and
->       therefore never incur a miss.
+>     * Split from flower patch.
+>     * Use tc skb extension instead of 'skb->l2_miss'.
 > 
->  include/linux/skbuff.h  |  1 +
->  net/bridge/br_device.c  |  1 +
->  net/bridge/br_forward.c |  3 +++
->  net/bridge/br_input.c   |  1 +
->  net/bridge/br_private.h | 27 +++++++++++++++++++++++++++
->  5 files changed, 33 insertions(+)
+>  include/net/flow_dissector.h |  2 ++
+>  net/core/flow_dissector.c    | 10 ++++++++++
+>  2 files changed, 12 insertions(+)
 > 
 
-Nice approach.
-Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
 
 
 
