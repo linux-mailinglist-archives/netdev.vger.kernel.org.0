@@ -1,138 +1,171 @@
-Return-Path: <netdev+bounces-6179-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6180-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 742107150DD
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 23:12:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 6889A7150E7
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 23:20:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A01A9280FA0
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 21:12:12 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 23625280F84
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 21:20:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A663E1095F;
-	Mon, 29 May 2023 21:12:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 938E210964;
+	Mon, 29 May 2023 21:20:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B9AC1094D
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 21:12:10 +0000 (UTC)
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CF03CF
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 14:12:08 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-568960f4596so19994767b3.1
-        for <netdev@vger.kernel.org>; Mon, 29 May 2023 14:12:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1685394727; x=1687986727;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SNIbMRRuukreAZUC2GpTXXJapIJH6ZTqRY6eETcu5do=;
-        b=a58aF0yeP61zDhlUOfNZLdoceiGGu26FxV3w360cVEX5mXHSCikCT9QZERrFOn+Wgg
-         PQV3rmSuBZyWY7RJpxGCaweRtPtOGXNtJcQhRUc2Iiihmavwag/sytmxBLigXGwWZ5lk
-         MLQoJyIYLb64f3BZPnDxbbiLlxkUMoohc9b/lJFrsKSBEmQDa4uuUXrKl0lWOYjJlass
-         Vm9R7gNJl0aoBHuFj+eLnN5KovJ8X9KpPljEMIAznmET2jGKoJR2W7ks9R7Zl7Kw+ity
-         mkmUkdCwuo7zJwvR5vpEgDRs5datWM1md9+4+SU5d4GrZlIohZop23cGF+rwOMxEyoPR
-         NYUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685394727; x=1687986727;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SNIbMRRuukreAZUC2GpTXXJapIJH6ZTqRY6eETcu5do=;
-        b=HccMd6aaabnZ0RryCChk2g8uWD5+7NknQSSe/8f6XM+pCEOEdFeYm+IZzJK7bLXMj0
-         pJFL7qCwYLGjDE+ZXVTp3OH63ODKtA3Wic2Qgf+8FkneSdskGVPyCXH+GpYnvEXCkVLm
-         hkbJz84SAYbCCdq5jYIRoF5XEE8PjGACuOhJ+A1fyAmsEk4XXFvHrNHMHww3+qVzRBdi
-         nACe0ZBDavrv+yhNBaALuZmFL+Wh6K9H2OVO/9GFjeI59Aq+aqnaRwnRvxysHQ0UBSj5
-         fim17Y0THNRyR1FXFC2ZoYqE039RnUfMmHnhnAJdE75vL2OGHezGD3CQJDEpxn+eSAdy
-         pvZw==
-X-Gm-Message-State: AC+VfDwnre9nbMDNLKna1Gguy1mSkadvCWqLkBf7/C6gtqEdgGFf8z+T
-	j2O4onWMbMX6HDqM6m4ZswG7E+YQMqPHFQ==
-X-Google-Smtp-Source: ACHHUZ4EK9Ki5lqBKfhxeJ5UQrbZDNyq0mE3Vi/VAJElmaNP79ShHBWggELHy87FMqUFasJeW9t+ieHOM3yayw==
-X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:262e])
- (user=shakeelb job=sendgmr) by 2002:a81:b619:0:b0:561:bf07:ee28 with SMTP id
- u25-20020a81b619000000b00561bf07ee28mr54893ywh.5.1685394727672; Mon, 29 May
- 2023 14:12:07 -0700 (PDT)
-Date: Mon, 29 May 2023 21:12:05 +0000
-In-Reply-To: <73b1381e-6a59-26fe-c0b6-51ea3ebf60f8@bytedance.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FE087C
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 21:20:14 +0000 (UTC)
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58872C7;
+	Mon, 29 May 2023 14:20:11 -0700 (PDT)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1685395209;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=vZhBQR9q3SUgg9iCc2i3JVyzYRPAGeV4tGL2QQEIHxY=;
+	b=DfekSqJwFtryBc4U81a/ZMaRxU/dd0Q0WqYqonNTIqUnongfhsRvLEVeK5Y4pRy//d+shy
+	CRwZpQki2MEKgOeZfKTKRoEiGfevOCcsLXcXwDM0YwPuPgYSrg/6aA9r948R2oHMZ/1DSz
+	UCRnJrrBuelJdpFnnJlO3QQ0iVRp1e4dBiKRO/P74bZnJSoxbaI1xAR3HxXiV53A1k0Jqf
+	VaLpudER9rlyYOSziMfZ5rAR5WbeHatW6ENiI0o5Z5ZFp3REHm7DAcjEX0QZtDENWeceDH
+	53om/U+BqVPdXq1o1nPFxQjrnH/TWZJ5YOUAX8mYoXmY4VG66h7CZn/lMz6RXw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1685395209;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=vZhBQR9q3SUgg9iCc2i3JVyzYRPAGeV4tGL2QQEIHxY=;
+	b=nDMrrKXgx86380d3HBnm5A7se+PRD4eT7Ab7LXrJmfLK2S9p+pTBJYA78fichvfJCwl3R6
+	lUrPpgOWwune1aBw==
+To: Chuck Lever III <chuck.lever@oracle.com>, Eli Cohen <elic@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>, Saeed Mahameed <saeedm@nvidia.com>,
+ linux-rdma <linux-rdma@vger.kernel.org>, "open list:NETWORKING [GENERAL]"
+ <netdev@vger.kernel.org>
+Subject: Re: system hang on start-up (mlx5?)
+In-Reply-To: <A54A0032-C066-4243-AD76-1E4D93AD9864@oracle.com>
+References: <A1E5B427-897B-409E-B8E3-E417678E81F6@oracle.com>
+ <DM8PR12MB54003FBFCABCCB37EE807B45AB6C9@DM8PR12MB5400.namprd12.prod.outlook.com>
+ <91176545-61D2-44BF-B736-513B78728DC7@oracle.com>
+ <20230504072953.GP525452@unreal>
+ <46EB453C-3CEB-43E8-BEE5-CD788162A3C9@oracle.com>
+ <DM8PR12MB54001D6A1C81673284074B37AB709@DM8PR12MB5400.namprd12.prod.outlook.com>
+ <A54A0032-C066-4243-AD76-1E4D93AD9864@oracle.com>
+Date: Mon, 29 May 2023 23:20:09 +0200
+Message-ID: <875y8altrq.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <20230522070122.6727-1-wuyun.abel@bytedance.com>
- <20230522070122.6727-4-wuyun.abel@bytedance.com> <20230525012259.qd6i6rtqvvae3or7@google.com>
- <73b1381e-6a59-26fe-c0b6-51ea3ebf60f8@bytedance.com>
-Message-ID: <20230529211205.6clthjyt37c4opju@google.com>
-Subject: Re: [PATCH v2 3/4] sock: Consider memcg pressure when raising sockmem
-From: Shakeel Butt <shakeelb@google.com>
-To: Abel Wu <wuyun.abel@bytedance.com>
-Cc: "David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, cgroups@vger.kernel.org
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Sat, May 27 2023 at 20:16, Chuck Lever, III wrote:
+>> On May 7, 2023, at 1:31 AM, Eli Cohen <elic@nvidia.com> wrote:
+> I can boot the system with mlx5_core deny-listed. I log in, remove
+> mlx5_core from the deny list, and then "modprobe mlx5_core" to
+> reproduce the issue while the system is running.
+>
+> May 27 15:47:45 manet.1015granger.net kernel: mlx5_core 0000:81:00.0: firmware version: 16.35.2000
+> May 27 15:47:45 manet.1015granger.net kernel: mlx5_core 0000:81:00.0: 126.016 Gb/s available PCIe bandwidth (8.0 GT/s PCIe x16 link)
+> May 27 15:47:46 manet.1015granger.net kernel: mlx5_irq_alloc: pool=ffff9a3718e56180 i=0 af_desc=ffffb6c88493fc90
+> May 27 15:47:46 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->managed_map=ffff9a3aefcf0f80 m->system_map=ffff9a33801990d0 end=236
+> May 27 15:47:46 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->alloc_map=ffff9a3aefcf0f60 end=236
+> May 27 15:47:46 manet.1015granger.net kernel: mlx5_core 0000:81:00.0: Port module event: module 0, Cable plugged
+> May 27 15:47:46 manet.1015granger.net kernel: mlx5_irq_alloc: pool=ffff9a3718e56180 i=1 af_desc=ffffb6c88493fc60
+> May 27 15:47:46 manet.1015granger.net kernel: mlx5_core 0000:81:00.0: mlx5_pcie_event:301:(pid 10): PCIe slot advertised sufficient power (27W).
+> May 27 15:47:46 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->managed_map=ffff9a36efcf0f80 m->system_map=ffff9a33801990d0 end=236
+> May 27 15:47:47 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->alloc_map=ffff9a36efcf0f60 end=236
+> May 27 15:47:47 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->managed_map=ffff9a36efd30f80 m->system_map=ffff9a33801990d0 end=236
+> May 27 15:47:47 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->alloc_map=ffff9a36efd30f60 end=236
+> May 27 15:47:47 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->managed_map=ffff9a3aefc30f80 m->system_map=ffff9a33801990d0 end=236
+> May 27 15:47:47 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->alloc_map=ffff9a3aefc30f60 end=236
+> May 27 15:47:47 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->managed_map=ffff9a3aefc70f80 m->system_map=ffff9a33801990d0 end=236
+> May 27 15:47:47 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->alloc_map=ffff9a3aefc70f60 end=236
+> May 27 15:47:47 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->managed_map=ffff9a3aefd30f80 m->system_map=ffff9a33801990d0 end=236
+> May 27 15:47:47 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->alloc_map=ffff9a3aefd30f60 end=236
+> May 27 15:47:47 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->managed_map=ffff9a3aefd70f80 m->system_map=ffff9a33801990d0 end=236
+> May 27 15:47:47 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->alloc_map=ffff9a3aefd70f60 end=236
+> May 27 15:47:47 manet.1015granger.net kernel: matrix_alloc_area: m->scratch_map=ffff9a33801990b0 cm->managed_map=ffffffffb9ef3f80 m->system_map=ffff9a33801990d0 end=236
+> May 27 15:47:47 manet.1015granger.net kernel: BUG: unable to handle page fault for address: ffffffffb9ef3f80
+>
+> ###
+>
+> The fault address is the cm->managed_map for one of the CPUs.
 
-+linux-mm and cgroups
+That does not make any sense at all. The irq matrix is initialized via:
 
-On Mon, May 29, 2023 at 07:58:45PM +0800, Abel Wu wrote:
-> Hi Shakeel, thanks for reviewing! And sorry for replying so late,
-> I was on a vocation :)
-> 
-> On 5/25/23 9:22 AM, Shakeel Butt wrote:
-> > On Mon, May 22, 2023 at 03:01:21PM +0800, Abel Wu wrote:
-> > > For now __sk_mem_raise_allocated() mainly considers global socket
-> > > memory pressure and allows to raise if no global pressure observed,
-> > > including the sockets whose memcgs are in pressure, which might
-> > > result in longer memcg memstall.
-> > > 
-> > > So take net-memcg's pressure into consideration when allocating
-> > > socket memory to alleviate long tail latencies.
-> > > 
-> > > Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
-> > 
-> > Hi Abel,
-> > 
-> > Have you seen any real world production issue which is fixed by this
-> > patch or is it more of a fix after reading code?
-> 
-> The latter. But we do observe one common case in the production env
-> that p2p service, which mainly downloads container images, running
-> inside a container with tight memory limit can easily be throttled and
-> keep memstalled for a long period of time and sometimes even be OOM-
-> killed. This service shows burst usage of TCP memory and I think it
-> indeed needs suppressing sockmem allocation if memcg is already under
-> pressure. The memcg pressure is usually caused by too many page caches
-> and the dirty ones starting to be wrote back to slow backends. So it
-> is insane to continuously receive net data to consume more memory.
-> 
+irq_alloc_matrix()
+  m = kzalloc(sizeof(matric);
+  m->maps = alloc_percpu(*m->maps);
 
-We actually made an intentional decision to not throttle the incoming
-traffic under memory pressure. See 720ca52bcef22 ("net-memcg: avoid
-stalls when under memory pressure"). If you think the throttling
-behavior is preferred for your application, please propose the patch
-separately and we can work on how to enable flexible policy here.
+So how is any per CPU map which got allocated there supposed to be
+invalid (not mapped):
 
-> > 
-> > This code is quite subtle and small changes can cause unintended
-> > behavior changes. At the moment the tcp memory accounting and memcg
-> > accounting is intermingled and I think we should decouple them.
-> 
-> My original intention to post this patchset is to clarify that:
-> 
->   - proto pressure only considers sysctl_mem[] (patch 2)
->   - memcg pressure only indicates the pressure inside itself
->   - consider both whenever needs allocation or reclaim (patch 1,3)
-> 
-> In this way, the two kinds of pressure maintain purer semantics, and
-> socket core can react on both of them properly and consistently.
+> May 27 15:47:47 manet.1015granger.net kernel: BUG: unable to handle page fault for address: ffffffffb9ef3f80
+> May 27 15:47:47 manet.1015granger.net kernel: #PF: supervisor read access in kernel mode
+> May 27 15:47:47 manet.1015granger.net kernel: #PF: error_code(0x0000) - not-present page
+> May 27 15:47:47 manet.1015granger.net kernel: PGD 54ec19067 P4D 54ec19067 PUD 54ec1a063 PMD 482b83063 PTE 800ffffab110c062
 
-Can you please resend you patch series (without patch 3) and Cc to
-linux-mm, cgroups list and memcg maintainers as well?
+But if you look at the address: 0xffffffffb9ef3f80
+
+That one is bogus:
+
+     managed_map=ffff9a36efcf0f80
+     managed_map=ffff9a36efd30f80
+     managed_map=ffff9a3aefc30f80
+     managed_map=ffff9a3aefc70f80
+     managed_map=ffff9a3aefd30f80
+     managed_map=ffff9a3aefd70f80
+     managed_map=ffffffffb9ef3f80
+
+Can you spot the fail?
+
+The first six are in the direct map and the last one is in module map,
+which makes no sense at all.
+
+Can you please apply the debug patch below and provide the output?
+
+Thanks,
+
+        tglx
+---
+--- a/kernel/irq/matrix.c
++++ b/kernel/irq/matrix.c
+@@ -51,6 +51,7 @@ struct irq_matrix {
+ 					   unsigned int alloc_end)
+ {
+ 	struct irq_matrix *m;
++	unsigned int cpu;
+ 
+ 	if (matrix_bits > IRQ_MATRIX_BITS)
+ 		return NULL;
+@@ -68,6 +69,8 @@ struct irq_matrix {
+ 		kfree(m);
+ 		return NULL;
+ 	}
++	for_each_possible_cpu(cpu)
++		pr_info("ALLOC: CPU%03u: %016lx\n", cpu, (unsigned long)per_cpu_ptr(m->maps, cpu));
+ 	return m;
+ }
+ 
+@@ -215,6 +218,8 @@ int irq_matrix_reserve_managed(struct ir
+ 		struct cpumap *cm = per_cpu_ptr(m->maps, cpu);
+ 		unsigned int bit;
+ 
++		pr_info("RESERVE MANAGED: CPU%03u: %016lx\n", cpu, (unsigned long)cm);
++
+ 		bit = matrix_alloc_area(m, cm, 1, true);
+ 		if (bit >= m->alloc_end)
+ 			goto cleanup;
 
