@@ -1,148 +1,118 @@
-Return-Path: <netdev+bounces-5983-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-5984-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D5804714260
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 05:46:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3FFDE714370
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 06:38:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4C2CF1C20948
-	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 03:46:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DE0BE1C20949
+	for <lists+netdev@lfdr.de>; Mon, 29 May 2023 04:38:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AF2AC647;
-	Mon, 29 May 2023 03:46:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 58AB662C;
+	Mon, 29 May 2023 04:38:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EF2562D
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 03:46:32 +0000 (UTC)
-Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE214B1;
-	Sun, 28 May 2023 20:46:29 -0700 (PDT)
-Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
-	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-	(Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
-	by fd01.gateway.ufhost.com (Postfix) with ESMTP id 96CD1809C;
-	Mon, 29 May 2023 11:46:21 +0800 (CST)
-Received: from EXMBX062.cuchost.com (172.16.6.62) by EXMBX166.cuchost.com
- (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 29 May
- 2023 11:46:21 +0800
-Received: from [192.168.120.43] (171.223.208.138) by EXMBX062.cuchost.com
- (172.16.6.62) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 29 May
- 2023 11:46:20 +0800
-Message-ID: <1dbf113c-7592-68bd-6aaf-05ff1d8c538c@starfivetech.com>
-Date: Mon, 29 May 2023 11:46:19 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49F3C7E
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 04:38:36 +0000 (UTC)
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7194C26AD;
+	Sun, 28 May 2023 21:38:03 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id 41be03b00d2f7-52c84543902so284502a12.0;
+        Sun, 28 May 2023 21:38:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685334999; x=1687926999;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ljDXSZhLI5ptYG5XAswsWjP1Fj7Tcbc8VedPFNYBYoQ=;
+        b=m40D0lUwbnh9qpzZq3YJVGsio+MYTwloUDfNmu8pg9f2x53WC6W8FVyfJWwiBMbEEt
+         C3qF3N8Je6GWNLGU750Ia3qbTDJzvIlxFh1mGK4KCCxyxFZ0nKP1MHWzaDDSrZ10ubZS
+         sAFfo5cSSfIqHV2Maynd1DSDdOZuSGhrAtB3+ChTAFuSjLS8U5wCr2PNbmdLP8CQu6z+
+         tA1gBcyGMLo8RGPwKl9slQOREzwKgDWyEgk7yyKXLoRgSHHOKkN3rBYS8yI+zfdKt8iO
+         4FGossrGqXq5UFOY1XupyAg+QcheZUHmT2Ia5PvqiILDl2nZlwXJSfTOPjwTN4TqNC2s
+         Wgfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685334999; x=1687926999;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ljDXSZhLI5ptYG5XAswsWjP1Fj7Tcbc8VedPFNYBYoQ=;
+        b=QqlNhH8Pe9OKBKTSVuD8wz8D/ZmUjIJJaQ5+5hZcSPEMCnrtN9aP6ZJl4etK8booOI
+         lru3Hu9cPDGk3Vz6jcJscX9KR8r8b1lY8eTiwOKEclWQUWHqe8BjbGZRY2E/F32HEdRN
+         mBcxbb8UlEdHu9bSzWGIUWnUCEpMK1TQuCYXrxoQHf2uFqYDMN0PhNi4CQbLQTaS5sjh
+         oyPdh1Ymx9Ek3wrf4wmdXE3bieMBNE9Gb/ishxb2uxTHeKLOj+jxHIxOpog/zJgMmQ/M
+         DnlgsZivn/4DgTSWhznJBg34b9rO1efprPU+qTBvxfyL4I9AHqYxLSf53cZbmYZQgeYK
+         YaMA==
+X-Gm-Message-State: AC+VfDzG+kQQE50YBts12XcayiBm/8nKV4InZQQDSpFALBOkAl45aTUG
+	I7NyMfZQxcqVRRhTZ3+X3cU=
+X-Google-Smtp-Source: ACHHUZ4lTguLq8y8jj9KX9ucZq9zIctmBGh7gxd9yKo8+2IUU5w7rbqQFarEa3Iv4T5h9YkfClS6NQ==
+X-Received: by 2002:a05:6a00:1f0e:b0:64a:ed6d:53ac with SMTP id be14-20020a056a001f0e00b0064aed6d53acmr10772452pfb.2.1685334998968;
+        Sun, 28 May 2023 21:36:38 -0700 (PDT)
+Received: from hbh25y.. ([114.254.32.145])
+        by smtp.gmail.com with ESMTPSA id i3-20020aa78b43000000b0064f95bb8255sm5096984pfd.53.2023.05.28.21.36.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 May 2023 21:36:38 -0700 (PDT)
+From: Hangyu Hua <hbh25y@gmail.com>
+To: jhs@mojatatu.com,
+	xiyou.wangcong@gmail.com,
+	jiri@resnulli.us,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	simon.horman@netronome.com,
+	pieter.jansenvanvuuren@netronome.com
+Cc: netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH] net: sched: fix possible OOB write in fl_set_geneve_opt()
+Date: Mon, 29 May 2023 12:36:15 +0800
+Message-Id: <20230529043615.4761-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v3 1/2] dt-bindings: net: motorcomm: Add pad driver
- strength cfg
-Content-Language: en-US
-To: Conor Dooley <conor@kernel.org>
-CC: <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<netdev@vger.kernel.org>, Peter Geis <pgwipeout@gmail.com>, Frank
-	<Frank.Sae@motor-comm.com>, "David S . Miller" <davem@davemloft.net>, "Eric
- Dumazet" <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Andrew Lunn <andrew@lunn.ch>, "Heiner
- Kallweit" <hkallweit1@gmail.com>, Russell King <linux@armlinux.org.uk>,
-	Yanhong Wang <yanhong.wang@starfivetech.com>
-References: <20230526090502.29835-1-samin.guo@starfivetech.com>
- <20230526090502.29835-2-samin.guo@starfivetech.com>
- <20230526-glutinous-pristine-fed571235b80@spud>
-From: Guo Samin <samin.guo@starfivetech.com>
-In-Reply-To: <20230526-glutinous-pristine-fed571235b80@spud>
-Content-Type: text/plain; charset="UTF-8"
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX062.cuchost.com
- (172.16.6.62)
-X-YovoleRuleAgent: yovoleflag
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Re: [PATCH v3 1/2] dt-bindings: net: motorcomm: Add pad driver strength c=
-fg
-From: Conor Dooley <conor@kernel.org>
-to: Samin Guo <samin.guo@starfivetech.com>
-data: 2023/5/27
+If we send two TCA_FLOWER_KEY_ENC_OPTS_GENEVE packets and their total
+size is 252 bytes(key->enc_opts.len = 252) then
+key->enc_opts.len = opt->length = data_len / 4 = 0 when the third
+TCA_FLOWER_KEY_ENC_OPTS_GENEVE packet enters fl_set_geneve_opt. This
+bypasses the next bounds check and results in an out-of-bounds.
 
-> On Fri, May 26, 2023 at 05:05:01PM +0800, Samin Guo wrote:
->> The motorcomm phy (YT8531) supports the ability to adjust the drive
->> strength of the rx_clk/rx_data, the value range of pad driver
->> strength is 0 to 7.
->>
->> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
->> ---
->>  .../devicetree/bindings/net/motorcomm,yt8xxx.yaml    | 12 +++++++++++=
+Fixes: 0a6e77784f49 ("net/sched: allow flower to match tunnel options")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+---
+ net/sched/cls_flower.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index e960a46b0520..a326fbfe4339 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -1153,6 +1153,9 @@ static int fl_set_geneve_opt(const struct nlattr *nla, struct fl_flow_key *key,
+ 	if (option_len > sizeof(struct geneve_opt))
+ 		data_len = option_len - sizeof(struct geneve_opt);
+ 
++	if (key->enc_opts.len > FLOW_DIS_TUN_OPTS_MAX - 4)
++		return -ERANGE;
 +
->>  1 file changed, 12 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.ya=
-ml b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
->> index 157e3bbcaf6f..29a1997a1577 100644
->> --- a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
->> +++ b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
->> @@ -52,6 +52,18 @@ properties:
->>        for a timer.
->>      type: boolean
->> =20
->> +  motorcomm,rx-clk-driver-strength:
->> +    description: drive strength of rx_clk pad.
->> +    $ref: /schemas/types.yaml#/definitions/uint32
->> +    enum: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
->=20
-> I think you should use minimum & maximum instead of these listed out
-> enums.
+ 	opt = (struct geneve_opt *)&key->enc_opts.data[key->enc_opts.len];
+ 	memset(opt, 0xff, option_len);
+ 	opt->length = data_len / 4;
+-- 
+2.34.1
 
-Thanks Conor, This can be improved in the next version.
-
- You have also had this comment since v1 & were reminded of it on
-> v2 by Krzysztof: "What do the numbers mean? What are the units? mA?"
->=20
-
-
-The good news is that we just got some data about units from Motorcomm.=20
-Maybe I can post the data show of the unit later after I get the complete=
- data.
-
-
-
-> This information should go into the binding, not sit in a thread on a
-> mailing list that noone will look at when trying to write a DT :(
->=20
-> Thanks,
-> Conor.
->
-
-Yes=EF=BC=8Cwhen we have the complete 'unit' data, it will be placed in D=
-T.
-
-Best regards,
-Samin
-=20
->> +    default: 3
->> +
->> +  motorcomm,rx-data-driver-strength:
->> +    description: drive strength of rx_data/rx_ctl rgmii pad.
->> +    $ref: /schemas/types.yaml#/definitions/uint32
->> +    enum: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
->> +    default: 3
->> +
->>    motorcomm,tx-clk-adj-enabled:
->>      description: |
->>        This configuration is mainly to adapt to VF2 with JH7110 SoC.
->> --=20
->> 2.17.1
->>
 
