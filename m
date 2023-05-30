@@ -1,218 +1,316 @@
-Return-Path: <netdev+bounces-6338-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6339-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 81FEC715D19
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 13:24:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 41BF4715D25
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 13:26:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 37355280D96
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 11:24:37 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EB8FF280FE6
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 11:26:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5816C17AAA;
-	Tue, 30 May 2023 11:24:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4EFDF17AB3;
+	Tue, 30 May 2023 11:26:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D5A617AA9
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 11:24:22 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094AD125
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 04:24:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685445853;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=FFKpZXmHv3EVEcNDqoXlVak203z2YTZFcHMcY6d15bo=;
-	b=TKwsr6dVPFOoTFhwRivD/dM5azroGX9EbK48TzjuvA9/dDbnsVM1UfgdvJItyqbcI2v8J7
-	v/LSaSWW+OQ3Oe4AUG/oODgepVkcPC1jnT0p019vgvx/nfPe0gQATRWd3gb08hQ/LmEonc
-	CXjsIZi1+Ka2Fz1WcbDjabv7vJgIb6c=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-248-vLqYbSVnMPeBvUitaMtG2w-1; Tue, 30 May 2023 07:24:12 -0400
-X-MC-Unique: vLqYbSVnMPeBvUitaMtG2w-1
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f6038dc351so16326245e9.3
-        for <netdev@vger.kernel.org>; Tue, 30 May 2023 04:24:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685445851; x=1688037851;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FFKpZXmHv3EVEcNDqoXlVak203z2YTZFcHMcY6d15bo=;
-        b=gv2bG2sFK2poGk7cJiF+af79l/FAEXb6MjVnHmoX3hBHgucXm4Zq8FHVjbQhBA15nw
-         ABXBiuePHRhsJqvP+wfeeyJJcjKDY4eQKoaxJ8PP9/CCa0aiot6V+4UKTyTmqiXz5Aze
-         agNKObngCVmAcqldPJ9Q0sH98BzFaG1nMv1xZVcaT9QecxjH/KV8+QWLdYHH0660I1bG
-         YvVty7YUMGFu3X5e1eA5/qEC0U50Lnl6Lpm3vqfAeivVAxkWW8rzCjhBrUtC7zFUWwdj
-         DSUsHMKgj10D2OMBBeCmD2HkqswjbvxIQFbTdQwLmBNlqgouEz4mTe8dgNgba9Xrg+3d
-         6erQ==
-X-Gm-Message-State: AC+VfDzL9QsKjEuySudqhYtl2HK+oFCcW8XHbhI4hoef++cyWQ8uCixd
-	ZBP/FWoSRJGe7+izRm/vXxR95YVvdhvlqYLu5wV/bASE7SPXR0GO1iz+0MC4dQ/cNRGHg//5myw
-	VSdIVWoFzNe/toRud1gFGZnIV
-X-Received: by 2002:a05:600c:228b:b0:3f6:13e1:16b7 with SMTP id 11-20020a05600c228b00b003f613e116b7mr1442245wmf.28.1685445850791;
-        Tue, 30 May 2023 04:24:10 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4olrB3T4242Hm657dR8k3m6TNwqGT1KzpvGbXMckpc6fTPwJMFCqvnLyJXIIbYPJ8cvXRQRA==
-X-Received: by 2002:a05:600c:228b:b0:3f6:13e1:16b7 with SMTP id 11-20020a05600c228b00b003f613e116b7mr1442231wmf.28.1685445850463;
-        Tue, 30 May 2023 04:24:10 -0700 (PDT)
-Received: from redhat.com ([2.52.11.69])
-        by smtp.gmail.com with ESMTPSA id k10-20020a7bc40a000000b003f606869603sm20719249wmi.6.2023.05.30.04.24.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 May 2023 04:24:09 -0700 (PDT)
-Date: Tue, 30 May 2023 07:24:06 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: syzbot <syzbot+d0d442c22fa8db45ff0e@syzkaller.appspotmail.com>
-Cc: jasowang@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-	virtualization@lists.linux-foundation.org,
-	Stefano Garzarella <sgarzare@redhat.com>, stefanha@redhat.com
-Subject: Re: [syzbot] [kvm?] [net?] [virt?] general protection fault in
- vhost_work_queue
-Message-ID: <20230530072310-mutt-send-email-mst@kernel.org>
-References: <0000000000001777f605fce42c5f@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E0D613ACA
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 11:26:16 +0000 (UTC)
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770E9106
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 04:26:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685445973; x=1716981973;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=dkzcwcDgRmpfX+T5vth3m5cnzvxnlso1kCO7aL1bKOM=;
+  b=QvlL4xs36ukpRnTA37mZBZqgYRW8k40dyV1j8EVXLLyTDplzb82QpMCN
+   5wLhoV3m8tAvnugyHgZ66qM87rtPyhZ60DLDrDGEBn4N9Js/K2iN6Rvy1
+   ZtwJG39qO5uQ3mM5FvhsJcPxPxjl2Xkn5m7wJTOPecmBiOBqS1Chbw47Z
+   2DTlkssq62QFaFqleLJd6RwzqvhojA2ryCm02hvYlyJDFIu5UsqLsSzwn
+   U8vIRgJvHTK7L3+iptEqNKHGUPvREXW+DVA+NmOe7LyJLR56LGx2toGdD
+   4gH59IL6lkzT9ROnqFomqTDjZXVQ7iIzHo5nJz3R+muOILlHuC/dfWuQA
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="353728613"
+X-IronPort-AV: E=Sophos;i="6.00,204,1681196400"; 
+   d="scan'208";a="353728613"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 04:26:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="830714674"
+X-IronPort-AV: E=Sophos;i="6.00,204,1681196400"; 
+   d="scan'208";a="830714674"
+Received: from irvmail002.ir.intel.com ([10.43.11.120])
+  by orsmga004.jf.intel.com with ESMTP; 30 May 2023 04:26:10 -0700
+Received: from pkitszel-desk.intel.com (unknown [10.254.150.168])
+	by irvmail002.ir.intel.com (Postfix) with ESMTP id 7F3203583B;
+	Tue, 30 May 2023 12:26:07 +0100 (IST)
+From: Przemek Kitszel <przemyslaw.kitszel@intel.com>
+To: intel-wired-lan-bounces@osuosl.org
+Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>,
+	Tony Nguyen <anthony.l.nguyen@intel.com>,
+	Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+	Victor Raj <victor.raj@intel.com>,
+	Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+	Jacob Keller <jacob.e.keller@intel.com>,
+	Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@linux.intel.com>,
+	Michal Wilczynski <michal.wilczynski@intel.com>,
+	netdev@vger.kernel.org,
+	Przemek Kitszel <przemyslaw.kitszel@intel.com>
+Subject: [PATCH iwl-next] ice: remove null checks before devm_kfree() calls
+Date: Tue, 30 May 2023 13:25:49 +0200
+Message-Id: <20230530112549.20916-1-przemyslaw.kitszel@intel.com>
+X-Mailer: git-send-email 2.38.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0000000000001777f605fce42c5f@google.com>
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
 	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 30, 2023 at 12:30:06AM -0700, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    933174ae28ba Merge tag 'spi-fix-v6.4-rc3' of git://git.ker..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=138d4ae5280000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=f389ffdf4e9ba3f0
-> dashboard link: https://syzkaller.appspot.com/bug?extid=d0d442c22fa8db45ff0e
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> Downloadable assets:
-> disk image: https://storage.googleapis.com/syzbot-assets/21a81b8c2660/disk-933174ae.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/b4951d89e238/vmlinux-933174ae.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/21eb405303cc/bzImage-933174ae.xz
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+d0d442c22fa8db45ff0e@syzkaller.appspotmail.com
-> 
-> general protection fault, probably for non-canonical address 0xdffffc000000000e: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: null-ptr-deref in range [0x0000000000000070-0x0000000000000077]
-> CPU: 0 PID: 29845 Comm: syz-executor.4 Not tainted 6.4.0-rc3-syzkaller-00032-g933174ae28ba #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/16/2023
-> RIP: 0010:vhost_work_queue drivers/vhost/vhost.c:259 [inline]
-> RIP: 0010:vhost_work_queue+0xfc/0x150 drivers/vhost/vhost.c:248
-> Code: 00 00 fc ff df 48 89 da 48 c1 ea 03 80 3c 02 00 75 56 48 b8 00 00 00 00 00 fc ff df 48 8b 1b 48 8d 7b 70 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 42 48 8b 7b 70 e8 95 9e ae f9 5b 5d 41 5c 41 5d e9
-> RSP: 0018:ffffc9000333faf8 EFLAGS: 00010202
-> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000d84d000
-> RDX: 000000000000000e RSI: ffffffff841221d7 RDI: 0000000000000070
-> RBP: ffff88804b6b95b0 R08: 0000000000000001 R09: 0000000000000000
-> R10: 0000000000000001 R11: 0000000000000000 R12: ffff88804b6b00b0
-> R13: 0000000000000000 R14: ffff88804b6b95e0 R15: ffff88804b6b95c8
-> FS:  00007f3b445ec700(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000001b2e423000 CR3: 000000005d734000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 000000000000003b DR6: 00000000ffff0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  vhost_transport_send_pkt+0x268/0x520 drivers/vhost/vsock.c:288
->  virtio_transport_send_pkt_info+0x54c/0x820 net/vmw_vsock/virtio_transport_common.c:250
->  virtio_transport_connect+0xb1/0xf0 net/vmw_vsock/virtio_transport_common.c:813
->  vsock_connect+0x37f/0xcd0 net/vmw_vsock/af_vsock.c:1414
->  __sys_connect_file+0x153/0x1a0 net/socket.c:2003
->  __sys_connect+0x165/0x1a0 net/socket.c:2020
->  __do_sys_connect net/socket.c:2030 [inline]
->  __se_sys_connect net/socket.c:2027 [inline]
->  __x64_sys_connect+0x73/0xb0 net/socket.c:2027
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> RIP: 0033:0x7f3b4388c169
-> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f3b445ec168 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
-> RAX: ffffffffffffffda RBX: 00007f3b439ac050 RCX: 00007f3b4388c169
-> RDX: 0000000000000010 RSI: 0000000020000140 RDI: 0000000000000004
-> RBP: 00007f3b438e7ca1 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007f3b43acfb1f R14: 00007f3b445ec300 R15: 0000000000022000
->  </TASK>
-> Modules linked in:
-> ---[ end trace 0000000000000000 ]---
-> RIP: 0010:vhost_work_queue drivers/vhost/vhost.c:259 [inline]
-> RIP: 0010:vhost_work_queue+0xfc/0x150 drivers/vhost/vhost.c:248
-> Code: 00 00 fc ff df 48 89 da 48 c1 ea 03 80 3c 02 00 75 56 48 b8 00 00 00 00 00 fc ff df 48 8b 1b 48 8d 7b 70 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 42 48 8b 7b 70 e8 95 9e ae f9 5b 5d 41 5c 41 5d e9
-> RSP: 0018:ffffc9000333faf8 EFLAGS: 00010202
-> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000d84d000
-> RDX: 000000000000000e RSI: ffffffff841221d7 RDI: 0000000000000070
-> RBP: ffff88804b6b95b0 R08: 0000000000000001 R09: 0000000000000000
-> R10: 0000000000000001 R11: 0000000000000000 R12: ffff88804b6b00b0
-> R13: 0000000000000000 R14: ffff88804b6b95e0 R15: ffff88804b6b95c8
-> FS:  00007f3b445ec700(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000001b2e428000 CR3: 000000005d734000 CR4: 00000000003506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 000000000000003b DR6: 00000000ffff0ff0 DR7: 0000000000000400
-> ----------------
-> Code disassembly (best guess), 5 bytes skipped:
->    0:	48 89 da             	mov    %rbx,%rdx
->    3:	48 c1 ea 03          	shr    $0x3,%rdx
->    7:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
->    b:	75 56                	jne    0x63
->    d:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
->   14:	fc ff df
->   17:	48 8b 1b             	mov    (%rbx),%rbx
->   1a:	48 8d 7b 70          	lea    0x70(%rbx),%rdi
->   1e:	48 89 fa             	mov    %rdi,%rdx
->   21:	48 c1 ea 03          	shr    $0x3,%rdx
-> * 25:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
->   29:	75 42                	jne    0x6d
->   2b:	48 8b 7b 70          	mov    0x70(%rbx),%rdi
->   2f:	e8 95 9e ae f9       	callq  0xf9ae9ec9
->   34:	5b                   	pop    %rbx
->   35:	5d                   	pop    %rbp
->   36:	41 5c                	pop    %r12
->   38:	41 5d                	pop    %r13
->   3a:	e9                   	.byte 0xe9
+We all know they are redundant.
 
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Reviewed-by: Michal Wilczynski <michal.wilczynski@intel.com>
+Signed-off-by: Przemek Kitszel <przemyslaw.kitszel@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_common.c   |  6 +--
+ drivers/net/ethernet/intel/ice/ice_controlq.c |  3 +-
+ drivers/net/ethernet/intel/ice/ice_flow.c     | 23 ++--------
+ drivers/net/ethernet/intel/ice/ice_lib.c      | 42 +++++++------------
+ drivers/net/ethernet/intel/ice/ice_sched.c    | 11 ++---
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 19 +++------
+ 6 files changed, 29 insertions(+), 75 deletions(-)
 
-Stefano, Stefan, take a look?
-
-
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> 
-> If the bug is already fixed, let syzbot know by replying with:
-> #syz fix: exact-commit-title
-> 
-> If you want to change bug's subsystems, reply with:
-> #syz set subsystems: new-subsystem
-> (See the list of subsystem names on the web dashboard)
-> 
-> If the bug is a duplicate of another bug, reply with:
-> #syz dup: exact-subject-of-another-report
-> 
-> If you want to undo deduplication, reply with:
-> #syz undup
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index eb2dc0983776..6acb40f3c202 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -814,8 +814,7 @@ static void ice_cleanup_fltr_mgmt_struct(struct ice_hw *hw)
+ 				devm_kfree(ice_hw_to_dev(hw), lst_itr);
+ 			}
+ 		}
+-		if (recps[i].root_buf)
+-			devm_kfree(ice_hw_to_dev(hw), recps[i].root_buf);
++		devm_kfree(ice_hw_to_dev(hw), recps[i].root_buf);
+ 	}
+ 	ice_rm_all_sw_replay_rule_info(hw);
+ 	devm_kfree(ice_hw_to_dev(hw), sw->recp_list);
+@@ -1011,8 +1010,7 @@ static int ice_cfg_fw_log(struct ice_hw *hw, bool enable)
+ 	}
+ 
+ out:
+-	if (data)
+-		devm_kfree(ice_hw_to_dev(hw), data);
++	devm_kfree(ice_hw_to_dev(hw), data);
+ 
+ 	return status;
+ }
+diff --git a/drivers/net/ethernet/intel/ice/ice_controlq.c b/drivers/net/ethernet/intel/ice/ice_controlq.c
+index d2faf1baad2f..e4cb5055b999 100644
+--- a/drivers/net/ethernet/intel/ice/ice_controlq.c
++++ b/drivers/net/ethernet/intel/ice/ice_controlq.c
+@@ -339,8 +339,7 @@ do {									\
+ 		}							\
+ 	}								\
+ 	/* free the buffer info list */					\
+-	if ((qi)->ring.cmd_buf)						\
+-		devm_kfree(ice_hw_to_dev(hw), (qi)->ring.cmd_buf);	\
++	devm_kfree(ice_hw_to_dev(hw), (qi)->ring.cmd_buf);		\
+ 	/* free DMA head */						\
+ 	devm_kfree(ice_hw_to_dev(hw), (qi)->ring.dma_head);		\
+ } while (0)
+diff --git a/drivers/net/ethernet/intel/ice/ice_flow.c b/drivers/net/ethernet/intel/ice/ice_flow.c
+index ef103e47a8dc..85cca572c22a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flow.c
++++ b/drivers/net/ethernet/intel/ice/ice_flow.c
+@@ -1303,23 +1303,6 @@ ice_flow_find_prof_id(struct ice_hw *hw, enum ice_block blk, u64 prof_id)
+ 	return NULL;
+ }
+ 
+-/**
+- * ice_dealloc_flow_entry - Deallocate flow entry memory
+- * @hw: pointer to the HW struct
+- * @entry: flow entry to be removed
+- */
+-static void
+-ice_dealloc_flow_entry(struct ice_hw *hw, struct ice_flow_entry *entry)
+-{
+-	if (!entry)
+-		return;
+-
+-	if (entry->entry)
+-		devm_kfree(ice_hw_to_dev(hw), entry->entry);
+-
+-	devm_kfree(ice_hw_to_dev(hw), entry);
+-}
+-
+ /**
+  * ice_flow_rem_entry_sync - Remove a flow entry
+  * @hw: pointer to the HW struct
+@@ -1335,7 +1318,8 @@ ice_flow_rem_entry_sync(struct ice_hw *hw, enum ice_block __always_unused blk,
+ 
+ 	list_del(&entry->l_entry);
+ 
+-	ice_dealloc_flow_entry(hw, entry);
++	devm_kfree(ice_hw_to_dev(hw), entry->entry);
++	devm_kfree(ice_hw_to_dev(hw), entry);
+ 
+ 	return 0;
+ }
+@@ -1662,8 +1646,7 @@ ice_flow_add_entry(struct ice_hw *hw, enum ice_block blk, u64 prof_id,
+ 
+ out:
+ 	if (status && e) {
+-		if (e->entry)
+-			devm_kfree(ice_hw_to_dev(hw), e->entry);
++		devm_kfree(ice_hw_to_dev(hw), e->entry);
+ 		devm_kfree(ice_hw_to_dev(hw), e);
+ 	}
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index e8142bea2eb2..c3722c68af99 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -321,31 +321,19 @@ static void ice_vsi_free_arrays(struct ice_vsi *vsi)
+ 
+ 	dev = ice_pf_to_dev(pf);
+ 
+-	if (vsi->af_xdp_zc_qps) {
+-		bitmap_free(vsi->af_xdp_zc_qps);
+-		vsi->af_xdp_zc_qps = NULL;
+-	}
++	bitmap_free(vsi->af_xdp_zc_qps);
++	vsi->af_xdp_zc_qps = NULL;
+ 	/* free the ring and vector containers */
+-	if (vsi->q_vectors) {
+-		devm_kfree(dev, vsi->q_vectors);
+-		vsi->q_vectors = NULL;
+-	}
+-	if (vsi->tx_rings) {
+-		devm_kfree(dev, vsi->tx_rings);
+-		vsi->tx_rings = NULL;
+-	}
+-	if (vsi->rx_rings) {
+-		devm_kfree(dev, vsi->rx_rings);
+-		vsi->rx_rings = NULL;
+-	}
+-	if (vsi->txq_map) {
+-		devm_kfree(dev, vsi->txq_map);
+-		vsi->txq_map = NULL;
+-	}
+-	if (vsi->rxq_map) {
+-		devm_kfree(dev, vsi->rxq_map);
+-		vsi->rxq_map = NULL;
+-	}
++	devm_kfree(dev, vsi->q_vectors);
++	vsi->q_vectors = NULL;
++	devm_kfree(dev, vsi->tx_rings);
++	vsi->tx_rings = NULL;
++	devm_kfree(dev, vsi->rx_rings);
++	vsi->rx_rings = NULL;
++	devm_kfree(dev, vsi->txq_map);
++	vsi->txq_map = NULL;
++	devm_kfree(dev, vsi->rxq_map);
++	vsi->rxq_map = NULL;
+ }
+ 
+ /**
+@@ -902,10 +890,8 @@ static void ice_rss_clean(struct ice_vsi *vsi)
+ 
+ 	dev = ice_pf_to_dev(pf);
+ 
+-	if (vsi->rss_hkey_user)
+-		devm_kfree(dev, vsi->rss_hkey_user);
+-	if (vsi->rss_lut_user)
+-		devm_kfree(dev, vsi->rss_lut_user);
++	devm_kfree(dev, vsi->rss_hkey_user);
++	devm_kfree(dev, vsi->rss_lut_user);
+ 
+ 	ice_vsi_clean_rss_flow_fld(vsi);
+ 	/* remove RSS replay list */
+diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
+index b7682de0ae05..b664d60fd037 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sched.c
++++ b/drivers/net/ethernet/intel/ice/ice_sched.c
+@@ -358,10 +358,7 @@ void ice_free_sched_node(struct ice_port_info *pi, struct ice_sched_node *node)
+ 				node->sibling;
+ 	}
+ 
+-	/* leaf nodes have no children */
+-	if (node->children)
+-		devm_kfree(ice_hw_to_dev(hw), node->children);
+-
++	devm_kfree(ice_hw_to_dev(hw), node->children);
+ 	kfree(node->name);
+ 	xa_erase(&pi->sched_node_ids, node->id);
+ 	devm_kfree(ice_hw_to_dev(hw), node);
+@@ -859,10 +856,8 @@ void ice_sched_cleanup_all(struct ice_hw *hw)
+ 	if (!hw)
+ 		return;
+ 
+-	if (hw->layer_info) {
+-		devm_kfree(ice_hw_to_dev(hw), hw->layer_info);
+-		hw->layer_info = NULL;
+-	}
++	devm_kfree(ice_hw_to_dev(hw), hw->layer_info);
++	hw->layer_info = NULL;
+ 
+ 	ice_sched_clear_port(hw->port_info);
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
+index d69efd33beee..49be0d2532eb 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.c
++++ b/drivers/net/ethernet/intel/ice/ice_switch.c
+@@ -1636,21 +1636,16 @@ ice_save_vsi_ctx(struct ice_hw *hw, u16 vsi_handle, struct ice_vsi_ctx *vsi)
+  */
+ static void ice_clear_vsi_q_ctx(struct ice_hw *hw, u16 vsi_handle)
+ {
+-	struct ice_vsi_ctx *vsi;
++	struct ice_vsi_ctx *vsi = ice_get_vsi_ctx(hw, vsi_handle);
+ 	u8 i;
+ 
+-	vsi = ice_get_vsi_ctx(hw, vsi_handle);
+ 	if (!vsi)
+ 		return;
+ 	ice_for_each_traffic_class(i) {
+-		if (vsi->lan_q_ctx[i]) {
+-			devm_kfree(ice_hw_to_dev(hw), vsi->lan_q_ctx[i]);
+-			vsi->lan_q_ctx[i] = NULL;
+-		}
+-		if (vsi->rdma_q_ctx[i]) {
+-			devm_kfree(ice_hw_to_dev(hw), vsi->rdma_q_ctx[i]);
+-			vsi->rdma_q_ctx[i] = NULL;
+-		}
++		devm_kfree(ice_hw_to_dev(hw), vsi->lan_q_ctx[i]);
++		vsi->lan_q_ctx[i] = NULL;
++		devm_kfree(ice_hw_to_dev(hw), vsi->rdma_q_ctx[i]);
++		vsi->rdma_q_ctx[i] = NULL;
+ 	}
+ }
+ 
+@@ -5486,9 +5481,7 @@ ice_add_adv_recipe(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
+ 		devm_kfree(ice_hw_to_dev(hw), fvit);
+ 	}
+ 
+-	if (rm->root_buf)
+-		devm_kfree(ice_hw_to_dev(hw), rm->root_buf);
+-
++	devm_kfree(ice_hw_to_dev(hw), rm->root_buf);
+ 	kfree(rm);
+ 
+ err_free_lkup_exts:
+-- 
+2.38.1
 
 
