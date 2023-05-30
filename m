@@ -1,51 +1,51 @@
-Return-Path: <netdev+bounces-6304-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6305-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E3AB87159E9
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 11:21:39 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 517EC7159EB
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 11:22:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 76EEB1C20B15
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 09:21:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0675F2810AB
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 09:21:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A314C13AF3;
-	Tue, 30 May 2023 09:21:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 46E8313AD8;
+	Tue, 30 May 2023 09:21:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F7221426A
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 09:21:13 +0000 (UTC)
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2059.outbound.protection.outlook.com [40.107.6.59])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD7010D5;
-	Tue, 30 May 2023 02:20:52 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 346AC11C89
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 09:21:24 +0000 (UTC)
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2083.outbound.protection.outlook.com [40.107.7.83])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57DE6113;
+	Tue, 30 May 2023 02:21:04 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MIYELnMBbSMV75HCq+Rz6/5SHO2MtGaSQ+euZCRpMtivV0EEx9Q/5RNsC2YNo1c4uaQA8fUWu0V/SmOzva5Hrq6v2IX6sHMUusB04g7dEEm4Ncfhly3+5xbpMql9k82qyQOzIoIrPkmuKQbnNunuxE+zJiRwk3uQaEopeqKG/BIdk7zGpe3m3uvp8L2Jgwmq5awikQvORorrtsAqXm4BCqHQVkZAHvSvD7yXcWlUrDgM7Yh0ARAWlBR80Jitxhq2aYI/C3hXztfoai5ZhHhFJPjT37sHmBjAj6rb4RKCwe7/ZSfa5XHWE0oR1nc0wArEAami4STTqjWxf/1ojAnilg==
+ b=R12HKXN5niykvp6saiMTU4S+yQO9nLIOfg3Pe4/wTkLuQPEjJY8UZ8R0pmK5Zulxg9X+qyhKxNDF2Z0MEDljVQI62mU02MLoUtux2+GlWfXIhyT6hJKkq7H5Tyds0zjHszkficqOwe1jUeM1Vu11hsiZcNAGjqvVUb/NbdyWBPzzX6I4Fu+N1S9wNTK64jvs2UQXbNJSPiQcis+gQvwntjp0p78vJegUA1NAmSIsMgv9J12jpyoKLm1DV0CoWueATo/TL1oiYeJgvUlFoc3Dv6ewe92eHskzh/qA1Wb2qdd4g0d6PHjC2gJzZJ6YhGmmlPg3XHz6asnizNWBJnUNcw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BtkZpYfXeGBh2Yn69kyjMNGg1iDOxeC/KYzXKmxFsYE=;
- b=Mi8oK9JagoVl8QBPxqgZgZreTwMdNBZpHtyfwu38HhBYMXm2KhWa84tqazCmHGFjUQBGCgh9i96H7dXdNCX5c06igXqLQGZEAqSE0id+dxzMnqyFfe7H2D/KaJaq/fV7W+gKEy9LUvtBO/OLH3Nar9mwJk2LgcXiW7MmZHVBphcOWJ6eFwHtLUglJuZ5Tzynrbt4ZHwaxf5qnlKdiGK8sapdt0LrGgIhPfi+LbRCm7e/ifutu/514GMQ4Rw5N5q89dqdqKcl3cI01HiarXH240MEv8w66PzedfhJrTUzLqp57eHkSlvAUkuD+oRQAjrESOJlVqZ0DgmuRDcDyTz9Mg==
+ bh=zXykmMVoPdtSlW5voeAPPQCj2SjCtgOMs+g79ehzeWw=;
+ b=cvkCEgwypALTbTPhCGn+1ZCsAZzeBXnX58SdUtaWBcTZkkk/lwvqxSiYUbtpAbxhZRq4KgcVOtoA067dQOsFIMvSE+YGLWRH1bjL/4/D3uqSghWxaLyd/H7eEGcpHnifKuwdnMlEIHQvMLjEoavYPylPC/zGIWHubxMRLas3Z3Cet55FfnYQPW/mHcVkAuf+xgCeHGJRhNHXzmD7i77pNBzkzGL+1GvYNv8EzoO03gmfx4Du8QuzlqJzwJ8k25UyGkroMS+SWIXUa8rSbAfRXe5hKjxjzCTIoRPoCEGcZ1AbVLHv7HKZu+Xs8Zv9UCeMR35v6IxQ3D8aIcSf556L0g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BtkZpYfXeGBh2Yn69kyjMNGg1iDOxeC/KYzXKmxFsYE=;
- b=cafou14AdaCjybHeZO4K7NI/5xHACXyPefo+VtM6FVX+SYUrDP1YB5uwImxykoTSR76GOqjMBm2tXcy7OFD7Sgpq4415Mo6XOXPbSrzgytCxIj0GaW/I68W4m9v5AtZ3PtPEsJqP10YHIWh7lDJwI1BmPBX0GT+7Ne37TQODjv8=
+ bh=zXykmMVoPdtSlW5voeAPPQCj2SjCtgOMs+g79ehzeWw=;
+ b=IomA5Bko+QjAy9mYhR2wnKZHcsIUE1Ee8HDeFpHX+e5ixBTnrUWaPZ83P3Yu/359Gmc1q4+mg5vsVIV9WEu+Uz2GAcwdMz0KOPkw+y4NnEjIhguwRbq36bEAI6DER4QsXoCZLGT0Edywra16b6u5lTkZ9b1qGBJM0dFHOxnC6cA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
  by VI1PR04MB7167.eurprd04.prod.outlook.com (2603:10a6:800:12a::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23; Tue, 30 May
- 2023 09:20:12 +0000
+ 2023 09:20:15 +0000
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::b027:17aa:e5f5:4fea]) by AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::b027:17aa:e5f5:4fea%6]) with mapi id 15.20.6433.022; Tue, 30 May 2023
- 09:20:12 +0000
+ 09:20:15 +0000
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 To: netdev@vger.kernel.org
 Cc: "David S. Miller" <davem@davemloft.net>,
@@ -83,9 +83,9 @@ Cc: "David S. Miller" <davem@davemloft.net>,
 	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
 	intel-wired-lan@lists.osuosl.org,
 	Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-Subject: [PATCH net-next 3/5] net/sched: taprio: add netlink reporting for offload statistics counters
-Date: Tue, 30 May 2023 12:19:46 +0300
-Message-Id: <20230530091948.1408477-4-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 4/5] net: enetc: refactor enetc_setup_tc_taprio() to have a switch/case for cmd
+Date: Tue, 30 May 2023 12:19:47 +0300
+Message-Id: <20230530091948.1408477-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230530091948.1408477-1-vladimir.oltean@nxp.com>
 References: <20230530091948.1408477-1-vladimir.oltean@nxp.com>
@@ -102,54 +102,54 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|VI1PR04MB7167:EE_
-X-MS-Office365-Filtering-Correlation-Id: c3bf6029-81a9-4e9f-f74d-08db60ef1277
+X-MS-Office365-Filtering-Correlation-Id: 3e22f244-79e1-452c-d0e8-08db60ef13b9
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	aQc5+jRH8dzOT44c65SP5tTD5NfwrCHaCICKcFKmZs0EwGnkbr1GhAw8NJyUbJvTXcCQYueuSSMF6vD+14vp1lp1e4xEu9U58bOKice+87p36MGU3VYmR6xLQDgqeiwg7HFsOcjOl517xdbTmhf+zFnl4LXVwc17aQoa/yBssdCi8w3X6qDtZtUW4Mz8VrUsVpKdlY8ezEMAKj14o83OKPBlvxfiw4e74tU8pvK95DS5w0NcjS5cmmTJChvvxo2Tqx9jTB4HnEkdjbE0Mja2GMngWpubfC0oiziC2nQc3Gk4Qu68c1v0fbtWKO+bvNjL0/j7sVZ+cYy57HNd6perhtivVNZkgwQl4w6oU1Q7rpBgnh2ZO0sHIixaI8y/k4NhgtcuekazdTyDS005kJ2DoHWkWTOmKbrnmmh98+b05h9xNNOFz8BccebUx0/Z+Ju/V7t6B6wrOIhO6h+6Fw4rAfmki8WfPZ1lOviuXQzUiMJYLBmzK2o5h59WRRHAkayMi0nuNGg7Wb+wgysz9WJpHxXUFUHEGQBnrIwmMa6wFFUY79lOPKx46yTj5mxjBddDTQedPOmlhDCNxtUzkiYf63vfgP7hKL23FQ9v5eSxCFbb2UuqSkYVVFbOwudOlm9s
+	MTUmCkkCXqdytEPvfrMfA1Ue3jrnqT8d1PIqKOUFo/Z+tPd8DeEHaxsWX+ehgQQtXGhQfvPLutXRNRC5VTYMb4wgD/x7GHbKDhJ35zv6ArUcynWZkh35aAHeQQdXrzC5Cmqh+pBM7VM+USRp7LaD2hNRKAiHN4G8muD0/Q4EkhCjo3Yf+6Y3xOgJdJ/Ham7o5PPESx39nPtMc66deHdIOj1bU3qgvGAtNy7fCzcxsH6h3HXt5IgWZh0kcLIBToUX3bT7L3ujbTdNqlYlYjERVY79n3lrgdbnfZU7O8hoRvS+8+OWsOk7bkoNo+xKKvOMoSOezJaLBqQ7aZyL+Uzeb/JNUo3wwo2sRdXTsRyIc+9ON0YmHRJgobn3qN7b6CUYa2S7YYrOPtcHzq2OSkL6+HoW5mQRt0KWKbqDmPDUypzTs2riMsNjUJ2rnpvzSjcEERuYKkFai/CAuuawJOf9Yf0pYgDONFTqR34fC1vD140gvU0mtmhkKUFOc4amlvAAbjsWRDO26mWFqbCYhZtSmYVUechp0A/ag8Gbo1odJ4rSNvd4XYiJm+FCcl6GrmK652SySMDBKjxtTrF2fRuOS3UBVVDvYKFgR8ZAEvwn0pAyo7OOeXiun/v4d24OAaBq
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(396003)(346002)(366004)(376002)(451199021)(54906003)(478600001)(38100700002)(38350700002)(66946007)(66556008)(66476007)(6486002)(41300700001)(52116002)(7416002)(7406005)(8676002)(8936002)(5660300002)(86362001)(44832011)(26005)(2906002)(186003)(1076003)(6506007)(6512007)(83380400001)(6916009)(4326008)(316002)(6666004)(2616005)(36756003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?TDPNmHfOb0sJWF1n3ITHv5JBOMNHDv0nIk0knwTWxPqZBrtFB8rY5XnL817V?=
- =?us-ascii?Q?RZiokVn6KiFW5lMgg4COkqtAtcUg5tnIzyLhqcKPBx5vdKq8WFuV721dy03b?=
- =?us-ascii?Q?Jg1XJ6zJqXEZFxQv5WTyxsA8Gi4UXYWPzRMeVS5QMVc+ObBnyQ39JTpvaQmO?=
- =?us-ascii?Q?IuFH0OWo0pwhcGgFKCDxJNgEXs4et5mJIlhq2tCZlC/eTu1tayxkm8pwP5zt?=
- =?us-ascii?Q?aInDSFJqUmgAEfikw4juWNYaZVkc4LlCmVeP/62S3mU4RIF4fTQngih5zzqB?=
- =?us-ascii?Q?jcy/Z9EIoyrUC8lNWYAZbrKdEGi32BL5/Kfcncfc1o5OaDjhPotTmrVUEAHz?=
- =?us-ascii?Q?ATz6bUQ+nGA7PfQ9FUNgpJuCPvoP0MMAPjAogevpl0/RqWpStgukakiO+rA/?=
- =?us-ascii?Q?2W93zFLMaF0WjDLip2HIrVPRmMH2MNSpm5lhbg/z2zAw/TuZlmftm8k2nidm?=
- =?us-ascii?Q?T/LYczei5lEpRhV6gh8VmTGyVNTgZo9QaM+ORRvYjwV3nGch0LC99s8CR8Wi?=
- =?us-ascii?Q?sdBF8RtRr/hbDEwdJApAgfq0vkdNP7Feeaa2exs8ZorjZwo33Yj15kZ2fYbW?=
- =?us-ascii?Q?R10g2Ybxlbq0Iqn7uDud64r3+wOa2MT2apeGHDOh7N/aES7kOS6b+QqYfuDO?=
- =?us-ascii?Q?0xFkbVRcBwkPnuUr9v9oIK0qw9WIkKbg5Tcjx8R4VxvK3Hr3PS4O/zk1G2nh?=
- =?us-ascii?Q?kUE+5E7sC/pva9IyASXWa0NQPg/Ch6VqWn+52tUyLVu+2u/yyjDYjcpET9zM?=
- =?us-ascii?Q?Lwke7DsKFzRALoexeQJUxB6/8dEsM9exfkqioQFbcD4glcgK1elht3gMZgPX?=
- =?us-ascii?Q?iSvHMSvBIHotebcSZv92kpGyuMfsfKGD4In0Y/VbbZl3YyJVGeSuo8kqEbol?=
- =?us-ascii?Q?PakIIkaIUSbBgR/sBvlkil1XwI7hJurgxqJ6InK+H079Bsuz4BkUY4h3s9NR?=
- =?us-ascii?Q?d3Rf9eN3wKCvznStCiK+bL3HLz5YPiv36VR3qSRbhDhUcJv7pRAE7cdSsrB0?=
- =?us-ascii?Q?kPppKFk/pHSQ78Uj1pZhapOTioug7XlHTDqQ2ltSRJA89V29XcN5TfSrerfK?=
- =?us-ascii?Q?V2zdNy0QAAXA1nWu3B255dn2hsbPTGo//bLMlPhhlp+Nf88JEZwxv1p0UYm9?=
- =?us-ascii?Q?EqutxNRB5C3dtG30fby7U2BR3l6DwiCaYq+/bnV2MOW3Xx1d3BmiR7MjT0xQ?=
- =?us-ascii?Q?oC6hrqWX6bTqvZEP+dHGPKRDn6TpeuacYR4zscHPiwkopchqXFl67XcVf/3R?=
- =?us-ascii?Q?mkmERDsehOriZ/BlNpXMv6UGREiev+8Xnk5mv3SEtKJVT7jkNoSSkllmXK2V?=
- =?us-ascii?Q?nBKm3AZZSgZ4EpNI1J37wJNcA++asCHeAWeWze8zMAXWjlBHUj+BnKtRILJd?=
- =?us-ascii?Q?UKqEGedYcopNbNEBfl/VZPnMZRpi7OjAGUOQrXdGUcQ6ssaYA4T+NL4Tl4dV?=
- =?us-ascii?Q?oNMj9KKJD0ds2YXqzEIkHwwIezkuAaRLw+Dk8OO3ewGMPjvXHhKFKO+sSd1H?=
- =?us-ascii?Q?n7bq1y2Iun1N0tTm/lJMfz/fKgRsfbuOVJZFBs14FrTlsuPo8ka6GSmoCjQV?=
- =?us-ascii?Q?/GrNNFyyly+/YEkeWx45g5ZgifMdiCGvdsrr+4mrE8vSP5Q+ZINoMXTsXNa0?=
- =?us-ascii?Q?sQ=3D=3D?=
+	=?us-ascii?Q?/5LtmqJI/mLDNvzM0Bqpi8yBe0Ospo6C59nU0vkUYm2efIBVtqHev4rL+bkZ?=
+ =?us-ascii?Q?luzEYSj71alDFa1jjKmcxL20tKt1Je6CGDSc+LEhw/9Qu4E31lpWgL+Fcjco?=
+ =?us-ascii?Q?luT77G8JNsKPt/squw1XqsGsK9XU1vuCH60dIU5jAie6w6xuj17ffjGBGw5g?=
+ =?us-ascii?Q?hyK8p/j2A3E+hW7bWb+Ct3GYE7ymDjqKbkC4BgeN/Tp1cymXTwNJsZFd+QKO?=
+ =?us-ascii?Q?TMwgc1/ciReY4grhNiKgqqw1rgww5aaZ5tl3pU8pyT9gjb+4cT9MS+mocq+d?=
+ =?us-ascii?Q?90MuCOpauNP4SKCllztujwwsiCVNNE0NbErgPKgIif9ogFAIBOm6XVP7+FVi?=
+ =?us-ascii?Q?p3U2SnOozEe6fJD+HvPQ1jWwXnC86pUq/vcGuVCqz3Yhl3gfhho9szigQCLm?=
+ =?us-ascii?Q?ZsylO1SD5M53WL+8z46HDhegmlpoXqOdfzcUyqMtPTMLnAj8CdgMaaVEqaTC?=
+ =?us-ascii?Q?iQlZglxXjk5uwXpP/SEiInIlcbaNcUIHWcsHEwIGy5wdAB5NJYgqNlG6K7OE?=
+ =?us-ascii?Q?hT7eymC7tGPMbEsy0EY5xPi+daHfR0D+UHRktHkYqXsxievtJlc8CfKMltqL?=
+ =?us-ascii?Q?ou5cJJvGAE9vVmGdDjFnEV/gl90Hl1lr920eBWd8rf1I6+vXkIVXLDIOgpP9?=
+ =?us-ascii?Q?FGmIa+grEEMO4i9ZCrG4taRSAWoYNruKR+txuxgXB29YdSA6Vhjq4H/martz?=
+ =?us-ascii?Q?GUTruMP+yRC0GE/FglV+Z6ASPfzz+QUrzgmPa6yIjbUkTo0b0JifAyyeKRri?=
+ =?us-ascii?Q?+0j/NB+YZu7rdszxqiH/EapFxL6/TFUNi2JRDg9nc6JDKI/FFJw/2O/GqX6i?=
+ =?us-ascii?Q?W0aN7nBAeEV7vFnm88x3nIKTi84ebC5Cgva2J6Drn4QABomIJa78S5qtS7xH?=
+ =?us-ascii?Q?fNvTWYb7q2o3fepxAFJhKo/Pq0Ut0pI7mirJSQy2VnqiHp2J3T9OMptHrLJz?=
+ =?us-ascii?Q?BKXEID2OykWs7F9mD2nOdca5+UYb1VUoHzRZWuUi9uk2mug0SwIeko3vBxh+?=
+ =?us-ascii?Q?C35S4e62GOMS98YQMq1odrCIt0rwobEvui4yrqV9V54e4FSKoryKSY+z01+g?=
+ =?us-ascii?Q?4WDUwI/tFO0ILZCTFmA7ngAGJy+q374vNERDCeolS5Bgdwx3yB0QpFC7w96k?=
+ =?us-ascii?Q?gDbd9hEouYmHjVx78sy3LdG3iChqZf2qkAhDrF0aWXKBmhiCxwQhWV8izkpC?=
+ =?us-ascii?Q?Af81p0Vdv8cbXUnH7bToGLacJzsAR4uBl3MQMsY4rZ3E2gSUfbb3RJa4JBlK?=
+ =?us-ascii?Q?Gent3647xAZhOw84u3kAOpq9rWOrkHSccIkn9tGLVyD9goWNO3G2yoQyilgi?=
+ =?us-ascii?Q?y8KIXR8SLSjeFB0y0P1Arg+09g7XDFatzJWNKMqK+vQ1K6f7cKOAvAmXSMCJ?=
+ =?us-ascii?Q?KwUPsAo5eT774OmFfQiG2uHnVvDgI/bnn+FEpf5bdPvC6XHtcs7N6O4Kxbjj?=
+ =?us-ascii?Q?8D2ZHSTm5dFHW0klbMT23BTASoAd92Y2E61URusd18Hbs9BXJEf+PiWbWE6w?=
+ =?us-ascii?Q?F45dfjF/kJizorceqShJ0eGT/fh4M8pXauv8t0aSQogzxeoHy9PXHehadDGe?=
+ =?us-ascii?Q?NOxwXOpM0vkUkaajQJzSz9Y2xn+Db/hI3TqW68gbhfFPJGgX4H19d++bEcs7?=
+ =?us-ascii?Q?aQ=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3bf6029-81a9-4e9f-f74d-08db60ef1277
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e22f244-79e1-452c-d0e8-08db60ef13b9
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 09:20:12.8431
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 09:20:14.9849
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dVxAgpXlT9HyeLXQnVn0alMHnB2y0qxZ04PnqwATmQDxYTERQgD+11rw00ziVPBS0yXeV4D5uyrcnWGBc4CBvA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5X4yuLYom0V0LH+dL0qfqVhPvuMt6BoL1zUT07UhOjVGkuz0ExmcEQN4MnG15zpgf8hQYVL3l1T2yx1c8P1cSA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7167
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -158,240 +158,179 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Offloading drivers may report some additional statistics counters, some
-of them even suggested by 802.1Q, like TransmissionOverrun.
-
-In my opinion we don't have to limit ourselves to reporting counters
-only globally to the Qdisc/interface, especially if the device has more
-detailed reporting (per traffic class), since the more detailed info is
-valuable for debugging and can help identifying who is exceeding its
-time slot.
-
-But on the other hand, some devices may not be able to report both per
-TC and global stats.
-
-So we end up reporting both ways, and use the good old ethtool_put_stat()
-strategy to determine which statistics are supported by this NIC.
-Statistics which aren't set are simply not reported to netlink. For this
-reason, we need something dynamic (a nlattr nest) to be reported through
-TCA_STATS_APP, and not something daft like the fixed-size and
-inextensible struct tc_codel_xstats. A good model for xstats which are a
-nlattr nest rather than a fixed struct seems to be cake.
-
- # Global stats
- $ tc -s qdisc show dev eth0 root
- # Per-tc stats
- $ tc -s class show dev eth0
+Make enetc_setup_tc_taprio() more amenable to future extensions, like
+reporting statistics.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/net/pkt_sched.h        | 47 ++++++++++++++++----
- include/uapi/linux/pkt_sched.h | 10 +++++
- net/sched/sch_taprio.c         | 78 +++++++++++++++++++++++++++++++++-
- 3 files changed, 126 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc.c  |  3 +-
+ drivers/net/ethernet/freescale/enetc/enetc.h  |  1 +
+ .../net/ethernet/freescale/enetc/enetc_qos.c  | 79 ++++++++++++-------
+ 3 files changed, 54 insertions(+), 29 deletions(-)
 
-diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-index f5fb11da357b..530d33adec88 100644
---- a/include/net/pkt_sched.h
-+++ b/include/net/pkt_sched.h
-@@ -188,6 +188,27 @@ struct tc_taprio_caps {
- enum tc_taprio_qopt_cmd {
- 	TAPRIO_CMD_REPLACE,
- 	TAPRIO_CMD_DESTROY,
-+	TAPRIO_CMD_STATS,
-+	TAPRIO_CMD_TC_STATS,
-+};
-+
-+/**
-+ * struct tc_taprio_qopt_stats - IEEE 802.1Qbv statistics
-+ * @window_drops: Frames that were dropped because they were too large to be
-+ *	transmitted in any of the allotted time windows (open gates) for their
-+ *	traffic class.
-+ * @tx_overruns: Frames still being transmitted by the MAC after the
-+ *	transmission gate associated with their traffic class has closed.
-+ *	Equivalent to `12.29.1.1.2 TransmissionOverrun` from 802.1Q-2018.
-+ */
-+struct tc_taprio_qopt_stats {
-+	u64 window_drops;
-+	u64 tx_overruns;
-+};
-+
-+struct tc_taprio_qopt_tc_stats {
-+	int tc;
-+	struct tc_taprio_qopt_stats stats;
- };
- 
- struct tc_taprio_sched_entry {
-@@ -199,16 +220,26 @@ struct tc_taprio_sched_entry {
- };
- 
- struct tc_taprio_qopt_offload {
--	struct tc_mqprio_qopt_offload mqprio;
--	struct netlink_ext_ack *extack;
- 	enum tc_taprio_qopt_cmd cmd;
--	ktime_t base_time;
--	u64 cycle_time;
--	u64 cycle_time_extension;
--	u32 max_sdu[TC_MAX_QUEUE];
- 
--	size_t num_entries;
--	struct tc_taprio_sched_entry entries[];
-+	union {
-+		/* TAPRIO_CMD_STATS */
-+		struct tc_taprio_qopt_stats stats;
-+		/* TAPRIO_CMD_TC_STATS */
-+		struct tc_taprio_qopt_tc_stats tc_stats;
-+		/* TAPRIO_CMD_REPLACE */
-+		struct {
-+			struct tc_mqprio_qopt_offload mqprio;
-+			struct netlink_ext_ack *extack;
-+			ktime_t base_time;
-+			u64 cycle_time;
-+			u64 cycle_time_extension;
-+			u32 max_sdu[TC_MAX_QUEUE];
-+
-+			size_t num_entries;
-+			struct tc_taprio_sched_entry entries[];
-+		};
-+	};
- };
- 
- #if IS_ENABLED(CONFIG_NET_SCH_TAPRIO)
-diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-index 51a7addc56c6..00f6ff0aff1f 100644
---- a/include/uapi/linux/pkt_sched.h
-+++ b/include/uapi/linux/pkt_sched.h
-@@ -1259,6 +1259,16 @@ enum {
- 	TCA_TAPRIO_TC_ENTRY_MAX = (__TCA_TAPRIO_TC_ENTRY_CNT - 1)
- };
- 
-+enum {
-+	TCA_TAPRIO_OFFLOAD_STATS_PAD = 1,	/* u64 */
-+	TCA_TAPRIO_OFFLOAD_STATS_WINDOW_DROPS,	/* u64 */
-+	TCA_TAPRIO_OFFLOAD_STATS_TX_OVERRUNS,	/* u64 */
-+
-+	/* add new constants above here */
-+	__TCA_TAPRIO_OFFLOAD_STATS_CNT,
-+	TCA_TAPRIO_OFFLOAD_STATS_MAX = (__TCA_TAPRIO_OFFLOAD_STATS_CNT - 1)
-+};
-+
- enum {
- 	TCA_TAPRIO_ATTR_UNSPEC,
- 	TCA_TAPRIO_ATTR_PRIOMAP, /* struct tc_mqprio_qopt */
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 06bf4c6355a5..3c4c2c334878 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -27,6 +27,8 @@
- #include <net/sock.h>
- #include <net/tcp.h>
- 
-+#define TAPRIO_STAT_NOT_SET	(~0ULL)
-+
- #include "sch_mqprio_lib.h"
- 
- static LIST_HEAD(taprio_list);
-@@ -2289,6 +2291,72 @@ static int taprio_dump_tc_entries(struct sk_buff *skb,
- 	return -EMSGSIZE;
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+index 63854294ac33..3aa31a760657 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -2624,7 +2624,7 @@ static void enetc_debug_tx_ring_prios(struct enetc_ndev_priv *priv)
+ 			   priv->tx_ring[i]->prio);
  }
  
-+static int taprio_put_stat(struct sk_buff *skb, u64 val, u16 attrtype)
+-static void enetc_reset_tc_mqprio(struct net_device *ndev)
++void enetc_reset_tc_mqprio(struct net_device *ndev)
+ {
+ 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+ 	struct enetc_hw *hw = &priv->si->hw;
+@@ -2649,6 +2649,7 @@ static void enetc_reset_tc_mqprio(struct net_device *ndev)
+ 
+ 	enetc_change_preemptible_tcs(priv, 0);
+ }
++EXPORT_SYMBOL_GPL(enetc_reset_tc_mqprio);
+ 
+ int enetc_setup_tc_mqprio(struct net_device *ndev, void *type_data)
+ {
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
+index c97a8e3d7a7f..8577cf7699a0 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.h
++++ b/drivers/net/ethernet/freescale/enetc/enetc.h
+@@ -429,6 +429,7 @@ struct net_device_stats *enetc_get_stats(struct net_device *ndev);
+ void enetc_set_features(struct net_device *ndev, netdev_features_t features);
+ int enetc_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd);
+ int enetc_setup_tc_mqprio(struct net_device *ndev, void *type_data);
++void enetc_reset_tc_mqprio(struct net_device *ndev);
+ int enetc_setup_bpf(struct net_device *ndev, struct netdev_bpf *bpf);
+ int enetc_xdp_xmit(struct net_device *ndev, int num_frames,
+ 		   struct xdp_frame **frames, u32 flags);
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+index 7aad824f4da7..2b8fdfffd02d 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+@@ -43,10 +43,9 @@ void enetc_sched_speed_set(struct enetc_ndev_priv *priv, int speed)
+ 	enetc_port_wr(hw, ENETC_PMR, (tmp & ~ENETC_PMR_PSPEED_MASK) | pspeed);
+ }
+ 
+-static int enetc_setup_taprio(struct net_device *ndev,
++static int enetc_setup_taprio(struct enetc_ndev_priv *priv,
+ 			      struct tc_taprio_qopt_offload *admin_conf)
+ {
+-	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+ 	struct enetc_hw *hw = &priv->si->hw;
+ 	struct enetc_cbd cbd = {.cmd = 0};
+ 	struct tgs_gcl_conf *gcl_config;
+@@ -60,19 +59,13 @@ static int enetc_setup_taprio(struct net_device *ndev,
+ 	int err;
+ 	int i;
+ 
++	/* TSD and Qbv are mutually exclusive in hardware */
++	for (i = 0; i < priv->num_tx_rings; i++)
++		if (priv->tx_ring[i]->tsd_enable)
++			return -EBUSY;
++
+ 	if (admin_conf->num_entries > enetc_get_max_gcl_len(hw))
+ 		return -EINVAL;
+-	gcl_len = admin_conf->num_entries;
+-
+-	tge = enetc_rd(hw, ENETC_PTGCR);
+-	if (admin_conf->cmd == TAPRIO_CMD_DESTROY) {
+-		enetc_wr(hw, ENETC_PTGCR, tge & ~ENETC_PTGCR_TGE);
+-		enetc_reset_ptcmsdur(hw);
+-
+-		priv->active_offloads &= ~ENETC_F_QBV;
+-
+-		return 0;
+-	}
+ 
+ 	if (admin_conf->cycle_time > U32_MAX ||
+ 	    admin_conf->cycle_time_extension > U32_MAX)
+@@ -82,6 +75,7 @@ static int enetc_setup_taprio(struct net_device *ndev,
+ 	 * control BD descriptor.
+ 	 */
+ 	gcl_config = &cbd.gcl_conf;
++	gcl_len = admin_conf->num_entries;
+ 
+ 	data_size = struct_size(gcl_data, entry, gcl_len);
+ 	tmp = enetc_cbd_alloc_data_mem(priv->si, &cbd, data_size,
+@@ -115,6 +109,7 @@ static int enetc_setup_taprio(struct net_device *ndev,
+ 	cbd.cls = BDCR_CMD_PORT_GCL;
+ 	cbd.status_flags = 0;
+ 
++	tge = enetc_rd(hw, ENETC_PTGCR);
+ 	enetc_wr(hw, ENETC_PTGCR, tge | ENETC_PTGCR_TGE);
+ 
+ 	err = enetc_send_cmd(priv->si, &cbd);
+@@ -132,29 +127,57 @@ static int enetc_setup_taprio(struct net_device *ndev,
+ 	return 0;
+ }
+ 
+-int enetc_setup_tc_taprio(struct net_device *ndev, void *type_data)
++static void enetc_reset_taprio(struct enetc_ndev_priv *priv)
 +{
-+	if (val == TAPRIO_STAT_NOT_SET)
-+		return 0;
-+	if (nla_put_u64_64bit(skb, attrtype, val, TCA_TAPRIO_OFFLOAD_STATS_PAD))
-+		return -EMSGSIZE;
-+	return 0;
++	struct enetc_hw *hw = &priv->si->hw;
++	u32 val;
++
++	val = enetc_rd(hw, ENETC_PTGCR);
++	enetc_wr(hw, ENETC_PTGCR, val & ~ENETC_PTGCR_TGE);
++	enetc_reset_ptcmsdur(hw);
++
++	priv->active_offloads &= ~ENETC_F_QBV;
 +}
 +
-+static int taprio_dump_xstats(struct Qdisc *sch, struct gnet_dump *d,
-+			      struct tc_taprio_qopt_offload *offload,
-+			      struct tc_taprio_qopt_stats *stats)
++static void enetc_taprio_destroy(struct net_device *ndev)
+ {
+-	struct tc_taprio_qopt_offload *taprio = type_data;
+ 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+-	int err, i;
+ 
+-	if (taprio->cmd != TAPRIO_CMD_REPLACE &&
+-	    taprio->cmd != TAPRIO_CMD_DESTROY)
+-		return -EOPNOTSUPP;
++	enetc_reset_taprio(priv);
++	enetc_reset_tc_mqprio(ndev);
++}
+ 
+-	/* TSD and Qbv are mutually exclusive in hardware */
+-	for (i = 0; i < priv->num_tx_rings; i++)
+-		if (priv->tx_ring[i]->tsd_enable)
+-			return -EBUSY;
++static int enetc_taprio_replace(struct net_device *ndev,
++				struct tc_taprio_qopt_offload *offload)
 +{
-+	struct net_device *dev = qdisc_dev(sch);
-+	const struct net_device_ops *ops;
-+	struct sk_buff *skb = d->skb;
-+	struct nlattr *xstats;
++	struct enetc_ndev_priv *priv = netdev_priv(ndev);
 +	int err;
-+
-+	ops = qdisc_dev(sch)->netdev_ops;
-+
-+	/* FIXME I could use qdisc_offload_dump_helper(), but that messes
-+	 * with sch->flags depending on whether the device reports taprio
-+	 * stats, and I'm not sure whether that's a good idea, considering
-+	 * that stats are optional to the offload itself
-+	 */
-+	if (!ops->ndo_setup_tc)
-+		return 0;
-+
-+	memset(stats, 0xff, sizeof(*stats));
-+
-+	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
-+	if (err == -EOPNOTSUPP)
-+		return 0;
+ 
+-	err = enetc_setup_tc_mqprio(ndev, &taprio->mqprio);
++	err = enetc_setup_tc_mqprio(ndev, &offload->mqprio);
+ 	if (err)
+ 		return err;
+ 
+-	err = enetc_setup_taprio(ndev, taprio);
+-	if (err) {
+-		taprio->mqprio.qopt.num_tc = 0;
+-		enetc_setup_tc_mqprio(ndev, &taprio->mqprio);
++	err = enetc_setup_taprio(priv, offload);
 +	if (err)
-+		return err;
++		enetc_reset_tc_mqprio(ndev);
 +
-+	xstats = nla_nest_start(skb, TCA_STATS_APP);
-+	if (!xstats)
-+		goto err;
-+
-+	if (taprio_put_stat(skb, stats->window_drops,
-+			    TCA_TAPRIO_OFFLOAD_STATS_WINDOW_DROPS) ||
-+	    taprio_put_stat(skb, stats->tx_overruns,
-+			    TCA_TAPRIO_OFFLOAD_STATS_TX_OVERRUNS))
-+		goto err_cancel;
-+
-+	nla_nest_end(skb, xstats);
-+
-+	return 0;
-+
-+err_cancel:
-+	nla_nest_cancel(skb, xstats);
-+err:
-+	return -EMSGSIZE;
++	return err;
 +}
 +
-+static int taprio_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
++int enetc_setup_tc_taprio(struct net_device *ndev, void *type_data)
 +{
-+	struct tc_taprio_qopt_offload offload = {
-+		.cmd = TAPRIO_CMD_STATS,
-+	};
++	struct tc_taprio_qopt_offload *offload = type_data;
++	int err = 0;
 +
-+	return taprio_dump_xstats(sch, d, &offload, &offload.stats);
-+}
-+
- static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
- {
- 	struct taprio_sched *q = qdisc_priv(sch);
-@@ -2389,11 +2457,18 @@ static int taprio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
- {
- 	struct netdev_queue *dev_queue = taprio_queue_get(sch, cl);
- 	struct Qdisc *child = dev_queue->qdisc_sleeping;
-+	struct tc_taprio_qopt_offload offload = {
-+		.cmd = TAPRIO_CMD_TC_STATS,
-+		.tc_stats = {
-+			.tc = cl - 1,
-+		},
-+	};
++	switch (offload->cmd) {
++	case TAPRIO_CMD_REPLACE:
++		err = enetc_taprio_replace(ndev, offload);
++		break;
++	case TAPRIO_CMD_DESTROY:
++		enetc_taprio_destroy(ndev);
++		break;
++	default:
++		err = -EOPNOTSUPP;
+ 	}
  
- 	if (gnet_stats_copy_basic(d, NULL, &child->bstats, true) < 0 ||
- 	    qdisc_qstats_copy(d, child) < 0)
- 		return -1;
--	return 0;
-+
-+	return taprio_dump_xstats(sch, d, &offload, &offload.tc_stats.stats);
- }
- 
- static void taprio_walk(struct Qdisc *sch, struct qdisc_walker *arg)
-@@ -2440,6 +2515,7 @@ static struct Qdisc_ops taprio_qdisc_ops __read_mostly = {
- 	.dequeue	= taprio_dequeue,
- 	.enqueue	= taprio_enqueue,
- 	.dump		= taprio_dump,
-+	.dump_stats	= taprio_dump_stats,
- 	.owner		= THIS_MODULE,
- };
- 
+ 	return err;
 -- 
 2.34.1
 
