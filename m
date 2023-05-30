@@ -1,198 +1,275 @@
-Return-Path: <netdev+bounces-6579-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6580-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 54767717002
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 23:55:10 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 47CBF717010
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 23:59:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 00595281071
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:55:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2E22B28132C
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:59:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F1B0A31F0B;
-	Tue, 30 May 2023 21:55:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D3A531F0E;
+	Tue, 30 May 2023 21:58:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE780200BC
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 21:55:06 +0000 (UTC)
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B43FAA
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 14:55:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685483705; x=1717019705;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=8/Q7rrvt1TsdaVZ8cSGUrMq2y6b9F1qi3xY90yhRy9s=;
-  b=mU3IkJ9AXbxcJtkGkLnWQ35vL+fQqAMPN/L7v5TIVIKAniCFLjtgFp4H
-   HHEzrr35ZZBmguhFAM33OQpNwvd2NKEtISB72UJfSMgokb+BmTGJht8nZ
-   yizLCPZSm306XDwD1C4IlELopNGetfDzfZUZ32fY8URlvMtI1XbtFp1pu
-   BQRRP3IjTRhzD4ldnQJEs3xafziG6JJJ2ReZJEvA2mACo+izdTBOF2Nz8
-   LJjBy7QdvO4UxDNI/MwlqOsn2y3WQyr6empHrCE9HVkwRvPUWmJDHr6uY
-   SeWakTl6h9GsSJP09NH4eEWsbeDpPvb3vRWstrHiNA2BFwkupzsO64uxM
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="353900421"
-X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
-   d="scan'208";a="353900421"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 14:55:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="776515168"
-X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
-   d="scan'208";a="776515168"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga004.fm.intel.com with ESMTP; 30 May 2023 14:55:04 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 30 May 2023 14:55:04 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 30 May 2023 14:55:04 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Tue, 30 May 2023 14:55:04 -0700
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.172)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Tue, 30 May 2023 14:55:04 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nQ8mUtcVy9tZy5GVFKlEZjVytkedsmPnLKYkEsrMT/+uD26r0ULyMlGjryCLGLGEcUPn83oOvfDFuXnaIgrzSJSXcOLXU4RDbXLnW/mykq7H+Fyhf2o89g0cmlOGCp432TQ0y7r+aa+7gJbviBRE9mrE7yKY45+1Ja0sUu2pmhDEwQVylPaN+vmAUsfWQ/r2SEkfZdJiEKL2mlD9iFRvTazscmXor5U4AWnsIFzOHD2q+akD3XrIHPHRZ3C5FS4s01g18KyYQ5muxoo4BKi/DGF6EgcQlMxxMGBwvExbbseMnGfPTWH6BelIMiVlCRqbcT55BR1BQMOgPKJXYL1dRA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hvD8VVdO4s2dny7dOuyebrXJ0cKcm2WsDaPFmXMr31s=;
- b=TrsMnBNFJx9TN0Z4DrLwk4dr78PIdzDts4oNeyQmySc3Uo6SzcuBiUkUowR2vgbeMA5BrBSd00nLEEsClkYrU6VROfOj7BYjYPYuZE6klXBMtI98H5+HuzhgCo5AZfZgt6nviMe8gUyI73St6Vz2H7FjDlMrRVOSQ7CMdGaIVVRJYBtSXPFcmA6z4wP2nthBHDMuBIA5od1Xi237OGehPFPSDC3UaGZo6SjY2nVo6G+eUrLKrp3tAaagADLVNovEATyTYcRhJHfA3a7rtIN0KSiQ+ahyMHGfkzt0KAeOCimA8qhNEWlTq01IB6AeM0KCG9/dy3xuWirMR8AhJ7i0BQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BYAPR11MB3672.namprd11.prod.outlook.com (2603:10b6:a03:fa::30)
- by DM4PR11MB5296.namprd11.prod.outlook.com (2603:10b6:5:393::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23; Tue, 30 May
- 2023 21:55:02 +0000
-Received: from BYAPR11MB3672.namprd11.prod.outlook.com
- ([fe80::61ad:23be:da91:9c65]) by BYAPR11MB3672.namprd11.prod.outlook.com
- ([fe80::61ad:23be:da91:9c65%3]) with mapi id 15.20.6433.022; Tue, 30 May 2023
- 21:55:02 +0000
-Message-ID: <ebcaf661-a6c3-518e-bbd0-f4c65b83056f@intel.com>
-Date: Tue, 30 May 2023 23:54:51 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Subject: Re: [PATCH iwl-next] ice: remove null checks before devm_kfree()
- calls
-To: Tony Nguyen <anthony.l.nguyen@intel.com>,
-	<intel-wired-lan-bounces@osuosl.org>
-CC: Jesse Brandeburg <jesse.brandeburg@intel.com>, Anirudh Venkataramanan
-	<anirudh.venkataramanan@intel.com>, Victor Raj <victor.raj@intel.com>, Michal
- Swiatkowski <michal.swiatkowski@linux.intel.com>, Jacob Keller
-	<jacob.e.keller@intel.com>, Martyna Szapar-Mudlaw
-	<martyna.szapar-mudlaw@linux.intel.com>, Michal Wilczynski
-	<michal.wilczynski@intel.com>, <netdev@vger.kernel.org>
-References: <20230530112549.20916-1-przemyslaw.kitszel@intel.com>
- <8a60b531-09b2-2df4-a7bb-02e3a98e7591@intel.com>
-Content-Language: en-US
-From: Przemek Kitszel <przemyslaw.kitszel@intel.com>
-In-Reply-To: <8a60b531-09b2-2df4-a7bb-02e3a98e7591@intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: ZR2P278CA0090.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:65::14) To BYAPR11MB3672.namprd11.prod.outlook.com
- (2603:10b6:a03:fa::30)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5580200BC
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 21:58:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E34FC433D2;
+	Tue, 30 May 2023 21:58:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685483937;
+	bh=4jZy45exYnNgaB2caizBfu6ca9UZFJzRxgPGz69y72E=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=I9wD0v9zhH6npsjAzCcI051WAdJ/VI/woFNHZz4owv3nHsFdPTSoXEZcYH8OEHhQf
+	 EGdmXwkuqt92aPw/mEk6fjvKLHxCSxqsO7zsvxPJttJUCSRWpcQbhEthjWLMYB1mlO
+	 cVXJtapO28e3rDDVQhJwur72rfDHLt7LPek2FfJ6w2h1fy+LbGAqx70qTfvl/6JO/n
+	 Wo2gs/WWyGFLVv85virLpcGjEZSIO9yylPZb70qP2Le5w9dKEy1GIXPCUbwX51fqN2
+	 bVXZ22NoBqNN0sRjHeniosa7SrkNFKtBny5AB9XsKRTdmOA5naCgx1RcNQbqp9DrBe
+	 MiwLFjJcLyH0Q==
+Date: Tue, 30 May 2023 16:58:55 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc: linux-pci@vger.kernel.org, netdev@vger.kernel.org,
+	Bjorn Helgaas <bhelgaas@google.com>, Rob Herring <robh@kernel.org>,
+	Claudiu Manoil <claudiu.manoil@nxp.com>,
+	Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH pci] PCI: don't skip probing entire device if first fn OF
+ node has status = "disabled"
+Message-ID: <ZHZxn0a3/EJbthYO@bhelgaas>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BYAPR11MB3672:EE_|DM4PR11MB5296:EE_
-X-MS-Office365-Filtering-Correlation-Id: b4c99cd1-e763-4c9c-25fe-08db61588506
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gEGpXBWhACarLK53nK1/n7QICyh5zeyjQ/QEVG5NUrWsTvOeCRJ05DhHvxfALbaEXYi+/EwYFpN/w8ZQgZUTQ60bSclXVq5cY/alHwgAufO5AO7LABD/bKO+9NZwqlmySBMIDESOJr2LE2tODfbDtOpgVMkpJuz+QVPus1PHqClUMfuKAfoT4ejpNrlQrGwihaqLLHIxBC/n4WVjwg3uebpCGhyES4NnKOxbp9sNSJZmVEQQaOSrCL4+wYcR/ut+bkevH/CVZPoZ8ZxAbIot9e/ZTsgng/ROdaKL5/FD0gvF2AL/gUddOrtJmCZNq8mgo3uQdLMP+E6nLdRKjGPv0Lo2viF9p7iIdNfo5fD/j0D7hLCfZUHFqdspsf3WyLT88oXjdaZhNmraU46FJOlTZIMu+utW6gffSItT4fKp7p+cP/Eyxhe4zp8oL9bSvbONNJbgOHhlipSlxrRDnh7hYF8izVawnG9Vldaxg23oK7LKs02LE14RVSAfDucHnAjjsrxxSPkvLMBZKAr7oHv47dhWa7N4ePV0WJiFUwm7UGZ9P1ZYQ+ZXeHrWmyQUQidMebsrkR76koqjalAXa2nFKgSFLi2Mv8F+9Lae32kJdI5siZx+l+hKo/e1qbEigF5u+21hBUgSdf0B9FcoBUcmMA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3672.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(376002)(346002)(396003)(39860400002)(136003)(451199021)(4744005)(2906002)(186003)(53546011)(6506007)(6512007)(31686004)(5660300002)(8676002)(82960400001)(8936002)(38100700002)(2616005)(54906003)(83380400001)(26005)(86362001)(6486002)(31696002)(41300700001)(316002)(4326008)(6666004)(66946007)(36756003)(66476007)(66556008)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZjNBdHZhL1FhZXRiVGt5QXJkQzZLbnZORkNNZEd3WnZtcUdxZnAwRFZYTGto?=
- =?utf-8?B?T2xhMzdmWVJrcHluTTF3Skx0UC9mYnFhaHJ0NjY4ZGM0S09SeUZvWWRSSVRl?=
- =?utf-8?B?clBxdldGMlkrYkw5NU0zcGRGMUNpZ3FvRlU1dzMrRG9NQmk2N0htNkNwSThh?=
- =?utf-8?B?MXZMRnM5QTVRdGhDZXBEb0QzQlJxSFJxZm9NU3lSQnUxUmoyTk9IWlRGdHQ0?=
- =?utf-8?B?dGFja3Y1b00wTEtHWGJ0WmxwTlczRHVBUHl6dWlrcDFRQkErS1FaWVFMNCtZ?=
- =?utf-8?B?bm9vN3JRdlVvWUlLbnFCOXJ1UUVQOWNNQlJEelNKZ0FPcU9ld3AxaWhzQmVv?=
- =?utf-8?B?amtRQjBENU1SaXp5Z1YwNTRRQUx6emg5UlRuYmtFR0NPVTBYWVBLL3N3RkNY?=
- =?utf-8?B?dXZXS2NzeDlRMDhmcEgrVVpTeFI2ZG5NY1RnemFabVpHT0hETkl1Sk1uRDE3?=
- =?utf-8?B?ekhOMXN3SkozdmJxN0Q1aWQ4eG9RcC9LNlQzaGR3NVhKNVJYTDJuQTFaUjZU?=
- =?utf-8?B?Y3h4TWhCOXg3N2xQNGpHVkgzOUFmRFlkU0cvZFg2ckQ0USt6QTllWXBwbzll?=
- =?utf-8?B?b1dmdWtYdk1YY0N3SktXS3JPOUVvcWxXTTV4WlJaTTB0TEp2TTRTYWxrNkdl?=
- =?utf-8?B?VVVVb0ZkVmlVRE5vbXNXMURsTjZNQWVsdEI4QlR0Zlk5ZUdnQ0czeFFrZ3U2?=
- =?utf-8?B?U3UrV1FwVS9rVElManBEQVF5TEdiRXdKcFNBMThEODdFb0R5eGlreEJiQnNv?=
- =?utf-8?B?a2xpdXEvbGtHRENxUGpRZmQyUGpYUzVBZTdKMHZ5MzRZYUNTYjFjUzh5ZE9D?=
- =?utf-8?B?YTRzaTZvdHNNeGV0RFZNU3FUQ2RCWDh4V2YvTjk4bXAxRkRUNUpVWUtueFpm?=
- =?utf-8?B?Nk5yVjI3TmtjVURnUFE0OHdYVGV2OStwYnhaL1JKbXIwaDNSSWUzajBXd3hF?=
- =?utf-8?B?YjhrSXZIaFp1NFRpQXBvaWRrZVRFMjloZ2xSMFF3KzMyaHFiVElYSWoyVWdQ?=
- =?utf-8?B?SWRtbkJvMW9kL0dRWVl3M2tYdE5EU3hwaURSaDBlaGhrcEZwSGpaNVFkMnNN?=
- =?utf-8?B?b0hVNnRPdkNuTHpMVXVsUUc5V3NqMlhiWlpQeUpQVEVjQWt5NGdZN1NvSHQx?=
- =?utf-8?B?WFBTMWJnMThYcDVkNmUrLzBOeFp2dmpmVS9TbVdTbkQ2MU1BS0ZjVDJYcklY?=
- =?utf-8?B?cnBmWE94T1J2RHljelBSYkx3WVdRVU5sMUtaZGNCSjdIZFhHbUt0T0ZxOUdn?=
- =?utf-8?B?L1Nsa1BaaExZRGpxRFEyT3ozVG5pb0dDQ0hHZU5SQzRFRVBVcGxYc3g5OGlS?=
- =?utf-8?B?M1F4cGhoN2hKd0x1WHpCTURmaTlUbmNkTisyUzVJNjFJandvVXFvNE1xTWNF?=
- =?utf-8?B?aDFOMERySXRjZTVEMWlnbGdCSmlHbnRoeHBDcGhJVW5vT05MckZZT2lhdUZU?=
- =?utf-8?B?WnlzeEpvN2wzR0lyNmQvNVhheWRYVW81M0FxVDF5Mzdmd29mSm5iaTFQbUVx?=
- =?utf-8?B?Nm00NDIxVmtIRWNyVmwxd2xSNFZJRUVESUhmb0NKUlNzTi9oQUlzWWlETnVm?=
- =?utf-8?B?N2dENE1XQU5VMzlDYmQyMlN4b2oxVWEwYUZyU3R3Q2NJUGQrNEZQc1hEN0lE?=
- =?utf-8?B?bEhCRU45YzFPU3JVM0NHaFNrazJ1NXlvdGNzdE50SzNsOEpPQVkybWt5SEtr?=
- =?utf-8?B?cmVPS1JGZDlsaTZ2TUp1VHA2K2VycHNiblJzejlEUzNaSjI3NklQQU9OYjhE?=
- =?utf-8?B?UTViQ1R5UVZDMjlUb1R6UmVEVSthSmpwSXJtT2Fkak5DeVUxUEVnVXhaNzZE?=
- =?utf-8?B?ZWcrS2M3MldFQ2pJYkRpTHZPVDZTVFNMenI4UXgyRzVwckR0ZDByelJ3UUda?=
- =?utf-8?B?bWJpMEtuMlJyR3lpeGpJaXFqM1grbUJBNS9FcWg4QjNHWWpSMHRScnNKRmRq?=
- =?utf-8?B?aytKRjZaV05oSzhoZ2hEa0ljOXVvL1J5SU1oZWNPNWdyRng2T3I3bnBnR3pn?=
- =?utf-8?B?cmZ1M0dBNkJ6WDc2di84bXoyYUVHQndjRWN1QXZMVXhoaUpDa2FxemNJQXVJ?=
- =?utf-8?B?ajkvQWF5K2x2RzhISXowMU8wUnVRZ0FURTJoUCtkU0dLY0wycnRvVnM5RW5s?=
- =?utf-8?B?NUlXSElkdHd6TjdPUEVSYVZkSmpmeGkxWHVSR0lTOWFnMitFMDBHdWVqcEtD?=
- =?utf-8?B?bmc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: b4c99cd1-e763-4c9c-25fe-08db61588506
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3672.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 21:55:02.3612
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: V95WZU6txqivCUXfvQK9gXDBlEyqFrz+dOKLSPZYOUjGW5k1+NXwUL33qZaX7DqhGSJyB65OYwpmCxe1EC8jleQbEYjo+OXOoJlENsUfOjE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5296
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230521115141.2384444-1-vladimir.oltean@nxp.com>
 
-On 5/30/23 22:24, Tony Nguyen wrote:
-> On 5/30/2023 4:25 AM, Przemek Kitszel wrote:
+On Sun, May 21, 2023 at 02:51:41PM +0300, Vladimir Oltean wrote:
+> pci_scan_child_bus_extend() calls pci_scan_slot() with devfn
+> (bus:device:function) being a multiple of 8, i.e. for each unique
+> device.
 > 
-> This wasn't received by IWL; you shouldn't be send sending to the 
-> bounces address, please use intel-wired-lan@lists.osuosl.org
+> pci_scan_slot() has logic to say that if the function 0 of a device is
+> absent, the entire device is absent and we can skip the other functions
+> entirely. Traditionally, this has meant that pci_bus_read_dev_vendor_id()
+> returns an error code for that function.
 > 
-> Thanks,
-> Tony
+> However, since the blamed commit, there is an extra confounding
+> condition: function 0 of the device exists and has a valid vendor id,
+> but it is disabled in the device tree. In that case, pci_scan_slot()
+> would incorrectly skip the entire device instead of just that function.
 > 
->> We all know they are redundant.
->>
->> Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
->> Reviewed-by: Michal Wilczynski <michal.wilczynski@intel.com>
->> Signed-off-by: Przemek Kitszel <przemyslaw.kitszel@intel.com>
+> Such is the case with the NXP LS1028A SoC, which has an ECAM
+> for embedded Ethernet (see pcie@1f0000000 in
+> arm64/boot/dts/freescale/fsl-ls1028a.dtsi). Each Ethernet port
+> represents a function within the ENETC ECAM, with function 0 going
+> to ENETC Ethernet port 0, connected to SERDES port 0 (SGMII or USXGMII).
 > 
+> When using a SERDES protocol such as 0x9999, all 4 SERDES lanes go to
+> the Ethernet switch (function 5 on this ECAM) and none go to ENETC
+> port 0. So, ENETC port 0 needs to have status = "disabled", and embedded
+> Ethernet takes place just through the other functions (fn 2 is the DSA
+> master, fn 3 is the MDIO controller, fn 5 is the DSA switch etc).
+> Contrast this with other SERDES protocols like 0x85bb, where the switch
+> takes up a single SERDES lane and uses the QSGMII protocol - so ENETC
+> port 0 also gets access to a SERDES lane.
 
-Oh, sorry, I had bad address copy-pasted into my bashrc, updated now.
+Can you write this description in terms of PCI topology?  The
+nitty-gritty SERDES details are not relevant at this level, except to
+say that Function 0 is present in some cases but not others, and when
+it is not present, *other* functions may be present.
 
-Should I repost?
+Sigh.  Per spec (PCIe r6.0, sec 7.5.1.1.9), software is not permitted
+to probe for Functions other than 0 unless "explicitly indicated by
+another mechanism, such as an ARI or SR-IOV Capability."
+
+Does it "work" to probe when the spec prohibits it?  Probably.  Does
+it lead to some breakage elsewhere eventually?  Quite possibly.  They
+didn't put "software must not probe" in the spec just to make
+enumeration faster.
+
+So I'm a little grumpy about further complicating this already messy
+path just to accommodate a new non-compliant SoC.  Everybody pays the
+price of understanding all this stuff, and it doesn't seem in balance.
+
+Can you take advantage of some existing mechanism like
+PCI_SCAN_ALL_PCIE_DEVS or hypervisor_isolated_pci_functions() (which
+could be renamed and made more general)?
+
+> Therefore, here, function 0 being unused has nothing to do with the
+> entire PCI device being unused.
+> 
+> Add a "bool present_but_skipped" which is propagated from the caller
+> of pci_set_of_node() all the way to pci_scan_slot(), so that it can
+> distinguish an error reading the ECAM from a disabled device in the
+> device tree.
+> 
+> Fixes: 6fffbc7ae137 ("PCI: Honor firmware's device disabled status")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  drivers/pci/pci.h   |  1 +
+>  drivers/pci/probe.c | 58 +++++++++++++++++++++++++++++++--------------
+>  2 files changed, 41 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> index 2475098f6518..dc11e0945744 100644
+> --- a/drivers/pci/pci.h
+> +++ b/drivers/pci/pci.h
+> @@ -240,6 +240,7 @@ bool pci_bus_generic_read_dev_vendor_id(struct pci_bus *bus, int devfn, u32 *pl,
+>  					int crs_timeout);
+>  int pci_idt_bus_quirk(struct pci_bus *bus, int devfn, u32 *pl, int crs_timeout);
+>  
+> +int __pci_setup_device(struct pci_dev *dev, bool *present_but_skipped);
+>  int pci_setup_device(struct pci_dev *dev);
+>  int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+>  		    struct resource *res, unsigned int reg);
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index 0b2826c4a832..17a51fa55020 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -1811,17 +1811,7 @@ static void early_dump_pci_device(struct pci_dev *pdev)
+>  		       value, 256, false);
+>  }
+>  
+> -/**
+> - * pci_setup_device - Fill in class and map information of a device
+> - * @dev: the device structure to fill
+> - *
+> - * Initialize the device structure with information about the device's
+> - * vendor,class,memory and IO-space addresses, IRQ lines etc.
+> - * Called at initialisation of the PCI subsystem and by CardBus services.
+> - * Returns 0 on success and negative if unknown type of device (not normal,
+> - * bridge or CardBus).
+> - */
+> -int pci_setup_device(struct pci_dev *dev)
+> +int __pci_setup_device(struct pci_dev *dev, bool *present_but_skipped)
+>  {
+>  	u32 class;
+>  	u16 cmd;
+> @@ -1841,8 +1831,10 @@ int pci_setup_device(struct pci_dev *dev)
+>  	set_pcie_port_type(dev);
+>  
+>  	err = pci_set_of_node(dev);
+> -	if (err)
+> +	if (err) {
+> +		*present_but_skipped = true;
+>  		return err;
+> +	}
+>  	pci_set_acpi_fwnode(dev);
+>  
+>  	pci_dev_assign_slot(dev);
+> @@ -1995,6 +1987,23 @@ int pci_setup_device(struct pci_dev *dev)
+>  	return 0;
+>  }
+>  
+> +/**
+> + * pci_setup_device - Fill in class and map information of a device
+> + * @dev: the device structure to fill
+> + *
+> + * Initialize the device structure with information about the device's
+> + * vendor,class,memory and IO-space addresses, IRQ lines etc.
+> + * Called at initialisation of the PCI subsystem and by CardBus services.
+> + * Returns 0 on success and negative if unknown type of device (not normal,
+> + * bridge or CardBus).
+> + */
+> +int pci_setup_device(struct pci_dev *dev)
+> +{
+> +	bool present_but_skipped = false;
+> +
+> +	return __pci_setup_device(dev, &present_but_skipped);
+> +}
+> +
+>  static void pci_configure_mps(struct pci_dev *dev)
+>  {
+>  	struct pci_dev *bridge = pci_upstream_bridge(dev);
+> @@ -2414,7 +2423,8 @@ EXPORT_SYMBOL(pci_bus_read_dev_vendor_id);
+>   * Read the config data for a PCI device, sanity-check it,
+>   * and fill in the dev structure.
+>   */
+> -static struct pci_dev *pci_scan_device(struct pci_bus *bus, int devfn)
+> +static struct pci_dev *pci_scan_device(struct pci_bus *bus, int devfn,
+> +				       bool *present_but_skipped)
+>  {
+>  	struct pci_dev *dev;
+>  	u32 l;
+> @@ -2430,7 +2440,7 @@ static struct pci_dev *pci_scan_device(struct pci_bus *bus, int devfn)
+>  	dev->vendor = l & 0xffff;
+>  	dev->device = (l >> 16) & 0xffff;
+>  
+> -	if (pci_setup_device(dev)) {
+> +	if (__pci_setup_device(dev, present_but_skipped)) {
+>  		pci_bus_put(dev->bus);
+>  		kfree(dev);
+>  		return NULL;
+> @@ -2575,17 +2585,20 @@ void pci_device_add(struct pci_dev *dev, struct pci_bus *bus)
+>  	WARN_ON(ret < 0);
+>  }
+>  
+> -struct pci_dev *pci_scan_single_device(struct pci_bus *bus, int devfn)
+> +static struct pci_dev *__pci_scan_single_device(struct pci_bus *bus, int devfn,
+> +						bool *present_but_skipped)
+>  {
+>  	struct pci_dev *dev;
+>  
+> +	*present_but_skipped = false;
+> +
+>  	dev = pci_get_slot(bus, devfn);
+>  	if (dev) {
+>  		pci_dev_put(dev);
+>  		return dev;
+>  	}
+>  
+> -	dev = pci_scan_device(bus, devfn);
+> +	dev = pci_scan_device(bus, devfn, present_but_skipped);
+>  	if (!dev)
+>  		return NULL;
+>  
+> @@ -2593,6 +2606,13 @@ struct pci_dev *pci_scan_single_device(struct pci_bus *bus, int devfn)
+>  
+>  	return dev;
+>  }
+> +
+> +struct pci_dev *pci_scan_single_device(struct pci_bus *bus, int devfn)
+> +{
+> +	bool present_but_skipped;
+> +
+> +	return __pci_scan_single_device(bus, devfn, &present_but_skipped);
+> +}
+>  EXPORT_SYMBOL(pci_scan_single_device);
+>  
+>  static int next_ari_fn(struct pci_bus *bus, struct pci_dev *dev, int fn)
+> @@ -2665,6 +2685,7 @@ static int only_one_child(struct pci_bus *bus)
+>   */
+>  int pci_scan_slot(struct pci_bus *bus, int devfn)
+>  {
+> +	bool present_but_skipped;
+>  	struct pci_dev *dev;
+>  	int fn = 0, nr = 0;
+>  
+> @@ -2672,13 +2693,14 @@ int pci_scan_slot(struct pci_bus *bus, int devfn)
+>  		return 0; /* Already scanned the entire slot */
+>  
+>  	do {
+> -		dev = pci_scan_single_device(bus, devfn + fn);
+> +		dev = __pci_scan_single_device(bus, devfn + fn,
+> +					       &present_but_skipped);
+>  		if (dev) {
+>  			if (!pci_dev_is_added(dev))
+>  				nr++;
+>  			if (fn > 0)
+>  				dev->multifunction = 1;
+> -		} else if (fn == 0) {
+> +		} else if (fn == 0 && !present_but_skipped) {
+>  			/*
+>  			 * Function 0 is required unless we are running on
+>  			 * a hypervisor that passes through individual PCI
+> -- 
+> 2.34.1
+> 
 
