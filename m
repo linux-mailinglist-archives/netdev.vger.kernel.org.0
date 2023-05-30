@@ -1,89 +1,84 @@
-Return-Path: <netdev+bounces-6308-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6309-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2F478715A28
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 11:30:12 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9C9A6715A2D
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 11:30:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CFA981C20BD8
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 09:30:08 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 57A5528104C
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 09:30:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3AE0414A8E;
-	Tue, 30 May 2023 09:30:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 429A914A90;
+	Tue, 30 May 2023 09:30:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 251E41426D;
-	Tue, 30 May 2023 09:30:06 +0000 (UTC)
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F03B9130;
-	Tue, 30 May 2023 02:30:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=wy+LxcoyQ9k+5pSYSWu73ome4mN4pgQvZZQDQ3xRVR0=; b=ZR+7tVCErDha7TenpU3luyqFqB
-	UNMMuyJdQwZ4LuNR6Ymr9ipQJoRHPgeIkm+8bNGx2RBPDsR3Xh5KWQN4xzD54KWLSOQAk1l2rQxTO
-	NggFEHyyzWBItAi4oQIAJprRLVCd2LEZk+oJwtsHUvoHr5/44puMPuRZ16fzXasUtNboKnFwddht2
-	wGMiQgoMxLV5MjMxXgArU+9eNKdbIE/mDIaSq383SFfQ26jeN8mxFQQbHIiVEF84pa2GJ1bDwAo20
-	o7boWi6VoQ5+TKzk85FFQYnx4VTFLKQ7Di8BXuTXd16KnzkeHoGoYobHaFItug1MiCONDPm953SiL
-	QJcr22rw==;
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-	by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <daniel@iogearbox.net>)
-	id 1q3vfr-000Es5-ML; Tue, 30 May 2023 11:29:51 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-	by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <daniel@iogearbox.net>)
-	id 1q3vfr-000I7I-26; Tue, 30 May 2023 11:29:51 +0200
-Subject: Re: pull-request: bpf-next 2023-05-26
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
- ast@kernel.org, andrii@kernel.org, martin.lau@linux.dev,
- netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20230526222747.17775-1-daniel@iogearbox.net>
- <20230526173003.55cad641@kernel.org>
-From: Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <484ffbc6-69e8-864e-35c5-61c38fd0c116@iogearbox.net>
-Date: Tue, 30 May 2023 11:29:50 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0000C1429F
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 09:30:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A25D5C4339B;
+	Tue, 30 May 2023 09:30:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685439028;
+	bh=Gs9p4IGSlyQzi0lIVyq2sYGgSph1oKPP7IXR+a2jmEY=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=BarS5hq9qnInSkZmX3L5UU22yIPR2YDZ9n5rHEqqVxEYxFZ6eOvCOE7da9QD9Hqy5
+	 1DcRMVdHvO7cEJTZt9AUWmkxY1BXB+XH0YjkydpFkiKvKI/kw2dP6zWZSUS5HFpgCv
+	 Cwk9eI4vv5mS3h5u40AZ1vv/AFbiN8Cl97iSGq5lQJLqPo7XXHwdW6SP0wyMNr9zn/
+	 hzCQC6Q7FpRm3kBP51SZ/NNNiIqRIMXAc8aOkkGcHpFVswfuXpfQrqk2Yjv7P8PeHo
+	 By1E1xWzoVFXsDji4OewKLQY2LYLQHhmKCziq3Qd4hr830l6Zu6eisqcd6r/Jj6fOB
+	 0xgOKM0XE2iaQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 81D69E21EC5;
+	Tue, 30 May 2023 09:30:28 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20230526173003.55cad641@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.8/26923/Tue May 30 09:22:21 2023)
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/2] Two fixes for SMCRv2
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168543902851.21397.17672525174578554637.git-patchwork-notify@kernel.org>
+Date: Tue, 30 May 2023 09:30:28 +0000
+References: <1685101741-74826-1-git-send-email-guwen@linux.alibaba.com>
+In-Reply-To: <1685101741-74826-1-git-send-email-guwen@linux.alibaba.com>
+To: Wen Gu <guwen@linux.alibaba.com>
+Cc: kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 
-On 5/27/23 2:30 AM, Jakub Kicinski wrote:
-> On Sat, 27 May 2023 00:27:47 +0200 Daniel Borkmann wrote:
->> 1) Add the capability to destroy sockets in BPF through a new kfunc, from Aditi Ghag.
+Hello:
+
+This series was applied to netdev/net.git (main)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Fri, 26 May 2023 19:48:59 +0800 you wrote:
+> This patch set includes two bugfix for SMCRv2.
 > 
-> Is there a reason this wasn't CCed to netdev?
+> Wen Gu (2):
+>   net/smc: Scan from current RMB list when no position specified
+>   net/smc: Don't use RMBs not mapped to new link in SMCRv2 ADD LINK
+> 
+>  net/smc/smc_llc.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
 
-Hm, good point. I think this was oversight as this was submitter's first patch series
-for upstream. I did see Paolo reviewing one of the revisions, but yes netdev should have
-been in Cc throughout all the revisions. Sorry about that, we'll watch out the Cc list
-more closely and point this out if this happens again in future.
+Here is the summary with links:
+  - [net,1/2] net/smc: Scan from current RMB list when no position specified
+    https://git.kernel.org/netdev/net/c/b24aa141c2ff
+  - [net,2/2] net/smc: Don't use RMBs not mapped to new link in SMCRv2 ADD LINK
+    https://git.kernel.org/netdev/net/c/71c6aa0305e3
 
-Thanks,
-Daniel
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
 
