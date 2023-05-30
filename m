@@ -1,119 +1,177 @@
-Return-Path: <netdev+bounces-6438-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6439-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AC22F716471
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 16:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id A16CC716478
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 16:40:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6750A2811DF
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 14:40:23 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5D4C0281191
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 14:40:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 86AA118012;
-	Tue, 30 May 2023 14:40:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7FEF718012;
+	Tue, 30 May 2023 14:40:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B9C617FE4
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 14:40:21 +0000 (UTC)
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB66AF9
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 07:40:18 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id 5b1f17b1804b1-3f623adec61so47716405e9.0
-        for <netdev@vger.kernel.org>; Tue, 30 May 2023 07:40:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1685457617; x=1688049617;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qL9GyciTC/kDMAYy+oAPInWZVHejB3sQdm/6/+QY5xY=;
-        b=VfZ/j24OU445Uk6UmPb2tu3xKCMAXmqFBBx/zqeFcPrto9XH+VEl1VeJUVdoZ16iLu
-         mXWuTvjeVKmse/BUFataQVhxBxPkAh5i0Q9V5bunbwRgnTo0O+/1fYS9Vt5feU3SfwE0
-         LzLVVf0Z2ytg7TSPhqsZo+DLxd1RIbt/IZAtHEXm+qhgFSDNPc9ez3jsOD8WvquQJvqI
-         oiVy8dIrAsfdKRl6lt7F+jEtXLPMbZEbVcrNWtU5ekAoEPfps4Noce1ElnC3kdhC/NZM
-         Lpoufi2AwJfzl8hKQJncGCv0D5CVfA8xJRcGYG/bRC0A3wUhtnxbIOObz4ZqECc3r46s
-         muKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685457617; x=1688049617;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qL9GyciTC/kDMAYy+oAPInWZVHejB3sQdm/6/+QY5xY=;
-        b=WuAdGwL3oQF0xq7oszUt6Rkw3XO1XTZmM7Z+V/KwlIxu7vu4CEFnj6E4r6dy74iWO7
-         tEW84H2AAOrN0Z7CI2REvl5L0E/+XLcFGmDVGoAYayXBK5Bj4gbRaTfvwKNRM6Iy/RVr
-         aZLbaxzVc6yqnLWLG6SYwiYMV6crBrx1PEJDzGO2H35Bs9d9IsKysvy2J8MAlOcohhuh
-         V/PhojeNnzCWRVoJGMijO5Wvcx23ZCkZZ0KdYts54dVOySRQMliVVRI6tvqCeilGINKR
-         PaO+lFA0uMdt8ATAiqBFUpbASRIY/oEEnTDyD41ruDVcLJrjJrCzRmI0jnduLd3iDXVT
-         4kFA==
-X-Gm-Message-State: AC+VfDwpg6bkJiFiNixzmAGOX78FMcUWiMuko7eN9KNOmuGKIBK1cSYo
-	KWhtJ6w4fCvmWoDohx+xF5ztjQ==
-X-Google-Smtp-Source: ACHHUZ5qf+rZSdsbJ+5YXF2H2nZ0Bg0WhxwG6fHwBrEgYJR1mgnZ99rVJhd9NU5Mb9+Q7eZgm0+CTg==
-X-Received: by 2002:a7b:c3d4:0:b0:3f4:21ff:b91f with SMTP id t20-20020a7bc3d4000000b003f421ffb91fmr1803557wmj.28.1685457617136;
-        Tue, 30 May 2023 07:40:17 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id c21-20020a7bc855000000b003f1958eeadcsm21067878wml.17.2023.05.30.07.40.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 May 2023 07:40:14 -0700 (PDT)
-Date: Tue, 30 May 2023 17:40:11 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7386F1F17C
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 14:40:29 +0000 (UTC)
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4FDAD9;
+	Tue, 30 May 2023 07:40:27 -0700 (PDT)
+Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+	(No client certificate requested)
+	(Authenticated sender: lukma@denx.de)
+	by phobos.denx.de (Postfix) with ESMTPSA id E654184771;
+	Tue, 30 May 2023 16:40:25 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+	s=phobos-20191101; t=1685457626;
+	bh=nCAsO6YzdaocrJisOtvhkHpnwIFZ8klzdEiTQeOXs58=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=MZyIIttksS/gBqEIOIGNvY92AWhBWGmlzKYhQCitmBDCFrSbXHLuyczc/ncWrPJru
+	 Yn1Z4QPp4dqn52rG+X05724EG2X+sb6DeiFlz3tGJRP32d/q7phs42ZWVTxn1J/osU
+	 WfFOBr4O+MCQG+5D+CFv3v3aj2ICBw6io5eg9OAUB+IDf889KPPR72YoVhHcAOh1kn
+	 H4kaDVOtp59tFZeHonxWpzmHeQKSPpoFrFAeWMizoRsxsaHy55pwXb8N/1oO65RRYh
+	 2XCR206EAr406odJUgZuYEJCSSWxJxNRX+fFHgN8EuwTxYrrIbmguAbMivyKNfMfb0
+	 qhaYQSLM69GAQ==
+Date: Tue, 30 May 2023 16:40:25 +0200
+From: Lukasz Majewski <lukma@denx.de>
 To: Andrew Lunn <andrew@lunn.ch>
-Cc: Jakub Kicinski <kuba@kernel.org>, Russell King <linux@armlinux.org.uk>,
-	Oleksij Rempel <linux@rempel-privat.de>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] net: phy: fix a signedness bug in genphy_loopback()
-Message-ID: <fb553ce5-c533-44a2-a134-fbb552f247bb@kili.mountain>
-References: <d7bb312e-2428-45f6-b9b3-59ba544e8b94@kili.mountain>
- <20230529215802.70710036@kernel.org>
- <90b1107b-7ea0-4d8f-ad88-ec14fd149582@lunn.ch>
+Cc: "Russell King (Oracle)" <linux@armlinux.org.uk>, Vivien Didelot
+ <vivien.didelot@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>,
+ Vladimir Oltean <olteanv@gmail.com>, "David S. Miller"
+ <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC] net: dsa: slave: Advertise correct EEE capabilities at
+ slave PHY setup
+Message-ID: <20230530164025.7a6d6bbd@wsk>
+In-Reply-To: <e7696621-38a9-41a1-afdf-0864e115d796@lunn.ch>
+References: <20230530122621.2142192-1-lukma@denx.de>
+	<ZHXzTBOtlPKqNfLw@shell.armlinux.org.uk>
+	<20230530160743.2c93a388@wsk>
+	<e7696621-38a9-41a1-afdf-0864e115d796@lunn.ch>
+Organization: denx.de
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <90b1107b-7ea0-4d8f-ad88-ec14fd149582@lunn.ch>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/z=PGOl1xXbXnvYC4ToDKDEA";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 30, 2023 at 02:39:53PM +0200, Andrew Lunn wrote:
-> On Mon, May 29, 2023 at 09:58:02PM -0700, Jakub Kicinski wrote:
-> > On Fri, 26 May 2023 14:45:54 +0300 Dan Carpenter wrote:
-> > > The "val" variable is used to store error codes from phy_read() so
-> > > it needs to be signed for the error handling to work as expected.
-> > > 
-> > > Fixes: 014068dcb5b1 ("net: phy: genphy_loopback: add link speed configuration")
-> > > Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
-> > 
-> > Is it going to be obvious to PHY-savvy folks that the val passed to
-> > phy_read_poll_timeout() must be an int? Is it a very common pattern?
-> > My outsider intuition is that since regs are 16b, u16 is reasonable,
-> > and more people may make the same mistake.
-> 
-> It is common to get this wrong in general with PHY drivers. Dan
-> regularly posts fixes like this soon after a PHY driver patch it
-> merged. I really wish we could somehow get the compiler to warn when
-> the result from phy_read() is stored into a unsigned type. It would
-> save Dan a lot of work.
+--Sig_/z=PGOl1xXbXnvYC4ToDKDEA
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I don't see these as much as I used.  It's maybe once per month.  I'm
-not sure why, maybe kbuild emails everyone before I see it?  GCC will
-warn about this with -Wtype-limits.  Clang will also trigger a warning.
+Hi Andrew,
 
-The Smatch check for this had a bug where it only warned about if
-(x < 0) { if x was u32 or larger.  I fixed that bug which is why I was
-looking at this code.  I will push the fix for that in a couple days.
+> On Tue, May 30, 2023 at 04:07:43PM +0200, Lukasz Majewski wrote:
+> > Hi Russell,
+> >  =20
+> > > On Tue, May 30, 2023 at 02:26:21PM +0200, Lukasz Majewski wrote: =20
+> > > > One can disable in device tree advertising of EEE capabilities
+> > > > of PHY when 'eee-broken-100tx' property is present in DTS.
+> > > >=20
+> > > > With DSA switch it also may happen that one would need to
+> > > > disable EEE due to some network issues.
+> > > >=20
+> > > > Corresponding switch DTS description:
+> > > >=20
+> > > >  switch@0 {
+> > > > 	 ports {
+> > > > 		port@0 {
+> > > > 		reg =3D <0>;
+> > > > 		label =3D "lan1";
+> > > > 		phy-handle =3D <&switchphy0>;
+> > > > 		};
+> > > > 	}
+> > > > 	mdio {
+> > > > 		switchphy0: switchphy@0 {
+> > > > 		reg =3D <0>;
+> > > > 		eee-broken-100tx;
+> > > > 	};
+> > > > 	};
+> > > >=20
+> > > > This patch adjusts the content of MDIO_AN_EEE_ADV in MDIO_MMD_AN
+> > > > "device" so the phydev->eee_broken_modes are taken into account
+> > > > from the start of the slave PHYs.   =20
+> > >=20
+> > > This should be handled by phylib today in recent kernels without
+> > > the need for any patch (as I describe below, because the
+> > > config_aneg PHY method should be programming it.) Are you seeing
+> > > a problem with it in 6.4-rc? =20
+> >=20
+> > Unfortunately, for this project I use LTS 5.15.z kernel.
+> >=20
+> > My impression is that the mv88e6xxx driver is not handling EEE setup
+> > during initialization (even with v6.4-rc). =20
+>=20
+> In general, nearly every driver gets EEE wrong.=20
 
-regards,
-dan carpenter
+Ach... I see :/
 
+> I have a patchset
+> which basically rewrites EEE.
+
+Ok.
+
+> It has been posted as RFC a couple
+> times, and i plan to start posting it for merging this week.
+
+Ok. :-)
+
+>=20
+> But as a result, don't expect EEE to actually work with any LTS
+> kernel.
+
+Then, I think that it would be best to use the above "hack" until your
+patch set is not reviewed and merged. After that, when customer will
+mover forward with LTS kernel, I can test the EEE on the proper HW.
+
+>=20
+> 	Andrew
+
+
+
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Erika Unter
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/z=PGOl1xXbXnvYC4ToDKDEA
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmR2CtkACgkQAR8vZIA0
+zr2wMwf/ThyB1oVLay5mqG9rhyAeruSDYpuA/uGmNY4Pqhm1328aigl+OIoXx0AT
+fbMbpmRBzV2D+SWDcU4RI/B2h0KmNQTinvBmXU/5L1D3VDbD+vQW/KbNeupxBehr
+eta15sKjLszfsILZneloCcCow/pNLZ65TLgCtHb0wi6rnkAvMI0Cnn/8jTm2Lp6I
+MHvCMujniLDPp8EnifQN27fqGe1AQWjuQrRIU/yzsuSodSv5ekFk7iIX2dYWVAzg
+Rv0OnKM1gkJ6rqXk4YNFhDzDwlFIiAlDkR7OuXxt1alNax/D+WkT0LRsiPZsjijg
+5KI04xFlGZuZeD7jIty1oCV74JT2YQ==
+=Hxj6
+-----END PGP SIGNATURE-----
+
+--Sig_/z=PGOl1xXbXnvYC4ToDKDEA--
 
