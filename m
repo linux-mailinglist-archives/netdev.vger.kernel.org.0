@@ -1,51 +1,51 @@
-Return-Path: <netdev+bounces-6196-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6197-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7AB0E7152D0
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 03:07:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 7EBF57152D1
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 03:07:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3F3CE281012
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 01:07:04 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 389E3280CA7
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 01:07:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BBE7C636;
-	Tue, 30 May 2023 01:06:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2F29B7EC;
+	Tue, 30 May 2023 01:07:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB3407EC
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 01:06:47 +0000 (UTC)
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205E2C7
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 18:06:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F4FB636
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 01:07:12 +0000 (UTC)
+Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521CC9D
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 18:07:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1685408807; x=1716944807;
+  t=1685408831; x=1716944831;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=eE+tq2MesmZsn2DWQFGXqI+fu3ttN3VMkVJ2CxcQsgc=;
-  b=ayN3LzvWopQQHyzXoUtGJjJUlYbKiCdg6KAvpxSG4r7EpqDuz4iBAgsf
-   oSH+e2a5iJXdxOXd5q5iqGVj6Cd/Jo0L8ax0UtHVjifMEdC0Rx6PaQbzx
-   w2/ascvsCaCKvMA2Zg5ubPDtXk+j3+ype5ZcXaQjVtMXJhtlh/iCGz4WJ
-   Q=;
+  bh=gRnBxPUGhd3Si4K/R287a7lstenKYT2FO6ZrtJGccXw=;
+  b=HpYG1vLcBKJ20AlNNwrzyAU1seF0wiR06h7yxsD6fyxsvEyLd1ItQjaf
+   7Ogce/P4bmAucWvYAuXRGFPGgkAhLGMwqrqeIVb936ssuaW/KrmNFX1/r
+   a3GjL171SAttRb2GhmErsZCvrMtynoQA4wmjxEovG3C1O0kf8UjhiwLdq
+   A=;
 X-IronPort-AV: E=Sophos;i="6.00,201,1681171200"; 
-   d="scan'208";a="329938485"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-9fe6ad2f.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 01:06:44 +0000
-Received: from EX19MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-	by email-inbound-relay-iad-1a-m6i4x-9fe6ad2f.us-east-1.amazon.com (Postfix) with ESMTPS id 9AAF180E1B;
-	Tue, 30 May 2023 01:06:41 +0000 (UTC)
+   d="scan'208";a="288205143"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-a65ebc6e.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 01:07:09 +0000
+Received: from EX19MTAUWC002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+	by email-inbound-relay-iad-1e-m6i4x-a65ebc6e.us-east-1.amazon.com (Postfix) with ESMTPS id 3276E609A4;
+	Tue, 30 May 2023 01:07:05 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
+ EX19MTAUWC002.ant.amazon.com (10.250.64.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 30 May 2023 01:06:40 +0000
+ 15.2.1118.26; Tue, 30 May 2023 01:07:05 +0000
 Received: from 88665a182662.ant.amazon.com.com (10.106.101.39) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 30 May 2023 01:06:37 +0000
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.26;
+ Tue, 30 May 2023 01:07:02 +0000
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
 	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
@@ -53,9 +53,9 @@ To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
 	<willemdebruijn.kernel@gmail.com>
 CC: Kuniyuki Iwashima <kuniyu@amazon.com>, Kuniyuki Iwashima
 	<kuni1840@gmail.com>, <netdev@vger.kernel.org>
-Subject: [PATCH v1 net-next 06/14] udp: Remove UDPLITE_SEND_CSCOV and UDPLITE_RECV_CSCOV.
-Date: Mon, 29 May 2023 18:03:40 -0700
-Message-ID: <20230530010348.21425-7-kuniyu@amazon.com>
+Subject: [PATCH v1 net-next 07/14] udp: Remove pcslen, pcrlen, and pcflag in struct udp_sock.
+Date: Mon, 29 May 2023 18:03:41 -0700
+Message-ID: <20230530010348.21425-8-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230530010348.21425-1-kuniyu@amazon.com>
 References: <20230530010348.21425-1-kuniyu@amazon.com>
@@ -68,148 +68,234 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [10.106.101.39]
-X-ClientProxiedBy: EX19D044UWA004.ant.amazon.com (10.13.139.7) To
+X-ClientProxiedBy: EX19D035UWA001.ant.amazon.com (10.13.139.101) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
 Precedence: Bulk
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-	T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=ham autolearn_force=no
-	version=3.4.6
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-We could set partial checksum coverage for UDP-Lite via setsockopt,
-but it's no longer supported.
+We removed partial checksum coverage support in the previous commit;
+thus, udp_sk(sk)->{pcslen,pcrlen,pcflag} are always zero.  We can safely
+remove the related code guarded by pcflag.
 
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
- include/net/udplite.h |  4 ----
- net/ipv4/udp.c        | 45 ++-----------------------------------------
- net/ipv6/udp.c        |  4 ++--
- 3 files changed, 4 insertions(+), 49 deletions(-)
+After removing these members, the layout of udp_sock changes as follows.
+We may want to move encap/gro functions on the last cache line to save
+one cache line ?
 
+Before:
+
+struct udp_sock {
+        struct inet_sock           inet __attribute__((__aligned__(8))); /*     0   976 */
+
+        /* XXX last struct has 4 bytes of padding */
+
+        /* --- cacheline 15 boundary (960 bytes) was 16 bytes ago --- */
+...
+        unsigned char              accept_udp_fraglist:1; /*   985: 5  1 */
+
+        /* XXX 2 bits hole, try to pack */
+
+        __u16                      len;                  /*   986     2 */
+        __u16                      gso_size;             /*   988     2 */
+        __u16                      pcslen;               /*   990     2 */
+        __u16                      pcrlen;               /*   992     2 */
+        __u8                       pcflag;               /*   994     1 */
+        __u8                       unused[3];            /*   995     3 */
+
+        /* XXX 2 bytes hole, try to pack */
+
+        int                        (*encap_rcv)(struct sock *, struct sk_buff *); /*  1000     8 */
+        void                       (*encap_err_rcv)(struct sock *, struct sk_buff *, int, __be16, u32, u8 *); /*  1008     8 */
+        int                        (*encap_err_lookup)(struct sock *, struct sk_buff *); /*  1016     8 */
+        /* --- cacheline 16 boundary (1024 bytes) --- */
+        void                       (*encap_destroy)(struct sock *); /*  1024     8 */
+        struct sk_buff *           (*gro_receive)(struct sock *, struct list_head *, struct sk_buff *); /*  1032     8 */
+        int                        (*gro_complete)(struct sock *, struct sk_buff *, int); /*  1040     8 */
+
+        /* XXX 40 bytes hole, try to pack */
+
+        /* --- cacheline 17 boundary (1088 bytes) --- */
+        struct sk_buff_head        reader_queue __attribute__((__aligned__(64))); /*  1088    24 */
+        int                        forward_deficit;      /*  1112     4 */
+        int                        forward_threshold;    /*  1116     4 */
+
+        /* size: 1152, cachelines: 18, members: 25 */
+        /* sum members: 1077, holes: 2, sum holes: 42 */
+        /* sum bitfield members: 6 bits, bit holes: 1, sum bit holes: 2 bits */
+        /* padding: 32 */
+        /* paddings: 1, sum paddings: 4 */
+        /* forced alignments: 2, forced holes: 1, sum forced holes: 40 */
+} __attribute__((__aligned__(64)));
+
+After:
+
+struct udp_sock {
+        struct inet_sock           inet __attribute__((__aligned__(8))); /*     0   976 */
+
+        /* XXX last struct has 4 bytes of padding */
+
+        /* --- cacheline 15 boundary (960 bytes) was 16 bytes ago --- */
+...
+        unsigned char              accept_udp_fraglist:1; /*   985: 5  1 */
+
+        /* XXX 2 bits hole, try to pack */
+
+        __u16                      len;                  /*   986     2 */
+        __u16                      gso_size;             /*   988     2 */
+
+        /* XXX 2 bytes hole, try to pack */
+
+        int                        (*encap_rcv)(struct sock *, struct sk_buff *); /*   992     8 */
+        void                       (*encap_err_rcv)(struct sock *, struct sk_buff *, int, __be16, u32, u8 *); /*  1000     8 */
+        int                        (*encap_err_lookup)(struct sock *, struct sk_buff *); /*  1008     8 */
+        void                       (*encap_destroy)(struct sock *); /*  1016     8 */
+        /* --- cacheline 16 boundary (1024 bytes) --- */
+        struct sk_buff *           (*gro_receive)(struct sock *, struct list_head *, struct sk_buff *); /*  1024     8 */
+        int                        (*gro_complete)(struct sock *, struct sk_buff *, int); /*  1032     8 */
+
+        /* XXX 48 bytes hole, try to pack */
+
+        /* --- cacheline 17 boundary (1088 bytes) --- */
+        struct sk_buff_head        reader_queue __attribute__((__aligned__(64))); /*  1088    24 */
+        int                        forward_deficit;      /*  1112     4 */
+        int                        forward_threshold;    /*  1116     4 */
+
+        /* size: 1152, cachelines: 18, members: 21 */
+        /* sum members: 1069, holes: 2, sum holes: 50 */
+        /* sum bitfield members: 6 bits, bit holes: 1, sum bit holes: 2 bits */
+        /* padding: 32 */
+        /* paddings: 1, sum paddings: 4 */
+        /* forced alignments: 2, forced holes: 1, sum forced holes: 48 */
+} __attribute__((__aligned__(64)));
+---
+ include/linux/udp.h   | 12 +-----------
+ include/net/udplite.h |  6 ------
+ net/ipv4/udp.c        | 34 ----------------------------------
+ net/ipv6/udp.c        | 17 -----------------
+ 4 files changed, 1 insertion(+), 68 deletions(-)
+
+diff --git a/include/linux/udp.h b/include/linux/udp.h
+index 43c1fb2d2c21..f2f44ad62ea0 100644
+--- a/include/linux/udp.h
++++ b/include/linux/udp.h
+@@ -57,17 +57,7 @@ struct udp_sock {
+ 	 */
+ 	__u16		 len;		/* total length of pending frames */
+ 	__u16		 gso_size;
+-	/*
+-	 * Fields specific to UDP-Lite.
+-	 */
+-	__u16		 pcslen;
+-	__u16		 pcrlen;
+-/* indicator bits used by pcflag: */
+-#define UDPLITE_BIT      0x1  		/* set by udplite proto init function */
+-#define UDPLITE_SEND_CC  0x2  		/* set via udplite setsockopt         */
+-#define UDPLITE_RECV_CC  0x4		/* set via udplite setsocktopt        */
+-	__u8		 pcflag;        /* marks socket as UDP-Lite if > 0    */
+-	__u8		 unused[3];
++
+ 	/*
+ 	 * For encapsulation sockets.
+ 	 */
 diff --git a/include/net/udplite.h b/include/net/udplite.h
-index e436917f9b14..f4c513cff753 100644
+index f4c513cff753..1bc9393f2890 100644
 --- a/include/net/udplite.h
 +++ b/include/net/udplite.h
-@@ -8,10 +8,6 @@
- #include <net/ip6_checksum.h>
- #include <net/udp.h>
+@@ -59,15 +59,9 @@ static inline int udplite_checksum_init(struct sk_buff *skb, struct udphdr *uh)
+ /* Fast-path computation of checksum. Socket may not be locked. */
+ static inline __wsum udplite_csum(struct sk_buff *skb)
+ {
+-	const struct udp_sock *up = udp_sk(skb->sk);
+ 	const int off = skb_transport_offset(skb);
+ 	int len = skb->len - off;
  
--/* UDP-Lite socket options */
--#define UDPLITE_SEND_CSCOV   10 /* sender partial coverage (as sent)      */
--#define UDPLITE_RECV_CSCOV   11 /* receiver partial coverage (threshold ) */
--
- /*
-  *	Checksum computation is all in software, hence simpler getfrag.
-  */
+-	if ((up->pcflag & UDPLITE_SEND_CC) && up->pcslen < len) {
+-		if (0 < up->pcslen)
+-			len = up->pcslen;
+-		udp_hdr(skb)->len = htons(up->pcslen);
+-	}
+ 	skb->ip_summed = CHECKSUM_NONE;     /* no HW support for checksumming */
+ 
+ 	return skb_checksum(skb, off, len, 0);
 diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 9d836604562a..dc416db001c8 100644
+index dc416db001c8..345a6364a969 100644
 --- a/net/ipv4/udp.c
 +++ b/net/ipv4/udp.c
-@@ -2642,7 +2642,6 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
- 	struct udp_sock *up = udp_sk(sk);
- 	int val, valbool;
- 	int err = 0;
--	int is_udplite = IS_UDPLITE(sk);
- 
- 	if (level == SOL_SOCKET) {
- 		err = sk_setsockopt(sk, level, optname, optval, optlen);
-@@ -2727,36 +2726,6 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
- 		release_sock(sk);
- 		break;
+@@ -2129,40 +2129,6 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 		/* FALLTHROUGH -- it's a UDP Packet */
+ 	}
  
 -	/*
--	 * 	UDP-Lite's partial checksum coverage (RFC 3828).
+-	 * 	UDP-Lite specific tests, ignored on UDP sockets
 -	 */
--	/* The sender sets actual checksum coverage length via this option.
--	 * The case coverage > packet length is handled by send module. */
--	case UDPLITE_SEND_CSCOV:
--		if (!is_udplite)         /* Disable the option on UDP sockets */
--			return -ENOPROTOOPT;
--		if (val != 0 && val < 8) /* Illegal coverage: use default (8) */
--			val = 8;
--		else if (val > USHRT_MAX)
--			val = USHRT_MAX;
--		up->pcslen = val;
--		up->pcflag |= UDPLITE_SEND_CC;
--		break;
+-	if ((up->pcflag & UDPLITE_RECV_CC)  &&  UDP_SKB_CB(skb)->partial_cov) {
 -
--	/* The receiver specifies a minimum checksum coverage value. To make
--	 * sense, this should be set to at least 8 (as done below). If zero is
--	 * used, this again means full checksum coverage.                     */
--	case UDPLITE_RECV_CSCOV:
--		if (!is_udplite)         /* Disable the option on UDP sockets */
--			return -ENOPROTOOPT;
--		if (val != 0 && val < 8) /* Avoid silly minimal values.       */
--			val = 8;
--		else if (val > USHRT_MAX)
--			val = USHRT_MAX;
--		up->pcrlen = val;
--		up->pcflag |= UDPLITE_RECV_CC;
--		break;
+-		/*
+-		 * MIB statistics other than incrementing the error count are
+-		 * disabled for the following two types of errors: these depend
+-		 * on the application settings, not on the functioning of the
+-		 * protocol stack as such.
+-		 *
+-		 * RFC 3828 here recommends (sec 3.3): "There should also be a
+-		 * way ... to ... at least let the receiving application block
+-		 * delivery of packets with coverage values less than a value
+-		 * provided by the application."
+-		 */
+-		if (up->pcrlen == 0) {          /* full coverage was set  */
+-			net_dbg_ratelimited("UDPLite: partial coverage %d while full coverage %d requested\n",
+-					    UDP_SKB_CB(skb)->cscov, skb->len);
+-			goto drop;
+-		}
+-		/* The next case involves violating the min. coverage requested
+-		 * by the receiver. This is subtle: if receiver wants x and x is
+-		 * greater than the buffersize/MTU then receiver will complain
+-		 * that it wants x while sender emits packets of smaller size y.
+-		 * Therefore the above ...()->partial_cov statement is essential.
+-		 */
+-		if (UDP_SKB_CB(skb)->cscov  <  up->pcrlen) {
+-			net_dbg_ratelimited("UDPLite: coverage %d too small, need min %d\n",
+-					    UDP_SKB_CB(skb)->cscov, up->pcrlen);
+-			goto drop;
+-		}
+-	}
 -
- 	default:
- 		err = -ENOPROTOOPT;
- 		break;
-@@ -2769,7 +2738,7 @@ EXPORT_SYMBOL(udp_lib_setsockopt);
- static int udp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
- 			  unsigned int optlen)
- {
--	if (level == SOL_UDP  ||  level == SOL_UDPLITE || level == SOL_SOCKET)
-+	if (level == SOL_UDP || level == SOL_SOCKET)
- 		return udp_lib_setsockopt(sk, level, optname,
- 					  optval, optlen,
- 					  udp_push_pending_frames);
-@@ -2815,16 +2784,6 @@ int udp_lib_getsockopt(struct sock *sk, int level, int optname,
- 		val = up->gro_enabled;
- 		break;
- 
--	/* The following two cannot be changed on UDP sockets, the return is
--	 * always 0 (which corresponds to the full checksum coverage of UDP). */
--	case UDPLITE_SEND_CSCOV:
--		val = up->pcslen;
--		break;
--
--	case UDPLITE_RECV_CSCOV:
--		val = up->pcrlen;
--		break;
--
- 	default:
- 		return -ENOPROTOOPT;
- 	}
-@@ -2840,7 +2799,7 @@ EXPORT_SYMBOL(udp_lib_getsockopt);
- static int udp_getsockopt(struct sock *sk, int level, int optname,
- 			  char __user *optval, int __user *optlen)
- {
--	if (level == SOL_UDP  ||  level == SOL_UDPLITE)
-+	if (level == SOL_UDP)
- 		return udp_lib_getsockopt(sk, level, optname, optval, optlen);
- 	return ip_getsockopt(sk, level, optname, optval, optlen);
- }
+ 	prefetch(&sk->sk_rmem_alloc);
+ 	if (rcu_access_pointer(sk->sk_filter) &&
+ 	    udp_lib_checksum_complete(skb))
 diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 161686aa0dbe..ecd304bbecb4 100644
+index ecd304bbecb4..5c4b0e662ff5 100644
 --- a/net/ipv6/udp.c
 +++ b/net/ipv6/udp.c
-@@ -1680,7 +1680,7 @@ static void udpv6_destroy_sock(struct sock *sk)
- static int udpv6_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
- 			    unsigned int optlen)
- {
--	if (level == SOL_UDP  ||  level == SOL_UDPLITE || level == SOL_SOCKET)
-+	if (level == SOL_UDP || level == SOL_SOCKET)
- 		return udp_lib_setsockopt(sk, level, optname,
- 					  optval, optlen,
- 					  udp_v6_push_pending_frames);
-@@ -1690,7 +1690,7 @@ static int udpv6_setsockopt(struct sock *sk, int level, int optname, sockptr_t o
- static int udpv6_getsockopt(struct sock *sk, int level, int optname,
- 			    char __user *optval, int __user *optlen)
- {
--	if (level == SOL_UDP  ||  level == SOL_UDPLITE)
-+	if (level == SOL_UDP)
- 		return udp_lib_getsockopt(sk, level, optname, optval, optlen);
- 	return ipv6_getsockopt(sk, level, optname, optval, optlen);
- }
+@@ -738,23 +738,6 @@ static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 		/* FALLTHROUGH -- it's a UDP Packet */
+ 	}
+ 
+-	/*
+-	 * UDP-Lite specific tests, ignored on UDP sockets (see net/ipv4/udp.c).
+-	 */
+-	if ((up->pcflag & UDPLITE_RECV_CC)  &&  UDP_SKB_CB(skb)->partial_cov) {
+-
+-		if (up->pcrlen == 0) {          /* full coverage was set  */
+-			net_dbg_ratelimited("UDPLITE6: partial coverage %d while full coverage %d requested\n",
+-					    UDP_SKB_CB(skb)->cscov, skb->len);
+-			goto drop;
+-		}
+-		if (UDP_SKB_CB(skb)->cscov  <  up->pcrlen) {
+-			net_dbg_ratelimited("UDPLITE6: coverage %d too small, need min %d\n",
+-					    UDP_SKB_CB(skb)->cscov, up->pcrlen);
+-			goto drop;
+-		}
+-	}
+-
+ 	prefetch(&sk->sk_rmem_alloc);
+ 	if (rcu_access_pointer(sk->sk_filter) &&
+ 	    udp_lib_checksum_complete(skb))
 -- 
 2.30.2
 
