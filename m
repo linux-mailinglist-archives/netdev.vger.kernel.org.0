@@ -1,144 +1,120 @@
-Return-Path: <netdev+bounces-6427-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6428-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D896E7163D8
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 16:23:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D9EAC7163DC
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 16:23:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 33E2B1C20B9A
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 14:23:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7A9601C20B27
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 14:23:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ADF4D23C6A;
-	Tue, 30 May 2023 14:23:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23FA023C72;
+	Tue, 30 May 2023 14:23:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A355521076
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 14:23:23 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891CB1702;
-	Tue, 30 May 2023 07:23:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=JB5w856AbvIstOIyH1LRsT5NgKxcolH3MM5jEqlJpow=; b=Dx/UbQ2+nJfzbKxm5WLF/uKidM
-	3kD4QT3lf/3HTuA8Ahtwxt7R6dN2z+nqhxKbhVRbhfR1Doz2TRbqI6DLG1AgdzV8sjzsSk6l4Tkby
-	U2Ky6b4JgsTEgUYRa0H40dVQAA6s6EMM1ezaGqZf99S2MA80xE4Dv9WWEiyue2XmyB2rEWLBhPfaj
-	9FT/8M6I7Q1OqcYS4J0ykR1k06f2FBQuu9wtPp+8Rr0Zuyb6XCGhtY42JrLAQIIA21n6tH9GJYXLV
-	f7HGhc044YMzcADGy618pBpVkY0x4fJ1qHCGVpVkijJ8O0JXROFXaQuTcLoBGIPEmydbrENX0YCre
-	Xs4N5zdQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55210)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q40FU-0002vl-PU; Tue, 30 May 2023 15:22:56 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q40FT-00087Q-2P; Tue, 30 May 2023 15:22:55 +0100
-Date: Tue, 30 May 2023 15:22:55 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Lukasz Majewski <lukma@denx.de>
-Cc: Andrew Lunn <andrew@lunn.ch>, Vivien Didelot <vivien.didelot@gmail.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC] net: dsa: slave: Advertise correct EEE capabilities at
- slave PHY setup
-Message-ID: <ZHYGv7zcJd/Ad4hH@shell.armlinux.org.uk>
-References: <20230530122621.2142192-1-lukma@denx.de>
- <ZHXzTBOtlPKqNfLw@shell.armlinux.org.uk>
- <20230530160743.2c93a388@wsk>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18E2D21076
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 14:23:39 +0000 (UTC)
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFCB0E6B
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 07:23:13 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id 5b1f17b1804b1-3f606e111d3so125475e9.1
+        for <netdev@vger.kernel.org>; Tue, 30 May 2023 07:23:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1685456590; x=1688048590;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UpS+v9astrIWciuP6AW6IcOJp29/neHVPmUPqCQqLYk=;
+        b=Q/1n/Q5U0ws7VDmj6VRBX2wfq7F5i7u/kb7N51VeHhkHbz4tTTZ+V/uhWbUMv+0tW+
+         jUKM1vQtM19OFK83HQR0n6Xs2a9cX4lVbnLnI6U4kV4kFReYNkrKlBfAqqH3z9CAaurp
+         vuDobR4y2/3mvletj2hCYp44hsz/Ocyv8MTFTqnvoJPdZ5UaXw2haXIynD/pPDYHPHqL
+         CvkM7b5IiPnLgKg/RPnlIE7XbyH73fcL7+mkk24WBlP8lwrzk/lv3NOFl39mZ1egLQYd
+         GYfQ0+/zzbbq4cO9uMxbcaLjnwisASum4uhdGfy98JtwLsN/imHoNy+a6fEh700B+y6l
+         BuPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685456590; x=1688048590;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UpS+v9astrIWciuP6AW6IcOJp29/neHVPmUPqCQqLYk=;
+        b=FU3NasotBwpzetAc9S7jifGYHaBxFYhPero876MfHsoc5jKvx0Hzh0ViVgCe2xCLOQ
+         uDz3zx+YlxtVw/7/QKm2XWYN6AH04Yt0OXPZietcWwXvcDcGXJrRwvao0VOS8T1QA5nW
+         yfFjewNLAjxW4ju36hKut74MTVhbHlvk1xYrAZrBIWCBexd2XSLu1ftV+y23y06LzSiu
+         hyNYJsu1xntbg3PwsAscM/3ucgwPiuFkVuscsRyF7+fXzBBTkDissRkm4IjEvSWqhH6l
+         vju1+nFn8XP/dhx9xW4SsN2z5hhLQ2JMLpezvvo6MPCoHNrb54Ob/u506ObHWVu69DtR
+         DfqA==
+X-Gm-Message-State: AC+VfDzl+SS/p7oBUiG+jnwLQ4WchioIOE1iCOqEYR0auKENgRI8qXAl
+	vylunSL83KJElRN/B6NyJvfIZDlXEz2fIWInIlV3Vw==
+X-Google-Smtp-Source: ACHHUZ6DO1jDG1WnOh30Q8Tdtf+K4s3bQJcMxtJ1jKMD+rmSEVQLw7h0Myu8+U933G1k+v5o12KX2blAlrs9yoBVwJI=
+X-Received: by 2002:a05:600c:1c84:b0:3f4:df95:17e0 with SMTP id
+ k4-20020a05600c1c8400b003f4df9517e0mr146328wms.5.1685456590048; Tue, 30 May
+ 2023 07:23:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230530160743.2c93a388@wsk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <20230530141935.GA21936@didi-ThinkCentre-M920t-N000>
+In-Reply-To: <20230530141935.GA21936@didi-ThinkCentre-M920t-N000>
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 30 May 2023 16:22:58 +0200
+Message-ID: <CANn89i+HK5vny8qo89_+4PqZj9rBcGi6sVfSgN4HSpqqoUr6fw@mail.gmail.com>
+Subject: Re: [PATCH net v2] tcp: fix mishandling when the sack compression is deferred
+To: fuyuanli <fuyuanli@didiglobal.com>
+Cc: "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>, Neal Cardwell <ncardwell@google.com>, ycheng <ycheng@google.com>, 
+	toke <toke@toke.dk>, netdev@vger.kernel.org, 
+	Weiping Zhang <zhangweiping@didiglobal.com>, Tio Zhang <tiozhang@didiglobal.com>, 
+	Jason Xing <kerneljasonxing@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 30, 2023 at 04:07:43PM +0200, Lukasz Majewski wrote:
-> Hi Russell,
-> 
-> > On Tue, May 30, 2023 at 02:26:21PM +0200, Lukasz Majewski wrote:
-> > > One can disable in device tree advertising of EEE capabilities of
-> > > PHY when 'eee-broken-100tx' property is present in DTS.
-> > > 
-> > > With DSA switch it also may happen that one would need to disable
-> > > EEE due to some network issues.
-> > > 
-> > > Corresponding switch DTS description:
-> > > 
-> > >  switch@0 {
-> > > 	 ports {
-> > > 		port@0 {
-> > > 		reg = <0>;
-> > > 		label = "lan1";
-> > > 		phy-handle = <&switchphy0>;
-> > > 		};
-> > > 	}
-> > > 	mdio {
-> > > 		switchphy0: switchphy@0 {
-> > > 		reg = <0>;
-> > > 		eee-broken-100tx;
-> > > 	};
-> > > 	};
-> > > 
-> > > This patch adjusts the content of MDIO_AN_EEE_ADV in MDIO_MMD_AN
-> > > "device" so the phydev->eee_broken_modes are taken into account
-> > > from the start of the slave PHYs.  
-> > 
-> > This should be handled by phylib today in recent kernels without the
-> > need for any patch (as I describe below, because the config_aneg PHY
-> > method should be programming it.) Are you seeing a problem with it
-> > in 6.4-rc?
-> 
-> Unfortunately, for this project I use LTS 5.15.z kernel.
-> 
-> My impression is that the mv88e6xxx driver is not handling EEE setup
-> during initialization (even with v6.4-rc).
-> 
-> I've tried to replace genphy_config_eee_advert() with phy_init_eee, but
-> it lacks the part to program PCS advertise registers.
+On Tue, May 30, 2023 at 4:19=E2=80=AFPM fuyuanli <fuyuanli@didiglobal.com> =
+wrote:
+>
+> In this patch, we mainly do two things which could be separately
+> found as the following links:
+> 1) fix not sending a compressed ack if it's deferred.
+> 2) use the ICSK_ACK_TIMER flag in tcp_sack_compress_send_ack() and
+> tcp_event_ack_sent() in order we can cancel it if it's deferred.
+>
+> Here are more details in the old logic:
+> When sack compression is triggered in the tcp_compressed_ack_kick(),
+> if the sock is owned by user, it will set TCP_DELACK_TIMER_DEFERRED
+> and then defer to the release cb phrase. Later once user releases
+> the sock, tcp_delack_timer_handler() should send a ack as expected,
+> which, however, cannot happen due to lack of ICSK_ACK_TIMER flag.
+> Therefore, the receiver would not sent an ack until the sender's
+> retransmission timeout. It definitely increases unnecessary latency.
+>
+> Fixes: 5d9f4262b7ea ("tcp: add SACK compression")
+> Suggested-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: fuyuanli <fuyuanli@didiglobal.com>
+> Signed-off-by: Jason Xing <kerneljasonxing@gmail.com>
+> Link: https://lore.kernel.org/netdev/20230529113804.GA20300@didi-ThinkCen=
+tre-M920t-N000/
+> Link: https://lore.kernel.org/netdev/20230530023737.584-1-kerneljasonxing=
+@gmail.com/
+> ---
+> v2:
+> 1) change the commit title and message
+> 2) reuse the delayed ack logic when handling the sack compression
+> as suggested by Eric.
+> 3) "merge" another related patch into this one. See the second link.
 
-Firstly, I would advise backporting the EEE changes. The older EEE
-implementation was IMHO not particularly good (I think you can find
-a record in the archives of me stating that the old interfaces were
-just too quirky.)
+No.
 
-Secondly, even if you program the PHY for EEE, unless you have
-something like an Atheros AR803x PHY with its SmartEEE, EEE needs
-the support of both the PHY and the MAC to which its connected to
-in order to work. It's the MAC which is the "client" which says
-to the PHY "I'm idle" and when both ends tell their PHYs that
-they're idle, the media link can then drop into the low power
-state.
-
-The 88e6xxx internal PHYs will communicate their EEE negotiation
-state back to the MACs, but for an external PHY, that won't happen,
-and there is no code in the 88e6xxx driver to configure the MAC to
-program the MAC to do EEE.
-
-So, I'm wondering what's actually going on here... can you give
-any more details about the hardware setup?
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+This is not the patch I suggested.
 
