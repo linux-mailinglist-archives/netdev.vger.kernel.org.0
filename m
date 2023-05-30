@@ -1,158 +1,141 @@
-Return-Path: <netdev+bounces-6247-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6248-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B6340715582
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 08:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id A58DB715585
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 08:33:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6720B2810B5
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 06:30:58 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 008972810CC
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 06:33:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC5B21110;
-	Tue, 30 May 2023 06:30:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 235AB1110;
+	Tue, 30 May 2023 06:33:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FE87111AB
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 06:30:56 +0000 (UTC)
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C13BF
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 23:30:54 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id 5b1f17b1804b1-3f6a6b9bebdso102805e9.0
-        for <netdev@vger.kernel.org>; Mon, 29 May 2023 23:30:54 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 156D67E
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 06:33:25 +0000 (UTC)
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37169E8
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 23:33:22 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id ffacd0b85a97d-3094910b150so4047139f8f.0
+        for <netdev@vger.kernel.org>; Mon, 29 May 2023 23:33:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1685428253; x=1688020253;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YRx2HMn0OgK8Wf4NKopm1Q8CsykoOI54UVBh2xPJbys=;
-        b=1dV04U1c/5p0i2Fy8TQCj/tjWnQXfsVCE8Q9XjMgRDYYOndRM0ksnvG6CUi+LaWNf4
-         onPiD0BnVC2UxwOtBZ1fuIX8zB3R4apua2G7Vw8Eu17XhdYlWwVYPE6LqmBJYaOiaMfQ
-         5qPywpdNn1N++mKYG/7EsI1nkoqBEJnOdLKmWicIwWQ7aSueh96FGOaXsXB6qUVrNSyV
-         EKOQ/k4TtkR7u+RdctKYAfWicEGk8+aflA/uTxdZm4YK5vAjI76fwLVVXnnmc5OUfIiB
-         Fwb7lTPNvzFHmu+dnVcqcoax16rc5tcF4ohMzoCyOR3UL1QJEO7YuE6qX/zhbfRbdRQc
-         gQNQ==
+        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1685428400; x=1688020400;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=0CaTbkqipKHF/4cgQK7m5sFsqW1/AiCE4xcl9QWDCkE=;
+        b=VIJROpdqecRKPKO18kI/qvkZLAL2G0dvztOP7r7F9T+EGaNpkWXI1RDHSrxALmotZm
+         32Favjr9fdsFiVLdaulzWULqvj9yoeE45sE9kmNtoOdot+CaeJwfa0ZTUKRcMjJacGgx
+         j85OP0/bWH4yQLJgzdXm6XMfpW4nv5nVc8H/OeI6oox1TnZ+uR9U942cfSlxnbmddp5b
+         mZpt55FCNvPOXIpK0vcl/gFWeAHjgoTFSt3Cx+KYd6g5Mtg7NPZOgX3X3bA9GvjqNGQG
+         pI5gfpmhIkC2P4NSxn7fqxWDAkNH8/AGwopofi/ILzWQZxqHxXOCHI00M9kJZiYHK3wT
+         FJwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685428253; x=1688020253;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=YRx2HMn0OgK8Wf4NKopm1Q8CsykoOI54UVBh2xPJbys=;
-        b=UrVykllSZfifgBJ0BwItWR2N68eTcKEg5R8fhu36jxBENYJQZKzabWGjXVNI7/zdiO
-         5bvhj1tpo0V+WlrpfzcR0YBJNtn8gOPhj1oFDJO7nx83VL0t/ww5iyQ2NKmk8rdVTvYj
-         8HTCQnnvQtm2xWIx6ApgAq1rT5N7Uekhg0ADpllDnCuXj5qLFcQrLK7k6LPFo3gRVK3P
-         xH8sVyk1u4p20WYwqF8hBAOAb5g9xC/7R3iCctY1+47S3CmRkmgYYjrW68wuuyXW9YkU
-         hxUNZOwzSK3f+uOHzbO7FNFh4iX7WBGBuKWH4x7Qq4EB9eUe/4Eu/izfWHH/A1jdv/tg
-         Uh4w==
-X-Gm-Message-State: AC+VfDxuQUTzc8LGYvkE9kA9BT9aovB9GPL0YwyLo2B8uqGOHgFx9S9F
-	Wq9ZTSr/H8ma0skDBWPKsZVmNunLkQJFh7LLIn3W4w==
-X-Google-Smtp-Source: ACHHUZ7VY+T+ZwVCYF/3KBe7kwgfzlXyswhs3kjSmdCDzkurrXYnzPRkG3KJ4/nEiXi3nafSJ9SkA0Mxoq5VcFPA8yY=
-X-Received: by 2002:a05:600c:35cb:b0:3f6:f4b:d4a6 with SMTP id
- r11-20020a05600c35cb00b003f60f4bd4a6mr57055wmq.7.1685428252928; Mon, 29 May
- 2023 23:30:52 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685428400; x=1688020400;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0CaTbkqipKHF/4cgQK7m5sFsqW1/AiCE4xcl9QWDCkE=;
+        b=VhyONB0snLJ/24RLiS5uTwfdTq1LWuCEHDjtBau2VxONeB4sIBwIn/3ethngc5PV7y
+         uX+I2NnfDW7d9Hc6R59jCZzs26fxOqOUnVYy58+iDA6HxARNRsYbVPul+zhYybsUFMjy
+         N9jPqy/6kundOlVjf/uYDeG/1lGw9uirAUZNZOP6A4HOz5SYwUabYE9Wz9jxYbkV6G43
+         QJ8io/gIqA0LbEYzDvlrcNB7hULuP9+kcMLpwCuOoBLieM1TvnvhGBjv8vFfDw60cb4s
+         hFFPy/r0YHM7lWiNVE6EwBKRGnl36gAyFC40eypL7Rl9RSjybCjWYV5KtCedwFQ8Yf1S
+         QHkA==
+X-Gm-Message-State: AC+VfDyMBWvjZ96eM2DCatNFBZPKkFQ/ID/wQhtNPJ+ySQdBO6jGGMhD
+	qSs5Xt0e3f8IuE7jGLEYue8oMw==
+X-Google-Smtp-Source: ACHHUZ5Pks+fKBdU2dJorWFfP9tr2Eu4zIO2oPrV1EAz0MWD0FXMujNCp8r0yZ6JrDLVDensddZ8tQ==
+X-Received: by 2002:a5d:67c3:0:b0:30a:dfe1:ed02 with SMTP id n3-20020a5d67c3000000b0030adfe1ed02mr592387wrw.34.1685428400506;
+        Mon, 29 May 2023 23:33:20 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id h4-20020adfe984000000b002fe96f0b3acsm2113468wrm.63.2023.05.29.23.33.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 May 2023 23:33:19 -0700 (PDT)
+Date: Tue, 30 May 2023 08:33:18 +0200
+From: Jiri Pirko <jiri@resnulli.us>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org, pabeni@redhat.com, davem@davemloft.net,
+	edumazet@google.com, leon@kernel.org, saeedm@nvidia.com,
+	moshe@nvidia.com, jesse.brandeburg@intel.com,
+	anthony.l.nguyen@intel.com, tariqt@nvidia.com, idosch@nvidia.com,
+	petrm@nvidia.com, simon.horman@corigine.com, ecree.xilinx@gmail.com,
+	habetsm.xilinx@gmail.com, michal.wilczynski@intel.com,
+	jacob.e.keller@intel.com
+Subject: Re: [patch net-next v2 14/15] devlink: move port_del() to
+ devlink_port_ops
+Message-ID: <ZHWYrgyi/GofFf8s@nanopsycho>
+References: <20230526102841.2226553-1-jiri@resnulli.us>
+ <20230526102841.2226553-15-jiri@resnulli.us>
+ <20230526211008.7b06ac3e@kernel.org>
+ <ZHG0dSuA7s0ggN0o@nanopsycho>
+ <20230528233334.77dc191d@kernel.org>
+ <ZHRi0qZD/Hsjn0Fq@nanopsycho>
+ <20230529184119.414d62f3@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230523025618.113937-1-john.fastabend@gmail.com> <20230523025618.113937-8-john.fastabend@gmail.com>
-In-Reply-To: <20230523025618.113937-8-john.fastabend@gmail.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Tue, 30 May 2023 08:30:41 +0200
-Message-ID: <CANn89iLNWH2=LvNdfyhBFCte5ZTsws13YBE4N263nzVStxccdQ@mail.gmail.com>
-Subject: Re: [PATCH bpf v10 07/14] bpf: sockmap, wake up polling after data copy
-To: John Fastabend <john.fastabend@gmail.com>
-Cc: jakub@cloudflare.com, daniel@iogearbox.net, bpf@vger.kernel.org, 
-	netdev@vger.kernel.org, ast@kernel.org, andrii@kernel.org, will@isovalent.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230529184119.414d62f3@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 23, 2023 at 4:56=E2=80=AFAM John Fastabend <john.fastabend@gmai=
-l.com> wrote:
+Tue, May 30, 2023 at 03:41:19AM CEST, kuba@kernel.org wrote:
+>On Mon, 29 May 2023 10:31:14 +0200 Jiri Pirko wrote:
+>> >One could argue logically removing a port is also an operation of 
+>> >the parent (i.e. the devlink instance). The fact that the port gets
+>> >destroyed in the process is secondary. Ergo maybe we should skip 
+>> >this patch?  
+>> 
+>> Well, the port_del() could differ for different port flavours. The
+>> embedding structure of struct devlink_port is also different.
+>> 
+>> Makes sense to me to skip the flavour switch and have one port_del() for
+>> each port.
 >
-> When TCP stack has data ready to read sk_data_ready() is called. Sockmap
-> overwrites this with its own handler to call into BPF verdict program.
-> But, the original TCP socket had sock_def_readable that would additionall=
-y
-> wake up any user space waiters with sk_wake_async().
+>The asymmetry bothers me. It's hard to comment on what the best
+>approach is given this series shows no benefit of moving port_del().
+>Maybe even a loss, as mlx5 now has an ifdef in two places:
 >
-> Sockmap saved the callback when the socket was created so call the saved
-> data ready callback and then we can wake up any epoll() logic waiting
-> on the read.
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+>> index e39fd85ea2f9..63635cc44479 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+>> @@ -320,7 +320,6 @@ static const struct devlink_ops mlx5_devlink_ops = {
+>>  #endif
+>>  #ifdef CONFIG_MLX5_SF_MANAGER
+>>  	.port_new = mlx5_devlink_sf_port_new,
+>> -	.port_del = mlx5_devlink_sf_port_del,
+>>  #endif
+>>  	.flash_update = mlx5_devlink_flash_update,
+>>  	.info_get = mlx5_devlink_info_get,
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
+>> index 76c5d6e9d47f..f370f67d9e33 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
+>> @@ -145,6 +145,9 @@ struct devlink_port *mlx5_esw_offloads_devlink_port(struct mlx5_eswitch *esw, u1
+>>  }
+>>  
+>>  static const struct devlink_port_ops mlx5_esw_dl_sf_port_ops = {
+>> +#ifdef CONFIG_MLX5_SF_MANAGER
+>> +	.port_del = mlx5_devlink_sf_port_del,
+>> +#endif
+>>  	.port_fn_hw_addr_get = mlx5_devlink_port_fn_hw_addr_get,
+>>  	.port_fn_hw_addr_set = mlx5_devlink_port_fn_hw_addr_set,
+>>  	.port_fn_roce_get = mlx5_devlink_port_fn_roce_get,
 >
-> Note we call on 'copied >=3D 0' to account for returning 0 when a FIN is
-> received because we need to wake up user for this as well so they
-> can do the recvmsg() -> 0 and detect the shutdown.
->
-> Fixes: 04919bed948dc ("tcp: Introduce tcp_read_skb()")
-> Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> ---
->  net/core/skmsg.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
->
-> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-> index bcd45a99a3db..08be5f409fb8 100644
-> --- a/net/core/skmsg.c
-> +++ b/net/core/skmsg.c
-> @@ -1199,12 +1199,21 @@ static int sk_psock_verdict_recv(struct sock *sk,=
- struct sk_buff *skb)
->  static void sk_psock_verdict_data_ready(struct sock *sk)
->  {
->         struct socket *sock =3D sk->sk_socket;
-> +       int copied;
->
->         trace_sk_data_ready(sk);
->
->         if (unlikely(!sock || !sock->ops || !sock->ops->read_skb))
->                 return;
-> -       sock->ops->read_skb(sk, sk_psock_verdict_recv);
-> +       copied =3D sock->ops->read_skb(sk, sk_psock_verdict_recv);
-> +       if (copied >=3D 0) {
-> +               struct sk_psock *psock;
-> +
-> +               rcu_read_lock();
-> +               psock =3D sk_psock(sk);
-> +               psock->saved_data_ready(sk);
-> +               rcu_read_unlock();
-> +       }
->  }
->
->  void sk_psock_start_verdict(struct sock *sk, struct sk_psock *psock)
-> --
-> 2.33.0
->
+>Is it okay if we deferred the port_del() patch until there's some
+>clear benefit?
 
-It seems psock could be NULL here, right ?
-
-What do you think if I submit the following fix ?
-
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index a9060e1f0e4378fa47cfd375b4729b5b0a9f54ec..a29508e1ff3568583263b9307f7=
-b1a0e814ba76d
-100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -1210,7 +1210,8 @@ static void sk_psock_verdict_data_ready(struct sock *=
-sk)
-
-                rcu_read_lock();
-                psock =3D sk_psock(sk);
--               psock->saved_data_ready(sk);
-+               if (psock)
-+                       psock->saved_data_ready(sk);
-                rcu_read_unlock();
-        }
- }
+Sure.
 
