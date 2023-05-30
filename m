@@ -1,122 +1,263 @@
-Return-Path: <netdev+bounces-6571-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6565-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9B234716FA7
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 23:25:10 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id A63C2716F19
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 22:51:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 092881C20A61
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:25:07 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3A1C42812D4
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 20:51:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4D0FF2D262;
-	Tue, 30 May 2023 21:25:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C1CBB200B4;
+	Tue, 30 May 2023 20:51:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DEF8200BC
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 21:25:07 +0000 (UTC)
-X-Greylist: delayed 2063 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 30 May 2023 14:25:02 PDT
-Received: from mx11lb.world4you.com (mx11lb.world4you.com [81.19.149.121])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08160D9
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 14:25:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=tmK094y96wxnVZkH2WsdAa3vLGfUTZukvcfeq7bEgWM=; b=g2658kAvRw+cmjUJNfxuCNCd4i
-	d9gNNNLErmW8wcGrdqA8ala/MJNOtzhBThzY5NnncEfzZpdlLQTmFuLxJFjskHkF3Xpr1PWicSNvm
-	gPuQNG3iSdGkO/fBG5epBXViCUyzsQmE2JCDMbQSjx74JgEsCNQmYDhkvdKAnI1LDczU=;
-Received: from [88.117.62.186] (helo=[10.0.0.160])
-	by mx11lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <gerhard@engleder-embedded.com>)
-	id 1q46Ia-0002Tp-2o; Tue, 30 May 2023 22:50:32 +0200
-Message-ID: <7602e37b-1b83-8697-d9e6-c9cc1e5214e3@engleder-embedded.com>
-Date: Tue, 30 May 2023 22:50:31 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B772B7E
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:51:18 +0000 (UTC)
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FCFC10A;
+	Tue, 30 May 2023 13:50:52 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id 38308e7fff4ca-2afb2875491so53109891fa.1;
+        Tue, 30 May 2023 13:50:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685479850; x=1688071850;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1Ylkw/NLGjRglYYdjZVPg6YRfMOUcFgiFJEPQkmObYw=;
+        b=cFeZHxd72eQLJPqj0Y71fYxUtkh8Dk/Phgzhw0QsSbGrd/Pe/FpZ6uQDp/By20Jlg/
+         UsHX5VUl0Ssyt1hDQGvCmJiEA+8R0OR5XzNus2Dt/Z0QcYp20N7Db8k0PTvpJLNepQuI
+         zVUL1c+NAmac87l+XYMO3m4Z9YiXDWIk3tdXD0JIEypNeR+0pcWgN7Z8jCbR5MYkiJh9
+         Wgbf6DtiAyjD3/GhoYVjeHEkBY+UiE0T8tvQ2eQfMIPf9egwoMD8NperlKCzvfK9h1xm
+         9rumJuOXHplb7WZWgoicto6WQGBizH1BS0v6asUz/35CMpvIJdWo9B+4W+QT2j3qXgFo
+         52KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685479850; x=1688071850;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1Ylkw/NLGjRglYYdjZVPg6YRfMOUcFgiFJEPQkmObYw=;
+        b=EFOqolcQgbZKEBT8tffs7iGZR43jJl2oUaEtipLaqDIwX7TCztX+Cp9EUvSi97L42L
+         2cVjWYC6sPZEgNQm8KEOW6LlxQeeTwzHjOzX28tVEFzyheEi3b14UL5RSI0KeVpub/D+
+         vWfDlRJr/c/qwcx1LsfEMKKjU/PkUTwuoO/X2zoLIGPDxoWyjNHTurMFt+Yqxo9vrpXP
+         ynhtx9LbkBl6r46G4eJKdKoIx45Tvx9qdnM7sLMzrrEIdHeZgItbgzZG9BP1pjHwOjuV
+         dn4JGkztKMwKfm9gXg5dxdBhnVCBzrYJG8jFQeE55kOKovvlBjekJ8kMlnifUfc4R1ud
+         FSfQ==
+X-Gm-Message-State: AC+VfDwx2hwjWFnAKfcpqPa09S7XWBZDWSx+yIYfmJ6hgxv7P/uBDxvs
+	veWAXaNQsiqkJ4l2AKuasPuYZzzAEomFge1X2Yo12sHM
+X-Google-Smtp-Source: ACHHUZ5n5Jmrhmc1kh/SJJ708j1DWzaUZSdp/68VKKs1M1037UKPw0vinzDJmL971eSMr/3StPc9MMa2hJHfJxJBo7U=
+X-Received: by 2002:a2e:9f09:0:b0:2aa:481b:b439 with SMTP id
+ u9-20020a2e9f09000000b002aa481bb439mr1525949ljk.21.1685479850206; Tue, 30 May
+ 2023 13:50:50 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH net-next 2/5] net/sched: taprio: replace
- tc_taprio_qopt_offload :: enable with a "cmd" enum
-To: Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Jamal Hadi Salim <jhs@mojatatu.com>,
- Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
- Vinicius Costa Gomes <vinicius.gomes@intel.com>,
- Kurt Kanzenbach <kurt@linutronix.de>,
- Amritha Nambiar <amritha.nambiar@intel.com>,
- Ferenc Fejes <ferenc.fejes@ericsson.com>,
- Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, Roger Quadros
- <rogerq@kernel.org>, Pranavi Somisetty <pranavi.somisetty@amd.com>,
- Harini Katakam <harini.katakam@amd.com>,
- Giuseppe Cavallaro <peppe.cavallaro@st.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>,
- Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
- Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
- Oleksij Rempel <linux@rempel-privat.de>,
- Jacob Keller <jacob.e.keller@intel.com>, linux-kernel@vger.kernel.org,
- Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
- Claudiu Manoil <claudiu.manoil@nxp.com>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- UNGLinuxDriver@microchip.com, Jesse Brandeburg <jesse.brandeburg@intel.com>,
- Tony Nguyen <anthony.l.nguyen@intel.com>,
- Horatiu Vultur <horatiu.vultur@microchip.com>,
- Jose Abreu <joabreu@synopsys.com>,
- Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- intel-wired-lan@lists.osuosl.org,
- Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-References: <20230530091948.1408477-1-vladimir.oltean@nxp.com>
- <20230530091948.1408477-3-vladimir.oltean@nxp.com>
-Content-Language: en-US
-From: Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <20230530091948.1408477-3-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
-	RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+References: <20230522234154.2924052-1-yinghsu@chromium.org>
+ <ZGyPt1GYGV2C2RQZ@corigine.com> <CABBYNZ+by-OQH2aPEMHpQ5cOLoKNpR7k111rJj6iOd2PGLx3gg@mail.gmail.com>
+ <CAAa9mD3A+3uJzFK0EbTrn5hX42EOgeixehmxgkwdhp1KetxjVQ@mail.gmail.com>
+ <CABBYNZKPv_0AaJJm2_c0F+4qX_vKXQ9BnVgR-kPy40YsDDqSRQ@mail.gmail.com>
+ <CAAa9mD2e-WkuHshXf7ifOHcGEsgHb68xkRdaq5MRMeY7_jzkMg@mail.gmail.com> <CAAa9mD00VriG3utyedjwykuUUXaRU0SvXkr5+VPgmZFpiFokrA@mail.gmail.com>
+In-Reply-To: <CAAa9mD00VriG3utyedjwykuUUXaRU0SvXkr5+VPgmZFpiFokrA@mail.gmail.com>
+From: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date: Tue, 30 May 2023 13:50:37 -0700
+Message-ID: <CABBYNZLpNbYDrP9aZqx9dm=XMh2KdRDAy+2gXX0wexMBHiQQUA@mail.gmail.com>
+Subject: Re: [PATCH v2] Bluetooth: Fix l2cap_disconnect_req deadlock
+To: Ying Hsu <yinghsu@chromium.org>
+Cc: Simon Horman <simon.horman@corigine.com>, linux-bluetooth@vger.kernel.org, 
+	chromeos-bluetooth-upstreaming@chromium.org, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Johan Hedberg <johan.hedberg@gmail.com>, 
+	Marcel Holtmann <marcel@holtmann.org>, Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org, 
+	netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 30.05.23 11:19, Vladimir Oltean wrote:
-> Inspired from struct flow_cls_offload :: cmd, in order for taprio to be
-> able to report statistics (which is future work), it seems that we need
-> to drill one step further with the ndo_setup_tc(TC_SETUP_QDISC_TAPRIO)
-> multiplexing, and pass the command as part of the common portion of the
-> muxed structure.
-> 
-> Since we already have an "enable" variable in tc_taprio_qopt_offload,
-> refactor all drivers to check for "cmd" instead of "enable", and reject
-> every other command except "replace" and "destroy" - to be future proof.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->   drivers/net/dsa/hirschmann/hellcreek.c             | 14 +++++++++-----
->   drivers/net/dsa/ocelot/felix_vsc9959.c             |  4 +++-
->   drivers/net/dsa/sja1105/sja1105_tas.c              |  7 +++++--
->   drivers/net/ethernet/engleder/tsnep_selftests.c    | 12 ++++++------
->   drivers/net/ethernet/engleder/tsnep_tc.c           |  4 +++-
->   drivers/net/ethernet/freescale/enetc/enetc_qos.c   |  6 +++++-
->   drivers/net/ethernet/intel/igc/igc_main.c          | 13 +++++++++++--
->   .../net/ethernet/microchip/lan966x/lan966x_tc.c    | 10 ++++++++--
->   drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c    |  7 +++++--
->   drivers/net/ethernet/ti/am65-cpsw-qos.c            | 11 ++++++++---
->   include/net/pkt_sched.h                            |  7 ++++++-
->   net/sched/sch_taprio.c                             |  4 ++--
->   12 files changed, 71 insertions(+), 28 deletions(-)
+Hi Ying,
 
-Reviewed-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+On Mon, May 29, 2023 at 10:08=E2=80=AFPM Ying Hsu <yinghsu@chromium.org> wr=
+ote:
+>
+> Gentle ping, Luiz.
+>
+>
+> On Thu, May 25, 2023 at 12:16=E2=80=AFPM Ying Hsu <yinghsu@chromium.org> =
+wrote:
+> >
+> > Hi Luiz,
+> >
+> > The proposal solves the deadlock but might introduce other problems as
+> > it breaks the order of l2cap_chan_del.
+> > There are another way to resolve the deadlock:
+> > ```
+> > @@ -4663,7 +4663,9 @@ static inline int l2cap_disconnect_req(struct
+> > l2cap_conn *conn,
+> >
+> >         chan->ops->set_shutdown(chan);
+> >
+> > +       l2cap_chan_unlock(chan);
+> >         mutex_lock(&conn->chan_lock);
+> > +       l2cap_chan_lock(chan);
+> >         l2cap_chan_del(chan, ECONNRESET);
+> >         mutex_unlock(&conn->chan_lock);
+> >  ```
+
+Yeah, I kind of like this better, that said I don't think changing the
+order of l2cap_chan_del matters that much but it does change the
+callback teardown sequence so perhaps we should stick to a simpler
+solution for now.
+
+Please submit an updated version so we can move forward with it.
+
+> > If you're okay with it, I'll do some verification and post a full patch=
+.
+> >
+> > Best regards,
+> > Ying
+> >
+> > On Thu, May 25, 2023 at 2:56=E2=80=AFAM Luiz Augusto von Dentz
+> > <luiz.dentz@gmail.com> wrote:
+> > >
+> > > Hi Ying,
+> > >
+> > > On Wed, May 24, 2023 at 3:54=E2=80=AFAM Ying Hsu <yinghsu@chromium.or=
+g> wrote:
+> > > >
+> > > > Hi Simon,
+> > > >
+> > > > I understand your concern about the repeated code.
+> > > > However, simply hiding the locking logic in another function
+> > > > introduces hidden assumptions.
+> > > > For this patch, I would like to fix the deadlock in a simple and ea=
+sy
+> > > > to understand way.
+> > > > We can always refactor the l2cap_chan utility functions later.
+> > > >
+> > > > Hi Luis,
+> > > >
+> > > > I'll add a fixes tag in the next version.
+> > >
+> > > And how about doing this:
+> > >
+> > > https://gist.github.com/Vudentz/e513859ecb31e79c947dfcb4b5c60453
+> > >
+> > > > Best regards,
+> > > > Ying
+> > > >
+> > > >
+> > > > On Wed, May 24, 2023 at 3:06=E2=80=AFAM Luiz Augusto von Dentz
+> > > > <luiz.dentz@gmail.com> wrote:
+> > > > >
+> > > > > Hi Simon, Ying,
+> > > > >
+> > > > > On Tue, May 23, 2023 at 3:04=E2=80=AFAM Simon Horman <simon.horma=
+n@corigine.com> wrote:
+> > > > > >
+> > > > > > On Mon, May 22, 2023 at 11:41:51PM +0000, Ying Hsu wrote:
+> > > > > > > L2CAP assumes that the locks conn->chan_lock and chan->lock a=
+re
+> > > > > > > acquired in the order conn->chan_lock, chan->lock to avoid
+> > > > > > > potential deadlock.
+> > > > > > > For example, l2sock_shutdown acquires these locks in the orde=
+r:
+> > > > > > >   mutex_lock(&conn->chan_lock)
+> > > > > > >   l2cap_chan_lock(chan)
+> > > > > > >
+> > > > > > > However, l2cap_disconnect_req acquires chan->lock in
+> > > > > > > l2cap_get_chan_by_scid first and then acquires conn->chan_loc=
+k
+> > > > > > > before calling l2cap_chan_del. This means that these locks ar=
+e
+> > > > > > > acquired in unexpected order, which leads to potential deadlo=
+ck:
+> > > > > > >   l2cap_chan_lock(c)
+> > > > > > >   mutex_lock(&conn->chan_lock)
+> > > > > > >
+> > > > > > > This patch uses __l2cap_get_chan_by_scid to replace
+> > > > > > > l2cap_get_chan_by_scid and adjusts the locking order to avoid=
+ the
+> > > > > > > potential deadlock.
+> > > > >
+> > > > > This needs the fixes tag so we can backport it properly.
+> > > > >
+> > > > > > > Signed-off-by: Ying Hsu <yinghsu@chromium.org>
+> > > > > > > ---
+> > > > > > > This commit has been tested on a Chromebook device.
+> > > > > > >
+> > > > > > > Changes in v2:
+> > > > > > > - Adding the prefix "Bluetooth:" to subject line.
+> > > > > > >
+> > > > > > >  net/bluetooth/l2cap_core.c | 26 ++++++++++++++++++++------
+> > > > > > >  1 file changed, 20 insertions(+), 6 deletions(-)
+> > > > > > >
+> > > > > > > diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap=
+_core.c
+> > > > > > > index 376b523c7b26..8f08192b8fb1 100644
+> > > > > > > --- a/net/bluetooth/l2cap_core.c
+> > > > > > > +++ b/net/bluetooth/l2cap_core.c
+> > > > > > > @@ -4651,8 +4651,16 @@ static inline int l2cap_disconnect_req=
+(struct l2cap_conn *conn,
+> > > > > > >
+> > > > > > >       BT_DBG("scid 0x%4.4x dcid 0x%4.4x", scid, dcid);
+> > > > > > >
+> > > > > > > -     chan =3D l2cap_get_chan_by_scid(conn, dcid);
+> > > > > > > +     mutex_lock(&conn->chan_lock);
+> > > > > > > +     chan =3D __l2cap_get_chan_by_scid(conn, dcid);
+> > > > > > > +     if (chan) {
+> > > > > > > +             chan =3D l2cap_chan_hold_unless_zero(chan);
+> > > > > > > +             if (chan)
+> > > > > > > +                     l2cap_chan_lock(chan);
+> > > > > > > +     }
+> > > > > > > +
+> > > > > > >       if (!chan) {
+> > > > > > > +             mutex_unlock(&conn->chan_lock);
+> > > > > > >               cmd_reject_invalid_cid(conn, cmd->ident, dcid, =
+scid);
+> > > > > > >               return 0;
+> > > > > > >       }
+> > > > > >
+> > > > > > Hi Ying,
+> > > > > >
+> > > > > > The conditional setting of chan and calling l2cap_chan_lock()
+> > > > > > is both non-trivial and repeated. It seems that it ought to be
+> > > > > > in a helper.
+> > > > > >
+> > > > > > Something like this (I'm sure a better function name can be cho=
+sen):
+> > > > > >
+> > > > > >         chan =3D __l2cap_get_and_lock_chan_by_scid(conn, dcid);
+> > > > > >         if (!chan) {
+> > > > > >                 ...
+> > > > > >         }
+> > > > > >
+> > > > > >         ...
+> > > > >
+> > > > > Or perhaps we could do something like l2cap_del_chan_by_scid:
+> > > > >
+> > > > > https://gist.github.com/Vudentz/e513859ecb31e79c947dfcb4b5c60453
+> > > > >
+> > > > > --
+> > > > > Luiz Augusto von Dentz
+> > >
+> > >
+> > >
+> > > --
+> > > Luiz Augusto von Dentz
+
+
+
+--=20
+Luiz Augusto von Dentz
 
