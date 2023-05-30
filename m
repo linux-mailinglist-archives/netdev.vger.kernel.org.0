@@ -1,141 +1,144 @@
-Return-Path: <netdev+bounces-6429-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6427-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 379FA7163E1
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 16:24:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D896E7163D8
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 16:23:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CCF8D1C20C15
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 14:23:59 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 33E2B1C20B9A
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 14:23:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C150D23C80;
-	Tue, 30 May 2023 14:23:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ADF4D23C6A;
+	Tue, 30 May 2023 14:23:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE95621076
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 14:23:41 +0000 (UTC)
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2093.outbound.protection.outlook.com [40.107.101.93])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46673E72
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 07:23:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dLoiB330satBNkWx6mDC8Ee7F/G0ACTJKFpMqjoDo1umqVZZSTSNzkR5RX0Xl9wjfNmkmkE+6I6oukgh+VQLQiUrjXYEeOMHlOc0+b5n9Cm6+dmcingpJV2VlQqWYScDoO6+osjDOntVSHkPeLaQhacRdFv9cWzL+LtRP3u83/L92DtVjJrgzEToGBvkFaqHnGurbXqfMRvWVxgI1rP1dW+3szoy2PdZWsgbTD40WCOIFk62H+zZYVkNPkS47cVNG5ylWrNUW+75wUxH5ISnp3OZK/Wt+6y0rqyZqQsFADHNtPYBrbkToVsEuNlY2xNo1fp/rhF9arSfrASjWM8ZMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HABFyQ6o2sKCyQAiFn70T8tOt01YxiRj0G1H3lnO470=;
- b=QGZrI6kca9iDJ1rDPrqWh4bXyAmQhkjDIwUpA6kDowIj/ifkQnUwaW9HhXqFnftQek6loAJK1vabaav7/eqaWOJNMMLC7gGidDS8oupOEtjPs40VFA09H+6TTWf+S4Hf6dc3NoN59Wg+HrS+JvThoJjOOlWJjHH84QOu+UUJqYMfF6TmDpD9Ii54Pb0WHQ/YVopVG1Xr4qXZUP8D7yKUAHJ/knR3QeJh6ldlxCHcF91q33CLXN31L3bE3K9XdQBjyYXJxuxQXke5vEZHC48JNcGhZ7cgmHHsVXXRWY0+10ZvJibkIQ9KR/t8RLj0jG8ld4BZxEV9ZXjQheFPkR8ctw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HABFyQ6o2sKCyQAiFn70T8tOt01YxiRj0G1H3lnO470=;
- b=RbWIZDoHdvZo5Crh2KZMu5bh9M5MVBFmbe085Huuc+HmvTm2Z94BKJtgcfSjAaBXAyq0WN+1mXaouBXWfly+BW9ixt1lfgGtMXSS3+rnnJCYIRAtC8HaGygdHquM4/IC2lQHRTyVCqTQ/FdLdywwpQE4zrgFNlsJWFPP2mNyEQs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SJ0PR13MB5871.namprd13.prod.outlook.com (2603:10b6:a03:439::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.22; Tue, 30 May
- 2023 14:22:43 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6433.022; Tue, 30 May 2023
- 14:22:43 +0000
-Date: Tue, 30 May 2023 16:22:19 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	David Ahern <dsahern@kernel.org>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 net-next 03/14] ipv6: Remove IPV6_ADDRFORM support for
- IPPROTO_UDPLITE.
-Message-ID: <ZHYGm8j0rmf+boQ/@corigine.com>
-References: <20230530010348.21425-1-kuniyu@amazon.com>
- <20230530010348.21425-4-kuniyu@amazon.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230530010348.21425-4-kuniyu@amazon.com>
-X-ClientProxiedBy: AM4PR05CA0020.eurprd05.prod.outlook.com (2603:10a6:205::33)
- To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A355521076
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 14:23:23 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891CB1702;
+	Tue, 30 May 2023 07:23:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=JB5w856AbvIstOIyH1LRsT5NgKxcolH3MM5jEqlJpow=; b=Dx/UbQ2+nJfzbKxm5WLF/uKidM
+	3kD4QT3lf/3HTuA8Ahtwxt7R6dN2z+nqhxKbhVRbhfR1Doz2TRbqI6DLG1AgdzV8sjzsSk6l4Tkby
+	U2Ky6b4JgsTEgUYRa0H40dVQAA6s6EMM1ezaGqZf99S2MA80xE4Dv9WWEiyue2XmyB2rEWLBhPfaj
+	9FT/8M6I7Q1OqcYS4J0ykR1k06f2FBQuu9wtPp+8Rr0Zuyb6XCGhtY42JrLAQIIA21n6tH9GJYXLV
+	f7HGhc044YMzcADGy618pBpVkY0x4fJ1qHCGVpVkijJ8O0JXROFXaQuTcLoBGIPEmydbrENX0YCre
+	Xs4N5zdQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55210)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q40FU-0002vl-PU; Tue, 30 May 2023 15:22:56 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q40FT-00087Q-2P; Tue, 30 May 2023 15:22:55 +0100
+Date: Tue, 30 May 2023 15:22:55 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Lukasz Majewski <lukma@denx.de>
+Cc: Andrew Lunn <andrew@lunn.ch>, Vivien Didelot <vivien.didelot@gmail.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [RFC] net: dsa: slave: Advertise correct EEE capabilities at
+ slave PHY setup
+Message-ID: <ZHYGv7zcJd/Ad4hH@shell.armlinux.org.uk>
+References: <20230530122621.2142192-1-lukma@denx.de>
+ <ZHXzTBOtlPKqNfLw@shell.armlinux.org.uk>
+ <20230530160743.2c93a388@wsk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB5871:EE_
-X-MS-Office365-Filtering-Correlation-Id: b2db0802-5df5-47fc-b1b3-08db611954fb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	5K5YDPf6DFGC0hhTGs61sQqQY5nezqqj5vA6zCPCUX5PMTGI5q0EjqL2aynV/nDmw0HR7yWHOjDCt+syfck89c6ladlfFVFaSo1byA6/Nri/1baC9OkAAtz9QrhhCqgY8rzlpcbFAO3G/2GWwlyKwksKVtiZ5wmhMLzx/UKtgFTRhornh5segT5/BXvYgNksJuiVUx+1M9qKP0rqVhKKhVFSYi8ArdINbUVtzCQPNp7/Dtsy6LUHNWecOt9Vnf5hf6/t5UDjg4uV+cW3RRKmOGVoUUuORSrltSyI2J+Bf2mpn1tAWq0+G5IDcAvN2P4Ib0DR5jJ6rhQQdgpSashLdsAw1EwIKIBwmoNpJTmoA74/afQqHfHC1U7T4rB/7uqHc6oGgTFfx1PWRuKanTdWlRihujG4YB8/uM1C1HormBhE9xEeuR+x08dGonj21RJRZBxgGKnTUgCC4FiVQQwgqTBPYxk3IotkKPL7E5Vx5YQW8n2iCAKYlAMZWEKlMK9I6SCd9ASmEHPuJCjZA9C/rWTecXfEkaS/WYJjT4K9i6LJIMJ4aktnZ9Momw/jyPek
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39840400004)(366004)(376002)(346002)(136003)(451199021)(6506007)(6512007)(186003)(2616005)(2906002)(54906003)(478600001)(44832011)(86362001)(8676002)(41300700001)(6486002)(38100700002)(8936002)(66946007)(558084003)(66556008)(66476007)(316002)(5660300002)(6666004)(36756003)(6916009)(4326008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?DhJQR1b89AqMWjSos6RycGS7SiogyRLLDAiWgZiLI3A872gqRObo5ljYCCqK?=
- =?us-ascii?Q?MqmLMqFrNiEipksWK5Pi1GJCLPa4WuiOkBkH4QIOTdnJ5sft/sJY0C8IIiXO?=
- =?us-ascii?Q?4Ooz0v774yBmuHsskLGCb+MVqrGMKIWYfFMLlNpfDwUeQ3GhXKjWoLc5b6z+?=
- =?us-ascii?Q?WlPKdpem0HjlBE1nmh91W5K0Ckl9SR9NAOuur3J6hn1iH9lhKK2QsQgUoKoR?=
- =?us-ascii?Q?jGrei28ezw0E9xhJpgChJD9vLhXAROsUzaEjdgZqcmGM/NCGcB98F63q59mh?=
- =?us-ascii?Q?+jj3yC1oohbxxHMML3GkTDoK8bBJtE5yX1OyzPsaMxQWgnJN1yXkQmOpdoaK?=
- =?us-ascii?Q?lZ0jm+basiDmQhnm+STEU3SlZRJxMFrvW0nV5CuKPzR+iUsd4pVliP+rHNc5?=
- =?us-ascii?Q?K3t++DlS/aaAKNGN2DZ122cTKoCkiiXIHW3oH1C1IDCaoxSr36TVCrs58iAz?=
- =?us-ascii?Q?2uqsBVYWpgtQeyGrwyd+NofInEpgMtKgvz+4d2MV+uGMyAomiTcRUb3glk1e?=
- =?us-ascii?Q?6gznlGud8+C0t/M9LLcgY3Jn6wEQsK5xiJi+jyqRyqJFBwvUWQv9e6V/YXqr?=
- =?us-ascii?Q?WkIrYUx0PyLvjtE4iJmcBYk+UuB25qbvLVqJ5UVOw/m1g47QPxX+2z8x0T4f?=
- =?us-ascii?Q?I7FAUBkIi/7kFC5b2ELq2yKewfdwo9w6CkVbXVR/fMD6wtix2DO70awZnlCh?=
- =?us-ascii?Q?AvTlctxkky4cquQpNsBeByN4XvDa3O1LFhDaw1eC3Q4PK4Kulga6WcM8A/5k?=
- =?us-ascii?Q?MjihOTnCBMLblrM/owGO3gmIRnVfy4+5wUplj1VVuNDD26ioiH+2EZJpXFBV?=
- =?us-ascii?Q?Ans7lueWiQK5fQcG6MutfW9J6gFUEP6S1nbpw60wMm5DFTOK8ywbNXDvXz1w?=
- =?us-ascii?Q?h5B68qUUX6bFYJ0sG77J5lQ6dO/FpgQn43ccbGjlZBczRFyvAKH+ESCQOuWH?=
- =?us-ascii?Q?alypu5eVbWG7jkXOBFJWOBd/koHc/jJGZsY9mkkSNL9Gu0UxDP41wfjCIKZK?=
- =?us-ascii?Q?lJ428yhLNfdKRel2Hn22RrOvYCN1ReH/xk50yz3n041ADRy7F3aOYl9LSexQ?=
- =?us-ascii?Q?LmBzRUXJ0G3yoC/EBRUs8CxghdpdBYXi+9XonTziFLdaf2PQl/eBXH/pXz8K?=
- =?us-ascii?Q?oDIXaaMtfyc9oD4LI6qwYlVk15Nj3QSLIkfErbFJGM1cK7sJU+LlUjIz7fAn?=
- =?us-ascii?Q?znXtuiBMIE2tVbfrxfhf5BNOG6TTsE3BKAoeJnNY9JzmFVObLuO2DgtfMqpO?=
- =?us-ascii?Q?VVUPAgcs/ZXvCLN/PDW8XpxpA/21jYRTM6zT7nQD20dPGDP/pAYlulY7FaEH?=
- =?us-ascii?Q?weVUw1P2WF14LHC6UBnGJffGHD4uY/6i5E1+vbTvOrdlFGOFqvbWbWs73w9u?=
- =?us-ascii?Q?1MeejPVcYKZWHFQ+WrT0tjYKDyOxrrvhFdLNbbioAPKOkdmR9wxrmpPVTfD8?=
- =?us-ascii?Q?JcpEIeLwleFn0cEVhQbWpvMf//pow1MYn7wai2sbfaY0gvZ9hrjfOYgRiQHk?=
- =?us-ascii?Q?mZaqjHTaXeqrFPHQvuXZsHCERaWV2xvJQ8i7t9MReciOD+DfTJVpS83TA6vq?=
- =?us-ascii?Q?vQf8Qch5gA5e633JZOKHHX8GWYRzIST1P34kZ8hmnFKfgW/CpKDOVzLpayRM?=
- =?us-ascii?Q?3aYgFG1N7HTNxT/dHDqG5XiVd9uT/zDrzOQ32eRPYzT2NKIdoqK/NZN8QM33?=
- =?us-ascii?Q?ZTYdJA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2db0802-5df5-47fc-b1b3-08db611954fb
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 14:22:43.3463
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Nnb4ivqbwOJxX26GSXvALtuOfALV2PcE2ZDSkidk4HOFIXkiTSWDUSzl+WSOEorNC9GNE5do1iBH41ZdvgzcEBhmZKA/fX9HW30q8yOkZ0U=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5871
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230530160743.2c93a388@wsk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 29, 2023 at 06:03:37PM -0700, Kuniyuki Iwashima wrote:
-> The previous commit removes UDP-Lite v6 support, so conversion
-> from UDP-Lite v6 to v4 never occurs.
+On Tue, May 30, 2023 at 04:07:43PM +0200, Lukasz Majewski wrote:
+> Hi Russell,
 > 
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > On Tue, May 30, 2023 at 02:26:21PM +0200, Lukasz Majewski wrote:
+> > > One can disable in device tree advertising of EEE capabilities of
+> > > PHY when 'eee-broken-100tx' property is present in DTS.
+> > > 
+> > > With DSA switch it also may happen that one would need to disable
+> > > EEE due to some network issues.
+> > > 
+> > > Corresponding switch DTS description:
+> > > 
+> > >  switch@0 {
+> > > 	 ports {
+> > > 		port@0 {
+> > > 		reg = <0>;
+> > > 		label = "lan1";
+> > > 		phy-handle = <&switchphy0>;
+> > > 		};
+> > > 	}
+> > > 	mdio {
+> > > 		switchphy0: switchphy@0 {
+> > > 		reg = <0>;
+> > > 		eee-broken-100tx;
+> > > 	};
+> > > 	};
+> > > 
+> > > This patch adjusts the content of MDIO_AN_EEE_ADV in MDIO_MMD_AN
+> > > "device" so the phydev->eee_broken_modes are taken into account
+> > > from the start of the slave PHYs.  
+> > 
+> > This should be handled by phylib today in recent kernels without the
+> > need for any patch (as I describe below, because the config_aneg PHY
+> > method should be programming it.) Are you seeing a problem with it
+> > in 6.4-rc?
+> 
+> Unfortunately, for this project I use LTS 5.15.z kernel.
+> 
+> My impression is that the mv88e6xxx driver is not handling EEE setup
+> during initialization (even with v6.4-rc).
+> 
+> I've tried to replace genphy_config_eee_advert() with phy_init_eee, but
+> it lacks the part to program PCS advertise registers.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Firstly, I would advise backporting the EEE changes. The older EEE
+implementation was IMHO not particularly good (I think you can find
+a record in the archives of me stating that the old interfaces were
+just too quirky.)
 
+Secondly, even if you program the PHY for EEE, unless you have
+something like an Atheros AR803x PHY with its SmartEEE, EEE needs
+the support of both the PHY and the MAC to which its connected to
+in order to work. It's the MAC which is the "client" which says
+to the PHY "I'm idle" and when both ends tell their PHYs that
+they're idle, the media link can then drop into the low power
+state.
+
+The 88e6xxx internal PHYs will communicate their EEE negotiation
+state back to the MACs, but for an external PHY, that won't happen,
+and there is no code in the 88e6xxx driver to configure the MAC to
+program the MAC to do EEE.
+
+So, I'm wondering what's actually going on here... can you give
+any more details about the hardware setup?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
