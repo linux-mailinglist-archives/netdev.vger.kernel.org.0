@@ -1,181 +1,476 @@
-Return-Path: <netdev+bounces-6355-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6356-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 66ECD715E40
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 14:00:13 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id C0A30715E48
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 14:01:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A531E1C20C1A
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 12:00:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 541E61C20B75
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 12:01:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E514D182B8;
-	Tue, 30 May 2023 12:00:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B7F5F182DA;
+	Tue, 30 May 2023 12:01:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0EE317AC6
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 12:00:09 +0000 (UTC)
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2098.outbound.protection.outlook.com [40.107.92.98])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A01F3;
-	Tue, 30 May 2023 04:59:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MyLp//T/ihHwxBJcAr+CitwneoSBOjxPhzwQBUOuYaVkFlDkBCV6ecKXzCpHunOHmKBRMZ4xaW+t5VCX5ErNxRaK3BTuOOW3jJ+Mt6hkKH2qsRwCNV8izxCUh8EENLhi5fNcDUxx2hctiPEsy0UJc5dnPrUwrkbcEQPsNPMzqz6kbGC6haK+0ZmP9A093fS07dTWMPvp6Ij87jvc6K8p83SbMWA3GYo55vSMkHnC5yQ/xXTg7+M/E+VHtufcSv5dtNp8pY+N+GxZcUTi5u5p0HfO4BIu2lndDAsA2GsGv1ogbFx+n/vvlB+hcb3nKIwZJdKcvURTG3/LpMTffzBkIw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JRs1pY0AWC9GkXfojTlUJBVE/6M0Gl0ZOzh3mssJh4U=;
- b=aYC+kMQgz5BIIcptYVwurQMRiWyG8x0ItaojOzdfl8SKmqswKhXfYfpOPdDjJobOEZxCSTgZ5+/qnJh58JATJ8gwLg5KaN6MZmTcP53p4U1weA1Loe4nPH21zaI5t4dQWKm5W5/14t2Gh3wIhcDTargJmtEZWOeU5fUrowKQ4prXTZxuH4GQioKw8NPXm3OI32eSdopBKUS+XpHe6VfJF71xGQDiQrh8vpSM1G3tCyPmweQ/r/ffTKfSFS+wVym1rmQI0/JhF4Emn7EVcoChM6H06vu2Wy9sl/zk5hP6VxfrL4xXZz1Ap6JRAHV4Aq9SzGub/SNAKQ2XWV1x0Dky4w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JRs1pY0AWC9GkXfojTlUJBVE/6M0Gl0ZOzh3mssJh4U=;
- b=XRgZDQIYLA9VO7NN+Lp+9swHyjkEQGuWjpO6YlDFTco43A3dqe+MrX4h3TDC/1WhVKn0G56XGgVtL5DwjqzMm070jz6jZW3z/e0Mo5tUKiwsIBFaw5RXqCyGgFEelYqbuxVPGUQvwFBNFs/eSDSxbWDLqWfpRog6VT6JCRsP/x0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM6PR13MB3820.namprd13.prod.outlook.com (2603:10b6:5:245::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23; Tue, 30 May
- 2023 11:59:27 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6433.022; Tue, 30 May 2023
- 11:59:27 +0000
-Date: Tue, 30 May 2023 13:59:20 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Richard Gobert <richardbgobert@gmail.com>
-Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, lixiaoyan@google.com, alexanderduyck@fb.com,
-	linyunsheng@huawei.com, lucien.xin@gmail.com,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] gro: decrease size of CB
-Message-ID: <ZHXlGH2YqVnO6KYq@corigine.com>
-References: <20230529160503.GA3884@debian>
- <20230529161240.GA3958@debian>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230529161240.GA3958@debian>
-X-ClientProxiedBy: AM0PR01CA0082.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:10e::23) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5F8217FF5
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 12:01:19 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F78B90;
+	Tue, 30 May 2023 05:01:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1685448077; x=1716984077;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SV0f890kYGMVyZmg8vt7TTw244ER+FU0s1Oc2QFPtZw=;
+  b=hRAzNJ+H5wpxjB60PdPUX6sdJFrAGw88Yl8G8Y6t0tdJzesS4q+x3aKh
+   IYnTf854fOQ+b1L8nw70irec+JIgZScNRwdJL6G2umrPxWgva9/2+G88S
+   wfcqOLDK5wQb6rsK8WmzeJ+NRjuz0ThVVZH9J/WGQb1uoya+bEMU0DQHN
+   5INLop2fjrggiMANeXW6/DwZXNL2G0T5AJZlT10rNt+xyr3BV6PW8hwLZ
+   FJxfe7fq6Poi9SQGCeLJDmCLuYWtkC6MXoqEFf4AxeH8eGEw7YLO6CJ6c
+   RcmHA+BpAi5PyGSpQOw9nJBuEnTAqIUwQOcCPaIvuxJajm4ypNl/8Xb5+
+   w==;
+X-IronPort-AV: E=Sophos;i="6.00,204,1681196400"; 
+   d="scan'208";a="216017968"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2023 05:01:16 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Tue, 30 May 2023 05:01:15 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Tue, 30 May 2023 05:01:15 -0700
+Date: Tue, 30 May 2023 14:01:14 +0200
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
+To: Vladimir Oltean <vladimir.oltean@nxp.com>
+CC: <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>, "Eric
+ Dumazet" <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+	<pabeni@redhat.com>, Jamal Hadi Salim <jhs@mojatatu.com>, Cong Wang
+	<xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>, "Vinicius Costa
+ Gomes" <vinicius.gomes@intel.com>, Kurt Kanzenbach <kurt@linutronix.de>,
+	Gerhard Engleder <gerhard@engleder-embedded.com>, Amritha Nambiar
+	<amritha.nambiar@intel.com>, Ferenc Fejes <ferenc.fejes@ericsson.com>,
+	Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, Roger Quadros <rogerq@kernel.org>,
+	Pranavi Somisetty <pranavi.somisetty@amd.com>, Harini Katakam
+	<harini.katakam@amd.com>, Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>, Michael Sit Wei Hong
+	<michael.wei.hong.sit@intel.com>, Mohammad Athari Bin Ismail
+	<mohammad.athari.ismail@intel.com>, Oleksij Rempel <linux@rempel-privat.de>,
+	Jacob Keller <jacob.e.keller@intel.com>, <linux-kernel@vger.kernel.org>,
+	Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
+	Claudiu Manoil <claudiu.manoil@nxp.com>, Alexandre Belloni
+	<alexandre.belloni@bootlin.com>, <UNGLinuxDriver@microchip.com>, "Jesse
+ Brandeburg" <jesse.brandeburg@intel.com>, Tony Nguyen
+	<anthony.l.nguyen@intel.com>, Jose Abreu <joabreu@synopsys.com>, "Maxime
+ Coquelin" <mcoquelin.stm32@gmail.com>, <intel-wired-lan@lists.osuosl.org>,
+	Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+Subject: Re: [PATCH net-next 2/5] net/sched: taprio: replace
+ tc_taprio_qopt_offload :: enable with a "cmd" enum
+Message-ID: <20230530120114.zxh5xncibdtqkf3l@soft-dev3-1>
+References: <20230530091948.1408477-1-vladimir.oltean@nxp.com>
+ <20230530091948.1408477-3-vladimir.oltean@nxp.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB3820:EE_
-X-MS-Office365-Filtering-Correlation-Id: 319fbc3c-d980-4e9f-ae3b-08db6105517e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	A9QGACjASvGaSi4WwxsKhnNmCDIhhpS+rHpTkThjEfq9Ia3APjLobFVXWnQPB5q5ZDJSd8hgXQbVxFzJYcAQSUVnBV6SAeKOaIWLr1CdSS930Gr00uXGwy21nOYTDlJnJEI+EnDrkEpOOizxUmmstHbJAmwVL123nDQ6v9N2FZHVe/WAHWpSUmECKZQFeJvISHiyd4t0qTdpCTHWh1YINFV2YRXczYJFH/C+geP7HoDLcC5eilFn64rSycZfCGI8v8ZOLslvcy3wHjlZGYJrZzepCJHNVpSM/cyLQVdqJxlrY1pWaWkyyRW9mskIRRsg4ucYa4R45j93OIi6663OhCWtZoe5SA1QzE8aFJAE2ExrcmFqCUbgC6YETZM4VV18nltwwxZIXwdmieN3ssLlBMf9BjviY6tZkfupao1in6O5eFLD8ZzJmHR1WnWDvZOsVKzdz6MNHncDwQXEN7umO5uV/G1PjFw+jSWP5UIMjyFSiZ884yTemYInq0J5NPrraw95AC0Q/QcL/lD40KNscQu8bOflwOMoSDAy2fJtg9v06qsTYfjkknp28tDUfyrR
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(39830400003)(346002)(136003)(376002)(451199021)(6512007)(6506007)(186003)(2906002)(2616005)(478600001)(44832011)(83380400001)(86362001)(8936002)(8676002)(6486002)(41300700001)(38100700002)(66946007)(66476007)(5660300002)(66556008)(36756003)(6666004)(316002)(7416002)(4326008)(6916009);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?on1S3usz/EXMw1j3Mwx8WkNxk/BJjr2ZbR1PBEix7mtfmBuCqZbG4wbKCGz8?=
- =?us-ascii?Q?HYTX9p72EHgGZaEwjCVW1b0GiwtuzF0QVKKbRtSrcqKPSxaLdO74KMvxmw+M?=
- =?us-ascii?Q?WVTxd784EwdmXWp+ZoZSZ6EIqsykjuO6zq3lEffVyamTjtA+ntnQ5QAWM60P?=
- =?us-ascii?Q?uzFTR4lPguIamm7viqRyfo6+7nrE74Q4rFUKPvb8ddhgv75mDCSwi6ffRKZY?=
- =?us-ascii?Q?z7NO6UiuoJM67UxYiVfS5tcQMNzPVdjtHZM7j4o8GeiNTMnf3k95lyO4rns9?=
- =?us-ascii?Q?KPO0NjbTQR+8oAwfvVIRn2Mr+0vnEjePWOQJuKlK5dxU/oPlfOsWWQbdLzky?=
- =?us-ascii?Q?CZU2MDUWEB84DcBkWyQQWO2960iXAUpI6Rrv+rp5O9P2jDc6OisFnBlgLCJ1?=
- =?us-ascii?Q?Y7OZTr79RHaLJ5v9Cts59CHHjJmRQ0T4TDuTd08gQmVzID3MdhhUhydKE4fG?=
- =?us-ascii?Q?NAoDZh180K1MfhqbhrOWykdLONMys8oTYmfpkQaCUC8vbk0Ukj4q8a3Rz9u3?=
- =?us-ascii?Q?IcHbvcoOynaZm6BWWTAKWKnDQTvf6Ql24c+mdMx4R93fZ9oGRGi3AM/ZjX7N?=
- =?us-ascii?Q?FQirQDudXqymywMzoKQVaOQ3oucPMpOhG+x32YKML7jFsIoYclA2IqOIipAr?=
- =?us-ascii?Q?RT8dpQOVO8Y8sBNVJ6UZBYK9nkMf015xJYIzOlfTLA5GrTSyqfJjZ1tGjz0A?=
- =?us-ascii?Q?cRtNQwiaFnphyC04XsDQQF4rGei/p4JUQpd7Px4abDaw9yiPKnPJvARU4RMQ?=
- =?us-ascii?Q?FznTLBkqhD+5qPA9fShT7SfL4URUVroe7hfurAivGEO/JOo9aDNHGoTaqirS?=
- =?us-ascii?Q?0BXANIYfb20cZ5ieqhq/uaIgS3u12mVq8pfJ1BSETjtoriMGDgkUNgaTMDKm?=
- =?us-ascii?Q?W7qIs69wwPdHYcxjMPJwsVJQtjUjeMIQncxqZTJX2sWsPj8YJA5n8sepOyih?=
- =?us-ascii?Q?s5U9DaoL15J4d3utlSZ7gIvz7I/WFJ3UXHRe94+WXWj9dKaqJ5nlhMNAY2Td?=
- =?us-ascii?Q?ULguCTSDeXqD04M5I821G9h/3J4RO+HVEfskALJ0yYb0BOgvpoq+UGxNpGmf?=
- =?us-ascii?Q?dCvJ7CRQdM8NnNw5ChN5c0Yx55mMZ3hpSzaNk+5tLu4/niccTrCiVaXUC47q?=
- =?us-ascii?Q?yC/rslCHudglBTSUo/4XYvTtgrOxX8tuXrlqnHKBSBt3q5piTx+BF176FWcI?=
- =?us-ascii?Q?TjVKRORMolhxiUdFfWiJUpqQlAjoreC7rZ7Ve1NzcC43TPYDQUtjDgyAzGdv?=
- =?us-ascii?Q?oF6gB8MCScA3PL+AceZ4lNNlqNOhBuMqYSesGfRiNv5F2zLaAzNxTnU5Kw9L?=
- =?us-ascii?Q?O1oFwyyyjhuABKWpKvsvFGVO3VIzWMJWtVxZSscQaKzo6hh4j+w5ytuVyvx9?=
- =?us-ascii?Q?KI33MyvDqe7iqGbhtkm/KQuy08oFLgbcIYG8R8ANIC8WgdCrl9futc2c7Kdm?=
- =?us-ascii?Q?QIYJBOGlt/nn3eras97Vit3JZsGN6HcoVVApSWOBzjwN6Y91nceLoxyGAMuY?=
- =?us-ascii?Q?+PN1lPhLSckrXeJZ/bHlQP0VSR1nd1eaOvqSn9Ol/oGf8dDmlTbNWzjcMMQP?=
- =?us-ascii?Q?xGAtWo4tEygExA6raz0mbehJyjr2IGZUtcet0KoazOCkDVK3nMBrMQlKJ0xx?=
- =?us-ascii?Q?IsZ8trlryIEnaOp0gjl8GRc2curXpLx6Ux9AzcSmbwpSDn30zVd8J2Ulq8wf?=
- =?us-ascii?Q?PhiTdA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 319fbc3c-d980-4e9f-ae3b-08db6105517e
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 11:59:27.4132
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8bdMp7Id/KpjET3g2ZTNT5F+dTrqZshvKqJtDECq29/THX7Oy8NnVVftQtccdXXXai1bIacnWr3PwAI+7VB/sYNJo2RmIhW1pAhasEoPxak=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB3820
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20230530091948.1408477-3-vladimir.oltean@nxp.com>
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 29, 2023 at 06:12:42PM +0200, Richard Gobert wrote:
-> The GRO control block (NAPI_GRO_CB) is currently at its maximum size.
-> This commit reduces its size by putting two groups of fields that are
-> used only at different times into a union.
+The 05/30/2023 12:19, Vladimir Oltean wrote:
 > 
-> Specifically, the fields frag0 and frag0_len are the fields that make up
-> the frag0 optimisation mechanism, which is used during the initial
-> parsing of the SKB.
+> Inspired from struct flow_cls_offload :: cmd, in order for taprio to be
+> able to report statistics (which is future work), it seems that we need
+> to drill one step further with the ndo_setup_tc(TC_SETUP_QDISC_TAPRIO)
+> multiplexing, and pass the command as part of the common portion of the
+> muxed structure.
 > 
-> The fields last and age are used after the initial parsing, while the
-> SKB is stored in the GRO list, waiting for other packets to arrive.
+> Since we already have an "enable" variable in tc_taprio_qopt_offload,
+> refactor all drivers to check for "cmd" instead of "enable", and reject
+> every other command except "replace" and "destroy" - to be future proof.
 > 
-> There was one location in dev_gro_receive that modified the frag0 fields
-> after setting last and age. I changed this accordingly without altering
-> the code behaviour.
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com> # for lan966x
+
+> ---
+>  drivers/net/dsa/hirschmann/hellcreek.c             | 14 +++++++++-----
+>  drivers/net/dsa/ocelot/felix_vsc9959.c             |  4 +++-
+>  drivers/net/dsa/sja1105/sja1105_tas.c              |  7 +++++--
+>  drivers/net/ethernet/engleder/tsnep_selftests.c    | 12 ++++++------
+>  drivers/net/ethernet/engleder/tsnep_tc.c           |  4 +++-
+>  drivers/net/ethernet/freescale/enetc/enetc_qos.c   |  6 +++++-
+>  drivers/net/ethernet/intel/igc/igc_main.c          | 13 +++++++++++--
+>  .../net/ethernet/microchip/lan966x/lan966x_tc.c    | 10 ++++++++--
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c    |  7 +++++--
+>  drivers/net/ethernet/ti/am65-cpsw-qos.c            | 11 ++++++++---
+>  include/net/pkt_sched.h                            |  7 ++++++-
+>  net/sched/sch_taprio.c                             |  4 ++--
+>  12 files changed, 71 insertions(+), 28 deletions(-)
 > 
-> Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
-
-...
-
-> diff --git a/net/core/gro.c b/net/core/gro.c
-> index 2d84165cb4f1..91454176a6d8 100644
-> --- a/net/core/gro.c
-> +++ b/net/core/gro.c
-> @@ -460,6 +460,14 @@ static void gro_pull_from_frag0(struct sk_buff *skb, int grow)
->  	}
->  }
->  
-> +static inline void gro_try_pull_from_frag0(struct sk_buff *skb)
-
-Hi Richard,
-
-In general it is preferred not to use the inline keyword in C files,
-but rather let the compiler do it's thing.
-
-Unless you think the compiler isn't doing it's thing very well
-in this case, please consider removing the inline keyword.
-
-> +{
-> +	int grow = skb_gro_offset(skb) - skb_headlen(skb);
+> diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
+> index 595a548bb0a8..af50001ccdd4 100644
+> --- a/drivers/net/dsa/hirschmann/hellcreek.c
+> +++ b/drivers/net/dsa/hirschmann/hellcreek.c
+> @@ -1885,13 +1885,17 @@ static int hellcreek_port_setup_tc(struct dsa_switch *ds, int port,
+>         case TC_SETUP_QDISC_TAPRIO: {
+>                 struct tc_taprio_qopt_offload *taprio = type_data;
+> 
+> -               if (!hellcreek_validate_schedule(hellcreek, taprio))
+> -                       return -EOPNOTSUPP;
+> +               switch (taprio->cmd) {
+> +               case TAPRIO_CMD_REPLACE:
+> +                       if (!hellcreek_validate_schedule(hellcreek, taprio))
+> +                               return -EOPNOTSUPP;
+> 
+> -               if (taprio->enable)
+>                         return hellcreek_port_set_schedule(ds, port, taprio);
+> -
+> -               return hellcreek_port_del_schedule(ds, port);
+> +               case TAPRIO_CMD_DESTROY:
+> +                       return hellcreek_port_del_schedule(ds, port);
+> +               default:
+> +                       return -EOPNOTSUPP;
+> +               }
+>         }
+>         default:
+>                 return -EOPNOTSUPP;
+> diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+> index 030738fef60e..5de6a27052fc 100644
+> --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
+> +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+> @@ -1411,7 +1411,7 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+> 
+>         mutex_lock(&ocelot->tas_lock);
+> 
+> -       if (!taprio->enable) {
+> +       if (taprio->cmd == TAPRIO_CMD_DESTROY) {
+>                 ocelot_port_mqprio(ocelot, port, &taprio->mqprio);
+>                 ocelot_rmw_rix(ocelot, 0, QSYS_TAG_CONFIG_ENABLE,
+>                                QSYS_TAG_CONFIG, port);
+> @@ -1423,6 +1423,8 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+> 
+>                 mutex_unlock(&ocelot->tas_lock);
+>                 return 0;
+> +       } else if (taprio->cmd != TAPRIO_CMD_REPLACE) {
+> +               return -EOPNOTSUPP;
+>         }
+> 
+>         ret = ocelot_port_mqprio(ocelot, port, &taprio->mqprio);
+> diff --git a/drivers/net/dsa/sja1105/sja1105_tas.c b/drivers/net/dsa/sja1105/sja1105_tas.c
+> index e6153848a950..d7818710bc02 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_tas.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_tas.c
+> @@ -516,10 +516,11 @@ int sja1105_setup_tc_taprio(struct dsa_switch *ds, int port,
+>         /* Can't change an already configured port (must delete qdisc first).
+>          * Can't delete the qdisc from an unconfigured port.
+>          */
+> -       if (!!tas_data->offload[port] == admin->enable)
+> +       if ((!!tas_data->offload[port] && admin->cmd == TAPRIO_CMD_REPLACE) ||
+> +           (!tas_data->offload[port] && admin->cmd == TAPRIO_CMD_DESTROY))
+>                 return -EINVAL;
+> 
+> -       if (!admin->enable) {
+> +       if (admin->cmd == TAPRIO_CMD_DESTROY) {
+>                 taprio_offload_free(tas_data->offload[port]);
+>                 tas_data->offload[port] = NULL;
+> 
+> @@ -528,6 +529,8 @@ int sja1105_setup_tc_taprio(struct dsa_switch *ds, int port,
+>                         return rc;
+> 
+>                 return sja1105_static_config_reload(priv, SJA1105_SCHEDULING);
+> +       } else if (admin->cmd != TAPRIO_CMD_REPLACE) {
+> +               return -EOPNOTSUPP;
+>         }
+> 
+>         /* The cycle time extension is the amount of time the last cycle from
+> diff --git a/drivers/net/ethernet/engleder/tsnep_selftests.c b/drivers/net/ethernet/engleder/tsnep_selftests.c
+> index 1581d6b22232..8a9145f93147 100644
+> --- a/drivers/net/ethernet/engleder/tsnep_selftests.c
+> +++ b/drivers/net/ethernet/engleder/tsnep_selftests.c
+> @@ -329,7 +329,7 @@ static bool disable_taprio(struct tsnep_adapter *adapter)
+>         int retval;
+> 
+>         memset(&qopt, 0, sizeof(qopt));
+> -       qopt.enable = 0;
+> +       qopt.cmd = TAPRIO_CMD_DESTROY;
+>         retval = tsnep_tc_setup(adapter->netdev, TC_SETUP_QDISC_TAPRIO, &qopt);
+>         if (retval)
+>                 return false;
+> @@ -360,7 +360,7 @@ static bool tsnep_test_taprio(struct tsnep_adapter *adapter)
+>         for (i = 0; i < 255; i++)
+>                 qopt->entries[i].command = TC_TAPRIO_CMD_SET_GATES;
+> 
+> -       qopt->enable = 1;
+> +       qopt->cmd = TAPRIO_CMD_REPLACE;
+>         qopt->base_time = ktime_set(0, 0);
+>         qopt->cycle_time = 1500000;
+>         qopt->cycle_time_extension = 0;
+> @@ -382,7 +382,7 @@ static bool tsnep_test_taprio(struct tsnep_adapter *adapter)
+>         if (!run_taprio(adapter, qopt, 100))
+>                 goto failed;
+> 
+> -       qopt->enable = 1;
+> +       qopt->cmd = TAPRIO_CMD_REPLACE;
+>         qopt->base_time = ktime_set(0, 0);
+>         qopt->cycle_time = 411854;
+>         qopt->cycle_time_extension = 0;
+> @@ -406,7 +406,7 @@ static bool tsnep_test_taprio(struct tsnep_adapter *adapter)
+>         if (!run_taprio(adapter, qopt, 100))
+>                 goto failed;
+> 
+> -       qopt->enable = 1;
+> +       qopt->cmd = TAPRIO_CMD_REPLACE;
+>         qopt->base_time = ktime_set(0, 0);
+>         delay_base_time(adapter, qopt, 12);
+>         qopt->cycle_time = 125000;
+> @@ -457,7 +457,7 @@ static bool tsnep_test_taprio_change(struct tsnep_adapter *adapter)
+>         for (i = 0; i < 255; i++)
+>                 qopt->entries[i].command = TC_TAPRIO_CMD_SET_GATES;
+> 
+> -       qopt->enable = 1;
+> +       qopt->cmd = TAPRIO_CMD_REPLACE;
+>         qopt->base_time = ktime_set(0, 0);
+>         qopt->cycle_time = 100000;
+>         qopt->cycle_time_extension = 0;
+> @@ -610,7 +610,7 @@ static bool tsnep_test_taprio_extension(struct tsnep_adapter *adapter)
+>         for (i = 0; i < 255; i++)
+>                 qopt->entries[i].command = TC_TAPRIO_CMD_SET_GATES;
+> 
+> -       qopt->enable = 1;
+> +       qopt->cmd = TAPRIO_CMD_REPLACE;
+>         qopt->base_time = ktime_set(0, 0);
+>         qopt->cycle_time = 100000;
+>         qopt->cycle_time_extension = 50000;
+> diff --git a/drivers/net/ethernet/engleder/tsnep_tc.c b/drivers/net/ethernet/engleder/tsnep_tc.c
+> index d083e6684f12..745b191a5540 100644
+> --- a/drivers/net/ethernet/engleder/tsnep_tc.c
+> +++ b/drivers/net/ethernet/engleder/tsnep_tc.c
+> @@ -325,7 +325,7 @@ static int tsnep_taprio(struct tsnep_adapter *adapter,
+>         if (!adapter->gate_control)
+>                 return -EOPNOTSUPP;
+> 
+> -       if (!qopt->enable) {
+> +       if (qopt->cmd == TAPRIO_CMD_DESTROY) {
+>                 /* disable gate control if active */
+>                 mutex_lock(&adapter->gate_control_lock);
+> 
+> @@ -337,6 +337,8 @@ static int tsnep_taprio(struct tsnep_adapter *adapter,
+>                 mutex_unlock(&adapter->gate_control_lock);
+> 
+>                 return 0;
+> +       } else if (qopt->cmd != TAPRIO_CMD_REPLACE) {
+> +               return -EOPNOTSUPP;
+>         }
+> 
+>         retval = tsnep_validate_gcl(qopt);
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+> index 83c27bbbc6ed..7aad824f4da7 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+> @@ -65,7 +65,7 @@ static int enetc_setup_taprio(struct net_device *ndev,
+>         gcl_len = admin_conf->num_entries;
+> 
+>         tge = enetc_rd(hw, ENETC_PTGCR);
+> -       if (!admin_conf->enable) {
+> +       if (admin_conf->cmd == TAPRIO_CMD_DESTROY) {
+>                 enetc_wr(hw, ENETC_PTGCR, tge & ~ENETC_PTGCR_TGE);
+>                 enetc_reset_ptcmsdur(hw);
+> 
+> @@ -138,6 +138,10 @@ int enetc_setup_tc_taprio(struct net_device *ndev, void *type_data)
+>         struct enetc_ndev_priv *priv = netdev_priv(ndev);
+>         int err, i;
+> 
+> +       if (taprio->cmd != TAPRIO_CMD_REPLACE &&
+> +           taprio->cmd != TAPRIO_CMD_DESTROY)
+> +               return -EOPNOTSUPP;
 > +
-> +	if (grow > 0)
-> +		gro_pull_from_frag0(skb, grow);
-> +}
-> +
->  static void gro_flush_oldest(struct napi_struct *napi, struct list_head *head)
+>         /* TSD and Qbv are mutually exclusive in hardware */
+>         for (i = 0; i < priv->num_tx_rings; i++)
+>                 if (priv->tx_ring[i]->tsd_enable)
+> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+> index c5ef1edcf548..88145c30c919 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+> @@ -6113,9 +6113,18 @@ static int igc_save_qbv_schedule(struct igc_adapter *adapter,
+>         size_t n;
+>         int i;
+> 
+> -       adapter->qbv_enable = qopt->enable;
+> +       switch (qopt->cmd) {
+> +       case TAPRIO_CMD_REPLACE:
+> +               adapter->qbv_enable = true;
+> +               break;
+> +       case TAPRIO_CMD_DESTROY:
+> +               adapter->qbv_enable = false;
+> +               break;
+> +       default:
+> +               return -EOPNOTSUPP;
+> +       }
+> 
+> -       if (!qopt->enable)
+> +       if (!adapter->qbv_enable)
+>                 return igc_tsn_clear_schedule(adapter);
+> 
+>         if (qopt->base_time < 0)
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_tc.c b/drivers/net/ethernet/microchip/lan966x/lan966x_tc.c
+> index cf0cc7562d04..ee652f2d2359 100644
+> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_tc.c
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_tc.c
+> @@ -21,8 +21,14 @@ static int lan966x_tc_setup_qdisc_mqprio(struct lan966x_port *port,
+>  static int lan966x_tc_setup_qdisc_taprio(struct lan966x_port *port,
+>                                          struct tc_taprio_qopt_offload *taprio)
 >  {
->  	struct sk_buff *oldest;
+> -       return taprio->enable ? lan966x_taprio_add(port, taprio) :
+> -                               lan966x_taprio_del(port);
+> +       switch (taprio->cmd) {
+> +       case TAPRIO_CMD_REPLACE:
+> +               return lan966x_taprio_add(port, taprio);
+> +       case TAPRIO_CMD_DESTROY:
+> +               return lan966x_taprio_del(port);
+> +       default:
+> +               return -EOPNOTSUPP;
+> +       }
+>  }
+> 
+>  static int lan966x_tc_setup_qdisc_tbf(struct lan966x_port *port,
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
+> index 9d55226479b4..ac41ef4cbd2f 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
+> @@ -966,8 +966,11 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
+>                 return -EOPNOTSUPP;
+>         }
+> 
+> -       if (!qopt->enable)
+> +       if (qopt->cmd == TAPRIO_CMD_DESTROY)
+>                 goto disable;
+> +       else if (qopt->cmd != TAPRIO_CMD_REPLACE)
+> +               return -EOPNOTSUPP;
+> +
+>         if (qopt->num_entries >= dep)
+>                 return -EINVAL;
+>         if (!qopt->cycle_time)
+> @@ -988,7 +991,7 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
+> 
+>         mutex_lock(&priv->plat->est->lock);
+>         priv->plat->est->gcl_size = size;
+> -       priv->plat->est->enable = qopt->enable;
+> +       priv->plat->est->enable = qopt->cmd == TAPRIO_CMD_REPLACE;
+>         mutex_unlock(&priv->plat->est->lock);
+> 
+>         for (i = 0; i < size; i++) {
+> diff --git a/drivers/net/ethernet/ti/am65-cpsw-qos.c b/drivers/net/ethernet/ti/am65-cpsw-qos.c
+> index 3a908db6e5b2..eced87fa261c 100644
+> --- a/drivers/net/ethernet/ti/am65-cpsw-qos.c
+> +++ b/drivers/net/ethernet/ti/am65-cpsw-qos.c
+> @@ -450,7 +450,7 @@ static int am65_cpsw_configure_taprio(struct net_device *ndev,
+> 
+>         am65_cpsw_est_update_state(ndev);
+> 
+> -       if (!est_new->taprio.enable) {
+> +       if (est_new->taprio.cmd == TAPRIO_CMD_DESTROY) {
+>                 am65_cpsw_stop_est(ndev);
+>                 return ret;
+>         }
+> @@ -476,7 +476,7 @@ static int am65_cpsw_configure_taprio(struct net_device *ndev,
+>         am65_cpsw_est_set_sched_list(ndev, est_new);
+>         am65_cpsw_port_est_assign_buf_num(ndev, est_new->buf);
+> 
+> -       am65_cpsw_est_set(ndev, est_new->taprio.enable);
+> +       am65_cpsw_est_set(ndev, est_new->taprio.cmd == TAPRIO_CMD_REPLACE);
+> 
+>         if (tact == TACT_PROG) {
+>                 ret = am65_cpsw_timer_set(ndev, est_new);
+> @@ -520,7 +520,7 @@ static int am65_cpsw_set_taprio(struct net_device *ndev, void *type_data)
+>         am65_cpsw_cp_taprio(taprio, &est_new->taprio);
+>         ret = am65_cpsw_configure_taprio(ndev, est_new);
+>         if (!ret) {
+> -               if (taprio->enable) {
+> +               if (taprio->cmd == TAPRIO_CMD_REPLACE) {
+>                         devm_kfree(&ndev->dev, port->qos.est_admin);
+> 
+>                         port->qos.est_admin = est_new;
+> @@ -564,8 +564,13 @@ static void am65_cpsw_est_link_up(struct net_device *ndev, int link_speed)
+>  static int am65_cpsw_setup_taprio(struct net_device *ndev, void *type_data)
+>  {
+>         struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
+> +       struct tc_taprio_qopt_offload *taprio = type_data;
+>         struct am65_cpsw_common *common = port->common;
+> 
+> +       if (taprio->cmd != TAPRIO_CMD_REPLACE &&
+> +           taprio->cmd != TAPRIO_CMD_DESTROY)
+> +               return -EOPNOTSUPP;
+> +
+>         if (!IS_ENABLED(CONFIG_TI_AM65_CPSW_TAS))
+>                 return -ENODEV;
+> 
+> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+> index f436688b6efc..f5fb11da357b 100644
+> --- a/include/net/pkt_sched.h
+> +++ b/include/net/pkt_sched.h
+> @@ -185,6 +185,11 @@ struct tc_taprio_caps {
+>         bool broken_mqprio:1;
+>  };
+> 
+> +enum tc_taprio_qopt_cmd {
+> +       TAPRIO_CMD_REPLACE,
+> +       TAPRIO_CMD_DESTROY,
+> +};
+> +
+>  struct tc_taprio_sched_entry {
+>         u8 command; /* TC_TAPRIO_CMD_* */
+> 
+> @@ -196,7 +201,7 @@ struct tc_taprio_sched_entry {
+>  struct tc_taprio_qopt_offload {
+>         struct tc_mqprio_qopt_offload mqprio;
+>         struct netlink_ext_ack *extack;
+> -       u8 enable;
+> +       enum tc_taprio_qopt_cmd cmd;
+>         ktime_t base_time;
+>         u64 cycle_time;
+>         u64 cycle_time_extension;
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index d29e6785854d..06bf4c6355a5 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -1524,7 +1524,7 @@ static int taprio_enable_offload(struct net_device *dev,
+>                                "Not enough memory for enabling offload mode");
+>                 return -ENOMEM;
+>         }
+> -       offload->enable = 1;
+> +       offload->cmd = TAPRIO_CMD_REPLACE;
+>         offload->extack = extack;
+>         mqprio_qopt_reconstruct(dev, &offload->mqprio.qopt);
+>         offload->mqprio.extack = extack;
+> @@ -1572,7 +1572,7 @@ static int taprio_disable_offload(struct net_device *dev,
+>                                "Not enough memory to disable offload mode");
+>                 return -ENOMEM;
+>         }
+> -       offload->enable = 0;
+> +       offload->cmd = TAPRIO_CMD_DESTROY;
+> 
+>         err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
+>         if (err < 0) {
+> --
+> 2.34.1
+> 
+> 
 
-...
+-- 
+/Horatiu
 
