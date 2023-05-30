@@ -1,187 +1,110 @@
-Return-Path: <netdev+bounces-6509-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6504-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id CD3B9716BA1
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 19:54:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 7C939716B97
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 19:51:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 878F42812B8
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 17:54:42 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2FE712811E3
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 17:51:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B0E222D247;
-	Tue, 30 May 2023 17:53:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7DBED28C1A;
+	Tue, 30 May 2023 17:51:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94E7C1EA76
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 17:53:44 +0000 (UTC)
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AABE1E5
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 10:53:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685469222; x=1717005222;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=JtLALKCr6ZaRXzpKx4t4bLMrENNsh9XxZP0LT/WN9+c=;
-  b=iT/632beZSvifevwxnNA8ryut6sJWaogJVsYBMag+cug0+DkomE8+o+t
-   uXWD0RUHbt3KTBasMtj+e2JyKcZCgGRbqVKVx5yCe7F7u6ev7LtYgodNY
-   +s/mcEEsUh0F9km1OgtjQNtiIMoqYvYJR9nJmWBm201uZ6qCG5qaKRMMf
-   0bPCl3aGw/mmh5VTe5e3uOQp++lItoNA9GRCW4jCvoZijhxlDPiRW53zV
-   s2BNhNsT1qLUCaKvipH8jHQSA5BfczPwR0TIx0oyitHPMz/6kIUfQSCl0
-   J9N1bto4SvjgZI9Emv0WgIQ7LIfvTr4zdiIHuUlExcgq2dJllr6PILscr
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="418488185"
-X-IronPort-AV: E=Sophos;i="6.00,204,1681196400"; 
-   d="scan'208";a="418488185"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 10:53:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="706525020"
-X-IronPort-AV: E=Sophos;i="6.00,204,1681196400"; 
-   d="scan'208";a="706525020"
-Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by orsmga002.jf.intel.com with ESMTP; 30 May 2023 10:53:39 -0700
-From: Tony Nguyen <anthony.l.nguyen@intel.com>
-To: davem@davemloft.net,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	edumazet@google.com,
-	netdev@vger.kernel.org
-Cc: Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-	anthony.l.nguyen@intel.com,
-	sasha.neftin@intel.com,
-	richardcochran@gmail.com,
-	Naama Meir <naamax.meir@linux.intel.com>
-Subject: [PATCH net 4/4] igc: Add workaround for missing timestamps
-Date: Tue, 30 May 2023 10:49:28 -0700
-Message-Id: <20230530174928.2516291-5-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230530174928.2516291-1-anthony.l.nguyen@intel.com>
-References: <20230530174928.2516291-1-anthony.l.nguyen@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F5681EA76
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 17:51:38 +0000 (UTC)
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14E7A3
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 10:51:36 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id d75a77b69052e-3f6b94062f3so25457971cf.0
+        for <netdev@vger.kernel.org>; Tue, 30 May 2023 10:51:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685469096; x=1688061096;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=NPVf1j/ZGiBZeMQOaoQ1Ab6Us4s8dVEf4ZPJKxrMJL0=;
+        b=kjM5K4c/y4ffBhVd4Bm6WpIzgx3rEDKkihuaiJTcZEpINWY0BmwRcHr7ARWE+EYosj
+         uDU4Myk1jCy/ps/RKuiHPWGUVmvOVZH1s/gJ+97LFBlJdw0LH07maAWSlpJlySHnOyvB
+         kZUKE7r/cScqlHqr/CBz8J82Srg7+04hShA03y3L4ABRa57d89YrwiussHklHNagHJUS
+         2cdnAkDpaLb1bYktxVKqax8E9rONJsmPP/TCtLGf2TIdNjgYmQdGrvEgW9RbQl7q/3jK
+         jSY91hTja43YTGmVl7AA2RmkmYmmZ3K2t4aPh/MIfmtnp1AygfHLxR199FYx5lZKzkpY
+         yFEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685469096; x=1688061096;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=NPVf1j/ZGiBZeMQOaoQ1Ab6Us4s8dVEf4ZPJKxrMJL0=;
+        b=hIRMyhrRMtgZAuelC667ThKwvPiCCZFYhMEkcdHKd57IyZP94n69BdE9ATXx3nmjcL
+         Gd/+t4V0qjQsVVVkR3EDroqpJ/y/j5R4pSHLlKs6gj4EXhlyfvPC8ue0dVWXxYFtDtIK
+         zg2oMj+BtDkaYUvXcXtE6254wfniHFZkAm8RQhrDiJyvn8RtO4KusJbNYS7rZMWHd4In
+         eGwa4poATT9XtnYPAss+snW0N8YmEmT1GoTq+wbpwLutsN2uoamHvzSBsmOQZn2gShok
+         Jb5Iw45j3cmTpmuPHDkfPYFhie/yoa4gpi/w+58r8DSBMbCDKPSnSpAKayau0aIMnCU7
+         4rHw==
+X-Gm-Message-State: AC+VfDzJECQamezBzp1gotIr1RYBJdpSvBtxl1C7ty33GgdkTd/war6T
+	UaLF/uQcoaJIw9tBKe09b14=
+X-Google-Smtp-Source: ACHHUZ7Mu99AQf+GelmKTh/FuX5ypDyaA2r8FXVD7Oh5tHD/QXbn1n4rXqBBGERV5mY7EWz8V17h+g==
+X-Received: by 2002:a05:622a:49:b0:3f6:af78:de10 with SMTP id y9-20020a05622a004900b003f6af78de10mr3143589qtw.28.1685469095687;
+        Tue, 30 May 2023 10:51:35 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id x6-20020ac87ec6000000b003e64303bd2dsm4803401qtj.63.2023.05.30.10.51.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 May 2023 10:51:35 -0700 (PDT)
+Message-ID: <af880ce8-a7b8-138e-1ab9-8c89e662eecf@gmail.com>
+Date: Tue, 30 May 2023 10:51:27 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [RFC/RFTv3 01/24] net: phy: Add phydev->eee_active to simplify
+ adjust link callbacks
+Content-Language: en-US
+To: Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>,
+ Russell King <rmk+kernel@armlinux.org.uk>,
+ Oleksij Rempel <linux@rempel-privat.de>
+References: <20230331005518.2134652-1-andrew@lunn.ch>
+ <20230331005518.2134652-2-andrew@lunn.ch>
+From: Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230331005518.2134652-2-andrew@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+On 3/30/23 17:54, Andrew Lunn wrote:
+> MAC drivers which support EEE need to know the results of the EEE
+> auto-neg in order to program the hardware to perform EEE or not.  The
+> oddly named phy_init_eee() can be used to determine this, it returns 0
+> if EEE should be used, or a negative error code,
+> e.g. -EOPPROTONOTSUPPORT if the PHY does not support EEE or negotiate
+> resulted in it not being used.
+> 
+> However, many MAC drivers get this wrong. Add phydev->eee_active which
+> indicates the result of the autoneg for EEE, including if EEE is
+> administratively disabled with ethtool. The MAC driver can then access
+> this in the same way as link speed and duplex in the adjust link
+> callback.
+> 
+> Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-There's an hardware issue that can cause missing timestamps. The bug
-is that the interrupt is only cleared if the IGC_TXSTMPH_0 register is
-read.
-
-The bug can cause a race condition if a timestamp is captured at the
-wrong time, and we will miss that timestamp. To reduce the time window
-that the problem is able to happen, in case no timestamp was ready, we
-read the "previous" value of the timestamp registers, and we compare
-with the "current" one, if it didn't change we can reasonably sure
-that no timestamp was captured. If they are different, we use the new
-value as the captured timestamp.
-
-This workaround has more impact when multiple timestamp registers are
-used, and the IGC_TXSTMPH_0 register always need to be read, so the
-interrupt is cleared.
-
-Fixes: 2c344ae24501 ("igc: Add support for TX timestamping")
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/igc/igc_ptp.c | 48 ++++++++++++++++++------
- 1 file changed, 37 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
-index 17e8970bd761..47a2140f9144 100644
---- a/drivers/net/ethernet/intel/igc/igc_ptp.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
-@@ -666,14 +666,49 @@ static void igc_ptp_tx_hwtstamp(struct igc_adapter *adapter)
- 	struct sk_buff *skb = adapter->ptp_tx_skb;
- 	struct skb_shared_hwtstamps shhwtstamps;
- 	struct igc_hw *hw = &adapter->hw;
-+	u32 tsynctxctl;
- 	int adjust = 0;
- 	u64 regval;
- 
- 	if (WARN_ON_ONCE(!skb))
- 		return;
- 
--	regval = rd32(IGC_TXSTMPL);
--	regval |= (u64)rd32(IGC_TXSTMPH) << 32;
-+	tsynctxctl = rd32(IGC_TSYNCTXCTL);
-+	tsynctxctl &= IGC_TSYNCTXCTL_TXTT_0;
-+	if (tsynctxctl) {
-+		regval = rd32(IGC_TXSTMPL);
-+		regval |= (u64)rd32(IGC_TXSTMPH) << 32;
-+	} else {
-+		/* There's a bug in the hardware that could cause
-+		 * missing interrupts for TX timestamping. The issue
-+		 * is that for new interrupts to be triggered, the
-+		 * IGC_TXSTMPH_0 register must be read.
-+		 *
-+		 * To avoid discarding a valid timestamp that just
-+		 * happened at the "wrong" time, we need to confirm
-+		 * that there was no timestamp captured, we do that by
-+		 * assuming that no two timestamps in sequence have
-+		 * the same nanosecond value.
-+		 *
-+		 * So, we read the "low" register, read the "high"
-+		 * register (to latch a new timestamp) and read the
-+		 * "low" register again, if "old" and "new" versions
-+		 * of the "low" register are different, a valid
-+		 * timestamp was captured, we can read the "high"
-+		 * register again.
-+		 */
-+		u32 txstmpl_old, txstmpl_new;
-+
-+		txstmpl_old = rd32(IGC_TXSTMPL);
-+		rd32(IGC_TXSTMPH);
-+		txstmpl_new = rd32(IGC_TXSTMPL);
-+
-+		if (txstmpl_old == txstmpl_new)
-+			return;
-+
-+		regval = txstmpl_new;
-+		regval |= (u64)rd32(IGC_TXSTMPH) << 32;
-+	}
- 	if (igc_ptp_systim_to_hwtstamp(adapter, &shhwtstamps, regval))
- 		return;
- 
-@@ -711,22 +746,13 @@ static void igc_ptp_tx_hwtstamp(struct igc_adapter *adapter)
-  */
- void igc_ptp_tx_work(struct igc_adapter *adapter)
- {
--	struct igc_hw *hw = &adapter->hw;
- 	unsigned long flags;
--	u32 tsynctxctl;
- 
- 	spin_lock_irqsave(&adapter->ptp_tx_lock, flags);
- 
- 	if (!adapter->ptp_tx_skb)
- 		goto unlock;
- 
--	tsynctxctl = rd32(IGC_TSYNCTXCTL);
--	tsynctxctl &= IGC_TSYNCTXCTL_TXTT_0;
--	if (!tsynctxctl) {
--		WARN_ONCE(1, "Received a TSTAMP interrupt but no TSTAMP is ready.\n");
--		goto unlock;
--	}
--
- 	igc_ptp_tx_hwtstamp(adapter);
- 
- unlock:
+Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
 -- 
-2.38.1
+Florian
 
 
