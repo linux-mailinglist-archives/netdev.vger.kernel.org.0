@@ -1,229 +1,205 @@
-Return-Path: <netdev+bounces-6607-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6608-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9630871712B
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 01:03:01 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 836B0717130
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 01:03:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4955D281392
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 23:03:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1D52A1C20DD6
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 23:03:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7300534CE3;
-	Tue, 30 May 2023 23:02:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A584134CE6;
+	Tue, 30 May 2023 23:03:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64D00A927
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 23:02:58 +0000 (UTC)
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18446E8
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 16:02:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685487777; x=1717023777;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=n7wkmd7AXWdtHsKrvyGiWof7rMc2DuoYk1UA4uRCkE8=;
-  b=hkkeds4u7e+nCTFHkfxzm48ir3ktbp1oNItkoWF/MUXrxi0yZE4atpX6
-   fbnP2QfbfxbxSTAygtq2cIJBVx1PvstXvHq9ruwkQZKIqvCJ8LxtTqqw3
-   rL1fgIXxEWVd1HoyLFHKzJ7ZjQF3OBk/gmH6q2muOCrMzi9Lk1vho87OD
-   RV5EfKE11SQkvZZGTyzSe7F79ljECOJtaoRpSCIXUDGmGoztedsnQymFf
-   TwMv0y0aRJFI2F5tWt7ZI8bcW41HDx7EVuZve2pFMExPxCaLJ9rI/vrU1
-   dz/LackrLOZpWmakv4E2I3czMuvszsu9f8gPrSjYnJVh23jDjSuQyjijw
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="418557103"
-X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
-   d="scan'208";a="418557103"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 16:02:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="706625446"
-X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
-   d="scan'208";a="706625446"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga002.jf.intel.com with ESMTP; 30 May 2023 16:02:56 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 30 May 2023 16:02:55 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Tue, 30 May 2023 16:02:55 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.42) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Tue, 30 May 2023 16:02:55 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M5UraIgrIA9paOyq+C+16vn9u7qV22zvNZXH7RCxko97qa11fHdCc7MNQIKm6gTaUm5czibyii0FVKgTyCPNOnHu+FMkBIjXmiwQ1zut9zXNvO1IIt7Oe4GSOIcmo/IMDJX5EwMk9JOloiaKx15lQdC2s7RNxtC9WpWqeAVF6nlheu7HjeJXFONAXbqx3T046NutI9sXlrJgDvQlq/b0PnrlJKEh08DkR4c6OvQvU7vIOgW+BgazrBnA8CoD9JUwqjx0cZHEw6RwYocUdSUntPVhLAh9mRr6wqX3mEbYtlip5FQAgOal1zgoaP9utIWE6KLVWgzN3qPuKe9Dv5ra6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9pumfiq9x95Jk/VRGersGyItXYr37iqTfNqgrhswy6I=;
- b=bbWLz/B4kRxbASLtYoc/dA0YG+Afb1NhectiuUAjoW6cI2KKBarRFjBEIm3769K/U0MrOuXIIBQUWV4GYVcBnLdu7GjZdNNofF8OpkcVyDZKWOTbDoCkw4jxTglOFEfdYBnksc5jRh/9y3cS10XcMKzgPGWnUC8wcu/qXZgHJEqeIMgmHy/drdNfxvfdOGWLF7T/2bIlBQLanSyLTEi7iJyZ/BVYHByGe8/7hIoHuoir1984opExSg4B1zq2O8CSi18bxMdqhe0BGrOa/ShQPn0uTgAgpgSpx0JyWLyTtItcDaMCwXmG45WF+Djkv66yztFtOg7mvhEb8UEbsWNX0A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from MW4PR11MB5911.namprd11.prod.outlook.com (2603:10b6:303:16b::16)
- by PH0PR11MB7660.namprd11.prod.outlook.com (2603:10b6:510:26f::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.22; Tue, 30 May
- 2023 23:02:53 +0000
-Received: from MW4PR11MB5911.namprd11.prod.outlook.com
- ([fe80::d06:5841:d0e0:68b8]) by MW4PR11MB5911.namprd11.prod.outlook.com
- ([fe80::d06:5841:d0e0:68b8%4]) with mapi id 15.20.6433.022; Tue, 30 May 2023
- 23:02:53 +0000
-From: "Singh, Krishneil K" <krishneil.k.singh@intel.com>
-To: "Linga, Pavan Kumar" <pavan.kumar.linga@intel.com>,
-	"intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-CC: "willemb@google.com" <willemb@google.com>, "pabeni@redhat.com"
-	<pabeni@redhat.com>, "leon@kernel.org" <leon@kernel.org>, "mst@redhat.com"
-	<mst@redhat.com>, "simon.horman@corigine.com" <simon.horman@corigine.com>,
-	"Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-	"stephen@networkplumber.org" <stephen@networkplumber.org>,
-	"edumazet@google.com" <edumazet@google.com>, "Nguyen, Anthony L"
-	<anthony.l.nguyen@intel.com>, "netdev@vger.kernel.org"
-	<netdev@vger.kernel.org>, "kuba@kernel.org" <kuba@kernel.org>, "Burra, Phani
- R" <phani.r.burra@intel.com>, "decot@google.com" <decot@google.com>,
-	"davem@davemloft.net" <davem@davemloft.net>, "shannon.nelson@amd.com"
-	<shannon.nelson@amd.com>
-Subject: RE: [Intel-wired-lan] [PATCH iwl-next v6 12/15] idpf: add RX splitq
- napi poll support
-Thread-Topic: [Intel-wired-lan] [PATCH iwl-next v6 12/15] idpf: add RX splitq
- napi poll support
-Thread-Index: AQHZjQ1vg3ciX8OOekqLgcxskjdHi69ze1Yw
-Date: Tue, 30 May 2023 23:02:53 +0000
-Message-ID: <MW4PR11MB5911AE69A00E0497F7DBF12ABA4B9@MW4PR11MB5911.namprd11.prod.outlook.com>
-References: <20230523002252.26124-1-pavan.kumar.linga@intel.com>
- <20230523002252.26124-13-pavan.kumar.linga@intel.com>
-In-Reply-To: <20230523002252.26124-13-pavan.kumar.linga@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MW4PR11MB5911:EE_|PH0PR11MB7660:EE_
-x-ms-office365-filtering-correlation-id: ec69afcb-7ae3-4301-54f7-08db6161ffd7
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: kCchETs00Gib8at2aNd+UJAnU9FNDCVDfFQKMTPmuI4RcFP6PnS+RxGEOtycHJziwR0T2jna6bYZpnaUph8UHMqXuoQSaB+/tfug7PaEgjHTPkWSDdPQz++YyYRGhkNe3fzFLFe+V8qPSyumIdxEFI858V+8pvXsSFFmp70NgSuq2cuj0fSOFj4ByHkT6+75MGoRRoMueIaE5Mrr+tHhqRB/CFGignglYGxtLrYv96cV/+VhXtHentwHut7WLm0bu6sWuGLr8UkbuX9XvY5VZev3FgpnxBJ0W8zQOYThP3iZ1xKamnwNAliw3zJznromQjr6r/P+A77k6a/2nRMj+iAz6EkQyhcFAyH43T0dwBD968sTctM2aNpG6oypY7XetP0P6z7jwRVHDkmxbsyVrOt+dU/DCr5b4Xng/GOjkGogxeoAKB1g8OrZGXDWBILDnKgK9YaPdK4S+XzaVerBkS5GdNznDFo7cPHgyF3uWHGryINF/DS1w+IoI5yay22aHtJgJHAFyEYgY72FOtP+oIbvbmNXFOvSLK63wIdi4f3CUEMVzxLEzAOdzHWHsp/+gXn4mBv/RZTuh3uIK5DpFKTrPR3bIhIygH2l8KKxq8BMIrFNVukJW3Uqvmfrrr0L
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5911.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(136003)(346002)(376002)(366004)(396003)(451199021)(86362001)(41300700001)(38070700005)(7696005)(55016003)(4326008)(71200400001)(316002)(33656002)(66946007)(66476007)(64756008)(66446008)(66556008)(7416002)(76116006)(52536014)(5660300002)(2906002)(186003)(478600001)(53546011)(6506007)(9686003)(26005)(83380400001)(8676002)(122000001)(54906003)(8936002)(82960400001)(38100700002)(110136005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?aCpBdHFqhayw9iQJGgIVVDQVWxg7mTSw58CcXgCOKXu0RXngpUyrKJV2ZhGg?=
- =?us-ascii?Q?rwUGVyOg2EfHqEb8pxmWy3mc4Ym21Hu/zF/MjmF+BMfCzbIfLzme4vjyfI47?=
- =?us-ascii?Q?K+SUUEvooh7axXjwX2E3ZUZwlG/eWV5A8vgKL81ZEP/AwaJ2GFTtJ6PaQ2Qx?=
- =?us-ascii?Q?CL7YLC+bVIXwNjd7fzPKN+IJ9XXL9KlUFI4OCpzIOEgsXX8FDPLrMyXSIq/c?=
- =?us-ascii?Q?LwRHPEFUPtngwIbuskhQQmO1Z0bqniuNpFO2heQ/vAHJho8Yd/T5ItLH3knc?=
- =?us-ascii?Q?Cwc/Gw/JB7Pilo+8MO94gcTv5WqSMpTGw2YOBDNTg9IkPEGT5UMX3bSnovc8?=
- =?us-ascii?Q?P+ler4jDibDx9CYXU2C5qT4m/689vSYvKyiJKJtYdhOgYQU1HUwPuf545Yb4?=
- =?us-ascii?Q?3mGzEfTJEHXfyo95yqwjaABDtB7IwlTwPG8AyLia26LJtdMuwrzNs8JUln2U?=
- =?us-ascii?Q?+qDcQJtaLjEiVUbrYy0W96HMMYFEbtddLHsBAiFOCT7WTaFikdpB2N69rfCM?=
- =?us-ascii?Q?+/4k25MjV72/sHRNfHnJPNfVYyPgxWu6kPW/g0ejutfdoCxSI5ERc2ovCax5?=
- =?us-ascii?Q?Aw+zbloJC48a7wYG42g1bxL1AOGtSFV0fUdJR4O3/V3vWrGRsKdbjKqbwJFd?=
- =?us-ascii?Q?I79YfFlc8+tKca2R213MsJwqoD9Ky66jfS0cJtaPVN5uYlMczwEVW6eHJQaK?=
- =?us-ascii?Q?Wm6wdv+R8R0VNWxfXmBm276x7ulj8FpCWwg6cFcK0laGAsFg5qwUJSG5kimz?=
- =?us-ascii?Q?nGD5hJJy0L5LvojOsqC84eEbhtxst3oMJsoPgq3tlTqyebuCYhIdpfKgcQlG?=
- =?us-ascii?Q?wxXIBCAVS6W3ZS7oQLLxkKex14qIUDY5UZwTkUGU7ejgLEs499+HPX4Mluvs?=
- =?us-ascii?Q?gtCNgXF9WLCIO9kts4H8rBbiVvrHSfJ5m/6QhqZNaEdSokrmXFCyHAzFpAX5?=
- =?us-ascii?Q?hXdFuv8CfVTWqcQjwZqEdcowCYRyPSsGbTUJatTWHjAPRBzTcBpgUBN5irNE?=
- =?us-ascii?Q?JR07w/0rhgEYScSNcOr4PNuQ1DOBRvwmLgb8Yvcz43UceKHoK/ryPynGPLn8?=
- =?us-ascii?Q?PNM77konRdPMTaIaoAOycxTnfxHtedkbAcZmgz2oPCzhUPivICLKvy1oNDkD?=
- =?us-ascii?Q?URqYZUkS5evWKk864HGN7e9rjGM1v1/Stms8RllMAVQSaiZ+AvE3UdUm6FyI?=
- =?us-ascii?Q?ido2KiJy7/grEQqimXGMLHTbQX58OQH569mEkMO8tRU0UMDQfC+sNya/HAJr?=
- =?us-ascii?Q?UixhU9txVKgebmHiGrIDIImBlW/XDKKWIOcGLmBlHjFvcye4MGbNjNkoEkS0?=
- =?us-ascii?Q?4vOplhdkwv4VsRwcX3wxveU5W5g0RVN+csyl+1JIjA0NVUtxrwAau2no11zF?=
- =?us-ascii?Q?Kom+9e0An2RGb0nlXWUVjN8UOipt066b3lfktf7MaJFow5jJh2Ps577oqCin?=
- =?us-ascii?Q?flppzEQlYGxLwkyfzGGApMTL1QzDq5ZDYw43+04lrQFPA4oMTeXJsM6nyY+0?=
- =?us-ascii?Q?dnOPH8fFLazJLBU4pSemXns20ItVO7UHPUF/4YVi0v0dWh4TQFF9Dx4iINBK?=
- =?us-ascii?Q?IDWx6d1/gddjHHc5OtaYYwY1mQUJ13ywGsmdDoHpEWWWPQrlzjPXQHZjn90h?=
- =?us-ascii?Q?5A=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94409A927
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 23:03:51 +0000 (UTC)
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B250710A
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 16:03:45 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id 41be03b00d2f7-5346d150972so4532353a12.3
+        for <netdev@vger.kernel.org>; Tue, 30 May 2023 16:03:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685487825; x=1688079825;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VGBkdAioPYjKfdSzh76OpK2mIcPIL5KFujvfOfU06eY=;
+        b=WbdSLQRbMMEAyjqgF7qFsaA8jmB8cgQ/GWIM42aQxj+UgRhPHJaXBrNdWKuqA92iK8
+         9eHVSH/ptfI6twyyUoXz7WBpKNAPnj3kcoQsPHZRbOgNQug4MswjiINbhXQkc2p3SRv0
+         H0iz7k++4epfU/zA79jgB4tJSSgWwAUGmUh3eRZGwEGDgDG9uP/vuCV2X1Yp5gHcSJn7
+         wGQWqEXfy9ploAOjpQ+6O6ZE3aUyfvFxj95FM+e409lIJ/C8h9h3qjbI1uP2TGlBwGPn
+         WFLnO7Sut0fdUYxc1DdY59sYIeRuWXeotN11FgWzO/FIJ74shO6r5KtfwUE+JSGFj3O8
+         Uh3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685487825; x=1688079825;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VGBkdAioPYjKfdSzh76OpK2mIcPIL5KFujvfOfU06eY=;
+        b=GrGts7zXyLr7JqhSYdLtlpQYbY8M3wQPF3azjHE6YTuxp32cvRrKKm+w0OUc4FFyMw
+         xyxZ9/wsCa/rwim7CjhbP4aEi8i4BvdGtTzHwrKsAKa/ZsaW1s0/AglppnKgRhHk8ecU
+         wgOaQgtnC5jRM6bHC3OGY+IbFxmRt5K9+QSS+2ciTEZHRMy0e69Lo4k/JsVN5g/cB001
+         Iiefu4Swm5DAb8yHSvkp8OdZdBfAgKI3RNsBt0mJMAwM/2T5WEduA23wVtgQ/+J3CA8/
+         rlUG+FbUlrG9FmgjbeGNpB8hd9ZX1QBB6JWI6KShTL+YenE8TFaEIS0ZvUArj3XIGdUY
+         fF/g==
+X-Gm-Message-State: AC+VfDw8iftnd1Oj9R90+wmHZ4XbW9EVZfd6reeZGuiEqcuJeBu3OI2z
+	tcQb4LgXBfAGYvDAvnKgZIQ6gElWUUDj7Q==
+X-Google-Smtp-Source: ACHHUZ7rFRCMMzpCUOxbqbR/D5FYnERowZ16GtgXfFyDcDHMZauZ1+Wmc8KRMMVae1X4pSbBZyMkrQ==
+X-Received: by 2002:a17:90a:af88:b0:253:3ed3:b212 with SMTP id w8-20020a17090aaf8800b002533ed3b212mr3824643pjq.20.1685487824906;
+        Tue, 30 May 2023 16:03:44 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id t3-20020a17090aba8300b00256833cd9a4sm3889188pjr.54.2023.05.30.16.03.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 May 2023 16:03:43 -0700 (PDT)
+Message-ID: <f31ea61f-ead3-e299-e4f2-f4914acc45ae@gmail.com>
+Date: Tue, 30 May 2023 16:03:35 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5911.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec69afcb-7ae3-4301-54f7-08db6161ffd7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 May 2023 23:02:53.4577
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2F2v4nNkj6Zyw073+OdiVUY9UPH8OS/3Yr+BL3PYHSVVJkGTVH2MV1oXUbJKT0tKqP0kvuGdoVKq9FVl3zhEi63bYLG7xVJ4CnO/Ne3idZg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB7660
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [RFC/RFTv3 00/24] net: ethernet: Rework EEE
+Content-Language: en-US
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>,
+ Andrew Lunn <andrew@lunn.ch>
+Cc: netdev <netdev@vger.kernel.org>, Heiner Kallweit <hkallweit1@gmail.com>,
+ Oleksij Rempel <linux@rempel-privat.de>
+References: <20230331005518.2134652-1-andrew@lunn.ch>
+ <fa21ef50-7f36-3d01-5ecf-4a2832bcec89@gmail.com>
+ <d753d72c-6b7a-4014-b515-121dd6ff957b@lunn.ch>
+ <ZHZcc/E/Hx1bnjcx@shell.armlinux.org.uk>
+From: Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <ZHZcc/E/Hx1bnjcx@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-> -----Original Message-----
-> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
-> Pavan Kumar Linga
-> Sent: Monday, May 22, 2023 5:23 PM
-> To: intel-wired-lan@lists.osuosl.org
-> Cc: willemb@google.com; pabeni@redhat.com; leon@kernel.org;
-> mst@redhat.com; simon.horman@corigine.com; Brandeburg, Jesse
-> <jesse.brandeburg@intel.com>; stephen@networkplumber.org;
-> edumazet@google.com; Nguyen, Anthony L
-> <anthony.l.nguyen@intel.com>; netdev@vger.kernel.org; kuba@kernel.org;
-> Burra, Phani R <phani.r.burra@intel.com>; decot@google.com;
-> davem@davemloft.net; shannon.nelson@amd.com
-> Subject: [Intel-wired-lan] [PATCH iwl-next v6 12/15] idpf: add RX splitq =
-napi
-> poll support
->=20
-> From: Alan Brady <alan.brady@intel.com>
->=20
-> Add support to handle interrupts for the RX completion queue and
-> RX buffer queue. When the interrupt fires on RX completion queue,
-> process the RX descriptors that are received. Allocate and prepare
-> the SKB with the RX packet info, for both data and header buffer.
->=20
-> IDPF uses software maintained refill queues to manage buffers between
-> RX queue producer and the buffer queue consumer. They are required in
-> order to maintain a lockless buffer management system and are strictly
-> software only constructs. Instead of updating the RX buffer queue tail
-> with available buffers right after the clean routine, it posts the
-> buffer ids to the refill queues, only to post them to the HW later.
->=20
-> If the generic receive offload (GRO) is enabled in the capabilities
-> and turned on by default or via ethtool, then HW performs the
-> packet coalescing if certain criteria are met by the incoming
-> packets and updates the RX descriptor. Similar to GRO, if generic
-> checksum is enabled, HW computes the checksum and updates the
-> respective fields in the descriptor. Add support to update the
-> SKB fields with the GRO and the generic checksum received.
->=20
-> Signed-off-by: Alan Brady <alan.brady@intel.com>
-> Co-developed-by: Joshua Hay <joshua.a.hay@intel.com>
-> Signed-off-by: Joshua Hay <joshua.a.hay@intel.com>
-> Co-developed-by: Madhu Chittim <madhu.chittim@intel.com>
-> Signed-off-by: Madhu Chittim <madhu.chittim@intel.com>
-> Co-developed-by: Phani Burra <phani.r.burra@intel.com>
-> Signed-off-by: Phani Burra <phani.r.burra@intel.com>
-> Co-developed-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
-> Signed-off-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
-> Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
-> Reviewed-by: Willem de Bruijn <willemb@google.com>
-> ---
->  drivers/net/ethernet/intel/idpf/idpf.h        |   2 +
->  drivers/net/ethernet/intel/idpf/idpf_txrx.c   | 992 +++++++++++++++++-
->  drivers/net/ethernet/intel/idpf/idpf_txrx.h   |  56 +-
->  .../net/ethernet/intel/idpf/idpf_virtchnl.c   |   4 +-
->  4 files changed, 1045 insertions(+), 9 deletions(-)
->=20
-Tested-by: Krishneil Singh  <krishneil.k.singh@intel.com>
+On 5/30/23 13:28, Russell King (Oracle) wrote:
+> On Tue, May 30, 2023 at 09:48:00PM +0200, Andrew Lunn wrote:
+>> On Tue, May 30, 2023 at 11:31:04AM -0700, Florian Fainelli wrote:
+>>> Hi Andrew, Russell,
+>>>
+>>> On 3/30/23 17:54, Andrew Lunn wrote:
+>>>> Most MAC drivers get EEE wrong. The API to the PHY is not very
+>>>> obvious, which is probably why. Rework the API, pushing most of the
+>>>> EEE handling into phylib core, leaving the MAC drivers to just
+>>>> enable/disable support for EEE in there change_link call back, or
+>>>> phylink mac_link_up callback.
+>>>>
+>>>> MAC drivers are now expect to indicate to phylib/phylink if they
+>>>> support EEE. If not, no EEE link modes are advertised. If the MAC does
+>>>> support EEE, on phy_start()/phylink_start() EEE advertisement is
+>>>> configured.
+>>>
+>>> Thanks for doing this work, because it really is a happy mess out there. A
+>>> few questions as I have been using mvneta as the reference for fixing GENET
+>>> and its shortcomings.
+>>>
+>>> In your new patches the decision to enable EEE is purely based upon the
+>>> eee_active boolean and not eee_enabled && tx_lpi_enabled unlike what mvneta
+>>> useed to do.
+>>
+>> I don't really care much what we decide means 'enabled'. I just want
+>> it moved out of MAC drivers and into the core so it is consistent.
+>>
+>> Russel, if you want to propose something which works for both Copper
+>> and Fibre, i'm happy to implement it. But as you pointed out, we need
+>> to decide where. Maybe phylib handles copper, and phylink is layered
+>> on top and handles fibre?
+> 
+> Phylib also handles fibre too with dual-media PHYs (such as 88E151x
+> and 88X3310), and as I've just pointed out, the recent attempts at
+> "fixing" phylib's handling particularly with eee_enabled have made it
+> rather odd.
+> 
+> That said, the 88E151x resolution of 1000BASE-X negotiation is also
+> rather odd, particularly with pause modes. So I don't trust one bit
+> that anyone is even using 88E151x in fibre setups - or if they are
+> they don't care about this odd behaviour.
+> 
+> Before we go any further, I think we need to hammer out eactly how the
+> ethtool EEE interface is supposed to work, because right now I can't
+> say that I fully understand it - and as I've said in my replies to
+> Florian recently, phylib's EEE implementation becomes utterly silly
+> when it comes to fibre.
+> 
+> In particular, we need to hammer out what the difference exactly is
+> between "eee_enabled" and "tx_lpi_enabled", and what they control,
+> and I suggest we look at it from the point of view of both copper
+> (where EEE is negotiated) and fibre (were EEE is optional, no
+> capability bits, no negotiation, so no advertisement.)
+> 
+> It seems fairly obvious to me that tx_lpi* are about the MAC
+> configuration, since that's the entity which is responsible for
+> signalling LPI towards the PHY(PCS) over GMII.
+
+Yes that much we can agree on that tx_lpi* is from the perspective of 
+the MAC.
+
+> 
+> eee_active... what does "active" actually mean? From the API doc, it
+> means the "Result of the eee negotiation" which is fine for copper
+> links where EEE is negotiated, but in the case of fibre, there isn't
+> EEE negotiation, and EEE is optionally implemented in the PCS.
+
+Is there any way to feed back whether EEE is actually being used at the 
+time on a fiber link? In which case eee_active would reflect that state.
+
+> 
+> eee_enabled... doesn't seem to have a meaning as far as IEEE 802.3
+> goes, it's a Linux invention. Documentation says "EEE configured mode"
+> which is just as useful as a chocolate teapot for making tea, that
+> comment might as well be deleted for what use it is. To this day, I
+> have no idea what this setting is actually supposed to be doing.
+> It seemed sane to me that if eee_enabled is false, then we should
+> not report eee_active as true, nor should we allow the MAC to
+> generate LPI. Whether the advertisement gets programmed into the PHY
+> or not is something I never thought about, and I can't remember
+> phylib's old behaviour. Modern phylib treats eee_enabled = false to
+> program a zero advertisement, which means when reading back via
+> get_eee(), you get a zero advertisement back. Effectively, eee_active
+> in modern phylib means "allow the advertisement to be programmed
+> if enabled, otherwise clear the advertisement". >
+> If it's simply there to zero the advertisement, then what if the
+> media type has no capability for EEE advertisement, but intrinsically
+> supports EEE. That's where phylib's interpretation falls down IMHO.
+> 
+> Maybe this ethtool interface doesn't work very well for cases where
+> there is EEE ability but no EEE advertisement? Not sure.
+
+At the time it was introduced, there certainly was not much care being 
+given to fiber use cases.
+
+> 
+> Until we get that settled, we can't begin to fathom how phylib (or
+> phylink) should make a decision as to whether the MAC should signal
+> LPI towards the media or not.
+
+Now that we have SmartEEE and AutogrEEEn as additional supported modes 
+by certain PHY drivers for MACs that lack any LPI signaling capability 
+towards the PHY, there may be a reason for re-purposing or clarifying 
+the meaning of eee_enabled=true with tx_lpi_enabled=false. Although in 
+those cases, I would just issue a warning that tx_lpi_enabled is ignored 
+because the MAC is incapable of LPI signaling.
+
+It seems that eee_enabled is intended to be a local administrative 
+parameter that provides an additional gating level to the local & remote 
+advertisement resolution. As a driver you can only enable EEE at the MAC 
+and/or PHY level if local & remote & enabled = true.
+-- 
+Florian
+
 
