@@ -1,128 +1,137 @@
-Return-Path: <netdev+bounces-6250-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6251-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id ACD6671559C
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 08:40:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id A2AF17155D6
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 08:58:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 28B771C20B8B
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 06:40:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E9D311C20B27
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 06:57:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8AF3479E4;
-	Tue, 30 May 2023 06:40:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4D4229453;
+	Tue, 30 May 2023 06:57:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EFA37E
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 06:40:09 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF18E8
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 23:40:07 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1q3t1M-0001BU-Od; Tue, 30 May 2023 08:39:52 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1q3t1K-003oJd-30; Tue, 30 May 2023 08:39:50 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1q3t1J-009NGk-Dl; Tue, 30 May 2023 08:39:49 +0200
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Vladimir Oltean <olteanv@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Woojung Huh <woojung.huh@microchip.com>,
-	UNGLinuxDriver@microchip.com,
-	George McCollister <george.mccollister@gmail.com>,
-	netdev@vger.kernel.org,
-	kernel@pengutronix.de
-Subject: [PATCH net-next] net: dsa: Switch i2c drivers back to use .probe()
-Date: Tue, 30 May 2023 08:39:36 +0200
-Message-Id: <20230530063936.2160016-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.39.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BE0E7E
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 06:57:58 +0000 (UTC)
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D17E123
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 23:57:52 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id 5b1f17b1804b1-3f70597707eso57115e9.0
+        for <netdev@vger.kernel.org>; Mon, 29 May 2023 23:57:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1685429871; x=1688021871;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SHzqIyBto1SPvM6Sh19Wri052HEnIav9D7zAToQEq6U=;
+        b=URid0El3ojW4ylCNvqLwoNrZpU+BgL/QQ+JKBNCqsLMHnwp1fsr5m33Iayhuakk2AD
+         hh+9mXeq0fX63a6MfMcIsUN5tjb+q8ptQadIXbmLlftm5javQeL/vYzVGdX1Y790XME9
+         +UKw+Hy573uJbytxgMWNNfRKJGJYVeofKhK7blh+PsOZEuMnKDuqCmVy6uoQUCevH5el
+         qtdb/5Ft7fqnpldOofQYnx+awggDy7UN1UMg3RA37J/0EsTJWJGVRBVYu3h/r3ddaO6O
+         1TqsRPFrtD0wYmW/TfCkVRJzq6lthhnazSQw1USHnnGIS8CaRCJINA2bPCmEzlNYR2Rl
+         zTKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685429871; x=1688021871;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SHzqIyBto1SPvM6Sh19Wri052HEnIav9D7zAToQEq6U=;
+        b=SlI4rhqFQGHHQ/H1neJhpnpzbn3euRir95r9pzP4DPZzy/8s7ulzTvtEVMrxxi3O8t
+         Jwzagq0v4kXkv4Bi+KFG5Sz8t88wrKc2HerQThli6RqbFC/MSovbrpHIJEkgxmxJcpC1
+         32de6iGsW2iED1xeUQb/UhzI3PfbVMN5cV7vUA2CCo6nh9q6XmNBY9wMnTqkQ+yXnryP
+         n+hZu8O+1/hkIQtVCXHK+U/aBQsYbDEKjKAHA9kUkhUcy9SbeW9VpPu93CPU7RkTsLmj
+         s5AuwoyEL4vW6O/dCR+noTMqEkhp/idOkyquziCc+xj3k4MNHHQkEdEflC1/Uxyp7ixA
+         pteg==
+X-Gm-Message-State: AC+VfDy/gGr8SuwhxfszsygwlNevfl+QWbWrs9jQxl/hOJPA8Fvi1fBm
+	l9pWHEToFwQNi8xFb9gay7sZnf4bkhPpfNNj6iT/wPRpMtfn/UmjmPOdZA==
+X-Google-Smtp-Source: ACHHUZ6lCVsP/YFGrJUWEdb+4ahmdU5pcqGcGe/9YreiIxe1KLdxkXxcm+AZ0qOSJnDWoa7AUaDO268ilS/HfbAE1P0=
+X-Received: by 2002:a05:600c:4f10:b0:3f4:2736:b5eb with SMTP id
+ l16-20020a05600c4f1000b003f42736b5ebmr59589wmq.1.1685429870704; Mon, 29 May
+ 2023 23:57:50 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2190; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=b+ToDtHHYtUFwIaAAD/lF/vK1xhdcMF/MsEEHE7GQbQ=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkdZonjgcn2gQA3d0c43xTGjR0NFjOjghrfF56S EBf+g/wXVGJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZHWaJwAKCRCPgPtYfRL+ TvFZB/9Kjijt3jfwO9BzHksqa5bZdpy26rTAER4oIIwBlMBEjvw4KJZ00t8HiJiQsgtPafZsv7Q UNWPz8Q+6DJby8JR3cLSpB2yAGNn7sze35tQoDMjDhBx06T50kY9GWWiDh/dPNn9UFMXRxEuLr2 0NDgDKQstscQEP0TvUATDrOyZh5gcHjtXCNwfJSFNSVBJN9x/yBHCwP7c+oXQjK02o0z7eOT4yJ CflxiAN4oobqPGejVyyFMuu+enjNMT8WNMJY1QgCiFiQdpmzHLQy6qZU/ra/4whZuLLOChB2jCy rkvPdZq+8htYFGZdO1xBf7JNxyv3eO/IaMXaqO9oU0PL4NDl
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <CANn89iLzMBJE31VBL3jtu-ojdoAYwV_KLo1Qo+L6LWZ+5UKMtg@mail.gmail.com>
+ <20230530032141.2277902-1-gaoxingwang1@huawei.com>
+In-Reply-To: <20230530032141.2277902-1-gaoxingwang1@huawei.com>
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 30 May 2023 08:57:39 +0200
+Message-ID: <CANn89iK05tppo0neGmKTdU-Dp8Dap6ayxda-++Z3LRp3DFrq+w@mail.gmail.com>
+Subject: Re: ip6_gre: paninc in ip6gre_header
+To: gaoxingwang <gaoxingwang1@huawei.com>
+Cc: davem@davemloft.net, dsahern@kernel.org, liaichun@huawei.com, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, pabeni@redhat.com, 
+	yanan@huawei.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-After commit b8a1a4cd5a98 ("i2c: Provide a temporary .probe_new()
-call-back type"), all drivers being converted to .probe_new() and then
-03c835f498b5 ("i2c: Switch .probe() to not take an id parameter") convert
-back to (the new) .probe() to be able to eventually drop .probe_new() from
-struct i2c_driver.
+On Tue, May 30, 2023 at 5:22=E2=80=AFAM gaoxingwang <gaoxingwang1@huawei.co=
+m> wrote:
+>
+> >> Hello:
+> >>   I am doing some fuzz test for kernel, the following crash was trigge=
+red.
+> >>   My kernel version is 5.10.0.Have you encountered similar problems?
+> >>   If there is a fix, please let me know.
+> >>   Thank you very much.
+> >
+> >Please do not report fuzzer tests on old kernels.
+> >
+> >Yes, there is a fix already.
+>
+> I've found this commit 5796015fa968a(ipv6: allocate enough headroom in ip=
+6_finish_output2()) that I didn't patch for my kernel.
+> Is this the fix you have mentioned? I'm testing to see if it works, but i=
+t will take a few days.I'd appreciate it if you could reply.
+>
+> >
+> >Make sure to use at least v5.10.180
+> >
+> >Thanks.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/net/dsa/lan9303_i2c.c           | 2 +-
- drivers/net/dsa/microchip/ksz9477_i2c.c | 2 +-
- drivers/net/dsa/xrs700x/xrs700x_i2c.c   | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+As I said, please upgrade to the latest v.5.10.X if you really need to
+fuzz 5.10 based kernels.
 
-diff --git a/drivers/net/dsa/lan9303_i2c.c b/drivers/net/dsa/lan9303_i2c.c
-index e8844820c3a9..bbbec322bc4f 100644
---- a/drivers/net/dsa/lan9303_i2c.c
-+++ b/drivers/net/dsa/lan9303_i2c.c
-@@ -105,7 +105,7 @@ static struct i2c_driver lan9303_i2c_driver = {
- 		.name = "LAN9303_I2C",
- 		.of_match_table = lan9303_i2c_of_match,
- 	},
--	.probe_new = lan9303_i2c_probe,
-+	.probe = lan9303_i2c_probe,
- 	.remove = lan9303_i2c_remove,
- 	.shutdown = lan9303_i2c_shutdown,
- 	.id_table = lan9303_i2c_id,
-diff --git a/drivers/net/dsa/microchip/ksz9477_i2c.c b/drivers/net/dsa/microchip/ksz9477_i2c.c
-index 97a317263a2f..3ee26effbcb8 100644
---- a/drivers/net/dsa/microchip/ksz9477_i2c.c
-+++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
-@@ -119,7 +119,7 @@ static struct i2c_driver ksz9477_i2c_driver = {
- 		.name	= "ksz9477-switch",
- 		.of_match_table = ksz9477_dt_ids,
- 	},
--	.probe_new = ksz9477_i2c_probe,
-+	.probe = ksz9477_i2c_probe,
- 	.remove	= ksz9477_i2c_remove,
- 	.shutdown = ksz9477_i2c_shutdown,
- 	.id_table = ksz9477_i2c_id,
-diff --git a/drivers/net/dsa/xrs700x/xrs700x_i2c.c b/drivers/net/dsa/xrs700x/xrs700x_i2c.c
-index 14ff6887a225..c1179d7311f7 100644
---- a/drivers/net/dsa/xrs700x/xrs700x_i2c.c
-+++ b/drivers/net/dsa/xrs700x/xrs700x_i2c.c
-@@ -147,7 +147,7 @@ static struct i2c_driver xrs700x_i2c_driver = {
- 		.name	= "xrs700x-i2c",
- 		.of_match_table = of_match_ptr(xrs700x_i2c_dt_ids),
- 	},
--	.probe_new = xrs700x_i2c_probe,
-+	.probe = xrs700x_i2c_probe,
- 	.remove	= xrs700x_i2c_remove,
- 	.shutdown = xrs700x_i2c_shutdown,
- 	.id_table = xrs700x_i2c_id,
--- 
-2.39.2
+We do not support 'your kernel', there is absolutely no way we can
+know what is 'your kernel', unless you use a supported upstream one.
 
+I will not give the list of fixes that went between 5.10 and 5.10.180,
+you can use git log, information is already available there.
+
+Probably not an exhaustive list (because some authors do not include
+stack traces in their changelog),
+or bugs can cause different crashes.
+
+git log v5.10..v5.10.180 --oneline --grep mld_sendpack
+be59b87ee4aed81db7c10e44f603866a0ac3ca5d net: tunnels: annotate
+lockless accesses to dev->needed_headroom
+8208d7e56b1e579320b9ff3712739ad2e63e1f86 ipv6: avoid use-after-free in
+ip6_fragment()
+7aa3d623c11b9ab60f86b7833666e5d55bac4be9 net: sched: fix race
+condition in qdisc_graft()
+49516e6ed91434d022a800321a8bc7d8054f62ac ipv6: make ip6_rt_gc_expire an ato=
+mic_t
+797b380f0756354b39f7487c362ea203cf3e3e80 net: sched: limit TC_ACT_REPEAT lo=
+ops
+beb39adb150f8f3b516ddf7c39835a9788704d23 mld: fix panic in mld_newpack()
+0414bde7796802753672700ff0c9d3909ef07bd7 net: sched: replaced invalid
+qdisc tree flush helper in qdisc_replace
+
+
+Thanks.
 
