@@ -1,165 +1,153 @@
-Return-Path: <netdev+bounces-6560-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6561-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id BDF9C716EA5
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 22:28:43 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 61590716EB1
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 22:31:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1111D1C20D09
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 20:28:40 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 24B8D28134C
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 20:31:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 855BD31F01;
-	Tue, 30 May 2023 20:28:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 567A828C1D;
+	Tue, 30 May 2023 20:31:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78382200AD
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:28:40 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F389F7
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 13:28:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=FfZ7cjg6jP2cUC84njeyJaiBUPGjE57tY7swC6z7VRM=; b=rg7DmniTVFJ5Lytrfaaq2BjtBE
-	3WbQxcc4QFap8eS2Xz8fsc9S05VLRF+FrEG5BzWlyQ2YpggIP2g4IkTj7gkINY8gtMeNpMDw/qx+u
-	fxHuDEcZAQCHjCLcxrVM1uONUlo6ifNw1eZ/V+gkmwm50IPNyjAQ/tjauuUTfv55fw6tr5/yIOj4E
-	6O4ulup35wNfSVa8G/xtdi6bcmecGw/QKtvUyoSAN5vGHr/NnSTyRDbpskLbxUUeNZUJNaZ/rocu9
-	UM+BEvhFz5wph4rMR+ZfAR6ucqenpGq0NSjM2DDV4R2SQYSVZccwrgkVM84h7feyU3qVkOY1ZvMxC
-	jiuJ2AUg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59352)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q45xM-0003RV-Da; Tue, 30 May 2023 21:28:36 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q45xL-0008Mo-95; Tue, 30 May 2023 21:28:35 +0100
-Date: Tue, 30 May 2023 21:28:35 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: Florian Fainelli <f.fainelli@gmail.com>,
-	netdev <netdev@vger.kernel.org>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Oleksij Rempel <linux@rempel-privat.de>
-Subject: Re: [RFC/RFTv3 00/24] net: ethernet: Rework EEE
-Message-ID: <ZHZcc/E/Hx1bnjcx@shell.armlinux.org.uk>
-References: <20230331005518.2134652-1-andrew@lunn.ch>
- <fa21ef50-7f36-3d01-5ecf-4a2832bcec89@gmail.com>
- <d753d72c-6b7a-4014-b515-121dd6ff957b@lunn.ch>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4460F24E84
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:31:50 +0000 (UTC)
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2068.outbound.protection.outlook.com [40.107.96.68])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024FF118
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 13:31:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Kd6FFQ2g41Mv1MsCdkPYaiwmq7KDUk1r+CUGnozueM3ZqPvzqc7i644/ut3yiWjaE/eK5USuO6yS4LXqXFOXXVCz8LWWqj40/MSzTcbkU3HbF48v9CNLO1Z3/bqT2oUlibHt4A3JOA3vA5wE2llB34yZpqzyGd7VGCAw+JzTiAQba11AbTeLpkkRfD9ahTkUFZ7k56Fz/jEqv3WdzIqi0kz5cYVJ/XFPJtZV3Aq33DAEuwbFwG8qynyhUss6iVwOCzPyreHHhEBfJVyEYt3BVQ1as/QqNYNgDrJXtMNMdOqF5B3y5cpTjWhzLu2Qo7CBn5/TE8ANu6oPraIep7i8oA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BuhesGuJgqMEFS52IoR+7gSrHpVcjFXhyVh5Od/Q9II=;
+ b=UdpPCHgOD6sNLkLWvnIS2lu0HthKrivQ9SFwX2WvZ6xZgV9d6pXOhaiRt5FOMbkvl+NLPVvMRjLL+l45ZbY6pTvLNdnJlBjlh7Twobari5U+tqFnh0kXyzF6GDkgpYPi0jvEebZi/dg9GblZWBqGQdP6oG+S/6UghKEreqDOrBVMUHtV/MhJgvyi7TLdGXHCdjyM77U8OXhc8a+qzgTRECDk67516w5Vn8TrmRB/Ol7ZjtLkpVOnvLy6HBP7KKdzPFc+mL9k0vIb5Z031beGAaNHxhzgfF52KdvCGiyccDYYU49KjloDeXHFvikZZetIIvgXZprf9GdyzlmlJKKBnA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=microchip.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BuhesGuJgqMEFS52IoR+7gSrHpVcjFXhyVh5Od/Q9II=;
+ b=RGLxMe9S3U8XhWCg/kkfIXqHZsyt2poMfkKRVRr0kNqiLyLsJgYstGtH1ZlqRpNECI3TJeKaK2Qlsys3gCNqCNjGsdvvdj0CLscETkB2XFhfbRw9IaQD19G9IdK3LHPlwM6cbXLNitcTaCUyWbhe5KGGnL50sJx67U0Ey84fDY3uwVf+259+FS0esk7dk/+jWz2k2ZnbiQuzzFggovNvRThOjMpevtNgh649zY5YVPomNv1EupS4n5mgbsqRdnJ1WtK2yd2epgeoCfaKqpm6FI7IbVXW6LRGq03zlTPi9e2uHLPfAZ512dc2t6UJlhiXzVPiSFdlEIy9xBJIpG3YLA==
+Received: from DM6PR07CA0116.namprd07.prod.outlook.com (2603:10b6:5:330::13)
+ by CY8PR12MB8067.namprd12.prod.outlook.com (2603:10b6:930:74::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23; Tue, 30 May
+ 2023 20:31:45 +0000
+Received: from DM6NAM11FT077.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:330:cafe::83) by DM6PR07CA0116.outlook.office365.com
+ (2603:10b6:5:330::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23 via Frontend
+ Transport; Tue, 30 May 2023 20:31:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DM6NAM11FT077.mail.protection.outlook.com (10.13.173.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6455.22 via Frontend Transport; Tue, 30 May 2023 20:31:45 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 30 May 2023
+ 13:31:36 -0700
+Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 30 May
+ 2023 13:31:34 -0700
+References: <20230510-dcb-rewr-v2-0-9f38e688117e@microchip.com>
+ <20230510-dcb-rewr-v2-3-9f38e688117e@microchip.com>
+ <87pm6j5ako.fsf@nvidia.com>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Petr Machata <petrm@nvidia.com>
+To: Petr Machata <petrm@nvidia.com>
+CC: Daniel Machon <daniel.machon@microchip.com>, <netdev@vger.kernel.org>,
+	<dsahern@kernel.org>, <stephen@networkplumber.org>,
+	<UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH iproute2-next v2 3/8] dcb: app: modify
+ dcb_app_table_remove_replaced() for dcb-rewr reuse
+Date: Tue, 30 May 2023 22:29:20 +0200
+In-Reply-To: <87pm6j5ako.fsf@nvidia.com>
+Message-ID: <87wn0p4l3w.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d753d72c-6b7a-4014-b515-121dd6ff957b@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT077:EE_|CY8PR12MB8067:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3b729c63-a99c-415e-eefc-08db614ce2f8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	a2EkoOCFEMq52dEZobqs+3Wq4/6JHH1omICMTPfdY3HXCRHK/FzGkgdDAIznJOK1zH2RjMYJn/O74oh+lLm22AbWOVi1MBmq7HJbQ6CVmNT4Z4y/IlQeK9qjP2KiF2M3yxxNkQbdRnH0dXcUY5Q8AYxTr2my/T4qn8qkYVrZ7d8Mr7c1DN2NqdFyNHumW2+4+XPcSKBwm96caFJUdejw+mObiRlyX0+ximrwYeoZa0JDrlO6W+KatGaMRlZXhw8J374gCZL0VQo/cHC/yMniueGxWewI150C4xPNA8mnBnPIMi7Fk38U1WKxo4JKo7hlkbQhE3N7eXmAJXDT+RnXZsDkWea0++eAyJnffeh1JFzNsUKZx716sgRQgNPyGfXAZzfH2a8PnJgiRuKO850d6xtJJTBgBsPUvyF5cz+i3Hw3zvwBpTrnLrmn3GivwKDNg+4SM58WLVa+hr/n2jXDyLVDvPtphfJj27/FQ2Hr0xMNorl/aNVeNO0UDXemckstW/Sx3rf0G56dxLRsKgb5LNVjTSNDuznik12u7syJYcPRVPtDnKp3N/k0THpeCy11ck9qVungzOmF1ekGMCJnO956wvxHeeFJcL3D5ZGzIj1gUjmKGp4Tw9eJR1ZHiHom06eKJQDWKxdjqNjcdwzi3Wjpwc+gjs5FFt86O81fVJkIdJy/y/+SE3YFAUTn0dVGAQ15EK8fPmp1moJT6AmxuLuIJggcZAVWS0bX3uLGq+rw4X4t6Z5Kn9BF//9Fadeb
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(39860400002)(376002)(346002)(451199021)(46966006)(36840700001)(40470700004)(82310400005)(86362001)(41300700001)(40480700001)(40460700003)(478600001)(4326008)(6666004)(316002)(70206006)(70586007)(36756003)(36860700001)(5660300002)(186003)(16526019)(4744005)(2906002)(426003)(47076005)(336012)(6200100001)(83380400001)(26005)(2616005)(7636003)(6862004)(82740400003)(356005)(37006003)(8676002)(8936002)(54906003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 20:31:45.5024
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b729c63-a99c-415e-eefc-08db614ce2f8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM11FT077.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8067
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 30, 2023 at 09:48:00PM +0200, Andrew Lunn wrote:
-> On Tue, May 30, 2023 at 11:31:04AM -0700, Florian Fainelli wrote:
-> > Hi Andrew, Russell,
-> > 
-> > On 3/30/23 17:54, Andrew Lunn wrote:
-> > > Most MAC drivers get EEE wrong. The API to the PHY is not very
-> > > obvious, which is probably why. Rework the API, pushing most of the
-> > > EEE handling into phylib core, leaving the MAC drivers to just
-> > > enable/disable support for EEE in there change_link call back, or
-> > > phylink mac_link_up callback.
-> > > 
-> > > MAC drivers are now expect to indicate to phylib/phylink if they
-> > > support EEE. If not, no EEE link modes are advertised. If the MAC does
-> > > support EEE, on phy_start()/phylink_start() EEE advertisement is
-> > > configured.
-> > 
-> > Thanks for doing this work, because it really is a happy mess out there. A
-> > few questions as I have been using mvneta as the reference for fixing GENET
-> > and its shortcomings.
-> > 
-> > In your new patches the decision to enable EEE is purely based upon the
-> > eee_active boolean and not eee_enabled && tx_lpi_enabled unlike what mvneta
-> > useed to do.
-> 
-> I don't really care much what we decide means 'enabled'. I just want
-> it moved out of MAC drivers and into the core so it is consistent.
-> 
-> Russel, if you want to propose something which works for both Copper
-> and Fibre, i'm happy to implement it. But as you pointed out, we need
-> to decide where. Maybe phylib handles copper, and phylink is layered
-> on top and handles fibre?
 
-Phylib also handles fibre too with dual-media PHYs (such as 88E151x
-and 88X3310), and as I've just pointed out, the recent attempts at
-"fixing" phylib's handling particularly with eee_enabled have made it
-rather odd.
+Petr Machata <petrm@nvidia.com> writes:
 
-That said, the 88E151x resolution of 1000BASE-X negotiation is also
-rather odd, particularly with pause modes. So I don't trust one bit
-that anyone is even using 88E151x in fibre setups - or if they are
-they don't care about this odd behaviour.
+> Daniel Machon <daniel.machon@microchip.com> writes:
+>
+>> diff --git a/dcb/dcb.h b/dcb/dcb.h
+>> index d40664f29dad..84ce95d5c1b2 100644
+>> --- a/dcb/dcb.h
+>> +++ b/dcb/dcb.h
+>> @@ -56,11 +56,25 @@ void dcb_print_array_kw(const __u8 *array, size_t array_size,
+>>  
+>>  /* dcb_app.c */
+>>  
+>> +struct dcb_app_table {
+>> +	struct dcb_app *apps;
+>> +	size_t n_apps;
+>> +	int attr;
+>> +};
+>> +
+>>  int dcb_cmd_app(struct dcb *dcb, int argc, char **argv);
+>>  enum ieee_attrs_app dcb_app_attr_type_get(__u8 selector);
+>>  bool dcb_app_attr_type_validate(enum ieee_attrs_app type);
+>>  bool dcb_app_selector_validate(enum ieee_attrs_app type, __u8 selector);
+>>  
+>> +bool dcb_app_pid_eq(const struct dcb_app *aa, const struct dcb_app *ab);
 
-Before we go any further, I think we need to hammer out eactly how the
-ethtool EEE interface is supposed to work, because right now I can't
-say that I fully understand it - and as I've said in my replies to
-Florian recently, phylib's EEE implementation becomes utterly silly
-when it comes to fibre.
+And I suspect this one does not need to be public at all?
 
-In particular, we need to hammer out what the difference exactly is
-between "eee_enabled" and "tx_lpi_enabled", and what they control,
-and I suggest we look at it from the point of view of both copper
-(where EEE is negotiated) and fibre (were EEE is optional, no
-capability bits, no negotiation, so no advertisement.)
-
-It seems fairly obvious to me that tx_lpi* are about the MAC
-configuration, since that's the entity which is responsible for
-signalling LPI towards the PHY(PCS) over GMII.
-
-eee_active... what does "active" actually mean? From the API doc, it
-means the "Result of the eee negotiation" which is fine for copper
-links where EEE is negotiated, but in the case of fibre, there isn't
-EEE negotiation, and EEE is optionally implemented in the PCS.
-
-eee_enabled... doesn't seem to have a meaning as far as IEEE 802.3
-goes, it's a Linux invention. Documentation says "EEE configured mode"
-which is just as useful as a chocolate teapot for making tea, that
-comment might as well be deleted for what use it is. To this day, I
-have no idea what this setting is actually supposed to be doing.
-It seemed sane to me that if eee_enabled is false, then we should
-not report eee_active as true, nor should we allow the MAC to
-generate LPI. Whether the advertisement gets programmed into the PHY
-or not is something I never thought about, and I can't remember
-phylib's old behaviour. Modern phylib treats eee_enabled = false to
-program a zero advertisement, which means when reading back via
-get_eee(), you get a zero advertisement back. Effectively, eee_active
-in modern phylib means "allow the advertisement to be programmed
-if enabled, otherwise clear the advertisement".
-
-If it's simply there to zero the advertisement, then what if the
-media type has no capability for EEE advertisement, but intrinsically
-supports EEE. That's where phylib's interpretation falls down IMHO.
-
-Maybe this ethtool interface doesn't work very well for cases where
-there is EEE ability but no EEE advertisement? Not sure.
-
-Until we get that settled, we can't begin to fathom how phylib (or
-phylink) should make a decision as to whether the MAC should signal
-LPI towards the media or not.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+>> +bool dcb_app_prio_eq(const struct dcb_app *aa, const struct dcb_app *ab);
+>
+> This function isn't necessary until 5/8, that's when it should be added.
 
