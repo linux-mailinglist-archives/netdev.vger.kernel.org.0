@@ -1,187 +1,172 @@
-Return-Path: <netdev+bounces-6262-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6263-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 166EE7156C2
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 09:30:36 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5858D7156D7
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 09:33:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C5DA0281026
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 07:30:34 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7CEF11C20A8A
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 07:33:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9FB0411CB3;
-	Tue, 30 May 2023 07:30:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0585411C8E;
+	Tue, 30 May 2023 07:33:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EF7C11CA2
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 07:30:13 +0000 (UTC)
-Received: from mail-io1-f80.google.com (mail-io1-f80.google.com [209.85.166.80])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD4FE78
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 00:30:06 -0700 (PDT)
-Received: by mail-io1-f80.google.com with SMTP id ca18e2360f4ac-7749b49ce95so248014039f.2
-        for <netdev@vger.kernel.org>; Tue, 30 May 2023 00:30:06 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E35EE9475
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 07:33:34 +0000 (UTC)
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B09E10FC;
+	Tue, 30 May 2023 00:33:29 -0700 (PDT)
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-565de553de1so37770767b3.0;
+        Tue, 30 May 2023 00:33:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685431806; x=1688023806;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=a5KqC1edhiO7JepEHlmRT8WJ2yLfb5IhYu4wMi2/DSw=;
-        b=ZeschGQMgz9w9Ti4HIDA/70JY/jamTGSp1YajI/a39hlrEFOm1+g3BqBNVclW+HhyV
-         +VjWO7CFFyu4hLqfQ2H8JnrijgUxy35V6iqM8IKaub5B5yAtHRHMfRubYnd+BMyMGJcW
-         pBEqiU7Dy9rtYuJNF/STo3lTJHlAfgU4tQqz77Umx9wHUOrJEb2CX+PNiFCBJJoqJdpl
-         Ci99iAzQ4COyBC3wLE8vYXizw3hDvLT8+YVqdxpURMVYNeFnZKKaLVHsbgjFomZOH+29
-         5Wo65M6HMba/yB4ltnC3P6Q8mp1qteh+ifZYeZn0DbXOPmKQyFDGzVjIQvvRH5REOA4X
-         C0zg==
-X-Gm-Message-State: AC+VfDxe4Oui5LH73culrWdfM0WXFjjp/YEbYEkPWo7BdjqQtygkl4op
-	4aKjn+uxwYmXyfpEPWTSUDQZF4yzrcf4c4xXmW/QtkZuw0Wn
-X-Google-Smtp-Source: ACHHUZ6jRHEI659u6OJ7MbdCGAh+CQGfbeSNkc55tbVwKziOOQu6jDaY06aEQMb2KBaFHwpJvFF4HAuWWIJIhwpznzrRpxwK6z8P
+        d=1e100.net; s=20221208; t=1685432008; x=1688024008;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=G7iyMopwXqfUGzT29EQG9rJ3RGW+uo/AYfLgt0y1pc8=;
+        b=ctKJzrCQXe0qxqFMvn0i2oqSpTloDW4+0pzakl+NO7V5QDBS4MM8+KvLvJ7DLQROd4
+         UdVB9M5015wAvfR9pkVZuBSjDHUJ4ZOnjgGc1kELaPrMhpKkrZ2JySMRFI/sA+tEHta1
+         bLJInerUg9l5kriIf/6SAJ1k6zVfGEPI/FIj17JSObbbnBIANryL0HTLradvOECT42oF
+         EshHAQSGYctGSkIeeSNTpuwSyimRx+bHWEroNG9u0uL4BNFNX1okdym71j/b8RD3ixO3
+         Sf6OZJ9G4hKx5SIcnYzn7cCNbXQh1c7jE1KlC58Q0pRnS4eiId1MiyQjPYTzk9a6/m1q
+         Ou0w==
+X-Gm-Message-State: AC+VfDxb4tab9oxruy8yX/JN8xdYj71k1TWF+F7w/y2vfV2RPyjGKynW
+	RamPtrk98J9Wz8y48vLRTYeZ25s4QuaJ0w==
+X-Google-Smtp-Source: ACHHUZ5pCRQckc1Qt9a+ItPRglkuMY+1n48fCMQm+BYsLl9oo/ZNe/0miZhPa1UqAfXPsbRlbTcoQg==
+X-Received: by 2002:a05:690c:f83:b0:568:b105:751 with SMTP id df3-20020a05690c0f8300b00568b1050751mr4338153ywb.2.1685432008279;
+        Tue, 30 May 2023 00:33:28 -0700 (PDT)
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com. [209.85.128.182])
+        by smtp.gmail.com with ESMTPSA id j187-20020a0dc7c4000000b00561b76b72d7sm4257704ywd.40.2023.05.30.00.33.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 May 2023 00:33:27 -0700 (PDT)
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-565de553de1so37770497b3.0;
+        Tue, 30 May 2023 00:33:27 -0700 (PDT)
+X-Received: by 2002:a05:690c:84a:b0:561:fc3a:30f3 with SMTP id
+ bz10-20020a05690c084a00b00561fc3a30f3mr11642082ywb.8.1685432007266; Tue, 30
+ May 2023 00:33:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:1103:b0:41a:c455:f4c1 with SMTP id
- n3-20020a056638110300b0041ac455f4c1mr678488jal.4.1685431806029; Tue, 30 May
- 2023 00:30:06 -0700 (PDT)
-Date: Tue, 30 May 2023 00:30:06 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001777f605fce42c5f@google.com>
-Subject: [syzbot] [kvm?] [net?] [virt?] general protection fault in vhost_work_queue
-From: syzbot <syzbot+d0d442c22fa8db45ff0e@syzkaller.appspotmail.com>
-To: jasowang@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	mst@redhat.com, netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com, 
-	virtualization@lists.linux-foundation.org
+References: <20230529080840.1156458-1-yoshihiro.shimoda.uh@renesas.com> <20230529080840.1156458-6-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <20230529080840.1156458-6-yoshihiro.shimoda.uh@renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 30 May 2023 09:33:14 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVsu+aZG9Vhb5fPwzR9J8uPPQ658Kz_g1hZXAzB5qi2+Q@mail.gmail.com>
+Message-ID: <CAMuHMdVsu+aZG9Vhb5fPwzR9J8uPPQ658Kz_g1hZXAzB5qi2+Q@mail.gmail.com>
+Subject: Re: [PATCH net-next 5/5] net: renesas: rswitch: Use per-queue rate limiter
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: s.shtylyov@omp.ru, davem@davemloft.net, edumazet@google.com, 
+	kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org, 
+	krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, 
+	geert+renesas@glider.be, magnus.damm@gmail.com, netdev@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-	SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello,
+Hi Shimoda-san,
 
-syzbot found the following issue on:
+On Mon, May 29, 2023 at 10:08=E2=80=AFAM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> Use per-queue rate limiter instead of global rate limiter. Otherwise
+> TX performance will be low when we use multiple ports at the same time.
+>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-HEAD commit:    933174ae28ba Merge tag 'spi-fix-v6.4-rc3' of git://git.ker..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=138d4ae5280000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f389ffdf4e9ba3f0
-dashboard link: https://syzkaller.appspot.com/bug?extid=d0d442c22fa8db45ff0e
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Thanks for your patch!
 
-Unfortunately, I don't have any reproducer for this issue yet.
+> --- a/drivers/net/ethernet/renesas/rswitch.c
+> +++ b/drivers/net/ethernet/renesas/rswitch.c
+> @@ -156,22 +156,31 @@ static int rswitch_gwca_axi_ram_reset(struct rswitc=
+h_private *priv)
+>         return rswitch_reg_wait(priv->addr, GWARIRM, GWARIRM_ARR, GWARIRM=
+_ARR);
+>  }
+>
+> -static void rswitch_gwca_set_rate_limit(struct rswitch_private *priv, in=
+t rate)
+> +static void rswitch_gwca_set_rate_limit(struct rswitch_private *priv,
+> +                                       struct rswitch_gwca_queue *txq)
+>  {
+> -       u32 gwgrlulc, gwgrlc;
+> +       u64 period_ps;
+> +       unsigned long rate;
+> +       u32 gwrlc;
+>
+> -       switch (rate) {
+> -       case 1000:
+> -               gwgrlulc =3D 0x0000005f;
+> -               gwgrlc =3D 0x00010260;
+> -               break;
+> -       default:
+> -               dev_err(&priv->pdev->dev, "%s: This rate is not supported=
+ (%d)\n", __func__, rate);
+> -               return;
+> -       }
+> +       rate =3D clk_get_rate(priv->aclk);
+> +       if (!rate)
+> +               rate =3D RSWITCH_ACLK_DEFAULT;
+> +
+> +       period_ps =3D div64_u64(1000000000000ULL, rate);
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/21a81b8c2660/disk-933174ae.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/b4951d89e238/vmlinux-933174ae.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/21eb405303cc/bzImage-933174ae.xz
+div64_ul, as rate is unsigned long.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+d0d442c22fa8db45ff0e@syzkaller.appspotmail.com
+> +
+> +       /* GWRLC value =3D 256 * ACLK_period[ns] * maxBandwidth[Gbps] */
+> +       gwrlc =3D 256 * period_ps * txq->speed / 1000000;
 
-general protection fault, probably for non-canonical address 0xdffffc000000000e: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000070-0x0000000000000077]
-CPU: 0 PID: 29845 Comm: syz-executor.4 Not tainted 6.4.0-rc3-syzkaller-00032-g933174ae28ba #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/16/2023
-RIP: 0010:vhost_work_queue drivers/vhost/vhost.c:259 [inline]
-RIP: 0010:vhost_work_queue+0xfc/0x150 drivers/vhost/vhost.c:248
-Code: 00 00 fc ff df 48 89 da 48 c1 ea 03 80 3c 02 00 75 56 48 b8 00 00 00 00 00 fc ff df 48 8b 1b 48 8d 7b 70 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 42 48 8b 7b 70 e8 95 9e ae f9 5b 5d 41 5c 41 5d e9
-RSP: 0018:ffffc9000333faf8 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000d84d000
-RDX: 000000000000000e RSI: ffffffff841221d7 RDI: 0000000000000070
-RBP: ffff88804b6b95b0 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: ffff88804b6b00b0
-R13: 0000000000000000 R14: ffff88804b6b95e0 R15: ffff88804b6b95c8
-FS:  00007f3b445ec700(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2e423000 CR3: 000000005d734000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 000000000000003b DR6: 00000000ffff0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- vhost_transport_send_pkt+0x268/0x520 drivers/vhost/vsock.c:288
- virtio_transport_send_pkt_info+0x54c/0x820 net/vmw_vsock/virtio_transport_common.c:250
- virtio_transport_connect+0xb1/0xf0 net/vmw_vsock/virtio_transport_common.c:813
- vsock_connect+0x37f/0xcd0 net/vmw_vsock/af_vsock.c:1414
- __sys_connect_file+0x153/0x1a0 net/socket.c:2003
- __sys_connect+0x165/0x1a0 net/socket.c:2020
- __do_sys_connect net/socket.c:2030 [inline]
- __se_sys_connect net/socket.c:2027 [inline]
- __x64_sys_connect+0x73/0xb0 net/socket.c:2027
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f3b4388c169
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f3b445ec168 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
-RAX: ffffffffffffffda RBX: 00007f3b439ac050 RCX: 00007f3b4388c169
-RDX: 0000000000000010 RSI: 0000000020000140 RDI: 0000000000000004
-RBP: 00007f3b438e7ca1 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f3b43acfb1f R14: 00007f3b445ec300 R15: 0000000000022000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:vhost_work_queue drivers/vhost/vhost.c:259 [inline]
-RIP: 0010:vhost_work_queue+0xfc/0x150 drivers/vhost/vhost.c:248
-Code: 00 00 fc ff df 48 89 da 48 c1 ea 03 80 3c 02 00 75 56 48 b8 00 00 00 00 00 fc ff df 48 8b 1b 48 8d 7b 70 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 42 48 8b 7b 70 e8 95 9e ae f9 5b 5d 41 5c 41 5d e9
-RSP: 0018:ffffc9000333faf8 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000d84d000
-RDX: 000000000000000e RSI: ffffffff841221d7 RDI: 0000000000000070
-RBP: ffff88804b6b95b0 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: ffff88804b6b00b0
-R13: 0000000000000000 R14: ffff88804b6b95e0 R15: ffff88804b6b95c8
-FS:  00007f3b445ec700(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2e428000 CR3: 000000005d734000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 000000000000003b DR6: 00000000ffff0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess), 5 bytes skipped:
-   0:	48 89 da             	mov    %rbx,%rdx
-   3:	48 c1 ea 03          	shr    $0x3,%rdx
-   7:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
-   b:	75 56                	jne    0x63
-   d:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  14:	fc ff df
-  17:	48 8b 1b             	mov    (%rbx),%rbx
-  1a:	48 8d 7b 70          	lea    0x70(%rbx),%rdi
-  1e:	48 89 fa             	mov    %rdi,%rdx
-  21:	48 c1 ea 03          	shr    $0x3,%rdx
-* 25:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
-  29:	75 42                	jne    0x6d
-  2b:	48 8b 7b 70          	mov    0x70(%rbx),%rdi
-  2f:	e8 95 9e ae f9       	callq  0xf9ae9ec9
-  34:	5b                   	pop    %rbx
-  35:	5d                   	pop    %rbp
-  36:	41 5c                	pop    %r12
-  38:	41 5d                	pop    %r13
-  3a:	e9                   	.byte 0xe9
+This contains an open-coded 64-by-32 division, causing link failures
+on 32-bit platforms, so you should use div_u64() instead.  However,
+because of the premultiplication by speed, which is 32-bit, you can
+use the mul_u64_u32_div() helper.
 
+Combining this with the calculation of period_ps above, you can simplify
+this to:
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+    gwrlc =3D div64_ul(256000000ULL * txq->speed, rate);
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> +
+> +       /* To avoid overflow internally, the value should be 97% */
+> +       gwrlc =3D gwrlc * 97 / 100;
+>
+> -       iowrite32(gwgrlulc, priv->addr + GWGRLULC);
+> -       iowrite32(gwgrlc, priv->addr + GWGRLC);
+> +       dev_dbg(&priv->pdev->dev,
+> +               "%s: index =3D %d, speed =3D %d, rate =3D %ld, gwrlc =3D =
+%08x\n",
+> +               __func__, txq->index_trim, txq->speed, rate, gwrlc);
+> +
+> +       iowrite32(GWRLULC_NOT_REQUIRED, priv->addr + GWRLULC(txq->index_t=
+rim));
+> +       iowrite32(gwrlc | GWRLC_RLE, priv->addr + GWRLC(txq->index_trim))=
+;
+>  }
+>
 
-If the bug is already fixed, let syzbot know by replying with:
-#syz fix: exact-commit-title
+Gr{oetje,eeting}s,
 
-If you want to change bug's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
+                        Geert
 
-If the bug is a duplicate of another bug, reply with:
-#syz dup: exact-subject-of-another-report
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
-If you want to undo deduplication, reply with:
-#syz undup
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
 
