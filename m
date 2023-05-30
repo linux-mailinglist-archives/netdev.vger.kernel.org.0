@@ -1,128 +1,145 @@
-Return-Path: <netdev+bounces-6555-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6556-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 993C1716E53
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 22:06:20 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 63BC6716E5E
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 22:09:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 547BF2812F9
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 20:06:19 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AD9BB1C20D09
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 20:09:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 98E2C31EF0;
-	Tue, 30 May 2023 20:06:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6A24431EF4;
+	Tue, 30 May 2023 20:09:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DA6B2D277
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:06:17 +0000 (UTC)
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2317BF3;
-	Tue, 30 May 2023 13:06:16 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id 38308e7fff4ca-2af278ca45eso51406361fa.1;
-        Tue, 30 May 2023 13:06:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685477174; x=1688069174;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Gy7g3HmcFJ07k2+S79J+2E5SNsvjTiJvRjtXbmAogd0=;
-        b=A8URtGPLrsAUgpVPmcSHEyRdUeR0+DAR1lzp8M2EWxjdIYI6P5C85NucXMMrYYq1bx
-         uFrnEBhNCKkWqi0jkTLoTZmnNQ2Q/Vj8eP0olu7MqiiWy700B0g+h7Yq5ZjNYpeOHS7n
-         LBqCtDlyJqmBKQdLn7q0PppcuNY+WBFfDuvPhph0QBmt/5L7Tdtwgz0Y8bbZ2VvLOoco
-         spGtqRYNbp43iW8JIKKci3Gb90J4NZJqSOE9/Y3FBRkNQ+PNsiTmjdPmKN8EynUVrzTK
-         68eMObI35wYQXLc+yAikDnQh6FpPv2x1ROC5o9Tv8rORptarz7AjjKPFefvZe47kDLLu
-         BLHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685477174; x=1688069174;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Gy7g3HmcFJ07k2+S79J+2E5SNsvjTiJvRjtXbmAogd0=;
-        b=LeoiadC4LETLgKsgW4DR6aDNzYB7mW/prty3B98Yhg/p8Q+V4hvZ2ae+TNTHenmxZz
-         EYXcdY/RtsGPdlrma7CX8DNjPF4Km2GV1KNUDptexK9WzrWhjG58132CTC5uaPoHLwn1
-         aPAOm9pULxXrGX1lPIDsk0r8+XCq0Wdm4tjZoXiyueakkLEgsQJt4Q6g2o/T9CrDLB/N
-         Rz3mNMWVO076z5MSiiz5mN0ZsN5PRKhPZaOx1U8CwYYwCJi36F23hI39g/xGi0lSmyP9
-         +DaOvwylI1pTVqyCXVPYVSUHMRdYV6tQDJYkktpuudMkuzwUkzYCjpbFIAONkCq9m4iN
-         sSHg==
-X-Gm-Message-State: AC+VfDw80/Ba8M0QVgqMxn9GT+x+1yyK7mBgNTberWrIfBQIu5s1+hKj
-	ipn29BwCeEWpx/KK/v0ga+oZuyx/ivOHEJeNRvw=
-X-Google-Smtp-Source: ACHHUZ5k1qpbdpbHtwSrm5N7oo/aBUz5QZq8DF/6U/8ESwy7n9GyqYF6hSvis1aU8HwJveHgmbXdmsi8sxVEEp1aXl8=
-X-Received: by 2002:a2e:9682:0:b0:2ad:aa42:8c0b with SMTP id
- q2-20020a2e9682000000b002adaa428c0bmr1491500lji.35.1685477174136; Tue, 30 May
- 2023 13:06:14 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ED17200AD
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:09:05 +0000 (UTC)
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA745F3;
+	Tue, 30 May 2023 13:09:03 -0700 (PDT)
+Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34UIdwJa003875;
+	Tue, 30 May 2023 20:08:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=5rWZ2/PgxHy/y5NYiyjQh4DXegRR/1Cb3dzKDHLoPGs=;
+ b=TKfM+m5O14f2Y25lpdUqyKZaTU0vyltCCMdzdkdr+WLtlrbx3N6/UD0pbNnmI9WKmIlE
+ pxLdBjZuGOEG9qqJ/vvnfYYS25qvTmVEKA0nBMvqEv+AwSEoyRsgaXal2Lik1KROK75V
+ 3fqcRffZT7k9/A/JlLFc2tfXtOzBeYQDKuCWalJ0DxtQHdA/yCOUOfFeeQhy+tkhKk3u
+ aSaSRtEN1RnxhAxFZ1TwJwA9ugjxcbKE+ncYN0o+KejpBDBahueKkpfo7HfYkJe19agV
+ I89KD9lcbru5ftcNN2tfwdqFrEUPQuLv6uyNgeJEF9SCXjS8MruMNmFM8STgRRjr2H+4 0Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qwjvf8huh-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 30 May 2023 20:08:58 +0000
+Received: from m0360083.ppops.net (m0360083.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34UJ03jZ002236;
+	Tue, 30 May 2023 20:08:58 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qwjvf8htx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 30 May 2023 20:08:58 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+	by ppma03wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34UHWvad003118;
+	Tue, 30 May 2023 20:08:56 GMT
+Received: from smtprelay04.wdc07v.mail.ibm.com ([9.208.129.114])
+	by ppma03wdc.us.ibm.com (PPS) with ESMTPS id 3qu9g5rdq7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 30 May 2023 20:08:56 +0000
+Received: from smtpav04.wdc07v.mail.ibm.com (smtpav04.wdc07v.mail.ibm.com [10.39.53.231])
+	by smtprelay04.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34UK8sn634800156
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 30 May 2023 20:08:54 GMT
+Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id B64A258045;
+	Tue, 30 May 2023 20:08:54 +0000 (GMT)
+Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id C3F9E58050;
+	Tue, 30 May 2023 20:08:52 +0000 (GMT)
+Received: from [9.61.92.222] (unknown [9.61.92.222])
+	by smtpav04.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 30 May 2023 20:08:52 +0000 (GMT)
+Message-ID: <4c8f11e5-d97d-5c9a-69b1-ba11c5857799@linux.ibm.com>
+Date: Tue, 30 May 2023 22:08:51 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230424133542.14383-1-johan+linaro@kernel.org> <ZHYHRW-9BN4n4pPs@hovoldconsulting.com>
-In-Reply-To: <ZHYHRW-9BN4n4pPs@hovoldconsulting.com>
-From: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date: Tue, 30 May 2023 13:06:01 -0700
-Message-ID: <CABBYNZ+ae5h-KdAKwvCRNyDPB3W4nzyuEBzPdw72-8DLb9BAsw@mail.gmail.com>
-Subject: Re: [PATCH 0/2] Bluetooth: fix bdaddr quirks
-To: Johan Hovold <johan@kernel.org>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>, 
-	Matthias Kaehlcke <mka@chromium.org>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	netdev@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.11.0
+Subject: Re: [PATCH net 1/2] net/smc: Scan from current RMB list when no
+ position specified
+To: Wen Gu <guwen@linux.alibaba.com>, kgraul@linux.ibm.com, jaka@linux.ibm.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc: linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1685101741-74826-1-git-send-email-guwen@linux.alibaba.com>
+ <1685101741-74826-2-git-send-email-guwen@linux.alibaba.com>
+From: Wenjia Zhang <wenjia@linux.ibm.com>
+In-Reply-To: <1685101741-74826-2-git-send-email-guwen@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: NZw55rljhcxjYUq1xtakSkwQSz7DlSI4
+X-Proofpoint-GUID: cmd8PxFCF0pWlGsjsyioEBINrEFIq511
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-05-30_15,2023-05-30_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
+ mlxlogscore=999 adultscore=0 priorityscore=1501 lowpriorityscore=0
+ bulkscore=0 mlxscore=0 impostorscore=0 phishscore=0 spamscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2304280000 definitions=main-2305300163
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
+	RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Johan,
-
-On Tue, May 30, 2023 at 7:25=E2=80=AFAM Johan Hovold <johan@kernel.org> wro=
-te:
->
-> On Mon, Apr 24, 2023 at 03:35:40PM +0200, Johan Hovold wrote:
-> > These patches fixes a couple of issues with the two bdaddr quirks:
-> >
-> > The first one allows HCI_QUIRK_INVALID_BDADDR to be used with
-> > HCI_QUIRK_NON_PERSISTENT_SETUP.
-> >
-> > The second patch restores the original semantics of the
-> > HCI_QUIRK_USE_BDADDR_PROPERTY so that the controller is marked as
-> > unconfigured when no device address is specified in the devicetree (as
-> > the quirk is documented to work).
-> >
-> > This specifically makes sure that Qualcomm HCI controllers such as
-> > wcn6855 found on the Lenovo X13s are marked as unconfigured until user
-> > space has provided a valid address.
-> >
-> > Long term, the HCI_QUIRK_USE_BDADDR_PROPERTY should probably be dropped
-> > in favour of HCI_QUIRK_INVALID_BDADDR and always checking the devicetre=
-e
-> > property.
->
-> > Johan Hovold (2):
-> >   Bluetooth: fix invalid-bdaddr quirk for non-persistent setup
-> >   Bluetooth: fix use-bdaddr-property quirk
-> >
-> >  net/bluetooth/hci_sync.c | 30 +++++++++++-------------------
-> >  1 file changed, 11 insertions(+), 19 deletions(-)
->
-> Any further comments to this series, or can this one be merged for 6.5
-> now?
-
-Looks like this was removed from Patchwork since it has passed 30 days
-without updates, could you please resend it so CI can pick it up and
-test it again.
-
-> Johan
 
 
+On 26.05.23 13:49, Wen Gu wrote:
+> When finding the first RMB of link group, it should start from the
+> current RMB list whose index is 0. So fix it.
+> 
+> Fixes: b4ba4652b3f8 ("net/smc: extend LLC layer for SMC-Rv2")
+> Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+> ---
+>   net/smc/smc_llc.c | 5 ++++-
+>   1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
+> index a0840b8..8423e8e 100644
+> --- a/net/smc/smc_llc.c
+> +++ b/net/smc/smc_llc.c
+> @@ -578,7 +578,10 @@ static struct smc_buf_desc *smc_llc_get_next_rmb(struct smc_link_group *lgr,
+>   {
+>   	struct smc_buf_desc *buf_next;
+>   
+> -	if (!buf_pos || list_is_last(&buf_pos->list, &lgr->rmbs[*buf_lst])) {
+> +	if (!buf_pos)
+> +		return _smc_llc_get_next_rmb(lgr, buf_lst);
+> +
+> +	if (list_is_last(&buf_pos->list, &lgr->rmbs[*buf_lst])) {
+>   		(*buf_lst)++;
+>   		return _smc_llc_get_next_rmb(lgr, buf_lst);
+>   	}
+It seems too late, but still, why not? :
 
---=20
-Luiz Augusto von Dentz
+-	if (!buf_pos || list_is_last(&buf_pos->list, &lgr->rmbs[*buf_lst])) {
+-  		(*buf_lst)++;
++	if (list_is_last(&buf_pos->list, &lgr->rmbs[(*buf_lst])++)) {
+
+
+Thanks,
+Wenjia
 
