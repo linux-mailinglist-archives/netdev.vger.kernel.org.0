@@ -1,189 +1,186 @@
-Return-Path: <netdev+bounces-6527-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6528-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9E1AB716CD0
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 20:51:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 149A6716D14
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:04:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3DC8F1C209E2
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 18:51:53 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5FD691C20CD6
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 19:04:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 993AF20992;
-	Tue, 30 May 2023 18:51:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0777921062;
+	Tue, 30 May 2023 19:04:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88F1817FE5
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 18:51:44 +0000 (UTC)
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7F8106
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 11:51:40 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id 5b1f17b1804b1-3f6a6b9bebdso13215e9.0
-        for <netdev@vger.kernel.org>; Tue, 30 May 2023 11:51:40 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E974719924
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 19:04:37 +0000 (UTC)
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DD5102
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 12:04:35 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id ca18e2360f4ac-77749d2613bso61415139f.2
+        for <netdev@vger.kernel.org>; Tue, 30 May 2023 12:04:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1685472699; x=1688064699;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AfcaQqLv1zYdIvq3YIyO/trBflJe8VuRf7FQypIS0A0=;
-        b=y8EAZUQrKE+gHmlHfkoMJgf4ioDw3COw5LAYdaA+mKdA2Yx8G7TzQvfwHOfjs1NuTV
-         k8K2PweKu9Z/CXK+zi2chdkvemnSEbBfwiDKMYNOmQUBxHBgcQhuddhHBX5T+zU4+87C
-         x3EXkIOdxtASoKI4pukkR9ZAisL+H+F147ehSckOoA8Kkz0x00svvf6W24K1oACRr08s
-         IpaIKr68dWpn7d7pGUJ85TpAb0nG3YwsNdyuC45ZyzGGtpay/tyWv4BjbyjugeQtrQlg
-         ns9xKTP2VI1O/24m17PbVMr0wLK9M5JAatsTT1zHNxJ/N8Chrl1xX4ctWZ6MXbHZI/44
-         s6nQ==
+        d=linaro.org; s=google; t=1685473475; x=1688065475;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=wfQuZmnPQJmPq4FD0skpyrp1OyYgS6QeSjx3Y7QLJpo=;
+        b=HmRpw8pGvyPSbo1Qzvek5/4weOk51Rnlxpp6EOvPssKH3D5hQ5EDzw0EoSd7xiUZus
+         mms608q4JqR/J3lQg/7HKynivqzzxZS7UppVP37EvxglMzvkpSsKDvOV28aW6L42SERH
+         SJ/y7tIVas1/E/bcbtlnn5M3X+cIKQiUNEYlvmyWmANy80Sa1xHxwRdCLY7FJvWUvbPQ
+         Z15dxzNpvzEGaRcjiV+7ndsDr30d3hH3TkjzvG0MCU3Tf4JLuSpQoc45cw4HNc+d2AIl
+         S61L/WYbLv72GF90UiZgLuA4usY//Xlm2bnxQbOV9jCeI8ZHIDqjgpJGcMTjbW96unsN
+         vt5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685472699; x=1688064699;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=AfcaQqLv1zYdIvq3YIyO/trBflJe8VuRf7FQypIS0A0=;
-        b=LGa/0snxka23cL8OxAk5VQRTlIHJk6KVu+XqOr4MOclA8Y5k1DnxfwUqIG0yFcMBkJ
-         Rkc4zZWKjSPxDszpEXGO6YaYuYoh1hzgDJDTrPX/7G2JI9w2gN0GXWKD0AmJ07NCNqnz
-         YZkU8r2KU17PdEBNAgXhcL9Ixsq2vESjfhAPbrWEOZ+JQ1CqXdm4NAZdN8GqXTz4ROSU
-         75Za2jVGzJioK6FHRSncAGazkBgUg/91v68Tey5JLLkHz3+fW3lQdRqs6eCVUSUIjFt4
-         IPgCQeW1VIMWmWYhsmoQfAMeGjlnxacJuBW7ugXnFACU9UgJ4KsBle6jKRgklwbCzD6p
-         hSAw==
-X-Gm-Message-State: AC+VfDxHUMivLvGYHME3neOtgomfcO48ghhLASU46GQ0pon6hTOEH66E
-	CC7WP/iPu3MMaHN/5/oKEXIudhT1UObjjH3y72pilQ==
-X-Google-Smtp-Source: ACHHUZ50X8Dw5dNyu4ojcs/WkGFLgA/3MxQwJq5nhQHi3vllssEhnqRfR7HJ0uYsunB2/PzS4tqUG1U1fAYHC+c8bkk=
-X-Received: by 2002:a05:600c:4fce:b0:3f3:3855:c5d8 with SMTP id
- o14-20020a05600c4fce00b003f33855c5d8mr6461wmq.6.1685472698944; Tue, 30 May
- 2023 11:51:38 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685473475; x=1688065475;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wfQuZmnPQJmPq4FD0skpyrp1OyYgS6QeSjx3Y7QLJpo=;
+        b=QtgDwa7ca1xBS0PBq4J5473A5Yn/Dltm+oNi6c372m7aAyEjOUz69btzI7KUgpt/KI
+         EfwNe8/JnObB/sB3TStGEx6bn/a7PGNk+KmKolaPfAgL81lj3Ne+GiIbQ551iqYE2afd
+         aS3DKZucL9jcoTIEuu540EST9DfMSTGRkLXJs3USDzd8vDlu2VNuReAShy8u1W8AQPPg
+         WOtqGZDjRzOnrxSwUwgQW3lDYhyX63G5nHzOH/fRF5XgZFMOx3pmzPdhhL8anT/CREhy
+         9vbGxQh5gBvAdNzjhtDHitzIbuVJ5MMfGGK2CBdRrwRb14navb5Cs8KYYnI1mqXc+YNd
+         osfw==
+X-Gm-Message-State: AC+VfDxBLMFxVAlwxC7u9RHN2Nm9MPNXpHqY+NGvB167rjSNipHse+mN
+	FSSqpLmYrYQG3s1XsDoD3q6ho/maOv8nXc6JiuNxnQ==
+X-Google-Smtp-Source: ACHHUZ6eBRiUgFq4mXt5B6sXnYlZU3E7fxaNdGF17ikXkootwxAujomGFgxAC2KRPKLqROgo4vGERw==
+X-Received: by 2002:a92:d581:0:b0:33b:151a:e29f with SMTP id a1-20020a92d581000000b0033b151ae29fmr363228iln.11.1685473474944;
+        Tue, 30 May 2023 12:04:34 -0700 (PDT)
+Received: from [172.22.22.28] ([98.61.227.136])
+        by smtp.gmail.com with ESMTPSA id z96-20020a0293e9000000b004178754b24bsm920068jah.166.2023.05.30.12.04.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 May 2023 12:04:34 -0700 (PDT)
+Message-ID: <f9ccdc27-7b5f-5894-46ab-84c1e1650d9f@linaro.org>
+Date: Tue, 30 May 2023 14:04:32 -0500
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230523025618.113937-1-john.fastabend@gmail.com>
- <20230523025618.113937-8-john.fastabend@gmail.com> <CANn89iLNWH2=LvNdfyhBFCte5ZTsws13YBE4N263nzVStxccdQ@mail.gmail.com>
- <647641b8e9f3c_13ff820831@john.notmuch> <647643c4dc379_15101208bf@john.notmuch>
-In-Reply-To: <647643c4dc379_15101208bf@john.notmuch>
-From: Eric Dumazet <edumazet@google.com>
-Date: Tue, 30 May 2023 20:51:27 +0200
-Message-ID: <CANn89i+1KBp9_8zktqfFrCK0xpqGOhnXbTy-A79n0_YBGWM7kQ@mail.gmail.com>
-Subject: Re: [PATCH bpf v10 07/14] bpf: sockmap, wake up polling after data copy
-To: John Fastabend <john.fastabend@gmail.com>
-Cc: jakub@cloudflare.com, daniel@iogearbox.net, bpf@vger.kernel.org, 
-	netdev@vger.kernel.org, ast@kernel.org, andrii@kernel.org, will@isovalent.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH net] net: ipa: Use the correct value for IPA_STATUS_SIZE
+Content-Language: en-US
+To: Bert Karwatzki <spasswolf@web.de>,
+ Simon Horman <simon.horman@corigine.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <7ae8af63b1254ab51d45c870e7942f0e3dc15b1e.camel@web.de>
+ <ZHWhEiWtEC9VKOS1@corigine.com>
+ <2b91165f667d3896a0aded39830905f62f725815.camel@web.de>
+ <3c4d235d-8e49-61a2-a445-5d363962d3e7@linaro.org>
+ <8d0e0272c80a594e7425ffcdd7714df7117edde5.camel@web.de>
+From: Alex Elder <elder@linaro.org>
+In-Reply-To: <8d0e0272c80a594e7425ffcdd7714df7117edde5.camel@web.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 30, 2023 at 8:43=E2=80=AFPM John Fastabend <john.fastabend@gmai=
-l.com> wrote:
->
-> John Fastabend wrote:
-> > Eric Dumazet wrote:
-> > > On Tue, May 23, 2023 at 4:56=E2=80=AFAM John Fastabend <john.fastaben=
-d@gmail.com> wrote:
-> > > >
-> > > > When TCP stack has data ready to read sk_data_ready() is called. So=
-ckmap
-> > > > overwrites this with its own handler to call into BPF verdict progr=
-am.
-> > > > But, the original TCP socket had sock_def_readable that would addit=
-ionally
-> > > > wake up any user space waiters with sk_wake_async().
-> > > >
-> > > > Sockmap saved the callback when the socket was created so call the =
-saved
-> > > > data ready callback and then we can wake up any epoll() logic waiti=
-ng
-> > > > on the read.
-> > > >
-> > > > Note we call on 'copied >=3D 0' to account for returning 0 when a F=
-IN is
-> > > > received because we need to wake up user for this as well so they
-> > > > can do the recvmsg() -> 0 and detect the shutdown.
-> > > >
-> > > > Fixes: 04919bed948dc ("tcp: Introduce tcp_read_skb()")
-> > > > Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
-> > > > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> > > > ---
-> > > >  net/core/skmsg.c | 11 ++++++++++-
-> > > >  1 file changed, 10 insertions(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-> > > > index bcd45a99a3db..08be5f409fb8 100644
-> > > > --- a/net/core/skmsg.c
-> > > > +++ b/net/core/skmsg.c
-> > > > @@ -1199,12 +1199,21 @@ static int sk_psock_verdict_recv(struct soc=
-k *sk, struct sk_buff *skb)
-> > > >  static void sk_psock_verdict_data_ready(struct sock *sk)
-> > > >  {
-> > > >         struct socket *sock =3D sk->sk_socket;
-> > > > +       int copied;
-> > > >
-> > > >         trace_sk_data_ready(sk);
-> > > >
-> > > >         if (unlikely(!sock || !sock->ops || !sock->ops->read_skb))
-> > > >                 return;
-> > > > -       sock->ops->read_skb(sk, sk_psock_verdict_recv);
-> > > > +       copied =3D sock->ops->read_skb(sk, sk_psock_verdict_recv);
-> > > > +       if (copied >=3D 0) {
-> > > > +               struct sk_psock *psock;
-> > > > +
-> > > > +               rcu_read_lock();
-> > > > +               psock =3D sk_psock(sk);
-> > > > +               psock->saved_data_ready(sk);
-> > > > +               rcu_read_unlock();
-> > > > +       }
-> > > >  }
-> > > >
-> > > >  void sk_psock_start_verdict(struct sock *sk, struct sk_psock *psoc=
-k)
-> > > > --
-> > > > 2.33.0
-> > > >
-> > >
-> > > It seems psock could be NULL here, right ?
-> > >
-> > > What do you think if I submit the following fix ?
-> > >
-> > > diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-> > > index a9060e1f0e4378fa47cfd375b4729b5b0a9f54ec..a29508e1ff3568583263b=
-9307f7b1a0e814ba76d
-> > > 100644
-> > > --- a/net/core/skmsg.c
-> > > +++ b/net/core/skmsg.c
-> > > @@ -1210,7 +1210,8 @@ static void sk_psock_verdict_data_ready(struct =
-sock *sk)
-> > >
-> > >                 rcu_read_lock();
-> > >                 psock =3D sk_psock(sk);
-> > > -               psock->saved_data_ready(sk);
-> > > +               if (psock)
-> > > +                       psock->saved_data_ready(sk);
-> > >                 rcu_read_unlock();
-> > >         }
-> > >  }
-> >
-> > Yes please do presumably this is plausible if user delete map entry whi=
-le
-> > data is being sent and we get a race. We don't have any tests for this
-> > in our CI though because we never delete socks after adding them and
-> > rely on the sock close. This shouldn't happen in that path because of t=
-he
-> > data_ready is blocked on SOCK_DEAD flag iirc.
-> >
-> > I'll think if we can add some stress test to add map update/delete in
-> > a tight loop with live socket sending/receiving traffic.
-> >
-> > Thanks
->
-> I can also submit it if its easier just let me know.
+On 5/30/23 1:36 PM, Bert Karwatzki wrote:
+> Am Dienstag, dem 30.05.2023 um 07:29 -0500 schrieb Alex Elder:
+>> On 5/30/23 4:10 AM, Bert Karwatzki wrote:
+>>> Am Dienstag, dem 30.05.2023 um 09:09 +0200 schrieb Simon Horman:
+>>>> On Sat, May 27, 2023 at 10:46:25PM +0200, Bert Karwatzki wrote:
+>>>>> commit b8dc7d0eea5a7709bb534f1b3ca70d2d7de0b42c introduced
+>>>>> IPA_STATUS_SIZE as a replacement for the size of the removed struct
+>>>>> ipa_status. sizeof(struct ipa_status) was sizeof(__le32[8]), use this
+>>>>> as IPA_STATUS_SIZE.
+>>
+>> This is better, however it really isn't done in a way that's
+>> appropriate for a Linux kernel patch.  I will gladly help you
+>> get it right if you have the patience for that.  But I'm not
+>> going to say anything yet--until you say you want me to help
+>> you do this.  If you prefer, I can submit the patch for you.
+>>
+>> The reason this is important is your commit is permanent, and
+>> just like code, commit messages are best if kept consistent
+>> and readable.  I also am offering to help you understand so
+>> you avoid any trouble next time you want to send a kernel patch.
+>>
+>> Let me know what you prefer.
+>>
+>>                                          -Alex
+>>
+>>>>
+> 
+> So here's v3 of the patch, done (I hope) in a way that is more standard
+> conforming.
+> 
+>  From e0dc802b5f6f41c0a388c7281aabe077a4e3c5a2 Mon Sep 17 00:00:00 2001
+> From: Bert Karwatzki <spasswolf@web.de>
+> Date: Tue, 30 May 2023 20:23:29 +0200
+> Subject: [PATCH] net/ipa: Use correct value for IPA_STATUS_SIZE
+> 
+> IPA_STATUS_SIZE was introduced in commit b8dc7d0eea5a as a replacement
+> for the size of the removed struct ipa_status which had size
+> sizeof(__le32[8]). Use this value as IPA_STATUS_SIZE.
+> 
+> Signed-off-by: Bert Karwatzki <spasswolf@web.de>
 
- I will, this is based on a syzbot report I will also release,
-thanks !
+This is better, but there are a few more things to do differently.
+- When re-submitting a patch, please indicate a (new) version in
+   the subject line.  Since you haven't been doing that, it should
+   be sufficient to just use "version 2", something like this:
+     [PATCH net v2] net: ipa: Use the correct value for IPA_STATUS_SIZE
+- Add a "Fixes" tag above your "Signed-off-by:" line:
+     Fixes: b8dc7d0eea5a ("net: ipa: stop using sizeof(status)")
+- Do not send information above the patch in the e-mail.  An easy
+   way to get it right is to use "git send-email".  For example:
+     - git format-patch -1
+     - Edit 0001-*.patch, adding lines like this below the "From:" line:
+	To: davem@davemloft.net
+	To: edumazet@google.com
+	To: kuba@kernel.org
+	To: pabeni@redhat.com
+	Cc: elder@kernel.org
+	Cc: netdev@vger.kernel.org
+	Cc: linux-arm-msm@vger.kernel.org
+	Cc: linux-kernel@vger.kernel.org
+     - Run this:
+         git send-email --dry-run 0001-*.patch
+       to try to catch any errors
+     - Finally, run this:
+         git send-email 0001-*.patch
+       to actually send the patch.  This will require a password.
+
+Even if you don't use "git send-email", just let the e-mail
+itself indicate the "From:" and "Subject:" lines.  And have
+the content of the e-mail be the patch itself.
+
+I hope this helps.
+
+					-Alex
+
+> ---
+>   drivers/net/ipa/ipa_endpoint.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+> index 2ee80ed140b7..afa1d56d9095 100644
+> --- a/drivers/net/ipa/ipa_endpoint.c
+> +++ b/drivers/net/ipa/ipa_endpoint.c
+> @@ -119,7 +119,7 @@ enum ipa_status_field_id {
+>   };
+>   
+>   /* Size in bytes of an IPA packet status structure */
+> -#define IPA_STATUS_SIZE			sizeof(__le32[4])
+> +#define IPA_STATUS_SIZE			sizeof(__le32[8])
+>   
+>   /* IPA status structure decoder; looks up field values for a structure */
+>   static u32 ipa_status_extract(struct ipa *ipa, const void *data,
+
 
