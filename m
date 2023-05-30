@@ -1,49 +1,54 @@
-Return-Path: <netdev+bounces-6207-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6208-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 69B2E7152F7
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 03:25:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 0E8E8715302
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 03:41:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C2B65280E37
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 01:25:16 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6B498280EEE
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 01:41:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C3326A41;
-	Tue, 30 May 2023 01:25:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B358A51;
+	Tue, 30 May 2023 01:41:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A84FA3C
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 01:25:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E1A7C433EF;
-	Tue, 30 May 2023 01:25:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2443A80D
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 01:41:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2659DC433D2;
+	Tue, 30 May 2023 01:41:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685409912;
-	bh=9UerJLLnxNhRATA1s0uD9tcq5ez+PTurFIgg5hQqOY4=;
+	s=k20201202; t=1685410880;
+	bh=YmLS8XHJhN7TiIXbCwAAk6rvkMAI25tx7VRPVlsGPCI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=YOLgHZUS7m4UicUONy29UjASg5Z2PRQUwVgJjr5JaUPToN454+WhV6GOWt2sZzcgB
-	 XV2+aTb5mUxPlqdpgbm/I9qF8eCZ6UDpzd4b0JXwTI9yKMMMseseN6xVZo/3SiVnVQ
-	 vGNqAmvMWl0YbXw8isJw/xA7TgINXknqJWu5hlyGS9izIj76TmRl2K2xMF/0jOxTqW
-	 3hUK+lUHWjrQ6KI1sEFOdPCLNE8RblRM39TlWtmaSMbVMvfzBleImOSNEtpZln+Jw+
-	 ArF27dEECrm/lECb9YDDqj66lXzpNrRrCcv2wYrwbGhuN/bEBki24cUku7odED9cTw
-	 VT7inL45ggY8g==
-Date: Mon, 29 May 2023 18:25:11 -0700
+	b=epHDp6R77pwIH1tVOWDex0ZbQ4m0lmmVg76NLbW+1dbW004AYUvhm2Gme7VMKmNa+
+	 m5lm236yEUpk6zfPBqwLJIXGbVv7u7HhU23+FOS4tRR+KFAC42RMyO+ZpfaNGcYJ7+
+	 sqr6doooBxJNWVtMVTiLI8es4mqHL0/DjpXo4spe4hcs1DfVCRIwTWm8RFiwHW+6S1
+	 s8GTuz/gK5lolSy1j4bkbcCY/NhHHY2Mf5mXUlUkWsQEcDRvILFSrBj7BT+oo+auQk
+	 JCt5R6EZBfFk3F4rI5l7zAxlapcggRA3EnbolYH3eZ7OtyNi4f73jkzBxg0E/xUsI+
+	 lzyZjM9Gzl/kA==
+Date: Mon, 29 May 2023 18:41:19 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: Xin Long <lucien.xin@gmail.com>
-Cc: network dev <netdev@vger.kernel.org>, davem@davemloft.net, Eric Dumazet
- <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Thomas Graf
- <tgraf@infradead.org>, Alexander Duyck <alexanderduyck@fb.com>
-Subject: Re: [PATCH net 1/3] rtnetlink: move validate_linkmsg into
- rtnl_create_link
-Message-ID: <20230529182511.0b138482@kernel.org>
-In-Reply-To: <CADvbK_eoJUrDFrW_Kons7RnU5qivdA9ezULcMacB-H+QcNNNCQ@mail.gmail.com>
-References: <cover.1685051273.git.lucien.xin@gmail.com>
-	<7fde1eac7583cc93bc5b1cb3b386c522b32a94c9.1685051273.git.lucien.xin@gmail.com>
-	<20230526204956.4cc0ddf3@kernel.org>
-	<CADvbK_eoJUrDFrW_Kons7RnU5qivdA9ezULcMacB-H+QcNNNCQ@mail.gmail.com>
+To: Jiri Pirko <jiri@resnulli.us>
+Cc: netdev@vger.kernel.org, pabeni@redhat.com, davem@davemloft.net,
+ edumazet@google.com, leon@kernel.org, saeedm@nvidia.com, moshe@nvidia.com,
+ jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com, tariqt@nvidia.com,
+ idosch@nvidia.com, petrm@nvidia.com, simon.horman@corigine.com,
+ ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+ michal.wilczynski@intel.com, jacob.e.keller@intel.com
+Subject: Re: [patch net-next v2 14/15] devlink: move port_del() to
+ devlink_port_ops
+Message-ID: <20230529184119.414d62f3@kernel.org>
+In-Reply-To: <ZHRi0qZD/Hsjn0Fq@nanopsycho>
+References: <20230526102841.2226553-1-jiri@resnulli.us>
+	<20230526102841.2226553-15-jiri@resnulli.us>
+	<20230526211008.7b06ac3e@kernel.org>
+	<ZHG0dSuA7s0ggN0o@nanopsycho>
+	<20230528233334.77dc191d@kernel.org>
+	<ZHRi0qZD/Hsjn0Fq@nanopsycho>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -53,62 +58,49 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 27 May 2023 16:36:15 -0400 Xin Long wrote:
-> Other than avoiding calling validation twice, adding validate_linkmsg() in
-> rtnl_create_link() also fixes the missing validation for newly created links,
-> it includes tb[IFLA_ADDRESS/IFLA_BROADCAST] checks in validate_linkmsg():
+On Mon, 29 May 2023 10:31:14 +0200 Jiri Pirko wrote:
+> >One could argue logically removing a port is also an operation of 
+> >the parent (i.e. the devlink instance). The fact that the port gets
+> >destroyed in the process is secondary. Ergo maybe we should skip 
+> >this patch?  
+> 
+> Well, the port_del() could differ for different port flavours. The
+> embedding structure of struct devlink_port is also different.
+> 
+> Makes sense to me to skip the flavour switch and have one port_del() for
+> each port.
 
-Ah, I see. Since this is a fix I'd err on the side of keeping the
-change small and obvious and limit it to adding the call in
-validate_linkmsg() without worrying about validating multiple times.
-Then follow up with the refactoring to net-next. 
-I guess it could be acceptable to take the whole thing into net, if
-you prefer but at least the commit message would need clarification.
+The asymmetry bothers me. It's hard to comment on what the best
+approach is given this series shows no benefit of moving port_del().
+Maybe even a loss, as mlx5 now has an ifdef in two places:
 
-> As for the calling twice thing, validating before any changes happen
-> makes sense.
-> Based on the change in this patch, I will pull the validation out of
-> do_setlink()
-> to these 3 places:
-> 
-> @@ -3600,7 +3605,9 @@ static int __rtnl_newlink(struct sk_buff *skb,
-> struct nlmsghdr *nlh,
->                         return -EEXIST;
->                 if (nlh->nlmsg_flags & NLM_F_REPLACE)
->                         return -EOPNOTSUPP;
-> -
-> +               err = validate_linkmsg(dev, tb, extack);
-> +               if (err < 0)
-> +                       return err;
-> 
-> @@ -3377,6 +3383,9 @@ static int rtnl_group_changelink(const struct
-> sk_buff *skb,
-> 
->         for_each_netdev_safe(net, dev, aux) {
->                 if (dev->group == group) {
-> +                       err = validate_linkmsg(dev, tb, extack);
-> +                       if (err < 0)
-> +                               return err;
->                         err = do_setlink(skb, dev, ifm, extack, tb, 0);
-> 
-> @@ -3140,6 +3136,10 @@ static int rtnl_setlink(struct sk_buff *skb,
-> struct nlmsghdr *nlh,
->                 goto errout;
->         }
-> 
-> +       err = validate_linkmsg(dev, tb, extack);
-> +       if (err < 0)
-> +               goto errout;
-> +
->         err = do_setlink(skb, dev, ifm, extack, tb, 0);
-> 
-> 
-> and yes, one more place calls validate_linkmsg (comparing to the old code
-> with the one in rtnl_create_link), unless someone thinks it's not worth it.
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> index e39fd85ea2f9..63635cc44479 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> @@ -320,7 +320,6 @@ static const struct devlink_ops mlx5_devlink_ops = {
+>  #endif
+>  #ifdef CONFIG_MLX5_SF_MANAGER
+>  	.port_new = mlx5_devlink_sf_port_new,
+> -	.port_del = mlx5_devlink_sf_port_del,
+>  #endif
+>  	.flash_update = mlx5_devlink_flash_update,
+>  	.info_get = mlx5_devlink_info_get,
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
+> index 76c5d6e9d47f..f370f67d9e33 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
+> @@ -145,6 +145,9 @@ struct devlink_port *mlx5_esw_offloads_devlink_port(struct mlx5_eswitch *esw, u1
+>  }
+>  
+>  static const struct devlink_port_ops mlx5_esw_dl_sf_port_ops = {
+> +#ifdef CONFIG_MLX5_SF_MANAGER
+> +	.port_del = mlx5_devlink_sf_port_del,
+> +#endif
+>  	.port_fn_hw_addr_get = mlx5_devlink_port_fn_hw_addr_get,
+>  	.port_fn_hw_addr_set = mlx5_devlink_port_fn_hw_addr_set,
+>  	.port_fn_roce_get = mlx5_devlink_port_fn_roce_get,
 
-Yup, LGTM. Renaming do_setlink() to __do_setlink() and adding a wrapper
-called do_setlink() which does the validation and calls __do_setlink() -
-seems like another option to explore. Whatever you reckon ends up
-looking neatest. As long as the validation ends up moving towards 
-the entry point not deeper in - any approach is fine.
+Is it okay if we deferred the port_del() patch until there's some
+clear benefit?
 
