@@ -1,51 +1,51 @@
-Return-Path: <netdev+bounces-6301-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6302-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8C6C67159E1
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 11:20:41 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7B7BB7159E5
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 11:21:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1F7FF1C20B8E
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 09:20:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 372B7280FDE
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 09:20:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B193313ACC;
-	Tue, 30 May 2023 09:20:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9881513AD0;
+	Tue, 30 May 2023 09:20:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D69E13AC8
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 09:20:38 +0000 (UTC)
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2083.outbound.protection.outlook.com [40.107.7.83])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79CD31AD;
-	Tue, 30 May 2023 02:20:18 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BE3013AC8
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 09:20:52 +0000 (UTC)
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2059.outbound.protection.outlook.com [40.107.6.59])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01254E64;
+	Tue, 30 May 2023 02:20:26 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B4v8e8esuhL6KfLZN96Dbenf1L+Q78zZKkonM59W14CJjmGc1UkxLsxpaQQxxb9GPnPqS+dMYuCO/D65UFjYUmOjnCmKqAPf4tdw9kKI0Q+Jak2TdDpR9lUF/d5mxDwF7PPlPdHu0twiNOKK7rN7l3Bz2D6TFcFvfsU60aMrcSIQMepZU16t8o9MnrR2J/yjqVKZMXRFkn4th5wOascW26q7uGdDhjW97w3hDghXdBH7IdIP78cPH3GoLmysU8RV59UdBtdxHw1mkVz3hWHGirJuT29a1ilx0uPZtufmGQ7PsBtCwfmYmOFbDQGfaIRqIigRbQztUEMx54LiioUtqw==
+ b=fBpLdRWMN+0erOmuY9ehjKK3pMUTeXqN0NKzwUvXiwq5DCbsDnBhduknTRUERP1LCl9yAZX9PspShcZni6mgqOmQqbkhCkQLGOFLhivuN++R/niiQV7WKZebW5Zpl80DW2ZXGjHjZVaB8iaxJvUeRE8+b2JCGaf94YRHtMCxb2buWpAtH7PXD7+6wJs75do53HdpTz7Ju9NLPA4khvwJRps0dckOQhPRn7o7wTOQzSGTj9N4ZpPhKrGqBzfM3IYangVfGrHe1apbBEYAO0ClXee9GIPnBxVPRXbQYeW05LJe47gDe2GwbKyshs8hnS+pJiEN6bp1Ohpcue6VwByR2g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=O+UyOhuzfQMqN54rD4LgKK9nIDVVRFBI+0dKQwkqrZc=;
- b=QhL5yj6cqWlqWbDO8PyRZzpgL1JCaWXPg5p+TdCjpMLcH1Hdvo2WbJchbQ1bFo4w0sIbngrGBZhNUTkgQhisRsETfqD3NbW/Djt5mU1Js7/GHc0aEN/x/h1U6WhwAohltJpuZNYDTB86hdl9xCU5LZHk4FYQexKO/TDka6EdmPj1CWbfNG86FZbl+OveVSJF0Ux9kaPxWHEoyfXuNNvh3IUPwanLLTGvpHjE1x7QgEWCdkCMhc58UCj3HhYkcMio3gtL0Pi9dufZwEPA/DRuExuUIPFrJJnBtNFWFZrald/mE62lid5KHjCICGZpT712iyUTSYCHAn1qOGntz3goww==
+ bh=5g/6xap3XUMNtS4JvEw30zPbTYCVwojNm6btWkb+G98=;
+ b=a2oPNVgwmq9aBb+sYuDPc9w/kPEIao3gL/vDVHWjgKYi2cqfNTBPpNEKPvHvamc1QKT3S2KQQ7kTHXJfI5pGZXAxWQOc4hc8awjohRg9OQ3RqweWaMNRbNGXnlYPpkaupVW8zXPvCjX22fHrgEvOvu5g3GTz7JCqK9dCpf61zxLNKYqyXgZ/IQrdvBYFdYTesftA9y06KPrurSNhnEsNFnYlRxmw2ZupSaIWSnMbrN5tWp1ssxSuaGS8CwdvBybE0BKZKf9OiPItdDQAqn9ZChPC946gJwxAOwx3S+TqLWLNKLDFTOaih7482fL15gVxqLrucxfq4I9KRJEZi7dApw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O+UyOhuzfQMqN54rD4LgKK9nIDVVRFBI+0dKQwkqrZc=;
- b=IMmDuCKhELrgzLTJrLbqZBOZEo60K5iSWxXmh4sEagsgTPjqn1islBz7DiJ+RHdKTVchwcHMJQPcozFrYHHCKgzPvD5eISAu3l6tEBjBvLQXyZK/4Q9n3B64n0Kqm1h2Z+szaoSJ4vf6IzFYvFLrh6BCPR9o+NmgVVNwESb/RZw=
+ bh=5g/6xap3XUMNtS4JvEw30zPbTYCVwojNm6btWkb+G98=;
+ b=qeQsnPDltiqgVj5m9li79rYxGZqhffez+Or0sAAEk0hPQviP3fSO1JxrfoL9YYWGQrZ7a2yE5rlTdTM3eFInRVGhqV31B15G6vf78mQGlErZnQG3a8+oTQRe2RXPom2/+zx6bkN1lY1dYF6ivTsCZ+3Tfn+x+g5JfmV2hEcoUQM=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
  by VI1PR04MB7167.eurprd04.prod.outlook.com (2603:10a6:800:12a::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23; Tue, 30 May
- 2023 09:20:06 +0000
+ 2023 09:20:08 +0000
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::b027:17aa:e5f5:4fea]) by AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::b027:17aa:e5f5:4fea%6]) with mapi id 15.20.6433.022; Tue, 30 May 2023
- 09:20:06 +0000
+ 09:20:08 +0000
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 To: netdev@vger.kernel.org
 Cc: "David S. Miller" <davem@davemloft.net>,
@@ -83,10 +83,12 @@ Cc: "David S. Miller" <davem@davemloft.net>,
 	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
 	intel-wired-lan@lists.osuosl.org,
 	Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-Subject: [PATCH net-next 0/5] xstats for tc-taprio
-Date: Tue, 30 May 2023 12:19:43 +0300
-Message-Id: <20230530091948.1408477-1-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 1/5] net/sched: taprio: don't overwrite "sch" variable in taprio_dump_class_stats()
+Date: Tue, 30 May 2023 12:19:44 +0300
+Message-Id: <20230530091948.1408477-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230530091948.1408477-1-vladimir.oltean@nxp.com>
+References: <20230530091948.1408477-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: FR0P281CA0155.DEUP281.PROD.OUTLOOK.COM
@@ -100,54 +102,54 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|VI1PR04MB7167:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0228b954-e31a-4f72-3118-08db60ef0e98
+X-MS-Office365-Filtering-Correlation-Id: 2c747841-e453-4214-f641-08db60ef0fe5
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	XYOIpAOhBIsIN8u7C3WpbrXzbkgLLQxCXUkArhPKyxMDJVuJFTGdgY6/i2r6pjLLgt1Ro9aAiYIIGMrpKw+M0ZcP1hoGePHhZ2dYoDadHQzg63n6BnESrEZlG+uGnpE3f1NTDCk5Hm3NmkM86cZzruOxPj0nonJ3EmEMPWNNPOSz+ufrCqDsVDOAPAuSsjgGlXNCpfdIc4S1q3Ih5EQsaBbqYjKsNI4FkmLpT8Q27wTxxsZOvX5U+8Buz4wttVZTbmwsoMvOJw0BuhQSE3QGLCDR84RDh/AJnkWVOIQdaSFyK2XS9cqx16zQE8TMF2hfzMb/14E3PWx9NvlU2BXy/3tV4x36nN4inRcFkMkT4f0L/eQMJP7k8Q8Bqjm9Vo3wKIGIywLl+13OX3UtzvD01+IW+z/0aUAmW+w8FetIzK3eO3H6AgOpNePJymXv7NSIcwhHxQpvdx+1st+WtioU0IBVRvw3GDb9HI5RNAfc0VaP9OnIjMkdbV5zBvshxCotnK6PvQbE1f2m+b/qG1aaVc6iAcS/Roiqy40jtqNCVgVCYXuwhcFYhiF3FUqajHljyD9sJ3k5GLmgeIWnLRhyFvNIcCWK78FtS1KhSUEt5n+qiMPT/2ZtqaHfk3r2+B/rFkJrQM9e2LhOeahXvhQ4lw==
+	jM8KtKj/+X7u738DVFFvqyer5vNF9mmsHQ1/AQmfT077zzXk5+6UoCBKq53j24bgMMNKw38ahYRJu+1swmHFKn/hCtwxZcF/kRAidPvZglvqUjfbNMVD/53y6cPAOZ7xIZvjm5LXze33GZToAbPd4AvutfkN7bThyb2W5hAP9stp2VTkC6x25w8tgQ4znihehgbAN/w4tYl54sGA3Jaq3pjZeGuB92rIgKhKKo4n5YhS9N9ON6VGuWbznhWMKjdfFcjJ/SkRfS8yb2PY3DVi7UrpBzsGfqRp6mKIoQ381A4f0/UiSD3b9ZZ4hiBkxkk+Suw7Yn7hX7tUAZT98csxJ6joqbsfmqrYrhdSf2PrXDAsaz30ADwUzrx/ldPQzY62qpMHjJRX8M3bB4lyhHpdFHIpLHAFyZxPNXUdI3UwddnIrvSoc7MgkMueHcO5+tiCV21xPNETKzUg4XpPSXu8JOyXneusSBeBE+d0jLoOdm27MIXKpdBEdO6255BlJvkDzMuLSfUFu0tuu2u5ECTnBvntUFBsZqN4i9YI595XLCFsBpdqGhps4iTOZwOsT5rC5pOuqPOjUeJKRcmRYtEa5aHMga8+V1z2IfzvmBS0TIaIlBNg5ptNSP7i5xq/+BVq
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(396003)(346002)(366004)(376002)(451199021)(54906003)(478600001)(38100700002)(38350700002)(966005)(66946007)(66556008)(66476007)(6486002)(41300700001)(52116002)(7416002)(7406005)(8676002)(8936002)(5660300002)(86362001)(44832011)(26005)(2906002)(186003)(1076003)(6506007)(6512007)(83380400001)(6916009)(4326008)(316002)(6666004)(2616005)(36756003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(396003)(346002)(366004)(376002)(451199021)(54906003)(478600001)(38100700002)(38350700002)(66946007)(66556008)(66476007)(6486002)(41300700001)(52116002)(7416002)(7406005)(8676002)(8936002)(5660300002)(86362001)(44832011)(26005)(2906002)(186003)(1076003)(6506007)(6512007)(83380400001)(6916009)(4326008)(316002)(6666004)(2616005)(36756003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?0XNQvJv7p646rp/laIPLE4CS5ol7VYBZExMHII9gTHaNH4FVna/DYSoq2/M6?=
- =?us-ascii?Q?o6315YVUHv1uvMuF9WuP/Z+PrBwQ2GURM6IIc+BuBkh3zczCtyLoocFdanKB?=
- =?us-ascii?Q?I6G0ImywbNW4NCdXVOuea5g0lhtqnQOwlTDwNX3ZM4A2MWSaYWlwOwGexXz7?=
- =?us-ascii?Q?h9x7nofc1VnG9HWzjOXiK6boYawW45TIdFTUtP51eMwYtsjQ6/MMX9jfKNO+?=
- =?us-ascii?Q?iuwa3tqrqu7HoHfxM/EkrS0/kX6N3/udGxH0W6/bbEixrJEMQQpVrSf8dKvn?=
- =?us-ascii?Q?pje2YCWcm7bBhX8r/4nSKVdF6QSybDVpsqX0wNGPQnr3t17lgzYR+Vux7Mha?=
- =?us-ascii?Q?Nr1bMtD91Q8s7mftNCBPWNnCvjdEOfxh7+0tz6b013XpjmY9hvS8wc5VXOV7?=
- =?us-ascii?Q?2EFXFrUwxvd2v2F0ErW6voUwMnZoCJAfewcJ65J1AdUmGYjrm+jyBT4pG8aR?=
- =?us-ascii?Q?aBYbtawLf9Y5vE4wod+7E/Npkhul/pJHKDAn44U1tvZSyK8ArAU4MOadekwl?=
- =?us-ascii?Q?aOpSPFJD1fJ64FrYU5Kwkqlu4EXs8BF8/nVLi3wb/FSLo9vns+OPZWR7deid?=
- =?us-ascii?Q?WqcS3+9/8m7TpHS54k9yfHXJZdLcQ7bVSmMkSXgLHwC+RrtmY7TcXbOl8CDM?=
- =?us-ascii?Q?U1CrocIfZ9yGw9fk6VrDExPWidnX0tKvSU6CJyib+H6lm0Sfzlr+XtvPSq/l?=
- =?us-ascii?Q?WZ7J7ZqXTnJtCs0XlFT9Na4rpMA7ZF8jblSblvH/CO4nvhwGL/x7YKbZsyz3?=
- =?us-ascii?Q?3oiUnwkyl1C9w/2IDruERHxRBfyUmhTJ+nWCZsPrF8fxVykBPbykRGmfz1M5?=
- =?us-ascii?Q?Hb1C27Ohn9xBM8cUniP57/qb8DRBH6Rrn/3KDPNuA+Qm/7ETuzvEmTaSWLXr?=
- =?us-ascii?Q?jI1RNjPB8d+eD3lCKmNah/e+bGRzqm+IpSXUsExwKrFL8LrDB7CJqgdoGcQm?=
- =?us-ascii?Q?8nQeppcAEC4ZbY9IiSUcxi4gx/lY1Q9V5r1Cg2ShDnPj22jIGo3P4a5ooGPQ?=
- =?us-ascii?Q?d9P12dQGY2kp/6vT1syVl3xNc7gDvAAyLXntQeelEMRvbrJN3vfFuT85d2Xm?=
- =?us-ascii?Q?w8Y4DaOv+oNuMdqnlv3Sl0b9QLBKe+cyp1s6uCac0VB6JEqC5qCyyJNB6EMN?=
- =?us-ascii?Q?RroU3kV37e6rEtvDgTDtcNa/KSLk7cNzGYIfeypJpZjaXcZhd088+SVwCPm3?=
- =?us-ascii?Q?rZ2YYougN1XD77LRBLntg4hzHvX86NB7pdA1So+ndseLqeQNYu26ckHWhIJw?=
- =?us-ascii?Q?G3bbH1ie0kShHErItKphJLHjwXYocAXO1zMxyvu7vZrztyKBAjfOREqe3j2h?=
- =?us-ascii?Q?t0JQiZ6ZBa4bzKl62/dBf9QLr7EJzfvrs74I1UDsbVVdstUDE2mCdbyyD/wr?=
- =?us-ascii?Q?ATJGbwHOjv/R47z10+9HNGUmxrDEFOCWIPaKVAQpT+fATjz7uj0JkY4IYlc3?=
- =?us-ascii?Q?YMzcrKbJcRcBWsUhmme69nuHIHnjZnAVmuVIDSw2YoQge/ScYOgGH7i0GsRS?=
- =?us-ascii?Q?VwwAMeQBVwkj6NVQiwXLhupqeT9DITvzKeueCy1AOK92+kQtm6eVxHMcJmOl?=
- =?us-ascii?Q?mPDeXyLQUKofhj06mJlWdChnOCAnsgUB2MNHMuAZjYI4ujwd2TICa2mwyJGS?=
- =?us-ascii?Q?sg=3D=3D?=
+	=?us-ascii?Q?gxmhnbRTluNUeleYUB/RcUPKLISjXoF4i3pwCXhEvTAGZPZ15b8UtLhMuZ+o?=
+ =?us-ascii?Q?uf4ofLCMvvXirXhl5CBQq88hTYUVVyzzBaVOByHemGG2YrdNreSbusKjzXts?=
+ =?us-ascii?Q?LpVzHs6ssrGCECZkYSKbE+CFvn53ENKrNgHXPSHxNEs6dNIEVvCQVfZpNnZw?=
+ =?us-ascii?Q?zZIvD8g07InCPNpCpzKNKucQdzL5hTu2uVabKQFs4o1y9QQrO+88fUrNGzw2?=
+ =?us-ascii?Q?T5HnbhU8948g4yei2POykV/Xuc7QcwThvUABzTTTuDOxcPAu6axHT5Ou07Yl?=
+ =?us-ascii?Q?+27/FqPofx4LcqcAnbgYo4fVwWM+yyQSMDjw2lO6OmIdzE2v/L8RwgSrd4SP?=
+ =?us-ascii?Q?LjarDk7EQWj6uuonzyfRPLNyE+0R5Sd/O8mJ0KR/jgXZGvEA5k/1ljYd4fqV?=
+ =?us-ascii?Q?Lv/Ai7Mb06jPjZtHRGzaXiQZaruBk8AOAf/+yrJehvt0nKFUSia4rp3s2pXX?=
+ =?us-ascii?Q?XZGi5YV/ZogJ9rFaO5zQoM+4u/oNTpzQznozsKSnZ2NCelcfSxMgLcnTsF0+?=
+ =?us-ascii?Q?7jjRERlq11EG25U/QHlrHD7fqf2Riam3rNWZWFDW6RogWNheEtqhcp829+AI?=
+ =?us-ascii?Q?LSSbvWhMiix+F2F/xY50lSQ7Q0K762JvZIj0vTThxrscCpvp5qbFRtQAhD7e?=
+ =?us-ascii?Q?G8BYjhR+V0JbODnmXe+14ny0hT8ywS/J21VyW43JLWYb009p7cW13y19ZFwN?=
+ =?us-ascii?Q?ISFtroOyK1Sxm+drLw9JiJl8eC2HSHy4kCKHssBWejWsRGnnWP0SxReVmNsZ?=
+ =?us-ascii?Q?zPXauS4udv5IOol7K3nelad15QbJ+Qlu9UZ6UMdfjVN96jFW/f9LBIMTFZJD?=
+ =?us-ascii?Q?eUfzN5usSfCBaCEDmid5Cd8ePkO3dDrmsIJxCBAo/N6u4jtsnH6FWMxoTlVu?=
+ =?us-ascii?Q?FgR+0zVVe9rOA46AbC62UbkT3gkfc1ONHeBfydeUhAndsPtnfp+dGx3HJYsU?=
+ =?us-ascii?Q?8nY5dZnVdh3bn/0qgFuLaqI2BXxrACu7CXW4qhkVBjGUDTjhbsietPFUt117?=
+ =?us-ascii?Q?kh9ard/oO2fQOECy3pWFXq7R/3a9v9GU+KsOVlzrcNnUq5t3fC0rFODRoAoP?=
+ =?us-ascii?Q?cs18g+7/QsX3zD79U+vTjpE7lqA5aJ9Okqpb6QGNnRwjBZ/b7TGTYoVHcoom?=
+ =?us-ascii?Q?Yt0TvUihNSIQcZwSabFcE69YPPtcg2akcKQdgK8kjumos4QS1M6GKeGMTpxg?=
+ =?us-ascii?Q?KMaDQkS9qnoygd06MxGye+nE7xuvKI85uECBzWhNMW4yxCnptzK/0qPCPq8K?=
+ =?us-ascii?Q?hnQyo0mOyj/BeviS/7MWnOuu+VtpqAyaLWlgMppJOOKvn++dijRr/kjLWFWm?=
+ =?us-ascii?Q?C/kCYco1jryCP6rNf8NH1pWw6Zl6dTt4AHkgyVLYz86vLo27NTLh87LAKcAe?=
+ =?us-ascii?Q?ESPbHxbiway18Oh3PWQ8xbpxj9yTXqk8tp0AErpy3tngGKJXaRchxiaAvNV/?=
+ =?us-ascii?Q?NdPyV+wiIh+G0IxhvjfMrfx95Oq+bIX+HMfGQb85XuHAdZ97IRZx0Ra31ckH?=
+ =?us-ascii?Q?aLUyeWymejm3UFyd2GBuKtgpvkUt7OHeCo9I/34BGVt6qjiHB3zldGlHskzQ?=
+ =?us-ascii?Q?42+lNhkg1dNY1wj+ytZjQwOXfCO01Goq1JowvkEZNpTqV6a6SaVE0E7/9aQu?=
+ =?us-ascii?Q?Lw=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0228b954-e31a-4f72-3118-08db60ef0e98
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2c747841-e453-4214-f641-08db60ef0fe5
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 09:20:06.3978
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 09:20:08.5461
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UOTl16OsMG8o6uWggd/lZv6LC6iS5V6Ko9n4QWvL24OWt5dojK62qfJjfnoUdVV/uMQ5HYg8+fcdf4Wdoz/C6Q==
+X-MS-Exchange-CrossTenant-UserPrincipalName: pAahR1QXEwl5kAEfxcOEEEt9EzwhGBvZ1RZ66nvZcECuRLL6lprz+Sjr4gMeaidkHMeLi/N4A5T6cZbKChzUdw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7167
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -156,48 +158,36 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-As a result of this discussion:
-https://lore.kernel.org/intel-wired-lan/20230411055543.24177-1-muhammad.husaini.zulkifli@intel.com/
+In taprio_dump_class_stats() we don't need a reference to the root Qdisc
+once we get the reference to the child corresponding to this traffic
+class, so it's okay to overwrite "sch". But in a future patch we will
+need the root Qdisc too, so create a dedicated "child" pointer variable
+to hold the child reference. This also makes the code adhere to a more
+conventional coding style.
 
-it became apparent that tc-taprio should make an effort to standardize
-statistics counters related to the 802.1Qbv scheduling as implemented
-by the NIC. I'm presenting here one counter suggested by the standard,
-and one counter defined by the NXP ENETC controller from LS1028A. Both
-counters are reported globally and per traffic class - drivers get
-different callbacks for reporting both of these, and get to choose what
-to report in both cases.
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ net/sched/sch_taprio.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-The iproute2 counterpart is available here for testing:
-https://github.com/vladimiroltean/iproute2/commits/taprio-xstats
-
-Vladimir Oltean (5):
-  net/sched: taprio: don't overwrite "sch" variable in
-    taprio_dump_class_stats()
-  net/sched: taprio: replace tc_taprio_qopt_offload :: enable with a
-    "cmd" enum
-  net/sched: taprio: add netlink reporting for offload statistics
-    counters
-  net: enetc: refactor enetc_setup_tc_taprio() to have a switch/case for
-    cmd
-  net: enetc: report statistics counters for taprio
-
- drivers/net/dsa/hirschmann/hellcreek.c        |  14 ++-
- drivers/net/dsa/ocelot/felix_vsc9959.c        |   4 +-
- drivers/net/dsa/sja1105/sja1105_tas.c         |   7 +-
- .../net/ethernet/engleder/tsnep_selftests.c   |  12 +-
- drivers/net/ethernet/engleder/tsnep_tc.c      |   4 +-
- drivers/net/ethernet/freescale/enetc/enetc.c  |   3 +-
- drivers/net/ethernet/freescale/enetc/enetc.h  |   1 +
- .../net/ethernet/freescale/enetc/enetc_qos.c  | 110 ++++++++++++++----
- drivers/net/ethernet/intel/igc/igc_main.c     |  13 ++-
- .../ethernet/microchip/lan966x/lan966x_tc.c   |  10 +-
- .../net/ethernet/stmicro/stmmac/stmmac_tc.c   |   7 +-
- drivers/net/ethernet/ti/am65-cpsw-qos.c       |  11 +-
- include/net/pkt_sched.h                       |  56 +++++++--
- include/uapi/linux/pkt_sched.h                |  10 ++
- net/sched/sch_taprio.c                        |  90 ++++++++++++--
- 15 files changed, 286 insertions(+), 66 deletions(-)
-
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 76db9a10ef50..d29e6785854d 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -2388,10 +2388,10 @@ static int taprio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
+ 	__acquires(d->lock)
+ {
+ 	struct netdev_queue *dev_queue = taprio_queue_get(sch, cl);
++	struct Qdisc *child = dev_queue->qdisc_sleeping;
+ 
+-	sch = dev_queue->qdisc_sleeping;
+-	if (gnet_stats_copy_basic(d, NULL, &sch->bstats, true) < 0 ||
+-	    qdisc_qstats_copy(d, sch) < 0)
++	if (gnet_stats_copy_basic(d, NULL, &child->bstats, true) < 0 ||
++	    qdisc_qstats_copy(d, child) < 0)
+ 		return -1;
+ 	return 0;
+ }
 -- 
 2.34.1
 
