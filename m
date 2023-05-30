@@ -1,172 +1,140 @@
-Return-Path: <netdev+bounces-6362-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6363-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D7A54715F23
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 14:26:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id F4227715F36
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 14:27:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 77FD01C20B4E
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 12:26:12 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8AEF81C20BCA
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 12:26:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E25919920;
-	Tue, 30 May 2023 12:26:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 127D319921;
+	Tue, 30 May 2023 12:26:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DFEC174DF
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 12:26:06 +0000 (UTC)
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A769D
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 05:26:04 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id 4fb4d7f45d1cf-5149bdb59daso3569888a12.2
-        for <netdev@vger.kernel.org>; Tue, 30 May 2023 05:26:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1685449562; x=1688041562;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=m1A3pPtGHVixOn/xWWbPwneoP4l3d07yrVwIEB3j2rk=;
-        b=Xdkg4/usmbvYcxt8xCQGz3dG0P5uYeBuumHZnNxaQBh3esi+RZsfsqUcpfsWf2lrhc
-         f2rLijkCkVWVkv7k9q6cau7/2ShsA7mBTf5tAS9zKUK+HoqgBk8aTewncBLWr7Ib2/pd
-         lyo9ssvigMPs/sjFcZhyM8ci3UOIzk9O8L18GMB6h3oNrDreKYuypqtdH3AOxNnu+eff
-         c1lE5U5IRgyUJAaDQ0IXDo/FAMqXSIokYrxNUwHvc1AQCcqkvP+nkGrT69KyWSTI+z2i
-         Dcbh8Z71fo788qtWRkYO1y1y4SQokQkToBMQ8PUIdmkUSKylnylDBOguEc/VKrV4iZa9
-         W9KQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685449562; x=1688041562;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=m1A3pPtGHVixOn/xWWbPwneoP4l3d07yrVwIEB3j2rk=;
-        b=IpioRlloAMaQKOcF0hWXC0xGcfq7iMixuc0AqzBZwmWJIfZMv2tR4n0YlBih+BCSS9
-         V1fivSt882qfkqT5xR+GLO+f9KtX3Q0ABP5bCbfdj5ya8qdGKB3i84IVY0SloC71l0ob
-         7CrKqmx295h/oOiksw6GvgvcexArimn4S8Bmrl2Bv+Vk+hgRsjZyFffG05SMIjOxTlsz
-         QyVw5aYM9pTLflORI0yt6wfJuwuu1W8IK8P0xKkZGiX82InLNM3nWpjDH97ShFencCQT
-         Qvbn+cm9qDuKlKgOet7ASwsqnyxTmf2fWnDe+FP8jJL2gmWtAUYAIQjJm6cWPlwDSmwu
-         BtNA==
-X-Gm-Message-State: AC+VfDyAotReaM8+E6oTqLXMOzPhi2ITgWk/sJp9igm2QpLs18hjjuwz
-	Ll2sUBYDJe/9oxdTxGO4f8kAaA==
-X-Google-Smtp-Source: ACHHUZ6bIVwugA+CNFY/6v/wXqH4stb5Yy7HEPA+YAfR64MUIuKu4jkjDASrPecCuhgjeulD42qW7Q==
-X-Received: by 2002:aa7:c301:0:b0:50c:4b9:1483 with SMTP id l1-20020aa7c301000000b0050c04b91483mr1423191edq.37.1685449562551;
-        Tue, 30 May 2023 05:26:02 -0700 (PDT)
-Received: from krzk-bin ([178.197.199.204])
-        by smtp.gmail.com with ESMTPSA id p17-20020a056402075100b005149b6ec1bdsm2838504edy.29.2023.05.30.05.26.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 May 2023 05:26:02 -0700 (PDT)
-Date: Tue, 30 May 2023 14:25:59 +0200
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To: Pranavi Somisetty <pranavi.somisetty@amd.com>
-Cc: pabeni@redhat.com, netdev@vger.kernel.org, edumazet@google.com,
-	davem@davemloft.net, kuba@kernel.org, nicolas.ferre@microchip.com,
-	michal.simek@amd.com, harini.katakam@amd.com, robh+dt@kernel.org,
-	devicetree@vger.kernel.org, claudiu.beznea@microchip.com,
-	radhey.shyam.pandey@amd.com, linux-kernel@vger.kernel.org,
-	krzysztof.kozlowski+dt@linaro.org, git@amd.com
-Subject: Re: [PATCH net-next v3 1/2] dt-bindings: net: cdns,macb: Add
- rx-watermark property
-Message-ID: <20230530122559.o2nvvtkf2gddvjkz@krzk-bin>
-References: <20230530095138.1302-1-pranavi.somisetty@amd.com>
- <20230530095138.1302-2-pranavi.somisetty@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08619174DF
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 12:26:58 +0000 (UTC)
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37054E42;
+	Tue, 30 May 2023 05:26:38 -0700 (PDT)
+Received: from localhost.localdomain (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+	(No client certificate requested)
+	(Authenticated sender: lukma@denx.de)
+	by phobos.denx.de (Postfix) with ESMTPSA id 2D0D985F52;
+	Tue, 30 May 2023 14:26:35 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+	s=phobos-20191101; t=1685449595;
+	bh=HCxUDLptga1ZY26RbeXABUOOkjpCerVJLwimbWQwyU8=;
+	h=From:To:Cc:Subject:Date:From;
+	b=JpfxQZ2G7jg0wSVBi2cOntG4yyCH1s2egcZzvVd5FjNL+SKgIAGoDMt0Q/redNUL9
+	 +/Fc42ob9MGrQzAU71wrEuICXBHNgX0Yt7jAPXV2I99x5rJ1ZM5emKP2qmXiZIf/Jb
+	 6rtL8sTbCheZglPY3ImO/bQ87hAfGA2vHG5SB7SagMAbykeTxGyGU/Gn74AW7gfc5E
+	 0lMlC0S9GwXsAL5o+pj0WRXh/ocBstfHhKxjDJ/t2Mqyh0iqXsR3i2/C7nwD1mHRwx
+	 nFdGwh65F37hd/qaysI15AaY9mZpW2KBCWsy8uM56uz0SbqtoI8zLVUY4myA4/mDlj
+	 2ho0LTsD2R9SQ==
+From: Lukasz Majewski <lukma@denx.de>
+To: Andrew Lunn <andrew@lunn.ch>,
+	Russell King <linux@armlinux.org.uk>
+Cc: Vivien Didelot <vivien.didelot@gmail.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lukasz Majewski <lukma@denx.de>
+Subject: [RFC] net: dsa: slave: Advertise correct EEE capabilities at slave PHY setup
+Date: Tue, 30 May 2023 14:26:21 +0200
+Message-Id: <20230530122621.2142192-1-lukma@denx.de>
+X-Mailer: git-send-email 2.30.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20230530095138.1302-2-pranavi.somisetty@amd.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, 30 May 2023 03:51:37 -0600, Pranavi Somisetty wrote:
-> watermark value is the minimum amount of packet data
-> required to activate the forwarding process. The watermark
-> implementation and maximum size is dependent on the device
-> where Cadence MACB/GEM is used.
-> 
-> Signed-off-by: Pranavi Somisetty <pranavi.somisetty@amd.com>
-> ---
-> Changes v2:
-> None (patch added in v2)
-> 
-> Changes v3:
-> 1. Fixed DT schema error: "scalar properties shouldn't have array keywords".
-> 2. Modified description of rx-watermark to include units of the watermark value.
-> 3. Modified the DT property name corresponding to rx_watermark in
-> pbuf_rxcutthru to "cdns,rx-watermark".
-> 4. Modified commit description to remove references to Xilinx platforms,
-> since the changes aren't platform specific.
-> ---
->  Documentation/devicetree/bindings/net/cdns,macb.yaml | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
+One can disable in device tree advertising of EEE capabilities of PHY
+when 'eee-broken-100tx' property is present in DTS.
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+With DSA switch it also may happen that one would need to disable EEE due
+to some network issues.
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+Corresponding switch DTS description:
 
-Full log is available here: https://patchwork.ozlabs.org/patch/1787378
+ switch@0 {
+	 ports {
+		port@0 {
+		reg = <0>;
+		label = "lan1";
+		phy-handle = <&switchphy0>;
+		};
+	}
+	mdio {
+		switchphy0: switchphy@0 {
+		reg = <0>;
+		eee-broken-100tx;
+	};
+	};
+
+This patch adjusts the content of MDIO_AN_EEE_ADV in MDIO_MMD_AN "device"
+so the phydev->eee_broken_modes are taken into account from the start of
+the slave PHYs.
+
+As a result the 'ethtool --show-eee lan1' shows that EEE is not supported
+from the outset.
+
+Questions:
+
+- Is the genphy_config_eee_advert() appropriate to be used here?
+  As I found this issue on 5.15 kernel, it looks like mainline now uses
+  PHY features for handle EEE (but the aforementioned function is still
+  present in newest mainline - v6.4-rc1).
+
+- I've also observed strange behaviour for EEE capability register:
+  Why the value in MDIO_MMD_PCS device; reg MDIO_PCS_EEE_ABLE is somewhat
+  "volatile" - in a sense that when I use:
+  ethtool --set-eee lan2 eee off
+
+  It is cleared by PHY itself to 0x0 (from 0x2) and turning it on again is
+  not working.
+
+  Is this expected? Or am I missing something?
 
 
-ethernet@e000b000: ethernet-phy@0: Unevaluated properties are not allowed ('device_type', 'marvell,reg-init' were unexpected)
-	arch/arm/boot/dts/zynq-parallella.dtb
 
-ethernet@e000b000: ethernet-phy@0: Unevaluated properties are not allowed ('device_type' was unexpected)
-	arch/arm/boot/dts/zynq-zed.dtb
-	arch/arm/boot/dts/zynq-zybo.dtb
-	arch/arm/boot/dts/zynq-zybo-z7.dtb
+Signed-off-by: Lukasz Majewski <lukma@denx.de>
+---
+ net/dsa/slave.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-ethernet@e000b000: ethernet-phy@1: Unevaluated properties are not allowed ('device_type' was unexpected)
-	arch/arm/boot/dts/zynq-cc108.dtb
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 353d8fff3166..712923c7d4e2 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2247,6 +2247,7 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
+ 		phylink_destroy(dp->pl);
+ 	}
+ 
++	genphy_config_eee_advert(slave_dev->phydev);
+ 	return ret;
+ }
+ 
+-- 
+2.37.3
 
-ethernet@e000b000: ethernet-phy@7: Unevaluated properties are not allowed ('device_type' was unexpected)
-	arch/arm/boot/dts/zynq-zc702.dtb
-	arch/arm/boot/dts/zynq-zc706.dtb
-	arch/arm/boot/dts/zynq-zc770-xm010.dtb
-
-ethernet@e000c000: ethernet-phy@7: Unevaluated properties are not allowed ('device_type' was unexpected)
-	arch/arm/boot/dts/zynq-zc770-xm013.dtb
-
-ethernet@f0028000: ethernet-phy@1: Unevaluated properties are not allowed ('rxc-skew-ps', 'rxd0-skew-ps', 'rxd1-skew-ps', 'rxd2-skew-ps', 'rxd3-skew-ps', 'rxdv-skew-ps', 'txc-skew-ps', 'txen-skew-ps' were unexpected)
-	arch/arm/boot/dts/sama5d33ek.dtb
-	arch/arm/boot/dts/sama5d34ek.dtb
-	arch/arm/boot/dts/sama5d35ek.dtb
-	arch/arm/boot/dts/sama5d36ek_cmp.dtb
-	arch/arm/boot/dts/sama5d36ek.dtb
-
-ethernet@f0028000: ethernet-phy@7: Unevaluated properties are not allowed ('rxc-skew-ps', 'rxd0-skew-ps', 'rxd1-skew-ps', 'rxd2-skew-ps', 'rxd3-skew-ps', 'rxdv-skew-ps', 'txc-skew-ps', 'txen-skew-ps' were unexpected)
-	arch/arm/boot/dts/at91-dvk_som60.dtb
-	arch/arm/boot/dts/sama5d33ek.dtb
-	arch/arm/boot/dts/sama5d34ek.dtb
-	arch/arm/boot/dts/sama5d35ek.dtb
-	arch/arm/boot/dts/sama5d36ek_cmp.dtb
-	arch/arm/boot/dts/sama5d36ek.dtb
-
-ethernet@ff0d0000: ethernet-phy@5: Unevaluated properties are not allowed ('ti,dp83867-rxctrl-strap-quirk', 'ti,fifo-depth', 'ti,rx-internal-delay', 'ti,tx-internal-delay' were unexpected)
-	arch/arm64/boot/dts/xilinx/zynqmp-zc1751-xm016-dc2.dtb
-
-ethernet@ff0e0000: ethernet-phy@c: Unevaluated properties are not allowed ('ti,dp83867-rxctrl-strap-quirk', 'ti,fifo-depth', 'ti,rx-internal-delay', 'ti,tx-internal-delay' were unexpected)
-	arch/arm64/boot/dts/xilinx/zynqmp-zcu102-rev1.0.dtb
-	arch/arm64/boot/dts/xilinx/zynqmp-zcu102-rev1.1.dtb
-	arch/arm64/boot/dts/xilinx/zynqmp-zcu102-revB.dtb
-	arch/arm64/boot/dts/xilinx/zynqmp-zcu104-revA.dtb
-	arch/arm64/boot/dts/xilinx/zynqmp-zcu104-revC.dtb
-	arch/arm64/boot/dts/xilinx/zynqmp-zcu106-revA.dtb
-	arch/arm64/boot/dts/xilinx/zynqmp-zcu111-revA.dtb
-
-ethernet@ff0e0000: Unevaluated properties are not allowed ('ethernet-phy@21' was unexpected)
-	arch/arm64/boot/dts/xilinx/zynqmp-zcu102-revA.dtb
-
-ethernet@fffbc000: Unevaluated properties are not allowed ('ethernet-phy' was unexpected)
-	arch/arm/boot/dts/at91rm9200ek.dtb
 
