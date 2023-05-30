@@ -1,65 +1,122 @@
-Return-Path: <netdev+bounces-6539-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6540-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 19D96716DBD
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:39:35 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 382DD716DBE
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:39:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C95B0280C96
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 19:39:33 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CCE681C20D4E
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 19:39:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B0572D24B;
-	Tue, 30 May 2023 19:39:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8C2C22D263;
+	Tue, 30 May 2023 19:39:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C01CB200AD
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 19:39:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 264D8C433EF;
-	Tue, 30 May 2023 19:39:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685475570;
-	bh=6BVs/4ylZ5MJhPhB0/aJDvk7bJwuMJkawV5+ouDr0gE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=sS4WDe5IEn0pNA1TTf/DHBrcX0mRJ6kxZWu3xHplhmDd2Yv+PFlZ3Cdy2DOJRIUyF
-	 x4SuYDFQo1A4RnH2WSVSHxcdZFvlh4dLIXG7WJPrVSVfo/cCgtMQ/BYUN6Tuc7EJn2
-	 fpg2ukujl6EzrnSxEln+dTU9//vumMArvgkihKNXXd14zqTC0/F4JfsEPd5LYfqHKT
-	 V+jcaVPeOCCIsFF9ugPhgj/vldFhvBh/IoQ/q3UCTw4+GuhAE2vGVW9baRIIomalfc
-	 OytYvUAwVvA7PQRQa43RfWQxG4jOvD2BW2JUIzDUdC8u4YkBJyFmchYkJXSL7qCxiP
-	 z3uLiEeT7uiLg==
-Date: Tue, 30 May 2023 12:39:29 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Parav Pandit <parav@nvidia.com>
-Cc: Eric Dumazet <edumazet@google.com>, David Ahern <dsahern@kernel.org>,
- davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: Make gro complete function to return void
-Message-ID: <20230530123929.42472e9f@kernel.org>
-In-Reply-To: <CANn89iLxUk6KpQ1a=Q+pNb95nkS6fYbHsuBGdxyTX23fuTGo6g@mail.gmail.com>
-References: <20230529134430.492879-1-parav@nvidia.com>
-	<b4940bfa-aab6-644a-77d3-20bf9a876a6a@kernel.org>
-	<CANn89iLxUk6KpQ1a=Q+pNb95nkS6fYbHsuBGdxyTX23fuTGo6g@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E2B7200AD
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 19:39:50 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A60FC9;
+	Tue, 30 May 2023 12:39:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=vuH9AirNJ0G92dOvzMEbbxP5J8VYMBS61Gic4A50dWU=; b=fjiDg0sb9u5hx80DnTUTzrtFvh
+	FunR2nQKkBxNVCx47Ok59SmaNZ5O8epfbPFMSFrT4cPE7dDxgjCAyH4kGcTjqvss4dce3ATHdUSo0
+	QCKwWYsOMHILt2EFsN51FV8WdMKrTMkD+O+l6YROQuwXrO7ONtZBF3fRNTC2eZP0DXbAugojXFeU8
+	BK/pufaAT++ZGpoKAsSx8AzcHOVW8fTQABopPUNu5HM9a9oOkffNFmm1QBsb+QDJObtPiBdnTniWB
+	cIVoV0N9YjFotBr7pxcZjXV6ye73E082k8Qn91huCTe9D3O6FMCr/s67Fy/gp9Elt3ZJkmRm83btr
+	Cz27DLCg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40238)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q45C1-0003Ms-02; Tue, 30 May 2023 20:39:41 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q45Bz-0008KW-3w; Tue, 30 May 2023 20:39:39 +0100
+Date: Tue, 30 May 2023 20:39:39 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Andrew Lunn <andrew@lunn.ch>, Dan Carpenter <dan.carpenter@linaro.org>,
+	Oleksij Rempel <linux@rempel-privat.de>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] net: phy: fix a signedness bug in genphy_loopback()
+Message-ID: <ZHZQ+1KNGB7KYZGi@shell.armlinux.org.uk>
+References: <d7bb312e-2428-45f6-b9b3-59ba544e8b94@kili.mountain>
+ <20230529215802.70710036@kernel.org>
+ <90b1107b-7ea0-4d8f-ad88-ec14fd149582@lunn.ch>
+ <20230530121910.05b9f837@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230530121910.05b9f837@kernel.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Tue, 30 May 2023 17:48:22 +0200 Eric Dumazet wrote:
-> > tcp_gro_complete seems fairly trivial. Any reason not to make it an
-> > inline and avoid another function call in the datapath?  
+On Tue, May 30, 2023 at 12:19:10PM -0700, Jakub Kicinski wrote:
+> On Tue, 30 May 2023 14:39:53 +0200 Andrew Lunn wrote:
+> > > Therefore we should try to fix phy_read_poll_timeout() instead to
+> > > use a local variable like it does for __ret.  
+> > 
+> > The problem with that is val is supposed to be available to the
+> > caller. I don't know if it is every actually used, but if it is, using
+> > an internal signed variable and then throwing away the sign bit on
+> > return is going to result in similar bugs.
 > 
-> Probably, although it is a regular function call, not an indirect one.
+> This is what I meant FWIW:
 > 
-> In the grand total of driver rx napi + GRO cost, saving a few cycles
-> per GRO completed packet is quite small.
+> diff --git a/include/linux/phy.h b/include/linux/phy.h
+> index 7addde5d14c0..829bd57b8794 100644
+> --- a/include/linux/phy.h
+> +++ b/include/linux/phy.h
+> @@ -1206,10 +1206,13 @@ static inline int phy_read(struct phy_device *phydev, u32 regnum)
+>  #define phy_read_poll_timeout(phydev, regnum, val, cond, sleep_us, \
+>  				timeout_us, sleep_before_read) \
+>  ({ \
+> -	int __ret = read_poll_timeout(phy_read, val, val < 0 || (cond), \
+> +	int __ret, __val;						\
+> +									\
+> +	__ret = read_poll_timeout(phy_read, __val, __val < 0 || (cond),	\
+>  		sleep_us, timeout_us, sleep_before_read, phydev, regnum); \
+> -	if (val < 0) \
+> -		__ret = val; \
+> +	val = __val;
+> +	if (__val < 0) \
+> +		__ret = __val; \
+>  	if (__ret) \
+>  		phydev_err(phydev, "%s failed: %d\n", __func__, __ret); \
+>  	__ret; \
+> 
+> 
+> I tried enabling -Wtype-limits but it's _very_ noisy :(
 
-IOW please make sure you include the performance analysis quantifying
-the win, if you want to make this a static inline. Or let us know if
-the patch is good as is, I'm keeping it in pw for now.
+Yes, looks good, that's what I thought you were meaning, and I totally
+agree with it. Thanks!
+
+Whatever we decide for this will also need to be applied to
+phy_read_mmd_poll_timeout() as well.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
