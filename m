@@ -1,80 +1,100 @@
-Return-Path: <netdev+bounces-6276-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6277-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C84767157B0
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 09:55:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 742487157D7
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 10:02:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8CA832810AC
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 07:55:25 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 160FC1C20B84
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 08:02:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AFA2A125D5;
-	Tue, 30 May 2023 07:55:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69F9F125DA;
+	Tue, 30 May 2023 08:02:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A9A5125CC
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 07:55:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71025C433EF;
-	Tue, 30 May 2023 07:55:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685433322;
-	bh=8ZdTOa03jdrIEEMTRubaTPNotfGUbHnWuYuQN/xtOPA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=pZTF2iPEAyO8W9Utdy4WVirRx29yvcU1kmInYUI3eNQMllXS+VOlwBK05kE4cjMxm
-	 iT9hShvfgQRfHdzjKYv0DOEqATP1TAWzLwnevJEwSTONFyqhoUJow0AyIu9DOmiuf/
-	 FrofSDhfMRE4axz/VDizJeMojrALTfc8JO5H6NEBKIJww4JAw+HE/ifoy8w7RZ5XTM
-	 qav5qHfQL/LZqApbRShIy2S4xYnoc4V2YwhXkLIF31fE41+oJqdf61xZIYtkFz8Hj0
-	 sXAXTjeGZy7wLLDsAyg0GKY24Z1D/n5oKbLDtnqMHzs77yXpHvyuFYSMVMWsvwcj8N
-	 gusvJxpYikayw==
-Message-ID: <43d8b745-ea0e-4359-8291-be750abab41a@kernel.org>
-Date: Tue, 30 May 2023 09:55:15 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C19A125C4
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 08:02:02 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762C7A8
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 01:02:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1685433721; x=1716969721;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XkDnCkZNz58YuZx28XBiYswNlrmkkiuTTE2FYZ29pmI=;
+  b=tAwEwp1fdlyCCstmWg+gUF/WavlxaS1AfFGDtL50vut5ElaLJkgo1jw1
+   2b2JLgY/fDJgYgjRKOGguV2FAZJaxq5t643r9OZLR1sttdS8JjokxbIP4
+   AZSjFFDTdIN0/Sgp8x4re8Yyi2zZdbE1wgxC2fhzDI9wz7nWRQnbSufq4
+   KJKq6pqlklvwne4Q1mRHkw9kxhAwth8sU0Cm5jQ3KWFKSgpUOIJ6QazH6
+   3tvu4Aq9ogA4LVqFfl3pY0/7blIefoX/kFCPZ+gC5jvxuHGtWO0nl31Up
+   H+hIj/z19J/GONtU96V70no9JaxUMJ0uUSr9WU8G9LSl6R7psuJOOolTp
+   Q==;
+X-IronPort-AV: E=Sophos;i="6.00,203,1681196400"; 
+   d="scan'208";a="213672300"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2023 01:02:00 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Tue, 30 May 2023 01:01:58 -0700
+Received: from DEN-LT-70577 (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Tue, 30 May 2023 01:01:56 -0700
+Date: Tue, 30 May 2023 08:01:52 +0000
+From: Daniel Machon <daniel.machon@microchip.com>
+To: Petr Machata <petrm@nvidia.com>
+CC: <netdev@vger.kernel.org>, <dsahern@kernel.org>,
+	<stephen@networkplumber.org>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH iproute2-next v2 2/8] dcb: app: modify dcb-app print
+ functions for dcb-rewr reuse
+Message-ID: <ZHWtcJiVlUmfLrE1@DEN-LT-70577>
+References: <20230510-dcb-rewr-v2-0-9f38e688117e@microchip.com>
+ <20230510-dcb-rewr-v2-2-9f38e688117e@microchip.com>
+ <87leh75aek.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH v2] dt-bindings: net: Add QCA2066 Bluetooth
-Content-Language: en-US
-To: "Tim Jiang (QUIC)" <quic_tjiang@quicinc.com>
-Cc: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "Balakrishna Godavarthi (QUIC)" <quic_bgodavar@quicinc.com>,
- "Hemant Gupta (QUIC)" <quic_hemantg@quicinc.com>
-References: <20230518092719.11308-1-quic_tjiang@quicinc.com>
- <fb3678d67fd4428eaec98365288384ed@quicinc.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <fb3678d67fd4428eaec98365288384ed@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <87leh75aek.fsf@nvidia.com>
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On 23/05/2023 09:49, Tim Jiang (QUIC) wrote:
-> Hi krzk:
->   Could you help review this patch ?
-
-Did you send it to me (as asked by get_maintainers.pl)?
-
+ > > Where dcb-app requires protocol to be the printed key, dcb-rewr requires
+> > it to be the priority. Adapt existing dcb-app print functions for this.
+> >
+> > dcb_app_print_filtered() has been modified, to take two callbacks; one
+> > for printing the entire string (pid and prio), and one for the pid type
+> > (dec, hex, dscp, pcp). This saves us for making one dedicated function
+> > for each pid type for both app and rewr.
+> >
+> > dcb_app_print_key_*() functions have been renamed to
+> > dcb_app_print_pid_*() to align with new situation. Also, none of them
+> > will print the colon anymore.
+> >
+> > Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
 > 
-> Regards.
-> Tim
+> There are about four patches included in this one patch: the %d->%u
+> change, the colon shenanigans, the renaming, and prototype change of
+> dcb_app_print_filtered().
 > 
-> 
-> -----Original Message-----
-> From: Tim Jiang (QUIC) <quic_tjiang@quicinc.com> 
-> Sent: Thursday, May 18, 2023 5:27 PM
-> To: krzk@kernel.org
-> Cc: netdev@vger.kernel.org; devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; Balakrishna Godavarthi (QUIC) <quic_bgodavar@quicinc.com>; Hemant Gupta (QUIC) <quic_hemantg@quicinc.com>; Tim Jiang (QUIC) <quic_tjiang@quicinc.com>
+> I think the code is OK, but I would appreciate splitting into a patch
+> per feature.
 
-I think not...
+Sure I can split those changes up.
 
-Best regards,
-Krzysztof
 
 
