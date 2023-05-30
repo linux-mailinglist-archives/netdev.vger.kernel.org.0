@@ -1,98 +1,171 @@
-Return-Path: <netdev+bounces-6572-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6573-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id AD42B716FAA
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 23:25:36 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7B795716FB1
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 23:28:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4DA381C20D25
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:25:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3C16C2812C9
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:28:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EEED32D271;
-	Tue, 30 May 2023 21:25:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 628262D273;
+	Tue, 30 May 2023 21:28:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1AE7200BC
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 21:25:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A804FC433EF;
-	Tue, 30 May 2023 21:25:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685481932;
-	bh=ejaclWSHbDLbp2UXNQomtdqhegOAlHZIrxyIZTVXKG0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=td3ZU43xsQvVU2R0wcNsnwsdM3a1v+ibDR+c4mmB9cjPYvhJPSosdwxhR8Q0ntZGW
-	 EX/XuKfGRlh5Jd4qYZGbLtJtdLZ5vbcpXjYu+BNqgzZK1HKkiuYH2nATxREdKmObxF
-	 wpGQSOgu5vufwjTf9ma5eUZ5LQIf20q4yGSv+by/z1aQu9Q5UtWVvGhq2pYTKEBfBH
-	 DNtPoV3FEZFIv6scJT8igpXey8Y9DQmvGKff1bTgyiNObhDdOtyJLuYMH6oNkOEiWB
-	 SmeKRlhvQG8TT0e/OG63n8yrvY71Shk0Yg0dGCVRmfS+B27tRETqSWs8yYQQyncnkb
-	 Lh24gvb6yDx4A==
-Date: Tue, 30 May 2023 22:25:26 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Shay Drory <shayd@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
-	Eli Cohen <elic@nvidia.com>, Leon Romanovsky <leon@kernel.org>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56DB3200BC
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 21:28:16 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D40E5;
+	Tue, 30 May 2023 14:28:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=rtMOiQ1B6T7dYB7FwbV1KNs7Z9hwONAQYl5x937amzk=; b=U0hCUVtBCNQ//NjLHwtyoRJ2Sm
+	EG7nrYN1OdOJvbYm2BIwRPwmtjWiwITDzqzCVUudTdqJXEuge4sk+NhOM4gGzGR6dP7Ox71yfZDrL
+	EcyK9dskHLmOjf5IESag0VmsngOXITkQn26MjifhuNOgnfphlVhIPjsYPaCEi8Teo5ejaN0FYa+NF
+	cilZYBO8nm9+yi5HD+nEcGdxhwrSLwD34DDigORiVvPhJl9QqBIjLUbDQhS2VsR/DtUTg3iSpBJr5
+	XNpmjpuyFvnIP+vnfZFMcO4ZPDgzsKwbkRU2JwFVYWLWJvNN0EMdRIcm6czwYnxYsLjphMyhsLia2
+	4KRC22tA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45726)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q46sy-0003Us-PD; Tue, 30 May 2023 22:28:08 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q46sx-0008PF-3F; Tue, 30 May 2023 22:28:07 +0100
+Date: Tue, 30 May 2023 22:28:07 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Jakub Kicinski <kuba@kernel.org>,
+	Dan Carpenter <dan.carpenter@linaro.org>,
+	Oleksij Rempel <linux@rempel-privat.de>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
 	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net] net/mlx5: Fix setting of irq->map.index for static
- IRQ case
-Message-ID: <7469ae42-63a2-4078-b997-30d959429d70@sirena.org.uk>
-References: <20230530141304.1850195-1-schnelle@linux.ibm.com>
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] net: phy: fix a signedness bug in genphy_loopback()
+Message-ID: <ZHZqZyCJGZjraJ6P@shell.armlinux.org.uk>
+References: <d7bb312e-2428-45f6-b9b3-59ba544e8b94@kili.mountain>
+ <20230529215802.70710036@kernel.org>
+ <90b1107b-7ea0-4d8f-ad88-ec14fd149582@lunn.ch>
+ <20230530121910.05b9f837@kernel.org>
+ <ZHZQ+1KNGB7KYZGi@shell.armlinux.org.uk>
+ <0851bc91-6a7c-4333-ad8a-3a18083411e3@lunn.ch>
+ <ZHZmBBDSVMf1WQWI@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="EZeP2Ayk5L3aJND3"
-Content-Disposition: inline
-In-Reply-To: <20230530141304.1850195-1-schnelle@linux.ibm.com>
-X-Cookie: Many are cold, but few are frozen.
-
-
---EZeP2Ayk5L3aJND3
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <ZHZmBBDSVMf1WQWI@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Tue, May 30, 2023 at 04:13:04PM +0200, Niklas Schnelle wrote:
-> When dynamic IRQ allocation is not supported all IRQs are allocated up
-> front in mlx5_irq_table_create() instead of dynamically as part of
-> mlx5_irq_alloc(). In the latter dynamic case irq->map.index is set
-> via the mapping returned by pci_msix_alloc_irq_at(). In the static case
-> and prior to commit 1da438c0ae02 ("net/mlx5: Fix indexing of mlx5_irq")
-> irq->map.index was set in mlx4_irq_alloc() twice once initially to 0 and
-> then to the requested index before storing in the xarray. After this
-> commit it is only set to 0 which breaks all other IRQ mappins.
+On Tue, May 30, 2023 at 10:09:24PM +0100, Russell King (Oracle) wrote:
+> Having thought about this, the best I can come up with is this, which
+> I think gives us everything we want without needing BUILD_BUG_ONs:
+> 
+> #define phy_read_poll_timeout(phydev, regnum, val, cond, sleep_us, \
+>                                 timeout_us, sleep_before_read) \
+> ({ \
+>         int __ret, __val;
+> 	__ret = read_poll_timeout(__val = phy_read, val, __val < 0 || (cond), \
+>                 sleep_us, timeout_us, sleep_before_read, phydev, regnum); \
+>         if (__val < 0) \
+>                 __ret = __val; \
+>         if (__ret) \
+>                 phydev_err(phydev, "%s failed: %d\n", __func__, __ret); \
+>         __ret; \
+> })
+> 
+> This looks rather horrid, but what it essentially does is:
+> 
+>                 (val) = op(args); \
+>                 if (cond) \
+>                         break; \
+> 
+> expands to:
+> 
+> 		(val) = __val = phy_read(args);
+> 		if (__val < 0 || (cond))
+> 			break;
+> 
+> As phy_read() returns an int, there is no cast or loss assigning it
+> to __val, since that is also an int. The conversion from int to
+> something else happens at the same point it always has.
 
-s/mappins/mappings/
+... and actually produces nicer code on 32-bit ARM:
 
-We were seeing the issue that this fixes on a Cavium ThunderX2 system
-and the analysis looks good so:
+Old (with the u16 val changed to an int val):
 
-Tested-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Mark Brown <broonie@kernel.org>
+ 2f8:   ebfffffe        bl      0 <mdiobus_read>
+ 2fc:   e7e03150        ubfx    r3, r0, #2, #1		extract bit 2 into r3
+ 300:   e1a04000        mov     r4, r0			save return value
+ 304:   e2002004        and     r2, r0, #4		extract bit 2 again
+ 308:   e1933fa0        orrs    r3, r3, r0, lsr #31	grab sign bit
+ 30c:   1a00000d        bne     348 <genphy_loopback+0xd8>
+		breaks out of loop if r3 is nonzero
+	... rest of loop ...
+...
+ 348:   e3520000        cmp     r2, #0
+ 34c:   0a00000b        beq     380 <genphy_loopback+0x110>
+		basically tests whether bit 2 was zero, and jumps if it
+		was. Basically (cond) is false.
 
---EZeP2Ayk5L3aJND3
-Content-Type: application/pgp-signature; name="signature.asc"
+ 350:   e3540000        cmp     r4, #0
+ 354:   a3a04000        movge   r4, #0
+ 358:   ba00000a        blt     388 <genphy_loopback+0x118>
+		tests whether a phy_read returned an error and jumps
+		if it did. r4 is basically __ret.
+...
 
------BEGIN PGP SIGNATURE-----
+ 380:   e3540000        cmp     r4, #0
+ 384:   a3e0406d        mvnge   r4, #109        ; 0x6d
+		if r4 (__ret) was >= 0, sets an error code (-ETIMEDOUT).
+ 388:   e1a03004        mov     r3, r4
+ ... dev_err() bit.
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmR2acUACgkQJNaLcl1U
-h9CyKwf/fk+JCCweTuB1F1pHhuuKuWees2MC0dMrpv7VT2X2DcuakOc+KMjUwODW
-o0gZ0Hq009KEesiIQN95nyUf8R6MJQHaeKbMQ/CdxQk6g247yKjeS5jcYfenphsf
-0IulzAjix0uqHM7TTMO3Rv/C+tfvsI5C7odcJrL1fWQwlTCScdhGHnWs0by1B4QI
-0Ki8F1HCXbDIMfNgAH/MrKdIC0Rz0zeTAEIhhhiZcJjDOHAXbcHC+T8ruk3K7t31
-gf2AzU/OWw/OL0eAz1uOoaTKSczh6Kq2hTZHpF5yVttJOeESTpqq8oUE9UQEhuLf
-eoISI7psNmYdrhMXifygdMYrwBbKIQ==
-=puE3
------END PGP SIGNATURE-----
+The new generated code is:
 
---EZeP2Ayk5L3aJND3--
+ 2f8:   ebfffffe        bl      0 <mdiobus_read>
+                        2f8: R_ARM_CALL mdiobus_read
+ 2fc:   e2504000        subs    r4, r0, #0		__val assignment
+ 300:   ba000014        blt     358 <genphy_loopback+0xe8>
+		if <0, go direct to dev_err code
+ 304:   e3140004        tst     r4, #4			cond test within loop
+ 308:   1a00000d        bne     344 <genphy_loopback+0xd4>
+	... rest of loop ...
+
+ 344:   e6ff4074        uxth    r4, r4			cast to 16-bit uint
+ 348:   e3140004        tst     r4, #4			test
+ 34c:   13a04000        movne   r4, #0			__ret is zero if bit set
+ 350:   1a000007        bne     374 <genphy_loopback+0x104> basically returns
+ 354:   e3e0406d        mvn     r4, #109        ; 0x6d
+	... otherwise sets __ret to -ETIMEDOUT
+	... dev_err() code
+
+Is there a reason why it was written (cond) || val < 0 rather than
+val < 0 || (cond) ? Note that the order of these tests makes no
+difference in this situation, but I'm wondering whether it was
+intentional?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
