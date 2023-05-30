@@ -1,171 +1,299 @@
-Return-Path: <netdev+bounces-6224-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6225-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4630B715461
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 06:05:59 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B693E71548F
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 06:46:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F21EA28104D
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 04:05:57 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 03E29281045
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 04:46:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BF0C81C29;
-	Tue, 30 May 2023 04:05:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D676D81D;
+	Tue, 30 May 2023 04:45:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFDA01C08
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 04:05:55 +0000 (UTC)
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2082.outbound.protection.outlook.com [40.107.93.82])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E151994
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 21:05:53 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P4RRUBAv+a368BlSc/qFu+m7EnkDgpZDwGvXOdmuT8YUqq59Mc2jZT1y5PuY1KAvfn12JfQzeptrb81miKJ1rrkjIbeNqyhlZkG1EQisv0rq6oPgyyQRy5PjbExQfeqwFY0/9YSv8WGDkGSWqMUXPvvsZvhUVxuugI8Gr+itupwGhtbz3VS6HFEgtLXrVqZrRvNyNNNBGADJplX9crWmV2wI8TXvw5epFoBC7ORm53w3XaQfMdrV3a3/RjpiY479bV/lTgdCkgOETcb1/RfMD8yMG4JwVfGzNWVvqWkjU+IN/J8LWH15cjC4jZu2KsEqnR+KYF78ymw/wjSdESc1Pw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wSrH4KbSAhAJVmVYxe4zloIxYjCxpv0nlMeOBbAUdAo=;
- b=GpHDqc2r6bySiRWsoSnApN5cPaPbU2Gb7jCt8rBvkqAcTwuzPWKupcaEbcPujqI5SNBoKZI8j/ztALTwBuExLDbIx8iCLdsfBVJ9+po030ruiQxzS8t6ML29hFW+s5SEir7KPDhxZ940I5EV5xLvn9dx4maWy4U0tqDFGeXM90VCoeJjUuwmnsEJEZFXAjmUfn+sKjF0OVONy6uCePhqPrE3UqgMLoi+OxoCRw+aBCSG85eXu7AHsJs/DA+rWbocWLXGvFMdfMbA6+GXLvVdttcWKhvAvP5SRJIcHNY1dGCJaco1N7mfllsz7cv84iyzilaYCyhoSLF1/Em/r4stHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wSrH4KbSAhAJVmVYxe4zloIxYjCxpv0nlMeOBbAUdAo=;
- b=HGhHko+d3RwR0o4m2Vs6E6glzJLC0q/EUE9XJBTCOIRjj0wWImpKW1zehzlOqZDBsxkPUeoHbAtRj0MNV8iVFmJobNdR0hzNsyRtC71kMGyLwv3YfPf0ZiKgMJeWNlz8ZtuTQk23wHf5HZqWOVTDjWKAMWK72Wa8I7Jb+I8f4axnYIVFzy3oB4Wlx7ZihHFPJv1UfsS/hGMRRnA8X4Nbva0wY8I/pF+Sxi2+pPmgolCiuReeg6Hcqx8qOD5IDzM8DXQRpkMD1AnxMXvommbEZlPVUl3URMgEum0CTG2xgjLQQEAy4xPb/OPAowKIIdNyKjeYFG6kWPI5pi5dFBZqnQ==
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
- by DM4PR12MB6062.namprd12.prod.outlook.com (2603:10b6:8:b2::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6433.22; Tue, 30 May 2023 04:05:51 +0000
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::824c:2f44:2922:fd76]) by PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::824c:2f44:2922:fd76%5]) with mapi id 15.20.6433.022; Tue, 30 May 2023
- 04:05:51 +0000
-From: Parav Pandit <parav@nvidia.com>
-To: Andrea Claudi <aclaudi@redhat.com>, "netdev@vger.kernel.org"
-	<netdev@vger.kernel.org>
-CC: "stephen@networkplumber.org" <stephen@networkplumber.org>,
-	"dsahern@gmail.com" <dsahern@gmail.com>
-Subject: RE: [PATCH iproute2] vdpa: propagate error from cmd_dev_vstats_show()
-Thread-Topic: [PATCH iproute2] vdpa: propagate error from
- cmd_dev_vstats_show()
-Thread-Index: AQHZknZm85wbHSW/JECIMva3pLFHNK9yMvqw
-Date: Tue, 30 May 2023 04:05:51 +0000
-Message-ID:
- <PH0PR12MB548115D8A19BDD18B196AAA4DC4B9@PH0PR12MB5481.namprd12.prod.outlook.com>
-References:
- <5290b224a23e36b22e179ca83f2ce377f6d8dd1c.1685396319.git.aclaudi@redhat.com>
-In-Reply-To:
- <5290b224a23e36b22e179ca83f2ce377f6d8dd1c.1685396319.git.aclaudi@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|DM4PR12MB6062:EE_
-x-ms-office365-filtering-correlation-id: 72936283-b2aa-432e-6c2d-08db60c32881
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- G14zirwDtrsh19VqxePNt3K++oW4Dp4PVfp7OJA0k7yo1uJ/98imFgRal1gEx+NWpX6PFJt/8SooJHfYWuZuE6LP5oQqOjkJslyHntr6NZkVeCM5RDB6+/YZgNFUn3Jgb7TQoWxp8Nz/Dtgq65gRIpkrJ5QovDxlCbieFD4EkZZN+5mS2Juf2lCFz9GqP26+Wp3Gk0FdOFSFbIOomB00lXulK/M0qnmmUPN/MrAarcpBd3okvyQJtvPP5SJKhMKVbF3CZwf7P3AflsKxF4XiEQdfkID2pImPsVR7umSWXy9TV+wdhtR/GK3fJHgvS4rLRuA8i5HfdHT9YoJ9PzBov432BXc6nLza7Jsed7c8zvdLDULAvGDUfnQVkrfP8oq+SctskumxBPENMPJdNrs08SVGxhf7IellfKKv7CUOZFeLj6DDFPtddCXxX+9Umh3xgbo67WfnTdQjjia8CpM/Gmpq5Fn7FYas/kIzUfgWqCoqYcM/G7M2QwYpTm0QJhnxeWK0vs+rT/IEIvcQRxYpCRHVNCOikp5IvXE494fVBRWZvj4v47yxvosUchXn+ZjVR+/Hro5GXQozGEFXAGo1AXRwvOwc/0lSHOV9U3zZdxpECiYjc2JcMzOIeUwmgFMS
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(136003)(376002)(366004)(396003)(346002)(451199021)(38100700002)(186003)(41300700001)(83380400001)(9686003)(6506007)(26005)(7696005)(478600001)(71200400001)(110136005)(54906003)(66556008)(66946007)(66476007)(76116006)(4326008)(64756008)(66446008)(55016003)(122000001)(316002)(52536014)(33656002)(8936002)(8676002)(4744005)(86362001)(38070700005)(2906002)(5660300002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?Y+HnkjaQumF06jdqS2HXEw1GbxdwYXvByFIC02Wjw1MR27ULSFJnqqJH+Q1V?=
- =?us-ascii?Q?s15hb4EcCxClBJjVLr0bog9+f2tO9qDXSTdbTrA/Gklno5rd69L1ZTvC2PC2?=
- =?us-ascii?Q?Q7clgfV5ZjdMtXFxU7fkHaY5fvfG9cnqVBHNXz2dO1mZ5REp1yu7GdHKfspo?=
- =?us-ascii?Q?w8uCDRsjINt1TKTXUBvZRonOS3TXrRGaIVOHz0K6k9slBZEOgKP9J1E8PuL2?=
- =?us-ascii?Q?Q8aNrXl66wMOABxPHr18T04/LnznfvEyixF8xAfOUJeYghAW17dZKCbMyOTL?=
- =?us-ascii?Q?EUSUpjQ1gw02xs3t2DHdkzidtkOWts2KHqmBW4fB5yGRWZouRbGBUiQkm6T2?=
- =?us-ascii?Q?0ACGEBm1nqWSUuxI4U1tPw3jwz2n+Hhnhw2oQ03Z+CsVkPGa5KvG2fjwihDE?=
- =?us-ascii?Q?ipuN8TghTxI/z2ZM1tMlPrKiBwpSe4tw7qVMT7qASuIuoZgEX0mVOPL4nOJE?=
- =?us-ascii?Q?rnPP9BSURxZD0vdPEU2BtgvXa6UlW+SVB1cRw9q4s+dHSInFtxulM2Kn/yU6?=
- =?us-ascii?Q?YDXnbkfAcbSlCHq8Rn8wDdQasjzG7Sa6BFo0xTfIoAAOP26l+1Zy/ocsoOMX?=
- =?us-ascii?Q?cL9gWBEJZQU17wgPqkLt+m601qen0/o2eiIvQOKpb+w6vZzv2Ie/ehKdLvmR?=
- =?us-ascii?Q?AHPBUzQyBtEl1KUH/nA4Sl4jMUDzONXpULsSv2wEMQRNJpTCwqgKpe5eJeSM?=
- =?us-ascii?Q?MhUBolVYFgl2MNBE6S0ZFvaYizHIaPIHhSncPBz61U8ZhHXXM94+rqatBkDv?=
- =?us-ascii?Q?NTrhpIVJL+VUk52sR2ysD9Vqpv1Q8Ks9vE2H/WgeWsONfLB/epCY+yRJtFwW?=
- =?us-ascii?Q?s4jtfYgnvkHFZUmVvRos4A59no1bx9FqRhL91QwIr0RL5Nl8FnWwEaozzlHC?=
- =?us-ascii?Q?NdGKp0lzPuQKUqzixZvzzTMM58lGSZR1unkDIMhHKcinElwslksmqFm+CA2o?=
- =?us-ascii?Q?5elv6eSoIZ0t+Wk2skybebfxTOf+wAnsUe0HH1AQE+vHOCFEnt1KQ17Synl3?=
- =?us-ascii?Q?Qznq0VBxVCseY4mEaEL/2Y6CZmsVlur0DexkKqq3A0R2zOLobZMbbW8KWXiO?=
- =?us-ascii?Q?OGtUOL2UhdjJ9B13TBbWm42UhJpNn29U1H0azibDDsv6/TuK5HqvVP443drE?=
- =?us-ascii?Q?pHYL2ayVtRq2nFefMzrFead9x2Dpo+69tG4zb4FawBJKq8fsF7PVccKbehFT?=
- =?us-ascii?Q?hvJwqI3R6uxNYp8awdi/JIjFzJAb31yJekY8OtSfi4UzmMI5j9/3P2G8RYSH?=
- =?us-ascii?Q?pwveaTJmeSAWNS3YfYdyhSVlJdr5/MyPYX/LG//knjFcfgPWOxjKMoGXMRIu?=
- =?us-ascii?Q?omldyGZtR2u5qlzxpwgUL+qMMWpzoZsjCTW2GRlPIjOXkbXexRF6FtlD7+hv?=
- =?us-ascii?Q?e6aNZ22EjHzfPNHU+VkwxtbWdHaHcE6gw6kgaVjR6lvWA7/s5zifMFNbBl0S?=
- =?us-ascii?Q?1kiLZToto58QFoF//zFIkB32Qn6WCEz2x2HbIcPWeCs5jk/V9nZwyNoQOMEL?=
- =?us-ascii?Q?5MNYf+TT+Mv/K20x5fDgssIyQGlTKd9iH/NdDHy5mA5xz3mIqa4R+/w72eoF?=
- =?us-ascii?Q?1kG0fTJQWw6l7+Q0hDw=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD3497E9;
+	Tue, 30 May 2023 04:45:58 +0000 (UTC)
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563DDE8;
+	Mon, 29 May 2023 21:45:56 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id 98e67ed59e1d1-2553f2706bfso2783797a91.1;
+        Mon, 29 May 2023 21:45:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685421956; x=1688013956;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=WnRzpYkB9J7f0YSKLddiyloDnl+jPqIem2lDhPLL95Y=;
+        b=WeBTNA1M8N9vQSWalw3Whyi1jgvP6gJVGzHbFCpL+UTxifP1tfltwIiMX0p4SMdREV
+         Rou94laqsyo/lD4QhIJXF2F1xOPdP50tEUzlVyRbet1/l4iGc5vbH8tFyqzR+6silN8L
+         5h1dijcPS2w8q4ATa4kCkIvyDzR7l6f5rQPPZYxqI6RDYB1Mvd7Yth72U26EALNU5n9w
+         31PDC/OCg2frnR+/liItmpPalaRjeBYWXs0v2gyoYLH1vqlRQLlbQmjo57OvgS9HTJ3r
+         XTHJoy3nr2Ik/oFGOJlAvHGTi9T5bpjKbrdlGsaFJvQwKteuLTU0g3hPkmnYfzE7KQ6B
+         32Hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685421956; x=1688013956;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=WnRzpYkB9J7f0YSKLddiyloDnl+jPqIem2lDhPLL95Y=;
+        b=DOQBqEYP8wn1xWue9qr+N5AmmwWFJdHoHVvtdj0rXj/0czMwshCA3PvxylzTq3GW9F
+         mOf5jHvsqyYcW42HP/GVeKT/9rNcWxgn1ZWUk9wAlicT1jwFpO7b59PSOeMA35iKVPAj
+         NTxZpm077bGQCL06Zds3Vezg3WILC6OdW6v41PYmZP6BmrBn9Jh/r3McmUJaqWgEIcCc
+         D+5WN2m0QUCDiicG+hud+zCUnT3HrdSj4ZuPY8DW/7UFPh+Ttf8dS/eljlsjJ87R6DLT
+         jTE6bc48odRrfX8UHVmABdFZVdYdRWiBGy9GLZfgrEMrRrs0P5NgNFHeqnDM+yrUs7nT
+         sIiA==
+X-Gm-Message-State: AC+VfDzpcmzuBqnOmjX4sUtasyhHoguJqT4kDzm7FHS3CWEHfFXblbn9
+	maVCQqdwABNldA0O6sN9B7A=
+X-Google-Smtp-Source: ACHHUZ4bgwVFXkIcdsn6WzBDoLP77ZigpEk/ogM9lTySeRFcEoJAKzM/AL2SxFkhZTHHPtJUB5NLlA==
+X-Received: by 2002:a17:90a:55c7:b0:253:3eb5:3ade with SMTP id o7-20020a17090a55c700b002533eb53ademr1210937pjm.8.1685421955618;
+        Mon, 29 May 2023 21:45:55 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.21])
+        by smtp.gmail.com with ESMTPSA id e23-20020a17090ab39700b00247601ce2aesm5701811pjr.20.2023.05.29.21.45.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 May 2023 21:45:55 -0700 (PDT)
+From: menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To: dsahern@kernel.org,
+	andrii@kernel.org
+Cc: davem@davemloft.net,
+	ast@kernel.org,
+	daniel@iogearbox.net,
+	martin.lau@linux.dev,
+	song@kernel.org,
+	yhs@fb.com,
+	john.fastabend@gmail.com,
+	kpsingh@kernel.org,
+	sdf@google.com,
+	haoluo@google.com,
+	jolsa@kernel.org,
+	tglx@linutronix.de,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	x86@kernel.org,
+	hpa@zytor.com,
+	netdev@vger.kernel.org,
+	bpf@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Menglong Dong <imagedong@tencent.com>
+Subject: [PATCH] bpf, x86: allow function arguments up to 12 for TRACING
+Date: Tue, 30 May 2023 12:44:23 +0800
+Message-Id: <20230530044423.3897681-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 72936283-b2aa-432e-6c2d-08db60c32881
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 May 2023 04:05:51.7348
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HuW+wCixT75WmYTIUwVYwuTQOrbUksrDRksDMQ6w87PgJLlFg+XZmwEI1FiCsji2cEx8GFY1Xo+TOl7DD+dJzg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6062
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+From: Menglong Dong <imagedong@tencent.com>
 
+For now, the BPF program of type BPF_PROG_TYPE_TRACING can only be used
+on the kernel functions whose arguments count less than 6. This is not
+friendly at all, as too many functions have arguments count more than 6.
 
-> From: Andrea Claudi <aclaudi@redhat.com>
-> Sent: Monday, May 29, 2023 5:42 PM
->=20
-> Error potentially returned from mnlu_gen_socket_sndrcv() are propagated f=
-or
-> each and every invocation in vdpa. Let's do the same here.
->=20
-> Fixes: 6f97e9c9337b ("vdpa: Add support for reading vdpa device statistic=
-s")
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-> ---
->  vdpa/vdpa.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
-> index 27647d73..8bbe452c 100644
-> --- a/vdpa/vdpa.c
-> +++ b/vdpa/vdpa.c
-> @@ -986,7 +986,7 @@ static int cmd_dev_vstats_show(struct vdpa *vdpa, int
-> argc, char **argv)
->  	pr_out_section_start(vdpa, "vstats");
->  	err =3D mnlu_gen_socket_sndrcv(&vdpa->nlg, nlh,
-> cmd_dev_vstats_show_cb, vdpa);
->  	pr_out_section_end(vdpa);
-> -	return 0;
-> +	return err;
->  }
->=20
->  static int cmd_dev_vstats(struct vdpa *vdpa, int argc, char **argv)
-> --
-> 2.40.1
+Therefore, let's enhance it by increasing the function arguments count
+allowed in arch_prepare_bpf_trampoline(), for now, only x86_64.
 
-Reviewed-by: Parav Pandit <parav@nvidia.com>
+For the case that we don't need to call origin function, which means
+without BPF_TRAMP_F_CALL_ORIG, we need only copy the function arguments
+that stored in the frame of the caller to current frame. The arguments
+of arg6-argN are stored in "$rbp + 0x18", we need copy them to
+"$rbp - regs_off + (6 * 8)".
+
+For the case with BPF_TRAMP_F_CALL_ORIG, we need prepare the arguments
+in stack before call origin function, which means we need alloc extra
+"8 * (arg_count - 6)" memory in the top of the stack. Note, there should
+not be any data be pushed to the stack before call the origin function.
+Then, we have to store rbx with 'mov' instead of 'push'.
+
+It works well for the FENTRY and FEXIT, I'm not sure if there are other
+complicated cases.
+
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+ arch/x86/net/bpf_jit_comp.c | 88 ++++++++++++++++++++++++++++++++-----
+ 1 file changed, 77 insertions(+), 11 deletions(-)
+
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index 1056bbf55b17..a3bc7e86ca19 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -1868,7 +1868,7 @@ static void save_regs(const struct btf_func_model *m, u8 **prog, int nr_regs,
+ 	 * mov QWORD PTR [rbp-0x10],rdi
+ 	 * mov QWORD PTR [rbp-0x8],rsi
+ 	 */
+-	for (i = 0, j = 0; i < min(nr_regs, 6); i++) {
++	for (i = 0, j = 0; i < min(nr_regs, 12); i++) {
+ 		/* The arg_size is at most 16 bytes, enforced by the verifier. */
+ 		arg_size = m->arg_size[j];
+ 		if (arg_size > 8) {
+@@ -1876,10 +1876,22 @@ static void save_regs(const struct btf_func_model *m, u8 **prog, int nr_regs,
+ 			next_same_struct = !next_same_struct;
+ 		}
+ 
+-		emit_stx(prog, bytes_to_bpf_size(arg_size),
+-			 BPF_REG_FP,
+-			 i == 5 ? X86_REG_R9 : BPF_REG_1 + i,
+-			 -(stack_size - i * 8));
++		if (i <= 5) {
++			/* store function arguments in regs */
++			emit_stx(prog, bytes_to_bpf_size(arg_size),
++				 BPF_REG_FP,
++				 i == 5 ? X86_REG_R9 : BPF_REG_1 + i,
++				 -(stack_size - i * 8));
++		} else {
++			/* store function arguments in stack */
++			emit_ldx(prog, bytes_to_bpf_size(arg_size),
++				 BPF_REG_0, BPF_REG_FP,
++				 (i - 6) * 8 + 0x18);
++			emit_stx(prog, bytes_to_bpf_size(arg_size),
++				 BPF_REG_FP,
++				 BPF_REG_0,
++				 -(stack_size - i * 8));
++		}
+ 
+ 		j = next_same_struct ? j : j + 1;
+ 	}
+@@ -1913,6 +1925,41 @@ static void restore_regs(const struct btf_func_model *m, u8 **prog, int nr_regs,
+ 	}
+ }
+ 
++static void prepare_origin_stack(const struct btf_func_model *m, u8 **prog,
++				 int nr_regs, int stack_size)
++{
++	int i, j, arg_size;
++	bool next_same_struct = false;
++
++	if (nr_regs <= 6)
++		return;
++
++	/* Prepare the function arguments in stack before call origin
++	 * function. These arguments must be stored in the top of the
++	 * stack.
++	 */
++	for (i = 0, j = 0; i < min(nr_regs, 12); i++) {
++		/* The arg_size is at most 16 bytes, enforced by the verifier. */
++		arg_size = m->arg_size[j];
++		if (arg_size > 8) {
++			arg_size = 8;
++			next_same_struct = !next_same_struct;
++		}
++
++		if (i > 5) {
++			emit_ldx(prog, bytes_to_bpf_size(arg_size),
++				 BPF_REG_0, BPF_REG_FP,
++				 (i - 6) * 8 + 0x18);
++			emit_stx(prog, bytes_to_bpf_size(arg_size),
++				 BPF_REG_FP,
++				 BPF_REG_0,
++				 -(stack_size - (i - 6) * 8));
++		}
++
++		j = next_same_struct ? j : j + 1;
++	}
++}
++
+ static int invoke_bpf_prog(const struct btf_func_model *m, u8 **pprog,
+ 			   struct bpf_tramp_link *l, int stack_size,
+ 			   int run_ctx_off, bool save_ret)
+@@ -2136,7 +2183,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+ 				void *func_addr)
+ {
+ 	int i, ret, nr_regs = m->nr_args, stack_size = 0;
+-	int regs_off, nregs_off, ip_off, run_ctx_off;
++	int regs_off, nregs_off, ip_off, run_ctx_off, arg_stack_off, rbx_off;
+ 	struct bpf_tramp_links *fentry = &tlinks[BPF_TRAMP_FENTRY];
+ 	struct bpf_tramp_links *fexit = &tlinks[BPF_TRAMP_FEXIT];
+ 	struct bpf_tramp_links *fmod_ret = &tlinks[BPF_TRAMP_MODIFY_RETURN];
+@@ -2150,8 +2197,10 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+ 		if (m->arg_flags[i] & BTF_FMODEL_STRUCT_ARG)
+ 			nr_regs += (m->arg_size[i] + 7) / 8 - 1;
+ 
+-	/* x86-64 supports up to 6 arguments. 7+ can be added in the future */
+-	if (nr_regs > 6)
++	/* x86-64 supports up to 12 arguments. 1-6 are passed through
++	 * regs, the remains are through stack.
++	 */
++	if (nr_regs > 12)
+ 		return -ENOTSUPP;
+ 
+ 	/* Generated trampoline stack layout:
+@@ -2170,7 +2219,14 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+ 	 *
+ 	 * RBP - ip_off    [ traced function ]  BPF_TRAMP_F_IP_ARG flag
+ 	 *
++	 * RBP - rbx_off   [ rbx value       ]  always
++	 *
+ 	 * RBP - run_ctx_off [ bpf_tramp_run_ctx ]
++	 *
++	 *                     [ stack_argN ]  BPF_TRAMP_F_CALL_ORIG
++	 *                     [ ...        ]
++	 *                     [ stack_arg2 ]
++	 * RBP - arg_stack_off [ stack_arg1 ]
+ 	 */
+ 
+ 	/* room for return value of orig_call or fentry prog */
+@@ -2190,9 +2246,17 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+ 
+ 	ip_off = stack_size;
+ 
++	stack_size += 8;
++	rbx_off = stack_size;
++
+ 	stack_size += (sizeof(struct bpf_tramp_run_ctx) + 7) & ~0x7;
+ 	run_ctx_off = stack_size;
+ 
++	if (nr_regs > 6 && (flags & BPF_TRAMP_F_CALL_ORIG))
++		stack_size += (nr_regs - 6) * 8;
++
++	arg_stack_off = stack_size;
++
+ 	if (flags & BPF_TRAMP_F_SKIP_FRAME) {
+ 		/* skip patched call instruction and point orig_call to actual
+ 		 * body of the kernel function.
+@@ -2212,8 +2276,9 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+ 	x86_call_depth_emit_accounting(&prog, NULL);
+ 	EMIT1(0x55);		 /* push rbp */
+ 	EMIT3(0x48, 0x89, 0xE5); /* mov rbp, rsp */
+-	EMIT4(0x48, 0x83, 0xEC, stack_size); /* sub rsp, stack_size */
+-	EMIT1(0x53);		 /* push rbx */
++	EMIT3_off32(0x48, 0x81, 0xEC, stack_size); /* sub rsp, stack_size */
++	/* mov QWORD PTR [rbp - rbx_off], rbx */
++	emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_6, -rbx_off);
+ 
+ 	/* Store number of argument registers of the traced function:
+ 	 *   mov rax, nr_regs
+@@ -2262,6 +2327,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+ 
+ 	if (flags & BPF_TRAMP_F_CALL_ORIG) {
+ 		restore_regs(m, &prog, nr_regs, regs_off);
++		prepare_origin_stack(m, &prog, nr_regs, arg_stack_off);
+ 
+ 		if (flags & BPF_TRAMP_F_ORIG_STACK) {
+ 			emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
+@@ -2321,7 +2387,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+ 	if (save_ret)
+ 		emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, -8);
+ 
+-	EMIT1(0x5B); /* pop rbx */
++	emit_ldx(&prog, BPF_DW, BPF_REG_6, BPF_REG_FP, -rbx_off);
+ 	EMIT1(0xC9); /* leave */
+ 	if (flags & BPF_TRAMP_F_SKIP_FRAME)
+ 		/* skip our return address and return to parent */
+-- 
+2.40.1
 
 
