@@ -1,51 +1,51 @@
-Return-Path: <netdev+bounces-6195-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6194-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7AD647152CF
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 03:06:45 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 796927152CE
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 03:06:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 118361C20AF4
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 01:06:42 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0FAF51C20AD8
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 01:06:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D9BE7ED;
-	Tue, 30 May 2023 01:06:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9ECE77EC;
+	Tue, 30 May 2023 01:06:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08D1A7EC
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 01:06:34 +0000 (UTC)
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C2C9D
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 18:06:31 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DB75636
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 01:06:22 +0000 (UTC)
+Received: from smtp-fw-80008.amazon.com (smtp-fw-80008.amazon.com [99.78.197.219])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130A5D9
+	for <netdev@vger.kernel.org>; Mon, 29 May 2023 18:06:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1685408791; x=1716944791;
+  t=1685408779; x=1716944779;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=lA+QB86VEFz9Bf9eh2GntABvInWDoHa6/AhvmqZzv3g=;
-  b=D1rHJtElXep9Hpbs7cz6aTGYQqPR0H7H4BIb4MNn36nfRHDvpRWKp9K0
-   POJp8LQLIP+t4xuwy1V8p+w4p6cpwqnhylTDfAO2rlkTwnjWtMI/Nv/b8
-   e2q23E1YSaIA5ybU3g4qniVS2SdHhSUaK7WMWEn6+a19hzPPJ5ILzfiqA
-   o=;
+  bh=E77WX/6HdKZpEX0vfss39cz39lQsP1vXdU09My/mGRs=;
+  b=I4u/RlB3pNkTRIuJJfxksA/mmEwlyYrvXH9HOTwDqdEHDMWz6Zn20YXK
+   11cBYSjrwZU/wcThVKVqnketU59E4AZEFJliUKibFPn/lWnMSlx8Yp9QG
+   tZ7QrAwHfTi3vFs81S8QuH2tf5upL5zG7UNiTQyVcKTWVdE4ccjN8+ekG
+   s=;
 X-IronPort-AV: E=Sophos;i="6.00,201,1681171200"; 
-   d="scan'208";a="288205053"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-7dc0ecf1.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 01:06:30 +0000
-Received: from EX19MTAUWB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-	by email-inbound-relay-iad-1e-m6i4x-7dc0ecf1.us-east-1.amazon.com (Postfix) with ESMTPS id 477FA803C2;
-	Tue, 30 May 2023 01:06:26 +0000 (UTC)
+   d="scan'208";a="6647964"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-cadc3fbd.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80008.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 01:06:16 +0000
+Received: from EX19MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+	by email-inbound-relay-pdx-2b-m6i4x-cadc3fbd.us-west-2.amazon.com (Postfix) with ESMTPS id 882A3A0583;
+	Tue, 30 May 2023 01:06:15 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWB002.ant.amazon.com (10.250.64.231) with Microsoft SMTP Server
+ EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 30 May 2023 01:05:49 +0000
+ 15.2.1118.26; Tue, 30 May 2023 01:06:14 +0000
 Received: from 88665a182662.ant.amazon.com.com (10.106.101.39) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.26;
- Tue, 30 May 2023 01:05:47 +0000
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Tue, 30 May 2023 01:06:12 +0000
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
 	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
@@ -53,9 +53,9 @@ To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
 	<willemdebruijn.kernel@gmail.com>
 CC: Kuniyuki Iwashima <kuniyu@amazon.com>, Kuniyuki Iwashima
 	<kuni1840@gmail.com>, <netdev@vger.kernel.org>
-Subject: [PATCH v1 net-next 04/14] udplite: Retire UDP-Lite for IPv4.
-Date: Mon, 29 May 2023 18:03:38 -0700
-Message-ID: <20230530010348.21425-5-kuniyu@amazon.com>
+Subject: [PATCH v1 net-next 05/14] udp: Remove UDP-Lite SNMP stats.
+Date: Mon, 29 May 2023 18:03:39 -0700
+Message-ID: <20230530010348.21425-6-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230530010348.21425-1-kuniyu@amazon.com>
 References: <20230530010348.21425-1-kuniyu@amazon.com>
@@ -68,575 +68,577 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [10.106.101.39]
-X-ClientProxiedBy: EX19D037UWB004.ant.amazon.com (10.13.138.84) To
+X-ClientProxiedBy: EX19D046UWB004.ant.amazon.com (10.13.139.164) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
 Precedence: Bulk
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-We no longer support IPPROTO_UDPLITE for AF_INET.
+We stored UDP-Lite stats in udplite_statistics and udplite_stats_in6
+of struct netns_mib.
 
-This commit removes udplite.c and udp_impl.h under net/ipv4 and makes
-some functions static that UDP shared.
+Since UDP and UDP-Lite share code, UDP_INC_STATS() always has to
+check if the socket is UDP-Lite.  However, we no longer increment
+UDP-Lite stats.
 
-Also, we remove the SOCK_DIAG code for UDP-Lite.
-
-Note that udplite.h is included in udp.c temporarily not to introduce
-breakage, but we will remove it later with dead code.
+Let's remove the stats and save one protocol test.
 
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
- include/net/sock.h    |   4 +-
- include/net/udp.h     |   5 +-
- include/net/udplite.h |   6 --
- net/ipv4/Makefile     |   2 +-
- net/ipv4/af_inet.c    |   4 --
- net/ipv4/proc.c       |   2 -
- net/ipv4/udp.c        |  36 +++++------
- net/ipv4/udp_bpf.c    |   2 -
- net/ipv4/udp_diag.c   |  46 +-------------
- net/ipv4/udp_impl.h   |  29 ---------
- net/ipv4/udplite.c    | 136 ------------------------------------------
- 11 files changed, 25 insertions(+), 247 deletions(-)
- delete mode 100644 net/ipv4/udp_impl.h
- delete mode 100644 net/ipv4/udplite.c
+ include/net/netns/mib.h |  5 ---
+ include/net/udp.h       | 43 +++++++++--------------
+ net/ipv4/af_inet.c      |  6 ----
+ net/ipv4/proc.c         | 13 -------
+ net/ipv4/udp.c          | 76 ++++++++++++++++++-----------------------
+ net/ipv6/af_inet6.c     |  6 ----
+ net/ipv6/proc.c         | 14 --------
+ net/ipv6/udp.c          | 48 +++++++++++---------------
+ 8 files changed, 69 insertions(+), 142 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 656ea89f60ff..0b6c74bdd688 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -133,14 +133,14 @@ typedef __u64 __bitwise __addrpair;
-  *	@skc_net_refcnt: socket is using net ref counting
-  *	@skc_bound_dev_if: bound device index if != 0
-  *	@skc_bind_node: bind hash linkage for various protocol lookup tables
-- *	@skc_portaddr_node: second hash linkage for UDP/UDP-Lite protocol
-+ *	@skc_portaddr_node: second hash linkage for UDP protocol
-  *	@skc_prot: protocol handlers inside a network family
-  *	@skc_net: reference to the network namespace of this socket
-  *	@skc_v6_daddr: IPV6 destination address
-  *	@skc_v6_rcv_saddr: IPV6 source address
-  *	@skc_cookie: socket's cookie value
-  *	@skc_node: main hash linkage for various protocol lookup tables
-- *	@skc_nulls_node: main hash linkage for TCP/UDP/UDP-Lite protocol
-+ *	@skc_nulls_node: main hash linkage for TCP protocol
-  *	@skc_tx_queue_mapping: tx queue number for this connection
-  *	@skc_rx_queue_mapping: rx queue number for this connection
-  *	@skc_flags: place holder for sk_flags
+diff --git a/include/net/netns/mib.h b/include/net/netns/mib.h
+index 7e373664b1e7..dce05f8e6a33 100644
+--- a/include/net/netns/mib.h
++++ b/include/net/netns/mib.h
+@@ -28,11 +28,6 @@ struct netns_mib {
+ 	DEFINE_SNMP_STAT(struct mptcp_mib, mptcp_statistics);
+ #endif
+ 
+-	DEFINE_SNMP_STAT(struct udp_mib, udplite_statistics);
+-#if IS_ENABLED(CONFIG_IPV6)
+-	DEFINE_SNMP_STAT(struct udp_mib, udplite_stats_in6);
+-#endif
+-
+ 	DEFINE_SNMP_STAT(struct icmp_mib, icmp_statistics);
+ 	DEFINE_SNMP_STAT_ATOMIC(struct icmpmsg_mib, icmpmsg_statistics);
+ #if IS_ENABLED(CONFIG_IPV6)
 diff --git a/include/net/udp.h b/include/net/udp.h
-index 5cad44318d71..bfe62e73552a 100644
+index bfe62e73552a..d00509873f6f 100644
 --- a/include/net/udp.h
 +++ b/include/net/udp.h
-@@ -76,7 +76,7 @@ struct udp_table {
- 	unsigned int		log;
- };
- extern struct udp_table udp_table;
--void udp_table_init(struct udp_table *, const char *);
-+
- static inline struct udp_hslot *udp_hashslot(struct udp_table *table,
- 					     struct net *net, unsigned int num)
- {
-@@ -183,7 +183,7 @@ static inline void udp_lib_init_sock(struct sock *sk)
- 	set_bit(SOCK_CUSTOM_SOCKOPT, &sk->sk_socket->flags);
+@@ -390,37 +390,28 @@ static inline int copy_linear_skb(struct sk_buff *skb, int len, int off,
  }
  
--/* hash routines shared between UDPv4/6 and UDP-Litev4/6 */
-+/* hash routines shared between UDPv4/6 */
- static inline int udp_lib_hash(struct sock *sk)
- {
- 	BUG();
-@@ -284,7 +284,6 @@ int udp_cmsg_send(struct sock *sk, struct msghdr *msg, u16 *gso_size);
- void udp4_hwcsum(struct sk_buff *skb, __be32 src, __be32 dst);
- int udp_rcv(struct sk_buff *skb);
- int udp_ioctl(struct sock *sk, int cmd, unsigned long arg);
--int udp_init_sock(struct sock *sk);
- int udp_pre_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len);
- int __udp_disconnect(struct sock *sk, int flags);
- int udp_disconnect(struct sock *sk, int flags);
-diff --git a/include/net/udplite.h b/include/net/udplite.h
-index 299c14ce2bb9..e436917f9b14 100644
---- a/include/net/udplite.h
-+++ b/include/net/udplite.h
-@@ -12,9 +12,6 @@
- #define UDPLITE_SEND_CSCOV   10 /* sender partial coverage (as sent)      */
- #define UDPLITE_RECV_CSCOV   11 /* receiver partial coverage (threshold ) */
- 
--extern struct proto 		udplite_prot;
--extern struct udp_table		udplite_table;
--
  /*
-  *	Checksum computation is all in software, hence simpler getfrag.
+- * 	SNMP statistics for UDP and UDP-Lite
++ * 	SNMP statistics for UDP
   */
-@@ -80,7 +77,4 @@ static inline __wsum udplite_csum(struct sk_buff *skb)
- 	return skb_checksum(skb, off, len, 0);
- }
+-#define UDP_INC_STATS(net, field, is_udplite)		      do { \
+-	if (is_udplite) SNMP_INC_STATS((net)->mib.udplite_statistics, field);       \
+-	else		SNMP_INC_STATS((net)->mib.udp_statistics, field);  }  while(0)
+-#define __UDP_INC_STATS(net, field, is_udplite) 	      do { \
+-	if (is_udplite) __SNMP_INC_STATS((net)->mib.udplite_statistics, field);         \
+-	else		__SNMP_INC_STATS((net)->mib.udp_statistics, field);    }  while(0)
+-
+-#define __UDP6_INC_STATS(net, field, is_udplite)	    do { \
+-	if (is_udplite) __SNMP_INC_STATS((net)->mib.udplite_stats_in6, field);\
+-	else		__SNMP_INC_STATS((net)->mib.udp_stats_in6, field);  \
+-} while(0)
+-#define UDP6_INC_STATS(net, field, __lite)		    do { \
+-	if (__lite) SNMP_INC_STATS((net)->mib.udplite_stats_in6, field);  \
+-	else	    SNMP_INC_STATS((net)->mib.udp_stats_in6, field);      \
+-} while(0)
++#define __UDP_INC_STATS(net, field)				\
++	__SNMP_INC_STATS((net)->mib.udp_statistics, field)
++#define UDP_INC_STATS(net, field)				\
++	SNMP_INC_STATS((net)->mib.udp_statistics, field)
++
++#define __UDP6_INC_STATS(net, field)				\
++	__SNMP_INC_STATS((net)->mib.udp_stats_in6, field)
++#define UDP6_INC_STATS(net, field)				\
++	SNMP_INC_STATS((net)->mib.udp_stats_in6, field)
  
--void udplite4_register(void);
--int udplite_get_port(struct sock *sk, unsigned short snum,
--		     int (*scmp)(const struct sock *, const struct sock *));
- #endif	/* _UDPLITE_H */
-diff --git a/net/ipv4/Makefile b/net/ipv4/Makefile
-index b18ba8ef93ad..a49e09f3f32a 100644
---- a/net/ipv4/Makefile
-+++ b/net/ipv4/Makefile
-@@ -10,7 +10,7 @@ obj-y     := route.o inetpeer.o protocol.o \
- 	     tcp.o tcp_input.o tcp_output.o tcp_timer.o tcp_ipv4.o \
- 	     tcp_minisocks.o tcp_cong.o tcp_metrics.o tcp_fastopen.o \
- 	     tcp_rate.o tcp_recovery.o tcp_ulp.o \
--	     tcp_offload.o tcp_plb.o datagram.o raw.o udp.o udplite.o \
-+	     tcp_offload.o tcp_plb.o datagram.o raw.o udp.o \
- 	     udp_offload.o arp.o icmp.o devinet.o af_inet.o igmp.o \
- 	     fib_frontend.o fib_semantics.o fib_trie.o fib_notifier.o \
- 	     inet_fragment.o ping.o ip_tunnel_core.o gre_offload.o \
+ #if IS_ENABLED(CONFIG_IPV6)
+-#define __UDPX_MIB(sk, ipv4)						\
+-({									\
+-	ipv4 ? (IS_UDPLITE(sk) ? sock_net(sk)->mib.udplite_statistics :	\
+-				 sock_net(sk)->mib.udp_statistics) :	\
+-		(IS_UDPLITE(sk) ? sock_net(sk)->mib.udplite_stats_in6 :	\
+-				 sock_net(sk)->mib.udp_stats_in6);	\
++#define __UDPX_MIB(sk, ipv4)				\
++({							\
++	ipv4 ? sock_net(sk)->mib.udp_statistics :	\
++		sock_net(sk)->mib.udp_stats_in6;	\
+ })
+ #else
+-#define __UDPX_MIB(sk, ipv4)						\
+-({									\
+-	IS_UDPLITE(sk) ? sock_net(sk)->mib.udplite_statistics :		\
+-			 sock_net(sk)->mib.udp_statistics;		\
++#define __UDPX_MIB(sk, ipv4)				\
++({							\
++	sock_net(sk)->mib.udp_statistics;		\
+ })
+ #endif
+ 
 diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 946650036c7f..bf9fdce5bd05 100644
+index bf9fdce5bd05..332a01ffd550 100644
 --- a/net/ipv4/af_inet.c
 +++ b/net/ipv4/af_inet.c
-@@ -102,7 +102,6 @@
- #include <net/gro.h>
- #include <net/tcp.h>
- #include <net/udp.h>
--#include <net/udplite.h>
- #include <net/ping.h>
- #include <linux/skbuff.h>
- #include <net/sock.h>
-@@ -2009,9 +2008,6 @@ static int __init inet_init(void)
- 	/* Setup UDP memory threshold */
- 	udp_init();
- 
--	/* Add UDP-Lite (RFC 3828) */
--	udplite4_register();
--
- 	raw_init();
- 
- 	ping_init();
+@@ -1769,9 +1769,6 @@ static __net_init int ipv4_mib_init_net(struct net *net)
+ 	net->mib.udp_statistics = alloc_percpu(struct udp_mib);
+ 	if (!net->mib.udp_statistics)
+ 		goto err_udp_mib;
+-	net->mib.udplite_statistics = alloc_percpu(struct udp_mib);
+-	if (!net->mib.udplite_statistics)
+-		goto err_udplite_mib;
+ 	net->mib.icmp_statistics = alloc_percpu(struct icmp_mib);
+ 	if (!net->mib.icmp_statistics)
+ 		goto err_icmp_mib;
+@@ -1786,8 +1783,6 @@ static __net_init int ipv4_mib_init_net(struct net *net)
+ err_icmpmsg_mib:
+ 	free_percpu(net->mib.icmp_statistics);
+ err_icmp_mib:
+-	free_percpu(net->mib.udplite_statistics);
+-err_udplite_mib:
+ 	free_percpu(net->mib.udp_statistics);
+ err_udp_mib:
+ 	free_percpu(net->mib.net_statistics);
+@@ -1803,7 +1798,6 @@ static __net_exit void ipv4_mib_exit_net(struct net *net)
+ {
+ 	kfree(net->mib.icmpmsg_statistics);
+ 	free_percpu(net->mib.icmp_statistics);
+-	free_percpu(net->mib.udplite_statistics);
+ 	free_percpu(net->mib.udp_statistics);
+ 	free_percpu(net->mib.net_statistics);
+ 	free_percpu(net->mib.ip_statistics);
 diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
-index eaf1d3113b62..7cf33b1763ed 100644
+index 7cf33b1763ed..d27e92fc45c1 100644
 --- a/net/ipv4/proc.c
 +++ b/net/ipv4/proc.c
-@@ -64,8 +64,6 @@ static int sockstat_seq_show(struct seq_file *seq, void *v)
- 	seq_printf(seq, "UDP: inuse %d mem %ld\n",
- 		   sock_prot_inuse_get(net, &udp_prot),
- 		   proto_memory_allocated(&udp_prot));
--	seq_printf(seq, "UDPLITE: inuse %d\n",
--		   sock_prot_inuse_get(net, &udplite_prot));
- 	seq_printf(seq, "RAW: inuse %d\n",
- 		   sock_prot_inuse_get(net, &raw_prot));
- 	seq_printf(seq,  "FRAG: inuse %u memory %lu\n",
+@@ -34,7 +34,6 @@
+ #include <net/tcp.h>
+ #include <net/mptcp.h>
+ #include <net/udp.h>
+-#include <net/udplite.h>
+ #include <linux/bottom_half.h>
+ #include <linux/inetdevice.h>
+ #include <linux/proc_fs.h>
+@@ -434,18 +433,6 @@ static int snmp_seq_show_tcp_udp(struct seq_file *seq, void *v)
+ 	for (i = 0; snmp4_udp_list[i].name; i++)
+ 		seq_printf(seq, " %lu", buff[i]);
+ 
+-	memset(buff, 0, TCPUDP_MIB_MAX * sizeof(unsigned long));
+-
+-	/* the UDP and UDP-Lite MIBs are the same */
+-	seq_puts(seq, "\nUdpLite:");
+-	snmp_get_cpu_field_batch(buff, snmp4_udp_list,
+-				 net->mib.udplite_statistics);
+-	for (i = 0; snmp4_udp_list[i].name; i++)
+-		seq_printf(seq, " %s", snmp4_udp_list[i].name);
+-	seq_puts(seq, "\nUdpLite:");
+-	for (i = 0; snmp4_udp_list[i].name; i++)
+-		seq_printf(seq, " %lu", buff[i]);
+-
+ 	seq_putc(seq, '\n');
+ 	return 0;
+ }
 diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 7a874c497cbd..2e966ce4a41b 100644
+index 2e966ce4a41b..9d836604562a 100644
 --- a/net/ipv4/udp.c
 +++ b/net/ipv4/udp.c
-@@ -99,6 +99,7 @@
- #include <linux/seq_file.h>
- #include <net/net_namespace.h>
- #include <net/icmp.h>
-+#include <net/inet_common.h>
- #include <net/inet_hashtables.h>
- #include <net/ip_tunnels.h>
- #include <net/route.h>
-@@ -109,9 +110,10 @@
- #include <linux/btf_ids.h>
- #include <trace/events/skb.h>
- #include <net/busy_poll.h>
--#include "udp_impl.h"
- #include <net/sock_reuseport.h>
- #include <net/addrconf.h>
-+#include <net/udp.h>
-+#include <net/udplite.h>
- #include <net/udp_tunnel.h>
- #if IS_ENABLED(CONFIG_IPV6)
- #include <net/ipv6_stubs.h>
-@@ -227,7 +229,7 @@ static int udp_reuseport_add_sock(struct sock *sk, struct udp_hslot *hslot)
+@@ -981,13 +981,13 @@ static int udp_send_skb(struct sk_buff *skb, struct flowi4 *fl4,
+ 	err = ip_send_skb(sock_net(sk), skb);
+ 	if (err) {
+ 		if (err == -ENOBUFS && !inet->recverr) {
+-			UDP_INC_STATS(sock_net(sk),
+-				      UDP_MIB_SNDBUFERRORS, is_udplite);
++			UDP_INC_STATS(sock_net(sk), UDP_MIB_SNDBUFERRORS);
+ 			err = 0;
+ 		}
+-	} else
+-		UDP_INC_STATS(sock_net(sk),
+-			      UDP_MIB_OUTDATAGRAMS, is_udplite);
++	} else {
++		UDP_INC_STATS(sock_net(sk), UDP_MIB_OUTDATAGRAMS);
++	}
++
+ 	return err;
  }
  
- /**
-- *  udp_lib_get_port  -  UDP/-Lite port lookup for IPv4 and IPv6
-+ *  udp_lib_get_port  -  UDP port lookup for IPv4 and IPv6
-  *
-  *  @sk:          socket struct in question
-  *  @snum:        port number to look up
-@@ -349,7 +351,7 @@ int udp_lib_get_port(struct sock *sk, unsigned short snum,
- }
- EXPORT_SYMBOL(udp_lib_get_port);
+@@ -1313,10 +1313,9 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	 * things).  We could add another new stat but at least for now that
+ 	 * seems like overkill.
+ 	 */
+-	if (err == -ENOBUFS || test_bit(SOCK_NOSPACE, &sk->sk_socket->flags)) {
+-		UDP_INC_STATS(sock_net(sk),
+-			      UDP_MIB_SNDBUFERRORS, is_udplite);
+-	}
++	if (err == -ENOBUFS || test_bit(SOCK_NOSPACE, &sk->sk_socket->flags))
++		UDP_INC_STATS(sock_net(sk), UDP_MIB_SNDBUFERRORS);
++
+ 	return err;
  
--int udp_v4_get_port(struct sock *sk, unsigned short snum)
-+static int udp_v4_get_port(struct sock *sk, unsigned short snum)
- {
- 	unsigned int hash2_nulladdr =
- 		ipv4_portaddr_hash(sock_net(sk), htonl(INADDR_ANY), snum);
-@@ -712,7 +714,7 @@ static struct sock *__udp4_lib_err_encap(struct net *net,
-  * to find the appropriate port.
-  */
+ do_confirm:
+@@ -1630,10 +1629,10 @@ static struct sk_buff *__first_packet_length(struct sock *sk,
  
--int __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
-+static int __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
- {
- 	struct inet_sock *inet;
- 	const struct iphdr *iph = (const struct iphdr *)skb->data;
-@@ -1327,8 +1329,8 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- }
- EXPORT_SYMBOL(udp_sendmsg);
+ 	while ((skb = skb_peek(rcvq)) != NULL) {
+ 		if (udp_lib_checksum_complete(skb)) {
+-			__UDP_INC_STATS(sock_net(sk), UDP_MIB_CSUMERRORS,
+-					IS_UDPLITE(sk));
+-			__UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS,
+-					IS_UDPLITE(sk));
++			struct net *net = sock_net(sk);
++
++			__UDP_INC_STATS(net, UDP_MIB_CSUMERRORS);
++			__UDP_INC_STATS(net, UDP_MIB_INERRORS);
+ 			atomic_inc(&sk->sk_drops);
+ 			__skb_unlink(skb, rcvq);
+ 			*total += skb->truesize;
+@@ -1787,11 +1786,10 @@ int udp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ 		return err;
  
--int udp_sendpage(struct sock *sk, struct page *page, int offset,
--		 size_t size, int flags)
-+static int udp_sendpage(struct sock *sk, struct page *page, int offset,
-+			size_t size, int flags)
- {
- 	struct bio_vec bvec;
- 	struct msghdr msg = { .msg_flags = flags | MSG_SPLICE_PAGES };
-@@ -1591,7 +1593,7 @@ static void udp_destruct_sock(struct sock *sk)
- 	inet_sock_destruct(sk);
- }
+ 	if (udp_lib_checksum_complete(skb)) {
+-		int is_udplite = IS_UDPLITE(sk);
+ 		struct net *net = sock_net(sk);
  
--int udp_init_sock(struct sock *sk)
-+static int udp_init_sock(struct sock *sk)
- {
- 	udp_lib_init_sock(sk);
- 	sk->sk_destruct = udp_destruct_sock;
-@@ -2032,7 +2034,7 @@ void udp_lib_rehash(struct sock *sk, u16 newhash)
- }
- EXPORT_SYMBOL(udp_lib_rehash);
+-		__UDP_INC_STATS(net, UDP_MIB_CSUMERRORS, is_udplite);
+-		__UDP_INC_STATS(net, UDP_MIB_INERRORS, is_udplite);
++		__UDP_INC_STATS(net, UDP_MIB_CSUMERRORS);
++		__UDP_INC_STATS(net, UDP_MIB_INERRORS);
+ 		atomic_inc(&sk->sk_drops);
+ 		kfree_skb(skb);
+ 		goto try_again;
+@@ -1814,6 +1812,7 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int flags,
+ 	int off, err, peeking = flags & MSG_PEEK;
+ 	struct inet_sock *inet = inet_sk(sk);
+ 	int is_udplite = IS_UDPLITE(sk);
++	struct net *net = sock_net(sk);
+ 	bool checksum_valid = false;
+ 	unsigned int ulen, copied;
+ 	struct sk_buff *skb;
+@@ -1863,16 +1862,14 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int flags,
+ 	if (unlikely(err)) {
+ 		if (!peeking) {
+ 			atomic_inc(&sk->sk_drops);
+-			UDP_INC_STATS(sock_net(sk),
+-				      UDP_MIB_INERRORS, is_udplite);
++			UDP_INC_STATS(net, UDP_MIB_INERRORS);
+ 		}
+ 		kfree_skb(skb);
+ 		return err;
+ 	}
  
--void udp_v4_rehash(struct sock *sk)
-+static void udp_v4_rehash(struct sock *sk)
- {
- 	u16 new_hash = ipv4_portaddr_hash(sock_net(sk),
- 					  inet_sk(sk)->inet_rcv_saddr,
-@@ -2376,8 +2378,8 @@ static int udp_unicast_rcv_skb(struct sock *sk, struct sk_buff *skb,
-  *	All we need to do is get the socket, and then do a checksum.
-  */
+ 	if (!peeking)
+-		UDP_INC_STATS(sock_net(sk),
+-			      UDP_MIB_INDATAGRAMS, is_udplite);
++		UDP_INC_STATS(net, UDP_MIB_INDATAGRAMS);
  
--int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
--		   int proto)
-+static int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
-+			  int proto)
- {
- 	struct sock *sk;
- 	struct udphdr *uh;
-@@ -2619,7 +2621,7 @@ int udp_rcv(struct sk_buff *skb)
- 	return __udp4_lib_rcv(skb, dev_net(skb->dev)->ipv4.udp_table, IPPROTO_UDP);
- }
+ 	sock_recv_cmsgs(msg, sk, skb);
  
--void udp_destroy_sock(struct sock *sk)
-+static void udp_destroy_sock(struct sock *sk)
+@@ -1904,8 +1901,8 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int flags,
+ csum_copy_err:
+ 	if (!__sk_queue_drop_skb(sk, &udp_sk(sk)->reader_queue, skb, flags,
+ 				 udp_skb_destructor)) {
+-		UDP_INC_STATS(sock_net(sk), UDP_MIB_CSUMERRORS, is_udplite);
+-		UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
++		UDP_INC_STATS(net, UDP_MIB_CSUMERRORS);
++		UDP_INC_STATS(net, UDP_MIB_INERRORS);
+ 	}
+ 	kfree_skb(skb);
+ 
+@@ -2056,20 +2053,18 @@ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ 
+ 	rc = __udp_enqueue_schedule_skb(sk, skb);
+ 	if (rc < 0) {
+-		int is_udplite = IS_UDPLITE(sk);
++		struct net *net = sock_net(sk);
+ 		int drop_reason;
+ 
+ 		/* Note that an ENOMEM error is charged twice */
+ 		if (rc == -ENOMEM) {
+-			UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
+-					is_udplite);
++			UDP_INC_STATS(net, UDP_MIB_RCVBUFERRORS);
+ 			drop_reason = SKB_DROP_REASON_SOCKET_RCVBUFF;
+ 		} else {
+-			UDP_INC_STATS(sock_net(sk), UDP_MIB_MEMERRORS,
+-				      is_udplite);
++			UDP_INC_STATS(net, UDP_MIB_MEMERRORS);
+ 			drop_reason = SKB_DROP_REASON_PROTO_MEM;
+ 		}
+-		UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
++		UDP_INC_STATS(net, UDP_MIB_INERRORS);
+ 		kfree_skb_reason(skb, drop_reason);
+ 		trace_udp_fail_queue_rcv_skb(rc, sk);
+ 		return -1;
+@@ -2090,7 +2085,7 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
  {
+ 	int drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
  	struct udp_sock *up = udp_sk(sk);
- 	bool slow = lock_sock_fast(sk);
-@@ -2774,8 +2776,8 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
- }
- EXPORT_SYMBOL(udp_lib_setsockopt);
+-	int is_udplite = IS_UDPLITE(sk);
++	struct net *net = sock_net(sk);
  
--int udp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
--		   unsigned int optlen)
-+static int udp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
-+			  unsigned int optlen)
+ 	/*
+ 	 *	Charge it to the socket, dropping if the queue is full.
+@@ -2126,9 +2121,7 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 
+ 			ret = encap_rcv(sk, skb);
+ 			if (ret <= 0) {
+-				__UDP_INC_STATS(sock_net(sk),
+-						UDP_MIB_INDATAGRAMS,
+-						is_udplite);
++				__UDP_INC_STATS(net, UDP_MIB_INDATAGRAMS);
+ 				return -ret;
+ 			}
+ 		}
+@@ -2187,9 +2180,9 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 
+ csum_error:
+ 	drop_reason = SKB_DROP_REASON_UDP_CSUM;
+-	__UDP_INC_STATS(sock_net(sk), UDP_MIB_CSUMERRORS, is_udplite);
++	__UDP_INC_STATS(net, UDP_MIB_CSUMERRORS);
+ drop:
+-	__UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
++	__UDP_INC_STATS(net, UDP_MIB_INERRORS);
+ 	atomic_inc(&sk->sk_drops);
+ 	kfree_skb_reason(skb, drop_reason);
+ 	return -1;
+@@ -2279,10 +2272,8 @@ static int __udp4_lib_mcast_deliver(struct net *net, struct sk_buff *skb,
+ 
+ 		if (unlikely(!nskb)) {
+ 			atomic_inc(&sk->sk_drops);
+-			__UDP_INC_STATS(net, UDP_MIB_RCVBUFERRORS,
+-					IS_UDPLITE(sk));
+-			__UDP_INC_STATS(net, UDP_MIB_INERRORS,
+-					IS_UDPLITE(sk));
++			__UDP_INC_STATS(net, UDP_MIB_RCVBUFERRORS);
++			__UDP_INC_STATS(net, UDP_MIB_INERRORS);
+ 			continue;
+ 		}
+ 		if (udp_queue_rcv_skb(sk, nskb) > 0)
+@@ -2300,8 +2291,7 @@ static int __udp4_lib_mcast_deliver(struct net *net, struct sk_buff *skb,
+ 			consume_skb(skb);
+ 	} else {
+ 		kfree_skb(skb);
+-		__UDP_INC_STATS(net, UDP_MIB_IGNOREDMULTI,
+-				proto == IPPROTO_UDPLITE);
++		__UDP_INC_STATS(net, UDP_MIB_IGNOREDMULTI);
+ 	}
+ 	return 0;
+ }
+@@ -2447,7 +2437,7 @@ static int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 		goto csum_error;
+ 
+ 	drop_reason = SKB_DROP_REASON_NO_SOCKET;
+-	__UDP_INC_STATS(net, UDP_MIB_NOPORTS, proto == IPPROTO_UDPLITE);
++	__UDP_INC_STATS(net, UDP_MIB_NOPORTS);
+ 	icmp_send(skb, ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, 0);
+ 
+ 	/*
+@@ -2476,9 +2466,9 @@ static int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 			    proto == IPPROTO_UDPLITE ? "Lite" : "",
+ 			    &saddr, ntohs(uh->source), &daddr, ntohs(uh->dest),
+ 			    ulen);
+-	__UDP_INC_STATS(net, UDP_MIB_CSUMERRORS, proto == IPPROTO_UDPLITE);
++	__UDP_INC_STATS(net, UDP_MIB_CSUMERRORS);
+ drop:
+-	__UDP_INC_STATS(net, UDP_MIB_INERRORS, proto == IPPROTO_UDPLITE);
++	__UDP_INC_STATS(net, UDP_MIB_INERRORS);
+ 	kfree_skb_reason(skb, drop_reason);
+ 	return 0;
+ }
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index ca360680fae0..16df217be69d 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -899,9 +899,6 @@ static int __net_init ipv6_init_mibs(struct net *net)
+ 	net->mib.udp_stats_in6 = alloc_percpu(struct udp_mib);
+ 	if (!net->mib.udp_stats_in6)
+ 		return -ENOMEM;
+-	net->mib.udplite_stats_in6 = alloc_percpu(struct udp_mib);
+-	if (!net->mib.udplite_stats_in6)
+-		goto err_udplite_mib;
+ 	net->mib.ipv6_statistics = alloc_percpu(struct ipstats_mib);
+ 	if (!net->mib.ipv6_statistics)
+ 		goto err_ip_mib;
+@@ -927,8 +924,6 @@ static int __net_init ipv6_init_mibs(struct net *net)
+ err_icmp_mib:
+ 	free_percpu(net->mib.ipv6_statistics);
+ err_ip_mib:
+-	free_percpu(net->mib.udplite_stats_in6);
+-err_udplite_mib:
+ 	free_percpu(net->mib.udp_stats_in6);
+ 	return -ENOMEM;
+ }
+@@ -936,7 +931,6 @@ static int __net_init ipv6_init_mibs(struct net *net)
+ static void ipv6_cleanup_mibs(struct net *net)
  {
- 	if (level == SOL_UDP  ||  level == SOL_UDPLITE || level == SOL_SOCKET)
- 		return udp_lib_setsockopt(sk, level, optname,
-@@ -2845,8 +2847,8 @@ int udp_lib_getsockopt(struct sock *sk, int level, int optname,
- }
- EXPORT_SYMBOL(udp_lib_getsockopt);
- 
--int udp_getsockopt(struct sock *sk, int level, int optname,
--		   char __user *optval, int __user *optlen)
-+static int udp_getsockopt(struct sock *sk, int level, int optname,
-+			  char __user *optval, int __user *optlen)
- {
- 	if (level == SOL_UDP  ||  level == SOL_UDPLITE)
- 		return udp_lib_getsockopt(sk, level, optname, optval, optlen);
-@@ -3092,7 +3094,7 @@ static void udp4_format_sock(struct sock *sp, struct seq_file *f,
- 		atomic_read(&sp->sk_drops));
- }
- 
--int udp4_seq_show(struct seq_file *seq, void *v)
-+static int udp4_seq_show(struct seq_file *seq, void *v)
- {
- 	seq_setwidth(seq, 127);
- 	if (v == SEQ_START_TOKEN)
-@@ -3403,7 +3405,7 @@ static int __init set_uhash_entries(char *str)
- }
- __setup("uhash_entries=", set_uhash_entries);
- 
--void __init udp_table_init(struct udp_table *table, const char *name)
-+static void __init udp_table_init(struct udp_table *table, const char *name)
- {
- 	unsigned int i;
- 
-diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
-index 0735d820e413..90336d215f79 100644
---- a/net/ipv4/udp_bpf.c
-+++ b/net/ipv4/udp_bpf.c
-@@ -6,8 +6,6 @@
- #include <net/udp.h>
- #include <net/inet_common.h>
- 
--#include "udp_impl.h"
--
- static struct proto *udpv6_prot_saved __read_mostly;
- 
- static int sk_udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
-diff --git a/net/ipv4/udp_diag.c b/net/ipv4/udp_diag.c
-index de3f2d31f510..b8de2babfb0c 100644
---- a/net/ipv4/udp_diag.c
-+++ b/net/ipv4/udp_diag.c
-@@ -10,7 +10,6 @@
- #include <linux/inet_diag.h>
- #include <linux/udp.h>
- #include <net/udp.h>
--#include <net/udplite.h>
- #include <linux/sock_diag.h>
- 
- static int sk_diag_dump(struct sock *sk, struct sk_buff *skb,
-@@ -228,12 +227,6 @@ static int udp_diag_destroy(struct sk_buff *in_skb,
- 	return __udp_diag_destroy(in_skb, req, sock_net(in_skb->sk)->ipv4.udp_table);
- }
- 
--static int udplite_diag_destroy(struct sk_buff *in_skb,
--				const struct inet_diag_req_v2 *req)
--{
--	return __udp_diag_destroy(in_skb, req, &udplite_table);
--}
--
- #endif
- 
- static const struct inet_diag_handler udp_diag_handler = {
-@@ -247,49 +240,13 @@ static const struct inet_diag_handler udp_diag_handler = {
- #endif
+ 	free_percpu(net->mib.udp_stats_in6);
+-	free_percpu(net->mib.udplite_stats_in6);
+ 	free_percpu(net->mib.ipv6_statistics);
+ 	free_percpu(net->mib.icmpv6_statistics);
+ 	kfree(net->mib.icmpv6msg_statistics);
+diff --git a/net/ipv6/proc.c b/net/ipv6/proc.c
+index 91bcd4525494..5b431057969c 100644
+--- a/net/ipv6/proc.c
++++ b/net/ipv6/proc.c
+@@ -129,18 +129,6 @@ static const struct snmp_mib snmp6_udp6_list[] = {
+ 	SNMP_MIB_SENTINEL
  };
  
--static void udplite_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
--			      const struct inet_diag_req_v2 *r)
--{
--	udp_dump(&udplite_table, skb, cb, r);
--}
--
--static int udplite_diag_dump_one(struct netlink_callback *cb,
--				 const struct inet_diag_req_v2 *req)
--{
--	return udp_dump_one(&udplite_table, cb, req);
--}
--
--static const struct inet_diag_handler udplite_diag_handler = {
--	.dump		 = udplite_diag_dump,
--	.dump_one	 = udplite_diag_dump_one,
--	.idiag_get_info  = udp_diag_get_info,
--	.idiag_type	 = IPPROTO_UDPLITE,
--	.idiag_info_size = 0,
--#ifdef CONFIG_INET_DIAG_DESTROY
--	.destroy	 = udplite_diag_destroy,
--#endif
+-static const struct snmp_mib snmp6_udplite6_list[] = {
+-	SNMP_MIB_ITEM("UdpLite6InDatagrams", UDP_MIB_INDATAGRAMS),
+-	SNMP_MIB_ITEM("UdpLite6NoPorts", UDP_MIB_NOPORTS),
+-	SNMP_MIB_ITEM("UdpLite6InErrors", UDP_MIB_INERRORS),
+-	SNMP_MIB_ITEM("UdpLite6OutDatagrams", UDP_MIB_OUTDATAGRAMS),
+-	SNMP_MIB_ITEM("UdpLite6RcvbufErrors", UDP_MIB_RCVBUFERRORS),
+-	SNMP_MIB_ITEM("UdpLite6SndbufErrors", UDP_MIB_SNDBUFERRORS),
+-	SNMP_MIB_ITEM("UdpLite6InCsumErrors", UDP_MIB_CSUMERRORS),
+-	SNMP_MIB_ITEM("UdpLite6MemErrors", UDP_MIB_MEMERRORS),
+-	SNMP_MIB_SENTINEL
 -};
 -
- static int __init udp_diag_init(void)
+ static void snmp6_seq_show_icmpv6msg(struct seq_file *seq, atomic_long_t *smib)
  {
--	int err;
--
--	err = inet_diag_register(&udp_diag_handler);
--	if (err)
--		goto out;
--	err = inet_diag_register(&udplite_diag_handler);
--	if (err)
--		goto out_lite;
--out:
--	return err;
--out_lite:
--	inet_diag_unregister(&udp_diag_handler);
--	goto out;
-+	return inet_diag_register(&udp_diag_handler);
+ 	char name[32];
+@@ -222,8 +210,6 @@ static int snmp6_seq_show(struct seq_file *seq, void *v)
+ 	snmp6_seq_show_icmpv6msg(seq, net->mib.icmpv6msg_statistics->mibs);
+ 	snmp6_seq_show_item(seq, net->mib.udp_stats_in6,
+ 			    NULL, snmp6_udp6_list);
+-	snmp6_seq_show_item(seq, net->mib.udplite_stats_in6,
+-			    NULL, snmp6_udplite6_list);
+ 	return 0;
  }
  
- static void __exit udp_diag_exit(void)
- {
--	inet_diag_unregister(&udplite_diag_handler);
- 	inet_diag_unregister(&udp_diag_handler);
- }
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index bc3f7ac8c28a..161686aa0dbe 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -666,20 +666,18 @@ static int __udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
  
-@@ -297,4 +254,3 @@ module_init(udp_diag_init);
- module_exit(udp_diag_exit);
- MODULE_LICENSE("GPL");
- MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 2-17 /* AF_INET - IPPROTO_UDP */);
--MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 2-136 /* AF_INET - IPPROTO_UDPLITE */);
-diff --git a/net/ipv4/udp_impl.h b/net/ipv4/udp_impl.h
-deleted file mode 100644
-index 4ba7a88a1b1d..000000000000
---- a/net/ipv4/udp_impl.h
-+++ /dev/null
-@@ -1,29 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef _UDP4_IMPL_H
--#define _UDP4_IMPL_H
--#include <net/udp.h>
--#include <net/udplite.h>
--#include <net/protocol.h>
--#include <net/inet_common.h>
--
--int __udp4_lib_rcv(struct sk_buff *, struct udp_table *, int);
--int __udp4_lib_err(struct sk_buff *, u32, struct udp_table *);
--
--int udp_v4_get_port(struct sock *sk, unsigned short snum);
--void udp_v4_rehash(struct sock *sk);
--
--int udp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
--		   unsigned int optlen);
--int udp_getsockopt(struct sock *sk, int level, int optname,
--		   char __user *optval, int __user *optlen);
--
--int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int flags,
--		int *addr_len);
--int udp_sendpage(struct sock *sk, struct page *page, int offset, size_t size,
--		 int flags);
--void udp_destroy_sock(struct sock *sk);
--
--#ifdef CONFIG_PROC_FS
--int udp4_seq_show(struct seq_file *seq, void *v);
--#endif
--#endif	/* _UDP4_IMPL_H */
-diff --git a/net/ipv4/udplite.c b/net/ipv4/udplite.c
-deleted file mode 100644
-index 56d94d23b9e0..000000000000
---- a/net/ipv4/udplite.c
-+++ /dev/null
-@@ -1,136 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-or-later
--/*
-- *  UDPLITE     An implementation of the UDP-Lite protocol (RFC 3828).
-- *
-- *  Authors:    Gerrit Renker       <gerrit@erg.abdn.ac.uk>
-- *
-- *  Changes:
-- *  Fixes:
-- */
--
--#define pr_fmt(fmt) "UDPLite: " fmt
--
--#include <linux/export.h>
--#include <linux/proc_fs.h>
--#include "udp_impl.h"
--
--struct udp_table 	udplite_table __read_mostly;
--EXPORT_SYMBOL(udplite_table);
--
--/* Designate sk as UDP-Lite socket */
--static int udplite_sk_init(struct sock *sk)
--{
--	udp_init_sock(sk);
--	udp_sk(sk)->pcflag = UDPLITE_BIT;
--	return 0;
--}
--
--static int udplite_rcv(struct sk_buff *skb)
--{
--	return __udp4_lib_rcv(skb, &udplite_table, IPPROTO_UDPLITE);
--}
--
--static int udplite_err(struct sk_buff *skb, u32 info)
--{
--	return __udp4_lib_err(skb, info, &udplite_table);
--}
--
--static const struct net_protocol udplite_protocol = {
--	.handler	= udplite_rcv,
--	.err_handler	= udplite_err,
--	.no_policy	= 1,
--};
--
--struct proto 	udplite_prot = {
--	.name		   = "UDP-Lite",
--	.owner		   = THIS_MODULE,
--	.close		   = udp_lib_close,
--	.connect	   = ip4_datagram_connect,
--	.disconnect	   = udp_disconnect,
--	.ioctl		   = udp_ioctl,
--	.init		   = udplite_sk_init,
--	.destroy	   = udp_destroy_sock,
--	.setsockopt	   = udp_setsockopt,
--	.getsockopt	   = udp_getsockopt,
--	.sendmsg	   = udp_sendmsg,
--	.recvmsg	   = udp_recvmsg,
--	.sendpage	   = udp_sendpage,
--	.hash		   = udp_lib_hash,
--	.unhash		   = udp_lib_unhash,
--	.rehash		   = udp_v4_rehash,
--	.get_port	   = udp_v4_get_port,
--
--	.memory_allocated  = &udp_memory_allocated,
--	.per_cpu_fw_alloc  = &udp_memory_per_cpu_fw_alloc,
--
--	.sysctl_mem	   = sysctl_udp_mem,
--	.sysctl_wmem_offset = offsetof(struct net, ipv4.sysctl_udp_wmem_min),
--	.sysctl_rmem_offset = offsetof(struct net, ipv4.sysctl_udp_rmem_min),
--	.obj_size	   = sizeof(struct udp_sock),
--	.h.udp_table	   = &udplite_table,
--};
--EXPORT_SYMBOL(udplite_prot);
--
--static struct inet_protosw udplite4_protosw = {
--	.type		=  SOCK_DGRAM,
--	.protocol	=  IPPROTO_UDPLITE,
--	.prot		=  &udplite_prot,
--	.ops		=  &inet_dgram_ops,
--	.flags		=  INET_PROTOSW_PERMANENT,
--};
--
--#ifdef CONFIG_PROC_FS
--static struct udp_seq_afinfo udplite4_seq_afinfo = {
--	.family		= AF_INET,
--	.udp_table 	= &udplite_table,
--};
--
--static int __net_init udplite4_proc_init_net(struct net *net)
--{
--	if (!proc_create_net_data("udplite", 0444, net->proc_net, &udp_seq_ops,
--			sizeof(struct udp_iter_state), &udplite4_seq_afinfo))
--		return -ENOMEM;
--	return 0;
--}
--
--static void __net_exit udplite4_proc_exit_net(struct net *net)
--{
--	remove_proc_entry("udplite", net->proc_net);
--}
--
--static struct pernet_operations udplite4_net_ops = {
--	.init = udplite4_proc_init_net,
--	.exit = udplite4_proc_exit_net,
--};
--
--static __init int udplite4_proc_init(void)
--{
--	return register_pernet_subsys(&udplite4_net_ops);
--}
--#else
--static inline int udplite4_proc_init(void)
--{
--	return 0;
--}
--#endif
--
--void __init udplite4_register(void)
--{
--	udp_table_init(&udplite_table, "UDP-Lite");
--	if (proto_register(&udplite_prot, 1))
--		goto out_register_err;
--
--	if (inet_add_protocol(&udplite_protocol, IPPROTO_UDPLITE) < 0)
--		goto out_unregister_proto;
--
--	inet_register_protosw(&udplite4_protosw);
--
--	if (udplite4_proc_init())
--		pr_err("%s: Cannot register /proc!\n", __func__);
--	return;
--
--out_unregister_proto:
--	proto_unregister(&udplite_prot);
--out_register_err:
--	pr_crit("%s: Cannot add UDP-Lite protocol\n", __func__);
--}
+ 	rc = __udp_enqueue_schedule_skb(sk, skb);
+ 	if (rc < 0) {
+-		int is_udplite = IS_UDPLITE(sk);
+ 		enum skb_drop_reason drop_reason;
++		struct net *net = sock_net(sk);
+ 
+ 		/* Note that an ENOMEM error is charged twice */
+ 		if (rc == -ENOMEM) {
+-			UDP6_INC_STATS(sock_net(sk),
+-					 UDP_MIB_RCVBUFERRORS, is_udplite);
++			UDP6_INC_STATS(net, UDP_MIB_RCVBUFERRORS);
+ 			drop_reason = SKB_DROP_REASON_SOCKET_RCVBUFF;
+ 		} else {
+-			UDP6_INC_STATS(sock_net(sk),
+-				       UDP_MIB_MEMERRORS, is_udplite);
++			UDP6_INC_STATS(net, UDP_MIB_MEMERRORS);
+ 			drop_reason = SKB_DROP_REASON_PROTO_MEM;
+ 		}
+-		UDP6_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
++		UDP6_INC_STATS(net, UDP_MIB_INERRORS);
+ 		kfree_skb_reason(skb, drop_reason);
+ 		return -1;
+ 	}
+@@ -699,7 +697,7 @@ static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ {
+ 	enum skb_drop_reason drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ 	struct udp_sock *up = udp_sk(sk);
+-	int is_udplite = IS_UDPLITE(sk);
++	struct net *net = sock_net(sk);
+ 
+ 	if (!xfrm6_policy_check(sk, XFRM_POLICY_IN, skb)) {
+ 		drop_reason = SKB_DROP_REASON_XFRM_POLICY;
+@@ -732,9 +730,7 @@ static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 
+ 			ret = encap_rcv(sk, skb);
+ 			if (ret <= 0) {
+-				__UDP6_INC_STATS(sock_net(sk),
+-						 UDP_MIB_INDATAGRAMS,
+-						 is_udplite);
++				__UDP6_INC_STATS(net, UDP_MIB_INDATAGRAMS);
+ 				return -ret;
+ 			}
+ 		}
+@@ -777,9 +773,9 @@ static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 
+ csum_error:
+ 	drop_reason = SKB_DROP_REASON_UDP_CSUM;
+-	__UDP6_INC_STATS(sock_net(sk), UDP_MIB_CSUMERRORS, is_udplite);
++	__UDP6_INC_STATS(net, UDP_MIB_CSUMERRORS);
+ drop:
+-	__UDP6_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
++	__UDP6_INC_STATS(net, UDP_MIB_INERRORS);
+ 	atomic_inc(&sk->sk_drops);
+ 	kfree_skb_reason(skb, drop_reason);
+ 	return -1;
+@@ -889,10 +885,8 @@ static int __udp6_lib_mcast_deliver(struct net *net, struct sk_buff *skb,
+ 		nskb = skb_clone(skb, GFP_ATOMIC);
+ 		if (unlikely(!nskb)) {
+ 			atomic_inc(&sk->sk_drops);
+-			__UDP6_INC_STATS(net, UDP_MIB_RCVBUFERRORS,
+-					 IS_UDPLITE(sk));
+-			__UDP6_INC_STATS(net, UDP_MIB_INERRORS,
+-					 IS_UDPLITE(sk));
++			__UDP6_INC_STATS(net, UDP_MIB_RCVBUFERRORS);
++			__UDP6_INC_STATS(net, UDP_MIB_INERRORS);
+ 			continue;
+ 		}
+ 
+@@ -911,8 +905,7 @@ static int __udp6_lib_mcast_deliver(struct net *net, struct sk_buff *skb,
+ 			consume_skb(skb);
+ 	} else {
+ 		kfree_skb(skb);
+-		__UDP6_INC_STATS(net, UDP_MIB_IGNOREDMULTI,
+-				 proto == IPPROTO_UDPLITE);
++		__UDP6_INC_STATS(net, UDP_MIB_IGNOREDMULTI);
+ 	}
+ 	return 0;
+ }
+@@ -1037,7 +1030,7 @@ static int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 	if (udp_lib_checksum_complete(skb))
+ 		goto csum_error;
+ 
+-	__UDP6_INC_STATS(net, UDP_MIB_NOPORTS, proto == IPPROTO_UDPLITE);
++	__UDP6_INC_STATS(net, UDP_MIB_NOPORTS);
+ 	icmpv6_send(skb, ICMPV6_DEST_UNREACH, ICMPV6_PORT_UNREACH, 0);
+ 
+ 	kfree_skb_reason(skb, reason);
+@@ -1058,9 +1051,9 @@ static int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ csum_error:
+ 	if (reason == SKB_DROP_REASON_NOT_SPECIFIED)
+ 		reason = SKB_DROP_REASON_UDP_CSUM;
+-	__UDP6_INC_STATS(net, UDP_MIB_CSUMERRORS, proto == IPPROTO_UDPLITE);
++	__UDP6_INC_STATS(net, UDP_MIB_CSUMERRORS);
+ discard:
+-	__UDP6_INC_STATS(net, UDP_MIB_INERRORS, proto == IPPROTO_UDPLITE);
++	__UDP6_INC_STATS(net, UDP_MIB_INERRORS);
+ 	kfree_skb_reason(skb, reason);
+ 	return 0;
+ }
+@@ -1300,13 +1293,11 @@ static int udp_v6_send_skb(struct sk_buff *skb, struct flowi6 *fl6,
+ 	err = ip6_send_skb(skb);
+ 	if (err) {
+ 		if (err == -ENOBUFS && !inet6_sk(sk)->recverr) {
+-			UDP6_INC_STATS(sock_net(sk),
+-				       UDP_MIB_SNDBUFERRORS, is_udplite);
++			UDP6_INC_STATS(sock_net(sk), UDP_MIB_SNDBUFERRORS);
+ 			err = 0;
+ 		}
+ 	} else {
+-		UDP6_INC_STATS(sock_net(sk),
+-			       UDP_MIB_OUTDATAGRAMS, is_udplite);
++		UDP6_INC_STATS(sock_net(sk), UDP_MIB_OUTDATAGRAMS);
+ 	}
+ 	return err;
+ }
+@@ -1644,10 +1635,9 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	 * things).  We could add another new stat but at least for now that
+ 	 * seems like overkill.
+ 	 */
+-	if (err == -ENOBUFS || test_bit(SOCK_NOSPACE, &sk->sk_socket->flags)) {
+-		UDP6_INC_STATS(sock_net(sk),
+-			       UDP_MIB_SNDBUFERRORS, is_udplite);
+-	}
++	if (err == -ENOBUFS || test_bit(SOCK_NOSPACE, &sk->sk_socket->flags))
++		UDP6_INC_STATS(sock_net(sk), UDP_MIB_SNDBUFERRORS);
++
+ 	return err;
+ 
+ do_confirm:
 -- 
 2.30.2
 
