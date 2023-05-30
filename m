@@ -1,159 +1,276 @@
-Return-Path: <netdev+bounces-6482-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6483-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id C67CA716861
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 17:59:43 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 58316716869
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 18:01:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7B0B9281158
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 15:59:42 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0B555281229
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 16:01:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D327D27217;
-	Tue, 30 May 2023 15:59:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4472827219;
+	Tue, 30 May 2023 16:00:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8A1417AD4
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 15:59:40 +0000 (UTC)
-Received: from mx6.didiglobal.com (mx6.didiglobal.com [111.202.70.123])
-	by lindbergh.monkeyblade.net (Postfix) with SMTP id 0180AF7
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 08:59:28 -0700 (PDT)
-Received: from mail.didiglobal.com (unknown [10.79.65.12])
-	by mx6.didiglobal.com (Maildata Gateway V2.8) with ESMTPS id 4A1031100B6004;
-	Tue, 30 May 2023 23:59:26 +0800 (CST)
-Received: from didi-ThinkCentre-M920t-N000 (10.79.64.101) by
- ZJY02-ACTMBX-02.didichuxing.com (10.79.65.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 30 May 2023 23:59:25 +0800
-Date: Tue, 30 May 2023 23:59:19 +0800
-X-MD-Sfrom: fuyuanli@didiglobal.com
-X-MD-SrcIP: 10.79.65.12
-From: fuyuanli <fuyuanli@didiglobal.com>
-To: Eric Dumazet <edumazet@google.com>
-CC: "David S. Miller" <davem@davemloft.net>, David Ahern <dsahern@kernel.org>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Neal
- Cardwell <ncardwell@google.com>, ycheng <ycheng@google.com>, toke
-	<toke@toke.dk>, fuyuanli <fuyuanli@didiglobal.com>, <netdev@vger.kernel.org>,
-	Weiping Zhang <zhangweiping@didiglobal.com>, Tio Zhang
-	<tiozhang@didiglobal.com>, Jason Xing <kerneljasonxing@gmail.com>
-Subject: [PATCH net v3] tcp: fix mishandling when the sack compression is
- deferred
-Message-ID: <20230530155919.GA6803@didi-ThinkCentre-M920t-N000>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3323F17AD4
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 16:00:59 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F067F1
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 09:00:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685462454;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=cpizXiy/LDrr+SJt8KqJ4lnndh1NLm4zehYJ/eyPviI=;
+	b=Xprwe/lHErze8LwxPkJ6hXFauQEID2ANHMTC7CQn8hnShGhS9DX2KFw/9xhdC3HqwfHcNG
+	uiAiDlo3I3ZLa4iezFmUswd3w+cn4IKy+VU0lHElX9YFykB8Sy8SfE0SnmOItlkbsVO42L
+	ruTmr6xZ+ADDOZcoObX2Sq0YT5CjI3Y=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-378-4RIpW0QDPn6o1iDoJ8pFug-1; Tue, 30 May 2023 12:00:52 -0400
+X-MC-Unique: 4RIpW0QDPn6o1iDoJ8pFug-1
+Received: by mail-lj1-f199.google.com with SMTP id 38308e7fff4ca-2af570dc8daso20791171fa.2
+        for <netdev@vger.kernel.org>; Tue, 30 May 2023 09:00:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685462450; x=1688054450;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cpizXiy/LDrr+SJt8KqJ4lnndh1NLm4zehYJ/eyPviI=;
+        b=cf4RmzKFdqAZxG0PFx9PyyYsR+rJWrc4Dzo/NkaJRVpcVmJoURtMwp+/TDF+lAM0Qk
+         LwBxzBZ02GdQieooUBaKqwnqj3KqPvnmOSQOTVQ60yan11nW9wJNqDZiHj/Z1OgUbaJr
+         k5LzqNIozwutYc+eZAVlNq9ChKfcR/Tm0ED9mh5q2tEtij0yk/ESOQwySk4RoNr7A/Mx
+         531L0AVSsriPbaohSFrovW02RJ8oW90agFB+AXDhcjTHqXNxFquorWAg8Xi7xOrZpXKb
+         jyfJng5bQ9A7EgW1MnlkgMO3GJkMOno+acHBOuZZQWno8Bs7CXPvRK0LbZWKSy5u3VDn
+         kMHg==
+X-Gm-Message-State: AC+VfDzIdrPUAoSZyXrkwd0A+To+SFCVXIiiNDwO1gS2jPoShqRi5MOz
+	vtFhlc5YvTXhYOsVKY00E/S5lv1LNq6PXz0g3cmDlecEr7hDrW+pXZb1sRAIVETYY6zRxbBTHtd
+	G3m4rl4NmArNqQhJr
+X-Received: by 2002:a2e:2e08:0:b0:2ac:8c5e:e151 with SMTP id u8-20020a2e2e08000000b002ac8c5ee151mr1108261lju.31.1685462450415;
+        Tue, 30 May 2023 09:00:50 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ65CUAQ0psNpySoTjwhH9D51FR0/IOamyhQpQTFmaHfXN81xSEWPOXkE63QmqLY9ZD61r047Q==
+X-Received: by 2002:a2e:2e08:0:b0:2ac:8c5e:e151 with SMTP id u8-20020a2e2e08000000b002ac8c5ee151mr1108234lju.31.1685462449966;
+        Tue, 30 May 2023 09:00:49 -0700 (PDT)
+Received: from sgarzare-redhat (host-87-12-25-16.business.telecomitalia.it. [87.12.25.16])
+        by smtp.gmail.com with ESMTPSA id j13-20020a170906474d00b0096a5d341b50sm7520587ejs.111.2023.05.30.09.00.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 May 2023 09:00:49 -0700 (PDT)
+Date: Tue, 30 May 2023 18:00:47 +0200
+From: Stefano Garzarella <sgarzare@redhat.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>, 
+	Mike Christie <michael.christie@oracle.com>
+Cc: syzbot <syzbot+d0d442c22fa8db45ff0e@syzkaller.appspotmail.com>, 
+	jasowang@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com, 
+	virtualization@lists.linux-foundation.org, stefanha@redhat.com
+Subject: Re: [syzbot] [kvm?] [net?] [virt?] general protection fault in
+ vhost_work_queue
+Message-ID: <CAGxU2F7HK5KRggiY7xnKHeXFRXJmqcKbjf3JnXC3mbmn9xqRtw@mail.gmail.com>
+References: <0000000000001777f605fce42c5f@google.com>
+ <20230530072310-mutt-send-email-mst@kernel.org>
+ <CAGxU2F7O7ef3mdvNXtiC0VtWiS2DMnoiGwSR=Z6SWbzqcrBF-g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Originating-IP: [10.79.64.101]
-X-ClientProxiedBy: ZJY01-PUBMBX-01.didichuxing.com (10.79.64.32) To
- ZJY02-ACTMBX-02.didichuxing.com (10.79.65.12)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAGxU2F7O7ef3mdvNXtiC0VtWiS2DMnoiGwSR=Z6SWbzqcrBF-g@mail.gmail.com>
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-In this patch, we mainly try to handle sending a compressed ack
-correctly if it's deferred.
+On Tue, May 30, 2023 at 3:44 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+>
+> On Tue, May 30, 2023 at 1:24 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Tue, May 30, 2023 at 12:30:06AM -0700, syzbot wrote:
+> > > Hello,
+> > >
+> > > syzbot found the following issue on:
+> > >
+> > > HEAD commit:    933174ae28ba Merge tag 'spi-fix-v6.4-rc3' of git://git.ker..
+> > > git tree:       upstream
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=138d4ae5280000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=f389ffdf4e9ba3f0
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=d0d442c22fa8db45ff0e
+> > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > >
+> > > Unfortunately, I don't have any reproducer for this issue yet.
+> > >
+> > > Downloadable assets:
+> > > disk image: https://storage.googleapis.com/syzbot-assets/21a81b8c2660/disk-933174ae.raw.xz
+> > > vmlinux: https://storage.googleapis.com/syzbot-assets/b4951d89e238/vmlinux-933174ae.xz
+> > > kernel image: https://storage.googleapis.com/syzbot-assets/21eb405303cc/bzImage-933174ae.xz
+> > >
+> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > Reported-by: syzbot+d0d442c22fa8db45ff0e@syzkaller.appspotmail.com
+> > >
+> > > general protection fault, probably for non-canonical address 0xdffffc000000000e: 0000 [#1] PREEMPT SMP KASAN
+> > > KASAN: null-ptr-deref in range [0x0000000000000070-0x0000000000000077]
+> > > CPU: 0 PID: 29845 Comm: syz-executor.4 Not tainted 6.4.0-rc3-syzkaller-00032-g933174ae28ba #0
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/16/2023
+> > > RIP: 0010:vhost_work_queue drivers/vhost/vhost.c:259 [inline]
+> > > RIP: 0010:vhost_work_queue+0xfc/0x150 drivers/vhost/vhost.c:248
+> > > Code: 00 00 fc ff df 48 89 da 48 c1 ea 03 80 3c 02 00 75 56 48 b8 00 00 00 00 00 fc ff df 48 8b 1b 48 8d 7b 70 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 42 48 8b 7b 70 e8 95 9e ae f9 5b 5d 41 5c 41 5d e9
+> > > RSP: 0018:ffffc9000333faf8 EFLAGS: 00010202
+> > > RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000d84d000
+> > > RDX: 000000000000000e RSI: ffffffff841221d7 RDI: 0000000000000070
+> > > RBP: ffff88804b6b95b0 R08: 0000000000000001 R09: 0000000000000000
+> > > R10: 0000000000000001 R11: 0000000000000000 R12: ffff88804b6b00b0
+> > > R13: 0000000000000000 R14: ffff88804b6b95e0 R15: ffff88804b6b95c8
+> > > FS:  00007f3b445ec700(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 0000001b2e423000 CR3: 000000005d734000 CR4: 00000000003506f0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 000000000000003b DR6: 00000000ffff0ff0 DR7: 0000000000000400
+> > > Call Trace:
+> > >  <TASK>
+> > >  vhost_transport_send_pkt+0x268/0x520 drivers/vhost/vsock.c:288
+> > >  virtio_transport_send_pkt_info+0x54c/0x820 net/vmw_vsock/virtio_transport_common.c:250
+> > >  virtio_transport_connect+0xb1/0xf0 net/vmw_vsock/virtio_transport_common.c:813
+> > >  vsock_connect+0x37f/0xcd0 net/vmw_vsock/af_vsock.c:1414
+> > >  __sys_connect_file+0x153/0x1a0 net/socket.c:2003
+> > >  __sys_connect+0x165/0x1a0 net/socket.c:2020
+> > >  __do_sys_connect net/socket.c:2030 [inline]
+> > >  __se_sys_connect net/socket.c:2027 [inline]
+> > >  __x64_sys_connect+0x73/0xb0 net/socket.c:2027
+> > >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> > >  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+> > >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > > RIP: 0033:0x7f3b4388c169
+> > > Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> > > RSP: 002b:00007f3b445ec168 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
+> > > RAX: ffffffffffffffda RBX: 00007f3b439ac050 RCX: 00007f3b4388c169
+> > > RDX: 0000000000000010 RSI: 0000000020000140 RDI: 0000000000000004
+> > > RBP: 00007f3b438e7ca1 R08: 0000000000000000 R09: 0000000000000000
+> > > R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> > > R13: 00007f3b43acfb1f R14: 00007f3b445ec300 R15: 0000000000022000
+> > >  </TASK>
+> > > Modules linked in:
+> > > ---[ end trace 0000000000000000 ]---
+> > > RIP: 0010:vhost_work_queue drivers/vhost/vhost.c:259 [inline]
+> > > RIP: 0010:vhost_work_queue+0xfc/0x150 drivers/vhost/vhost.c:248
+> > > Code: 00 00 fc ff df 48 89 da 48 c1 ea 03 80 3c 02 00 75 56 48 b8 00 00 00 00 00 fc ff df 48 8b 1b 48 8d 7b 70 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 42 48 8b 7b 70 e8 95 9e ae f9 5b 5d 41 5c 41 5d e9
+> > > RSP: 0018:ffffc9000333faf8 EFLAGS: 00010202
+> > > RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000d84d000
+> > > RDX: 000000000000000e RSI: ffffffff841221d7 RDI: 0000000000000070
+> > > RBP: ffff88804b6b95b0 R08: 0000000000000001 R09: 0000000000000000
+> > > R10: 0000000000000001 R11: 0000000000000000 R12: ffff88804b6b00b0
+> > > R13: 0000000000000000 R14: ffff88804b6b95e0 R15: ffff88804b6b95c8
+> > > FS:  00007f3b445ec700(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 0000001b2e428000 CR3: 000000005d734000 CR4: 00000000003506e0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 000000000000003b DR6: 00000000ffff0ff0 DR7: 0000000000000400
+> > > ----------------
+> > > Code disassembly (best guess), 5 bytes skipped:
+> > >    0: 48 89 da                mov    %rbx,%rdx
+> > >    3: 48 c1 ea 03             shr    $0x3,%rdx
+> > >    7: 80 3c 02 00             cmpb   $0x0,(%rdx,%rax,1)
+> > >    b: 75 56                   jne    0x63
+> > >    d: 48 b8 00 00 00 00 00    movabs $0xdffffc0000000000,%rax
+> > >   14: fc ff df
+> > >   17: 48 8b 1b                mov    (%rbx),%rbx
+> > >   1a: 48 8d 7b 70             lea    0x70(%rbx),%rdi
+> > >   1e: 48 89 fa                mov    %rdi,%rdx
+> > >   21: 48 c1 ea 03             shr    $0x3,%rdx
+> > > * 25: 80 3c 02 00             cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
+> > >   29: 75 42                   jne    0x6d
+> > >   2b: 48 8b 7b 70             mov    0x70(%rbx),%rdi
+> > >   2f: e8 95 9e ae f9          callq  0xf9ae9ec9
+> > >   34: 5b                      pop    %rbx
+> > >   35: 5d                      pop    %rbp
+> > >   36: 41 5c                   pop    %r12
+> > >   38: 41 5d                   pop    %r13
+> > >   3a: e9                      .byte 0xe9
+> >
+> >
+> > Stefano, Stefan, take a look?
+>
+> I'll take a look.
+>
+> From a first glance, it looks like an issue when we call vhost_work_queue().
+> @Mike, does that ring any bells since you recently looked at that code?
 
-Here are more details in the old logic:
-When sack compression is triggered in the tcp_compressed_ack_kick(),
-if the sock is owned by user, it will set TCP_DELACK_TIMER_DEFERRED
-and then defer to the release cb phrase. Later once user releases
-the sock, tcp_delack_timer_handler() should send a ack as expected,
-which, however, cannot happen due to lack of ICSK_ACK_TIMER flag.
-Therefore, the receiver would not sent an ack until the sender's
-retransmission timeout. It definitely increases unnecessary latency.
+I think it is partially related to commit 6e890c5d5021 ("vhost: use
+vhost_tasks for worker threads") and commit 1a5f8090c6de ("vhost: move
+worker thread fields to new struct"). Maybe that commits just
+highlighted the issue and it was already existing.
 
-Fixes: 5d9f4262b7ea ("tcp: add SACK compression")
-Suggested-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: fuyuanli <fuyuanli@didiglobal.com>
-Signed-off-by: Jason Xing <kerneljasonxing@gmail.com>
-Link: https://lore.kernel.org/netdev/20230529113804.GA20300@didi-ThinkCentre-M920t-N000/
----
-v3:
-1) remove the flag which is newly added in v2 patch.
-2) adjust the commit message.
+In this case I think there is a race between vhost_worker_create() and
+vhost_transport_send_pkt(). vhost_transport_send_pkt() calls
+vhost_work_queue() without holding the vhost device mutex, so it can run
+while vhost_worker_create() set dev->worker, but has not yet set
+worker->vtsk.
 
-v2:
-1) change the commit title and message
-2) reuse the delayed ack logic when handling the sack compression
-as suggested by Eric.
-3) "merge" another related patch into this one. See the second link.
----
- include/net/tcp.h    |  1 +
- net/ipv4/tcp_input.c |  2 +-
- net/ipv4/tcp_timer.c | 16 +++++++++++++---
- 3 files changed, 15 insertions(+), 4 deletions(-)
+Before commit 1a5f8090c6de ("vhost: move worker thread fields to new
+struct"), dev->worker is set when everything was ready, but maybe it was
+just a case of the instructions not being re-ordered and the problem
+could still occur.
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 18a038d16434..6e1cd583a899 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -480,6 +480,7 @@ int tcp_disconnect(struct sock *sk, int flags);
- 
- void tcp_finish_connect(struct sock *sk, struct sk_buff *skb);
- int tcp_send_rcvq(struct sock *sk, struct msghdr *msg, size_t size);
-+void tcp_sack_compress_send_ack(struct sock *sk);
- void inet_sk_rx_dst_set(struct sock *sk, const struct sk_buff *skb);
- 
- /* From syncookies.c */
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 61b6710f337a..bf8b22218dd4 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -4530,7 +4530,7 @@ static void tcp_sack_maybe_coalesce(struct tcp_sock *tp)
- 	}
- }
- 
--static void tcp_sack_compress_send_ack(struct sock *sk)
-+void tcp_sack_compress_send_ack(struct sock *sk)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index b839c2f91292..39eb947fe392 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -290,9 +290,19 @@ static int tcp_write_timeout(struct sock *sk)
- void tcp_delack_timer_handler(struct sock *sk)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
-+	struct tcp_sock *tp = tcp_sk(sk);
- 
--	if (((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN)) ||
--	    !(icsk->icsk_ack.pending & ICSK_ACK_TIMER))
-+	if ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN))
-+		return;
-+
-+	/* Handling the sack compression case */
-+	if (tp->compressed_ack) {
-+		tcp_mstamp_refresh(tp);
-+		tcp_sack_compress_send_ack(sk);
-+		return;
-+	}
-+
-+	if (!(icsk->icsk_ack.pending & ICSK_ACK_TIMER))
- 		return;
- 
- 	if (time_after(icsk->icsk_ack.timeout, jiffies)) {
-@@ -312,7 +322,7 @@ void tcp_delack_timer_handler(struct sock *sk)
- 			inet_csk_exit_pingpong_mode(sk);
- 			icsk->icsk_ack.ato      = TCP_ATO_MIN;
- 		}
--		tcp_mstamp_refresh(tcp_sk(sk));
-+		tcp_mstamp_refresh(tp);
- 		tcp_send_ack(sk);
- 		__NET_INC_STATS(sock_net(sk), LINUX_MIB_DELAYEDACKS);
- 	}
--- 
-2.17.1
+This happens because VHOST_VSOCK_SET_GUEST_CID can be called before
+VHOST_SET_OWNER and then vhost_transport_send_pkt() finds the guest's
+CID and tries to send it a packet.
+But is it correct to handle VHOST_VSOCK_SET_GUEST_CID, before
+VHOST_SET_OWNER?
+
+QEMU always calls VHOST_SET_OWNER before anything, but I don't know
+about the other VMMs.
+
+So, could it be an acceptable solution to reject
+VHOST_VSOCK_SET_GUEST_CID before VHOST_SET_OWNER?
+
+I mean somethig like this:
+
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 6578db78f0ae..33fc0805d189 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -829,7 +829,12 @@ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
+        case VHOST_VSOCK_SET_GUEST_CID:
+                if (copy_from_user(&guest_cid, argp, sizeof(guest_cid)))
+                        return -EFAULT;
+-               return vhost_vsock_set_cid(vsock, guest_cid);
++               mutex_lock(&vsock->dev.mutex);
++               r = vhost_dev_check_owner(&vsock->dev);
++               if (!r)
++                       r = vhost_vsock_set_cid(vsock, guest_cid);
++               mutex_unlock(&vsock->dev.mutex);
++               return r;
+        case VHOST_VSOCK_SET_RUNNING:
+                if (copy_from_user(&start, argp, sizeof(start)))
+                        return -EFAULT;
+
+In the documentation, we say:
+
+  /* Set current process as the (exclusive) owner of this file descriptor.  This
+   * must be called before any other vhost command.  Further calls to
+   * VHOST_OWNER_SET fail until VHOST_OWNER_RESET is called. */
+
+This should prevents the issue, but could break a wrong userspace.
+
+Others idea that I have in mind are:
+- hold vsock->dev.mutex while calling vhost_work_queue() (performance 
+  degradation?)
+- use RCU to protect dev->worker
+
+WDYT?
+
+Thanks,
+Stefano
 
 
