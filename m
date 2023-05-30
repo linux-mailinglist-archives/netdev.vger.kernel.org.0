@@ -1,168 +1,239 @@
-Return-Path: <netdev+bounces-6551-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6564-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 902C3716E38
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:57:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 2D1E4716F09
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 22:46:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 313411C20D43
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 19:57:25 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 947D71C20D48
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 20:46:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5CDCA31EE8;
-	Tue, 30 May 2023 19:57:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E9E8519933;
+	Tue, 30 May 2023 20:46:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4024E17FE5;
-	Tue, 30 May 2023 19:57:23 +0000 (UTC)
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4A9FE8;
-	Tue, 30 May 2023 12:57:21 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7A977E
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:46:42 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2077.outbound.protection.outlook.com [40.107.220.77])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 084AC8E
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 13:46:41 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VPr6d469x9TyFMAIIxz3Ot57C1ARPIG0jcglZcpIAOtE5al2F84XUha88mLRmuILSL91a0ktgGRo5LILIx7DJyIapW3rlWEBNVHzt7KIUtlzdwg/insZL8PCp4vTg8yTpuQx85VHPd0njrxb+AvhH3RUMAwa2oT3P2ubOuFtI1JWW09dnVSKn9oWRpjEM+g3kgu7u8xY2Tu8+VmXRcFHZvUOF5seWf8vleL4ymCpcVcKPp4fqHfjhUnWHz6iinMKuwjY2wNZXNAcr5cQlezFWoxkeJQtJDAu9ccZ8QLuG2TeHVHg8sMuIc8wc0g0U/KEb00LKig3JPpTA+zPaiD+/A==
+ b=SR8NWweULY19hW4wk7Gl51kSMnem9DZXRBytz0i3pK9L3yG/15GQgfNS5rSoN1Aiim6X0vHmvwu72D7zT+YoKWOVnlRhkYjBhTgZ2AzvkSLshQg81QE2EEdszinKoEiZfrdXuTopFTtJbXJnre8SHScO1V3vzswwtOpA+TJlmrbOfgnviDlnXReJYRDZHMUL5dfskzWniuBKcWo37kOeA6wJ4PxyMkGJigjyfNHqI7Sy4WDrcbJ6/fuC3e9OAMkgP2uIYxeWYe2oaQ0PREJwkaEZLc+GZx0lJFToe+4VmMzwDX7oXKnmZAsF/jSKah827wAV12OBGc2TD9kPsU9flQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dqjl0lDnTlFvG+HPBFEWc2VkR8nthr5Z1F8d/jdNxC4=;
- b=VTlsE4F9UHNHxzZtygvXzkXI/qtsEXSlrgOuKH0mFM0OxG/o2KQGqu4WUV0RPMVmvwwhycWsR74wkSaS7AaheYnYeZcYi6d0jLpkUDQyepD/ukhsKb4ORc8IrEqo54iWGbiM4FEKfvA0TepqVamFki/woz8EDXAYxGa8zbgpO+7fVr1e5GNZuNsLNKgvqrr5HiJVuqGSysJpTKBqWEYvZZK5Lm63+U7miIS6O48AgLnxHuo8KvXyXVztbJpBbghi/2cZRDXd7ZrelpgPNPaJ8BPa/evpjukc3WwFz4a1qSGZHikmLfarEopL+9hITXWQnSk5RR/M/QdLO8r+m0lnoQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ bh=/DIZe+d50VHtD8FTsABS+UvBvJy+jh/vHi4OgldRBCg=;
+ b=nAJ9qa+RAiNV7TO4LjZTPf0TO4eXC0IKEyAWW+Pmj8TaTfWkNuQH/spx4o0wLrd8BmBZLoXeaTt0hPV6hoReAy5JjSiBlXOvj0hzHxFFOfDAYQoeefLahNNDuveXt4sFuKFsIyo4bt9XJybFSB/DBnjO1s5eOdkbFdk5eHGtLCvrWQVqXEIB/AmhVjogfkRm4NJYd5HB6eCgKTO2X3mFI4in8eiOjEOL5pz1mVvY15lXxjb0tYPkLZ9y6kaE85xj2TMtbgLlFKKlx70ApoHtGqf+xIlWeDD71UQKLM55THRzFwc89O8fh0G7KIElwu8a5SC4Xzc1OPCwAVj9jw8t3Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=microchip.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dqjl0lDnTlFvG+HPBFEWc2VkR8nthr5Z1F8d/jdNxC4=;
- b=MxGgmZrmfm3ojcs/VxjY5Fi/LF80INde7RqtzpeoDC9jQgeA8CCeSsK51EWMUBDzzD8hCLD5kun0+wi9AnrrJMSEUbstTbGImGGCAy2q209PsVNPMCSBCJ+RFV5zecgXzlN0G8CYsRMDlVhybIF4dBO+wwZupYlFIdlclEkYQss=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by LV3PR13MB6335.namprd13.prod.outlook.com (2603:10b6:408:1a6::14) with
+ bh=/DIZe+d50VHtD8FTsABS+UvBvJy+jh/vHi4OgldRBCg=;
+ b=ggQmrDUD8KEl3OHjsTD/jylO7zbqX+vynaXV5VEzqT0yDGOUgU+x/VJoLA7nnVu4tLNFl6e9APJzHM0+pgeTKU9e0NH+H/QsSa4Tqf+/sT+nwtGma3Si1HBl5cPP0Yo8KMmIdc4H8NmhDybwDQvGWeXhf0XamV/Mp26OoVTicG3brN2iDFAYpGDQ7zYsxs/K7goHDvxH4t+F9g2li2/N2WFpJHyE0WW/qLS3bjWmoTnGDhARtOgTiklOEaycDpzqaKYE80ZRzbcTpvzHUXRNmNdBV46/S5cDOrquxShGCGLdFqrYqaRlgekTIVZPu0iJJKargOk0eoC08jA+H5TXow==
+Received: from BLAPR03CA0064.namprd03.prod.outlook.com (2603:10b6:208:329::9)
+ by BL0PR12MB4948.namprd12.prod.outlook.com (2603:10b6:208:1cc::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.21; Tue, 30 May
- 2023 19:57:19 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6433.022; Tue, 30 May 2023
- 19:57:19 +0000
-Date: Tue, 30 May 2023 21:57:13 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc: bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-	andrii@kernel.org, netdev@vger.kernel.org,
-	magnus.karlsson@intel.com, bjorn@kernel.org,
-	tirthendu.sarkar@intel.com
-Subject: Re: [PATCH v2 bpf-next 13/22] xsk: report ZC multi-buffer capability
- via xdp_features
-Message-ID: <ZHZVGUJ3ROybmBJj@corigine.com>
-References: <20230529155024.222213-1-maciej.fijalkowski@intel.com>
- <20230529155024.222213-14-maciej.fijalkowski@intel.com>
- <ZHXkQX0uSh8tDFTO@corigine.com>
- <ZHXsmDhfw9hxjUCe@boxer>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZHXsmDhfw9hxjUCe@boxer>
-X-ClientProxiedBy: AM4PR0202CA0007.eurprd02.prod.outlook.com
- (2603:10a6:200:89::17) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.22; Tue, 30 May
+ 2023 20:46:38 +0000
+Received: from BL02EPF000145BB.namprd05.prod.outlook.com
+ (2603:10b6:208:329:cafe::24) by BLAPR03CA0064.outlook.office365.com
+ (2603:10b6:208:329::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23 via Frontend
+ Transport; Tue, 30 May 2023 20:46:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BL02EPF000145BB.mail.protection.outlook.com (10.167.241.211) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6455.18 via Frontend Transport; Tue, 30 May 2023 20:46:38 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 30 May 2023
+ 13:46:20 -0700
+Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 30 May
+ 2023 13:46:18 -0700
+References: <20230510-dcb-rewr-v2-0-9f38e688117e@microchip.com>
+ <20230510-dcb-rewr-v2-5-9f38e688117e@microchip.com>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Petr Machata <petrm@nvidia.com>
+To: Daniel Machon <daniel.machon@microchip.com>
+CC: <netdev@vger.kernel.org>, <dsahern@kernel.org>,
+	<stephen@networkplumber.org>, <petrm@nvidia.com>,
+	<UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH iproute2-next v2 5/8] dcb: rewr: add new dcb-rewr
+ subcommand
+Date: Tue, 30 May 2023 21:58:33 +0200
+In-Reply-To: <20230510-dcb-rewr-v2-5-9f38e688117e@microchip.com>
+Message-ID: <87sfbd4kfb.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|LV3PR13MB6335:EE_
-X-MS-Office365-Filtering-Correlation-Id: c3978d25-2347-430c-d14f-08db6148136a
+X-MS-TrafficTypeDiagnostic: BL02EPF000145BB:EE_|BL0PR12MB4948:EE_
+X-MS-Office365-Filtering-Correlation-Id: d79ca250-4bc9-48cb-0be9-08db614ef755
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	ddbSc+8Lb9OzZXyC81Mpw6ZS48qCPucLISGWfCB2oq512Sw9w8qp/37crPPNMdllalRfN63RKwf5AEGWLwmTNT9lg7pvxTylYCDAF+pMdSpaH4RWPDPDJ96FLf5Fnzj2RFH4LEMcMHi1WI26KBzbNHrOhoUyLBNSs0Ax38ub8b8jUe7LZYxRIZ9lCrOeWapEmDOqJYL4sIwdPAqsgwjtvUbWQ31Eq8wx9zixjQkTa62zoJBnT+U4+YLMy7Xjt0XwZbFO0LhSuV6nbjpqNpb0GiMfL8VWj67OP1kV6ap1dGAkIh6Jf97A56EIPlcw99kKaP6htO1zmb/vfHqTsQivO87J/Yfcd0aUKnlkxrzSv6pgPbitXSR067jOnCoFDaEeM2G1Mm7hNbel8Lpo2hdIdNw6WJ4Bty4y0jL30u3kFML+8wyCDprVqTqtt8r7aj+zpz4OAOWXb0ugJ1yTtFNWXiwbdMQ9EtpD4Dm2cMxLTC20vlP+Avwl030smw7+axVDUUfawxUXwQmM2/hahr8q88IDs6kglKHn5y71x8D3yrf3hNCl69RYNom2FMG3cRcRcJUf3ARAKzCvdzFRtpyJiUPxve+gpsoKKwOW7h09geE=
+	6IbGVVwg6G8zOC77KOgCkALU37qzTa+cOnxVv42VXLwxOXBinsNKW7E/kxTVTBRO1C1sjOsaCor72k5xBQMeRh5L1cvV+c16Cgof6pX3BpAjfg21kOPj26DdoELJ1FhNmuP2DtXhXayDXqhoL52GRJfpBpBRojAAxOTnFJZSXBVvYnmrcHs3Y1K1xPuh17xS7EFsZJN5TQUtUn2OVQaXpqjpCH1gz1eEW8clRRTqt4cvAGraSTxDaCaGMJV0hstOykyhGXI528JtXDJhJiTLyx5AybFtYwSwAtr1GRK8LwWdEV/5PLhbb/34adf0yMOrpbEdAfop9BWQQyYsk/AeuELqzdrdxkJu1Y0KuvkEv6hhKNduWhW35cPiPy2CAYWqWxa6qmKFLpvGr9L7+JRg3DsCbVoJaTTn7gGi3+Hw/yYEjhI1LE4+avFaeTldGUBnrBKC2cMwsD+lK82dmts0w3X+31eOGTPFaHpwrJY1HINA9RFY6Wh8ODd9Eq8FuX2erVEU85I0+fyKO4GVb8FgkuTc5SEha8c603MAcDBVJdyLzCywRDzjg0lHPt1o4aMzw7RDGsLhhnbtHpqiOgiglNHyDHOzF43KspQ7/mmZHmZ0YLOQgw4QD8vip1/rcxaO95G8MWYYGtIkGSdYlzBAsC9bUBiVuEUAN4PHl8/u+4kWYroHmykMHDzB/QMikAGqBzJe5xIvE15Pb14g2ktGeEbXmeDSOd7h0/yqg+DALH6rCauHYNiFSVBtL+u/jkA7
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(39840400004)(346002)(366004)(136003)(396003)(451199021)(6486002)(41300700001)(6666004)(316002)(83380400001)(86362001)(186003)(36756003)(2906002)(6512007)(6506007)(44832011)(8676002)(5660300002)(8936002)(2616005)(478600001)(38100700002)(6916009)(4326008)(66946007)(66556008)(66476007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?k7zxZV7INlOV6W64S7PBiwA9rRi2rGlMscoKCzxhbLSw2CpoHj1v6i7y27ws?=
- =?us-ascii?Q?NP8X6TvMHBK1wOTmcOWyqlGv/82UHL+OjSSjXEMhYDgnjmnZ5b10KxBD3pKs?=
- =?us-ascii?Q?8kisIUGFzEGRCcMtvDO4awF5vTCgnpoZtVNYlVnWSZP8nQY7EF19Y49jFYyQ?=
- =?us-ascii?Q?vUTFQwWkjNfes4M8RPlG3WyIcq+304gGlZZMl7GvsEPsyfCwZW1uJyvFNext?=
- =?us-ascii?Q?GCMGAn8fjCuh7YX2gh17cgSy9UrOhm02tuLNUrWmxO+pKDw5XN+pkzht6j/P?=
- =?us-ascii?Q?1vPJo5COBSUQteosyBoqkxXZSiY8R+33wXZHNl0ygLhMCx079XOjDW3lqtjG?=
- =?us-ascii?Q?2MgiHKDAh8hNKXhYQ8HkWpuaaL4yTM6UOmGP4OhGYzKat6Kd/Djcyti3sbnY?=
- =?us-ascii?Q?lZ/X8Jdd469z/GKnE2yVLDczCSBTJbD6myEZCpUw73N+TbLKa2rNNfY7aOJ0?=
- =?us-ascii?Q?+uCW16KPgCq8BYYVc64FwTgG4SmjlD/1ZDXm6K+NMVcPrpFjrPCq+j3LShGW?=
- =?us-ascii?Q?Abgdu8rJ0ZWrWYZZIBjy8kF9TdNO+Maczq87x0gJ6aJWFJhAD4lGkuptee1d?=
- =?us-ascii?Q?eJnOh8QdNljrq0eN5ZyXxisNYsc0EnS0J3QcuPBKKWZk59HMwwmRa1fIqeJ/?=
- =?us-ascii?Q?rcT14T+jP8kMI2wdoWO/YqpRRQxyj7D0w6bUCUlgeKA5wQUNg6i2EHQVahre?=
- =?us-ascii?Q?zrBdD8dzWSIpKXyjxGq5ApB5ygDwJM6/yBsWGxwu6q7Qwhc1gqjciWAFqIeu?=
- =?us-ascii?Q?8CQ99v14zwdSYJrPF4G9XUaxXy/WZzxiyGQywr79OKLOGSxC3F0yAyOPQLdd?=
- =?us-ascii?Q?qIjPhsULdnokezzrHVOyFUunSVa3wy48eYbiZI6bFHkUv/tdRCt78/kxubN6?=
- =?us-ascii?Q?YMh6oWoBipuEC/mf0Z0s4MwqezziptpkZb2DzoodaLDhiPJOn5b1LTfd7kdb?=
- =?us-ascii?Q?NpVVaOAY/ijBU075rHlrzipOY7Sywxnzyjr8bOvrf95E1tL1Iabu7S0Yxwgy?=
- =?us-ascii?Q?J1pNgVYoxOwOCcvKczgsMoYkN+uPM+JoXNnJyA+7ORj50m1mQzarThZf2yf1?=
- =?us-ascii?Q?KG1is6NPr2DlVRyiqnm/Mpqon1LDcqL+weszZQfO5xZ4aP2OCgWRB/sELehe?=
- =?us-ascii?Q?niRmtVtEguxnCkX7wTZRz/JOuftKYZRsHTtaEesOe2e6IO20dnNzM/ArpdGU?=
- =?us-ascii?Q?KhXf+K+2oPc0jj5ooyxlhoIEzJLL/w5L8lhpVussBRrVYJ/3WcPU6x167xTx?=
- =?us-ascii?Q?WCvWdVqFY6vCik+aBLHXGQXx3qfaHGgWWMab6ChIc9V60rkH5wPvxRrWOHq+?=
- =?us-ascii?Q?oec9C28vG3UI0ra20ZHoM0puDM8IUBVja5pnsxo8EAS54xnps1oeMp0d4bux?=
- =?us-ascii?Q?2+5Jlr8OFa8neqwKD8Qh4vJMvzyoxB+nsJ2UEjzAX9Mqs+w2hgmyN0ARSFPY?=
- =?us-ascii?Q?G9oYnwNAjFBAXkT7ioxWBRBU83/G58abJraq+0G56zlC7TsSXI/RRuTJVAvV?=
- =?us-ascii?Q?nm9mtDGRb04ZjJqFdIWUexwtOuWFMS/yh8N1n65OgEoVYlBLBBMWCRlGaS1F?=
- =?us-ascii?Q?4uPRM9bqKc2dyvCDk5wfBsbRPRnfAPQbWqqxBFTbGjlN0Z4wHn9wJFNnX0S6?=
- =?us-ascii?Q?GhKlK7o/F4zHrD8CF7JhkNXs0UzMpBMgJX1rrtdn+l8xffNvavhTFoUh2v11?=
- =?us-ascii?Q?6oU9Fw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3978d25-2347-430c-d14f-08db6148136a
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 19:57:19.6311
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(39860400002)(376002)(346002)(451199021)(36840700001)(46966006)(40470700004)(316002)(356005)(83380400001)(70206006)(70586007)(36860700001)(2906002)(54906003)(26005)(6916009)(7636003)(4326008)(82740400003)(86362001)(426003)(47076005)(336012)(2616005)(478600001)(5660300002)(40460700003)(186003)(6666004)(16526019)(41300700001)(40480700001)(36756003)(8936002)(8676002)(82310400005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 20:46:38.5915
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Vr6j51PnOWMydt8uvOeLOz+LVZIc7B5XZPCcWqd4fvW2j4iPR79Lc7oCov/Uk93nQvu9PYPcYsGItj0Z6OrmSxQgTaYPsjRWfXN5mx3EL5c=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR13MB6335
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: d79ca250-4bc9-48cb-0be9-08db614ef755
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF000145BB.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4948
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 30, 2023 at 02:31:20PM +0200, Maciej Fijalkowski wrote:
-> On Tue, May 30, 2023 at 01:55:45PM +0200, Simon Horman wrote:
-> > On Mon, May 29, 2023 at 05:50:15PM +0200, Maciej Fijalkowski wrote:
-> > > Introduce new xdp_feature NETDEV_XDP_ACT_NDO_ZC_SG that will be used to
-> > > find out if user space that wants to do ZC multi-buffer will be able to
-> > > do so against underlying ZC driver.
-> > > 
-> > > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > > ---
-> > >  include/uapi/linux/netdev.h | 4 ++--
-> > >  net/xdp/xsk_buff_pool.c     | 6 ++++++
-> > >  2 files changed, 8 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/include/uapi/linux/netdev.h b/include/uapi/linux/netdev.h
-> > > index 639524b59930..bfca07224f7b 100644
-> > > --- a/include/uapi/linux/netdev.h
-> > > +++ b/include/uapi/linux/netdev.h
-> > > @@ -33,8 +33,8 @@ enum netdev_xdp_act {
-> > >  	NETDEV_XDP_ACT_HW_OFFLOAD = 16,
-> > >  	NETDEV_XDP_ACT_RX_SG = 32,
-> > >  	NETDEV_XDP_ACT_NDO_XMIT_SG = 64,
-> > > -
-> > > -	NETDEV_XDP_ACT_MASK = 127,
-> > > +	NETDEV_XDP_ACT_NDO_ZC_SG = 128,
-> > 
-> > Hi Maciej,
-> > 
-> > Please consider adding NETDEV_XDP_ACT_NDO_ZC_SG to the Kernel doc
-> > a just above netdev_xdp_act.
-> 
-> right, my bad. i'll do this in next rev but i'd like to gather more
-> feedback from people. thanks once again for spotting an issue.
 
-Thanks, good plan.
+Daniel Machon <daniel.machon@microchip.com> writes:
+
+> Add a new subcommand 'rewr' for configuring the in-kernel DCB rewrite
+> table. The rewr-table of the kernel is similar to the APP-table, and so
+> is this new subcommand. Therefore, much of the existing bookkeeping code
+> from dcb-app, can be reused in the dcb-rewr implementation.
+>
+> Initially, only support for configuring PCP and DSCP-based rewrite has
+> been added.
+>
+> Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+
+Looks good overall, barring the comment about dcb_app_parse_mapping_cb()
+that I made in the other patch, and a handful of nits below.
+
+> ---
+>  dcb/Makefile   |   3 +-
+>  dcb/dcb.c      |   4 +-
+>  dcb/dcb.h      |  32 ++++++
+>  dcb/dcb_app.c  |  49 ++++----
+>  dcb/dcb_rewr.c | 355 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  5 files changed, 416 insertions(+), 27 deletions(-)
+
+> diff --git a/dcb/dcb.h b/dcb/dcb.h
+> index b3bc30cd02c5..092dc90e8358 100644
+> --- a/dcb/dcb.h
+> +++ b/dcb/dcb.h
+> @@ -54,6 +54,10 @@ void dcb_print_array_on_off(const __u8 *array, size_t size);
+>  void dcb_print_array_kw(const __u8 *array, size_t array_size,
+>  			const char *const kw[], size_t kw_size);
+>  
+> +/* dcp_rewr.c */
+> +
+> +int dcb_cmd_rewr(struct dcb *dcb, int argc, char **argv);
+> +
+>  /* dcb_app.c */
+>  
+>  struct dcb_app_table {
+> @@ -70,8 +74,29 @@ struct dcb_app_parse_mapping {
+>  	int err;
+>  };
+>  
+> +#define DCB_APP_PCP_MAX 15
+
+This should be removed from dcb_app.c as well.
+
+> +#define DCB_APP_DSCP_MAX 63
+
+DCB_APP_DSCP_MAX should be introduced in a separate patch together with
+the s/63/DCB_APP_DSCP_MAX/ of the existing code, instead of including it
+all here. It's a concern separate from the main topic of the patch.
+
+> +
+>  int dcb_cmd_app(struct dcb *dcb, int argc, char **argv);
+>  
+> +int dcb_app_get(struct dcb *dcb, const char *dev, struct dcb_app_table *tab);
+> +int dcb_app_add_del(struct dcb *dcb, const char *dev, int command,
+> +		    const struct dcb_app_table *tab,
+> +		    bool (*filter)(const struct dcb_app *));
+> +
+> +bool dcb_app_is_dscp(const struct dcb_app *app);
+> +bool dcb_app_is_pcp(const struct dcb_app *app);
+> +
+> +int dcb_app_print_pid_dscp(__u16 protocol);
+> +int dcb_app_print_pid_pcp(__u16 protocol);
+> +int dcb_app_print_pid_dec(__u16 protocol);
+> +void dcb_app_print_filtered(const struct dcb_app_table *tab,
+> +			    bool (*filter)(const struct dcb_app *),
+> +			    void (*print_pid_prio)(int (*print_pid)(__u16),
+> +						   const struct dcb_app *),
+> +			    int (*print_pid)(__u16 protocol),
+> +			    const char *json_name, const char *fp_name);
+> +
+>  enum ieee_attrs_app dcb_app_attr_type_get(__u8 selector);
+>  bool dcb_app_attr_type_validate(enum ieee_attrs_app type);
+>  bool dcb_app_selector_validate(enum ieee_attrs_app type, __u8 selector);
+> @@ -80,11 +105,18 @@ bool dcb_app_pid_eq(const struct dcb_app *aa, const struct dcb_app *ab);
+>  bool dcb_app_prio_eq(const struct dcb_app *aa, const struct dcb_app *ab);
+>  
+>  int dcb_app_table_push(struct dcb_app_table *tab, struct dcb_app *app);
+> +int dcb_app_table_copy(struct dcb_app_table *a, const struct dcb_app_table *b);
+> +void dcb_app_table_sort(struct dcb_app_table *tab);
+> +void dcb_app_table_fini(struct dcb_app_table *tab);
+> +void dcb_app_table_remove_existing(struct dcb_app_table *a,
+> +				   const struct dcb_app_table *b);
+>  void dcb_app_table_remove_replaced(struct dcb_app_table *a,
+>  				   const struct dcb_app_table *b,
+>  				   bool (*key_eq)(const struct dcb_app *aa,
+>  						  const struct dcb_app *ab));
+>  
+> +int dcb_app_parse_pcp(__u32 *key, const char *arg);
+> +int dcb_app_parse_dscp(__u32 *key, const char *arg);
+>  void dcb_app_parse_mapping_cb(__u32 key, __u64 value, void *data);
+>  
+>  /* dcb_apptrust.c */
+> diff --git a/dcb/dcb_app.c b/dcb/dcb_app.c
+> index 97cba658aa6b..3cb1bb302ed6 100644
+> --- a/dcb/dcb_app.c
+> +++ b/dcb/dcb_app.c
+
+> @@ -643,9 +642,9 @@ static int dcb_app_add_del_cb(struct dcb *dcb, struct nlmsghdr *nlh, void *data)
+
+> +static int dcb_cmd_rewr_replace(struct dcb *dcb, const char *dev, int argc,
+> +				char **argv)
+> +{
+
+[...]
+
+> +}
+> +
+> +
+
+Two blank lines.
+
+> +static int dcb_cmd_rewr_show(struct dcb *dcb, const char *dev, int argc,
+> +			     char **argv)
+> +{
 
