@@ -1,101 +1,72 @@
-Return-Path: <netdev+bounces-6226-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6227-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A383971549F
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 06:54:50 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id CB4977154AA
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 06:58:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2CB631C20B15
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 04:54:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8740A281021
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 04:58:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A031F17C0;
-	Tue, 30 May 2023 04:54:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B22041C08;
+	Tue, 30 May 2023 04:58:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89D617E9;
-	Tue, 30 May 2023 04:54:45 +0000 (UTC)
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76441E3;
-	Mon, 29 May 2023 21:54:43 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-	by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34U24C7N010022;
-	Mon, 29 May 2023 21:54:22 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=3C7rqfTKs3OhE/59qADlZbdCdA2iSx6m3r61x8RXtlM=;
- b=BzJ+K6AX7uRNYwLgkl1/kcp2g8XshZ9uWZrKPUrC+1zOYgBcTIxDybmctApvy0iV8UIh
- /jSnP0c1cZLV2399AfY6Q4kxXB2POUbgf1R2vnIgvrBnB86WcbvEnxxLDRupwj1Rfk/s
- 78lq0jd9u7Dkw7SoXvL0CzEsxa3kmv2TPpABGAgHzVGH72DtJqrnrKruDeXHMHN57k71
- drhM2IGou0pw0tY8PEiIs01a89aTKWT3AW1UweXvwn3m593kRLDpgNyyCmgc38YHByuQ
- M91kdKjwajz4392oOuEcV7rSQMa/Ggx7MnmACyU+6cCb3Xqf7l6VPow1CNk201N6e3Q6 xw== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-	by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3quhcm70u9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-	Mon, 29 May 2023 21:54:21 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Mon, 29 May
- 2023 21:54:19 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Mon, 29 May 2023 21:54:19 -0700
-Received: from localhost.localdomain (unknown [10.28.36.165])
-	by maili.marvell.com (Postfix) with ESMTP id 542A03F7058;
-	Mon, 29 May 2023 21:54:14 -0700 (PDT)
-From: Ratheesh Kannoth <rkannoth@marvell.com>
-To: <starmiku1207184332@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <john.fastabend@gmail.com>, <andrii@kernel.org>,
-        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
-        <kpsingh@kernel.org>, <sdf@google.com>, <haoluo@google.com>,
-        <jolsa@kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <hawk@kernel.org>
-CC: <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH] kernel: bpf: syscall: fix a possible sleep-in-atomic bug in __bpf_prog_put()
-Date: Tue, 30 May 2023 10:24:09 +0530
-Message-ID: <20230530045409.440958-1-rkannoth@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230529155327.585056-1-starmiku1207184332@gmail.com>
-References: <20230529155327.585056-1-starmiku1207184332@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 513587E9
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 04:58:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 886ABC433EF;
+	Tue, 30 May 2023 04:58:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685422684;
+	bh=ZGGpOq+uObnkcEWx80C+FBZ6VsPfRaAQ73HUlsFkY1A=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=VBswMtimzeTP8Fd10/OL6GTPRpKzRUnATE3+6olxdkhiPtO4nEC9ZDt7lzA5AySHs
+	 iHLgVkrgi7bTNkVZWbrwoYBpiS69N1wuwW7ribHBV01G1uBWfAj2qZ5rrGqLHuNLob
+	 CHcPJ/glWbgAxnS0fATEt+5kvIJex/91STY53qsgo6aiYKRjI1zl2Zn/Iqd6j8OMMw
+	 GZsQ0gyhNF0ANL7GLCgRhPREG5+mUrfo5A47URyejc2ogEfejt2pgx3p4pQkHoj/gS
+	 /99cUDEnL5HZ2l29iJO5uJHB/G2CwvsfFZlyUAzbiFMtE3+qjR2jK7NxcfvMN6NcLv
+	 J0HjjvsOykriw==
+Date: Mon, 29 May 2023 21:58:02 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>
+Cc: Dan Carpenter <dan.carpenter@linaro.org>, Oleksij Rempel
+ <linux@rempel-privat.de>, Heiner Kallweit <hkallweit1@gmail.com>, "David S.
+ Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Paolo
+ Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+ kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] net: phy: fix a signedness bug in genphy_loopback()
+Message-ID: <20230529215802.70710036@kernel.org>
+In-Reply-To: <d7bb312e-2428-45f6-b9b3-59ba544e8b94@kili.mountain>
+References: <d7bb312e-2428-45f6-b9b3-59ba544e8b94@kili.mountain>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: y_V4fOJnu-uHhzWQxJt3PXDizA7mUnaa
-X-Proofpoint-ORIG-GUID: y_V4fOJnu-uHhzWQxJt3PXDizA7mUnaa
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-05-30_02,2023-05-29_02,2023-05-22_02
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: starmiku1207184332@gmail.com
+On Fri, 26 May 2023 14:45:54 +0300 Dan Carpenter wrote:
+> The "val" variable is used to store error codes from phy_read() so
+> it needs to be signed for the error handling to work as expected.
+> 
+> Fixes: 014068dcb5b1 ("net: phy: genphy_loopback: add link speed configuration")
+> Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
 
->
->+			// safely calling vfree() under any context
-do we need this comment as code is self explanatory.
+Is it going to be obvious to PHY-savvy folks that the val passed to
+phy_read_poll_timeout() must be an int? Is it a very common pattern?
+My outsider intuition is that since regs are 16b, u16 is reasonable,
+and more people may make the same mistake. Therefore we should try to
+fix phy_read_poll_timeout() instead to use a local variable like it
+does for __ret. 
 
-> 			INIT_WORK(&aux->work, bpf_prog_put_deferred);
-> 			schedule_work(&aux->work);
-> 		} else {
->+			// depending on the vfree_atomic() branch in vfree()
-same as above.
+Weaker version would be to add a compile time check to ensure val 
+is signed (assert(typeof(val)~0ULL < 0) or such?).
 
-> 			bpf_prog_put_deferred(&aux->work);
-> 		}
-> 	}
->--
->2.25.1
+Opinions?
 
