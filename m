@@ -1,276 +1,237 @@
-Return-Path: <netdev+bounces-6483-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6484-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 58316716869
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 18:01:02 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id D01C571686D
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 18:01:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0B555281229
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 16:01:01 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 84CB528122B
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 16:01:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4472827219;
-	Tue, 30 May 2023 16:00:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E82B2721E;
+	Tue, 30 May 2023 16:01:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3323F17AD4
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 16:00:59 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F067F1
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 09:00:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685462454;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=cpizXiy/LDrr+SJt8KqJ4lnndh1NLm4zehYJ/eyPviI=;
-	b=Xprwe/lHErze8LwxPkJ6hXFauQEID2ANHMTC7CQn8hnShGhS9DX2KFw/9xhdC3HqwfHcNG
-	uiAiDlo3I3ZLa4iezFmUswd3w+cn4IKy+VU0lHElX9YFykB8Sy8SfE0SnmOItlkbsVO42L
-	ruTmr6xZ+ADDOZcoObX2Sq0YT5CjI3Y=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-378-4RIpW0QDPn6o1iDoJ8pFug-1; Tue, 30 May 2023 12:00:52 -0400
-X-MC-Unique: 4RIpW0QDPn6o1iDoJ8pFug-1
-Received: by mail-lj1-f199.google.com with SMTP id 38308e7fff4ca-2af570dc8daso20791171fa.2
-        for <netdev@vger.kernel.org>; Tue, 30 May 2023 09:00:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685462450; x=1688054450;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cpizXiy/LDrr+SJt8KqJ4lnndh1NLm4zehYJ/eyPviI=;
-        b=cf4RmzKFdqAZxG0PFx9PyyYsR+rJWrc4Dzo/NkaJRVpcVmJoURtMwp+/TDF+lAM0Qk
-         LwBxzBZ02GdQieooUBaKqwnqj3KqPvnmOSQOTVQ60yan11nW9wJNqDZiHj/Z1OgUbaJr
-         k5LzqNIozwutYc+eZAVlNq9ChKfcR/Tm0ED9mh5q2tEtij0yk/ESOQwySk4RoNr7A/Mx
-         531L0AVSsriPbaohSFrovW02RJ8oW90agFB+AXDhcjTHqXNxFquorWAg8Xi7xOrZpXKb
-         jyfJng5bQ9A7EgW1MnlkgMO3GJkMOno+acHBOuZZQWno8Bs7CXPvRK0LbZWKSy5u3VDn
-         kMHg==
-X-Gm-Message-State: AC+VfDzIdrPUAoSZyXrkwd0A+To+SFCVXIiiNDwO1gS2jPoShqRi5MOz
-	vtFhlc5YvTXhYOsVKY00E/S5lv1LNq6PXz0g3cmDlecEr7hDrW+pXZb1sRAIVETYY6zRxbBTHtd
-	G3m4rl4NmArNqQhJr
-X-Received: by 2002:a2e:2e08:0:b0:2ac:8c5e:e151 with SMTP id u8-20020a2e2e08000000b002ac8c5ee151mr1108261lju.31.1685462450415;
-        Tue, 30 May 2023 09:00:50 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ65CUAQ0psNpySoTjwhH9D51FR0/IOamyhQpQTFmaHfXN81xSEWPOXkE63QmqLY9ZD61r047Q==
-X-Received: by 2002:a2e:2e08:0:b0:2ac:8c5e:e151 with SMTP id u8-20020a2e2e08000000b002ac8c5ee151mr1108234lju.31.1685462449966;
-        Tue, 30 May 2023 09:00:49 -0700 (PDT)
-Received: from sgarzare-redhat (host-87-12-25-16.business.telecomitalia.it. [87.12.25.16])
-        by smtp.gmail.com with ESMTPSA id j13-20020a170906474d00b0096a5d341b50sm7520587ejs.111.2023.05.30.09.00.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 May 2023 09:00:49 -0700 (PDT)
-Date: Tue, 30 May 2023 18:00:47 +0200
-From: Stefano Garzarella <sgarzare@redhat.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>, 
-	Mike Christie <michael.christie@oracle.com>
-Cc: syzbot <syzbot+d0d442c22fa8db45ff0e@syzkaller.appspotmail.com>, 
-	jasowang@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com, 
-	virtualization@lists.linux-foundation.org, stefanha@redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69D8917AD4
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 16:01:28 +0000 (UTC)
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99DF7113;
+	Tue, 30 May 2023 09:01:23 -0700 (PDT)
+Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34UE44YP002515;
+	Tue, 30 May 2023 16:01:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : from : to : cc : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2023-03-30;
+ bh=Z9dAWeXey5k2g7fk467jgHOt+40YfVaea+33ukz1+GE=;
+ b=RyoTbEIug+UXEZK/RzOG8+fyvsTo9H1+Qc8kPQ3XKi8nrzZAjrNWx1l9Pb6dpT0KBq2j
+ 7XXDkt3VT7aAVNn6yvhR0eUJiaBf9sFtm/UoeZR/K8TSdeSJAfq2S8jZ0CZtgGimVoPI
+ w5eGRG1XcZn7tdssfDoTpHeM0vJanz81Ixa/SSou0YOXxF+cqaHpcDb1FMTsBLPswOm1
+ ODrrUtuk5DGZSO/+cZ1/1N5oCjG/U7woXGJTbQDFcg747/VCJigd5v8pAkjC7gV3nY85
+ tUBEojm+fF7bWaqLadw9UtCpGZsr3uiAcSp7t3IQWnXMl2u9KgJxkw7JzJBScnFIkSxT dQ== 
+Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qvhd9u77c-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 30 May 2023 16:01:19 +0000
+Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 34UEblJC019734;
+	Tue, 30 May 2023 16:01:18 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2169.outbound.protection.outlook.com [104.47.58.169])
+	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3qu8a4b1na-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 30 May 2023 16:01:17 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LvU47XtwZe3Z+60Lw0MKz1la2Q7zRish+N7rdwrPT2Rphc4hNavWBO2kE5ToK7qJoaglUKjh+oi9AhptRcM5tJloxOmlXhCB6XzRcmPGmnGEra3EdCY0yGItXYlNm75WNBE82MPjlmgSsgJS2fkbqUfXc5gDqfoBh1wH99fVqDEMqMV3iGxBI41zqEESpeby9kaSYTCmKEgFAwcBZQAhAfB2qo5lrJohJcAE97s9Wyqd4uOuuKIeF0B1T6kCGiHwC7LRY0w9JImN8/Kt/TMl4/t0J4AY0s7mRqx8Eepg/gDDxek85ghnbQbV+y0+E3S1eDC6c6fLGKLyC0C06oIq3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Z9dAWeXey5k2g7fk467jgHOt+40YfVaea+33ukz1+GE=;
+ b=UQLJ+RguSDowI3Ikm9Bt+1UoLZIn2V+6sg8H2G4u4yH0qnOEp9sEI6S6za9/5zpzQJlDm4TyMTZGrODgZ94STarzcn0vaDK0Z8LhnhErHAe+cr7vVypJYxqpbuHrRgp+4jkhRLIPqoqNkYoigVDbbvhmj1/WhdVqTYLLK/VKKFwT2tiq8OsM26yS2eovi4a5os5OKcU67yAE6GF882DoovZhxNa8jGBg2SThd26ZqoxIKZ7N58998o3xiT3G4sAevJuO0bF4p26k/T86dEHKu7cUn6RcdTix32rGbd7Xuw5aeKaAd61lOGInWPneh8qR8qic9qqEgrC4+4DR+ENkkA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Z9dAWeXey5k2g7fk467jgHOt+40YfVaea+33ukz1+GE=;
+ b=CDTxh0gkcGHHHpzLyMEwJYMcrcZJQNp+2JwQ79saW2AAZtxNjmrZhk8unPkbmiTZ5O8uxkTLTjfSI1XXKylumuAO4tw3gzFyRr6BnWo6SRRHiFTLxjmC5PZm7G+c5PXUFVqafVkLZU91vQy9w0+pOd9Ngrp+A/cGJntDoTkIEsc=
+Received: from CY8PR10MB7243.namprd10.prod.outlook.com (2603:10b6:930:7c::10)
+ by SJ2PR10MB7826.namprd10.prod.outlook.com (2603:10b6:a03:56b::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.22; Tue, 30 May
+ 2023 16:01:14 +0000
+Received: from CY8PR10MB7243.namprd10.prod.outlook.com
+ ([fe80::13d6:c3f3:2447:6559]) by CY8PR10MB7243.namprd10.prod.outlook.com
+ ([fe80::13d6:c3f3:2447:6559%5]) with mapi id 15.20.6433.022; Tue, 30 May 2023
+ 16:01:14 +0000
+Message-ID: <c87f0768-027b-c192-1baf-05273aac382b@oracle.com>
+Date: Tue, 30 May 2023 11:01:11 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
 Subject: Re: [syzbot] [kvm?] [net?] [virt?] general protection fault in
  vhost_work_queue
-Message-ID: <CAGxU2F7HK5KRggiY7xnKHeXFRXJmqcKbjf3JnXC3mbmn9xqRtw@mail.gmail.com>
+Content-Language: en-US
+From: Mike Christie <michael.christie@oracle.com>
+To: Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc: syzbot <syzbot+d0d442c22fa8db45ff0e@syzkaller.appspotmail.com>,
+        jasowang@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        virtualization@lists.linux-foundation.org, stefanha@redhat.com
 References: <0000000000001777f605fce42c5f@google.com>
  <20230530072310-mutt-send-email-mst@kernel.org>
  <CAGxU2F7O7ef3mdvNXtiC0VtWiS2DMnoiGwSR=Z6SWbzqcrBF-g@mail.gmail.com>
+ <85836a9b-b30a-bdb6-d058-1f7c17d8e48e@oracle.com>
+In-Reply-To: <85836a9b-b30a-bdb6-d058-1f7c17d8e48e@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: DM6PR06CA0050.namprd06.prod.outlook.com
+ (2603:10b6:5:54::27) To CY8PR10MB7243.namprd10.prod.outlook.com
+ (2603:10b6:930:7c::10)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAGxU2F7O7ef3mdvNXtiC0VtWiS2DMnoiGwSR=Z6SWbzqcrBF-g@mail.gmail.com>
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY8PR10MB7243:EE_|SJ2PR10MB7826:EE_
+X-MS-Office365-Filtering-Correlation-Id: d6f777db-ff24-4106-9f28-08db6127186c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 
+	Jt/4I1+TxDXwNADfZVFxOMmbBk3z0pezqpIeHDybXOw2tVyx3Yes4vbCDhhs9BSgy/Fh265e31Lo4LBR96Td6Es0b4Q4zFbuYN8F5cBr6ByUpfnNAzXLzW14u8fsqx0jhkBGPfK6XhCHhEiVnx33jqVjVSb9Sr7v5IHPEGF0vvkZMkMvu/wy3EKMhJXo/nCpr2NK2asPCkSEfDAYZEcU4T6HGbwc3NFNdFnBuPQfwn3UwGsa4Hr+M9UazK67dUXgwC8/of8WtHbcX5EtCyypuFUrRZ4OoPetYiHrmuzm6kHkKbXxjgJwz34v6txdwiJz4YzMab5EdPuUQwMB+flMfkXIbSVPk9KDSMr9DoMi1gnURAywJgZ46xbVykeTgzCe1ESJN/yALAK2pN+73s+Fh5IBY0MyEkz/AyqvU6+RwnPB9rTHPvCpZrCWR1AiF4et2bf7OrvjmrZD5/RHfES8NOVf+B5EmAWzUUixi1BNDRBOw2z6QH3efKp/FbsGohigHlD6f42WTR1umJwFTny7LeO7O5ff+1bj3Qpk1zEK3Lg6lXX0rr8sByVPtk3fJtvFdwao8Bj2QVZKXAMqe5RpK8Rbf8Q9D5pkiondPevz79cwYirrZaVXSUVp4AHCgOem+YsJdYDe5A2fv1qISqOkPA==
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY8PR10MB7243.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(39860400002)(376002)(346002)(396003)(366004)(451199021)(26005)(186003)(53546011)(6486002)(6512007)(6506007)(316002)(6666004)(2906002)(5660300002)(41300700001)(36756003)(7416002)(8936002)(8676002)(478600001)(38100700002)(31686004)(110136005)(4326008)(86362001)(31696002)(2616005)(66946007)(66556008)(83380400001)(66476007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?utf-8?B?RUlvVVF6VGFhM0IxZlZuc0FDSmh5U2FtTnVDbGdxNnZqSmw3aFdWdVNmdjZl?=
+ =?utf-8?B?eDI2L1VDM0cybmNTakR4ckNGcG9VYmVjN2k0cm5jK2ZwQ2ZQUlZjV2hiYzUv?=
+ =?utf-8?B?Qi9LeDVGVkZkRmtFNjBadWZ6aE1qUHBldzJKRnhSS3p4UFIrS0RSWXlkNFRL?=
+ =?utf-8?B?cHV4dnRHUFRVOHUvM3RNQUtLNTFPaGNMSVVqdzZrVnZ3V28wNEtlenRGdlZY?=
+ =?utf-8?B?MG9pMU9DTW5Cejhhdm1tSTFqZXpocjN2dDBvUHBDU25oS0ZzTHY3dHg3TTF2?=
+ =?utf-8?B?ODdrVnp6RkNrUVBvdzcwNGdlcG1uYUxWRVF4WXRSelY5dEhJcE1wU2VDYVFR?=
+ =?utf-8?B?eWxVV1hxOStJc08vQTBQWXJpSE5LYkVSZ1RraEhSbW9RSXh5TWdobWw2WTZL?=
+ =?utf-8?B?UUJMMUdWTzBCb0dCUHlDSGlyWDYxSW00SUtoRWJLWWROQnE5Yk56WVViekpq?=
+ =?utf-8?B?MW4veWdIOEdraDZGNjZWY2I4NSthakVFS2dSazgwYmV6YjZ3c0NoQVZMdW5L?=
+ =?utf-8?B?RjFZV0FHOWpSenVpakJ5dEw2MWkvUVZEQU92QzluRkRRSjg1OVZWVDVJc1hX?=
+ =?utf-8?B?dG55THB2cjB5VHliWGFOZk94eVdCWWp1MDlLemlwdW1aVGRob0M0ME95NURT?=
+ =?utf-8?B?TEVFYTFiUXEyczJ6LzBTYmZibXpUT0ljVmFuM1ZKU0taOUxrNjNKV1h3Zjd2?=
+ =?utf-8?B?cFdjUzZxbXBYZys5eHhvUi9EY3VHYmQwWGxnbElMRGlhbVJLckhyNTBGdi9Y?=
+ =?utf-8?B?TTd6dzdhbExSSGh2T01DaHlxUWVyZk5mN2JkYzUyT04wdmVTYlpqbXVmMkVU?=
+ =?utf-8?B?ZXRrYktKRk5lU0VrdXE3bS9hRGlrTWRaNlBzUzFrQ0J6UEV4THpxY000dnFn?=
+ =?utf-8?B?b3R2TWlQaWdoeEp0WmdKV0M3Nzd2N3BOYkpWV3lrUmllN3JWR3B6SWlPLy9Y?=
+ =?utf-8?B?SWM3OW5yK0hCU0J6U0t5MjIzdWk3aXh5N0doa29qNW96ZXY1elRLUGZ6Y0wy?=
+ =?utf-8?B?QTVOYVNzbkNpNlhHdnRGaERoU3VuM0FxZDZhQkFJV3pUQ3huS0JyVUY3WFc5?=
+ =?utf-8?B?bkxqckNyRCtwbkcybndiNUc0Wi9ZMysxbkt2MmdqRVdUbHducVpHMm5ZN1l1?=
+ =?utf-8?B?TFh2MW5IVndOVWFJZTFkQnlXOENhRmsxN1h0aFNmUTR5UUdtNEhLbXA4ejVh?=
+ =?utf-8?B?QXN4Zm9teFQ5bjFtVmNwaHR2UmZHNldNUTNzSXVVaDljcGFESVhTcGRGcVhJ?=
+ =?utf-8?B?eGxWbDB1d2N3ckpDMWZFaVgrYUI4WGxoSDVYaU15ZWJaL3c1amVOUHNNSjV6?=
+ =?utf-8?B?WFd5bnQxVWhYZHZmK3k0bmtMVGxpdHFlMXJwcFZMMFpqdGxvTFBLRmhodEhs?=
+ =?utf-8?B?aVVSbU9RQ0hERFdYRzZraVQ0M2dTS2hxZVF3TWU4Uk1ZbWltdmN4clYwYmp0?=
+ =?utf-8?B?YUJtTGo0SE9hOVh1M1U1NnVOZE9NUmdWZks4NnFaKzBGWVRrQ3FlRThPekZ1?=
+ =?utf-8?B?cGZvNngxQXZoYllOcFZnUTFaeTFuVmM0bXMzUHRIS1k3K3hoNHNpcTlJSXcw?=
+ =?utf-8?B?WDRJYng2QWNsYll1L1NsUHdMdHhzYlNkTFRQYW92a2JhRTNUTzhmbVJDbDNF?=
+ =?utf-8?B?NGtVTzhiblh1RkxDZXNUc0pYUkwxMjBMOVcwWUdLMTF2a3V0K0VHejM3YXoz?=
+ =?utf-8?B?eHFJTGNqSHZpMkRtZ2dFTnU3c29ySXlkQ1laRE5NSkUwZUpCazdaZGRDV01T?=
+ =?utf-8?B?RGhJYVpQL2VGVzEzSDlSTDNtamluZ1B5a1l0QnQvVmczMmRUU1dSK0kyZDhu?=
+ =?utf-8?B?NXh2RzE5MGd1K2FKT2dhMUR0Q1hGZWVpYmNNTmN5UWdrYzNiWG5hRDc2d3k0?=
+ =?utf-8?B?NCs3ZjczR2p5UUNzaHZ4NHZabWxzZTVTb3hjRUlabmZqOHdYbU9yaTVSaCtt?=
+ =?utf-8?B?Qng5SnVTQncxUWhNRTloV0VjYnZQYXFBeEN5bXJBTmZpK1BuVloxZHl0dXow?=
+ =?utf-8?B?UWdxYWwyQk5NclVRVXBxd3pjN2d3Tm55a1FURE5vamRSWGxtMG1PT1VVYlI3?=
+ =?utf-8?B?bEdkSHpXZ1dhWExIOUV5WGVmcHR0bG9CVFhJeE1UaDJnWkQzbXFPVnF2b3dD?=
+ =?utf-8?B?Y1hWVk5XOEdUQTRrdEZUSWY0N1ZmMWdKY3c5UUQwQWhiYlRNZERad2pOcGlu?=
+ =?utf-8?B?NVE9PQ==?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	=?utf-8?B?eVlFWGhZOXB1VUpxRStTL3lXYk9Ca0VYTkRjY2YzVEhOQVdyeGVPMjNIdU9K?=
+ =?utf-8?B?MDUvc0F4UXFLSzZHVkU2YitxdmZOdWhrQXRuM0ZQRGgyNjFJd1VpMlR3bzZK?=
+ =?utf-8?B?QlJNejlkNDdLb3Bod0NHNk1RSi9IY2hNQlFVWVVPNXU5bWNyMCtDS3Z4UEJn?=
+ =?utf-8?B?aGEzbU1ianVsWktOdWIveTJseXhPci9FYmNlaEMrTDZRQ3EzK0FHUzFPcFYy?=
+ =?utf-8?B?NzFYWThLU1VWZVlUUFROZ2hDS2FZaFU0aDUzVkd2MVMyWU4zSVMvZFlvNEtl?=
+ =?utf-8?B?MXlxMjE1cHQ4blpzc1RhTFNGU1pNaWk4RzBXVGhkdEZqQm1XcSt4U3NkR3JN?=
+ =?utf-8?B?QURMcUMxbWk2ZU52VlU1V0NjQ2w5dUVUWThzNnBRbVltdXNpZFlHVDFueXRI?=
+ =?utf-8?B?M3FDdStvRXphNStUK1Zoam1CaHVkL2dnUi9IZjdpY3ZMbk5iQ0E3YVJaMkFY?=
+ =?utf-8?B?b2hKSUhoU2JiaHlXUGtvdm5rMitSY1hsM2N1dzU0RVNsK0ZVdW05N0hUckpj?=
+ =?utf-8?B?NzNlOFZKTnB4bnFDUk15MEdZSTZyYUQvZ01aclM0S3FlOFEza3dQTU0yeVJJ?=
+ =?utf-8?B?eGVidTA5QzZNMkxvQWZIaDJQQndIaHdydm8wQmNKSGh1dHEwQ2h5cDVDTGI3?=
+ =?utf-8?B?S3A5MW1mT3pHRUV0OGVxVHpGWHoxL0ZvV1p6bmNkN3NRNFBERFMreGRacHFz?=
+ =?utf-8?B?ZzJhSTdEVHpiRDFTRXVrRmtHQVhBRXpiWkJ0TDVTQmdnOHVTYSthSHQwUFZ5?=
+ =?utf-8?B?ZUh5bDhYTlhmRFNUL1Q0Zm9jRlRRejZiTTZncXhoK2hQWGlOaE5rNWQ2SE5j?=
+ =?utf-8?B?UW1iUGNiZjFsd2JzVzd0ZUh5M0RCWDUrdFV5S3BkS0hxZDRqZFkxb0ErL0Jw?=
+ =?utf-8?B?K2pEMVBsV1RKb050R01leFZ0ZWVVTnlmbmc3TWY0NFo4c3JDakpRMGExVW1m?=
+ =?utf-8?B?czltNmN6YlpQMysvclVZUWNPWG5xVnU4OU5HeU9DbTUrb0szYkhhcEdVS1Z4?=
+ =?utf-8?B?Y3RzYW9qUENVOW5GMUx4bDZ0UVNvTXhVS2ptQ1lHSU1mTHFDb2JEYlE1QXFu?=
+ =?utf-8?B?QUM1QkhWQTNGalhSOEhUbHVuMmEzS3diZUFGSnZFekErSG0xQTJRVm44Y0cx?=
+ =?utf-8?B?QU1xWW0vWFUvOWhDdWpuRUFGb21xbkp2cDJMa3FPOWtmWnpnVlNiOVNhRHZp?=
+ =?utf-8?B?MEY2R0I2NWxBRFBZbTVIM09zZkc2cFpsSXM3c2c3Z3NtZDNERTV6dS9Wc1Jn?=
+ =?utf-8?B?TzRTSVh2RENoS2ZodlpoOUt2bUJlRk1qSUlsTG9wWTZpaGZCTU5nZWNWaDFi?=
+ =?utf-8?Q?z7ZkFq1XONcF0=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d6f777db-ff24-4106-9f28-08db6127186c
+X-MS-Exchange-CrossTenant-AuthSource: CY8PR10MB7243.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 16:01:14.5755
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: mVp1QUKjOot83xyUtH5Fw1Ux2ekgNWx3yA+0AvWL7xTRlZon2HVu+5hokeu33ubeLHWLHwncIYPfJHY41fI6mgslTKf/WWTAwHheEZ4Hpgs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR10MB7826
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-05-30_12,2023-05-30_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 phishscore=0
+ bulkscore=0 adultscore=0 mlxscore=0 suspectscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2304280000
+ definitions=main-2305300127
+X-Proofpoint-GUID: JOOxrxCCbBrhenleZfqYkPYDJ_Ra45TA
+X-Proofpoint-ORIG-GUID: JOOxrxCCbBrhenleZfqYkPYDJ_Ra45TA
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 30, 2023 at 3:44 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->
-> On Tue, May 30, 2023 at 1:24 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Tue, May 30, 2023 at 12:30:06AM -0700, syzbot wrote:
-> > > Hello,
-> > >
-> > > syzbot found the following issue on:
-> > >
-> > > HEAD commit:    933174ae28ba Merge tag 'spi-fix-v6.4-rc3' of git://git.ker..
-> > > git tree:       upstream
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=138d4ae5280000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=f389ffdf4e9ba3f0
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=d0d442c22fa8db45ff0e
-> > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > >
-> > > Unfortunately, I don't have any reproducer for this issue yet.
-> > >
-> > > Downloadable assets:
-> > > disk image: https://storage.googleapis.com/syzbot-assets/21a81b8c2660/disk-933174ae.raw.xz
-> > > vmlinux: https://storage.googleapis.com/syzbot-assets/b4951d89e238/vmlinux-933174ae.xz
-> > > kernel image: https://storage.googleapis.com/syzbot-assets/21eb405303cc/bzImage-933174ae.xz
-> > >
-> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > Reported-by: syzbot+d0d442c22fa8db45ff0e@syzkaller.appspotmail.com
-> > >
-> > > general protection fault, probably for non-canonical address 0xdffffc000000000e: 0000 [#1] PREEMPT SMP KASAN
-> > > KASAN: null-ptr-deref in range [0x0000000000000070-0x0000000000000077]
-> > > CPU: 0 PID: 29845 Comm: syz-executor.4 Not tainted 6.4.0-rc3-syzkaller-00032-g933174ae28ba #0
-> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/16/2023
-> > > RIP: 0010:vhost_work_queue drivers/vhost/vhost.c:259 [inline]
-> > > RIP: 0010:vhost_work_queue+0xfc/0x150 drivers/vhost/vhost.c:248
-> > > Code: 00 00 fc ff df 48 89 da 48 c1 ea 03 80 3c 02 00 75 56 48 b8 00 00 00 00 00 fc ff df 48 8b 1b 48 8d 7b 70 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 42 48 8b 7b 70 e8 95 9e ae f9 5b 5d 41 5c 41 5d e9
-> > > RSP: 0018:ffffc9000333faf8 EFLAGS: 00010202
-> > > RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000d84d000
-> > > RDX: 000000000000000e RSI: ffffffff841221d7 RDI: 0000000000000070
-> > > RBP: ffff88804b6b95b0 R08: 0000000000000001 R09: 0000000000000000
-> > > R10: 0000000000000001 R11: 0000000000000000 R12: ffff88804b6b00b0
-> > > R13: 0000000000000000 R14: ffff88804b6b95e0 R15: ffff88804b6b95c8
-> > > FS:  00007f3b445ec700(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > CR2: 0000001b2e423000 CR3: 000000005d734000 CR4: 00000000003506f0
-> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > DR3: 000000000000003b DR6: 00000000ffff0ff0 DR7: 0000000000000400
-> > > Call Trace:
-> > >  <TASK>
-> > >  vhost_transport_send_pkt+0x268/0x520 drivers/vhost/vsock.c:288
-> > >  virtio_transport_send_pkt_info+0x54c/0x820 net/vmw_vsock/virtio_transport_common.c:250
-> > >  virtio_transport_connect+0xb1/0xf0 net/vmw_vsock/virtio_transport_common.c:813
-> > >  vsock_connect+0x37f/0xcd0 net/vmw_vsock/af_vsock.c:1414
-> > >  __sys_connect_file+0x153/0x1a0 net/socket.c:2003
-> > >  __sys_connect+0x165/0x1a0 net/socket.c:2020
-> > >  __do_sys_connect net/socket.c:2030 [inline]
-> > >  __se_sys_connect net/socket.c:2027 [inline]
-> > >  __x64_sys_connect+0x73/0xb0 net/socket.c:2027
-> > >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> > >  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-> > >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > > RIP: 0033:0x7f3b4388c169
-> > > Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> > > RSP: 002b:00007f3b445ec168 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
-> > > RAX: ffffffffffffffda RBX: 00007f3b439ac050 RCX: 00007f3b4388c169
-> > > RDX: 0000000000000010 RSI: 0000000020000140 RDI: 0000000000000004
-> > > RBP: 00007f3b438e7ca1 R08: 0000000000000000 R09: 0000000000000000
-> > > R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> > > R13: 00007f3b43acfb1f R14: 00007f3b445ec300 R15: 0000000000022000
-> > >  </TASK>
-> > > Modules linked in:
-> > > ---[ end trace 0000000000000000 ]---
-> > > RIP: 0010:vhost_work_queue drivers/vhost/vhost.c:259 [inline]
-> > > RIP: 0010:vhost_work_queue+0xfc/0x150 drivers/vhost/vhost.c:248
-> > > Code: 00 00 fc ff df 48 89 da 48 c1 ea 03 80 3c 02 00 75 56 48 b8 00 00 00 00 00 fc ff df 48 8b 1b 48 8d 7b 70 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 42 48 8b 7b 70 e8 95 9e ae f9 5b 5d 41 5c 41 5d e9
-> > > RSP: 0018:ffffc9000333faf8 EFLAGS: 00010202
-> > > RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000d84d000
-> > > RDX: 000000000000000e RSI: ffffffff841221d7 RDI: 0000000000000070
-> > > RBP: ffff88804b6b95b0 R08: 0000000000000001 R09: 0000000000000000
-> > > R10: 0000000000000001 R11: 0000000000000000 R12: ffff88804b6b00b0
-> > > R13: 0000000000000000 R14: ffff88804b6b95e0 R15: ffff88804b6b95c8
-> > > FS:  00007f3b445ec700(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > CR2: 0000001b2e428000 CR3: 000000005d734000 CR4: 00000000003506e0
-> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > DR3: 000000000000003b DR6: 00000000ffff0ff0 DR7: 0000000000000400
-> > > ----------------
-> > > Code disassembly (best guess), 5 bytes skipped:
-> > >    0: 48 89 da                mov    %rbx,%rdx
-> > >    3: 48 c1 ea 03             shr    $0x3,%rdx
-> > >    7: 80 3c 02 00             cmpb   $0x0,(%rdx,%rax,1)
-> > >    b: 75 56                   jne    0x63
-> > >    d: 48 b8 00 00 00 00 00    movabs $0xdffffc0000000000,%rax
-> > >   14: fc ff df
-> > >   17: 48 8b 1b                mov    (%rbx),%rbx
-> > >   1a: 48 8d 7b 70             lea    0x70(%rbx),%rdi
-> > >   1e: 48 89 fa                mov    %rdi,%rdx
-> > >   21: 48 c1 ea 03             shr    $0x3,%rdx
-> > > * 25: 80 3c 02 00             cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
-> > >   29: 75 42                   jne    0x6d
-> > >   2b: 48 8b 7b 70             mov    0x70(%rbx),%rdi
-> > >   2f: e8 95 9e ae f9          callq  0xf9ae9ec9
-> > >   34: 5b                      pop    %rbx
-> > >   35: 5d                      pop    %rbp
-> > >   36: 41 5c                   pop    %r12
-> > >   38: 41 5d                   pop    %r13
-> > >   3a: e9                      .byte 0xe9
-> >
-> >
-> > Stefano, Stefan, take a look?
->
-> I'll take a look.
->
-> From a first glance, it looks like an issue when we call vhost_work_queue().
-> @Mike, does that ring any bells since you recently looked at that code?
+On 5/30/23 10:58 AM, Mike Christie wrote:
+> On 5/30/23 8:44 AM, Stefano Garzarella wrote:
+>>
+>> From a first glance, it looks like an issue when we call vhost_work_queue().
+>> @Mike, does that ring any bells since you recently looked at that code?
+> 
+> I see the bug. needed to have set the dev->worker after setting worker->vtsk
+> like below:
+> 
+> 
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index a92af08e7864..7bd95984a501 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -564,7 +564,6 @@ static int vhost_worker_create(struct vhost_dev *dev)
+>  	if (!worker)
+>  		return -ENOMEM;
+>  
+> -	dev->worker = worker;
+>  	worker->kcov_handle = kcov_common_handle();
+>  	init_llist_head(&worker->work_list);
+>  	snprintf(name, sizeof(name), "vhost-%d", current->pid);
+> @@ -576,6 +575,7 @@ static int vhost_worker_create(struct vhost_dev *dev)
+>  	}
+>  
+>  	worker->vtsk = vtsk;
 
-I think it is partially related to commit 6e890c5d5021 ("vhost: use
-vhost_tasks for worker threads") and commit 1a5f8090c6de ("vhost: move
-worker thread fields to new struct"). Maybe that commits just
-highlighted the issue and it was already existing.
+Shoot, oh wait, I think I needed a smp_wmb to always make sure worker->vtask
+is set before dev->worker or vhost_work_queue could still end up seeing
+dev->worker set before worker->vtsk right?
 
-In this case I think there is a race between vhost_worker_create() and
-vhost_transport_send_pkt(). vhost_transport_send_pkt() calls
-vhost_work_queue() without holding the vhost device mutex, so it can run
-while vhost_worker_create() set dev->worker, but has not yet set
-worker->vtsk.
-
-Before commit 1a5f8090c6de ("vhost: move worker thread fields to new
-struct"), dev->worker is set when everything was ready, but maybe it was
-just a case of the instructions not being re-ordered and the problem
-could still occur.
-
-This happens because VHOST_VSOCK_SET_GUEST_CID can be called before
-VHOST_SET_OWNER and then vhost_transport_send_pkt() finds the guest's
-CID and tries to send it a packet.
-But is it correct to handle VHOST_VSOCK_SET_GUEST_CID, before
-VHOST_SET_OWNER?
-
-QEMU always calls VHOST_SET_OWNER before anything, but I don't know
-about the other VMMs.
-
-So, could it be an acceptable solution to reject
-VHOST_VSOCK_SET_GUEST_CID before VHOST_SET_OWNER?
-
-I mean somethig like this:
-
-diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index 6578db78f0ae..33fc0805d189 100644
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -829,7 +829,12 @@ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
-        case VHOST_VSOCK_SET_GUEST_CID:
-                if (copy_from_user(&guest_cid, argp, sizeof(guest_cid)))
-                        return -EFAULT;
--               return vhost_vsock_set_cid(vsock, guest_cid);
-+               mutex_lock(&vsock->dev.mutex);
-+               r = vhost_dev_check_owner(&vsock->dev);
-+               if (!r)
-+                       r = vhost_vsock_set_cid(vsock, guest_cid);
-+               mutex_unlock(&vsock->dev.mutex);
-+               return r;
-        case VHOST_VSOCK_SET_RUNNING:
-                if (copy_from_user(&start, argp, sizeof(start)))
-                        return -EFAULT;
-
-In the documentation, we say:
-
-  /* Set current process as the (exclusive) owner of this file descriptor.  This
-   * must be called before any other vhost command.  Further calls to
-   * VHOST_OWNER_SET fail until VHOST_OWNER_RESET is called. */
-
-This should prevents the issue, but could break a wrong userspace.
-
-Others idea that I have in mind are:
-- hold vsock->dev.mutex while calling vhost_work_queue() (performance 
-  degradation?)
-- use RCU to protect dev->worker
-
-WDYT?
-
-Thanks,
-Stefano
+> +	dev->worker = worker;>  	vhost_task_start(vtsk);
+>  	return 0;
+>  
 
 
