@@ -1,162 +1,148 @@
-Return-Path: <netdev+bounces-6569-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6570-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8E91D716F67
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 23:09:39 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 94C47716F7F
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 23:15:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BF5A22810BA
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:09:37 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 25FFC1C20D1B
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:15:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC37028C1D;
-	Tue, 30 May 2023 21:09:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A7FA02A9EB;
+	Tue, 30 May 2023 21:15:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E145121CF3
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 21:09:35 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510CF97;
-	Tue, 30 May 2023 14:09:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=Xv/on1soQm2WiaudXE9Ed1L5dqZ5lX/VHutFpckjEf8=; b=v/F0MO7kTnFLgfWviJwwuTazXY
-	35YFXB+g6jUUg4Ee0LruI/Ve2e+42tdpOAVL/B4+bEuljps5xkStKaz+JfGbA7nN5mws95kqAP4s9
-	RrjYw+D3BSlrzx1G0zbRsD8nBfBo22n0/Wl23WCv7omNXNSc/T1VP1IrTjC350Hj6EypFue65IvlY
-	PhZ8LPqVCzY88KVrRjElX9ETMFVx1Y6j7gtmUEO1olNRk+6s4FWSMhOpIRIDkz6/eoGhF+XDxojSH
-	jdTvJaiyb8iEZvkMrA9AUdokGZw0fLfvecA10AYKh3MWjwNwobuGiib86IH+m8PB02O7RBhgvqdA9
-	oAngFbcw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58388)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q46at-0003TZ-G4; Tue, 30 May 2023 22:09:27 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q46aq-0008Ov-UE; Tue, 30 May 2023 22:09:24 +0100
-Date: Tue, 30 May 2023 22:09:24 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: Jakub Kicinski <kuba@kernel.org>,
-	Dan Carpenter <dan.carpenter@linaro.org>,
-	Oleksij Rempel <linux@rempel-privat.de>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] net: phy: fix a signedness bug in genphy_loopback()
-Message-ID: <ZHZmBBDSVMf1WQWI@shell.armlinux.org.uk>
-References: <d7bb312e-2428-45f6-b9b3-59ba544e8b94@kili.mountain>
- <20230529215802.70710036@kernel.org>
- <90b1107b-7ea0-4d8f-ad88-ec14fd149582@lunn.ch>
- <20230530121910.05b9f837@kernel.org>
- <ZHZQ+1KNGB7KYZGi@shell.armlinux.org.uk>
- <0851bc91-6a7c-4333-ad8a-3a18083411e3@lunn.ch>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99B79200BC
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 21:15:07 +0000 (UTC)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871A9138;
+	Tue, 30 May 2023 14:14:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685481291; x=1717017291;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=kP3IzRcNnl5fizRI+YuizgSNvrAVapWMHLTUNUcbfpE=;
+  b=RZeyZ3QY41q45Cp8ZXpY4z/9ubGCzj6JiDZl8BeBezkZx0fuzgCDaijT
+   u9v2QMrJ8Vo3NMMBYqmFS7DaIpMcLejJ1EWMFuNIZxIgBXUZv38tEue4Q
+   GFztd7GBUje0z/tplGSnQzGR5/Fig/0ygbA4t+Y3eAxAZMFsVNom+bKwa
+   RCGFVu5NOtQXXMLLDZmlkvYbNubmEBWZ9+edHccB/XyhAtdybq1uKNkZw
+   9rxRrmf33esfjOA/Fyvrkt4FACWNMWgwSMmZzFQbe3riAUxS9GZ9tFMQj
+   IApuxVpY6GEq2J0GoOqDph2b4kKibw+i9ngcovYyRUTiHde4w/D753XoA
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="335398994"
+X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
+   d="scan'208";a="335398994"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 14:14:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="850946373"
+X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
+   d="scan'208";a="850946373"
+Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.17])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 14:14:17 -0700
+From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To: Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+ <pabeni@redhat.com>, Jamal Hadi Salim <jhs@mojatatu.com>, Cong Wang
+ <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>, Kurt Kanzenbach
+ <kurt@linutronix.de>, Gerhard Engleder <gerhard@engleder-embedded.com>,
+ Amritha Nambiar <amritha.nambiar@intel.com>, Ferenc Fejes
+ <ferenc.fejes@ericsson.com>, Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+ Roger Quadros <rogerq@kernel.org>, Pranavi Somisetty
+ <pranavi.somisetty@amd.com>, Harini Katakam <harini.katakam@amd.com>,
+ Giuseppe Cavallaro <peppe.cavallaro@st.com>, Alexandre Torgue
+ <alexandre.torgue@foss.st.com>, Michael Sit Wei Hong
+ <michael.wei.hong.sit@intel.com>, Mohammad Athari Bin Ismail
+ <mohammad.athari.ismail@intel.com>, Oleksij Rempel
+ <linux@rempel-privat.de>, Jacob Keller <jacob.e.keller@intel.com>,
+ linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>, Florian
+ Fainelli <f.fainelli@gmail.com>, Claudiu Manoil <claudiu.manoil@nxp.com>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ UNGLinuxDriver@microchip.com, Jesse
+ Brandeburg <jesse.brandeburg@intel.com>, Tony Nguyen
+ <anthony.l.nguyen@intel.com>, Horatiu Vultur
+ <horatiu.vultur@microchip.com>, Jose Abreu <joabreu@synopsys.com>, Maxime
+ Coquelin <mcoquelin.stm32@gmail.com>, intel-wired-lan@lists.osuosl.org,
+ Muhammad
+ Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+Subject: Re: [PATCH net-next 1/5] net/sched: taprio: don't overwrite "sch"
+ variable in taprio_dump_class_stats()
+In-Reply-To: <20230530091948.1408477-2-vladimir.oltean@nxp.com>
+References: <20230530091948.1408477-1-vladimir.oltean@nxp.com>
+ <20230530091948.1408477-2-vladimir.oltean@nxp.com>
+Date: Tue, 30 May 2023 14:14:17 -0700
+Message-ID: <87edmxv7x2.fsf@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0851bc91-6a7c-4333-ad8a-3a18083411e3@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 30, 2023 at 10:04:52PM +0200, Andrew Lunn wrote:
-> > > This is what I meant FWIW:
-> > > 
-> > > diff --git a/include/linux/phy.h b/include/linux/phy.h
-> > > index 7addde5d14c0..829bd57b8794 100644
-> > > --- a/include/linux/phy.h
-> > > +++ b/include/linux/phy.h
-> > > @@ -1206,10 +1206,13 @@ static inline int phy_read(struct phy_device *phydev, u32 regnum)
-> > >  #define phy_read_poll_timeout(phydev, regnum, val, cond, sleep_us, \
-> > >  				timeout_us, sleep_before_read) \
-> > >  ({ \
-> > > -	int __ret = read_poll_timeout(phy_read, val, val < 0 || (cond), \
-> > > +	int __ret, __val;						\
-> > > +									\
-> > > +	__ret = read_poll_timeout(phy_read, __val, __val < 0 || (cond),	\
-> > >  		sleep_us, timeout_us, sleep_before_read, phydev, regnum); \
-> > > -	if (val < 0) \
-> > > -		__ret = val; \
-> > > +	val = __val;
-> 
-> This results in the sign being discarded if val is unsigned. Yes, the
-> test is remove, which i assume will stop Smatch complaining, but it is
-> still broken.
+Hi,
 
-I was going to ask you to explain that, but having thought about
-this more, there's much bigger problems with the proposal.
+Vladimir Oltean <vladimir.oltean@nxp.com> writes:
 
-First, if I'm understanding you correctly, your point doesn't seem
-relevant, because if val is unsigned, we have an implicit cast from a
-signed int to an unsigned int _at_ _some_ _point_. With the existing
-code, that implicit cast is buried inside read_poll_timeout(), here
-to be exact:
+> In taprio_dump_class_stats() we don't need a reference to the root Qdisc
+> once we get the reference to the child corresponding to this traffic
+> class, so it's okay to overwrite "sch". But in a future patch we will
+> need the root Qdisc too, so create a dedicated "child" pointer variable
+> to hold the child reference. This also makes the code adhere to a more
+> conventional coding style.
+>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
 
-	(val) = op(args);
+The patch looks good:
 
-because "op" will be one of the phy_read*() functions that returns an
-"int", but "val" is unsigned - which means there's an implicit cast
-here. Jakub's patch moves that cast after read_poll_timeout().
+Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-The elephant in the room has nothing to do with this, but everything
-to do with "cond". "cond" is an expression to be evaluated inside the
-loop, which must have access to the value read from the phy_read*()
-function, and that value is referenced via whatever variable was
-provided via "val". So changing "val" immediately breaks "cond".
+But I have a suggestion, this "taprio_queue_get() ->
+dev_queue->qdisc_sleeping()" dance should have the same result as
+calling 'taprio_leaf()'.
+
+I am thinking of using taprio_leaf() here and in taprio_dump_class().
+Could be a separate commit.
 
 
-Having thought about this, the best I can come up with is this, which
-I think gives us everything we want without needing BUILD_BUG_ONs:
-
-#define phy_read_poll_timeout(phydev, regnum, val, cond, sleep_us, \
-                                timeout_us, sleep_before_read) \
-({ \
-        int __ret, __val;
-	__ret = read_poll_timeout(__val = phy_read, val, __val < 0 || (cond), \
-                sleep_us, timeout_us, sleep_before_read, phydev, regnum); \
-        if (__val < 0) \
-                __ret = __val; \
-        if (__ret) \
-                phydev_err(phydev, "%s failed: %d\n", __func__, __ret); \
-        __ret; \
-})
-
-This looks rather horrid, but what it essentially does is:
-
-                (val) = op(args); \
-                if (cond) \
-                        break; \
-
-expands to:
-
-		(val) = __val = phy_read(args);
-		if (__val < 0 || (cond))
-			break;
-
-As phy_read() returns an int, there is no cast or loss assigning it
-to __val, since that is also an int. The conversion from int to
-something else happens at the same point it always has.
-
-Hmm?
+>  net/sched/sch_taprio.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index 76db9a10ef50..d29e6785854d 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -2388,10 +2388,10 @@ static int taprio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
+>  	__acquires(d->lock)
+>  {
+>  	struct netdev_queue *dev_queue = taprio_queue_get(sch, cl);
+> +	struct Qdisc *child = dev_queue->qdisc_sleeping;
+>  
+> -	sch = dev_queue->qdisc_sleeping;
+> -	if (gnet_stats_copy_basic(d, NULL, &sch->bstats, true) < 0 ||
+> -	    qdisc_qstats_copy(d, sch) < 0)
+> +	if (gnet_stats_copy_basic(d, NULL, &child->bstats, true) < 0 ||
+> +	    qdisc_qstats_copy(d, child) < 0)
+>  		return -1;
+>  	return 0;
+>  }
+> -- 
+> 2.34.1
+>
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+Vinicius
 
