@@ -1,63 +1,63 @@
-Return-Path: <netdev+bounces-6515-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6516-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2B3F0716BDD
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 20:04:07 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id B804C716BE4
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 20:05:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DA80A2811F0
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 18:04:05 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7272C281288
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 18:05:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF4292A9E8;
-	Tue, 30 May 2023 18:04:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A098F2A9EA;
+	Tue, 30 May 2023 18:05:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D42451EA76
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 18:04:03 +0000 (UTC)
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9942C107
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 11:04:02 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id d75a77b69052e-3f6ac005824so43643171cf.2
-        for <netdev@vger.kernel.org>; Tue, 30 May 2023 11:04:02 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 931401EA76
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 18:05:43 +0000 (UTC)
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57620B2
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 11:05:38 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id 6a1803df08f44-6260a07bf3cso21671396d6.0
+        for <netdev@vger.kernel.org>; Tue, 30 May 2023 11:05:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685469841; x=1688061841;
+        d=gmail.com; s=20221208; t=1685469937; x=1688061937;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=USkm4TzRyP4ByzUf08vQ6j0hn2VrtE+7q7klbWx014M=;
-        b=V1fJFh/WtW0BIh0qZ+KRZbiijVNDQIupl07wCtexVrikj+ab4b8tQUUHKXWuBwk5cX
-         oC0GHs5fHHbk1YZrjq4/r11DE4tnWTxXydJe6h3wyjVJxEp2wGrDUMKNBdoP9gHIR2Ng
-         TRhYlo1VN+l2giQnbe180QZg6XOyKkbekVmaDMQND1KSmkyHHowQ2odl2u/Am1pRzUZY
-         bx1q3ejYZwqszzDpjePz2oQKdnUdUdKjnWT5WP1JJK5Jaye9m7vsWKX+Zw6I+bWamsze
-         GMr9SDawipfg+g0xN0kPUYo8ODX7DHvZsC7girK+Bld7SV5XJib7nUy6UyVXIjpRY2X8
-         UyGw==
+        bh=siTWa6wKjpNK3TYryVQb2msnrf7DMm9LAu+uyfysJEI=;
+        b=MfbNZRzJ8Du38XmSCSw+0M9ZIxvrlP6Ixlt1x0eePSkN4JqSNjsixfN7IA16KZiL3P
+         UxOxyAQnlDdfykyHak/LhdMdzhOnsFEtMpy8cZci1/KjLJJApm5k/gqPCqnRbYeGvXNy
+         hS1QVFoFYlE1M4yhda5UcG6Vxjbsd86wjh1vIReurOWMndFynxR0hi0Nhdc0GgzMlmZm
+         1j9wbfhktg5F39oZqBbluDcMPY8nuA/XQgmN1SOpDzzymc6vbHNz9dRyVWLfIb5rEL1H
+         5x18/Q9MO9rHGlJlqYivwAKJIywTykJOsewmNq2noCmoqwEmRF685cPH6TSANTb3qGE3
+         53EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685469841; x=1688061841;
+        d=1e100.net; s=20221208; t=1685469937; x=1688061937;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=USkm4TzRyP4ByzUf08vQ6j0hn2VrtE+7q7klbWx014M=;
-        b=Syp+u9vVu2cWZf39dHP+aSzH91goo3NB6wGAVo9XDJ1s6ZQ1Z42Ww/s7aEEcJVfA7H
-         VlHdiIkXJx8WF6Abz2AeNsCbF+/kTuDvcgukvJ+yUKw9sKKRJiKNVB+Kc3TGl3+bO4cL
-         ajpaWWEqC/Bn41UGnHDIR1aSI6+IfG/KcTZuqFJddETVks/y5gfd3T/QFu0zLTT4WmWB
-         t/wGf93JXMHtQHJdWJpdjBqR4QRlxAjEqZv+URbwv9tmHxuttOSJFjftp8pkbtsCLW6a
-         YTQ1fnDXQAlLhF+h1+iKYye4DgidvvWyVo2+7KBfxA8RJf7O0xps7C9wsKu5Occ/ol0O
-         hQLw==
-X-Gm-Message-State: AC+VfDxa4n2f3nvSE3bRIHk+wvQB62ASMCOHRd0fUCHVGda7hI1ABnhT
-	0IvDEjKwma2XFSQfSBUZyLw=
-X-Google-Smtp-Source: ACHHUZ5e0SNj0om56F1alM406kqgzXPQzf7eupYdGlN8pgg5t14sBcox2kcgYJ1SA7l7gOu5YHzOPg==
-X-Received: by 2002:a05:6214:130c:b0:626:2461:9f09 with SMTP id pn12-20020a056214130c00b0062624619f09mr3932349qvb.40.1685469841032;
-        Tue, 30 May 2023 11:04:01 -0700 (PDT)
+        bh=siTWa6wKjpNK3TYryVQb2msnrf7DMm9LAu+uyfysJEI=;
+        b=Xsg1zhO4m3n4VVQHfc6MUjBvtLS/Pc/hxAzuJFe8c35TP7fOzVlsJXztAxP1YMZHp6
+         8h3n5POETUJBO373eYOo5vXEc6GP2rG/K5zuAJtq2uIfceI/nIfmIkikbRLl4eQzW3Zw
+         6CKV/Aga8fWD9Hm8AqRgNY07tJZSmTVMyEXJObDblHrytl1Vt6bVOUIcdnO/1rurpqgL
+         10lnY50yiLNpQwuuiofYVADuf43dGx57UW+/Ae/JH8EZNGb2vUnre9YTyEIx0aBvOkS3
+         Tj3yFWcvbOr54VlC9VCUyHiihEYDvzjfUct7/ByyvdyjXPj8lB4KmK3IsdbWzjZiNmmD
+         OLMQ==
+X-Gm-Message-State: AC+VfDwjzN9RJ+z7PIkek3OlppEithrDzvlQIoEw1By18GMsGM0sxHgt
+	gAPHJZWDr7Ar+mXVdAfsfFY=
+X-Google-Smtp-Source: ACHHUZ7nb4mvK87qIdaSCB4LTIcnlTLq4Siw70IHcD/Kl8R9fmB9PZQO1Dgmj5z+mlJcWYaY7YWyrA==
+X-Received: by 2002:a05:6214:212e:b0:626:1be5:176e with SMTP id r14-20020a056214212e00b006261be5176emr3498903qvc.41.1685469937440;
+        Tue, 30 May 2023 11:05:37 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id w2-20020a0cef82000000b005e750d07153sm2875347qvr.135.2023.05.30.11.03.57
+        by smtp.googlemail.com with ESMTPSA id j29-20020ac84c9d000000b003f38aabb88asm4870735qtv.20.2023.05.30.11.05.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 May 2023 11:04:00 -0700 (PDT)
-Message-ID: <e03e8ae9-8ae3-4035-8839-b72bde8e65d8@gmail.com>
-Date: Tue, 30 May 2023 11:03:54 -0700
+        Tue, 30 May 2023 11:05:36 -0700 (PDT)
+Message-ID: <311ad9e4-fd8f-f8d5-75fd-6af570835c68@gmail.com>
+Date: Tue, 30 May 2023 11:05:29 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -66,17 +66,16 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.0
-Subject: Re: [RFC/RFTv3 07/24] net: marvell: mvneta: Simplify EEE
- configuration
+Subject: Re: [RFC/RFTv3 16/24] net: dsa: b53: Swap to using phydev->eee_active
 Content-Language: en-US
 To: Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>
 Cc: Heiner Kallweit <hkallweit1@gmail.com>,
  Russell King <rmk+kernel@armlinux.org.uk>,
  Oleksij Rempel <linux@rempel-privat.de>
 References: <20230331005518.2134652-1-andrew@lunn.ch>
- <20230331005518.2134652-8-andrew@lunn.ch>
+ <20230331005518.2134652-17-andrew@lunn.ch>
 From: Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230331005518.2134652-8-andrew@lunn.ch>
+In-Reply-To: <20230331005518.2134652-17-andrew@lunn.ch>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -87,16 +86,12 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 On 3/30/23 17:55, Andrew Lunn wrote:
-> phylib already does most of the work. It will track eee_enabled,
-> eee_active and tx_lpi_enabled and correctly set them in the
-> ethtool_get_eee callback.
-> 
-> Replace the call to phy_init_eee() by looking at the value of
-> eee_active passed to the mac_set_eee callback.
+> Rather than calling phy_init_eee() retrieve the same information from
+> within the phydev structure.
 > 
 > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-Reviewed-by: Florian Fainelli <florian.fainelli@broadcon.com>
+Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
 -- 
 Florian
 
