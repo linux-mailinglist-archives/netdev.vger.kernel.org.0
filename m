@@ -1,189 +1,203 @@
-Return-Path: <netdev+bounces-6367-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6368-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3010A715F53
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 14:29:58 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5A2C2715FCB
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 14:33:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DFEB428115E
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 12:29:56 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 101F82811F9
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 12:33:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1364B1992B;
-	Tue, 30 May 2023 12:29:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A07012B81;
+	Tue, 30 May 2023 12:33:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00F0418007
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 12:29:54 +0000 (UTC)
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67AF4107
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 05:29:40 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id e9e14a558f8ab-33aa60f4094so10559665ab.1
-        for <netdev@vger.kernel.org>; Tue, 30 May 2023 05:29:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1685449778; x=1688041778;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=db7pOK2qWllgoSD+hdy9un8RIi8jDZibrX+vbM0TbcI=;
-        b=E3f6YBkCcce5sNygYmsqPom7hQcebcWA4FKh0jB+WuU4bCUNTTiVDOQ4oYLgDlkbaa
-         +RIM1noTWHCjhF2Ve3BVHBooqefxmRSfa04XfNOEIjU3UVbYw6PptOdhcb86Pft+JLK3
-         zrKLc5jfK02NFqj8hKTzoDVR42EKfq9IpM1KCGtmLoFN0dwef3sDgsRdxDF6HWltZGWe
-         OPUuAcdUCowRP1t2kwVk1JqpElJ0HUP7QDw1pp3ZXNAmPvcOsdM3Bj5JG6BfUKZA5GEC
-         TjNm4TPYZRmP+WRzwsS0MRUcGlExjiaeAuIEI1y7C5GuR1ISYq9tEEE2/qvQJgjIBycC
-         C9UA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685449778; x=1688041778;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=db7pOK2qWllgoSD+hdy9un8RIi8jDZibrX+vbM0TbcI=;
-        b=l76+hXtZ6EcglSsRRdQjL7EGwpYFbzySAi3wec9E/9psyVxCjiPvn3P2Ocqi8nkOtm
-         QcdFzzynu7VI43abpvipFUEXqs0CruVD6Pce0X5XnMJNwR0vk2c7y89B5zl+L2/hCnhZ
-         AiSgtodo+9WGotYq57boYH3+ZBG307Vsm9SeXMOxUCak3nAyrzHlSLMg0jnkCNip+sop
-         HIlJZMFLq10LZyIsVVaEuA+XjpBZownQaMWj0CBEqEWCzjoG/fhklwYpRVaNfNxHQV1G
-         5dnZHzBKQErefc7tdft+HZ3sIIYUlFWGeAKIfpug9iFSuxjT//OQp3OJ76KaRW4E/32K
-         2WKw==
-X-Gm-Message-State: AC+VfDxgWpzL6xrZSEJG5jh24UqdZ0q5FBMA6XpFXtgC2KNeT7vm7j/P
-	xIdBPpKoSmUC8gw5aWwBBBqn0w==
-X-Google-Smtp-Source: ACHHUZ6TM/HJSRb/wKW1p0GHS4HzM3dN4kBjO5DaLuSqMt0fzSDZPsxL+zNlyWRu2e+sQg2eZZRvHQ==
-X-Received: by 2002:a92:d688:0:b0:331:107d:e96e with SMTP id p8-20020a92d688000000b00331107de96emr1311753iln.16.1685449777883;
-        Tue, 30 May 2023 05:29:37 -0700 (PDT)
-Received: from [172.22.22.28] ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id g186-20020a025bc3000000b0041643b78cbesm707344jab.120.2023.05.30.05.29.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 May 2023 05:29:37 -0700 (PDT)
-Message-ID: <3c4d235d-8e49-61a2-a445-5d363962d3e7@linaro.org>
-Date: Tue, 30 May 2023 07:29:36 -0500
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0E69FBED;
+	Tue, 30 May 2023 12:33:06 +0000 (UTC)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49571A7;
+	Tue, 30 May 2023 05:32:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685449960; x=1716985960;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=wJIsJkCkiX+7Fk0sprrAv2Zsb95lgSdZOFi48+nt/hc=;
+  b=nDOnnwa6jZ5mrqIKHMvHkeWbRqgmP41Z/Gr6EwJHBN7VJ136WHHG08XP
+   x/cnfOeMsT8PJscqnTe3B6kh2Gd43i11P4sxZEniIBTltHIEWYf42jeIm
+   Ifq51SbngF0E7DcescO4SjSZaPyUoiTtIYyipChMdCyDiIQSgZgHcuJu/
+   RncTBBPDumaxTgNMl1co4infNBbyuvWLjYpCjD32r50s7iCUfIHg5+C8R
+   eQvQ6NIAR6Zp+/a1eNvRwHS4QlCUmX4S023WsF3LAW0OMYIhbz7T9AOQj
+   A1f6qIkxv1t/0euOASuGDNK1w5bKpdAZx6t+fUYTe7jasm7hgfLSW5g52
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="334521705"
+X-IronPort-AV: E=Sophos;i="6.00,204,1681196400"; 
+   d="scan'208";a="334521705"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 05:31:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="953114719"
+X-IronPort-AV: E=Sophos;i="6.00,204,1681196400"; 
+   d="scan'208";a="953114719"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmsmga006.fm.intel.com with ESMTP; 30 May 2023 05:31:30 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Tue, 30 May 2023 05:31:29 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Tue, 30 May 2023 05:31:29 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Tue, 30 May 2023 05:31:29 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.108)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Tue, 30 May 2023 05:31:28 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HZ/AuBXMDE88z/ud8gA2hpM/tIzpTIuGBi1CEa/0iY9eEaHrOuQdQKIlXLZhGUsmJ0/Rshm62l+ajbTygLfQtMhGnyTTDm1jvP9f67iKO46EbtWD7vaNtU6LR1lVyeO/fSxYxng03M+3EFReKDw8PTu+8HqsPYqIYl+7GeDop7s2d1kOJM5EsnZqNlks8h1cVC7CGxbmzWROBx6v890rnsuN7Y84V5gFvpqv8Sl9whfV2NHZ3rXy9fU3V6IJtGN6Hwf1RO8N7PgDg3HAyJh/7fBjjAzt2YaPBsCqlUOkgS3wT3mCDQKKxZFlFPNHVuScM7L8ssUtCCkTThi7ogJBIA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OIj/ed3zuUMPi0ePlcValbi+nZG2Krh/chfpGWjY5RU=;
+ b=ItdR/w7YFlfaOA7jQxzl+vVWIyI4QTPxx2QrYVQwrdDOpao8FuU/h1zr/jbVQxrXAbLBt0hTSSvkRMqQGggQ8buIc3DCCW8+gwmoH6mPsXLY0NYLWwCjXCOP4JCTiUlLI99BUcN6jryQeWtFngV5uIZycjY/JDdsk16PgTQcLUgqVkIxEthNuH/Bxv01otCcxfPG3bIo0YhLR3iA+2VWbWlg7MooLaNG1ARo8G7LQL8v2xaoqglRhggmMqPm+jGS9v6HOvSqA48sbtlz15wowxrawTDraKQlN/ccLANhBcSdDn7dQOXkWwJb+4sAbHd6GslOspsp8rM2/Qw5bymsmQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
+ LV8PR11MB8606.namprd11.prod.outlook.com (2603:10b6:408:1f7::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23; Tue, 30 May
+ 2023 12:31:27 +0000
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::9e4f:80cc:e0aa:6809]) by DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::9e4f:80cc:e0aa:6809%2]) with mapi id 15.20.6433.022; Tue, 30 May 2023
+ 12:31:27 +0000
+Date: Tue, 30 May 2023 14:31:20 +0200
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To: Simon Horman <simon.horman@corigine.com>
+CC: <bpf@vger.kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
+	<andrii@kernel.org>, <netdev@vger.kernel.org>, <magnus.karlsson@intel.com>,
+	<bjorn@kernel.org>, <tirthendu.sarkar@intel.com>
+Subject: Re: [PATCH v2 bpf-next 13/22] xsk: report ZC multi-buffer capability
+ via xdp_features
+Message-ID: <ZHXsmDhfw9hxjUCe@boxer>
+References: <20230529155024.222213-1-maciej.fijalkowski@intel.com>
+ <20230529155024.222213-14-maciej.fijalkowski@intel.com>
+ <ZHXkQX0uSh8tDFTO@corigine.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZHXkQX0uSh8tDFTO@corigine.com>
+X-ClientProxiedBy: FR0P281CA0141.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:96::12) To DM4PR11MB6117.namprd11.prod.outlook.com
+ (2603:10b6:8:b3::19)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net] net: ipa: Use the correct value for IPA_STATUS_SIZE
-Content-Language: en-US
-To: Bert Karwatzki <spasswolf@web.de>,
- Simon Horman <simon.horman@corigine.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <7ae8af63b1254ab51d45c870e7942f0e3dc15b1e.camel@web.de>
- <ZHWhEiWtEC9VKOS1@corigine.com>
- <2b91165f667d3896a0aded39830905f62f725815.camel@web.de>
-From: Alex Elder <elder@linaro.org>
-In-Reply-To: <2b91165f667d3896a0aded39830905f62f725815.camel@web.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|LV8PR11MB8606:EE_
+X-MS-Office365-Filtering-Correlation-Id: fd791f70-2853-47ba-d2ad-08db6109c99b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: DDopzqg0lXHWrNUdT9N6DcVMlGF3vdBIz2cFvsghMnTzxQq/ynalbAk84dwzCngAo9bwoRNukm7uE5k6ZIz/OL+djmYPD3ULG51VuqWPXr8wcMV497lszSoMyGYk9TEAoZTo+Dg2nBR5VRbvnCqnUgSH6KpPDQM7i8zjz39pFVpiPItN61xWEFT3UeOiI6JCJ1tC8Ui4iuR/3sfrJQow49LanZXTgUl9OElEIkbdKHXqWmJlFLbdAcWrr+7feez9A+yAr5BSWziMxIltz4ZABSmFrTNCL5CBy4KEKs9/l1RjlkTjTdvSAZxZCH5Kc6u2iJumi0UAbRSKQ1AIUOmTrhdKYGUNT0Hkw8WqvseV0fk0OWsc9pSO/N2DRG3KM/4pOyc8v+HqfRMwCz3xgMp5PDKSNKqcXVCetbWR0UAjoVahdyoOyxFg5FKBKZ97PzLMavwKaYtZ+3MsBvoptO+8E3DyJOppJuv4Yo3xc/yFYHb6aNWwL1vTdJnje2IxZEShA5CuJxlyxlfd15TfeVjY2+DRCnYiq4XEPsubdRvd31xMJE9wZQD+wxZjUDNXBdQj
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(39860400002)(396003)(376002)(346002)(366004)(136003)(451199021)(478600001)(8936002)(8676002)(44832011)(5660300002)(2906002)(33716001)(86362001)(4326008)(6916009)(66556008)(66476007)(66946007)(82960400001)(316002)(38100700002)(41300700001)(186003)(107886003)(6506007)(6512007)(9686003)(26005)(6486002)(6666004)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nxy+ZBWGtRJLVml2aMbw5ej8ekTwDqINFBb6/wc6EibGDrjPacMHJbr9YLkl?=
+ =?us-ascii?Q?q8Bx08pJhD2QXWmvejTZG3Mg0LQNPAIEXe/Q853ww9YSpbs0EyULBIxYErdk?=
+ =?us-ascii?Q?z8RzgGixoARhFeYbBE6FIqXWfICdCsV8pn9wIyAgDD98loYMuwigDrmBbED9?=
+ =?us-ascii?Q?rsqMe77g6FlDoH+ARP6nR1mpBmedTC38xhPJp83JKbvPlob3VHnE8wLAwK4s?=
+ =?us-ascii?Q?0FigHlNKb7IqlrdLyk0+H017GMEgqOa6anF4r12tV6KaDaQQt0bREIGstcxk?=
+ =?us-ascii?Q?ga35tVJhLiUY2ZupEp1oZ0V9tP745Ebt/kA4CARPwk8aX1/Ynvg5CfvUZRzJ?=
+ =?us-ascii?Q?KUNKjBKgaMAiHTX3PSalpXkUZDbP9iK87cyfKyM4u0apd4x7FP459KeiRwf1?=
+ =?us-ascii?Q?bYrnrhyVcu+h8zP0i61v4OAsBtXoiVPPfZwFKlqgqheOJMh01OCVUQymFYDT?=
+ =?us-ascii?Q?X02MFcTeCCNcAx3w1BfrIoqy4x2SZYlNF5QSUZ3J4z6NlTT137B2/0+yqBnn?=
+ =?us-ascii?Q?B/k7yI6SpNc4sDFx0v96v5lq7h4y5h1HWZ+lulOxttjrf6XKbhVbLRysWPUw?=
+ =?us-ascii?Q?nkQYvkO41bX00O7Md9Y9MdIqaof89ojgOyzEZE8yjTgUVR9mRv+AaXA4yVJ+?=
+ =?us-ascii?Q?8H73O7x7/b3Br8VtyyeX89wJGmDlwCNiaUpHnWP3vCpALsyFgwTEz6hkjFG1?=
+ =?us-ascii?Q?z/+rlUetL3idGwNJ3KIKQwFnmlYkHR/+I5TrkB+oCLHM49ptMXM7w+KqRl7O?=
+ =?us-ascii?Q?HGIpNqs+yak5AkT+HznaIT5iBjwDJSXuFeuUxwQryvBf3t/rxBIH143Qc5RX?=
+ =?us-ascii?Q?aKkyT0I1wOt/2Jvtm9rj6Rw8F+B67WbriSbkuALiwL5E1JGNIYjZc3uDeBa1?=
+ =?us-ascii?Q?gAf4HmfVYtEhqcFxTWuKoN07i4E1qAz5/gS5FDY+k4hccX+wpiDZjutkO+Hc?=
+ =?us-ascii?Q?kuzQHqrNcXRPvvhIUlKP+gLh5TqhQZgO4JVSOYrB8YEa3Mn/wq+p54jODCrt?=
+ =?us-ascii?Q?/45yZvb0EXq9dYMhoMIDbiUrwEtRvfRGHX7GlzG+TtnSIfJ4+Qk9AC7a+Z+Z?=
+ =?us-ascii?Q?OwjYtUjeShVwjQ7Z2pW7cgI+uUKZt+0EFXaD1aZzY6SJ8YgTKyG35Fm7xF5Q?=
+ =?us-ascii?Q?ddlORbNrM9g7ON3ZdGHDnx+Fo3zUusZ4MnwVDgv4NQYMiItYcrWd0Z4Ztocm?=
+ =?us-ascii?Q?DfATo7RfPALXIdQA4ntrP8pTmu+HRd8bESQw/gqHPE3BVBYxppuWrL7ZBSH1?=
+ =?us-ascii?Q?YRomVX5EhTsSarkZjMoJ1a7vYrGq088DmFuttnL2TYNPHum64rDWm48FcNs3?=
+ =?us-ascii?Q?fWpPyA53TzQt0Bkl39D8isN9q4StdRumFHgyHEuD7k22mgnJiR3b4WlR+kb/?=
+ =?us-ascii?Q?x9HtuYRidCf70LQ/ovftdKt1MW52ogEFi5gV+ImPV+f9H9FLQdtjiLubALY8?=
+ =?us-ascii?Q?qFarsm3B8DlneEtGIYUGGNHFmXObZ063+6QTPR8XVkLEzXS6RGVN+Z20nOLs?=
+ =?us-ascii?Q?Qu137DXRheFgegtB8HzTLYs6ZN9oMbEJNIoxUX6AVE0Y7eyXeH5mfL7Jm92h?=
+ =?us-ascii?Q?tx+7woasgdxGd74rUde/NIuCsmX2S64ff2ss2IDw57MyaU1JZk0womGrKZ5J?=
+ =?us-ascii?Q?9A=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: fd791f70-2853-47ba-d2ad-08db6109c99b
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 12:31:26.9512
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yvig4c3zzi8IeTlYQ+nLvyzCfJor2LTfDn9WEagECUGD0ZZRgmVewiccddZVA/p0sO4XfnhUKyJ6s3+Yh772CRGrXtm03yM5LDzlbxnx+7E=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR11MB8606
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 5/30/23 4:10 AM, Bert Karwatzki wrote:
-> Am Dienstag, dem 30.05.2023 um 09:09 +0200 schrieb Simon Horman:
->> On Sat, May 27, 2023 at 10:46:25PM +0200, Bert Karwatzki wrote:
->>> commit b8dc7d0eea5a7709bb534f1b3ca70d2d7de0b42c introduced
->>> IPA_STATUS_SIZE as a replacement for the size of the removed struct
->>> ipa_status. sizeof(struct ipa_status) was sizeof(__le32[8]), use this
->>> as IPA_STATUS_SIZE.
-
-This is better, however it really isn't done in a way that's
-appropriate for a Linux kernel patch.  I will gladly help you
-get it right if you have the patience for that.  But I'm not
-going to say anything yet--until you say you want me to help
-you do this.  If you prefer, I can submit the patch for you.
-
-The reason this is important is your commit is permanent, and
-just like code, commit messages are best if kept consistent
-and readable.  I also am offering to help you understand so
-you avoid any trouble next time you want to send a kernel patch.
-
-Let me know what you prefer.
-
-					-Alex
-
->>>
->>>>  From 0623148733819bb5d3648b1ed404d57c8b6b31d8 Mon Sep 17 00:00:00 2001
->>> From: Bert Karwatzki <spasswolf@web.de>
->>> Date: Sat, 27 May 2023 22:16:52 +0200
->>> Subject: [PATCH] Use the correct value for IPA_STATUS_SIZE.
->>> IPA_STATUS_SIZE
->>>   was introduced in commit b8dc7d0eea5a7709bb534f1b3ca70d2d7de0b42c as a
->>>   replacment for the size of the removed struct ipa_status which had
->>> size =
->>>   sizeof(__le32[8]).
->>>
->>> Signed-off-by: Bert Karwatzki <spasswolf@web.de>
->>
->> Hi Bert,
->>
->> As well as the feedback provided by Jakub elsewhere in this
->> thread I think it would be useful to CC the author of the above mentioned
->> commit, Alex Elder <elder@linaro.org>. I have CCed him on this email.
->> Please consider doing likewise when you post v2.
->>
->> FWIIW, I did take a look.
->> And I do agree with your maths: struct ipa_status was 32 (= 8 x 4) bytes long.
->>
->>> ---
->>>   drivers/net/ipa/ipa_endpoint.c | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/net/ipa/ipa_endpoint.c
->>> b/drivers/net/ipa/ipa_endpoint.c
->>> index 2ee80ed140b7..afa1d56d9095 100644
->>> --- a/drivers/net/ipa/ipa_endpoint.c
->>> +++ b/drivers/net/ipa/ipa_endpoint.c
->>> @@ -119,7 +119,7 @@ enum ipa_status_field_id {
->>>   };
->>>   
->>>   /* Size in bytes of an IPA packet status structure */
->>> -#define IPA_STATUS_SIZE                        sizeof(__le32[4])
->>> +#define IPA_STATUS_SIZE                        sizeof(__le32[8])
->>>   
->>>   /* IPA status structure decoder; looks up field values for a structure
->>> */
->>>   static u32 ipa_status_extract(struct ipa *ipa, const void *data,
->>> -- 
->>> 2.40.1
->>>
->>> Bert Karwatzki
+On Tue, May 30, 2023 at 01:55:45PM +0200, Simon Horman wrote:
+> On Mon, May 29, 2023 at 05:50:15PM +0200, Maciej Fijalkowski wrote:
+> > Introduce new xdp_feature NETDEV_XDP_ACT_NDO_ZC_SG that will be used to
+> > find out if user space that wants to do ZC multi-buffer will be able to
+> > do so against underlying ZC driver.
+> > 
+> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > ---
+> >  include/uapi/linux/netdev.h | 4 ++--
+> >  net/xdp/xsk_buff_pool.c     | 6 ++++++
+> >  2 files changed, 8 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/include/uapi/linux/netdev.h b/include/uapi/linux/netdev.h
+> > index 639524b59930..bfca07224f7b 100644
+> > --- a/include/uapi/linux/netdev.h
+> > +++ b/include/uapi/linux/netdev.h
+> > @@ -33,8 +33,8 @@ enum netdev_xdp_act {
+> >  	NETDEV_XDP_ACT_HW_OFFLOAD = 16,
+> >  	NETDEV_XDP_ACT_RX_SG = 32,
+> >  	NETDEV_XDP_ACT_NDO_XMIT_SG = 64,
+> > -
+> > -	NETDEV_XDP_ACT_MASK = 127,
+> > +	NETDEV_XDP_ACT_NDO_ZC_SG = 128,
 > 
-> Here is v2 of the patch, the first one was garbled by the linebreak setting of
-> evolution.
+> Hi Maciej,
 > 
-> From: Bert Karwatzki <spasswolf@web.de>
-> Date: Tue, 30 May 2023 10:55:55 +0200
-> Subject: [PATCH] IPA_STATUS_SIZE was introduced in commit b8dc7d0eea5a as a
->   replacement for the size of the removed struct ipa_status of size
->   sizeof(__le32[8]). Use this value as IPA_STATUS_SIZE.
-> 
-> Signed-off-by: Bert Karwatzki <spasswolf@web.de>
-> ---
->   drivers/net/ipa/ipa_endpoint.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-> index 2ee80ed140b7..afa1d56d9095 100644
-> --- a/drivers/net/ipa/ipa_endpoint.c
-> +++ b/drivers/net/ipa/ipa_endpoint.c
-> @@ -119,7 +119,7 @@ enum ipa_status_field_id {
->   };
->   
->   /* Size in bytes of an IPA packet status structure */
-> -#define IPA_STATUS_SIZE			sizeof(__le32[4])
-> +#define IPA_STATUS_SIZE			sizeof(__le32[8])
->   
->   /* IPA status structure decoder; looks up field values for a structure */
->   static u32 ipa_status_extract(struct ipa *ipa, const void *data,
+> Please consider adding NETDEV_XDP_ACT_NDO_ZC_SG to the Kernel doc
+> a just above netdev_xdp_act.
 
+right, my bad. i'll do this in next rev but i'd like to gather more
+feedback from people. thanks once again for spotting an issue.
+
+> 
+> > +	NETDEV_XDP_ACT_MASK = 255,
+> >  };
+> >  
+> >  enum {
+> 
+> ...
 
