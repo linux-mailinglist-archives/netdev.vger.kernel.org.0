@@ -1,161 +1,123 @@
-Return-Path: <netdev+bounces-6317-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6318-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 77EF4715ADA
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 11:58:27 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 42E46715AE6
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 12:00:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 24A9C1C20B99
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 09:58:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F0ED0280ECC
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 10:00:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7AFA016420;
-	Tue, 30 May 2023 09:58:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1622516432;
+	Tue, 30 May 2023 10:00:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C45B14264
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 09:58:24 +0000 (UTC)
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077F4CD
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 02:58:21 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id 98e67ed59e1d1-256c8bed212so231382a91.3
-        for <netdev@vger.kernel.org>; Tue, 30 May 2023 02:58:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1685440700; x=1688032700;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=bmz6Z7NUWk0U026+5Q0T6CzUzMYytLkTng8HlWy5Lg4=;
-        b=iettzvPTOMlgAHfkVY1pS+qqpIpB2PLO5C8dRw6KQRujBajTAL8JD/241Bty/FRLjz
-         9s4iBi5fUThcbTsop2dBSPpWY8pQlaROVBqEShVgYP2QADtbotxRMzdurP4sveqF4v5l
-         bep8dihv0HzugpAtHfbYgA9QSk+bN9QuV6G/i2qx2JC57dXj85puYaB4rwWAB2hHSfo3
-         HtQNjQVoSoQ1gqKdnESow3SdjfNShjC5FxSWHmqXreZrB1WSWpc3Rnk9x5ICwkavB/2N
-         h3IjZm8TacNSoTjLzCxgvkdlRjTk9O4eLCLKj+0vOksGRzCpNIohHIq+3jgaBLTMwvI5
-         inJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685440700; x=1688032700;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bmz6Z7NUWk0U026+5Q0T6CzUzMYytLkTng8HlWy5Lg4=;
-        b=iFUSZUkC9lX+FoFa1Q/jn/pgKj9rjq4v+hg3Do/qm82/B8p6uAijy3ZbKxMIqhrVIA
-         JV1OdvSDcLXGIvikD9yx4agI5ZWQNKHjWPiyh3ESME8u5PImwgXXGuCIpMrkIiwZLrZp
-         1Gme8O4ZBs02Vi20cCJYbagTYYRquMlbAyLoLJWYLKFfzkvLCaDi1CckKIL9/s+UA9A+
-         Xroblz/DLWzMei3AOf4si8fAB/zgsg7vDjNQAg0z/UnNDNZiXch9LgXNmFDo5MSiRumm
-         Ur1qOCwc8kknZY8JDkGfYVm697yZcf+vdpa2c4lf/P+B1SMNraZeHeR03Z+vnRGKcohh
-         /ssw==
-X-Gm-Message-State: AC+VfDzdNLdjyc+glOrsp+ZIlWhbE+aNRe07i9DHCzjTUmd9nViO7a1y
-	9bsSn/pxJpAXrcEWkX56nas2ZA==
-X-Google-Smtp-Source: ACHHUZ6p1Z3EqBsdp/RqVMEmZmIFHNjD3bJwaRcnPXJc1KpOkq694fn/fRX0XIQ9hPrPSn83MYTSMA==
-X-Received: by 2002:a17:90a:d510:b0:256:807c:62b with SMTP id t16-20020a17090ad51000b00256807c062bmr2085681pju.0.1685440700394;
-        Tue, 30 May 2023 02:58:20 -0700 (PDT)
-Received: from [10.94.58.170] ([203.208.167.147])
-        by smtp.gmail.com with ESMTPSA id s22-20020a17090a1c1600b002533ce5b261sm11066413pjs.10.2023.05.30.02.58.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 May 2023 02:58:19 -0700 (PDT)
-Message-ID: <529f97d7-d9b7-2049-0c9d-a8d6a23b430b@bytedance.com>
-Date: Tue, 30 May 2023 17:58:14 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC84716418
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 10:00:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 72849C433D2;
+	Tue, 30 May 2023 10:00:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685440822;
+	bh=tQ/3SHl9vr/ygwjx98i9ivbpl4z1ZQWHPcwGVuT0ah0=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=a0iMSepltDmWPKjHik13kO2U9mT1k+DR3NqgfDJeF7p2PbOKlZ3nQ7eG+NPpcoj0p
+	 kQO2UuhQGxUH4cqkA6glbBLUsSSDK69I/nwRvRqnpKKITJsUl4UbqtDwQA08w3qc63
+	 rrkVcd6MIxx88teq50SdZwHbZL3cPk5FZdY0KBn/9XC2wFo2NyCF1yMle086nihzGe
+	 6bXotejSZCMEIO/r23QBmyQBQKO3Z8secKO6l896Qcf1WZqBUA6+SV1KcGLRLixrCd
+	 tFJ54SYlN1xCcS9lzSIusssiVvw4dh1tPq3tbwn5fzZeEWnP/0/M39OJNt32lmjPBp
+	 XAQOzcv0oBsFw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4CCC3E52BFB;
+	Tue, 30 May 2023 10:00:22 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.11.0
-Subject: Re: Re: [PATCH v2 3/4] sock: Consider memcg pressure when raising
- sockmem
-To: Shakeel Butt <shakeelb@google.com>
-Cc: "David S . Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-mm@kvack.org, cgroups@vger.kernel.org
-References: <20230522070122.6727-1-wuyun.abel@bytedance.com>
- <20230522070122.6727-4-wuyun.abel@bytedance.com>
- <20230525012259.qd6i6rtqvvae3or7@google.com>
- <73b1381e-6a59-26fe-c0b6-51ea3ebf60f8@bytedance.com>
- <20230529211205.6clthjyt37c4opju@google.com>
-Content-Language: en-US
-From: Abel Wu <wuyun.abel@bytedance.com>
-In-Reply-To: <20230529211205.6clthjyt37c4opju@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v4 0/6] microchip_t1s: Update on Microchip 10BASE-T1S
+ PHY driver
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168544082230.7583.8570017963154848959.git-patchwork-notify@kernel.org>
+Date: Tue, 30 May 2023 10:00:22 +0000
+References: <20230526152348.70781-1-Parthiban.Veerasooran@microchip.com>
+In-Reply-To: <20230526152348.70781-1-Parthiban.Veerasooran@microchip.com>
+To: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
+Cc: andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ ramon.nordin.rodriguez@ferroamp.se, horatiu.vultur@microchip.com,
+ Woojung.Huh@microchip.com, Nicolas.Ferre@microchip.com,
+ Thorsten.Kummermehr@microchip.com
 
-On 5/30/23 5:12 AM, Shakeel Butt wrote:
-> 
-> +linux-mm and cgroups
-> 
-> On Mon, May 29, 2023 at 07:58:45PM +0800, Abel Wu wrote:
->> Hi Shakeel, thanks for reviewing! And sorry for replying so late,
->> I was on a vocation :)
->>
->> On 5/25/23 9:22 AM, Shakeel Butt wrote:
->>> On Mon, May 22, 2023 at 03:01:21PM +0800, Abel Wu wrote:
->>>> For now __sk_mem_raise_allocated() mainly considers global socket
->>>> memory pressure and allows to raise if no global pressure observed,
->>>> including the sockets whose memcgs are in pressure, which might
->>>> result in longer memcg memstall.
->>>>
->>>> So take net-memcg's pressure into consideration when allocating
->>>> socket memory to alleviate long tail latencies.
->>>>
->>>> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
->>>
->>> Hi Abel,
->>>
->>> Have you seen any real world production issue which is fixed by this
->>> patch or is it more of a fix after reading code?
->>
->> The latter. But we do observe one common case in the production env
->> that p2p service, which mainly downloads container images, running
->> inside a container with tight memory limit can easily be throttled and
->> keep memstalled for a long period of time and sometimes even be OOM-
->> killed. This service shows burst usage of TCP memory and I think it
->> indeed needs suppressing sockmem allocation if memcg is already under
->> pressure. The memcg pressure is usually caused by too many page caches
->> and the dirty ones starting to be wrote back to slow backends. So it
->> is insane to continuously receive net data to consume more memory.
->>
-> 
-> We actually made an intentional decision to not throttle the incoming
-> traffic under memory pressure. See 720ca52bcef22 ("net-memcg: avoid
-> stalls when under memory pressure"). If you think the throttling
-> behavior is preferred for your application, please propose the patch
-> separately and we can work on how to enable flexible policy here.
+Hello:
 
-Ah I see. Thanks for providing the context. So suppressing the alloc
-under memcg pressure could further keep senders waiting if SACKed segs
-get dropped from the OFO queue.
+This series was applied to netdev/net-next.git (main)
+by Paolo Abeni <pabeni@redhat.com>:
 
+On Fri, 26 May 2023 20:53:42 +0530 you wrote:
+> This patch series contain the below updates,
+> - Fixes on the Microchip LAN8670/1/2 10BASE-T1S PHYs support in the
+>   net/phy/microchip_t1s.c driver.
+> - Adds support for the Microchip LAN8650/1 Rev.B0 10BASE-T1S Internal
+>   PHYs in the net/phy/microchip_t1s.c driver.
 > 
->>>
->>> This code is quite subtle and small changes can cause unintended
->>> behavior changes. At the moment the tcp memory accounting and memcg
->>> accounting is intermingled and I think we should decouple them.
->>
->> My original intention to post this patchset is to clarify that:
->>
->>    - proto pressure only considers sysctl_mem[] (patch 2)
->>    - memcg pressure only indicates the pressure inside itself
->>    - consider both whenever needs allocation or reclaim (patch 1,3)
->>
->> In this way, the two kinds of pressure maintain purer semantics, and
->> socket core can react on both of them properly and consistently.
+> Changes:
+> v2:
+> - Updated cover letter contents.
+> - Modified driver description is more generic as it is common for all the
+>   Microchip 10BASE-T1S PHYs.
+> - Replaced read-modify-write code with phy_modify_mmd function.
+> - Moved */ to the same line for the single line comments.
+> - Changed the type int to u16 for LAN865X Rev.B0 fixup registers
+>   declaration.
+> - Changed all the comments starting letter to upper case for the
+>   consistency.
+> - Removed return value check of phy_read_mmd and returned directly in the
+>   last line of the function lan865x_revb0_indirect_read.
+> - Used reverse christmas notation wherever is possible.
+> - Used FIELD_PREP instead of << in all the places.
+> - Used 4 byte representation for all the register addresses and values
+>   for consistency.
+> - Comment for indirect read is modified.
+> - Implemented "Reset Complete" status polling in config_init.
+> - Function lan865x_setup_cfgparam is split into multiple functions for
+>   readability.
+> - Reference to AN1760 document is added in the comment.
+> - Removed interrupt disabling code as it is not needed.
+> - Provided meaningful macros for the LAN865X Rev.B0 indirect read
+>   registers and control.
+> - Replaced 0x10 with BIT(4).
+> - Removed collision detection disable/enable code as it can be done with
+>   a separate patch later.
 > 
-> Can you please resend you patch series (without patch 3) and Cc to
-> linux-mm, cgroups list and memcg maintainers as well?
+> [...]
 
-Yeah, absolutely.
+Here is the summary with links:
+  - [net-next,v4,1/6] net: phy: microchip_t1s: modify driver description to be more generic
+    https://git.kernel.org/netdev/net-next/c/ca33db4a8602
+  - [net-next,v4,2/6] net: phy: microchip_t1s: replace read-modify-write code with phy_modify_mmd
+    https://git.kernel.org/netdev/net-next/c/221a5344806c
+  - [net-next,v4,3/6] net: phy: microchip_t1s: update LAN867x PHY supported revision number
+    https://git.kernel.org/netdev/net-next/c/6f12765ecad3
+  - [net-next,v4,4/6] net: phy: microchip_t1s: fix reset complete status handling
+    https://git.kernel.org/netdev/net-next/c/1d7650b8ce60
+  - [net-next,v4,5/6] net: phy: microchip_t1s: remove unnecessary interrupts disabling code
+    https://git.kernel.org/netdev/net-next/c/b4010beb347d
+  - [net-next,v4,6/6] net: phy: microchip_t1s: add support for Microchip LAN865x Rev.B0 PHYs
+    https://git.kernel.org/netdev/net-next/c/972c6d834633
 
-Thanks,
-	Abel
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
 
