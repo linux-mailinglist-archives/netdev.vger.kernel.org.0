@@ -1,251 +1,109 @@
-Return-Path: <netdev+bounces-6395-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6397-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D37BB716248
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 15:40:54 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 10BD871624E
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 15:41:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 367E81C20BEE
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 13:40:51 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C0020281047
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 13:41:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E3A142099E;
-	Tue, 30 May 2023 13:40:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CA2C6209A1;
+	Tue, 30 May 2023 13:41:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB392134C8;
-	Tue, 30 May 2023 13:40:49 +0000 (UTC)
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC29FC7;
-	Tue, 30 May 2023 06:40:47 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id 2adb3069b0e04-4f4f8b94c06so3086788e87.1;
-        Tue, 30 May 2023 06:40:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685454046; x=1688046046;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=SmmXWf5VDDMZcW+QNCbT/c4wqHIFll2ETEUO3d8PsKA=;
-        b=q9aRVDAZ+cZ8l92OzxQqOrX4a4jGbQ2d3AIrLy33mkCpDYTogOwgxXXQAkOem8nYuf
-         tcMNvNCXkg+NqZ/7CMLow4ui368c9WxjohtxdqLfMgOtGLASQ6+lIfqj2KS2/q8kOcmy
-         D/TjIFkmFSzl9y0i/wa7yRfClV0J1lA3DaTmpTgqBJcLeLU3tqkIHMa+qeMz03JpRELo
-         KZzzkYvsgzNSuatIMLwGTmzDgRZnHJbsPt3JpFXZYDH5diQ2Eggui8jh+V+1lAaZK1tn
-         U3I2eWjDGhWQXVBYQ4yJxWjozJDyKUUKfba6IGV3tp1v0Gradx7pNbxRVK9cb9Zx9gNp
-         wUVA==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE2A11993C
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 13:41:16 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87727100
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 06:41:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685454069;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=n0CkyHEtcTifnOXVB8Vspl4eg4a6Ka45BNcOmHqGA8I=;
+	b=DXDhZQgOZ30dsmu57lWpRlBT2tAldgsxGaNjuBUGyKs93cTFRC6Ubvk0C3HyayivaqoerI
+	KOuJi2ECQ3WO9hIDT2XSyQ9Fhyi7vJXujURo7tea+cfeM39ZX2aFikxAeoEdPZVsGwcRDc
+	dT2JlnbrD+u2S06cRNBdj3ltut+B4qs=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-222-45Fpp_r6N623V_yF-QNYEQ-1; Tue, 30 May 2023 09:41:08 -0400
+X-MC-Unique: 45Fpp_r6N623V_yF-QNYEQ-1
+Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-75cb47e5507so8782685a.1
+        for <netdev@vger.kernel.org>; Tue, 30 May 2023 06:41:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685454046; x=1688046046;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SmmXWf5VDDMZcW+QNCbT/c4wqHIFll2ETEUO3d8PsKA=;
-        b=KcmGjbQnUD1l5KOUhy3r6L0CYvznAoSuSkrW8lBtdCPvCOvcGkwEIMRIj2a3ESq6R5
-         Zji2c0aM7CkrYHlDVg2x8nZCSi+dtYHe+6EYQHVHPm3A19IIFYfezp5195GPiglIysZw
-         40V7RwKMyLantE16tLrmoL7sdJg+rgYSwYRl90BF+XLAZYWosUqigBsEKLM8eJubC5Iw
-         BsW0tKwQ3wU0rSzr/9OfaDx3kphaC+PqhwdJcVbgbwWRSJ/Zx1uRCFQNBAz78crCZfMw
-         kbDLIeK+nptSWbnIygrQbq5iB4cRbhIMFBoD+dbbzWnX6H+1pPtN9giFKOZ+WHaXswEU
-         okgA==
-X-Gm-Message-State: AC+VfDz8o/5oIKuepn7A5Y0yFe6yUz0WEy70fMgZ6Gank6GqCoCOSEj4
-	Q/ovKUMgXKybjuqfiDBjv1M=
-X-Google-Smtp-Source: ACHHUZ4w6GAJxwyL6/ORDkh3BmkW9R3onKMmQiZinaXybBNgUVHX54Lyv8nxVmX7ze1ReHJXNfiLEA==
-X-Received: by 2002:a2e:3013:0:b0:2af:1120:3f6a with SMTP id w19-20020a2e3013000000b002af11203f6amr803855ljw.11.1685454045843;
-        Tue, 30 May 2023 06:40:45 -0700 (PDT)
-Received: from [192.168.0.107] ([77.124.85.177])
-        by smtp.gmail.com with ESMTPSA id i11-20020a170906114b00b00965af4c7f07sm7293224eja.20.2023.05.30.06.40.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 May 2023 06:40:45 -0700 (PDT)
-Message-ID: <dc19366d-8516-9f2a-b6ed-d9323e9250c9@gmail.com>
-Date: Tue, 30 May 2023 16:40:41 +0300
+        d=1e100.net; s=20221208; t=1685454068; x=1688046068;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=n0CkyHEtcTifnOXVB8Vspl4eg4a6Ka45BNcOmHqGA8I=;
+        b=i9wLH9hicGkOSqhutX+8r5DX9G1YyLasG0/o+Ixd8OvSfvGbvNztSbwDvFOh6liOA/
+         BVlLuWVttQE9+4gFFp0LDCRR7MgCuL3kU7gvV0ZvxLnn10PT0wK24XkdZ3dU6YYbOm+i
+         19hTW/qeH4GFS5/ZHKBoXycs+vm15WRKqTvCT9PxYGiftdl7tNEJMLVzO1TfBBusNBQ6
+         GM+v7yBP3xqK9Uo61lZHrD74sF2NCniswtRaoHnbxKHbRURItgIZitmvT4AjRcholWwu
+         6ZLvNoWWTmOjC5jju5rjpVwGCodg+eQegR/xasIK0yBrVV9afBuLci6WFjY8JVUyv8hZ
+         +KZw==
+X-Gm-Message-State: AC+VfDzDuX9aBGZhlbvQE7LD+mjEHRKDBuk9sUGKMuwhfZvvmCzzdipT
+	aK38Ly4ThlKuXWW9ni98d1MfpOAUArZVoQdzsdS137HUdmirEIQlUgiLmaYEXc5GHlM2iNEtelj
+	+ndx2WvzS9dosdYdRCNKQuZkv
+X-Received: by 2002:a05:620a:2694:b0:75b:23a1:82a2 with SMTP id c20-20020a05620a269400b0075b23a182a2mr2019258qkp.3.1685454067873;
+        Tue, 30 May 2023 06:41:07 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7j/oCMBGzRbpvd7/AXnahFFwjHyAEk12eU0pbhaky5dA8obmwDB2JJodeXY7f1zLQga2djRg==
+X-Received: by 2002:a05:620a:2694:b0:75b:23a1:82a2 with SMTP id c20-20020a05620a269400b0075b23a182a2mr2019242qkp.3.1685454067613;
+        Tue, 30 May 2023 06:41:07 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-248-97.dyn.eolo.it. [146.241.248.97])
+        by smtp.gmail.com with ESMTPSA id p2-20020a05621415c200b0061b58b07130sm1355409qvz.137.2023.05.30.06.41.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 May 2023 06:41:07 -0700 (PDT)
+Message-ID: <a75954b2fd1aeccb2a6898dc9d10f7e46f611788.camel@redhat.com>
+Subject: Re: [PATCH net-next v3 1/2] usbnet: ipheth: fix risk of NULL
+ pointer deallocation
+From: Paolo Abeni <pabeni@redhat.com>
+To: George Valkov <gvalkov@gmail.com>, Foster Snowhill <forst@pen.gy>
+Cc: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>,  Jakub Kicinski <kuba@kernel.org>, Simon Horman
+ <simon.horman@corigine.com>, Jan Kiszka <jan.kiszka@siemens.com>, linux-usb
+ <linux-usb@vger.kernel.org>, Linux Netdev List <netdev@vger.kernel.org>
+Date: Tue, 30 May 2023 15:41:04 +0200
+In-Reply-To: <A4F3E461-E5BE-4707-B63A-BD6AAC3DBD02@gmail.com>
+References: <20230527130309.34090-1-forst@pen.gy>
+	 <0f7a8b0c149daa49c34a817cc24d1d58acedb9f4.camel@redhat.com>
+	 <A4F3E461-E5BE-4707-B63A-BD6AAC3DBD02@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH bpf-next 1/2] samples/bpf: fixup xdp_redirect tool to be
- able to support xdp multibuffer
-Content-Language: en-US
-To: Jesper Dangaard Brouer <jbrouer@redhat.com>,
- Alexei Starovoitov <ast@kernel.org>,
- John Fastabend <john.fastabend@gmail.com>, Jakub Kicinski <kuba@kernel.org>
-Cc: brouer@redhat.com, Daniel Borkmann <daniel@iogearbox.net>,
- Jesper Dangaard Brouer <hawk@kernel.org>, bpf@vger.kernel.org,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- netdev@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
- Nimrod Oren <noren@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>,
- Lorenzo Bianconi <lorenzo.bianconi@redhat.com>, drosen@google.com,
- Joanne Koong <joannelkoong@gmail.com>, henning.fehrmann@aei.mpg.de,
- oliver.behnke@aei.mpg.de
-References: <20230529110608.597534-1-tariqt@nvidia.com>
- <20230529110608.597534-2-tariqt@nvidia.com>
- <63d91da7-4040-a766-dcd7-bccbb4c02ef4@redhat.com>
- <4ceac69b-d2ae-91b5-1b24-b02c8faa902b@gmail.com>
- <3168b14c-c9c1-b11b-2500-2ff2451eb81c@redhat.com>
-From: Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <3168b14c-c9c1-b11b-2500-2ff2451eb81c@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Tue, 2023-05-30 at 14:11 +0300, George Valkov wrote:
+> Sorry, I attached the old version by mistake. Here is the new version:
 
+LGTM.
 
-On 30/05/2023 15:40, Jesper Dangaard Brouer wrote:
-> 
-> 
-> On 30/05/2023 14.17, Tariq Toukan wrote:
->>
->> On 30/05/2023 14:33, Jesper Dangaard Brouer wrote:
->>>
->>>
->>> On 29/05/2023 13.06, Tariq Toukan wrote:
->>>> Expand the xdp multi-buffer support to xdp_redirect tool.
->>>> Similar to what's done in commit
->>>> 772251742262 ("samples/bpf: fixup some tools to be able to support 
->>>> xdp multibuffer")
->>>> and its fix commit
->>>> 7a698edf954c ("samples/bpf: Fix MAC address swapping in xdp2_kern").
->>>>
->>>
->>> Have you tested if this cause a performance degradation?
->>>
->>> (Also found possible bug below)
->>>
->>
->> Hi Jesper,
->>
->> This introduces the same known perf degradation we already have in 
->> xdp1 and xdp2.
-> 
-> Did a quick test with xdp1, the performance degradation is around 18%.
-> 
->   Before: 22,917,961 pps
->   After:  18,798,336 pps
-> 
->   (1-(18798336/22917961))*100 = 17.97%
-> 
-> 
->> Unfortunately, this is the API we have today to safely support 
->> multi-buffer.
->> Note that both perf and functional (noted below) degradation should be 
->> eliminated once replacing the load/store operations with dynptr logic 
->> that returns a pointer to the scatter entry instead of copying it.
->>
-> 
-> Well, should we use dynptr logic in this patch then?
-> 
+Please in future prefer inline patch vs attachments even for
+discussion.
 
-AFAIU it's not there ready to be used...
-Not sure what parts are missing, I'll need to review it a bit deeper.
+Note that you will have to formally repost both patches.
 
-> Does it make sense to add sample code that does thing in a way that is 
-> sub-optimal and we want to replace?
-> ... (I fear people will copy paste the sample code).
-> 
+Thanks!
 
-I get your point.
-As xdp1 and xdp2 are already there, I thought that we'd want to expose 
-multi-buffer samples in XDP_REDIRECT as well. We use these samples for 
-internal testing.
+Paolo
 
->> I initiated a discussion on this topic a few months ago. dynptr was 
->> accepted since then, but I'm not aware of any in-progress followup 
->> work that addresses this.
->>
-> 
-> Are you saying some more work is needed on dynptr?
-> 
-
-AFAIU yes.
-But I might be wrong... I need to revisit this.
-Do you think/know that dynptr can be used immediately?
-
->>>> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
->>>> Reviewed-by: Nimrod Oren <noren@nvidia.com>
->>>> ---
->>>>   samples/bpf/xdp_redirect.bpf.c | 16 ++++++++++++----
->>>>   1 file changed, 12 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/samples/bpf/xdp_redirect.bpf.c 
->>>> b/samples/bpf/xdp_redirect.bpf.c
->>>> index 7c02bacfe96b..620163eb7e19 100644
->>>> --- a/samples/bpf/xdp_redirect.bpf.c
->>>> +++ b/samples/bpf/xdp_redirect.bpf.c
->>>> @@ -16,16 +16,21 @@
->>>>   const volatile int ifindex_out;
->>>> -SEC("xdp")
->>>> +#define XDPBUFSIZE    64
->>>
->>> Pktgen sample scripts will default send with 60 pkt length, because the
->>> 4 bytes FCS (end-frame checksum) is added by hardware.
->>>
->>> Will this result in an error when bpf_xdp_load_bytes() tries to copy 64
->>> bytes from a 60 bytes packet?
->>>
->>
->> Yes.
->>
->> This can be resolved by reducing XDPBUFSIZE to 60.
->> Need to check if it's OK to disregard these last 4 bytes without 
->> hurting the XDP program logic.
->>
->> If so, do you suggest changing xdp1 and xdp2 as well?
->>
-> 
-> I can take care of reducing XDPBUFSIZE to 60 on xpd1 and xdp2, as I
-> already had to make these changes for the above quick bench work ;-)
-> I'll send out patches shortly.
-> 
-> 
-Thanks.
-
-Are we fine with the above?
-Should we just change the array size to 60 and re-spin?
-
->>>> +SEC("xdp.frags")
->>>>   int xdp_redirect_prog(struct xdp_md *ctx)
->>>>   {
->>>> -    void *data_end = (void *)(long)ctx->data_end;
->>>> -    void *data = (void *)(long)ctx->data;
->>>> +    __u8 pkt[XDPBUFSIZE] = {};
->>>> +    void *data_end = &pkt[XDPBUFSIZE-1];
->>>> +    void *data = pkt;
->>>>       u32 key = bpf_get_smp_processor_id();
->>>>       struct ethhdr *eth = data;
->>>>       struct datarec *rec;
->>>>       u64 nh_off;
->>>> +    if (bpf_xdp_load_bytes(ctx, 0, pkt, sizeof(pkt)))
->>>> +        return XDP_DROP;
->>>
->>> E.g. sizeof(pkt) = 64 bytes here.
->>>
->>>> +
->>>>       nh_off = sizeof(*eth);
->>>>       if (data + nh_off > data_end)
->>>>           return XDP_DROP;
->>>> @@ -36,11 +41,14 @@ int xdp_redirect_prog(struct xdp_md *ctx)
->>>>       NO_TEAR_INC(rec->processed);
->>>>       swap_src_dst_mac(data);
->>>> +    if (bpf_xdp_store_bytes(ctx, 0, pkt, sizeof(pkt)))
->>>> +        return XDP_DROP;
->>>> +
->>>>       return bpf_redirect(ifindex_out, 0);
->>>>   }
->>>>   /* Redirect require an XDP bpf_prog loaded on the TX device */
->>>> -SEC("xdp")
->>>> +SEC("xdp.frags")
->>>>   int xdp_redirect_dummy_prog(struct xdp_md *ctx)
->>>>   {
->>>>       return XDP_PASS;
->>>
->>
-> 
 
