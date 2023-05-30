@@ -1,240 +1,77 @@
-Return-Path: <netdev+bounces-6200-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6189-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9D4137152D7
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 03:08:23 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 667D57152C9
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 03:03:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D175628100A
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 01:08:21 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2AE04280FA8
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 01:03:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3215F7F4;
-	Tue, 30 May 2023 01:08:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 425877EC;
+	Tue, 30 May 2023 01:03:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 272117ED
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 01:08:08 +0000 (UTC)
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C92ACF
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 18:08:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1685408886; x=1716944886;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=y47W/QIoqcycmY/SO0UpcCh/11OwolmY7EGs3jeMRnU=;
-  b=U5ybjth/Qqa6Gcez53Hir7INNufipAkYfOK5tT7GGd5fF11SM+eVXExC
-   b1fgQgv0OhJkAO0yzyUP+9IUSuCG7a8M7vKVQgt6BQ5IDy9GwqJ8Hm4eH
-   gRRlO0y+gPe+M9/SuniLmcSTVlP0SJWvQkAOSHVBoBfpmUlDBU/xd/nek
-   o=;
-X-IronPort-AV: E=Sophos;i="6.00,201,1681171200"; 
-   d="scan'208";a="336829830"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-bbc6e425.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 01:08:04 +0000
-Received: from EX19MTAUWB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-	by email-inbound-relay-iad-1a-m6i4x-bbc6e425.us-east-1.amazon.com (Postfix) with ESMTPS id CCDF4802EA;
-	Tue, 30 May 2023 01:08:01 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWB002.ant.amazon.com (10.250.64.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 30 May 2023 01:07:55 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.106.101.39) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 30 May 2023 01:07:52 +0000
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
-To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, David Ahern <dsahern@kernel.org>, Willem de Bruijn
-	<willemdebruijn.kernel@gmail.com>
-CC: Kuniyuki Iwashima <kuniyu@amazon.com>, Kuniyuki Iwashima
-	<kuni1840@gmail.com>, <netdev@vger.kernel.org>
-Subject: [PATCH v1 net-next 09/14] udp: Don't pass proto to udp[46]_csum_init().
-Date: Mon, 29 May 2023 18:03:43 -0700
-Message-ID: <20230530010348.21425-10-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230530010348.21425-1-kuniyu@amazon.com>
-References: <20230530010348.21425-1-kuniyu@amazon.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8F75636
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 01:03:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFD7EC433EF;
+	Tue, 30 May 2023 01:03:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685408626;
+	bh=kAT5fvEFUD94iWwrqKTiRXR3bJ3UKRVwgwbttql1BuQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=bx/Sn96Wn3n2+UjI2VfjVC79eHJ1XKlvr9VEFhenhhxtrY4GoSLjLmD20QVrwI1vp
+	 QyjAqHD4U8W+yIrP/5XJvYtKXqmvqWYlApZbdHUqv6jJnOujAK7Qcd3GOtmB7qhkib
+	 ufGXB+BB0tdaE2AAg0ieGKc12fyy1SiXXwo0Cp9sQpuyhxSyvBL4ofnFus7hphHEDc
+	 8R5x+Dct4eX2uCctzIE6NmwW7LnjSqKjJ+htK8HtiThbYuXIAMOB2Ly+OiZyHzue8P
+	 mWjwSO5HJOoZ3+RONj+AoLEycyzcPw0Ga7PdAW+Ke5ZTgKgdbpuF1aP63hHC+dcsw7
+	 wrcGCNGDLHYqA==
+Date: Mon, 29 May 2023 18:03:44 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Vlad Buslov <vladbu@nvidia.com>
+Cc: Peilin Ye <yepeilin.cs@gmail.com>, Jamal Hadi Salim <jhs@mojatatu.com>,
+ Pedro Tammela <pctammela@mojatatu.com>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Paolo Abeni
+ <pabeni@redhat.com>, Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko
+ <jiri@resnulli.us>, Peilin Ye <peilin.ye@bytedance.com>, Daniel Borkmann
+ <daniel@iogearbox.net>, "John Fastabend" <john.fastabend@gmail.com>, Hillf
+ Danton <hdanton@sina.com>, <netdev@vger.kernel.org>, Cong Wang
+ <cong.wang@bytedance.com>
+Subject: Re: [PATCH v5 net 6/6] net/sched: qdisc_destroy() old ingress and
+ clsact Qdiscs before grafting
+Message-ID: <20230529180344.3a9c2f35@kernel.org>
+In-Reply-To: <87fs7fxov6.fsf@nvidia.com>
+References: <cover.1684887977.git.peilin.ye@bytedance.com>
+	<429357af094297abbc45f47b8e606f11206df049.1684887977.git.peilin.ye@bytedance.com>
+	<faaeb0b0-8538-9dfa-4c1e-8a225e3534f4@mojatatu.com>
+	<CAM0EoM=3iYmmLjnifx_FDcJfRbN31tRnCE0ZvqQs5xSBPzaqXQ@mail.gmail.com>
+	<CAM0EoM=FS2arxv0__aQXF1a7ViJnM0hST=TL9dcnJpkf-ipjvA@mail.gmail.com>
+	<7879f218-c712-e9cc-57ba-665990f5f4c9@mojatatu.com>
+	<ZHE8P9Bi6FlKz4US@C02FL77VMD6R.googleapis.com>
+	<20230526193324.41dfafc8@kernel.org>
+	<ZHG+AR8qgpJ6/Zhx@C02FL77VMD6R.googleapis.com>
+	<CAM0EoM=xLkAr5EF7bty+ETmZ3GXnmB9De3fYSCrQjKPb8qDy7Q@mail.gmail.com>
+	<87jzwrxrz8.fsf@nvidia.com>
+	<87fs7fxov6.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.106.101.39]
-X-ClientProxiedBy: EX19D046UWB004.ant.amazon.com (10.13.139.164) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-Precedence: Bulk
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-	T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-We passed IPPROTO_UDPLITE as proto to __udp[46]_lib_rcv(), which passes
-it to udp[46]_csum_init().
+On Mon, 29 May 2023 15:58:50 +0300 Vlad Buslov wrote:
+> If livelock with concurrent filters insertion is an issue, then it can
+> be remedied by setting a new Qdisc->flags bit
+> "DELETED-REJECT-NEW-FILTERS" and checking for it together with
+> QDISC_CLASS_OPS_DOIT_UNLOCKED in order to force any concurrent filter
+> insertion coming after the flag is set to synchronize on rtnl lock.
 
-However, we no longer call __udp[46]_lib_rcv() with IPPROTO_UDPLITE, so
-proto is always IPPROTO_UDP in udp[46]_csum_init(), and we can hard-code
-it.
-
-Also, udp6_csum_init() is not called from other functions, so we move it
-to net/ipv6/udp.c as a static function.
-
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- include/net/ip6_checksum.h |  1 -
- net/ipv4/udp.c             |  7 +++----
- net/ipv6/ip6_checksum.c    | 33 ---------------------------------
- net/ipv6/udp.c             | 34 +++++++++++++++++++++++++++++++++-
- 4 files changed, 36 insertions(+), 39 deletions(-)
-
-diff --git a/include/net/ip6_checksum.h b/include/net/ip6_checksum.h
-index c8a96b888277..f9e03cc7a19c 100644
---- a/include/net/ip6_checksum.h
-+++ b/include/net/ip6_checksum.h
-@@ -83,5 +83,4 @@ void udp6_set_csum(bool nocheck, struct sk_buff *skb,
- 		   const struct in6_addr *saddr,
- 		   const struct in6_addr *daddr, int len);
- 
--int udp6_csum_init(struct sk_buff *skb, struct udphdr *uh, int proto);
- #endif
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index aee075fb5f4f..f8a545c6e3e7 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2247,15 +2247,14 @@ static int __udp4_lib_mcast_deliver(struct net *net, struct sk_buff *skb,
-  * Otherwise, csum completion requires checksumming packet body,
-  * including udp header and folding it to skb->csum.
-  */
--static inline int udp4_csum_init(struct sk_buff *skb, struct udphdr *uh,
--				 int proto)
-+static inline int udp4_csum_init(struct sk_buff *skb, struct udphdr *uh)
- {
- 	int err;
- 
- 	/* Note, we are only interested in != 0 or == 0, thus the
- 	 * force to int.
- 	 */
--	err = (__force int)skb_checksum_init_zero_check(skb, proto, uh->check,
-+	err = (__force int)skb_checksum_init_zero_check(skb, IPPROTO_UDP, uh->check,
- 							inet_compute_pseudo);
- 	if (err)
- 		return err;
-@@ -2335,7 +2334,7 @@ static int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 		uh = udp_hdr(skb);
- 	}
- 
--	if (udp4_csum_init(skb, uh, proto))
-+	if (udp4_csum_init(skb, uh))
- 		goto csum_error;
- 
- 	sk = skb_steal_sock(skb, &refcounted);
-diff --git a/net/ipv6/ip6_checksum.c b/net/ipv6/ip6_checksum.c
-index 1362db7a3660..e1a594873675 100644
---- a/net/ipv6/ip6_checksum.c
-+++ b/net/ipv6/ip6_checksum.c
-@@ -62,39 +62,6 @@ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
- EXPORT_SYMBOL(csum_ipv6_magic);
- #endif
- 
--int udp6_csum_init(struct sk_buff *skb, struct udphdr *uh, int proto)
--{
--	int err;
--
--	/* To support RFC 6936 (allow zero checksum in UDP/IPV6 for tunnels)
--	 * we accept a checksum of zero here. When we find the socket
--	 * for the UDP packet we'll check if that socket allows zero checksum
--	 * for IPv6 (set by socket option).
--	 *
--	 * Note, we are only interested in != 0 or == 0, thus the
--	 * force to int.
--	 */
--	err = (__force int)skb_checksum_init_zero_check(skb, proto, uh->check,
--							ip6_compute_pseudo);
--	if (err)
--		return err;
--
--	if (skb->ip_summed == CHECKSUM_COMPLETE && !skb->csum_valid) {
--		/* If SW calculated the value, we know it's bad */
--		if (skb->csum_complete_sw)
--			return 1;
--
--		/* HW says the value is bad. Let's validate that.
--		 * skb->csum is no longer the full packet checksum,
--		 * so don't treat is as such.
--		 */
--		skb_checksum_complete_unset(skb);
--	}
--
--	return 0;
--}
--EXPORT_SYMBOL(udp6_csum_init);
--
- /* Function to set UDP checksum for an IPv6 UDP packet. This is intended
-  * for the simple case like when setting the checksum for a UDP tunnel.
-  */
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 21d48f8803d0..170bbaa4a9d4 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -896,6 +896,38 @@ static void udp6_sk_rx_dst_set(struct sock *sk, struct dst_entry *dst)
- 	}
- }
- 
-+static int udp6_csum_init(struct sk_buff *skb, struct udphdr *uh)
-+{
-+	int err;
-+
-+	/* To support RFC 6936 (allow zero checksum in UDP/IPV6 for tunnels)
-+	 * we accept a checksum of zero here. When we find the socket
-+	 * for the UDP packet we'll check if that socket allows zero checksum
-+	 * for IPv6 (set by socket option).
-+	 *
-+	 * Note, we are only interested in != 0 or == 0, thus the
-+	 * force to int.
-+	 */
-+	err = (__force int)skb_checksum_init_zero_check(skb, IPPROTO_UDP, uh->check,
-+							ip6_compute_pseudo);
-+	if (err)
-+		return err;
-+
-+	if (skb->ip_summed == CHECKSUM_COMPLETE && !skb->csum_valid) {
-+		/* If SW calculated the value, we know it's bad */
-+		if (skb->csum_complete_sw)
-+			return 1;
-+
-+		/* HW says the value is bad. Let's validate that.
-+		 * skb->csum is no longer the full packet checksum,
-+		 * so don't treat is as such.
-+		 */
-+		skb_checksum_complete_unset(skb);
-+	}
-+
-+	return 0;
-+}
-+
- /* wrapper for udp_queue_rcv_skb tacking care of csum conversion and
-  * return code conversion for ip layer consumption
-  */
-@@ -956,7 +988,7 @@ static int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 		}
- 	}
- 
--	if (udp6_csum_init(skb, uh, proto))
-+	if (udp6_csum_init(skb, uh))
- 		goto csum_error;
- 
- 	/* Check if the socket is already available, e.g. due to early demux */
--- 
-2.30.2
-
+Sounds very nice, yes.
 
