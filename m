@@ -1,63 +1,63 @@
-Return-Path: <netdev+bounces-6576-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6577-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C87E1716FD7
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 23:39:05 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5E67F716FDB
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 23:39:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 688A31C20D8D
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:39:02 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 10F15281334
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:39:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C79F631F02;
-	Tue, 30 May 2023 21:39:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 625B131F03;
+	Tue, 30 May 2023 21:39:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAE9A200BC
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 21:39:02 +0000 (UTC)
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 084B9E5;
-	Tue, 30 May 2023 14:39:01 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id 98e67ed59e1d1-25669acf1b0so2799267a91.0;
-        Tue, 30 May 2023 14:39:01 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5806C200BC
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 21:39:45 +0000 (UTC)
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E3A107;
+	Tue, 30 May 2023 14:39:35 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id d2e1a72fcca58-64d41d8bc63so3971816b3a.0;
+        Tue, 30 May 2023 14:39:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685482740; x=1688074740;
+        d=gmail.com; s=20221208; t=1685482775; x=1688074775;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=7xr/xAflOQkbZrsxeuPZYwFlb7zpPHeI468vpcAX5x4=;
-        b=MYVgAVYH93wkCcEIhlmmH6g9Zc1E+ErBlGiidFNufGnX8QzVxqqxkhwP10RqbGTd/R
-         oGrRUb1hwDPn71/RBP8C7Eo/MsWjP4TG1XileHl3mrd+vB1/hu9FLHVZR5qVTDU6hzCW
-         xKe1pCbFLtteKQVNXd7pU2XyPUII74j+bxRuV4h4z75fpv22qkKfEn8pyZZIvgjvFne7
-         zccUzOmHaC5bKHV83afS/428Ah+3jw8xINqRvGJNXARHaYt82X6voYnZbq8W0A5hFJAp
-         HaoOSUO/31aFfd97h0JGuWttuc2qlp91zRxTb/W3DHuV8NtY6bsmt+TDTSVKU8UdN9iG
-         cqqA==
+        bh=hpYvhVTjZdMJvafiF5KeDRaJxYCBLlgjL89QGECGd2c=;
+        b=VEtP8MlZUbBdCeag89T6zqxQ/9VbRcsFGtw5aENS/07d2LPfUlaKj+jvRTabjG8XZQ
+         TfxkKPscjIaSfgzLJKs0RqOztakMfu0Mv3Flui6h6NS8Fyjsh0GdJif2fQdtpvm6LKzB
+         rqx+MgT7A3uAfw4c9yStaoq74JbNbwuzIbwr4jyvwBmfYOj694o0KP5socGqmU33UTqY
+         Xl48QqV/dxLiieWbYLlPw6FmoK2PltfVqKS370q70dqHEta5nTaGyEFconDj2A8ykhcK
+         4kNgQw9dv/ePUNOsDM9xR3x6hveuqIi7Z22jYs4xVT3GMIkGuDAssRza2Pwlj/X65v0c
+         sbfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685482740; x=1688074740;
+        d=1e100.net; s=20221208; t=1685482775; x=1688074775;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7xr/xAflOQkbZrsxeuPZYwFlb7zpPHeI468vpcAX5x4=;
-        b=amhFLC8Da+Oi2GewmyqgrkaRe8jbbC6rBoSdS64+g9hxCEvmyVu7nEqAC4dPPKuHai
-         JhkTYivNAC6C1qmvKPq0lFkFX2+pmwAW/UP9UC5Mcs/dYoq/oDvAmWg1asNGiVkTgT6J
-         ce9a213qPpIGaqNNSewauKVUmrNCnW8lOmmaZaVaYVtp/Jtd8G6m7TmGubZGCZy8bB3i
-         AK2/zzecPEIfa/Gk4y28z12Kk1pogHOci6+g9Ets6yQdhadlCCKbIMkUTTP0kOBsA6T/
-         0PUrG7PbbB3tD1nhtpJCRWKEcfztpfH3ig/heT1ToLaDLgVU77CLT491M4psiG3bWzHi
-         4esQ==
-X-Gm-Message-State: AC+VfDwE3/R19oRY5pY9mPugR61p/vFrFZl819JTBptO3NSQSPfY1jME
-	ED5NKCUj4DUe13iHrTsktq4=
-X-Google-Smtp-Source: ACHHUZ6JxdbT6JZxzP1Y6HZ3X/1+TEvqU2ggY7//bFW3ktDJ7Prr7l2ae1cQO5Euxnmx4K4wibaukw==
-X-Received: by 2002:a17:90b:1b49:b0:255:a1d9:4486 with SMTP id nv9-20020a17090b1b4900b00255a1d94486mr3967511pjb.1.1685482740343;
-        Tue, 30 May 2023 14:39:00 -0700 (PDT)
+        bh=hpYvhVTjZdMJvafiF5KeDRaJxYCBLlgjL89QGECGd2c=;
+        b=gCS5fc44AGLMkfAzF2ql2AmXI5GUznLAA4f+DUpibkhaWDjSDxLSZ2dxf5OotVwpY/
+         QXKhlsXvoDzpWYE6OlchUXC+JD0T/yvcgbFd/NJ/l7BOy1RI/bj/+rzkGZsZelMoCj14
+         cNsIVW9VtEpw/0u8oos1euKhROkSmYsip6bUzloHDq4yttzDGJjNIgD6ekY+pmnwRDm1
+         B+KCPE2jlLCqUQBnyKrFTLYPxtuCF/RFKM83ciFe/UxlGWd8bnxOfvjaSohIRzZy1B0G
+         ZWWnRFkyS5daiklz4v+SPdhD1eWVAyuXcuEbjxvn7j33dHwBnOuRACXV04GdBRFxUCQz
+         HyqA==
+X-Gm-Message-State: AC+VfDz/fdsYkCDVIH3qigQvzV9MhwrPJkwo0tvXrtJhhY3Qz7kXebmp
+	BvW3WALbnlKcKpYvLYXkwsYnNTKGoXAH5w==
+X-Google-Smtp-Source: ACHHUZ7t9gh5pLLnj1uDj4zm7URp6+6nXn1PCHcmEpJFIBsMX5xvRzBSoif/mjJCWSzh0dIfg3TLvg==
+X-Received: by 2002:a05:6a20:ae1a:b0:10b:92b8:9845 with SMTP id dp26-20020a056a20ae1a00b0010b92b89845mr2902340pzb.7.1685482774686;
+        Tue, 30 May 2023 14:39:34 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id u5-20020a17090ae00500b0024dee5cbe29sm4750589pjy.27.2023.05.30.14.38.51
+        by smtp.googlemail.com with ESMTPSA id z5-20020aa791c5000000b0064fabbc047dsm2100744pfa.55.2023.05.30.14.39.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 May 2023 14:38:59 -0700 (PDT)
-Message-ID: <dd68b82b-7bb7-3f4f-7243-e3a4b745cd97@gmail.com>
-Date: Tue, 30 May 2023 14:38:47 -0700
+        Tue, 30 May 2023 14:39:34 -0700 (PDT)
+Message-ID: <c4008f3b-455f-5e8a-7381-6a73c192f675@gmail.com>
+Date: Tue, 30 May 2023 14:39:20 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -66,7 +66,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.0
-Subject: Re: [PATCH v8 2/3] net: dsa: mv88e6xxx: add support for MV88E6020
+Subject: Re: [PATCH v8 3/3] net: dsa: mv88e6xxx: add support for MV88E6071
  switch
 Content-Language: en-US
 To: Lukasz Majewski <lukma@denx.de>, Andrew Lunn <andrew@lunn.ch>,
@@ -75,14 +75,13 @@ Cc: Eric Dumazet <edumazet@google.com>, "David S. Miller"
  <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
  Paolo Abeni <pabeni@redhat.com>, Alexander Duyck
  <alexander.duyck@gmail.com>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+ linux-kernel@vger.kernel.org
 References: <20230530083916.2139667-1-lukma@denx.de>
- <20230530083916.2139667-3-lukma@denx.de>
+ <20230530083916.2139667-4-lukma@denx.de>
 From: Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230530083916.2139667-3-lukma@denx.de>
+In-Reply-To: <20230530083916.2139667-4-lukma@denx.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
 	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -91,34 +90,15 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 On 5/30/23 01:39, Lukasz Majewski wrote:
-> From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> A mv88e6250 family switch with 5 internal PHYs, 2 RMIIs
+> and no PTP support.
 > 
-> A mv88e6250 family switch with 2 PHY and RMII ports and
-> no PTP support.
-> 
-> Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 > Signed-off-by: Lukasz Majewski <lukma@denx.de>
 > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-> ---
-[snip]
-
->   /* List of supported models */
->   enum mv88e6xxx_model {
-> +	MV88E6020,
->   	MV88E6085,
->   	MV88E6095,
->   	MV88E6097,
-> @@ -94,7 +95,7 @@ enum mv88e6xxx_family {
->   	MV88E6XXX_FAMILY_6097,	/* 6046 6085 6096 6097 */
->   	MV88E6XXX_FAMILY_6165,	/* 6123 6161 6165 */
->   	MV88E6XXX_FAMILY_6185,	/* 6108 6121 6122 6131 6152 6155 6182 6185 */
-> -	MV88E6XXX_FAMILY_6250,	/* 6220 6250 */
-> +	MV88E6XXX_FAMILY_6250,	/* 6220 6250 6020 */
-
-über nit: only if you have to resubmit, numbers in ascending order.
-
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Same comment as in patch #2.
 -- 
 Florian
 
