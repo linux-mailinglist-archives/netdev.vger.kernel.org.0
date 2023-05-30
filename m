@@ -1,38 +1,38 @@
-Return-Path: <netdev+bounces-6286-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6287-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A05047158B5
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 10:37:44 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 254957158BC
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 10:38:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4BAC12810EE
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 08:37:43 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BB7151C20A8F
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 08:37:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D1FB012B62;
-	Tue, 30 May 2023 08:37:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 02A3112B82;
+	Tue, 30 May 2023 08:37:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5612125D3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E742812B79
 	for <netdev@vger.kernel.org>; Tue, 30 May 2023 08:37:33 +0000 (UTC)
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93AAEBF
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 01:37:31 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F99ADB
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 01:37:32 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q3uqy-0002xV-JO; Tue, 30 May 2023 10:37:16 +0200
+	id 1q3uqy-0002xU-JO; Tue, 30 May 2023 10:37:16 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q3uqw-003pae-UH; Tue, 30 May 2023 10:37:14 +0200
+	id 1q3uqw-003pab-R1; Tue, 30 May 2023 10:37:14 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1q3uqw-00AbUb-2J; Tue, 30 May 2023 10:37:14 +0200
+	id 1q3uqw-00AbUl-3C; Tue, 30 May 2023 10:37:14 +0200
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Maxime Coquelin <mcoquelin.stm32@gmail.com>,
 	Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -46,10 +46,12 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	linux-arm-kernel@lists.infradead.org,
 	devicetree@vger.kernel.org,
 	netdev@vger.kernel.org
-Subject: [PATCH v2 0/3] Extend dt-bindings for PSE-PD controllers and update prtt1c dts
-Date: Tue, 30 May 2023 10:37:10 +0200
-Message-Id: <20230530083713.2527380-1-o.rempel@pengutronix.de>
+Subject: [PATCH v2 1/3] dt-bindings: net: pse-pd: Update regex pattern for ethernet-pse nodes
+Date: Tue, 30 May 2023 10:37:11 +0200
+Message-Id: <20230530083713.2527380-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230530083713.2527380-1-o.rempel@pengutronix.de>
+References: <20230530083713.2527380-1-o.rempel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -67,31 +69,33 @@ X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-changes v2:
-- extend ethernet-pse regexp in the PoDL PSE dt-bindings
+This patch modifies the regex pattern for the $nodename property in the
+device tree bindings documentation for PSE-PD controllers. The updated
+pattern allows for additional node names, including those with a hyphen
+followed by a hexadecimal digit.
 
-This patch set comes in response to issues identified while adding PoDL
-PSE support to the stm32 prtt1c device tree. The existing pse-pd device
-tree bindings did not allow node name patterns like "ethernet-pse-0" and
-"ethernet-pse-1", leading to validation failures.
+Before this change, the pattern ^ethernet-pse(@.*)?$ only allowed for
+node names like "ethernet-pse" or "ethernet-pse@1". With the new pattern
+node names like "ethernet-pse-1" are now also valid.
 
-To address these false positives in validation, the device tree bindings
-are extended to support these node name patterns. Alongside this, an
-example node is added to aid in the improved validation process.
-Following these changes, the updated PoDL PSE regulator nodes are then
-added to the stm32 prtt1c device tree.
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ .../devicetree/bindings/net/pse-pd/pse-controller.yaml          | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/net/pse-pd/pse-controller.yaml b/Documentation/devicetree/bindings/net/pse-pd/pse-controller.yaml
+index b110abb42597..3548efc2191c 100644
+--- a/Documentation/devicetree/bindings/net/pse-pd/pse-controller.yaml
++++ b/Documentation/devicetree/bindings/net/pse-pd/pse-controller.yaml
+@@ -16,7 +16,7 @@ maintainers:
  
-Oleksij Rempel (3):
-  dt-bindings: net: pse-pd: Update regex pattern for ethernet-pse nodes
-  dt-bindings: net: pse-pd: Add "ethernet-pse-0" example to improve
-    validation in podl-pse-regulator DT binding
-  ARM: dts: stm32: prtt1c: Add PoDL PSE regulator nodes
-
- .../net/pse-pd/podl-pse-regulator.yaml        |  6 ++++
- .../bindings/net/pse-pd/pse-controller.yaml   |  2 +-
- arch/arm/boot/dts/stm32mp151a-prtt1c.dts      | 32 +++++++++++++++++++
- 3 files changed, 39 insertions(+), 1 deletion(-)
-
+ properties:
+   $nodename:
+-    pattern: "^ethernet-pse(@.*)?$"
++    pattern: "^ethernet-pse(@[0-9a-f]+|-([0-9a-f]+))?$"
+ 
+   "#pse-cells":
+     description:
 -- 
 2.39.2
 
