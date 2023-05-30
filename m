@@ -1,237 +1,165 @@
-Return-Path: <netdev+bounces-6559-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6560-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B76A0716E9F
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 22:26:34 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id BDF9C716EA5
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 22:28:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 610C7281258
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 20:26:33 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1111D1C20D09
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 20:28:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6DA1931EFD;
-	Tue, 30 May 2023 20:26:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 855BD31F01;
+	Tue, 30 May 2023 20:28:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FE5331EFB
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:26:31 +0000 (UTC)
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2049.outbound.protection.outlook.com [40.107.237.49])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF8EFC
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 13:26:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=muVs7tb6NPjWufFmQGsvK1PjTSV8LXsoOTdXEwekXrFhYavczHll9VGI276rsTuY46wO4yuxPDNjSlQt1yMB523vHxxG6Mz3ImQdaO8FN7SXfiDX4E90dKy3SzCTgv+XYB8eSkWVMkxp4Oc45fLqQsjHte1oqU+Oq27TFicFnUeHi7Or47OjR4oX+DTb4+nvwTt9b7y7Xn/U+WaxrS7Dt5Vo8Gxkagn75aaIjoMI/w9s+i741uWWu7Jx3BssTLHhhNqpbwYS9Gc7+p3rQF2OnEP0wsyQkbk6zX8gaPYBjOx31UJH71RGDdg45InyyUsNvS+iY5ZnleV6mDajanswhw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OHztWEHWTUGlnp/G7LdyxHlNSr5fxdXrVxj8sRvTPEA=;
- b=P8DVAyYJ3gc/WaNlI+lKs1lIGKM47iWXIkoRXNyzEwXviRJV228DjBHXR6NC8dIBiad7pv0tdX3cHoVZR+ndwh68bts0jlyUpZHt/zA2xwKfY5GN7yjUxqsAJfkTVB9p3CgfVCPTfc3rXG2y4o/8mYMYbAAoMwaApT4hrCwcgiUiPRMxA5UbRrT4GOD5tiCpp3EsRHFiDiG7UooA7cScrY0C3NnYzSMD/XDlBYdlDD0Vg0bOxz3NfMg6clIU2U5LNWSYVTwg8WfwZeq+6uVm8a4T7g4kk1VYMKmRcchn04Qy+j1yQdSa35ntHyqB2QAME8SQfUuYQ0PU3+dKaB07Yw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OHztWEHWTUGlnp/G7LdyxHlNSr5fxdXrVxj8sRvTPEA=;
- b=m0prt3KETr779aUQhnGonNL8m2mPZL9u0AgHcJVZVNlH/u4BHHJx4w5uph1Y6qV6rO0dbL71Z8SdGsS9fIYOm/BlSZ2el9pkcpkZF2IhAt8Tsb+Ew93TB2CiJyM0r3XIj7rgkTo9akKy/9535qOODIBwOkYwKWN29wnSl3/9Q3o=
-Received: from SJ0PR05CA0002.namprd05.prod.outlook.com (2603:10b6:a03:33b::7)
- by CY5PR12MB6299.namprd12.prod.outlook.com (2603:10b6:930:20::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.22; Tue, 30 May
- 2023 20:26:26 +0000
-Received: from DM6NAM11FT101.eop-nam11.prod.protection.outlook.com
- (2603:10b6:a03:33b:cafe::b3) by SJ0PR05CA0002.outlook.office365.com
- (2603:10b6:a03:33b::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.22 via Frontend
- Transport; Tue, 30 May 2023 20:26:26 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT101.mail.protection.outlook.com (10.13.172.208) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6455.22 via Frontend Transport; Tue, 30 May 2023 20:26:25 +0000
-Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 30 May
- 2023 15:26:25 -0500
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB08.amd.com
- (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 30 May
- 2023 13:26:24 -0700
-Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34 via Frontend
- Transport; Tue, 30 May 2023 15:26:22 -0500
-From: <edward.cree@amd.com>
-To: <linux-net-drivers@amd.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-	<pabeni@redhat.com>, <edumazet@google.com>
-CC: Edward Cree <ecree.xilinx@gmail.com>, <netdev@vger.kernel.org>,
-	<habetsm.xilinx@gmail.com>, <dan.carpenter@linaro.org>,
-	<oe-kbuild-all@lists.linux.dev>, kernel test robot <lkp@intel.com>, "Dan
- Carpenter" <error27@gmail.com>
-Subject: [PATCH net] sfc: fix error unwinds in TC offload
-Date: Tue, 30 May 2023 21:25:27 +0100
-Message-ID: <20230530202527.53115-1-edward.cree@amd.com>
-X-Mailer: git-send-email 2.27.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78382200AD
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:28:40 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F389F7
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 13:28:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=FfZ7cjg6jP2cUC84njeyJaiBUPGjE57tY7swC6z7VRM=; b=rg7DmniTVFJ5Lytrfaaq2BjtBE
+	3WbQxcc4QFap8eS2Xz8fsc9S05VLRF+FrEG5BzWlyQ2YpggIP2g4IkTj7gkINY8gtMeNpMDw/qx+u
+	fxHuDEcZAQCHjCLcxrVM1uONUlo6ifNw1eZ/V+gkmwm50IPNyjAQ/tjauuUTfv55fw6tr5/yIOj4E
+	6O4ulup35wNfSVa8G/xtdi6bcmecGw/QKtvUyoSAN5vGHr/NnSTyRDbpskLbxUUeNZUJNaZ/rocu9
+	UM+BEvhFz5wph4rMR+ZfAR6ucqenpGq0NSjM2DDV4R2SQYSVZccwrgkVM84h7feyU3qVkOY1ZvMxC
+	jiuJ2AUg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59352)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q45xM-0003RV-Da; Tue, 30 May 2023 21:28:36 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q45xL-0008Mo-95; Tue, 30 May 2023 21:28:35 +0100
+Date: Tue, 30 May 2023 21:28:35 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Florian Fainelli <f.fainelli@gmail.com>,
+	netdev <netdev@vger.kernel.org>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Oleksij Rempel <linux@rempel-privat.de>
+Subject: Re: [RFC/RFTv3 00/24] net: ethernet: Rework EEE
+Message-ID: <ZHZcc/E/Hx1bnjcx@shell.armlinux.org.uk>
+References: <20230331005518.2134652-1-andrew@lunn.ch>
+ <fa21ef50-7f36-3d01-5ecf-4a2832bcec89@gmail.com>
+ <d753d72c-6b7a-4014-b515-121dd6ff957b@lunn.ch>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT101:EE_|CY5PR12MB6299:EE_
-X-MS-Office365-Filtering-Correlation-Id: 52680f6e-f09b-4565-503b-08db614c243a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	TQ6g03sr7/6Ne/r3aiGzw2TR5Zq761VFB8Gm5MIdF/caDuY8s1o2MRTmhaZHAn9ZOayajDd+Lyz2lRdBLqvPC3KtxLkEvhcpov7uQQma9cjzkuD1ew7FIhiIMC388GD7sO5K9HexJzhgjjWzoMSguSy/zAcCz+zoBAtBDkbIdbNAQDm5jh9hFpnQ1Qi08f+rKF6DhkwDmz/efLzWRlQ3hPhnyY62Ze9ljHkltNRdXO6HBVUdm/vUVHT3Q8B5hkVlWdafCLaRltx/u28Su5UYJh3YPitdyjMtMQKneLKSLo3Tg258sATbjUMLb5PnUdjhsRZF9GtdQuOQzlQS+0R75OfGL7C4cXvN0FlzDWutqDw4RHACW3Q+jbnw4SQJZXmFHgViiUgQ2fI4Qdo4BakldBPpOwgjPF0hCIsYODsKesTaVq/saohOx36Gf7PjsI/wZH95+80cO64+T3Opz9fZer6fafj3QrHMty1tndQQV5Xio4cX/Fxj9hiDgZ5am6jVp/bxVwzdk3aeciFk3aISxhLPeqyY7ozafLi3P5Tgnx6X75Z2/DZiRONr/jio3gw87wFJuHFGkoV1UJaep/Vrn0HviOF0/DOYe31IDcskz5uv5QxRfEWXjFe8aPfqPvFNo6Ngbp96BRRLM5Vw2R4/Xpcwi+a2LzxYCpbW6o3JGPUSQOboa+F+GiQ7ZOnIx8eu7i/MchrCafmap4xRR063bEo2FGKZdulFmd+ooPH1KzVRgfuZVXlAurDUqbcN7wijNniUfov+dKN2hGmadbUQyg==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(396003)(376002)(136003)(451199021)(46966006)(36840700001)(40470700004)(36860700001)(83380400001)(36756003)(47076005)(86362001)(426003)(478600001)(2876002)(336012)(70206006)(70586007)(4326008)(110136005)(2616005)(54906003)(2906002)(186003)(81166007)(966005)(1076003)(356005)(316002)(82310400005)(7416002)(40460700003)(26005)(5660300002)(8676002)(82740400003)(40480700001)(8936002)(41300700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 20:26:25.5486
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 52680f6e-f09b-4565-503b-08db614c243a
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT101.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6299
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d753d72c-6b7a-4014-b515-121dd6ff957b@lunn.ch>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Edward Cree <ecree.xilinx@gmail.com>
+On Tue, May 30, 2023 at 09:48:00PM +0200, Andrew Lunn wrote:
+> On Tue, May 30, 2023 at 11:31:04AM -0700, Florian Fainelli wrote:
+> > Hi Andrew, Russell,
+> > 
+> > On 3/30/23 17:54, Andrew Lunn wrote:
+> > > Most MAC drivers get EEE wrong. The API to the PHY is not very
+> > > obvious, which is probably why. Rework the API, pushing most of the
+> > > EEE handling into phylib core, leaving the MAC drivers to just
+> > > enable/disable support for EEE in there change_link call back, or
+> > > phylink mac_link_up callback.
+> > > 
+> > > MAC drivers are now expect to indicate to phylib/phylink if they
+> > > support EEE. If not, no EEE link modes are advertised. If the MAC does
+> > > support EEE, on phy_start()/phylink_start() EEE advertisement is
+> > > configured.
+> > 
+> > Thanks for doing this work, because it really is a happy mess out there. A
+> > few questions as I have been using mvneta as the reference for fixing GENET
+> > and its shortcomings.
+> > 
+> > In your new patches the decision to enable EEE is purely based upon the
+> > eee_active boolean and not eee_enabled && tx_lpi_enabled unlike what mvneta
+> > useed to do.
+> 
+> I don't really care much what we decide means 'enabled'. I just want
+> it moved out of MAC drivers and into the core so it is consistent.
+> 
+> Russel, if you want to propose something which works for both Copper
+> and Fibre, i'm happy to implement it. But as you pointed out, we need
+> to decide where. Maybe phylib handles copper, and phylink is layered
+> on top and handles fibre?
 
-Failure ladders weren't exactly unwinding what the function had done up
- to that point; most seriously, when we encountered an already offloaded
- rule, the failure path tried to remove the new rule from the hashtable,
- which would in fact remove the already-present 'old' rule (since it has
- the same key) from the table, and leak its resources.
+Phylib also handles fibre too with dual-media PHYs (such as 88E151x
+and 88X3310), and as I've just pointed out, the recent attempts at
+"fixing" phylib's handling particularly with eee_enabled have made it
+rather odd.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <error27@gmail.com>
-Closes: https://lore.kernel.org/r/202305200745.xmIlkqjH-lkp@intel.com/
-Fixes: d902e1a737d4 ("sfc: bare bones TC offload on EF100")
-Fixes: 17654d84b47c ("sfc: add offloading of 'foreign' TC (decap) rules")
-Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
----
- drivers/net/ethernet/sfc/tc.c | 27 ++++++++++++---------------
- 1 file changed, 12 insertions(+), 15 deletions(-)
+That said, the 88E151x resolution of 1000BASE-X negotiation is also
+rather odd, particularly with pause modes. So I don't trust one bit
+that anyone is even using 88E151x in fibre setups - or if they are
+they don't care about this odd behaviour.
 
-diff --git a/drivers/net/ethernet/sfc/tc.c b/drivers/net/ethernet/sfc/tc.c
-index 0327639a628a..c004443c1d58 100644
---- a/drivers/net/ethernet/sfc/tc.c
-+++ b/drivers/net/ethernet/sfc/tc.c
-@@ -624,13 +624,12 @@ static int efx_tc_flower_replace_foreign(struct efx_nic *efx,
- 	if (!found) { /* We don't care. */
- 		netif_dbg(efx, drv, efx->net_dev,
- 			  "Ignoring foreign filter that doesn't egdev us\n");
--		rc = -EOPNOTSUPP;
--		goto release;
-+		return -EOPNOTSUPP;
- 	}
- 
- 	rc = efx_mae_match_check_caps(efx, &match.mask, NULL);
- 	if (rc)
--		goto release;
-+		return rc;
- 
- 	if (efx_tc_match_is_encap(&match.mask)) {
- 		enum efx_encap_type type;
-@@ -639,8 +638,7 @@ static int efx_tc_flower_replace_foreign(struct efx_nic *efx,
- 		if (type == EFX_ENCAP_TYPE_NONE) {
- 			NL_SET_ERR_MSG_MOD(extack,
- 					   "Egress encap match on unsupported tunnel device");
--			rc = -EOPNOTSUPP;
--			goto release;
-+			return -EOPNOTSUPP;
- 		}
- 
- 		rc = efx_mae_check_encap_type_supported(efx, type);
-@@ -648,25 +646,24 @@ static int efx_tc_flower_replace_foreign(struct efx_nic *efx,
- 			NL_SET_ERR_MSG_FMT_MOD(extack,
- 					       "Firmware reports no support for %s encap match",
- 					       efx_tc_encap_type_name(type));
--			goto release;
-+			return rc;
- 		}
- 
- 		rc = efx_tc_flower_record_encap_match(efx, &match, type,
- 						      extack);
- 		if (rc)
--			goto release;
-+			return rc;
- 	} else {
- 		/* This is not a tunnel decap rule, ignore it */
- 		netif_dbg(efx, drv, efx->net_dev,
- 			  "Ignoring foreign filter without encap match\n");
--		rc = -EOPNOTSUPP;
--		goto release;
-+		return -EOPNOTSUPP;
- 	}
- 
- 	rule = kzalloc(sizeof(*rule), GFP_USER);
- 	if (!rule) {
- 		rc = -ENOMEM;
--		goto release;
-+		goto out_free;
- 	}
- 	INIT_LIST_HEAD(&rule->acts.list);
- 	rule->cookie = tc->cookie;
-@@ -678,7 +675,7 @@ static int efx_tc_flower_replace_foreign(struct efx_nic *efx,
- 			  "Ignoring already-offloaded rule (cookie %lx)\n",
- 			  tc->cookie);
- 		rc = -EEXIST;
--		goto release;
-+		goto out_free;
- 	}
- 
- 	act = kzalloc(sizeof(*act), GFP_USER);
-@@ -843,6 +840,7 @@ static int efx_tc_flower_replace_foreign(struct efx_nic *efx,
- 				       efx_tc_match_action_ht_params);
- 		efx_tc_free_action_set_list(efx, &rule->acts, false);
- 	}
-+out_free:
- 	kfree(rule);
- 	if (match.encap)
- 		efx_tc_flower_release_encap_match(efx, match.encap);
-@@ -899,8 +897,7 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
- 		return rc;
- 	if (efx_tc_match_is_encap(&match.mask)) {
- 		NL_SET_ERR_MSG_MOD(extack, "Ingress enc_key matches not supported");
--		rc = -EOPNOTSUPP;
--		goto release;
-+		return -EOPNOTSUPP;
- 	}
- 
- 	if (tc->common.chain_index) {
-@@ -924,9 +921,9 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
- 	if (old) {
- 		netif_dbg(efx, drv, efx->net_dev,
- 			  "Already offloaded rule (cookie %lx)\n", tc->cookie);
--		rc = -EEXIST;
- 		NL_SET_ERR_MSG_MOD(extack, "Rule already offloaded");
--		goto release;
-+		kfree(rule);
-+		return -EEXIST;
- 	}
- 
- 	/* Parse actions */
+Before we go any further, I think we need to hammer out eactly how the
+ethtool EEE interface is supposed to work, because right now I can't
+say that I fully understand it - and as I've said in my replies to
+Florian recently, phylib's EEE implementation becomes utterly silly
+when it comes to fibre.
+
+In particular, we need to hammer out what the difference exactly is
+between "eee_enabled" and "tx_lpi_enabled", and what they control,
+and I suggest we look at it from the point of view of both copper
+(where EEE is negotiated) and fibre (were EEE is optional, no
+capability bits, no negotiation, so no advertisement.)
+
+It seems fairly obvious to me that tx_lpi* are about the MAC
+configuration, since that's the entity which is responsible for
+signalling LPI towards the PHY(PCS) over GMII.
+
+eee_active... what does "active" actually mean? From the API doc, it
+means the "Result of the eee negotiation" which is fine for copper
+links where EEE is negotiated, but in the case of fibre, there isn't
+EEE negotiation, and EEE is optionally implemented in the PCS.
+
+eee_enabled... doesn't seem to have a meaning as far as IEEE 802.3
+goes, it's a Linux invention. Documentation says "EEE configured mode"
+which is just as useful as a chocolate teapot for making tea, that
+comment might as well be deleted for what use it is. To this day, I
+have no idea what this setting is actually supposed to be doing.
+It seemed sane to me that if eee_enabled is false, then we should
+not report eee_active as true, nor should we allow the MAC to
+generate LPI. Whether the advertisement gets programmed into the PHY
+or not is something I never thought about, and I can't remember
+phylib's old behaviour. Modern phylib treats eee_enabled = false to
+program a zero advertisement, which means when reading back via
+get_eee(), you get a zero advertisement back. Effectively, eee_active
+in modern phylib means "allow the advertisement to be programmed
+if enabled, otherwise clear the advertisement".
+
+If it's simply there to zero the advertisement, then what if the
+media type has no capability for EEE advertisement, but intrinsically
+supports EEE. That's where phylib's interpretation falls down IMHO.
+
+Maybe this ethtool interface doesn't work very well for cases where
+there is EEE ability but no EEE advertisement? Not sure.
+
+Until we get that settled, we can't begin to fathom how phylib (or
+phylink) should make a decision as to whether the MAC should signal
+LPI towards the media or not.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
