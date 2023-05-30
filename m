@@ -1,143 +1,75 @@
-Return-Path: <netdev+bounces-6537-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6538-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1EF53716DA7
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:36:21 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 35314716DB8
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 21:38:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B222E1C20D13
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 19:36:17 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D339128130B
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 19:38:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF6882D267;
-	Tue, 30 May 2023 19:36:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 49E832A9D8;
+	Tue, 30 May 2023 19:38:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E36EE200AD
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 19:36:01 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF6DF3
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 12:35:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=OvTQPRuoi6wMf8jDa6e++dPG/Ef48nvp2WalqQJ6lw4=; b=uiz/KGKpPOTZmnSAfaJs0mQeTw
-	vGJRxThIBRsoQI1epwuT6jvILvrUCbYxwD8bMcyVSaGeYVrerMCHjpIO5thqIJnmySPVF/eNgzrK8
-	NK3lgEmTqsY/fPIu1ITVgqC1S3T54PaEaJyOF+romn2FJjG3dtWgrnyLi864nFqpTu3fOGWUq9wiM
-	iDJooMIbBldrRwD/PHm1BJii2nLiTpZvSLv29SWMOz57curaGAxYZtE3dmea3btx4DICI7FF0Rs+z
-	ntfxMBwoF6wO1hBbaAhs/kxAJLuS89JahNIZKV+cQXu8PXQVqH7hSUWMSpTMUvSmlmAnN6rqLiVd2
-	YBTy1mQg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59504)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q458O-0003MQ-Sj; Tue, 30 May 2023 20:35:56 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q458N-0008Ja-Mn; Tue, 30 May 2023 20:35:55 +0100
-Date: Tue, 30 May 2023 20:35:55 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Oleksij Rempel <linux@rempel-privat.de>
-Subject: Re: [RFC/RFTv3 00/24] net: ethernet: Rework EEE
-Message-ID: <ZHZQG+O9HkQ+5K62@shell.armlinux.org.uk>
-References: <20230331005518.2134652-1-andrew@lunn.ch>
- <fa21ef50-7f36-3d01-5ecf-4a2832bcec89@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F76C200AD
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 19:38:44 +0000 (UTC)
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050:0:465::103])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6845C9
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 12:38:41 -0700 (PDT)
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:b231:465::102])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4QW2kj23rVz9skv;
+	Tue, 30 May 2023 21:38:37 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
+	s=MBO0001; t=1685475517;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=NMucfYgD5mYuTqx5EBoQrmLUOxyqZckOO9SW0NI5Jq8=;
+	b=rge5rrGuONG007L0LpDUwBGaPNgr1V4VsHVL4ApBQCe4uPO/HnConWmSWrwXQK3XN59KFw
+	NCTGS19A1lwf3QWx40Ab/kNEmMR7AFQsW42kl4U0qPow+/GmqSwDZjA1GTYvC3y3GjcmlB
+	Ia8xtW8VGAny11i+WqiOFpmoYJuGU8o8O3Hrr2waijKoSdqBQnoTwJ5ADWEZP1orC3CsxE
+	qXcU8jv3kh4L3wFjSR0jnFgGgRClBBfrARcaNeEykloLe+FZEUatg5lke59Irw9hoONw4Q
+	NfkcfzNetKBiz/uK91LhvXI5BseqtcUVn40ra1lb/6XtOmeFfKMCSScOsCU4ww==
+References: <20230510-dcb-rewr-v2-0-9f38e688117e@microchip.com>
+ <20230510-dcb-rewr-v2-8-9f38e688117e@microchip.com>
+From: Petr Machata <me@pmachata.org>
+To: Daniel Machon <daniel.machon@microchip.com>
+Cc: netdev@vger.kernel.org, dsahern@kernel.org, stephen@networkplumber.org,
+ petrm@nvidia.com, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH iproute2-next v2 8/8] man: dcb-app: clean up a few mistakes
+Date: Tue, 30 May 2023 21:37:52 +0200
+In-reply-to: <20230510-dcb-rewr-v2-8-9f38e688117e@microchip.com>
+Message-ID: <87h6rt624k.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fa21ef50-7f36-3d01-5ecf-4a2832bcec89@gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+Content-Type: text/plain
+X-Rspamd-Queue-Id: 4QW2kj23rVz9skv
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 30, 2023 at 11:31:04AM -0700, Florian Fainelli wrote:
-> Hi Andrew, Russell,
-> 
-> On 3/30/23 17:54, Andrew Lunn wrote:
-> > Most MAC drivers get EEE wrong. The API to the PHY is not very
-> > obvious, which is probably why. Rework the API, pushing most of the
-> > EEE handling into phylib core, leaving the MAC drivers to just
-> > enable/disable support for EEE in there change_link call back, or
-> > phylink mac_link_up callback.
-> > 
-> > MAC drivers are now expect to indicate to phylib/phylink if they
-> > support EEE. If not, no EEE link modes are advertised. If the MAC does
-> > support EEE, on phy_start()/phylink_start() EEE advertisement is
-> > configured.
-> 
-> Thanks for doing this work, because it really is a happy mess out there. A
-> few questions as I have been using mvneta as the reference for fixing GENET
-> and its shortcomings.
-> 
-> In your new patches the decision to enable EEE is purely based upon the
-> eee_active boolean and not eee_enabled && tx_lpi_enabled unlike what mvneta
-> useed to do.
-> 
-> Russell, is there an use case for having eee_enabled while not having
-> tx_lpi_enabled?
 
-As I've been stating recently, LPI is entirely to do with the MAC, so
-the LPI delay and the enable boolean are about controlling the MAC end
-of things.
+Daniel Machon <daniel.machon@microchip.com> writes:
 
-I've never really understood what "eee_enabled" is supposed to be doing,
-since there's nowhere really to enable or disable EEE per-se. Through
-recent patches, phylib has since defined "eee_enabled" to mean that the
-advertisement is non-empty, which came as a surprise to me, but again
-seems rather redundant and strange.
+> While referencing the dcb-app manpage, I spotted a few mistakes. Lets
+> fix them.
+>
+> Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
 
-It's strange because as far as I can see from what documentation there
-is, "eee_enabled" is supposed to be a control that users can set
-independently of the advertisement, but with the phylib implementation,
-eee_enabled read from get_eee() as I say is defined as whether the
-advertisement is non-zero or not.
-
-With fibre setups, there is no EEE advertisement, so in that situation
-phylib's interpretation of eee_enabled via get_eee/set_eee would be
-very much incorrect. The only control one has is whether LPI is enabled
-and its timer setting.
-
-That said, the current mvneta implementation doesn't actually enable
-LPI for fibre... but there is a bug in that one can get the MAC to
-enable LPI via ethtool's set_eee() !
-
-I think for a fibre setup, eee_enabled && tx_lpi_enabled is reasonable,
-given that eee_enabled is a seperate control from the advertisement
-which will be zero in that case.
-
-Going back to phylib, given this, things get even more "fun" if you have
-a dual-media PHY. As there's no EEE capability bits for 1000base-X, but
-a 1000base-X PCS optionally supports EEE. So, even with a zero EEE
-advertisement with a dual-media PHY that would only affect the copper
-side, and EEE may still be possible in the fibre side... which makes
-phylib's new interpretation of "eee_enabled" rather odd.
-
-In any case, "eee_enabled" I don't think has much meaning for the fibre
-case because there's definitely no control beyond what "tx_lpi_enabled"
-already offers.
-
-I think this is a classic case where the EEE interface has been designed
-solely around copper without checking what the situation is for fibre!
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+Reviewed-by: Petr Machata <me@pmachata.org>
 
