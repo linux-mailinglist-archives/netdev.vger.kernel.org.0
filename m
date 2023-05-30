@@ -1,144 +1,107 @@
-Return-Path: <netdev+bounces-6221-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6222-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D8E3F715403
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 04:46:40 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0BFAF715423
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 05:09:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6B4781C20B27
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 02:46:37 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BB654281023
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 03:09:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DAD52ED1;
-	Tue, 30 May 2023 02:46:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D182610FF;
+	Tue, 30 May 2023 03:09:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C98F57FB
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 02:46:37 +0000 (UTC)
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A4F188
-	for <netdev@vger.kernel.org>; Mon, 29 May 2023 19:45:56 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4QVc9m2wn6zLqH6;
-	Tue, 30 May 2023 10:42:04 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 30 May 2023 10:45:02 +0800
-Message-ID: <8c3eb711-6428-699e-9ef1-6bbdeb36ffb0@huawei.com>
-Date: Tue, 30 May 2023 10:45:02 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C06B210FE
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 03:09:40 +0000 (UTC)
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732C5E0;
+	Mon, 29 May 2023 20:09:35 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 41be03b00d2f7-53f9a376f3eso947648a12.0;
+        Mon, 29 May 2023 20:09:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685416174; x=1688008174;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=OHha7skYKya3YZ9Yq4CvIc6dsTZef5S5YbQ/NaBv3TA=;
+        b=nqNy+aH6lnZgEWufNk5dgaIMiij6+g5EOXT8T7A+Lt99aQ9mRjK5bLpKqBYYc0yzdH
+         0+d4uvwP6kyZRim96acurrJstqriWKplKYPIayRNwbYPFEZROEj7tl3lJIE/JUfesd5+
+         UHfgjDrNLY9kEAWatkc2hDztMoRi4qolizUwSjXzOHj6sSQD44Jn5YkVv9UslS/9FcUa
+         fudS6BGNkCa/PndUmGasdObstYrgFzDWj0Wsn1NbDL51vo0QYemI5b/7w2b40H8Z/aL6
+         y7vrIXLKy3Urk25tqrFGU9aKfVN6x8tkKWkd09wENjtDzNrTsn1c3XsEZhKcMpmVKdyn
+         ob4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685416174; x=1688008174;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=OHha7skYKya3YZ9Yq4CvIc6dsTZef5S5YbQ/NaBv3TA=;
+        b=QbBLxW6uAgtkPWZ3fui8v9OfgqG5M4jzXDMDG1andzI7+PbLXZe6FFJ+ye8d8lHAJz
+         DN4niTu/a4pIuFbK1xItG2a5xWO274Smz9qJQ9yKeSc6uePwjg2Oe35K5aNq/8aYC9/6
+         MKg+ZSx5L7uiYoZLNioozi4pEwUd7m+3vf9AHaCOkUBEMLR5dYr5ecNS/yJDtYKi5S4v
+         4r/UJTS1KfStTEMwEaCHKjRLsNRHkJLQqxfujiLm13olGHXMur66FgViXgcPh1dqptbz
+         FWc1EVmaqvXHc+3Wnx48e7tzVAGjmC0+06RA1Wmh593OiCriGF1tF3iUcti/AmAqGB5r
+         0nFg==
+X-Gm-Message-State: AC+VfDzggNTJo6RptsqgeKZ+N3lLrJrMVueZpRO46k8FJxR+2/D0bSot
+	39ElaqzJl/aeDT95NnTyZx0=
+X-Google-Smtp-Source: ACHHUZ5pMXMQ/CqUWNS0MCIllEY4M9NsQixB8jkD8YOEy/fqDSIycPN4xCg0g4GnwTDQnZmG5hg9Wg==
+X-Received: by 2002:a17:903:278c:b0:1ac:b449:352d with SMTP id jw12-20020a170903278c00b001acb449352dmr805807plb.61.1685416174083;
+        Mon, 29 May 2023 20:09:34 -0700 (PDT)
+Received: from [192.168.43.80] (subs02-180-214-232-15.three.co.id. [180.214.232.15])
+        by smtp.gmail.com with ESMTPSA id p4-20020a170902e74400b001a95c7742bbsm8972584plf.9.2023.05.29.20.09.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 May 2023 20:09:33 -0700 (PDT)
+Message-ID: <2b8dbe95-c7e9-5158-93f6-865306a661b0@gmail.com>
+Date: Tue, 30 May 2023 10:09:28 +0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH net] net: sched: fix NULL pointer dereference in mq_attach
-To: Peilin Ye <yepeilin.cs@gmail.com>, Jamal Hadi Salim <jhs@mojatatu.com>
-CC: <netdev@vger.kernel.org>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-	<davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-	<pabeni@redhat.com>, <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-	<wanghai38@huawei.com>, <peilin.ye@bytedance.com>, <cong.wang@bytedance.com>
-References: <20230527093747.3583502-1-shaozhengchao@huawei.com>
- <CAM0EoMkrpShprVbWSFN3FpFWtK9494Hyo+mOSNOJmXCFoieN7Q@mail.gmail.com>
- <c135ae5a-37ff-aa89-a3f7-976799181a04@huawei.com>
- <ZHRpfB2NatdM6fHJ@C02FL77VMD6R.googleapis.com>
- <CAM0EoMk+zO0RcnJ4Uie7jU+MNdFz7Mc37W223jVZip62QMRdzQ@mail.gmail.com>
- <ZHVAlCtzFeJrwKvc@C02FL77VMD6R.googleapis.com>
-From: shaozhengchao <shaozhengchao@huawei.com>
-In-Reply-To: <ZHVAlCtzFeJrwKvc@C02FL77VMD6R.googleapis.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [net-next PATCH v3 03/13] Documentation: leds: leds-class:
+ Document new Hardware driven LEDs APIs
+To: Christian Marangi <ansuelsmth@gmail.com>, Jonathan Corbet <corbet@lwn.net>
+Cc: Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+ Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
+ Vladimir Oltean <olteanv@gmail.com>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ linux-leds@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20230527112854.2366-1-ansuelsmth@gmail.com>
+ <20230527112854.2366-4-ansuelsmth@gmail.com> <ZHRd5wDnMrWZlwrd@debian.me>
+ <871qiz5iqt.fsf@meer.lwn.net> <6474b526.050a0220.baa3e.31c1@mx.google.com>
+Content-Language: en-US
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <6474b526.050a0220.baa3e.31c1@mx.google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Peilin:
-	Thank you for your reply.
-On 2023/5/30 8:17, Peilin Ye wrote:
-> On Mon, May 29, 2023 at 09:53:28AM -0400, Jamal Hadi Salim wrote:
->> On Mon, May 29, 2023 at 4:59 AM Peilin Ye <yepeilin.cs@gmail.com> wrote:
->>> On Mon, May 29, 2023 at 09:10:23AM +0800, shaozhengchao wrote:
->>>> On 2023/5/29 3:05, Jamal Hadi Salim wrote:
->>>>> On Sat, May 27, 2023 at 5:30 AM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
->>>>>> When use the following command to test:
->>>>>> 1)ip link add bond0 type bond
->>>>>> 2)ip link set bond0 up
->>>>>> 3)tc qdisc add dev bond0 root handle ffff: mq
->>>>>> 4)tc qdisc replace dev bond0 parent ffff:fff1 handle ffff: mq
->>>>>
->>>>> This is fixed by Peilin in this ongoing discussion:
->>>>> https://lore.kernel.org/netdev/cover.1684887977.git.peilin.ye@bytedance.com/
->>>>>
->>>>        Thank you for your reply. I have notice Peilin's patches before,
->>>> and test after the patch is incorporated in local host. But it still
->>>> triggers the problem.
->>>>        Peilin's patches can be filtered out when the query result of
->>>> qdisc_lookup is of the ingress type. Here is 4/6 patch in his patches.
->>>> +if (q->flags & TCQ_F_INGRESS) {
->>>> +     NL_SET_ERR_MSG(extack,
->>>> +                    "Cannot regraft ingress or clsact Qdiscs");
->>>> +     return -EINVAL;
->>>> +}
->>>>        However, the query result of my test case in qdisc_lookup is mq.
->>>> Therefore, the patch cannot solve my problem.
->>>
->>> Ack, they are different: patch [4/6] prevents ingress (clsact) Qdiscs
->>> from being regrafted (to elsewhere), and Zhengchao's patch prevents other
->>> Qdiscs from being regrafted to ffff:fff1.
->>
->> Ok, at first glance it was not obvious.
->> Do we catch all combinations? for egress (0xffffffff) allowed minor is
->> 0xfff3 (clsact::) and 0xffff. For ingress (0xfffffff1) allowed minor
->> is 0xfff1 and 0xfff2(clsact).
+On 5/29/23 21:09, Christian Marangi wrote:
+> Just to clarify, a device name can't be returned. Not every device have
+> a name and such name can be changed. An example is network device where
+> you can change the name of the interface.
 > 
-> ffff:fff1 is special in tc_modify_qdisc(); if minor isn't fff1,
-> tc_modify_qdisc() thinks user wants to graft a Qdisc under existing ingress
-> or clsact Qdisc:
+> Using the device prevents all of this problem. 
 > 
-> 	if (clid != TC_H_INGRESS) {	/* ffff:fff1 */
-> 		p = qdisc_lookup(dev, TC_H_MAJ(clid));
-> 		if (!p) {
-> 			NL_SET_ERR_MSG(extack, "Failed to find specified qdisc");
-> 			return -ENOENT;
-> 		}
-> 		q = qdisc_leaf(p, clid);
-> 	} else if (dev_ingress_queue_create(dev)) {
-> 		q = dev_ingress_queue(dev)->qdisc_sleeping;
-> 	}
-> 
-> This will go to the "parent != NULL" path in qdisc_graft(), and
-> sch_{ingress,clsact} doesn't implement cl_ops->graft(), so -EOPNOTSUPP will
-> be returned.
-> 
-Yes, I agree.
-> In short, yes, I think ffff:fff1 is the only case should be fixed.
-> 
-> By the way I just noticed that currently it is possible to create a e.g.
-> HTB class with a class ID of ffff:fff1...
-> 
->    $ tc qdisc add dev eth0 root handle ffff: htb default fff1
->    $ tc class add dev eth0 \
->              parent ffff: classid ffff:fff1 htb rate 100%
-> 
-> Regrafting a Qdisc to such classes won't work as intended at all.  It's a
-> separate issue though.
-> 
-This seems to be another problem.
 
-Zhengchao Shao
-> Thanks,
-> Peilin Ye
-> 
+Oh, I guess it was /dev/something.
+
+-- 
+An old man doll... just what I always wanted! - Clara
+
 
