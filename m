@@ -1,197 +1,149 @@
-Return-Path: <netdev+bounces-6385-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6386-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 515377160EF
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 15:02:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 396CB716105
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 15:04:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 81F522811C3
-	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 13:02:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 79E3E281006
+	for <lists+netdev@lfdr.de>; Tue, 30 May 2023 13:04:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E5CA21DDD7;
-	Tue, 30 May 2023 13:02:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AAE6B1E528;
+	Tue, 30 May 2023 13:04:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1E9C1D2BD
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 13:02:07 +0000 (UTC)
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2093.outbound.protection.outlook.com [40.107.223.93])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FA6D114
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 06:01:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DtFJSz5ijYaJELq8VYv1/QKLV3KJJWKNNg4Xu5JgUOTtkiRZTFof1vAUoBn95L+2Zf5ddqGw5v7LVfaptGqJoymHucFKFzCIvQJNeAyCx/PAdInHe6JrT6vhWKGZyVCqk85BNad6v+Q/EFNSDd7i9IpGODv2ECni5yLDVAkySVf1yb8e7GO+n6Gdp7i8Ts6HuQ0KFbdhVdetGltbLSfsSJDx0ZjtD4eYR45a9vvJbTcIrL7km1iLzJucrRMnEzj+77NcIa3ykVSJj6duRR9dY3IIliiWevt3+QcdM21Ei28kdEuxVx71Xg8WNMLu7R8/v/nqRVFuwjG3+1alcqdDqg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6xOgUCwf7foViiCut7RwMl3w0duibhwkv+0cp1LZDfA=;
- b=iCYwiEXTDXJn5V2+CsS4dhJX5RzGdTBh85Z8CShXn2yBEsBRiiPvOSOD18gcUIyXVpZFwfU5e/5ApsK6MVIHZYSr9WumMLRGA8EXtVPvdVjJZdT4MiHYqNP4Icr+08lJs85a0bOgyeYllmEpD76HPujhr07uyqdEpu/nZcTHojW3xF4DoGJykRK6xgAOF0mejuUY5uGHsKqc44bP9nJIxxbnhS3p008as9KKs/hP1jsu1y6w7/+BkTMxl0Ao2QRTcOUoPjEby/R+XtLUCbyFI1OMWbl99+Ypv4qELqCu4aSMw+GRCYWYOzvmJW/a5Ngx6enfp6R527yL0jAnhwjv8g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6xOgUCwf7foViiCut7RwMl3w0duibhwkv+0cp1LZDfA=;
- b=ANXA0MHjCIK3lVDCCd9hCoolaTjLuYtRXee+4GJbQGANYKuNrvx+VGZSjvt+VOm2CignagGqjasbmQ1RW7CeCcxvc9zbe77XhiB0U677aVcMX3zV3SbGH42pkPiaUQXbwJOhE13+Cp1UNkT07sCs4ae+tvwIfxDpMnjmKKf00ZM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SN4PR13MB5693.namprd13.prod.outlook.com (2603:10b6:806:1ec::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23; Tue, 30 May
- 2023 13:01:18 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6433.022; Tue, 30 May 2023
- 13:01:18 +0000
-Date: Tue, 30 May 2023 15:01:11 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	David Ahern <dsahern@kernel.org>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 net-next 02/14] udplite: Retire UDP-Lite for IPv6.
-Message-ID: <ZHXzlz94VL+Y72PR@corigine.com>
-References: <20230530010348.21425-1-kuniyu@amazon.com>
- <20230530010348.21425-3-kuniyu@amazon.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230530010348.21425-3-kuniyu@amazon.com>
-X-ClientProxiedBy: AS4P195CA0027.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:20b:5d6::16) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A346134C8
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 13:04:44 +0000 (UTC)
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C6692
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 06:04:43 -0700 (PDT)
+Received: from pps.filterd (m0353728.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34UCsBjq024036;
+	Tue, 30 May 2023 13:04:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : date : content-type : content-transfer-encoding :
+ mime-version; s=pp1; bh=dzPAVqwktTw6TxwqxfPZzO3f7vdGfaliGvSZaKhT6A0=;
+ b=LrEAzTDG+gjFpLeuJDCD26HlYfjZJdo93FkLdFDhMAKnrFOIrmtkQWnfH9yhJ15H4vV8
+ q/r3m85YEJHcSHFRkpXqvDvJJinH2IW7tvpaAvCZlpnA3oAoE413hJO5gEyGXQDFXL/T
+ VM++x5Y/YvxfguZDLZHqZ8acWpukQ4GxWmQbIu+z1JiMFwe1kMNhm1cPA0FYu5NXgStm
+ nJObwvxHepIiyYQ3/qr/9m0TrUuFXty1mw9BMGalq8Qs+6Es03iRos8U+BCvpNVenECu
+ FtWJgdgQKM9RaTz/erZKmkSfWJJG1Uw54u0RLb/NdOyg7r6WSzhh1bSW8kEXxrY6L5/2 nw== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qwhjc88rr-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 30 May 2023 13:04:41 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+	by ppma03ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34U3ugEg020202;
+	Tue, 30 May 2023 13:04:38 GMT
+Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
+	by ppma03ams.nl.ibm.com (PPS) with ESMTPS id 3qu9g51fup-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 30 May 2023 13:04:38 +0000
+Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
+	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34UD4aPg7406092
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 30 May 2023 13:04:36 GMT
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 678F92004D;
+	Tue, 30 May 2023 13:04:36 +0000 (GMT)
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 3FD7F20040;
+	Tue, 30 May 2023 13:04:36 +0000 (GMT)
+Received: from [9.152.212.237] (unknown [9.152.212.237])
+	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 30 May 2023 13:04:36 +0000 (GMT)
+Message-ID: <d6ada86741a440f99b5d6fedff532c8dbe86254f.camel@linux.ibm.com>
+Subject: mlx5 driver is broken when pci_msix_can_alloc_dyn() is false with
+ v6.4-rc4
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Shay Drory <shayd@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
+        Eli
+	Cohen <elic@nvidia.com>, netdev@vger.kernel.org
+Date: Tue, 30 May 2023 15:04:36 +0200
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.1 (3.48.1-1.fc38) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SN4PR13MB5693:EE_
-X-MS-Office365-Filtering-Correlation-Id: c6cf592d-4014-4cde-e7eb-08db610df54f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	/p2BAPlPXKBG39zcOOL4/X+SNPnA1wqwJ8W6HDsF7Po2sruxf+JchEKX3am+rDuGyc9v+GC39atN4iMFmTgFH1IFuWJzU6WE7VChdL8XrUH+MAzkvOpwGvEqV78n3CY82nuYh0wF7HNeZDXP2b2wQy6NaLnv6+JfEzaxYm+kayKxxfuk5mp1Pmr8AEGextZzjK7zBkqAUuHoywWPztZ1+1KFI4+SxSz0u/Zrcw2lPZNL1dZ/VEMkTgPT/+lF72yw/zKzjNKHnedUXw0lwS230UcBi4uIe3xgjNnD+tuAoNKthjYWOGAFtv01tklxzzRtnYIC/y8AgXbXt+PoFj3YRrwMfLRSFcfNXU+Z509gKYXmMmaeoJMmTO49IWysA7S71M8IxT+M51SN6dMLxfDUxZV1Y14WJ9OtiiSTQc9D8DDmFZAm1XTTQyC5Rvw+Nr4gXUNyp1Tsun4e14op68saqyNQlYZpIBQDlk7o8iSOFs8iz04rzs+oT7DsEDy2VZsa2+ARbzK6ZI06y4OUE0zKn1+nwfMNDTXSvzD+N16Jkj5OG5dox7Q5waugOdLHKCVO8wCPyIKGkd+Kh/5afMBMoPRgzpLHQMqtph1Y5VIgtz3OgCHOdBbrtkSvliqBXmyXcquJYlMohhI+S5zjXGGFbw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(376002)(396003)(39840400004)(346002)(451199021)(478600001)(8676002)(8936002)(54906003)(41300700001)(5660300002)(86362001)(6666004)(6486002)(316002)(4326008)(6916009)(66946007)(66476007)(66556008)(44832011)(6512007)(6506007)(186003)(83380400001)(2616005)(2906002)(36756003)(38100700002)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?dOYjMkw/XbpdEuneQJQ0zBQaBbvhMHhHmc4Bt+gBH+xK1MQ2+YC7tnsEGu/j?=
- =?us-ascii?Q?SAqFzw3ry2Dj/hIVDBGvCV/7EiYfUpzfs4y/wzwbwTols/112KyTovxm4hSL?=
- =?us-ascii?Q?WEnMAX+Gwy0jS/BunwL5/XFZVYaZ7pbHFqT1F4YCgODjVnBfvmpKr0nqn/W5?=
- =?us-ascii?Q?QhRwwy6v7EU3BC2L/DYPVpH7PGuqeFOgrQU2jUdPgBzD5B0XBIwUFLffyzpq?=
- =?us-ascii?Q?7xTZMo0wgAzfaqGrFCUh+P5iOKhuo2Y4Km46X8dR5RKnL/emKKpq0gXuxyE2?=
- =?us-ascii?Q?/5ehSWnNoJnLrydkLj4gbZtBQftuciUwZnBFY10RTdak1j3llISnd9uQbC65?=
- =?us-ascii?Q?6PYSiETLr+YvIBskBmDOg6YLnoQwj7kZeM09Eg0j6Q7KFK/1OrULLP/b0Wkt?=
- =?us-ascii?Q?GRs6bqKEI+u0W+5DmdzmrN+TfFab/lSqPIbpGpFVRbq+0JqnlWJQ2KE1kIJ4?=
- =?us-ascii?Q?kGiLbMOuzdo6nArXO87BMSZ4KUtBlfVcXq5SfSPaUZnjFos+Wed/5zS8jzCa?=
- =?us-ascii?Q?m1NW73SKGsEl51iu4A0/qkxODi8UMWXiNht7isJZfV61F06xjy3J7mscUIMv?=
- =?us-ascii?Q?8r+sO18o05JiVnur5ECjKrwytWp/A06H+QSn93TU+o2XGPxmokeDgBKWLKYp?=
- =?us-ascii?Q?+cMYu2mgKnqQ5CuSD0BsO7nEeSPh/mg0yBGhVVfUGh1lMMkv5QlEkJlziCS3?=
- =?us-ascii?Q?VwOcf9Z8MM0QbErkRONhREWf0Trcu0tFPlQJPn3kTEQlM2z7m/P/XPbYGjth?=
- =?us-ascii?Q?/DIByY4X+KcCk8rKTz3rMJ2iZJ4LQ57evW4QgGMVcvrIUfNBHEBujYTMaj6p?=
- =?us-ascii?Q?ndvj8nl1cCQMYcuAXZMchyWaESpi/Ri9Ki6D3nCap6/HV/yWT3QEIlUxS5YT?=
- =?us-ascii?Q?9XtmbvAqwUTsTETPLPFBlEmMPnotGlJ+UdKMn+8IWqsO31sV0+5av8mMIRvi?=
- =?us-ascii?Q?iL2yL7w6vIe104JHafWtTyQQBQY695iwAnyywVHo6xwz4uU4+a3WBc9+5Jwh?=
- =?us-ascii?Q?KDE88p3SDnGAx1DoTTXLCauS0wE0ohofKOBXIt/1QFTzdSYe2fcBh3vp5SJY?=
- =?us-ascii?Q?EY5CWxG1I47JuXVFSh8zFGjoMwyl09Z75OQgpGgWzQwivsiHx44QhhFYqhxM?=
- =?us-ascii?Q?d2+oDco4nxBR5P/R7FUuctKXSEzGxKe0itEJs4WlzmM205RDGFPBWPyrD0tw?=
- =?us-ascii?Q?VMVglKml40f/T1OG8vOY1QF4YFgwBh4hrUbjoMwTbhND+Jnj3bKi+LpuoMD9?=
- =?us-ascii?Q?wRWdPIbDExKT1qODiyX/LnV5HxeJ7H2vVT0++cUjpU4ADb1RtmPh9XrLhTnX?=
- =?us-ascii?Q?zuytkPJv9K3EEVmU5mH3gujpBwGqdVAOLscTgyJSgRyy/HQdcUSgIG2wsnjS?=
- =?us-ascii?Q?BiR5W6v8NVrhMeDqOP6vgmC2O5THrxYaKBvqadMHtZjFNeYyougkqpkIRE03?=
- =?us-ascii?Q?u4KyP/MKm63hUTCXEPC+QpKU2xKAeTIsE0uGO5rNFMJfAu0XrASEwuZRGvIq?=
- =?us-ascii?Q?CfmT0BiiVIhBIi7M7ZgZqRW+w5pEJyDCoo6utIGfS2isopeWP/jWa3KJOxrf?=
- =?us-ascii?Q?Hhc4ACJdF2WzxbnyBiaJuRPkGfAT/yK0z98w3Z3RfANwrWMfhQvCbZct2kB3?=
- =?us-ascii?Q?gcpFLeIvQYTZVp+qKFuHm7wyh6DUoiJ3lYuJ8vkZAB5jRoO26WC0lUCUFrQt?=
- =?us-ascii?Q?qUABhw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c6cf592d-4014-4cde-e7eb-08db610df54f
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 13:01:18.2174
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nOuIEcKBdqDE/X3pj1q0WaLmdQ68vEs9a3cKTb57980Zx5ABmRdXo44EtiB66Lk4CFFUm6WC7pCeH2FlxSy1T80afldjf/L+uXemJA26Oj0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR13MB5693
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: U1eE3PGZ2PAlGjQKzT-x7CgdkAT4hvg3
+X-Proofpoint-GUID: U1eE3PGZ2PAlGjQKzT-x7CgdkAT4hvg3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-05-30_09,2023-05-30_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
+ impostorscore=0 mlxscore=0 clxscore=1011 malwarescore=0 bulkscore=0
+ spamscore=0 suspectscore=0 lowpriorityscore=0 priorityscore=1501
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2304280000 definitions=main-2305300106
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 29, 2023 at 06:03:36PM -0700, Kuniyuki Iwashima wrote:
-> We no longer support IPPROTO_UDPLITE for AF_INET6.
-> 
-> This commit removes udplite.c and udp_impl.h under net/ipv6 and makes
-> some functions static that UDP shared.
-> 
-> Note that udplite.h is included in udp.c temporarily not to introduce
-> breakage, but we will remove it later with dead code.
-> 
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Hi Saeed, Eli, Shay,
 
-...
+With v6.4-rc4 I'm getting a stream of RX and TX timeouts when trying to
+use ConnectX-4 and ConnectX-6 VFs on s390. I've bisected this and found
+the following commit to be broken:
 
-> diff --git a/net/ipv6/udp_impl.h b/net/ipv6/udp_impl.h
-> deleted file mode 100644
-> index 0590f566379d..000000000000
-> --- a/net/ipv6/udp_impl.h
-> +++ /dev/null
-> @@ -1,31 +0,0 @@
-> -/* SPDX-License-Identifier: GPL-2.0 */
-> -#ifndef _UDP6_IMPL_H
-> -#define _UDP6_IMPL_H
-> -#include <net/udp.h>
-> -#include <net/udplite.h>
-> -#include <net/protocol.h>
-> -#include <net/addrconf.h>
-> -#include <net/inet_common.h>
-> -#include <net/transp_v6.h>
-> -
-> -int __udp6_lib_rcv(struct sk_buff *, struct udp_table *, int);
-> -int __udp6_lib_err(struct sk_buff *, struct inet6_skb_parm *, u8, u8, int,
-> -		   __be32, struct udp_table *);
-> -
-> -int udpv6_init_sock(struct sock *sk);
-> -int udp_v6_get_port(struct sock *sk, unsigned short snum);
-> -void udp_v6_rehash(struct sock *sk);
-> -
-> -int udpv6_getsockopt(struct sock *sk, int level, int optname,
-> -		     char __user *optval, int __user *optlen);
-> -int udpv6_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
-> -		     unsigned int optlen);
-> -int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len);
-> -int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int flags,
-> -		  int *addr_len);
+commit 1da438c0ae02396dc5018b63237492cb5908608d
+Author: Shay Drory <shayd@nvidia.com>
+Date:   Mon Apr 17 10:57:50 2023 +0300
 
-clang-16 with W=1 complains that:
+    net/mlx5: Fix indexing of mlx5_irq
 
- +net/ipv6/udp.c:341:5: warning: no previous prototype for 'udpv6_recvmsg' [-Wmissing-prototypes]
- +  341 | int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- +      |     ^~~~~~~~~~~~~
- +net/ipv6/udp.c:1335:5: warning: no previous prototype for 'udpv6_sendmsg' [-Wmissing-prototypes]
- + 1335 | int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- +      |     ^~~~~~~~~~~~~
+    After the cited patch, mlx5_irq xarray index can be different then
+    mlx5_irq MSIX table index.
+    Fix it by storing both mlx5_irq xarray index and MSIX table index.
 
-Likewise it has similar complains about ipv4 in a subsequent patch.
+    Fixes: 3354822cde5a ("net/mlx5: Use dynamic msix vectors allocation")
+    Signed-off-by: Shay Drory <shayd@nvidia.com>
+    Reviewed-by: Eli Cohen <elic@nvidia.com>
+    Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 
-> -void udpv6_destroy_sock(struct sock *sk);
-> -
-> -#ifdef CONFIG_PROC_FS
-> -int udp6_seq_show(struct seq_file *seq, void *v);
-> -#endif
-> -#endif	/* _UDP6_IMPL_H */
+The problem is that our IRQs currently still use a legacy mode instead
+of a full fledged IRQ domain. One consequence of that is that
+pci_msix_can_alloc_dyn(dev->pdev) returns false. That lands us in the
+non dynamic case in mlx5_irq_alloc() where irq->map.index is set to 0.
+Now prior to the above commit irq->map.index would later be set to i
+(the irq number) but that was replaced with just setting irq-
+>pool_index =3D i. For the dynamic case this is fine because
+pci_msix_alloc_irq_at() sets it but for the non-dynamic case this leave
+it unset. With the following diff the RX/TX timeouts go away:
 
-...
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+index db5687d9fec9..94dce3735204 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+@@ -237,7 +237,7 @@ struct mlx5_irq *mlx5_irq_alloc(struct
+mlx5_irq_pool *pool, int i,
+                 * vectors have also been allocated.
+                 */
+                irq->map.virq =3D pci_irq_vector(dev->pdev, i);
+-               irq->map.index =3D 0;
++               irq->map.index =3D i;
+        } else {
+                irq->map =3D pci_msix_alloc_irq_at(dev->pdev,
+MSI_ANY_INDEX, af_desc);
+                if (!irq->map.virq) {
+
+
+
+I'll sent a patch with the above shortly but wanted to give you a heads
+up since I'd really like to get this fixed for -rc5 or at least -rc6.
+
+Thanks,
+Niklas
 
