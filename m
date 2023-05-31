@@ -1,345 +1,118 @@
-Return-Path: <netdev+bounces-6761-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6762-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 582E8717D3E
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:36:48 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 816A8717D43
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:38:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BED8B1C20DFE
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:36:44 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1D4371C20E75
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:38:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CFD646FC9;
-	Wed, 31 May 2023 10:36:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0710979D2;
+	Wed, 31 May 2023 10:38:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B62B71C11
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:36:44 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17324B3
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 03:36:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685529401;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=LblAMPIHxGOVQwAa31sEVmS+RasGb+Q5tilzhH105LQ=;
-	b=A56sfIVS1jtETJZAOZ+BWw2gXWEDYxVwXYZu05jYSb0SYOUlzR/9Xnfmg0rtO3NMicf72F
-	4A0I9fGVzEXkcia+e14tsVHtX7Aqg/pbORJH4xDUVoHmFEkAcLC6Q3+szBCCeKbatpFt3x
-	TyRdw7wL4OW1BIJ6mgqlD3jdQDZV1MI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-662-g9VziVHePlutvh9IHQCyeA-1; Wed, 31 May 2023 06:36:37 -0400
-X-MC-Unique: g9VziVHePlutvh9IHQCyeA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8A93D3C0CEEB;
-	Wed, 31 May 2023 10:36:37 +0000 (UTC)
-Received: from renaissance-vector.redhat.com (unknown [10.39.195.31])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 060A72166B25;
-	Wed, 31 May 2023 10:36:35 +0000 (UTC)
-From: Andrea Claudi <aclaudi@redhat.com>
-To: netdev@vger.kernel.org
-Cc: stephen@networkplumber.org,
-	dsahern@gmail.com,
-	leon@kernel.org,
-	idosch@idosch.org
-Subject: [PATCH iproute2-next v2] treewide: fix indentation
-Date: Wed, 31 May 2023 12:35:56 +0200
-Message-Id: <7a8a4109889c4937ad7ddc196865e94354828045.1685529196.git.aclaudi@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E25E66FC9
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:38:54 +0000 (UTC)
+Received: from mout.web.de (mout.web.de [212.227.15.4])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F61BE;
+	Wed, 31 May 2023 03:38:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de; s=s29768273;
+	t=1685529518; i=spasswolf@web.de;
+	bh=EdzXAuAMFY3t1LSaGo+AZHE/CDQud/bV5pOhIIq/oMk=;
+	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=JKxk6kUiW552tsCiXcNfxoGhPd15Ah4lWu2lTkaZH/Y7qeKC1hk8QgGnFGLbjS8PX
+	 PfgQd07nettDbdcgfzfmJStK616i5R0adCa3YYAL13InHqmxTpMmsFT+t4R0x+RERI
+	 yar6kFXelc9OuYAPkoiXJdgFTpMxIhgd1D+NyeZ2gglc0Ds+PZp7lWtaFJO1Eqn3Ch
+	 uLMQlRqNXXcq6xmgJ7NBJQ+v1tQPKgajMhpkmwOSil7jxrNp8rooeQP3oRnNT4bd5v
+	 ZiqD0ISzAN/zHFNEwiMaQyN3CQ1tV4IYODu3GWJReyGRnQDTtBMi2B2d49SOLcUAOd
+	 PTAp+BCwsThDg==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from localhost.localdomain ([176.198.191.160]) by smtp.web.de
+ (mrweb006 [213.165.67.108]) with ESMTPSA (Nemesis) id
+ 1MBS71-1pvlAI3KSl-00CeGc; Wed, 31 May 2023 12:38:37 +0200
+From: Bert Karwatzki <spasswolf@web.de>
+To: davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com
+Cc: Bert Karwatzki <spasswolf@web.de>,
+	elder@kernel.org,
+	netdev@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH net v3] net: ipa: Use correct value for IPA_STATUS_SIZE
+Date: Wed, 31 May 2023 12:36:19 +0200
+Message-Id: <20230531103618.102608-1-spasswolf@web.de>
+X-Mailer: git-send-email 2.40.1
+In-Reply-To: <e144386d-e62a-a470-fcf9-0dab6f7ab837@linaro.org>
+References: <e144386d-e62a-a470-fcf9-0dab6f7ab837@linaro.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:3Dsv7+l5ZvDr30QdVwjfAb5zt4bew3VSOwXjuw4FzsNrtBvP/cH
+ Awf4EvPoD3GkxAAvrQmk+sKBUar5b/Kmz25ljlMVEUkOyPdaAoP22GXn2aNaLSXRBJjcoF5
+ nidWWUsxnj/dPsKXU/jYj5/sXh9odUu3grZ18GEwE/PWOaiTkv8Afb4hbyNW0/xbT+qxKOj
+ 0kUCZ9mek74yTLYPADtbQ==
+UI-OutboundReport: notjunk:1;M01:P0:4sAftPvt+MU=;wtLMJQB0iheI2e4mLDv8fzTKN7o
+ V6rjerJU0Iu+5gTVgemotw0rkOWE+XhEYHWOIDQkbdBkN4krojhoRszloednHJyvjPUBkzi3A
+ T8hamwta3xUc+3tnhmjfY837+/ANw6Gs7h6CZoa+xtq08MaD1kJMcVlvOLdK0bnzUyFfx5Vmr
+ LAHOTBd9ozujI7ziuV6TkZBUows3LsgapKsJknViRi/tgDP/Rx3B+PWBXxyIc1yR35WOtHgjP
+ QrElrbULRrpmP0wtboOiDW1K5OWHWTsheYtO+sGd5YRxnmVrLzMvvitz/LgAYvrB+17T2IZIN
+ l2y0Sk07u7LA7RYP6CELoV0JYgeVxwN0fHpawwgjNYQVf3SGhi3VCjiwRJuv+ws3nk5tEMS1L
+ ATq48ZUGN4CP24vcgBENd84qDZY0PYMkcg/uygsx3VScbUIuPrwcntuYbWSvu0IpRsb2TwBfL
+ EWc/UOPWJEL6AHY8XejFs+9Qm3q2cqZRNCDsen1PW2a6LUaxXBn7xT8+/JihV125usd2i5n6L
+ PRf5TfECFyIk+/Fgy//qdmZTiTYfOLJ59XjBNL4jBT+VBkkXBZUBhIsYm/Ja6+SWPPHBNdfgc
+ 8fSUSAWrOQmjNerKPrkE40d3GtJSHbd+di17FVyYGg1ykQ4GdqUBJaNivGkjyY08rZNPRyLJl
+ jQIWc+WymGV99rdrdd0Q74F0jBkS/+RflAIinjoW1cE9ugI10I92wYWDH/OiiUkJrKltL0BTx
+ BFENJ14b80k6prKBrEPWQKZOhNlFVOMlhs716TZYI+lvoQSE8knani3R89QsFJk69t1AY9SyY
+ uGYmqUwHr1kCcTSUL3A9+DC3vk+FRrxJf1lmx/cLY1E6FgPPTk+DFfPVxksbkB1npda752LFW
+ LfrIWYMq+mjovZPKnsSwSP1lQD3CAILTNwOiTYB7SfOKwxidgVL35hMSlLHsyj8SC9xfVzOeS
+ 7f4B/M/aPZvk5XiNND3xIp/XW7Y=
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Replace multiple whitespaces with tab where appropriate.
-While at it, fix tc flower help message and remove some double
-whitespaces.
+IPA_STATUS_SIZE was introduced in commit b8dc7d0eea5a as a replacement
+for the size of the removed struct ipa_status which had size
+sizeof(__le32[8]). Use this value as IPA_STATUS_SIZE.
 
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- bridge/vni.c   |  2 +-
- genl/ctrl.c    |  2 +-
- ip/ipaddress.c |  2 +-
- ip/ipmacsec.c  |  4 ++--
- ip/ipprefix.c  |  2 +-
- ip/ipvrf.c     |  2 +-
- lib/fs.c       |  2 +-
- lib/ll_types.c | 10 +++++-----
- rdma/dev.c     | 10 +++++-----
- tc/f_flower.c  |  4 ++--
- tc/m_ipt.c     |  4 ++--
- tc/m_xt_old.c  |  4 ++--
- tc/q_fq.c      |  8 ++++----
- tc/q_htb.c     |  4 ++--
- tc/tc_core.c   |  2 +-
- 15 files changed, 31 insertions(+), 31 deletions(-)
+Fixes: b8dc7d0eea5a ("net: ipa: stop using sizeof(status)")
+Signed-off-by: Bert Karwatzki <spasswolf@web.de>
+=2D--
+ drivers/net/ipa/ipa_endpoint.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/bridge/vni.c b/bridge/vni.c
-index 940f251c..96e6566f 100644
---- a/bridge/vni.c
-+++ b/bridge/vni.c
-@@ -33,7 +33,7 @@ static void usage(void)
- 	fprintf(stderr,
- 		"Usage: bridge vni { add | del } vni VNI\n"
- 		"		[ { group | remote } IP_ADDRESS ]\n"
--	        "		[ dev DEV ]\n"
-+		"		[ dev DEV ]\n"
- 		"       bridge vni { show }\n"
- 		"\n"
- 		"Where:	VNI	:= 0-16777215\n"
-diff --git a/genl/ctrl.c b/genl/ctrl.c
-index 8d2e9448..d5b765cc 100644
---- a/genl/ctrl.c
-+++ b/genl/ctrl.c
-@@ -315,7 +315,7 @@ static int ctrl_list(int cmd, int argc, char **argv)
- 
- 		rtnl_dump_filter(&rth, print_ctrl2, stdout);
- 
--        }
-+	}
- 
- 	ret = 0;
- ctrl_done:
-diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-index 41055c43..cb2ac7e9 100644
---- a/ip/ipaddress.c
-+++ b/ip/ipaddress.c
-@@ -1443,7 +1443,7 @@ static const struct ifa_flag_data_t* lookup_flag_data_by_name(const char* flag_n
- 		if (strcmp(flag_name, ifa_flag_data[i].name) == 0)
- 			return &ifa_flag_data[i];
- 	}
--        return NULL;
-+	return NULL;
- }
- 
- static void print_ifa_flags(FILE *fp, const struct ifaddrmsg *ifa,
-diff --git a/ip/ipmacsec.c b/ip/ipmacsec.c
-index 8b0d5666..476a6d1d 100644
---- a/ip/ipmacsec.c
-+++ b/ip/ipmacsec.c
-@@ -1379,10 +1379,10 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
- 			if (strcmp(*argv, "default") == 0)
- 				cipher.id = MACSEC_DEFAULT_CIPHER_ID;
- 			else if (strcmp(*argv, "gcm-aes-128") == 0 ||
--			         strcmp(*argv, "GCM-AES-128") == 0)
-+				 strcmp(*argv, "GCM-AES-128") == 0)
- 				cipher.id = MACSEC_CIPHER_ID_GCM_AES_128;
- 			else if (strcmp(*argv, "gcm-aes-256") == 0 ||
--			         strcmp(*argv, "GCM-AES-256") == 0)
-+				 strcmp(*argv, "GCM-AES-256") == 0)
- 				cipher.id = MACSEC_CIPHER_ID_GCM_AES_256;
- 			else if (strcmp(*argv, "gcm-aes-xpn-128") == 0 ||
- 				 strcmp(*argv, "GCM-AES-XPN-128") == 0)
-diff --git a/ip/ipprefix.c b/ip/ipprefix.c
-index ddf77014..c5704e5a 100644
---- a/ip/ipprefix.c
-+++ b/ip/ipprefix.c
-@@ -60,7 +60,7 @@ int print_prefix(struct nlmsghdr *n, void *arg)
- 
- 	if (tb[PREFIX_ADDRESS]) {
- 		fprintf(fp, "prefix %s/%u",
--		        rt_addr_n2a_rta(family, tb[PREFIX_ADDRESS]),
-+			rt_addr_n2a_rta(family, tb[PREFIX_ADDRESS]),
- 			prefix->prefix_len);
- 	}
- 	fprintf(fp, "dev %s ", ll_index_to_name(prefix->prefix_ifindex));
-diff --git a/ip/ipvrf.c b/ip/ipvrf.c
-index 0718bea8..d6b59adb 100644
---- a/ip/ipvrf.c
-+++ b/ip/ipvrf.c
-@@ -252,7 +252,7 @@ static int prog_load(int idx)
- 	};
- 
- 	return bpf_program_load(BPF_PROG_TYPE_CGROUP_SOCK, prog, sizeof(prog),
--			        "GPL", bpf_log_buf, sizeof(bpf_log_buf));
-+				"GPL", bpf_log_buf, sizeof(bpf_log_buf));
- }
- 
- static int vrf_configure_cgroup(const char *path, int ifindex)
-diff --git a/lib/fs.c b/lib/fs.c
-index 22d4af75..63fc733e 100644
---- a/lib/fs.c
-+++ b/lib/fs.c
-@@ -41,7 +41,7 @@ static int name_to_handle_at(int dirfd, const char *pathname,
- 	struct file_handle *handle, int *mount_id, int flags)
- {
- 	return syscall(__NR_name_to_handle_at, dirfd, pathname, handle,
--	               mount_id, flags);
-+		       mount_id, flags);
- }
- 
- static int open_by_handle_at(int mount_fd, struct file_handle *handle, int flags)
-diff --git a/lib/ll_types.c b/lib/ll_types.c
-index fa57ceb5..81d6cd9d 100644
---- a/lib/ll_types.c
-+++ b/lib/ll_types.c
-@@ -108,11 +108,11 @@ __PF(VOID,void)
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint=
+.c
+index 2ee80ed140b7..afa1d56d9095 100644
+=2D-- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -119,7 +119,7 @@ enum ipa_status_field_id {
  };
- #undef __PF
- 
--        int i;
--        for (i=0; !numeric && i<sizeof(arphrd_names)/sizeof(arphrd_names[0]); i++) {
--                 if (arphrd_names[i].type == type)
-+	int i;
-+	for (i=0; !numeric && i<sizeof(arphrd_names)/sizeof(arphrd_names[0]); i++) {
-+		if (arphrd_names[i].type == type)
- 			return arphrd_names[i].name;
- 	}
--        snprintf(buf, len, "[%d]", type);
--        return buf;
-+	snprintf(buf, len, "[%d]", type);
-+	return buf;
- }
-diff --git a/rdma/dev.c b/rdma/dev.c
-index f09c33bc..585bec54 100644
---- a/rdma/dev.c
-+++ b/rdma/dev.c
-@@ -191,13 +191,13 @@ static void dev_print_node_type(struct rd *rd, struct nlattr **tb)
- 
- static void dev_print_dev_proto(struct rd *rd, struct nlattr **tb)
- {
--       const char *str;
-+	const char *str;
- 
--       if (!tb[RDMA_NLDEV_ATTR_DEV_PROTOCOL])
--               return;
-+	if (!tb[RDMA_NLDEV_ATTR_DEV_PROTOCOL])
-+		return;
- 
--       str = mnl_attr_get_str(tb[RDMA_NLDEV_ATTR_DEV_PROTOCOL]);
--       print_color_string(PRINT_ANY, COLOR_NONE, "protocol", "protocol %s ", str);
-+	str = mnl_attr_get_str(tb[RDMA_NLDEV_ATTR_DEV_PROTOCOL]);
-+	print_color_string(PRINT_ANY, COLOR_NONE, "protocol", "protocol %s ", str);
- }
- 
- static int dev_parse_cb(const struct nlmsghdr *nlh, void *data)
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index 48cfafdb..c73c46dd 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -57,7 +57,7 @@ static void explain(void)
- 		"			cvlan_prio PRIORITY |\n"
- 		"			cvlan_ethtype [ ipv4 | ipv6 | ETH-TYPE ] |\n"
- 		"			pppoe_sid PSID |\n"
--		"			ppp_proto [ ipv4 | ipv6 | mpls_uc | mpls_mc | PPP_PROTO ]"
-+		"			ppp_proto [ ipv4 | ipv6 | mpls_uc | mpls_mc | PPP_PROTO ] |\n"
- 		"			dst_mac MASKED-LLADDR |\n"
- 		"			src_mac MASKED-LLADDR |\n"
- 		"			ip_proto [tcp | udp | sctp | icmp | icmpv6 | l2tp | IP-PROTO ] |\n"
-@@ -88,7 +88,7 @@ static void explain(void)
- 		"			enc_ttl MASKED-IP_TTL |\n"
- 		"			geneve_opts MASKED-OPTIONS |\n"
- 		"			vxlan_opts MASKED-OPTIONS |\n"
--		"                       erspan_opts MASKED-OPTIONS |\n"
-+		"			erspan_opts MASKED-OPTIONS |\n"
- 		"			gtp_opts MASKED-OPTIONS |\n"
- 		"			ip_flags IP-FLAGS |\n"
- 		"			enc_dst_port [ port_number ] |\n"
-diff --git a/tc/m_ipt.c b/tc/m_ipt.c
-index 465d1b80..3a4ccfac 100644
---- a/tc/m_ipt.c
-+++ b/tc/m_ipt.c
-@@ -409,8 +409,8 @@ static int parse_ipt(struct action_util *a, int *argc_p,
- 	optind = 0;
- 	free_opts(opts);
- 	/* Clear flags if target will be used again */
--        m->tflags = 0;
--        m->used = 0;
-+	m->tflags = 0;
-+	m->used = 0;
- 	/* Free allocated memory */
- 	if (m->t)
- 	    free(m->t);
-diff --git a/tc/m_xt_old.c b/tc/m_xt_old.c
-index efa084c5..c747154e 100644
---- a/tc/m_xt_old.c
-+++ b/tc/m_xt_old.c
-@@ -334,8 +334,8 @@ static int parse_ipt(struct action_util *a, int *argc_p,
- 	optind = 0;
- 	free_opts(opts);
- 	/* Clear flags if target will be used again */
--        m->tflags = 0;
--        m->used = 0;
-+	m->tflags = 0;
-+	m->used = 0;
- 	/* Free allocated memory */
- 	if (m->t)
- 	    free(m->t);
-diff --git a/tc/q_fq.c b/tc/q_fq.c
-index 0589800a..3277ebc7 100644
---- a/tc/q_fq.c
-+++ b/tc/q_fq.c
-@@ -23,7 +23,7 @@ static void explain(void)
- 	fprintf(stderr,
- 		"Usage: ... fq	[ limit PACKETS ] [ flow_limit PACKETS ]\n"
- 		"		[ quantum BYTES ] [ initial_quantum BYTES ]\n"
--		"		[ maxrate RATE  ] [ buckets NUMBER ]\n"
-+		"		[ maxrate RATE ] [ buckets NUMBER ]\n"
- 		"		[ [no]pacing ] [ refill_delay TIME ]\n"
- 		"		[ low_rate_threshold RATE ]\n"
- 		"		[ orphan_mask MASK]\n"
-@@ -243,13 +243,13 @@ static int fq_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 	if (set_ce_threshold)
- 		addattr_l(n, 1024, TCA_FQ_CE_THRESHOLD,
- 			  &ce_threshold, sizeof(ce_threshold));
--    if (set_timer_slack)
-+	if (set_timer_slack)
- 		addattr_l(n, 1024, TCA_FQ_TIMER_SLACK,
- 			  &timer_slack, sizeof(timer_slack));
--    if (set_horizon)
-+	if (set_horizon)
- 		addattr_l(n, 1024, TCA_FQ_HORIZON,
- 			  &horizon, sizeof(horizon));
--    if (horizon_drop != 255)
-+	if (horizon_drop != 255)
- 		addattr_l(n, 1024, TCA_FQ_HORIZON_DROP,
- 			  &horizon_drop, sizeof(horizon_drop));
- 	addattr_nest_end(n, tail);
-diff --git a/tc/q_htb.c b/tc/q_htb.c
-index 31862ffb..63b9521b 100644
---- a/tc/q_htb.c
-+++ b/tc/q_htb.c
-@@ -49,8 +49,8 @@ static void explain(void)
- 
- static void explain1(char *arg)
- {
--    fprintf(stderr, "Illegal \"%s\"\n", arg);
--    explain();
-+	fprintf(stderr, "Illegal \"%s\"\n", arg);
-+	explain();
- }
- 
- static int htb_parse_opt(struct qdisc_util *qu, int argc,
-diff --git a/tc/tc_core.c b/tc/tc_core.c
-index 8276f6a1..871ceb45 100644
---- a/tc/tc_core.c
-+++ b/tc/tc_core.c
-@@ -170,7 +170,7 @@ int tc_calc_rtable_64(struct tc_ratespec *r, __u32 *rtab,
- 		rtab[i] = tc_calc_xmittime(bps, sz);
- 	}
- 
--	r->cell_align =  -1;
-+	r->cell_align = -1;
- 	r->cell_log = cell_log;
- 	r->linklayer = (linklayer & TC_LINKLAYER_MASK);
- 	return cell_log;
--- 
+
+ /* Size in bytes of an IPA packet status structure */
+-#define IPA_STATUS_SIZE			sizeof(__le32[4])
++#define IPA_STATUS_SIZE			sizeof(__le32[8])
+
+ /* IPA status structure decoder; looks up field values for a structure */
+ static u32 ipa_status_extract(struct ipa *ipa, const void *data,
+=2D-
 2.40.1
+
+As none of you seem to be in Europe, I'll do another attempt, this time
+with git send-email.
+Bert Karwatzki
 
 
