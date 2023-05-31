@@ -1,202 +1,284 @@
-Return-Path: <netdev+bounces-6710-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6711-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A0A7F717860
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 09:36:49 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1783C717899
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 09:48:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EEB901C20D76
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 07:36:45 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 69E101C20D1F
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 07:48:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BEBEAD50;
-	Wed, 31 May 2023 07:36:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DCAD5AD53;
+	Wed, 31 May 2023 07:48:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D097A944
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 07:36:45 +0000 (UTC)
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2131.outbound.protection.outlook.com [40.107.237.131])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353E4E5
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 00:36:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TNsyBlNE2T0w3J0IQ536D1u3+sq4u1pIg7jBlaXUvHlVLOyy8EKLm7MhiFvHlRyDZkbQeIfUxiB9ecChopIelXofAOmO6p18rv8juv27xllJqtt/uE7eqeUMcYgBbDnSwzoECQZTAhf+cY9SQuO97zHYwwlNK7cJctB2GoG+tfZOM5OGM7kzznSwkwk9YSUISOBF0E1D1zuoemwMOEfjRZcUPPesl3iqpJ6gwulGNoaWGVatQ5wmBqxpctxGNsxJkSAAodIy7pEuv/v1NGimgVVihPQcf9aPRTUH90MzSJ0SBYoDrvg4k8K+jrciiPsQlPa4gWOkB3/V+pVnJdfzgQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IocztVIS2An9qVhOchrVv2SOHWcZnFBBVSDRuO+d/Ys=;
- b=L1iCTjuvULLS/akonmPbPAX5HVIHYGpdWQ256av5fTDiloFL/zkgzBHtwdjxFqdxF1w56bfcMNvUwVya80ekoLE6RqcnURRx5720a525dxx0/yUj/EHbsrmfQArW23GV1TnDoo0y8a8TsN4z3HsyGB6vrhYy5ODej9wctp4tmSJaO8asoPKn3Xn93VHo20wC4OEnCq2BxP1KRXlSVosjpglElizYbRdNtrRtHbLAIAl+ipWP9i6a1yozg3O7w1KjkdGrRZ/nBD+ldq9Io9H+3eCV1mpr/pkASNFYMkM8Ufrh3531l55VMyTqqiThDK01LoTPNTi667qw30OSHxtv3w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB038A945
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 07:48:19 +0000 (UTC)
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7063B122
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 00:48:17 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-30aea656e36so2495128f8f.1
+        for <netdev@vger.kernel.org>; Wed, 31 May 2023 00:48:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IocztVIS2An9qVhOchrVv2SOHWcZnFBBVSDRuO+d/Ys=;
- b=voK5ONvW/AVZnlBWxnKVNU9zz7Womh5yp//GgHkOOAiGlbIhcFtd5NcWVl3e+6fZ5UiNFei3bwGKzNbdjHXNDY4KSmfsrBRqvTMASk7JQHwDKh+8uIoYgBn8OPfhnEzQOiU6ipIGPZmsVO+LcMZOgh201A7+7wPCjifA+x7tsMs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BY5PR13MB3875.namprd13.prod.outlook.com (2603:10b6:a03:226::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.22; Wed, 31 May
- 2023 07:36:39 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6433.024; Wed, 31 May 2023
- 07:36:39 +0000
-Date: Wed, 31 May 2023 09:36:32 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Przemek Kitszel <przemyslaw.kitszel@intel.com>
-Cc: intel-wired-lan-bounces@osuosl.org,
-	Jesse Brandeburg <jesse.brandeburg@intel.com>,
-	Tony Nguyen <anthony.l.nguyen@intel.com>,
-	Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-	Victor Raj <victor.raj@intel.com>,
-	Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-	Jacob Keller <jacob.e.keller@intel.com>,
-	Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@linux.intel.com>,
-	Michal Wilczynski <michal.wilczynski@intel.com>,
-	netdev@vger.kernel.org
-Subject: Re: [PATCH iwl-next] ice: remove null checks before devm_kfree()
- calls
-Message-ID: <ZHb5AIgL5SzBa5FA@corigine.com>
-References: <20230530112549.20916-1-przemyslaw.kitszel@intel.com>
- <ZHY8MqU4Kfb+aTIP@corigine.com>
- <08806483-959b-925d-2099-561d0f0278f8@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <08806483-959b-925d-2099-561d0f0278f8@intel.com>
-X-ClientProxiedBy: AS4P195CA0054.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:20b:65a::14) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=linaro.org; s=google; t=1685519296; x=1688111296;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+tRSEdxP8IM2jGH9SQvtWqET/153WHbcp/+/2iayQMU=;
+        b=YXbMxXdWgXfUU0qf80s17Bl0IXn2Mnyry5L1rrzIdyXr3fLNdZCXDGRehczX0f16VP
+         bRBIEGNElh8ih3eLiHyFGF1LIxYeY4J2BT+vd2c2CXwVadyYRWh/dpUmLwCAHeEuWB2H
+         bgEEoFZ0XujkJfdKZbc61voLWN+nrcT2vxLK8lCAya/kyjZ+qcFpfUTLqg0MWZgt+pms
+         r4I2n7bXr0impDYuk8TngNUPYJJtzBl7U2bTb7q9WIyqoBQMil7u+hQ2IV9O8oq/pCcC
+         YQpcxb4Z9vSlB6kQa/jjczflaR+190dcR/sINyQ6iMmbDibLluP4TUjv40cGcbvreu8h
+         CerA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685519296; x=1688111296;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+tRSEdxP8IM2jGH9SQvtWqET/153WHbcp/+/2iayQMU=;
+        b=cWVCPw7aHVy9l4OoHCJagYSDhtSiIU8kzrQB969sVznvrb5wQ+k+8h9Pk4GzyxLMcq
+         OUwpPejHDJd+17lNT6b3IrOxqhbQwczyngWUL0vcw61OrGJWSzK4lHdkjW7j8c+l787x
+         WwVV8I4fpVDwzkwlXZHZhk5AlLUdB0Mj3Ikui2iTOdo9lPg1OzSbgwzS3bTkDTMXOJ9K
+         FES2l+wtbp95qFAzrh5uLia40aip60vKwtbGgU6YPq5CPh/AnoTh6B1njo+qcy947+xh
+         oFNLt9Vie+XxPURkYdM4dC8x7c79IsZ76bfKUomyu94iKKLagv9jq2T3yuMG8eKXfsMa
+         j5HA==
+X-Gm-Message-State: AC+VfDw7eDMkzy39uvu9fAtoayxwdEAD3rC1ZIe7OiSn0vBcsRHdkhCr
+	gUXFJjYbFZawpOpxPgnazWGJQg==
+X-Google-Smtp-Source: ACHHUZ77exca1531RsIDO/3C7eTHQt1nH/831RLyq6v8yb3Cqd/T8FdVYe6PeAe+nlDYDJAtMNHy2Q==
+X-Received: by 2002:a05:6000:1245:b0:306:297b:927f with SMTP id j5-20020a056000124500b00306297b927fmr3203075wrx.25.1685519295779;
+        Wed, 31 May 2023 00:48:15 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id b17-20020adff251000000b002c71b4d476asm5757981wrp.106.2023.05.31.00.48.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 May 2023 00:48:13 -0700 (PDT)
+Date: Wed, 31 May 2023 10:48:09 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: NeilBrown <neilb@suse.de>
+Cc: Stanislav Kinsbursky <skinsbursky@parallels.com>,
+	Chuck Lever <chuck.lever@oracle.com>,
+	Jeff Layton <jlayton@kernel.org>,
+	Trond Myklebust <trond.myklebust@hammerspace.com>,
+	Anna Schumaker <anna@kernel.org>,
+	"J. Bruce Fields" <bfields@redhat.com>, linux-nfs@vger.kernel.org,
+	netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] nfsd: fix double fget() bug in __write_ports_addfd()
+Message-ID: <58fd7e35-ba6c-432e-8e02-9c5476c854b4@kili.mountain>
+References: <9c90e813-c7fb-4c90-b52b-131481640a78@kili.mountain>
+ <168548566376.23533.14778348024215909777@noble.neil.brown.name>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY5PR13MB3875:EE_
-X-MS-Office365-Filtering-Correlation-Id: 27cf8120-9db1-4913-6bc6-08db61a9c544
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	mOawJq9chW9z6KxlLANDPNmA/UpHtaC2l8e3222f5vm2EA6XLnE34TW9DaPxclxaz5RyDUqe+2432f1LWXCrVMZj3mLWwjUVMo8LIWZaIU7bLVtN5EB8Ol/JfbRdAP04d0Codm/lrW8t2z/3nd7rGRr6RNb3WFlGEt+7USydsZWj4rYfI8JTRQf1Wz2UaUH4zb4mQvHD8gq0Mfj5eR4/gBmR8kABfiHr89YhUQiS+X6P1hWvvOTMy2JOMRQDYoP/YA9oky5vcaFACYXNk802liKscsJZ0NQyPIXWRzCGMLcz9T+oSHUs14YHf+yjUaThuEPhjUbRUiGl5oks7yicYTTgT34/qIx6ggI1KKAnfcz6Cn/IEIkqmRE6b0+60Djsp1nd3WEbgsib9uLLhMfAArpW+ybejUfhFOKGatsOJvf4Ws0Kz8q7KK8KjOK7Q9+iKIoy1/hUdERaSTGF83OLMjuTGogwoyzsCp269wIhbTZ9MwXbzMB4RBu/TM8R4k9NDzgIS08E48XH/hHKeqcSSVsD+A4yWPcQsYBgeQ0h5L7wy6hFtwDXmHbLfuPyEp04
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(346002)(366004)(396003)(39830400003)(451199021)(6486002)(41300700001)(44832011)(86362001)(4326008)(6916009)(6666004)(316002)(36756003)(66946007)(66556008)(66476007)(7416002)(5660300002)(186003)(2906002)(53546011)(6506007)(6512007)(2616005)(38100700002)(83380400001)(478600001)(66899021)(54906003)(8676002)(8936002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?yU5N9/ShzopZ5c0ClOFV0lBASAtMF0U9tEei3C6usIIatoXfvXylZRwMd27e?=
- =?us-ascii?Q?6pQpqr+JJkJ22ISmGRyZ4oTveavNYUD1tDWwjwc5BmIgXtrNeSUIJgZm9zyn?=
- =?us-ascii?Q?YDFjwx5dXbuNT4beyGVlppLS+lkIi0a5kkRuOcHKCkWbdJ6FwkQetX4xAj4z?=
- =?us-ascii?Q?O+vZXj4nSC6P5ms/rDMxcAo8Bb+YnEV36ruSRQmN7e2uEzdHHYjfLOwwviNM?=
- =?us-ascii?Q?KMvXs3pEhYwU6rpiqDFVrAQ2EvsgcKi/cVnWGv98Ve5OCslg5drDhHu6cYrB?=
- =?us-ascii?Q?kg6CWWxUX0QPV+Pf+MKIv3e6uFDh5nNZMfqGjXEktCYgkl9HK37CSrnyJsqv?=
- =?us-ascii?Q?iyLsHkGvzl7AN2CfsrIUkdm9hMY3qyWAWtD+Xcx7yEeaMaoycLAjCAx2++5Y?=
- =?us-ascii?Q?+Xu3X9cmVyMgdDXsDf0U3jroKamK9dikcaGTxKcLF7k3QSu0JYks8Y1Eub7y?=
- =?us-ascii?Q?kzb+PkhDFS4IPnsMXu1/ammZdovU4UABzgLKK1ObbNmnx2hYAy/v+08GFGdO?=
- =?us-ascii?Q?ALPJQcyZhI18pvFiH5/vcA3s40KSgAsZfY0gtuUinxw+fYSQwqpRGY+MVRqD?=
- =?us-ascii?Q?AWzIaOwfcJGOtTe6z2EOIln79Z9gSsXYnpDevDncGJlESwXDDgvldWyEJTcL?=
- =?us-ascii?Q?2zu7/a9FR1UCKxy7QmJ+Jqm2WMOp27NEuUlUPJRIf3PuISP8Uf/buoTwkFGR?=
- =?us-ascii?Q?wGJ8r1z5jPadp4+U6ZgpXlAkAMI7BiTOml91ahuDTfnN90LuLVo+tRDnfbvU?=
- =?us-ascii?Q?6zc+AiKwn63VKsbEplWa5EupQOeHcAo4mnBzdjuwysoGjDojk4qzxbQoSknP?=
- =?us-ascii?Q?aaXk9goOlUAoDOOiGjHdQhs7jt0wuZl6jT2e/am3bBDpA8CFhM97ttNx0EuQ?=
- =?us-ascii?Q?maB+g8p8reCCL9Qr3q14EJns1MOHGLqZBm5fEnv4vAfigROhehPS5+SaEopf?=
- =?us-ascii?Q?9xP0zRyzcPqFAYN16UyMv6L42Ej5t/XfGpgpanihfWeX4c5ZH05Fzv88YVcb?=
- =?us-ascii?Q?iW/d3kW/Qkfs7lvCp6I1I/7vJfcHvIsaq5JwXqQ4FgjfGGszW+VZaVeWPaz6?=
- =?us-ascii?Q?Pjom7dg3y8fK5YBqR47cbk4VPx5clPYeNqfqoXr4cvxTqWXrseMxu3GX/t3B?=
- =?us-ascii?Q?Zi3lffKC1Dqb7nGe0Kqgv+oazeps/lBz62sm5S2NELV5rC65TIHYInrYiBHQ?=
- =?us-ascii?Q?xR8pCaVbOkSIb4KYN3JO1Ma2lh5Aj+zQpMuZnWmJTuo0CUTdyfel/tFPbNm1?=
- =?us-ascii?Q?ANwZCHXgPOfvrzMYkxnRf+S2tKqo8Om9xZHTk9O3jXFAy0TlvynQPDHg4GjX?=
- =?us-ascii?Q?vLbTlOC74nSUeFSRThXEr09BE2UadhtQcNI2c83CqFaA/NgJVMdrqKubB1na?=
- =?us-ascii?Q?JDwehVWhq0bt+rOKArUo1tFg1iXJ3VHHYMHweqlB1uDn7L1m/kPrUWoRPGxm?=
- =?us-ascii?Q?ibOHLlI20imbgLkk9zTh1Er0lqG6HXaEvbhJ6Q4qzThwo1FYTgLELYrw0Rco?=
- =?us-ascii?Q?nQAbfA7k8vqNo9qIOTSl8kkb3LFaOh8OS7lvi6GeAp4QL35pgbePNV2lQ493?=
- =?us-ascii?Q?jrjDxA1ApndZ6p5qUuRZsDaAb+oId10vadh6S2gcUSzHChw1YUoAtwKaiwaE?=
- =?us-ascii?Q?gjbEKu3cQJ2QLe+CvVlMxSvraUGvEjb+XlAFxwKGQzAD7ECTYG/bExxYpmQl?=
- =?us-ascii?Q?78UhQg=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 27cf8120-9db1-4913-6bc6-08db61a9c544
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2023 07:36:39.1570
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZAAT6BEeKq+2N9f+hn3OlHJAswAUWq7BsRovxuRTph3+en3j3M8PT2oY1BViv+AtYtK0c0oCPPUv1E1E6QGLBMXU1j/qd95Ba2lcwFUexZg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR13MB3875
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <168548566376.23533.14778348024215909777@noble.neil.brown.name>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 31, 2023 at 12:06:15AM +0200, Przemek Kitszel wrote:
-> On 5/30/23 20:10, Simon Horman wrote:
-> > On Tue, May 30, 2023 at 01:25:49PM +0200, Przemek Kitszel wrote:
-> > > We all know they are redundant.
-> > > 
-> > > Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-> > > Reviewed-by: Michal Wilczynski <michal.wilczynski@intel.com>
-> > > Signed-off-by: Przemek Kitszel <przemyslaw.kitszel@intel.com>
+On Wed, May 31, 2023 at 08:27:43AM +1000, NeilBrown wrote:
+> On Mon, 29 May 2023, Dan Carpenter wrote:
+> > The bug here is that you cannot rely on getting the same socket
+> > from multiple calls to fget() because userspace can influence
+> > that.  This is a kind of double fetch bug.
 > > 
-> > ...
-> > 
-> > > diff --git a/drivers/net/ethernet/intel/ice/ice_flow.c b/drivers/net/ethernet/intel/ice/ice_flow.c
-> > > index ef103e47a8dc..85cca572c22a 100644
-> > > --- a/drivers/net/ethernet/intel/ice/ice_flow.c
-> > > +++ b/drivers/net/ethernet/intel/ice/ice_flow.c
-> > > @@ -1303,23 +1303,6 @@ ice_flow_find_prof_id(struct ice_hw *hw, enum ice_block blk, u64 prof_id)
-> > >   	return NULL;
-> > >   }
-> > > -/**
-> > > - * ice_dealloc_flow_entry - Deallocate flow entry memory
-> > > - * @hw: pointer to the HW struct
-> > > - * @entry: flow entry to be removed
-> > > - */
-> > > -static void
-> > > -ice_dealloc_flow_entry(struct ice_hw *hw, struct ice_flow_entry *entry)
-> > > -{
-> > > -	if (!entry)
-> > > -		return;
-> > > -
-> > > -	if (entry->entry)
-> > > -		devm_kfree(ice_hw_to_dev(hw), entry->entry);
-> > > -
-> > > -	devm_kfree(ice_hw_to_dev(hw), entry);
-> > > -}
-> > > -
-> > >   /**
-> > >    * ice_flow_rem_entry_sync - Remove a flow entry
-> > >    * @hw: pointer to the HW struct
-> > > @@ -1335,7 +1318,8 @@ ice_flow_rem_entry_sync(struct ice_hw *hw, enum ice_block __always_unused blk,
+> > The fix is to delete the svc_alien_sock() function and insted do
+> > the checking inside the svc_addsock() function.
 > 
-> More context would include following:
+> Hi,
+>  I definitely agree with the change to pass the 'net' into
+>  svc_addsock(), and check the the fd has the correct net.
 > 
->         if (!entry)
->                 return -EINVAL;
-> 
-> 
-> > >   	list_del(&entry->l_entry);
-> > > -	ice_dealloc_flow_entry(hw, entry);
-> > > +	devm_kfree(ice_hw_to_dev(hw), entry->entry);
-> > 
-> > Hi Przemek,
-> > 
-> > Previously entry was not dereferenced if it was NULL.
-> > Now it is. Can that occur?
-> 
-> The check is right above the default 3-line context provided by git, see
-> above.
+>  I'm not sure I agree with the removal of the svc_alien_sock() test.  It
+>  is best to perform sanity tests before allocation things, and
+>  nfsd_create_serv() can create a new 'serv' - though most often it just
+>  incs the refcount.
 
-Yes, right. Sorry for not checking that.
-This does of course look good.
+That's true.  But the other philosophical rule is that we shouldn't
+optimize for the failure path.  If someone gives us bad data they
+deserve a slow down.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+I also think leaving svc_alien_sock() is a trap for the unwary because
+it will lead to more double fget() bugs.  The svc_alien_sock() function
+is weird because it returns false on success and false on failure and
+true for alien sock.
+
+> 
+>  Maybe instead svc_alien_sock() could return the struct socket (if
+>  successful), and it could be passed to svc_addsock()???
+> 
+>  I would probably then change the name of svc_alien_sock()
+
+Yeah, because we don't want alien sockets, we want Earth sockets.
+Doing this is much more complicated...  The name svc_get_earth_sock()
+is just a joke.  Tell me what name to use if we decide to go this
+route.
+
+To be honest, I would probably still go with my v1 patch.
+
+regards,
+dan carpenter
+
+diff --git a/fs/nfsd/nfsctl.c b/fs/nfsd/nfsctl.c
+index e0e98b40a6e5d..affcd44f03d6b 100644
+--- a/fs/nfsd/nfsctl.c
++++ b/fs/nfsd/nfsctl.c
+@@ -689,6 +689,7 @@ static ssize_t __write_ports_names(char *buf, struct net *net)
+  */
+ static ssize_t __write_ports_addfd(char *buf, struct net *net, const struct cred *cred)
+ {
++	struct socket *so;
+ 	char *mesg = buf;
+ 	int fd, err;
+ 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
+@@ -698,22 +699,30 @@ static ssize_t __write_ports_addfd(char *buf, struct net *net, const struct cred
+ 		return -EINVAL;
+ 	trace_nfsd_ctl_ports_addfd(net, fd);
+ 
+-	if (svc_alien_sock(net, fd)) {
++	so = svc_get_earth_sock(net, fd);
++	if (!so) {
+ 		printk(KERN_ERR "%s: socket net is different to NFSd's one\n", __func__);
+ 		return -EINVAL;
+ 	}
+ 
+ 	err = nfsd_create_serv(net);
+ 	if (err != 0)
+-		return err;
++		goto out_put_sock;
+ 
+-	err = svc_addsock(nn->nfsd_serv, fd, buf, SIMPLE_TRANSACTION_LIMIT, cred);
++	err = svc_addsock(nn->nfsd_serv, so, buf, SIMPLE_TRANSACTION_LIMIT, cred);
++	if (err)
++		goto out_put_net;
+ 
+-	if (err >= 0 &&
+-	    !nn->nfsd_serv->sv_nrthreads && !xchg(&nn->keep_active, 1))
++	if (!nn->nfsd_serv->sv_nrthreads && !xchg(&nn->keep_active, 1))
+ 		svc_get(nn->nfsd_serv);
+ 
+ 	nfsd_put(net);
++	return 0;
++
++out_put_net:
++	nfsd_put(net);
++out_put_sock:
++	sockfd_put(so);
+ 	return err;
+ }
+ 
+diff --git a/include/linux/sunrpc/svcsock.h b/include/linux/sunrpc/svcsock.h
+index d16ae621782c0..2422d260591bb 100644
+--- a/include/linux/sunrpc/svcsock.h
++++ b/include/linux/sunrpc/svcsock.h
+@@ -61,8 +61,8 @@ int		svc_recv(struct svc_rqst *, long);
+ void		svc_send(struct svc_rqst *rqstp);
+ void		svc_drop(struct svc_rqst *);
+ void		svc_sock_update_bufs(struct svc_serv *serv);
+-bool		svc_alien_sock(struct net *net, int fd);
+-int		svc_addsock(struct svc_serv *serv, const int fd,
++struct socket	*svc_get_earth_sock(struct net *net, int fd);
++int		svc_addsock(struct svc_serv *serv, struct socket *so,
+ 					char *name_return, const size_t len,
+ 					const struct cred *cred);
+ void		svc_init_xprt_sock(void);
+diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+index 46845cb6465d7..78f6ae9fa42d4 100644
+--- a/net/sunrpc/svcsock.c
++++ b/net/sunrpc/svcsock.c
+@@ -1474,21 +1474,20 @@ static struct svc_sock *svc_setup_socket(struct svc_serv *serv,
+ 	return svsk;
+ }
+ 
+-bool svc_alien_sock(struct net *net, int fd)
++struct socket *svc_get_earth_sock(struct net *net, int fd)
+ {
+ 	int err;
+ 	struct socket *sock = sockfd_lookup(fd, &err);
+-	bool ret = false;
+ 
+ 	if (!sock)
+-		goto out;
+-	if (sock_net(sock->sk) != net)
+-		ret = true;
+-	sockfd_put(sock);
+-out:
+-	return ret;
++		return NULL;
++	if (sock_net(sock->sk) != net) {
++		sockfd_put(sock);
++		return NULL;
++	}
++	return sock;
+ }
+-EXPORT_SYMBOL_GPL(svc_alien_sock);
++EXPORT_SYMBOL_GPL(svc_get_earth_sock);
+ 
+ /**
+  * svc_addsock - add a listener socket to an RPC service
+@@ -1502,36 +1501,27 @@ EXPORT_SYMBOL_GPL(svc_alien_sock);
+  * Name is terminated with '\n'.  On error, returns a negative errno
+  * value.
+  */
+-int svc_addsock(struct svc_serv *serv, const int fd, char *name_return,
++int svc_addsock(struct svc_serv *serv, struct socket *so, char *name_return,
+ 		const size_t len, const struct cred *cred)
+ {
+-	int err = 0;
+-	struct socket *so = sockfd_lookup(fd, &err);
+ 	struct svc_sock *svsk = NULL;
+ 	struct sockaddr_storage addr;
+ 	struct sockaddr *sin = (struct sockaddr *)&addr;
+ 	int salen;
+ 
+-	if (!so)
+-		return err;
+-	err = -EAFNOSUPPORT;
+ 	if ((so->sk->sk_family != PF_INET) && (so->sk->sk_family != PF_INET6))
+-		goto out;
+-	err =  -EPROTONOSUPPORT;
++		return -EAFNOSUPPORT;
+ 	if (so->sk->sk_protocol != IPPROTO_TCP &&
+ 	    so->sk->sk_protocol != IPPROTO_UDP)
+-		goto out;
+-	err = -EISCONN;
++		return -EPROTONOSUPPORT;
+ 	if (so->state > SS_UNCONNECTED)
+-		goto out;
+-	err = -ENOENT;
++		return -EISCONN;
+ 	if (!try_module_get(THIS_MODULE))
+-		goto out;
++		return -ENOENT;
+ 	svsk = svc_setup_socket(serv, so, SVC_SOCK_DEFAULTS);
+ 	if (IS_ERR(svsk)) {
+ 		module_put(THIS_MODULE);
+-		err = PTR_ERR(svsk);
+-		goto out;
++		return PTR_ERR(svsk);
+ 	}
+ 	salen = kernel_getsockname(svsk->sk_sock, sin);
+ 	if (salen >= 0)
+@@ -1539,9 +1529,6 @@ int svc_addsock(struct svc_serv *serv, const int fd, char *name_return,
+ 	svsk->sk_xprt.xpt_cred = get_cred(cred);
+ 	svc_add_new_perm_xprt(serv, &svsk->sk_xprt);
+ 	return svc_one_sock_name(svsk, name_return, len);
+-out:
+-	sockfd_put(so);
+-	return err;
+ }
+ EXPORT_SYMBOL_GPL(svc_addsock);
+ 
+
+
 
 
