@@ -1,129 +1,203 @@
-Return-Path: <netdev+bounces-7266-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6660-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C93CD71F6B5
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 01:39:53 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DDA74717475
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 05:45:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1B4D51C21142
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 23:39:50 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8ACED28136F
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 03:45:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5F21548234;
-	Thu,  1 Jun 2023 23:39:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B820F1878;
+	Wed, 31 May 2023 03:45:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 468FC10FA
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 23:39:50 +0000 (UTC)
-Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E178136;
-	Thu,  1 Jun 2023 16:39:48 -0700 (PDT)
-Received: by mail-oo1-xc36.google.com with SMTP id 006d021491bc7-5584f8ec30cso1085378eaf.0;
-        Thu, 01 Jun 2023 16:39:48 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB14F186B
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 03:45:30 +0000 (UTC)
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22280EC
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:45:29 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id 41be03b00d2f7-53f7bef98b7so2984187a12.3
+        for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:45:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685662788; x=1688254788;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Y66S7nKcbyO9mw2veazWYNce7x29EbNWsEjy9gQwvT8=;
-        b=JgN6bMOPbZQQzmbjQOXjZR1MWbA658FbsmFwhmJTfIBw7YT4vVH5SbNbGOqDYNiykz
-         NsONTUM1dbTRUtPmxQi/H2LhtTn0Gt6DO8HcjDTOBUhoGjYv59NWvC5TZ17iskx80o1o
-         jZWxce7jFMBi1PMppTmfYEnMNSDmtgSD0HR7uL22/b+QOMO2srLfPklplvCwi4Zgpn/S
-         +RyIJ/nq+QgwVgiZe0DQp6ybDulRm25BGxz2VtBmAV3+cM3FYgqFrIm/4tiHZjNDFj3/
-         NVhs4YEuF3+R+IYByMBWLDGjNsegbKB3nzBunHXSaJIZCWh9PVtdIWIC9DuBPSNL49Un
-         OkfA==
+        d=chromium.org; s=google; t=1685504728; x=1688096728;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=mWRStRzhjvxvXtPIyOg18FX2uAjXK3LmODKkFrfOfw0=;
+        b=fPPupQpDJe/KmEnc2WnZF8g5GpmYFL7szIinLEYV32rvUtsaCDyhhmM6HS+5Vg8tAq
+         Ju7LCyeMJgyyKq5XB/Rn13NFszVCnQwEFVEur0eXcG+4sUhRHce3QetMa3fyv7P1lv7z
+         N+u1plwb+KEfc8mRjeNx98MhNSHTGvoxu2f/w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685662788; x=1688254788;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Y66S7nKcbyO9mw2veazWYNce7x29EbNWsEjy9gQwvT8=;
-        b=Kl6rnOXFgqoGrNqlLT8dnPnPlzHdmAVsxhGZhSVav0Wm46GJ6xbWllBqm5lNOhyCkD
-         kBlB5IuFgqe0C4Ckulu1zs30gpFrzI45AphfoPTzHPxCvEh/rr7/JBiKroR9X0x9eSqd
-         sxwBFRN2HfgxYvrcbEC/uQThpyvXsEhTq7Tco4jTgFgHJmkSfHxtBDUGq7wlbiymdSsM
-         YzoylbgJAWOATl2u1QDAffsgzoI381z7GTbvDU7xShkObfyNWiO7A000GaD7FrQKXqeE
-         tWXW4QvQE1Tv1Sft8mlgtuvy+NZqmUVpxCsLWIjdGZn+3kZrARd+6Fxzp4o3kWWKNJoA
-         M7QQ==
-X-Gm-Message-State: AC+VfDxIN6DIPPB9/MltVaGZlKkw8AjMC8H7vFnhhs8QYYIqJhNQ5f+2
-	rkwQh0PjKFJ+dYhud7rfZBFaG7GgPa5zbfRq
-X-Google-Smtp-Source: ACHHUZ5H3iz5f8fyOD3aj+Xa4IrVqtidCjhJ6HAZSYPdF8KVhqG0fRMzu2vPFMhJL5t8WczAz3B7Dw==
-X-Received: by 2002:a05:6358:9896:b0:123:5c29:c39a with SMTP id q22-20020a056358989600b001235c29c39amr7109173rwa.31.1685662787613;
-        Thu, 01 Jun 2023 16:39:47 -0700 (PDT)
-Received: from localhost (ec2-52-9-159-93.us-west-1.compute.amazonaws.com. [52.9.159.93])
-        by smtp.gmail.com with ESMTPSA id z15-20020aa791cf000000b0064d59e194c8sm5585299pfa.115.2023.06.01.16.39.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jun 2023 16:39:47 -0700 (PDT)
-Date: Wed, 31 May 2023 03:35:30 +0000
-From: Bobby Eshleman <bobbyeshleman@gmail.com>
-To: Stefano Garzarella <sgarzare@redhat.com>
-Cc: Bobby Eshleman <bobby.eshleman@bytedance.com>, kvm@vger.kernel.org,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
+        d=1e100.net; s=20221208; t=1685504728; x=1688096728;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mWRStRzhjvxvXtPIyOg18FX2uAjXK3LmODKkFrfOfw0=;
+        b=TWSre2mTAFvTg6dGviIS6pDGiEVqFkHTDpOQr7E/Zhh/JbYM+hnpc2q8RME4aPYCRe
+         BTQpjB4GfZRfeL5WOrpwlaN4jx3QVLY54gZOd6uRzSb36EOtyywpg1cJAdN3DewTjkr3
+         I/Y7xWmPQNcRUmmQ7fBPT8JivO1h/0pXH5Kl2XKNVnlkR6esgMRFfEs40XzRFwTTeEG0
+         kBW7Tm/VYuJLCfnpqEMz0I1ZkyIbhvu0PAnGksvkAe2puPpRWY3LAGDp/vBGPgiLi6ZO
+         NM+PEnuTnldQEYsoP8E40iinCj7FDZFw5DG1THNcIMLdkuGY6cbtl6vgIrCplhbclSrI
+         kdAw==
+X-Gm-Message-State: AC+VfDz1vJc0Vd5hCXTrrPKs8C+yq8AIqH6OaBnBB5xSH8PUNjG3J5+S
+	ANn46qi+yg/LQktsN3Jf6g8MZA==
+X-Google-Smtp-Source: ACHHUZ43/DN6lEy8Zrzn0r3E1bhpKKnF7A8bfa3e3OXdy+1nCr5lMGZ3vkOrHeG/LMfIYwjX5e1AQw==
+X-Received: by 2002:a17:902:a508:b0:1b0:31a8:2f74 with SMTP id s8-20020a170902a50800b001b031a82f74mr3379208plq.68.1685504728555;
+        Tue, 30 May 2023 20:45:28 -0700 (PDT)
+Received: from localhost (21.160.199.104.bc.googleusercontent.com. [104.199.160.21])
+        by smtp.gmail.com with UTF8SMTPSA id e7-20020a17090301c700b001b042e8ed77sm72787plh.281.2023.05.30.20.45.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 May 2023 20:45:28 -0700 (PDT)
+From: Ying Hsu <yinghsu@chromium.org>
+To: linux-bluetooth@vger.kernel.org
+Cc: chromeos-bluetooth-upstreaming@chromium.org,
+	Ying Hsu <yinghsu@chromium.org>,
+	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
-	Stefan Hajnoczi <stefanha@redhat.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	"David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net] virtio/vsock: fix sock refcnt bug on owner set
- failure
-Message-ID: <ZHbAgkvSHEiQlFs6@bullseye>
-References: <20230531-b4-vsock-fix-refcnt-v1-1-0ed7b697cca5@bytedance.com>
- <35xlmp65lxd4eoal2oy3lwyjxd3v22aeo2nbuyknc4372eljct@vkilkppadayd>
+	Jakub Kicinski <kuba@kernel.org>,
+	Johan Hedberg <johan.hedberg@gmail.com>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org
+Subject: [PATCH v5] Bluetooth: Fix l2cap_disconnect_req deadlock
+Date: Wed, 31 May 2023 03:44:56 +0000
+Message-ID: <20230531034522.375889-1-yinghsu@chromium.org>
+X-Mailer: git-send-email 2.41.0.rc0.172.g3f132b7071-goog
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <35xlmp65lxd4eoal2oy3lwyjxd3v22aeo2nbuyknc4372eljct@vkilkppadayd>
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DATE_IN_PAST_24_48,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 01, 2023 at 09:58:47AM +0200, Stefano Garzarella wrote:
-> On Wed, May 31, 2023 at 07:47:32PM +0000, Bobby Eshleman wrote:
-> > Previous to setting the owner the socket is found via
-> > vsock_find_connected_socket(), which returns sk after a call to
-> > sock_hold().
-> > 
-> > If setting the owner fails, then sock_put() needs to be called.
-> > 
-> > Fixes: f9d2b1e146e0 ("virtio/vsock: fix leaks due to missing skb owner")
-> > Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
-> > ---
-> > net/vmw_vsock/virtio_transport_common.c | 1 +
-> > 1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-> > index b769fc258931..f01cd6adc5cb 100644
-> > --- a/net/vmw_vsock/virtio_transport_common.c
-> > +++ b/net/vmw_vsock/virtio_transport_common.c
-> > @@ -1343,6 +1343,7 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
-> > 
-> > 	if (!skb_set_owner_sk_safe(skb, sk)) {
-> > 		WARN_ONCE(1, "receiving vsock socket has sk_refcnt == 0\n");
-> > +		sock_put(sk);
-> 
-> Did you have any warning, issue here?
-> 
-> IIUC skb_set_owner_sk_safe() can return false only if the ref counter
-> is 0, so calling a sock_put() on it should have no effect except to
-> produce a warning.
-> 
+L2CAP assumes that the locks conn->chan_lock and chan->lock are
+acquired in the order conn->chan_lock, chan->lock to avoid
+potential deadlock.
+For example, l2sock_shutdown acquires these locks in the order:
+  mutex_lock(&conn->chan_lock)
+  l2cap_chan_lock(chan)
 
-Oh yeah, you're totally right. I did not recall how
-skb_set_owner_sk_safe() worked internally and thought I'd introduced an
-uneven hold/put count with that prior patch when reading through the
-code again. I haven't seen any live issue, just misread the code.
+However, l2cap_disconnect_req acquires chan->lock in
+l2cap_get_chan_by_scid first and then acquires conn->chan_lock
+before calling l2cap_chan_del. This means that these locks are
+acquired in unexpected order, which leads to potential deadlock:
+  l2cap_chan_lock(c)
+  mutex_lock(&conn->chan_lock)
 
-Sorry about that, feel free to ignore this patch.
+This patch releases chan->lock before acquiring the conn_chan_lock
+to avoid the potential deadlock.
 
-Best,
-Bobby
+Fixes: ("a2a9339e1c9d Bluetooth: L2CAP: Fix use-after-free in l2cap_disconnect_{req,rsp}")
+Signed-off-by: Ying Hsu <yinghsu@chromium.org>
+---
+This commit has been tested on a Chromebook device.
+
+Changes in v5:
+- Fixing the merge conflict by removing l2cap_del_chan_by_scid.
+
+Changes in v4:
+- Using l2cap_get_chan_by_scid to avoid repeated code.
+- Releasing chan->lock before acquiring conn->chan_lock.
+
+Changes in v3:
+- Adding the fixes tag.
+
+Changes in v2:
+- Adding the prefix "Bluetooth:" to subject line.
+
+ net/bluetooth/l2cap_core.c | 37 +++++++++++++++----------------------
+ 1 file changed, 15 insertions(+), 22 deletions(-)
+
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 036bc147f4de..16ac4aac0638 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -4634,26 +4634,6 @@ static inline int l2cap_config_rsp(struct l2cap_conn *conn,
+ 	return err;
+ }
+ 
+-static struct l2cap_chan *l2cap_del_chan_by_scid(struct l2cap_conn *conn,
+-						 u16 cid, int err)
+-{
+-	struct l2cap_chan *c;
+-
+-	mutex_lock(&conn->chan_lock);
+-	c = __l2cap_get_chan_by_scid(conn, cid);
+-	if (c) {
+-		/* Only lock if chan reference is not 0 */
+-		c = l2cap_chan_hold_unless_zero(c);
+-		if (c) {
+-			l2cap_chan_lock(c);
+-			l2cap_chan_del(c, err);
+-		}
+-	}
+-	mutex_unlock(&conn->chan_lock);
+-
+-	return c;
+-}
+-
+ static inline int l2cap_disconnect_req(struct l2cap_conn *conn,
+ 				       struct l2cap_cmd_hdr *cmd, u16 cmd_len,
+ 				       u8 *data)
+@@ -4671,7 +4651,7 @@ static inline int l2cap_disconnect_req(struct l2cap_conn *conn,
+ 
+ 	BT_DBG("scid 0x%4.4x dcid 0x%4.4x", scid, dcid);
+ 
+-	chan = l2cap_del_chan_by_scid(conn, dcid, ECONNRESET);
++	chan = l2cap_get_chan_by_scid(conn, dcid);
+ 	if (!chan) {
+ 		cmd_reject_invalid_cid(conn, cmd->ident, dcid, scid);
+ 		return 0;
+@@ -4682,6 +4662,13 @@ static inline int l2cap_disconnect_req(struct l2cap_conn *conn,
+ 	l2cap_send_cmd(conn, cmd->ident, L2CAP_DISCONN_RSP, sizeof(rsp), &rsp);
+ 
+ 	chan->ops->set_shutdown(chan);
++
++	l2cap_chan_unlock(chan);
++	mutex_lock(&conn->chan_lock);
++	l2cap_chan_lock(chan);
++	l2cap_chan_del(chan, ECONNRESET);
++	mutex_unlock(&conn->chan_lock);
++
+ 	chan->ops->close(chan);
+ 
+ 	l2cap_chan_unlock(chan);
+@@ -4706,7 +4693,7 @@ static inline int l2cap_disconnect_rsp(struct l2cap_conn *conn,
+ 
+ 	BT_DBG("dcid 0x%4.4x scid 0x%4.4x", dcid, scid);
+ 
+-	chan = l2cap_del_chan_by_scid(conn, scid, 0);
++	chan = l2cap_get_chan_by_scid(conn, scid);
+ 	if (!chan)
+ 		return 0;
+ 
+@@ -4716,6 +4703,12 @@ static inline int l2cap_disconnect_rsp(struct l2cap_conn *conn,
+ 		return 0;
+ 	}
+ 
++	l2cap_chan_unlock(chan);
++	mutex_lock(&conn->chan_lock);
++	l2cap_chan_lock(chan);
++	l2cap_chan_del(chan, 0);
++	mutex_unlock(&conn->chan_lock);
++
+ 	chan->ops->close(chan);
+ 
+ 	l2cap_chan_unlock(chan);
+-- 
+2.41.0.rc0.172.g3f132b7071-goog
+
 
