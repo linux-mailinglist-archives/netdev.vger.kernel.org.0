@@ -1,168 +1,192 @@
-Return-Path: <netdev+bounces-6755-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6753-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DE854717CF4
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:13:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id AE500717CEC
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:13:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7A7651C20DB5
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:13:46 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EFF4E1C20D95
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:13:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 24BA613ACD;
-	Wed, 31 May 2023 10:13:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2986513AC9;
+	Wed, 31 May 2023 10:13:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 135643D64
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:13:28 +0000 (UTC)
-Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AEF12B
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 03:13:23 -0700 (PDT)
-X-QQ-mid:Yeas43t1685527903t560t14403
-Received: from 3DB253DBDE8942B29385B9DFB0B7E889 (jiawenwu@trustnetic.com [183.159.96.128])
-X-QQ-SSF:00400000000000F0FOF000000000000
-From: =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
-X-BIZMAIL-ID: 14749073908177250109
-To: "'Russell King \(Oracle\)'" <linux@armlinux.org.uk>
-Cc: <netdev@vger.kernel.org>,
-	<jarkko.nikula@linux.intel.com>,
-	<andriy.shevchenko@linux.intel.com>,
-	<mika.westerberg@linux.intel.com>,
-	<jsd@semihalf.com>,
-	<Jose.Abreu@synopsys.com>,
-	<andrew@lunn.ch>,
-	<hkallweit1@gmail.com>,
-	<oe-kbuild-all@lists.linux.dev>,
-	<linux-i2c@vger.kernel.org>,
-	<linux-gpio@vger.kernel.org>,
-	<mengyuanlou@net-swift.com>,
-	"'Piotr Raczynski'" <piotr.raczynski@intel.com>
-References: <20230524091722.522118-6-jiawenwu@trustnetic.com> <202305261959.mnGUW17n-lkp@intel.com> <ZHCZ0hLKARXu3xFH@shell.armlinux.org.uk> <02dd01d991d2$2120fcf0$6362f6d0$@trustnetic.com> <03ac01d992d2$67c1ec90$3745c5b0$@trustnetic.com> <ZHcXvFvR3H8Vmyok@shell.armlinux.org.uk>
-In-Reply-To: <ZHcXvFvR3H8Vmyok@shell.armlinux.org.uk>
-Subject: RE: [PATCH net-next v9 5/9] net: txgbe: Add SFP module identify
-Date: Wed, 31 May 2023 18:11:42 +0800
-Message-ID: <047f01d993a8$4c4465c0$e4cd3140$@trustnetic.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12C4AD52E
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:13:08 +0000 (UTC)
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2107.outbound.protection.outlook.com [40.107.94.107])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7E810B;
+	Wed, 31 May 2023 03:13:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BqN54jzSbto/VSsd33qbNjGI+ntg2JRMyds7OYullop+/Nrxns4MvIel/oCNdTU+nfUPlQgefoL0JSAaszoMfNltMNV5MmzfRQDUzha5NYDXCtRQPVRi9bzf2tHgUS6mKluAw0WZdbTUyFcniVsLBnwBCI5UuOojLvGrBsXtEdmzIwfWHPLCKm2qR9GPwgKf7aZpTtVEcaIulq5PupexOGtaw+8wH9s2ltIcUYdhpKJv3LgPSEZFv9fKJOmXrhSsGJhaRfCnJaCzUxp5qPZo5rC/yJvvAoCb1gUWXhxncub7dzIb04wEnuyTDx9tdbBifyRF1o4yGZstJNWB5LtbRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HVBuN1zunydNV9eKKT0thfUsc+CL4eaCMJOQwNoAhQU=;
+ b=Prl+bS03iA8NUx//ue+/Rbopz+SIqhDOkkJml0HWVHlc0IsnCqzWWtSvojMLg6kXMeWItCxdn5/HaEFlTvJa17hAeR+aYPGSW06jf0luhl/KCsoP0N+bqPlofUWq+938UbUS996d8lZioZEo1NacPiEzewK1QIOluo2v6Ysxibl7nKDcklgck2PckrpFEGVFPDgVeEpBpff0doVm0k5BKkZUm4G9fAF2OaXr1XBMaTT/Q384XaUGNTKp2Ny04zt29vbSzDGLI7YsnKiXdm+vpNJnxM868s2gVOgFQNVwwVKjWvGyf8kWM+wcTS7modrBlk5H41W6dj/y6KVXX8FbTg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HVBuN1zunydNV9eKKT0thfUsc+CL4eaCMJOQwNoAhQU=;
+ b=gl4ygUhF9Zxi1cHOtgTryJKkCtgp7WmuxlagVinNPOFsd+jPjVW0pnBsOrGB62OmrhwrX5wxWDkLKKzLm/iSoy6beb4jD9g4j3UkfZKXP5F7bLc4p6hRkOMOlTTQbAuGpI3fxHLdbQzIsArSzmnmleHqeHav9zCSbhUafB8HzVo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH0PR13MB6008.namprd13.prod.outlook.com (2603:10b6:510:d8::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.17; Wed, 31 May
+ 2023 10:13:03 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6433.024; Wed, 31 May 2023
+ 10:13:03 +0000
+Date: Wed, 31 May 2023 12:12:56 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Hangyu Hua <hbh25y@gmail.com>
+Cc: jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, simon.horman@netronome.com,
+	pieter.jansen-van-vuuren@amd.com, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: sched: fix possible OOB write in fl_set_geneve_opt()
+Message-ID: <ZHcdqPFZODXF/U7m@corigine.com>
+References: <20230529043615.4761-1-hbh25y@gmail.com>
+ <ZHXf29es/yh3r6jq@corigine.com>
+ <e9925aef-fefc-24b9-dea3-bd3bcca01b35@gmail.com>
+ <ZHb/nPuTMja3giSP@corigine.com>
+ <ebdc1731-3647-8b58-c66c-db5bb09f5bfa@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ebdc1731-3647-8b58-c66c-db5bb09f5bfa@gmail.com>
+X-ClientProxiedBy: AM0PR04CA0069.eurprd04.prod.outlook.com
+ (2603:10a6:208:1::46) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQFlCTXCD0V13/nxYaH3lJLB+zCPMgFguorBARt7XSgCWWopnAJhtNzYAOnc7CuwHDLfgA==
-Content-Language: zh-cn
-X-QQ-SENDSIZE: 520
-Feedback-ID: Yeas:trustnetic.com:qybglogicsvrgz:qybglogicsvrgz5a-1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=unavailable
-	autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB6008:EE_
+X-MS-Office365-Filtering-Correlation-Id: 64e88831-f81b-4d13-6d29-08db61bf9e7f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	vEKURoGgWC14BarjIgAo98aD0MMah2h566aq9aZx+ZIVcOIS0/Y3ZKSRqqqAOcM7IoiMD+AFK9zXJekVNxOjLZSowpiPe6RdxcRLzbVGs4sXfVnAVSzgnHfNKRVA3cu2gqZUjvGqDa+0jtW2Xi/vTqb7am4+of9/axZ87n4GdMcjVCTxQPgbgRYGmfJjFWAfPqhjE1G+IR09EGwH4e6nO+yAwiJhi9ndXc1/M5Y2J53jgPvyDocjkzO5OZLo62P6Bf0Y9Kydj6DE2zAX7JlHD91J1wEhN7EIoTCDsPTnLQOsvn4r4IZFHH0Z0WuDzFAKu0TLkoMbzy7w91a9N/bTTeo78N7MZLGnFclKhxG/F/nLxfZSqceq0b5fwc6YjfUUOnstaxJt0Loq583BMdFdgRJ4yeW0byAAV42jtvbcAJeLksdX9x/xqyDBirmLeCA3eetShcHzlpfS1ljoLbZwj3CBGwWHPnkiFlGwYf5QnsGGpBjI4wdq6r0xiUTwGOgJJ6Omg5faoZk+hPfsgkpVus399v7QV/SLY7siNRWTJzRWvei1y457DyIHXoLe/u6AmwaMra9MAUK7H9B1pQ+6lz4EZOV1NBnCW8zknf98YZA=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(376002)(39840400004)(396003)(136003)(451199021)(66556008)(478600001)(66946007)(6916009)(66476007)(4326008)(316002)(36756003)(86362001)(38100700002)(83380400001)(53546011)(2616005)(6512007)(6506007)(186003)(41300700001)(7416002)(6666004)(8676002)(44832011)(6486002)(8936002)(2906002)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ePLBqHPuEB/MNV+UTM/Z3LN0PoaBn24BiDN7Clcu73UvZY6HTGO5S1wOls/U?=
+ =?us-ascii?Q?dI5bAIJx3dW+80reF7ahuB1FtlZjmvy2K50cT7F/RvbVsbOSTvLAlODHTCCS?=
+ =?us-ascii?Q?txQZyq2hr9lTWZoGWtsm6hXD+1ZnfDCZIZeXNmizNrUgX4DbqXPhhIw9u6ZH?=
+ =?us-ascii?Q?FXzd0dDZZA/XSRt5IqExfIa5CfIdKyMw8ajUUUUJsmtx0AwKm+QWr5IPA+Vw?=
+ =?us-ascii?Q?E3TpOYwsbBbRR0d4vDBL1M71r1IyUOSKmAHg8bK43xOK/aa+/uhWL/dJCjaJ?=
+ =?us-ascii?Q?iV4ojvEChPEZZDWOPrAn9LpbGJmxjrAxlsFJ+K6Z7HXcW+3ObKURYrurCJvR?=
+ =?us-ascii?Q?Wl+ameAB2juknnMnrzLj9iiF2JjqCCdmoF0jRRPrbMoEeR5z26k2o4kWWRaC?=
+ =?us-ascii?Q?gpvjJ1lkSjzamsyPBT/A3gdGfKDCWe/wL/D6l7qSzhJecWLPhOMKCCfh/Raj?=
+ =?us-ascii?Q?Fbh46VJCgt5vzFU6TYSOUFSWI9odhw01jElTM94qsi076NeELkwHZ5x/WEHh?=
+ =?us-ascii?Q?FqvVv6FoixMliOP58a6AJYTyu7/ixcgsPOs8YsGCIS8LkqTmrwkGdAlsVtu3?=
+ =?us-ascii?Q?YY/8mhjs62Ee0gxSQC/jxmfF92nBsHoJy2KL/Dig0rnqCoCny46/Su7rQWUF?=
+ =?us-ascii?Q?PSH7SnXW2/2gv7bofA9Mbyly19/tRzf4StxTk5tvzlvMXv3ZS0nade9uYK2l?=
+ =?us-ascii?Q?+U0bftQclN/VrB4YdH7mDceJRuIWHKAXEtmaV41Tp1zojsiDzT8q2Nudh7x2?=
+ =?us-ascii?Q?a6VKD4XBtZDXWKgjIBLx6n+pexCFkJ5dqy23O/+j84UzO08IU+nM6XxbUFTJ?=
+ =?us-ascii?Q?AFezsQ9mkV6r24rxAFu4CrvSyMuB925lttwGHXI0JQF0n1T7y5b6A2B7KPru?=
+ =?us-ascii?Q?zJCgCSyLMg37wgh2zIgnlVrC7zqR1W32qopUe6ny26PM3hpOLu1kUFPBgc6a?=
+ =?us-ascii?Q?ZjTUAt+wG+hsEMt3SAxvEUHGt6l+s+uCZIAYXnnwX6LomxSyV3W5eBx9G1yU?=
+ =?us-ascii?Q?BRZOWgB/W2D9UQBIxZsGNQDL8b3KKK4ZK24H/0HScI2bCOr9aLOVg28Met3x?=
+ =?us-ascii?Q?thZsT33fwpz2RIjD175/p39AYamNvBPQvFwX3LmNt8rhEguFUbspYM3C4G11?=
+ =?us-ascii?Q?xHr36lDO6IOS94KnwdhwNZZOnnsu4vO6LQzI+QofIhuFPdIK8wN7Ua9L0JTF?=
+ =?us-ascii?Q?CxiOitzvj1iNzA7draWvGThyi50+1fg+FjZaTKPgBUvLRfnOp8RBxjdreDAm?=
+ =?us-ascii?Q?FGYB3gFcdRjOsZllU0X0QCE1ge3cujUaWyWLxlA7yTgqmjoN1MTXxISbhsnC?=
+ =?us-ascii?Q?GMTnrze7UAM36dOOiPt75ZmamUW9ca21UJjir2FiQBl095TtGyeZRAi0dJHX?=
+ =?us-ascii?Q?Yj4fW/cYnTbOylhqsTygzvFfWqaUETOzl6JUulyUkk+nEiEbWQtmoKKTOf9U?=
+ =?us-ascii?Q?it8RrZroJPSHGvvd66FVjQv7+K9ibvuHxdlnkvb0VERgYdvM5Gp7GrplyOYG?=
+ =?us-ascii?Q?1cF3+s15Uf5Juc6FYUf12+4mnbScgU/4sbCNsbE1J8NPSNgK0rzdnkzwau80?=
+ =?us-ascii?Q?fDL5Z30uB124oQkgdH6+biIuTRKYCnqp6KaRD3g+8krR9GWrRVwPY2W1Yk+9?=
+ =?us-ascii?Q?JpB2V84dFoE1rXVvOZ89hF/BvOGT/+6YJ/Ts+prfHN7IXEjc5JGngy2ITa8f?=
+ =?us-ascii?Q?8o+GdQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 64e88831-f81b-4d13-6d29-08db61bf9e7f
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2023 10:13:03.0505
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qH0faYOQozIObEYpRGpfuaVes6Fozxo7W9INn+PrPJ1uLh4t8n+9fh8w8duTtDvAmCoO30LGiIx5m+o+QndZS7gIS0xGcK9p81HCrotVo5c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB6008
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wednesday, May 31, 2023 5:48 PM, Russell King (Oracle) wrote:
-> On Tue, May 30, 2023 at 04:40:36PM +0800, Jiawen Wu wrote:
-> > On Monday, May 29, 2023 10:06 AM, Jiawen Wu wrote:
-> > > On Friday, May 26, 2023 7:37 PM, Russell King (Oracle) wrote:
-> > > > On Fri, May 26, 2023 at 07:30:45PM +0800, kernel test robot wrote:
-> > > > > Kconfig warnings: (for reference only)
-> > > > >    WARNING: unmet direct dependencies detected for I2C_DESIGNWARE_PLATFORM
-> > > > >    Depends on [n]: I2C [=n] && HAS_IOMEM [=y] && (ACPI && COMMON_CLK [=y] || !ACPI)
-> > > > >    Selected by [y]:
-> > > > >    - TXGBE [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_WANGXUN [=y] && PCI [=y]
-> > > > >    WARNING: unmet direct dependencies detected for SFP
-> > > > >    Depends on [n]: NETDEVICES [=y] && PHYLIB [=y] && I2C [=n] && PHYLINK [=y] && (HWMON [=n] || HWMON [=n]=n)
-> > > > >    Selected by [y]:
-> > > > >    - TXGBE [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_WANGXUN [=y] && PCI [=y]
-> > > >
-> > > > ... and is basically caused by "select SFP". No. Do not do this unless
-> > > > you look at the dependencies for SFP and ensure that those are also
-> > > > satisfied - because if you don't you create messes like the above
-> > > > build errors.
-> > >
-> > > So how do I make sure that the module I need compiles and loads correctly,
-> > > rely on the user to manually select it?
-> >
-> > When I changed the TXGBE config to:
-> > ...
-> > 	depends on SFP
-> > 	select PCS_XPCS
-> > ...
-> > the compilation gave an error:
-> >
-> > drivers/net/phy/Kconfig:16:error: recursive dependency detected!
-> > drivers/net/phy/Kconfig:16:     symbol PHYLIB is selected by PHYLINK
-> > drivers/net/phy/Kconfig:6:      symbol PHYLINK is selected by PCS_XPCS
-> > drivers/net/pcs/Kconfig:8:      symbol PCS_XPCS is selected by TXGBE
-> > drivers/net/ethernet/wangxun/Kconfig:40:        symbol TXGBE depends on SFP
-> > drivers/net/phy/Kconfig:63:     symbol SFP depends on PHYLIB
-> > For a resolution refer to Documentation/kbuild/kconfig-language.rst
-> > subsection "Kconfig recursive dependency limitations"
-> >
-> > Seems deleting "depends on SFP" is the correct way. But is this normal?
-> > How do we ensure the dependency between TXGBE and SFP?
+On Wed, May 31, 2023 at 06:05:29PM +0800, Hangyu Hua wrote:
+> On 31/5/2023 16:04, Simon Horman wrote:
+> > On Wed, May 31, 2023 at 01:38:49PM +0800, Hangyu Hua wrote:
+> > > On 30/5/2023 19:36, Simon Horman wrote:
+> > > > [Updated Pieter's email address, dropped old email address of mine]
+> > > > 
+> > > > On Mon, May 29, 2023 at 12:36:15PM +0800, Hangyu Hua wrote:
+> > > > > If we send two TCA_FLOWER_KEY_ENC_OPTS_GENEVE packets and their total
+> > > > > size is 252 bytes(key->enc_opts.len = 252) then
+> > > > > key->enc_opts.len = opt->length = data_len / 4 = 0 when the third
+> > > > > TCA_FLOWER_KEY_ENC_OPTS_GENEVE packet enters fl_set_geneve_opt. This
+> > > > > bypasses the next bounds check and results in an out-of-bounds.
+> > > > > 
+> > > > > Fixes: 0a6e77784f49 ("net/sched: allow flower to match tunnel options")
+> > > > > Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> > > > 
+> > > > Hi Hangyu Hua,
+> > > > 
+> > > > Thanks. I think I see the problem too.
+> > > > But I do wonder, is this more general than Geneve options?
+> > > > That is, can this occur with any sequence of options, that
+> > > > consume space in enc_opts (configured in fl_set_key()) that
+> > > > in total are more than 256 bytes?
+> > > > 
+> > > 
+> > > I think you are right. It is a good idea to add check in fl_set_vxlan_opt
+> > > and fl_set_erspan_opt and fl_set_gtp_opt too.
+> > > But they should be submitted as other patches. fl_set_geneve_opt has already
+> > > check this with the following code:
+> > > 
+> > > static int fl_set_geneve_opt(const struct nlattr *nla, struct fl_flow_key
+> > > *key,
+> > > 			     int depth, int option_len,
+> > > 			     struct netlink_ext_ack *extack)
+> > > {
+> > > ...
+> > > 		if (new_len > FLOW_DIS_TUN_OPTS_MAX) {
+> > > 			NL_SET_ERR_MSG(extack, "Tunnel options exceeds max size");
+> > > 			return -ERANGE;
+> > > 		}
+> > > ...
+> > > }
+> > > 
+> > > This bug will only be triggered under this special
+> > > condition(key->enc_opts.len = 252). So I think it will be better understood
+> > > by submitting this patch independently.
+> > 
+> > A considered approach sounds good to me.
+> > 
+> > I do wonder, could the bounds checks be centralised in the caller?
+> > Maybe not if it doesn't know the length that will be consumed.
+> > 
 > 
-> First, I would do this:
-> 
-> 	select PHYLINK
-> 	select PCS_XPCS
-> 
-> but then I'm principled, and I don't agree that PCS_XPCS should be
-> selecting PHYLINK.
-> 
-> The second thing I don't particularly like is selecting user visible
-> symbols, but as I understand it, with TXGBE, the SFP slot is not an
-> optional feature, so there's little option.
-> 
-> So, because SFP requires I2C:
-> 
-> 	select I2C
-> 	select SFP
-> 
-> That is basically what I meant by "you look at the dependencies for
-> SFP and ensure that those are also satisfied".
-> 
-> Adding that "select I2C" also solves the unmet dependencies for
-> I2C_DESIGNWARE_PLATFORM.
-> 
-> However, even with that, we're not done with the evilness of select,
-> because there's one more permitted configuration combination that
-> will break.
-> 
-> If you build TXGBE into the kernel, that will force SFP=y, I2C=y,
-> PHYLINK=y, PHYLIB=y. So far so good. However, if HWMON=m, then things
-> will again break. So I would also suggest:
-> 
-> 	select HWMON if TXGBE=y
-> 
-> even though you don't require it, it solves the build fallout from
-> where HWMON=m but you force SFP=y.
-> 
-> Maybe someone else has better ideas how to do this, but the above is
-> the best I can come up with.
-> 
-> 
-> IMHO, select is nothing but pure evil, and should be used with utmost
-> care and a full understanding of its ramifications, and a realisation
-> that it *totally* and *utterly* blows away any "depends on" on the
-> target of the select statement.
-> 
-> An option that states that it depends on something else generally does
-> because... oddly enough, it _depends_ on that other option. So, if
-> select forces an option on without its dependencies, then it's not
-> surprising that stuff fails to build.
-> 
-> Whenever a select statement is added, one must _always_ look at the
-> target symbol and consider any "depends on" there, and how to ensure
-> that those dependencies are guaranteed to always be satisfied.
+> This may make code more complex. I am not sure if it is necessary to do
+> this.
 
-Thanks for the detailed explanation. I'll check each of the required options,
-and use "depends on" whenever possible.
-
+Understood. I agree that complex seems undesirable.
 
