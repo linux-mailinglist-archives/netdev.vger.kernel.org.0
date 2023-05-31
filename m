@@ -1,163 +1,136 @@
-Return-Path: <netdev+bounces-6672-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6673-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 477C671764B
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 07:39:22 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id D244C717658
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 07:47:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C0B691C20C5C
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 05:39:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 33E2B281380
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 05:47:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9C04D63AD;
-	Wed, 31 May 2023 05:38:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 304614A3E;
+	Wed, 31 May 2023 05:47:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FD695395
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 05:38:58 +0000 (UTC)
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DC6EE;
-	Tue, 30 May 2023 22:38:57 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id d2e1a72fcca58-64d3bc0dce9so1212244b3a.0;
-        Tue, 30 May 2023 22:38:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685511536; x=1688103536;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=nnQk6J1N7k/8h6FVLVnLBiuJAo005sGCro1rlFM76hg=;
-        b=F210SJWQyDbyen0gbpq5wzMpl8EHqto+1Nz4gacdt9NguYg/My4jcfi+z4dkcEFpAs
-         CoUwVgp7/YdKI+Kf52AfPb+b/agCb8rtvvGRFvHmzPNBhXK40zDGDAoTauCUMKZi+c89
-         9w36b0OsoOKTNIrWCNzKFODiwszBMx+SKNJVrDfvShGD2WOmLNXCTIY6rm8ZcNshpqBe
-         S1n4AwjQfHvofX7eEfQBa+eLV5KVd4VUuHz72gwQnfx7nnW0WcdFdCTfGzTnJTj9K5nN
-         R9NKmgOPXixAJpJrLECW3sJHNIp8nE0e8CkbRF2w9mN0IpRVEG5Pe5CCqBRRlTiKSUUs
-         dYGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685511536; x=1688103536;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nnQk6J1N7k/8h6FVLVnLBiuJAo005sGCro1rlFM76hg=;
-        b=RXXTYyKNZ4tVO4Fz9TzvE0BdAKbwAsiTR+4WZAorsiWbnPbQgWP/2IohA6A1oeNbNE
-         ekqXy9ggI5yz+O62h5SMniTZeZO36ud55HBOnXlWF+bxRFfzkE+nVKfRr2w8gQBSsUUM
-         2VcM+JG6IYRbym7wywVRGIhGS32KiQ4P6cVqr1dMnjBQwLpoWlDW5kk0lv+t6FaX3Q6k
-         juxLyCT4sjCxu/Y2wg9toPLvbLuGtcvmrZT+LpfKyDzsQE8HHUedF4nClUK8g5sFLdbp
-         3uENfu1YQMT9Ep3JKc0505WNK2dTE8cE/t1HgCF9THiz29ic2OuC5rbOQ3PGI/5M9qCO
-         NMlA==
-X-Gm-Message-State: AC+VfDzAa8V5lLRimNRkEh7rgx3wKRTMKeCH+MbgBZ/s9xIyfoBBCm2y
-	mVLMZFXIpo682qsWtwPQRao=
-X-Google-Smtp-Source: ACHHUZ70eED/hF3467VY3RnuCPWOOjMAwG1tnefnlyWx0PbXUUN7A9Rl3yYEpUPcoUWeWtklm8og9g==
-X-Received: by 2002:a05:6a20:8e09:b0:10c:8939:fc48 with SMTP id y9-20020a056a208e0900b0010c8939fc48mr1594528pzj.3.1685511536405;
-        Tue, 30 May 2023 22:38:56 -0700 (PDT)
-Received: from [127.0.0.1] ([2404:c140:1f03::caf2])
-        by smtp.gmail.com with ESMTPSA id c5-20020aa781c5000000b006439df7ed5fsm2561902pfn.6.2023.05.30.22.38.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 May 2023 22:38:55 -0700 (PDT)
-Message-ID: <e9925aef-fefc-24b9-dea3-bd3bcca01b35@gmail.com>
-Date: Wed, 31 May 2023 13:38:49 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FF3010F4
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 05:47:05 +0000 (UTC)
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAB21EE
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 22:47:04 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+	by mailout.nyi.internal (Postfix) with ESMTP id 437565C00B9;
+	Wed, 31 May 2023 01:47:04 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Wed, 31 May 2023 01:47:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm1; t=1685512024; x=1685598424; bh=OURpNO4P3HA/z
+	m/bKyveNcmNduwdfwOYHSQG64kVykE=; b=bTm3yKpZRmcPp/WGMlYB/Dj7hjjL7
+	6VWPZ1oa3FwUap5YjyxyfskLtQaMID+OHQxj61wW9KlooRaablsQ7EXoxEXR036d
+	T0LfTo4fghMy73wXG2vzLBAdXE/fAnPNBcdftSYpiJI9riJCdm1qJVT7zVPceQfb
+	BE8OjG+kuamkzdDk9p2SF+CLHGCxTMOdIIzwxv70YTDnTFKxvG8K3YWEANmrvMAh
+	avuVirxQaJfr9618gu5MfH1XMZcDsF/4ns2uTcF/IlEPyBlTAFtgkgOfRF3NGhof
+	76hgafp2JzUsIsUZ5RFfMWMcYc0Qd/Mr3eaVaA1DsdJdIKK5lSGU/g41Q==
+X-ME-Sender: <xms:WN92ZEYAEr6VB-yEvkYm3-cMm5UExag71HvfPF698nJvgfCNFjrVOw>
+    <xme:WN92ZPYdZ1YCvK6b2GW1iG-Nf5yKpPxqxzIXSK6YdNQBtVLaSq49D99YCfQSVUr2h
+    A6Qe5Xl7SVQlsA>
+X-ME-Received: <xmr:WN92ZO8d-1j33EPOukMB-i-HvEloGwyWVcPDXKhK2PCFsia696kDb_LFkBSTKPB2doj0Cawr1ME_uF9w9ifhkWjZXck>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeekkedguddtudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
+    htthgvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeej
+    geeghfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:WN92ZOrkB59Q6FLxD2pzix0B86p7R7kaGrl0LLF7KKmelUQ8mFSJFA>
+    <xmx:WN92ZPp3Av4c4XI0j0AuCKhhEzW4GLNAz6SJ1RsSI6V_L2AUigdiQQ>
+    <xmx:WN92ZMRNNkbnbm6e7j93TIsUhUyFjR_Vri3O4dDrB6KInOMfducwmQ>
+    <xmx:WN92ZG3KwqD9S2ONXP_50_ZEp9cwrMsgm_4tYXzSZf_ueytDEBVyHg>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 31 May 2023 01:47:03 -0400 (EDT)
+Date: Wed, 31 May 2023 08:47:00 +0300
+From: Ido Schimmel <idosch@idosch.org>
+To: Andrea Claudi <aclaudi@redhat.com>
+Cc: netdev@vger.kernel.org, stephen@networkplumber.org, dsahern@gmail.com,
+	leon@kernel.org
+Subject: Re: [PATCH iproute2-next] treewide: fix indentation
+Message-ID: <ZHbfVC03hq/wsHwG@shredder>
+References: <aa496abb20ac66d45db0dcf6456a0ea23508de09.1685466971.git.aclaudi@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH] net: sched: fix possible OOB write in fl_set_geneve_opt()
-To: Simon Horman <simon.horman@corigine.com>
-Cc: jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, simon.horman@netronome.com,
- pieter.jansen-van-vuuren@amd.com, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20230529043615.4761-1-hbh25y@gmail.com>
- <ZHXf29es/yh3r6jq@corigine.com>
-Content-Language: en-US
-From: Hangyu Hua <hbh25y@gmail.com>
-In-Reply-To: <ZHXf29es/yh3r6jq@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aa496abb20ac66d45db0dcf6456a0ea23508de09.1685466971.git.aclaudi@redhat.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 30/5/2023 19:36, Simon Horman wrote:
-> [Updated Pieter's email address, dropped old email address of mine]
+On Tue, May 30, 2023 at 07:19:53PM +0200, Andrea Claudi wrote:
+> Replace multiple whitespaces with tab where appropriate.
 > 
-> On Mon, May 29, 2023 at 12:36:15PM +0800, Hangyu Hua wrote:
->> If we send two TCA_FLOWER_KEY_ENC_OPTS_GENEVE packets and their total
->> size is 252 bytes(key->enc_opts.len = 252) then
->> key->enc_opts.len = opt->length = data_len / 4 = 0 when the third
->> TCA_FLOWER_KEY_ENC_OPTS_GENEVE packet enters fl_set_geneve_opt. This
->> bypasses the next bounds check and results in an out-of-bounds.
->>
->> Fixes: 0a6e77784f49 ("net/sched: allow flower to match tunnel options")
->> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-> 
-> Hi Hangyu Hua,
-> 
-> Thanks. I think I see the problem too.
-> But I do wonder, is this more general than Geneve options?
-> That is, can this occur with any sequence of options, that
-> consume space in enc_opts (configured in fl_set_key()) that
-> in total are more than 256 bytes?
-> 
+> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+> ---
+>  bridge/vni.c   |  2 +-
+>  genl/ctrl.c    |  2 +-
+>  ip/ipaddress.c |  2 +-
+>  ip/ipmacsec.c  |  4 ++--
+>  ip/ipprefix.c  |  2 +-
+>  ip/ipvrf.c     |  2 +-
+>  lib/fs.c       |  2 +-
+>  lib/ll_types.c | 10 +++++-----
+>  rdma/dev.c     | 10 +++++-----
+>  tc/m_ipt.c     |  4 ++--
+>  tc/m_xt_old.c  |  4 ++--
+>  tc/q_fq.c      |  8 ++++----
+>  tc/q_htb.c     |  4 ++--
+>  tc/tc_core.c   |  2 +-
+>  14 files changed, 29 insertions(+), 29 deletions(-)
 
-I think you are right. It is a good idea to add check in 
-fl_set_vxlan_opt and fl_set_erspan_opt and fl_set_gtp_opt too.
-But they should be submitted as other patches. fl_set_geneve_opt has 
-already check this with the following code:
+Thanks for the patch. Do you mind folding this one as well?
 
-static int fl_set_geneve_opt(const struct nlattr *nla, struct 
-fl_flow_key *key,
-			     int depth, int option_len,
-			     struct netlink_ext_ack *extack)
-{
-...
-		if (new_len > FLOW_DIS_TUN_OPTS_MAX) {
-			NL_SET_ERR_MSG(extack, "Tunnel options exceeds max size");
-			return -ERANGE;
-		}
-...
-}
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index 48cfafdbc3c0..d68c9d2a194b 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -88,7 +88,7 @@ static void explain(void)
+                "                       enc_ttl MASKED-IP_TTL |\n"
+                "                       geneve_opts MASKED-OPTIONS |\n"
+                "                       vxlan_opts MASKED-OPTIONS |\n"
+-               "                       erspan_opts MASKED-OPTIONS |\n"
++               "                       erspan_opts MASKED-OPTIONS |\n"
+                "                       gtp_opts MASKED-OPTIONS |\n"
+                "                       ip_flags IP-FLAGS |\n"
+                "                       enc_dst_port [ port_number ] |\n"
 
-This bug will only be triggered under this special 
-condition(key->enc_opts.len = 252). So I think it will be better 
-understood by submitting this patch independently.
+Before:
 
-By the way, I think memset's third param should be option_len in 
-fl_set_vxlan_opt and fl_set_erspan_opt. Do I need to submit another 
-patch to fix all these issues?
+$ tc filter add flower help 2>&1 | grep opts
+                        geneve_opts MASKED-OPTIONS |
+                        vxlan_opts MASKED-OPTIONS |
+                       erspan_opts MASKED-OPTIONS |
+                        gtp_opts MASKED-OPTIONS |
 
-Thanks,
-Hangyu
+After:
 
->> ---
->>   net/sched/cls_flower.c | 3 +++
->>   1 file changed, 3 insertions(+)
->>
->> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
->> index e960a46b0520..a326fbfe4339 100644
->> --- a/net/sched/cls_flower.c
->> +++ b/net/sched/cls_flower.c
->> @@ -1153,6 +1153,9 @@ static int fl_set_geneve_opt(const struct nlattr *nla, struct fl_flow_key *key,
->>   	if (option_len > sizeof(struct geneve_opt))
->>   		data_len = option_len - sizeof(struct geneve_opt);
->>   
->> +	if (key->enc_opts.len > FLOW_DIS_TUN_OPTS_MAX - 4)
->> +		return -ERANGE;
->> +
->>   	opt = (struct geneve_opt *)&key->enc_opts.data[key->enc_opts.len];
->>   	memset(opt, 0xff, option_len);
->>   	opt->length = data_len / 4;
->> -- 
->> 2.34.1
->>
->>
+$ tc filter add flower help 2>&1 | grep opts
+                        geneve_opts MASKED-OPTIONS |
+                        vxlan_opts MASKED-OPTIONS |
+                        erspan_opts MASKED-OPTIONS |
+                        gtp_opts MASKED-OPTIONS |
 
