@@ -1,284 +1,273 @@
-Return-Path: <netdev+bounces-6771-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6779-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id EEA3C717D9D
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 13:06:06 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2410F717EDD
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 13:50:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4373A1C20949
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 11:06:03 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A2B311C20CDF
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 11:50:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 713EA13AE8;
-	Wed, 31 May 2023 11:05:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2DF2B14270;
+	Wed, 31 May 2023 11:50:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FED6C8CB
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 11:05:24 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5882C19A
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 04:04:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685531078;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Lspjk3nUuuzKHM/LR2nBU2AWpiVJh3beRxHXZXIuEZs=;
-	b=UzXsJFRPeZm3rkTJ3vOfEtFCfKcQWUBjn0eTs58vdapzZbWNXE2vSW0q5mx2tmOtluY9Jc
-	csPTHFnt10NMy3f9zkF/ZhtBNB2VYm8cjr/efWohEIKktryujTWYihn7DcGhFReHeRMXJA
-	5guDrQh87t98vOGY/Fe1kWWHnD8FwUQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-395-ksUvxhdGOC6sRfiW3m6cCg-1; Wed, 31 May 2023 07:04:35 -0400
-X-MC-Unique: ksUvxhdGOC6sRfiW3m6cCg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9CB101019C86;
-	Wed, 31 May 2023 11:04:34 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id C706B2166B25;
-	Wed, 31 May 2023 11:04:32 +0000 (UTC)
-From: David Howells <dhowells@redhat.com>
-To: netdev@vger.kernel.org
-Cc: David Howells <dhowells@redhat.com>,
-	Tom Herbert <tom@herbertland.com>,
-	Tom Herbert <tom@quantonium.net>,
-	Cong Wang <cong.wang@bytedance.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	David Ahern <dsahern@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Jens Axboe <axboe@kernel.dk>,
-	linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 2/2] kcm: Convert kcm_sendpage() to use MSG_SPLICE_PAGES
-Date: Wed, 31 May 2023 12:04:22 +0100
-Message-ID: <20230531110423.643196-3-dhowells@redhat.com>
-In-Reply-To: <20230531110423.643196-1-dhowells@redhat.com>
-References: <20230531110423.643196-1-dhowells@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19F40C8ED
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 11:50:36 +0000 (UTC)
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2046.outbound.protection.outlook.com [40.107.244.46])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0BE101
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 04:50:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EBELCDL8fCy+azyX7udqnQ53Q/M3wf53R30vW6T8l+98cDFvYYs1hJSh7svO15gV1HZbsk6DG2tEK7qxYNuoWYZLG6Yj5COIMeCkk6rre49FwD6vdtSFslYXTuOPFs8u8pyZxt563ALWlUDlyLkVGCvD9OmuN78qkOVx4zGM3365RdL4ub9ANLgc7O2B5jL6gUdF70bMZNZTMejzqbYclF6xh9zbKFiSu0IAQwtG2opYavL3S3WKKHcZBgYifNO94tGgqnaIcbkuArGorF2fTmfmgyfZlQ7cLA/yq9dpqmbfcDQaCD6MgN6uNM7evTtcQR/8OkILuMSW8V/xi6OsYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dZjBDpqTxciPVZJ25y4fZjJoZ0i3ZYys3S6Xwxo5NQc=;
+ b=Ok+c0ITkEL7IdzSOci8lZeF/bO78cdMUkftMlV1FmuRyo3+ie6vd6kF3D3A79qR68UNNG2MtyehLhlKc9ln3rieKdDSvSMridmE4Vpo8UW+lLzlIY63QTQqVH7FI2epEF0vtByvW/8MSpLtSJkZouq3CO9zFuPhSq9DWrEmqpgUxJSooT+xyXA1sgDFixN5d07O+Kf4WpbOB4dS9YXSdWnU90nH4qu0iYrv5r2U97M0Tg25/7zlXdm5fRmovaIcyCFIONi8G4pbZGhuUJrwly9RCEelTpdKbLJQhlMpcmAWwO2N0VhZNNDoJJ5uOt9Jv0LAGRrteIjZzWD9uEaC10g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=microchip.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dZjBDpqTxciPVZJ25y4fZjJoZ0i3ZYys3S6Xwxo5NQc=;
+ b=gFaaoPaGYPREK7WwQxrih2lqNIH6zzRDrB/f/PT9KePoGTR6aMzYdmDgYYVOWPnwMU2ULR3JD4E/kZDAXsF2AzYE0dOfiSldBWT0G22Bc5tbxoBxN28Sg3Bf5xTTgE/9ywSqokjZvZP8UbKwOsQhWkV0njAO3VIG5lRdFAbrcq005RE39M+yDWSZIlD1OqsWiLK5m/8JWxo5J4ZS67+69R8nI+VW9Y6+WQsp/kALv2wuKZYCbQs17o+8/9s6okOBx5UEQ7MM55WXD+bxkIg59zPp+crmK4onpNGAcAxsZvY5xfYhN77V0k+s6XvlOWluZFkqYSUViLHn42qgUZuvnw==
+Received: from BN9PR03CA0848.namprd03.prod.outlook.com (2603:10b6:408:13d::13)
+ by IA0PR12MB8301.namprd12.prod.outlook.com (2603:10b6:208:40b::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.22; Wed, 31 May
+ 2023 11:50:31 +0000
+Received: from BN8NAM11FT012.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13d:cafe::92) by BN9PR03CA0848.outlook.office365.com
+ (2603:10b6:408:13d::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.23 via Frontend
+ Transport; Wed, 31 May 2023 11:50:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN8NAM11FT012.mail.protection.outlook.com (10.13.177.55) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6455.23 via Frontend Transport; Wed, 31 May 2023 11:50:30 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 31 May 2023
+ 04:50:16 -0700
+Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 31 May
+ 2023 04:50:15 -0700
+References: <20230510-dcb-rewr-v2-0-9f38e688117e@microchip.com>
+ <20230510-dcb-rewr-v2-4-9f38e688117e@microchip.com>
+ <874jnt618e.fsf@nvidia.com> <20230531081217.jgcahyzgx2rnoyue@DEN-LT-70577>
+User-agent: mu4e 1.6.6; emacs 28.1
+From: Petr Machata <petrm@nvidia.com>
+To: Daniel Machon <daniel.machon@microchip.com>
+CC: Petr Machata <petrm@nvidia.com>, <netdev@vger.kernel.org>,
+	<dsahern@kernel.org>, <stephen@networkplumber.org>,
+	<UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH iproute2-next v2 4/8] dcb: app: modify
+ dcb_app_parse_mapping_cb for dcb-rewr reuse
+Date: Wed, 31 May 2023 13:05:25 +0200
+In-Reply-To: <20230531081217.jgcahyzgx2rnoyue@DEN-LT-70577>
+Message-ID: <87jzwo4t57.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT012:EE_|IA0PR12MB8301:EE_
+X-MS-Office365-Filtering-Correlation-Id: 54305108-1ad9-473e-e660-08db61cd3c43
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	GNzi4mGWL5aSEfZCRXq/Cqfdf7nBPPWdYgaaXLIx3I9pZRnPp7EoxBZr7Q33w+C/FBUn69FUICAZJDiei1En7ziWpsODcKwT8U6Jn7fZi2JuRFbbM6KBA63Ap9LwRQ1LDQzz8/f90PZBixgtWcmatIJFZEMpou/8ETYlgokA4Z9vGRgt7CoGZAv0IeSukszTnM1KxAte6eEgGoZyGGhKQf1PkXWtImLLS8/2bPSQtxKrxCL8RMnBa3gbAtVOTQ5M/ODOHF/uT7Al1qpWn8wAy0yHFdEUto4kgOX2t6oTn7efg5C72BnwN9PCyfPrEZQqzEN7dbEuqOofM8TZkWPpC61NzKnbxY9UzwYToDA+MDXm1asbGxmq8RyPZkCNHZZXOj24EqxSBv0Y0IlXYjWAHIBlRaFTbhl3X4qxDVO8Tio10Naz5fbh7C64mZXbLEqH/ZExAbQLk/jYroOM63+mFaMF+9e4+HwgBE8Az/Hc3bQNZIQtlbIiVgyPlITKFGnCXx8cK4+I0DZ6ukSXDMFCQUTOoMcriD5oTc1pWgacAN0VhOhNdVG/sqeNEPKzr+VPNOfttzWgaCNzSemMKADK5yIDUK0tR4UvovUaI8tWSDsDMMA9Ygo+Qa9yyhKTi951/ejgqhS/j7jOQk64B3NSjL0PinXwNJsbb862w4BdpWd5Tb7tV/wLjH9KeUALx3edEK1ciKvkHJ+pbLGenAGKgyhlw+R83g19UQWu2/UgaFserknTWNKU+gdMQ9Wffbf+
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(376002)(346002)(136003)(451199021)(36840700001)(46966006)(40470700004)(2906002)(8936002)(66899021)(82740400003)(8676002)(26005)(356005)(5660300002)(7636003)(40460700003)(40480700001)(47076005)(478600001)(83380400001)(41300700001)(36756003)(54906003)(86362001)(6666004)(36860700001)(186003)(16526019)(426003)(336012)(70206006)(2616005)(6916009)(70586007)(4326008)(82310400005)(316002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2023 11:50:30.8298
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54305108-1ad9-473e-e660-08db61cd3c43
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT012.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8301
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Convert kcm_sendpage() to use sendmsg() with MSG_SPLICE_PAGES rather than
-directly splicing in the pages itself.
 
-This allows ->sendpage() to be replaced by something that can handle
-multiple multipage folios in a single transaction.
+Daniel Machon <daniel.machon@microchip.com> writes:
 
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Tom Herbert <tom@herbertland.com>
-cc: Tom Herbert <tom@quantonium.net>
-cc: Cong Wang <cong.wang@bytedance.com>
-cc: Jakub Kicinski <kuba@kernel.org>
-cc: Eric Dumazet <edumazet@google.com>
-cc: "David S. Miller" <davem@davemloft.net>
-cc: Paolo Abeni <pabeni@redhat.com>
-cc: Jens Axboe <axboe@kernel.dk>
-cc: Matthew Wilcox <willy@infradead.org>
-cc: netdev@vger.kernel.org
----
- net/kcm/kcmsock.c | 161 ++++++----------------------------------------
- 1 file changed, 18 insertions(+), 143 deletions(-)
+>> Daniel Machon <daniel.machon@microchip.com> writes:
+>> 
+>> > When parsing APP table entries, priority and protocol is assigned from
+>> > value and key, respectively. Rewrite requires it opposite.
+>> >
+>> > Adapt the existing dcb_app_parse_mapping_cb for this, by using callbacks
+>> > for pushing app or rewr entries to the table.
+>> >
+>> > Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+>> > ---
+>> >  dcb/dcb.h     | 12 ++++++++++++
+>> >  dcb/dcb_app.c | 23 ++++++++++++-----------
+>> >  2 files changed, 24 insertions(+), 11 deletions(-)
+>> >
+>> > diff --git a/dcb/dcb.h b/dcb/dcb.h
+>> > index 84ce95d5c1b2..b3bc30cd02c5 100644
+>> > --- a/dcb/dcb.h
+>> > +++ b/dcb/dcb.h
+>> > @@ -62,7 +62,16 @@ struct dcb_app_table {
+>> >       int attr;
+>> >  };
+>> >
+>> > +struct dcb_app_parse_mapping {
+>> > +     __u8 selector;
+>> > +     struct dcb_app_table *tab;
+>> > +     int (*push)(struct dcb_app_table *tab,
+>> > +                 __u8 selector, __u32 key, __u64 value);
+>> > +     int err;
+>> > +};
+>> > +
+>> >  int dcb_cmd_app(struct dcb *dcb, int argc, char **argv);
+>> > +
+>> >  enum ieee_attrs_app dcb_app_attr_type_get(__u8 selector);
+>> >  bool dcb_app_attr_type_validate(enum ieee_attrs_app type);
+>> >  bool dcb_app_selector_validate(enum ieee_attrs_app type, __u8 selector);
+>> > @@ -70,11 +79,14 @@ bool dcb_app_selector_validate(enum ieee_attrs_app type, __u8 selector);
+>> >  bool dcb_app_pid_eq(const struct dcb_app *aa, const struct dcb_app *ab);
+>> >  bool dcb_app_prio_eq(const struct dcb_app *aa, const struct dcb_app *ab);
+>> >
+>> > +int dcb_app_table_push(struct dcb_app_table *tab, struct dcb_app *app);
+>> >  void dcb_app_table_remove_replaced(struct dcb_app_table *a,
+>> >                                  const struct dcb_app_table *b,
+>> >                                  bool (*key_eq)(const struct dcb_app *aa,
+>> >                                                 const struct dcb_app *ab));
+>> >
+>> > +void dcb_app_parse_mapping_cb(__u32 key, __u64 value, void *data);
+>> > +
+>> >  /* dcb_apptrust.c */
+>> >
+>> >  int dcb_cmd_apptrust(struct dcb *dcb, int argc, char **argv);
+>> > diff --git a/dcb/dcb_app.c b/dcb/dcb_app.c
+>> > index 4cd175a0623b..97cba658aa6b 100644
+>> > --- a/dcb/dcb_app.c
+>> > +++ b/dcb/dcb_app.c
+>> > @@ -105,7 +105,7 @@ static void dcb_app_table_fini(struct dcb_app_table *tab)
+>> >       free(tab->apps);
+>> >  }
+>> >
+>> > -static int dcb_app_table_push(struct dcb_app_table *tab, struct dcb_app *app)
+>> > +int dcb_app_table_push(struct dcb_app_table *tab, struct dcb_app *app)
+>> >  {
+>> >       struct dcb_app *apps = realloc(tab->apps, (tab->n_apps + 1) * sizeof(*tab->apps));
+>> >
+>> > @@ -231,25 +231,25 @@ static void dcb_app_table_sort(struct dcb_app_table *tab)
+>> >       qsort(tab->apps, tab->n_apps, sizeof(*tab->apps), dcb_app_cmp_cb);
+>> >  }
+>> >
+>> > -struct dcb_app_parse_mapping {
+>> > -     __u8 selector;
+>> > -     struct dcb_app_table *tab;
+>> > -     int err;
+>> > -};
+>> > -
+>> > -static void dcb_app_parse_mapping_cb(__u32 key, __u64 value, void *data)
+>> > +static int dcb_app_push(struct dcb_app_table *tab,
+>> > +                     __u8 selector, __u32 key, __u64 value)
+>> >  {
+>> > -     struct dcb_app_parse_mapping *pm = data;
+>> >       struct dcb_app app = {
+>> > -             .selector = pm->selector,
+>> > +             .selector = selector,
+>> >               .priority = value,
+>> >               .protocol = key,
+>> >       };
+>> > +     return dcb_app_table_push(tab, &app);
+>> > +}
+>> > +
+>> > +void dcb_app_parse_mapping_cb(__u32 key, __u64 value, void *data)
+>> > +{
+>> > +     struct dcb_app_parse_mapping *pm = data;
+>> >
+>> >       if (pm->err)
+>> >               return;
+>> >
+>> > -     pm->err = dcb_app_table_push(pm->tab, &app);
+>> > +     pm->err = pm->push(pm->tab, pm->selector, key, value);
+>> >  }
+>> >
+>> >  static int dcb_app_parse_mapping_ethtype_prio(__u32 key, char *value, void *data)
+>> > @@ -663,6 +663,7 @@ static int dcb_cmd_app_parse_add_del(struct dcb *dcb, const char *dev,
+>> >  {
+>> >       struct dcb_app_parse_mapping pm = {
+>> >               .tab = tab,
+>> > +             .push = dcb_app_push,
+>> >       };
+>> >       int ret;
+>> 
+>> I think I misunderstood your code. Since you are adding new functions
+>> for parsing the PRIO-DSCP and PRIO-PCP mappings, which have their own
+>> dcb_parse_mapping() invocations, couldn't you just copy over the
+>> dcb_app_parse_mapping_cb() from APP and adapt it to do the right thing
+>> for REWR? Then the push callback is not even necessary
+>> dcb_app_parse_mapping_cb() does not need to be public.
+>
+> It is always a balance of when to do what. So far, patches #2, #3 and #4
+> tries to modify the existing dcb-app functions for dcb-rewr reuse. They
+> all deal with the prio:pid, pid:prio problem (printing, pushing and
+> replacing entries). What you suggest now is to copy
+> dcb_app_parse_mapping_cb() entirely, just for changing that order. It
+> can be done, but then it could also be done for #2 and #3, which would
+> then result in more boilerplate code.
+>
+> Whatever we choose, I think we should stay consistent?
 
-diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
-index 8555ede66333..ba22af16b96d 100644
---- a/net/kcm/kcmsock.c
-+++ b/net/kcm/kcmsock.c
-@@ -761,149 +761,6 @@ static void kcm_push(struct kcm_sock *kcm)
- 		kcm_write_msgs(kcm);
- }
- 
--static ssize_t kcm_sendpage(struct socket *sock, struct page *page,
--			    int offset, size_t size, int flags)
--
--{
--	struct sock *sk = sock->sk;
--	struct kcm_sock *kcm = kcm_sk(sk);
--	struct sk_buff *skb = NULL, *head = NULL;
--	long timeo = sock_sndtimeo(sk, flags & MSG_DONTWAIT);
--	bool eor;
--	int err = 0;
--	int i;
--
--	if (flags & MSG_SENDPAGE_NOTLAST)
--		flags |= MSG_MORE;
--
--	/* No MSG_EOR from splice, only look at MSG_MORE */
--	eor = !(flags & MSG_MORE);
--
--	lock_sock(sk);
--
--	sk_clear_bit(SOCKWQ_ASYNC_NOSPACE, sk);
--
--	err = -EPIPE;
--	if (sk->sk_err)
--		goto out_error;
--
--	if (kcm->seq_skb) {
--		/* Previously opened message */
--		head = kcm->seq_skb;
--		skb = kcm_tx_msg(head)->last_skb;
--		i = skb_shinfo(skb)->nr_frags;
--
--		if (skb_can_coalesce(skb, i, page, offset)) {
--			skb_frag_size_add(&skb_shinfo(skb)->frags[i - 1], size);
--			skb_shinfo(skb)->flags |= SKBFL_SHARED_FRAG;
--			goto coalesced;
--		}
--
--		if (i >= MAX_SKB_FRAGS) {
--			struct sk_buff *tskb;
--
--			tskb = alloc_skb(0, sk->sk_allocation);
--			while (!tskb) {
--				kcm_push(kcm);
--				err = sk_stream_wait_memory(sk, &timeo);
--				if (err)
--					goto out_error;
--			}
--
--			if (head == skb)
--				skb_shinfo(head)->frag_list = tskb;
--			else
--				skb->next = tskb;
--
--			skb = tskb;
--			skb->ip_summed = CHECKSUM_UNNECESSARY;
--			i = 0;
--		}
--	} else {
--		/* Call the sk_stream functions to manage the sndbuf mem. */
--		if (!sk_stream_memory_free(sk)) {
--			kcm_push(kcm);
--			set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
--			err = sk_stream_wait_memory(sk, &timeo);
--			if (err)
--				goto out_error;
--		}
--
--		head = alloc_skb(0, sk->sk_allocation);
--		while (!head) {
--			kcm_push(kcm);
--			err = sk_stream_wait_memory(sk, &timeo);
--			if (err)
--				goto out_error;
--		}
--
--		skb = head;
--		i = 0;
--	}
--
--	get_page(page);
--	skb_fill_page_desc_noacc(skb, i, page, offset, size);
--	skb_shinfo(skb)->flags |= SKBFL_SHARED_FRAG;
--
--coalesced:
--	skb->len += size;
--	skb->data_len += size;
--	skb->truesize += size;
--	sk->sk_wmem_queued += size;
--	sk_mem_charge(sk, size);
--
--	if (head != skb) {
--		head->len += size;
--		head->data_len += size;
--		head->truesize += size;
--	}
--
--	if (eor) {
--		bool not_busy = skb_queue_empty(&sk->sk_write_queue);
--
--		/* Message complete, queue it on send buffer */
--		__skb_queue_tail(&sk->sk_write_queue, head);
--		kcm->seq_skb = NULL;
--		KCM_STATS_INCR(kcm->stats.tx_msgs);
--
--		if (flags & MSG_BATCH) {
--			kcm->tx_wait_more = true;
--		} else if (kcm->tx_wait_more || not_busy) {
--			err = kcm_write_msgs(kcm);
--			if (err < 0) {
--				/* We got a hard error in write_msgs but have
--				 * already queued this message. Report an error
--				 * in the socket, but don't affect return value
--				 * from sendmsg
--				 */
--				pr_warn("KCM: Hard failure on kcm_write_msgs\n");
--				report_csk_error(&kcm->sk, -err);
--			}
--		}
--	} else {
--		/* Message not complete, save state */
--		kcm->seq_skb = head;
--		kcm_tx_msg(head)->last_skb = skb;
--	}
--
--	KCM_STATS_ADD(kcm->stats.tx_bytes, size);
--
--	release_sock(sk);
--	return size;
--
--out_error:
--	kcm_push(kcm);
--
--	err = sk_stream_error(sk, flags, err);
--
--	/* make sure we wake any epoll edge trigger waiter */
--	if (unlikely(skb_queue_len(&sk->sk_write_queue) == 0 && err == -EAGAIN))
--		sk->sk_write_space(sk);
--
--	release_sock(sk);
--	return err;
--}
--
- static int kcm_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- {
- 	struct sock *sk = sock->sk;
-@@ -1111,6 +968,24 @@ static int kcm_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	return err;
- }
- 
-+static ssize_t kcm_sendpage(struct socket *sock, struct page *page,
-+			    int offset, size_t size, int flags)
-+
-+{
-+	struct bio_vec bvec;
-+	struct msghdr msg = { .msg_flags = flags | MSG_SPLICE_PAGES, };
-+
-+	if (flags & MSG_SENDPAGE_NOTLAST)
-+		msg.msg_flags |= MSG_MORE;
-+
-+	if (flags & MSG_OOB)
-+		return -EOPNOTSUPP;
-+
-+	bvec_set_page(&bvec, page, size, offset);
-+	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, size);
-+	return kcm_sendmsg(sock, &msg, size);
-+}
-+
- static int kcm_recvmsg(struct socket *sock, struct msghdr *msg,
- 		       size_t len, int flags)
- {
+I mean, where do you put the threshold? Because what currently gets
+reused is this:
 
+void dcb_app_parse_mapping_cb(__u32 key, __u64 value, void *data)
+{
+	struct dcb_app_parse_mapping *pm = data;
+
+	if (pm->err)
+		return;
+
+	pm->err = pm->push(pm->tab, pm->selector, key, value);
+}
+
+(OK, that, and the helper data structure)
+
+IMHO the ceremony around the declaration, it not being near where it's
+used, the extra callback to make it generic, etc., is more expensive
+than what the reuse saves us.
+
+Like, similarly we could talk about reusing dcb_cmd_app() for
+dcb_rewr_app() or whatever. But we shamelessly duplicate, because
+making it reusable is more expensive than what it brings.
+
+If anything, I would reuse the data structure, and copy the callback.
 
