@@ -1,278 +1,168 @@
-Return-Path: <netdev+bounces-6752-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6755-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C5A59717CCA
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:06:19 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DE854717CF4
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:13:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 618E31C20DB5
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:06:16 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7A7651C20DB5
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:13:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E743B13AC6;
-	Wed, 31 May 2023 10:06:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 24BA613ACD;
+	Wed, 31 May 2023 10:13:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AD4E12B99
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:06:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F36EC433EF;
-	Wed, 31 May 2023 10:06:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685527575;
-	bh=CAfGkoCX7jrzOItNlPZnfGyufMo84Rg7e0vHaI13f/A=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=KhgoJxyih2pvUkn5EDeCJabDLgTI9qwBerUzpsc4EWFHjvRrVUQksByMzWn0cVimH
-	 ZuHKgD1UhMpG/Fk+mDPa5MeNmUPri96kGJDZFxm0poacVcWm6LAyChH7i0c7zQ6tRY
-	 gcM6UiphUXy8IV/j/u0pTAngJf4RvgeG5yNOXHvsmXshlOSzsyl0Bb+VF1yD2aAKLi
-	 08cfkMucNYsgO4pBza8WtkarrFbSFyuf8v+/Ev0rCDvuK5UdiFPYwUUCyfCK4ZyLN2
-	 J+6O0aQAduDPwnsr79YAn64sU8xpRn8+F9dqdjhlawFkq8Sh5Z1WJDGxjO5fSsOmAK
-	 aasB4l9pPtMKA==
-Message-ID: <655a378d4b71942e19473caa00ba7d44e12641a5.camel@kernel.org>
-Subject: Re: [PATCH] nfsd: fix double fget() bug in __write_ports_addfd()
-From: Jeff Layton <jlayton@kernel.org>
-To: Dan Carpenter <dan.carpenter@linaro.org>, NeilBrown <neilb@suse.de>
-Cc: Stanislav Kinsbursky <skinsbursky@parallels.com>, Chuck Lever
- <chuck.lever@oracle.com>, Trond Myklebust
- <trond.myklebust@hammerspace.com>,  Anna Schumaker <anna@kernel.org>, "J.
- Bruce Fields" <bfields@redhat.com>,  linux-nfs@vger.kernel.org,
- netdev@vger.kernel.org,  kernel-janitors@vger.kernel.org
-Date: Wed, 31 May 2023 06:06:12 -0400
-In-Reply-To: <58fd7e35-ba6c-432e-8e02-9c5476c854b4@kili.mountain>
-References: <9c90e813-c7fb-4c90-b52b-131481640a78@kili.mountain>
-	 <168548566376.23533.14778348024215909777@noble.neil.brown.name>
-	 <58fd7e35-ba6c-432e-8e02-9c5476c854b4@kili.mountain>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.2 (3.48.2-1.fc38) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 135643D64
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:13:28 +0000 (UTC)
+Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AEF12B
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 03:13:23 -0700 (PDT)
+X-QQ-mid:Yeas43t1685527903t560t14403
+Received: from 3DB253DBDE8942B29385B9DFB0B7E889 (jiawenwu@trustnetic.com [183.159.96.128])
+X-QQ-SSF:00400000000000F0FOF000000000000
+From: =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
+X-BIZMAIL-ID: 14749073908177250109
+To: "'Russell King \(Oracle\)'" <linux@armlinux.org.uk>
+Cc: <netdev@vger.kernel.org>,
+	<jarkko.nikula@linux.intel.com>,
+	<andriy.shevchenko@linux.intel.com>,
+	<mika.westerberg@linux.intel.com>,
+	<jsd@semihalf.com>,
+	<Jose.Abreu@synopsys.com>,
+	<andrew@lunn.ch>,
+	<hkallweit1@gmail.com>,
+	<oe-kbuild-all@lists.linux.dev>,
+	<linux-i2c@vger.kernel.org>,
+	<linux-gpio@vger.kernel.org>,
+	<mengyuanlou@net-swift.com>,
+	"'Piotr Raczynski'" <piotr.raczynski@intel.com>
+References: <20230524091722.522118-6-jiawenwu@trustnetic.com> <202305261959.mnGUW17n-lkp@intel.com> <ZHCZ0hLKARXu3xFH@shell.armlinux.org.uk> <02dd01d991d2$2120fcf0$6362f6d0$@trustnetic.com> <03ac01d992d2$67c1ec90$3745c5b0$@trustnetic.com> <ZHcXvFvR3H8Vmyok@shell.armlinux.org.uk>
+In-Reply-To: <ZHcXvFvR3H8Vmyok@shell.armlinux.org.uk>
+Subject: RE: [PATCH net-next v9 5/9] net: txgbe: Add SFP module identify
+Date: Wed, 31 May 2023 18:11:42 +0800
+Message-ID: <047f01d993a8$4c4465c0$e4cd3140$@trustnetic.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQFlCTXCD0V13/nxYaH3lJLB+zCPMgFguorBARt7XSgCWWopnAJhtNzYAOnc7CuwHDLfgA==
+Content-Language: zh-cn
+X-QQ-SENDSIZE: 520
+Feedback-ID: Yeas:trustnetic.com:qybglogicsvrgz:qybglogicsvrgz5a-1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=unavailable
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Wed, 2023-05-31 at 10:48 +0300, Dan Carpenter wrote:
-> On Wed, May 31, 2023 at 08:27:43AM +1000, NeilBrown wrote:
-> > On Mon, 29 May 2023, Dan Carpenter wrote:
-> > > The bug here is that you cannot rely on getting the same socket
-> > > from multiple calls to fget() because userspace can influence
-> > > that.  This is a kind of double fetch bug.
-> > >=20
-> > > The fix is to delete the svc_alien_sock() function and insted do
-> > > the checking inside the svc_addsock() function.
-> >=20
-> > Hi,
-> >  I definitely agree with the change to pass the 'net' into
-> >  svc_addsock(), and check the the fd has the correct net.
-> >=20
-> >  I'm not sure I agree with the removal of the svc_alien_sock() test.  I=
-t
-> >  is best to perform sanity tests before allocation things, and
-> >  nfsd_create_serv() can create a new 'serv' - though most often it just
-> >  incs the refcount.
->=20
-> That's true.  But the other philosophical rule is that we shouldn't
-> optimize for the failure path.  If someone gives us bad data they
-> deserve a slow down.
+On Wednesday, May 31, 2023 5:48 PM, Russell King (Oracle) wrote:
+> On Tue, May 30, 2023 at 04:40:36PM +0800, Jiawen Wu wrote:
+> > On Monday, May 29, 2023 10:06 AM, Jiawen Wu wrote:
+> > > On Friday, May 26, 2023 7:37 PM, Russell King (Oracle) wrote:
+> > > > On Fri, May 26, 2023 at 07:30:45PM +0800, kernel test robot wrote:
+> > > > > Kconfig warnings: (for reference only)
+> > > > >    WARNING: unmet direct dependencies detected for I2C_DESIGNWARE_PLATFORM
+> > > > >    Depends on [n]: I2C [=n] && HAS_IOMEM [=y] && (ACPI && COMMON_CLK [=y] || !ACPI)
+> > > > >    Selected by [y]:
+> > > > >    - TXGBE [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_WANGXUN [=y] && PCI [=y]
+> > > > >    WARNING: unmet direct dependencies detected for SFP
+> > > > >    Depends on [n]: NETDEVICES [=y] && PHYLIB [=y] && I2C [=n] && PHYLINK [=y] && (HWMON [=n] || HWMON [=n]=n)
+> > > > >    Selected by [y]:
+> > > > >    - TXGBE [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_WANGXUN [=y] && PCI [=y]
+> > > >
+> > > > ... and is basically caused by "select SFP". No. Do not do this unless
+> > > > you look at the dependencies for SFP and ensure that those are also
+> > > > satisfied - because if you don't you create messes like the above
+> > > > build errors.
+> > >
+> > > So how do I make sure that the module I need compiles and loads correctly,
+> > > rely on the user to manually select it?
+> >
+> > When I changed the TXGBE config to:
+> > ...
+> > 	depends on SFP
+> > 	select PCS_XPCS
+> > ...
+> > the compilation gave an error:
+> >
+> > drivers/net/phy/Kconfig:16:error: recursive dependency detected!
+> > drivers/net/phy/Kconfig:16:     symbol PHYLIB is selected by PHYLINK
+> > drivers/net/phy/Kconfig:6:      symbol PHYLINK is selected by PCS_XPCS
+> > drivers/net/pcs/Kconfig:8:      symbol PCS_XPCS is selected by TXGBE
+> > drivers/net/ethernet/wangxun/Kconfig:40:        symbol TXGBE depends on SFP
+> > drivers/net/phy/Kconfig:63:     symbol SFP depends on PHYLIB
+> > For a resolution refer to Documentation/kbuild/kconfig-language.rst
+> > subsection "Kconfig recursive dependency limitations"
+> >
+> > Seems deleting "depends on SFP" is the correct way. But is this normal?
+> > How do we ensure the dependency between TXGBE and SFP?
+> 
+> First, I would do this:
+> 
+> 	select PHYLINK
+> 	select PCS_XPCS
+> 
+> but then I'm principled, and I don't agree that PCS_XPCS should be
+> selecting PHYLINK.
+> 
+> The second thing I don't particularly like is selecting user visible
+> symbols, but as I understand it, with TXGBE, the SFP slot is not an
+> optional feature, so there's little option.
+> 
+> So, because SFP requires I2C:
+> 
+> 	select I2C
+> 	select SFP
+> 
+> That is basically what I meant by "you look at the dependencies for
+> SFP and ensure that those are also satisfied".
+> 
+> Adding that "select I2C" also solves the unmet dependencies for
+> I2C_DESIGNWARE_PLATFORM.
+> 
+> However, even with that, we're not done with the evilness of select,
+> because there's one more permitted configuration combination that
+> will break.
+> 
+> If you build TXGBE into the kernel, that will force SFP=y, I2C=y,
+> PHYLINK=y, PHYLIB=y. So far so good. However, if HWMON=m, then things
+> will again break. So I would also suggest:
+> 
+> 	select HWMON if TXGBE=y
+> 
+> even though you don't require it, it solves the build fallout from
+> where HWMON=m but you force SFP=y.
+> 
+> Maybe someone else has better ideas how to do this, but the above is
+> the best I can come up with.
+> 
+> 
+> IMHO, select is nothing but pure evil, and should be used with utmost
+> care and a full understanding of its ramifications, and a realisation
+> that it *totally* and *utterly* blows away any "depends on" on the
+> target of the select statement.
+> 
+> An option that states that it depends on something else generally does
+> because... oddly enough, it _depends_ on that other option. So, if
+> select forces an option on without its dependencies, then it's not
+> surprising that stuff fails to build.
+> 
+> Whenever a select statement is added, one must _always_ look at the
+> target symbol and consider any "depends on" there, and how to ensure
+> that those dependencies are guaranteed to always be satisfied.
 
-> I also think leaving svc_alien_sock() is a trap for the unwary because
-> it will lead to more double fget() bugs.  The svc_alien_sock() function
-> is weird because it returns false on success and false on failure and
-> true for alien sock.
->=20
-> >=20
-> >  Maybe instead svc_alien_sock() could return the struct socket (if
-> >  successful), and it could be passed to svc_addsock()???
-> >=20
-> >  I would probably then change the name of svc_alien_sock()
->=20
-> Yeah, because we don't want alien sockets, we want Earth sockets.
-> Doing this is much more complicated...  The name svc_get_earth_sock()
-> is just a joke.  Tell me what name to use if we decide to go this
-> route.
->=20
-> To be honest, I would probably still go with my v1 patch.
->=20
+Thanks for the detailed explanation. I'll check each of the required options,
+and use "depends on" whenever possible.
 
-+1.  I don't see a need to do this check twice. Let's optimize for the
-success case and if someone sends down bogus data, then they just go
-slower.
-
-I too suggest we just go with Dan's original patch.
-
-
-
-> regards,
-> dan carpenter
->=20
-> diff --git a/fs/nfsd/nfsctl.c b/fs/nfsd/nfsctl.c
-> index e0e98b40a6e5d..affcd44f03d6b 100644
-> --- a/fs/nfsd/nfsctl.c
-> +++ b/fs/nfsd/nfsctl.c
-> @@ -689,6 +689,7 @@ static ssize_t __write_ports_names(char *buf, struct =
-net *net)
->   */
->  static ssize_t __write_ports_addfd(char *buf, struct net *net, const str=
-uct cred *cred)
->  {
-> +	struct socket *so;
->  	char *mesg =3D buf;
->  	int fd, err;
->  	struct nfsd_net *nn =3D net_generic(net, nfsd_net_id);
-> @@ -698,22 +699,30 @@ static ssize_t __write_ports_addfd(char *buf, struc=
-t net *net, const struct cred
->  		return -EINVAL;
->  	trace_nfsd_ctl_ports_addfd(net, fd);
-> =20
-> -	if (svc_alien_sock(net, fd)) {
-> +	so =3D svc_get_earth_sock(net, fd);
-> +	if (!so) {
->  		printk(KERN_ERR "%s: socket net is different to NFSd's one\n", __func_=
-_);
->  		return -EINVAL;
->  	}
-> =20
->  	err =3D nfsd_create_serv(net);
->  	if (err !=3D 0)
-> -		return err;
-> +		goto out_put_sock;
-> =20
-> -	err =3D svc_addsock(nn->nfsd_serv, fd, buf, SIMPLE_TRANSACTION_LIMIT, c=
-red);
-> +	err =3D svc_addsock(nn->nfsd_serv, so, buf, SIMPLE_TRANSACTION_LIMIT, c=
-red);
-> +	if (err)
-> +		goto out_put_net;
-> =20
-> -	if (err >=3D 0 &&
-> -	    !nn->nfsd_serv->sv_nrthreads && !xchg(&nn->keep_active, 1))
-> +	if (!nn->nfsd_serv->sv_nrthreads && !xchg(&nn->keep_active, 1))
->  		svc_get(nn->nfsd_serv);
-> =20
->  	nfsd_put(net);
-> +	return 0;
-> +
-> +out_put_net:
-> +	nfsd_put(net);
-> +out_put_sock:
-> +	sockfd_put(so);
->  	return err;
->  }
-> =20
-> diff --git a/include/linux/sunrpc/svcsock.h b/include/linux/sunrpc/svcsoc=
-k.h
-> index d16ae621782c0..2422d260591bb 100644
-> --- a/include/linux/sunrpc/svcsock.h
-> +++ b/include/linux/sunrpc/svcsock.h
-> @@ -61,8 +61,8 @@ int		svc_recv(struct svc_rqst *, long);
->  void		svc_send(struct svc_rqst *rqstp);
->  void		svc_drop(struct svc_rqst *);
->  void		svc_sock_update_bufs(struct svc_serv *serv);
-> -bool		svc_alien_sock(struct net *net, int fd);
-> -int		svc_addsock(struct svc_serv *serv, const int fd,
-> +struct socket	*svc_get_earth_sock(struct net *net, int fd);
-> +int		svc_addsock(struct svc_serv *serv, struct socket *so,
->  					char *name_return, const size_t len,
->  					const struct cred *cred);
->  void		svc_init_xprt_sock(void);
-> diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
-> index 46845cb6465d7..78f6ae9fa42d4 100644
-> --- a/net/sunrpc/svcsock.c
-> +++ b/net/sunrpc/svcsock.c
-> @@ -1474,21 +1474,20 @@ static struct svc_sock *svc_setup_socket(struct s=
-vc_serv *serv,
->  	return svsk;
->  }
-> =20
-> -bool svc_alien_sock(struct net *net, int fd)
-> +struct socket *svc_get_earth_sock(struct net *net, int fd)
->  {
->  	int err;
->  	struct socket *sock =3D sockfd_lookup(fd, &err);
-> -	bool ret =3D false;
-> =20
->  	if (!sock)
-> -		goto out;
-> -	if (sock_net(sock->sk) !=3D net)
-> -		ret =3D true;
-> -	sockfd_put(sock);
-> -out:
-> -	return ret;
-> +		return NULL;
-> +	if (sock_net(sock->sk) !=3D net) {
-> +		sockfd_put(sock);
-> +		return NULL;
-> +	}
-> +	return sock;
->  }
-> -EXPORT_SYMBOL_GPL(svc_alien_sock);
-> +EXPORT_SYMBOL_GPL(svc_get_earth_sock);
-> =20
->  /**
->   * svc_addsock - add a listener socket to an RPC service
-> @@ -1502,36 +1501,27 @@ EXPORT_SYMBOL_GPL(svc_alien_sock);
->   * Name is terminated with '\n'.  On error, returns a negative errno
->   * value.
->   */
-> -int svc_addsock(struct svc_serv *serv, const int fd, char *name_return,
-> +int svc_addsock(struct svc_serv *serv, struct socket *so, char *name_ret=
-urn,
->  		const size_t len, const struct cred *cred)
->  {
-> -	int err =3D 0;
-> -	struct socket *so =3D sockfd_lookup(fd, &err);
->  	struct svc_sock *svsk =3D NULL;
->  	struct sockaddr_storage addr;
->  	struct sockaddr *sin =3D (struct sockaddr *)&addr;
->  	int salen;
-> =20
-> -	if (!so)
-> -		return err;
-> -	err =3D -EAFNOSUPPORT;
->  	if ((so->sk->sk_family !=3D PF_INET) && (so->sk->sk_family !=3D PF_INET=
-6))
-> -		goto out;
-> -	err =3D  -EPROTONOSUPPORT;
-> +		return -EAFNOSUPPORT;
->  	if (so->sk->sk_protocol !=3D IPPROTO_TCP &&
->  	    so->sk->sk_protocol !=3D IPPROTO_UDP)
-> -		goto out;
-> -	err =3D -EISCONN;
-> +		return -EPROTONOSUPPORT;
->  	if (so->state > SS_UNCONNECTED)
-> -		goto out;
-> -	err =3D -ENOENT;
-> +		return -EISCONN;
->  	if (!try_module_get(THIS_MODULE))
-> -		goto out;
-> +		return -ENOENT;
->  	svsk =3D svc_setup_socket(serv, so, SVC_SOCK_DEFAULTS);
->  	if (IS_ERR(svsk)) {
->  		module_put(THIS_MODULE);
-> -		err =3D PTR_ERR(svsk);
-> -		goto out;
-> +		return PTR_ERR(svsk);
->  	}
->  	salen =3D kernel_getsockname(svsk->sk_sock, sin);
->  	if (salen >=3D 0)
-> @@ -1539,9 +1529,6 @@ int svc_addsock(struct svc_serv *serv, const int fd=
-, char *name_return,
->  	svsk->sk_xprt.xpt_cred =3D get_cred(cred);
->  	svc_add_new_perm_xprt(serv, &svsk->sk_xprt);
->  	return svc_one_sock_name(svsk, name_return, len);
-> -out:
-> -	sockfd_put(so);
-> -	return err;
->  }
->  EXPORT_SYMBOL_GPL(svc_addsock);
-> =20
->=20
->=20
->=20
-
---=20
-Jeff Layton <jlayton@kernel.org>
 
