@@ -1,118 +1,121 @@
-Return-Path: <netdev+bounces-6762-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6763-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 816A8717D43
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:38:58 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 38E13717D4B
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:42:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1D4371C20E75
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:38:55 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CA2FF2814B5
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:42:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0710979D2;
-	Wed, 31 May 2023 10:38:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D7018F51;
+	Wed, 31 May 2023 10:42:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E25E66FC9
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:38:54 +0000 (UTC)
-Received: from mout.web.de (mout.web.de [212.227.15.4])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F61BE;
-	Wed, 31 May 2023 03:38:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de; s=s29768273;
-	t=1685529518; i=spasswolf@web.de;
-	bh=EdzXAuAMFY3t1LSaGo+AZHE/CDQud/bV5pOhIIq/oMk=;
-	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=JKxk6kUiW552tsCiXcNfxoGhPd15Ah4lWu2lTkaZH/Y7qeKC1hk8QgGnFGLbjS8PX
-	 PfgQd07nettDbdcgfzfmJStK616i5R0adCa3YYAL13InHqmxTpMmsFT+t4R0x+RERI
-	 yar6kFXelc9OuYAPkoiXJdgFTpMxIhgd1D+NyeZ2gglc0Ds+PZp7lWtaFJO1Eqn3Ch
-	 uLMQlRqNXXcq6xmgJ7NBJQ+v1tQPKgajMhpkmwOSil7jxrNp8rooeQP3oRnNT4bd5v
-	 ZiqD0ISzAN/zHFNEwiMaQyN3CQ1tV4IYODu3GWJReyGRnQDTtBMi2B2d49SOLcUAOd
-	 PTAp+BCwsThDg==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from localhost.localdomain ([176.198.191.160]) by smtp.web.de
- (mrweb006 [213.165.67.108]) with ESMTPSA (Nemesis) id
- 1MBS71-1pvlAI3KSl-00CeGc; Wed, 31 May 2023 12:38:37 +0200
-From: Bert Karwatzki <spasswolf@web.de>
-To: davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com
-Cc: Bert Karwatzki <spasswolf@web.de>,
-	elder@kernel.org,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11BD515B8
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:42:27 +0000 (UTC)
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9980BE;
+	Wed, 31 May 2023 03:42:25 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id 41be03b00d2f7-5289ce6be53so589436a12.0;
+        Wed, 31 May 2023 03:42:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685529745; x=1688121745;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=zPx/iynNOvvlzHXUOH2e7MeUR4JsTfqmjD2ESWI6jAk=;
+        b=WQJCOdK8bkEEUi3W8bYSccdBi0KK8d/PuHyguCmhIcxFPjyQg9kmIbjRT91RyIGp3z
+         iN5uHJA8HVaAlja5+C+IydMnxdtKs0mhUh9lXLYeZ4Kt915dl85EaVQx/GHMwSqlAC0V
+         07Cnu4LxQbOY92umdz62Bx9aNgCLz72M80gtMybIW2Yts8H2SL232S/wdGOD7G/DYco+
+         ectahprf5qKQ9eA005OCN/zFnL3LdKVPtbzxIXAaIC6oyMAVLlW4OkMfL6a5mNpqlx8n
+         57x1aoMXyf00aJOdqY0Ye365X2XDtIhVbKHDXIyPUlg0IMBUBAmp9hp/DRU6yg3dr6mP
+         0wOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685529745; x=1688121745;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zPx/iynNOvvlzHXUOH2e7MeUR4JsTfqmjD2ESWI6jAk=;
+        b=a1q1ltMfxF98pEXSrbGkS44PxjKzKFbkxI7+UQ3tG9gJ4WVfe94bO0OyjPcdN6vhGG
+         SLQK6U8KHN/5f3fPoH+Q8bNUa8syeq+NsEdqk9mJqeXHm5HbH/iy3PJdAgRlNJgV/RyK
+         sd2OtfaU1UY9tE4nYqw6T+TyHx55onUXOkVsYWef/IOO41kK8+cXbA/F1Y2clzIJVk7d
+         5Ike+9M7qzQ4rsuuAvE4l3A8OLRr5QNWqujrKNcQKLOTvmmdafKVJPE6nBHB370tg0MQ
+         zkFIA+m1pCymAfwMEX9WTDEMEzwrWJWKHbWHFrphjUpGtgmy5cEGGQHgxwzYKzeqNZk/
+         2ULg==
+X-Gm-Message-State: AC+VfDyb1iuhGsdXErKKCDsle43u3mweQI+77ar9UpwZISmvjCXjMeIV
+	nfoKa9wUHksePS9XMgFTozs=
+X-Google-Smtp-Source: ACHHUZ6o46Y/n+GcSntg8AOOWkMoF7eJjyTe/+vZiYx7xrA2akLeDPFlNoHc5jbMW5vDiCYPMnuwJA==
+X-Received: by 2002:a17:902:ce82:b0:1af:e116:4b42 with SMTP id f2-20020a170902ce8200b001afe1164b42mr14286520plg.34.1685529745248;
+        Wed, 31 May 2023 03:42:25 -0700 (PDT)
+Received: from DESKTOP-4R0U3NR.siflower.com ([104.28.228.28])
+        by smtp.gmail.com with ESMTPSA id b4-20020a170902d30400b001b0395c3ffasm1015500plc.180.2023.05.31.03.42.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 May 2023 03:42:25 -0700 (PDT)
+From: Qingfang DENG <dqfext@gmail.com>
+To: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>,
+	Ville Nuorvala <vnuorval@tcs.hut.fi>,
+	Masahide NAKAMURA <nakam@linux-ipv6.org>,
 	netdev@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH net v3] net: ipa: Use correct value for IPA_STATUS_SIZE
-Date: Wed, 31 May 2023 12:36:19 +0200
-Message-Id: <20230531103618.102608-1-spasswolf@web.de>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <e144386d-e62a-a470-fcf9-0dab6f7ab837@linaro.org>
-References: <e144386d-e62a-a470-fcf9-0dab6f7ab837@linaro.org>
+Cc: Qingfang DENG <qingfang.deng@siflower.com.cn>
+Subject: [PATCH net] neighbour: fix unaligned access to pneigh_entry
+Date: Wed, 31 May 2023 18:42:33 +0800
+Message-Id: <20230531104233.50645-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:3Dsv7+l5ZvDr30QdVwjfAb5zt4bew3VSOwXjuw4FzsNrtBvP/cH
- Awf4EvPoD3GkxAAvrQmk+sKBUar5b/Kmz25ljlMVEUkOyPdaAoP22GXn2aNaLSXRBJjcoF5
- nidWWUsxnj/dPsKXU/jYj5/sXh9odUu3grZ18GEwE/PWOaiTkv8Afb4hbyNW0/xbT+qxKOj
- 0kUCZ9mek74yTLYPADtbQ==
-UI-OutboundReport: notjunk:1;M01:P0:4sAftPvt+MU=;wtLMJQB0iheI2e4mLDv8fzTKN7o
- V6rjerJU0Iu+5gTVgemotw0rkOWE+XhEYHWOIDQkbdBkN4krojhoRszloednHJyvjPUBkzi3A
- T8hamwta3xUc+3tnhmjfY837+/ANw6Gs7h6CZoa+xtq08MaD1kJMcVlvOLdK0bnzUyFfx5Vmr
- LAHOTBd9ozujI7ziuV6TkZBUows3LsgapKsJknViRi/tgDP/Rx3B+PWBXxyIc1yR35WOtHgjP
- QrElrbULRrpmP0wtboOiDW1K5OWHWTsheYtO+sGd5YRxnmVrLzMvvitz/LgAYvrB+17T2IZIN
- l2y0Sk07u7LA7RYP6CELoV0JYgeVxwN0fHpawwgjNYQVf3SGhi3VCjiwRJuv+ws3nk5tEMS1L
- ATq48ZUGN4CP24vcgBENd84qDZY0PYMkcg/uygsx3VScbUIuPrwcntuYbWSvu0IpRsb2TwBfL
- EWc/UOPWJEL6AHY8XejFs+9Qm3q2cqZRNCDsen1PW2a6LUaxXBn7xT8+/JihV125usd2i5n6L
- PRf5TfECFyIk+/Fgy//qdmZTiTYfOLJ59XjBNL4jBT+VBkkXBZUBhIsYm/Ja6+SWPPHBNdfgc
- 8fSUSAWrOQmjNerKPrkE40d3GtJSHbd+di17FVyYGg1ykQ4GdqUBJaNivGkjyY08rZNPRyLJl
- jQIWc+WymGV99rdrdd0Q74F0jBkS/+RflAIinjoW1cE9ugI10I92wYWDH/OiiUkJrKltL0BTx
- BFENJ14b80k6prKBrEPWQKZOhNlFVOMlhs716TZYI+lvoQSE8knani3R89QsFJk69t1AY9SyY
- uGYmqUwHr1kCcTSUL3A9+DC3vk+FRrxJf1lmx/cLY1E6FgPPTk+DFfPVxksbkB1npda752LFW
- LfrIWYMq+mjovZPKnsSwSP1lQD3CAILTNwOiTYB7SfOKwxidgVL35hMSlLHsyj8SC9xfVzOeS
- 7f4B/M/aPZvk5XiNND3xIp/XW7Y=
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
-	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-IPA_STATUS_SIZE was introduced in commit b8dc7d0eea5a as a replacement
-for the size of the removed struct ipa_status which had size
-sizeof(__le32[8]). Use this value as IPA_STATUS_SIZE.
+From: Qingfang DENG <qingfang.deng@siflower.com.cn>
 
-Fixes: b8dc7d0eea5a ("net: ipa: stop using sizeof(status)")
-Signed-off-by: Bert Karwatzki <spasswolf@web.de>
-=2D--
- drivers/net/ipa/ipa_endpoint.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+After the blamed commit, the member key is longer 4-byte aligned. On
+platforms that do not support unaligned access, e.g., MIPS32R2 with
+unaligned_action set to 2, this will trigger a crash when accessing
+an IPv6 pneigh_entry, as the key is cast to an in6_addr pointer.
 
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint=
-.c
-index 2ee80ed140b7..afa1d56d9095 100644
-=2D-- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -119,7 +119,7 @@ enum ipa_status_field_id {
+Align the member to 4 bytes on said platforms.
+
+Fixes: 62dd93181aaa ("[IPV6] NDISC: Set per-entry is_router flag in Proxy NA.")
+Signed-off-by: Qingfang DENG <qingfang.deng@siflower.com.cn>
+---
+ include/net/neighbour.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/include/net/neighbour.h b/include/net/neighbour.h
+index 3fa5774bddac..c0195ed9d111 100644
+--- a/include/net/neighbour.h
++++ b/include/net/neighbour.h
+@@ -180,7 +180,11 @@ struct pneigh_entry {
+ 	netdevice_tracker	dev_tracker;
+ 	u32			flags;
+ 	u8			protocol;
++#ifdef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
+ 	u8			key[];
++#else
++	u8			key[] __aligned(4);
++#endif
  };
-
- /* Size in bytes of an IPA packet status structure */
--#define IPA_STATUS_SIZE			sizeof(__le32[4])
-+#define IPA_STATUS_SIZE			sizeof(__le32[8])
-
- /* IPA status structure decoder; looks up field values for a structure */
- static u32 ipa_status_extract(struct ipa *ipa, const void *data,
-=2D-
-2.40.1
-
-As none of you seem to be in Europe, I'll do another attempt, this time
-with git send-email.
-Bert Karwatzki
+ 
+ /*
+-- 
+2.34.1
 
 
