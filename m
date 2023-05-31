@@ -1,163 +1,140 @@
-Return-Path: <netdev+bounces-6920-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6922-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C638D718AD0
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 22:09:54 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7CEDB718AF8
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 22:19:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 488CE1C20AEB
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 20:09:51 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 34FF82815B9
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 20:19:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F2063C09E;
-	Wed, 31 May 2023 20:09:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 577093C0A9;
+	Wed, 31 May 2023 20:19:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 666F219E61
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 20:09:40 +0000 (UTC)
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2675C128
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 13:09:38 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id 98e67ed59e1d1-2565a9107d2so4058690a91.0
-        for <netdev@vger.kernel.org>; Wed, 31 May 2023 13:09:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1685563777; x=1688155777;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=znL7f7/82TkQpJEpu7c6MThFxiycg/NL4+PI0rygfNQ=;
-        b=JumrgGYStYR+yRW+DXolW6jOJL2tiwPHpWi2FK4VDTy23bMMuYYFyPDEr0CfUZ8h+e
-         9sFBsOZ8J/nQK5TMW4TK6tkZAqqWcZJhqNGRZLUbA8NcAcgwbLQTBr10tqD5zuxLJPcH
-         b0A9Jz36cd1n/nSsRKoZQmRUB4+6FhHECdanzUDisr4M+BgzGJ5b4GhmXgT9ZTbNngoh
-         9yki4DFFHBFEeaQEwvxsITXKXFgJIFSUaLMLu7D+76JpvoFnPSGfWliPOGCi+ZKjnM8e
-         MIYjNo0q3R6ia1zLKhqW4hUa2VkqPIEPBgHKTRotq/LbmV1eOsYrciQUcSZheqAnyVt3
-         qvUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685563777; x=1688155777;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=znL7f7/82TkQpJEpu7c6MThFxiycg/NL4+PI0rygfNQ=;
-        b=M4eX8YqRqnlqVgqWO+ulryWtvwIuzevMGxR9z4i/2s5omyNH0LYxHt9iamo8I06aXH
-         FnNaVv7exI0BmV2hU7wvWcs1wSBLPRIpIxDbu7tPp/JloNZAVJ1WFnVsuh6NctGIoVDT
-         PaIDbsGA7zG0K8UhA0RlW50iM26yGIIOp0KEPHMa1pof+IGgKDQNb/KOs/0muxOKlV0y
-         jQpfKU3YbqBsEj1Npmj4kaHx4xemZoy3Sfnj+JB+iSm0CH4jzU+fWtrewh/oVEPRTelE
-         6yENEj0VdziaE+fyjT3yBuHPszJ+2qOYxQDWrHPWSBnHaiAqLzuzk7IBmebURzOAFTWv
-         ctBw==
-X-Gm-Message-State: AC+VfDxzt3z5dK3+kKlCs5bK9R/75ba9j7aZr1ogdaeCcy2exKtvKhD3
-	d5WrH/oWtvLk1zQ5YQk3x1y6/8hfw4o70H28wOA=
-X-Google-Smtp-Source: ACHHUZ6eKWw/t7H+nBTQPpkqQG0FdVwCQvVKNUD8kXL3Dt30mSh2odKjCoBtWWk9rwAIB4uAOMdlGg==
-X-Received: by 2002:a17:902:d2c5:b0:1ac:5b6b:df4c with SMTP id n5-20020a170902d2c500b001ac5b6bdf4cmr6534057plc.69.1685563777563;
-        Wed, 31 May 2023 13:09:37 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id jj14-20020a170903048e00b001b04c2023e3sm1767799plb.218.2023.05.31.13.09.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 May 2023 13:09:37 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1q4S8V-0018Kh-Pk;
-	Wed, 31 May 2023 17:09:35 -0300
-Date: Wed, 31 May 2023 17:09:35 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Chuck Lever III <chuck.lever@oracle.com>
-Cc: Chuck Lever <cel@kernel.org>, Netdev <netdev@vger.kernel.org>,
-	linux-rdma <linux-rdma@vger.kernel.org>,
-	Bernard Metzler <BMT@zurich.ibm.com>, Tom Talpey <tom@talpey.com>
-Subject: Re: [PATCH RFC 3/3] RDMA/siw: Require non-zero 6-byte MACs for soft
- iWARP
-Message-ID: <ZHepf6/z8ZxRPe+B@ziepe.ca>
-References: <168330051600.5953.11366152375575299483.stgit@oracle-102.nfsv4bat.org>
- <168330138101.5953.12575990094340826016.stgit@oracle-102.nfsv4bat.org>
- <ZFVf+wzF6Px8nlVR@ziepe.ca>
- <7825F977-3F62-4AFC-92F2-233C5EAE01D3@oracle.com>
- <ZHeaVdsMUz8gDjEU@ziepe.ca>
- <B0D24A4F-8E82-4696-ACE1-453E45866DAC@oracle.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4974D34CE2
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 20:19:26 +0000 (UTC)
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F67126;
+	Wed, 31 May 2023 13:19:23 -0700 (PDT)
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34VKCVx9001351;
+	Wed, 31 May 2023 20:19:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=sTJCWWUwzwvNr/MkB+nxK/PvXW1ND48ywSdnL9r2G/I=;
+ b=sxQoG0kvVkhnyhB9eb+OI9pqNiToozu3AIl6pgp559MfzyrrQgnrLMZ2Qha+NApe/kHM
+ ITHVeeqpErVZ4oK7jbAQrWQnwDJr2ODcg1xW0gj5tTTw6+6i7w61JXOFAMrJYqysL3Rp
+ JQtsmxKTAZr/NBgQ8RbYP+pnfEqpHyrvmeRXs7czCxz7cRAdBptaSOd5RKTzOCPRY3rW
+ M2H4NCPv0sVDDn1lFqYkGYqSi/BqIjmiN5H4DQtW4RD1ZFaf3z3SJmWICDAA6DTDnXfU
+ uBJS/kQHLEmoIVBbl/QzsL6Gv4jVDu49lZZL+ox5yp4xbHar51S52ooa4hrZOE7oG/3v 2g== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qxd2c05je-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 31 May 2023 20:19:05 +0000
+Received: from m0353729.ppops.net (m0353729.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34VKFpvl013315;
+	Wed, 31 May 2023 20:19:04 GMT
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qxd2c05ha-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 31 May 2023 20:19:04 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+	by ppma02wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34VJAC4Y008154;
+	Wed, 31 May 2023 20:19:03 GMT
+Received: from smtprelay02.wdc07v.mail.ibm.com ([9.208.129.120])
+	by ppma02wdc.us.ibm.com (PPS) with ESMTPS id 3qu9g8ddxs-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 31 May 2023 20:19:03 +0000
+Received: from smtpav04.wdc07v.mail.ibm.com (smtpav04.wdc07v.mail.ibm.com [10.39.53.231])
+	by smtprelay02.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34VKJ1GC48431430
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 31 May 2023 20:19:02 GMT
+Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id DA9A358050;
+	Wed, 31 May 2023 20:19:01 +0000 (GMT)
+Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 20C6558054;
+	Wed, 31 May 2023 20:19:00 +0000 (GMT)
+Received: from [9.61.47.250] (unknown [9.61.47.250])
+	by smtpav04.wdc07v.mail.ibm.com (Postfix) with ESMTPS;
+	Wed, 31 May 2023 20:19:00 +0000 (GMT)
+Message-ID: <002e833e-33b0-54d4-8584-9366850a7956@linux.vnet.ibm.com>
+Date: Wed, 31 May 2023 13:18:59 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <B0D24A4F-8E82-4696-ACE1-453E45866DAC@oracle.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.1
+Subject: Re: [PATCH net-next 08/11] iavf: switch to Page Pool
+To: Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Michal Kubiak <michal.kubiak@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Christoph Hellwig <hch@lst.de>, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org
+References: <20230516161841.37138-1-aleksander.lobakin@intel.com>
+ <20230516161841.37138-9-aleksander.lobakin@intel.com>
+ <4c6723df-5d40-2504-fcdc-dfdc2047f92c@linux.vnet.ibm.com>
+ <8302be1b-416a-de32-c43b-73bd378f8122@intel.com>
+Content-Language: en-US
+From: David Christensen <drc@linux.vnet.ibm.com>
+In-Reply-To: <8302be1b-416a-de32-c43b-73bd378f8122@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: g88aeaZRpnfP0PdxA02G1n1w3BlzCyqp
+X-Proofpoint-GUID: st-v3kKNhM2pBCFgda0-Zy5gNWLuGVPD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-05-31_14,2023-05-31_03,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 malwarescore=0
+ mlxscore=0 adultscore=0 mlxlogscore=999 suspectscore=0 lowpriorityscore=0
+ phishscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2304280000 definitions=main-2305310170
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+	DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
+	RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 31, 2023 at 07:11:52PM +0000, Chuck Lever III wrote:
+
+
+On 5/25/23 4:08 AM, Alexander Lobakin wrote:
+>> Any plans to add page pool fragmentation support (i.e.
+>> PP_FLAG_PAGE_FRAG) in the future to better support architectures with
+>> larger page sizes such as 64KB on ppc64le?
 > 
-> 
-> > On May 31, 2023, at 3:04 PM, Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> > 
-> > On Tue, May 23, 2023 at 07:18:18PM +0000, Chuck Lever III wrote:
-> > 
-> >> The core address resolution code wants to find an L2 address
-> >> for the egress device. The underlying ib_device, where a made-up
-> >> GID might be stored, is not involved with address resolution
-> >> AFAICT.
-> > 
-> > Where are you hitting this?
-> 
->      kworker/2:0-26    [002]   551.962874: funcgraph_entry:                   |  addr_resolve() {
->      kworker/2:0-26    [002]   551.962874: bprint:               addr_resolve: resolve_neigh=true resolve_by_gid_attr=false
->      kworker/2:0-26    [002]   551.962874: funcgraph_entry:                   |    addr4_resolve.constprop.0() {
->      kworker/2:0-26    [002]   551.962875: bprint:               addr4_resolve.constprop.0: src_in=0.0.0.0:35173 dst_in=100.72.1.2:20049
->      kworker/2:0-26    [002]   551.962875: funcgraph_entry:                   |      ip_route_output_flow() {
->      kworker/2:0-26    [002]   551.962875: funcgraph_entry:                   |        ip_route_output_key_hash() {
->      kworker/2:0-26    [002]   551.962876: funcgraph_entry:                   |          ip_route_output_key_hash_rcu() {
->      kworker/2:0-26    [002]   551.962876: funcgraph_entry:        4.526 us   |            __fib_lookup();
->      kworker/2:0-26    [002]   551.962881: funcgraph_entry:        0.264 us   |            fib_select_path();
->      kworker/2:0-26    [002]   551.962881: funcgraph_entry:        1.022 us   |            __mkroute_output();
->      kworker/2:0-26    [002]   551.962882: funcgraph_exit:         6.705 us   |          }
->      kworker/2:0-26    [002]   551.962882: funcgraph_exit:         7.283 us   |        }
->      kworker/2:0-26    [002]   551.962883: funcgraph_exit:         7.624 us   |      }
->      kworker/2:0-26    [002]   551.962883: funcgraph_exit:         8.395 us   |    }
->      kworker/2:0-26    [002]   551.962883: funcgraph_entry:                   |    rdma_set_src_addr_rcu.constprop.0() {
->      kworker/2:0-26    [002]   551.962883: bprint:               rdma_set_src_addr_rcu.constprop.0: ndev=0xffff91f5135a4000 name=tailscale0
->      kworker/2:0-26    [002]   551.962884: funcgraph_entry:                   |      copy_src_l2_addr() {
->      kworker/2:0-26    [002]   551.962884: funcgraph_entry:        0.984 us   |        iff_flags2string();
->      kworker/2:0-26    [002]   551.962885: bprint:               copy_src_l2_addr: ndev=0xffff91f5135a4000 dst_in=100.72.1.2:20049 flags=UP|POINTOPOINT|NOARP|MULTICAST
->      kworker/2:0-26    [002]   551.962885: funcgraph_entry:                   |        rdma_copy_src_l2_addr() {
->      kworker/2:0-26    [002]   551.962886: funcgraph_entry:        0.148 us   |          devtype2string();
->      kworker/2:0-26    [002]   551.962887: bprint:               rdma_copy_src_l2_addr: name=tailscale0 type=NONE src_dev_addr=00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 broadcast=00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ifindex=3
->      kworker/2:0-26    [002]   551.962887: funcgraph_exit:         1.488 us   |        }
->      kworker/2:0-26    [002]   551.962887: bprint:               copy_src_l2_addr: network type=IB
->      kworker/2:0-26    [002]   551.962887: funcgraph_exit:         3.636 us   |      }
->      kworker/2:0-26    [002]   551.962887: funcgraph_exit:         4.275 us   |    }
-> 
-> 
-> Address resolution finds the right device, but there's
-> a zero-value L2 address.
+> Currently no, we resigned from page fragmentation due to the complexity
+> and restrictions it provides for no benefits on x86_64. But I remember
+> that pages > 4 Kb exist (I have a couple MIPS boards where I have fun
+> sometimes and page size is set to 16 Kb there. But still always use 1
+> page per frame).
+> By "better support" you mean reducing memory usage or something else?
 
-Sure, but why is that a problem?
+Yes, reducing memory waste.  Current generation P10 systems default to 
+quad-port, 10Gb copper i40e NICs.  When you combine a large number of 
+CPUs, and therefore a large number of RX queues, with a 64KB page 
+allocation per packet, memory usage can balloon very quickly as you add 
+additional ports.
 
-This got to rdma_set_src_addr_rcu, so the resolution suceeded, where
-is the failure? From the above trace I think addr_resolve() succeeded?
+Would you be open to patches to address this further down the road as 
+your refactoring effort gets closer to completion?
 
-> Thus it cannot form a unique GID from that. Perhaps there needs to
-> be a call to query_gid in here?
-
-So your issue is cma_iw_acquire_dev() which looks like it is encoding
-the MAC into the GID for some reason? We don't do that on rocee, the
-GID encodes the IP address
-
-I have no idea how iWarp works, but this is surprising that it puts a
-MAC in the GID..
-
-If the iwarp device has only one GID ever and it is always the "MAC"
-the cma_iw_acquire_dev()'s logic is simply wrong, it should check that
-the dev_addr's netdev matches the one and only GID and just use the
-GID. No reason to search for GIDs.
-
-A small edit to cma_validate_port() might make sense, it is kind of
-wrong to force the gid_type to IB_GID_TYPE_IB for whatever ARPHRD type
-the tunnel is using.
-
-Jason
+Dave
 
