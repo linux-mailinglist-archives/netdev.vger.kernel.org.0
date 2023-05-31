@@ -1,154 +1,107 @@
-Return-Path: <netdev+bounces-6722-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6723-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E36F37179C1
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:16:48 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 36C3B7179D0
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:18:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8A1A91C20DDA
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:16:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E08E72813DB
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:18:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 35983BE5A;
-	Wed, 31 May 2023 08:16:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 15C8ABE5D;
+	Wed, 31 May 2023 08:18:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29533BA2B
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:16:46 +0000 (UTC)
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47ED8C5;
-	Wed, 31 May 2023 01:16:44 -0700 (PDT)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-	(No client certificate requested)
-	(Authenticated sender: lukma@denx.de)
-	by phobos.denx.de (Postfix) with ESMTPSA id D03D78611C;
-	Wed, 31 May 2023 10:16:41 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-	s=phobos-20191101; t=1685521002;
-	bh=QIT5LdXsd38HnT1gObrlKAjLGwfJ/Ui3fx46NLLUQac=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=VP3Jvfbn0rOgAcsX3fMnSgyQSUENXDYAJZf6G8CTfx23vjm6uxde16oYHDfltQ664
-	 phmfrjyQlGyR/aq9xBFhtNe324WFfgVbHgjGAtRgBVr26dm6jl265cD3QLg5tJmDfR
-	 Gt+JeDI6RdWHvgwVK0A0wKWevIfr3P6e73kVDBIPrNgwlYUE2wHDXEe4jXr9ERoDXw
-	 UbtDXGFtHn4ZsHm6vrcZrDIO7lXgBvRegVyV3K3WcC/ShbEZVZsWKofiaJyRR+suqW
-	 DpFosSbZF8pg3AeHIEA+gtFKaoWOTGI+V0h7KNVqRNILd8mqRi2bDW6KounbNkC5vf
-	 +va52tIB45TGQ==
-Date: Wed, 31 May 2023 10:16:40 +0200
-From: Lukasz Majewski <lukma@denx.de>
-To: "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc: Andrew Lunn <andrew@lunn.ch>, Vivien Didelot <vivien.didelot@gmail.com>,
- Florian Fainelli <f.fainelli@gmail.com>, Vladimir Oltean
- <olteanv@gmail.com>, "David S. Miller" <davem@davemloft.net>, Jakub
- Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [RFC] net: dsa: slave: Advertise correct EEE capabilities at
- slave PHY setup
-Message-ID: <20230531101640.131fe934@wsk>
-In-Reply-To: <ZHYLNGkG26QP/QAS@shell.armlinux.org.uk>
-References: <20230530122621.2142192-1-lukma@denx.de>
-	<ZHXzTBOtlPKqNfLw@shell.armlinux.org.uk>
-	<20230530160743.2c93a388@wsk>
-	<ZHYGv7zcJd/Ad4hH@shell.armlinux.org.uk>
-	<35546c34-17a6-4295-b263-3f2a97d53b94@lunn.ch>
-	<ZHYLNGkG26QP/QAS@shell.armlinux.org.uk>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1269BA52
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:18:54 +0000 (UTC)
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DE310E
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 01:18:51 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id a640c23a62f3a-9707313e32eso1018751866b.2
+        for <netdev@vger.kernel.org>; Wed, 31 May 2023 01:18:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685521130; x=1688113130;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ZvmMiUwyBQPq4pfFY+SS/m/KZqhfIcrmFD93CDkiW8I=;
+        b=Dee5TIrrKVDSoSGQmAV/zjLf9hn7xkXeNXZFKrN4o8I0O50g0KngfyTfXYbtiP7v12
+         JIr/7y3ysOdA6dPqRBJOjjYmFYkf5/8jDaV7/ayf/46qJI3u+y4GdvHa2GU5uLTeSLYM
+         cyVQujo2Yxq5Bd/SS7KW55/k2dKgbGpV1m9OFCeqnsgGewjZuyQ3OnGaE+4DwWF0e4g+
+         hnqVY5gjsEepjvy/HSVriHwQSxh3e82RD81uFlKPK7HEVqgrsZvBJOvrVaT36U++FrBE
+         0VGX/XUaGYHbCzb1GZU0pKpMaMa85T2o7KHSXfhjK2p3zjM87OOUA+LH9iDaErGEGPc2
+         bQUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685521130; x=1688113130;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZvmMiUwyBQPq4pfFY+SS/m/KZqhfIcrmFD93CDkiW8I=;
+        b=aj38znVKwEPTndgvk6NIkzdiVpFcUdV2BKJjF1D3c2DT1SeEl94DItJek/YiyWc1O4
+         20EFr+LZstIHSWwhPHP9a1wFq2SahUt4fGzS+tta4tiL35kJ2eA0wG4cTx1q6yyxqJvO
+         4COPKbKbGN5YrYQ8/1oee9iiT/KVCM0BDv9H+1VuRVioDofMfV+texCzR8S4LHBFVC9P
+         6PGNR5bs5vG7lRRX55j5ezbl9PHYGfpJmhVDsvSoOEMmPyF2k9hk9LEhQ2zcieS2bbQO
+         i1f85/iolpRMcxjMkahT7aRrOFU8asLFxi2Ng2N7IpkZ/RYeKrLAx4FmWgOVJdt8oKjI
+         wsQw==
+X-Gm-Message-State: AC+VfDxkuTrQzL/ygsL9alwqAjkQgP9L2KSPMSRihPBWX1ElDQRY1y48
+	iJqfVVrH1voN46jJbJtOx+0=
+X-Google-Smtp-Source: ACHHUZ79ipfMk7nv7j7BfPuBvSjN13f/7lgToHcguKSPd//5UkoAougpN1UNcsTRW4Ml+94mloCzLw==
+X-Received: by 2002:a17:907:2dab:b0:96f:7af5:9e9e with SMTP id gt43-20020a1709072dab00b0096f7af59e9emr4078465ejc.53.1685521129942;
+        Wed, 31 May 2023 01:18:49 -0700 (PDT)
+Received: from ?IPV6:2a01:c23:c18f:4600:f909:602e:4191:f30f? (dynamic-2a01-0c23-c18f-4600-f909-602e-4191-f30f.c23.pool.telefonica.de. [2a01:c23:c18f:4600:f909:602e:4191:f30f])
+        by smtp.googlemail.com with ESMTPSA id k17-20020a170906681100b0096f7105b3a6sm8496389ejr.189.2023.05.31.01.18.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 May 2023 01:18:49 -0700 (PDT)
+Message-ID: <87535ce9-4780-d982-0535-d010720aa636@gmail.com>
+Date: Wed, 31 May 2023 10:18:40 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Kl0N1N7kWlpAgVWt2ktIom0";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Content-Language: en-US
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: David Miller <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Paolo Abeni <pabeni@redhat.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <f9439c7f-c92c-4c2c-703e-110f96d841b7@gmail.com>
+ <20230530233055.44e18e3a@kernel.org>
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next] net: don't set sw irq coalescing defaults in
+ case of PREEMPT_RT
+In-Reply-To: <20230530233055.44e18e3a@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---Sig_/Kl0N1N7kWlpAgVWt2ktIom0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 31.05.2023 08:30, Jakub Kicinski wrote:
+> On Sun, 28 May 2023 19:39:59 +0200 Heiner Kallweit wrote:
+>> If PREEMPT_RT is set, then assume that the user focuses on minimum
+>> latency. Therefore don't set sw irq coalescing defaults.
+>> This affects the defaults only, users can override these settings
+>> via sysfs.
+> 
+> Did someone complain? I don't have an opinion, but I'm curious what
+> prompted the patch.
 
-Hi Russell,
+No direct complain, and not covering exactly this point.
+Background: I witnessed some discussions between PREEMPT_RT users
+(e.g. from linuxcnc project) regarding network latency with
+RTL8168 NICs. It seems these users aren't really aware of the
+userspace knobs that the kernel provides for RT optimization.
+To make their life easier we could optimize few things for latency
+and use PREEMPT_RT as an indicator.
 
-> On Tue, May 30, 2023 at 04:26:49PM +0200, Andrew Lunn wrote:
-> > > So, I'm wondering what's actually going on here... can you give
-> > > any more details about the hardware setup? =20
-> >=20
-> > And what switch it actually is. I've not looked in too much detail,
-> > but i think different switch families have different EEE
-> > capabilities. But in general, as Russell pointed out, there is no
-> > MAC support for EEE in the mv88e6xxx driver. =20
->=20
-> ... except for the built-in PHYs,
-
-This is my case.
-
-> which if they successfully negotiate
-> EEE, that status is communicated back to the MAC in that one sees
-> MV88E6352_PORT_STS_EEE
-
-I cannot find this register in my documentation.
-
-> set, which results in the MAC being able to
-> signal LPI to the PHY... and I've stuck a 'scope on the PHY media-side
-> signals in the past and have seen that activity does stop without
-> there needing to be any help from the driver for this.
->=20
-> At least reading the information I have for the 88E6352, there is no
-> configuration of LPI timers, nor any seperate LPI enable. If EEE is
-> enabled at the MAC, then LPI will be signalled according to whatever
-> Marvell decided would be appropriate.
-
-And this knowledge is not disclosed to public.
-
->=20
-> For an external PHY that the PPU is not polling, the only way that
-> we'd have EEE functional is if we forced EEE in port control register
-> 1 on switches that support those bits. In other words setting both the
-> EEE and FORCE_EEE bits...
->=20
-
-Are those bits available in c45 standard? Or are they SoC (IC) specific?
-
-In my case I do have only two c45 registers disclosed (i.e. described)
-for mv88e6071 SoC in the documentation.
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Erika Unter
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/Kl0N1N7kWlpAgVWt2ktIom0
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmR3AmgACgkQAR8vZIA0
-zr2vgAf/TPyuqCpXqy8OzcsofOh15TCYmLibHnjTznVps7GTT0zuwuoH9wWaif7E
-bUgJEGjaKr3yNTonliDF1C7rfuP7n6YwGhwIFEf5oyU1uN+ELTWPy9EqUplbE3oM
-MIl9KnPc0vqV5MFweT6OLUZeacklzCsRGAyNmcchlLx2h+9jTXKosXevBroYmyIe
-FuV5nMr/yJkR6hXXwQi+YiuavL0LttUx/z2Q3co2FWfuZiYqv3dZHr7MgbTiQIOk
-P+JSwlPOOz0n97h5ktJCclxHuAU+SPf3GbYs4f4lHnLFVKGJQwf4HQW7Cp6qdBIJ
-r4FYxEmTNTygcOj2ntB3/YXUpgFscw==
-=TFoU
------END PGP SIGNATURE-----
-
---Sig_/Kl0N1N7kWlpAgVWt2ktIom0--
 
