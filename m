@@ -1,171 +1,278 @@
-Return-Path: <netdev+bounces-6751-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6752-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2DE8A717CC6
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:05:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id C5A59717CCA
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:06:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B94FB1C20D64
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:05:37 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 618E31C20DB5
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:06:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 82ABD13AC1;
-	Wed, 31 May 2023 10:05:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E743B13AC6;
+	Wed, 31 May 2023 10:06:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71BB8D2F6
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:05:38 +0000 (UTC)
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF829F;
-	Wed, 31 May 2023 03:05:36 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id d9443c01a7336-1b02750ca0dso6277055ad.0;
-        Wed, 31 May 2023 03:05:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685527536; x=1688119536;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=HeKTOYgsOHmbs8G4uF5AubnU8n6wTCs2dizwLG2Gqpc=;
-        b=WQQ5ksPHTMS2XAS93kRWeN7Mmemr0cTNE6GQ4QcJ8s4G9RK3V6UPpl4VtAabLWMvUi
-         5uqy3DltMJr0UYN+AUZHX0/2m465WdkWc/FMykMWuRHxevSWV38g8mwMDxEMXrz2ukxB
-         dGJFKtEUItBKBP9i7L2MWIqm6TE/T2hXs4CobpkKe4Fl1kYH4SM4d0KM8GqBvOeACOPP
-         SCibaW34oc3WJiBQzArUoshAPTu8OzJ6LLmV3Efgi8CnZxvN6z+5i1hji78ucyFHhdTv
-         VI5DC+QdcQNzp7CNtqpWfEXD4Pl1KstC18FsD68t0lTV2sE/NV5L+4nsVSSbv5QbD3bd
-         q7oQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685527536; x=1688119536;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HeKTOYgsOHmbs8G4uF5AubnU8n6wTCs2dizwLG2Gqpc=;
-        b=EddL4OC2D4IfV4N9FAViGSFQeDWyBOhqakSEhL8aFGByfVUoBj7G/e0NqNOJOBqkBh
-         5kgYh26HdkGGGmvBzMzMFrhN+wNy91wIPzn53yqfFeYor9/tT1w2IoihduJMU8cmQNCU
-         evAC7O1u27gFGQzNHK148E7mFhtaY1ILDqjcX8v5y4fmcIt+wLgGaRUijJXm19l/rURz
-         ykWKMoM8soMl1YtBS8wwspOjhmx6JF+Xv+ypSjZRhBGMELx7nG3YsHeM21YXwO9zOe3l
-         uuN5nacA1I+YF5fRgD9p7LrTELZKt9vIQHwtjV43OyWnP9qJSY9nHi6HGxDK9XJUH4jQ
-         y0gg==
-X-Gm-Message-State: AC+VfDzjWjQlmSQiyErpTg/fqlZ22rgjoo4AHb2CASpQpMAtLNltoxoh
-	kf7NBBmanKD4lF4OYHT6yC8=
-X-Google-Smtp-Source: ACHHUZ7lfarClMDji6Z2FjENK1gvREcg+iERVgXDzG/A4xsurL7EgPnXGNSw2nThy8ItrF8pfyqABw==
-X-Received: by 2002:a17:902:e54e:b0:1a9:6467:aa8d with SMTP id n14-20020a170902e54e00b001a96467aa8dmr2214163plf.1.1685527536203;
-        Wed, 31 May 2023 03:05:36 -0700 (PDT)
-Received: from [127.0.0.1] ([2404:c140:1f03::caf2])
-        by smtp.gmail.com with ESMTPSA id o7-20020a170902bcc700b001aaed55aff3sm940994pls.137.2023.05.31.03.05.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 31 May 2023 03:05:35 -0700 (PDT)
-Message-ID: <ebdc1731-3647-8b58-c66c-db5bb09f5bfa@gmail.com>
-Date: Wed, 31 May 2023 18:05:29 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AD4E12B99
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:06:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F36EC433EF;
+	Wed, 31 May 2023 10:06:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685527575;
+	bh=CAfGkoCX7jrzOItNlPZnfGyufMo84Rg7e0vHaI13f/A=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+	b=KhgoJxyih2pvUkn5EDeCJabDLgTI9qwBerUzpsc4EWFHjvRrVUQksByMzWn0cVimH
+	 ZuHKgD1UhMpG/Fk+mDPa5MeNmUPri96kGJDZFxm0poacVcWm6LAyChH7i0c7zQ6tRY
+	 gcM6UiphUXy8IV/j/u0pTAngJf4RvgeG5yNOXHvsmXshlOSzsyl0Bb+VF1yD2aAKLi
+	 08cfkMucNYsgO4pBza8WtkarrFbSFyuf8v+/Ev0rCDvuK5UdiFPYwUUCyfCK4ZyLN2
+	 J+6O0aQAduDPwnsr79YAn64sU8xpRn8+F9dqdjhlawFkq8Sh5Z1WJDGxjO5fSsOmAK
+	 aasB4l9pPtMKA==
+Message-ID: <655a378d4b71942e19473caa00ba7d44e12641a5.camel@kernel.org>
+Subject: Re: [PATCH] nfsd: fix double fget() bug in __write_ports_addfd()
+From: Jeff Layton <jlayton@kernel.org>
+To: Dan Carpenter <dan.carpenter@linaro.org>, NeilBrown <neilb@suse.de>
+Cc: Stanislav Kinsbursky <skinsbursky@parallels.com>, Chuck Lever
+ <chuck.lever@oracle.com>, Trond Myklebust
+ <trond.myklebust@hammerspace.com>,  Anna Schumaker <anna@kernel.org>, "J.
+ Bruce Fields" <bfields@redhat.com>,  linux-nfs@vger.kernel.org,
+ netdev@vger.kernel.org,  kernel-janitors@vger.kernel.org
+Date: Wed, 31 May 2023 06:06:12 -0400
+In-Reply-To: <58fd7e35-ba6c-432e-8e02-9c5476c854b4@kili.mountain>
+References: <9c90e813-c7fb-4c90-b52b-131481640a78@kili.mountain>
+	 <168548566376.23533.14778348024215909777@noble.neil.brown.name>
+	 <58fd7e35-ba6c-432e-8e02-9c5476c854b4@kili.mountain>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.2 (3.48.2-1.fc38) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH] net: sched: fix possible OOB write in fl_set_geneve_opt()
-To: Simon Horman <simon.horman@corigine.com>
-Cc: jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, simon.horman@netronome.com,
- pieter.jansen-van-vuuren@amd.com, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20230529043615.4761-1-hbh25y@gmail.com>
- <ZHXf29es/yh3r6jq@corigine.com>
- <e9925aef-fefc-24b9-dea3-bd3bcca01b35@gmail.com>
- <ZHb/nPuTMja3giSP@corigine.com>
-Content-Language: en-US
-From: Hangyu Hua <hbh25y@gmail.com>
-In-Reply-To: <ZHb/nPuTMja3giSP@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-On 31/5/2023 16:04, Simon Horman wrote:
-> On Wed, May 31, 2023 at 01:38:49PM +0800, Hangyu Hua wrote:
->> On 30/5/2023 19:36, Simon Horman wrote:
->>> [Updated Pieter's email address, dropped old email address of mine]
->>>
->>> On Mon, May 29, 2023 at 12:36:15PM +0800, Hangyu Hua wrote:
->>>> If we send two TCA_FLOWER_KEY_ENC_OPTS_GENEVE packets and their total
->>>> size is 252 bytes(key->enc_opts.len = 252) then
->>>> key->enc_opts.len = opt->length = data_len / 4 = 0 when the third
->>>> TCA_FLOWER_KEY_ENC_OPTS_GENEVE packet enters fl_set_geneve_opt. This
->>>> bypasses the next bounds check and results in an out-of-bounds.
->>>>
->>>> Fixes: 0a6e77784f49 ("net/sched: allow flower to match tunnel options")
->>>> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
->>>
->>> Hi Hangyu Hua,
->>>
->>> Thanks. I think I see the problem too.
->>> But I do wonder, is this more general than Geneve options?
->>> That is, can this occur with any sequence of options, that
->>> consume space in enc_opts (configured in fl_set_key()) that
->>> in total are more than 256 bytes?
->>>
->>
->> I think you are right. It is a good idea to add check in fl_set_vxlan_opt
->> and fl_set_erspan_opt and fl_set_gtp_opt too.
->> But they should be submitted as other patches. fl_set_geneve_opt has already
->> check this with the following code:
->>
->> static int fl_set_geneve_opt(const struct nlattr *nla, struct fl_flow_key
->> *key,
->> 			     int depth, int option_len,
->> 			     struct netlink_ext_ack *extack)
->> {
->> ...
->> 		if (new_len > FLOW_DIS_TUN_OPTS_MAX) {
->> 			NL_SET_ERR_MSG(extack, "Tunnel options exceeds max size");
->> 			return -ERANGE;
->> 		}
->> ...
->> }
->>
->> This bug will only be triggered under this special
->> condition(key->enc_opts.len = 252). So I think it will be better understood
->> by submitting this patch independently.
-> 
-> A considered approach sounds good to me.
-> 
-> I do wonder, could the bounds checks be centralised in the caller?
-> Maybe not if it doesn't know the length that will be consumed.
-> 
+On Wed, 2023-05-31 at 10:48 +0300, Dan Carpenter wrote:
+> On Wed, May 31, 2023 at 08:27:43AM +1000, NeilBrown wrote:
+> > On Mon, 29 May 2023, Dan Carpenter wrote:
+> > > The bug here is that you cannot rely on getting the same socket
+> > > from multiple calls to fget() because userspace can influence
+> > > that.  This is a kind of double fetch bug.
+> > >=20
+> > > The fix is to delete the svc_alien_sock() function and insted do
+> > > the checking inside the svc_addsock() function.
+> >=20
+> > Hi,
+> >  I definitely agree with the change to pass the 'net' into
+> >  svc_addsock(), and check the the fd has the correct net.
+> >=20
+> >  I'm not sure I agree with the removal of the svc_alien_sock() test.  I=
+t
+> >  is best to perform sanity tests before allocation things, and
+> >  nfsd_create_serv() can create a new 'serv' - though most often it just
+> >  incs the refcount.
+>=20
+> That's true.  But the other philosophical rule is that we shouldn't
+> optimize for the failure path.  If someone gives us bad data they
+> deserve a slow down.
 
-This may make code more complex. I am not sure if it is necessary to do 
-this.
+> I also think leaving svc_alien_sock() is a trap for the unwary because
+> it will lead to more double fget() bugs.  The svc_alien_sock() function
+> is weird because it returns false on success and false on failure and
+> true for alien sock.
+>=20
+> >=20
+> >  Maybe instead svc_alien_sock() could return the struct socket (if
+> >  successful), and it could be passed to svc_addsock()???
+> >=20
+> >  I would probably then change the name of svc_alien_sock()
+>=20
+> Yeah, because we don't want alien sockets, we want Earth sockets.
+> Doing this is much more complicated...  The name svc_get_earth_sock()
+> is just a joke.  Tell me what name to use if we decide to go this
+> route.
+>=20
+> To be honest, I would probably still go with my v1 patch.
+>=20
 
->> By the way, I think memset's third param should be option_len in
->> fl_set_vxlan_opt and fl_set_erspan_opt. Do I need to submit another patch to
->> fix all these issues?
-> 
-> I think that in general one fix per patch is best.
++1.  I don't see a need to do this check twice. Let's optimize for the
+success case and if someone sends down bogus data, then they just go
+slower.
 
-I see. I will try to handle these issues.
+I too suggest we just go with Dan's original patch.
 
-> 
-> Some minor nits.
-> 
-> 1. As this is a fix for networking code it is probably targeted
->     at the net, as opposed to net-next, tree. This should be indicated
->     in the patch subject.
-> 
-> 	 Subject: [PATCH net v2] ...
-> 
-> 2. I think the usual patch prefix for this file, of late,
->     has been 'net/sched: flower: '
-> 
-> 	 Subject: [PATCH net v2]  net/sched: flower: ...
-> 
 
-Get it. I will send a v2 later.
+
+> regards,
+> dan carpenter
+>=20
+> diff --git a/fs/nfsd/nfsctl.c b/fs/nfsd/nfsctl.c
+> index e0e98b40a6e5d..affcd44f03d6b 100644
+> --- a/fs/nfsd/nfsctl.c
+> +++ b/fs/nfsd/nfsctl.c
+> @@ -689,6 +689,7 @@ static ssize_t __write_ports_names(char *buf, struct =
+net *net)
+>   */
+>  static ssize_t __write_ports_addfd(char *buf, struct net *net, const str=
+uct cred *cred)
+>  {
+> +	struct socket *so;
+>  	char *mesg =3D buf;
+>  	int fd, err;
+>  	struct nfsd_net *nn =3D net_generic(net, nfsd_net_id);
+> @@ -698,22 +699,30 @@ static ssize_t __write_ports_addfd(char *buf, struc=
+t net *net, const struct cred
+>  		return -EINVAL;
+>  	trace_nfsd_ctl_ports_addfd(net, fd);
+> =20
+> -	if (svc_alien_sock(net, fd)) {
+> +	so =3D svc_get_earth_sock(net, fd);
+> +	if (!so) {
+>  		printk(KERN_ERR "%s: socket net is different to NFSd's one\n", __func_=
+_);
+>  		return -EINVAL;
+>  	}
+> =20
+>  	err =3D nfsd_create_serv(net);
+>  	if (err !=3D 0)
+> -		return err;
+> +		goto out_put_sock;
+> =20
+> -	err =3D svc_addsock(nn->nfsd_serv, fd, buf, SIMPLE_TRANSACTION_LIMIT, c=
+red);
+> +	err =3D svc_addsock(nn->nfsd_serv, so, buf, SIMPLE_TRANSACTION_LIMIT, c=
+red);
+> +	if (err)
+> +		goto out_put_net;
+> =20
+> -	if (err >=3D 0 &&
+> -	    !nn->nfsd_serv->sv_nrthreads && !xchg(&nn->keep_active, 1))
+> +	if (!nn->nfsd_serv->sv_nrthreads && !xchg(&nn->keep_active, 1))
+>  		svc_get(nn->nfsd_serv);
+> =20
+>  	nfsd_put(net);
+> +	return 0;
+> +
+> +out_put_net:
+> +	nfsd_put(net);
+> +out_put_sock:
+> +	sockfd_put(so);
+>  	return err;
+>  }
+> =20
+> diff --git a/include/linux/sunrpc/svcsock.h b/include/linux/sunrpc/svcsoc=
+k.h
+> index d16ae621782c0..2422d260591bb 100644
+> --- a/include/linux/sunrpc/svcsock.h
+> +++ b/include/linux/sunrpc/svcsock.h
+> @@ -61,8 +61,8 @@ int		svc_recv(struct svc_rqst *, long);
+>  void		svc_send(struct svc_rqst *rqstp);
+>  void		svc_drop(struct svc_rqst *);
+>  void		svc_sock_update_bufs(struct svc_serv *serv);
+> -bool		svc_alien_sock(struct net *net, int fd);
+> -int		svc_addsock(struct svc_serv *serv, const int fd,
+> +struct socket	*svc_get_earth_sock(struct net *net, int fd);
+> +int		svc_addsock(struct svc_serv *serv, struct socket *so,
+>  					char *name_return, const size_t len,
+>  					const struct cred *cred);
+>  void		svc_init_xprt_sock(void);
+> diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+> index 46845cb6465d7..78f6ae9fa42d4 100644
+> --- a/net/sunrpc/svcsock.c
+> +++ b/net/sunrpc/svcsock.c
+> @@ -1474,21 +1474,20 @@ static struct svc_sock *svc_setup_socket(struct s=
+vc_serv *serv,
+>  	return svsk;
+>  }
+> =20
+> -bool svc_alien_sock(struct net *net, int fd)
+> +struct socket *svc_get_earth_sock(struct net *net, int fd)
+>  {
+>  	int err;
+>  	struct socket *sock =3D sockfd_lookup(fd, &err);
+> -	bool ret =3D false;
+> =20
+>  	if (!sock)
+> -		goto out;
+> -	if (sock_net(sock->sk) !=3D net)
+> -		ret =3D true;
+> -	sockfd_put(sock);
+> -out:
+> -	return ret;
+> +		return NULL;
+> +	if (sock_net(sock->sk) !=3D net) {
+> +		sockfd_put(sock);
+> +		return NULL;
+> +	}
+> +	return sock;
+>  }
+> -EXPORT_SYMBOL_GPL(svc_alien_sock);
+> +EXPORT_SYMBOL_GPL(svc_get_earth_sock);
+> =20
+>  /**
+>   * svc_addsock - add a listener socket to an RPC service
+> @@ -1502,36 +1501,27 @@ EXPORT_SYMBOL_GPL(svc_alien_sock);
+>   * Name is terminated with '\n'.  On error, returns a negative errno
+>   * value.
+>   */
+> -int svc_addsock(struct svc_serv *serv, const int fd, char *name_return,
+> +int svc_addsock(struct svc_serv *serv, struct socket *so, char *name_ret=
+urn,
+>  		const size_t len, const struct cred *cred)
+>  {
+> -	int err =3D 0;
+> -	struct socket *so =3D sockfd_lookup(fd, &err);
+>  	struct svc_sock *svsk =3D NULL;
+>  	struct sockaddr_storage addr;
+>  	struct sockaddr *sin =3D (struct sockaddr *)&addr;
+>  	int salen;
+> =20
+> -	if (!so)
+> -		return err;
+> -	err =3D -EAFNOSUPPORT;
+>  	if ((so->sk->sk_family !=3D PF_INET) && (so->sk->sk_family !=3D PF_INET=
+6))
+> -		goto out;
+> -	err =3D  -EPROTONOSUPPORT;
+> +		return -EAFNOSUPPORT;
+>  	if (so->sk->sk_protocol !=3D IPPROTO_TCP &&
+>  	    so->sk->sk_protocol !=3D IPPROTO_UDP)
+> -		goto out;
+> -	err =3D -EISCONN;
+> +		return -EPROTONOSUPPORT;
+>  	if (so->state > SS_UNCONNECTED)
+> -		goto out;
+> -	err =3D -ENOENT;
+> +		return -EISCONN;
+>  	if (!try_module_get(THIS_MODULE))
+> -		goto out;
+> +		return -ENOENT;
+>  	svsk =3D svc_setup_socket(serv, so, SVC_SOCK_DEFAULTS);
+>  	if (IS_ERR(svsk)) {
+>  		module_put(THIS_MODULE);
+> -		err =3D PTR_ERR(svsk);
+> -		goto out;
+> +		return PTR_ERR(svsk);
+>  	}
+>  	salen =3D kernel_getsockname(svsk->sk_sock, sin);
+>  	if (salen >=3D 0)
+> @@ -1539,9 +1529,6 @@ int svc_addsock(struct svc_serv *serv, const int fd=
+, char *name_return,
+>  	svsk->sk_xprt.xpt_cred =3D get_cred(cred);
+>  	svc_add_new_perm_xprt(serv, &svsk->sk_xprt);
+>  	return svc_one_sock_name(svsk, name_return, len);
+> -out:
+> -	sockfd_put(so);
+> -	return err;
+>  }
+>  EXPORT_SYMBOL_GPL(svc_addsock);
+> =20
+>=20
+>=20
+>=20
+
+--=20
+Jeff Layton <jlayton@kernel.org>
 
