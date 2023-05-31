@@ -1,144 +1,199 @@
-Return-Path: <netdev+bounces-6717-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6718-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id ADD397179A3
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:08:39 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5E10F7179AF
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:12:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 43DB21C20D76
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:08:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ABC3828141B
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:12:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 64AA6BA4D;
-	Wed, 31 May 2023 08:08:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE86FBE46;
+	Wed, 31 May 2023 08:12:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55941BA26
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:08:36 +0000 (UTC)
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37EC6135;
-	Wed, 31 May 2023 01:08:32 -0700 (PDT)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-	(No client certificate requested)
-	(Authenticated sender: lukma@denx.de)
-	by phobos.denx.de (Postfix) with ESMTPSA id 7BE638603A;
-	Wed, 31 May 2023 10:08:29 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-	s=phobos-20191101; t=1685520510;
-	bh=c2dLKCbUbaFW+8QKah5Ba2UZhD+rn8WUlFyDcSy4UDM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=qqfkikiO0dd8q3mDg6lz5btvKbsk7hv6/A2fTvTSSpnGEBxE5uIRnzfXN6wcDDFyB
-	 wEYorBBEfOhRJvahWX7yN4gSR8yXtM8z+Yl4uL2hs08DoRXxgyWdq6801GoUir/P1E
-	 HwCYeSnr1qZ96ivv16xbakV+qiUIa8h4decIxeJdHSDpqiV8h2a1XhnUOcpxP/hehl
-	 Koq0HHGj+yCook0NyTHb7ZyjT7+Dh40SI5mwML9vivCXd0/4J0otHAsTY+3Olfjoaq
-	 ddkayOkC2X1r9cQOrmLUfETF6OvP03mibN/Pt0H7RB9H17nGRy+7Hgcmq9n0ctXiIq
-	 rrhAiHc5Km9hQ==
-Date: Wed, 31 May 2023 10:08:28 +0200
-From: Lukasz Majewski <lukma@denx.de>
-To: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
- Russell King <linux@armlinux.org.uk>, Eric Dumazet <edumazet@google.com>,
- "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Alexander Duyck
- <alexander.duyck@gmail.com>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, Matthias Schiffer
- <matthias.schiffer@ew.tq-group.com>
-Subject: Re: [PATCH v8 2/3] net: dsa: mv88e6xxx: add support for MV88E6020
- switch
-Message-ID: <20230531100828.3f0a3200@wsk>
-In-Reply-To: <dd68b82b-7bb7-3f4f-7243-e3a4b745cd97@gmail.com>
-References: <20230530083916.2139667-1-lukma@denx.de>
-	<20230530083916.2139667-3-lukma@denx.de>
-	<dd68b82b-7bb7-3f4f-7243-e3a4b745cd97@gmail.com>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC296BA2B
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:12:24 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2C793
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 01:12:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1685520743; x=1717056743;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EStCc4K5CMW55CwMmntC1CTqhM5BAhomMm6Fkqe5rU4=;
+  b=uPRZYFz1s87Nplqo0zql5FeFYEO1KDZadIPOljXOcrrZ3PhFS/d7nCcD
+   8cJ3OaHubYoq0xl3Dj8b/JlJsf2BITj9RytQktfiah29jd6wdnZU12PLr
+   4KtnhESRMPBLGgCUbev6oiJmyIVYG/sHzFTqza2xMwOTHXxLfqx04biYg
+   EQR+q2FCSJmSBwXTW5nmTUs8wBVhovUaB+M63+xxja83E1rmo+qkTbU2U
+   /7Q3rFUBsqwC5meqeUUe8KRR4tJ8RqJm7nsPj97IWAA2OygtDXTlGa60B
+   Zjg1hyNbz+e3ZPxNtgtlOhp3b1G+CAqW/TizxvGVkcomPfu54jVYPdPgy
+   g==;
+X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
+   d="scan'208";a="213884819"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 May 2023 01:12:22 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 31 May 2023 01:12:19 -0700
+Received: from DEN-LT-70577 (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Wed, 31 May 2023 01:12:18 -0700
+Date: Wed, 31 May 2023 08:12:17 +0000
+From: Daniel Machon <daniel.machon@microchip.com>
+To: Petr Machata <petrm@nvidia.com>
+CC: <netdev@vger.kernel.org>, <dsahern@kernel.org>,
+	<stephen@networkplumber.org>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH iproute2-next v2 4/8] dcb: app: modify
+ dcb_app_parse_mapping_cb for dcb-rewr reuse
+Message-ID: <20230531081217.jgcahyzgx2rnoyue@DEN-LT-70577>
+References: <20230510-dcb-rewr-v2-0-9f38e688117e@microchip.com>
+ <20230510-dcb-rewr-v2-4-9f38e688117e@microchip.com>
+ <874jnt618e.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/KuUStryJVJf1l7OpeRAR0j6";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <874jnt618e.fsf@nvidia.com>
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---Sig_/KuUStryJVJf1l7OpeRAR0j6
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+> Daniel Machon <daniel.machon@microchip.com> writes:
+> 
+> > When parsing APP table entries, priority and protocol is assigned from
+> > value and key, respectively. Rewrite requires it opposite.
+> >
+> > Adapt the existing dcb_app_parse_mapping_cb for this, by using callbacks
+> > for pushing app or rewr entries to the table.
+> >
+> > Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+> > ---
+> >  dcb/dcb.h     | 12 ++++++++++++
+> >  dcb/dcb_app.c | 23 ++++++++++++-----------
+> >  2 files changed, 24 insertions(+), 11 deletions(-)
+> >
+> > diff --git a/dcb/dcb.h b/dcb/dcb.h
+> > index 84ce95d5c1b2..b3bc30cd02c5 100644
+> > --- a/dcb/dcb.h
+> > +++ b/dcb/dcb.h
+> > @@ -62,7 +62,16 @@ struct dcb_app_table {
+> >       int attr;
+> >  };
+> >
+> > +struct dcb_app_parse_mapping {
+> > +     __u8 selector;
+> > +     struct dcb_app_table *tab;
+> > +     int (*push)(struct dcb_app_table *tab,
+> > +                 __u8 selector, __u32 key, __u64 value);
+> > +     int err;
+> > +};
+> > +
+> >  int dcb_cmd_app(struct dcb *dcb, int argc, char **argv);
+> > +
+> >  enum ieee_attrs_app dcb_app_attr_type_get(__u8 selector);
+> >  bool dcb_app_attr_type_validate(enum ieee_attrs_app type);
+> >  bool dcb_app_selector_validate(enum ieee_attrs_app type, __u8 selector);
+> > @@ -70,11 +79,14 @@ bool dcb_app_selector_validate(enum ieee_attrs_app type, __u8 selector);
+> >  bool dcb_app_pid_eq(const struct dcb_app *aa, const struct dcb_app *ab);
+> >  bool dcb_app_prio_eq(const struct dcb_app *aa, const struct dcb_app *ab);
+> >
+> > +int dcb_app_table_push(struct dcb_app_table *tab, struct dcb_app *app);
+> >  void dcb_app_table_remove_replaced(struct dcb_app_table *a,
+> >                                  const struct dcb_app_table *b,
+> >                                  bool (*key_eq)(const struct dcb_app *aa,
+> >                                                 const struct dcb_app *ab));
+> >
+> > +void dcb_app_parse_mapping_cb(__u32 key, __u64 value, void *data);
+> > +
+> >  /* dcb_apptrust.c */
+> >
+> >  int dcb_cmd_apptrust(struct dcb *dcb, int argc, char **argv);
+> > diff --git a/dcb/dcb_app.c b/dcb/dcb_app.c
+> > index 4cd175a0623b..97cba658aa6b 100644
+> > --- a/dcb/dcb_app.c
+> > +++ b/dcb/dcb_app.c
+> > @@ -105,7 +105,7 @@ static void dcb_app_table_fini(struct dcb_app_table *tab)
+> >       free(tab->apps);
+> >  }
+> >
+> > -static int dcb_app_table_push(struct dcb_app_table *tab, struct dcb_app *app)
+> > +int dcb_app_table_push(struct dcb_app_table *tab, struct dcb_app *app)
+> >  {
+> >       struct dcb_app *apps = realloc(tab->apps, (tab->n_apps + 1) * sizeof(*tab->apps));
+> >
+> > @@ -231,25 +231,25 @@ static void dcb_app_table_sort(struct dcb_app_table *tab)
+> >       qsort(tab->apps, tab->n_apps, sizeof(*tab->apps), dcb_app_cmp_cb);
+> >  }
+> >
+> > -struct dcb_app_parse_mapping {
+> > -     __u8 selector;
+> > -     struct dcb_app_table *tab;
+> > -     int err;
+> > -};
+> > -
+> > -static void dcb_app_parse_mapping_cb(__u32 key, __u64 value, void *data)
+> > +static int dcb_app_push(struct dcb_app_table *tab,
+> > +                     __u8 selector, __u32 key, __u64 value)
+> >  {
+> > -     struct dcb_app_parse_mapping *pm = data;
+> >       struct dcb_app app = {
+> > -             .selector = pm->selector,
+> > +             .selector = selector,
+> >               .priority = value,
+> >               .protocol = key,
+> >       };
+> > +     return dcb_app_table_push(tab, &app);
+> > +}
+> > +
+> > +void dcb_app_parse_mapping_cb(__u32 key, __u64 value, void *data)
+> > +{
+> > +     struct dcb_app_parse_mapping *pm = data;
+> >
+> >       if (pm->err)
+> >               return;
+> >
+> > -     pm->err = dcb_app_table_push(pm->tab, &app);
+> > +     pm->err = pm->push(pm->tab, pm->selector, key, value);
+> >  }
+> >
+> >  static int dcb_app_parse_mapping_ethtype_prio(__u32 key, char *value, void *data)
+> > @@ -663,6 +663,7 @@ static int dcb_cmd_app_parse_add_del(struct dcb *dcb, const char *dev,
+> >  {
+> >       struct dcb_app_parse_mapping pm = {
+> >               .tab = tab,
+> > +             .push = dcb_app_push,
+> >       };
+> >       int ret;
+> 
+> I think I misunderstood your code. Since you are adding new functions
+> for parsing the PRIO-DSCP and PRIO-PCP mappings, which have their own
+> dcb_parse_mapping() invocations, couldn't you just copy over the
+> dcb_app_parse_mapping_cb() from APP and adapt it to do the right thing
+> for REWR? Then the push callback is not even necessary
+> dcb_app_parse_mapping_cb() does not need to be public.
 
-Hi Florian,
+It is always a balance of when to do what. So far, patches #2, #3 and #4
+tries to modify the existing dcb-app functions for dcb-rewr reuse. They
+all deal with the prio:pid, pid:prio problem (printing, pushing and
+replacing entries). What you suggest now is to copy
+dcb_app_parse_mapping_cb() entirely, just for changing that order. It
+can be done, but then it could also be done for #2 and #3, which would
+then result in more boilerplate code.
 
-> On 5/30/23 01:39, Lukasz Majewski wrote:
-> > From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-> >=20
-> > A mv88e6250 family switch with 2 PHY and RMII ports and
-> > no PTP support.
-> >=20
-> > Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-> > Signed-off-by: Lukasz Majewski <lukma@denx.de>
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch> =20
->=20
-> > --- =20
-> [snip]
->=20
-> >   /* List of supported models */
-> >   enum mv88e6xxx_model {
-> > +	MV88E6020,
-> >   	MV88E6085,
-> >   	MV88E6095,
-> >   	MV88E6097,
-> > @@ -94,7 +95,7 @@ enum mv88e6xxx_family {
-> >   	MV88E6XXX_FAMILY_6097,	/* 6046 6085 6096 6097 */
-> >   	MV88E6XXX_FAMILY_6165,	/* 6123 6161 6165 */
-> >   	MV88E6XXX_FAMILY_6185,	/* 6108 6121 6122 6131 6152
-> > 6155 6182 6185 */
-> > -	MV88E6XXX_FAMILY_6250,	/* 6220 6250 */
-> > +	MV88E6XXX_FAMILY_6250,	/* 6220 6250 6020 */ =20
->=20
-> =C3=BCber nit: only if you have to resubmit, numbers in ascending order.
->=20
-
-I hope that v8 will be the last iteration :-)
-
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Erika Unter
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/KuUStryJVJf1l7OpeRAR0j6
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmR3AHwACgkQAR8vZIA0
-zr0ziwgAsgmaxJ2Kf6VzDlQZtAa1xjjVuuhFXpuqSMx3oF6IXJMsm8Wd3Au+Drt8
-We83e2pK0DTOKy+L5GaFwmW4rA6cAuK867XJeOPgQCABP8v2N1DVGxtFVJFAGiaZ
-+FFjGbst1D8DM1jLQra278VCYjUmnQQdD8ae8iqeSuJLRUoCBZUa5Y4+Q8amRybP
-qE+Nu8gSOUgVw+8nmkV+P/K+sVyRR7HGgifNQCLl2u5EeNjrWMAsFgZEqRI8NUUE
-CBmVj44mzLeWEyuxUos7osxQ86lImI5ZZNDAe4D8t9g6Dgls2TY8DFCakMu9EOxK
-rppGFFweVvo9SzNB78LbDTLcngw67Q==
-=jEBG
------END PGP SIGNATURE-----
-
---Sig_/KuUStryJVJf1l7OpeRAR0j6--
+Whatever we choose, I think we should stay consistent?
 
