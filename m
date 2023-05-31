@@ -1,77 +1,57 @@
-Return-Path: <netdev+bounces-6760-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6761-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 57045717D35
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:28:22 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 582E8717D3E
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:36:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 12A1028147A
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:28:21 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BED8B1C20DFE
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:36:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B52F413AED;
-	Wed, 31 May 2023 10:28:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CFD646FC9;
+	Wed, 31 May 2023 10:36:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6787D52A
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:28:18 +0000 (UTC)
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B5B134;
-	Wed, 31 May 2023 03:28:16 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id d2e1a72fcca58-64d61fff78aso1263425b3a.1;
-        Wed, 31 May 2023 03:28:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685528896; x=1688120896;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=+G6B2FYjYUAyd30KeFTxGI0vcvv6LmGoONehuHedteU=;
-        b=EgrxYW1I2j1cKcYj1ot/iR0l7Tnwf9k+Xj5djTC4TgWol557kZDc4c6mpA4gZxoc76
-         ikRiArahYxGiGdIqNN+Ck/HlMXLuGk0w5+nFV6JtJ4Ej1PByDwiryM5cXkrsScyE6VMC
-         ieirqTnrAcTx0ngOYG4MHdEVWnuqgr2/58EXSODyHBCw8Pd7olJfgMhaq0Q6jYiydAIj
-         tWHtRw5Gx0DLB+vb8zPFpZPG2h4vQ94xg6nQixqu6Eq0wl8xKjkRiBBM147MSEeWNMV7
-         +qMA+u5Xx5WsB/i0gIBhPLfSV2K7Dm5y4LBmOKwuSkHKRNI7knyMKJa5MDJaCvsrFP41
-         MxAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685528896; x=1688120896;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+G6B2FYjYUAyd30KeFTxGI0vcvv6LmGoONehuHedteU=;
-        b=DoWYaV1mkbbJ3bk6V0beaxGln+nBM+BzTZzy7qMqxRWex7JYj1VFeJ8TER0+GY+6Sc
-         30bkhHb/wDao1E+t5EFLLU+vk/QEntQp55jDqVuf1j1D0omxnFGPWKQEk9GG4yE32YiA
-         xFU2GtRE8JvN9OOvonEl/AgN7CFx1N0dZJvT3UYTiocjFQHbodH+EK3rhkdhY2PBUQXV
-         X3ww7u9n6/2sRm+jZPpXtsr0UOpLXXxYz1fgvXXbdQYiZYJvPetGzkaekvjA9U/XAnn3
-         Rio/eRSZ6KHJJkR2wyzq8IbdW3WPYIdckat3p2uvxpM3/1p073Q0gpJ5WCo6FgcRkD8N
-         Wlgg==
-X-Gm-Message-State: AC+VfDyrkZT7ln6KCEmI7BYhJUZanlJfndPVztZ7tigyAGw6xwS9zk5e
-	UIPmELFxG1RLTJk92aN6W3Q=
-X-Google-Smtp-Source: ACHHUZ6WlcL8E6mzLHjwtN+3nDSeMud1tIsLJBp5q0gWrT9gxDtG+0uymgPafGpM0KdI3Dy22J9KCg==
-X-Received: by 2002:a05:6a20:394c:b0:10f:955a:bc86 with SMTP id r12-20020a056a20394c00b0010f955abc86mr2011961pzg.0.1685528896154;
-        Wed, 31 May 2023 03:28:16 -0700 (PDT)
-Received: from hbh25y.mshome.net ([103.114.158.1])
-        by smtp.gmail.com with ESMTPSA id i28-20020a63541c000000b0053efb8fae02sm952238pgb.24.2023.05.31.03.28.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 May 2023 03:28:15 -0700 (PDT)
-From: Hangyu Hua <hbh25y@gmail.com>
-To: jhs@mojatatu.com,
-	xiyou.wangcong@gmail.com,
-	jiri@resnulli.us,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	simon.horman@corigine.com,
-	pieter.jansen-van-vuuren@amd.com
-Cc: netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH net v2] net/sched: flower: fix possible OOB write in fl_set_geneve_opt()
-Date: Wed, 31 May 2023 18:28:04 +0800
-Message-Id: <20230531102805.27090-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B62B71C11
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:36:44 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17324B3
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 03:36:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685529401;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=LblAMPIHxGOVQwAa31sEVmS+RasGb+Q5tilzhH105LQ=;
+	b=A56sfIVS1jtETJZAOZ+BWw2gXWEDYxVwXYZu05jYSb0SYOUlzR/9Xnfmg0rtO3NMicf72F
+	4A0I9fGVzEXkcia+e14tsVHtX7Aqg/pbORJH4xDUVoHmFEkAcLC6Q3+szBCCeKbatpFt3x
+	TyRdw7wL4OW1BIJ6mgqlD3jdQDZV1MI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-662-g9VziVHePlutvh9IHQCyeA-1; Wed, 31 May 2023 06:36:37 -0400
+X-MC-Unique: g9VziVHePlutvh9IHQCyeA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8A93D3C0CEEB;
+	Wed, 31 May 2023 10:36:37 +0000 (UTC)
+Received: from renaissance-vector.redhat.com (unknown [10.39.195.31])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 060A72166B25;
+	Wed, 31 May 2023 10:36:35 +0000 (UTC)
+From: Andrea Claudi <aclaudi@redhat.com>
+To: netdev@vger.kernel.org
+Cc: stephen@networkplumber.org,
+	dsahern@gmail.com,
+	leon@kernel.org,
+	idosch@idosch.org
+Subject: [PATCH iproute2-next v2] treewide: fix indentation
+Date: Wed, 31 May 2023 12:35:56 +0200
+Message-Id: <7a8a4109889c4937ad7ddc196865e94354828045.1685529196.git.aclaudi@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -79,43 +59,287 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-If we send two TCA_FLOWER_KEY_ENC_OPTS_GENEVE packets and their total
-size is 252 bytes(key->enc_opts.len = 252) then
-key->enc_opts.len = opt->length = data_len / 4 = 0 when the third
-TCA_FLOWER_KEY_ENC_OPTS_GENEVE packet enters fl_set_geneve_opt. This
-bypasses the next bounds check and results in an out-of-bounds.
+Replace multiple whitespaces with tab where appropriate.
+While at it, fix tc flower help message and remove some double
+whitespaces.
 
-Fixes: 0a6e77784f49 ("net/sched: allow flower to match tunnel options")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
 ---
+ bridge/vni.c   |  2 +-
+ genl/ctrl.c    |  2 +-
+ ip/ipaddress.c |  2 +-
+ ip/ipmacsec.c  |  4 ++--
+ ip/ipprefix.c  |  2 +-
+ ip/ipvrf.c     |  2 +-
+ lib/fs.c       |  2 +-
+ lib/ll_types.c | 10 +++++-----
+ rdma/dev.c     | 10 +++++-----
+ tc/f_flower.c  |  4 ++--
+ tc/m_ipt.c     |  4 ++--
+ tc/m_xt_old.c  |  4 ++--
+ tc/q_fq.c      |  8 ++++----
+ tc/q_htb.c     |  4 ++--
+ tc/tc_core.c   |  2 +-
+ 15 files changed, 31 insertions(+), 31 deletions(-)
 
-	v2: add "net" tag to title
-
- net/sched/cls_flower.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 9dbc43388e57..815c3e416bc5 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -1153,6 +1153,9 @@ static int fl_set_geneve_opt(const struct nlattr *nla, struct fl_flow_key *key,
- 	if (option_len > sizeof(struct geneve_opt))
- 		data_len = option_len - sizeof(struct geneve_opt);
+diff --git a/bridge/vni.c b/bridge/vni.c
+index 940f251c..96e6566f 100644
+--- a/bridge/vni.c
++++ b/bridge/vni.c
+@@ -33,7 +33,7 @@ static void usage(void)
+ 	fprintf(stderr,
+ 		"Usage: bridge vni { add | del } vni VNI\n"
+ 		"		[ { group | remote } IP_ADDRESS ]\n"
+-	        "		[ dev DEV ]\n"
++		"		[ dev DEV ]\n"
+ 		"       bridge vni { show }\n"
+ 		"\n"
+ 		"Where:	VNI	:= 0-16777215\n"
+diff --git a/genl/ctrl.c b/genl/ctrl.c
+index 8d2e9448..d5b765cc 100644
+--- a/genl/ctrl.c
++++ b/genl/ctrl.c
+@@ -315,7 +315,7 @@ static int ctrl_list(int cmd, int argc, char **argv)
  
-+	if (key->enc_opts.len > FLOW_DIS_TUN_OPTS_MAX - 4)
-+		return -ERANGE;
-+
- 	opt = (struct geneve_opt *)&key->enc_opts.data[key->enc_opts.len];
- 	memset(opt, 0xff, option_len);
- 	opt->length = data_len / 4;
+ 		rtnl_dump_filter(&rth, print_ctrl2, stdout);
+ 
+-        }
++	}
+ 
+ 	ret = 0;
+ ctrl_done:
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index 41055c43..cb2ac7e9 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -1443,7 +1443,7 @@ static const struct ifa_flag_data_t* lookup_flag_data_by_name(const char* flag_n
+ 		if (strcmp(flag_name, ifa_flag_data[i].name) == 0)
+ 			return &ifa_flag_data[i];
+ 	}
+-        return NULL;
++	return NULL;
+ }
+ 
+ static void print_ifa_flags(FILE *fp, const struct ifaddrmsg *ifa,
+diff --git a/ip/ipmacsec.c b/ip/ipmacsec.c
+index 8b0d5666..476a6d1d 100644
+--- a/ip/ipmacsec.c
++++ b/ip/ipmacsec.c
+@@ -1379,10 +1379,10 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			if (strcmp(*argv, "default") == 0)
+ 				cipher.id = MACSEC_DEFAULT_CIPHER_ID;
+ 			else if (strcmp(*argv, "gcm-aes-128") == 0 ||
+-			         strcmp(*argv, "GCM-AES-128") == 0)
++				 strcmp(*argv, "GCM-AES-128") == 0)
+ 				cipher.id = MACSEC_CIPHER_ID_GCM_AES_128;
+ 			else if (strcmp(*argv, "gcm-aes-256") == 0 ||
+-			         strcmp(*argv, "GCM-AES-256") == 0)
++				 strcmp(*argv, "GCM-AES-256") == 0)
+ 				cipher.id = MACSEC_CIPHER_ID_GCM_AES_256;
+ 			else if (strcmp(*argv, "gcm-aes-xpn-128") == 0 ||
+ 				 strcmp(*argv, "GCM-AES-XPN-128") == 0)
+diff --git a/ip/ipprefix.c b/ip/ipprefix.c
+index ddf77014..c5704e5a 100644
+--- a/ip/ipprefix.c
++++ b/ip/ipprefix.c
+@@ -60,7 +60,7 @@ int print_prefix(struct nlmsghdr *n, void *arg)
+ 
+ 	if (tb[PREFIX_ADDRESS]) {
+ 		fprintf(fp, "prefix %s/%u",
+-		        rt_addr_n2a_rta(family, tb[PREFIX_ADDRESS]),
++			rt_addr_n2a_rta(family, tb[PREFIX_ADDRESS]),
+ 			prefix->prefix_len);
+ 	}
+ 	fprintf(fp, "dev %s ", ll_index_to_name(prefix->prefix_ifindex));
+diff --git a/ip/ipvrf.c b/ip/ipvrf.c
+index 0718bea8..d6b59adb 100644
+--- a/ip/ipvrf.c
++++ b/ip/ipvrf.c
+@@ -252,7 +252,7 @@ static int prog_load(int idx)
+ 	};
+ 
+ 	return bpf_program_load(BPF_PROG_TYPE_CGROUP_SOCK, prog, sizeof(prog),
+-			        "GPL", bpf_log_buf, sizeof(bpf_log_buf));
++				"GPL", bpf_log_buf, sizeof(bpf_log_buf));
+ }
+ 
+ static int vrf_configure_cgroup(const char *path, int ifindex)
+diff --git a/lib/fs.c b/lib/fs.c
+index 22d4af75..63fc733e 100644
+--- a/lib/fs.c
++++ b/lib/fs.c
+@@ -41,7 +41,7 @@ static int name_to_handle_at(int dirfd, const char *pathname,
+ 	struct file_handle *handle, int *mount_id, int flags)
+ {
+ 	return syscall(__NR_name_to_handle_at, dirfd, pathname, handle,
+-	               mount_id, flags);
++		       mount_id, flags);
+ }
+ 
+ static int open_by_handle_at(int mount_fd, struct file_handle *handle, int flags)
+diff --git a/lib/ll_types.c b/lib/ll_types.c
+index fa57ceb5..81d6cd9d 100644
+--- a/lib/ll_types.c
++++ b/lib/ll_types.c
+@@ -108,11 +108,11 @@ __PF(VOID,void)
+ };
+ #undef __PF
+ 
+-        int i;
+-        for (i=0; !numeric && i<sizeof(arphrd_names)/sizeof(arphrd_names[0]); i++) {
+-                 if (arphrd_names[i].type == type)
++	int i;
++	for (i=0; !numeric && i<sizeof(arphrd_names)/sizeof(arphrd_names[0]); i++) {
++		if (arphrd_names[i].type == type)
+ 			return arphrd_names[i].name;
+ 	}
+-        snprintf(buf, len, "[%d]", type);
+-        return buf;
++	snprintf(buf, len, "[%d]", type);
++	return buf;
+ }
+diff --git a/rdma/dev.c b/rdma/dev.c
+index f09c33bc..585bec54 100644
+--- a/rdma/dev.c
++++ b/rdma/dev.c
+@@ -191,13 +191,13 @@ static void dev_print_node_type(struct rd *rd, struct nlattr **tb)
+ 
+ static void dev_print_dev_proto(struct rd *rd, struct nlattr **tb)
+ {
+-       const char *str;
++	const char *str;
+ 
+-       if (!tb[RDMA_NLDEV_ATTR_DEV_PROTOCOL])
+-               return;
++	if (!tb[RDMA_NLDEV_ATTR_DEV_PROTOCOL])
++		return;
+ 
+-       str = mnl_attr_get_str(tb[RDMA_NLDEV_ATTR_DEV_PROTOCOL]);
+-       print_color_string(PRINT_ANY, COLOR_NONE, "protocol", "protocol %s ", str);
++	str = mnl_attr_get_str(tb[RDMA_NLDEV_ATTR_DEV_PROTOCOL]);
++	print_color_string(PRINT_ANY, COLOR_NONE, "protocol", "protocol %s ", str);
+ }
+ 
+ static int dev_parse_cb(const struct nlmsghdr *nlh, void *data)
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index 48cfafdb..c73c46dd 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -57,7 +57,7 @@ static void explain(void)
+ 		"			cvlan_prio PRIORITY |\n"
+ 		"			cvlan_ethtype [ ipv4 | ipv6 | ETH-TYPE ] |\n"
+ 		"			pppoe_sid PSID |\n"
+-		"			ppp_proto [ ipv4 | ipv6 | mpls_uc | mpls_mc | PPP_PROTO ]"
++		"			ppp_proto [ ipv4 | ipv6 | mpls_uc | mpls_mc | PPP_PROTO ] |\n"
+ 		"			dst_mac MASKED-LLADDR |\n"
+ 		"			src_mac MASKED-LLADDR |\n"
+ 		"			ip_proto [tcp | udp | sctp | icmp | icmpv6 | l2tp | IP-PROTO ] |\n"
+@@ -88,7 +88,7 @@ static void explain(void)
+ 		"			enc_ttl MASKED-IP_TTL |\n"
+ 		"			geneve_opts MASKED-OPTIONS |\n"
+ 		"			vxlan_opts MASKED-OPTIONS |\n"
+-		"                       erspan_opts MASKED-OPTIONS |\n"
++		"			erspan_opts MASKED-OPTIONS |\n"
+ 		"			gtp_opts MASKED-OPTIONS |\n"
+ 		"			ip_flags IP-FLAGS |\n"
+ 		"			enc_dst_port [ port_number ] |\n"
+diff --git a/tc/m_ipt.c b/tc/m_ipt.c
+index 465d1b80..3a4ccfac 100644
+--- a/tc/m_ipt.c
++++ b/tc/m_ipt.c
+@@ -409,8 +409,8 @@ static int parse_ipt(struct action_util *a, int *argc_p,
+ 	optind = 0;
+ 	free_opts(opts);
+ 	/* Clear flags if target will be used again */
+-        m->tflags = 0;
+-        m->used = 0;
++	m->tflags = 0;
++	m->used = 0;
+ 	/* Free allocated memory */
+ 	if (m->t)
+ 	    free(m->t);
+diff --git a/tc/m_xt_old.c b/tc/m_xt_old.c
+index efa084c5..c747154e 100644
+--- a/tc/m_xt_old.c
++++ b/tc/m_xt_old.c
+@@ -334,8 +334,8 @@ static int parse_ipt(struct action_util *a, int *argc_p,
+ 	optind = 0;
+ 	free_opts(opts);
+ 	/* Clear flags if target will be used again */
+-        m->tflags = 0;
+-        m->used = 0;
++	m->tflags = 0;
++	m->used = 0;
+ 	/* Free allocated memory */
+ 	if (m->t)
+ 	    free(m->t);
+diff --git a/tc/q_fq.c b/tc/q_fq.c
+index 0589800a..3277ebc7 100644
+--- a/tc/q_fq.c
++++ b/tc/q_fq.c
+@@ -23,7 +23,7 @@ static void explain(void)
+ 	fprintf(stderr,
+ 		"Usage: ... fq	[ limit PACKETS ] [ flow_limit PACKETS ]\n"
+ 		"		[ quantum BYTES ] [ initial_quantum BYTES ]\n"
+-		"		[ maxrate RATE  ] [ buckets NUMBER ]\n"
++		"		[ maxrate RATE ] [ buckets NUMBER ]\n"
+ 		"		[ [no]pacing ] [ refill_delay TIME ]\n"
+ 		"		[ low_rate_threshold RATE ]\n"
+ 		"		[ orphan_mask MASK]\n"
+@@ -243,13 +243,13 @@ static int fq_parse_opt(struct qdisc_util *qu, int argc, char **argv,
+ 	if (set_ce_threshold)
+ 		addattr_l(n, 1024, TCA_FQ_CE_THRESHOLD,
+ 			  &ce_threshold, sizeof(ce_threshold));
+-    if (set_timer_slack)
++	if (set_timer_slack)
+ 		addattr_l(n, 1024, TCA_FQ_TIMER_SLACK,
+ 			  &timer_slack, sizeof(timer_slack));
+-    if (set_horizon)
++	if (set_horizon)
+ 		addattr_l(n, 1024, TCA_FQ_HORIZON,
+ 			  &horizon, sizeof(horizon));
+-    if (horizon_drop != 255)
++	if (horizon_drop != 255)
+ 		addattr_l(n, 1024, TCA_FQ_HORIZON_DROP,
+ 			  &horizon_drop, sizeof(horizon_drop));
+ 	addattr_nest_end(n, tail);
+diff --git a/tc/q_htb.c b/tc/q_htb.c
+index 31862ffb..63b9521b 100644
+--- a/tc/q_htb.c
++++ b/tc/q_htb.c
+@@ -49,8 +49,8 @@ static void explain(void)
+ 
+ static void explain1(char *arg)
+ {
+-    fprintf(stderr, "Illegal \"%s\"\n", arg);
+-    explain();
++	fprintf(stderr, "Illegal \"%s\"\n", arg);
++	explain();
+ }
+ 
+ static int htb_parse_opt(struct qdisc_util *qu, int argc,
+diff --git a/tc/tc_core.c b/tc/tc_core.c
+index 8276f6a1..871ceb45 100644
+--- a/tc/tc_core.c
++++ b/tc/tc_core.c
+@@ -170,7 +170,7 @@ int tc_calc_rtable_64(struct tc_ratespec *r, __u32 *rtab,
+ 		rtab[i] = tc_calc_xmittime(bps, sz);
+ 	}
+ 
+-	r->cell_align =  -1;
++	r->cell_align = -1;
+ 	r->cell_log = cell_log;
+ 	r->linklayer = (linklayer & TC_LINKLAYER_MASK);
+ 	return cell_log;
 -- 
-2.34.1
+2.40.1
 
 
