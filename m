@@ -1,175 +1,220 @@
-Return-Path: <netdev+bounces-8592-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6930-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9F0CD724ACF
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 20:07:48 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3C6BD718CC0
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 23:34:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F25F51C20B50
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 18:07:44 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B5FAD281657
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 21:34:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6DAE22E32;
-	Tue,  6 Jun 2023 18:07:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B5C3C3D3B1;
+	Wed, 31 May 2023 21:34:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B6A619915
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 18:07:45 +0000 (UTC)
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 574E0170C;
-	Tue,  6 Jun 2023 11:07:43 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id d9443c01a7336-1b00ecabdf2so59814615ad.2;
-        Tue, 06 Jun 2023 11:07:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A39333D3AC
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 21:34:17 +0000 (UTC)
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D3F10EF
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 14:33:51 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id af79cd13be357-75affe977abso931885a.0
+        for <netdev@vger.kernel.org>; Wed, 31 May 2023 14:33:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686074863; x=1688666863;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=r0hwtS5mthE8ORedBA1IkEsymrNnIIr+qtD7JhNdJ7w=;
-        b=fP1GIQiYsHnBQrUBQV50NFEYS+Zq6mc5rTj7EuUMmqjRx4VOlQYOasfdfo8PRdmm8A
-         6+d3PjamJge99/hYGpPAL6zjl15x4hVfptCaHjUeLTkloLl5IkF4ovKJTOh9+PW3sBOs
-         3mexo1kETdbnIVh+wbuATXPzuVz1bxRo3JDzg0Tg7CUK2CcFF0BmiPEt6oEDKdZtNX/y
-         Uz5pMbKPM2wUk/yC4jK5OIabtK70fUdjuAKIXw6XhDK5dstKqrAbdXlYHraIkBIRgn0C
-         4xN28kvKzlbENCk9nUS7OhimhaMhTu5JpHYZfhnPimt32qHEeoy3Q77etXePz9xKV1ey
-         pbeQ==
+        d=broadcom.com; s=google; t=1685568796; x=1688160796;
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=e4klnNp4bMmatfpRezWoxZ/lrKZtJSGLE+TJjnuCr5M=;
+        b=VCo2e3eJHPMwKq6mLp9o8yQ2c1ROqMgkVPbJl0X1gEYKPU/Ct8U9cOC/NgTuFWaC3o
+         7PgXkLyX4jDDZiYwauxSagug6q0SjbpVt3qp95nNs4iPC/0YAkwM+QFBOXhkm1MjP8XZ
+         gr+gi7IaRt8BCuv7M36KoVlzT+/rif/J6QqNc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686074863; x=1688666863;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20221208; t=1685568796; x=1688160796;
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=r0hwtS5mthE8ORedBA1IkEsymrNnIIr+qtD7JhNdJ7w=;
-        b=UhIQVdzkN8MRp8ZE3zx0kcJ/pMsX8pulwHsQ4mxKqtG+8veyb8uW2UzrZEOJUg2/N0
-         /0D5eoijDM5NyUueeFIyvh4RSrXeGHGJk07ggzPb2+Wsl4vw2m/ICO8XOqW0PgEB2OS/
-         dP5QCwoPEmW9hqJQ51lzeXwFfwEpRrfXcDz4t8IRYo4KnQoN5yZdHzUBV1F/9lm864UW
-         D3JExR5qQDST7tl2GNLB5s+H6h2V+RherwrCQKP8Gfr4o50Ko4RdII3bjX4QXVU1clC3
-         aqLpQZ0HqeHGNSQ/Us36BwL2zCBSS6jR1ajt67SglATpbM+yVAx+Mb84EHTna1mIkMak
-         PeSw==
-X-Gm-Message-State: AC+VfDyLk4xL/6qfrsQV+WNUG/sCHnQEUzTIXQzfK13kijVcJNrNH7Eg
-	daeMr5y/G+brjpxmM2kJvK4=
-X-Google-Smtp-Source: ACHHUZ4KwpeZHnZv9+45bTIb7AnMOtp7aX/KdzGdJpRkMYWVQYklkc+60/cQY9TUFMMcMYvH1ufXPA==
-X-Received: by 2002:a17:902:e742:b0:1b2:194b:9ce9 with SMTP id p2-20020a170902e74200b001b2194b9ce9mr3271917plf.44.1686074862578;
-        Tue, 06 Jun 2023 11:07:42 -0700 (PDT)
-Received: from localhost (ec2-52-8-182-0.us-west-1.compute.amazonaws.com. [52.8.182.0])
-        by smtp.gmail.com with ESMTPSA id w7-20020a170902a70700b001ae5cc15655sm8850788plq.5.2023.06.06.11.07.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jun 2023 11:07:42 -0700 (PDT)
-Date: Wed, 31 May 2023 21:10:23 +0000
-From: Bobby Eshleman <bobbyeshleman@gmail.com>
-To: Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Cc: Bobby Eshleman <bobby.eshleman@bytedance.com>,
-	Stefan Hajnoczi <stefanha@redhat.com>,
-	Stefano Garzarella <sgarzare@redhat.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Jason Wang <jasowang@redhat.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	"K. Y. Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-	Bryan Tan <bryantan@vmware.com>, kvm@vger.kernel.org,
-	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	Jiang Wang <jiang.wang@bytedance.com>
-Subject: Re: [PATCH RFC net-next v3 0/8] virtio/vsock: support datagrams
-Message-ID: <ZHe3v8PHcIdFk+R5@bullseye>
-References: <20230413-b4-vsock-dgram-v3-0-c2414413ef6a@bytedance.com>
- <2830ac58-fd77-7e5f-5565-eb47dd027d81@sberdevices.ru>
+        bh=e4klnNp4bMmatfpRezWoxZ/lrKZtJSGLE+TJjnuCr5M=;
+        b=LdjB5OE8znhRtgFxplnvFGp9Vf+hkE11PW8dULxmtQKF7ECW8qTbMJNqF6D+o+mrSW
+         kxQO8FxfB6VXIkoOVqZETwG24jLE1uhNrmizgEpwnfeaji+mJTTBVJyMfJOVV5259oOj
+         SpVsNRzT+xtSpXX8w4ALC5YqCevfgDS1OkwAd9cwU6kQnmsnsFW9EX8+GzGKD9wC7IFo
+         M0CjdNDYreEc+MTnbtl8YyC4PSrmZg0Pp6mOYlTXB53qOhJ1R2flNJj+t89Met24bRHu
+         R6pTtZEm/xUinS4moEgElma6kFmDDq70+uQa4krpbY6X93C3/HaKmPi06h4CIk58ZSyy
+         l3Dg==
+X-Gm-Message-State: AC+VfDxeQRFpKa41IhCufIAMbJfrayERNfysS36XSUTpNL6QHg/DdFIH
+	AsyYJHmrQF/mkM7fxijgJVb80w==
+X-Google-Smtp-Source: ACHHUZ4uCsCNZRq7Bfiyn13N9fL+vSf8vBau9KzZ3tE7dR4G5Lo/ni7F+hCGjis2OzZNFWDVeeDkfQ==
+X-Received: by 2002:a05:620a:4496:b0:75b:3a5d:5b3a with SMTP id x22-20020a05620a449600b0075b3a5d5b3amr8715192qkp.62.1685568796374;
+        Wed, 31 May 2023 14:33:16 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id j27-20020a05620a001b00b0074d3233487dsm5703855qki.114.2023.05.31.14.33.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 May 2023 14:33:15 -0700 (PDT)
+Message-ID: <bda74174-6623-e657-eb7a-bda278882fff@broadcom.com>
+Date: Wed, 31 May 2023 14:32:59 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2830ac58-fd77-7e5f-5565-eb47dd027d81@sberdevices.ru>
-X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH net-next v5 3/6] net: bcmasp: Add support for ASP2.0
+ Ethernet controller
+To: Justin Chen <justin.chen@broadcom.com>, netdev@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, bcm-kernel-feedback-list@broadcom.com
+Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+ conor+dt@kernel.org, opendmb@gmail.com, andrew@lunn.ch,
+ hkallweit1@gmail.com, linux@armlinux.org.uk, richardcochran@gmail.com,
+ sumit.semwal@linaro.org, christian.koenig@amd.com, simon.horman@corigine.com
+References: <1684969313-35503-1-git-send-email-justin.chen@broadcom.com>
+ <1684969313-35503-4-git-send-email-justin.chen@broadcom.com>
+From: Florian Fainelli <florian.fainelli@broadcom.com>
+In-Reply-To: <1684969313-35503-4-git-send-email-justin.chen@broadcom.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+	boundary="0000000000005f4e7f05fd0411f2"
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 05, 2023 at 11:42:06PM +0300, Arseniy Krasnov wrote:
-> Hello Bobby!
-> 
-> Thanks for this patchset, really interesting!
-> 
-> I applied it on head:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=d20dd0ea14072e8a90ff864b2c1603bd68920b4b
-> 
-> And tried to run ./vsock_test (client in the guest, server in the host), I had the following crash:
-> 
-> Control socket connected to 192.168.1.1:12345.                          
-> 0 - SOCK_STREAM connection reset...                                     
-> [    8.050215] BUG: kernel NULL pointer derefer                         
-> [    8.050960] #PF: supervisor read access in kernel mode               
-> [    8.050960] #PF: error_code(0x0000) - not-present page               
-> [    8.050960] PGD 0 P4D 0                                              
-> [    8.050960] Oops: 0000 [#1] PREEMPT SMP PTI                          
-> [    8.050960] CPU: 0 PID: 109 Comm: vsock_test Not tainted 6.4.0-rc3-gd707c220a700
-> [    8.050960] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14
-> [    8.050960] RIP: 0010:static_key_count+0x0/0x20                      
-> [    8.050960] Code: 04 4c 8b 46 08 49 29 c0 4c 01 c8 4c 89 47 08 89 0e 89 56 04 4f
-> [    8.050960] RSP: 0018:ffffa9a1c021bdc0 EFLAGS: 00010202              
-> [    8.050960] RAX: ffffffffac309880 RBX: ffffffffc02fc140 RCX: 0000000000000000
-> [    8.050960] RDX: ffff9a5eff944600 RSI: 0000000000000000 RDI: 0000000000000000
-> [    8.050960] RBP: ffff9a5ec2371900 R08: ffffa9a1c021bd30 R09: ffff9a5eff98e0c0
-> [    8.050960] R10: 0000000000001000 R11: 0000000000000000 R12: ffffa9a1c021be80
-> [    8.050960] R13: 0000000000000000 R14: 0000000000000002 R15: ffff9a5ec1cfca80
-> [    8.050960] FS:  00007fa9bf88c5c0(0000) GS:ffff9a5efe400000(0000) knlGS:00000000
-> [    8.050960] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033        
-> [    8.050960] CR2: 0000000000000000 CR3: 00000000023e0000 CR4: 00000000000006f0
-> [    8.050960] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [    8.050960] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [    8.050960] Call Trace:                                              
-> [    8.050960]  <TASK>                                                  
-> [    8.050960]  once_deferred+0xd/0x30                                  
-> [    8.050960]  vsock_assign_transport+0xa2/0x1b0 [vsock]               
-> [    8.050960]  vsock_connect+0xb4/0x3a0 [vsock]                        
-> [    8.050960]  ? var_wake_function+0x60/0x60                           
-> [    8.050960]  __sys_connect+0x9e/0xd0                                 
-> [    8.050960]  ? _raw_spin_unlock_irq+0xe/0x30                         
-> [    8.050960]  ? do_setitimer+0x128/0x1f0                              
-> [    8.050960]  ? alarm_setitimer+0x4c/0x90                             
-> [    8.050960]  ? fpregs_assert_state_consistent+0x1d/0x50              
-> [    8.050960]  ? exit_to_user_mode_prepare+0x36/0x130                  
-> [    8.050960]  __x64_sys_connect+0x11/0x20                             
-> [    8.050960]  do_syscall_64+0x3b/0xc0                                 
-> [    8.050960]  entry_SYSCALL_64_after_hwframe+0x4b/0xb5                
-> [    8.050960] RIP: 0033:0x7fa9bf7c4d13                                 
-> [    8.050960] Code: 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 48
-> [    8.050960] RSP: 002b:00007ffdf2d96cc8 EFLAGS: 00000246 ORIG_RAX: 0000000000000a
-> [    8.050960] RAX: ffffffffffffffda RBX: 0000560c305d0020 RCX: 00007fa9bf7c4d13
-> [    8.050960] RDX: 0000000000000010 RSI: 00007ffdf2d96ce0 RDI: 0000000000000004
-> [    8.050960] RBP: 0000000000000004 R08: 0000560c317dc018 R09: 0000000000000000
-> [    8.050960] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> [    8.050960] R13: 0000560c305ccc2d R14: 00007ffdf2d96ce0 R15: 00007ffdf2d96d70
-> [    8.050960]  </TASK>  
-> 
-> 
-> I guess crash is somewhere near:
-> 
-> old_info->transport->release(vsk); in vsock_assign_transport(). May be my config is wrong...
-> 
-> Thanks, Arseniy
+--0000000000005f4e7f05fd0411f2
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Thanks Arseniy!
+On 5/24/23 16:01, Justin Chen wrote:
+> Add support for the Broadcom ASP 2.0 Ethernet controller which is first
+> introduced with 72165. This controller features two distinct Ethernet
+> ports that can be independently operated.
+> 
+> This patch supports:
+> 
+> - Wake-on-LAN using magic packets
+> - basic ethtool operations (link, counters, message level)
+> - MAC destination address filtering (promiscuous, ALL_MULTI, etc.)
+> 
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
+> Signed-off-by: Justin Chen <justin.chen@broadcom.com>
+> ---
 
-I now see I broke the tests, but did't break the stream/dgram socket
-utility I was using in development.
+[snip]
 
-I'll track this down and include a fix in the next rev.
+> +static const struct net_device_ops bcmasp_netdev_ops = {
+> +	.ndo_open		= bcmasp_open,
+> +	.ndo_stop		= bcmasp_stop,
+> +	.ndo_start_xmit		= bcmasp_xmit,
+> +	.ndo_tx_timeout		= bcmasp_tx_timeout,
+> +	.ndo_set_rx_mode	= bcmasp_set_rx_mode,
+> +	.ndo_get_phys_port_name	= bcmasp_get_phys_port_name,
+> +	.ndo_get_stats		= bcmasp_get_stats,
+> +	.ndo_do_ioctl		= bcmasp_ioctl,
 
-I should have warned this v3 is pretty under-tested. Being unsure if
-some of the design choices would be accepted at all, I didn't want to
-waste too much time until things were accepted at a high level.
+This needs to be:
 
-Best,
-Bobby
+@@ -1207,7 +1196,7 @@ static const struct net_device_ops 
+bcmasp_netdev_ops = {
+         .ndo_set_rx_mode        = bcmasp_set_rx_mode,
+         .ndo_get_phys_port_name = bcmasp_get_phys_port_name,
+         .ndo_get_stats          = bcmasp_get_stats,
+-       .ndo_do_ioctl           = bcmasp_ioctl,
++       .ndo_eth_ioctl          = phy_do_ioctl_running,
+         .ndo_set_mac_address    = bcmasp_set_mac_address,
+  };
+
+such that MII ioctls work properly.
+-- 
+Florian
+
+
+--0000000000005f4e7f05fd0411f2
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVgwggRAoAMCAQICDBP8P9hKRVySg3Qv5DANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAxMjE4MTFaFw0yNTA5MTAxMjE4MTFaMIGW
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEZsb3JpYW4gRmFpbmVsbGkxLDAqBgkqhkiG
+9w0BCQEWHWZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEA+oi3jMmHltY4LMUy8Up5+1zjd1iSgUBXhwCJLj1GJQF+GwP8InemBbk5rjlC
+UwbQDeIlOfb8xGqHoQFGSW8p9V1XUw+cthISLkycex0AJ09ufePshLZygRLREU0H4ecNPMejxCte
+KdtB4COST4uhBkUCo9BSy1gkl8DJ8j/BQ1KNUx6oYe0CntRag+EnHv9TM9BeXBBLfmMRnWNhvOSk
+nSmRX0J3d9/G2A3FIC6WY2XnLW7eAZCQPa1Tz3n2B5BGOxwqhwKLGLNu2SRCPHwOdD6e0drURF7/
+Vax85/EqkVnFNlfxtZhS0ugx5gn2pta7bTdBm1IG4TX+A3B1G57rVwIDAQABo4IB3jCCAdowDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDAoBgNVHREEITAfgR1mbG9yaWFuLmZhaW5lbGxpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
+BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUwwfJ6/F
+KL0fRdVROal/Lp4lAF0wDQYJKoZIhvcNAQELBQADggEBAKBgfteDc1mChZjKBY4xAplC6uXGyBrZ
+kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
+2s1RH00JOkO5SkYdwCHj4DB9B7KEnLatJtD8MBorvt+QxTuSh4ze96Jz3kEIoHMvwGFkgObWblsc
+3/YcLBmCgaWpZ3Ksev1vJPr5n8riG3/N4on8gO5qinmmr9Y7vGeuf5dmZrYMbnb+yCBalkUmZQwY
+NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
+AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
+LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
+/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIGItqRIU15xv8mQT
+5wIKXFSrTd3E8n/IqhZkGODeWalhMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIzMDUzMTIxMzMxNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCbQTMinf6ONcNqYkTiqN8CGhT5P250sMmM
+5C32DeBKqmP1atQN6UVlgP9Q4JqClV0FZd34Ms2iWYxEqX826Qf7bY6vhO1xFhOUY7+QUjrcQ7nE
+q4TTMu5QrRd+bnolW2NdM8oh2AqccecleojnqriX0IrIkKiV2o2WuETSRsqKbtCGfaNgPWhgnkIu
+qtfW0rYpWvruzDHfcJ38RbLPsjsxp5wKH8MQVbL3xl1rT9eKlZ5px2j05T7jt0XlR/7NpmmZPNF4
+1eX8gTBoeiuN2Us6wWr/SUoeXV73+0TeFISaQ6HqhmXKkO6njJkd0tNxzuEj+qyDQEPQ14Q1ZStS
+K4c1
+--0000000000005f4e7f05fd0411f2--
 
