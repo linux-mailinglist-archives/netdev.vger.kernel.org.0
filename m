@@ -1,206 +1,241 @@
-Return-Path: <netdev+bounces-6941-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6942-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9D41C718EAE
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 00:42:37 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5A925718EAF
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 00:43:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 43F35281630
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 22:42:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0EE0928160E
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 22:43:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4258E200B0;
-	Wed, 31 May 2023 22:42:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4876120697;
+	Wed, 31 May 2023 22:43:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30A907F1
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 22:42:33 +0000 (UTC)
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BBCF11F
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 15:42:30 -0700 (PDT)
-Received: by mail-qk1-x736.google.com with SMTP id af79cd13be357-75ca95c4272so7710785a.0
-        for <netdev@vger.kernel.org>; Wed, 31 May 2023 15:42:30 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 355D2200B0
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 22:43:11 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F7512C
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 15:43:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1685572989; x=1717108989;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=iTfW6HVBIXcrlo0FOhBu3a3Wwdaetwhhvk+Pk1Q241M=;
+  b=1rKY/o20eYmK+YQsn/lvQrnnQ7BAF7vLnl+nWSUou050uYGG/FLtvee1
+   2aiGU06MiR24juzJOutdtzHgHxcOK80wQ6bvrxkyLVj5xpL0hRzlTYq3U
+   0fwNgrS4Ks85nMWVMsbhYlzZumRVf9WocT8Oiik1zqPK0HQEZI+I2q39c
+   M7K/63/BbB3pXDS8DGlF4L2xtTFW9XpwoH89kMxBLcw9Mj10laQDcOLHc
+   lLNTrLEu4+ovOvVey70E02Lz3Y2mSPkTgfzHe5daw5k/15YNW4C+yjddb
+   N0HrnEgUFIgQ241l3GI/j87Leof8Bga4KhhkKpoj4zlMQgQuYEr/dpPP6
+   g==;
+X-IronPort-AV: E=Sophos;i="6.00,207,1681196400"; 
+   d="scan'208";a="218261659"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 May 2023 15:43:08 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 31 May 2023 15:43:04 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
+ Transport; Wed, 31 May 2023 15:43:04 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FFrpL0BJ+AcgD1eDMQSmnhPAS6sy/+zHL7HRH6GLNzYBqzMuCeM/4DjTkJI6XkvG5T0ia0/V2/oydZz77Tu27dRAiTS8qkpVTeMrIB3fdHnky5dqOD/JymHWCN7umLXzo2wH1Vz5w2NgyEHrvKfqgU6Z++Vi74yDlAhPF24PlXjqP7CdaGSN0EBsBdaOrebFMRayawS7Wbkr+OpVad+Gd6IpCJjHj/IBd3EaxSgGO7F3VDOK/Hg5cFFJ2jdHS+f+mgHQBYip2a6gPZm625Zi2pA827cyxgjPYgFqDWfOpJ6fSqEjnplGaNDlehVogNXfdG41Opq0SBRe2Ze2Gm2Uwg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zl1WYL9R7khak8HDJthTyUSYLkQpT4TQRzTMCQC8WyQ=;
+ b=KhroNqes3Yebmn1gejtjmpWO8gnN95ugXkRz5j4QmWNNc3DOGeUlZc9vB6NUjIiEHIEqu+w30rAF9dHCBa+PInHX8jRG6q950SOytgVMCINGa64GVpw+WoTMXDx28Azxuwz26zgGkFTgHQS93Ic+wfY9eULDQA2uVquVEeYoUn5fCfEbiZv01lTVk2qVBiMTUxKG+/QrQnCvWgXzV3q+umiNzAnSFt22GemRxtmMJ3tlQU8XdGHGAeBxEKlmy6sOJdtmXNUX0grXUbdkwZWDLiIgnPqpWpPnINeSxaROT6IfKu93xW38tYp8s0LOV1VnX5Gps0+3a5XDRUeXQJXltg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1685572949; x=1688164949;
-        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=9QZ9rXwXEtCgcNVoMVW9WCFAM5e+VOoXReOUmt4FRmE=;
-        b=B/cyYEaWFIGTFcbiL2dPaIcz1NF3Gc3DV152Vd30DcqyJshfglr+uuwHhgPMbmFB98
-         QtNpTAG3zGv7NMF+ovKDMCheBQv9HbwLTspQWE0A96HIL2LhNkcn/6RCMTfwYq04LKG2
-         MlYJyoUFBi3vr7WHu7kJMvjNx3063urrDwdLs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685572949; x=1688164949;
-        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9QZ9rXwXEtCgcNVoMVW9WCFAM5e+VOoXReOUmt4FRmE=;
-        b=DZvj+dHAjBwz38iTACrzVe49r/vephwtMUitC77n3lXgq340DNgyHiM/w2pTpF4qDe
-         UQXeTacEa5Rx5OI2lpSnnfBjoW0LyzE0EITkcAWwohYuESa++qFzoy8LY7dVDHOwi+wF
-         TZO1T2T5sFuTSj2lVs5h4abhFYQe+Sc2E585CNnA88ZpW1gkTGkm7x0pq8lBZpn4ApXF
-         nLYMxjKWkR5OBGA+QzaCKC9hOBWH2b4U0JKNOSCEIxq2yMANXRkxQX/D88+SoOcY1zgO
-         pgIei4WCGEeKyv8XHlckTQw10b3aIu69fjjIDnzcJH4gpcURFKZCrftIiQ0U5Lz6cCC+
-         z7yA==
-X-Gm-Message-State: AC+VfDyoYMHw8lrWpzEqNkYHNapfiQ+UvKhN8CutZ+Zf4yx3SNmZR+ba
-	gagkbeKU7t34pquIVt8HpzpsXA==
-X-Google-Smtp-Source: ACHHUZ5bhJ48Dw96CaKTIbU0gRwV6TlrsoTivPYCno/zT8o4MXOOi3OxkqP9uCzc4nn+ITshIkUwcg==
-X-Received: by 2002:a05:620a:2541:b0:75b:23a1:8e58 with SMTP id s1-20020a05620a254100b0075b23a18e58mr7517720qko.41.1685572949069;
-        Wed, 31 May 2023 15:42:29 -0700 (PDT)
-Received: from [10.67.50.169] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a23-20020a05620a16d700b0075b053ab66bsm5705706qkn.50.2023.05.31.15.42.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 31 May 2023 15:42:28 -0700 (PDT)
-Message-ID: <2bdc58c5-455c-8b1f-59f3-69e43dc1f8ee@broadcom.com>
-Date: Wed, 31 May 2023 15:42:26 -0700
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zl1WYL9R7khak8HDJthTyUSYLkQpT4TQRzTMCQC8WyQ=;
+ b=C80Ycdrg9jaXCOsyQZik2yPspEd9DlwirmPLIwlL6LM9hICe0iY6OSRwMFPG8nu2xmNmTJQhVowIv/JX2uUxeencpU9O3lDfQXnGJJCphiTncTEiW0R9eV85iR5VMVo1aLES1/k/Dpfat0+uqmXEaGr9Mg4IBir7rmTSk+mdtcs=
+Received: from BYAPR11MB3558.namprd11.prod.outlook.com (2603:10b6:a03:b3::11)
+ by IA0PR11MB7187.namprd11.prod.outlook.com (2603:10b6:208:441::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.24; Wed, 31 May
+ 2023 22:43:02 +0000
+Received: from BYAPR11MB3558.namprd11.prod.outlook.com
+ ([fe80::449c:459f:8f5d:1e46]) by BYAPR11MB3558.namprd11.prod.outlook.com
+ ([fe80::449c:459f:8f5d:1e46%6]) with mapi id 15.20.6433.022; Wed, 31 May 2023
+ 22:43:01 +0000
+From: <Tristram.Ha@microchip.com>
+To: <andrew@lunn.ch>
+CC: <davem@davemloft.net>, <f.fainelli@gmail.com>, <netdev@vger.kernel.org>,
+	<UNGLinuxDriver@microchip.com>
+Subject: RE: [PATCH net-next] net: phy: smsc: add WoL support to
+ LAN8740/LAN8742 PHYs.
+Thread-Topic: [PATCH net-next] net: phy: smsc: add WoL support to
+ LAN8740/LAN8742 PHYs.
+Thread-Index: AQHZkDwiffQVuCP3CUK1xQvBykSLHa9xWOWAgAOin9A=
+Date: Wed, 31 May 2023 22:43:01 +0000
+Message-ID: <BYAPR11MB35583CCCF0C908763B5BA5E3EC489@BYAPR11MB3558.namprd11.prod.outlook.com>
+References: <1685151574-2752-1-git-send-email-Tristram.Ha@microchip.com>
+ <cd313489-603e-4d8e-a09d-22a0c492a3cd@lunn.ch>
+In-Reply-To: <cd313489-603e-4d8e-a09d-22a0c492a3cd@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BYAPR11MB3558:EE_|IA0PR11MB7187:EE_
+x-ms-office365-filtering-correlation-id: 26318d8d-ddab-4e66-6873-08db622863cc
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: lG+loiKvaV2Km2KEYWJ59vvNeuP0vlv6rWSWJ5Bap/oSP10VomS7fyYRZp5B1uf49wfFS0Mziy2sQl+68LGIJRYy33zofAsCY5DN8B0YvlfWzY5qjgMFKQeN+fzYn+yKiDaPfjeHq8D5bvNcPvlBgWFqkbGD/pQDn16azNNK0yxKkY5XBnBfixDV/WiS0gH+1Qai6PWtl/vijGV3w0Ic9UmMS10yJCvOvE6TZNWDI9RUaMVspV/TpjdpjJSZqCAKa7w3ySVlaER3FpetvbrGFL1whOwKZZ9NI1W2B3HhswxKw1Ge1LdNVQC1FwIDbtAxE1cGPhW4tFX0bY+JVvN9HIPZ4Ls2/ETCII/kxjThIpXygvUMRUB9ImW0hft6vvnl5P26TBgwqlh5K/sSHh73OfB0x7vW3/+tisqDknUqLH3V3mQIms0Yq6T1dR/mt3NE33OYKKEp+dpnW5eWrz9EMWX3ex+ZfK9mmYzXbOVVelWzR3XxxhbssNK7kngVFJEvy9dIMGZzbMb6jRMujMxhnBZjg2vSAUDtv+Qc7iba6KzYwZjKbptQ5HLNYJfh3xZFSpSdnm0GLwU+B7AgMse1Q+qPZmzBEU1KadWj3BnCjp5DH9HJfq1ODfMq/Mm6NcpG
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3558.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(376002)(136003)(396003)(366004)(39860400002)(451199021)(83380400001)(186003)(2906002)(64756008)(4326008)(6916009)(66946007)(66446008)(66476007)(76116006)(71200400001)(316002)(7696005)(66556008)(54906003)(478600001)(26005)(107886003)(6506007)(52536014)(5660300002)(9686003)(8676002)(41300700001)(8936002)(55016003)(38100700002)(122000001)(38070700005)(33656002)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?6eR0EQimrN03yD+ttTASW1ABdCR+8zz0aunrsKW+nSZWKiaWfPwsNf+aFBLM?=
+ =?us-ascii?Q?gfSb/HpWT+FZWG/yH41x6Upb/ljDLXCAdxUKA6Ot1WQcejTHa+glwymqtIDi?=
+ =?us-ascii?Q?aEcopg/N+Ncx5Jh9Wh/DEqIzPl8x5hZ5hPV6ABj1r9B8Qfma8atinww+bzi4?=
+ =?us-ascii?Q?qDDp6aAJDqRz1Ed+oys+zsJSbd1reOXsZsOPngSqZ6KV4MUyuPMohMPt0Mus?=
+ =?us-ascii?Q?Jcc+ErEQsNIuqx4251kCDqPHjSolZHOeR5p61nr114ds49tHN7EigcUChNK0?=
+ =?us-ascii?Q?VYCF9q6HMgr7pTm7C3kWHhNlsukBzaF4EGPPrum4laCHpSuAb/2bxxrH3Ydp?=
+ =?us-ascii?Q?JD9Iqy6+Xtz5QR2w5XtDyoHzF5NVbgIHvSezrftpeE4qbwcrBazXs/p5dZQ5?=
+ =?us-ascii?Q?kk432HLsLMllizdPOYmjkqxcztTMv2C1ZZijFQkJtwo+HwaMavE8qV3p2II+?=
+ =?us-ascii?Q?NSW63UKtx8ZWCtjKDsgOt2OkWoRfSdZCysXKDJ/JUiijgzMyjxul76ifDZXx?=
+ =?us-ascii?Q?6hTzEhPZqu8LG3lshzlCQxd+igiaUcoMAYzdGSGzAVFhIm4bCae441pD9N6R?=
+ =?us-ascii?Q?WSSMza1p2c79AZPI6VnunjJwdtQifUfjP31/eg5APovt0Tum9IH937eYsfvz?=
+ =?us-ascii?Q?wIPOgbzWcUAJDm/FJtk57J2aNu3pANM3IPXbeLZlcklVa8z1xlHMfjzJV2Kr?=
+ =?us-ascii?Q?5JonpKmUut6KdUSHxlfWixg2KJPRdYajgiOhoifDRHzD+0lxEMGSaB8cZs9f?=
+ =?us-ascii?Q?GBC6XnU8qqF64FQP43Te2hVfGCX++WQZHWIh/RiDAWaYKJ327wUVcQNqqGUa?=
+ =?us-ascii?Q?SEwbwN4vZ6aJaMKyeQt9RewUEpik7767GYvZYNFzWVjpwcxc3RSfjOk5ra8r?=
+ =?us-ascii?Q?a1WfVxfLRN+6mCXl6wqPfmTtHNw614YvraPD/+C1exL9S0lfKwZKnLxBWiFC?=
+ =?us-ascii?Q?w9j4XYs92X2DcgqK3ECtb7V8dinPvI/6pTWPl8fXat2RoI81jtKLBhH7K1Kv?=
+ =?us-ascii?Q?bBhmY4J+JJK7QL5vshvRO+ZxBxVcQUWAhOPfQLAUMMESTrIyLIAAj3X/bk4s?=
+ =?us-ascii?Q?zxu14f//0Ig/BEBHI5QCDkJw1D5CMlLPSgPMJWRw2ytrtbPG817HS7t1vDpF?=
+ =?us-ascii?Q?Mbj6jBPUeajgVbvsOHRkeTMqwcGAw9dSrRX2+W01tHw2y8clAvNdFoIFbUQW?=
+ =?us-ascii?Q?DLYmI2WDHH16AfUUtfYzDz6Up8PdMqLpoilhxqluYMeM6UOq3rLFz6iHSxCq?=
+ =?us-ascii?Q?cUracYnxPOA8nx8mSJcUfdVPV7oJC49AQuxmxM0Vhwvsc0Pf127XmZHWWj8a?=
+ =?us-ascii?Q?GSIDfcXTL+rHRAHCSrj1Lh6HKOYmgYkwtvDTNIItx1c6RGPj89Vz8I+SMTS5?=
+ =?us-ascii?Q?wO+qdAfj/K3YiRYWOiCFz1nBCPzulZa0bOpiCcbKM45Woe0ItJJLYo3dOuwG?=
+ =?us-ascii?Q?TS+W4oQPpJKJmtaafNigkZchR0CK8mRQtVUfD4ou5h8LUDn4b9GuZ20BZJL4?=
+ =?us-ascii?Q?jhuTUcKr9OOXWyH+CAIIFidYDZ5G9dse6O/lXBzuFyyTy2hIMN+aqmPrqFiZ?=
+ =?us-ascii?Q?a+nlQzYddFpWcXpXJb6pjd6eNmLjuRw5NZTUAQ4W?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.11.1
-Subject: Re: [PATCH] net: systemport: Add and correct check for
- platform_get_irq
-To: Jiasheng Jiang <jiasheng@iscas.ac.cn>, f.fainelli@gmail.com,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, bcm-kernel-feedback-list@broadcom.com
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230531091159.8933-1-jiasheng@iscas.ac.cn>
-From: Justin Chen <justin.chen@broadcom.com>
-In-Reply-To: <20230531091159.8933-1-jiasheng@iscas.ac.cn>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="000000000000e43b1305fd05082f"
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3558.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 26318d8d-ddab-4e66-6873-08db622863cc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 May 2023 22:43:01.5563
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: qVMGXi1t9piHFHYYTZjthqXMdbxW1ZYGtWY8hnG2k/btShQwrPx5Bk7vxHiW6KUnG50RBYSAan8Q8RFaszSH+em1TJoO6mZFucvtaacSBbY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR11MB7187
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---000000000000e43b1305fd05082f
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+> Subject: Re: [PATCH net-next] net: phy: smsc: add WoL support to LAN8740/=
+LAN8742
+> PHYs.
+>=20
+> > +     if (wol->wolopts & WAKE_ARP) {
+> > +             const u8 *ip_addr =3D
+> > +                     ((const u8 *)&((ndev->ip_ptr)->ifa_list)->ifa_add=
+ress);
+>=20
+> I'm not sure this is safe. What happens when the interface only has an
+> IPv6 address? Is ifa_list a NULL pointer? I really think you need to
+> be using a core helper to get the IPv4 address.
+>=20
 
+This will be fixed with in_dev_get() and rcu_dereference().
+Indeed the address will disappear when the link is down.
+Why is that so?
 
+> > +             const u16 mask[3] =3D { 0xF03F, 0x003F, 0x03C0 };
+>=20
+> Are there any endianness issues here? I've not looked at how mask is
+> used, but if it is indicating which bytes in the pattern should be
+> matched on, i guess endian does matter.
 
-On 5/31/23 2:11 AM, Jiasheng Jiang wrote:
-> Add the missing check for "priv->wol_irq".
-> Use "<" instead of "<=" to check the irqs since the platform_get_irq
-> returns non-zero IRQ number on success and negative error number on
-> failure, shown in `driver/base/platform.c`.
-> 
-> Fixes: 83e82f4c706b ("net: systemport: add Wake-on-LAN support")
-> Fixes: 80105befdb4b ("net: systemport: add Broadcom SYSTEMPORT Ethernet MAC driver")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
->   drivers/net/ethernet/broadcom/bcmsysport.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
-> index 38d0cdaf22a5..16c9c0be1a33 100644
-> --- a/drivers/net/ethernet/broadcom/bcmsysport.c
-> +++ b/drivers/net/ethernet/broadcom/bcmsysport.c
-> @@ -2535,7 +2535,7 @@ static int bcm_sysport_probe(struct platform_device *pdev)
->   	} else {
->   		priv->wol_irq = platform_get_irq(pdev, 1);
->   	}
-> -	if (priv->irq0 <= 0 || (priv->irq1 <= 0 && !priv->is_lite)) {
-> +	if (priv->irq0 < 0 || (priv->irq1 < 0 && !priv->is_lite) || priv->wol_irq < 0) {
->   		ret = -EINVAL;
->   		goto err_free_netdev;
->   	}
+These values eventually are programmed into MMD registers.
+There are 8 for 128-bit value.  Bit 0 in the last register is byte 0.
+I do not see PHY register values are checked for endianness.
 
-wol_irq is optional so we don't want to error out. Guess we should 
-probably replace platform_get_irq with platform_get_irq_optional(). "<=" 
-is fine. As you mentioned, a non-zero is success, so zero is considered 
-invalid.
+> > +             u8 pattern[42] =3D {
+> > +                     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+> > +                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+> > +                     0x08, 0x06,
+> > +                     0x00, 0x01, 0x08, 0x00, 0x06, 0x04, 0x00, 0x01,
+> > +                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+> > +                     0x00, 0x00, 0x00, 0x00,
+> > +                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+> > +                     0x00, 0x00, 0x00, 0x00 };
+>=20
+>=20
+> > +     if (wol->wolopts & WAKE_MCAST) {
+> > +             u8 pattern[6] =3D { 0x33, 0x33, 0xFF, 0x00, 0x00, 0x00 };
+> > +             u16 mask[1] =3D { 0x0007 };
+> > +             u8 len =3D 3;
+> > +
+> > +             /* Try to match IPv6 Neighbor Solicitation. */
+> > +             if (ndev->ip6_ptr) {
+> > +                     struct list_head *addr_list =3D
+> > +                             &ndev->ip6_ptr->addr_list;
+> > +                     struct inet6_ifaddr *ifa;
+> > +
+> > +                     list_for_each_entry(ifa, addr_list, if_list) {
+> > +                             if (ifa->scope =3D=3D IFA_LINK) {
+> > +                                     memcpy(&pattern[3],
+> > +                                            &ifa->addr.in6_u.u6_addr8[=
+13],
+> > +                                            3);
+> > +                                     mask[0] =3D 0x003F;
+> > +                                     len =3D 6;
+> > +                                     break;
+> > +                             }
+> > +                     }
+> > +             }
+>=20
+> From an architecture point of view, i don't think a PHY driver should
+> be access these data structure directly. See if ipv6_get_lladdr() does
+> what you need?
 
-Thanks,
-Justin
+ipv6_get_lladdr() is not exported so cannot be used when building the
+PHY driver as a module.
+The WAKE_ARP and WAKE_MCAST code just want a regular IPv4 address
+and an IPv6 address as shown by ifconfig command.
+They are more like an example to show how the hardware pattern filtering
+is done.
 
---000000000000e43b1305fd05082f
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+> > +     if (wol->wolopts & (WAKE_MAGIC | WAKE_UCAST)) {
+> > +             const u8 *mac =3D (const u8 *)ndev->dev_addr;
+> > +
+> > +             if (!is_valid_ether_addr(mac))
+> > +                     return -EINVAL;
+>
+> Is that possible? Does the hardware care?
+>
 
-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
-NhTY3E+cXCB11wty89QStajwXdhGJTYEvUgvsq1h8CwJj9w/38ldAQf5WjhPmApYeJR2ewFrBMCM
-4lHkdRJ6TDc9nXoEkypUfjJkJHe7Eal06tosh6JpAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
-BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
-Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
-NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
-A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
-aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
-cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
-MBqBGGp1c3Rpbi5jaGVuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
-GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUIWGeYuaTsnIada5Xx8TR3cheUbgw
-DQYJKoZIhvcNAQELBQADggEBAHNQlMqQOFYPYFO71A+8t+qWMmtOdd2iGswSOvpSZ/pmGlfw8ZvY
-dRTkl27m37la84AxRkiVMes14JyOZJoMh/g7fbgPlU14eBc6WQWkIA6AmNkduFWTr1pRezkjpeo6
-xVmdBLM4VY1TFDYj7S8H2adPuypd62uHMY/MZi+BIUys4uAFA+N3NuUBNjcVZXYPplYxxKEuIFq6
-sDL+OV16G+F9CkNMN3txsym8Nnx5WAYZb6+rBUIhMGz70V05xsHQfzvo2s7f0J1tJ5BoRlPPhL0h
-VOnWA3h71u9TfSsv+PXVm3P21TfOS2uc1hbzEqyENCP4i5XQ0rv0TmPW42GZ0o4xggJtMIICaQIB
-ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
-bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwj8BKLXNpALfemdRAwDQYJ
-YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJpDam6/49yQKDLkiabEsZLeVcIQLwkSCnHp
-xdnAH3C1MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDUzMTIy
-NDIyOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
-AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
-BgkqhkiG9w0BAQEFAASCAQAPZ2Ifm9pj46LfefwTLv+muq/7rVR+R9uo1JXvMXIhj70AlMWmZ1W8
-DyNKK3kEILdi9q2EZD1GNBniV9zsM6a+9Kq9TJEMtFaGkINGvrPG/Fp3O8V80X8Zxca+KYdCsIwV
-Tq2gBiY98HbOY8mlvlgxy8LGDNsFW0a3Xwsvxxm9A0AwTgzpnq66UCcbBMOI94eTvDoaz+nlqVqd
-yVwsBUwfyoNBsTR4JURfnYuNtLcD77zxTuvwXMSC7DZQdbcI7CykKyjDj/N7BHmDCmz0Kt/irA7v
-nQbTJ2mSdQsHuG08wJEtVHZRq3mze5PfpT30OhQQwHs37hf0ctxpJhUAun4D
---000000000000e43b1305fd05082f--
+Removed.
+
 
