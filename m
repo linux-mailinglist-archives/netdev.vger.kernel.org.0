@@ -1,130 +1,102 @@
-Return-Path: <netdev+bounces-6712-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6720-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2627A717941
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 09:58:20 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id AA1D07179B5
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:13:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 49B06281354
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 07:58:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6C9392813C8
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:13:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 50792BA25;
-	Wed, 31 May 2023 07:58:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9EDE3BE4B;
+	Wed, 31 May 2023 08:13:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45674A942
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 07:58:16 +0000 (UTC)
-X-Greylist: delayed 356 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 May 2023 00:58:02 PDT
-Received: from us-smtp-delivery-115.mimecast.com (us-smtp-delivery-115.mimecast.com [170.10.133.115])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C42186
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 00:58:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
-	s=selector; t=1685519881;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=f8zcB3FWzdIFMOaqwlI0SLKX/m2ghSlGQdvzpIMntgE=;
-	b=bGKjGcO08aLl+6a8ArDMeNaCMGBODLkkkE4YQM9DZBiGBviWtuw43u3ysx9JsvURj+8FcN
-	U0EOvZUnRabF0HcYY1t8VmhHoOPzmd72XXmNJ7bAdAyBMkIsFbn33dPnaeIzFFP0872tBq
-	t/XTpN20gXRSHYK/bdCMieDrzUPkLLtb1LsLuF2bDjOav7x7GQh2/+ZyHoMJIfjD/tvY4o
-	ntnz1gpPyWEVUDvA30CiWrdC8dIlJcyF8pQZmKvz2BIWwtTp20Er0l9Twm9QpOB17t+skG
-	KkxrIeiAgi5Ies9LHasDCT4RymFWl6gLYnG/YTepCyQrl5Adrg/Ls9WCdLDRBw==
-Received: from mail.maxlinear.com (174-47-1-83.static.ctl.one [174.47.1.83])
- by relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- us-mta-613-lqpd6lBjOL-cJyLEWZh_4Q-1; Wed, 31 May 2023 03:48:42 -0400
-X-MC-Unique: lqpd6lBjOL-cJyLEWZh_4Q-1
-Received: from sgsxdev002.isng.phoenix.local (10.226.81.112) by
- mail.maxlinear.com (10.23.38.120) with Microsoft SMTP Server id 15.1.2375.24;
- Wed, 31 May 2023 00:48:29 -0700
-From: Xu Liang <lxu@maxlinear.com>
-To: <andrew@lunn.ch>, <hkallweit1@gmail.com>, <netdev@vger.kernel.org>,
-	<davem@davemloft.net>, <kuba@kernel.org>
-CC: <linux@armlinux.org.uk>, <hmehrtens@maxlinear.com>,
-	<tmohren@maxlinear.com>, <rtanwar@maxlinear.com>,
-	<mohammad.athari.ismail@intel.com>, <edumazet@google.com>,
-	<michael@walle.cc>, <pabeni@redhat.com>, Xu Liang <lxu@maxlinear.com>
-Subject: [PATCH net] net: phy: mxl-gpy: extend interrupt fix to all impacted variants
-Date: Wed, 31 May 2023 15:48:22 +0800
-Message-ID: <20230531074822.39136-1-lxu@maxlinear.com>
-X-Mailer: git-send-email 2.17.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93D6CBA2B
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:13:44 +0000 (UTC)
+X-Greylist: delayed 732 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 May 2023 01:13:42 PDT
+Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3373293;
+	Wed, 31 May 2023 01:13:41 -0700 (PDT)
+Received: from localhost.localdomain (unknown [124.16.138.125])
+	by APP-03 (Coremail) with SMTP id rQCowAC3vzNK_XZkbgFTCA--.54869S2;
+	Wed, 31 May 2023 15:54:51 +0800 (CST)
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To: davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	davthompson@nvidia.com,
+	asmaa@nvidia.com,
+	mkl@pengutronix.de
+Cc: netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] mlxbf_gige: Add missing check for platform_get_irq
+Date: Wed, 31 May 2023 15:54:51 +0800
+Message-Id: <20230531075451.47524-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: maxlinear.com
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:rQCowAC3vzNK_XZkbgFTCA--.54869S2
+X-Coremail-Antispam: 1UD129KBjvJXoWrZF4UGr1xJr43AF1ruF1ftFb_yoW8Jry7pr
+	y8JryvqrZ5J3Wjg3Z7J395Zr1fuw4qvF1a9FWfKa1furn8Za1qkr98tFWxuFn7Gr9xG3y3
+	Ary3ZFs5ZFn8A3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+	1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+	6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
+	1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
+	6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
+	0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
+	8cxan2IY04v7MxkIecxEwVAFwVW8CwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbV
+	WUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF
+	67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42
+	IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF
+	0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2Kf
+	nxnUUI43ZEXa7VUbhiSPUUUUU==
+X-Originating-IP: [124.16.138.125]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The interrupt fix in commit 97a89ed101bb should be applied on all variants
-of GPY2xx PHY and GPY115C.
+Add the check for the return value of the platform_get_irq and
+return error if it fails.
 
-Fixes: 97a89ed101bb ("net: phy: mxl-gpy: disable interrupts on GPY215 by de=
-fault")
-Signed-off-by: Xu Liang <lxu@maxlinear.com>
+Fixes: f92e1869d74e ("Add Mellanox BlueField Gigabit Ethernet driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
- drivers/net/phy/mxl-gpy.c | 16 +++-------------
- 1 file changed, 3 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
-index 6301a9abfb95..ea1073adc5a1 100644
---- a/drivers/net/phy/mxl-gpy.c
-+++ b/drivers/net/phy/mxl-gpy.c
-@@ -274,13 +274,6 @@ static int gpy_config_init(struct phy_device *phydev)
- =09return ret < 0 ? ret : 0;
- }
-=20
--static bool gpy_has_broken_mdint(struct phy_device *phydev)
--{
--=09/* At least these PHYs are known to have broken interrupt handling */
--=09return phydev->drv->phy_id =3D=3D PHY_ID_GPY215B ||
--=09       phydev->drv->phy_id =3D=3D PHY_ID_GPY215C;
--}
--
- static int gpy_probe(struct phy_device *phydev)
- {
- =09struct device *dev =3D &phydev->mdio.dev;
-@@ -300,8 +293,7 @@ static int gpy_probe(struct phy_device *phydev)
- =09phydev->priv =3D priv;
- =09mutex_init(&priv->mbox_lock);
-=20
--=09if (gpy_has_broken_mdint(phydev) &&
--=09    !device_property_present(dev, "maxlinear,use-broken-interrupts"))
-+=09if (!device_property_present(dev, "maxlinear,use-broken-interrupts"))
- =09=09phydev->dev_flags |=3D PHY_F_NO_IRQ;
-=20
- =09fw_version =3D phy_read(phydev, PHY_FWV);
-@@ -659,11 +651,9 @@ static irqreturn_t gpy_handle_interrupt(struct phy_dev=
-ice *phydev)
- =09 * frame. Therefore, polling is the best we can do and won't do any mor=
-e
- =09 * harm.
- =09 * It was observed that this bug happens on link state and link speed
--=09 * changes on a GPY215B and GYP215C independent of the firmware version
--=09 * (which doesn't mean that this list is exhaustive).
-+=09 * changes independent of the firmware version.
- =09 */
--=09if (gpy_has_broken_mdint(phydev) &&
--=09    (reg & (PHY_IMASK_LSTC | PHY_IMASK_LSPC))) {
-+=09if (reg & (PHY_IMASK_LSTC | PHY_IMASK_LSPC)) {
- =09=09reg =3D gpy_mbox_read(phydev, REG_GPIO0_OUT);
- =09=09if (reg < 0) {
- =09=09=09phy_error(phydev);
---=20
-2.17.1
+diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
+index 694de9513b9f..a38e1c68874f 100644
+--- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
++++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
+@@ -427,6 +427,10 @@ static int mlxbf_gige_probe(struct platform_device *pdev)
+ 	priv->error_irq = platform_get_irq(pdev, MLXBF_GIGE_ERROR_INTR_IDX);
+ 	priv->rx_irq = platform_get_irq(pdev, MLXBF_GIGE_RECEIVE_PKT_INTR_IDX);
+ 	priv->llu_plu_irq = platform_get_irq(pdev, MLXBF_GIGE_LLU_PLU_INTR_IDX);
++	if (priv->error_irq < 0 || priv->rx_irq < 0 || priv->llu_plu_irq < 0) {
++		err = -ENODEV;
++		goto out;
++	}
+ 
+ 	phy_irq = acpi_dev_gpio_irq_get_by(ACPI_COMPANION(&pdev->dev), "phy-gpios", 0);
+ 	if (phy_irq < 0) {
+-- 
+2.25.1
 
 
