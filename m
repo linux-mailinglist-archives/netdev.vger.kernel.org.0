@@ -1,88 +1,101 @@
-Return-Path: <netdev+bounces-6897-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6898-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 18E0C7189BC
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 21:00:37 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E87B17189C9
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 21:05:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5483C1C20A30
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 19:00:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 882F1281568
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 19:05:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9D6DE19BAB;
-	Wed, 31 May 2023 19:00:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B422119E48;
+	Wed, 31 May 2023 19:04:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA6D8182D4
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 19:00:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 65E4BC4339E;
-	Wed, 31 May 2023 19:00:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685559621;
-	bh=hyY/JqW6K6nLzKDxiXx2110t3c/QHoR5jzju90vkioQ=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=smjiBPfSmG3K855Fps/QfhPC6bhUa9KJVAKE/WUyvBiS+ohdkE4+jR0f0uyof/XQ3
-	 gshglM9nJVQyQVErYwiz8PrdSsf9PnZweNnd1erNwRDantBorRzQZmMd0xXD/4XteK
-	 PrjwTEs4aXVSSDsYXXvJIAyBCECIZYH2udKvXPkuNCOPXJZh9fWF2TXTOIowERZCw6
-	 9B5tgr8JyEhuUaDNhx1z2HMWuX014GtCvUxxQl112OaIlMECP3CzVFnRBo9goVI6+q
-	 NAJj+fFZk/DGohVmT5V5b94iXwsGPJxBUc6L0xT7NCB/R92FHwETCTvtkCVVnZrZaw
-	 9fcYsxN+VKerg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4A385E21EC7;
-	Wed, 31 May 2023 19:00:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4DA7805
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 19:04:58 +0000 (UTC)
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E6310F
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 12:04:56 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id af79cd13be357-75affe977abso717040685a.0
+        for <netdev@vger.kernel.org>; Wed, 31 May 2023 12:04:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1685559895; x=1688151895;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=55EZdRKawvywEhrbC7BpBXsx5HuuUYXOihAkNZH/MO0=;
+        b=pWsxzsmg771TOdEFNtaXdyB2oUh3rVCYyTNw/hfZarQt3YcGoQzykrhCiMD74jqicY
+         KX+3j6oTwdq0nnx2QwhUZfhD1vZjumcyv5tJSYOe1TY3jl7LhE/7p7JxrAGlcu7O4BNn
+         +1ueT2nygtj5SUFjn1n9J8LIt/9eUSF1jlNps0VyYJfsGggVDpcMzzpE4GgSFD+VuIi/
+         GbOZ63V+Sq0JqaLPpaKLELJZUc8mEU5wW692fyWlIteDgwGuiSaBoI8RArc5xUAeIa7r
+         5dJYY9ALmSK++p1qTWShWK8+5tNgtUysfNch8cYJP9RjU0CmEk6gDTQdjpKoFUwq371z
+         w7qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685559895; x=1688151895;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=55EZdRKawvywEhrbC7BpBXsx5HuuUYXOihAkNZH/MO0=;
+        b=g0ZGynHJqgNZhnRPvfZ0phVOGtN8wDNPAi2KYmvjmrpTHeCYf4WRCrEcyz75hPiGMc
+         t2ktPlV1GkFo1WUbKL+UNPijF9v42hZcooUBMM9k30WR7XnLXxxCy0294lZuySjIEZbD
+         xHCzkum0R3sBz2CZj/Rp0MelWbCV0tL9GcaDAoQSen2cgYrmmc2LXRqTHJu8+NzthmH4
+         Sp7558VqXvQmXgGXAwZqDhJB2gmFO2ZYqIYWtZIS3VjsB0kiXiSDbiWrtuCHx2JTYghk
+         tOiXu53lXTk33ayOy/fTwpY64D3o4fxNYT93+pB9CMkSoFYqWNdRethOk8MhPWamvkqw
+         YS3g==
+X-Gm-Message-State: AC+VfDw9CB2cY3NTL0Gwpo5B2KUi3fBEY9hbvkY71hg4LKJjlzGBP2H+
+	TAk2ul65AhhKAbtgoALURLzsxw==
+X-Google-Smtp-Source: ACHHUZ4yata1LcfSPtHo41ono6PwRoZmU222yNfJWyoG1NlvYfLT2L3YHWy3WFq2BVDg9BMUObGLMA==
+X-Received: by 2002:ad4:5b8f:0:b0:621:2ad5:df74 with SMTP id 15-20020ad45b8f000000b006212ad5df74mr7776699qvp.51.1685559895712;
+        Wed, 31 May 2023 12:04:55 -0700 (PDT)
+Received: from ziepe.ca ([206.223.160.26])
+        by smtp.gmail.com with ESMTPSA id v17-20020a0cf911000000b0062618962ec0sm4280792qvn.133.2023.05.31.12.04.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 May 2023 12:04:55 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1q4R7t-0017TK-Kw;
+	Wed, 31 May 2023 16:04:53 -0300
+Date: Wed, 31 May 2023 16:04:53 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Chuck Lever III <chuck.lever@oracle.com>
+Cc: Chuck Lever <cel@kernel.org>, Netdev <netdev@vger.kernel.org>,
+	linux-rdma <linux-rdma@vger.kernel.org>,
+	Bernard Metzler <BMT@zurich.ibm.com>, Tom Talpey <tom@talpey.com>
+Subject: Re: [PATCH RFC 3/3] RDMA/siw: Require non-zero 6-byte MACs for soft
+ iWARP
+Message-ID: <ZHeaVdsMUz8gDjEU@ziepe.ca>
+References: <168330051600.5953.11366152375575299483.stgit@oracle-102.nfsv4bat.org>
+ <168330138101.5953.12575990094340826016.stgit@oracle-102.nfsv4bat.org>
+ <ZFVf+wzF6Px8nlVR@ziepe.ca>
+ <7825F977-3F62-4AFC-92F2-233C5EAE01D3@oracle.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH RESEND 0/2] Bluetooth: fix debugfs registration
-From: patchwork-bot+bluetooth@kernel.org
-Message-Id: 
- <168555962130.19706.12623481688693032536.git-patchwork-notify@kernel.org>
-Date: Wed, 31 May 2023 19:00:21 +0000
-References: <20230531085759.2803-1-johan+linaro@kernel.org>
-In-Reply-To: <20230531085759.2803-1-johan+linaro@kernel.org>
-To: Johan Hovold <johan+linaro@kernel.org>
-Cc: marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
- linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7825F977-3F62-4AFC-92F2-233C5EAE01D3@oracle.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
+On Tue, May 23, 2023 at 07:18:18PM +0000, Chuck Lever III wrote:
 
-This series was applied to bluetooth/bluetooth-next.git (master)
-by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
+> The core address resolution code wants to find an L2 address
+> for the egress device. The underlying ib_device, where a made-up
+> GID might be stored, is not involved with address resolution
+> AFAICT.
 
-On Wed, 31 May 2023 10:57:57 +0200 you wrote:
-> The HCI controller debugfs interface is created during setup or when a
-> controller is configured, but there is nothing preventing a controller
-> from being configured multiple times (e.g. by setting the device
-> address), which results in a host of errors in the logs:
-> 
-> 	debugfs: File 'features' in directory 'hci0' already present!
-> 	debugfs: File 'manufacturer' in directory 'hci0' already present!
-> 	debugfs: File 'hci_version' in directory 'hci0' already present!
-> 	...
-> 	debugfs: File 'quirk_simultaneous_discovery' in directory 'hci0' already present!
-> 
-> [...]
+Where are you hitting this?
 
-Here is the summary with links:
-  - [RESEND,1/2] Bluetooth: fix debugfs registration
-    https://git.kernel.org/bluetooth/bluetooth-next/c/3e972279b782
-  - [RESEND,2/2] Bluetooth: hci_qca: fix debugfs registration
-    https://git.kernel.org/bluetooth/bluetooth-next/c/22307d477e3f
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Jason
 
