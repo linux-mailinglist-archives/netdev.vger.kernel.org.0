@@ -1,101 +1,144 @@
-Return-Path: <netdev+bounces-6898-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6899-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E87B17189C9
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 21:05:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 446D97189DC
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 21:09:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 882F1281568
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 19:05:00 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 81DB728151D
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 19:09:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B422119E48;
-	Wed, 31 May 2023 19:04:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B13A719E4E;
+	Wed, 31 May 2023 19:09:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4DA7805
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 19:04:58 +0000 (UTC)
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E6310F
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 12:04:56 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id af79cd13be357-75affe977abso717040685a.0
-        for <netdev@vger.kernel.org>; Wed, 31 May 2023 12:04:56 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EDA12578
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 19:09:26 +0000 (UTC)
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20DB125;
+	Wed, 31 May 2023 12:08:56 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id 4fb4d7f45d1cf-5147e441c33so240614a12.0;
+        Wed, 31 May 2023 12:08:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1685559895; x=1688151895;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=55EZdRKawvywEhrbC7BpBXsx5HuuUYXOihAkNZH/MO0=;
-        b=pWsxzsmg771TOdEFNtaXdyB2oUh3rVCYyTNw/hfZarQt3YcGoQzykrhCiMD74jqicY
-         KX+3j6oTwdq0nnx2QwhUZfhD1vZjumcyv5tJSYOe1TY3jl7LhE/7p7JxrAGlcu7O4BNn
-         +1ueT2nygtj5SUFjn1n9J8LIt/9eUSF1jlNps0VyYJfsGggVDpcMzzpE4GgSFD+VuIi/
-         GbOZ63V+Sq0JqaLPpaKLELJZUc8mEU5wW692fyWlIteDgwGuiSaBoI8RArc5xUAeIa7r
-         5dJYY9ALmSK++p1qTWShWK8+5tNgtUysfNch8cYJP9RjU0CmEk6gDTQdjpKoFUwq371z
-         w7qg==
+        d=gmail.com; s=20221208; t=1685560135; x=1688152135;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zyxR30g2bKMnEjOEuROEiWjiUjocH3rGbPWdVsGv92s=;
+        b=Ye2IWrnhoxGCqV8CGZvUTZnGQFK30FN7eFPb3mkua59MXfEURFTToTqMIc9p4HZwMP
+         wFzjlVy9+QNsDn11n5oBQPUWKVZnTri5EvZYXX1lbvupKK/+7zMxPcBPoMJN839ELKW9
+         a1pgRCPWS7GNpT+c1HzgV+ns6eEcXkOses3w16nXfaSiXwV1vQJr86mZsPBcDWh3byPy
+         lPMencn3DjE+it5T1fGr1w6nHJ67qk4Bc8giOLvY+PenGdUi6wMJS29BtBXJdbiVu/+6
+         gZaLhB2bkTvf02Mdre9GTMnAcN8mLKnnjMiRp55fte9LFOqZf4BXk3L4hm5yihFbKZDz
+         XFMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685559895; x=1688151895;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=55EZdRKawvywEhrbC7BpBXsx5HuuUYXOihAkNZH/MO0=;
-        b=g0ZGynHJqgNZhnRPvfZ0phVOGtN8wDNPAi2KYmvjmrpTHeCYf4WRCrEcyz75hPiGMc
-         t2ktPlV1GkFo1WUbKL+UNPijF9v42hZcooUBMM9k30WR7XnLXxxCy0294lZuySjIEZbD
-         xHCzkum0R3sBz2CZj/Rp0MelWbCV0tL9GcaDAoQSen2cgYrmmc2LXRqTHJu8+NzthmH4
-         Sp7558VqXvQmXgGXAwZqDhJB2gmFO2ZYqIYWtZIS3VjsB0kiXiSDbiWrtuCHx2JTYghk
-         tOiXu53lXTk33ayOy/fTwpY64D3o4fxNYT93+pB9CMkSoFYqWNdRethOk8MhPWamvkqw
-         YS3g==
-X-Gm-Message-State: AC+VfDw9CB2cY3NTL0Gwpo5B2KUi3fBEY9hbvkY71hg4LKJjlzGBP2H+
-	TAk2ul65AhhKAbtgoALURLzsxw==
-X-Google-Smtp-Source: ACHHUZ4yata1LcfSPtHo41ono6PwRoZmU222yNfJWyoG1NlvYfLT2L3YHWy3WFq2BVDg9BMUObGLMA==
-X-Received: by 2002:ad4:5b8f:0:b0:621:2ad5:df74 with SMTP id 15-20020ad45b8f000000b006212ad5df74mr7776699qvp.51.1685559895712;
-        Wed, 31 May 2023 12:04:55 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id v17-20020a0cf911000000b0062618962ec0sm4280792qvn.133.2023.05.31.12.04.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 May 2023 12:04:55 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1q4R7t-0017TK-Kw;
-	Wed, 31 May 2023 16:04:53 -0300
-Date: Wed, 31 May 2023 16:04:53 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Chuck Lever III <chuck.lever@oracle.com>
-Cc: Chuck Lever <cel@kernel.org>, Netdev <netdev@vger.kernel.org>,
-	linux-rdma <linux-rdma@vger.kernel.org>,
-	Bernard Metzler <BMT@zurich.ibm.com>, Tom Talpey <tom@talpey.com>
-Subject: Re: [PATCH RFC 3/3] RDMA/siw: Require non-zero 6-byte MACs for soft
- iWARP
-Message-ID: <ZHeaVdsMUz8gDjEU@ziepe.ca>
-References: <168330051600.5953.11366152375575299483.stgit@oracle-102.nfsv4bat.org>
- <168330138101.5953.12575990094340826016.stgit@oracle-102.nfsv4bat.org>
- <ZFVf+wzF6Px8nlVR@ziepe.ca>
- <7825F977-3F62-4AFC-92F2-233C5EAE01D3@oracle.com>
+        d=1e100.net; s=20221208; t=1685560135; x=1688152135;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=zyxR30g2bKMnEjOEuROEiWjiUjocH3rGbPWdVsGv92s=;
+        b=IWpyQphcW6Z5uhCXJTtrPBNMDEutfQlECtR3IN/QE/b4R3cT9BPhuYOyEirPRM8sqr
+         prMKBpA5fruEx8XnGNuqIkkrLU2o8Z61/EGfjYF9l45ShbuJYN6N7H4DxfnVqRP3DNZz
+         eIuSacu7WvxvdPU5Ht//0wBRExNS/RNbFrb8yGE+1mQqJU4OAhHtyH34WE/c/9P/hV8+
+         DHVfP7nc+PcClFZ6xqS/dveeIT8qEa+L2U8KeUZgy8fFvAgB37vpP1fLazQpavNjOehV
+         TY6UD6GzYPw+M761+S01IyIVDcETHD3J7+4C9plBWsuCEzJzcCY1kXHS0MRyYA4WfczR
+         GklQ==
+X-Gm-Message-State: AC+VfDzCd127y1refm3+AEVDP9wKa3tFGDwK63Owm7rgfkazVeZGWiC3
+	iFJj+OIbKi5/RveJ/wd/G6c=
+X-Google-Smtp-Source: ACHHUZ7fgGkI5VqrGVbz2CLufCaK0JikIDl9Hwd+z7uJFtvba3mR751C8zmx9S8daTsL5HhTRk9D+w==
+X-Received: by 2002:a05:6402:5107:b0:514:9311:e83a with SMTP id m7-20020a056402510700b005149311e83amr7142584edd.8.1685560134877;
+        Wed, 31 May 2023 12:08:54 -0700 (PDT)
+Received: from ?IPV6:2a01:c23:c18f:4600:8999:532:b66e:c213? (dynamic-2a01-0c23-c18f-4600-8999-0532-b66e-c213.c23.pool.telefonica.de. [2a01:c23:c18f:4600:8999:532:b66e:c213])
+        by smtp.googlemail.com with ESMTPSA id d25-20020a50fb19000000b0050cc4461fc5sm6101880edq.92.2023.05.31.12.08.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 May 2023 12:08:54 -0700 (PDT)
+Message-ID: <4a6c413c-8791-fd00-a73e-7a12413693e3@gmail.com>
+Date: Wed, 31 May 2023 21:08:53 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7825F977-3F62-4AFC-92F2-233C5EAE01D3@oracle.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: [PATCH 2/2] net: phy: realtek: Add optional external PHY clock
+To: Detlev Casanova <detlev.casanova@collabora.com>,
+ linux-kernel@vger.kernel.org
+Cc: Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
+ "David S . Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Florian Fainelli <f.fainelli@gmail.com>,
+ netdev@vger.kernel.org, devicetree@vger.kernel.org
+References: <20230531150340.522994-1-detlev.casanova@collabora.com>
+ <20230531150340.522994-2-detlev.casanova@collabora.com>
+Content-Language: en-US
+From: Heiner Kallweit <hkallweit1@gmail.com>
+In-Reply-To: <20230531150340.522994-2-detlev.casanova@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 23, 2023 at 07:18:18PM +0000, Chuck Lever III wrote:
+On 31.05.2023 17:03, Detlev Casanova wrote:
+> In some cases, the PHY can use an external clock source instead of a
+> crystal.
+> 
+> Add an optional clock in the phy node to make sure that the clock source
+> is enabled, if specified, before probing.
+> 
+> Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+> ---
+>  drivers/net/phy/realtek.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+> index 3d99fd6664d7..70c75dbbf799 100644
+> --- a/drivers/net/phy/realtek.c
+> +++ b/drivers/net/phy/realtek.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/phy.h>
+>  #include <linux/module.h>
+>  #include <linux/delay.h>
+> +#include <linux/clk.h>
+>  
+>  #define RTL821x_PHYSR				0x11
+>  #define RTL821x_PHYSR_DUPLEX			BIT(13)
+> @@ -80,6 +81,7 @@ struct rtl821x_priv {
+>  	u16 phycr1;
+>  	u16 phycr2;
+>  	bool has_phycr2;
+> +	struct clk *clk;
+>  };
+>  
+>  static int rtl821x_read_page(struct phy_device *phydev)
+> @@ -103,6 +105,11 @@ static int rtl821x_probe(struct phy_device *phydev)
+>  	if (!priv)
+>  		return -ENOMEM;
+>  
+> +	priv->clk = devm_clk_get_optional_enabled(dev, "xtal");
 
-> The core address resolution code wants to find an L2 address
-> for the egress device. The underlying ib_device, where a made-up
-> GID might be stored, is not involved with address resolution
-> AFAICT.
+Why add priv->clk if it isn't used outside probe()?
 
-Where are you hitting this?
+How about suspend/resume? Would it make sense to stop the clock
+whilst PHY is suspended?
 
-Jason
+> +	if (IS_ERR(priv->clk))
+> +		return dev_err_probe(dev, PTR_ERR(priv->clk),
+> +				     "failed to get phy xtal clock\n");
+> +
+>  	ret = phy_read_paged(phydev, 0xa43, RTL8211F_PHYCR1);
+>  	if (ret < 0)
+>  		return ret;
+
 
