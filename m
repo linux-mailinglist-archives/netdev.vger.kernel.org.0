@@ -1,136 +1,196 @@
-Return-Path: <netdev+bounces-6719-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6721-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0F5D77179B1
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:12:46 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 64D227179BB
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:15:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C746528142A
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:12:44 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C22882813AD
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:14:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E9C73BE47;
-	Wed, 31 May 2023 08:12:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA409BE52;
+	Wed, 31 May 2023 08:14:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF62BBA26
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:12:34 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C59BE
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 01:12:33 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1q4GwT-0006Bx-Ry; Wed, 31 May 2023 10:12:25 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-	(envelope-from <ore@pengutronix.de>)
-	id 1q4GwS-0043cp-Ad; Wed, 31 May 2023 10:12:24 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-	(envelope-from <ore@pengutronix.de>)
-	id 1q4GwR-00H83J-9T; Wed, 31 May 2023 10:12:23 +0200
-Date: Wed, 31 May 2023 10:12:23 +0200
-From: Oleksij Rempel <o.rempel@pengutronix.de>
-To: Lukasz Majewski <lukma@denx.de>
-Cc: Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
-	Vivien Didelot <vivien.didelot@gmail.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC] net: dsa: slave: Advertise correct EEE capabilities at
- slave PHY setup
-Message-ID: <ZHcBZ5hGTu7aBCsJ@pengutronix.de>
-References: <20230530122621.2142192-1-lukma@denx.de>
- <32aa2c0f-e284-4c5e-ba13-a2ea7783c202@lunn.ch>
- <20230530154039.4552e08a@wsk>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6E5DBA52
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:14:56 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2110C5
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 01:14:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1685520893; x=1717056893;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=A7FLB/m/yNzfNR2rBTeRYdMrluPgEWmMsHTKsrep9Jo=;
+  b=tm4IfSdOfjc4wkvg03z5ah8W2Pwxu+ha6fcthF7M05rg2SrzyWA0gvaM
+   fyWtmJN85wTyD2peEV/w4imKyMDV/TEB2XhDZjn8o1utpAN86H7S2DQWj
+   wgYT7+LWDpKllA/EBMOJr64GrE6oSRXou1lrWvOFXcWwFkhZfezN5k0tU
+   k+7YQpg8qrdc0C8umLVKKNukSHoDRTi14UopApbVMuiRgrU8CBA3766oS
+   mj9bceOoluQl/okOYmXFosWqe9Pjzu03X3+zUfPCOJTmYbUb5r7q/hP4j
+   ysj87XqesAEX/2NsoHzzwrSlyeSs85FQ8gnOLMPDrALO2h4c/ACSZHDEH
+   g==;
+X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
+   d="scan'208";a="215577216"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 May 2023 01:14:53 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 31 May 2023 01:14:53 -0700
+Received: from DEN-LT-70577 (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Wed, 31 May 2023 01:14:52 -0700
+Date: Wed, 31 May 2023 08:14:51 +0000
+From: Daniel Machon <daniel.machon@microchip.com>
+To: Petr Machata <petrm@nvidia.com>
+CC: <netdev@vger.kernel.org>, <dsahern@kernel.org>,
+	<stephen@networkplumber.org>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH iproute2-next v2 5/8] dcb: rewr: add new dcb-rewr
+ subcommand
+Message-ID: <20230531081451.rjhc3ie2yb4iyxzr@DEN-LT-70577>
+References: <20230510-dcb-rewr-v2-0-9f38e688117e@microchip.com>
+ <20230510-dcb-rewr-v2-5-9f38e688117e@microchip.com>
+ <87sfbd4kfb.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230530154039.4552e08a@wsk>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+In-Reply-To: <87sfbd4kfb.fsf@nvidia.com>
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Lukasz,
+ > Daniel Machon <daniel.machon@microchip.com> writes:
+> 
+> > Add a new subcommand 'rewr' for configuring the in-kernel DCB rewrite
+> > table. The rewr-table of the kernel is similar to the APP-table, and so
+> > is this new subcommand. Therefore, much of the existing bookkeeping code
+> > from dcb-app, can be reused in the dcb-rewr implementation.
+> >
+> > Initially, only support for configuring PCP and DSCP-based rewrite has
+> > been added.
+> >
+> > Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+> 
+> Looks good overall, barring the comment about dcb_app_parse_mapping_cb()
+> that I made in the other patch, and a handful of nits below.
+> 
+> > ---
+> >  dcb/Makefile   |   3 +-
+> >  dcb/dcb.c      |   4 +-
+> >  dcb/dcb.h      |  32 ++++++
+> >  dcb/dcb_app.c  |  49 ++++----
+> >  dcb/dcb_rewr.c | 355 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+> >  5 files changed, 416 insertions(+), 27 deletions(-)
+> 
+> > diff --git a/dcb/dcb.h b/dcb/dcb.h
+> > index b3bc30cd02c5..092dc90e8358 100644
+> > --- a/dcb/dcb.h
+> > +++ b/dcb/dcb.h
+> > @@ -54,6 +54,10 @@ void dcb_print_array_on_off(const __u8 *array, size_t size);
+> >  void dcb_print_array_kw(const __u8 *array, size_t array_size,
+> >                       const char *const kw[], size_t kw_size);
+> >
+> > +/* dcp_rewr.c */
+> > +
+> > +int dcb_cmd_rewr(struct dcb *dcb, int argc, char **argv);
+> > +
+> >  /* dcb_app.c */
+> >
+> >  struct dcb_app_table {
+> > @@ -70,8 +74,29 @@ struct dcb_app_parse_mapping {
+> >       int err;
+> >  };
+> >
+> > +#define DCB_APP_PCP_MAX 15
+> 
+> This should be removed from dcb_app.c as well.
+> 
+> > +#define DCB_APP_DSCP_MAX 63
+> 
+> DCB_APP_DSCP_MAX should be introduced in a separate patch together with
+> the s/63/DCB_APP_DSCP_MAX/ of the existing code, instead of including it
+> all here. It's a concern separate from the main topic of the patch.
 
-On Tue, May 30, 2023 at 03:40:39PM +0200, Lukasz Majewski wrote:
-> Hi Andrew,
-> 
-> > On Tue, May 30, 2023 at 02:26:21PM +0200, Lukasz Majewski wrote:
-> > > One can disable in device tree advertising of EEE capabilities of
-> > > PHY when 'eee-broken-100tx' property is present in DTS.
-> > > 
-> > > With DSA switch it also may happen that one would need to disable
-> > > EEE due to some network issues.  
-> > 
-> > Is EEE actually broken in the MAC/PHY combination?
-> > 
-> 
-> Problem is that when I connect on this project some non-manageable
-> switches (which by default have EEE enabled), then I observe very rare
-> and sporadic link loss and reconnection.
+Ack.
 
-The interesting question is, do other link partner or local system is
-broken?
-In some cases, not proper tx-timer was triggering this kind of
-symptoms. And timer configuration may depend on the link speed. So,
-driver may be need to take care of this.
-
-> Disabling EEE solves the problem.
 > 
-> > You should not be using this DT option for configuration. It is there
-> > because there is some hardware which is truly broken, and needs EEE
-> > turned off.
+> > +
+> >  int dcb_cmd_app(struct dcb *dcb, int argc, char **argv);
+> >
+> > +int dcb_app_get(struct dcb *dcb, const char *dev, struct dcb_app_table *tab);
+> > +int dcb_app_add_del(struct dcb *dcb, const char *dev, int command,
+> > +                 const struct dcb_app_table *tab,
+> > +                 bool (*filter)(const struct dcb_app *));
+> > +
+> > +bool dcb_app_is_dscp(const struct dcb_app *app);
+> > +bool dcb_app_is_pcp(const struct dcb_app *app);
+> > +
+> > +int dcb_app_print_pid_dscp(__u16 protocol);
+> > +int dcb_app_print_pid_pcp(__u16 protocol);
+> > +int dcb_app_print_pid_dec(__u16 protocol);
+> > +void dcb_app_print_filtered(const struct dcb_app_table *tab,
+> > +                         bool (*filter)(const struct dcb_app *),
+> > +                         void (*print_pid_prio)(int (*print_pid)(__u16),
+> > +                                                const struct dcb_app *),
+> > +                         int (*print_pid)(__u16 protocol),
+> > +                         const char *json_name, const char *fp_name);
+> > +
+> >  enum ieee_attrs_app dcb_app_attr_type_get(__u8 selector);
+> >  bool dcb_app_attr_type_validate(enum ieee_attrs_app type);
+> >  bool dcb_app_selector_validate(enum ieee_attrs_app type, __u8 selector);
+> > @@ -80,11 +105,18 @@ bool dcb_app_pid_eq(const struct dcb_app *aa, const struct dcb_app *ab);
+> >  bool dcb_app_prio_eq(const struct dcb_app *aa, const struct dcb_app *ab);
+> >
+> >  int dcb_app_table_push(struct dcb_app_table *tab, struct dcb_app *app);
+> > +int dcb_app_table_copy(struct dcb_app_table *a, const struct dcb_app_table *b);
+> > +void dcb_app_table_sort(struct dcb_app_table *tab);
+> > +void dcb_app_table_fini(struct dcb_app_table *tab);
+> > +void dcb_app_table_remove_existing(struct dcb_app_table *a,
+> > +                                const struct dcb_app_table *b);
+> >  void dcb_app_table_remove_replaced(struct dcb_app_table *a,
+> >                                  const struct dcb_app_table *b,
+> >                                  bool (*key_eq)(const struct dcb_app *aa,
+> >                                                 const struct dcb_app *ab));
+> >
+> > +int dcb_app_parse_pcp(__u32 *key, const char *arg);
+> > +int dcb_app_parse_dscp(__u32 *key, const char *arg);
+> >  void dcb_app_parse_mapping_cb(__u32 key, __u64 value, void *data);
+> >
+> >  /* dcb_apptrust.c */
+> > diff --git a/dcb/dcb_app.c b/dcb/dcb_app.c
+> > index 97cba658aa6b..3cb1bb302ed6 100644
+> > --- a/dcb/dcb_app.c
+> > +++ b/dcb/dcb_app.c
 > 
-> Yes, I do think that the above sentence sums up my use case.
-
-As Andrew already described, current linux kernel EEE support is not in
-the best shape, it is hard to see the difference between broken HW and
-SW.
-
-> > If EEE does work, but you need to turn it off because of latency etc,
-> > then please use ethtool.
-> > 
+> > @@ -643,9 +642,9 @@ static int dcb_app_add_del_cb(struct dcb *dcb, struct nlmsghdr *nlh, void *data)
 > 
-> Yes, correct - it is possible to disable the EEE with 
+> > +static int dcb_cmd_rewr_replace(struct dcb *dcb, const char *dev, int argc,
+> > +                             char **argv)
+> > +{
 > 
-> ethtool --set-eee lan2 eee off
+> [...]
 > 
-> However, as I've stated in the mail, I cannot re-enable EEE once
-> disabled with:
+> > +}
+> > +
+> > +
 > 
-> ethtool --set-eee lan2 eee on
+> Two blank lines.
 > 
-> ethtool --show-eee lan2
-> EEE Settings for lan2:
->         EEE status: not supported
-> 
-> 
-> As the capability register shows value of 0.
-
-Some PHYs indeed have this issues:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/phy/micrel.c?h=v6.4-rc4#n1402
-
-In case of your older kernel version, you will need to fake access to
-the EEE caps register.
-
-Regards,
-Oleksij
+> > +static int dcb_cmd_rewr_show(struct dcb *dcb, const char *dev, int argc,
+> > +                          char **argv)
+> > +{
 
