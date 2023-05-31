@@ -1,157 +1,163 @@
-Return-Path: <netdev+bounces-6824-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6825-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6CDFA71855C
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 16:53:12 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1CB90718584
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 17:03:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F36F62814ED
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 14:53:10 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A6DBB1C20EA4
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 15:03:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E6DD216416;
-	Wed, 31 May 2023 14:52:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C86316423;
+	Wed, 31 May 2023 15:03:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8AB116415
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 14:52:50 +0000 (UTC)
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2046.outbound.protection.outlook.com [40.107.114.46])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4380C0;
-	Wed, 31 May 2023 07:52:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Pj0xQhctX5BirZjgGp8DuiC3gR2LUbOZ8svGtO8FK693q5Vc7ZUr6kN1PDw0vt8PEmpYo9QiVCjfMbvz9VO8OHbRyxxeAZvg8uuSfNmPvS33KuGS7uIqQB6cyN3RgoyX8cf1Q9UIzDk03zrV5TLYrW8sN1xnBydkQGSVa86V3hugvXXpte5/E3sbqkrMGL1ZYrEkAh4PRS0ljUiin2/3mYKrRV86MsWU3Y1Bq69e8xOZnuFCiqwnSMXz7xzocSM2iqem7ttuO/Xld6EJloZxlyt8JOtt9vG3vRVKH58ZLjB29zmxgm9DsOoTSMPjJru25iFGb36DvMI/nadx322L3g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QB9+9O8YHe6jYhIs7vr7ASVe3UNw2FxjtZRaVnMmbzc=;
- b=iRwIZr+IXHuftkWB0XMUScTBEEFvaEdMvo6xlbE9CU/jytQkpaf4jeRj8aSQ44QPNWKap6XiMc3XQK/eItsf88sIowLl0JDSVeQ7EcKEgYSk2AkteC6qVE9mPCAKhilDqUZKiB3ghXm5Ti1MG2DcnHPK9KYYCdQmJL4u6zTeKzZ+CUkwGYRld8v+gc/eqacwbM4MJhVWsccZw1V2EXu1HXrUUSEeGkZUJuMRrlGZE9lubnqdEtYGJWfiCHa1DNJLS3hOLns4ZxjQ78TRi+l+sbsTl9Xn8bOzjhSkA/6mPC9mC3sRw1zQ++9nYvAEEvm7D/pnD0G63HuBqDq+96Bs7Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=sord.co.jp; dmarc=pass action=none header.from=sord.co.jp;
- dkim=pass header.d=sord.co.jp; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A7FAC8FF
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 15:03:56 +0000 (UTC)
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C576134
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:03:50 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-3f6a6b9bebdso85645e9.0
+        for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:03:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=sordcorp.onmicrosoft.com; s=selector2-sordcorp-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QB9+9O8YHe6jYhIs7vr7ASVe3UNw2FxjtZRaVnMmbzc=;
- b=l0xiuzK7h5T46Qb4l5YHWJt8U31Q63Hp1Yc4OOc95xrQ/GvQTwkOmknOmmZkd/3eqZi8zPSLJEF+sleeMCW4H747knvNhOlpno40URdlBoCicJk6UblkOgppKWXTxyUbuV+FRweoR0ZpxraP+dKzKO86S73gdKoMSEUeVaTrH1k=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=sord.co.jp;
-Received: from OSZPR01MB7049.jpnprd01.prod.outlook.com (2603:1096:604:13c::13)
- by TYWPR01MB8872.jpnprd01.prod.outlook.com (2603:1096:400:16f::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.24; Wed, 31 May
- 2023 14:52:46 +0000
-Received: from OSZPR01MB7049.jpnprd01.prod.outlook.com
- ([fe80::361d:fa2b:36c9:268e]) by OSZPR01MB7049.jpnprd01.prod.outlook.com
- ([fe80::361d:fa2b:36c9:268e%2]) with mapi id 15.20.6433.024; Wed, 31 May 2023
- 14:52:46 +0000
-Message-ID: <167dd6d4-1154-3259-9a00-c46b8f764388@sord.co.jp>
-Date: Wed, 31 May 2023 23:52:44 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net-next 2/2] net: phy: adin: add support for inverting
- the link status output signal
-Content-Language: en-US
-To: Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc: netdev@vger.kernel.org, devicetree@vger.kernel.org,
- Michael Hennerich <michael.hennerich@analog.com>,
- Alexandru Tachici <alexandru.tachici@analog.com>
-References: <7eedd83d-7d87-ba3e-7a38-990f05a44579@sord.co.jp>
- <20230531063714.7znsc7cepsk3yu44@soft-dev3-1>
-From: Atsushi Nemoto <atsushi.nemoto@sord.co.jp>
-In-Reply-To: <20230531063714.7znsc7cepsk3yu44@soft-dev3-1>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TYCPR01CA0033.jpnprd01.prod.outlook.com
- (2603:1096:405:1::21) To OSZPR01MB7049.jpnprd01.prod.outlook.com
- (2603:1096:604:13c::13)
+        d=google.com; s=20221208; t=1685545429; x=1688137429;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=H9hQYHnZva8RSd0ItZzDKoX0R76IANPL/LygsCiCcfM=;
+        b=5eyGCrFRA0SL7FzVYaBQBJ2c8rAMnCHGbZbxofJSdWYn2RGso3EZe9+EkK/66lPwO6
+         Iqkjxs1Z/wsp/BJMjYgtx7qNFvjln+N+gOdsgizXyHLaMvugYES3hJhblFygpuNU3dBK
+         /rkufjynWgFactLBpWmY1gI2TdNk5gBTjLL1IcIFvlTBqQx1x7UhpM3ZgDbiWyCc+umi
+         8mT7thH79odxYbf+z7xCjuY8T+f0NRrw+w4Yf0uEp2Z9YXaRoiq533RL8cCe+FwjH5Gd
+         kko7M2E/dnpLMQhNoYP4itS4DOXOBeGc2UE44rlrN49637vqEg+778LGtVyqQds6j7tb
+         dCyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685545429; x=1688137429;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=H9hQYHnZva8RSd0ItZzDKoX0R76IANPL/LygsCiCcfM=;
+        b=TWproatnHDPPGWIjn5rYUulafe/efw7TqJYFQyA9t5F7VHpMy0hShNA4rbRIwPKtHN
+         zXD5W4CMSJurF5Cz2V1L3iTl16sWMDTibkZjzNBCEdG6IkgGhudWWFV+cXqy43u0rAIU
+         2FOZkwuZ1fxh9CEIP6t4h31Zcnji9w7uyi/vMHfg1S1JA5ShHCDWBeXfTMU97VIzHFfE
+         cjYsaPqFrQWkAouqgnVfsEen9VldJeee19zOmscj7UuknFKZhNK23lUbR9coe98rIpfp
+         0af2OWz6lu25Eoah8+VZi7QAIwcTatAcfy1inXLfcMT1WlUW0t6BB6usdpYCAxrZ8BfM
+         6G8g==
+X-Gm-Message-State: AC+VfDxlvNL/sCu1GMga3Nx3LV/oi+OM1HR3I/1HpfisC8k7QsXXczyr
+	r4ToMYWo5oILTFg4IvREFu6snu6g22DkNiQf+Ya6kA==
+X-Google-Smtp-Source: ACHHUZ79rtAYPrPj9pBckviOihnUQ6c6rbV3UKc5JhuaJRnXqnkN385r39yywDbzp8MbSz7+BQtk28q2498nTMd+/Y4=
+X-Received: by 2002:a05:600c:4f8d:b0:3f1:9a3d:4f7f with SMTP id
+ n13-20020a05600c4f8d00b003f19a3d4f7fmr132466wmq.1.1685545428875; Wed, 31 May
+ 2023 08:03:48 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: OSZPR01MB7049:EE_|TYWPR01MB8872:EE_
-X-MS-Office365-Filtering-Correlation-Id: d49b9d80-f29f-4028-1921-08db61e6b1ea
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ZLfA+EiusQOldiY3q/lrj8lGRJsJXigVkEdjKwFTOQ/0RmefT6yliF90yegVa4di/7CYwRAnZx4Bs2qx9dBVaJ2qm8idNr0stoqsdBmjy87H38eGrTjJiEpA/eQbhLTEZFUTAdqpjhPmv2eEooo3u24fayeKKEtK6+j+76oxZ/LCMp+vO7KPfKP21CnPnXNZE33Q6xGNYAYNfdxyL5/6ONKiAd8/CyA0ERTsJaTJWOK37ToIB4zMM0riQSyhOH5xu4Z3L9FQCePgPv9tm0ln/gxXfM5vsDvj1gKWgdNoUqHkTPKfhzAO3In10JjfYg6sqUq80kj5GvfQr+cTwhaBVuEBM/z6edKffi5ALPGLWT7AsEsY0tt/m7FihZhG0d8mqtTQjK+VAxbmHmCPeX7FoOA2hIA0EkINTSIfBWIa2Ft03KHYWsy8xmIHGC99bY8CxJYhIDhPPXFYJMFj6ukJNHlP7h5HD56kY7wv/nclG/pYXnU24BhdNKzVzlJqXtuMHDt+XVMlUCALLsPcQC2Mpn8a3MYZ0DVO32ZXLoDCsVXWuHw45iBZacWQRk6D1oDNLNi1+KUf2ixO31FzMPVMSPLZM2H6zrBxjo5Ikym253cXcEKB2R2DdyMQA6KB2ZYVrfY6stDeVm6fG0pDXSO0aw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSZPR01MB7049.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39850400004)(366004)(346002)(376002)(396003)(136003)(451199021)(66476007)(5660300002)(36756003)(4326008)(6916009)(66946007)(66556008)(478600001)(31686004)(54906003)(8676002)(316002)(6486002)(41300700001)(44832011)(38100700002)(8936002)(86362001)(2616005)(6512007)(53546011)(186003)(31696002)(6506007)(26005)(4744005)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?azJRZEd6NFQ2UHlMby9aOGN1MnlFcW9TT2J4b1RqbzA4K3FwRUFKTGVRSzZZ?=
- =?utf-8?B?amFKNGVRMU9LeW52dVM4N2xacmN4NWhEb2JHLzBDY0hVeElxQ0MwNDgyamNr?=
- =?utf-8?B?bDQ1eUY2b2FuSmRwdTZtZi9QM3FTYWNldXdES2pFS0tEMnJNQ0liUTROcFZN?=
- =?utf-8?B?ZVlBNVRRdkxja050dUY4ZkFFeWp4dUcwU081cTUyZXRsaVg4Zm9adE9uQlo2?=
- =?utf-8?B?L0N6Y1pPVVAyYWYrYm9udE01SERkSXFHN1VoalZKaVMxNWxiQ1BpSVU1RlJl?=
- =?utf-8?B?dk84SVRtMWl0eG1qUlRMQW9nY0trc3hQVDdiQ3FYT3EwYlF3ZTB3WWsrS2RY?=
- =?utf-8?B?Z1BrdkZ1OVlxVUJ0UlBmNFMraEEvN1pJbjIzbUFGbnJ3aEdycE5zc3hESS9W?=
- =?utf-8?B?ZXVNMDNKclBXVjVwTGV6R3VzRkJ1M2pTQnZDVUovZ1hKMWoyaUhmL3g1M2Yv?=
- =?utf-8?B?N05xWEZnaVE3dkZESk5SMWIrR2N3WDZLWksyT2Z0MGptOVc4WWtVdGgzcW1r?=
- =?utf-8?B?ejA0Q3M0dWpHK2hEK3hQN3hTU0s5MEZzdURueHdJaURhRUlabTRLZ3JOakE1?=
- =?utf-8?B?NHhwNWcrQWhzUXM2WGNuTXhjTWJKWHFFbHd0OXFoTkUxSnVjc2NROEpWQ2Jr?=
- =?utf-8?B?UHcvM1llUllhUWlySUREUFcxZTJTWXF5cnNqUnJaRFdhR3o3WGFxNTlLbXRp?=
- =?utf-8?B?dkJQSHVUQXBSSnZrbnFXbjZyM0tobDlQZWU0M1pQT0p5SVRMM2hPUlc5L1Jy?=
- =?utf-8?B?OGlTbHBVbFdqb2tMS3puMEt0U3kwRzBhOGY0NTd2WGdkZG9HQVErVHBmTWFS?=
- =?utf-8?B?eEJMMkZWVkdMTDQyblp3bGkvdkJqM3lpQnhoTU1aUnFyMi9JdnZueEo4ZVRz?=
- =?utf-8?B?ZUNWWjEyVGVKSVRTZ01WS2VLK2dBNUYzZXhwa2dJMStHN1hvZFFEOS9xd0Vl?=
- =?utf-8?B?TDZvOHZYUnNCMVRCVzJmV09SSFNVejM1SzNIZmdYZngvZ0hMOGpOeHNodWlr?=
- =?utf-8?B?V2o3RE9pMFpaajB1NmprTG91RlpqMW9waU1GUVdjWDVlTHhwMmROczZwR2tC?=
- =?utf-8?B?NnN1V29ZZDQ2ZE9ialk4ZStURldxRkphdUN6WUdYQkZDUXUxMWtTM1BhOVUw?=
- =?utf-8?B?WmVjNS8ySUpTaTZEQnNCZVVSNUtNNTNTaXFYV0dJa1JPSkZ5Z0M3TjExMFFB?=
- =?utf-8?B?WmxUQXJBWTFJQ1NkUXRkM2RGTGkvemRmUGs1ZWc0SXkyUGtYd1RJMER3RjJy?=
- =?utf-8?B?eTd4VWJGdU44WUo1L3pjbWNyUG5LRGo3WUZXeW1KTW1MVGZkVU1QNlRvdXBC?=
- =?utf-8?B?ZzNkVWphMWJPbGxCeUNiZ2I0Y2hrenB2ZUNDREdtMkJ0NEVuSjc4cGVHTEpM?=
- =?utf-8?B?bVF0Qko2V2VzSlh6QU0yaG1yWEFXOU40VVdpYU9wK0d3SGt5OHMwTU41aVB0?=
- =?utf-8?B?SzU4c0NTN2xIbzZtZ0FZaHYwNUxWbkd1dHhMbW0zSHUwU2RrQUV2QnlrMDdK?=
- =?utf-8?B?a0tVUnFva1N4NmZkVS9jSXQrcXhENlI5NGhqNVJkUy9GVTZ1UmhQbmRaMzFG?=
- =?utf-8?B?S2xrUjZwSFl5NTJ3UUZ3RDE4NEVFUG05SmFQM0Q4ek91b2tYQk1UdVBHTk9O?=
- =?utf-8?B?aEtiUFBvYjZhRHpFbjJrVWNnWldhTFF1d1A5VFBhbHlJUC81OXJ1Sko1WVFQ?=
- =?utf-8?B?MXBYODNralVLSm81cVhqbkxCdm4xbTNIR05xRHhZMExpSGVidHpjSkU0akw5?=
- =?utf-8?B?VFgwdlJkTVVWOW41blF1QlZkZXNwbldka00rME9QRm1BaXpZNkZCcnROVUJB?=
- =?utf-8?B?RXRoWG1xYWM4U1lCU2VFU0ljRlVWWkIxeEI2aElDcnFXTHU0dVV1NGRuOXBt?=
- =?utf-8?B?bmo4M0pNMld1NkJyQUJKN0VhdGo0ZGtieDlIdkhvSXhRTW9Cdm1NT0dxdzNY?=
- =?utf-8?B?YXhwSGEwRmxxYWlvTjBGTktvZS9tOVo4U3VlNmdpYy9KSGhQZnVUTmM3dTJl?=
- =?utf-8?B?MEJjSXlmVWdxU3h6aUxaTDFHK09RWWVyd3VsMkRPdnp2aVZzb2hGSWkwWUhK?=
- =?utf-8?B?WEFybkQ1NTIxdmFNdG9oK3JVend6cmhGUENBZXVocmNpa2N0WTNKZStTenI4?=
- =?utf-8?B?NjVIRWc5WVNjdElKS1d3WnNaaXhjN1lldHQvOVBVekMwRUxmLzZvQ1JlQWpt?=
- =?utf-8?B?VGc9PQ==?=
-X-OriginatorOrg: sord.co.jp
-X-MS-Exchange-CrossTenant-Network-Message-Id: d49b9d80-f29f-4028-1921-08db61e6b1ea
-X-MS-Exchange-CrossTenant-AuthSource: OSZPR01MB7049.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2023 14:52:45.9802
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: cf867293-59a2-46d0-8328-dfdea9397b80
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wHIMYgxajNVEa1djTP8xet2f48RtwikEFqWCs2Dx1ED1AeMWjjMoSt8P2CAOJPmETVX47zHwGLbGN1ip9rWVu+T8uu1oYGue5k5pvLpb90U=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB8872
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <20230531141556.1637341-1-lee@kernel.org>
+In-Reply-To: <20230531141556.1637341-1-lee@kernel.org>
+From: Eric Dumazet <edumazet@google.com>
+Date: Wed, 31 May 2023 17:03:37 +0200
+Message-ID: <CANn89iJw2N9EbF+Fm8KCPMvo-25ONwba+3PUr8L2ktZC1Z3uLw@mail.gmail.com>
+Subject: Re: [PATCH 1/1] net/sched: cls_u32: Fix reference counter leak
+ leading to overflow
+To: Lee Jones <lee@kernel.org>
+Cc: jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us, 
+	davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, stable@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 2023/05/31 15:37, Horatiu Vultur wrote:
-> When you create patch series that contains more than 1 patch, you need to
-> create also a cover letter.
-> Also it seems that not all the maintainers were CCed. To find out which
-> ones are the maintainers please use: ./scripts/get_maintainer.pl
-> 
-> Other than that, it looks OK.
+On Wed, May 31, 2023 at 4:16=E2=80=AFPM Lee Jones <lee@kernel.org> wrote:
+>
+> In the event of a failure in tcf_change_indev(), u32_set_parms() will
+> immediately return without decrementing the recently incremented
+> reference counter.  If this happens enough times, the counter will
+> rollover and the reference freed, leading to a double free which can be
+> used to do 'bad things'.
+>
+> Cc: stable@kernel.org # v4.14+
 
-Thank you for your review.
-I just posted revised patchset.
+Please add a Fixes: tag.
 
----
-Atsushi Nemoto
+> Signed-off-by: Lee Jones <lee@kernel.org>
+> ---
+>  net/sched/cls_u32.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+> index 4e2e269f121f8..fad61ca5e90bf 100644
+> --- a/net/sched/cls_u32.c
+> +++ b/net/sched/cls_u32.c
+> @@ -762,8 +762,11 @@ static int u32_set_parms(struct net *net, struct tcf=
+_proto *tp,
+>         if (tb[TCA_U32_INDEV]) {
+>                 int ret;
+>                 ret =3D tcf_change_indev(net, tb[TCA_U32_INDEV], extack);
 
+This call should probably be done earlier in the function, next to
+tcf_exts_validate_ex()
+
+Otherwise we might ask why the tcf_bind_filter() does not need to be undone=
+.
+
+Something like:
+
+diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+index 4e2e269f121f8a301368b9783753e055f5af6a4e..ac957ff2216ae18bcabdd3af3b0=
+e127447ef8f91
+100644
+--- a/net/sched/cls_u32.c
++++ b/net/sched/cls_u32.c
+@@ -718,13 +718,18 @@ static int u32_set_parms(struct net *net, struct
+tcf_proto *tp,
+                         struct nlattr *est, u32 flags, u32 fl_flags,
+                         struct netlink_ext_ack *extack)
+ {
+-       int err;
++       int err, ifindex =3D -1;
+
+        err =3D tcf_exts_validate_ex(net, tp, tb, est, &n->exts, flags,
+                                   fl_flags, extack);
+        if (err < 0)
+                return err;
+
++       if (tb[TCA_U32_INDEV]) {
++               ifindex =3D tcf_change_indev(net, tb[TCA_U32_INDEV], extack=
+);
++               if (ifindex < 0)
++                       return -EINVAL;
++       }
+        if (tb[TCA_U32_LINK]) {
+                u32 handle =3D nla_get_u32(tb[TCA_U32_LINK]);
+                struct tc_u_hnode *ht_down =3D NULL, *ht_old;
+@@ -759,13 +764,9 @@ static int u32_set_parms(struct net *net, struct
+tcf_proto *tp,
+                tcf_bind_filter(tp, &n->res, base);
+        }
+
+-       if (tb[TCA_U32_INDEV]) {
+-               int ret;
+-               ret =3D tcf_change_indev(net, tb[TCA_U32_INDEV], extack);
+-               if (ret < 0)
+-                       return -EINVAL;
+-               n->ifindex =3D ret;
+-       }
++       if (ifindex >=3D 0)
++               n->ifindex =3D ifindex;
++
+        return 0;
+ }
 
