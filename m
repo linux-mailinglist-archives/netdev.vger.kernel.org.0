@@ -1,176 +1,171 @@
-Return-Path: <netdev+bounces-6750-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6751-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 90EC8717C5C
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 11:47:57 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2DE8A717CC6
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:05:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 25417281473
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 09:47:56 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B94FB1C20D64
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:05:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F03712B8F;
-	Wed, 31 May 2023 09:47:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 82ABD13AC1;
+	Wed, 31 May 2023 10:05:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0405E3D64
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 09:47:53 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D8AD9;
-	Wed, 31 May 2023 02:47:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=bfZg92z4iIPhpCvBzweOlyp4JZTKSuNewMH/vk9aswM=; b=Hjx1z9+HzkPjEH3xjuSwSvccgV
-	EY1rtgdi8wEJjb4gvbD18v5xYFe6Uo7h+hz5AyKtwU89tE6pPAyzl+HPnb7IAduqcf4z4eOVTRRwP
-	nC384uSNh+ABV4I3roFGfZF9ccCS980eJk7NKAHXmuDLLe9QD+ReWsaBL1Khs8XNRp20UB8/9Tr7G
-	lFP54b3E0P1f9tVdJ5WNzADihEX18fIkiythcK+6E3euvwq7plMtjTuUubOyVtpckimOEp/NaDxf6
-	ftKL/KbTGkhyDuTxDLbLQfTz+K6d/kASylC7LM2aLj0GNh17NiURHe61ugqllN7tJjBbQdhXQJ41f
-	raEg425Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52920)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q4IQj-0004Gx-N5; Wed, 31 May 2023 10:47:45 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q4IQf-0000Zd-0D; Wed, 31 May 2023 10:47:41 +0100
-Date: Wed, 31 May 2023 10:47:40 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Jiawen Wu <jiawenwu@trustnetic.com>
-Cc: 'kernel test robot' <lkp@intel.com>, netdev@vger.kernel.org,
-	jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com,
-	mika.westerberg@linux.intel.com, jsd@semihalf.com,
-	Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
-	oe-kbuild-all@lists.linux.dev, linux-i2c@vger.kernel.org,
-	linux-gpio@vger.kernel.org, mengyuanlou@net-swift.com,
-	'Piotr Raczynski' <piotr.raczynski@intel.com>
-Subject: Re: [PATCH net-next v9 5/9] net: txgbe: Add SFP module identify
-Message-ID: <ZHcXvFvR3H8Vmyok@shell.armlinux.org.uk>
-References: <20230524091722.522118-6-jiawenwu@trustnetic.com>
- <202305261959.mnGUW17n-lkp@intel.com>
- <ZHCZ0hLKARXu3xFH@shell.armlinux.org.uk>
- <02dd01d991d2$2120fcf0$6362f6d0$@trustnetic.com>
- <03ac01d992d2$67c1ec90$3745c5b0$@trustnetic.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71BB8D2F6
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:05:38 +0000 (UTC)
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF829F;
+	Wed, 31 May 2023 03:05:36 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id d9443c01a7336-1b02750ca0dso6277055ad.0;
+        Wed, 31 May 2023 03:05:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685527536; x=1688119536;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=HeKTOYgsOHmbs8G4uF5AubnU8n6wTCs2dizwLG2Gqpc=;
+        b=WQQ5ksPHTMS2XAS93kRWeN7Mmemr0cTNE6GQ4QcJ8s4G9RK3V6UPpl4VtAabLWMvUi
+         5uqy3DltMJr0UYN+AUZHX0/2m465WdkWc/FMykMWuRHxevSWV38g8mwMDxEMXrz2ukxB
+         dGJFKtEUItBKBP9i7L2MWIqm6TE/T2hXs4CobpkKe4Fl1kYH4SM4d0KM8GqBvOeACOPP
+         SCibaW34oc3WJiBQzArUoshAPTu8OzJ6LLmV3Efgi8CnZxvN6z+5i1hji78ucyFHhdTv
+         VI5DC+QdcQNzp7CNtqpWfEXD4Pl1KstC18FsD68t0lTV2sE/NV5L+4nsVSSbv5QbD3bd
+         q7oQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685527536; x=1688119536;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HeKTOYgsOHmbs8G4uF5AubnU8n6wTCs2dizwLG2Gqpc=;
+        b=EddL4OC2D4IfV4N9FAViGSFQeDWyBOhqakSEhL8aFGByfVUoBj7G/e0NqNOJOBqkBh
+         5kgYh26HdkGGGmvBzMzMFrhN+wNy91wIPzn53yqfFeYor9/tT1w2IoihduJMU8cmQNCU
+         evAC7O1u27gFGQzNHK148E7mFhtaY1ILDqjcX8v5y4fmcIt+wLgGaRUijJXm19l/rURz
+         ykWKMoM8soMl1YtBS8wwspOjhmx6JF+Xv+ypSjZRhBGMELx7nG3YsHeM21YXwO9zOe3l
+         uuN5nacA1I+YF5fRgD9p7LrTELZKt9vIQHwtjV43OyWnP9qJSY9nHi6HGxDK9XJUH4jQ
+         y0gg==
+X-Gm-Message-State: AC+VfDzjWjQlmSQiyErpTg/fqlZ22rgjoo4AHb2CASpQpMAtLNltoxoh
+	kf7NBBmanKD4lF4OYHT6yC8=
+X-Google-Smtp-Source: ACHHUZ7lfarClMDji6Z2FjENK1gvREcg+iERVgXDzG/A4xsurL7EgPnXGNSw2nThy8ItrF8pfyqABw==
+X-Received: by 2002:a17:902:e54e:b0:1a9:6467:aa8d with SMTP id n14-20020a170902e54e00b001a96467aa8dmr2214163plf.1.1685527536203;
+        Wed, 31 May 2023 03:05:36 -0700 (PDT)
+Received: from [127.0.0.1] ([2404:c140:1f03::caf2])
+        by smtp.gmail.com with ESMTPSA id o7-20020a170902bcc700b001aaed55aff3sm940994pls.137.2023.05.31.03.05.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 May 2023 03:05:35 -0700 (PDT)
+Message-ID: <ebdc1731-3647-8b58-c66c-db5bb09f5bfa@gmail.com>
+Date: Wed, 31 May 2023 18:05:29 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <03ac01d992d2$67c1ec90$3745c5b0$@trustnetic.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH] net: sched: fix possible OOB write in fl_set_geneve_opt()
+To: Simon Horman <simon.horman@corigine.com>
+Cc: jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, simon.horman@netronome.com,
+ pieter.jansen-van-vuuren@amd.com, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20230529043615.4761-1-hbh25y@gmail.com>
+ <ZHXf29es/yh3r6jq@corigine.com>
+ <e9925aef-fefc-24b9-dea3-bd3bcca01b35@gmail.com>
+ <ZHb/nPuTMja3giSP@corigine.com>
+Content-Language: en-US
+From: Hangyu Hua <hbh25y@gmail.com>
+In-Reply-To: <ZHb/nPuTMja3giSP@corigine.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, May 30, 2023 at 04:40:36PM +0800, Jiawen Wu wrote:
-> On Monday, May 29, 2023 10:06 AM, Jiawen Wu wrote:
-> > On Friday, May 26, 2023 7:37 PM, Russell King (Oracle) wrote:
-> > > On Fri, May 26, 2023 at 07:30:45PM +0800, kernel test robot wrote:
-> > > > Kconfig warnings: (for reference only)
-> > > >    WARNING: unmet direct dependencies detected for I2C_DESIGNWARE_PLATFORM
-> > > >    Depends on [n]: I2C [=n] && HAS_IOMEM [=y] && (ACPI && COMMON_CLK [=y] || !ACPI)
-> > > >    Selected by [y]:
-> > > >    - TXGBE [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_WANGXUN [=y] && PCI [=y]
-> > > >    WARNING: unmet direct dependencies detected for SFP
-> > > >    Depends on [n]: NETDEVICES [=y] && PHYLIB [=y] && I2C [=n] && PHYLINK [=y] && (HWMON [=n] || HWMON [=n]=n)
-> > > >    Selected by [y]:
-> > > >    - TXGBE [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_WANGXUN [=y] && PCI [=y]
-> > >
-> > > ... and is basically caused by "select SFP". No. Do not do this unless
-> > > you look at the dependencies for SFP and ensure that those are also
-> > > satisfied - because if you don't you create messes like the above
-> > > build errors.
-> > 
-> > So how do I make sure that the module I need compiles and loads correctly,
-> > rely on the user to manually select it?
+On 31/5/2023 16:04, Simon Horman wrote:
+> On Wed, May 31, 2023 at 01:38:49PM +0800, Hangyu Hua wrote:
+>> On 30/5/2023 19:36, Simon Horman wrote:
+>>> [Updated Pieter's email address, dropped old email address of mine]
+>>>
+>>> On Mon, May 29, 2023 at 12:36:15PM +0800, Hangyu Hua wrote:
+>>>> If we send two TCA_FLOWER_KEY_ENC_OPTS_GENEVE packets and their total
+>>>> size is 252 bytes(key->enc_opts.len = 252) then
+>>>> key->enc_opts.len = opt->length = data_len / 4 = 0 when the third
+>>>> TCA_FLOWER_KEY_ENC_OPTS_GENEVE packet enters fl_set_geneve_opt. This
+>>>> bypasses the next bounds check and results in an out-of-bounds.
+>>>>
+>>>> Fixes: 0a6e77784f49 ("net/sched: allow flower to match tunnel options")
+>>>> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+>>>
+>>> Hi Hangyu Hua,
+>>>
+>>> Thanks. I think I see the problem too.
+>>> But I do wonder, is this more general than Geneve options?
+>>> That is, can this occur with any sequence of options, that
+>>> consume space in enc_opts (configured in fl_set_key()) that
+>>> in total are more than 256 bytes?
+>>>
+>>
+>> I think you are right. It is a good idea to add check in fl_set_vxlan_opt
+>> and fl_set_erspan_opt and fl_set_gtp_opt too.
+>> But they should be submitted as other patches. fl_set_geneve_opt has already
+>> check this with the following code:
+>>
+>> static int fl_set_geneve_opt(const struct nlattr *nla, struct fl_flow_key
+>> *key,
+>> 			     int depth, int option_len,
+>> 			     struct netlink_ext_ack *extack)
+>> {
+>> ...
+>> 		if (new_len > FLOW_DIS_TUN_OPTS_MAX) {
+>> 			NL_SET_ERR_MSG(extack, "Tunnel options exceeds max size");
+>> 			return -ERANGE;
+>> 		}
+>> ...
+>> }
+>>
+>> This bug will only be triggered under this special
+>> condition(key->enc_opts.len = 252). So I think it will be better understood
+>> by submitting this patch independently.
 > 
-> When I changed the TXGBE config to:
-> ...
-> 	depends on SFP
-> 	select PCS_XPCS
-> ...
-> the compilation gave an error:
+> A considered approach sounds good to me.
 > 
-> drivers/net/phy/Kconfig:16:error: recursive dependency detected!
-> drivers/net/phy/Kconfig:16:     symbol PHYLIB is selected by PHYLINK
-> drivers/net/phy/Kconfig:6:      symbol PHYLINK is selected by PCS_XPCS
-> drivers/net/pcs/Kconfig:8:      symbol PCS_XPCS is selected by TXGBE
-> drivers/net/ethernet/wangxun/Kconfig:40:        symbol TXGBE depends on SFP
-> drivers/net/phy/Kconfig:63:     symbol SFP depends on PHYLIB
-> For a resolution refer to Documentation/kbuild/kconfig-language.rst
-> subsection "Kconfig recursive dependency limitations"
+> I do wonder, could the bounds checks be centralised in the caller?
+> Maybe not if it doesn't know the length that will be consumed.
 > 
-> Seems deleting "depends on SFP" is the correct way. But is this normal?
-> How do we ensure the dependency between TXGBE and SFP?
 
-First, I would do this:
+This may make code more complex. I am not sure if it is necessary to do 
+this.
 
-	select PHYLINK
-	select PCS_XPCS
+>> By the way, I think memset's third param should be option_len in
+>> fl_set_vxlan_opt and fl_set_erspan_opt. Do I need to submit another patch to
+>> fix all these issues?
+> 
+> I think that in general one fix per patch is best.
 
-but then I'm principled, and I don't agree that PCS_XPCS should be
-selecting PHYLINK.
+I see. I will try to handle these issues.
 
-The second thing I don't particularly like is selecting user visible
-symbols, but as I understand it, with TXGBE, the SFP slot is not an
-optional feature, so there's little option.
+> 
+> Some minor nits.
+> 
+> 1. As this is a fix for networking code it is probably targeted
+>     at the net, as opposed to net-next, tree. This should be indicated
+>     in the patch subject.
+> 
+> 	 Subject: [PATCH net v2] ...
+> 
+> 2. I think the usual patch prefix for this file, of late,
+>     has been 'net/sched: flower: '
+> 
+> 	 Subject: [PATCH net v2]  net/sched: flower: ...
+> 
 
-So, because SFP requires I2C:
-
-	select I2C
-	select SFP
-
-That is basically what I meant by "you look at the dependencies for
-SFP and ensure that those are also satisfied".
-
-Adding that "select I2C" also solves the unmet dependencies for
-I2C_DESIGNWARE_PLATFORM.
-
-However, even with that, we're not done with the evilness of select,
-because there's one more permitted configuration combination that
-will break.
-
-If you build TXGBE into the kernel, that will force SFP=y, I2C=y,
-PHYLINK=y, PHYLIB=y. So far so good. However, if HWMON=m, then things
-will again break. So I would also suggest:
-
-	select HWMON if TXGBE=y
-
-even though you don't require it, it solves the build fallout from
-where HWMON=m but you force SFP=y.
-
-Maybe someone else has better ideas how to do this, but the above is
-the best I can come up with.
-
-
-IMHO, select is nothing but pure evil, and should be used with utmost
-care and a full understanding of its ramifications, and a realisation
-that it *totally* and *utterly* blows away any "depends on" on the
-target of the select statement.
-
-An option that states that it depends on something else generally does
-because... oddly enough, it _depends_ on that other option. So, if
-select forces an option on without its dependencies, then it's not
-surprising that stuff fails to build.
-
-Whenever a select statement is added, one must _always_ look at the
-target symbol and consider any "depends on" there, and how to ensure
-that those dependencies are guaranteed to always be satisfied.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+Get it. I will send a v2 later.
 
