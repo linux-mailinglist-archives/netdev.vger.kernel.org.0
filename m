@@ -1,156 +1,107 @@
-Return-Path: <netdev+bounces-6729-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6730-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AC8C7717A9F
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:49:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4FE98717AB9
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:52:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 691D9280EE9
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:49:15 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 79164281146
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:52:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 76B7BBA49;
-	Wed, 31 May 2023 08:49:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 774ACBE6B;
+	Wed, 31 May 2023 08:52:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61657139F
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:49:13 +0000 (UTC)
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B56113;
-	Wed, 31 May 2023 01:49:10 -0700 (PDT)
-Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34V7awX5000761;
-	Wed, 31 May 2023 08:49:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=UEan03QWYcnaZZlJX/zExSgnptFkk/YvcVmYOiJWI3Y=;
- b=irTK6z8jQsgfF8WrE2q0C5sRzFL82dNrqEHBvthzlV1vxw04TZUy2EoxA24R6Wmxzw7R
- I8l/n2pNjXYTkk6OimtUj1VcOOmZMRGsoyqo3iefGQaphW8PIB7h6ClRLa83cd6Frrh7
- dl4JDtlZQg59j64NZuG5P+dYayODn70CWzqd66b3Da7V6ZYS7MbVftwRGy7LrPJXif3J
- SdG7/Usg7osuhE3QI3gTLRrK9UEJt9EFPYjlWWBfa/T0DDmgaWuWfadTl9iyl7dN2K6J
- temFX14tITDHu8xrnqFsOcGPMqmSYrezv37lMeO6p/Jxjw+c8fWmWNeQ2grpRgEHMQGx Pw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qx1r5j2eb-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 31 May 2023 08:49:02 +0000
-Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34V8fdTM003518;
-	Wed, 31 May 2023 08:49:01 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qx1r5j2ds-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 31 May 2023 08:49:01 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-	by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34V4otZm011798;
-	Wed, 31 May 2023 08:48:59 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-	by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3qu94e1w21-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 31 May 2023 08:48:59 +0000
-Received: from smtpav01.fra02v.mail.ibm.com (smtpav01.fra02v.mail.ibm.com [10.20.54.100])
-	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34V8mun221889760
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 31 May 2023 08:48:57 GMT
-Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id CAC962004B;
-	Wed, 31 May 2023 08:48:56 +0000 (GMT)
-Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 9181120043;
-	Wed, 31 May 2023 08:48:56 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by smtpav01.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 31 May 2023 08:48:56 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Shay Drory <shayd@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
-        Eli Cohen <elic@nvidia.com>, Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Simon Horman <simon.horman@corigine.com>, linux-rdma@vger.kernel.org
-Subject: [PATCH net v2] net/mlx5: Fix setting of irq->map.index for static IRQ case
-Date: Wed, 31 May 2023 10:48:56 +0200
-Message-Id: <20230531084856.2091666-1-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.39.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B4A01879
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:52:11 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC59C194
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 01:51:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685523119;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=WGo4qtRQ4pkJVWaEUVypZ+1I1vSFSgJTj8gN/jNbr24=;
+	b=I2KF44bSn0L3SoygoNBC9h0gV8ali7yenRSqjYXC0dWpr5dxQzqvD4U+lgUG18a2VZmVPA
+	xDqL0Uza/Ez+PYdYdpuqBAdfFVzjgqZk/Z9hLzLkmEHV4Dv/ffZSxWBE2MJU0i2jbTirK9
+	2AUOkHJnfyyZi71OVifr3iGdCKvxN5Y=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-297-6A7MVqTQNyGeS8sO5Uaxog-1; Wed, 31 May 2023 04:51:57 -0400
+X-MC-Unique: 6A7MVqTQNyGeS8sO5Uaxog-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CD993280BC41;
+	Wed, 31 May 2023 08:51:56 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 9FE4B40E6A43;
+	Wed, 31 May 2023 08:51:54 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <20230526201202.1cd35fe9@kernel.org>
+References: <20230526201202.1cd35fe9@kernel.org> <20230524144923.3623536-1-dhowells@redhat.com> <20230524144923.3623536-4-dhowells@redhat.com>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: dhowells@redhat.com, netdev@vger.kernel.org,
+    "David S. Miller" <davem@davemloft.net>,
+    Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+    Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+    David Ahern <dsahern@kernel.org>,
+    Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>,
+    linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+    Tom Herbert <tom@herbertland.com>, Tom Herbert <tom@quantonium.net>
+Subject: Re: [PATCH net-next 3/4] kcm: Support MSG_SPLICE_PAGES
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: IpaMixqhl_GstFLOiN4P1omx1hOk1inL
-X-Proofpoint-GUID: P4cTm2aPsP84RRIVih7cyLmLqC5MIFVB
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-05-31_04,2023-05-30_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 clxscore=1011
- lowpriorityscore=0 impostorscore=0 bulkscore=0 mlxlogscore=999
- priorityscore=1501 mlxscore=0 adultscore=0 malwarescore=0 spamscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2304280000 definitions=main-2305310074
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <574369.1685523113.1@warthog.procyon.org.uk>
+Date: Wed, 31 May 2023 09:51:53 +0100
+Message-ID: <574370.1685523113@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-When dynamic IRQ allocation is not supported all IRQs are allocated up
-front in mlx5_irq_table_create() instead of dynamically as part of
-mlx5_irq_alloc(). In the latter dynamic case irq->map.index is set
-via the mapping returned by pci_msix_alloc_irq_at(). In the static case
-and prior to commit 1da438c0ae02 ("net/mlx5: Fix indexing of mlx5_irq")
-irq->map.index was set in mlx5_irq_alloc() twice once initially to 0 and
-then to the requested index before storing in the xarray. After this
-commit it is only set to 0 which breaks all other IRQ mappings.
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-Fix this by setting irq->map.index to the requested index together with
-irq->map.virq and improve the related comment to make it clearer which
-cases it deals with.
+> On Wed, 24 May 2023 15:49:22 +0100 David Howells wrote:
+> > +			err = skb_splice_from_iter(skb, &msg->msg_iter, copy,
+> > +						   sk->sk_allocation);
+> > +			if (err < 0) {
+> > +				if (err == -EMSGSIZE)
+> > +					goto wait_for_memory;
+> > +				goto out_error;
+> > +			}
+> >  
+> 
+> should there be a:
+> 
+> 		copy = err;
+> or:
+> 		copy -= msg_data_left(msg);
+> 
+> or some such here? Can we safely assume that skb_splice_from_iter() will
+> copy all or nothing? 
 
-Tested-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Reviewed-by: Eli Cohen <elic@nvidia.com>
-Fixes: 1da438c0ae02 ("net/mlx5: Fix indexing of mlx5_irq")
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
-v1 -> v2:
-- Added R-bs/Acks
-- Fixed typos in commit message
+Yeah.  Good point.  I didn't add one because the normal operation code doesn't
+do that - but I guess that's all-or-nothing.
 
- drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-index db5687d9fec9..fd5b43e8f3bb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-@@ -232,12 +232,13 @@ struct mlx5_irq *mlx5_irq_alloc(struct mlx5_irq_pool *pool, int i,
- 	if (!irq)
- 		return ERR_PTR(-ENOMEM);
- 	if (!i || !pci_msix_can_alloc_dyn(dev->pdev)) {
--		/* The vector at index 0 was already allocated.
--		 * Just get the irq number. If dynamic irq is not supported
--		 * vectors have also been allocated.
-+		/* The vector at index 0 is always statically allocated. If
-+		 * dynamic irq is not supported all vectors are statically
-+		 * allocated. In both cases just get the irq number and set
-+		 * the index.
- 		 */
- 		irq->map.virq = pci_irq_vector(dev->pdev, i);
--		irq->map.index = 0;
-+		irq->map.index = i;
- 	} else {
- 		irq->map = pci_msix_alloc_irq_at(dev->pdev, MSI_ANY_INDEX, af_desc);
- 		if (!irq->map.virq) {
--- 
-2.39.2
+David
 
 
