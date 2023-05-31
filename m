@@ -1,196 +1,154 @@
-Return-Path: <netdev+bounces-6721-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6722-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 64D227179BB
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:15:00 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id E36F37179C1
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:16:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C22882813AD
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:14:58 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8A1A91C20DDA
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:16:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA409BE52;
-	Wed, 31 May 2023 08:14:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 35983BE5A;
+	Wed, 31 May 2023 08:16:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6E5DBA52
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:14:56 +0000 (UTC)
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2110C5
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 01:14:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1685520893; x=1717056893;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=A7FLB/m/yNzfNR2rBTeRYdMrluPgEWmMsHTKsrep9Jo=;
-  b=tm4IfSdOfjc4wkvg03z5ah8W2Pwxu+ha6fcthF7M05rg2SrzyWA0gvaM
-   fyWtmJN85wTyD2peEV/w4imKyMDV/TEB2XhDZjn8o1utpAN86H7S2DQWj
-   wgYT7+LWDpKllA/EBMOJr64GrE6oSRXou1lrWvOFXcWwFkhZfezN5k0tU
-   k+7YQpg8qrdc0C8umLVKKNukSHoDRTi14UopApbVMuiRgrU8CBA3766oS
-   mj9bceOoluQl/okOYmXFosWqe9Pjzu03X3+zUfPCOJTmYbUb5r7q/hP4j
-   ysj87XqesAEX/2NsoHzzwrSlyeSs85FQ8gnOLMPDrALO2h4c/ACSZHDEH
-   g==;
-X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
-   d="scan'208";a="215577216"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 May 2023 01:14:53 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Wed, 31 May 2023 01:14:53 -0700
-Received: from DEN-LT-70577 (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Wed, 31 May 2023 01:14:52 -0700
-Date: Wed, 31 May 2023 08:14:51 +0000
-From: Daniel Machon <daniel.machon@microchip.com>
-To: Petr Machata <petrm@nvidia.com>
-CC: <netdev@vger.kernel.org>, <dsahern@kernel.org>,
-	<stephen@networkplumber.org>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH iproute2-next v2 5/8] dcb: rewr: add new dcb-rewr
- subcommand
-Message-ID: <20230531081451.rjhc3ie2yb4iyxzr@DEN-LT-70577>
-References: <20230510-dcb-rewr-v2-0-9f38e688117e@microchip.com>
- <20230510-dcb-rewr-v2-5-9f38e688117e@microchip.com>
- <87sfbd4kfb.fsf@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29533BA2B
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:16:46 +0000 (UTC)
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47ED8C5;
+	Wed, 31 May 2023 01:16:44 -0700 (PDT)
+Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+	(No client certificate requested)
+	(Authenticated sender: lukma@denx.de)
+	by phobos.denx.de (Postfix) with ESMTPSA id D03D78611C;
+	Wed, 31 May 2023 10:16:41 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+	s=phobos-20191101; t=1685521002;
+	bh=QIT5LdXsd38HnT1gObrlKAjLGwfJ/Ui3fx46NLLUQac=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=VP3Jvfbn0rOgAcsX3fMnSgyQSUENXDYAJZf6G8CTfx23vjm6uxde16oYHDfltQ664
+	 phmfrjyQlGyR/aq9xBFhtNe324WFfgVbHgjGAtRgBVr26dm6jl265cD3QLg5tJmDfR
+	 Gt+JeDI6RdWHvgwVK0A0wKWevIfr3P6e73kVDBIPrNgwlYUE2wHDXEe4jXr9ERoDXw
+	 UbtDXGFtHn4ZsHm6vrcZrDIO7lXgBvRegVyV3K3WcC/ShbEZVZsWKofiaJyRR+suqW
+	 DpFosSbZF8pg3AeHIEA+gtFKaoWOTGI+V0h7KNVqRNILd8mqRi2bDW6KounbNkC5vf
+	 +va52tIB45TGQ==
+Date: Wed, 31 May 2023 10:16:40 +0200
+From: Lukasz Majewski <lukma@denx.de>
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: Andrew Lunn <andrew@lunn.ch>, Vivien Didelot <vivien.didelot@gmail.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, Vladimir Oltean
+ <olteanv@gmail.com>, "David S. Miller" <davem@davemloft.net>, Jakub
+ Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [RFC] net: dsa: slave: Advertise correct EEE capabilities at
+ slave PHY setup
+Message-ID: <20230531101640.131fe934@wsk>
+In-Reply-To: <ZHYLNGkG26QP/QAS@shell.armlinux.org.uk>
+References: <20230530122621.2142192-1-lukma@denx.de>
+	<ZHXzTBOtlPKqNfLw@shell.armlinux.org.uk>
+	<20230530160743.2c93a388@wsk>
+	<ZHYGv7zcJd/Ad4hH@shell.armlinux.org.uk>
+	<35546c34-17a6-4295-b263-3f2a97d53b94@lunn.ch>
+	<ZHYLNGkG26QP/QAS@shell.armlinux.org.uk>
+Organization: denx.de
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <87sfbd4kfb.fsf@nvidia.com>
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/Kl0N1N7kWlpAgVWt2ktIom0";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
- > Daniel Machon <daniel.machon@microchip.com> writes:
-> 
-> > Add a new subcommand 'rewr' for configuring the in-kernel DCB rewrite
-> > table. The rewr-table of the kernel is similar to the APP-table, and so
-> > is this new subcommand. Therefore, much of the existing bookkeeping code
-> > from dcb-app, can be reused in the dcb-rewr implementation.
-> >
-> > Initially, only support for configuring PCP and DSCP-based rewrite has
-> > been added.
-> >
-> > Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
-> 
-> Looks good overall, barring the comment about dcb_app_parse_mapping_cb()
-> that I made in the other patch, and a handful of nits below.
-> 
-> > ---
-> >  dcb/Makefile   |   3 +-
-> >  dcb/dcb.c      |   4 +-
-> >  dcb/dcb.h      |  32 ++++++
-> >  dcb/dcb_app.c  |  49 ++++----
-> >  dcb/dcb_rewr.c | 355 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-> >  5 files changed, 416 insertions(+), 27 deletions(-)
-> 
-> > diff --git a/dcb/dcb.h b/dcb/dcb.h
-> > index b3bc30cd02c5..092dc90e8358 100644
-> > --- a/dcb/dcb.h
-> > +++ b/dcb/dcb.h
-> > @@ -54,6 +54,10 @@ void dcb_print_array_on_off(const __u8 *array, size_t size);
-> >  void dcb_print_array_kw(const __u8 *array, size_t array_size,
-> >                       const char *const kw[], size_t kw_size);
-> >
-> > +/* dcp_rewr.c */
-> > +
-> > +int dcb_cmd_rewr(struct dcb *dcb, int argc, char **argv);
-> > +
-> >  /* dcb_app.c */
-> >
-> >  struct dcb_app_table {
-> > @@ -70,8 +74,29 @@ struct dcb_app_parse_mapping {
-> >       int err;
-> >  };
-> >
-> > +#define DCB_APP_PCP_MAX 15
-> 
-> This should be removed from dcb_app.c as well.
-> 
-> > +#define DCB_APP_DSCP_MAX 63
-> 
-> DCB_APP_DSCP_MAX should be introduced in a separate patch together with
-> the s/63/DCB_APP_DSCP_MAX/ of the existing code, instead of including it
-> all here. It's a concern separate from the main topic of the patch.
+--Sig_/Kl0N1N7kWlpAgVWt2ktIom0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Ack.
+Hi Russell,
 
-> 
-> > +
-> >  int dcb_cmd_app(struct dcb *dcb, int argc, char **argv);
-> >
-> > +int dcb_app_get(struct dcb *dcb, const char *dev, struct dcb_app_table *tab);
-> > +int dcb_app_add_del(struct dcb *dcb, const char *dev, int command,
-> > +                 const struct dcb_app_table *tab,
-> > +                 bool (*filter)(const struct dcb_app *));
-> > +
-> > +bool dcb_app_is_dscp(const struct dcb_app *app);
-> > +bool dcb_app_is_pcp(const struct dcb_app *app);
-> > +
-> > +int dcb_app_print_pid_dscp(__u16 protocol);
-> > +int dcb_app_print_pid_pcp(__u16 protocol);
-> > +int dcb_app_print_pid_dec(__u16 protocol);
-> > +void dcb_app_print_filtered(const struct dcb_app_table *tab,
-> > +                         bool (*filter)(const struct dcb_app *),
-> > +                         void (*print_pid_prio)(int (*print_pid)(__u16),
-> > +                                                const struct dcb_app *),
-> > +                         int (*print_pid)(__u16 protocol),
-> > +                         const char *json_name, const char *fp_name);
-> > +
-> >  enum ieee_attrs_app dcb_app_attr_type_get(__u8 selector);
-> >  bool dcb_app_attr_type_validate(enum ieee_attrs_app type);
-> >  bool dcb_app_selector_validate(enum ieee_attrs_app type, __u8 selector);
-> > @@ -80,11 +105,18 @@ bool dcb_app_pid_eq(const struct dcb_app *aa, const struct dcb_app *ab);
-> >  bool dcb_app_prio_eq(const struct dcb_app *aa, const struct dcb_app *ab);
-> >
-> >  int dcb_app_table_push(struct dcb_app_table *tab, struct dcb_app *app);
-> > +int dcb_app_table_copy(struct dcb_app_table *a, const struct dcb_app_table *b);
-> > +void dcb_app_table_sort(struct dcb_app_table *tab);
-> > +void dcb_app_table_fini(struct dcb_app_table *tab);
-> > +void dcb_app_table_remove_existing(struct dcb_app_table *a,
-> > +                                const struct dcb_app_table *b);
-> >  void dcb_app_table_remove_replaced(struct dcb_app_table *a,
-> >                                  const struct dcb_app_table *b,
-> >                                  bool (*key_eq)(const struct dcb_app *aa,
-> >                                                 const struct dcb_app *ab));
-> >
-> > +int dcb_app_parse_pcp(__u32 *key, const char *arg);
-> > +int dcb_app_parse_dscp(__u32 *key, const char *arg);
-> >  void dcb_app_parse_mapping_cb(__u32 key, __u64 value, void *data);
-> >
-> >  /* dcb_apptrust.c */
-> > diff --git a/dcb/dcb_app.c b/dcb/dcb_app.c
-> > index 97cba658aa6b..3cb1bb302ed6 100644
-> > --- a/dcb/dcb_app.c
-> > +++ b/dcb/dcb_app.c
-> 
-> > @@ -643,9 +642,9 @@ static int dcb_app_add_del_cb(struct dcb *dcb, struct nlmsghdr *nlh, void *data)
-> 
-> > +static int dcb_cmd_rewr_replace(struct dcb *dcb, const char *dev, int argc,
-> > +                             char **argv)
-> > +{
-> 
-> [...]
-> 
-> > +}
-> > +
-> > +
-> 
-> Two blank lines.
-> 
-> > +static int dcb_cmd_rewr_show(struct dcb *dcb, const char *dev, int argc,
-> > +                          char **argv)
-> > +{
+> On Tue, May 30, 2023 at 04:26:49PM +0200, Andrew Lunn wrote:
+> > > So, I'm wondering what's actually going on here... can you give
+> > > any more details about the hardware setup? =20
+> >=20
+> > And what switch it actually is. I've not looked in too much detail,
+> > but i think different switch families have different EEE
+> > capabilities. But in general, as Russell pointed out, there is no
+> > MAC support for EEE in the mv88e6xxx driver. =20
+>=20
+> ... except for the built-in PHYs,
+
+This is my case.
+
+> which if they successfully negotiate
+> EEE, that status is communicated back to the MAC in that one sees
+> MV88E6352_PORT_STS_EEE
+
+I cannot find this register in my documentation.
+
+> set, which results in the MAC being able to
+> signal LPI to the PHY... and I've stuck a 'scope on the PHY media-side
+> signals in the past and have seen that activity does stop without
+> there needing to be any help from the driver for this.
+>=20
+> At least reading the information I have for the 88E6352, there is no
+> configuration of LPI timers, nor any seperate LPI enable. If EEE is
+> enabled at the MAC, then LPI will be signalled according to whatever
+> Marvell decided would be appropriate.
+
+And this knowledge is not disclosed to public.
+
+>=20
+> For an external PHY that the PPU is not polling, the only way that
+> we'd have EEE functional is if we forced EEE in port control register
+> 1 on switches that support those bits. In other words setting both the
+> EEE and FORCE_EEE bits...
+>=20
+
+Are those bits available in c45 standard? Or are they SoC (IC) specific?
+
+In my case I do have only two c45 registers disclosed (i.e. described)
+for mv88e6071 SoC in the documentation.
+
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Erika Unter
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/Kl0N1N7kWlpAgVWt2ktIom0
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmR3AmgACgkQAR8vZIA0
+zr2vgAf/TPyuqCpXqy8OzcsofOh15TCYmLibHnjTznVps7GTT0zuwuoH9wWaif7E
+bUgJEGjaKr3yNTonliDF1C7rfuP7n6YwGhwIFEf5oyU1uN+ELTWPy9EqUplbE3oM
+MIl9KnPc0vqV5MFweT6OLUZeacklzCsRGAyNmcchlLx2h+9jTXKosXevBroYmyIe
+FuV5nMr/yJkR6hXXwQi+YiuavL0LttUx/z2Q3co2FWfuZiYqv3dZHr7MgbTiQIOk
+P+JSwlPOOz0n97h5ktJCclxHuAU+SPf3GbYs4f4lHnLFVKGJQwf4HQW7Cp6qdBIJ
+r4FYxEmTNTygcOj2ntB3/YXUpgFscw==
+=TFoU
+-----END PGP SIGNATURE-----
+
+--Sig_/Kl0N1N7kWlpAgVWt2ktIom0--
 
