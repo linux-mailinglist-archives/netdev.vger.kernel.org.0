@@ -1,133 +1,99 @@
-Return-Path: <netdev+bounces-6756-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6758-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C000F717CFE
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:16:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 38505717D1C
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:21:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C1858281473
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:16:30 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E76ED28149B
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:21:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ADC2E13AD7;
-	Wed, 31 May 2023 10:16:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 545A113AE9;
+	Wed, 31 May 2023 10:21:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 981CED2F6;
-	Wed, 31 May 2023 10:16:26 +0000 (UTC)
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECFFB10E;
-	Wed, 31 May 2023 03:16:24 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id 6a1803df08f44-6260adf44daso8437186d6.1;
-        Wed, 31 May 2023 03:16:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685528184; x=1688120184;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=6ouue5IsJewxZcqyzngzCLx+A1R2cc7DroC8/ReaYIA=;
-        b=q7lB4WDRaJLozHwEeHv/4jbn6TIrHQNpAHY1zqtaDPjwSc9Z2GkqzPH/bLqHoRgSI9
-         FDeoqDhzhKXNAqlnjbpUbadcRqM8Mfu59lDp7YYalb147/wn/RNKbWGiLRIxyfkYtNpH
-         nzTO8c/3eMucEZO2MgjAIv9xW0DAtQVnGTIMpvHRJEDUCPTR1JPV7aB8FFkOvFd65Yj7
-         l4cJYQxeggpcOmf5wtheuJSU0OpTUGonqvdf/mYBImxOM0NVNNyeO7AffC/X1sPeFa7F
-         eXqTv9G/S07TwkVt4kMUamK0VKj6cm2Qi+Rt9ngvyDznVsRy48Cv6igZhTcHzmCK15s4
-         Scpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685528184; x=1688120184;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=6ouue5IsJewxZcqyzngzCLx+A1R2cc7DroC8/ReaYIA=;
-        b=d++epVuYzm7b4FpuU9F6UBKX/kXpnxvgk52oS00Cei7wH4qmKNycJzFI1Am5U6GPQ5
-         lxYqsXFlDOtmrJQ25hnlOGfP0pKbOhxtxWOgdEPLKjTG5HmX9wMVAAwkzIhv9QFc9Rqb
-         /iXwet2AvQG5RIH8vr49XHuv11cD1HtjiOAjHGKlWIsV90S3Ol7fqnHTEcdnwYy23V+o
-         uDgESKxqb6MRVzSzumWh1ptghf4XYXsuUYeq31xdv5ZLtLyDBwqpfwFKS520+LYC/3HH
-         dZ1sHtjYVJEe9lvj2ieUeiwmW3U6NArNF+WHJBv2/YgowXbGHGt8NWIw/YUObNkaFas5
-         0Rig==
-X-Gm-Message-State: AC+VfDyXqPuaTy/oMupAg68JQ+Ezg/cf9MJ76g7j0LH7HATQk05xyWQL
-	UDGpMmc6GW1UZhyCQfBS7/KqTdHUMuUNrXAUOqrsNrz+Ut/GITpQ
-X-Google-Smtp-Source: ACHHUZ5nJFyjdUTnnf2JW7HgSXWRoRMfXz6yMQ/eXD+cDlKxw9hYvPd4b2Yw5SVwMt/y4CxHqVW8XoWlKMrrFAPYHkw=
-X-Received: by 2002:ad4:5966:0:b0:61b:76dd:b643 with SMTP id
- eq6-20020ad45966000000b0061b76ddb643mr1556283qvb.4.1685528184000; Wed, 31 May
- 2023 03:16:24 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2656D13AE0
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:21:35 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 469F41BD
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 03:21:33 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ore@pengutronix.de>)
+	id 1q4IxA-0002GV-QI; Wed, 31 May 2023 12:21:16 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+	(envelope-from <ore@pengutronix.de>)
+	id 1q4Ix9-0045I2-1E; Wed, 31 May 2023 12:21:15 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+	(envelope-from <ore@pengutronix.de>)
+	id 1q4Ix8-00E4a0-E8; Wed, 31 May 2023 12:21:14 +0200
+From: Oleksij Rempel <o.rempel@pengutronix.de>
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	=?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= <jerome.pouiller@silabs.com>
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
+	kernel@pengutronix.de,
+	linux-kernel@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	netdev@vger.kernel.org
+Subject: [PATCH v3 0/2] Extend dt-bindings for PSE-PD controllers and update prtt1c dts
+Date: Wed, 31 May 2023 12:21:11 +0200
+Message-Id: <20230531102113.3353065-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230529155024.222213-1-maciej.fijalkowski@intel.com> <20230529155024.222213-14-maciej.fijalkowski@intel.com>
-In-Reply-To: <20230529155024.222213-14-maciej.fijalkowski@intel.com>
-From: Magnus Karlsson <magnus.karlsson@gmail.com>
-Date: Wed, 31 May 2023 12:16:13 +0200
-Message-ID: <CAJ8uoz1qa-XgntqSUtwjU_vCajDAbZqYgEVSajZxidmpG0cOFQ@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 13/22] xsk: report ZC multi-buffer capability
- via xdp_features
-To: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc: bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net, 
-	andrii@kernel.org, netdev@vger.kernel.org, magnus.karlsson@intel.com, 
-	bjorn@kernel.org, tirthendu.sarkar@intel.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, 29 May 2023 at 17:57, Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> Introduce new xdp_feature NETDEV_XDP_ACT_NDO_ZC_SG that will be used to
-> find out if user space that wants to do ZC multi-buffer will be able to
-> do so against underlying ZC driver.
->
-> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> ---
->  include/uapi/linux/netdev.h | 4 ++--
->  net/xdp/xsk_buff_pool.c     | 6 ++++++
->  2 files changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/include/uapi/linux/netdev.h b/include/uapi/linux/netdev.h
-> index 639524b59930..bfca07224f7b 100644
-> --- a/include/uapi/linux/netdev.h
-> +++ b/include/uapi/linux/netdev.h
-> @@ -33,8 +33,8 @@ enum netdev_xdp_act {
->         NETDEV_XDP_ACT_HW_OFFLOAD = 16,
->         NETDEV_XDP_ACT_RX_SG = 32,
->         NETDEV_XDP_ACT_NDO_XMIT_SG = 64,
-> -
-> -       NETDEV_XDP_ACT_MASK = 127,
-> +       NETDEV_XDP_ACT_NDO_ZC_SG = 128,
+changes v3:
+- reword commit message for the pse-controller.yaml patch
+- drop podl-pse-regulator.yaml patch
 
-Since this flag has nothing to do with an NDO, I would prefer the
-simpler NETDEV_XDP_ACT_ZC_SG. What do you think?
+changes v2:
+- extend ethernet-pse regexp in the PoDL PSE dt-bindings
 
-> +       NETDEV_XDP_ACT_MASK = 255,
->  };
->
->  enum {
-> diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-> index 0a9f8ea68de3..43cca5fa90cf 100644
-> --- a/net/xdp/xsk_buff_pool.c
-> +++ b/net/xdp/xsk_buff_pool.c
-> @@ -189,6 +189,12 @@ int xp_assign_dev(struct xsk_buff_pool *pool,
->                 goto err_unreg_pool;
->         }
->
-> +       if (!(netdev->xdp_features & NETDEV_XDP_ACT_NDO_ZC_SG) &&
-> +           flags & XDP_USE_SG) {
-> +               err = -EOPNOTSUPP;
-> +               goto err_unreg_pool;
-> +       }
-> +
->         bpf.command = XDP_SETUP_XSK_POOL;
->         bpf.xsk.pool = pool;
->         bpf.xsk.queue_id = queue_id;
-> --
-> 2.35.3
->
->
+This patch set comes in response to issues identified while adding PoDL
+PSE support to the stm32 prtt1c device tree. The existing pse-pd device
+tree bindings did not allow node name patterns like "ethernet-pse-0" and
+"ethernet-pse-1", leading to validation failures.
+
+To address these false positives in validation, the device tree bindings
+are extended to support these node name patterns. Alongside this, an
+example node is added to aid in the improved validation process.
+Following these changes, the updated PoDL PSE regulator nodes are then
+added to the stm32 prtt1c device tree.
+
+Oleksij Rempel (2):
+  dt-bindings: net: pse-pd: Allow -N suffix for ethernet-pse node names
+  ARM: dts: stm32: prtt1c: Add PoDL PSE regulator nodes
+
+ .../bindings/net/pse-pd/pse-controller.yaml   |  2 +-
+ arch/arm/boot/dts/stm32mp151a-prtt1c.dts      | 32 +++++++++++++++++++
+ 2 files changed, 33 insertions(+), 1 deletion(-)
+
+-- 
+2.39.2
+
 
