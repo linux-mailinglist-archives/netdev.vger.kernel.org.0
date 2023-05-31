@@ -1,148 +1,117 @@
-Return-Path: <netdev+bounces-6949-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6764-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6540B718F8D
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 02:31:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id CEFCD717D53
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 12:46:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1F7F3280CF5
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 00:31:54 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 30DF6281491
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:46:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 64D0C1101;
-	Thu,  1 Jun 2023 00:31:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91276AD58;
+	Wed, 31 May 2023 10:46:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59CA57EA
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 00:31:52 +0000 (UTC)
-Received: from mail-b.sr.ht (mail-b.sr.ht [173.195.146.151])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35CE124;
-	Wed, 31 May 2023 17:31:48 -0700 (PDT)
-Authentication-Results: mail-b.sr.ht; dkim=none 
-Received: from git.sr.ht (unknown [173.195.146.142])
-	by mail-b.sr.ht (Postfix) with ESMTPSA id B34EA11F0F5;
-	Thu,  1 Jun 2023 00:31:47 +0000 (UTC)
-From: ~akihirosuda <akihirosuda@git.sr.ht>
-Date: Wed, 31 May 2023 19:42:49 +0900
-Subject: [PATCH linux v2] net/ipv4: ping_group_range: allow GID from
- 2147483648 to 4294967294
-Message-ID: <168557950756.14226.6470993129419598644-0@git.sr.ht>
-X-Mailer: git.sr.ht
-Reply-to: ~akihirosuda <suda.kyoto@gmail.com>
-To: linux-kernel@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
- edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, segoon@openwall.com,
- kuniyu@amazon.com
-Cc: suda.kyoto@gmail.com, akihiro.suda.cz@hco.ntt.co.jp
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4B7C8F51
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 10:46:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AD17C433D2;
+	Wed, 31 May 2023 10:46:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685529978;
+	bh=uvajCD/cT8XPDDXHL1P5zECvOH/G0AyyNrIES1Z6/Ng=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=U/ok+6f1wkidXmCi52ay4cMHzhejtsHqtYwA+9gXXd/YWg72oZmtpsb/yN8YRvB43
+	 o5RzGUJb/8sR6kVKcY2eRyZwbmI6kndeBkEnOlGx5gb3NLeFd0LLO7f07SiJ5JQ2Rh
+	 WECGpklsOlOx02Qgxou8TlQ/Uvn1QNLIXWqBpBFYhO+dEQ4lJSCfuosihMxsfczjBH
+	 geOAjLRvqZjZZ+v3Vv3MaimBz+3nS6or/or6tKpV41D9S6TB5pm5IRM5/Q7q9WqMNh
+	 i2UeA5ThiOgn+U3nveHzTMjouMFyT0TJUJAv6X8am3AdK0YH6NX9C+0zTF13OLr1JN
+	 DF0NbRxCjtz5A==
+Date: Wed, 31 May 2023 11:46:11 +0100
+From: Lee Jones <lee@kernel.org>
+To: patchwork-bot+netdevbpf@kernel.org
+Cc: Christian Marangi <ansuelsmth@gmail.com>, pavel@ucw.cz, corbet@lwn.net,
+	andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, linux-leds@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v4 00/13] leds: introduce new LED hw control APIs
+Message-ID: <20230531104611.GC449117@google.com>
+References: <20230529163243.9555-1-ansuelsmth@gmail.com>
+ <168552422621.12579.18364898651664418572.git-patchwork-notify@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DATE_IN_PAST_12_24,
-	FREEMAIL_FORGED_REPLYTO,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <168552422621.12579.18364898651664418572.git-patchwork-notify@kernel.org>
 
-From: Akihiro Suda <akihiro.suda.cz@hco.ntt.co.jp>
+On Wed, 31 May 2023, patchwork-bot+netdevbpf@kernel.org wrote:
 
-With this commit, all the GIDs ("0 4294967294") can be written to the
-"net.ipv4.ping_group_range" sysctl.
+> Hello:
+> 
+> This series was applied to netdev/net-next.git (main)
+> by David S. Miller <davem@davemloft.net>:
 
-Note that 4294967295 (0xffffffff) is an invalid GID (see gid_valid() in
-include/linux/uidgid.h), and an attempt to register this number will cause
--EINVAL.
+*sigh*
+ 
+> On Mon, 29 May 2023 18:32:30 +0200 you wrote:
+> > Since this series is cross subsystem between LED and netdev,
+> > a stable branch was created to facilitate merging process.
+> > 
+> > This is based on top of branch ib-leds-netdev-v6.5 present here [1]
+> > and rebased on top of net-next since the LED stable branch got merged.
+> > 
+> > This is a continue of [2]. It was decided to take a more gradual
+> > approach to implement LEDs support for switch and phy starting with
+> > basic support and then implementing the hw control part when we have all
+> > the prereq done.
+> > 
+> > [...]
+> 
+> Here is the summary with links:
+>   - [net-next,v4,01/13] leds: add APIs for LEDs hw control
+>     https://git.kernel.org/netdev/net-next/c/ed554d3f9451
+>   - [net-next,v4,02/13] leds: add API to get attached device for LED hw control
+>     https://git.kernel.org/netdev/net-next/c/052c38eb17e8
+>   - [net-next,v4,03/13] Documentation: leds: leds-class: Document new Hardware driven LEDs APIs
+>     https://git.kernel.org/netdev/net-next/c/8aa2fd7b6698
+>   - [net-next,v4,04/13] leds: trigger: netdev: refactor code setting device name
+>     https://git.kernel.org/netdev/net-next/c/28a6a2ef18ad
+>   - [net-next,v4,05/13] leds: trigger: netdev: introduce check for possible hw control
+>     https://git.kernel.org/netdev/net-next/c/4fd1b6d47a7a
+>   - [net-next,v4,06/13] leds: trigger: netdev: add basic check for hw control support
+>     https://git.kernel.org/netdev/net-next/c/6352f25f9fad
+>   - [net-next,v4,07/13] leds: trigger: netdev: reject interval store for hw_control
+>     https://git.kernel.org/netdev/net-next/c/c84c80c7388f
+>   - [net-next,v4,08/13] leds: trigger: netdev: add support for LED hw control
+>     https://git.kernel.org/netdev/net-next/c/7c145a34ba6e
+>   - [net-next,v4,09/13] leds: trigger: netdev: validate configured netdev
+>     https://git.kernel.org/netdev/net-next/c/33ec0b53beff
+>   - [net-next,v4,10/13] leds: trigger: netdev: init mode if hw control already active
+>     https://git.kernel.org/netdev/net-next/c/0316cc5629d1
+>   - [net-next,v4,11/13] leds: trigger: netdev: expose netdev trigger modes in linux include
+>     https://git.kernel.org/netdev/net-next/c/947acacab5ea
+>   - [net-next,v4,12/13] net: dsa: qca8k: implement hw_control ops
+>     https://git.kernel.org/netdev/net-next/c/e0256648c831
+>   - [net-next,v4,13/13] net: dsa: qca8k: add op to get ports netdev
+>     https://git.kernel.org/netdev/net-next/c/4f53c27f772e
+> 
+> You are awesome, thank you!
+> -- 
+> Deet-doot-dot, I am a bot.
+> https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
+> 
 
-Prior to this commit, only up to GID 2147483647 could be covered.
-Documentation/networking/ip-sysctl.rst had "0 4294967295" as an example
-value, but this example was wrong and causing -EINVAL.
-
-v1->v2: Simplified the patch (Thanks to Kuniyuki Iwashima for suggestion)
-
-Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
-Signed-off-by: Akihiro Suda <akihiro.suda.cz@hco.ntt.co.jp>
----
- Documentation/networking/ip-sysctl.rst | 4 ++--
- include/net/ping.h                     | 6 +-----
- net/ipv4/sysctl_net_ipv4.c             | 8 ++++----
- 3 files changed, 7 insertions(+), 11 deletions(-)
-
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networkin=
-g/ip-sysctl.rst
-index 6ec06a33688a..80b8f73a0244 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -1352,8 +1352,8 @@ ping_group_range - 2 INTEGERS
- 	Restrict ICMP_PROTO datagram sockets to users in the group range.
- 	The default is "1 0", meaning, that nobody (not even root) may
- 	create ping sockets.  Setting it to "100 100" would grant permissions
--	to the single group. "0 4294967295" would enable it for the world, "100
--	4294967295" would enable it for the users, but not daemons.
-+	to the single group. "0 4294967294" would enable it for the world, "100
-+	4294967294" would enable it for the users, but not daemons.
-=20
- tcp_early_demux - BOOLEAN
- 	Enable early demux for established TCP sockets.
-diff --git a/include/net/ping.h b/include/net/ping.h
-index 9233ad3de0ad..bc7779262e60 100644
---- a/include/net/ping.h
-+++ b/include/net/ping.h
-@@ -16,11 +16,7 @@
- #define PING_HTABLE_SIZE 	64
- #define PING_HTABLE_MASK 	(PING_HTABLE_SIZE-1)
-=20
--/*
-- * gid_t is either uint or ushort.  We want to pass it to
-- * proc_dointvec_minmax(), so it must not be larger than MAX_INT
-- */
--#define GID_T_MAX (((gid_t)~0U) >> 1)
-+#define GID_T_MAX (((gid_t)~0U) - 1)
-=20
- /* Compatibility glue so we can support IPv6 when it's compiled as a module =
-*/
- struct pingv6_ops {
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 40fe70fc2015..bb49d9407c45 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -34,8 +34,8 @@ static int ip_ttl_min =3D 1;
- static int ip_ttl_max =3D 255;
- static int tcp_syn_retries_min =3D 1;
- static int tcp_syn_retries_max =3D MAX_TCP_SYNCNT;
--static int ip_ping_group_range_min[] =3D { 0, 0 };
--static int ip_ping_group_range_max[] =3D { GID_T_MAX, GID_T_MAX };
-+static long ip_ping_group_range_min[] =3D { 0, 0 };
-+static long ip_ping_group_range_max[] =3D { GID_T_MAX, GID_T_MAX };
- static u32 u32_max_div_HZ =3D UINT_MAX / HZ;
- static int one_day_secs =3D 24 * 3600;
- static u32 fib_multipath_hash_fields_all_mask __maybe_unused =3D
-@@ -165,7 +165,7 @@ static int ipv4_ping_group_range(struct ctl_table *table,=
- int write,
- {
- 	struct user_namespace *user_ns =3D current_user_ns();
- 	int ret;
--	gid_t urange[2];
-+	unsigned long urange[2];
- 	kgid_t low, high;
- 	struct ctl_table tmp =3D {
- 		.data =3D &urange,
-@@ -178,7 +178,7 @@ static int ipv4_ping_group_range(struct ctl_table *table,=
- int write,
- 	inet_get_ping_group_range_table(table, &low, &high);
- 	urange[0] =3D from_kgid_munged(user_ns, low);
- 	urange[1] =3D from_kgid_munged(user_ns, high);
--	ret =3D proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
-+	ret =3D proc_doulongvec_minmax(&tmp, write, buffer, lenp, ppos);
-=20
- 	if (write && ret =3D=3D 0) {
- 		low =3D make_kgid(user_ns, urange[0]);
---=20
-2.38.4
+-- 
+Lee Jones [李琼斯]
 
