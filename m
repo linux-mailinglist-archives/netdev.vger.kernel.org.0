@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-6846-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6847-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8A5F171867C
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 17:36:01 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id ABBCC71867E
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 17:36:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EF8F6281516
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 15:35:59 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 463991C20BDC
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 15:36:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2CF14174C1;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 89321174D2;
 	Wed, 31 May 2023 15:35:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CA3416438
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1311F171C5
 	for <netdev@vger.kernel.org>; Wed, 31 May 2023 15:35:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E88E4C433EF;
-	Wed, 31 May 2023 15:35:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67D3EC433A0;
+	Wed, 31 May 2023 15:35:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1685547356;
-	bh=3XcAmIFSrnOkTTIvaLbHDeAzQQeOsMTCKo2LBSckIcE=;
-	h=From:To:Cc:Subject:Date:From;
-	b=sDeCRDLwnQy/Bxy+3qmQjJgUVCi17SQ5EuF7qGaiWSri0+EscsjzzSGVlbX5oT6aW
-	 CXBmHxAow3QWd8vN4EOMLl1bM97SO3R0ujk9E2einZiies/jWOTVGbCy/E26nZjE8i
-	 iknyMMLJtyH/L+BexiZt9uDyvvVUfLDPbSZKaebhJch35BrO3Tv99yHwVqxcd1QH4P
-	 I+NaskzzJf0G+fh1utazXKKMRlXll8xQKSkzinrTmhYji7I4C8DRhFSOGP9bt0Iefk
-	 yCtJOo2xrpKwHxOXobUGUyIqxSR9Ns7HDg9sLGPeBYZXBFMPu1yDx1dNO9WfSmTFox
-	 jsZgz3FDZyMYQ==
+	bh=o5FPeUP281Tur/5s4It1VlOpopPVBJhReOl9Rq77ITQ=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=uzp6N6pfe8cN2LqPaW83b1IHY7nPdfG7Mge4J8UwTqK4rDNNH4aJozKxWP+nX0T08
+	 7ZedXJYn4+6a1iVPehRbSARBZ1E0DzRGing4mC0zdeIuwlgxJcXzY8v+kKCsIfvsF2
+	 w2kgBMI9wOJCZWoSzaFAxnvNeUL3rQL5f/qeoPvMRR7MLtAwsRTg/KW63exunahj62
+	 rEjVNIbcw3FDGvOwfIHEDyHCE9GViSCWJovUs6+8CS+YH7cIcK8yJBxR7LoIvNEym5
+	 kAu3P04hNl0yIdFyfQbEsROtnoF57djDsS+1GvTxe1k+hd5bKm6bGiSVRse10Ee+X4
+	 ZfhywgyvNcGew==
 From: Jakub Kicinski <kuba@kernel.org>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
@@ -38,10 +38,12 @@ Cc: netdev@vger.kernel.org,
 	borisp@nvidia.com,
 	john.fastabend@gmail.com,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 1/2] tls: suppress wakeups unless we have a full record
-Date: Wed, 31 May 2023 08:35:50 -0700
-Message-Id: <20230531153551.187141-1-kuba@kernel.org>
+Subject: [PATCH net-next 2/2] selftests: tls: add tests for poll behavior
+Date: Wed, 31 May 2023 08:35:51 -0700
+Message-Id: <20230531153551.187141-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230531153551.187141-1-kuba@kernel.org>
+References: <20230531153551.187141-1-kuba@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -50,71 +52,162 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-TLS does not override .poll() so TLS-enabled socket will generate
-an event whenever data arrives at the TCP socket. This leads to
-unnecessary wakeups on slow connections.
+Make sure we don't generate premature POLLIN events.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/tls/tls_main.c | 35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+ tools/testing/selftests/net/tls.c | 131 ++++++++++++++++++++++++++++++
+ 1 file changed, 131 insertions(+)
 
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 3d45fdb5c4e9..e02a0d882ed3 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -358,6 +358,39 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
- 		tls_ctx_free(sk, ctx);
+diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
+index e699548d4247..eccea9845c65 100644
+--- a/tools/testing/selftests/net/tls.c
++++ b/tools/testing/selftests/net/tls.c
+@@ -15,6 +15,7 @@
+ #include <linux/tcp.h>
+ #include <linux/socket.h>
+ 
++#include <sys/epoll.h>
+ #include <sys/types.h>
+ #include <sys/sendfile.h>
+ #include <sys/socket.h>
+@@ -1637,6 +1638,136 @@ TEST_F(tls_err, timeo)
+ 	}
  }
  
-+static __poll_t tls_sk_poll(struct file *file, struct socket *sock,
-+			    struct poll_table_struct *wait)
++TEST_F(tls_err, poll_partial_rec)
 +{
-+	struct tls_sw_context_rx *ctx;
-+	struct tls_context *tls_ctx;
-+	struct sock *sk = sock->sk;
-+	struct sk_psock *psock;
-+	__poll_t mask = 0;
-+	u8 shutdown;
-+	int state;
++	struct pollfd pfd = { };
++	ssize_t rec_len;
++	char rec[256];
++	char buf[128];
 +
-+	mask = tcp_poll(file, sock, wait);
++	if (self->notls)
++		SKIP(return, "no TLS support");
 +
-+	state = inet_sk_state_load(sk);
-+	shutdown = READ_ONCE(sk->sk_shutdown);
-+	if (unlikely(state != TCP_ESTABLISHED || shutdown & RCV_SHUTDOWN))
-+		return mask;
++	pfd.fd = self->cfd2;
++	pfd.events = POLLIN;
++	EXPECT_EQ(poll(&pfd, 1, 1), 0);
 +
-+	tls_ctx = tls_get_ctx(sk);
-+	ctx = tls_sw_ctx_rx(tls_ctx);
-+	psock = sk_psock_get(sk);
++	memrnd(buf, sizeof(buf));
++	EXPECT_EQ(send(self->fd, buf, sizeof(buf), 0), sizeof(buf));
++	rec_len = recv(self->cfd, rec, sizeof(rec), 0);
++	EXPECT_GT(rec_len, sizeof(buf));
 +
-+	if (skb_queue_empty_lockless(&ctx->rx_list) &&
-+	    !tls_strp_msg_ready(ctx) &&
-+	    sk_psock_queue_empty(psock))
-+		mask &= ~(EPOLLIN | EPOLLRDNORM);
-+
-+	if (psock)
-+		sk_psock_put(sk, psock);
-+
-+	return mask;
++	/* Write 100B, not the full record ... */
++	EXPECT_EQ(send(self->fd2, rec, 100, 0), 100);
++	/* ... no full record should mean no POLLIN */
++	pfd.fd = self->cfd2;
++	pfd.events = POLLIN;
++	EXPECT_EQ(poll(&pfd, 1, 1), 0);
++	/* Now write the rest, and it should all pop out of the other end. */
++	EXPECT_EQ(send(self->fd2, rec + 100, rec_len - 100, 0), rec_len - 100);
++	pfd.fd = self->cfd2;
++	pfd.events = POLLIN;
++	EXPECT_EQ(poll(&pfd, 1, 1), 1);
++	EXPECT_EQ(recv(self->cfd2, rec, sizeof(rec), 0), sizeof(buf));
++	EXPECT_EQ(memcmp(buf, rec, sizeof(buf)), 0);
 +}
 +
- static int do_tls_getsockopt_conf(struct sock *sk, char __user *optval,
- 				  int __user *optlen, int tx)
- {
-@@ -928,9 +961,11 @@ static void build_proto_ops(struct proto_ops ops[TLS_NUM_CONFIG][TLS_NUM_CONFIG]
- 
- 	ops[TLS_BASE][TLS_SW  ] = ops[TLS_BASE][TLS_BASE];
- 	ops[TLS_BASE][TLS_SW  ].splice_read	= tls_sw_splice_read;
-+	ops[TLS_BASE][TLS_SW  ].poll		= tls_sk_poll;
- 
- 	ops[TLS_SW  ][TLS_SW  ] = ops[TLS_SW  ][TLS_BASE];
- 	ops[TLS_SW  ][TLS_SW  ].splice_read	= tls_sw_splice_read;
-+	ops[TLS_SW  ][TLS_SW  ].poll		= tls_sk_poll;
- 
- #ifdef CONFIG_TLS_DEVICE
- 	ops[TLS_HW  ][TLS_BASE] = ops[TLS_BASE][TLS_BASE];
++TEST_F(tls_err, epoll_partial_rec)
++{
++	struct epoll_event ev, events[10];
++	ssize_t rec_len;
++	char rec[256];
++	char buf[128];
++	int epollfd;
++
++	if (self->notls)
++		SKIP(return, "no TLS support");
++
++	epollfd = epoll_create1(0);
++	ASSERT_GE(epollfd, 0);
++
++	memset(&ev, 0, sizeof(ev));
++	ev.events = EPOLLIN;
++	ev.data.fd = self->cfd2;
++	ASSERT_GE(epoll_ctl(epollfd, EPOLL_CTL_ADD, self->cfd2, &ev), 0);
++
++	EXPECT_EQ(epoll_wait(epollfd, events, 10, 0), 0);
++
++	memrnd(buf, sizeof(buf));
++	EXPECT_EQ(send(self->fd, buf, sizeof(buf), 0), sizeof(buf));
++	rec_len = recv(self->cfd, rec, sizeof(rec), 0);
++	EXPECT_GT(rec_len, sizeof(buf));
++
++	/* Write 100B, not the full record ... */
++	EXPECT_EQ(send(self->fd2, rec, 100, 0), 100);
++	/* ... no full record should mean no POLLIN */
++	EXPECT_EQ(epoll_wait(epollfd, events, 10, 0), 0);
++	/* Now write the rest, and it should all pop out of the other end. */
++	EXPECT_EQ(send(self->fd2, rec + 100, rec_len - 100, 0), rec_len - 100);
++	EXPECT_EQ(epoll_wait(epollfd, events, 10, 0), 1);
++	EXPECT_EQ(recv(self->cfd2, rec, sizeof(rec), 0), sizeof(buf));
++	EXPECT_EQ(memcmp(buf, rec, sizeof(buf)), 0);
++
++	close(epollfd);
++}
++
++TEST_F(tls_err, poll_partial_rec_async)
++{
++	struct pollfd pfd = { };
++	ssize_t rec_len;
++	char rec[256];
++	char buf[128];
++	char token;
++	int p[2];
++	int ret;
++
++	if (self->notls)
++		SKIP(return, "no TLS support");
++
++	ASSERT_GE(pipe(p), 0);
++
++	memrnd(buf, sizeof(buf));
++	EXPECT_EQ(send(self->fd, buf, sizeof(buf), 0), sizeof(buf));
++	rec_len = recv(self->cfd, rec, sizeof(rec), 0);
++	EXPECT_GT(rec_len, sizeof(buf));
++
++	ret = fork();
++	ASSERT_GE(ret, 0);
++
++	if (ret) {
++		int status, pid2;
++
++		close(p[1]);
++		usleep(1000); /* Give child a head start */
++
++		EXPECT_EQ(send(self->fd2, rec, 100, 0), 100);
++
++		EXPECT_EQ(read(p[0], &token, 1), 1); /* Barrier #1 */
++
++		EXPECT_EQ(send(self->fd2, rec + 100, rec_len - 100, 0),
++			  rec_len - 100);
++
++		pid2 = wait(&status);
++		EXPECT_EQ(pid2, ret);
++		EXPECT_EQ(status, 0);
++	} else {
++		close(p[0]);
++
++		/* Child should sleep in poll(), never get a wake */
++		pfd.fd = self->cfd2;
++		pfd.events = POLLIN;
++		EXPECT_EQ(poll(&pfd, 1, 5), 0);
++
++		EXPECT_EQ(write(p[1], &token, 1), 1); /* Barrier #1 */
++
++		pfd.fd = self->cfd2;
++		pfd.events = POLLIN;
++		EXPECT_EQ(poll(&pfd, 1, 5), 1);
++
++		exit(!_metadata->passed);
++	}
++}
++
+ TEST(non_established) {
+ 	struct tls12_crypto_info_aes_gcm_256 tls12;
+ 	struct sockaddr_in addr;
 -- 
 2.40.1
 
