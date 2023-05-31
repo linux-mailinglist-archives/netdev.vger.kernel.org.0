@@ -1,192 +1,245 @@
-Return-Path: <netdev+bounces-6670-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6671-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 281DC71763D
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 07:32:41 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id AB4D2717647
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 07:39:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D816428131E
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 05:32:39 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 48F0B1C20D54
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 05:39:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 29E8B2113;
-	Wed, 31 May 2023 05:32:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 496D64A3C;
+	Wed, 31 May 2023 05:38:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1955D186C
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 05:32:38 +0000 (UTC)
-Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D0A11B
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 22:32:32 -0700 (PDT)
-Received: by mail-oo1-xc35.google.com with SMTP id 006d021491bc7-555536b85a0so2669819eaf.2
-        for <netdev@vger.kernel.org>; Tue, 30 May 2023 22:32:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685511152; x=1688103152;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UzD0ZRhLNfuPDroNRE+8ZYwDGYrkY108VvKhdjU7fgw=;
-        b=qbOzRZWkiYVootH7mOe/uYBaBtMeTAVjG1DjzuCQ+h6cZ5myXzLSPi5GaaRYNPW+YD
-         klK3fSUgGQXdiWse16gZFeLQP2WZdsoWjAeFhG7Vi6Ohyp+gvLAWY73Mwi3OmS5KM+cM
-         y4hn/VXt/I6BNIIwQSuiiAwgrVs0N5/oXJr/aN+GEcqLrwi6fQHv8P5UoMICTK+NInVb
-         YIvBJCe3ZMN/MQgRYMFlBtrfx4K03A2yN9UL0PtSXrKfSKnox3/N6pv5DCLOg5Wg4t9K
-         dwuTWEZU6E9HvM+PHpayqj74nLS7u5FCwdYTyEfjRbTeVMGm0lA67+RQjtqHr01meph6
-         twiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685511152; x=1688103152;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=UzD0ZRhLNfuPDroNRE+8ZYwDGYrkY108VvKhdjU7fgw=;
-        b=G+Ufg19zXzR3dxXTBYZXLE7JYu3xeL22EZCsjOB1R0ycGubssb2fX0L42QtA3MyTkc
-         jmWviCAATtSl71gGIdCld4xRk0SJWrQE84y4Pb/Vd1RbyaCFixVmvoU4VDdtOOLckgMx
-         vsZKNaBD16t/wKsXeINu0u7FIwRQjbJAzoZmIyxdQcQtZoDqmhhCozYy/57t66sVmpm+
-         kA2IVXqNimSfyuj/NM9CffhmrjRxYLR1M6LruSwz51BrGCHTrkd+VOGCP8A0oyOja8jg
-         4M2+/nSCCivBDHRQKE1TJgc//7ec2RLQWDVOjn/iYupzJ0J9IgHOkPDEpg8q1cDv9hDy
-         IRew==
-X-Gm-Message-State: AC+VfDwuMPkPBs/ufb7EAHsrid8Ynq0qR2dkRF7VSGfPGkofm9VJnDxy
-	h43q4OCOmhPHf3gRqePAEFx8eP0Z8ctiU96edO0=
-X-Google-Smtp-Source: ACHHUZ47d8QQK5IuESRSfca4fn4AewbBnCREQFVeygXNAzY8zGcHRY0eCsaLtzz+LigJ5O5xia9eHedE+SAyREvbFdY=
-X-Received: by 2002:a05:6808:3092:b0:398:2c02:20a2 with SMTP id
- bl18-20020a056808309200b003982c0220a2mr3077916oib.17.1685511152250; Tue, 30
- May 2023 22:32:32 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2632620F3;
+	Wed, 31 May 2023 05:38:58 +0000 (UTC)
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E5311C;
+	Tue, 30 May 2023 22:38:56 -0700 (PDT)
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+	by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34V3P3ur010975;
+	Tue, 30 May 2023 22:38:36 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=s2048-2021-q4;
+ bh=qS54MR+dBHjyPTrpmKZyEyXn6cHxQFkqaI6Jz9U35cE=;
+ b=dkg9CzWdZ13XUX4NX9yHhZsH9P9K3n03suiZFX4UoRQ/3sI37xHB3Dskr6DA19XWkPjM
+ ZTicqrmV7pLEu9ruWlUmoEbNvSKevuiaZrPh05ZoPQPN+81rRoFhOZ3Y8WKe8eJfBfUK
+ M69hZB3vmTO2bol2/moGmxG9OiZENdFwdgidfUDyzAbsBMKqu06eB1UsEEYw+I3ekZVx
+ MhxqB3Pt4zMmqiDANlmxCkKLDzZdDO7FU8HqFtFYAgs44GZablYz//jw2Gc83pmxdVLs
+ 3uAROid+oo5+f2Kx37WA6SEC+wVRdzOGAEM0dnPt/ip/fp3Vu1QqLEOghwEloAZdSKtT /w== 
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2168.outbound.protection.outlook.com [104.47.56.168])
+	by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3qwfn0q79a-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 30 May 2023 22:38:36 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=blEGUwqpamG3fWJvtQaW3CEPHiwjGNJ/R/8VtD/Ta7U3lXRjbKzdxlCFWnwKM8zRcu7YqIiImCwTo2G/SpHOhmq9fEN7ib2bG4zS1xW7cyWIBK+pC+LLN8Zyl7B/D9KnNvoc/98xCcdkps55YNAcMzccRLe0gZcw7OaRp9SCWRyFGUHzU43sRJ5SvFLtw8SrET7CHWf/p4tWW0/xTT+hqkjH20rxv3ZA7UbnXAV9qvvh5HFpSpobzBdPAPMh2fWFglsGW7ocOL6soGDCxLw41zR1EDrtcr4SmB0mS2cnqWU1q9B7LUOyXvEATBAZquq+y1oOIuqmo6aEH1oz3mjI5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qS54MR+dBHjyPTrpmKZyEyXn6cHxQFkqaI6Jz9U35cE=;
+ b=gVtQ0VVurxnhmBcEuAiiyKrioT1RATs5cslFbHe3z35KAHD4IbRaQglfDhSPq4JQLtVj2U8zTiYhp/fxzdbElZ//o2F+FUoL34cblaCni5AUXgOoBUcrmBjc7MTeuCpQUbzjrCyDiCXtNO/1KK74QCdqaykvijtjsslbXnZ5FoCAGWi+OLRVcgp/6sfiFvvu/2+3XDqD2Q7yXxTMsjNuIJfF/i1hFgpcSqYOJGOvOeBq8sDiR9sC++mpqoYrszqY3beKeTdoJ4m8xgC2Czsiq1hsk1fImeKoJzFeLTsLwfB6LQv8yA7F27WYnrZ7q4s9dn6RwpNxqP/j/sl32ibvhA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
+ dkim=pass header.d=meta.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by SJ2PR15MB5764.namprd15.prod.outlook.com (2603:10b6:a03:4d3::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23; Wed, 31 May
+ 2023 05:38:34 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::bf7d:a453:b8d9:cf0]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::bf7d:a453:b8d9:cf0%6]) with mapi id 15.20.6433.022; Wed, 31 May 2023
+ 05:38:34 +0000
+Message-ID: <40fc10d4-b68d-83c3-b659-e291031df5bd@meta.com>
+Date: Tue, 30 May 2023 22:38:29 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.11.2
+Subject: Re: [PATCH v2] kernel: bpf: syscall: fix a possible sleep-in-atomic
+ bug in __bpf_prog_put()
+Content-Language: en-US
+To: Teng Qi <starmiku1207184332@gmail.com>
+Cc: ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
+        jolsa@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20230530070610.600063-1-starmiku1207184332@gmail.com>
+ <4f37f760-048b-9d54-14ae-d1f979898625@meta.com>
+ <CALyQVaxuONP8WXSVGhT2ih12ae0FwE3C+A1s4O7LArTHERmAxg@mail.gmail.com>
+From: Yonghong Song <yhs@meta.com>
+In-Reply-To: <CALyQVaxuONP8WXSVGhT2ih12ae0FwE3C+A1s4O7LArTHERmAxg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BYAPR07CA0054.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::31) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230530141935.GA21936@didi-ThinkCentre-M920t-N000>
- <CANn89i+HK5vny8qo89_+4PqZj9rBcGi6sVfSgN4HSpqqoUr6fw@mail.gmail.com>
- <CAL+tcoCW7o-RcQ40NdZKwfcoqn5V9K4kjKpYpiT0E38k7yyc2Q@mail.gmail.com>
- <CANn89iKopAb_TGWtqHZB40Gs9VW=UfLj+h2za1=Pr8c6+Lcn=Q@mail.gmail.com>
- <CAL+tcoDYZhDkH+oK+7KrmdWA03aY356UPBOGZOnbUiYKZ5q9YQ@mail.gmail.com> <CANn89iLtzzqHhFtq196AnAer6YoUjQKxHz2_zsqbiavnZAqUjQ@mail.gmail.com>
-In-Reply-To: <CANn89iLtzzqHhFtq196AnAer6YoUjQKxHz2_zsqbiavnZAqUjQ@mail.gmail.com>
-From: Jason Xing <kerneljasonxing@gmail.com>
-Date: Wed, 31 May 2023 13:31:55 +0800
-Message-ID: <CAL+tcoD0hXzymHyGJm2Rfk1hnVieFiAP5SY_WqdwE++APkskFA@mail.gmail.com>
-Subject: Re: [PATCH net v2] tcp: fix mishandling when the sack compression is deferred
-To: Eric Dumazet <edumazet@google.com>
-Cc: fuyuanli <fuyuanli@didiglobal.com>, "David S. Miller" <davem@davemloft.net>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Neal Cardwell <ncardwell@google.com>, ycheng <ycheng@google.com>, toke <toke@toke.dk>, 
-	netdev@vger.kernel.org, Weiping Zhang <zhangweiping@didiglobal.com>, 
-	Tio Zhang <tiozhang@didiglobal.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN6PR1501MB2064:EE_|SJ2PR15MB5764:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9e8c91e9-4ba1-45c7-6c9a-08db61994636
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 
+	W41NBTuKWTR0PZc2FwbGMWMZKy9loeU16Hp4K9LkSnVdJMuRjB9i9cQ8nZ/ZHIgvBLDcSviciCJTfmFTBiImEq8btjofjFneKacUxAXu4oMUIIZfMeEQ28WvCd5GlUGonMUPcHxVKZfknX48ynBi3Tiifvp/S5nEoIF9r6Pgm8ci1BBNmTsubwRZAAOyvbkeRvS/gMn8VJkw+12A4H6R88gXMvwY/NLLddG6Ic8ddcpDhE9zGhJU9g3neYzzmC5Vof2uL5NpaIfgE6jK9B8dDVNYGfJe77wb/o4Y9fTrWe1tG5k253W07MK6feAPuA4deqT2aHX30dphXMX0kpfW+B1lopDYiUQHs6uOVdjqVZ7Kyl68FVtu0ckCHsfrBvbDxPbXWWthLuETY+wYbahyrW+anVPuQNn2cyE6R6ogjqoQ4/XgN+H/JJ+kEsVgzqXmrsg7ShBRwEf0Qeaon3D/fC4CXxO+9BQChUb8Y+vvsGkuXH7tdkkVgukGYYR67Ly9B5KMJSoRYTKNWzxV/sxnN8PrrXVWMwvg/xv19/wA7d56jtIG4QJTtMCj6ovApZG9q9Oshn++39WvXyIzgXKVRxcddPzhH5qhGKDDrAoBltKGDN3RZM0Y5eeP+vOro0l7+H2H+5QKzfyn2dQNOzfUiQ==
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(136003)(346002)(396003)(366004)(376002)(451199021)(6916009)(66556008)(66476007)(66946007)(86362001)(4326008)(478600001)(5660300002)(41300700001)(31686004)(6486002)(8676002)(8936002)(7416002)(31696002)(6512007)(6666004)(6506007)(316002)(53546011)(186003)(83380400001)(2906002)(2616005)(36756003)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?utf-8?B?MVpMRDhxalJPS0NXazMzQzJ4My9ueERQeDI3cDZubmFHOW5SMVBoeDJ1NDlV?=
+ =?utf-8?B?blZyV0w4OVYwbHE0WW5TQ3I3cVlpeUJlZG1NVWVWZUdCSTV3d2w2OVBQNng4?=
+ =?utf-8?B?N2JjSjh5QW42bkg3aE5SV0xVSUhpa0xTK0RMMkhESU9ldnhRMEdrTm1IWmRh?=
+ =?utf-8?B?Qzd4ZDBURWpnTHRDSWJvRDVkVEhCUWlnVmFEMFoyUUwzL3pEUHRkUTZWNHdB?=
+ =?utf-8?B?T3BMSGpDQ21pZVdNVE40T25FVzRBSmF0eW1WM1IwcFV5NmZnZGlpMHpDREhU?=
+ =?utf-8?B?QkFUMkVPeVhXeXFBQnl6MERhT1dzalpEclBrMm9EdnczaUxjQWhKWFJzcHBQ?=
+ =?utf-8?B?UlRFcis1SXFuS0REZFYxSzFUalhVdllqZ1ZzbDdLZmtEZmFrSXE3MnlrRnpq?=
+ =?utf-8?B?bDNHU1E0NGFNbW9BWkJkZXBiaFVFNXd3eTFibkpPbHZSYURuVW5FdURCODls?=
+ =?utf-8?B?K0grVVQ4am5jSGgzN21YSGVDNm9aQW44WWNJVFZUZzMzRVFnRG9OeTNDVmx3?=
+ =?utf-8?B?bzQ3VmRuSVN0TE9Ic29paFpmaGptZzk4YWF1cnh4aVBaOFFlVHFnYzY0dzRr?=
+ =?utf-8?B?VVNJa291U1ZYRFIycXBoSDJXVmhnWjJpeEp6d1F0aTRoR09VWVNnOGZaMlJ3?=
+ =?utf-8?B?M1d1Vmc3RUF6WTBzTW5HMTkzWkt0RnN2QXM2OUYxTXI2cGtua3NGT2dZck9X?=
+ =?utf-8?B?R2E5UXY0RjlTdkJIc1JSNjhtZ0FQRnl6cjkyYzhNNHNCc21uQ0tFdE03Nzgx?=
+ =?utf-8?B?a2N5Z1Rod2tnZ0lPcnY2Q1NGRkMvejhrYUpFUkpHeEo3WFcycXEzc1RRSXkx?=
+ =?utf-8?B?TUdkcUJuM2E0QldacDR4YW9JWFgxZUtVbWdicWV4QUhNOWlFZEYvSWR3MXQ2?=
+ =?utf-8?B?dUFGbEk5dUR2QXJxSGV2N3R1YlRmWFpVNHhFTjBnMk85djJkV2ZuY1FkbFVi?=
+ =?utf-8?B?WmJ5Smk1ekR6NGxsRS9uekxaTCtkdk9wVHkySTRxcGdmSnFneGxhQWZzUUpO?=
+ =?utf-8?B?OU1xUUZNU242dHAxZzFZUjhSc3FzQi8xdGFsZ1NvVXYxZGhhdG00bzI4alpU?=
+ =?utf-8?B?d01vNDJvVGRzMEdxeExRRldRRDZORkM0SXk3elpKSXlmM21VSld6UzRLTkNh?=
+ =?utf-8?B?WVZrSWREdnVUZUxpajFYdW5IbGVJSGlwWlRXNS9oNEdJWFMzaHJEd2MxZFVK?=
+ =?utf-8?B?ZXovUGlTOEg5aHRBNUNkQS9ieUxINzFEaUd6ZFVjRUhZZy91dktPdnJhRjI0?=
+ =?utf-8?B?S2lLaWhFSUFJUkorcHpUUlUxbGpVK3dHaTdYc2NJV2lOYzlLa3lUdjdNRCt1?=
+ =?utf-8?B?aUMxS2VzTkhSdHhYMXZoOHlLNkV2ZTBVUHdqTFVxdEdKRkFwY3BGY0xIZWhF?=
+ =?utf-8?B?a3VQM3RSOXVOQXRIM2dRSThod0RiWm9EVFk4OFlrM2VKSTVpb3VRcFgwRG9Z?=
+ =?utf-8?B?NkNrVDdHTVVyU0VGcWwxdXpITUpqSEVjazhCUHZodkU1WjhyUm1LalFka054?=
+ =?utf-8?B?NW9TelQ0aEUyTTZyaExaRC9BZXlZRVpkOGwrU3I0cEFRR3d2L1laN09sbGJl?=
+ =?utf-8?B?L2tJVlpiR3ExcUh3ZmZCVHUveFdpNjFjTktKWU5McXhSaHNPWnBVaE5EQXFk?=
+ =?utf-8?B?WTBGc1VoaFlqSERtYThXTmdnYmVLS2szT2puZ29XbTBMbmFNSXJvenFJbWhV?=
+ =?utf-8?B?aFNvcUhpQXZidTFJLzVDODhnV3REVUtkcGlDRUhRbjhtMWJudkF3MkFwcndW?=
+ =?utf-8?B?MXVuNG50R1l4ZDBLcS9aVS91VE0raTBxbHJHYU03R2N6ampIQmtjZy9ieXlQ?=
+ =?utf-8?B?TW91bFZxT3lIRjZlWkZySi9SOWl4RFczZ3Y4a2JrZ2w2aC90ZHdkUWpBVmZU?=
+ =?utf-8?B?eGpSeEFFLzBJVk9YUmxnZmZKbVhjSGNPRDAyQXUwNmZidVEvMmR2R21iS2I4?=
+ =?utf-8?B?Z2cvNEVWV3hsUytxQS9CT3FlODlIMlZ6RW9OeW5UcFlpdjYyNEgxMTd1Qk1B?=
+ =?utf-8?B?ZWkxMFU4dmdqSDRZZFgvMEN1TWh3TnZBNmQ5c2JGTlY1Mk82UnhwT0xVVjdD?=
+ =?utf-8?B?NkEzODI1TXIrL09pU0FvWGlMRmFtVlJackpmZHpGeDdWYnlSbk9iTFNDdXNv?=
+ =?utf-8?B?a1hOQVVYWGRnTCs3UmFxYjl1SnFOSlFLRC83RE5yc0RhSHFYMDdIQi9qY1hs?=
+ =?utf-8?B?ZGc9PQ==?=
+X-OriginatorOrg: meta.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e8c91e9-4ba1-45c7-6c9a-08db61994636
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2023 05:38:34.0795
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: epeCF34dzA/aNAjkmwSmmlDjnW/KfrXvSXnIhSqzM8KhMDQLkS7onF6PYvacXvT6
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR15MB5764
+X-Proofpoint-ORIG-GUID: qPhfV_vg7Dk9cIBM5WegSn6WFJrAgW1y
+X-Proofpoint-GUID: qPhfV_vg7Dk9cIBM5WegSn6WFJrAgW1y
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-05-31_02,2023-05-30_01,2023-05-22_02
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 31, 2023 at 12:13=E2=80=AFPM Eric Dumazet <edumazet@google.com>=
- wrote:
->
-> On Wed, May 31, 2023 at 5:50=E2=80=AFAM Jason Xing <kerneljasonxing@gmail=
-.com> wrote:
-> >
-> > On Tue, May 30, 2023 at 10:51=E2=80=AFPM Eric Dumazet <edumazet@google.=
-com> wrote:
-> > >
-> > > On Tue, May 30, 2023 at 4:32=E2=80=AFPM Jason Xing <kerneljasonxing@g=
-mail.com> wrote:
-> > > >
-> > > > I'm confused. You said in the previous email:
-> > > > "As a bonus, no need to send one patch for net, and another in net-=
-next,
-> > > > trying to 'fix' issues that should have been fixed cleanly in a sin=
-gle patch."
-> > > >
-> > > > So we added "introducing ICSK_ACK_TIMER flag for sack compression" =
-to
-> > > > fix them on top of the patch you suggested.
-> > > >
-> > > > I can remove the Suggested-by label. For now, I do care about your
-> > > > opinion on the current patch.
-> > > >
-> > > > Well...should I give up introducing that flag and then leave that
-> > > > 'issue' behind? :S
-> > >
-> > > Please let the fix go alone.
-> > >
-> > > Then I will look at your patch, but honestly I fail to see the _reaso=
-n_ for it.
-> > >
-> > > In case you missed it, tcp_event_ack_sent() calls
-> > > inet_csk_clear_xmit_timer(sk, ICSK_TIME_DACK);
-> >
-> > Hello Eric,
-> >
-> > Sorry, I didn't explain that 'issue' well last night. Let me try it onc=
-e more:
-> >
-> > In the tcp_event_ack_sent(), since we're going to transmit data with
-> > ack header, we should cancel those timers which could start before to
-> > avoid sending useless/redundant acks. Right?
-> >
-> > But what if the timer, say, icsk_delack_timer, was triggered before
-> > and had to postpone it in the release cb phrase because currently
-> > socket (in the tcp sending process) has owned its @owned
-> > field(sk->sk_lock.owned =3D=3D 1).
-> >
-> > We could avoid sending extra useless ack by removing the
-> > ICSK_ACK_TIMER flag to stop sending an ack in
-> > tcp_delack_timer_handler().
-> >
-> > In the current logic, see in the tcp_event_ack_sent():
-> > 1) hrtimer_try_to_cancel(&tp->compressed_ack_timer)
-> > 2) sk_stop_timer(sk, &icsk->icsk_delack_timer)
-> > Those two statements can prevent the timers from sending a useless ack
-> > but cannot prevent sending a useless ack in the deferred process.
-> >
-> > Does it make any sense? Like I said, it's not a bug, but more like an
-> > improvement.
->
-> Your patch adds a bug. An skb allocation can fail, and ACK would not be s=
-ent.
->
-> Timer handlers are not canceled in TCP stack.
-> We do not call sk_stop_timer() because include/net/inet_connection_sock.h=
- says
->
-> /* Cancel timers, when they are not required. */
-> #undef INET_CSK_CLEAR_TIMERS
->
-> So claiming the following is nonsense:
->
-> <quote>
->  2) sk_stop_timer(sk, &icsk->icsk_delack_timer)
-> Those two statements can prevent ...
-> </quote>
->
 
-[...]
-> We do not send extra ACK, because icsk->icsk_ack.pending (or icsk->icsk_p=
-ending)
-> is cleared in inet_csk_clear_xmit_timer()
 
-You're right about this. Thanks for your kind explanation. I missed
-this key point again :(
+On 5/30/23 10:30 PM, Teng Qi wrote:
+>> I would really like you to create a test case
+>> to demonstrate with a rcu or spin-lock warnings based on existing code
+>> base. With a test case, it would hard to see whether we need this
+>> patch or not.
+> 
+> Ok, I will try to construct a test case.
+> 
+>> Please put 'Fixes' right before 'Signed-off-by' in the above.
+> 
+> Ok.
+> 
+>> Could we have cases where in software context we have irqs_disabled()?
+> 
+> What do you mean about software context?
 
-It is a really happy ending cause I only need to focus on the v3
-patch. Please help us review that patch if you're available (no rush)
-:)
+sorry. i mean softirq context.
 
-Thanks,
-Jason
-
->
-> This clearing is happening already at strategic places.
->
-> When tcp_delack_timer_handler() is finally run (when owning socket lock),
-> it will return early if icsk->icsk_ack.pending was already cleared.
->
-> hrtimer_try_to_cancel(&tp->compressed_ack_timer) has to be called because
-> we rely on the hrtimer status (hrtimer_is_queued()) in __tcp_ack_snd_chec=
-k()
+> 
+> On Wed, May 31, 2023 at 1:46 AM Yonghong Song <yhs@meta.com> wrote:
+>>
+>>
+>>
+>> On 5/30/23 12:06 AM, starmiku1207184332@gmail.com wrote:
+>>> From: Teng Qi <starmiku1207184332@gmail.com>
+>>>
+>>> __bpf_prog_put() indirectly calls kvfree() through bpf_prog_put_deferred()
+>>> which is unsafe under atomic context. The current
+>>> condition ‘in_irq() || irqs_disabled()’ in __bpf_prog_put() to ensure safety
+>>> does not cover cases involving the spin lock region and rcu read lock region.
+>>> Since __bpf_prog_put() is called by various callers in kernel/, net/ and
+>>> drivers/, and potentially more in future, it is necessary to handle those
+>>> cases as well.
+>>>
+>>> Although we haven`t found a proper way to identify the rcu read lock region,
+>>> we have noticed that vfree() calls vfree_atomic() with the
+>>> condition 'in_interrupt()' to ensure safety.
+>>
+>> I would really like you to create a test case
+>> to demonstrate with a rcu or spin-lock warnings based on existing code
+>> base. With a test case, it would hard to see whether we need this
+>> patch or not.
+>>
+>>>
+>>> To make __bpf_prog_put() safe in practice, we propose calling
+>>> bpf_prog_put_deferred() with the condition 'in_interrupt()' and
+>>> using the work queue for any other context.
+>>>
+>>> We also added a comment to indicate that the safety of  __bpf_prog_put()
+>>> relies implicitly on the implementation of vfree().
+>>>
+>>> Signed-off-by: Teng Qi <starmiku1207184332@gmail.com>
+>>> ---
+>>> v2:
+>>> remove comments because of self explanatory of code.
+>>>
+>>> Fixes: d809e134be7a ("bpf: Prepare bpf_prog_put() to be called from irq context.")
+>>
+>> Please put 'Fixes' right before 'Signed-off-by' in the above.
+>>
+>>> ---
+>>>    kernel/bpf/syscall.c | 2 +-
+>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+>>> index 14f39c1e573e..96658e5874be 100644
+>>> --- a/kernel/bpf/syscall.c
+>>> +++ b/kernel/bpf/syscall.c
+>>> @@ -2099,7 +2099,7 @@ static void __bpf_prog_put(struct bpf_prog *prog)
+>>>        struct bpf_prog_aux *aux = prog->aux;
+>>>
+>>>        if (atomic64_dec_and_test(&aux->refcnt)) {
+>>> -             if (in_irq() || irqs_disabled()) {
+>>> +             if (!in_interrupt()) {
+>>
+>> Could we have cases where in software context we have irqs_disabled()?
+>>
+>>>                        INIT_WORK(&aux->work, bpf_prog_put_deferred);
+>>>                        schedule_work(&aux->work);
+>>>                } else {
 
