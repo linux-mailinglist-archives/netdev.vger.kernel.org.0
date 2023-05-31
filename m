@@ -1,85 +1,81 @@
-Return-Path: <netdev+bounces-6649-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6650-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 60D4D7172D8
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 03:07:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 7188071730C
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 03:18:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 026AA2813F7
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 01:07:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 138E82813AC
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 01:18:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0E603ED9;
-	Wed, 31 May 2023 01:07:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF685EDD;
+	Wed, 31 May 2023 01:18:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7FA9EB8
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 01:07:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2B2DED9
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 01:18:35 +0000 (UTC)
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2DEBF9
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 18:07:40 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758E293
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 18:18:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685495260;
+	s=mimecast20190719; t=1685495910;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=2a4YKqXAVZsfIDOnK1o6EetH++cnzg6vwlfUs57fikU=;
-	b=hcJB1m/YFc5MXdNS26DrNXL3BYzKitQrni3zfZtjrtc9RcuCZWVAN9pEq31j1nR06xCkUe
-	Kr85kquD1NZy6pbcF951BIoGVXeCS+QT+TRrm5biv9YmDwmujjz+P91sA7ormVU94wCBfA
-	9Jb8+b0gGX8XB+BY4+Mzi9memJOxC40=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=Ir/VVy+J40+fR5W5ZYolYNwrbXnQ4o9+NPmBgQ3p4b4=;
+	b=GvZmh0ET4l60pD8hX1O7D+FaptIb8PR6sms0WOjtoIbdH2+pg64vTvTA94Q6hLLKB5qm1c
+	T0eOkie/NCfIBxGC/0FJ3LHEsfxnga+oQcG9KlOqVr3kvysPdegg43r5TLYionqG5WrSba
+	k0oN+z0eFMsxIlug19W22gTbS0RxOKk=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-168-5fvELGdiN0Ovm7Ef4saKmQ-1; Tue, 30 May 2023 21:07:38 -0400
-X-MC-Unique: 5fvELGdiN0Ovm7Ef4saKmQ-1
-Received: by mail-lj1-f197.google.com with SMTP id 38308e7fff4ca-2af2ffb4e5aso26830461fa.1
-        for <netdev@vger.kernel.org>; Tue, 30 May 2023 18:07:38 -0700 (PDT)
+ us-mta-496-VyBJEOOfNK69BGHT0n5N-A-1; Tue, 30 May 2023 21:18:29 -0400
+X-MC-Unique: VyBJEOOfNK69BGHT0n5N-A-1
+Received: by mail-lj1-f200.google.com with SMTP id 38308e7fff4ca-2b058775453so2476101fa.0
+        for <netdev@vger.kernel.org>; Tue, 30 May 2023 18:18:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685495257; x=1688087257;
+        d=1e100.net; s=20221208; t=1685495907; x=1688087907;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=2a4YKqXAVZsfIDOnK1o6EetH++cnzg6vwlfUs57fikU=;
-        b=Y22jFu3dqi9sLkVdpbkFuYcJ8ZkQNmu0pg+OUTS35/BtpSkrxFamlqqsAWueis4FcS
-         pcjG18wbo11qs4gMnuyvwZrRjdcyaK9DlWHB8O3xwUqOs0kF+umAlVPxjFbJq2Kahi6q
-         iYlptqZI6hfyjLWzLfqAjLaqRARuvwpJxnDebLMeUC95vbrz7vlJv78rftI/tJZEd8o+
-         IEMdnOpwa1wndKbx9z0J0Cqr5fbb++0ljC28EvrB/PwSNQBhsyh/rOJVNzxZVNbjrnVw
-         3KZ5p0qkszXfojIPV7Nrel6TDl210ycon/DrIvfQw7j9AytuiMFucYEuxx7qdmvXRLSO
-         nw9w==
-X-Gm-Message-State: AC+VfDzbxPNLAm2+ECvP3s0bn7q+wzfCF+Pic95P8pCSO6mmQn97hMWK
-	Rb5El5vNbtswFTbfuCAByuVn4CLsvZIWWtpUsV2AwjpE/LNiadocmbM6xP7HYYUTG1IgrtwBO7y
-	aUUBnevOKUWUPidCdAcUATySScHxWVzXC
-X-Received: by 2002:a2e:83d5:0:b0:2a8:bf74:61cc with SMTP id s21-20020a2e83d5000000b002a8bf7461ccmr1603357ljh.26.1685495257101;
-        Tue, 30 May 2023 18:07:37 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5mcll9hwd9ORK2nSdd4ipN83XKS3tVT9bk0w17vjAvbvyIAcRZLtd9f4CeW67BqYPZlHXbCkMUDPf6FxvjQes=
-X-Received: by 2002:a2e:83d5:0:b0:2a8:bf74:61cc with SMTP id
- s21-20020a2e83d5000000b002a8bf7461ccmr1603346ljh.26.1685495256793; Tue, 30
- May 2023 18:07:36 -0700 (PDT)
+        bh=Ir/VVy+J40+fR5W5ZYolYNwrbXnQ4o9+NPmBgQ3p4b4=;
+        b=N7f1D1KhzTo7ul2dzp8yjQ5k79DqcCx3rebtZpyVSTSNYQWvMSXaU6CD0PdKzgNC3y
+         RVdXFtzNSR592il5PGOK9eYI2q95yyueomxUrK8XBA183z5n1g1r7ml3h4zr8Ofdo2lr
+         c85ihk6l5LtjPVh948UydRMoRoxM90ret/yG1vxwNiEMwcLnztugvUAIA9Leo8BRcpQZ
+         svI/DARDdL0glbqpGEpC0/Ze133anbfljdzaO6osiZnFtfbAIakW+0evYMVuOSi7hZNs
+         /JxGir7ZNwHB8Lzk5iv61Om/uDIRfch3QZGFV8gRUlsjO//xbDY5F1DrZDIlfbUVEFMm
+         7JVw==
+X-Gm-Message-State: AC+VfDwe0PhMOL9OgLv9WwZB4CcAqQLfl/1dO1lFEfdPb0GDIzcSjOGE
+	kJNSYFRqwG4JPWEO8P9CzeXN0Lzuc4mD6TpDtjVJFdumwIbYQoQJnrGzwaZg6CzZT7E3U2z385C
+	FxnvL/Je+uQkPbywAfiJfh5nySaKVNqxT
+X-Received: by 2002:a2e:83c2:0:b0:2b0:248c:bc4e with SMTP id s2-20020a2e83c2000000b002b0248cbc4emr1123304ljh.19.1685495907456;
+        Tue, 30 May 2023 18:18:27 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5MiD+EkDGCENaEc6zUCMhbWxWBQQ7bKJO9UtQBdqIBpcqivaIBbWJm+oXxBoD/ScRGpUe8cWqgAX4awT04u2A=
+X-Received: by 2002:a2e:83c2:0:b0:2b0:248c:bc4e with SMTP id
+ s2-20020a2e83c2000000b002b0248cbc4emr1123298ljh.19.1685495907039; Tue, 30 May
+ 2023 18:18:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230524081842.3060-1-jasowang@redhat.com> <20230524081842.3060-2-jasowang@redhat.com>
- <20230524050604-mutt-send-email-mst@kernel.org> <CACGkMEvm=MJz5e2C_7U=yjrvoo7pxsr=tRAL29OdxJDWhvtiSQ@mail.gmail.com>
- <20230525033750-mutt-send-email-mst@kernel.org> <CACGkMEtCA0-NY=qq_FnGzoY+VXmixGmBV3y80nZWO=NmxdRWmw@mail.gmail.com>
- <20230528073139-mutt-send-email-mst@kernel.org> <CACGkMEvcjjGRfNYeZaG0hS8R2fnpve62QFv_ReRTXxCUKwf36w@mail.gmail.com>
-In-Reply-To: <CACGkMEvcjjGRfNYeZaG0hS8R2fnpve62QFv_ReRTXxCUKwf36w@mail.gmail.com>
+References: <20230519215632.12343-1-shannon.nelson@amd.com> <20230519215632.12343-10-shannon.nelson@amd.com>
+In-Reply-To: <20230519215632.12343-10-shannon.nelson@amd.com>
 From: Jason Wang <jasowang@redhat.com>
-Date: Wed, 31 May 2023 09:07:25 +0800
-Message-ID: <CACGkMEtgZ_=L2noqdADgNTr_E7s3adw=etvcFt3G7ZERQq43_g@mail.gmail.com>
-Subject: Re: [PATCH V3 net-next 1/2] virtio-net: convert rx mode setting to
- use workqueue
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: xuanzhuo@linux.alibaba.com, davem@davemloft.net, edumazet@google.com, 
-	kuba@kernel.org, pabeni@redhat.com, virtualization@lists.linux-foundation.org, 
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	alvaro.karsz@solid-run.com
+Date: Wed, 31 May 2023 09:18:15 +0800
+Message-ID: <CACGkMEuC0VL9R1RookYzao6kUpLt00+c_H=VvET7YpG1cbDS2w@mail.gmail.com>
+Subject: Re: [PATCH v7 virtio 09/11] pds_vdpa: add support for vdpa and
+ vdpamgmt interfaces
+To: Shannon Nelson <shannon.nelson@amd.com>
+Cc: mst@redhat.com, virtualization@lists.linux-foundation.org, 
+	brett.creeley@amd.com, netdev@vger.kernel.org, simon.horman@corigine.com, 
+	drivers@pensando.io
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -89,284 +85,1105 @@ X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, May 29, 2023 at 9:21=E2=80=AFAM Jason Wang <jasowang@redhat.com> wr=
-ote:
+On Sat, May 20, 2023 at 5:57=E2=80=AFAM Shannon Nelson <shannon.nelson@amd.=
+com> wrote:
 >
-> On Sun, May 28, 2023 at 7:39=E2=80=AFPM Michael S. Tsirkin <mst@redhat.co=
-m> wrote:
-> >
-> > On Fri, May 26, 2023 at 09:31:34AM +0800, Jason Wang wrote:
-> > > On Thu, May 25, 2023 at 3:41=E2=80=AFPM Michael S. Tsirkin <mst@redha=
-t.com> wrote:
-> > > >
-> > > > On Thu, May 25, 2023 at 11:43:34AM +0800, Jason Wang wrote:
-> > > > > On Wed, May 24, 2023 at 5:15=E2=80=AFPM Michael S. Tsirkin <mst@r=
-edhat.com> wrote:
-> > > > > >
-> > > > > > On Wed, May 24, 2023 at 04:18:41PM +0800, Jason Wang wrote:
-> > > > > > > This patch convert rx mode setting to be done in a workqueue,=
- this is
-> > > > > > > a must for allow to sleep when waiting for the cvq command to
-> > > > > > > response since current code is executed under addr spin lock.
-> > > > > > >
-> > > > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > > > > > ---
-> > > > > > > Changes since V1:
-> > > > > > > - use RTNL to synchronize rx mode worker
-> > > > > > > ---
-> > > > > > >  drivers/net/virtio_net.c | 55 ++++++++++++++++++++++++++++++=
-+++++++---
-> > > > > > >  1 file changed, 52 insertions(+), 3 deletions(-)
-> > > > > > >
-> > > > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_ne=
-t.c
-> > > > > > > index 56ca1d270304..5d2f1da4eaa0 100644
-> > > > > > > --- a/drivers/net/virtio_net.c
-> > > > > > > +++ b/drivers/net/virtio_net.c
-> > > > > > > @@ -265,6 +265,12 @@ struct virtnet_info {
-> > > > > > >       /* Work struct for config space updates */
-> > > > > > >       struct work_struct config_work;
-> > > > > > >
-> > > > > > > +     /* Work struct for config rx mode */
-> > > > > >
-> > > > > > With a bit less abbreviation maybe? setting rx mode?
-> > > > >
-> > > > > That's fine.
-> > > > >
-> > > > > >
-> > > > > > > +     struct work_struct rx_mode_work;
-> > > > > > > +
-> > > > > > > +     /* Is rx mode work enabled? */
-> > > > > >
-> > > > > > Ugh not a great comment.
-> > > > >
-> > > > > Any suggestions for this. E.g we had:
-> > > > >
-> > > > >         /* Is delayed refill enabled? */
-> > > >
-> > > > /* OK to queue work setting RX mode? */
-> > >
-> > > Ok.
-> > >
-> > > >
-> > > >
-> > > > > >
-> > > > > > > +     bool rx_mode_work_enabled;
-> > > > > > > +
-> > > > > >
-> > > > > >
-> > > > > >
-> > > > > > >       /* Does the affinity hint is set for virtqueues? */
-> > > > > > >       bool affinity_hint_set;
-> > > > > > >
-> > > > > > > @@ -388,6 +394,20 @@ static void disable_delayed_refill(struc=
-t virtnet_info *vi)
-> > > > > > >       spin_unlock_bh(&vi->refill_lock);
-> > > > > > >  }
-> > > > > > >
-> > > > > > > +static void enable_rx_mode_work(struct virtnet_info *vi)
-> > > > > > > +{
-> > > > > > > +     rtnl_lock();
-> > > > > > > +     vi->rx_mode_work_enabled =3D true;
-> > > > > > > +     rtnl_unlock();
-> > > > > > > +}
-> > > > > > > +
-> > > > > > > +static void disable_rx_mode_work(struct virtnet_info *vi)
-> > > > > > > +{
-> > > > > > > +     rtnl_lock();
-> > > > > > > +     vi->rx_mode_work_enabled =3D false;
-> > > > > > > +     rtnl_unlock();
-> > > > > > > +}
-> > > > > > > +
-> > > > > > >  static void virtqueue_napi_schedule(struct napi_struct *napi=
-,
-> > > > > > >                                   struct virtqueue *vq)
-> > > > > > >  {
-> > > > > > > @@ -2341,9 +2361,11 @@ static int virtnet_close(struct net_de=
-vice *dev)
-> > > > > > >       return 0;
-> > > > > > >  }
-> > > > > > >
-> > > > > > > -static void virtnet_set_rx_mode(struct net_device *dev)
-> > > > > > > +static void virtnet_rx_mode_work(struct work_struct *work)
-> > > > > > >  {
-> > > > > > > -     struct virtnet_info *vi =3D netdev_priv(dev);
-> > > > > > > +     struct virtnet_info *vi =3D
-> > > > > > > +             container_of(work, struct virtnet_info, rx_mode=
-_work);
-> > > > > > > +     struct net_device *dev =3D vi->dev;
-> > > > > > >       struct scatterlist sg[2];
-> > > > > > >       struct virtio_net_ctrl_mac *mac_data;
-> > > > > > >       struct netdev_hw_addr *ha;
-> > > > > > > @@ -2356,6 +2378,8 @@ static void virtnet_set_rx_mode(struct =
-net_device *dev)
-> > > > > > >       if (!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_RX)=
-)
-> > > > > > >               return;
-> > > > > > >
-> > > > > > > +     rtnl_lock();
-> > > > > > > +
-> > > > > > >       vi->ctrl->promisc =3D ((dev->flags & IFF_PROMISC) !=3D =
-0);
-> > > > > > >       vi->ctrl->allmulti =3D ((dev->flags & IFF_ALLMULTI) !=
-=3D 0);
-> > > > > > >
-> > > > > > > @@ -2373,14 +2397,19 @@ static void virtnet_set_rx_mode(struc=
-t net_device *dev)
-> > > > > > >               dev_warn(&dev->dev, "Failed to %sable allmulti =
-mode.\n",
-> > > > > > >                        vi->ctrl->allmulti ? "en" : "dis");
-> > > > > > >
-> > > > > > > +     netif_addr_lock_bh(dev);
-> > > > > > > +
-> > > > > > >       uc_count =3D netdev_uc_count(dev);
-> > > > > > >       mc_count =3D netdev_mc_count(dev);
-> > > > > > >       /* MAC filter - use one buffer for both lists */
-> > > > > > >       buf =3D kzalloc(((uc_count + mc_count) * ETH_ALEN) +
-> > > > > > >                     (2 * sizeof(mac_data->entries)), GFP_ATOM=
-IC);
-> > > > > > >       mac_data =3D buf;
-> > > > > > > -     if (!buf)
-> > > > > > > +     if (!buf) {
-> > > > > > > +             netif_addr_unlock_bh(dev);
-> > > > > > > +             rtnl_unlock();
-> > > > > > >               return;
-> > > > > > > +     }
-> > > > > > >
-> > > > > > >       sg_init_table(sg, 2);
-> > > > > > >
-> > > > > > > @@ -2401,6 +2430,8 @@ static void virtnet_set_rx_mode(struct =
-net_device *dev)
-> > > > > > >       netdev_for_each_mc_addr(ha, dev)
-> > > > > > >               memcpy(&mac_data->macs[i++][0], ha->addr, ETH_A=
-LEN);
-> > > > > > >
-> > > > > > > +     netif_addr_unlock_bh(dev);
-> > > > > > > +
-> > > > > > >       sg_set_buf(&sg[1], mac_data,
-> > > > > > >                  sizeof(mac_data->entries) + (mc_count * ETH_=
-ALEN));
-> > > > > > >
-> > > > > > > @@ -2408,9 +2439,19 @@ static void virtnet_set_rx_mode(struct=
- net_device *dev)
-> > > > > > >                                 VIRTIO_NET_CTRL_MAC_TABLE_SET=
-, sg))
-> > > > > > >               dev_warn(&dev->dev, "Failed to set MAC filter t=
-able.\n");
-> > > > > > >
-> > > > > > > +     rtnl_unlock();
-> > > > > > > +
-> > > > > > >       kfree(buf);
-> > > > > > >  }
-> > > > > > >
-> > > > > > > +static void virtnet_set_rx_mode(struct net_device *dev)
-> > > > > > > +{
-> > > > > > > +     struct virtnet_info *vi =3D netdev_priv(dev);
-> > > > > > > +
-> > > > > > > +     if (vi->rx_mode_work_enabled)
-> > > > > > > +             schedule_work(&vi->rx_mode_work);
-> > > > > > > +}
-> > > > > > > +
-> > > > > >
-> > > > > > >  static int virtnet_vlan_rx_add_vid(struct net_device *dev,
-> > > > > > >                                  __be16 proto, u16 vid)
-> > > > > > >  {
-> > > > > > > @@ -3181,6 +3222,8 @@ static void virtnet_freeze_down(struct =
-virtio_device *vdev)
-> > > > > > >
-> > > > > > >       /* Make sure no work handler is accessing the device */
-> > > > > > >       flush_work(&vi->config_work);
-> > > > > > > +     disable_rx_mode_work(vi);
-> > > > > > > +     flush_work(&vi->rx_mode_work);
-> > > > > > >
-> > > > > > >       netif_tx_lock_bh(vi->dev);
-> > > > > > >       netif_device_detach(vi->dev);
-> > > > > >
-> > > > > > Hmm so queued rx mode work will just get skipped
-> > > > > > and on restore we get a wrong rx mode.
-> > > > > > Any way to make this more robust?
-> > > > >
-> > > > > It could be done by scheduling a work on restore.
-> > >
-> > > Rethink this, I think we don't need to care about this case since the
-> > > user processes should have been frozened.
-> >
-> > Yes but not the workqueue. Want to switch to system_freezable_wq?
+> This is the vDPA device support, where we advertise that we can
+> support the virtio queues and deal with the configuration work
+> through the pds_core's adminq.
 >
-> Yes, I will do it in v2.
+> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+> ---
+>
+> Note: this had previously been Acked-by Jason Wang, but changed enough
+>       in v6 that I felt it needs a new Ack.
 
-Actually, this doesn't work. Freezable workqueue can only guarantee
-when being freezed the new work will be queued and not scheduled until
-thaw. So the ktrhead that is executing the workqueue is not freezable.
-The busy loop (even with cond_resched()) will force suspend in this
-case.
-
-I wonder if we should switch to using a dedicated kthread for
-virtio-net then we can allow it to be frozen.
+Acked-by: Jason Wang <jasowang@redhat.com>
 
 Thanks
 
-
 >
-> Thanks
+>  drivers/vdpa/pds/aux_drv.c  |  15 +
+>  drivers/vdpa/pds/aux_drv.h  |   1 +
+>  drivers/vdpa/pds/debugfs.c  | 263 ++++++++++++++++
+>  drivers/vdpa/pds/debugfs.h  |   5 +
+>  drivers/vdpa/pds/vdpa_dev.c | 606 +++++++++++++++++++++++++++++++++++-
+>  drivers/vdpa/pds/vdpa_dev.h |   4 +-
+>  6 files changed, 892 insertions(+), 2 deletions(-)
 >
-> >
-> > > And that the reason we don't
-> > > even need to hold RTNL here.
-> > >
-> > > Thanks
-> > >
-> > > > >
-> > > > > Thanks
-> > > >
-> > > >
-> > > > > >
-> > > > > >
-> > > > > > > @@ -3203,6 +3246,7 @@ static int virtnet_restore_up(struct vi=
-rtio_device *vdev)
-> > > > > > >       virtio_device_ready(vdev);
-> > > > > > >
-> > > > > > >       enable_delayed_refill(vi);
-> > > > > > > +     enable_rx_mode_work(vi);
-> > > > > > >
-> > > > > > >       if (netif_running(vi->dev)) {
-> > > > > > >               err =3D virtnet_open(vi->dev);
-> > > > > > > @@ -4002,6 +4046,7 @@ static int virtnet_probe(struct virtio_=
-device *vdev)
-> > > > > > >       vdev->priv =3D vi;
-> > > > > > >
-> > > > > > >       INIT_WORK(&vi->config_work, virtnet_config_changed_work=
+> diff --git a/drivers/vdpa/pds/aux_drv.c b/drivers/vdpa/pds/aux_drv.c
+> index 0c4a135b1484..186e9ee22eb1 100644
+> --- a/drivers/vdpa/pds/aux_drv.c
+> +++ b/drivers/vdpa/pds/aux_drv.c
+> @@ -63,8 +63,21 @@ static int pds_vdpa_probe(struct auxiliary_device *aux=
+_dev,
+>                 goto err_free_mgmt_info;
+>         }
+>
+> +       /* Let vdpa know that we can provide devices */
+> +       err =3D vdpa_mgmtdev_register(&vdpa_aux->vdpa_mdev);
+> +       if (err) {
+> +               dev_err(dev, "%s: Failed to initialize vdpa_mgmt interfac=
+e: %pe\n",
+> +                       __func__, ERR_PTR(err));
+> +               goto err_free_virtio;
+> +       }
+> +
+> +       pds_vdpa_debugfs_add_pcidev(vdpa_aux);
+> +       pds_vdpa_debugfs_add_ident(vdpa_aux);
+> +
+>         return 0;
+>
+> +err_free_virtio:
+> +       vp_modern_remove(&vdpa_aux->vd_mdev);
+>  err_free_mgmt_info:
+>         pci_free_irq_vectors(padev->vf_pdev);
+>  err_free_mem:
+> @@ -79,9 +92,11 @@ static void pds_vdpa_remove(struct auxiliary_device *a=
+ux_dev)
+>         struct pds_vdpa_aux *vdpa_aux =3D auxiliary_get_drvdata(aux_dev);
+>         struct device *dev =3D &aux_dev->dev;
+>
+> +       vdpa_mgmtdev_unregister(&vdpa_aux->vdpa_mdev);
+>         vp_modern_remove(&vdpa_aux->vd_mdev);
+>         pci_free_irq_vectors(vdpa_aux->padev->vf_pdev);
+>
+> +       pds_vdpa_debugfs_del_vdpadev(vdpa_aux);
+>         kfree(vdpa_aux);
+>         auxiliary_set_drvdata(aux_dev, NULL);
+>
+> diff --git a/drivers/vdpa/pds/aux_drv.h b/drivers/vdpa/pds/aux_drv.h
+> index 99e0ff340bfa..26b75344156e 100644
+> --- a/drivers/vdpa/pds/aux_drv.h
+> +++ b/drivers/vdpa/pds/aux_drv.h
+> @@ -13,6 +13,7 @@ struct pds_vdpa_aux {
+>         struct pds_auxiliary_dev *padev;
+>
+>         struct vdpa_mgmt_dev vdpa_mdev;
+> +       struct pds_vdpa_device *pdsv;
+>
+>         struct pds_vdpa_ident ident;
+>
+> diff --git a/drivers/vdpa/pds/debugfs.c b/drivers/vdpa/pds/debugfs.c
+> index d91dceb07380..21a0dc0cb607 100644
+> --- a/drivers/vdpa/pds/debugfs.c
+> +++ b/drivers/vdpa/pds/debugfs.c
+> @@ -10,6 +10,7 @@
+>  #include <linux/pds/pds_auxbus.h>
+>
+>  #include "aux_drv.h"
+> +#include "vdpa_dev.h"
+>  #include "debugfs.h"
+>
+>  static struct dentry *dbfs_dir;
+> @@ -24,3 +25,265 @@ void pds_vdpa_debugfs_destroy(void)
+>         debugfs_remove_recursive(dbfs_dir);
+>         dbfs_dir =3D NULL;
+>  }
+> +
+> +#define PRINT_SBIT_NAME(__seq, __f, __name)                     \
+> +       do {                                                    \
+> +               if ((__f) & (__name))                               \
+> +                       seq_printf(__seq, " %s", &#__name[16]); \
+> +       } while (0)
+> +
+> +static void print_status_bits(struct seq_file *seq, u8 status)
+> +{
+> +       seq_puts(seq, "status:");
+> +       PRINT_SBIT_NAME(seq, status, VIRTIO_CONFIG_S_ACKNOWLEDGE);
+> +       PRINT_SBIT_NAME(seq, status, VIRTIO_CONFIG_S_DRIVER);
+> +       PRINT_SBIT_NAME(seq, status, VIRTIO_CONFIG_S_DRIVER_OK);
+> +       PRINT_SBIT_NAME(seq, status, VIRTIO_CONFIG_S_FEATURES_OK);
+> +       PRINT_SBIT_NAME(seq, status, VIRTIO_CONFIG_S_NEEDS_RESET);
+> +       PRINT_SBIT_NAME(seq, status, VIRTIO_CONFIG_S_FAILED);
+> +       seq_puts(seq, "\n");
+> +}
+> +
+> +static void print_feature_bits_all(struct seq_file *seq, u64 features)
+> +{
+> +       int i;
+> +
+> +       seq_puts(seq, "features:");
+> +
+> +       for (i =3D 0; i < (sizeof(u64) * 8); i++) {
+> +               u64 mask =3D BIT_ULL(i);
+> +
+> +               switch (features & mask) {
+> +               case BIT_ULL(VIRTIO_NET_F_CSUM):
+> +                       seq_puts(seq, " VIRTIO_NET_F_CSUM");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_GUEST_CSUM):
+> +                       seq_puts(seq, " VIRTIO_NET_F_GUEST_CSUM");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_CTRL_GUEST_OFFLOADS):
+> +                       seq_puts(seq, " VIRTIO_NET_F_CTRL_GUEST_OFFLOADS"=
 );
-> > > > > > > +     INIT_WORK(&vi->rx_mode_work, virtnet_rx_mode_work);
-> > > > > > >       spin_lock_init(&vi->refill_lock);
-> > > > > > >
-> > > > > > >       if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF)) {
-> > > > > > > @@ -4110,6 +4155,8 @@ static int virtnet_probe(struct virtio_=
-device *vdev)
-> > > > > > >       if (vi->has_rss || vi->has_rss_hash_report)
-> > > > > > >               virtnet_init_default_rss(vi);
-> > > > > > >
-> > > > > > > +     enable_rx_mode_work(vi);
-> > > > > > > +
-> > > > > > >       /* serialize netdev register + virtio_device_ready() wi=
-th ndo_open() */
-> > > > > > >       rtnl_lock();
-> > > > > > >
-> > > > > > > @@ -4207,6 +4254,8 @@ static void virtnet_remove(struct virti=
-o_device *vdev)
-> > > > > > >
-> > > > > > >       /* Make sure no work handler is accessing the device. *=
-/
-> > > > > > >       flush_work(&vi->config_work);
-> > > > > > > +     disable_rx_mode_work(vi);
-> > > > > > > +     flush_work(&vi->rx_mode_work);
-> > > > > > >
-> > > > > > >       unregister_netdev(vi->dev);
-> > > > > > >
-> > > > > > > --
-> > > > > > > 2.25.1
-> > > > > >
-> > > >
-> >
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_MTU):
+> +                       seq_puts(seq, " VIRTIO_NET_F_MTU");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_MAC):
+> +                       seq_puts(seq, " VIRTIO_NET_F_MAC");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_GUEST_TSO4):
+> +                       seq_puts(seq, " VIRTIO_NET_F_GUEST_TSO4");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_GUEST_TSO6):
+> +                       seq_puts(seq, " VIRTIO_NET_F_GUEST_TSO6");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_GUEST_ECN):
+> +                       seq_puts(seq, " VIRTIO_NET_F_GUEST_ECN");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_GUEST_UFO):
+> +                       seq_puts(seq, " VIRTIO_NET_F_GUEST_UFO");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_HOST_TSO4):
+> +                       seq_puts(seq, " VIRTIO_NET_F_HOST_TSO4");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_HOST_TSO6):
+> +                       seq_puts(seq, " VIRTIO_NET_F_HOST_TSO6");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_HOST_ECN):
+> +                       seq_puts(seq, " VIRTIO_NET_F_HOST_ECN");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_HOST_UFO):
+> +                       seq_puts(seq, " VIRTIO_NET_F_HOST_UFO");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_MRG_RXBUF):
+> +                       seq_puts(seq, " VIRTIO_NET_F_MRG_RXBUF");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_STATUS):
+> +                       seq_puts(seq, " VIRTIO_NET_F_STATUS");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_CTRL_VQ):
+> +                       seq_puts(seq, " VIRTIO_NET_F_CTRL_VQ");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_CTRL_RX):
+> +                       seq_puts(seq, " VIRTIO_NET_F_CTRL_RX");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_CTRL_VLAN):
+> +                       seq_puts(seq, " VIRTIO_NET_F_CTRL_VLAN");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_CTRL_RX_EXTRA):
+> +                       seq_puts(seq, " VIRTIO_NET_F_CTRL_RX_EXTRA");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_GUEST_ANNOUNCE):
+> +                       seq_puts(seq, " VIRTIO_NET_F_GUEST_ANNOUNCE");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_MQ):
+> +                       seq_puts(seq, " VIRTIO_NET_F_MQ");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_CTRL_MAC_ADDR):
+> +                       seq_puts(seq, " VIRTIO_NET_F_CTRL_MAC_ADDR");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_HASH_REPORT):
+> +                       seq_puts(seq, " VIRTIO_NET_F_HASH_REPORT");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_RSS):
+> +                       seq_puts(seq, " VIRTIO_NET_F_RSS");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_RSC_EXT):
+> +                       seq_puts(seq, " VIRTIO_NET_F_RSC_EXT");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_STANDBY):
+> +                       seq_puts(seq, " VIRTIO_NET_F_STANDBY");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_NET_F_SPEED_DUPLEX):
+> +                       seq_puts(seq, " VIRTIO_NET_F_SPEED_DUPLEX");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_F_NOTIFY_ON_EMPTY):
+> +                       seq_puts(seq, " VIRTIO_F_NOTIFY_ON_EMPTY");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_F_ANY_LAYOUT):
+> +                       seq_puts(seq, " VIRTIO_F_ANY_LAYOUT");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_F_VERSION_1):
+> +                       seq_puts(seq, " VIRTIO_F_VERSION_1");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_F_ACCESS_PLATFORM):
+> +                       seq_puts(seq, " VIRTIO_F_ACCESS_PLATFORM");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_F_RING_PACKED):
+> +                       seq_puts(seq, " VIRTIO_F_RING_PACKED");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_F_ORDER_PLATFORM):
+> +                       seq_puts(seq, " VIRTIO_F_ORDER_PLATFORM");
+> +                       break;
+> +               case BIT_ULL(VIRTIO_F_SR_IOV):
+> +                       seq_puts(seq, " VIRTIO_F_SR_IOV");
+> +                       break;
+> +               case 0:
+> +                       break;
+> +               default:
+> +                       seq_printf(seq, " bit_%d", i);
+> +                       break;
+> +               }
+> +       }
+> +
+> +       seq_puts(seq, "\n");
+> +}
+> +
+> +void pds_vdpa_debugfs_add_pcidev(struct pds_vdpa_aux *vdpa_aux)
+> +{
+> +       vdpa_aux->dentry =3D debugfs_create_dir(pci_name(vdpa_aux->padev-=
+>vf_pdev), dbfs_dir);
+> +}
+> +
+> +static int identity_show(struct seq_file *seq, void *v)
+> +{
+> +       struct pds_vdpa_aux *vdpa_aux =3D seq->private;
+> +       struct vdpa_mgmt_dev *mgmt;
+> +
+> +       seq_printf(seq, "aux_dev:            %s\n",
+> +                  dev_name(&vdpa_aux->padev->aux_dev.dev));
+> +
+> +       mgmt =3D &vdpa_aux->vdpa_mdev;
+> +       seq_printf(seq, "max_vqs:            %d\n", mgmt->max_supported_v=
+qs);
+> +       seq_printf(seq, "config_attr_mask:   %#llx\n", mgmt->config_attr_=
+mask);
+> +       seq_printf(seq, "supported_features: %#llx\n", mgmt->supported_fe=
+atures);
+> +       print_feature_bits_all(seq, mgmt->supported_features);
+> +
+> +       return 0;
+> +}
+> +DEFINE_SHOW_ATTRIBUTE(identity);
+> +
+> +void pds_vdpa_debugfs_add_ident(struct pds_vdpa_aux *vdpa_aux)
+> +{
+> +       debugfs_create_file("identity", 0400, vdpa_aux->dentry,
+> +                           vdpa_aux, &identity_fops);
+> +}
+> +
+> +static int config_show(struct seq_file *seq, void *v)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D seq->private;
+> +       struct virtio_net_config vc;
+> +       u64 driver_features;
+> +       u8 status;
+> +
+> +       memcpy_fromio(&vc, pdsv->vdpa_aux->vd_mdev.device,
+> +                     sizeof(struct virtio_net_config));
+> +
+> +       seq_printf(seq, "mac:                  %pM\n", vc.mac);
+> +       seq_printf(seq, "max_virtqueue_pairs:  %d\n",
+> +                  __virtio16_to_cpu(true, vc.max_virtqueue_pairs));
+> +       seq_printf(seq, "mtu:                  %d\n", __virtio16_to_cpu(t=
+rue, vc.mtu));
+> +       seq_printf(seq, "speed:                %d\n", le32_to_cpu(vc.spee=
+d));
+> +       seq_printf(seq, "duplex:               %d\n", vc.duplex);
+> +       seq_printf(seq, "rss_max_key_size:     %d\n", vc.rss_max_key_size=
+);
+> +       seq_printf(seq, "rss_max_indirection_table_length: %d\n",
+> +                  le16_to_cpu(vc.rss_max_indirection_table_length));
+> +       seq_printf(seq, "supported_hash_types: %#x\n",
+> +                  le32_to_cpu(vc.supported_hash_types));
+> +       seq_printf(seq, "vn_status:            %#x\n",
+> +                  __virtio16_to_cpu(true, vc.status));
+> +
+> +       status =3D vp_modern_get_status(&pdsv->vdpa_aux->vd_mdev);
+> +       seq_printf(seq, "dev_status:           %#x\n", status);
+> +       print_status_bits(seq, status);
+> +
+> +       seq_printf(seq, "req_features:         %#llx\n", pdsv->req_featur=
+es);
+> +       print_feature_bits_all(seq, pdsv->req_features);
+> +       driver_features =3D vp_modern_get_driver_features(&pdsv->vdpa_aux=
+->vd_mdev);
+> +       seq_printf(seq, "driver_features:      %#llx\n", driver_features)=
+;
+> +       print_feature_bits_all(seq, driver_features);
+> +       seq_printf(seq, "vdpa_index:           %d\n", pdsv->vdpa_index);
+> +       seq_printf(seq, "num_vqs:              %d\n", pdsv->num_vqs);
+> +
+> +       return 0;
+> +}
+> +DEFINE_SHOW_ATTRIBUTE(config);
+> +
+> +static int vq_show(struct seq_file *seq, void *v)
+> +{
+> +       struct pds_vdpa_vq_info *vq =3D seq->private;
+> +
+> +       seq_printf(seq, "ready:      %d\n", vq->ready);
+> +       seq_printf(seq, "desc_addr:  %#llx\n", vq->desc_addr);
+> +       seq_printf(seq, "avail_addr: %#llx\n", vq->avail_addr);
+> +       seq_printf(seq, "used_addr:  %#llx\n", vq->used_addr);
+> +       seq_printf(seq, "q_len:      %d\n", vq->q_len);
+> +       seq_printf(seq, "qid:        %d\n", vq->qid);
+> +
+> +       seq_printf(seq, "doorbell:   %#llx\n", vq->doorbell);
+> +       seq_printf(seq, "avail_idx:  %d\n", vq->avail_idx);
+> +       seq_printf(seq, "used_idx:   %d\n", vq->used_idx);
+> +       seq_printf(seq, "irq:        %d\n", vq->irq);
+> +       seq_printf(seq, "irq-name:   %s\n", vq->irq_name);
+> +
+> +       return 0;
+> +}
+> +DEFINE_SHOW_ATTRIBUTE(vq);
+> +
+> +void pds_vdpa_debugfs_add_vdpadev(struct pds_vdpa_aux *vdpa_aux)
+> +{
+> +       int i;
+> +
+> +       debugfs_create_file("config", 0400, vdpa_aux->dentry, vdpa_aux->p=
+dsv, &config_fops);
+> +
+> +       for (i =3D 0; i < vdpa_aux->pdsv->num_vqs; i++) {
+> +               char name[8];
+> +
+> +               snprintf(name, sizeof(name), "vq%02d", i);
+> +               debugfs_create_file(name, 0400, vdpa_aux->dentry,
+> +                                   &vdpa_aux->pdsv->vqs[i], &vq_fops);
+> +       }
+> +}
+> +
+> +void pds_vdpa_debugfs_del_vdpadev(struct pds_vdpa_aux *vdpa_aux)
+> +{
+> +       debugfs_remove_recursive(vdpa_aux->dentry);
+> +       vdpa_aux->dentry =3D NULL;
+> +}
+> +
+> +void pds_vdpa_debugfs_reset_vdpadev(struct pds_vdpa_aux *vdpa_aux)
+> +{
+> +       /* we don't keep track of the entries, so remove it all
+> +        * then rebuild the basics
+> +        */
+> +       pds_vdpa_debugfs_del_vdpadev(vdpa_aux);
+> +       pds_vdpa_debugfs_add_pcidev(vdpa_aux);
+> +       pds_vdpa_debugfs_add_ident(vdpa_aux);
+> +}
+> diff --git a/drivers/vdpa/pds/debugfs.h b/drivers/vdpa/pds/debugfs.h
+> index 658849591a99..c088a4e8f1e9 100644
+> --- a/drivers/vdpa/pds/debugfs.h
+> +++ b/drivers/vdpa/pds/debugfs.h
+> @@ -8,5 +8,10 @@
+>
+>  void pds_vdpa_debugfs_create(void);
+>  void pds_vdpa_debugfs_destroy(void);
+> +void pds_vdpa_debugfs_add_pcidev(struct pds_vdpa_aux *vdpa_aux);
+> +void pds_vdpa_debugfs_add_ident(struct pds_vdpa_aux *vdpa_aux);
+> +void pds_vdpa_debugfs_add_vdpadev(struct pds_vdpa_aux *vdpa_aux);
+> +void pds_vdpa_debugfs_del_vdpadev(struct pds_vdpa_aux *vdpa_aux);
+> +void pds_vdpa_debugfs_reset_vdpadev(struct pds_vdpa_aux *vdpa_aux);
+>
+>  #endif /* _PDS_VDPA_DEBUGFS_H_ */
+> diff --git a/drivers/vdpa/pds/vdpa_dev.c b/drivers/vdpa/pds/vdpa_dev.c
+> index 0f0f0ab8b811..5690ee676ad9 100644
+> --- a/drivers/vdpa/pds/vdpa_dev.c
+> +++ b/drivers/vdpa/pds/vdpa_dev.c
+> @@ -4,6 +4,7 @@
+>  #include <linux/pci.h>
+>  #include <linux/vdpa.h>
+>  #include <uapi/linux/vdpa.h>
+> +#include <linux/virtio_pci_modern.h>
+>
+>  #include <linux/pds/pds_common.h>
+>  #include <linux/pds/pds_core_if.h>
+> @@ -12,7 +13,464 @@
+>
+>  #include "vdpa_dev.h"
+>  #include "aux_drv.h"
+> +#include "cmds.h"
+> +#include "debugfs.h"
+>
+> +static u64 pds_vdpa_get_driver_features(struct vdpa_device *vdpa_dev);
+> +
+> +static struct pds_vdpa_device *vdpa_to_pdsv(struct vdpa_device *vdpa_dev=
+)
+> +{
+> +       return container_of(vdpa_dev, struct pds_vdpa_device, vdpa_dev);
+> +}
+> +
+> +static int pds_vdpa_set_vq_address(struct vdpa_device *vdpa_dev, u16 qid=
+,
+> +                                  u64 desc_addr, u64 driver_addr, u64 de=
+vice_addr)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +
+> +       pdsv->vqs[qid].desc_addr =3D desc_addr;
+> +       pdsv->vqs[qid].avail_addr =3D driver_addr;
+> +       pdsv->vqs[qid].used_addr =3D device_addr;
+> +
+> +       return 0;
+> +}
+> +
+> +static void pds_vdpa_set_vq_num(struct vdpa_device *vdpa_dev, u16 qid, u=
+32 num)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +
+> +       pdsv->vqs[qid].q_len =3D num;
+> +}
+> +
+> +static void pds_vdpa_kick_vq(struct vdpa_device *vdpa_dev, u16 qid)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +
+> +       iowrite16(qid, pdsv->vqs[qid].notify);
+> +}
+> +
+> +static void pds_vdpa_set_vq_cb(struct vdpa_device *vdpa_dev, u16 qid,
+> +                              struct vdpa_callback *cb)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +
+> +       pdsv->vqs[qid].event_cb =3D *cb;
+> +}
+> +
+> +static irqreturn_t pds_vdpa_isr(int irq, void *data)
+> +{
+> +       struct pds_vdpa_vq_info *vq;
+> +
+> +       vq =3D data;
+> +       if (vq->event_cb.callback)
+> +               vq->event_cb.callback(vq->event_cb.private);
+> +
+> +       return IRQ_HANDLED;
+> +}
+> +
+> +static void pds_vdpa_release_irq(struct pds_vdpa_device *pdsv, int qid)
+> +{
+> +       if (pdsv->vqs[qid].irq =3D=3D VIRTIO_MSI_NO_VECTOR)
+> +               return;
+> +
+> +       free_irq(pdsv->vqs[qid].irq, &pdsv->vqs[qid]);
+> +       pdsv->vqs[qid].irq =3D VIRTIO_MSI_NO_VECTOR;
+> +}
+> +
+> +static void pds_vdpa_set_vq_ready(struct vdpa_device *vdpa_dev, u16 qid,=
+ bool ready)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +       struct pci_dev *pdev =3D pdsv->vdpa_aux->padev->vf_pdev;
+> +       struct device *dev =3D &pdsv->vdpa_dev.dev;
+> +       u64 driver_features;
+> +       u16 invert_idx =3D 0;
+> +       int irq;
+> +       int err;
+> +
+> +       dev_dbg(dev, "%s: qid %d ready %d =3D> %d\n",
+> +               __func__, qid, pdsv->vqs[qid].ready, ready);
+> +       if (ready =3D=3D pdsv->vqs[qid].ready)
+> +               return;
+> +
+> +       driver_features =3D pds_vdpa_get_driver_features(vdpa_dev);
+> +       if (driver_features & BIT_ULL(VIRTIO_F_RING_PACKED))
+> +               invert_idx =3D PDS_VDPA_PACKED_INVERT_IDX;
+> +
+> +       if (ready) {
+> +               irq =3D pci_irq_vector(pdev, qid);
+> +               snprintf(pdsv->vqs[qid].irq_name, sizeof(pdsv->vqs[qid].i=
+rq_name),
+> +                        "vdpa-%s-%d", dev_name(dev), qid);
+> +
+> +               err =3D request_irq(irq, pds_vdpa_isr, 0,
+> +                                 pdsv->vqs[qid].irq_name, &pdsv->vqs[qid=
+]);
+> +               if (err) {
+> +                       dev_err(dev, "%s: no irq for qid %d: %pe\n",
+> +                               __func__, qid, ERR_PTR(err));
+> +                       return;
+> +               }
+> +               pdsv->vqs[qid].irq =3D irq;
+> +
+> +               /* Pass vq setup info to DSC using adminq to gather up an=
+d
+> +                * send all info at once so FW can do its full set up in
+> +                * one easy operation
+> +                */
+> +               err =3D pds_vdpa_cmd_init_vq(pdsv, qid, invert_idx, &pdsv=
+->vqs[qid]);
+> +               if (err) {
+> +                       dev_err(dev, "Failed to init vq %d: %pe\n",
+> +                               qid, ERR_PTR(err));
+> +                       pds_vdpa_release_irq(pdsv, qid);
+> +                       ready =3D false;
+> +               }
+> +       } else {
+> +               err =3D pds_vdpa_cmd_reset_vq(pdsv, qid, invert_idx, &pds=
+v->vqs[qid]);
+> +               if (err)
+> +                       dev_err(dev, "%s: reset_vq failed qid %d: %pe\n",
+> +                               __func__, qid, ERR_PTR(err));
+> +               pds_vdpa_release_irq(pdsv, qid);
+> +       }
+> +
+> +       pdsv->vqs[qid].ready =3D ready;
+> +}
+> +
+> +static bool pds_vdpa_get_vq_ready(struct vdpa_device *vdpa_dev, u16 qid)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +
+> +       return pdsv->vqs[qid].ready;
+> +}
+> +
+> +static int pds_vdpa_set_vq_state(struct vdpa_device *vdpa_dev, u16 qid,
+> +                                const struct vdpa_vq_state *state)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +       struct pds_auxiliary_dev *padev =3D pdsv->vdpa_aux->padev;
+> +       struct device *dev =3D &padev->aux_dev.dev;
+> +       u64 driver_features;
+> +       u16 avail;
+> +       u16 used;
+> +
+> +       if (pdsv->vqs[qid].ready) {
+> +               dev_err(dev, "Setting device position is denied while vq =
+is enabled\n");
+> +               return -EINVAL;
+> +       }
+> +
+> +       driver_features =3D pds_vdpa_get_driver_features(vdpa_dev);
+> +       if (driver_features & BIT_ULL(VIRTIO_F_RING_PACKED)) {
+> +               avail =3D state->packed.last_avail_idx |
+> +                       (state->packed.last_avail_counter << 15);
+> +               used =3D state->packed.last_used_idx |
+> +                      (state->packed.last_used_counter << 15);
+> +
+> +               /* The avail and used index are stored with the packed wr=
+ap
+> +                * counter bit inverted.  This way, in case set_vq_state =
+is
+> +                * not called, the initial value can be set to zero prior=
+ to
+> +                * feature negotiation, and it is good for both packed an=
+d
+> +                * split vq.
+> +                */
+> +               avail ^=3D PDS_VDPA_PACKED_INVERT_IDX;
+> +               used ^=3D PDS_VDPA_PACKED_INVERT_IDX;
+> +       } else {
+> +               avail =3D state->split.avail_index;
+> +               /* state->split does not provide a used_index:
+> +                * the vq will be set to "empty" here, and the vq will re=
+ad
+> +                * the current used index the next time the vq is kicked.
+> +                */
+> +               used =3D avail;
+> +       }
+> +
+> +       if (used !=3D avail) {
+> +               dev_dbg(dev, "Setting used equal to avail, for interopera=
+bility\n");
+> +               used =3D avail;
+> +       }
+> +
+> +       pdsv->vqs[qid].avail_idx =3D avail;
+> +       pdsv->vqs[qid].used_idx =3D used;
+> +
+> +       return 0;
+> +}
+> +
+> +static int pds_vdpa_get_vq_state(struct vdpa_device *vdpa_dev, u16 qid,
+> +                                struct vdpa_vq_state *state)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +       struct pds_auxiliary_dev *padev =3D pdsv->vdpa_aux->padev;
+> +       struct device *dev =3D &padev->aux_dev.dev;
+> +       u64 driver_features;
+> +       u16 avail;
+> +       u16 used;
+> +
+> +       if (pdsv->vqs[qid].ready) {
+> +               dev_err(dev, "Getting device position is denied while vq =
+is enabled\n");
+> +               return -EINVAL;
+> +       }
+> +
+> +       avail =3D pdsv->vqs[qid].avail_idx;
+> +       used =3D pdsv->vqs[qid].used_idx;
+> +
+> +       driver_features =3D pds_vdpa_get_driver_features(vdpa_dev);
+> +       if (driver_features & BIT_ULL(VIRTIO_F_RING_PACKED)) {
+> +               avail ^=3D PDS_VDPA_PACKED_INVERT_IDX;
+> +               used ^=3D PDS_VDPA_PACKED_INVERT_IDX;
+> +
+> +               state->packed.last_avail_idx =3D avail & 0x7fff;
+> +               state->packed.last_avail_counter =3D avail >> 15;
+> +               state->packed.last_used_idx =3D used & 0x7fff;
+> +               state->packed.last_used_counter =3D used >> 15;
+> +       } else {
+> +               state->split.avail_index =3D avail;
+> +               /* state->split does not provide a used_index. */
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +static struct vdpa_notification_area
+> +pds_vdpa_get_vq_notification(struct vdpa_device *vdpa_dev, u16 qid)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +       struct virtio_pci_modern_device *vd_mdev;
+> +       struct vdpa_notification_area area;
+> +
+> +       area.addr =3D pdsv->vqs[qid].notify_pa;
+> +
+> +       vd_mdev =3D &pdsv->vdpa_aux->vd_mdev;
+> +       if (!vd_mdev->notify_offset_multiplier)
+> +               area.size =3D PDS_PAGE_SIZE;
+> +       else
+> +               area.size =3D vd_mdev->notify_offset_multiplier;
+> +
+> +       return area;
+> +}
+> +
+> +static int pds_vdpa_get_vq_irq(struct vdpa_device *vdpa_dev, u16 qid)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +
+> +       return pdsv->vqs[qid].irq;
+> +}
+> +
+> +static u32 pds_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
+> +{
+> +       return PDS_PAGE_SIZE;
+> +}
+> +
+> +static u32 pds_vdpa_get_vq_group(struct vdpa_device *vdpa_dev, u16 idx)
+> +{
+> +       return 0;
+> +}
+> +
+> +static u64 pds_vdpa_get_device_features(struct vdpa_device *vdpa_dev)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +
+> +       return pdsv->supported_features;
+> +}
+> +
+> +static int pds_vdpa_set_driver_features(struct vdpa_device *vdpa_dev, u6=
+4 features)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +       struct device *dev =3D &pdsv->vdpa_dev.dev;
+> +       u64 driver_features;
+> +       u64 nego_features;
+> +       u64 missing;
+> +
+> +       if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)) && features) =
+{
+> +               dev_err(dev, "VIRTIO_F_ACCESS_PLATFORM is not negotiated\=
+n");
+> +               return -EOPNOTSUPP;
+> +       }
+> +
+> +       pdsv->req_features =3D features;
+> +
+> +       /* Check for valid feature bits */
+> +       nego_features =3D features & le64_to_cpu(pdsv->vdpa_aux->ident.hw=
+_features);
+> +       missing =3D pdsv->req_features & ~nego_features;
+> +       if (missing) {
+> +               dev_err(dev, "Can't support all requested features in %#l=
+lx, missing %#llx features\n",
+> +                       pdsv->req_features, missing);
+> +               return -EOPNOTSUPP;
+> +       }
+> +
+> +       driver_features =3D pds_vdpa_get_driver_features(vdpa_dev);
+> +       dev_dbg(dev, "%s: %#llx =3D> %#llx\n",
+> +               __func__, driver_features, nego_features);
+> +
+> +       if (driver_features =3D=3D nego_features)
+> +               return 0;
+> +
+> +       vp_modern_set_features(&pdsv->vdpa_aux->vd_mdev, nego_features);
+> +
+> +       return 0;
+> +}
+> +
+> +static u64 pds_vdpa_get_driver_features(struct vdpa_device *vdpa_dev)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +
+> +       return vp_modern_get_driver_features(&pdsv->vdpa_aux->vd_mdev);
+> +}
+> +
+> +static void pds_vdpa_set_config_cb(struct vdpa_device *vdpa_dev,
+> +                                  struct vdpa_callback *cb)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +
+> +       pdsv->config_cb.callback =3D cb->callback;
+> +       pdsv->config_cb.private =3D cb->private;
+> +}
+> +
+> +static u16 pds_vdpa_get_vq_num_max(struct vdpa_device *vdpa_dev)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +
+> +       /* qemu has assert() that vq_num_max <=3D VIRTQUEUE_MAX_SIZE (102=
+4) */
+> +       return min_t(u16, 1024, BIT(le16_to_cpu(pdsv->vdpa_aux->ident.max=
+_qlen)));
+> +}
+> +
+> +static u32 pds_vdpa_get_device_id(struct vdpa_device *vdpa_dev)
+> +{
+> +       return VIRTIO_ID_NET;
+> +}
+> +
+> +static u32 pds_vdpa_get_vendor_id(struct vdpa_device *vdpa_dev)
+> +{
+> +       return PCI_VENDOR_ID_PENSANDO;
+> +}
+> +
+> +static u8 pds_vdpa_get_status(struct vdpa_device *vdpa_dev)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +
+> +       return vp_modern_get_status(&pdsv->vdpa_aux->vd_mdev);
+> +}
+> +
+> +static void pds_vdpa_set_status(struct vdpa_device *vdpa_dev, u8 status)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +       struct device *dev =3D &pdsv->vdpa_dev.dev;
+> +       u8 old_status;
+> +       int i;
+> +
+> +       old_status =3D pds_vdpa_get_status(vdpa_dev);
+> +       dev_dbg(dev, "%s: old %#x new %#x\n", __func__, old_status, statu=
+s);
+> +
+> +       pds_vdpa_cmd_set_status(pdsv, status);
+> +
+> +       /* Note: still working with FW on the need for this reset cmd */
+> +       if (status =3D=3D 0) {
+> +               pds_vdpa_cmd_reset(pdsv);
+> +
+> +               for (i =3D 0; i < pdsv->num_vqs; i++) {
+> +                       pdsv->vqs[i].avail_idx =3D 0;
+> +                       pdsv->vqs[i].used_idx =3D 0;
+> +               }
+> +       }
+> +
+> +       if (status & ~old_status & VIRTIO_CONFIG_S_FEATURES_OK) {
+> +               for (i =3D 0; i < pdsv->num_vqs; i++) {
+> +                       pdsv->vqs[i].notify =3D
+> +                               vp_modern_map_vq_notify(&pdsv->vdpa_aux->=
+vd_mdev,
+> +                                                       i, &pdsv->vqs[i].=
+notify_pa);
+> +               }
+> +       }
+> +}
+> +
+> +static int pds_vdpa_reset(struct vdpa_device *vdpa_dev)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +       struct device *dev;
+> +       int err =3D 0;
+> +       u8 status;
+> +       int i;
+> +
+> +       dev =3D &pdsv->vdpa_aux->padev->aux_dev.dev;
+> +       status =3D pds_vdpa_get_status(vdpa_dev);
+> +
+> +       if (status =3D=3D 0)
+> +               return 0;
+> +
+> +       if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
+> +               /* Reset the vqs */
+> +               for (i =3D 0; i < pdsv->num_vqs && !err; i++) {
+> +                       err =3D pds_vdpa_cmd_reset_vq(pdsv, i, 0, &pdsv->=
+vqs[i]);
+> +                       if (err)
+> +                               dev_err(dev, "%s: reset_vq failed qid %d:=
+ %pe\n",
+> +                                       __func__, i, ERR_PTR(err));
+> +                       pds_vdpa_release_irq(pdsv, i);
+> +                       memset(&pdsv->vqs[i], 0, sizeof(pdsv->vqs[0]));
+> +                       pdsv->vqs[i].ready =3D false;
+> +               }
+> +       }
+> +
+> +       pds_vdpa_set_status(vdpa_dev, 0);
+> +
+> +       return 0;
+> +}
+> +
+> +static size_t pds_vdpa_get_config_size(struct vdpa_device *vdpa_dev)
+> +{
+> +       return sizeof(struct virtio_net_config);
+> +}
+> +
+> +static void pds_vdpa_get_config(struct vdpa_device *vdpa_dev,
+> +                               unsigned int offset,
+> +                               void *buf, unsigned int len)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +       void __iomem *device;
+> +
+> +       if (offset + len > sizeof(struct virtio_net_config)) {
+> +               WARN(true, "%s: bad read, offset %d len %d\n", __func__, =
+offset, len);
+> +               return;
+> +       }
+> +
+> +       device =3D pdsv->vdpa_aux->vd_mdev.device;
+> +       memcpy_fromio(buf, device + offset, len);
+> +}
+> +
+> +static void pds_vdpa_set_config(struct vdpa_device *vdpa_dev,
+> +                               unsigned int offset, const void *buf,
+> +                               unsigned int len)
+> +{
+> +       struct pds_vdpa_device *pdsv =3D vdpa_to_pdsv(vdpa_dev);
+> +       void __iomem *device;
+> +
+> +       if (offset + len > sizeof(struct virtio_net_config)) {
+> +               WARN(true, "%s: bad read, offset %d len %d\n", __func__, =
+offset, len);
+> +               return;
+> +       }
+> +
+> +       device =3D pdsv->vdpa_aux->vd_mdev.device;
+> +       memcpy_toio(device + offset, buf, len);
+> +}
+> +
+> +static const struct vdpa_config_ops pds_vdpa_ops =3D {
+> +       .set_vq_address         =3D pds_vdpa_set_vq_address,
+> +       .set_vq_num             =3D pds_vdpa_set_vq_num,
+> +       .kick_vq                =3D pds_vdpa_kick_vq,
+> +       .set_vq_cb              =3D pds_vdpa_set_vq_cb,
+> +       .set_vq_ready           =3D pds_vdpa_set_vq_ready,
+> +       .get_vq_ready           =3D pds_vdpa_get_vq_ready,
+> +       .set_vq_state           =3D pds_vdpa_set_vq_state,
+> +       .get_vq_state           =3D pds_vdpa_get_vq_state,
+> +       .get_vq_notification    =3D pds_vdpa_get_vq_notification,
+> +       .get_vq_irq             =3D pds_vdpa_get_vq_irq,
+> +       .get_vq_align           =3D pds_vdpa_get_vq_align,
+> +       .get_vq_group           =3D pds_vdpa_get_vq_group,
+> +
+> +       .get_device_features    =3D pds_vdpa_get_device_features,
+> +       .set_driver_features    =3D pds_vdpa_set_driver_features,
+> +       .get_driver_features    =3D pds_vdpa_get_driver_features,
+> +       .set_config_cb          =3D pds_vdpa_set_config_cb,
+> +       .get_vq_num_max         =3D pds_vdpa_get_vq_num_max,
+> +       .get_device_id          =3D pds_vdpa_get_device_id,
+> +       .get_vendor_id          =3D pds_vdpa_get_vendor_id,
+> +       .get_status             =3D pds_vdpa_get_status,
+> +       .set_status             =3D pds_vdpa_set_status,
+> +       .reset                  =3D pds_vdpa_reset,
+> +       .get_config_size        =3D pds_vdpa_get_config_size,
+> +       .get_config             =3D pds_vdpa_get_config,
+> +       .set_config             =3D pds_vdpa_set_config,
+> +};
+>  static struct virtio_device_id pds_vdpa_id_table[] =3D {
+>         {VIRTIO_ID_NET, VIRTIO_DEV_ANY_ID},
+>         {0},
+> @@ -21,12 +479,157 @@ static struct virtio_device_id pds_vdpa_id_table[] =
+=3D {
+>  static int pds_vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name=
+,
+>                             const struct vdpa_dev_set_config *add_config)
+>  {
+> -       return -EOPNOTSUPP;
+> +       struct pds_vdpa_aux *vdpa_aux;
+> +       struct pds_vdpa_device *pdsv;
+> +       struct vdpa_mgmt_dev *mgmt;
+> +       u16 fw_max_vqs, vq_pairs;
+> +       struct device *dma_dev;
+> +       struct pci_dev *pdev;
+> +       struct device *dev;
+> +       u8 mac[ETH_ALEN];
+> +       int err;
+> +       int i;
+> +
+> +       vdpa_aux =3D container_of(mdev, struct pds_vdpa_aux, vdpa_mdev);
+> +       dev =3D &vdpa_aux->padev->aux_dev.dev;
+> +       mgmt =3D &vdpa_aux->vdpa_mdev;
+> +
+> +       if (vdpa_aux->pdsv) {
+> +               dev_warn(dev, "Multiple vDPA devices on a VF is not suppo=
+rted.\n");
+> +               return -EOPNOTSUPP;
+> +       }
+> +
+> +       pdsv =3D vdpa_alloc_device(struct pds_vdpa_device, vdpa_dev,
+> +                                dev, &pds_vdpa_ops, 1, 1, name, false);
+> +       if (IS_ERR(pdsv)) {
+> +               dev_err(dev, "Failed to allocate vDPA structure: %pe\n", =
+pdsv);
+> +               return PTR_ERR(pdsv);
+> +       }
+> +
+> +       vdpa_aux->pdsv =3D pdsv;
+> +       pdsv->vdpa_aux =3D vdpa_aux;
+> +
+> +       pdev =3D vdpa_aux->padev->vf_pdev;
+> +       dma_dev =3D &pdev->dev;
+> +       pdsv->vdpa_dev.dma_dev =3D dma_dev;
+> +
+> +       pdsv->supported_features =3D mgmt->supported_features;
+> +
+> +       if (add_config->mask & BIT_ULL(VDPA_ATTR_DEV_FEATURES)) {
+> +               u64 unsupp_features =3D
+> +                       add_config->device_features & ~mgmt->supported_fe=
+atures;
+> +
+> +               if (unsupp_features) {
+> +                       dev_err(dev, "Unsupported features: %#llx\n", uns=
+upp_features);
+> +                       err =3D -EOPNOTSUPP;
+> +                       goto err_unmap;
+> +               }
+> +
+> +               pdsv->supported_features =3D add_config->device_features;
+> +       }
+> +
+> +       err =3D pds_vdpa_cmd_reset(pdsv);
+> +       if (err) {
+> +               dev_err(dev, "Failed to reset hw: %pe\n", ERR_PTR(err));
+> +               goto err_unmap;
+> +       }
+> +
+> +       err =3D pds_vdpa_init_hw(pdsv);
+> +       if (err) {
+> +               dev_err(dev, "Failed to init hw: %pe\n", ERR_PTR(err));
+> +               goto err_unmap;
+> +       }
+> +
+> +       fw_max_vqs =3D le16_to_cpu(pdsv->vdpa_aux->ident.max_vqs);
+> +       vq_pairs =3D fw_max_vqs / 2;
+> +
+> +       /* Make sure we have the queues being requested */
+> +       if (add_config->mask & (1 << VDPA_ATTR_DEV_NET_CFG_MAX_VQP))
+> +               vq_pairs =3D add_config->net.max_vq_pairs;
+> +
+> +       pdsv->num_vqs =3D 2 * vq_pairs;
+> +       if (pdsv->supported_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ))
+> +               pdsv->num_vqs++;
+> +
+> +       if (pdsv->num_vqs > fw_max_vqs) {
+> +               dev_err(dev, "%s: queue count requested %u greater than m=
+ax %u\n",
+> +                       __func__, pdsv->num_vqs, fw_max_vqs);
+> +               err =3D -ENOSPC;
+> +               goto err_unmap;
+> +       }
+> +
+> +       if (pdsv->num_vqs !=3D fw_max_vqs) {
+> +               err =3D pds_vdpa_cmd_set_max_vq_pairs(pdsv, vq_pairs);
+> +               if (err) {
+> +                       dev_err(dev, "Failed to set max_vq_pairs: %pe\n",
+> +                               ERR_PTR(err));
+> +                       goto err_unmap;
+> +               }
+> +       }
+> +
+> +       /* Set a mac, either from the user config if provided
+> +        * or set a random mac if default is 00:..:00
+> +        */
+> +       if (add_config->mask & BIT_ULL(VDPA_ATTR_DEV_NET_CFG_MACADDR)) {
+> +               ether_addr_copy(mac, add_config->net.mac);
+> +               pds_vdpa_cmd_set_mac(pdsv, mac);
+> +       } else {
+> +               struct virtio_net_config __iomem *vc;
+> +
+> +               vc =3D pdsv->vdpa_aux->vd_mdev.device;
+> +               memcpy_fromio(mac, vc->mac, sizeof(mac));
+> +               if (is_zero_ether_addr(mac)) {
+> +                       eth_random_addr(mac);
+> +                       dev_info(dev, "setting random mac %pM\n", mac);
+> +                       pds_vdpa_cmd_set_mac(pdsv, mac);
+> +               }
+> +       }
+> +
+> +       for (i =3D 0; i < pdsv->num_vqs; i++) {
+> +               pdsv->vqs[i].qid =3D i;
+> +               pdsv->vqs[i].pdsv =3D pdsv;
+> +               pdsv->vqs[i].irq =3D VIRTIO_MSI_NO_VECTOR;
+> +               pdsv->vqs[i].notify =3D vp_modern_map_vq_notify(&pdsv->vd=
+pa_aux->vd_mdev,
+> +                                                             i, &pdsv->v=
+qs[i].notify_pa);
+> +       }
+> +
+> +       pdsv->vdpa_dev.mdev =3D &vdpa_aux->vdpa_mdev;
+> +
+> +       /* We use the _vdpa_register_device() call rather than the
+> +        * vdpa_register_device() to avoid a deadlock because our
+> +        * dev_add() is called with the vdpa_dev_lock already set
+> +        * by vdpa_nl_cmd_dev_add_set_doit()
+> +        */
+> +       err =3D _vdpa_register_device(&pdsv->vdpa_dev, pdsv->num_vqs);
+> +       if (err) {
+> +               dev_err(dev, "Failed to register to vDPA bus: %pe\n", ERR=
+_PTR(err));
+> +               goto err_unmap;
+> +       }
+> +
+> +       pds_vdpa_debugfs_add_vdpadev(vdpa_aux);
+> +
+> +       return 0;
+> +
+> +err_unmap:
+> +       put_device(&pdsv->vdpa_dev.dev);
+> +       vdpa_aux->pdsv =3D NULL;
+> +       return err;
+>  }
+>
+>  static void pds_vdpa_dev_del(struct vdpa_mgmt_dev *mdev,
+>                              struct vdpa_device *vdpa_dev)
+>  {
+> +       struct pds_vdpa_aux *vdpa_aux;
+> +
+> +       vdpa_aux =3D container_of(mdev, struct pds_vdpa_aux, vdpa_mdev);
+> +       _vdpa_unregister_device(vdpa_dev);
+> +
+> +       pds_vdpa_cmd_reset(vdpa_aux->pdsv);
+> +       pds_vdpa_debugfs_reset_vdpadev(vdpa_aux);
+> +
+> +       vdpa_aux->pdsv =3D NULL;
+> +
+> +       dev_info(&vdpa_aux->padev->aux_dev.dev, "Removed vdpa device\n");
+>  }
+>
+>  static const struct vdpa_mgmtdev_ops pds_vdpa_mgmt_dev_ops =3D {
+> @@ -94,6 +697,7 @@ int pds_vdpa_get_mgmt_info(struct pds_vdpa_aux *vdpa_a=
+ux)
+>         mgmt->supported_features =3D le64_to_cpu(vdpa_aux->ident.hw_featu=
+res);
+>         mgmt->config_attr_mask =3D BIT_ULL(VDPA_ATTR_DEV_NET_CFG_MACADDR)=
+;
+>         mgmt->config_attr_mask |=3D BIT_ULL(VDPA_ATTR_DEV_NET_CFG_MAX_VQP=
+);
+> +       mgmt->config_attr_mask |=3D BIT_ULL(VDPA_ATTR_DEV_FEATURES);
+>
+>         err =3D pci_alloc_irq_vectors(pdev, vdpa_aux->nintrs, vdpa_aux->n=
+intrs,
+>                                     PCI_IRQ_MSIX);
+> diff --git a/drivers/vdpa/pds/vdpa_dev.h b/drivers/vdpa/pds/vdpa_dev.h
+> index a21596f438c1..25c1d192f0ef 100644
+> --- a/drivers/vdpa/pds/vdpa_dev.h
+> +++ b/drivers/vdpa/pds/vdpa_dev.h
+> @@ -35,12 +35,14 @@ struct pds_vdpa_device {
+>         struct pds_vdpa_aux *vdpa_aux;
+>
+>         struct pds_vdpa_vq_info vqs[PDS_VDPA_MAX_QUEUES];
+> +       u64 supported_features;         /* specified device features */
+>         u64 req_features;               /* features requested by vdpa */
+> -       u64 actual_features;            /* features negotiated and in use=
+ */
+>         u8 vdpa_index;                  /* rsvd for future subdevice use =
+*/
+>         u8 num_vqs;                     /* num vqs in use */
+>         struct vdpa_callback config_cb;
+>  };
+>
+> +#define PDS_VDPA_PACKED_INVERT_IDX     0x8000
+> +
+>  int pds_vdpa_get_mgmt_info(struct pds_vdpa_aux *vdpa_aux);
+>  #endif /* _VDPA_DEV_H_ */
+> --
+> 2.17.1
+>
 
 
