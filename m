@@ -1,37 +1,37 @@
-Return-Path: <netdev+bounces-6689-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6690-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3EC4F7176FC
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:40:25 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 444EF7176FF
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:40:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DAED628136B
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 06:40:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DF9DB1C20D3F
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 06:40:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1EA52748C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5871479DD;
 	Wed, 31 May 2023 06:40:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E0B31879
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0D417477
 	for <netdev@vger.kernel.org>; Wed, 31 May 2023 06:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3DE46C433D2;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 464F7C4339E;
 	Wed, 31 May 2023 06:40:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1685515220;
-	bh=0F5CFyCNDWyVreznbLHgH1BLNQGO4dp1+YadEAadEiQ=;
+	bh=qOfsqcDQVftyZME0Y4MF1+NjnMjPTxemly2cwF8OXvc=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=iappkUMkqFEr+3R69Kuu+nLTMxh6Z5sBoPRKOxjqzcrPdo0GWMxEdNyVRBxeXqzIq
-	 0OXWmvNKn/luFWgV23+r1of0Mn5TDMB5nEI1SwVFbyIFCe7I/XMySKGAxx50sc4vSw
-	 OgeX1qSkLr+FgpMUL+YefS1R8Nqc7/uWuPIB1O1lUKKWE0iiIPoGrdnmwuWtzfQRlF
-	 j2ZFrFO0WAZFp0ykEGLznWUSVOXZllaqQWW+qo8CGtJ0OtzUlFvUfwCttR4eeT4eLi
-	 Y20J+0YwvYqNwQls+oVgOcpHBLL5jVi9UUS2L87txu4WvTHPHGAmm1Y7C6c6fN5P6Y
-	 q8u8YwcpZNnvw==
+	b=UcY+xRdBLD2LtZ1ENdMzu0nzf8oKbqAwZBMjsSNCR0jzHJX17MF8G1HLEVuUrsHXH
+	 DrXwCLG6swGiWTqaqNe9XjdH1Koc8/dmYZGwQPTgOMjCv6CJ2889OgWK4WHEjCYEeR
+	 61ZoJF829crzSppXK3fLlt1d6vEbugtSiAvFJXfm6xgHFCeCXm9RKg4r9nL+6oKhFv
+	 PTX6QV0cW13A61pxevv3V+BpJDk0ru3M8b9BYd/Ic7PTGdrtJ0bV7r4D541ltX0cMp
+	 moxk1BfQNIMwCLjaojTxd/RKVD0r9up1KJb9mrgEpbCaKWC10Zc8IMmf1J1vk+YSpc
+	 1Kd2hSaz4n7cQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1EB22E52BF3;
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2AB41E21EC7;
 	Wed, 31 May 2023 06:40:20 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
@@ -41,46 +41,76 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v6 net 0/4] net/sched: Fixes for sch_ingress and sch_clsact
+Subject: Re: [PATCH net] net: sched: fix NULL pointer dereference in mq_attach
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168551522012.11093.1296970233634715565.git-patchwork-notify@kernel.org>
+ <168551522017.11093.5289353859414201530.git-patchwork-notify@kernel.org>
 Date: Wed, 31 May 2023 06:40:20 +0000
-References: <cover.1685388545.git.peilin.ye@bytedance.com>
-In-Reply-To: <cover.1685388545.git.peilin.ye@bytedance.com>
-To: Peilin Ye <yepeilin.cs@gmail.com>
-Cc: jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
- peilin.ye@bytedance.com, john.fastabend@gmail.com, daniel@iogearbox.net,
- vladbu@mellanox.com, pctammela@mojatatu.com, hdanton@sina.com,
- shaozhengchao@huawei.com, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, cong.wang@bytedance.com
+References: <20230527093747.3583502-1-shaozhengchao@huawei.com>
+In-Reply-To: <20230527093747.3583502-1-shaozhengchao@huawei.com>
+To: shaozhengchao <shaozhengchao@huawei.com>
+Cc: netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+ jiri@resnulli.us, davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, weiyongjun1@huawei.com, yuehaibing@huawei.com,
+ wanghai38@huawei.com
 
 Hello:
 
-This series was applied to netdev/net.git (main)
+This patch was applied to netdev/net.git (main)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 29 May 2023 12:52:31 -0700 you wrote:
-> Link to v5: https://lore.kernel.org/r/cover.1684887977.git.peilin.ye@bytedance.com/
-> Link to v4: https://lore.kernel.org/r/cover.1684825171.git.peilin.ye@bytedance.com/
-> Link to v3 (incomplete): https://lore.kernel.org/r/cover.1684821877.git.peilin.ye@bytedance.com/
-> Link to v2: https://lore.kernel.org/r/cover.1684796705.git.peilin.ye@bytedance.com/
-> Link to v1: https://lore.kernel.org/r/cover.1683326865.git.peilin.ye@bytedance.com/
+On Sat, 27 May 2023 17:37:47 +0800 you wrote:
+> When use the following command to test:
+> 1)ip link add bond0 type bond
+> 2)ip link set bond0 up
+> 3)tc qdisc add dev bond0 root handle ffff: mq
+> 4)tc qdisc replace dev bond0 parent ffff:fff1 handle ffff: mq
 > 
-> Hi all,
+> The kernel reports NULL pointer dereference issue. The stack information
+> is as follows:
+> Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
+> Internal error: Oops: 0000000096000006 [#1] SMP
+> Modules linked in:
+> pstate: 20000005 (nzCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> pc : mq_attach+0x44/0xa0
+> lr : qdisc_graft+0x20c/0x5cc
+> sp : ffff80000e2236a0
+> x29: ffff80000e2236a0 x28: ffff0000c0e59d80 x27: ffff0000c0be19c0
+> x26: ffff0000cae3e800 x25: 0000000000000010 x24: 00000000fffffff1
+> x23: 0000000000000000 x22: ffff0000cae3e800 x21: ffff0000c9df4000
+> x20: ffff0000c9df4000 x19: 0000000000000000 x18: ffff80000a934000
+> x17: ffff8000f5b56000 x16: ffff80000bb08000 x15: 0000000000000000
+> x14: 0000000000000000 x13: 6b6b6b6b6b6b6b6b x12: 6b6b6b6b00000001
+> x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
+> x8 : ffff0000c0be0730 x7 : bbbbbbbbbbbbbbbb x6 : 0000000000000008
+> x5 : ffff0000cae3e864 x4 : 0000000000000000 x3 : 0000000000000001
+> x2 : 0000000000000001 x1 : ffff8000090bc23c x0 : 0000000000000000
+> Call trace:
+> mq_attach+0x44/0xa0
+> qdisc_graft+0x20c/0x5cc
+> tc_modify_qdisc+0x1c4/0x664
+> rtnetlink_rcv_msg+0x354/0x440
+> netlink_rcv_skb+0x64/0x144
+> rtnetlink_rcv+0x28/0x34
+> netlink_unicast+0x1e8/0x2a4
+> netlink_sendmsg+0x308/0x4a0
+> sock_sendmsg+0x64/0xac
+> ____sys_sendmsg+0x29c/0x358
+> ___sys_sendmsg+0x90/0xd0
+> __sys_sendmsg+0x7c/0xd0
+> __arm64_sys_sendmsg+0x2c/0x38
+> invoke_syscall+0x54/0x114
+> el0_svc_common.constprop.1+0x90/0x174
+> do_el0_svc+0x3c/0xb0
+> el0_svc+0x24/0xec
+> el0t_64_sync_handler+0x90/0xb4
+> el0t_64_sync+0x174/0x178
 > 
 > [...]
 
 Here is the summary with links:
-  - [v6,net,1/4] net/sched: sch_ingress: Only create under TC_H_INGRESS
-    https://git.kernel.org/netdev/net/c/c7cfbd115001
-  - [v6,net,2/4] net/sched: sch_clsact: Only create under TC_H_CLSACT
-    https://git.kernel.org/netdev/net/c/5eeebfe6c493
-  - [v6,net,3/4] net/sched: Reserve TC_H_INGRESS (TC_H_CLSACT) for ingress (clsact) Qdiscs
-    https://git.kernel.org/netdev/net/c/f85fa45d4a94
-  - [v6,net,4/4] net/sched: Prohibit regrafting ingress or clsact Qdiscs
-    https://git.kernel.org/netdev/net/c/9de95df5d15b
+  - [net] net: sched: fix NULL pointer dereference in mq_attach
+    https://git.kernel.org/netdev/net/c/36eec020fab6
 
 You are awesome, thank you!
 -- 
