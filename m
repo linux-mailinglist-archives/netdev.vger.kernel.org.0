@@ -1,197 +1,156 @@
-Return-Path: <netdev+bounces-6796-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6797-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id DFE37718122
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 15:11:08 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id BC27071812F
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 15:14:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 96A162814C1
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 13:11:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5435C1C20E90
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 13:14:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6B7A14294;
-	Wed, 31 May 2023 13:11:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F0D214296;
+	Wed, 31 May 2023 13:14:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EF6912B8C;
-	Wed, 31 May 2023 13:11:05 +0000 (UTC)
-Received: from mail-yw1-x1142.google.com (mail-yw1-x1142.google.com [IPv6:2607:f8b0:4864:20::1142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA92D9;
-	Wed, 31 May 2023 06:11:04 -0700 (PDT)
-Received: by mail-yw1-x1142.google.com with SMTP id 00721157ae682-565aa2cc428so48690577b3.1;
-        Wed, 31 May 2023 06:11:04 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A36DA936
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 13:14:55 +0000 (UTC)
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E2C97;
+	Wed, 31 May 2023 06:14:53 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id 5b1f17b1804b1-3f6148e501dso11265285e9.1;
+        Wed, 31 May 2023 06:14:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685538663; x=1688130663;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1685538892; x=1688130892;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YMHNxtLliZ2AvZ7BdWhgd9VB7EbsZ/iFVPRdfnAvAIs=;
-        b=FErNm+WvV6cZHL75kBQyo2UBm9dre99Bc4zbXu1EsL86LWG/M1G9jhs49GXQorpayQ
-         LEbTVwOGVskxVKJjr6KqoqEXkxC+gCWd2VpGLyIxS/t7VYWRW6Q/B0ElLGT2H+STbq8H
-         6YMUDb333LuJKwLV9PfjlomlcZ7bns6zPqXhjzXZT20v9ZzAqczpbOnPsk8VCsFuX+IO
-         cQmrtCQW6c4TBX3ms+ZY/Cqv8IV21/q08GvuMot/9UJgleQaeupdYAj+Y5YbBvXwhG8d
-         ZuGDTYC9JtpUe4g08lfSvENlyoDbvilNr602dLEtXm4wihlhJl+oCa4Zmt22LcLspH/c
-         e7Qw==
+        bh=FE8vfd27NzOmqDwn14Kq37kbonQDA4TclFm5GJMMesY=;
+        b=pEAZzgkaxcYXgx4U/3TAYbqgzPplz3n6NKWwKRPJE4/YDe6dO1ewmXrk3giub39laW
+         2h5+dZc/n4kx0OC5rILRtfKNmX8pv2tS5AfHvxjsAjxtX9N8vVMT/N9a2UxT2FxGmOCg
+         P+AzAGm8BO/K1fg6saJYNFnmyUVbJsSo8sWAeP6AFy95rp5PCdseJXG88rlh7AhGTc4B
+         4Glfagh+T7yPkUCwH91bVQOP2HhjM/ra3XlFSb5RXdwxJLwSbZSly39XjYe9VGpKd+Xq
+         JPPFkR0fF2LDq5DMntpRT57NEwJuKuQBtI9MAm57uOVS8caHwhfwbX7xBLGzFN5Crjrj
+         xa7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685538663; x=1688130663;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1685538892; x=1688130892;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=YMHNxtLliZ2AvZ7BdWhgd9VB7EbsZ/iFVPRdfnAvAIs=;
-        b=IW443/tYyzKYrwYJGaUnOj5weyYbXo8BlGM+mII02Lk4h45cGQg2WBAObnUAWrguU0
-         5QcQ83H8nmaLolDQfksvjPYwTZUPvJmUfcdjs+ypA26U4NnZi8IwRicSu4tcoeTIxgBd
-         ZJ7rkiXhbcYeEf2I8Zax1alaf29q8hExgHmdJfYin3sU1cyC3faZ0wQ6WjnuSij5iT9U
-         4yfTdyfYo0R9y/CDDP4olp2JrjxRZD86izUdi6LE4BTXsIfHqjfxOHNlVpuIF41DgIaK
-         7I/Z2v93Sn96gj3MEGbctvxvAG2MmSG9fZQ59fT6oYENEoIF/A1T6MLn7tQ5GEuFToN3
-         01Tw==
-X-Gm-Message-State: AC+VfDzN9fNjyCFJRjahUWF0kVHznSbK8MxpS/LoHSAyzVztQgaeEbeH
-	Hk7Wemsx6XnKX6Gc2D+LUjmbktnzth+GlPtRaRY=
-X-Google-Smtp-Source: ACHHUZ5QdMRj9Z/EbvvuGzuIS47cw5z10AgGLopA2qlZgNO3cBUb8yYvOMdlQnABnmxTs2+jGbu1jfk/BE0kwkrQnAY=
-X-Received: by 2002:a25:ca86:0:b0:bb1:38a:f0b with SMTP id a128-20020a25ca86000000b00bb1038a0f0bmr5282809ybg.65.1685538663191;
- Wed, 31 May 2023 06:11:03 -0700 (PDT)
+        bh=FE8vfd27NzOmqDwn14Kq37kbonQDA4TclFm5GJMMesY=;
+        b=OgcExBLFtfMkRIjwJusS5jJOS22g8QiuoPEysIdmH15C5ULWCofDcHZUF/BXu5CV1s
+         uDZR4DmR+Yd0bwSUYEhxJ8FufsbyQ95opMJpL3iD4chQ1pKVREmTvMYylWHWNueJqaRt
+         miX0rBdJ2YehFTAGo29A80d24tIjOyfJTK9uDbED3Lx/B+3C60vHCQQoT8l1oU95w7wE
+         CW3FbzRFQrm6xneOyrAG8oi5d2oZqdvo8M9EuSFXHkgbQFVpY5TC6v+6nmC/6uOrdvWY
+         MzPHsBENH+bDgfRy1jGPbm9dZsx9Aqiq902ebeha1zKIgSdPOsmc97LxSqsdK1kOpncU
+         /rIQ==
+X-Gm-Message-State: AC+VfDy85LRLkYnsyrnQclH/Awe/dDVcvp5hPiG7kutMS44hYPgvotkO
+	+l0yYITb9CuGWI+zZH1zyLA=
+X-Google-Smtp-Source: ACHHUZ7dMovGUs1BxbKlpaWffWIPQ0cccdzVna+phGPIAR9+3tuDG6FTBI97B8V04TwRUYShFz0X8A==
+X-Received: by 2002:a05:600c:1f86:b0:3f6:335:d8e1 with SMTP id je6-20020a05600c1f8600b003f60335d8e1mr2588709wmb.2.1685538891967;
+        Wed, 31 May 2023 06:14:51 -0700 (PDT)
+Received: from smtpclient.apple (212-5-158-116.ip.btc-net.bg. [212.5.158.116])
+        by smtp.gmail.com with ESMTPSA id h6-20020a1ccc06000000b003f7191da579sm103779wmb.42.2023.05.31.06.14.49
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 31 May 2023 06:14:51 -0700 (PDT)
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20230530044423.3897681-1-imagedong@tencent.com>
- <ZHb+ypjE4Ybg3O18@krava> <CADxym3biE8WcMxWf1wok+s4pBYEi6+fYQAbZJVxm7eBfzWLjLQ@mail.gmail.com>
- <34fb3a9841bf4977413be799f7cbef78560aaa20.camel@gmail.com>
-In-Reply-To: <34fb3a9841bf4977413be799f7cbef78560aaa20.camel@gmail.com>
-From: Menglong Dong <menglong8.dong@gmail.com>
-Date: Wed, 31 May 2023 21:10:51 +0800
-Message-ID: <CADxym3YuGnoPpxUx92ZZqhi4z8t-hHQaKfah=9k6L-YiTg+Jjw@mail.gmail.com>
-Subject: Re: [PATCH] bpf, x86: allow function arguments up to 12 for TRACING
-To: Eduard Zingerman <eddyz87@gmail.com>
-Cc: Jiri Olsa <olsajiri@gmail.com>, dsahern@kernel.org, andrii@kernel.org, 
-	davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net, 
-	martin.lau@linux.dev, song@kernel.org, yhs@fb.com, john.fastabend@gmail.com, 
-	kpsingh@kernel.org, sdf@google.com, haoluo@google.com, tglx@linutronix.de, 
-	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, 
-	hpa@zytor.com, netdev@vger.kernel.org, bpf@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Menglong Dong <imagedong@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.600.7\))
+Subject: Re: [PATCH net-next v3 2/2] usbnet: ipheth: add CDC NCM support
+From: George Valkov <gvalkov@gmail.com>
+In-Reply-To: <e7159f2e39e79e51da123d09cfbcc21411dad544.camel@redhat.com>
+Date: Wed, 31 May 2023 16:14:38 +0300
+Cc: Foster Snowhill <forst@pen.gy>,
+ "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>,
+ Simon Horman <simon.horman@corigine.com>,
+ Jan Kiszka <jan.kiszka@siemens.com>,
+ linux-usb <linux-usb@vger.kernel.org>,
+ Linux Netdev List <netdev@vger.kernel.org>
 Content-Transfer-Encoding: quoted-printable
+Message-Id: <9D068F77-4349-4285-BDE8-3DCFC45DB7E6@gmail.com>
+References: <20230527130309.34090-1-forst@pen.gy>
+ <20230527130309.34090-2-forst@pen.gy>
+ <e7159f2e39e79e51da123d09cfbcc21411dad544.camel@redhat.com>
+To: Paolo Abeni <pabeni@redhat.com>
+X-Mailer: Apple Mail (2.3731.600.7)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 31, 2023 at 8:02=E2=80=AFPM Eduard Zingerman <eddyz87@gmail.com=
-> wrote:
->
-> On Wed, 2023-05-31 at 17:03 +0800, Menglong Dong wrote:
-> > On Wed, May 31, 2023 at 4:01=E2=80=AFPM Jiri Olsa <olsajiri@gmail.com> =
-wrote:
-> > >
-> > > On Tue, May 30, 2023 at 12:44:23PM +0800, menglong8.dong@gmail.com wr=
-ote:
-> > > > From: Menglong Dong <imagedong@tencent.com>
-> > > >
-> > > > For now, the BPF program of type BPF_PROG_TYPE_TRACING can only be =
-used
-> > > > on the kernel functions whose arguments count less than 6. This is =
-not
-> > > > friendly at all, as too many functions have arguments count more th=
-an 6.
-> > > >
-> > > > Therefore, let's enhance it by increasing the function arguments co=
-unt
-> > > > allowed in arch_prepare_bpf_trampoline(), for now, only x86_64.
-> > > >
-> > > > For the case that we don't need to call origin function, which mean=
-s
-> > > > without BPF_TRAMP_F_CALL_ORIG, we need only copy the function argum=
-ents
-> > > > that stored in the frame of the caller to current frame. The argume=
-nts
-> > > > of arg6-argN are stored in "$rbp + 0x18", we need copy them to
-> > > > "$rbp - regs_off + (6 * 8)".
-> > > >
-> > > > For the case with BPF_TRAMP_F_CALL_ORIG, we need prepare the argume=
-nts
-> > > > in stack before call origin function, which means we need alloc ext=
-ra
-> > > > "8 * (arg_count - 6)" memory in the top of the stack. Note, there s=
-hould
-> > > > not be any data be pushed to the stack before call the origin funct=
-ion.
-> > > > Then, we have to store rbx with 'mov' instead of 'push'.
-> > > >
-> > > > It works well for the FENTRY and FEXIT, I'm not sure if there are o=
-ther
-> > > > complicated cases.
-> > > >
-> > > > Signed-off-by: Menglong Dong <imagedong@tencent.com>
-> > > > ---
-> > > >  arch/x86/net/bpf_jit_comp.c | 88 ++++++++++++++++++++++++++++++++-=
-----
-> > >
-> > > please add selftests for this.. I had to add one to be able to check
-> > > the generated trampoline
-> > >
-> >
-> > Okay!
-> >
-> > BTW, I failed to compile the latest selftests/bpf with
-> > the following errors:
-> >
-> > progs/verifier_and.c:58:16: error: invalid operand for instruction
-> >         asm volatile ("                                 \
-> >
->
-> These tests were moved to use inline assembly recently (2 month ago).
-> Discussion at the time was whether to use \n\ or \ terminators at the
-> end of each line. People opted for \ as easier to read.
-> Replacing \ with \n\ and compiling this test using clang 14 shows
-> more informative error message:
->
-> $ make -j14 `pwd`/verifier_and.bpf.o
->   CLNG-BPF [test_maps] verifier_and.bpf.o
-> progs/verifier_and.c:68:1: error: invalid operand for instruction
->         w1 %%=3D 2;                                       \n\
-> ^
-> <inline asm>:11:5: note: instantiated into assembly here
->         w1 %=3D 2;
->
-> My guess is that clang 14 does not know how to handle operations on
-> 32-bit sub-registers w[0-9].
->
-> But using clang 14 I get some errors not related to inline assembly as we=
-ll.
-> Also, I recall that there were runtime issues with clang 14 and
-> tests using enum64.
->
-> All-in-all, you need newer version of clang for tests nowadays,
-> sorry for inconvenience.
 
-Thanks for your explanation! It works well after I
-update my clang to a newer version.
+Georgi Valkov
+httpstorm.com
+nano RTOS
 
-Menglong Dong
->
-> > The version of clang I used is:
-> >
-> > clang --version
-> > Debian clang version 14.0.6
-> > Target: x86_64-pc-linux-gnu
-> > Thread model: posix
-> > InstalledDir: /usr/bin
-> >
-> > Does anyone know the reason?
-> >
-> > Thanks!
-> > Menglong Dong
-> >
-> > > jirka
-> > >
-> > >
-> >
->
+
+
+> On 30 May 2023, at 1:58 PM, Paolo Abeni <pabeni@redhat.com> wrote:
+>=20
+> Hi,
+>=20
+> On Sat, 2023-05-27 at 15:03 +0200, Foster Snowhill wrote:
+>> @@ -116,12 +124,12 @@ static int ipheth_alloc_urbs(struct =
+ipheth_device *iphone)
+>> if (rx_urb =3D=3D NULL)
+>> goto free_tx_urb;
+>>=20
+>> - tx_buf =3D usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE,
+>> + tx_buf =3D usb_alloc_coherent(iphone->udev, IPHETH_TX_BUF_SIZE,
+>>    GFP_KERNEL, &tx_urb->transfer_dma);
+>> if (tx_buf =3D=3D NULL)
+>> goto free_rx_urb;
+>>=20
+>> - rx_buf =3D usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE + =
+IPHETH_IP_ALIGN,
+>> + rx_buf =3D usb_alloc_coherent(iphone->udev, IPHETH_RX_BUF_SIZE,
+>>    GFP_KERNEL, &rx_urb->transfer_dma);
+>> if (rx_buf =3D=3D NULL)
+>> goto free_tx_buf;
+>=20
+> Here the driver already knows if the device is in NCM or legacy mode,
+> so perhaps we could select the buffer size accordingly? You would
+> probably need to store the actual buffer size somewhere to keep the
+> buffer handling consistent and simple in later code.
+>=20
+>> @@ -373,12 +489,10 @@ static netdev_tx_t ipheth_tx(struct sk_buff =
+*skb, struct net_device *net)
+>> }
+>>=20
+>> memcpy(dev->tx_buf, skb->data, skb->len);
+>> - if (skb->len < IPHETH_BUF_SIZE)
+>> - memset(dev->tx_buf + skb->len, 0, IPHETH_BUF_SIZE - skb->len);
+>>=20
+>> usb_fill_bulk_urb(dev->tx_urb, udev,
+>>  usb_sndbulkpipe(udev, dev->bulk_out),
+>> -  dev->tx_buf, IPHETH_BUF_SIZE,
+>> +  dev->tx_buf, skb->len,
+>>  ipheth_sndbulk_callback,
+>>  dev);
+>> dev->tx_urb->transfer_flags |=3D URB_NO_TRANSFER_DMA_MAP;
+>=20
+> This chunk looks unrelated from NCM support, and unconditionally
+> changes the established behaviour even with legacy mode, why?
+>=20
+> Does that works even with old(er) devices?
+
+Yes,
+Tested-on: iPhone 7 Plus, iOS 15.7.6
+Testen-on: iPhone 4s, iOS 8.4
+Tested-on: iPhone 3G, iOS 4.2.1
+
+All work without any issues.
+
 
