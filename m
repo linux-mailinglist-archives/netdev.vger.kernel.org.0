@@ -1,100 +1,119 @@
-Return-Path: <netdev+bounces-6742-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6744-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 92D8A717B7A
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 11:12:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 972F3717BBA
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 11:22:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4E412281449
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 09:12:50 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 53573281336
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 09:22:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9C0B1D2F9;
-	Wed, 31 May 2023 09:12:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC451D313;
+	Wed, 31 May 2023 09:22:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 924227E1
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 09:12:48 +0000 (UTC)
-Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C6F1AB;
-	Wed, 31 May 2023 02:12:29 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.125])
-	by APP-05 (Coremail) with SMTP id zQCowACXnopeD3dk3y+cCA--.2088S2;
-	Wed, 31 May 2023 17:11:59 +0800 (CST)
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To: f.fainelli@gmail.com,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	bcm-kernel-feedback-list@broadcom.com
-Cc: netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] net: systemport: Add and correct check for platform_get_irq
-Date: Wed, 31 May 2023 17:11:59 +0800
-Message-Id: <20230531091159.8933-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1DC7D2F9
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 09:22:17 +0000 (UTC)
+Received: from smtpbgbr1.qq.com (smtpbgbr1.qq.com [54.207.19.206])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3808129
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 02:22:14 -0700 (PDT)
+X-QQ-mid:Yeas44t1685524789t455t56494
+Received: from 3DB253DBDE8942B29385B9DFB0B7E889 (jiawenwu@trustnetic.com [183.159.96.128])
+X-QQ-SSF:00400000000000F0FOF000000000000
+From: =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
+X-BIZMAIL-ID: 10707911515186658702
+To: "'Russell King \(Oracle\)'" <linux@armlinux.org.uk>
+Cc: <netdev@vger.kernel.org>,
+	<jarkko.nikula@linux.intel.com>,
+	<andriy.shevchenko@linux.intel.com>,
+	<mika.westerberg@linux.intel.com>,
+	<jsd@semihalf.com>,
+	<Jose.Abreu@synopsys.com>,
+	<andrew@lunn.ch>,
+	<hkallweit1@gmail.com>,
+	<oe-kbuild-all@lists.linux.dev>,
+	<linux-i2c@vger.kernel.org>,
+	<linux-gpio@vger.kernel.org>,
+	<mengyuanlou@net-swift.com>,
+	"'Piotr Raczynski'" <piotr.raczynski@intel.com>
+References: <20230524091722.522118-6-jiawenwu@trustnetic.com> <202305261959.mnGUW17n-lkp@intel.com> <ZHCZ0hLKARXu3xFH@shell.armlinux.org.uk> <02dd01d991d2$2120fcf0$6362f6d0$@trustnetic.com> <03ac01d992d2$67c1ec90$3745c5b0$@trustnetic.com>
+In-Reply-To: <03ac01d992d2$67c1ec90$3745c5b0$@trustnetic.com>
+Subject: RE: [PATCH net-next v9 5/9] net: txgbe: Add SFP module identify
+Date: Wed, 31 May 2023 17:19:47 +0800
+Message-ID: <046e01d993a1$0b8f51e0$22adf5a0$@trustnetic.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:zQCowACXnopeD3dk3y+cCA--.2088S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Jr4UAF43AFyfurW8XFy7Jrb_yoWkZFXEk3
-	W3Xw45XrW8Gr9FvwsFyr47C34a9rZ2kr1rZF17tFy3K3srJr1UX3ykZa4ftw1UWrWkGFy3
-	urnxtayxAw1akjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUIcSsGvfJTRUUUbcxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-	Cr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
-	0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-	2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJV
-	W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4f
-	MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
-	0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0E
-	wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
-	W8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAI
-	cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjwSdDUUUUU==
-X-Originating-IP: [124.16.138.125]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQFlCTXCD0V13/nxYaH3lJLB+zCPMgFguorBARt7XSgCWWopnAJhtNzYsCNyvSA=
+Content-Language: zh-cn
+X-QQ-SENDSIZE: 520
+Feedback-ID: Yeas:trustnetic.com:qybglogicsvrgz:qybglogicsvrgz5a-1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=unavailable
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add the missing check for "priv->wol_irq".
-Use "<" instead of "<=" to check the irqs since the platform_get_irq
-returns non-zero IRQ number on success and negative error number on
-failure, shown in `driver/base/platform.c`.
+On Tuesday, May 30, 2023 4:41 PM, Jiawen Wu wrote:
+> On Monday, May 29, 2023 10:06 AM, Jiawen Wu wrote:
+> > On Friday, May 26, 2023 7:37 PM, Russell King (Oracle) wrote:
+> > > On Fri, May 26, 2023 at 07:30:45PM +0800, kernel test robot wrote:
+> > > > Kconfig warnings: (for reference only)
+> > > >    WARNING: unmet direct dependencies detected for I2C_DESIGNWARE_PLATFORM
+> > > >    Depends on [n]: I2C [=n] && HAS_IOMEM [=y] && (ACPI && COMMON_CLK [=y] || !ACPI)
+> > > >    Selected by [y]:
+> > > >    - TXGBE [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_WANGXUN [=y] && PCI [=y]
+> > > >    WARNING: unmet direct dependencies detected for SFP
+> > > >    Depends on [n]: NETDEVICES [=y] && PHYLIB [=y] && I2C [=n] && PHYLINK [=y] && (HWMON [=n] || HWMON [=n]=n)
+> > > >    Selected by [y]:
+> > > >    - TXGBE [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_WANGXUN [=y] && PCI [=y]
+> > >
+> > > ... and is basically caused by "select SFP". No. Do not do this unless
+> > > you look at the dependencies for SFP and ensure that those are also
+> > > satisfied - because if you don't you create messes like the above
+> > > build errors.
+> >
+> > So how do I make sure that the module I need compiles and loads correctly,
+> > rely on the user to manually select it?
+> 
+> When I changed the TXGBE config to:
+> ...
+> 	depends on SFP
+> 	select PCS_XPCS
+> ...
+> the compilation gave an error:
+> 
+> drivers/net/phy/Kconfig:16:error: recursive dependency detected!
+> drivers/net/phy/Kconfig:16:     symbol PHYLIB is selected by PHYLINK
+> drivers/net/phy/Kconfig:6:      symbol PHYLINK is selected by PCS_XPCS
+> drivers/net/pcs/Kconfig:8:      symbol PCS_XPCS is selected by TXGBE
+> drivers/net/ethernet/wangxun/Kconfig:40:        symbol TXGBE depends on SFP
+> drivers/net/phy/Kconfig:63:     symbol SFP depends on PHYLIB
+> For a resolution refer to Documentation/kbuild/kconfig-language.rst
+> subsection "Kconfig recursive dependency limitations"
+> 
+> Seems deleting "depends on SFP" is the correct way. But is this normal?
+> How do we ensure the dependency between TXGBE and SFP?
 
-Fixes: 83e82f4c706b ("net: systemport: add Wake-on-LAN support")
-Fixes: 80105befdb4b ("net: systemport: add Broadcom SYSTEMPORT Ethernet MAC driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/net/ethernet/broadcom/bcmsysport.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Russell,
 
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
-index 38d0cdaf22a5..16c9c0be1a33 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.c
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.c
-@@ -2535,7 +2535,7 @@ static int bcm_sysport_probe(struct platform_device *pdev)
- 	} else {
- 		priv->wol_irq = platform_get_irq(pdev, 1);
- 	}
--	if (priv->irq0 <= 0 || (priv->irq1 <= 0 && !priv->is_lite)) {
-+	if (priv->irq0 < 0 || (priv->irq1 < 0 && !priv->is_lite) || priv->wol_irq < 0) {
- 		ret = -EINVAL;
- 		goto err_free_netdev;
- 	}
--- 
-2.25.1
+Could you please give me some suggestions?
+
+I checked "kconfig-language" doc, the practical solution is that swap all
+"select FOO" to "depends on FOO" or swap all "depends on FOO" to
+"select FOO". Config PCS_XPCS has to be selected in order to load modules
+properly, so how should I fix the warning?
 
 
