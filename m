@@ -1,109 +1,147 @@
-Return-Path: <netdev+bounces-6732-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6734-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2C4F4717AE3
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 10:58:49 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D2E19717B17
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 11:04:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D4D0A281192
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 08:58:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0B2EB2814A3
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 09:04:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF5E5C14E;
-	Wed, 31 May 2023 08:58:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E5DB7C12C;
+	Wed, 31 May 2023 09:04:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72D0CBE6E
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:58:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F257C4339B;
-	Wed, 31 May 2023 08:58:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685523518;
-	bh=HaYbQJNi6y881NqAy/tkhEXGqgb8cgiQ7a1/RH6TbrI=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=sKwl+ueYa9OKC0VTzsZZm6QE+TtD+wHKIUCr/INiDLgF9vK6gK8Vasyu9RcSI3gQZ
-	 LdtJqjpTS1zuKkZpNXCRo9G8VN8UXcQr4mlVr2eUKYaoou5OrMPDYpAZEjbtdUmKVt
-	 2zCOrSE25apXdIFqkxTGpx9DkmYCTp4hGmKQoUOmp7ZCbtcOpzG/HsgrkpQiHtQADx
-	 Ow8qtQehHdWoom1OUMwbf28DlkfGWVPmv7xWFRrUeHJMef7gyixk4v6mjUfoh9KdVx
-	 XBzNsuWeNTO9es6qJEjFKLBfcxPS8Zh5He0Z4ObGWuO8wBS6+4Ja09/edT+95W6qYv
-	 B4BwUqWcWuDtw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-	(envelope-from <johan+linaro@kernel.org>)
-	id 1q4HfF-0000jn-Oe; Wed, 31 May 2023 10:58:41 +0200
-From: Johan Hovold <johan+linaro@kernel.org>
-To: Marcel Holtmann <marcel@holtmann.org>,
-	Johan Hedberg <johan.hedberg@gmail.com>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	linux-bluetooth@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	netdev@vger.kernel.org,
-	Johan Hovold <johan+linaro@kernel.org>,
-	stable@vger.kernel.org
-Subject: [PATCH RESEND 2/2] Bluetooth: hci_qca: fix debugfs registration
-Date: Wed, 31 May 2023 10:57:59 +0200
-Message-Id: <20230531085759.2803-3-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.39.3
-In-Reply-To: <20230531085759.2803-1-johan+linaro@kernel.org>
-References: <20230531085759.2803-1-johan+linaro@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDE091FBA;
+	Wed, 31 May 2023 09:04:12 +0000 (UTC)
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54FD6E6D;
+	Wed, 31 May 2023 02:04:11 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id 3f1490d57ef6-ba86ea269e0so7828600276.1;
+        Wed, 31 May 2023 02:04:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685523850; x=1688115850;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wwBAn3OB0zI4GMIIC6jxeKIz0zwIBvc1fIs969RT6uc=;
+        b=N0X+JHbsSY/a7pW8cbNNswleHaara2N6I2XkKY2DNkt/StZejKQrtbNcuzM7UG0bKn
+         WF/rV8jiFDUtHggf8jqw9y5o5oVT34y6N9cxh+QL9sCKG/o13h6ONjkOtch5FfDipAO/
+         CrDVeVAUtB3Ccm4sfQiUTMpNyZCytDyZeUhDIhwmIlI1UaeZeO1ydZvmeM6Db/k7Etle
+         yCflQd7rCAynwW0J/o3XMCiXg5Z+K4jZWpnnlVsMSjjhAuzJIUFx/uwH4G5mlbxMDgUB
+         YG/ZJ8KUXN0vhS7i7VtDvmSIMe3KJkwM2aSExiKPAvhIiTVKUa7G4tPYlFk9S+Bb3lg4
+         RN0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685523850; x=1688115850;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=wwBAn3OB0zI4GMIIC6jxeKIz0zwIBvc1fIs969RT6uc=;
+        b=OIcg9IlsvGHrJKtnBr6IoYACdNkzc6vBlwkqQGpZY/y2CSfYHTz9vDFdC8V4rlwx6D
+         lnht2c2yOBZTTS7dJltH/78DT+XrYjaI852VKQjS+SGntLlF3JSVmdEG7pHZEhc0uCFH
+         imwEjHBUGZoQnhWVRr4ilFn7axHiBWmOPHgEO3YlMcwYhAUhyWMfeS97ya1x8QBzkkdK
+         14SGoFoURKKU9Gmn3ueG3UcvU4xs53/pxj2qqfKFMV+C9I/5OOGKtK+GfGIgmj8nzX2h
+         XOiQBgFLHdDngFfcNH+Vsbsyuy2J34aDhRNK3ePTjex0EknSG/BNM60QSFGUR2JujaoW
+         Fv8g==
+X-Gm-Message-State: AC+VfDxyZETzFG5T+IwexgGRVu69MMBKsOKErrhwdpS5t3vBlqvpqQfc
+	Wg7Pn5U1lSBdRgrXoWzWSYz1lnEkNNP+RM4ySV4=
+X-Google-Smtp-Source: ACHHUZ5gi7XkoCJIniTiJ2MRu25GFLI4lNpQEtc8w6NzLJHDJNzjBbRos99IhzW6f9IyCrcpSgLs6An+wBFApTSETA4=
+X-Received: by 2002:a25:7e03:0:b0:bac:616b:aa91 with SMTP id
+ z3-20020a257e03000000b00bac616baa91mr5618631ybc.20.1685523850502; Wed, 31 May
+ 2023 02:04:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20230530044423.3897681-1-imagedong@tencent.com> <ZHb+ypjE4Ybg3O18@krava>
+In-Reply-To: <ZHb+ypjE4Ybg3O18@krava>
+From: Menglong Dong <menglong8.dong@gmail.com>
+Date: Wed, 31 May 2023 17:03:59 +0800
+Message-ID: <CADxym3biE8WcMxWf1wok+s4pBYEi6+fYQAbZJVxm7eBfzWLjLQ@mail.gmail.com>
+Subject: Re: [PATCH] bpf, x86: allow function arguments up to 12 for TRACING
+To: Jiri Olsa <olsajiri@gmail.com>
+Cc: dsahern@kernel.org, andrii@kernel.org, davem@davemloft.net, ast@kernel.org, 
+	daniel@iogearbox.net, martin.lau@linux.dev, song@kernel.org, yhs@fb.com, 
+	john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com, 
+	haoluo@google.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, 
+	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com, 
+	netdev@vger.kernel.org, bpf@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Menglong Dong <imagedong@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Since commit 3e4be65eb82c ("Bluetooth: hci_qca: Add poweroff support
-during hci down for wcn3990"), the setup callback which registers the
-debugfs interface can be called multiple times.
+On Wed, May 31, 2023 at 4:01=E2=80=AFPM Jiri Olsa <olsajiri@gmail.com> wrot=
+e:
+>
+> On Tue, May 30, 2023 at 12:44:23PM +0800, menglong8.dong@gmail.com wrote:
+> > From: Menglong Dong <imagedong@tencent.com>
+> >
+> > For now, the BPF program of type BPF_PROG_TYPE_TRACING can only be used
+> > on the kernel functions whose arguments count less than 6. This is not
+> > friendly at all, as too many functions have arguments count more than 6=
+.
+> >
+> > Therefore, let's enhance it by increasing the function arguments count
+> > allowed in arch_prepare_bpf_trampoline(), for now, only x86_64.
+> >
+> > For the case that we don't need to call origin function, which means
+> > without BPF_TRAMP_F_CALL_ORIG, we need only copy the function arguments
+> > that stored in the frame of the caller to current frame. The arguments
+> > of arg6-argN are stored in "$rbp + 0x18", we need copy them to
+> > "$rbp - regs_off + (6 * 8)".
+> >
+> > For the case with BPF_TRAMP_F_CALL_ORIG, we need prepare the arguments
+> > in stack before call origin function, which means we need alloc extra
+> > "8 * (arg_count - 6)" memory in the top of the stack. Note, there shoul=
+d
+> > not be any data be pushed to the stack before call the origin function.
+> > Then, we have to store rbx with 'mov' instead of 'push'.
+> >
+> > It works well for the FENTRY and FEXIT, I'm not sure if there are other
+> > complicated cases.
+> >
+> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> > ---
+> >  arch/x86/net/bpf_jit_comp.c | 88 ++++++++++++++++++++++++++++++++-----
+>
+> please add selftests for this.. I had to add one to be able to check
+> the generated trampoline
+>
 
-This specifically leads to the following error when powering on the
-controller:
+Okay!
 
-	debugfs: Directory 'ibs' with parent 'hci0' already present!
+BTW, I failed to compile the latest selftests/bpf with
+the following errors:
 
-Add a driver flag to avoid trying to register the debugfs interface more
-than once.
+progs/verifier_and.c:58:16: error: invalid operand for instruction
+        asm volatile ("                                 \
 
-Fixes: 3e4be65eb82c ("Bluetooth: hci_qca: Add poweroff support during hci down for wcn3990")
-Cc: stable@vger.kernel.org	# 4.20
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/bluetooth/hci_qca.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+The version of clang I used is:
 
-diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
-index 1b064504b388..e30c979535b1 100644
---- a/drivers/bluetooth/hci_qca.c
-+++ b/drivers/bluetooth/hci_qca.c
-@@ -78,7 +78,8 @@ enum qca_flags {
- 	QCA_HW_ERROR_EVENT,
- 	QCA_SSR_TRIGGERED,
- 	QCA_BT_OFF,
--	QCA_ROM_FW
-+	QCA_ROM_FW,
-+	QCA_DEBUGFS_CREATED,
- };
- 
- enum qca_capabilities {
-@@ -635,6 +636,9 @@ static void qca_debugfs_init(struct hci_dev *hdev)
- 	if (!hdev->debugfs)
- 		return;
- 
-+	if (test_and_set_bit(QCA_DEBUGFS_CREATED, &qca->flags))
-+		return;
-+
- 	ibs_dir = debugfs_create_dir("ibs", hdev->debugfs);
- 
- 	/* read only */
--- 
-2.39.3
+clang --version
+Debian clang version 14.0.6
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
 
+Does anyone know the reason?
+
+Thanks!
+Menglong Dong
+
+> jirka
+>
+>
 
