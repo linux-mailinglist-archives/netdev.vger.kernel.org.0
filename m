@@ -1,113 +1,101 @@
-Return-Path: <netdev+bounces-6831-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6832-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 633B57185D7
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 17:14:44 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 116B87185DC
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 17:15:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id ACEBB1C20DA8
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 15:14:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 930971C20E62
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 15:15:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D52F91643B;
-	Wed, 31 May 2023 15:14:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B20C1643C;
+	Wed, 31 May 2023 15:15:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF1F716416
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 15:14:40 +0000 (UTC)
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71DF398;
-	Wed, 31 May 2023 08:14:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685546078; x=1717082078;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=40w13x0XwUpjFZqc01Htg5dEFrCwAqF8ve0cde1aw5o=;
-  b=XD8fQkhPPeB7EDgt22zPfKC1KloJjW16zoADBsfyu+rF5kwjC91E+es/
-   eJi3N/Sb5JGMpCYCCMDjQTnXul8fdplFSeeGWOvRclFEP9E2zOpwnhwy4
-   PX3L3d5RQG2gAFyQszbafAFIkOIR8CiVi2cdDY9xaI5dr8S2SErdjgRrr
-   5bs24hDObiJnDpR40a9kmrKtu92182P0cvQUWyNtBi82r+Rlqh94a2R3y
-   /jTES99mhUdYR0O1o6yRfaF5XC4j7gSppxT8hB/tvQn3b1eZUk73ZUo3i
-   Fggo4BMbTQwBGzVIi9o3+H1c0nhQTuAQIO5Ol9w8jiRLgZYyvTlkun16b
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10727"; a="344781187"
-X-IronPort-AV: E=Sophos;i="6.00,207,1681196400"; 
-   d="scan'208";a="344781187"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2023 08:14:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10727"; a="710116083"
-X-IronPort-AV: E=Sophos;i="6.00,207,1681196400"; 
-   d="scan'208";a="710116083"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga007.fm.intel.com with ESMTP; 31 May 2023 08:14:28 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 31 May 2023 08:14:28 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 31 May 2023 08:14:28 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Wed, 31 May 2023 08:14:28 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.171)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Wed, 31 May 2023 08:14:27 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB76416438
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 15:15:18 +0000 (UTC)
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A97123;
+	Wed, 31 May 2023 08:15:17 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34VERHdU031545;
+	Wed, 31 May 2023 15:15:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2023-03-30;
+ bh=DLT3nLGkBnr4440mVYZhr5Fum7yk612uNkqxs5BQI6I=;
+ b=XwLGV5fUxi4o7IvWmoF6Sctz4Dou4ze+UdB6MdVN3ag3uHC3Dz4De2+ntgOuU8Auws23
+ +zBxI/riEwVu9p9jenwxY7dWf3T5+fZZodpylociP0091U9VcBSUZ3ZilFJmpL/Mdre/
+ lo7uut6pIRGjKucFrihlAlRFdVMIEtCc/7HZo0HlkhS6L0NswI6yRgmXiY49jwnhHNec
+ 23Sqfy4NVBXfsvM5ISW/drNSQTbEB+stQc19wodhh25XwuvKgknzxS0ERRSKDfKHC2N6
+ jZSv+1A6XENpYuZS5hDVwI67Tzab1rssJpxDmRkeTz/G38+SYR50EfRfF3zRiRqwpDkb 3g== 
+Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qvhj4x4e5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 31 May 2023 15:15:11 +0000
+Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 34VEa97l019825;
+	Wed, 31 May 2023 15:15:11 GMT
+Received: from nam04-bn8-obe.outbound.protection.outlook.com (mail-bn8nam04lp2048.outbound.protection.outlook.com [104.47.74.48])
+	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3qu8a5yet5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 31 May 2023 15:15:10 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XPZkizxHCHuKGgNPmeGuLCy1LvlAK+visZ84ee3Uj593Lz9MxiZ+8vBdSlnE0qV1XheHocM8RyLQcpMUek5tX/amiAwcwzPqouPPFlhkoAfnKKa/GsQ5skrpCELSY8hXcmrdSGxYk89WL1hfJeZht995HbyOe8T6z2oezKLXGL8kFUdXYDMac55vxJvok6q7Hf3yZMKfjW0Tn6Xqa0zG5bLrywmr9sIN1QiZMWhtAY/NefvQuKA3wQoEVgKYA7Mhx4BvbwedHoTJGy3nLjmxEoIZGPewXM/F4L/LlsvCilcqndx0dqDuSTKynQm8QhtWqhpmfjbDDZP53lXYiYQOJw==
+ b=g3tU480wHML/JOnuVfckhnEfoGOlaTbJstd2yqE5IvvTot45CrS9GyyYxnb3Ms0mG29fWD6jLGEJq8Z0jXK+ZBxEtbHedtz5yPtDcIB0bF0S7whlCJmk74IHKmaz/zWGyjK8/4lGqe7PN90STuGpmjMg3EK62mFNWX8wxq/bGQw7/99JF1Zk3AkZ2eYDkdziEMhYxFINURXiF4H+iGQ7sSnu4ihbXYuMoUXhhRZnxXXoD6MjuETpbtBQfAYLXFjHUSD4HfmmIi8yngtD5+QzDjO+0vgkApGMqxb/1IjlX7EZ/YMwpwrIcjB2XeJXUpJtZUaOe7gY/+/63OBMZBaPEw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KlOuf9lfU+3/QH+W6Ggbo7CE2LFlBwImvvps4X8kMLE=;
- b=b8eUatPLrOotdMbHoDfQr+V/pDzGteLkniIvpUs/dmAsR5KM4EfyxOpUMr/YjevjL5amfObObne6C7vwOFc4OXRgu5CHnVLjy5Sd+Hp0++It2TNeIoE16C/H7bDZnWaifem4RlDUt55MW0j/hO+5Vd/+g03ABiKE4LSVt1BLEzu3ISllfe0bOlksf3b4qV3wFBKs9/CuRrhMcdh61DCZl6CtfJSSeR0fME76YohZXXAhBHdniZpOpQu2IljWIvsw/hBoYAgmqMNwXvgFWgZDU0BHYaUmXU1zoz8lCwKHg9a4FSjVN1ZOrUtA5hZxaSfck2tvgqBMdAzkiCH/rcsrXg==
+ bh=DLT3nLGkBnr4440mVYZhr5Fum7yk612uNkqxs5BQI6I=;
+ b=JCXS1eWzVy2Zq8fj1FrxSWFhImhdvaTCe2CWdvygp1U2pyV4vfD8FFd7pKZE22cLwBkcVL/eLi7TMaMw3GJow/ccvstMray+XGLPK6PCLjSt5Zc6ibuZnpVeb6M0fi4oModsGZ0qnyVZ5UicfvVysZJWzXJiMpcEFp9hK4sbMeNGtcKATmcD6hNQRgIfUi6va5m4I4Nf5H6guYLi/ynwydo89fu8MJBsIO8ypk8Zo4sQjprHNiTfS75fG0lmB3zA1Ic15JuKPHNRU50NS8Kuo5YJANDpGCChklZCsXJF7HOF+LHwWJ8goueH9rkoMLpcKACEQpBKt3hhyJr6GOE1Pg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
- by MN6PR11MB8172.namprd11.prod.outlook.com (2603:10b6:208:478::9) with
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DLT3nLGkBnr4440mVYZhr5Fum7yk612uNkqxs5BQI6I=;
+ b=bL8MrYMNcnebWbdsqF3tyAo6u59AcBzb9ehTCh57fxe7LlnITsDlrEYXqAgasZPFCim/QB9OodekUONcvIdW6s9dspA361oGo3wg8HOUj/A2TNiKbivrq5r8vSxK1tTWjI/Z0H+YAsCzXtilJ4ScKLQNgifOTc4MmWeCIU81kJ0=
+Received: from CY8PR10MB7243.namprd10.prod.outlook.com (2603:10b6:930:7c::10)
+ by DM4PR10MB6136.namprd10.prod.outlook.com (2603:10b6:8:b8::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.22; Wed, 31 May
- 2023 15:14:25 +0000
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::64d9:76b5:5b43:1590]) by DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::64d9:76b5:5b43:1590%2]) with mapi id 15.20.6433.022; Wed, 31 May 2023
- 15:14:25 +0000
-Message-ID: <cb7d3479-63a5-31b4-355d-b12a7e1b2878@intel.com>
-Date: Wed, 31 May 2023 17:13:22 +0200
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.24; Wed, 31 May
+ 2023 15:15:08 +0000
+Received: from CY8PR10MB7243.namprd10.prod.outlook.com
+ ([fe80::13d6:c3f3:2447:6559]) by CY8PR10MB7243.namprd10.prod.outlook.com
+ ([fe80::13d6:c3f3:2447:6559%5]) with mapi id 15.20.6433.024; Wed, 31 May 2023
+ 15:15:08 +0000
+Message-ID: <43f67549-fe4d-e3ca-fbb0-33bea6e2b534@oracle.com>
+Date: Wed, 31 May 2023 10:15:06 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [Intel-wired-lan] [PATCH net-next v2 03/12] iavf: optimize Rx
- buffer allocation a bunch
+ Thunderbird/102.11.2
+Subject: Re: [syzbot] [kvm?] [net?] [virt?] general protection fault in
+ vhost_work_queue
 Content-Language: en-US
-To: Alexander H Duyck <alexander.duyck@gmail.com>
-CC: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, Paul Menzel <pmenzel@molgen.mpg.de>, "Jesper Dangaard
- Brouer" <hawk@kernel.org>, Larysa Zaremba <larysa.zaremba@intel.com>,
-	<netdev@vger.kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-	<linux-kernel@vger.kernel.org>, Michal Kubiak <michal.kubiak@intel.com>,
-	<intel-wired-lan@lists.osuosl.org>, Christoph Hellwig <hch@lst.de>, "Magnus
- Karlsson" <magnus.karlsson@intel.com>
-References: <20230525125746.553874-1-aleksander.lobakin@intel.com>
- <20230525125746.553874-4-aleksander.lobakin@intel.com>
- <8828262f1c238ab28be9ec87a7701acd791af926.camel@gmail.com>
-From: Alexander Lobakin <aleksander.lobakin@intel.com>
-In-Reply-To: <8828262f1c238ab28be9ec87a7701acd791af926.camel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0106.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a3::16) To DM6PR11MB3625.namprd11.prod.outlook.com
- (2603:10b6:5:13a::21)
+To: Stefano Garzarella <sgarzare@redhat.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>,
+        syzbot <syzbot+d0d442c22fa8db45ff0e@syzkaller.appspotmail.com>,
+        jasowang@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        virtualization@lists.linux-foundation.org, stefanha@redhat.com
+References: <0000000000001777f605fce42c5f@google.com>
+ <20230530072310-mutt-send-email-mst@kernel.org>
+ <CAGxU2F7O7ef3mdvNXtiC0VtWiS2DMnoiGwSR=Z6SWbzqcrBF-g@mail.gmail.com>
+ <CAGxU2F7HK5KRggiY7xnKHeXFRXJmqcKbjf3JnXC3mbmn9xqRtw@mail.gmail.com>
+ <e4589879-1139-22cc-854f-fed22cc18693@oracle.com>
+ <6p7pi6mf3db3gp3xqarap4uzrgwlzqiz7wgg5kn2ep7hvrw5pg@wxowhbw4e7w7>
+ <035e3423-c003-3de9-0805-2091b9efb45d@oracle.com>
+ <CAGxU2F5oTLY_weLixRKMQVqmjpDG_09yL6tS2rF8mwJ7K+xP0Q@mail.gmail.com>
+From: Mike Christie <michael.christie@oracle.com>
+In-Reply-To: <CAGxU2F5oTLY_weLixRKMQVqmjpDG_09yL6tS2rF8mwJ7K+xP0Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: DM6PR05CA0052.namprd05.prod.outlook.com
+ (2603:10b6:5:335::21) To CY8PR10MB7243.namprd10.prod.outlook.com
+ (2603:10b6:930:7c::10)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -115,259 +103,148 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|MN6PR11MB8172:EE_
-X-MS-Office365-Filtering-Correlation-Id: 025d6b2b-e5d0-4715-48a6-08db61e9b775
+X-MS-TrafficTypeDiagnostic: CY8PR10MB7243:EE_|DM4PR10MB6136:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3f0c4e90-f696-40a7-cc3c-08db61e9d214
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ICmSYjzbC7ysqgaEGzNWstJxWfxncjHsjKRTtiRGe8PpSuKq0kPyT1b0UL4kfVHWWrLCKylTyihcAQWvtsvKfUuto2SwNwZX5ZnF/htxLTtz9uNuneZg8ATTnJBkOYFNAnrsVAHBfMszyMVldHQyvcO+JWKDxTbcbqfhE1G1m8EuXawIhl+7K0cXw7WsWLpWThlckugrlSCG8sXDPxqV1JfTRCgTUwGRSsSWyfhs4eG3PiWmjwSJ5oSPHBnQzYv1mzLLqg5VxLM9Wd/4TAqwsYI3i8d2IV+/cRk30UYxhY1ANgwpez9PsTHou8WSza9KgxiITLBtHrETc1yw98/8nGAbwOcGyNgmoOlpSpx1K8A6uSu7RewtdVc1Q5nUvqJSU6rg0pX+Vv7MZ3yIUZIe7247BumrnCMwjYRYHEYGywMSCPfrAvt2Sg3DjdbqEBcP+i3y8LZm5kuTlqax1zHhcsP6SQTXORborXCYx+IELwyT6qiE/L37DBqTdsKUA5yBeoa7SjHN4+Es5UQQen3xTHwSvASY/oNNkLTmOZNR/VIzuiNPxpqr09GasWWpuHDXNgH2VWD+qNHlbtE8IvoximiRudaobF4tygbsC2Mbnc2nk8GGP7Ot5iTTTZYr/kuQaOwWE55y+NemEORwgLKEFw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(366004)(346002)(396003)(136003)(376002)(451199021)(6512007)(6506007)(31686004)(186003)(2906002)(2616005)(54906003)(66899021)(478600001)(26005)(83380400001)(86362001)(8676002)(8936002)(66946007)(6486002)(38100700002)(82960400001)(41300700001)(6666004)(66476007)(316002)(5660300002)(66556008)(36756003)(107886003)(7416002)(6916009)(31696002)(4326008)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 
+	lmu/820h2+WGJfrXXrrHcQ9OIQ0FAMxEDQWuBt8ujrSL4KVWrUG3R0OCez0isHpG7uzLw8uqLe+DpLThCkL5kSNyOMYR/zgQiPMgN1rNk3NyV+9Qnfdc+mFoJ2J0FHWevgcV7mHG3twBdCPt+NnL63Z6bdsy4/P/hj93LJMp7Ypg5vNsBUJshu4wMdWHMWwCq/1fDK1PlzXwcdAGhSOZLMKYpGn7x1Ipq2NT88/jBMzJAO98v28+wIFb/wD03aQYBjayz66IWvwSjBlqHNDGqAyAAA4bJUnIbHZWJJdV1VT8t9rt0zRp90SzSsF4cyB7PGKgIu2au0h2aWkJjfs0n8I+vBfuaE5hTEte2VKaVua7CR/Yzxyz28mNqwXZ1cIDCa3ASlDFv0QChpDJd5p7k+SifZqsVGd++EpMUnUAmWzuURyKQS9qRfWqgYUxWCQTM07E1lDBvLl6ZSH89X/zeHDXJRcRaPnOj9WgXvTYl0fmrs7mixhKwPT7B6iIu2la90ag/CXKHpwhfjLVOuCxcIeC1HMCJx+w/zDmaz5yCWUl/HHlsau3x8iORUGez2ciLuS029AjMIW8Gz60SEEG49pLRtYInBcoUf7RSWTTXDv835C0NtqcpTwpobeZ5D//kMJKYTl8Qmb0JgKl3pt/7g==
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY8PR10MB7243.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(136003)(366004)(376002)(39860400002)(396003)(451199021)(316002)(66476007)(66556008)(4326008)(6916009)(478600001)(54906003)(5660300002)(36756003)(7416002)(66946007)(31686004)(8676002)(6486002)(41300700001)(38100700002)(8936002)(86362001)(2616005)(6512007)(53546011)(186003)(83380400001)(31696002)(6506007)(26005)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OGdQZkhYaWh4RVpWTEY4VXo4NDVOTDRkR1o1akxpZUVoVktWK21sNSs4cVhh?=
- =?utf-8?B?WUNKdmpZSW9ONDE3RS9Ib1VUTlJ2KzlIMktGb2wvOGtFOG95ZnhjbHdqOVZJ?=
- =?utf-8?B?SzhFSit6V0EyTjdFWXZESEo1M0llaEtzWHVJc3ZqR29Lc0tsZ3RWdGFZTjhh?=
- =?utf-8?B?VytaYUMrRThscG1TL3BaaEh1T2FwWHJLMmJXdERHdjVEaWZ6WnQzaGFZQVZG?=
- =?utf-8?B?RHliWmZLRy81R3pNcmV0TndwRHhCYmZXUWdIRnJxUU9OQzJ5bW45TEQ2L0dh?=
- =?utf-8?B?WVU5ejlPaktjN3plSXVjWGhLalhDQmJTV255TXRKclBFcUxva3JDSGU4L3BL?=
- =?utf-8?B?VlVieDN6YzFybnVuWHFkN0FUSmRBWW9lUjQ3UWh6a05YRjVoS0pWOEFVRnVy?=
- =?utf-8?B?ZUxZbEdraG9UUkRER3o2SzNDbkE3OXZBSWUyN2hwdkdmb3NraXN2SFhKR2hG?=
- =?utf-8?B?dXhuYTBHVHJCb1BaRENCK2IrZEhMZC8yZGxTYUxuVUJFemxwSnZhYzBUMW5C?=
- =?utf-8?B?QS9PNXV3Q0huMWZ5NUhibS9BVUMxdlB6QWhENEtTZjBRcmZaZXJ1akJCczdU?=
- =?utf-8?B?NkMyMWZCQTdpVE1OcFFrNmJBN2pFRExHemhuY2Y2MkQ1VE1sdjZRa1lQcHRK?=
- =?utf-8?B?UEx0eFpDK0x3VWZKR2JTbHNoRGRZeVh3VWtUL0VMU3hENDJzN0NndXduaXdZ?=
- =?utf-8?B?a3RJRzUyVkJUWWthY1hMSnBDbmZRaFRnL3pyeCtIQmw3QmhPOUdUME56cmFz?=
- =?utf-8?B?bFRIYXU2dnhraEk5dzNDU3BpSUZkMlk5bnFNTngraTBGUmV4SGxEdnZIMEsx?=
- =?utf-8?B?dU1YdXFvcUdvZURrM0hGcnhZZ3B2ZWJ3RFlRK2hIOXZYcVJRWCtLTi8xRDQv?=
- =?utf-8?B?RGpEVnhkY1k5WUdEWXAyU3E0QUNzbXRreXVtN002Q2JlcXJKSzlMS1JsTnJq?=
- =?utf-8?B?eEF4cjVSR2FOdEhKQ1ZlV0xpdFY1aEVPZ0xGM2RSZktuUkRoaW45UDhCdCt4?=
- =?utf-8?B?TjNCdVh3ZGNZdjZadXVQbEJjV0tPQU8zc0RKWFFPY20zU3JIUENLTUw3dVVR?=
- =?utf-8?B?Zm96cjV5ZVpnZHhmQWJ3NTM3aFZReWRoSFFUeWZRY1E3MEdYeUhuVDJBNFhQ?=
- =?utf-8?B?RzVJczRqNVZVZWtHaytYWXZUbFpiaEpqQ0t1SWU1emMrakZGNytKTlRIa0dZ?=
- =?utf-8?B?bHQxWDVSUm5OVTlmbThFeWdBbVlZK3ZLK2pCeFpCeW54WkpoZnE1eFhaZnp6?=
- =?utf-8?B?MDFyTzY3eFlYcDR5bVJBRG5QS3ZjTlVFb0JXZ09TbHFtQkFjRXlSVkJiZjJs?=
- =?utf-8?B?SFN6UE1XbUNWVHBtbE1VanBGampqL2hJd0xJcXhhcTUwMjZMc1Z4UVJTUGhh?=
- =?utf-8?B?bjZRVXpmTlM1Mk9WdkFzRHhlS2o1TDJQby8zV3ltMVdlSVVZREVucnp3d2Ez?=
- =?utf-8?B?NjZUTlFCZzhxN3U0cEhOZ1VtWUJtenQrTVBWVVR2bWZpYjBGbnh3VEU3N0w2?=
- =?utf-8?B?QS82UXVWbW10enoyc2ZkQlR4VXZOZVhzVWtvZjl2QWRhcnViSUFpeEdPUE9p?=
- =?utf-8?B?R3JsaHR0OU5mVGMzTEV0UXFBY0pwbHRmV2hKNHlsNFVWam5NMzVQZEwxQkYr?=
- =?utf-8?B?R043ZWNRUGEvVUl0d3FkK0xCcXVlNlZ6blcxRkZGcmhnSGFUVW51b1NDNFVD?=
- =?utf-8?B?SER5bEQrV3dmWUJZMlNXNGYyNkhHcGprU2doRzRnMmR5SmRLOWZzODAxcUdS?=
- =?utf-8?B?K0JsRHRlRndlSDN3VFJjSk5SNEhzTC9Nd2x1VUcyc0ZlZ0lVWGx3dkUrM24z?=
- =?utf-8?B?MnVJL0dRUW9HMldhc1RjQUYzQ3lVNjNZWnp1V3creGdGVXRnZ1piZXZlaDlK?=
- =?utf-8?B?bDdzNWludmJ3LytmZkFpcHdjdlUrZVNLVXNrV3pWcXFpNUo4eHhBeGFDcm15?=
- =?utf-8?B?QnYxVFZ6TDZnVzZmRC9yK2g4MEUyU2UxNy9nV09JWUE4TDZLK0hEWjZHWmJN?=
- =?utf-8?B?Rlhvamp3ZjNrMlVhSnFxYTZKVmFLWm9BMjNSSjh2KzFQZHhlaDBqUmZtZjNW?=
- =?utf-8?B?eWtqbFNucmtlL2hGbmI3emN2OXV4REZCaDBHdGRGQkF1OEc4L1licE1FaTJ4?=
- =?utf-8?B?UEIxOFJTMTN3ekVNRlJ5c1pkb0ZjQnFQU3JGZ3lmeU8vN0NuZmV0Y0daRXB1?=
- =?utf-8?B?cmc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 025d6b2b-e5d0-4715-48a6-08db61e9b775
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?utf-8?B?TmtJUHBQbDhHSEppbnkxVlhPanp0WGVJSFZXd2lVeHhxelVGa0FjQzVvRjVq?=
+ =?utf-8?B?OU1yT1A4QzZDblZ4bXpyMkwrMEUybXlYcEFFZE1Edm5MMy80TlpMK3hNYWZq?=
+ =?utf-8?B?bzVSbmxjeS93YTR1cmpuMTY2aHNkakQyZkpseEZhNkdyTXlOLzhRR0RWdWUy?=
+ =?utf-8?B?NU1ycjBBQWxLUkpsMDlwSUlJQVE5bnZXYVprazFURnBjTlNTWEJRVGkxTFlY?=
+ =?utf-8?B?S0tVN0hQc0V0SnVQYzIzUUFwTzllK3VMMGt5S05WVWNpcVJkRjZjVTZLK0ox?=
+ =?utf-8?B?UjZBaGZXM20wL0M5bEdjcTVGUzhPdFVuTFdtR3B2OEVHaENoVkpXOWlxd0pO?=
+ =?utf-8?B?eXVOa2FuYXNQbUpuWnY3TTM2M0FNOHBHU052dnU5L0xpYktpNzFYOGt5UFZq?=
+ =?utf-8?B?Mmc1ZDZKcFVRWVRpUSs0c21ESHk1WVdFRW8xT2hyQlVjOTFVdzNLc1hsWS94?=
+ =?utf-8?B?N245Y09qbSt6VTlFdk4yeVBCb3cycHJwVWRtMW5qYlpseGxPaHhBQU5mKzMr?=
+ =?utf-8?B?SEs5Vm9LYWgrdk9xcm8wTFlwbXlEa3dQK0lNblRKYlhaY21ZVVBZN0pMaXBW?=
+ =?utf-8?B?Z1dUcmdFZ3VNMDgwM3pTd3REUGM5NXM3dXhWZFhGVEx6eFBNRUtXeFdVcE1i?=
+ =?utf-8?B?ZUQ4NGg3bTE1QUJjZEc1S0k1ZjQ2MllUVE5XVU1IRndjK0RIUkoxNk5YSUZj?=
+ =?utf-8?B?a3lmRDJnNUxJenhhU09XS3BleUw3aUx1S0hKanZialRuc081bTdJK3pyd2ZI?=
+ =?utf-8?B?dm5uVVZHSENhZ241ck9VeVdWdTBkczZZd1RNSW5TUUFPN1I5L2ptaVovdi9i?=
+ =?utf-8?B?T3NGbnJ4ejUyZUhKRFk4ZFRQVG9pelRIZ2VrTE53Skx3eFlmOXpVT3hlS1Z3?=
+ =?utf-8?B?MFNrWWhrVkZ6S2tVb1NvVDVTU0I3MmdDa0JTUG4rTklKUGRqMGNQZFdUM0M1?=
+ =?utf-8?B?QzROaFhBZTMrQ1NHTG0vakMxZEJMY1R4aENlZFpSdGM2MlpkNUxsSjNBMXBy?=
+ =?utf-8?B?R01qMUVNWmRsYkZOM2ZpL29zbzVuNXJ3bEpVeXpjQmJhekgyUHR5M0Zzb2Jy?=
+ =?utf-8?B?ZDZ1MjkrU1IrbWgzY2FvNWZPak8raG5ic2J4aTRvOGwzUGRaZ1JsUUlOeTl1?=
+ =?utf-8?B?TG1ocmduWXhGS283RFZ2YTJlTU1ESjFtY0wvaStURzFrcjNtemp6d1l6ZTlt?=
+ =?utf-8?B?NnE1SzJuMTBsSWFUc2tPd2xUZGlIcDl2TDA1YjJlUVNGc292U004VWlxaVdr?=
+ =?utf-8?B?Vkc4Q051T1hRUXMrWVhyVUF0aGVxd0pqMEdPU1lnME53WnA4OTdMQUIwc2Zi?=
+ =?utf-8?B?Tlh3N2JHeFhHdWVCeGthOUp3SFFuUFluanZwa3VEVndQSU5ZZ2FlUW5vNjVB?=
+ =?utf-8?B?YW82NG5UZXllUUNrRXpNa2FWTEZsaGtDZGlFaDhBVzA3SHdjYWVOQTE0U2Vo?=
+ =?utf-8?B?NVJ4YXE4Nk5YUFA3bDVoRDNvb2lhRWxSVjU1RUU5OFE0ZzZQQXA2bi9XdTZx?=
+ =?utf-8?B?dmFZTlFFcUdLRTF6clo5akxwRTAvQ0Y4dmhoOEhEK2hiMUhsRmxzcXhMVmp2?=
+ =?utf-8?B?dXlTZnJFb3lSdTQxUm5zTnIwWDh4cmdjdG1VTlozNzE5eGkwL1JjQW9aaGl1?=
+ =?utf-8?B?b0tsVWVXMkt0SnFWcmM1OU9OM1B5R25maXlGQUZUbjNvOFhnWm1pSVRnUmlh?=
+ =?utf-8?B?SlNUNmR1WjBkUFcvaGdWU1VyMzF0a0g1UFJMeHhBei8rZDZYNnVqM2RIQUIx?=
+ =?utf-8?B?ajB6cUlVbFI4OW1iU0o2UUxxVmp6UWlpc29MejVZaTFQWUZDYUVJRzNPdlo0?=
+ =?utf-8?B?d1Flcm83ZUhYRlFIUVhrNldnVm1pVlp3NGJmcy9Ba3A2Mklyb3c2UnlxMFJl?=
+ =?utf-8?B?K3RINkM0NFpYRGxvdXN1czF5MXhyN3Voc2NQL1VrelppQ3lzZGVNejRNSnFo?=
+ =?utf-8?B?RlVWdzEwY1BaVjhPTXJPeTF0K0Z6SlBlWFA3WldWai9QcWtYYWhQVTQ5MWx1?=
+ =?utf-8?B?YmZ3dzZaMGxjUTQwdllzZGZSM09vdWxHQlBtdkF1aTdCVUtxWG5IaWtsYWMz?=
+ =?utf-8?B?M1JBSnQzaTREMlZGZEMvNzJqTkdITVRvaHVRaXFub3AxVHdaRW92MTc3UGpk?=
+ =?utf-8?B?RkUrMS92RnRjQVRTL3Zod3VJTk8yWFVCaHRKWWh1MU1jS3l0clhDNDlaUVJM?=
+ =?utf-8?B?ZkE9PQ==?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	=?utf-8?B?S2t4V0VKV1BGUlhqcjhKa1Q2SVEzcm9rdFUxUUF4SUkyUkFGVVlXQUFGWXpj?=
+ =?utf-8?B?bW4zSlUwQ09yQWN1MW5QUHRNYW5XVWRJNTc1NHliWnMvaFduTnZXYjg0cmxR?=
+ =?utf-8?B?ODMwZk9KQzJoWjFUSGRpTGRUdlNzWVI5a0dEc0lsSFV4b0doUWwyajVZZkZ5?=
+ =?utf-8?B?Unl3dlVnVnVKdXF0aFQySGdOeG5wRk9EWnV0MlBuZHR3V1p6dmcrYWtxODNW?=
+ =?utf-8?B?ZkE5eG1adWpNQXR1TGpibU9aaFNJT0NZVVo0N0xvekMraEJlMVFGQ3dkbFJD?=
+ =?utf-8?B?K2ZRcThpMGFGNGllM0Q5YXNOSWo2dGFsOXFTSDhoeWRzNldabWRDdWpUaTdj?=
+ =?utf-8?B?a1Yxa01vNTREcXFXWVNOT013ZXdmR0xRaFlYeXpvcE5HSDNrVndYOVlaeTVW?=
+ =?utf-8?B?N291V3ppdTQvL1VYS2dwdDNsaHB1ekozUUtOWHNCTXc1T0lmZlZsSHlVeEts?=
+ =?utf-8?B?d0Evd3JZL05vNUprWGtsNWIreDMwQ3JaM2dpV2x6a2UvYnRJWis5K0g3ZXNG?=
+ =?utf-8?B?RmNOQXFUZVVQUUd0SGpQRzJCa01ZUE1HQlBYeHkyTmJ1aWJLRE1lOEJ0aVl0?=
+ =?utf-8?B?S3VnUDB6N2ZnT2UrQWJDTjd1T1dzSjFiU2V6aTZFQTZGZS96ZVN6MjQrenpn?=
+ =?utf-8?B?ZkVQamdMWlJWYm5PZnd5YjNTdnh0Wms4cFFENCtJU1FaS2dPMXM4WHBkQzBo?=
+ =?utf-8?B?RHNYV3ZqWHBXUlE2MGJNc1I2RnJzQzhBUElCWWdDcUFuNGE0dXJlYVpLVVFC?=
+ =?utf-8?B?NEVSTDVRenM5Uk1jQzdyV3pGMW44dGdUNExFVkZObFByK3A2K0lVYURJZGVl?=
+ =?utf-8?B?emh1bzQyaWpBVW1OYVlKK1dKN0FLN1dPVXlNNW9BZlZNRW9zd0w3SC82RFFj?=
+ =?utf-8?B?VUFncmgwYTU1dHJRQ09BTlkzRmxxTWRGczY0aHdRYTZJSWF0MkhDQlR5ODB0?=
+ =?utf-8?B?bFN6a3MraXRWTWVsbnpzT0pBOUdFeVluWmZncFRhRU4vNnd1SGRZQ2Q5SzRO?=
+ =?utf-8?B?K0Zsd0o4RGxPMVBtRDJYQ1M5eVlIUVpDV2tkQWZ4V2NvTnd3c2dQbmNRMjNS?=
+ =?utf-8?B?SWR0ekVWTXVYWCtZSERNN01pZFFoU05YUUwrTThMczBPTE9QTnZsd0ViUm5S?=
+ =?utf-8?B?VzR1WVp4UnZFYkMvdVUrbC96UmwwYXhMMnhJdXE3Y2R1SUpUZmFRdzFzV25j?=
+ =?utf-8?B?c28vdW01UDVkOTgvT2pVektibitvZjU1NG9ma0p4Qk1MeGdxNkxkQ1M2SUJo?=
+ =?utf-8?B?WmhQSTNqY2V5bzhTdU1RVVByTWRtcTgveTJJeXJkZDZUa0pKV2FvV0FpQ3Vx?=
+ =?utf-8?Q?nSlCbGG5c7kCE=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3f0c4e90-f696-40a7-cc3c-08db61e9d214
+X-MS-Exchange-CrossTenant-AuthSource: CY8PR10MB7243.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2023 15:14:25.7112
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2023 15:15:08.3872
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EjGBEZr5CyPjOLbA5Z2FHw2U2akvh/x+lhI388YIJbKaF8I50YbicG0KEarIBt+Va3dqH15FYGEOPMR1z1bW9LYEriGy0HM5YGVJyZ5Nb5o=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR11MB8172
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8Xd2l0QhMCyDz+fGmSAALQosdOcDqzEnkPErYdWPtqgYyvWJeNFTD/qA3UUn9txx3vfWsTVXDBpCGSeNUFG9XisweH40DyRgZ+vMMCNrPKE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR10MB6136
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-05-31_10,2023-05-31_03,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 phishscore=0
+ bulkscore=0 adultscore=0 mlxscore=0 suspectscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2304280000
+ definitions=main-2305310130
+X-Proofpoint-GUID: gmWdtDezSndEFaGTwnoxf_4tOUl4ptfu
+X-Proofpoint-ORIG-GUID: gmWdtDezSndEFaGTwnoxf_4tOUl4ptfu
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Alexander H Duyck <alexander.duyck@gmail.com>
-Date: Tue, 30 May 2023 09:18:40 -0700
-
-> On Thu, 2023-05-25 at 14:57 +0200, Alexander Lobakin wrote:
->> The Rx hotpath code of IAVF is not well-optimized TBH. Before doing any
->> further buffer model changes, shake it up a bit. Notably:
+On 5/31/23 2:27 AM, Stefano Garzarella wrote:
+> On Tue, May 30, 2023 at 6:30 PM <michael.christie@oracle.com> wrote:
 >>
->> 1. Cache more variables on the stack.
->>    DMA device, Rx page size, NTC -- these are the most common things
->>    used all throughout the hotpath, often in loops on each iteration.
->>    Instead of fetching (or even calculating, as with the page size) them
->>    from the ring all the time, cache them on the stack at the beginning
->>    of the NAPI polling callback. NTC will be written back at the end,
->>    the rest are used read-only, so no sync needed.
-> 
-> The advantage of this is going to vary based on the attribute. One of
-> the reasons why I left most of this on the ring is because the section
-> of the ring most of these variables were meant to be read-mostly and
-> shouldn't have resulted in any additional overhead versus accessing
-> them from the stack.
-
-But not all of these variables are read-only. E.g. NTC is often
-modified. Page size was calculated per descriptor, but could be once a
-poll cycle starts, and so on.
-
-> 
->> 2. Don't move the recycled buffers around the ring.
->>    The idea of passing the page of the right-now-recycled-buffer to a
->>    different buffer, in this case, the first one that needs to be
->>    allocated, moreover, on each new frame, is fundamentally wrong. It
->>    involves a few o' fetches, branches and then writes (and one Rx
->>    buffer struct is at least 32 bytes) where they're completely unneeded,
->>    but gives no good -- the result is the same as if we'd recycle it
->>    inplace, at the same position where it was used. So drop this and let
->>    the main refilling function take care of all the buffers, which were
->>    processed and now need to be recycled/refilled.
-> 
-> The next_to_alloc logic was put in place to deal with systems that are
-> experiencing memory issues. Specifically what can end up happening is
-> that the ring can stall due to failing memory allocations and the
-> memory can get stuck on the ring. For that reason we were essentially
-> defragmenting the buffers when we started suffering memory pressure so
-> that they could be reusued and/or freed following immediate use.
-> 
-> Basically what you are trading off is some exception handling for
-> performance by removing it.
-
-I'm not sure this helps a lot, but OTOH this really slows down things,
-esp. given that this code is run all the time, not only when a memory
-allocation fail happens.
-
-> 
->> 3. Don't allocate with %GPF_ATOMIC on ifup.
->>    This involved introducing the @gfp parameter to a couple functions.
->>    Doesn't change anything for Rx -> softirq.
-> 
-> Any specific reason for this? Just wondering if this is meant to
-> address some sort of memory pressure issue since it basically just
-> means the allocation can go out and try to free other memory.
-
-Yes, I'm no MM expert, but I've seen plenty of times messages from the
-MM folks that ATOMIC shouldn't be used in non-atomic contexts. Atomic
-allocation is able to grab memory from some sort of critical reservs and
-all that, and the less we touch them, the better. Outside of atomic
-contexts they should not be touched.
-
-> 
->> 4. 1 budget unit == 1 descriptor, not skb.
->>    There could be underflow when receiving a lot of fragmented frames.
->>    If each of them would consist of 2 frags, it means that we'd process
->>    64 descriptors at the point where we pass the 32th skb to the stack.
->>    But the driver would count that only as a half, which could make NAPI
->>    re-enable interrupts prematurely and create unnecessary CPU load.
-> 
-> Not sure I agree with this. The problem is the overhead for an skb
-> going up the stack versus a fragment are pretty signficant. Keep in
-> mind that most of the overhead for a single buffer occurs w/
-> napi_gro_receive and is not actually at the driver itself. The whole
-> point of the budget is to meter out units of work, not to keep you in
-> the busy loop. This starts looking like the old code where the Intel
-> drivers were returning either budget or 0 instead of supporting the
-> middle ground.
-
-No, certainly not this :D
-
-The point of budget is to limit the amount of time drivers can spend on
-cleaning their rings. Making skb the unit makes the unit very logical
-and flexible, but I'd say it should always be solid. Imagine you get a
-frame which got spanned across 5 buffers. You spend x5 time (roughly) to
-build an skb and pass it up the stack vs when you get a linear frame in
-one buffer, but according to your logics both of these cases count as 1
-unit, while the amount of time spent differs significantly. I can't say
-that's fair enough.
-
-> 
->> 5. Shortcut !size case.
->>    It's super rare, but possible -- for example, if the last buffer of
->>    the fragmented frame contained only FCS, which was then stripped by
->>    the HW. Instead of checking for size several times when processing,
->>    quickly reuse the buffer and jump to the skb fields part.
->> 6. Refill the ring after finishing the polling loop.
->>    Previously, the loop wasn't starting a new iteration after the 64th
->>    desc, meaning that we were always leaving 16 buffers non-refilled
->>    until the next NAPI poll. It's better to refill them while they're
->>    still hot, so do that right after exiting the loop as well.
->>    For a full cycle of 64 descs, there will be 4 refills of 16 descs
->>    from now on.
+>> On 5/30/23 11:17 AM, Stefano Garzarella wrote:
+>>> On Tue, May 30, 2023 at 11:09:09AM -0500, Mike Christie wrote:
+>>>> On 5/30/23 11:00 AM, Stefano Garzarella wrote:
+>>>>> I think it is partially related to commit 6e890c5d5021 ("vhost: use
+>>>>> vhost_tasks for worker threads") and commit 1a5f8090c6de ("vhost: move
+>>>>> worker thread fields to new struct"). Maybe that commits just
+>>>>> highlighted the issue and it was already existing.
+>>>>
+>>>> See my mail about the crash. Agree with your analysis about worker->vtsk
+>>>> not being set yet. It's a bug from my commit where I should have not set
+>>>> it so early or I should be checking for
+>>>>
+>>>> if (dev->worker && worker->vtsk)
+>>>>
+>>>> instead of
+>>>>
+>>>> if (dev->worker)
+>>>
+>>> Yes, though, in my opinion the problem may persist depending on how the
+>>> instructions are reordered.
 >>
->> Function: add/remove: 4/2 grow/shrink: 0/5 up/down: 473/-647 (-174)
+>> Ah ok.
 >>
->> + up to 2% performance.
+>>>
+>>> Should we protect dev->worker() with an RCU to be safe?
 >>
+>> For those multiple worker patchsets Jason had asked me about supporting
+>> where we don't have a worker while we are swapping workers around. To do
+>> that I had added rcu around the dev->worker. I removed it in later patchsets
+>> because I didn't think anyone would use it.
+>>
+>> rcu would work for your case and for what Jason had requested.
 > 
-> What is the test you saw the 2% performance improvement in? Is it
-> something XDP related or a full stack test?
-
-Not XDP, it's not present in this driver at this point :D
-Stack test, but without usercopy overhead. Trafgen bombs the NIC, the
-driver builds skbs and passes it up the stack, the stack does GRO etc,
-and then the frames get dropped on IP input because there's no socket.
-
+> Yeah, so you already have some patches?
 > 
->> Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
+> Do you want to send it to solve this problem?
 > 
-> Also one thing I am not a huge fan of is a patch that is really a
-> patchset onto itself. With all 6 items called out here I would have
-> preferred to see this as 6 patches as it would have been easier to
-> review.
 
-Agree BTW, I'm not a fan of this patch either. I wasn't sure what to do
-with it, as splitting it into 6 explodes the series into a monster, but
-proceeding without it increases diffstat and complicates things later
-on. I'll try the latter, but will see. 17 patches is not the End of Days
-after all.
+Yeah, I'll break them out and send them later today when I can retest
+rebased patches.
 
-> 
->> ---
->>  drivers/net/ethernet/intel/iavf/iavf_main.c |   2 +-
->>  drivers/net/ethernet/intel/iavf/iavf_txrx.c | 259 +++++++++-----------
->>  drivers/net/ethernet/intel/iavf/iavf_txrx.h |   3 +-
->>  3 files changed, 114 insertions(+), 150 deletions(-)
-
-[...]
-
->> @@ -943,23 +945,17 @@ bool iavf_alloc_rx_buffers(struct iavf_ring *rx_ring, u16 cleaned_count)
->>  
->>  		/* clear the status bits for the next_to_use descriptor */
->>  		rx_desc->wb.qword1.status_error_len = 0;
->> -
->> -		cleaned_count--;
->> -	} while (cleaned_count);
->> +	} while (--to_refill);
-> 
-> Just a nit. You might want to break this up into two statements like I
-> had before. I know some people within Intel weren't a huge fan of when
-> I used to do that kind of thing all the time in loops where I would do
-> the decrement and test in one line.. :)
-
-Should I please them or do it as I want to? :D I realize from the
-compiler's PoV it's most likely the same, but dunno, why not.
-
-> 
->>  
->>  	if (rx_ring->next_to_use != ntu)
->>  		iavf_release_rx_desc(rx_ring, ntu);
->>  
->> -	return false;
-
-[...]
-
->>  	/* if we are the last buffer then there is nothing else to do */
->>  #define IAVF_RXD_EOF BIT(IAVF_RX_DESC_STATUS_EOF_SHIFT)
->>  	if (likely(iavf_test_staterr(rx_desc, IAVF_RXD_EOF)))
-> 
-> You may want to see if you can get rid of this function entirely,
-> perhaps you do in a later patch. This function was added for ixgbe back
-> in the day to allow us to place the skb back in the ring for the RSC
-> based workloads where we had to deal with interleaved frames in the Rx
-> path.
-> 
-> For example, one question here would be why are we passing skb? It
-> isn't used as far as I can tell.
-
-Yes, I'm optimizing all this out later in the series. I was surprised
-just as much as you when I saw skb getting passed to do nothing ._.
-
-[...]
-
-Thanks for the detailed reviews, stuff that Intel often lacks :s :D
-
-Olek
 
