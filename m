@@ -1,203 +1,143 @@
-Return-Path: <netdev+bounces-6660-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6661-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DDA74717475
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 05:45:33 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 03E1B717482
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 05:50:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8ACED28136F
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 03:45:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 957E51C20BDA
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 03:50:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B820F1878;
-	Wed, 31 May 2023 03:45:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 68FDC1879;
+	Wed, 31 May 2023 03:50:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB14F186B
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 03:45:30 +0000 (UTC)
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22280EC
-	for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:45:29 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id 41be03b00d2f7-53f7bef98b7so2984187a12.3
-        for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:45:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D2F91385
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 03:50:34 +0000 (UTC)
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A3A93
+	for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:50:32 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id 46e09a7af769-6af9dcc98f0so4157054a34.0
+        for <netdev@vger.kernel.org>; Tue, 30 May 2023 20:50:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1685504728; x=1688096728;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=mWRStRzhjvxvXtPIyOg18FX2uAjXK3LmODKkFrfOfw0=;
-        b=fPPupQpDJe/KmEnc2WnZF8g5GpmYFL7szIinLEYV32rvUtsaCDyhhmM6HS+5Vg8tAq
-         Ju7LCyeMJgyyKq5XB/Rn13NFszVCnQwEFVEur0eXcG+4sUhRHce3QetMa3fyv7P1lv7z
-         N+u1plwb+KEfc8mRjeNx98MhNSHTGvoxu2f/w=
+        d=gmail.com; s=20221208; t=1685505032; x=1688097032;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YeQSMl34qZhCGsb+7RcT49Q0M+b97VQy6FdaAKY2hM8=;
+        b=dSuEfqScQjACClFCsC14bBf/reTSsBOgN/9zazNlkKZ//CDU1RDJTi2Q2idJQfA3ul
+         2xS48SwfGiX/ue2Bv4giYjCgON+ss6cXLGz2EFhD2o/uDDH/qxHCd+I0Gz62Ra9jlXIS
+         fTybKx87teECR9OduE3KKxW3uQJJWwTCJHMw53fvyyX+iJ5ClYfGaleEgxbPKcUO2ZfY
+         PHdj09b15mB+2uwnwRA1Y73xKFh434Sj+w0QG/bMdSpXhzejYGruqBU3X0c1ZkNjY3rx
+         z5+sfBH62H2vDYZzgUO7q4DvHbSjXTR0AktGQE4B6P0835B0X2z1U0XUQeX3pz1ewVr9
+         yt9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685504728; x=1688096728;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mWRStRzhjvxvXtPIyOg18FX2uAjXK3LmODKkFrfOfw0=;
-        b=TWSre2mTAFvTg6dGviIS6pDGiEVqFkHTDpOQr7E/Zhh/JbYM+hnpc2q8RME4aPYCRe
-         BTQpjB4GfZRfeL5WOrpwlaN4jx3QVLY54gZOd6uRzSb36EOtyywpg1cJAdN3DewTjkr3
-         I/Y7xWmPQNcRUmmQ7fBPT8JivO1h/0pXH5Kl2XKNVnlkR6esgMRFfEs40XzRFwTTeEG0
-         kBW7Tm/VYuJLCfnpqEMz0I1ZkyIbhvu0PAnGksvkAe2puPpRWY3LAGDp/vBGPgiLi6ZO
-         NM+PEnuTnldQEYsoP8E40iinCj7FDZFw5DG1THNcIMLdkuGY6cbtl6vgIrCplhbclSrI
-         kdAw==
-X-Gm-Message-State: AC+VfDz1vJc0Vd5hCXTrrPKs8C+yq8AIqH6OaBnBB5xSH8PUNjG3J5+S
-	ANn46qi+yg/LQktsN3Jf6g8MZA==
-X-Google-Smtp-Source: ACHHUZ43/DN6lEy8Zrzn0r3E1bhpKKnF7A8bfa3e3OXdy+1nCr5lMGZ3vkOrHeG/LMfIYwjX5e1AQw==
-X-Received: by 2002:a17:902:a508:b0:1b0:31a8:2f74 with SMTP id s8-20020a170902a50800b001b031a82f74mr3379208plq.68.1685504728555;
-        Tue, 30 May 2023 20:45:28 -0700 (PDT)
-Received: from localhost (21.160.199.104.bc.googleusercontent.com. [104.199.160.21])
-        by smtp.gmail.com with UTF8SMTPSA id e7-20020a17090301c700b001b042e8ed77sm72787plh.281.2023.05.30.20.45.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 May 2023 20:45:28 -0700 (PDT)
-From: Ying Hsu <yinghsu@chromium.org>
-To: linux-bluetooth@vger.kernel.org
-Cc: chromeos-bluetooth-upstreaming@chromium.org,
-	Ying Hsu <yinghsu@chromium.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Johan Hedberg <johan.hedberg@gmail.com>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	linux-kernel@vger.kernel.org,
-	netdev@vger.kernel.org
-Subject: [PATCH v5] Bluetooth: Fix l2cap_disconnect_req deadlock
-Date: Wed, 31 May 2023 03:44:56 +0000
-Message-ID: <20230531034522.375889-1-yinghsu@chromium.org>
-X-Mailer: git-send-email 2.41.0.rc0.172.g3f132b7071-goog
+        d=1e100.net; s=20221208; t=1685505032; x=1688097032;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=YeQSMl34qZhCGsb+7RcT49Q0M+b97VQy6FdaAKY2hM8=;
+        b=ELYfZeXb5PiYYlq2K4IlsB6p1b6aBSVv7KKhUhMqmHT7QKwAeKK63NfpExKY+LnO7T
+         gqGkHtCQMnDxClR8zIQyNb+sSVg5oheiMXH8e8XMSm2R575q/ImPb55orEgEy6J3x9NJ
+         lzXgIHFO7X9PFy9AK3F2fVef/1KFJ2vVYYP+N4T1L7PgGzNI0GozI0134IZ7b+l3304B
+         DteYemt7M8bRljdlaNVyg+KEFKlrhDv6OLAecarPegpEdmRp9iyIXKB7etDfLd7PMzD5
+         lETZ2+WUy0XJ0xrjDFgSo5KNiSH0s2c6wlWj38ZiARDQ2siPLvEAK8dRZgfB/J5veK9s
+         ML6w==
+X-Gm-Message-State: AC+VfDyZIH+OWJRkpDoVHm7c9wfLWy958hfTu8W1TA3Y8WJVfq7LyPoC
+	i6mZeOEB50QUU5W9tGa41IGzzH6jHS2QGKMNwBjfgO2nLFPFKbq7
+X-Google-Smtp-Source: ACHHUZ4DrybPtHmOdYYuKYzsLWC3sjDxdwRKlrGcCnet2XJrb0NCZk3itFJ9bJJAXoo15lFQsdMThdRcfPiXvT02o80=
+X-Received: by 2002:a05:6808:4281:b0:394:2868:d51f with SMTP id
+ dq1-20020a056808428100b003942868d51fmr2101872oib.4.1685505031898; Tue, 30 May
+ 2023 20:50:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+References: <20230530141935.GA21936@didi-ThinkCentre-M920t-N000>
+ <CANn89i+HK5vny8qo89_+4PqZj9rBcGi6sVfSgN4HSpqqoUr6fw@mail.gmail.com>
+ <CAL+tcoCW7o-RcQ40NdZKwfcoqn5V9K4kjKpYpiT0E38k7yyc2Q@mail.gmail.com> <CANn89iKopAb_TGWtqHZB40Gs9VW=UfLj+h2za1=Pr8c6+Lcn=Q@mail.gmail.com>
+In-Reply-To: <CANn89iKopAb_TGWtqHZB40Gs9VW=UfLj+h2za1=Pr8c6+Lcn=Q@mail.gmail.com>
+From: Jason Xing <kerneljasonxing@gmail.com>
+Date: Wed, 31 May 2023 11:49:55 +0800
+Message-ID: <CAL+tcoDYZhDkH+oK+7KrmdWA03aY356UPBOGZOnbUiYKZ5q9YQ@mail.gmail.com>
+Subject: Re: [PATCH net v2] tcp: fix mishandling when the sack compression is deferred
+To: Eric Dumazet <edumazet@google.com>
+Cc: fuyuanli <fuyuanli@didiglobal.com>, "David S. Miller" <davem@davemloft.net>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Neal Cardwell <ncardwell@google.com>, ycheng <ycheng@google.com>, toke <toke@toke.dk>, 
+	netdev@vger.kernel.org, Weiping Zhang <zhangweiping@didiglobal.com>, 
+	Tio Zhang <tiozhang@didiglobal.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-L2CAP assumes that the locks conn->chan_lock and chan->lock are
-acquired in the order conn->chan_lock, chan->lock to avoid
-potential deadlock.
-For example, l2sock_shutdown acquires these locks in the order:
-  mutex_lock(&conn->chan_lock)
-  l2cap_chan_lock(chan)
+On Tue, May 30, 2023 at 10:51=E2=80=AFPM Eric Dumazet <edumazet@google.com>=
+ wrote:
+>
+> On Tue, May 30, 2023 at 4:32=E2=80=AFPM Jason Xing <kerneljasonxing@gmail=
+.com> wrote:
+> >
+> > I'm confused. You said in the previous email:
+> > "As a bonus, no need to send one patch for net, and another in net-next=
+,
+> > trying to 'fix' issues that should have been fixed cleanly in a single =
+patch."
+> >
+> > So we added "introducing ICSK_ACK_TIMER flag for sack compression" to
+> > fix them on top of the patch you suggested.
+> >
+> > I can remove the Suggested-by label. For now, I do care about your
+> > opinion on the current patch.
+> >
+> > Well...should I give up introducing that flag and then leave that
+> > 'issue' behind? :S
+>
+> Please let the fix go alone.
+>
+> Then I will look at your patch, but honestly I fail to see the _reason_ f=
+or it.
+>
+> In case you missed it, tcp_event_ack_sent() calls
+> inet_csk_clear_xmit_timer(sk, ICSK_TIME_DACK);
 
-However, l2cap_disconnect_req acquires chan->lock in
-l2cap_get_chan_by_scid first and then acquires conn->chan_lock
-before calling l2cap_chan_del. This means that these locks are
-acquired in unexpected order, which leads to potential deadlock:
-  l2cap_chan_lock(c)
-  mutex_lock(&conn->chan_lock)
+Hello Eric,
 
-This patch releases chan->lock before acquiring the conn_chan_lock
-to avoid the potential deadlock.
+Sorry, I didn't explain that 'issue' well last night. Let me try it once mo=
+re:
 
-Fixes: ("a2a9339e1c9d Bluetooth: L2CAP: Fix use-after-free in l2cap_disconnect_{req,rsp}")
-Signed-off-by: Ying Hsu <yinghsu@chromium.org>
----
-This commit has been tested on a Chromebook device.
+In the tcp_event_ack_sent(), since we're going to transmit data with
+ack header, we should cancel those timers which could start before to
+avoid sending useless/redundant acks. Right?
 
-Changes in v5:
-- Fixing the merge conflict by removing l2cap_del_chan_by_scid.
+But what if the timer, say, icsk_delack_timer, was triggered before
+and had to postpone it in the release cb phrase because currently
+socket (in the tcp sending process) has owned its @owned
+field(sk->sk_lock.owned =3D=3D 1).
 
-Changes in v4:
-- Using l2cap_get_chan_by_scid to avoid repeated code.
-- Releasing chan->lock before acquiring conn->chan_lock.
+We could avoid sending extra useless ack by removing the
+ICSK_ACK_TIMER flag to stop sending an ack in
+tcp_delack_timer_handler().
 
-Changes in v3:
-- Adding the fixes tag.
+In the current logic, see in the tcp_event_ack_sent():
+1) hrtimer_try_to_cancel(&tp->compressed_ack_timer)
+2) sk_stop_timer(sk, &icsk->icsk_delack_timer)
+Those two statements can prevent the timers from sending a useless ack
+but cannot prevent sending a useless ack in the deferred process.
 
-Changes in v2:
-- Adding the prefix "Bluetooth:" to subject line.
+Does it make any sense? Like I said, it's not a bug, but more like an
+improvement.
 
- net/bluetooth/l2cap_core.c | 37 +++++++++++++++----------------------
- 1 file changed, 15 insertions(+), 22 deletions(-)
-
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 036bc147f4de..16ac4aac0638 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -4634,26 +4634,6 @@ static inline int l2cap_config_rsp(struct l2cap_conn *conn,
- 	return err;
- }
- 
--static struct l2cap_chan *l2cap_del_chan_by_scid(struct l2cap_conn *conn,
--						 u16 cid, int err)
--{
--	struct l2cap_chan *c;
--
--	mutex_lock(&conn->chan_lock);
--	c = __l2cap_get_chan_by_scid(conn, cid);
--	if (c) {
--		/* Only lock if chan reference is not 0 */
--		c = l2cap_chan_hold_unless_zero(c);
--		if (c) {
--			l2cap_chan_lock(c);
--			l2cap_chan_del(c, err);
--		}
--	}
--	mutex_unlock(&conn->chan_lock);
--
--	return c;
--}
--
- static inline int l2cap_disconnect_req(struct l2cap_conn *conn,
- 				       struct l2cap_cmd_hdr *cmd, u16 cmd_len,
- 				       u8 *data)
-@@ -4671,7 +4651,7 @@ static inline int l2cap_disconnect_req(struct l2cap_conn *conn,
- 
- 	BT_DBG("scid 0x%4.4x dcid 0x%4.4x", scid, dcid);
- 
--	chan = l2cap_del_chan_by_scid(conn, dcid, ECONNRESET);
-+	chan = l2cap_get_chan_by_scid(conn, dcid);
- 	if (!chan) {
- 		cmd_reject_invalid_cid(conn, cmd->ident, dcid, scid);
- 		return 0;
-@@ -4682,6 +4662,13 @@ static inline int l2cap_disconnect_req(struct l2cap_conn *conn,
- 	l2cap_send_cmd(conn, cmd->ident, L2CAP_DISCONN_RSP, sizeof(rsp), &rsp);
- 
- 	chan->ops->set_shutdown(chan);
-+
-+	l2cap_chan_unlock(chan);
-+	mutex_lock(&conn->chan_lock);
-+	l2cap_chan_lock(chan);
-+	l2cap_chan_del(chan, ECONNRESET);
-+	mutex_unlock(&conn->chan_lock);
-+
- 	chan->ops->close(chan);
- 
- 	l2cap_chan_unlock(chan);
-@@ -4706,7 +4693,7 @@ static inline int l2cap_disconnect_rsp(struct l2cap_conn *conn,
- 
- 	BT_DBG("dcid 0x%4.4x scid 0x%4.4x", dcid, scid);
- 
--	chan = l2cap_del_chan_by_scid(conn, scid, 0);
-+	chan = l2cap_get_chan_by_scid(conn, scid);
- 	if (!chan)
- 		return 0;
- 
-@@ -4716,6 +4703,12 @@ static inline int l2cap_disconnect_rsp(struct l2cap_conn *conn,
- 		return 0;
- 	}
- 
-+	l2cap_chan_unlock(chan);
-+	mutex_lock(&conn->chan_lock);
-+	l2cap_chan_lock(chan);
-+	l2cap_chan_del(chan, 0);
-+	mutex_unlock(&conn->chan_lock);
-+
- 	chan->ops->close(chan);
- 
- 	l2cap_chan_unlock(chan);
--- 
-2.41.0.rc0.172.g3f132b7071-goog
-
+Thanks,
+Jason
 
