@@ -1,84 +1,105 @@
-Return-Path: <netdev+bounces-6748-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6749-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2F727717C2D
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 11:40:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5813C717C4E
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 11:45:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E85D52813B5
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 09:40:24 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E9BEF1C20E09
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 09:45:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 214C312B78;
-	Wed, 31 May 2023 09:40:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3C94612B8E;
+	Wed, 31 May 2023 09:45:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34AB9D52E
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 09:40:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D1541C4339B;
-	Wed, 31 May 2023 09:40:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685526020;
-	bh=vzvd6yc3uH+kPoLgYGUShqKeP2ccEjuSqbdKW85AxJ4=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=WwaeNRFm5kfOSFhWjpAQK9fUkpP/0mQ4JKHpBOjV28xn0OlkfXl859Rd+PA6VRwHN
-	 j+x1BQdxSIqZz+BvWAQJn51dmoc6gR6FkO0L7ZQ6/uoeA0emR7iOVFHs4WGysereF9
-	 IhXhupu3IXgmKuaLDLVWjwAcIX7V38+geWvIzcsnm8Zg6yl5mjgWI+SZWMwwh0i//W
-	 ZkkWiRsUKrTIxtfuTCeH86n+4davNfPmfZvS9MVM8lXa4syXEWiKNTUzdfw3RhWryA
-	 5VfH8k7BGRStvbAtfqWOHmGagHGUFnzN7ROnM3pchhcgMkmqp2+OCOR7hHlldMAKZ7
-	 eeNyWZcOYA52A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B2EE3E52C03;
-	Wed, 31 May 2023 09:40:20 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DB523D64
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 09:45:38 +0000 (UTC)
+Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA1710E;
+	Wed, 31 May 2023 02:45:36 -0700 (PDT)
+Received: by mail-pg1-f172.google.com with SMTP id 41be03b00d2f7-517ab9a4a13so4911757a12.1;
+        Wed, 31 May 2023 02:45:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685526336; x=1688118336;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=t/2aFBpIsqpE5f/CcamhdekTeF9dAuGTGy1N658Z3Aw=;
+        b=YpvqIF6sjCT028bnduUEPYNw38JvAqY+IPI/cxef6XFIQvhLfzkB3FMygvoJf87c2I
+         T34xKd4kGaBOpMFReQXRXXjY+a1lvs/IFb8ciWma1eFb8XQUFxHgyet7Gu4EjRMBHECj
+         Rj+kBR3YjGRcwgD2DUVELllJlhlWWIfnhZsNNTJRA2L+xUWcgd9P0Fcqwyics628IHD4
+         DuzctOKA97z2F4VEU+M2hEVPpKla0WlmEoVl1jOc3w1QBhEUAYetB/L7wn+67UYpCzpX
+         e6AYP8JmIIqDeJXV2R5p8Rf4Refe/0LVqzt6927sT6IJZ48iZhyrrqM0sehJOSJSqw8J
+         itxA==
+X-Gm-Message-State: AC+VfDwQUztd7OskD+HTDuO3DiZDdzsuMbkBy1wzaevBCUsV+OxOrPh+
+	dQz2zlEyBmu1KuGxwgOhhgZCwRYaHdRbhLje/7w=
+X-Google-Smtp-Source: ACHHUZ6keaXUYHaJYg6vFOspqfoUed6ZnCFmBKZmVeFdviOjIuQo6mQbZ2GJJKlVVoH9EV6aBxz/wMIDSqnCz222cKQ=
+X-Received: by 2002:a17:90b:951:b0:256:35f0:a2b0 with SMTP id
+ dw17-20020a17090b095100b0025635f0a2b0mr5138557pjb.0.1685526335890; Wed, 31
+ May 2023 02:45:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] udp6: Fix race condition in udp6_sendmsg & connect
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168552602072.29725.226588999597106916.git-patchwork-notify@kernel.org>
-Date: Wed, 31 May 2023 09:40:20 +0000
-References: <20230530113941.1674072-1-VEfanov@ispras.ru>
-In-Reply-To: <20230530113941.1674072-1-VEfanov@ispras.ru>
-To: Vladislav Efanov <VEfanov@ispras.ru>
-Cc: willemdebruijn.kernel@gmail.com, davem@davemloft.net, dsahern@kernel.org,
- edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- lvc-project@linuxtesting.org
+References: <20230507155506.3179711-1-mailhol.vincent@wanadoo.fr>
+ <20230530144637.4746-1-mailhol.vincent@wanadoo.fr> <20230530144637.4746-4-mailhol.vincent@wanadoo.fr>
+ <ZHYbaYWeIaDcUhhw@corigine.com> <CAMZ6RqK2vr0KRq76UNOSKzHMEfhz1YPFdg7CdQJqq4pBH3hj5w@mail.gmail.com>
+ <ZHZTUw9HWE10CUn0@corigine.com>
+In-Reply-To: <ZHZTUw9HWE10CUn0@corigine.com>
+From: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date: Wed, 31 May 2023 18:45:24 +0900
+Message-ID: <CAMZ6RqL=hB_566G4rmOYksgnSV1sQEyQEgjHPfkVEL5TQfejqg@mail.gmail.com>
+Subject: Re: [PATCH v3 3/3] can: length: refactor frame lengths definition to
+ add size in bits
+To: Simon Horman <simon.horman@corigine.com>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org, 
+	Thomas.Kopp@microchip.com, Oliver Hartkopp <socketcan@hartkopp.net>, netdev@vger.kernel.org, 
+	marex@denx.de, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
+On Wed. 31 May 2023 at 04:53, Simon Horman <simon.horman@corigine.com> wrote:
+> On Wed, May 31, 2023 at 02:29:43AM +0900, Vincent MAILHOL wrote:
+> > On Wed. 31 May 2023 at 00:56, Simon Horman <simon.horman@corigine.com> wrote:
+> > > On Tue, May 30, 2023 at 11:46:37PM +0900, Vincent Mailhol wrote:
+>
+> ...
+>
+> > > > +/**
+> > > > + * can_bitstuffing_len() - Calculate the maximum length with bitsuffing
+> > > > + * @bitstream_len: length of a destuffed bit stream
+> > >
+> > > Hi Vincent,
+> > >
+> > > it looks like an editing error has crept in here:
+> > >
+> > >         s/bitstream_len/destuffed_len/
+> >
+> > Doh! Thanks for picking this up.
+> >
+> > I already prepared a v4 locally. Before sending it, I will wait one
+> > day to see if there are other comments.
+>
+> Thanks, sounds good.
 
-This patch was applied to netdev/net.git (main)
-by David S. Miller <davem@davemloft.net>:
+On a side note, I was puzzled because I did not get any documentation
+warnings when running a "make W=1". I just realized that only .c files
+get checked, not headers. I sent a separate patch to fix the
+documentation:
 
-On Tue, 30 May 2023 14:39:41 +0300 you wrote:
-> Syzkaller got the following report:
-> BUG: KASAN: use-after-free in sk_setup_caps+0x621/0x690 net/core/sock.c:2018
-> Read of size 8 at addr ffff888027f82780 by task syz-executor276/3255
-> 
-> The function sk_setup_caps (called by ip6_sk_dst_store_flow->
-> ip6_dst_store) referenced already freed memory as this memory was
-> freed by parallel task in udpv6_sendmsg->ip6_sk_dst_lookup_flow->
-> sk_dst_check.
-> 
-> [...]
+  https://lore.kernel.org/linux-doc/20230531093951.358769-1-mailhol.vincent@wanadoo.fr/
 
-Here is the summary with links:
-  - [v2] udp6: Fix race condition in udp6_sendmsg & connect
-    https://git.kernel.org/netdev/net/c/448a5ce1120c
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Yours sincerely,
+Vincent Mailhol
 
