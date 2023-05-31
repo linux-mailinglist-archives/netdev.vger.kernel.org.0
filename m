@@ -1,62 +1,117 @@
-Return-Path: <netdev+bounces-6886-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6881-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 69B7171890D
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 20:10:18 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7DAE17188F6
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 20:00:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2372B28157A
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 18:10:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BFC731C20F06
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 18:00:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4FFCB1950E;
-	Wed, 31 May 2023 18:10:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C26B18B0A;
+	Wed, 31 May 2023 18:00:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EB9019923
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 18:10:03 +0000 (UTC)
-X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 May 2023 11:10:00 PDT
-Received: from info.tjgnb.top (unknown [120.48.39.207])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id D537A98
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 11:10:00 -0700 (PDT)
-Received: from admini-PC (116.21.30.124) by info.tjgnb.top id heu6ng0e97cc for <netdev@vger.kernel.org>; Thu, 1 Jun 2023 01:59:59 +0800 (envelope-from <info8@info.tjgnb.top>)
-From: "Meguel" <meguel.zheung@mymetalproduct.com>
-Subject: =?UTF-8?B?5Zue5aSN77yad2U=?= manufacture leveling feet leveling
- casters for machines-MIYA Metal Porducts
-To: netdev@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A23C171C4
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 18:00:16 +0000 (UTC)
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF44126;
+	Wed, 31 May 2023 11:00:13 -0700 (PDT)
+Received: from arisu.localnet (mtl.collabora.ca [66.171.169.34])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: detlev)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id D2C2B66056D7;
+	Wed, 31 May 2023 19:00:10 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1685556012;
+	bh=2DlD47EuurI1+4uewQzR4DdZPPGxHv74VYEPxfWFriA=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=V8Milrc/OCzz6XoLcw5ODsOcLv8R4jhlet06ofcsKTjPko5PkxM/w63HqRGnPDXJX
+	 ChHOxwOd4lj66xBwN1/dROtagK8pxlBSYRq2hO/xOuF7GKIfh+Byb4jLYD1hm4BxNg
+	 aldQw2NCm4ZidPdA5tOqkW6k3UYYvfzPmyMI83yt+LPDqvqWxJGx/wNc8unh2aQaRS
+	 bI72ZkYBkQvljpJ2n/MUkqQ+nde/2yHc7HyieoPyQCui3OKvH5K3n/ZeYCOOCpZ88X
+	 ZgL9qevAH42WHNNZ0klBKOZmCuDC3qVGMrzUhC6EOzxWnXJmxkS0wIuhFTxL4hJVnh
+	 /xVMqD3nHyROg==
+From: Detlev Casanova <detlev.casanova@collabora.com>
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: linux-kernel@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+ Russell King <linux@armlinux.org.uk>,
+ "David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Florian Fainelli <f.fainelli@gmail.com>,
+ netdev@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: net: phy: Support external PHY xtal
+Date: Wed, 31 May 2023 14:00:12 -0400
+Message-ID: <6646604.lOV4Wx5bFT@arisu>
+In-Reply-To: <ade45bcf-c174-429a-96ca-d0ffb41748d4@lunn.ch>
+References:
+ <20230531150340.522994-1-detlev.casanova@collabora.com>
+ <ade45bcf-c174-429a-96ca-d0ffb41748d4@lunn.ch>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Sender: info8@info.tjgnb.top
-Reply-To: meguel.zheung@mymetalproduct.com
-Date: Thu, 1 Jun 2023 01:59:53 +0800
-X-Priority: 3
-X-MSMail-Priority: Normal
-X-MimeOLE: Produced By Microsoft MimeOLE V6.00.3790.4913
-Content-Disposition: inline
-X-Spam-Status: No, score=2.5 required=5.0 tests=BAYES_50,FROM_SUSPICIOUS_NTLD,
-	HEADER_FROM_DIFFERENT_DOMAINS,MISSING_MID,RDNS_NONE,SPF_HELO_NONE,
-	SPF_NONE,TO_NO_BRKTS_MSFT,T_SCC_BODY_TEXT_LINE autolearn=no
-	autolearn_force=no version=3.4.6
-X-Spam-Level: **
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
-Message-Id: <20230531181003.4FFCB1950E@smtp.subspace.kernel.org>
 
-SGVsbG8gRGlyZWN0b3IsDQpTb3JyeSBmb3IgdGhlIGRpc3R1cmJpbmcuDQpIZXJlIE1lZ3VlbCBv
-ZiBNSVlBIE1FVEFMIFBST0RVQ1RTIENISU5BLiANCldlIHByb2R1Y2UgdGhlIG1hY2hpbmVzIGxl
-dmVsaW5nIGZlZXQgYW5kIGxldmVsaW5nIGNhc3RlcnMgb2YgdmFyaW91cyB0eXBlcy4gUXVvdGF0
-aW9uLCBjYXRhbG9nIGFuZCBzYW1wbGVzIGF2YWlsYWJsZSB0byBjaGVjay4NCkRvIHlvdSB3YW50
-IHRvIGtub3cgbW9yZSDvvJ8NCg0KWW91cnMgZmFpdGhmdWxseSwNCg0KDQpNZWd1ZWwgWmhldW5n
-DQpPdmVyc2VhcyBNYXJrZXRpbmcgTWFuYWdlcg0KDQpBMDI4LCAzcmQgRmxvb3IsIE5vLiAxMTY1
-LTExODUsIFhpaHVhbiBSb2FkLCBTaGlxaWFvIFN0cmVldCwgUGFueXUgRGlzdHJpY3QsIEd1YW5n
-emhvdSwgQ2hpbmEuDQpXaGF0c2FwcC9XZWNoYXTvvJorODYgMTg2IDY0ODIgMjc1MQ0K
+On Wednesday, May 31, 2023 11:16:46 A.M. EDT Andrew Lunn wrote:
+> On Wed, May 31, 2023 at 11:03:39AM -0400, Detlev Casanova wrote:
+> > Ethernet PHYs can have external an clock that needs to be activated before
+> > probing the PHY.
+> > 
+> > Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+> > ---
+> > 
+> >  .../devicetree/bindings/net/ethernet-phy.yaml          | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > b/Documentation/devicetree/bindings/net/ethernet-phy.yaml index
+> > 4f574532ee13..e83a33c2aa59 100644
+> > --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > 
+> > @@ -93,6 +93,16 @@ properties:
+> >        the turn around line low at end of the control phase of the
+> >        MDIO transaction.
+> > 
+> > +  clock-names:
+> > +    items:
+> > +      - const: xtal
+> 
+> I don't think xtal is the best of names here. It generally is used as
+> an abbreviation for crystal. And the commit message is about there not
+> being a crystal, but an actual clock.
+> 
+> How is this clock named on the datasheet?
+
+In the case of the PHY I used (RTL8211F), it is EXT_CLK. But this must be 
+generic to any (ethernet) PHY, so using ext_clk to match it would not be
+good either.
+
+Now this is about having an external clock, so the ext_clk name makes sense in 
+this case.
+
+I'm not pushing one name or another, let's use what you feel is more natural.
+
+Detlev.
+
+
+
 
