@@ -1,46 +1,47 @@
-Return-Path: <netdev+bounces-6936-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6937-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 26E5D718DFF
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 00:04:18 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3DFA7718E0D
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 00:07:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 67B6C1C20F8C
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 22:04:14 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4A038281618
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 22:07:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5666840763;
-	Wed, 31 May 2023 22:04:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1125F40766;
+	Wed, 31 May 2023 22:07:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E20919E7C
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 22:04:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6AF6C4339B;
-	Wed, 31 May 2023 22:04:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44EC119E7C
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 22:07:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 954DEC433EF;
+	Wed, 31 May 2023 22:07:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685570652;
-	bh=SO57Xmd1x9TbpSODSt8GMhS5MbXpLDr4RlIx0s069Ow=;
+	s=k20201202; t=1685570852;
+	bh=7EjhTSxh5SY7b9ApyiBAysKr7233N2ER+oIwSKBbgSA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=a80Ba1WbFvfMvW663xFfTRQK6cb5Kney1tdY9hzq1i0OKbd0yDsTTX0TfKBvClZrL
-	 gSZYhtgqY/QPgViq4BYYwfW359VX0eZJphAOQ0EDbvvlpTDP/kzjHf/a/NexryKMRH
-	 azUBA5GfKKPkr4w57sg/C7S37iWgzzphQyhgQ9a6UduB1UEFfMWuVOrSE137F2WDri
-	 ykid6FYxOqOGzll7tjAsYeTXhrGOm3PxklA/2rxGBvpnvXTtD5Fk5c6Pb8F+rKSHKA
-	 OdqzGgI0lu4IXkscLVMrP9qyFjF4THPIwsgSlfTnBGjyG39gxT8B0D0xBviEagWykj
-	 ImgGxPjALwQVw==
-Date: Wed, 31 May 2023 15:04:10 -0700
+	b=iR/61cTw30Cwu+x71pfuEibL3AEEXR6oFsNAPnDrkiINUX8ZTeswXV5a+GDRRbO76
+	 84ofQouyFlKQ+ZVfpvDUpMjq9RWosAkaZtbm6o0sPjGzJjPbBXEQQTaRrw9L63CrmY
+	 Xbo3hicgWRpKzJMMC3qyTTTzXLbzYdF6pxqVya+2nOYPidTqS5P2DQ0rxC3h/12AAC
+	 Yu++UCsY9MLNShSQw6HXXKyqVFG30qiXIpO5YwUUTNP5X+BY2ifxwJBDafsEtR7wkf
+	 Qme3wtRNHZzT/lEGhR/rDHXIHac++DNhggG+cqRpZ7WQ309WUFjniIiNF1jfNHzw+t
+	 pcnKsu5YqXI/w==
+Date: Wed, 31 May 2023 15:07:31 -0700
 From: Saeed Mahameed <saeed@kernel.org>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Rahul Rameshbabu <rrameshbabu@nvidia.com>, saeedm@nvidia.com,
-	netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net/mlx5e: simplify condition after napi budget
- handling change
-Message-ID: <ZHfEWnhQfrEKOgOe@x130>
-References: <20230531020051.52655-1-kuba@kernel.org>
- <87sfbd9p4z.fsf@nvidia.com>
- <20230530221943.63300b4c@kernel.org>
+To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+	netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next] net/mlx5e: Remove a useless function call
+Message-ID: <ZHfFI8Gby5HKgIkr@x130>
+References: <fc535be629990acef5e2a3dfecd64a5f9661fd25.1685349266.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -49,23 +50,15 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20230530221943.63300b4c@kernel.org>
+In-Reply-To: <fc535be629990acef5e2a3dfecd64a5f9661fd25.1685349266.git.christophe.jaillet@wanadoo.fr>
 
-On 30 May 22:19, Jakub Kicinski wrote:
->reminder: please avoid top posting on the list
+On 29 May 10:34, Christophe JAILLET wrote:
+>'handle' is known to be NULL here. There is no need to kfree() it.
 >
->On Tue, 30 May 2023 20:05:32 -0700 Rahul Rameshbabu wrote:
->> You might want to clean up
->> drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c as well in the
->> mlx5e_ptp_napi_poll function as well.
->>
->>   static int mlx5e_ptp_napi_poll(struct napi_struct *napi, int budget)
->
->This is a separate NAPI instance, I don't think I should be touching
->this. I can remove a check from TLS, tho, it seems:
->
+>Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-I will apply this to net-next-mlx5 as is, Rahul and Tariq can follow up on
-PTP and TLS if necessary 
 
+Applied to net-next-mlx5.
+
+Thanks
 
