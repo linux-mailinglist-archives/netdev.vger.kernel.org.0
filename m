@@ -1,125 +1,240 @@
-Return-Path: <netdev+bounces-6902-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6901-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D00F0718A00
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 21:18:52 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id A13BC7189FC
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 21:18:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8BC46281542
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 19:18:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3324D1C20EFD
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 19:18:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC60A1B8E9;
-	Wed, 31 May 2023 19:18:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 786B619E7C;
+	Wed, 31 May 2023 19:18:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF0EE805
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 19:18:49 +0000 (UTC)
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F956136;
-	Wed, 31 May 2023 12:18:47 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailout.west.internal (Postfix) with ESMTP id 720523200488;
-	Wed, 31 May 2023 15:18:44 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Wed, 31 May 2023 15:18:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=devkernel.io; h=
-	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm2; t=1685560724; x=1685647124; bh=xq
-	8RBedQ3sB9Mo7GT+EN0dCesgPG9Vj9tJJoe1zny1M=; b=jh1xX9pfANE0yprjLp
-	srqy1gT3wr5+d3aHfrMtNPGTYcznlT6YpnWn/T98iH28pstLVRXohapRxmqr2zQC
-	drqD4UOcrLHSzoS/c8Lnqs8aXOPmEUtS5ZQDL4Z9HaTzl/orvXHy62UHdVCn/Nnp
-	LFOyW/jRnjnwpmFUpisI54AvWoc37ssYhroFnL1QDTFQgpEyQ7mQrzWLBF7oux1y
-	u1Vn6fKdYHEfcQ/plK/CDx/FqLOSLgZ62BjSo4H+5OWr86B3WDLz9x5fr6bFqHJb
-	jbM2eSYXWBSc/RJdlyRB3iLpoJOhQRjwQPHgQUiBdUAR5gmI+EeLHqtxGGTIKQ/G
-	6EWg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm1; t=1685560724; x=1685647124; bh=xq8RBedQ3sB9M
-	o7GT+EN0dCesgPG9Vj9tJJoe1zny1M=; b=S8cPPK+jpvT50eFsxGvJHTlZ4w2y4
-	xMk+3qLKeJZ97VjNLxXIIqxiVkt6jMAb6o6nb01ZuA2onXly+Mz1KAuOwFqK5oRX
-	OaJ5mRrQ2MIE+tGycvUXorya30aTch9PpUlSOnzr9QV2MDtGhu5A0pmTHrD6LieB
-	PQZCQq02G11ofL9+31AUTnh/DDM5zB6AeCGUVh0xhCNkRDzHY3jeNQD3M8pIU5T0
-	lXoDd2n0uuuIT00CDBd7webh1ZYFXwU6zp20gR9pLhFKmzLciT5xvUVAnR9mqpXQ
-	zoSffHvA43W6Ioz+qVXCgtUIJ64g6I4ccsZDPCW6kITbHbc6wZX2P1cpA==
-X-ME-Sender: <xms:k513ZLgkuKU0dkiSY95VneVKYY4PqcOk1G8ZuZDYiIU_GgowpMM9oA>
-    <xme:k513ZIAO-7HVzKOM0L6qGdWFELd1ebnMGJ-pO1DatVAVbMrGxQ7kqURdq7yk4Do1n
-    gYinalwuiqIe8kJg0g>
-X-ME-Received: <xmr:k513ZLGETKyA5DLs3Zv9eLuY8v2ENz3G8_xFO2I2eo-Um38q5DOhqb9bt8GiKUIzCJf6ZVwbDZyXHBKGIFfk4lCA0zU7-jlCfDHiqDOZMMcn>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeekledgudefhecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfhgfhffvvefuffgjkfggtgesth
-    dtredttdertdenucfhrhhomhepufhtvghfrghnucftohgvshgthhcuoehshhhrseguvghv
-    khgvrhhnvghlrdhioheqnecuggftrfgrthhtvghrnhephffgjeevudduhedvudevgfduvd
-    fffefghfeiuedufeduhffhieejfeejffehledvnecuffhomhgrihhnpehkvghrnhgvlhdr
-    ohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hshhhrseguvghvkhgvrhhnvghlrdhioh
-X-ME-Proxy: <xmx:k513ZITx2jGfQBnoKfqtrqTmVHYJGe8Et5ujGK-yePLmI9rTgs5i0g>
-    <xmx:k513ZIwxKUlkk7FBNvpyDKnVICU5X55QrHLnWTTW8M-B-EFRSEgsjg>
-    <xmx:k513ZO58BL92IT8Ww5Qf5s8sURqVYnyOaGTS-CUn0JZE9HUFrgEEiA>
-    <xmx:lJ13ZHrrmh3PcA_FwN3bD9GI8Y2RSIBoalztSGx6AheQ8b0l54s0ig>
-Feedback-ID: i84614614:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 31 May 2023 15:18:42 -0400 (EDT)
-References: <20230518211751.3492982-1-shr@devkernel.io>
- <20230518211751.3492982-2-shr@devkernel.io>
- <20230531103224.17a462cc@kernel.org>
-User-agent: mu4e 1.10.1; emacs 28.2.50
-From: Stefan Roesch <shr@devkernel.io>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: io-uring@vger.kernel.org, kernel-team@fb.com, axboe@kernel.dk,
- ammarfaizi2@gnuweeb.org, netdev@vger.kernel.org, olivier@trillion01.com
-Subject: Re: [PATCH v13 1/7] net: split off __napi_busy_poll from
- napi_busy_poll
-Date: Wed, 31 May 2023 12:16:50 -0700
-In-reply-to: <20230531103224.17a462cc@kernel.org>
-Message-ID: <qvqwleh41f8x.fsf@devbig1114.prn1.facebook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C1842578
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 19:18:13 +0000 (UTC)
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0484107
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 12:18:10 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id 4fb4d7f45d1cf-51491b87565so188074a12.1
+        for <netdev@vger.kernel.org>; Wed, 31 May 2023 12:18:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1685560689; x=1688152689;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=n8yZnUSUyLkwq+12ZSohTFTCzqIRJUZ2nM3Mlv8CU5Y=;
+        b=jfD6XoFfiHEkI6WEaIYim/I1vasSk7JBwLyK4bqK4cFbR1EzpJgrKmMCfMG2T7+66I
+         eW9Llzy3mxw+298elWEbeXxW3aL9FHM2KkaiElY/aP0PwzJaOdpdzKzjKdCRWlFPPo79
+         1Ba993qLQcmyLM2pyDgBcXT05a27vA/WHrnCkXEvROkoSk4OCIZDZrfFvh+dq91xiBsw
+         54J8wYpJxdGkStZv3l1ftgxsmOABW8duZRt33/F/pky5TsBbkgODNRf4LNtlGg7O8DDj
+         8+N9LbG+N8V1lWuYI3pxgJsOi6uboOUv7nCQiIqsAn8b1axOFJe6mIxfXZmOPsiXSegQ
+         t0Kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685560689; x=1688152689;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=n8yZnUSUyLkwq+12ZSohTFTCzqIRJUZ2nM3Mlv8CU5Y=;
+        b=Wlsakh5WmB6ibAhNT0HnxQUcQ0oNP1/36qzvvPrlCy809hSTVg3gEG7Pr5DRYK684g
+         cN1GBg+i3iVd96leBNiP1MLob5HVUTcK8HdUWC7LEnyvsAm8IjY/W4BP0nhQ+tarZ3OR
+         eb66FykFj1/47JAPYXxSOSuvZTThCv46gY/VPrCYxDD68hDDJFiLu1WopJcYNE+J8uON
+         oDHDklYTlxTstQT97K8LJjRTpUNhT3rUwLbYGYB+8/qIqBCt3LkIxsyob32wAjE8efXb
+         mMvSYly4O/0tEmRups1q1MARbWimTh8bhEjBCdAcmQjr4obW0D0m1EadS7GQ/rlsipsB
+         L6wA==
+X-Gm-Message-State: AC+VfDxCLSKZtL2NVy9AgbyEtCA6r2cSEjeJe3b/EpFdWTH7xb9aHm5s
+	XcxRU1HOlGTCAOV58OOxpobuCg==
+X-Google-Smtp-Source: ACHHUZ5gK/WE6u0PV2dcnqH5U9LEV1u5gmQFRpnBznnE0qZHTuxx3M0czajnS24w4LjSg6uOfAD9Uw==
+X-Received: by 2002:a17:906:5d10:b0:969:813c:9868 with SMTP id g16-20020a1709065d1000b00969813c9868mr5844763ejt.18.1685560689407;
+        Wed, 31 May 2023 12:18:09 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.199.204])
+        by smtp.gmail.com with ESMTPSA id qw23-20020a170906fcb700b0096f71ace804sm9491344ejb.99.2023.05.31.12.18.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 May 2023 12:18:08 -0700 (PDT)
+Message-ID: <ce7366d0-616d-f5f4-56be-714e65a0a96e@linaro.org>
+Date: Wed, 31 May 2023 21:18:06 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH net-next v5 2/6] dt-bindings: net: Brcm ASP 2.0 Ethernet
+ controller
+Content-Language: en-US
+To: Justin Chen <justin.chen@broadcom.com>, netdev@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, bcm-kernel-feedback-list@broadcom.com
+Cc: florian.fainelli@broadcom.com, davem@davemloft.net, edumazet@google.com,
+ kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, opendmb@gmail.com,
+ andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+ richardcochran@gmail.com, sumit.semwal@linaro.org, christian.koenig@amd.com,
+ simon.horman@corigine.com
+References: <1684969313-35503-1-git-send-email-justin.chen@broadcom.com>
+ <1684969313-35503-3-git-send-email-justin.chen@broadcom.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1684969313-35503-3-git-send-email-justin.chen@broadcom.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On 25/05/2023 01:01, Justin Chen wrote:
+> From: Florian Fainelli <florian.fainelli@broadcom.com>
+> 
+> Add a binding document for the Broadcom ASP 2.0 Ethernet
+> controller.
+> 
+> Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
+> Signed-off-by: Justin Chen <justin.chen@broadcom.com>
+> ---
+> v5
+> 	- Fix compatible string yaml format to properly capture what we want
+> 
+> v4
+>         - Adjust compatible string example to reference SoC and HW ver
+> 
+> v3
+>         - Minor formatting issues
+>         - Change channel prop to brcm,channel for vendor specific format
+>         - Removed redundant v2.0 from compat string
+>         - Fix ranges field
+> 
+> v2
+>         - Minor formatting issues
+> 
+>  .../devicetree/bindings/net/brcm,asp-v2.0.yaml     | 149 +++++++++++++++++++++
+>  1 file changed, 149 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml b/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
+> new file mode 100644
+> index 000000000000..c4cd24492bfd
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
+> @@ -0,0 +1,149 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/brcm,asp-v2.0.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Broadcom ASP 2.0 Ethernet controller
+> +
+> +maintainers:
+> +  - Justin Chen <justin.chen@broadcom.com>
+> +  - Florian Fainelli <florian.fainelli@broadcom.com>
+> +
+> +description: Broadcom Ethernet controller first introduced with 72165
+> +
+> +properties:
+> +  '#address-cells':
 
-Jakub Kicinski <kuba@kernel.org> writes:
+Judging by more comments, there will be a v6, thus please also use
+consistent quotes - either ' or ".
 
-> On Thu, 18 May 2023 14:17:45 -0700 Stefan Roesch wrote:
->> -	napi = napi_by_id(napi_id);
->> -	if (!napi)
->> +	ctx.napi = napi_by_id(napi_id);
->> +	if (!ctx.napi)
->>  		goto out;
->>
->>  	preempt_disable();
->
-> This will conflict with:
->
->     https://git.kernel.org/netdev/net-next/c/c857946a4e26
->
-> :( Not sure what to do about it..
->
-> Maybe we can merge a simpler version to unblock io-uring (just add
-> need_resched() to your loop_end callback and you'll get the same
-> behavior). Refactor in net-next in parallel. Then once trees converge
-> do simple a cleanup and call the _rcu version?
+> +    const: 1
+> +  '#size-cells':
+> +    const: 1
+> +
+> +  compatible:
 
-Jakub, I can certainly call need_resched() in the loop_end callback, but
-isn't there a potential race? need_resched() in the loop_end callback
-might not return true, but the need_resched() call in napi_busy_poll
-does?
+As Conor pointed out, compatible is always first.
+
+> +    oneOf:
+> +      - items:
+> +          - enum:
+> +              - brcm,bcm74165-asp
+> +          - const: brcm,asp-v2.1
+> +      - items:
+> +          - enum:
+> +              - brcm,bcm72165-asp
+> +          - const: brcm,asp-v2.0
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  ranges: true
+> +
+> +  interrupts:
+> +    minItems: 1
+> +    items:
+> +      - description: RX/TX interrupt
+> +      - description: Port 0 Wake-on-LAN
+> +      - description: Port 1 Wake-on-LAN
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  ethernet-ports:
+> +    type: object
+> +    properties:
+> +      '#address-cells':
+> +        const: 1
+> +      '#size-cells':
+> +        const: 0
+> +
+> +    patternProperties:
+> +      "^port@[0-9]+$":
+> +        type: object
+> +
+> +        $ref: ethernet-controller.yaml#
+> +
+> +        properties:
+> +          reg:
+> +            maxItems: 1
+> +            description: Port number
+> +
+> +          brcm,channel:
+> +            $ref: /schemas/types.yaml#/definitions/uint32
+> +            description: ASP channel number
+
+Why do you need it? reg defines it. Your description does not explain
+here much, except copying property name. Can we please avoid
+descriptions which just copy name?
+
+> +
+> +        required:
+> +          - reg
+> +          - brcm,channel
+> +
+> +    additionalProperties: false
+> +
+> +patternProperties:
+> +  "^mdio@[0-9a-f]+$":
+
+Isn't mdio a property of each ethernet port? Existing users
+(e.g.bcmgenet, owl-emac, switches) do it that way...
+
+Otherwise how do you define relation-ship? Can one mdio fit multiple ports?
+
+
+> +    type: object
+> +    $ref: brcm,unimac-mdio.yaml
+> +
+> +    description:
+> +      ASP internal UniMAC MDIO bus
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+
+
+Best regards,
+Krzysztof
+
 
