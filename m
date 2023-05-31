@@ -1,164 +1,268 @@
-Return-Path: <netdev+bounces-6852-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6853-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5F9727186B7
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 17:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 1D5F97186D8
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 17:57:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1BDD1281567
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 15:50:17 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BCFF4281522
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 15:57:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D717174F8;
-	Wed, 31 May 2023 15:50:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D05461772B;
+	Wed, 31 May 2023 15:57:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFF09174EC;
-	Wed, 31 May 2023 15:50:12 +0000 (UTC)
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1A012B;
-	Wed, 31 May 2023 08:50:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685548210; x=1717084210;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=lAStyqkpKxMpRWFEmN6/fxXN8UiaPp9Vk4Abc22viy4=;
-  b=bryzKOWtkE1XHRTCWo/ELKL+TocP7XtTcWqk+VHqOOdCwORJXHYIcahW
-   5FjocMg2ZEfDMoG0FX9t7o1vCktvzbkVUQUZZNzf8rlICO23qZkJDeLh+
-   oms0aOTL2q8uWHRO3IJhmTbGR6FcS+G5iWg06FcINMB3ZWxO3DGDRUvAS
-   5jfzFKFwgX/+cUsDaWLJeXpi+QKBUjPTvXjVl/yaiv+BveVyvhpIvClA4
-   lOhlb812E2P/vddp7Xsgk+ZyPPlYGqelDGID6hjCJMVykeKcKsMePy+wi
-   kohZdtn3z3LQc76bLY0tp4a4sZJPlaxYD/+hQgI3ZcQUcmQ1vLqbH60qe
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10727"; a="418770874"
-X-IronPort-AV: E=Sophos;i="6.00,207,1681196400"; 
-   d="scan'208";a="418770874"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2023 08:49:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10727"; a="819370635"
-X-IronPort-AV: E=Sophos;i="6.00,207,1681196400"; 
-   d="scan'208";a="819370635"
-Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by fmsmga002.fm.intel.com with ESMTP; 31 May 2023 08:49:10 -0700
-From: Tony Nguyen <anthony.l.nguyen@intel.com>
-To: davem@davemloft.net,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	edumazet@google.com,
-	netdev@vger.kernel.org
-Cc: Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-	anthony.l.nguyen@intel.com,
-	magnus.karlsson@intel.com,
-	ast@kernel.org,
-	daniel@iogearbox.net,
-	hawk@kernel.org,
-	john.fastabend@gmail.com,
-	bpf@vger.kernel.org,
-	Simon Horman <simon.horman@corigine.com>,
-	Chandan Kumar Rout <chandanx.rout@intel.com>
-Subject: [PATCH net] ice: recycle/free all of the fragments from multi-buffer frame
-Date: Wed, 31 May 2023 08:44:57 -0700
-Message-Id: <20230531154457.3216621-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.38.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCE5B174CB
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 15:57:02 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2136.outbound.protection.outlook.com [40.107.220.136])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 574A1125;
+	Wed, 31 May 2023 08:57:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hxGKsBtojCQog/FDCCLLSHNTxZiXyEz3dk0amqkl6prNE3AR/8XGvwmfox0XxmLVQRrLDtubnGwM2yVMFpxVEs6fSmLLvt3BTvcKqtdAS86uoheVQBB7sdS2euqnnBI49P71GUkAlzKv9MKnaLa2vuUEqzurqbpZ7qcU6ldka3WrwuxIWhIpGIg0dYsRLGudmLn4EhK+btV8DMkd1/EalhCKAhHiQYxXsYHfr8FMu57o1+g25avQ82r+YZxWdUNQ83f+1vHkXPR3cFzVQTFF/vOQNw+7Cjm8QpwkoTNHY1ccnmBDRyxxWYNPBj2BdReA/lzLOkzVUD6efCa7DVbV3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=E/FD03qq7h+ACzK9S8OZnsjtSyuO5WfGZDIRnrcec7Q=;
+ b=jBP3XYi1CvK+mzoZoUAaJc8gUHyjkKl0SePwRrz0mRvO/uypSQZv2gjCm8G4igqCTBRq/0NroSxS5Pj0Qhe8/SRWyYKUmcrhiHGmG78vWsY0yFK3MgZ+TOjFVOZ9MGAcrO2H7DrVGd+vd3LDgZ/FEXOJjjHgfYyCU5g25QqPBOcGnSzLTjDUed2M+z6PC7jZAyZTE9wIGkC80jNc4o0AnnOQ8Dj2vS7F3mWgVBny+bboznsLd9bsqc10eJsnuhswHtds1qkouQWXFX1RGHo4v72FZE7OgYUXaaBF2zYlSFokS1HjYDAyDiYkqjpDauS9s/BB7l8opXOyF/2LvnLisQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=E/FD03qq7h+ACzK9S8OZnsjtSyuO5WfGZDIRnrcec7Q=;
+ b=chLyorS3FaWoKOnghkT9jMUupF60SN6dWtlGjR/xMvewhMGiDpEWmqieT7w1Q4X+XFZuWE1OzqoKVqJloqcauTKWR9+Bhf5aW1MAxGjOHVc3bhx7pti0b3gmzT2mUhfGXoXG/JRHXmOw+HFlLJB0q/UzTqRBDINVRkF4ZXRfJk8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BY5PR13MB4469.namprd13.prod.outlook.com (2603:10b6:a03:1d5::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.22; Wed, 31 May
+ 2023 15:56:56 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6433.024; Wed, 31 May 2023
+ 15:56:56 +0000
+Date: Wed, 31 May 2023 17:56:48 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Bobby Eshleman <bobby.eshleman@bytedance.com>
+Cc: Stefan Hajnoczi <stefanha@redhat.com>,
+	Stefano Garzarella <sgarzare@redhat.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Jason Wang <jasowang@redhat.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+	Bryan Tan <bryantan@vmware.com>, Vishnu Dasa <vdasa@vmware.com>,
+	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+	kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-hyperv@vger.kernel.org
+Subject: Re: [PATCH RFC net-next v3 1/8] vsock/dgram: generalize recvmsg and
+ drop transport->dgram_dequeue
+Message-ID: <ZHduQMZG4an6A+DG@corigine.com>
+References: <20230413-b4-vsock-dgram-v3-0-c2414413ef6a@bytedance.com>
+ <20230413-b4-vsock-dgram-v3-1-c2414413ef6a@bytedance.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230413-b4-vsock-dgram-v3-1-c2414413ef6a@bytedance.com>
+X-ClientProxiedBy: AM0PR01CA0106.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:10e::47) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY5PR13MB4469:EE_
+X-MS-Office365-Filtering-Correlation-Id: 61bf06ef-37df-42bd-be7b-08db61efa917
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	zrb8SRr/Bnk/qqsdSXJQnnxhLUlydgIOJI7EJq0Zfn5W/ThQMjUJNU9q5S60MonjJIi7pCnlRHvDWpJBiUVMJqFVmCA9mNAOtEi3t8KPY8dAiZy761Cx0guv8OecpKu9ZYk9pqAPSZczCTMO3ZqJzCu1w7rjUCtdrHEjG6a3cjKLEcmElXGj83VX7A9FHNNW58jpJQsVgy1mPHb9rnyuuLaaWYc5aqFjNuy1t1DMqgBEnH1mnHKqRMxQEoMAvRD2PKkQ7/87OQRn6ff8dfbhauxmpWo7P0AI3m+nKDbSJEP5OjPjEHDeha/GLClVFQcFqVT6AI6qjzq34Bh56tHTdi/M1XosGa4aN6FIKNdQduFaBjrBc5llDIhot30ox7yorQ6dTsBwNGsIzaQBAwr67eLdxxkUJzNpjST9A7G8+4mnd4gy1fYZqZ+Qk8fDAvgISI7ZaCU4309KTIuOB+aAxnfB0A4Gd/FA102HyhwFYLU1xNaJZJRiJ8caqhCNNPb1GvwkE051BCnXy64jGzHmZobtG+g0EMiwDrBuK8dwNg2AUntzGa8Txutfjf8LYH1uRPde6Sx+DmZk0j6gF1Que3egUnWLUqgAfXpX9LjPAxc=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(396003)(39830400003)(136003)(376002)(451199021)(6512007)(6506007)(186003)(2906002)(2616005)(54906003)(478600001)(44832011)(83380400001)(8676002)(8936002)(38100700002)(6486002)(41300700001)(66556008)(6666004)(66946007)(5660300002)(66476007)(316002)(86362001)(36756003)(7416002)(4326008)(6916009)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Wuo7ghWGi+4L4hNbSj6RX+0Bi6yJllK2VbhYVAXjoEz96xiALCQuNtk4bqdI?=
+ =?us-ascii?Q?UaTI3Q6rVxzuI1t67FIXbd7t9SqBW+scdwmBhy0WadRoKt/FUsSUvVPW0Le6?=
+ =?us-ascii?Q?7GLKbCBxzUvlX7dSNpu7+X+GKkxHBPah7UhR/TUgLMQV2Xdeff363lapLAzO?=
+ =?us-ascii?Q?CUiaUJ0iwLlsE0syQry+EU8Mk96u0fmiRn9wcYR4DFuQxWxbV2rLrRIUz5Dl?=
+ =?us-ascii?Q?qCPIIGAcKgiJWo35vfrzWny3Zqxxfhs1NAl5vUmYOWkCsV4jLXlIS+k7ZgOW?=
+ =?us-ascii?Q?N4UBZDVceESXe58lerussfHUOIpkZ4XUDBxwrZEl2vEjwAgJtm1p/4nJFp1Q?=
+ =?us-ascii?Q?Fsi7REMYvCn0YhzPZaupMqBal4jpW3wU/WtLHVBRRXHKJKQ//YCmRrCm/KOS?=
+ =?us-ascii?Q?vqQXznXCOyP9NDULz9ItqeelurobN2m54Dc1lXJS5+EPrRTpu16Xxv0SYKV8?=
+ =?us-ascii?Q?FXSxARfdSeKwXbReY+K/ro0me1EweSLTF4molOD/VtzHhP8GrVC+DBqdkYQT?=
+ =?us-ascii?Q?FTYNDv7JZ29JuNPd8u9AHLICuD9eopwYDNTZY8mbibpOCo0UtzAIW+63fbMk?=
+ =?us-ascii?Q?A5x38+7VlFQezRsfBb83PCHYzoISms0YKAlFD6fPN6Z5LAUAR8oI3KirPpyx?=
+ =?us-ascii?Q?9PCKcTsXSoRehBOMwxvawQ1E0exwdP+00x7x6qonP6zgfLxCKq8XPy0Ba3H0?=
+ =?us-ascii?Q?x0wNb/o7TZpQFnCntELxA+zXjwJ1fa0pKMlpbNgHQdSx/5lneZPlYNlxtKYA?=
+ =?us-ascii?Q?KMEHO3eF+Zp6sfrwGDjk0zKeT/NofQtqj6yqP6Cx557ajLxjjALR89sKDNO9?=
+ =?us-ascii?Q?8aOOTg46iZiFP1oYoeImj3zgwlxBTIMZ32wkke5YXx+Zru++rY9rLo6hR7yG?=
+ =?us-ascii?Q?nVSCr02HwbR5r4SBZ7tVXQx2ySLRTOAt/CcppADpb3SJ8fiQ4lhgPZLQdZT2?=
+ =?us-ascii?Q?SDobujmO528k23FsyfdpPhTJ6tFVJVKbVx36KwJku39LnzRxVjsXXoGrLcnR?=
+ =?us-ascii?Q?r6cueAFZi2Z075vTnQi8WB2xAXrbIQ5if5y4dXAICqkeEHLCpkbEa/ngwEXD?=
+ =?us-ascii?Q?tGVmXKTqkfySIcHJ0UFbNcAAk5OfsqrfavRZocJqrfu5fXSFcsSHUGa7KKw+?=
+ =?us-ascii?Q?GbsNfc7Fi00X+OWXYqmcFBacCjTR29b0CVz4gL5MKGNTRmg0BwC2WqhSO9dN?=
+ =?us-ascii?Q?iTi4+cJPbYP6im6pY+SxGJS5POi7Vn0yvnoKrBqUrIbFlnU/Af29FOinJIFz?=
+ =?us-ascii?Q?gtglC3wOILuWqscUSm2mi/R6Gd1ucH0mkB1Aq/4AtDkb0XEUEiVK5mIWIHAF?=
+ =?us-ascii?Q?ZxMU3XSI0PB01vMAcGTL/LdNpNVCCcj+c3Xpa+ItZB8QG0q7L3BpmzjMju/8?=
+ =?us-ascii?Q?I+dG8qcRC5c/LGZgKONImmwNignMb+eA1DEUTWWME7B6aTda+8XbPx/6i9BA?=
+ =?us-ascii?Q?9Xp51kNctf01ni7KsoqPRuey55RLmMgl1Nxp6HeEyHJ93q3TWx4+vitXW2pc?=
+ =?us-ascii?Q?x3LgXr3xyWRqC23tSXnqrU1B0yNFvsmpyjRurPoJeLr0IMPSc7N4WuaPxEQk?=
+ =?us-ascii?Q?NgQr0cfYtrZ/xmW5h8qKtiCOyCFXUEoqZgvpRqJ8S7UtDZyCK7PAVqDetEJ5?=
+ =?us-ascii?Q?gkIlzKTqjeXjiXlwkHcC+oXsNqK8o6yhmCZA8aPwSetS7dQyokUccys2WVgg?=
+ =?us-ascii?Q?PKlKxQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 61bf06ef-37df-42bd-be7b-08db61efa917
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2023 15:56:56.7467
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: d6YgPNRBMXEqz9MklyI86fQ+PMXec81+NBqGEF44IRwHF7MrwdyDXRrE0ui/u+QTdI5Xa9fgs5hREnp1w0PEG2/EWY9G00KZ6ohROBkrlyk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR13MB4469
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+On Wed, May 31, 2023 at 12:35:05AM +0000, Bobby Eshleman wrote:
+> This commit drops the transport->dgram_dequeue callback and makes
+> vsock_dgram_recvmsg() generic. It also adds additional transport
+> callbacks for use by the generic vsock_dgram_recvmsg(), such as for
+> parsing skbs for CID/port which vary in format per transport.
+> 
+> Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
 
-The ice driver caches next_to_clean value at the beginning of
-ice_clean_rx_irq() in order to remember the first buffer that has to be
-freed/recycled after main Rx processing loop. The end boundary is
-indicated by first descriptor of frame that Rx processing loop has ended
-its duties. Note that if mentioned loop ended in the middle of gathering
-multi-buffer frame, next_to_clean would be pointing to the descriptor in
-the middle of the frame BUT freeing/recycling stage will stop at the
-first descriptor. This means that next iteration of ice_clean_rx_irq()
-will miss the (first_desc, next_to_clean - 1) entries.
+...
 
- When running various 9K MTU workloads, such splats were observed:
+> diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
+> index b370070194fa..b6a51afb74b8 100644
+> --- a/net/vmw_vsock/vmci_transport.c
+> +++ b/net/vmw_vsock/vmci_transport.c
+> @@ -1731,57 +1731,40 @@ static int vmci_transport_dgram_enqueue(
+>  	return err - sizeof(*dg);
+>  }
+>  
+> -static int vmci_transport_dgram_dequeue(struct vsock_sock *vsk,
+> -					struct msghdr *msg, size_t len,
+> -					int flags)
+> +int vmci_transport_dgram_get_cid(struct sk_buff *skb, unsigned int *cid)
+>  {
+> -	int err;
+>  	struct vmci_datagram *dg;
+> -	size_t payload_len;
+> -	struct sk_buff *skb;
+>  
+> -	if (flags & MSG_OOB || flags & MSG_ERRQUEUE)
+> -		return -EOPNOTSUPP;
+> +	dg = (struct vmci_datagram *)skb->data;
+> +	if (!dg)
+> +		return -EINVAL;
+>  
+> -	/* Retrieve the head sk_buff from the socket's receive queue. */
+> -	err = 0;
+> -	skb = skb_recv_datagram(&vsk->sk, flags, &err);
+> -	if (!skb)
+> -		return err;
+> +	*cid = dg->src.context;
+> +	return 0;
+> +}
 
-[  540.780716] BUG: kernel NULL pointer dereference, address: 0000000000000000
-[  540.787787] #PF: supervisor read access in kernel mode
-[  540.793002] #PF: error_code(0x0000) - not-present page
-[  540.798218] PGD 0 P4D 0
-[  540.800801] Oops: 0000 [#1] PREEMPT SMP NOPTI
-[  540.805231] CPU: 18 PID: 3984 Comm: xskxceiver Tainted: G        W          6.3.0-rc7+ #96
-[  540.813619] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0008.031920191559 03/19/2019
-[  540.824209] RIP: 0010:ice_clean_rx_irq+0x2b6/0xf00 [ice]
-[  540.829678] Code: 74 24 10 e9 aa 00 00 00 8b 55 78 41 31 57 10 41 09 c4 4d 85 ff 0f 84 83 00 00 00 49 8b 57 08 41 8b 4f 1c 65 8b 35 1a fa 4b 3f <48> 8b 02 48 c1 e8 3a 39 c6 0f 85 a2 00 00 00 f6 42 08 02 0f 85 98
-[  540.848717] RSP: 0018:ffffc9000f42fc50 EFLAGS: 00010282
-[  540.854029] RAX: 0000000000000004 RBX: 0000000000000002 RCX: 000000000000fffe
-[  540.861272] RDX: 0000000000000000 RSI: 0000000000000001 RDI: 00000000ffffffff
-[  540.868519] RBP: ffff88984a05ac00 R08: 0000000000000000 R09: dead000000000100
-[  540.875760] R10: ffff88983fffcd00 R11: 000000000010f2b8 R12: 0000000000000004
-[  540.883008] R13: 0000000000000003 R14: 0000000000000800 R15: ffff889847a10040
-[  540.890253] FS:  00007f6ddf7fe640(0000) GS:ffff88afdf800000(0000) knlGS:0000000000000000
-[  540.898465] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  540.904299] CR2: 0000000000000000 CR3: 000000010d3da001 CR4: 00000000007706e0
-[  540.911542] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  540.918789] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  540.926032] PKRU: 55555554
-[  540.928790] Call Trace:
-[  540.931276]  <TASK>
-[  540.933418]  ice_napi_poll+0x4ca/0x6d0 [ice]
-[  540.937804]  ? __pfx_ice_napi_poll+0x10/0x10 [ice]
-[  540.942716]  napi_busy_loop+0xd7/0x320
-[  540.946537]  xsk_recvmsg+0x143/0x170
-[  540.950178]  sock_recvmsg+0x99/0xa0
-[  540.953729]  __sys_recvfrom+0xa8/0x120
-[  540.957543]  ? do_futex+0xbd/0x1d0
-[  540.961008]  ? __x64_sys_futex+0x73/0x1d0
-[  540.965083]  __x64_sys_recvfrom+0x20/0x30
-[  540.969155]  do_syscall_64+0x38/0x90
-[  540.972796]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
-[  540.977934] RIP: 0033:0x7f6de5f27934
+Hi Bobby,
 
-To fix this, set cached_ntc to first_desc so that at the end, when
-freeing/recycling buffers, descriptors from first to ntc are not missed.
+clang-16 with W=1 seems a bit unhappy about this.
 
-Fixes: 2fba7dc5157b ("ice: Add support for XDP multi-buffer on Rx side")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Tested-by: Chandan Kumar Rout <chandanx.rout@intel.com> (A Contingent Worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_txrx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+  net/vmw_vsock/vmci_transport.c:1734:5: warning: no previous prototype for function 'vmci_transport_dgram_get_cid' [-Wmissing-prototypes]
+  int vmci_transport_dgram_get_cid(struct sk_buff *skb, unsigned int *cid)
+      ^
+  net/vmw_vsock/vmci_transport.c:1734:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+  int vmci_transport_dgram_get_cid(struct sk_buff *skb, unsigned int *cid)
+  ^
+  static 
+  net/vmw_vsock/vmci_transport.c:1746:5: warning: no previous prototype for function 'vmci_transport_dgram_get_port' [-Wmissing-prototypes]
+  int vmci_transport_dgram_get_port(struct sk_buff *skb, unsigned int *port)
+      ^
+  net/vmw_vsock/vmci_transport.c:1746:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+  int vmci_transport_dgram_get_port(struct sk_buff *skb, unsigned int *port)
+  ^
+  static 
+  net/vmw_vsock/vmci_transport.c:1758:5: warning: no previous prototype for function 'vmci_transport_dgram_get_length' [-Wmissing-prototypes]
+  int vmci_transport_dgram_get_length(struct sk_buff *skb, size_t *len)
+      ^
+  net/vmw_vsock/vmci_transport.c:1758:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+  int vmci_transport_dgram_get_length(struct sk_buff *skb, size_t *len)
+  ^
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index 059bd911c51d..52d0a126eb61 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -1152,11 +1152,11 @@ int ice_clean_rx_irq(struct ice_rx_ring *rx_ring, int budget)
- 	unsigned int total_rx_bytes = 0, total_rx_pkts = 0;
- 	unsigned int offset = rx_ring->rx_offset;
- 	struct xdp_buff *xdp = &rx_ring->xdp;
-+	u32 cached_ntc = rx_ring->first_desc;
- 	struct ice_tx_ring *xdp_ring = NULL;
- 	struct bpf_prog *xdp_prog = NULL;
- 	u32 ntc = rx_ring->next_to_clean;
- 	u32 cnt = rx_ring->count;
--	u32 cached_ntc = ntc;
- 	u32 xdp_xmit = 0;
- 	u32 cached_ntu;
- 	bool failure;
--- 
-2.38.1
+I see similar warnings for net/vmw_vsock/af_vsock.c in patch 4/8.
 
+> +
+> +int vmci_transport_dgram_get_port(struct sk_buff *skb, unsigned int *port)
+> +{
+> +	struct vmci_datagram *dg;
+>  
+>  	dg = (struct vmci_datagram *)skb->data;
+>  	if (!dg)
+> -		/* err is 0, meaning we read zero bytes. */
+> -		goto out;
+> -
+> -	payload_len = dg->payload_size;
+> -	/* Ensure the sk_buff matches the payload size claimed in the packet. */
+> -	if (payload_len != skb->len - sizeof(*dg)) {
+> -		err = -EINVAL;
+> -		goto out;
+> -	}
+> +		return -EINVAL;
+>  
+> -	if (payload_len > len) {
+> -		payload_len = len;
+> -		msg->msg_flags |= MSG_TRUNC;
+> -	}
+> +	*port = dg->src.resource;
+> +	return 0;
+> +}
+>  
+> -	/* Place the datagram payload in the user's iovec. */
+> -	err = skb_copy_datagram_msg(skb, sizeof(*dg), msg, payload_len);
+> -	if (err)
+> -		goto out;
+> +int vmci_transport_dgram_get_length(struct sk_buff *skb, size_t *len)
+> +{
+> +	struct vmci_datagram *dg;
+>  
+> -	if (msg->msg_name) {
+> -		/* Provide the address of the sender. */
+> -		DECLARE_SOCKADDR(struct sockaddr_vm *, vm_addr, msg->msg_name);
+> -		vsock_addr_init(vm_addr, dg->src.context, dg->src.resource);
+> -		msg->msg_namelen = sizeof(*vm_addr);
+> -	}
+> -	err = payload_len;
+> +	dg = (struct vmci_datagram *)skb->data;
+> +	if (!dg)
+> +		return -EINVAL;
+>  
+> -out:
+> -	skb_free_datagram(&vsk->sk, skb);
+> -	return err;
+> +	*len = dg->payload_size;
+> +	return 0;
+>  }
+>  
+>  static bool vmci_transport_dgram_allow(u32 cid, u32 port)
+
+...
 
