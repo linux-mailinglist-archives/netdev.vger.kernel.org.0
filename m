@@ -1,123 +1,127 @@
-Return-Path: <netdev+bounces-6827-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6828-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 650FB71858E
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 17:04:36 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 08B537185A2
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 17:06:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1F613281424
-	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 15:04:35 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 58B501C20E75
+	for <lists+netdev@lfdr.de>; Wed, 31 May 2023 15:06:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF95D16429;
-	Wed, 31 May 2023 15:04:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BF42F1642E;
+	Wed, 31 May 2023 15:06:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4DC6154AB
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 15:04:21 +0000 (UTC)
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B14E5E43;
-	Wed, 31 May 2023 08:04:12 -0700 (PDT)
-Received: from arisu.mtl.collabora.ca (mtl.collabora.ca [66.171.169.34])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: detlev)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id D5F846606EB2;
-	Wed, 31 May 2023 16:04:09 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1685545451;
-	bh=ojpftkR4i1FZMG72jz+SAgiRAqMlLbUDSyJeAdTo4nY=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=V7mMuiFuy/oZjT/E/zwMGXS97T7DIb4RyJ9VJp9TS9OvzuwpCTEXV5xrM8uS4ufMR
-	 MhCWdJhw/97WCAgQoMaMAshA2clPWxN+aEUuaXFCswmdlwGF7v60dei6rybplBpoAp
-	 CL82PTdQGLZhz4igNm94bDG0J28z772/+v2TWq+x0UhEVNgixsyUGZN8C7SMT9s8Iz
-	 xExkFD6cS8oXJ6zZnM538/tbRElTqVG5qbfsdvEpnUeESswWK6/BXNu7lS3UaT4YZT
-	 h0J8UO3PqOP0UmhikDx2wn+zy+nlwzyYKL567lhL8AS8L4LnaE+zCGtF0DryGOOHVE
-	 jLX6eljPHwUhg==
-From: Detlev Casanova <detlev.casanova@collabora.com>
-To: linux-kernel@vger.kernel.org
-Cc: Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	netdev@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Detlev Casanova <detlev.casanova@collabora.com>
-Subject: [PATCH 2/2] net: phy: realtek: Add optional external PHY clock
-Date: Wed, 31 May 2023 11:03:40 -0400
-Message-Id: <20230531150340.522994-2-detlev.casanova@collabora.com>
-X-Mailer: git-send-email 2.39.3
-In-Reply-To: <20230531150340.522994-1-detlev.casanova@collabora.com>
-References: <20230531150340.522994-1-detlev.casanova@collabora.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1ED616425
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 15:06:02 +0000 (UTC)
+Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E78DE57
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:05:41 -0700 (PDT)
+Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-19f8af9aa34so2001085fac.1
+        for <netdev@vger.kernel.org>; Wed, 31 May 2023 08:05:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1685545536; x=1688137536;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HKym96YAzpIP9uRUNi0zGjtXWFUPd2ygLCpBbo0BoMc=;
+        b=rsDm8mSycBA9yjsx3K+zjz6B/A5ovegUVU46esg64idEZcUM2/vcGhkQIejHdpUUqi
+         ZiFFtrVJzP1DyFEVjp8ckHlunExlJkN15Yraj7vBA8415T/sWBiGugfEtislSdrcOgIp
+         I/4aoyfpmO/nnteg81xWA6cN/hT2v+F9KtMnEgFGk0CvRjTDwh9wnIGgx0CrSOMu2zl3
+         pEK/MO4SgzhvQHmXlAHBsbOOOHjjtPhbYbTHJobAUkiiqFWTNL1ZX4kx4WTEJiigKcXC
+         rv6XqqfwdXshhLCzNELkHJs6CRBDHTtxTktrj3kZHSf+1wt0etkahP1LRMQiR/3e2Xus
+         BR1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685545536; x=1688137536;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=HKym96YAzpIP9uRUNi0zGjtXWFUPd2ygLCpBbo0BoMc=;
+        b=kBwF+isUr0CpEPDgaSdfPE2GUj/ZmrBI7c0lQGcmjz2WdWDY8grBvcGWuxe6vXzFsP
+         yxLee5//5n2a4lloTbd8SStXDJ2asS2u1SopdqAK5jAFQzWELFCBLXA2wFr7/Wtt0mUe
+         UGYp2mU8vRgimbWB/U4tDjCPv2x8pbqECuGFDM3n1RbzOhvDYtT/km9COs5iwl7RpT8Y
+         lVR5NXiH4VJYsY2Ltqi74sT0BJKxkA6BFeOq/HgdUZ0ZQXGDgUl5xYudtSk8J9bL0a69
+         HuN2G2vLBySpzdJhvcXqpC7EqsjPOeFWdZ8ptxriooVxICnjOQB4pozXD/MYieuOm1Mh
+         sBDQ==
+X-Gm-Message-State: AC+VfDyJAbKGKvmEk1YzD8nSEN/RzDc/WDg9X5bMafOL6Es4Ox38z82p
+	oLQtSViI1sUzqMam3+bDNRpbiHLw3s64zmIO0+xapsSA6BKSFJb85HQ=
+X-Google-Smtp-Source: ACHHUZ6Axf4tx5LENQVUBnzkqzLQgLlmHXX/SDmmcOAQYfuZVZ9/AY8qp30uzVjHucMHU4QqsUwiTJcV09Soko9AgWA=
+X-Received: by 2002:a05:6870:659e:b0:192:63b5:13cc with SMTP id
+ fp30-20020a056870659e00b0019263b513ccmr5480033oab.12.1685545536357; Wed, 31
+ May 2023 08:05:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+References: <20230531141556.1637341-1-lee@kernel.org>
+In-Reply-To: <20230531141556.1637341-1-lee@kernel.org>
+From: Jamal Hadi Salim <jhs@mojatatu.com>
+Date: Wed, 31 May 2023 11:05:25 -0400
+Message-ID: <CAM0EoMnw_4Z6tGC8=JkGKuCFTkJHt5JOFj56+_Z6GDExAMbugQ@mail.gmail.com>
+Subject: Re: [PATCH 1/1] net/sched: cls_u32: Fix reference counter leak
+ leading to overflow
+To: Lee Jones <lee@kernel.org>
+Cc: xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net, 
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, stable@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-In some cases, the PHY can use an external clock source instead of a
-crystal.
+On Wed, May 31, 2023 at 10:16=E2=80=AFAM Lee Jones <lee@kernel.org> wrote:
+>
+> In the event of a failure in tcf_change_indev(), u32_set_parms() will
+> immediately return without decrementing the recently incremented
+> reference counter.  If this happens enough times, the counter will
+> rollover and the reference freed, leading to a double free which can be
+> used to do 'bad things'.
+>
+> Cc: stable@kernel.org # v4.14+
+> Signed-off-by: Lee Jones <lee@kernel.org>
+> ---
+>  net/sched/cls_u32.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+> index 4e2e269f121f8..fad61ca5e90bf 100644
+> --- a/net/sched/cls_u32.c
+> +++ b/net/sched/cls_u32.c
+> @@ -762,8 +762,11 @@ static int u32_set_parms(struct net *net, struct tcf=
+_proto *tp,
+>         if (tb[TCA_U32_INDEV]) {
+>                 int ret;
+>                 ret =3D tcf_change_indev(net, tb[TCA_U32_INDEV], extack);
+> -               if (ret < 0)
+> +               if (ret < 0) {
+> +                       if (tb[TCA_U32_LINK])
+> +                               n->ht_down->refcnt--;
+>                         return -EINVAL;
+> +               }
+>                 n->ifindex =3D ret;
+>         }
+>         return 0;
 
-Add an optional clock in the phy node to make sure that the clock source
-is enabled, if specified, before probing.
+The spirit of the patch looks right I dont think this fully solves the
+issue you state.
+My suggestion: Move the if (tb[TCA_U32_INDEV])  above the if
+(tb[TCA_U32_LINK]) {
+Did you see this in practice or you found it by eyeballing the code?
+Can you also add a tdc test for it? There are simple ways to create
+the scenario.
 
-Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
----
- drivers/net/phy/realtek.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 3d99fd6664d7..70c75dbbf799 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -12,6 +12,7 @@
- #include <linux/phy.h>
- #include <linux/module.h>
- #include <linux/delay.h>
-+#include <linux/clk.h>
- 
- #define RTL821x_PHYSR				0x11
- #define RTL821x_PHYSR_DUPLEX			BIT(13)
-@@ -80,6 +81,7 @@ struct rtl821x_priv {
- 	u16 phycr1;
- 	u16 phycr2;
- 	bool has_phycr2;
-+	struct clk *clk;
- };
- 
- static int rtl821x_read_page(struct phy_device *phydev)
-@@ -103,6 +105,11 @@ static int rtl821x_probe(struct phy_device *phydev)
- 	if (!priv)
- 		return -ENOMEM;
- 
-+	priv->clk = devm_clk_get_optional_enabled(dev, "xtal");
-+	if (IS_ERR(priv->clk))
-+		return dev_err_probe(dev, PTR_ERR(priv->clk),
-+				     "failed to get phy xtal clock\n");
-+
- 	ret = phy_read_paged(phydev, 0xa43, RTL8211F_PHYCR1);
- 	if (ret < 0)
- 		return ret;
--- 
-2.39.3
-
+cheers,
+jamal
+> 2.41.0.rc0.172.g3f132b7071-goog
+>
 
