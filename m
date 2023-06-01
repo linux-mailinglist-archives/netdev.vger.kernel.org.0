@@ -1,91 +1,69 @@
-Return-Path: <netdev+bounces-7245-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7246-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id BBD3D71F4B6
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 23:31:22 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5308071F4EB
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 23:40:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 546001C210F9
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 21:31:19 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0B00C2817F3
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 21:40:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0675C24127;
-	Thu,  1 Jun 2023 21:31:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2EABE24138;
+	Thu,  1 Jun 2023 21:40:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8278C33DF
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 21:31:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DD57C433D2;
-	Thu,  1 Jun 2023 21:31:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F09B624130
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 21:40:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 55A12C433D2;
+	Thu,  1 Jun 2023 21:40:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685655078;
-	bh=Rq/YPhUrxxmon4lsDaGRDkAmNIYRrnC5b1pXLnZ3MbA=;
-	h=From:To:Cc:Subject:Date:From;
-	b=VDx29Is+heLSHZendXg04+AgJJOfhzDRchuOF/qJ5fqzXQshWgSpyhA8H50/huNLd
-	 pINbTUfx8y2pP0q+Eq7t1xM2QbJzMb8sxEw+NNdEolt4WXQV4GkxatzEq0TOphHQLa
-	 jKwieLVkqsEVui4bdtJQkm0vunj/GtbUkKhRMeqJqhwejXt0ukzlRLgG901gefA9YP
-	 CAEIYvrlzF6Rlt09Q4Re1gsNsgnQhlpXMvZ61u1Zk4xTSRr8pO5hsMELLKh0JqRFMc
-	 D7gFui3Uwamc6waP115/MJzbVl0PBzIGsbZExrTFPSvVJAk04PEU+g3h42Df9t6PrE
-	 eUpfOTnW2D2OA==
-From: Arnd Bergmann <arnd@kernel.org>
-To: Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Christian Marangi <ansuelsmth@gmail.com>
-Cc: Arnd Bergmann <arnd@arndb.de>,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] net: dsa: qca8k: add CONFIG_LEDS_TRIGGERS dependency
-Date: Thu,  1 Jun 2023 23:31:04 +0200
-Message-Id: <20230601213111.3182893-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.2
+	s=k20201202; t=1685655640;
+	bh=EmFaRNESXp24m392Z9FFvkoAt9Tu3v3zI6uBJPBkC6Y=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=jfsjUMgrZrYffmfnH+gs5nB+jSsZWoDLwz/CmvgSpmxU/rzfT3sAamAXMrQpK3s4x
+	 qqG18TydL8PPvMSJ2U5xrHRSpso1p6d3cVAKenrhVJDYmPs5tjNQ8P7TKfVVuQS6vn
+	 s2Xvglhj4nQMQFu7JP3PZf8RskhbszOLPct8idQH/cW0MISxiVFwgmARrXDrkMS1UJ
+	 mLph9FQd+MU69IGlqe4eHoA4GneK+o7GYU56l9mc1ZmM0C1R7xw6Q+SrO7WL8fzQGM
+	 p5A70HLEw5cejh5HRElIJA/6npN+SZpTdaH0FTWXfuTkdUdI/+19Ze7jA+erUk49S6
+	 3uphIRA9VbCAg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3D8E6E52C02;
+	Thu,  1 Jun 2023 21:40:40 +0000 (UTC)
+Subject: Re: [GIT PULL] Networking for v6.4-rc5
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <20230601180906.238637-1-kuba@kernel.org>
+References: <20230601180906.238637-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20230601180906.238637-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git net-6.4-rc5
+X-PR-Tracked-Commit-Id: a451b8eb96e521ebabc9c53fefa2bcfad6f80f25
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 714069daa5d345483578e2ff77fb6f06f4dcba6a
+Message-Id: <168565564024.17545.9325041927544084632.pr-tracker-bot@kernel.org>
+Date: Thu, 01 Jun 2023 21:40:40 +0000
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: torvalds@linux-foundation.org, kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, pabeni@redhat.com
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-From: Arnd Bergmann <arnd@arndb.de>
+The pull request you sent on Thu,  1 Jun 2023 11:09:06 -0700:
 
-Without LED triggers, the driver now fails to build:
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git net-6.4-rc5
 
-drivers/net/dsa/qca/qca8k-leds.c: In function 'qca8k_parse_port_leds':
-drivers/net/dsa/qca/qca8k-leds.c:403:31: error: 'struct led_classdev' has no member named 'hw_control_is_supported'
-  403 |                 port_led->cdev.hw_control_is_supported = qca8k_cled_hw_control_is_supported;
-      |                               ^
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/714069daa5d345483578e2ff77fb6f06f4dcba6a
 
-There is a mix of 'depends on' and 'select' for LEDS_TRIGGERS, so it's
-not clear what we should use here, but in general using 'depends on'
-causes fewer problems, so use that.
+Thank you!
 
-Fixes: e0256648c831a ("net: dsa: qca8k: implement hw_control ops")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/dsa/qca/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/dsa/qca/Kconfig b/drivers/net/dsa/qca/Kconfig
-index 4347b42c50fd2..de9da469908bc 100644
---- a/drivers/net/dsa/qca/Kconfig
-+++ b/drivers/net/dsa/qca/Kconfig
-@@ -20,6 +20,7 @@ config NET_DSA_QCA8K_LEDS_SUPPORT
- 	bool "Qualcomm Atheros QCA8K Ethernet switch family LEDs support"
- 	depends on NET_DSA_QCA8K
- 	depends on LEDS_CLASS=y || LEDS_CLASS=NET_DSA_QCA8K
-+	depends on LEDS_TRIGGERS
- 	help
- 	  This enabled support for LEDs present on the Qualcomm Atheros
- 	  QCA8K Ethernet switch chips.
 -- 
-2.39.2
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
 
