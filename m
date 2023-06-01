@@ -1,61 +1,70 @@
-Return-Path: <netdev+bounces-7142-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7143-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6618271EE5D
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 18:12:21 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 83D9171EE6E
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 18:14:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 038A91C2107F
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:12:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3D69D28167E
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:14:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 949CB4078B;
-	Thu,  1 Jun 2023 16:12:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 611EA4078A;
+	Thu,  1 Jun 2023 16:14:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CBBCBA2F;
-	Thu,  1 Jun 2023 16:12:16 +0000 (UTC)
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 50B4C18F;
-	Thu,  1 Jun 2023 09:12:13 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 525171063;
-	Thu,  1 Jun 2023 09:12:58 -0700 (PDT)
-Received: from FVFF77S0Q05N.cambridge.arm.com (FVFF77S0Q05N.cambridge.arm.com [10.1.36.140])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C47623F663;
-	Thu,  1 Jun 2023 09:12:06 -0700 (PDT)
-Date: Thu, 1 Jun 2023 17:12:03 +0100
-From: Mark Rutland <mark.rutland@arm.com>
-To: Mike Rapoport <rppt@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	"David S. Miller" <davem@davemloft.net>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	Kent Overstreet <kent.overstreet@linux.dev>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Russell King <linux@armlinux.org.uk>, Song Liu <song@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
-	bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-mips@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, linux-parisc@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	loongarch@lists.linux.dev, netdev@vger.kernel.org,
-	sparclinux@vger.kernel.org, x86@kernel.org
-Subject: Re: [PATCH 00/13] mm: jit/text allocator
-Message-ID: <ZHjDU/mxE+cugpLj@FVFF77S0Q05N.cambridge.arm.com>
-References: <20230601101257.530867-1-rppt@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C22822D77
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 16:14:29 +0000 (UTC)
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B24BE4;
+	Thu,  1 Jun 2023 09:14:27 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id ffacd0b85a97d-30ad458f085so1903923f8f.0;
+        Thu, 01 Jun 2023 09:14:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685636066; x=1688228066;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:to:from:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=E16yr1i22oXCsD5aURpquO4ePT9VmEDNhq4WbZpVAao=;
+        b=R6XJAjXATXTdbT0KnjmT3UXxhDFcFbK+Xtp4peaXI9vBWroQ50v3n4ypvmQaKLzHpk
+         LMwkUHpxcsWTIhRSj14aNBGRLUueXNJYnXATYAm449B1rZIBCFc8tybuesCK1Ihn1c8Q
+         bu1W4SDhGDjPOefp9r1qCohm4cNBy5R2Gg+KT/gaKiWLlB9EyOR16kZduyZ2Z8V5EoO+
+         SULsvWmu6SFoBaK2seW+YZ6T1NYWZEjZZ671MQvSuGl4XnPdPQ7XhfzJ8VrXvtGcxCKY
+         DvWTAqUoT+utqU6xH9bMm11KKBy2KoHXek93CTqFJAmXisE+4FJ6MtKYeBMjSYxNEqF2
+         omIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685636066; x=1688228066;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=E16yr1i22oXCsD5aURpquO4ePT9VmEDNhq4WbZpVAao=;
+        b=RvxZMuyGDSmLdyc0dmC5mPmsyrtRx/aVbMaHoiNTuZ9zVb0PnO4G6n4NP8QzIFunUk
+         jYhXynr9oAp29rBtTbAMymKZAuyq6AYMACMgVeZWh8UiVFPGeEkz9BJdPd8MP5Skp3lS
+         xBUAwG/wcrcKy85XHKi+pHXfDmh5AOyhy6kO/wCGqIWmtTIdlN9lPfRKRyqaSzkNJKiw
+         K8Pi6D0TuOPj18QAYCmNmuS+jbZqd9SLK4gFUQirIh7qNXFY/ty79Ppl2BTJLvNIt++l
+         VrljQqjz/nuYkoia06aZZwxQHJUJS6sVDUm1tgZ/fEa6hkUbVxjv7rCN6sxJkfPFMlQL
+         h/1w==
+X-Gm-Message-State: AC+VfDw/HlpvjRZyePxOVRzx+dRHwqLpX93W/otQCog9lSjpERDiadxS
+	kLAMDEsn1XHggjuhhXtA3SU=
+X-Google-Smtp-Source: ACHHUZ4V03JJA8OupHmdf0HNEVGpE9hwzND/Wc/0EPXGGEwSh8FgmLDB+GbuZI3ldRnc0FBRtJXyyw==
+X-Received: by 2002:a5d:6307:0:b0:30a:8999:3b9 with SMTP id i7-20020a5d6307000000b0030a899903b9mr2307123wru.28.1685636065412;
+        Thu, 01 Jun 2023 09:14:25 -0700 (PDT)
+Received: from debian ([89.238.191.199])
+        by smtp.gmail.com with ESMTPSA id k5-20020adff5c5000000b0030af1d87342sm10940382wrp.6.2023.06.01.09.14.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Jun 2023 09:14:25 -0700 (PDT)
+Date: Thu, 1 Jun 2023 18:14:09 +0200
+From: Richard Gobert <richardbgobert@gmail.com>
+To: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, aleksander.lobakin@intel.com,
+	lixiaoyan@google.com, lucien.xin@gmail.com, alexanderduyck@fb.com,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 1/1] gro: decrease size of CB
+Message-ID: <20230601161407.GA9253@debian>
+References: <20230601160924.GA9194@debian>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -64,161 +73,146 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230601101257.530867-1-rppt@kernel.org>
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+In-Reply-To: <20230601160924.GA9194@debian>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Mike,
+The GRO control block (NAPI_GRO_CB) is currently at its maximum size.
+This commit reduces its size by putting two groups of fields that are
+used only at different times into a union.
 
-On Thu, Jun 01, 2023 at 01:12:44PM +0300, Mike Rapoport wrote:
-> From: "Mike Rapoport (IBM)" <rppt@kernel.org>
-> 
-> Hi,
-> 
-> module_alloc() is used everywhere as a mean to allocate memory for code.
-> 
-> Beside being semantically wrong, this unnecessarily ties all subsystmes
-> that need to allocate code, such as ftrace, kprobes and BPF to modules
-> and puts the burden of code allocation to the modules code.
+Specifically, the fields frag0 and frag0_len are the fields that make up
+the frag0 optimisation mechanism, which is used during the initial
+parsing of the SKB.
 
-I agree this is a problem, and one key issue here is that these can have
-different requirements. For example, on arm64 we need modules to be placed
-within a 128M or 2G window containing the kernel, whereas it would be safe for
-the kprobes XOL area to be placed arbitrarily far from the kernel image (since
-we don't allow PC-relative insns to be stepped out-of-line). Likewise arm64
-doesn't have ftrace trampolines, and DIRECT_CALL trampolines can safely be
-placed arbitarily far from the kernel image.
+The fields last and age are used after the initial parsing, while the
+SKB is stored in the GRO list, waiting for other packets to arrive.
 
-For a while I have wanted to give kprobes its own allocator so that it can work
-even with CONFIG_MODULES=n, and so that it doesn't have to waste VA space in
-the modules area.
+There was one location in dev_gro_receive that modified the frag0 fields
+after setting last and age. I changed this accordingly without altering
+the code behaviour.
 
-Given that, I think these should have their own allocator functions that can be
-provided independently, even if those happen to use common infrastructure.
+Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
+---
+ include/net/gro.h | 26 ++++++++++++++++----------
+ net/core/gro.c    | 19 ++++++++++++-------
+ 2 files changed, 28 insertions(+), 17 deletions(-)
 
-> Several architectures override module_alloc() because of various
-> constraints where the executable memory can be located and this causes
-> additional obstacles for improvements of code allocation.
-> 
-> This set splits code allocation from modules by introducing
-> jit_text_alloc(), jit_data_alloc() and jit_free() APIs, replaces call
-> sites of module_alloc() and module_memfree() with the new APIs and
-> implements core text and related allocation in a central place.
-> 
-> Instead of architecture specific overrides for module_alloc(), the
-> architectures that require non-default behaviour for text allocation must
-> fill jit_alloc_params structure and implement jit_alloc_arch_params() that
-> returns a pointer to that structure. If an architecture does not implement
-> jit_alloc_arch_params(), the defaults compatible with the current
-> modules::module_alloc() are used.
+diff --git a/include/net/gro.h b/include/net/gro.h
+index a4fab706240d..7b47dd6ce94f 100644
+--- a/include/net/gro.h
++++ b/include/net/gro.h
+@@ -11,11 +11,23 @@
+ #include <net/udp.h>
+ 
+ struct napi_gro_cb {
+-	/* Virtual address of skb_shinfo(skb)->frags[0].page + offset. */
+-	void	*frag0;
++	union {
++		struct {
++			/* Virtual address of skb_shinfo(skb)->frags[0].page + offset. */
++			void	*frag0;
+ 
+-	/* Length of frag0. */
+-	unsigned int frag0_len;
++			/* Length of frag0. */
++			unsigned int frag0_len;
++		};
++
++		struct {
++			/* used in skb_gro_receive() slow path */
++			struct sk_buff *last;
++
++			/* jiffies when first packet was created/queued */
++			unsigned long age;
++		};
++	};
+ 
+ 	/* This indicates where we are processing relative to skb->data. */
+ 	int	data_offset;
+@@ -32,9 +44,6 @@ struct napi_gro_cb {
+ 	/* Used in ipv6_gro_receive() and foo-over-udp */
+ 	u16	proto;
+ 
+-	/* jiffies when first packet was created/queued */
+-	unsigned long age;
+-
+ /* Used in napi_gro_cb::free */
+ #define NAPI_GRO_FREE             1
+ #define NAPI_GRO_FREE_STOLEN_HEAD 2
+@@ -77,9 +86,6 @@ struct napi_gro_cb {
+ 
+ 	/* used to support CHECKSUM_COMPLETE for tunneling protocols */
+ 	__wsum	csum;
+-
+-	/* used in skb_gro_receive() slow path */
+-	struct sk_buff *last;
+ };
+ 
+ #define NAPI_GRO_CB(skb) ((struct napi_gro_cb *)(skb)->cb)
+diff --git a/net/core/gro.c b/net/core/gro.c
+index 2d84165cb4f1..a709155994ad 100644
+--- a/net/core/gro.c
++++ b/net/core/gro.c
+@@ -460,6 +460,14 @@ static void gro_pull_from_frag0(struct sk_buff *skb, int grow)
+ 	}
+ }
+ 
++static void gro_try_pull_from_frag0(struct sk_buff *skb)
++{
++	int grow = skb_gro_offset(skb) - skb_headlen(skb);
++
++	if (grow > 0)
++		gro_pull_from_frag0(skb, grow);
++}
++
+ static void gro_flush_oldest(struct napi_struct *napi, struct list_head *head)
+ {
+ 	struct sk_buff *oldest;
+@@ -489,7 +497,6 @@ static enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk_buff
+ 	struct sk_buff *pp = NULL;
+ 	enum gro_result ret;
+ 	int same_flow;
+-	int grow;
+ 
+ 	if (netif_elide_gro(skb->dev))
+ 		goto normal;
+@@ -564,17 +571,14 @@ static enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk_buff
+ 	else
+ 		gro_list->count++;
+ 
++	/* Must be called before setting NAPI_GRO_CB(skb)->{age|last} */
++	gro_try_pull_from_frag0(skb);
+ 	NAPI_GRO_CB(skb)->age = jiffies;
+ 	NAPI_GRO_CB(skb)->last = skb;
+ 	if (!skb_is_gso(skb))
+ 		skb_shinfo(skb)->gso_size = skb_gro_len(skb);
+ 	list_add(&skb->list, &gro_list->list);
+ 	ret = GRO_HELD;
+-
+-pull:
+-	grow = skb_gro_offset(skb) - skb_headlen(skb);
+-	if (grow > 0)
+-		gro_pull_from_frag0(skb, grow);
+ ok:
+ 	if (gro_list->count) {
+ 		if (!test_bit(bucket, &napi->gro_bitmask))
+@@ -587,7 +591,8 @@ static enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk_buff
+ 
+ normal:
+ 	ret = GRO_NORMAL;
+-	goto pull;
++	gro_try_pull_from_frag0(skb);
++	goto ok;
+ }
+ 
+ struct packet_offload *gro_find_receive_by_type(__be16 type)
+-- 
+2.36.1
 
-As above, I suspect that each of the callsites should probably be using common
-infrastructure, but I don't think that a single jit_alloc_arch_params() makes
-sense, since the parameters for each case may need to be distinct.
-
-> The new jitalloc infrastructure allows decoupling of kprobes and ftrace
-> from modules, and most importantly it enables ROX allocations for
-> executable memory.
-> 
-> A centralized infrastructure for code allocation allows future
-> optimizations for allocations of executable memory, caching large pages for
-> better iTLB performance and providing sub-page allocations for users that
-> only need small jit code snippets.
-
-This sounds interesting, but I think this can be achieved without requiring a
-single jit_alloc_arch_params() shared by all users?
-
-Thanks,
-Mark.
-
-> 
-> patches 1-5: split out the code allocation from modules and arch
-> patch 6: add dedicated API for data allocations with constraints similar to
-> code allocations
-> patches 7-9: decouple dynamic ftrace and kprobes form CONFIG_MODULES
-> patches 10-13: enable ROX allocations for executable memory on x86
-> 
-> Mike Rapoport (IBM) (11):
->   nios2: define virtual address space for modules
->   mm: introduce jit_text_alloc() and use it instead of module_alloc()
->   mm/jitalloc, arch: convert simple overrides of module_alloc to jitalloc
->   mm/jitalloc, arch: convert remaining overrides of module_alloc to jitalloc
->   module, jitalloc: drop module_alloc
->   mm/jitalloc: introduce jit_data_alloc()
->   x86/ftrace: enable dynamic ftrace without CONFIG_MODULES
->   arch: make jitalloc setup available regardless of CONFIG_MODULES
->   kprobes: remove dependcy on CONFIG_MODULES
->   modules, jitalloc: prepare to allocate executable memory as ROX
->   x86/jitalloc: make memory allocated for code ROX
-> 
-> Song Liu (2):
->   ftrace: Add swap_func to ftrace_process_locs()
->   x86/jitalloc: prepare to allocate exectuatble memory as ROX
-> 
->  arch/Kconfig                     |   5 +-
->  arch/arm/kernel/module.c         |  32 ------
->  arch/arm/mm/init.c               |  35 ++++++
->  arch/arm64/kernel/module.c       |  47 --------
->  arch/arm64/mm/init.c             |  42 +++++++
->  arch/loongarch/kernel/module.c   |   6 -
->  arch/loongarch/mm/init.c         |  16 +++
->  arch/mips/kernel/module.c        |   9 --
->  arch/mips/mm/init.c              |  19 ++++
->  arch/nios2/include/asm/pgtable.h |   5 +-
->  arch/nios2/kernel/module.c       |  24 ++--
->  arch/parisc/kernel/module.c      |  11 --
->  arch/parisc/mm/init.c            |  21 +++-
->  arch/powerpc/kernel/kprobes.c    |   4 +-
->  arch/powerpc/kernel/module.c     |  37 -------
->  arch/powerpc/mm/mem.c            |  41 +++++++
->  arch/riscv/kernel/module.c       |  10 --
->  arch/riscv/mm/init.c             |  18 +++
->  arch/s390/kernel/ftrace.c        |   4 +-
->  arch/s390/kernel/kprobes.c       |   4 +-
->  arch/s390/kernel/module.c        |  46 +-------
->  arch/s390/mm/init.c              |  35 ++++++
->  arch/sparc/kernel/module.c       |  34 +-----
->  arch/sparc/mm/Makefile           |   2 +
->  arch/sparc/mm/jitalloc.c         |  21 ++++
->  arch/sparc/net/bpf_jit_comp_32.c |   8 +-
->  arch/x86/Kconfig                 |   2 +
->  arch/x86/kernel/alternative.c    |  43 ++++---
->  arch/x86/kernel/ftrace.c         |  59 +++++-----
->  arch/x86/kernel/kprobes/core.c   |   4 +-
->  arch/x86/kernel/module.c         |  75 +------------
->  arch/x86/kernel/static_call.c    |  10 +-
->  arch/x86/kernel/unwind_orc.c     |  13 ++-
->  arch/x86/mm/init.c               |  52 +++++++++
->  arch/x86/net/bpf_jit_comp.c      |  22 +++-
->  include/linux/ftrace.h           |   2 +
->  include/linux/jitalloc.h         |  69 ++++++++++++
->  include/linux/moduleloader.h     |  15 ---
->  kernel/bpf/core.c                |  14 +--
->  kernel/kprobes.c                 |  51 +++++----
->  kernel/module/Kconfig            |   1 +
->  kernel/module/main.c             |  56 ++++------
->  kernel/trace/ftrace.c            |  13 ++-
->  kernel/trace/trace_kprobe.c      |  11 ++
->  mm/Kconfig                       |   3 +
->  mm/Makefile                      |   1 +
->  mm/jitalloc.c                    | 185 +++++++++++++++++++++++++++++++
->  mm/mm_init.c                     |   2 +
->  48 files changed, 777 insertions(+), 462 deletions(-)
->  create mode 100644 arch/sparc/mm/jitalloc.c
->  create mode 100644 include/linux/jitalloc.h
->  create mode 100644 mm/jitalloc.c
-> 
-> 
-> base-commit: 44c026a73be8038f03dbdeef028b642880cf1511
-> -- 
-> 2.35.1
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 
