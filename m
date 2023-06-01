@@ -1,70 +1,67 @@
-Return-Path: <netdev+bounces-7192-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7193-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 26A0B71F0A5
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 19:22:59 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8F5BE71F0AE
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 19:23:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A9ED91C20A08
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 17:22:55 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4A067281862
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 17:23:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 589384700D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7592647012;
 	Thu,  1 Jun 2023 17:22:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DD7F4252C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 684A34700F
 	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 17:22:04 +0000 (UTC)
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3525F1A1
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 10:21:58 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id d9443c01a7336-1b021cddb74so5738035ad.0
-        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 10:21:58 -0700 (PDT)
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131981A6
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 10:21:59 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id 41be03b00d2f7-5289ce6be53so1836295a12.0
+        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 10:21:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1685640117; x=1688232117;
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1685640118; x=1688232118;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9j3narrsxe03huzqvKsSsW9jWi72TLYmmQBkxj0a2/Q=;
-        b=KEYx5twPd+O8SA7JfI1OmQDyCGO+RfmBgA8+b1bhzTRsdGE5JXm9ZjX2I3zNs36QNt
-         MSNrFV/EPqv1rlH276g+w3nC3+YVr6lJyuuxhk9kKU1JoY9CqaVxwK9oHiblKSXDGQPV
-         owM5/BpCr71G9me5zvSAZR9S9o98TxxBm/LMCV9DkpRkInxblJ+4c5OcsmNbBsmis4OM
-         29VL1cZXTCadFvyzP5YoZUwJEVmoSDj5qJgi1IduQcS1CfV9dP+Pe6pKe18fiO4xyA63
-         XquN9N8CWLsSHKOKutjbAOHAQN3O0TNpa9mGasAjYj5j//Bx9knWhHbFEMUDiHFge5sh
-         fSYA==
+        bh=yi+TlvcFR4h2vJbs4es2njLEIso9YCrBEu0B3+5RTO4=;
+        b=anCTUNL3PkCXWLZ6a9rUnQYrehDhhPIsbLh7fxbKO3pQBkcI+A3toi4TPDltq41qsc
+         c3oJVSTcEHFu9FC3QcFzEmaP00cQ+0o4fAuMRyzFL+tC2YVPFZMVIIjIUHKxTJIk0WWW
+         F0DTkoaVIxhNfweHAOcacBtU+1ZXi3qng6L9gfEvEnZfCzgxKoO9bAnHigexNluxGA1f
+         PizAMOWByo9uSwDGVYuXEKoFZEYtLV5G/BLonn7PyUJKNmKGuo1obU3zL/hjQF5BHwCk
+         xxd9ZBpLTnE3tw9SEcIBsKzm136sJMjE2Jy5PNR+1F+VasJh7kWgDyPffwSjdZAqJh01
+         WYZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685640117; x=1688232117;
+        d=1e100.net; s=20221208; t=1685640118; x=1688232118;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=9j3narrsxe03huzqvKsSsW9jWi72TLYmmQBkxj0a2/Q=;
-        b=IdXhsE3OJcZfFrtOTM2YSSLxtayPlqfODc/8tlkgZmu06DsjynpEhtogkgVOlwo4we
-         jbskQBkbUnyIbZrlqyuQMDQf9/T6GpwhAwFf7Zz8Jr4lZUxFJyMFRg6LJAmp93KdfvYE
-         iqV+k/VIN01DzXUgTSnD5zvIeuAohmMlBzAlJD6gj5OApZsrsx3KnOSz5PeGVa5lVRxC
-         wn/5DPs6TG24Z+I7SGPgJg5clTkSHjUaCN/QZHFDpuYE1WCDfdwgERY9bZzPP4pKpOed
-         NHI8EHVuqU3XEcADgKGDUVXfUHNMyKM+y6tLvteKJkrLmbQ1B5fqutLIAroBCdu8XBAG
-         G19Q==
-X-Gm-Message-State: AC+VfDx5+0ruSz9whgD0olZMHUPSkrrmPnx8fRbMnyfmeeEOQWoCEGMF
-	wEmFAxALRea5RCBR7tILQaTTwgBZ3VeyDw6k/gFzKg==
-X-Google-Smtp-Source: ACHHUZ69Pkn5lUIVNzFfEdC4BcORl/qWiATSJSkJVB+EKH3nAoSMnrs87OUraUJi1/5b3OyEobO9kQ==
-X-Received: by 2002:a17:902:dac7:b0:1ac:8837:de9 with SMTP id q7-20020a170902dac700b001ac88370de9mr134946plx.3.1685640117453;
-        Thu, 01 Jun 2023 10:21:57 -0700 (PDT)
+        bh=yi+TlvcFR4h2vJbs4es2njLEIso9YCrBEu0B3+5RTO4=;
+        b=EQh06uklhk/6tCMzaFNZMrWsFmElgaUCxKnc9dyKPsxFdP+Tsk95uSpQWBJ26Zd9hf
+         BuWCF+P6Ib7DmieGcyoSNjbXNl7aSIVxaUKp2MDnx7F0mwNedrDIsCnpdBAkI5Ave+dv
+         eHnwDfdPE+y1E10OZ3mVmM3fRTs7TgBFsefopUFdAbkg+GqNx3rLIctgeTibc2hUNO/V
+         uou61tBetwT96LBBZOEa6EI0MvaTTzSiCXKl9HOiPX+qIzOPK6tVP7jMbY7py3b3CE3l
+         WA/S6d4LFqYyLhKXKZWZdDGsA7v4DVtveF1q7kIWZJgzdsj78A2odzOpNwHNLUBWUli+
+         ll6g==
+X-Gm-Message-State: AC+VfDzlPl4ELjYikAEmyy3EPgjXDQ/x7lYc/EyFaMd5UQd2h03XN/cZ
+	37jYn/qua0ZXqpG6uuVQxcdr/aMr7l/0smal29eFLQ==
+X-Google-Smtp-Source: ACHHUZ46b2SvWEaiWcIs1uRdjltgbEaK1yNnGzBg4aP9StdRkYuz7qWvyubq6p+b4f48NnzRZWRzow==
+X-Received: by 2002:a17:902:e550:b0:1ac:6fc3:6beb with SMTP id n16-20020a170902e55000b001ac6fc36bebmr3328296plf.9.1685640118286;
+        Thu, 01 Jun 2023 10:21:58 -0700 (PDT)
 Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id k6-20020a170902760600b001b1920cffdasm2378945pll.204.2023.06.01.10.21.56
+        by smtp.gmail.com with ESMTPSA id k6-20020a170902760600b001b1920cffdasm2378945pll.204.2023.06.01.10.21.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jun 2023 10:21:56 -0700 (PDT)
+        Thu, 01 Jun 2023 10:21:58 -0700 (PDT)
 From: Stephen Hemminger <stephen@networkplumber.org>
 To: netdev@vger.kernel.org
-Cc: Stephen Hemminger <stephen@networkplumber.org>,
-	Roopa Prabhu <roopa@nvidia.com>,
-	Nikolay Aleksandrov <razor@blackwall.org>,
-	bridge@lists.linux-foundation.org
-Subject: [PATCH iproute2 3/7] bridge: make print_vlan_info static
-Date: Thu,  1 Jun 2023 10:21:41 -0700
-Message-Id: <20230601172145.51357-4-stephen@networkplumber.org>
+Cc: Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH iproute2 4/7] rt_names: drop unused rtnl_addrprot_a2n
+Date: Thu,  1 Jun 2023 10:21:42 -0700
+Message-Id: <20230601172145.51357-5-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230601172145.51357-1-stephen@networkplumber.org>
 References: <20230601172145.51357-1-stephen@networkplumber.org>
@@ -81,47 +78,70 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Function defined and used in only one file.
+This function is defined but never used in current code.
 
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- bridge/br_common.h | 1 -
- bridge/vlan.c      | 3 ++-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ include/rt_names.h |  1 -
+ lib/rt_names.c     | 33 ---------------------------------
+ 2 files changed, 34 deletions(-)
 
-diff --git a/bridge/br_common.h b/bridge/br_common.h
-index 1bdee65844c1..704e76b0acb2 100644
---- a/bridge/br_common.h
-+++ b/bridge/br_common.h
-@@ -6,7 +6,6 @@
- #define MDB_RTR_RTA(r) \
- 		((struct rtattr *)(((char *)(r)) + RTA_ALIGN(sizeof(__u32))))
+diff --git a/include/rt_names.h b/include/rt_names.h
+index e96d80f30554..9003e67785b3 100644
+--- a/include/rt_names.h
++++ b/include/rt_names.h
+@@ -14,7 +14,6 @@ const char *rtnl_dsfield_get_name(int id);
+ const char *rtnl_group_n2a(int id, char *buf, int len);
  
--void print_vlan_info(struct rtattr *tb, int ifindex);
- int print_linkinfo(struct nlmsghdr *n, void *arg);
- int print_mdb_mon(struct nlmsghdr *n, void *arg);
- int print_fdb(struct nlmsghdr *n, void *arg);
-diff --git a/bridge/vlan.c b/bridge/vlan.c
-index 5b304ea94224..dfc62f83a5df 100644
---- a/bridge/vlan.c
-+++ b/bridge/vlan.c
-@@ -18,6 +18,7 @@
- 
- static unsigned int filter_index, filter_vlan;
- static int vlan_rtm_cur_ifidx = -1;
-+static void print_vlan_info(struct rtattr *tb, int ifindex);
- 
- enum vlan_show_subject {
- 	VLAN_SHOW_VLAN,
-@@ -1309,7 +1310,7 @@ static int vlan_global_show(int argc, char **argv)
- 	return 0;
+ int rtnl_rtprot_a2n(__u32 *id, const char *arg);
+-int rtnl_addrprot_a2n(__u32 *id, const char *arg);
+ int rtnl_rtscope_a2n(__u32 *id, const char *arg);
+ int rtnl_rttable_a2n(__u32 *id, const char *arg);
+ int rtnl_rtrealm_a2n(__u32 *id, const char *arg);
+diff --git a/lib/rt_names.c b/lib/rt_names.c
+index 51d11fd056b1..8af3bca3245b 100644
+--- a/lib/rt_names.c
++++ b/lib/rt_names.c
+@@ -255,39 +255,6 @@ numeric:
+ 	return buf;
  }
  
--void print_vlan_info(struct rtattr *tb, int ifindex)
-+static void print_vlan_info(struct rtattr *tb, int ifindex)
- {
- 	struct rtattr *i, *list = tb;
- 	int rem = RTA_PAYLOAD(list);
+-int rtnl_addrprot_a2n(__u32 *id, const char *arg)
+-{
+-	static char *cache;
+-	static unsigned long res;
+-	char *end;
+-	int i;
+-
+-	if (cache && strcmp(cache, arg) == 0) {
+-		*id = res;
+-		return 0;
+-	}
+-
+-	if (!rtnl_addrprot_tab_initialized)
+-		rtnl_addrprot_initialize();
+-
+-	for (i = 0; i < 256; i++) {
+-		if (rtnl_addrprot_tab[i] &&
+-		    strcmp(rtnl_addrprot_tab[i], arg) == 0) {
+-			cache = rtnl_addrprot_tab[i];
+-			res = i;
+-			*id = res;
+-			return 0;
+-		}
+-	}
+-
+-	res = strtoul(arg, &end, 0);
+-	if (!end || end == arg || *end || res > 255)
+-		return -1;
+-	*id = res;
+-	return 0;
+-}
+-
+-
+ static char *rtnl_rtscope_tab[256] = {
+ 	[RT_SCOPE_UNIVERSE]	= "global",
+ 	[RT_SCOPE_NOWHERE]	= "nowhere",
 -- 
 2.39.2
 
