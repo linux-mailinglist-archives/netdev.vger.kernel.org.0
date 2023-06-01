@@ -1,117 +1,106 @@
-Return-Path: <netdev+bounces-7242-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7243-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B59BF71F481
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 23:17:39 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8914271F48E
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 23:24:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E1CF32818C8
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 21:17:37 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BC0912818F3
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 21:24:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A31923D75;
-	Thu,  1 Jun 2023 21:17:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B428924120;
+	Thu,  1 Jun 2023 21:24:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E66733DF
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 21:17:35 +0000 (UTC)
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8328E196
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 14:17:34 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-5618857518dso18292187b3.2
-        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 14:17:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1685654253; x=1688246253;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=HGHwbUSNPfodDaTVsYK4YLV6cTXrbYqDf+m4CaU+Vj4=;
-        b=FeHTSyEYXgZUPtaQBBfIK/izkLSI5S2u739eRp+AMnOqO6rnwYDeLC5nU6fIts0NoV
-         MonSvMrArTKzAnGnwaWZurE/8pZJMSYbW2Q5h4Ja3yAKskVBVbNA/RBZ+MWv1n6I7cfJ
-         XAznJ4vzRrBfBtRegO6dtRMefvigTuay+ei5WlOw5+DupuONnxzmHhaDBNm3LfMj993i
-         HEPUDcb5cNpvIQRaN1Q2QScq0FxGap+u+b2Rwzlstu8efzBKLPd+8dHjNkNQReoZ4StV
-         yAfbRs7ejut39mQ5HFk9vKAjDHsxa4EW5zeabwGNRcu0mOfKIN3m8f9fTcq637q52Iuv
-         mbpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685654253; x=1688246253;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=HGHwbUSNPfodDaTVsYK4YLV6cTXrbYqDf+m4CaU+Vj4=;
-        b=OZrkRShuFEWyq1MvKiyrUZ1aEnjz4gEP0tYxW3mCS/3E3xea+ZZFdhY0pcZxOZWC7Z
-         0voSI74grFkVIxxusT7BZXP3lifolrUiW3D+gI9rHEqu0KgHdP270jrYatUh6N5xnDrm
-         Shc7mLppTGJPtWIc2WdqwnGEYOru56zsladNP+ZREdpjp+NJ8nWLYSF9/cPsePmMeNJj
-         uHFif0CGSWE3xWW0wCbpKB5AtSloqns/K6DVDAa+Wl8/SDRFy8CdLAMlQDWmpuVbDQTB
-         x1fWZCBgXzd+2Pfc20j9JaXaA/MiXes2ee/A6Pl316ADeqCxdjZzsX8mqCiGHh8vMFVr
-         tF7g==
-X-Gm-Message-State: AC+VfDxv+59djffQfknWOFFSzomdhvLDrcUGb520rV5iwXzqm2/c1ci8
-	JyTTPWx11U4VJlE87lXjuJd4zr9iFOg64w==
-X-Google-Smtp-Source: ACHHUZ4LqLbYypBDPmSzws3Xwmx2TTmmdlVLUof8sSPY18i+jvP6PIsTW2l7ljfzNOrCOkH3e3pTVtdnwEjshA==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a81:ae45:0:b0:566:861:e451 with SMTP id
- g5-20020a81ae45000000b005660861e451mr6080268ywk.7.1685654253754; Thu, 01 Jun
- 2023 14:17:33 -0700 (PDT)
-Date: Thu,  1 Jun 2023 21:17:32 +0000
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A01F533DF
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 21:24:24 +0000 (UTC)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F223F1A7
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 14:24:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685654661; x=1717190661;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=Lozp43ednVYkDC2WKxGwUfNzJqJ6eA5JyvuRnQOQoEg=;
+  b=PKrxG70neVzUMUqNjr13PvjYmcl0IqJ/PA7Tzy+VS9HkOPSxF1PmTB9m
+   PwJ4Zlt5CrkAZo9+ku0jNG444uosvZR89DHze8QqA+vgA8T5IKL6ia9F7
+   l5l/i4yqInrYtqCKp66RSdghxWu9qlCHQBRghp/3F60AaH3T3Kna+NHhb
+   ndfaisBU+ivGab8ogSkDGXlevwV5n47yNsHa/mqsOCAdK7F5O5IZ+Hb1+
+   OQHA51+K9C+adpYmcaabNoH1cHlpSDYk/UPMnyyrk6QR2MWBN0ppKG6f6
+   m3M40o1vBIGrFBBjeh2ReuZ6XBHAuAH3anb0XQecrdX+l/33x1xGecs9Y
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10728"; a="358116751"
+X-IronPort-AV: E=Sophos;i="6.00,210,1681196400"; 
+   d="scan'208";a="358116751"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2023 14:21:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10728"; a="710671039"
+X-IronPort-AV: E=Sophos;i="6.00,210,1681196400"; 
+   d="scan'208";a="710671039"
+Received: from zzhou9-mobl1.amr.corp.intel.com (HELO vcostago-mobl3) ([10.252.141.43])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2023 14:21:36 -0700
+From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To: Jakub Kicinski <kuba@kernel.org>, Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+ netdev@vger.kernel.org, sasha.neftin@intel.com, richardcochran@gmail.com,
+ Vladimir Oltean <vladimir.oltean@nxp.com>, Naama Meir
+ <naamax.meir@linux.intel.com>
+Subject: Re: [PATCH net 2/4] igc: Check if hardware TX timestamping is
+ enabled earlier
+In-Reply-To: <20230531231029.36822957@kernel.org>
+References: <20230530174928.2516291-1-anthony.l.nguyen@intel.com>
+ <20230530174928.2516291-3-anthony.l.nguyen@intel.com>
+ <20230531231029.36822957@kernel.org>
+Date: Thu, 01 Jun 2023 14:21:35 -0700
+Message-ID: <87353aubds.fsf@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.41.0.rc0.172.g3f132b7071-goog
-Message-ID: <20230601211732.1606062-1-edumazet@google.com>
-Subject: [PATCH net] tcp: gso: really support BIG TCP
-From: Eric Dumazet <edumazet@google.com>
-To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org, Xin Long <lucien.xin@gmail.com>, 
-	David Ahern <dsahern@kernel.org>, eric.dumazet@gmail.com, 
-	Eric Dumazet <edumazet@google.com>, Alexander Duyck <alexanderduyck@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-We missed that tcp_gso_segment() was assuming skb->len was smaller than 65535 :
+Hi,
 
-oldlen = (u16)~skb->len;
+Jakub Kicinski <kuba@kernel.org> writes:
 
-This part came with commit 0718bcc09b35 ("[NET]: Fix CHECKSUM_HW GSO problems.")
+> On Tue, 30 May 2023 10:49:26 -0700 Tony Nguyen wrote:
+>> -	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
+>> +	if (unlikely(adapter->tstamp_config.tx_type == HWTSTAMP_TX_ON &&
+>> +		     skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
+>>  		/* FIXME: add support for retrieving timestamps from
+>>  		 * the other timer registers before skipping the
+>>  		 * timestamping request.
+>> @@ -1586,7 +1587,7 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
+>>  		unsigned long flags;
+>>  
+>>  		spin_lock_irqsave(&adapter->ptp_tx_lock, flags);
+>> -		if (adapter->tstamp_config.tx_type == HWTSTAMP_TX_ON && !adapter->ptp_tx_skb) {
+>> +		if (!adapter->ptp_tx_skb) {
+>
+> AFAICT the cancel / cleanup path is not synchronized (I mean for
+> accesses to adapter->tstamp_config) so this looks racy to me :(
+>
 
-This leads to wrong TCP checksum.
+As far as I can see, the racy behavior wasn't introduced here, can I
+propose the fix as a follow up patch? Or do you prefer that I re-spin
+this series?
 
-Simply use csum_fold() to support 32bit packet lengthes.
 
-oldlen name is a bit misleading, as it is the contribution
-of skb->len on the input skb TCP checksum. I added a comment
-to clarify this point.
-
-Fixes: 09f3d1a3a52c ("ipv6/gso: remove temporary HBH/jumbo header")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Alexander Duyck <alexanderduyck@fb.com>
----
- net/ipv4/tcp_offload.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c
-index 45dda788938704c3f762256266d9ea29b6ded4a5..5a1a163b2d859696df8f204b50e3fc76c14b64e9 100644
---- a/net/ipv4/tcp_offload.c
-+++ b/net/ipv4/tcp_offload.c
-@@ -75,7 +75,8 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
- 	if (!pskb_may_pull(skb, thlen))
- 		goto out;
- 
--	oldlen = (u16)~skb->len;
-+	/* Contribution of skb->len in current TCP checksum */
-+	oldlen = (__force u32)csum_fold((__force __wsum)skb->len);
- 	__skb_pull(skb, thlen);
- 
- 	mss = skb_shinfo(skb)->gso_size;
+Cheers,
 -- 
-2.41.0.rc0.172.g3f132b7071-goog
-
+Vinicius
 
