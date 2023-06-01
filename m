@@ -1,283 +1,221 @@
-Return-Path: <netdev+bounces-7250-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7252-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 85E1971F51B
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 23:53:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3E93171F5B8
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 00:12:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 171A91C2110B
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 21:53:21 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BFC081C21154
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 22:12:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F38431EFD;
-	Thu,  1 Jun 2023 21:53:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1FA6E46FE9;
+	Thu,  1 Jun 2023 22:12:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F660182D0
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 21:53:10 +0000 (UTC)
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EF9D195;
-	Thu,  1 Jun 2023 14:53:08 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id 41be03b00d2f7-5289ce6be53so2025739a12.0;
-        Thu, 01 Jun 2023 14:53:08 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0947E4252D
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 22:12:47 +0000 (UTC)
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505CB196
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 15:12:44 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id af79cd13be357-75ce1196bd7so130610285a.3
+        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 15:12:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685656388; x=1688248388;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=broadcom.com; s=google; t=1685657563; x=1688249563;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=G68pkf+EjV1cJeNi8PG38UDN9hb7qm/88/NxhsQ9ajQ=;
-        b=qPShLCalzxPyskuTUtXZ7Rfu3OmvacivFQo9Tdli8QuHYwxvsavpZksdzUj+JLa5N7
-         /rDvwBZ+i+5sqwj34S+D0T1JHpugEWa0m2h+b3o5x2WXGUnJKLqs7YsvKhNEUyylbfOo
-         LV7YZxGKYNCZYl3EUV148rFXC0LsEu9t7X17R7/xkM+C9huYqS5BSW3nZAXkXf0nVMk/
-         67At7Dihrqjz1O1qxtxPvuuDveooVDbZj1gpidQC3F5DQxH+EDWomFgdmuhNGn0JlL31
-         fr/P85Wq+1jgWvo/NP8c+2ElLEqT5Q84sq+F7VaZ/seJqFPxJeAnGTfhsnblA66BGA56
-         UleQ==
+        bh=KgJ3stU/seO0A2JTBxl4fNJeypWfUTyY8LijRhxrzyI=;
+        b=TR1EPKRPsb4BgYagvlhFBRsThVLMYTBpMDa9RhTYm67jmfx09/eUwzD8fZlWX7yrgy
+         I8bisdKg6ZZyIXWxcnwUlpb8RuN2AJaUgFY4k9sHOt/Hh+dBzSNfYh+W1hStRboSQ5Ek
+         H1EF22zHMltl8qkXxc8OV+meFISZyNe+b8TlA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685656388; x=1688248388;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1685657563; x=1688249563;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=G68pkf+EjV1cJeNi8PG38UDN9hb7qm/88/NxhsQ9ajQ=;
-        b=AcWeGHIm0UeYcKXF0aihIHu8NuXoNorMH/yFyagfW+rB61BA1PiitYKye1VmHsVMT7
-         tdEIzOqtL7uDBd9p8Mlzewbfy/6413flogUrU5oMGLKE5e/x3R4mwW51/5CKR3X2ltPQ
-         wx8+hAO2zt9bDpxmcH7VoF63GsQ1FTkwwXf6rF4MFrpDLBsk6UQWsPsIT0P6FjqdNlXz
-         pKUNkGJrAUGjs3AEuH0dF1u7ufQweeLZJYi98pqWu0RQo9VIM/lLMAR+EDST+0mOx6Tf
-         l+faDMJQZJlb/meouzPsLCzbxc5utQRzPk4v2U58yUeOAPygN8t++Uf8k4YMW4NkdHBk
-         ygAw==
-X-Gm-Message-State: AC+VfDypi18hvFs+1JTX9roq0TatFDe0phS+AMyhMgbx30qjSqw2wD9l
-	4StAGAu7i5eQP8raf/9PjZI=
-X-Google-Smtp-Source: ACHHUZ4XZw/TCgBBXeCw4ofQdb31hqwKZnZeGlgkaYFxQEsbFoQbQp0RTtP6YgUCAVPjwpruBATcSg==
-X-Received: by 2002:a17:902:c945:b0:1af:b5af:367b with SMTP id i5-20020a170902c94500b001afb5af367bmr535957pla.29.1685656387852;
-        Thu, 01 Jun 2023 14:53:07 -0700 (PDT)
-Received: from babbage.. (162-227-164-7.lightspeed.sntcca.sbcglobal.net. [162.227.164.7])
-        by smtp.gmail.com with ESMTPSA id b7-20020a170902650700b001b034d2e71csm4049207plk.34.2023.06.01.14.53.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jun 2023 14:53:07 -0700 (PDT)
-From: msmulski2@gmail.com
-To: andrew@lunn.ch
-Cc: f.fainelli@gmail.com,
-	olteanv@gmail.com,
+        bh=KgJ3stU/seO0A2JTBxl4fNJeypWfUTyY8LijRhxrzyI=;
+        b=NuDytnYxcfLOOSmrgmohvBQtvoGBVQrBICVVmkjRK3rVUhshKvDHQtsbnKweXDxX1n
+         +InZPRTIE+SWTihwfJA+Q30OiIoIf3rsxS3CM+InbPccS+DtdnMYgAhVZc/NgoVL50qE
+         abfqpKronVeHVwnkwG1u/1o1YASKLvSsAtT7NIIb1EhHblmHp1/LgvUl4Db9Olp8LtX9
+         UpUwArinCaUdyJvhlG0LqMf6qdH7K/v+/0NVM7SMnK/2o/ElzkR1jiHogeYigEbK/jxt
+         zUYQ/JjME66MZQvELPD9NepG5Yd0rCSli3431+1tm3Z/0WEaMoBrpuoOEuXRzGHAMuXk
+         ONLw==
+X-Gm-Message-State: AC+VfDw9odReIiugIPw4M/MDCWypjltHnpyuzCZ32Rk3AunCoviOQpkK
+	Oy7i78yjFdRYFSLM8rSAH1vmceMf+ZL3XGIw0LfCP1SK1tBWPDymxd8Lx4z5GnMjT8YHVQKBL8o
+	2fV7/33/IwD2mwad5n/zouwy1pax/EWupSBkku7iIJN1FOCK84MVi4DlrvBu33NDGHe2D65ABT2
+	XKh9z2Zg==
+X-Google-Smtp-Source: ACHHUZ4sMymG/6wqFok/B8wPgYeFN3UUAWC0zHJG8jj/vUMPf58EXxUDVCFrIPRmIsI5sXC5z02Lng==
+X-Received: by 2002:a37:849:0:b0:75b:23a0:d9d1 with SMTP id 70-20020a370849000000b0075b23a0d9d1mr9439089qki.39.1685657563047;
+        Thu, 01 Jun 2023 15:12:43 -0700 (PDT)
+Received: from stbirv-lnx-2.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id f5-20020a05620a068500b00759554bbe48sm7180430qkh.4.2023.06.01.15.12.39
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 01 Jun 2023 15:12:42 -0700 (PDT)
+From: Justin Chen <justin.chen@broadcom.com>
+To: netdev@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	bcm-kernel-feedback-list@broadcom.com
+Cc: florian.fainelli@broadcom.com,
 	davem@davemloft.net,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
+	robh+dt@kernel.org,
+	krzysztof.kozlowski+dt@linaro.org,
+	conor+dt@kernel.org,
+	opendmb@gmail.com,
+	andrew@lunn.ch,
+	hkallweit1@gmail.com,
 	linux@armlinux.org.uk,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
+	richardcochran@gmail.com,
+	sumit.semwal@linaro.org,
+	christian.koenig@amd.com,
 	simon.horman@corigine.com,
-	kabel@kernel.org,
-	Michal Smulski <michal.smulski@ooma.com>
-Subject: [PATCH net-next v5 1/1] net: dsa: mv88e6xxx: implement USXGMII mode for mv88e6393x
-Date: Thu,  1 Jun 2023 14:52:51 -0700
-Message-Id: <20230601215251.3529-2-msmulski2@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230601215251.3529-1-msmulski2@gmail.com>
-References: <20230601215251.3529-1-msmulski2@gmail.com>
+	Justin Chen <justin.chen@broadcom.com>
+Subject: [PATCH net-next v6 0/6] Brcm ASP 2.0 Ethernet Controller
+Date: Thu,  1 Jun 2023 15:12:25 -0700
+Message-Id: <1685657551-38291-1-git-send-email-justin.chen@broadcom.com>
+X-Mailer: git-send-email 2.7.4
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+	boundary="0000000000004879dc05fd18bc2c"
+X-Spam-Status: No, score=-0.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=no
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-From: Michal Smulski <michal.smulski@ooma.com>
+--0000000000004879dc05fd18bc2c
 
-Enable USXGMII mode for mv88e6393x chips. Tested on Marvell 88E6191X.
+Add support for the Broadcom ASP 2.0 Ethernet controller which is first
+introduced with 72165.
 
-Signed-off-by: Michal Smulski <michal.smulski@ooma.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c   |  3 +-
- drivers/net/dsa/mv88e6xxx/port.c   |  3 ++
- drivers/net/dsa/mv88e6xxx/serdes.c | 70 +++++++++++++++++++++++++++++-
- drivers/net/dsa/mv88e6xxx/serdes.h | 13 ++++++
- 4 files changed, 85 insertions(+), 4 deletions(-)
+Florian Fainelli (2):
+  dt-bindings: net: Brcm ASP 2.0 Ethernet controller
+  net: phy: bcm7xxx: Add EPHY entry for 74165
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 8731af6d79de..5a92ccfd08ea 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -815,8 +815,7 @@ static void mv88e6393x_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
- 				config->mac_capabilities |= MAC_5000FD |
- 					MAC_10000FD;
- 			}
--			/* FIXME: USXGMII is not supported yet */
--			/* __set_bit(PHY_INTERFACE_MODE_USXGMII, supported); */
-+			__set_bit(PHY_INTERFACE_MODE_USXGMII, supported);
- 		}
- 	}
- 
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index e9b4a6ea4d09..dd66ec902d4c 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -566,6 +566,9 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 	case PHY_INTERFACE_MODE_10GBASER:
- 		cmode = MV88E6393X_PORT_STS_CMODE_10GBASER;
- 		break;
-+	case PHY_INTERFACE_MODE_USXGMII:
-+		cmode = MV88E6393X_PORT_STS_CMODE_USXGMII;
-+		break;
- 	default:
- 		cmode = 0;
- 	}
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
-index 72faec8f44dc..e4f3dc39bc46 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.c
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.c
-@@ -683,7 +683,8 @@ int mv88e6393x_serdes_get_lane(struct mv88e6xxx_chip *chip, int port)
- 	    cmode == MV88E6XXX_PORT_STS_CMODE_SGMII ||
- 	    cmode == MV88E6XXX_PORT_STS_CMODE_2500BASEX ||
- 	    cmode == MV88E6393X_PORT_STS_CMODE_5GBASER ||
--	    cmode == MV88E6393X_PORT_STS_CMODE_10GBASER)
-+	    cmode == MV88E6393X_PORT_STS_CMODE_10GBASER ||
-+	    cmode == MV88E6393X_PORT_STS_CMODE_USXGMII)
- 		lane = port;
- 
- 	return lane;
-@@ -984,6 +985,64 @@ static int mv88e6393x_serdes_pcs_get_state_10g(struct mv88e6xxx_chip *chip,
- 			state->speed = SPEED_10000;
- 		state->duplex = DUPLEX_FULL;
- 	}
-+	return 0;
-+}
-+
-+/* USXGMII registers for Marvell switch 88e639x are undocumented and this function is based
-+ * on some educated guesses. It appears that there are no status bits related to
-+ * autonegotiation complete or flow control.
-+ */
-+static int mv88e639x_serdes_pcs_get_state_usxgmii(struct mv88e6xxx_chip *chip,
-+						  int port, int lane,
-+						  struct phylink_link_state *state)
-+{
-+	u16 status, lp_status;
-+	int err;
-+
-+	err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
-+				    MV88E6390_USXGMII_LP_STATUS, &lp_status);
-+	if (err) {
-+		dev_err(chip->dev, "can't read Serdes USXGMII LP status: %d\n", err);
-+		return err;
-+	}
-+	dev_dbg(chip->dev, "USXGMII LP statsus: 0x%x\n", lp_status);
-+
-+	err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
-+				    MV88E6390_USXGMII_PHY_STATUS, &status);
-+	if (err) {
-+		dev_err(chip->dev, "can't read Serdes USXGMII PHY status: %d\n", err);
-+		return err;
-+	}
-+	dev_dbg(chip->dev, "USXGMII PHY statsus: 0x%x\n", status);
-+
-+	state->link = !!(status & MV88E6390_USXGMII_PHY_STATUS_LINK);
-+	state->duplex = status &
-+		MV88E6390_USXGMII_PHY_STATUS_DUPLEX_FULL ?
-+		DUPLEX_FULL : DUPLEX_HALF;
-+
-+	switch (status & MV88E6390_USXGMII_PHY_STATUS_SPEED_MASK) {
-+	case MV88E6390_USXGMII_PHY_STATUS_SPEED_10000:
-+		state->speed = SPEED_10000;
-+		break;
-+	case MV88E6390_USXGMII_PHY_STATUS_SPEED_5000:
-+		state->speed = SPEED_5000;
-+		break;
-+	case MV88E6390_USXGMII_PHY_STATUS_SPEED_2500:
-+		state->speed = SPEED_2500;
-+		break;
-+	case MV88E6390_USXGMII_PHY_STATUS_SPEED_1000:
-+		state->speed = SPEED_1000;
-+		break;
-+	case MV88E6390_USXGMII_PHY_STATUS_SPEED_100:
-+		state->speed = SPEED_100;
-+		break;
-+	case MV88E6390_USXGMII_PHY_STATUS_SPEED_10:
-+		state->speed = SPEED_10;
-+		break;
-+	default:
-+		dev_err(chip->dev, "invalid PHY speed\n");
-+		return -EINVAL;
-+	}
- 
- 	return 0;
- }
-@@ -1020,6 +1079,9 @@ int mv88e6393x_serdes_pcs_get_state(struct mv88e6xxx_chip *chip, int port,
- 	case PHY_INTERFACE_MODE_10GBASER:
- 		return mv88e6393x_serdes_pcs_get_state_10g(chip, port, lane,
- 							   state);
-+	case PHY_INTERFACE_MODE_USXGMII:
-+		return mv88e639x_serdes_pcs_get_state_usxgmii(chip, port, lane,
-+							   state);
- 
- 	default:
- 		return -EOPNOTSUPP;
-@@ -1173,6 +1235,7 @@ int mv88e6393x_serdes_irq_enable(struct mv88e6xxx_chip *chip, int port,
- 		return mv88e6390_serdes_irq_enable_sgmii(chip, lane, enable);
- 	case MV88E6393X_PORT_STS_CMODE_5GBASER:
- 	case MV88E6393X_PORT_STS_CMODE_10GBASER:
-+	case MV88E6393X_PORT_STS_CMODE_USXGMII:
- 		return mv88e6393x_serdes_irq_enable_10g(chip, lane, enable);
- 	}
- 
-@@ -1213,6 +1276,7 @@ irqreturn_t mv88e6393x_serdes_irq_status(struct mv88e6xxx_chip *chip, int port,
- 		break;
- 	case MV88E6393X_PORT_STS_CMODE_5GBASER:
- 	case MV88E6393X_PORT_STS_CMODE_10GBASER:
-+	case MV88E6393X_PORT_STS_CMODE_USXGMII:
- 		err = mv88e6393x_serdes_irq_status_10g(chip, lane, &status);
- 		if (err)
- 			return err;
-@@ -1477,7 +1541,8 @@ static int mv88e6393x_serdes_erratum_5_2(struct mv88e6xxx_chip *chip, int lane,
- 	 * to SERDES operating in 10G mode. These registers only apply to 10G
- 	 * operation and have no effect on other speeds.
- 	 */
--	if (cmode != MV88E6393X_PORT_STS_CMODE_10GBASER)
-+	if (cmode != MV88E6393X_PORT_STS_CMODE_10GBASER &&
-+	    cmode != MV88E6393X_PORT_STS_CMODE_USXGMII)
- 		return 0;
- 
- 	for (i = 0; i < ARRAY_SIZE(fixes); ++i) {
-@@ -1582,6 +1647,7 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
- 		break;
- 	case MV88E6393X_PORT_STS_CMODE_5GBASER:
- 	case MV88E6393X_PORT_STS_CMODE_10GBASER:
-+	case MV88E6393X_PORT_STS_CMODE_USXGMII:
- 		err = mv88e6390_serdes_power_10g(chip, lane, on);
- 		break;
- 	default:
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.h b/drivers/net/dsa/mv88e6xxx/serdes.h
-index 29bb4e91e2f6..899b8518113a 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.h
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.h
-@@ -48,6 +48,19 @@
- #define MV88E6393X_10G_INT_LINK_CHANGE	BIT(2)
- #define MV88E6393X_10G_INT_STATUS	0x9001
- 
-+/* USXGMII */
-+#define MV88E6390_USXGMII_LP_STATUS       0xf0a2
-+#define MV88E6390_USXGMII_PHY_STATUS      0xf0a6
-+#define MV88E6390_USXGMII_PHY_STATUS_SPEED_MASK	GENMASK(11, 9)
-+#define MV88E6390_USXGMII_PHY_STATUS_SPEED_5000	0xa00
-+#define MV88E6390_USXGMII_PHY_STATUS_SPEED_2500	0x800
-+#define MV88E6390_USXGMII_PHY_STATUS_SPEED_10000	0x600
-+#define MV88E6390_USXGMII_PHY_STATUS_SPEED_1000	0x400
-+#define MV88E6390_USXGMII_PHY_STATUS_SPEED_100	0x200
-+#define MV88E6390_USXGMII_PHY_STATUS_SPEED_10	0x000
-+#define MV88E6390_USXGMII_PHY_STATUS_DUPLEX_FULL	BIT(12)
-+#define MV88E6390_USXGMII_PHY_STATUS_LINK		BIT(15)
-+
- /* 1000BASE-X and SGMII */
- #define MV88E6390_SGMII_BMCR		(0x2000 + MII_BMCR)
- #define MV88E6390_SGMII_BMSR		(0x2000 + MII_BMSR)
+Justin Chen (4):
+  dt-bindings: net: brcm,unimac-mdio: Add asp-v2.0
+  net: bcmasp: Add support for ASP2.0 Ethernet controller
+  net: phy: mdio-bcm-unimac: Add asp v2.0 support
+  MAINTAINERS: ASP 2.0 Ethernet driver maintainers
+
+ .../devicetree/bindings/net/brcm,asp-v2.0.yaml     |  153 ++
+ .../devicetree/bindings/net/brcm,unimac-mdio.yaml  |    2 +
+ MAINTAINERS                                        |    9 +
+ drivers/net/ethernet/broadcom/Kconfig              |   11 +
+ drivers/net/ethernet/broadcom/Makefile             |    1 +
+ drivers/net/ethernet/broadcom/asp2/Makefile        |    2 +
+ drivers/net/ethernet/broadcom/asp2/bcmasp.c        | 1467 ++++++++++++++++++++
+ drivers/net/ethernet/broadcom/asp2/bcmasp.h        |  638 +++++++++
+ .../net/ethernet/broadcom/asp2/bcmasp_ethtool.c    |  568 ++++++++
+ drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c   | 1393 +++++++++++++++++++
+ .../net/ethernet/broadcom/asp2/bcmasp_intf_defs.h  |  238 ++++
+ drivers/net/mdio/mdio-bcm-unimac.c                 |    2 +
+ drivers/net/phy/bcm7xxx.c                          |    1 +
+ include/linux/brcmphy.h                            |    1 +
+ 14 files changed, 4486 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
+ create mode 100644 drivers/net/ethernet/broadcom/asp2/Makefile
+ create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp.c
+ create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp.h
+ create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
+ create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c
+ create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp_intf_defs.h
+
 -- 
-2.34.1
+2.7.4
 
+
+--0000000000004879dc05fd18bc2c
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+NhTY3E+cXCB11wty89QStajwXdhGJTYEvUgvsq1h8CwJj9w/38ldAQf5WjhPmApYeJR2ewFrBMCM
+4lHkdRJ6TDc9nXoEkypUfjJkJHe7Eal06tosh6JpAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
+BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
+Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
+NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
+A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
+aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
+cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
+MBqBGGp1c3Rpbi5jaGVuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
+GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUIWGeYuaTsnIada5Xx8TR3cheUbgw
+DQYJKoZIhvcNAQELBQADggEBAHNQlMqQOFYPYFO71A+8t+qWMmtOdd2iGswSOvpSZ/pmGlfw8ZvY
+dRTkl27m37la84AxRkiVMes14JyOZJoMh/g7fbgPlU14eBc6WQWkIA6AmNkduFWTr1pRezkjpeo6
+xVmdBLM4VY1TFDYj7S8H2adPuypd62uHMY/MZi+BIUys4uAFA+N3NuUBNjcVZXYPplYxxKEuIFq6
+sDL+OV16G+F9CkNMN3txsym8Nnx5WAYZb6+rBUIhMGz70V05xsHQfzvo2s7f0J1tJ5BoRlPPhL0h
+VOnWA3h71u9TfSsv+PXVm3P21TfOS2uc1hbzEqyENCP4i5XQ0rv0TmPW42GZ0o4xggJtMIICaQIB
+ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
+bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwj8BKLXNpALfemdRAwDQYJ
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBJYA7JTG3szPkhkVP4R8jeZacGyo/cH1Bvt
+DoG1W8XfMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYwMTIy
+MTI0M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
+BgkqhkiG9w0BAQEFAASCAQB/+YvTStSWh1e1hOJcuXs+4Ix4jAK4f79LmfGOF4a3zevArElgZ+LF
++E2FeDihU6wu0kl+ezmIx5hDKViXt0nsDOdlOpkI7yvxaYSs6lGKcYWeDny060a/VN9pweSVBxbT
+t8nlYDqnhXzqYQTIzStCCzZM/kqQ90QNmRF/HCFIVe9aWrjMciKMxFAiMzH447kxER50rZMTqFz/
+vMPBPPdIl04xi1eqlA/tZyge/CGfYHJlZEykuLcxE9NiZbJbAOT7eGQU3hzf3FpHlEtIYh6sqqxa
+X5PjB4Dwsfy4efihPZf0gP9RsVGnpJCSMNCJGwXmTQP90zlj2wBhRyuguMaX
+--0000000000004879dc05fd18bc2c--
 
