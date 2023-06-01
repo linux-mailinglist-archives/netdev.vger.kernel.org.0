@@ -1,74 +1,83 @@
-Return-Path: <netdev+bounces-7106-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7107-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D064F719F9B
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:19:56 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 87CC771A005
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:30:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6F7F41C21035
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 14:19:53 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 420932817A4
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 14:30:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E4D1621CF2;
-	Thu,  1 Jun 2023 14:19:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A5E8423411;
+	Thu,  1 Jun 2023 14:30:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAD2421CEB
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 14:19:53 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84354129;
-	Thu,  1 Jun 2023 07:19:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=UE3rNze3/a01N32sS0x0DAAL8DTKrBYQlAh4EP6ZaxQ=; b=4/KZfK3lyY7z+GVoAG9l1VzTsU
-	XxCsEImqIqpdW7PatAL8qhAmpS53qgnP3tPxZYe4VezPEnCU3IdXi7CTBF/7MYGVWCP+FwyOti2+u
-	Ad7bwHAnYsgkik3778bzlKPUdsNG01H4JMbDVOD2csq12D9ZtCgAgfgekhadyDE2xm4Q=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1q4j9S-00EZj9-Jk; Thu, 01 Jun 2023 16:19:42 +0200
-Date: Thu, 1 Jun 2023 16:19:42 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Florian Fainelli <florian.fainelli@broadcom.com>
-Cc: netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: phy: broadcom: Add LPI counter
-Message-ID: <aeb2d66a-fa23-454d-b5f1-7df1aec95cd3@lunn.ch>
-References: <20230531231729.1873932-1-florian.fainelli@broadcom.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D66B22D43
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 14:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 90331C433EF;
+	Thu,  1 Jun 2023 14:30:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685629819;
+	bh=2eT6v1/C9jazgiPlmc7EA3TKFRAj8z2AYljVkDk7Xds=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=N+Ctla4de7wScrzh+1XaCSrzFpax6DikzdHp7zgitOiXL+/pC3aDU4R0qTS178IAl
+	 BvdGmSUxeOcje3vO8nKzUEhLAIxCjF55NwsprsDVdeviCTdhRm/1wGXhBa92tYpapN
+	 6qesW+UnZ6+z0lw1mYvbIndqpG43o0Wzox9gUrXOOKUJfuK4iUlofOUDiCJ9d1gjtk
+	 KcSs51FQHfJwb22FPeJKiIs11NZCMaDA9ZpGrSNnt8sfIY1cGjGnrPfFlVzVa56Usb
+	 6m2ipZxj30q/Xw+TLQl/7TRnT2SSapN1waVRNph2dBUHBE8Q4saQF5NRxElQoxiOtT
+	 PDi95CNMK7ChA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 797A0E52C02;
+	Thu,  1 Jun 2023 14:30:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230531231729.1873932-1-florian.fainelli@broadcom.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: dsa: mv88e6xxx: Increase wait after reset
+ deactivation
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168562981949.12126.5921188118385782118.git-patchwork-notify@kernel.org>
+Date: Thu, 01 Jun 2023 14:30:19 +0000
+References: <20230530145223.1223993-1-andreas.svensson@axis.com>
+In-Reply-To: <20230530145223.1223993-1-andreas.svensson@axis.com>
+To: Andreas Svensson <andreas.svensson@axis.com>
+Cc: andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ kernel@axis.com, baruch@tkos.co.il, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 
-On Wed, May 31, 2023 at 04:17:29PM -0700, Florian Fainelli wrote:
-> Add the ability to read the PHY maintained LPI counter which is in the
-> Clause 45 vendor space, device address 7, offset 0x803F. The counter is
-> cleared on read.
+Hello:
+
+This patch was applied to netdev/net.git (main)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Tue, 30 May 2023 16:52:23 +0200 you wrote:
+> A switch held in reset by default needs to wait longer until we can
+> reliably detect it.
 > 
-> Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
+> An issue was observed when testing on the Marvell 88E6393X (Link Street).
+> The driver failed to detect the switch on some upstarts. Increasing the
+> wait time after reset deactivation solves this issue.
+> 
+> [...]
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Here is the summary with links:
+  - [net] net: dsa: mv88e6xxx: Increase wait after reset deactivation
+    https://git.kernel.org/netdev/net/c/3c27f3d53d58
 
-    Andrew
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
 
