@@ -1,88 +1,107 @@
-Return-Path: <netdev+bounces-7077-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7078-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 98304719AFF
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 13:30:24 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2535B719B05
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 13:35:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 51CE828175F
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 11:30:23 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D049D281718
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 11:35:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C599123427;
-	Thu,  1 Jun 2023 11:30:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DBC4B23429;
+	Thu,  1 Jun 2023 11:35:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D8AA23404
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 11:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7C785C433EF;
-	Thu,  1 Jun 2023 11:30:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685619019;
-	bh=nZcwgW7xBictvCErCoWGsWs1oqpGOIByQ0oGnpcuCzg=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=QwrukkJ0BSyOd4Q6RSFnpJhfmp+6yuRfolfKjECi08OK2i4RVZrRbFF7Yl2BY1K5M
-	 znpc888PGsYQuzF6sdkllam0S7KlRmJXDhY7j3xcmJvo/QGAaXAGjfoFkHOVOAeth1
-	 k77TIUPsIEu19zDKsFrr+kYYemnDOpykYbcHvy1l3QWErc6XwE9m6EmWykHQeV/uzU
-	 TJN2Xr15HrPMGnHgrsNXDMZvdwR8LQB7yEkgSZEhHUhur8mFCIxs0ic9vwPeaMXm2V
-	 YcT9p/SlFDeI3bYiR/7aj9oqVYXeg+YmUr3/jKtKv5dtHPn+7GSw839pQSYDecxBjB
-	 L/bAuipCcTgBw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 430C0C395E0;
-	Thu,  1 Jun 2023 11:30:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB70023404
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 11:35:22 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EF3129
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 04:35:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685619320;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=g2HrdO1luTCQTFelo54c1HAUWB7J3N54nooptJdm2oE=;
+	b=g9999PChwm6UiyIi5Bzd8wFXGWC9pul4cXVajMI3otlXQ42wPOokdHVX757Wy9ywHuUEBw
+	KGYGnAwGtPkBMVFNdElnx9YGQocx03WxHhs148HZtoZFUQH9nmrb+4D4gLVM48fDnWzG8Z
+	mZq8w1EErSGcqKd+TBwGcdV/eg6o3X0=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-138-b71uj-mYOMqSwieJCWkpYw-1; Thu, 01 Jun 2023 07:35:16 -0400
+X-MC-Unique: b71uj-mYOMqSwieJCWkpYw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 261D13C14111;
+	Thu,  1 Jun 2023 11:35:16 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id AC97C8162;
+	Thu,  1 Jun 2023 11:35:13 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <bd2750e52b47af1782233e254114eb8d627f1073.camel@redhat.com>
+References: <bd2750e52b47af1782233e254114eb8d627f1073.camel@redhat.com> <20230530141635.136968-1-dhowells@redhat.com> <20230530141635.136968-9-dhowells@redhat.com>
+To: Paolo Abeni <pabeni@redhat.com>
+Cc: dhowells@redhat.com, netdev@vger.kernel.org,
+    Herbert Xu <herbert@gondor.apana.org.au>,
+    "David S. Miller" <davem@davemloft.net>,
+    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+    Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+    David Ahern <dsahern@kernel.org>,
+    Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>,
+    linux-crypto@vger.kernel.org, linux-mm@kvack.org,
+    linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 08/10] crypto: af_alg: Support MSG_SPLICE_PAGES
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v4] tcp: fix mishandling when the sack compression is
- deferred.
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168561901927.15218.5820204567180741386.git-patchwork-notify@kernel.org>
-Date: Thu, 01 Jun 2023 11:30:19 +0000
-References: <20230531080150.GA20424@didi-ThinkCentre-M920t-N000>
-In-Reply-To: <20230531080150.GA20424@didi-ThinkCentre-M920t-N000>
-To: fuyuanli <fuyuanli@didiglobal.com>
-Cc: edumazet@google.com, davem@davemloft.net, dsahern@kernel.org,
- kuba@kernel.org, pabeni@redhat.com, ncardwell@google.com, ycheng@google.com,
- toke@toke.dk, netdev@vger.kernel.org, zhangweiping@didiglobal.com,
- tiozhang@didiglobal.com, kerneljasonxing@gmail.com
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <822307.1685619312.1@warthog.procyon.org.uk>
+Date: Thu, 01 Jun 2023 12:35:12 +0100
+Message-ID: <822308.1685619312@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
+Paolo Abeni <pabeni@redhat.com> wrote:
 
-This patch was applied to netdev/net.git (main)
-by Paolo Abeni <pabeni@redhat.com>:
+> > +	if ((msg->msg_flags & MSG_SPLICE_PAGES) &&
+> > +	    !iov_iter_is_bvec(&msg->msg_iter))
+> > +		return -EINVAL;
+> > +
+> ...
+> It looks like the above expect/supports only ITER_BVEC iterators, what
+> about adding a WARN_ON_ONCE(<other iov type>)?
 
-On Wed, 31 May 2023 16:01:50 +0800 you wrote:
-> In this patch, we mainly try to handle sending a compressed ack
-> correctly if it's deferred.
-> 
-> Here are more details in the old logic:
-> When sack compression is triggered in the tcp_compressed_ack_kick(),
-> if the sock is owned by user, it will set TCP_DELACK_TIMER_DEFERRED
-> and then defer to the release cb phrase. Later once user releases
-> the sock, tcp_delack_timer_handler() should send a ack as expected,
-> which, however, cannot happen due to lack of ICSK_ACK_TIMER flag.
-> Therefore, the receiver would not sent an ack until the sender's
-> retransmission timeout. It definitely increases unnecessary latency.
-> 
-> [...]
+Meh.  I relaxed that requirement as I'm now using tools to extract stuff from
+any iterator (extract_iter_to_sg() in this case) rather than walking the
+bvec[] directly.  I forgot to remove the check from af_alg.  I can add an
+extra patch to remove it.  Also, it probably doesn't matter for AF_ALG since
+that's only likely to be called from userspace, either directly (which will
+not set MSG_SPLICE_PAGES) or via splice (which will pass a BVEC).  Internal
+kernel code will use crypto API directly.
 
-Here is the summary with links:
-  - [net,v4] tcp: fix mishandling when the sack compression is deferred.
-    https://git.kernel.org/netdev/net/c/30c6f0bf9579
+> Also, I'm keeping this series a bit more in pw to allow Herbert or
+> others to have a look.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks.
 
+David
 
 
