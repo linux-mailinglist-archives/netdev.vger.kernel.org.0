@@ -1,39 +1,39 @@
-Return-Path: <netdev+bounces-7101-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7102-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D785B719F72
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:15:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id AD13C719F76
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:15:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6CE061C2104A
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 14:15:26 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 413761C208D4
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 14:15:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 531EB21CE9;
-	Thu,  1 Jun 2023 14:15:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AA6E221CDD;
+	Thu,  1 Jun 2023 14:15:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4249C21063
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 14:15:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F8D921063
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 14:15:16 +0000 (UTC)
 Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BE051A7;
-	Thu,  1 Jun 2023 07:15:08 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C43701BF;
+	Thu,  1 Jun 2023 07:15:11 -0700 (PDT)
 X-GND-Sasl: maxime.chevallier@bootlin.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1685628906;
+	t=1685628910;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=CGAXWRYvf80zHfIhDzB2tu6kKP2+wfCv2aHqFygA5hI=;
-	b=FXoW95C+Tqzworwca9UAfYyxbxSAmRkvLWDCrxm8wYO9MfFoZC4O9CwRasskE3dFXlNpX6
-	gF3ziMoisDW/3XRZpRu4670JSP3718amRQoR8Z3k3jiGvw17cUARrjWxG2LdLUdNCIkAgf
-	8+X3BLstbgLyhPmF/JIgBepnCdUdykAo78/2dSRErGwAKJENSzpq5F2UldShtGjOftR1II
-	RZ+aKqUfoqpJcAI4oCM4NdYJvRaJCTd6sWh4mWuQMP8I4qs1oZeKFRULTD8is11syPVUEa
-	Sd9Z2V//BVAkPsajLtUY5g3yei7YjXQHo8r8SprtTiyFMduTFdDKVrgzMM7D4Q==
+	bh=FbF9YiR1UaImGOv/TekzB+7e07IepTmsR1e+tk9jk7k=;
+	b=PgLJCyf/9Ceg6ezO92AoOw3M45jJiJpxeHT6se9mGNWfy3rdZ/7POe5sNa709xNJgM9D3L
+	Vu0riRXXSojli6ajUMXnXhsUKuc3cfhuYodGJy2x+p9aekpxL0cznTXQ9+AJ+xMLfNR8t0
+	9hx1PEtVJ5yyFQeb2K/RchX4ub+yoepPHmF+k9wUsZBclbXskih6rX7b+fB+GWBihnepW4
+	VlCaEH6sjw4rJKftp0TS97MFzkjnsSdvagHUkRIITlo0d0aU6NtDg+7gkdwKry3TBvc2q1
+	zkL9VhNZNeL1fgJq9mcBeHMCp//pu4B/kwrqPmshuLHcYBOZN9XP50JL2IQOzg==
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
@@ -56,8 +56,8 @@ X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 57CB320008;
-	Thu,  1 Jun 2023 14:15:02 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 219A62000A;
+	Thu,  1 Jun 2023 14:15:07 +0000 (UTC)
 From: Maxime Chevallier <maxime.chevallier@bootlin.com>
 To: Mark Brown <broonie@kernel.org>,
 	davem@davemloft.net
@@ -82,9 +82,9 @@ Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
 	Alexandre Torgue <alexandre.torgue@foss.st.com>,
 	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
 	Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v4 1/4] net: mdio: Introduce a regmap-based mdio driver
-Date: Thu,  1 Jun 2023 16:14:51 +0200
-Message-Id: <20230601141454.67858-2-maxime.chevallier@bootlin.com>
+Subject: [PATCH net-next v4 2/4] net: ethernet: altera-tse: Convert to mdio-regmap and use PCS Lynx
+Date: Thu,  1 Jun 2023 16:14:52 +0200
+Message-Id: <20230601141454.67858-3-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230601141454.67858-1-maxime.chevallier@bootlin.com>
 References: <20230601141454.67858-1-maxime.chevallier@bootlin.com>
@@ -102,227 +102,161 @@ X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-There exists several examples today of devices that embed an ethernet
-PHY or PCS directly inside an SoC. In this situation, either the device
-is controlled through a vendor-specific register set, or sometimes
-exposes the standard 802.3 registers that are typically accessed over
-MDIO.
+The newly introduced regmap-based MDIO driver allows for an easy mapping
+of an mdiodevice onto the memory-mapped TSE PCS, which is actually a
+Lynx PCS.
 
-As phylib and phylink are designed to use mdiodevices, this driver
-allows creating a virtual MDIO bus, that translates mdiodev register
-accesses to regmap accesses.
-
-The reason we use regmap is because there are at least 3 such devices
-known today, 2 of them are Altera TSE PCS's, memory-mapped, exposed
-with a 4-byte stride in stmmac's dwmac-socfpga variant, and a 2-byte
-stride in altera-tse. The other one (nxp,sja1110-base-tx-mdio) is
-exposed over SPI.
+Convert Altera TSE to use this PCS instead of the pcs-altera-tse, which
+is nothing more than a memory-mapped Lynx PCS.
 
 Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 ---
 V3->V4 :
- - Clarify the KConfig description with the need for REGMAP
- - Put the correct #include in the new header, as per Vlad's review
-V2->V3 :
- - Introduce struct mdio_regmap_priv for priv elements instead of plain
-   reuse of the config struct
- - Use ~O instead of ~0UL
-V1->V2 :
- - Use phy_mask to avoid unnecessary scanning, suggested by Andrew
- - Allow entirely disabling scanning, suggested by Vlad
+ - Use pcs_lynxcreate()/destroy() introduced by Russell
+ - Fix the error path
+ - Add back misplaced KConfig dependencies
+V2->V3 : No changes
+V1->V2 : No changes
 
- MAINTAINERS                      |  7 +++
- drivers/net/mdio/Kconfig         | 11 ++++
- drivers/net/mdio/Makefile        |  1 +
- drivers/net/mdio/mdio-regmap.c   | 93 ++++++++++++++++++++++++++++++++
- include/linux/mdio/mdio-regmap.h | 26 +++++++++
- 5 files changed, 138 insertions(+)
- create mode 100644 drivers/net/mdio/mdio-regmap.c
- create mode 100644 include/linux/mdio/mdio-regmap.h
+ drivers/net/ethernet/altera/Kconfig           |  2 +
+ drivers/net/ethernet/altera/altera_tse_main.c | 57 ++++++++++++++++---
+ 2 files changed, 50 insertions(+), 9 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index c904dba1733b..f68269b39e09 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12835,6 +12835,13 @@ F:	Documentation/devicetree/bindings/net/ieee802154/mcr20a.txt
- F:	drivers/net/ieee802154/mcr20a.c
- F:	drivers/net/ieee802154/mcr20a.h
+diff --git a/drivers/net/ethernet/altera/Kconfig b/drivers/net/ethernet/altera/Kconfig
+index dd7fd41ccde5..93533ba03429 100644
+--- a/drivers/net/ethernet/altera/Kconfig
++++ b/drivers/net/ethernet/altera/Kconfig
+@@ -5,6 +5,8 @@ config ALTERA_TSE
+ 	select PHYLIB
+ 	select PHYLINK
+ 	select PCS_ALTERA_TSE
++	select MDIO_REGMAP
++	select REGMAP_MMIO
+ 	help
+ 	  This driver supports the Altera Triple-Speed (TSE) Ethernet MAC.
  
-+MDIO REGMAP DRIVER
-+M:	Maxime Chevallier <maxime.chevallier@bootlin.com>
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	drivers/net/mdio/mdio-regmap.c
-+F:	include/linux/mdio/mdio-regmap.h
-+
- MEASUREMENT COMPUTING CIO-DAC IIO DRIVER
- M:	William Breathitt Gray <william.gray@linaro.org>
- L:	linux-iio@vger.kernel.org
-diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
-index 9ff2e6f22f3f..4a7a303be2f7 100644
---- a/drivers/net/mdio/Kconfig
-+++ b/drivers/net/mdio/Kconfig
-@@ -185,6 +185,17 @@ config MDIO_IPQ8064
- 	  This driver supports the MDIO interface found in the network
- 	  interface units of the IPQ8064 SoC
- 
-+config MDIO_REGMAP
-+	tristate
-+	help
-+	  This driver allows using MDIO devices that are not sitting on a
-+	  regular MDIO bus, but still exposes the standard 802.3 register
-+	  layout. It's regmap-based so that it can be used on integrated,
-+	  memory-mapped PHYs, SPI PHYs and so on. A new virtual MDIO bus is
-+	  created, and its read/write operations are mapped to the underlying
-+	  regmap. Users willing to use this driver must explicitly select
-+	  REGMAP.
-+
- config MDIO_THUNDER
- 	tristate "ThunderX SOCs MDIO buses"
- 	depends on 64BIT
-diff --git a/drivers/net/mdio/Makefile b/drivers/net/mdio/Makefile
-index 7d4cb4c11e4e..1015f0db4531 100644
---- a/drivers/net/mdio/Makefile
-+++ b/drivers/net/mdio/Makefile
-@@ -19,6 +19,7 @@ obj-$(CONFIG_MDIO_MOXART)		+= mdio-moxart.o
- obj-$(CONFIG_MDIO_MSCC_MIIM)		+= mdio-mscc-miim.o
- obj-$(CONFIG_MDIO_MVUSB)		+= mdio-mvusb.o
- obj-$(CONFIG_MDIO_OCTEON)		+= mdio-octeon.o
-+obj-$(CONFIG_MDIO_REGMAP)		+= mdio-regmap.o
- obj-$(CONFIG_MDIO_SUN4I)		+= mdio-sun4i.o
- obj-$(CONFIG_MDIO_THUNDER)		+= mdio-thunder.o
- obj-$(CONFIG_MDIO_XGENE)		+= mdio-xgene.o
-diff --git a/drivers/net/mdio/mdio-regmap.c b/drivers/net/mdio/mdio-regmap.c
-new file mode 100644
-index 000000000000..8a742a8d6387
---- /dev/null
-+++ b/drivers/net/mdio/mdio-regmap.c
-@@ -0,0 +1,93 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/* Driver for MMIO-Mapped MDIO devices. Some IPs expose internal PHYs or PCS
-+ * within the MMIO-mapped area
-+ *
-+ * Copyright (C) 2023 Maxime Chevallier <maxime.chevallier@bootlin.com>
-+ */
-+#include <linux/bitfield.h>
-+#include <linux/delay.h>
-+#include <linux/mdio.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_mdio.h>
-+#include <linux/phy.h>
-+#include <linux/platform_device.h>
-+#include <linux/regmap.h>
+diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
+index 190ff1bcd94e..d866c0f1b503 100644
+--- a/drivers/net/ethernet/altera/altera_tse_main.c
++++ b/drivers/net/ethernet/altera/altera_tse_main.c
+@@ -27,14 +27,16 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mii.h>
 +#include <linux/mdio/mdio-regmap.h>
-+
-+#define DRV_NAME "mdio-regmap"
-+
-+struct mdio_regmap_priv {
-+	struct regmap *regmap;
-+	u8 valid_addr;
-+};
-+
-+static int mdio_regmap_read_c22(struct mii_bus *bus, int addr, int regnum)
-+{
-+	struct mdio_regmap_priv *ctx = bus->priv;
-+	unsigned int val;
-+	int ret;
-+
-+	if (ctx->valid_addr != addr)
-+		return -ENODEV;
-+
-+	ret = regmap_read(ctx->regmap, regnum, &val);
-+	if (ret < 0)
-+		return ret;
-+
-+	return val;
-+}
-+
-+static int mdio_regmap_write_c22(struct mii_bus *bus, int addr, int regnum,
-+				 u16 val)
-+{
-+	struct mdio_regmap_priv *ctx = bus->priv;
-+
-+	if (ctx->valid_addr != addr)
-+		return -ENODEV;
-+
-+	return regmap_write(ctx->regmap, regnum, val);
-+}
-+
-+struct mii_bus *devm_mdio_regmap_register(struct device *dev,
-+					  const struct mdio_regmap_config *config)
-+{
-+	struct mdio_regmap_priv *mr;
-+	struct mii_bus *mii;
-+	int rc;
-+
-+	if (!config->parent)
-+		return ERR_PTR(-EINVAL);
-+
-+	mii = devm_mdiobus_alloc_size(config->parent, sizeof(*mr));
-+	if (!mii)
-+		return ERR_PTR(-ENOMEM);
-+
-+	mr = mii->priv;
-+	mr->regmap = config->regmap;
-+	mr->valid_addr = config->valid_addr;
-+
-+	mii->name = DRV_NAME;
-+	strscpy(mii->id, config->name, MII_BUS_ID_SIZE);
-+	mii->parent = config->parent;
-+	mii->read = mdio_regmap_read_c22;
-+	mii->write = mdio_regmap_write_c22;
-+
-+	if (config->autoscan)
-+		mii->phy_mask = ~BIT(config->valid_addr);
-+	else
-+		mii->phy_mask = ~0;
-+
-+	rc = devm_mdiobus_register(dev, mii);
-+	if (rc) {
-+		dev_err(config->parent, "Cannot register MDIO bus![%s] (%d)\n", mii->id, rc);
-+		return ERR_PTR(rc);
+ #include <linux/netdevice.h>
+ #include <linux/of_device.h>
+ #include <linux/of_mdio.h>
+ #include <linux/of_net.h>
+ #include <linux/of_platform.h>
+-#include <linux/pcs-altera-tse.h>
++#include <linux/pcs-lynx.h>
+ #include <linux/phy.h>
+ #include <linux/platform_device.h>
++#include <linux/regmap.h>
+ #include <linux/skbuff.h>
+ #include <asm/cacheflush.h>
+ 
+@@ -1132,13 +1134,16 @@ static int request_and_map(struct platform_device *pdev, const char *name,
+ static int altera_tse_probe(struct platform_device *pdev)
+ {
+ 	const struct of_device_id *of_id = NULL;
++	struct regmap_config pcs_regmap_cfg;
+ 	struct altera_tse_private *priv;
++	struct mdio_regmap_config mrc;
+ 	struct resource *control_port;
++	struct regmap *pcs_regmap;
+ 	struct resource *dma_res;
+ 	struct resource *pcs_res;
++	struct mii_bus *pcs_bus;
+ 	struct net_device *ndev;
+ 	void __iomem *descmap;
+-	int pcs_reg_width = 2;
+ 	int ret = -ENODEV;
+ 
+ 	ndev = alloc_etherdev(sizeof(struct altera_tse_private));
+@@ -1255,12 +1260,32 @@ static int altera_tse_probe(struct platform_device *pdev)
+ 	 * address space, but if it's not the case, we fallback to the mdiophy0
+ 	 * from the MAC's address space
+ 	 */
+-	ret = request_and_map(pdev, "pcs", &pcs_res,
+-			      &priv->pcs_base);
++	ret = request_and_map(pdev, "pcs", &pcs_res, &priv->pcs_base);
+ 	if (ret) {
++		/* If we can't find a dedicated resource for the PCS, fallback
++		 * to the internal PCS, that has a different address stride
++		 */
+ 		priv->pcs_base = priv->mac_dev + tse_csroffs(mdio_phy0);
+-		pcs_reg_width = 4;
++		pcs_regmap_cfg.reg_bits = 32;
++		/* Values are MDIO-like values, on 16 bits */
++		pcs_regmap_cfg.val_bits = 16;
++		pcs_regmap_cfg.reg_shift = REGMAP_UPSHIFT(2);
++	} else {
++		pcs_regmap_cfg.reg_bits = 16;
++		pcs_regmap_cfg.val_bits = 16;
++		pcs_regmap_cfg.reg_shift = REGMAP_UPSHIFT(1);
 +	}
 +
-+	return mii;
-+}
-+EXPORT_SYMBOL_GPL(devm_mdio_regmap_register);
++	/* Create a regmap for the PCS so that it can be used by the PCS driver */
++	pcs_regmap = devm_regmap_init_mmio(&pdev->dev, priv->pcs_base,
++					   &pcs_regmap_cfg);
++	if (IS_ERR(pcs_regmap)) {
++		ret = PTR_ERR(pcs_regmap);
++		goto err_free_netdev;
+ 	}
++	mrc.regmap = pcs_regmap;
++	mrc.parent = &pdev->dev;
++	mrc.valid_addr = 0x0;
+ 
+ 	/* Rx IRQ */
+ 	priv->rx_irq = platform_get_irq_byname(pdev, "rx_irq");
+@@ -1384,7 +1409,18 @@ static int altera_tse_probe(struct platform_device *pdev)
+ 			 (unsigned long) control_port->start, priv->rx_irq,
+ 			 priv->tx_irq);
+ 
+-	priv->pcs = alt_tse_pcs_create(ndev, priv->pcs_base, pcs_reg_width);
++	snprintf(mrc.name, MII_BUS_ID_SIZE, "%s-pcs-mii", ndev->name);
++	pcs_bus = devm_mdio_regmap_register(&pdev->dev, &mrc);
++	if (IS_ERR(pcs_bus)) {
++		ret = PTR_ERR(pcs_bus);
++		goto err_init_pcs;
++	}
 +
-+MODULE_DESCRIPTION("MDIO API over regmap");
-+MODULE_AUTHOR("Maxime Chevallier <maxime.chevallier@bootlin.com>");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/mdio/mdio-regmap.h b/include/linux/mdio/mdio-regmap.h
-new file mode 100644
-index 000000000000..679d9069846b
---- /dev/null
-+++ b/include/linux/mdio/mdio-regmap.h
-@@ -0,0 +1,26 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Driver for MMIO-Mapped MDIO devices. Some IPs expose internal PHYs or PCS
-+ * within the MMIO-mapped area
-+ *
-+ * Copyright (C) 2023 Maxime Chevallier <maxime.chevallier@bootlin.com>
-+ */
-+#ifndef MDIO_REGMAP_H
-+#define MDIO_REGMAP_H
++	priv->pcs = lynx_pcs_create_mdiodev(pcs_bus, 0);
++	if (IS_ERR(priv->pcs)) {
++		ret = PTR_ERR(priv->pcs);
++		goto err_init_pcs;
++	}
+ 
+ 	priv->phylink_config.dev = &ndev->dev;
+ 	priv->phylink_config.type = PHYLINK_NETDEV;
+@@ -1407,12 +1443,13 @@ static int altera_tse_probe(struct platform_device *pdev)
+ 	if (IS_ERR(priv->phylink)) {
+ 		dev_err(&pdev->dev, "failed to create phylink\n");
+ 		ret = PTR_ERR(priv->phylink);
+-		goto err_init_phy;
++		goto err_init_phylink;
+ 	}
+ 
+ 	return 0;
+-
+-err_init_phy:
++err_init_phylink:
++	lynx_pcs_destroy(priv->pcs);
++err_init_pcs:
+ 	unregister_netdev(ndev);
+ err_register_netdev:
+ 	netif_napi_del(&priv->napi);
+@@ -1433,6 +1470,8 @@ static int altera_tse_remove(struct platform_device *pdev)
+ 	altera_tse_mdio_destroy(ndev);
+ 	unregister_netdev(ndev);
+ 	phylink_destroy(priv->phylink);
++	lynx_pcs_destroy(priv->pcs);
 +
-+#include <linux/phy.h>
-+
-+struct device;
-+struct regmap;
-+
-+struct mdio_regmap_config {
-+	struct device *parent;
-+	struct regmap *regmap;
-+	char name[MII_BUS_ID_SIZE];
-+	u8 valid_addr;
-+	bool autoscan;
-+};
-+
-+struct mii_bus *devm_mdio_regmap_register(struct device *dev,
-+					  const struct mdio_regmap_config *config);
-+
-+#endif
+ 	free_netdev(ndev);
+ 
+ 	return 0;
 -- 
 2.40.1
 
