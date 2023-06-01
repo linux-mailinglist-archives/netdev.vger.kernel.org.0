@@ -1,136 +1,139 @@
-Return-Path: <netdev+bounces-7072-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7073-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B93C2719A70
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 13:01:35 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4404A719A85
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 13:07:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4E70D1C20B5E
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 11:01:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CC7F51C20ADE
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 11:07:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F1E1923417;
-	Thu,  1 Jun 2023 11:01:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D67A92341E;
+	Thu,  1 Jun 2023 11:07:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E680723402
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 11:01:32 +0000 (UTC)
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B77199
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 04:01:27 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-144-KQsI8QU2NXmzXqmxFLGEwA-1; Thu, 01 Jun 2023 12:01:24 +0100
-X-MC-Unique: KQsI8QU2NXmzXqmxFLGEwA-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 1 Jun
- 2023 12:01:21 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.048; Thu, 1 Jun 2023 12:01:21 +0100
-From: David Laight <David.Laight@ACULAB.COM>
-To: 'David Howells' <dhowells@redhat.com>, Jakub Kicinski <kuba@kernel.org>
-CC: "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "David S. Miller"
-	<davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Paolo Abeni
-	<pabeni@redhat.com>, Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	David Ahern <dsahern@kernel.org>, Matthew Wilcox <willy@infradead.org>, "Jens
- Axboe" <axboe@kernel.dk>, "linux-mm@kvack.org" <linux-mm@kvack.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Chuck Lever
-	<chuck.lever@oracle.com>, Boris Pismenny <borisp@nvidia.com>, John Fastabend
-	<john.fastabend@gmail.com>, Christoph Hellwig <hch@infradead.org>, "Linus
- Torvalds" <torvalds@linux-foundation.org>
-Subject: RE: Bug in short splice to socket?
-Thread-Topic: Bug in short splice to socket?
-Thread-Index: AQHZk0XbNwrvw6NqbEOlRWOj/YHtG691x/2w
-Date: Thu, 1 Jun 2023 11:01:21 +0000
-Message-ID: <3009021da34b4d70a839c1f0a40ffc58@AcuMS.aculab.com>
-References: <20230526180844.73745d78@kernel.org>
- <20230524153311.3625329-1-dhowells@redhat.com>
- <20230524153311.3625329-10-dhowells@redhat.com>
- <499791.1685485603@warthog.procyon.org.uk>
-In-Reply-To: <499791.1685485603@warthog.procyon.org.uk>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83C8423404;
+	Thu,  1 Jun 2023 11:07:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A781FC433D2;
+	Thu,  1 Jun 2023 11:07:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685617670;
+	bh=+Yjm8puKI4qcOhrAjHQoPXnOlN6+/fj9nQ2KMrVKq+A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=RhP2k+/FQSvli7tGw2eOKlboTIMhAX1rWIMmQojkSItsf7Pbu27Voz4XKQfKsJMv+
+	 yk64a7+GnLa0AXm5NTg7oxgCbiU/vvM5YtvO42iXWm3c1dvWeuqaT9QYECD04AjLI8
+	 +kurm3Gcj765DCLAHDCbNzTJmkHWERuX8j+NWUQrH79TGx2XeQSd0dO1NOebia9EMt
+	 dJu6ZE7ylH9284d9jqvK6St/2YUkHNw8jD2OIGo2TbwtTLSoShdT9QABDGhevJVWTD
+	 pUczYlcvfwWLpOJgcn012xrthp2r+mfy68euX8CFvo6UC393XjO1m9JQnHYF6C6kEn
+	 C9f6ivmZ7x+Ew==
+Date: Thu, 1 Jun 2023 14:07:13 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	"David S. Miller" <davem@davemloft.net>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	Kent Overstreet <kent.overstreet@linux.dev>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Russell King <linux@armlinux.org.uk>, Song Liu <song@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
+	bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-mips@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, linux-parisc@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	loongarch@lists.linux.dev, netdev@vger.kernel.org,
+	sparclinux@vger.kernel.org, x86@kernel.org
+Subject: Re: [PATCH 12/13] x86/jitalloc: prepare to allocate exectuatble
+ memory as ROX
+Message-ID: <20230601110713.GE395338@kernel.org>
+References: <20230601101257.530867-1-rppt@kernel.org>
+ <20230601101257.530867-13-rppt@kernel.org>
+ <20230601103050.GT4253@hirez.programming.kicks-ass.net>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230601103050.GT4253@hirez.programming.kicks-ass.net>
 
-From: David Howells
-> Sent: 30 May 2023 23:27
->=20
-> Jakub Kicinski <kuba@kernel.org> wrote:
->=20
-> > Will the TLS selftests under tools/.../net/tls.c exercise this?
->=20
-> Interesting.  Now that you've pointed me at it, I've tried running it.  M=
-ostly
-> it passes, but I'm having some problems with the multi_chunk_sendfile tes=
-ts
-> that time out.  I think that splice_direct_to_actor() has a bug.  The pro=
-blem
-> is this bit of code:
->=20
-> =09=09/*
-> =09=09 * If more data is pending, set SPLICE_F_MORE
-> =09=09 * If this is the last data and SPLICE_F_MORE was not set
-> =09=09 * initially, clears it.
-> =09=09 */
-> =09=09if (read_len < len)
-> =09=09=09sd->flags |=3D SPLICE_F_MORE;
-> =09=09else if (!more)
-> =09=09=09sd->flags &=3D ~SPLICE_F_MORE;
->=20
-> When used with sendfile(), it sets SPLICE_F_MORE (which causes MSG_MORE t=
-o be
-> passed to the network protocol) if we haven't yet read everything that th=
-e
-> user requested and clears it if we fulfilled what the user requested.
->=20
-> This has the weird effect that MSG_MORE gets kind of inverted.  It's neve=
-r
-> seen by the actor if we can read the entire request into the pipe - excep=
-t if
-> we hit the EOF first.  If we hit the EOF before we fulfil the entire requ=
-est,
-> we get a short read and SPLICE_F_MORE and thus MSG_MORE *is* set.  The
-> upstream TLS code ignores it - but I'm changing this with my patches as
-> sendmsg() then uses it to mark the EOR.
+On Thu, Jun 01, 2023 at 12:30:50PM +0200, Peter Zijlstra wrote:
+> On Thu, Jun 01, 2023 at 01:12:56PM +0300, Mike Rapoport wrote:
+> 
+> > +static void __init_or_module do_text_poke(void *addr, const void *opcode, size_t len)
+> > +{
+> > +	if (system_state < SYSTEM_RUNNING) {
+> > +		text_poke_early(addr, opcode, len);
+> > +	} else {
+> > +		mutex_lock(&text_mutex);
+> > +		text_poke(addr, opcode, len);
+> > +		mutex_unlock(&text_mutex);
+> > +	}
+> > +}
+> 
+> So I don't much like do_text_poke(); why?
 
-Isn't MSG_MORE supposed to be just a hint that more data will follow.
-So you'd expect a final send with MSG_MORE to get sent, but possibly
-after a short timeout.
+I believe the idea was to keep memcpy for early boot before the kernel
+image is protected without going and adding if (is_module_text_address())
+all over the place.
 
-Using it as a record marker seems wrong.
+I think this can be used instead without updating all the call sites of
+text_poke_early():
 
-I'm not sure how to clear 'Oh bugger I set MSG_MORE but have no data'
-to avoid the timeout.
-A zero length semdmsg() won't DTRT with protocols like SCTP.
-(Does splice even do anything sensible with SCTP?)
+diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+index 91057de8e6bc..f994e63e9903 100644
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -1458,7 +1458,7 @@ void __init_or_module text_poke_early(void *addr, const void *opcode,
+ 		 * code cannot be running and speculative code-fetches are
+ 		 * prevented. Just change the code.
+ 		 */
+-		memcpy(addr, opcode, len);
++		text_poke_copy(addr, opcode, len);
+ 	} else {
+ 		local_irq_save(flags);
+ 		memcpy(addr, opcode, len);
+ 
+> > diff --git a/arch/x86/kernel/ftrace.c b/arch/x86/kernel/ftrace.c
+> > index aa99536b824c..d50595f2c1a6 100644
+> > --- a/arch/x86/kernel/ftrace.c
+> > +++ b/arch/x86/kernel/ftrace.c
+> > @@ -118,10 +118,13 @@ ftrace_modify_code_direct(unsigned long ip, const char *old_code,
+> >  		return ret;
+> >  
+> >  	/* replace the text with the new text */
+> > -	if (ftrace_poke_late)
+> > +	if (ftrace_poke_late) {
+> >  		text_poke_queue((void *)ip, new_code, MCOUNT_INSN_SIZE, NULL);
+> > -	else
+> > -		text_poke_early((void *)ip, new_code, MCOUNT_INSN_SIZE);
+> > +	} else {
+> > +		mutex_lock(&text_mutex);
+> > +		text_poke((void *)ip, new_code, MCOUNT_INSN_SIZE);
+> > +		mutex_unlock(&text_mutex);
+> > +	}
+> >  	return 0;
+> >  }
+> 
+> And in the above case it's actively wrong for loosing the _queue()
+> thing.
 
-=09David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1=
-PT, UK
-Registration No: 1397386 (Wales)
-
+-- 
+Sincerely yours,
+Mike.
 
