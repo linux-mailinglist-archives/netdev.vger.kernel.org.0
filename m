@@ -1,129 +1,123 @@
-Return-Path: <netdev+bounces-8960-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7024-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 27C05726685
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 18:54:15 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id E41547194D5
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 09:59:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 854F61C209E8
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 16:54:11 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1F4701C20FDE
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 07:59:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4FEA935B21;
-	Wed,  7 Jun 2023 16:54:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C4F99C2EC;
+	Thu,  1 Jun 2023 07:59:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4540263B5
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 16:54:12 +0000 (UTC)
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61011FE9;
-	Wed,  7 Jun 2023 09:54:03 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id 41be03b00d2f7-53fbb3a013dso6950723a12.1;
-        Wed, 07 Jun 2023 09:54:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686156843; x=1688748843;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=54+qi/h0dgjEiscE3jr8CCpbJikBz1EP/4AV4WdE4uA=;
-        b=Y0KoLQYaVs/x/uZp6sPOZL1DtjPxKsuHogteQgI7gi4ksgnssk/h5AP4Xqi7YXS4Du
-         X0YYdyTW49qXUruen2a9EoNULB27nBj2CcCR7X2DZ3H1RaRpAEsqaCL23H3fIEMWm8Da
-         GGB2+I4XzJxZFY94NjuHz2XMfuHYaXGAwAbgPD+1zRw33J4YOWC1EntopGcp/Mlnesld
-         Y2OuAu5rjgEvMwcf9jgvfO02siSdQhKJlfMKczIykXGR32n8P2nQTFiTs2VAvNdJkrkn
-         hhKWCcdNOkJVT/TVfR0uRpyW9d6UfOdxhzo1yeaoAYXj/6X5BA+TtuGdFNmKpSMOM+9f
-         MebA==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9075BE7F
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 07:59:00 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249331AE
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 00:58:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685606338;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=TS9b3RiFkUpCZDdrYBHho5/2B8BOEzYrjzr41mSr/Ds=;
+	b=MkpTpAKnKSHO+q1DzI++y59XnqgDX4HLqxfs7U/LrgGPbzo7zAzhg+2ZVOVp6REpb9o/P+
+	5H58/zUAO1OR4AIAfYE6ZrLhqhgU/KuRqUsODDV/gGkXSy5Vj8XsZ9+26d2wRy/jeC9QrY
+	+IaExL1IZWrSDQ1LycA4zU/gBf4Rjg0=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-271-BpjhA1oHNa-_7FOJlCrZHQ-1; Thu, 01 Jun 2023 03:58:57 -0400
+X-MC-Unique: BpjhA1oHNa-_7FOJlCrZHQ-1
+Received: by mail-ej1-f70.google.com with SMTP id a640c23a62f3a-96f6fee8123so32522266b.0
+        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 00:58:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686156843; x=1688748843;
+        d=1e100.net; s=20221208; t=1685606336; x=1688198336;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=54+qi/h0dgjEiscE3jr8CCpbJikBz1EP/4AV4WdE4uA=;
-        b=LrH2h9EJu00IkdiFlxkZkZbH5rFJOgqXqPXN5oD0pkPml35LhuuLGh++fm081N95cx
-         CVPdhor9vXdgdHgQjxLPunDjN6UQwn7rjJQj03Nufc3Wx32Vd/sFe8/o9ZaMRhDhl2Km
-         vFWnDkm+4UYM6txrHop4D8N5Ds2MFrO0zXahujy1IdZ7Z07qNUwv72sHVPHIUYd6IFv7
-         kGiZZ5Zw7qvXJQtPZnV4zmxouOv8DlgunG0UQzYGfLS9IV6lY2EZoHTpm+mOFWa8Z+15
-         nnbolBEFErJoXx7D+A/EgzGhYK1BNue5nfTFyecLv3CiIEi4TF1dCR1zFZoAZ1/U/0vG
-         e2iQ==
-X-Gm-Message-State: AC+VfDzbfkAqjUUyg+U4HbLFAiOQ0KfeTNOGgMfmBqwc4EDwcsN1Amju
-	ht1WnqtPMOTsCHqyiK1+xls=
-X-Google-Smtp-Source: ACHHUZ5Q6QKhrwvqRGpZjrJLLYXFFObmXo+JbPl75BNIiN9vCn525+V+0eOVVMY/7ACsH9rbz6VtZg==
-X-Received: by 2002:a17:903:41c6:b0:1b1:ac87:b47a with SMTP id u6-20020a17090341c600b001b1ac87b47amr6806648ple.65.1686156843148;
-        Wed, 07 Jun 2023 09:54:03 -0700 (PDT)
-Received: from localhost (ec2-52-8-182-0.us-west-1.compute.amazonaws.com. [52.8.182.0])
-        by smtp.gmail.com with ESMTPSA id ik8-20020a170902ab0800b001ae0152d280sm10792502plb.193.2023.06.07.09.54.02
+        bh=TS9b3RiFkUpCZDdrYBHho5/2B8BOEzYrjzr41mSr/Ds=;
+        b=bby46yDNeT7ld+XYNHyth0wBsiqwwRF8uCGP99gACtS/Z4d1FZuRq2hNDJmFG7wYDn
+         UwUs2m8iAOrhGnrXXPIwJ2ew54GAQ2jWOH16kCXrwlas3ckyTHzsvwI9ynk7CIrXEdvU
+         Ku3NcigqK3y6tFeTrQDAIBnrL9koZ+9J4qKfF7vLiZB8FCBhvy1FKudq+PbYqQAGkaVf
+         xqBjldQbioH9+KikoquWFzAyA8pRNn+XB55P6MnUYKsPxq4m7TT/zmy/yrTzthPmMO1S
+         7iiHyWth4uaFzJAJ9GVlP6tvY9egL5mqXMvd5qljYzij7VY5GrNIKd9+7+EvgvgFO8WC
+         3knA==
+X-Gm-Message-State: AC+VfDw0dxCFBcByoWO/k6gcgehfzEXO5SQLi0G6MFDsDUX0j7ncPxS0
+	oSwAj1I5OdWBf3pr/rA514S+iqIldmbfOQLZ1tRkNoBVwBT+xlvE2eI+T14XDl3Mlatymp8HPEz
+	CHXNZv9z00Si4Jlkr
+X-Received: by 2002:a17:907:6d1d:b0:96a:1c2a:5a38 with SMTP id sa29-20020a1709076d1d00b0096a1c2a5a38mr7615762ejc.11.1685606335951;
+        Thu, 01 Jun 2023 00:58:55 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6ie3v5LmwvGb/KlhSkOFjqXmTaLy6LzatU5TWS+dAPKf5UfysEeO19vXwVk6f6zCMci8fpbA==
+X-Received: by 2002:a17:907:6d1d:b0:96a:1c2a:5a38 with SMTP id sa29-20020a1709076d1d00b0096a1c2a5a38mr7615751ejc.11.1685606335678;
+        Thu, 01 Jun 2023 00:58:55 -0700 (PDT)
+Received: from sgarzare-redhat ([134.0.3.103])
+        by smtp.gmail.com with ESMTPSA id g5-20020a1709064e4500b0096f6647b5e8sm10183211ejw.64.2023.06.01.00.58.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jun 2023 09:54:02 -0700 (PDT)
-Date: Thu, 1 Jun 2023 07:54:07 +0000
-From: Bobby Eshleman <bobbyeshleman@gmail.com>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: Simon Horman <simon.horman@corigine.com>,
-	Bobby Eshleman <bobby.eshleman@bytedance.com>,
-	Stefan Hajnoczi <stefanha@redhat.com>,
-	Stefano Garzarella <sgarzare@redhat.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Jason Wang <jasowang@redhat.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	"K. Y. Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-	Bryan Tan <bryantan@vmware.com>, Vishnu Dasa <vdasa@vmware.com>,
-	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-	kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH RFC net-next v3 6/8] virtio/vsock: support dgrams
-Message-ID: <ZHhOn7QKdByqc3m+@bullseye>
-References: <20230413-b4-vsock-dgram-v3-0-c2414413ef6a@bytedance.com>
- <20230413-b4-vsock-dgram-v3-6-c2414413ef6a@bytedance.com>
- <ZHdxJxjXDkkO03L4@corigine.com>
- <d2e9c45f-bcbd-4e6a-98c1-c98283450626@kadam.mountain>
+        Thu, 01 Jun 2023 00:58:54 -0700 (PDT)
+Date: Thu, 1 Jun 2023 09:58:47 +0200
+From: Stefano Garzarella <sgarzare@redhat.com>
+To: Bobby Eshleman <bobby.eshleman@bytedance.com>
+Cc: Stefan Hajnoczi <stefanha@redhat.com>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org, 
+	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] virtio/vsock: fix sock refcnt bug on owner set
+ failure
+Message-ID: <35xlmp65lxd4eoal2oy3lwyjxd3v22aeo2nbuyknc4372eljct@vkilkppadayd>
+References: <20230531-b4-vsock-fix-refcnt-v1-1-0ed7b697cca5@bytedance.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <d2e9c45f-bcbd-4e6a-98c1-c98283450626@kadam.mountain>
-X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+In-Reply-To: <20230531-b4-vsock-fix-refcnt-v1-1-0ed7b697cca5@bytedance.com>
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 31, 2023 at 09:13:04PM +0300, Dan Carpenter wrote:
-> On Wed, May 31, 2023 at 06:09:11PM +0200, Simon Horman wrote:
-> > > @@ -102,6 +144,7 @@ virtio_transport_alloc_skb(struct virtio_vsock_pkt_info *info,
-> > 
-> > Smatch that err may not be initialised in the out label below.
-> > 
-> > Just above this context the following appears:
-> > 
-> > 	if (info->vsk && !skb_set_owner_sk_safe(skb, sk_vsock(info->vsk))) {
-> > 		WARN_ONCE(1, "failed to allocate skb on vsock socket with sk_refcnt == 0\n");
-> > 		goto out;
-> > 	}
-> > 
-> > So I wonder if in that case err may not be initialised.
-> > 
-> 
-> Yep, exactly right.  I commented out the goto and it silenced the
-> warning.  I also initialized err to zero at the start hoping that it
-> would trigger a different warning but it didn't.  :(
-> 
-> regards,
-> dan carpenter
-> 
+On Wed, May 31, 2023 at 07:47:32PM +0000, Bobby Eshleman wrote:
+>Previous to setting the owner the socket is found via
+>vsock_find_connected_socket(), which returns sk after a call to
+>sock_hold().
+>
+>If setting the owner fails, then sock_put() needs to be called.
+>
+>Fixes: f9d2b1e146e0 ("virtio/vsock: fix leaks due to missing skb owner")
+>Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
+>---
+> net/vmw_vsock/virtio_transport_common.c | 1 +
+> 1 file changed, 1 insertion(+)
+>
+>diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>index b769fc258931..f01cd6adc5cb 100644
+>--- a/net/vmw_vsock/virtio_transport_common.c
+>+++ b/net/vmw_vsock/virtio_transport_common.c
+>@@ -1343,6 +1343,7 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
+>
+> 	if (!skb_set_owner_sk_safe(skb, sk)) {
+> 		WARN_ONCE(1, "receiving vsock socket has sk_refcnt == 0\n");
+>+		sock_put(sk);
 
-Thanks for checking that Dan. Fixed in the next rev.
+Did you have any warning, issue here?
 
-Best,
-Bobby
+IIUC skb_set_owner_sk_safe() can return false only if the ref counter
+is 0, so calling a sock_put() on it should have no effect except to
+produce a warning.
+
+Thanks,
+Stefano
+
 
