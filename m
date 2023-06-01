@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-6996-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6997-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 179AE7192E5
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 08:01:37 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C4D627192E6
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 08:01:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 84C891C20F11
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 06:01:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7FF4F281607
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 06:01:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 06952748E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A86279F8;
 	Thu,  1 Jun 2023 06:01:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 660485C85
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 06:01:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D1ACC433EF;
-	Thu,  1 Jun 2023 06:01:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F76C7483
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 06:01:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADB37C4339C;
+	Thu,  1 Jun 2023 06:01:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685599291;
-	bh=iqJKYz7g6AkjTQg/OLioQ6HUfbQWKLmZ0jZKEbNrNz4=;
-	h=From:To:Cc:Subject:Date:From;
-	b=QCMMs2VcNX9wDjnDZ/aGUwPWkEiyec4rjio90DuQ5Hpz4MKXM5qvieIApEUaOuY89
-	 F7CAC44/RbTsNbKwge7j8E4abq7L6gk35atqzJsCcbxCNiQA2+czSBninkiZTv9OF7
-	 DPGhyAwgTuRfL9tvRn5nkORSRPwWWqRnRACUBz6biPCExr8y6Lyalu/E9aB47JYJEE
-	 VomQlmI8Yr+PeyCXPQUCHqd1Y2raDp690f8dUD8Dv9jRKEYs5LYWNavg3ypMyslmV3
-	 GGDQD+p038R1LJvgnNcyJjOYb9Wd/kpg+3cdJamTrJeS43TDJXCdklCwiOmZ6NfaOq
-	 3QwaiN+mkJZVg==
+	s=k20201202; t=1685599292;
+	bh=z9WHggYUGxjp29BFpzBm/+ZwKTQDx4Ed/A7w5qs2EXE=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=mx8xKz2c9ZCfrjkbbxF6VgLBDDJthY+xlFdMzkCN9NIwVg30uGycssBYi99qYZVCx
+	 neqtLwRw8jroQncpADzXCfZNWv9fK2M1cAv8ocRAa4b9OvuDs4wWcnjgSQjNP3ubPZ
+	 r1cJA3O6JocmxYUkbDe4edPulnT4tJxWQBbQy+MTYdZ7TcujBW9sW5kPJQuBbvyFlQ
+	 hvY74f8N3pw3NQTLQiEEWY9uyhnG5GL3GnnnIMBEOPT1PeB/C+jqxqjrJC71DNQhQP
+	 0j6eWw+8dwR9oPUNlor/uomO8bK/6tfEFuBitj6Ro/cbBbNGkcq+sXZRlu6yMUCg+m
+	 jpMPPloNU4UAQ==
 From: Saeed Mahameed <saeed@kernel.org>
 To: "David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -37,11 +37,15 @@ To: "David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>
 Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	netdev@vger.kernel.org,
-	Tariq Toukan <tariqt@nvidia.com>
-Subject: [pull request][net-next 00/14] mlx5 updates 2023-05-31
-Date: Wed, 31 May 2023 23:01:04 -0700
-Message-Id: <20230601060118.154015-1-saeed@kernel.org>
+	Tariq Toukan <tariqt@nvidia.com>,
+	Mark Bloch <mbloch@nvidia.com>,
+	Roi Dayan <roid@nvidia.com>
+Subject: [net-next 01/14] net/mlx5e: en_tc, Extend peer flows to a list
+Date: Wed, 31 May 2023 23:01:05 -0700
+Message-Id: <20230601060118.154015-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230601060118.154015-1-saeed@kernel.org>
+References: <20230601060118.154015-1-saeed@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -50,127 +54,128 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Mark Bloch <mbloch@nvidia.com>
 
-This series is part 1 of 2 part series to add 4 port lag support in
-mlx5.
-For more information please see tag log below.
+Currently, mlx5e_flow is holding a pointer to a peer_flow, in case one
+was created. e.g. There is an assumption that mlx5e_flow can have only
+one peer.
+In order to support more than one peer, refactor mlx5e_flow to hold a
+list of peer flows.
 
-Please pull and let me know if there is any problem.
+Signed-off-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ .../ethernet/mellanox/mlx5/core/en/tc_priv.h  |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 43 ++++++++++++-------
+ 2 files changed, 28 insertions(+), 17 deletions(-)
 
-Thanks,
-Saeed.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h
+index ba2b1f24ff14..8a500a966f06 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h
+@@ -94,13 +94,13 @@ struct mlx5e_tc_flow {
+ 	 * destinations.
+ 	 */
+ 	struct encap_flow_item encaps[MLX5_MAX_FLOW_FWD_VPORTS];
+-	struct mlx5e_tc_flow *peer_flow;
+ 	struct mlx5e_hairpin_entry *hpe; /* attached hairpin instance */
+ 	struct list_head hairpin; /* flows sharing the same hairpin */
+ 	struct list_head peer;    /* flows with peer flow */
+ 	struct list_head unready; /* flows not ready to be offloaded (e.g
+ 				   * due to missing route)
+ 				   */
++	struct list_head peer_flows; /* flows on peer */
+ 	struct net_device *orig_dev; /* netdev adding flow first */
+ 	int tmp_entry_index;
+ 	struct list_head tmp_list; /* temporary flow list used by neigh update */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 1b0906cb57ef..de8b7a119a02 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -2074,6 +2074,8 @@ void mlx5e_put_flow_list(struct mlx5e_priv *priv, struct list_head *flow_list)
+ static void __mlx5e_tc_del_fdb_peer_flow(struct mlx5e_tc_flow *flow)
+ {
+ 	struct mlx5_eswitch *esw = flow->priv->mdev->priv.eswitch;
++	struct mlx5e_tc_flow *peer_flow;
++	struct mlx5e_tc_flow *tmp;
+ 
+ 	if (!flow_flag_test(flow, ESWITCH) ||
+ 	    !flow_flag_test(flow, DUP))
+@@ -2085,12 +2087,13 @@ static void __mlx5e_tc_del_fdb_peer_flow(struct mlx5e_tc_flow *flow)
+ 
+ 	flow_flag_clear(flow, DUP);
+ 
+-	if (refcount_dec_and_test(&flow->peer_flow->refcnt)) {
+-		mlx5e_tc_del_fdb_flow(flow->peer_flow->priv, flow->peer_flow);
+-		kfree(flow->peer_flow);
++	list_for_each_entry_safe(peer_flow, tmp, &flow->peer_flows, peer_flows) {
++		if (refcount_dec_and_test(&peer_flow->refcnt)) {
++			mlx5e_tc_del_fdb_flow(peer_flow->priv, peer_flow);
++			list_del(&peer_flow->peer_flows);
++			kfree(peer_flow);
++		}
+ 	}
+-
+-	flow->peer_flow = NULL;
+ }
+ 
+ static void mlx5e_tc_del_fdb_peer_flow(struct mlx5e_tc_flow *flow)
+@@ -4378,6 +4381,7 @@ mlx5e_alloc_flow(struct mlx5e_priv *priv, int attr_size,
+ 	INIT_LIST_HEAD(&flow->hairpin);
+ 	INIT_LIST_HEAD(&flow->l3_to_l2_reformat);
+ 	INIT_LIST_HEAD(&flow->attrs);
++	INIT_LIST_HEAD(&flow->peer_flows);
+ 	refcount_set(&flow->refcnt, 1);
+ 	init_completion(&flow->init_done);
+ 	init_completion(&flow->del_hw_done);
+@@ -4526,7 +4530,7 @@ static int mlx5e_tc_add_fdb_peer_flow(struct flow_cls_offload *f,
+ 		goto out;
+ 	}
+ 
+-	flow->peer_flow = peer_flow;
++	list_add_tail(&peer_flow->peer_flows, &flow->peer_flows);
+ 	flow_flag_set(flow, DUP);
+ 	mutex_lock(&esw->offloads.peer_mutex);
+ 	list_add_tail(&flow->peer, &esw->offloads.peer_flows);
+@@ -4824,19 +4828,26 @@ int mlx5e_stats_flower(struct net_device *dev, struct mlx5e_priv *priv,
+ 	if (!peer_esw)
+ 		goto out;
+ 
+-	if (flow_flag_test(flow, DUP) &&
+-	    flow_flag_test(flow->peer_flow, OFFLOADED)) {
+-		u64 bytes2;
+-		u64 packets2;
+-		u64 lastuse2;
++	if (flow_flag_test(flow, DUP)) {
++		struct mlx5e_tc_flow *peer_flow;
+ 
+-		if (flow_flag_test(flow, USE_ACT_STATS)) {
+-			f->use_act_stats = true;
+-		} else {
+-			counter = mlx5e_tc_get_counter(flow->peer_flow);
++		list_for_each_entry(peer_flow, &flow->peer_flows, peer_flows) {
++			u64 packets2;
++			u64 lastuse2;
++			u64 bytes2;
++
++			if (!flow_flag_test(peer_flow, OFFLOADED))
++				continue;
++			if (flow_flag_test(flow, USE_ACT_STATS)) {
++				f->use_act_stats = true;
++				break;
++			}
++
++			counter = mlx5e_tc_get_counter(peer_flow);
+ 			if (!counter)
+ 				goto no_peer_counter;
+-			mlx5_fc_query_cached(counter, &bytes2, &packets2, &lastuse2);
++			mlx5_fc_query_cached(counter, &bytes2, &packets2,
++					     &lastuse2);
+ 
+ 			bytes += bytes2;
+ 			packets += packets2;
+-- 
+2.40.1
 
-
-The following changes since commit 60cbd38bb0ad9e4395fba9c6994f258f1d6cad51:
-
-  Merge branch 'xstats-for-tc-taprio' (2023-05-31 10:00:30 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2023-05-31
-
-for you to fetch changes up to 053540c77f58313451481890336d63ab49d7e1cb:
-
-  net/mlx5: Devcom, extend mlx5_devcom_send_event to work with more than two devices (2023-05-31 22:15:40 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2023-05-31
-
-net/mlx5: Support 4 ports VF LAG, part 1/2
-
-This series continues the series[1] "Support 4 ports HCAs LAG mode"
-by Mark Bloch. This series adds support for 4 ports VF LAG (single FDB
-E-Switch).
-
-This series of patches focuses on refactoring different sections of the
-code that make assumptions about VF LAG supporting only two ports. For
-instance, it assumes that each device can only have one peer.
-
-Patches 1-5:
-- Refactor ETH handling of TC rules of eswitches with peers.
-Patch 6:
-- Refactors peer miss group table.
-Patches 7-9:
-- Refactor single FDB E-Switch creation.
-Patch 10:
-- Refactor the DR layer.
-Patches 11-14:
-- Refactors devcom layer.
-
-Next series will refactor LAG layer and enable 4 ports VF LAG.
-This series specifically allows HCAs with 4 ports to create a VF LAG
-with only 4 ports. It is not possible to create a VF LAG with 2 or 3
-ports using HCAs that have 4 ports.
-
-Currently, the Merged E-Switch feature only supports HCAs with 2 ports.
-However, upcoming patches will introduce support for HCAs with 4 ports.
-
-In order to activate VF LAG a user can execute:
-
-devlink dev eswitch set pci/0000:08:00.0 mode switchdev
-devlink dev eswitch set pci/0000:08:00.1 mode switchdev
-devlink dev eswitch set pci/0000:08:00.2 mode switchdev
-devlink dev eswitch set pci/0000:08:00.3 mode switchdev
-ip link add name bond0 type bond
-ip link set dev bond0 type bond mode 802.3ad
-ip link set dev eth2 master bond0
-ip link set dev eth3 master bond0
-ip link set dev eth4 master bond0
-ip link set dev eth5 master bond0
-
-Where eth2, eth3, eth4 and eth5 are net-interfaces of pci/0000:08:00.0
-pci/0000:08:00.1 pci/0000:08:00.2 pci/0000:08:00.3 respectively.
-
-User can verify LAG state and type via debugfs:
-/sys/kernel/debug/mlx5/0000\:08\:00.0/lag/state
-/sys/kernel/debug/mlx5/0000\:08\:00.0/lag/type
-
-[1]
-https://lore.kernel.org/netdev/20220510055743.118828-1-saeedm@nvidia.com/
-
-----------------------------------------------------------------
-Mark Bloch (3):
-      net/mlx5e: en_tc, Extend peer flows to a list
-      net/mlx5e: rep, store send to vport rules per peer
-      net/mlx5e: en_tc, re-factor query route port
-
-Shay Drory (11):
-      net/mlx5e: tc, Refactor peer add/del flow
-      net/mlx5e: Handle offloads flows per peer
-      net/mlx5: E-switch, enlarge peer miss group table
-      net/mlx5: E-switch, refactor FDB miss rule add/remove
-      net/mlx5: E-switch, Handle multiple master egress rules
-      net/mlx5: E-switch, generalize shared FDB creation
-      net/mlx5: DR, handle more than one peer domain
-      net/mlx5: Devcom, Rename paired to ready
-      net/mlx5: E-switch, mark devcom as not ready when all eswitches are unpaired
-      net/mlx5: Devcom, introduce devcom_for_each_peer_entry
-      net/mlx5: Devcom, extend mlx5_devcom_send_event to work with more than two devices
-
- .../net/ethernet/mellanox/mlx5/core/en/tc_priv.h   |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   | 137 ++++++++++++---
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   7 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 183 +++++++++++++--------
- .../mellanox/mlx5/core/esw/acl/egress_ofld.c       |  25 ++-
- .../net/ethernet/mellanox/mlx5/core/esw/acl/ofld.h |   1 +
- .../net/ethernet/mellanox/mlx5/core/esw/bridge.c   |  30 +++-
- .../ethernet/mellanox/mlx5/core/esw/bridge_mcast.c |  21 ++-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  32 +++-
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 176 +++++++++++++-------
- drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c   |   3 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.h   |   3 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   5 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.h  |   3 +-
- drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c  |  39 ++++-
- .../net/ethernet/mellanox/mlx5/core/lib/devcom.c   | 124 +++++++++-----
- .../net/ethernet/mellanox/mlx5/core/lib/devcom.h   |  35 ++--
- .../mellanox/mlx5/core/steering/dr_action.c        |   5 +-
- .../mellanox/mlx5/core/steering/dr_domain.c        |  13 +-
- .../mellanox/mlx5/core/steering/dr_ste_v0.c        |   9 +-
- .../mellanox/mlx5/core/steering/dr_ste_v1.c        |   9 +-
- .../mellanox/mlx5/core/steering/dr_types.h         |   2 +-
- .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |   5 +-
- .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |   3 +-
- 24 files changed, 603 insertions(+), 271 deletions(-)
 
