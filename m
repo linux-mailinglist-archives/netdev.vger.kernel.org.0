@@ -1,172 +1,191 @@
-Return-Path: <netdev+bounces-7026-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7027-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 62AC1719520
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 10:12:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4497071953A
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 10:17:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EF124281682
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 08:12:08 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 705A92815F5
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 08:17:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 48280D513;
-	Thu,  1 Jun 2023 08:12:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4AA27E546;
+	Thu,  1 Jun 2023 08:17:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AE0ABE7F
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 08:12:06 +0000 (UTC)
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2085.outbound.protection.outlook.com [40.107.22.85])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094E912F;
-	Thu,  1 Jun 2023 01:12:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DKZ7VRvQARdBrRHQCo02/rZssRxCE9MtZSdmrFgoSUFJ8v6EoesRD5gWby6oxbbQxT8vuIv7ZZR2LRV8eyI065yvGi8A9TcY8jsr4h0IO3OWXHEUBCPDZfxL9lz+Tm/EEB58ysTYpSLP5uAeIT456fbiWNTIs2+Aky1uiTzc6zcpLUzGZ89lrYzFjXztCXoFWlE+jFIBkdvmxj13N9SS4XHB8w/f2imYs78Ia49Of/zMOX94kX6ATQ1BjqSNCxoDMYJeD/1Xp7ymy2WNO+84+hLkWKjZkv4KDOIPDXtK39FP0Hr/eYk6a/kJkoYuUCbcMzp7bJl0G3KEic7L71RjRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jilFZmG1Bfom4yOTIX/1xudHi3d/zUFB/dxf3A/NdDc=;
- b=OaR+fqMJVubQim3D8VOzZTQH0mi3bttI2TdlzEWeK3Qq/UzJr366voY6gbBNJl3YbtbOL0/k39RArWwR1nS/37Wc4q6l2ou/F+qnME8nylM6vUE3er5JGj41hIoADNzUKYKiL+XBfKOCvT70Yzplcg3KWGVoX2HWrXKGykHbrE6Jmkemg6yiCFkAo8sMcA0jUjaLrnFFWmiPh55F7PAukuSPzc+vdvpWbHQ37/ouPBwJuw39nj21EGxoCL1muYaMaunGab6UzcEqOd4wkLNbGXnd0STJnCXGnu9zOBtErOuBN7R4eXrd8mvGNKoLPcKHDq1c/kzgFrNEm65FlqsiKA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jilFZmG1Bfom4yOTIX/1xudHi3d/zUFB/dxf3A/NdDc=;
- b=ga6ReZbFFHXe6/Y0/2N/p7vm4HG/lFVmdEUYiXwlIKAa9M4eHU1e45fLQvMwQb2JrnPFEOE0R07oT/0tluaSswN/3d8Tc3BOhviuhK4VgdhuA3pGbg2cCRnxX/qxynua7rmu3VPBW61La/cZsgDEWtFymjDQFpfJcumlVVPDfhU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by DBAPR04MB7399.eurprd04.prod.outlook.com (2603:10a6:10:1a8::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.23; Thu, 1 Jun
- 2023 08:12:01 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::47e4:eb1:e83c:fa4a]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::47e4:eb1:e83c:fa4a%4]) with mapi id 15.20.6455.020; Thu, 1 Jun 2023
- 08:12:01 +0000
-Date: Thu, 1 Jun 2023 11:11:56 +0300
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-	Bjorn Helgaas <bhelgaas@google.com>, Rob Herring <robh@kernel.org>,
-	Claudiu Manoil <claudiu.manoil@nxp.com>,
-	Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
-	Liu Peibao <liupeibao@loongson.cn>,
-	Binbin Zhou <zhoubinbin@loongson.cn>,
-	Huacai Chen <chenhuacai@loongson.cn>
-Subject: Re: [PATCH pci] PCI: don't skip probing entire device if first fn OF
- node has status = "disabled"
-Message-ID: <20230601081156.zyymihd565fscuha@skbuf>
-References: <20230531165819.phx7uwlgtvnt3tvb@skbuf>
- <ZHetDo5PozWdtrxP@bhelgaas>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZHetDo5PozWdtrxP@bhelgaas>
-X-ClientProxiedBy: FR3P281CA0190.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a4::8) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 380DFD2E3
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 08:17:52 +0000 (UTC)
+Received: from mail-io1-f78.google.com (mail-io1-f78.google.com [209.85.166.78])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08BDBFB
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 01:17:48 -0700 (PDT)
+Received: by mail-io1-f78.google.com with SMTP id ca18e2360f4ac-7773a91a912so162347139f.1
+        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 01:17:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685607467; x=1688199467;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=b3edtjvnj88PndoVpUzOMvroFERuTIEvu1uDTqw3VI4=;
+        b=fE4rjr6/Zmi0l2OckMy4OdRcCeGEFsGrdTJfvbg0uHdcSyU3YNCKqo1/HExeYrGOgw
+         9buy2clKDPIZzAEfDAdwMhlLnBp3kLQioGZUTyqtVvuwEvyDRAmOQmgMyHF9b6cA3pnD
+         ZuWgJ61vqWlGY2mmcolovIO613LGKksL69zmqVPMJh97EOXp+zUlSo0hgh7VPzPgb7P0
+         tSmaQbs28weISHXO8LkwoVDuJAjAVQK/AWUgTg5DVYsy19CHpjrmOYkAnfm7c76Mj8S2
+         eY7flpuytAnSg03WH5bhlJ7VXy48bQHHQPOG+ZWuyz8UdsJ8vewZala9I9sKcL1dYUBN
+         zYhw==
+X-Gm-Message-State: AC+VfDy7RqvevatfxxJVvpLFRr2MxiKJZpgjG650c6zgwRi2RnDLsLr2
+	j8gyvQ0fOodH5Xhtu9uGsW33K6leA9Sw2xHKcABFS9wApeFx
+X-Google-Smtp-Source: ACHHUZ5jvU5W7NceH/iaowoBjYeMRtnXvxExH2I6rRvZ8cupRZ55oFVxQGVJXOnAIHX+Y64w9OZm44Rvy/Aq20MNg3T9H8zHudbA
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|DBAPR04MB7399:EE_
-X-MS-Office365-Filtering-Correlation-Id: cd8df577-436d-4dd7-566b-08db6277dfea
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	yDVa2oWlWbkAA03QlQOLglL7nLWEhTSrjHwOoNoqV2dzMTCDq3cDbRfiuQ4oQxABe5ccjaQb1bZFsmztGC+2dHjN0z7Ftd2CbW39pJiG0v+fb8IY6NxsNX6fg/dkgAMM+x2Y+gqEB3dTgOmV8l8vlwUIQceIE8fhlnMKR4Dw/fsD+fS5ODdGml/WOs3Lq7eL8O41RE0Pzm8SVEsOqCK9XLVLVb7fc2vV/nXn8ida6fQkwl6SA9iCwJE9YneF0IN4C/TVqJWFw39/HhZ+Ztun8LJrSxDPW6D+bQ4LPSHSW+r+wHaElOXjQwRx73BbMAFL6J2Uclxh1vQH453SQYmtPxhpVssLk7TWh83E3Ibc23i/WiT+OVZ8rIOTnUz3eRu+gj6Ivj6PwSGcaZxLI8SbSk9L2bVXCDhx50V6RcE6PRxz0GBGnwJy++nAvV3Zz0Rduyw3QmoBrfKiO4me7EBcOf7hnsdWE9iuiqB2qGr8as3cStZFDoZFJmcjBCm6hMwc6tzZe0h3BH24R+QiEsktDkIGebOR5QMdtlvYCNMTMK30SQlEaAUNAwPWHSGOsr4y
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(366004)(39860400002)(346002)(136003)(396003)(376002)(451199021)(33716001)(38100700002)(86362001)(66899021)(8936002)(8676002)(41300700001)(7416002)(5660300002)(26005)(44832011)(1076003)(6506007)(6512007)(9686003)(66556008)(2906002)(186003)(83380400001)(6666004)(66476007)(316002)(6486002)(66946007)(478600001)(54906003)(4326008)(6916009);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?0vN4br9sQRWld9dGsUGbryiCTnjqU42L3od8TKm5llxaWeP+8da/U56/UPc9?=
- =?us-ascii?Q?x2dwe7t5rV0RAMer98Lb9XLPhksbbkQbznFrCJgDdHU9Gc3TCYvpuWB8mn8E?=
- =?us-ascii?Q?rxNGchjVj75on291OXpl90ktWmJ3lM6m4qR+hMWQ5b59UWPL9qfeuoWWFD7e?=
- =?us-ascii?Q?+tjZjbihOMqwExv9lOOB5wodHph2ar5omad6mwrhgv05LS+Qk9o4I0mYr501?=
- =?us-ascii?Q?uLJQaLZQpTFkHQNzmbVfLPMJa6CORB0mqBDlCHlJeJEtX7dGLJONMRBosmYF?=
- =?us-ascii?Q?cnFnVjybBugWC/H8zz5nFPhIRrmAhvasRUWeREbEvAE9tUxZf3WIR9e466yf?=
- =?us-ascii?Q?u4tfABA4GrGy2IMX9q3iFYJIEpSbtN7sQtQUQ1kPxnjhJ30WfWQ9005HoqAI?=
- =?us-ascii?Q?FXmvpeFqih3vZyJyAnPaCixowyJwPqDAmDOMKVGcrs7cpxT3mbTD3ga7G2Se?=
- =?us-ascii?Q?mZpBczZvz7mHfpUanvvKVS/ELZlUe/vTrz+3RJqsFH2uVMCzIJ8sLvBMEu5y?=
- =?us-ascii?Q?a1W911yoJDzMeksjqFC9MfTltQt+Fw3K98v/VPqKycH8a0lBYZqrzqGPSZyV?=
- =?us-ascii?Q?/BzYflHOCEt/so8blVYe6nztvqRgbA7GZtMFtd38kiWIcMec62L/6kOu/gYm?=
- =?us-ascii?Q?UBVnI6x1SvuwPpFPOordhXQpaWNX0noHDq9+W0qhImjozmuveiic/G6iVHHn?=
- =?us-ascii?Q?Q+w6/xm8u72nHpoinl9IJifzEZ+slnv3Pf5ayDLv131zELBSrAisDRAcpCln?=
- =?us-ascii?Q?y9sQVV42LQ7BdRm0gcxsXmAEXuwvHKMHd+FEJ0mgYn7kw/xdBJY6h0750ZZa?=
- =?us-ascii?Q?p61xWhagpztM3oBvKsAP0owIAjWFh5g4hRhfB21rO7MDjYQO7MQYXId3qstb?=
- =?us-ascii?Q?7Mxh8JE8RuNYuxcy8wGIBo9+cr2PCLFrx3jKNEfVbGWz8C4R4Az4zwJwIXyH?=
- =?us-ascii?Q?ARV4pwLwdAxrJxlB+tyoGEqEtNL4QyEdA+jXMK7R4JPnop6WCcgFIfxQY2fq?=
- =?us-ascii?Q?OPwiFE5EmXazajaMr9zAJ7xFg/Qhf8O0EqMAQGftP2hnE4l2VehxJ1PUaioI?=
- =?us-ascii?Q?tkFQgBrIEd5hpPEBxBeoqaqvhPqKO49KLgZ9ur2TSJWFHDnW2boU3NfbYgeE?=
- =?us-ascii?Q?EmwJd5CGDQduj0OD+Ti+L6ZLlRWWj7PZRF3F6xO5W1RW/R6XW3nTLSCqgxe+?=
- =?us-ascii?Q?xo+6ahLtZjffmREQQMZ1LA1uYlbTJrQPEcqOwbnlMW6dat7BtdcW3nk1Yl6Y?=
- =?us-ascii?Q?0EYglDcbz01jf8/6oSkXweJR8qnu4sbYe40krFDNi5zOwxZ4gSICUtBF0tPJ?=
- =?us-ascii?Q?KGlF6Mye+uT2c40FJpPv2sXs2WjGoovGgp7mWeA/hGN3Y1yF68w3Wkhy9viw?=
- =?us-ascii?Q?ytthETNZeBnUMfWmq2Cylh/pNSca2tvas/3U7FfEq2PaYDsADllA4TvauoOF?=
- =?us-ascii?Q?6vjFdwVhoz34NHkDQTBJPk5eM7y5py5HV2/F5rwkojq3XIelYeZz6Av8u8mU?=
- =?us-ascii?Q?uRfuh09taCE0XApoZPZq/88BNFru2Tnql5GomSu5g8TuIqRMRK4zCI8Q3a3x?=
- =?us-ascii?Q?Pesnvm/cDr5qEXTAVDEtR8mrtp8wbCtenwDUVOp4eDG5y4Tg8Q8rzL1TZALG?=
- =?us-ascii?Q?sA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd8df577-436d-4dd7-566b-08db6277dfea
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2023 08:12:01.3156
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2mwEiYylBgTrneKSI4Gpqo57he/KkFL/UMCXj2UjKrxRfxcBshlDgMuWpnEAzewIupyG41bREBq8/pTkMvbAfQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7399
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a02:2283:0:b0:40f:8f07:e28e with SMTP id
+ o125-20020a022283000000b0040f8f07e28emr526717jao.1.1685607467279; Thu, 01 Jun
+ 2023 01:17:47 -0700 (PDT)
+Date: Thu, 01 Jun 2023 01:17:47 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000516d5905fd0d12ec@google.com>
+Subject: [syzbot] [net?] [bpf?] general protection fault in sk_psock_verdict_data_ready
+From: syzbot <syzbot+8252ac3e16614ea0ea04@syzkaller.appspotmail.com>
+To: andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org, 
+	daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com, 
+	jakub@cloudflare.com, john.fastabend@gmail.com, kuba@kernel.org, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, pabeni@redhat.com, 
+	syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+	SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 31, 2023 at 03:24:46PM -0500, Bjorn Helgaas wrote:
-> I guess I should have asked "what bad things happen without this patch
-> and without the DT 'disabled' status"?
+Hello,
 
-Well, now that you put it this way, I do realize that things are not so
-ideal for me.
+syzbot found the following issue on:
 
-Our drivers for the functions of this device were already checking for
-of_device_is_available() during probe. So, reverting the core PCIe
-patch, they would still not register a network interface, which is good.
+HEAD commit:    4781e965e655 net: phy: broadcom: Register dummy IRQ handler
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=117277de280000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5335204dcdecfda
+dashboard link: https://syzkaller.appspot.com/bug?extid=8252ac3e16614ea0ea04
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-However (and this is the bad part), multiple functions of this PCIe
-device unfortunately share a common memory, which is not zeroized by
-hardware, and so, to avoid multi-bit ECC errors, it must be zeroized by
-software, using some memory space accesses from all functions that have
-access to that shared memory (every function zeroizes its piece of it).
-This, sadly, includes functions which have status = "disabled". See
-commit 3222b5b613db ("net: enetc: initialize RFS/RSS memories for unused
-ports too").
+Unfortunately, I don't have any reproducer for this issue yet.
 
-What we used to do was start probing a bit in enetc_pf_probe(), enable
-the memory space, zeroize our part of the shared memory, then check
-of_device_is_available() and finally, we disable the memory space again
-and exit probing with -ENODEV.
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/7a839a1e1e20/disk-4781e965.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/ceb0a7674b18/vmlinux-4781e965.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/f3e82748f103/bzImage-4781e965.xz
 
-That is not possible anymore with the core patch, because the PCIe core
-will not probe our disabled functions at all anymore.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8252ac3e16614ea0ea04@syzkaller.appspotmail.com
 
-The ENETC is not a hot-pluggable PCIe device. It uses Enhanced Allocation
-to essentially describe on-chip memory spaces, which are always present.
-So presumably, a different system-level solution to initialize those
-shared memories (U-Boot?) may be chosen, if implementing this workaround
-in Linux puts too much pressure on the PCIe core and the way in which it
-does things. Initially I didn't want to do this in prior boot stages
-because we only enable the RCEC in Linux, nothing is broken other than
-the spurious AER messages, and, you know.. the kernel may still run
-indefinitely on top of bootloaders which don't have the workaround applied.
-So working around it in Linux avoids one dependency.
+general protection fault, probably for non-canonical address 0xdffffc000000005c: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x00000000000002e0-0x00000000000002e7]
+CPU: 0 PID: 15 Comm: ksoftirqd/0 Not tainted 6.4.0-rc3-syzkaller-00588-g4781e965e655 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/16/2023
+RIP: 0010:sk_psock_verdict_data_ready+0x19f/0x3c0 net/core/skmsg.c:1213
+Code: 4c 89 e6 e8 63 70 5e f9 4d 85 e4 75 75 e8 19 74 5e f9 48 8d bb e0 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 07 02 00 00 48 89 ef ff 93 e0 02 00 00 e8 29 fd
+RSP: 0018:ffffc90000147688 EFLAGS: 00010206
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000100
+RDX: 000000000000005c RSI: ffffffff8825ceb7 RDI: 00000000000002e0
+RBP: ffff888076518c40 R08: 0000000000000007 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000008000 R15: ffff888076518c40
+FS:  0000000000000000(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f901375bab0 CR3: 000000004bf26000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ tcp_data_ready+0x10a/0x520 net/ipv4/tcp_input.c:5006
+ tcp_data_queue+0x25d3/0x4c50 net/ipv4/tcp_input.c:5080
+ tcp_rcv_established+0x829/0x1f90 net/ipv4/tcp_input.c:6019
+ tcp_v4_do_rcv+0x65a/0x9c0 net/ipv4/tcp_ipv4.c:1726
+ tcp_v4_rcv+0x2cbf/0x3340 net/ipv4/tcp_ipv4.c:2148
+ ip_protocol_deliver_rcu+0x9f/0x480 net/ipv4/ip_input.c:205
+ ip_local_deliver_finish+0x2ec/0x520 net/ipv4/ip_input.c:233
+ NF_HOOK include/linux/netfilter.h:303 [inline]
+ NF_HOOK include/linux/netfilter.h:297 [inline]
+ ip_local_deliver+0x1ae/0x200 net/ipv4/ip_input.c:254
+ dst_input include/net/dst.h:468 [inline]
+ ip_rcv_finish+0x1cf/0x2f0 net/ipv4/ip_input.c:449
+ NF_HOOK include/linux/netfilter.h:303 [inline]
+ NF_HOOK include/linux/netfilter.h:297 [inline]
+ ip_rcv+0xae/0xd0 net/ipv4/ip_input.c:569
+ __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5491
+ __netif_receive_skb+0x1f/0x1c0 net/core/dev.c:5605
+ process_backlog+0x101/0x670 net/core/dev.c:5933
+ __napi_poll+0xb7/0x6f0 net/core/dev.c:6499
+ napi_poll net/core/dev.c:6566 [inline]
+ net_rx_action+0x8a9/0xcb0 net/core/dev.c:6699
+ __do_softirq+0x1d4/0x905 kernel/softirq.c:571
+ run_ksoftirqd kernel/softirq.c:939 [inline]
+ run_ksoftirqd+0x31/0x60 kernel/softirq.c:931
+ smpboot_thread_fn+0x659/0x9e0 kernel/smpboot.c:164
+ kthread+0x344/0x440 kernel/kthread.c:379
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:sk_psock_verdict_data_ready+0x19f/0x3c0 net/core/skmsg.c:1213
+Code: 4c 89 e6 e8 63 70 5e f9 4d 85 e4 75 75 e8 19 74 5e f9 48 8d bb e0 02 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 07 02 00 00 48 89 ef ff 93 e0 02 00 00 e8 29 fd
+RSP: 0018:ffffc90000147688 EFLAGS: 00010206
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000100
+RDX: 000000000000005c RSI: ffffffff8825ceb7 RDI: 00000000000002e0
+RBP: ffff888076518c40 R08: 0000000000000007 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000008000 R15: ffff888076518c40
+FS:  0000000000000000(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f901375bab0 CR3: 000000004bf26000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	4c 89 e6             	mov    %r12,%rsi
+   3:	e8 63 70 5e f9       	callq  0xf95e706b
+   8:	4d 85 e4             	test   %r12,%r12
+   b:	75 75                	jne    0x82
+   d:	e8 19 74 5e f9       	callq  0xf95e742b
+  12:	48 8d bb e0 02 00 00 	lea    0x2e0(%rbx),%rdi
+  19:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  20:	fc ff df
+  23:	48 89 fa             	mov    %rdi,%rdx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
+  2e:	0f 85 07 02 00 00    	jne    0x23b
+  34:	48 89 ef             	mov    %rbp,%rdi
+  37:	ff 93 e0 02 00 00    	callq  *0x2e0(%rbx)
+  3d:	e8                   	.byte 0xe8
+  3e:	29 fd                	sub    %edi,%ebp
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+If the bug is already fixed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want to change bug's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the bug is a duplicate of another bug, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
 
