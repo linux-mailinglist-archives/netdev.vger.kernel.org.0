@@ -1,45 +1,76 @@
-Return-Path: <netdev+bounces-7020-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7021-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3C72B7193B2
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 08:58:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id A6D107193C5
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 09:01:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 740C01C20FD0
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 06:58:43 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 26FCD1C20F4F
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 07:01:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CC5455392;
-	Thu,  1 Jun 2023 06:58:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D4B06ADF;
+	Thu,  1 Jun 2023 07:01:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE8B31FDA
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 06:58:43 +0000 (UTC)
-Received: from cstnet.cn (smtp80.cstnet.cn [159.226.251.80])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA6EE44;
-	Wed, 31 May 2023 23:58:31 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.125])
-	by APP-01 (Coremail) with SMTP id qwCowACHj+uCQXhk1KJMCQ--.36089S2;
-	Thu, 01 Jun 2023 14:58:12 +0800 (CST)
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To: kuba@kernel.org
-Cc: davem@davemloft.net,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80A95199
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 07:01:07 +0000 (UTC)
+Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AF1A3;
+	Thu,  1 Jun 2023 00:01:05 -0700 (PDT)
+Received: by mail-oo1-xc2d.google.com with SMTP id 006d021491bc7-558565cc59bso430418eaf.0;
+        Thu, 01 Jun 2023 00:01:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685602865; x=1688194865;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ufZlzhRbgrp2ECAGGL+klhy80faTIJsC40pw0AO7I/s=;
+        b=YStVcwYM9hqQJgsRY155+ZbILLF0giQbOMCgHsvoLaIGmWRAYdASz8Wl56wm6r/H9q
+         Jsj/WQiM1qH3TcQ32k8TkLSRqu/EPfPGo69MgOAqjwLEXFfu9kiPbjjoRrxO6AM5mP/b
+         JRf3yrWLDEBmxdGQG85LcPICjjP592buGPWHAt6cYZtHlRkFsfex1eom5FrDjhAOQKYZ
+         EiuhRLFexR1Tbbp9cvG7u2nCbY3HnzemsEadP/UNabsQqAlGqIVv4srG1ooiPdN1S/2x
+         366sRBsmGhW/5Fkk13AJ8/X7XQnI/f0qU9j7TqZqRd8XsM09FdYYpgVBntPNvZ/Pcb1/
+         cmKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685602865; x=1688194865;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ufZlzhRbgrp2ECAGGL+klhy80faTIJsC40pw0AO7I/s=;
+        b=IEmfNOJ8QSjG6+jJ8k1HqOOJsQyVaQCPSL2LKVTNpfM6geHQ2vTxYpoqRAxzmnIk5v
+         9ac86qKb88soqS16xv3vzZ12L+UqbnLXFL40q6IzJG7vsDQBap4VPShoUwbyCH5M8qgV
+         jgkigcTzrLOVgKn4mOqDkDEsve3eD2yU9FaFvlyiquTZpL992Oo1FsFEKhZHSk+0XL8m
+         Dema80CMHbbbRnL5eI2dJ76afg0rBuuDZEXLAW5FEaC2sJ64ooNApSjSgKynm3gyCHpL
+         F0jC/Mjlc1oYiC/MZFODxfTAPMNl+kjSc4vfKqYGO8u92yA+movepXeNMfX98M9Bu4Ep
+         ZmfA==
+X-Gm-Message-State: AC+VfDzw/Rr+63GHvowJUiwFWLwXnAhjL9zBXpm48mL1/DeaaM3B/MHc
+	/p/g28978wIazvPsN01UR3fSX1d1hXwzsXoQfk0=
+X-Google-Smtp-Source: ACHHUZ4baPIwOegGnCejHi+mh7aZuQhlsdJwMQ6jefUHQyPArJwNd9ujW+n/AO/1O63Z2BURJHViDw==
+X-Received: by 2002:a05:6358:419b:b0:123:30e2:4cfd with SMTP id w27-20020a056358419b00b0012330e24cfdmr5972236rwc.18.1685602864726;
+        Thu, 01 Jun 2023 00:01:04 -0700 (PDT)
+Received: from dnptp-9.. ([111.198.57.33])
+        by smtp.gmail.com with ESMTPSA id s34-20020a17090a2f2500b0024df6bbf5d8sm712591pjd.30.2023.06.01.00.01.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Jun 2023 00:01:04 -0700 (PDT)
+From: Yuezhen Luan <eggcar.luan@gmail.com>
+To: jesse.brandeburg@intel.com,
+	anthony.l.nguyen@intel.com,
+	davem@davemloft.net,
 	edumazet@google.com,
-	pabeni@redhat.com,
-	davthompson@nvidia.com,
-	asmaa@nvidia.com,
-	mkl@pengutronix.de,
-	limings@nvidia.com,
+	kuba@kernel.org,
+	pabeni@redhat.com
+Cc: intel-wired-lan@lists.osuosl.org,
 	netdev@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: Re: [PATCH] mlxbf_gige: Add missing check for platform_get_irq
-Date: Thu,  1 Jun 2023 14:58:08 +0800
-Message-Id: <20230601065808.1137-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+	jacob.e.keller@intel.com,
+	Yuezhen Luan <eggcar.luan@gmail.com>
+Subject: [PATCH v2] igb: Fix extts capture value format for 82580/i354/i350
+Date: Thu,  1 Jun 2023 07:00:58 +0000
+Message-Id: <20230601070058.2117-1-eggcar.luan@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -47,63 +78,65 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:qwCowACHj+uCQXhk1KJMCQ--.36089S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7ur13KF4kArWxXw48uF4UArb_yoW8Ww1rp3
-	4rKw1furW8Jr1fKw4kCw15ua4Yya98Cr15Xr1v9a1rZasxXrn5KFyFqr4avryUGa4F939r
-	tFsI9ry8Kw47Za7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUvK14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-	6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
-	1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
-	6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
-	0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
-	8cxan2IY04v7MxkIecxEwVAFwVW8AwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbV
-	WUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF
-	67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42
-	IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF
-	0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxh
-	VjvjDU0xZFpf9x0JU-J5rUUUUU=
-X-Originating-IP: [124.16.138.125]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu,  1 Jun 2023 14:27:21 +0800 Jakub Kicinski wrote:
-> On Thu,  1 Jun 2023 14:19:08 +0800 Jiasheng Jiang wrote:
->> Add the check for the return value of the platform_get_irq and
->> return error if it fails.
->> 
->> Fixes: f92e1869d74e ("Add Mellanox BlueField Gigabit Ethernet driver")
->> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> 
-> BTW I looked thru my sent messages and I complained to you about not
-> CCing people at least twice before. Please start paying attention or
-> we'll stop paying attention to your patches.
+82580/i354/i350 features circle-counter-like timestamp registers
+that are different with newer i210. The EXTTS capture value in
+AUXTSMPx should be converted from raw circle counter value to
+timestamp value in resolution of 1 nanosec by the driver.
 
-According to the documentation of submitting patches
-(Link: https://docs.kernel.org/process/submitting-patches.html),
-I used "scripts/get_maintainer.pl" to gain the appropriate recipients
-for my patch.
-However, the "limings@nvidia.com" is not contained in the following list.
+This issue can be reproduced on i350 nics, connecting an 1PPS
+signal to a SDP pin, and run 'ts2phc' command to read external
+1PPS timestamp value. On i210 this works fine, but on i350 the
+extts is not correctly converted.
 
-"David S. Miller" <davem@davemloft.net> (maintainer:NETWORKING DRIVERS)
-Eric Dumazet <edumazet@google.com> (maintainer:NETWORKING DRIVERS)
-Jakub Kicinski <kuba@kernel.org> (maintainer:NETWORKING DRIVERS,commit_signer:5/6=83%,authored:1/6=17%,removed_lines:1/20=5%)
-Paolo Abeni <pabeni@redhat.com> (maintainer:NETWORKING DRIVERS)
-Asmaa Mnebhi <asmaa@nvidia.com> (commit_signer:4/6=67%)
-David Thompson <davthompson@nvidia.com> (commit_signer:4/6=67%,authored:4/6=67%,added_lines:94/99=95%,removed_lines:19/20=95%)
-Marc Kleine-Budde <mkl@pengutronix.de> (commit_signer:1/6=17%)
-netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
-linux-kernel@vger.kernel.org (open list)
+The i350/i354/82580's SYSTIM and other timestamp registers are
+40bit counters, presenting time range of 2^40 ns, that means these
+registers overflows every about 1099s. This causes all these regs
+can't be used directly in contrast to the newer i210/i211s.
 
-There may be a problem with the script.
-The best way is to fix it.
+The igb driver needs to convert these raw register values to
+valid time stamp format by using kernel timecounter apis for i350s
+families. Here the igb_extts() just forgot to do the convert.
 
-Thanks,
-Jiang
+Signed-off-by: Yuezhen Luan <eggcar.luan@gmail.com>
+---
+ drivers/net/ethernet/intel/igb/igb_main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 58872a4c2..bb3db387d 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -6947,6 +6947,7 @@ static void igb_extts(struct igb_adapter *adapter, int tsintr_tt)
+ 	struct e1000_hw *hw = &adapter->hw;
+ 	struct ptp_clock_event event;
+ 	struct timespec64 ts;
++	unsigned long flags;
+ 
+ 	if (pin < 0 || pin >= IGB_N_SDP)
+ 		return;
+@@ -6954,9 +6955,12 @@ static void igb_extts(struct igb_adapter *adapter, int tsintr_tt)
+ 	if (hw->mac.type == e1000_82580 ||
+ 	    hw->mac.type == e1000_i354 ||
+ 	    hw->mac.type == e1000_i350) {
+-		s64 ns = rd32(auxstmpl);
++		u64 ns = rd32(auxstmpl);
+ 
+-		ns += ((s64)(rd32(auxstmph) & 0xFF)) << 32;
++		ns += ((u64)(rd32(auxstmph) & 0xFF)) << 32;
++		spin_lock_irqsave(&adapter->tmreg_lock, flags);
++		ns = timecounter_cyc2time(&adapter->tc, ns);
++		spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
+ 		ts = ns_to_timespec64(ns);
+ 	} else {
+ 		ts.tv_nsec = rd32(auxstmpl);
+-- 
+2.34.1
 
 
