@@ -1,63 +1,63 @@
-Return-Path: <netdev+bounces-7085-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7086-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 33491719C3E
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 14:35:24 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id EAA5E719CDE
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 15:03:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 65141281794
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 12:35:22 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BDACF1C21033
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 13:03:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 95A8723423;
-	Thu,  1 Jun 2023 12:35:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 29842BA3B;
+	Thu,  1 Jun 2023 13:03:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E3391C2E
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 12:35:20 +0000 (UTC)
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A98129
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 05:35:18 -0700 (PDT)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-19f22575d89so478464fac.0
-        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 05:35:18 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1290123414
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 13:03:32 +0000 (UTC)
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CBE124
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 06:03:29 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id 5614622812f47-39831cb47c6so219987b6e.2
+        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 06:03:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1685622918; x=1688214918;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1685624608; x=1688216608;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=ik2+mR4fS3dyHRfq9L02szHNt9KX9zHrkteyOimVbHk=;
-        b=1qEcAN3a6Q/DauGVl1YiD2cIxaYLEGYr9XYtQbOXYzD/g+TLATcHGkiPS3+3H/nCnN
-         Y2Cz8FxRakFmjtrscZ1KzRPn6OyOk8M7h2T6aGVNdB4qSdv28wjQxts6ebGKUr5QPXuu
-         55R6et9K5tNWv02JScjeVdHejnzXOEb07KlJFoQfJhVOcUs8G8P7xvS1xxrNQtLzluij
-         77lbm2qH0UvoWIM8yvlw6Q1Pfy+4GXakJkIISoz2W5h4kDYvsOEIupUXRr7N/FAVjLiJ
-         5YoLwhsTu6zRiaXxas1BuuzSWduINBd3PxMyWfYl/qbchIoBvOZsW/ICzsk7krqWgKJ+
-         JftQ==
+        bh=O2MTHcbXgwFmYaKWorbkFmW7aLd8OdY8kFW4OcXEY+o=;
+        b=Pwy2GFaUzvvvdSQhZuZnSFb6BofUle+kph5ujJtlbNvuo5ifvnoFmkrQLQaYD58Ccc
+         68x7AJwX67QLclt6iyBOcrkGltFXCaXTGiIrERPpbIhEKYUOBIir1dOvKQd7JqQHY1eo
+         f8BtxCujgVK04KnI0gost7BsyDlSDh0KIiCMkeS+7UOIRttO4S6gE8xqni1uAW6bdt8B
+         EYY/R7dJA2zM8CIqVECkCfYPc8uXbo3bsvHEWHtaJyS9uZBy5VSZrVcH5P3t2+9gZep2
+         dMG7lCDSqkeiKhxhOmrlIUi+7gQTZheBP4P1Dt8mMsVLjAKI3ktjJio/hBDiiJI/UBJ0
+         cRdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685622918; x=1688214918;
+        d=1e100.net; s=20221208; t=1685624608; x=1688216608;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ik2+mR4fS3dyHRfq9L02szHNt9KX9zHrkteyOimVbHk=;
-        b=aG5XwHZURMDj+2JCCtd8CQOAHw0Q/xLZ9nl/Cw2W+qUReB2P59k1d7cltJ3rSFyP7A
-         C/VpeSXZX5IzH3XXLNzGXiHBzFp3GZTUduRmMfcdWUKmybaFLJaAUKN95FnLGhJhkTG3
-         MlpYChKbiZBf968jOecY1DJ25L+UtesLZd034v2ZzU3ATzf4sN0cHUnKGO1CnQ5fK0fv
-         ksYyDMrw59cfhTgwws7qBMvQnsb6pO9BAn2Wfgy+c6GV8DFc85CDht8aa6PxZKQHolet
-         F8qPN7i93C9So+lbX/CDhBlF1bPZRuAzUcUODWeSA/CEyCiIRlY5PrnEbIc5xGC5a2mK
-         iecQ==
-X-Gm-Message-State: AC+VfDwfjYPTLGDsYYN6x7Xc//pP2Gi8n24FsXxtYSCbeDh5G5Gt7W2R
-	fHl2V4DToHwJRDptqmB87ADajw==
-X-Google-Smtp-Source: ACHHUZ51uuvRKwSt89JYp1to9Rytyflm9R6jYGGkJumt07w2H7f+Op3aMTT9AL2BhIvf54/G2iWr6Q==
-X-Received: by 2002:a05:6871:c10d:b0:196:87c5:8881 with SMTP id yq13-20020a056871c10d00b0019687c58881mr4225010oab.10.1685622917842;
-        Thu, 01 Jun 2023 05:35:17 -0700 (PDT)
+        bh=O2MTHcbXgwFmYaKWorbkFmW7aLd8OdY8kFW4OcXEY+o=;
+        b=DKyTroI8r8+Gx2pT/0o4ISl0F98SPSIPsxkmRYYy7yayhyd8SasqeUqRUC21YWulQk
+         n/IGv5Bgh4kyxtRhQXOk8P0pEc/zXs3pBLyW16BAU4zTbFociymnG54MFdIGfvw1AgVW
+         U/4/6qzw4jKIU+PJwmxgGAF7479hhaKsufM0YU6WGfj05p2oUAYUuwAo41rU9VuXyleV
+         yBfFJRx7rkqfVtEE0kZrk4LK0rlYzbueJpDwhdxNaSybYmxHvgWIyL1wk7q86UMe8gnE
+         bT0Yi97Bu8bK3H9pyzoQjjoqMtPfFkO/bbYC1d/TREEHUkPv+Tz6kRMoF52dBXuWMhDX
+         RPow==
+X-Gm-Message-State: AC+VfDxQpL7M/be9kuVMr+5UVn5dddBJWoeIimArpNILOfjzRzmhPvCr
+	tgPLOmJISqeKQAyOzKumRkjTlPGZ9Y95lxq1dTg=
+X-Google-Smtp-Source: ACHHUZ6FoCofgxnCPboAjYphMPtuFXkNulJ/p/jUXvJ745JkpR+iBS1nt89sMQRmu97ux5PCwTGPTg==
+X-Received: by 2002:aca:6254:0:b0:38c:a20d:d376 with SMTP id w81-20020aca6254000000b0038ca20dd376mr4473852oib.39.1685624608503;
+        Thu, 01 Jun 2023 06:03:28 -0700 (PDT)
 Received: from ?IPV6:2804:14d:5c5e:44fb:6aab:7933:6a5a:53d6? ([2804:14d:5c5e:44fb:6aab:7933:6a5a:53d6])
-        by smtp.gmail.com with ESMTPSA id h43-20020a056870172b00b0019e9dd601c1sm1614690oae.55.2023.06.01.05.35.14
+        by smtp.gmail.com with ESMTPSA id k184-20020aca3dc1000000b00399ed3b7c56sm1690938oia.35.2023.06.01.06.03.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Jun 2023 05:35:17 -0700 (PDT)
-Message-ID: <4cea8b20-52dd-887e-88ce-f2af5ae95d74@mojatatu.com>
-Date: Thu, 1 Jun 2023 09:35:12 -0300
+        Thu, 01 Jun 2023 06:03:28 -0700 (PDT)
+Message-ID: <30a35b1f-9f66-f7c7-61c6-048c1b68efce@mojatatu.com>
+Date: Thu, 1 Jun 2023 10:03:22 -0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -66,17 +66,28 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.0
-Subject: Re: [PATCH net-next,v2] selftests/tc-testing: replace mq with invalid
- parent ID
+Subject: Re: [PATCH v5 net 6/6] net/sched: qdisc_destroy() old ingress and
+ clsact Qdiscs before grafting
 Content-Language: en-US
-To: Zhengchao Shao <shaozhengchao@huawei.com>, netdev@vger.kernel.org,
- linux-kselftest@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
- jiri@resnulli.us, shuah@kernel.org
-Cc: kuba@kernel.org, victor@mojatatu.com, peilin.ye@bytedance.com,
- weiyongjun1@huawei.com, yuehaibing@huawei.com
-References: <20230601012250.52738-1-shaozhengchao@huawei.com>
+To: Peilin Ye <yepeilin.cs@gmail.com>, Vlad Buslov <vladbu@nvidia.com>
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>, Jakub Kicinski <kuba@kernel.org>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Paolo Abeni <pabeni@redhat.com>, Cong Wang <xiyou.wangcong@gmail.com>,
+ Jiri Pirko <jiri@resnulli.us>, Peilin Ye <peilin.ye@bytedance.com>,
+ Daniel Borkmann <daniel@iogearbox.net>,
+ John Fastabend <john.fastabend@gmail.com>, Hillf Danton <hdanton@sina.com>,
+ netdev@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
+References: <CAM0EoM=FS2arxv0__aQXF1a7ViJnM0hST=TL9dcnJpkf-ipjvA@mail.gmail.com>
+ <7879f218-c712-e9cc-57ba-665990f5f4c9@mojatatu.com>
+ <ZHE8P9Bi6FlKz4US@C02FL77VMD6R.googleapis.com>
+ <20230526193324.41dfafc8@kernel.org>
+ <ZHG+AR8qgpJ6/Zhx@C02FL77VMD6R.googleapis.com>
+ <CAM0EoM=xLkAr5EF7bty+ETmZ3GXnmB9De3fYSCrQjKPb8qDy7Q@mail.gmail.com>
+ <87jzwrxrz8.fsf@nvidia.com> <87fs7fxov6.fsf@nvidia.com>
+ <ZHW9tMw5oCkratfs@C02FL77VMD6R.googleapis.com> <87bki2xb3d.fsf@nvidia.com>
+ <ZHgXL+Bsm2M+ZMiM@C02FL77VMD6R.googleapis.com>
 From: Pedro Tammela <pctammela@mojatatu.com>
-In-Reply-To: <20230601012250.52738-1-shaozhengchao@huawei.com>
+In-Reply-To: <ZHgXL+Bsm2M+ZMiM@C02FL77VMD6R.googleapis.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -85,70 +96,125 @@ X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 31/05/2023 22:22, Zhengchao Shao wrote:
-> The test case shown in [1] triggers the kernel to access the null pointer.
-> Therefore, add related test cases to mq.
-> The test results are as follows:
+On 01/06/2023 00:57, Peilin Ye wrote:
+> Hi Vlad and all,
 > 
-> ./tdc.py -e 0531
-> 1..1
-> ok 1 0531 - Replace mq with invalid parent ID
+> On Tue, May 30, 2023 at 03:18:19PM +0300, Vlad Buslov wrote:
+>>>> If livelock with concurrent filters insertion is an issue, then it can
+>>>> be remedied by setting a new Qdisc->flags bit
+>>>> "DELETED-REJECT-NEW-FILTERS" and checking for it together with
+>>>> QDISC_CLASS_OPS_DOIT_UNLOCKED in order to force any concurrent filter
+>>>> insertion coming after the flag is set to synchronize on rtnl lock.
+>>>
+>>> Thanks for the suggestion!  I'll try this approach.
+>>>
+>>> Currently QDISC_CLASS_OPS_DOIT_UNLOCKED is checked after taking a refcnt of
+>>> the "being-deleted" Qdisc.  I'll try forcing "late" requests (that arrive
+>>> later than Qdisc is flagged as being-deleted) sync on RTNL lock without
+>>> (before) taking the Qdisc refcnt (otherwise I think Task 1 will replay for
+>>> even longer?).
+>>
+>> Yeah, I see what you mean. Looking at the code __tcf_qdisc_find()
+>> already returns -EINVAL when q->refcnt is zero, so maybe returning
+>> -EINVAL from that function when "DELETED-REJECT-NEW-FILTERS" flags is
+>> set is also fine? Would be much easier to implement as opposed to moving
+>> rtnl_lock there.
 > 
-> ./tdc.py -c mq
-> 1..8
-> ok 1 ce7d - Add mq Qdisc to multi-queue device (4 queues)
-> ok 2 2f82 - Add mq Qdisc to multi-queue device (256 queues)
-> ok 3 c525 - Add duplicate mq Qdisc
-> ok 4 128a - Delete nonexistent mq Qdisc
-> ok 5 03a9 - Delete mq Qdisc twice
-> ok 6 be0f - Add mq Qdisc to single-queue device
-> ok 7 1023 - Show mq class
-> ok 8 0531 - Replace mq with invalid parent ID
+> I implemented [1] this suggestion and tested the livelock issue in QEMU (-m
+> 16G, CONFIG_NR_CPUS=8).  I tried deleting the ingress Qdisc (let's call it
+> "request A") while it has a lot of ongoing filter requests, and here's the
+> result:
 > 
-> [1] https://lore.kernel.org/all/20230527093747.3583502-1-shaozhengchao@huawei.com/
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-
-LGTM,
-
-Reviewed-by: Pedro Tammela <pctammela@mojatatu.com>
-
-> ---
->   .../tc-testing/tc-tests/qdiscs/mq.json        | 25 ++++++++++++++++++-
->   1 file changed, 24 insertions(+), 1 deletion(-)
+>                          #1         #2         #3         #4
+>    ----------------------------------------------------------
+>     a. refcnt            89         93        230        571
+>     b. replayed     167,568    196,450    336,291    878,027
+>     c. time real   0m2.478s   0m2.746s   0m3.693s   0m9.461s
+>             user   0m0.000s   0m0.000s   0m0.000s   0m0.000s
+>              sys   0m0.623s   0m0.681s   0m1.119s   0m2.770s
 > 
-> diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/mq.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/mq.json
-> index 44fbfc6caec7..e3d2de5c184f 100644
-> --- a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/mq.json
-> +++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/mq.json
-> @@ -155,5 +155,28 @@
->               "teardown": [
->                   "echo \"1\" > /sys/bus/netdevsim/del_device"
->               ]
-> -        }
-> +	},
-> +	{
-> +		"id": "0531",
-> +		"name": "Replace mq with invalid parent ID",
-> +		"category": [
-> +			"qdisc",
-> +			"mq"
-> +		],
-> +		"plugins": {
-> +			"requires": "nsPlugin"
-> +		},
-> +		"setup": [
-> +			"echo \"1 1 16\" > /sys/bus/netdevsim/new_device",
-> +			"$TC qdisc add dev $ETH root handle ffff: mq"
-> +		],
-> +		"cmdUnderTest": "$TC qdisc replace dev $ETH parent ffff:fff1 handle ffff: mq",
-> +		"expExitCode": "2",
-> +		"verifyCmd": "$TC qdisc show dev $ETH",
-> +		"matchPattern": "qdisc [a-zA-Z0-9_]+ 0: parent ffff",
-> +		"matchCount": "16",
-> +		"teardown": [
-> +			"echo \"1\" > /sys/bus/netdevsim/del_device"
-> +		]
-> +	}
->   ]
+>     a. is the Qdisc refcnt when A calls qdisc_graft() for the first time;
+>     b. is the number of times A has been replayed;
+>     c. is the time(1) output for A.
+> 
+> a. and b. are collected from printk() output.  This is better than before,
+> but A could still be replayed for hundreds of thousands of times and hang
+> for a few seconds.
+> 
+> Is this okay?  If not, is it possible (or should we) to make A really
+> _wait_ on Qdisc refcnt, instead of "busy-replaying"?
+> 
+> Thanks,
+> Peilin Ye
+> 
+> [1] Diff against v5 patch 6 (printk() calls not included):
+> 
+> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+> index 3e9cc43cbc90..de7b0538b309 100644
+> --- a/include/net/sch_generic.h
+> +++ b/include/net/sch_generic.h
+> @@ -94,6 +94,7 @@ struct Qdisc {
+>   #define TCQ_F_INVISIBLE                0x80 /* invisible by default in dump */
+>   #define TCQ_F_NOLOCK           0x100 /* qdisc does not require locking */
+>   #define TCQ_F_OFFLOADED                0x200 /* qdisc is offloaded to HW */
+> +#define TCQ_F_DESTROYING       0x400 /* destroying, reject filter requests */
+>          u32                     limit;
+>          const struct Qdisc_ops  *ops;
+>          struct qdisc_size_table __rcu *stab;
+> @@ -185,6 +186,11 @@ static inline bool qdisc_is_empty(const struct Qdisc *qdisc)
+>          return !READ_ONCE(qdisc->q.qlen);
+>   }
+> 
+> +static inline bool qdisc_is_destroying(const struct Qdisc *qdisc)
+> +{
+> +       return qdisc->flags & TCQ_F_DESTROYING;
+> +}
+> +
+>   /* For !TCQ_F_NOLOCK qdisc, qdisc_run_begin/end() must be invoked with
+>    * the qdisc root lock acquired.
+>    */
+> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+> index 2621550bfddc..3e7f6f286ac0 100644
+> --- a/net/sched/cls_api.c
+> +++ b/net/sched/cls_api.c
+> @@ -1172,7 +1172,7 @@ static int __tcf_qdisc_find(struct net *net, struct Qdisc **q,
+>                  *parent = (*q)->handle;
+>          } else {
+>                  *q = qdisc_lookup_rcu(dev, TC_H_MAJ(*parent));
+> -               if (!*q) {
+> +               if (!*q || qdisc_is_destroying(*q)) {
+>                          NL_SET_ERR_MSG(extack, "Parent Qdisc doesn't exists");
+>                          err = -EINVAL;
+>                          goto errout_rcu;
+> diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+> index 286b7c58f5b9..d6e47546c7fe 100644
+> --- a/net/sched/sch_api.c
+> +++ b/net/sched/sch_api.c
+> @@ -1086,12 +1086,18 @@ static int qdisc_graft(struct net_device *dev, struct Qdisc *parent,
+>                                  return -ENOENT;
+>                          }
+> 
+> -                       /* Replay if the current ingress (or clsact) Qdisc has ongoing
+> -                        * RTNL-unlocked filter request(s).  This is the counterpart of that
+> -                        * qdisc_refcount_inc_nz() call in __tcf_qdisc_find().
+> +                       /* If current ingress (clsact) Qdisc has ongoing filter requests, stop
+> +                        * accepting any more by marking it as "being destroyed", then tell the
+> +                        * caller to replay by returning -EAGAIN.
+>                           */
+> -                       if (!qdisc_refcount_dec_if_one(dev_queue->qdisc_sleeping))
+> +                       q = dev_queue->qdisc_sleeping;
+> +                       if (!qdisc_refcount_dec_if_one(q)) {
+> +                               q->flags |= TCQ_F_DESTROYING;
+> +                               rtnl_unlock();
+> +                               schedule();
+Was this intended or just a leftover?
+rtnl_lock() would reschedule if needed as it's a mutex_lock
+> +                               rtnl_lock();
+>                                  return -EAGAIN;
+> +                       }
+>                  }
+> 
+>                  if (dev->flags & IFF_UP)
+> 
 
 
