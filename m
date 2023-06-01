@@ -1,75 +1,70 @@
-Return-Path: <netdev+bounces-7021-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7022-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A6D107193C5
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 09:01:10 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4CDCE7194AA
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 09:46:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 26FCD1C20F4F
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 07:01:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A5F991C20FDD
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 07:46:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D4B06ADF;
-	Thu,  1 Jun 2023 07:01:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4C0F1BE7F;
+	Thu,  1 Jun 2023 07:46:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80A95199
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 07:01:07 +0000 (UTC)
-Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AF1A3;
-	Thu,  1 Jun 2023 00:01:05 -0700 (PDT)
-Received: by mail-oo1-xc2d.google.com with SMTP id 006d021491bc7-558565cc59bso430418eaf.0;
-        Thu, 01 Jun 2023 00:01:05 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B6B8539B
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 07:46:47 +0000 (UTC)
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3B5E46
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 00:46:45 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id ffacd0b85a97d-30ae3a399aaso84152f8f.1
+        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 00:46:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685602865; x=1688194865;
+        d=gmail.com; s=20221208; t=1685605603; x=1688197603;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ufZlzhRbgrp2ECAGGL+klhy80faTIJsC40pw0AO7I/s=;
-        b=YStVcwYM9hqQJgsRY155+ZbILLF0giQbOMCgHsvoLaIGmWRAYdASz8Wl56wm6r/H9q
-         Jsj/WQiM1qH3TcQ32k8TkLSRqu/EPfPGo69MgOAqjwLEXFfu9kiPbjjoRrxO6AM5mP/b
-         JRf3yrWLDEBmxdGQG85LcPICjjP592buGPWHAt6cYZtHlRkFsfex1eom5FrDjhAOQKYZ
-         EiuhRLFexR1Tbbp9cvG7u2nCbY3HnzemsEadP/UNabsQqAlGqIVv4srG1ooiPdN1S/2x
-         366sRBsmGhW/5Fkk13AJ8/X7XQnI/f0qU9j7TqZqRd8XsM09FdYYpgVBntPNvZ/Pcb1/
-         cmKA==
+        bh=UDvuyGKcE4u2rB8/mp0V+EeyHQy6wBtC2SMaZnT20Uw=;
+        b=NI/JOH7aY0yZWpzrD1bPO9PDnk6QZrho8b5HQ6h6l7SKFqEqpWOjJibfJ8shwSVL7L
+         QIqOl9+OW0d86Sr0awwMMua9B+9L/IPUBgolxGCORQBkJbceM19r1ie2rk2G0MhHvBxz
+         Z8NbJGxV2JFF8zjpYF0OoWTxRUVrJvc3n0riAMuf4u/V2RyxEARh2h8g5NhpTUgb2pYt
+         RqpEJQ3u4Xlt0rV2ntkwomvmneW/wwPLfYic1PZ2RjKPq3TJTnSi4vYZyma45ERtRrrV
+         eVKp8XdjWzPUaHF5a4JgR5myFEMFtZMFod1I5fZ887nHgYr0Bl2M0LysnGt+DvIsJPou
+         +SvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685602865; x=1688194865;
+        d=1e100.net; s=20221208; t=1685605603; x=1688197603;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=ufZlzhRbgrp2ECAGGL+klhy80faTIJsC40pw0AO7I/s=;
-        b=IEmfNOJ8QSjG6+jJ8k1HqOOJsQyVaQCPSL2LKVTNpfM6geHQ2vTxYpoqRAxzmnIk5v
-         9ac86qKb88soqS16xv3vzZ12L+UqbnLXFL40q6IzJG7vsDQBap4VPShoUwbyCH5M8qgV
-         jgkigcTzrLOVgKn4mOqDkDEsve3eD2yU9FaFvlyiquTZpL992Oo1FsFEKhZHSk+0XL8m
-         Dema80CMHbbbRnL5eI2dJ76afg0rBuuDZEXLAW5FEaC2sJ64ooNApSjSgKynm3gyCHpL
-         F0jC/Mjlc1oYiC/MZFODxfTAPMNl+kjSc4vfKqYGO8u92yA+movepXeNMfX98M9Bu4Ep
-         ZmfA==
-X-Gm-Message-State: AC+VfDzw/Rr+63GHvowJUiwFWLwXnAhjL9zBXpm48mL1/DeaaM3B/MHc
-	/p/g28978wIazvPsN01UR3fSX1d1hXwzsXoQfk0=
-X-Google-Smtp-Source: ACHHUZ4baPIwOegGnCejHi+mh7aZuQhlsdJwMQ6jefUHQyPArJwNd9ujW+n/AO/1O63Z2BURJHViDw==
-X-Received: by 2002:a05:6358:419b:b0:123:30e2:4cfd with SMTP id w27-20020a056358419b00b0012330e24cfdmr5972236rwc.18.1685602864726;
-        Thu, 01 Jun 2023 00:01:04 -0700 (PDT)
-Received: from dnptp-9.. ([111.198.57.33])
-        by smtp.gmail.com with ESMTPSA id s34-20020a17090a2f2500b0024df6bbf5d8sm712591pjd.30.2023.06.01.00.01.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jun 2023 00:01:04 -0700 (PDT)
-From: Yuezhen Luan <eggcar.luan@gmail.com>
-To: jesse.brandeburg@intel.com,
+        bh=UDvuyGKcE4u2rB8/mp0V+EeyHQy6wBtC2SMaZnT20Uw=;
+        b=RNu2Oa8ECSCkSNnk2z2Go0uc/Ujq5N3oEv0DidT5oSq9zS7yjC83OXJHp4YlulN3QP
+         mPeU8MCUXzhhmFWiDNmkdh64lkKED5oU1Bdklbv2iWff3HMytSyHTGn36XGc9H0eQ9OC
+         NnHX6qQprrhqodiqddZITHzMHAtto00DKIXOpCaczVyo2de/zX0UbYOLHtT4CVSoOjhy
+         bjUvgZAUZdvaxddthMP/yWM8dVyUe1+pnfFHclEts56MMbCg05Z1FP8q+O2KIEy4ubLb
+         AhI5E/1Irvjg+XlWXOOuRmOe2qQ04HipvnC074+XQg3ElQv8DHg7m7BC4Rms/f3f7bkO
+         dO1Q==
+X-Gm-Message-State: AC+VfDyOxo/vER4+xzCWbGj6AQiKT83o5LNF9gxQk9KRO4CRhRdWhkRn
+	a1W75trRKXLQreRJk9Us1k1xBWRCuhtump9RlNI=
+X-Google-Smtp-Source: ACHHUZ5ao6C+5pz+zF550bM9Hzn7MZh6x3oNgeWCAz8f8fCyHhR3KaBEgRmtv7zz3EnE8gZWMkPyiw==
+X-Received: by 2002:a5d:680b:0:b0:2f9:ee11:e5c3 with SMTP id w11-20020a5d680b000000b002f9ee11e5c3mr5807970wru.2.1685605603177;
+        Thu, 01 Jun 2023 00:46:43 -0700 (PDT)
+Received: from localhost.localdomain (h-176-10-144-222.NA.cust.bahnhof.se. [176.10.144.222])
+        by smtp.gmail.com with ESMTPSA id p12-20020adfcc8c000000b0030adfa48e1esm9350795wrj.29.2023.06.01.00.46.41
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 01 Jun 2023 00:46:42 -0700 (PDT)
+From: Magnus Karlsson <magnus.karlsson@gmail.com>
+To: magnus.karlsson@intel.com,
+	intel-wired-lan@lists.osuosl.org,
 	anthony.l.nguyen@intel.com,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com
-Cc: intel-wired-lan@lists.osuosl.org,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	jacob.e.keller@intel.com,
-	Yuezhen Luan <eggcar.luan@gmail.com>
-Subject: [PATCH v2] igb: Fix extts capture value format for 82580/i354/i350
-Date: Thu,  1 Jun 2023 07:00:58 +0000
-Message-Id: <20230601070058.2117-1-eggcar.luan@gmail.com>
+	maciej.fijalkowski@intel.com,
+	hao.ma@intel.com
+Cc: netdev@vger.kernel.org
+Subject: [PATCH iwl-next] ixgbe: allow toggling loopback mode via ndo_set_features callback
+Date: Thu,  1 Jun 2023 09:46:21 +0200
+Message-Id: <20230601074621.14755-1-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -85,57 +80,160 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-82580/i354/i350 features circle-counter-like timestamp registers
-that are different with newer i210. The EXTTS capture value in
-AUXTSMPx should be converted from raw circle counter value to
-timestamp value in resolution of 1 nanosec by the driver.
+From: Hao Ma <hao.ma@intel.com>
 
-This issue can be reproduced on i350 nics, connecting an 1PPS
-signal to a SDP pin, and run 'ts2phc' command to read external
-1PPS timestamp value. On i210 this works fine, but on i350 the
-extts is not correctly converted.
+Add support for NETIF_F_LOOPBACK. This feature can be set via: $
+ethtool -K eth0 loopback <on|off>. This sets the MAC Tx->Rx loopback
+used by selftests/bpf/xskxceiver.
 
-The i350/i354/82580's SYSTIM and other timestamp registers are
-40bit counters, presenting time range of 2^40 ns, that means these
-registers overflows every about 1099s. This causes all these regs
-can't be used directly in contrast to the newer i210/i211s.
-
-The igb driver needs to convert these raw register values to
-valid time stamp format by using kernel timecounter apis for i350s
-families. Here the igb_extts() just forgot to do the convert.
-
-Signed-off-by: Yuezhen Luan <eggcar.luan@gmail.com>
+Signed-off-by: Hao Ma <hao.ma@intel.com>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ .../net/ethernet/intel/ixgbe/ixgbe_common.c   |  4 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 73 +++++++++++++++++++
+ drivers/net/ethernet/intel/ixgbe/ixgbe_type.h |  1 +
+ 3 files changed, 76 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 58872a4c2..bb3db387d 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -6947,6 +6947,7 @@ static void igb_extts(struct igb_adapter *adapter, int tsintr_tt)
- 	struct e1000_hw *hw = &adapter->hw;
- 	struct ptp_clock_event event;
- 	struct timespec64 ts;
-+	unsigned long flags;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+index 878dd8dff528..b8998a56ad24 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+@@ -3337,7 +3337,7 @@ s32 ixgbe_check_mac_link_generic(struct ixgbe_hw *hw, ixgbe_link_speed *speed,
  
- 	if (pin < 0 || pin >= IGB_N_SDP)
- 		return;
-@@ -6954,9 +6955,12 @@ static void igb_extts(struct igb_adapter *adapter, int tsintr_tt)
- 	if (hw->mac.type == e1000_82580 ||
- 	    hw->mac.type == e1000_i354 ||
- 	    hw->mac.type == e1000_i350) {
--		s64 ns = rd32(auxstmpl);
-+		u64 ns = rd32(auxstmpl);
- 
--		ns += ((s64)(rd32(auxstmph) & 0xFF)) << 32;
-+		ns += ((u64)(rd32(auxstmph) & 0xFF)) << 32;
-+		spin_lock_irqsave(&adapter->tmreg_lock, flags);
-+		ns = timecounter_cyc2time(&adapter->tc, ns);
-+		spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
- 		ts = ns_to_timespec64(ns);
+ 	if (link_up_wait_to_complete) {
+ 		for (i = 0; i < IXGBE_LINK_UP_TIME; i++) {
+-			if (links_reg & IXGBE_LINKS_UP) {
++			if (links_reg & IXGBE_LINKS_UP || hw->loopback_on) {
+ 				*link_up = true;
+ 				break;
+ 			} else {
+@@ -3347,7 +3347,7 @@ s32 ixgbe_check_mac_link_generic(struct ixgbe_hw *hw, ixgbe_link_speed *speed,
+ 			links_reg = IXGBE_READ_REG(hw, IXGBE_LINKS);
+ 		}
  	} else {
- 		ts.tv_nsec = rd32(auxstmpl);
+-		if (links_reg & IXGBE_LINKS_UP) {
++		if (links_reg & IXGBE_LINKS_UP || hw->loopback_on) {
+ 			if (crosstalk_fix_active) {
+ 				/* Check the link state again after a delay
+ 				 * to filter out spurious link up
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 5d83c887a3fc..70b34b7b5cb0 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -8864,6 +8864,57 @@ netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff *skb,
+ 	return NETDEV_TX_OK;
+ }
+ 
++static int ixgbe_force_loopback(struct ixgbe_adapter *adapter, bool on)
++{	struct ixgbe_hw *hw = &adapter->hw;
++	u32 reg_data;
++
++	hw->loopback_on = on;
++	/* Setup MAC loopback */
++	reg_data = IXGBE_READ_REG(hw, IXGBE_HLREG0);
++	if (on)
++		reg_data |= IXGBE_HLREG0_LPBK;
++	else
++		reg_data &= ~IXGBE_HLREG0_LPBK;
++	IXGBE_WRITE_REG(hw, IXGBE_HLREG0, reg_data);
++
++	reg_data = IXGBE_READ_REG(hw, IXGBE_FCTRL);
++	if (on)
++		reg_data |= IXGBE_FCTRL_SBP | IXGBE_FCTRL_MPE;
++	else
++		reg_data &= ~(IXGBE_FCTRL_SBP | IXGBE_FCTRL_MPE);
++	reg_data &= ~(IXGBE_FCTRL_BAM);
++	IXGBE_WRITE_REG(hw, IXGBE_FCTRL, reg_data);
++
++	/* X540 and X550 needs to set the MACC.FLU bit to force link up */
++	switch (adapter->hw.mac.type) {
++	case ixgbe_mac_X540:
++	case ixgbe_mac_X550:
++	case ixgbe_mac_X550EM_x:
++	case ixgbe_mac_x550em_a:
++		reg_data = IXGBE_READ_REG(hw, IXGBE_MACC);
++		if (on)
++			reg_data |= IXGBE_MACC_FLU;
++		else
++			reg_data &= ~IXGBE_MACC_FLU;
++		IXGBE_WRITE_REG(hw, IXGBE_MACC, reg_data);
++		break;
++	default:
++		if (hw->mac.orig_autoc) {
++			if (on)
++				reg_data = hw->mac.orig_autoc | IXGBE_AUTOC_FLU;
++			else
++				reg_data = hw->mac.orig_autoc & ~IXGBE_AUTOC_FLU;
++			IXGBE_WRITE_REG(hw, IXGBE_AUTOC, reg_data);
++		} else {
++			return 10;
++		}
++	}
++
++	IXGBE_WRITE_FLUSH(hw);
++
++	return 0;
++}
++
+ static netdev_tx_t __ixgbe_xmit_frame(struct sk_buff *skb,
+ 				      struct net_device *netdev,
+ 				      struct ixgbe_ring *ring)
+@@ -9915,6 +9966,15 @@ static int ixgbe_set_features(struct net_device *netdev,
+ 	if (changed & NETIF_F_RXALL)
+ 		need_reset = true;
+ 
++	if (changed & NETIF_F_LOOPBACK) {
++		if (features & NETIF_F_LOOPBACK) {
++			ixgbe_force_loopback(adapter, true);
++		} else {
++			ixgbe_force_loopback(adapter, false);
++			need_reset = true;
++			}
++	}
++
+ 	netdev->features = features;
+ 
+ 	if ((changed & NETIF_F_HW_L2FW_DOFFLOAD) && adapter->num_rx_pools > 1)
+@@ -10286,6 +10346,17 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+ 			/* Wait until ndo_xsk_wakeup completes. */
+ 			synchronize_rcu();
+ 		err = ixgbe_setup_tc(dev, adapter->hw_tcs);
++		if (adapter->hw.loopback_on) {
++			u32 reg_data;
++
++			reg_data = IXGBE_READ_REG(&adapter->hw, IXGBE_HLREG0);
++			reg_data |= IXGBE_HLREG0_LPBK;
++			IXGBE_WRITE_REG(&adapter->hw, IXGBE_HLREG0, reg_data);
++
++			reg_data = IXGBE_READ_REG(&adapter->hw, IXGBE_MACC);
++			reg_data |= IXGBE_MACC_FLU;
++			IXGBE_WRITE_REG(&adapter->hw, IXGBE_MACC, reg_data);
++		}
+ 
+ 		if (err)
+ 			return -EINVAL;
+@@ -10969,6 +11040,8 @@ static int ixgbe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (hw->mac.type >= ixgbe_mac_82599EB)
+ 		netdev->features |= NETIF_F_SCTP_CRC | NETIF_F_GSO_UDP_L4;
+ 
++	netdev->features |= NETIF_F_LOOPBACK;
++
+ #ifdef CONFIG_IXGBE_IPSEC
+ #define IXGBE_ESP_FEATURES	(NETIF_F_HW_ESP | \
+ 				 NETIF_F_HW_ESP_TX_CSUM | \
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
+index 2b00db92b08f..ca50ccd59b50 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
+@@ -3652,6 +3652,7 @@ struct ixgbe_hw {
+ 	bool				allow_unsupported_sfp;
+ 	bool				wol_enabled;
+ 	bool				need_crosstalk_fix;
++	bool				loopback_on;
+ };
+ 
+ struct ixgbe_info {
+
+base-commit: 735c9ee9a374769b78c716de3c19a6c9440ede85
 -- 
 2.34.1
 
