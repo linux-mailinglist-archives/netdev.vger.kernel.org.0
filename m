@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-7001-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7004-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id E00707192EC
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 08:03:10 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id CA3527192EF
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 08:04:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 964F428160B
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 06:03:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 83B73281620
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 06:04:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 18749A950;
-	Thu,  1 Jun 2023 06:01:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C55A913AF0;
+	Thu,  1 Jun 2023 06:01:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B22D1BA42
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 06:01:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22234C433D2;
-	Thu,  1 Jun 2023 06:01:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A115BA5E
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 06:01:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15E4CC433EF;
+	Thu,  1 Jun 2023 06:01:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685599299;
-	bh=MDAWxVfYS8YboyTj5Pxe0e27WMK92SbdY5tmV2HlLZ0=;
+	s=k20201202; t=1685599300;
+	bh=n21YIHPF43CNZvwtbNWoJGCLIXzaxmS78hTVdXZw8SE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=c7cEdumCm62pUrzDtOxGcWRFKrej1TTb2sYVu1mfurQ7+K68FCnS2Tfwa7yTHTho/
-	 R0+Yan3DWuybo0ZbpPcJTu2nyMs8m6e3GIjhgNKFYg2ijNBaKBUhclyJB2NVEWRef4
-	 BZTM5kvwckzASYLkO6r7OAfiBQlR1LjsQ3BnBhDEgiT0t5F0x78u1HHm8PlEvzA+K7
-	 0x3BxidnBKi56T8DdOiRz5mmhegESgBdepFtV8XbrW24zHXdF/Wn5+le+KrNSKrEZa
-	 UvioH2ERtheUMf1EHANOBdIkIT8XX+YB3AhmZcjbTmsSi8Y6InMydC/IVCKdfad9zA
-	 sS4c6fi+P/cuA==
+	b=dix5IcuueYEOegW0hVvU22r3T4Y3ZqHM4Q6Ep6YMbKzWXXlPjHZdYCyrZOAg5wn+y
+	 iNpR5LgFKUowV33gvWa/7c2fo+csSb917Lcx97o6gOxbLU8sx91nTpRewNqGdSKXOm
+	 EeQ0rF0Nmnz2D1vGir/I4p6pMat5We6EmZGfXs57tG9opyGT+pOKIP/gE4j9RDG5/R
+	 pm1j6+6kuVAE4dVwZgLeylU5i8d/HnhELFp08a4ewk16MZx73u+dKD1i+myF9c5jdN
+	 dbHDSMs6TOk8QazdSCBbNKN8nk49pE4P+NUA/HgHPJdPPt55eTQz/JvtbMBU8g/4rr
+	 FIyIUDZVBcT7Q==
 From: Saeed Mahameed <saeed@kernel.org>
 To: "David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -39,11 +39,10 @@ Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	netdev@vger.kernel.org,
 	Tariq Toukan <tariqt@nvidia.com>,
 	Shay Drory <shayd@nvidia.com>,
-	Mark Bloch <mbloch@nvidia.com>,
 	Roi Dayan <roid@nvidia.com>
-Subject: [net-next 07/14] net/mlx5: E-switch, refactor FDB miss rule add/remove
-Date: Wed, 31 May 2023 23:01:11 -0700
-Message-Id: <20230601060118.154015-8-saeed@kernel.org>
+Subject: [net-next 08/14] net/mlx5: E-switch, Handle multiple master egress rules
+Date: Wed, 31 May 2023 23:01:12 -0700
+Message-Id: <20230601060118.154015-9-saeed@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230601060118.154015-1-saeed@kernel.org>
 References: <20230601060118.154015-1-saeed@kernel.org>
@@ -57,72 +56,261 @@ Content-Transfer-Encoding: 8bit
 
 From: Shay Drory <shayd@nvidia.com>
 
-Currently, E-switch FDB have a single peer miss rule.
-In order to support more than one peer, refactor E-switch FDB to
-have peer miss rule per peer, and change the code to add/remove a
-rule from specific peer.
+Currently, whenever a shared FDB is created, the slave eswitch is
+creating master egress rule to the master eswitch.
+In order to support more than two ports, which means there will be
+more than one slave eswitch, enlarge bounce_rule, which is used to
+create master egress rule, to an xarray.
 
 Signed-off-by: Shay Drory <shayd@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h        | 2 +-
- .../net/ethernet/mellanox/mlx5/core/eswitch_offloads.c   | 9 +++++----
- 2 files changed, 6 insertions(+), 5 deletions(-)
+ .../mellanox/mlx5/core/esw/acl/egress_ofld.c  | 15 +--
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |  8 +-
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 92 +++++++++++++------
+ 3 files changed, 79 insertions(+), 36 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c
+index 2e504c7461c6..ae815a8392c6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c
+@@ -15,13 +15,15 @@ static void esw_acl_egress_ofld_fwd2vport_destroy(struct mlx5_vport *vport)
+ 	vport->egress.offloads.fwd_rule = NULL;
+ }
+ 
+-static void esw_acl_egress_ofld_bounce_rule_destroy(struct mlx5_vport *vport)
++static void esw_acl_egress_ofld_bounce_rules_destroy(struct mlx5_vport *vport)
+ {
+-	if (!vport->egress.offloads.bounce_rule)
+-		return;
++	struct mlx5_flow_handle *bounce_rule;
++	unsigned long i;
+ 
+-	mlx5_del_flow_rules(vport->egress.offloads.bounce_rule);
+-	vport->egress.offloads.bounce_rule = NULL;
++	xa_for_each(&vport->egress.offloads.bounce_rules, i, bounce_rule) {
++		mlx5_del_flow_rules(bounce_rule);
++		xa_erase(&vport->egress.offloads.bounce_rules, i);
++	}
+ }
+ 
+ static int esw_acl_egress_ofld_fwd2vport_create(struct mlx5_eswitch *esw,
+@@ -96,7 +98,7 @@ static void esw_acl_egress_ofld_rules_destroy(struct mlx5_vport *vport)
+ {
+ 	esw_acl_egress_vlan_destroy(vport);
+ 	esw_acl_egress_ofld_fwd2vport_destroy(vport);
+-	esw_acl_egress_ofld_bounce_rule_destroy(vport);
++	esw_acl_egress_ofld_bounce_rules_destroy(vport);
+ }
+ 
+ static int esw_acl_egress_ofld_groups_create(struct mlx5_eswitch *esw,
+@@ -194,6 +196,7 @@ int esw_acl_egress_ofld_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport
+ 		vport->egress.acl = NULL;
+ 		return err;
+ 	}
++	vport->egress.type = VPORT_EGRESS_ACL_TYPE_DEFAULT;
+ 
+ 	err = esw_acl_egress_ofld_groups_create(esw, vport);
+ 	if (err)
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-index eadc39542e5e..2a941e1cc686 100644
+index 2a941e1cc686..05ae1c3a6e68 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -218,7 +218,7 @@ struct mlx5_eswitch_fdb {
- 			struct mlx5_flow_group *send_to_vport_grp;
- 			struct mlx5_flow_group *send_to_vport_meta_grp;
- 			struct mlx5_flow_group *peer_miss_grp;
--			struct mlx5_flow_handle **peer_miss_rules;
-+			struct mlx5_flow_handle **peer_miss_rules[MLX5_MAX_PORTS];
- 			struct mlx5_flow_group *miss_grp;
- 			struct mlx5_flow_handle **send_to_vport_meta_rules;
- 			struct mlx5_flow_handle *miss_rule_uni;
+@@ -123,8 +123,14 @@ struct vport_ingress {
+ 	} offloads;
+ };
+ 
++enum vport_egress_acl_type {
++	VPORT_EGRESS_ACL_TYPE_DEFAULT,
++	VPORT_EGRESS_ACL_TYPE_SHARED_FDB,
++};
++
+ struct vport_egress {
+ 	struct mlx5_flow_table *acl;
++	enum vport_egress_acl_type type;
+ 	struct mlx5_flow_handle  *allowed_vlan;
+ 	struct mlx5_flow_group *vlan_grp;
+ 	union {
+@@ -136,7 +142,7 @@ struct vport_egress {
+ 		struct {
+ 			struct mlx5_flow_group *fwd_grp;
+ 			struct mlx5_flow_handle *fwd_rule;
+-			struct mlx5_flow_handle *bounce_rule;
++			struct xarray bounce_rules;
+ 			struct mlx5_flow_group *bounce_grp;
+ 		} offloads;
+ 	};
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index ca69ed487413..a7f352777d9e 100644
+index a7f352777d9e..ce70320b89b3 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -1132,7 +1132,7 @@ static int esw_add_fdb_peer_miss_rules(struct mlx5_eswitch *esw,
- 		flows[vport->index] = flow;
- 	}
+@@ -2512,6 +2512,7 @@ static int __esw_set_master_egress_rule(struct mlx5_core_dev *master,
+ 					struct mlx5_vport *vport,
+ 					struct mlx5_flow_table *acl)
+ {
++	u16 slave_index = MLX5_CAP_GEN(slave, vhca_id);
+ 	struct mlx5_flow_handle *flow_rule = NULL;
+ 	struct mlx5_flow_destination dest = {};
+ 	struct mlx5_flow_act flow_act = {};
+@@ -2527,8 +2528,7 @@ static int __esw_set_master_egress_rule(struct mlx5_core_dev *master,
+ 	misc = MLX5_ADDR_OF(fte_match_param, spec->match_value,
+ 			    misc_parameters);
+ 	MLX5_SET(fte_match_set_misc, misc, source_port, MLX5_VPORT_UPLINK);
+-	MLX5_SET(fte_match_set_misc, misc, source_eswitch_owner_vhca_id,
+-		 MLX5_CAP_GEN(slave, vhca_id));
++	MLX5_SET(fte_match_set_misc, misc, source_eswitch_owner_vhca_id, slave_index);
  
--	esw->fdb_table.offloads.peer_miss_rules = flows;
-+	esw->fdb_table.offloads.peer_miss_rules[mlx5_get_dev_index(peer_dev)] = flows;
+ 	misc = MLX5_ADDR_OF(fte_match_param, spec->match_criteria, misc_parameters);
+ 	MLX5_SET_TO_ONES(fte_match_set_misc, misc, source_port);
+@@ -2543,44 +2543,35 @@ static int __esw_set_master_egress_rule(struct mlx5_core_dev *master,
+ 
+ 	flow_rule = mlx5_add_flow_rules(acl, spec, &flow_act,
+ 					&dest, 1);
+-	if (IS_ERR(flow_rule))
++	if (IS_ERR(flow_rule)) {
+ 		err = PTR_ERR(flow_rule);
+-	else
+-		vport->egress.offloads.bounce_rule = flow_rule;
++	} else {
++		err = xa_insert(&vport->egress.offloads.bounce_rules,
++				slave_index, flow_rule, GFP_KERNEL);
++		if (err)
++			mlx5_del_flow_rules(flow_rule);
++	}
  
  	kvfree(spec);
- 	return 0;
-@@ -1160,13 +1160,14 @@ static int esw_add_fdb_peer_miss_rules(struct mlx5_eswitch *esw,
  	return err;
  }
  
--static void esw_del_fdb_peer_miss_rules(struct mlx5_eswitch *esw)
-+static void esw_del_fdb_peer_miss_rules(struct mlx5_eswitch *esw,
-+					struct mlx5_core_dev *peer_dev)
+-static int esw_set_master_egress_rule(struct mlx5_core_dev *master,
+-				      struct mlx5_core_dev *slave)
++static int esw_master_egress_create_resources(struct mlx5_flow_namespace *egress_ns,
++					      struct mlx5_vport *vport)
  {
- 	struct mlx5_flow_handle **flows;
- 	struct mlx5_vport *vport;
- 	unsigned long i;
+ 	int inlen = MLX5_ST_SZ_BYTES(create_flow_group_in);
+-	struct mlx5_eswitch *esw = master->priv.eswitch;
+ 	struct mlx5_flow_table_attr ft_attr = {
+-		.max_fte = 1, .prio = 0, .level = 0,
++		.max_fte = MLX5_MAX_PORTS, .prio = 0, .level = 0,
+ 		.flags = MLX5_FLOW_TABLE_OTHER_VPORT,
+ 	};
+-	struct mlx5_flow_namespace *egress_ns;
+ 	struct mlx5_flow_table *acl;
+ 	struct mlx5_flow_group *g;
+-	struct mlx5_vport *vport;
+ 	void *match_criteria;
+ 	u32 *flow_group_in;
+ 	int err;
  
--	flows = esw->fdb_table.offloads.peer_miss_rules;
-+	flows = esw->fdb_table.offloads.peer_miss_rules[mlx5_get_dev_index(peer_dev)];
+-	vport = mlx5_eswitch_get_vport(esw, esw->manager_vport);
+-	if (IS_ERR(vport))
+-		return PTR_ERR(vport);
+-
+-	egress_ns = mlx5_get_flow_vport_acl_namespace(master,
+-						      MLX5_FLOW_NAMESPACE_ESW_EGRESS,
+-						      vport->index);
+-	if (!egress_ns)
+-		return -EINVAL;
+-
+ 	if (vport->egress.acl)
+-		return -EINVAL;
++		return 0;
  
- 	mlx5_esw_for_each_vf_vport(esw, i, vport, mlx5_core_max_vfs(esw->dev))
- 		mlx5_del_flow_rules(flows[vport->index]);
-@@ -2700,7 +2701,7 @@ static void mlx5_esw_offloads_unpair(struct mlx5_eswitch *esw,
- 	mlx5e_tc_clean_fdb_peer_flows(esw);
- #endif
- 	mlx5_esw_offloads_rep_event_unpair(esw, peer_esw);
--	esw_del_fdb_peer_miss_rules(esw);
-+	esw_del_fdb_peer_miss_rules(esw, peer_esw->dev);
+ 	flow_group_in = kvzalloc(inlen, GFP_KERNEL);
+ 	if (!flow_group_in)
+@@ -2604,7 +2595,7 @@ static int esw_set_master_egress_rule(struct mlx5_core_dev *master,
+ 	MLX5_SET(create_flow_group_in, flow_group_in,
+ 		 source_eswitch_owner_vhca_id_valid, 1);
+ 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 0);
+-	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, 0);
++	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, MLX5_MAX_PORTS);
+ 
+ 	g = mlx5_create_flow_group(acl, flow_group_in);
+ 	if (IS_ERR(g)) {
+@@ -2612,19 +2603,15 @@ static int esw_set_master_egress_rule(struct mlx5_core_dev *master,
+ 		goto err_group;
+ 	}
+ 
+-	err = __esw_set_master_egress_rule(master, slave, vport, acl);
+-	if (err)
+-		goto err_rule;
+-
+ 	vport->egress.acl = acl;
+ 	vport->egress.offloads.bounce_grp = g;
++	vport->egress.type = VPORT_EGRESS_ACL_TYPE_SHARED_FDB;
++	xa_init_flags(&vport->egress.offloads.bounce_rules, XA_FLAGS_ALLOC);
+ 
+ 	kvfree(flow_group_in);
+ 
+ 	return 0;
+ 
+-err_rule:
+-	mlx5_destroy_flow_group(g);
+ err_group:
+ 	mlx5_destroy_flow_table(acl);
+ out:
+@@ -2632,6 +2619,52 @@ static int esw_set_master_egress_rule(struct mlx5_core_dev *master,
+ 	return err;
  }
  
- static int mlx5_esw_offloads_pair(struct mlx5_eswitch *esw,
++static void esw_master_egress_destroy_resources(struct mlx5_vport *vport)
++{
++	mlx5_destroy_flow_group(vport->egress.offloads.bounce_grp);
++	mlx5_destroy_flow_table(vport->egress.acl);
++}
++
++static int esw_set_master_egress_rule(struct mlx5_core_dev *master,
++				      struct mlx5_core_dev *slave)
++{
++	struct mlx5_eswitch *esw = master->priv.eswitch;
++	u16 slave_index = MLX5_CAP_GEN(slave, vhca_id);
++	struct mlx5_flow_namespace *egress_ns;
++	struct mlx5_vport *vport;
++	int err;
++
++	vport = mlx5_eswitch_get_vport(esw, esw->manager_vport);
++	if (IS_ERR(vport))
++		return PTR_ERR(vport);
++
++	egress_ns = mlx5_get_flow_vport_acl_namespace(master,
++						      MLX5_FLOW_NAMESPACE_ESW_EGRESS,
++						      vport->index);
++	if (!egress_ns)
++		return -EINVAL;
++
++	if (vport->egress.acl && vport->egress.type != VPORT_EGRESS_ACL_TYPE_SHARED_FDB)
++		return 0;
++
++	err = esw_master_egress_create_resources(egress_ns, vport);
++	if (err)
++		return err;
++
++	if (xa_load(&vport->egress.offloads.bounce_rules, slave_index))
++		return -EINVAL;
++
++	err = __esw_set_master_egress_rule(master, slave, vport, vport->egress.acl);
++	if (err)
++		goto err_rule;
++
++	return 0;
++
++err_rule:
++	esw_master_egress_destroy_resources(vport);
++	return err;
++}
++
+ static void esw_unset_master_egress_rule(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_vport *vport;
+@@ -2640,6 +2673,7 @@ static void esw_unset_master_egress_rule(struct mlx5_core_dev *dev)
+ 				       dev->priv.eswitch->manager_vport);
+ 
+ 	esw_acl_egress_ofld_cleanup(vport);
++	xa_destroy(&vport->egress.offloads.bounce_rules);
+ }
+ 
+ int mlx5_eswitch_offloads_config_single_fdb(struct mlx5_eswitch *master_esw,
 -- 
 2.40.1
 
