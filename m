@@ -1,108 +1,185 @@
-Return-Path: <netdev+bounces-7082-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7083-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 28FF2719B77
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 14:02:43 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 46558719BEC
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 14:22:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A4A2F28175E
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 12:02:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EF4B528176D
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 12:22:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6C2123435;
-	Thu,  1 Jun 2023 12:02:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6760E2343C;
+	Thu,  1 Jun 2023 12:22:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B86423429
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 12:02:39 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA24EE71;
-	Thu,  1 Jun 2023 05:02:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=KV3wHUujsSOxU/oeIXKi+3r4Hg4NKOWlza+5RYzc5H4=; b=RnpPZu0KctrNBkYvsUddgdvG37
-	dzbZhCKkPvYGI3KbQgO0PbpGVaP/2i6L7q0IOb87fkppGlNM6EQmQhbKZhVl+UjWzqjXsy16cvjFS
-	WD9CLqPNm0nmOZggyZEGW+hj0/e6KOZN7AZYi2UBREAhKQv1L1y84aBVuVuYChIzRdd8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1q4h04-00EZ39-6U; Thu, 01 Jun 2023 14:01:52 +0200
-Date: Thu, 1 Jun 2023 14:01:52 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Andreas Svensson <andreas.svensson@axis.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	kernel@axis.com, Baruch Siach <baruch@tkos.co.il>,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: dsa: mv88e6xxx: Increase wait after reset
- deactivation
-Message-ID: <133860f9-e745-44ce-9b74-c5d990cf92db@lunn.ch>
-References: <20230530145223.1223993-1-andreas.svensson@axis.com>
- <be44dfe3-b4cb-4fd5-b4bd-23eec4bd401c@lunn.ch>
- <f89e203a-af77-9661-1003-0e9370ff6fab@axis.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AD7423404
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 12:22:03 +0000 (UTC)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3529133;
+	Thu,  1 Jun 2023 05:22:00 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.55])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4QX4vK4CT1ztQSG;
+	Thu,  1 Jun 2023 20:19:41 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Thu, 1 Jun
+ 2023 20:21:57 +0800
+Subject: Re: [PATCH net-next v2 2/3] page_pool: support non-frag page for
+ page_pool_alloc_frag()
+From: Yunsheng Lin <linyunsheng@huawei.com>
+To: Alexander H Duyck <alexander.duyck@gmail.com>, <davem@davemloft.net>,
+	<kuba@kernel.org>, <pabeni@redhat.com>
+CC: <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Lorenzo Bianconi
+	<lorenzo@kernel.org>, Jesper Dangaard Brouer <hawk@kernel.org>, Ilias
+ Apalodimas <ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>
+References: <20230529092840.40413-1-linyunsheng@huawei.com>
+ <20230529092840.40413-3-linyunsheng@huawei.com>
+ <977d55210bfcb4f454b9d740fcbe6c451079a086.camel@gmail.com>
+ <2e4f0359-151a-5cff-6d31-0ea0f014ef9a@huawei.com>
+Message-ID: <635f9719-754d-8fc7-c99b-125ea81476a7@huawei.com>
+Date: Thu, 1 Jun 2023 20:21:56 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f89e203a-af77-9661-1003-0e9370ff6fab@axis.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <2e4f0359-151a-5cff-6d31-0ea0f014ef9a@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
- On Thu, Jun 01, 2023 at 11:10:58AM +0200, Andreas Svensson wrote:
-> On 5/30/23 19:28, Andrew Lunn wrote:
-> > On Tue, May 30, 2023 at 04:52:23PM +0200, Andreas Svensson wrote:
-> > > A switch held in reset by default needs to wait longer until we can
-> > > reliably detect it.
-> > > 
-> > > An issue was observed when testing on the Marvell 88E6393X (Link Street).
-> > > The driver failed to detect the switch on some upstarts. Increasing the
-> > > wait time after reset deactivation solves this issue.
-> > > 
-> > > The updated wait time is now also the same as the wait time in the
-> > > mv88e6xxx_hardware_reset function.
-> > 
-> > Do you have an EEPROM attached and content in it?
+On 2023/5/31 20:19, Yunsheng Lin wrote:
+> On 2023/5/30 23:07, Alexander H Duyck wrote:
+
+Hi, Alexander
+    Any more comment or concern?
+    I feel like we are circling back to v1 about whether it is better
+add a new wrapper/API or not and where to do the "(size << 1 > max_size)"
+checking. I really like to continue the discussion here instead of in the
+new thread again when I post a v3, thanks.
+
+> ...
 > 
-> There's no EEPROM attached to the switch in our design.
+>>> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT) {
+>>> +		*offset = 0;
+>>> +		return page_pool_alloc_pages(pool, gfp);
+>>> +	}
+>>> +
+>>
+>> This is a recipe for pain. Rather than doing this I would say we should
+>> stick with our existing behavior and not allow page pool fragments to
+>> be used when the DMA address is consuming the region. Otherwise we are
+>> going to make things very confusing.
 > 
-> > 
-> > It is not necessarily the reset itself which is the problem, but how
-> > long it takes after the reset to read the contents of the
-> > EEPROM. While it is doing that, is does not respond on the MDIO
-> > bus. Which is why mv88e6xxx_hardware_reset() polls for that to
-> > complete.
+> Are there any other concern other than confusing? we could add a
+> big comment to make it clear.
 > 
-> Ok, yes that makes sense. I could add the mv88e6xxx_g1_wait_eeprom_done
-> function after the reset deactivation.
-
-I don't think that works, because how to talk to the switch is not
-determined until after the switch has been detected.
-
-> The datasheet for 88E6393X also states that it needs at least 10ms
-> before it's ready. But I suppose this varies from switch to switch.
-
-O.K, let go with this change and see if anybody really complains. We
-can always add a DT property later.
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-You probably need to repost with my Reviewed-by added, now that Paolo
-has changed the status of the patch.
-
-    Andrew
+> The point of adding that is to avoid the driver handling the
+> PAGE_POOL_DMA_USE_PP_FRAG_COUNT when using page_pool_alloc_frag()
+> like something like below:
+> 
+> if (!PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
+> 	page = page_pool_alloc_frag()
+> else
+> 	page = XXXXX;
+> 
+> Or do you perfer the driver handling it? why?
+> 
+>>
+>> If we have to have both version I would much rather just have some
+>> inline calls in the header wrapped in one #ifdef for
+>> PAGE_POOL_DMA_USE_PP_FRAG_COUNT that basically are a wrapper for
+>> page_pool pages treated as pp_frag.
+> 
+> Do you have a good name in mind for that wrapper.
+> In addition to the naming, which API should I use when I am a driver
+> author wanting to add page pool support?
+> 
+>>
+>>>  	size = ALIGN(size, dma_get_cache_alignment());
+>>> -	*offset = pool->frag_offset;
+>>>  
+>>
+>> If we are going to be allocating mono-frag pages they should be
+>> allocated here based on the size check. That way we aren't discrupting
+>> the performance for the smaller fragments and the code below could
+>> function undisturbed.
+> 
+> It is to allow possible optimization as below.
+> 
+>>
+>>> -	if (page && *offset + size > max_size) {
+>>> +	if (page) {
+>>> +		*offset = pool->frag_offset;
+>>> +
+>>> +		if (*offset + size <= max_size) {
+>>> +			pool->frag_users++;
+>>> +			pool->frag_offset = *offset + size;
+>>> +			alloc_stat_inc(pool, fast);
+>>> +			return page;
+> 
+> Note that we still allow frag page here when '(size << 1 > max_size)'.
+> 
+>>> +		}
+>>> +
+>>> +		pool->frag_page = NULL;
+>>>  		page = page_pool_drain_frag(pool, page);
+>>>  		if (page) {
+>>>  			alloc_stat_inc(pool, fast);
+>>> @@ -714,26 +727,24 @@ struct page *page_pool_alloc_frag(struct page_pool *pool,
+>>>  		}
+>>>  	}
+>>>  
+>>> -	if (!page) {
+>>> -		page = page_pool_alloc_pages(pool, gfp);
+>>> -		if (unlikely(!page)) {
+>>> -			pool->frag_page = NULL;
+>>> -			return NULL;
+>>> -		}
+>>> -
+>>> -		pool->frag_page = page;
+>>> +	page = page_pool_alloc_pages(pool, gfp);
+>>> +	if (unlikely(!page))
+>>> +		return NULL;
+>>>  
+>>>  frag_reset:
+>>> -		pool->frag_users = 1;
+>>> +	/* return page as non-frag page if a page is not able to
+>>> +	 * hold two frags for the current requested size.
+>>> +	 */
+>>
+>> This statement ins't exactly true since you make all page pool pages
+>> into fragmented pages.
+> 
+> Any suggestion to describe it more accurately?
+> I wrote that thinking frag_count being one as non-frag page.
+> 
+>>
+>>
+>>> +	if (unlikely(size << 1 > max_size)) {
+>>
+>> This should happen much sooner so you aren't mixing these allocations
+>> with the smaller ones and forcing the fragmented page to be evicted.
+> 
+> As mentioned above, it is to allow a possible optimization
+> 
+> 
+> .
+> 
 
