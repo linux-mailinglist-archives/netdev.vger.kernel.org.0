@@ -1,86 +1,61 @@
-Return-Path: <netdev+bounces-6981-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6982-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1B9FE719183
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 05:57:51 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id B77797191A1
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 06:12:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 42151281689
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 03:57:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EE9601C20F8E
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 04:12:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4AC5A5C89;
-	Thu,  1 Jun 2023 03:57:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F1FCA63DD;
+	Thu,  1 Jun 2023 04:12:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ABD146BF
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 03:57:47 +0000 (UTC)
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0894E7
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 20:57:43 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id d75a77b69052e-3f83971680eso9691291cf.0
-        for <netdev@vger.kernel.org>; Wed, 31 May 2023 20:57:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685591863; x=1688183863;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uEkdXBgS449KNBss036eO5NEyAZJqh9G3Wj6Prtj4PU=;
-        b=S2L9ZiM1uI7q2elIKa2yEeByCGyPNZeXE70G63UxuT2sMlbq5hgiFed06Otkd4cddJ
-         gy9i8YSlX0Pq6w950mDvm/VD5HGMI1FFKAJkTMFy4Hn4iE45b4MzOZaNiIVgYoBFsoPM
-         21kSncV5Mr4EhLhE7Pg75smBf1gcnzpROKDI82w23UAOjeQUsxbEyO2nFOOFO7F11a13
-         vZTuVXd/G6MP2QoWvFkdr/7lasVON1kMu4Tuf81Y58fcfw5I5cs5ybrT/MK8wTZKnqxb
-         4DaRO3iMEI4T6dT1t7ReIOf6EP23yycRbgb4Bey9BR94CVllo1UJtUsZxBCWWUv68rkX
-         bVeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685591863; x=1688183863;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uEkdXBgS449KNBss036eO5NEyAZJqh9G3Wj6Prtj4PU=;
-        b=jsBJSP3N6S0Fx7ASNO8Bv5EavOc1VJO3j2u5c+upUqfrMr1613672Ex811YHBlH0My
-         RgUrrJQS3TTRz9QKIN5hrTcUSfG3L71wMLgUGZS6gm1ezZs3QfJRYzlwUfVA/7HkAMzV
-         Z2mU3Bxg/FFuOQSItboOGHfXeG243T5D73n7KAGUotm6Q5PZZgEPnqHm8a224adCEreo
-         OGx/AY/8EPaiaB7SZksrYXcvZiakg5sg+odfgP2/J2xctivOU1pHJGfTNv1kNTnl4Lgb
-         ThOxqr8Kcw2/A5Atf77AcujHAbl+2zTJ/g03gbSaafjdIVCpGaNreynh6+pVeDdM7zLU
-         Jf0Q==
-X-Gm-Message-State: AC+VfDwwcHU4eMq0PJNndDcgU08NthV6dSVFXAIbizOEVBbYhyU80Rhf
-	w2/0jmw0bX1sh96bYAL8ag==
-X-Google-Smtp-Source: ACHHUZ792XMzoWpursJRQ3qZjf87UD5w493xR8NpnZwg/txS6ZOWuMj4zATcMasAGrn32XIpiQlh8Q==
-X-Received: by 2002:a05:622a:1104:b0:3f6:aaad:2b60 with SMTP id e4-20020a05622a110400b003f6aaad2b60mr748076qty.7.1685591862880;
-        Wed, 31 May 2023 20:57:42 -0700 (PDT)
-Received: from C02FL77VMD6R.googleapis.com ([2600:1700:d860:12b0:d1fd:3da6:fcf2:e941])
-        by smtp.gmail.com with ESMTPSA id fc22-20020a05622a489600b003e0945575dasm7048381qtb.1.2023.05.31.20.57.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 May 2023 20:57:42 -0700 (PDT)
-Date: Wed, 31 May 2023 20:57:35 -0700
-From: Peilin Ye <yepeilin.cs@gmail.com>
-To: Vlad Buslov <vladbu@nvidia.com>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>, Jakub Kicinski <kuba@kernel.org>,
-	Pedro Tammela <pctammela@mojatatu.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
-	Peilin Ye <peilin.ye@bytedance.com>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	John Fastabend <john.fastabend@gmail.com>,
-	Hillf Danton <hdanton@sina.com>, netdev@vger.kernel.org,
-	Cong Wang <cong.wang@bytedance.com>
-Subject: Re: [PATCH v5 net 6/6] net/sched: qdisc_destroy() old ingress and
- clsact Qdiscs before grafting
-Message-ID: <ZHgXL+Bsm2M+ZMiM@C02FL77VMD6R.googleapis.com>
-References: <CAM0EoM=FS2arxv0__aQXF1a7ViJnM0hST=TL9dcnJpkf-ipjvA@mail.gmail.com>
- <7879f218-c712-e9cc-57ba-665990f5f4c9@mojatatu.com>
- <ZHE8P9Bi6FlKz4US@C02FL77VMD6R.googleapis.com>
- <20230526193324.41dfafc8@kernel.org>
- <ZHG+AR8qgpJ6/Zhx@C02FL77VMD6R.googleapis.com>
- <CAM0EoM=xLkAr5EF7bty+ETmZ3GXnmB9De3fYSCrQjKPb8qDy7Q@mail.gmail.com>
- <87jzwrxrz8.fsf@nvidia.com>
- <87fs7fxov6.fsf@nvidia.com>
- <ZHW9tMw5oCkratfs@C02FL77VMD6R.googleapis.com>
- <87bki2xb3d.fsf@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF3565397
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 04:12:04 +0000 (UTC)
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F80FE7
+	for <netdev@vger.kernel.org>; Wed, 31 May 2023 21:12:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685592722; x=1717128722;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=0F7rmJkA/nCMCaVmGgRa3cvFcvXjrbZRm/Mur/lie6k=;
+  b=gh+4oTeeDnYJIYV7OSgfTDqrd0tAyAexw7WC6jl3io3x2p+Xhn5nGdY1
+   AJmfPZNY6shARvNTJSScW3p9PI39mh8uJiQQHTVzSPhnH7wKHU9/EOxaO
+   +P/0OAwX8R+enMlGeza1SGowpUjOJmKN+4FfaoMGusVk8KCNpVJIzWA1p
+   4ySqZzJ9WrafF6LQU1Gfq59GjhDp1YlojtyPc2uOKMc5O+UvCBo5I//J+
+   7S56k47cLNg0qShn7CZjgjSHh6r8cUse2C6izn6SU/YvKGamDJY/cKSXC
+   SZl97AB7l3Q8IfL0F+vSJbUKgikvx2U9B0+lQcum5nBw186MWSc0yyxxE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10727"; a="383711879"
+X-IronPort-AV: E=Sophos;i="6.00,209,1681196400"; 
+   d="scan'208";a="383711879"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2023 21:12:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10727"; a="796974487"
+X-IronPort-AV: E=Sophos;i="6.00,209,1681196400"; 
+   d="scan'208";a="796974487"
+Received: from lkp-server01.sh.intel.com (HELO fb1ced2c09fb) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 31 May 2023 21:12:00 -0700
+Received: from kbuild by fb1ced2c09fb with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1q4ZfL-0001tl-2R;
+	Thu, 01 Jun 2023 04:11:59 +0000
+Date: Thu, 1 Jun 2023 12:11:36 +0800
+From: kernel test robot <lkp@intel.com>
+To: Christian Marangi <ansuelsmth@gmail.com>
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
+Subject: [net-next:main 12/26] drivers/net/dsa/qca/qca8k-leds.c:377:18:
+ error: no member named 'hw_control_is_supported' in 'struct led_classdev'
+Message-ID: <202306011219.NQCSpIEG-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -89,129 +64,141 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87bki2xb3d.fsf@nvidia.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Vlad and all,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git main
+head:   60cbd38bb0ad9e4395fba9c6994f258f1d6cad51
+commit: e0256648c831af13cbfe4a1787327fcec01c2807 [12/26] net: dsa: qca8k: implement hw_control ops
+config: mips-randconfig-r003-20230531 (https://download.01.org/0day-ci/archive/20230601/202306011219.NQCSpIEG-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 4faf3aaf28226a4e950c103a14f6fc1d1fdabb1b)
+reproduce (this is a W=1 build):
+        mkdir -p ~/bin
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mipsel-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=e0256648c831af13cbfe4a1787327fcec01c2807
+        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
+        git fetch --no-tags net-next main
+        git checkout e0256648c831af13cbfe4a1787327fcec01c2807
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang ~/bin/make.cross W=1 O=build_dir ARCH=mips olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang ~/bin/make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/net/dsa/qca/
 
-On Tue, May 30, 2023 at 03:18:19PM +0300, Vlad Buslov wrote:
-> >> If livelock with concurrent filters insertion is an issue, then it can
-> >> be remedied by setting a new Qdisc->flags bit
-> >> "DELETED-REJECT-NEW-FILTERS" and checking for it together with
-> >> QDISC_CLASS_OPS_DOIT_UNLOCKED in order to force any concurrent filter
-> >> insertion coming after the flag is set to synchronize on rtnl lock.
-> >
-> > Thanks for the suggestion!  I'll try this approach.
-> >
-> > Currently QDISC_CLASS_OPS_DOIT_UNLOCKED is checked after taking a refcnt of
-> > the "being-deleted" Qdisc.  I'll try forcing "late" requests (that arrive
-> > later than Qdisc is flagged as being-deleted) sync on RTNL lock without
-> > (before) taking the Qdisc refcnt (otherwise I think Task 1 will replay for
-> > even longer?).
-> 
-> Yeah, I see what you mean. Looking at the code __tcf_qdisc_find()
-> already returns -EINVAL when q->refcnt is zero, so maybe returning
-> -EINVAL from that function when "DELETED-REJECT-NEW-FILTERS" flags is
-> set is also fine? Would be much easier to implement as opposed to moving
-> rtnl_lock there.
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202306011219.NQCSpIEG-lkp@intel.com/
 
-I implemented [1] this suggestion and tested the livelock issue in QEMU (-m
-16G, CONFIG_NR_CPUS=8).  I tried deleting the ingress Qdisc (let's call it
-"request A") while it has a lot of ongoing filter requests, and here's the
-result:
+All errors (new ones prefixed by >>):
 
-                        #1         #2         #3         #4
-  ----------------------------------------------------------
-   a. refcnt            89         93        230        571
-   b. replayed     167,568    196,450    336,291    878,027
-   c. time real   0m2.478s   0m2.746s   0m3.693s   0m9.461s
-           user   0m0.000s   0m0.000s   0m0.000s   0m0.000s
-            sys   0m0.623s   0m0.681s   0m1.119s   0m2.770s
+>> drivers/net/dsa/qca/qca8k-leds.c:377:18: error: no member named 'hw_control_is_supported' in 'struct led_classdev'
+                   port_led->cdev.hw_control_is_supported = qca8k_cled_hw_control_is_supported;
+                   ~~~~~~~~~~~~~~ ^
+>> drivers/net/dsa/qca/qca8k-leds.c:378:18: error: no member named 'hw_control_set' in 'struct led_classdev'
+                   port_led->cdev.hw_control_set = qca8k_cled_hw_control_set;
+                   ~~~~~~~~~~~~~~ ^
+>> drivers/net/dsa/qca/qca8k-leds.c:379:18: error: no member named 'hw_control_get' in 'struct led_classdev'
+                   port_led->cdev.hw_control_get = qca8k_cled_hw_control_get;
+                   ~~~~~~~~~~~~~~ ^
+>> drivers/net/dsa/qca/qca8k-leds.c:380:18: error: no member named 'hw_control_trigger' in 'struct led_classdev'
+                   port_led->cdev.hw_control_trigger = "netdev";
+                   ~~~~~~~~~~~~~~ ^
+   4 errors generated.
 
-   a. is the Qdisc refcnt when A calls qdisc_graft() for the first time;
-   b. is the number of times A has been replayed;
-   c. is the time(1) output for A.
 
-a. and b. are collected from printk() output.  This is better than before,
-but A could still be replayed for hundreds of thousands of times and hang
-for a few seconds.
+vim +377 drivers/net/dsa/qca/qca8k-leds.c
 
-Is this okay?  If not, is it possible (or should we) to make A really
-_wait_ on Qdisc refcnt, instead of "busy-replaying"?
+   316	
+   317	static int
+   318	qca8k_parse_port_leds(struct qca8k_priv *priv, struct fwnode_handle *port, int port_num)
+   319	{
+   320		struct fwnode_handle *led = NULL, *leds = NULL;
+   321		struct led_init_data init_data = { };
+   322		struct dsa_switch *ds = priv->ds;
+   323		enum led_default_state state;
+   324		struct qca8k_led *port_led;
+   325		int led_num, led_index;
+   326		int ret;
+   327	
+   328		leds = fwnode_get_named_child_node(port, "leds");
+   329		if (!leds) {
+   330			dev_dbg(priv->dev, "No Leds node specified in device tree for port %d!\n",
+   331				port_num);
+   332			return 0;
+   333		}
+   334	
+   335		fwnode_for_each_child_node(leds, led) {
+   336			/* Reg represent the led number of the port.
+   337			 * Each port can have at most 3 leds attached
+   338			 * Commonly:
+   339			 * 1. is gigabit led
+   340			 * 2. is mbit led
+   341			 * 3. additional status led
+   342			 */
+   343			if (fwnode_property_read_u32(led, "reg", &led_num))
+   344				continue;
+   345	
+   346			if (led_num >= QCA8K_LED_PORT_COUNT) {
+   347				dev_warn(priv->dev, "Invalid LED reg %d defined for port %d",
+   348					 led_num, port_num);
+   349				continue;
+   350			}
+   351	
+   352			led_index = QCA8K_LED_PORT_INDEX(port_num, led_num);
+   353	
+   354			port_led = &priv->ports_led[led_index];
+   355			port_led->port_num = port_num;
+   356			port_led->led_num = led_num;
+   357			port_led->priv = priv;
+   358	
+   359			state = led_init_default_state_get(led);
+   360			switch (state) {
+   361			case LEDS_DEFSTATE_ON:
+   362				port_led->cdev.brightness = 1;
+   363				qca8k_led_brightness_set(port_led, 1);
+   364				break;
+   365			case LEDS_DEFSTATE_KEEP:
+   366				port_led->cdev.brightness =
+   367						qca8k_led_brightness_get(port_led);
+   368				break;
+   369			default:
+   370				port_led->cdev.brightness = 0;
+   371				qca8k_led_brightness_set(port_led, 0);
+   372			}
+   373	
+   374			port_led->cdev.max_brightness = 1;
+   375			port_led->cdev.brightness_set_blocking = qca8k_cled_brightness_set_blocking;
+   376			port_led->cdev.blink_set = qca8k_cled_blink_set;
+ > 377			port_led->cdev.hw_control_is_supported = qca8k_cled_hw_control_is_supported;
+ > 378			port_led->cdev.hw_control_set = qca8k_cled_hw_control_set;
+ > 379			port_led->cdev.hw_control_get = qca8k_cled_hw_control_get;
+ > 380			port_led->cdev.hw_control_trigger = "netdev";
+   381			init_data.default_label = ":port";
+   382			init_data.fwnode = led;
+   383			init_data.devname_mandatory = true;
+   384			init_data.devicename = kasprintf(GFP_KERNEL, "%s:0%d", ds->slave_mii_bus->id,
+   385							 port_num);
+   386			if (!init_data.devicename)
+   387				return -ENOMEM;
+   388	
+   389			ret = devm_led_classdev_register_ext(priv->dev, &port_led->cdev, &init_data);
+   390			if (ret)
+   391				dev_warn(priv->dev, "Failed to init LED %d for port %d", led_num, port_num);
+   392	
+   393			kfree(init_data.devicename);
+   394		}
+   395	
+   396		return 0;
+   397	}
+   398	
 
-Thanks,
-Peilin Ye
-
-[1] Diff against v5 patch 6 (printk() calls not included):
-
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 3e9cc43cbc90..de7b0538b309 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -94,6 +94,7 @@ struct Qdisc {
- #define TCQ_F_INVISIBLE                0x80 /* invisible by default in dump */
- #define TCQ_F_NOLOCK           0x100 /* qdisc does not require locking */
- #define TCQ_F_OFFLOADED                0x200 /* qdisc is offloaded to HW */
-+#define TCQ_F_DESTROYING       0x400 /* destroying, reject filter requests */
-        u32                     limit;
-        const struct Qdisc_ops  *ops;
-        struct qdisc_size_table __rcu *stab;
-@@ -185,6 +186,11 @@ static inline bool qdisc_is_empty(const struct Qdisc *qdisc)
-        return !READ_ONCE(qdisc->q.qlen);
- }
-
-+static inline bool qdisc_is_destroying(const struct Qdisc *qdisc)
-+{
-+       return qdisc->flags & TCQ_F_DESTROYING;
-+}
-+
- /* For !TCQ_F_NOLOCK qdisc, qdisc_run_begin/end() must be invoked with
-  * the qdisc root lock acquired.
-  */
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 2621550bfddc..3e7f6f286ac0 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -1172,7 +1172,7 @@ static int __tcf_qdisc_find(struct net *net, struct Qdisc **q,
-                *parent = (*q)->handle;
-        } else {
-                *q = qdisc_lookup_rcu(dev, TC_H_MAJ(*parent));
--               if (!*q) {
-+               if (!*q || qdisc_is_destroying(*q)) {
-                        NL_SET_ERR_MSG(extack, "Parent Qdisc doesn't exists");
-                        err = -EINVAL;
-                        goto errout_rcu;
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 286b7c58f5b9..d6e47546c7fe 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -1086,12 +1086,18 @@ static int qdisc_graft(struct net_device *dev, struct Qdisc *parent,
-                                return -ENOENT;
-                        }
-
--                       /* Replay if the current ingress (or clsact) Qdisc has ongoing
--                        * RTNL-unlocked filter request(s).  This is the counterpart of that
--                        * qdisc_refcount_inc_nz() call in __tcf_qdisc_find().
-+                       /* If current ingress (clsact) Qdisc has ongoing filter requests, stop
-+                        * accepting any more by marking it as "being destroyed", then tell the
-+                        * caller to replay by returning -EAGAIN.
-                         */
--                       if (!qdisc_refcount_dec_if_one(dev_queue->qdisc_sleeping))
-+                       q = dev_queue->qdisc_sleeping;
-+                       if (!qdisc_refcount_dec_if_one(q)) {
-+                               q->flags |= TCQ_F_DESTROYING;
-+                               rtnl_unlock();
-+                               schedule();
-+                               rtnl_lock();
-                                return -EAGAIN;
-+                       }
-                }
-
-                if (dev->flags & IFF_UP)
-
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
