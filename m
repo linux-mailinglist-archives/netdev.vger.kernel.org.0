@@ -1,82 +1,114 @@
-Return-Path: <netdev+bounces-7045-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7046-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id BAF907196A5
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 11:17:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id D58187196C0
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 11:21:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 70EC02816E4
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 09:17:53 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 239841C21012
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 09:21:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8729F14271;
-	Thu,  1 Jun 2023 09:17:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F5AE1429C;
+	Thu,  1 Jun 2023 09:21:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3175E79DF
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 09:17:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B02B0C433D2;
-	Thu,  1 Jun 2023 09:17:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685611069;
-	bh=q0CJdSwXOIJZvPvJU/z1sdvR3U3gXtkEs4k/nknZCKE=;
-	h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-	b=Pu4TajYAxmVtPK8l64pTxUbVC50dU99ybV9kjG4vUZuzP1MTiXLq4ebRN9JEswJPC
-	 9gqrdWezwjMfxd3n8dW2tpct1bHWQ4u/93au/v8Ux9Tn2lMsGg9DtedCWXQrl0L6Dy
-	 70unoZ4Q5hx+1uCP5TK8MUelatzwOkP2LxASzUrk8EcPyukgPdwemfpC9dCCW9NZ+Z
-	 7BXfENmmF9ewBz4RvAlGyhE6Gzqcy9lX8vR7qfkUcC/Fx3WeoO9RGi2Op2l7NOyd09
-	 evmmFrp0BeDKZlLbqrbIBAgIRIK5LA9G73XQTjOEdbjz5+P4Vl+3A7uUQn4xvZbxrO
-	 uzmTG7QxQxGsQ==
-From: Kalle Valo <kvalo@kernel.org>
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: "David S. Miller" <davem@davemloft.net>,  Eric Dumazet <edumazet@google.com>,  Jakub Kicinski <kuba@kernel.org>,  Paolo Abeni <pabeni@redhat.com>,  ath10k@lists.infradead.org,  linux-wireless@vger.kernel.org,  netdev@vger.kernel.org,  kernel@pengutronix.de
-Subject: Re: [PATCH net-next 0/4] Convert to platform remove callback returning void
-References: <20230601082556.2738446-1-u.kleine-koenig@pengutronix.de>
-Date: Thu, 01 Jun 2023 12:17:44 +0300
-In-Reply-To: <20230601082556.2738446-1-u.kleine-koenig@pengutronix.de> ("Uwe
-	\=\?utf-8\?Q\?Kleine-K\=C3\=B6nig\=22's\?\= message of "Thu, 1 Jun 2023 10:25:52
- +0200")
-Message-ID: <87h6rrk0cn.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FBAA13AFB
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 09:21:40 +0000 (UTC)
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D293A11F
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 02:21:37 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id 98e67ed59e1d1-256931ec244so450431a91.3
+        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 02:21:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1685611297; x=1688203297;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+SifIOg3EEC6zrsKMH+AeZTstzDtSY/mgHTMqEQiv+Y=;
+        b=dPwWBIklySlVaBz8aeBqewiIOE0jlHpvIS+F8E+hS9vGXogaqy82OoWltppnH3cRu/
+         cyVh89Z0tPzL4LiipOoWMj4kULvV1bjyF1ODgZcwRTHTwQP4wrdSZClAe+2yEZO5k0KG
+         +xy52vL/CfNLcNbysVWiRQd2lBmFYYGdgUkRcFn06ca4weGv8vtbQLFOD98a5NvIU1h8
+         3MMB9BB/QjJxePr73CbAcbJzyv86gEBsA3+TZogVj5nah9tD21ixe85Q43JaHlS5rvph
+         JVLX9nxUx/CXzwXX6QAm7DNMOtv7MqwDiP8ypsAIRfUR7z3NRA2elUGaSxSyHZbcqIrK
+         +lMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685611297; x=1688203297;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+SifIOg3EEC6zrsKMH+AeZTstzDtSY/mgHTMqEQiv+Y=;
+        b=ELR2KgMzDCA5ASVG7teIKvFlVyWaqf5A+96DtXWdT7nMfV9d4bFlKV+1i75NRT2VJR
+         8Ja326Zo5W+Hl8FZT3HSGqYv4oQE1ZMyliKMuZ1iWs+7GTZOdo5oOJQx3+cu4XbOkHBx
+         1nbGJdCY8h+4RZr+g7rskiDB/1uW3ftRcy5e0CIc7Kjq8RgSIEyDUaDCNqPCBqtbUDAH
+         D3dio2TTq1cQTIASiKFPm0DH6J8XqI1vEYOCGsMRota2rcXQnrMYcWObuOC4G2A5ZrmK
+         cGTTwEEOBbk74FS8DuS2Hfcofjwd3TtY7v6SilQk4/XVv6h1ZPm8ZoClj9tqO3Y4t2EL
+         clOA==
+X-Gm-Message-State: AC+VfDzAOUo+EldsOYXWYsGY5cLtF3VhCM0EthcvECtm02kc3iKo5qqx
+	7LLs/aI3KATXDoSk7wPd7tjnbA==
+X-Google-Smtp-Source: ACHHUZ7FhBkJfqewCHGUAQxAW+IJu86mq8peHjHQfuAR1O2g96/sdIGSovJaGL9FEuFwpivR11EPMA==
+X-Received: by 2002:a17:90a:8a0b:b0:255:63ae:f940 with SMTP id w11-20020a17090a8a0b00b0025563aef940mr8215670pjn.36.1685611297358;
+        Thu, 01 Jun 2023 02:21:37 -0700 (PDT)
+Received: from [10.94.58.170] ([203.208.167.147])
+        by smtp.gmail.com with ESMTPSA id h8-20020a17090a3d0800b00256bbfbabcfsm985328pjc.48.2023.06.01.02.21.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Jun 2023 02:21:36 -0700 (PDT)
+Message-ID: <1fb805bc-baef-ee09-fa3a-d464af94751f@bytedance.com>
+Date: Thu, 1 Jun 2023 17:21:29 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.11.2
+Subject: Re: Re: [PATCH v4 4/4] sock: Remove redundant cond of memcg pressure
+Content-Language: en-US
+To: Paolo Abeni <pabeni@redhat.com>, "David S . Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
+ Michal Hocko <mhocko@kernel.org>, Vladimir Davydov <vdavydov.dev@gmail.com>,
+ Shakeel Butt <shakeelb@google.com>, Muchun Song <muchun.song@linux.dev>
+Cc: Simon Horman <simon.horman@corigine.com>, netdev@vger.kernel.org,
+ linux-mm@kvack.org, cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230530114011.13368-1-wuyun.abel@bytedance.com>
+ <20230530114011.13368-5-wuyun.abel@bytedance.com>
+ <db32243e6cb70798edcf33a9d5c82a8c7ba556e2.camel@redhat.com>
+From: Abel Wu <wuyun.abel@bytedance.com>
+In-Reply-To: <db32243e6cb70798edcf33a9d5c82a8c7ba556e2.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> writes:
+On 6/1/23 5:10 PM, Paolo Abeni wrote:
+> On Tue, 2023-05-30 at 19:40 +0800, Abel Wu wrote:
+>> Now with the previous patch, __sk_mem_raise_allocated() considers
+>> the memory pressure of both global and the socket's memcg on a func-
+>> wide level,
+> 
+> Since the "previous patch" (aka "sock: Consider memcg pressure when
+> raising sockmem") has been dropped in this series revision, I guess
+> this patch should be dropped, too?
 
-> the motivation for this series is patch #3, patch #2 is a preparation for=
- it
-> and patches #1 and #4 are just cleanups that I noticed en passant.
->
-> Best regards
-> Uwe
->
-> Uwe Kleine-K=C3=B6nig (4):
->   ath10k: Drop cleaning of driver data from probe error path and remove
->   ath10k: Drop checks that are always false
->   ath10k: Convert to platform remove callback returning void
->   atk10k: Don't opencode ath10k_pci_priv() in ath10k_ahb_priv()
->
->  drivers/net/wireless/ath/ath10k/ahb.c  | 20 +++-----------------
->  drivers/net/wireless/ath/ath10k/snoc.c |  8 +++-----
->  2 files changed, 6 insertions(+), 22 deletions(-)
+Yes indeed, these two patches should go together. Sorry for my
+carelessness.
 
-ath10k patches go to my ath.git tree, not net-next. Also "wifi:" is
-missing from the title but I can add that.
+> 
+> Is this targeting the 'net-next' tree or the 'net' one? please specify
+> the target tree into the subj line. I think we could consider net-next
+> for this series, given the IMHO not trivial implications.
 
-No need to resend because of these.
+Got it, I will resend this series based on net-next.
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+Thanks!
+	Abel
 
