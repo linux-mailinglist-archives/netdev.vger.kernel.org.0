@@ -1,242 +1,529 @@
-Return-Path: <netdev+bounces-7218-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7222-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5033271F170
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 20:13:56 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id BF86A71F193
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 20:19:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C974B1C21141
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 18:13:52 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7EAE628189D
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 18:19:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ABB6348248;
-	Thu,  1 Jun 2023 18:13:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B08DA48254;
+	Thu,  1 Jun 2023 18:19:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BFFA48231;
-	Thu,  1 Jun 2023 18:13:50 +0000 (UTC)
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0FC018C;
-	Thu,  1 Jun 2023 11:13:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685643229; x=1717179229;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=x2kfGM5zg1pegy2ACJbDcHZqHZCUJKCbv1jAtHgTy3Q=;
-  b=mR7YGNm53lv21d3LKfM6w85lsy2z/gd6dISTZFcZH2YD4BHTAmPmFLJ9
-   MN4Ggci2GtbCQpdV25Nyfpyt/R/KMB3w0sw5zNELn0vIPCv3Un03i+8Ue
-   tW5n4cbI2S2c63V2wPf3mQv3nAcwMsfYbiHuCntnDLYLCTuBEJq25TfwS
-   9oOhNsBdBXJS19/Dj1D7SCDjm0PZgDs6yt+7HmsIlU62UXXuyIx+ggMU/
-   Iy/5q+A/RvAm1GK+5ly8nIua82Q4SDU2nxDyICAG9NwPrrMGRbFuB6/rL
-   jGm6S2AzxKAkasdHQ6zF7kKqyJKSth2TA1IuI4KhNx0Yg7RRnPYayCHl5
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10728"; a="336000212"
-X-IronPort-AV: E=Sophos;i="6.00,210,1681196400"; 
-   d="scan'208";a="336000212"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2023 11:13:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10728"; a="684957733"
-X-IronPort-AV: E=Sophos;i="6.00,210,1681196400"; 
-   d="scan'208";a="684957733"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga006.jf.intel.com with ESMTP; 01 Jun 2023 11:13:47 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 1 Jun 2023 11:13:47 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 1 Jun 2023 11:13:47 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Thu, 1 Jun 2023 11:13:47 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Thu, 1 Jun 2023 11:13:46 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 968B847017
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 18:19:41 +0000 (UTC)
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739F5E7;
+	Thu,  1 Jun 2023 11:19:38 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 351E43G3021715;
+	Thu, 1 Jun 2023 18:14:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2023-03-30;
+ bh=mef4M0RWz5T7Pw5cWqcMkp8JSwQNIW/qmbnYuD/GolI=;
+ b=K/rxKvSNGg1ovV4IiLFf48HXA77yiglS9TXxJqB5AQEEsf2jMp214XVwnuyiYfyPALNf
+ h44RkiW4Q8+H/+H/wabTlWgRal9/bk+Ct6jM8PIEE8nsmiMdBjy+TQ73xECu/rVwFO0q
+ hgdCI/UhR08/AYNCQrNUJSQAPuvYIWU/Jvrr74lD8s8bz8ku61MfKeaF3ODAFf1qS5Gb
+ 9SbY+ANDYiF9ZQMH/TE2/wPv+496nJ8nSkcEN4jYX7v/GUFBVUwBBm+r/yzXNsQ3MrBG
+ El/gXTxm9sGafCYo1yWRjyMQm4PmhFH/9kS69bVmKQOWcv1mq4N7FfJ/J20lxnTQQIcf 6Q== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qvhwwhaf2-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 01 Jun 2023 18:14:11 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 351H495O026017;
+	Thu, 1 Jun 2023 18:14:11 GMT
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1nam02lp2042.outbound.protection.outlook.com [104.47.57.42])
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3qu8ae4fcq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 01 Jun 2023 18:14:10 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RiyVNJpNSHN3j5/nXPEZ+PYcWomLH9K8UFWjCS0mxyWBa3YKeBDXdTFw87NTub0kg/C1cH6Q0tjwPISKaQtt66HLDLlgV5wG/D5uIVEW3NKkgfaEkt8y5yFCeMaObgoorOwxgtS5nuXMhEQ3h5ZMRXSnHVR5Exa260CdFn5sskHy8aKDvdEHualMLJU6bnCfxDjDPXgRzblWQq38UO0nSDSdUFSM/Pl1/YNVYFd4oaBSVd3ORJvgYZM9w9A7umj4ezLWaBApRQ/9s5ev3Bt6Edw+wgCQuXG00Fo1LMUQByo4H5JKKx88x1Doa4aaEL6yRPaDRIuIfGT+0LS0qFcKCg==
+ b=e9qZfDiUqVXITyk1yQJRNDKFbLcWANTZCrsH0KouuZTFa5iNAn43kMjin6TMxyjy9cVAUztUC1gucKZYG86IGcV9e2dwz8RXdGSqrzImiMJD4XKluyfDJmVKetRZctaZ1Yvfb64avIdyXxVFHIEoaWAe6zGyceDhme+U7JBvRpkzJ1JScQk72hW49Fxu964i08o4wInBZyFrZCETHCC7IC4AWqS46CuVOGdH3brLNnVBugmOqyYVx8SX+bfPoR9xo1zkSZlqrxUrLN3NdwV94iE2lSNbQLtcMgSluvi9MQMsz/iuHIKCz9gT2RVpt+JibuFwnAkxFqhkViAOPHgDZg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=x2kfGM5zg1pegy2ACJbDcHZqHZCUJKCbv1jAtHgTy3Q=;
- b=I9rb6vn9bqNLlb8+n5kiHaGjAvPBDctiZldP7Aa/BXptz+fficqBZeAJCOvSz7+s27WtwVtZ6HYMGu0ylzqlVHeZy8r+UcXlsds3UgXLd5fT0FKglTOW5WEtWJLfxzc5gkRZ+4RpfD9cGzray/4cVw/nCVZ5w52d1ff76PbTFasALKLMMvMUkbmvSYzBEMkq+rIVXpEZYSBfb5y/eELAWfuxUuQrFhO3xLsjl41gqE2Mef//HO2mL+n/TWwkNEzXArCWQOVW94wiUQdYNIYX7D97ALX8i3xEoPbp18Woaz/mWGtrNhoY4F38eL4H5g574qpOKGUZWwqI0ZpVPoHs8g==
+ bh=mef4M0RWz5T7Pw5cWqcMkp8JSwQNIW/qmbnYuD/GolI=;
+ b=bbv0XTAQzqbgAscFV3dlrsIk63rJc0dlGCYPnJipWaGA1TkTQ5+gqNUGmPxXqYvo4zCJSBmM2DZq3NM5ApZQZhpznzA0F1tf4qmCWKj/Db7naQgNfzEEz3c2nHB6qWjzON4X/0/OD1SgPQ6xhfra/NgVpiPzxrITlvb53ScQtfKHoo7bsXU67+wLzsVFtTVUniT8fGXgWYh/JQjVsWSHjSy5lEJWwksk/0F3IIRBmAD8U04yKs9WjfiqQgk5qySNy8sgo9QD0pYNUUwaufdF7wUgCoXRkU6VPa6wKPDiuCCbVhmJJsuEsLgle82ZcWMeGuytAvQtX1el/KIgBy/gUg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from LV2PR11MB5976.namprd11.prod.outlook.com (2603:10b6:408:17c::13)
- by SJ0PR11MB5118.namprd11.prod.outlook.com (2603:10b6:a03:2dd::19) with
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mef4M0RWz5T7Pw5cWqcMkp8JSwQNIW/qmbnYuD/GolI=;
+ b=JzuT0X/I1FYboXotRDoXe2ww+bJE+OBq5kXbxOl21ZlkbMTpPY5+l8cRP36FG3ykf0LOprRI8vlOGiMP8HMKv3JB8Bi6BCYaVH0FaFu+xeJ5F3UfuPvCYr6upF0HVkgeUy06WwRNkzZNTWw7l7Ze2JkSVX7XwXFfe7dk+yMCFxc=
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
+ by IA1PR10MB7213.namprd10.prod.outlook.com (2603:10b6:208:3f2::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.22; Thu, 1 Jun
- 2023 18:13:44 +0000
-Received: from LV2PR11MB5976.namprd11.prod.outlook.com
- ([fe80::c6c4:7e98:bcea:f07d]) by LV2PR11MB5976.namprd11.prod.outlook.com
- ([fe80::c6c4:7e98:bcea:f07d%4]) with mapi id 15.20.6433.024; Thu, 1 Jun 2023
- 18:13:44 +0000
-From: "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-To: "kent.overstreet@linux.dev" <kent.overstreet@linux.dev>
-CC: "tglx@linutronix.de" <tglx@linutronix.de>, "mcgrof@kernel.org"
-	<mcgrof@kernel.org>, "deller@gmx.de" <deller@gmx.de>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>, "davem@davemloft.net"
-	<davem@davemloft.net>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-	"linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-	"hca@linux.ibm.com" <hca@linux.ibm.com>, "catalin.marinas@arm.com"
-	<catalin.marinas@arm.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-riscv@lists.infradead.org"
-	<linux-riscv@lists.infradead.org>, "palmer@dabbelt.com" <palmer@dabbelt.com>,
-	"x86@kernel.org" <x86@kernel.org>, "chenhuacai@kernel.org"
-	<chenhuacai@kernel.org>, "tsbogend@alpha.franken.de"
-	<tsbogend@alpha.franken.de>, "linux-trace-kernel@vger.kernel.org"
-	<linux-trace-kernel@vger.kernel.org>, "linux-parisc@vger.kernel.org"
-	<linux-parisc@vger.kernel.org>, "rppt@kernel.org" <rppt@kernel.org>,
-	"mpe@ellerman.id.au" <mpe@ellerman.id.au>, "linux-s390@vger.kernel.org"
-	<linux-s390@vger.kernel.org>, "christophe.leroy@csgroup.eu"
-	<christophe.leroy@csgroup.eu>, "rostedt@goodmis.org" <rostedt@goodmis.org>,
-	"will@kernel.org" <will@kernel.org>, "dinguyen@kernel.org"
-	<dinguyen@kernel.org>, "naveen.n.rao@linux.ibm.com"
-	<naveen.n.rao@linux.ibm.com>, "sparclinux@vger.kernel.org"
-	<sparclinux@vger.kernel.org>, "linux-modules@vger.kernel.org"
-	<linux-modules@vger.kernel.org>, "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "song@kernel.org" <song@kernel.org>,
-	"linux-mm@kvack.org" <linux-mm@kvack.org>, "loongarch@lists.linux.dev"
-	<loongarch@lists.linux.dev>, "akpm@linux-foundation.org"
-	<akpm@linux-foundation.org>
-Subject: Re: [PATCH 12/13] x86/jitalloc: prepare to allocate exectuatble
- memory as ROX
-Thread-Topic: [PATCH 12/13] x86/jitalloc: prepare to allocate exectuatble
- memory as ROX
-Thread-Index: AQHZlKm5cQf5rjPFXEabUnQGbxJicq92PIKAgAADw4A=
-Date: Thu, 1 Jun 2023 18:13:44 +0000
-Message-ID: <a51c041b61e2916d2b91c990349aabc6cb9836aa.camel@intel.com>
-References: <20230601101257.530867-1-rppt@kernel.org>
-	 <20230601101257.530867-13-rppt@kernel.org>
-	 <0f50ac52a5280d924beeb131e6e4717b6ad9fdf7.camel@intel.com>
-	 <ZHjcr26YskTm+0EF@moria.home.lan>
-In-Reply-To: <ZHjcr26YskTm+0EF@moria.home.lan>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-user-agent: Evolution 3.44.4-0ubuntu1 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: LV2PR11MB5976:EE_|SJ0PR11MB5118:EE_
-x-ms-office365-filtering-correlation-id: 373a1b69-e770-4acc-1884-08db62cbefb5
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SkvZkPkVW70+2quULFZXlldo2L+zLi4wZ3IS26g975GucpOzpfNah8EjQQHSmesMHWpBTfdJzANfFTbEdq2B31Wa1qDj/dDVUQ4myE91p5Ifgoh5vlUldRgLxSGfm65FsbfKWr+AiUKk62tQvuwKMbDtcBffwrHMW5SARSWQTFYjaznG/lQrZF/j1L+akacE0qWbAAGFR1lirXthYXRoDxyj8kK038YZlBeRH4GYrKq9/gxNyjKgu2OQfkbtKjkTJ6R+DtHXHWH6hHX+69oa1oXsfA/YjZPozWwnFQGgw3GJL/bvRLq0eTWmOBvqXCLKatzt1krM9eG6VY2RxuxNlpjG4mV5GsWqg83RB8fCB+0cygRVRfdYWvQcPOajurxs+kW/ZfOSQ5aZP4gmy3Dns0/QXQZyPjOqpJShJyAjDDgDTYhfjvpKdm1VdeIprbspvwGMYkM10SllOqfi7b8xZHX4Qy8p7om0xBffIyvvb2qOgkBn5EaE4fA0TxkAS33VY2pH0KobQFd7yykoPiTaceHRa0KX50ihyQhk8/kRC0s/trvjLKg4I6120KxQm0+9P5NyaAGNeAe+ilLhOc3mW0AWdlCz6QsZTWhQYAwuJUpuY1+GO2LFKrVgKn+lxcif
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR11MB5976.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(346002)(366004)(136003)(376002)(396003)(451199021)(4326008)(7406005)(91956017)(7416002)(66946007)(76116006)(66556008)(66446008)(66476007)(6916009)(64756008)(8676002)(316002)(41300700001)(5660300002)(2906002)(8936002)(54906003)(66899021)(6486002)(82960400001)(478600001)(71200400001)(186003)(6506007)(36756003)(2616005)(6512007)(26005)(122000001)(38070700005)(38100700002)(86362001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Y1ZLbTR5WWhOYlF4QUVuWXJ6STR3RXpVVVpWbFVueWlRQkNHazFVbzlUdzBJ?=
- =?utf-8?B?aEZVL2IxK0JQbXE3UlArd0w4b1N1Ni9hRkVrSUVCQk9lSUtqdU50NTV3bTZR?=
- =?utf-8?B?WEI4OVA3UytuRFZHVDZVTnFzTUNBdGpyMnhrbkNwZWxVK2Z1SVpUNHJvQ0NW?=
- =?utf-8?B?M1loMnk0d0M0TkpEV1p3bm1zYkZtSlBnRzUzZWZFMUk4eWNZeGVzVHlycXNp?=
- =?utf-8?B?VkJyYm9hZHIvUGtUL0N4UFMrRDFHekpGUU1IM0xTdXJ5QWp5TGFWVWRJd2RE?=
- =?utf-8?B?UjFXZmNvSlhNSEhMTjZuOEFmVHJIY21TOElTS2RTN3ZVV2xvUWt0N2t5TFlO?=
- =?utf-8?B?dUl1K2JYcmJBWVpuTGNFOFUwWjhZMmpKTkg1WDl2eWRhclNHNjV4YzBFL1JX?=
- =?utf-8?B?ZkZ3cWZIZzJHMkdwd0xucndHeldqZCs5MXdBNXY0NTFtS0FoWXpvVDEwY0Y1?=
- =?utf-8?B?VzFMUzdHQnNZOXlrMGtMR2hQRHNFcFVxdDdHUGVGL25USzd2a3ZNMW5LN05J?=
- =?utf-8?B?VEZoOEpoT01sS2dyMFAwWWVtK256ZEdLUG1lVzJON3QxZGN2bjIxc2pIbmZ6?=
- =?utf-8?B?c3NsTFVURUNidmRENjErVEdyMis2SitVeDdLUFhDYWd1WWwrV0pwNjVGVUUw?=
- =?utf-8?B?L2o1bEkwSzg4K1JpT1JiVFl6UWNoSXM1akVDTldrYittbFVybzFQaXZGOUVl?=
- =?utf-8?B?RDh2ejArWUYxTWRibThBZ3g1d2ZCUm5GNklETXFkajRCUE1qOEVuMGViY1ds?=
- =?utf-8?B?dzZrajhGeXBTM2tkWDhIRVNVYUFwMHM2UE5Sbzl2UXRGcnFwa0ZUcmxvSWVv?=
- =?utf-8?B?ZzVza0t6MUNEUFNrOVNKeFV0eHBKb0YyemR6akRERjFTTSt0bDVZZVMwUHJN?=
- =?utf-8?B?Y3R2MEZvWTMwRGx1ODVsWGRmNnJWZk94MW9DbG5NSDNabkpPMFhBWnBockFx?=
- =?utf-8?B?Tmt0Uk5kUFZyOHZGL3grVWduWjBuZlU3Rk1aVWkxQS8xTXB6cFVkcGlFamZM?=
- =?utf-8?B?c0FLbUxhWEFkb3g1djBuRlo1bWJDcjFXa045MHV1RDd5NUllcnpZTnVMY3pC?=
- =?utf-8?B?dzBEK0MwN21wdEo1MTlOR21qcUhCT3diR3gvbVg3bFhkQ0l1SGh3eUZQTzFB?=
- =?utf-8?B?N0UrazdQa2E4Sm9qc3NBUndiZzhRRHYzRitGN1ViNjd5SlJKdWZ2enFCdVgv?=
- =?utf-8?B?NzJPZTB2VXk2SElscXFWRVJMMVNZSHFVTlo3b1dFWDhWUzQ4Vm1VckEvOEZO?=
- =?utf-8?B?aEtmY2gvbXdIZE5XbFc5Sk84OW1kenBaWHRBcCtvamZ5ckF4Snk5TW5ranFC?=
- =?utf-8?B?dHg3akxPQTh2Q05ucS9WNXQyclFmQ3VjZVJtUEZPc1NQUE5RdXdNRk1WTEVs?=
- =?utf-8?B?bm9FYzI2ZndnMTR6SkkrZUJOTUpiMnVSMTFqWDNUYVJ0RENISFE3dm9OQjBO?=
- =?utf-8?B?U2lRbGtJMjZCaFVOeGFuWmcwVFVOdHF0RTB4VEY4ZUpyNmRjclY5emtzQm9R?=
- =?utf-8?B?bkFJM2crOVFsaU0veSs4SUVwS2ZOR1BGalBtVlJmN25pRTlXMXF0bVUvNnlX?=
- =?utf-8?B?dWhjdW85K1kwNG5CaGF0cmNXVTVtTkRDNjdaQk5YV2RFY1l4S2Z6dlRaR0RJ?=
- =?utf-8?B?YWdVU2R3VmJVSzJBVGNKVkJScXZ4eWlrbURBbFgrZU9pY0tPS245cjhrYkY0?=
- =?utf-8?B?WSswbzhEL1g5b3cwdG1YbTJsR3QvTWtPU3JJdlpudC84Um4zdkRKelJXNWI1?=
- =?utf-8?B?THB2UzlYVHYvRmxLTzRuWWZOdVZsbEh4NDN2c296Y21HbzdFSFNMTjFUSkI1?=
- =?utf-8?B?Nm8wOU5ZMW9NclJmaytFVmlCUHVGQ0RDOE9BaVhyQTZTaWNnL3EwZUdIbGMx?=
- =?utf-8?B?VmhKQmlJWDFHd3NOdjlaa1ArMEIxM3FTQTRwYm00OC81K2FuY3B4bnZMN3Ix?=
- =?utf-8?B?UUFMOTAxTktHVEU0Ukd6OGF6UllpUER3YXh4MTZwM1hmV0IvQlBHMHVoOTBO?=
- =?utf-8?B?bFoxUFFZcGh5b05xZlpjc3V5MGpqK2dUbXR0bE5sRHNmNzgxM2pSajg1NTY5?=
- =?utf-8?B?Z0ZadmdLcjc3SCtLU1FEd1NTeEVsTXpoWTIvdEFlYWhSQUZ0ZkpSSkxzMlh5?=
- =?utf-8?B?ajFuL3FGTkhTbW5WNnVQZUFXazNPd2t4VnU2RHBGN296RmdBWUtZbnVRV1Ev?=
- =?utf-8?B?cFE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A1A647A111E5A34C9562FF24B7BCE62B@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.24; Thu, 1 Jun
+ 2023 18:14:08 +0000
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::998f:d221:5fb6:c67d]) by SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::998f:d221:5fb6:c67d%7]) with mapi id 15.20.6455.020; Thu, 1 Jun 2023
+ 18:14:08 +0000
+Date: Thu, 1 Jun 2023 14:14:05 -0400
+From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+To: Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
+Cc: davem@davemloft.net, david@fries.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, zbr@ioremap.net, brauner@kernel.org,
+        johannes@sipsolutions.net, ecree.xilinx@gmail.com, leon@kernel.org,
+        keescook@chromium.org, socketcan@hartkopp.net, petrm@nvidia.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v5 5/6] connector/cn_proc: Performance improvements
+Message-ID: <20230601181405.lvybxlzvf4w5czx4@revolver>
+References: <20230420202709.3207243-1-anjali.k.kulkarni@oracle.com>
+ <20230420202709.3207243-6-anjali.k.kulkarni@oracle.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230420202709.3207243-6-anjali.k.kulkarni@oracle.com>
+User-Agent: NeoMutt/20220429
+X-ClientProxiedBy: YT3PR01CA0014.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:86::16) To SN6PR10MB3022.namprd10.prod.outlook.com
+ (2603:10b6:805:d8::25)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN6PR10MB3022:EE_|IA1PR10MB7213:EE_
+X-MS-Office365-Filtering-Correlation-Id: 23cb3877-7830-4426-8978-08db62cbfdf0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 
+	6dsNHbvNadbn9lvk3IV/vaN4cnWbL8dyiz/5bWQCcA+ZVAaaCuflfycsuwHjGA0iGybx2BSDptOtznX37scQ2H7XlmsDg3rm2zhmOogqNT4sVoa7mlrHoSt2ZFTd7VCGPChoyKyW4d0NyPUKcAYFx2rwl7hpffLpI6fPbnnppc+asuj4+OV9BGdWWi4RmC16p/+cdGOrQxPIQAwSN6YEK0QumQT5aTRHa03KM5e9HWojpTkhhhh+8tPV5TAlllzuPfZt1MTxL7btmEUWrTWr05GOwV4JNO51RVBTTyHrOELGaF7RupHCvpnuZEARUG5/GpkQeB0y0DDbH81l10IgIVSzb/gvvLGQXBa0KjiAhyHdNbfv92zxpGZUsVMN4nVe1nAmWfMsIOX51sfHlbckWjMpDHS0fed6DZEebmAUv8I49BZMwoywIK3e5lqrWQFYvpttt/HbnRECFKiWeDOVQ1aVZr0J1GiEXa+trT7BZ6WvLkf4H2xS5A8CQ+je8ymvosQ5B5XarFmSvtO478qdEskAHAyqC7saP2VxXpTtK7a+lZM3ZWWAQmNslYUdzClS
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(376002)(346002)(396003)(136003)(366004)(39860400002)(451199021)(2906002)(83380400001)(30864003)(86362001)(33716001)(38100700002)(8936002)(6862004)(6486002)(8676002)(41300700001)(5660300002)(478600001)(66556008)(1076003)(6636002)(4326008)(66946007)(66476007)(7416002)(26005)(316002)(6512007)(6666004)(186003)(9686003)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?us-ascii?Q?mcqd7BaP9X8yeiz6C0Gyjzmt6FfYixmHYNnIfIYvzqIu6Cgc5c60pGKMzNQE?=
+ =?us-ascii?Q?hkqlLVQbjCSJ+YP9GN3WdGP5QprY9OtmpulQHK/m38Dtd+U1FvtCRVl8hGj1?=
+ =?us-ascii?Q?vaL1bcrzyNByqtd+zhLyfDVASWKXvh08ZEaWJCcVbJb9yPXPogE8/dxoWzuN?=
+ =?us-ascii?Q?Aps1aBrlWKe0xL4f3Kc5j4uyHU0glS+X3R8WkYeFLYeyd6lieUViV8m5jnXI?=
+ =?us-ascii?Q?qNwWwkii6nrDnl1BVKOtEOBqw5TWfclawdw0EzK+BJsGFZgI69yZmhpy7Jbt?=
+ =?us-ascii?Q?YbIH7oacXKfGWQOw6s+uxl3bTyZkyyZ3bWkA7Ssw8na2/reTYoF87r3agIzI?=
+ =?us-ascii?Q?rF8Y1kR8YNPmUXJlNV2q9Tfj2qGWliiITE0noUp8+8rvxZZuaMPq6N5KOoLv?=
+ =?us-ascii?Q?LVV75M6yR51C+9xUIE1ypP5btB9rP8KtabNF1jZptexcE0fUFtS9Af4kGpYQ?=
+ =?us-ascii?Q?yD9nrHn+6Qbs38BlLJa5Ekv5QBx7t8lP0Jx3MH2abKNua5+KsR8MdfINNc+O?=
+ =?us-ascii?Q?RAAUY4Z/bD7b+0RRD8rZIhAGbt+U6uFDbD66MwP+p9eE0FE/ITSceDFJEgL8?=
+ =?us-ascii?Q?kPCX7dXumW2pwT55XiZ/BCjjglApupKFvjrkzEzJJtR0bW6ebONfWnFlDqct?=
+ =?us-ascii?Q?L7d+0888qSKpIuVzDc6tDTanv0CR03QHSJpmQfg3bV2NYlXOlPzVEOv4xfl1?=
+ =?us-ascii?Q?dfsdla8fDvkQ5uG5SN2cdshl7uhwUSVwkzBTGYBXqiRkKpPS9xJ02TLNfpj3?=
+ =?us-ascii?Q?ajEmnu201pEY/RSybUujDm2xoyn22E0l2pK0VJlkS9fbu0r9cBUu9y4b44nO?=
+ =?us-ascii?Q?n7Jm+E/LFpmtyYmxbe5XOxXl1qjg+HN+ZMXXWK1/Rc8p3ZWaJma8AnSCtOnz?=
+ =?us-ascii?Q?lMukCcEFc0nihIxNZWEDtF+j7yGp/sSKgMVk0uKHAJlLTcbneqbMhYVEaWHX?=
+ =?us-ascii?Q?8R+VZ01AK66uibFXduHLBTP3SoMyw/K2eq1+GzdFbsOGUnqKHK7YZbgwgj92?=
+ =?us-ascii?Q?ONkn/SXkbKTDMc4ntXC5FJD8q6VYtIQ+2OF3U5RoXl9ZUGOwOnRn9Q8YfTyt?=
+ =?us-ascii?Q?+9la3Sbgek4putWS+fw2OHoYxgyTBZP1muS1QPIawGx9P65S6Oz0zbtfcRgh?=
+ =?us-ascii?Q?NCJrxfIww+onrB+MwbUYcSMibFD3PtR1kCLOptiYmzxhxWaES2t8K3lJmA2+?=
+ =?us-ascii?Q?co0cjegytxTGnFSyIRSqsVa3PNtEL7y11rTHO/4k8hZlvA4ZPXDaYtmTd18s?=
+ =?us-ascii?Q?iRBtFFGn4HVS6nq0DDt8DQqVsXpBffcPZJacwLN5KZ9Wt0UPzWjjehEbhz20?=
+ =?us-ascii?Q?QfWSBljymJZhXYGYMFL29IZfMUCSYvYVgIo7Fx6jmKwDahYjLzJIuOi+X0bg?=
+ =?us-ascii?Q?+as8J0WeKtLk6xDFKvZgH6h0PPWqkE56r4zObxsHGNPbbh75nAOtcEF3h4ER?=
+ =?us-ascii?Q?Kd3yr6I6m1UyvWfqb4QztuOmGP08QPyvaSBbmXHJL8z/Pfbw+bw0gf2Qdqzl?=
+ =?us-ascii?Q?l8scGEVSCxvs4aVIDUc0SYL8LhFB+7UjFae8/bF3GUwnSZciueaLWs43cuBy?=
+ =?us-ascii?Q?527d/X0JJ8Mrj8XnqEjwZBV/wM9z5AS+FZGXBk9TTYiEIdMq0JLOEzaMphF8?=
+ =?us-ascii?Q?Wg=3D=3D?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	=?us-ascii?Q?rr8JZ6GqDMyZvJu4NEeL52/uDfQI43QJ0bEFkFzxwjThDiKuR5Nko7f/lWwT?=
+ =?us-ascii?Q?/MdMGjKzPB0PdojO8C9JSHe254WhJ+enpZo6XP3maKkz4JtbmH29U85+2ApK?=
+ =?us-ascii?Q?zSWgeHi+bwsuEhCaqKqvLsfDBNH4mePMIpVzp4HBV4D95GgPBwJBYjqHXikB?=
+ =?us-ascii?Q?hybQLTD8j3eP4MI5RvPWfypEx8A3482n1nUDji+oTCxp9uZXlGvtRLIkr7Tw?=
+ =?us-ascii?Q?2/aZNB0M/mnGIGieOyTrmD0jErfQaiM5EpMWgI9SkNsQEd0XVzWYFLKwzKdn?=
+ =?us-ascii?Q?jFpxgd6CZ6aMh5BOebh+gVUNZedklBX8P3TgwJhLaKM4OCteS1FmBSfZ4hYF?=
+ =?us-ascii?Q?gV+w9EfjQrWcwCZKqOhzWyxuA8J5DLo6+ZwyvKdRNgqA4AOf3rKVsw38U9nd?=
+ =?us-ascii?Q?gpcJ7gI4YRFeKnpLdQk16EpgulC/yeR2kwIu/FluRN7LLE650jCQtkGxluEh?=
+ =?us-ascii?Q?f8AOIHKLHRu4EUKswDIljW/YuOtYZEc3DrvnjELN9VOUTbfwxQgcuTkgJipz?=
+ =?us-ascii?Q?E6lLlUw183mM0hwiswkPchpzboiiIyIbRCMkf1sL2QO5yE65OqDf+JaZwNd2?=
+ =?us-ascii?Q?bcLOpJMSPH+aghf05X1dfTWk0pr/9YpdnfLqCHmrc2JpZmCjMY00pVDdmGGn?=
+ =?us-ascii?Q?c3CQfakI7JF5e4DRnsPiO7uOiR2qAujiWjQ7Gw5GojiNXfmExFb5moisLoDI?=
+ =?us-ascii?Q?Bxt9mk6u5fei8dYrTxxTA1d8tT8yzhnFn8828PPwz/c1DRxoz1HlQD2QqIAs?=
+ =?us-ascii?Q?W6K5nniZWME8tzz/Sadw0oE5l9ZzktujLaJrbpILx6wXWPHL5dVTgi23L1HW?=
+ =?us-ascii?Q?U/XO86iWH+LXyNVbj3ruYJWeA6cAxNU8Gsm2d53AwiICNZ8xfmKnP0lyIHtO?=
+ =?us-ascii?Q?et3VxUP+pg5XYVRCPborsqxIthI7JuNDMxNsoWXMCDL2drXcSgW2lx+22g2m?=
+ =?us-ascii?Q?BBOE1cMNRyfg5p7TSP7166FpnaFPEjjSsquj8W1S8YuLK4J6wqwRxBlz2zAv?=
+ =?us-ascii?Q?2GyNdPutbSL+sAIZeGxfjB4kpN1bGBFK9o5trQpdQpOX0qJFDiLjDk28Vl1m?=
+ =?us-ascii?Q?tWJXEn2AbWMaiX+9667nrC6lPgv64ISkkUPmA8wWWgI44/g0n5w=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23cb3877-7830-4426-8978-08db62cbfdf0
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR11MB5976.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 373a1b69-e770-4acc-1884-08db62cbefb5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jun 2023 18:13:44.2336
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2023 18:14:08.4234
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: EZEGCqIhVLCJDZJZETWqE/mANMxvpV+PwMIeUO9cuBGIfIZ9t19MxsZuj9buirXQjUNQYhSHs7wq62TXonZF0S8Yv0FgeMYhEF8erVy5WPg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5118
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KFHha7GSkkMO/D0TQSas5+J/xWX4Tqa8elmcs88aQV8t7zzc192GVeB0G9Phi1KUP0Z3Zkwi6m4GquhWOrEBFg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR10MB7213
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-06-01_08,2023-05-31_03,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 phishscore=0 spamscore=0
+ adultscore=0 mlxlogscore=999 bulkscore=0 malwarescore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2304280000
+ definitions=main-2306010157
+X-Proofpoint-ORIG-GUID: 35DgSG23fSN1MfXXBe6VFvTn_tW5hGD1
+X-Proofpoint-GUID: 35DgSG23fSN1MfXXBe6VFvTn_tW5hGD1
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-T24gVGh1LCAyMDIzLTA2LTAxIGF0IDE0OjAwIC0wNDAwLCBLZW50IE92ZXJzdHJlZXQgd3JvdGU6
-DQo+IE9uIFRodSwgSnVuIDAxLCAyMDIzIGF0IDA0OjU0OjI3UE0gKzAwMDAsIEVkZ2Vjb21iZSwg
-UmljayBQIHdyb3RlOg0KPiA+IEl0IGlzIGp1c3QgYSBsb2NhbCBmbHVzaCwgYnV0IEkgd29uZGVy
-IGhvdyBtdWNoIHRleHRfcG9rZSgpaW5nIGlzDQo+ID4gdG9vDQo+ID4gbXVjaC4gQSBsb3Qgb2Yg
-dGhlIGFyZSBldmVuIGluc2lkZSBsb29wcy4gQ2FuJ3QgaXQgZG8gdGhlIGJhdGNoDQo+ID4gdmVy
-c2lvbg0KPiA+IGF0IGxlYXN0Pw0KPiA+IA0KPiA+IFRoZSBvdGhlciB0aGluZywgYW5kIG1heWJl
-IHRoaXMgaXMgaW4gcGFyYW5vaWEgY2F0ZWdvcnksIGJ1dCBpdCdzDQo+ID4gcHJvYmFibHkgYXQg
-bGVhc3Qgd29ydGggbm90aW5nLiBCZWZvcmUgdGhlIG1vZHVsZXMgd2VyZSBub3QgbWFkZQ0KPiA+
-IGV4ZWN1dGFibGUgdW50aWwgYWxsIG9mIHRoZSBjb2RlIHdhcyBmaW5hbGl6ZWQuIE5vdyB0aGV5
-IGFyZSBtYWRlDQo+ID4gZXhlY3V0YWJsZSBpbiBhbiBpbnRlcm1lZGlhdGUgc3RhdGUgYW5kIHRo
-ZW4gcGF0Y2hlZCBsYXRlci4gSXQNCj4gPiBtaWdodA0KPiA+IHdlYWtlbiB0aGUgQ0ZJIHN0dWZm
-LCBidXQgYWxzbyBpdCBqdXN0IGtpbmQgb2Ygc2VlbXMgYSBiaXQNCj4gPiB1bmJvdW5kZWQNCj4g
-PiBmb3IgZGVhbGluZyB3aXRoIGV4ZWN1dGFibGUgY29kZS4NCj4gDQo+IEkgYmVsaWV2ZSBicGYg
-c3RhcnRzIG91dCBieSBpbml0aWFsaXppbmcgbmV3IGV4ZWN1dGFibGUgbWVtb3J5IHdpdGgNCj4g
-aWxsZWdhbCBvcGNvZGVzLCBtYXliZSB3ZSBzaG91bGQgc3RlYWwgdGhhdCBhbmQgbWFrZSBpdCBz
-dGFuZGFyZC4NCg0KSSB3YXMgdGhpbmtpbmcgb2YgbW9kdWxlcyB3aGljaCBoYXZlIGEgdG9uIG9m
-IGFsdGVybmF0aXZlcywgZXJyYXRhDQpmaXhlcywgZXRjIGFwcGxpZWQgdG8gdGhlbSBhZnRlciB0
-aGUgaW5pdGlhbCBzZWN0aW9ucyBhcmUgd3JpdHRlbiB0bw0KdGhlIHRvLWJlLWV4ZWN1dGFibGUg
-bWFwcGluZy4gSSB0aG91Z2h0IHRoaXMgaGFkIHplcm9lZCBwYWdlcyB0byBzdGFydCwNCndoaWNo
-IHNlZW1zIG9rLg0KDQo+IA0KPiA+IFByZXBhcmluZyB0aGUgbW9kdWxlcyBpbiBhIHNlcGFyYXRl
-IFJXIG1hcHBpbmcsIGFuZCB0aGVuDQo+ID4gdGV4dF9wb2tlKClpbmcNCj4gPiB0aGUgd2hvbGUg
-dGhpbmcgaW4gd2hlbiB5b3UgYXJlIGRvbmUgd291bGQgcmVzb2x2ZSBib3RoIG9mIHRoZXNlLg0K
-PiANCj4gdGV4dF9wb2tlKCkgX2RvZXNfIGNyZWF0ZSBhIHNlcGFyYXRlIFJXIG1hcHBpbmcuDQoN
-ClNvcnJ5LCBJIG1lYW50IGEgc2VwYXJhdGUgUlcgYWxsb2NhdGlvbi4NCg0KPiANCj4gVGhlIHRo
-aW5nIHRoYXQgc3Vja3MgYWJvdXQgdGV4dF9wb2tlKCkgaXMgdGhhdCBpdCBhbHdheXMgZG9lcyBh
-IGZ1bGwNCj4gVExCDQo+IGZsdXNoLCBhbmQgQUZBSUNUIHRoYXQncyBub3QgcmVtb3RlbHkgbmVl
-ZGVkLiBXaGF0IGl0IHJlYWxseSB3YW50cyB0bw0KPiBiZQ0KPiBkb2luZyBpcyBjb25jZXB0dWFs
-bHkganVzdA0KPiANCj4ga21hcF9sb2NhbCgpDQo+IG1lbXBjeSgpDQo+IGt1bm1hcF9sb2NhKCkN
-Cj4gZmx1c2hfaWNhY2hlKCk7DQo+IA0KPiAuLi5leGNlcHQgdGhhdCBrbWFwX2xvY2FsKCkgd29u
-J3QgYWN0dWFsbHkgY3JlYXRlIGEgbmV3IG1hcHBpbmcgb24NCj4gbm9uLWhpZ2htZW0gYXJjaGl0
-ZWN0dXJlcywgc28gdGV4dF9wb2tlKCkgb3BlbiBjb2RlcyBpdC4NCg0KVGV4dCBwb2tlIGNyZWF0
-ZXMgb25seSBhIGxvY2FsIENQVSBSVyBtYXBwaW5nLiBJdCdzIG1vcmUgc2VjdXJlIGJlY2F1c2UN
-Cm90aGVyIHRocmVhZHMgY2FuJ3Qgd3JpdGUgdG8gaXQuIEl0IGFsc28gb25seSBuZWVkcyB0byBm
-bHVzaCB0aGUgbG9jYWwNCmNvcmUgd2hlbiBpdCdzIGRvbmUgc2luY2UgaXQncyBub3QgdXNpbmcg
-YSBzaGFyZWQgTU0uIEl0IHVzZWQgdG8gdXNlDQp0aGUgZml4bWFwLCB3aGljaCBpcyBzaW1pbGFy
-IHRvIHdoYXQgeW91IGFyZSBkZXNjcmliaW5nIEkgdGhpbmsuDQoNCg==
+* Anjali Kulkarni <anjali.k.kulkarni@oracle.com> [691231 23:00]:
+> This patch adds the capability to filter messages sent by the proc
+> connector on the event type supplied in the message from the client
+> to the connector. The client can register to listen for an event type
+> given in struct proc_input.
+> 
+> This event based filteting will greatly enhance performance - handling
+> 8K exits takes about 70ms, whereas 8K-forks + 8K-exits takes about 150ms
+> & handling 8K-forks + 8K-exits + 8K-execs takes 200ms. There are currently
+> 9 different types of events, and we need to listen to all of them. Also,
+> measuring the time using pidfds for monitoring 8K process exits took
+> much longer - 200ms, as compared to 70ms using only exit notifications of
+> proc connector.
+> 
+> We also add a new event type - PROC_EVENT_NONZERO_EXIT, which is
+> only sent by kernel to a listening application when any process exiting,
+> has a non-zero exit status. This will help the clients like Oracle DB,
+> where a monitoring process wants notfications for non-zero process exits
+> so it can cleanup after them.
+> 
+> This kind of a new event could also be useful to other applications like
+> Google's lmkd daemon, which needs a killed process's exit notification.
+> 
+> The patch takes care that existing clients using old mechanism of not
+> sending the event type work without any changes.
+> 
+> cn_filter function checks to see if the event type being notified via
+> proc connector matches the event type requested by client, before
+> sending(matches) or dropping(does not match) a packet.
+> 
+> The proc_filter.c test file is updated to reflect the new filtering.
+> 
+> Signed-off-by: Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
+> ---
+>  drivers/connector/cn_proc.c     | 59 +++++++++++++++++++++++++++++----
+>  include/uapi/linux/cn_proc.h    | 19 +++++++++++
+>  samples/connector/proc_filter.c | 47 +++++++++++++++++++++++---
+>  3 files changed, 115 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/connector/cn_proc.c b/drivers/connector/cn_proc.c
+> index 84f38d2bd4b9..35bec1fd7ee0 100644
+> --- a/drivers/connector/cn_proc.c
+> +++ b/drivers/connector/cn_proc.c
+> @@ -50,21 +50,44 @@ static DEFINE_PER_CPU(struct local_event, local_event) = {
+>  
+>  static int cn_filter(struct sock *dsk, struct sk_buff *skb, void *data)
+>  {
+> +	uintptr_t val;
+> +	__u32 what, exit_code, *ptr;
+>  	enum proc_cn_mcast_op mc_op;
+>  
+> -	if (!dsk)
+> +	if (!dsk || !data)
+>  		return 0;
+>  
+> +	ptr = (__u32 *)data;
+> +	what = *ptr++;
+> +	exit_code = *ptr;
+> +	val = ((struct proc_input *)(dsk->sk_user_data))->event_type;
+>  	mc_op = ((struct proc_input *)(dsk->sk_user_data))->mcast_op;
+>  
+>  	if (mc_op == PROC_CN_MCAST_IGNORE)
+>  		return 1;
+>  
+> -	return 0;
+> +	if ((__u32)val == PROC_EVENT_ALL)
+> +		return 0;
+> +	/*
+> +	 * Drop packet if we have to report only non-zero exit status
+> +	 * (PROC_EVENT_NONZERO_EXIT) and exit status is 0
+> +	 */
+> +	if (((__u32)val & PROC_EVENT_NONZERO_EXIT) &&
+> +	    (what == PROC_EVENT_EXIT)) {
+> +		if (exit_code)
+> +			return 0;
+> +		else
+> +			return 1;
+> +	}
+
+new line here please.
+
+> +	if ((__u32)val & what)
+> +		return 0;
+
+new line here please.
+
+> +	return 1;
+>  }
+>  
+>  static inline void send_msg(struct cn_msg *msg)
+>  {
+> +	__u32 filter_data[2];
+> +
+>  	local_lock(&local_event.lock);
+>  
+>  	msg->seq = __this_cpu_inc_return(local_event.count) - 1;
+> @@ -76,8 +99,15 @@ static inline void send_msg(struct cn_msg *msg)
+>  	 *
+>  	 * If cn_netlink_send() fails, the data is not sent.
+>  	 */
+> +	filter_data[0] = ((struct proc_event *)msg->data)->what;
+> +	if (filter_data[0] == PROC_EVENT_EXIT) {
+> +		filter_data[1] =
+> +		((struct proc_event *)msg->data)->event_data.exit.exit_code;
+> +	} else {
+> +		filter_data[1] = 0;
+> +	}
+
+new line here please.
+
+>  	cn_netlink_send_mult(msg, msg->len, 0, CN_IDX_PROC, GFP_NOWAIT,
+> -			     cn_filter, NULL);
+> +			     cn_filter, (void *)filter_data);
+>  
+>  	local_unlock(&local_event.lock);
+>  }
+> @@ -357,12 +387,15 @@ static void cn_proc_ack(int err, int rcvd_seq, int rcvd_ack)
+>  
+>  /**
+>   * cn_proc_mcast_ctl
+> - * @data: message sent from userspace via the connector
+> + * @msg: message sent from userspace via the connector
+> + * @nsp: NETLINK_CB of the client's socket buffer
+>   */
+>  static void cn_proc_mcast_ctl(struct cn_msg *msg,
+>  			      struct netlink_skb_parms *nsp)
+>  {
+>  	enum proc_cn_mcast_op mc_op = 0, prev_mc_op = 0;
+> +	struct proc_input *pinput = NULL;
+> +	enum proc_cn_event ev_type = 0;
+>  	int err = 0, initial = 0;
+>  	struct sock *sk = NULL;
+>  
+> @@ -381,11 +414,21 @@ static void cn_proc_mcast_ctl(struct cn_msg *msg,
+>  		goto out;
+>  	}
+>  
+> -	if (msg->len == sizeof(mc_op))
+> +	if (msg->len == sizeof(*pinput)) {
+> +		pinput = (struct proc_input *)msg->data;
+> +		mc_op = pinput->mcast_op;
+> +		ev_type = pinput->event_type;
+> +	} else if (msg->len == sizeof(mc_op)) {
+>  		mc_op = *((enum proc_cn_mcast_op *)msg->data);
+> -	else
+> +		ev_type = PROC_EVENT_ALL;
+> +	} else
+
+if you have a  } else, you should brace the second part:
+	} else { ...
+
+>  		return;
+>  
+> +	ev_type = valid_event((enum proc_cn_event)ev_type);
+> +
+> +	if (ev_type == PROC_EVENT_NONE)
+> +		ev_type = PROC_EVENT_ALL;
+> +
+>  	if (nsp->sk) {
+>  		sk = nsp->sk;
+>  		if (sk->sk_user_data == NULL) {
+> @@ -396,6 +439,8 @@ static void cn_proc_mcast_ctl(struct cn_msg *msg,
+>  			prev_mc_op =
+>  			((struct proc_input *)(sk->sk_user_data))->mcast_op;
+>  		}
+> +		((struct proc_input *)(sk->sk_user_data))->event_type =
+> +			ev_type;
+>  		((struct proc_input *)(sk->sk_user_data))->mcast_op = mc_op;
+>  	}
+>  
+> @@ -407,6 +452,8 @@ static void cn_proc_mcast_ctl(struct cn_msg *msg,
+>  	case PROC_CN_MCAST_IGNORE:
+>  		if (!initial && (prev_mc_op != PROC_CN_MCAST_IGNORE))
+>  			atomic_dec(&proc_event_num_listeners);
+> +		((struct proc_input *)(sk->sk_user_data))->event_type =
+> +			PROC_EVENT_NONE;
+>  		break;
+>  	default:
+>  		err = EINVAL;
+> diff --git a/include/uapi/linux/cn_proc.h b/include/uapi/linux/cn_proc.h
+> index 6a06fb424313..f2afb7cc4926 100644
+> --- a/include/uapi/linux/cn_proc.h
+> +++ b/include/uapi/linux/cn_proc.h
+> @@ -30,6 +30,15 @@ enum proc_cn_mcast_op {
+>  	PROC_CN_MCAST_IGNORE = 2
+>  };
+>  
+> +#define PROC_EVENT_ALL (PROC_EVENT_FORK | PROC_EVENT_EXEC | PROC_EVENT_UID |  \
+> +			PROC_EVENT_GID | PROC_EVENT_SID | PROC_EVENT_PTRACE | \
+> +			PROC_EVENT_COMM | PROC_EVENT_NONZERO_EXIT |           \
+> +			PROC_EVENT_COREDUMP | PROC_EVENT_EXIT)
+> +
+> +/*
+> + * If you add an entry in proc_cn_event, make sure you add it in
+> + * PROC_EVENT_ALL above as well.
+> + */
+>  enum proc_cn_event {
+>  	/* Use successive bits so the enums can be used to record
+>  	 * sets of events as well
+> @@ -45,15 +54,25 @@ enum proc_cn_event {
+>  	/* "next" should be 0x00000400 */
+>  	/* "last" is the last process event: exit,
+>  	 * while "next to last" is coredumping event
+> +	 * before that is report only if process dies
+> +	 * with non-zero exit status
+>  	 */
+> +	PROC_EVENT_NONZERO_EXIT = 0x20000000,
+>  	PROC_EVENT_COREDUMP = 0x40000000,
+>  	PROC_EVENT_EXIT = 0x80000000
+>  };
+>  
+>  struct proc_input {
+>  	enum proc_cn_mcast_op mcast_op;
+> +	enum proc_cn_event event_type;
+>  };
+>  
+> +static inline enum proc_cn_event valid_event(enum proc_cn_event ev_type)
+> +{
+> +	ev_type &= PROC_EVENT_ALL;
+> +	return ev_type;
+> +}
+> +
+>  /*
+>   * From the user's point of view, the process
+>   * ID is the thread group ID and thread ID is the internal
+> diff --git a/samples/connector/proc_filter.c b/samples/connector/proc_filter.c
+> index 84e53855c650..e2aab859cc34 100644
+> --- a/samples/connector/proc_filter.c
+> +++ b/samples/connector/proc_filter.c
+> @@ -15,22 +15,33 @@
+>  #include <errno.h>
+>  #include <signal.h>
+>  
+> +#define FILTER
+> +
+> +#ifdef FILTER
+> +#define NL_MESSAGE_SIZE (sizeof(struct nlmsghdr) + sizeof(struct cn_msg) + \
+> +			 sizeof(struct proc_input))
+> +#else
+>  #define NL_MESSAGE_SIZE (sizeof(struct nlmsghdr) + sizeof(struct cn_msg) + \
+>  			 sizeof(int))
+> +#endif
+>  
+>  #define MAX_EVENTS 1
+>  
+> +volatile static int interrupted;
+> +static int nl_sock, ret_errno, tcount;
+> +static struct epoll_event evn;
+> +
+>  #ifdef ENABLE_PRINTS
+>  #define Printf printf
+>  #else
+>  #define Printf
+>  #endif
+>  
+> -volatile static int interrupted;
+> -static int nl_sock, ret_errno, tcount;
+> -static struct epoll_event evn;
+> -
+
+It's not obvious to me why the above needed to be moved?
+
+> +#ifdef FILTER
+> +int send_message(struct proc_input *pinp)
+> +#else
+>  int send_message(enum proc_cn_mcast_op mcast_op)
+> +#endif
+>  {
+>  	char buff[NL_MESSAGE_SIZE];
+>  	struct nlmsghdr *hdr;
+> @@ -50,8 +61,14 @@ int send_message(enum proc_cn_mcast_op mcast_op)
+>  	msg->ack = 0;
+>  	msg->flags = 0;
+>  
+> +#ifdef FILTER
+> +	msg->len = sizeof(struct proc_input);
+> +	((struct proc_input *)msg->data)->mcast_op = pinp->mcast_op;
+> +	((struct proc_input *)msg->data)->event_type = pinp->event_type;
+> +#else
+>  	msg->len = sizeof(int);
+>  	*(int *)msg->data = mcast_op;
+> +#endif
+>  
+>  	if (send(nl_sock, hdr, hdr->nlmsg_len, 0) == -1) {
+>  		ret_errno = errno;
+> @@ -61,7 +78,11 @@ int send_message(enum proc_cn_mcast_op mcast_op)
+>  	return 0;
+>  }
+>  
+> +#ifdef FILTER
+> +int register_proc_netlink(int *efd, struct proc_input *input)
+> +#else
+>  int register_proc_netlink(int *efd, enum proc_cn_mcast_op mcast_op)
+> +#endif
+>  {
+>  	struct sockaddr_nl sa_nl;
+>  	int err = 0, epoll_fd;
+> @@ -92,7 +113,11 @@ int register_proc_netlink(int *efd, enum proc_cn_mcast_op mcast_op)
+>  		return -2;
+>  	}
+>  
+> +#ifdef FILTER
+> +	err = send_message(input);
+> +#else
+>  	err = send_message(mcast_op);
+> +#endif
+>  	if (err < 0)
+>  		return err;
+>  
+> @@ -223,10 +248,19 @@ int main(int argc, char *argv[])
+>  {
+>  	int epoll_fd, err;
+>  	struct proc_event proc_ev;
+> +#ifdef FILTER
+> +	struct proc_input input;
+> +#endif
+>  
+>  	signal(SIGINT, sigint);
+>  
+> +#ifdef FILTER
+> +	input.event_type = PROC_EVENT_NONZERO_EXIT;
+> +	input.mcast_op = PROC_CN_MCAST_LISTEN;
+> +	err = register_proc_netlink(&epoll_fd, &input);
+> +#else
+>  	err = register_proc_netlink(&epoll_fd, PROC_CN_MCAST_LISTEN);
+> +#endif
+>  	if (err < 0) {
+>  		if (err == -2)
+>  			close(nl_sock);
+> @@ -252,7 +286,12 @@ int main(int argc, char *argv[])
+>  		}
+>  	}
+>  
+> +#ifdef FILTER
+> +	input.mcast_op = PROC_CN_MCAST_IGNORE;
+> +	send_message(&input);
+> +#else
+>  	send_message(PROC_CN_MCAST_IGNORE);
+> +#endif
+>  
+>  	close(epoll_fd);
+>  	close(nl_sock);
+> -- 
+> 2.40.0
+> 
 
