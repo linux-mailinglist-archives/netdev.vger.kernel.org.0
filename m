@@ -1,148 +1,168 @@
-Return-Path: <netdev+bounces-7098-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7099-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id CF22A719E6D
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 15:42:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4B821719F0C
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:06:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8397628172A
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 13:42:16 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ED31128172E
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 14:06:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 95EA421CC0;
-	Thu,  1 Jun 2023 13:42:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2979E21CD7;
+	Thu,  1 Jun 2023 14:06:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89F5C23423
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 13:42:14 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5AC1139
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 06:42:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685626931;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ZPN2zqjRcvTx5BAbVRSKyrNwIPYaR9V6mursf4H+kkE=;
-	b=UBxwOJdaRm2luaDY7t8k9446iy8VUnJuINRWGyS4m9RgSZFNolHiufuYbVqb/ImBpcadF6
-	yH/Zt8NwO4JyJTHa7PcvExjNIz0rOaWDrJaUeh83DF1UCFAGdp2Vxdg+4IYUO0KrkeuMli
-	VkmtxDd1jqQawifUBtAmC35N39D2dP4=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-354-Odq0QhyGOlaCeyIPE1kdVw-1; Thu, 01 Jun 2023 09:42:10 -0400
-X-MC-Unique: Odq0QhyGOlaCeyIPE1kdVw-1
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-30ac043a7eeso46895f8f.0
-        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 06:42:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685626928; x=1688218928;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ZPN2zqjRcvTx5BAbVRSKyrNwIPYaR9V6mursf4H+kkE=;
-        b=OQnPJxt5K7UCo8is2th3rCylhdVKtMglMEW8cZET6cliHzZOy3B4LifFrxevT7GG7L
-         FHWRisPsis9pnWfbBbeUu/zwRhgAyjWYQDqI2ZXd4ZeLlVAA4coLrjGePQERymbPb410
-         o7r1TXL0VE4mB2YGjiCWX2d3nGgWdkuko9kdWsicQEt2ahIkIU1g4sbN9MuhxtaWdBTy
-         rp6vLSw68gcGX49lyrGh6HMLDmY0QKMvudIIAuD5p1FchB6kyT88C9FL8k33Kr/Bn1Sz
-         Eat3lNj7oVdVwFBxIF+VBaSTy8Jkalil7aPVEr+cGoC7V+/4e/Jg9B+cbMXc4vxBDF06
-         lgPw==
-X-Gm-Message-State: AC+VfDzKujw0frAlE9Zopz7y6yIATy/jrUozdwg2RErpWFMqLPZlFCpr
-	lrNyo8KtTcEZ1q4P5QMuJVHFLzcMJK7k92nh6GxGL3dmjVQJR6PlY7t0q3huk86QyMQuhyZPOZ2
-	pumXo40Ek0563uiTu
-X-Received: by 2002:a5d:5490:0:b0:2e4:c9ac:c492 with SMTP id h16-20020a5d5490000000b002e4c9acc492mr5994559wrv.1.1685626928450;
-        Thu, 01 Jun 2023 06:42:08 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ52njr8Il+cOTczR39DnsK5Iu/OapPG+wYgoaSYubVjP1CrjzkBWo6brNrPUA6MLAqHiTSnPA==
-X-Received: by 2002:a5d:5490:0:b0:2e4:c9ac:c492 with SMTP id h16-20020a5d5490000000b002e4c9acc492mr5994541wrv.1.1685626928087;
-        Thu, 01 Jun 2023 06:42:08 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-242-89.dyn.eolo.it. [146.241.242.89])
-        by smtp.gmail.com with ESMTPSA id z2-20020a5d6542000000b0030c2e3c7fb3sm2963398wrv.101.2023.06.01.06.42.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jun 2023 06:42:07 -0700 (PDT)
-Message-ID: <1a14013cc3e205265e4564094d4faf971b651810.camel@redhat.com>
-Subject: Re: [PATCH net] net: dsa: mv88e6xxx: Increase wait after reset
- deactivation
-From: Paolo Abeni <pabeni@redhat.com>
-To: Andrew Lunn <andrew@lunn.ch>, Andreas Svensson
- <andreas.svensson@axis.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>, Vladimir Oltean
- <olteanv@gmail.com>,  "David S. Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,  kernel@axis.com,
- Baruch Siach <baruch@tkos.co.il>, netdev@vger.kernel.org, 
- linux-kernel@vger.kernel.org
-Date: Thu, 01 Jun 2023 15:42:06 +0200
-In-Reply-To: <133860f9-e745-44ce-9b74-c5d990cf92db@lunn.ch>
-References: <20230530145223.1223993-1-andreas.svensson@axis.com>
-	 <be44dfe3-b4cb-4fd5-b4bd-23eec4bd401c@lunn.ch>
-	 <f89e203a-af77-9661-1003-0e9370ff6fab@axis.com>
-	 <133860f9-e745-44ce-9b74-c5d990cf92db@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E948C21CC9
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 14:06:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DA87C4339B;
+	Thu,  1 Jun 2023 14:06:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685628406;
+	bh=jo+kQRmaMsGk8ilFDIPDe218c8Tetx9OvbItrHEqoYE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=l7jX3PMgpRa2WwIfC0tf5h8YCO3IO9p9e/4e8d8da94t0pAlDlQzhZbrmZvAS4OVt
+	 jKJGsiItamIF78bDAdpNSxVF/uFzsxc23LkOb1Nkzq/7Hgnkuo0LJT7SYxUSE93L0Y
+	 vuRpWEFlFBxrRwQcDBb8Mtu5N8FpvHJFbPt5CZZw0YATtIzFB8+X48XLITlt19lFuU
+	 PHDnKzvz38VWHDHPYWKtkv4zy4dppE5MgVVnw0Sn0tGaF8rT3wRHluNTEwmaVPQ1tC
+	 0YicaiD+JNkUSIm3X5rmcaw5Tnp16fWZw8Tdtiy6KkBbsGW6eoW3jZcVq3kd3Pvvqn
+	 xY5yRd6zi5Ylg==
+Date: Thu, 1 Jun 2023 15:06:40 +0100
+From: Lee Jones <lee@kernel.org>
+To: Jamal Hadi Salim <jhs@mojatatu.com>, Eric Dumazet <edumazet@google.com>
+Cc: Eric Dumazet <edumazet@google.com>, xiyou.wangcong@gmail.com,
+	jiri@resnulli.us, davem@davemloft.net, kuba@kernel.org,
+	pabeni@redhat.com, linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org, stable@kernel.org
+Subject: Re: [PATCH 1/1] net/sched: cls_u32: Fix reference counter leak
+ leading to overflow
+Message-ID: <20230601140640.GG449117@google.com>
+References: <20230531141556.1637341-1-lee@kernel.org>
+ <CANn89iJw2N9EbF+Fm8KCPMvo-25ONwba+3PUr8L2ktZC1Z3uLw@mail.gmail.com>
+ <CAM0EoMnUgXsr4UBeZR57vPpc5WRJkbWUFsii90jXJ=stoXCGcg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAM0EoMnUgXsr4UBeZR57vPpc5WRJkbWUFsii90jXJ=stoXCGcg@mail.gmail.com>
 
-On Thu, 2023-06-01 at 14:01 +0200, Andrew Lunn wrote:
->  On Thu, Jun 01, 2023 at 11:10:58AM +0200, Andreas Svensson wrote:
-> > On 5/30/23 19:28, Andrew Lunn wrote:
-> > > On Tue, May 30, 2023 at 04:52:23PM +0200, Andreas Svensson wrote:
-> > > > A switch held in reset by default needs to wait longer until we can
-> > > > reliably detect it.
-> > > >=20
-> > > > An issue was observed when testing on the Marvell 88E6393X (Link St=
-reet).
-> > > > The driver failed to detect the switch on some upstarts. Increasing=
- the
-> > > > wait time after reset deactivation solves this issue.
-> > > >=20
-> > > > The updated wait time is now also the same as the wait time in the
-> > > > mv88e6xxx_hardware_reset function.
-> > >=20
-> > > Do you have an EEPROM attached and content in it?
-> >=20
-> > There's no EEPROM attached to the switch in our design.
-> >=20
-> > >=20
-> > > It is not necessarily the reset itself which is the problem, but how
-> > > long it takes after the reset to read the contents of the
-> > > EEPROM. While it is doing that, is does not respond on the MDIO
-> > > bus. Which is why mv88e6xxx_hardware_reset() polls for that to
-> > > complete.
-> >=20
-> > Ok, yes that makes sense. I could add the mv88e6xxx_g1_wait_eeprom_done
-> > function after the reset deactivation.
->=20
-> I don't think that works, because how to talk to the switch is not
-> determined until after the switch has been detected.
->=20
-> > The datasheet for 88E6393X also states that it needs at least 10ms
-> > before it's ready. But I suppose this varies from switch to switch.
->=20
-> O.K, let go with this change and see if anybody really complains. We
-> can always add a DT property later.
->=20
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
->=20
-> You probably need to repost with my Reviewed-by added, now that Paolo
-> has changed the status of the patch.
+On Wed, 31 May 2023, Jamal Hadi Salim wrote:
 
-Not needed. I can restore the patch in PW.
+> On Wed, May 31, 2023 at 11:03 AM Eric Dumazet <edumazet@google.com> wrote:
+> >
+> > On Wed, May 31, 2023 at 4:16 PM Lee Jones <lee@kernel.org> wrote:
+> > >
+> > > In the event of a failure in tcf_change_indev(), u32_set_parms() will
+> > > immediately return without decrementing the recently incremented
+> > > reference counter.  If this happens enough times, the counter will
+> > > rollover and the reference freed, leading to a double free which can be
+> > > used to do 'bad things'.
+> > >
+> > > Cc: stable@kernel.org # v4.14+
+> >
+> > Please add a Fixes: tag.
 
-Thanks,
+Why?
 
-Paolo
+From memory, I couldn't identify a specific commit to fix, which is why
+I used a Cc tag as per the Stable documentation:
 
+Option 1
+********
+
+To have the patch automatically included in the stable tree, add the tag
+
+.. code-block:: none
+
+     Cc: stable@vger.kernel.org
+
+in the sign-off area. Once the patch is merged it will be applied to
+the stable tree without anything else needing to be done by the author
+or subsystem maintainer.
+
+> > > Signed-off-by: Lee Jones <lee@kernel.org>
+> > > ---
+> > >  net/sched/cls_u32.c | 5 ++++-
+> > >  1 file changed, 4 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+> > > index 4e2e269f121f8..fad61ca5e90bf 100644
+> > > --- a/net/sched/cls_u32.c
+> > > +++ b/net/sched/cls_u32.c
+> > > @@ -762,8 +762,11 @@ static int u32_set_parms(struct net *net, struct tcf_proto *tp,
+> > >         if (tb[TCA_U32_INDEV]) {
+> > >                 int ret;
+> > >                 ret = tcf_change_indev(net, tb[TCA_U32_INDEV], extack);
+> >
+> > This call should probably be done earlier in the function, next to
+> > tcf_exts_validate_ex()
+> >
+> > Otherwise we might ask why the tcf_bind_filter() does not need to be undone.
+> >
+> > Something like:
+> >
+> > diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+> > index 4e2e269f121f8a301368b9783753e055f5af6a4e..ac957ff2216ae18bcabdd3af3b0e127447ef8f91
+> > 100644
+> > --- a/net/sched/cls_u32.c
+> > +++ b/net/sched/cls_u32.c
+> > @@ -718,13 +718,18 @@ static int u32_set_parms(struct net *net, struct
+> > tcf_proto *tp,
+> >                          struct nlattr *est, u32 flags, u32 fl_flags,
+> >                          struct netlink_ext_ack *extack)
+> >  {
+> > -       int err;
+> > +       int err, ifindex = -1;
+> >
+> >         err = tcf_exts_validate_ex(net, tp, tb, est, &n->exts, flags,
+> >                                    fl_flags, extack);
+> >         if (err < 0)
+> >                 return err;
+> >
+> > +       if (tb[TCA_U32_INDEV]) {
+> > +               ifindex = tcf_change_indev(net, tb[TCA_U32_INDEV], extack);
+> > +               if (ifindex < 0)
+> > +                       return -EINVAL;
+> > +       }
+
+Thanks for the advice.  Leave it with me.
+
+> >         if (tb[TCA_U32_LINK]) {
+> >                 u32 handle = nla_get_u32(tb[TCA_U32_LINK]);
+> >                 struct tc_u_hnode *ht_down = NULL, *ht_old;
+> > @@ -759,13 +764,9 @@ static int u32_set_parms(struct net *net, struct
+> > tcf_proto *tp,
+> >                 tcf_bind_filter(tp, &n->res, base);
+> >         }
+> >
+> > -       if (tb[TCA_U32_INDEV]) {
+> > -               int ret;
+> > -               ret = tcf_change_indev(net, tb[TCA_U32_INDEV], extack);
+> > -               if (ret < 0)
+> > -                       return -EINVAL;
+> > -               n->ifindex = ret;
+> > -       }
+> > +       if (ifindex >= 0)
+> > +               n->ifindex = ifindex;
+> > +
+> 
+> I guess we crossed paths ;->
+
+> Please, add a tdc test as well - it doesnt have to be in this patch,
+> can be a followup.
+
+I don't know how to do that, or even what a 'tdc' is.  Is it trivial?
+
+Can you point me towards the documentation please?
+
+-- 
+Lee Jones [李琼斯]
 
