@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-7061-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7062-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id BF669719915
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 12:17:58 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B5342719944
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 12:18:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5588D1C21081
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 10:17:55 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 48A1E1C21069
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 10:18:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D928A206BB;
-	Thu,  1 Jun 2023 10:14:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D86FE40795;
+	Thu,  1 Jun 2023 10:14:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E86740785;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94CDC40785;
+	Thu,  1 Jun 2023 10:14:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E2E8C433A0;
 	Thu,  1 Jun 2023 10:14:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C133C433EF;
-	Thu,  1 Jun 2023 10:14:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685614478;
-	bh=RnI9kyc36R7EEC0EF5Knnbb7J1Oc8vlY/yhY3jroC/s=;
+	s=k20201202; t=1685614487;
+	bh=Hrx9VtVZyq4uWMBfRCekQXUO/IA4A1XOafQormtZTuY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=smB0mdPZDNWFwAFsCAwb5DAFagzvRAPK6rkjDKV0KuqusGMOYloR0np4kQBA5fOZE
-	 DuF2MiWRS01rW4nbJjsbx3Hc5ocUPSkCJxzaZHKrhr5hT4UiIFg6WhUEKnpjSiOB4C
-	 btfMce30g+4cPrkTqHJKVmXzpp6oSY2iG628dFMeRrr7N971OSdNECTmrkyl+GgPfz
-	 KJ+yOaQxeEWps9YCXFnSeYww1v2zotAZ/BwweTurhTFjcdSeiSzqPJvki3yRVxglei
-	 plYk2kbTT3J971PZwv8JAckptKMEPNNSnOhMyaOYkmZGqnNAusCuxyauY3sDufcq4C
-	 3b1Acmo9lEOUA==
+	b=gpP21c/RwAJYJm+U25a1tWi/38F4mEWtcst293zmlG6D0PKkBX6d3h9ATwIa7uumf
+	 xA2hJJdQXNiMtmOQ7k+n+4Eh/tb5q0l+ZhSYKzMYnVQJJBECXK0Boas7FeJCclB+qU
+	 YcYICH1vai6DP7rq0TDqg3DTbnaTA2lnglkoOvwlhDm1fQ7nyhjt7rdP88kQv/EuQI
+	 aAPjl78FETn69M4Prx6Edwv1H7cz2NpKwM5xe4vWf7aC2SYCcxtbSZA9vK0QR4+ALQ
+	 VYyMUVtF0JdrmF3hiV5k4Z6ygm8TjniyOkfbF+4LCBKjd7eHTl1itn2XLvK6KpbTcp
+	 yOKt8OfWFYJOQ==
 From: Mike Rapoport <rppt@kernel.org>
 To: linux-kernel@vger.kernel.org
 Cc: Andrew Morton <akpm@linux-foundation.org>,
@@ -66,9 +66,9 @@ Cc: Andrew Morton <akpm@linux-foundation.org>,
 	netdev@vger.kernel.org,
 	sparclinux@vger.kernel.org,
 	x86@kernel.org
-Subject: [PATCH 09/13] kprobes: remove dependcy on CONFIG_MODULES
-Date: Thu,  1 Jun 2023 13:12:53 +0300
-Message-Id: <20230601101257.530867-10-rppt@kernel.org>
+Subject: [PATCH 10/13] modules, jitalloc: prepare to allocate executable memory as ROX
+Date: Thu,  1 Jun 2023 13:12:54 +0300
+Message-Id: <20230601101257.530867-11-rppt@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20230601101257.530867-1-rppt@kernel.org>
 References: <20230601101257.530867-1-rppt@kernel.org>
@@ -82,181 +82,114 @@ Content-Transfer-Encoding: 8bit
 
 From: "Mike Rapoport (IBM)" <rppt@kernel.org>
 
-kprobes depended on CONFIG_MODULES because it has to allocate memory for
-code.
+When executable memory will be allocated as ROX it won't be possible to
+update it using memset() and memcpy().
 
-Since code allocations are now implemented with jitalloc, kprobes can be
-enabled in non-modular kernels.
-
-Add #ifdef CONFIG_MODULE guars for the code dealing with kprobes inside
-modules, make CONFIG_KPROBES select CONFIG_JIT_ALLOC and drop the
-dependency of CONFIG_KPROBES on CONFIG_MODULES
+Introduce jit_update_copy() and jit_update_set() APIs and use them in
+modules loading code instead of memcpy() and memset().
 
 Signed-off-by: Mike Rapoport (IBM) <rppt@kernel.org>
 ---
- arch/Kconfig                |  2 +-
- kernel/kprobes.c            | 43 +++++++++++++++++++++----------------
- kernel/trace/trace_kprobe.c | 11 ++++++++++
- 3 files changed, 37 insertions(+), 19 deletions(-)
+ include/linux/jitalloc.h |  2 ++
+ kernel/module/main.c     | 19 ++++++++++++++-----
+ mm/jitalloc.c            | 20 ++++++++++++++++++++
+ 3 files changed, 36 insertions(+), 5 deletions(-)
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 205fd23e0cad..479a7b8be191 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -39,9 +39,9 @@ config GENERIC_ENTRY
+diff --git a/include/linux/jitalloc.h b/include/linux/jitalloc.h
+index 7f8cafb3cfe9..0ba5ef785a85 100644
+--- a/include/linux/jitalloc.h
++++ b/include/linux/jitalloc.h
+@@ -55,6 +55,8 @@ struct jit_alloc_params *jit_alloc_arch_params(void);
+ void jit_free(void *buf);
+ void *jit_text_alloc(size_t len);
+ void *jit_data_alloc(size_t len);
++void jit_update_copy(void *buf, void *new_buf, size_t len);
++void jit_update_set(void *buf, int c, size_t len);
  
- config KPROBES
- 	bool "Kprobes"
--	depends on MODULES
- 	depends on HAVE_KPROBES
- 	select KALLSYMS
-+	select JIT_ALLOC
- 	select TASKS_RCU if PREEMPTION
- 	help
- 	  Kprobes allows you to trap at almost any kernel address and
-diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-index 3caf3561c048..11c1cfbb11ae 100644
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -1568,6 +1568,7 @@ static int check_kprobe_address_safe(struct kprobe *p,
- 		goto out;
- 	}
+ #ifdef CONFIG_JIT_ALLOC
+ void jit_alloc_init(void);
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 91477aa5f671..9f0711c42aa2 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -1197,9 +1197,19 @@ void __weak module_arch_freeing_init(struct module *mod)
  
-+#ifdef CONFIG_MODULES
- 	/* Check if 'p' is probing a module. */
- 	*probed_mod = __module_text_address((unsigned long) p->addr);
- 	if (*probed_mod) {
-@@ -1591,6 +1592,8 @@ static int check_kprobe_address_safe(struct kprobe *p,
- 			ret = -ENOENT;
- 		}
- 	}
-+#endif
-+
- out:
- 	preempt_enable();
- 	jump_label_unlock();
-@@ -2484,24 +2487,6 @@ int kprobe_add_area_blacklist(unsigned long start, unsigned long end)
- 	return 0;
- }
- 
--/* Remove all symbols in given area from kprobe blacklist */
--static void kprobe_remove_area_blacklist(unsigned long start, unsigned long end)
--{
--	struct kprobe_blacklist_entry *ent, *n;
--
--	list_for_each_entry_safe(ent, n, &kprobe_blacklist, list) {
--		if (ent->start_addr < start || ent->start_addr >= end)
--			continue;
--		list_del(&ent->list);
--		kfree(ent);
--	}
--}
--
--static void kprobe_remove_ksym_blacklist(unsigned long entry)
--{
--	kprobe_remove_area_blacklist(entry, entry + 1);
--}
--
- int __weak arch_kprobe_get_kallsym(unsigned int *symnum, unsigned long *value,
- 				   char *type, char *sym)
+ static void *module_memory_alloc(unsigned int size, enum mod_mem_type type)
  {
-@@ -2566,6 +2551,25 @@ static int __init populate_kprobe_blacklist(unsigned long *start,
- 	return ret ? : arch_populate_kprobe_blacklist();
- }
- 
-+#ifdef CONFIG_MODULES
-+/* Remove all symbols in given area from kprobe blacklist */
-+static void kprobe_remove_area_blacklist(unsigned long start, unsigned long end)
-+{
-+	struct kprobe_blacklist_entry *ent, *n;
+-	if (mod_mem_type_is_data(type))
+-		return jit_data_alloc(size);
+-	return jit_text_alloc(size);
++	void *p;
 +
-+	list_for_each_entry_safe(ent, n, &kprobe_blacklist, list) {
-+		if (ent->start_addr < start || ent->start_addr >= end)
-+			continue;
-+		list_del(&ent->list);
-+		kfree(ent);
++	if (mod_mem_type_is_data(type)) {
++		p = jit_data_alloc(size);
++		if (p)
++			memset(p, 0, size);
++	} else {
++		p = jit_text_alloc(size);
++		if (p)
++			jit_update_set(p, 0, size);
 +	}
++
++	return p;
+ }
+ 
+ static void module_memory_free(void *ptr, enum mod_mem_type type)
+@@ -2223,7 +2233,6 @@ static int move_module(struct module *mod, struct load_info *info)
+ 			t = type;
+ 			goto out_enomem;
+ 		}
+-		memset(ptr, 0, mod->mem[type].size);
+ 		mod->mem[type].base = ptr;
+ 	}
+ 
+@@ -2251,7 +2260,7 @@ static int move_module(struct module *mod, struct load_info *info)
+ 				ret = -ENOEXEC;
+ 				goto out_enomem;
+ 			}
+-			memcpy(dest, (void *)shdr->sh_addr, shdr->sh_size);
++			jit_update_copy(dest, (void *)shdr->sh_addr, shdr->sh_size);
+ 		}
+ 		/*
+ 		 * Update the userspace copy's ELF section address to point to
+diff --git a/mm/jitalloc.c b/mm/jitalloc.c
+index 16fd715d501a..a8ae64364d56 100644
+--- a/mm/jitalloc.c
++++ b/mm/jitalloc.c
+@@ -7,6 +7,16 @@
+ 
+ static struct jit_alloc_params jit_alloc_params;
+ 
++static inline void jit_text_poke_copy(void *dst, const void *src, size_t len)
++{
++	memcpy(dst, src, len);
 +}
 +
-+static void kprobe_remove_ksym_blacklist(unsigned long entry)
++static inline void jit_text_poke_set(void *addr, int c, size_t len)
 +{
-+	kprobe_remove_area_blacklist(entry, entry + 1);
++	memset(addr, c, len);
 +}
 +
- static void add_module_kprobe_blacklist(struct module *mod)
- {
- 	unsigned long start, end;
-@@ -2667,6 +2671,7 @@ static struct notifier_block kprobe_module_nb = {
- 	.notifier_call = kprobes_module_callback,
- 	.priority = 0
- };
-+#endif
- 
- void kprobe_free_init_mem(void)
- {
-@@ -2726,8 +2731,10 @@ static int __init init_kprobes(void)
- 	err = arch_init_kprobes();
- 	if (!err)
- 		err = register_die_notifier(&kprobe_exceptions_nb);
-+#ifdef CONFIG_MODULES
- 	if (!err)
- 		err = register_module_notifier(&kprobe_module_nb);
-+#endif
- 
- 	kprobes_initialized = (err == 0);
- 	kprobe_sysctls_init();
-diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-index 59cda19a9033..cf804e372554 100644
---- a/kernel/trace/trace_kprobe.c
-+++ b/kernel/trace/trace_kprobe.c
-@@ -111,6 +111,7 @@ static nokprobe_inline bool trace_kprobe_within_module(struct trace_kprobe *tk,
- 	return strncmp(module_name(mod), name, len) == 0 && name[len] == ':';
+ static void *jit_alloc(size_t len, unsigned int alignment, pgprot_t pgprot,
+ 		       unsigned long start, unsigned long end,
+ 		       unsigned long fallback_start, unsigned long fallback_end,
+@@ -86,6 +96,16 @@ void *jit_data_alloc(size_t len)
+ 			 fallback_start, fallback_end, kasan);
  }
  
-+#ifdef CONFIG_MODULES
- static nokprobe_inline bool trace_kprobe_module_exist(struct trace_kprobe *tk)
- {
- 	char *p;
-@@ -129,6 +130,12 @@ static nokprobe_inline bool trace_kprobe_module_exist(struct trace_kprobe *tk)
- 
- 	return ret;
- }
-+#else
-+static inline bool trace_kprobe_module_exist(struct trace_kprobe *tk)
++void jit_update_copy(void *buf, void *new_buf, size_t len)
 +{
-+	return false;
++	jit_text_poke_copy(buf, new_buf, len);
 +}
-+#endif
- 
- static bool trace_kprobe_is_busy(struct dyn_event *ev)
++
++void jit_update_set(void *addr, int c, size_t len)
++{
++	jit_text_poke_set(addr, c, len);
++}
++
+ struct jit_alloc_params * __weak jit_alloc_arch_params(void)
  {
-@@ -670,6 +677,7 @@ static int register_trace_kprobe(struct trace_kprobe *tk)
- 	return ret;
- }
- 
-+#ifdef CONFIG_MODULES
- /* Module notifier call back, checking event on the module */
- static int trace_kprobe_module_callback(struct notifier_block *nb,
- 				       unsigned long val, void *data)
-@@ -704,6 +712,7 @@ static struct notifier_block trace_kprobe_module_nb = {
- 	.notifier_call = trace_kprobe_module_callback,
- 	.priority = 1	/* Invoked after kprobe module callback */
- };
-+#endif
- 
- static int __trace_kprobe_create(int argc, const char *argv[])
- {
-@@ -1797,8 +1806,10 @@ static __init int init_kprobe_trace_early(void)
- 	if (ret)
- 		return ret;
- 
-+#ifdef CONFIG_MODULES
- 	if (register_module_notifier(&trace_kprobe_module_nb))
- 		return -EINVAL;
-+#endif
- 
- 	return 0;
- }
+ 	return NULL;
 -- 
 2.35.1
 
