@@ -1,168 +1,192 @@
-Return-Path: <netdev+bounces-7099-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7100-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4B821719F0C
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:06:51 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1CAA9719F6C
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:15:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ED31128172E
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 14:06:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A644C1C2103D
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 14:15:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2979E21CD7;
-	Thu,  1 Jun 2023 14:06:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA0F121CD9;
+	Thu,  1 Jun 2023 14:15:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E948C21CC9
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 14:06:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DA87C4339B;
-	Thu,  1 Jun 2023 14:06:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685628406;
-	bh=jo+kQRmaMsGk8ilFDIPDe218c8Tetx9OvbItrHEqoYE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=l7jX3PMgpRa2WwIfC0tf5h8YCO3IO9p9e/4e8d8da94t0pAlDlQzhZbrmZvAS4OVt
-	 jKJGsiItamIF78bDAdpNSxVF/uFzsxc23LkOb1Nkzq/7Hgnkuo0LJT7SYxUSE93L0Y
-	 vuRpWEFlFBxrRwQcDBb8Mtu5N8FpvHJFbPt5CZZw0YATtIzFB8+X48XLITlt19lFuU
-	 PHDnKzvz38VWHDHPYWKtkv4zy4dppE5MgVVnw0Sn0tGaF8rT3wRHluNTEwmaVPQ1tC
-	 0YicaiD+JNkUSIm3X5rmcaw5Tnp16fWZw8Tdtiy6KkBbsGW6eoW3jZcVq3kd3Pvvqn
-	 xY5yRd6zi5Ylg==
-Date: Thu, 1 Jun 2023 15:06:40 +0100
-From: Lee Jones <lee@kernel.org>
-To: Jamal Hadi Salim <jhs@mojatatu.com>, Eric Dumazet <edumazet@google.com>
-Cc: Eric Dumazet <edumazet@google.com>, xiyou.wangcong@gmail.com,
-	jiri@resnulli.us, davem@davemloft.net, kuba@kernel.org,
-	pabeni@redhat.com, linux-kernel@vger.kernel.org,
-	netdev@vger.kernel.org, stable@kernel.org
-Subject: Re: [PATCH 1/1] net/sched: cls_u32: Fix reference counter leak
- leading to overflow
-Message-ID: <20230601140640.GG449117@google.com>
-References: <20230531141556.1637341-1-lee@kernel.org>
- <CANn89iJw2N9EbF+Fm8KCPMvo-25ONwba+3PUr8L2ktZC1Z3uLw@mail.gmail.com>
- <CAM0EoMnUgXsr4UBeZR57vPpc5WRJkbWUFsii90jXJ=stoXCGcg@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C405621063
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 14:15:07 +0000 (UTC)
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1435E186;
+	Thu,  1 Jun 2023 07:15:03 -0700 (PDT)
+X-GND-Sasl: maxime.chevallier@bootlin.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1685628902;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=GSKLVXScyIF80afcNDZ6IMVCbvZLfc7MWeR4l9bPXxU=;
+	b=mnFKeur3xvzXNWe+lohQggL53A5bU6z/ZYAUAhvbL0gAHMssf0rrMoxwiDw1jXWBh201qN
+	qKNCEwltHUbaIMLwubDM+Bzi+kZBo4ZbAcd37YLuZuSPEYouIH3X9svIG2VCRBfB8M/lVv
+	ow2Kq5fY4/yMVrLgVPXfK0lrBAcnzw54zOWiagHKb7gD0UArUb1Mfp3txaoPLYR9F1eWYc
+	yH4vRcW0ds3uqdAjboRXpFfJ+IFB1XSNSZsPDmbMErdR/Xtm9LURg/cI9DrZotzHBhffXW
+	rtxNuiALfAdN4iLIM4fyF1ux7TQngMSm5d7NFsZmexBomO1Ss44Gi5UdZGQQhw==
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 926642000C;
+	Thu,  1 Jun 2023 14:14:55 +0000 (UTC)
+From: Maxime Chevallier <maxime.chevallier@bootlin.com>
+To: Mark Brown <broonie@kernel.org>,
+	davem@davemloft.net
+Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	alexis.lothore@bootlin.com,
+	thomas.petazzoni@bootlin.com,
+	Andrew Lunn <andrew@lunn.ch>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Eric Dumazet <edumazet@google.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Vladimir Oltean <vladimir.oltean@nxp.com>,
+	Ioana Ciornei <ioana.ciornei@nxp.com>,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Jose Abreu <joabreu@synopsys.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH net-next v4 0/4] net: add a regmap-based mdio driver and drop TSE PCS
+Date: Thu,  1 Jun 2023 16:14:50 +0200
+Message-Id: <20230601141454.67858-1-maxime.chevallier@bootlin.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAM0EoMnUgXsr4UBeZR57vPpc5WRJkbWUFsii90jXJ=stoXCGcg@mail.gmail.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Wed, 31 May 2023, Jamal Hadi Salim wrote:
+Hello everyone,
 
-> On Wed, May 31, 2023 at 11:03 AM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Wed, May 31, 2023 at 4:16 PM Lee Jones <lee@kernel.org> wrote:
-> > >
-> > > In the event of a failure in tcf_change_indev(), u32_set_parms() will
-> > > immediately return without decrementing the recently incremented
-> > > reference counter.  If this happens enough times, the counter will
-> > > rollover and the reference freed, leading to a double free which can be
-> > > used to do 'bad things'.
-> > >
-> > > Cc: stable@kernel.org # v4.14+
-> >
-> > Please add a Fixes: tag.
+This is the V4 of a series that follows-up on the work [1] aiming to drop the
+altera TSE PCS driver, as it turns out to be a version of the Lynx PCS exposed
+as a memory-mapped block, instead of living on an MDIO bus.
 
-Why?
+One step of this removal involved creating a regmap-based mdio driver
+that translates MDIO accesses into the actual underlying bus that
+exposes the register. The register layout must of course match the
+standard MDIO layout, but we can now account for differences in stride
+with recent work on the regmap subsystem [2].
 
-From memory, I couldn't identify a specific commit to fix, which is why
-I used a Cc tag as per the Stable documentation:
+Sorry for repeating this, but I didn't hear anything on this matter in previous
+iterations, Mark, Net maintainers, this series depends on the patch
+e12ff2876493 that was recently merged into the regmap tree [3].
 
-Option 1
-********
+For this series to be usable in net-next, this patch must be applied
+beforehand. Should Mark create a tag that would then be merged into
+net-next ? Or should we just wait for the next release to merge this
+into net-next ?
 
-To have the patch automatically included in the stable tree, add the tag
+This series introduces a new MDIO driver, and uses it to convert Altera
+TSE from the actual TSE PCS driver to Lynx PCS.
 
-.. code-block:: none
+Since it turns out dwmac_socfpga also uses a TSE PCS block, port that
+driver to Lynx as well.
 
-     Cc: stable@vger.kernel.org
+Changes in V4 :
+ - Use new pcs_lynx_create/destroy helpers added by Russell
+ - Rework the cleanup sequence to avoid leaking data
+ - Rework a bit KConfig to properly select dependencies
+ - Fix a few hiccups with misplaced hunks in 2 commits
 
-in the sign-off area. Once the patch is merged it will be applied to
-the stable tree without anything else needing to be done by the author
-or subsystem maintainer.
+Changes in V3 :
+ - Use a dedicated struct for the mii bus's priv data, to avoid
+   duplicating the whole struct mdio_regmap_config, from which 2 fields
+   only are necessary after init, as suggested by Russell
+ - Use ~0 instead of ~0UL for the no-scan bitmask, following Simon's
+   review.
 
-> > > Signed-off-by: Lee Jones <lee@kernel.org>
-> > > ---
-> > >  net/sched/cls_u32.c | 5 ++++-
-> > >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
-> > > index 4e2e269f121f8..fad61ca5e90bf 100644
-> > > --- a/net/sched/cls_u32.c
-> > > +++ b/net/sched/cls_u32.c
-> > > @@ -762,8 +762,11 @@ static int u32_set_parms(struct net *net, struct tcf_proto *tp,
-> > >         if (tb[TCA_U32_INDEV]) {
-> > >                 int ret;
-> > >                 ret = tcf_change_indev(net, tb[TCA_U32_INDEV], extack);
-> >
-> > This call should probably be done earlier in the function, next to
-> > tcf_exts_validate_ex()
-> >
-> > Otherwise we might ask why the tcf_bind_filter() does not need to be undone.
-> >
-> > Something like:
-> >
-> > diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
-> > index 4e2e269f121f8a301368b9783753e055f5af6a4e..ac957ff2216ae18bcabdd3af3b0e127447ef8f91
-> > 100644
-> > --- a/net/sched/cls_u32.c
-> > +++ b/net/sched/cls_u32.c
-> > @@ -718,13 +718,18 @@ static int u32_set_parms(struct net *net, struct
-> > tcf_proto *tp,
-> >                          struct nlattr *est, u32 flags, u32 fl_flags,
-> >                          struct netlink_ext_ack *extack)
-> >  {
-> > -       int err;
-> > +       int err, ifindex = -1;
-> >
-> >         err = tcf_exts_validate_ex(net, tp, tb, est, &n->exts, flags,
-> >                                    fl_flags, extack);
-> >         if (err < 0)
-> >                 return err;
-> >
-> > +       if (tb[TCA_U32_INDEV]) {
-> > +               ifindex = tcf_change_indev(net, tb[TCA_U32_INDEV], extack);
-> > +               if (ifindex < 0)
-> > +                       return -EINVAL;
-> > +       }
+Changes in V2 :
+ - Use phy_mask to avoid unnecessarily scanning the whole mdio bus
+ - Go one step further and completely disable scanning if users
+   set the .autoscan flag to false, in case the mdiodevice isn't an
+   actual PHY (a PCS for example).
 
-Thanks for the advice.  Leave it with me.
+Thanks,
 
-> >         if (tb[TCA_U32_LINK]) {
-> >                 u32 handle = nla_get_u32(tb[TCA_U32_LINK]);
-> >                 struct tc_u_hnode *ht_down = NULL, *ht_old;
-> > @@ -759,13 +764,9 @@ static int u32_set_parms(struct net *net, struct
-> > tcf_proto *tp,
-> >                 tcf_bind_filter(tp, &n->res, base);
-> >         }
-> >
-> > -       if (tb[TCA_U32_INDEV]) {
-> > -               int ret;
-> > -               ret = tcf_change_indev(net, tb[TCA_U32_INDEV], extack);
-> > -               if (ret < 0)
-> > -                       return -EINVAL;
-> > -               n->ifindex = ret;
-> > -       }
-> > +       if (ifindex >= 0)
-> > +               n->ifindex = ifindex;
-> > +
-> 
-> I guess we crossed paths ;->
+Maxime
 
-> Please, add a tdc test as well - it doesnt have to be in this patch,
-> can be a followup.
+[1] : https://lore.kernel.org/all/20230324093644.464704-1-maxime.chevallier@bootlin.com/
+[2] : https://lore.kernel.org/all/20230407152604.105467-1-maxime.chevallier@bootlin.com/#t
+[3] : https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git/commit/?id=e12ff28764937dd58c8613f16065da60da149048
 
-I don't know how to do that, or even what a 'tdc' is.  Is it trivial?
+Maxime Chevallier (4):
+  net: mdio: Introduce a regmap-based mdio driver
+  net: ethernet: altera-tse: Convert to mdio-regmap and use PCS Lynx
+  net: pcs: Drop the TSE PCS driver
+  net: stmmac: dwmac-sogfpga: use the lynx pcs driver
 
-Can you point me towards the documentation please?
+ MAINTAINERS                                   |  14 +-
+ drivers/net/ethernet/altera/Kconfig           |   2 +
+ drivers/net/ethernet/altera/altera_tse_main.c |  57 +++-
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |   3 +
+ drivers/net/ethernet/stmicro/stmmac/Makefile  |   2 +-
+ .../ethernet/stmicro/stmmac/altr_tse_pcs.c    | 257 ------------------
+ .../ethernet/stmicro/stmmac/altr_tse_pcs.h    |  29 --
+ drivers/net/ethernet/stmicro/stmmac/common.h  |   2 +
+ .../ethernet/stmicro/stmmac/dwmac-socfpga.c   |  91 +++++--
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  12 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_mdio.c |   3 +
+ drivers/net/mdio/Kconfig                      |  11 +
+ drivers/net/mdio/Makefile                     |   1 +
+ drivers/net/mdio/mdio-regmap.c                |  93 +++++++
+ drivers/net/pcs/Kconfig                       |   6 -
+ drivers/net/pcs/Makefile                      |   1 -
+ drivers/net/pcs/pcs-altera-tse.c              | 160 -----------
+ include/linux/mdio/mdio-regmap.h              |  26 ++
+ include/linux/pcs-altera-tse.h                |  17 --
+ 19 files changed, 271 insertions(+), 516 deletions(-)
+ delete mode 100644 drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
+ delete mode 100644 drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
+ create mode 100644 drivers/net/mdio/mdio-regmap.c
+ delete mode 100644 drivers/net/pcs/pcs-altera-tse.c
+ create mode 100644 include/linux/mdio/mdio-regmap.h
+ delete mode 100644 include/linux/pcs-altera-tse.h
 
 -- 
-Lee Jones [李琼斯]
+2.40.1
+
 
