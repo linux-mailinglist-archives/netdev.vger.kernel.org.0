@@ -1,236 +1,236 @@
-Return-Path: <netdev+bounces-7160-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7161-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C94DB71EF20
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 18:34:01 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 42EDD71EF28
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 18:34:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 80A5A28184F
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:34:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BCFBD1C21103
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:34:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 47345156E8;
-	Thu,  1 Jun 2023 16:33:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 53858171D6;
+	Thu,  1 Jun 2023 16:34:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34C42D533
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 16:33:45 +0000 (UTC)
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2068.outbound.protection.outlook.com [40.107.249.68])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B0D191;
-	Thu,  1 Jun 2023 09:33:42 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4166BD533
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 16:34:46 +0000 (UTC)
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5268E193;
+	Thu,  1 Jun 2023 09:34:29 -0700 (PDT)
+Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 351E44MF008028;
+	Thu, 1 Jun 2023 16:34:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2023-03-30;
+ bh=ninq5w8bfoSDhZQG/aMc82YWsE7QFwrpXxaziYlzcmQ=;
+ b=0lVc1LA/aFmu9oVQuzL3jdSTB+jS7a6dXJAXTmBBa42aqzQEHgXPvmLC+LZogscPVXhA
+ gNLVhwH5AfOfQskxv5JzAVqrfyr/8UVU8SCUYm0yWHVDuH16P3vO4f+Qmq8uEvfv8vbq
+ IrgP/JyC8sPPClpBpG2Yp1klqrJrNbJD4eAnh6N1rq9SXPd3rEXD7Ik0hOLtMLXNH+/1
+ wZVErfGfzUuockmKuSfZnbs7zZ+gBT+nTlXRxvsCwwBdwKMeQAhg6APLG07szpDFH6y1
+ vtWFKl/lYneGtvnXQE/uNM7JvQizeQrUuQqURy8ve7QtcMzo9YVAxobuDcp28Fu8elpe Vg== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qvhda1d4y-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 01 Jun 2023 16:34:11 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 351G2Eq9004404;
+	Thu, 1 Jun 2023 16:34:10 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2106.outbound.protection.outlook.com [104.47.58.106])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3qv4yf2tp7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 01 Jun 2023 16:34:10 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lnwoDk1AHW2jmo5twZ6HTEHXfi2KhvHVV0S+n7fzCuwoaQs2E9ucIUiLsQMgDVw1UggdUKmIw4bzySyUW/VuomXZ0Qmb4gewdam2rfi5aBFAHSvQGJb39LNCjeZFT6MmSvODThpH3Vo5aDKZHol0dHFVYHBNfFCM94hUVb2a3LsxtesG1V4SK52/ONzMnWOm1oZyGnGnDl+gK8lQ51QjpkLH1LgGD/6Z0wnvJE40P2RlygZpd8+q4mW7ib2FX7lYxVNIMQdzn3EVrfulpfgO4n/PyrzoK6jM3voKUbEHXyo4/LsHekniJ18aqC+g3A7drtYkJTysZdjbY6fOGbFRkQ==
+ b=MuXbEl2r2Yjy0aa0FT5ntu9pmwp9FxjzuchwkdaFdie/jn+E0dagDG7L4t4iREGDigvPD1vsUMzolnNIFQXy31qJbrTHcKMH27GLznxqXWya8ZZVfgKeCZTCC8asvEagduhoQFvDPX/DP+dXXeGC7+crbEfycE44S3BUbzqrAfdYKB/BUDnDG2q3SRPI7Vap0Ym2IPUY07Ukl8dVzwlX9oklEYslBDfdqJo5mdYCPYJPXw3QInbRenIumMRJc64x54DFKwzHBVuwxN+1i7T3H9gNeXzzQxY7Gvs9ReopfRO1DW0io3t7KcwUsc7Rt0+UeMnDVkr+aatFsd1C+4QF3Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1kGgXEki6P0ZXuxbW+x1+eVgW8YLmD79Koz27CcYezg=;
- b=YsdPKGLyab/Y7q1Ui2uHSKD5PPhap9EgU3d5thZ5eg1hT4HuLHoAp7kIQ1Cpz7g9o2gGQQt3jgEZREjtpQY+aF6jy0xKCEuAJ5jvcdpaaVth+dibXMn8tZ2Oc6mkg0SNn8i9UNzEkIfqrgZknwRVpitJbkBgrHHdaArhNk+wC6PHAJTovmFQ2sNGkHbUS8GGHBlw/EhGAccRFDmfmuJwNfw+Vy9ScidHXoRHA4TD7V4awg5/Tg78s0f3R7pXrHirXfwDaNJyGwP+b3p27a6ZEjlxvtmSkB7QKHBpcAjmvJ1a01uJ1HThBl1e0kmHC6aVg3WKUgPmRi1gDmPHc83b4w==
+ bh=ninq5w8bfoSDhZQG/aMc82YWsE7QFwrpXxaziYlzcmQ=;
+ b=Hxgzj1ysUmuOgAIEJCk0INnw/hMW9QLI4axdUKXbK6fibeDdW9PyDxPRbYrNIj7PFwvuYql4IexJHfnB8/YpI5djE9KWKQEyWo9tZfGGacEg8MHiAGFgI0mgHb7m6DK6iqJlqKDETEGWhNbmKxN621pE+zg7lodVQD3/K5T1vAYwHZcO4wOy2HCqgiZqyt2EoqOMa9CzhypmvkVaxvgumq2I3aQfW07g4El8Vl6mMp2+LrWz63qcE/WktHl4kvDP89VqJFa2ZnpQ9TXcifgU3kvpyC+LXUHXzMhgLHZguDkLE7e9QzE1tgnTLQnVffYzzJhyPHDIEgHmFd1FPJgR3Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1kGgXEki6P0ZXuxbW+x1+eVgW8YLmD79Koz27CcYezg=;
- b=SJV6VOvqO7Mg7AeHmja0yoawyn66V3hxunvaDqc2CiIsA4UQeZlcAYAdOZ0AXYG6C5HH+hhIY30eCDZnXhmhxkcvF29i5X04vB//I/RtouLn/k17d1Fc6oZhcofUW0frKUy2Kz7J7Whheifzp8YcAgnkmhRBqvSLqCus20kNtuo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by PA4PR04MB7760.eurprd04.prod.outlook.com (2603:10a6:102:c5::14) with
+ bh=ninq5w8bfoSDhZQG/aMc82YWsE7QFwrpXxaziYlzcmQ=;
+ b=mmpGBSo6xz9g+ERZ2r3DQ6VdngU/gg3ptzUeMDnk7NP0YTsZovvkWTt715jWIlPxnrlOde27oW/WMKqfQgmf5I7w6qNw5Ri1sundbWakEAYAencHZQ4Pni8fAD9UUdpTbBbNgf294PElc34VzC3ihoPJS7H6MzY/FFp4hT/WWuU=
+Received: from BY5PR10MB4129.namprd10.prod.outlook.com (2603:10b6:a03:210::21)
+ by IA0PR10MB7349.namprd10.prod.outlook.com (2603:10b6:208:40d::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.23; Thu, 1 Jun
- 2023 16:33:39 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::47e4:eb1:e83c:fa4a]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::47e4:eb1:e83c:fa4a%4]) with mapi id 15.20.6455.020; Thu, 1 Jun 2023
- 16:33:39 +0000
-Date: Thu, 1 Jun 2023 19:33:35 +0300
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-	Bjorn Helgaas <bhelgaas@google.com>, Rob Herring <robh@kernel.org>,
-	Claudiu Manoil <claudiu.manoil@nxp.com>,
-	Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
-	Liu Peibao <liupeibao@loongson.cn>,
-	Binbin Zhou <zhoubinbin@loongson.cn>,
-	Huacai Chen <chenhuacai@loongson.cn>
-Subject: Re: [PATCH pci] PCI: don't skip probing entire device if first fn OF
- node has status = "disabled"
-Message-ID: <20230601163335.6zw4ojbqxz2ws6vx@skbuf>
-References: <20230601081156.zyymihd565fscuha@skbuf>
- <ZHi87bqTFQGKDhYO@bhelgaas>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZHi87bqTFQGKDhYO@bhelgaas>
-X-ClientProxiedBy: FR0P281CA0018.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:15::23) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+ 2023 16:34:08 +0000
+Received: from BY5PR10MB4129.namprd10.prod.outlook.com
+ ([fe80::ec9b:ef74:851b:6aa9]) by BY5PR10MB4129.namprd10.prod.outlook.com
+ ([fe80::ec9b:ef74:851b:6aa9%5]) with mapi id 15.20.6455.020; Thu, 1 Jun 2023
+ 16:34:08 +0000
+From: Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
+To: Jakub Kicinski <kuba@kernel.org>
+CC: "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com"
+	<edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "zbr@ioremap.net" <zbr@ioremap.net>,
+        "brauner@kernel.org"
+	<brauner@kernel.org>,
+        "johannes@sipsolutions.net"
+	<johannes@sipsolutions.net>,
+        "ecree.xilinx@gmail.com"
+	<ecree.xilinx@gmail.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "socketcan@hartkopp.net"
+	<socketcan@hartkopp.net>,
+        "petrm@nvidia.com" <petrm@nvidia.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v4 1/6] netlink: Reverse the patch which removed filtering
+Thread-Topic: [PATCH v4 1/6] netlink: Reverse the patch which removed
+ filtering
+Thread-Index: 
+ AQHZZCxJt7hHR9OT2UmzMPODBe2VMK8V1x8AgADu1gCAAA1sAIAAevWAgALFEQCAJFpdAIABHiYAgBXwRACAIQQKAIAAApUAgAACn4A=
+Date: Thu, 1 Jun 2023 16:34:08 +0000
+Message-ID: <6A9C1580-8B7B-42DB-B37A-A948F68E3FFF@oracle.com>
+References: <20230331235528.1106675-1-anjali.k.kulkarni@oracle.com>
+ <20230331235528.1106675-2-anjali.k.kulkarni@oracle.com>
+ <20230331210920.399e3483@kernel.org>
+ <88FD5EFE-6946-42C4-881B-329C3FE01D26@oracle.com>
+ <20230401121212.454abf11@kernel.org>
+ <4E631493-D61F-4778-A392-3399DF400A9D@oracle.com>
+ <20230403135008.7f492aeb@kernel.org>
+ <57A9B006-C6FC-463D-BA05-D927126899BB@oracle.com>
+ <20230427100304.1807bcde@kernel.org>
+ <472D6877-F434-4537-A075-FE1AE0ED078A@oracle.com>
+ <BF7B6B37-10BF-41C0-BA77-F34C31ED886E@oracle.com>
+ <20230601092444.6b56b1db@kernel.org>
+In-Reply-To: <20230601092444.6b56b1db@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BY5PR10MB4129:EE_|IA0PR10MB7349:EE_
+x-ms-office365-filtering-correlation-id: 0adf40e7-83e3-4970-0082-08db62be05f3
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 
+ mULXPsqjQFuLddCpZ+ZEkP8Hei0qimPMvqRgYTRsS96PZLIsTgeLQu2CKpFZRFvuS1EJ/pzn7fqDmCrT8EKLWcEyWg5oWE05I1DsqFGgrLQ0wr4xetB3rRdq5UVG5qst5H4wOwFYk378Co6pdBEbCdV67qJpTaDQBc92J7oPyyocoPTK2UmUCCar44ro78Lxbb/DMajiYaNfUmoeBML1cuMCyK7yKNHok37ylOXizVgNUj6wX0Wje4w70gQdUXIYPp1Gp8HudSeD3Opd9DrLh1dGzPFcMs2bcMT0eXrANzIErbymHuTr8KmkPWC5XV1vrxfbxaLn2HYZWPwblbb/y5gWlpI82Jw4zNt5yd8ug71Px6v9DVPQA2EC0tujYghK/SQZ+VgB7xjoEzunJQAx3zYLDlcIkFcZeGMDl/0Tf175xdz0vYa+V5FkmjrNAFinKHNjDJ40zqHxE9hN5l9HYe4mFKy+NmzQx1GQ6IK41qQfY/HcPEzSW2z3R/g7h/jsrzyOTQQNfxwnafHqCHhXtNtRSeFqiU9vP0hEAebMYm3I1nlHNkWyy1t5hrT6QfarrnB6SrhgL/6qWJ1qg1d7VSgAzBrn+GFyNK1tOeXItkaXqrPs5JhjtDQxgEyiiBhmyLEFIe3U/9F91KXQ968JEg==
+x-forefront-antispam-report: 
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4129.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(136003)(39860400002)(366004)(396003)(376002)(451199021)(83380400001)(26005)(6506007)(6512007)(53546011)(41300700001)(38100700002)(186003)(6486002)(2616005)(71200400001)(478600001)(54906003)(4326008)(6916009)(76116006)(66446008)(64756008)(66556008)(122000001)(66476007)(66946007)(316002)(7416002)(2906002)(5660300002)(8676002)(8936002)(33656002)(86362001)(38070700005)(36756003)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: 
+ =?us-ascii?Q?b4kZu+zW5A2RevgBZJ/Ms2y+TyH12UzMZ+pHAnLu8Gb2P6ktB2ENpfC7n4je?=
+ =?us-ascii?Q?aeLP0sfiRK2OSBp9F5ORV29jQKOt2fUGdy/nYdhInNdbkbDcf7vWjlymPn4E?=
+ =?us-ascii?Q?AsoI6LYoZIYgFk6o8D04vcP9b8wQehuvFkEw5m7MiN+JF691OlND681w+nfZ?=
+ =?us-ascii?Q?aDt4eI3IuroTjaZLtsIK7NNcF8bK5pzfT3SdBXz32mdWhm4tDLIl3Dg6eDlZ?=
+ =?us-ascii?Q?CvNpFCqNKlqwUBHBiwaeB3CZvIUjbxsxgEyEyNIaeXKSQNZ5iLFbrOdfKxOG?=
+ =?us-ascii?Q?80VKWqCLbaYU67FreK9o2Ossk18urs/m/GkHLkmD7Lh29VoyLK/VuRlLpGjm?=
+ =?us-ascii?Q?d4sK0slTVQw59xx/3tb+yZoaFlzaVbUBmhWsnhWCyVu2AxDLizIw/wX8cebx?=
+ =?us-ascii?Q?IeQlqn0z+QDBs+QRtm3WYNocppi4NwRc4pQYDwMv21+FUL0eHyfNc3vLvYb+?=
+ =?us-ascii?Q?jiBYxpuOEv3NCyyjdPadw6sLR4u26HQhfS5ileQ6bn2xfcDOa3asO4mIT0m0?=
+ =?us-ascii?Q?K1F2Es3q1D8iFfpfia7ILNLWGrEcsO7c/dRKCNOyqS09fp3sQ7P3/PjkOiCQ?=
+ =?us-ascii?Q?JWgBx/N9p0zruGxPEj+s9HH43qWlgsijUFsHLOEbXzWj7R2MM4iTXGT4PYTZ?=
+ =?us-ascii?Q?dJRLoIlAOFfH3gU4iz0yhuDwqxs3jwLRRxWfGt9g2+G/IbmB4zMhP6X+H9D7?=
+ =?us-ascii?Q?vGCSsIeKgkhvMRYhJRw/7T23neme10TA+FNqg1J12MtSLeJTcoUTGxe9fI4C?=
+ =?us-ascii?Q?mO+0uuSkDqEfCBStJDyYGhYXuLK4IY/NONNy8wGZJ64Vte1SU79lqj40QSnO?=
+ =?us-ascii?Q?WVbwlHlLQcWvyLlHOJZpTtq4c8/iDHcpruaElqw0Q8q8BoZanNiOCCwJd0Vk?=
+ =?us-ascii?Q?cmUbIpP2+oQNgAkj+zIMsIL/26WODLDR7iUjwUPCKTab9PCmuAFmqcg4un4h?=
+ =?us-ascii?Q?d+qVEUatd6nLOygrkGUkJP1PP4snwMSMRjehS1oIlf3Xc72ExYCRJkJZ558V?=
+ =?us-ascii?Q?MzME90xYXCtuf4mHvhB3iFKEl+ane635IJWsuF+yOlbS6q28xuavrc5d79Sw?=
+ =?us-ascii?Q?yCKjpSytvRuVu2sOkiO5HVA1kWl9YgToYY4A0NxLJ4z/x2htrzxGs9CKyodw?=
+ =?us-ascii?Q?wXmfcdcTrT5g2vgl6COie/yJ9AzVo8v0LzwtWYJidDdR/lkxm6Far32XTYee?=
+ =?us-ascii?Q?LyooMDzeS9nBTkc+wy5PQTsKgQfz2nT3z2skY7XXTRxPp94mVsFwlYoIi8d1?=
+ =?us-ascii?Q?9zH35M/QI2IctjUIxsybgo5pJWvep7ey1q2NzU3Un2/V1EMpR4xRlU4kqSb1?=
+ =?us-ascii?Q?Yaj/ICgMFabQykMRvV4cFWs4cvnUaT/1CkNkNhkLrwLpXPF39X81WQo6oJ/4?=
+ =?us-ascii?Q?ry5WA2dHHFOLjozaKoKdezooMeo7sLvCi+ftDP6Gm9koT2x7Thax1pnYdu1Z?=
+ =?us-ascii?Q?BBXbzDzlS5PVgJjJWL475c7td/iuCLWqSQJHXgOjgSno95xat2Mp9DTG2KAh?=
+ =?us-ascii?Q?85eU/mdTAxyfXstXjK24i0TUyFKC+6sVVni+u/aKuAVTSLFmUdNQeyebM/8s?=
+ =?us-ascii?Q?M13t85rCO6IehTjvld0UDfALywfTRm31kDhVDdOmKKhO4BMy5ZgS4suhHJQR?=
+ =?us-ascii?Q?HQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <B5EFC1BF7947BF46845277690A578CC4@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|PA4PR04MB7760:EE_
-X-MS-Office365-Filtering-Correlation-Id: 70bec76e-f81c-40f9-056d-08db62bdf458
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	p2RF0Xoly17lSjj9DIqWVbjN5ney0rdgCNDJHHcUwbXpyepC5b0CALstPi/CMxn2LdQzS7mnxtSxmI0rZBgMLwVxNvPipm0iKl1oE4D4oZcol8R40lQbKmQy8Mt5cUx9oBfOjwFD0tD+TNEDiwilGF2yR2dpiACW3bsbOsO1Pjvk7wwaIF3C1dRbuPZDjHhugKjAyRb0iQcF92klGniKx0zprqoOhTW/86ezMT7PDdpRB2PsD2ycRC5JCxNAnQ4XA9aOQxtsYf0Vt/eOuaxPd39DbsIsjGdgnMRXTlrxOx1MOoPNYElsTOHFyT9sF3240vdPGNxAeJMEVy/CYyM9pQEwsSMdEg119ecc0q5ItOkt3vzHvQeUL47ZT7j7Dre57vjPcMOUUBadyKkZkcET+pECzC8CPZL0fm3dD73Zve5vbTKKqepGocB0m7ojHfXT/4HKwD8zCJnkT+bprJ/lkcT/xY9MizvAdAI29gVY2HXXhmqDp4YmhdlhVcFQ+aZvRi22Ge8/nrwzYjpR482vEpscQqw9fy4SHgjvu3oOb3N+0HVXtIEdl41VpvElBD6w
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(346002)(39860400002)(136003)(396003)(376002)(366004)(451199021)(478600001)(54906003)(8676002)(8936002)(44832011)(7416002)(5660300002)(33716001)(86362001)(2906002)(6916009)(4326008)(66556008)(66946007)(66476007)(316002)(38100700002)(41300700001)(83380400001)(186003)(6506007)(26005)(1076003)(6512007)(9686003)(6486002)(6666004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?T8MkETrqGMIMJOaX0pmrcwQcAJ1AjkLV98zrFJezIOeTvd9emaefjHQMUIyy?=
- =?us-ascii?Q?I7AHYJHVEJxzOiyg/s//hp/1LhtWvEwtTixpi1Ia7ZvL7Fk9cQvjEMYkC5B0?=
- =?us-ascii?Q?Li77vh6KhSOP0Bmh0z4bw3AhxDDK+FKT5LGVouST3vJOgozlH53Y00QpgYsd?=
- =?us-ascii?Q?7QNIyABsOmfG/4IWaVZMDIRCqYKK8TKw7IZr5lpLeLLKaJEpxDR7IOqjgeAh?=
- =?us-ascii?Q?tO9g8+irCvCyTwPTL+pqW1dSQTLLS4X80gSgczSPrZRmEW0zBF2oUIefQVcB?=
- =?us-ascii?Q?T4RI+k5g3dKMFRY5HFryU6fmjlk8/KHgWlEJx5+VhKnq40uyemJ79B7afmfg?=
- =?us-ascii?Q?ZJIa2kTUPt6cYbdE8sl591tV6QBKNns1HVC+xZeSJjdRyLK+xprNe+kQ8hBw?=
- =?us-ascii?Q?gzB/u9ZhutHOYd0EujPGBM7kZ8nVRi0en5rbTfz6nHWbzC8ZhUT/tPDCCzqI?=
- =?us-ascii?Q?QUP3GFuaWPGfvX8gT65drvly4ugNSXIUoy+Jc8lGl/5xHfAuBDoPB0BSTCL9?=
- =?us-ascii?Q?huXDGbcFGOWbuPySsz4ev1aHyabqhYdik17qNUxg+O+NYZXF2q3blk0SZwB1?=
- =?us-ascii?Q?Oi36BAqy2e/Pm88YuwBVE5yQeTf2YXf07Gzl0Bcrk4mVc46LYhTDAKafZ8Ao?=
- =?us-ascii?Q?zUN5ZtyDZwBnNi1bK8V5aeO7ivdJJmWx9NqPHFNbpTzpZVNS2I4kEA4JrhM+?=
- =?us-ascii?Q?5UOllN8FyBDpz5q1B1b/z0FyqBU1mh+YnAODrkIAspTFdWN3lj+azwMONZD0?=
- =?us-ascii?Q?uozV7wMaLHHK9iVQs5eleG0wZGVQfi+KIu8TUoLy0gRCtMXc8jzJS7nhysXf?=
- =?us-ascii?Q?EhaFOF9CL/GwMXviqQeg1dyIFKCciQxFkmd9lwlXQ34sRJuuF0h+GrM5o7Fv?=
- =?us-ascii?Q?TThQrDmuyXV1RMuHIOYaSRQO1Bi8az+AHWFXzbu7j3qLAUkQLlmUAs/aMlxs?=
- =?us-ascii?Q?2KcjHi/UgH+bL2TIselnXzXfCqE2j4p5tG46pqAALYrFmYTN8CFi1ghW3b83?=
- =?us-ascii?Q?NX/f1BAMCHoXjNqQp2X5alVM+ST1cJ2NK5bGIey6k2nvQkqt92/rqydqhxM2?=
- =?us-ascii?Q?8X9A8t5jqz/aw9phB4DJXxhvU1DJDzRX+OqlJTMVJE3Bk6734Xco0lQy/WD0?=
- =?us-ascii?Q?V+ZI+rVv+BxAVxANevZcB6YOR/ArO1J7IgO+iJcACRP9Qz7kdAuu7iiSDlW3?=
- =?us-ascii?Q?S9UlCrUxeSqTLZBu/Puxq7BS6kVeJBOfxV/gauep1cgCD1+0pYEOMWuJ3cP6?=
- =?us-ascii?Q?P7olYliCyxg+w0ZPM5xL234zYdc2S9fzkjR1lachu4zB42uXgDvpus+64ENC?=
- =?us-ascii?Q?D5Z5IosH4iiwRjYvaLjDT5RUYXeWG5/8WtrXGo4UAiDL0DYSp4Ex97/P9kuU?=
- =?us-ascii?Q?xsqIR/eKSKiOGwnODWeU4W5Vqy44QtvhIW6w+YT8nW3wCrhrci+Ffcn7dEAZ?=
- =?us-ascii?Q?LETq+4LyFtw3CWhk1ItnghqPZZ7mpweLJJcM2uS69h/QhOVDVOZi5qHw/Bdv?=
- =?us-ascii?Q?jlJRhDxzWqSbdTrWJ+NxEIXCZb2BX/NybxKCvBI6VRoD10KF1vsld9IIHsLR?=
- =?us-ascii?Q?q+lFOCV0H+aWORmYRmN3HwVL6aaq9TKx8BmvfqOqSiLfcOs4+hVk81jXYCpY?=
- =?us-ascii?Q?Pg=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 70bec76e-f81c-40f9-056d-08db62bdf458
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	=?us-ascii?Q?NEiDt4uncPA/mpRIEAu2TGvx+CxLiN7qiMLucn0PEhOc/TfJqCYtymj+Xw12?=
+ =?us-ascii?Q?7IFYuD/PFxkOf7QG3wXCBUsi3C6zUFvvQBwZ78f9aatEyQSWjzcTrr+98Yeh?=
+ =?us-ascii?Q?Fp1emZH3swPewcff9ka38dOzSevEeJbFIm3jDCPnGco5TmwbqkHJeLrMRwGv?=
+ =?us-ascii?Q?epgxWS7VBC2K8yiDqHSAJsYopk/2WtcyfxZ4bLWMIsw1tvdzd8ItZLdqkMYV?=
+ =?us-ascii?Q?yYcsCY3PoT7kxKIfo1Y5ierhVeF3cJmT9BWlk9MWKVjfjGqSRh+MwveHjTJ+?=
+ =?us-ascii?Q?4oaV+B7RT+lpuXBHtcZN8XOZofGZyNb0nbScHIYQ0Y1Fuy+6hEJX4W1dVzET?=
+ =?us-ascii?Q?sPbbzeLt+qKWlqyW2m54cqnGoa8pBNc9+mGmKcZkTKuWGf9+aUXPX5Oxdosx?=
+ =?us-ascii?Q?dqNT5Sihnt/RZ8AhVX4MSbGOzBD0HdIQ2VcDeqYfB5WmxeC/ILtiD1AB3f5K?=
+ =?us-ascii?Q?obeYqIGoslAdOfGb+xdr9075+hsfyt7XVoLCPhzwkOan1KOtdHuqJiufEJTR?=
+ =?us-ascii?Q?UrG7U0KinrlA2DOCm6ywiS6JED1+zcLZtyzeuUEeOWbbHHs9bEDHil3tTLAk?=
+ =?us-ascii?Q?xl7nO/k4KLgsxHYXfrpTvdJgS5vY6VY59K4C/Is1fdehWBfSSkynrJlAJZvn?=
+ =?us-ascii?Q?CfswiUp8iqonBfTfQMR89b6ytbUMflWyMGz6KCEcVe6McIfM0uVz0cVggdqE?=
+ =?us-ascii?Q?0Ealhpcnsyx/MDS/B+ZBd0UVe4j5f5XJ2kERis56KWx8RrWA8Fra/vnTeguU?=
+ =?us-ascii?Q?oA2/5j80VMc1gAzFrm7DcFns2adWni2oeosvd6jPXQbllRZwITB1yDJqpJj0?=
+ =?us-ascii?Q?SC1zR/BTGUQ6zydN1Kpf2aQVpSVHUNez9UeIQ8A642tRc5HAIUfG9e4Vv01Q?=
+ =?us-ascii?Q?IVMX8RbcyWPxl5QpCc2FoThYrBBIQrVew2hg2iX7ktJ0yXnGmR+cM4MGzz4s?=
+ =?us-ascii?Q?/FCg/wTQjZZNbqF4Y6YhE2wrtAmZPHNHITL3ueaDfLvVB9uSLRcgjpXzSny1?=
+ =?us-ascii?Q?m7Zq0Cx9mnLOpVVr/Z4pDXPmCKOi8lYx80GfbL84LaFeb8kK/3OllzZFwZ5R?=
+ =?us-ascii?Q?Kd1HZkLlBNg785f+D22U7Hg9wLNimQ=3D=3D?=
+X-OriginatorOrg: oracle.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2023 16:33:39.2552
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4129.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0adf40e7-83e3-4970-0082-08db62be05f3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jun 2023 16:34:08.5919
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Eb2dJeblOXzmGDeFaQkG1ZkY+f5qluY2xti3bmzG1T08MSYLQDjRYaZBhj7rh5FpQigbj5ax3KqPVCw4UMZwWQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7760
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7630hP+aLQBF1owZswOpwKi5xqA8zWY8wXf0g9eI7QyAKpf9DETy8j7z8wd0eOLzNmQgN29ZC7jaEYDq7auNmVpEvfLrQrHz6U33E6Y6FSo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR10MB7349
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-06-01_08,2023-05-31_03,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999
+ adultscore=0 malwarescore=0 bulkscore=0 suspectscore=0 mlxscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2304280000 definitions=main-2306010144
+X-Proofpoint-GUID: S_Jc5FDxDchcHa8Fl6Yuf7XZhQ2jReL0
+X-Proofpoint-ORIG-GUID: S_Jc5FDxDchcHa8Fl6Yuf7XZhQ2jReL0
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 01, 2023 at 10:44:45AM -0500, Bjorn Helgaas wrote:
-> To make sure I understand you, I think you're saying that if Function
-> 0 has DT status "disabled", 6fffbc7ae137 ("PCI: Honor firmware's
-> device disabled status") breaks things because we don't enumerate
-> Function 0 and the driver can't temporarily claim it to zero out its
-> piece of the shared memory.
-> 
-> With just 6fffbc7ae137, we don't enumerate Function 0, which means we
-> don't see that it's a multi-function device, so we don't enumerate
-> Functions 1, 2, etc, either.
-> 
-> With both 6fffbc7ae137 and your current patch, we would enumerate
-> Functions 1, 2, etc, but we still skip Function 0, so its piece of the
-> shared memory still doesn't get zeroed.
 
-I'm saying that as long as commit 6fffbc7ae137 ("PCI: Honor firmware's
-device disabled status") exists in the form where the pci_driver :: probe()
-is completely skipped for disabled functions, the NXP ENETC PCIe device
-has a problem no matter what the function number is. That problem is:
-the device drivers of all PCIe functions need to clear some memory
-before they ultimately fail to probe (as they should), because of some
-hardware design oversight. That is no longer possible if the driver has
-no hook to execute code for those devices that are disabled.
 
-On top of that, function 0 having status = "disabled" is extra
-problematic, because the PCI core will now just assume that functions 1 .. N
-don't exist at all, which is simply false, because the usefulness of
-ENETC port 0 (PCIe function 0) from a networking perspective is
-independent from the usefulness of ENETC port 1 (PCIe function 1), ENETC
-port 2 etc.
+> On Jun 1, 2023, at 9:24 AM, Jakub Kicinski <kuba@kernel.org> wrote:
+>=20
+> On Thu, 1 Jun 2023 16:15:31 +0000 Anjali Kulkarni wrote:
+>>>> I don't have sufficient knowledge to review that code, sorry :( =20
+>>>=20
+>>> Is there anyone who can please help review this code?=20
+>>> Christian, could you please help take a look?
+>>=20
+>> Gentle ping again - Christian could you please help review?
+>=20
+> The code may have security implications, I really don't feel like I can
+> be the sole reviewer. There's a bunch of experts working at Oracle,
+> maybe you could get one of them to put their name on it? I can apply
+> the patches, I just want to be sure I'm not the _only_ reviewer.
 
-> 
-> > The ENETC is not a hot-pluggable PCIe device. It uses Enhanced Allocation
-> > to essentially describe on-chip memory spaces, which are always present.
-> > So presumably, a different system-level solution to initialize those
-> > shared memories (U-Boot?) may be chosen, if implementing this workaround
-> > in Linux puts too much pressure on the PCIe core and the way in which it
-> > does things. Initially I didn't want to do this in prior boot stages
-> > because we only enable the RCEC in Linux, nothing is broken other than
-> > the spurious AER messages, and, you know.. the kernel may still run
-> > indefinitely on top of bootloaders which don't have the workaround applied.
-> > So working around it in Linux avoids one dependency.
-> 
-> If I understand correctly, something (bootloader or Linux) needs to do
-> something to Function 0 (e.g., clear memory).
+Thanks so much for your response. There is someone at Oracle who looked at =
+this some time ago and is familiar enough with this to review the code - bu=
+t he is not a kernel committer - he sends occasional patches upstream which=
+ get committed - would it be ok if he reviewed it along with you and then y=
+ou could commit it? If you know of someone from Oracle who could also poten=
+tially review it, please let me know.=20
 
-To more than just function 0 (also 1, 2 and 6). There are 2 confounding
-problems, the latter being something that was exposed by your question:
-what will happen that's bad with the current mainline code structure,
-*notwithstanding* the fact that function 0 may have status = "disabled"
-(which currently will skip enumeration for the rest of the functions
-which don't have status = "disabled").
-
-> Doing it in Linux would minimize dependences on the bootloader, so
-> that seems desirable to me. That means Linux needs to enumerate
-> Function 0 so it is visible to a driver or possibly a quirk.
-
-Uhm... no, that wouldn't be enough. Only a straight revert would satisfy
-the workaround that we currently have for NXP ENETC in Linux.
-
-Also, I'm not sure if it was completely reasonable of me in the first
-place to exploit this quirk of the Linux PCI bus - that the probe
-function is called even if a device is disabled in the device tree.
-I would understand if I was forced to rethink that.
-
-> I think we could contemplate implementing 6fffbc7ae137 in a different
-> way.  Checking DT status at driver probe-time would probably work for
-> Loongson, but wouldn't quite solve the NXP problem because the driver
-> wouldn't be able to claim Function 0 even temporarily.
-
-Not sure what you mean by "checking DT status at driver probe-time".
-Does enetc_pf_probe() -> of_device_is_available() qualify? You probably
-mean earlier than that.
-
-My problem is that I don't really understand what was the functional
-need for commit 6fffbc7ae137 ("PCI: Honor firmware's device disabled
-status") in the first place, considering that any device driver can
-already fail to probe based on the same condition at its own will.
-
-> Is DT the only way to learn the NXP SERDES configuration?  I think it
-> would be much better if there were a way to programmatically learn it,
-> because then you wouldn't have to worry about syncing the DT with the
-> platform configuration, and it would decouple this from the Loongson
-> situation.
-
-Syncing the DT with the platform configuration will always be necessary,
-because for networking we will also need extra information which is
-completely non-discoverable, like a phy-handle or such, and that depends
-on the wiring and static pinmuxing of the SoC. So it is practically
-reasonable to expect that what is usable has status = "okay", and what
-isn't has status = "disabled". Not to mention, there are already device
-trees in circulation which are written that way, and those need to
-continue to work.
-
-> (If there were a way to actually discover the Loongson situation
-> instead of relying on DT, e.g., by keying off a Device ID or
-> something, that would be much better, too.  I assume we explored that,
-> but I don't remember the details.)
-> 
-> Bjorn
-
-What is it that's special about the Loongson situation?
 
