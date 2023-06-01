@@ -1,236 +1,209 @@
-Return-Path: <netdev+bounces-7161-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7162-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 42EDD71EF28
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 18:34:49 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id EEF3B71EF33
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 18:37:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BCFBD1C21103
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:34:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 85CC828186E
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:37:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 53858171D6;
-	Thu,  1 Jun 2023 16:34:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B774F182B2;
+	Thu,  1 Jun 2023 16:37:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4166BD533
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 16:34:46 +0000 (UTC)
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5268E193;
-	Thu,  1 Jun 2023 09:34:29 -0700 (PDT)
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 351E44MF008028;
-	Thu, 1 Jun 2023 16:34:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2023-03-30;
- bh=ninq5w8bfoSDhZQG/aMc82YWsE7QFwrpXxaziYlzcmQ=;
- b=0lVc1LA/aFmu9oVQuzL3jdSTB+jS7a6dXJAXTmBBa42aqzQEHgXPvmLC+LZogscPVXhA
- gNLVhwH5AfOfQskxv5JzAVqrfyr/8UVU8SCUYm0yWHVDuH16P3vO4f+Qmq8uEvfv8vbq
- IrgP/JyC8sPPClpBpG2Yp1klqrJrNbJD4eAnh6N1rq9SXPd3rEXD7Ik0hOLtMLXNH+/1
- wZVErfGfzUuockmKuSfZnbs7zZ+gBT+nTlXRxvsCwwBdwKMeQAhg6APLG07szpDFH6y1
- vtWFKl/lYneGtvnXQE/uNM7JvQizeQrUuQqURy8ve7QtcMzo9YVAxobuDcp28Fu8elpe Vg== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qvhda1d4y-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 01 Jun 2023 16:34:11 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 351G2Eq9004404;
-	Thu, 1 Jun 2023 16:34:10 GMT
-Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2106.outbound.protection.outlook.com [104.47.58.106])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3qv4yf2tp7-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 01 Jun 2023 16:34:10 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MuXbEl2r2Yjy0aa0FT5ntu9pmwp9FxjzuchwkdaFdie/jn+E0dagDG7L4t4iREGDigvPD1vsUMzolnNIFQXy31qJbrTHcKMH27GLznxqXWya8ZZVfgKeCZTCC8asvEagduhoQFvDPX/DP+dXXeGC7+crbEfycE44S3BUbzqrAfdYKB/BUDnDG2q3SRPI7Vap0Ym2IPUY07Ukl8dVzwlX9oklEYslBDfdqJo5mdYCPYJPXw3QInbRenIumMRJc64x54DFKwzHBVuwxN+1i7T3H9gNeXzzQxY7Gvs9ReopfRO1DW0io3t7KcwUsc7Rt0+UeMnDVkr+aatFsd1C+4QF3Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ninq5w8bfoSDhZQG/aMc82YWsE7QFwrpXxaziYlzcmQ=;
- b=Hxgzj1ysUmuOgAIEJCk0INnw/hMW9QLI4axdUKXbK6fibeDdW9PyDxPRbYrNIj7PFwvuYql4IexJHfnB8/YpI5djE9KWKQEyWo9tZfGGacEg8MHiAGFgI0mgHb7m6DK6iqJlqKDETEGWhNbmKxN621pE+zg7lodVQD3/K5T1vAYwHZcO4wOy2HCqgiZqyt2EoqOMa9CzhypmvkVaxvgumq2I3aQfW07g4El8Vl6mMp2+LrWz63qcE/WktHl4kvDP89VqJFa2ZnpQ9TXcifgU3kvpyC+LXUHXzMhgLHZguDkLE7e9QzE1tgnTLQnVffYzzJhyPHDIEgHmFd1FPJgR3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ninq5w8bfoSDhZQG/aMc82YWsE7QFwrpXxaziYlzcmQ=;
- b=mmpGBSo6xz9g+ERZ2r3DQ6VdngU/gg3ptzUeMDnk7NP0YTsZovvkWTt715jWIlPxnrlOde27oW/WMKqfQgmf5I7w6qNw5Ri1sundbWakEAYAencHZQ4Pni8fAD9UUdpTbBbNgf294PElc34VzC3ihoPJS7H6MzY/FFp4hT/WWuU=
-Received: from BY5PR10MB4129.namprd10.prod.outlook.com (2603:10b6:a03:210::21)
- by IA0PR10MB7349.namprd10.prod.outlook.com (2603:10b6:208:40d::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.23; Thu, 1 Jun
- 2023 16:34:08 +0000
-Received: from BY5PR10MB4129.namprd10.prod.outlook.com
- ([fe80::ec9b:ef74:851b:6aa9]) by BY5PR10MB4129.namprd10.prod.outlook.com
- ([fe80::ec9b:ef74:851b:6aa9%5]) with mapi id 15.20.6455.020; Thu, 1 Jun 2023
- 16:34:08 +0000
-From: Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
-To: Jakub Kicinski <kuba@kernel.org>
-CC: "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com"
-	<edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "zbr@ioremap.net" <zbr@ioremap.net>,
-        "brauner@kernel.org"
-	<brauner@kernel.org>,
-        "johannes@sipsolutions.net"
-	<johannes@sipsolutions.net>,
-        "ecree.xilinx@gmail.com"
-	<ecree.xilinx@gmail.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "socketcan@hartkopp.net"
-	<socketcan@hartkopp.net>,
-        "petrm@nvidia.com" <petrm@nvidia.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v4 1/6] netlink: Reverse the patch which removed filtering
-Thread-Topic: [PATCH v4 1/6] netlink: Reverse the patch which removed
- filtering
-Thread-Index: 
- AQHZZCxJt7hHR9OT2UmzMPODBe2VMK8V1x8AgADu1gCAAA1sAIAAevWAgALFEQCAJFpdAIABHiYAgBXwRACAIQQKAIAAApUAgAACn4A=
-Date: Thu, 1 Jun 2023 16:34:08 +0000
-Message-ID: <6A9C1580-8B7B-42DB-B37A-A948F68E3FFF@oracle.com>
-References: <20230331235528.1106675-1-anjali.k.kulkarni@oracle.com>
- <20230331235528.1106675-2-anjali.k.kulkarni@oracle.com>
- <20230331210920.399e3483@kernel.org>
- <88FD5EFE-6946-42C4-881B-329C3FE01D26@oracle.com>
- <20230401121212.454abf11@kernel.org>
- <4E631493-D61F-4778-A392-3399DF400A9D@oracle.com>
- <20230403135008.7f492aeb@kernel.org>
- <57A9B006-C6FC-463D-BA05-D927126899BB@oracle.com>
- <20230427100304.1807bcde@kernel.org>
- <472D6877-F434-4537-A075-FE1AE0ED078A@oracle.com>
- <BF7B6B37-10BF-41C0-BA77-F34C31ED886E@oracle.com>
- <20230601092444.6b56b1db@kernel.org>
-In-Reply-To: <20230601092444.6b56b1db@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BY5PR10MB4129:EE_|IA0PR10MB7349:EE_
-x-ms-office365-filtering-correlation-id: 0adf40e7-83e3-4970-0082-08db62be05f3
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 
- mULXPsqjQFuLddCpZ+ZEkP8Hei0qimPMvqRgYTRsS96PZLIsTgeLQu2CKpFZRFvuS1EJ/pzn7fqDmCrT8EKLWcEyWg5oWE05I1DsqFGgrLQ0wr4xetB3rRdq5UVG5qst5H4wOwFYk378Co6pdBEbCdV67qJpTaDQBc92J7oPyyocoPTK2UmUCCar44ro78Lxbb/DMajiYaNfUmoeBML1cuMCyK7yKNHok37ylOXizVgNUj6wX0Wje4w70gQdUXIYPp1Gp8HudSeD3Opd9DrLh1dGzPFcMs2bcMT0eXrANzIErbymHuTr8KmkPWC5XV1vrxfbxaLn2HYZWPwblbb/y5gWlpI82Jw4zNt5yd8ug71Px6v9DVPQA2EC0tujYghK/SQZ+VgB7xjoEzunJQAx3zYLDlcIkFcZeGMDl/0Tf175xdz0vYa+V5FkmjrNAFinKHNjDJ40zqHxE9hN5l9HYe4mFKy+NmzQx1GQ6IK41qQfY/HcPEzSW2z3R/g7h/jsrzyOTQQNfxwnafHqCHhXtNtRSeFqiU9vP0hEAebMYm3I1nlHNkWyy1t5hrT6QfarrnB6SrhgL/6qWJ1qg1d7VSgAzBrn+GFyNK1tOeXItkaXqrPs5JhjtDQxgEyiiBhmyLEFIe3U/9F91KXQ968JEg==
-x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4129.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(136003)(39860400002)(366004)(396003)(376002)(451199021)(83380400001)(26005)(6506007)(6512007)(53546011)(41300700001)(38100700002)(186003)(6486002)(2616005)(71200400001)(478600001)(54906003)(4326008)(6916009)(76116006)(66446008)(64756008)(66556008)(122000001)(66476007)(66946007)(316002)(7416002)(2906002)(5660300002)(8676002)(8936002)(33656002)(86362001)(38070700005)(36756003)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: 
- =?us-ascii?Q?b4kZu+zW5A2RevgBZJ/Ms2y+TyH12UzMZ+pHAnLu8Gb2P6ktB2ENpfC7n4je?=
- =?us-ascii?Q?aeLP0sfiRK2OSBp9F5ORV29jQKOt2fUGdy/nYdhInNdbkbDcf7vWjlymPn4E?=
- =?us-ascii?Q?AsoI6LYoZIYgFk6o8D04vcP9b8wQehuvFkEw5m7MiN+JF691OlND681w+nfZ?=
- =?us-ascii?Q?aDt4eI3IuroTjaZLtsIK7NNcF8bK5pzfT3SdBXz32mdWhm4tDLIl3Dg6eDlZ?=
- =?us-ascii?Q?CvNpFCqNKlqwUBHBiwaeB3CZvIUjbxsxgEyEyNIaeXKSQNZ5iLFbrOdfKxOG?=
- =?us-ascii?Q?80VKWqCLbaYU67FreK9o2Ossk18urs/m/GkHLkmD7Lh29VoyLK/VuRlLpGjm?=
- =?us-ascii?Q?d4sK0slTVQw59xx/3tb+yZoaFlzaVbUBmhWsnhWCyVu2AxDLizIw/wX8cebx?=
- =?us-ascii?Q?IeQlqn0z+QDBs+QRtm3WYNocppi4NwRc4pQYDwMv21+FUL0eHyfNc3vLvYb+?=
- =?us-ascii?Q?jiBYxpuOEv3NCyyjdPadw6sLR4u26HQhfS5ileQ6bn2xfcDOa3asO4mIT0m0?=
- =?us-ascii?Q?K1F2Es3q1D8iFfpfia7ILNLWGrEcsO7c/dRKCNOyqS09fp3sQ7P3/PjkOiCQ?=
- =?us-ascii?Q?JWgBx/N9p0zruGxPEj+s9HH43qWlgsijUFsHLOEbXzWj7R2MM4iTXGT4PYTZ?=
- =?us-ascii?Q?dJRLoIlAOFfH3gU4iz0yhuDwqxs3jwLRRxWfGt9g2+G/IbmB4zMhP6X+H9D7?=
- =?us-ascii?Q?vGCSsIeKgkhvMRYhJRw/7T23neme10TA+FNqg1J12MtSLeJTcoUTGxe9fI4C?=
- =?us-ascii?Q?mO+0uuSkDqEfCBStJDyYGhYXuLK4IY/NONNy8wGZJ64Vte1SU79lqj40QSnO?=
- =?us-ascii?Q?WVbwlHlLQcWvyLlHOJZpTtq4c8/iDHcpruaElqw0Q8q8BoZanNiOCCwJd0Vk?=
- =?us-ascii?Q?cmUbIpP2+oQNgAkj+zIMsIL/26WODLDR7iUjwUPCKTab9PCmuAFmqcg4un4h?=
- =?us-ascii?Q?d+qVEUatd6nLOygrkGUkJP1PP4snwMSMRjehS1oIlf3Xc72ExYCRJkJZ558V?=
- =?us-ascii?Q?MzME90xYXCtuf4mHvhB3iFKEl+ane635IJWsuF+yOlbS6q28xuavrc5d79Sw?=
- =?us-ascii?Q?yCKjpSytvRuVu2sOkiO5HVA1kWl9YgToYY4A0NxLJ4z/x2htrzxGs9CKyodw?=
- =?us-ascii?Q?wXmfcdcTrT5g2vgl6COie/yJ9AzVo8v0LzwtWYJidDdR/lkxm6Far32XTYee?=
- =?us-ascii?Q?LyooMDzeS9nBTkc+wy5PQTsKgQfz2nT3z2skY7XXTRxPp94mVsFwlYoIi8d1?=
- =?us-ascii?Q?9zH35M/QI2IctjUIxsybgo5pJWvep7ey1q2NzU3Un2/V1EMpR4xRlU4kqSb1?=
- =?us-ascii?Q?Yaj/ICgMFabQykMRvV4cFWs4cvnUaT/1CkNkNhkLrwLpXPF39X81WQo6oJ/4?=
- =?us-ascii?Q?ry5WA2dHHFOLjozaKoKdezooMeo7sLvCi+ftDP6Gm9koT2x7Thax1pnYdu1Z?=
- =?us-ascii?Q?BBXbzDzlS5PVgJjJWL475c7td/iuCLWqSQJHXgOjgSno95xat2Mp9DTG2KAh?=
- =?us-ascii?Q?85eU/mdTAxyfXstXjK24i0TUyFKC+6sVVni+u/aKuAVTSLFmUdNQeyebM/8s?=
- =?us-ascii?Q?M13t85rCO6IehTjvld0UDfALywfTRm31kDhVDdOmKKhO4BMy5ZgS4suhHJQR?=
- =?us-ascii?Q?HQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <B5EFC1BF7947BF46845277690A578CC4@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A65D313AC3
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 16:37:55 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1790D184
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 09:37:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685637473;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+	bh=dRovf0TkfwZJtEX8LS1CrpRlVRui8vInd6qNhP+IgAU=;
+	b=CyTu3MZrrPxN7wa8b+j375KEHR/pq/hoD1QlRkNpttH+v0rInQ9/HC8w1754ETjBRtX9Sz
+	RlRaJuRczeOfmGOQGp67SxIBgp1obWjz+UlA056L3nblT5/Ks4q0BHLEhr7Bm36z8i1NoE
+	FVnf3q2s280sqTeqiurNTvy/+Ga5naw=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-609-dXQW2w02MPe4HVhCWTJXxA-1; Thu, 01 Jun 2023 12:37:51 -0400
+X-MC-Unique: dXQW2w02MPe4HVhCWTJXxA-1
+Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-30634323dfeso637955f8f.3
+        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 09:37:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685637470; x=1688229470;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dRovf0TkfwZJtEX8LS1CrpRlVRui8vInd6qNhP+IgAU=;
+        b=NbAH/RqHnprewKok6J4QsrAScXPr9WC9hQy+XoIdN3pUcSilrebih8o3JmkZVfTfR4
+         n19Iwt7SyNynwcY8Fs3gzGySIT8vte64lu6M059kAD0w/asYvYaVUUw2ziWARdMtHJb6
+         Iy8b2l4nzRXB5TgUJHJ/YrzOAUhycl2OleFOWhYD2cTDcQONm45OXx+qub2k0RUPilk/
+         OZaa5y1On1iCrTF29TfBfnu7Cp5MASFce5Voo6Yg15Om2FO9rxiKHtoW7xV49XpzPBIK
+         Fh7AwUmFnMPS1Bu6vWQYfcRwie7JknqLvKFCBqWM8PD+RidS3pxhXUa/RWaSrdlylfD0
+         j4FA==
+X-Gm-Message-State: AC+VfDy0mZCYsx/sFLkSF+GosO4O+yH4b8fAI8Quxx+am7qDlfyvPwkH
+	OyTgUZckEKaunb0lg9fX7AhwrE/aYG6P13YGspb0wgS0acgurZ59O9DWwSaFtFiQUYqaYqWxlZF
+	Fjsa/tVVyGNFpD4Cb
+X-Received: by 2002:adf:fdc8:0:b0:309:491b:39cc with SMTP id i8-20020adffdc8000000b00309491b39ccmr2434126wrs.3.1685637470085;
+        Thu, 01 Jun 2023 09:37:50 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6JVA6VBrHcu7cvcqoCX6KNzAEDFjHTUEK5n3WMHdpDFWf5hbeKmeVD4ZD8rlugE3eyWAldUw==
+X-Received: by 2002:adf:fdc8:0:b0:309:491b:39cc with SMTP id i8-20020adffdc8000000b00309491b39ccmr2434110wrs.3.1685637469752;
+        Thu, 01 Jun 2023 09:37:49 -0700 (PDT)
+Received: from debian (2a01cb058918ce0082e9cbca34104a7c.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:82e9:cbca:3410:4a7c])
+        by smtp.gmail.com with ESMTPSA id y20-20020a05600c365400b003f60fb2addbsm2824436wmq.44.2023.06.01.09.37.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Jun 2023 09:37:49 -0700 (PDT)
+Date: Thu, 1 Jun 2023 18:37:46 +0200
+From: Guillaume Nault <gnault@redhat.com>
+To: David Miller <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>
+Cc: netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+	Simon Horman <horms@verge.net.au>, Julian Anastasov <ja@ssi.bg>,
+	Pablo Neira Ayuso <pablo@netfilter.org>,
+	Jozsef Kadlecsik <kadlec@netfilter.org>,
+	Florian Westphal <fw@strlen.de>,
+	Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+	Xin Long <lucien.xin@gmail.com>
+Subject: [PATCH net-next] ipv4: Drop tos parameter from flowi4_update_output()
+Message-ID: <f9e28cf551d9efb9278ac80d34d458295d8c845a.1685637136.git.gnault@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	=?us-ascii?Q?NEiDt4uncPA/mpRIEAu2TGvx+CxLiN7qiMLucn0PEhOc/TfJqCYtymj+Xw12?=
- =?us-ascii?Q?7IFYuD/PFxkOf7QG3wXCBUsi3C6zUFvvQBwZ78f9aatEyQSWjzcTrr+98Yeh?=
- =?us-ascii?Q?Fp1emZH3swPewcff9ka38dOzSevEeJbFIm3jDCPnGco5TmwbqkHJeLrMRwGv?=
- =?us-ascii?Q?epgxWS7VBC2K8yiDqHSAJsYopk/2WtcyfxZ4bLWMIsw1tvdzd8ItZLdqkMYV?=
- =?us-ascii?Q?yYcsCY3PoT7kxKIfo1Y5ierhVeF3cJmT9BWlk9MWKVjfjGqSRh+MwveHjTJ+?=
- =?us-ascii?Q?4oaV+B7RT+lpuXBHtcZN8XOZofGZyNb0nbScHIYQ0Y1Fuy+6hEJX4W1dVzET?=
- =?us-ascii?Q?sPbbzeLt+qKWlqyW2m54cqnGoa8pBNc9+mGmKcZkTKuWGf9+aUXPX5Oxdosx?=
- =?us-ascii?Q?dqNT5Sihnt/RZ8AhVX4MSbGOzBD0HdIQ2VcDeqYfB5WmxeC/ILtiD1AB3f5K?=
- =?us-ascii?Q?obeYqIGoslAdOfGb+xdr9075+hsfyt7XVoLCPhzwkOan1KOtdHuqJiufEJTR?=
- =?us-ascii?Q?UrG7U0KinrlA2DOCm6ywiS6JED1+zcLZtyzeuUEeOWbbHHs9bEDHil3tTLAk?=
- =?us-ascii?Q?xl7nO/k4KLgsxHYXfrpTvdJgS5vY6VY59K4C/Is1fdehWBfSSkynrJlAJZvn?=
- =?us-ascii?Q?CfswiUp8iqonBfTfQMR89b6ytbUMflWyMGz6KCEcVe6McIfM0uVz0cVggdqE?=
- =?us-ascii?Q?0Ealhpcnsyx/MDS/B+ZBd0UVe4j5f5XJ2kERis56KWx8RrWA8Fra/vnTeguU?=
- =?us-ascii?Q?oA2/5j80VMc1gAzFrm7DcFns2adWni2oeosvd6jPXQbllRZwITB1yDJqpJj0?=
- =?us-ascii?Q?SC1zR/BTGUQ6zydN1Kpf2aQVpSVHUNez9UeIQ8A642tRc5HAIUfG9e4Vv01Q?=
- =?us-ascii?Q?IVMX8RbcyWPxl5QpCc2FoThYrBBIQrVew2hg2iX7ktJ0yXnGmR+cM4MGzz4s?=
- =?us-ascii?Q?/FCg/wTQjZZNbqF4Y6YhE2wrtAmZPHNHITL3ueaDfLvVB9uSLRcgjpXzSny1?=
- =?us-ascii?Q?m7Zq0Cx9mnLOpVVr/Z4pDXPmCKOi8lYx80GfbL84LaFeb8kK/3OllzZFwZ5R?=
- =?us-ascii?Q?Kd1HZkLlBNg785f+D22U7Hg9wLNimQ=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4129.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0adf40e7-83e3-4970-0082-08db62be05f3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jun 2023 16:34:08.5919
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7630hP+aLQBF1owZswOpwKi5xqA8zWY8wXf0g9eI7QyAKpf9DETy8j7z8wd0eOLzNmQgN29ZC7jaEYDq7auNmVpEvfLrQrHz6U33E6Y6FSo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR10MB7349
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-06-01_08,2023-05-31_03,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999
- adultscore=0 malwarescore=0 bulkscore=0 suspectscore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2304280000 definitions=main-2306010144
-X-Proofpoint-GUID: S_Jc5FDxDchcHa8Fl6Yuf7XZhQ2jReL0
-X-Proofpoint-ORIG-GUID: S_Jc5FDxDchcHa8Fl6Yuf7XZhQ2jReL0
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+Callers of flowi4_update_output() never try to update ->flowi4_tos:
 
+  * ip_route_connect() updates ->flowi4_tos with its own current
+    value.
 
-> On Jun 1, 2023, at 9:24 AM, Jakub Kicinski <kuba@kernel.org> wrote:
->=20
-> On Thu, 1 Jun 2023 16:15:31 +0000 Anjali Kulkarni wrote:
->>>> I don't have sufficient knowledge to review that code, sorry :( =20
->>>=20
->>> Is there anyone who can please help review this code?=20
->>> Christian, could you please help take a look?
->>=20
->> Gentle ping again - Christian could you please help review?
->=20
-> The code may have security implications, I really don't feel like I can
-> be the sole reviewer. There's a bunch of experts working at Oracle,
-> maybe you could get one of them to put their name on it? I can apply
-> the patches, I just want to be sure I'm not the _only_ reviewer.
+  * ip_route_newports() has two users: tcp_v4_connect() and
+    dccp_v4_connect. Both initialise fl4 with ip_route_connect(), which
+    in turn sets ->flowi4_tos with RT_TOS(inet_sk(sk)->tos) and
+    ->flowi4_scope based on SOCK_LOCALROUTE.
 
-Thanks so much for your response. There is someone at Oracle who looked at =
-this some time ago and is familiar enough with this to review the code - bu=
-t he is not a kernel committer - he sends occasional patches upstream which=
- get committed - would it be ok if he reviewed it along with you and then y=
-ou could commit it? If you know of someone from Oracle who could also poten=
-tially review it, please let me know.=20
+    Then ip_route_newports() updates ->flowi4_tos with
+    RT_CONN_FLAGS(sk), which is the same as RT_TOS(inet_sk(sk)->tos),
+    unless SOCK_LOCALROUTE is set on the socket. In that case, the
+    lowest order bit is set to 1, to eventually inform
+    ip_route_output_key_hash() to restrict the scope to RT_SCOPE_LINK.
+    This is equivalent to properly setting ->flowi4_scope as
+    ip_route_connect() did.
+
+  * ip_vs_xmit.c initialises ->flowi4_tos with memset(0), then calls
+    flowi4_update_output() with tos=0.
+
+  * sctp_v4_get_dst() uses the same RT_CONN_FLAGS_TOS() when
+    initialising ->flowi4_tos and when calling flowi4_update_output().
+
+In the end, ->flowi4_tos never changes. So let's just drop the tos
+parameter. This will simplify the conversion of ->flowi4_tos from __u8
+to dscp_t.
+
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+---
+Looks like oif could be removed too.
+---
+ include/net/flow.h              | 3 +--
+ include/net/route.h             | 6 ++----
+ net/netfilter/ipvs/ip_vs_xmit.c | 4 ++--
+ net/sctp/protocol.c             | 4 +---
+ 4 files changed, 6 insertions(+), 11 deletions(-)
+
+diff --git a/include/net/flow.h b/include/net/flow.h
+index bb8651a6eaa7..7f0adda3bf2f 100644
+--- a/include/net/flow.h
++++ b/include/net/flow.h
+@@ -116,11 +116,10 @@ static inline void flowi4_init_output(struct flowi4 *fl4, int oif,
+ }
+ 
+ /* Reset some input parameters after previous lookup */
+-static inline void flowi4_update_output(struct flowi4 *fl4, int oif, __u8 tos,
++static inline void flowi4_update_output(struct flowi4 *fl4, int oif,
+ 					__be32 daddr, __be32 saddr)
+ {
+ 	fl4->flowi4_oif = oif;
+-	fl4->flowi4_tos = tos;
+ 	fl4->daddr = daddr;
+ 	fl4->saddr = saddr;
+ }
+diff --git a/include/net/route.h b/include/net/route.h
+index bcc367cf3aa2..5a5c726472bd 100644
+--- a/include/net/route.h
++++ b/include/net/route.h
+@@ -321,8 +321,7 @@ static inline struct rtable *ip_route_connect(struct flowi4 *fl4, __be32 dst,
+ 		if (IS_ERR(rt))
+ 			return rt;
+ 		ip_rt_put(rt);
+-		flowi4_update_output(fl4, oif, fl4->flowi4_tos, fl4->daddr,
+-				     fl4->saddr);
++		flowi4_update_output(fl4, oif, fl4->daddr, fl4->saddr);
+ 	}
+ 	security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
+ 	return ip_route_output_flow(net, fl4, sk);
+@@ -337,8 +336,7 @@ static inline struct rtable *ip_route_newports(struct flowi4 *fl4, struct rtable
+ 		fl4->fl4_dport = dport;
+ 		fl4->fl4_sport = sport;
+ 		ip_rt_put(rt);
+-		flowi4_update_output(fl4, sk->sk_bound_dev_if,
+-				     RT_CONN_FLAGS(sk), fl4->daddr,
++		flowi4_update_output(fl4, sk->sk_bound_dev_if, fl4->daddr,
+ 				     fl4->saddr);
+ 		security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
+ 		return ip_route_output_flow(sock_net(sk), fl4, sk);
+diff --git a/net/netfilter/ipvs/ip_vs_xmit.c b/net/netfilter/ipvs/ip_vs_xmit.c
+index feb1d7fcb09f..c7652da78c88 100644
+--- a/net/netfilter/ipvs/ip_vs_xmit.c
++++ b/net/netfilter/ipvs/ip_vs_xmit.c
+@@ -139,7 +139,7 @@ static struct rtable *do_output_route4(struct net *net, __be32 daddr,
+ 		if (PTR_ERR(rt) == -EINVAL && *saddr &&
+ 		    rt_mode & IP_VS_RT_MODE_CONNECT && !loop) {
+ 			*saddr = 0;
+-			flowi4_update_output(&fl4, 0, 0, daddr, 0);
++			flowi4_update_output(&fl4, 0, daddr, 0);
+ 			goto retry;
+ 		}
+ 		IP_VS_DBG_RL("ip_route_output error, dest: %pI4\n", &daddr);
+@@ -147,7 +147,7 @@ static struct rtable *do_output_route4(struct net *net, __be32 daddr,
+ 	} else if (!*saddr && rt_mode & IP_VS_RT_MODE_CONNECT && fl4.saddr) {
+ 		ip_rt_put(rt);
+ 		*saddr = fl4.saddr;
+-		flowi4_update_output(&fl4, 0, 0, daddr, fl4.saddr);
++		flowi4_update_output(&fl4, 0, daddr, fl4.saddr);
+ 		loop = true;
+ 		goto retry;
+ 	}
+diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
+index c365df24ad33..664d1f2e9121 100644
+--- a/net/sctp/protocol.c
++++ b/net/sctp/protocol.c
+@@ -500,9 +500,7 @@ static void sctp_v4_get_dst(struct sctp_transport *t, union sctp_addr *saddr,
+ 			continue;
+ 
+ 		fl4->fl4_sport = laddr->a.v4.sin_port;
+-		flowi4_update_output(fl4,
+-				     asoc->base.sk->sk_bound_dev_if,
+-				     RT_CONN_FLAGS_TOS(asoc->base.sk, tos),
++		flowi4_update_output(fl4, asoc->base.sk->sk_bound_dev_if,
+ 				     daddr->v4.sin_addr.s_addr,
+ 				     laddr->a.v4.sin_addr.s_addr);
+ 
+-- 
+2.39.2
 
 
