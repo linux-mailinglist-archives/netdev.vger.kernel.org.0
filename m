@@ -1,299 +1,226 @@
-Return-Path: <netdev+bounces-7109-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7110-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id BBD1E71A025
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:34:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 65A8F71A02B
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 16:35:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7687C2811DF
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 14:34:39 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1B44A2817F6
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 14:35:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A7F0FFC1D;
-	Thu,  1 Jun 2023 14:34:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 64421101D6;
+	Thu,  1 Jun 2023 14:35:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9795823439
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 14:34:24 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96CB21A8
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 07:34:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685630061;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=5cWnXN2OJgEdtvyQPWdKWzOTqRw1rxRQiL55xfvSEwM=;
-	b=O/UOkcypUmjV4f91JnZOlEF3w3tymL6PM5gyQ4O9/VuUfOVx7HiBz65N+xSDKPsGaCP8LB
-	s6/t/HYyjie4BXTwRTYBduUIH8JTvs30pU0SnX0R0loLmXNoPx455IPdMqHFkwpXqtOeIU
-	qVIIMg89c5xfCxV3jwNjRfVWFlgxAfU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-518-B2F83YmsP2aeqexs1ttJDQ-1; Thu, 01 Jun 2023 10:34:18 -0400
-X-MC-Unique: B2F83YmsP2aeqexs1ttJDQ-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B28721C01719;
-	Thu,  1 Jun 2023 14:34:17 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id A3ABE48205E;
-	Thu,  1 Jun 2023 14:34:14 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <CAHk-=wghhHghtvU_SzXxAzfaX35BkNs-x91-Vj6+6tnVEhPrZg@mail.gmail.com>
-References: <CAHk-=wghhHghtvU_SzXxAzfaX35BkNs-x91-Vj6+6tnVEhPrZg@mail.gmail.com> <20230524153311.3625329-1-dhowells@redhat.com> <20230524153311.3625329-10-dhowells@redhat.com> <20230526180844.73745d78@kernel.org> <499791.1685485603@warthog.procyon.org.uk> <CAHk-=wgeixW3cc=Ys8eL0_+22FUhqeEru=nzRrSXy1U4YQdE-w@mail.gmail.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: dhowells@redhat.com, Jakub Kicinski <kuba@kernel.org>,
-    netdev@vger.kernel.org, "David S.
- Miller" <davem@davemloft.net>,
-    Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-    Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-    David Ahern <dsahern@kernel.org>,
-    Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>,
-    linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-    Chuck Lever <chuck.lever@oracle.com>,
-    Boris Pismenny <borisp@nvidia.com>,
-    John Fastabend <john.fastabend@gmail.com>,
-    Christoph Hellwig <hch@infradead.org>
-Subject: Re: Bug in short splice to socket?
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50EB423422
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 14:35:43 +0000 (UTC)
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52548E41
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 07:35:17 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id 2adb3069b0e04-4f4b0a0b557so1152251e87.1
+        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 07:35:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares.net; s=google; t=1685630115; x=1688222115;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=qSfNwowBIrXwCmy959sjHFBtcspDeGLD1tqwKKW+7Ys=;
+        b=dYbtu3UYUAEitxKc2CkYIYDng/Qda8jQs5za7qbAiCkvL9Nd2Ob+7VHS49pYO2NoVt
+         yg2kKmMl53HdnezRVuhHaUmZvwnffiuGV4GU08wGa0LTm0dWKZZ/0niXyBQJqeS1NOze
+         V/KEMob2jOiZpbcfAOwOXHWpZT+qSIAqZiARx6QwTfYmosmSFTC0GcvGda7i8Znh17zz
+         9BOPd/jDC3YviQI0T5alCHX8eK1sNiKmEWyirAAHRINW6nnGmEj3PwNGDnKTgMBvEZjq
+         tasIt+U/qWOilP0SgQzXnCr1cpizRP9b9SvmF344OpjWylhrvJUxx+8adpmrKPjgG0v0
+         cwHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685630115; x=1688222115;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qSfNwowBIrXwCmy959sjHFBtcspDeGLD1tqwKKW+7Ys=;
+        b=PgxDYiXifB8TClejVd34gfiR3yVFvTnxel8p0ARn62dnPSi8KfJ3aS/gPzKodnZ02F
+         BcCk89xlaQivsvHkW41urtuiFd1phk9Es5WUmuSr8UNue61NiqNAsCFN/pzkzxeaguVB
+         OZ1jw2wol72dwlqCMB4Ax3n9M2+DcI08T0nCGve/fBJDJhMOFCV9zRq/2CAmXO98jHxj
+         JdDGEwSUD5bXb+qhZNvP2pt4PVLo1CTIgBj/lrN6z4n76bJgw3N2aew12oLUqglYS9Ar
+         aVfgj8hFyd5K5TMVceyRiz/kttxhGCRwaa0y/w7RqkI9c0SnsHGcEsrLNOMYNM9UqqwH
+         AIag==
+X-Gm-Message-State: AC+VfDwJqCN/eJtB3wTFNHYbhvHAfVaTg9KwfrPSLtLARvIo4rSbhxer
+	DOpxDTSwtNXu6lDF90Id3N3Nwg==
+X-Google-Smtp-Source: ACHHUZ5kdMccQkoAlUzkaLwGRekQ/edux8f3fBn82uOO1QxrlGZsoZc+1Dp/R9dx8AQTzWnym2JCQQ==
+X-Received: by 2002:ac2:5479:0:b0:4f4:c30f:fafd with SMTP id e25-20020ac25479000000b004f4c30ffafdmr73943lfn.28.1685630115372;
+        Thu, 01 Jun 2023 07:35:15 -0700 (PDT)
+Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
+        by smtp.gmail.com with ESMTPSA id bg22-20020a05600c3c9600b003f4283f5c1bsm9709927wmb.2.2023.06.01.07.35.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Jun 2023 07:35:15 -0700 (PDT)
+From: Matthieu Baerts <matthieu.baerts@tessares.net>
+Date: Thu, 01 Jun 2023 16:34:36 +0200
+Subject: [PATCH net-next RFC] net: skip printing "link become ready" v6 msg
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 01 Jun 2023 15:34:08 +0100
-Message-ID: <832277.1685630048@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230601-net-next-skip_print_link_becomes_ready-v1-1-c13e64c14095@tessares.net>
+X-B4-Tracking: v=1; b=H4sIAHuseGQC/z2OywrCMBBFf6XM2kAaTRduBT/AbZGQx2iH6jQkQ
+ Sql/24q6OIuDgcOd4GMiTDDsVkg4YsyTVyh3TXgB8t3FBQqg5JqLzvZCsZSNxeRR4omJuJiHsS
+ jceinJ2aT0Ia30M6rTutgrTpAjTmbUbhk2Q9b7lfZVEx4o/n7of+L5nI+wXVdP68tdLChAAAA
+To: mptcp@lists.linux.dev, "David S. Miller" <davem@davemloft.net>, 
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
+ Paolo Abeni <pabeni@redhat.com>, David Ahern <dsahern@kernel.org>, 
+ Mat Martineau <martineau@kernel.org>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>, netdev@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, 
+ Matthieu Baerts <matthieu.baerts@tessares.net>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4914;
+ i=matthieu.baerts@tessares.net; h=from:subject:message-id;
+ bh=GLrbycqPqRupQVxPfBAeQV/Ty59syypaKHGw+itKRJo=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBkeKyisVl+FfDll7sOFg0z9Ac39h4Ccw6u+9lvs
+ 3VxxxUncW2JAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCZHisogAKCRD2t4JPQmmg
+ c/RaD/4o4Tn8sDVthZGvm2tBUx2KGQVHkcZAGGzkIo8G00uzwSysWhWPO15W/bJqvfl/QUk1PQu
+ SNTv/14k1MprVsFlAaNnopYSG6wYUdSRDFXx9ysTX/htPfX/8fg0FMgLklW8Yxcetc7mTnab9mn
+ 1Qgs0YKoXG8WNwTbu8OdkTd0tRJhl2UhxHM8tjRSn7tgP3awKIzDDkjIpV+TcwfmtvrwGOEVwix
+ AdreqRACDHd/Y1JjsQ+GNKolWzl89DqRKpqXFIRgGteWKBjZ4rKlUnK2XR8t4MrcivwN61slPWs
+ 77svn4X/Y9OF7s4xd51iWjFPZBXeG+q8iJH/5pOmad5WMGZN8/B1ror5bObph/Ay3drNx8flRW3
+ B19Lde6Tf1rQQHPi9vYl1D9ZnHnfp/Iyux3jgAtvTtlGJVJ3S/m7ri+Kj9PI8OnOCvCTwP1r3PF
+ HGepXXBrTfMCovEZ4hsuHVURyIrHMibgS62aFCs+T9eGDChpk9Ivuyn16vScF8O8JGL2veaL4wn
+ yhd9KDfvXZbedG9i5bxEz1IO8BKTh08QVj6m6lZB8q88Hf26nfJZmZpkJiKQLo7gZExmY95Wdgc
+ gTv9WfPjkgj9dyCwsQpkzNdvIJabpAc6c+RarJIkReU3YvzkYEIU6RIUi7R+IiXwDBkndJjOlbn
+ 86H63IHi/QwtbSQ==
+X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp;
+ fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+This following message is printed in the console each time a network
+device configured with an IPv6 addresses is ready to be used:
 
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
+  ADDRCONF(NETDEV_CHANGE): <iface>: link becomes ready
 
-> On Thu, Jun 1, 2023 at 9:09=E2=80=AFAM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > The reason the old code is garbage is that it sets SPLICE_F_MORE
-> > entirely in the wrong place. It sets it *after* it has done the
-> > splice(). That's just crazy.
->=20
-> Clarification, because there are two splice's (from and to): by "after
-> the splice" I mean after the splice source, of course. It's still set
-> before the splice _to_ the network.
->=20
-> (But it is still true that I hope the networking code itself then sets
-> MSG_MORE even if SPLICE_F_MORE wasn't set, if it gets a buffer that is
-> bigger than what it can handle right now - so there are two
-> *different* reasons for "more data" - either the source knows it has
-> more to give, or the destination knows it didn't use everything it
-> got).
+When netns are being extensively used -- e.g. by re-creating netns with
+veth to discuss with each other for testing purposes like mptcp_join.sh
+selftest does -- it generates a lot of messages: more than 700 when
+executing mptcp_join.sh with the latest version.
 
-I'm in the process of changing things so that ->sendpage() is removed and
-replaced with sendmsg() with MSG_SPLICE_PAGES.  The aim is to end up with a
-splice_to_socket() function (see attached) that transcribes a chunk of the
-pipe into a BVEC iterator and does a single sendmsg() that pushes a whole
-chunk of data to the socket in one go.
+=========
+== RFC ==
+=========
 
-In the network protocol, the loop inside sendmsg splices those pages into
-socket buffers, sleeping as necessary to gain sufficient memory to transcri=
-be
-all of them.  It can return partly done and the fully consumed pages will be
-consumed and then it'll return to gain more data.
+TL;DR: can we move this message to the debug level? Or is it better with
+a sysctl knob? Or something else?
 
-At the moment, it transcribes 16 pages at a time.  I could make it set
-MSG_MORE only if (a) SPLICE_F_MORE was passed into the splice() syscall or =
-(b)
-there's yet more data in the buffer.
+When looking at commit 3c21edbd1137 ("[IPV6]: Defer IPv6 device
+initialization until the link becomes ready.") which introduces this new
+message, it seems it had been added to verify that the new feature was
+working as expected. It could have then used a lower level than "info".
 
-However, this might well cause a malfunction in UDP, for example.  MSG_MORE
-corks the current packet, so if I ask sendfile() say shove 32K into a packe=
-t,
-if, say, 16K is read from the source and entirely transcribed into the pack=
-et,
-if I understand what you're proposing, MSG_MORE wouldn't get set and the
-packet would be transmitted early.  A similar issue might exist for AF_TLS,
-where the lack of MSG_MORE triggers an end-of-record.
+It is unclear if this message can be useful. Maybe it can be used as a
+sign to know if there is something wrong, e.g. if a device is being
+regularly reconfigured by accident? But even then, I don't think that
+was its goal at the first place and clearly there are better ways to
+monitor and diagnose such issues. Do you see any usages?
 
-The problem isn't that the buffer supplied is bigger than the protocol could
-handle in one go, it's that what we read was less than the amount that the
-user requested - but we don't know if there will be more data.
+If this message is not that useful, it is probably better to simply
+lower its level, similar to commit 7c62b8dd5ca8 ("net/ipv6: lower the
+level of "link is not ready" messages"). If we can take this direction,
+we will just need to switch from pr_info() to pr_debug().
 
-One solution might be to pass MSG_MORE regardless, and then follow up with a
-null sendmsg() if we then hit a zero-length read (ie. EOF) or -ENODATA (ie.=
- a
-hole).
+If this message can be useful in many situations, it would be good to
+have a way to turn it off because in some other situations, it floods
+the logs without providing any useful input. The proposition here is to
+have a new per netns sysctl knob to easily skip this specific message
+when needed. If we prefer to take this direction, we will still need to
+document the new knob and the modification in the MPTCP selftest should
+be done in a separated commit.
 
-> The point is that the splice *source* knows whether there is more data
-> to be had, and that's where the "there is more" should be set.
+Adding a new sysctl entry just for that seems a bit "heavy", maybe there
+are better ways that are still easy to put in place?
 
-Actually, that's not necessarily true.  If the source is a pipe or a socket,
-there may not be more, but we don't know that until the far end is closed -
-but for a file it probably is (we could be racing with a writer).  And then
-there's seqfile-based things like the trace buffer or procfiles which are
-really a class of their own.
-
-> Basically my argument is that the whole "there is more data" should be
-> set by "->splice_read()" not by some hack in some generic
-> splice_direct_to_actor() function that is absolutely not supposed to
-> know about the internals of the source or the destination.
->=20
-> Do we have a good interface for that? No. I get the feeling that to
-> actually fix this, we'd have to pass in the 'struct splice_desc"
-> pointer to ->splice_read().
-
-That might become more feasible, actually.  In Jens's tree are the patches =
-to
-clean up splice_read a lot and get rid of ITER_PIPE.  Most of the
-->splice_reads are going to be direct calls to copy_splice_read() and
-filemap_splice_read() or wrappers around filemap_splice_read().  The latter,
-at least, might be in a good position to note EOF, perhaps by marking a pipe
-buffer as "no more".
-
-copy_splice_read() is more problematic because ->read_iter() doesn't indica=
-te
-if it hit EOF (or hit a hole).
-
-David
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 ---
-ssize_t splice_to_socket(struct pipe_inode_info *pipe, struct file *out,
-			 loff_t *ppos, size_t len, unsigned int flags)
-{
-	struct socket *sock =3D sock_from_file(out);
-	struct bio_vec bvec[16];
-	struct msghdr msg =3D {};
-	ssize_t ret;
-	size_t spliced =3D 0;
-	bool need_wakeup =3D false;
+ include/net/netns/ipv6.h                        | 1 +
+ net/ipv6/addrconf.c                             | 5 +++--
+ net/ipv6/sysctl_net_ipv6.c                      | 9 +++++++++
+ tools/testing/selftests/net/mptcp/mptcp_join.sh | 1 +
+ 4 files changed, 14 insertions(+), 2 deletions(-)
 
-	pipe_lock(pipe);
+diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
+index 3cceb3e9320b..721abf86052f 100644
+--- a/include/net/netns/ipv6.h
++++ b/include/net/netns/ipv6.h
+@@ -56,6 +56,7 @@ struct netns_sysctl_ipv6 {
+ 	bool skip_notify_on_dev_down;
+ 	u8 fib_notify_on_flag_change;
+ 	u8 icmpv6_error_anycast_as_unicast;
++	bool skip_print_link_becomes_ready;
+ };
+ 
+ struct netns_ipv6 {
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 3797917237d0..9cf7b4932309 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -3633,8 +3633,9 @@ static int addrconf_notify(struct notifier_block *this, unsigned long event,
+ 				idev->if_flags |= IF_READY;
+ 			}
+ 
+-			pr_info("ADDRCONF(NETDEV_CHANGE): %s: link becomes ready\n",
+-				dev->name);
++			if (!net->ipv6.sysctl.skip_print_link_becomes_ready)
++				pr_info("ADDRCONF(NETDEV_CHANGE): %s: link becomes ready\n",
++					dev->name);
+ 
+ 			run_pending = 1;
+ 		}
+diff --git a/net/ipv6/sysctl_net_ipv6.c b/net/ipv6/sysctl_net_ipv6.c
+index 94a0a294c6a1..c9e82377a8fa 100644
+--- a/net/ipv6/sysctl_net_ipv6.c
++++ b/net/ipv6/sysctl_net_ipv6.c
+@@ -213,6 +213,15 @@ static struct ctl_table ipv6_table_template[] = {
+ 		.proc_handler	= proc_doulongvec_minmax,
+ 		.extra2		= &ioam6_id_wide_max,
+ 	},
++	{
++		.procname	= "skip_print_link_becomes_ready",
++		.data		= &init_net.ipv6.sysctl.skip_print_link_becomes_ready,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1         = SYSCTL_ZERO,
++		.extra2         = SYSCTL_ONE,
++	},
+ 	{ }
+ };
+ 
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+index e74d3074ef90..ec7d66a0a57e 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+@@ -83,6 +83,7 @@ init_partial()
+ 		ip netns exec $netns sysctl -q net.mptcp.pm_type=0
+ 		ip netns exec $netns sysctl -q net.ipv4.conf.all.rp_filter=0
+ 		ip netns exec $netns sysctl -q net.ipv4.conf.default.rp_filter=0
++		ip netns exec $netns sysctl -q net.ipv6.skip_print_link_becomes_ready=1
+ 		if [ $checksum -eq 1 ]; then
+ 			ip netns exec $netns sysctl -q net.mptcp.checksum_enabled=1
+ 		fi
 
-	while (len > 0) {
-		unsigned int head, tail, mask, bc =3D 0;
-		size_t remain =3D len;
+---
+base-commit: 6f4b98147b8dfcabacb19b5c6abd087af66d0049
+change-id: 20230601-net-next-skip_print_link_becomes_ready-5bc2655daa24
 
-		/*
-		 * Check for signal early to make process killable when there
-		 * are always buffers available
-		 */
-		ret =3D -ERESTARTSYS;
-		if (signal_pending(current))
-			break;
-
-		while (pipe_empty(pipe->head, pipe->tail)) {
-			ret =3D 0;
-			if (!pipe->writers)
-				goto out;
-
-			if (spliced)
-				goto out;
-
-			ret =3D -EAGAIN;
-			if (flags & SPLICE_F_NONBLOCK)
-				goto out;
-
-			ret =3D -ERESTARTSYS;
-			if (signal_pending(current))
-				goto out;
-
-			if (need_wakeup) {
-				wakeup_pipe_writers(pipe);
-				need_wakeup =3D false;
-			}
-
-			pipe_wait_readable(pipe);
-		}
-
-		head =3D pipe->head;
-		tail =3D pipe->tail;
-		mask =3D pipe->ring_size - 1;
-
-		while (!pipe_empty(head, tail)) {
-			struct pipe_buffer *buf =3D &pipe->bufs[tail & mask];
-			size_t seg;
-
-			if (!buf->len) {
-				tail++;
-				continue;
-			}
-
-			seg =3D min_t(size_t, remain, buf->len);
-			seg =3D min_t(size_t, seg, PAGE_SIZE);
-
-			ret =3D pipe_buf_confirm(pipe, buf);
-			if (unlikely(ret)) {
-				if (ret =3D=3D -ENODATA)
-					ret =3D 0;
-				break;
-			}
-
-			bvec_set_page(&bvec[bc++], buf->page, seg, buf->offset);
-			remain -=3D seg;
-			if (seg >=3D buf->len)
-				tail++;
-			if (bc >=3D ARRAY_SIZE(bvec))
-				break;
-		}
-
-		if (!bc)
-			break;
-
-		msg.msg_flags =3D 0;
-		if (flags & SPLICE_F_MORE)
-			msg.msg_flags =3D MSG_MORE;
-		if (remain && pipe_occupancy(pipe->head, tail) > 0)
-			msg.msg_flags =3D MSG_MORE;
-		msg.msg_flags |=3D MSG_SPLICE_PAGES;
-
-		iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, bvec, bc, len - remain);
-		ret =3D sock_sendmsg(sock, &msg);
-		if (ret <=3D 0)
-			break;
-
-		spliced +=3D ret;
-		len -=3D ret;
-		tail =3D pipe->tail;
-		while (ret > 0) {
-			struct pipe_buffer *buf =3D &pipe->bufs[tail & mask];
-			size_t seg =3D min_t(size_t, ret, buf->len);
-
-			buf->offset +=3D seg;
-			buf->len -=3D seg;
-			ret -=3D seg;
-
-			if (!buf->len) {
-				pipe_buf_release(pipe, buf);
-				tail++;
-			}
-		}
-
-		if (tail !=3D pipe->tail) {
-			pipe->tail =3D tail;
-			if (pipe->files)
-				need_wakeup =3D true;
-		}
-	}
-
-out:
-	pipe_unlock(pipe);
-	if (need_wakeup)
-		wakeup_pipe_writers(pipe);
-	return spliced ?: ret;
-}
+Best regards,
+-- 
+Matthieu Baerts <matthieu.baerts@tessares.net>
 
 
