@@ -1,133 +1,99 @@
-Return-Path: <netdev+bounces-7261-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7262-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8026871F601
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 00:36:10 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id BAACF71F62C
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 00:43:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BD6DA281987
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 22:36:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 494A81C21170
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 22:43:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 65A2320982;
-	Thu,  1 Jun 2023 22:36:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BD90924135;
+	Thu,  1 Jun 2023 22:43:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BDEF10FA;
-	Thu,  1 Jun 2023 22:36:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED82AC43443;
-	Thu,  1 Jun 2023 22:36:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685658962;
-	bh=HByQUJENQcDPWiijaDFhYT8jA4bRcfOqcVglu/ddG6U=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=re2I/9LpOnn67cRoh6PMZZOHT8vdfHha/bz6wtCDfOYdb5vZzGUctvTnWl4LYy/9m
-	 NwPwQViyZ7XqHLQBspSOOwlfhUwQAtJo+yIL5HnTKCCgUiXqtggXTsskTfnNpG7vN9
-	 VK+9AhJpq2nZ3mf3rthk6G8xSKwWwiHUzWquyx91XgpIn8z8MdRB3+bYCub3NDdJsU
-	 MBXCxXfkbcJxxlc8t1IXtz79Bkfq9TSzEwYW0lg8eC1Maz9RVf0VpdqrZpUNbjK7/t
-	 roE+PBwSYAYsytt+Ua6jTizptS+lu0Z7pWJc7cPm4JVKQxLN5o5FZMLtghbCRvoQ8N
-	 h5KrxNOdHSCXg==
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-4f3ba703b67so1883166e87.1;
-        Thu, 01 Jun 2023 15:36:01 -0700 (PDT)
-X-Gm-Message-State: AC+VfDwCfcoWvJSmhQPKGLk4na5gWDVfbKoT0+70BSdxCghnn0LsO9eE
-	mHJX70nFS4hM1gSoxd7YkjITBewiMbLpXXglhsE=
-X-Google-Smtp-Source: ACHHUZ5IpAtCBKLINxhk+Z0SWINwbFkPqmi++HI/k6BNegfGNCzvnzTim5Gy3oJJLp9NHmq3+FFn0pl72eGk9Pzb3ws=
-X-Received: by 2002:ac2:48ba:0:b0:4ec:8816:f4fc with SMTP id
- u26-20020ac248ba000000b004ec8816f4fcmr792426lfg.6.1685658959623; Thu, 01 Jun
- 2023 15:35:59 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF35310FA
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 22:43:02 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FBA412C;
+	Thu,  1 Jun 2023 15:43:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=mShMM3p8SqII3lbXMxoUKDpBZz5yb8liVkn0PUSzrRY=; b=o/cvisFLXDZkg1pALu/qjJ9cyZ
+	jM/EQfwdJM7dEd0ynEU+4NsAxrrykHFGlfhZy4l2YxAuGQx+W5YxjvngbvCmuU+zc0ftAUVCu/UIe
+	uJxGnUg9gt7s6OHHkO95KJfYqe5JyRixt09EbdVcOtHbderosT9MzRnRSw9r07JK5/WAVZ64bKqDB
+	Tpow4BY/SLiVw/Igr/haq3CGfn2finRrg5SCP4Z5eKLGl6/IbPs4gqRSL30MUOrwLJ40olhD/0KOy
+	B+Qb9lna9okjadvmmczGMH5mckcVUi9+c4O53zCMbJ4JTIXKYKBD4QTmm56d/8umfat16a2MFO49z
+	6qOxB2ag==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:51104)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q4r0N-00078r-Q8; Thu, 01 Jun 2023 23:42:52 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q4r0K-0002If-5v; Thu, 01 Jun 2023 23:42:48 +0100
+Date: Thu, 1 Jun 2023 23:42:48 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: msmulski2@gmail.com
+Cc: andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, simon.horman@corigine.com,
+	kabel@kernel.org, Michal Smulski <michal.smulski@ooma.com>
+Subject: Re: [PATCH net-next v5 1/1] net: dsa: mv88e6xxx: implement USXGMII
+ mode for mv88e6393x
+Message-ID: <ZHke6JqvcWZsOdX5@shell.armlinux.org.uk>
+References: <20230601215251.3529-1-msmulski2@gmail.com>
+ <20230601215251.3529-2-msmulski2@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230601101257.530867-1-rppt@kernel.org> <20230601101257.530867-5-rppt@kernel.org>
-In-Reply-To: <20230601101257.530867-5-rppt@kernel.org>
-From: Song Liu <song@kernel.org>
-Date: Thu, 1 Jun 2023 15:35:47 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW70o=8QwcNJPx=qxaKoPkOzwYt8xxzjK38dF2tJB-18jQ@mail.gmail.com>
-Message-ID: <CAPhsuW70o=8QwcNJPx=qxaKoPkOzwYt8xxzjK38dF2tJB-18jQ@mail.gmail.com>
-Subject: Re: [PATCH 04/13] mm/jitalloc, arch: convert remaining overrides of
- module_alloc to jitalloc
-To: Mike Rapoport <rppt@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
-	"David S. Miller" <davem@davemloft.net>, Dinh Nguyen <dinguyen@kernel.org>, 
-	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>, 
-	Kent Overstreet <kent.overstreet@linux.dev>, Luis Chamberlain <mcgrof@kernel.org>, 
-	Michael Ellerman <mpe@ellerman.id.au>, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Russell King <linux@armlinux.org.uk>, 
-	Steven Rostedt <rostedt@goodmis.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>, bpf@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, 
-	linux-mm@kvack.org, linux-modules@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-s390@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev, 
-	netdev@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230601215251.3529-2-msmulski2@gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Thu, Jun 1, 2023 at 3:13=E2=80=AFAM Mike Rapoport <rppt@kernel.org> wrot=
-e:
->
-> From: "Mike Rapoport (IBM)" <rppt@kernel.org>
->
-> Extend jitalloc parameters to accommodate more complex overrides of
-> module_alloc() by architectures.
->
-> This includes specification of a fallback range required by arm, arm64
-> and powerpc and support for allocation of KASAN shadow required by
-> arm64, s390 and x86.
->
-> The core implementation of jit_alloc() takes care of suppressing warnings
-> when the initial allocation fails but there is a fallback range defined.
->
-> Signed-off-by: Mike Rapoport (IBM) <rppt@kernel.org>
+On Thu, Jun 01, 2023 at 02:52:51PM -0700, msmulski2@gmail.com wrote:
+> +/* USXGMII */
+> +#define MV88E6390_USXGMII_PHY_STATUS_SPEED_MASK	GENMASK(11, 9)
+> +#define MV88E6390_USXGMII_PHY_STATUS_SPEED_5000	0xa00
+> +#define MV88E6390_USXGMII_PHY_STATUS_SPEED_2500	0x800
+> +#define MV88E6390_USXGMII_PHY_STATUS_SPEED_10000	0x600
+> +#define MV88E6390_USXGMII_PHY_STATUS_SPEED_1000	0x400
+> +#define MV88E6390_USXGMII_PHY_STATUS_SPEED_100	0x200
+> +#define MV88E6390_USXGMII_PHY_STATUS_SPEED_10	0x000
+> +#define MV88E6390_USXGMII_PHY_STATUS_DUPLEX_FULL	BIT(12)
+> +#define MV88E6390_USXGMII_PHY_STATUS_LINK		BIT(15)
 
-[...]
+How is this different from the definitions in include/uapi/linux/mdio.h
+(see MDIO_USXGMII_*). Have you considered using
+phylink_decode_usxgmii_word() to decode these instead of reinventing the
+wheel?
 
->
-> diff --git a/arch/arm64/kernel/module.c b/arch/arm64/kernel/module.c
-> index 5af4975caeb5..ecf1f4030317 100644
-> --- a/arch/arm64/kernel/module.c
-> +++ b/arch/arm64/kernel/module.c
-> @@ -17,56 +17,49 @@
->  #include <linux/moduleloader.h>
->  #include <linux/scs.h>
->  #include <linux/vmalloc.h>
-> +#include <linux/jitalloc.h>
->  #include <asm/alternative.h>
->  #include <asm/insn.h>
->  #include <asm/scs.h>
->  #include <asm/sections.h>
->
-> -void *module_alloc(unsigned long size)
-> +static struct jit_alloc_params jit_alloc_params =3D {
-> +       .alignment      =3D MODULE_ALIGN,
-> +       .flags          =3D JIT_ALLOC_KASAN_SHADOW,
-> +};
-> +
-> +struct jit_alloc_params *jit_alloc_arch_params(void)
->  {
->         u64 module_alloc_end =3D module_alloc_base + MODULES_VSIZE;
+It would be nice to wait until we've converted 88e6xxx to phylink PCS
+before adding this support, which is something that's been blocked for
+a few years but should be unblocked either at the end of this cycle,
+or certainly by 6.5-rc1. Andrew, would you agree?
 
-module_alloc_base() is initialized in kaslr_init(), which is called after
-mm_core_init(). We will need some special logic for this.
-
-Thanks,
-Song
-
-> -       gfp_t gfp_mask =3D GFP_KERNEL;
-> -       void *p;
-> -
-> -       /* Silence the initial allocation */
-> -       if (IS_ENABLED(CONFIG_ARM64_MODULE_PLTS))
-> -               gfp_mask |=3D __GFP_NOWARN;
->
-
-[...]
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
