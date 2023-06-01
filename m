@@ -1,134 +1,133 @@
-Return-Path: <netdev+bounces-7228-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7229-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1531971F225
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 20:38:31 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2AD9871F259
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 20:49:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9D0AB1C210B2
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 18:38:27 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C2A1F2818FB
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 18:49:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A205E1D2C3;
-	Thu,  1 Jun 2023 18:38:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E822F19E55;
+	Thu,  1 Jun 2023 18:48:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96D386FBA
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 18:38:16 +0000 (UTC)
-Received: from out-16.mta1.migadu.com (out-16.mta1.migadu.com [95.215.58.16])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1F919F
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 11:38:12 -0700 (PDT)
-Date: Thu, 1 Jun 2023 14:38:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1685644690;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=vE5M38dfe56E8s/vH4SQoCtLt0IZYGAsgOXKDjVTLRk=;
-	b=WcebRBX9N7xDfAOhJQCDt0Brku79Lkj1MR87hiRp7qhEDbQiQDjnDqE0iVy5Kc4E8ADGNa
-	mXKEmKqKwoHkFh7QINhK9dRhKouPQW/ELmG9UtD3LNTa1N16g/g9fLkjUa8jbnd9gCmrO/
-	7957lwgmB5RqAKvocMdeApF9dZOlVqo=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-Cc: "tglx@linutronix.de" <tglx@linutronix.de>,
-	"mcgrof@kernel.org" <mcgrof@kernel.org>,
-	"deller@gmx.de" <deller@gmx.de>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-	"linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-	"hca@linux.ibm.com" <hca@linux.ibm.com>,
-	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
-	"palmer@dabbelt.com" <palmer@dabbelt.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"chenhuacai@kernel.org" <chenhuacai@kernel.org>,
-	"tsbogend@alpha.franken.de" <tsbogend@alpha.franken.de>,
-	"linux-trace-kernel@vger.kernel.org" <linux-trace-kernel@vger.kernel.org>,
-	"linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-	"rppt@kernel.org" <rppt@kernel.org>,
-	"mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-	"christophe.leroy@csgroup.eu" <christophe.leroy@csgroup.eu>,
-	"rostedt@goodmis.org" <rostedt@goodmis.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"dinguyen@kernel.org" <dinguyen@kernel.org>,
-	"naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
-	"sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-	"linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-	"bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"song@kernel.org" <song@kernel.org>,
-	"linux-mm@kvack.org" <linux-mm@kvack.org>,
-	"loongarch@lists.linux.dev" <loongarch@lists.linux.dev>,
-	"akpm@linux-foundation.org" <akpm@linux-foundation.org>
-Subject: Re: [PATCH 12/13] x86/jitalloc: prepare to allocate exectuatble
- memory as ROX
-Message-ID: <ZHjljJfQjhVV/jNS@moria.home.lan>
-References: <20230601101257.530867-1-rppt@kernel.org>
- <20230601101257.530867-13-rppt@kernel.org>
- <0f50ac52a5280d924beeb131e6e4717b6ad9fdf7.camel@intel.com>
- <ZHjcr26YskTm+0EF@moria.home.lan>
- <a51c041b61e2916d2b91c990349aabc6cb9836aa.camel@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D438723DF
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 18:48:58 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F1C718D;
+	Thu,  1 Jun 2023 11:48:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+	Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+	In-Reply-To:References; bh=bHdmnR1Xzli1omfGwEoz5opBryIwcSOFGIV2/hia/f0=; b=Xj
+	v90ww/C1HE3NKJDoyJpYVZ38/0NS0131d81z0uGkR2BYA4jQ0YHwR+b32P+Jw7CR/vgMk+bhCosbF
+	vxap1wKiltEir3iYsSyn4+IHwgII+6jzdCxKswz9BMO1D2Eu5OsdyqAkfSORFQtsT73aVDD+k+K/T
+	xvQa7naKxvwK31o=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1q4nLx-00EbD4-SR; Thu, 01 Jun 2023 20:48:53 +0200
+Date: Thu, 1 Jun 2023 20:48:53 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Florian Fainelli <florian.fainelli@broadcom.com>
+Cc: Justin Chen <justin.chen@broadcom.com>,
+	Simon Horman <simon.horman@corigine.com>, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, davem@davemloft.net,
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+	bcm-kernel-feedback-list@broadcom.com,
+	Daniil Tatianin <d-tatianin@yandex-team.ru>,
+	Yuiko Oshino <yuiko.oshino@microchip.com>,
+	Horatiu Vultur <horatiu.vultur@microchip.com>,
+	Steen Hegelund <steen.hegelund@microchip.com>,
+	Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>,
+	Arun Ramadoss <arun.ramadoss@microchip.com>
+Subject: Re: [PATCH net-next] ethtool: ioctl: improve error checking for
+ set_wol
+Message-ID: <312c1067-aab6-4f04-b18e-ba1b7a0d1427@lunn.ch>
+References: <1685566429-2869-1-git-send-email-justin.chen@broadcom.com>
+ <ZHi/aT6vxpdOryD8@corigine.com>
+ <e7e49753-3ad6-9e03-44ff-945e66fca9a3@broadcom.com>
+ <eda87740-669c-a6e1-9c71-a9a92d3b173a@broadcom.com>
+ <e3065103-d38c-1b80-5b61-71e8ba017e71@broadcom.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <a51c041b61e2916d2b91c990349aabc6cb9836aa.camel@intel.com>
-X-Migadu-Flow: FLOW_OUT
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e3065103-d38c-1b80-5b61-71e8ba017e71@broadcom.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-	version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 01, 2023 at 06:13:44PM +0000, Edgecombe, Rick P wrote:
-> > text_poke() _does_ create a separate RW mapping.
-> 
-> Sorry, I meant a separate RW allocation.
-
-Ah yes, that makes sense
-
-
-> 
+> > > I was planning to for the Broadcom drivers since those I can test.
+> > > But I could do it across the board if that is preferred.
+> > > 
+> > > > > Signed-off-by: Justin Chen <justin.chen@broadcom.com>
+> > > > > ---
+> > > > >   net/ethtool/ioctl.c | 14 ++++++++++++--
+> > > > >   1 file changed, 12 insertions(+), 2 deletions(-)
+> > > > > 
+> > > > > diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+> > > > > index 6bb778e10461..80f456f83db0 100644
+> > > > > --- a/net/ethtool/ioctl.c
+> > > > > +++ b/net/ethtool/ioctl.c
+> > > > > @@ -1436,15 +1436,25 @@ static int ethtool_get_wol(struct
+> > > > > net_device *dev, char __user *useraddr)
+> > > > >   static int ethtool_set_wol(struct net_device *dev, char
+> > > > > __user *useraddr)
+> > > > >   {
+> > > > > -    struct ethtool_wolinfo wol;
+> > > > > +    struct ethtool_wolinfo wol, cur_wol;
+> > > > >       int ret;
+> > > > > -    if (!dev->ethtool_ops->set_wol)
+> > > > > +    if (!dev->ethtool_ops->get_wol || !dev->ethtool_ops->set_wol)
+> > > > >           return -EOPNOTSUPP;
+> > > > 
+> > > > Are there cases where (in-tree) drivers provide set_wol byt not get_wol?
+> > > > If so, does this break their set_wol support?
+> > > > 
+> > > 
+> > > My original thought was to match netlink set wol behavior. So
+> > > drivers that do that won't work with netlink set_wol right now. I'll
+> > > skim around to see if any drivers do this. But I would reckon this
+> > > should be a driver fix.
+> > > 
+> > > Thanks,
+> > > Justin
+> > > 
 > > 
-> > The thing that sucks about text_poke() is that it always does a full
-> > TLB
-> > flush, and AFAICT that's not remotely needed. What it really wants to
-> > be
-> > doing is conceptually just
-> > 
-> > kmap_local()
-> > mempcy()
-> > kunmap_loca()
-> > flush_icache();
-> > 
-> > ...except that kmap_local() won't actually create a new mapping on
-> > non-highmem architectures, so text_poke() open codes it.
+> > I see a driver at drivers/net/phy/microchip.c. But this is a phy driver
+> > set_wol hook.
 > 
-> Text poke creates only a local CPU RW mapping. It's more secure because
-> other threads can't write to it.
+> That part of the driver appears to be dead code. It attempts to pretend to
+> support Wake-on-LAN, but it does not do any specific programming of wake-up
+> filters, nor does it implement get_wol. It also does not make use of the
+> recently introduced PHY_ALWAYS_CALL_SUSPEND flag.
+> 
+> When it is time to determine whether to suspend the PHY or not, eventually
+> phy_suspend() will call phy_ethtool_get_wol(). Since no get_wol is
+> implemented, the wol.wolopts will remain zero, therefore we will just
+> suspend the PHY.
+> 
+> I suspect this was added to work around MAC drivers that may forcefully try
+> to suspend the PHY, but that should not even be possible these days.
+> 
+> I would just remove that logic from microchip.c entirely.
 
-*nod*, same as kmap_local
+The Microchip developers are reasonably responsive. So we should Cc:
+them.
 
-> It also only needs to flush the local core when it's done since it's
-> not using a shared MM.
- 
-Ahh! Thanks for that; perhaps the comment in text_poke() about IPIs
-could be a bit clearer.
-
-What is it (if anything) you don't like about text_poke() then? It looks
-like it's doing broadly similar things to kmap_local(), so should be
-in the same ballpark from a performance POV?
+	Andrew
 
