@@ -1,163 +1,211 @@
-Return-Path: <netdev+bounces-6977-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-6978-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5A8BC719146
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 05:22:10 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2B723719147
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 05:25:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DBC85281689
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 03:22:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B0E471C20FD6
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 03:25:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC70D4C95;
-	Thu,  1 Jun 2023 03:22:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 241F45383;
+	Thu,  1 Jun 2023 03:25:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC85E1FA9
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 03:22:06 +0000 (UTC)
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024F3123
-	for <netdev@vger.kernel.org>; Wed, 31 May 2023 20:22:05 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id 5b1f17b1804b1-3f6a6b9bebdso43635e9.0
-        for <netdev@vger.kernel.org>; Wed, 31 May 2023 20:22:04 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 120414C83
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 03:25:37 +0000 (UTC)
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9475CC9;
+	Wed, 31 May 2023 20:25:32 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id 3f1490d57ef6-ba818eb96dcso284521276.0;
+        Wed, 31 May 2023 20:25:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1685589723; x=1688181723;
+        d=gmail.com; s=20221208; t=1685589932; x=1688181932;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=qStCg7KeACsi2KVI6FrJ4HwOilw06iHPCAkOe/uQA0Q=;
-        b=F+a3gWbqc5yvzXtyB3N2bGHooXmHV7Le8S7sW/yVCLU1xCJkFBNuoEDREeMI6S9a/u
-         lEROE+8+MoRFn4wAK/rstppBHdPTTqAgNqGrFvTfpI9msilONOo3t8TLTVwLryJfLfPR
-         ZIP4335XuiBknLIzEDoiQkYlG1esppjFJCpnROVgTEvdgS1jX0CBispLOZR21JAYON0+
-         yZL9aEcdajnFvUdH8HjETBefVAUJ3Osp5WDLyoJOYd9jkttb/DB7HSDDnxoxexiFXXOd
-         4DL2z1hWQ6cii5dD8B6ar/6dErmSUvHLdtgMEUIsXjyEaXPpt0mzvHis8tbBNdpUNcqy
-         E0fA==
+        bh=1075G3HvSg/kvHdmmCcsIFr2YDRXoh3FI/k1IiFmQCg=;
+        b=G8s7iRtzkkILLueWvrQxne0xcEFcpNJrcdR/YeaVrghsHmRQjtzV4lOb44UqaSlk5O
+         g+8TIdrrmZ916KDcK1zR0q7qc5a6uSmgH6Fs8FXNUWCfGKe97FclYordRz6Z0+vzJlti
+         gXItJkQurx+CDCuhL13EGYJZVebGTB7pv4WCWD8RzVtIQR0KwUIcI/PjUxINHx41zlew
+         UjnHx9ShOY3ioU2O6DAKlXiEhXwEHZvtpK5eigAWGIHDnrd5M6Aiy719f9mTj//b6v1L
+         f66yUtf43J0J3P0lGKTLH6vpfaw88bHKy+Rzay/3agJY/mCUpy7MQbmN3cUJdKbqNwHu
+         zeQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685589723; x=1688181723;
+        d=1e100.net; s=20221208; t=1685589932; x=1688181932;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=qStCg7KeACsi2KVI6FrJ4HwOilw06iHPCAkOe/uQA0Q=;
-        b=V+ibkL9Rl/6lRpYvQLBoPjjLS04Oplqpeb9DDU8CfQrFwM+f2CJGOeXHw3F9Up4SLs
-         USMs2rXkqa0pxBnvqAfI3u+HbaCbiZY6hGieNnLoIF6EA7Two/Aw806jv9j3RxGVb94R
-         jnihVDXQ/bgPfoVOOrDk3gystHlidPucgSox/5CAXsp91iWmXuds27xsfBUjhkIqnBZP
-         CsNeshghvLsTBVV2L1g6YpcllTAohGHp+xD69i9NzFTMLjWWQT2n1PKssqfrE+Eri0wY
-         Fcb1oSFC9XizY2lYemi5Kg5qm7wG8F7Psx8Iv3Ly3K81XgxY1KzBb7KK/0jhlTPa1Ylx
-         nIag==
-X-Gm-Message-State: AC+VfDwXIX0Kt8S4waKd1hO1zsfUIK5BtMHlUsiR4rCU6nzxUtv6XyqQ
-	lAUoM2t52S8O7HNnpN2ih3bPvTIXyLVU1yEAzvujRA==
-X-Google-Smtp-Source: ACHHUZ736YceZpdtvfKwWNDiZOp/Z6AYQZvPcY7aL4/Vy7gmo6ngT95goGJUW1bqEWgF9nWI2MOKi5lNmdon2p3yUaU=
-X-Received: by 2002:a05:600c:82c9:b0:3f4:df95:17e0 with SMTP id
- eo9-20020a05600c82c900b003f4df9517e0mr62557wmb.5.1685589723336; Wed, 31 May
- 2023 20:22:03 -0700 (PDT)
+        bh=1075G3HvSg/kvHdmmCcsIFr2YDRXoh3FI/k1IiFmQCg=;
+        b=KPIKA+Nt8ruu0KC1jUe7ujqAfb1wkc3WM0X+MucMcYz7EMa/6TG8uwlEpDKi0EwS0h
+         BpQdAtqHr2NoQNmYy2aENwIwq14OQDTTFe2P/ic9k287FVWV5AqsXDwYUgXVaGkl9XWL
+         4I/Lepko5DyZf8KzUeocOQF7XEVo2GqRvem1q8M5MIFHYkHQvNZEKD6lPraVn7CTlBbG
+         KfVIEgS5DoY/tCEy8M8iyde6S4xKKN62nnZqDJJNVw/wBgpqLm3l1vIjE8ZAz9sZYDCz
+         0pZ1rcJYIRr7EO+CgkVtrUxFrUDP9Ul7cfR6oLTq5EuB7KNtGqFvRb6zV+7LUWhYAdn1
+         fQqw==
+X-Gm-Message-State: AC+VfDwrShl9hCnQCmomM8s1xjoHcO+y9KpjejAx/yJ9ReGOoPalrafK
+	659U8MC7ITp+ZSWuS2LNPjdqI8HnS+97fJLzmlY=
+X-Google-Smtp-Source: ACHHUZ7dB0ExZANHMOCXMBLjVatsOxCNoXw4FyZluu58OkcExYMv1y4Ju5SZSyN+Q2dfeGWmh+J8mwzxfQilEMVMSh4=
+X-Received: by 2002:a25:e713:0:b0:b72:4ca:b3ce with SMTP id
+ e19-20020a25e713000000b00b7204cab3cemr7594658ybh.16.1685589931691; Wed, 31
+ May 2023 20:25:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CH3PR11MB7345DBA6F79282169AAFE9E0FC759@CH3PR11MB7345.namprd11.prod.outlook.com>
- <20230512171702.923725-1-shakeelb@google.com> <CH3PR11MB7345035086C1661BF5352E6EFC789@CH3PR11MB7345.namprd11.prod.outlook.com>
- <CALvZod7n2yHU8PMn5b39w6E+NhLtBynDKfo1GEfXaa64_tqMWQ@mail.gmail.com>
- <CH3PR11MB7345E9EAC5917338F1C357C0FC789@CH3PR11MB7345.namprd11.prod.outlook.com>
- <CALvZod6txDQ9kOHrNFL64XiKxmbVHqMtWNiptUdGt9UuhQVLOQ@mail.gmail.com>
- <ZGMYz+08I62u+Yeu@xsang-OptiPlex-9020> <20230517162447.dztfzmx3hhetfs2q@google.com>
- <ZHcJUF4f9VcnyGVt@xsang-OptiPlex-9020> <20230531194520.qhvibyyaqg7vwi6s@google.com>
- <CH3PR11MB73454186CA28AE6ACCEA9674FC499@CH3PR11MB7345.namprd11.prod.outlook.com>
-In-Reply-To: <CH3PR11MB73454186CA28AE6ACCEA9674FC499@CH3PR11MB7345.namprd11.prod.outlook.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Thu, 1 Jun 2023 05:21:51 +0200
-Message-ID: <CANn89iLPbd3JDvFCgvZO_1sppCyFDFQ_fqJy3kKBAucJrbm_vw@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a proper size
-To: "Zhang, Cathy" <cathy.zhang@intel.com>
-Cc: Shakeel Butt <shakeelb@google.com>, "Sang, Oliver" <oliver.sang@intel.com>, 
-	"Yin, Fengwei" <fengwei.yin@intel.com>, "Tang, Feng" <feng.tang@intel.com>, 
-	Linux MM <linux-mm@kvack.org>, Cgroups <cgroups@vger.kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, "davem@davemloft.net" <davem@davemloft.net>, 
-	"kuba@kernel.org" <kuba@kernel.org>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, 
-	"Srinivas, Suresh" <suresh.srinivas@intel.com>, "Chen, Tim C" <tim.c.chen@intel.com>, 
-	"You, Lizhen" <lizhen.you@intel.com>, "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>, 
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>, "Li, Philip" <philip.li@intel.com>, 
-	"Liu, Yujie" <yujie.liu@intel.com>
+References: <168557950756.14226.6470993129419598644-0@git.sr.ht> <20230601012708.69681-1-kuniyu@amazon.com>
+In-Reply-To: <20230601012708.69681-1-kuniyu@amazon.com>
+From: Akihiro Suda <suda.kyoto@gmail.com>
+Date: Thu, 1 Jun 2023 12:25:20 +0900
+Message-ID: <CAG8fp8TExDuswLyBaudhAuSG9NEyPKf3=QbUGb8Gq1KtBt6Tag@mail.gmail.com>
+Subject: Re: [PATCH linux v2] net/ipv4: ping_group_range: allow GID from
+ 2147483648 to 4294967294
+To: Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc: akihirosuda@git.sr.ht, akihiro.suda.cz@hco.ntt.co.jp, davem@davemloft.net, 
+	edumazet@google.com, kuba@kernel.org, linux-kernel@vger.kernel.org, 
+	netdev@vger.kernel.org, pabeni@redhat.com, segoon@openwall.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 1, 2023 at 4:48=E2=80=AFAM Zhang, Cathy <cathy.zhang@intel.com>=
- wrote:
->
->
->
-> > -----Original Message-----
-> > From: Shakeel Butt <shakeelb@google.com>
-> > Sent: Thursday, June 1, 2023 3:45 AM
-> > To: Sang, Oliver <oliver.sang@intel.com>
-> > Cc: Zhang, Cathy <cathy.zhang@intel.com>; Yin, Fengwei
-> > <fengwei.yin@intel.com>; Tang, Feng <feng.tang@intel.com>; Eric Dumazet
-> > <edumazet@google.com>; Linux MM <linux-mm@kvack.org>; Cgroups
-> > <cgroups@vger.kernel.org>; Paolo Abeni <pabeni@redhat.com>;
-> > davem@davemloft.net; kuba@kernel.org; Brandeburg, Jesse
-> > <jesse.brandeburg@intel.com>; Srinivas, Suresh
-> > <suresh.srinivas@intel.com>; Chen, Tim C <tim.c.chen@intel.com>; You,
-> > Lizhen <lizhen.you@intel.com>; eric.dumazet@gmail.com;
-> > netdev@vger.kernel.org; Li, Philip <philip.li@intel.com>; Liu, Yujie
-> > <yujie.liu@intel.com>
-> > Subject: Re: [PATCH net-next 1/2] net: Keep sk->sk_forward_alloc as a p=
-roper
-> > size
-> >
-> > Hi Oliver,
-> >
-> > On Wed, May 31, 2023 at 04:46:08PM +0800, Oliver Sang wrote:
-> > [...]
-> > >
-> > > we applied below patch upon v6.4-rc2, so far, we didn't spot out
-> > > performance impacts of it to other tests.
-> > >
-> > > but we found -7.6% regression of netperf.Throughput_Mbps
-> > >
-> >
-> > Thanks, this is what I was looking for. I will dig deeper and decide ho=
-w to
-> > proceed (i.e. improve this patch or work on long term approach).
->
-> Hi Shakeel,
-> If I understand correctly, I think the long-term goal you mentioned is to
-> implement a per-memcg per-cpu cache or a percpu_counter solution, right?
-> A per-memcg per-cpu cache solution can avoid the uncharge overhead and
-> reduce charge overhead, while the percpu_counter solution can help avoid
-> the charge overhead ultimately. It seems both are necessary and complex.
->
-> The above is from memory side, regarding to our original proposal that is=
- to
-> tune the reclaim threshold from network side, Eric and you worry about th=
-at
-> it might re-introduce the OOM issue. I see the following two interfaces i=
-n
-> network stack, which indicate the memory usage status, so is it possible =
-to
-> tune the reclaim threshold to smaller when enter memory pressure and set
-> it to 64K when leave memory pressure? How do you think?
->         void                    (*enter_memory_pressure)(struct sock *sk)=
-;
->         void                    (*leave_memory_pressure)(struct sock *sk)=
-;
->
+Thanks, submitted v3 with your suggestions
+https://patchwork.kernel.org/project/netdevbpf/patch/20230601031305.55901-1=
+-akihiro.suda.cz@hco.ntt.co.jp/
 
-No it is not possible to reclaim 'the threshold' when 10,000,000
-sockets are alive and kept
-a budget around 64KB.
-We do not have a shrinker and we do not want one.
-The only sensible solution is per-cpu cache.
-This was done in core TCP stack, a similar solution is needed in
-memcg, if memcg has to be used.
+2023=E5=B9=B46=E6=9C=881=E6=97=A5(=E6=9C=A8) 10:27 Kuniyuki Iwashima <kuniy=
+u@amazon.com>:
+>
+> From: ~akihirosuda <akihirosuda@git.sr.ht>
+> Date: Wed, 31 May 2023 19:42:49 +0900
+> > From: Akihiro Suda <akihiro.suda.cz@hco.ntt.co.jp>
+> >
+> > With this commit, all the GIDs ("0 4294967294") can be written to the
+> > "net.ipv4.ping_group_range" sysctl.
+> >
+> > Note that 4294967295 (0xffffffff) is an invalid GID (see gid_valid() in
+> > include/linux/uidgid.h), and an attempt to register this number will ca=
+use
+> > -EINVAL.
+> >
+> > Prior to this commit, only up to GID 2147483647 could be covered.
+> > Documentation/networking/ip-sysctl.rst had "0 4294967295" as an example
+> > value, but this example was wrong and causing -EINVAL.
+> >
+> > v1->v2: Simplified the patch (Thanks to Kuniyuki Iwashima for suggestio=
+n)
+>
+> Changelog should be placed under '---'.
+>
+> Also could you use 'net' instead of 'linux' in Subject so that
+> patchwork will be happy ?
+>
+> https://patchwork.kernel.org/project/netdevbpf/patch/168557950756.14226.6=
+470993129419598644-0@git.sr.ht/
+>
+>
+> >
+> > Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
+> > Signed-off-by: Akihiro Suda <akihiro.suda.cz@hco.ntt.co.jp>
+> > ---
+> >  Documentation/networking/ip-sysctl.rst | 4 ++--
+> >  include/net/ping.h                     | 6 +-----
+> >  net/ipv4/sysctl_net_ipv4.c             | 8 ++++----
+> >  3 files changed, 7 insertions(+), 11 deletions(-)
+> >
+> > diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/net=
+working/ip-sysctl.rst
+> > index 6ec06a33688a..80b8f73a0244 100644
+> > --- a/Documentation/networking/ip-sysctl.rst
+> > +++ b/Documentation/networking/ip-sysctl.rst
+> > @@ -1352,8 +1352,8 @@ ping_group_range - 2 INTEGERS
+> >       Restrict ICMP_PROTO datagram sockets to users in the group range.
+> >       The default is "1 0", meaning, that nobody (not even root) may
+> >       create ping sockets.  Setting it to "100 100" would grant permiss=
+ions
+> > -     to the single group. "0 4294967295" would enable it for the world=
+, "100
+> > -     4294967295" would enable it for the users, but not daemons.
+> > +     to the single group. "0 4294967294" would enable it for the world=
+, "100
+> > +     4294967294" would enable it for the users, but not daemons.
+> >
+> >  tcp_early_demux - BOOLEAN
+> >       Enable early demux for established TCP sockets.
+> > diff --git a/include/net/ping.h b/include/net/ping.h
+> > index 9233ad3de0ad..bc7779262e60 100644
+> > --- a/include/net/ping.h
+> > +++ b/include/net/ping.h
+> > @@ -16,11 +16,7 @@
+> >  #define PING_HTABLE_SIZE     64
+> >  #define PING_HTABLE_MASK     (PING_HTABLE_SIZE-1)
+> >
+> > -/*
+> > - * gid_t is either uint or ushort.  We want to pass it to
+> > - * proc_dointvec_minmax(), so it must not be larger than MAX_INT
+> > - */
+> > -#define GID_T_MAX (((gid_t)~0U) >> 1)
+> > +#define GID_T_MAX (((gid_t)~0U) - 1)
+> >
+> >  /* Compatibility glue so we can support IPv6 when it's compiled as a m=
+odule */
+> >  struct pingv6_ops {
+> > diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+> > index 40fe70fc2015..bb49d9407c45 100644
+> > --- a/net/ipv4/sysctl_net_ipv4.c
+> > +++ b/net/ipv4/sysctl_net_ipv4.c
+> > @@ -34,8 +34,8 @@ static int ip_ttl_min =3D 1;
+> >  static int ip_ttl_max =3D 255;
+> >  static int tcp_syn_retries_min =3D 1;
+> >  static int tcp_syn_retries_max =3D MAX_TCP_SYNCNT;
+> > -static int ip_ping_group_range_min[] =3D { 0, 0 };
+> > -static int ip_ping_group_range_max[] =3D { GID_T_MAX, GID_T_MAX };
+> > +static long ip_ping_group_range_min[] =3D { 0, 0 };
+> > +static long ip_ping_group_range_max[] =3D { GID_T_MAX, GID_T_MAX };
+>
+> nit: s/long/unsigned long/
+>
+> Then, add
+>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+>
+> Thanks!
+>
+>
+> >  static u32 u32_max_div_HZ =3D UINT_MAX / HZ;
+> >  static int one_day_secs =3D 24 * 3600;
+> >  static u32 fib_multipath_hash_fields_all_mask __maybe_unused =3D
+> > @@ -165,7 +165,7 @@ static int ipv4_ping_group_range(struct ctl_table *=
+table, int write,
+> >  {
+> >       struct user_namespace *user_ns =3D current_user_ns();
+> >       int ret;
+> > -     gid_t urange[2];
+> > +     unsigned long urange[2];
+> >       kgid_t low, high;
+> >       struct ctl_table tmp =3D {
+> >               .data =3D &urange,
+> > @@ -178,7 +178,7 @@ static int ipv4_ping_group_range(struct ctl_table *=
+table, int write,
+> >       inet_get_ping_group_range_table(table, &low, &high);
+> >       urange[0] =3D from_kgid_munged(user_ns, low);
+> >       urange[1] =3D from_kgid_munged(user_ns, high);
+> > -     ret =3D proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
+> > +     ret =3D proc_doulongvec_minmax(&tmp, write, buffer, lenp, ppos);
+> >
+> >       if (write && ret =3D=3D 0) {
+> >               low =3D make_kgid(user_ns, urange[0]);
+> > --
+> > 2.38.4
+>
 
