@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-7005-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7006-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7A09E7192F1
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 08:04:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8D4EF7192F2
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 08:04:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 294AB281699
-	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 06:04:26 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 24A5C1C20F34
+	for <lists+netdev@lfdr.de>; Thu,  1 Jun 2023 06:04:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0BA051426F;
-	Thu,  1 Jun 2023 06:01:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E6E3D306;
+	Thu,  1 Jun 2023 06:01:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DD11D306
-	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 06:01:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EB80C4339B;
-	Thu,  1 Jun 2023 06:01:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C186D13AED
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 06:01:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74F00C433A0;
+	Thu,  1 Jun 2023 06:01:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685599301;
-	bh=x0jGndzhc7tZfL71KgatBevdEvOZ/+YpdW6FLww/POQ=;
+	s=k20201202; t=1685599302;
+	bh=QM6v+O8m2DH22MCL9bC7O1LsNSlJ5ctmacqk73Z66Lg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=lz2IwoV5H5aawHOvlbskLePSV8XK7ebI6kNfFAc7RK8U4Q2a6pEyzqn0silb4o2+b
-	 rLi0rbDjWWOSHIJCeWws3JctpLYyyXU7bNXbC2hgUPLvQknys8SautBlLkJEQo4Iyv
-	 5mhLsYFul8rC6Sj2IYRxr7xAxmGNkYWCz3P0xPK0mOL5qKU9AVfmaMOqpKlUsbwvBN
-	 AEUrUjfZooXEui/EOvTKpIwQILXjcnp4Q5dbrlgFOknUM86jx1BELzOgA+4JAn8UXg
-	 NaBlU/uLdy+TkEODENdekNMKaHfe7Ex0P52biaQV4FXwXu9NxTxbYeKBBoXsCz7qsO
-	 WzxjbZK+eeAVg==
+	b=la40hLhIH2ccUkZbMxb/XKZIaX8pXH32TqdA500QWNHXnqC8oVoV1PLytQa09rLJa
+	 KZ42ds72b/Bm7+vyC5P0N5B2RryzVJZG6NfkMwBIDO11vJ3p6ncC/+yeAYOGLyHCsg
+	 j/L+Izjpoahfi4QRoZ74L6anJkEkJHBH+/CE1S+ZqjxhlTkRq2OY2gDYhA8dZPlf0x
+	 Ymd2v+GgfLle1BZ+WT4EN8yzdGYgeMbohmcgYBM8W39bbYdD5G9LbIxhqqCZGOlX4+
+	 6l+h2sXVV1CbFr2JC8UUd+646bsCCl8Je4tvbBW0vjDmrs/0t8EFcTivGTXkLXPaHw
+	 bdGgby1vqNGjw==
 From: Saeed Mahameed <saeed@kernel.org>
 To: "David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -39,10 +39,10 @@ Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	netdev@vger.kernel.org,
 	Tariq Toukan <tariqt@nvidia.com>,
 	Shay Drory <shayd@nvidia.com>,
-	Roi Dayan <roid@nvidia.com>
-Subject: [net-next 09/14] net/mlx5: E-switch, generalize shared FDB creation
-Date: Wed, 31 May 2023 23:01:13 -0700
-Message-Id: <20230601060118.154015-10-saeed@kernel.org>
+	Yevgeny Kliteynik <kliteyn@nvidia.com>
+Subject: [net-next 10/14] net/mlx5: DR, handle more than one peer domain
+Date: Wed, 31 May 2023 23:01:14 -0700
+Message-Id: <20230601060118.154015-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230601060118.154015-1-saeed@kernel.org>
 References: <20230601060118.154015-1-saeed@kernel.org>
@@ -56,270 +56,282 @@ Content-Transfer-Encoding: 8bit
 
 From: Shay Drory <shayd@nvidia.com>
 
-Shared FDB creation is hard coded for only two eswitches.
-Generalize shared FDB creation so that any number of eswitches could
-create shared FDB.
+Currently, DR domain is using the assumption that each domain can only
+have a single peer.
+In order to support VF LAG of more then two ports, expand peer domain
+to use an array of peers, and align the code accordingly.
 
 Signed-off-by: Shay Drory <shayd@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+Reviewed-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/esw/acl/egress_ofld.c  | 12 +++++++
- .../mellanox/mlx5/core/esw/acl/ofld.h         |  1 +
- .../net/ethernet/mellanox/mlx5/core/eswitch.h | 12 +++----
- .../mellanox/mlx5/core/eswitch_offloads.c     | 32 +++++++++--------
- .../net/ethernet/mellanox/mlx5/core/lag/lag.c | 35 +++++++++++++++----
- 5 files changed, 66 insertions(+), 26 deletions(-)
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c  | 12 +++++++-----
+ drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c    |  3 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.h    |  3 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c   |  5 +++--
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.h   |  3 ++-
+ .../mellanox/mlx5/core/steering/dr_action.c         |  5 +++--
+ .../mellanox/mlx5/core/steering/dr_domain.c         | 13 +++++++------
+ .../mellanox/mlx5/core/steering/dr_ste_v0.c         |  9 +++++----
+ .../mellanox/mlx5/core/steering/dr_ste_v1.c         |  9 +++++----
+ .../ethernet/mellanox/mlx5/core/steering/dr_types.h |  2 +-
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c    |  5 +++--
+ .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h   |  3 ++-
+ 12 files changed, 42 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c
-index ae815a8392c6..24b1ca4e4ff8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c
-@@ -15,6 +15,18 @@ static void esw_acl_egress_ofld_fwd2vport_destroy(struct mlx5_vport *vport)
- 	vport->egress.offloads.fwd_rule = NULL;
- }
- 
-+void esw_acl_egress_ofld_bounce_rule_destroy(struct mlx5_vport *vport, int rule_index)
-+{
-+	struct mlx5_flow_handle *bounce_rule =
-+		xa_load(&vport->egress.offloads.bounce_rules, rule_index);
-+
-+	if (!bounce_rule)
-+		return;
-+
-+	mlx5_del_flow_rules(bounce_rule);
-+	xa_erase(&vport->egress.offloads.bounce_rules, rule_index);
-+}
-+
- static void esw_acl_egress_ofld_bounce_rules_destroy(struct mlx5_vport *vport)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 98d75a33a624..761278e1af5c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -2778,7 +2778,9 @@ static int mlx5_esw_offloads_set_ns_peer(struct mlx5_eswitch *esw,
+ 					 struct mlx5_eswitch *peer_esw,
+ 					 bool pair)
  {
- 	struct mlx5_flow_handle *bounce_rule;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ofld.h b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ofld.h
-index c9f8469e9a47..536b04e83618 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ofld.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ofld.h
-@@ -10,6 +10,7 @@
- /* Eswitch acl egress external APIs */
- int esw_acl_egress_ofld_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport);
- void esw_acl_egress_ofld_cleanup(struct mlx5_vport *vport);
-+void esw_acl_egress_ofld_bounce_rule_destroy(struct mlx5_vport *vport, int rule_index);
- int mlx5_esw_acl_egress_vport_bond(struct mlx5_eswitch *esw, u16 active_vport_num,
- 				   u16 passive_vport_num);
- int mlx5_esw_acl_egress_vport_unbond(struct mlx5_eswitch *esw, u16 vport_num);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-index 05ae1c3a6e68..9833d1a587cc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -754,9 +754,9 @@ void esw_vport_change_handle_locked(struct mlx5_vport *vport);
++	u8 peer_idx = mlx5_get_dev_index(peer_esw->dev);
+ 	struct mlx5_flow_root_namespace *peer_ns;
++	u8 idx = mlx5_get_dev_index(esw->dev);
+ 	struct mlx5_flow_root_namespace *ns;
+ 	int err;
  
- bool mlx5_esw_offloads_controller_valid(const struct mlx5_eswitch *esw, u32 controller);
+@@ -2786,18 +2788,18 @@ static int mlx5_esw_offloads_set_ns_peer(struct mlx5_eswitch *esw,
+ 	ns = esw->dev->priv.steering->fdb_root_ns;
  
--int mlx5_eswitch_offloads_config_single_fdb(struct mlx5_eswitch *master_esw,
--					    struct mlx5_eswitch *slave_esw);
--void mlx5_eswitch_offloads_destroy_single_fdb(struct mlx5_eswitch *master_esw,
-+int mlx5_eswitch_offloads_single_fdb_add_one(struct mlx5_eswitch *master_esw,
-+					     struct mlx5_eswitch *slave_esw, int max_slaves);
-+void mlx5_eswitch_offloads_single_fdb_del_one(struct mlx5_eswitch *master_esw,
- 					      struct mlx5_eswitch *slave_esw);
- int mlx5_eswitch_reload_reps(struct mlx5_eswitch *esw);
+ 	if (pair) {
+-		err = mlx5_flow_namespace_set_peer(ns, peer_ns);
++		err = mlx5_flow_namespace_set_peer(ns, peer_ns, peer_idx);
+ 		if (err)
+ 			return err;
  
-@@ -808,14 +808,14 @@ mlx5_esw_vport_to_devlink_port_index(const struct mlx5_core_dev *dev,
+-		err = mlx5_flow_namespace_set_peer(peer_ns, ns);
++		err = mlx5_flow_namespace_set_peer(peer_ns, ns, idx);
+ 		if (err) {
+-			mlx5_flow_namespace_set_peer(ns, NULL);
++			mlx5_flow_namespace_set_peer(ns, NULL, peer_idx);
+ 			return err;
+ 		}
+ 	} else {
+-		mlx5_flow_namespace_set_peer(ns, NULL);
+-		mlx5_flow_namespace_set_peer(peer_ns, NULL);
++		mlx5_flow_namespace_set_peer(ns, NULL, peer_idx);
++		mlx5_flow_namespace_set_peer(peer_ns, NULL, idx);
+ 	}
+ 
+ 	return 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
+index 144e59480686..11374c3744c5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
+@@ -139,7 +139,8 @@ static void mlx5_cmd_stub_modify_header_dealloc(struct mlx5_flow_root_namespace
  }
  
- static inline int
--mlx5_eswitch_offloads_config_single_fdb(struct mlx5_eswitch *master_esw,
--					struct mlx5_eswitch *slave_esw)
-+mlx5_eswitch_offloads_single_fdb_add_one(struct mlx5_eswitch *master_esw,
-+					 struct mlx5_eswitch *slave_esw, int max_slaves)
+ static int mlx5_cmd_stub_set_peer(struct mlx5_flow_root_namespace *ns,
+-				  struct mlx5_flow_root_namespace *peer_ns)
++				  struct mlx5_flow_root_namespace *peer_ns,
++				  u8 peer_idx)
  {
  	return 0;
  }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.h b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.h
+index 8ef4254b9ea1..b6b9a5a20591 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.h
+@@ -93,7 +93,8 @@ struct mlx5_flow_cmds {
+ 				      struct mlx5_modify_hdr *modify_hdr);
  
- static inline void
--mlx5_eswitch_offloads_destroy_single_fdb(struct mlx5_eswitch *master_esw,
-+mlx5_eswitch_offloads_single_fdb_del_one(struct mlx5_eswitch *master_esw,
- 					 struct mlx5_eswitch *slave_esw) {}
+ 	int (*set_peer)(struct mlx5_flow_root_namespace *ns,
+-			struct mlx5_flow_root_namespace *peer_ns);
++			struct mlx5_flow_root_namespace *peer_ns,
++			u8 peer_idx);
  
- static inline int
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index ce70320b89b3..98d75a33a624 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -2557,11 +2557,11 @@ static int __esw_set_master_egress_rule(struct mlx5_core_dev *master,
+ 	int (*create_ns)(struct mlx5_flow_root_namespace *ns);
+ 	int (*destroy_ns)(struct mlx5_flow_root_namespace *ns);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index 19da02c41616..4ef04aa28771 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -3620,7 +3620,8 @@ void mlx5_destroy_match_definer(struct mlx5_core_dev *dev,
  }
  
- static int esw_master_egress_create_resources(struct mlx5_flow_namespace *egress_ns,
--					      struct mlx5_vport *vport)
-+					      struct mlx5_vport *vport, size_t count)
+ int mlx5_flow_namespace_set_peer(struct mlx5_flow_root_namespace *ns,
+-				 struct mlx5_flow_root_namespace *peer_ns)
++				 struct mlx5_flow_root_namespace *peer_ns,
++				 u8 peer_idx)
  {
- 	int inlen = MLX5_ST_SZ_BYTES(create_flow_group_in);
- 	struct mlx5_flow_table_attr ft_attr = {
--		.max_fte = MLX5_MAX_PORTS, .prio = 0, .level = 0,
-+		.max_fte = count, .prio = 0, .level = 0,
- 		.flags = MLX5_FLOW_TABLE_OTHER_VPORT,
- 	};
- 	struct mlx5_flow_table *acl;
-@@ -2595,7 +2595,7 @@ static int esw_master_egress_create_resources(struct mlx5_flow_namespace *egress
- 	MLX5_SET(create_flow_group_in, flow_group_in,
- 		 source_eswitch_owner_vhca_id_valid, 1);
- 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 0);
--	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, MLX5_MAX_PORTS);
-+	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, count);
- 
- 	g = mlx5_create_flow_group(acl, flow_group_in);
- 	if (IS_ERR(g)) {
-@@ -2626,7 +2626,7 @@ static void esw_master_egress_destroy_resources(struct mlx5_vport *vport)
- }
- 
- static int esw_set_master_egress_rule(struct mlx5_core_dev *master,
--				      struct mlx5_core_dev *slave)
-+				      struct mlx5_core_dev *slave, size_t count)
- {
- 	struct mlx5_eswitch *esw = master->priv.eswitch;
- 	u16 slave_index = MLX5_CAP_GEN(slave, vhca_id);
-@@ -2647,7 +2647,7 @@ static int esw_set_master_egress_rule(struct mlx5_core_dev *master,
- 	if (vport->egress.acl && vport->egress.type != VPORT_EGRESS_ACL_TYPE_SHARED_FDB)
- 		return 0;
- 
--	err = esw_master_egress_create_resources(egress_ns, vport);
-+	err = esw_master_egress_create_resources(egress_ns, vport, count);
- 	if (err)
- 		return err;
- 
-@@ -2665,19 +2665,24 @@ static int esw_set_master_egress_rule(struct mlx5_core_dev *master,
- 	return err;
- }
- 
--static void esw_unset_master_egress_rule(struct mlx5_core_dev *dev)
-+static void esw_unset_master_egress_rule(struct mlx5_core_dev *dev,
-+					 struct mlx5_core_dev *slave_dev)
- {
- 	struct mlx5_vport *vport;
- 
- 	vport = mlx5_eswitch_get_vport(dev->priv.eswitch,
- 				       dev->priv.eswitch->manager_vport);
- 
--	esw_acl_egress_ofld_cleanup(vport);
--	xa_destroy(&vport->egress.offloads.bounce_rules);
-+	esw_acl_egress_ofld_bounce_rule_destroy(vport, MLX5_CAP_GEN(slave_dev, vhca_id));
-+
-+	if (xa_empty(&vport->egress.offloads.bounce_rules)) {
-+		esw_acl_egress_ofld_cleanup(vport);
-+		xa_destroy(&vport->egress.offloads.bounce_rules);
-+	}
- }
- 
--int mlx5_eswitch_offloads_config_single_fdb(struct mlx5_eswitch *master_esw,
--					    struct mlx5_eswitch *slave_esw)
-+int mlx5_eswitch_offloads_single_fdb_add_one(struct mlx5_eswitch *master_esw,
-+					     struct mlx5_eswitch *slave_esw, int max_slaves)
- {
- 	int err;
- 
-@@ -2687,7 +2692,7 @@ int mlx5_eswitch_offloads_config_single_fdb(struct mlx5_eswitch *master_esw,
- 		return err;
- 
- 	err = esw_set_master_egress_rule(master_esw->dev,
--					 slave_esw->dev);
-+					 slave_esw->dev, max_slaves);
- 	if (err)
- 		goto err_acl;
- 
-@@ -2695,15 +2700,14 @@ int mlx5_eswitch_offloads_config_single_fdb(struct mlx5_eswitch *master_esw,
- 
- err_acl:
- 	esw_set_slave_root_fdb(NULL, slave_esw->dev);
--
- 	return err;
- }
- 
--void mlx5_eswitch_offloads_destroy_single_fdb(struct mlx5_eswitch *master_esw,
-+void mlx5_eswitch_offloads_single_fdb_del_one(struct mlx5_eswitch *master_esw,
- 					      struct mlx5_eswitch *slave_esw)
- {
--	esw_unset_master_egress_rule(master_esw->dev);
- 	esw_set_slave_root_fdb(NULL, slave_esw->dev);
-+	esw_unset_master_egress_rule(master_esw->dev, slave_esw->dev);
- }
- 
- #define ESW_OFFLOADS_DEVCOM_PAIR	(0)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-index 5d331b940f4d..9bc2822881ca 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-@@ -550,6 +550,29 @@ char *mlx5_get_str_port_sel_mode(enum mlx5_lag_mode mode, unsigned long flags)
- 	}
- }
- 
-+static int mlx5_lag_create_single_fdb(struct mlx5_lag *ldev)
-+{
-+	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
-+	struct mlx5_eswitch *master_esw = dev0->priv.eswitch;
-+	int err;
-+	int i;
-+
-+	for (i = MLX5_LAG_P1 + 1; i < ldev->ports; i++) {
-+		struct mlx5_eswitch *slave_esw = ldev->pf[i].dev->priv.eswitch;
-+
-+		err = mlx5_eswitch_offloads_single_fdb_add_one(master_esw,
-+							       slave_esw, ldev->ports);
-+		if (err)
-+			goto err;
-+	}
-+	return 0;
-+err:
-+	for (; i > MLX5_LAG_P1; i--)
-+		mlx5_eswitch_offloads_single_fdb_del_one(master_esw,
-+							 ldev->pf[i].dev->priv.eswitch);
-+	return err;
-+}
-+
- static int mlx5_create_lag(struct mlx5_lag *ldev,
- 			   struct lag_tracker *tracker,
- 			   enum mlx5_lag_mode mode,
-@@ -557,7 +580,6 @@ static int mlx5_create_lag(struct mlx5_lag *ldev,
- {
- 	bool shared_fdb = test_bit(MLX5_LAG_MODE_FLAG_SHARED_FDB, &flags);
- 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
--	struct mlx5_core_dev *dev1 = ldev->pf[MLX5_LAG_P2].dev;
- 	u32 in[MLX5_ST_SZ_DW(destroy_lag_in)] = {};
- 	int err;
- 
-@@ -575,8 +597,7 @@ static int mlx5_create_lag(struct mlx5_lag *ldev,
+ 	if (peer_ns && ns->mode != peer_ns->mode) {
+ 		mlx5_core_err(ns->dev,
+@@ -3628,7 +3629,7 @@ int mlx5_flow_namespace_set_peer(struct mlx5_flow_root_namespace *ns,
+ 		return -EINVAL;
  	}
  
- 	if (shared_fdb) {
--		err = mlx5_eswitch_offloads_config_single_fdb(dev0->priv.eswitch,
--							      dev1->priv.eswitch);
-+		err = mlx5_lag_create_single_fdb(ldev);
- 		if (err)
- 			mlx5_core_err(dev0, "Can't enable single FDB mode\n");
+-	return ns->cmds->set_peer(ns, peer_ns);
++	return ns->cmds->set_peer(ns, peer_ns, peer_idx);
+ }
+ 
+ /* This function should be called only at init stage of the namespace.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
+index f137a0611b77..200ec946409c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
+@@ -295,7 +295,8 @@ void mlx5_fc_update_sampling_interval(struct mlx5_core_dev *dev,
+ const struct mlx5_flow_cmds *mlx5_fs_cmd_get_fw_cmds(void);
+ 
+ int mlx5_flow_namespace_set_peer(struct mlx5_flow_root_namespace *ns,
+-				 struct mlx5_flow_root_namespace *peer_ns);
++				 struct mlx5_flow_root_namespace *peer_ns,
++				 u8 peer_idx);
+ 
+ int mlx5_flow_namespace_set_mode(struct mlx5_flow_namespace *ns,
+ 				 enum mlx5_flow_steering_mode mode);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+index 0eb9a8d7f282..4e9bc1897a88 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+@@ -2071,8 +2071,9 @@ mlx5dr_action_create_dest_vport(struct mlx5dr_domain *dmn,
+ 	struct mlx5dr_action *action;
+ 	u8 peer_vport;
+ 
+-	peer_vport = vhca_id_valid && (vhca_id != dmn->info.caps.gvmi);
+-	vport_dmn = peer_vport ? dmn->peer_dmn : dmn;
++	peer_vport = vhca_id_valid && mlx5_core_is_pf(dmn->mdev) &&
++		(vhca_id != dmn->info.caps.gvmi);
++	vport_dmn = peer_vport ? dmn->peer_dmn[vhca_id] : dmn;
+ 	if (!vport_dmn) {
+ 		mlx5dr_dbg(dmn, "No peer vport domain for given vhca_id\n");
+ 		return NULL;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
+index 9a2dfe6ebe31..75dc85dc24ef 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
+@@ -555,17 +555,18 @@ int mlx5dr_domain_destroy(struct mlx5dr_domain *dmn)
+ }
+ 
+ void mlx5dr_domain_set_peer(struct mlx5dr_domain *dmn,
+-			    struct mlx5dr_domain *peer_dmn)
++			    struct mlx5dr_domain *peer_dmn,
++			    u8 peer_idx)
+ {
+ 	mlx5dr_domain_lock(dmn);
+ 
+-	if (dmn->peer_dmn)
+-		refcount_dec(&dmn->peer_dmn->refcount);
++	if (dmn->peer_dmn[peer_idx])
++		refcount_dec(&dmn->peer_dmn[peer_idx]->refcount);
+ 
+-	dmn->peer_dmn = peer_dmn;
++	dmn->peer_dmn[peer_idx] = peer_dmn;
+ 
+-	if (dmn->peer_dmn)
+-		refcount_inc(&dmn->peer_dmn->refcount);
++	if (dmn->peer_dmn[peer_idx])
++		refcount_inc(&dmn->peer_dmn[peer_idx]->refcount);
+ 
+ 	mlx5dr_domain_unlock(dmn);
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
+index 2010d4ac6519..69d7a8f3c402 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
+@@ -1647,6 +1647,7 @@ dr_ste_v0_build_src_gvmi_qpn_tag(struct mlx5dr_match_param *value,
+ 				 u8 *tag)
+ {
+ 	struct mlx5dr_match_misc *misc = &value->misc;
++	int id = misc->source_eswitch_owner_vhca_id;
+ 	struct mlx5dr_cmd_vport_cap *vport_cap;
+ 	struct mlx5dr_domain *dmn = sb->dmn;
+ 	struct mlx5dr_domain *vport_dmn;
+@@ -1657,11 +1658,11 @@ dr_ste_v0_build_src_gvmi_qpn_tag(struct mlx5dr_match_param *value,
+ 
+ 	if (sb->vhca_id_valid) {
+ 		/* Find port GVMI based on the eswitch_owner_vhca_id */
+-		if (misc->source_eswitch_owner_vhca_id == dmn->info.caps.gvmi)
++		if (id == dmn->info.caps.gvmi)
+ 			vport_dmn = dmn;
+-		else if (dmn->peer_dmn && (misc->source_eswitch_owner_vhca_id ==
+-					   dmn->peer_dmn->info.caps.gvmi))
+-			vport_dmn = dmn->peer_dmn;
++		else if (id < MLX5_MAX_PORTS && dmn->peer_dmn[id] &&
++			 (id == dmn->peer_dmn[id]->info.caps.gvmi))
++			vport_dmn = dmn->peer_dmn[id];
  		else
-@@ -647,19 +668,21 @@ int mlx5_activate_lag(struct mlx5_lag *ldev,
- int mlx5_deactivate_lag(struct mlx5_lag *ldev)
+ 			return -EINVAL;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
+index 4c0704ad166b..f4ef0b22b991 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
+@@ -1979,6 +1979,7 @@ static int dr_ste_v1_build_src_gvmi_qpn_tag(struct mlx5dr_match_param *value,
+ 					    u8 *tag)
  {
- 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
--	struct mlx5_core_dev *dev1 = ldev->pf[MLX5_LAG_P2].dev;
-+	struct mlx5_eswitch *master_esw = dev0->priv.eswitch;
- 	u32 in[MLX5_ST_SZ_DW(destroy_lag_in)] = {};
- 	bool roce_lag = __mlx5_lag_is_roce(ldev);
- 	unsigned long flags = ldev->mode_flags;
- 	int err;
-+	int i;
+ 	struct mlx5dr_match_misc *misc = &value->misc;
++	int id = misc->source_eswitch_owner_vhca_id;
+ 	struct mlx5dr_cmd_vport_cap *vport_cap;
+ 	struct mlx5dr_domain *dmn = sb->dmn;
+ 	struct mlx5dr_domain *vport_dmn;
+@@ -1988,11 +1989,11 @@ static int dr_ste_v1_build_src_gvmi_qpn_tag(struct mlx5dr_match_param *value,
  
- 	ldev->mode = MLX5_LAG_MODE_NONE;
- 	ldev->mode_flags = 0;
- 	mlx5_lag_mp_reset(ldev);
+ 	if (sb->vhca_id_valid) {
+ 		/* Find port GVMI based on the eswitch_owner_vhca_id */
+-		if (misc->source_eswitch_owner_vhca_id == dmn->info.caps.gvmi)
++		if (id == dmn->info.caps.gvmi)
+ 			vport_dmn = dmn;
+-		else if (dmn->peer_dmn && (misc->source_eswitch_owner_vhca_id ==
+-					   dmn->peer_dmn->info.caps.gvmi))
+-			vport_dmn = dmn->peer_dmn;
++		else if (id < MLX5_MAX_PORTS && dmn->peer_dmn[id] &&
++			 (id == dmn->peer_dmn[id]->info.caps.gvmi))
++			vport_dmn = dmn->peer_dmn[id];
+ 		else
+ 			return -EINVAL;
  
- 	if (test_bit(MLX5_LAG_MODE_FLAG_SHARED_FDB, &flags)) {
--		mlx5_eswitch_offloads_destroy_single_fdb(dev0->priv.eswitch,
--							 dev1->priv.eswitch);
-+		for (i = MLX5_LAG_P1 + 1; i < ldev->ports; i++)
-+			mlx5_eswitch_offloads_single_fdb_del_one(master_esw,
-+								 ldev->pf[i].dev->priv.eswitch);
- 		clear_bit(MLX5_LAG_MODE_FLAG_SHARED_FDB, &flags);
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+index 678a993ab053..1622dbbe6b97 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+@@ -935,7 +935,7 @@ struct mlx5dr_domain_info {
+ };
  
+ struct mlx5dr_domain {
+-	struct mlx5dr_domain *peer_dmn;
++	struct mlx5dr_domain *peer_dmn[MLX5_MAX_PORTS];
+ 	struct mlx5_core_dev *mdev;
+ 	u32 pdn;
+ 	struct mlx5_uars_page *uar;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+index 984653756779..c6fda1cbfcff 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+@@ -770,14 +770,15 @@ static int mlx5_cmd_dr_update_fte(struct mlx5_flow_root_namespace *ns,
+ }
+ 
+ static int mlx5_cmd_dr_set_peer(struct mlx5_flow_root_namespace *ns,
+-				struct mlx5_flow_root_namespace *peer_ns)
++				struct mlx5_flow_root_namespace *peer_ns,
++				u8 peer_idx)
+ {
+ 	struct mlx5dr_domain *peer_domain = NULL;
+ 
+ 	if (peer_ns)
+ 		peer_domain = peer_ns->fs_dr_domain.dr_domain;
+ 	mlx5dr_domain_set_peer(ns->fs_dr_domain.dr_domain,
+-			       peer_domain);
++			       peer_domain, peer_idx);
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
+index 9afd268a2573..5ba88f2ecb3f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
+@@ -48,7 +48,8 @@ int mlx5dr_domain_destroy(struct mlx5dr_domain *domain);
+ int mlx5dr_domain_sync(struct mlx5dr_domain *domain, u32 flags);
+ 
+ void mlx5dr_domain_set_peer(struct mlx5dr_domain *dmn,
+-			    struct mlx5dr_domain *peer_dmn);
++			    struct mlx5dr_domain *peer_dmn,
++			    u8 peer_idx);
+ 
+ struct mlx5dr_table *
+ mlx5dr_table_create(struct mlx5dr_domain *domain, u32 level, u32 flags,
 -- 
 2.40.1
 
