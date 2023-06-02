@@ -1,176 +1,123 @@
-Return-Path: <netdev+bounces-7543-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7544-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id CD3DD72096F
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 21:00:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 58E5472097F
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 21:05:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 05068281A7A
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 19:00:56 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 04766281A94
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 19:05:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EDE671DDDC;
-	Fri,  2 Jun 2023 19:00:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 349931DDEA;
+	Fri,  2 Jun 2023 19:05:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D58023330D
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 19:00:53 +0000 (UTC)
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19DC1B1
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 12:00:51 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id ffacd0b85a97d-3063433fa66so2423059f8f.3
-        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 12:00:51 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2633619E45
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 19:05:24 +0000 (UTC)
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C380E77
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 12:05:13 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id ffacd0b85a97d-30ae69ef78aso2883328f8f.1
+        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 12:05:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1685732450; x=1688324450;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8VL0M+Hv9mGmc2Kt3/mWXFNmoQyIrOk75ebAr7Lp4t4=;
-        b=wNuEBht98hdHBzwrSX9/VjIRmjQydztOjE5vGDPkxuPe9qAgdxHlKT8L9Czx/B3eJ7
-         6V+1YEOf5awhAgikwlyYS86zeTrGk0f9z9gpmxb4JXphlFjJp+tm3ZXq+llmI69utkrh
-         Jz76LGTEiSDL+E8aEgcv4smX/WbfrpbXaLZMuuXLrp9J5lxKFe7Se7AC0Diq2Wtyhzo+
-         0fke/IRtSWl34ZOsn2lto4fcW4cu23b0iC5LaTJtCt+PrGL9K6lpPWcjF/a8g0hHcge+
-         jtDSzZNcIgu6eJ9YHVzHdblOT7oFIEXuXbfTCfF353iztjidwgYTSewgFU4ibtn36SNC
-         lwJg==
+        d=bgdev-pl.20221208.gappssmtp.com; s=20221208; t=1685732712; x=1688324712;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=If31y072xq4e6P4sxZ7wENONrwovu6qw7j2QcnCLwYM=;
+        b=iw2od1eb1LLnTIiTck7tEolOQHlCSsiuiuK5Az1wQSsyQuGpmGKl+Ddz6oaTtYMOzE
+         T5Pnesq+GFxqESCem3TjpoUlvFNgtO2PKO1B0wmLT590vpkWUz+hZIgTV49nhewaoPhO
+         /R3iGhEYJouZbX9L1pxez8SCfqDXal7HKVE7A29/lYBlkkB14Z+itAmcRkIA7BlSJAZl
+         iooncu6iVfqshI8TqaN7O8K152pq1VBbizt+FTAQSLTp9nsQ2Srm5C/AJJlUFwbKsC1K
+         s3o/b2T4EwBTJ8ng314F/99Imw/npLH8nX8MwWUCryUxytFt+vMpaQRNOed9724L0UZZ
+         LKzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685732450; x=1688324450;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8VL0M+Hv9mGmc2Kt3/mWXFNmoQyIrOk75ebAr7Lp4t4=;
-        b=iUhgLdxoMH32L9MXzGWyar3UNtQNhzWyxAnW8kbO5hEDPV6UkCJS7/DyvciFiWbuEr
-         5LuwL1EGT/5tCr87bWLblUwI2EvMvaz6jNRgt11esI2qasi4V9ohdsvIhkPOUkxiqZB/
-         CO+qgVHJM+gam4tAHQtMkfcJpsQDNP8weA1/cHlE7Gn8Y+FbdNRX+a9S56afOhDGQb0U
-         elbkjN9poMuXI/DuFFMuQ4g/zuV9A+yG/WM/ja9F82xWEHtxCeowxtGLy/qY4URkmgt3
-         JUg3y6l0IJ15AuGTug+PS6L+o/tN6lZpbXcXRmY5elLCpoyNVhwKNvjHeSQ+i/qoDmfB
-         lkew==
-X-Gm-Message-State: AC+VfDyFLW4KFIc2MeikYm/mv8sAJTrlelbgx94zpwTfzJzPwaqTSipp
-	5p+JV3kw6MWoFYJ6WgcyGUxuGg==
-X-Google-Smtp-Source: ACHHUZ6Oh8bWLSOT4QRyV5ew1nqbPRtcV9c9JCxEs994pSpo0l2xBf1uRTl1F39Ha+3YnNAnq8fIug==
-X-Received: by 2002:a5d:4211:0:b0:309:509f:a7f0 with SMTP id n17-20020a5d4211000000b00309509fa7f0mr542331wrq.44.1685732450258;
-        Fri, 02 Jun 2023 12:00:50 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id h14-20020a5d504e000000b00300aee6c9cesm2436674wrt.20.2023.06.02.12.00.47
+        d=1e100.net; s=20221208; t=1685732712; x=1688324712;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=If31y072xq4e6P4sxZ7wENONrwovu6qw7j2QcnCLwYM=;
+        b=iLxHsXACkogyrCYOJnmuTOgfhZT1veS2HmwHmF25cqAtjwh/BValBE7OuHAhmAu3jG
+         SSEHmkbNxwpXq/Rbmdqc27WjZj6sKpMGgMP8HLEkDenz4GJ+uKj0EWGvGVi+PE82r40D
+         Gt5yYCOpnCEsmYhztEUUN6p7HJDemYMtRlTdt7FxG29OYHdkbrCI/4DiltW9QKZz2GpV
+         cU8JRwsUPzgMde5zExTb0ywmSwAlu9G118GRZqt53oLcERNIkzl6hyVtu3wLOMEHD4WN
+         BD7oVlXrZQ8dWIvFSzCnJQTdw4mp7tbXZfVotb/qfHLnsV0kvBo0450P6OgeYtu5b+JH
+         XS8w==
+X-Gm-Message-State: AC+VfDwMHpqzACvBuwzI2MstUY/dWvA1lEBg+A3yHH5NQz22Aa2z7tsb
+	6CACmS+kMbA6MTk3SZYKcj+Ysw==
+X-Google-Smtp-Source: ACHHUZ49cV0H3yp9vW9BOannfVeKeUwyqy/UKFpf4uPItZATZzhUiTC+cpJxJ2yN3zr/xYJXdhwL5w==
+X-Received: by 2002:a5d:6b0a:0:b0:2fb:92c7:b169 with SMTP id v10-20020a5d6b0a000000b002fb92c7b169mr585237wrw.10.1685732711749;
+        Fri, 02 Jun 2023 12:05:11 -0700 (PDT)
+Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:7569:c0c0:3a0e:c54d])
+        by smtp.gmail.com with ESMTPSA id y8-20020a056000108800b002ff2c39d072sm2361029wrw.104.2023.06.02.12.05.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jun 2023 12:00:48 -0700 (PDT)
-Date: Fri, 2 Jun 2023 22:00:45 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Simon Horman <simon.horman@corigine.com>
-Cc: David Howells <dhowells@redhat.com>, netdev@vger.kernel.org,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Boris Pismenny <borisp@nvidia.com>,
-	John Fastabend <john.fastabend@gmail.com>,
+        Fri, 02 Jun 2023 12:05:11 -0700 (PDT)
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+To: Vinod Koul <vkoul@kernel.org>,
+	Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jose Abreu <joabreu@synopsys.com>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	David Ahern <dsahern@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>,
-	linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 03/11] tls/sw: Use zero-length sendmsg()
- without MSG_MORE to flush
-Message-ID: <ee50e4ec-5df7-4342-885d-9e6c52da7407@kadam.mountain>
-References: <20230602150752.1306532-1-dhowells@redhat.com>
- <20230602150752.1306532-4-dhowells@redhat.com>
- <ZHo0rNlhJCRE4msb@corigine.com>
+	Paolo Abeni <pabeni@redhat.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Andrew Halaney <ahalaney@redhat.com>,
+	Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc: netdev@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: [PATCH net] net: stmmac: dwmac-qcom-ethqos: fix a regression on EMAC < 3
+Date: Fri,  2 Jun 2023 21:04:55 +0200
+Message-Id: <20230602190455.3123018-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZHo0rNlhJCRE4msb@corigine.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 02, 2023 at 08:27:56PM +0200, Simon Horman wrote:
-> + dan Carpenter
-> 
-> On Fri, Jun 02, 2023 at 04:07:44PM +0100, David Howells wrote:
-> > Allow userspace to end a TLS record without supplying any data by calling
-> > send()/sendto()/sendmsg() with no data and no MSG_MORE flag.  This can be
-> > used to flush a previous send/splice that had MSG_MORE or SPLICE_F_MORE set
-> > or a sendfile() that was incomplete.
-> > 
-> > Without this, a zero-length send to tls-sw is just ignored.  I think
-> > tls-device will do the right thing without modification.
-> > 
-> > Signed-off-by: David Howells <dhowells@redhat.com>
-> > cc: Chuck Lever <chuck.lever@oracle.com>
-> > cc: Boris Pismenny <borisp@nvidia.com>
-> > cc: John Fastabend <john.fastabend@gmail.com>
-> > cc: Jakub Kicinski <kuba@kernel.org>
-> > cc: Eric Dumazet <edumazet@google.com>
-> > cc: "David S. Miller" <davem@davemloft.net>
-> > cc: Paolo Abeni <pabeni@redhat.com>
-> > cc: Jens Axboe <axboe@kernel.dk>
-> > cc: Matthew Wilcox <willy@infradead.org>
-> > cc: netdev@vger.kernel.org
-> > ---
-> >  net/tls/tls_sw.c | 6 +++++-
-> >  1 file changed, 5 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-> > index cac1adc968e8..6aa6d17888f5 100644
-> > --- a/net/tls/tls_sw.c
-> > +++ b/net/tls/tls_sw.c
-> > @@ -945,7 +945,7 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
-> >  	struct tls_rec *rec;
-> >  	int required_size;
-> >  	int num_async = 0;
-> > -	bool full_record;
-> > +	bool full_record = false;
-> >  	int record_room;
-> >  	int num_zc = 0;
-> >  	int orig_size;
-> > @@ -971,6 +971,9 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
-> >  		}
-> >  	}
-> >  
-> > +	if (!msg_data_left(msg) && eor)
-> > +		goto just_flush;
-> > +
-> 
-> Hi David,
-> 
-> the flow of this function is not entirely simple, so it is not easy for me
-> to manually verify this. But in combination gcc-12 -Wmaybe-uninitialized
-> and Smatch report that the following may be used uninitialised as a result
-> of this change:
-> 
->  * msg_pl
+From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-This warning seems correct to me.
+We must not assign plat_dat->dwmac4_addrs unconditionally as for
+structures which don't set them, this will result in the core driver
+using zeroes everywhere and breaking the driver for older HW. On EMAC < 2
+the address should remain NULL.
 
->  * orig_size
+Fixes: b68376191c69 ("net: stmmac: dwmac-qcom-ethqos: Add EMAC3 support")
+Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-This warning assumes we hit the first warning and then hit the goto
-wait_for_memory;
-
->  * msg_en
-
-I don't get this warning on my system but it's the same thing.  Hit the
-first warning then the goto wait_for_memory.
-
->  * required_size
-
-Same.
-
->  * try_to_copy
-
-I don't really understand this warning and I can't reproduce it.
-Strange.
-
-regards,
-dan carpenter
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+index 16a8c361283b..f07905f00f98 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+@@ -644,7 +644,8 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
+ 	plat_dat->fix_mac_speed = ethqos_fix_mac_speed;
+ 	plat_dat->dump_debug_regs = rgmii_dump;
+ 	plat_dat->has_gmac4 = 1;
+-	plat_dat->dwmac4_addrs = &data->dwmac4_addrs;
++	if (ethqos->has_emac3)
++		plat_dat->dwmac4_addrs = &data->dwmac4_addrs;
+ 	plat_dat->pmt = 1;
+ 	plat_dat->tso_en = of_property_read_bool(np, "snps,tso");
+ 	if (of_device_is_compatible(np, "qcom,qcs404-ethqos"))
+-- 
+2.39.2
 
 
