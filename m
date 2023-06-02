@@ -1,99 +1,101 @@
-Return-Path: <netdev+bounces-7392-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7393-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id CF4D271FFFD
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 13:05:52 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7CE0A720021
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 13:08:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7174428180A
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 11:05:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id ECF291C20D1F
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 11:08:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8BD8815496;
-	Fri,  2 Jun 2023 11:05:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3CE25154B5;
+	Fri,  2 Jun 2023 11:08:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B7BD8466
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 11:05:49 +0000 (UTC)
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A19D7133;
-	Fri,  2 Jun 2023 04:05:47 -0700 (PDT)
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-	id 1q52bI-0004TD-P5; Fri, 02 Jun 2023 13:05:44 +0200
-Message-ID: <5b235e0f-cd4c-a453-d648-5a4e9080ac19@leemhuis.info>
-Date: Fri, 2 Jun 2023 13:05:44 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FE03107B1
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 11:08:20 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD066E2;
+	Fri,  2 Jun 2023 04:08:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=HNBLPpuuwhi8v9HkXVIDxJamEPoFjmcMUaXsh28K9BY=; b=qB52FOtrDTU1GIxUjQlT2PH4tZ
+	WUPPi/xTFsRWOGTMPiE2hdVC65Zd3idxbXcY/Vu13zUoJKjFKOTUuvriBbJCT2X6OdJeGaXGugYxl
+	/1ot1wQd8C5mhjexGv6MlPSHaXgGkrYwP8BR9mDhR50YCjqEzpkeOhn7PQeb4MtvS/VokK/wCPGKy
+	Nrp2PkbsFnzQKPkPl+ds8jPCuo83BDkVx2KavweZ1L/2YNA9ErY4Et7FtKFNjq0RVVGS83N7Lf3R7
+	nxbOo652hdO7122XZxmtSbuqb8vX2mkf+buC81KHa4ojqqcoQB6xZwcFiGm/YHPIA7SNnCquIY12g
+	2QDR+k8g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32820)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q52da-0007sL-Lr; Fri, 02 Jun 2023 12:08:06 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q52dY-0002sR-8K; Fri, 02 Jun 2023 12:08:04 +0100
+Date: Fri, 2 Jun 2023 12:08:04 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: msmulski2@gmail.com
+Cc: andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, simon.horman@corigine.com,
+	kabel@kernel.org, Michal Smulski <michal.smulski@ooma.com>
+Subject: Re: [PATCH net-next v6 1/1] net: dsa: mv88e6xxx: implement USXGMII
+ mode for mv88e6393x
+Message-ID: <ZHnNlGiHRbUYsxlC@shell.armlinux.org.uk>
+References: <20230602001705.2747-1-msmulski2@gmail.com>
+ <20230602001705.2747-2-msmulski2@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: system hang on start-up (mlx5?)
-From: "Linux regression tracking #update (Thorsten Leemhuis)"
- <regressions@leemhuis.info>
-To: Chuck Lever III <chuck.lever@oracle.com>,
- "elic@nvidia.com" <elic@nvidia.com>
-Cc: "saeedm@nvidia.com" <saeedm@nvidia.com>, Leon Romanovsky
- <leon@kernel.org>, linux-rdma <linux-rdma@vger.kernel.org>,
- "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
- Linux kernel regressions list <regressions@lists.linux.dev>
-Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>,
- Linux regressions mailing list <regressions@lists.linux.dev>
-References: <A1E5B427-897B-409E-B8E3-E417678E81F6@oracle.com>
- <bf2594bb-94e0-5c89-88ad-935dee2ac95c@leemhuis.info>
-Content-Language: en-US, de-DE
-In-Reply-To: <bf2594bb-94e0-5c89-88ad-935dee2ac95c@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1685703947;77e8c7d7;
-X-HE-SMSGID: 1q52bI-0004TD-P5
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230602001705.2747-2-msmulski2@gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-[TLDR: This mail in primarily relevant for Linux regression tracking. A
-change or fix related to the regression discussed in this thread was
-posted or applied, but it did not use a Link: tag to point to the
-report, as Linus and the documentation call for. Things happen, no
-worries -- but now the regression tracking bot needs to be told manually
-about the fix. See link in footer if these mails annoy you.]
+On Thu, Jun 01, 2023 at 05:17:04PM -0700, msmulski2@gmail.com wrote:
+> +static int mv88e639x_serdes_pcs_get_state_usxgmii(struct mv88e6xxx_chip *chip,
+> +						  int port, int lane,
+> +						  struct phylink_link_state *state)
+> +{
+> +	u16 status, lp_status;
+> +	int err;
+> +
+> +	err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
+> +				    MV88E6390_USXGMII_PHY_STATUS, &status);
+> +	if (err) {
+> +		dev_err(chip->dev, "can't read Serdes USXGMII PHY status: %d\n", err);
+> +		return err;
+> +	}
+> +	dev_dbg(chip->dev, "USXGMII PHY status: 0x%x\n", status);
+> +
+> +	state->link = !!(status & MDIO_USXGMII_LINK);
 
-On 08.05.23 14:29, Linux regression tracking #adding (Thorsten Leemhuis)
-wrote:
-> On 03.05.23 03:03, Chuck Lever III wrote:
->>
->> I have a Supermicro X10SRA-F/X10SRA-F with a ConnectX®-5 EN network
->> interface card, 100GbE single-port QSFP28, PCIe3.0 x16, tall bracket;
->> MCX515A-CCAT
->>
->> When booting a v6.3+ kernel, the boot process stops cold after a
->> few seconds. The last message on the console is the MLX5 driver
->> note about "PCIe slot advertised sufficient power (27W)".
->>
->> bisect reports that bbac70c74183 ("net/mlx5: Use newer affinity
->> descriptor") is the first bad commit.
->>
->> I've trolled lore a couple of times and haven't found any discussion
->> of this issue.
-> 
-> #regzbot ^introduced bbac70c74183
-> #regzbot title system hang on start-up (irq or mlx5 problem?)
-> #regzbot ignore-activity
+Another thing which is missing is filling in state->an_complete. Does
+the PHY have a status bit for this when operating in USXGMII mode?
+If not, please set it to state->link.
 
-#regzbot fix: 368591995d010e6
-#regzbot ignore-activity
+Thanks.
 
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
---
-Everything you wanna know about Linux kernel regression tracking:
-https://linux-regtracking.leemhuis.info/about/#tldr
-That page also explains what to do if mails like this annoy you.
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
