@@ -1,77 +1,106 @@
-Return-Path: <netdev+bounces-7279-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7280-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0450271F82E
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 03:48:49 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1F27B71F852
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 04:13:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BE014281998
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 01:48:47 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 47EE71C211A7
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 02:13:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E656D10FA;
-	Fri,  2 Jun 2023 01:48:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9DE6410E3;
+	Fri,  2 Jun 2023 02:13:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D91B810E3
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 01:48:45 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A323297;
-	Thu,  1 Jun 2023 18:48:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=2FfI2CGt5OAyLnPlwE0+qVBCnJpNryj1RGeDDNRa1ps=; b=wfk+KV8WqWyawOQOczdqtPXpzN
-	0fc/6LgQIhnF59Y/63v2SxhWWIn2Q9I8/7ENu42jKIr3keJdfGAXHPrHLcU3gHphF9dbJr/MLLOGb
-	mXq8xCMyOIEzjQFPZ7n/hcMvFh+L2F3zWvj2U/XmjEWAxUspwbusJCgGn4nF+cYEThk4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1q4tto-00EdAD-49; Fri, 02 Jun 2023 03:48:16 +0200
-Date: Fri, 2 Jun 2023 03:48:16 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc: msmulski2@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, simon.horman@corigine.com,
-	kabel@kernel.org, Michal Smulski <michal.smulski@ooma.com>
-Subject: Re: [PATCH net-next v5 1/1] net: dsa: mv88e6xxx: implement USXGMII
- mode for mv88e6393x
-Message-ID: <324df285-d042-4cc7-9304-d8ccffc624e2@lunn.ch>
-References: <20230601215251.3529-1-msmulski2@gmail.com>
- <20230601215251.3529-2-msmulski2@gmail.com>
- <ZHke6JqvcWZsOdX5@shell.armlinux.org.uk>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DF8D15A3
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 02:13:27 +0000 (UTC)
+Received: from cstnet.cn (smtp80.cstnet.cn [159.226.251.80])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A824F138;
+	Thu,  1 Jun 2023 19:13:24 -0700 (PDT)
+Received: from localhost.localdomain (unknown [124.16.138.125])
+	by APP-01 (Coremail) with SMTP id qwCowACHj_szUHlkEgfGCQ--.60181S2;
+	Fri, 02 Jun 2023 10:13:08 +0800 (CST)
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To: kuba@kernel.org
+Cc: davem@davemloft.net,
+	edumazet@google.com,
+	pabeni@redhat.com,
+	davthompson@nvidia.com,
+	asmaa@nvidia.com,
+	mkl@pengutronix.de,
+	limings@nvidia.com,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: Re: [PATCH] mlxbf_gige: Add missing check for platform_get_irq
+Date: Fri,  2 Jun 2023 10:13:05 +0800
+Message-Id: <20230602021305.29926-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZHke6JqvcWZsOdX5@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:qwCowACHj_szUHlkEgfGCQ--.60181S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7KF4DJw1DXrykur18Cr18AFb_yoW8Cr1Up3
+	ykKwn5ArWkJa4rKw4xu3W3ua4rJ3WUCry3Wrn09a18Z347Jrn5GryS9rWavF1UCr1kZrZ8
+	JFnFqryUtw47Aa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUvE14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+	1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+	6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
+	1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
+	7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
+	1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02
+	628vn2kIc2xKxwCY02Avz4vE14v_Gr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7
+	v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF
+	1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIx
+	AIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI
+	42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
+	evJa73UjIFyTuYvjfUO_MaUUUUU
+X-Originating-IP: [124.16.138.125]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-> It would be nice to wait until we've converted 88e6xxx to phylink PCS
-> before adding this support, which is something that's been blocked for
-> a few years but should be unblocked either at the end of this cycle,
-> or certainly by 6.5-rc1. Andrew, would you agree?
+On Thu, 1 Jun 2023 23:54:02 +0800 Jakub Kicinski wrote:
+> On Thu,  1 Jun 2023 14:58:08 +0800 Jiasheng Jiang wrote:
+>> According to the documentation of submitting patches
+>> (Link: https://docs.kernel.org/process/submitting-patches.html),
+>> I used "scripts/get_maintainer.pl" to gain the appropriate recipients
+>> for my patch.
+>> However, the "limings@nvidia.com" is not contained in the following list.
+> 
+> And I told you already to run the script on the _patch_ not on the file
+> path.
+> 
+> $ ./scripts/get_maintainer.pl 0001-mlxbf_gige-Add-missing-check-for-platform_get_irq.patch
+> "David S. Miller" <davem@davemloft.net> (maintainer:NETWORKING DRIVERS,blamed_fixes:1/1=100%)
+> Eric Dumazet <edumazet@google.com> (maintainer:NETWORKING DRIVERS)
+> Jakub Kicinski <kuba@kernel.org> (maintainer:NETWORKING DRIVERS,commit_signer:5/6=83%,authored:1/6=17%,removed_lines:1/20=5%)
+> Paolo Abeni <pabeni@redhat.com> (maintainer:NETWORKING DRIVERS)
+> Asmaa Mnebhi <asmaa@nvidia.com> (commit_signer:4/6=67%,blamed_fixes:1/1=100%)
+> David Thompson <davthompson@nvidia.com> (commit_signer:4/6=67%,authored:4/6=67%,added_lines:94/99=95%,removed_lines:19/20=95%,blamed_fixes:1/1=100%)
+> Marc Kleine-Budde <mkl@pengutronix.de> (commit_signer:1/6=17%)
+> Jiasheng Jiang <jiasheng@iscas.ac.cn> (commit_signer:1/6=17%,authored:1/6=17%)
+> vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+> Liming Sun <limings@nvidia.com> (blamed_fixes:1/1=100%)
+> ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
+> linux-kernel@vger.kernel.org (open list)
 
-I don't think merging this will make it any harder to convert the code
-to a PCS driver.
+I have got it. I will run the script on the patch.
 
-As far as i know, all the DT changes should already be in linux-next,
-so i think 6.5-rc1 is a reasonable target.
+Thanks,
+Jiang
 
-   Andrew
 
