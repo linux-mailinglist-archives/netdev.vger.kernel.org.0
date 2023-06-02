@@ -1,44 +1,44 @@
-Return-Path: <netdev+bounces-7294-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7291-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 68FA471F886
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 04:39:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 93B1471F882
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 04:38:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EE67A1C211CE
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 02:39:04 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1F11F1C211A8
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 02:38:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CB7BE5381;
-	Fri,  2 Jun 2023 02:36:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D0BCF15AA;
+	Fri,  2 Jun 2023 02:36:01 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29A0415C5
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 02:35:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 391EAC4339C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A2CE15C9
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 02:35:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD9A3C433B0;
 	Fri,  2 Jun 2023 02:35:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685673356;
-	bh=v/g80ZATnAcg1/kTcXEG0DKoFP8SDNWciBZYZAVYWZI=;
+	s=k20201202; t=1685673357;
+	bh=7X65X6kDwAxKipI84JCv8SDjLr1x1VCNXZZDURP4PR8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=KehiWVtYXDEPFo+l3FE2rGPdb3tlQ6HcziBrncMoRSkCXUcpasV2H1z5s5xSzO4oX
-	 sUloaylESwqE9oTaFElZnJ/0VLvvn7/ZoPT9aTpE3SSHvA/4pUH2Znu8aZvaPDpfIR
-	 qP+UyAUpl1pQxUAzPzXucFYFn51gh87S/689YU3+0/6fkhNtH6zSQX5JQzg1HfsgwK
-	 SBrReNHjHpFn35mKGmuXpmeNQW8V8gV2QN96WjpCIbZVk2maqqGEii4bsFZoIRfoLk
-	 /fFS96xFv4ueXLJZT4Ls/mfo0DKNitMmX6L5+GMrpQ6geAKDSqhIkw1IGan61ipVV2
-	 iz6tmaVu3voHQ==
+	b=RIar4oOedrUDtVukL7/bEGUarFJoeQXcUGdyNWW9xDOkmkY95wiD+YCrlG8Eg2UwQ
+	 BP/NLV3/uowghZeka+gnvii/vFj0cWTwII9yT+r4/ObI5CglyZc7DM9YETxev1m3Bm
+	 vMHybJW/D8NGi9KEV0uaizA06uW3IOwqfcSjzdX+cRVjuENcsc/Bny3rPaEb8Xv8eg
+	 +kiI16NRsqUk+gbdIDh3/n90iVBK4+OTYnPMW9JivMgen/vU5ylTmYT2nvNODREyg5
+	 giZjzGORwww5oyeIZHGq4kNBeMDMkpML7sQSEVuJd7Wz9inxqrIMeOnpr5wcc3YBdM
+	 IYEgOY+XOobbg==
 From: Jakub Kicinski <kuba@kernel.org>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
 	edumazet@google.com,
 	pabeni@redhat.com,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 07/10] tools: ynl-gen: move the response reading logic into YNL
-Date: Thu,  1 Jun 2023 19:35:45 -0700
-Message-Id: <20230602023548.463441-8-kuba@kernel.org>
+Subject: [PATCH net-next 08/10] tools: ynl-gen: generate alloc and free helpers for req
+Date: Thu,  1 Jun 2023 19:35:46 -0700
+Message-Id: <20230602023548.463441-9-kuba@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230602023548.463441-1-kuba@kernel.org>
 References: <20230602023548.463441-1-kuba@kernel.org>
@@ -50,146 +50,71 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-We generate send() and recv() calls and all msg handling for
-each operation. It's a lot of repeated code and will only grow
-with notification handling. Call back to a helper YNL lib instead.
+We expect user to allocate requests with calloc(),
+make things a bit more consistent and provide helpers.
+Generate free calls, too.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/net/ynl/ynl-gen-c.py | 63 ++++++++++++++++----------------------
- 1 file changed, 27 insertions(+), 36 deletions(-)
+ tools/net/ynl/ynl-gen-c.py | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
 diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
-index 5318edfdb874..7d833a42e060 100755
+index 7d833a42e060..4a7ca2823270 100755
 --- a/tools/net/ynl/ynl-gen-c.py
 +++ b/tools/net/ynl/ynl-gen-c.py
-@@ -1371,13 +1371,13 @@ _C_KW = {
-     ret_err = '-1'
-     direction = "request"
-     local_vars = ['struct nlmsghdr *nlh;',
--                  'int len, err;']
-+                  'int err;']
+@@ -1476,6 +1476,14 @@ _C_KW = {
+     return 'obj'
  
-     if 'reply' in ri.op[ri.op_mode]:
-         ret_ok = 'rsp'
-         ret_err = 'NULL'
-         local_vars += [f'{type_name(ri, rdir(direction))} *rsp;',
--                       'struct ynl_parse_arg yarg = { .ys = ys, };']
-+                       'struct ynl_req_state yrs = { .yarg = { .ys = ys, }, };']
  
-     print_prototype(ri, direction, terminate=False)
-     ri.cw.block_start()
-@@ -1387,41 +1387,39 @@ _C_KW = {
- 
-     ri.cw.p(f"ys->req_policy = &{ri.struct['request'].render_name}_nest;")
-     if 'reply' in ri.op[ri.op_mode]:
--        ri.cw.p(f"yarg.rsp_policy = &{ri.struct['reply'].render_name}_nest;")
-+        ri.cw.p(f"yrs.yarg.rsp_policy = &{ri.struct['reply'].render_name}_nest;")
-     ri.cw.nl()
-     for _, attr in ri.struct["request"].member_list():
-         attr.attr_put(ri, "req")
-     ri.cw.nl()
- 
--    ri.cw.p('err = mnl_socket_sendto(ys->sock, nlh, nlh->nlmsg_len);')
--    ri.cw.p('if (err < 0)')
--    ri.cw.p(f"return {ret_err};")
--    ri.cw.nl()
--    ri.cw.p('len = mnl_socket_recvfrom(ys->sock, ys->rx_buf, MNL_SOCKET_BUFFER_SIZE);')
--    ri.cw.p('if (len < 0)')
--    ri.cw.p(f"return {ret_err};")
--    ri.cw.nl()
--
-+    parse_arg = "NULL"
-     if 'reply' in ri.op[ri.op_mode]:
-         ri.cw.p('rsp = calloc(1, sizeof(*rsp));')
--        ri.cw.p('yarg.data = rsp;')
-+        ri.cw.p('yrs.yarg.data = rsp;')
-+        ri.cw.p(f"yrs.cb = {op_prefix(ri, 'reply')}_parse;")
-+        if ri.op.value is not None:
-+            ri.cw.p(f'yrs.rsp_cmd = {ri.op.enum_name};')
-+        else:
-+            ri.cw.p(f'yrs.rsp_cmd = {ri.op.rsp_value};')
-         ri.cw.nl()
--        ri.cw.p(f"err = {ri.nl.parse_cb_run(op_prefix(ri, 'reply') + '_parse', '&yarg', False)};")
--        ri.cw.p('if (err < 0)')
-+        parse_arg = '&yrs'
-+    ri.cw.p(f"err = ynl_exec(ys, nlh, {parse_arg});")
-+    ri.cw.p('if (err < 0)')
-+    if 'reply' in ri.op[ri.op_mode]:
-         ri.cw.p('goto err_free;')
--        ri.cw.nl()
--
--    ri.cw.p('err = ynl_recv_ack(ys, err);')
--    ri.cw.p('if (err)')
--    ri.cw.p('goto err_free;')
-+    else:
-+        ri.cw.p('return -1;')
-     ri.cw.nl()
++def print_alloc_wrapper(ri, direction):
++    name = op_prefix(ri, direction)
++    ri.cw.write_func_prot(f'static inline struct {name} *', f"{name}_alloc", [f"void"])
++    ri.cw.block_start()
++    ri.cw.p(f'return calloc(1, sizeof(struct {name}));')
++    ri.cw.block_end()
 +
-     ri.cw.p(f"return {ret_ok};")
-     ri.cw.nl()
--    ri.cw.p('err_free:')
- 
-     if 'reply' in ri.op[ri.op_mode]:
-+        ri.cw.p('err_free:')
-         ri.cw.p(f"{call_free(ri, rdir(direction), 'rsp')}")
--    ri.cw.p(f"return {ret_err};")
-+        ri.cw.p(f"return {ret_err};")
 +
-     ri.cw.block_end()
+ def print_free_prototype(ri, direction, suffix=';'):
+     name = op_prefix(ri, direction)
+     arg = free_arg_name(direction)
+@@ -1523,6 +1531,7 @@ _C_KW = {
+ 
+ def print_type_helpers(ri, direction, deref=False):
+     print_free_prototype(ri, direction)
++    ri.cw.nl()
+ 
+     if ri.ku_space == 'user' and direction == 'request':
+         for _, attr in ri.struct[direction].member_list():
+@@ -1531,6 +1540,7 @@ _C_KW = {
  
  
-@@ -1431,7 +1429,7 @@ _C_KW = {
-     ri.cw.block_start()
-     local_vars = ['struct ynl_dump_state yds = {};',
-                   'struct nlmsghdr *nlh;',
--                  'int len, err;']
-+                  'int err;']
+ def print_req_type_helpers(ri):
++    print_alloc_wrapper(ri, "request")
+     print_type_helpers(ri, "request")
  
-     for var in local_vars:
-         ri.cw.p(f'{var}')
-@@ -1440,6 +1438,10 @@ _C_KW = {
-     ri.cw.p('yds.ys = ys;')
-     ri.cw.p(f"yds.alloc_sz = sizeof({type_name(ri, rdir(direction))});")
-     ri.cw.p(f"yds.cb = {op_prefix(ri, 'reply', deref=True)}_parse;")
-+    if ri.op.value is not None:
-+        ri.cw.p(f'yds.rsp_cmd = {ri.op.enum_name};')
-+    else:
-+        ri.cw.p(f'yds.rsp_cmd = {ri.op.rsp_value};')
-     ri.cw.p(f"yds.rsp_policy = &{ri.struct['reply'].render_name}_nest;")
-     ri.cw.nl()
-     ri.cw.p(f"nlh = ynl_gemsg_start_dump(ys, {ri.nl.get_family_id()}, {ri.op.enum_name}, 1);")
-@@ -1451,20 +1453,9 @@ _C_KW = {
-             attr.attr_put(ri, "req")
-     ri.cw.nl()
  
--    ri.cw.p('err = mnl_socket_sendto(ys->sock, nlh, nlh->nlmsg_len);')
--    ri.cw.p('if (err < 0)')
--    ri.cw.p('return NULL;')
--    ri.cw.nl()
--
--    ri.cw.block_start(line='do')
--    ri.cw.p('len = mnl_socket_recvfrom(ys->sock, ys->rx_buf, MNL_SOCKET_BUFFER_SIZE);')
--    ri.cw.p('if (len < 0)')
--    ri.cw.p('goto free_list;')
--    ri.cw.nl()
--    ri.cw.p(f"err = {ri.nl.parse_cb_run('ynl_dump_trampoline', '&yds', False, indent=2)};")
-+    ri.cw.p('err = ynl_exec_dump(ys, nlh, &yds);')
-     ri.cw.p('if (err < 0)')
-     ri.cw.p('goto free_list;')
--    ri.cw.block_end(line='while (err > 0);')
-     ri.cw.nl()
+@@ -1554,6 +1564,12 @@ _C_KW = {
+     print_type(ri, "request")
  
-     ri.cw.p('return yds.first;')
-@@ -1631,7 +1622,7 @@ _C_KW = {
-     ri.cw.block_start()
-     ri.cw.p(f"{sub_type} *next = rsp;")
-     ri.cw.nl()
--    ri.cw.block_start(line='while (next)')
-+    ri.cw.block_start(line='while ((void *)next != YNL_LIST_END)')
-     _free_type_members_iter(ri, ri.struct['reply'])
-     ri.cw.p('rsp = next;')
-     ri.cw.p('next = rsp->next;')
+ 
++def print_req_free(ri):
++    if 'request' not in ri.op[ri.op_mode]:
++        return
++    _free_type(ri, 'request', ri.struct['request'])
++
++
+ def print_rsp_type(ri):
+     if (ri.op_mode == 'do' or ri.op_mode == 'dump') and 'reply' in ri.op[ri.op_mode]:
+         direction = 'reply'
+@@ -2344,6 +2360,7 @@ _C_KW = {
+                 if 'do' in op and 'event' not in op:
+                     cw.p(f"/* {op.enum_name} - do */")
+                     ri = RenderInfo(cw, parsed, args.mode, op, op_name, "do")
++                    print_req_free(ri)
+                     print_rsp_free(ri)
+                     parse_rsp_msg(ri)
+                     print_req(ri)
 -- 
 2.40.1
 
