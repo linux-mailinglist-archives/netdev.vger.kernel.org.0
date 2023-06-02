@@ -1,399 +1,184 @@
-Return-Path: <netdev+bounces-7517-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7518-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 66211720848
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 19:20:00 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id AD289720866
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 19:33:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D86981C21194
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:19:56 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 151B62819CF
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:33:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B3CEB33313;
-	Fri,  2 Jun 2023 17:19:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 26CEF3331B;
+	Fri,  2 Jun 2023 17:33:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A121B33310
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 17:19:56 +0000 (UTC)
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727D01A2;
-	Fri,  2 Jun 2023 10:19:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685726393; x=1717262393;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=huQWIaGLCyDwNEyv4gbOkY32hoPagVTcWkg9cSo0J7c=;
-  b=XYuxQXVEAVXx0c0IdooSo6ty/eXLm4uPGNLBTpAbZCET07ohFXOHuGa2
-   Ve1Wj7PVDx9becFtpFYQspv0+gAiI53pY2oQmo6lhlx4+aKHtNQsDnfyX
-   U92buqKSSUWM2tGW5N52+DLf3piCBhXDgAqnXjLtsxdP0Gf0UowPRkeRm
-   BvepsJWkgMlA1okXzTWMzas+aPiLtqLmcekQg8iz63iwT+CpMP2eH6QBM
-   x4ZiYYT+8jqu/avge/pPyPO3miku5V0DeRtoOBo7fyHlLeESIVefPU9RN
-   MX29ufTc9Hmxa1HeQQyt3sJkEtctRvFjqEJUnf9lAyjk8ubLmiy4u0ta7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10729"; a="419455142"
-X-IronPort-AV: E=Sophos;i="6.00,213,1681196400"; 
-   d="scan'208";a="419455142"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2023 10:19:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10729"; a="737615596"
-X-IronPort-AV: E=Sophos;i="6.00,213,1681196400"; 
-   d="scan'208";a="737615596"
-Received: from lkp-server01.sh.intel.com (HELO 15ab08e44a81) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 02 Jun 2023 10:19:50 -0700
-Received: from kbuild by 15ab08e44a81 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1q58RJ-0000lB-17;
-	Fri, 02 Jun 2023 17:19:49 +0000
-Date: Sat, 3 Jun 2023 01:19:37 +0800
-From: kernel test robot <lkp@intel.com>
-To: Shunsuke Mie <mie@igel.co.jp>, "Michael S. Tsirkin" <mst@redhat.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Rusty Russell <rusty@rustcorp.com.au>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Shunsuke Mie <mie@igel.co.jp>
-Subject: Re: [PATCH v4 1/1] vringh: IOMEM support
-Message-ID: <202306030119.NG7CQmJ8-lkp@intel.com>
-References: <20230602055211.309960-2-mie@igel.co.jp>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14BB3332EE
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 17:33:22 +0000 (UTC)
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2065.outbound.protection.outlook.com [40.107.92.65])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683181B8
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 10:33:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=R6knR2IN4ckM09wOHsuoyWE9Qt2AfZdsg9aj6gmLUck5bx7dzYcZY2YMS2A1cHSA3BD8q5/tRbSAtu698UfNnVEpgRDkcJ4gExq6S0cyFhKdhFn9t/+JJpjXK5xcNjDaoBOZ+yRd/j+TMQDdeE+JIynzuOPZpywqLJytOu9JFgGBtKoEnoT3yu0Tg7xDQtyLfk6Q7rMy61BuY/qVOLCjp9+ZevQy+iDratmKlqqOs/8X8w8sG/frnddjYdr4zlj/9RbL11sPaxLWM7zBGbp/keFl617KoSR6nsy8mkIBfF/01GIqXytqFnKmMjyOHSCJwqH0ui2uUPnDnDgtGwJGpg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=r1h+HEanQUCXpVJfxGz6o9LcO5iw+vY5ietP3ctwNtI=;
+ b=W3IFD1RV+C3OxvjCAc0PNsu9EdfnUOSuo4zM4YM7p90x6p4U2sNofThme4QOZhc9zHMlYl7TviznXLkIZ7Id3dP9iJM3mT4Wo/IGSJBda0CueQ+bkM2DY26XAiUkNJjg3tGjuWDnwtcD4A9YxFAsh7D9sa7r5tHDb9hwdzNNvszhvfdnsR7QS16tgfyfbY/lyZTNfdlakBePPIs7ktQLmZ+pETNbsaZeeaFo8JPgBkYMATAOQ7sOu0ODEo4qeYAUykAlpMNEmZx64wR3FUNpOpbT/ppOnu+2Vn7vBgVamhnbqqDUodFiCbv5KXclFJ8f2/tIlPs0Wt/kuItwfb74pw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r1h+HEanQUCXpVJfxGz6o9LcO5iw+vY5ietP3ctwNtI=;
+ b=o1679TZCVCbDx53jrNQ1sjvCKmOUut7WbmqaoJY1VMP5lIc/DyM3bmWwEdkw4fARrI0nP7K7Mb/I1KHOhwKKCLUjJFtnEY9ap/SiO4GckAMvgkJ89BXSCUN9Ilv5bm1Je24IMs60Gu2jhp8klHSXNqqqyMX1gLKqNhd9YZdmWkA=
+Received: from BY3PR05CA0024.namprd05.prod.outlook.com (2603:10b6:a03:254::29)
+ by SJ0PR12MB8165.namprd12.prod.outlook.com (2603:10b6:a03:4e4::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.23; Fri, 2 Jun
+ 2023 17:33:18 +0000
+Received: from DM6NAM11FT022.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:a03:254:cafe::cf) by BY3PR05CA0024.outlook.office365.com
+ (2603:10b6:a03:254::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.8 via Frontend
+ Transport; Fri, 2 Jun 2023 17:33:18 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT022.mail.protection.outlook.com (10.13.172.210) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6455.26 via Frontend Transport; Fri, 2 Jun 2023 17:33:17 +0000
+Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 2 Jun
+ 2023 12:33:16 -0500
+From: Shannon Nelson <shannon.nelson@amd.com>
+To: <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC: <brett.creeley@amd.com>, <drivers@pensando.io>, Nitya Sunkad
+	<nitya.sunkad@amd.com>, Shannon Nelson <shannon.nelson@amd.com>
+Subject: [PATCH net-next] ionic: add support for ethtool extended stat link_down_count
+Date: Fri, 2 Jun 2023 10:32:52 -0700
+Message-ID: <20230602173252.35711-1-shannon.nelson@amd.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230602055211.309960-2-mie@igel.co.jp>
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT022:EE_|SJ0PR12MB8165:EE_
+X-MS-Office365-Filtering-Correlation-Id: d229d3d5-1b51-4476-789b-08db638f73eb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	YucLXmgoL0XgwTlzMIeouaiPAOYbl16q0aTA85bdawG4QuMXvJp1slHrZR/ENThowg5Enbp2xoz6pk30KkBNUFhdy8wsJZG7pfTCsOenIpEsulyF25RyYGnNHfo6RA2IF0r7jbx/umzHbCuAkWHBg+czTjvtyJ8HeM+4Ef/1yCu9uqvgM1cN+R1dedmiEfHy1CF3AoQp9PG6Zz4izmj7MtFkrmnvNHCmj+mgJAxOp5HYC5NWDs5AVaTNiZ93283bHvVAZXZRriqc/7sRHT1/R6wU4WTqoV6KHl/FZuaBvauyjSvBKIHJGrMdaHVp3H2rOcIGZXnpg0WpGFsJaQ+tZiJra2ScFLeIMGZG+rgRvymYnKqJKaCsKt7WqifUKjsDEVHFhJmQ6vemRd+RtiWVZUJSuiw3cUie1C0b49DVSXTYNmAuXOEfv6XKqShdvyrI2veqPt5U/qhblomvr+s02QrZOguh2bFk4nuqf/KHnCRwl/x0w7j7Ror55JNZUAktpNiSRlbz+5GTmojvvph9E99wGDtw2fAVleOD8xsReD/5YH6pfRw+9bW35YL0f9KKxfkoJrdlrNoMJYEosfBsA58N+wBPJ0qIaYObWhhOzObHxVYY1Thmds2uhN62VmXiw0j3xoCgJUejR06EMNN/QW4N2VzUAu+b6+W8RM6wbMRCz1vuqSUY7WD0XYqEUN7uaaMvFcR1x5lxpisfLO9h0msh/3q2gRRtRy8rc3hj61euoHBmWVICcT5Wuel71h3qyY6ppi6NDTnkzjLDIYJJXw==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(346002)(396003)(39860400002)(451199021)(46966006)(40470700004)(36840700001)(82740400003)(356005)(82310400005)(81166007)(40460700003)(110136005)(86362001)(4326008)(70206006)(70586007)(54906003)(40480700001)(36756003)(478600001)(186003)(6666004)(47076005)(16526019)(26005)(1076003)(44832011)(2616005)(8936002)(8676002)(2906002)(5660300002)(336012)(36860700001)(316002)(41300700001)(426003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2023 17:33:17.8560
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d229d3d5-1b51-4476-789b-08db638f73eb
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM11FT022.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8165
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Shunsuke,
+From: Nitya Sunkad <nitya.sunkad@amd.com>
 
-kernel test robot noticed the following build warnings:
+Following the example of 9a0f830f8026 ("ethtool: linkstate: add a statistic
+for PHY down events"), added support for link down events.
 
-[auto build test WARNING on mst-vhost/linux-next]
-[also build test WARNING on linus/master horms-ipvs/master v6.4-rc4 next-20230602]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Added callback ionic_get_link_ext_stats to ionic_ethtool.c to support
+link_down_count, a property of netdev that gets incremented every time
+the device link goes down.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Shunsuke-Mie/vringh-IOMEM-support/20230602-135351
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
-patch link:    https://lore.kernel.org/r/20230602055211.309960-2-mie%40igel.co.jp
-patch subject: [PATCH v4 1/1] vringh: IOMEM support
-config: hexagon-randconfig-r034-20230531 (https://download.01.org/0day-ci/archive/20230603/202306030119.NG7CQmJ8-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 4faf3aaf28226a4e950c103a14f6fc1d1fdabb1b)
-reproduce (this is a W=1 build):
-        mkdir -p ~/bin
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/de2a1f5220c32e953400f225aba6bd294a8d41b8
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Shunsuke-Mie/vringh-IOMEM-support/20230602-135351
-        git checkout de2a1f5220c32e953400f225aba6bd294a8d41b8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang ~/bin/make.cross W=1 O=build_dir ARCH=hexagon olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang ~/bin/make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/vhost/
+Run ethtool -I <devname> to display the device link down count.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202306030119.NG7CQmJ8-lkp@intel.com/
+Signed-off-by: Nitya Sunkad <nitya.sunkad@amd.com>
+Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+---
+ drivers/net/ethernet/pensando/ionic/ionic_ethtool.c | 9 +++++++++
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c     | 1 +
+ drivers/net/ethernet/pensando/ionic/ionic_lif.h     | 1 +
+ 3 files changed, 11 insertions(+)
 
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/vhost/vringh.c:17:
-   In file included from include/linux/bvec.h:10:
-   In file included from include/linux/highmem.h:12:
-   In file included from include/linux/hardirq.h:11:
-   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
-   In file included from include/asm-generic/hardirq.h:17:
-   In file included from include/linux/irq.h:20:
-   In file included from include/linux/io.h:13:
-   In file included from arch/hexagon/include/asm/io.h:334:
-   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
-                                                     ^
-   In file included from drivers/vhost/vringh.c:17:
-   In file included from include/linux/bvec.h:10:
-   In file included from include/linux/highmem.h:12:
-   In file included from include/linux/hardirq.h:11:
-   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
-   In file included from include/asm-generic/hardirq.h:17:
-   In file included from include/linux/irq.h:20:
-   In file included from include/linux/io.h:13:
-   In file included from arch/hexagon/include/asm/io.h:334:
-   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
-                                                     ^
-   In file included from drivers/vhost/vringh.c:17:
-   In file included from include/linux/bvec.h:10:
-   In file included from include/linux/highmem.h:12:
-   In file included from include/linux/hardirq.h:11:
-   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
-   In file included from include/asm-generic/hardirq.h:17:
-   In file included from include/linux/irq.h:20:
-   In file included from include/linux/io.h:13:
-   In file included from arch/hexagon/include/asm/io.h:334:
-   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
->> drivers/vhost/vringh.c:1661:5: warning: no previous prototype for function 'vringh_init_iomem' [-Wmissing-prototypes]
-   int vringh_init_iomem(struct vringh *vrh, u64 features, unsigned int num,
-       ^
-   drivers/vhost/vringh.c:1661:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int vringh_init_iomem(struct vringh *vrh, u64 features, unsigned int num,
-   ^
-   static 
->> drivers/vhost/vringh.c:1683:5: warning: no previous prototype for function 'vringh_getdesc_iomem' [-Wmissing-prototypes]
-   int vringh_getdesc_iomem(struct vringh *vrh, struct vringh_kiov *riov,
-       ^
-   drivers/vhost/vringh.c:1683:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int vringh_getdesc_iomem(struct vringh *vrh, struct vringh_kiov *riov,
-   ^
-   static 
->> drivers/vhost/vringh.c:1714:9: warning: no previous prototype for function 'vringh_iov_pull_iomem' [-Wmissing-prototypes]
-   ssize_t vringh_iov_pull_iomem(struct vringh *vrh, struct vringh_kiov *riov,
-           ^
-   drivers/vhost/vringh.c:1714:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   ssize_t vringh_iov_pull_iomem(struct vringh *vrh, struct vringh_kiov *riov,
-   ^
-   static 
->> drivers/vhost/vringh.c:1729:9: warning: no previous prototype for function 'vringh_iov_push_iomem' [-Wmissing-prototypes]
-   ssize_t vringh_iov_push_iomem(struct vringh *vrh, struct vringh_kiov *wiov,
-           ^
-   drivers/vhost/vringh.c:1729:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   ssize_t vringh_iov_push_iomem(struct vringh *vrh, struct vringh_kiov *wiov,
-   ^
-   static 
->> drivers/vhost/vringh.c:1744:6: warning: no previous prototype for function 'vringh_abandon_iomem' [-Wmissing-prototypes]
-   void vringh_abandon_iomem(struct vringh *vrh, unsigned int num)
-        ^
-   drivers/vhost/vringh.c:1744:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void vringh_abandon_iomem(struct vringh *vrh, unsigned int num)
-   ^
-   static 
->> drivers/vhost/vringh.c:1759:5: warning: no previous prototype for function 'vringh_complete_iomem' [-Wmissing-prototypes]
-   int vringh_complete_iomem(struct vringh *vrh, u16 head, u32 len)
-       ^
-   drivers/vhost/vringh.c:1759:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int vringh_complete_iomem(struct vringh *vrh, u16 head, u32 len)
-   ^
-   static 
->> drivers/vhost/vringh.c:1777:6: warning: no previous prototype for function 'vringh_notify_enable_iomem' [-Wmissing-prototypes]
-   bool vringh_notify_enable_iomem(struct vringh *vrh)
-        ^
-   drivers/vhost/vringh.c:1777:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   bool vringh_notify_enable_iomem(struct vringh *vrh)
-   ^
-   static 
->> drivers/vhost/vringh.c:1790:6: warning: no previous prototype for function 'vringh_notify_disable_iomem' [-Wmissing-prototypes]
-   void vringh_notify_disable_iomem(struct vringh *vrh)
-        ^
-   drivers/vhost/vringh.c:1790:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void vringh_notify_disable_iomem(struct vringh *vrh)
-   ^
-   static 
->> drivers/vhost/vringh.c:1802:5: warning: no previous prototype for function 'vringh_need_notify_iomem' [-Wmissing-prototypes]
-   int vringh_need_notify_iomem(struct vringh *vrh)
-       ^
-   drivers/vhost/vringh.c:1802:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int vringh_need_notify_iomem(struct vringh *vrh)
-   ^
-   static 
-   15 warnings generated.
-
-
-vim +/vringh_init_iomem +1661 drivers/vhost/vringh.c
-
-  1647	
-  1648	/**
-  1649	 * vringh_init_iomem - initialize a vringh for a vring on io-memory.
-  1650	 * @vrh: the vringh to initialize.
-  1651	 * @features: the feature bits for this ring.
-  1652	 * @num: the number of elements.
-  1653	 * @weak_barriers: true if we only need memory barriers, not I/O.
-  1654	 * @desc: the userspace descriptor pointer.
-  1655	 * @avail: the userspace avail pointer.
-  1656	 * @used: the userspace used pointer.
-  1657	 *
-  1658	 * Returns an error if num is invalid: you should check pointers
-  1659	 * yourself!
-  1660	 */
-> 1661	int vringh_init_iomem(struct vringh *vrh, u64 features, unsigned int num,
-  1662			      bool weak_barriers, struct vring_desc *desc,
-  1663			      struct vring_avail *avail, struct vring_used *used)
-  1664	{
-  1665		return vringh_init_kern(vrh, features, num, weak_barriers, desc, avail,
-  1666					used);
-  1667	}
-  1668	EXPORT_SYMBOL(vringh_init_iomem);
-  1669	
-  1670	/**
-  1671	 * vringh_getdesc_iomem - get next available descriptor from vring on io-memory.
-  1672	 * @vrh: the vring on io-memory.
-  1673	 * @riov: where to put the readable descriptors (or NULL)
-  1674	 * @wiov: where to put the writable descriptors (or NULL)
-  1675	 * @head: head index we received, for passing to vringh_complete_iomem().
-  1676	 * @gfp: flags for allocating larger riov/wiov.
-  1677	 *
-  1678	 * Returns 0 if there was no descriptor, 1 if there was, or -errno.
-  1679	 *
-  1680	 * There some notes, and those are same with vringh_getdesc_kern(). Please see
-  1681	 * it.
-  1682	 */
-> 1683	int vringh_getdesc_iomem(struct vringh *vrh, struct vringh_kiov *riov,
-  1684				 struct vringh_kiov *wiov, u16 *head, gfp_t gfp)
-  1685	{
-  1686		int err;
-  1687	
-  1688		err = __vringh_get_head(vrh, getu16_iomem, &vrh->last_avail_idx);
-  1689		if (err < 0)
-  1690			return err;
-  1691	
-  1692		/* Empty... */
-  1693		if (err == vrh->vring.num)
-  1694			return 0;
-  1695	
-  1696		*head = err;
-  1697		err = __vringh_iov(vrh, *head, riov, wiov, no_range_check, NULL, gfp,
-  1698				   copydesc_iomem);
-  1699		if (err)
-  1700			return err;
-  1701	
-  1702		return 1;
-  1703	}
-  1704	EXPORT_SYMBOL(vringh_getdesc_iomem);
-  1705	
-  1706	/**
-  1707	 * vringh_iov_pull_iomem - copy bytes from vring_iov.
-  1708	 * @riov: the riov as passed to vringh_getdesc_iomem() (updated as we consume)
-  1709	 * @dst: the place to copy.
-  1710	 * @len: the maximum length to copy.
-  1711	 *
-  1712	 * Returns the bytes copied <= len or a negative errno.
-  1713	 */
-> 1714	ssize_t vringh_iov_pull_iomem(struct vringh *vrh, struct vringh_kiov *riov,
-  1715				      void *dst, size_t len)
-  1716	{
-  1717		return vringh_iov_xfer(vrh, riov, dst, len, xfer_from_iomem);
-  1718	}
-  1719	EXPORT_SYMBOL(vringh_iov_pull_iomem);
-  1720	
-  1721	/**
-  1722	 * vringh_iov_push_iomem - copy bytes into vring_iov.
-  1723	 * @wiov: the wiov as passed to vringh_getdesc_iomem() (updated as we consume)
-  1724	 * @src: the place to copy from.
-  1725	 * @len: the maximum length to copy.
-  1726	 *
-  1727	 * Returns the bytes copied <= len or a negative errno.
-  1728	 */
-> 1729	ssize_t vringh_iov_push_iomem(struct vringh *vrh, struct vringh_kiov *wiov,
-  1730				      const void *src, size_t len)
-  1731	{
-  1732		return vringh_iov_xfer(vrh, wiov, (void *)src, len, xfer_to_iomem);
-  1733	}
-  1734	EXPORT_SYMBOL(vringh_iov_push_iomem);
-  1735	
-  1736	/**
-  1737	 * vringh_abandon_iomem - we've decided not to handle the descriptor(s).
-  1738	 * @vrh: the vring.
-  1739	 * @num: the number of descriptors to put back (ie. num
-  1740	 *	 vringh_getdesc_iomem() to undo).
-  1741	 *
-  1742	 * The next vringh_get_kern() will return the old descriptor(s) again.
-  1743	 */
-> 1744	void vringh_abandon_iomem(struct vringh *vrh, unsigned int num)
-  1745	{
-  1746		vringh_abandon_kern(vrh, num);
-  1747	}
-  1748	EXPORT_SYMBOL(vringh_abandon_iomem);
-  1749	
-  1750	/**
-  1751	 * vringh_complete_iomem - we've finished with descriptor, publish it.
-  1752	 * @vrh: the vring.
-  1753	 * @head: the head as filled in by vringh_getdesc_iomem().
-  1754	 * @len: the length of data we have written.
-  1755	 *
-  1756	 * You should check vringh_need_notify_iomem() after one or more calls
-  1757	 * to this function.
-  1758	 */
-> 1759	int vringh_complete_iomem(struct vringh *vrh, u16 head, u32 len)
-  1760	{
-  1761		struct vring_used_elem used;
-  1762	
-  1763		used.id = cpu_to_vringh32(vrh, head);
-  1764		used.len = cpu_to_vringh32(vrh, len);
-  1765	
-  1766		return __vringh_complete(vrh, &used, 1, putu16_iomem, putused_iomem);
-  1767	}
-  1768	EXPORT_SYMBOL(vringh_complete_iomem);
-  1769	
-  1770	/**
-  1771	 * vringh_notify_enable_iomem - we want to know if something changes.
-  1772	 * @vrh: the vring.
-  1773	 *
-  1774	 * This always enables notifications, but returns false if there are
-  1775	 * now more buffers available in the vring.
-  1776	 */
-> 1777	bool vringh_notify_enable_iomem(struct vringh *vrh)
-  1778	{
-  1779		return __vringh_notify_enable(vrh, getu16_iomem, putu16_iomem);
-  1780	}
-  1781	EXPORT_SYMBOL(vringh_notify_enable_iomem);
-  1782	
-  1783	/**
-  1784	 * vringh_notify_disable_iomem - don't tell us if something changes.
-  1785	 * @vrh: the vring.
-  1786	 *
-  1787	 * This is our normal running state: we disable and then only enable when
-  1788	 * we're going to sleep.
-  1789	 */
-> 1790	void vringh_notify_disable_iomem(struct vringh *vrh)
-  1791	{
-  1792		__vringh_notify_disable(vrh, putu16_iomem);
-  1793	}
-  1794	EXPORT_SYMBOL(vringh_notify_disable_iomem);
-  1795	
-  1796	/**
-  1797	 * vringh_need_notify_iomem - must we tell the other side about used buffers?
-  1798	 * @vrh: the vring we've called vringh_complete_iomem() on.
-  1799	 *
-  1800	 * Returns -errno or 0 if we don't need to tell the other side, 1 if we do.
-  1801	 */
-> 1802	int vringh_need_notify_iomem(struct vringh *vrh)
-  1803	{
-  1804		return __vringh_need_notify(vrh, getu16_iomem);
-  1805	}
-  1806	EXPORT_SYMBOL(vringh_need_notify_iomem);
-  1807	
-
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+index 9b2b96fa36af..4c527a06e7d9 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+@@ -104,6 +104,14 @@ static void ionic_get_regs(struct net_device *netdev, struct ethtool_regs *regs,
+ 	memcpy_fromio(p + offset, lif->ionic->idev.dev_cmd_regs->words, size);
+ }
+ 
++static void ionic_get_link_ext_stats(struct net_device *netdev,
++				     struct ethtool_link_ext_stats *stats)
++{
++	struct ionic_lif *lif = netdev_priv(netdev);
++
++	stats->link_down_events = lif->link_down_count;
++}
++
+ static int ionic_get_link_ksettings(struct net_device *netdev,
+ 				    struct ethtool_link_ksettings *ks)
+ {
+@@ -1074,6 +1082,7 @@ static const struct ethtool_ops ionic_ethtool_ops = {
+ 	.get_regs_len		= ionic_get_regs_len,
+ 	.get_regs		= ionic_get_regs,
+ 	.get_link		= ethtool_op_get_link,
++	.get_link_ext_stats	= ionic_get_link_ext_stats,
+ 	.get_link_ksettings	= ionic_get_link_ksettings,
+ 	.set_link_ksettings	= ionic_set_link_ksettings,
+ 	.get_coalesce		= ionic_get_coalesce,
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index 957027e546b3..6ccc1ea91992 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -168,6 +168,7 @@ static void ionic_link_status_check(struct ionic_lif *lif)
+ 		}
+ 	} else {
+ 		if (netif_carrier_ok(netdev)) {
++			lif->link_down_count++;
+ 			netdev_info(netdev, "Link down\n");
+ 			netif_carrier_off(netdev);
+ 		}
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+index c9c4c46d5a16..fd2ea670e7d8 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+@@ -201,6 +201,7 @@ struct ionic_lif {
+ 	u64 hw_features;
+ 	bool registered;
+ 	u16 lif_type;
++	unsigned int link_down_count;
+ 	unsigned int nmcast;
+ 	unsigned int nucast;
+ 	unsigned int nvlans;
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.17.1
+
 
