@@ -1,79 +1,109 @@
-Return-Path: <netdev+bounces-7316-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7317-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9482A71FA1C
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 08:29:31 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id BF08371FA77
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 09:01:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CF5811C20FD0
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 06:29:27 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5C829281568
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 07:01:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 340374406;
-	Fri,  2 Jun 2023 06:29:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3F72346A8;
+	Fri,  2 Jun 2023 07:00:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 216F13FDB
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 06:29:27 +0000 (UTC)
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C300E10C9;
-	Thu,  1 Jun 2023 23:28:59 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id 6a1803df08f44-62603efd2e3so14452386d6.1;
-        Thu, 01 Jun 2023 23:28:59 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17C3310E5;
+	Fri,  2 Jun 2023 07:00:59 +0000 (UTC)
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701651B9;
+	Fri,  2 Jun 2023 00:00:47 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id 6a1803df08f44-628f267aa5aso1177036d6.1;
+        Fri, 02 Jun 2023 00:00:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685687338; x=1688279338;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=JP4VtYfTpokhb/xoqxYleHsw/oeIF5+SRkQoPt6gSWw=;
-        b=seMnMYJUUohGcgZxh2SIuvUdPt8SMK5RA3gNuvrselKQlYVOhKv4pU3ycWHlsk+3/r
-         0ZQGY0GK/pqUZUNFChxO9qvZewXJvFFaWYEcbfYmM5//O9lIYWVYSv7oPslaT/ApWk1/
-         ElaTo1UTp/x4JQnxxmBaAsndLnakR4WrNIEWT1/PIo6odpT7pq3qG2L7cC8OurUR8f3u
-         Ff/9YMxyb0IEINcpvAIP++InRR60kAKP8ujup4pF5lztC97W4gb2R5rjapLGW4c5Uvuu
-         5nTQN3ERO5vdNm5oExz7OIcI+utztZYlznaBrrE+somdPw6ZRkQ045BAYcx+xY+pJDgs
-         ksTA==
+        d=gmail.com; s=20221208; t=1685689246; x=1688281246;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=5+Dwvdqn0Nc+03wWkuuIbg+roLTPzxNXIEQmZzt/hu4=;
+        b=GTw6Eipm5S+VJeux5pubyt5ODlplECcBv00WjTFzhxwM5uiLPBp0HMHU+q4PaZYJp4
+         miKnL9tEPl9Cvug/XCS1Fc16h1s6W8QiX6E6xkntXvUYIERJ33BPFreVKg2XDcRZZiV0
+         qNhJr68zq9qeb6eXpqlnEXiGBv0ZzEJfQxRXVSdsP6PM7vssI5SHQFRbxvbnmU+m/Bsb
+         BFDmNI9jagVqSU/+JmIauQ0dOAeSjtXhXHrR6tix5J2EEkUx7okarpNE96agpK6tDjWt
+         tB7eti1gz/rBqPRTb51QofB4KsinH/4dUH8J3KkIO7n1SnWYlD/g8YwonxjAa5vDE4O9
+         3siA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685687338; x=1688279338;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20221208; t=1685689246; x=1688281246;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=JP4VtYfTpokhb/xoqxYleHsw/oeIF5+SRkQoPt6gSWw=;
-        b=dvPhQzqPhc/eQUGKbGVjAofkb3sRYdtwO9+gGHA++i1kcs25f5jXAKWNfzSh8AjIzs
-         v+h5EahmHfI2oLlzEfbs7/3oiwdWE6b49lMLZ0gDplqPiBLKJOoI+9T8UBI9gDobmsyq
-         AiPPACvS9gmHdouhGpKkWf8FgtrvKqkbwle0CHGQTPjl1SMLg7ujm0+tw9FSxCCBf87w
-         UCtPVX5Yl0V2y9moqeeToK3rfpTAcpjDU0eOah433A9EUImaTer/1nyZuC7xeDszlJOi
-         D1zesvy4AZDDLW6NQ51Iu8cVImz8wZqNUDlaQrQfqaW+vN0my1phSRBy40WUl73eg/mf
-         pG0A==
-X-Gm-Message-State: AC+VfDzTShSWnh9D+nuvF+pa+NhGL35VLJV5ky0rQrUSxY2YBAW2skrm
-	WJKoDGkBwVQE8jsTsFWpxeGsaOybtA6tO6Y/mhg=
-X-Google-Smtp-Source: ACHHUZ4pCynEppFlR22bUG60ASi3Bp3h0SiDbE6Ea2qZiFI0YyRf6NsmTNQsSt6SWcwvtzWgdrHbW2oONDgFlWN2zPg=
-X-Received: by 2002:a05:6214:411a:b0:621:1b73:52c9 with SMTP id
- kc26-20020a056214411a00b006211b7352c9mr11323635qvb.10.1685687338157; Thu, 01
- Jun 2023 23:28:58 -0700 (PDT)
+        bh=5+Dwvdqn0Nc+03wWkuuIbg+roLTPzxNXIEQmZzt/hu4=;
+        b=KRXEayaWpHSh/GOmnoJQ18y/b50aUpZqclrw2EHlccTF22Je2eQBqFadbXulLiWzPE
+         FNlcs+s1H5/61uYVns5yKsqMHCzmhA2GIaeQMOin8tlI8syaLUvLnTbjZ2z6A10QosAC
+         tVJcNkmoNPAotHXmxM/i0y98RlJvjWHPGbFCfC2gr+KI7Quknum2wnex5yqsBPM/1glu
+         mK/5eViUefAMkP2yB1MLm0evkz3Jc/LUV/GbhwoseFJVSZ+6h68JJhkK1wGO0wHbjP5n
+         sVigbqfPkQjEq88z2VCfx1NmndgedtyNWHcAqDif8/yxxd4jWPjSboXW7E4arhmNg3bO
+         5IPA==
+X-Gm-Message-State: AC+VfDzMmTeXTFDB+7a0qL35poJqkZHO9ZJwXqb1CKn6N4hc1ODHHQf/
+	/2lrm0doK39iQWtacN8OTizq2nDvDUU++jyH
+X-Google-Smtp-Source: ACHHUZ6JzhZeLPUw8GX3KsQoF6VZHf0ewEJBuUixnXCbPihdMYOeiS8ui+TZC0md2WulZw7AvUnvTw==
+X-Received: by 2002:a05:6214:c8b:b0:626:1906:bcac with SMTP id r11-20020a0562140c8b00b006261906bcacmr12587680qvr.0.1685689246444;
+        Fri, 02 Jun 2023 00:00:46 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.24])
+        by smtp.gmail.com with ESMTPSA id jk11-20020a170903330b00b001ac7c725c1asm572716plb.6.2023.06.02.00.00.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Jun 2023 00:00:45 -0700 (PDT)
+From: menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To: olsajiri@gmail.com
+Cc: davem@davemloft.net,
+	dsahern@kernel.org,
+	ast@kernel.org,
+	daniel@iogearbox.net,
+	andrii@kernel.org,
+	martin.lau@linux.dev,
+	song@kernel.org,
+	yhs@fb.com,
+	john.fastabend@gmail.com,
+	kpsingh@kernel.org,
+	sdf@google.com,
+	haoluo@google.com,
+	jolsa@kernel.org,
+	tglx@linutronix.de,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	x86@kernel.org,
+	hpa@zytor.com,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	mykolal@fb.com,
+	shuah@kernel.org,
+	benbjiang@tencent.com,
+	iii@linux.ibm.com,
+	imagedong@tencent.com,
+	xukuohai@huawei.com,
+	chantr4@gmail.com,
+	zwisler@google.com,
+	eddyz87@gmail.com,
+	netdev@vger.kernel.org,
+	bpf@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org
+Subject: [PATCH bpf-next v2 0/5] bpf, x86: allow function arguments up to 14 for TRACING
+Date: Fri,  2 Jun 2023 14:59:53 +0800
+Message-Id: <20230602065958.2869555-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230601070058.2117-1-eggcar.luan@gmail.com> <CO1PR11MB5089465F5D37EBA62BB1A123D6499@CO1PR11MB5089.namprd11.prod.outlook.com>
- <22e193f7-b55d-a31a-0179-4a53af692a89@intel.com>
-In-Reply-To: <22e193f7-b55d-a31a-0179-4a53af692a89@intel.com>
-From: egg car <eggcar.luan@gmail.com>
-Date: Fri, 2 Jun 2023 14:28:47 +0800
-Message-ID: <CACMC4jYdZjLKOLW0gFMOwwH-6bjGW1cBroXe6pioh+w4JQa9Bw@mail.gmail.com>
-Subject: Re: [PATCH v2] igb: Fix extts capture value format for 82580/i354/i350
-To: Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc: "Keller, Jacob E" <jacob.e.keller@intel.com>, 
-	"Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "davem@davemloft.net" <davem@davemloft.net>, 
-	"edumazet@google.com" <edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>, 
-	"pabeni@redhat.com" <pabeni@redhat.com>, 
-	"intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>, 
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
 	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -81,10 +111,52 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Dear Tony and Jacob,
+From: Menglong Dong <imagedong@tencent.com>
 
-Thanks for the review, I'll optimize the patch soon.
+For now, the BPF program of type BPF_PROG_TYPE_TRACING can only be used
+on the kernel functions whose arguments count less than 6. This is not
+friendly at all, as too many functions have arguments count more than 6.
 
-Regards,
-Yuezhen Luan
+Therefore, let's enhance it by increasing the function arguments count
+allowed in arch_prepare_bpf_trampoline(), for now, only x86_64.
+
+In the 1th patch, we make MAX_BPF_FUNC_ARGS 14, according to our
+statistics.
+
+In the 2th patch, we make arch_prepare_bpf_trampoline() support to copy
+function arguments in stack for x86 arch. Therefore, the maximum
+arguments can be up to MAX_BPF_FUNC_ARGS for FENTRY and FEXIT.
+
+And the 3-5th patches are for the testcases of the 2th patch.
+
+Changes since v1:
+- change the maximun function arguments to 14 from 12
+- add testcases (Jiri Olsa)
+- instead EMIT4 with EMIT3_off32 for "lea" to prevent overflow
+
+Menglong Dong (5):
+  bpf: make MAX_BPF_FUNC_ARGS 14
+  bpf, x86: allow function arguments up to 14 for TRACING
+  libbpf: make BPF_PROG support 15 function arguments
+  selftests/bpf: rename bpf_fentry_test{7,8,9} to bpf_fentry_test_ptr*
+  selftests/bpf: add testcase for FENTRY/FEXIT with 6+ arguments
+
+ arch/x86/net/bpf_jit_comp.c                   | 96 ++++++++++++++++---
+ include/linux/bpf.h                           |  9 +-
+ net/bpf/test_run.c                            | 40 ++++++--
+ tools/lib/bpf/bpf_helpers.h                   |  9 +-
+ tools/lib/bpf/bpf_tracing.h                   | 10 +-
+ .../selftests/bpf/prog_tests/bpf_cookie.c     | 24 ++---
+ .../bpf/prog_tests/kprobe_multi_test.c        | 16 ++--
+ .../testing/selftests/bpf/progs/fentry_test.c | 50 ++++++++--
+ .../testing/selftests/bpf/progs/fexit_test.c  | 51 ++++++++--
+ .../selftests/bpf/progs/get_func_ip_test.c    |  2 +-
+ .../selftests/bpf/progs/kprobe_multi.c        | 12 +--
+ .../bpf/progs/verifier_btf_ctx_access.c       |  2 +-
+ .../selftests/bpf/verifier/atomic_fetch_add.c |  4 +-
+ 13 files changed, 249 insertions(+), 76 deletions(-)
+
+-- 
+2.40.1
+
 
