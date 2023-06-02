@@ -1,30 +1,30 @@
-Return-Path: <netdev+bounces-7354-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7355-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 81B5571FDBD
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 11:25:14 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D6F4A71FDC3
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 11:25:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B8C95281770
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 09:25:12 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1EFA11C20AD0
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 09:25:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F53118AF8;
-	Fri,  2 Jun 2023 09:22:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 54CC518C09;
+	Fri,  2 Jun 2023 09:22:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C36A17748;
-	Fri,  2 Jun 2023 09:22:21 +0000 (UTC)
-Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E757E4C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F4A018C06;
+	Fri,  2 Jun 2023 09:22:22 +0000 (UTC)
+Received: from out30-111.freemail.mail.aliyun.com (out30-111.freemail.mail.aliyun.com [115.124.30.111])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A37DE6D;
 	Fri,  2 Jun 2023 02:22:19 -0700 (PDT)
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0Vk9M5tA_1685697733;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vk9M5tA_1685697733)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R451e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0Vk9LPCK_1685697734;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vk9LPCK_1685697734)
           by smtp.aliyun-inc.com;
-          Fri, 02 Jun 2023 17:22:14 +0800
+          Fri, 02 Jun 2023 17:22:15 +0800
 From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To: virtualization@lists.linux-foundation.org
 Cc: "Michael S. Tsirkin" <mst@redhat.com>,
@@ -40,9 +40,9 @@ Cc: "Michael S. Tsirkin" <mst@redhat.com>,
 	John Fastabend <john.fastabend@gmail.com>,
 	netdev@vger.kernel.org,
 	bpf@vger.kernel.org
-Subject: [PATCH vhost v10 06/10] virtio_ring: packed-detach: support return dma info to driver
-Date: Fri,  2 Jun 2023 17:22:02 +0800
-Message-Id: <20230602092206.50108-7-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH vhost v10 07/10] virtio_ring: introduce helpers for premapped
+Date: Fri,  2 Jun 2023 17:22:03 +0800
+Message-Id: <20230602092206.50108-8-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.32.0.3.g01195cf9f
 In-Reply-To: <20230602092206.50108-1-xuanzhuo@linux.alibaba.com>
 References: <20230602092206.50108-1-xuanzhuo@linux.alibaba.com>
@@ -61,218 +61,166 @@ X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Under the premapped mode, the driver needs to unmap the DMA address
-after receiving the buffer. The virtio core records the DMA address,
-so the driver needs a way to get the dma info from the virtio core.
+This patch introduces three helpers for premapped mode.
 
-A straightforward approach is to pass an array to the virtio core when
-calling virtqueue_get_buf(). However, it is not feasible when there are
-multiple DMA addresses in the descriptor chain, and the array size is
-unknown.
+* virtqueue_get_buf_premapped
+* virtqueue_detach_unused_buf_premapped
 
-To solve this problem, a helper be introduced. After calling
-virtqueue_get_buf(), the driver can call the helper to
-retrieve a dma info. If the helper function returns -EAGAIN, it means
-that there are more DMA addresses to be processed, and the driver should
-call the helper function again. To keep track of the current position in
-the chain, a cursor must be passed to the helper function, which is
-initialized by virtqueue_get_buf().
+The above helpers work like the non-premapped funcs. But a cursor is
+passed.
 
-Some processes are done inside this helper, so this helper MUST be
-called under the premapped mode.
+virtqueue_detach is used to get the dma info of the last buf by
+  cursor.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/virtio/virtio_ring.c | 105 ++++++++++++++++++++++++++++++++---
- include/linux/virtio.h       |   9 ++-
- 2 files changed, 103 insertions(+), 11 deletions(-)
+ drivers/virtio/virtio_ring.c | 83 ++++++++++++++++++++++++++++++++++++
+ include/linux/virtio.h       | 10 +++++
+ 2 files changed, 93 insertions(+)
 
 diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index cdc4349f6066..cbc22daae7e1 100644
+index cbc22daae7e1..6771b9661798 100644
 --- a/drivers/virtio/virtio_ring.c
 +++ b/drivers/virtio/virtio_ring.c
-@@ -1695,8 +1695,85 @@ static bool virtqueue_kick_prepare_packed(struct virtqueue *_vq)
- 	return needs_kick;
+@@ -2555,6 +2555,66 @@ void *virtqueue_get_buf(struct virtqueue *_vq, unsigned int *len)
+ 	return virtqueue_get_buf_ctx(_vq, len, NULL);
  }
- 
-+static void detach_cursor_init_packed(struct vring_virtqueue *vq,
-+				      struct virtqueue_detach_cursor *cursor, u16 id)
-+{
-+	struct vring_desc_state_packed *state = NULL;
-+	u32 len;
+ EXPORT_SYMBOL_GPL(virtqueue_get_buf);
 +
-+	state = &vq->packed.desc_state[id];
-+
-+	/* Clear data ptr. */
-+	state->data = NULL;
-+
-+	vq->packed.desc_extra[state->last].next = vq->free_head;
-+	vq->free_head = id;
-+	vq->vq.num_free += state->num;
-+
-+	/* init cursor */
-+	cursor->curr = id;
-+	cursor->done = 0;
-+	cursor->pos = 0;
-+
-+	if (vq->packed.desc_extra[id].flags & VRING_DESC_F_INDIRECT) {
-+		len = vq->split.desc_extra[id].len;
-+
-+		cursor->num = len / sizeof(struct vring_packed_desc);
-+		cursor->indirect = true;
-+
-+		vring_unmap_extra_packed(vq, &vq->packed.desc_extra[id]);
-+	} else {
-+		cursor->num = state->num;
-+		cursor->indirect = false;
-+	}
-+}
-+
-+static int virtqueue_detach_packed(struct virtqueue *_vq, struct virtqueue_detach_cursor *cursor,
-+				   dma_addr_t *addr, u32 *len, enum dma_data_direction *dir)
++/**
++ * virtqueue_get_buf_premapped - get the next used buffer
++ * @_vq: the struct virtqueue we're talking about.
++ * @len: the length written into the buffer
++ * @ctx: extra context for the token
++ * @cursor: detach cursor
++ *
++ * If the device wrote data into the buffer, @len will be set to the
++ * amount written.  This means you don't need to clear the buffer
++ * beforehand to ensure there's no data leakage in the case of short
++ * writes.
++ *
++ * Caller must ensure we don't call this with other virtqueue
++ * operations at the same time (except where noted).
++ *
++ * This is used for the premapped vq. The cursor is passed by the dirver, that
++ * is used for virtqueue_detach. That will be initialized by virtio core
++ * internally.
++ *
++ * Returns NULL if there are no used buffers, or the "data" token
++ * handed to virtqueue_add_*().
++ */
++void *virtqueue_get_buf_premapped(struct virtqueue *_vq, unsigned int *len,
++				  void **ctx,
++				  struct virtqueue_detach_cursor *cursor)
 +{
 +	struct vring_virtqueue *vq = to_vvq(_vq);
 +
-+	if (unlikely(cursor->done))
-+		return -EINVAL;
-+
-+	if (!cursor->indirect) {
-+		struct vring_desc_extra *extra;
-+
-+		extra = &vq->packed.desc_extra[cursor->curr];
-+		cursor->curr = extra->next;
-+
-+		*addr = extra->addr;
-+		*len = extra->len;
-+		*dir = (extra->flags & VRING_DESC_F_WRITE) ? DMA_FROM_DEVICE : DMA_TO_DEVICE;
-+
-+		if (++cursor->pos == cursor->num) {
-+			cursor->done = true;
-+			return 0;
-+		}
-+	} else {
-+		struct vring_packed_desc *indir_desc, *desc;
-+		u16 flags;
-+
-+		indir_desc = vq->packed.desc_state[cursor->curr].indir_desc;
-+		desc = &indir_desc[cursor->pos];
-+
-+		flags = le16_to_cpu(desc->flags);
-+		*addr = le64_to_cpu(desc->addr);
-+		*len = le32_to_cpu(desc->len);
-+		*dir = (flags & VRING_DESC_F_WRITE) ?  DMA_FROM_DEVICE : DMA_TO_DEVICE;
-+
-+		if (++cursor->pos == cursor->num) {
-+			kfree(indir_desc);
-+			cursor->done = true;
-+			return 0;
-+		}
-+	}
-+
-+	return -EAGAIN;
++	return vq->packed_ring ? virtqueue_get_buf_ctx_packed(_vq, len, ctx, cursor) :
++				 virtqueue_get_buf_ctx_split(_vq, len, ctx, cursor);
 +}
++EXPORT_SYMBOL_GPL(virtqueue_get_buf_premapped);
 +
- static void detach_buf_packed(struct vring_virtqueue *vq,
--			      unsigned int id, void **ctx)
-+			      unsigned int id)
- {
- 	struct vring_desc_state_packed *state = NULL;
- 	struct vring_packed_desc *desc;
-@@ -1736,8 +1813,6 @@ static void detach_buf_packed(struct vring_virtqueue *vq,
- 		}
- 		kfree(desc);
- 		state->indir_desc = NULL;
--	} else if (ctx) {
--		*ctx = state->indir_desc;
- 	}
- }
- 
-@@ -1768,7 +1843,8 @@ static bool more_used_packed(const struct vring_virtqueue *vq)
- 
- static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
- 					  unsigned int *len,
--					  void **ctx)
-+					  void **ctx,
-+					  struct virtqueue_detach_cursor *cursor)
- {
- 	struct vring_virtqueue *vq = to_vvq(_vq);
- 	u16 last_used, id, last_used_idx;
-@@ -1808,7 +1884,14 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
- 
- 	/* detach_buf_packed clears data, so grab it now. */
- 	ret = vq->packed.desc_state[id].data;
--	detach_buf_packed(vq, id, ctx);
++/**
++ * virtqueue_detach - get the dma info of last buf
++ * @_vq: the struct virtqueue we're talking about.
++ * @cursor: detach cursor
++ * @addr: the dma address
++ * @len: the length of the dma address
++ * @dir: the direction of the dma address
++ *
++ * This is used for the premapped vq. The cursor is initialized by
++ * virtqueue_get_buf_premapped or virtqueue_detach_unused_buf_premapped.
++ *
++ * Returns:
++ * -EAGAIN: there are more dma info, this function should be called more.
++ * -EINVAL: the process is done, should not call this function
++ * 0: no more dma info
++ */
++int virtqueue_detach(struct virtqueue *_vq, struct virtqueue_detach_cursor *cursor,
++		     dma_addr_t *addr, u32 *len, enum dma_data_direction *dir)
++{
++	struct vring_virtqueue *vq = to_vvq(_vq);
 +
-+	if (!vq->indirect && ctx)
-+		*ctx = vq->packed.desc_state[id].indir_desc;
++	return vq->packed_ring ? virtqueue_detach_packed(_vq, cursor, addr, len, dir) :
++				 virtqueue_detach_split(_vq, cursor, addr, len, dir);
++}
++EXPORT_SYMBOL_GPL(virtqueue_detach);
 +
-+	if (vq->premapped)
-+		detach_cursor_init_packed(vq, cursor, id);
-+	else
-+		detach_buf_packed(vq, id);
- 
- 	last_used += vq->packed.desc_state[id].num;
- 	if (unlikely(last_used >= vq->packed.vring.num)) {
-@@ -1960,7 +2043,8 @@ static bool virtqueue_enable_cb_delayed_packed(struct virtqueue *_vq)
- 	return true;
- }
- 
--static void *virtqueue_detach_unused_buf_packed(struct virtqueue *_vq)
-+static void *virtqueue_detach_unused_buf_packed(struct virtqueue *_vq,
-+						struct virtqueue_detach_cursor *cursor)
- {
- 	struct vring_virtqueue *vq = to_vvq(_vq);
- 	unsigned int i;
-@@ -1973,7 +2057,10 @@ static void *virtqueue_detach_unused_buf_packed(struct virtqueue *_vq)
- 			continue;
- 		/* detach_buf clears data, so grab it now. */
- 		buf = vq->packed.desc_state[i].data;
--		detach_buf_packed(vq, i, NULL);
-+		if (vq->premapped)
-+			detach_cursor_init_packed(vq, cursor, i);
-+		else
-+			detach_buf_packed(vq, i);
- 		END_USE(vq);
- 		return buf;
- 	}
-@@ -2458,7 +2545,7 @@ void *virtqueue_get_buf_ctx(struct virtqueue *_vq, unsigned int *len,
- {
- 	struct vring_virtqueue *vq = to_vvq(_vq);
- 
--	return vq->packed_ring ? virtqueue_get_buf_ctx_packed(_vq, len, ctx) :
-+	return vq->packed_ring ? virtqueue_get_buf_ctx_packed(_vq, len, ctx, NULL) :
- 				 virtqueue_get_buf_ctx_split(_vq, len, ctx, NULL);
- }
- EXPORT_SYMBOL_GPL(virtqueue_get_buf_ctx);
-@@ -2590,7 +2677,7 @@ void *virtqueue_detach_unused_buf(struct virtqueue *_vq)
- {
- 	struct vring_virtqueue *vq = to_vvq(_vq);
- 
--	return vq->packed_ring ? virtqueue_detach_unused_buf_packed(_vq) :
-+	return vq->packed_ring ? virtqueue_detach_unused_buf_packed(_vq, NULL) :
- 				 virtqueue_detach_unused_buf_split(_vq, NULL);
+ /**
+  * virtqueue_disable_cb - disable callbacks
+  * @_vq: the struct virtqueue we're talking about.
+@@ -2682,6 +2742,29 @@ void *virtqueue_detach_unused_buf(struct virtqueue *_vq)
  }
  EXPORT_SYMBOL_GPL(virtqueue_detach_unused_buf);
+ 
++/**
++ * virtqueue_detach_unused_buf_premapped - detach first unused buffer
++ * @_vq: the struct virtqueue we're talking about.
++ * @cursor: detach cursor
++ *
++ * This is used for the premapped vq. The cursor is passed by the dirver, that
++ * is used for virtqueue_detach. That will be initialized by virtio core
++ * internally.
++ *
++ * Returns NULL or the "data" token handed to virtqueue_add_*().
++ * This is not valid on an active queue; it is useful for device
++ * shutdown or the reset queue.
++ */
++void *virtqueue_detach_unused_buf_premapped(struct virtqueue *_vq,
++					    struct virtqueue_detach_cursor *cursor)
++{
++	struct vring_virtqueue *vq = to_vvq(_vq);
++
++	return vq->packed_ring ? virtqueue_detach_unused_buf_packed(_vq, cursor) :
++				 virtqueue_detach_unused_buf_split(_vq, cursor);
++}
++EXPORT_SYMBOL_GPL(virtqueue_detach_unused_buf_premapped);
++
+ static inline bool more_used(const struct vring_virtqueue *vq)
+ {
+ 	return vq->packed_ring ? more_used_packed(vq) : more_used_split(vq);
 diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-index eb4a4e4329aa..7f137c7a9034 100644
+index 7f137c7a9034..0a11c5b32fe5 100644
 --- a/include/linux/virtio.h
 +++ b/include/linux/virtio.h
-@@ -43,8 +43,13 @@ struct virtqueue_detach_cursor {
- 	unsigned done:1;
- 	unsigned hole:14;
+@@ -3,6 +3,7 @@
+ #define _LINUX_VIRTIO_H
+ /* Everything a virtio driver needs to work with any particular virtio
+  * implementation. */
++#include <linux/dma-mapping.h>
+ #include <linux/types.h>
+ #include <linux/scatterlist.h>
+ #include <linux/spinlock.h>
+@@ -88,6 +89,10 @@ void *virtqueue_get_buf(struct virtqueue *vq, unsigned int *len);
+ void *virtqueue_get_buf_ctx(struct virtqueue *vq, unsigned int *len,
+ 			    void **ctx);
  
--	/* for split head */
--	unsigned head:16;
-+	union {
-+		/* for split head */
-+		unsigned head:16;
++void *virtqueue_get_buf_premapped(struct virtqueue *_vq, unsigned int *len,
++				  void **ctx,
++				  struct virtqueue_detach_cursor *cursor);
 +
-+		/* for packed id */
-+		unsigned curr:16;
-+	};
- 	unsigned num:16;
- 	unsigned pos:16;
- };
+ void virtqueue_disable_cb(struct virtqueue *vq);
+ 
+ bool virtqueue_enable_cb(struct virtqueue *vq);
+@@ -101,6 +106,8 @@ bool virtqueue_poll(struct virtqueue *vq, unsigned);
+ bool virtqueue_enable_cb_delayed(struct virtqueue *vq);
+ 
+ void *virtqueue_detach_unused_buf(struct virtqueue *vq);
++void *virtqueue_detach_unused_buf_premapped(struct virtqueue *_vq,
++					    struct virtqueue_detach_cursor *cursor);
+ 
+ unsigned int virtqueue_get_vring_size(const struct virtqueue *vq);
+ 
+@@ -114,6 +121,9 @@ dma_addr_t virtqueue_get_used_addr(const struct virtqueue *vq);
+ int virtqueue_resize(struct virtqueue *vq, u32 num,
+ 		     void (*recycle)(struct virtqueue *vq, void *buf));
+ 
++int virtqueue_detach(struct virtqueue *_vq, struct virtqueue_detach_cursor *cursor,
++		     dma_addr_t *addr, u32 *len, enum dma_data_direction *dir);
++
+ /**
+  * struct virtio_device - representation of a device using virtio
+  * @index: unique position on the virtio bus
 -- 
 2.32.0.3.g01195cf9f
 
