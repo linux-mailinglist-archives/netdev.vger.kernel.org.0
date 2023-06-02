@@ -1,121 +1,123 @@
-Return-Path: <netdev+bounces-7592-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7593-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id DFE86720C0D
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 00:48:28 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 46BE3720C15
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 00:53:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 70A0B1C21239
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 22:48:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E85D5281B35
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 22:53:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 19EB1C141;
-	Fri,  2 Jun 2023 22:48:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0CD60C2C0;
+	Fri,  2 Jun 2023 22:53:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E8A733301
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 22:48:25 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43621BC
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:48:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685746101;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=86nnFvIAvMyLiukOvU/wo8+LyrpqtpVSH2BbGuUzuuI=;
-	b=gAW3Vp6TltUR3931BJU1QLp/+ROTrKFfkoZQXCFYIV4xpgoRY7MsFTOjopxTXQkkAFpZrB
-	A0Q+mltgd6z/lFbnzC6gW/qVVM+WiZ7a0AJcZRsxmr9phuAgMmpe5/mYmnRxHnTgEa/Ey/
-	VQjGJZb04vz7Zi/kJhgXEb/LBtlwsvk=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-639-89Q3-a5FMeuwDwJuPuUWkw-1; Fri, 02 Jun 2023 18:48:20 -0400
-X-MC-Unique: 89Q3-a5FMeuwDwJuPuUWkw-1
-Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-3f814a2d990so28081761cf.1
-        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 15:48:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2BCDC141
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 22:53:53 +0000 (UTC)
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EAF1E40
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:53:52 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id a640c23a62f3a-9700219be87so376087666b.1
+        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 15:53:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685746431; x=1688338431;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=800f3+0Lsb+PmQixuAuDOEq2hZQ/QTMYoU+QGjAKizU=;
+        b=KQKUoXTx39Yav8VGFeYO8c7s+y4jXFlquHdRHZsAqmUGJwM4SUOwebAKChgoB5jD6C
+         CIOijE1k4h+BIGUUs3UbseZoyMPA3Zazi/GQHfbKrObLLPwR+iNGTIv62FGdL3/mCVkH
+         t5Vyb4R1i2MY/R0C4upPp30yF2uz/v4xzehjrhxI7PE+kBSUh6s8VXCxjwd0zuZAqdTZ
+         jzFx7x+KACVF/WtgyXeZ+/BZctA7qH4stdKWl+MQARvgapNoFMr6vSqdfVJauHutt5Jv
+         QhLH0if8SkqaSpT/vOxbg89yVUd/HUfHtbQimG+SoxsdmyZluO7E6rzwAElMhrgVVPe6
+         AAEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685746100; x=1688338100;
-        h=cc:to:subject:message-id:date:in-reply-to:mime-version:references
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=86nnFvIAvMyLiukOvU/wo8+LyrpqtpVSH2BbGuUzuuI=;
-        b=gmgbUVQ/I25q/RnQU0RkS0KaRzuakR/BEbBEtGP1eA24Wcg2UVas7yQqwUdrEhG5OI
-         Y78DDpZeYKwN0fwsUcIg0aygD5YHoF73JHj5kyQgzhGaGenqe5eeqNKV2cdXlSOUbwOI
-         zaf6KzqZm1fwGppcnH86gY5pBSuM24Syrw/LkToxMmEiZtuGDFjQpUl7cweyBnY7ui7t
-         Zy7O6nPquTJ5LqChsW07F99nlham/xkgzUZ2OZI6nY6h/A7n2oOJpkpjLBp4j6bh6wlX
-         W4CjvaZm7nzIzvTwj/u688IO5ehLSO9Ge9VaucgAB8aXBgnM11xJZ4Qip7YBKnua820F
-         qlnQ==
-X-Gm-Message-State: AC+VfDyExSiyWbHA5dBaJ4BWT/PmUtj566oh8vW4QIxtEpoL/e5B6g+l
-	2ccdlx4TmjEvzdqO0KJusQ5GH9TZVZ7shLwSi4Zf2lIQUYWJDucZ9RLtLXYuY6L1lJNeh6D+aBN
-	z9bP2OcfFbNL8XEtDuZfpv7URo3EnBljm
-X-Received: by 2002:a05:622a:54e:b0:3f5:3ad4:39b7 with SMTP id m14-20020a05622a054e00b003f53ad439b7mr14052253qtx.66.1685746099922;
-        Fri, 02 Jun 2023 15:48:19 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5KSgxzea6zpUFEZ+Gs/8kapO8ccu9XNo0WDb0EJw0TlyqICwoXEvzfYRo18t7EkACcrfLUUDT98TBUXa39dZg=
-X-Received: by 2002:a05:622a:54e:b0:3f5:3ad4:39b7 with SMTP id
- m14-20020a05622a054e00b003f53ad439b7mr14052227qtx.66.1685746099674; Fri, 02
- Jun 2023 15:48:19 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 2 Jun 2023 15:48:19 -0700
-From: Marcelo Ricardo Leitner <mleitner@redhat.com>
-References: <20230517110225.29327-1-jhs@mojatatu.com>
+        d=1e100.net; s=20221208; t=1685746431; x=1688338431;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=800f3+0Lsb+PmQixuAuDOEq2hZQ/QTMYoU+QGjAKizU=;
+        b=FNrNQaH+CTfBoDm+N9zQG//wf0Prsrhjeas+XJ1TcWd7masRQEbs+jdEQ9xl/DiZ/B
+         PtAI9q9vhk9LVOBsIbtEvXS08fxyiDloREeIXKAvL66QbdvfRSvU/KRcMcl9bHlqokK7
+         mdGccUAinHCqKUI2WeUzO51/8aOkJf3e+IbokRMTqGZTZ8VYY6MXPS+u5w+uEJgn04rz
+         pnDYv7sGoL7oC5CX/0nXaCab5znt9hxVoaVWTPYooRp4tTO+5M+3mmhQ8KSNq4tMUtgd
+         b9f9QHA0944NBgowmhTA6phn4Tqg0GkxAFLynVd4nhlc4FyzZ36FrJ5rExW251FtoN5P
+         0Tng==
+X-Gm-Message-State: AC+VfDzXESicpd7ndIvvUXub1gAFOR5HxQtPgj8seRILDDv3esK0CI6M
+	nNxmpKYIB4OGIutEr6l8/SDURkXYnJI=
+X-Google-Smtp-Source: ACHHUZ54uvQgqsE/6t2pHO70DTBj532VRt0GgmdwlAcKJLL4haGwoZixbfemnO6fNLGrnRucAR/GLw==
+X-Received: by 2002:a17:907:97d3:b0:96a:928c:d391 with SMTP id js19-20020a17090797d300b0096a928cd391mr22484ejc.4.1685746430499;
+        Fri, 02 Jun 2023 15:53:50 -0700 (PDT)
+Received: from shift.daheim (p5b0d7936.dip0.t-ipconnect.de. [91.13.121.54])
+        by smtp.gmail.com with ESMTPSA id l14-20020a170906a40e00b0095807ab4b57sm1274165ejz.178.2023.06.02.15.53.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Jun 2023 15:53:49 -0700 (PDT)
+Received: from chuck by shift.daheim with local (Exim 4.96)
+	(envelope-from <chuck@shift.daheim>)
+	id 1q5DeX-007a97-01;
+	Sat, 03 Jun 2023 00:53:49 +0200
+From: Christian Lamparter <chunkeey@gmail.com>
+To: netdev@vger.kernel.org
+Cc: alsi@bang-olufsen.dk,
+	luizluca@gmail.com,
+	linus.walleij@linaro.org,
+	andrew@lunn.ch,
+	olteanv@gmail.com,
+	f.fainelli@gmail.com
+Subject: [PATCH v1] net: dsa: realtek: rtl8365mb: add missing case for digital interface 0
+Date: Sat,  3 Jun 2023 00:53:48 +0200
+Message-Id: <40df61cc5bebe94e4d7d32f79776be0c12a37d61.1685746295.git.chunkeey@gmail.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20230517110225.29327-1-jhs@mojatatu.com>
-Date: Fri, 2 Jun 2023 15:48:19 -0700
-Message-ID: <CALnP8ZZps_VJNEMsZm07fK4DjPR1iCQkyH4_tpbZVr+N8KS+ug@mail.gmail.com>
-Subject: Re: [PATCH RFC net-next 00/28 v2] Introducing P4TC
-To: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: netdev@vger.kernel.org, deb.chatterjee@intel.com, anjali.singhai@intel.com, 
-	namrata.limaye@intel.com, jiri@resnulli.us, xiyou.wangcong@gmail.com, 
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
-	tom@sipanda.io, p4tc-discussions@netdevconf.info, vladbu@nvidia.com, 
-	simon.horman@corigine.com, khalidm@nvidia.com, toke@redhat.com, 
-	Mahesh.Shirshyad@amd.com, Vipin.Jain@amd.com, tomasz.osinski@intel.com, 
-	mattyk@nvidia.com, dan.daly@intel.com, john.andy.fingerhut@intel.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 17, 2023 at 07:02:25AM -0400, Jamal Hadi Salim wrote:
-> We are seeking community feedback on P4TC patches.
+when bringing up the switch on a Netgear WNDAP660, I observed that
+no traffic got passed from the RTL8363 to the ethernet interface...
 
-This was the first time I read these patches. I don't have much to
-comment on it overall yet.
+Turns out, this was because the dropped case for
+RTL8365MB_DIGITAL_INTERFACE_SELECT_REG(0) that
+got deleted by accident.
 
->
-> Apologies, I know this is a large number of patches but it is the best we could
-> do so as not to miss the essence of the work.
-> Please do note that > 50% of LOC are testcases. I should have emphasized
-> this last time to improve the quality of the discussions, but mea culpa.
+Fixes: d18b59f48b31 ("net: dsa: realtek: rtl8365mb: rename extport to extint")
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+---
+RTL8365MB_DIGITAL_INTERFACE_SELECT_REG(0) is shared between
+extif0 and extif1. There's an extra
+RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_MASK later on to diffy
+up between bits for extif0 and extif1.
+---
+ drivers/net/dsa/realtek/rtl8365mb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-And much of the LOC that are not testcases, are for the CRUD
-implementations. P4 is not simpe and allowing such simple
-manipulations of all those types to the user comes at a cost and I
-don't see a way around that.
-
-The scripts seem long and complex, but they can be structured and are
-human readable. I like how one is able to inspect the datapath no
-matter how it was configured (from a p4 program or manually built).
-This helps a lot with the supportability of solutions based on it.
-
-One thing that I hate about u32 is that it is like perl^W^Wwrite-only.
-It is as flexible as u32, but making sense out of those matches is a
-nightmare. The approach here keeps the flexibility, while not
-becoming as complex and slow moving as flower and yet, understandable
-by humans. A promising in between the two extreme approaches that we
-have in tc today.
-
-  Marcelo
+diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+index 6c00e6dcb193..57aa39f5b341 100644
+--- a/drivers/net/dsa/realtek/rtl8365mb.c
++++ b/drivers/net/dsa/realtek/rtl8365mb.c
+@@ -209,7 +209,8 @@
+ #define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG0		0x1305 /* EXT1 */
+ #define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG1		0x13C3 /* EXT2 */
+ #define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG(_extint) \
+-		((_extint) == 1 ? RTL8365MB_DIGITAL_INTERFACE_SELECT_REG0 : \
++		((_extint) == 0 ? RTL8365MB_DIGITAL_INTERFACE_SELECT_REG0 : \
++		 (_extint) == 1 ? RTL8365MB_DIGITAL_INTERFACE_SELECT_REG0 : \
+ 		 (_extint) == 2 ? RTL8365MB_DIGITAL_INTERFACE_SELECT_REG1 : \
+ 		 0x0)
+ #define   RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_MASK(_extint) \
+-- 
+2.40.1
 
 
