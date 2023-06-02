@@ -1,61 +1,72 @@
-Return-Path: <netdev+bounces-7486-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7487-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2D72E720740
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 18:18:13 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0FE1C72074B
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 18:19:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 96E571C211B3
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 16:18:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 91FCA1C210F2
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 16:19:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 540421C75F;
-	Fri,  2 Jun 2023 16:18:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 187221C763;
+	Fri,  2 Jun 2023 16:19:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 497541C758
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 16:18:09 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49390E40
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 09:18:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=u7cun0H59yCApyhyXwsrgbyJ1bHtB7pjH1rhSHjse8I=; b=Z0QOOeR1YSm53aeXJa0XUsdwlI
-	0hcbNNL1B2YfQKzA/urVQH8QzeR5RuUd9wdPokGQb4Bcb5QrfUA2DpfA3GUjvGNsBGEyuewSWsdeM
-	eAqK0xvYvOK8/p5p0Hw9nej92Vye+U2AU6eJ7bABgvWeW6iYM0jFOjFS0VG6KM005cAe2Uudi5ZSS
-	IjNayK8Mv0OdZIXmiq6I2z6HPDeGuBdluubkjBtwK52bO1l+Op/110ItFNqyPoVqez3sqeKapGnCj
-	bZg/VVcntf18bc2GvAPSjUPvqoXYObFM6NfxwJ8hdkWJxlYNvjF+un4xwnveRm6twuDdBzT93XfJ9
-	lrqdmDTg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41240)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q57TV-0008HM-PD; Fri, 02 Jun 2023 17:18:01 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q57TT-000366-Iy; Fri, 02 Jun 2023 17:17:59 +0100
-Date: Fri, 2 Jun 2023 17:17:59 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CC021C750
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 16:19:14 +0000 (UTC)
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CA61AB;
+	Fri,  2 Jun 2023 09:19:10 -0700 (PDT)
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-3078cc99232so2053910f8f.3;
+        Fri, 02 Jun 2023 09:19:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685722749; x=1688314749;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Df45G13freHV7qKaooKW3cbNcYiTjIevZWnDBJV0Ngs=;
+        b=hUEnD0Ofsj+rzl64sA0vaThqsrkqYoUsUTISenW0qLKAQ6C2Tj+Ai/OLheoQunlaZm
+         PgY00AZi/c/BBWf2gvi5+EOJIAiLgEVFv8EFysrxkP6vDXpGXCWf/eDyY4KTXetUalQi
+         C9PLWxGVedEaoH7U13Lfthaak9DuD+EOg64RDjVtHrBQ8lh24+j4hec3Xg5brqQTY+5A
+         /QpBQKwpwY8phDgnTuKsxSv31Xotp/weBsvGpSDUMiOsIAHJgtNoNk8toAXNrV/LNtNo
+         d3EGoUkTfSHZarrhxesSlnafEdD/F8g7cWQfaqUVNtJe+0VdjORtShHTm1LKlJrkeJqc
+         UCCw==
+X-Gm-Message-State: AC+VfDw6i4lLwfE81t/W2aMQPrNK/X90TvuHKIyBpfavNNIXD9tzio1l
+	Yxvi1yh3A2QGxJGeonJ225o=
+X-Google-Smtp-Source: ACHHUZ7V6s1LqVdQdevjsk3RKa1VPwpouEu01j6+gnTKwWbWp9RyusXrlmogJW9nb4M2BtQB8hHwHg==
+X-Received: by 2002:a5d:65c2:0:b0:30a:dfb4:e300 with SMTP id e2-20020a5d65c2000000b0030adfb4e300mr389381wrw.28.1685722749158;
+        Fri, 02 Jun 2023 09:19:09 -0700 (PDT)
+Received: from gmail.com (fwdproxy-cln-116.fbsv.net. [2a03:2880:31ff:74::face:b00c])
+        by smtp.gmail.com with ESMTPSA id k2-20020a5d4282000000b003047ea78b42sm2075225wrq.43.2023.06.02.09.19.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Jun 2023 09:19:08 -0700 (PDT)
+Date: Fri, 2 Jun 2023 09:19:06 -0700
+From: Breno Leitao <leitao@debian.org>
+To: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc: dsahern@kernel.org, Remi Denis-Courmont <courmisch@gmail.com>,
 	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	Dan Carpenter <dan.carpenter@linaro.org>,
-	Oleksij Rempel <linux@rempel-privat.de>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: phylib: fix phy_read*_poll_timeout()
-Message-ID: <ZHoWN0uO30P/y9hv@shell.armlinux.org.uk>
-References: <E1q4kX6-00BNuM-Mx@rmk-PC.armlinux.org.uk>
- <20230601213345.3aaee66a@kernel.org>
- <20230601213509.7ef8f199@kernel.org>
- <ZHmt9c9VsYxcoXaI@shell.armlinux.org.uk>
- <20230602090539.6a4fa374@kernel.org>
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Alexander Aring <alex.aring@gmail.com>,
+	Stefan Schmidt <stefan@datenfreihafen.org>,
+	Miquel Raynal <miquel.raynal@bootlin.com>,
+	Matthieu Baerts <matthieu.baerts@tessares.net>,
+	Mat Martineau <martineau@kernel.org>,
+	Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+	Xin Long <lucien.xin@gmail.com>, leit@fb.com, axboe@kernel.dk,
+	asml.silence@gmail.com, linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org, dccp@vger.kernel.org,
+	linux-wpan@vger.kernel.org, mptcp@lists.linux.dev,
+	linux-sctp@vger.kernel.org
+Subject: Re: [PATCH net-next v4] net: ioctl: Use kernel memory on protocol
+ ioctl callbacks
+Message-ID: <ZHoWeiDVoLV1VMpT@gmail.com>
+References: <20230530175403.2434218-1-leitao@debian.org>
+ <6476f0e4b0182_3c8862294b2@willemb.c.googlers.com.notmuch>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -64,90 +75,47 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230602090539.6a4fa374@kernel.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+In-Reply-To: <6476f0e4b0182_3c8862294b2@willemb.c.googlers.com.notmuch>
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,FSL_HELO_FAKE,
+	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 02, 2023 at 09:05:39AM -0700, Jakub Kicinski wrote:
-> On Fri, 2 Jun 2023 09:53:09 +0100 Russell King (Oracle) wrote:
-> > > Yes it is :)  All this to save the single line of assignment
-> > > after the read_poll_timeout() "call" ?  
-> > 
-> > Okay, so it seems you don't like it. We can't fix it then, and we'll
-> > have to go with the BUILD_BUG_ON() forcing all users to use a signed
-> > varable (which better be larger than a s8 so negative errnos can fit)
-> > or we just rely on Dan to report the problems.
+On Wed, May 31, 2023 at 03:01:56AM -0400, Willem de Bruijn wrote:
+> Breno Leitao wrote:
+> > +int ip6mr_sk_ioctl(struct sock *sk, unsigned int cmd, void __user *arg);
+> > +static inline int sk_is_ip6mr(struct sock *sk)
+> > +{
+> > +	return sk->sk_family == AF_INET6 &&
+> > +		inet_sk(sk)->inet_num == IPPROTO_ICMPV6;
+> > +}
+ 
+> Technically, this is just sk_is_icmpv6, which is broader than IPv6
+> multicast routing.
+
+Right, let me rename it to reflect this properly.
+
+> No other concerns from me.
+
+Thanks for the detailed review.
+
+> Two small asides, that are fine to ignore.
 > 
-> Wait, did the version I proposed not work?
+> The $PROTO_sk_ioctl functions could conceivably call directly into
+> the $PROTO_ioctl functions without the indirect function pointer.
+> But that would require open coding the sock_sk_ioctl_inout helpers.
 > 
-> https://lore.kernel.org/all/20230530121910.05b9f837@kernel.org/
+> The demux now first checks relatively unlikely multicast routing
+> and phonet before falling through to the more common protocols. But
+> ioctl is not a hot path operation.
 
-If we're into the business of throwing web URLs at each other for
-messages we've already read, here's my one for you which contains
-the explanation why your one is broken, and proposing my solution.
+I am more than happy to open code sock_sk_ioctl_inout into protocol
+functions, but, I would prefer to do it in a follow up patch, since this
+one is close (I hope) to address the original problem. I hope it works
+for you.
 
-https://lore.kernel.org/all/ZHZmBBDSVMf1WQWI@shell.armlinux.org.uk/
-
-To see exactly why yours is broken, see the paragraph starting
-"The elephant in the room..."
-
-If it needs yet more explanation, which clearly it does, then let's
-look at what genphy_loopback is doing:
-
-                ret = phy_read_poll_timeout(phydev, MII_BMSR, val,
-                                            val & BMSR_LSTATUS,
-                                    5000, 500000, true);
-
-Now, with your supposed "fix" of:
-
-+	int __ret, __val;						\
-+									\
-+	__ret = read_poll_timeout(phy_read, __val, __val < 0 || (cond),	\
- 		sleep_us, timeout_us, sleep_before_read, phydev, regnum); \
-
-This ends up being:
-
-	int __ret, __val;
-
-	__ret = read_poll_timeout(phy_read, __val, __val < 0 || (val & BMSR_LSTATUS),
- 		sleep_us, timeout_us, sleep_before_read, phydev, regnum);
-
-and that expands to something that does this:
-
-	__val = phy_read(phydev, regnum);
-	if (__val < 0 || (val & BMSR_LSTATUS))
-		break;
-
-Can you spot the bug yet? Where does "val" for the test "val & BMSR_LSTATUS"
-come from?
-
-A bigger hint. With the existing code, this would have been:
-
-	val = phy_read(phydev, regnum);
-	if (val < 0 || (val & BMSR_LSTATUS))
-		break;
-
-See the difference? val & BMSR_LSTATUS is checking the value that was
-returned from phy_read() here, but in yours, it's checking an
-uninitialised variable.
-
-With my proposal, this becomes:
-
-	val = __val = phy_read(phydev, regnum);
-	if (__val < 0 || (val & BMSR_LSTATUS))
-		break;
-
-where "val" is whatever type the user chose, which has absolutely _no_
-bearing what so ever on whether the test for __val < 0 can be correctly
-evaluated, and makes that test totally independent of whatever type the
-user chose.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+Thanks!
 
