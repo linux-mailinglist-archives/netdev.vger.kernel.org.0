@@ -1,92 +1,146 @@
-Return-Path: <netdev+bounces-7342-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7343-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id A390271FCC0
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 10:54:02 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id F0A2F71FCC7
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 10:54:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5DDD5281760
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 08:54:01 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 800CA1C20BEE
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 08:54:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 52C43C8EC;
-	Fri,  2 Jun 2023 08:53:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23BE414286;
+	Fri,  2 Jun 2023 08:54:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47A0C46AA
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:53:26 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AB73E6D
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 01:53:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=kbS2UwqF+dnVZY/XUMn7QZlmb5IKyGIwfOGYJB/ZAGg=; b=kSB1d0VR75hhl0Byvm0grU8b1/
-	pUypk2+wtIzbk1gAZbW1eLw9VPEwkKt74L5Twx73A+nDAT9yFGZNkZt1bNtSlH/6agvmMd65ufgB+
-	R04aquQ4jfgYd0+NDmWP65FhATzYvpRNSeZwtFpyAgwDbhkdjSgV9aEPI4nR0JJTinr0FIiVOOqP7
-	OUz/LDz8a+rmSDlCzDBVlzeFg90nCyAd+GmN1eE/8tVEUxAsK9G0okCpkok9VVpnYH/mWV+Hx8LzD
-	0hIQq/UQ3ZltSG220wXKfVM+abKWl+5nPldOSNQvUoJfU6KksXFWOQsXivD6/iEmN3l/ZLUjWnGKh
-	1xynHb4g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39330)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q50X2-0007hF-Dq; Fri, 02 Jun 2023 09:53:12 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q50Wz-0002nS-NK; Fri, 02 Jun 2023 09:53:09 +0100
-Date: Fri, 2 Jun 2023 09:53:09 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	Dan Carpenter <dan.carpenter@linaro.org>,
-	Oleksij Rempel <linux@rempel-privat.de>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: phylib: fix phy_read*_poll_timeout()
-Message-ID: <ZHmt9c9VsYxcoXaI@shell.armlinux.org.uk>
-References: <E1q4kX6-00BNuM-Mx@rmk-PC.armlinux.org.uk>
- <20230601213345.3aaee66a@kernel.org>
- <20230601213509.7ef8f199@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1994046AA
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:54:53 +0000 (UTC)
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A63BFE52
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 01:54:31 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+	by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3528sKK9027659;
+	Fri, 2 Jun 2023 03:54:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1685696060;
+	bh=V2p+jq8Ctw9rByWsLTNS2arqzG00Bxp9ytj9ysO8HGw=;
+	h=Date:CC:Subject:To:References:From:In-Reply-To;
+	b=rk9UqGyacQ2R4SXNTXEM3kA6HEHyWHn24lnvZ5k5zkB8Tgp1XC4kLUcWRj9wZCYLt
+	 RZCBlpJWYHpXlM5ZjvoRS+ocs5K2K5094sLcE3UNiQs5McYX9IIYwM52E/lhPHJhFT
+	 aQaURvbW/34doanV2vRuJQ2AmfEUda0/uXtXuu0s=
+Received: from DLEE101.ent.ti.com (dlee101.ent.ti.com [157.170.170.31])
+	by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3528sKt0009490
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 2 Jun 2023 03:54:20 -0500
+Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Fri, 2
+ Jun 2023 03:54:19 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Fri, 2 Jun 2023 03:54:19 -0500
+Received: from [172.24.145.61] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+	by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3528sGGV094792;
+	Fri, 2 Jun 2023 03:54:17 -0500
+Message-ID: <2fd8d661-8c1b-5e33-4b04-1d0f2fedd6fc@ti.com>
+Date: Fri, 2 Jun 2023 14:24:16 +0530
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230601213509.7ef8f199@kernel.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+CC: <pabeni@redhat.com>, <kuba@kernel.org>, <edumazet@google.com>,
+        <davem@davemloft.net>, <bryan.whitehead@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <s-vadapalli@ti.com>
+Subject: Re: [PATCH net-next] net: lan743x: Remove extranous gotos
+Content-Language: en-US
+To: Moritz Fischer <moritzf@google.com>, <netdev@vger.kernel.org>
+References: <20230602000414.3294036-1-moritzf@google.com>
+From: Siddharth Vadapalli <s-vadapalli@ti.com>
+In-Reply-To: <20230602000414.3294036-1-moritzf@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 01, 2023 at 09:35:09PM -0700, Jakub Kicinski wrote:
-> On Thu, 1 Jun 2023 21:33:45 -0700 Jakub Kicinski wrote:
-> > On Thu, 01 Jun 2023 16:48:12 +0100 Russell King (Oracle) wrote:
-> > > +	__ret = read_poll_timeout(__val = phy_read, val, \  
-> >                                                     ^^^
-> > Is this not __val on purpose?
-> 
-> Yes it is :)  All this to save the single line of assignment
-> after the read_poll_timeout() "call" ?
 
-Okay, so it seems you don't like it. We can't fix it then, and we'll
-have to go with the BUILD_BUG_ON() forcing all users to use a signed
-varable (which better be larger than a s8 so negative errnos can fit)
-or we just rely on Dan to report the problems.
+
+On 02/06/23 05:34, Moritz Fischer wrote:
+> The gotos for cleanup aren't required, the function
+> might as well just return the actual error code.
+> 
+> Signed-off-by: Moritz Fischer <moritzf@google.com>
+
+Reviewed-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+
+> ---
+>  drivers/net/ethernet/microchip/lan743x_main.c | 20 +++++--------------
+>  1 file changed, 5 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+> index 957d96a91a8a..f1bded993edc 100644
+> --- a/drivers/net/ethernet/microchip/lan743x_main.c
+> +++ b/drivers/net/ethernet/microchip/lan743x_main.c
+> @@ -160,16 +160,13 @@ static int lan743x_csr_init(struct lan743x_adapter *adapter)
+>  {
+>  	struct lan743x_csr *csr = &adapter->csr;
+>  	resource_size_t bar_start, bar_length;
+> -	int result;
+>  
+>  	bar_start = pci_resource_start(adapter->pdev, 0);
+>  	bar_length = pci_resource_len(adapter->pdev, 0);
+>  	csr->csr_address = devm_ioremap(&adapter->pdev->dev,
+>  					bar_start, bar_length);
+> -	if (!csr->csr_address) {
+> -		result = -ENOMEM;
+> -		goto clean_up;
+> -	}
+> +	if (!csr->csr_address)
+> +		return -ENOMEM;
+>  
+>  	csr->id_rev = lan743x_csr_read(adapter, ID_REV);
+>  	csr->fpga_rev = lan743x_csr_read(adapter, FPGA_REV);
+> @@ -177,10 +174,8 @@ static int lan743x_csr_init(struct lan743x_adapter *adapter)
+>  		   "ID_REV = 0x%08X, FPGA_REV = %d.%d\n",
+>  		   csr->id_rev,	FPGA_REV_GET_MAJOR_(csr->fpga_rev),
+>  		   FPGA_REV_GET_MINOR_(csr->fpga_rev));
+> -	if (!ID_REV_IS_VALID_CHIP_ID_(csr->id_rev)) {
+> -		result = -ENODEV;
+> -		goto clean_up;
+> -	}
+> +	if (!ID_REV_IS_VALID_CHIP_ID_(csr->id_rev))
+> +		return -ENODEV;
+>  
+>  	csr->flags = LAN743X_CSR_FLAG_SUPPORTS_INTR_AUTO_SET_CLR;
+>  	switch (csr->id_rev & ID_REV_CHIP_REV_MASK_) {
+> @@ -193,12 +188,7 @@ static int lan743x_csr_init(struct lan743x_adapter *adapter)
+>  		break;
+>  	}
+>  
+> -	result = lan743x_csr_light_reset(adapter);
+> -	if (result)
+> -		goto clean_up;
+> -	return 0;
+> -clean_up:
+> -	return result;
+> +	return lan743x_csr_light_reset(adapter);
+>  }
+>  
+>  static void lan743x_intr_software_isr(struct lan743x_adapter *adapter)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+Regards,
+Siddharth.
 
