@@ -1,44 +1,44 @@
-Return-Path: <netdev+bounces-7291-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7292-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 93B1471F882
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 04:38:10 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6E6C971F883
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 04:38:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1F11F1C211A8
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 02:38:07 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F050A2819BA
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 02:38:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D0BCF15AA;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E02D94406;
 	Fri,  2 Jun 2023 02:36:01 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A2CE15C9
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 02:35:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD9A3C433B0;
-	Fri,  2 Jun 2023 02:35:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DE4615CF
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 02:35:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40A3AC433B3;
+	Fri,  2 Jun 2023 02:35:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1685673357;
-	bh=7X65X6kDwAxKipI84JCv8SDjLr1x1VCNXZZDURP4PR8=;
+	bh=4JeCpRZLs/uR+QiSe1U9JHaYJzUKduNF5DIhxE3hr+A=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=RIar4oOedrUDtVukL7/bEGUarFJoeQXcUGdyNWW9xDOkmkY95wiD+YCrlG8Eg2UwQ
-	 BP/NLV3/uowghZeka+gnvii/vFj0cWTwII9yT+r4/ObI5CglyZc7DM9YETxev1m3Bm
-	 vMHybJW/D8NGi9KEV0uaizA06uW3IOwqfcSjzdX+cRVjuENcsc/Bny3rPaEb8Xv8eg
-	 +kiI16NRsqUk+gbdIDh3/n90iVBK4+OTYnPMW9JivMgen/vU5ylTmYT2nvNODREyg5
-	 giZjzGORwww5oyeIZHGq4kNBeMDMkpML7sQSEVuJd7Wz9inxqrIMeOnpr5wcc3YBdM
-	 IYEgOY+XOobbg==
+	b=joVbpUTl86BugQXjOJSRBpucA/xaHPgmnKXln7uuUekibP0thr5ih33TSv5iDbP8b
+	 cXika5sRz1VTRCaWE873xpvMsRsXeFEGAezR3D9lzct7bkCtzlfwQxVFpa0Xwsr+6V
+	 eFTBZ4R/0LoOiQGeSxHvc914/ePRwy1uVU8N3Hlh8l6n779xbt0vcCmaIB/K2LeAus
+	 k8N/jO937cU24BFSqCJUt0u1/Xy4H9GCkodxZrwH+vB5yjbAONeT9Mf7YuLqPeywU+
+	 pnwgp37GS0XvD1e9LDZCsnFGlX/8yNl14JMKjdRjb5nmiwneeWI5EoQWpJB7sAUMPq
+	 aNKs2G61ARHwA==
 From: Jakub Kicinski <kuba@kernel.org>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
 	edumazet@google.com,
 	pabeni@redhat.com,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 08/10] tools: ynl-gen: generate alloc and free helpers for req
-Date: Thu,  1 Jun 2023 19:35:46 -0700
-Message-Id: <20230602023548.463441-9-kuba@kernel.org>
+Subject: [PATCH net-next 09/10] tools: ynl-gen: switch to family struct
+Date: Thu,  1 Jun 2023 19:35:47 -0700
+Message-Id: <20230602023548.463441-10-kuba@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230602023548.463441-1-kuba@kernel.org>
 References: <20230602023548.463441-1-kuba@kernel.org>
@@ -50,71 +50,60 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-We expect user to allocate requests with calloc(),
-make things a bit more consistent and provide helpers.
-Generate free calls, too.
+We'll want to store static info about the family soon.
+Generate a struct. This changes creation from, e.g.:
+
+	 ys = ynl_sock_create("netdev", &yerr);
+to:
+	 ys = ynl_sock_create(&ynl_netdev_family, &yerr);
+
+on user's side.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/net/ynl/ynl-gen-c.py | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ tools/net/ynl/ynl-gen-c.py | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
 diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
-index 7d833a42e060..4a7ca2823270 100755
+index 4a7ca2823270..320e5e90920a 100755
 --- a/tools/net/ynl/ynl-gen-c.py
 +++ b/tools/net/ynl/ynl-gen-c.py
-@@ -1476,6 +1476,14 @@ _C_KW = {
-     return 'obj'
+@@ -2109,6 +2109,16 @@ _C_KW = {
+     cw.p(f'#endif /* {hdr_prot} */')
  
  
-+def print_alloc_wrapper(ri, direction):
-+    name = op_prefix(ri, direction)
-+    ri.cw.write_func_prot(f'static inline struct {name} *', f"{name}_alloc", [f"void"])
-+    ri.cw.block_start()
-+    ri.cw.p(f'return calloc(1, sizeof(struct {name}));')
-+    ri.cw.block_end()
++def render_user_family(family, cw, prototype):
++    symbol = f'const struct ynl_family ynl_{family.c_name}_family'
++    if prototype:
++        cw.p(f'extern {symbol};')
++    else:
++        cw.block_start(f'{symbol} = ')
++        cw.p(f'.name = "{family.name}",')
++        cw.block_end(line=';')
 +
 +
- def print_free_prototype(ri, direction, suffix=';'):
-     name = op_prefix(ri, direction)
-     arg = free_arg_name(direction)
-@@ -1523,6 +1531,7 @@ _C_KW = {
+ def find_kernel_root(full_path):
+     sub_path = ''
+     while True:
+@@ -2204,6 +2214,8 @@ _C_KW = {
+                 cw.p(f'#include "{one}"')
+         else:
+             cw.p('struct ynl_sock;')
++            cw.nl()
++            render_user_family(parsed, cw, True)
+         cw.nl()
  
- def print_type_helpers(ri, direction, deref=False):
-     print_free_prototype(ri, direction)
-+    ri.cw.nl()
+     if args.mode == "kernel":
+@@ -2397,6 +2409,9 @@ _C_KW = {
+                 cw.p('/* --------------- Common notification parsing --------------- */')
+                 print_ntf_type_parse(parsed, cw, args.mode)
  
-     if ri.ku_space == 'user' and direction == 'request':
-         for _, attr in ri.struct[direction].member_list():
-@@ -1531,6 +1540,7 @@ _C_KW = {
- 
- 
- def print_req_type_helpers(ri):
-+    print_alloc_wrapper(ri, "request")
-     print_type_helpers(ri, "request")
- 
- 
-@@ -1554,6 +1564,12 @@ _C_KW = {
-     print_type(ri, "request")
- 
- 
-+def print_req_free(ri):
-+    if 'request' not in ri.op[ri.op_mode]:
-+        return
-+    _free_type(ri, 'request', ri.struct['request'])
++            cw.nl()
++            render_user_family(parsed, cw, False)
 +
-+
- def print_rsp_type(ri):
-     if (ri.op_mode == 'do' or ri.op_mode == 'dump') and 'reply' in ri.op[ri.op_mode]:
-         direction = 'reply'
-@@ -2344,6 +2360,7 @@ _C_KW = {
-                 if 'do' in op and 'event' not in op:
-                     cw.p(f"/* {op.enum_name} - do */")
-                     ri = RenderInfo(cw, parsed, args.mode, op, op_name, "do")
-+                    print_req_free(ri)
-                     print_rsp_free(ri)
-                     parse_rsp_msg(ri)
-                     print_req(ri)
+     if args.header:
+         cw.p(f'#endif /* {hdr_prot} */')
+ 
 -- 
 2.40.1
 
