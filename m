@@ -1,237 +1,130 @@
-Return-Path: <netdev+bounces-7573-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7574-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 121EC720A58
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 22:30:58 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 083FD720A68
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 22:38:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B1025281B00
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 20:30:56 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7906D1C2128D
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 20:38:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1AC0E1F93E;
-	Fri,  2 Jun 2023 20:30:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FA34539C;
+	Fri,  2 Jun 2023 20:38:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F1261F93A
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 20:30:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21E94523E
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 20:38:50 +0000 (UTC)
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CC9E5B
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 13:30:47 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6846CE43
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 13:38:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685737841;
+	s=mimecast20190719; t=1685738328;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=EgKfP9AbuoSBTzMbn1uV6HerF5HUDAS8HMnZsL2qkJ4=;
-	b=FcZT64dt8bfpsXDHVO5qe62hgnhC1xmN6dOw8Muv/mOWuIdQLnu/gL8j3PzeoZk9vZqm6M
-	8HNFgpq3xHJXtPexelzf8mf9D8AK98aZ426QPRKnfj1AFHwnkIfmnXsTADGmUXxU+X97dL
-	j0wPaaOqdnwncVjXDhI7Z8hFD9Rq99k=
-Received: from mail-ua1-f70.google.com (mail-ua1-f70.google.com
- [209.85.222.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-453-UdFlm01SM4CAxOFnPVx1Zw-1; Fri, 02 Jun 2023 16:30:40 -0400
-X-MC-Unique: UdFlm01SM4CAxOFnPVx1Zw-1
-Received: by mail-ua1-f70.google.com with SMTP id a1e0cc1a2514c-789adaf5182so841421241.3
-        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 13:30:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685737840; x=1688329840;
-        h=cc:to:subject:message-id:date:in-reply-to:mime-version:references
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=EgKfP9AbuoSBTzMbn1uV6HerF5HUDAS8HMnZsL2qkJ4=;
-        b=QvV7yeSdNd4+t5Q+oRTNv3VZIyjq36PaX/WRQbljTA4VIX1aR7VMwnyzk2edQolpsT
-         aOllcKqiHuXDTPTAckztdbOUlyePKxJS3UM4Bzv0TSPdeTacW2/dfou7PyOcJWzEl5sS
-         Ny9LHqZSbBQdeOOOezByClyY/jlviI4lA2UJyji3s+wo2hSPmAn6MkqQCDIj8YI9D7yb
-         PWsDoBHUhqOiWkhTAoSJLZ+fDaQoe6Ky3tZxMqQA5toxMIMy4MQn1xcKZTisbLzgisBG
-         BP906h1bZM/ScZpK9V90kniHoYbv1gdvzfioxpDuhT5w1IN6d4dPOuUZ03UUCtMupAMz
-         +84Q==
-X-Gm-Message-State: AC+VfDxzQTgDwS3xYZSolxaC6NhqXE3hKzFMU9HCTOvV5Wh9GfKtMBJl
-	96VHXGh00vZKjTDl11c78M4ql35q2/R6NVSch39lQlT34ViCbTQnlJU4B5gFHJC7PF0ZmQ4Bz/6
-	1d7a1tiIIJQ4OUFffbw6rYEg2ubR6iFss
-X-Received: by 2002:a67:fe97:0:b0:437:db1d:7edb with SMTP id b23-20020a67fe97000000b00437db1d7edbmr5626346vsr.6.1685737839634;
-        Fri, 02 Jun 2023 13:30:39 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6FROtjx8Mxi1OsExYeNOSibtQDsQb5aCnR+NQbW9yl56xV0YRkPBCmEEmN9SXG4CMV8AAVqKfUYSk5LuRwFiw=
-X-Received: by 2002:a67:fe97:0:b0:437:db1d:7edb with SMTP id
- b23-20020a67fe97000000b00437db1d7edbmr5626320vsr.6.1685737839395; Fri, 02 Jun
- 2023 13:30:39 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 2 Jun 2023 13:30:38 -0700
-From: Marcelo Ricardo Leitner <mleitner@redhat.com>
-References: <20230517110232.29349-1-jhs@mojatatu.com> <20230517110232.29349-9-jhs@mojatatu.com>
+	bh=9cFmOTRalrutMLCpPhglIGPnK0Bp8qtiBThh8gpw5mE=;
+	b=hiFeXH5lcWng1gsFtACn51wmlqNkwwXzZX/S10MszpHr1ClnUdN2u4Q8awtRNR+zJjAwNV
+	mt6FqWHykPI6kRy+ZVHfzbLV4H2VJsVxWUtHKTknUZHsmFCqjMLg+YPoFB0NrQHUvE5wZI
+	X1hImsGxnriG4fWqV5rHQyuTW2mzdEw=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-63-wEvFv4c5MtC6Mv9sV1jM2g-1; Fri, 02 Jun 2023 16:38:45 -0400
+X-MC-Unique: wEvFv4c5MtC6Mv9sV1jM2g-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 51E093C13511;
+	Fri,  2 Jun 2023 20:38:44 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 2D7E12026D49;
+	Fri,  2 Jun 2023 20:38:41 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <CAHk-=wh=V579PDYvkpnTobCLGczbgxpMgGmmhqiTyE34Cpi5Gg@mail.gmail.com>
+References: <CAHk-=wh=V579PDYvkpnTobCLGczbgxpMgGmmhqiTyE34Cpi5Gg@mail.gmail.com> <CAHk-=wji_2UwFMkUYkygsYRek05NwaQkH-vA=yKQtQS9Js+urQ@mail.gmail.com> <20230524153311.3625329-1-dhowells@redhat.com> <20230524153311.3625329-10-dhowells@redhat.com> <20230526180844.73745d78@kernel.org> <499791.1685485603@warthog.procyon.org.uk> <CAHk-=wgeixW3cc=Ys8eL0_+22FUhqeEru=nzRrSXy1U4YQdE-w@mail.gmail.com> <CAHk-=wghhHghtvU_SzXxAzfaX35BkNs-x91-Vj6+6tnVEhPrZg@mail.gmail.com> <832277.1685630048@warthog.procyon.org.uk> <909595.1685639680@warthog.procyon.org.uk> <20230601212043.720f85c2@kernel.org> <952877.1685694220@warthog.procyon.org.uk> <CAHk-=wjvgL5nyZmpYRWBfab4NKvfQ7NjUvUhE3a3wYTyTEHdfQ@mail.gmail.com> <1227123.1685706296@warthog.procyon.org.uk> <CAHk-=wgyAGUMHmQM-5Eb556z5xiHZB7cF05qjrtUH4F7P-1rSA@mail.gmail.com> <20230602093929.29fd447d@kernel.org> <CAHk-=whgpCNzmQfTAUY7D8P6t9TgzoLx9Uauu7YGQpgZtg-SYg@mail.gmail.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: dhowells@redhat.com, Jakub Kicinski <kuba@kernel.org>,
+    netdev@vger.kernel.org, "David S.
+ Miller" <davem@davemloft.net>,
+    Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+    Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+    David Ahern <dsahern@kernel.org>,
+    Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>,
+    linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+    Chuck Lever <chuck.lever@oracle.com>,
+    Boris Pismenny <borisp@nvidia.com>,
+    John Fastabend <john.fastabend@gmail.com>,
+    Christoph Hellwig <hch@infradead.org>
+Subject: Re: Bug in short splice to socket?
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20230517110232.29349-9-jhs@mojatatu.com>
-Date: Fri, 2 Jun 2023 13:30:38 -0700
-Message-ID: <CALnP8ZZk8-ZowUcvD1UZTBsVjxth7xaTY1CwvJUYj8XJEKhkeg@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 net-next 09/28] p4tc: add P4 data types
-To: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: netdev@vger.kernel.org, deb.chatterjee@intel.com, anjali.singhai@intel.com, 
-	namrata.limaye@intel.com, tom@sipanda.io, p4tc-discussions@netdevconf.info, 
-	Mahesh.Shirshyad@amd.com, Vipin.Jain@amd.com, tomasz.osinski@intel.com, 
-	jiri@resnulli.us, xiyou.wangcong@gmail.com, davem@davemloft.net, 
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, vladbu@nvidia.com, 
-	simon.horman@corigine.com, khalidm@nvidia.com, toke@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1379960.1685738320.1@warthog.procyon.org.uk>
+Date: Fri, 02 Jun 2023 21:38:40 +0100
+Message-ID: <1379961.1685738320@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
 X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 17, 2023 at 07:02:13AM -0400, Jamal Hadi Salim wrote:
-> +bool p4tc_type_unsigned(int typeid)
+Linus Torvalds <torvalds@linux-foundation.org> wrote:
 
-Nit, maybe name it p4tc_is_type_unsigned() instead.
+> So a "splice_eof()" sounds fine to me, and we'd make the semantics be
+> the current behavior:
+> 
+>  - splice() sets SPLICE_F_MORE if 'len > read_len'
+> 
+>  - splice() _clears_ SPLICE_F_MORE if we have hit 'len'
+> 
+>  - splice always sets SPLICE_F_MORE if it was passed by the user
+> 
+> BUT with the small new 'splice_eof()' rule that:
+> 
+>  - if the user did *not* set SPLICE_F_MORE *and* we didn't hit that
+> "use all of len" case that cleared SPLICE_F_MORE, *and* we did a
+> "->splice_in()" that returned EOF (ie zero), *then* we will also do
+> that ->splice_eof() call.
+> 
+> The above sounds like "stable and possibly useful semantics" to me. It
+> would just have to be documented.
+> 
+> Is that what people want?
 
-> +{
-> +	switch (typeid) {
-> +	case P4T_U8:
-> +	case P4T_U16:
-> +	case P4T_U32:
-> +	case P4T_U64:
-> +	case P4T_U128:
-> +	case P4T_BOOL:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +int p4t_copy(struct p4tc_type_mask_shift *dst_mask_shift,
-> +	     struct p4tc_type *dst_t, void *dstv,
-> +	     struct p4tc_type_mask_shift *src_mask_shift,
-> +	     struct p4tc_type *src_t, void *srcv)
-> +{
-> +	u64 readval[BITS_TO_U64(P4TC_MAX_KEYSZ)] = {0};
-> +	const struct p4tc_type_ops *srco, *dsto;
-> +
-> +	dsto = dst_t->ops;
-> +	srco = src_t->ops;
-> +
-> +	__p4tc_type_host_read(srco, src_t, src_mask_shift, srcv,
-> +			      &readval);
-> +	__p4tc_type_host_write(dsto, dst_t, dst_mask_shift, &readval,
-> +			       dstv);
-> +
-> +	return 0;
+That's easier to implement, I think.  That's basically what I was trying to
+achieve by sending a zero-length actor call, but this is a cleaner way of
+doing it, particularly if it's added as a socket op next to ->sendmsg().
 
-The return value on these (write) functions seems to be inconsistent.
-All the write functions are returning 0. Then, __p4tc_type_host_write
-itself propagates the return value, but then here it doesn't.
+Otherwise I have to build up the input side to try and tell me in advance
+whether it thinks we hit an EOF/hole/whatever condition.  The problem is that,
+as previously mentioned, it doesn't work for all circumstances - seqfile,
+pipes, sockets for instance.
 
-> +}
-> +
-> +int p4t_cmp(struct p4tc_type_mask_shift *dst_mask_shift,
-> +	    struct p4tc_type *dst_t, void *dstv,
-> +	    struct p4tc_type_mask_shift *src_mask_shift,
-> +	    struct p4tc_type *src_t, void *srcv)
-> +{
-> +	u64 a[BITS_TO_U64(P4TC_MAX_KEYSZ)] = {0};
-> +	u64 b[BITS_TO_U64(P4TC_MAX_KEYSZ)] = {0};
-> +	const struct p4tc_type_ops *srco, *dsto;
-> +
-> +	dsto = dst_t->ops;
-> +	srco = src_t->ops;
-> +
-> +	__p4tc_type_host_read(dsto, dst_t, dst_mask_shift, dstv, a);
-> +	__p4tc_type_host_read(srco, src_t, src_mask_shift, srcv, b);
-> +
-> +	return memcmp(a, b, sizeof(a));
-> +}
-> +
-> +void p4t_release(struct p4tc_type_mask_shift *mask_shift)
-> +{
-> +	kfree(mask_shift->mask);
-> +	kfree(mask_shift);
-> +}
-> +
-> +static int p4t_validate_bitpos(u16 bitstart, u16 bitend, u16 maxbitstart,
-> +			       u16 maxbitend, struct netlink_ext_ack *extack)
-> +{
-> +	if (bitstart > maxbitstart) {
-> +		NL_SET_ERR_MSG_MOD(extack, "bitstart too high");
-> +		return -EINVAL;
-> +	}
-> +	if (bitend > maxbitend) {
-> +		NL_SET_ERR_MSG_MOD(extack, "bitend too high");
-> +		return -EINVAL;
-> +	}
+Take the following scenario for example: I could read from a TCP socket,
+filling up the pipe-buffer, but not with sufficient data to fulfill the
+operation.  Say I drain the TCP socket, but it's still open, so might produce
+more data.  I then call the actor, which passes all the data to sendmsg() with
+MSG_SPLICE_PAGES and MSG_MORE and clears the buffer.  I then go round again,
+but in the meantime, the source socket got shut down with no further data
+available and do_splice_to() returns 0.
 
-Do we want a condition for
- +	if (bitstart > bitend) {
- +		NL_SET_ERR_MSG_MOD(extack, "bitstart after bitend");
- +		return -EINVAL;
- +	}
-?
+There's no way to predict this, so having a ->splice_eof() call would handle
+this situation.
 
-> +
-> +	return 0;
-> +}
-> +
-> +//XXX: Latter immedv will be 64 bits
-> +static int p4t_u32_validate(struct p4tc_type *container, void *value,
-> +			    u16 bitstart, u16 bitend,
-> +			    struct netlink_ext_ack *extack)
-> +{
-> +	u32 container_maxsz = U32_MAX;
-> +	u32 *val = value;
-> +	size_t maxval;
-> +	int ret;
-> +
-> +	ret = p4t_validate_bitpos(bitstart, bitend, 31, 31, extack);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	maxval = GENMASK(bitend, 0);
-> +	if (val && (*val > container_maxsz || *val > maxval)) {
-> +		NL_SET_ERR_MSG_MOD(extack, "U32 value out of range");
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static struct p4tc_type_mask_shift *
-> +p4t_u32_bitops(u16 bitsiz, u16 bitstart, u16 bitend,
-> +	       struct netlink_ext_ack *extack)
-> +{
-> +	u32 mask = GENMASK(bitend, bitstart);
-> +	struct p4tc_type_mask_shift *mask_shift;
-> +	u32 *cmask;
-> +
-> +	mask_shift = kzalloc(sizeof(*mask_shift), GFP_KERNEL);
-> +	if (!mask_shift)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	cmask = kzalloc(sizeof(u32), GFP_KERNEL);
-> +	if (!cmask) {
-> +		kfree(mask_shift);
-> +		return ERR_PTR(-ENOMEM);
-> +	}
-> +
-> +	*cmask = mask;
-> +
-> +	mask_shift->mask = cmask;
-> +	mask_shift->shift = bitstart;
-
-AFAICT, mask_shift->mask is never shared. So maybe consider
-embedding mask onto mask_shift itself, to avoid the double allocation.
-I mean, something like
-+	mask_shift = kzalloc(sizeof(*mask_shift)+sizeof(u32), GFP_KERNEL);
-+	cmask = mask_shift+1;
-
-This may also help with cache miss later on.
-
-> +
-> +	return mask_shift;
-> +}
+David
 
 
