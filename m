@@ -1,127 +1,137 @@
-Return-Path: <netdev+bounces-7328-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7329-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 462FC71FB27
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 09:41:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 1EBC471FB48
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 09:43:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 79E611C20AB5
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 07:40:59 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9DAB11C20AA9
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 07:43:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D799C79ED;
-	Fri,  2 Jun 2023 07:40:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3CC7979EF;
+	Fri,  2 Jun 2023 07:43:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A81E263CC;
-	Fri,  2 Jun 2023 07:40:57 +0000 (UTC)
-Received: from mail-yw1-x1142.google.com (mail-yw1-x1142.google.com [IPv6:2607:f8b0:4864:20::1142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D77E1A1;
-	Fri,  2 Jun 2023 00:40:55 -0700 (PDT)
-Received: by mail-yw1-x1142.google.com with SMTP id 00721157ae682-568bb833462so18651147b3.1;
-        Fri, 02 Jun 2023 00:40:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685691654; x=1688283654;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oM3fAwJKm3WQ26amYPUOEVz+QzB/5EEs4dGWk0XfUBQ=;
-        b=EpcDldyc/xJAJSWsy4/nbiCnWjNh4lnuQsxXsmfzFcKyo0NOCYcjD6HcsAT+oVgKHP
-         70MQvmc8G7+kcKUTlKQflJop4tjllC2G8QfpoSrVnf4GMZlkQEEhYS4sQgJbmXb34dq4
-         NipGqJ/juk0rk3B5Rp0k57Z4TsFF3OxeAisgoW0oP++iiphEP53dJPy016b1vAhS7lWb
-         GAFDOkaD9OxNrBkkqxBHmMF5stHiMJKXjOaCU9q218iA5rYNMin3xs7c1RqsClrIj0MC
-         /mANooql1iZXtf52FZN9VtANxbeVPdKi3wnNBDvJIL8ic73tcVwt+bIrXwp17dQkvf5U
-         DMRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685691654; x=1688283654;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oM3fAwJKm3WQ26amYPUOEVz+QzB/5EEs4dGWk0XfUBQ=;
-        b=OXnSdvAkg/M7dLvNViKnsxsOS0L8cIBZRjvcBWnxTsxY+qGxTRySnT3Lsjv9gilNEn
-         XM8NVWICUKmVDkgI2nmjEQFI1qYPCP1c8Y0l3vGEQCBYMDoepWfEPY5NoaVHAvYp1/cz
-         KGaVkBxipbbFRlj4lv28A9R9qFwJoj0k7/LKsXU4ixT3aokyqb4ZSzddzevxJbN4S4ru
-         bexmA+YO1SAPuA0uj5oOWTSWKm5BhYzKXZGvoYHxZy50Bvi+wZ0l36c9PlOuSwqsPwgb
-         0ogL2r0SHZf4AgZNm8euxz88I1naavdLY98i16lCv9ME3JJa+nwadX67ZpqbVKr5SfzC
-         Y1Og==
-X-Gm-Message-State: AC+VfDy6pZZCXdEmMChOUJ527piNylJdvI7K6TwuuPn17ie1VT59t54o
-	irYlOR5lyiROunxXbllfW4scRP8iNoqwh5Y0PtA=
-X-Google-Smtp-Source: ACHHUZ7dq+nyoMyR2vPjTFZyqws79z3rSs3uYbsWdIBlshpIKWvybc79mfHHaow3yloEzFhAu+wmAO1J8m6WapVESns=
-X-Received: by 2002:a81:4e11:0:b0:561:81b:734b with SMTP id
- c17-20020a814e11000000b00561081b734bmr11667281ywb.39.1685691654522; Fri, 02
- Jun 2023 00:40:54 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B5D1538B
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 07:43:19 +0000 (UTC)
+Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1092D170F;
+	Fri,  2 Jun 2023 00:42:41 -0700 (PDT)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R291e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0Vk91PcA_1685691756;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0Vk91PcA_1685691756)
+          by smtp.aliyun-inc.com;
+          Fri, 02 Jun 2023 15:42:36 +0800
+Date: Fri, 2 Jun 2023 15:42:34 +0800
+From: Tony Lu <tonylu@linux.alibaba.com>
+To: Wen Gu <guwen@linux.alibaba.com>
+Cc: kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, linux-s390@vger.kernel.org,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net/smc: Avoid to access invalid RMBs' MRs in SMCRv1
+ ADD LINK CONT
+Message-ID: <ZHmdamWMArZplcLD@TONYMAC-ALIBABA.local>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <1685608912-124996-1-git-send-email-guwen@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230602065958.2869555-1-imagedong@tencent.com> <20230602065958.2869555-3-imagedong@tencent.com>
-In-Reply-To: <20230602065958.2869555-3-imagedong@tencent.com>
-From: Menglong Dong <menglong8.dong@gmail.com>
-Date: Fri, 2 Jun 2023 15:40:43 +0800
-Message-ID: <CADxym3ZnmD_DhvS_KaJo4yt6PteaUDvifj4dp4gBBRuvoks=-g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/5] bpf, x86: allow function arguments up to
- 14 for TRACING
-To: olsajiri@gmail.com
-Cc: davem@davemloft.net, dsahern@kernel.org, ast@kernel.org, 
-	daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev, 
-	song@kernel.org, yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org, 
-	sdf@google.com, haoluo@google.com, jolsa@kernel.org, tglx@linutronix.de, 
-	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, 
-	hpa@zytor.com, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
-	mykolal@fb.com, shuah@kernel.org, benbjiang@tencent.com, iii@linux.ibm.com, 
-	imagedong@tencent.com, xukuohai@huawei.com, chantr4@gmail.com, 
-	zwisler@google.com, eddyz87@gmail.com, netdev@vger.kernel.org, 
-	bpf@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1685608912-124996-1-git-send-email-guwen@linux.alibaba.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 2, 2023 at 3:01=E2=80=AFPM <menglong8.dong@gmail.com> wrote:
->
-> From: Menglong Dong <imagedong@tencent.com>
-> @@ -2262,6 +2327,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_im=
-age *im, void *image, void *i
->
->         if (flags & BPF_TRAMP_F_CALL_ORIG) {
->                 restore_regs(m, &prog, nr_regs, regs_off);
-> +               prepare_origin_stack(m, &prog, nr_regs, arg_stack_off);
->
->                 if (flags & BPF_TRAMP_F_ORIG_STACK) {
->                         emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8)=
-;
-> @@ -2321,14 +2387,14 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_=
-image *im, void *image, void *i
->         if (save_ret)
->                 emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, -8);
->
-> -       EMIT1(0x5B); /* pop rbx */
-> +       emit_ldx(&prog, BPF_DW, BPF_REG_6, BPF_REG_FP, -rbx_off);
->         EMIT1(0xC9); /* leave */
->         if (flags & BPF_TRAMP_F_SKIP_FRAME)
->                 /* skip our return address and return to parent */
->                 EMIT4(0x48, 0x83, 0xC4, 8); /* add rsp, 8 */
->         emit_return(&prog, prog);
->         /* Make sure the trampoline generation logic doesn't overflow */
-> -       if (WARN_ON_ONCE(prog > (u8 *)image_end - BPF_INSN_SAFETY)) {
-> +       if (prog > (u8 *)image_end - BPF_INSN_SAFETY) {
+On Thu, Jun 01, 2023 at 04:41:52PM +0800, Wen Gu wrote:
+> SMCRv1 has a similar issue to SMCRv2 (see link below) that may access
+> invalid MRs of RMBs when construct LLC ADD LINK CONT messages.
+> 
+>  BUG: kernel NULL pointer dereference, address: 0000000000000014
+>  #PF: supervisor read access in kernel mode
+>  #PF: error_code(0x0000) - not-present page
+>  PGD 0 P4D 0
+>  Oops: 0000 [#1] PREEMPT SMP PTI
+>  CPU: 5 PID: 48 Comm: kworker/5:0 Kdump: loaded Tainted: G W   E      6.4.0-rc3+ #49
+>  Workqueue: events smc_llc_add_link_work [smc]
+>  RIP: 0010:smc_llc_add_link_cont+0x160/0x270 [smc]
+>  RSP: 0018:ffffa737801d3d50 EFLAGS: 00010286
+>  RAX: ffff964f82144000 RBX: ffffa737801d3dd8 RCX: 0000000000000000
+>  RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff964f81370c30
+>  RBP: ffffa737801d3dd4 R08: ffff964f81370000 R09: ffffa737801d3db0
+>  R10: 0000000000000001 R11: 0000000000000060 R12: ffff964f82e70000
+>  R13: ffff964f81370c38 R14: ffffa737801d3dd3 R15: 0000000000000001
+>  FS:  0000000000000000(0000) GS:ffff9652bfd40000(0000) knlGS:0000000000000000
+>  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>  CR2: 0000000000000014 CR3: 000000008fa20004 CR4: 00000000003706e0
+>  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>  Call Trace:
+>   <TASK>
+>   smc_llc_srv_rkey_exchange+0xa7/0x190 [smc]
+>   smc_llc_srv_add_link+0x3ae/0x5a0 [smc]
+>   smc_llc_add_link_work+0xb8/0x140 [smc]
+>   process_one_work+0x1e5/0x3f0
+>   worker_thread+0x4d/0x2f0
+>   ? __pfx_worker_thread+0x10/0x10
+>   kthread+0xe5/0x120
+>   ? __pfx_kthread+0x10/0x10
+>   ret_from_fork+0x2c/0x50
+>   </TASK>
+> 
+> When an alernate RNIC is available in system, SMC will try to add a new
+> link based on the RNIC for resilience. All the RMBs in use will be mapped
+> to the new link. Then the RMBs' MRs corresponding to the new link will
+> be filled into LLC messages. For SMCRv1, they are ADD LINK CONT messages.
+> 
+> However smc_llc_add_link_cont() may mistakenly access to unused RMBs which
+> haven't been mapped to the new link and have no valid MRs, thus causing a
+> crash. So this patch fixes it.
+> 
+> Fixes: 87f88cda2128 ("net/smc: rkey processing for a new link as SMC client")
+> Link: https://lore.kernel.org/r/1685101741-74826-3-git-send-email-guwen@linux.alibaba.com
+> Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
 
-Oops, this line is a mistake, and I should keep it still.
+This SGTM, thanks.
 
->                 ret =3D -EFAULT;
->                 goto cleanup;
->         }
-> --
-> 2.40.1
->
+Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
+
+> ---
+>  net/smc/smc_llc.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
+> index 7a8d916..90f0b60 100644
+> --- a/net/smc/smc_llc.c
+> +++ b/net/smc/smc_llc.c
+> @@ -851,6 +851,8 @@ static int smc_llc_add_link_cont(struct smc_link *link,
+>  	addc_llc->num_rkeys = *num_rkeys_todo;
+>  	n = *num_rkeys_todo;
+>  	for (i = 0; i < min_t(u8, n, SMC_LLC_RKEYS_PER_CONT_MSG); i++) {
+> +		while (*buf_pos && !(*buf_pos)->used)
+> +			*buf_pos = smc_llc_get_next_rmb(lgr, buf_lst, *buf_pos);
+>  		if (!*buf_pos) {
+>  			addc_llc->num_rkeys = addc_llc->num_rkeys -
+>  					      *num_rkeys_todo;
+> @@ -867,8 +869,6 @@ static int smc_llc_add_link_cont(struct smc_link *link,
+>  
+>  		(*num_rkeys_todo)--;
+>  		*buf_pos = smc_llc_get_next_rmb(lgr, buf_lst, *buf_pos);
+> -		while (*buf_pos && !(*buf_pos)->used)
+> -			*buf_pos = smc_llc_get_next_rmb(lgr, buf_lst, *buf_pos);
+>  	}
+>  	addc_llc->hd.common.llc_type = SMC_LLC_ADD_LINK_CONT;
+>  	addc_llc->hd.length = sizeof(struct smc_llc_msg_add_link_cont);
+> -- 
+> 1.8.3.1
 
