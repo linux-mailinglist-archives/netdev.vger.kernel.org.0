@@ -1,132 +1,149 @@
-Return-Path: <netdev+bounces-7418-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7419-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 69A2D720287
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:03:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 9BA0C7202BD
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:11:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1489D2818C7
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 13:03:58 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 334012818A3
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 13:11:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B10418AE1;
-	Fri,  2 Jun 2023 13:03:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4B34818AFF;
+	Fri,  2 Jun 2023 13:11:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1953915BF
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 13:03:55 +0000 (UTC)
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4131B3;
-	Fri,  2 Jun 2023 06:03:53 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-565ee3d14c2so21184797b3.2;
-        Fri, 02 Jun 2023 06:03:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685711033; x=1688303033;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=l3ZRPUz8ZBR77uMNjAdn8AKPr3I5bpHtCQUGRxd1Y5I=;
-        b=PCx/ghPp/7LQ4JBemhHQpWMBLCbwb2E5ZIWLu96BLs/tF4uAbK7VxQe+JUmTMOgJWP
-         wbNwWcmos7mxPxeH/2AT1yC5OcOlNBMIbhEBbM26iGPiC5gWkxvprCtV2ZV88I8Cpipr
-         wUvbi36DBW3X073X0BwGO80111vEpT8tQa+qUJ9XYkT6slRisaLDmpCg5Ouqb2O8/LUD
-         NGotGc38gBVA3sFmLCclfGJvAvzUDB2dy896gVRBJvycnCHSodWBzs65ZF1owDSnx+aY
-         4khZU0k+xoAyx4Kv6wUDIgrCFzEWkhGB5YqNbRyMyO7v4dqO/yqKjweZsT/1L2AnbWd6
-         onTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685711033; x=1688303033;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=l3ZRPUz8ZBR77uMNjAdn8AKPr3I5bpHtCQUGRxd1Y5I=;
-        b=Gx77B0uujJXLVt0/PjxnaKBshkauN8JfCF6LLG8ozMr7BIiH12VGAvZ/T9WSQqvRPl
-         ehoXNvQERz2tbkmKPQ0iBZlgzepGes086g1VpwO7BXNcLJuNQx9ZPe+PHbGFP6pFw+1H
-         oqmHWTeuKE5kaAudQ09X7g0jIuaSuOli/sD1eIdJRt77Go+xiXZkTJpkpUklPeY1J+Of
-         ZFVSEDZeHPKk+VfokuQmrvyajxSMQomNICVBgI8Uwdsj0gFq+sDtRLBB2XiXRO+6kT3y
-         Idu+GPbB0C+bgl57jMl/mC791j1MNE1Xh3J2eV63DyS1V2hjJs+8byMDPdZGmfM5K0g3
-         OD3A==
-X-Gm-Message-State: AC+VfDw1k9eR2JygTQCoe0xUQrCaHa3HBeMUqwaGkecE49lS3TydIZxW
-	0gJcmgej6H4NnvdOV+LYjD1Fz5aMjaf7CNzUsow=
-X-Google-Smtp-Source: ACHHUZ7fFI2FiBfit/D2txdSbalGxdI6U723yrg8Qc5/16GhvGFJQS5doIqTz5hFt1EXkICJDhjoINq+kd6P1zfwPPk=
-X-Received: by 2002:a0d:cbc5:0:b0:564:a549:babc with SMTP id
- n188-20020a0dcbc5000000b00564a549babcmr12513619ywd.32.1685711032746; Fri, 02
- Jun 2023 06:03:52 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32D77111B8
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 13:11:51 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8195BE4D;
+	Fri,  2 Jun 2023 06:11:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=OTouvSUz3z0SuKPd9GjaAkReu68Py/wYa5z+M99zv4Y=; b=jLaAHwh0koGGv0TijZOPa7Zpjd
+	u9HlyFtdBXnU8uDysZ4jP3IzvPkgG3WsEC3+H55cDEbUJ1lqB7hVutURkgmZhs6WOdbs5g+eV0TAx
+	j53GumEW7Tkv0M2FpXjRlgSAt5KUo4mREmFsuJxJSBAdhvs9bNN+AeZcljmbmH2Q8t1xXpimSEEqU
+	JZEnzOwaSN5bMQ58Z98CTd2sDNTyhDo8eBvjLRa0sJlTy+7T4aOnTRyD9SUQp/hku7KWouFJ5WsQF
+	XL6NXHGwqpvsQOI9CsCPHEGDcAnym1YZ/irS/6Kik3yBSX5/hi9Hk4Bt/T0rfVH6+6b8pJHnLKUZb
+	CEYj8t0g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:50514)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q54Yn-00081X-GQ; Fri, 02 Jun 2023 14:11:17 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q54Yk-0002yf-QK; Fri, 02 Jun 2023 14:11:14 +0100
+Date: Fri, 2 Jun 2023 14:11:14 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc: msmulski2@gmail.com, andrew@lunn.ch, f.fainelli@gmail.com,
+	olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, simon.horman@corigine.com,
+	kabel@kernel.org, Michal Smulski <michal.smulski@ooma.com>
+Subject: Re: [PATCH net-next v6 1/1] net: dsa: mv88e6xxx: implement USXGMII
+ mode for mv88e6393x
+Message-ID: <ZHnqcvP8hv19RBr8@shell.armlinux.org.uk>
+References: <20230602001705.2747-1-msmulski2@gmail.com>
+ <20230602001705.2747-2-msmulski2@gmail.com>
+ <ZHnEzPadBBbfwj18@shell.armlinux.org.uk>
+ <20230602112804.32ffi7mpk5xfzvq4@LXL00007.wbi.nxp.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CANn89iK13jkbKXv-rKiUbTqMrk3KjVPGYH_Vv7FtJJ5pTdUAYQ@mail.gmail.com>
- <20230531225947.38239-1-kuniyu@amazon.com> <b613cbaf569945e3811609a9f10fe0aa@AcuMS.aculab.com>
-In-Reply-To: <b613cbaf569945e3811609a9f10fe0aa@AcuMS.aculab.com>
-From: Akihiro Suda <suda.kyoto@gmail.com>
-Date: Fri, 2 Jun 2023 22:03:41 +0900
-Message-ID: <CAG8fp8R+2TztxYKcLwU354mQ47mD7RPQKarxnzA+j2ydtqamBg@mail.gmail.com>
-Subject: Re: [PATCH linux] net/ipv4: ping_group_range: allow GID from
- 2147483648 to 4294967294
-To: David Laight <David.Laight@aculab.com>
-Cc: Kuniyuki Iwashima <kuniyu@amazon.com>, "edumazet@google.com" <edumazet@google.com>, 
-	"akihiro.suda.cz@hco.ntt.co.jp" <akihiro.suda.cz@hco.ntt.co.jp>, 
-	"akihirosuda@git.sr.ht" <akihirosuda@git.sr.ht>, "davem@davemloft.net" <davem@davemloft.net>, 
-	"kuba@kernel.org" <kuba@kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>, "pabeni@redhat.com" <pabeni@redhat.com>, 
-	"segoon@openwall.com" <segoon@openwall.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230602112804.32ffi7mpk5xfzvq4@LXL00007.wbi.nxp.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-2023=E5=B9=B46=E6=9C=882=E6=97=A5(=E9=87=91) 19:51 David Laight <David.Laig=
-ht@aculab.com>:
->
-> From: Kuniyuki Iwashima
-> > Sent: 01 June 2023 00:00
-> ....
-> > > > --- a/include/net/ping.h
-> > > > +++ b/include/net/ping.h
-> > > > @@ -20,7 +20,7 @@
-> > > >   * gid_t is either uint or ushort.  We want to pass it to
-> > > >   * proc_dointvec_minmax(), so it must not be larger than MAX_INT
-> > > >   */
-> > > > -#define GID_T_MAX (((gid_t)~0U) >> 1)
-> > > > +#define GID_T_MAX ((gid_t)~0U)
->
-> Doesn't that comment need updating?
->
-> I do wonder how much code breaks for gid > MAXINT.
-> How much testing does it actually get??
+On Fri, Jun 02, 2023 at 02:28:04PM +0300, Ioana Ciornei wrote:
+> On Fri, Jun 02, 2023 at 11:30:36AM +0100, Russell King (Oracle) wrote:
+> > On Thu, Jun 01, 2023 at 05:17:04PM -0700, msmulski2@gmail.com wrote:
+> > > +/* USXGMII registers for Marvell switch 88e639x are undocumented and this function is based
+> > > + * on some educated guesses. It appears that there are no status bits related to
+> > > + * autonegotiation complete or flow control.
+> > > + */
+> > > +static int mv88e639x_serdes_pcs_get_state_usxgmii(struct mv88e6xxx_chip *chip,
+> > > +						  int port, int lane,
+> > > +						  struct phylink_link_state *state)
+> > > +{
+> > > +	u16 status, lp_status;
+> > > +	int err;
+> > > +
+> > > +	err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
+> > > +				    MV88E6390_USXGMII_PHY_STATUS, &status);
+> > > +	if (err) {
+> > > +		dev_err(chip->dev, "can't read Serdes USXGMII PHY status: %d\n", err);
+> > > +		return err;
+> > > +	}
+> > > +	dev_dbg(chip->dev, "USXGMII PHY status: 0x%x\n", status);
+> > > +
+> > > +	state->link = !!(status & MDIO_USXGMII_LINK);
+> > > +
+> > > +	if (state->link) {
+> > > +		err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
+> > > +					    MV88E6390_USXGMII_LP_STATUS, &lp_status);
+> > 
+> > What's the difference between these two registers? Specifically, what
+> > I'm asking is why the USXGMII partner status seems to be split between
+> > two separate registers.
+> > 
+> > Note that I think phylink_decode_usxgmii_word() is probably missing a
+> > check for MDIO_USXGMII_LINK, based on how Cisco SGMII works (and
+> > USXGMII is pretty similar.)
+> > 
+> > MDIO_USXGMII_LINK indicates whether the attached PHY has link on the
+> > media side or not. It's entirely possible for the USXGMII link to be
+> > up (thus allowing us to receive the "LPA" from the PHY) but for the
+> > PHY to be reporting to us that it has no media side link.
+> > 
+> > So, I think phylink_decode_usxgmii_word() at least needs at the
+> > beginning this added:
+> > 
+> > 	if (!(lpa & MDIO_USXGMII_LINK)) {
+> > 		state->link = false;
+> > 		return;
+> > 	}
+> > 
+> > The only user of this has been the Lynx PCS, so I'll add Ioana to this
+> > email as well to see whether there's any objection from Lynx PCS users
+> > to adding it.
+> >
+> 
+> I just tested this snippet on a LX2160ARDB that has USXGMII on two of
+> its lanes which go to Aquantia AQR113C PHYs.
+> 
+> The lpa read is 0x5601 and, with the patch, the interface does not link
+> up. I am not sure what is happening, if it's this PHY in particular that
+> does not properly set MDIO_USXGMII_LINK.
 
-It is fixed in v3:
-https://patchwork.kernel.org/project/netdevbpf/patch/20230601031305.55901-1=
--akihiro.suda.cz@hco.ntt.co.jp/
+Thanks for testing. I wonder if the USXGMII control word that the PHY
+transmits can be read from one of its registers?
 
-```
--/*
-- * gid_t is either uint or ushort.  We want to pass it to
-- * proc_dointvec_minmax(), so it must not be larger than MAX_INT
-- */
--#define GID_T_MAX (((gid_t)~0U) >> 1)
-+#define GID_T_MAX (((gid_t)~0U) - 1)
-```
+If the PHY is correctly setting the link bit, but it's not appearing
+in the Lynx PCS registers as set, that would be weird, and suggest the
+PCS is handling that itself. Does the Lynx link status bit change
+according to the media link status, while the AN complete bit stays
+set?
 
-Tested with 4294967294, 4294967295 (EINVAL), and 4294967296 (EINVAL), on x8=
-6_64.
-
-
-
-
->         David
->
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1=
- 1PT, UK
-> Registration No: 1397386 (Wales)
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
