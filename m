@@ -1,44 +1,44 @@
-Return-Path: <netdev+bounces-7289-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7294-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 83D2A71F87E
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 04:37:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 68FA471F886
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 04:39:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BAA4B1C210DF
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 02:37:20 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EE67A1C211CE
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 02:39:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A1B81FA0;
-	Fri,  2 Jun 2023 02:35:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CB7BE5381;
+	Fri,  2 Jun 2023 02:36:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81E6815BE
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29A0415C5
 	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 02:35:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5151C433A8;
-	Fri,  2 Jun 2023 02:35:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 391EAC4339C;
+	Fri,  2 Jun 2023 02:35:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1685673356;
-	bh=HPCXRAGS9IZW3z4JOSUpExlXZcf9x8rj1vrvHyxaGUI=;
+	bh=v/g80ZATnAcg1/kTcXEG0DKoFP8SDNWciBZYZAVYWZI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=CoNbuHZrI16MChJbZJHhixcVjSOtkacZQVjzjbEPNsDqCh3W4xHMw5r0qjrY9n6lF
-	 h2Yrw8oLi/N1oGrnnsvx6K3eGXIKKgIQEGcpyMWziNGSvVdoDCLIM82Rhp4zTb3x0q
-	 n23cqGrDztgwvhQjaCoI+CTdlg+He7kgGaAyV49jBxC7WHoNxzRruyppuFydppQJs5
-	 lqiIdYI3GcY4xoNFFtLxEWBkkw07FAXXN1mEbJ9muSsJv8Sx1o7cNz1SITe+Mx0eDo
-	 YcyUIPx0L9V7XLzxq+mJJUteJv4WHhGQGwEyqyz5zcwb+i/SelfGM6yZYsBG09yuE6
-	 0ljELd3pTPP/A==
+	b=KehiWVtYXDEPFo+l3FE2rGPdb3tlQ6HcziBrncMoRSkCXUcpasV2H1z5s5xSzO4oX
+	 sUloaylESwqE9oTaFElZnJ/0VLvvn7/ZoPT9aTpE3SSHvA/4pUH2Znu8aZvaPDpfIR
+	 qP+UyAUpl1pQxUAzPzXucFYFn51gh87S/689YU3+0/6fkhNtH6zSQX5JQzg1HfsgwK
+	 SBrReNHjHpFn35mKGmuXpmeNQW8V8gV2QN96WjpCIbZVk2maqqGEii4bsFZoIRfoLk
+	 /fFS96xFv4ueXLJZT4Ls/mfo0DKNitMmX6L5+GMrpQ6geAKDSqhIkw1IGan61ipVV2
+	 iz6tmaVu3voHQ==
 From: Jakub Kicinski <kuba@kernel.org>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
 	edumazet@google.com,
 	pabeni@redhat.com,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 06/10] tools: ynl-gen: generate enum-to-string helpers
-Date: Thu,  1 Jun 2023 19:35:44 -0700
-Message-Id: <20230602023548.463441-7-kuba@kernel.org>
+Subject: [PATCH net-next 07/10] tools: ynl-gen: move the response reading logic into YNL
+Date: Thu,  1 Jun 2023 19:35:45 -0700
+Message-Id: <20230602023548.463441-8-kuba@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230602023548.463441-1-kuba@kernel.org>
 References: <20230602023548.463441-1-kuba@kernel.org>
@@ -50,126 +50,146 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-It's sometimes useful to print the name of an enum value,
-flag or name of the op. Python can do it, add C helper
-code gen for getting names of things.
-
-Example:
-
-  static const char * const netdev_xdp_act_strmap[] = {
-	[0] = "basic",
-	[1] = "redirect",
-	[2] = "ndo-xmit",
-	[3] = "xsk-zerocopy",
-	[4] = "hw-offload",
-	[5] = "rx-sg",
-	[6] = "ndo-xmit-sg",
-  };
-
-  const char *netdev_xdp_act_str(enum netdev_xdp_act value)
-  {
-	value = ffs(value) - 1;
-	if (value < 0 || value >= (int)MNL_ARRAY_SIZE(netdev_xdp_act_strmap))
-		return NULL;
-	return netdev_xdp_act_strmap[value];
-  }
+We generate send() and recv() calls and all msg handling for
+each operation. It's a lot of repeated code and will only grow
+with notification handling. Call back to a helper YNL lib instead.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/net/ynl/ynl-gen-c.py | 66 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 66 insertions(+)
+ tools/net/ynl/ynl-gen-c.py | 63 ++++++++++++++++----------------------
+ 1 file changed, 27 insertions(+), 36 deletions(-)
 
 diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
-index 8bf4b70216d7..5318edfdb874 100755
+index 5318edfdb874..7d833a42e060 100755
 --- a/tools/net/ynl/ynl-gen-c.py
 +++ b/tools/net/ynl/ynl-gen-c.py
-@@ -1168,6 +1168,56 @@ _C_KW = {
-     cw.nl()
+@@ -1371,13 +1371,13 @@ _C_KW = {
+     ret_err = '-1'
+     direction = "request"
+     local_vars = ['struct nlmsghdr *nlh;',
+-                  'int len, err;']
++                  'int err;']
+ 
+     if 'reply' in ri.op[ri.op_mode]:
+         ret_ok = 'rsp'
+         ret_err = 'NULL'
+         local_vars += [f'{type_name(ri, rdir(direction))} *rsp;',
+-                       'struct ynl_parse_arg yarg = { .ys = ys, };']
++                       'struct ynl_req_state yrs = { .yarg = { .ys = ys, }, };']
+ 
+     print_prototype(ri, direction, terminate=False)
+     ri.cw.block_start()
+@@ -1387,41 +1387,39 @@ _C_KW = {
+ 
+     ri.cw.p(f"ys->req_policy = &{ri.struct['request'].render_name}_nest;")
+     if 'reply' in ri.op[ri.op_mode]:
+-        ri.cw.p(f"yarg.rsp_policy = &{ri.struct['reply'].render_name}_nest;")
++        ri.cw.p(f"yrs.yarg.rsp_policy = &{ri.struct['reply'].render_name}_nest;")
+     ri.cw.nl()
+     for _, attr in ri.struct["request"].member_list():
+         attr.attr_put(ri, "req")
+     ri.cw.nl()
+ 
+-    ri.cw.p('err = mnl_socket_sendto(ys->sock, nlh, nlh->nlmsg_len);')
+-    ri.cw.p('if (err < 0)')
+-    ri.cw.p(f"return {ret_err};")
+-    ri.cw.nl()
+-    ri.cw.p('len = mnl_socket_recvfrom(ys->sock, ys->rx_buf, MNL_SOCKET_BUFFER_SIZE);')
+-    ri.cw.p('if (len < 0)')
+-    ri.cw.p(f"return {ret_err};")
+-    ri.cw.nl()
+-
++    parse_arg = "NULL"
+     if 'reply' in ri.op[ri.op_mode]:
+         ri.cw.p('rsp = calloc(1, sizeof(*rsp));')
+-        ri.cw.p('yarg.data = rsp;')
++        ri.cw.p('yrs.yarg.data = rsp;')
++        ri.cw.p(f"yrs.cb = {op_prefix(ri, 'reply')}_parse;")
++        if ri.op.value is not None:
++            ri.cw.p(f'yrs.rsp_cmd = {ri.op.enum_name};')
++        else:
++            ri.cw.p(f'yrs.rsp_cmd = {ri.op.rsp_value};')
+         ri.cw.nl()
+-        ri.cw.p(f"err = {ri.nl.parse_cb_run(op_prefix(ri, 'reply') + '_parse', '&yarg', False)};")
+-        ri.cw.p('if (err < 0)')
++        parse_arg = '&yrs'
++    ri.cw.p(f"err = ynl_exec(ys, nlh, {parse_arg});")
++    ri.cw.p('if (err < 0)')
++    if 'reply' in ri.op[ri.op_mode]:
+         ri.cw.p('goto err_free;')
+-        ri.cw.nl()
+-
+-    ri.cw.p('err = ynl_recv_ack(ys, err);')
+-    ri.cw.p('if (err)')
+-    ri.cw.p('goto err_free;')
++    else:
++        ri.cw.p('return -1;')
+     ri.cw.nl()
++
+     ri.cw.p(f"return {ret_ok};")
+     ri.cw.nl()
+-    ri.cw.p('err_free:')
+ 
+     if 'reply' in ri.op[ri.op_mode]:
++        ri.cw.p('err_free:')
+         ri.cw.p(f"{call_free(ri, rdir(direction), 'rsp')}")
+-    ri.cw.p(f"return {ret_err};")
++        ri.cw.p(f"return {ret_err};")
++
+     ri.cw.block_end()
  
  
-+def put_op_name_fwd(family, cw):
-+    cw.write_func_prot('const char *', f'{family.name}_op_str', ['int op'], suffix=';')
-+
-+
-+def put_op_name(family, cw):
-+    map_name = f'{family.name}_op_strmap'
-+    cw.block_start(line=f"static const char * const {map_name}[] =")
-+    for op_name, op in family.msgs.items():
-+        cw.p(f'[{op.enum_name}] = "{op_name}",')
-+    cw.block_end(line=';')
-+    cw.nl()
-+
-+    cw.write_func_prot('const char *', f'{family.name}_op_str', ['int op'])
-+    cw.block_start()
-+    cw.p(f'if (op < 0 || op >= (int)MNL_ARRAY_SIZE({map_name}))')
-+    cw.p('return NULL;')
-+    cw.p(f'return {map_name}[op];')
-+    cw.block_end()
-+    cw.nl()
-+
-+
-+def put_enum_to_str_fwd(family, cw, enum):
-+    args = [f'enum {enum.render_name} value']
-+    if 'enum-name' in enum and not enum['enum-name']:
-+        args = ['int value']
-+    cw.write_func_prot('const char *', f'{enum.render_name}_str', args, suffix=';')
-+
-+
-+def put_enum_to_str(family, cw, enum):
-+    map_name = f'{enum.render_name}_strmap'
-+    cw.block_start(line=f"static const char * const {map_name}[] =")
-+    for entry in enum.entries.values():
-+        cw.p(f'[{entry.value}] = "{entry.name}",')
-+    cw.block_end(line=';')
-+    cw.nl()
-+
-+    args = [f'enum {enum.render_name} value']
-+    if 'enum-name' in enum and not enum['enum-name']:
-+        args = ['int value']
-+    cw.write_func_prot('const char *', f'{enum.render_name}_str', args)
-+    cw.block_start()
-+    if enum.type == 'flags':
-+        cw.p('value = ffs(value) - 1;')
-+    cw.p(f'if (value < 0 || value >= (int)MNL_ARRAY_SIZE({map_name}))')
-+    cw.p('return NULL;')
-+    cw.p(f'return {map_name}[value];')
-+    cw.block_end()
-+    cw.nl()
-+
-+
- def put_req_nested(ri, struct):
-     func_args = ['struct nlmsghdr *nlh',
-                  'unsigned int attr_type',
-@@ -2210,6 +2260,14 @@ _C_KW = {
-     if args.mode == "user":
-         has_ntf = False
-         if args.header:
-+            cw.p('/* Enums */')
-+            put_op_name_fwd(parsed, cw)
-+
-+            for name, const in parsed.consts.items():
-+                if isinstance(const, EnumSet):
-+                    put_enum_to_str_fwd(parsed, cw, const)
-+            cw.nl()
-+
-             cw.p('/* Common nested types */')
-             for attr_set, struct in sorted(parsed.pure_nested_structs.items()):
-                 ri = RenderInfo(cw, parsed, args.mode, "", "", "", attr_set)
-@@ -2262,6 +2320,14 @@ _C_KW = {
-                 print_ntf_parse_prototype(parsed, cw)
-             cw.nl()
-         else:
-+            cw.p('/* Enums */')
-+            put_op_name(parsed, cw)
-+
-+            for name, const in parsed.consts.items():
-+                if isinstance(const, EnumSet):
-+                    put_enum_to_str(parsed, cw, const)
-+            cw.nl()
-+
-             cw.p('/* Policies */')
-             for name, _ in parsed.attr_sets.items():
-                 struct = Struct(parsed, name)
+@@ -1431,7 +1429,7 @@ _C_KW = {
+     ri.cw.block_start()
+     local_vars = ['struct ynl_dump_state yds = {};',
+                   'struct nlmsghdr *nlh;',
+-                  'int len, err;']
++                  'int err;']
+ 
+     for var in local_vars:
+         ri.cw.p(f'{var}')
+@@ -1440,6 +1438,10 @@ _C_KW = {
+     ri.cw.p('yds.ys = ys;')
+     ri.cw.p(f"yds.alloc_sz = sizeof({type_name(ri, rdir(direction))});")
+     ri.cw.p(f"yds.cb = {op_prefix(ri, 'reply', deref=True)}_parse;")
++    if ri.op.value is not None:
++        ri.cw.p(f'yds.rsp_cmd = {ri.op.enum_name};')
++    else:
++        ri.cw.p(f'yds.rsp_cmd = {ri.op.rsp_value};')
+     ri.cw.p(f"yds.rsp_policy = &{ri.struct['reply'].render_name}_nest;")
+     ri.cw.nl()
+     ri.cw.p(f"nlh = ynl_gemsg_start_dump(ys, {ri.nl.get_family_id()}, {ri.op.enum_name}, 1);")
+@@ -1451,20 +1453,9 @@ _C_KW = {
+             attr.attr_put(ri, "req")
+     ri.cw.nl()
+ 
+-    ri.cw.p('err = mnl_socket_sendto(ys->sock, nlh, nlh->nlmsg_len);')
+-    ri.cw.p('if (err < 0)')
+-    ri.cw.p('return NULL;')
+-    ri.cw.nl()
+-
+-    ri.cw.block_start(line='do')
+-    ri.cw.p('len = mnl_socket_recvfrom(ys->sock, ys->rx_buf, MNL_SOCKET_BUFFER_SIZE);')
+-    ri.cw.p('if (len < 0)')
+-    ri.cw.p('goto free_list;')
+-    ri.cw.nl()
+-    ri.cw.p(f"err = {ri.nl.parse_cb_run('ynl_dump_trampoline', '&yds', False, indent=2)};")
++    ri.cw.p('err = ynl_exec_dump(ys, nlh, &yds);')
+     ri.cw.p('if (err < 0)')
+     ri.cw.p('goto free_list;')
+-    ri.cw.block_end(line='while (err > 0);')
+     ri.cw.nl()
+ 
+     ri.cw.p('return yds.first;')
+@@ -1631,7 +1622,7 @@ _C_KW = {
+     ri.cw.block_start()
+     ri.cw.p(f"{sub_type} *next = rsp;")
+     ri.cw.nl()
+-    ri.cw.block_start(line='while (next)')
++    ri.cw.block_start(line='while ((void *)next != YNL_LIST_END)')
+     _free_type_members_iter(ri, ri.struct['reply'])
+     ri.cw.p('rsp = next;')
+     ri.cw.p('next = rsp->next;')
 -- 
 2.40.1
 
