@@ -1,126 +1,140 @@
-Return-Path: <netdev+bounces-7270-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7271-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3E75071F6FD
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 02:02:39 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6D60071F701
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 02:04:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EC87D281978
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 00:02:37 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 27B4C281986
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 00:04:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 60963EBE;
-	Fri,  2 Jun 2023 00:02:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81C771363;
+	Fri,  2 Jun 2023 00:04:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B985180;
-	Fri,  2 Jun 2023 00:02:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A691CC433A8;
-	Fri,  2 Jun 2023 00:02:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685664150;
-	bh=tFm/VXuuVDtTlP6XBCrW6GQLEa1ct+xvVLB1UFiGIT0=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=Zhe+ii4hjesHDAgMZHuwpUCJJCm75EFKG+5a6EPWjMO0HDHXPyIpavtujtLCURVSG
-	 L0tPOTqlQwSkMNiUo14MQBHZXJuJsEZSF14bp35whT7uHVYa6I5+MNTZchaPm9JNIm
-	 aVdr8gwENYjQkB3MGIU8IUF/E6pIAulaPIHaGpFoY73x0KGcegDzYIgthrQqKLiK0x
-	 E+hZoEG+zWVfdTx59SC4n6eQIxvKqvyqdxNlYb/Bah5jcigAfqfjnA8yubrXktjB4r
-	 u9EYw1FVaxQ8EYOZ1NhKvpv2x/t9dFLPXYWavNE0MV8kGpQg8ySGoyFYWjG/4fGguR
-	 0BNJi8O6JG65A==
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-4f3edc05aa5so1930227e87.3;
-        Thu, 01 Jun 2023 17:02:30 -0700 (PDT)
-X-Gm-Message-State: AC+VfDx1f2WOHYh7UHw2JHakFpe2ckFEFbZuGB3OYXPFivvE1fP+VU58
-	0jPezDtLPl/YbMsuEvh90TqVFocil64TxgweWLU=
-X-Google-Smtp-Source: ACHHUZ5+AeCGOC7qHIq2jqRCeZpvT4cPqtj6GONlHu3ZGFgMYeuzIcV8ffuR5AKgvu/Von6c/0h12/a6PWP4XU2OyEA=
-X-Received: by 2002:a05:6512:201:b0:4f2:4df1:9718 with SMTP id
- a1-20020a056512020100b004f24df19718mr780946lfo.17.1685664148535; Thu, 01 Jun
- 2023 17:02:28 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EDA51360
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 00:04:25 +0000 (UTC)
+Received: from mail-ua1-x94a.google.com (mail-ua1-x94a.google.com [IPv6:2607:f8b0:4864:20::94a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B11133
+	for <netdev@vger.kernel.org>; Thu,  1 Jun 2023 17:04:23 -0700 (PDT)
+Received: by mail-ua1-x94a.google.com with SMTP id a1e0cc1a2514c-7809b741fe6so444394241.3
+        for <netdev@vger.kernel.org>; Thu, 01 Jun 2023 17:04:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1685664262; x=1688256262;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=W3pnAHSVW3eYxnV9ACkFH1u9krZff97VO3pjVJxkYmo=;
+        b=jBAkISm68rGZP8e4vIPav3WY1JpJXrNXzM2Uc6SVZKa27q5eZsLnIv201YjPxPEecB
+         O5Xzt91ijY8ZnDF7y5YZqFvn53KrdwhbgfFU4eXK+JBkYHPt/ExagiUD3wcw1o2ePhhn
+         X7H5KvHec0mSUuJtPCgdaAhyBBicaC9xFTnmhqVj3n8WccMnuYkIzkaqQewuiZf+pPsx
+         y4uk5bh1X73TjKbvnFDXsv1nR0nzNcY9b+cAQ8iltXPOxls1gBL/zfRNKaFiHRdA6z0O
+         8AGOsQspNBeGSv2AEQyJvS0dx9J0VDnYlmlHRK6iskoC2yOUPFkeQ9A1BnJaCDUnL0b8
+         bMrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685664262; x=1688256262;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=W3pnAHSVW3eYxnV9ACkFH1u9krZff97VO3pjVJxkYmo=;
+        b=BtXW+4BCniYUyjyqa7b2wS2SKbtZRWZ13JLVaUVVdIcaY5qXAS+2cnAgsdMD8HYn1U
+         9ibenm2tOd0Yo1tqGPERDkt45hpF1zbqtQZt5mtCwCrGFar+CTPLyalbFf99SscDMBxC
+         xamgphQ1+83focQ1jbvLLpf/ZdI6j9qHETBIuZZMQTyEJftwZ7QD/eeJwwNSWSDMSOjc
+         TPe/u2hjsZ2ZNu9j2W/e/2+n3/uOjl3EkNHZVuUIpR+NVFaDaXRsB8JAccj9PhLOtu1V
+         Ew+L28cjCjBuw8WIJBxMq/naeSKVD3QS2h9l3/id8TiDl7G+W4cUcO/omLoMZ7Cgei2O
+         RjUQ==
+X-Gm-Message-State: AC+VfDyxrN+J7Mpi1O0oz7dbOLlW7atN6FjAyhRXQXIoaLH0zie5CpJU
+	eWbjiLcO1qYg+dwXAh3m/zxbd4v9EMxBBTaDR9QmVBHI4G6GzMPhO7mPaYDCIr2RvXGiZ1yI6Pl
+	4VZDiF65J6Uxc1Bbx94IPervLz4q80++BpJNHCoAQ69uGHHYFjgMy2IgRPes9Xfju
+X-Google-Smtp-Source: ACHHUZ5ol5sbiXba1GCHekbR0EILfk/wzS3Y/s+n2vefP/xibQwJv3xHTuoPN5toPwgCnzPMmH9zd7lGt7bE
+X-Received: from morats.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:d9e])
+ (user=moritzf job=sendgmr) by 2002:a05:6102:474a:b0:439:3e4c:138c with SMTP
+ id ej10-20020a056102474a00b004393e4c138cmr5306960vsb.3.1685664262487; Thu, 01
+ Jun 2023 17:04:22 -0700 (PDT)
+Date: Fri,  2 Jun 2023 00:04:14 +0000
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20230601101257.530867-1-rppt@kernel.org> <20230601101257.530867-13-rppt@kernel.org>
- <20230601103050.GT4253@hirez.programming.kicks-ass.net> <20230601110713.GE395338@kernel.org>
-In-Reply-To: <20230601110713.GE395338@kernel.org>
-From: Song Liu <song@kernel.org>
-Date: Thu, 1 Jun 2023 17:02:16 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7J=4iMPQQw=V1C4MLFf=cP94gSwVx1g7M4YL0W6OLHRQ@mail.gmail.com>
-Message-ID: <CAPhsuW7J=4iMPQQw=V1C4MLFf=cP94gSwVx1g7M4YL0W6OLHRQ@mail.gmail.com>
-Subject: Re: [PATCH 12/13] x86/jitalloc: prepare to allocate exectuatble
- memory as ROX
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>, linux-kernel@vger.kernel.org, 
-	Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Christophe Leroy <christophe.leroy@csgroup.eu>, "David S. Miller" <davem@davemloft.net>, 
-	Dinh Nguyen <dinguyen@kernel.org>, Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>, 
-	Huacai Chen <chenhuacai@kernel.org>, Kent Overstreet <kent.overstreet@linux.dev>, 
-	Luis Chamberlain <mcgrof@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, 
-	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Russell King <linux@armlinux.org.uk>, Steven Rostedt <rostedt@goodmis.org>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner <tglx@linutronix.de>, 
-	Will Deacon <will@kernel.org>, bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-modules@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-s390@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev, 
-	netdev@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.41.0.rc0.172.g3f132b7071-goog
+Message-ID: <20230602000414.3294036-1-moritzf@google.com>
+Subject: [PATCH net-next] net: lan743x: Remove extranous gotos
+From: Moritz Fischer <moritzf@google.com>
+To: netdev@vger.kernel.org
+Cc: pabeni@redhat.com, kuba@kernel.org, edumazet@google.com, 
+	davem@davemloft.net, bryan.whitehead@microchip.com, 
+	UNGLinuxDriver@microchip.com, Moritz Fischer <moritzf@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Thu, Jun 1, 2023 at 4:07=E2=80=AFAM Mike Rapoport <rppt@kernel.org> wrot=
-e:
->
-> On Thu, Jun 01, 2023 at 12:30:50PM +0200, Peter Zijlstra wrote:
-> > On Thu, Jun 01, 2023 at 01:12:56PM +0300, Mike Rapoport wrote:
-> >
-> > > +static void __init_or_module do_text_poke(void *addr, const void *op=
-code, size_t len)
-> > > +{
-> > > +   if (system_state < SYSTEM_RUNNING) {
-> > > +           text_poke_early(addr, opcode, len);
-> > > +   } else {
-> > > +           mutex_lock(&text_mutex);
-> > > +           text_poke(addr, opcode, len);
-> > > +           mutex_unlock(&text_mutex);
-> > > +   }
-> > > +}
-> >
-> > So I don't much like do_text_poke(); why?
->
-> I believe the idea was to keep memcpy for early boot before the kernel
-> image is protected without going and adding if (is_module_text_address())
-> all over the place.
->
-> I think this can be used instead without updating all the call sites of
-> text_poke_early():
->
-> diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.=
-c
-> index 91057de8e6bc..f994e63e9903 100644
-> --- a/arch/x86/kernel/alternative.c
-> +++ b/arch/x86/kernel/alternative.c
-> @@ -1458,7 +1458,7 @@ void __init_or_module text_poke_early(void *addr, c=
-onst void *opcode,
->                  * code cannot be running and speculative code-fetches ar=
-e
->                  * prevented. Just change the code.
->                  */
-> -               memcpy(addr, opcode, len);
-> +               text_poke_copy(addr, opcode, len);
->         } else {
->                 local_irq_save(flags);
->                 memcpy(addr, opcode, len);
->
+The gotos for cleanup aren't required, the function
+might as well just return the actual error code.
 
-This alone doesn't work, as text_poke_early() is called
-before addr is added to the list of module texts. So we
-still use memcpy() here.
+Signed-off-by: Moritz Fischer <moritzf@google.com>
+---
+ drivers/net/ethernet/microchip/lan743x_main.c | 20 +++++--------------
+ 1 file changed, 5 insertions(+), 15 deletions(-)
 
-Thanks,
-Song
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index 957d96a91a8a..f1bded993edc 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -160,16 +160,13 @@ static int lan743x_csr_init(struct lan743x_adapter *adapter)
+ {
+ 	struct lan743x_csr *csr = &adapter->csr;
+ 	resource_size_t bar_start, bar_length;
+-	int result;
+ 
+ 	bar_start = pci_resource_start(adapter->pdev, 0);
+ 	bar_length = pci_resource_len(adapter->pdev, 0);
+ 	csr->csr_address = devm_ioremap(&adapter->pdev->dev,
+ 					bar_start, bar_length);
+-	if (!csr->csr_address) {
+-		result = -ENOMEM;
+-		goto clean_up;
+-	}
++	if (!csr->csr_address)
++		return -ENOMEM;
+ 
+ 	csr->id_rev = lan743x_csr_read(adapter, ID_REV);
+ 	csr->fpga_rev = lan743x_csr_read(adapter, FPGA_REV);
+@@ -177,10 +174,8 @@ static int lan743x_csr_init(struct lan743x_adapter *adapter)
+ 		   "ID_REV = 0x%08X, FPGA_REV = %d.%d\n",
+ 		   csr->id_rev,	FPGA_REV_GET_MAJOR_(csr->fpga_rev),
+ 		   FPGA_REV_GET_MINOR_(csr->fpga_rev));
+-	if (!ID_REV_IS_VALID_CHIP_ID_(csr->id_rev)) {
+-		result = -ENODEV;
+-		goto clean_up;
+-	}
++	if (!ID_REV_IS_VALID_CHIP_ID_(csr->id_rev))
++		return -ENODEV;
+ 
+ 	csr->flags = LAN743X_CSR_FLAG_SUPPORTS_INTR_AUTO_SET_CLR;
+ 	switch (csr->id_rev & ID_REV_CHIP_REV_MASK_) {
+@@ -193,12 +188,7 @@ static int lan743x_csr_init(struct lan743x_adapter *adapter)
+ 		break;
+ 	}
+ 
+-	result = lan743x_csr_light_reset(adapter);
+-	if (result)
+-		goto clean_up;
+-	return 0;
+-clean_up:
+-	return result;
++	return lan743x_csr_light_reset(adapter);
+ }
+ 
+ static void lan743x_intr_software_isr(struct lan743x_adapter *adapter)
+-- 
+2.41.0.rc0.172.g3f132b7071-goog
+
 
