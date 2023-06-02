@@ -1,63 +1,35 @@
-Return-Path: <netdev+bounces-7339-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7340-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A7E9771FC40
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 10:42:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D475671FC56
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 10:45:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E2EF91C20C17
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 08:42:27 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 649B71C20BE4
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 08:45:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B6E0F5687;
-	Fri,  2 Jun 2023 08:42:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B998379FB;
+	Fri,  2 Jun 2023 08:45:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8A2A53A0
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:42:28 +0000 (UTC)
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D6118D
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 01:42:23 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-5147aee9d7cso2580259a12.3
-        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 01:42:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google; t=1685695341; x=1688287341;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ulq4OZiXYAieRrRq88dpEIE3RYucbrr7NukGwo0ANhU=;
-        b=0KKmwxtDonKpBq+O708ULhKF4QlbPgf94kGe2VLNAjZ3+/QOc9xqt1INoayrixM/U3
-         s3/WjddTz2GQ2z1bJaCKLSoShDhd/tLJZ0hO4VQ7IYRmCe9BsbKIk+vGYY7uD54N5YHI
-         SKhalpFYKOOO79+ci8cH1Q8vQr3az7dBFptKctQuHtqF0tVTr798eU8JY+kzEBHYKdlo
-         EG8R7khB6g31qGyNZT345mKl0EmenU+e6K/pciw7ZywPuuqi2j/5QP5yufxUDHoDaNRA
-         s6S7XLUKEn48WzIYTvDaegOaUIB/DAjU7YKW+yUekoAuNWh3mjr1nLbxGBa0KCmVbuvz
-         prag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685695341; x=1688287341;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ulq4OZiXYAieRrRq88dpEIE3RYucbrr7NukGwo0ANhU=;
-        b=lYdlC8Dbsr4ydUqQfCjytNrF64VYjWCuo7x0/yYW3DMJqYW9LT+EpQe2sQiB16FhEK
-         7cLEZPPFYKTlukBSngNId7ahlB7cMJmqSdHXJ535rUZ9YGfCahbxCP/rgdp7/I34NtjU
-         /we+EKarON8jzSuy8rfl91Bb0hcleU4vJlssnQYc6SXr+eNz03uZsu1I8+7afJ6HIGdQ
-         mt+7BB10VPiTTyMOQz6F+m6iN7EsJo+xOffvxTEq7T0OS1+fqYv4C1mf5T3gwtOpurHE
-         LgKM9DzcUJNSXJStrp8kzS7n3Lk+62cBF9eXwWYSZKq7ARsBvJXrykH8tf0C7/tPOQDt
-         dgyw==
-X-Gm-Message-State: AC+VfDy4mb55lQlafrxWnZVUMIWQG5hfnvdE1etPRrG55aDFWBg5adw0
-	iaVn8nORg6+BvcJUM1kl4gGcbQ==
-X-Google-Smtp-Source: ACHHUZ5ZsLXqx11LfoQxvoMVtqGUxOmwKXFSjmo5X8DLvf5yXtEl91+0aCV+faaobRckakgFHhjGHA==
-X-Received: by 2002:a17:907:2d11:b0:973:ed4a:375f with SMTP id gs17-20020a1709072d1100b00973ed4a375fmr9939546ejc.46.1685695341354;
-        Fri, 02 Jun 2023 01:42:21 -0700 (PDT)
-Received: from [10.44.2.5] ([81.246.10.41])
-        by smtp.gmail.com with ESMTPSA id o9-20020a1709064f8900b0094e6a9c1d24sm500066eju.12.2023.06.02.01.42.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Jun 2023 01:42:21 -0700 (PDT)
-Message-ID: <68035bad-b53e-91cb-0e4a-007f27d62b05@tessares.net>
-Date: Fri, 2 Jun 2023 10:42:20 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2A5B5687
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:45:06 +0000 (UTC)
+Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE41E67;
+	Fri,  2 Jun 2023 01:44:32 -0700 (PDT)
+Received: from [192.168.0.2] (ip5f5aebf4.dynamic.kabel-deutschland.de [95.90.235.244])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
+	(No client certificate requested)
+	(Authenticated sender: pmenzel)
+	by mx.molgen.mpg.de (Postfix) with ESMTPSA id 2F6E361EA1BFF;
+	Fri,  2 Jun 2023 10:43:27 +0200 (CEST)
+Message-ID: <577f38ed-8532-c32e-07bd-4a3b384d5fe8@molgen.mpg.de>
+Date: Fri, 2 Jun 2023 10:43:27 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -66,57 +38,152 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.0
-Subject: Re: [PATCH net-next RFC] net: skip printing "link become ready" v6
- msg
-Content-Language: en-GB
-To: David Ahern <dsahern@kernel.org>,
- Stephen Hemminger <stephen@networkplumber.org>
-Cc: mptcp@lists.linux.dev, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Mat Martineau <martineau@kernel.org>,
- Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20230601-net-next-skip_print_link_becomes_ready-v1-1-c13e64c14095@tessares.net>
- <20230601103742.71285cf1@hermes.local>
- <63ee166d-6b33-2293-4ff2-2c42d350580a@kernel.org>
-From: Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <63ee166d-6b33-2293-4ff2-2c42d350580a@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Use PME poll to circumvent
+ unreliable ACPI wake
+Content-Language: en-US
+To: Kai-Heng Feng <kai.heng.feng@canonical.com>,
+ Alexander H Duyck <alexander.duyck@gmail.com>
+Cc: linux-pm@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+ linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+ Jesse Brandeburg <jesse.brandeburg@intel.com>,
+ Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ "David S. Miller" <davem@davemloft.net>, linux-pci@vger.kernel.org
+References: <20230601162537.1163270-1-kai.heng.feng@canonical.com>
+ <269262acfcce8eb1b85ee1fe3424a5ef2991f481.camel@gmail.com>
+ <CAAd53p7c6eEqxd3jecfgvpxuYO3nmmmovcqD=3PgbqSVCWFfxA@mail.gmail.com>
+From: Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <CAAd53p7c6eEqxd3jecfgvpxuYO3nmmmovcqD=3PgbqSVCWFfxA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Stephen, David,
+[Cc: linux-pci@vger.kernel.org]
 
-On 01/06/2023 19:43, David Ahern wrote:
-> On 6/1/23 11:37 AM, Stephen Hemminger wrote:
->> On Thu, 01 Jun 2023 16:34:36 +0200
->> Matthieu Baerts <matthieu.baerts@tessares.net> wrote:
+Dear Kai,
+
+
+Thank you for your patch.
+
+Am 02.06.23 um 03:46 schrieb Kai-Heng Feng:
+> On Fri, Jun 2, 2023 at 4:24 AM Alexander H Duyck wrote:
 >>
->>> This following message is printed in the console each time a network
->>> device configured with an IPv6 addresses is ready to be used:
->>>
->>>   ADDRCONF(NETDEV_CHANGE): <iface>: link becomes ready
->>>
->>> When netns are being extensively used -- e.g. by re-creating netns with
->>> veth to discuss with each other for testing purposes like mptcp_join.sh
->>> selftest does -- it generates a lot of messages: more than 700 when
->>> executing mptcp_join.sh with the latest version.
->>
->> Don't add yet another network nerd knob.
->> Just change message from pr_info to pr_debug.
+>> On Fri, 2023-06-02 at 00:25 +0800, Kai-Heng Feng wrote:
+>>> On some I219 devices, ethernet cable plugging detection only works once
+>>> from PCI D3 state. Subsequent cable plugging does set PME bit correctly,
+>>> but device still doesn't get woken up.
+
+Could you please add the list of all the devices with the firmware 
+version, you know this problem exists on? Please also add the URLs of 
+the bug reports at the end of the commit message.
+
+Is that problem logged somehow? Could a log message be added first?
+
+>> Do we have a root cause on why things don't get woken up? This seems
+>> like an issue where something isn't getting reset after the first
+>> wakeup and so future ones are blocked.
 > 
-> +1
+> No we don't know the root cause.
+> I guess the D3 wake isn't really tested under Windows because I219
+> doesn't use runtime D3 on Windows.
 
-Thank you both for your quick replies! I will send a patch doing that.
+How do you know? Where you able to look at the Microsoft Windows driver 
+source code?
 
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+>>> Since I219 connects to the root complex directly, it relies on platform
+>>> firmware (ACPI) to wake it up. In this case, the GPE from _PRW only
+>>> works for first cable plugging but fails to notify the driver for
+>>> subsequent plugging events.
+>>>
+>>> The issue was originally found on CNP, but the same issue can be found
+>>> on ADL too. So workaround the issue by continuing use PME poll after
+
+The verb is spelled with a space: work around.
+
+>>> first ACPI wake. As PME poll is always used, the runtime suspend
+>>> restriction for CNP can also be removed.
+
+When was that restriction for CNP added?
+
+>>> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+>>> ---
+>>>   drivers/net/ethernet/intel/e1000e/netdev.c | 4 +++-
+>>>   1 file changed, 3 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+>>> index bd7ef59b1f2e..f0e48f2bc3a2 100644
+>>> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
+>>> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+>>> @@ -7021,6 +7021,8 @@ static __maybe_unused int e1000e_pm_runtime_resume(struct device *dev)
+>>>        struct e1000_adapter *adapter = netdev_priv(netdev);
+>>>        int rc;
+>>>
+>>> +     pdev->pme_poll = true;
+>>> +
+>>>        rc = __e1000_resume(pdev);
+>>>        if (rc)
+>>>                return rc;
+>>
+>> Doesn't this enable this too broadly. I know there are a number of
+>> devices that run under the e1000e and I would imagine that we don't
+>> want them all running with "pme_poll = true" do we?
+> 
+> Whack a mole isn't scaling, either.
+> The generation between CNP and ADL are probably affected too.
+> 
+>> It seems like at a minimum we should only be setting this for specific
+>> platofrms or devices instead of on all of them.
+>>
+>> Also this seems like something we should be setting on the suspend side
+>> since it seems to be cleared in the wakeup calls.
+> 
+> pme_poll gets cleared on wakeup, and once it's cleared the device will
+> be removed from pci_pme_list.
+> 
+> To prevent that, reset pme_poll to true immediately on runtime resume.
+> 
+>> Lastly I am not sure the first one is necessarily succeeding. You might
+>> want to check the status of pme_poll before you run your first test.
+>> From what I can tell it looks like the initial state is true in
+>> pci_pm_init. If so it might be getting cleared after the first wakeup
+>> which is what causes your issues.
+> 
+> That's by design. pme_poll gets cleared when the hardware is capable
+> to signal wakeup via PME# or ACPI GPE. For detected hardwares, the
+> pme_poll will never be cleared.
+> So this becomes tricky for the issue, since the ACPI GPE works for
+> just one time, but never again.
+> 
+>>> @@ -7682,7 +7684,7 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>
+>>>        dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_SMART_PREPARE);
+>>>
+>>> -     if (pci_dev_run_wake(pdev) && hw->mac.type != e1000_pch_cnp)
+>>> +     if (pci_dev_run_wake(pdev))
+>>>                pm_runtime_put_noidle(&pdev->dev);
+>>>
+>>>        return 0;
+>>
+>> I assume this is the original workaround that was put in to address
+>> this issue. Perhaps you should add a Fixes tag to this to identify
+>> which workaround this patch is meant to be replacing.
+> 
+> Another possibility is to remove runtime power management completely.
+> I wonder why Windows keep the device at D0 all the time?
+
+Who knows how to contact Intel’s driver developers for Microsoft Windows?
+
+> Can Linux align with Windows?
+
+Before deciding this, the power usage in the different states should be 
+measured.
+
+
+Kind regards,
+
+Paul
 
