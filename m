@@ -1,49 +1,49 @@
-Return-Path: <netdev+bounces-7452-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7453-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D54F7720587
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:10:02 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8DA5072058A
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:10:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6310C1C20E5E
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:09:59 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0C7E01C2093C
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:10:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 636991B905;
-	Fri,  2 Jun 2023 15:08:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F24FA19E6D;
+	Fri,  2 Jun 2023 15:08:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 592EC19E6B
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:08:34 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290901BF
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:08:33 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E67D21B910
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:08:40 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A01E56
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:08:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685718512;
+	s=mimecast20190719; t=1685718515;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=2ZNhwXeGIbA58IS6DHid2Q6FV7QVgcqbxppr3d+VzBk=;
-	b=hcCwAUXO4PA6hjEMRwJLsOsQecs0sA4Wzsxw7Y3qCW0ra5LKIVKxoD+N79i6weVZGIP3Nj
-	GrnVBOvUntKLW6nURm0p0MMJL+WlCh7YPPDAKoqMBbQrWZvZg+87TOcLYWVyywZHQCsGwb
-	XAsuO2tdJGKOMJq1M7z2sKTVg9yP/Ag=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=VkjM4EGYNz4bsSc92zEJRjklGPZ81HVRDlJ8Fsl+T7k=;
+	b=dW+1cpJq9fOQdrY34RjFxeT4js4MGPYbDF76tOAeYYdjsaW6ba1JmbddbTT/MD+SytvH7Q
+	iMxsbT62twQ1dP4ETdqu+BUM/7yREBNSka33eVB5fqs8MT5LPwbnIxJG1H+pyu3MfHjbl+
+	u9JjEw6PVkwXB9IfLMfaY3HdhN9ytnQ=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-257-hxUTvV89POCJp7sspC3Tpw-1; Fri, 02 Jun 2023 11:08:29 -0400
-X-MC-Unique: hxUTvV89POCJp7sspC3Tpw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+ us-mta-552-_zaZ26ErPBGk4yKO8qBKjw-1; Fri, 02 Jun 2023 11:08:32 -0400
+X-MC-Unique: _zaZ26ErPBGk4yKO8qBKjw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 49A92811E96;
-	Fri,  2 Jun 2023 15:08:28 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6021929AB3FA;
+	Fri,  2 Jun 2023 15:08:31 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 255369E60;
-	Fri,  2 Jun 2023 15:08:26 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 1B13C40146F;
+	Fri,  2 Jun 2023 15:08:29 +0000 (UTC)
 From: David Howells <dhowells@redhat.com>
 To: netdev@vger.kernel.org,
 	Linus Torvalds <torvalds@linux-foundation.org>
@@ -61,9 +61,9 @@ Cc: David Howells <dhowells@redhat.com>,
 	Jens Axboe <axboe@kernel.dk>,
 	linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 06/11] tls: Address behaviour change in multi_chunk_sendfile kselftest
-Date: Fri,  2 Jun 2023 16:07:47 +0100
-Message-ID: <20230602150752.1306532-7-dhowells@redhat.com>
+Subject: [PATCH net-next v3 07/11] tls/sw: Support MSG_SPLICE_PAGES
+Date: Fri,  2 Jun 2023 16:07:48 +0100
+Message-ID: <20230602150752.1306532-8-dhowells@redhat.com>
 In-Reply-To: <20230602150752.1306532-1-dhowells@redhat.com>
 References: <20230602150752.1306532-1-dhowells@redhat.com>
 Precedence: bulk
@@ -73,7 +73,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
 X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -81,18 +81,11 @@ X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The multi_chunk_sendfile tests in the TLS kselftest now fail because the
-behaviour of sendfile()[*] changed when SPLICE_F_MORE signalling was fixed.
-Now MSG_MORE is signalled to the socket until we have read sufficient data
-to fulfill the request - which means if we get a short read, MSG_MORE isn't
-seen to be dropped and the TLS record remains pending.
+Make TLS's sendmsg() support MSG_SPLICE_PAGES.  This causes pages to be
+spliced from the source iterator if possible.
 
-[*] This will also affect splice() if SPLICE_F_MORE isn't included in the
-    flags.
-
-Fix the TLS multi_chunk_sendfile kselftest to attempt to flush the
-outstanding TLS record if we get a short sendfile() by doing a zero-length
-send() with MSG_MORE unset.
+This allows ->sendpage() to be replaced by something that can handle
+multiple multipage folios in a single transaction.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Chuck Lever <chuck.lever@oracle.com>
@@ -106,32 +99,85 @@ cc: Jens Axboe <axboe@kernel.dk>
 cc: Matthew Wilcox <willy@infradead.org>
 cc: netdev@vger.kernel.org
 ---
- tools/testing/selftests/net/tls.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
-index e699548d4247..8f4bed8aacc0 100644
---- a/tools/testing/selftests/net/tls.c
-+++ b/tools/testing/selftests/net/tls.c
-@@ -377,7 +377,7 @@ static void chunked_sendfile(struct __test_metadata *_metadata,
- 	char buf[TLS_PAYLOAD_MAX_LEN];
- 	uint16_t test_payload_size;
- 	int size = 0;
--	int ret;
-+	int ret = 0;
- 	char filename[] = "/tmp/mytemp.XXXXXX";
- 	int fd = mkstemp(filename);
- 	off_t offset = 0;
-@@ -398,6 +398,10 @@ static void chunked_sendfile(struct __test_metadata *_metadata,
- 		size -= ret;
- 	}
+Notes:
+    ver #2)
+     - "rls_" should be "tls_".
+
+ net/tls/tls_sw.c | 46 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 45 insertions(+), 1 deletion(-)
+
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 6aa6d17888f5..14636cc6c3a4 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -929,6 +929,38 @@ static int tls_sw_push_pending_record(struct sock *sk, int flags)
+ 				   &copied, flags);
+ }
  
-+	/* Flush the TLS record on a short read. */
-+	if (ret < chunk_size)
-+		EXPECT_EQ(send(self->fd, "", 0, 0), 0);
++static int tls_sw_sendmsg_splice(struct sock *sk, struct msghdr *msg,
++				 struct sk_msg *msg_pl, size_t try_to_copy,
++				 ssize_t *copied)
++{
++	struct page *page = NULL, **pages = &page;
 +
- 	EXPECT_EQ(recv(self->cfd, buf, test_payload_size, MSG_WAITALL),
- 		  test_payload_size);
++	do {
++		ssize_t part;
++		size_t off;
++		bool put = false;
++
++		part = iov_iter_extract_pages(&msg->msg_iter, &pages,
++					      try_to_copy, 1, 0, &off);
++		if (part <= 0)
++			return part ?: -EIO;
++
++		if (WARN_ON_ONCE(!sendpage_ok(page))) {
++			iov_iter_revert(&msg->msg_iter, part);
++			return -EIO;
++		}
++
++		sk_msg_page_add(msg_pl, page, part, off);
++		sk_mem_charge(sk, part);
++		if (put)
++			put_page(page);
++		*copied += part;
++		try_to_copy -= part;
++	} while (try_to_copy && !sk_msg_full(msg_pl));
++
++	return 0;
++}
++
+ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+ {
+ 	long timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
+@@ -1021,6 +1053,17 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+ 			full_record = true;
+ 		}
  
++		if (try_to_copy && (msg->msg_flags & MSG_SPLICE_PAGES)) {
++			ret = tls_sw_sendmsg_splice(sk, msg, msg_pl,
++						    try_to_copy, &copied);
++			if (ret < 0)
++				goto send_end;
++			tls_ctx->pending_open_record_frags = true;
++			if (full_record || eor || sk_msg_full(msg_pl))
++				goto copied;
++			continue;
++		}
++
+ 		if (!is_kvec && (full_record || eor) && !async_capable) {
+ 			u32 first = msg_pl->sg.end;
+ 
+@@ -1083,8 +1126,9 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+ 		/* Open records defined only if successfully copied, otherwise
+ 		 * we would trim the sg but not reset the open record frags.
+ 		 */
+-		tls_ctx->pending_open_record_frags = true;
+ 		copied += try_to_copy;
++copied:
++		tls_ctx->pending_open_record_frags = true;
+ just_flush:
+ 		if (full_record || eor) {
+ 			ret = bpf_exec_tx_verdict(msg_pl, sk, full_record,
 
 
