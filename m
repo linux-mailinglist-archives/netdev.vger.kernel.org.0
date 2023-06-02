@@ -1,60 +1,61 @@
-Return-Path: <netdev+bounces-7317-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7318-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id BF08371FA77
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 09:01:02 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6EB3F71FA7D
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 09:01:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5C829281568
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 07:01:01 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2F3462815B9
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 07:01:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3F72346A8;
-	Fri,  2 Jun 2023 07:00:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4A53246AA;
+	Fri,  2 Jun 2023 07:01:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17C3310E5;
-	Fri,  2 Jun 2023 07:00:59 +0000 (UTC)
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701651B9;
-	Fri,  2 Jun 2023 00:00:47 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id 6a1803df08f44-628f267aa5aso1177036d6.1;
-        Fri, 02 Jun 2023 00:00:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A2053D6D;
+	Fri,  2 Jun 2023 07:01:26 +0000 (UTC)
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC2C18D;
+	Fri,  2 Jun 2023 00:01:09 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id 41be03b00d2f7-53f9a376f3eso1558164a12.0;
+        Fri, 02 Jun 2023 00:01:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685689246; x=1688281246;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=5+Dwvdqn0Nc+03wWkuuIbg+roLTPzxNXIEQmZzt/hu4=;
-        b=GTw6Eipm5S+VJeux5pubyt5ODlplECcBv00WjTFzhxwM5uiLPBp0HMHU+q4PaZYJp4
-         miKnL9tEPl9Cvug/XCS1Fc16h1s6W8QiX6E6xkntXvUYIERJ33BPFreVKg2XDcRZZiV0
-         qNhJr68zq9qeb6eXpqlnEXiGBv0ZzEJfQxRXVSdsP6PM7vssI5SHQFRbxvbnmU+m/Bsb
-         BFDmNI9jagVqSU/+JmIauQ0dOAeSjtXhXHrR6tix5J2EEkUx7okarpNE96agpK6tDjWt
-         tB7eti1gz/rBqPRTb51QofB4KsinH/4dUH8J3KkIO7n1SnWYlD/g8YwonxjAa5vDE4O9
-         3siA==
+        d=gmail.com; s=20221208; t=1685689269; x=1688281269;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZnG52d2Dc9v7SzDlLP9SHsRobLYh/Fr6zYq50STRQGE=;
+        b=I+xCs901C/zEpAM2hx4qv5g3BCXtFOxN/KhotSi7GKPxdlyKQgmDGMoJPqDgSEmufL
+         8C5/wuewZpjMI+8sadDOjVVMxxB/tugR9dzs6rQYdLN1bq/7kuXt5VUjJz7xni/VyuEz
+         jVgNSbKs7e5i1Jg4iFAwm1rPoP2mAPoH17mcvjaTZqAftdzv6aZ3bjUcuLSON4yNjUpx
+         JifOW/fzMZhFnQ0bWCd4tkkv5KnyeCMiJ3P4lxWw4QmRkFeI94dVxdZ4r3JrnaYO2K1e
+         oG+9bdnKUBct1IWHXisqiiO6MTXEzS30p+EOMdjgbfr+Fz8WFc8eJLjY641VF7PZojjg
+         WxTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685689246; x=1688281246;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=5+Dwvdqn0Nc+03wWkuuIbg+roLTPzxNXIEQmZzt/hu4=;
-        b=KRXEayaWpHSh/GOmnoJQ18y/b50aUpZqclrw2EHlccTF22Je2eQBqFadbXulLiWzPE
-         FNlcs+s1H5/61uYVns5yKsqMHCzmhA2GIaeQMOin8tlI8syaLUvLnTbjZ2z6A10QosAC
-         tVJcNkmoNPAotHXmxM/i0y98RlJvjWHPGbFCfC2gr+KI7Quknum2wnex5yqsBPM/1glu
-         mK/5eViUefAMkP2yB1MLm0evkz3Jc/LUV/GbhwoseFJVSZ+6h68JJhkK1wGO0wHbjP5n
-         sVigbqfPkQjEq88z2VCfx1NmndgedtyNWHcAqDif8/yxxd4jWPjSboXW7E4arhmNg3bO
-         5IPA==
-X-Gm-Message-State: AC+VfDzMmTeXTFDB+7a0qL35poJqkZHO9ZJwXqb1CKn6N4hc1ODHHQf/
-	/2lrm0doK39iQWtacN8OTizq2nDvDUU++jyH
-X-Google-Smtp-Source: ACHHUZ6JzhZeLPUw8GX3KsQoF6VZHf0ewEJBuUixnXCbPihdMYOeiS8ui+TZC0md2WulZw7AvUnvTw==
-X-Received: by 2002:a05:6214:c8b:b0:626:1906:bcac with SMTP id r11-20020a0562140c8b00b006261906bcacmr12587680qvr.0.1685689246444;
-        Fri, 02 Jun 2023 00:00:46 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685689269; x=1688281269;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ZnG52d2Dc9v7SzDlLP9SHsRobLYh/Fr6zYq50STRQGE=;
+        b=Nwv20pJSI43HXKXhltOhfqHcukMYgMTyENL+fmaX0jtIjUTE4jbfscGtopP4BNfyJ/
+         UFJ869zkwUPG8qMxVqQHDj+rUtjf72bs8dLxmQ43fsrbYdmh0+oWJeTn8HVZRgZ+dL1t
+         Shd+CGI7Z8PtaeQIAG0CpEJfEA5xr5J3UTW+u7lrbC8qPwJQVQtwdj5rvivHQU5hb0mZ
+         jKOszVfQGzqNcYfNwmDbB3T8693mb0mZD3zztyQ0PwqZyTQm/BB0WPa5MBd/7GRO9JNr
+         1rPr36UB6YLuHudlr2LUzlBbwDtxsHbPNX0Irj7Rd/g85ZMgxu5B7/G8DJbyaf+vIuFT
+         KgFQ==
+X-Gm-Message-State: AC+VfDyZWFkuGrBMHI1Hczwgn7GkbohDtY3wMpWmvTlYaLJIw8s0RxcO
+	VRzBU6efp02CF0647HbCNig=
+X-Google-Smtp-Source: ACHHUZ6jTUPbQ8booJg0HcNCVWgN0R74kwYWjIkCH9W7pLwScUj7HdcQpJCgkgA3sCxUlp7PqE545A==
+X-Received: by 2002:a17:902:d485:b0:1b1:8e8b:7f6a with SMTP id c5-20020a170902d48500b001b18e8b7f6amr1661443plg.27.1685689269110;
+        Fri, 02 Jun 2023 00:01:09 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.24])
-        by smtp.gmail.com with ESMTPSA id jk11-20020a170903330b00b001ac7c725c1asm572716plb.6.2023.06.02.00.00.32
+        by smtp.gmail.com with ESMTPSA id jk11-20020a170903330b00b001ac7c725c1asm572716plb.6.2023.06.02.00.00.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jun 2023 00:00:45 -0700 (PDT)
+        Fri, 02 Jun 2023 00:01:08 -0700 (PDT)
 From: menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To: olsajiri@gmail.com
@@ -93,10 +94,12 @@ Cc: davem@davemloft.net,
 	bpf@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next v2 0/5] bpf, x86: allow function arguments up to 14 for TRACING
-Date: Fri,  2 Jun 2023 14:59:53 +0800
-Message-Id: <20230602065958.2869555-1-imagedong@tencent.com>
+Subject: [PATCH bpf-next v2 1/5] bpf: make MAX_BPF_FUNC_ARGS 14
+Date: Fri,  2 Jun 2023 14:59:54 +0800
+Message-Id: <20230602065958.2869555-2-imagedong@tencent.com>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230602065958.2869555-1-imagedong@tencent.com>
+References: <20230602065958.2869555-1-imagedong@tencent.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -113,49 +116,62 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Menglong Dong <imagedong@tencent.com>
 
-For now, the BPF program of type BPF_PROG_TYPE_TRACING can only be used
-on the kernel functions whose arguments count less than 6. This is not
-friendly at all, as too many functions have arguments count more than 6.
+According to the current kernel version, below is a statistics of the
+function arguments count:
 
-Therefore, let's enhance it by increasing the function arguments count
-allowed in arch_prepare_bpf_trampoline(), for now, only x86_64.
+argument count | FUNC_PROTO count
+7              | 367
+8              | 196
+9              | 71
+10             | 43
+11             | 22
+12             | 10
+13             | 15
+14             | 4
+15             | 0
+16             | 1
 
-In the 1th patch, we make MAX_BPF_FUNC_ARGS 14, according to our
-statistics.
+It's hard to statisics the function count, so I use FUNC_PROTO in the btf
+of vmlinux instead. The function with 16 arguments is ZSTD_buildCTable(),
+which I think can be ignored.
 
-In the 2th patch, we make arch_prepare_bpf_trampoline() support to copy
-function arguments in stack for x86 arch. Therefore, the maximum
-arguments can be up to MAX_BPF_FUNC_ARGS for FENTRY and FEXIT.
+Therefore, let's make the maximum of function arguments count 14. It used
+to be 12, but it seems that there is no harm to make it big enough.
 
-And the 3-5th patches are for the testcases of the 2th patch.
+Reviewed-by: Jiang Biao <benbjiang@tencent.com>
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+ include/linux/bpf.h | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-Changes since v1:
-- change the maximun function arguments to 14 from 12
-- add testcases (Jiri Olsa)
-- instead EMIT4 with EMIT3_off32 for "lea" to prevent overflow
-
-Menglong Dong (5):
-  bpf: make MAX_BPF_FUNC_ARGS 14
-  bpf, x86: allow function arguments up to 14 for TRACING
-  libbpf: make BPF_PROG support 15 function arguments
-  selftests/bpf: rename bpf_fentry_test{7,8,9} to bpf_fentry_test_ptr*
-  selftests/bpf: add testcase for FENTRY/FEXIT with 6+ arguments
-
- arch/x86/net/bpf_jit_comp.c                   | 96 ++++++++++++++++---
- include/linux/bpf.h                           |  9 +-
- net/bpf/test_run.c                            | 40 ++++++--
- tools/lib/bpf/bpf_helpers.h                   |  9 +-
- tools/lib/bpf/bpf_tracing.h                   | 10 +-
- .../selftests/bpf/prog_tests/bpf_cookie.c     | 24 ++---
- .../bpf/prog_tests/kprobe_multi_test.c        | 16 ++--
- .../testing/selftests/bpf/progs/fentry_test.c | 50 ++++++++--
- .../testing/selftests/bpf/progs/fexit_test.c  | 51 ++++++++--
- .../selftests/bpf/progs/get_func_ip_test.c    |  2 +-
- .../selftests/bpf/progs/kprobe_multi.c        | 12 +--
- .../bpf/progs/verifier_btf_ctx_access.c       |  2 +-
- .../selftests/bpf/verifier/atomic_fetch_add.c |  4 +-
- 13 files changed, 249 insertions(+), 76 deletions(-)
-
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index f58895830ada..8b997779faf7 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -961,10 +961,10 @@ enum bpf_cgroup_storage_type {
+ 
+ #define MAX_BPF_CGROUP_STORAGE_TYPE __BPF_CGROUP_STORAGE_MAX
+ 
+-/* The longest tracepoint has 12 args.
+- * See include/trace/bpf_probe.h
++/* The maximun number of the kernel function arguments.
++ * Let's make it 14, for now.
+  */
+-#define MAX_BPF_FUNC_ARGS 12
++#define MAX_BPF_FUNC_ARGS 14
+ 
+ /* The maximum number of arguments passed through registers
+  * a single function may have.
+@@ -2273,7 +2273,8 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ static inline bool bpf_tracing_ctx_access(int off, int size,
+ 					  enum bpf_access_type type)
+ {
+-	if (off < 0 || off >= sizeof(__u64) * MAX_BPF_FUNC_ARGS)
++	/* "+1" here is for FEXIT return value. */
++	if (off < 0 || off >= sizeof(__u64) * (MAX_BPF_FUNC_ARGS + 1))
+ 		return false;
+ 	if (type != BPF_READ)
+ 		return false;
 -- 
 2.40.1
 
