@@ -1,100 +1,89 @@
-Return-Path: <netdev+bounces-7388-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7389-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id BBF9771FF9D
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 12:43:29 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9472971FFC3
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 12:52:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4B8141C2094E
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 10:43:26 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BFA8D2817EC
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 10:52:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B2FFA10947;
-	Fri,  2 Jun 2023 10:43:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D69D610953;
+	Fri,  2 Jun 2023 10:52:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7E038466
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 10:43:25 +0000 (UTC)
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB18E59
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 03:43:04 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-7776dd75224so87013739f.2
-        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 03:43:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685702556; x=1688294556;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=G9TOw2H2TDDn1VQzhH7iezPzkkf4u+p1oMfgUm2gH4s=;
-        b=Pp7oXuGYV8G7+N4gEIl3wBcITbQ7QbkACmPoPo/P0PWF4nUnNDigNMBh9ELRVxlb4A
-         i3KnXx38lsqstzzQ7szs5qGKN3kOtmFaWW2eQ8dbCpkfSteAySYNhVN7uqhCPPaNyMT1
-         y04uxtNRVIkd1HaPoqJ8Yvu712AubNo3EXeERxm+w8CYAsB29v0nkqY96YyDZ22/cQGY
-         Z2pFgNf1LgT0aNNEEuhI0+4JW663lv8wo1m+qFYubvXI7pJ12t8XdyShNgFTH3PgfE8T
-         R8P4aj/yQJBrowNC+sXqFlUouTgbv8VBhPjrGZAzlBsBwC1PhWgFvUThZ35tZEgCYEO4
-         4jRg==
-X-Gm-Message-State: AC+VfDyqpDKWIrOIH9RGKzU//rKq/mwoALyUsik+iqwaSc06zqa3ppP4
-	VdP4z9e1ldRrzcQ5Fgd+NGXiyHVVPXHBOI97lcnQrzPy/rFT
-X-Google-Smtp-Source: ACHHUZ5g81UbT0rdYhiZsxkJQRZusYNFheAl9Q2G8/fz5X7oyogzCbJ3gEEO9e7RVn0nSDYkK4N6utNhjlOH6ehZj7UVEKz1AfvE
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFC43107B1
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 10:52:03 +0000 (UTC)
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90270194
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 03:51:56 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-35-3yuN105PNGCVPWGL2SIudQ-1; Fri, 02 Jun 2023 11:51:53 +0100
+X-MC-Unique: 3yuN105PNGCVPWGL2SIudQ-1
+Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
+ (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Fri, 2 Jun
+ 2023 11:51:50 +0100
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.048; Fri, 2 Jun 2023 11:51:50 +0100
+From: David Laight <David.Laight@ACULAB.COM>
+To: 'Kuniyuki Iwashima' <kuniyu@amazon.com>, "edumazet@google.com"
+	<edumazet@google.com>
+CC: "akihiro.suda.cz@hco.ntt.co.jp" <akihiro.suda.cz@hco.ntt.co.jp>,
+	"akihirosuda@git.sr.ht" <akihirosuda@git.sr.ht>, "davem@davemloft.net"
+	<davem@davemloft.net>, "kuba@kernel.org" <kuba@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>, "pabeni@redhat.com"
+	<pabeni@redhat.com>, "segoon@openwall.com" <segoon@openwall.com>,
+	"suda.kyoto@gmail.com" <suda.kyoto@gmail.com>
+Subject: RE: [PATCH linux] net/ipv4: ping_group_range: allow GID from
+ 2147483648 to 4294967294
+Thread-Topic: [PATCH linux] net/ipv4: ping_group_range: allow GID from
+ 2147483648 to 4294967294
+Thread-Index: AQHZlBP3VDhY7Q4aa0O6DdrMSjDw/a93V+rg
+Date: Fri, 2 Jun 2023 10:51:50 +0000
+Message-ID: <b613cbaf569945e3811609a9f10fe0aa@AcuMS.aculab.com>
+References: <CANn89iK13jkbKXv-rKiUbTqMrk3KjVPGYH_Vv7FtJJ5pTdUAYQ@mail.gmail.com>
+ <20230531225947.38239-1-kuniyu@amazon.com>
+In-Reply-To: <20230531225947.38239-1-kuniyu@amazon.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:a814:0:b0:774:7cc5:6682 with SMTP id
- c20-20020a5ea814000000b007747cc56682mr799847ioa.3.1685702556762; Fri, 02 Jun
- 2023 03:42:36 -0700 (PDT)
-Date: Fri, 02 Jun 2023 03:42:36 -0700
-In-Reply-To: <00000000000015ac7905e97ebaed@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000017cc6205fd233643@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in rdma_close
-From: syzbot <syzbot+67d13108d855f451cafc@syzkaller.appspotmail.com>
-To: asmadeus@codewreck.org, dan.carpenter@oracle.com, davem@davemloft.net, 
-	edumazet@google.com, ericvh@gmail.com, kuba@kernel.org, leon@kernel.org, 
-	linux-kernel@vger.kernel.org, linux_oss@crudebyte.com, lucho@ionkov.net, 
-	netdev@vger.kernel.org, pabeni@redhat.com, syzkaller-bugs@googlegroups.com, 
-	v9fs-developer@lists.sourceforge.net
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-	SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This bug is marked as fixed by commit:
-9p: client_create/destroy: only call trans_mod->close after create
+RnJvbTogS3VuaXl1a2kgSXdhc2hpbWENCj4gU2VudDogMDEgSnVuZSAyMDIzIDAwOjAwDQouLi4u
+DQo+ID4gPiAtLS0gYS9pbmNsdWRlL25ldC9waW5nLmgNCj4gPiA+ICsrKyBiL2luY2x1ZGUvbmV0
+L3BpbmcuaA0KPiA+ID4gQEAgLTIwLDcgKzIwLDcgQEANCj4gPiA+ICAgKiBnaWRfdCBpcyBlaXRo
+ZXIgdWludCBvciB1c2hvcnQuICBXZSB3YW50IHRvIHBhc3MgaXQgdG8NCj4gPiA+ICAgKiBwcm9j
+X2RvaW50dmVjX21pbm1heCgpLCBzbyBpdCBtdXN0IG5vdCBiZSBsYXJnZXIgdGhhbiBNQVhfSU5U
+DQo+ID4gPiAgICovDQo+ID4gPiAtI2RlZmluZSBHSURfVF9NQVggKCgoZ2lkX3QpfjBVKSA+PiAx
+KQ0KPiA+ID4gKyNkZWZpbmUgR0lEX1RfTUFYICgoZ2lkX3QpfjBVKQ0KDQpEb2Vzbid0IHRoYXQg
+Y29tbWVudCBuZWVkIHVwZGF0aW5nPw0KDQpJIGRvIHdvbmRlciBob3cgbXVjaCBjb2RlIGJyZWFr
+cyBmb3IgZ2lkID4gTUFYSU5ULg0KSG93IG11Y2ggdGVzdGluZyBkb2VzIGl0IGFjdHVhbGx5IGdl
+dD8/DQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkg
+Um9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlv
+biBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
-But I can't find it in the tested trees[1] for more than 90 days.
-Is it a correct commit? Please update it by replying:
-
-#syz fix: exact-commit-title
-
-Until then the bug is still considered open and new crashes with
-the same signature are ignored.
-
-Kernel: Linux
-Dashboard link: https://syzkaller.appspot.com/bug?extid=67d13108d855f451cafc
-
----
-[1] I expect the commit to be present in:
-
-1. for-kernelci branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git
-
-2. master branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-
-3. master branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-4. main branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-
-The full list of 10 trees can be found at
-https://syzkaller.appspot.com/upstream/repos
 
