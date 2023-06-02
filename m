@@ -1,46 +1,46 @@
-Return-Path: <netdev+bounces-7471-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7472-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3B40972067B
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:47:06 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 79E2C72067C
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:47:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BBAAD1C210C5
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:47:02 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 35B6B2819F7
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:47:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 203661B90F;
-	Fri,  2 Jun 2023 15:45:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C70351B91E;
+	Fri,  2 Jun 2023 15:45:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13AC31B8FB
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:45:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCA521B910
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:45:50 +0000 (UTC)
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EADD41A1
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:45:44 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AED518C
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:45:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
 	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
 	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=HQhW/Hts9r3Kh+Zsi5qaq9C+CeI+sWFaMco1KSADJRo=; b=O2irZXLAiBqkFpUty0xqh03LCk
-	1gx+PW52hQjjng6BHt3YqRwc5GPUSMEqP5uFcwwxu8LLDIT4iL4B173G8DF9Rms/0Vf8AcccliiIj
-	NIXZHC+IpEM0Fb6btLXJFOjEnrcTeJhXsZqtZJFX19a7i1seG44VgcAbJ/JsC7cEAg2M+4doorZE5
-	14DAdEBU6MF9Q6ad6ujCabaliBPDWsA4OXtcO/ncZjjuZNEa+FFsFDeFCc2HvMWwyBygsrmLg1pZ8
-	mrV4UK4gb/oIawevxypa+kppWCKnBSR8+BZ2qEYJQ8PG8KMCoHskeDC8Hk7+g3PEpdbT7fhv29hxx
-	0br/CB5Q==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:44008 helo=rmk-PC.armlinux.org.uk)
+	bh=5Yri5zTLMwqtY189y122EOnnzmFonxPfU7xL3miev/k=; b=aPNLK/gXowf/3BEkDqgMEL2U07
+	wC9CkXxLzD8PM7UoY55jb1eEmbLSf8goum5ZkUoyWToP1bOkvcXs4cvsXG7GpKMYnql0A9o7hdED/
+	gpwgr1KOwyikfiJ+FORkojrJ13LxTn1oHKmXFuvb1PMqSDFQQA7ouDwi7sMgU0JCLkSNGG8ZlDVwp
+	E7lzB2A7VBcUV21zDNzovWRn57GVis9IqXznBpRzVYa6g9n+5uHaD445NvAL/FUPB9GEvEXtwXVeX
+	uVL8HK+tCTJyu9YEDXb4dBgTwzf3DjYKLFv+JFGhG+VPH99t/OBdbbsGQw2lwnPHew+S+YaQwwaPx
+	igO9dHNg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:44022 helo=rmk-PC.armlinux.org.uk)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <rmk@armlinux.org.uk>)
-	id 1q56yC-0008EO-Cv; Fri, 02 Jun 2023 16:45:40 +0100
+	id 1q56yH-0008Ec-FX; Fri, 02 Jun 2023 16:45:45 +0100
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
 	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-	id 1q56yB-00Bsuy-PP; Fri, 02 Jun 2023 16:45:39 +0100
+	id 1q56yG-00Bsv4-St; Fri, 02 Jun 2023 16:45:44 +0100
 In-Reply-To: <ZHoOe9K/dZuW2pOe@shell.armlinux.org.uk>
 References: <ZHoOe9K/dZuW2pOe@shell.armlinux.org.uk>
 From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -54,7 +54,7 @@ Cc: "David S. Miller" <davem@davemloft.net>,
 	netdev@vger.kernel.org,
 	Paolo Abeni <pabeni@redhat.com>,
 	Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH net-next 6/8] net: fman_memac: use lynx_pcs_create_fwnode()
+Subject: [PATCH net-next 7/8] net: pcs: lynx: make lynx_pcs_create() static
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -64,9 +64,9 @@ MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1q56yB-00Bsuy-PP@rmk-PC.armlinux.org.uk>
+Message-Id: <E1q56yG-00Bsv4-St@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date: Fri, 02 Jun 2023 16:45:39 +0100
+Date: Fri, 02 Jun 2023 16:45:44 +0100
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
 	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
@@ -74,41 +74,49 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Use lynx_pcs_create_fwnode() to create a lynx PCS from a fwnode handle.
+We no longer need to export lynx_pcs_create() for drivers to use as we
+now have all the functionality we need in the two new creation helpers.
+Remove the export and prototype, and make it static.
 
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/ethernet/freescale/fman/fman_memac.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+ drivers/net/pcs/pcs-lynx.c | 3 +--
+ include/linux/pcs-lynx.h   | 1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
-index 8f45caf4af12..4fbdae996d05 100644
---- a/drivers/net/ethernet/freescale/fman/fman_memac.c
-+++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
-@@ -1039,19 +1039,14 @@ static struct phylink_pcs *memac_pcs_create(struct device_node *mac_node,
- 					    int index)
+diff --git a/drivers/net/pcs/pcs-lynx.c b/drivers/net/pcs/pcs-lynx.c
+index b0907c67d469..b8c66137e28d 100644
+--- a/drivers/net/pcs/pcs-lynx.c
++++ b/drivers/net/pcs/pcs-lynx.c
+@@ -307,7 +307,7 @@ static const struct phylink_pcs_ops lynx_pcs_phylink_ops = {
+ 	.pcs_link_up = lynx_pcs_link_up,
+ };
+ 
+-struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio)
++static struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio)
  {
- 	struct device_node *node;
--	struct mdio_device *mdiodev = NULL;
- 	struct phylink_pcs *pcs;
+ 	struct lynx_pcs *lynx;
  
- 	node = of_parse_phandle(mac_node, "pcsphy-handle", index);
--	if (node && of_device_is_available(node))
--		mdiodev = of_mdio_find_device(node);
--	of_node_put(node);
--
--	if (!mdiodev)
--		return ERR_PTR(-EPROBE_DEFER);
-+	if (!node || !of_device_is_available(node))
-+		return ERR_PTR(-ENODEV);
+@@ -322,7 +322,6 @@ struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio)
  
--	pcs = lynx_pcs_create(mdiodev);
--	mdio_device_put(mdiodev);
-+	pcs = lynx_pcs_create_fwnode(of_fwnode_handle(node));
-+	of_node_put(node);
- 
- 	return pcs;
+ 	return lynx_to_phylink_pcs(lynx);
  }
+-EXPORT_SYMBOL(lynx_pcs_create);
+ 
+ struct phylink_pcs *lynx_pcs_create_mdiodev(struct mii_bus *bus, int addr)
+ {
+diff --git a/include/linux/pcs-lynx.h b/include/linux/pcs-lynx.h
+index 123e813df771..7958cccd16f2 100644
+--- a/include/linux/pcs-lynx.h
++++ b/include/linux/pcs-lynx.h
+@@ -9,7 +9,6 @@
+ #include <linux/mdio.h>
+ #include <linux/phylink.h>
+ 
+-struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio);
+ struct phylink_pcs *lynx_pcs_create_mdiodev(struct mii_bus *bus, int addr);
+ struct phylink_pcs *lynx_pcs_create_fwnode(struct fwnode_handle *node);
+ 
 -- 
 2.30.2
 
