@@ -1,187 +1,145 @@
-Return-Path: <netdev+bounces-7503-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7507-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 968257207AA
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 18:34:44 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9A3767207DA
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 18:44:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3E5BF281957
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 16:34:43 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2630D1C21184
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 16:44:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 57698332E3;
-	Fri,  2 Jun 2023 16:34:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CD751332F3;
+	Fri,  2 Jun 2023 16:44:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46539332E1
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 16:34:41 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04201AB
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 09:34:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=JROnAh9uM+2iqyKp52V/ZLKTj/qwnj5KPDtEO4yRNyY=; b=xPtQ6YpISPHemnswmpZ2szvsxh
-	apkT+jg6L2P+luE/0aqhyL9tJLMamoiCnWWrDHNxuBcyqWcL+nlBojkCjJzLLiKSCSXHGAgC5ZU6Z
-	e6QQ2ihTa4i19RBkkV+ZBKanPjIejuuKMpaYxZawWwNRcc65O+Ww2UrsvJRLSHM+qV0VXLN6OF1bT
-	OIRHddeKpmSyeHEBSdkv2tXYaCOncCHid9n1FgVgj6sumpwiyUJW2dvQ4GrJBjeBoBE0giLXFpQPG
-	WAy64E4YbkNeXGMILxX4e7U2NVRXG9jNpo2HF7VxgRhBfUPssTOe94cuDbmU8ZiT33N8FUA+7TJzx
-	6pqLDyIw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:37720)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q57jV-0008IB-Ij; Fri, 02 Jun 2023 17:34:33 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q57jT-00036L-V3; Fri, 02 Jun 2023 17:34:31 +0100
-Date: Fri, 2 Jun 2023 17:34:31 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	Dan Carpenter <dan.carpenter@linaro.org>,
-	Oleksij Rempel <linux@rempel-privat.de>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: phylib: fix phy_read*_poll_timeout()
-Message-ID: <ZHoaF6O0Vlq9pikF@shell.armlinux.org.uk>
-References: <E1q4kX6-00BNuM-Mx@rmk-PC.armlinux.org.uk>
- <20230601213345.3aaee66a@kernel.org>
- <20230601213509.7ef8f199@kernel.org>
- <ZHmt9c9VsYxcoXaI@shell.armlinux.org.uk>
- <20230602090539.6a4fa374@kernel.org>
- <ZHoWN0uO30P/y9hv@shell.armlinux.org.uk>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2443332E1
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 16:44:23 +0000 (UTC)
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47ABC196
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 09:44:21 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id 4fb4d7f45d1cf-5147e8972a1so3307540a12.0
+        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 09:44:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1685724259; x=1688316259;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vzJT3HyKG2J4xiGoewlppsTGaruPJowM8pRCfo3JmUA=;
+        b=dApqJ39S7kJ+spfhmbazjAu4ciZJNJh9okgwO2MURW6o9cnlP9bFbzXfFSTm6MpfF4
+         Djad093jfFLRiG2RHrrBUxQ8Rw9eOvmEPy7P5PGrG905bvSKIvK9GhC3mSulV3uhmH4b
+         qE/6W6pjsxfBx3mREiM4iDZy+yKW3dDaumtlE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685724259; x=1688316259;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vzJT3HyKG2J4xiGoewlppsTGaruPJowM8pRCfo3JmUA=;
+        b=aAYcEAlsIze06FlomqnlSBLOCmRL/dEwBXDoICB3GIMUPpuHMBwVO/rjS3QePF4cou
+         XaU4IFKcR4o++oDQ4KzVac0BopR7k3zNu+FYga05RlmXCYp14sFVx2bhHojgp48zmWaR
+         nh+8Do9KP7/HCn5shhmEydBLgWVvLDxt0If9ftqwS5cxgIZCOgKgIRMqJnhN9HZSeHUS
+         spifc+ZEmZ4NhSz+6wKULqjwa9VVBfHvlRmDey1Xv8Kw/RysA2cZvxkMvwMz2n/2XmsC
+         dzJoxjg56R9OupZwtKIoJaWG0rYLP6k3a8s6DkXi/LeCICfyNSlBOCLcL7eLYTxEWCUN
+         RJNA==
+X-Gm-Message-State: AC+VfDwbs/FS1azi1Ggnp7jwZD8tA6KXBGL/1fO22z3+PcWf0HJpoZHZ
+	NmJVdV9FDUzIINOe3uDtCPk/wfUNTOazxmn6v4W//ZjH
+X-Google-Smtp-Source: ACHHUZ6eRLKxmZxH8V8/wY58igampizztcXD5pU90DDRycxpsb1fATMvJOEnVkQHGnh8HlKRcLA7KA==
+X-Received: by 2002:aa7:c904:0:b0:510:db93:f034 with SMTP id b4-20020aa7c904000000b00510db93f034mr2429691edt.36.1685724259567;
+        Fri, 02 Jun 2023 09:44:19 -0700 (PDT)
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com. [209.85.218.42])
+        by smtp.gmail.com with ESMTPSA id v15-20020aa7d9cf000000b0050bc4eb9846sm849375eds.1.2023.06.02.09.44.19
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Jun 2023 09:44:19 -0700 (PDT)
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-97467e06511so109932966b.2
+        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 09:44:19 -0700 (PDT)
+X-Received: by 2002:a2e:7302:0:b0:2af:1681:2993 with SMTP id
+ o2-20020a2e7302000000b002af16812993mr311009ljc.49.1685723811492; Fri, 02 Jun
+ 2023 09:36:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZHoWN0uO30P/y9hv@shell.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <20230602150752.1306532-1-dhowells@redhat.com> <20230602150752.1306532-6-dhowells@redhat.com>
+In-Reply-To: <20230602150752.1306532-6-dhowells@redhat.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Fri, 2 Jun 2023 12:36:34 -0400
+X-Gmail-Original-Message-ID: <CAHk-=wg-9vyvbQPy_Aa=BQmkdX7b=ANinNUU+22tMELuxmH99g@mail.gmail.com>
+Message-ID: <CAHk-=wg-9vyvbQPy_Aa=BQmkdX7b=ANinNUU+22tMELuxmH99g@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 05/11] splice, net: Fix SPLICE_F_MORE
+ signalling in splice_direct_to_actor()
+To: David Howells <dhowells@redhat.com>
+Cc: netdev@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>, 
+	Boris Pismenny <borisp@nvidia.com>, John Fastabend <john.fastabend@gmail.com>, 
+	Jakub Kicinski <kuba@kernel.org>, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, 
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, David Ahern <dsahern@kernel.org>, 
+	Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>, linux-mm@kvack.org, 
+	linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>, 
+	Al Viro <viro@zeniv.linux.org.uk>, Jan Kara <jack@suse.cz>, Jeff Layton <jlayton@kernel.org>, 
+	David Hildenbrand <david@redhat.com>, Christian Brauner <brauner@kernel.org>, linux-fsdevel@vger.kernel.org, 
+	linux-block@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 02, 2023 at 05:17:59PM +0100, Russell King (Oracle) wrote:
-> On Fri, Jun 02, 2023 at 09:05:39AM -0700, Jakub Kicinski wrote:
-> > On Fri, 2 Jun 2023 09:53:09 +0100 Russell King (Oracle) wrote:
-> > > > Yes it is :)  All this to save the single line of assignment
-> > > > after the read_poll_timeout() "call" ?  
-> > > 
-> > > Okay, so it seems you don't like it. We can't fix it then, and we'll
-> > > have to go with the BUILD_BUG_ON() forcing all users to use a signed
-> > > varable (which better be larger than a s8 so negative errnos can fit)
-> > > or we just rely on Dan to report the problems.
-> > 
-> > Wait, did the version I proposed not work?
-> > 
-> > https://lore.kernel.org/all/20230530121910.05b9f837@kernel.org/
-> 
-> If we're into the business of throwing web URLs at each other for
-> messages we've already read, here's my one for you which contains
-> the explanation why your one is broken, and proposing my solution.
-> 
-> https://lore.kernel.org/all/ZHZmBBDSVMf1WQWI@shell.armlinux.org.uk/
-> 
-> To see exactly why yours is broken, see the paragraph starting
-> "The elephant in the room..."
-> 
-> If it needs yet more explanation, which clearly it does, then let's
-> look at what genphy_loopback is doing:
-> 
->                 ret = phy_read_poll_timeout(phydev, MII_BMSR, val,
->                                             val & BMSR_LSTATUS,
->                                     5000, 500000, true);
-> 
-> Now, with your supposed "fix" of:
-> 
-> +	int __ret, __val;						\
-> +									\
-> +	__ret = read_poll_timeout(phy_read, __val, __val < 0 || (cond),	\
->  		sleep_us, timeout_us, sleep_before_read, phydev, regnum); \
-> 
-> This ends up being:
-> 
-> 	int __ret, __val;
-> 
-> 	__ret = read_poll_timeout(phy_read, __val, __val < 0 || (val & BMSR_LSTATUS),
->  		sleep_us, timeout_us, sleep_before_read, phydev, regnum);
-> 
-> and that expands to something that does this:
-> 
-> 	__val = phy_read(phydev, regnum);
-> 	if (__val < 0 || (val & BMSR_LSTATUS))
-> 		break;
-> 
-> Can you spot the bug yet? Where does "val" for the test "val & BMSR_LSTATUS"
-> come from?
-> 
-> A bigger hint. With the existing code, this would have been:
-> 
-> 	val = phy_read(phydev, regnum);
-> 	if (val < 0 || (val & BMSR_LSTATUS))
-> 		break;
-> 
-> See the difference? val & BMSR_LSTATUS is checking the value that was
-> returned from phy_read() here, but in yours, it's checking an
-> uninitialised variable.
-> 
-> With my proposal, this becomes:
-> 
-> 	val = __val = phy_read(phydev, regnum);
-> 	if (__val < 0 || (val & BMSR_LSTATUS))
-> 		break;
-> 
-> where "val" is whatever type the user chose, which has absolutely _no_
-> bearing what so ever on whether the test for __val < 0 can be correctly
-> evaluated, and makes that test totally independent of whatever type the
-> user chose.
+On Fri, Jun 2, 2023 at 11:08=E2=80=AFAM David Howells <dhowells@redhat.com>=
+ wrote:
+>
+> Fix this by making splice_direct_to_actor() always signal SPLICE_F_MORE i=
+f
+> we haven't yet hit the requested operation size.
 
-If you don't like my solution, then I suppose another possibility would
-be:
+Well, I certainly like this patch better than the previous versions,
+just because it doesn't add random fd-specific code.
 
-#define __phy_poll_read(phydev, regnum, val) \
-	({ \
-		int __err; \
-		__err = phy_read(phydev, regnum); \
-		if (__err >= 0) \
-			val = __err; \
-		__err; \
-	})
+That said, I think it might be worth really documenting the behavior,
+particularly for files where the kernel *could* know "the file is at
+EOF, no more data".
 
-#define phy_read_poll_timeout(phydev, regnum, val, cond, sleep_us, \
-                                timeout_us, sleep_before_read) \
-({ \
-	int __ret, __err; \
-	__ret = read_poll_timeout(__phy_poll_read, __err, \
-				  __err < 0 || (cond), \
-		sleep_us, timeout_us, sleep_before_read, phydev, regnum, val); \
-	if (__err < 0) \
-		__ret = __err; \
-...
+I hope that if user space wants to splice() a file to a socket, said
+user space would have done an 'fstat()' and actually pass in the file
+size as the length to splice(). Because if they do, I think this
+simplified patch does the right thing automatically.
 
-but that brings with it the possibility of using an uninitialised
-"val" (e.g. if phy_read() returns an error on the first iteration.)
-and is way more horrid and even less easy to understand.
+But if user space instead passes in a "maximally big len", and just
+depends on the kernel then doing tha
 
-Remember that we default to *not* warning about uninitialised variables
-when building the kernel, so this won't produce a warning - which I
-guess is probably why you didn't notice that your suggestion left "val"
-uninitialised.
+                ret =3D do_splice_to(in, &pos, pipe, len, flags);
+                if (unlikely(ret <=3D 0))
+                        goto out_release;
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+to stop splicing at EOF, then the last splice_write() will have had
+SPLICE_F_MORE set, even though no more data is coming from the file,
+of course.
+
+And I think that's fine. But wasn't that effectively what the old code
+was already doing because 'read_len' was smaller than 'len'? I thought
+that was what you wanted to fix?
+
+IOW, I thought you wanted to clear SPLICE_F_MORE when we hit EOF. This
+still doesn't do that.
+
+So now I'm confused about what your "fix" is. Your patch doesn't
+actually seem to change existing behavior in splice_direct_to_actor().
+
+I was expecting you to actually pass the 'sd' down to do_splice_to()
+and then to ->splice_read(), so that the splice_read() function could
+say "I have no more", and clear it.
+
+But you didn't do that.
+
+Am I misreading something, or did I miss another patch?
+
+               Linus
 
