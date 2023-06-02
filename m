@@ -1,133 +1,187 @@
-Return-Path: <netdev+bounces-7501-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7503-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id F15BD7207A1
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 18:32:39 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 968257207AA
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 18:34:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7C5281C21227
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 16:32:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3E5BF281957
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 16:34:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 937411EA9F;
-	Fri,  2 Jun 2023 16:31:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 57698332E3;
+	Fri,  2 Jun 2023 16:34:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88CCD1EA9B
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 16:31:48 +0000 (UTC)
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6BA6194
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 09:31:46 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-565d1b86a64so30545537b3.3
-        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 09:31:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1685723506; x=1688315506;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=57MXj3/H9RSkFTRrQoRMmiLMzWFmPoS/vFw7oSzKDy0=;
-        b=WS1vRDLLr0PwfCuRa6QcHyp5NX4WuBEBopELLBTm9qKDYR5IKOmiz95xdrbJ+7xXkh
-         eXpmfFe736UBizAqr/pq5Q2iDvXYukPDsOH6BhuIqxqHY9n7XqB5RPC9ul76PKxDO/Oc
-         32cPJB5Ni42M1C+7tB6xvtdWqAlUpznPceKsrRTtXZsKCr9eeMb+tukcMLn5V+5gYoST
-         IdssAE+lZCPxOKo0JhNyN73xtF1Wh8KaPDp6aInS0Bxz1wW5olIcMwou2q1FrYgYaOlC
-         a4r0jm9ebfr0TTn/Txr8sD+7Hddb43oOPxEs9KyDEkCowhMnvkFKY958ZZO/fUXNqhJ9
-         LB7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685723506; x=1688315506;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=57MXj3/H9RSkFTRrQoRMmiLMzWFmPoS/vFw7oSzKDy0=;
-        b=AtuR+53ctGrlzbR0c/Oln8g9zrY4P9YntcqZpe7ok31jl2E9GjSCK0E7PxeicY+C/V
-         tznxeB3RI6bCeaTCKdKZxAUUqJ34PjyqqgAnHQ4dyjRXVE3KtAe5necZSj8A9A5Vw73f
-         iZh9SVWw4klchgFWC0q70YgdyUzZc6g9atbvRt8QsL+n8S8xNGmjTDOHyAbO6kfeLwB5
-         0WS9rowjhV9gFbioUCbNuo6CO7UY2xXjdS7Ti62JgEneutuUu5+vZzgMmEcVePHVGmTd
-         Y/Lt2TG7Y8k+y9G21e/iTcyYVqnVjmQE4BxQSFPRnihUIVtF72KfpXap6YNDlswX1BPo
-         3Vig==
-X-Gm-Message-State: AC+VfDzQPD8ZUZV/5MjW4yVvdJ0EypsQ9kCh/1Yw4qESGkjzLE4/owGj
-	rdpYQpiOceRbd3RR1vt1NKgKqAO1I+/xAQ==
-X-Google-Smtp-Source: ACHHUZ73nqC9QAfdBDYCsuNahCW5nEzAIehgJhTt857DS0lG/sc0/POiZuHk7o9WVin64y++KLKqGRj10eIiPw==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a81:af62:0:b0:568:f589:2b4e with SMTP id
- x34-20020a81af62000000b00568f5892b4emr264910ywj.0.1685723506028; Fri, 02 Jun
- 2023 09:31:46 -0700 (PDT)
-Date: Fri,  2 Jun 2023 16:31:41 +0000
-In-Reply-To: <20230602163141.2115187-1-edumazet@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46539332E1
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 16:34:41 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04201AB
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 09:34:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=JROnAh9uM+2iqyKp52V/ZLKTj/qwnj5KPDtEO4yRNyY=; b=xPtQ6YpISPHemnswmpZ2szvsxh
+	apkT+jg6L2P+luE/0aqhyL9tJLMamoiCnWWrDHNxuBcyqWcL+nlBojkCjJzLLiKSCSXHGAgC5ZU6Z
+	e6QQ2ihTa4i19RBkkV+ZBKanPjIejuuKMpaYxZawWwNRcc65O+Ww2UrsvJRLSHM+qV0VXLN6OF1bT
+	OIRHddeKpmSyeHEBSdkv2tXYaCOncCHid9n1FgVgj6sumpwiyUJW2dvQ4GrJBjeBoBE0giLXFpQPG
+	WAy64E4YbkNeXGMILxX4e7U2NVRXG9jNpo2HF7VxgRhBfUPssTOe94cuDbmU8ZiT33N8FUA+7TJzx
+	6pqLDyIw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:37720)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q57jV-0008IB-Ij; Fri, 02 Jun 2023 17:34:33 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q57jT-00036L-V3; Fri, 02 Jun 2023 17:34:31 +0100
+Date: Fri, 2 Jun 2023 17:34:31 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+	Dan Carpenter <dan.carpenter@linaro.org>,
+	Oleksij Rempel <linux@rempel-privat.de>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phylib: fix phy_read*_poll_timeout()
+Message-ID: <ZHoaF6O0Vlq9pikF@shell.armlinux.org.uk>
+References: <E1q4kX6-00BNuM-Mx@rmk-PC.armlinux.org.uk>
+ <20230601213345.3aaee66a@kernel.org>
+ <20230601213509.7ef8f199@kernel.org>
+ <ZHmt9c9VsYxcoXaI@shell.armlinux.org.uk>
+ <20230602090539.6a4fa374@kernel.org>
+ <ZHoWN0uO30P/y9hv@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <20230602163141.2115187-1-edumazet@google.com>
-X-Mailer: git-send-email 2.41.0.rc0.172.g3f132b7071-goog
-Message-ID: <20230602163141.2115187-3-edumazet@google.com>
-Subject: [PATCH net 2/2] rfs: annotate lockless accesses to RFS sock flow table
-From: Eric Dumazet <edumazet@google.com>
-To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org, eric.dumazet@gmail.com, 
-	Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZHoWN0uO30P/y9hv@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add READ_ONCE()/WRITE_ONCE() on accesses to the sock flow table.
+On Fri, Jun 02, 2023 at 05:17:59PM +0100, Russell King (Oracle) wrote:
+> On Fri, Jun 02, 2023 at 09:05:39AM -0700, Jakub Kicinski wrote:
+> > On Fri, 2 Jun 2023 09:53:09 +0100 Russell King (Oracle) wrote:
+> > > > Yes it is :)  All this to save the single line of assignment
+> > > > after the read_poll_timeout() "call" ?  
+> > > 
+> > > Okay, so it seems you don't like it. We can't fix it then, and we'll
+> > > have to go with the BUILD_BUG_ON() forcing all users to use a signed
+> > > varable (which better be larger than a s8 so negative errnos can fit)
+> > > or we just rely on Dan to report the problems.
+> > 
+> > Wait, did the version I proposed not work?
+> > 
+> > https://lore.kernel.org/all/20230530121910.05b9f837@kernel.org/
+> 
+> If we're into the business of throwing web URLs at each other for
+> messages we've already read, here's my one for you which contains
+> the explanation why your one is broken, and proposing my solution.
+> 
+> https://lore.kernel.org/all/ZHZmBBDSVMf1WQWI@shell.armlinux.org.uk/
+> 
+> To see exactly why yours is broken, see the paragraph starting
+> "The elephant in the room..."
+> 
+> If it needs yet more explanation, which clearly it does, then let's
+> look at what genphy_loopback is doing:
+> 
+>                 ret = phy_read_poll_timeout(phydev, MII_BMSR, val,
+>                                             val & BMSR_LSTATUS,
+>                                     5000, 500000, true);
+> 
+> Now, with your supposed "fix" of:
+> 
+> +	int __ret, __val;						\
+> +									\
+> +	__ret = read_poll_timeout(phy_read, __val, __val < 0 || (cond),	\
+>  		sleep_us, timeout_us, sleep_before_read, phydev, regnum); \
+> 
+> This ends up being:
+> 
+> 	int __ret, __val;
+> 
+> 	__ret = read_poll_timeout(phy_read, __val, __val < 0 || (val & BMSR_LSTATUS),
+>  		sleep_us, timeout_us, sleep_before_read, phydev, regnum);
+> 
+> and that expands to something that does this:
+> 
+> 	__val = phy_read(phydev, regnum);
+> 	if (__val < 0 || (val & BMSR_LSTATUS))
+> 		break;
+> 
+> Can you spot the bug yet? Where does "val" for the test "val & BMSR_LSTATUS"
+> come from?
+> 
+> A bigger hint. With the existing code, this would have been:
+> 
+> 	val = phy_read(phydev, regnum);
+> 	if (val < 0 || (val & BMSR_LSTATUS))
+> 		break;
+> 
+> See the difference? val & BMSR_LSTATUS is checking the value that was
+> returned from phy_read() here, but in yours, it's checking an
+> uninitialised variable.
+> 
+> With my proposal, this becomes:
+> 
+> 	val = __val = phy_read(phydev, regnum);
+> 	if (__val < 0 || (val & BMSR_LSTATUS))
+> 		break;
+> 
+> where "val" is whatever type the user chose, which has absolutely _no_
+> bearing what so ever on whether the test for __val < 0 can be correctly
+> evaluated, and makes that test totally independent of whatever type the
+> user chose.
 
-This also prevents a (smart ?) compiler to remove the condition in:
+If you don't like my solution, then I suppose another possibility would
+be:
 
-if (table->ents[index] != newval)
-        table->ents[index] = newval;
+#define __phy_poll_read(phydev, regnum, val) \
+	({ \
+		int __err; \
+		__err = phy_read(phydev, regnum); \
+		if (__err >= 0) \
+			val = __err; \
+		__err; \
+	})
 
-We need the condition to avoid dirtying a shared cache line.
+#define phy_read_poll_timeout(phydev, regnum, val, cond, sleep_us, \
+                                timeout_us, sleep_before_read) \
+({ \
+	int __ret, __err; \
+	__ret = read_poll_timeout(__phy_poll_read, __err, \
+				  __err < 0 || (cond), \
+		sleep_us, timeout_us, sleep_before_read, phydev, regnum, val); \
+	if (__err < 0) \
+		__ret = __err; \
+...
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/linux/netdevice.h | 7 +++++--
- net/core/dev.c            | 6 ++++--
- 2 files changed, 9 insertions(+), 4 deletions(-)
+but that brings with it the possibility of using an uninitialised
+"val" (e.g. if phy_read() returns an error on the first iteration.)
+and is way more horrid and even less easy to understand.
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 08fbd4622ccf731daaee34ad99773d6dc2e82fa6..e6f22b7403d014a2cf4d81d931109a594ce1398e 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -768,8 +768,11 @@ static inline void rps_record_sock_flow(struct rps_sock_flow_table *table,
- 		/* We only give a hint, preemption can change CPU under us */
- 		val |= raw_smp_processor_id();
- 
--		if (table->ents[index] != val)
--			table->ents[index] = val;
-+		/* The following WRITE_ONCE() is paired with the READ_ONCE()
-+		 * here, and another one in get_rps_cpu().
-+		 */
-+		if (READ_ONCE(table->ents[index]) != val)
-+			WRITE_ONCE(table->ents[index], val);
- 	}
- }
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index b3c13e0419356b943e90b1f46dd7e035c6ec1a9c..1495f8aff288e944c8cab21297f244a6fcde752f 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4471,8 +4471,10 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
- 		u32 next_cpu;
- 		u32 ident;
- 
--		/* First check into global flow table if there is a match */
--		ident = sock_flow_table->ents[hash & sock_flow_table->mask];
-+		/* First check into global flow table if there is a match.
-+		 * This READ_ONCE() pairs with WRITE_ONCE() from rps_record_sock_flow().
-+		 */
-+		ident = READ_ONCE(sock_flow_table->ents[hash & sock_flow_table->mask]);
- 		if ((ident ^ hash) & ~rps_cpu_mask)
- 			goto try_rps;
- 
+Remember that we default to *not* warning about uninitialised variables
+when building the kernel, so this won't produce a warning - which I
+guess is probably why you didn't notice that your suggestion left "val"
+uninitialised.
+
 -- 
-2.41.0.rc0.172.g3f132b7071-goog
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
