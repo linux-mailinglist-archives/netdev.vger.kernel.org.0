@@ -1,72 +1,109 @@
-Return-Path: <netdev+bounces-7497-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7498-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6240C72078F
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 18:30:05 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id AD238720795
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 18:31:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1DD37281951
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 16:30:04 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 29C0D1C21217
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 16:31:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 289621D2C7;
-	Fri,  2 Jun 2023 16:30:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1E7BC8F4;
+	Fri,  2 Jun 2023 16:31:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 165DC1D2BA
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 16:30:01 +0000 (UTC)
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2083.outbound.protection.outlook.com [40.107.249.83])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B71FEB4;
-	Fri,  2 Jun 2023 09:29:56 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E9991D2DA
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 16:31:18 +0000 (UTC)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A500194;
+	Fri,  2 Jun 2023 09:31:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685723475; x=1717259475;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=9H31JwSLJbIMerupqoDEcfZ+oGWaVPKVD/YXIFrdsQw=;
+  b=BKKGMNKcbcgCDgnEtS986GtbCs1Vvoz6xowkRsMIpsvSyTP67cyiSCqf
+   hyxlwMnkC1N0hW+VeLkIIJzgLzA1I3elvJONiAZuxhT56JdPrVtHFF54h
+   ccT3H1OnOL1P7afnj45gDDQumUwRgTpj+xOEVsrDupFQryIBqCtNrOTRM
+   FR4dfiySZv0ZxsKY1NzQCyO9Wnt7tlUbhqnMqwozpS66he6Db6QgZUh1w
+   tS9G7ALIbAmp/ZqihBuWM2RkdKg/eN3VU+spxteuDqVu6N1v2XozHC3Qw
+   iuxiV4R1wV+LM8DRYCNVZrdiRObB42R1ecBywPH4vjtWSN4GGOBF7Jn7a
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10729"; a="336273711"
+X-IronPort-AV: E=Sophos;i="6.00,213,1681196400"; 
+   d="scan'208";a="336273711"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2023 09:31:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10729"; a="772931498"
+X-IronPort-AV: E=Sophos;i="6.00,213,1681196400"; 
+   d="scan'208";a="772931498"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga008.fm.intel.com with ESMTP; 02 Jun 2023 09:31:09 -0700
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Fri, 2 Jun 2023 09:31:08 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Fri, 2 Jun 2023 09:31:08 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Fri, 2 Jun 2023 09:31:08 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ADf+PziJAgbCEdJy9gXH9AKX0BA2GJZ7yRpWuKTyA+OCWC/oXuVJOpki/1mAtNLSpNZnrCkLKaaMXLdxk191D326c3U7IKM9CRNKBnymvUGIO41VyZ7HNVw8FIkzrATxy8Zb289SFrhB67x+6hEGnpUuQA0/dqRLCWniAaKIVTpBhytdNgi4Zb0pSThe+Bz4ThihcqLyVEC692CiB3+O8g93dDISXxpqQxJCP/zb1gMoZcB8gX1fL7g7uk8rX2ZgtiUrMszF8NvDpmkgs7dQ0mKVf3nphaiTEDNdQE20TztpHTmMZvXYZ7Ppta04LbZ4/OLma4JcrxSPt+/PUmAA3A==
+ b=ZxIQmnTqhCWvKcBTJwkSvYyyRbw/+YZCZSICfli8JfXsOs/C0PybvpINc3Yz47iX3g7CExRRBguvBfrQReXO8ehl9yjd+nvuv8a1JmA9lV1pThUb+7IXzQ7gaH2DLaaQToZ9Pr9gZNE9P+CIu0621bDVKKda6D2p6Zs4d2Rw9xj1g4zYdoZSpJLENcoiWpNCO8I0R2o9kkIY/vEX/gFCVtEXqMotAUyOoCX3MyBOy99jgbm2czxEYPB/5COS7xa8w3FAjBML35geIa63mEKV8AIpIF/vJ+N2Orn/rqUp8K4YilNW83b6ka0ZEMBcTIgWVeqrs+UsVf9wxyqO52oAKA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TpUPR95aWNLLc8ygCD+ogUcMebiV1U9TfzQlRtEEor4=;
- b=SmWrxprPJ76NBZSZjvesqEX1HkjdCRYxYSKPmxj3ifRaEq9KBdmX0v/Zhwr1IN6qs2Pyf0GuWQrUijVu+zzBqM+KxRhtF3tphu9JfiE/UpDwKNeDgF1s+xDMitt4qUXq6Z8i/tDS9P9+cvAeq0ML/cp3p+/vGWUyO7Ux0khXStOwsrBrronL+f4AuJ1DJO5CUF/4PsUNM1nfVe6H4NYBx3g8Bn39lgKQeEI2c0D84kZgfFAyisbI+5jwlunjKQfNvVlc4ranv61Bs1SCW6S6RMiqpdtwjkD7plne8ASMLl7xL6px55MLT529BlOz6Pd2sszxXpXuu7rDLFBE9BbKzA==
+ bh=axPrEnu5T3OcNTSZ/gsL8Xt3J5mGK0CYEu4jEwEV/Fg=;
+ b=dhU2P2Z8BU5pD5D4U/dSMgiak/YiX9ZJZ6SJ+WhZXt8TY9gXLEj3QBiBWqrymTvRXE58hku1yDevQlqWvl13Wt5vOL/CbqZyE5q2z34mBFlFazfc7qoK6/uotEQECKvK4j7canTRtbQFPmjkPBbR1D/gMrnvVc7hO4kPnLKS9FYclSCGVgpb29KYm+UaSI+ZDz8/WccSNEOs1DRWTLHy3khsBoYIUGpOnnsRzqSGpZEQLQjM9yjnIsqxaoFi6zLSdWdtnHC96b6RX4POSaXfQG2j0vEODgSj9/Dc/5s/qGjmCP3X+aN4+YIVj9XDyQH63HRn6UElM3BjBX0n7gOfLA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TpUPR95aWNLLc8ygCD+ogUcMebiV1U9TfzQlRtEEor4=;
- b=bn5NTeeCQbMK8x85h87z2uZBARkOpg+gH7TiziBPAGuVyOb5KCcfTp2gTIWk0PocROq9E24g6+Q+LjwxTargtU+ReBKnueMILQ0UfYKpbLoR7XEX1Ks+brpKpSeMXohG4Wy7RFTAZam8q1z/mn1Ob/FC/cvKqbEhUFR752TLan4=
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by AM0PR04MB6867.eurprd04.prod.outlook.com (2603:10a6:208:182::11) with
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
+ by BY1PR11MB8056.namprd11.prod.outlook.com (2603:10b6:a03:533::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.21; Fri, 2 Jun
- 2023 16:29:52 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::47e4:eb1:e83c:fa4a]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::47e4:eb1:e83c:fa4a%4]) with mapi id 15.20.6455.020; Fri, 2 Jun 2023
- 16:29:52 +0000
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-To: netdev@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Jamal Hadi Salim <jhs@mojatatu.com>,
-	Cong Wang <xiyou.wangcong@gmail.com>,
-	Jiri Pirko <jiri@resnulli.us>,
-	linux-kernel@vger.kernel.org,
-	Peilin Ye <yepeilin.cs@gmail.com>,
-	Pedro Tammela <pctammela@mojatatu.com>
-Subject: [RFC PATCH net-next] net/sched: introduce pretty printers for Qdiscs
-Date: Fri,  2 Jun 2023 19:29:35 +0300
-Message-Id: <20230602162935.2380811-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR09CA0120.eurprd09.prod.outlook.com
- (2603:10a6:803:78::43) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.23; Fri, 2 Jun
+ 2023 16:31:05 +0000
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::82b6:7b9d:96ce:9325]) by DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::82b6:7b9d:96ce:9325%6]) with mapi id 15.20.6455.024; Fri, 2 Jun 2023
+ 16:31:04 +0000
+Message-ID: <51f558e3-7ccd-45cd-d944-73997765fd12@intel.com>
+Date: Fri, 2 Jun 2023 18:29:44 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH net-next v3 09/12] iavf: switch to Page Pool
+Content-Language: en-US
+To: Alexander H Duyck <alexander.duyck@gmail.com>, Jakub Kicinski
+	<kuba@kernel.org>
+CC: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+	<edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Maciej Fijalkowski
+	<maciej.fijalkowski@intel.com>, Magnus Karlsson <magnus.karlsson@intel.com>,
+	Michal Kubiak <michal.kubiak@intel.com>, Larysa Zaremba
+	<larysa.zaremba@intel.com>, Jesper Dangaard Brouer <hawk@kernel.org>, "Ilias
+ Apalodimas" <ilias.apalodimas@linaro.org>, Christoph Hellwig <hch@lst.de>,
+	Paul Menzel <pmenzel@molgen.mpg.de>, <netdev@vger.kernel.org>,
+	<intel-wired-lan@lists.osuosl.org>, <linux-kernel@vger.kernel.org>
+References: <20230530150035.1943669-1-aleksander.lobakin@intel.com>
+ <20230530150035.1943669-10-aleksander.lobakin@intel.com>
+ <0962a8a8493f0c892775cda8affb93c20f8b78f7.camel@gmail.com>
+From: Alexander Lobakin <aleksander.lobakin@intel.com>
+In-Reply-To: <0962a8a8493f0c892775cda8affb93c20f8b78f7.camel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR2P281CA0061.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:93::18) To DM6PR11MB3625.namprd11.prod.outlook.com
+ (2603:10b6:5:13a::21)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -74,266 +111,205 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AM0PR04MB6867:EE_
-X-MS-Office365-Filtering-Correlation-Id: bb87a41d-dd50-446c-8abf-08db63869793
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|BY1PR11MB8056:EE_
+X-MS-Office365-Filtering-Correlation-Id: ed9d80d7-774a-4102-98b2-08db6386c272
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	MHSnlWpxnExkRzhBeTam2LW/ljJyE8uSUyc5L1hCLueb+nYdKP35w2PatB0veU/7PFBYi65QJSQmNsGFB9QYI1RJIGHCoCK/6DHJMHstTASfQV7bArkvoUnd25tFfar3WQViVlFfmq/HYT54urAIIsAgX05AFM58J1XNLl0lBjxyEJOwv8IzM0xvRO4tqSKAkP9BR+r7DHnIBvEubypLHHdwTueOwZnaIRCUIL31+fpBHdIL1aVhV9WVg6SdQL8nkSQGlBcxKnarbfnBhrfNthBlsKt4S2SYL45cPfA2+r7ESiB4lzt8yWEw2FPZLVrCNE4OYLjoZAeLTSz6kvdfQW7HsCP/Ax6YQNNIKR6Fhk+mMv29eoKSWVN6qq3BEuYcOOUqogny/BzNLB2djp7yrwona7Sod00i+7H59ub5ILjGqVkdyvH/FrQvU5yIIDyNaxUQh6bXTeHeha0+fzjbBKr1otWWup10Ztzp8hS+TE8XDkGjDBiMoh+jN459nGoRMaqdM7AiFXqxcG38J/H0nYuGV6CmXU8jVI7cTgwJrH9V9eKaqdlZfPQ73q6xwIkqqY8vBPIoYXcvbiKjASXzA6PGsO41WC8Z+UIxfX32qst2kPHhvI6SosPmtVvCss5O
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(39860400002)(346002)(136003)(376002)(451199021)(6512007)(186003)(6506007)(1076003)(26005)(41300700001)(38350700002)(38100700002)(2616005)(83380400001)(6486002)(6666004)(52116002)(54906003)(36756003)(66556008)(66476007)(4326008)(66946007)(6916009)(478600001)(316002)(44832011)(7416002)(5660300002)(2906002)(8676002)(86362001)(8936002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: cgiFxMF9sK1LH/xzylhffnHbGQI4FrPD42QCcqB0dyC06OuDRgcnypoIOsZIjf4qgwld2+lfExjF4U4AWi8CEve41wHdJABKCyEGuAIAaKbNoiqhdiVNvKv6mGWPSY2GX4nqua9D5UX64muet2zROw23qYQQhIMZjj4JnzUFZJhcyTOfSNRw+4mzPOHT2jT+hPp/1rWhTCycpqnFHMXvUpj89xg24bwihqKtpePDPgNeHxThIJiPPwyjlPGquFXOXvs8VJHOXPJj6wzBvQxvImsMQaVSSjuP2n6C38anXcu9ilaAheVOgULVJMX7vkr9j4BQSoNdoM8XDYF78AavqVCOotmpoTEGdHCkxsyIw5TWM/xNivImcfsqQV2C0H2IxgDiSaIPA5eH0NHW5rOAfgmV/2b6VlG+Npt8AHLPawuq8pahNlbf977NmzPim31cAQ0wXwFB7Odn/7arVzGSWnGfPabyMT4GHrv6jZlEo9lM1nfzPkfGuQ2KKnWySqu+JAth7UBxTIPnL16FQ59kaMr3mtACBXJaRzDwOVGugdn4VBBTThC0F5NtCNqY7znbzRo8fJpgTQ71TPvW59CNq3LnG3xZZwbxCGTUcjA9+TlEg5YKF4HByJZfQc+0GFgABw7gro8aUeXNjWqEpsJ5WQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(396003)(366004)(136003)(346002)(376002)(451199021)(478600001)(6512007)(2616005)(6506007)(26005)(36756003)(186003)(83380400001)(6486002)(6666004)(41300700001)(38100700002)(4326008)(82960400001)(66556008)(66476007)(66946007)(316002)(7416002)(31696002)(86362001)(2906002)(5660300002)(8936002)(8676002)(31686004)(54906003)(110136005)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?BgDmRz0IoDfEg+dqOabpiNt1EtYHLrrH9zSoYS5gS6DMp/H7fPqscbw8hsm3?=
- =?us-ascii?Q?xHrdmzAW+XFSEcQXBZOv/eg0f0/GmCZYlUXYsQ1gX8GR2jwBUV0H0AbgAqqk?=
- =?us-ascii?Q?pMVTDFP5AiEK4E7eE0xCgzKKR/RrX5FCQWCa3BCFf8evQHFl1Hsu+Oe4czcl?=
- =?us-ascii?Q?bYiE8hDWPRjxLWGD6VpUlvkvLHfc7VLadI9jL6GCBRwM2uXsnhgB3zY3MWrp?=
- =?us-ascii?Q?uXkdF7RZwL5CQY5HQImeiN+Knr4rwCBW2LoV1P6ax1npc3Eazm8kqpV/aFFU?=
- =?us-ascii?Q?m7dwUAfRBanmCsaNWPapZiVpPhxh4N5g4c+OJZZwyO+jQ3WvSEOhInM2vz9K?=
- =?us-ascii?Q?FNf567cgn4Q0Eb4+uj93k2Z5DhwPqzWBvGtNtSkW7KBVkM7FxCLH2bD7gyJQ?=
- =?us-ascii?Q?qcH3XGydq5q9jap3j5G69d4+riT7vBE5kc9O6EA1k4C7KGkcjsl8FcybtPqx?=
- =?us-ascii?Q?v0RSVIvkHsAFEzvj5N6vZh1v09ZP9Q5XI5rhZICdgNbH+djRNPcLU/DPpvQY?=
- =?us-ascii?Q?Vd0bmmO9W9tDW7j6epHz4cGIalDCPy2I/neqVrCTParpwxhoKJR5RjG3TZ5q?=
- =?us-ascii?Q?i2YrlKP07ngUwv0Fy9YlACAyi/BJItFg1gDVxHZGHObTfBbgrwPUDqeN4II+?=
- =?us-ascii?Q?KQXpGbOWElhitInYpqX8JFG1yENQ/H9+ksr6DnWQwUXAEl4qls1REe4B3Pzh?=
- =?us-ascii?Q?lGCCHfxyAzzi2uaBQCLeAuCY39irVlsIXwqe9Pqh5247gsXchOCVb3OwF7h2?=
- =?us-ascii?Q?oy/r9aJD7z8AdWQ+tad0ARBKSKaRTopqQ2syv7BvU6trywyNLLZJ2UTQeNjX?=
- =?us-ascii?Q?F8lP1qts3GFCeVDy8M6yqXnpwmeoxembnIxVfFNDgOvNDavtSwmL2C8uyaAO?=
- =?us-ascii?Q?ytBG7+VbnFHs11/drlQsaRzMcsB/Vy2p694wcWeM5TjwpxSL96Pi+aabxIWo?=
- =?us-ascii?Q?yOXFuaKLEsvDX32PL08brbvFdC5oYz/qoTLvclmgT2JQpgXavYNsMnReryRO?=
- =?us-ascii?Q?jjqKhXvkqto0JiS07rZdifWlYySn+Drm5rlSPkkiqf7xefYelQbaV8E4AXW+?=
- =?us-ascii?Q?HrWWuvUTCTKQQ0liEC+rhR03zM2kfnYjPuXXgfX1KrN4eeds2r+cIOfwGxer?=
- =?us-ascii?Q?nWesiS2e1e9KiXA1UB7pH3ZTGGhpoJLx1yYep9yw92SreK/WmN4BJ5CE0eEG?=
- =?us-ascii?Q?FfIZ1rElJTSdraNvKw+GCmFeLfFrZ80xpUr6Dwd9VFzMfHHE2TP1kKcVhhOL?=
- =?us-ascii?Q?Q9SIIwUe5iilD1WZFv6rwRhiblCo29nSbuuf0NFvYeHLy9TpdoeZzBCfVPa9?=
- =?us-ascii?Q?FifqNNN/CM/6zBBRY6MhAkuOgU1pZAZFqufVWqzQp0rkT0GtBw8rQNyx2Dlh?=
- =?us-ascii?Q?Kb23GjxHogt0uW+7cg0mPHxfsRBcze7qoIANgPtm/ppgRAmaW/w+fgMk1rCi?=
- =?us-ascii?Q?UQiM95OX9StEu7Ug+dzWBzBJHCok2aNzQUOLpWJLXdkMnkDmSx67gWRj/oro?=
- =?us-ascii?Q?dt+7m22XBQVMov2BI6mRyo1mzw2OceqiJXTmq2mOS3OhuOQ9Fc3lczp2zs6v?=
- =?us-ascii?Q?cQvLiYa+XvPQMmhlhU3AZPNl540csvE1Z0wk/eHf7KCC3cWBKBVrCedrDpBG?=
- =?us-ascii?Q?rw=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bb87a41d-dd50-446c-8abf-08db63869793
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZFRKK1NxS2J5MU4zUEJ2SUM2MlB5dHdLWXgrd3JmMDJycmx3WVBJUVJtVldi?=
+ =?utf-8?B?Y1FDaW9OY01Ya0FSNFY2VC9OV2VzQlFQY3hKR0plMG9vN0h4THlYRkF2eHJB?=
+ =?utf-8?B?Uk9kV2U2RUVzOXF6WE51cyt3bUl4ekMvZk5ET25wT2l0ZjZTWEtNQ3V0ekxO?=
+ =?utf-8?B?cEgvRHpKRS8vS3RpZXduZmFYVTZ3V1NvTDVMZzVOT0JoUHVsdlEwVUNyWHlR?=
+ =?utf-8?B?MTE5eHBmVFlxNXV5eTJqMHoxQjgza2ZUeUVIcEs0YitWOVZMakZudmVIU0I5?=
+ =?utf-8?B?a2QySHhBYnBDTlR4NWJ3SngzaVpRaitUd0RVUFV6djVGZHBQWDBvNGNmZVV2?=
+ =?utf-8?B?Ukhsajc1ZUxkQmRSQlRZY0FUY2xzenRXUHRQWGtoK1BmTUtmM01kVEk1UVRs?=
+ =?utf-8?B?YjdxZ1VEai9rRlJSSFRtUjJEQTVyMUtpZGJzelZ2TitIekV6ZzdzYTN0aWJ6?=
+ =?utf-8?B?dURwVU1ZRWk4OWFvL3REb3JpRkNuTGV0Vk1wM3dFdmU4UXM0MzlGbUFvNlVK?=
+ =?utf-8?B?eE5xTFJ3Zkp3elRkWkhQRzA3M21KT0psMDFRc2EyQmN1aFE1dHNjNVlwWlZk?=
+ =?utf-8?B?VzZCVmlOd05NVi9mb1FrTE5FYm9hcHpFb0VwUTc2MDR3c0tYV1ZIN3lOcC90?=
+ =?utf-8?B?eW8wMmgrWDA1STExTExlYzU3VllUc0QzVzNlVmVaTEVpbkZHdXBZTWpJSGZn?=
+ =?utf-8?B?T1BCOXhCcUxBRzNDUHhYZy8yOXlZRFdxTEZ4TWpEemd4eHB6c3FCRmIybGd4?=
+ =?utf-8?B?eFFDSWYzc2x6bkJIanBUcjcvTHhtWGZkazVSeFZwTXJJc0s3SFM1UDZNdWFW?=
+ =?utf-8?B?Uml6UzJmOGV3blExaHh4SVRacGZ1endqbmpmanRJdDRTTlNqR05VdWx0R3FZ?=
+ =?utf-8?B?L2RtalBhbUNocXAxTXRCRTdwblJlckNyYWdIdnZHTWxxMGUvdlV4S2diSnh1?=
+ =?utf-8?B?cFEvc2doRncweVJ1SHRTOW4xamNqQ0E2ZDRxOGlrL1ZvVmx1R0x6RTJPRG55?=
+ =?utf-8?B?cmFIbHRSZGx1VE9LaVdYVFFHVElzWkcxKzJHbnBVMDk3YVAyK2xlM1l5T3F5?=
+ =?utf-8?B?a0NZdVJUWFJUQVEyYWhuWExjRnU5NTYyL2JkamdVTHBSa2d5VUdXSHN3NUI2?=
+ =?utf-8?B?bElRRHYrR1ptRk9kbGxrMkxQa3pYOHJEOVhiVmNEblc1aklvUk9sRzB0NVVC?=
+ =?utf-8?B?eVlnYktBUjI5OThHa1FsZllDcU1BTG5OV3JMR2tic2J2TklwWXB0T2RqNFhW?=
+ =?utf-8?B?b2J3R2ozRkxsQ3ZtZlBpUFhDcFQ1TDYzU1AzUER0TTZPQS9iWS9zVW8weDdE?=
+ =?utf-8?B?RmNpU3AwQ1lLeUhmK2tsbExVQ0dFTnFVQjRjandOVmpiWFRzUFJvaWthMGto?=
+ =?utf-8?B?dnhWT0JCcnZCUXZxOGEvTHU3U2VyNy9iOHFNS28zRUR2aXpCQXpaZEppMnY0?=
+ =?utf-8?B?TWJ6elo5elYyL2ZLcjNtRFQwdFNidkFIbGtTckNXNjRPTzk5dGp4d0xjZFZu?=
+ =?utf-8?B?WExZdHcyeWcxUnAxU2pWeEhReXFiRjIyM3Q3U0l3SnBIVzFSbWlucndUajgx?=
+ =?utf-8?B?cHVDSkhaYi82Z3hZR2kzcngwYklNV01kTkRONzJSMDNQcUtqMUk1MDRZRjdy?=
+ =?utf-8?B?WHlqYmZzWUJyV0NoVkpNVndCWSt3NzZrRzB4NkpMWGQrMWptY2svbmcxNHNn?=
+ =?utf-8?B?VFZvbGV0UHJUVUZ6eGNWbzlVbkcyMlBJeDNjeW9ORmlJVDVzL0ZHbFI2c3pX?=
+ =?utf-8?B?eFBValFXOVlYMEpmNUxsdzh5Z3BBczFOemlnQk9PYkRPdEZ4WGJCQTBGbVR1?=
+ =?utf-8?B?OU5YcWRZamc4Q3VqMjJQU0lXTERYZTlDeHczSkFzZGFwb3JaakV5RmtWV3Fy?=
+ =?utf-8?B?NVN5QWx3Q2FzYU5FZ2lCR3hPQkhjYzVEeHhhcWsxcGwwNXYxNnV2ZnR4Qk1T?=
+ =?utf-8?B?Y05GdFo3WWZBRWdHOVhtQU1SaXJFL1JlVTFZaTBCd1VKdGZZdDZGMGFhY3Rj?=
+ =?utf-8?B?M0lqOE1sSjVBUk96MHR1VjZ2WGxPc0tmWXBEeStlT3V2dUYvQ3B2OHNjL1ZC?=
+ =?utf-8?B?TkhuaVE5ZUU0MmFFekNiZlUwZFNPdHh2Rjc4OFUzZWlXRVViL08xTm1BRzhj?=
+ =?utf-8?B?a21zbGRRbHU3RVRINS9qa0ZSTDE3bUFIdkdJb1p6UFRIekh1T0cxOEE4ZTJP?=
+ =?utf-8?B?QlE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed9d80d7-774a-4102-98b2-08db6386c272
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2023 16:29:52.6074
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2023 16:31:04.6240
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5PuCoRQBie9sl/2hHmr+abjw15pwykJtg0WN+MlfDFMx9Hxr+Igy4b5GfDd85Qc7KjoDRaQpUWNJwIpf93wtGg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6867
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+X-MS-Exchange-CrossTenant-UserPrincipalName: mQcvAdTG7P1amvg/PGR+TrIseSi+d89TNQsfreVRkRZsTRDCy91Ds9a7H2uS/NAmMDkY9z9hDDnPbXyiqQCVFTg7ezoA76cYerGAQMOyefU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY1PR11MB8056
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
 	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Sometimes when debugging Qdiscs it may be confusing to know exactly what
-you're looking at, especially since they're hierarchical. Pretty printing
-the handle, parent handle and netdev is a bit cumbersome, so this patch
-proposes a set of wrappers around __qdisc_printk() which are heavily
-inspired from __net_printk().
+From: Alexander H Duyck <alexander.duyck@gmail.com>
+Date: Wed, 31 May 2023 09:19:06 -0700
 
-It is assumed that these printers will be more useful for untalented
-kernel hackers such as myself rather than to the overall quality of the
-code, since Qdiscs rarely print stuff to the kernel log by design (and
-where they do, maybe that should be reconsidered in the first place).
+> On Tue, 2023-05-30 at 17:00 +0200, Alexander Lobakin wrote:
+>> Now that the IAVF driver simply uses dev_alloc_page() + free_page() with
+>> no custom recycling logics and one whole page per frame, it can easily
+>> be switched to using Page Pool API instead.
 
-A single demo conversion has been made, there is room for more if the
-idea is appreciated.
+[...]
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- include/net/sch_debug.h | 45 +++++++++++++++++++++
- net/sched/Makefile      |  2 +-
- net/sched/sch_api.c     |  4 +-
- net/sched/sch_debug.c   | 86 +++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 134 insertions(+), 3 deletions(-)
- create mode 100644 include/net/sch_debug.h
- create mode 100644 net/sched/sch_debug.c
+>> @@ -691,8 +690,6 @@ int iavf_setup_tx_descriptors(struct iavf_ring *tx_ring)
+>>   **/
+>>  void iavf_clean_rx_ring(struct iavf_ring *rx_ring)
+>>  {
+>> -	u16 i;
+>> -
+>>  	/* ring already cleared, nothing to do */
+>>  	if (!rx_ring->rx_pages)
+>>  		return;
+>> @@ -703,28 +700,17 @@ void iavf_clean_rx_ring(struct iavf_ring *rx_ring)
+>>  	}
+>>  
+>>  	/* Free all the Rx ring sk_buffs */
+>> -	for (i = 0; i < rx_ring->count; i++) {
+>> +	for (u32 i = 0; i < rx_ring->count; i++) {
+> 
+> Did we make a change to our coding style to allow declaration of
+> variables inside of for statements? Just wondering if this is a change
+> since the recent updates to the ISO C standard, or if this doesn't
+> match up with what we would expect per the coding standard.
 
-diff --git a/include/net/sch_debug.h b/include/net/sch_debug.h
-new file mode 100644
-index 000000000000..032de4710671
---- /dev/null
-+++ b/include/net/sch_debug.h
-@@ -0,0 +1,45 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __NET_SCHED_DEBUG_H
-+#define __NET_SCHED_DEBUG_H
-+
-+#include <linux/bug.h>
-+#include <linux/kern_levels.h>
-+
-+struct Qdisc;
-+
-+__printf(3, 4) __cold
-+void qdisc_printk(const char *level, const struct Qdisc *sch,
-+		  const char *format, ...);
-+__printf(2, 3) __cold
-+void qdisc_emerg(const struct Qdisc *sch, const char *format, ...);
-+__printf(2, 3) __cold
-+void qdisc_alert(const struct Qdisc *sch, const char *format, ...);
-+__printf(2, 3) __cold
-+void qdisc_crit(const struct Qdisc *sch, const char *format, ...);
-+__printf(2, 3) __cold
-+void qdisc_err(const struct Qdisc *sch, const char *format, ...);
-+__printf(2, 3) __cold
-+void qdisc_warn(const struct Qdisc *sch, const char *format, ...);
-+__printf(2, 3) __cold
-+void qdisc_notice(const struct Qdisc *sch, const char *format, ...);
-+__printf(2, 3) __cold
-+void qdisc_info(const struct Qdisc *sch, const char *format, ...);
-+
-+#if defined(CONFIG_DYNAMIC_DEBUG) || \
-+	(defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
-+#define qdisc_dbg(__sch, format, args...)			\
-+do {								\
-+	dynamic_qdisc_dbg(__sch, format, ##args);		\
-+} while (0)
-+#elif defined(DEBUG)
-+#define qdisc_dbg(__sch, format, args...)			\
-+	qdisc_printk(KERN_DEBUG, __sch, format, ##args)
-+#else
-+#define qdisc_dbg(__sch, format, args...)			\
-+({								\
-+	if (0)							\
-+		qdisc_printk(KERN_DEBUG, __sch, format, ##args); \
-+})
-+#endif
-+
-+#endif
-diff --git a/net/sched/Makefile b/net/sched/Makefile
-index b5fd49641d91..ab13bf7db283 100644
---- a/net/sched/Makefile
-+++ b/net/sched/Makefile
-@@ -6,7 +6,7 @@
- obj-y	:= sch_generic.o sch_mq.o
- 
- obj-$(CONFIG_INET)		+= sch_frag.o
--obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
-+obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o sch_debug.o
- obj-$(CONFIG_NET_CLS)		+= cls_api.o
- obj-$(CONFIG_NET_CLS_ACT)	+= act_api.o
- obj-$(CONFIG_NET_ACT_POLICE)	+= act_police.o
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index fdb8f429333d..a6bfe2e40f89 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -31,6 +31,7 @@
- #include <net/netlink.h>
- #include <net/pkt_sched.h>
- #include <net/pkt_cls.h>
-+#include <net/sch_debug.h>
- #include <net/tc_wrapper.h>
- 
- #include <trace/events/qdisc.h>
-@@ -597,8 +598,7 @@ EXPORT_SYMBOL(__qdisc_calculate_pkt_len);
- void qdisc_warn_nonwc(const char *txt, struct Qdisc *qdisc)
- {
- 	if (!(qdisc->flags & TCQ_F_WARN_NONWC)) {
--		pr_warn("%s: %s qdisc %X: is non-work-conserving?\n",
--			txt, qdisc->ops->id, qdisc->handle >> 16);
-+		qdisc_warn(qdisc, "%s: qdisc is non-work-conserving?\n", txt);
- 		qdisc->flags |= TCQ_F_WARN_NONWC;
- 	}
- }
-diff --git a/net/sched/sch_debug.c b/net/sched/sch_debug.c
-new file mode 100644
-index 000000000000..1f47dac88c6e
---- /dev/null
-+++ b/net/sched/sch_debug.c
-@@ -0,0 +1,86 @@
-+#include <linux/pkt_sched.h>
-+#include <net/sch_generic.h>
-+#include <net/sch_debug.h>
-+
-+static void qdisc_handle_str(u32 handle, char *str)
-+{
-+	if (handle == TC_H_ROOT) {
-+		sprintf(str, "root");
-+		return;
-+	} else if (handle == TC_H_INGRESS) {
-+		sprintf(str, "ingress");
-+		return;
-+	} else {
-+		sprintf(str, "%x:%x", TC_H_MAJ(handle) >> 16, TC_H_MIN(handle));
-+		return;
-+	}
-+}
-+
-+static void __qdisc_printk(const char *level, const struct Qdisc *sch,
-+			   struct va_format *vaf)
-+{
-+	struct net_device *dev = qdisc_dev(sch);
-+	char handle_str[10], parent_str[10];
-+
-+	qdisc_handle_str(sch->handle, handle_str);
-+	qdisc_handle_str(sch->parent, parent_str);
-+
-+	if (dev && dev->dev.parent) {
-+		dev_printk_emit(level[1] - '0',
-+				dev->dev.parent,
-+				"%s %s %s%s %s %s parent %s: %pV",
-+				dev_driver_string(dev->dev.parent),
-+				dev_name(dev->dev.parent),
-+				netdev_name(dev), netdev_reg_state(dev),
-+				sch->ops->id, handle_str, parent_str, vaf);
-+	} else if (dev) {
-+		printk("%s%s%s %s %s parent %s: %pV",
-+		       level, netdev_name(dev), netdev_reg_state(dev),
-+		       sch->ops->id, handle_str, parent_str, vaf);
-+	} else {
-+		printk("%s(NULL net_device) %s %s parent %s: %pV", level,
-+		       sch->ops->id, handle_str, parent_str, vaf);
-+	}
-+}
-+
-+void qdisc_printk(const char *level, const struct Qdisc *sch,
-+		  const char *format, ...)
-+{
-+	struct va_format vaf;
-+	va_list args;
-+
-+	va_start(args, format);
-+
-+	vaf.fmt = format;
-+	vaf.va = &args;
-+
-+	__qdisc_printk(level, sch, &vaf);
-+
-+	va_end(args);
-+}
-+EXPORT_SYMBOL(qdisc_printk);
-+
-+#define define_qdisc_printk_level(func, level)			\
-+void func(const struct Qdisc *sch, const char *fmt, ...)	\
-+{								\
-+	struct va_format vaf;					\
-+	va_list args;						\
-+								\
-+	va_start(args, fmt);					\
-+								\
-+	vaf.fmt = fmt;						\
-+	vaf.va = &args;						\
-+								\
-+	__qdisc_printk(level, sch, &vaf);			\
-+								\
-+	va_end(args);						\
-+}								\
-+EXPORT_SYMBOL(func);
-+
-+define_qdisc_printk_level(qdisc_emerg, KERN_EMERG);
-+define_qdisc_printk_level(qdisc_alert, KERN_ALERT);
-+define_qdisc_printk_level(qdisc_crit, KERN_CRIT);
-+define_qdisc_printk_level(qdisc_err, KERN_ERR);
-+define_qdisc_printk_level(qdisc_warn, KERN_WARNING);
-+define_qdisc_printk_level(qdisc_notice, KERN_NOTICE);
-+define_qdisc_printk_level(qdisc_info, KERN_INFO);
--- 
-2.34.1
+It's optional right now, nobody would object declaring it either way.
+Doing it inside is allowed since we switched to C11, right.
+Here I did that because my heart was breaking to see this little u16
+alone (and yeah, u16 on the stack).
 
+> 
+>>  		struct page *page = rx_ring->rx_pages[i];
+>> -		dma_addr_t dma;
+>>  
+>>  		if (!page)
+>>  			continue;
+>>  
+>> -		dma = page_pool_get_dma_addr(page);
+>> -
+>>  		/* Invalidate cache lines that may have been written to by
+>>  		 * device so that we avoid corrupting memory.
+>>  		 */
+>> -		dma_sync_single_range_for_cpu(rx_ring->dev, dma,
+>> -					      LIBIE_SKB_HEADROOM,
+>> -					      LIBIE_RX_BUF_LEN,
+>> -					      DMA_FROM_DEVICE);
+>> -
+>> -		/* free resources associated with mapping */
+>> -		dma_unmap_page_attrs(rx_ring->dev, dma, LIBIE_RX_TRUESIZE,
+>> -				     DMA_FROM_DEVICE, IAVF_RX_DMA_ATTR);
+>> -
+>> -		__free_page(page);
+>> +		page_pool_dma_sync_full_for_cpu(rx_ring->pool, page);
+>> +		page_pool_put_full_page(rx_ring->pool, page, false);
+>>  	}
+>>  
+>>  	rx_ring->next_to_clean = 0;
+>> @@ -739,10 +725,15 @@ void iavf_clean_rx_ring(struct iavf_ring *rx_ring)
+>>   **/
+>>  void iavf_free_rx_resources(struct iavf_ring *rx_ring)
+>>  {
+>> +	struct device *dev = rx_ring->pool->p.dev;
+>> +
+>>  	iavf_clean_rx_ring(rx_ring);
+>>  	kfree(rx_ring->rx_pages);
+>>  	rx_ring->rx_pages = NULL;
+>>  
+>> +	page_pool_destroy(rx_ring->pool);
+>> +	rx_ring->dev = dev;
+>> +
+>>  	if (rx_ring->desc) {
+>>  		dma_free_coherent(rx_ring->dev, rx_ring->size,
+>>  				  rx_ring->desc, rx_ring->dma);
+> 
+> Not a fan of this switching back and forth between being a page pool
+> pointer and a dev pointer. Seems problematic as it is easily
+> misinterpreted. I would say that at a minimum stick to either it is
+> page_pool(Rx) or dev(Tx) on a ring type basis.
+
+The problem is that page_pool has lifetime from ifup to ifdown, while
+its ring lives longer. So I had to do something with this, but also I
+didn't want to have 2 pointers at the same time since it's redundant and
++8 bytes to the ring for nothing.
+
+[...]
+
+> This setup works for iavf, however for i40e/ice you may run into issues
+> since the setup_rx_descriptors call is also used to setup the ethtool
+> loopback test w/o a napi struct as I recall so there may not be a
+> q_vector.
+
+I'll handle that. Somehow :D Thanks for noticing, I'll take a look
+whether I should do something right now or it can be done later when
+switching the actual mentioned drivers.
+
+[...]
+
+>> @@ -240,7 +237,10 @@ struct iavf_rx_queue_stats {
+>>  struct iavf_ring {
+>>  	struct iavf_ring *next;		/* pointer to next ring in q_vector */
+>>  	void *desc;			/* Descriptor ring memory */
+>> -	struct device *dev;		/* Used for DMA mapping */
+>> +	union {
+>> +		struct page_pool *pool;	/* Used for Rx page management */
+>> +		struct device *dev;	/* Used for DMA mapping on Tx */
+>> +	};
+>>  	struct net_device *netdev;	/* netdev ring maps to */
+>>  	union {
+>>  		struct iavf_tx_buffer *tx_bi;
+> 
+> Would it make more sense to have the page pool in the q_vector rather
+> than the ring? Essentially the page pool is associated per napi
+> instance so it seems like it would make more sense to store it with the
+> napi struct rather than potentially have multiple instances per napi.
+
+As per Page Pool design, you should have it per ring. Plus you have
+rxq_info (XDP-related structure), which is also per-ring and
+participates in recycling in some cases. So I wouldn't complicate.
+I went down the chain and haven't found any place where having more than
+1 PP per NAPI would break anything. If I got it correctly, Jakub's
+optimization discourages having 1 PP per several NAPIs (or scheduling
+one NAPI on different CPUs), but not the other way around. The goal was
+to exclude concurrent access to one PP from different threads, and here
+it's impossible.
+Lemme know. I can always disable NAPI optimization for cases when one
+vector is shared by several queues -- and it's not a usual case for
+these NICs anyway -- but I haven't found a reason for that.
+
+[...]
+
+Thanks,
+Olek
 
