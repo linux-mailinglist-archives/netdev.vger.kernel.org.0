@@ -1,159 +1,148 @@
-Return-Path: <netdev+bounces-7528-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7529-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6CDC1720906
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 20:21:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 5B883720913
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 20:25:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A26F11C211F0
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 18:21:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DAB421C211C4
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 18:25:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EE8091D2DD;
-	Fri,  2 Jun 2023 18:21:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 522D81D2D6;
+	Fri,  2 Jun 2023 18:25:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C01819E47;
-	Fri,  2 Jun 2023 18:21:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C87DC433AA;
-	Fri,  2 Jun 2023 18:21:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685730074;
-	bh=X+6D25ac/ynfkYhL6CVIatM+QSgTz3ZdfLV95/xOw/s=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=m8QqKBlwUZ1OdVsi3iL4i/wpx/dFY6BbtHjhKMAoPALO9d9S1Of5z7SZF4QL6sTbP
-	 1AkumCJkUSaKm4k7dCVk+lOGEFZdfq22cqjqj27S/pPlmB3p+6xXv2CNvliSMKoASM
-	 /hdXoCMRwv6EJy8J6GYtUkCvLB9u0rcyusLTXlpDOf8Lr4f24TWYjjjFg1gay1e8Ak
-	 p/JJ9xBOtMt5dIZYwKQ9oFJD8MWj9f1lt6ZhCj0XTqBGpkRKgNx/tS3niGcx/Matut
-	 0hwyzJfj74d+iBjmUiHb0LPXzSLbkWfgBPmkBtc2NCOoUpEnhn1N5112VQidBofQtB
-	 l46PC2/nl/Dww==
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2af189d323fso46352391fa.1;
-        Fri, 02 Jun 2023 11:21:14 -0700 (PDT)
-X-Gm-Message-State: AC+VfDy6tUtSTkY4WimD0ve8ZiSIIh10ZMJfMY+q87EfuCPbr3gZqly6
-	Qk5lO3wACNYGAPPmYAAU39rdvk/Wpx+a3HieDNM=
-X-Google-Smtp-Source: ACHHUZ7u+3QRkPB700ZRWSkZS34WuzRLSBXiPs+mDMX8Rtj0TALCowhBg47HVf6nzRS8a/FS2UP95/Ck0Au4nvQTBcE=
-X-Received: by 2002:a2e:b55a:0:b0:2b0:59c3:29c9 with SMTP id
- a26-20020a2eb55a000000b002b059c329c9mr217540ljn.6.1685730071990; Fri, 02 Jun
- 2023 11:21:11 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FEAB156D2
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 18:25:03 +0000 (UTC)
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2064.outbound.protection.outlook.com [40.107.237.64])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D71123
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 11:25:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=M/8rkGDdYmMWI+5YjD3SjCCW4WGQ80ayGnHYgQIovatsBc+yka7DtnIgdIHJ3EzgSiD3+dFCjdloy3venj/UGBSc6/X7ElhS6oOrtxTo4rwUPtqXRZdGc53x0K61aFJ2IpDxDCtUfPFK2WCXrdLUGQ7greDsypEOvNYX9fksBmGMEnMLpd0aB9cvPqJ2xUVBjweGmq4sTq6jW7dJ1icJeRxIKEVoUpFygO4oTKObK5BuGVGB7Nz6m6+yOBgQji/CohPWYTAiReAR6JuUub/HmGG/cjZQFUuZS9zgaxsVpA2Iwb61ib7jBfqVf0mk+vxlLFUkB37xEVNULXPe1HS23g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=R5wpVcBmE5+PN6fkcvsY8/aZoyg0ldpaVsT9dOYwnVo=;
+ b=dq7DZWvh+wFFPbr4J+FiVmwruKW71zNEj8nDCSIqDO6NX8u2Ro9PFE9jNVs+Fk3UkWn2zBF8qF2XryLrww4o9bm+VEPLREDj4aonWdGrgDhYha0o4f6yypt4xYTdU7BqpgNXgEjg4wTg/F98t958li+8utKg1zvG1fvVBmWwnQ6nlKVU8vrWyUg7ryrzYv8NcaARx8Z2Qu9l7E/4F1CDnqSSO3zggNYukRqu/2B/bGDjZZwpKT7XMKYeKe7UyBX6Argu2K1Bw3GnfdYqmcovHNXY3yJRGXnIQBIQxLKfH7oJfHyegQLLJguCBfSUZlsA3KUpjhIwvwwvaWpWlm0tZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=R5wpVcBmE5+PN6fkcvsY8/aZoyg0ldpaVsT9dOYwnVo=;
+ b=sFJ2BW96ra8Rqwxeu0W339RQnUQmKks/Xz+/s+Om39b4r6XuXwCk8yRfxBpg9tfi4+3vP7941+Fnp6ECNVRViiJvmgP3y6RA+tekD6GXs1blnhHXOVGz00B51GoXVwiVeWBQp1KuMgtwlW2cXSPouJ639U94vC96Frg0AzXW1wAMq56UgPjVlDnQfEwfg0TCxOKrIO3KU7pPJONed768xWDe6BbMvOnW9mPK8c/51PFDeZSX2zzZyL93IqF11j9KIozRrzpzaqebJ2WuJkZYz2wLBbcNzgpfiMeBL6aTThMZNTGTi6MZb6xSlkq0gFcJ1hLfJKjn8mkottEidbDNNg==
+Received: from DM6PR01CA0005.prod.exchangelabs.com (2603:10b6:5:296::10) by
+ DS7PR12MB5863.namprd12.prod.outlook.com (2603:10b6:8:7a::18) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6455.24; Fri, 2 Jun 2023 18:24:57 +0000
+Received: from DM6NAM11FT068.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:296:cafe::62) by DM6PR01CA0005.outlook.office365.com
+ (2603:10b6:5:296::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.26 via Frontend
+ Transport; Fri, 2 Jun 2023 18:24:57 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ DM6NAM11FT068.mail.protection.outlook.com (10.13.173.67) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6455.26 via Frontend Transport; Fri, 2 Jun 2023 18:24:57 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 2 Jun 2023
+ 11:24:47 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Fri, 2 Jun 2023 11:24:47 -0700
+Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server id 15.2.986.37 via Frontend
+ Transport; Fri, 2 Jun 2023 11:24:45 -0700
+From: Asmaa Mnebhi <asmaa@nvidia.com>
+To: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+	<pabeni@redhat.com>
+CC: Asmaa Mnebhi <asmaa@nvidia.com>, <netdev@vger.kernel.org>,
+	<cai.huoqing@linux.dev>, <brgl@bgdev.pl>, <chenhao288@hisilicon.com>,
+	<huangguangbin2@huawei.com>, David Thompson <davthompson@nvidia.com>
+Subject: [PATCH net-next v1 1/1] mlxbf_gige: Fix kernel panic at shutdown
+Date: Fri, 2 Jun 2023 14:24:43 -0400
+Message-ID: <20230602182443.25514-1-asmaa@nvidia.com>
+X-Mailer: git-send-email 2.30.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230601101257.530867-1-rppt@kernel.org> <ZHjDU/mxE+cugpLj@FVFF77S0Q05N.cambridge.arm.com>
- <ZHjgIH3aX9dCvVZc@moria.home.lan> <ZHm3zUUbwqlsZBBF@FVFF77S0Q05N>
-In-Reply-To: <ZHm3zUUbwqlsZBBF@FVFF77S0Q05N>
-From: Song Liu <song@kernel.org>
-Date: Fri, 2 Jun 2023 11:20:58 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7Euczff_KB70nuH=Hhf2EYHAf=xiQR7mFqVfByhD34XA@mail.gmail.com>
-Message-ID: <CAPhsuW7Euczff_KB70nuH=Hhf2EYHAf=xiQR7mFqVfByhD34XA@mail.gmail.com>
-Subject: Re: [PATCH 00/13] mm: jit/text allocator
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: Kent Overstreet <kent.overstreet@linux.dev>, Mike Rapoport <rppt@kernel.org>, 
-	linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
-	"David S. Miller" <davem@davemloft.net>, Dinh Nguyen <dinguyen@kernel.org>, 
-	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>, 
-	Luis Chamberlain <mcgrof@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, 
-	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Russell King <linux@armlinux.org.uk>, Steven Rostedt <rostedt@goodmis.org>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner <tglx@linutronix.de>, 
-	Will Deacon <will@kernel.org>, bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-modules@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-s390@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev, 
-	netdev@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org, 
-	Puranjay Mohan <puranjay12@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT068:EE_|DS7PR12MB5863:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1ac51150-2da5-4811-0619-08db6396ab37
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Lr+IlD3MrKuB5JC2RfES6N0n1G6MdQ/7/D3nxPy5IXdg91nyPtrZZGp6GxHUhFDjTn8/h3aJT0ol3L8hSEKPkZip1Vq9hRO6xb6SAmbifyrk9ycCCqo7M4BHyZq2NIXv08WTzPvUZk+LpF/y6Jqlw2UiP+u0DHcEaaSSX2GAUApqMd/m/kWycNbrKh0FwQE1hIDBphIL0NOAg3odyoXvguKp0AzMq4KG0vVsowH1Rq1gH6B3cZbgvN3TLokIanK5ahiU8C6tde9ZtLF4SDEFtlP+OC3j9t3G7sMiofoRxfzTd043e659X3+E/l70dqgyndCJIe5rgcdaSS0tOdXGFQSwlfKtv6mo8IEFk7jbhJ0Tbjy43o0w/LKUFbTFhUiP59nT7f/U4iFUDAqA40WcMaDN3Z/HEJgtZ+9DTA7jL6vmRDhkundPGx6ABbBv7ZTwRjsKkoT9cK0f1oy6S+c44dwaCaYY6EjtrAAcclbNner1FyHt9Z4Ltx/MvXdS2xjlXJaT3KcR+V7K3bKYkFAE2QgSBjCQfLrs4Hz6h3vaRhGJYPk/54HIXOjzcJlmiIIV9PeeUFE9GlceSOOGKN3UDMzOkBqquNNaU9CfAksJZYSrGVoCl+ZZBjCPeY5WoFR64ytuPSqD70f+s6u0uM8IMj0AXsYPpWPlbW2yfXPHqrFuaMxXPWQ56dLeRa4ukZao2L+ULEBpiJ70ZpvmOVrYCZADuT1nNSOyrFSqy2zZCfNSym9OKLwmHNrqVWmDWims
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(136003)(39860400002)(346002)(451199021)(36840700001)(40470700004)(46966006)(86362001)(5660300002)(8936002)(2906002)(316002)(82310400005)(82740400003)(4326008)(356005)(7636003)(70586007)(70206006)(8676002)(54906003)(110136005)(47076005)(478600001)(36860700001)(41300700001)(40460700003)(186003)(40480700001)(2616005)(107886003)(7696005)(83380400001)(426003)(336012)(36756003)(26005)(1076003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2023 18:24:57.0561
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ac51150-2da5-4811-0619-08db6396ab37
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM11FT068.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5863
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Fri, Jun 2, 2023 at 2:35=E2=80=AFAM Mark Rutland <mark.rutland@arm.com> =
-wrote:
->
-> On Thu, Jun 01, 2023 at 02:14:56PM -0400, Kent Overstreet wrote:
-> > On Thu, Jun 01, 2023 at 05:12:03PM +0100, Mark Rutland wrote:
-> > > For a while I have wanted to give kprobes its own allocator so that i=
-t can work
-> > > even with CONFIG_MODULES=3Dn, and so that it doesn't have to waste VA=
- space in
-> > > the modules area.
-> > >
-> > > Given that, I think these should have their own allocator functions t=
-hat can be
-> > > provided independently, even if those happen to use common infrastruc=
-ture.
-> >
-> > How much memory can kprobes conceivably use? I think we also want to tr=
-y
-> > to push back on combinatorial new allocators, if we can.
->
-> That depends on who's using it, and how (e.g. via BPF).
->
-> To be clear, I'm not necessarily asking for entirely different allocators=
-, but
-> I do thinkg that we want wrappers that can at least pass distinct start+e=
-nd
-> parameters to a common allocator, and for arm64's modules code I'd expect=
- that
-> we'd keep the range falblack logic out of the common allcoator, and just =
-call
-> it twice.
->
-> > > > Several architectures override module_alloc() because of various
-> > > > constraints where the executable memory can be located and this cau=
-ses
-> > > > additional obstacles for improvements of code allocation.
-> > > >
-> > > > This set splits code allocation from modules by introducing
-> > > > jit_text_alloc(), jit_data_alloc() and jit_free() APIs, replaces ca=
-ll
-> > > > sites of module_alloc() and module_memfree() with the new APIs and
-> > > > implements core text and related allocation in a central place.
-> > > >
-> > > > Instead of architecture specific overrides for module_alloc(), the
-> > > > architectures that require non-default behaviour for text allocatio=
-n must
-> > > > fill jit_alloc_params structure and implement jit_alloc_arch_params=
-() that
-> > > > returns a pointer to that structure. If an architecture does not im=
-plement
-> > > > jit_alloc_arch_params(), the defaults compatible with the current
-> > > > modules::module_alloc() are used.
-> > >
-> > > As above, I suspect that each of the callsites should probably be usi=
-ng common
-> > > infrastructure, but I don't think that a single jit_alloc_arch_params=
-() makes
-> > > sense, since the parameters for each case may need to be distinct.
-> >
-> > I don't see how that follows. The whole point of function parameters is
-> > that they may be different :)
->
-> What I mean is that jit_alloc_arch_params() tries to aggregate common
-> parameters, but they aren't actually common (e.g. the actual start+end ra=
-nge
-> for allocation).
->
-> > Can you give more detail on what parameters you need? If the only extra
-> > parameter is just "does this allocation need to live close to kernel
-> > text", that's not that big of a deal.
->
-> My thinking was that we at least need the start + end for each caller. Th=
-at
-> might be it, tbh.
+There is a race condition happening during shutdown due to pending napi transactions.
+Since mlxbf_gige_poll is still running, it tries to access a NULL pointer and as a
+result causes a kernel panic.
+To fix this during shutdown, invoke mlxbf_gige_remove to disable and dequeue napi.
 
-IIUC, arm64 uses VMALLOC address space for BPF programs. The reason
-is each BPF program uses at least 64kB (one page) out of the 128MB
-address space. Puranjay Mohan (CC'ed) is working on enabling
-bpf_prog_pack for arm64. Once this work is done, multiple BPF programs
-will be able to share a page. Will this improvement remove the need to
-specify a different address range for BPF programs?
+Fixes: f92e1869d74e ("Add Mellanox BlueField Gigabit Ethernet driver")
+Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-Thanks,
-Song
+diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
+index 694de9513b9f..7017f14595db 100644
+--- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
++++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
+@@ -485,10 +485,7 @@ static int mlxbf_gige_remove(struct platform_device *pdev)
+ 
+ static void mlxbf_gige_shutdown(struct platform_device *pdev)
+ {
+-	struct mlxbf_gige *priv = platform_get_drvdata(pdev);
+-
+-	writeq(0, priv->base + MLXBF_GIGE_INT_EN);
+-	mlxbf_gige_clean_port(priv);
++	mlxbf_gige_remove(pdev);
+ }
+ 
+ static const struct acpi_device_id __maybe_unused mlxbf_gige_acpi_match[] = {
+-- 
+2.30.1
+
 
