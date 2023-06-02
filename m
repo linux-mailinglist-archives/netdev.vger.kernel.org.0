@@ -1,339 +1,232 @@
-Return-Path: <netdev+bounces-7445-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7446-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9277772054B
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:05:38 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E8025720568
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:08:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 414A9281998
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:05:37 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2B1221C2094A
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:08:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6A8FE19BDD;
-	Fri,  2 Jun 2023 15:05:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 780B919E41;
+	Fri,  2 Jun 2023 15:08:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57ACD258F
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:05:35 +0000 (UTC)
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F331B7;
-	Fri,  2 Jun 2023 08:05:30 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id d9443c01a7336-1b02d0942caso10957255ad.1;
-        Fri, 02 Jun 2023 08:05:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685718330; x=1688310330;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AVYp+0xRrABpA+nW/UL0wQT78NsGeWK/bJt+odq48Kw=;
-        b=SWtj/RivdDdkfH7W4UOFjyATb5ZvO+gXvdjEMUq2seQQ2xynVC2zodDPFqHrZnMmyA
-         kd4F2kJfKxmEhe05gfyFz71s/AftNNFk2jVlC9xVvnDG4+m1qirwtdgmnl9dZtVf/O/x
-         f4MErBuHDem0CQZo/3wUp1vgqyUOdDQxSFcJWhvshUhmO8dRa115KmSkMxt1xhTXy5Ou
-         3xKRl2Mw0qBgwFVipSfHgqLj/m9KZpUBNa6ARZz5gPf6sPapuNq1i31L8RJsqwdqj6fQ
-         PBE/aRyl16QS/yORG6eQWFez7HOaeASp0VWZ6tpp/lFBzV0NO5/JM1Go6eItan0VX01D
-         jVoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685718330; x=1688310330;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=AVYp+0xRrABpA+nW/UL0wQT78NsGeWK/bJt+odq48Kw=;
-        b=D2W3vLmAQ/YS2zdSvcYAlQYoxQOriFmJ9VnQFhlw2U/KKWFBsf42BSU17+wR3BK9cE
-         tbJxCQ6xD5mNd071eTG+MtNxfxiMyBjDKWfAR/QT+4gAiy6NeCWEMG+1GmL8WPHz5I+9
-         droao9m95pduQ8HXUIuin64vEsrRfVmbsBCDIFTrXX0zt1z2bOUYSdKBhydC1WAxFIqv
-         koIXjOyPoHLxgEqflWGF3hfOv32MpK81gfpQJWIzBcsaik4OPL6l1TzsfB3Dh+ZYq3OW
-         kUulUqVwHUABYCKfKG2CfTDdIpBIlFRm4G1fC59LZ8AmPxzoHh9Mn+3YfJvUR+CEA8VG
-         OTWw==
-X-Gm-Message-State: AC+VfDzWHSjCNFCVncSYUmNs/Hd2E9BrnYr+qogteWblxuEAROk192Ee
-	bJT0dCATP18D3N/zPFDVBUzzPTDC9LD8VrkJcdU=
-X-Google-Smtp-Source: ACHHUZ6hu3WaEIY/KGqCiqpllvClinnYMo4yqXbSBKsWFgY7OWcRmf8HOHpvyi1bSZIESaNssHBa4XOvHA8dj15DqWY=
-X-Received: by 2002:a17:903:2284:b0:1ae:dadc:ca2a with SMTP id
- b4-20020a170903228400b001aedadcca2amr198815plh.57.1685718329571; Fri, 02 Jun
- 2023 08:05:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 666C510796
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:08:06 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E450C123
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:08:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685718482;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=z63L2vi8cak2/v6n5QmH0cCWe2aDh0Ir21QTFKTQsGs=;
+	b=MweOlLFPF92Y3BOw17nGwpXttQy49p5jn+cT6oV2KtXlthSmBHQSN6Vp0I3t5QGAE21iwY
+	WRb2bwkjI7ANYapy8DRvfDOpEDIdyMofHBWfyhDUo3lYhCIJJ6UuP1LuvyTjNdNLnna4hO
+	h0IhQu6ID1kn/hX/Hbar70wF3MGVs8U=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-52-1kRgGqq9PU6KXfpvdf7AVg-1; Fri, 02 Jun 2023 11:07:59 -0400
+X-MC-Unique: 1kRgGqq9PU6KXfpvdf7AVg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AC2A9185A7AB;
+	Fri,  2 Jun 2023 15:07:58 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 47A892166B25;
+	Fri,  2 Jun 2023 15:07:55 +0000 (UTC)
+From: David Howells <dhowells@redhat.com>
+To: netdev@vger.kernel.org,
+	Linus Torvalds <torvalds@linux-foundation.org>
+Cc: David Howells <dhowells@redhat.com>,
+	Chuck Lever <chuck.lever@oracle.com>,
+	Boris Pismenny <borisp@nvidia.com>,
+	John Fastabend <john.fastabend@gmail.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+	David Ahern <dsahern@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Jens Axboe <axboe@kernel.dk>,
+	linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v3 00/11] splice, net: Rewrite splice-to-socket, fix SPLICE_F_MORE and handle MSG_SPLICE_PAGES in AF_TLS
+Date: Fri,  2 Jun 2023 16:07:41 +0100
+Message-ID: <20230602150752.1306532-1-dhowells@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230525125746.553874-1-aleksander.lobakin@intel.com>
- <20230525125746.553874-4-aleksander.lobakin@intel.com> <8828262f1c238ab28be9ec87a7701acd791af926.camel@gmail.com>
- <cb7d3479-63a5-31b4-355d-b12a7e1b2878@intel.com> <CAKgT0Ud204CiJeB-5zcTKdrv7ODrfP09t73CqRhps7g3qhWU5w@mail.gmail.com>
- <d375fef9-43c4-9f2a-41c9-5247fcb3aa1e@intel.com>
-In-Reply-To: <d375fef9-43c4-9f2a-41c9-5247fcb3aa1e@intel.com>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Fri, 2 Jun 2023 08:04:53 -0700
-Message-ID: <CAKgT0Uc4UQ=PpVtjUAP=hjTDrWWkc79PeSwp39T6MSpo1ZyOag@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH net-next v2 03/12] iavf: optimize Rx
- buffer allocation a bunch
-To: Alexander Lobakin <aleksander.lobakin@intel.com>
-Cc: Paul Menzel <pmenzel@molgen.mpg.de>, Jesper Dangaard Brouer <hawk@kernel.org>, 
-	Larysa Zaremba <larysa.zaremba@intel.com>, netdev@vger.kernel.org, 
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>, linux-kernel@vger.kernel.org, 
-	Christoph Hellwig <hch@lst.de>, Eric Dumazet <edumazet@google.com>, 
-	Michal Kubiak <michal.kubiak@intel.com>, intel-wired-lan@lists.osuosl.org, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	"David S. Miller" <davem@davemloft.net>, Magnus Karlsson <magnus.karlsson@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 2, 2023 at 7:00=E2=80=AFAM Alexander Lobakin
-<aleksander.lobakin@intel.com> wrote:
->
-> From: Alexander Duyck <alexander.duyck@gmail.com>
-> Date: Wed, 31 May 2023 10:22:18 -0700
->
-> > On Wed, May 31, 2023 at 8:14=E2=80=AFAM Alexander Lobakin
-> > <aleksander.lobakin@intel.com> wrote:
->
-> [...]
->
-> >> But not all of these variables are read-only. E.g. NTC is often
-> >> modified. Page size was calculated per descriptor, but could be once a
-> >> poll cycle starts, and so on.
-> >
-> > Yeah, the ntc should be carried in the stack. The only reason for
-> > using the ring variable was because in the case of ixgbe we had to do
-> > some tricks with it to deal with RSC as we were either accessing ntc
-> > or the buffer pointed to by the descriptor. I think most of that code
-> > has been removed for i40e though.
->
-> IAVF was forked off ixgbe as per Jesse's statement :D
+Here are patches to do the following:
 
-Yes, but point is they are forked off the same driver and this code
-has fallen a bit behind i40e. Really both should probably have been
-updated at the same time.
+ (1) Block MSG_SENDPAGE_* flags from leaking into ->sendmsg() from
+     userspace, whilst allowing splice_to_socket() to pass them in.
 
-The fact is everything since igb is more or less based on the same
-design. I just kept tweaking it as I moved from one driver to the
-next. So in terms of refactoring to use a common library you could
-probably go back that far without too much trouble. The only
-exceptions to all that are fm10k and igbvf which while being similar
-also have some significant design differences that might make it a bit
-more difficult.
+ (2) Allow MSG_SPLICE_PAGES to be passed into tls_*_sendmsg().  Until
+     support is added, it will be ignored and a splice-driven sendmsg()
+     will be treated like a normal sendmsg().  TCP, UDP, AF_UNIX and
+     Chelsio-TLS already handle the flag in net-next.
 
-> [...]
->
-> >>> Any specific reason for this? Just wondering if this is meant to
-> >>> address some sort of memory pressure issue since it basically just
-> >>> means the allocation can go out and try to free other memory.
-> >>
-> >> Yes, I'm no MM expert, but I've seen plenty of times messages from the
-> >> MM folks that ATOMIC shouldn't be used in non-atomic contexts. Atomic
-> >> allocation is able to grab memory from some sort of critical reservs a=
-nd
-> >> all that, and the less we touch them, the better. Outside of atomic
-> >> contexts they should not be touched.
-> >
-> > For our purposes though the Rx path is more-or-less always in
-> > interrupt context. That is why it had defaulted to just always using
-> > GFP_ATOMIC. For your purposes you could probably leave it that way
-> > since you are going to be pulling out most of this code anyway.
->
-> That's for Rx path, but don't forget that the initial allocation on ifup
-> is done in the process context. That's what the maintainers and
-> reviewers usually warn about: to not allocate with %GFP_ATOMIC on ifups.
+ (3) Allow tls/sw to be given a zero-length send()/sendto()/sendmsg()
+     without MSG_MORE set to allow userspace ot flush the pending record.
 
-I can see that for the static values like the queue vectors and rings,
-however for the buffers themselves, but I don't see the point in doing
-that for the regular buffer allocations. Basically it is adding
-overhead for something that should have minimal impact as it usually
-happens early on during boot when the memory should be free anyway so
-GFP_ATOMIC vs GFP_KERNEL wouldn't have much impact in either case
+ (4) Replace a chain of functions to splice-to-sendpage with a single
+     function to splice via sendmsg() with MSG_SPLICE_PAGES.  This allows a
+     bunch of pages to be spliced from a pipe in a single call using a
+     bio_vec[] and pushes the main processing loop down into the bowels of
+     the protocol driver rather than repeatedly calling in with a page at a
+     time.
 
-> [...]
->
-> >> The point of budget is to limit the amount of time drivers can spend o=
-n
-> >> cleaning their rings. Making skb the unit makes the unit very logical
-> >> and flexible, but I'd say it should always be solid. Imagine you get a
-> >> frame which got spanned across 5 buffers. You spend x5 time (roughly) =
-to
-> >> build an skb and pass it up the stack vs when you get a linear frame i=
-n
-> >> one buffer, but according to your logics both of these cases count as =
-1
-> >> unit, while the amount of time spent differs significantly. I can't sa=
-y
-> >> that's fair enough.
-> >
-> > I would say it is. Like I said most of the overhead is the stack, not
-> > the driver. So if we are cleaning 5 descriptors but only processing
-> > one skb then I would say it is only one unit in terms of budget. This
-> > is one of the reasons why we don't charge Tx to the NAPI budget. Tx
-> > clean up is extremely lightweight as it is only freeing memory, and in
-> > cases of Tx and Rx being mixed can essentially be folded in as Tx
-> > buffers could be reused for Rx.
-> >
-> > If we are wanting to increase the work being done per poll it would
-> > make more sense to stick to interrupts and force it to backlog more
-> > packets per interrupt so that it is processing 64 skbs per call.
->
-> Oh, I feel like I'm starting to agree :D OK, then the following doesn't
-> really get out of my head: why do we store skb pointer on the ring then,
-> if we count 1 skb as 1 unit, so that we won't leave the loop until the
-> EOP? Only to handle allocation failures? But skb is already allocated at
-> this point... <confused>
+ (5) Alter the behaviour of sendfile() and fix SPLICE_F_MORE/MSG_MORE
+     signalling[1] such SPLICE_F_MORE is always signalled until we have
+     read sufficient data to finish the request.  If we get a zero-length
+     before we've managed to splice sufficient data, we now leave the
+     socket expecting more data and leave it to userspace to deal with it.
 
-The skb is there to essentially hold the frags. Keep in mind that when
-ixgbe was coded up XDP didn't exist yet.
+ (6) Address the now failing TLS multi_chunk_sendfile kselftest by putting
+     in a zero-length send() to end the record.
 
-I think there are drivers that are already getting away from this,
-such as mvneta, by storing an xdp_buff instead of an skb. In theory we
-could do away with most of this and just use a shared_info structure,
-but since that exists in the first frag we still need a pointer to the
-first frag as well.
+ (7) Make AF_TLS handle the MSG_SPLICE_PAGES internal sendmsg flag.
+     MSG_SPLICE_PAGES is an internal hint that tells the protocol that it
+     should splice the pages supplied if it can.  Its sendpage
+     implementations are then turned into wrappers around that.
 
-Also multi-frag frames are typically not that likely on a normal
-network as most of the frames are less than 1514B in length. In
-addition as I mentioned before a jumbo frame workload will be less
-demanding since the frame rates are so much lower. So when I coded
-this up I had optimized for the non-fragged case with the fragmented
-case being more of an afterthought needed mostly as exception
-handling.
+ (8) Provide some sample programs for driving AF_ALG (hash & encrypt), TCP,
+     TLS, UDP and AF_UNIX.
 
-> [...]
->
-> >>> What is the test you saw the 2% performance improvement in? Is it
-> >>> something XDP related or a full stack test?
-> >>
-> >> Not XDP, it's not present in this driver at this point :D
-> >> Stack test, but without usercopy overhead. Trafgen bombs the NIC, the
-> >> driver builds skbs and passes it up the stack, the stack does GRO etc,
-> >> and then the frames get dropped on IP input because there's no socket.
-> >
-> > So one thing you might want to look at would be a full stack test w/
-> > something such as netperf versus optimizing for a drop only test.
-> > Otherwise that can lead to optimizations that will actually hurt
-> > driver performance in the long run.
->
-> I was doing some netperf (or that Microsoft's tool, don't remember the
-> name) tests, but the problem is that usercopy is such a bottleneck, so
-> that you don't notice any optimizations or regressions most of time.
-> Also, userspace tools usually just pass huge payload chunks and then the
-> drivers GSO them into MTU-sized frames, so you always get line rate and
-> that's it. Short frames or interleave/imix (randomly-mix-sized) are the
-> most stressful from my experience and are able to show actual outcome.
+Here are some simple timings, taking the best timing for each out of
+several runs.  In the following table, samples added in the last patch were
+used for the first five columns and the tls kselftest for the last:
 
-That is kind of what I figured. So one thing to watch out for is
-stating performance improvements without providing context on what
-exactly it is you are doing to see that gain. So essentially what we
-have is a microbenchmark that is seeing the gain.
+	Patches	unix-	tcp-send	tls-send	tls
+		   send					kselftest
+			10G	lo	10G	lo
+	=======	=======	=======	=======	=======	=======	=======
+	none	0.516	0.469	0.492	3.121	3.082	1.152
+	splice	0.470	0.452	0.471	3.074	3.041	0.294
+	all	0.469	0.440	0.475	3.077	3.041	0.345
 
-Admittedly my goto used to be IPv4 routing since that exercised both
-the Tx and Rx path for much the same reason. However one thing you
-need to keep in mind is that if you cannot see a gain in the
-full-stack test odds are most users may not notice much of an impact.
+the times are all in seconds.  The "none" row is with none of the patches
+applied; "splice" is up to the splice-to-sendpage replacement; and "all" is
+with all the patches applied.  The "10G" column is going to a server on a
+different box by 10G ethernet and the "lo" column is going to a server on
+the same box by the loopback device.
 
-> >
-> >>>
-> >>>> Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
-> >>>
-> >>> Also one thing I am not a huge fan of is a patch that is really a
-> >>> patchset onto itself. With all 6 items called out here I would have
-> >>> preferred to see this as 6 patches as it would have been easier to
-> >>> review.
-> >>
-> >> Agree BTW, I'm not a fan of this patch either. I wasn't sure what to d=
-o
-> >> with it, as splitting it into 6 explodes the series into a monster, bu=
-t
-> >> proceeding without it increases diffstat and complicates things later
-> >> on. I'll try the latter, but will see. 17 patches is not the End of Da=
-ys
-> >> after all.
-> >
-> > One thing you may want to consider to condense some of these patches
-> > would be to look at possibly combining patches 4 and 5 which disable
-> > recycling and use a full 4K page. It seems like of those patches one
-> > ends up redoing the other since so many of the dma_sync calls are
-> > updated in both.
->
-> Or maybe I'll move this one into the subsequent series, since it's only
-> pt. 1 of Rx optimizations. There's also the second commit, but it's
-> probably as messy as this one and these two could be just converted into
-> a series.
->
-> [...]
->
-> >>> Just a nit. You might want to break this up into two statements like =
-I
-> >>> had before. I know some people within Intel weren't a huge fan of whe=
-n
-> >>> I used to do that kind of thing all the time in loops where I would d=
-o
-> >>> the decrement and test in one line.. :)
-> >>
-> >> Should I please them or do it as I want to? :D I realize from the
-> >> compiler's PoV it's most likely the same, but dunno, why not.
-> >
-> > If nobody internally is bugging you about it then I am fine with it. I
-> > just know back during my era people would complain about that from a
-> > maintainability perspective. I guess I got trained to catch those kind
-> > of things as a result.
->
-> Haha understand. I usually say: "please some good arguments or I didn't
-> hear this", maybe that's why nobody complained on `--var` yet :D
+I think the apparent improvement is from cutting out a layer in the splice
+stack and pushing more than one page in a single sendmsg.  The improvement
+in the tls selftest column is particularly marked.
 
-Either that or they were already worn down by the time you started
-adding this type of stuff.. :)
+The following sample and selftest commands were used:
+	unix-sink /tmp/sock &		# server
+	unix-send -ds 256M /tmp/sock	# client
+	tcp-sink &			# server
+	tcp-send -ds 256M 127.0.0.1	# client - loopback
+	tcp-send -ds 256M 192.168.6.1	# client - 10G ethernet
+	tls-sink &			# server
+	tls-send -ds 256M 127.0.0.1	# client - loopback
+	tls-send -ds 256M 192.168.6.1	# client - 10G ethernet
+	tls -r tls.12_aes_gcm.multi_chunk_sendfile
 
-The one I used to do that would really drive people nuts was:
-    for (i =3D loop_count; i--;)
-
-It is more efficient since I don't have to do the comparison to the
-loop counter, but it is definitely counterintuitive to run loops
-backwards like that. I tried to break myself of the habit of using
-those sort of loops anywhere that wasn't performance critical such as
-driver init.
-
-> [...]
->
-> >> Yes, I'm optimizing all this out later in the series. I was surprised
-> >> just as much as you when I saw skb getting passed to do nothing ._.
-> >
-> > The funny part for me is that it is like reviewing code written via a
-> > game of telephone. I recognize the code but have to think about it
-> > since there are all the bits of changes and such from the original
-> > ixgbe.
->
-> Lots of things are still recognizable even in IDPF. That's how this
-> series was born... :D
-
-Yep, now the question is how many drivers can be pulled into using
-this library. The issue is going to be all the extra features and
-workarounds outside of your basic Tx/Rx will complicate the code since
-all the drivers implement them a bit differently. One of the reasons
-for not consolidating them was to allow for performance optimizing for
-each driver. By combining them you are going to likely need to add a
-number of new conditional paths to the fast path.
+where 256M is a 256MiB file to be read in its entirety unless otherwise
+specified, -d indicates O_DIRECT and -s asks for splice (if input is a
+pipe) or sendfile (if input not a pipe) to be used.
 
 
-> >
-> >> [...]
-> >>
-> >> Thanks for the detailed reviews, stuff that Intel often lacks :s :D
-> >
-> > No problem, it was the least I could do since I am responsible for so
-> > much of this code in the earlier drivers anyway. If nothing else I
-> > figured I could provide a bit of history on why some of this was the
-> > way it was.
-> These history bits are nice and interesting to read actually! And also
-> useful since they give some context and understanding of what is
-> obsolete and can be removed/changed.
+I've pushed the patches here also:
 
-Yeah, it is easiest to do these sort of refactors when you have
-somebody to answer the "why" of most of this. I recall going through
-this when I was refactoring the igb/ixgbe drivers back in the day and
-having to purge the dead e1000 code throughout. Of course, after this
-refactor it will be all yours right?.. :D
+	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=sendpage-2-tls
+
+David
+
+Changes
+=======
+ver #3)
+ - Include the splice-to-socket rewrite patch.
+ - Fix SPLICE_F_MORE/MSG_MORE signalling.
+ - Allow AF_TLS to accept sendmsg() with MSG_SPLICE_PAGES before it is
+   handled.
+ - Allow a zero-length send() to a TLS socket to flush an outstanding
+   record.
+ - Address TLS kselftest failure.
+
+ver #2)
+ - Dropped the slab data copying.
+ - "rls_" should be "tls_".
+ - Attempted to fix splice_direct_to_actor().
+ - Blocked MSG_SENDPAGE_* from being set by userspace.
+
+Link: https://lore.kernel.org/r/499791.1685485603@warthog.procyon.org.uk/ [1]
+Link: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=51c78a4d532efe9543a4df019ff405f05c6157f6 # part 1
+Link: https://lore.kernel.org/r/20230524153311.3625329-1-dhowells@redhat.com/ # v1
+
+David Howells (11):
+  net: Block MSG_SENDPAGE_* from being passed to sendmsg() by userspace
+  tls: Allow MSG_SPLICE_PAGES but treat it as normal sendmsg
+  tls/sw: Use zero-length sendmsg() without MSG_MORE to flush
+  splice, net: Use sendmsg(MSG_SPLICE_PAGES) rather than ->sendpage()
+  splice, net: Fix SPLICE_F_MORE signalling in splice_direct_to_actor()
+  tls: Address behaviour change in multi_chunk_sendfile kselftest
+  tls/sw: Support MSG_SPLICE_PAGES
+  tls/sw: Convert tls_sw_sendpage() to use MSG_SPLICE_PAGES
+  tls/device: Support MSG_SPLICE_PAGES
+  tls/device: Convert tls_device_sendpage() to use MSG_SPLICE_PAGES
+  net: Add samples for network I/O and splicing
+
+ fs/splice.c                       | 176 ++++++++++++++++++------
+ include/linux/fs.h                |   2 -
+ include/linux/socket.h            |   4 +-
+ include/linux/splice.h            |   2 +
+ net/socket.c                      |  26 +---
+ net/tls/tls_device.c              |  97 ++++++-------
+ net/tls/tls_sw.c                  | 217 +++++++++++-------------------
+ samples/Kconfig                   |  14 ++
+ samples/Makefile                  |   1 +
+ samples/net/Makefile              |  13 ++
+ samples/net/alg-encrypt.c         | 206 ++++++++++++++++++++++++++++
+ samples/net/alg-hash.c            | 147 ++++++++++++++++++++
+ samples/net/splice-out.c          | 147 ++++++++++++++++++++
+ samples/net/tcp-send.c            | 177 ++++++++++++++++++++++++
+ samples/net/tcp-sink.c            |  80 +++++++++++
+ samples/net/tls-send.c            | 188 ++++++++++++++++++++++++++
+ samples/net/tls-sink.c            | 104 ++++++++++++++
+ samples/net/udp-send.c            | 156 +++++++++++++++++++++
+ samples/net/udp-sink.c            |  84 ++++++++++++
+ samples/net/unix-send.c           | 151 +++++++++++++++++++++
+ samples/net/unix-sink.c           |  54 ++++++++
+ tools/testing/selftests/net/tls.c |   6 +-
+ 22 files changed, 1792 insertions(+), 260 deletions(-)
+ create mode 100644 samples/net/Makefile
+ create mode 100644 samples/net/alg-encrypt.c
+ create mode 100644 samples/net/alg-hash.c
+ create mode 100644 samples/net/splice-out.c
+ create mode 100644 samples/net/tcp-send.c
+ create mode 100644 samples/net/tcp-sink.c
+ create mode 100644 samples/net/tls-send.c
+ create mode 100644 samples/net/tls-sink.c
+ create mode 100644 samples/net/udp-send.c
+ create mode 100644 samples/net/udp-sink.c
+ create mode 100644 samples/net/unix-send.c
+ create mode 100644 samples/net/unix-sink.c
+
 
