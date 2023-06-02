@@ -1,278 +1,267 @@
-Return-Path: <netdev+bounces-7460-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7461-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id CC5DD7205EB
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:25:17 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 69ECE720635
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:31:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8242D2817EB
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:25:16 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 016DF281889
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:31:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8555219E7D;
-	Fri,  2 Jun 2023 15:25:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 141971B8EA;
+	Fri,  2 Jun 2023 15:31:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F3A19BDD
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:25:14 +0000 (UTC)
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40157E40
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:25:11 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id 5b1f17b1804b1-3f7024e66adso66455e9.1
-        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 08:25:11 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F116219E63
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:31:34 +0000 (UTC)
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00A518D;
+	Fri,  2 Jun 2023 08:31:32 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id 98e67ed59e1d1-2563a4b6285so1090402a91.2;
+        Fri, 02 Jun 2023 08:31:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1685719510; x=1688311510;
+        d=gmail.com; s=20221208; t=1685719892; x=1688311892;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Hh0YDA1ZFgZULjoXwrckQIitm8tyqKffAZs62xGu2ao=;
-        b=59dyhFmOc5nzlHduYMj+LoMNbm7uWZ9trp3VUi/z2bq0IZO1A1yLe4++mDaQPuRJzc
-         R38ZkAzgq1Tqx3CuM4agnRW3MiUIpiEVHzndQXCNks4sbW+lIflpof3NNYAcYNUxbL2W
-         M1NMH/zlgwMkhi0yoSYAOVckD9Cjz02Wqa2W4lyipkNyXag7Ax3V6za0cJDAfQjSm3tA
-         0J2OHnXByzgjZBgV1OUrBcRqXJ6oF1TQmkfQmwQ/UYmHRbLke5nQ8lvACj5q9a/iFW6n
-         ZRiWGCVKeLyNe63760ykS8ry/oxmPJIi9/IT2PcYTTQ+Huklp0p1SUMHNKCmRcAN3/GO
-         Z6vA==
+        bh=XVAhse4BY3eKaha4TswgDkvPwrD/95UarSkx0ikeHJo=;
+        b=Q/sEsb2pvK1C0fTBXbmLQeHyOvJhNDYHCchkHHSe0G1w3zrDqpF8G8y86kyAE+aHRH
+         sREClAqHg8vksuyG5ig/heKo/sIzu17yMmTYu9wXZoH80oBgl6wHdzqxfWC9D7jhLaZX
+         infND7AifadESe1DfExi6fdKd1zU400z8WQZKJuUb8wlRFgYgNKrXzSBzJsTVVsOPUin
+         43uahjTZ0ZK5WhC8a+NW70qq6tuJTiN80VtsL2CrjwnsPJDcApswMeCP7gNIKZCyREng
+         twQINvyEPDly6vgI20cDqHe5xUv7BI/5AP9Jf/inG9yFr0XyYlyLp42/vCYu+c0OHUc6
+         7Sww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685719510; x=1688311510;
+        d=1e100.net; s=20221208; t=1685719892; x=1688311892;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Hh0YDA1ZFgZULjoXwrckQIitm8tyqKffAZs62xGu2ao=;
-        b=J+xZnig/THnVNqfPcOf5sM72mYk8AAEQ+fZJlUt4CWRS34b4JTTjZuhWZHFkO43yOH
-         YWjss6vO8WwFJ+MU51aOpWaXSfPsOVqi8PridtEFB4OwakmKbDClL/3ROvMGbQ4Qv/pj
-         5kR/OCmXo2C+mVqAKdT2/0cYfq1gsy6fOCC+bx++7AkQxRdUJL2FoVsgQ+v3uIIJh2cX
-         HJq9UtKPRnZu/k/MEpy2BbNFbwH+r/9mZfZsKnjWXVavIwkqF3Hw9Ok4BKA1JQQFeGLI
-         T04nG1/CTLf1ptk4hfrSWaSSHBGKjoFhXyD5k8ikZ+vY/aq4bnFfnsHc/h3i2RRqqgpO
-         JHHQ==
-X-Gm-Message-State: AC+VfDxxvrlOo35puClG1Xd6fIreLckEQ25Q/409uwYSs6jmmmiIfM71
-	qtsLQu0UDWg2HScm22Q7SEvGdNsdXxIxc3nh4oMSLw==
-X-Google-Smtp-Source: ACHHUZ6PH3HTU7NYq8QMBn6WTyziVYLo5Vs8zMeCG/TfrKaF/+I28KwOVosA1ui9h3ssNIv+9SL+/InqHefktpJR7Bs=
-X-Received: by 2002:a05:600c:3c9e:b0:3f1:70d1:21a6 with SMTP id
- bg30-20020a05600c3c9e00b003f170d121a6mr231296wmb.0.1685719509607; Fri, 02 Jun
- 2023 08:25:09 -0700 (PDT)
+        bh=XVAhse4BY3eKaha4TswgDkvPwrD/95UarSkx0ikeHJo=;
+        b=NeVDUWfdXkuBMCEhEW5C9BEC4WKzgSxtgW+C/zzNO51c6UUTfwMC8q0/Tc21PUyDdk
+         LzpgVsKGOs7iiGwCdozmwJMmTuw9/d8/lJcev4j9rd+knSANOiagQelnBZHsDaCbDAU9
+         08WxL6oUCnxqjqROlUUHMtn8djlmNJcTAx7dgsF8q69T76AKa5Edqzr83llVULL+ZSRK
+         cqcSn351+GYy6kheBZnHFI8eTSlWjUNt+Dp8DxFtBjYsFzLlYauufNbtYXNRAQpPzpAr
+         UHh8046EHg2QbmFMIi0CpYzgT/911X+sSXJedqHyc3kaeVsXezA020RucUNwj0aC+rf+
+         EFcw==
+X-Gm-Message-State: AC+VfDxZuS+IeLUkeznG2TdjlvYXPioi2NYOwnCo8OCvaYdRy+kEG36P
+	XKUpwVNBUpC7mX+ebP1O14ZQX0FRIp7CD/Q2YBnfhZT5
+X-Google-Smtp-Source: ACHHUZ6DrKOhjrQaK+eU0OhF6riRy926a05NC9lp36U78gRTIRsFRxZzJuDYgAgqfRxuhK9QG9ltA62ZO2hs+n0RM24=
+X-Received: by 2002:a17:90a:19c4:b0:255:7d50:c1aa with SMTP id
+ 4-20020a17090a19c400b002557d50c1aamr170735pjj.44.1685719891711; Fri, 02 Jun
+ 2023 08:31:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230601211732.1606062-1-edumazet@google.com> <MW5PR15MB512161EEAF0B6731DCA5AE80A449A@MW5PR15MB5121.namprd15.prod.outlook.com>
- <CANn89i+uOpwoboVi_K2MSn9x=isakxLaz1+ydTfEfGtK9h4C0g@mail.gmail.com>
- <db5f5b88ccbd40cadea8417822a3722239b7fc04.camel@gmail.com> <CANn89iLDzPcD-ASM8266dELMqe-innWtU2wgBV2Vfv1pRYRbrw@mail.gmail.com>
-In-Reply-To: <CANn89iLDzPcD-ASM8266dELMqe-innWtU2wgBV2Vfv1pRYRbrw@mail.gmail.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Fri, 2 Jun 2023 17:24:57 +0200
-Message-ID: <CANn89iJoA7U_j6pPX1CXmRtZG2XNGYhFzjRyNUBn+BbfM1gfbw@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: gso: really support BIG TCP
-To: Alexander H Duyck <alexander.duyck@gmail.com>
-Cc: Alexander Duyck <alexanderduyck@meta.com>, "David S . Miller" <davem@davemloft.net>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>, Xin Long <lucien.xin@gmail.com>, 
-	David Ahern <dsahern@kernel.org>, "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>
+References: <20230601112839.13799-1-dinghui@sangfor.com.cn>
+ <135a45b2c388fbaf9db4620cb01b95230709b9ac.camel@gmail.com> <eed0cbf7-ff12-057e-e133-0ddf5e98ef68@sangfor.com.cn>
+In-Reply-To: <eed0cbf7-ff12-057e-e133-0ddf5e98ef68@sangfor.com.cn>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Fri, 2 Jun 2023 08:30:54 -0700
+Message-ID: <CAKgT0UeV+E0B8syraLTod7SaduWh2SY8szJ9mBWyL1WBK=P8JA@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: ethtool: Fix out-of-bounds copy to user
+To: Ding Hui <dinghui@sangfor.com.cn>
+Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org, 
+	pabeni@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	pengdonglin@sangfor.com.cn, huangcun@sangfor.com.cn
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 2, 2023 at 5:21=E2=80=AFPM Eric Dumazet <edumazet@google.com> w=
-rote:
+On Thu, Jun 1, 2023 at 6:46=E2=80=AFPM Ding Hui <dinghui@sangfor.com.cn> wr=
+ote:
 >
-> On Fri, Jun 2, 2023 at 4:24=E2=80=AFPM Alexander H Duyck
-> <alexander.duyck@gmail.com> wrote:
+> On 2023/6/1 23:04, Alexander H Duyck wrote:
+> > On Thu, 2023-06-01 at 19:28 +0800, Ding Hui wrote:
+> >> When we get statistics by ethtool during changing the number of NIC
+> >> channels greater, the utility may crash due to memory corruption.
+> >>
+> >> The NIC drivers callback get_sset_count() could return a calculated
+> >> length depends on current number of channels (e.g. i40e, igb).
+> >>
 > >
-> > On Fri, 2023-06-02 at 04:30 +0200, Eric Dumazet wrote:
-> > > On Thu, Jun 1, 2023 at 11:46=E2=80=AFPM Alexander Duyck <alexanderduy=
-ck@meta.com> wrote:
-> > > >
-> > > >
-> > > >
-> > > > > -----Original Message-----
-> > > > > From: Eric Dumazet <edumazet@google.com>
-> > > > > Sent: Thursday, June 1, 2023 2:18 PM
-> > > > > To: David S . Miller <davem@davemloft.net>; Jakub Kicinski
-> > > > > <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>
-> > > > > Cc: netdev@vger.kernel.org; Xin Long <lucien.xin@gmail.com>; Davi=
-d Ahern
-> > > > > <dsahern@kernel.org>; eric.dumazet@gmail.com; Eric Dumazet
-> > > > > <edumazet@google.com>; Alexander Duyck <alexanderduyck@meta.com>
-> > > > > Subject: [PATCH net] tcp: gso: really support BIG TCP
-> > > > >
-> > > > > >
-> > > > > We missed that tcp_gso_segment() was assuming skb->len was smalle=
-r than
-> > > > > 65535 :
-> > > > >
-> > > > > oldlen =3D (u16)~skb->len;
-> > > > >
-> > > > > This part came with commit 0718bcc09b35 ("[NET]: Fix CHECKSUM_HW =
-GSO
-> > > > > problems.")
-> > > > >
-> > > > > This leads to wrong TCP checksum.
-> > > > >
-> > > > > Simply use csum_fold() to support 32bit packet lengthes.
-> > > > >
-> > > > > oldlen name is a bit misleading, as it is the contribution of skb=
-->len on the
-> > > > > input skb TCP checksum. I added a comment to clarify this point.
-> > > > >
-> > > > > Fixes: 09f3d1a3a52c ("ipv6/gso: remove temporary HBH/jumbo header=
-")
-> > > > > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > > > > Cc: Alexander Duyck <alexanderduyck@fb.com>
-> > > > > ---
-> > > > >  net/ipv4/tcp_offload.c | 3 ++-
-> > > > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > > > >
-> > > > > diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c inde=
-x
-> > > > > 45dda788938704c3f762256266d9ea29b6ded4a5..5a1a163b2d859696df8f204=
-b5
-> > > > > 0e3fc76c14b64e9 100644
-> > > > > --- a/net/ipv4/tcp_offload.c
-> > > > > +++ b/net/ipv4/tcp_offload.c
-> > > > > @@ -75,7 +75,8 @@ struct sk_buff *tcp_gso_segment(struct sk_buff =
-*skb,
-> > > > >       if (!pskb_may_pull(skb, thlen))
-> > > > >               goto out;
-> > > > >
-> > > > > -     oldlen =3D (u16)~skb->len;
-> > > > > +     /* Contribution of skb->len in current TCP checksum */
-> > > > > +     oldlen =3D (__force u32)csum_fold((__force __wsum)skb->len)=
-;
-> > > > >       __skb_pull(skb, thlen);
-> > > > >
-> > > > >       mss =3D skb_shinfo(skb)->gso_size;
-> > > >
-> > > > The only thing I am not sure about with this change is if we risk o=
-verflowing a u32 with all the math that may occur. The original code couldn=
-'t exceed a u16 for delta since we were essentially adding -oldlen + new he=
-ader + mss. With us now allowing the use of a value larger than 16 bit we s=
-hould be able to have the resultant value exceed 16b which means we might o=
-verflow when we add it to the current checksum.
-> > > >
-> > > > As such we may want to look at holding off on the csum_fold until a=
-fter we have added the new header and mss and then store the folded value i=
-n delta.
-> > > >
-> > >
-> > > I think you missed that csum_fold() result is also a 16bit value.
+> > The drivers shouldn't be changing that value. If the drivers are doing
+> > this they should be fixed to provide a fixed length in terms of their
+> > strings.
 > >
-> > I saw that. My concern was more about delta versus the oldlen value
-> > itself though. Specifically your folded value is added to thlen + mss
-> > which can then overflow past a 16b value, and when byteswapped and then
-> > added to the original checksum there is a risk of potential overflow.
 >
-> I do not think it matters. Herbert Xu said that what matters is that
+> Is there an explicit declaration for the rule?
+> I searched the ethernet drivers, found that many drivers that support
+> multiple queues return calculated length by number of queues rather than
+> fixed value. So pushing all these drivers to follow the rule is hard
+> to me.
 >
-> oldlen + (thlen + mss) would not overflow a 32bit value./
+> >> The ethtool allocates a user buffer with the first ioctl returned
+> >> length and invokes the second ioctl to get data. The kernel copies
+> >> data to the user buffer but without checking its length. If the length
+> >> returned by the second get_sset_count() is greater than the length
+> >> allocated by the user, it will lead to an out-of-bounds copy.
+> >>
+> >> Fix it by restricting the copy length not exceed the buffer length
+> >> specified by userspace.
+> >>
+> >> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
+> >
+> > Changing the copy size would not fix this. The problem is the driver
+> > will be overwriting with the size that it thinks it should be using.
+> > Reducing the value that is provided for the memory allocations will
+> > cause the driver to corrupt memory.
+> >
 >
+> I noticed that, in fact I did use the returned length to allocate
+> kernel memory, and only use adjusted length to copy to user.
+
+Ah, okay I hadn't noticed that part. Although that leads me to the
+question of if any of the drivers might be modifying the length values
+stored in the structures. We may want to add a new stack variable to
+track what the clamped value is for these rather than just leaving the
+value stored in the structure.
+
+> >> ---
+> >>   net/ethtool/ioctl.c | 16 +++++++++-------
+> >>   1 file changed, 9 insertions(+), 7 deletions(-)
+> >>
+> >> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+> >> index 6bb778e10461..82a975a9c895 100644
+> >> --- a/net/ethtool/ioctl.c
+> >> +++ b/net/ethtool/ioctl.c
+> >> @@ -1902,7 +1902,7 @@ static int ethtool_self_test(struct net_device *=
+dev, char __user *useraddr)
+> >>      if (copy_from_user(&test, useraddr, sizeof(test)))
+> >>              return -EFAULT;
+> >>
+> >> -    test.len =3D test_len;
+> >> +    test.len =3D min_t(u32, test.len, test_len);
+> >>      data =3D kcalloc(test_len, sizeof(u64), GFP_USER);
+> >>      if (!data)
+> >>              return -ENOMEM;
 > >
-> > The general idea was that ~skb->len + (segment length) will always
-> > technically be less than 0 since the original skb->len should always be
-> > larger or equal to the new segmented length. So the code as it was
-> > would always generate a value 16 or less in length.
-> >
-> > This was important when we computed delta and added it to the original
-> > value since we were using htonl which would byteswap things so we could
-> > potentially generate a 32b value, but it couldn't overflow since the
-> > two addends consisted of the upper 16b and lower 16b.
-> >
-> > That is why I am thinking we are better off just dropping the "(u16)"
-> > cast and just passing ~skb->len as the old_len.
-> >
-> > To address this we then have a couple different approaches we could
-> > take:
-> > 1. use csum_fold on the "delta" value either before or after the htonl.
-> > 2. use csum_add instead "+" for the addition of (th->check + delta)
-> >
-> > I'm thinking option 2 may be the better way to go as it would just add
-> > 2 addc operations, one for newcheck and one at the end of the function
-> > for th->check.
+> > This is the wrong spot to be doing this. You need to use test_len for
+> > your allocation as that is what the driver will be writing to. You
+> > should look at adjusting after the allocation call and before you do
+> > the copy
 >
-> Are you working on a patch yourself ? What would be the ETA ?
+> data =3D kcalloc(test_len, sizeof(u64), GFP_USER);  // yes, **test_len** =
+for kernel memory
+> ...
+> copy_to_user(useraddr, data, array_size(test.len, sizeof(u64)) // **test.=
+len** only for copy to user
+
+One other thought on this. Would we ever expect the length value to
+change? For many of these I wonder if we shouldn't just return an
+error in the case that there isn't enough space to store the test
+results.
+
+It might make sense to look at adding a return of ENOSPC or EFBIG when
+we encounter a size difference where our output is too big for the
+provided userspace buffer. At least with that we are not losing data.
+
+> >
+> >> @@ -1915,7 +1915,8 @@ static int ethtool_self_test(struct net_device *=
+dev, char __user *useraddr)
+> >>      if (copy_to_user(useraddr, &test, sizeof(test)))
+> >>              goto out;
+> >>      useraddr +=3D sizeof(test);
+> >> -    if (copy_to_user(useraddr, data, array_size(test.len, sizeof(u64)=
+)))
+> >> +    if (test.len &&
+> >> +        copy_to_user(useraddr, data, array_size(test.len, sizeof(u64)=
+)))
+> >>              goto out;
+> >>      ret =3D 0;
+> >>
+> >
+> > I don't believe this is adding any value. I wouldn't bother with
+> > checking for lengths of 0.
+> >
 >
-> Thanks.
+> Yes, we already checked the data ptr is not NULL, so we don't need checki=
+ng test.len.
+> I'll remove it in v2.
+>
+> >> @@ -1940,10 +1941,10 @@ static int ethtool_get_strings(struct net_devi=
+ce *dev, void __user *useraddr)
+> >>              return -ENOMEM;
+> >>      WARN_ON_ONCE(!ret);
+> >>
+> >> -    gstrings.len =3D ret;
+> >> +    gstrings.len =3D min_t(u32, gstrings.len, ret);
+> >>
+> >>      if (gstrings.len) {
+> >> -            data =3D vzalloc(array_size(gstrings.len, ETH_GSTRING_LEN=
+));
+> >> +            data =3D vzalloc(array_size(ret, ETH_GSTRING_LEN));
+> >>              if (!data)
+> >>                      return -ENOMEM;
+> >>
+> >
+> > Same here. We should be using the returned value for the allocations
+> > and tests, and then doing the min adjustment after the allocationis
+> > completed.
+> >
+>
+> gstrings.len =3D min_t(u32, gstrings.len, ret);   // adjusting
+>
+> if (gstrings.len) {  // checking the adjusted gstrings.len can avoid unne=
+cessary vzalloc and __ethtool_get_strings()
+> vzalloc(array_size(ret, ETH_GSTRING_LEN)); // **ret** for kernel memory, =
+rather than adjusted lenght
+>
+> At last, adjusted gstrings.len for copy to user
 
-To be clear, I spent a lot of time trying to code something like the follow=
-ing,
-then I chose a much simpler solution (patch as you see it)
+I see what you are talking about now.
 
-This was the WIP (and not working at all)
+> >> @@ -2055,9 +2056,9 @@ static int ethtool_get_stats(struct net_device *=
+dev, void __user *useraddr)
+> >>      if (copy_from_user(&stats, useraddr, sizeof(stats)))
+> >>              return -EFAULT;
+> >>
+> >> -    stats.n_stats =3D n_stats;
+> >> +    stats.n_stats =3D min_t(u32, stats.n_stats, n_stats);
+> >>
+> >> -    if (n_stats) {
+> >> +    if (stats.n_stats) {
+> >>              data =3D vzalloc(array_size(n_stats, sizeof(u64)));
+> >>              if (!data)
+> >>                      return -ENOMEM;
+> >
+> > Same here. We should be using n_stats, not stats.n_stats and adjust
+> > before you do the final copy.
+> >
+> >> @@ -2070,7 +2071,8 @@ static int ethtool_get_stats(struct net_device *=
+dev, void __user *useraddr)
+> >>      if (copy_to_user(useraddr, &stats, sizeof(stats)))
+> >>              goto out;
+> >>      useraddr +=3D sizeof(stats);
+> >> -    if (n_stats && copy_to_user(useraddr, data, array_size(n_stats, s=
+izeof(u64))))
+> >> +    if (stats.n_stats &&
+> >> +        copy_to_user(useraddr, data, array_size(stats.n_stats, sizeof=
+(u64))))
+> >>              goto out;
+> >>      ret =3D 0;
+> >>
+> >
+> > Again. I am not sure what value is being added. If n_stats is 0 then I
+> > am pretty sure this will do nothing anyway.
+> >
+>
+> Not really no, n_stats is returned value, and stats.n_stats is adjusted v=
+alue,
+> if the adjusted stats.n_stats is 0, we avoid memory allocation and settin=
+g data ptr
+> to NULL, copy_to_user() with NULL ptr maybe cause warn log.
 
-diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c
-index 3568607588b107f06b8fb7b1143d5417bb2a3ac2..19bc2d9ae10d45aa5cbb35add4a=
-a8e9f6b46a6ab
-100644
---- a/net/ipv4/tcp_offload.c
-+++ b/net/ipv4/tcp_offload.c
-@@ -60,11 +60,11 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
- {
-        struct sk_buff *segs =3D ERR_PTR(-EINVAL);
-        unsigned int sum_truesize =3D 0;
-+       unsigned int oldlen, newlen;
-        struct tcphdr *th;
-        unsigned int thlen;
-        unsigned int seq;
--       __be32 delta;
--       unsigned int oldlen;
-+       __wsum delta;
-        unsigned int mss;
-        struct sk_buff *gso_skb =3D skb;
-        __sum16 newcheck;
-@@ -78,7 +78,7 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
-        if (!pskb_may_pull(skb, thlen))
-                goto out;
-
--       oldlen =3D (u16)~skb->len;
-+       oldlen =3D skb->len;
-        __skb_pull(skb, thlen);
-
-        mss =3D skb_shinfo(skb)->gso_size;
-@@ -113,7 +113,9 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
-        if (skb_is_gso(segs))
-                mss *=3D skb_shinfo(segs)->gso_segs;
-
--       delta =3D htonl(oldlen + (thlen + mss));
-+       newlen =3D thlen + mss;
-+       delta =3D csum_sub(htonl(newlen), htonl(oldlen));
-+       newcheck =3D csum_fold(csum_add(csum_unfold(th->check), delta));
-
-        skb =3D segs;
-        th =3D tcp_hdr(skb);
-@@ -122,8 +124,6 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
-        if (unlikely(skb_shinfo(gso_skb)->tx_flags & SKBTX_SW_TSTAMP))
-                tcp_gso_tstamp(segs, skb_shinfo(gso_skb)->tskey, seq, mss);
-
--       newcheck =3D ~csum_fold((__force __wsum)((__force u32)th->check +
--                                              (__force u32)delta));
-
-        while (skb->next) {
-                th->fin =3D th->psh =3D 0;
-@@ -168,11 +168,11 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
-                        WARN_ON_ONCE(refcount_sub_and_test(-delta,
-&skb->sk->sk_wmem_alloc));
-        }
-
--       delta =3D htonl(oldlen + (skb_tail_pointer(skb) -
--                               skb_transport_header(skb)) +
--                     skb->data_len);
--       th->check =3D ~csum_fold((__force __wsum)((__force u32)th->check +
--                               (__force u32)delta));
-+       newlen =3D skb_tail_pointer(skb) - skb_transport_header(skb) +
-+                skb->data_len;
-+       delta =3D csum_sub(htonl(newlen), htonl(oldlen));
-+       th->check =3D csum_fold(csum_add(csum_unfold(th->check), delta));
-+
-        if (skb->ip_summed =3D=3D CHECKSUM_PARTIAL)
-                gso_reset_checksum(skb, ~th->check);
-        else
+I see now. So data is NULL if stats.n_stats is 0.
 
