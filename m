@@ -1,37 +1,37 @@
-Return-Path: <netdev+bounces-7369-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7368-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7CC1E71FE74
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 12:00:33 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D868871FE72
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 12:00:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D6537281777
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 10:00:31 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 158A21C20C5F
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 10:00:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D0941182B6;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6BE7182A0;
 	Fri,  2 Jun 2023 10:00:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 446881801C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 149F55687
 	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 10:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C17F3C433A4;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 78986C4339B;
 	Fri,  2 Jun 2023 10:00:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1685700019;
-	bh=axHxZl+xvYbV4nLySvgLP8O+nf+S05oPIYqnPsD2AzA=;
+	bh=FKQFA9YyHsqaGBGUWB0EFoK6lSWvks20FcE63BHWbWE=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=RwoJqXmJM2tZC2TQwgLw65lh9QPZQULEJUMQdX3FO1TaO569muh0asFusO4XCjWCB
-	 3rrYubkBz5SWBdc5G8zHxPSlcJDU23YdSWqLuX2MAlQuHAkSBzGOUPhYM8FREKVO9x
-	 ZRFFjqWWLQ04F7xd1OSEh1O+ID9hGQ1DJgzbnzLSJ3hU9DQr03fai+kUaHZpalZ1fz
-	 u26RTZ15gGqCL4JpsXhLHZgo2XPPOLsOPVXneVQCxXNJkmIDKaQnMSVruBUfb19f6c
-	 TsytIHJBimazJA6Bie/Ii4PYcv0WmcyQnWieCvUNALPhHQmALmjv3y668HpwU4Yo9V
-	 Qh5b8wCTzNpXw==
+	b=rT/wtFKHIhvvbEFXZfHoyLloY+H8mg+rD7Yg1jnkzgKUMBRP5IDciCWAfw/84HdUn
+	 UJq2dZYkzJXyEvd8PlrlJqdY5Z9vbwE7iV9BvZTwLR5kb59gNxELugaYJPhEgeYslT
+	 MWDddRgE/EDZsnuTEHu9dV79/55TO8IkiO/BzLUfSZVYXBllU2tyem4bC1aFgyjPhK
+	 rC2JwZHLHaIUV8ojJ8QTsK2lQXe51zIj6Srn3fPq1Kgy6D8H5rIpgocFFjrhRTx5D6
+	 XW8ZIujqgw9frwLYJmSmCdVKJdpzUUrUNqxWoWRl4UM49ICk8OMCJMgvXDnsz9A+go
+	 Obt7OBo0Ot8tQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AADC0C395E0;
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5C95EC395E5;
 	Fri,  2 Jun 2023 10:00:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
@@ -41,40 +41,39 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] ipv4: Drop tos parameter from flowi4_update_output()
+Subject: Re: [PATCH] net: dsa: qca8k: add CONFIG_LEDS_TRIGGERS dependency
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168570001969.17073.4452978864455433117.git-patchwork-notify@kernel.org>
+ <168570001937.17073.11024207858113974677.git-patchwork-notify@kernel.org>
 Date: Fri, 02 Jun 2023 10:00:19 +0000
-References: <f9e28cf551d9efb9278ac80d34d458295d8c845a.1685637136.git.gnault@redhat.com>
-In-Reply-To: <f9e28cf551d9efb9278ac80d34d458295d8c845a.1685637136.git.gnault@redhat.com>
-To: Guillaume Nault <gnault@redhat.com>
-Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
- edumazet@google.com, netdev@vger.kernel.org, dsahern@kernel.org,
- horms@verge.net.au, ja@ssi.bg, pablo@netfilter.org, kadlec@netfilter.org,
- fw@strlen.de, marcelo.leitner@gmail.com, lucien.xin@gmail.com
+References: <20230601213111.3182893-1-arnd@kernel.org>
+In-Reply-To: <20230601213111.3182893-1-arnd@kernel.org>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ ansuelsmth@gmail.com, arnd@arndb.de, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (main)
+This patch was applied to netdev/net.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 1 Jun 2023 18:37:46 +0200 you wrote:
-> Callers of flowi4_update_output() never try to update ->flowi4_tos:
+On Thu,  1 Jun 2023 23:31:04 +0200 you wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
->   * ip_route_connect() updates ->flowi4_tos with its own current
->     value.
+> Without LED triggers, the driver now fails to build:
 > 
->   * ip_route_newports() has two users: tcp_v4_connect() and
->     dccp_v4_connect. Both initialise fl4 with ip_route_connect(), which
->     in turn sets ->flowi4_tos with RT_TOS(inet_sk(sk)->tos) and
->     ->flowi4_scope based on SOCK_LOCALROUTE.
+> drivers/net/dsa/qca/qca8k-leds.c: In function 'qca8k_parse_port_leds':
+> drivers/net/dsa/qca/qca8k-leds.c:403:31: error: 'struct led_classdev' has no member named 'hw_control_is_supported'
+>   403 |                 port_led->cdev.hw_control_is_supported = qca8k_cled_hw_control_is_supported;
+>       |                               ^
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] ipv4: Drop tos parameter from flowi4_update_output()
-    https://git.kernel.org/netdev/net-next/c/3f06760c00f5
+  - net: dsa: qca8k: add CONFIG_LEDS_TRIGGERS dependency
+    https://git.kernel.org/netdev/net/c/37a826d86ff7
 
 You are awesome, thank you!
 -- 
