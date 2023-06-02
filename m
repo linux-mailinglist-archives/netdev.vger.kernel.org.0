@@ -1,224 +1,150 @@
-Return-Path: <netdev+bounces-7415-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7414-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id C3F6772022F
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 14:36:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 6762D72022A
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 14:35:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7E85B280FD0
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 12:36:08 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2398C281927
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 12:35:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 57E8F154A7;
-	Fri,  2 Jun 2023 12:35:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 78FA8111B8;
+	Fri,  2 Jun 2023 12:35:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D3BE15BF
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 12:35:55 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2120B18C
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 05:35:53 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1q5400-0001aC-Bd; Fri, 02 Jun 2023 14:35:20 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1q53zz-00016I-Rw; Fri, 02 Jun 2023 14:35:19 +0200
-Date: Fri, 2 Jun 2023 14:35:19 +0200
-From: Oleksij Rempel <o.rempel@pengutronix.de>
-To: Fedor Pchelkin <pchelkin@ispras.ru>
-Cc: Oleksij Rempel <linux@rempel-privat.de>,
-	Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-	lvc-project@linuxtesting.org,
-	Robin van der Gracht <robin@protonic.nl>, linux-can@vger.kernel.org,
-	Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-	Marc Kleine-Budde <mkl@pengutronix.de>,
-	Alexey Khoroshilov <khoroshilov@ispras.ru>, kernel@pengutronix.de,
-	Oliver Hartkopp <socketcan@hartkopp.net>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] can: j1939: avoid possible use-after-free when
- j1939_can_rx_register fails
-Message-ID: <20230602123519.GH17237@pengutronix.de>
-References: <20230526171910.227615-1-pchelkin@ispras.ru>
- <20230526171910.227615-3-pchelkin@ispras.ru>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A4388476
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 12:35:48 +0000 (UTC)
+Received: from domac.alu.hr (domac.alu.unizg.hr [IPv6:2001:b68:2:2800::3])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C9DA1AD;
+	Fri,  2 Jun 2023 05:35:45 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+	by domac.alu.hr (Postfix) with ESMTP id EC9D36022A;
+	Fri,  2 Jun 2023 14:35:41 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+	t=1685709341; bh=GiY3PCo8QniBGQj8UyN1CTuqS77BAaXgU5sGuqLnEdY=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=FLnNLs1dcZL5+6rWxY58jjfclTzOGkjXmGlj5p0yNu4qy3DGX6V4QugUz22jOAc2D
+	 OZApZNCrULkT3JnEPAE8iSkgir7xUovMMqyrMCO/WfXWKAWSQVhV+rsI095EPX/Eod
+	 rSQq0TLMVx32SF2Zrsa6Hj/x54QiOUZWdOjZmnmXiR+u8T7Q0WlEiVf3e3RpYYfSG6
+	 6nRen4vk+2HREtDi8BqyjK/IfAX9AA8vFfhUBgIwbB1sW3Nc7CMX0hb5SmpHLteDt4
+	 EFRE0881ZZ/EYppYJ/1oUXoD9rmPsdz5g3z9+oQouLTlkD5Uhq8XyqAkq3wY+AQLXI
+	 1uAvpClXoyDdQ==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+	by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 4Pd8hLSxYaBA; Fri,  2 Jun 2023 14:35:39 +0200 (CEST)
+Received: from [192.168.1.6] (unknown [77.237.113.62])
+	by domac.alu.hr (Postfix) with ESMTPSA id EB7C560228;
+	Fri,  2 Jun 2023 14:35:25 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+	t=1685709339; bh=GiY3PCo8QniBGQj8UyN1CTuqS77BAaXgU5sGuqLnEdY=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=RKvZ3VSztT9yChVj5zizTrLrpxx2oTMy1YPAZVIFuGCSG3uaICafD5G6MlwZXIQtC
+	 k4x8u3lvcKo01ltXVvBbW3dRBSs0h0muB1OBOPul+EF1J6EufFac5iIqBQkzg0cvdo
+	 P5ukL7/mv3ncuGHvN32+P7pIDdPxRsPkQGSbUSAEwTZBv2MP4Kv9VdoRptx2OvjU7V
+	 VJvMjTtNRy4ogAnyypHkOkp5SegP8rtDOM8zKXxFaW8bFqA4/LJLxfB5uM7KeCCxM8
+	 1hjR9Nwh/CTrRWDPwOcYPL8lHGCQmJjHUX0NqQEyY2Ys6SneMvc/kody3lrOSbtAs8
+	 0Kzv+wUkGjVFA==
+Message-ID: <015f6430-f6f3-61e3-25b8-2d989f4f3496@alu.unizg.hr>
+Date: Fri, 2 Jun 2023 14:35:20 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20230526171910.227615-3-pchelkin@ispras.ru>
-X-Sent-From: Pengutronix Hildesheim
-X-URL: http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: POSSIBLE BUG: selftests/net/fcnal-test.sh: [FAIL] in vrf "bind -
+ ns-B IPv6 LLA" test
+To: Guillaume Nault <gnault@redhat.com>
+Cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+ linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+References: <b6191f90-ffca-dbca-7d06-88a9788def9c@alu.unizg.hr>
+ <ZHeN3bg28pGFFjJN@debian>
+Content-Language: en-US
+From: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+In-Reply-To: <ZHeN3bg28pGFFjJN@debian>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, May 26, 2023 at 08:19:10PM +0300, Fedor Pchelkin wrote:
-> Syzkaller reports the following failure:
+On 5/31/23 20:11, Guillaume Nault wrote:
+> On Wed, May 24, 2023 at 02:17:09PM +0200, Mirsad Todorovac wrote:
+>> Hi,
 > 
-> BUG: KASAN: use-after-free in kref_put include/linux/kref.h:64 [inline]
-> BUG: KASAN: use-after-free in j1939_priv_put+0x25/0xa0 net/can/j1939/main.c:172
-> Write of size 4 at addr ffff888141c15058 by task swapper/3/0
-> 
-> CPU: 3 PID: 0 Comm: swapper/3 Not tainted 5.10.144-syzkaller #0
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
-> Call Trace:
->  <IRQ>
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x107/0x167 lib/dump_stack.c:118
->  print_address_description.constprop.0+0x1c/0x220 mm/kasan/report.c:385
->  __kasan_report mm/kasan/report.c:545 [inline]
->  kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
->  check_memory_region_inline mm/kasan/generic.c:186 [inline]
->  check_memory_region+0x145/0x190 mm/kasan/generic.c:192
->  instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
->  atomic_fetch_sub_release include/asm-generic/atomic-instrumented.h:220 [inline]
->  __refcount_sub_and_test include/linux/refcount.h:272 [inline]
->  __refcount_dec_and_test include/linux/refcount.h:315 [inline]
->  refcount_dec_and_test include/linux/refcount.h:333 [inline]
->  kref_put include/linux/kref.h:64 [inline]
->  j1939_priv_put+0x25/0xa0 net/can/j1939/main.c:172
->  j1939_sk_sock_destruct+0x44/0x90 net/can/j1939/socket.c:374
->  __sk_destruct+0x4e/0x820 net/core/sock.c:1784
->  rcu_do_batch kernel/rcu/tree.c:2485 [inline]
->  rcu_core+0xb35/0x1a30 kernel/rcu/tree.c:2726
->  __do_softirq+0x289/0x9a3 kernel/softirq.c:298
->  asm_call_irq_on_stack+0x12/0x20
->  </IRQ>
->  __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
->  run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
->  do_softirq_own_stack+0xaa/0xe0 arch/x86/kernel/irq_64.c:77
->  invoke_softirq kernel/softirq.c:393 [inline]
->  __irq_exit_rcu kernel/softirq.c:423 [inline]
->  irq_exit_rcu+0x136/0x200 kernel/softirq.c:435
->  sysvec_apic_timer_interrupt+0x4d/0x100 arch/x86/kernel/apic/apic.c:1095
->  asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:635
-> 
-> Allocated by task 1141:
->  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
->  kasan_set_track mm/kasan/common.c:56 [inline]
->  __kasan_kmalloc.constprop.0+0xc9/0xd0 mm/kasan/common.c:461
->  kmalloc include/linux/slab.h:552 [inline]
->  kzalloc include/linux/slab.h:664 [inline]
->  j1939_priv_create net/can/j1939/main.c:131 [inline]
->  j1939_netdev_start+0x111/0x860 net/can/j1939/main.c:268
->  j1939_sk_bind+0x8ea/0xd30 net/can/j1939/socket.c:485
->  __sys_bind+0x1f2/0x260 net/socket.c:1645
->  __do_sys_bind net/socket.c:1656 [inline]
->  __se_sys_bind net/socket.c:1654 [inline]
->  __x64_sys_bind+0x6f/0xb0 net/socket.c:1654
->  do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
->  entry_SYSCALL_64_after_hwframe+0x61/0xc6
-> 
-> Freed by task 1141:
->  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
->  kasan_set_track+0x1c/0x30 mm/kasan/common.c:56
->  kasan_set_free_info+0x1b/0x30 mm/kasan/generic.c:355
->  __kasan_slab_free+0x112/0x170 mm/kasan/common.c:422
->  slab_free_hook mm/slub.c:1542 [inline]
->  slab_free_freelist_hook+0xad/0x190 mm/slub.c:1576
->  slab_free mm/slub.c:3149 [inline]
->  kfree+0xd9/0x3b0 mm/slub.c:4125
->  j1939_netdev_start+0x5ee/0x860 net/can/j1939/main.c:300
->  j1939_sk_bind+0x8ea/0xd30 net/can/j1939/socket.c:485
->  __sys_bind+0x1f2/0x260 net/socket.c:1645
->  __do_sys_bind net/socket.c:1656 [inline]
->  __se_sys_bind net/socket.c:1654 [inline]
->  __x64_sys_bind+0x6f/0xb0 net/socket.c:1654
->  do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
->  entry_SYSCALL_64_after_hwframe+0x61/0xc6
-> 
-> It can be caused by this scenario:
-> 
-> CPU0					CPU1
-> j1939_sk_bind(socket0, ndev0, ...)
->   j1939_netdev_start()
-> 					j1939_sk_bind(socket1, ndev0, ...)
->                                           j1939_netdev_start()
->   mutex_lock(&j1939_netdev_lock)
->   j1939_priv_set(ndev0, priv)
->   mutex_unlock(&j1939_netdev_lock)
-> 					  if (priv_new)
-> 					    kref_get(&priv_new->rx_kref)
-> 					    return priv_new;
-> 					  /* inside j1939_sk_bind() */
-> 					  jsk->priv = priv
->   j1939_can_rx_register(priv) // fails
->   j1939_priv_set(ndev, NULL)
->   kfree(priv)
-> 					j1939_sk_sock_destruct()
-> 					j1939_priv_put() // <- uaf
-> 
-> To avoid this, call j1939_can_rx_register() under j1939_netdev_lock so
-> that a concurrent thread cannot process j1939_priv before
-> j1939_can_rx_register() returns.
-> 
-> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
-> 
-> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+> Hi Mirsad,
 
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Hi Guillaume,
 
-Thank you!
+>> The very recent 6.4-rc3 kernel build with AlmaLinux 8.7 on LENOVO 10TX000VCR
+>> desktop box fails one test:
+>>
+>> [root@host net]# ./fcnal-test.sh
+>> [...]
+>> TEST: ping out, vrf device+address bind - ns-B loopback IPv6                  [ OK ]
+>> TEST: ping out, vrf device+address bind - ns-B IPv6 LLA                       [FAIL]
+>> TEST: ping in - ns-A IPv6                                                     [ OK ]
+>> [...]
+>> Tests passed: 887
+>> Tests failed:   1
+>> [root@host net]#
+> 
+> This test also fails on -net. The problem is specific to ping sockets
+> (same test passes with raw sockets). I believe this test has always
+> failed since fcnal-test.sh started using net.ipv4.ping_group_range
+> (commit e71b7f1f44d3 ("selftests: add ping test with ping_group_range
+> tuned")).
+> 
+> The executed command is:
+> 
+> ip netns exec ns-A ip vrf exec red /usr/bin/ping6 -c1 -w1 -I 2001:db8:3::1 fe80::a846:b5ff:fe4c:da4e%eth1
+> 
+> So ping6 is executed inside VRF 'red' and sets .sin6_scope_id to 'eth1'
+> (which is a slave device of VRF 'red'). Therefore, we have
+> sk->sk_bound_dev_if == 'red' and .sin6_scope_id == 'eth1'. This fails
+> because ping_v6_sendmsg() expects them to be equal:
+> 
+> static int ping_v6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+> {
+> ...
+>                  if (__ipv6_addr_needs_scope_id(ipv6_addr_type(daddr)))
+>                          oif = u->sin6_scope_id;
+> ...
+>          if ((__ipv6_addr_needs_scope_id(addr_type) && !oif) ||
+>              (addr_type & IPV6_ADDR_MAPPED) ||
+>              (oif && sk->sk_bound_dev_if && oif != sk->sk_bound_dev_if)) <-- oif='eth1', but ->sk_bound_dev_if='red'
+>                  return -EINVAL;
+> ...
+> }
 
-> ---
->  net/can/j1939/main.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/can/j1939/main.c b/net/can/j1939/main.c
-> index 6ed79afe19a5..ecff1c947d68 100644
-> --- a/net/can/j1939/main.c
-> +++ b/net/can/j1939/main.c
-> @@ -290,16 +290,18 @@ struct j1939_priv *j1939_netdev_start(struct net_device *ndev)
->  		return priv_new;
->  	}
->  	j1939_priv_set(ndev, priv);
-> -	mutex_unlock(&j1939_netdev_lock);
->  
->  	ret = j1939_can_rx_register(priv);
->  	if (ret < 0)
->  		goto out_priv_put;
->  
-> +	mutex_unlock(&j1939_netdev_lock);
->  	return priv;
->  
->   out_priv_put:
->  	j1939_priv_set(ndev, NULL);
-> +	mutex_unlock(&j1939_netdev_lock);
-> +
->  	dev_put(ndev);
->  	kfree(priv);
->  
-> -- 
-> 2.34.1
-> 
-> 
-> 
+Thank you for your thorough investigation. It helps a great deal to
+understand the issue.
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+I am really not that into the network stack, though I can always smuggle
+the work on the network stack as a work on high-bandwidth multimedia
+and do it in day hours.
+
+Probably I need to catch up with the network stack homework.
+
+> I believe this condition should be relaxed to allow the case where
+> ->sk_bound_dev_if is oif's master device (and maybe there are other
+> VRF cases to also consider).
+
+I have looked into the code, but currently my knowledge of the code is
+not sufficient for the intervention.
+
+Thank you,
+Mirsad
 
