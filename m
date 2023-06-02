@@ -1,67 +1,73 @@
-Return-Path: <netdev+bounces-7465-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7466-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D260C720670
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:45:14 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 50C14720671
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:45:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 558FE1C20F48
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:45:11 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D25851C21006
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:45:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BD5731B8FB;
-	Fri,  2 Jun 2023 15:45:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 15B191B8FC;
+	Fri,  2 Jun 2023 15:45:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFCA919E63
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:45:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BCE319BDD
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:45:19 +0000 (UTC)
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C90197
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:45:08 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D16C018C
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:45:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=LD9Li3MloyOoBrM0qpNclY5RVIp9NVgagkuhhB2Jp2c=; b=eXG6AWOlucnUap5oygpGwB8UOn
-	/9BWjpIJhWn7srccY+HLYAjBDdkCoF4jXdznvKpM5pM+IwJeOqPouZ1XTBzfZ5nQPdd1DkGsJPT4S
-	AfnHdW3clyIDBnyX/wZ82uWOOq8zGJKPmoeOyjKWYWXWHc8H/DMGMAut0FX9Tgr31DcZUTdRvv6Zf
-	Jr3wU5b8fwHciy9wBqdlkG5DYYMuTW7+Kv8WIEb7N0uCF7wI8Pza6rlaz/Dtlymtbeiah4H6KeDdL
-	BqTR60dY9lnpB2LyUOc5omEMRAFIpwIaSbRbDRnWAFdMzmOicZBgMggnYl8K/osx76DBvX3YVZutr
-	7uYJvI3w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52062)
+	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=FglZWHLsmjwh6wV19l8Okkc0Fflq2M4hNtBqipFOo7M=; b=rqmpz6CMGYrqbG1ZndtfXFz7fN
+	mONWwokWU/iRtI2vpNqkQcwBLlOIpp0/fcJdY3eisInyOvSeVfRgyMalTbL7Zwg8MgCtUQaNQ0BT6
+	Uz05Regtia0o/pw90HRiPDJKIWxO3axb7+3plOet0DfpZ9uveyzP4DsNn7NBjutSoWGiN6b6JraX+
+	nQpQ0nH2egnOT80RCVNen1j/kR2s55qJpSKhTk06jX5zl2jxWKjPh95WIHg7ALdBywuE7bjHup0au
+	9DkkAkSt4voWUfFhUiHTw+SvSz8+FK96fmPgn3DwaKZgir+tr2tkJhB6E8IDi2F24M7f6ZqF6kyuB
+	7OuKEQug==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:50810 helo=rmk-PC.armlinux.org.uk)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q56xa-0008Cy-7u; Fri, 02 Jun 2023 16:45:02 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q56xX-00034p-Pq; Fri, 02 Jun 2023 16:44:59 +0100
-Date: Fri, 2 Jun 2023 16:44:59 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>
+	(envelope-from <rmk@armlinux.org.uk>)
+	id 1q56xm-0008DC-RA; Fri, 02 Jun 2023 16:45:14 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+	id 1q56xm-00BsuT-8I; Fri, 02 Jun 2023 16:45:14 +0100
+In-Reply-To: <ZHoOe9K/dZuW2pOe@shell.armlinux.org.uk>
+References: <ZHoOe9K/dZuW2pOe@shell.armlinux.org.uk>
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To: Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>
 Cc: "David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
 	Ioana Ciornei <ioana.ciornei@nxp.com>,
 	Jakub Kicinski <kuba@kernel.org>,
-	Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
+	Madalin Bucur <madalin.bucur@nxp.com>,
+	netdev@vger.kernel.org,
 	Paolo Abeni <pabeni@redhat.com>,
 	Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH net-next 0/8] complete Lynx mdio device handling
-Message-ID: <ZHoOe9K/dZuW2pOe@shell.armlinux.org.uk>
+Subject: [PATCH net-next 1/8] net: dpaa2-mac: allow lynx PCS to manage mdiodev
+ lifetime
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1q56xm-00BsuT-8I@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date: Fri, 02 Jun 2023 16:45:14 +0100
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
 	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
@@ -69,48 +75,41 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi,
+Put the mdiodev after lynx_pcs_create() so that the Lynx PCS driver
+can manage the lifetime of the mdiodev its using.
 
-This series completes the mdio device lifetime handling for Lynx PCS
-users which do not create their own mdio device, but instead fetch
-it using a firmware description - namely the DPAA2 and FMAN_MEMAC
-drivers.
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-In a previous patch set, lynx_pcs_create() was modified to increase
-the mdio device refcount, and lynx_pcs_destroy() to drop that
-refcount.
-
-The first two patches change these two drivers to put the reference
-which they hold immediately after lynx_pcs_create(), effectively
-handing the responsibility for maintaining the refcount to the Lynx
-PCS driver.
-
-A side effect of the first two patches is that lynx_get_mdio_device()
-is no longer used, so patch 3 removes it.
-
-Patch 4 adds a new helper - lynx_pcs_create_fwnode(), which creates
-a Lynx PCS instance from the fwnode.
-
-Patch 5 and 6 convert the two drivers to make use of this new helper,
-which simply has to find the mdio device, and then create the Lynx
-PCS from that.
-
-With those conversions done, lynx_pcs_create() is no longer required
-outside pcs-lynx.c, so remove it from public view.
-
-Finally, in patch 8 we change lynx_pcs_create() to return an
-error-pointer rather than NULL to bring consistency to the return
-style, and means that we can remove the NULL-to-error-pointer
-conversion from both lynx_pcs_create_fwnode() and
-lynx_pcs_create_mdiodev().
-
- drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 21 ++++++-------
- drivers/net/ethernet/freescale/fman/fman_memac.c | 18 +++--------
- drivers/net/pcs/pcs-lynx.c                       | 40 ++++++++++++++----------
- include/linux/pcs-lynx.h                         |  4 +--
- 4 files changed, 39 insertions(+), 44 deletions(-)
-
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+index cb70855e2b9a..c0f7dd3b4ac1 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+@@ -271,9 +271,9 @@ static int dpaa2_pcs_create(struct dpaa2_mac *mac,
+ 	}
+ 
+ 	mac->pcs = lynx_pcs_create(mdiodev);
++	mdio_device_put(mdiodev);
+ 	if (!mac->pcs) {
+ 		netdev_err(mac->net_dev, "lynx_pcs_create() failed\n");
+-		mdio_device_free(mdiodev);
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -285,10 +285,7 @@ static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
+ 	struct phylink_pcs *phylink_pcs = mac->pcs;
+ 
+ 	if (phylink_pcs) {
+-		struct mdio_device *mdio = lynx_get_mdio_device(phylink_pcs);
+-
+ 		lynx_pcs_destroy(phylink_pcs);
+-		mdio_device_free(mdio);
+ 		mac->pcs = NULL;
+ 	}
+ }
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
 
