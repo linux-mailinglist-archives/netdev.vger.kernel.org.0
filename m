@@ -1,80 +1,75 @@
-Return-Path: <netdev+bounces-7437-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7438-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 857ED72047B
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 16:29:39 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2EB6972047E
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 16:30:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DCB8128127C
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 14:29:37 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DC2BD28197C
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 14:30:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3DAB519BA6;
-	Fri,  2 Jun 2023 14:29:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 420A63D7A;
+	Fri,  2 Jun 2023 14:30:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32CBE18AE1
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 14:29:35 +0000 (UTC)
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6135D1AB
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 07:29:26 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id af79cd13be357-75b2726f04cso199812085a.3
-        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 07:29:26 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3565A19BC7
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 14:30:25 +0000 (UTC)
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793E79F
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 07:30:24 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id 5b1f17b1804b1-3f606912ebaso21583685e9.3
+        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 07:30:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1685716165; x=1688308165;
+        d=gmail.com; s=20221208; t=1685716223; x=1688308223;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=hR4cfRO52K19EaWIBnrpEm4Q5CC06YOFcLL4jhPlEBk=;
-        b=BBYNmuHPhOzCvfMF36eNi+aDUZZa1x6vDdpD0TUIuW3+SUQ9FI7eJWxYscbLKqZzbw
-         9lzj6CAAsAD/TJ/t8UofaoYLqVA+PF4zaowiZf6mg40pn0PU3wtKSwQeCw+dWf7TN0ip
-         c3XaJS19FEVWVEbuo6SDimPZsP2GvYc7U6SR2/2I7xLAAN/lPKM7A+snOoztxQUx1iPR
-         e+GL8revbu/ZnjOnPRIzXY0tBQUIMWGUSj5YNXn9B9s8h0jIeMb2WCpCUI2cygAV2GD9
-         4O17wtQMbvb204v9ZqcXrH46FEZFScPJ2+1JyAuRjlktf+FR3/ul0J2tDKMewSxcBpil
-         dZTg==
+        bh=IG41cu9uTI8OX8K2UEb0GiOZqEF8uyVDonOH0Uh3Wzo=;
+        b=Nw1PaGF14LPcN9PBQiAwEHU8dOEV0k7jEa+1fHI9UZMKNlSn1FyLlcWA8HPYeRiUfj
+         rCPtedfbn8dufVnfRmJmDZHG08ehFECFDbrHiVBI/Jm4XRAzIjygyxrIXGwtTa9LruTV
+         NKk5S9s2C2d76cjEgqBxXW57/dlOwF+WQ04CveR4leE6J1mE1DmtwTCRAU2X2TJ8qSzB
+         XCe3+yGUiBicZkYKmtpxkQigjB5DFqMZfwS75QbLFRb0S2GAD1fKMM14f5PHn5JdrGzD
+         A6guccsRrbQ9bFy1LIi4cT4ZuE4IOXVpzJTyQc9RNA8tsVGOBkfBlXRkZsBOjQGd0uFK
+         e59Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685716165; x=1688308165;
+        d=1e100.net; s=20221208; t=1685716223; x=1688308223;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=hR4cfRO52K19EaWIBnrpEm4Q5CC06YOFcLL4jhPlEBk=;
-        b=PW0choom+drSbDpuwBBOV5034tUTOrz7GMRsP2luQz2KnBqPUEOzdrN27W4pa6dF7H
-         +VF+Sz6LvclU/JFE9nCBO8++LMISr+O2fc+UMEGe1k992QA2oD+uHPx1bjV+tneUUUHx
-         +7Vwzxo1W4LvkFbnS3deElJ3Ujx8XzusjUO7iWHwd2nlsc4NkaZWpdkruAPZ9ezbrB3o
-         EJn5+dBzlK23zGlIA7qYRWqP4Cst1RjIY9O8PZ1mxiKvmX5w2pzHDePfVgnJCpGet6by
-         HRlPmiBXcgQbTp+rT9CbEDdqYeEmoMfFA9vhjPsfpwaC460F8o2zmzh8z5MFhqfT+TJ7
-         hBYg==
-X-Gm-Message-State: AC+VfDwD2+n+yANZ1XCHIYLcJU5zYORcQzdaF9+7e7PPtMTUfjfi0vQb
-	xJ8GOZ7YF40AUzJEmH/4FSzbZw==
-X-Google-Smtp-Source: ACHHUZ56MEkeH5Zo1tXDtmMTp0+mZ8Ne4ufF6avETdOTCToxjO9N+oqb5AbfO1rRUEIIe3xcJl8rCw==
-X-Received: by 2002:a05:620a:208c:b0:75b:23a1:8e30 with SMTP id e12-20020a05620a208c00b0075b23a18e30mr11561210qka.1.1685716165465;
-        Fri, 02 Jun 2023 07:29:25 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id w8-20020ae9e508000000b0075ce3d29be5sm694399qkf.44.2023.06.02.07.29.24
+        bh=IG41cu9uTI8OX8K2UEb0GiOZqEF8uyVDonOH0Uh3Wzo=;
+        b=VFbKtkjSS0+t/JatNSYCEVAyDv0N9/0u5pejfFuX3M5DIVR5YW8JcBY+xyrCXvCwKA
+         jmpsiRgbDgtvNWoQyBRL5K6mbBg+JQOe7UNQxSSgye0THSB5ZwX+cdhWe33Hd6UX/60U
+         senfT7GCIfa6gxgGV7AVOMGTe1cBvnck4CfSnBGhy1qkwySKtkealiFtMhLljnvpjyqA
+         rYD6Biarc6BOFIeG/4YWR4H+/p4bbhXjhWSe/mG3GKFbzvfVJ7rKGa3MTklTM+8bewRW
+         BvALKilx0/7pWXF5oiFFYbYny+AYFC3Jeov/IYrRAG03DiNBfJQpG2j/6Up4+EF1y0ng
+         crOg==
+X-Gm-Message-State: AC+VfDwKnHf+0zB+ECZcx45taKWOdxw/6S1zBQ+cQXP1Zu8rknBIXIx/
+	wWIj1N+IpIKO//vFIY/sVHZghA+cz4WlwQ==
+X-Google-Smtp-Source: ACHHUZ6Kvb8lSgvrvjy6Pv4VzI+/YH0tVlxrTx74kQcpISfyBuarRqGfXBB4O7hykWX/cCP6cJtFLA==
+X-Received: by 2002:a05:600c:b42:b0:3f1:7581:eaaf with SMTP id k2-20020a05600c0b4200b003f17581eaafmr2072502wmr.4.1685716222672;
+        Fri, 02 Jun 2023 07:30:22 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id y20-20020a05600c365400b003f60a446fe5sm2134070wmq.29.2023.06.02.07.30.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jun 2023 07:29:24 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1q55mO-001veh-8c;
-	Fri, 02 Jun 2023 11:29:24 -0300
-Date: Fri, 2 Jun 2023 11:29:24 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Linux regressions mailing list <regressions@lists.linux.dev>
-Cc: Chuck Lever III <chuck.lever@oracle.com>,
-	"elic@nvidia.com" <elic@nvidia.com>,
-	"saeedm@nvidia.com" <saeedm@nvidia.com>,
-	Leon Romanovsky <leon@kernel.org>,
-	linux-rdma <linux-rdma@vger.kernel.org>,
-	"open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Subject: Re: system hang on start-up (mlx5?)
-Message-ID: <ZHn8xALvQ/wKER1t@ziepe.ca>
-References: <A1E5B427-897B-409E-B8E3-E417678E81F6@oracle.com>
- <bf2594bb-94e0-5c89-88ad-935dee2ac95c@leemhuis.info>
- <5b235e0f-cd4c-a453-d648-5a4e9080ac19@leemhuis.info>
- <AAFDF38A-E59A-4D6A-8EC2-113861C8B5DB@oracle.com>
- <bb2df75d-05be-3f7b-693a-84be195dc2f1@leemhuis.info>
+        Fri, 02 Jun 2023 07:30:22 -0700 (PDT)
+Date: Fri, 2 Jun 2023 17:30:20 +0300
+From: Vladimir Oltean <olteanv@gmail.com>
+To: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Jose Abreu <Jose.Abreu@synopsys.com>, netdev@vger.kernel.org,
+	Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next 1/3] net: dsa: sja1105: allow XPCS to handle
+ mdiodev lifetime
+Message-ID: <20230602143020.w7czsg5ldqpkqhep@skbuf>
+References: <ZHn1cTGFtEQ1Rv6E@shell.armlinux.org.uk>
+ <E1q55IZ-00Bp4w-6V@rmk-PC.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -83,63 +78,63 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bb2df75d-05be-3f7b-693a-84be195dc2f1@leemhuis.info>
+In-Reply-To: <E1q55IZ-00Bp4w-6V@rmk-PC.armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 02, 2023 at 03:55:43PM +0200, Linux regression tracking (Thorsten Leemhuis) wrote:
-> On 02.06.23 15:38, Chuck Lever III wrote:
-> > 
-> >> On Jun 2, 2023, at 7:05 AM, Linux regression tracking #update (Thorsten Leemhuis) <regressions@leemhuis.info> wrote:
-> >>
-> >> [TLDR: This mail in primarily relevant for Linux regression tracking. A
-> >> change or fix related to the regression discussed in this thread was
-> >> posted or applied, but it did not use a Link: tag to point to the
-> >> report, as Linus and the documentation call for.
-> > 
-> > Linus recently stated he did not like Link: tags pointing to an
-> > email thread on lore.
+On Fri, Jun 02, 2023 at 02:58:35PM +0100, Russell King (Oracle) wrote:
+> Put the mdiodev after xpcs_create() so that the XPCS driver can manage
+> the lifetime of the mdiodev its using.
+
+nitpick: "it's using"
+
 > 
-> Afaik he strongly dislikes them when a Link: tag just points to the
-> submission of the patch being applied;
-
-He has said that, but AFAICT enough maintainers disagree that we are
-still adding Link tags to the submission as a glorified Change-Id
-
-When done well these do provide information because the cover letter
-should back link to all prior version of the series and you can then
-capture the entire discussion, although manually.
-
-> at the same time he *really wants* those links if they tell the
-> backstory how a fix came into being, which definitely includes the
-> report about the issue being fixed (side note: without those links
-> regression tracking becomes so hard that it's basically no
-> feasible).
-
-Yes, but this started to get a bit redundant as we now have
-
- Reported-by:  xx@syzkaller
-
-Which does identify the original bug and all its places, and now
-people are adding links to the syzkaller email too because checkpatch
-is complaining.
-
-> > Also, checkpatch.pl is now complaining about Closes: tags instead
-> > of Link: tags. A bug was never opened for this issue.
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> ---
+>  drivers/net/dsa/sja1105/sja1105_mdio.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> That was a change by somebody else, but FWIW, just use Closes: (instead
-> of Link:) with a link to the report on lore, that tag is not reserved
-> for bugs.
+> diff --git a/drivers/net/dsa/sja1105/sja1105_mdio.c b/drivers/net/dsa/sja1105/sja1105_mdio.c
+> index 01f1cb719042..166fe747f70a 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_mdio.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_mdio.c
+> @@ -417,6 +417,7 @@ static int sja1105_mdiobus_pcs_register(struct sja1105_private *priv)
+>  		}
+>  
+>  		xpcs = xpcs_create(mdiodev, priv->phy_mode[port]);
+> +		mdio_device_put(mdiodev);
+>  		if (IS_ERR(xpcs)) {
+>  			rc = PTR_ERR(xpcs);
+>  			goto out_pcs_free;
+> @@ -434,7 +435,6 @@ static int sja1105_mdiobus_pcs_register(struct sja1105_private *priv)
+>  		if (!priv->xpcs[port])
+>  			continue;
+>  
+> -		mdio_device_free(priv->xpcs[port]->mdiodev);
+>  		xpcs_destroy(priv->xpcs[port]);
+>  		priv->xpcs[port] = NULL;
+>  	}
+> @@ -457,7 +457,6 @@ static void sja1105_mdiobus_pcs_unregister(struct sja1105_private *priv)
+>  		if (!priv->xpcs[port])
+>  			continue;
+>  
+> -		mdio_device_free(priv->xpcs[port]->mdiodev);
+>  		xpcs_destroy(priv->xpcs[port]);
+>  		priv->xpcs[port] = NULL;
+>  	}
+> -- 
+> 2.30.2
 > 
-> /me will go and update his boilerplate text used above
 
-And now you say they should be closes not link?
+So before this patch, sja1105 was using xpcs with an mdiodev refcount
+of 2 (a transition phase after commit 9a5d500cffdb ("net: pcs: xpcs: add
+xpcs_create_mdiodev()")), and now it's back to using it with a refcount
+of 1? okay.
 
-Oy it makes my head hurt all these rules.
-
-Jason
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
