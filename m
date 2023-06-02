@@ -1,214 +1,177 @@
-Return-Path: <netdev+bounces-7475-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7476-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8F37A720688
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:51:46 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7F2FB720697
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 17:54:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DC6D2281A07
-	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:51:44 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 393FD2817FE
+	for <lists+netdev@lfdr.de>; Fri,  2 Jun 2023 15:54:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3D0A41B918;
-	Fri,  2 Jun 2023 15:51:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63EB21B91F;
+	Fri,  2 Jun 2023 15:54:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 299EA1B8FE
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:51:42 +0000 (UTC)
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01hn2232.outbound.protection.outlook.com [52.100.5.232])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E966E18C
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:51:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nLGQWTw7XikQShKlz+Zvxo1CmFTio5He0LsZp3kZPDI=;
- b=w/K2ZCdqc/NE1vpuygX1SqPfsSjPsNEk6jgi9DGOWSF+5WwQeSe5bFSVl/xzwowi3+unu3PwBBBXYpPksp/RumT/B/Cn+FTqEUCvJ1PXNokXbO6dD1OF+00SjfPmlKC6F6KUmloq/UX0WS/6RkoqzO92V9XRmdlJgjC56Dq/AsVW6S7IEOBzfVoQlZnn2eOGgYVU3RiijaiLldFXXBO1DiuOQBmkVhiYwVB9pWo7QQF+L8Z5kMH3j2lZy45Gdv1c3odYSkHguUBpAP9NC7m6Pn78zwbFmS8acHNvQFFEb5HUVOngor/PeQ3UpcM6uzGq74wFbRxII/K9tfLfiTDNKQ==
-Received: from DB7PR02CA0020.eurprd02.prod.outlook.com (2603:10a6:10:52::33)
- by AS8PR03MB7538.eurprd03.prod.outlook.com (2603:10a6:20b:346::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.24; Fri, 2 Jun
- 2023 15:51:36 +0000
-Received: from DB8EUR05FT018.eop-eur05.prod.protection.outlook.com
- (2603:10a6:10:52:cafe::d0) by DB7PR02CA0020.outlook.office365.com
- (2603:10a6:10:52::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.25 via Frontend
- Transport; Fri, 2 Jun 2023 15:51:36 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 20.160.56.82)
- smtp.mailfrom=seco.com; dkim=pass (signature was verified)
- header.d=seco.com;dmarc=pass action=none header.from=seco.com;
-Received-SPF: Pass (protection.outlook.com: domain of seco.com designates
- 20.160.56.82 as permitted sender) receiver=protection.outlook.com;
- client-ip=20.160.56.82; helo=inpost-eu.tmcas.trendmicro.com; pr=C
-Received: from inpost-eu.tmcas.trendmicro.com (20.160.56.82) by
- DB8EUR05FT018.mail.protection.outlook.com (10.233.238.63) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6455.24 via Frontend Transport; Fri, 2 Jun 2023 15:51:36 +0000
-Received: from outmta (unknown [192.168.82.132])
-	by inpost-eu.tmcas.trendmicro.com (Trend Micro CAS) with ESMTP id BB0A920081128;
-	Fri,  2 Jun 2023 15:51:35 +0000 (UTC)
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (unknown [104.47.13.56])
-	by repre.tmcas.trendmicro.com (Trend Micro CAS) with ESMTPS id 4D3BB20080073;
-	Fri,  2 Jun 2023 15:52:28 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O9AFEDYNuL717+CmaQVVKwP9vGq1/UdyLo6BfIOwhoRwMoTFp1gAD0ZHCRvIbUhllOuLfClD2G/IAmUj+zd/py6sFHIiCtJ+jSSJ5JPtHcDEqgcup2E/VkDdJUQc8qkuZXS7mecFgOfEOi1FEdNMSXkyx7BKrTCJUzh42QRd0jiHczNetNXu8HMYgK2q63eXv/aq82ltGsa9C8RTMkRHewtGKg9yfWDXRdw1d/Tu+P83m+MdI0NBgOhfDoRHL+XsNygmbRBQ4mHmbUnmD2fi116Y3kaSo029J1Np5NmWXrURjuiBGkva6NraZfRfM29/6KtOz8hxGO6cdM2JoPH7bg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nLGQWTw7XikQShKlz+Zvxo1CmFTio5He0LsZp3kZPDI=;
- b=X/5Uki82nsPkve00iW4GP8sKwu68K8QRa88Zk5mbSh1xgV/stw0jt0bMxMMSbHtH8PsLlcCar4HpTk/5evPrNV85dgKb1riui/K6G1qZ0cG+tK4rrXdktTmuWdQ3K2/viX8A/e51Th/hgS1AdNkBLz0CLIc+Cn3Ysfa575ytVpbhJCn5d99BAGRTnB2cLxJO4FKC/lJzB6tXNseC/Zh1/eQwDSIrldWw8Cn9PiGGl/qUvg2Ufjk6pMOvSPt2n6JfKTutwAPK3sgCslKgwHaoLEB+sA6cQj3lJIBBEFSwBjHShnkz6HGLqUK9tZB/8VSd78uD4AlNYFzrwq+LZG0DGA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nLGQWTw7XikQShKlz+Zvxo1CmFTio5He0LsZp3kZPDI=;
- b=w/K2ZCdqc/NE1vpuygX1SqPfsSjPsNEk6jgi9DGOWSF+5WwQeSe5bFSVl/xzwowi3+unu3PwBBBXYpPksp/RumT/B/Cn+FTqEUCvJ1PXNokXbO6dD1OF+00SjfPmlKC6F6KUmloq/UX0WS/6RkoqzO92V9XRmdlJgjC56Dq/AsVW6S7IEOBzfVoQlZnn2eOGgYVU3RiijaiLldFXXBO1DiuOQBmkVhiYwVB9pWo7QQF+L8Z5kMH3j2lZy45Gdv1c3odYSkHguUBpAP9NC7m6Pn78zwbFmS8acHNvQFFEb5HUVOngor/PeQ3UpcM6uzGq74wFbRxII/K9tfLfiTDNKQ==
-Authentication-Results-Original: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB9PR03MB8847.eurprd03.prod.outlook.com (2603:10a6:10:3dd::13)
- by PA4PR03MB7486.eurprd03.prod.outlook.com (2603:10a6:102:10e::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.24; Fri, 2 Jun
- 2023 15:51:30 +0000
-Received: from DB9PR03MB8847.eurprd03.prod.outlook.com
- ([fe80::d632:8122:75f7:7b0e]) by DB9PR03MB8847.eurprd03.prod.outlook.com
- ([fe80::d632:8122:75f7:7b0e%3]) with mapi id 15.20.6433.025; Fri, 2 Jun 2023
- 15:51:30 +0000
-Message-ID: <64b55156-81e2-44cf-224d-d362e10955e3@seco.com>
-Date: Fri, 2 Jun 2023 11:51:23 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH net-next 4/8] net: pcs: lynx: add lynx_pcs_create_fwnode()
-Content-Language: en-US
-To: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
- Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Ioana Ciornei <ioana.ciornei@nxp.com>,
- Jakub Kicinski <kuba@kernel.org>, Madalin Bucur <madalin.bucur@nxp.com>,
- netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>
-References: <ZHoOe9K/dZuW2pOe@shell.armlinux.org.uk>
- <E1q56y1-00Bsum-Hx@rmk-PC.armlinux.org.uk>
-From: Sean Anderson <sean.anderson@seco.com>
-In-Reply-To: <E1q56y1-00Bsum-Hx@rmk-PC.armlinux.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR10CA0021.namprd10.prod.outlook.com
- (2603:10b6:208:120::34) To DB9PR03MB8847.eurprd03.prod.outlook.com
- (2603:10a6:10:3dd::13)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58A931B909
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 15:54:25 +0000 (UTC)
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 702BD1B1
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 08:54:23 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id d2e1a72fcca58-652d1d3e040so664894b3a.1
+        for <netdev@vger.kernel.org>; Fri, 02 Jun 2023 08:54:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1685721262; x=1688313262;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=hMPm1WCidcSa7noQChdpx0ZZe8xArHI7ltSKDz1DDHE=;
+        b=tcxr6+xHc0dKRRo96CqkcIqBovCSUV11nd+BwQ2JMg48WC4/qqNkLA74NuZ63972Rs
+         tu9+V9lrzutApv/kp76Ajt1M1biLCg1nzcvVtWtHckX9t1OAMoWof7l+os1txHDPFJZd
+         7griBh+vsUAxpQlYtJEvqSAlKkQhpXvA27sJJVLwtRyAdMujw6Mo5Zob0bPrqLMOoLVB
+         10522mkHWgjScV8IXkCzWy/HLPRRha6mixfYskLshweInfTRrnd701Q7IGIqxYXgBqVf
+         bnMnbXa5SonSsfWc7P021ZPS6uuNYOOY+pB8jKy3Iq96R1j2tLuVYpi2mUQVoNnkoVao
+         jCFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685721262; x=1688313262;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hMPm1WCidcSa7noQChdpx0ZZe8xArHI7ltSKDz1DDHE=;
+        b=SRc/2MtXIIer46xW8dTwldd4+RErxuAIVxAhnoRJfDCsC5xX3SzAomHzXvigli1wQG
+         mofGuUHbqmZZk2UkM908nrQxH9P55iBrzfcHzedO/miUP2vXFvk1D5k0ZAVjW6DZvrc3
+         D7s6LxlhpXC1WFM0X6zAwfTQmVADtDT8Xk79gPorI6aeGCTJeddqCGuV0AezTJ3im4bi
+         oioEm20z600/Jtyrl5ltEASP0+CpIuwWqTrQAg2Drv6irGEKE1MAYxWlb4N/h/eIDcKT
+         61xmqkLUsjBQ2XzMvfUTVsRUm1tz+eoWAJpmXqLOpLSS8xKq62uMqj/opr9dTz7URO+1
+         Jndw==
+X-Gm-Message-State: AC+VfDzH7DrJTyU7d/k8nO2Ba0yUklFoJMbMpk4qeygJPupcjpe94Kbb
+	Pzbz7I25YZMUK12nw0A4JUmPTtQp4nBnLSg5O0g1UA==
+X-Google-Smtp-Source: ACHHUZ4oaDo0rbZItYz6oMCPDQhXrkPcHbCn2XGxqiGVI6RYzkRorDCHJvKzcLwF91rM/0rGtOkrRA==
+X-Received: by 2002:aa7:88cf:0:b0:64a:f730:1552 with SMTP id k15-20020aa788cf000000b0064af7301552mr11400839pff.19.1685721262487;
+        Fri, 02 Jun 2023 08:54:22 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id f4-20020aa78b04000000b0063f00898245sm1191756pfd.146.2023.06.02.08.54.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Jun 2023 08:54:21 -0700 (PDT)
+From: Stephen Hemminger <stephen@networkplumber.org>
+To: netdev@vger.kernel.org
+Cc: Stephen Hemminger <stephen@networkplumber.org>,
+	petrm@nvidia.com
+Subject: [PATCH iproute2] ipaddress: accept symbolic names
+Date: Fri,  2 Jun 2023 08:54:19 -0700
+Message-Id: <20230602155419.8958-1-stephen@networkplumber.org>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-TrafficTypeDiagnostic:
-	DB9PR03MB8847:EE_|PA4PR03MB7486:EE_|DB8EUR05FT018:EE_|AS8PR03MB7538:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5a551ff4-9841-4f5a-31ba-08db63813f0a
-X-TrendMicro-CAS-OUT-LOOP-IDENTIFIER: 656f966764b7fb185830381c646b41a1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original:
- ipvfoEQDL9wP6VsuxmI0tMscsirjw/YabqC6VPEXtdukwLgDBFSkaizbQ3Hr+tiLbFrk5ZCcAL1TcOJVl+88KgR2D5pcZckdcHC4Yhqkk03VGbSkVHeOheFf5C9+VQFYuYJ3iCRe0PEMwJrO57SKL5QHDWONTPu04tQ6G9/qg9G9u9o8zof2V7C3vSoRhBtPNmwYY7SavaU0ioHWG9UHq4xns2E5IgM7z9hUioxBoynW18gD0U3WGYLnEB1PKrEeSFSgrt69nRtgHSXDHJsLZ688I+Ks5K5Pa0XJwB7lctyQoYlaxq+4bPRmQPgEHTW5W2Gt2/XqFGJDbfy0+EdNGQKtW4+YamLReB+S1zNw2VQCOmXln1XqFQjpHNuw+/ozdVICimHfVr/HplUrfOm9IlobgPSYMaEr5Am4FfsJM/ExYCBtg6+HMehjiYsD9InS7EjQeon7I01jaHiwkxkQ2a1AHslbpXjbJ/Ph0xM3Pu9AIqDqNh2TNy9TLfU7tHMorTmRL3SGOCYuyGuiHnn7MECJslwKf/SNrWf155aUn+vS7RyWBCVSRahyTMVO9t7b+g/nO3MRo8kAz4mLCX15q6UFVT2lQC8Nb01WHcCf6mCLzBHJ/tbfI5OCQ2GtXUwB+7Ppx+H9Y647PZWanxXzUd8RilJIi34mhrc9ie/cgIJxHxcq4pKedBjuJ7LYeACr
-X-Forefront-Antispam-Report-Untrusted:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR03MB8847.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(39850400004)(136003)(376002)(346002)(396003)(451199021)(4326008)(26005)(6506007)(6512007)(53546011)(186003)(6666004)(6486002)(52116002)(5660300002)(44832011)(41300700001)(83380400001)(316002)(7416002)(2906002)(2616005)(8936002)(8676002)(478600001)(66556008)(66476007)(66946007)(110136005)(54906003)(86362001)(36756003)(31696002)(38100700002)(38350700002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR03MB7486
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- DB8EUR05FT018.eop-eur05.prod.protection.outlook.com
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	b624419b-da71-406b-77a1-08db63813b34
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	eu8kY6x3wfAHCiw7d6yQTDVsYXC9Y74uIuq4va+XwIxsWCxTYqxSUBJuKm/v+MVcp8a5ggDPVXHQnF+kltJ43qMmcwlk8J6Tn/pJV/cyRKoZAji5He8PhlK3aL4SmuGQe1jYWraTHBtrSRjLiAh5W8laa49MOnEpixuEZ2YWWZ1t/RxNMrutDTE/nwMLIBxKH/Zm3EoOCsiUSWGDj+yKy2Vrx6em1Ya33xueuw0lIRghtHEeiHwWPfp4qz93G2UB9z3LK0iqlhbKpS7MvrNVGgQxPvdvuQMwySUkVdvF7rUUOX6I1RmKQhw4WWCLWla3CoAwQQHlRe2IcS+mh5oniMe1MeYfNYvwFvbBebvm28Nmt4XDqgoN2oA4Qls4XSeliAzzdEWtciREwwKXtqAUdRNOhMoOQwdXflsUCcQN2f8d7Kv3KSGBuMTMw5zs4KgPWiLuT3fTid9fCQrzjKGa6VVma6uPX2kc2kJI07LbbfWsgi5UFw4o7wQJArjrJHac9XiuKos1yHaHLqRNouNKbTe+gBFlugfOv7KeeU40t0o/LmasWpZKBs9JuZfqh5ci6N+UXi1QRh20RbVytJLredO2uWCDOeiKiXHz6pWx3rM567ckcOTSQ/c85ryBALnx4wdy0cP/pBq69ETYdQ1+6h9pOdb4tBbn7uDbM2uEyQCEvd67NwbsIAt1GooSs/DkSFSIeu9UQkQ5doqohZWFMBOcHzkJuQjBwR+5X4XGk16LM+IvPGUy59tFQhiE/Szzg/bjXfaMtlaXwKMs2pOu8OtzSryXM6oQjy/LZxUBFbISMFrMroIH/UpIPryyr+9vBWsOnJp9aLKaIM0hb2IkKQ==
-X-Forefront-Antispam-Report:
-	CIP:20.160.56.82;CTRY:NL;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:inpost-eu.tmcas.trendmicro.com;PTR:inpost-eu.tmcas.trendmicro.com;CAT:NONE;SFS:(13230028)(396003)(376002)(39850400004)(136003)(346002)(5400799015)(451199021)(46966006)(36840700001)(40470700004)(2616005)(83380400001)(36860700001)(36756003)(47076005)(6486002)(336012)(6666004)(6506007)(53546011)(6512007)(40480700001)(186003)(26005)(40460700003)(34070700002)(82310400005)(44832011)(2906002)(54906003)(316002)(110136005)(41300700001)(31696002)(5660300002)(31686004)(86362001)(70206006)(7416002)(70586007)(4326008)(82740400003)(356005)(7596003)(7636003)(8936002)(478600001)(8676002)(43740500002)(12100799033);DIR:OUT;SFP:1501;
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2023 15:51:36.1995
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a551ff4-9841-4f5a-31ba-08db63813f0a
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=bebe97c3-6438-442e-ade3-ff17aa50e733;Ip=[20.160.56.82];Helo=[inpost-eu.tmcas.trendmicro.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DB8EUR05FT018.eop-eur05.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB7538
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 6/2/23 11:45, Russell King (Oracle) wrote:
-> Add a helper to create a lynx PCS from a fwnode handle.
-> 
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> ---
->  drivers/net/pcs/pcs-lynx.c | 29 +++++++++++++++++++++++++++++
->  include/linux/pcs-lynx.h   |  1 +
->  2 files changed, 30 insertions(+)
-> 
-> diff --git a/drivers/net/pcs/pcs-lynx.c b/drivers/net/pcs/pcs-lynx.c
-> index a90f74172f49..b0907c67d469 100644
-> --- a/drivers/net/pcs/pcs-lynx.c
-> +++ b/drivers/net/pcs/pcs-lynx.c
-> @@ -353,6 +353,35 @@ struct phylink_pcs *lynx_pcs_create_mdiodev(struct mii_bus *bus, int addr)
->  }
->  EXPORT_SYMBOL(lynx_pcs_create_mdiodev);
->  
-> +struct phylink_pcs *lynx_pcs_create_fwnode(struct fwnode_handle *node)
-> +{
-> +	struct mdio_device *mdio;
-> +	struct phylink_pcs *pcs;
+The function rtnl_addproto_a2n() was defined but never used.
+Use it to allow for symbolic names, and fix the function signatures
+so protocol value is consistently __u8.
 
-I think you should put the available check here as well.
+Fixes: bdb8d8549ed9 ("ip: Support IP address protocol")
+Cc: petrm@nvidia.com
+Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+---
+ include/rt_names.h |  4 ++--
+ ip/ipaddress.c     |  2 +-
+ lib/rt_names.c     | 18 +++++-------------
+ 3 files changed, 8 insertions(+), 16 deletions(-)
 
-> +	mdio = fwnode_mdio_find_device(node);
-> +	if (!mdio)
-> +		return ERR_PTR(-EPROBE_DEFER);
-> +
-> +	pcs = lynx_pcs_create(mdio);
-> +
-> +	/* Convert failure to create the PCS to an error pointer, so this
-> +	 * function has a consistent return value strategy.
-> +	 */
-> +	if (!pcs)
-> +		pcs = ERR_PTR(-ENOMEM);
-> +
-> +	/* lynx_create() has taken a refcount on the mdiodev if it was
-> +	 * successful. If lynx_create() fails, this will free the mdio
-> +	 * device here. In any case, we don't need to hold our reference
-> +	 * anymore, and putting it here will allow mdio_device_put() in
-> +	 * lynx_destroy() to automatically free the mdio device.
-> +	 */
-> +	mdio_device_put(mdio);
-> +
-> +	return pcs;
-> +}
-> +EXPORT_SYMBOL_GPL(lynx_pcs_create_fwnode);
-> +
->  void lynx_pcs_destroy(struct phylink_pcs *pcs)
->  {
->  	struct lynx_pcs *lynx = phylink_pcs_to_lynx(pcs);
-> diff --git a/include/linux/pcs-lynx.h b/include/linux/pcs-lynx.h
-> index 25f68a096bfe..123e813df771 100644
-> --- a/include/linux/pcs-lynx.h
-> +++ b/include/linux/pcs-lynx.h
-> @@ -11,6 +11,7 @@
->  
->  struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio);
->  struct phylink_pcs *lynx_pcs_create_mdiodev(struct mii_bus *bus, int addr);
-> +struct phylink_pcs *lynx_pcs_create_fwnode(struct fwnode_handle *node);
->  
->  void lynx_pcs_destroy(struct phylink_pcs *pcs);
->  
+diff --git a/include/rt_names.h b/include/rt_names.h
+index e96d80f30554..0275030704c1 100644
+--- a/include/rt_names.h
++++ b/include/rt_names.h
+@@ -5,7 +5,7 @@
+ #include <asm/types.h>
+ 
+ const char *rtnl_rtprot_n2a(int id, char *buf, int len);
+-const char *rtnl_addrprot_n2a(int id, char *buf, int len);
++const char *rtnl_addrprot_n2a(__u8 id, char *buf, int len);
+ const char *rtnl_rtscope_n2a(int id, char *buf, int len);
+ const char *rtnl_rttable_n2a(__u32 id, char *buf, int len);
+ const char *rtnl_rtrealm_n2a(int id, char *buf, int len);
+@@ -14,7 +14,7 @@ const char *rtnl_dsfield_get_name(int id);
+ const char *rtnl_group_n2a(int id, char *buf, int len);
+ 
+ int rtnl_rtprot_a2n(__u32 *id, const char *arg);
+-int rtnl_addrprot_a2n(__u32 *id, const char *arg);
++int rtnl_addrprot_a2n(__u8 *id, const char *arg);
+ int rtnl_rtscope_a2n(__u32 *id, const char *arg);
+ int rtnl_rttable_a2n(__u32 *id, const char *arg);
+ int rtnl_rtrealm_a2n(__u32 *id, const char *arg);
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index c428dd3d5413..7accbf7d7822 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -2547,7 +2547,7 @@ static int ipaddr_modify(int cmd, int flags, int argc, char **argv)
+ 			__u8 proto;
+ 
+ 			NEXT_ARG();
+-			if (get_u8(&proto, *argv, 0))
++			if (rtnl_addrprot_a2n(&proto, *argv))
+ 				invarg("\"proto\" value is invalid\n", *argv);
+ 			addattr8(&req.n, sizeof(req), IFA_PROTO, proto);
+ 		} else {
+diff --git a/lib/rt_names.c b/lib/rt_names.c
+index 51d11fd056b1..b441e98f8078 100644
+--- a/lib/rt_names.c
++++ b/lib/rt_names.c
+@@ -242,9 +242,9 @@ static void rtnl_addrprot_initialize(void)
+ 	rtnl_addrprot_tab_initialized = true;
+ }
+ 
+-const char *rtnl_addrprot_n2a(int id, char *buf, int len)
++const char *rtnl_addrprot_n2a(__u8 id, char *buf, int len)
+ {
+-	if (id < 0 || id >= 256 || numeric)
++	if (numeric)
+ 		goto numeric;
+ 	if (!rtnl_addrprot_tab_initialized)
+ 		rtnl_addrprot_initialize();
+@@ -255,27 +255,19 @@ numeric:
+ 	return buf;
+ }
+ 
+-int rtnl_addrprot_a2n(__u32 *id, const char *arg)
++int rtnl_addrprot_a2n(__u8 *id, const char *arg)
+ {
+-	static char *cache;
+-	static unsigned long res;
++	unsigned long res;
+ 	char *end;
+ 	int i;
+ 
+-	if (cache && strcmp(cache, arg) == 0) {
+-		*id = res;
+-		return 0;
+-	}
+-
+ 	if (!rtnl_addrprot_tab_initialized)
+ 		rtnl_addrprot_initialize();
+ 
+ 	for (i = 0; i < 256; i++) {
+ 		if (rtnl_addrprot_tab[i] &&
+ 		    strcmp(rtnl_addrprot_tab[i], arg) == 0) {
+-			cache = rtnl_addrprot_tab[i];
+-			res = i;
+-			*id = res;
++			*id = i;
+ 			return 0;
+ 		}
+ 	}
+-- 
+2.39.2
 
-Anyway, the rest of this series looks good to me.
-
---Sean
 
