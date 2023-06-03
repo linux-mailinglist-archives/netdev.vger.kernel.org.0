@@ -1,446 +1,206 @@
-Return-Path: <netdev+bounces-7723-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7724-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1C580721304
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 23:00:06 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 92B6372130F
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 23:12:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4B7181C210DF
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 21:00:02 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 19D9C1C20A7F
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 21:12:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A302A1C74A;
-	Sat,  3 Jun 2023 20:55:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 89C4B101C6;
+	Sat,  3 Jun 2023 21:12:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E08D1B916
-	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 20:55:03 +0000 (UTC)
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BFFA6;
-	Sat,  3 Jun 2023 13:55:00 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-	by mx.sberdevices.ru (Postfix) with ESMTP id 849605FD41;
-	Sat,  3 Jun 2023 23:54:50 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-	s=mail; t=1685825690;
-	bh=XeBcocw7Ow0J3zl/HOChhEU6WoykzJ9fUhXcW0cNTyA=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-	b=Qi+UKDrrk4uptXQrUkjbCjFMH1jc+/cOOur3ibO0CxS4znMKH2i6BYESMKIZuLDCH
-	 mUasGCnY7jtIa1KVPx0J8PI43IvKoKoflxNJgPDnzRvIC2bpnf/+5P+Nnqna9fVRow
-	 JTnXBN3Y+eMbrdzMgpi28DApiHLD/m2v58/SA3LSWDxHHQEuUDhNHOaEsviSXhKViU
-	 y9yCsMLwTj1ddgPi6nkYpmbsqvDvMp81fqxqu1obS3NNnqlBUr+YP8YitYC6ySdWDI
-	 nHIfydEBicaebFDbG8wU5OQEQiz2QyvQPB4kzS7uC3mE2qxlcViNweO2YswkOS2yK5
-	 mtFnmCFEBB9AQ==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-	by mx.sberdevices.ru (Postfix) with ESMTP;
-	Sat,  3 Jun 2023 23:54:50 +0300 (MSK)
-From: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To: Stefan Hajnoczi <stefanha@redhat.com>, Stefano Garzarella
-	<sgarzare@redhat.com>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang
-	<jasowang@redhat.com>, Bobby Eshleman <bobby.eshleman@bytedance.com>
-CC: <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-	<netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<kernel@sberdevices.ru>, <oxffffaa@gmail.com>, <avkrasnov@sberdevices.ru>,
-	Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Subject: [RFC PATCH v4 17/17] test/vsock: io_uring rx/tx tests
-Date: Sat, 3 Jun 2023 23:49:39 +0300
-Message-ID: <20230603204939.1598818-18-AVKrasnov@sberdevices.ru>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20230603204939.1598818-1-AVKrasnov@sberdevices.ru>
-References: <20230603204939.1598818-1-AVKrasnov@sberdevices.ru>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72672FC1B;
+	Sat,  3 Jun 2023 21:12:06 +0000 (UTC)
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD72BB;
+	Sat,  3 Jun 2023 14:12:04 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id 38308e7fff4ca-2b1adf27823so24651281fa.2;
+        Sat, 03 Jun 2023 14:12:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685826722; x=1688418722;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ywQUs5Fiz0nF2jpbvNI9hUxAw7fBwSlpxtNbhNWOdKQ=;
+        b=RDS3HF6Dzg4udc+gzR1ge+A8FipEjdhBSdULq7dQD2UyV6dgjBvuZgGerD6vUs2YSm
+         VDnqI9KNtr2Dk7Dcagvb3z7MHB6yFn9dZVHE0avEHhNOnZSxu+haoNYcH+DbvcdZqhp2
+         V/2FcSs+Og/LSo+4chvosoksvs7WCJCCw38bmEWjYWWbCKP1NNCl8K5ura9Sf0w8P5PP
+         7V+264OxyeQzdq0h0Oa1oSNUiGbjJiqkYN3172ascXs+vGBmB8K0oc564ajmaECysFRA
+         O+qDRdpmwpV7013SWgjBPZmxYgAbk4/aYxoKzE2wIVyrPNGanFSOTGWVNORuh+LwDAsi
+         f1HQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685826722; x=1688418722;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ywQUs5Fiz0nF2jpbvNI9hUxAw7fBwSlpxtNbhNWOdKQ=;
+        b=SZAv6c4aEnU02IE7CLZ8gHKXfgocaKwfYW8xNd2Tg/U1hiMdCbDyTdnyJKJWLdF8ur
+         XOhFxx1ebz7Lr31gpWiQqqRKDaMWm52AIObIoJN6WI1Opuw9KJFVc2+Li0rDlq48b8bj
+         q4NBELVRWYCT1NIASZ5e3PBIM7Rf2BBWdtCUfXfl3okBybupaDrXU6/UwoXgYCIFLW8n
+         c5gBt8WdPpHBwvW0fYwQmpH4BNp4eUDJ9mpGoSC26M+syKgzeu5J3CTrkxbFwK5axm29
+         xLN/1/Zy77TSFQ1jfumRsDF6xf7Ay56Wn3gR09WrHFHVqt/GQfrm/uOUzBdUC3qpDV6p
+         96mg==
+X-Gm-Message-State: AC+VfDyWAOA4NWGVIe6Bpj+KGKL7Pzyu89UrESEMkJhez6irL3NDAsud
+	xfJ/GYLxQIU96go4dlO2vG78Kb1TVV0DCpPgt75j0KwXfjTzXHnjND0=
+X-Google-Smtp-Source: ACHHUZ7QpjsIySl/XiT4DfbanAj3JM5KVAqgA/T1nohoUOzVT96eBA8GwqXTmRgv+kLRpCQJ8cFP5VM7V3QLXDceJ3I=
+X-Received: by 2002:a2e:88d6:0:b0:2a7:b986:3481 with SMTP id
+ a22-20020a2e88d6000000b002a7b9863481mr1909233ljk.41.1685826722179; Sat, 03
+ Jun 2023 14:12:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/06/03 16:55:00 #21417531
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+References: <20230601101257.530867-1-rppt@kernel.org> <ZHjDU/mxE+cugpLj@FVFF77S0Q05N.cambridge.arm.com>
+ <ZHjgIH3aX9dCvVZc@moria.home.lan> <ZHm3zUUbwqlsZBBF@FVFF77S0Q05N> <CAPhsuW7Euczff_KB70nuH=Hhf2EYHAf=xiQR7mFqVfByhD34XA@mail.gmail.com>
+In-Reply-To: <CAPhsuW7Euczff_KB70nuH=Hhf2EYHAf=xiQR7mFqVfByhD34XA@mail.gmail.com>
+From: Puranjay Mohan <puranjay12@gmail.com>
+Date: Sat, 3 Jun 2023 23:11:51 +0200
+Message-ID: <CANk7y0jtFA4sKgh2o2gAydLNzOxfZ0r3LVRuzzTGS8Qv0BuJGg@mail.gmail.com>
+Subject: Re: [PATCH 00/13] mm: jit/text allocator
+To: Song Liu <song@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, Kent Overstreet <kent.overstreet@linux.dev>, 
+	Mike Rapoport <rppt@kernel.org>, linux-kernel@vger.kernel.org, 
+	Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Christophe Leroy <christophe.leroy@csgroup.eu>, "David S. Miller" <davem@davemloft.net>, 
+	Dinh Nguyen <dinguyen@kernel.org>, Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>, 
+	Huacai Chen <chenhuacai@kernel.org>, Luis Chamberlain <mcgrof@kernel.org>, 
+	Michael Ellerman <mpe@ellerman.id.au>, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Russell King <linux@armlinux.org.uk>, 
+	Steven Rostedt <rostedt@goodmis.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>, bpf@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, 
+	linux-mm@kvack.org, linux-modules@vger.kernel.org, 
+	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	linux-s390@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev, 
+	netdev@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This adds set of tests which use io_uring for rx/tx. This test suite is
-implemented as separated util like 'vsock_test' and has the same set of
-input arguments as 'vsock_test'. These tests only cover cases of data
-transmission (no connect/bind/accept etc).
+On Fri, Jun 2, 2023 at 8:21=E2=80=AFPM Song Liu <song@kernel.org> wrote:
+>
+> On Fri, Jun 2, 2023 at 2:35=E2=80=AFAM Mark Rutland <mark.rutland@arm.com=
+> wrote:
+> >
+> > On Thu, Jun 01, 2023 at 02:14:56PM -0400, Kent Overstreet wrote:
+> > > On Thu, Jun 01, 2023 at 05:12:03PM +0100, Mark Rutland wrote:
+> > > > For a while I have wanted to give kprobes its own allocator so that=
+ it can work
+> > > > even with CONFIG_MODULES=3Dn, and so that it doesn't have to waste =
+VA space in
+> > > > the modules area.
+> > > >
+> > > > Given that, I think these should have their own allocator functions=
+ that can be
+> > > > provided independently, even if those happen to use common infrastr=
+ucture.
+> > >
+> > > How much memory can kprobes conceivably use? I think we also want to =
+try
+> > > to push back on combinatorial new allocators, if we can.
+> >
+> > That depends on who's using it, and how (e.g. via BPF).
+> >
+> > To be clear, I'm not necessarily asking for entirely different allocato=
+rs, but
+> > I do thinkg that we want wrappers that can at least pass distinct start=
++end
+> > parameters to a common allocator, and for arm64's modules code I'd expe=
+ct that
+> > we'd keep the range falblack logic out of the common allcoator, and jus=
+t call
+> > it twice.
+> >
+> > > > > Several architectures override module_alloc() because of various
+> > > > > constraints where the executable memory can be located and this c=
+auses
+> > > > > additional obstacles for improvements of code allocation.
+> > > > >
+> > > > > This set splits code allocation from modules by introducing
+> > > > > jit_text_alloc(), jit_data_alloc() and jit_free() APIs, replaces =
+call
+> > > > > sites of module_alloc() and module_memfree() with the new APIs an=
+d
+> > > > > implements core text and related allocation in a central place.
+> > > > >
+> > > > > Instead of architecture specific overrides for module_alloc(), th=
+e
+> > > > > architectures that require non-default behaviour for text allocat=
+ion must
+> > > > > fill jit_alloc_params structure and implement jit_alloc_arch_para=
+ms() that
+> > > > > returns a pointer to that structure. If an architecture does not =
+implement
+> > > > > jit_alloc_arch_params(), the defaults compatible with the current
+> > > > > modules::module_alloc() are used.
+> > > >
+> > > > As above, I suspect that each of the callsites should probably be u=
+sing common
+> > > > infrastructure, but I don't think that a single jit_alloc_arch_para=
+ms() makes
+> > > > sense, since the parameters for each case may need to be distinct.
+> > >
+> > > I don't see how that follows. The whole point of function parameters =
+is
+> > > that they may be different :)
+> >
+> > What I mean is that jit_alloc_arch_params() tries to aggregate common
+> > parameters, but they aren't actually common (e.g. the actual start+end =
+range
+> > for allocation).
+> >
+> > > Can you give more detail on what parameters you need? If the only ext=
+ra
+> > > parameter is just "does this allocation need to live close to kernel
+> > > text", that's not that big of a deal.
+> >
+> > My thinking was that we at least need the start + end for each caller. =
+That
+> > might be it, tbh.
+>
+> IIUC, arm64 uses VMALLOC address space for BPF programs. The reason
+> is each BPF program uses at least 64kB (one page) out of the 128MB
+> address space. Puranjay Mohan (CC'ed) is working on enabling
+> bpf_prog_pack for arm64. Once this work is done, multiple BPF programs
+> will be able to share a page. Will this improvement remove the need to
+> specify a different address range for BPF programs?
 
-Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
----
- tools/testing/vsock/Makefile           |   7 +-
- tools/testing/vsock/vsock_uring_test.c | 321 +++++++++++++++++++++++++
- 2 files changed, 327 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/vsock/vsock_uring_test.c
+Hi,
+Thanks for adding me to the conversation.
 
-diff --git a/tools/testing/vsock/Makefile b/tools/testing/vsock/Makefile
-index 0a78787d1d92..8621ae73051d 100644
---- a/tools/testing/vsock/Makefile
-+++ b/tools/testing/vsock/Makefile
-@@ -1,12 +1,17 @@
- # SPDX-License-Identifier: GPL-2.0-only
-+ifeq ($(MAKECMDGOALS),vsock_uring_test)
-+LDFLAGS = -luring
-+endif
-+
- all: test vsock_perf
- test: vsock_test vsock_diag_test
- vsock_test: vsock_test.o vsock_test_zerocopy.o timeout.o control.o util.o
- vsock_diag_test: vsock_diag_test.o timeout.o control.o util.o
- vsock_perf: vsock_perf.o
-+vsock_uring_test: control.o util.o vsock_uring_test.o timeout.o $(LDFLAGS)
- 
- CFLAGS += -g -O2 -Werror -Wall -I. -I../../include -I../../../usr/include -Wno-pointer-sign -fno-strict-overflow -fno-strict-aliasing -fno-common -MMD -U_FORTIFY_SOURCE -D_GNU_SOURCE
- .PHONY: all test clean
- clean:
--	${RM} *.o *.d vsock_test vsock_diag_test
-+	${RM} *.o *.d vsock_test vsock_diag_test vsock_uring_test
- -include *.d
-diff --git a/tools/testing/vsock/vsock_uring_test.c b/tools/testing/vsock/vsock_uring_test.c
-new file mode 100644
-index 000000000000..7637ff510490
---- /dev/null
-+++ b/tools/testing/vsock/vsock_uring_test.c
-@@ -0,0 +1,321 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* io_uring tests for vsock
-+ *
-+ * Copyright (C) 2023 SberDevices.
-+ *
-+ * Author: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-+ */
-+
-+#include <getopt.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <liburing.h>
-+#include <unistd.h>
-+#include <sys/mman.h>
-+#include <linux/kernel.h>
-+#include <error.h>
-+
-+#include "util.h"
-+#include "control.h"
-+
-+#define PAGE_SIZE		4096
-+#define RING_ENTRIES_NUM	4
-+
-+static struct vsock_test_data test_data_array[] = {
-+	/* All elements have page aligned base and size. */
-+	{
-+		.vecs_cnt = 3,
-+		{
-+			{ NULL, PAGE_SIZE },
-+			{ NULL, 2 * PAGE_SIZE },
-+			{ NULL, 3 * PAGE_SIZE },
-+		}
-+	},
-+	/* Middle element has both non-page aligned base and size. */
-+	{
-+		.vecs_cnt = 3,
-+		{
-+			{ NULL, PAGE_SIZE },
-+			{ (void *)1, 200  },
-+			{ NULL, 3 * PAGE_SIZE },
-+		}
-+	}
-+};
-+
-+static void vsock_io_uring_client(const struct test_opts *opts,
-+				  const struct vsock_test_data *test_data,
-+				  bool msg_zerocopy)
-+{
-+	struct io_uring_sqe *sqe;
-+	struct io_uring_cqe *cqe;
-+	struct io_uring ring;
-+	struct iovec *iovec;
-+	struct msghdr msg;
-+	int fd;
-+
-+	fd = vsock_stream_connect(opts->peer_cid, 1234);
-+	if (fd < 0) {
-+		perror("connect");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	if (msg_zerocopy)
-+		enable_so_zerocopy(fd);
-+
-+	iovec = iovec_from_test_data(test_data);
-+
-+	if (io_uring_queue_init(RING_ENTRIES_NUM, &ring, 0))
-+		error(1, errno, "io_uring_queue_init");
-+
-+	if (io_uring_register_buffers(&ring, iovec, test_data->vecs_cnt))
-+		error(1, errno, "io_uring_register_buffers");
-+
-+	memset(&msg, 0, sizeof(msg));
-+	msg.msg_iov = iovec;
-+	msg.msg_iovlen = test_data->vecs_cnt;
-+	sqe = io_uring_get_sqe(&ring);
-+
-+	if (msg_zerocopy)
-+		io_uring_prep_sendmsg_zc(sqe, fd, &msg, 0);
-+	else
-+		io_uring_prep_sendmsg(sqe, fd, &msg, 0);
-+
-+	if (io_uring_submit(&ring) != 1)
-+		error(1, errno, "io_uring_submit");
-+
-+	if (io_uring_wait_cqe(&ring, &cqe))
-+		error(1, errno, "io_uring_wait_cqe");
-+
-+	io_uring_cqe_seen(&ring, cqe);
-+
-+	control_writeulong(iovec_hash_djb2(iovec, test_data->vecs_cnt));
-+
-+	control_writeln("DONE");
-+	io_uring_queue_exit(&ring);
-+	free_iovec_test_data(test_data, iovec);
-+	close(fd);
-+}
-+
-+static void vsock_io_uring_server(const struct test_opts *opts,
-+				  const struct vsock_test_data *test_data)
-+{
-+	unsigned long remote_hash;
-+	unsigned long local_hash;
-+	struct io_uring_sqe *sqe;
-+	struct io_uring_cqe *cqe;
-+	struct io_uring ring;
-+	struct iovec iovec;
-+	size_t data_len;
-+	void *data;
-+	int fd;
-+
-+	fd = vsock_stream_accept(VMADDR_CID_ANY, 1234, NULL);
-+	if (fd < 0) {
-+		perror("accept");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	data_len = iovec_bytes(test_data->vecs, test_data->vecs_cnt);
-+
-+	data = malloc(data_len);
-+	if (!data) {
-+		perror("malloc");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	if (io_uring_queue_init(RING_ENTRIES_NUM, &ring, 0))
-+		error(1, errno, "io_uring_queue_init");
-+
-+	sqe = io_uring_get_sqe(&ring);
-+	iovec.iov_base = data;
-+	iovec.iov_len = data_len;
-+
-+	io_uring_prep_readv(sqe, fd, &iovec, 1, 0);
-+
-+	if (io_uring_submit(&ring) != 1)
-+		error(1, errno, "io_uring_submit");
-+
-+	if (io_uring_wait_cqe(&ring, &cqe))
-+		error(1, errno, "io_uring_wait_cqe");
-+
-+	if (cqe->res != data_len) {
-+		fprintf(stderr, "expected %zu, got %u\n", data_len,
-+			cqe->res);
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	local_hash = hash_djb2(data, data_len);
-+
-+	remote_hash = control_readulong();
-+	if (remote_hash != local_hash) {
-+		fprintf(stderr, "hash mismatch\n");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	control_expectln("DONE");
-+	io_uring_queue_exit(&ring);
-+	free(data);
-+}
-+
-+void test_stream_uring_server(const struct test_opts *opts)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(test_data_array); i++)
-+		vsock_io_uring_server(opts, &test_data_array[i]);
-+}
-+
-+void test_stream_uring_client(const struct test_opts *opts)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(test_data_array); i++)
-+		vsock_io_uring_client(opts, &test_data_array[i], false);
-+}
-+
-+void test_stream_uring_msg_zc_server(const struct test_opts *opts)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(test_data_array); i++)
-+		vsock_io_uring_server(opts, &test_data_array[i]);
-+}
-+
-+void test_stream_uring_msg_zc_client(const struct test_opts *opts)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(test_data_array); i++)
-+		vsock_io_uring_client(opts, &test_data_array[i], true);
-+}
-+
-+static struct test_case test_cases[] = {
-+	{
-+		.name = "SOCK_STREAM io_uring test",
-+		.run_server = test_stream_uring_server,
-+		.run_client = test_stream_uring_client,
-+	},
-+	{
-+		.name = "SOCK_STREAM io_uring MSG_ZEROCOPY test",
-+		.run_server = test_stream_uring_msg_zc_server,
-+		.run_client = test_stream_uring_msg_zc_client,
-+	},
-+	{},
-+};
-+
-+static const char optstring[] = "";
-+static const struct option longopts[] = {
-+	{
-+		.name = "control-host",
-+		.has_arg = required_argument,
-+		.val = 'H',
-+	},
-+	{
-+		.name = "control-port",
-+		.has_arg = required_argument,
-+		.val = 'P',
-+	},
-+	{
-+		.name = "mode",
-+		.has_arg = required_argument,
-+		.val = 'm',
-+	},
-+	{
-+		.name = "peer-cid",
-+		.has_arg = required_argument,
-+		.val = 'p',
-+	},
-+	{
-+		.name = "help",
-+		.has_arg = no_argument,
-+		.val = '?',
-+	},
-+	{},
-+};
-+
-+static void usage(void)
-+{
-+	fprintf(stderr, "Usage: vsock_uring_test [--help] [--control-host=<host>] --control-port=<port> --mode=client|server --peer-cid=<cid>\n"
-+		"\n"
-+		"  Server: vsock_uring_test --control-port=1234 --mode=server --peer-cid=3\n"
-+		"  Client: vsock_uring_test --control-host=192.168.0.1 --control-port=1234 --mode=client --peer-cid=2\n"
-+		"\n"
-+		"Run transmission tests using io_uring. Usage is the same as\n"
-+		"in ./vsock_test\n"
-+		"\n"
-+		"Options:\n"
-+		"  --help                 This help message\n"
-+		"  --control-host <host>  Server IP address to connect to\n"
-+		"  --control-port <port>  Server port to listen on/connect to\n"
-+		"  --mode client|server   Server or client mode\n"
-+		"  --peer-cid <cid>       CID of the other side\n"
-+		);
-+	exit(EXIT_FAILURE);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	const char *control_host = NULL;
-+	const char *control_port = NULL;
-+	struct test_opts opts = {
-+		.mode = TEST_MODE_UNSET,
-+		.peer_cid = VMADDR_CID_ANY,
-+	};
-+
-+	init_signals();
-+
-+	for (;;) {
-+		int opt = getopt_long(argc, argv, optstring, longopts, NULL);
-+
-+		if (opt == -1)
-+			break;
-+
-+		switch (opt) {
-+		case 'H':
-+			control_host = optarg;
-+			break;
-+		case 'm':
-+			if (strcmp(optarg, "client") == 0) {
-+				opts.mode = TEST_MODE_CLIENT;
-+			} else if (strcmp(optarg, "server") == 0) {
-+				opts.mode = TEST_MODE_SERVER;
-+			} else {
-+				fprintf(stderr, "--mode must be \"client\" or \"server\"\n");
-+				return EXIT_FAILURE;
-+			}
-+			break;
-+		case 'p':
-+			opts.peer_cid = parse_cid(optarg);
-+			break;
-+		case 'P':
-+			control_port = optarg;
-+			break;
-+		case '?':
-+		default:
-+			usage();
-+		}
-+	}
-+
-+	if (!control_port)
-+		usage();
-+	if (opts.mode == TEST_MODE_UNSET)
-+		usage();
-+	if (opts.peer_cid == VMADDR_CID_ANY)
-+		usage();
-+
-+	if (!control_host) {
-+		if (opts.mode != TEST_MODE_SERVER)
-+			usage();
-+		control_host = "0.0.0.0";
-+	}
-+
-+	control_init(control_host, control_port,
-+		     opts.mode == TEST_MODE_SERVER);
-+
-+	run_tests(test_cases, &opts);
-+
-+	control_cleanup();
-+
-+	return 0;
-+}
--- 
-2.25.1
+The ARM64 BPF JIT used to allocate the memory using module_alloc but it
+was not optimal because BPF programs and modules were sharing the 128 MB
+module region. This was fixed by
+91fc957c9b1d ("arm64/bpf: don't allocate BPF JIT programs in module memory"=
+)
+It created a dedicated 128 MB region set aside for BPF programs.
 
+But 128MB could get exhausted especially where PAGE_SIZE is 64KB - one
+page is needed per program. This restriction was removed by
+b89ddf4cca43 ("arm64/bpf: Remove 128MB limit for BPF JIT programs")
+
+So, currently BPF programs are using a full page from vmalloc (4 KB,
+16 KB, or 64 KB).
+This wastes memory and also causes iTLB pressure. Enabling bpf_prog_pack
+for ARM64 would fix it. I am doing some final tests and will send the patch=
+es in
+1-2 days.
+
+Thanks,
+Puranjay
 
