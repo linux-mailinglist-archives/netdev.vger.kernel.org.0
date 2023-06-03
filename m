@@ -1,60 +1,173 @@
-Return-Path: <netdev+bounces-7622-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7623-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id BFB10720E0A
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 08:08:45 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 405B9720E0C
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 08:11:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 01588281A74
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 06:08:44 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C68491C21222
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 06:11:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 12E2F7494;
-	Sat,  3 Jun 2023 06:08:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A3248477;
+	Sat,  3 Jun 2023 06:11:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12C69259A
-	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 06:08:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D427C433EF;
-	Sat,  3 Jun 2023 06:08:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685772520;
-	bh=6C5Ad8Vs2W1sQLRUdPV2kmQSXkQ/J9DS/IHQjyCI7zY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=IharSvm8QDTpSOxCcwfhSaUOg0a+3lJq+hKSr8VFk3VrfrETfKFzkX3hnPBBF+yD1
-	 M9JmcSdp0JBupvYS41VEuHRKZ/YPRdDPuCKkcdGjOvM/ihczcwhwxg4W3br2ReyKys
-	 aNAop1qjjB82xEyQ20kuKonCrwZ+XmUConKgk0vo+ZnomACYXXOD/Twp4l5RvNAHI5
-	 fCrGsiSVGT7ai1mCANvGQc52iLbkKhpHjtE+1qYzII6/B3CiHBYhdCm1FH4zjVvHdu
-	 dTqkor/Y1I4Rpt90PnjLoTVcsIchSQcOVmv81d8gEjLZlFRtn4MqTCigk/fOgjHmwb
-	 AOcSsNrdMNqIw==
-Date: Fri, 2 Jun 2023 23:08:39 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Amritha Nambiar <amritha.nambiar@intel.com>
-Cc: Simon Horman <simon.horman@corigine.com>, netdev@vger.kernel.org,
- davem@davemloft.net, sridhar.samudrala@intel.com
-Subject: Re: [net-next/RFC PATCH v1 4/4] netdev-genl: Add support for
- exposing napi info from netdev
-Message-ID: <20230602230839.64530697@kernel.org>
-In-Reply-To: <ZHoPBYx2lZJ+i1LC@corigine.com>
-References: <168564116688.7284.6877238631049679250.stgit@anambiarhost.jf.intel.com>
-	<168564136118.7284.18138054610456895287.stgit@anambiarhost.jf.intel.com>
-	<ZHoPBYx2lZJ+i1LC@corigine.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03EDE1FD5
+	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 06:11:50 +0000 (UTC)
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BA9E59
+	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 23:11:48 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3536BfMV067394;
+	Sat, 3 Jun 2023 01:11:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1685772701;
+	bh=46ufY7RJP02/DnH94XvIAsGEjVBPdTKfHvbrgpp8XcE=;
+	h=Date:CC:Subject:To:References:From:In-Reply-To;
+	b=nNSTD1jmfA0SwbBVMH/By2j9xPDxsN2tbm13qMQURZ9Yw0zmcWxofZFKLApjbJZCh
+	 SoY/pBPFqE+eip3a8wJR156H0IEgh9KokQSOZdcxlGc42UQVqT+0SIe2uF1M2dtms3
+	 X9Wchu6xfmEgsiufd/kSqLQvgbXnvMdOVVkOXSEo=
+Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
+	by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3536Bflr006641
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Sat, 3 Jun 2023 01:11:41 -0500
+Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Sat, 3
+ Jun 2023 01:11:40 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Sat, 3 Jun 2023 01:11:40 -0500
+Received: from [10.249.131.186] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+	by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3536Bbhq018402;
+	Sat, 3 Jun 2023 01:11:38 -0500
+Message-ID: <f92bb09a-9c08-0145-eb32-ae81d210586f@ti.com>
+Date: Sat, 3 Jun 2023 11:41:37 +0530
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+CC: <brett.creeley@amd.com>, <drivers@pensando.io>,
+        Nitya Sunkad
+	<nitya.sunkad@amd.com>, <s-vadapalli@ti.com>
+Subject: Re: [PATCH net-next] ionic: add support for ethtool extended stat
+ link_down_count
+Content-Language: en-US
+To: Shannon Nelson <shannon.nelson@amd.com>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+References: <20230602173252.35711-1-shannon.nelson@amd.com>
+From: Siddharth Vadapalli <s-vadapalli@ti.com>
+In-Reply-To: <20230602173252.35711-1-shannon.nelson@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Fri, 2 Jun 2023 17:47:17 +0200 Simon Horman wrote:
-> This feels like it should be two patches to me.
-> Though it is not something I feel strongly about.
 
-+1 I'd put the YAML and what's generated from it in one patch, 
-and the hand-written code in another.
+
+On 02-06-2023 23:02, Shannon Nelson wrote:
+> From: Nitya Sunkad <nitya.sunkad@amd.com>
+> 
+> Following the example of 9a0f830f8026 ("ethtool: linkstate: add a statistic
+> for PHY down events"), added support for link down events.
+
+s/added/add.
+
+> 
+> Added callback ionic_get_link_ext_stats to ionic_ethtool.c to support
+
+s/Added/Add.
+
+> link_down_count, a property of netdev that gets incremented every time
+> the device link goes down.
+
+Please use imperative mood when writing commit messages.
+Also, I think it is a good practice to Cc all the email IDs generated by
+./scripts/get_maintainer.pl.
+
+> 
+> Run ethtool -I <devname> to display the device link down count.
+> 
+> Signed-off-by: Nitya Sunkad <nitya.sunkad@amd.com>
+> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+
+Apart from my comments above, the patch looks good to me.
+
+Reviewed-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+
+> ---
+>  drivers/net/ethernet/pensando/ionic/ionic_ethtool.c | 9 +++++++++
+>  drivers/net/ethernet/pensando/ionic/ionic_lif.c     | 1 +
+>  drivers/net/ethernet/pensando/ionic/ionic_lif.h     | 1 +
+>  3 files changed, 11 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+> index 9b2b96fa36af..4c527a06e7d9 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+> @@ -104,6 +104,14 @@ static void ionic_get_regs(struct net_device *netdev, struct ethtool_regs *regs,
+>  	memcpy_fromio(p + offset, lif->ionic->idev.dev_cmd_regs->words, size);
+>  }
+>  
+> +static void ionic_get_link_ext_stats(struct net_device *netdev,
+> +				     struct ethtool_link_ext_stats *stats)
+> +{
+> +	struct ionic_lif *lif = netdev_priv(netdev);
+> +
+> +	stats->link_down_events = lif->link_down_count;
+> +}
+> +
+>  static int ionic_get_link_ksettings(struct net_device *netdev,
+>  				    struct ethtool_link_ksettings *ks)
+>  {
+> @@ -1074,6 +1082,7 @@ static const struct ethtool_ops ionic_ethtool_ops = {
+>  	.get_regs_len		= ionic_get_regs_len,
+>  	.get_regs		= ionic_get_regs,
+>  	.get_link		= ethtool_op_get_link,
+> +	.get_link_ext_stats	= ionic_get_link_ext_stats,
+>  	.get_link_ksettings	= ionic_get_link_ksettings,
+>  	.set_link_ksettings	= ionic_set_link_ksettings,
+>  	.get_coalesce		= ionic_get_coalesce,
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> index 957027e546b3..6ccc1ea91992 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> @@ -168,6 +168,7 @@ static void ionic_link_status_check(struct ionic_lif *lif)
+>  		}
+>  	} else {
+>  		if (netif_carrier_ok(netdev)) {
+> +			lif->link_down_count++;
+>  			netdev_info(netdev, "Link down\n");
+>  			netif_carrier_off(netdev);
+>  		}
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+> index c9c4c46d5a16..fd2ea670e7d8 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+> @@ -201,6 +201,7 @@ struct ionic_lif {
+>  	u64 hw_features;
+>  	bool registered;
+>  	u16 lif_type;
+> +	unsigned int link_down_count;
+>  	unsigned int nmcast;
+>  	unsigned int nucast;
+>  	unsigned int nvlans;
+
+-- 
+Regards,
+Siddharth.
 
