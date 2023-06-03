@@ -1,173 +1,150 @@
-Return-Path: <netdev+bounces-7623-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7624-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 405B9720E0C
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 08:11:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id AE14C720E14
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 08:17:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C68491C21222
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 06:11:50 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D1A8A1C212B8
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 06:17:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A3248477;
-	Sat,  3 Jun 2023 06:11:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E4955C98;
+	Sat,  3 Jun 2023 06:17:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03EDE1FD5
-	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 06:11:50 +0000 (UTC)
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BA9E59
-	for <netdev@vger.kernel.org>; Fri,  2 Jun 2023 23:11:48 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3536BfMV067394;
-	Sat, 3 Jun 2023 01:11:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1685772701;
-	bh=46ufY7RJP02/DnH94XvIAsGEjVBPdTKfHvbrgpp8XcE=;
-	h=Date:CC:Subject:To:References:From:In-Reply-To;
-	b=nNSTD1jmfA0SwbBVMH/By2j9xPDxsN2tbm13qMQURZ9Yw0zmcWxofZFKLApjbJZCh
-	 SoY/pBPFqE+eip3a8wJR156H0IEgh9KokQSOZdcxlGc42UQVqT+0SIe2uF1M2dtms3
-	 X9Wchu6xfmEgsiufd/kSqLQvgbXnvMdOVVkOXSEo=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-	by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3536Bflr006641
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Sat, 3 Jun 2023 01:11:41 -0500
-Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Sat, 3
- Jun 2023 01:11:40 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Sat, 3 Jun 2023 01:11:40 -0500
-Received: from [10.249.131.186] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-	by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3536Bbhq018402;
-	Sat, 3 Jun 2023 01:11:38 -0500
-Message-ID: <f92bb09a-9c08-0145-eb32-ae81d210586f@ti.com>
-Date: Sat, 3 Jun 2023 11:41:37 +0530
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57AE9847F
+	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 06:17:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C61AC433D2;
+	Sat,  3 Jun 2023 06:17:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685773074;
+	bh=GPNN/sqyg5NjDyqSyJLKgKnyIYY0cqzOmeAO64X/57g=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=noVM8XZwxGSJiWxLyOrROy5aXdxAFstWLy1e6I429cNpUVeEYga36y42TJ3UWtMmH
+	 W+xl+/uY0CxNImEJmJqDjp6MyBH0hk+QS+63e+oJ6As8Fitu3i5FDj3tQg4X3vHM2c
+	 jPRGQtJsMdrGIvYZPYbF5HkzSZBHB3XqMaVqlwvzCv02VIJi9t4n6X16plbb9qQwZ2
+	 S52/Icu9WxbSy2PVKWnl+mFRpaTW19iA1sgVRG+pLqe/5SD0T8n9NVt6b8wTc5tJOd
+	 0uRaPeFqtrnWw71ujN9tTk0R7G9Ky5jftFk9QIuZvOI7k76XO9KRbMNocCaKQh6Q3H
+	 XpsvU5LcWwcCw==
+Date: Fri, 2 Jun 2023 23:17:53 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Amritha Nambiar <amritha.nambiar@intel.com>
+Cc: netdev@vger.kernel.org, davem@davemloft.net, sridhar.samudrala@intel.com
+Subject: Re: [net-next/RFC PATCH v1 4/4] netdev-genl: Add support for
+ exposing napi info from netdev
+Message-ID: <20230602231753.37ec92b9@kernel.org>
+In-Reply-To: <168564136118.7284.18138054610456895287.stgit@anambiarhost.jf.intel.com>
+References: <168564116688.7284.6877238631049679250.stgit@anambiarhost.jf.intel.com>
+	<168564136118.7284.18138054610456895287.stgit@anambiarhost.jf.intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.2
-CC: <brett.creeley@amd.com>, <drivers@pensando.io>,
-        Nitya Sunkad
-	<nitya.sunkad@amd.com>, <s-vadapalli@ti.com>
-Subject: Re: [PATCH net-next] ionic: add support for ethtool extended stat
- link_down_count
-Content-Language: en-US
-To: Shannon Nelson <shannon.nelson@amd.com>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-References: <20230602173252.35711-1-shannon.nelson@amd.com>
-From: Siddharth Vadapalli <s-vadapalli@ti.com>
-In-Reply-To: <20230602173252.35711-1-shannon.nelson@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-
-
-On 02-06-2023 23:02, Shannon Nelson wrote:
-> From: Nitya Sunkad <nitya.sunkad@amd.com>
+On Thu, 01 Jun 2023 10:42:41 -0700 Amritha Nambiar wrote:
+> Add support in ynl/netdev.yaml for napi related information. The
+> netdev structure tracks all the napi instances and napi fields.
+> The napi instances and associated queue[s] can be retrieved this way.
 > 
-> Following the example of 9a0f830f8026 ("ethtool: linkstate: add a statistic
-> for PHY down events"), added support for link down events.
-
-s/added/add.
-
+> Refactored netdev-genl to support exposing napi<->queue[s] mapping
+> that is retained in a netdev.
 > 
-> Added callback ionic_get_link_ext_stats to ionic_ethtool.c to support
-
-s/Added/Add.
-
-> link_down_count, a property of netdev that gets incremented every time
-> the device link goes down.
-
-Please use imperative mood when writing commit messages.
-Also, I think it is a good practice to Cc all the email IDs generated by
-./scripts/get_maintainer.pl.
-
-> 
-> Run ethtool -I <devname> to display the device link down count.
-> 
-> Signed-off-by: Nitya Sunkad <nitya.sunkad@amd.com>
-> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
-
-Apart from my comments above, the patch looks good to me.
-
-Reviewed-by: Siddharth Vadapalli <s-vadapalli@ti.com>
-
+> Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
 > ---
->  drivers/net/ethernet/pensando/ionic/ionic_ethtool.c | 9 +++++++++
->  drivers/net/ethernet/pensando/ionic/ionic_lif.c     | 1 +
->  drivers/net/ethernet/pensando/ionic/ionic_lif.h     | 1 +
->  3 files changed, 11 insertions(+)
+>  Documentation/netlink/specs/netdev.yaml |   39 +++++
+>  include/uapi/linux/netdev.h             |    4 +
+>  net/core/netdev-genl.c                  |  239 ++++++++++++++++++++++++++-----
+>  tools/include/uapi/linux/netdev.h       |    4 +
+>  4 files changed, 247 insertions(+), 39 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-> index 9b2b96fa36af..4c527a06e7d9 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-> @@ -104,6 +104,14 @@ static void ionic_get_regs(struct net_device *netdev, struct ethtool_regs *regs,
->  	memcpy_fromio(p + offset, lif->ionic->idev.dev_cmd_regs->words, size);
->  }
->  
-> +static void ionic_get_link_ext_stats(struct net_device *netdev,
-> +				     struct ethtool_link_ext_stats *stats)
-> +{
-> +	struct ionic_lif *lif = netdev_priv(netdev);
-> +
-> +	stats->link_down_events = lif->link_down_count;
-> +}
-> +
->  static int ionic_get_link_ksettings(struct net_device *netdev,
->  				    struct ethtool_link_ksettings *ks)
->  {
-> @@ -1074,6 +1082,7 @@ static const struct ethtool_ops ionic_ethtool_ops = {
->  	.get_regs_len		= ionic_get_regs_len,
->  	.get_regs		= ionic_get_regs,
->  	.get_link		= ethtool_op_get_link,
-> +	.get_link_ext_stats	= ionic_get_link_ext_stats,
->  	.get_link_ksettings	= ionic_get_link_ksettings,
->  	.set_link_ksettings	= ionic_set_link_ksettings,
->  	.get_coalesce		= ionic_get_coalesce,
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> index 957027e546b3..6ccc1ea91992 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> @@ -168,6 +168,7 @@ static void ionic_link_status_check(struct ionic_lif *lif)
->  		}
->  	} else {
->  		if (netif_carrier_ok(netdev)) {
-> +			lif->link_down_count++;
->  			netdev_info(netdev, "Link down\n");
->  			netif_carrier_off(netdev);
->  		}
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-> index c9c4c46d5a16..fd2ea670e7d8 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-> @@ -201,6 +201,7 @@ struct ionic_lif {
->  	u64 hw_features;
->  	bool registered;
->  	u16 lif_type;
-> +	unsigned int link_down_count;
->  	unsigned int nmcast;
->  	unsigned int nucast;
->  	unsigned int nvlans;
+> diff --git a/Documentation/netlink/specs/netdev.yaml b/Documentation/netlink/specs/netdev.yaml
+> index b99e7ffef7a1..8d0edb529563 100644
+> --- a/Documentation/netlink/specs/netdev.yaml
+> +++ b/Documentation/netlink/specs/netdev.yaml
+> @@ -62,6 +62,44 @@ attribute-sets:
+>          type: u64
+>          enum: xdp-act
+>          enum-as-flags: true
+> +      -
+> +        name: napi-info
+> +        doc: napi information such as napi-id, napi queues etc.
+> +        type: nest
+> +        multi-attr: true
 
--- 
-Regards,
-Siddharth.
+Let's make a new attr space for the napi info command.
+We don't reuse much of the attributes, and as the commands 
+grow stuffing all attrs into one space makes finding stuff 
+harder.
+
+> +        nested-attributes: dev-napi-info
+
+And what's inside this nest should also be a separate attr space.
+
+
+> +      -
+> +        name: napi-id
+> +        doc: napi id
+> +        type: u32
+> +      -
+> +        name: rx-queues
+> +        doc: list of rx queues associated with a napi
+> +        type: u16
+
+Make it u32, at the uAPI level we're tried to the width of fields, and
+u16 ends up being the same size as u32 "on the wire" due to padding.
+
+> +        multi-attr: true
+> +      -
+> +        name: tx-queues
+> +        doc: list of tx queues associated with a napi
+> +        type: u16
+> +        multi-attr: true
+
+
+> +  -
+> +    name: dev-napi-info
+> +    subset-of: dev
+
+Yeah, this shouldn't be a subset just a full-on separate attr space.
+The handshake family may be a good example to look at, it's the biggest
+so far written with the new rules in mind. 
+
+> +    attributes:
+> +      -
+> +        name: napi-id
+> +        doc: napi id
+> +        type: u32
+> +      -
+> +        name: rx-queues
+> +        doc: list rx of queues associated with a napi
+> +        type: u16
+> +        multi-attr: true
+> +      -
+> +        name: tx-queues
+> +        doc: list tx of queues associated with a napi
+> +        type: u16
+> +        multi-attr: true
+>  
+>  operations:
+>    list:
+> @@ -77,6 +115,7 @@ operations:
+>            attributes:
+>              - ifindex
+>              - xdp-features
+> +            - napi-info
+
+Aaah, separate command, please. Let's not stuff all the information
+into a single command like we did for rtnl.
+
+>        dump:
+>          reply: *dev-all
+>      -
 
