@@ -1,51 +1,51 @@
-Return-Path: <netdev+bounces-7693-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7694-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 52830721246
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 22:06:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5851C72124C
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 22:06:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0D74F2819C8
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 20:06:26 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D09D51C20A28
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 20:06:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 18093FBEF;
-	Sat,  3 Jun 2023 20:05:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7F4B0FBF3;
+	Sat,  3 Jun 2023 20:05:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A92EE57E
-	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 20:05:38 +0000 (UTC)
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F036E66;
-	Sat,  3 Jun 2023 13:05:19 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7238DFBE4
+	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 20:05:54 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A7E9197;
+	Sat,  3 Jun 2023 13:05:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1685822719; x=1717358719;
+  t=1685822732; x=1717358732;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=n3ILkFBfh9UZ4UHKI4Ru752YIb0DQoRd9ssi4xgvZUI=;
-  b=NR1/JIZuEV4DRD8CVcV+WnBgMJ67Xh4S/pzh7/ff6ukgvItyieJhswXs
-   AJXsgfU3eJRjp43GcORJBVuU6qMIKa2BIu9/RPtfFMoMlB7CJm9pEl0sb
-   aDdSaq0zbuI7cQ+egJubF8j+VroQENKRd0ZWPTCtjbg7njHWaIELSci17
-   8tw/pHcqgGtqhxE64jIuM2N1t0M/713/jvKGgbNAnYD0/nH507R3CN512
-   xanBE59jIijyt9aTl+yRNgJ9ZBxJ6RJrb2pDD30fZc0Z6QECx4bK/GpLe
-   iuOdy5ERuIVWzyeFeCjSDJyZzWcWQqzQekCu2xP3A+jkZ/XRO9R7WyEz9
-   w==;
+  bh=OYccIHMXVXjL1b9j+xri9l8U2sGWx1pY2psEi/CR1mI=;
+  b=mbGMJX5Ikdmx2ogCubs+/kzPP2upI0Uy/MzDLx0hknLtl/k5WLelii/T
+   mDiuV0N6N7QaT+lsgxJSS4XkEBLHHTgnpAbdSu2nCLxeaGFi2pOWx6Xhy
+   QjfCbNBD/wXlkIJUQ4PM3tiZKPU90KAQjOCen/MxYkZUHVYZCLIZ4iJ1x
+   mpdGO6wf+1jsv4fEf8axErnusR1lkOtHlg0CpnuvejsDf4ZgDx8u7Z21N
+   hNcU896vmJGfBvRITClUuTUlIuZ+3AIvml0SRfFTJvhjK+kD5b8qgCsBq
+   yQsnU1J9PnfYGLTO5ISVwJv88PI4AxdQrempBWTNR24hF0T5HWmpa/OXI
+   Q==;
 X-IronPort-AV: E=Sophos;i="6.00,216,1681196400"; 
-   d="scan'208";a="228307953"
+   d="scan'208";a="218711253"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Jun 2023 13:05:18 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Jun 2023 13:05:30 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Sat, 3 Jun 2023 13:05:17 -0700
+ 15.1.2507.21; Sat, 3 Jun 2023 13:05:30 -0700
 Received: from che-lt-i67070.amer.actel.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Sat, 3 Jun 2023 13:05:05 -0700
+ 15.1.2507.21 via Frontend Transport; Sat, 3 Jun 2023 13:05:18 -0700
 From: Varshini Rajendran <varshini.rajendran@microchip.com>
 To: <tglx@linutronix.de>, <maz@kernel.org>, <robh+dt@kernel.org>,
 	<krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
@@ -64,9 +64,9 @@ CC: <Hari.PrasathGE@microchip.com>, <cristian.birsan@microchip.com>,
 	<durai.manickamkr@microchip.com>, <manikandan.m@microchip.com>,
 	<dharma.b@microchip.com>, <nayabbasha.sayed@microchip.com>,
 	<balakrishnan.s@microchip.com>
-Subject: [PATCH 10/21] ARM: at91: Kconfig: add config flag for SAM9X7 SoC
-Date: Sun, 4 Jun 2023 01:32:32 +0530
-Message-ID: <20230603200243.243878-11-varshini.rajendran@microchip.com>
+Subject: [PATCH 11/21] ARM: at91: add support in soc driver for new sam9x7
+Date: Sun, 4 Jun 2023 01:32:33 +0530
+Message-ID: <20230603200243.243878-12-varshini.rajendran@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230603200243.243878-1-varshini.rajendran@microchip.com>
 References: <20230603200243.243878-1-varshini.rajendran@microchip.com>
@@ -85,56 +85,75 @@ X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add config flag for sam9x7 SoC
+Add support for SAM9X7 SoC in the soc driver
 
 Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
 ---
- arch/arm/mach-at91/Kconfig | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+ drivers/soc/atmel/soc.c | 23 +++++++++++++++++++++++
+ drivers/soc/atmel/soc.h |  9 +++++++++
+ 2 files changed, 32 insertions(+)
 
-diff --git a/arch/arm/mach-at91/Kconfig b/arch/arm/mach-at91/Kconfig
-index 3dd9e718661b..4463afd7298a 100644
---- a/arch/arm/mach-at91/Kconfig
-+++ b/arch/arm/mach-at91/Kconfig
-@@ -143,11 +143,28 @@ config SOC_SAM9X60
- 	help
- 	  Select this if you are using Microchip's SAM9X60 SoC
+diff --git a/drivers/soc/atmel/soc.c b/drivers/soc/atmel/soc.c
+index cc9a3e107479..cae3452cbc60 100644
+--- a/drivers/soc/atmel/soc.c
++++ b/drivers/soc/atmel/soc.c
+@@ -101,6 +101,29 @@ static const struct at91_soc socs[] __initconst = {
+ 		 AT91_CIDR_VERSION_MASK, SAM9X60_D6K_EXID_MATCH,
+ 		 "sam9x60 8MiB SDRAM SiP", "sam9x60"),
+ #endif
++#ifdef CONFIG_SOC_SAM9X7
++	AT91_SOC(SAM9X7_CIDR_MATCH, AT91_CIDR_MATCH_MASK,
++		 AT91_CIDR_VERSION_MASK, SAM9X75_EXID_MATCH,
++		 "sam9x75", "sam9x7"),
++	AT91_SOC(SAM9X7_CIDR_MATCH, AT91_CIDR_MATCH_MASK,
++		 AT91_CIDR_VERSION_MASK, SAM9X72_EXID_MATCH,
++		 "sam9x72", "sam9x7"),
++	AT91_SOC(SAM9X7_CIDR_MATCH, AT91_CIDR_MATCH_MASK,
++		 AT91_CIDR_VERSION_MASK, SAM9X70_EXID_MATCH,
++		 "sam9x70", "sam9x7"),
++	AT91_SOC(SAM9X7_CIDR_MATCH, SAM9X75_D1G_EXID_MATCH,
++		 AT91_CIDR_VERSION_MASK, SAM9X75_EXID_MATCH,
++		 "sam9x75 1Gb DDR3L SiP ", "sam9x7"),
++	AT91_SOC(SAM9X7_CIDR_MATCH, SAM9X75_D5M_EXID_MATCH,
++		 AT91_CIDR_VERSION_MASK, SAM9X75_EXID_MATCH,
++		 "sam9x75 512Mb DDR2 SiP", "sam9x7"),
++	AT91_SOC(SAM9X7_CIDR_MATCH, SAM9X75_D1M_EXID_MATCH,
++		 AT91_CIDR_VERSION_MASK, SAM9X75_EXID_MATCH,
++		 "sam9x75 128Mb DDR2 SiP", "sam9x7"),
++	AT91_SOC(SAM9X7_CIDR_MATCH, SAM9X75_D2G_EXID_MATCH,
++		 AT91_CIDR_VERSION_MASK, SAM9X75_EXID_MATCH,
++		 "sam9x75 2Gb DDR3L SiP", "sam9x7"),
++#endif
+ #ifdef CONFIG_SOC_SAMA5
+ 	AT91_SOC(SAMA5D2_CIDR_MATCH, AT91_CIDR_MATCH_MASK,
+ 		 AT91_CIDR_VERSION_MASK, SAMA5D21CU_EXID_MATCH,
+diff --git a/drivers/soc/atmel/soc.h b/drivers/soc/atmel/soc.h
+index 7a9f47ce85fb..26dd26b4f179 100644
+--- a/drivers/soc/atmel/soc.h
++++ b/drivers/soc/atmel/soc.h
+@@ -45,6 +45,7 @@ at91_soc_init(const struct at91_soc *socs);
+ #define AT91SAM9N12_CIDR_MATCH		0x019a07a0
+ #define SAM9X60_CIDR_MATCH		0x019b35a0
+ #define SAMA7G5_CIDR_MATCH		0x00162100
++#define SAM9X7_CIDR_MATCH		0x09750020
  
-+config SOC_SAM9X7
-+	bool "SAM9X7"
-+	depends on ARCH_MULTI_V5
-+	select ATMEL_AIC5_IRQ
-+	select ATMEL_PM if PM
-+	select ATMEL_SDRAMC
-+	select CPU_ARM926T
-+	select HAVE_AT91_USB_CLK
-+	select HAVE_AT91_GENERATED_CLK
-+	select HAVE_AT91_SAM9X60_PLL
-+	select MEMORY
-+	select PINCTRL_AT91
-+	select SOC_SAM_V4_V5
-+	select SRAM if PM
-+	help
-+	  Select this if you are using Microchip's SAM9X7 SoC
+ #define AT91SAM9M11_EXID_MATCH		0x00000001
+ #define AT91SAM9M10_EXID_MATCH		0x00000002
+@@ -74,6 +75,14 @@ at91_soc_init(const struct at91_soc *socs);
+ #define SAMA7G54_D2G_EXID_MATCH		0x00000020
+ #define SAMA7G54_D4G_EXID_MATCH		0x00000028
+ 
++#define SAM9X75_EXID_MATCH		0x00000000
++#define SAM9X72_EXID_MATCH		0x00000004
++#define SAM9X70_EXID_MATCH		0x00000005
++#define SAM9X75_D1G_EXID_MATCH		0x00000001
++#define SAM9X75_D5M_EXID_MATCH		0x00000002
++#define SAM9X75_D1M_EXID_MATCH		0x00000003
++#define SAM9X75_D2G_EXID_MATCH		0x00000006
 +
- comment "Clocksource driver selection"
- 
- config ATMEL_CLOCKSOURCE_PIT
- 	bool "Periodic Interval Timer (PIT) support"
--	depends on SOC_AT91SAM9 || SOC_SAM9X60 || SOC_SAMA5
-+	depends on SOC_AT91SAM9 || SOC_SAM9X60 || SOC_SAM9X7 || SOC_SAMA5
- 	default SOC_AT91SAM9 || SOC_SAMA5
- 	select ATMEL_PIT
- 	help
-@@ -157,7 +174,7 @@ config ATMEL_CLOCKSOURCE_PIT
- 
- config ATMEL_CLOCKSOURCE_TCB
- 	bool "Timer Counter Blocks (TCB) support"
--	default SOC_AT91RM9200 || SOC_AT91SAM9 || SOC_SAM9X60 || SOC_SAMA5
-+	default SOC_AT91RM9200 || SOC_AT91SAM9 || SOC_SAM9X60 || SOC_SAM9X7 || SOC_SAMA5
- 	select ATMEL_TCB_CLKSRC
- 	help
- 	  Select this to get a high precision clocksource based on a
+ #define AT91SAM9XE128_CIDR_MATCH	0x329973a0
+ #define AT91SAM9XE256_CIDR_MATCH	0x329a93a0
+ #define AT91SAM9XE512_CIDR_MATCH	0x329aa3a0
 -- 
 2.25.1
 
