@@ -1,36 +1,36 @@
-Return-Path: <netdev+bounces-7727-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7728-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D7B2272132A
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 23:23:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id B23B1721334
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 23:36:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7F72E2819A3
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 21:23:34 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 62602281734
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 21:36:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B6EC1101E5;
-	Sat,  3 Jun 2023 21:23:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 636E3101EC;
+	Sat,  3 Jun 2023 21:36:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FAF8C2E9
-	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 21:23:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C63BCC433EF;
-	Sat,  3 Jun 2023 21:23:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0213E568
+	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 21:36:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30E18C433EF;
+	Sat,  3 Jun 2023 21:36:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685827410;
-	bh=dSIm5Wvz5LRZtbhpsX9D9prPNXaAd8xtjahnGUMHopU=;
+	s=k20201202; t=1685828169;
+	bh=yIeiVTnh/Ift8tK1dxozK/NMJ5hgTSuFRUDlnSNC+iw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=VLatQoL/jRjSCgyl5b6BC3oACHLf7Ne19JoLUCLcmVYCh5lmpSvW2X4N97aNtGxnt
-	 h0O1DQrE2jrnVb5chXwPD7yR96d8YLm/bG+sGFdvjarcGdwklRr8SRDw0UXVe/vuL7
-	 D4g5AHDPWDIK5vX88qYR5oFodDzV8eDvc/TQ8SJ7pTOv80vS6VTRJm4Q10k56xFl/4
-	 hjHWsUkBoitHOlxk8GWQA7Z2MlIHmdj/Jj9oQsVrylrPPd780F6OcrM+UjGjfgRzPX
-	 Sk82NubtpCij7kjdzOBBZJiRnCQBA7U9oDz/wdriLjUEamZAoSjJyHtdBmsUmZvtII
-	 1z5kwLAbipwmw==
-Date: Sat, 3 Jun 2023 22:23:21 +0100
+	b=pOy4jZdpnPUzdeDQ7IaQ5f5zeZo9Lf3IzXSm+kxfh/WmFkrYRIazkCNWIfC1ZWTSN
+	 O4DjJZl2rVtl4fCfs3yheut6STzxMMxbmP1a56eOaAcxxciiImZfKqKxsaEe38vqqf
+	 7KHKQufS5oLsIz6YMp6iuTVTdCUYCl0iJldho5jQ20QqaUHQVlyu7GsgjIVs4DGSc3
+	 1eIVjb4QikDkT8bbaGkcLu+QjTd50ICfsjW2CFAYhEU+CXckf39hyll2iSLHCotZLI
+	 jWjfSZQyXcgTFSbrR0pxKiiTlc26TkcZ/XmuISCS16f4592A9QdTt/+CcSvYD9efHf
+	 tdIVaE5ezoD1g==
+Date: Sat, 3 Jun 2023 22:35:59 +0100
 From: Conor Dooley <conor@kernel.org>
 To: Varshini Rajendran <varshini.rajendran@microchip.com>
 Cc: tglx@linutronix.de, maz@kernel.org, robh+dt@kernel.org,
@@ -50,12 +50,10 @@ Cc: tglx@linutronix.de, maz@kernel.org, robh+dt@kernel.org,
 	durai.manickamkr@microchip.com, manikandan.m@microchip.com,
 	dharma.b@microchip.com, nayabbasha.sayed@microchip.com,
 	balakrishnan.s@microchip.com
-Subject: Re: [PATCH 15/21] dt-bindings: irqchip/atmel-aic5: Add support for
- sam9x7 aic
-Message-ID: <20230603-sanded-blunderer-73cdd7c290c1@spud>
+Subject: Re: [PATCH 04/21] ARM: dts: at91: sam9x7: add device tree for soc
+Message-ID: <20230603-resource-decode-47167e7e199a@spud>
 References: <20230603200243.243878-1-varshini.rajendran@microchip.com>
- <20230603200243.243878-16-varshini.rajendran@microchip.com>
- <20230603-fervor-kilowatt-662c84b94853@spud>
+ <20230603200243.243878-5-varshini.rajendran@microchip.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -63,75 +61,203 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="5+h50twaFI8/uBg6"
+	protocol="application/pgp-signature"; boundary="DOAMUR2naNx1jPwl"
 Content-Disposition: inline
-In-Reply-To: <20230603-fervor-kilowatt-662c84b94853@spud>
+In-Reply-To: <20230603200243.243878-5-varshini.rajendran@microchip.com>
 
 
---5+h50twaFI8/uBg6
+--DOAMUR2naNx1jPwl
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Jun 03, 2023 at 10:19:50PM +0100, Conor Dooley wrote:
-> Hey Varshini,
+Hey Varshini,
+
+On Sun, Jun 04, 2023 at 01:32:26AM +0530, Varshini Rajendran wrote:
+> Add device tree file for SAM9X7 SoC family
 >=20
-> On Sun, Jun 04, 2023 at 01:32:37AM +0530, Varshini Rajendran wrote:
-> > Document the support added for the Advanced interrupt controller(AIC)
-> > chip in the sam9x7 soc family
+> Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
+> [nicolas.ferre@microchip.com: add support for gmac to sam9x7]
+
+Please just replace these [] things with a Co-developed-by.
+
+> Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+> [balamanikandan.gunasundar@microchip.com: Add device node csi2host and is=
+c]
+> Signed-off-by: Balamanikandan Gunasundar <balamanikandan.gunasundar@micro=
+chip.com>
+> ---
+>  arch/arm/boot/dts/sam9x7.dtsi | 1333 +++++++++++++++++++++++++++++++++
+>  1 file changed, 1333 insertions(+)
+>  create mode 100644 arch/arm/boot/dts/sam9x7.dtsi
 >=20
-> Please do not add new family based compatibles, but rather use per-soc
-> compatibles instead.
+> diff --git a/arch/arm/boot/dts/sam9x7.dtsi b/arch/arm/boot/dts/sam9x7.dtsi
+> new file mode 100644
+> index 000000000000..f98160182fe6
+> --- /dev/null
+> +++ b/arch/arm/boot/dts/sam9x7.dtsi
+> @@ -0,0 +1,1333 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + * sam9x7.dtsi - Device Tree Include file for Microchip SAM9X7 SoC family
+> + *
+> + * Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries
+> + *
+> + * Author: Varshini Rajendran <varshini.rajendran@microchip.com>
+> + */
+> +
+> +#include <dt-bindings/clock/at91.h>
+> +#include <dt-bindings/dma/at91.h>
+> +#include <dt-bindings/gpio/gpio.h>
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +#include <dt-bindings/interrupt-controller/irq.h>
+> +#include <dt-bindings/mfd/atmel-flexcom.h>
+> +#include <dt-bindings/pinctrl/at91.h>
+> +
+> +/ {
+> +	#address-cells =3D <1>;
+> +	#size-cells =3D <1>;
+> +	model =3D "Microchip SAM9X7 SoC";
+> +	compatible =3D "microchip,sam9x7";
 
-These things leave me penally confused. Afaiu, sam9x60 is a particular
-SoC. sam9x7 is actually a family, containing sam9x70, sam9x72 and
-sam9x75. It would appear to me that each should have its own compatible,
-no?
+Unless I am mistaken, sam9x7 is a family, not an soc. I'll have to
+defer to Nicolas or someone that actually properly understands the
+naming scheme here though! It's certainly odd to use sam9x7 here, when
+the file is filled with references to sam9x60, which is a soc-specific
+compatible.
 
->=20
-> Cheers,
-> Conor.
->=20
-> >=20
-> > Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
-> > ---
-> >  .../devicetree/bindings/interrupt-controller/atmel,aic.txt      | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/interrupt-controller/atm=
-el,aic.txt b/Documentation/devicetree/bindings/interrupt-controller/atmel,a=
-ic.txt
-> > index 7079d44bf3ba..2c267a66a3ea 100644
-> > --- a/Documentation/devicetree/bindings/interrupt-controller/atmel,aic.=
-txt
-> > +++ b/Documentation/devicetree/bindings/interrupt-controller/atmel,aic.=
-txt
-> > @@ -4,7 +4,7 @@ Required properties:
-> >  - compatible: Should be:
-> >      - "atmel,<chip>-aic" where  <chip> can be "at91rm9200", "sama5d2",
-> >        "sama5d3" or "sama5d4"
-> > -    - "microchip,<chip>-aic" where <chip> can be "sam9x60"
-> > +    - "microchip,<chip>-aic" where <chip> can be "sam9x60", "sam9x7"
-> > =20
-> >  - interrupt-controller: Identifies the node as an interrupt controller.
-> >  - #interrupt-cells: The number of cells to define the interrupts. It s=
-hould be 3.
-> > --=20
-> > 2.25.1
-> >
+Either way, the compatible is undocumented as far as I can tell and I
+assume that this was not actually tested, since there doesn't appear
+to be any dts including this file and therefore no way to build it?
 
+> +	interrupt-parent =3D <&aic>;
+> +
+> +	aliases {
+> +		serial0 =3D &dbgu;
+> +		gpio0 =3D &pioA;
+> +		gpio1 =3D &pioB;
+> +		gpio2 =3D &pioC;
+> +		gpio3 =3D &pioD;
+> +	};
+> +
+> +	cpus {
+> +		#address-cells =3D <1>;
+> +		#size-cells =3D <0>;
+> +
+> +		cpu@0 {
+> +			compatible =3D "arm,arm926ej-s";
+> +			device_type =3D "cpu";
+> +			reg =3D <0>;
+> +		};
+> +	};
+> +
+> +	clocks {
+> +		slow_xtal: slow_xtal {
+> +			compatible =3D "fixed-clock";
+> +			#clock-cells =3D <0>;
+> +		};
+> +
+> +		main_xtal: main_xtal {
+> +			compatible =3D "fixed-clock";
+> +			#clock-cells =3D <0>;
+> +		};
+> +	};
+> +
+> +	sram: sram@300000 {
+> +		compatible =3D "mmio-sram";
+> +		reg =3D <0x300000 0x10000>;
+> +		#address-cells =3D <1>;
+> +		#size-cells =3D <1>;
+> +		ranges =3D <0 0x300000 0x10000>;
+> +	};
+> +
+> +	ahb {
+> +		compatible =3D "simple-bus";
+> +		#address-cells =3D <1>;
+> +		#size-cells =3D <1>;
+> +		ranges;
+> +
+> +		usb0: gadget@500000 {
+> +			compatible =3D "microchip,sam9x60-udc";
 
+This is not a sam9x60, so it should not only have that SoC's compatible
+here. Ideally, "microchip,sam9x7{0,2,5}" with the sam9x60 one as a
+fallback.
 
---5+h50twaFI8/uBg6
+> +			reg =3D <0x500000 0x100000>,
+> +			      <0xf803c000 0x400>;
+> +			#address-cells =3D <1>;
+> +			#size-cells =3D <0>;
+> +			interrupts =3D <23 IRQ_TYPE_LEVEL_HIGH 2>;
+> +			clocks =3D <&pmc PMC_TYPE_PERIPHERAL 23>, <&pmc PMC_TYPE_CORE PMC_UTM=
+I>;
+> +			clock-names =3D "pclk", "hclk";
+> +			assigned-clocks =3D <&pmc PMC_TYPE_CORE PMC_UTMI>;
+> +			assigned-clock-rates =3D <480000000>;
+> +			status =3D "disabled";
+> +		};
+> +
+> +		ohci0: usb@600000 {
+> +			compatible =3D "atmel,at91rm9200-ohci", "usb-ohci";
+
+Ditto here.
+
+> +			reg =3D <0x600000 0x100000>;
+> +			interrupts =3D <22 IRQ_TYPE_LEVEL_HIGH 2>;
+> +			clocks =3D <&pmc PMC_TYPE_PERIPHERAL 22>, <&pmc PMC_TYPE_PERIPHERAL 2=
+2>, <&pmc PMC_TYPE_SYSTEM 6>;
+> +			clock-names =3D "ohci_clk", "hclk", "uhpck";
+> +			status =3D "disabled";
+> +		};
+> +
+> +		ehci0: usb@700000 {
+> +			compatible =3D "atmel,at91sam9g45-ehci", "usb-ehci";
+
+And here.
+
+> +			reg =3D <0x700000 0x100000>;
+> +			interrupts =3D <22 IRQ_TYPE_LEVEL_HIGH 2>;
+> +			clocks =3D <&pmc PMC_TYPE_CORE PMC_UTMI>, <&pmc PMC_TYPE_PERIPHERAL 2=
+2>;
+> +			clock-names =3D "usb_clk", "ehci_clk";
+> +			assigned-clocks =3D <&pmc PMC_TYPE_CORE PMC_UTMI>;
+> +			assigned-clock-rates =3D <480000000>;
+> +			status =3D "disabled";
+> +		};
+> +
+> +		sdmmc0: sdio-host@80000000 {
+> +			compatible =3D "microchip,sam9x60-sdhci";
+
+And here.
+
+> +			reg =3D <0x80000000 0x300>;
+> +			interrupts =3D <12 IRQ_TYPE_LEVEL_HIGH 0>;
+> +			clocks =3D <&pmc PMC_TYPE_PERIPHERAL 12>, <&pmc PMC_TYPE_GCK 12>;
+> +			clock-names =3D "hclock", "multclk";
+> +			assigned-clocks =3D <&pmc PMC_TYPE_GCK 12>;
+> +			assigned-clock-rates =3D <100000000>;
+> +			status =3D "disabled";
+> +		};
+> +
+> +		sdmmc1: sdio-host@90000000 {
+> +			compatible =3D "microchip,sam9x60-sdhci";
+
+There's no point me typing it every time, but ditto the whole way
+through this file ;)
+
+Cheers,
+Conor.
+
+--DOAMUR2naNx1jPwl
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZHuvSQAKCRB4tDGHoIJi
-0nQIAQCdCq0rnVwR27l81/lR1+KVZHZ2Pax5fjYvVUG5dr0aWQEA0SNTjHs2HGgK
-8L0e/r5CdXbUHSFnJSvMJ1FSh638bwc=
-=UztW
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZHuyPwAKCRB4tDGHoIJi
+0hSgAP9MoJHwyaSHta2fqHpzmQVjWJYXHIJ8IYUrjnHVS9xzdwD/SDyZtvGEuEbB
+aul/eSJSrczxyawcSZXHv/xvMzCmVws=
+=60V/
 -----END PGP SIGNATURE-----
 
---5+h50twaFI8/uBg6--
+--DOAMUR2naNx1jPwl--
 
