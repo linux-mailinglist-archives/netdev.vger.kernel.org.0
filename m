@@ -1,38 +1,38 @@
-Return-Path: <netdev+bounces-7626-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7627-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 263A1720E1B
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 08:30:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 56D4C720E1C
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 08:30:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6330B1C212AF
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 06:30:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B79E11C20968
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 06:30:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2F432EA0;
-	Sat,  3 Jun 2023 06:30:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 06B2F8494;
+	Sat,  3 Jun 2023 06:30:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B90EC132
-	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 06:30:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8D116C4339B;
-	Sat,  3 Jun 2023 06:30:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9D2AAD5C
+	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 06:30:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BD5DEC433A0;
+	Sat,  3 Jun 2023 06:30:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685773822;
-	bh=f0TtfCWpq+9yY6ha+jgh4kFkwXkoZ55oHOxLugenbf4=;
+	s=k20201202; t=1685773824;
+	bh=l20n6y1TiLpCpNzJruuHjBjRbNVyJ/3PDd+K9umTlmY=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=CHLC7RaT+1nXGQ7A19oJ0Ij1e86yBUXMsFh79ihp1mTaIG0ft/trIoOD65KKHJqZS
-	 +4NQGwk2gxVwXXo/MZs6K6NvdZ4nHtzX7R+yD0rBiKjUDGy1tPwWXRVNcFWH59y5s1
-	 miWQ3Cl2ehqiwZ1XLbn2w5LTA4zTY9u/YRwyOoQV8cjHk+q55cXEFE5Pgm0Rn/vtFx
-	 1mzG3dzYFTDLw1lMIIEpEGUgdWnslTOLPxfQCrCjtxLs/QyTFcJef+TjktRHOMabTu
-	 FjX7X0C2mzYCrwRdGsSMCOtUgsImE7jyopWHOnc+5GBc81p1KyPndQV26C3pdZWewI
-	 F6S6+R84+fdPw==
+	b=buXX6OOYebi+/wjsT5y4xiG3f+tP2JZzatemn2Cnx/3N1lYl68cJelVtoahiUemgg
+	 jd7G3AJ8jObZl5ICUfff2p6AG0vt/odqA6TwpgSpJ04CMZxdT9F+W/ylyjTkB6B8Ra
+	 P4iE7Qu8vf6dCc7x1MOAlqsUxryqwVqlJmN3sgb4gISJf6c5N1jID/19NSxUbej2Ji
+	 qxrNeU7MoufKZnX7tWp3XQUlHjhEiBpIriZoPxl56X4DhsyphWXeLFg1q9gspmCCwC
+	 ASY0GNcHdxWCbmFg5+ETgvbWfqcMsJ8Ur6wTWOsds9AYLUWqnq3jVecmlXlmV5gM21
+	 ACN4Bpam07UMQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6AC73E49FA9;
-	Sat,  3 Jun 2023 06:30:22 +0000 (UTC)
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A627AC395E0;
+	Sat,  3 Jun 2023 06:30:24 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -41,39 +41,57 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] net/ipv6: skip_notify_on_dev_down fix
+Subject: Re: [PATCH net-next 00/10] tools: ynl-gen: dust off the user space code
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168577382243.1168.3283542518432893640.git-patchwork-notify@kernel.org>
-Date: Sat, 03 Jun 2023 06:30:22 +0000
-References: <20230601160445.1480257-1-edumazet@google.com>
-In-Reply-To: <20230601160445.1480257-1-edumazet@google.com>
-To: Eric Dumazet <edumazet@google.com>
-Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
- netdev@vger.kernel.org, dsahern@kernel.org, matthieu.baerts@tessares.net,
- eric.dumazet@gmail.com
+ <168577382467.1168.8506596151079358044.git-patchwork-notify@kernel.org>
+Date: Sat, 03 Jun 2023 06:30:24 +0000
+References: <20230602023548.463441-1-kuba@kernel.org>
+In-Reply-To: <20230602023548.463441-1-kuba@kernel.org>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+ pabeni@redhat.com
 
 Hello:
 
-This series was applied to netdev/net.git (main)
+This series was applied to netdev/net-next.git (main)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu,  1 Jun 2023 16:04:43 +0000 you wrote:
-> While reviewing Matthieu Baerts recent patch [1], I found it copied/pasted
-> an existing bug around skip_notify_on_dev_down.
+On Thu,  1 Jun 2023 19:35:38 -0700 you wrote:
+> Every now and then I wish I finished the user space part of
+> the netlink specs, Python scripts kind of stole the show but
+> C is useful for selftests and stuff which needs to be fast.
+> Recently someone asked me how to access devlink and ethtool
+> from C++ which pushed me over the edge.
 > 
-> First patch is a stable candidate, and second one can simply land
-> in net tree.
-> 
-> https://lore.kernel.org/lkml/20230601-net-next-skip_print_link_becomes_ready-v1-1-c13e64c14095@tessares.net/
+> Fix things which bit rotted and finish notification handling.
+> This series contains code gen changes only. I'll follow up
+> with the fixed component, samples and docs as soon as it's
+> merged.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/2] net/ipv6: fix bool/int mismatch for skip_notify_on_dev_down
-    https://git.kernel.org/netdev/net/c/edf2e1d2019b
-  - [net,2/2] net/ipv6: convert skip_notify_on_dev_down sysctl to u8
-    https://git.kernel.org/netdev/net/c/ef62c0ae6db1
+  - [net-next,01/10] tools: ynl-gen: add extra headers for user space
+    https://git.kernel.org/netdev/net-next/c/91dfaef243cd
+  - [net-next,02/10] tools: ynl-gen: fix unused / pad attribute handling
+    https://git.kernel.org/netdev/net-next/c/6ad49839ba9b
+  - [net-next,03/10] tools: ynl-gen: don't override pure nested struct
+    https://git.kernel.org/netdev/net-next/c/67c65ce762ad
+  - [net-next,04/10] tools: ynl-gen: loosen type consistency check for events
+    https://git.kernel.org/netdev/net-next/c/5605f102378f
+  - [net-next,05/10] tools: ynl-gen: add error checking for nested structs
+    https://git.kernel.org/netdev/net-next/c/eef9b794eac8
+  - [net-next,06/10] tools: ynl-gen: generate enum-to-string helpers
+    https://git.kernel.org/netdev/net-next/c/21b6e302789c
+  - [net-next,07/10] tools: ynl-gen: move the response reading logic into YNL
+    https://git.kernel.org/netdev/net-next/c/dc0956c98f11
+  - [net-next,08/10] tools: ynl-gen: generate alloc and free helpers for req
+    https://git.kernel.org/netdev/net-next/c/5d58f911c755
+  - [net-next,09/10] tools: ynl-gen: switch to family struct
+    https://git.kernel.org/netdev/net-next/c/8cb6afb33541
+  - [net-next,10/10] tools: ynl-gen: generate static descriptions of notifications
+    https://git.kernel.org/netdev/net-next/c/59d814f0f285
 
 You are awesome, thank you!
 -- 
