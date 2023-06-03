@@ -1,39 +1,39 @@
-Return-Path: <netdev+bounces-7713-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7711-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 50E4F7212F8
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 22:56:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1367C7212F6
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 22:56:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D41C628193D
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 20:56:52 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8A98E1C209F2
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 20:56:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 36FC911CBE;
-	Sat,  3 Jun 2023 20:54:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 540E211C86;
+	Sat,  3 Jun 2023 20:54:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AB1411C85
-	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 20:54:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4879D11C85
+	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 20:54:58 +0000 (UTC)
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E8C19A;
-	Sat,  3 Jun 2023 13:54:56 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01AA5B3;
+	Sat,  3 Jun 2023 13:54:55 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-	by mx.sberdevices.ru (Postfix) with ESMTP id A12FD5FD36;
+	by mx.sberdevices.ru (Postfix) with ESMTP id E21A95FD37;
 	Sat,  3 Jun 2023 23:54:47 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
 	s=mail; t=1685825687;
-	bh=Lz8wUwmvEr3RVG1tld+2qsVDKoN2L55XiM0gSmTilXk=;
+	bh=ApoSi7ZfTEhQVGLgapLVsvDQGAGgUMVtdzLvgIwP5vU=;
 	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-	b=ZuNfwktTwU0LX48iEAIFz2n10dgnL5mnVcLoEx1496yfGCwBz1AJhGKZdQ3XH38DZ
-	 ePCS0Cx5h6hMbQc4zlGJyMslh5wQ+aJa6DodmgQKMuvHJlE4HJf4ADGohtkr8cemeu
-	 wpr69g09J+z+ihNwbLBdVGkqmb6Ub+1CJbAAZK+f7hrz0kPxObuPSrANr91xyK67SN
-	 ZIKtExwgbdDnZGD+FLevtTsrzqIwFF0SOeQV5uVsF5ZcdxOgdMUC4CHcZHzkS9TFYl
-	 YLSg4SG2pntbamX9e2jBhnznNMihwoINiflyopoTmuj6IDrS9MVS68+1TOkTpyPepf
-	 96sgS4sLs0XhQ==
+	b=AtVJ9LHYCx6rZSQS+YMDX5FaJbjdJxUrIEQ1YaCWynDCrMbEBlEfoKr1DYMS2Sub6
+	 /HMXGkJS0o9xZFnLGQTRLswCddVWe7MYxm3FYN95KkPfdwzma4E6n251rr8XUFjAVR
+	 YfX2ftHGxjH4VWAUNnk8ngHJ+5f4pO+ZKmQuF2b0NQT4oZKKohvWWI2TxMH42efJHe
+	 kolX/+GqXDSoxE7cozf1cDcTK+YQzKzKFUTSaSR9Ig5pA4zFVAPkntVLdQd5DOU7ad
+	 lo9n0yT1SzjUKzfoNY6JtI9kQbYlBZFgw25V5ADfFGXZxhsRX5GKtOV7YvqnDubhD9
+	 pQd48J4Waj8pQ==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
 	by mx.sberdevices.ru (Postfix) with ESMTP;
 	Sat,  3 Jun 2023 23:54:47 +0300 (MSK)
@@ -47,9 +47,9 @@ CC: <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
 	<netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<kernel@sberdevices.ru>, <oxffffaa@gmail.com>, <avkrasnov@sberdevices.ru>,
 	Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Subject: [RFC PATCH v4 06/17] vsock: check error queue to set EPOLLERR
-Date: Sat, 3 Jun 2023 23:49:28 +0300
-Message-ID: <20230603204939.1598818-7-AVKrasnov@sberdevices.ru>
+Subject: [RFC PATCH v4 07/17] vsock: read from socket's error queue
+Date: Sat, 3 Jun 2023 23:49:29 +0300
+Message-ID: <20230603204939.1598818-8-AVKrasnov@sberdevices.ru>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20230603204939.1598818-1-AVKrasnov@sberdevices.ru>
 References: <20230603204939.1598818-1-AVKrasnov@sberdevices.ru>
@@ -78,26 +78,51 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-If socket's error queue is not empty, EPOLLERR must be set. Otherwise,
-reader of error queue won't detect data in it using EPOLLERR bit.
+This adds handling of MSG_ERRQUEUE input flag in receive call. This flag
+is used to read socket's error queue instead of data queue. Possible
+scenario of error queue usage is receiving completions for transmission
+with MSG_ZEROCOPY flag.
 
 Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 ---
- net/vmw_vsock/af_vsock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/socket.h   | 1 +
+ net/vmw_vsock/af_vsock.c | 5 +++++
+ 2 files changed, 6 insertions(+)
 
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index bd1cc3238851..d79efd026880 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -382,6 +382,7 @@ struct ucred {
+ #define SOL_MPTCP	284
+ #define SOL_MCTP	285
+ #define SOL_SMC		286
++#define SOL_VSOCK	287
+ 
+ /* IPX options */
+ #define IPX_TYPE	1
 diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index efb8a0937a13..45fd20c4ed50 100644
+index 45fd20c4ed50..07803d9fbf6d 100644
 --- a/net/vmw_vsock/af_vsock.c
 +++ b/net/vmw_vsock/af_vsock.c
-@@ -1030,7 +1030,7 @@ static __poll_t vsock_poll(struct file *file, struct socket *sock,
- 	poll_wait(file, sk_sleep(sk), wait);
- 	mask = 0;
+@@ -110,6 +110,7 @@
+ #include <linux/workqueue.h>
+ #include <net/sock.h>
+ #include <net/af_vsock.h>
++#include <linux/errqueue.h>
  
--	if (sk->sk_err)
-+	if (sk->sk_err || !skb_queue_empty_lockless(&sk->sk_error_queue))
- 		/* Signify that there has been an error on this socket. */
- 		mask |= EPOLLERR;
+ static int __vsock_bind(struct sock *sk, struct sockaddr_vm *addr);
+ static void vsock_sk_destruct(struct sock *sk);
+@@ -2135,6 +2136,10 @@ vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 	int err;
+ 
+ 	sk = sock->sk;
++
++	if (unlikely(flags & MSG_ERRQUEUE))
++		return sock_recv_errqueue(sk, msg, len, SOL_VSOCK, 0);
++
+ 	vsk = vsock_sk(sk);
+ 	err = 0;
  
 -- 
 2.25.1
