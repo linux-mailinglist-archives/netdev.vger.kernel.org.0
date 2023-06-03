@@ -1,81 +1,110 @@
-Return-Path: <netdev+bounces-7636-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7637-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A0487720E3F
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 09:00:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 237A2720E71
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 09:11:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5C75D281B8A
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 07:00:25 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 54C4C1C21085
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 07:11:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B063FA954;
-	Sat,  3 Jun 2023 07:00:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 90F88AD2C;
+	Sat,  3 Jun 2023 07:11:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89C9BEA0
-	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 07:00:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 07CF9C433D2;
-	Sat,  3 Jun 2023 07:00:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685775622;
-	bh=otChWLMM6+DgC5sU96UtDU6GARkomiqyXLNhTkbHgVw=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=X76nRbPEwxbNaYcYc4JJoAOA5VgcYw4w24GG164Af0Ic9NpVi3lYxzUdG0jr8QOtP
-	 DM1WhlW8353Qyb58jPk1qF9Lmyq9dpvuJ9ERsePUV0YlDymhA6ye2+XRdYJJJhARB3
-	 RcL67NneKl5wtAtm++bVLFWGxmr/mZMyz4OmHIqYe8Am0MIbwGErH/bRLIiH6a9OLM
-	 nGvZ3ANyWEEswN6yotsxmJVz0blb1RsuJiv3gu2Huqk1zA4FnnnHlt+0dgjYHMhHw0
-	 KHJjoSSlZeWWBUZ7rXWGJ842IIkWoOAOaAnrZ1ru6MuMfM2i1Eeh6fn5BmNjwTAEU/
-	 V6Etj/YNGrZPw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E4E92C395E0;
-	Sat,  3 Jun 2023 07:00:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82B8779E0
+	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 07:11:45 +0000 (UTC)
+Received: from mail-m11875.qiye.163.com (mail-m11875.qiye.163.com [115.236.118.75])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B0EC0;
+	Sat,  3 Jun 2023 00:11:41 -0700 (PDT)
+Received: from [0.0.0.0] (unknown [172.96.223.238])
+	by mail-m11875.qiye.163.com (Hmail) with ESMTPA id AD5ED2802D9;
+	Sat,  3 Jun 2023 15:11:32 +0800 (CST)
+Message-ID: <5f0f2bab-ae36-8b13-2c6d-c69c6ff4a43f@sangfor.com.cn>
+Date: Sat, 3 Jun 2023 15:11:29 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: phylink: actually fix ksettings_set() ethtool call
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168577562193.13767.8075188819836108856.git-patchwork-notify@kernel.org>
-Date: Sat, 03 Jun 2023 07:00:21 +0000
-References: <E1q4eLm-00Ayxk-GZ@rmk-PC.armlinux.org.uk>
-In-Reply-To: <E1q4eLm-00Ayxk-GZ@rmk-PC.armlinux.org.uk>
-To: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Cc: andrew@lunn.ch, hkallweit1@gmail.com, Raju.Lakkaraju@microchip.com,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
- netdev@vger.kernel.org
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.1
+Subject: Re: [PATCH net-next] net: ethtool: Fix out-of-bounds copy to user
+Content-Language: en-US
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>, Andrew Lunn
+ <andrew@lunn.ch>, davem@davemloft.net, edumazet@google.com,
+ pabeni@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ pengdonglin@sangfor.com.cn, huangcun@sangfor.com.cn
+References: <20230601112839.13799-1-dinghui@sangfor.com.cn>
+ <135a45b2c388fbaf9db4620cb01b95230709b9ac.camel@gmail.com>
+ <eed0cbf7-ff12-057e-e133-0ddf5e98ef68@sangfor.com.cn>
+ <6110cf9f-c10e-4b9b-934d-8d202b7f5794@lunn.ch>
+ <f7e23fe6-4d30-ef1b-a431-3ef6ec6f77ba@sangfor.com.cn>
+ <6e28cea9-d615-449d-9c68-aa155efc8444@lunn.ch>
+ <CAKgT0UdyykQL-BidjaNpjX99FwJTxET51U29q4_CDqmABUuVbw@mail.gmail.com>
+ <ece228a3-5c31-4390-b6ba-ec3f2b6c5dcb@lunn.ch>
+ <CAKgT0Uf+XaKCFgBRTn-viVsKkNE7piAuDpht=efixsAV=3JdFQ@mail.gmail.com>
+ <44905acd-3ac4-cfe5-5e91-d182c1959407@sangfor.com.cn>
+ <20230602225519.66c2c987@kernel.org>
+From: Ding Hui <dinghui@sangfor.com.cn>
+In-Reply-To: <20230602225519.66c2c987@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkaHRpCVh5NQkwdS0hLSR1CGFUTARMWGhIXJBQOD1
+	lXWRgSC1lBWUpMSVVCTVVJSUhVSUhDWVdZFhoPEhUdFFlBWU9LSFVKSktISkxVSktLVUtZBg++
+X-HM-Tid: 0a888018ecd22eb1kusnad5ed2802d9
+X-HM-MType: 1
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PU06Nio5KD1MMjMzNRA*Vk8*
+	UQgwCxNVSlVKTUNOTExNSUJDS0hIVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
+	QVlKTElVQk1VSUlIVUlIQ1lXWQgBWUFPSklONwY+
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
-
-This patch was applied to netdev/net.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 01 Jun 2023 10:12:06 +0100 you wrote:
-> Raju Lakkaraju reported that the below commit caused a regression
-> with Lan743x drivers and a 2.5G SFP. Sadly, this is because the commit
-> was utterly wrong. Let's fix this properly by not moving the
-> linkmode_and(), but instead copying the link ksettings and then
-> modifying the advertising mask before passing the modified link
-> ksettings to phylib.
+On 2023/6/3 13:55, Jakub Kicinski wrote:
+> On Sat, 3 Jun 2023 09:51:34 +0800 Ding Hui wrote:
+>>> If that is the case maybe it would just make more sense to just return
+>>> an error if we are at risk of overrunning the userspace allocated
+>>> buffer.
+>>
+>> In that case, I can modify to return an error, however, I think the
+>> ENOSPC or EFBIG mentioned in a previous email may not be suitable,
+>> maybe like others length/size checking return EINVAL.
+>>
+>> Another thing I wondered is that should I update the current length
+>> back to user if user buffer is not enough, assuming we update the new
+>> length with error returned, the userspace can use it to reallocate
+>> buffer if he wants to, which can avoid re-call previous ioctl to get
+>> the new length.
 > 
-> [...]
+> This entire thread presupposes that user provides the length of
+> the buffer. I don't see that in the code. Take ethtool_get_stats()
+> as an example, you assume that stats.n_stats is set correctly,
+> but it's not enforced today. Some app somewhere may pass in zeroed
+> out stats and work just fine.
+> 
 
-Here is the summary with links:
-  - [net] net: phylink: actually fix ksettings_set() ethtool call
-    https://git.kernel.org/netdev/net/c/03c44a21d033
+Yes.
 
-You are awesome, thank you!
+I checked the others ioctl (e.g. ethtool_get_eeprom(), ethtool_get_features()),
+and searched the git log of ethtool utility, so I think that is an implicit
+rule and the check is missed in kernel where the patch involves.
+
+Without this rule, we cannot guarantee the safety of copy to user.
+
+Should we keep to be compatible with that incorrect userspace usage?
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Thanks,
+- Ding Hui
 
 
