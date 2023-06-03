@@ -1,96 +1,80 @@
-Return-Path: <netdev+bounces-7680-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7681-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 74B80721186
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 20:22:40 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 439F97211EE
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 21:52:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id ED2491C20A75
-	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 18:22:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A2F522817EB
+	for <lists+netdev@lfdr.de>; Sat,  3 Jun 2023 19:52:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 43670E54D;
-	Sat,  3 Jun 2023 18:22:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D02F5E571;
+	Sat,  3 Jun 2023 19:52:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34CFD290B
-	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 18:22:36 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393ACC2
-	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 11:22:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=bCdM9rQtuInPfJnPyhXJ0qHCuMiQrwKX96J8638O3eY=; b=GTdxDBp/q4jti0HthgryfpeRTB
-	1F1BeTjaPlZZA8ddid/FSQ8Nk0Nac6zTSw61uI+ylwL3Zsv6vefpJxv6XiR0hPDWSabZgyUvvCHex
-	fYGuaUXgVo/Dvcw6wr5zBcK1iz2cNv1fkEu7UtRBRRlfvX/2K2duH48b4jGInKfwJizQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1q5VtK-00ElU5-IX; Sat, 03 Jun 2023 20:22:18 +0200
-Date: Sat, 3 Jun 2023 20:22:18 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: David Miller <davem@davemloft.net>
-Cc: Russell King <rmk+kernel@armlinux.org.uk>, hkallweit1@gmail.com,
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: sfp: fix state loss when updating state_hw_mask
-Message-ID: <842907db-6450-4032-b0d6-a3de5b230258@lunn.ch>
-References: <E1pd4VM-00DjWW-2N@rmk-PC.armlinux.org.uk>
- <167922421698.31905.11495733031560601244.git-patchwork-notify@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D05720EB
+	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 19:52:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DFD86C4339B;
+	Sat,  3 Jun 2023 19:52:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685821939;
+	bh=S3Vx4FIgPm+iQwsmMrW0FL3Ww8UbMFlWqElAHg9Ap70=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=vB2VZzHwCJy9MBc9PLcTwjrMHxeIs1RQzbmLliruYVaR2MIt9YNyV9X6EX/fIZwgX
+	 +e/eAyZvKcI4TgWw+POfvpuH4ZxX5RiKdX5I5YXWuads1/W9XrrEPEzOpz5Yg2jxC+
+	 4DfO0pgy552+61v8+S/3CBV3uZWh/offphNNKYse/p58PxblBQCD0BZLX4XIOLGc/w
+	 e0nQYQ8KusykkdGq3wI8miGuzPe1EEqnWOQRMfkYuZHKARICTngKpRr+L0foTBYQl/
+	 dBXHrMUw7/ePFKINSQy9YLMiFi4r02N4cKYmQPRPkv+On8A+/Hl1n0N26gldxvmEgY
+	 FabdPNaMqZMaQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B6681E29F3E;
+	Sat,  3 Jun 2023 19:52:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <167922421698.31905.11495733031560601244.git-patchwork-notify@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] Fix gitignore for recently added usptream self tests
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168582193974.2686.3376927574243466657.git-patchwork-notify@kernel.org>
+Date: Sat, 03 Jun 2023 19:52:19 +0000
+References: <20230602195451.2862128-1-weihaogao@google.com>
+In-Reply-To: <20230602195451.2862128-1-weihaogao@google.com>
+To: Weihao Gao <weihaogao@google.com>
+Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, shuah@kernel.org, netdev@vger.kernel.org,
+ linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+ trivial@kernel.org
 
-On Sun, Mar 19, 2023 at 11:10:16AM +0000, patchwork-bot+netdevbpf@kernel.org wrote:
-> Hello:
+Hello:
+
+This patch was applied to netdev/net.git (main)
+by David S. Miller <davem@davemloft.net>:
+
+On Fri,  2 Jun 2023 19:54:50 +0000 you wrote:
+> This resolves the issue that generated binary is showing up as an untracked git file after every build on the kernel.
 > 
-> This patch was applied to netdev/net.git (main)
-> by David S. Miller <davem@davemloft.net>:
-> 
-> On Fri, 17 Mar 2023 07:28:00 +0000 you wrote:
-> > Andrew reports that the SFF modules on one of the ZII platforms do not
-> > indicate link up due to the SFP code believing that LOS indicating that
-> > there is no signal being received from the remote end, but in fact the
-> > LOS signal is showing that there is signal.
-> > 
-> > What makes SFF modules different from SFPs is they typically have an
-> > inverted LOS, which uncovered this issue. When we read the hardware
-> > state, we mask it with state_hw_mask so we ignore anything we're not
-> > interested in. However, we don't re-read when state_hw_mask changes,
-> > leading to sfp->state being stale.
-> > 
-> > [...]
-> 
-> Here is the summary with links:
->   - [net] net: sfp: fix state loss when updating state_hw_mask
->     https://git.kernel.org/netdev/net/c/04361b8bb818
+> Signed-off-by: Weihao Gao <weihaogao@google.com>
+> ---
+>  tools/testing/selftests/net/.gitignore | 3 +++
+>  1 file changed, 3 insertions(+)
 
-Hi David
+Here is the summary with links:
+  - Fix gitignore for recently added usptream self tests
+    https://git.kernel.org/netdev/net/c/02a7eee1ebf2
 
-This patch was submitted to net, and we can see it was also merged to
-netdev/net.git. The Fixes tag of 8475c4b70b04 indicates the problem
-was introduced in v6.1-rc1. Yet this fix does not appear in v6.1.31.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Do you have any idea why it has not been backported? It does cleanly
-cherry-pick.
 
-Thanks
-	Andrew
 
