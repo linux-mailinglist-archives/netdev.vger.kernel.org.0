@@ -1,170 +1,307 @@
-Return-Path: <netdev+bounces-7793-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7794-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5E631721871
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 18:08:14 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8F9AB721882
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 18:16:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CAF881C20A40
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 16:08:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 42BD328115F
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 16:16:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7A166101CC;
-	Sun,  4 Jun 2023 16:08:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2AEB6101E1;
+	Sun,  4 Jun 2023 16:16:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E098DDAB
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 16:08:11 +0000 (UTC)
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2127.outbound.protection.outlook.com [40.107.96.127])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8E5B3
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 09:08:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LWM8hAuwtqsppa8lO5/ac5w4wz0hTt5J22cq4kd9Ea82oaHCHhhr5p3+KGw8ErrOGJ+0ESN1cMZtXWbqharinQQJiTY/qerDH9j8BnZZBst7eOnQjh/OoSWpFkR4QtTrQKOsBdu9Iprr0JIVk+W8slxDrNr0B7KvsDyan0coldL+yDdabrtdQwCm7pdABI+gMf3uQ6WiXj4d9Z5fUj3t2IyT3p4CnKE5cQoUN9vDCadjzKy+pq7K/BwIap9fY3G9wwuyDxtIe6Bhk38CMnt0U/s2lgyga1hvkGB0iOgUfXpqNH9mIj1ikEzQnwGtE4x2y+E0t6/dgikD59CLCyHP3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gSen1C+cclMdseqEhoIdjh7NwF34MaNMB+zOKnsNkOY=;
- b=TagsPNjBDDF83grV3i5xFtSG7F30pdMlUtiFLygdZf0iUyyspaTlNZM3IEbC7ZmMOBT3377EjESYKqbCp783dVJZf4jzxn0LqYd1Ffehn0yv8B7NkMHl/P+mp8azSediBjP9shbkGuMvQO+IyCdkbmJG6B62NATlFwddlsRJEHijSv71v5k6XmYErT/QBHJb/bmVBTFxl6HzQHEUFvsDgnrHRnKskSsOVdrBwbQVjNy+01+KQpWAp/XLZiYpcE+Ko6wnCOT0h/CdMvUbBZ4kvkVQAVpcPc8L40C06XoEQ29ooeSsrNmgJO3VYCY2Q06ZKl6cNnaKQCc5c/zrHuqWrA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gSen1C+cclMdseqEhoIdjh7NwF34MaNMB+zOKnsNkOY=;
- b=uQHKMrKtq7537uq3UGBvRgq4MVRUCgpuB07NQss/Uof9+w3uJstLeBI7/CHx/S6TLNqvoCQ6Vq5RTvTh1kUj0vu7hsBuKW2mjiPTPvDhJMjnZ+v8woKyuiy0FvHCr+zHHTzOFCWKk+xFjrJ4h4TO1pPCrsON6huotk1ZayUquIE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CO6PR13MB5356.namprd13.prod.outlook.com (2603:10b6:303:14c::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Sun, 4 Jun
- 2023 16:08:06 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6455.030; Sun, 4 Jun 2023
- 16:08:06 +0000
-Date: Sun, 4 Jun 2023 18:08:00 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Wojciech Drewek <wojciech.drewek@intel.com>
-Cc: intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-	alexandr.lobakin@intel.com, david.m.ertman@intel.com,
-	michal.swiatkowski@linux.intel.com, marcin.szycik@linux.intel.com,
-	pawel.chmielewski@intel.com, sridhar.samudrala@intel.com,
-	pmenzel@molgen.mpg.de, dan.carpenter@linaro.org
-Subject: Re: [PATCH iwl-next v4 08/13] ice: Add guard rule when creating FDB
- in switchdev
-Message-ID: <ZHy24EDbl+zyIjsU@corigine.com>
-References: <20230524122121.15012-1-wojciech.drewek@intel.com>
- <20230524122121.15012-9-wojciech.drewek@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230524122121.15012-9-wojciech.drewek@intel.com>
-X-ClientProxiedBy: AS4P190CA0058.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:656::7) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F814DDAB
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 16:16:12 +0000 (UTC)
+Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 258DFB3;
+	Sun,  4 Jun 2023 09:16:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1685895309; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=SC1faauJLwgPgvkubwjC3WUExNQ05U8IPxBxXBr1oc87sJu0EvCm+1Zh+9YwqZvgzP2rCgFpMc2d6DVYxFxKk7WilzAF7WeQ4cHCL/xSntQ1ZhA0F/HdYWgFCPpZ7RqtSmRqUHr3d5Eq/tEglPVCTyzcnAIaNo69RzNFvAfDGLo=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1685895309; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+	bh=jDvl+5Gwb0Z1Fj/7pG7iYCRwIcEjBREw3uMwlZ2p9B0=; 
+	b=ka1sFShCH/wf7qi4N8wSVHnP2xVSuBJMREyUQtfN9JfxTcwI0y5mkpPkgNxVgKKUMTdqN6viWUss47WwBIfwR+SZdY8gzIYf3aNLpJTNJihB7ab2dA/7vIROXsf3+s4N1mWgzmBMYSiVfJCDrIMl1vQ8/1MedPRCxhs76IGEkQQ=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=arinc9.com;
+	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+	dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1685895309;
+	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=jDvl+5Gwb0Z1Fj/7pG7iYCRwIcEjBREw3uMwlZ2p9B0=;
+	b=fGw+0ugjnjBX+3SF5LgsRzl8U27NCxEwHRRcq6HAKMiIEA5zMc6/E5s99IVtE3mm
+	MccmoWMbRdEYePxXlifd69ouPwPhJSBVmiGgCWB8tzAiGDV7HoSHGULcvTr5eGxfhy3
+	kNx4wPGnBPOIXebFfKbM1aOMmr9yRhkV4ceahr00=
+Received: from [192.168.66.198] (178-147-169-233.haap.dm.cosmote.net [178.147.169.233]) by mx.zohomail.com
+	with SMTPS id 1685895307084897.9178477634476; Sun, 4 Jun 2023 09:15:07 -0700 (PDT)
+Message-ID: <0542e150-5ff4-5f74-361a-1a531d19eb7d@arinc9.com>
+Date: Sun, 4 Jun 2023 19:14:55 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO6PR13MB5356:EE_
-X-MS-Office365-Filtering-Correlation-Id: 66f10414-b25f-4b53-aa4f-08db6515e1e3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	JcHT8UDOriFV0dF4KRQdv1McpgntUhL4eJzqxz7gUTDHKZCcTOkkmIxfc/mLFKx/UQt/lFF1M5NQFMojX4u8yr6Ow5BVEQavZP7QHmrOw5It2g1r1pAljP6Rist2KXJAsLjAp4gEilLJ9MauhWFxVinRujVdNuT7y6l876ylpRKii7zvHI0Y2azOxtJEa5Zznq9yia1yujyapI7NDSJGXsMqFBB0Z5KDPCygt8TbRUkHbOqbw6MDKri7gQc2mIQkfkhPp4/M4gvFmFUru31wLYHVrh1RoLjuXXQVmm8D4Dzlgt1z0l5ZJZx+kAJvSi1srdMWnAicfJfcwQ/yGsdpRqF/XY2SxvpW0n//Sr13GvWFZmnGxJ6/HQtbiwFI83PBILzd3omqUM49045fHgdQ6V6BZuW52jAycoRxYa40HEtcaxmh+kIP5vs/wUBgAHW6e55RHXNsT/qV3HB9ePNeIEzd4V7JcHEYZT5jJ8vNz+hXvI5HxLgeESEEKXkYPvrWmjjUEgEixUk/c11k098QUaEnV86ECjoBZ85U/gQFdvOCB3csEUgj+Ln7VvR4mnHKsDT2SVg64fPUlnLtFkDeqQEaG85cdELQG3JPDsV7rJ8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(39830400003)(136003)(396003)(366004)(451199021)(41300700001)(8936002)(8676002)(5660300002)(7416002)(44832011)(6916009)(66946007)(316002)(66556008)(66476007)(4326008)(2906002)(478600001)(38100700002)(6512007)(6506007)(86362001)(186003)(36756003)(6486002)(2616005)(6666004)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?J4PjWYO9qAYj7Kb4zbi4L00xlGLc0TCCca/PaWJPU1X0F9x4KsiqNA3CULY1?=
- =?us-ascii?Q?tLz/ULjG3VhAeJNyXO0soGsyLkb/HpCUiTQB5K6vjII8f9CX66snTUVlf2It?=
- =?us-ascii?Q?Muldg+hHH1CxqHBol8tr9O9gT/mbBEZAsoPsp/JDF4DkQvK7/SkDjV02UDgm?=
- =?us-ascii?Q?vqVVtjQoISsxEqsBL5AWjOcQt0KV889SCiLHjf4WV1j3OvXtUoaU0EuxELAx?=
- =?us-ascii?Q?p6Ey4wlxJYOyoFZ7/dUoVoatF8Y+15AHZALXrtIS8wW1TbFlSw0ayKzdMPlo?=
- =?us-ascii?Q?JAsPrOOgIMTUEuc8mqR3HFCb+uxx2GKyfFt0TeHlzSG7mRxArMPXRpNk3zC1?=
- =?us-ascii?Q?nrZ24HPgmP2juD340cDl+oJrc2Wq+7GNAj+vID82zMyzdne8oVDmJkg2O1SK?=
- =?us-ascii?Q?7Uj+TAmADf6MicN9EwO4d4OoT22gEC/0S1it7czoMwHTmySfys28ZRBrpVXC?=
- =?us-ascii?Q?dounr+gMyXSDv9zC0kmxL0dCTcJVCgS0kn+TOXHI8QOLX1n6K7bLQfuMr4hb?=
- =?us-ascii?Q?vVNfx3uE1uL1Yg4QkDSZGSQ+TNCoJudsxixWOwUT9+wO45V5c+Qx1rqpGqQ8?=
- =?us-ascii?Q?Z3hIPkOl052rXtkqHsXvnBlHjmmzujY92sSDDzZGvhx0//G2Rj/bJ9RxJM1e?=
- =?us-ascii?Q?m8aRRV3Ks7N76o/1GWVfbWYvB0kGDpBKR3W/MQ6+nilq6hrqlJYnUGEb9EFL?=
- =?us-ascii?Q?4cqx212PrHW1abjIXvP5kdtnWA6Rt6Q/+XnKHxUajJ1JWXfP92yRI9P+GOoj?=
- =?us-ascii?Q?PjlpI06pQwWK12nHVzTEvMtdHMPc8/pRG+GHB/yVBEVeB010lta/syEuAjMu?=
- =?us-ascii?Q?4yqZq1V77RYfsdPrGzk/WXOlyTmehn9/flZW/J9zbDb4L/jZihCc73pb2QT/?=
- =?us-ascii?Q?x8QvGy7iz8wb40yiTt/HLzu7iwlWd4EA9mPgr4Q2T0q1PT42X8crqX6fTRR4?=
- =?us-ascii?Q?BKxYuuqaIfWg+rnluqIF2T5WK6xbH7obTmCGPS6q2imThy6gI7MHXFLjfqsX?=
- =?us-ascii?Q?E7K50ubeMjifCV4wQbuRHlICY3w69o2NqSdTt0/YVk92Jp5T37Fqoak/uKB3?=
- =?us-ascii?Q?XOGK9Yz+Kgqoojm0yWJhN6PUkR5O4p566kWicp+Rbwh+eDV0tqqVBgWXxxGZ?=
- =?us-ascii?Q?EbBS90ETZQ61y3eewZuxbIROvRa4XaLBHquD/8itil0r22edBXjFLVDrSTTu?=
- =?us-ascii?Q?g6KooRBKwCXwrurtpnLVJREmCrn+7jnhJPYo1TvUKVCP2P6MMZCEefKywCnT?=
- =?us-ascii?Q?9LTuqI01lSc9zjt7SM2HTJ3G4yd8GiA8P2JPoo3Calp2qO8tyjCTMnKVOZiP?=
- =?us-ascii?Q?V+7ka7rjsGzg9RoYFebvciZluQcflovpAnnHVgOFbXFiubAxltPkinhU0QIP?=
- =?us-ascii?Q?ZuMOPBbYjDTwWN2/VQ/W6etzUtxCod788aznMJP7VWyH6vHicJq31s0NvBkO?=
- =?us-ascii?Q?KMaqgn0yQ1CsMT6WHfeQAyfejP9dj4UOlmgSecx6Y8NNTO420DVcNwA7qCcq?=
- =?us-ascii?Q?kJ579VznwNNUDiEONgGXVjkGDth/6FwjaqmAwYIC2d5lAH29EFOaH85tDVlA?=
- =?us-ascii?Q?mG9gDv6e/ge9cZpkxUMIg2Z9dggbAxiqpRaodNKv6ciqr7pbRC0SXlQtRTHF?=
- =?us-ascii?Q?fXF2TbXM6XiG0yFtm8v9mg+FUwJBPcTF4ykI5pixFNvEcWWeWnEG7J722DBr?=
- =?us-ascii?Q?eBrcSw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66f10414-b25f-4b53-aa4f-08db6515e1e3
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jun 2023 16:08:06.3077
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: W/pHaEnGeyXlDwlkYTt6HAPSrhwqls8/TY7h0RQR8H6lDYp7n6EbRVa9kT5m4jD0P+Ep9yDhzzoV8vLbZm910N+u4g09/0dlxZGpP/fAMo8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR13MB5356
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH net-next 08/30] net: dsa: mt7530: change p{5,6}_interface
+ to p{5,6}_configured
+Content-Language: en-US
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: Vladimir Oltean <olteanv@gmail.com>, Sean Wang <sean.wang@mediatek.com>,
+ Landen Chao <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
+ Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
+ Florian Fainelli <f.fainelli@gmail.com>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Richard van Schagen <richard@routerhints.com>,
+ Richard van Schagen <vschagen@cs.com>,
+ Frank Wunderlich <frank-w@public-files.de>,
+ Bartel Eerdekens <bartel.eerdekens@constell8.be>, erkin.bozoglu@xeront.com,
+ mithat.guner@xeront.com, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org
+References: <20230526130145.7wg75yoe6ut4na7g@skbuf>
+ <7117531f-a9f2-63eb-f69d-23267e5745d0@arinc9.com>
+ <ZHsxdQZLkP/+5TF0@shell.armlinux.org.uk>
+ <826fd2fc-fbf8-dab7-9c90-b726d15e2983@arinc9.com>
+ <ZHyA/AmXmCxO6YMq@shell.armlinux.org.uk>
+ <20230604125517.fwqh2uxzvsa7n5hu@skbuf>
+ <ZHyMezyKizkz2+Wg@shell.armlinux.org.uk>
+ <d269ac88-9923-c00c-8047-cc8c9f94ef2c@arinc9.com>
+ <ZHyqI2oOI4KkvgB8@shell.armlinux.org.uk>
+ <ZHy1C7wzqaj5KCmy@shell.armlinux.org.uk>
+ <ZHy2jQLesdYFMQtO@shell.armlinux.org.uk>
+From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <ZHy2jQLesdYFMQtO@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 24, 2023 at 02:21:16PM +0200, Wojciech Drewek wrote:
-> From: Marcin Szycik <marcin.szycik@intel.com>
+On 4.06.2023 19:06, Russell King (Oracle) wrote:
+> On Sun, Jun 04, 2023 at 05:00:11PM +0100, Russell King (Oracle) wrote:
+>> On Sun, Jun 04, 2023 at 04:13:39PM +0100, Russell King (Oracle) wrote:
+>>> On Sun, Jun 04, 2023 at 04:14:31PM +0300, Arınç ÜNAL wrote:
+>>>> On 4.06.2023 16:07, Russell King (Oracle) wrote:
+>>>>> On Sun, Jun 04, 2023 at 03:55:17PM +0300, Vladimir Oltean wrote:
+>>>>>> On Sun, Jun 04, 2023 at 01:18:04PM +0100, Russell King (Oracle) wrote:
+>>>>>>> I don't remember whether Vladimir's firmware validator will fail for
+>>>>>>> mt753x if CPU ports are not fully described, but that would be well
+>>>>>>> worth checking. If it does, then we can be confident that phylink
+>>>>>>> will always be used, and those bypassing calls should not be necessary.
+>>>>>>
+>>>>>> It does, I've just retested this:
+>>>>>>
+>>>>>> [    8.469152] mscc_felix 0000:00:00.5: OF node /soc/pcie@1f0000000/ethernet-switch@0,5/ports/port@4 of CPU port 4 lacks the required "phy-handle", "fixed-link" or "managed" properties
+>>>>>> [    8.494571] mscc_felix 0000:00:00.5: error -EINVAL: Failed to register DSA switch
+>>>>>> [    8.502151] mscc_felix: probe of 0000:00:00.5 failed with error -22
+>>>>>
+>>>>> ... which isn't listed in dsa_switches_apply_workarounds[], and
+>>>>> neither is mt753x. Thanks.
+>>>>>
+>>>>> So, that should be sufficient to know that the CPU port will always
+>>>>> properly described, and thus bypassing phylink in mt753x for the CPU
+>>>>> port should not be necessary.
+>>>>
+>>>> Perfect! If I understand correctly, there's this code - specific to MT7531
+>>>> and MT7988 ports being used as CPU ports - which runs in addition to what's
+>>>> in mt753x_phylink_mac_config():
+>>>>
+>>>> 	mt7530_write(priv, MT7530_PMCR_P(port),
+>>>> 		     PMCR_CPU_PORT_SETTING(priv->id));
+>>>>
+>>>> This should be put on mt753x_phylink_mac_config(), under priv->id ==
+>>>> ID_MT7531, priv->id == ID_MT7988, and dsa_is_cpu_port(ds, port) checks?
+>>>
+>>> Please remember that I have very little knowledge of MT753x, so in
+>>> order to answer this question, I've read through the mt7530 driver
+>>> code.
+>>>
+>>> Looking at mt7530.h:
+>>>
+>>> #define  PMCR_CPU_PORT_SETTING(id)      (PMCR_FORCE_MODE_ID((id)) | \
+>>>                                           PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | \
+>>>                                           PMCR_BACKOFF_EN | PMCR_BACKPR_EN | \
+>>>                                           PMCR_TX_EN | PMCR_RX_EN | \
+>>>                                           PMCR_TX_FC_EN | PMCR_RX_FC_EN | \
+>>>                                           PMCR_FORCE_SPEED_1000 | \
+>>>                                           PMCR_FORCE_FDX | PMCR_FORCE_LNK)
+>>>
+>>> This seems to be some kind of port control register that sets amongst
+>>> other things parameters such as whether flow control is enabled, the
+>>> port speed, the duplex setting, whether link is forced up, etc.
+>>>
+>>> Looking at what mt753x_phylink_mac_link_up() does:
+>>>
+>>> 1. it sets PMCR_RX_EN | PMCR_TX_EN | PMCR_FORCE_LNK.
+>>> 2. it sets PMCR_FORCE_SPEED_1000 if speed was 1000Mbps, or if using
+>>>     an internal, TRGMII, 1000base-X or 2500base-X phy interface mode.
+>>> 3. it sets PMCR_FORCE_FDX if full duplex was requested.
+>>> 4. it sets PMCR_TX_FC_EN if full duplex was requested with tx pause.
+>>> 5. it sets PMCR_RX_FC_EN if full duplex was requested with rx pause.
+>>>
+>>> So, provided this is called with the appropriate parameters, for a
+>>> fixed link, that will leave the following:
+>>>
+>>> 	PMCR_FORCE_MODE_ID(id)
+>>> 	PMCR_IFG_XMIT(1)
+>>> 	PMCR_MAC_MODE
+>>> 	PMCR_BACKOFF_EN
+>>> 	PMCR_BACKPR_EN
+>>>
+>>> If we now look at mt753x_phylink_mac_config(), this sets
+>>> PMCR_IFG_XMIT(1), PMCR_MAC_MODE, PMCR_BACKOFF_EN, PMCR_BACKPR_EN,
+>>> and PMCR_FORCE_MODE_ID(priv->id), which I believe is everything that
+>>> PMCR_CPU_PORT_SETTING(priv->id) is doing.
+>>>
+>>> So, Wouldn't a fixed-link description indicating 1Gbps, full duplex
+>>> with pause cause phylink to call both mt753x_phylink_mac_config() and
+>>> mt753x_phylink_mac_link_up() with appropriate arguments to set all
+>>> of these parameters in PMCR?
+>>>
+>>> Now, I'm going to analyse something else. mt7531_cpu_port_config()
+>>> is called from mt753x_cpu_port_enable(), which is itself called from
+>>> mt7531_setup_common(). That is ultimately called from the DSA switch
+>>> ops .setup() method.
+>>>
+>>> This method is called from dsa_switch_setup() for each switch in the
+>>> DSA tree. dsa_tree_setup_switches() calls this, and is called from
+>>> dsa_tree_setup().  Once dsa_tree_setup_switches() finishes
+>>> successfully, dsa_tree_setup_ports() will be called. This will then
+>>> setup DSA and CPU ports, which will then setup a phylink instance
+>>> for these ports. phylink will parse the firmware description for
+>>> the port. DSA will then call dsa_port_enable().
+>>>
+>>> dsa_port_enable() will then call any port_enable() method in the
+>>> mt7530.c driver, which will be mt7530_port_enable(). This then...
+>>>
+>>>          mt7530_clear(priv, MT7530_PMCR_P(port), PMCR_LINK_SETTINGS_MASK);
+>>>
+>>> which is:
+>>>
+>>> #define  PMCR_LINK_SETTINGS_MASK        (PMCR_TX_EN | PMCR_FORCE_SPEED_1000 | \
+>>>                                           PMCR_RX_EN | PMCR_FORCE_SPEED_100 | \
+>>>                                           PMCR_TX_FC_EN | PMCR_RX_FC_EN | \
+>>>                                           PMCR_FORCE_FDX | PMCR_FORCE_LNK | \
+>>>                                           PMCR_FORCE_EEE1G | PMCR_FORCE_EEE100)
+>>>
+>>> So it wipes out all the PMCR settings that mt7531_cpu_port_config()
+>>> performed - undoing *everything* below that switch() statement in
+>>> mt7531_cpu_port_config()!
+>>>
+>>> Once the port_enable() method returns, DSA will then call
+>>> phylink_start(), which will trigger phylink to bring up the link
+>>> according to the settings it has, which will mean phylink calls
+>>> the mac_config(), pcs_config(), pcs_link_up() and mac_link_up()
+>>> with the appropriate parameters for the firmware described link.
+>>>
+>>> So I think I have the answer to my initial thought: do the calls in
+>>> mt7531_cpu_port_config() to the phylink methods have any use what so
+>>> ever? The answer is no, they are entirely useless. The same goes for
+>>> the other cpu_port_config() methods that do something similar. The
+>>> same goes for the PMCR register write that's changing any bits
+>>> included in PMCR_LINK_SETTINGS_MASK.
+>>>
+>>> What that means is that mt7988_cpu_port_config() can be entirely
+>>> removed, it serves no useful purpose what so ever. For
+>>> mt7531_cpu_port_config(), it only needs to set priv->p[56]_interface
+>>> which, as far as I can see, probably only avoids mac_config() doing
+>>> any pad setup (that's a guess.)
+>>>
+>>> At least that's what I gather from reading through the driver and
+>>> DSA code. It may be I've missed something, but currently, I think
+>>> that these cpu_port_config() functions aren't doing too much that
+>>> is actually useful work.
+>>
+>> Essentially, I think this change will have no effect at all on the
+>> driver, because any effect this code has is totally undone when the
+>> driver's port_enable() method is called:
+>>
+>> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+>> index 9bc54e1348cb..447e63d74e0c 100644
+>> --- a/drivers/net/dsa/mt7530.c
+>> +++ b/drivers/net/dsa/mt7530.c
+>> @@ -2859,8 +2859,6 @@ mt7531_cpu_port_config(struct dsa_switch *ds, int port)
+>>   {
+>>   	struct mt7530_priv *priv = ds->priv;
+>>   	phy_interface_t interface;
+>> -	int speed;
+>> -	int ret;
+>>   
+>>   	switch (port) {
+>>   	case 5:
+>> @@ -2880,36 +2878,6 @@ mt7531_cpu_port_config(struct dsa_switch *ds, int port)
+>>   		return -EINVAL;
+>>   	}
+>>   
+>> -	if (interface == PHY_INTERFACE_MODE_2500BASEX)
+>> -		speed = SPEED_2500;
+>> -	else
+>> -		speed = SPEED_1000;
+>> -
+>> -	ret = mt7531_mac_config(ds, port, MLO_AN_FIXED, interface);
+>> -	if (ret)
+>> -		return ret;
+>> -	mt7530_write(priv, MT7530_PMCR_P(port),
+>> -		     PMCR_CPU_PORT_SETTING(priv->id));
+>> -	mt753x_phylink_pcs_link_up(&priv->pcs[port].pcs, MLO_AN_FIXED,
+>> -				   interface, speed, DUPLEX_FULL);
+>> -	mt753x_phylink_mac_link_up(ds, port, MLO_AN_FIXED, interface, NULL,
+>> -				   speed, DUPLEX_FULL, true, true);
+>> -
+>> -	return 0;
+>> -}
+>> -
+>> -static int
+>> -mt7988_cpu_port_config(struct dsa_switch *ds, int port)
+>> -{
+>> -	struct mt7530_priv *priv = ds->priv;
+>> -
+>> -	mt7530_write(priv, MT7530_PMCR_P(port),
+>> -		     PMCR_CPU_PORT_SETTING(priv->id));
+>> -
+>> -	mt753x_phylink_mac_link_up(ds, port, MLO_AN_FIXED,
+>> -				   PHY_INTERFACE_MODE_INTERNAL, NULL,
+>> -				   SPEED_10000, DUPLEX_FULL, true, true);
+>> -
+>>   	return 0;
+>>   }
+>>   
+>> @@ -3165,7 +3133,6 @@ const struct mt753x_info mt753x_table[] = {
+>>   		.phy_read_c45 = mt7531_ind_c45_phy_read,
+>>   		.phy_write_c45 = mt7531_ind_c45_phy_write,
+>>   		.pad_setup = mt7988_pad_setup,
+>> -		.cpu_port_config = mt7988_cpu_port_config,
+>>   		.mac_port_get_caps = mt7988_mac_port_get_caps,
+>>   		.mac_port_config = mt7988_mac_config,
+>>   	},
 > 
-> Introduce new "guard" rule upon FDB entry creation.
+> ... and with that patch we can remove the definition of
+> PMCR_CPU_PORT_SETTING() as well!
 > 
-> It matches on src_mac, has valid bit unset, allow_pass_l2 set
-> and has a nop action.
-> 
-> Previously introduced "forward" rule matches on dst_mac, has valid
-> bit set, need_pass_l2 set and has a forward action.
-> 
-> With these rules, a packet will be offloaded only if FDB exists in both
-> directions (RX and TX).
-> 
-> Let's assume link partner sends a packet to VF1: src_mac = LP_MAC,
-> dst_mac = is VF1_MAC. Bridge adds FDB, two rules are created:
-> 1. Guard rule matching on src_mac == LP_MAC
-> 2. Forward rule matching on dst_mac == LP_MAC
-> Now VF1 responds with src_mac = VF1_MAC, dst_mac = LP_MAC. Before this
-> change, only one rule with dst_mac == LP_MAC would have existed, and the
-> packet would have been offloaded, meaning the bridge wouldn't add FDB in
-> the opposite direction. Now, the forward rule matches (dst_mac == LP_MAC),
-> but it has need_pass_l2 set an there is no guard rule with
-> src_mac == VF1_MAC, so the packet goes through slow-path and the bridge
-> adds FDB. Two rules are created:
-> 1. Guard rule matching on src_mac == VF1_MAC
-> 2. Forward rule matching on dst_mac == VF1_MAC
-> Further packets in both directions will be offloaded.
-> 
-> The same example is true in opposite direction (i.e. VF1 is the first to
-> send a packet out).
-> 
-> Signed-off-by: Marcin Szycik <marcin.szycik@intel.com>
-> Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+> There is one possibility why we may not be able to remove this code -
+> whether there's something in this which requires the CPU port to be
+> setup prior to something else. Only someone knowledgeable of the
+> hardware, or who has the hardware in front and can test would be able
+> to work that out.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+I am on the same page with your explanation so far. I will test this out 
+on MT7531. Thanks a lot for looking at this!
 
+Arınç
 
