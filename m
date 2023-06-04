@@ -1,157 +1,135 @@
-Return-Path: <netdev+bounces-7752-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7753-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6A1EF721623
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 12:37:12 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 34A3C721631
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 12:47:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DE7A21C209D0
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 10:37:08 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8E2812811B5
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 10:47:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 65ACF23C6;
-	Sun,  4 Jun 2023 10:37:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AE7FA3D86;
+	Sun,  4 Jun 2023 10:47:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AEF823AE
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 10:37:09 +0000 (UTC)
-Received: from mail-vs1-xe2a.google.com (mail-vs1-xe2a.google.com [IPv6:2607:f8b0:4864:20::e2a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 511A4C1;
-	Sun,  4 Jun 2023 03:37:06 -0700 (PDT)
-Received: by mail-vs1-xe2a.google.com with SMTP id ada2fe7eead31-43b148975e0so1135366137.0;
-        Sun, 04 Jun 2023 03:37:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685875025; x=1688467025;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=J+cW+W+2ToTmL5Y4D5MrCTf7iqNWcTE2j9X0ITTZBzs=;
-        b=JExgNb84ODfc1n2XYy4S5jPF5F4lLgn7e28BYdaq3YfVbJndWp2rO96Rdh2dExcsHU
-         o6OARLsIs0cAT76nDYzVxjtwNmLABQakff6/4TpMI/yozfxXxqm6sFLyqf/w5LZIXBbJ
-         zC+DbBMB32zQiqJxDneHHS2/E0CYotb8OIUKI+V5VTIv2lWE148GMOVcB3Sz6inUchTf
-         5S7GFwgSCoO5P0QRbPejsO+0c74YvVvfAxGr0+h5lK3heEBzYzXCSo+dzGKndszXGaVs
-         IA/ycRfW5pKCmGcjO/I0uEXZ0x0f1bvZpRvY9SSAGseCrXor94SjXYofHsJViBEkHaHA
-         FT0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685875025; x=1688467025;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=J+cW+W+2ToTmL5Y4D5MrCTf7iqNWcTE2j9X0ITTZBzs=;
-        b=PwvDFW2X9EzaeO8vFkUZqGrOBqv3R1yqh39nS8ul0TyoFOB0CVEB3M2J11Giyo2Iz2
-         KHWu6GSP0q20t94vqw64JO3fTy/BXhi08cFuIsK6UgqOZLbpn/zUEC52gN/qqj14BzF3
-         5jC+AHfRjfy4s5iJ6Po/8rhEVKMEOXJX91Znh3acAl1n778uZz/TpKy6LG7BmuNo/Est
-         KxHFmJtlqvIOewr4RsKmKT4l1Sa6Q0czd4xgI4iWDp3cWi/G/8VxywtXABO+3NuByi2o
-         mbzoZjSiWgD7VVxPkYqtLeWAAIXLqnwXQEiMZ7aAcLa2KopkRkh/oOFEGoMDhA7YHqzN
-         uEuA==
-X-Gm-Message-State: AC+VfDyB2NPD6FgPfZsWnvhXA3FGHniBBTjq95s91WCAnRH/FqocZjmH
-	HhdMgjdRIfVk/hUopH8HaLfD1/R5BLgsmxtusTk=
-X-Google-Smtp-Source: ACHHUZ513qxEIwWk8MOPLcnOJPrO/Wo2Uzw+66oaJBk/NI2yjIIxpjaDAYLrj9ZkQ4LfwiupswBKzQbJRpPjBu09Eu4=
-X-Received: by 2002:a1f:c10f:0:b0:463:12f:d38e with SMTP id
- r15-20020a1fc10f000000b00463012fd38emr1281952vkf.1.1685875025217; Sun, 04 Jun
- 2023 03:37:05 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3CEA23A8
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 10:47:51 +0000 (UTC)
+Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B277AC1;
+	Sun,  4 Jun 2023 03:47:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1685875620; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=l74JK4QshxL/UBAapJGNaqWB+hhBu7Q+e0TTtkWRMHyCbPc+P7Y5RYpgqSV/ZkLlSn2Ujbn1t2HHGef9Qa/aRGUYQ9AJr6OjPyWYl0ZQRP2mu+nCFsYwN3LQeDfdkYlaeya3ftClKUm1L83sJK1VjmvCtnXIj2O02Aja9c4bbak=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1685875620; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+	bh=5CpE3G81EGn4kbCwrb3Lg35kP6vgfybZjy8KICU3Qkk=; 
+	b=fPsZDhzxDyE4La8mlUGpPywqc+aefiGSBe0U6Zq0pFn3bYET9A85pzzjtWCJiSIcMlgOOSantBjkzpoiVHlRZYKNDqI2ejwh5ZpP2OhMz3t58+6YW0JN6qWqdbbC3qm3SbTImg/JqOvlDnJ9iGNJ+a6B+xQuPkYZdBGVKbxmgxU=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=arinc9.com;
+	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+	dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1685875620;
+	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=5CpE3G81EGn4kbCwrb3Lg35kP6vgfybZjy8KICU3Qkk=;
+	b=BP44qi/99Wb4tyuFqD0glUZaYsSL96WIDdMjJGAndTdkAC7LAeh15RhteFHEEWXr
+	4bnjiAd/utzzZag6TwAKJm6HQfB2vyenuTeCg4DS54HA8a1ab9HjlGXoZuYgENfOfdD
+	EV/N+CPxzmSgyEZ/aVWsoioi1RRKGHne7Yp9cV7w=
+Received: from [192.168.99.249] (178-147-169-233.haap.dm.cosmote.net [178.147.169.233]) by mx.zohomail.com
+	with SMTPS id 168587561947163.66753033579096; Sun, 4 Jun 2023 03:46:59 -0700 (PDT)
+Message-ID: <826fd2fc-fbf8-dab7-9c90-b726d15e2983@arinc9.com>
+Date: Sun, 4 Jun 2023 13:46:46 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230602081135.75424-1-wuyun.abel@bytedance.com>
- <20230602081135.75424-3-wuyun.abel@bytedance.com> <20230602204159.vo7fmuvh3y2pdfi5@google.com>
-In-Reply-To: <20230602204159.vo7fmuvh3y2pdfi5@google.com>
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date: Sun, 4 Jun 2023 12:36:25 +0200
-Message-ID: <CAF=yD-LFQRreWq1RMkvLw9Nj3NQpJwbDSCfECUhh-aVchR-jsg@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 2/3] sock: Always take memcg pressure into consideration
-To: Shakeel Butt <shakeelb@google.com>
-Cc: Abel Wu <wuyun.abel@bytedance.com>, "David S . Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>, 
-	Vladimir Davydov <vdavydov.dev@gmail.com>, Muchun Song <muchun.song@linux.dev>, 
-	Simon Horman <simon.horman@corigine.com>, netdev@vger.kernel.org, linux-mm@kvack.org, 
-	cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH net-next 08/30] net: dsa: mt7530: change p{5,6}_interface
+ to p{5,6}_configured
+Content-Language: en-US
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: Vladimir Oltean <olteanv@gmail.com>, Sean Wang <sean.wang@mediatek.com>,
+ Landen Chao <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
+ Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
+ Florian Fainelli <f.fainelli@gmail.com>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Richard van Schagen <richard@routerhints.com>,
+ Richard van Schagen <vschagen@cs.com>,
+ Frank Wunderlich <frank-w@public-files.de>,
+ Bartel Eerdekens <bartel.eerdekens@constell8.be>, erkin.bozoglu@xeront.com,
+ mithat.guner@xeront.com, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org
+References: <20230522121532.86610-1-arinc.unal@arinc9.com>
+ <20230522121532.86610-1-arinc.unal@arinc9.com>
+ <20230522121532.86610-9-arinc.unal@arinc9.com>
+ <20230522121532.86610-9-arinc.unal@arinc9.com>
+ <20230524175107.hwzygo7p4l4rvawj@skbuf>
+ <576f92b0-1900-f6ff-e92d-4b82e3436ea1@arinc9.com>
+ <20230526130145.7wg75yoe6ut4na7g@skbuf>
+ <7117531f-a9f2-63eb-f69d-23267e5745d0@arinc9.com>
+ <ZHsxdQZLkP/+5TF0@shell.armlinux.org.uk>
+From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <ZHsxdQZLkP/+5TF0@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 2, 2023 at 10:42=E2=80=AFPM Shakeel Butt <shakeelb@google.com> =
-wrote:
->
-> On Fri, Jun 02, 2023 at 04:11:34PM +0800, Abel Wu wrote:
-> > The sk_under_memory_pressure() is called to check whether there is
-> > memory pressure related to this socket. But now it ignores the net-
-> > memcg's pressure if the proto of the socket doesn't care about the
-> > global pressure, which may put burden on its memcg compaction or
-> > reclaim path (also remember that socket memory is un-reclaimable).
-> >
-> > So always check the memcg's vm status to alleviate memstalls when
-> > it's in pressure.
-> >
->
-> This is interesting. UDP is the only protocol which supports memory
-> accounting (i.e. udp_memory_allocated) but it does not define
-> memory_pressure. In addition, it does have sysctl_udp_mem. So
-> effectively UDP supports a hard limit and ignores memcg pressure at the
-> moment. This patch will change its behavior to consider memcg pressure
-> as well. I don't have any objection but let's get opinion of UDP
-> maintainer.
+On 3.06.2023 15:26, Russell King (Oracle) wrote:
+> On Sat, Jun 03, 2023 at 03:15:52PM +0300, Arınç ÜNAL wrote:
+>> On 26.05.2023 16:01, Vladimir Oltean wrote:
+>>> Ok, but given the premise of this patch set, that phylink is always available,
+>>> does it make sense for mt7531_cpu_port_config() and mt7988_cpu_port_config()
+>>> to manually call phylink methods?
+>>
+>> All I know is that that's how the implementation of phylink's PCS support in
+>> this driver works. It expects the MAC to be set up before calling
+>> mt753x_phylink_pcs_link_up() and mt753x_phylink_mac_link_up().
+> 
+> First, do you see a message printed for the DSA device indicating that
+> a link is up, without identifying the interface? For example, with
+> mv88e6xxx:
+> 
+> mv88e6085 f1072004.mdio-mii:04: Link is Up - 1Gbps/Full - flow control off
+> 
+> as opposed to a user port which will look like this:
+> 
+> mv88e6085 f1072004.mdio-mii:04 lan1: Link is Up - 1Gbps/Full - flow control rx/tx
+> 
+> If you do, that's likely for the CPU port, and indicates that phylink
+> is being used for the CPU port. If not, then you need to investigate
+> whether you've provided the full description in DT for the CPU port.
+> In other words, phy-mode and a fixed-link specification or in-band
+> mode.
 
-Others have more experience with memory pressure on UDP, for the
-record. Paolo worked on UDP memory pressure in
-https://lore.kernel.org/netdev/cover.1579281705.git.pabeni@redhat.com/
+Yes I do see this. The DT is properly defined and the port is properly 
+set up as a CPU port.
 
-It does seem odd to me to modify sk_under_memory_pressure only. See
-for instance its use in __sk_mem_raise_allocated:
+> 
+> Given that, you should have no need to make explicit calls to your
+> mac_config, pcs_link_up and mac_link_up functions. If you need to
+> make these calls, it suggests that phylink is not being used for the
+> CPU port.
 
-        if (sk_has_memory_pressure(sk)) {
-                u64 alloc;
+Your own commit does this so I don't know what to tell you.
 
-                if (!sk_under_memory_pressure(sk))
-                        return 1;
+https://github.com/torvalds/linux/commit/cbd1f243bc41056c76fcfc5f3380cfac1f00d37b
 
-This is not even reached as sk_has_memory_pressure is false for UDP.
-So this commit only affects the only other protocol-independent
-caller, __sk_mem_reduce_allocated, to possibly call
-sk_leave_memory_pressure if now under the global limit.
-
-What is the expected behavioral change in practice of this commit?
-
-
-> > Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
-> > ---
-> >  include/net/sock.h | 6 ++----
-> >  1 file changed, 2 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/include/net/sock.h b/include/net/sock.h
-> > index 3f63253ee092..ad1895ffbc4a 100644
-> > --- a/include/net/sock.h
-> > +++ b/include/net/sock.h
-> > @@ -1411,13 +1411,11 @@ static inline bool sk_has_memory_pressure(const=
- struct sock *sk)
-> >
-> >  static inline bool sk_under_memory_pressure(const struct sock *sk)
-> >  {
-> > -     if (!sk->sk_prot->memory_pressure)
-> > -             return false;
-> > -
-> >       if (mem_cgroup_under_socket_pressure(sk->sk_memcg))
-> >               return true;
-> >
-> > -     return !!*sk->sk_prot->memory_pressure;
-> > +     return sk->sk_prot->memory_pressure &&
-> > +             *sk->sk_prot->memory_pressure;
-> >  }
-> >
-> >  static inline long
-> > --
-> > 2.37.3
-> >
+Arınç
 
