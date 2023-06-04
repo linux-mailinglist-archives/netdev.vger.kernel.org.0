@@ -1,149 +1,137 @@
-Return-Path: <netdev+bounces-7738-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7739-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AD8C0721572
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 09:59:41 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7DB80721584
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 10:07:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1DE3C280D32
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 07:59:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A806E1C20AE7
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 08:07:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6976915C1;
-	Sun,  4 Jun 2023 07:59:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 65DDD23CF;
+	Sun,  4 Jun 2023 08:07:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BC29258D
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 07:59:38 +0000 (UTC)
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D378EC1;
-	Sun,  4 Jun 2023 00:59:32 -0700 (PDT)
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-973bf581759so585956866b.0;
-        Sun, 04 Jun 2023 00:59:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685865571; x=1688457571;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=L5qs9/6uJ8IloMQNdJLVtRnVIUUbYS4OgcobJioBuxs=;
-        b=IOyS9YJN2q1l5k7+XFWXCLD79i9Fon8o6PvMP92XKembdHx7SWcjy8rnzijOan0sjJ
-         mxmK6KPk8iC/hYJQKbH0RpXFMW9/1VerLTbgjLKrJre8wEFidMkgCwD4KetTJIv4gfx3
-         YMa9ujX9mzlMM3VS5Ghak+Wplq8ksfsvNYmaX4M1wMeI2CQmWCg1quH1J+k6kKjO6ZtD
-         DScuzKKtAv/RYN5hHxlsXAMlv1dOjv7nctV0W7clSD8F6P+cwQFEOQ8CkIvJFVWGqBig
-         HGTyGDtVDPGWm2ltlo3JEPjvQUV6t/cgx+Nb5fa4QGdCQRgiDMFIlP2wFV+nOpbF6cbR
-         L/AQ==
-X-Gm-Message-State: AC+VfDwkQLnopZfQH/oxLWHuBu2xFynCK5zE+Z7+feKunigi1tE64ZtL
-	ikOeSmEszCk3vE2FxrmpJ2/KNl7AaCLqaw==
-X-Google-Smtp-Source: ACHHUZ5YcxrSr3RoUr9BpB/eNrGolI0P3RzHaj6jkcll2hTu+W/ZqJE8aYJUHyyTtYhUyjhQJWqKcQ==
-X-Received: by 2002:a17:907:3f1f:b0:974:5480:171e with SMTP id hq31-20020a1709073f1f00b009745480171emr4761698ejc.32.1685865570735;
-        Sun, 04 Jun 2023 00:59:30 -0700 (PDT)
-Received: from gmail.com (fwdproxy-cln-011.fbsv.net. [2a03:2880:31ff:b::face:b00c])
-        by smtp.gmail.com with ESMTPSA id u12-20020a05600c00cc00b003f7678a07c4sm383178wmm.29.2023.06.04.00.59.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Jun 2023 00:59:30 -0700 (PDT)
-Date: Sun, 4 Jun 2023 00:59:27 -0700
-From: Breno Leitao <leitao@debian.org>
-To: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: Remi Denis-Courmont <courmisch@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Alexander Aring <alex.aring@gmail.com>,
-	Stefan Schmidt <stefan@datenfreihafen.org>,
-	Miquel Raynal <miquel.raynal@bootlin.com>,
-	David Ahern <dsahern@kernel.org>,
-	Matthieu Baerts <matthieu.baerts@tessares.net>,
-	Mat Martineau <martineau@kernel.org>,
-	Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-	Xin Long <lucien.xin@gmail.com>, axboe@kernel.dk,
-	asml.silence@gmail.com, leit@fb.com, linux-kernel@vger.kernel.org,
-	netdev@vger.kernel.org, dccp@vger.kernel.org,
-	linux-wpan@vger.kernel.org, mptcp@lists.linux.dev,
-	linux-sctp@vger.kernel.org
-Subject: Re: [PATCH net-next v5] net: ioctl: Use kernel memory on protocol
- ioctl callbacks
-Message-ID: <ZHxEX0TlXX7VV9kX@gmail.com>
-References: <20230602163044.1820619-1-leitao@debian.org>
- <CAF=yD-Kk9mVWPZN50NUu8uGwEbySNS-WzvJ=1HTTcVsA6OOuvA@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A7D215C1
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 08:07:34 +0000 (UTC)
+Received: from sender3-op-o19.zoho.com (sender3-op-o19.zoho.com [136.143.184.19])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028AFED;
+	Sun,  4 Jun 2023 01:07:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1685866005; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=PBkjITfkcgLIrj2ukmOM0fJ4ihuOMqEtafmR6mLgSGjFYsPWhsa/gIVDeFBxRvEV00S3RKY0KxRNzRIriDKzhx/meoRB2k62oCGQGX8q5t16jdELu89k2cjkr4V2zGtnBeYfbeEIgxXJvmI7RltKCCWhCdYiVL2BUjy8a0gFz1Q=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1685866005; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+	bh=sfXhf5HJgDnX1ZAfbfzJSTS4W+MU2gPcWf2z5/WiU2I=; 
+	b=XO/GcWvk1dGtQphlY+JLIITYbd+c2jcZlNAdFTE3XvKRE6nbNvnwN8kVWpCw6DwvXHgPd0792ZuwZn8SE77mQS7qDuw7nqkV7NE6yE+kL31MKHULFA1KaQeYmNSVDk7nRF/7pOraSQKbIddZQV3Pm/40Zdg+RG5/qkZM7gJSHrE=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=arinc9.com;
+	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+	dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1685866005;
+	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=sfXhf5HJgDnX1ZAfbfzJSTS4W+MU2gPcWf2z5/WiU2I=;
+	b=faOgHM7yJfCX/G92IExil29L7G5rtErAxx0mk8VSkP3ZmS8nxcLRVlhYuCYshZL+
+	KMeA9mHW0+XhK//TTuG01mIzt9Vyt8ct+X8qezLytZdYPzBK6+yhUwCP+fkdTcWEg+E
+	ucMh091BVH2PsUjQ8b5C0OxIBiKTZjcVNWddMxVg=
+Received: from [192.168.66.198] (178-147-169-233.haap.dm.cosmote.net [178.147.169.233]) by mx.zohomail.com
+	with SMTPS id 16858660033101021.621262772672; Sun, 4 Jun 2023 01:06:43 -0700 (PDT)
+Message-ID: <e4aff9aa-d0c6-1f2e-7f16-35df59d51b90@arinc9.com>
+Date: Sun, 4 Jun 2023 11:06:32 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH net-next 24/30] net: dsa: mt7530: rename MT7530_MFC to
+ MT753X_MFC
+Content-Language: en-US
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>,
+ Vladimir Oltean <olteanv@gmail.com>
+Cc: Sean Wang <sean.wang@mediatek.com>, Landen Chao
+ <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
+ Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
+ Florian Fainelli <f.fainelli@gmail.com>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Richard van Schagen <richard@routerhints.com>,
+ Richard van Schagen <vschagen@cs.com>,
+ Frank Wunderlich <frank-w@public-files.de>,
+ Bartel Eerdekens <bartel.eerdekens@constell8.be>, erkin.bozoglu@xeront.com,
+ mithat.guner@xeront.com, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org
+References: <20230522121532.86610-1-arinc.unal@arinc9.com>
+ <20230522121532.86610-25-arinc.unal@arinc9.com>
+ <20230526154258.skbkk4p34ro5uivr@skbuf>
+ <ZHDVUC1AqncfF2mK@shell.armlinux.org.uk>
+From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <ZHDVUC1AqncfF2mK@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAF=yD-Kk9mVWPZN50NUu8uGwEbySNS-WzvJ=1HTTcVsA6OOuvA@mail.gmail.com>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,FSL_HELO_FAKE,
-	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-	RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=no autolearn_force=no version=3.4.6
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello Willem 
 
-On Sat, Jun 03, 2023 at 10:21:50AM +0200, Willem de Bruijn wrote:
-> On Fri, Jun 2, 2023 at 6:31 PM Breno Leitao <leitao@debian.org> wrote:
-> > Signed-off-by: Breno Leitao <leitao@debian.org>
+
+On 26.05.2023 18:50, Russell King (Oracle) wrote:
+> On Fri, May 26, 2023 at 06:42:58PM +0300, Vladimir Oltean wrote:
+>> On Mon, May 22, 2023 at 03:15:26PM +0300, arinc9.unal@gmail.com wrote:
+>>>   	/* Disable flooding on all ports */
+>>> -	mt7530_clear(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK |
+>>> -		     UNU_FFP_MASK);
+>>> +	mt7530_clear(priv, MT753X_MFC, MT753X_BC_FFP_MASK | MT753X_UNM_FFP_MASK
+>>> +		     | MT753X_UNU_FFP_MASK);
+>>
+>> The preferred coding style is not to start new lines with operators.
+>>
+>>> +/* Register for CPU forward control */
+>>>   #define MT7531_CFC			0x4
+>>>   #define  MT7531_MIRROR_EN		BIT(19)
+>>> -#define  MT7531_MIRROR_MASK		(MIRROR_MASK << 16)
+>>> -#define  MT7531_MIRROR_PORT_GET(x)	(((x) >> 16) & MIRROR_MASK)
+>>> -#define  MT7531_MIRROR_PORT_SET(x)	(((x) & MIRROR_MASK) << 16)
+>>> +#define  MT7531_MIRROR_MASK		(0x7 << 16)
+>>
+>> minor nitpick: if you express this as GENMASK(18, 16), it will be a bit
+>> easier to cross-check with the datasheet, since both 18 and 16 are more
+>> representative than 0x7.
+>>
+>>> +#define  MT7531_MIRROR_PORT_GET(x)	(((x) >> 16) & 0x7)
+>>
+>> also here: (((x) & GENMASK(18, 16)) >> 16)
 > 
-> Please check the checkpatch output
+> Even better are:
+> #define  MT7531_MIRROR_PORT_GET(x)	FIELD_GET(MT7531_MIRROR_MASK, x)
 > 
-> https://patchwork.hopto.org/static/nipa/753609/13265673/checkpatch/stdout
-
-I am checking my current checkpatch before sending the patch, but I am
-not seeing the problems above.
-
-My tree is at 44c026a73be8038 ("Linux 6.4-rc3"), and I am not able to
-reproduce the problems above.
-
-	$ scripts/checkpatch.pl v5/v5-0001-net-ioctl-Use-kernel-memory-on-protocol-ioctl-cal.patch
-	total: 0 errors, 0 warnings, 0 checks, 806 lines checked
-	v5/v5-0001-net-ioctl-Use-kernel-memory-on-protocol-ioctl-cal.patch has no obvious style problems and is ready for submission.
-
-Let me investigate what options I am missing when running checkpatch.
-
-> > +/* A wrapper around sock ioctls, which copies the data from userspace
-> > + * (depending on the protocol/ioctl), and copies back the result to userspace.
-> > + * The main motivation for this function is to pass kernel memory to the
-> > + * protocol ioctl callbacks, instead of userspace memory.
-> > + */
-> > +int sk_ioctl(struct sock *sk, unsigned int cmd, void __user *arg)
-> > +{
-> > +       int rc = 1;
-> > +
-> > +       if (sk_is_ipmr(sk))
-> > +               rc = ipmr_sk_ioctl(sk, cmd, arg);
-> > +       else if (sk_is_icmpv6(sk))
-> > +               rc = ip6mr_sk_ioctl(sk, cmd, arg);
-> > +       else if (sk_is_phonet(sk))
-> > +               rc = phonet_sk_ioctl(sk, cmd, arg);
+>>
+>>> +#define  MT7531_MIRROR_PORT_SET(x)	(((x) & 0x7) << 16)
+>>
+>> and here: (((x) << 16) & GENMASK(18, 16))
 > 
-> Does this handle all phonet ioctl cases correctly?
+> #define  MT7531_MIRROR_PORT_SET(x)	FIELD_PREP(MT7531_MIRROR_MASK, x)
 > 
-> Notably pn_socket_ioctl has a SIOCPNGETOBJECT that reads and writes a u16.
+> No need to add parens around "x" in either of these uses as we're not
+> doing anything with x other than passing it into another macro.
 
-We are not touching  "struct proto_ops" in this patch at all.  And
-pn_socket_ioctl() is part of "struct proto_ops".
+Thanks. I suppose the GENMASK, FIELD_PREP, and FIELD_GET macros can be 
+widely used on mt7530.h? Like GENMASK(2, 0) on MT7530_MIRROR_MASK and 
+FIELD_PREP(MT7530_MIRROR_MASK, x) on MT7530_MIRROR_PORT(x)?
 
-	const struct proto_ops phonet_stream_ops = {
-		  ...
-		  .ioctl          = pn_socket_ioctl,
-	}
-
-That said, all the "struct proto_ops" ioctl calls backs continue to use
-"unsigned long arg" with userspace information, at least for now.
-
-	struct proto_ops {
-		...
-		int             (*ioctl)     (struct socket *sock, unsigned int cmd,
-					      unsigned long arg);
-	}
-
-This patch only changes the "struct proto".
+Arınç
 
