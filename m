@@ -1,69 +1,71 @@
-Return-Path: <netdev+bounces-7783-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7784-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6A2F5721797
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 16:02:25 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2BB3E72179D
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 16:18:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C75DB1C20A1F
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 14:02:21 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8C19D2810BE
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 14:17:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A0133DDA3;
-	Sun,  4 Jun 2023 14:02:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C14C7DDAB;
+	Sun,  4 Jun 2023 14:17:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93D6533F2
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 14:02:22 +0000 (UTC)
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2124.outbound.protection.outlook.com [40.107.223.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77FF1E45
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 07:02:16 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B41E623C6
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 14:17:56 +0000 (UTC)
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2467CD2
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 07:17:55 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SoBSDZjLUvdNbXY1wwjxlMokRmzRc7/VgZzaW6d2mOyNY0XKXPVFptmblErvVUPOkf5ugSOq9BlMgH5icTOZib9ObrxhhYaXNAiIMVr1HIE4HyNXeql6n6GQhBHzoRaM8qGgqv7HKnOX/h/7oS/RrJAjJtYkQf9zCpZEzsa4eRWc/fBY33Sp0yYzfjeVJi5fU32+ADIYuz0G+Poi1Pp9w9qerpXL9GhsBtKNzv4Mdeqodbh2b+6MkI7f0QkND+QDwEBMWDyrIzfGDGfDdADZ1gXOz7D4L3NNDAyyTLYKbTdUZYCnaN2QJ/vtDfnGvNoU7YbC8J1fOb+V3w86GZnmNQ==
+ b=T0wJB+fIKUUoEi+P6WHtDkpWzlyAXQTl2nj+H0i211YNE1hHxvDQw0by8x8j9h/hpVkfUwcfIQLjz4InypsU495c75MPHiBQjlWp+8WH8dfPilXhH3NYWBzYwWTPS5ur+Eyi0YGlLoxZanJFPnsghJlUBEKYTWMAW4YD9+yX1PX9FtyKgP7MFV1iByYlwmB80Kcr+n62dbaNZ3X8Htj4aUgKCbndUsuDpdPF6yze7JRrbPHqCUz7ITMSrqmkT4sFgVtMQXpUmYbpTrIOgNlgxwvMYyugDLfwtMlyizRMY+vSBJpY+eJ7eeGYco2e991ZOU1bPfzEwUZqIG9nPBqVMA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4kvtpGreL2esoAmQHzVL4MLczmw76jV4g9c3jLGf5qA=;
- b=TCTppyy1eN3ty7t60y+c0mYrag+hLoYNTSuhcXQWJmWmAFbU1wmmI7U4J5BSE4fBjw+u1T/+sHMxrwkaj4e0xAjGpyddX3MXOA9MvUtf4SBJbObMDCMdc3u2XLnwFe1V7LjButIZza5uDcPjiz3EBPBRua8jfRkfSwP+P0lEv9nnOhvNpIXzqhVW8gMdILvJLsO0KqAI2N7a8dAtpGjmhCTw4fHFbMWHZCyA4nTb66AODlMBIpVuPKCG3rKtsACxV73jw5pAW714GMsYbCH3wb2F9YrZ+6l+iQw7VdDTNK/LcH42HrVhqoeo9AmbF0Gy3a18GXX+UgTXSKb1kQ8myw==
+ bh=blY9DWT8/ISsBgjUpqbaPOXcsFTMTSSNMAxP5Lo+JQk=;
+ b=Isy29EvnrE7rDxR4HUIZIf+TIQs92xhcA4r9WbRNnPOiECven5BRyDc1Pbq8oPHqybdG82PQ3cbZjaCtbLZves+jckkBTp+Wztcb1Vm8HLIR1DRkKeCZ4nCKLp8hZ3GIZ2CwdJsekIe+JyohocbLKLFm0voHCHiL/9SDO8qzzmmmBFcOcjv3P8EQsPBZTimVAwPnzE69ByvOuy7anf6b0q525Nmeh7aZZ3BOEDpMw09lwcna81ufYpVTNstgNxnMRoZSkF9enY3bj8Wi5oCOIxLsetuE3RvHzIWjaRxXiSUkLwQWAFkmFOp2QWp26MnuDIerqezwln0KsgornPVy9Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4kvtpGreL2esoAmQHzVL4MLczmw76jV4g9c3jLGf5qA=;
- b=ERx3OX2QOdocHRSZQqoYpIaqL/iwB/d75OH8verCmmEj09uZLq+q4vf2UfSjKfDogyBqNyDguuUbBCWieMlfHuVHMnEfCGJvFnGFXx98wrX/tgurGcIdS1c6gPqjVG/DR2uQUhZGuSjUCEWeq6MZm+IySmQATKtBrboKadnymME=
+ bh=blY9DWT8/ISsBgjUpqbaPOXcsFTMTSSNMAxP5Lo+JQk=;
+ b=GGQpxFuzUjIcGLCqTCtWdrwQlx6ea32Huprb8nkOsRi6RCZff6pGY2tbbLotjOkNcvSTAXhPDQU3mdl30OymC4I+Pdto8GOVhEviuvtRjn2S2ccY5TTn/86RDJQ4VLx/O9CozeQMzFt10m1yxrFdnIUJ5vAjkA44TNhY5cr2aIg=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM6PR13MB3692.namprd13.prod.outlook.com (2603:10b6:5:229::7) with
+ by BN0PR13MB5232.namprd13.prod.outlook.com (2603:10b6:408:15b::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Sun, 4 Jun
- 2023 14:02:11 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.31; Sun, 4 Jun
+ 2023 14:17:52 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6455.030; Sun, 4 Jun 2023
- 14:02:11 +0000
-Date: Sun, 4 Jun 2023 16:02:04 +0200
+ 14:17:52 +0000
+Date: Sun, 4 Jun 2023 16:17:44 +0200
 From: Simon Horman <simon.horman@corigine.com>
 To: Wojciech Drewek <wojciech.drewek@intel.com>
 Cc: intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
 	alexandr.lobakin@intel.com, david.m.ertman@intel.com,
 	michal.swiatkowski@linux.intel.com, marcin.szycik@linux.intel.com,
 	pawel.chmielewski@intel.com, sridhar.samudrala@intel.com,
-	pmenzel@molgen.mpg.de, dan.carpenter@linaro.org
-Subject: Re: [PATCH iwl-next v4 05/13] ice: Unset src prune on uplink VSI
-Message-ID: <ZHyZXLTY5bo0C2CU@corigine.com>
+	pmenzel@molgen.mpg.de, dan.carpenter@linaro.org,
+	Jakub Kicinski <kuba@kernel.org>,
+	Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH iwl-next v4 07/13] ice: Switchdev FDB events support
+Message-ID: <ZHydCI08zJip88rj@corigine.com>
 References: <20230524122121.15012-1-wojciech.drewek@intel.com>
- <20230524122121.15012-6-wojciech.drewek@intel.com>
+ <20230524122121.15012-8-wojciech.drewek@intel.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230524122121.15012-6-wojciech.drewek@intel.com>
-X-ClientProxiedBy: AM9P195CA0020.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:20b:21f::25) To PH0PR13MB4842.namprd13.prod.outlook.com
+In-Reply-To: <20230524122121.15012-8-wojciech.drewek@intel.com>
+X-ClientProxiedBy: AS4PR09CA0009.eurprd09.prod.outlook.com
+ (2603:10a6:20b:5e0::12) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -72,75 +74,191 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB3692:EE_
-X-MS-Office365-Filtering-Correlation-Id: a1ae8643-c6b9-43f4-2e3f-08db65044aab
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BN0PR13MB5232:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2fb9481a-9176-4bfa-1efc-08db65067b64
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	Hbp72TtRsoyohda69c3fQEhHlvoRlKr0UzU8CdUoN5rBfEasiYyRVZXNjV2wwQyQFXNTN0LZjfv30eqm8CIHaSRhr//ZBOIj9yVducSlL8fQtZGtYiwpVu+FtiraYWC7RfKvZ8obh/TzZj4CkxYAyLE1BC5SAH0spK07atkg6VeydZiyhenM17AQHSCvbP3kT8qAATltYAnO+R1P/oS3ourKiGP6GEiFPbEc+KDwEMRHlwXdA/ZYIrDiBjdY7Ci9hw5rfE+jFWfroxxZi0/c+zfCLcqabTyFuEwrE5Gknyq9cTwtX0P9i73M9vqjM/nXIwldK7/wWzeb5VUOwV2T3JBsumg64K52jhWFWiZD8JJEDOv5P2jRZx7FxSdSUjSK2VOtDJXMrys9egfI+ARznjDCvJWBRpxJfpA7ov33VKStLFFDRXFojMcO9zaz9m3dbJSLN5feeQN7VkjoWvcnEhuH0iLk93tFTtxc+++12Nu7jPbFTd6F+yR5S7oxhTqt39zflHYvX5vRW9p6xtUVIg2M3mS/9TQLEkCFBOLGOek3TzS2dT0XT/KX3LRiJQpj
+	VttrC72k96uHgVO8xjPKvOxO3TjLSrdRpUyRUUCTwPyj6FYFmNzTbjkNaHgivzXvBRn21VLPpwnB+dz6BK+xcew/DGVQmJpa9wxF4DVZtf+CQSZGmaUrbaN+Xa5psycFzPNsVnP8VQQBBlEuxXxvo2Eq/bROD7ntwt9x9Fs8uTij8PTlBwc5eMbMUwLo9uPAcXq8Y1s89MySUH4SFK/+m+kppP4cszVtKqhummAQ3iDtemy6X5bvyeuoTNsC41xPfsZ8FwqVpTeOcQPqZOAmXlm381oFftDF4eF38BpBSGEEW5X10UvFAbomujQB7Cya5483Ucu4ewtxKLyI4xPVjGNgm87vt3JTS4pSvo/zHvl1LjKpLYjt9oVaz5XmFixQlc2TLHcpM1M6yJQyRK8/iE3D8E8Z3EukpPmTOmE6tQZNkJ5AhwilxIDCKS09yMwSTIXRuRz7mY2MlWbYodVbi0MSZWNSBBRozF3jUJgxC1uT+38EeaTzUpIuu7K8Sit4t+4ZgzFf5wkGVdPXeGIBNuBzZXvckQI05sNjVVFaS955gMEex/GB6ytlsxSCdI8j
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(366004)(39830400003)(346002)(376002)(451199021)(478600001)(5660300002)(8936002)(8676002)(44832011)(7416002)(36756003)(2906002)(4744005)(86362001)(4326008)(6916009)(66476007)(66556008)(66946007)(316002)(38100700002)(41300700001)(2616005)(6512007)(6506007)(186003)(6486002)(6666004);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(366004)(39830400003)(376002)(396003)(451199021)(2616005)(6506007)(6512007)(44832011)(316002)(83380400001)(6916009)(66556008)(4326008)(66946007)(66476007)(6486002)(6666004)(186003)(478600001)(54906003)(36756003)(66899021)(2906002)(5660300002)(8936002)(8676002)(86362001)(7416002)(41300700001)(38100700002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?JjIr1Kz3ZQ+AJCtbNH7X0QzhlfsxVqp4cISs+lZKzvkJpOMB9QCuqP9CQMiW?=
- =?us-ascii?Q?ia1u+egORIpaSD2GU06e/3CDlypTciyQyxYKsKQY49xKjLtyI5Gw0J3KpsrC?=
- =?us-ascii?Q?aeeQpxSuCBNdhvGHavpPtCjMaE2FPJRyGPUMd9V7Xk1gsH5xhtaDwb2XA9Rt?=
- =?us-ascii?Q?R8k+zFEk6XHObbCcWWwp5Tj3uFHtiN9vJMHV1l2F71nZ5CcCH83B3lWpkfIi?=
- =?us-ascii?Q?fMB26jqxU6Jz5qW1kf94ClqhhjyVFXKxt0pN83O31vi1UQtZqH+7KTI7Atqy?=
- =?us-ascii?Q?bn/OwCXWB1VVsYQUd0o5X3LmXXllj/ZWoYg3efWx4zZjj8vlmMsa4aJ51F7g?=
- =?us-ascii?Q?QrxU5YBFEcfKfgSgCUexatfeYzIF2lSiJvWk7LT4NSStULFuFG29RzPoGrT7?=
- =?us-ascii?Q?qmYgN3+PrA8baMFgjKx18hHGxiEtlXbJLMZlR5pz6qzI9rj8aintijE6eo0o?=
- =?us-ascii?Q?IbVYH1S/r+g4G1N8Gr1ZBTVFibPX1A1xZTkTzoSdctUkWLSGSpQbUioA2sXc?=
- =?us-ascii?Q?xrFAEeaxrAycuJDNegZlMHJaGPqRycXHgrBMHTpmqoEgZn7dVBU0+NH33sMh?=
- =?us-ascii?Q?T1hFemSVzgff7zjUyrIQTulQMo3MsIBws7RjIGp5etMEHMXwMEnXXNOWFopN?=
- =?us-ascii?Q?ppUj0BgffD9X246QH9AhHNgKj+MKujnGMTqV4l3hms+wS2XTaYP63tXDHJX6?=
- =?us-ascii?Q?Sfj1E1Nm2bM4i7xA3f2oMv3UgJclZjxBsXS61KXP4cIHVeIpEQVHxf3URhs0?=
- =?us-ascii?Q?LG5cZB4kjQZJYXZnDQ2GJjRqWF+2M9p3Oz7Enrfhl21p8xMzpmK4Edq6D6TX?=
- =?us-ascii?Q?Af8iz94iHWjvY2ie0w5NwQjpPN6rGqfPBj5WqcYHXW37frbkD3AptqM4w+zn?=
- =?us-ascii?Q?YzAXeCiByFCXQIkgh1v8YYyoW6CtnYC/xeKxDfP6mICmgAWDiTZPISNedcM1?=
- =?us-ascii?Q?Zf+maIKqWiRtl7mVlY2GZFwH/j3ByuwbxkSF53AjJpI6BCQqcjKPuRCrTQUn?=
- =?us-ascii?Q?peksPeo7jioyY/wG14cnjUGhYLGL6RvAFUSNb8/cqzHLt+XsqMY1UdEDz7ie?=
- =?us-ascii?Q?pLZCrNdMWQicz5fPTbh/ZyNHNdvTf3pr2YifQ4m0t+pT+a+9a4sYMPvzNBL6?=
- =?us-ascii?Q?V/tZFl2CDUQWUqDNZ2b+Ai/z2DLTyL20wMqCRi/DBcDpHxowmshLNs679RHr?=
- =?us-ascii?Q?6/LKbuN6AjyI/wlGI7/5yfVYv9ig4EoXFqmLYto2KQrSfD+mPbxCyTx9RdYI?=
- =?us-ascii?Q?n8TkFOPOSHM/9t8xeeBWN8QelsjWuMXekg6Y0+xc5igSrumR+OMbCGZ5beLj?=
- =?us-ascii?Q?sqKhBsx42mWElh16SVhDI1cYklZWu+GSbe+yYoCzs/givd+Z5n/yNUU3ApO8?=
- =?us-ascii?Q?UnrplTPS8iG6rfzqX1QJBZnieNgU2+cQ8g6AmYPRjiT3usucqeUclphGwa39?=
- =?us-ascii?Q?HaEIMzX/Du7GCO6rbC8okaZXNvJ8/Wf6Q4SduS/B9TSlXwk6C1H0UhO75xl4?=
- =?us-ascii?Q?lWs3OuFvZcG0M6R6YyQaIGTOVrSeBz33kzLSmdKsSFASUXavEx6TyjeNigJ/?=
- =?us-ascii?Q?RZix/c8WLglTadrOPpjqGSs3Xr2mKOqoPucoS5KG+d9Lk80+kBUQ9KreS3vw?=
- =?us-ascii?Q?G6vdabDOlEBkIupYwI6ZYKk1tpuv1fdGhpGbagqJHiFve81Jsnz1meHERkcW?=
- =?us-ascii?Q?6QuLpA=3D=3D?=
+	=?us-ascii?Q?Vhuwu3lCH1akpi2iWrBmcpSL46MwmeAdzYZn4EKSwEqrJQPnhJr8YvbO1W0o?=
+ =?us-ascii?Q?3bQwJzrzE/jHkoUZ4LTbCSjSlmeiH1oBrY82WcnD3OQ1Iajj8OfUGQR+kiAY?=
+ =?us-ascii?Q?eVSMzp6tbOFu3Z6hTbL4UbPbTiOpAflLImx7IBebg7IwgoepZsKBxxIbc6yO?=
+ =?us-ascii?Q?bGYx3PJtovnsSnynLs5LNL/GEJkWrZw6fQ+gkVq2FjbwQZhuzyZo19dERggN?=
+ =?us-ascii?Q?LkUYprjYDhn4YgC5f1xYQWYIeiM8PKFQ20GS5BQhpkCFq8TUNHxiNrRDAQpN?=
+ =?us-ascii?Q?xsrVPyIzohPuVsAxVukr7Xr2VPnJpM85XEleAASzp7sA8z318ojT2fik2JIA?=
+ =?us-ascii?Q?3bjFeUH2dZfa2zTIQaDBT+qWuvGdTWy8VixeAmFpWEuFrB9joxdBVd1WRvno?=
+ =?us-ascii?Q?gMo/27m38UhdbyuykR78Y4Imc94tkxZnNbEwr/voIuMoKAKF2eueOZMMzK8B?=
+ =?us-ascii?Q?w2U6Mfp3jfduADPwiJmkBj+tAB5LS3RsaOW998MUJR9X0JzSbpSO2mBfrLM/?=
+ =?us-ascii?Q?3Ml0gQeq402ygccpgCZvQiZlkL791fGi43eOmLAwi78U/bh8+ZnaBkbSgpZY?=
+ =?us-ascii?Q?tohfSgPwrozm23cEg75Ivy4HzKCblKJnTUcqHh7Wlu7RMbMvTHtIBW/tLz4y?=
+ =?us-ascii?Q?EBtsejt90m5CRxY3UCOreyeK1EEw1KCn/Tmjy+SBeXIBMHUZR1z7FcwwuwI5?=
+ =?us-ascii?Q?8/aVCCbbCBrEEn72eL1MoSbFU4h1FqXSzMpKV/lsbsW6fBXitoXHDhL/gmNX?=
+ =?us-ascii?Q?rCACtJQzx8CHUCiaLvD0dqBfnkYpYQTAhM0bnvfhWtGpTCujrTSpdx6s+68Y?=
+ =?us-ascii?Q?b9nPvUasUo4qZgj4R0320GYK1Zxzb5Ryf5WGFOxlfeB6J2deFSeY+KK9YiUb?=
+ =?us-ascii?Q?+q/a2Z3Ly4CQ30rJyOlTJUAjGm0421cWcbzcPd3rkj0YKqRawtq+kktmbsn9?=
+ =?us-ascii?Q?MGe0Z/kTgNrQq2O7eKiqQGxJjjLCs+SX1FmOylqBBd2S8Uw+SqHd2e7BhYPy?=
+ =?us-ascii?Q?ZwB+ZcvMW42UsBcdjQJ4XeOw3biBMfr3ZPOcVzgJJ1rCZulYmlCPrmChBzca?=
+ =?us-ascii?Q?n4x1Qbbe+qFJyZG3vvdbmD6EHoDamnpgxXSyTjVJU3IcAvCwOTFEqtvx0YSu?=
+ =?us-ascii?Q?vNqDgrW5SXwYoBK1pBf4xB/I1yBdXR1ZFHgJK/nw3PEpgocKtFiz8ry7GVjx?=
+ =?us-ascii?Q?Isaasn7ajelPbYUW5GHyChUVVENhZSSpv+BKi0MQuOA34FJrZIzrYhuRtmRC?=
+ =?us-ascii?Q?qs/5zYoUKilXZVpBBA+Yob0+cvjHc6oaQOqnCi5mLFEUIFkqrwjgg0qdny79?=
+ =?us-ascii?Q?wyg7WcIOZVhEBLQqXajxiCWH2I6KnFGSW0DFA81vAt4LMS3l/PB0HfzFe9Rt?=
+ =?us-ascii?Q?YgZR1LtIT/ygCbPadc6i1gZ3wxCYsE0nn/Ty7kQ1FsAzme9KN1ix8HGWDrjQ?=
+ =?us-ascii?Q?rYxHnkce8ngTfCMy1n2M/DMsD+eV4Y8dPZ0hrX+tH9y2BNx3azmljfZLQp05?=
+ =?us-ascii?Q?e2yMrMoxzDdbq8GqQxKOlq5blmgm5NM93rsmyibKuJZDeOlUSs/aMiK2ub9o?=
+ =?us-ascii?Q?pa5uEID+Wzvj0Lzj5LHgL93kAENOOv9YJA543i0QgWialD5YLa4C37GFUqHg?=
+ =?us-ascii?Q?JLVw+b7qXNUZXFOBBUV4gMd2BQWaKSTSHyklGLIxNu2kMcyuZOW3qMczynvi?=
+ =?us-ascii?Q?I+tNrQ=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1ae8643-c6b9-43f4-2e3f-08db65044aab
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2fb9481a-9176-4bfa-1efc-08db65067b64
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jun 2023 14:02:11.1231
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jun 2023 14:17:52.1432
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FAOictq8udougByk6V7GQeP3Q8MsgxdHhHoLmf+KgCfNlF3ez09FNaDDDSIeWei+4IjrVJi7dm7oQZrEDs0OnltdbVTikK0xamr4eUZ0wrs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB3692
+X-MS-Exchange-CrossTenant-UserPrincipalName: Vyn9Woa8MplRbwN1o889FEUxMp7u3bTEA38wQXQzNNj+CJbsDW8eHS5VRtixYjLfWKxLcRLhP2gYihuwRnn8XdFIl5jF7+zktgkGhkov4nk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR13MB5232
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, May 24, 2023 at 02:21:13PM +0200, Wojciech Drewek wrote:
-> In switchdev mode uplink VSI is supposed to receive all packets that
-> were not matched by existing filters. If ICE_AQ_VSI_SW_FLAG_LOCAL_LB
-> bit is unset and we have a filter associated with uplink VSI
-> which matches on dst mac equal to MAC1, then packets with src mac equal
-> to MAC1 will be pruned from reaching uplink VSI.
++ Jakub, Eric
+
+On Wed, May 24, 2023 at 02:21:15PM +0200, Wojciech Drewek wrote:
+> Listen for SWITCHDEV_FDB_{ADD|DEL}_TO_DEVICE events while in switchdev
+> mode. Accept these events on both uplink and VF PR ports. Add HW
+> rules in newly created workqueue. FDB entries are stored in rhashtable
+> for lookup when removing the entry and in the list for cleanup
+> purpose. Direction of the HW rule depends on the type of the ports
+> on which the FDB event was received:
 > 
-> Fix this by updating uplink VSI with ICE_AQ_VSI_SW_FLAG_LOCAL_LB bit
-> set when configuring switchdev mode.
+> ICE_ESWITCH_BR_UPLINK_PORT:
+> TX rule that forwards the packet to the LAN (egress).
+> 
+> ICE_ESWITCH_BR_VF_REPR_PORT:
+> RX rule that forwards the packet to the VF associated
+> with the port representor.
+> 
+> In both cases the rule matches on the dst mac address.
+> All the FDB entries are stored in the bridge structure.
+> When the port is removed all the FDB entries associated with
+> this port are removed as well. This is achieved thanks to the reference
+> to the port that FDB entry holds.
+> 
+> In the fwd rule we use only one lookup type (MAC address)
+> but lkups_cnt variable is already introduced because
+> we will have more lookups in the subsequent patches.
 > 
 > Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+...
 
+> +static void
+> +ice_eswitch_br_fdb_event_work(struct work_struct *work)
+> +{
+> +	struct ice_esw_br_fdb_work *fdb_work = ice_work_to_fdb_work(work);
+> +	bool added_by_user = fdb_work->fdb_info.added_by_user;
+> +	struct ice_esw_br_port *br_port = fdb_work->br_port;
+> +	const unsigned char *mac = fdb_work->fdb_info.addr;
+> +	u16 vid = fdb_work->fdb_info.vid;
+> +
+> +	rtnl_lock();
+> +
+> +	if (!br_port || !br_port->bridge)
+> +		goto err_exit;
+> +
+> +	switch (fdb_work->event) {
+> +	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+> +		ice_eswitch_br_fdb_entry_create(fdb_work->dev, br_port,
+> +						added_by_user, mac, vid);
+> +		break;
+> +	case SWITCHDEV_FDB_DEL_TO_DEVICE:
+> +		ice_eswitch_br_fdb_entry_find_and_delete(br_port->bridge,
+> +							 mac, vid);
+> +		break;
+> +	default:
+> +		goto err_exit;
+> +	}
+> +
+> +err_exit:
+> +	rtnl_unlock();
+> +	dev_put(fdb_work->dev);
+
+Hi Wojciech,
+
+I notice that the CI flags this as use of a deprecated API.
+So I'm wondering if it would be better written using netdev_put()
+And likewise, I'm wondering if other users in the ice driver should be
+updated.
+
+> +	ice_eswitch_br_fdb_work_dealloc(fdb_work);
+> +}
+
+...
+
+> +static int
+> +ice_eswitch_br_switchdev_event(struct notifier_block *nb,
+> +			       unsigned long event, void *ptr)
+> +{
+> +	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
+> +	struct switchdev_notifier_fdb_info *fdb_info;
+> +	struct switchdev_notifier_info *info = ptr;
+> +	struct ice_esw_br_offloads *br_offloads;
+> +	struct ice_esw_br_fdb_work *work;
+> +	struct ice_esw_br_port *br_port;
+> +	struct netlink_ext_ack *extack;
+> +	struct net_device *upper;
+> +
+> +	br_offloads = ice_nb_to_br_offloads(nb, switchdev_nb);
+> +	extack = switchdev_notifier_info_to_extack(ptr);
+> +
+> +	upper = netdev_master_upper_dev_get_rcu(dev);
+> +	if (!upper)
+> +		return NOTIFY_DONE;
+> +
+> +	if (!netif_is_bridge_master(upper))
+> +		return NOTIFY_DONE;
+> +
+> +	if (!ice_eswitch_br_is_dev_valid(dev))
+> +		return NOTIFY_DONE;
+> +
+> +	br_port = ice_eswitch_br_netdev_to_port(dev);
+> +	if (!br_port)
+> +		return NOTIFY_DONE;
+> +
+> +	switch (event) {
+> +	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+> +	case SWITCHDEV_FDB_DEL_TO_DEVICE:
+> +		fdb_info = container_of(info, typeof(*fdb_info), info);
+> +
+> +		work = ice_eswitch_br_fdb_work_alloc(fdb_info, br_port, dev,
+> +						     event);
+> +		if (IS_ERR(work)) {
+> +			NL_SET_ERR_MSG_MOD(extack, "Failed to init switchdev fdb work");
+> +			return notifier_from_errno(PTR_ERR(work));
+> +		}
+> +		dev_hold(dev);
+
+Likewise, I'm wondering if this should be netdev_hold().
+
+> +
+> +		queue_work(br_offloads->wq, &work->work);
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +	return NOTIFY_DONE;
+> +}
+> +
+
+...
 
