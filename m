@@ -1,108 +1,149 @@
-Return-Path: <netdev+bounces-7737-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7738-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3798572154E
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 09:19:12 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id AD8C0721572
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 09:59:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 675021C20AD2
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 07:19:08 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1DE3C280D32
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 07:59:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E526D23CF;
-	Sun,  4 Jun 2023 07:19:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6976915C1;
+	Sun,  4 Jun 2023 07:59:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA6AA15C1
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 07:19:08 +0000 (UTC)
-Received: from sender3-op-o19.zoho.com (sender3-op-o19.zoho.com [136.143.184.19])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60A18D2;
-	Sun,  4 Jun 2023 00:19:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1685863111; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=Du25Szoeq7xfXqGzr1DFoJ2H6FK1MGnor4r1Es1MjuKbi/OTLokEFgD9W8YMF8dDhi2/haKqJBQwx2Klwg9E2BcZzkrq1MMdaUPR3tMyRsZ0i7/2jBU4tZ4ApncIU97x2LB3n/tVsy3ByEqgQqbidck0MKZtElHu69xauBwRnwU=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1685863111; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-	bh=kxiz5zm70BezbuNN8v6JP8irFq1B+lspoXHQDQtRgY8=; 
-	b=IZiqA7xnNyrietBNPyKPoWFW5JgzzXWn+ffU/xeZ4iwTU0Er7pX4JSF5sommXubs/yARDCDyBx0tc3TYIUVHS5KJX3jFK4KWc+Emez4OF+lsxNB4fZdztXbE3uxvTlbGleKGe8+vtGn3Ac3LIQh1JQemQ8lutcmALSqDXlc7Xr0=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=arinc9.com;
-	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-	dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1685863111;
-	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=kxiz5zm70BezbuNN8v6JP8irFq1B+lspoXHQDQtRgY8=;
-	b=WqnPFherLeb3ujWwy+TWDONE0esDoCe9Hni1i8msdr7WjxD3Rld6yT243QyesWW8
-	FSsar+Kqm3hVIkvyFZ9VvLJXVdMsavztoFI1xafRplkHthXrzTms8qVVNNRlQc+y5eb
-	i7ot0nsqDNtRoxUbjYPJY0NPDUXOaN4JjhBd/QgQ=
-Received: from [192.168.83.218] (62.74.60.162 [62.74.60.162]) by mx.zohomail.com
-	with SMTPS id 1685863109616710.6883935588407; Sun, 4 Jun 2023 00:18:29 -0700 (PDT)
-Message-ID: <4d2bd4fb-923a-96c9-395c-5e2127695933@arinc9.com>
-Date: Sun, 4 Jun 2023 10:18:20 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BC29258D
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 07:59:38 +0000 (UTC)
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D378EC1;
+	Sun,  4 Jun 2023 00:59:32 -0700 (PDT)
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-973bf581759so585956866b.0;
+        Sun, 04 Jun 2023 00:59:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685865571; x=1688457571;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=L5qs9/6uJ8IloMQNdJLVtRnVIUUbYS4OgcobJioBuxs=;
+        b=IOyS9YJN2q1l5k7+XFWXCLD79i9Fon8o6PvMP92XKembdHx7SWcjy8rnzijOan0sjJ
+         mxmK6KPk8iC/hYJQKbH0RpXFMW9/1VerLTbgjLKrJre8wEFidMkgCwD4KetTJIv4gfx3
+         YMa9ujX9mzlMM3VS5Ghak+Wplq8ksfsvNYmaX4M1wMeI2CQmWCg1quH1J+k6kKjO6ZtD
+         DScuzKKtAv/RYN5hHxlsXAMlv1dOjv7nctV0W7clSD8F6P+cwQFEOQ8CkIvJFVWGqBig
+         HGTyGDtVDPGWm2ltlo3JEPjvQUV6t/cgx+Nb5fa4QGdCQRgiDMFIlP2wFV+nOpbF6cbR
+         L/AQ==
+X-Gm-Message-State: AC+VfDwkQLnopZfQH/oxLWHuBu2xFynCK5zE+Z7+feKunigi1tE64ZtL
+	ikOeSmEszCk3vE2FxrmpJ2/KNl7AaCLqaw==
+X-Google-Smtp-Source: ACHHUZ5YcxrSr3RoUr9BpB/eNrGolI0P3RzHaj6jkcll2hTu+W/ZqJE8aYJUHyyTtYhUyjhQJWqKcQ==
+X-Received: by 2002:a17:907:3f1f:b0:974:5480:171e with SMTP id hq31-20020a1709073f1f00b009745480171emr4761698ejc.32.1685865570735;
+        Sun, 04 Jun 2023 00:59:30 -0700 (PDT)
+Received: from gmail.com (fwdproxy-cln-011.fbsv.net. [2a03:2880:31ff:b::face:b00c])
+        by smtp.gmail.com with ESMTPSA id u12-20020a05600c00cc00b003f7678a07c4sm383178wmm.29.2023.06.04.00.59.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 04 Jun 2023 00:59:30 -0700 (PDT)
+Date: Sun, 4 Jun 2023 00:59:27 -0700
+From: Breno Leitao <leitao@debian.org>
+To: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc: Remi Denis-Courmont <courmisch@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Alexander Aring <alex.aring@gmail.com>,
+	Stefan Schmidt <stefan@datenfreihafen.org>,
+	Miquel Raynal <miquel.raynal@bootlin.com>,
+	David Ahern <dsahern@kernel.org>,
+	Matthieu Baerts <matthieu.baerts@tessares.net>,
+	Mat Martineau <martineau@kernel.org>,
+	Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+	Xin Long <lucien.xin@gmail.com>, axboe@kernel.dk,
+	asml.silence@gmail.com, leit@fb.com, linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org, dccp@vger.kernel.org,
+	linux-wpan@vger.kernel.org, mptcp@lists.linux.dev,
+	linux-sctp@vger.kernel.org
+Subject: Re: [PATCH net-next v5] net: ioctl: Use kernel memory on protocol
+ ioctl callbacks
+Message-ID: <ZHxEX0TlXX7VV9kX@gmail.com>
+References: <20230602163044.1820619-1-leitao@debian.org>
+ <CAF=yD-Kk9mVWPZN50NUu8uGwEbySNS-WzvJ=1HTTcVsA6OOuvA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net-next 19/30] net: dsa: mt7530: set interrupt register
- only for MT7530
-Content-Language: en-US
-To: Vladimir Oltean <olteanv@gmail.com>
-Cc: Sean Wang <sean.wang@mediatek.com>, Landen Chao
- <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
- Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
- Florian Fainelli <f.fainelli@gmail.com>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Russell King <linux@armlinux.org.uk>,
- Richard van Schagen <richard@routerhints.com>,
- Richard van Schagen <vschagen@cs.com>,
- Frank Wunderlich <frank-w@public-files.de>,
- Bartel Eerdekens <bartel.eerdekens@constell8.be>, erkin.bozoglu@xeront.com,
- mithat.guner@xeront.com, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org
-References: <20230522121532.86610-1-arinc.unal@arinc9.com>
- <20230522121532.86610-20-arinc.unal@arinc9.com>
- <20230526132508.fxgljrpozuuzelal@skbuf>
-From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20230526132508.fxgljrpozuuzelal@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAF=yD-Kk9mVWPZN50NUu8uGwEbySNS-WzvJ=1HTTcVsA6OOuvA@mail.gmail.com>
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,FSL_HELO_FAKE,
+	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+	RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 26.05.2023 16:25, Vladimir Oltean wrote:
-> On Mon, May 22, 2023 at 03:15:21PM +0300, arinc9.unal@gmail.com wrote:
->> From: Arınç ÜNAL <arinc.unal@arinc9.com>
->>
->> Setting this register related to interrupts is only needed for the MT7530
->> switch. Make an exclusive check to ensure this.
->>
->> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> Acked-by: Daniel Golle <daniel@makrotopia.org>
->> Tested-by: Daniel Golle <daniel@makrotopia.org>
->> ---
+Hello Willem 
+
+On Sat, Jun 03, 2023 at 10:21:50AM +0200, Willem de Bruijn wrote:
+> On Fri, Jun 2, 2023 at 6:31 PM Breno Leitao <leitao@debian.org> wrote:
+> > Signed-off-by: Breno Leitao <leitao@debian.org>
 > 
-> Why does it matter? What prompted you to make this change? I guess it's
-> not needed for MT7988? Or the register is not present? Or?...
+> Please check the checkpatch output
+> 
+> https://patchwork.hopto.org/static/nipa/753609/13265673/checkpatch/stdout
 
-It's not needed for the switch on the MT7988 SoC. The register is also 
-likely specific to the MT7530 switch.
+I am checking my current checkpatch before sending the patch, but I am
+not seeing the problems above.
 
-Arınç
+My tree is at 44c026a73be8038 ("Linux 6.4-rc3"), and I am not able to
+reproduce the problems above.
+
+	$ scripts/checkpatch.pl v5/v5-0001-net-ioctl-Use-kernel-memory-on-protocol-ioctl-cal.patch
+	total: 0 errors, 0 warnings, 0 checks, 806 lines checked
+	v5/v5-0001-net-ioctl-Use-kernel-memory-on-protocol-ioctl-cal.patch has no obvious style problems and is ready for submission.
+
+Let me investigate what options I am missing when running checkpatch.
+
+> > +/* A wrapper around sock ioctls, which copies the data from userspace
+> > + * (depending on the protocol/ioctl), and copies back the result to userspace.
+> > + * The main motivation for this function is to pass kernel memory to the
+> > + * protocol ioctl callbacks, instead of userspace memory.
+> > + */
+> > +int sk_ioctl(struct sock *sk, unsigned int cmd, void __user *arg)
+> > +{
+> > +       int rc = 1;
+> > +
+> > +       if (sk_is_ipmr(sk))
+> > +               rc = ipmr_sk_ioctl(sk, cmd, arg);
+> > +       else if (sk_is_icmpv6(sk))
+> > +               rc = ip6mr_sk_ioctl(sk, cmd, arg);
+> > +       else if (sk_is_phonet(sk))
+> > +               rc = phonet_sk_ioctl(sk, cmd, arg);
+> 
+> Does this handle all phonet ioctl cases correctly?
+> 
+> Notably pn_socket_ioctl has a SIOCPNGETOBJECT that reads and writes a u16.
+
+We are not touching  "struct proto_ops" in this patch at all.  And
+pn_socket_ioctl() is part of "struct proto_ops".
+
+	const struct proto_ops phonet_stream_ops = {
+		  ...
+		  .ioctl          = pn_socket_ioctl,
+	}
+
+That said, all the "struct proto_ops" ioctl calls backs continue to use
+"unsigned long arg" with userspace information, at least for now.
+
+	struct proto_ops {
+		...
+		int             (*ioctl)     (struct socket *sock, unsigned int cmd,
+					      unsigned long arg);
+	}
+
+This patch only changes the "struct proto".
 
