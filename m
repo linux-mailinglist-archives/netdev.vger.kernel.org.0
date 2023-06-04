@@ -1,46 +1,58 @@
-Return-Path: <netdev+bounces-7807-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7809-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DF5937218FD
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 20:00:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 1A0F8721907
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 20:02:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9CADA280EF0
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 18:00:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C1F57281197
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 18:02:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB9E110941;
-	Sun,  4 Jun 2023 18:00:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1FCD110948;
+	Sun,  4 Jun 2023 18:02:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99A9F883C
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 18:00:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43473C433EF;
-	Sun,  4 Jun 2023 18:00:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7CE7883C
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 18:02:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3AFCC433EF;
+	Sun,  4 Jun 2023 18:02:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685901635;
-	bh=63eNB+yM9aKAueRPJ3ZwmnFx1KBz9KU9e0yE0hsM1oY=;
+	s=k20201202; t=1685901732;
+	bh=tsgHg/5R2crKomKyj+7Pho6UFoS2AQKQ8Lkd87r9ko8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=YzG4HlrS7SACMPGfqIZuob1lsjN121uF2uUZUi71zWCeSyS6w9+Y927NF+KLkLZuF
-	 Uf8TOiuQ6H9di105FgF695jZcw7q14to3eDxwpPs+iV/Ngrh7i2zNXaqtUTbdeWM1n
-	 mkQMbrNlKHeWubKsq+tX1h9BhC9yPL9qQBz0aEu65/+z50LFIjjn5zMxMkKMNn95dx
-	 +l/vS0SmNIx0GTvg23BmWm5BVceclGK9IYMOyp3x7wihXpeuQnkam7xxegAgEa2UAq
-	 S0A34rWoi8K+b8SW6qJunRDBS5vUmi3mPS8gx8xTzaGvxKJG0InBYJmdFbDMf7WwPE
-	 ItgRSPcck0zJw==
-Date: Sun, 4 Jun 2023 11:00:34 -0700
+	b=VPSCfy/0/VfmjnkJ26s0+N3hVhu4/HnrUCquzI2efOtUvDs/4Yi/JlPrsd6b8FGRP
+	 TyJA63shtiLXlSp/yXjn24pXjiAID96auxASntrPNEF0UlR20gOlNB4B19siwHEReV
+	 YXzZtRNHKcfkTKg5pZZ5yscqbcv2C/Cdn9lEK+oOgM8n5x0G0biqmaW1qSXevUP/64
+	 VB8+4Sz9RdRD9EYH2/JGjHGVRbcSZyqYd/mWdQSJbck9euIo+KjHYtBIH+79oSfRrE
+	 nIjjdTwBqhBroLQzxaKfpO5LPZ6XepshB3PXgabN5/RDVX1omJghFQYfI4eDAIRFVM
+	 5NMZfTgqRNE4A==
+Date: Sun, 4 Jun 2023 11:02:11 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: Simon Horman <simon.horman@corigine.com>
-Cc: davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
- pabeni@redhat.com
-Subject: Re: [PATCH net-next 2/4] tools: ynl: user space helpers
-Message-ID: <20230604110034.08015f1b@kernel.org>
-In-Reply-To: <ZHtSbn1oHl4KcfUL@corigine.com>
-References: <20230603052547.631384-1-kuba@kernel.org>
-	<20230603052547.631384-3-kuba@kernel.org>
-	<ZHtSbn1oHl4KcfUL@corigine.com>
+To: Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+Cc: Luca Boccassi <bluca@debian.org>, Christian Brauner
+ <brauner@kernel.org>, davem@davemloft.net, linux-kernel@vger.kernel.org,
+ netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>, Paolo Abeni
+ <pabeni@redhat.com>, Leon Romanovsky <leon@kernel.org>, David Ahern
+ <dsahern@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Kees Cook
+ <keescook@chromium.org>, Kuniyuki Iwashima <kuniyu@amazon.com>, Lennart
+ Poettering <mzxreary@0pointer.de>, linux-arch@vger.kernel.org
+Subject: Re: [PATCH net-next v6 1/3] scm: add SO_PASSPIDFD and SCM_PIDFD
+Message-ID: <20230604110211.3f6401c6@kernel.org>
+In-Reply-To: <CAEivzxcTEghPqk=9hQMReSGzE=ruWnJyiuPhW5rGd7eUOEg12A@mail.gmail.com>
+References: <20230522132439.634031-1-aleksandr.mikhalitsyn@canonical.com>
+	<20230522132439.634031-2-aleksandr.mikhalitsyn@canonical.com>
+	<20230522133409.5c6e839a@kernel.org>
+	<20230523-flechten-ortsschild-e5724ecc4ed0@brauner>
+	<CAMw=ZnS8GBTDV0rw+Dh6hPv3uLXJVwapRFQHLMYEYGZHNoLNOw@mail.gmail.com>
+	<20230523140844.5895d645@kernel.org>
+	<CAEivzxeS2J5i0RJDvFHq-U_RAU5bbKVF5ZbphYDGoPcMZTsE3Q@mail.gmail.com>
+	<CAMw=ZnRmNaoRb2uceatrV8EAufJSKZzD2AsfT5PJE8NBBOrHCg@mail.gmail.com>
+	<20230524081933.44dc8bea@kernel.org>
+	<CAEivzxcTEghPqk=9hQMReSGzE=ruWnJyiuPhW5rGd7eUOEg12A@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -50,45 +62,12 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 3 Jun 2023 16:47:10 +0200 Simon Horman wrote:
-> > +/**
-> > + * struct ynl_error - error encountered by YNL
-> > + * Users should interact with the err member of struct ynl_sock directly.
-> > + * The main exception to that rule is ynl_sock_create().  
+On Wed, 24 May 2023 17:45:25 +0200 Aleksandr Mikhalitsyn wrote:
+> > How about you put the UNIX -> bool patch at the end of the series,
+> > (making it a 4 patch series) and if there's a discussion about it
+> > I'll just skip it and apply the first 3 patches?  
 > 
-> nit: As this is a kernel doc, maybe document the structure members here.
-> 
-> > + */
-> > +struct ynl_error {
-> > +	enum ynl_error_code code;
-> > +	unsigned int attr_offs;
-> > +	char msg[512];
-> > +};
-> > +
-> > +/**
-> > + * struct ynl_family - YNL family info
-> > + * Family description generated by codegen.  
-> 
-> And here.
-> 
-> > + */
-> > +struct ynl_family {
-> > +	const char *name;
-> > +	const struct ynl_ntf_info *ntf_info;
-> > +	unsigned int ntf_info_size;
-> > +};  
-> 
-> ...
-> 
-> > +/**
-> > + * ynl_has_ntf() - check if socket has *parsed* notifications
-> > + * Note that this does not take into account notifications sitting
-> > + * in netlink socket, just the notifications which have already been
-> > + * read and parsed (e.g. during a ynl_ntf_check() call).  
-> 
-> And the parameter of this function here.
+> Sure, I will do that!
 
-Thanks, not sure why my brain considered this "not really kernel code
-so I don't have to obey the rules" :S I marked the innards of the
-family as private, and tossed in the other descriptions. v2 posted.
+Hi Aleksandr! Did you disappear? Have I missed v7?
 
