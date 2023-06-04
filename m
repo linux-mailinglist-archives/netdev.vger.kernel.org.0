@@ -1,153 +1,105 @@
-Return-Path: <netdev+bounces-7815-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7816-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C2F0D721A1D
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 23:08:17 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 15973721A37
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 23:22:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B3EB728111F
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 21:08:15 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4CF62281115
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 21:22:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC371101FE;
-	Sun,  4 Jun 2023 21:08:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 93213111B6;
+	Sun,  4 Jun 2023 21:22:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B33BA567E
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 21:08:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EE49C433D2;
-	Sun,  4 Jun 2023 21:08:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49F75569F;
+	Sun,  4 Jun 2023 21:22:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B18A3C43321;
+	Sun,  4 Jun 2023 21:22:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685912892;
-	bh=tBcMEkXrQsgqR/F6ZhRcf1FCjzt6WCA3VYv57KwwRro=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=YeJvobG8z6dzqRsit5sIsSHMfcoFQJQT0lsk3RpGpNSTXDUpBvLvbZnPp18xsw1Op
-	 EBQhljqx4fl05CY9+Re1+ccLsuY9GKV+ir1TyjHK5DRSWtN6F8OsTwBNDd8FBU+Pih
-	 23wuxP4tRvW6pTbWVXhKuUcJiUPfbc2nnuNrgIz2/dapwchbfo1C/5UIGWZ94Sot9I
-	 Qj5WEi3i9Bm718xXQy+3Rv6VIXijNzlygT89FFhcc2X+0xWR4CYmI35Wj4jGycgU0u
-	 OS+Ay2auw/kJzPl6KAbpX/AwwWAlGQCxRMTLZhtF4kdvL0EMS6vTnEje9yF2mjMd+n
-	 eOf7SY6ruMbPQ==
-Date: Sun, 4 Jun 2023 22:08:02 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Varshini Rajendran <varshini.rajendran@microchip.com>,
-	Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>, krzysztof.kozlowski+dt@linaro.org,
-	Conor Dooley <conor+dt@kernel.org>,
-	Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Claudiu Beznea <claudiu.beznea@microchip.com>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>, Sebastian Reichel <sre@kernel.org>,
-	Mark Brown <broonie@kernel.org>,
-	Gregory Clement <gregory.clement@bootlin.com>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	Balamanikandan Gunasundar <balamanikandan.gunasundar@microchip.com>,
-	mihai.sain@microchip.com, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
-	linux-clk@vger.kernel.org, linux-pm@vger.kernel.org,
-	Hari.PrasathGE@microchip.com, cristian.birsan@microchip.com,
-	durai.manickamkr@microchip.com, manikandan.m@microchip.com,
-	dharma.b@microchip.com, nayabbasha.sayed@microchip.com,
-	balakrishnan.s@microchip.com
-Subject: Re: [PATCH 15/21] dt-bindings: irqchip/atmel-aic5: Add support for
- sam9x7 aic
-Message-ID: <20230604-cohesive-unmoving-032da3272620@spud>
-References: <20230603200243.243878-1-varshini.rajendran@microchip.com>
- <20230603200243.243878-16-varshini.rajendran@microchip.com>
- <20230603-fervor-kilowatt-662c84b94853@spud>
- <20230603-sanded-blunderer-73cdd7c290c1@spud>
- <4d3694b3-8728-42c1-8497-ae38134db37c@app.fastmail.com>
+	s=k20201202; t=1685913764;
+	bh=M3qa4JrCJfL3BlNTay6Yo1EjRS0Ncm+BgXInegps46U=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=b7/fXotn0pQEscndihWizAxU7LQa5dSl44a9/klsWVyS0lxz/8hzxSa2IZZsjsxfX
+	 r+NUkhYWfR+U4pM6AYQOSE7NKbAlOja0TNvz5m0DUEI1zWFDSIkNTecITt/pEkmEGw
+	 J/i1EcDni6ZWXfMClgL03G31hjpaAYBpUerxaCwWdNhFcQlLqMtUbQhIMCbcYDNWvU
+	 UhGMgdB0T5xWi5hDLtX6T9Luh2uONUrqL+9je7Lg6uu0df3kWNPuh+zhJ8FFH8haNG
+	 M5E3S5UelWImxtKzuetFx71eO1My6o4ugA9ZPA9fKjM0HrHilfHJ2bhtk0fdh1FBN/
+	 wGD7X3O1e8t2w==
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-4f3bb61f860so5149594e87.3;
+        Sun, 04 Jun 2023 14:22:44 -0700 (PDT)
+X-Gm-Message-State: AC+VfDxPRQv9LPH+gR49jUNVeDka5bPlr4WCUILKiHBOPdZDcuLUpbkO
+	Y+kgMj/azhGCcAPpQsuQ+MbuNYJhaG5+NhiALjA=
+X-Google-Smtp-Source: ACHHUZ60WLRim/NZBMM58ZYdg3/lDfHnTA86A+7CXA+1QyWmoNPWXKyb36vAONlyven1Wz2rt1eY822fjimBjrUI6Ak=
+X-Received: by 2002:ac2:5d6c:0:b0:4f2:4df1:f071 with SMTP id
+ h12-20020ac25d6c000000b004f24df1f071mr4227167lft.51.1685913762272; Sun, 04
+ Jun 2023 14:22:42 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="3Md+FIkjg+Lb1NW6"
-Content-Disposition: inline
-In-Reply-To: <4d3694b3-8728-42c1-8497-ae38134db37c@app.fastmail.com>
-
-
---3Md+FIkjg+Lb1NW6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20230601101257.530867-1-rppt@kernel.org> <ZHjDU/mxE+cugpLj@FVFF77S0Q05N.cambridge.arm.com>
+ <ZHjgIH3aX9dCvVZc@moria.home.lan> <ZHm3zUUbwqlsZBBF@FVFF77S0Q05N>
+ <CAPhsuW7Euczff_KB70nuH=Hhf2EYHAf=xiQR7mFqVfByhD34XA@mail.gmail.com> <ZHzRxE5V6YzGVsHy@moria.home.lan>
+In-Reply-To: <ZHzRxE5V6YzGVsHy@moria.home.lan>
+From: Song Liu <song@kernel.org>
+Date: Sun, 4 Jun 2023 14:22:30 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7iEDa44jxc_7Cj4KnVhtct-UTO2JtVK-U7o2ynn2iX8Q@mail.gmail.com>
+Message-ID: <CAPhsuW7iEDa44jxc_7Cj4KnVhtct-UTO2JtVK-U7o2ynn2iX8Q@mail.gmail.com>
+Subject: Re: [PATCH 00/13] mm: jit/text allocator
+To: Kent Overstreet <kent.overstreet@linux.dev>
+Cc: Mark Rutland <mark.rutland@arm.com>, Mike Rapoport <rppt@kernel.org>, linux-kernel@vger.kernel.org, 
+	Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Christophe Leroy <christophe.leroy@csgroup.eu>, "David S. Miller" <davem@davemloft.net>, 
+	Dinh Nguyen <dinguyen@kernel.org>, Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>, 
+	Huacai Chen <chenhuacai@kernel.org>, Luis Chamberlain <mcgrof@kernel.org>, 
+	Michael Ellerman <mpe@ellerman.id.au>, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Russell King <linux@armlinux.org.uk>, 
+	Steven Rostedt <rostedt@goodmis.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>, bpf@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, 
+	linux-mm@kvack.org, linux-modules@vger.kernel.org, 
+	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	linux-s390@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev, 
+	netdev@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org, 
+	Puranjay Mohan <puranjay12@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jun 04, 2023 at 11:49:48AM +0200, Arnd Bergmann wrote:
-> On Sat, Jun 3, 2023, at 23:23, Conor Dooley wrote:
-> > On Sat, Jun 03, 2023 at 10:19:50PM +0100, Conor Dooley wrote:
-> >> Hey Varshini,
-> >>=20
-> >> On Sun, Jun 04, 2023 at 01:32:37AM +0530, Varshini Rajendran wrote:
-> >> > Document the support added for the Advanced interrupt controller(AIC)
-> >> > chip in the sam9x7 soc family
-> >>=20
-> >> Please do not add new family based compatibles, but rather use per-soc
-> >> compatibles instead.
-> >
-> > These things leave me penally confused. Afaiu, sam9x60 is a particular
+On Sun, Jun 4, 2023 at 11:02=E2=80=AFAM Kent Overstreet
+<kent.overstreet@linux.dev> wrote:
+>
+> On Fri, Jun 02, 2023 at 11:20:58AM -0700, Song Liu wrote:
+> > IIUC, arm64 uses VMALLOC address space for BPF programs. The reason
+> > is each BPF program uses at least 64kB (one page) out of the 128MB
+> > address space. Puranjay Mohan (CC'ed) is working on enabling
+> > bpf_prog_pack for arm64. Once this work is done, multiple BPF programs
+> > will be able to share a page. Will this improvement remove the need to
+> > specify a different address range for BPF programs?
+>
+> Can we please stop working on BPF specific sub page allocation and focus
+> on doing this in mm/? This never should have been in BPF in the first
+> place.
 
-s/penally/perennially/
+That work is mostly independent of the allocator work we are discussing her=
+e.
+The goal Puranjay's work is to enable the arm64 BPF JIT engine to use a
+ROX allocator. The allocator could be the bpf_prog_pack allocator, or jital=
+loc,
+or module_alloc_type. Puranjay is using bpf_prog_alloc for now. But once
+jitalloc or module_alloc_type (either one) is merged, we will migrate BPF
+JIT engines (x86_64 and arm64) to the new allocator and then tear down
+bpf_prog_pack.
 
-> > SoC. sam9x7 is actually a family, containing sam9x70, sam9x72 and
-> > sam9x75. It would appear to me that each should have its own compatible,
-> > no?
->=20
-> I think the usual way this works is that the sam9x7 refers to the
-> SoC design as in what is actually part of the chip, whereas the 70,
-> 72 and 75 models are variants that have a certain subset of the
-> features enabled.
->=20
-> If that is the case here, then referring to the on-chip parts by
-> the sam9x7 name makes sense, and this is similar to what we do
-> on TI AM-series chips.
+Does this make sense?
 
-If it is the case that what differentiates them is having bits chopped
-off, and there's no implementation differences that seems fair.
-
-> There is a remaining risk that a there would be a future
-> sam9x71/73/74/76/... product based on a new chip that uses
-> incompatible devices, but at that point we can still use the
-> more specific model number to identify those without being
-> ambiguous. The same thing can of course happen when a SoC
-> vendor reuses a specific name of a prior product with an update
-> chip that has software visible changes.
->=20
-> I'd just leave this up to Varshini and the other at91 maintainers
-> here, provided they understand the exact risks.
-
-Ye, seems fair to me. Nicolas/Claudiu etc, is there a convention to use
-the "0" model as the compatible (like the 9x60 did) or have "random"
-things been done so far?
-
-> It's different for the parts that are listed as just sam9x60
-> compatible in the DT, I think those clearly need to have sam9x7
-> in the compatible list, but could have the sam9x60 identifier
-> as a fallback if the hardware is compatible.
-
-Aye.
-
---3Md+FIkjg+Lb1NW6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZHz9MgAKCRB4tDGHoIJi
-0ldWAP0RQc1PNr/7S0ZoI1mtSvW5rkogdGae6SPbH5C+bLhcmQEApOd41QvYR3Pq
-xuVQ4aC0kBM/JFWUKg2lYgoQNcmmEQw=
-=Dd5S
------END PGP SIGNATURE-----
-
---3Md+FIkjg+Lb1NW6--
+Thanks,
+Song
 
