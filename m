@@ -1,264 +1,367 @@
-Return-Path: <netdev+bounces-7784-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7785-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2BB3E72179D
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 16:18:00 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 35CE37217DF
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 16:43:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8C19D2810BE
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 14:17:58 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 993101C20991
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 14:43:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C14C7DDAB;
-	Sun,  4 Jun 2023 14:17:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13094D524;
+	Sun,  4 Jun 2023 14:43:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B41E623C6
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 14:17:56 +0000 (UTC)
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2467CD2
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 07:17:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T0wJB+fIKUUoEi+P6WHtDkpWzlyAXQTl2nj+H0i211YNE1hHxvDQw0by8x8j9h/hpVkfUwcfIQLjz4InypsU495c75MPHiBQjlWp+8WH8dfPilXhH3NYWBzYwWTPS5ur+Eyi0YGlLoxZanJFPnsghJlUBEKYTWMAW4YD9+yX1PX9FtyKgP7MFV1iByYlwmB80Kcr+n62dbaNZ3X8Htj4aUgKCbndUsuDpdPF6yze7JRrbPHqCUz7ITMSrqmkT4sFgVtMQXpUmYbpTrIOgNlgxwvMYyugDLfwtMlyizRMY+vSBJpY+eJ7eeGYco2e991ZOU1bPfzEwUZqIG9nPBqVMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=blY9DWT8/ISsBgjUpqbaPOXcsFTMTSSNMAxP5Lo+JQk=;
- b=Isy29EvnrE7rDxR4HUIZIf+TIQs92xhcA4r9WbRNnPOiECven5BRyDc1Pbq8oPHqybdG82PQ3cbZjaCtbLZves+jckkBTp+Wztcb1Vm8HLIR1DRkKeCZ4nCKLp8hZ3GIZ2CwdJsekIe+JyohocbLKLFm0voHCHiL/9SDO8qzzmmmBFcOcjv3P8EQsPBZTimVAwPnzE69ByvOuy7anf6b0q525Nmeh7aZZ3BOEDpMw09lwcna81ufYpVTNstgNxnMRoZSkF9enY3bj8Wi5oCOIxLsetuE3RvHzIWjaRxXiSUkLwQWAFkmFOp2QWp26MnuDIerqezwln0KsgornPVy9Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0294C23A5
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 14:43:28 +0000 (UTC)
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45C5E18E
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 07:43:02 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-977c8423dccso213240666b.1
+        for <netdev@vger.kernel.org>; Sun, 04 Jun 2023 07:43:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=blY9DWT8/ISsBgjUpqbaPOXcsFTMTSSNMAxP5Lo+JQk=;
- b=GGQpxFuzUjIcGLCqTCtWdrwQlx6ea32Huprb8nkOsRi6RCZff6pGY2tbbLotjOkNcvSTAXhPDQU3mdl30OymC4I+Pdto8GOVhEviuvtRjn2S2ccY5TTn/86RDJQ4VLx/O9CozeQMzFt10m1yxrFdnIUJ5vAjkA44TNhY5cr2aIg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BN0PR13MB5232.namprd13.prod.outlook.com (2603:10b6:408:15b::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.31; Sun, 4 Jun
- 2023 14:17:52 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6455.030; Sun, 4 Jun 2023
- 14:17:52 +0000
-Date: Sun, 4 Jun 2023 16:17:44 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Wojciech Drewek <wojciech.drewek@intel.com>
-Cc: intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-	alexandr.lobakin@intel.com, david.m.ertman@intel.com,
-	michal.swiatkowski@linux.intel.com, marcin.szycik@linux.intel.com,
-	pawel.chmielewski@intel.com, sridhar.samudrala@intel.com,
-	pmenzel@molgen.mpg.de, dan.carpenter@linaro.org,
-	Jakub Kicinski <kuba@kernel.org>,
-	Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH iwl-next v4 07/13] ice: Switchdev FDB events support
-Message-ID: <ZHydCI08zJip88rj@corigine.com>
-References: <20230524122121.15012-1-wojciech.drewek@intel.com>
- <20230524122121.15012-8-wojciech.drewek@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230524122121.15012-8-wojciech.drewek@intel.com>
-X-ClientProxiedBy: AS4PR09CA0009.eurprd09.prod.outlook.com
- (2603:10a6:20b:5e0::12) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=gmail.com; s=20221208; t=1685889781; x=1688481781;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gzPaAbjiwUgiiseLRq82xmrHe1oI+Dk2/aHhvA6JMrk=;
+        b=Q0Pe6y0Vf4BJPZmgRCYrk6l15F4GVQ8JedOaTuX9rQwt4yZd2FM79EWv88zL2pOa/b
+         1MqbguMtO1VHwIQc75AWVkqo3gbDdHpxflmvLvNvERyH293UiBmS9o9xfhiR83pK96YK
+         Yj1Hx5Ql2f+a1G41NsolK5QQJvgaVDvK/kYKCsJ4/dBir2S5Q9UFa16Ec39bxYJ59Fwi
+         ZFVI1cozM966XECD5pKVR2AhLdpzrG0GSma4gjg663uSYK8cIzNNu+5Ob8EnI/dAI1Ub
+         Q7pfKnR3MrWaF43yzaBKR6cSeuqifDNX+tVXA5b8pj38TbCitzZjcbMw1XxnBNdM+suP
+         CJbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685889781; x=1688481781;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gzPaAbjiwUgiiseLRq82xmrHe1oI+Dk2/aHhvA6JMrk=;
+        b=YfCLFbQIBwHJosy5e+8OhNEKkMKlDl7c6tLvpQ+N0bg7bU+gojVZKOqhwMgS3i0RqK
+         bWCsGVCwmV/1JXcpcGBZhKktS1CKdrrwbgSv5BFYlihGGlO2B+0XR3jlBDj7akpc0RgA
+         gR4zA6s2J9gXaJEUdH6MrrCGMpv3ZFbCBM4lTphk6Kcp6CIYBVa+OHoEKcusK7fRSxxe
+         RM5AmJEtjodMyF5OjWfCpv3YI+DMItV2OZoogY4Ah4zA0nzo/w3dkDFAMch9MFsu9rmE
+         k/m0x6cQip6s1G4MQNcbtwnfMR2yoOoHgdOYuXKWCzo4Ode9sciT2bVae1M2a/F9J7h6
+         W8Uw==
+X-Gm-Message-State: AC+VfDy0M4wH4DUsC98PcIU6QKrlEINvxQeLU+uoTCfZBli2ORWBf5y7
+	1XqVOZk/mv7se22HazgT1W4=
+X-Google-Smtp-Source: ACHHUZ6oa0d3sgemcUjFQ9eqXWbllkYPbd+dVZ2k4WHDaOWYlM3KL2tpmOn7GwYoleu49HUUFbSfAA==
+X-Received: by 2002:a17:907:9709:b0:977:cc4b:eeb1 with SMTP id jg9-20020a170907970900b00977cc4beeb1mr2208177ejc.19.1685889780217;
+        Sun, 04 Jun 2023 07:43:00 -0700 (PDT)
+Received: from shift.daheim (p4fd09d7d.dip0.t-ipconnect.de. [79.208.157.125])
+        by smtp.gmail.com with ESMTPSA id jp25-20020a170906f75900b0096f675ce45csm3109306ejb.182.2023.06.04.07.42.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 04 Jun 2023 07:42:59 -0700 (PDT)
+Received: from localhost ([127.0.0.1])
+	by shift.daheim with esmtp (Exim 4.96)
+	(envelope-from <chunkeey@gmail.com>)
+	id 1q5owc-001K93-2Z;
+	Sun, 04 Jun 2023 16:42:58 +0200
+Message-ID: <7111d194-3dde-d139-a405-5997ea729dc1@gmail.com>
+Date: Sun, 4 Jun 2023 16:42:58 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BN0PR13MB5232:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2fb9481a-9176-4bfa-1efc-08db65067b64
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	VttrC72k96uHgVO8xjPKvOxO3TjLSrdRpUyRUUCTwPyj6FYFmNzTbjkNaHgivzXvBRn21VLPpwnB+dz6BK+xcew/DGVQmJpa9wxF4DVZtf+CQSZGmaUrbaN+Xa5psycFzPNsVnP8VQQBBlEuxXxvo2Eq/bROD7ntwt9x9Fs8uTij8PTlBwc5eMbMUwLo9uPAcXq8Y1s89MySUH4SFK/+m+kppP4cszVtKqhummAQ3iDtemy6X5bvyeuoTNsC41xPfsZ8FwqVpTeOcQPqZOAmXlm381oFftDF4eF38BpBSGEEW5X10UvFAbomujQB7Cya5483Ucu4ewtxKLyI4xPVjGNgm87vt3JTS4pSvo/zHvl1LjKpLYjt9oVaz5XmFixQlc2TLHcpM1M6yJQyRK8/iE3D8E8Z3EukpPmTOmE6tQZNkJ5AhwilxIDCKS09yMwSTIXRuRz7mY2MlWbYodVbi0MSZWNSBBRozF3jUJgxC1uT+38EeaTzUpIuu7K8Sit4t+4ZgzFf5wkGVdPXeGIBNuBzZXvckQI05sNjVVFaS955gMEex/GB6ytlsxSCdI8j
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(366004)(39830400003)(376002)(396003)(451199021)(2616005)(6506007)(6512007)(44832011)(316002)(83380400001)(6916009)(66556008)(4326008)(66946007)(66476007)(6486002)(6666004)(186003)(478600001)(54906003)(36756003)(66899021)(2906002)(5660300002)(8936002)(8676002)(86362001)(7416002)(41300700001)(38100700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Vhuwu3lCH1akpi2iWrBmcpSL46MwmeAdzYZn4EKSwEqrJQPnhJr8YvbO1W0o?=
- =?us-ascii?Q?3bQwJzrzE/jHkoUZ4LTbCSjSlmeiH1oBrY82WcnD3OQ1Iajj8OfUGQR+kiAY?=
- =?us-ascii?Q?eVSMzp6tbOFu3Z6hTbL4UbPbTiOpAflLImx7IBebg7IwgoepZsKBxxIbc6yO?=
- =?us-ascii?Q?bGYx3PJtovnsSnynLs5LNL/GEJkWrZw6fQ+gkVq2FjbwQZhuzyZo19dERggN?=
- =?us-ascii?Q?LkUYprjYDhn4YgC5f1xYQWYIeiM8PKFQ20GS5BQhpkCFq8TUNHxiNrRDAQpN?=
- =?us-ascii?Q?xsrVPyIzohPuVsAxVukr7Xr2VPnJpM85XEleAASzp7sA8z318ojT2fik2JIA?=
- =?us-ascii?Q?3bjFeUH2dZfa2zTIQaDBT+qWuvGdTWy8VixeAmFpWEuFrB9joxdBVd1WRvno?=
- =?us-ascii?Q?gMo/27m38UhdbyuykR78Y4Imc94tkxZnNbEwr/voIuMoKAKF2eueOZMMzK8B?=
- =?us-ascii?Q?w2U6Mfp3jfduADPwiJmkBj+tAB5LS3RsaOW998MUJR9X0JzSbpSO2mBfrLM/?=
- =?us-ascii?Q?3Ml0gQeq402ygccpgCZvQiZlkL791fGi43eOmLAwi78U/bh8+ZnaBkbSgpZY?=
- =?us-ascii?Q?tohfSgPwrozm23cEg75Ivy4HzKCblKJnTUcqHh7Wlu7RMbMvTHtIBW/tLz4y?=
- =?us-ascii?Q?EBtsejt90m5CRxY3UCOreyeK1EEw1KCn/Tmjy+SBeXIBMHUZR1z7FcwwuwI5?=
- =?us-ascii?Q?8/aVCCbbCBrEEn72eL1MoSbFU4h1FqXSzMpKV/lsbsW6fBXitoXHDhL/gmNX?=
- =?us-ascii?Q?rCACtJQzx8CHUCiaLvD0dqBfnkYpYQTAhM0bnvfhWtGpTCujrTSpdx6s+68Y?=
- =?us-ascii?Q?b9nPvUasUo4qZgj4R0320GYK1Zxzb5Ryf5WGFOxlfeB6J2deFSeY+KK9YiUb?=
- =?us-ascii?Q?+q/a2Z3Ly4CQ30rJyOlTJUAjGm0421cWcbzcPd3rkj0YKqRawtq+kktmbsn9?=
- =?us-ascii?Q?MGe0Z/kTgNrQq2O7eKiqQGxJjjLCs+SX1FmOylqBBd2S8Uw+SqHd2e7BhYPy?=
- =?us-ascii?Q?ZwB+ZcvMW42UsBcdjQJ4XeOw3biBMfr3ZPOcVzgJJ1rCZulYmlCPrmChBzca?=
- =?us-ascii?Q?n4x1Qbbe+qFJyZG3vvdbmD6EHoDamnpgxXSyTjVJU3IcAvCwOTFEqtvx0YSu?=
- =?us-ascii?Q?vNqDgrW5SXwYoBK1pBf4xB/I1yBdXR1ZFHgJK/nw3PEpgocKtFiz8ry7GVjx?=
- =?us-ascii?Q?Isaasn7ajelPbYUW5GHyChUVVENhZSSpv+BKi0MQuOA34FJrZIzrYhuRtmRC?=
- =?us-ascii?Q?qs/5zYoUKilXZVpBBA+Yob0+cvjHc6oaQOqnCi5mLFEUIFkqrwjgg0qdny79?=
- =?us-ascii?Q?wyg7WcIOZVhEBLQqXajxiCWH2I6KnFGSW0DFA81vAt4LMS3l/PB0HfzFe9Rt?=
- =?us-ascii?Q?YgZR1LtIT/ygCbPadc6i1gZ3wxCYsE0nn/Ty7kQ1FsAzme9KN1ix8HGWDrjQ?=
- =?us-ascii?Q?rYxHnkce8ngTfCMy1n2M/DMsD+eV4Y8dPZ0hrX+tH9y2BNx3azmljfZLQp05?=
- =?us-ascii?Q?e2yMrMoxzDdbq8GqQxKOlq5blmgm5NM93rsmyibKuJZDeOlUSs/aMiK2ub9o?=
- =?us-ascii?Q?pa5uEID+Wzvj0Lzj5LHgL93kAENOOv9YJA543i0QgWialD5YLa4C37GFUqHg?=
- =?us-ascii?Q?JLVw+b7qXNUZXFOBBUV4gMd2BQWaKSTSHyklGLIxNu2kMcyuZOW3qMczynvi?=
- =?us-ascii?Q?I+tNrQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2fb9481a-9176-4bfa-1efc-08db65067b64
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jun 2023 14:17:52.1432
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Vyn9Woa8MplRbwN1o889FEUxMp7u3bTEA38wQXQzNNj+CJbsDW8eHS5VRtixYjLfWKxLcRLhP2gYihuwRnn8XdFIl5jF7+zktgkGhkov4nk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR13MB5232
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH v1] net: dsa: realtek: rtl8365mb: use mdio passthrough to
+ access PHYs
+Content-Language: de-DE
+To: =?UTF-8?Q?Alvin_=c5=a0ipraga?= <ALSI@bang-olufsen.dk>
+Cc: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "luizluca@gmail.com" <luizluca@gmail.com>,
+ "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+ "andrew@lunn.ch" <andrew@lunn.ch>, "olteanv@gmail.com" <olteanv@gmail.com>,
+ "f.fainelli@gmail.com" <f.fainelli@gmail.com>
+References: <0df383e20e5a90494e3cbd0cf23c508c5c943ab4.1685725191.git.chunkeey@gmail.com>
+ <lhzfruwpfpern22sadwtkhgqtgaindqbwsbt7w3qbh6i6swcls@ydl7hh2pcwf5>
+From: Christian Lamparter <chunkeey@gmail.com>
+In-Reply-To: <lhzfruwpfpern22sadwtkhgqtgaindqbwsbt7w3qbh6i6swcls@ydl7hh2pcwf5>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-+ Jakub, Eric
-
-On Wed, May 24, 2023 at 02:21:15PM +0200, Wojciech Drewek wrote:
-> Listen for SWITCHDEV_FDB_{ADD|DEL}_TO_DEVICE events while in switchdev
-> mode. Accept these events on both uplink and VF PR ports. Add HW
-> rules in newly created workqueue. FDB entries are stored in rhashtable
-> for lookup when removing the entry and in the list for cleanup
-> purpose. Direction of the HW rule depends on the type of the ports
-> on which the FDB event was received:
+On 6/4/23 14:03, Alvin Šipraga wrote:
+> On Fri, Jun 02, 2023 at 07:02:31PM +0200, Christian Lamparter wrote:
+>> when bringing up the PHYs on a Netgear WNDAP660, I observed that
+>> none of the PHYs are getting enumerated and the rtl8365mb fails
+>> to load.
+>>
+>> | realtek-mdio [...] lan1 (unini...): validation of gmii with support \
+>> |   0...,0.,..6280 and advertisement 0...,0...,6280 failed: -EINVAL
+>> | realtek-mdio [...] lan1 (uninit...): failed to connect to PHY: -EINVAL
+>> | realtek-mdio [...] lan1 (uninit...): error -22 setting up PHY for
+>> |   tree 0, switch 0, port 0
+>>
+>> with phytool, all registers just returned "0000".
+>>
+>> Now, the same behavior was present with the swconfig version of
+>> rtl8637b.c and in the device's uboot the "mii" register access
+>> utility also reports bogus values.
 > 
-> ICE_ESWITCH_BR_UPLINK_PORT:
-> TX rule that forwards the packet to the LAN (egress).
+> Not really relevant...
+
+Oh, maybe I should be blunt here. This is the first time that I
+got proper mii values for this RTL8363. This is revevant, because
+in u-boot the vendor (Netgear) usually takes care of the "mii" tool.
+
+But this wasn't the case here, I'm not sure if this RTL8363SB is
+an odd-ball or not. This patch was meant for discussion, if the
+discussion is fruitful, I fully expect to do a v2..v3 with the
+information that was gathered during review.
+
+>>
+>> The Netgear WNDAP660 might be somewhat special, since the RTL8363SB
+>> uses exclusive MDC/MDIO-access (instead of SMI). (And the RTL8363SB
+>> is not part of the supported list of this driver).
 > 
-> ICE_ESWITCH_BR_VF_REPR_PORT:
-> RX rule that forwards the packet to the VF associated
-> with the port representor.
+> We had other MDIO switches with support added, so I don't think it's unique.
 > 
-> In both cases the rule matches on the dst mac address.
-> All the FDB entries are stored in the bridge structure.
-> When the port is removed all the FDB entries associated with
-> this port are removed as well. This is achieved thanks to the reference
-> to the port that FDB entry holds.
+>>
+>> Since this was all hopeless, I dug up some datasheet when searching
+>> for solutions:
+>> "10/100M & 10/100/1000M Switch Controller Programming Guide".
+>> It had an interesting passage that pointed to a magical
+>> MDC_MDIO_OPERATION define which resulted in different slave PHY
+>> access for the MDIO than it was implemented for SMI.
 > 
-> In the fwd rule we use only one lookup type (MAC address)
-> but lkups_cnt variable is already introduced because
-> we will have more lookups in the subsequent patches.
+> Got a reference? I do not see MDC_MDIO_OPERATION in your patch.
+
+Oh, I overwrote the current rtl8365mb_dsa_phy_write and
+rtl8365mb_mdio_phy_read to match what's I found in ASUS WRT's codebase.
+ From what I gathered, this mdc-mdio was tested/developped with an RT-AC88U.
+So I think you all are no stranger to the ASUSWRT Merlin Project @
+https://www.asuswrt-merlin.net/. Thankfully they have a link to their
+github and provide the realtek source code which includes the phy
+access routines in:
+
+https://github.com/RMerl/asuswrt-merlin.ng/blob/master/release/src-rt-6.x.4708/linux/linux-2.6.36/drivers/char/rtl8365mb/rtl8367c_asicdrv_phy.c
+
+as rtl8367c_setAsicPHYReg and rtl8367c_getAsicPHYReg. (look in line 21 for
+the #if defined(MDC_MDIO_OPERATION) until the #else 188). These two are
+what I implemented in rtl8365mb_mdio_phy_write and rtl8365mb_mdio_phy_read.
+
+>>
+>> With this implemented, the RTL8363SB PHYs came to live:
+>>
+>> | [...]: found an RTL8363SB-CG switch
+>> | [...]: missing child interrupt-controller node
+>> | [...]: no interrupt support
+>> | [...]: configuring for fixed/rgmii link mode
+>> | [...] lan1 (uninit...): PHY [dsa-0.0:01] driver [Generic PHY] (irq=POLL)
+>> | [...] lan2 (uninit...): PHY [dsa-0.0:02] driver [Generic PHY] (irq=POLL)
+>> | device eth0 entered promiscuous mode
+>> | DSA: tree 0 setup
+>> | realtek-mdio 4ef600c00.ethernet:00: Link is Up - 1Gbps/Full - [...]
+>>
+>> | # phytool lan1/2
+>> | ieee-phy: id:0x001cc980 <--- this is correct!!
+>> |
+>> |  ieee-phy: reg:BMCR(0x00) val:0x1140
+>> |     flags:          -reset -loopback +aneg-enable -power-down
+>> |		      -isolate -aneg-restart -collision-test
+>> |     speed:          1000-full
+>> |
+>> |  ieee-phy: reg:BMSR(0x01) val:0x7969
+>> |     capabilities:   -100-b4 +100-f +100-h +10-f +10-h -100-t2-f
+>> |		      -100-t2-h
+>> |      flags:         +ext-status +aneg-complete -remote-fault
+>> |		      +aneg-capable -link -jabber +ext-register
+>>
+>> the port statistics are working too and the exported LED triggers.
+>> But so far I can't get any traffic to pass.
 > 
-> Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+> This info is also not entirely relevant in a commit message, but thanks for
+> clarifying.
 
-...
+True :) and it was a pain to format. Still I'm hoping to get confirmation
+about 0x001cc980-ish PHYID. This is something all switches should produce and
+this should be repoduceable by others (with slightly different IDs).
+The source for the phytool: https://github.com/wkz/phytool )
 
-> +static void
-> +ice_eswitch_br_fdb_event_work(struct work_struct *work)
-> +{
-> +	struct ice_esw_br_fdb_work *fdb_work = ice_work_to_fdb_work(work);
-> +	bool added_by_user = fdb_work->fdb_info.added_by_user;
-> +	struct ice_esw_br_port *br_port = fdb_work->br_port;
-> +	const unsigned char *mac = fdb_work->fdb_info.addr;
-> +	u16 vid = fdb_work->fdb_info.vid;
-> +
-> +	rtnl_lock();
-> +
-> +	if (!br_port || !br_port->bridge)
-> +		goto err_exit;
-> +
-> +	switch (fdb_work->event) {
-> +	case SWITCHDEV_FDB_ADD_TO_DEVICE:
-> +		ice_eswitch_br_fdb_entry_create(fdb_work->dev, br_port,
-> +						added_by_user, mac, vid);
-> +		break;
-> +	case SWITCHDEV_FDB_DEL_TO_DEVICE:
-> +		ice_eswitch_br_fdb_entry_find_and_delete(br_port->bridge,
-> +							 mac, vid);
-> +		break;
-> +	default:
-> +		goto err_exit;
-> +	}
-> +
-> +err_exit:
-> +	rtnl_unlock();
-> +	dev_put(fdb_work->dev);
+>> Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+>> ---
+>> Any good hints or comments? Is the RTL8363SB an odd one here and
+>> everybody else can just use SMI?
+> 
+> Luiz implemented MDIO support presumably because he could not use SMI. I think
+> at the very least, he or somebody else should test your patch on all existing
+> MDIO-wired chips supported by the driver. Since this could cause regressions. If
+> that is not possible but you would still like to support your new switch, maybe
+> we need both implementations available.
 
-Hi Wojciech,
+Yes, I'm fully expecting these comments.
 
-I notice that the CI flags this as use of a deprecated API.
-So I'm wondering if it would be better written using netdev_put()
-And likewise, I'm wondering if other users in the ice driver should be
-updated.
+> 
+> Regarding your patch, I do not fully understand it. I think you could perhaps
+> explain it a little more clearly. Basically I see that you are provisioning the
+> GPHY_OCP_MSB_0_REG a little bit differently, and then executing a register read
+> at some particular offset. Contrast this with the current indirect access
+> command register followed by polling. I think yours is a better approach, since
+> it is more direct, but only if it works and is well documented.
 
-> +	ice_eswitch_br_fdb_work_dealloc(fdb_work);
-> +}
+There are sadly the only useful comment in the vendor driver is "Default OCP Address"
+with the associated 0x29 "Magic value". This 0x29 becomes 0xA400 if you put it through
+the FIELD_PREP... And funnily enough, that exactly matches the existing
+"RTL8365MB_PHY_OCP_ADDR_PHYREG_BASE" which is used by the current accessors (but they
+do much much more).
 
-...
+It looks like the person that wrote the rtl8365mb_phy_ocp_read and
+rtl8365mb_phy_ocp_write() could answer in detail what's behind this.
+I'm sure this would be on a datasheet, but sadly I don't have one for the switch.
 
-> +static int
-> +ice_eswitch_br_switchdev_event(struct notifier_block *nb,
-> +			       unsigned long event, void *ptr)
-> +{
-> +	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
-> +	struct switchdev_notifier_fdb_info *fdb_info;
-> +	struct switchdev_notifier_info *info = ptr;
-> +	struct ice_esw_br_offloads *br_offloads;
-> +	struct ice_esw_br_fdb_work *work;
-> +	struct ice_esw_br_port *br_port;
-> +	struct netlink_ext_ack *extack;
-> +	struct net_device *upper;
-> +
-> +	br_offloads = ice_nb_to_br_offloads(nb, switchdev_nb);
-> +	extack = switchdev_notifier_info_to_extack(ptr);
-> +
-> +	upper = netdev_master_upper_dev_get_rcu(dev);
-> +	if (!upper)
-> +		return NOTIFY_DONE;
-> +
-> +	if (!netif_is_bridge_master(upper))
-> +		return NOTIFY_DONE;
-> +
-> +	if (!ice_eswitch_br_is_dev_valid(dev))
-> +		return NOTIFY_DONE;
-> +
-> +	br_port = ice_eswitch_br_netdev_to_port(dev);
-> +	if (!br_port)
-> +		return NOTIFY_DONE;
-> +
-> +	switch (event) {
-> +	case SWITCHDEV_FDB_ADD_TO_DEVICE:
-> +	case SWITCHDEV_FDB_DEL_TO_DEVICE:
-> +		fdb_info = container_of(info, typeof(*fdb_info), info);
-> +
-> +		work = ice_eswitch_br_fdb_work_alloc(fdb_info, br_port, dev,
-> +						     event);
-> +		if (IS_ERR(work)) {
-> +			NL_SET_ERR_MSG_MOD(extack, "Failed to init switchdev fdb work");
-> +			return notifier_from_errno(PTR_ERR(work));
-> +		}
-> +		dev_hold(dev);
+> Perhaps you can give a pointer to which logic in the vendor driver you followed
+> in order to achieve this more direct register access without polling. This will
+> help me review it :)
+> 
+> But since you still haven't got data through your switch, I am a bit reluctant
+> to approve this kind of change. I would prefer to see a full series adding the
+> support, so that this kind of change/quirk is justfieid. Otherwise it is just
+> introducing potential regressions with no real benefit. I hope you understand.
 
-Likewise, I'm wondering if this should be netdev_hold().
+Oh, this is no longer the case. I have it sort of working now. The "no traffic"
+issue was "fixed" by the second patch
+"net: dsa: realtek: rtl8365mb: add missing case for digital interface 0".
 
-> +
-> +		queue_work(br_offloads->wq, &work->work);
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +	return NOTIFY_DONE;
-> +}
-> +
+Though, It's not 100% finished. "Normal data" works, but it seems the switch
+doesn't like that I have multiple other VLANs on the same network (including
+non-vlan traffic). I see a constant stream of "non-realtek ethertype ..."
+message from tag_rtl8_4.c. These include 802.1Q (0x8100) EtherTypes,
+IPv4 (0x0800) and IPv6 (86DD)). Though, I'm optimistic that this can be solved.
 
-...
+>>
+>> So far, I'm just reusing the existing jam tables. rtl8367b.c jam
+>> tables ones don't help with getting "traffic". There are also the
+>> phy_read in realtek_ops, but it doesn't look like realtek-mdio.c
+>> is using those? So I left them as is.
+> 
+> Just fyi, the jam table is a bit of a fudge and might not be correct for all
+> switches. It's basically a blob lifted from the vendor driver. It should
+> probably be revisited and open-coded so that a human can read it. But I don't
+> mean to imply that this is why you don't get data through your switch.
+
+Yes, the provided jam_tables are enough to get the switch "online".
+Thing is, I tried openwrt's rtl8367b.c tables too. But didn't notice any
+difference. (The WNDAP660 isn't capable of "saturating" the 1 Gbit/s.
+So, it's unlikely that I can trigger any performance related bugs by
+simply flooding it.
+
+Regards,
+Christian
+
+> 
+>> ---
+>>   drivers/net/dsa/realtek/rtl8365mb.c | 78 +++++++++++++++++++++++++++--
+>>   1 file changed, 74 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+>> index 41ea3b5a42b1..6c00e6dcb193 100644
+>> --- a/drivers/net/dsa/realtek/rtl8365mb.c
+>> +++ b/drivers/net/dsa/realtek/rtl8365mb.c
+>> @@ -825,15 +825,85 @@ static int rtl8365mb_phy_write(struct realtek_priv *priv, int phy, int regnum,
+>>   	return 0;
+>>   }
+>>   
+>> +static int rtl8365mb_mdio_phy_read(struct realtek_priv *priv, int phy, int regnum)
+>> +{
+>> +	unsigned int val, addr;
+>> +	int ret;
+>> +
+>> +	if (phy > RTL8365MB_PHYADDRMAX)
+>> +		return -EINVAL;
+>> +
+>> +	if (regnum > RTL8365MB_PHYREGMAX)
+>> +		return -EINVAL;
+>> +
+>> +	mutex_lock(&priv->map_lock);
+>> +	ret = regmap_update_bits(priv->map_nolock, RTL8365MB_GPHY_OCP_MSB_0_REG,
+>> +				 RTL8365MB_GPHY_OCP_MSB_0_CFG_CPU_OCPADR_MASK, /* 0xA40 */
+>> +				 FIELD_PREP(RTL8365MB_GPHY_OCP_MSB_0_CFG_CPU_OCPADR_MASK,
+>> +					    FIELD_GET(RTL8365MB_PHY_OCP_ADDR_PREFIX_MASK,
+>> +						      RTL8365MB_PHY_OCP_ADDR_PHYREG_BASE)));
+>> +	if (ret) {
+>> +		mutex_unlock(&priv->map_lock);
+>> +		return ret;
+>> +	}
+>> +
+>> +	addr = RTL8365MB_PHY_BASE |
+>> +	       FIELD_PREP(RTL8365MB_INDIRECT_ACCESS_ADDRESS_PHYNUM_MASK, phy) |
+>> +	       regnum;
+>> +	ret = regmap_read(priv->map_nolock, addr, &val);
+>> +	mutex_unlock(&priv->map_lock);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	dev_dbg(priv->dev, "read PHY%d register 0x%02x, val <- %04x\n",
+>> +		phy, regnum, val);
+>> +
+>> +	return val & 0xFFFF;
+>> +}
+>> +
+>> +static int rtl8365mb_mdio_phy_write(struct realtek_priv *priv, int phy, int regnum,
+>> +				    u16 val)
+>> +{
+>> +	unsigned int addr;
+>> +	int ret;
+>> +
+>> +	if (phy > RTL8365MB_PHYADDRMAX)
+>> +		return -EINVAL;
+>> +
+>> +	if (regnum > RTL8365MB_PHYREGMAX)
+>> +		return -EINVAL;
+>> +
+>> +	mutex_lock(&priv->map_lock);
+>> +	ret = regmap_update_bits(priv->map_nolock, RTL8365MB_GPHY_OCP_MSB_0_REG,
+>> +				 RTL8365MB_GPHY_OCP_MSB_0_CFG_CPU_OCPADR_MASK,
+>> +				 FIELD_PREP(RTL8365MB_GPHY_OCP_MSB_0_CFG_CPU_OCPADR_MASK,
+>> +					    FIELD_GET(RTL8365MB_PHY_OCP_ADDR_PREFIX_MASK,
+>> +						      RTL8365MB_PHY_OCP_ADDR_PHYREG_BASE)));
+>> +	if (ret) {
+>> +		mutex_unlock(&priv->map_lock);
+>> +		return ret;
+>> +	}
+>> +
+>> +	addr = RTL8365MB_PHY_BASE |
+>> +	       FIELD_PREP(RTL8365MB_INDIRECT_ACCESS_ADDRESS_PHYNUM_MASK, phy) |
+>> +	       regnum;
+>> +	ret = regmap_write(priv->map_nolock, addr, val);
+>> +	mutex_unlock(&priv->map_lock);
+>> +
+>> +	dev_dbg(priv->dev, "write (%d) PHY%d register 0x%02x val -> %04x\n",
+>> +		ret, phy, regnum, val);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>>   static int rtl8365mb_dsa_phy_read(struct dsa_switch *ds, int phy, int regnum)
+>>   {
+>> -	return rtl8365mb_phy_read(ds->priv, phy, regnum);
+>> +	return rtl8365mb_mdio_phy_read(ds->priv, phy, regnum);
+>>   }
+>>   
+>> -static int rtl8365mb_dsa_phy_write(struct dsa_switch *ds, int phy, int regnum,
+>> -				   u16 val)
+>> +static int rtl8365mb_dsa_phy_write(struct dsa_switch *ds, int phy, int regnum, u16 val)
+>>   {
+>> -	return rtl8365mb_phy_write(ds->priv, phy, regnum, val);
+>> +	return rtl8365mb_mdio_phy_write(ds->priv, phy, regnum, val);
+>>   }
+>>   
+>>   static const struct rtl8365mb_extint *
+>> -- 
+>> 2.40.1
+>>
+
 
