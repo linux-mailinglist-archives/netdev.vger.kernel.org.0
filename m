@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-7756-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7757-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1100B72167C
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 13:59:02 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id A9E3E72167D
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 13:59:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5A2C11C209C9
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 11:58:58 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 64376281172
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 11:59:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB607538D;
-	Sun,  4 Jun 2023 11:58:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 82C1F566F;
+	Sun,  4 Jun 2023 11:58:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0FCD525C
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 11:58:41 +0000 (UTC)
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1637DC
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 04:58:39 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id a640c23a62f3a-977c72b116fso158036766b.3
-        for <netdev@vger.kernel.org>; Sun, 04 Jun 2023 04:58:39 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72E1A566D
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 11:58:42 +0000 (UTC)
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6ADDA
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 04:58:40 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-514924ca903so5483904a12.2
+        for <netdev@vger.kernel.org>; Sun, 04 Jun 2023 04:58:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20221208; t=1685879918; x=1688471918;
+        d=googlemail.com; s=20221208; t=1685879919; x=1688471919;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SCcosYCHd/XDPNokbGnd37kSTJfadMM1wXb8Sbc9+80=;
-        b=LNbKPuXewMcN1EJPel65quQD5L97ZmtK3GvCwpBzihkC39U/OMLsXZGcZOF1AEb9dm
-         eVh+IAgo/43JBiBNvHeUJZPXkXBQRKnB04B9AffWuO63rPowqTG0nqDN4aF4xSw+tF2g
-         eD0CWhfba74IVo/tWQ1LRv30AJa/huj1JNaS1HckqweAkskinuE+mtrhCnidUpONqP1h
-         7AZXFdlMzmhxJ+KaEnLucaK1Ml4rbAI8BOPnOYJBio0IvXj3yVxZad2tIgzlYTP8/kwf
-         H5eL1sypVaHYXEVAmvags8KmlYX+iJa9I7JYnpOlk6D2MJckZo3IAumj+aoMSJ2kBimF
-         BaHA==
+        bh=KZVbzgrBwFyJo55t2L2JQdJIlSh08MC1qGiJwCfnW3E=;
+        b=Cf99tjVkVzu/Vt+LGFgaQL0dF1mvdhHJTnwh9FLjDUTagE9Hb3oKrFfhegHiY/JoZh
+         pLYJZocGNrr+nQ23AmhGnsdYwPqQiT/EMCuBb8Vzvk0XYN744R/i8CBr39gxFxTHyUSv
+         YRlX00JHWEEIp3GXS/xOOVxRCLMbOCCU+qblQ78F4Kna5j/zLvaxkPo4jbnGSyNF/5CL
+         80J1bRmpbFKZ3qpeT8u94Csxn66UbUXHXE8TiRuv5ey7mjNEZ56u6EQQswXnDSQoSgmA
+         VcbCD7lnkkoCnaQnW3/dpndRIjpty5DYYwWtTj258VKvalCc31m8HqWutluvJUYfZOu8
+         4rqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685879918; x=1688471918;
+        d=1e100.net; s=20221208; t=1685879919; x=1688471919;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=SCcosYCHd/XDPNokbGnd37kSTJfadMM1wXb8Sbc9+80=;
-        b=B5C7advexMe+20ggNTii0/SsJFuWUmvpqv4gWKonoGZpYM4rCIQ3YPxrI/yIyU/ogf
-         G9Wj0eylF8Fa04VZ+x8tktYcRMxdQRj2P4O50oUQefOq3fKmBt+Zn5LAZNKqq3YZ/tG4
-         U4DY4yePnAD1drAue0N8G2eubljFWRRFjTTdJhJDkWgqNMe6ILCeKKw03ysDvEyVWIFW
-         CX+FNiTQTUD2i/3+4axz2B35NYJT1haBRcitwwDq+GdeL4S5zjmPYy1/mCrPsJ+L73pb
-         j0HsKC3HGiFy7Emmgc3kzqJ8+MUmdKz2t8aIf4D2rMa6Uv3TpbYlHeVaop8dxzcSWcQ0
-         Docw==
-X-Gm-Message-State: AC+VfDxxYmq8+oFzxA5qarcpiWF8zx+FQBz/bNjfPdMo1FoOUsoE+2W+
-	u4JceIcC8N4GSgIk4hkdvV1VCzELJbJaKg==
-X-Google-Smtp-Source: ACHHUZ77xYmv8S/7WARrWOnbDMQrX6uQaxafVNj6Yw7lquZgzNY/LxnTd5Sfw0RjxMRTOiIuD4Y9hQ==
-X-Received: by 2002:a17:906:fe05:b0:974:6065:c4be with SMTP id wy5-20020a170906fe0500b009746065c4bemr3262357ejb.21.1685879917968;
-        Sun, 04 Jun 2023 04:58:37 -0700 (PDT)
+        bh=KZVbzgrBwFyJo55t2L2JQdJIlSh08MC1qGiJwCfnW3E=;
+        b=FkQPjfOyTbkPMR/53fJS3ee+CGXXX0wROVmhn7s9JJWOO2A3a3/Hn6N+Ut2t2i3mOK
+         7GmsGCW3QurRJP3IVvEb8dStCGAX8KuQvYGtqEtRUciFaJQF189UExga55guWlc7Rid8
+         ZwlKP5LCQgYZ4pxAeDfzcmVTpPbKrgC42mIA3vGTFFNtFaOxZBK18e1hpXchS7CYbLLe
+         CB3gqzUlgCTl0+/u6GleWz64TCAg8ovi17JjO5MK9GZtPv5PkNDKpy4vW3Qq2Jo0XWP2
+         GLkHaUfqb2JJD6JwEp37/+3jLtif9zAaStnSPa/nCpuM2Hy6ri4aCxfJjXC+Hga/AEsK
+         phEQ==
+X-Gm-Message-State: AC+VfDwqG4rrpSuSaGxWq23eIqmKv47+eJFUfdYtd7Nj9IeUKzHlJPBy
+	HqO9o3juL1LY/60bqcEfwVDNMY7buZ3Bhw==
+X-Google-Smtp-Source: ACHHUZ5oea0b6XKKYnroQrKsHtZ69FfUzE20LDss9JlbGwntCiR0ZwbKj3406Brq8gpR10fqwFMG+A==
+X-Received: by 2002:a17:907:c1f:b0:975:942e:81f1 with SMTP id ga31-20020a1709070c1f00b00975942e81f1mr3286660ejc.4.1685879918739;
+        Sun, 04 Jun 2023 04:58:38 -0700 (PDT)
 Received: from localhost.localdomain (p200300c1c74c0400ba8584fffebf2b17.dip0.t-ipconnect.de. [2003:c1:c74c:400:ba85:84ff:febf:2b17])
-        by smtp.gmail.com with ESMTPSA id bc10-20020a056402204a00b00510de087302sm2706489edb.47.2023.06.04.04.58.37
+        by smtp.gmail.com with ESMTPSA id bc10-20020a056402204a00b00510de087302sm2706489edb.47.2023.06.04.04.58.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Jun 2023 04:58:37 -0700 (PDT)
+        Sun, 04 Jun 2023 04:58:38 -0700 (PDT)
 Sender: Zahari Doychev <zahari.doychev@googlemail.com>
 From: Zahari Doychev <zahari.doychev@linux.com>
 To: netdev@vger.kernel.org
@@ -71,9 +71,9 @@ Cc: jhs@mojatatu.com,
 	simon.horman@corigine.com,
 	idosch@idosch.org,
 	Zahari Doychev <zdoychev@maxlinear.com>
-Subject: [PATCH net-next v5 1/3] net: flow_dissector: add support for cfm packets
-Date: Sun,  4 Jun 2023 13:58:23 +0200
-Message-Id: <20230604115825.2739031-2-zahari.doychev@linux.com>
+Subject: [PATCH net-next v5 2/3] net: flower: add support for matching cfm fields
+Date: Sun,  4 Jun 2023 13:58:24 +0200
+Message-Id: <20230604115825.2739031-3-zahari.doychev@linux.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230604115825.2739031-1-zahari.doychev@linux.com>
 References: <20230604115825.2739031-1-zahari.doychev@linux.com>
@@ -94,103 +94,309 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Zahari Doychev <zdoychev@maxlinear.com>
 
-Add support for dissecting cfm packets. The cfm packet header
-fields maintenance domain level and opcode can be dissected.
+Add support to the tc flower classifier to match based on fields in CFM
+information elements like level and opcode.
+
+tc filter add dev ens6 ingress protocol 802.1q \
+	flower vlan_id 698 vlan_ethtype 0x8902 cfm mdl 5 op 46 \
+	action drop
 
 Signed-off-by: Zahari Doychev <zdoychev@maxlinear.com>
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 ---
- include/net/flow_dissector.h | 21 +++++++++++++++++++++
- net/core/flow_dissector.c    | 30 ++++++++++++++++++++++++++++++
- 2 files changed, 51 insertions(+)
+ include/uapi/linux/pkt_cls.h |   9 ++
+ net/sched/cls_flower.c       | 195 ++++++++++++++++++++++++++---------
+ 2 files changed, 158 insertions(+), 46 deletions(-)
 
-diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-index 8b41668c77fc..8664ed4fbbdf 100644
---- a/include/net/flow_dissector.h
-+++ b/include/net/flow_dissector.h
-@@ -301,6 +301,26 @@ struct flow_dissector_key_l2tpv3 {
- 	__be32 session_id;
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index 00933dda7b10..7865f5a9885b 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -596,6 +596,8 @@ enum {
+ 
+ 	TCA_FLOWER_L2_MISS,		/* u8 */
+ 
++	TCA_FLOWER_KEY_CFM,		/* nested */
++
+ 	__TCA_FLOWER_MAX,
  };
  
-+/**
-+ * struct flow_dissector_key_cfm
-+ * @mdl_ver: maintenance domain level (mdl) and cfm protocol version
-+ * @opcode: code specifying a type of cfm protocol packet
-+ *
-+ * See 802.1ag, ITU-T G.8013/Y.1731
-+ *         1               2
-+ * |7 6 5 4 3 2 1 0|7 6 5 4 3 2 1 0|
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * | mdl | version |     opcode    |
-+ * +-----+---------+-+-+-+-+-+-+-+-+
-+ */
-+struct flow_dissector_key_cfm {
-+	u8	mdl_ver;
-+	u8	opcode;
+@@ -704,6 +706,13 @@ enum {
+ 	TCA_FLOWER_KEY_FLAGS_FRAG_IS_FIRST = (1 << 1),
+ };
+ 
++enum {
++	TCA_FLOWER_KEY_CFM_OPT_UNSPEC,
++	TCA_FLOWER_KEY_CFM_MD_LEVEL,
++	TCA_FLOWER_KEY_CFM_OPCODE,
++	TCA_FLOWER_KEY_CFM_OPT_MAX,
 +};
 +
-+#define FLOW_DIS_CFM_MDL_MASK GENMASK(7, 5)
-+#define FLOW_DIS_CFM_MDL_MAX 7
-+
- enum flow_dissector_key_id {
- 	FLOW_DISSECTOR_KEY_CONTROL, /* struct flow_dissector_key_control */
- 	FLOW_DISSECTOR_KEY_BASIC, /* struct flow_dissector_key_basic */
-@@ -333,6 +353,7 @@ enum flow_dissector_key_id {
- 	FLOW_DISSECTOR_KEY_NUM_OF_VLANS, /* struct flow_dissector_key_num_of_vlans */
- 	FLOW_DISSECTOR_KEY_PPPOE, /* struct flow_dissector_key_pppoe */
- 	FLOW_DISSECTOR_KEY_L2TPV3, /* struct flow_dissector_key_l2tpv3 */
-+	FLOW_DISSECTOR_KEY_CFM, /* struct flow_dissector_key_cfm */
+ #define TCA_FLOWER_MASK_FLAGS_RANGE	(1 << 0) /* Range-based match */
  
- 	FLOW_DISSECTOR_KEY_MAX,
- };
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 481ca4080cbd..85a2d0d9bd39 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -557,6 +557,30 @@ __skb_flow_dissect_arp(const struct sk_buff *skb,
- 	return FLOW_DISSECT_RET_OUT_GOOD;
+ /* Match-all classifier */
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index e02ecabbb75c..b32f5423721b 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -11,6 +11,7 @@
+ #include <linux/rhashtable.h>
+ #include <linux/workqueue.h>
+ #include <linux/refcount.h>
++#include <linux/bitfield.h>
+ 
+ #include <linux/if_ether.h>
+ #include <linux/in6.h>
+@@ -71,6 +72,7 @@ struct fl_flow_key {
+ 	struct flow_dissector_key_num_of_vlans num_of_vlans;
+ 	struct flow_dissector_key_pppoe pppoe;
+ 	struct flow_dissector_key_l2tpv3 l2tpv3;
++	struct flow_dissector_key_cfm cfm;
+ } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
+ 
+ struct fl_flow_mask_range {
+@@ -617,6 +619,58 @@ static void *fl_get(struct tcf_proto *tp, u32 handle)
+ 	return __fl_get(head, handle);
  }
  
-+static enum flow_dissect_ret
-+__skb_flow_dissect_cfm(const struct sk_buff *skb,
-+		       struct flow_dissector *flow_dissector,
-+		       void *target_container, const void *data,
-+		       int nhoff, int hlen)
++static const struct nla_policy
++enc_opts_policy[TCA_FLOWER_KEY_ENC_OPTS_MAX + 1] = {
++	[TCA_FLOWER_KEY_ENC_OPTS_UNSPEC]        = {
++		.strict_start_type = TCA_FLOWER_KEY_ENC_OPTS_VXLAN },
++	[TCA_FLOWER_KEY_ENC_OPTS_GENEVE]        = { .type = NLA_NESTED },
++	[TCA_FLOWER_KEY_ENC_OPTS_VXLAN]         = { .type = NLA_NESTED },
++	[TCA_FLOWER_KEY_ENC_OPTS_ERSPAN]        = { .type = NLA_NESTED },
++	[TCA_FLOWER_KEY_ENC_OPTS_GTP]		= { .type = NLA_NESTED },
++};
++
++static const struct nla_policy
++geneve_opt_policy[TCA_FLOWER_KEY_ENC_OPT_GENEVE_MAX + 1] = {
++	[TCA_FLOWER_KEY_ENC_OPT_GENEVE_CLASS]      = { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_ENC_OPT_GENEVE_TYPE]       = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ENC_OPT_GENEVE_DATA]       = { .type = NLA_BINARY,
++						       .len = 128 },
++};
++
++static const struct nla_policy
++vxlan_opt_policy[TCA_FLOWER_KEY_ENC_OPT_VXLAN_MAX + 1] = {
++	[TCA_FLOWER_KEY_ENC_OPT_VXLAN_GBP]         = { .type = NLA_U32 },
++};
++
++static const struct nla_policy
++erspan_opt_policy[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX + 1] = {
++	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER]        = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX]      = { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR]        = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID]       = { .type = NLA_U8 },
++};
++
++static const struct nla_policy
++gtp_opt_policy[TCA_FLOWER_KEY_ENC_OPT_GTP_MAX + 1] = {
++	[TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE]	   = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ENC_OPT_GTP_QFI]	   = { .type = NLA_U8 },
++};
++
++static const struct nla_policy
++mpls_stack_entry_policy[TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX + 1] = {
++	[TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH]    = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_MPLS_OPT_LSE_TTL]      = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_MPLS_OPT_LSE_BOS]      = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_MPLS_OPT_LSE_TC]       = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL]    = { .type = NLA_U32 },
++};
++
++static const struct nla_policy cfm_opt_policy[TCA_FLOWER_KEY_CFM_OPT_MAX] = {
++	[TCA_FLOWER_KEY_CFM_MD_LEVEL]	= NLA_POLICY_MAX(NLA_U8,
++						FLOW_DIS_CFM_MDL_MAX),
++	[TCA_FLOWER_KEY_CFM_OPCODE]	= { .type = NLA_U8 },
++};
++
+ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
+ 	[TCA_FLOWER_UNSPEC]		= { .strict_start_type =
+ 						TCA_FLOWER_L2_MISS },
+@@ -725,52 +779,7 @@ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
+ 	[TCA_FLOWER_KEY_PPP_PROTO]	= { .type = NLA_U16 },
+ 	[TCA_FLOWER_KEY_L2TPV3_SID]	= { .type = NLA_U32 },
+ 	[TCA_FLOWER_L2_MISS]		= NLA_POLICY_MAX(NLA_U8, 1),
+-};
+-
+-static const struct nla_policy
+-enc_opts_policy[TCA_FLOWER_KEY_ENC_OPTS_MAX + 1] = {
+-	[TCA_FLOWER_KEY_ENC_OPTS_UNSPEC]        = {
+-		.strict_start_type = TCA_FLOWER_KEY_ENC_OPTS_VXLAN },
+-	[TCA_FLOWER_KEY_ENC_OPTS_GENEVE]        = { .type = NLA_NESTED },
+-	[TCA_FLOWER_KEY_ENC_OPTS_VXLAN]         = { .type = NLA_NESTED },
+-	[TCA_FLOWER_KEY_ENC_OPTS_ERSPAN]        = { .type = NLA_NESTED },
+-	[TCA_FLOWER_KEY_ENC_OPTS_GTP]		= { .type = NLA_NESTED },
+-};
+-
+-static const struct nla_policy
+-geneve_opt_policy[TCA_FLOWER_KEY_ENC_OPT_GENEVE_MAX + 1] = {
+-	[TCA_FLOWER_KEY_ENC_OPT_GENEVE_CLASS]      = { .type = NLA_U16 },
+-	[TCA_FLOWER_KEY_ENC_OPT_GENEVE_TYPE]       = { .type = NLA_U8 },
+-	[TCA_FLOWER_KEY_ENC_OPT_GENEVE_DATA]       = { .type = NLA_BINARY,
+-						       .len = 128 },
+-};
+-
+-static const struct nla_policy
+-vxlan_opt_policy[TCA_FLOWER_KEY_ENC_OPT_VXLAN_MAX + 1] = {
+-	[TCA_FLOWER_KEY_ENC_OPT_VXLAN_GBP]         = { .type = NLA_U32 },
+-};
+-
+-static const struct nla_policy
+-erspan_opt_policy[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX + 1] = {
+-	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER]        = { .type = NLA_U8 },
+-	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX]      = { .type = NLA_U32 },
+-	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR]        = { .type = NLA_U8 },
+-	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID]       = { .type = NLA_U8 },
+-};
+-
+-static const struct nla_policy
+-gtp_opt_policy[TCA_FLOWER_KEY_ENC_OPT_GTP_MAX + 1] = {
+-	[TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE]	   = { .type = NLA_U8 },
+-	[TCA_FLOWER_KEY_ENC_OPT_GTP_QFI]	   = { .type = NLA_U8 },
+-};
+-
+-static const struct nla_policy
+-mpls_stack_entry_policy[TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX + 1] = {
+-	[TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH]    = { .type = NLA_U8 },
+-	[TCA_FLOWER_KEY_MPLS_OPT_LSE_TTL]      = { .type = NLA_U8 },
+-	[TCA_FLOWER_KEY_MPLS_OPT_LSE_BOS]      = { .type = NLA_U8 },
+-	[TCA_FLOWER_KEY_MPLS_OPT_LSE_TC]       = { .type = NLA_U8 },
+-	[TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL]    = { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_CFM]		= NLA_POLICY_NESTED(cfm_opt_policy),
+ };
+ 
+ static void fl_set_key_val(struct nlattr **tb,
+@@ -1660,6 +1669,54 @@ static bool is_vlan_key(struct nlattr *tb, __be16 *ethertype,
+ 	return false;
+ }
+ 
++static int fl_set_key_cfm_md_level(struct nlattr **tb,
++				   struct fl_flow_key *key,
++				   struct fl_flow_key *mask,
++				   struct netlink_ext_ack *extack)
 +{
-+	struct flow_dissector_key_cfm *key, *hdr, _hdr;
++	u8 level;
 +
-+	if (!dissector_uses_key(flow_dissector, FLOW_DISSECTOR_KEY_CFM))
-+		return FLOW_DISSECT_RET_OUT_GOOD;
++	if (!tb[TCA_FLOWER_KEY_CFM_MD_LEVEL])
++		return 0;
 +
-+	hdr = __skb_header_pointer(skb, nhoff, sizeof(*key), data, hlen, &_hdr);
-+	if (!hdr)
-+		return FLOW_DISSECT_RET_OUT_BAD;
++	level = nla_get_u8(tb[TCA_FLOWER_KEY_CFM_MD_LEVEL]);
++	key->cfm.mdl_ver = FIELD_PREP(FLOW_DIS_CFM_MDL_MASK, level);
++	mask->cfm.mdl_ver = FLOW_DIS_CFM_MDL_MASK;
 +
-+	key = skb_flow_dissector_target(flow_dissector, FLOW_DISSECTOR_KEY_CFM,
-+					target_container);
-+
-+	key->mdl_ver = hdr->mdl_ver;
-+	key->opcode = hdr->opcode;
-+
-+	return FLOW_DISSECT_RET_OUT_GOOD;
++	return 0;
 +}
 +
- static enum flow_dissect_ret
- __skb_flow_dissect_gre(const struct sk_buff *skb,
- 		       struct flow_dissector_key_control *key_control,
-@@ -1400,6 +1424,12 @@ bool __skb_flow_dissect(const struct net *net,
- 		break;
++static void fl_set_key_cfm_opcode(struct nlattr **tb,
++				  struct fl_flow_key *key,
++				  struct fl_flow_key *mask,
++				  struct netlink_ext_ack *extack)
++{
++	fl_set_key_val(tb, &key->cfm.opcode, TCA_FLOWER_KEY_CFM_OPCODE,
++		       &mask->cfm.opcode, TCA_FLOWER_UNSPEC,
++		       sizeof(key->cfm.opcode));
++}
++
++static int fl_set_key_cfm(struct nlattr **tb,
++			  struct fl_flow_key *key,
++			  struct fl_flow_key *mask,
++			  struct netlink_ext_ack *extack)
++{
++	struct nlattr *nla_cfm_opt[TCA_FLOWER_KEY_CFM_OPT_MAX];
++	int err;
++
++	if (!tb[TCA_FLOWER_KEY_CFM])
++		return 0;
++
++	err = nla_parse_nested(nla_cfm_opt, TCA_FLOWER_KEY_CFM_OPT_MAX,
++			       tb[TCA_FLOWER_KEY_CFM], cfm_opt_policy, extack);
++	if (err < 0)
++		return err;
++
++	fl_set_key_cfm_opcode(nla_cfm_opt, key, mask, extack);
++
++	return fl_set_key_cfm_md_level(nla_cfm_opt, key, mask, extack);
++}
++
+ static int fl_set_key(struct net *net, struct nlattr **tb,
+ 		      struct fl_flow_key *key, struct fl_flow_key *mask,
+ 		      struct netlink_ext_ack *extack)
+@@ -1814,6 +1871,10 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
+ 			       TCA_FLOWER_KEY_L2TPV3_SID,
+ 			       &mask->l2tpv3.session_id, TCA_FLOWER_UNSPEC,
+ 			       sizeof(key->l2tpv3.session_id));
++	} else if (key->basic.n_proto  == htons(ETH_P_CFM)) {
++		ret = fl_set_key_cfm(tb, key, mask, extack);
++		if (ret)
++			return ret;
  	}
  
-+	case htons(ETH_P_CFM):
-+		fdret = __skb_flow_dissect_cfm(skb, flow_dissector,
-+					       target_container, data,
-+					       nhoff, hlen);
-+		break;
+ 	if (key->basic.ip_proto == IPPROTO_TCP ||
+@@ -1996,6 +2057,8 @@ static void fl_init_dissector(struct flow_dissector *dissector,
+ 			     FLOW_DISSECTOR_KEY_PPPOE, pppoe);
+ 	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
+ 			     FLOW_DISSECTOR_KEY_L2TPV3, l2tpv3);
++	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_CFM, cfm);
+ 
+ 	skb_flow_dissector_init(dissector, keys, cnt);
+ }
+@@ -3029,6 +3092,43 @@ static int fl_dump_key_ct(struct sk_buff *skb,
+ 	return -EMSGSIZE;
+ }
+ 
++static int fl_dump_key_cfm(struct sk_buff *skb,
++			   struct flow_dissector_key_cfm *key,
++			   struct flow_dissector_key_cfm *mask)
++{
++	struct nlattr *opts;
++	int err;
++	u8 mdl;
 +
- 	default:
- 		fdret = FLOW_DISSECT_RET_OUT_BAD;
- 		break;
++	if (!memchr_inv(mask, 0, sizeof(*mask)))
++		return 0;
++
++	opts = nla_nest_start(skb, TCA_FLOWER_KEY_CFM);
++	if (!opts)
++		return -EMSGSIZE;
++
++	if (FIELD_GET(FLOW_DIS_CFM_MDL_MASK, mask->mdl_ver)) {
++		mdl = FIELD_GET(FLOW_DIS_CFM_MDL_MASK, key->mdl_ver);
++		err = nla_put_u8(skb, TCA_FLOWER_KEY_CFM_MD_LEVEL, mdl);
++		if (err)
++			goto err_cfm_opts;
++	}
++
++	if (mask->opcode) {
++		err = nla_put_u8(skb, TCA_FLOWER_KEY_CFM_OPCODE, key->opcode);
++		if (err)
++			goto err_cfm_opts;
++	}
++
++	nla_nest_end(skb, opts);
++
++	return 0;
++
++err_cfm_opts:
++	nla_nest_cancel(skb, opts);
++	return err;
++}
++
+ static int fl_dump_key_options(struct sk_buff *skb, int enc_opt_type,
+ 			       struct flow_dissector_key_enc_opts *enc_opts)
+ {
+@@ -3316,6 +3416,9 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
+ 			     sizeof(key->hash.hash)))
+ 		goto nla_put_failure;
+ 
++	if (fl_dump_key_cfm(skb, &key->cfm, &mask->cfm))
++		goto nla_put_failure;
++
+ 	return 0;
+ 
+ nla_put_failure:
 -- 
 2.40.1
 
