@@ -1,763 +1,133 @@
-Return-Path: <netdev+bounces-7730-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7731-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6AA89721499
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 06:32:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 060917214AF
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 06:51:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D3AE81C20AE1
-	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 04:32:22 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0C6C91C20AE2
+	for <lists+netdev@lfdr.de>; Sun,  4 Jun 2023 04:51:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3DCE0621;
-	Sun,  4 Jun 2023 04:32:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5504B17F3;
+	Sun,  4 Jun 2023 04:51:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E714136A
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 04:32:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 231ACC433D2;
-	Sun,  4 Jun 2023 04:32:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685853140;
-	bh=b3IDDhEJ/rNKfwqPjIxfKfqAMhwdx7fRqmJlcDMGYpI=;
-	h=From:To:Cc:Subject:Date:From;
-	b=r3liFATNT+kWEBGFPmgffofveTZJx9IGdXu6GghfBtLyTjwG2dTcI14/3GZd46B+l
-	 50xMiRPSLAXCkWUbaZTToWtrIs7C9hZlMLN62IvN15vKxLjT6T+GprYsAUPR0Z8+cQ
-	 8kCrh6IpXhXh3sR1olXWk5qUnvlRRvID71LzMd+F39kJhZj26JZbaNHcVi8pfg5qWp
-	 N3YF3YA7NulZgKtLABZgRs5yv3sUnpBeKLgtS7VPVJjRnh79dv9EFm7zgrDvnc+zf6
-	 OHvZIwXT27T5VcdazKiWXunpSEpHirNxkADFzA6cnY+oNubFA866GKmHXy0oMeokMF
-	 B2vUSTsonPGXg==
-From: Masahiro Yamada <masahiroy@kernel.org>
-To: Jakub Kicinski <kuba@kernel.org>,
-	"David S . Miller" <davem@davemloft.net>,
-	netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Derek Chickles <dchickles@marvell.com>,
-	Satanand Burla <sburla@marvell.com>,
-	Felix Manlunas <fmanlunas@marvell.com>,
-	Masahiro Yamada <masahiroy@kernel.org>,
-	Eric Dumazet <edumazet@google.com>,
-	Nick Terrell <terrelln@fb.com>,
-	Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH] net: liquidio: fix mixed module-builtin object
-Date: Sun,  4 Jun 2023 13:32:13 +0900
-Message-Id: <20230604043213.901341-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.39.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46CC115CC
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 04:51:52 +0000 (UTC)
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE2BD3
+	for <netdev@vger.kernel.org>; Sat,  3 Jun 2023 21:51:50 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id a640c23a62f3a-96f7bf3cf9eso593261666b.0
+        for <netdev@vger.kernel.org>; Sat, 03 Jun 2023 21:51:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685854308; x=1688446308;
+        h=to:date:message-id:subject:mime-version:content-transfer-encoding
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xszXk3I/mv4XEU+Q0x66alNWoOSfPLq9xuhadpbqECg=;
+        b=q3/MRgoWlMgIlTvKZUYxXPcrtnsMBgH1GMpR89gQvtFcrsJzbmTp9GteXUzm03g/xs
+         d3I/+Yq6bsj6pLrUGEFyQUOC483pNb9wl5sNXJAy25nJRkmWC3BrUCFA9tjTj5ITb8+8
+         Fxqb4viBnQ/JbpbXqRc49LbQEOERkE/rgHK1Z7x4xuMLKxjJqE0l0VbsC/yKOgfIaV9e
+         xCPEQvFDpmEDmerXjy025U3+J9NqHRxvyeLMcIq8p0ZNlRqr2VcAXDepgnfjTR+MSf2j
+         mdhfYDTeOX6sH1VuPuoMNSBe56wZJWU/0gkYjVg68ZAAZPYG5Fr8OXWXbgbJB3z6JH5l
+         0QBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685854308; x=1688446308;
+        h=to:date:message-id:subject:mime-version:content-transfer-encoding
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xszXk3I/mv4XEU+Q0x66alNWoOSfPLq9xuhadpbqECg=;
+        b=ickyUB/2+xS9wwYYPmw+2Utedlclt/uOzLxyO2AcT29i/Vop++tP21jNazefSLdqbN
+         51aoZ2f7m8MLIirpI78OpEuIPIHJcErY3gg/UP3G5wgPymbZnYOGcaOFF7XsXpxVfVpv
+         SgQWNZOJtoyAqNkzFJmjb5y6emVlsNeJsskmsVv01UIuiLhv7RJBY0+OdgMd8nfkv+2R
+         8qnNkhfaPVldzhwr0fGY+6GRQIBrsPZppizUAR68yIXoK02osvBdngcNChMVujvgtbxR
+         RmjWBwFyGTllje1b/zCHo98p93wFMbQRMJ4NGdn+Mjv/brFz0pzyAFeEbSF3UAAhtUjk
+         9xtA==
+X-Gm-Message-State: AC+VfDxEF3Eo6Ie823u6dOC27GpE6ofOcMT5iR0AcXeaSWYKKQE/maBO
+	p9yVz2ZCj4+BUJXZatl9HFmrqRJeNJk=
+X-Google-Smtp-Source: ACHHUZ45KT063snNOPyp2+/z4ulFiacHiXnyn8dWPMzUfioL1FrxCF/DirmQENOoqnmOBub8NFLawg==
+X-Received: by 2002:a17:907:8a05:b0:973:9c54:5723 with SMTP id sc5-20020a1709078a0500b009739c545723mr3943143ejc.2.1685854308071;
+        Sat, 03 Jun 2023 21:51:48 -0700 (PDT)
+Received: from smtpclient.apple ([178.254.237.20])
+        by smtp.gmail.com with ESMTPSA id m4-20020a170906848400b00965a56f82absm2625670ejx.212.2023.06.03.21.51.47
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 03 Jun 2023 21:51:47 -0700 (PDT)
+From: Martin Zaharinov <micron10@gmail.com>
+Content-Type: text/plain;
+	charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.600.7\))
+Subject: Bug Report with kernel 6.3.5
+Message-Id: <20F611B6-2C76-4BD3-852D-8828D27F88EC@gmail.com>
+Date: Sun, 4 Jun 2023 07:51:36 +0300
+To: netdev <netdev@vger.kernel.org>,
+ Eric Dumazet <edumazet@google.com>
+X-Mailer: Apple Mail (2.3731.600.7)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-With CONFIG_LIQUIDIO=m and CONFIG_LIQUIDIO_VF=y (or vice versa),
-$(common-objs) are linked to a module and also to vmlinux even though
-the expected CFLAGS are different between builtins and modules.
+Hi Team one bug report=20
 
-This is the same situation as fixed by commit 637a642f5ca5 ("zstd:
-Fixing mixed module-builtin objects").
+after upgrade from kernel 6.2.12 to 6.3.5=20
+After fell hour system get this error.
 
-Introduce the new module, liquidio-core, to provide the common functions
-to liquidio and liquidio-vf.
+If is possible to check.
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
 
- drivers/net/ethernet/cavium/Kconfig           |  5 ++++
- drivers/net/ethernet/cavium/liquidio/Makefile |  4 +++-
- .../cavium/liquidio/cn23xx_pf_device.c        |  4 ++++
- .../cavium/liquidio/cn23xx_vf_device.c        |  3 +++
- .../ethernet/cavium/liquidio/cn66xx_device.c  |  1 +
- .../ethernet/cavium/liquidio/cn68xx_device.c  |  1 +
- .../net/ethernet/cavium/liquidio/lio_core.c   | 16 +++++++++++++
- .../ethernet/cavium/liquidio/lio_ethtool.c    |  1 +
- .../ethernet/cavium/liquidio/octeon_device.c  | 23 +++++++++++++++++++
- .../ethernet/cavium/liquidio/octeon_droq.c    |  4 ++++
- .../ethernet/cavium/liquidio/octeon_mem_ops.c |  5 ++++
- .../net/ethernet/cavium/liquidio/octeon_nic.c |  3 +++
- .../cavium/liquidio/request_manager.c         | 14 +++++++++++
- .../cavium/liquidio/response_manager.c        |  3 +++
- 14 files changed, 86 insertions(+), 1 deletion(-)
+Jun  4 01:46:52  [12810.275218][  T587] INFO: task nginx:3977 blocked =
+for more than 609 seconds.
+Jun  4 01:46:52  [12810.275350][  T587]       Tainted: G           O     =
+  6.3.5 #1
+Jun  4 01:46:52  [12810.275436][  T587] "echo 0 > =
+/proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Jun  4 01:46:52  [12810.275527][  T587] task:nginx         state:D =
+stack:0     pid:3977  ppid:1      flags:0x00000006
+Jun  4 01:46:52  [12810.275624][  T587] Call Trace:
+Jun  4 01:46:52  [12810.275707][  T587]  <TASK>
+Jun  4 01:46:52  [12810.275786][  T587]  __schedule+0x352/0x820
+Jun  4 01:46:52  [12810.275878][  T587]  =
+schedule_preempt_disabled+0x61/0xe0
+Jun  4 01:46:52  [12810.275963][  T587]  =
+__mutex_lock.constprop.0+0x481/0x7a0
+Jun  4 01:46:52  [12810.276049][  T587]  ? __lock_sock_fast+0x1a/0xc0
+Jun  4 01:46:52  [12810.276135][  T587]  ? lock_sock_nested+0x1a/0xc0
+Jun  4 01:46:52  [12810.276217][  T587]  ? =
+inode_wait_for_writeback+0x77/0xd0
+Jun  4 01:46:52  [12810.276307][  T587]  =
+eventpoll_release_file+0x41/0x90
+Jun  4 01:46:52  [12810.276416][  T587]  __fput+0x1d9/0x240
+Jun  4 01:46:52  [12810.276517][  T587]  task_work_run+0x51/0x80
+Jun  4 01:46:52  [12810.276624][  T587]  =
+exit_to_user_mode_prepare+0x123/0x130
+Jun  4 01:46:52  [12810.276732][  T587]  =
+syscall_exit_to_user_mode+0x21/0x110
+Jun  4 01:46:52  [12810.276847][  T587]  =
+entry_SYSCALL_64_after_hwframe+0x46/0xb0
+Jun  4 01:46:52  [12810.276954][  T587] RIP: 0033:0x15037529155a
+Jun  4 01:46:52  [12810.277056][  T587] RSP: 002b:000015036bbb6400 =
+EFLAGS: 00000293 ORIG_RAX: 0000000000000003
+Jun  4 01:46:52  [12810.277185][  T587] RAX: 0000000000000000 RBX: =
+000015036bbb7420 RCX: 000015037529155a
+Jun  4 01:46:52  [12810.277311][  T587] RDX: 0000000000000000 RSI: =
+0000000000000000 RDI: 0000000000000013
+Jun  4 01:46:52  [12810.277440][  T587] RBP: 00001503647343d0 R08: =
+1999999999999999 R09: 0000000000000000
+Jun  4 01:46:52  [12810.277567][  T587] R10: 000015037531baa0 R11: =
+0000000000000293 R12: 0000000000000ba5
+Jun  4 01:46:52  [12810.277693][  T587] R13: 0000150348731f48 R14: =
+0000000000000000 R15: 000000001f5b06b0
+Jun  4 01:46:52  [12810.277820][  T587]  </TASK>
 
-diff --git a/drivers/net/ethernet/cavium/Kconfig b/drivers/net/ethernet/cavium/Kconfig
-index 1c76c95b0b27..ca742cc146d7 100644
---- a/drivers/net/ethernet/cavium/Kconfig
-+++ b/drivers/net/ethernet/cavium/Kconfig
-@@ -62,6 +62,9 @@ config CAVIUM_PTP
- 	  Precision Time Protocol or other purposes.  Timestamps can be used in
- 	  BGX, TNS, GTI, and NIC blocks.
- 
-+config LIQUIDIO_CORE
-+	tristate
-+
- config LIQUIDIO
- 	tristate "Cavium LiquidIO support"
- 	depends on 64BIT && PCI
-@@ -69,6 +72,7 @@ config LIQUIDIO
- 	depends on PTP_1588_CLOCK_OPTIONAL
- 	select FW_LOADER
- 	select LIBCRC32C
-+	select LIQUIDIO_CORE
- 	select NET_DEVLINK
- 	help
- 	  This driver supports Cavium LiquidIO Intelligent Server Adapters
-@@ -92,6 +96,7 @@ config LIQUIDIO_VF
- 	tristate "Cavium LiquidIO VF support"
- 	depends on 64BIT && PCI_MSI
- 	depends on PTP_1588_CLOCK_OPTIONAL
-+	select LIQUIDIO_CORE
- 	help
- 	  This driver supports Cavium LiquidIO Intelligent Server Adapter
- 	  based on CN23XX chips.
-diff --git a/drivers/net/ethernet/cavium/liquidio/Makefile b/drivers/net/ethernet/cavium/liquidio/Makefile
-index bc9937502043..e5407f9c3912 100644
---- a/drivers/net/ethernet/cavium/liquidio/Makefile
-+++ b/drivers/net/ethernet/cavium/liquidio/Makefile
-@@ -3,7 +3,9 @@
- # Cavium Liquidio ethernet device driver
- #
- 
--common-objs :=	lio_ethtool.o		\
-+obj-$(CONFIG_LIQUIDIO_CORE) += liquidio-core.o
-+liquidio-core-y := \
-+		lio_ethtool.o		\
- 		lio_core.o		\
- 		request_manager.o	\
- 		response_manager.o	\
-diff --git a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_device.c b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_device.c
-index 9ed3d1ab2ca5..54b280114481 100644
---- a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_device.c
-+++ b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_device.c
-@@ -1377,6 +1377,7 @@ int setup_cn23xx_octeon_pf_device(struct octeon_device *oct)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(setup_cn23xx_octeon_pf_device);
- 
- int validate_cn23xx_pf_config_info(struct octeon_device *oct,
- 				   struct octeon_config *conf23xx)
-@@ -1435,6 +1436,7 @@ int cn23xx_fw_loaded(struct octeon_device *oct)
- 	val = octeon_read_csr64(oct, CN23XX_SLI_SCRATCH2);
- 	return (val >> SCR2_BIT_FW_LOADED) & 1ULL;
- }
-+EXPORT_SYMBOL_GPL(cn23xx_fw_loaded);
- 
- void cn23xx_tell_vf_its_macaddr_changed(struct octeon_device *oct, int vfidx,
- 					u8 *mac)
-@@ -1456,6 +1458,7 @@ void cn23xx_tell_vf_its_macaddr_changed(struct octeon_device *oct, int vfidx,
- 		octeon_mbox_write(oct, &mbox_cmd);
- 	}
- }
-+EXPORT_SYMBOL_GPL(cn23xx_tell_vf_its_macaddr_changed);
- 
- static void
- cn23xx_get_vf_stats_callback(struct octeon_device *oct,
-@@ -1510,3 +1513,4 @@ int cn23xx_get_vf_stats(struct octeon_device *oct, int vfidx,
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(cn23xx_get_vf_stats);
-diff --git a/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_device.c b/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_device.c
-index fda49404968c..ef4667b7e17f 100644
---- a/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_device.c
-+++ b/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_device.c
-@@ -386,6 +386,7 @@ void cn23xx_vf_ask_pf_to_do_flr(struct octeon_device *oct)
- 
- 	octeon_mbox_write(oct, &mbox_cmd);
- }
-+EXPORT_SYMBOL_GPL(cn23xx_vf_ask_pf_to_do_flr);
- 
- static void octeon_pfvf_hs_callback(struct octeon_device *oct,
- 				    struct octeon_mbox_cmd *cmd,
-@@ -468,6 +469,7 @@ int cn23xx_octeon_pfvf_handshake(struct octeon_device *oct)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(cn23xx_octeon_pfvf_handshake);
- 
- static void cn23xx_handle_vf_mbox_intr(struct octeon_ioq_vector *ioq_vector)
- {
-@@ -680,3 +682,4 @@ int cn23xx_setup_octeon_vf_device(struct octeon_device *oct)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(cn23xx_setup_octeon_vf_device);
-diff --git a/drivers/net/ethernet/cavium/liquidio/cn66xx_device.c b/drivers/net/ethernet/cavium/liquidio/cn66xx_device.c
-index 39643be8c30a..93fccfec288d 100644
---- a/drivers/net/ethernet/cavium/liquidio/cn66xx_device.c
-+++ b/drivers/net/ethernet/cavium/liquidio/cn66xx_device.c
-@@ -697,6 +697,7 @@ int lio_setup_cn66xx_octeon_device(struct octeon_device *oct)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(lio_setup_cn66xx_octeon_device);
- 
- int lio_validate_cn6xxx_config_info(struct octeon_device *oct,
- 				    struct octeon_config *conf6xxx)
-diff --git a/drivers/net/ethernet/cavium/liquidio/cn68xx_device.c b/drivers/net/ethernet/cavium/liquidio/cn68xx_device.c
-index 30254e4cf70f..b5103def3761 100644
---- a/drivers/net/ethernet/cavium/liquidio/cn68xx_device.c
-+++ b/drivers/net/ethernet/cavium/liquidio/cn68xx_device.c
-@@ -181,3 +181,4 @@ int lio_setup_cn68xx_octeon_device(struct octeon_device *oct)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(lio_setup_cn68xx_octeon_device);
-diff --git a/drivers/net/ethernet/cavium/liquidio/lio_core.c b/drivers/net/ethernet/cavium/liquidio/lio_core.c
-index 882b2be06ea0..9cc6303c82ff 100644
---- a/drivers/net/ethernet/cavium/liquidio/lio_core.c
-+++ b/drivers/net/ethernet/cavium/liquidio/lio_core.c
-@@ -26,6 +26,9 @@
- #include "octeon_main.h"
- #include "octeon_network.h"
- 
-+MODULE_AUTHOR("Cavium Networks, <support@cavium.com>");
-+MODULE_LICENSE("GPL");
-+
- /* OOM task polling interval */
- #define LIO_OOM_POLL_INTERVAL_MS 250
- 
-@@ -71,6 +74,7 @@ void lio_delete_glists(struct lio *lio)
- 	kfree(lio->glist);
- 	lio->glist = NULL;
- }
-+EXPORT_SYMBOL_GPL(lio_delete_glists);
- 
- /**
-  * lio_setup_glists - Setup gather lists
-@@ -154,6 +158,7 @@ int lio_setup_glists(struct octeon_device *oct, struct lio *lio, int num_iqs)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(lio_setup_glists);
- 
- int liquidio_set_feature(struct net_device *netdev, int cmd, u16 param1)
- {
-@@ -180,6 +185,7 @@ int liquidio_set_feature(struct net_device *netdev, int cmd, u16 param1)
- 	}
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(liquidio_set_feature);
- 
- void octeon_report_tx_completion_to_bql(void *txq, unsigned int pkts_compl,
- 					unsigned int bytes_compl)
-@@ -395,6 +401,7 @@ void liquidio_link_ctrl_cmd_completion(void *nctrl_ptr)
- 			nctrl->ncmd.s.cmd);
- 	}
- }
-+EXPORT_SYMBOL_GPL(liquidio_link_ctrl_cmd_completion);
- 
- void octeon_pf_changed_vf_macaddr(struct octeon_device *oct, u8 *mac)
- {
-@@ -478,6 +485,7 @@ int setup_rx_oom_poll_fn(struct net_device *netdev)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(setup_rx_oom_poll_fn);
- 
- void cleanup_rx_oom_poll_fn(struct net_device *netdev)
- {
-@@ -495,6 +503,7 @@ void cleanup_rx_oom_poll_fn(struct net_device *netdev)
- 		}
- 	}
- }
-+EXPORT_SYMBOL_GPL(cleanup_rx_oom_poll_fn);
- 
- /* Runs in interrupt context. */
- static void lio_update_txq_status(struct octeon_device *oct, int iq_num)
-@@ -899,6 +908,7 @@ int liquidio_setup_io_queues(struct octeon_device *octeon_dev, int ifidx,
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(liquidio_setup_io_queues);
- 
- static
- int liquidio_schedule_msix_droq_pkt_handler(struct octeon_droq *droq, u64 ret)
-@@ -1194,6 +1204,7 @@ int octeon_setup_interrupt(struct octeon_device *oct, u32 num_ioqs)
- 	}
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_setup_interrupt);
- 
- /**
-  * liquidio_change_mtu - Net device change_mtu
-@@ -1256,6 +1267,7 @@ int liquidio_change_mtu(struct net_device *netdev, int new_mtu)
- 	WRITE_ONCE(sc->caller_is_done, true);
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(liquidio_change_mtu);
- 
- int lio_wait_for_clean_oq(struct octeon_device *oct)
- {
-@@ -1279,6 +1291,7 @@ int lio_wait_for_clean_oq(struct octeon_device *oct)
- 
- 	return pending_pkts;
- }
-+EXPORT_SYMBOL_GPL(lio_wait_for_clean_oq);
- 
- static void
- octnet_nic_stats_callback(struct octeon_device *oct_dev,
-@@ -1509,6 +1522,7 @@ void lio_fetch_stats(struct work_struct *work)
- 
- 	return;
- }
-+EXPORT_SYMBOL_GPL(lio_fetch_stats);
- 
- int liquidio_set_speed(struct lio *lio, int speed)
- {
-@@ -1659,6 +1673,7 @@ int liquidio_get_speed(struct lio *lio)
- 
- 	return retval;
- }
-+EXPORT_SYMBOL_GPL(liquidio_get_speed);
- 
- int liquidio_set_fec(struct lio *lio, int on_off)
- {
-@@ -1812,3 +1827,4 @@ int liquidio_get_fec(struct lio *lio)
- 
- 	return retval;
- }
-+EXPORT_SYMBOL_GPL(liquidio_get_fec);
-diff --git a/drivers/net/ethernet/cavium/liquidio/lio_ethtool.c b/drivers/net/ethernet/cavium/liquidio/lio_ethtool.c
-index 2c10ae3f7fc1..9d56181a301f 100644
---- a/drivers/net/ethernet/cavium/liquidio/lio_ethtool.c
-+++ b/drivers/net/ethernet/cavium/liquidio/lio_ethtool.c
-@@ -3180,3 +3180,4 @@ void liquidio_set_ethtool_ops(struct net_device *netdev)
- 	else
- 		netdev->ethtool_ops = &lio_ethtool_ops;
- }
-+EXPORT_SYMBOL_GPL(liquidio_set_ethtool_ops);
-diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_device.c b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-index e159194d0aef..63cf4bf43ad1 100644
---- a/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-+++ b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-@@ -564,6 +564,7 @@ void octeon_init_device_list(int conf_type)
- 	for (i = 0; i <  MAX_OCTEON_DEVICES; i++)
- 		oct_set_config_info(i, conf_type);
- }
-+EXPORT_SYMBOL_GPL(octeon_init_device_list);
- 
- static void *__retrieve_octeon_config_info(struct octeon_device *oct,
- 					   u16 card_type)
-@@ -661,6 +662,7 @@ void octeon_free_device_mem(struct octeon_device *oct)
- 	octeon_device[i] = NULL;
- 	octeon_device_count--;
- }
-+EXPORT_SYMBOL_GPL(octeon_free_device_mem);
- 
- static struct octeon_device *octeon_allocate_device_mem(u32 pci_id,
- 							u32 priv_size)
-@@ -747,6 +749,7 @@ struct octeon_device *octeon_allocate_device(u32 pci_id,
- 
- 	return oct;
- }
-+EXPORT_SYMBOL_GPL(octeon_allocate_device);
- 
- /** Register a device's bus location at initialization time.
-  *  @param octeon_dev - pointer to the octeon device structure.
-@@ -804,6 +807,7 @@ int octeon_register_device(struct octeon_device *oct,
- 
- 	return refcount;
- }
-+EXPORT_SYMBOL_GPL(octeon_register_device);
- 
- /** Deregister a device at de-initialization time.
-  *  @param octeon_dev - pointer to the octeon device structure.
-@@ -821,6 +825,7 @@ int octeon_deregister_device(struct octeon_device *oct)
- 
- 	return refcount;
- }
-+EXPORT_SYMBOL_GPL(octeon_deregister_device);
- 
- int
- octeon_allocate_ioq_vector(struct octeon_device *oct, u32 num_ioqs)
-@@ -853,12 +858,14 @@ octeon_allocate_ioq_vector(struct octeon_device *oct, u32 num_ioqs)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_allocate_ioq_vector);
- 
- void
- octeon_free_ioq_vector(struct octeon_device *oct)
- {
- 	vfree(oct->ioq_vector);
- }
-+EXPORT_SYMBOL_GPL(octeon_free_ioq_vector);
- 
- /* this function is only for setting up the first queue */
- int octeon_setup_instr_queues(struct octeon_device *oct)
-@@ -904,6 +911,7 @@ int octeon_setup_instr_queues(struct octeon_device *oct)
- 	oct->num_iqs++;
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_setup_instr_queues);
- 
- int octeon_setup_output_queues(struct octeon_device *oct)
- {
-@@ -940,6 +948,7 @@ int octeon_setup_output_queues(struct octeon_device *oct)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_setup_output_queues);
- 
- int octeon_set_io_queues_off(struct octeon_device *oct)
- {
-@@ -989,6 +998,7 @@ int octeon_set_io_queues_off(struct octeon_device *oct)
- 	}
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_set_io_queues_off);
- 
- void octeon_set_droq_pkt_op(struct octeon_device *oct,
- 			    u32 q_no,
-@@ -1027,6 +1037,7 @@ int octeon_init_dispatch_list(struct octeon_device *oct)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_init_dispatch_list);
- 
- void octeon_delete_dispatch_list(struct octeon_device *oct)
- {
-@@ -1058,6 +1069,7 @@ void octeon_delete_dispatch_list(struct octeon_device *oct)
- 		kfree(temp);
- 	}
- }
-+EXPORT_SYMBOL_GPL(octeon_delete_dispatch_list);
- 
- octeon_dispatch_fn_t
- octeon_get_dispatch(struct octeon_device *octeon_dev, u16 opcode,
-@@ -1180,6 +1192,7 @@ octeon_register_dispatch_fn(struct octeon_device *oct,
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_register_dispatch_fn);
- 
- int octeon_core_drv_init(struct octeon_recv_info *recv_info, void *buf)
- {
-@@ -1262,6 +1275,7 @@ int octeon_core_drv_init(struct octeon_recv_info *recv_info, void *buf)
- 	octeon_free_recv_info(recv_info);
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_core_drv_init);
- 
- int octeon_get_tx_qsize(struct octeon_device *oct, u32 q_no)
- 
-@@ -1272,6 +1286,7 @@ int octeon_get_tx_qsize(struct octeon_device *oct, u32 q_no)
- 
- 	return -1;
- }
-+EXPORT_SYMBOL_GPL(octeon_get_tx_qsize);
- 
- int octeon_get_rx_qsize(struct octeon_device *oct, u32 q_no)
- {
-@@ -1280,6 +1295,7 @@ int octeon_get_rx_qsize(struct octeon_device *oct, u32 q_no)
- 		return oct->droq[q_no]->max_count;
- 	return -1;
- }
-+EXPORT_SYMBOL_GPL(octeon_get_rx_qsize);
- 
- /* Retruns the host firmware handshake OCTEON specific configuration */
- struct octeon_config *octeon_get_conf(struct octeon_device *oct)
-@@ -1302,6 +1318,7 @@ struct octeon_config *octeon_get_conf(struct octeon_device *oct)
- 	}
- 	return default_oct_conf;
- }
-+EXPORT_SYMBOL_GPL(octeon_get_conf);
- 
- /* scratch register address is same in all the OCT-II and CN70XX models */
- #define CNXX_SLI_SCRATCH1   0x3C0
-@@ -1318,6 +1335,7 @@ struct octeon_device *lio_get_device(u32 octeon_id)
- 	else
- 		return octeon_device[octeon_id];
- }
-+EXPORT_SYMBOL_GPL(lio_get_device);
- 
- u64 lio_pci_readq(struct octeon_device *oct, u64 addr)
- {
-@@ -1349,6 +1367,7 @@ u64 lio_pci_readq(struct octeon_device *oct, u64 addr)
- 
- 	return val64;
- }
-+EXPORT_SYMBOL_GPL(lio_pci_readq);
- 
- void lio_pci_writeq(struct octeon_device *oct,
- 		    u64 val,
-@@ -1369,6 +1388,7 @@ void lio_pci_writeq(struct octeon_device *oct,
- 
- 	spin_unlock_irqrestore(&oct->pci_win_lock, flags);
- }
-+EXPORT_SYMBOL_GPL(lio_pci_writeq);
- 
- int octeon_mem_access_ok(struct octeon_device *oct)
- {
-@@ -1388,6 +1408,7 @@ int octeon_mem_access_ok(struct octeon_device *oct)
- 
- 	return access_okay ? 0 : 1;
- }
-+EXPORT_SYMBOL_GPL(octeon_mem_access_ok);
- 
- int octeon_wait_for_ddr_init(struct octeon_device *oct, u32 *timeout)
- {
-@@ -1408,6 +1429,7 @@ int octeon_wait_for_ddr_init(struct octeon_device *oct, u32 *timeout)
- 
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(octeon_wait_for_ddr_init);
- 
- /* Get the octeon id assigned to the octeon device passed as argument.
-  *  This function is exported to other modules.
-@@ -1462,3 +1484,4 @@ void lio_enable_irq(struct octeon_droq *droq, struct octeon_instr_queue *iq)
- 		}
- 	}
- }
-+EXPORT_SYMBOL_GPL(lio_enable_irq);
-diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_droq.c b/drivers/net/ethernet/cavium/liquidio/octeon_droq.c
-index d4080bddcb6b..0d6ee30affb9 100644
---- a/drivers/net/ethernet/cavium/liquidio/octeon_droq.c
-+++ b/drivers/net/ethernet/cavium/liquidio/octeon_droq.c
-@@ -107,6 +107,7 @@ u32 octeon_droq_check_hw_for_pkts(struct octeon_droq *droq)
- 
- 	return last_count;
- }
-+EXPORT_SYMBOL_GPL(octeon_droq_check_hw_for_pkts);
- 
- static void octeon_droq_compute_max_packet_bufs(struct octeon_droq *droq)
- {
-@@ -216,6 +217,7 @@ int octeon_delete_droq(struct octeon_device *oct, u32 q_no)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_delete_droq);
- 
- int octeon_init_droq(struct octeon_device *oct,
- 		     u32 q_no,
-@@ -773,6 +775,7 @@ octeon_droq_process_packets(struct octeon_device *oct,
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_droq_process_packets);
- 
- /*
-  * Utility function to poll for packets. check_hw_for_packets must be
-@@ -921,6 +924,7 @@ int octeon_unregister_droq_ops(struct octeon_device *oct, u32 q_no)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_unregister_droq_ops);
- 
- int octeon_create_droq(struct octeon_device *oct,
- 		       u32 q_no, u32 num_descs,
-diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_mem_ops.c b/drivers/net/ethernet/cavium/liquidio/octeon_mem_ops.c
-index 7ccab36143c1..d70132437af3 100644
---- a/drivers/net/ethernet/cavium/liquidio/octeon_mem_ops.c
-+++ b/drivers/net/ethernet/cavium/liquidio/octeon_mem_ops.c
-@@ -164,6 +164,7 @@ octeon_pci_read_core_mem(struct octeon_device *oct,
- {
- 	__octeon_pci_rw_core_mem(oct, coreaddr, buf, len, 1);
- }
-+EXPORT_SYMBOL_GPL(octeon_pci_read_core_mem);
- 
- void
- octeon_pci_write_core_mem(struct octeon_device *oct,
-@@ -173,6 +174,7 @@ octeon_pci_write_core_mem(struct octeon_device *oct,
- {
- 	__octeon_pci_rw_core_mem(oct, coreaddr, (u8 *)buf, len, 0);
- }
-+EXPORT_SYMBOL_GPL(octeon_pci_write_core_mem);
- 
- u64 octeon_read_device_mem64(struct octeon_device *oct, u64 coreaddr)
- {
-@@ -182,6 +184,7 @@ u64 octeon_read_device_mem64(struct octeon_device *oct, u64 coreaddr)
- 
- 	return be64_to_cpu(ret);
- }
-+EXPORT_SYMBOL_GPL(octeon_read_device_mem64);
- 
- u32 octeon_read_device_mem32(struct octeon_device *oct, u64 coreaddr)
- {
-@@ -191,6 +194,7 @@ u32 octeon_read_device_mem32(struct octeon_device *oct, u64 coreaddr)
- 
- 	return be32_to_cpu(ret);
- }
-+EXPORT_SYMBOL_GPL(octeon_read_device_mem32);
- 
- void octeon_write_device_mem32(struct octeon_device *oct, u64 coreaddr,
- 			       u32 val)
-@@ -199,3 +203,4 @@ void octeon_write_device_mem32(struct octeon_device *oct, u64 coreaddr,
- 
- 	__octeon_pci_rw_core_mem(oct, coreaddr, (u8 *)&t, 4, 0);
- }
-+EXPORT_SYMBOL_GPL(octeon_write_device_mem32);
-diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_nic.c b/drivers/net/ethernet/cavium/liquidio/octeon_nic.c
-index 1a706f81bbb0..dee56ea740e7 100644
---- a/drivers/net/ethernet/cavium/liquidio/octeon_nic.c
-+++ b/drivers/net/ethernet/cavium/liquidio/octeon_nic.c
-@@ -79,6 +79,7 @@ octeon_alloc_soft_command_resp(struct octeon_device    *oct,
- 
- 	return sc;
- }
-+EXPORT_SYMBOL_GPL(octeon_alloc_soft_command_resp);
- 
- int octnet_send_nic_data_pkt(struct octeon_device *oct,
- 			     struct octnic_data_pkt *ndata,
-@@ -90,6 +91,7 @@ int octnet_send_nic_data_pkt(struct octeon_device *oct,
- 				   ndata->buf, ndata->datasize,
- 				   ndata->reqtype);
- }
-+EXPORT_SYMBOL_GPL(octnet_send_nic_data_pkt);
- 
- static inline struct octeon_soft_command
- *octnic_alloc_ctrl_pkt_sc(struct octeon_device *oct,
-@@ -196,3 +198,4 @@ octnet_send_nic_ctrl_pkt(struct octeon_device *oct,
- 
- 	return retval;
- }
-+EXPORT_SYMBOL_GPL(octnet_send_nic_ctrl_pkt);
-diff --git a/drivers/net/ethernet/cavium/liquidio/request_manager.c b/drivers/net/ethernet/cavium/liquidio/request_manager.c
-index 32f854c0cd79..de8a6ce86ad7 100644
---- a/drivers/net/ethernet/cavium/liquidio/request_manager.c
-+++ b/drivers/net/ethernet/cavium/liquidio/request_manager.c
-@@ -185,6 +185,7 @@ int octeon_delete_instr_queue(struct octeon_device *oct, u32 iq_no)
- 	}
- 	return 1;
- }
-+EXPORT_SYMBOL_GPL(octeon_delete_instr_queue);
- 
- /* Return 0 on success, 1 on failure */
- int octeon_setup_iq(struct octeon_device *oct,
-@@ -258,6 +259,7 @@ int lio_wait_for_instr_fetch(struct octeon_device *oct)
- 
- 	return instr_cnt;
- }
-+EXPORT_SYMBOL_GPL(lio_wait_for_instr_fetch);
- 
- static inline void
- ring_doorbell(struct octeon_device *oct, struct octeon_instr_queue *iq)
-@@ -282,6 +284,7 @@ octeon_ring_doorbell_locked(struct octeon_device *oct, u32 iq_no)
- 		ring_doorbell(oct, iq);
- 	spin_unlock(&iq->post_lock);
- }
-+EXPORT_SYMBOL_GPL(octeon_ring_doorbell_locked);
- 
- static inline void __copy_cmd_into_iq(struct octeon_instr_queue *iq,
- 				      u8 *cmd)
-@@ -345,6 +348,7 @@ octeon_register_reqtype_free_fn(struct octeon_device *oct, int reqtype,
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_register_reqtype_free_fn);
- 
- static inline void
- __add_to_request_list(struct octeon_instr_queue *iq,
-@@ -430,6 +434,7 @@ lio_process_iq_request_list(struct octeon_device *oct,
- 
- 	return inst_count;
- }
-+EXPORT_SYMBOL_GPL(lio_process_iq_request_list);
- 
- /* Can only be called from process context */
- int
-@@ -566,6 +571,7 @@ octeon_send_command(struct octeon_device *oct, u32 iq_no,
- 
- 	return st.status;
- }
-+EXPORT_SYMBOL_GPL(octeon_send_command);
- 
- void
- octeon_prepare_soft_command(struct octeon_device *oct,
-@@ -673,6 +679,7 @@ octeon_prepare_soft_command(struct octeon_device *oct,
- 		}
- 	}
- }
-+EXPORT_SYMBOL_GPL(octeon_prepare_soft_command);
- 
- int octeon_send_soft_command(struct octeon_device *oct,
- 			     struct octeon_soft_command *sc)
-@@ -726,6 +733,7 @@ int octeon_send_soft_command(struct octeon_device *oct,
- 	return (octeon_send_command(oct, sc->iq_no, 1, &sc->cmd, sc,
- 				    len, REQTYPE_SOFT_COMMAND));
- }
-+EXPORT_SYMBOL_GPL(octeon_send_soft_command);
- 
- int octeon_setup_sc_buffer_pool(struct octeon_device *oct)
- {
-@@ -755,6 +763,7 @@ int octeon_setup_sc_buffer_pool(struct octeon_device *oct)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_setup_sc_buffer_pool);
- 
- int octeon_free_sc_done_list(struct octeon_device *oct)
- {
-@@ -794,6 +803,7 @@ int octeon_free_sc_done_list(struct octeon_device *oct)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_free_sc_done_list);
- 
- int octeon_free_sc_zombie_list(struct octeon_device *oct)
- {
-@@ -818,6 +828,7 @@ int octeon_free_sc_zombie_list(struct octeon_device *oct)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_free_sc_zombie_list);
- 
- int octeon_free_sc_buffer_pool(struct octeon_device *oct)
- {
-@@ -842,6 +853,7 @@ int octeon_free_sc_buffer_pool(struct octeon_device *oct)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(octeon_free_sc_buffer_pool);
- 
- struct octeon_soft_command *octeon_alloc_soft_command(struct octeon_device *oct,
- 						      u32 datasize,
-@@ -913,6 +925,7 @@ struct octeon_soft_command *octeon_alloc_soft_command(struct octeon_device *oct,
- 
- 	return sc;
- }
-+EXPORT_SYMBOL_GPL(octeon_alloc_soft_command);
- 
- void octeon_free_soft_command(struct octeon_device *oct,
- 			      struct octeon_soft_command *sc)
-@@ -925,3 +938,4 @@ void octeon_free_soft_command(struct octeon_device *oct,
- 
- 	spin_unlock_bh(&oct->sc_buf_pool.lock);
- }
-+EXPORT_SYMBOL_GPL(octeon_free_soft_command);
-diff --git a/drivers/net/ethernet/cavium/liquidio/response_manager.c b/drivers/net/ethernet/cavium/liquidio/response_manager.c
-index ac7747ccf56a..861050966e18 100644
---- a/drivers/net/ethernet/cavium/liquidio/response_manager.c
-+++ b/drivers/net/ethernet/cavium/liquidio/response_manager.c
-@@ -52,12 +52,14 @@ int octeon_setup_response_list(struct octeon_device *oct)
- 
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(octeon_setup_response_list);
- 
- void octeon_delete_response_list(struct octeon_device *oct)
- {
- 	cancel_delayed_work_sync(&oct->dma_comp_wq.wk.work);
- 	destroy_workqueue(oct->dma_comp_wq.wq);
- }
-+EXPORT_SYMBOL_GPL(octeon_delete_response_list);
- 
- int lio_process_ordered_list(struct octeon_device *octeon_dev,
- 			     u32 force_quit)
-@@ -219,6 +221,7 @@ int lio_process_ordered_list(struct octeon_device *octeon_dev,
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(lio_process_ordered_list);
- 
- static void oct_poll_req_completion(struct work_struct *work)
- {
--- 
-2.39.2
-
+Martin=
 
