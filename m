@@ -1,142 +1,127 @@
-Return-Path: <netdev+bounces-8029-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8030-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 83448722780
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:34:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 8448E722792
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:35:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BF7561C20B9E
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 13:34:34 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F10891C20943
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 13:35:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 72FCB1C778;
-	Mon,  5 Jun 2023 13:34:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8FBED1C77C;
+	Mon,  5 Jun 2023 13:35:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6640F134BE
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 13:34:35 +0000 (UTC)
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6761F7
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 06:34:32 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-977e7d6945aso102001366b.2
-        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 06:34:32 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 829EC6FC3
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 13:35:24 +0000 (UTC)
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB381BB
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 06:35:12 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id 41be03b00d2f7-543a6cc5f15so1128609a12.2
+        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 06:35:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1685972071; x=1688564071;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=5rq3Widh6hOEiY5YdsfneGamzIlwkE0sJ5k3vngcFSc=;
-        b=H1IHNMyQRtp1DX11ax4fGQWgXmX7bBwuCedLwUTO/0JImjrcWQ7PGrGucaNUYW9QWq
-         OUft8vP7ux3whhgItsECM02LirXUQBIyB6Ybw9GTQC2z3G1v9H7yKm7biLhmZQAmiF84
-         fxrMtDdPeYmoM9gROxzDXjylvVQydkQmK7fvG5bBtrNELPq2EFtAbWquJc67We1IWHvV
-         HBU8TNQWja6X0MwKURm6oaVdSzqmJN6qbm5yOpZarC2wmli/OIP6zZ1esJivH5vJaiA4
-         ODag4hmmTEijO9vsz5QmSXv3wxbgmkd1Lx74f0Zmt6RoBg/OR/6gQJp/fxXMXcaHcn+1
-         nWLg==
+        d=ziepe.ca; s=google; t=1685972112; x=1688564112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=PQ9YEyXdfxIriIIMHnODtjK+/Crk0/ld21e+qZyv40A=;
+        b=VE6r3tEprgGUx8SgCYBffVRP6JbbmmcR1q4fZ1wh65I1j670EdBOJuyO8FMOOBPKzD
+         cS/hXdmzEeapUS8lJ4FKhXMfehxhGTyrs0DvNC21eiN/nmHmdt7l1BnkND1tZ/KvrAND
+         VDoFSCYdS93O05omPwPnnKXB79tI3L14iFurQmVEvrSkPtX2mjkqNlVCF7IBB+Y2a7qN
+         DCaUe2rg7iJG/aomwW5JKLznTwG7VPGl9ddzas+jt0/K7RvgT9DtHL08jtHy6mAE9ZQa
+         OBPf2db661cjg0p8hzt/PHtU5HfeJrfW44SaxDwfMMU0JKGZ1ajJMM2DToOk1CqwMjy1
+         DKSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685972071; x=1688564071;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5rq3Widh6hOEiY5YdsfneGamzIlwkE0sJ5k3vngcFSc=;
-        b=NcMSrgIbBVsF752vRV1kjuQLRUVu4x4ANGLh9hLdI+GG4+yu6MWMbJTPBKZGY/bmeW
-         ENKpGoJ8AiGFc3RQ22pK4h0uD4J7FsvYjLwgSrRatcWv1mwvBOXwVOyi4Lp1mY6Ng50K
-         K9PlmtIWsjfK8J51XcyKvkMrdVlROZTy/TxCcUUzAnTNIW8vvmvMib2+nBCf9aVvw4ab
-         KPXwqbV1ek4zIlW9uB+vS6t3TSKOOvPa2vPe5NBfPInoz6APYGZjnmR9WLAoK5DC/okO
-         KxhnLAjPPCxrg6e/2938GpptT0TdJVIIYTkQyrDDUh5D+cO5RwFGgvOfKnmmJqE2Cgat
-         EN0A==
-X-Gm-Message-State: AC+VfDyDzdsArNCt86Pc4mu+S7IyJ2vzvIOwvx3ReVTVvtkq//VN5psN
-	mkSNxXdVdqkGSMR2Shq896h6LA==
-X-Google-Smtp-Source: ACHHUZ7s745giAKDDO4doxV94noEtK/FRaEwLZP9MaulFyeyXHe/0hxRLNnut3NFVjxtd4jewVlWpA==
-X-Received: by 2002:a17:907:848:b0:974:61dc:107c with SMTP id ww8-20020a170907084800b0097461dc107cmr6376623ejb.44.1685972071027;
-        Mon, 05 Jun 2023 06:34:31 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id g19-20020a170906869300b0097461a7ebdcsm4251734ejx.82.2023.06.05.06.34.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Jun 2023 06:34:30 -0700 (PDT)
-Message-ID: <9b8a4221-beac-4394-8d71-a9060d4457f1@linaro.org>
-Date: Mon, 5 Jun 2023 15:34:26 +0200
+        d=1e100.net; s=20221208; t=1685972112; x=1688564112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PQ9YEyXdfxIriIIMHnODtjK+/Crk0/ld21e+qZyv40A=;
+        b=kUSXHtyceg02zeaWIEcSimWjXu/cFlnxzGAON/mSg/h9lcdUOJ9EpSH1mofBdoU5fs
+         lh0922w65zUt8IceDqmTzKnLRCcxxxSyNirb088Mdgosb3i0dH2HJi2quPwE2a4C2Oct
+         zJ0O8Hf3foI2ECFxx2jCSwoGy5K3PGwPFawCLo/fsdKIGSm4hxq/QJY48wqL+VFz/e98
+         PMQRybTZ37x1XLohNxdFwGVaY2FHNxJXPR4SBQh2TzSwTwp0RaTVul04mplL6RzX6U3X
+         HBelSrGoPcqQXxmqGwAcpfoI/XhBLdxwiTy2N+6D1PdOYZ3TStfIU0DLkiLF+ORdvkfC
+         AWug==
+X-Gm-Message-State: AC+VfDzhHipwkdw9TrLsYvXyKD0Qd7gnfB2JDvjx1D7HFhcFn4wJemJz
+	N1fLpFauTmpVa/anTDBBQiSt3w==
+X-Google-Smtp-Source: ACHHUZ7lcwTCBonG3pbLMxNGCQHIgpAzINF4LZqWdbfmP30nhlcE4dHT0tzD3NPMXEHIGqvx92Uqng==
+X-Received: by 2002:a17:902:f7cc:b0:1af:beae:c0b with SMTP id h12-20020a170902f7cc00b001afbeae0c0bmr6415399plw.22.1685972111898;
+        Mon, 05 Jun 2023 06:35:11 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id p5-20020a170902eac500b001b03a1a3151sm6643287pld.70.2023.06.05.06.35.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Jun 2023 06:35:11 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1q6AMX-002mN1-DO;
+	Mon, 05 Jun 2023 10:35:09 -0300
+Date: Mon, 5 Jun 2023 10:35:09 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Simon Horman <simon.horman@corigine.com>
+Cc: Wei Hu <weh@microsoft.com>, netdev@vger.kernel.org,
+	linux-hyperv@vger.kernel.org, linux-rdma@vger.kernel.org,
+	longli@microsoft.com, sharmaajay@microsoft.com, leon@kernel.org,
+	kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+	decui@microsoft.com, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, vkuznets@redhat.com,
+	ssengar@linux.microsoft.com, shradhagupta@linux.microsoft.com
+Subject: Re: [PATCH 1/1] RDMA/mana_ib: Add EQ interrupt support to mana ib
+ driver.
+Message-ID: <ZH3kjU7a2L7EkEQ2@ziepe.ca>
+References: <20230605114313.1640883-1-weh@microsoft.com>
+ <ZH3f2abyRU1l/dq6@corigine.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.2
-Subject: Re: [PATCH 21/21] net: macb: add support for gmac to sam9x7
-Content-Language: en-US
-To: Nicolas Ferre <nicolas.ferre@microchip.com>,
- Varshini Rajendran <varshini.rajendran@microchip.com>, tglx@linutronix.de,
- maz@kernel.org, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
- conor+dt@kernel.org, alexandre.belloni@bootlin.com,
- claudiu.beznea@microchip.com, davem@davemloft.net, edumazet@google.com,
- kuba@kernel.org, pabeni@redhat.com, gregkh@linuxfoundation.org,
- linux@armlinux.org.uk, mturquette@baylibre.com, sboyd@kernel.org,
- sre@kernel.org, broonie@kernel.org, arnd@arndb.de,
- gregory.clement@bootlin.com, sudeep.holla@arm.com,
- balamanikandan.gunasundar@microchip.com, mihai.sain@microchip.com,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
- linux-usb@vger.kernel.org, linux-clk@vger.kernel.org,
- linux-pm@vger.kernel.org
-Cc: Hari.PrasathGE@microchip.com, cristian.birsan@microchip.com,
- durai.manickamkr@microchip.com, manikandan.m@microchip.com,
- dharma.b@microchip.com, nayabbasha.sayed@microchip.com,
- balakrishnan.s@microchip.com
-References: <20230603200243.243878-1-varshini.rajendran@microchip.com>
- <20230603200243.243878-22-varshini.rajendran@microchip.com>
- <be3716e0-383f-e79a-b441-c606c0e049df@linaro.org>
- <3e262485-bf5f-1a98-e399-e02add3eaa89@microchip.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <3e262485-bf5f-1a98-e399-e02add3eaa89@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZH3f2abyRU1l/dq6@corigine.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 05/06/2023 14:07, Nicolas Ferre wrote:
-> On 05/06/2023 at 08:42, Krzysztof Kozlowski wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->>
->> On 03/06/2023 22:02, Varshini Rajendran wrote:
->>> From: Nicolas Ferre <nicolas.ferre@microchip.com>
->>>
->>> Add support for GMAC in sam9x7 SoC family
->>>
->>> Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
->>> Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
->>> ---
->>>   drivers/net/ethernet/cadence/macb_main.c | 1 +
->>>   1 file changed, 1 insertion(+)
->>>
->>> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
->>> index 29a1199dad14..609c8e9305ba 100644
->>> --- a/drivers/net/ethernet/cadence/macb_main.c
->>> +++ b/drivers/net/ethernet/cadence/macb_main.c
->>> @@ -4913,6 +4913,7 @@ static const struct of_device_id macb_dt_ids[] = {
->>>        { .compatible = "microchip,mpfs-macb", .data = &mpfs_config },
->>>        { .compatible = "microchip,sama7g5-gem", .data = &sama7g5_gem_config },
->>>        { .compatible = "microchip,sama7g5-emac", .data = &sama7g5_emac_config },
->>> +     { .compatible = "microchip,sam9x7-gem", .data = &sama7g5_gem_config },
->>
->> These are compatible, aren't they? Why do you need new entry?
+On Mon, Jun 05, 2023 at 03:15:05PM +0200, Simon Horman wrote:
+> On Mon, Jun 05, 2023 at 11:43:13AM +0000, Wei Hu wrote:
+> > Add EQ interrupt support for mana ib driver. Allocate EQs per ucontext
+> > to receive interrupt. Attach EQ when CQ is created. Call CQ interrupt
+> > handler when completion interrupt happens. EQs are destroyed when
+> > ucontext is deallocated.
+> > 
+> > The change calls some public APIs in mana ethernet driver to
+> > allocate EQs and other resources. Ehe EQ process routine is also shared
+> > by mana ethernet and mana ib drivers.
+> > 
+> > Co-developed-by: Ajay Sharma <sharmaajay@microsoft.com>
+> > Signed-off-by: Ajay Sharma <sharmaajay@microsoft.com>
+> > Signed-off-by: Wei Hu <weh@microsoft.com>
 > 
-> The hardware itself is different, even if the new features are not 
-> supported yet in the macb driver.
-> The macb driver will certainly evolve in order to add these features so 
-> we decided to match a new compatible string all the way to the driver.
+> ...
+> 
+> > @@ -368,6 +420,24 @@ static int mana_ib_create_qp_raw(struct ib_qp *ibqp, struct ib_pd *ibpd,
+> >  	qp->sq_id = wq_spec.queue_index;
+> >  	send_cq->id = cq_spec.queue_index;
+> >  
+> > +	if (gd->gdma_context->cq_table[send_cq->id] == NULL) {
+> > +
+> > +		gdma_cq = kzalloc(sizeof(*gdma_cq), GFP_KERNEL);
+> > +		if (!gdma_cq) {
+> > +			pr_err("failed to allocate gdma_cq\n");
+> 
+> Hi wei Hu,
+> 
+> I think 'err = -ENOMEM' is needed here.
 
-You claim to be fully compatible with sama7g5-gem, so adding new
-features does not warrant not-reusing old match entry now.
+And no prints like that in drivers.
 
-Best regards,
-Krzysztof
-
+Jason
 
