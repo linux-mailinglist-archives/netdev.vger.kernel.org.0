@@ -1,340 +1,216 @@
-Return-Path: <netdev+bounces-8125-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8126-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2A929722D65
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 19:12:35 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D5C60722D66
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 19:12:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D37F1280A70
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 17:12:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9038828137A
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 17:12:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DFFFDDDD0;
-	Mon,  5 Jun 2023 17:12:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E072DDD2;
+	Mon,  5 Jun 2023 17:12:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEFAB6FC3
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 17:12:31 +0000 (UTC)
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA0B99
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 10:12:29 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-3f7359a3b78so5265e9.0
-        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 10:12:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1685985148; x=1688577148;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=W5i8759VvdBb33cZoQHB760rmEICyfYogRQ3PCyuk04=;
-        b=fA9wBYTmZs9iyUYMBkc7qZw76uaXuB+lfDySKs9sQSyL+kPhxfsnt6fdPxM0K6UsYE
-         ePR7hljjdbySt82Q8YOOoXdN8yny7efAiMZQRdMoIj0JfIRGet1R64IN4yGjhgrzsWhW
-         0oR6zJGQ3FothC+tdv52ZwGutBRHXQQH0PyGPxWbMypDuVQMTChlSF1Uk+Md+kfSO+KY
-         okXhqFtKuD5PYCAPSC39cWfDHoCH89O3ivDrEunIgSlXzelDetTqa3Lmkwij6Vgy44RR
-         8vvTi10qvJNP5Qt21ss5PNL/pNtPQ5Nsi0j5JChN6ekHDCrIw5VI1wGSi6ZosYaiIL1F
-         nx3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685985148; x=1688577148;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=W5i8759VvdBb33cZoQHB760rmEICyfYogRQ3PCyuk04=;
-        b=J8ebghpkL/d9Qz+yjSB61xsJ6QBX2AoV1Xw8O/Z/DLHDzHQlY9hJBko6iXuhRzaW4E
-         Pu7tUdWyZBjjPcORz7xPbsyAiTcGterR4T2nNWWJ9pNRtptwr0yl/A69LAGUHZzFYGhB
-         6eIcFILNr0rsQW9idfP0Pxd5pMU0lfQe092sNfvmcYFDVHa4XIO3knUs42V3JRNp9vHb
-         ISzqZUnXwoWu653kqrrKBA4jBZgtRnC9UpEw+ege5Glkx8DJGsiVd4e3TpiTLqFeOcwU
-         iU5Lf8VMeEUqY/oY57b1OLzHAorsGWMUqNpTWIWppcygfXzdeMph4/kNDs5z6pJbx4ko
-         w1Jg==
-X-Gm-Message-State: AC+VfDzwiMX5Zek/dB+KGHDEP4Wj951EoXKS262OeEvy2hTQm+rBa3gV
-	VZj8w/cUO8qCVjWJmCAGFrPx3MXvN9T/xtvxPize2g==
-X-Google-Smtp-Source: ACHHUZ6TZL4bQrWxn1GmjggUG3b1NpcFd231IEWDOja0Mgzzk22lL4IEGWJaHh+/ClttcJDwZJ8rXY4Ziq08UG3Mzoo=
-X-Received: by 2002:a05:600c:8088:b0:3f7:e463:a0d6 with SMTP id
- ew8-20020a05600c808800b003f7e463a0d6mr1303wmb.0.1685985147692; Mon, 05 Jun
- 2023 10:12:27 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B8558F41
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 17:12:48 +0000 (UTC)
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C77A2DC
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 10:12:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685985166; x=1717521166;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=drYoKVkivoa//uQP8ACElYEc5d1BR9tQEnssJ66MExQ=;
+  b=WBXCtwzebAKbRR9Fa9DtkQZYJt408edrll5bSDbLZshK3pwKZKmJNrC0
+   KxEmPuQ46WfVp5+nZAAZfARDez6toPFxGbhdTBXevnLbg0Dh/HYZM5Gyp
+   LSHEdgMPDQRDknd1ndZ7X3jvDvAvdGURSzbWEAng+N2RIiBa5xwVkMHw/
+   Nyy4igwTGjY7yEp/RuTWV2YIDHpIh+5D5PhPkuzqdz/yCZ0AvRGH212/t
+   TIy77QOLMRMrGC9JA/v15Geps+1YToUiAiwpG9NUBW7kamK4HyVZ2SvTN
+   lJ3OBNfxx0tKgAmDAXrS6DzfpsoCgOqw7G/Ud4S1XtDqKkLrhtWRErzlg
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="346020121"
+X-IronPort-AV: E=Sophos;i="6.00,218,1681196400"; 
+   d="scan'208";a="346020121"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 10:12:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="738431527"
+X-IronPort-AV: E=Sophos;i="6.00,218,1681196400"; 
+   d="scan'208";a="738431527"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga008.jf.intel.com with ESMTP; 05 Jun 2023 10:12:42 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Mon, 5 Jun 2023 10:12:42 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Mon, 5 Jun 2023 10:12:42 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Mon, 5 Jun 2023 10:12:41 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Lj2SnACoQOyvJ9CMU6QrbXrbSDXJgmPnLIx1On6yIIu5tLgpDtPi8sO41gNcZh4NdInpwLOM300cK8MIDQg4wmwAo1/XcGxRQE5DJ5U4LHhaARgGv5gADExgB6H4tkiBIpFfSqeYTPiZK264vIV7CXt0juVSbr+qZEagbpqpabmM9aIeI6M8rtDbt3tJlOdb2Id1BST8WCjj+GbtgbLd/11wdwt4HA4pnNV73qd1tGZYNWxQOBmz6DH72Tywx9Y2F2gCazRYVNn4Hbm5IazJ3GzWRU6aFnchP84EJkHVgd622o5x+JJRJQCtxbuoworpK5RXpGRZqVQYgloCiSZ6XA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=drYoKVkivoa//uQP8ACElYEc5d1BR9tQEnssJ66MExQ=;
+ b=gUnDo+8721+qVBgRlBa4FZt7uhBu7Ax6L1ywaMRLIyDN8GYmrlsJtvfcTAuzTG8nHKtf7Iwqha+89SM+9o6tWa7MWwN2ZEXmwWGIjNMQH/Jpqp8WwgQON8nszPstCyM7GTBS8rfnJhmygtsS8mgwIa2zABGH//q3pEyfj1hmLy53Gsq3u9tlXmo2tkwJOBbu4v5VwUU5idipBJozrqxfXix76AQkuP90DMg8tY/zZYgnl02aNXyBm8b2SaiHZGskRbzRKNcp66sTUr3+Ih9Uy0WmvuKPlrtpPsRBp/9IEfOzEfoKhUf5AWQM0gjtyEAcHFCvaEWsvyqKSD2wQTwAyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MW4PR11MB5776.namprd11.prod.outlook.com (2603:10b6:303:183::9)
+ by PH0PR11MB7446.namprd11.prod.outlook.com (2603:10b6:510:26d::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Mon, 5 Jun
+ 2023 17:12:39 +0000
+Received: from MW4PR11MB5776.namprd11.prod.outlook.com
+ ([fe80::7b23:e512:60c9:ce08]) by MW4PR11MB5776.namprd11.prod.outlook.com
+ ([fe80::7b23:e512:60c9:ce08%6]) with mapi id 15.20.6455.030; Mon, 5 Jun 2023
+ 17:12:39 +0000
+From: "Drewek, Wojciech" <wojciech.drewek@intel.com>
+To: Simon Horman <simon.horman@corigine.com>
+CC: "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>, "Lobakin, Aleksander"
+	<aleksander.lobakin@intel.com>, "Ertman, David M" <david.m.ertman@intel.com>,
+	"michal.swiatkowski@linux.intel.com" <michal.swiatkowski@linux.intel.com>,
+	"marcin.szycik@linux.intel.com" <marcin.szycik@linux.intel.com>,
+	"Chmielewski, Pawel" <pawel.chmielewski@intel.com>, "Samudrala, Sridhar"
+	<sridhar.samudrala@intel.com>, "pmenzel@molgen.mpg.de"
+	<pmenzel@molgen.mpg.de>, "dan.carpenter@linaro.org"
+	<dan.carpenter@linaro.org>
+Subject: RE: [PATCH iwl-next v4 09/13] ice: Accept LAG netdevs in bridge
+ offloads
+Thread-Topic: [PATCH iwl-next v4 09/13] ice: Accept LAG netdevs in bridge
+ offloads
+Thread-Index: AQHZlv6lpVixG3ecq0+3a7IzwK/SPq98b2xA
+Date: Mon, 5 Jun 2023 17:12:39 +0000
+Message-ID: <MW4PR11MB5776E0183A1A0683D726F0EFFD4DA@MW4PR11MB5776.namprd11.prod.outlook.com>
+References: <20230524122121.15012-1-wojciech.drewek@intel.com>
+ <20230524122121.15012-10-wojciech.drewek@intel.com>
+ <ZHy2m2fATV0mXgBT@corigine.com>
+In-Reply-To: <ZHy2m2fATV0mXgBT@corigine.com>
+Accept-Language: pl-PL, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: MW4PR11MB5776:EE_|PH0PR11MB7446:EE_
+x-ms-office365-filtering-correlation-id: 44e175f7-d658-46dd-4f5a-08db65e810fb
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 4Ax5sGgbNC6zJUvTRXi5x09lr/R+IQ2HrUH0ZJrKwliAVjKJCfwAwOsYhoo/O5NRgvvCkCJKzekm/48SELQ7J+YmvZBMdF4HVTBhEupmVzj61Ert4LrDcnVNm1iKKnjoeLK9fvc3DlgjKzidaAowknUmMW/vfUtii9KCj+JtGt0rdqtAGOkYcaTt7MBzh6gk9RSIBlZJOFTZgnbclwM8hkM60dHlao+BjRJ8eVzd9fvx7V9YmGtXYRS7P2I8xHHG5WILiJVxSnZM5AtkKtyW1Al//IMLzspUnZ4xv7DAPqh2VEy6QrhhgsAhLPIFHYTunTz1bBG5VXvaWbwpQSOO0wuzyS8GZT0FzHdINUKIS5cUPE2oy29ShW5V8zRkyaV/4o54UkATTP0rThjDD3LLRlbx+U+c8apQOIZjDjvjZZ2XeYH21EdfJ7+oLwroButrGazW4z+xMYUxsVRyZkOa8+D/3sW6OBwTga0e7rd1Kl588ey1rCmJNI+oJrY7+TMKBBJIVkTn6AB6K2HwxCeAHScfEos8Qi0o36hInXEEUuPzMqcyWi3meTqJciceULC1u4Bczthz/Iv7UB0OttV0AudFVgrTXeVeFPYe9UWuxd8=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5776.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(39860400002)(376002)(366004)(346002)(396003)(451199021)(478600001)(2906002)(966005)(7696005)(33656002)(71200400001)(38070700005)(83380400001)(6506007)(26005)(9686003)(53546011)(86362001)(122000001)(82960400001)(38100700002)(186003)(55016003)(316002)(8676002)(8936002)(66946007)(76116006)(6916009)(4326008)(66556008)(64756008)(66476007)(66446008)(5660300002)(52536014)(54906003)(41300700001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?uDMpTNA4vp3UUHgMrJMAfD81fXj0h5//Thz2hpBWqKLR+BA5Bq1pGdJg7R0X?=
+ =?us-ascii?Q?JoodC28HnBiRpN6d6van5nbfh+gi/oFdelVlNHph/wq5vw5xMjhXi8c6y1Wc?=
+ =?us-ascii?Q?zErqqVQrbjDJzI8tUnL09FFsAd7g1vqWIk9PjkPYSUvmJATA0nrVN3a2qUyo?=
+ =?us-ascii?Q?x6S3EFuFzuBXJqOpBkXNexp5eP+qSxpN1sBqcPaSmBN8qKS4gVm4y834+I1q?=
+ =?us-ascii?Q?cTOuzFLWr2Now1jMX2GRD5kC4o7/xKOuK5h+TwMuO6tnUDYRM39fqCBYwpWI?=
+ =?us-ascii?Q?DPynY82mO7rfnNEjbjrbzsx0KSS5phKFBnxMbqhMHp7eEpqa+/CY5P0cUoPf?=
+ =?us-ascii?Q?s07wAGxrFW2n6h8GWfauOkOfZ+2gH6SPxCRY78R99nQBl8smzosyZ/c/V11J?=
+ =?us-ascii?Q?+xYwI8oS2gftcD+a+6/iD9Ewx/g86cvpRdyO9y1TWYnc17+LYaGTKGHVvEHA?=
+ =?us-ascii?Q?k8DSMbgEFGgylCrWfrDEt6MxuJcTkLVIVNzr6+30Fzywzsa8HhXBPQ6E3AwR?=
+ =?us-ascii?Q?B+235qirHcr7u8mWvgk3YpY0Qq0FWnTUFKZ3pJcdVUHbol6mt3pSXIp3pH8c?=
+ =?us-ascii?Q?jSfHcVnvPkUbUMeMFt/M9N2UcBTr6/jTYRjkvusyPHEbzfYxmA/2zbmE2g8+?=
+ =?us-ascii?Q?4SGwkfIBrYuF/Bh3rQC5HaKPoGiGA0srQx6mfPmxC25k0WjOm4SNafYbQOcD?=
+ =?us-ascii?Q?OJjkiCjquz21FCxfffSVWAZ7YYTp8vSusEQyZf878dgrlPcUZXxYtGL2aF5K?=
+ =?us-ascii?Q?9EQt3CL1plFweFdIMLTfLuzsS7D0F4ktKtOJFV3BthPxhwah7IDzqz2ifjnu?=
+ =?us-ascii?Q?oD+EV5NC/rIVwtLAh4a71W7O+9GbD+Ilw5MXCSiOJb51IgiD2gRJlJnJanLK?=
+ =?us-ascii?Q?/zNqdYDyktQvBPvev2q2P2Md/TODrS3qxNNxBKsZnNLRrzcel2z4W053KI6D?=
+ =?us-ascii?Q?my9419fqoskalHklJl+mi878mbFwSmwcsBA15m+KOUs9aMnWWsC9tbMEnPm+?=
+ =?us-ascii?Q?VkqnCRFNsbjQshAGh/Y7ajUUioAFmI1UM/+oPQRSxu184Po0qaRp9VYWpIT3?=
+ =?us-ascii?Q?9WKEwP6omz4gOUXE4AJt5dp4BTwb9t2VH25TfCQRtBlAIsTx0QHgxiQ3++UU?=
+ =?us-ascii?Q?GyV86YFjF8+Ex2LALwVtkbZcqHKs7NibCQpy2bQPFXp+xiTo5ngeUbdp8flA?=
+ =?us-ascii?Q?hdjafq9gsRmmm/tKqm/xFMvjaXphEQqmA+QlTzoj+daIntVZ/KFfFXOjLq0P?=
+ =?us-ascii?Q?9EuqjGY1FUiEobG9/WIUR+zuhQzoxXlqgd3SEhZ8YWgarxwUOGWb/w0l2f2d?=
+ =?us-ascii?Q?Pjf6T+Jwg4oy+66qSH7eNxoFVD9SWLPiHtnU6N0g9z07AYsH3T3fZLgrac9c?=
+ =?us-ascii?Q?ZtwLsbYHZIo6emUpbFk2M0OcLEzfvCqWmk70QfJfUlwBiKPD0aPiKiDdbaGG?=
+ =?us-ascii?Q?/Wam+j4Oi/UsX0FPxmBadWASp74+BnWusbSakwr37kkTh2RBGxXJHYLWyJGf?=
+ =?us-ascii?Q?Zfzo/XxHTPlFt7/cT1tVDQyVkt4/BpTmhV+LjuZMCnxxLQ6N06POhltWEokn?=
+ =?us-ascii?Q?pF7BBEx7N1RY/f18+FwqCbV9d93mI2NxfC7GwSRO?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CANn89iKLzwi47D7eteEmG7ehpy3fQ6dvkGnPrF+wpWNXbk0+Eg@mail.gmail.com>
- <20230605164824.56791-1-kuniyu@amazon.com>
-In-Reply-To: <20230605164824.56791-1-kuniyu@amazon.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Mon, 5 Jun 2023 19:12:15 +0200
-Message-ID: <CANn89iLboLwLrHXeHJucAqBkEL_S0rJFog68t7wwwXO-aNf5Mg@mail.gmail.com>
-Subject: Re: [PATCH v1 net] ipv6: rpl: Fix Route of Death.
-To: Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc: alex.aring@gmail.com, davem@davemloft.net, dsahern@kernel.org, 
-	kuba@kernel.org, kuni1840@gmail.com, netdev@vger.kernel.org, 
-	pabeni@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5776.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 44e175f7-d658-46dd-4f5a-08db65e810fb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jun 2023 17:12:39.4699
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: FVSEZXOV6TaoJY+nGUPVEvDDu0RXCXSaTFGstaQmfgBNO1vrLRBnhyCDnnDw7OlH7KOrEWGJyovpYm+1a/wLWtEJw69TcUCH4rnUJXaB5uc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB7446
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 5, 2023 at 6:48=E2=80=AFPM Kuniyuki Iwashima <kuniyu@amazon.com=
-> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
-> Date: Mon, 5 Jun 2023 18:27:46 +0200
-> > On Mon, Jun 5, 2023 at 4:41=E2=80=AFPM Kuniyuki Iwashima <kuniyu@amazon=
-.com> wrote:
-> > >
-> > > A remote DoS vulnerability of RPL Source Routing is assigned CVE-2023=
--2156.
-> > >
-> > > The Source Routing Header (SRH) has the following format:
-> > >
-> > >   0                   1                   2                   3
-> > >   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-> > >   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-> > >   |  Next Header  |  Hdr Ext Len  | Routing Type  | Segments Left |
-> > >   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-> > >   | CmprI | CmprE |  Pad  |               Reserved                |
-> > >   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-> > >   |                                                               |
-> > >   .                                                               .
-> > >   .                        Addresses[1..n]                        .
-> > >   .                                                               .
-> > >   |                                                               |
-> > >   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-> > >
-> > > The originator of an SRH places the first hop's IPv6 address in the I=
-Pv6
-> > > header's IPv6 Destination Address and the second hop's IPv6 address a=
-s
-> > > the first address in Addresses[1..n].
-> > >
-> > > The CmprI and CmprE fields indicate the number of prefix octets that =
-are
-> > > shared with the IPv6 Destination Address.  When CmprI or CmprE is not=
- 0,
-> > > Addresses[1..n] are compressed as follows:
-> > >
-> > >   1..n-1 : (16 - CmprI) bytes
-> > >        n : (16 - CmprE) bytes
-> > >
-> > > Segments Left indicates the number of route segments remaining.  When=
- the
-> > > value is not zero, the SRH is forwarded to the next hop.  Its address
-> > > is extracted from Addresses[n - Segment Left + 1] and swapped with IP=
-v6
-> > > Destination Address.
-> > >
-> > > When Segment Left is greater than or equal to 2, the size of SRH is n=
-ot
-> > > changed because Addresses[1..n-1] are decompressed and recompressed w=
-ith
-> > > CmprI.
-> > >
-> > > OTOH, when Segment Left changes from 1 to 0, the new SRH could have a
-> > > different size because Addresses[1..n-1] are decompressed with CmprI =
-and
-> > > recompressed with CmprE.
-> > >
-> > > Let's say CmprI is 15 and CmprE is 0.  When we receive SRH with Segme=
-nt
-> > > Left >=3D 2, Addresses[1..n-1] have 1 byte for each, and Addresses[n]=
- has
-> > > 16 bytes.  When Segment Left is 1, Addresses[1..n-1] is decompressed =
-to
-> > > 16 bytes and not recompressed.  Finally, the new SRH will need more r=
-oom
-> > > in the header, and the size is (16 - 1) * (n - 1) bytes.
-> > >
-> > > Here the max value of n is 255 as Segment Left is u8, so in the worst=
- case,
-> > > we have to allocate 3825 bytes in the skb headroom.  However, now we =
-only
-> > > allocate a small fixed buffer that is IPV6_RPL_SRH_WORST_SWAP_SIZE (1=
-6 + 7
-> > > bytes).  If the decompressed size overflows the room, skb_push() hits=
- BUG()
-> > > below [0].
-> > >
-> > > Instead of allocating the fixed buffer for every packet, let's alloca=
-te
-> > > enough headroom only when we receive SRH with Segment Left 1.
-> > >
-> > > [0]:
-> > > skbuff: skb_under_panic: text:ffffffff81c9f6e2 len:576 put:576 head:f=
-fff8880070b5180 data:ffff8880070b4fb0 tail:0x70 end:0x140 dev:lo
-> > > kernel BUG at net/core/skbuff.c:200!
-> > > invalid opcode: 0000 [#1] PREEMPT SMP PTI
-> > > CPU: 0 PID: 154 Comm: python3 Not tainted 6.4.0-rc4-00190-gc308e9ec00=
-47 #7
-> > > Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.=
-0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-> > > RIP: 0010:skb_panic (net/core/skbuff.c:200)
-> > > Code: 4f 70 50 8b 87 bc 00 00 00 50 8b 87 b8 00 00 00 50 ff b7 c8 00 =
-00 00 4c 8b 8f c0 00 00 00 48 c7 c7 80 6e 77 82 e8 ad 8b 60 ff <0f> 0b 66 6=
-6 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90 90
-> > > RSP: 0018:ffffc90000003da0 EFLAGS: 00000246
-> > > RAX: 0000000000000085 RBX: ffff8880058a6600 RCX: 0000000000000000
-> > > RDX: 0000000000000000 RSI: ffff88807dc1c540 RDI: ffff88807dc1c540
-> > > RBP: ffffc90000003e48 R08: ffffffff82b392c8 R09: 00000000ffffdfff
-> > > R10: ffffffff82a592e0 R11: ffffffff82b092e0 R12: ffff888005b1c800
-> > > R13: ffff8880070b51b8 R14: ffff888005b1ca18 R15: ffff8880070b5190
-> > > FS:  00007f4539f0b740(0000) GS:ffff88807dc00000(0000) knlGS:000000000=
-0000000
-> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > CR2: 000055670baf3000 CR3: 0000000005b0e000 CR4: 00000000007506f0
-> > > PKRU: 55555554
-> > > Call Trace:
-> > >  <IRQ>
-> > >  skb_push (net/core/skbuff.c:210)
-> > >  ipv6_rthdr_rcv (./include/linux/skbuff.h:2880 net/ipv6/exthdrs.c:634=
- net/ipv6/exthdrs.c:718)
-> > >  ? raw6_local_deliver (net/ipv6/raw.c:207)
-> > >  ip6_protocol_deliver_rcu (net/ipv6/ip6_input.c:437 (discriminator 5)=
-)
-> > >  ip6_input_finish (./include/linux/rcupdate.h:805 net/ipv6/ip6_input.=
-c:483)
-> > >  __netif_receive_skb_one_core (net/core/dev.c:5494)
-> > >  process_backlog (./include/linux/rcupdate.h:805 net/core/dev.c:5934)
-> > >  __napi_poll (net/core/dev.c:6496)
-> > >  net_rx_action (net/core/dev.c:6565 net/core/dev.c:6696)
-> > >  __do_softirq (./arch/x86/include/asm/jump_label.h:27 ./include/linux=
-/jump_label.h:207 ./include/trace/events/irq.h:142 kernel/softirq.c:572)
-> > >  do_softirq (kernel/softirq.c:472 kernel/softirq.c:459)
-> > >  </IRQ>
-> > >  <TASK>
-> > >  __local_bh_enable_ip (kernel/softirq.c:396)
-> > >  __dev_queue_xmit (net/core/dev.c:4272)
-> > >  ip6_finish_output2 (./include/net/neighbour.h:544 net/ipv6/ip6_outpu=
-t.c:134)
-> > >  rawv6_sendmsg (./include/net/dst.h:458 ./include/linux/netfilter.h:3=
-03 net/ipv6/raw.c:656 net/ipv6/raw.c:914)
-> > >  sock_sendmsg (net/socket.c:724 net/socket.c:747)
-> > >  __sys_sendto (net/socket.c:2144)
-> > >  __x64_sys_sendto (net/socket.c:2156 net/socket.c:2152 net/socket.c:2=
-152)
-> > >  do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80=
-)
-> > >  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-> > > RIP: 0033:0x7f453a138aea
-> > > Code: d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0f 1f 00 f3 0f 1e fa 41 =
-89 ca 64 8b 04 25 18 00 00 00 85 c0 75 15 b8 2c 00 00 00 0f 05 <48> 3d 00 f=
-0 ff ff 77 7e c3 0f 1f 44 00 00 41 54 48 83 ec 30 44 89
-> > > RSP: 002b:00007ffcc212a1c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002=
-c
-> > > RAX: ffffffffffffffda RBX: 00007ffcc212a288 RCX: 00007f453a138aea
-> > > RDX: 0000000000000060 RSI: 00007f4539084c20 RDI: 0000000000000003
-> > > RBP: 00007f4538308e80 R08: 00007ffcc212a300 R09: 000000000000001c
-> > > R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> > > R13: ffffffffc4653600 R14: 0000000000000001 R15: 00007f4539712d1b
-> > >  </TASK>
-> > > Modules linked in:
-> > >
-> > > Fixes: 8610c7c6e3bd ("net: ipv6: add support for rpl sr exthdr")
-> > > Reported-by: Max VA
-> > > Closes: https://www.interruptlabs.co.uk/articles/linux-ipv6-route-of-=
-death
-> > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > > ---
-> > > To maintainers:
-> > > Please complement the Reported-by address from the security@ mailing =
-list
-> > > if possible, which checkpatch will complain about.
-> > > ---
-> > >  include/net/rpl.h  |  3 ---
-> > >  net/ipv6/exthdrs.c | 26 ++++++++------------------
-> > >  2 files changed, 8 insertions(+), 21 deletions(-)
-> > >
-> > > diff --git a/include/net/rpl.h b/include/net/rpl.h
-> > > index 308ef0a05cae..30fe780d1e7c 100644
-> > > --- a/include/net/rpl.h
-> > > +++ b/include/net/rpl.h
-> > > @@ -23,9 +23,6 @@ static inline int rpl_init(void)
-> > >  static inline void rpl_exit(void) {}
-> > >  #endif
-> > >
-> > > -/* Worst decompression memory usage ipv6 address (16) + pad 7 */
-> > > -#define IPV6_RPL_SRH_WORST_SWAP_SIZE (sizeof(struct in6_addr) + 7)
-> > > -
-> > >  size_t ipv6_rpl_srh_size(unsigned char n, unsigned char cmpri,
-> > >                          unsigned char cmpre);
-> > >
-> > > diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-> > > index a8d961d3a477..bc413961f564 100644
-> > > --- a/net/ipv6/exthdrs.c
-> > > +++ b/net/ipv6/exthdrs.c
-> > > @@ -569,24 +569,6 @@ static int ipv6_rpl_srh_rcv(struct sk_buff *skb)
-> > >                 return -1;
-> > >         }
-> > >
-> > > -       if (skb_cloned(skb)) {
-> > > -               if (pskb_expand_head(skb, IPV6_RPL_SRH_WORST_SWAP_SIZ=
-E, 0,
-> > > -                                    GFP_ATOMIC)) {
-> > > -                       __IP6_INC_STATS(net, ip6_dst_idev(skb_dst(skb=
-)),
-> > > -                                       IPSTATS_MIB_OUTDISCARDS);
-> > > -                       kfree_skb(skb);
-> > > -                       return -1;
-> > > -               }
-> > > -       } else {
-> > > -               err =3D skb_cow_head(skb, IPV6_RPL_SRH_WORST_SWAP_SIZ=
-E);
-> > > -               if (unlikely(err)) {
-> > > -                       kfree_skb(skb);
-> > > -                       return -1;
-> > > -               }
-> > > -       }
-> > > -
-> > > -       hdr =3D (struct ipv6_rpl_sr_hdr *)skb_transport_header(skb);
-> > > -
-> > >         if (!pskb_may_pull(skb, ipv6_rpl_srh_size(n, hdr->cmpri,
-> > >                                                   hdr->cmpre))) {
-> > >                 kfree_skb(skb);
-> > > @@ -630,6 +612,14 @@ static int ipv6_rpl_srh_rcv(struct sk_buff *skb)
-> > >         skb_pull(skb, ((hdr->hdrlen + 1) << 3));
-> > >         skb_postpull_rcsum(skb, oldhdr,
-> > >                            sizeof(struct ipv6hdr) + ((hdr->hdrlen + 1=
-) << 3));
-> > > +       if (unlikely(!hdr->segments_left) &&
-> > > +           pskb_expand_head(skb, sizeof(struct ipv6hdr) + ((chdr->hd=
-rlen + 1) << 3), 0,
-> > > +                            GFP_ATOMIC)) {
-> > > +               __IP6_INC_STATS(net, ip6_dst_idev(skb_dst(skb)), IPST=
-ATS_MIB_OUTDISCARDS);
-> > > +               kfree_skb(skb);
-> > > +               kfree(buf);
-> > > +               return -1;
-> > > +       }
-> > >         skb_push(skb, ((chdr->hdrlen + 1) << 3) + sizeof(struct ipv6h=
-dr));
-> > >         skb_reset_network_header(skb);
-> > >         skb_mac_header_rebuild(skb);
-> >
-> > Your patch is not complete.
-> >
-> > Any pskb_maypull() or pskb_expand_head() can change skb->head
-> >
-> > So @oldhdr will point to freed memory and this will trigger another bug=
- report.
-> >
-> > memmove(ipv6_hdr(skb), oldhdr, sizeof(struct ipv6hdr)); // crash
->
-> Yes, I assumed your series would fix it.  At least after the new
-> pskb_expand_head(), we don't touch the hdr.
->
-> If it's the best option, could you take my patch into your v2 ?
->
 
-I think the existing calls do not change skb->head, because the caller norm=
-ally
-already pulled the needed data.
 
-Essentially I think your patch should be standalone.
+> -----Original Message-----
+> From: Simon Horman <simon.horman@corigine.com>
+> Sent: niedziela, 4 czerwca 2023 18:07
+> To: Drewek, Wojciech <wojciech.drewek@intel.com>
+> Cc: intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; Lobakin, Al=
+eksander <aleksander.lobakin@intel.com>; Ertman, David M
+> <david.m.ertman@intel.com>; michal.swiatkowski@linux.intel.com; marcin.sz=
+ycik@linux.intel.com; Chmielewski, Pawel
+> <pawel.chmielewski@intel.com>; Samudrala, Sridhar <sridhar.samudrala@inte=
+l.com>; pmenzel@molgen.mpg.de;
+> dan.carpenter@linaro.org
+> Subject: Re: [PATCH iwl-next v4 09/13] ice: Accept LAG netdevs in bridge =
+offloads
+>=20
+> On Wed, May 24, 2023 at 02:21:17PM +0200, Wojciech Drewek wrote:
+> > Allow LAG interfaces to be used in bridge offload using
+> > netif_is_lag_master. In this case, search for ice netdev in
+> > the list of LAG's lower devices.
+>=20
+> Hi Wojciech,
+>=20
+> As this uses the first lower device found that is an ICE netdev, it is a
+> little unclear to me how this handles the (likely) case of a LAG having
+> more than one lower device, each of which are ICE netdevs belonging to th=
+e
+> same eswitch. And the perhaps less likely case where it has more than
+> once lower devices, but they don't all belong to the same ICE eswitch.
 
-Later we can cleanup things.
+The only use case here is Active-Backup bond which is send in separate patc=
+hset[1].
+6th patch of the series[2] makes sure that that below scenarios will not ha=
+ppen:
+- non-ice devices
+- more than 2 devices
+So the only possible scenario would be 2 PFs of the same nic bonded togethe=
+r.
+In this patch we want to handle the situation when such bond is added to th=
+e bridge.
+Maybe we should wait with this patch until the LAG series will be accepted?
+
+
+[1] http://patchwork.ozlabs.org/project/intel-wired-lan/list/?series=3D3554=
+87&state=3D*
+[2] http://patchwork.ozlabs.org/project/intel-wired-lan/patch/2023051723002=
+8.321350-7-david.m.ertman@intel.com/
 
