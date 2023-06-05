@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-8165-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8168-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 95BAD722F12
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:01:32 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id C7724722F19
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:02:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1280C1C20D09
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 19:01:29 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7CB492813CC
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 19:02:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 49F7C23D68;
-	Mon,  5 Jun 2023 19:01:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 540D32414C;
+	Mon,  5 Jun 2023 19:01:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AE4723D45
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 19:01:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E5FFC4339B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFF6A2412D
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 19:01:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBEA6C4339E;
 	Mon,  5 Jun 2023 19:01:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685991670;
-	bh=YWVobWnX75GGwzA0NQyCxihXlmv1ljj8G3Fl1Un4xw0=;
+	s=k20201202; t=1685991671;
+	bh=vnH8r1rHc58yTq7/V4PDZj1CZec3i8d1lPr+6IjUsT4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=nczHBKdaeMB/iALJYHzY/TSFD9hKXXcGHMZD8IjVz4m3CCGiKPv/uqna4bxrVnlFl
-	 Uh2I+sRNp22gktB5ythSauTKD2lwpsQobpHW0oFZVyBc5ruYilmwwM+fi735Ce1IBD
-	 eBSaKeTL+u+/zmSX9AULYZCFCeVkfiffiG34yf1JglaIBkq5DcGNznDBG4YxJBRKyA
-	 eL8l9l24HoDdV59ZsKHqvwR/0rybf/B6jbC7w61/7ifoPvNX5X4q3FfWO4gft0KdL7
-	 fB+KhvcEJxKFdU0gbYs5dJgDlQg0uktn+/J7EdorttPi5iGva+rlCiPBWEYhkySgvF
-	 WtXFhHPRXHM8g==
+	b=P9xZQF4Aj+k5fPLzJzPsIcP7w3NsoiqtzLfb8QEX7at4vXT+EG0L27qvBH2dHQzDJ
+	 SN5y6zUoBGayyU9YK0zCkKps8m2kQK5ctb8vvYjgYPQENL9AzIkm1hu5xPOzohptF1
+	 F5aCUaGtlyEqL557TPbTK/x/a7EVgsUbYRgjeSG2gNRHn+B0cIBV32ZmoEA4ENRw7z
+	 r5xbCjpzqhIgs3Ka0OeowF9eOzu1KHocZM39MFJRL+LiREKGpFn70L8ePi03jRuYzX
+	 IsQD+pCT30/724fpb8d8PDNdTRvCpZ27L1JpP7uhbaKuCUggnh3F4/Z9i1pmFAYAPq
+	 VpnjbR42lUK2A==
 From: Jakub Kicinski <kuba@kernel.org>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
@@ -39,9 +39,9 @@ Cc: netdev@vger.kernel.org,
 	sdf@google.com,
 	willemdebruijn.kernel@gmail.com,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v3 1/4] tools: ynl-gen: clean up stray new lines at the end of reply-less requests
-Date: Mon,  5 Jun 2023 12:01:05 -0700
-Message-Id: <20230605190108.809439-2-kuba@kernel.org>
+Subject: [PATCH net-next v3 2/4] tools: ynl: user space helpers
+Date: Mon,  5 Jun 2023 12:01:06 -0700
+Message-Id: <20230605190108.809439-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230605190108.809439-1-kuba@kernel.org>
 References: <20230605190108.809439-1-kuba@kernel.org>
@@ -53,39 +53,1388 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Do not print empty lines before closing brackets.
+Add "fixed" part of the user space Netlink Spec-based library.
+This will get linked with the protocol implementations to form
+a full API.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/net/ynl/ynl-gen-c.py | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+v2: fix up kdoc
+---
+ .../userspace-api/netlink/intro-specs.rst     |  79 ++
+ tools/net/ynl/Makefile                        |  19 +
+ tools/net/ynl/generated/Makefile              |  45 +
+ tools/net/ynl/lib/Makefile                    |  28 +
+ tools/net/ynl/lib/ynl.c                       | 901 ++++++++++++++++++
+ tools/net/ynl/lib/ynl.h                       | 237 +++++
+ tools/net/ynl/ynl-regen.sh                    |   2 +-
+ 7 files changed, 1310 insertions(+), 1 deletion(-)
+ create mode 100644 tools/net/ynl/Makefile
+ create mode 100644 tools/net/ynl/generated/Makefile
+ create mode 100644 tools/net/ynl/lib/Makefile
+ create mode 100644 tools/net/ynl/lib/ynl.c
+ create mode 100644 tools/net/ynl/lib/ynl.h
 
-diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
-index 4c12c6f8968e..1e64c5c2a087 100755
---- a/tools/net/ynl/ynl-gen-c.py
-+++ b/tools/net/ynl/ynl-gen-c.py
-@@ -944,9 +944,10 @@ from lib import SpecFamily, SpecAttrSet, SpecAttr, SpecOperation, SpecEnumSet, S
-     def _is_cond(cls, line):
-         return line.startswith('if') or line.startswith('while') or line.startswith('for')
+diff --git a/Documentation/userspace-api/netlink/intro-specs.rst b/Documentation/userspace-api/netlink/intro-specs.rst
+index a3b847eafff7..bada89699455 100644
+--- a/Documentation/userspace-api/netlink/intro-specs.rst
++++ b/Documentation/userspace-api/netlink/intro-specs.rst
+@@ -78,3 +78,82 @@ to see other examples.
+ The code generation itself is performed by ``tools/net/ynl/ynl-gen-c.py``
+ but it takes a few arguments so calling it directly for each file
+ quickly becomes tedious.
++
++YNL lib
++=======
++
++``tools/net/ynl/lib/`` contains an implementation of a C library
++(based on libmnl) which integrates with code generated by
++``tools/net/ynl/ynl-gen-c.py`` to create easy to use netlink wrappers.
++
++YNL basics
++----------
++
++The YNL library consists of two parts - the generic code (functions
++prefix by ``ynl_``) and per-family auto-generated code (prefixed
++with the name of the family).
++
++To create a YNL socket call ynl_sock_create() passing the family
++struct (family structs are exported by the auto-generated code).
++ynl_sock_destroy() closes the socket.
++
++YNL requests
++------------
++
++Steps for issuing YNL requests are best explained on an example.
++All the functions and types in this example come from the auto-generated
++code (for the netdev family in this case):
++
++.. code-block:: c
++
++   // 0. Request and response pointers
++   struct netdev_dev_get_req *req;
++   struct netdev_dev_get_rsp *d;
++
++   // 1. Allocate a request
++   req = netdev_dev_get_req_alloc();
++   // 2. Set request parameters (as needed)
++   netdev_dev_get_req_set_ifindex(req, ifindex);
++
++   // 3. Issues the request
++   d = netdev_dev_get(ys, req);
++   // 4. Free the request arguments
++   netdev_dev_get_req_free(req);
++   // 5. Error check (the return value from step 3)
++   if (!d) {
++	// 6. Print the YNL-generated error
++	fprintf(stderr, "YNL: %s\n", ys->err.msg);
++        return -1;
++   }
++
++   // ... do stuff with the response @d
++
++   // 7. Free response
++   netdev_dev_get_rsp_free(d);
++
++YNL dumps
++---------
++
++Performing dumps follows similar pattern as requests.
++Dumps return a list of objects terminated by a special marker,
++or NULL on error. Use ``ynl_dump_foreach()`` to iterate over
++the result.
++
++YNL notifications
++-----------------
++
++YNL lib supports using the same socket for notifications and
++requests. In case notifications arrive during processing of a request
++they are queued internally and can be retrieved at a later time.
++
++To subscribed to notifications use ``ynl_subscribe()``.
++The notifications have to be read out from the socket,
++``ynl_socket_get_fd()`` returns the underlying socket fd which can
++be plugged into appropriate asynchronous IO API like ``poll``,
++or ``select``.
++
++Notifications can be retrieved using ``ynl_ntf_dequeue()`` and have
++to be freed using ``ynl_ntf_free()``. Since we don't know the notification
++type upfront the notifications are returned as ``struct ynl_ntf_base_type *``
++and user is expected to cast them to the appropriate full type based
++on the ``cmd`` member.
+diff --git a/tools/net/ynl/Makefile b/tools/net/ynl/Makefile
+new file mode 100644
+index 000000000000..d664b36deb5b
+--- /dev/null
++++ b/tools/net/ynl/Makefile
+@@ -0,0 +1,19 @@
++# SPDX-License-Identifier: GPL-2.0
++
++SUBDIRS = lib generated samples
++
++all: $(SUBDIRS)
++
++$(SUBDIRS):
++	@if [ -f "$@/Makefile" ] ; then \
++		$(MAKE) -C $@ ; \
++	fi
++
++clean hardclean:
++	@for dir in $(SUBDIRS) ; do \
++		if [ -f "$$dir/Makefile" ] ; then \
++			$(MAKE) -C $$dir $@; \
++		fi \
++	done
++
++.PHONY: clean all $(SUBDIRS)
+diff --git a/tools/net/ynl/generated/Makefile b/tools/net/ynl/generated/Makefile
+new file mode 100644
+index 000000000000..9a09e581906e
+--- /dev/null
++++ b/tools/net/ynl/generated/Makefile
+@@ -0,0 +1,45 @@
++# SPDX-License-Identifier: GPL-2.0
++
++CC=gcc
++CFLAGS=-std=gnu11 -O2 -W -Wall -Wextra -Wno-unused-parameter -Wshadow \
++	-I../lib/
++ifeq ("$(DEBUG)","1")
++  CFLAGS += -g -fsanitize=address -fsanitize=leak -static-libasan
++endif
++
++TOOL:=../ynl-gen-c.py
++
++GENS:=
++SRCS=$(patsubst %,%-user.c,${GENS})
++HDRS=$(patsubst %,%-user.h,${GENS})
++OBJS=$(patsubst %,%-user.o,${GENS})
++
++all: protos.a $(HDRS) $(SRCS) $(KHDRS) $(KSRCS) $(UAPI) regen
++
++protos.a: $(OBJS)
++	@echo -e "\tAR $@"
++	@ar rcs $@ $(OBJS)
++
++%-user.h: ../../../../Documentation/netlink/specs/%.yaml $(TOOL)
++	@echo -e "\tGEN $@"
++	@$(TOOL) --mode user --header --spec $< > $@
++
++%-user.c: ../../../../Documentation/netlink/specs/%.yaml $(TOOL)
++	@echo -e "\tGEN $@"
++	@$(TOOL) --mode user --source --spec $< > $@
++
++%-user.o: %-user.c %-user.h
++	@echo -e "\tCC $@"
++	@$(COMPILE.c) -c -o $@ $<
++
++clean:
++	rm -f *.o
++
++hardclean: clean
++	rm -f *.c *.h *.a
++
++regen:
++	@../ynl-regen.sh
++
++.PHONY: all clean hardclean regen
++.DEFAULT_GOAL: all
+diff --git a/tools/net/ynl/lib/Makefile b/tools/net/ynl/lib/Makefile
+new file mode 100644
+index 000000000000..d2e50fd0a52d
+--- /dev/null
++++ b/tools/net/ynl/lib/Makefile
+@@ -0,0 +1,28 @@
++# SPDX-License-Identifier: GPL-2.0
++
++CC=gcc
++CFLAGS=-std=gnu11 -O2 -W -Wall -Wextra -Wno-unused-parameter -Wshadow
++ifeq ("$(DEBUG)","1")
++  CFLAGS += -g -fsanitize=address -fsanitize=leak -static-libasan
++endif
++
++SRCS=$(wildcard *.c)
++OBJS=$(patsubst %.c,%.o,${SRCS})
++
++include $(wildcard *.d)
++
++all: ynl.a
++
++ynl.a: $(OBJS)
++	ar rcs $@ $(OBJS)
++clean:
++	rm -f *.o *.d *~
++
++hardclean: clean
++	rm -f *.a
++
++%.o: %.c
++	$(COMPILE.c) -MMD -c -o $@ $<
++
++.PHONY: all clean
++.DEFAULT_GOAL=all
+diff --git a/tools/net/ynl/lib/ynl.c b/tools/net/ynl/lib/ynl.c
+new file mode 100644
+index 000000000000..514e0d69e731
+--- /dev/null
++++ b/tools/net/ynl/lib/ynl.c
+@@ -0,0 +1,901 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
++#include <errno.h>
++#include <poll.h>
++#include <string.h>
++#include <stdlib.h>
++#include <linux/types.h>
++
++#include <libmnl/libmnl.h>
++#include <linux/genetlink.h>
++
++#include "ynl.h"
++
++#define ARRAY_SIZE(arr)		(sizeof(arr) / sizeof(*arr))
++
++#define __yerr_msg(yse, _msg...)					\
++	({								\
++		struct ynl_error *_yse = (yse);				\
++									\
++		if (_yse) {						\
++			snprintf(_yse->msg, sizeof(_yse->msg) - 1,  _msg); \
++			_yse->msg[sizeof(_yse->msg) - 1] = 0;		\
++		}							\
++	})
++
++#define __yerr_code(yse, _code...)		\
++	({					\
++		struct ynl_error *_yse = (yse);	\
++						\
++		if (_yse) {			\
++			_yse->code = _code;	\
++		}				\
++	})
++
++#define __yerr(yse, _code, _msg...)		\
++	({					\
++		__yerr_msg(yse, _msg);		\
++		__yerr_code(yse, _code);	\
++	})
++
++#define __perr(yse, _msg)		__yerr(yse, errno, _msg)
++
++#define yerr_msg(_ys, _msg...)		__yerr_msg(&(_ys)->err, _msg)
++#define yerr(_ys, _code, _msg...)	__yerr(&(_ys)->err, _code, _msg)
++#define perr(_ys, _msg)			__yerr(&(_ys)->err, errno, _msg)
++
++/* -- Netlink boiler plate */
++static int
++ynl_err_walk_report_one(struct ynl_policy_nest *policy, unsigned int type,
++			char *str, int str_sz, int *n)
++{
++	if (!policy) {
++		if (*n < str_sz)
++			*n += snprintf(str, str_sz, "!policy");
++		return 1;
++	}
++
++	if (type > policy->max_attr) {
++		if (*n < str_sz)
++			*n += snprintf(str, str_sz, "!oob");
++		return 1;
++	}
++
++	if (!policy->table[type].name) {
++		if (*n < str_sz)
++			*n += snprintf(str, str_sz, "!name");
++		return 1;
++	}
++
++	if (*n < str_sz)
++		*n += snprintf(str, str_sz - *n,
++			       ".%s", policy->table[type].name);
++	return 0;
++}
++
++static int
++ynl_err_walk(struct ynl_sock *ys, void *start, void *end, unsigned int off,
++	     struct ynl_policy_nest *policy, char *str, int str_sz,
++	     struct ynl_policy_nest **nest_pol)
++{
++	unsigned int astart_off, aend_off;
++	const struct nlattr *attr;
++	unsigned int data_len;
++	unsigned int type;
++	bool found = false;
++	int n = 0;
++
++	if (!policy) {
++		if (n < str_sz)
++			n += snprintf(str, str_sz, "!policy");
++		return n;
++	}
++
++	data_len = end - start;
++
++	mnl_attr_for_each_payload(start, data_len) {
++		astart_off = (char *)attr - (char *)start;
++		aend_off = astart_off + mnl_attr_get_payload_len(attr);
++		if (aend_off <= off)
++			continue;
++
++		found = true;
++		break;
++	}
++	if (!found)
++		return 0;
++
++	off -= astart_off;
++
++	type = mnl_attr_get_type(attr);
++
++	if (ynl_err_walk_report_one(policy, type, str, str_sz, &n))
++		return n;
++
++	if (!off) {
++		if (nest_pol)
++			*nest_pol = policy->table[type].nest;
++		return n;
++	}
++
++	if (!policy->table[type].nest) {
++		if (n < str_sz)
++			n += snprintf(str, str_sz, "!nest");
++		return n;
++	}
++
++	off -= sizeof(struct nlattr);
++	start =  mnl_attr_get_payload(attr);
++	end = start + mnl_attr_get_payload_len(attr);
++
++	return n + ynl_err_walk(ys, start, end, off, policy->table[type].nest,
++				&str[n], str_sz - n, nest_pol);
++}
++
++#define NLMSGERR_ATTR_MISS_TYPE (NLMSGERR_ATTR_POLICY + 1)
++#define NLMSGERR_ATTR_MISS_NEST (NLMSGERR_ATTR_POLICY + 2)
++#define NLMSGERR_ATTR_MAX (NLMSGERR_ATTR_MAX + 2)
++
++static int
++ynl_ext_ack_check(struct ynl_sock *ys, const struct nlmsghdr *nlh,
++		  unsigned int hlen)
++{
++	const struct nlattr *tb[NLMSGERR_ATTR_MAX + 1] = {};
++	char miss_attr[sizeof(ys->err.msg)];
++	char bad_attr[sizeof(ys->err.msg)];
++	const struct nlattr *attr;
++	const char *str = NULL;
++
++	if (!(nlh->nlmsg_flags & NLM_F_ACK_TLVS))
++		return MNL_CB_OK;
++
++	mnl_attr_for_each(attr, nlh, hlen) {
++		unsigned int len, type;
++
++		len = mnl_attr_get_payload_len(attr);
++		type = mnl_attr_get_type(attr);
++
++		if (type > NLMSGERR_ATTR_MAX)
++			continue;
++
++		tb[type] = attr;
++
++		switch (type) {
++		case NLMSGERR_ATTR_OFFS:
++		case NLMSGERR_ATTR_MISS_TYPE:
++		case NLMSGERR_ATTR_MISS_NEST:
++			if (len != sizeof(__u32))
++				return MNL_CB_ERROR;
++			break;
++		case NLMSGERR_ATTR_MSG:
++			str = mnl_attr_get_payload(attr);
++			if (str[len - 1])
++				return MNL_CB_ERROR;
++			break;
++		default:
++			break;
++		}
++	}
++
++	bad_attr[0] = '\0';
++	miss_attr[0] = '\0';
++
++	if (tb[NLMSGERR_ATTR_OFFS]) {
++		unsigned int n, off;
++		void *start, *end;
++
++		ys->err.attr_offs = mnl_attr_get_u32(tb[NLMSGERR_ATTR_OFFS]);
++
++		n = snprintf(bad_attr, sizeof(bad_attr), "%sbad attribute: ",
++			     str ? " (" : "");
++
++		start = mnl_nlmsg_get_payload_offset(ys->nlh,
++						     sizeof(struct genlmsghdr));
++		end = mnl_nlmsg_get_payload_tail(ys->nlh);
++
++		off = ys->err.attr_offs;
++		off -= sizeof(struct nlmsghdr);
++		off -= sizeof(struct genlmsghdr);
++
++		n += ynl_err_walk(ys, start, end, off, ys->req_policy,
++				  &bad_attr[n], sizeof(bad_attr) - n, NULL);
++
++		if (n >= sizeof(bad_attr))
++			n = sizeof(bad_attr) - 1;
++		bad_attr[n] = '\0';
++	}
++	if (tb[NLMSGERR_ATTR_MISS_TYPE]) {
++		struct ynl_policy_nest *nest_pol = NULL;
++		unsigned int n, off, type;
++		void *start, *end;
++		int n2;
++
++		type = mnl_attr_get_u32(tb[NLMSGERR_ATTR_MISS_TYPE]);
++
++		n = snprintf(miss_attr, sizeof(miss_attr), "%smissing attribute: ",
++			     bad_attr[0] ? ", " : (str ? " (" : ""));
++
++		start = mnl_nlmsg_get_payload_offset(ys->nlh,
++						     sizeof(struct genlmsghdr));
++		end = mnl_nlmsg_get_payload_tail(ys->nlh);
++
++		nest_pol = ys->req_policy;
++		if (tb[NLMSGERR_ATTR_MISS_NEST]) {
++			off = mnl_attr_get_u32(tb[NLMSGERR_ATTR_MISS_NEST]);
++			off -= sizeof(struct nlmsghdr);
++			off -= sizeof(struct genlmsghdr);
++
++			n += ynl_err_walk(ys, start, end, off, ys->req_policy,
++					  &miss_attr[n], sizeof(miss_attr) - n,
++					  &nest_pol);
++		}
++
++		n2 = 0;
++		ynl_err_walk_report_one(nest_pol, type, &miss_attr[n],
++					sizeof(miss_attr) - n, &n2);
++		n += n2;
++
++		if (n >= sizeof(miss_attr))
++			n = sizeof(miss_attr) - 1;
++		miss_attr[n] = '\0';
++	}
++
++	/* Implicitly depend on ys->err.code already set */
++	if (str)
++		yerr_msg(ys, "Kernel %s: '%s'%s%s%s",
++			 ys->err.code ? "error" : "warning",
++			 str, bad_attr, miss_attr,
++			 bad_attr[0] || miss_attr[0] ? ")" : "");
++	else if (bad_attr[0] || miss_attr[0])
++		yerr_msg(ys, "Kernel %s: %s%s",
++			 ys->err.code ? "error" : "warning",
++			 bad_attr, miss_attr);
++
++	return MNL_CB_OK;
++}
++
++static int ynl_cb_error(const struct nlmsghdr *nlh, void *data)
++{
++	const struct nlmsgerr *err = mnl_nlmsg_get_payload(nlh);
++	struct ynl_parse_arg *yarg = data;
++	unsigned int hlen;
++	int code;
++
++	code = err->error >= 0 ? err->error : -err->error;
++	yarg->ys->err.code = code;
++	errno = code;
++
++	hlen = sizeof(*err);
++	if (!(nlh->nlmsg_flags & NLM_F_CAPPED))
++		hlen += mnl_nlmsg_get_payload_len(&err->msg);
++
++	ynl_ext_ack_check(yarg->ys, nlh, hlen);
++
++	return code ? MNL_CB_ERROR : MNL_CB_STOP;
++}
++
++static int ynl_cb_done(const struct nlmsghdr *nlh, void *data)
++{
++	struct ynl_parse_arg *yarg = data;
++	int err;
++
++	err = *(int *)NLMSG_DATA(nlh);
++	if (err < 0) {
++		yarg->ys->err.code = -err;
++		errno = -err;
++
++		ynl_ext_ack_check(yarg->ys, nlh, sizeof(int));
++
++		return MNL_CB_ERROR;
++	}
++	return MNL_CB_STOP;
++}
++
++static int ynl_cb_noop(const struct nlmsghdr *nlh, void *data)
++{
++	return MNL_CB_OK;
++}
++
++mnl_cb_t ynl_cb_array[NLMSG_MIN_TYPE] = {
++	[NLMSG_NOOP]	= ynl_cb_noop,
++	[NLMSG_ERROR]	= ynl_cb_error,
++	[NLMSG_DONE]	= ynl_cb_done,
++	[NLMSG_OVERRUN]	= ynl_cb_noop,
++};
++
++/* Attribute validation */
++
++int ynl_attr_validate(struct ynl_parse_arg *yarg, const struct nlattr *attr)
++{
++	struct ynl_policy_attr *policy;
++	unsigned int type, len;
++	unsigned char *data;
++
++	data = mnl_attr_get_payload(attr);
++	len = mnl_attr_get_payload_len(attr);
++	type = mnl_attr_get_type(attr);
++	if (type > yarg->rsp_policy->max_attr) {
++		yerr(yarg->ys, YNL_ERROR_INTERNAL,
++		     "Internal error, validating unknown attribute");
++		return -1;
++	}
++
++	policy = &yarg->rsp_policy->table[type];
++
++	switch (policy->type) {
++	case YNL_PT_REJECT:
++		yerr(yarg->ys, YNL_ERROR_ATTR_INVALID,
++		     "Rejected attribute (%s)", policy->name);
++		return -1;
++	case YNL_PT_IGNORE:
++		break;
++	case YNL_PT_U8:
++		if (len == sizeof(__u8))
++			break;
++		yerr(yarg->ys, YNL_ERROR_ATTR_INVALID,
++		     "Invalid attribute (u8 %s)", policy->name);
++		return -1;
++	case YNL_PT_U16:
++		if (len == sizeof(__u16))
++			break;
++		yerr(yarg->ys, YNL_ERROR_ATTR_INVALID,
++		     "Invalid attribute (u16 %s)", policy->name);
++		return -1;
++	case YNL_PT_U32:
++		if (len == sizeof(__u32))
++			break;
++		yerr(yarg->ys, YNL_ERROR_ATTR_INVALID,
++		     "Invalid attribute (u32 %s)", policy->name);
++		return -1;
++	case YNL_PT_U64:
++		if (len == sizeof(__u64))
++			break;
++		yerr(yarg->ys, YNL_ERROR_ATTR_INVALID,
++		     "Invalid attribute (u64 %s)", policy->name);
++		return -1;
++	case YNL_PT_FLAG:
++		/* Let flags grow into real attrs, why not.. */
++		break;
++	case YNL_PT_NEST:
++		if (!len || len >= sizeof(*attr))
++			break;
++		yerr(yarg->ys, YNL_ERROR_ATTR_INVALID,
++		     "Invalid attribute (nest %s)", policy->name);
++		return -1;
++	case YNL_PT_BINARY:
++		if (!policy->len || len == policy->len)
++			break;
++		yerr(yarg->ys, YNL_ERROR_ATTR_INVALID,
++		     "Invalid attribute (binary %s)", policy->name);
++		return -1;
++	case YNL_PT_NUL_STR:
++		if ((!policy->len || len <= policy->len) && !data[len - 1])
++			break;
++		yerr(yarg->ys, YNL_ERROR_ATTR_INVALID,
++		     "Invalid attribute (string %s)", policy->name);
++		return -1;
++	default:
++		yerr(yarg->ys, YNL_ERROR_ATTR_INVALID,
++		     "Invalid attribute (unknown %s)", policy->name);
++		return -1;
++	}
++
++	return 0;
++}
++
++/* Generic code */
++
++static void ynl_err_reset(struct ynl_sock *ys)
++{
++	ys->err.code = 0;
++	ys->err.attr_offs = 0;
++	ys->err.msg[0] = 0;
++}
++
++struct nlmsghdr *ynl_msg_start(struct ynl_sock *ys, __u32 id, __u16 flags)
++{
++	struct nlmsghdr *nlh;
++
++	ynl_err_reset(ys);
++
++	nlh = ys->nlh = mnl_nlmsg_put_header(ys->tx_buf);
++	nlh->nlmsg_type	= id;
++	nlh->nlmsg_flags = flags;
++	nlh->nlmsg_seq = ++ys->seq;
++
++	return nlh;
++}
++
++struct nlmsghdr *
++ynl_gemsg_start(struct ynl_sock *ys, __u32 id, __u16 flags,
++		__u8 cmd, __u8 version)
++{
++	struct genlmsghdr gehdr;
++	struct nlmsghdr *nlh;
++	void *data;
++
++	nlh = ynl_msg_start(ys, id, flags);
++
++	memset(&gehdr, 0, sizeof(gehdr));
++	gehdr.cmd = cmd;
++	gehdr.version = version;
++
++	data = mnl_nlmsg_put_extra_header(nlh, sizeof(gehdr));
++	memcpy(data, &gehdr, sizeof(gehdr));
++
++	return nlh;
++}
++
++void ynl_msg_start_req(struct ynl_sock *ys, __u32 id)
++{
++	ynl_msg_start(ys, id, NLM_F_REQUEST | NLM_F_ACK);
++}
++
++void ynl_msg_start_dump(struct ynl_sock *ys, __u32 id)
++{
++	ynl_msg_start(ys, id, NLM_F_REQUEST | NLM_F_ACK | NLM_F_DUMP);
++}
++
++struct nlmsghdr *
++ynl_gemsg_start_req(struct ynl_sock *ys, __u32 id, __u8 cmd, __u8 version)
++{
++	return ynl_gemsg_start(ys, id, NLM_F_REQUEST | NLM_F_ACK, cmd, version);
++}
++
++struct nlmsghdr *
++ynl_gemsg_start_dump(struct ynl_sock *ys, __u32 id, __u8 cmd, __u8 version)
++{
++	return ynl_gemsg_start(ys, id, NLM_F_REQUEST | NLM_F_ACK | NLM_F_DUMP,
++			       cmd, version);
++}
++
++int ynl_recv_ack(struct ynl_sock *ys, int ret)
++{
++	if (!ret) {
++		yerr(ys, YNL_ERROR_EXPECT_ACK,
++		     "Expecting an ACK but nothing received");
++		return -1;
++	}
++
++	ret = mnl_socket_recvfrom(ys->sock, ys->rx_buf, MNL_SOCKET_BUFFER_SIZE);
++	if (ret < 0) {
++		perr(ys, "Socket receive failed");
++		return ret;
++	}
++	return mnl_cb_run(ys->rx_buf, ret, ys->seq, ys->portid,
++			  ynl_cb_null, ys);
++}
++
++int ynl_cb_null(const struct nlmsghdr *nlh, void *data)
++{
++	struct ynl_parse_arg *yarg = data;
++
++	yerr(yarg->ys, YNL_ERROR_UNEXPECT_MSG,
++	     "Received a message when none were expected");
++
++	return MNL_CB_ERROR;
++}
++
++/* Init/fini and genetlink boiler plate */
++static int
++ynl_get_family_info_mcast(struct ynl_sock *ys, const struct nlattr *mcasts)
++{
++	const struct nlattr *entry, *attr;
++	unsigned int i;
++
++	mnl_attr_for_each_nested(attr, mcasts)
++		ys->n_mcast_groups++;
++
++	if (!ys->n_mcast_groups)
++		return 0;
++
++	ys->mcast_groups = calloc(ys->n_mcast_groups,
++				  sizeof(*ys->mcast_groups));
++	if (!ys->mcast_groups)
++		return MNL_CB_ERROR;
++
++	i = 0;
++	mnl_attr_for_each_nested(entry, mcasts) {
++		mnl_attr_for_each_nested(attr, entry) {
++			if (mnl_attr_get_type(attr) == CTRL_ATTR_MCAST_GRP_ID)
++				ys->mcast_groups[i].id = mnl_attr_get_u32(attr);
++			if (mnl_attr_get_type(attr) == CTRL_ATTR_MCAST_GRP_NAME) {
++				strncpy(ys->mcast_groups[i].name,
++					mnl_attr_get_str(attr),
++					GENL_NAMSIZ - 1);
++				ys->mcast_groups[i].name[GENL_NAMSIZ - 1] = 0;
++			}
++		}
++	}
++
++	return 0;
++}
++
++static int ynl_get_family_info_cb(const struct nlmsghdr *nlh, void *data)
++{
++	struct ynl_parse_arg *yarg = data;
++	struct ynl_sock *ys = yarg->ys;
++	const struct nlattr *attr;
++	bool found_id = true;
++
++	mnl_attr_for_each(attr, nlh, sizeof(struct genlmsghdr)) {
++		if (mnl_attr_get_type(attr) == CTRL_ATTR_MCAST_GROUPS)
++			if (ynl_get_family_info_mcast(ys, attr))
++				return MNL_CB_ERROR;
++
++		if (mnl_attr_get_type(attr) != CTRL_ATTR_FAMILY_ID)
++			continue;
++
++		if (mnl_attr_get_payload_len(attr) != sizeof(__u16)) {
++			yerr(ys, YNL_ERROR_ATTR_INVALID, "Invalid family ID");
++			return MNL_CB_ERROR;
++		}
++
++		ys->family_id = mnl_attr_get_u16(attr);
++		found_id = true;
++	}
++
++	if (!found_id) {
++		yerr(ys, YNL_ERROR_ATTR_MISSING, "Family ID missing");
++		return MNL_CB_ERROR;
++	}
++	return MNL_CB_OK;
++}
++
++static int ynl_sock_read_family(struct ynl_sock *ys, const char *family_name)
++{
++	struct ynl_parse_arg yarg = { .ys = ys, };
++	struct nlmsghdr *nlh;
++	int err;
++
++	nlh = ynl_gemsg_start_req(ys, GENL_ID_CTRL, CTRL_CMD_GETFAMILY, 1);
++	mnl_attr_put_strz(nlh, CTRL_ATTR_FAMILY_NAME, family_name);
++
++	err = mnl_socket_sendto(ys->sock, nlh, nlh->nlmsg_len);
++	if (err < 0) {
++		perr(ys, "failed to request socket family info");
++		return err;
++	}
++
++	err = mnl_socket_recvfrom(ys->sock, ys->rx_buf, MNL_SOCKET_BUFFER_SIZE);
++	if (err <= 0) {
++		perr(ys, "failed to receive the socket family info");
++		return err;
++	}
++	err = mnl_cb_run2(ys->rx_buf, err, ys->seq, ys->portid,
++			  ynl_get_family_info_cb, &yarg,
++			  ynl_cb_array, ARRAY_SIZE(ynl_cb_array));
++	if (err < 0) {
++		free(ys->mcast_groups);
++		perr(ys, "failed to receive the socket family info - no such family?");
++		return err;
++	}
++
++	return ynl_recv_ack(ys, err);
++}
++
++struct ynl_sock *
++ynl_sock_create(const struct ynl_family *yf, struct ynl_error *yse)
++{
++	struct ynl_sock *ys;
++	int one = 1;
++
++	ys = malloc(sizeof(*ys) + 2 * MNL_SOCKET_BUFFER_SIZE);
++	if (!ys)
++		return NULL;
++	memset(ys, 0, sizeof(*ys));
++
++	ys->family = yf;
++	ys->tx_buf = &ys->raw_buf[0];
++	ys->rx_buf = &ys->raw_buf[MNL_SOCKET_BUFFER_SIZE];
++	ys->ntf_last_next = &ys->ntf_first;
++
++	ys->sock = mnl_socket_open(NETLINK_GENERIC);
++	if (!ys->sock) {
++		__perr(yse, "failed to create a netlink socket");
++		goto err_free_sock;
++	}
++
++	if (mnl_socket_setsockopt(ys->sock, NETLINK_CAP_ACK,
++				  &one, sizeof(one))) {
++		__perr(yse, "failed to enable netlink ACK");
++		goto err_close_sock;
++	}
++	if (mnl_socket_setsockopt(ys->sock, NETLINK_EXT_ACK,
++				  &one, sizeof(one))) {
++		__perr(yse, "failed to enable netlink ext ACK");
++		goto err_close_sock;
++	}
++
++	ys->seq = random();
++	ys->portid = mnl_socket_get_portid(ys->sock);
++
++	if (ynl_sock_read_family(ys, yf->name)) {
++		if (yse)
++			memcpy(yse, &ys->err, sizeof(*yse));
++		goto err_close_sock;
++	}
++
++	return ys;
++
++err_close_sock:
++	mnl_socket_close(ys->sock);
++err_free_sock:
++	free(ys);
++	return NULL;
++}
++
++void ynl_sock_destroy(struct ynl_sock *ys)
++{
++	struct ynl_ntf_base_type *ntf;
++
++	mnl_socket_close(ys->sock);
++	while ((ntf = ynl_ntf_dequeue(ys)))
++		ynl_ntf_free(ntf);
++	free(ys->mcast_groups);
++	free(ys);
++}
++
++/* YNL multicast handling */
++
++void ynl_ntf_free(struct ynl_ntf_base_type *ntf)
++{
++	ntf->free(ntf);
++}
++
++int ynl_subscribe(struct ynl_sock *ys, const char *grp_name)
++{
++	unsigned int i;
++	int err;
++
++	for (i = 0; i < ys->n_mcast_groups; i++)
++		if (!strcmp(ys->mcast_groups[i].name, grp_name))
++			break;
++	if (i == ys->n_mcast_groups) {
++		yerr(ys, ENOENT, "Multicast group '%s' not found", grp_name);
++		return -1;
++	}
++
++	err = mnl_socket_setsockopt(ys->sock, NETLINK_ADD_MEMBERSHIP,
++				    &ys->mcast_groups[i].id,
++				    sizeof(ys->mcast_groups[i].id));
++	if (err < 0) {
++		perr(ys, "Subscribing to multicast group failed");
++		return -1;
++	}
++
++	return 0;
++}
++
++int ynl_socket_get_fd(struct ynl_sock *ys)
++{
++	return mnl_socket_get_fd(ys->sock);
++}
++
++struct ynl_ntf_base_type *ynl_ntf_dequeue(struct ynl_sock *ys)
++{
++	struct ynl_ntf_base_type *ntf;
++
++	if (!ynl_has_ntf(ys))
++		return NULL;
++
++	ntf = ys->ntf_first;
++	ys->ntf_first = ntf->next;
++	if (ys->ntf_last_next == &ntf->next)
++		ys->ntf_last_next = &ys->ntf_first;
++
++	return ntf;
++}
++
++static int ynl_ntf_parse(struct ynl_sock *ys, const struct nlmsghdr *nlh)
++{
++	struct ynl_parse_arg yarg = { .ys = ys, };
++	const struct ynl_ntf_info *info;
++	struct ynl_ntf_base_type *rsp;
++	struct genlmsghdr *gehdr;
++	int ret;
++
++	gehdr = mnl_nlmsg_get_payload(nlh);
++	if (gehdr->cmd >= ys->family->ntf_info_size)
++		return MNL_CB_ERROR;
++	info = &ys->family->ntf_info[gehdr->cmd];
++	if (!info->cb)
++		return MNL_CB_ERROR;
++
++	rsp = calloc(1, info->alloc_sz);
++	rsp->free = info->free;
++	yarg.data = rsp->data;
++	yarg.rsp_policy = info->policy;
++
++	ret = info->cb(nlh, &yarg);
++	if (ret <= MNL_CB_STOP)
++		goto err_free;
++
++	rsp->family = nlh->nlmsg_type;
++	rsp->cmd = gehdr->cmd;
++
++	*ys->ntf_last_next = rsp;
++	ys->ntf_last_next = &rsp->next;
++
++	return MNL_CB_OK;
++
++err_free:
++	info->free(rsp);
++	return MNL_CB_ERROR;
++}
++
++static int ynl_ntf_trampoline(const struct nlmsghdr *nlh, void *data)
++{
++	return ynl_ntf_parse((struct ynl_sock *)data, nlh);
++}
++
++int ynl_ntf_check(struct ynl_sock *ys)
++{
++	ssize_t len;
++	int err;
++
++	do {
++		/* libmnl doesn't let us pass flags to the recv to make
++		 * it non-blocking so we need to poll() or peek() :|
++		 */
++		struct pollfd pfd = { };
++
++		pfd.fd = mnl_socket_get_fd(ys->sock);
++		pfd.events = POLLIN;
++		err = poll(&pfd, 1, 1);
++		if (err < 1)
++			return err;
++
++		len = mnl_socket_recvfrom(ys->sock, ys->rx_buf,
++					  MNL_SOCKET_BUFFER_SIZE);
++		if (len < 0)
++			return len;
++
++		err = mnl_cb_run2(ys->rx_buf, len, ys->seq, ys->portid,
++				  ynl_ntf_trampoline, ys,
++				  ynl_cb_array, NLMSG_MIN_TYPE);
++		if (err < 0)
++			return err;
++	} while (err > 0);
++
++	return 0;
++}
++
++/* YNL specific helpers used by the auto-generated code */
++
++struct ynl_dump_list_type *YNL_LIST_END = (void *)(0xb4d123);
++
++void ynl_error_unknown_notification(struct ynl_sock *ys, __u8 cmd)
++{
++	yerr(ys, YNL_ERROR_UNKNOWN_NTF,
++	     "Unknown notification message type '%d'", cmd);
++}
++
++int ynl_error_parse(struct ynl_parse_arg *yarg, const char *msg)
++{
++	yerr(yarg->ys, YNL_ERROR_INV_RESP, "Error parsing response: %s", msg);
++	return MNL_CB_ERROR;
++}
++
++static int
++ynl_check_alien(struct ynl_sock *ys, const struct nlmsghdr *nlh, __u32 rsp_cmd)
++{
++	struct genlmsghdr *gehdr;
++
++	if (mnl_nlmsg_get_payload_len(nlh) < sizeof(*gehdr)) {
++		yerr(ys, YNL_ERROR_INV_RESP,
++		     "Kernel responded with truncated message");
++		return -1;
++	}
++
++	gehdr = mnl_nlmsg_get_payload(nlh);
++	if (gehdr->cmd != rsp_cmd)
++		return ynl_ntf_parse(ys, nlh);
++
++	return 0;
++}
++
++static int ynl_req_trampoline(const struct nlmsghdr *nlh, void *data)
++{
++	struct ynl_req_state *yrs = data;
++	int ret;
++
++	ret = ynl_check_alien(yrs->yarg.ys, nlh, yrs->rsp_cmd);
++	if (ret)
++		return ret < 0 ? MNL_CB_ERROR : MNL_CB_OK;
++
++	return yrs->cb(nlh, &yrs->yarg);
++}
++
++int ynl_exec(struct ynl_sock *ys, struct nlmsghdr *req_nlh,
++	     struct ynl_req_state *yrs)
++{
++	ssize_t len;
++	int err;
++
++	err = mnl_socket_sendto(ys->sock, req_nlh, req_nlh->nlmsg_len);
++	if (err < 0)
++		return err;
++
++	do {
++		len = mnl_socket_recvfrom(ys->sock, ys->rx_buf,
++					  MNL_SOCKET_BUFFER_SIZE);
++		if (len < 0)
++			return len;
++
++		err = mnl_cb_run2(ys->rx_buf, len, ys->seq, ys->portid,
++				  ynl_req_trampoline, yrs,
++				  ynl_cb_array, NLMSG_MIN_TYPE);
++		if (err < 0)
++			return err;
++	} while (err > 0);
++
++	return 0;
++}
++
++static int ynl_dump_trampoline(const struct nlmsghdr *nlh, void *data)
++{
++	struct ynl_dump_state *ds = data;
++	struct ynl_dump_list_type *obj;
++	struct ynl_parse_arg yarg = {};
++	int ret;
++
++	ret = ynl_check_alien(ds->ys, nlh, ds->rsp_cmd);
++	if (ret)
++		return ret < 0 ? MNL_CB_ERROR : MNL_CB_OK;
++
++	obj = calloc(1, ds->alloc_sz);
++	if (!obj)
++		return MNL_CB_ERROR;
++
++	if (!ds->first)
++		ds->first = obj;
++	if (ds->last)
++		ds->last->next = obj;
++	ds->last = obj;
++
++	yarg.ys = ds->ys;
++	yarg.rsp_policy = ds->rsp_policy;
++	yarg.data = &obj->data;
++
++	return ds->cb(nlh, &yarg);
++}
++
++static void *ynl_dump_end(struct ynl_dump_state *ds)
++{
++	if (!ds->first)
++		return YNL_LIST_END;
++
++	ds->last->next = YNL_LIST_END;
++	return ds->first;
++}
++
++int ynl_exec_dump(struct ynl_sock *ys, struct nlmsghdr *req_nlh,
++		  struct ynl_dump_state *yds)
++{
++	ssize_t len;
++	int err;
++
++	err = mnl_socket_sendto(ys->sock, req_nlh, req_nlh->nlmsg_len);
++	if (err < 0)
++		return err;
++
++	do {
++		len = mnl_socket_recvfrom(ys->sock, ys->rx_buf,
++					  MNL_SOCKET_BUFFER_SIZE);
++		if (len < 0)
++			goto err_close_list;
++
++		err = mnl_cb_run2(ys->rx_buf, len, ys->seq, ys->portid,
++				  ynl_dump_trampoline, yds,
++				  ynl_cb_array, NLMSG_MIN_TYPE);
++		if (err < 0)
++			goto err_close_list;
++	} while (err > 0);
++
++	yds->first = ynl_dump_end(yds);
++	return 0;
++
++err_close_list:
++	yds->first = ynl_dump_end(yds);
++	return -1;
++}
+diff --git a/tools/net/ynl/lib/ynl.h b/tools/net/ynl/lib/ynl.h
+new file mode 100644
+index 000000000000..9eafa3552c16
+--- /dev/null
++++ b/tools/net/ynl/lib/ynl.h
+@@ -0,0 +1,237 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
++#ifndef __YNL_C_H
++#define __YNL_C_H 1
++
++#include <stddef.h>
++#include <libmnl/libmnl.h>
++#include <linux/genetlink.h>
++#include <linux/types.h>
++
++struct mnl_socket;
++struct nlmsghdr;
++
++/*
++ * User facing code
++ */
++
++struct ynl_ntf_base_type;
++struct ynl_ntf_info;
++struct ynl_sock;
++
++enum ynl_error_code {
++	YNL_ERROR_NONE = 0,
++	__YNL_ERRNO_END = 4096,
++	YNL_ERROR_INTERNAL,
++	YNL_ERROR_EXPECT_ACK,
++	YNL_ERROR_EXPECT_MSG,
++	YNL_ERROR_UNEXPECT_MSG,
++	YNL_ERROR_ATTR_MISSING,
++	YNL_ERROR_ATTR_INVALID,
++	YNL_ERROR_UNKNOWN_NTF,
++	YNL_ERROR_INV_RESP,
++};
++
++/**
++ * struct ynl_error - error encountered by YNL
++ * @code:	errno (low values) or YNL error code (enum ynl_error_code)
++ * @attr_offs:	offset of bad attribute (for very advanced users)
++ * @msg:	error message
++ *
++ * Error information for when YNL operations fail.
++ * Users should interact with the err member of struct ynl_sock directly.
++ * The main exception to that rule is ynl_sock_create().
++ */
++struct ynl_error {
++	enum ynl_error_code code;
++	unsigned int attr_offs;
++	char msg[512];
++};
++
++/**
++ * struct ynl_family - YNL family info
++ * Family description generated by codegen. Pass to ynl_sock_create().
++ */
++struct ynl_family {
++/* private: */
++	const char *name;
++	const struct ynl_ntf_info *ntf_info;
++	unsigned int ntf_info_size;
++};
++
++/**
++ * struct ynl_sock - YNL wrapped netlink socket
++ * @err: YNL error descriptor, cleared on every request.
++ */
++struct ynl_sock {
++	struct ynl_error err;
++
++/* private: */
++	const struct ynl_family *family;
++	struct mnl_socket *sock;
++	__u32 seq;
++	__u32 portid;
++	__u16 family_id;
++
++	unsigned int n_mcast_groups;
++	struct {
++		unsigned int id;
++		char name[GENL_NAMSIZ];
++	} *mcast_groups;
++
++	struct ynl_ntf_base_type *ntf_first;
++	struct ynl_ntf_base_type **ntf_last_next;
++
++	struct nlmsghdr *nlh;
++	struct ynl_policy_nest *req_policy;
++	unsigned char *tx_buf;
++	unsigned char *rx_buf;
++	unsigned char raw_buf[];
++};
++
++struct ynl_sock *
++ynl_sock_create(const struct ynl_family *yf, struct ynl_error *e);
++void ynl_sock_destroy(struct ynl_sock *ys);
++
++#define ynl_dump_foreach(dump, iter)					\
++	for (typeof(dump->obj) *iter = &dump->obj;			\
++	     !ynl_dump_obj_is_last(iter);				\
++	     iter = ynl_dump_obj_next(iter))
++
++int ynl_subscribe(struct ynl_sock *ys, const char *grp_name);
++int ynl_socket_get_fd(struct ynl_sock *ys);
++int ynl_ntf_check(struct ynl_sock *ys);
++
++/**
++ * ynl_has_ntf() - check if socket has *parsed* notifications
++ * @ys: active YNL socket
++ *
++ * Note that this does not take into account notifications sitting
++ * in netlink socket, just the notifications which have already been
++ * read and parsed (e.g. during a ynl_ntf_check() call).
++ */
++static inline bool ynl_has_ntf(struct ynl_sock *ys)
++{
++	return ys->ntf_last_next != &ys->ntf_first;
++}
++struct ynl_ntf_base_type *ynl_ntf_dequeue(struct ynl_sock *ys);
++
++void ynl_ntf_free(struct ynl_ntf_base_type *ntf);
++
++/*
++ * YNL internals / low level stuff
++ */
++
++/* Generic mnl helper code */
++
++enum ynl_policy_type {
++	YNL_PT_REJECT = 1,
++	YNL_PT_IGNORE,
++	YNL_PT_NEST,
++	YNL_PT_FLAG,
++	YNL_PT_BINARY,
++	YNL_PT_U8,
++	YNL_PT_U16,
++	YNL_PT_U32,
++	YNL_PT_U64,
++	YNL_PT_NUL_STR,
++};
++
++struct ynl_policy_attr {
++	enum ynl_policy_type type;
++	unsigned int len;
++	const char *name;
++	struct ynl_policy_nest *nest;
++};
++
++struct ynl_policy_nest {
++	unsigned int max_attr;
++	struct ynl_policy_attr *table;
++};
++
++struct ynl_parse_arg {
++	struct ynl_sock *ys;
++	struct ynl_policy_nest *rsp_policy;
++	void *data;
++};
++
++struct ynl_dump_list_type {
++	struct ynl_dump_list_type *next;
++	unsigned char data[] __attribute__ ((aligned (8)));
++};
++extern struct ynl_dump_list_type *YNL_LIST_END;
++
++static inline bool ynl_dump_obj_is_last(void *obj)
++{
++	unsigned long uptr = (unsigned long)obj;
++
++	uptr -= offsetof(struct ynl_dump_list_type, data);
++	return uptr == (unsigned long)YNL_LIST_END;
++}
++
++static inline void *ynl_dump_obj_next(void *obj)
++{
++	unsigned long uptr = (unsigned long)obj;
++	struct ynl_dump_list_type *list;
++
++	uptr -= offsetof(struct ynl_dump_list_type, data);
++	list = (void *)uptr;
++	uptr = (unsigned long)list->next;
++	uptr += offsetof(struct ynl_dump_list_type, data);
++
++	return (void *)uptr;
++}
++
++struct ynl_ntf_base_type {
++	__u16 family;
++	__u8 cmd;
++	struct ynl_ntf_base_type *next;
++	void (*free)(struct ynl_ntf_base_type *ntf);
++	unsigned char data[] __attribute__ ((aligned (8)));
++};
++
++extern mnl_cb_t ynl_cb_array[NLMSG_MIN_TYPE];
++
++struct nlmsghdr *
++ynl_gemsg_start_req(struct ynl_sock *ys, __u32 id, __u8 cmd, __u8 version);
++struct nlmsghdr *
++ynl_gemsg_start_dump(struct ynl_sock *ys, __u32 id, __u8 cmd, __u8 version);
++
++int ynl_attr_validate(struct ynl_parse_arg *yarg, const struct nlattr *attr);
++
++int ynl_recv_ack(struct ynl_sock *ys, int ret);
++int ynl_cb_null(const struct nlmsghdr *nlh, void *data);
++
++/* YNL specific helpers used by the auto-generated code */
++
++struct ynl_req_state {
++	struct ynl_parse_arg yarg;
++	mnl_cb_t cb;
++	__u32 rsp_cmd;
++};
++
++struct ynl_dump_state {
++	struct ynl_sock *ys;
++	struct ynl_policy_nest *rsp_policy;
++	void *first;
++	struct ynl_dump_list_type *last;
++	size_t alloc_sz;
++	mnl_cb_t cb;
++	__u32 rsp_cmd;
++};
++
++struct ynl_ntf_info {
++	struct ynl_policy_nest *policy;
++	mnl_cb_t cb;
++	size_t alloc_sz;
++	void (*free)(struct ynl_ntf_base_type *ntf);
++};
++
++int ynl_exec(struct ynl_sock *ys, struct nlmsghdr *req_nlh,
++	     struct ynl_req_state *yrs);
++int ynl_exec_dump(struct ynl_sock *ys, struct nlmsghdr *req_nlh,
++		  struct ynl_dump_state *yds);
++
++void ynl_error_unknown_notification(struct ynl_sock *ys, __u8 cmd);
++int ynl_error_parse(struct ynl_parse_arg *yarg, const char *msg);
++
++#endif
+diff --git a/tools/net/ynl/ynl-regen.sh b/tools/net/ynl/ynl-regen.sh
+index 74f5de1c2399..2a4525e2aa17 100755
+--- a/tools/net/ynl/ynl-regen.sh
++++ b/tools/net/ynl/ynl-regen.sh
+@@ -14,7 +14,7 @@ done
  
--    def p(self, line, add_ind=0):
-+    def p(self, line, add_ind=0, eat_nl=False):
-         if self._nl:
--            self._out.write('\n')
-+            if not eat_nl:
-+                self._out.write('\n')
-             self._nl = False
-         ind = self._ind
-         if line[-1] == ':':
-@@ -971,7 +972,7 @@ from lib import SpecFamily, SpecAttrSet, SpecAttr, SpecOperation, SpecEnumSet, S
-         if line and line[0] not in {';', ','}:
-             line = ' ' + line
-         self._ind -= 1
--        self.p('}' + line)
-+        self.p('}' + line, eat_nl=True)
+ KDIR=$(dirname $(dirname $(dirname $(dirname $(realpath $0)))))
  
-     def write_doc_line(self, doc, indent=True):
-         words = doc.split()
+-files=$(git grep --files-with-matches '^/\* YNL-GEN \(kernel\|uapi\)')
++files=$(git grep --files-with-matches '^/\* YNL-GEN \(kernel\|uapi\|user\)')
+ for f in $files; do
+     # params:     0       1      2     3
+     #         $YAML YNL-GEN kernel $mode
 -- 
 2.40.1
 
