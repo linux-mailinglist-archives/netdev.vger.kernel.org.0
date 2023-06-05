@@ -1,46 +1,54 @@
-Return-Path: <netdev+bounces-8161-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8163-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 61E01722EF9
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 20:54:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id CE6E3722F09
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 20:58:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1D2052813D6
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 18:54:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8973E280F83
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 18:58:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3AFA42263F;
-	Mon,  5 Jun 2023 18:54:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D326F23C99;
+	Mon,  5 Jun 2023 18:58:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07255DDC0
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 18:54:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 323A3C433D2;
-	Mon,  5 Jun 2023 18:54:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97B5E20EA
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 18:58:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0265C433EF;
+	Mon,  5 Jun 2023 18:58:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685991273;
-	bh=vXftzGJAhXXvWT1zyk21njhU2NPx1cGZNIXNxDJXYcc=;
+	s=k20201202; t=1685991531;
+	bh=q9IlhMk0z/b8+lV8XafUj/P9x8dLcJwjnb2AaJeesJs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=KpQS+ifNplTlu8LeiCVLzF+tStMil7v/5jnh+D9nLbPbbP1uhLLEFHoCo/nkTFLHl
-	 meD4QlpDx6O8BHJBKtH0zCzYLU/KhNF+uI9f/4oGOS+76WYyKhcirHbHlAhB2A5qCy
-	 SjeCrEDjVWTQPnZYz9eEC6mGU3jaFfitIyw4r7DyYPjjW1bo+TXV5CgUZN7s0MqGxU
-	 yMHKbMJKrMbp9ij4a9olWRBNK3OsgIE3tDRpK0uxEphsIh9qFzZ/SUcz/kWVu+Dvr2
-	 EnDEed/h7nkjwN7y5N0mJNo/fcGdzWpmwJDjQ6MM3w1yRTYrA6nkn0JRksjqAWCsPu
-	 /B9q2A61j59OA==
-Date: Mon, 5 Jun 2023 11:54:32 -0700
+	b=cMGFCKZ8Zv8dgepvbm62uwlkj/B6CnQw7P2FQMQs050yFitzQhCBPtCJJnq4hxDyX
+	 wLQDn19x39tDr2y7KBO4QTKR5mcrGMwB0bcLDJOI7fTgbWWzLHVAY9yXpPxoIsyu2y
+	 A/A/O0uVrLkQBxo+A7woElplrypoBRgUyBC2LdwDXOfv0DDSzCIK6JzTWO+HDXTGRn
+	 KLYt/tyc3gOeYZ65tLNTmSSfeUHjsRRVqvoEdxO6mUXrkva6ds+9QfpgaXtxjzFsUV
+	 Pv84UPjIXg1EIz3YNCVXbwCqWKoM4QrxnlyTGcBZOrVZQmWOinEnrbsOSumZW+MoJi
+	 DK/p3Y2OSpTgQ==
+Date: Mon, 5 Jun 2023 11:58:49 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
- pabeni@redhat.com, simon.horman@corigine.com
-Subject: Re: [PATCH net-next v2 4/4] tools: ynl: add sample for netdev
-Message-ID: <20230605115432.05769008@kernel.org>
-In-Reply-To: <647dab8865654_d27b6294f8@willemb.c.googlers.com.notmuch>
-References: <20230604175843.662084-1-kuba@kernel.org>
-	<20230604175843.662084-5-kuba@kernel.org>
-	<647dab8865654_d27b6294f8@willemb.c.googlers.com.notmuch>
+To: Gal Pressman <gal@nvidia.com>, espeer@gmail.com
+Cc: David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>, Andrew
+ Gospodarek <andrew.gospodarek@broadcom.com>, Michael Chan
+ <michael.chan@broadcom.com>, Stephen Hemminger
+ <stephen@networkplumber.org>, Michal Kubecek <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next 1/4] netlink: truncate overlength attribute
+ list in nla_nest_end()
+Message-ID: <20230605115849.0368b8a7@kernel.org>
+In-Reply-To: <cdbd5105-973a-2fa0-279b-0d81a1a637b9@nvidia.com>
+References: <20210123045321.2797360-1-edwin.peer@broadcom.com>
+	<20210123045321.2797360-2-edwin.peer@broadcom.com>
+	<1dc163b0-d4b0-8f6c-d047-7eae6dc918c4@gmail.com>
+	<CAKOOJTwKK5AgTf+g5LS4MMwR_HwbdFS6U7SFH0jZe8FuJMgNgA@mail.gmail.com>
+	<CAKOOJTzwdSdwBF=H-h5qJzXaFDiMoX=vjrMi_vKfZoLrkt4=Lg@mail.gmail.com>
+	<62a12b2c-c94e-8d89-0e75-f01dc6abbe92@gmail.com>
+	<CAKOOJTwBcRJah=tngJH3EaHCCXb6T_ptAV+GMvqX_sZONeKe9w@mail.gmail.com>
+	<cdbd5105-973a-2fa0-279b-0d81a1a637b9@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -50,11 +58,30 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 05 Jun 2023 05:31:52 -0400 Willem de Bruijn wrote:
-> > +CFLAGS=-std=gnu99 -O2 -W -Wall -Wextra -Wno-unused-parameter -Wshadow \
-> > +	-I../lib/ -I../generated/  
-> 
-> Should new userspace code also use gnu11?
+[Updating Edwin's email.]
 
-Well, 99.9% sure it doesn't matter, but okay. Let me send v3.
+On Mon, 5 Jun 2023 10:28:06 +0300 Gal Pressman wrote:
+> On 26/01/2021 19:51, Edwin Peer wrote:
+> > On Mon, Jan 25, 2021 at 8:56 PM David Ahern <dsahern@gmail.com> wrote:
+> >   
+> >> I'm not a fan of the skb trim idea. I think it would be better to figure
+> >> out how to stop adding to the skb when an attr length is going to exceed
+> >> 64kB. Not failing hard with an error (ip link sh needs to succeed), but
+> >> truncating the specific attribute of a message with a flag so userspace
+> >> knows it is short.  
+> > 
+> > Absent the ability to do something useful in terms of actually
+> > avoiding the overflow [1], I'm abandoning this approach entirely. I
+> > have a different idea that I will propose in due course.
+> > 
+> > [1] https://marc.info/?l=linux-netdev&m=161163943811663
+> > 
+> > Regards,
+> > Edwin Peer  
+> 
+> Hello Edwin,
+> 
+> I'm also interested in getting this issue resolved, have you had any
+> progress since this series? Are you still working on it?
+
 
