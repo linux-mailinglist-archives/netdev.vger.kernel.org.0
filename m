@@ -1,126 +1,132 @@
-Return-Path: <netdev+bounces-7871-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7872-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E3C50721E70
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 08:43:50 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6A1F7721E7B
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 08:48:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5DC1E1C20B51
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 06:43:47 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A010D1C20948
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 06:47:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A6485388;
-	Mon,  5 Jun 2023 06:43:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 474E9539D;
+	Mon,  5 Jun 2023 06:48:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E9655254
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 06:43:48 +0000 (UTC)
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A3D12A
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 23:43:27 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id 4fb4d7f45d1cf-5149b63151aso6647024a12.3
-        for <netdev@vger.kernel.org>; Sun, 04 Jun 2023 23:43:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1685947405; x=1688539405;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=uw934CvNepJzyaQQUV31TxbXFbtnqLugvutH4AccEcs=;
-        b=C7MPx2JRwVd1TLHaSaegjE/x0aHabVAcj4AfLdl1uPogVTjWmjrm5JgVDsmb8Jv6+G
-         lD4mgcLc9zSYKqw7y3QUkQOkeID0pomCw5pteniMt5ltImNIhbxfuK/jPDopO3jDPodr
-         4dIF4ysieJewoJkSMHGN++J4sRbE33hRvCsoQra/lezrXaovAdbix1NMwkodXTb95OV2
-         8WtdelzV0uZxVHChiPRNirjygvHToX1LRNHtj2yIhAJhSY7BllYpYb7ssOo9jhMachYN
-         Fk5lCTgbWvzlPCEJjhVkRBscV7Gds8MwE/NG6S6F8VU7J8o+ToleRn2Ae56GkZEy/oqR
-         Yanw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685947405; x=1688539405;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=uw934CvNepJzyaQQUV31TxbXFbtnqLugvutH4AccEcs=;
-        b=Q4CGLJ7c4yEAd+cT96jkk7IHwLpjtP6CFeD72L90aaxBJbhClS3Ye6u9Mp3bNrX8DI
-         DHTSBOOrjc95VIvMMDKR/dRWwG72s/+eis/HM96Ba3YtEpAtztiiZltTeO/wng3sX6qA
-         4YrK1WjnbdVhBrGkowcYQUdwxzWwt1B2EfHw1TxRHNmox0aLIOxC4XEso7fqdINbu+jd
-         gWgdm9n7OAvbwMzlDOQX0nFg2jxC4p4Co0akN8nl48F7Euu0e/dbxN2JhWhB2aRBqaqp
-         KzhEwECjoUPGzgk13BuABD+xs3vuCiCUPBmYG5yK23vhcl6VReGnP86PFCPLDqNBm0nu
-         2btw==
-X-Gm-Message-State: AC+VfDztlHQc24No/nugIQHvc8zlaxIwPm7V6zsSQC5opOXkt5oSg8jB
-	h65aWrtv6K7Bwog51ppO2A7LpA==
-X-Google-Smtp-Source: ACHHUZ6uVGxy9xFnG9Y9A3SHNYvD3NcLQFCgeDBBJmRjdb3lXsh4QvFCpVy68MhjoZMM0vV+dWuDgg==
-X-Received: by 2002:a17:906:9b88:b0:973:91f7:5092 with SMTP id dd8-20020a1709069b8800b0097391f75092mr7422310ejc.2.1685947405338;
-        Sun, 04 Jun 2023 23:43:25 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id o22-20020a1709061b1600b00977c50476f7sm2602597ejg.44.2023.06.04.23.43.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 04 Jun 2023 23:43:24 -0700 (PDT)
-Message-ID: <2a538004-351f-487a-361c-df723d186c27@linaro.org>
-Date: Mon, 5 Jun 2023 08:43:18 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C09D138C
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 06:48:00 +0000 (UTC)
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820909F
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 23:47:58 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailout.nyi.internal (Postfix) with ESMTP id 843995C01C8;
+	Mon,  5 Jun 2023 02:47:57 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Mon, 05 Jun 2023 02:47:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nikishkin.pw; h=
+	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm1; t=1685947677; x=1686034077; bh=ny
+	Xefh6YCPEkuradwY2NjKAgOI9fNPFPOY9qhI4tlh0=; b=KMRS0Tl8JhiIk9Zpe7
+	+sTuIVb3qN6wxurt6AVdpkUwQ5pLXFeHPMLyNnF36DusRdFy/QeAUdiiUoc5ek+I
+	flhe+mmdcMQfVw2OOSj/Ti/zhEwoAtILm4nkPcbcaJo2PUzeUDW8hoRvq29ZYiYC
+	zHp3lP+R0XOcrDc/ZIsIwH88DMRKxk+XD5pwBpDX2JRLnHGowy0J+beXXF7DcU4o
+	7gNDjccG0obqEs8006VFjCBTKacXlbuKH2AM1hlUVze26x+LfWzDamNcnCPZRNx2
+	xvbxAIuvqn2PhdrH8eLW3Ycw56ernNjWty4SYCbVjHZosdI/A5pT6pBF3N7NRaWH
+	2zXA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm1; t=1685947677; x=1686034077; bh=nyXefh6YCPEku
+	radwY2NjKAgOI9fNPFPOY9qhI4tlh0=; b=sS4NZ8Ihwne/CTR10+A3+77ew/LYG
+	W8I0RPLxXECmxfvzIJgk/E9Mxz6r5VCpseVd4zaxMmXhgv8QqgWajCAxtWcJHHZX
+	mmXE+nodQyb0J66oWLj4rahR4WeoFsGZoP4ONw5xqFACO0+YHbif7ZCI8uMwLOXP
+	gKTAzfvsgm1B93qKcg9CjKp34Vhfen8LUIJWUWs9UibUi0zjR/+v2X3XKIPhNu+/
+	jOThaIPP3a+r/84mUaI72Mgr0alx6IWjnGuFRo1PH6mz7NGxtVxPvROOXNXWiwsm
+	WrxSzRz2RR0VMjkO/mKBHP6tNpzhqgt48/mPbQbYN3fzIH6/d0WIvGmVA==
+X-ME-Sender: <xms:HYV9ZFq8uJioDqP7sQR4ly0tos82WdVwmqBmZE0DYVHYVese7ePNaA>
+    <xme:HYV9ZHoqz_aGickZN4qB5DCzBerYQigAKbL5ALEqYz-A5fCoHcn6wMZsfm666bMlk
+    mmcffwZnPvzFVdzXyk>
+X-ME-Received: <xmr:HYV9ZCMKNyLGy-0StfgQgqCmAeqRmdpVWda5jpkDYhSASInETDEFYsFQdzC3JmDwKVhwweiuzAo>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeelkedgudduudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enfghrlhcuvffnffculddutddmnecujfgurhepfhgfhffvvefuffgjkfggtgesthdtredt
+    tdertdenucfhrhhomhepgghlrgguihhmihhrucfpihhkihhshhhkihhnuceovhhlrgguih
+    hmihhrsehnihhkihhshhhkihhnrdhpfieqnecuggftrfgrthhtvghrnhepieehheegheet
+    udejlefgtdehjefftefhhfffueegueeuveefffeiudekvdehjefhnecuffhomhgrihhnpe
+    hkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgr
+    ihhlfhhrohhmpehvlhgrughimhhirhesnhhikhhishhhkhhinhdrphif
+X-ME-Proxy: <xmx:HYV9ZA4vsvtfgls9O_HuspKJHT7OwI0-7JLCSyuUelp1nEkJ3ShmKA>
+    <xmx:HYV9ZE5hUAKr0ISTmC7wYRT9gugtkyuR1gno1qq2ILt8MPxcWjJI6Q>
+    <xmx:HYV9ZIgedAzPHp_MszgG4taDwOVIcRM5yLP-V4JBWEZ52M-7Kve_Ww>
+    <xmx:HYV9ZEjj7iXZ9keymOBExvPRM2xhLZtwOm3BrFEfXrrY_NiIF7O19w>
+Feedback-ID: id3b446c5:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 5 Jun 2023 02:47:53 -0400 (EDT)
+References: <20230604140051.4523-1-vladimir@nikishkin.pw>
+ <ZH2CeAWH7uMLkFcj@shredder>
+User-agent: mu4e 1.8.14; emacs 30.0.50
+From: Vladimir Nikishkin <vladimir@nikishkin.pw>
+To: Ido Schimmel <idosch@idosch.org>
+Cc: netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+ kuba@kernel.org, pabeni@redhat.com, eng.alaamohamedsoliman.am@gmail.com,
+ gnault@redhat.com, razor@blackwall.org, idosch@nvidia.com,
+ liuhangbin@gmail.com, eyal.birger@gmail.com, jtoppins@redhat.com
+Subject: Re: [PATCH iproute2-next v7] ip-link: add support for nolocalbypass
+ in vxlan
+Date: Mon, 05 Jun 2023 14:47:12 +0800
+In-reply-to: <ZH2CeAWH7uMLkFcj@shredder>
+Message-ID: <87sfb6pfqh.fsf@laptop.lockywolf.net>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.2
-Subject: Re: [PATCH 17/21] power: reset: at91-poweroff: lookup for proper pmc
- dt node for sam9x7
-Content-Language: en-US
-To: Varshini Rajendran <varshini.rajendran@microchip.com>,
- tglx@linutronix.de, maz@kernel.org, robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
- nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
- claudiu.beznea@microchip.com, davem@davemloft.net, edumazet@google.com,
- kuba@kernel.org, pabeni@redhat.com, gregkh@linuxfoundation.org,
- linux@armlinux.org.uk, mturquette@baylibre.com, sboyd@kernel.org,
- sre@kernel.org, broonie@kernel.org, arnd@arndb.de,
- gregory.clement@bootlin.com, sudeep.holla@arm.com,
- balamanikandan.gunasundar@microchip.com, mihai.sain@microchip.com,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
- linux-usb@vger.kernel.org, linux-clk@vger.kernel.org,
- linux-pm@vger.kernel.org
-Cc: Hari.PrasathGE@microchip.com, cristian.birsan@microchip.com,
- durai.manickamkr@microchip.com, manikandan.m@microchip.com,
- dharma.b@microchip.com, nayabbasha.sayed@microchip.com,
- balakrishnan.s@microchip.com
-References: <20230603200243.243878-1-varshini.rajendran@microchip.com>
- <20230603200243.243878-18-varshini.rajendran@microchip.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230603200243.243878-18-varshini.rajendran@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 03/06/2023 22:02, Varshini Rajendran wrote:
-> Use sam9x7 pmc's compatible to lookup for in the SHDWC driver
-> 
-> Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
-> ---
->  drivers/power/reset/at91-sama5d2_shdwc.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/power/reset/at91-sama5d2_shdwc.c b/drivers/power/reset/at91-sama5d2_shdwc.c
-> index d8ecffe72f16..d0f29b99f25e 100644
-> --- a/drivers/power/reset/at91-sama5d2_shdwc.c
-> +++ b/drivers/power/reset/at91-sama5d2_shdwc.c
-> @@ -326,6 +326,7 @@ static const struct of_device_id at91_pmc_ids[] = {
->  	{ .compatible = "atmel,sama5d2-pmc" },
->  	{ .compatible = "microchip,sam9x60-pmc" },
->  	{ .compatible = "microchip,sama7g5-pmc" },
-> +	{ .compatible = "microchip,sam9x7-pmc" },
 
-Why do you need new entry if these are compatible?
+Ido Schimmel <idosch@idosch.org> writes:
 
-Best regards,
-Krzysztof
+> On Sun, Jun 04, 2023 at 10:00:51PM +0800, Vladimir Nikishkin wrote:
+>> Add userspace support for the [no]localbypass vxlan netlink
+>> attribute. With localbypass on (default), the vxlan driver processes
+>> the packets destined to the local machine by itself, bypassing the
+>> userspace nework stack. With nolocalbypass the packets are always
+>> forwarded to the userspace network stack, so userspace programs,
+>> such as tcpdump have a chance to process them.
+>> 
+>> Signed-off-by: Vladimir Nikishkin <vladimir@nikishkin.pw>
+>> ---
+>> v6=>v7:
+>> Use the new vxlan_opts data structure. Rely on the printing loop
+>> in vxlan_print_opt when printing the value of [no] localbypass.
+>
+> Stephen's changes are still not present in the next branch so this patch
+> does not apply
+
+Sorry for the confusion, I thought that the tree to develop against is
+git://git.kernel.org/pub/scm/linux/kernel/git/shemminger/iproute2.git
+
+Apologies.
+
+-- 
+Your sincerely,
+Vladimir Nikishkin (MiEr, lockywolf)
+(Laptop)
+--
+Fastmail.
 
 
