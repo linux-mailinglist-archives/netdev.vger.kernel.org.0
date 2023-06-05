@@ -1,132 +1,118 @@
-Return-Path: <netdev+bounces-7872-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7874-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6A1F7721E7B
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 08:48:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id BCDAB721EA5
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:00:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A010D1C20948
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 06:47:59 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C05E31C20B11
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 07:00:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 474E9539D;
-	Mon,  5 Jun 2023 06:48:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9BE685680;
+	Mon,  5 Jun 2023 07:00:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C09D138C
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 06:48:00 +0000 (UTC)
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820909F
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 23:47:58 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailout.nyi.internal (Postfix) with ESMTP id 843995C01C8;
-	Mon,  5 Jun 2023 02:47:57 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Mon, 05 Jun 2023 02:47:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nikishkin.pw; h=
-	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm1; t=1685947677; x=1686034077; bh=ny
-	Xefh6YCPEkuradwY2NjKAgOI9fNPFPOY9qhI4tlh0=; b=KMRS0Tl8JhiIk9Zpe7
-	+sTuIVb3qN6wxurt6AVdpkUwQ5pLXFeHPMLyNnF36DusRdFy/QeAUdiiUoc5ek+I
-	flhe+mmdcMQfVw2OOSj/Ti/zhEwoAtILm4nkPcbcaJo2PUzeUDW8hoRvq29ZYiYC
-	zHp3lP+R0XOcrDc/ZIsIwH88DMRKxk+XD5pwBpDX2JRLnHGowy0J+beXXF7DcU4o
-	7gNDjccG0obqEs8006VFjCBTKacXlbuKH2AM1hlUVze26x+LfWzDamNcnCPZRNx2
-	xvbxAIuvqn2PhdrH8eLW3Ycw56ernNjWty4SYCbVjHZosdI/A5pT6pBF3N7NRaWH
-	2zXA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm1; t=1685947677; x=1686034077; bh=nyXefh6YCPEku
-	radwY2NjKAgOI9fNPFPOY9qhI4tlh0=; b=sS4NZ8Ihwne/CTR10+A3+77ew/LYG
-	W8I0RPLxXECmxfvzIJgk/E9Mxz6r5VCpseVd4zaxMmXhgv8QqgWajCAxtWcJHHZX
-	mmXE+nodQyb0J66oWLj4rahR4WeoFsGZoP4ONw5xqFACO0+YHbif7ZCI8uMwLOXP
-	gKTAzfvsgm1B93qKcg9CjKp34Vhfen8LUIJWUWs9UibUi0zjR/+v2X3XKIPhNu+/
-	jOThaIPP3a+r/84mUaI72Mgr0alx6IWjnGuFRo1PH6mz7NGxtVxPvROOXNXWiwsm
-	WrxSzRz2RR0VMjkO/mKBHP6tNpzhqgt48/mPbQbYN3fzIH6/d0WIvGmVA==
-X-ME-Sender: <xms:HYV9ZFq8uJioDqP7sQR4ly0tos82WdVwmqBmZE0DYVHYVese7ePNaA>
-    <xme:HYV9ZHoqz_aGickZN4qB5DCzBerYQigAKbL5ALEqYz-A5fCoHcn6wMZsfm666bMlk
-    mmcffwZnPvzFVdzXyk>
-X-ME-Received: <xmr:HYV9ZCMKNyLGy-0StfgQgqCmAeqRmdpVWda5jpkDYhSASInETDEFYsFQdzC3JmDwKVhwweiuzAo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeelkedgudduudcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enfghrlhcuvffnffculddutddmnecujfgurhepfhgfhffvvefuffgjkfggtgesthdtredt
-    tdertdenucfhrhhomhepgghlrgguihhmihhrucfpihhkihhshhhkihhnuceovhhlrgguih
-    hmihhrsehnihhkihhshhhkihhnrdhpfieqnecuggftrfgrthhtvghrnhepieehheegheet
-    udejlefgtdehjefftefhhfffueegueeuveefffeiudekvdehjefhnecuffhomhgrihhnpe
-    hkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgr
-    ihhlfhhrohhmpehvlhgrughimhhirhesnhhikhhishhhkhhinhdrphif
-X-ME-Proxy: <xmx:HYV9ZA4vsvtfgls9O_HuspKJHT7OwI0-7JLCSyuUelp1nEkJ3ShmKA>
-    <xmx:HYV9ZE5hUAKr0ISTmC7wYRT9gugtkyuR1gno1qq2ILt8MPxcWjJI6Q>
-    <xmx:HYV9ZIgedAzPHp_MszgG4taDwOVIcRM5yLP-V4JBWEZ52M-7Kve_Ww>
-    <xmx:HYV9ZEjj7iXZ9keymOBExvPRM2xhLZtwOm3BrFEfXrrY_NiIF7O19w>
-Feedback-ID: id3b446c5:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 5 Jun 2023 02:47:53 -0400 (EDT)
-References: <20230604140051.4523-1-vladimir@nikishkin.pw>
- <ZH2CeAWH7uMLkFcj@shredder>
-User-agent: mu4e 1.8.14; emacs 30.0.50
-From: Vladimir Nikishkin <vladimir@nikishkin.pw>
-To: Ido Schimmel <idosch@idosch.org>
-Cc: netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
- kuba@kernel.org, pabeni@redhat.com, eng.alaamohamedsoliman.am@gmail.com,
- gnault@redhat.com, razor@blackwall.org, idosch@nvidia.com,
- liuhangbin@gmail.com, eyal.birger@gmail.com, jtoppins@redhat.com
-Subject: Re: [PATCH iproute2-next v7] ip-link: add support for nolocalbypass
- in vxlan
-Date: Mon, 05 Jun 2023 14:47:12 +0800
-In-reply-to: <ZH2CeAWH7uMLkFcj@shredder>
-Message-ID: <87sfb6pfqh.fsf@laptop.lockywolf.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BC1D28EE
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 07:00:54 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 230CC103
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 00:00:53 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mkl@pengutronix.de>)
+	id 1q64Cx-0007n2-F4
+	for netdev@vger.kernel.org; Mon, 05 Jun 2023 09:00:51 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+	by bjornoya.blackshift.org (Postfix) with SMTP id 9C7F51D20E5
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 06:59:55 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by bjornoya.blackshift.org (Postfix) with ESMTPS id 62BBC1D20C6;
+	Mon,  5 Jun 2023 06:59:54 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+	by hardanger.blackshift.org (OpenSMTPD) with ESMTP id c99a8122;
+	Mon, 5 Jun 2023 06:59:53 +0000 (UTC)
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: netdev@vger.kernel.org
+Cc: davem@davemloft.net,
+	kuba@kernel.org,
+	linux-can@vger.kernel.org,
+	kernel@pengutronix.de
+Subject: [PATCH net 0/3] pull-request: can 2023-06-05
+Date: Mon,  5 Jun 2023 08:59:49 +0200
+Message-Id: <20230605065952.1074928-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+Hello netdev-team,
 
-Ido Schimmel <idosch@idosch.org> writes:
+this is a pull request of 3 patches for net/master.
 
-> On Sun, Jun 04, 2023 at 10:00:51PM +0800, Vladimir Nikishkin wrote:
->> Add userspace support for the [no]localbypass vxlan netlink
->> attribute. With localbypass on (default), the vxlan driver processes
->> the packets destined to the local machine by itself, bypassing the
->> userspace nework stack. With nolocalbypass the packets are always
->> forwarded to the userspace network stack, so userspace programs,
->> such as tcpdump have a chance to process them.
->> 
->> Signed-off-by: Vladimir Nikishkin <vladimir@nikishkin.pw>
->> ---
->> v6=>v7:
->> Use the new vxlan_opts data structure. Rely on the printing loop
->> in vxlan_print_opt when printing the value of [no] localbypass.
->
-> Stephen's changes are still not present in the next branch so this patch
-> does not apply
+All 3 patches target the j1939 stack.
 
-Sorry for the confusion, I thought that the tree to develop against is
-git://git.kernel.org/pub/scm/linux/kernel/git/shemminger/iproute2.git
+The 1st patch is by Oleksij Rempel and fixes the error queue handling
+for (E)TP sessions that run into timeouts.
 
-Apologies.
+The last 2 patches are by Fedor Pchelkin and fix a potential
+use-after-free in j1939_netdev_start() if j1939_can_rx_register()
+fails.
 
--- 
-Your sincerely,
-Vladimir Nikishkin (MiEr, lockywolf)
-(Laptop)
---
-Fastmail.
+regards,
+Marc
+
+---
+
+The following changes since commit 8cde87b007dad2e461015ff70352af56ceb02c75:
+
+  net: sched: wrap tc_skip_wrapper with CONFIG_RETPOLINE (2023-06-04 15:49:06 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-6.4-20230605
+
+for you to fetch changes up to 628f725d3b090fadcc3735aaf4332e778335188e:
+
+  Merge patch series "can: j1939: avoid possible use-after-free when j1939_can_rx_register fails" (2023-06-05 08:27:23 +0200)
+
+----------------------------------------------------------------
+linux-can-fixes-for-6.4-20230605
+
+----------------------------------------------------------------
+Fedor Pchelkin (2):
+      can: j1939: change j1939_netdev_lock type to mutex
+      can: j1939: avoid possible use-after-free when j1939_can_rx_register fails
+
+Marc Kleine-Budde (1):
+      Merge patch series "can: j1939: avoid possible use-after-free when j1939_can_rx_register fails"
+
+Oleksij Rempel (1):
+      can: j1939: j1939_sk_send_loop_abort(): improved error queue handling in J1939 Socket
+
+ net/can/j1939/main.c   | 24 +++++++++++++-----------
+ net/can/j1939/socket.c |  5 +++++
+ 2 files changed, 18 insertions(+), 11 deletions(-)
+
 
 
