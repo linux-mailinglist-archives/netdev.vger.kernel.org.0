@@ -1,111 +1,185 @@
-Return-Path: <netdev+bounces-7849-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7850-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 31095721C9B
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 05:40:19 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5DBB9721CA1
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 05:45:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 375771C2097F
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 03:40:15 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 187592810CD
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 03:45:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AE60137D;
-	Mon,  5 Jun 2023 03:40:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B9A217EA;
+	Mon,  5 Jun 2023 03:45:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A00BB17E3
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 03:40:15 +0000 (UTC)
-Received: from mail-m11875.qiye.163.com (mail-m11875.qiye.163.com [115.236.118.75])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964B7B1;
-	Sun,  4 Jun 2023 20:40:12 -0700 (PDT)
-Received: from [0.0.0.0] (unknown [172.96.223.238])
-	by mail-m11875.qiye.163.com (Hmail) with ESMTPA id AFA5228027E;
-	Mon,  5 Jun 2023 11:40:01 +0800 (CST)
-Message-ID: <f6ad6281-df30-93cf-d057-5841b8c1e2e6@sangfor.com.cn>
-Date: Mon, 5 Jun 2023 11:39:59 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DA79137D
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 03:45:07 +0000 (UTC)
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8B3B7
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 20:45:06 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id d9443c01a7336-1b0201d9a9eso31323455ad.0
+        for <netdev@vger.kernel.org>; Sun, 04 Jun 2023 20:45:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1685936706; x=1688528706;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=X4SSVnlC4IwShHocep9s7ywh2nFdFJx4NP0mnzsxLtQ=;
+        b=As6EY1mjueMRZ7v0/kgCl2t91e15oNTmUA0m6RVlAOyhhApKue6wdKlKzvvava5Fcd
+         7bZlp0aFbor4T+wPcVB7EOsdXcZqEey4q983dLSdBzROsSVwnxGW1k2POoACXCndxFV5
+         jSTTeEVl43/bU4MYq8IlqIKpo6Z/kEFBPKMZWkj58lzSahNq5GkSQ/+j0IUvnyYmZVQ1
+         QcWOn71C3ALjIheNI740qF//drYAQpKWahvI3cPkZtsYHoE0W3WNF3tU2OWgzT71NEYM
+         knrOlEANyLAfubq+jUVTXFE11Cn7dEIw1kVc1JqQgJmORJYkQDRbzHG0pf5bFi2O+h+2
+         CUBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685936706; x=1688528706;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=X4SSVnlC4IwShHocep9s7ywh2nFdFJx4NP0mnzsxLtQ=;
+        b=LKEiMzwDMdz+GMAaq1L/cGqaQdwXasAuixFHl16tHL1aZ96UPvLogM1at39zF90ZL8
+         cBlxY9+ksqRFc7vLYqUWc/Qam+9QKNKAySWxsvnIgxMbGlLcnI4nI0ISagUTpxfHuBQi
+         iwVTJub2GFUJXYS2XFgFYLoR7XzY0BwiuXumxe9rPwSAo+sBh2aNBFNw60Xy+Iqv4eia
+         iqqKciDW2r40aZ5154RczJXi7/FPV5lBv40Uo0ruHg2BXlO4+boo8Gcr9Y0SUjJUIhot
+         CKgqEpDLO0FHvfvLREzj8gNuB10M9OqoNop6dKQLRhOEnklWIzomHK96h1egJUKe32MW
+         +nUQ==
+X-Gm-Message-State: AC+VfDzcbRumvByb3Q8XOqwjXUBAF3PfM/OxeqNSt8I2C3FzLzu3pTT6
+	E0vCMIX6JnS7wxRrnrwSnEQTkQ==
+X-Google-Smtp-Source: ACHHUZ4BO/9Z64c1dfqNlXO6bfWV+qB2TMgQnTpAnH1ehEOf3mlCBA7r9y4+HPsB7FnzNnLUZIyQ0w==
+X-Received: by 2002:a17:902:e84d:b0:1b0:3ab6:5140 with SMTP id t13-20020a170902e84d00b001b03ab65140mr7153073plg.4.1685936705787;
+        Sun, 04 Jun 2023 20:45:05 -0700 (PDT)
+Received: from [10.254.80.225] ([139.177.225.255])
+        by smtp.gmail.com with ESMTPSA id a12-20020a170902eccc00b00186a2274382sm5384273plh.76.2023.06.04.20.44.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 04 Jun 2023 20:45:05 -0700 (PDT)
+Message-ID: <6f67c3ca-5e73-d7ac-f32a-42a21d3ea576@bytedance.com>
+Date: Mon, 5 Jun 2023 11:44:55 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.2
-Subject: Re: [PATCH net-next] net: ethtool: Fix out-of-bounds copy to user
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Alexander Duyck <alexander.duyck@gmail.com>, Andrew Lunn
- <andrew@lunn.ch>, davem@davemloft.net, edumazet@google.com,
- pabeni@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- pengdonglin@sangfor.com.cn, huangcun@sangfor.com.cn
-References: <20230601112839.13799-1-dinghui@sangfor.com.cn>
- <135a45b2c388fbaf9db4620cb01b95230709b9ac.camel@gmail.com>
- <eed0cbf7-ff12-057e-e133-0ddf5e98ef68@sangfor.com.cn>
- <6110cf9f-c10e-4b9b-934d-8d202b7f5794@lunn.ch>
- <f7e23fe6-4d30-ef1b-a431-3ef6ec6f77ba@sangfor.com.cn>
- <6e28cea9-d615-449d-9c68-aa155efc8444@lunn.ch>
- <CAKgT0UdyykQL-BidjaNpjX99FwJTxET51U29q4_CDqmABUuVbw@mail.gmail.com>
- <ece228a3-5c31-4390-b6ba-ec3f2b6c5dcb@lunn.ch>
- <CAKgT0Uf+XaKCFgBRTn-viVsKkNE7piAuDpht=efixsAV=3JdFQ@mail.gmail.com>
- <44905acd-3ac4-cfe5-5e91-d182c1959407@sangfor.com.cn>
- <20230602225519.66c2c987@kernel.org>
- <5f0f2bab-ae36-8b13-2c6d-c69c6ff4a43f@sangfor.com.cn>
- <20230604104718.4bf45faf@kernel.org>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.11.2
+Subject: Re: Re: [PATCH net-next v5 2/3] sock: Always take memcg pressure into
+ consideration
 Content-Language: en-US
-From: Ding Hui <dinghui@sangfor.com.cn>
-In-Reply-To: <20230604104718.4bf45faf@kernel.org>
+To: Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+ Shakeel Butt <shakeelb@google.com>, Paolo Abeni <pabeni@redhat.com>
+Cc: "David S . Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>,
+ Vladimir Davydov <vdavydov.dev@gmail.com>,
+ Muchun Song <muchun.song@linux.dev>, Simon Horman
+ <simon.horman@corigine.com>, netdev@vger.kernel.org, linux-mm@kvack.org,
+ cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230602081135.75424-1-wuyun.abel@bytedance.com>
+ <20230602081135.75424-3-wuyun.abel@bytedance.com>
+ <20230602204159.vo7fmuvh3y2pdfi5@google.com>
+ <CAF=yD-LFQRreWq1RMkvLw9Nj3NQpJwbDSCfECUhh-aVchR-jsg@mail.gmail.com>
+From: Abel Wu <wuyun.abel@bytedance.com>
+In-Reply-To: <CAF=yD-LFQRreWq1RMkvLw9Nj3NQpJwbDSCfECUhh-aVchR-jsg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlCSEhIVk5PQ0kfSR9OQx9OHlUTARMWGhIXJBQOD1
-	lXWRgSC1lBWUpMSVVCTVVJSUhVSUhDWVdZFhoPEhUdFFlBWU9LSFVKSktISkxVSktLVUtZBg++
-X-HM-Tid: 0a8889a3ff7c2eb1kusnafa5228027e
-X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6K1E6MSo*Nz0BFDAyOQgtHlY*
-	CjQwCjRVSlVKTUNOQkhNT0tMSEhJVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
-	QVlKTElVQk1VSUlIVUlIQ1lXWQgBWUFPS0JDNwY+
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 2023/6/5 1:47, Jakub Kicinski wrote:
-> On Sat, 3 Jun 2023 15:11:29 +0800 Ding Hui wrote:
->> Yes.
+On 6/4/23 6:36 PM, Willem de Bruijn wrote:
+> On Fri, Jun 2, 2023 at 10:42 PM Shakeel Butt <shakeelb@google.com> wrote:
 >>
->> I checked the others ioctl (e.g. ethtool_get_eeprom(), ethtool_get_features()),
->> and searched the git log of ethtool utility, so I think that is an implicit
->> rule and the check is missed in kernel where the patch involves.
+>> On Fri, Jun 02, 2023 at 04:11:34PM +0800, Abel Wu wrote:
+>>> The sk_under_memory_pressure() is called to check whether there is
+>>> memory pressure related to this socket. But now it ignores the net-
+>>> memcg's pressure if the proto of the socket doesn't care about the
+>>> global pressure, which may put burden on its memcg compaction or
+>>> reclaim path (also remember that socket memory is un-reclaimable).
+>>>
+>>> So always check the memcg's vm status to alleviate memstalls when
+>>> it's in pressure.
+>>>
 >>
->> Without this rule, we cannot guarantee the safety of copy to user.
->>
->> Should we keep to be compatible with that incorrect userspace usage?
+>> This is interesting. UDP is the only protocol which supports memory
+>> accounting (i.e. udp_memory_allocated) but it does not define
+>> memory_pressure. In addition, it does have sysctl_udp_mem. So
+>> effectively UDP supports a hard limit and ignores memcg pressure at the
+>> moment. This patch will change its behavior to consider memcg pressure
+>> as well. I don't have any objection but let's get opinion of UDP
+>> maintainer.
 > 
-> If such incorrect user space exists we do, if it doesn't we don't.
-> Problem is that we don't know what exists out there.
+> Others have more experience with memory pressure on UDP, for the
+> record. Paolo worked on UDP memory pressure in
+> https://lore.kernel.org/netdev/cover.1579281705.git.pabeni@redhat.com/
 > 
-> Maybe we can add a pr_err_once() complaining about bad usage for now
-> and see if anyone reports back that they are hitting it?
+> It does seem odd to me to modify sk_under_memory_pressure only. See
+> for instance its use in __sk_mem_raise_allocated:
 > 
+>          if (sk_has_memory_pressure(sk)) {
+>                  u64 alloc;
+> 
+>                  if (!sk_under_memory_pressure(sk))
+>                          return 1;
+> 
+> This is not even reached as sk_has_memory_pressure is false for UDP.
 
-How about this:
+I intended to make __sk_mem_raise_allocated() be aware of net-memcg
+pressure instead of just this bit [1][2].
 
-Case 1:
-If the user len/n_stats is not zero, we will treat it as correct usage
-(although we cannot distinguish between the real correct usage and
-uninitialized usage). Return -EINVAL if current length exceed the one
-user specified.
+[1] 
+https://lore.kernel.org/lkml/20230523094652.49411-5-wuyun.abel@bytedance.com/
+[2] 
+https://lore.kernel.org/lkml/20230523094652.49411-6-wuyun.abel@bytedance.com/
 
-Case 2:
-If it is zero, we will treat it as incorrect usage, we can add a
-pr_err_once() for it and keep to be compatible with it for a period of time.
-At a suitable time in the future, this part can be removed by maintainers.
+And TBH I am wondering why considering memcg's pressure here, as the
+main part in this if statement is to allow the sockets that are below
+average memory usage to raise from a *global* memory view, which seems
+nothing to do with memcg.
 
--- 
-Thanks,
-- Ding Hui
+> So this commit only affects the only other protocol-independent
+> caller, __sk_mem_reduce_allocated, to possibly call
+> sk_leave_memory_pressure if now under the global limit.
+> 
+> What is the expected behavioral change in practice of this commit?
 
+Be more conservative on sockmem alloc if under memcg pressure, to
+avoid worse memstall/latency.
+
+> 
+> 
+>>> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
+>>> ---
+>>>   include/net/sock.h | 6 ++----
+>>>   1 file changed, 2 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/include/net/sock.h b/include/net/sock.h
+>>> index 3f63253ee092..ad1895ffbc4a 100644
+>>> --- a/include/net/sock.h
+>>> +++ b/include/net/sock.h
+>>> @@ -1411,13 +1411,11 @@ static inline bool sk_has_memory_pressure(const struct sock *sk)
+>>>
+>>>   static inline bool sk_under_memory_pressure(const struct sock *sk)
+>>>   {
+>>> -     if (!sk->sk_prot->memory_pressure)
+>>> -             return false;
+>>> -
+>>>        if (mem_cgroup_under_socket_pressure(sk->sk_memcg))
+>>>                return true;
+>>>
+>>> -     return !!*sk->sk_prot->memory_pressure;
+>>> +     return sk->sk_prot->memory_pressure &&
+>>> +             *sk->sk_prot->memory_pressure;
+>>>   }
+>>>
+>>>   static inline long
+>>> --
+>>> 2.37.3
+>>>
 
