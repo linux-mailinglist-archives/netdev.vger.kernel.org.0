@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-8167-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8166-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3E578722F18
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:02:10 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 558E6722F14
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:01:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9B90F1C20D60
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 19:02:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1114C281356
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 19:01:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4C4F724140;
-	Mon,  5 Jun 2023 19:01:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E150824131;
+	Mon,  5 Jun 2023 19:01:13 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1001E23D66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9391923D45
 	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 19:01:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 779C1C4339C;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0703DC433A4;
 	Mon,  5 Jun 2023 19:01:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685991671;
-	bh=Ihfc3V9vD2BHkByKOhP9RICRe5CdaY2nErAOsGJaZg4=;
+	s=k20201202; t=1685991672;
+	bh=P2IQglPfT/vD5ouGeQeqoF2jhcB2cC2sz5ZW6wEie5k=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=bb0acy5phSKsGHWVMpy7HanjVpey9L2TaDp6RiT/Ji0OKQH8d3E2crfxCLqIlNOxI
-	 oIlDJJbwKgbnqBNgErdnFvaWPVl3vPkZMHU2vWGyCCe1GWpfiyDViwG927Geq/E//6
-	 EjtN1jK93H/3rlTBlYq9PdxnNvp3D8fzlmrr5/qz1eEV86T6hrfZSM83qm029QPrKo
-	 gL17lROc0awioFydNL9HL/JuY0FrpyV2xHPU+ixf1HbZHj0cgzzuSg6KzjB5twgrss
-	 04EfjCbmOAnkZDzoKKJ09PhwUbe4jGhQM2KEpct7R+vB5GPtxNQKzMgQM48S8sAJxb
-	 +ZDwgdQ9MN46g==
+	b=qA30WhIKhQkI6HamEaundBsyOpH+agpVeSBIhOfxNQ53+cJy3bQa5PZP8B9PwDMjq
+	 fRHtDOO/uqN9b4rz3NCzPh/z6JtAiPT1fJCHjfIoNBynlIAzMUo8EegXaCZLa8UlHg
+	 zcCiRkPDG03cPTcds7SbzVY0KMRf1eRGGNqL3PlOvlFblqcqkHiCK+R2DOCvGZxKOa
+	 JtIal/6q91uIKb25qF6eWPEmeZk948OwxFscQgOevHNJG4iKM7SHALS6ValLqZKHYt
+	 NwfU6WyafjD2TddxlERNdmT8E0R5Y8BLiH5tIAckhyq7jTTVzhAq2O7VUA5I+0Ojbc
+	 qRpgoHUc8hH3Q==
 From: Jakub Kicinski <kuba@kernel.org>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
@@ -39,9 +39,9 @@ Cc: netdev@vger.kernel.org,
 	sdf@google.com,
 	willemdebruijn.kernel@gmail.com,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v3 3/4] tools: ynl: support fou and netdev in C
-Date: Mon,  5 Jun 2023 12:01:07 -0700
-Message-Id: <20230605190108.809439-4-kuba@kernel.org>
+Subject: [PATCH net-next v3 4/4] tools: ynl: add sample for netdev
+Date: Mon,  5 Jun 2023 12:01:08 -0700
+Message-Id: <20230605190108.809439-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230605190108.809439-1-kuba@kernel.org>
 References: <20230605190108.809439-1-kuba@kernel.org>
@@ -53,1074 +53,194 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Generate the code for netdev and fou families. They are simple
-and already supported by the code gen.
+Add a sample application using the C library.
+My main goal is to make writing selftests easier but until
+I have some of those ready I think it's useful to show off
+the functionality and let people poke and tinker.
+
+Sample outputs - dump:
+
+$ ./netdev
+Select ifc ($ifindex; or 0 = dump; or -2 ntf check): 0
+      lo[1]	0:
+  enp1s0[2]	23: basic redirect rx-sg
+
+Notifications (watching veth pair getting added and deleted):
+
+$ ./netdev
+Select ifc ($ifindex; or 0 = dump; or -2 ntf check): -2
+[53]	0: (ntf: dev-add-ntf)
+[54]	0: (ntf: dev-add-ntf)
+[54]	23: basic redirect rx-sg (ntf: dev-change-ntf)
+[53]	23: basic redirect rx-sg (ntf: dev-change-ntf)
+[53]	23: basic redirect rx-sg (ntf: dev-del-ntf)
+[54]	23: basic redirect rx-sg (ntf: dev-del-ntf)
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/net/ynl/generated/Makefile      |   2 +-
- tools/net/ynl/generated/fou-user.c    | 340 ++++++++++++++++++++++++++
- tools/net/ynl/generated/fou-user.h    | 337 +++++++++++++++++++++++++
- tools/net/ynl/generated/netdev-user.c | 250 +++++++++++++++++++
- tools/net/ynl/generated/netdev-user.h |  88 +++++++
- 5 files changed, 1016 insertions(+), 1 deletion(-)
- create mode 100644 tools/net/ynl/generated/fou-user.c
- create mode 100644 tools/net/ynl/generated/fou-user.h
- create mode 100644 tools/net/ynl/generated/netdev-user.c
- create mode 100644 tools/net/ynl/generated/netdev-user.h
+ tools/net/ynl/samples/.gitignore |   1 +
+ tools/net/ynl/samples/Makefile   |  28 ++++++++
+ tools/net/ynl/samples/netdev.c   | 108 +++++++++++++++++++++++++++++++
+ 3 files changed, 137 insertions(+)
+ create mode 100644 tools/net/ynl/samples/.gitignore
+ create mode 100644 tools/net/ynl/samples/Makefile
+ create mode 100644 tools/net/ynl/samples/netdev.c
 
-diff --git a/tools/net/ynl/generated/Makefile b/tools/net/ynl/generated/Makefile
-index 9a09e581906e..bbf5d83755c9 100644
---- a/tools/net/ynl/generated/Makefile
-+++ b/tools/net/ynl/generated/Makefile
-@@ -9,7 +9,7 @@ endif
- 
- TOOL:=../ynl-gen-c.py
- 
--GENS:=
-+GENS:=fou netdev
- SRCS=$(patsubst %,%-user.c,${GENS})
- HDRS=$(patsubst %,%-user.h,${GENS})
- OBJS=$(patsubst %,%-user.o,${GENS})
-diff --git a/tools/net/ynl/generated/fou-user.c b/tools/net/ynl/generated/fou-user.c
+diff --git a/tools/net/ynl/samples/.gitignore b/tools/net/ynl/samples/.gitignore
 new file mode 100644
-index 000000000000..c99b5d438021
+index 000000000000..7b1f5179cb54
 --- /dev/null
-+++ b/tools/net/ynl/generated/fou-user.c
-@@ -0,0 +1,340 @@
-+// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-+/* Do not edit directly, auto-generated from: */
-+/*	Documentation/netlink/specs/fou.yaml */
-+/* YNL-GEN user source */
++++ b/tools/net/ynl/samples/.gitignore
+@@ -0,0 +1 @@
++netdev
+diff --git a/tools/net/ynl/samples/Makefile b/tools/net/ynl/samples/Makefile
+new file mode 100644
+index 000000000000..714316cad45f
+--- /dev/null
++++ b/tools/net/ynl/samples/Makefile
+@@ -0,0 +1,28 @@
++# SPDX-License-Identifier: GPL-2.0
 +
-+#include <stdlib.h>
-+#include "fou-user.h"
-+#include "ynl.h"
-+#include <linux/fou.h>
++CC=gcc
++CFLAGS=-std=gnu11 -O2 -W -Wall -Wextra -Wno-unused-parameter -Wshadow \
++	-I../lib/ -I../generated/
++ifeq ("$(DEBUG)","1")
++  CFLAGS += -g -fsanitize=address -fsanitize=leak -static-libasan
++endif
 +
-+#include <stdlib.h>
++LDLIBS=-lmnl ../lib/ynl.a ../generated/protos.a
++
++SRCS=$(wildcard *.c)
++BINS=$(patsubst %.c,%,${SRCS})
++
++include $(wildcard *.d)
++
++all: $(BINS)
++
++$(BINS): ../lib/ynl.a ../generated/protos.a
++
++clean:
++	rm -f *.o *.d *~
++
++hardclean: clean
++	rm -f $(BINS)
++
++.PHONY: all clean
++.DEFAULT_GOAL=all
+diff --git a/tools/net/ynl/samples/netdev.c b/tools/net/ynl/samples/netdev.c
+new file mode 100644
+index 000000000000..d31268aa47c5
+--- /dev/null
++++ b/tools/net/ynl/samples/netdev.c
+@@ -0,0 +1,108 @@
++// SPDX-License-Identifier: GPL-2.0
 +#include <stdio.h>
 +#include <string.h>
-+#include <libmnl/libmnl.h>
-+#include <linux/genetlink.h>
 +
-+/* Enums */
-+static const char * const fou_op_strmap[] = {
-+	[FOU_CMD_UNSPEC] = "unspec",
-+	[FOU_CMD_ADD] = "add",
-+	[FOU_CMD_DEL] = "del",
-+	[FOU_CMD_GET] = "get",
-+};
++#include <ynl.h>
 +
-+const char *fou_op_str(int op)
-+{
-+	if (op < 0 || op >= (int)MNL_ARRAY_SIZE(fou_op_strmap))
-+		return NULL;
-+	return fou_op_strmap[op];
-+}
++#include <net/if.h>
 +
-+static const char * const fou_encap_type_strmap[] = {
-+	[0] = "unspec",
-+	[1] = "direct",
-+	[2] = "gue",
-+};
-+
-+const char *fou_encap_type_str(int value)
-+{
-+	if (value < 0 || value >= (int)MNL_ARRAY_SIZE(fou_encap_type_strmap))
-+		return NULL;
-+	return fou_encap_type_strmap[value];
-+}
-+
-+/* Policies */
-+extern struct ynl_policy_nest fou_nest;
-+
-+struct ynl_policy_attr fou_policy[FOU_ATTR_MAX + 1] = {
-+	[FOU_ATTR_UNSPEC] = { .name = "unspec", .type = YNL_PT_REJECT, },
-+	[FOU_ATTR_PORT] = { .name = "port", .type = YNL_PT_U16, },
-+	[FOU_ATTR_AF] = { .name = "af", .type = YNL_PT_U8, },
-+	[FOU_ATTR_IPPROTO] = { .name = "ipproto", .type = YNL_PT_U8, },
-+	[FOU_ATTR_TYPE] = { .name = "type", .type = YNL_PT_U8, },
-+	[FOU_ATTR_REMCSUM_NOPARTIAL] = { .name = "remcsum_nopartial", .type = YNL_PT_FLAG, },
-+	[FOU_ATTR_LOCAL_V4] = { .name = "local_v4", .type = YNL_PT_U32, },
-+	[FOU_ATTR_LOCAL_V6] = { .name = "local_v6", .type = YNL_PT_BINARY,},
-+	[FOU_ATTR_PEER_V4] = { .name = "peer_v4", .type = YNL_PT_U32, },
-+	[FOU_ATTR_PEER_V6] = { .name = "peer_v6", .type = YNL_PT_BINARY,},
-+	[FOU_ATTR_PEER_PORT] = { .name = "peer_port", .type = YNL_PT_U16, },
-+	[FOU_ATTR_IFINDEX] = { .name = "ifindex", .type = YNL_PT_U32, },
-+};
-+
-+struct ynl_policy_nest fou_nest = {
-+	.max_attr = FOU_ATTR_MAX,
-+	.table = fou_policy,
-+};
-+
-+/* Common nested types */
-+/* ============== FOU_CMD_ADD ============== */
-+/* FOU_CMD_ADD - do */
-+void fou_add_req_free(struct fou_add_req *req)
-+{
-+	free(req->local_v6);
-+	free(req->peer_v6);
-+	free(req);
-+}
-+
-+int fou_add(struct ynl_sock *ys, struct fou_add_req *req)
-+{
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	nlh = ynl_gemsg_start_req(ys, ys->family_id, FOU_CMD_ADD, 1);
-+	ys->req_policy = &fou_nest;
-+
-+	if (req->_present.port)
-+		mnl_attr_put_u16(nlh, FOU_ATTR_PORT, req->port);
-+	if (req->_present.ipproto)
-+		mnl_attr_put_u8(nlh, FOU_ATTR_IPPROTO, req->ipproto);
-+	if (req->_present.type)
-+		mnl_attr_put_u8(nlh, FOU_ATTR_TYPE, req->type);
-+	if (req->_present.remcsum_nopartial)
-+		mnl_attr_put(nlh, FOU_ATTR_REMCSUM_NOPARTIAL, 0, NULL);
-+	if (req->_present.local_v4)
-+		mnl_attr_put_u32(nlh, FOU_ATTR_LOCAL_V4, req->local_v4);
-+	if (req->_present.peer_v4)
-+		mnl_attr_put_u32(nlh, FOU_ATTR_PEER_V4, req->peer_v4);
-+	if (req->_present.local_v6_len)
-+		mnl_attr_put(nlh, FOU_ATTR_LOCAL_V6, req->_present.local_v6_len, req->local_v6);
-+	if (req->_present.peer_v6_len)
-+		mnl_attr_put(nlh, FOU_ATTR_PEER_V6, req->_present.peer_v6_len, req->peer_v6);
-+	if (req->_present.peer_port)
-+		mnl_attr_put_u16(nlh, FOU_ATTR_PEER_PORT, req->peer_port);
-+	if (req->_present.ifindex)
-+		mnl_attr_put_u32(nlh, FOU_ATTR_IFINDEX, req->ifindex);
-+
-+	err = ynl_exec(ys, nlh, NULL);
-+	if (err < 0)
-+		return -1;
-+
-+	return 0;
-+}
-+
-+/* ============== FOU_CMD_DEL ============== */
-+/* FOU_CMD_DEL - do */
-+void fou_del_req_free(struct fou_del_req *req)
-+{
-+	free(req->local_v6);
-+	free(req->peer_v6);
-+	free(req);
-+}
-+
-+int fou_del(struct ynl_sock *ys, struct fou_del_req *req)
-+{
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	nlh = ynl_gemsg_start_req(ys, ys->family_id, FOU_CMD_DEL, 1);
-+	ys->req_policy = &fou_nest;
-+
-+	if (req->_present.af)
-+		mnl_attr_put_u8(nlh, FOU_ATTR_AF, req->af);
-+	if (req->_present.ifindex)
-+		mnl_attr_put_u32(nlh, FOU_ATTR_IFINDEX, req->ifindex);
-+	if (req->_present.port)
-+		mnl_attr_put_u16(nlh, FOU_ATTR_PORT, req->port);
-+	if (req->_present.peer_port)
-+		mnl_attr_put_u16(nlh, FOU_ATTR_PEER_PORT, req->peer_port);
-+	if (req->_present.local_v4)
-+		mnl_attr_put_u32(nlh, FOU_ATTR_LOCAL_V4, req->local_v4);
-+	if (req->_present.peer_v4)
-+		mnl_attr_put_u32(nlh, FOU_ATTR_PEER_V4, req->peer_v4);
-+	if (req->_present.local_v6_len)
-+		mnl_attr_put(nlh, FOU_ATTR_LOCAL_V6, req->_present.local_v6_len, req->local_v6);
-+	if (req->_present.peer_v6_len)
-+		mnl_attr_put(nlh, FOU_ATTR_PEER_V6, req->_present.peer_v6_len, req->peer_v6);
-+
-+	err = ynl_exec(ys, nlh, NULL);
-+	if (err < 0)
-+		return -1;
-+
-+	return 0;
-+}
-+
-+/* ============== FOU_CMD_GET ============== */
-+/* FOU_CMD_GET - do */
-+void fou_get_req_free(struct fou_get_req *req)
-+{
-+	free(req->local_v6);
-+	free(req->peer_v6);
-+	free(req);
-+}
-+
-+void fou_get_rsp_free(struct fou_get_rsp *rsp)
-+{
-+	free(rsp->local_v6);
-+	free(rsp->peer_v6);
-+	free(rsp);
-+}
-+
-+int fou_get_rsp_parse(const struct nlmsghdr *nlh, void *data)
-+{
-+	struct ynl_parse_arg *yarg = data;
-+	const struct nlattr *attr;
-+	struct fou_get_rsp *dst;
-+
-+	dst = yarg->data;
-+
-+	mnl_attr_for_each(attr, nlh, sizeof(struct genlmsghdr)) {
-+		if (mnl_attr_get_type(attr) == FOU_ATTR_PORT) {
-+			if (ynl_attr_validate(yarg, attr))
-+				return MNL_CB_ERROR;
-+			dst->_present.port = 1;
-+			dst->port = mnl_attr_get_u16(attr);
-+		}
-+		else if (mnl_attr_get_type(attr) == FOU_ATTR_IPPROTO) {
-+			if (ynl_attr_validate(yarg, attr))
-+				return MNL_CB_ERROR;
-+			dst->_present.ipproto = 1;
-+			dst->ipproto = mnl_attr_get_u8(attr);
-+		}
-+		else if (mnl_attr_get_type(attr) == FOU_ATTR_TYPE) {
-+			if (ynl_attr_validate(yarg, attr))
-+				return MNL_CB_ERROR;
-+			dst->_present.type = 1;
-+			dst->type = mnl_attr_get_u8(attr);
-+		}
-+		else if (mnl_attr_get_type(attr) == FOU_ATTR_REMCSUM_NOPARTIAL) {
-+			if (ynl_attr_validate(yarg, attr))
-+				return MNL_CB_ERROR;
-+			dst->_present.remcsum_nopartial = 1;
-+		}
-+		else if (mnl_attr_get_type(attr) == FOU_ATTR_LOCAL_V4) {
-+			if (ynl_attr_validate(yarg, attr))
-+				return MNL_CB_ERROR;
-+			dst->_present.local_v4 = 1;
-+			dst->local_v4 = mnl_attr_get_u32(attr);
-+		}
-+		else if (mnl_attr_get_type(attr) == FOU_ATTR_PEER_V4) {
-+			if (ynl_attr_validate(yarg, attr))
-+				return MNL_CB_ERROR;
-+			dst->_present.peer_v4 = 1;
-+			dst->peer_v4 = mnl_attr_get_u32(attr);
-+		}
-+		else if (mnl_attr_get_type(attr) == FOU_ATTR_LOCAL_V6) {
-+			unsigned int len;
-+
-+			if (ynl_attr_validate(yarg, attr))
-+				return MNL_CB_ERROR;
-+
-+			len = mnl_attr_get_payload_len(attr);
-+			dst->_present.local_v6_len = len;
-+			dst->local_v6 = malloc(len);
-+			memcpy(dst->local_v6, mnl_attr_get_payload(attr), len);
-+		}
-+		else if (mnl_attr_get_type(attr) == FOU_ATTR_PEER_V6) {
-+			unsigned int len;
-+
-+			if (ynl_attr_validate(yarg, attr))
-+				return MNL_CB_ERROR;
-+
-+			len = mnl_attr_get_payload_len(attr);
-+			dst->_present.peer_v6_len = len;
-+			dst->peer_v6 = malloc(len);
-+			memcpy(dst->peer_v6, mnl_attr_get_payload(attr), len);
-+		}
-+		else if (mnl_attr_get_type(attr) == FOU_ATTR_PEER_PORT) {
-+			if (ynl_attr_validate(yarg, attr))
-+				return MNL_CB_ERROR;
-+			dst->_present.peer_port = 1;
-+			dst->peer_port = mnl_attr_get_u16(attr);
-+		}
-+		else if (mnl_attr_get_type(attr) == FOU_ATTR_IFINDEX) {
-+			if (ynl_attr_validate(yarg, attr))
-+				return MNL_CB_ERROR;
-+			dst->_present.ifindex = 1;
-+			dst->ifindex = mnl_attr_get_u32(attr);
-+		}
-+	}
-+
-+	return MNL_CB_OK;
-+}
-+
-+struct fou_get_rsp *fou_get(struct ynl_sock *ys, struct fou_get_req *req)
-+{
-+	struct ynl_req_state yrs = { .yarg = { .ys = ys, }, };
-+	struct fou_get_rsp *rsp;
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	nlh = ynl_gemsg_start_req(ys, ys->family_id, FOU_CMD_GET, 1);
-+	ys->req_policy = &fou_nest;
-+	yrs.yarg.rsp_policy = &fou_nest;
-+
-+	if (req->_present.af)
-+		mnl_attr_put_u8(nlh, FOU_ATTR_AF, req->af);
-+	if (req->_present.ifindex)
-+		mnl_attr_put_u32(nlh, FOU_ATTR_IFINDEX, req->ifindex);
-+	if (req->_present.port)
-+		mnl_attr_put_u16(nlh, FOU_ATTR_PORT, req->port);
-+	if (req->_present.peer_port)
-+		mnl_attr_put_u16(nlh, FOU_ATTR_PEER_PORT, req->peer_port);
-+	if (req->_present.local_v4)
-+		mnl_attr_put_u32(nlh, FOU_ATTR_LOCAL_V4, req->local_v4);
-+	if (req->_present.peer_v4)
-+		mnl_attr_put_u32(nlh, FOU_ATTR_PEER_V4, req->peer_v4);
-+	if (req->_present.local_v6_len)
-+		mnl_attr_put(nlh, FOU_ATTR_LOCAL_V6, req->_present.local_v6_len, req->local_v6);
-+	if (req->_present.peer_v6_len)
-+		mnl_attr_put(nlh, FOU_ATTR_PEER_V6, req->_present.peer_v6_len, req->peer_v6);
-+
-+	rsp = calloc(1, sizeof(*rsp));
-+	yrs.yarg.data = rsp;
-+	yrs.cb = fou_get_rsp_parse;
-+	yrs.rsp_cmd = FOU_CMD_GET;
-+
-+	err = ynl_exec(ys, nlh, &yrs);
-+	if (err < 0)
-+		goto err_free;
-+
-+	return rsp;
-+
-+err_free:
-+	fou_get_rsp_free(rsp);
-+	return NULL;
-+}
-+
-+/* FOU_CMD_GET - dump */
-+void fou_get_list_free(struct fou_get_list *rsp)
-+{
-+	struct fou_get_list *next = rsp;
-+
-+	while ((void *)next != YNL_LIST_END) {
-+		rsp = next;
-+		next = rsp->next;
-+
-+		free(rsp->obj.local_v6);
-+		free(rsp->obj.peer_v6);
-+		free(rsp);
-+	}
-+}
-+
-+struct fou_get_list *fou_get_dump(struct ynl_sock *ys)
-+{
-+	struct ynl_dump_state yds = {};
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	yds.ys = ys;
-+	yds.alloc_sz = sizeof(struct fou_get_list);
-+	yds.cb = fou_get_rsp_parse;
-+	yds.rsp_cmd = FOU_CMD_GET;
-+	yds.rsp_policy = &fou_nest;
-+
-+	nlh = ynl_gemsg_start_dump(ys, ys->family_id, FOU_CMD_GET, 1);
-+
-+	err = ynl_exec_dump(ys, nlh, &yds);
-+	if (err < 0)
-+		goto free_list;
-+
-+	return yds.first;
-+
-+free_list:
-+	fou_get_list_free(yds.first);
-+	return NULL;
-+}
-+
-+const struct ynl_family ynl_fou_family =  {
-+	.name		= "fou",
-+};
-diff --git a/tools/net/ynl/generated/fou-user.h b/tools/net/ynl/generated/fou-user.h
-new file mode 100644
-index 000000000000..d8ab50579cd1
---- /dev/null
-+++ b/tools/net/ynl/generated/fou-user.h
-@@ -0,0 +1,337 @@
-+/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-+/* Do not edit directly, auto-generated from: */
-+/*	Documentation/netlink/specs/fou.yaml */
-+/* YNL-GEN user header */
-+
-+#ifndef _LINUX_FOU_GEN_H
-+#define _LINUX_FOU_GEN_H
-+
-+#include <stdlib.h>
-+#include <string.h>
-+#include <linux/types.h>
-+#include <linux/fou.h>
-+
-+struct ynl_sock;
-+
-+extern const struct ynl_family ynl_fou_family;
-+
-+/* Enums */
-+const char *fou_op_str(int op);
-+const char *fou_encap_type_str(int value);
-+
-+/* Common nested types */
-+/* ============== FOU_CMD_ADD ============== */
-+/* FOU_CMD_ADD - do */
-+struct fou_add_req {
-+	struct {
-+		__u32 port:1;
-+		__u32 ipproto:1;
-+		__u32 type:1;
-+		__u32 remcsum_nopartial:1;
-+		__u32 local_v4:1;
-+		__u32 peer_v4:1;
-+		__u32 local_v6_len;
-+		__u32 peer_v6_len;
-+		__u32 peer_port:1;
-+		__u32 ifindex:1;
-+	} _present;
-+
-+	__u16 port /* big-endian */;
-+	__u8 ipproto;
-+	__u8 type;
-+	__u32 local_v4;
-+	__u32 peer_v4;
-+	void *local_v6;
-+	void *peer_v6;
-+	__u16 peer_port /* big-endian */;
-+	__s32 ifindex;
-+};
-+
-+static inline struct fou_add_req *fou_add_req_alloc(void)
-+{
-+	return calloc(1, sizeof(struct fou_add_req));
-+}
-+void fou_add_req_free(struct fou_add_req *req);
-+
-+static inline void
-+fou_add_req_set_port(struct fou_add_req *req, __u16 port /* big-endian */)
-+{
-+	req->_present.port = 1;
-+	req->port = port;
-+}
-+static inline void
-+fou_add_req_set_ipproto(struct fou_add_req *req, __u8 ipproto)
-+{
-+	req->_present.ipproto = 1;
-+	req->ipproto = ipproto;
-+}
-+static inline void fou_add_req_set_type(struct fou_add_req *req, __u8 type)
-+{
-+	req->_present.type = 1;
-+	req->type = type;
-+}
-+static inline void fou_add_req_set_remcsum_nopartial(struct fou_add_req *req)
-+{
-+	req->_present.remcsum_nopartial = 1;
-+}
-+static inline void
-+fou_add_req_set_local_v4(struct fou_add_req *req, __u32 local_v4)
-+{
-+	req->_present.local_v4 = 1;
-+	req->local_v4 = local_v4;
-+}
-+static inline void
-+fou_add_req_set_peer_v4(struct fou_add_req *req, __u32 peer_v4)
-+{
-+	req->_present.peer_v4 = 1;
-+	req->peer_v4 = peer_v4;
-+}
-+static inline void
-+fou_add_req_set_local_v6(struct fou_add_req *req, const void *local_v6,
-+			 size_t len)
-+{
-+	free(req->local_v6);
-+	req->local_v6 = malloc(req->_present.local_v6_len);
-+	memcpy(req->local_v6, local_v6, req->_present.local_v6_len);
-+}
-+static inline void
-+fou_add_req_set_peer_v6(struct fou_add_req *req, const void *peer_v6,
-+			size_t len)
-+{
-+	free(req->peer_v6);
-+	req->peer_v6 = malloc(req->_present.peer_v6_len);
-+	memcpy(req->peer_v6, peer_v6, req->_present.peer_v6_len);
-+}
-+static inline void
-+fou_add_req_set_peer_port(struct fou_add_req *req,
-+			  __u16 peer_port /* big-endian */)
-+{
-+	req->_present.peer_port = 1;
-+	req->peer_port = peer_port;
-+}
-+static inline void
-+fou_add_req_set_ifindex(struct fou_add_req *req, __s32 ifindex)
-+{
-+	req->_present.ifindex = 1;
-+	req->ifindex = ifindex;
-+}
-+
-+/*
-+ * Add port.
-+ */
-+int fou_add(struct ynl_sock *ys, struct fou_add_req *req);
-+
-+/* ============== FOU_CMD_DEL ============== */
-+/* FOU_CMD_DEL - do */
-+struct fou_del_req {
-+	struct {
-+		__u32 af:1;
-+		__u32 ifindex:1;
-+		__u32 port:1;
-+		__u32 peer_port:1;
-+		__u32 local_v4:1;
-+		__u32 peer_v4:1;
-+		__u32 local_v6_len;
-+		__u32 peer_v6_len;
-+	} _present;
-+
-+	__u8 af;
-+	__s32 ifindex;
-+	__u16 port /* big-endian */;
-+	__u16 peer_port /* big-endian */;
-+	__u32 local_v4;
-+	__u32 peer_v4;
-+	void *local_v6;
-+	void *peer_v6;
-+};
-+
-+static inline struct fou_del_req *fou_del_req_alloc(void)
-+{
-+	return calloc(1, sizeof(struct fou_del_req));
-+}
-+void fou_del_req_free(struct fou_del_req *req);
-+
-+static inline void fou_del_req_set_af(struct fou_del_req *req, __u8 af)
-+{
-+	req->_present.af = 1;
-+	req->af = af;
-+}
-+static inline void
-+fou_del_req_set_ifindex(struct fou_del_req *req, __s32 ifindex)
-+{
-+	req->_present.ifindex = 1;
-+	req->ifindex = ifindex;
-+}
-+static inline void
-+fou_del_req_set_port(struct fou_del_req *req, __u16 port /* big-endian */)
-+{
-+	req->_present.port = 1;
-+	req->port = port;
-+}
-+static inline void
-+fou_del_req_set_peer_port(struct fou_del_req *req,
-+			  __u16 peer_port /* big-endian */)
-+{
-+	req->_present.peer_port = 1;
-+	req->peer_port = peer_port;
-+}
-+static inline void
-+fou_del_req_set_local_v4(struct fou_del_req *req, __u32 local_v4)
-+{
-+	req->_present.local_v4 = 1;
-+	req->local_v4 = local_v4;
-+}
-+static inline void
-+fou_del_req_set_peer_v4(struct fou_del_req *req, __u32 peer_v4)
-+{
-+	req->_present.peer_v4 = 1;
-+	req->peer_v4 = peer_v4;
-+}
-+static inline void
-+fou_del_req_set_local_v6(struct fou_del_req *req, const void *local_v6,
-+			 size_t len)
-+{
-+	free(req->local_v6);
-+	req->local_v6 = malloc(req->_present.local_v6_len);
-+	memcpy(req->local_v6, local_v6, req->_present.local_v6_len);
-+}
-+static inline void
-+fou_del_req_set_peer_v6(struct fou_del_req *req, const void *peer_v6,
-+			size_t len)
-+{
-+	free(req->peer_v6);
-+	req->peer_v6 = malloc(req->_present.peer_v6_len);
-+	memcpy(req->peer_v6, peer_v6, req->_present.peer_v6_len);
-+}
-+
-+/*
-+ * Delete port.
-+ */
-+int fou_del(struct ynl_sock *ys, struct fou_del_req *req);
-+
-+/* ============== FOU_CMD_GET ============== */
-+/* FOU_CMD_GET - do */
-+struct fou_get_req {
-+	struct {
-+		__u32 af:1;
-+		__u32 ifindex:1;
-+		__u32 port:1;
-+		__u32 peer_port:1;
-+		__u32 local_v4:1;
-+		__u32 peer_v4:1;
-+		__u32 local_v6_len;
-+		__u32 peer_v6_len;
-+	} _present;
-+
-+	__u8 af;
-+	__s32 ifindex;
-+	__u16 port /* big-endian */;
-+	__u16 peer_port /* big-endian */;
-+	__u32 local_v4;
-+	__u32 peer_v4;
-+	void *local_v6;
-+	void *peer_v6;
-+};
-+
-+static inline struct fou_get_req *fou_get_req_alloc(void)
-+{
-+	return calloc(1, sizeof(struct fou_get_req));
-+}
-+void fou_get_req_free(struct fou_get_req *req);
-+
-+static inline void fou_get_req_set_af(struct fou_get_req *req, __u8 af)
-+{
-+	req->_present.af = 1;
-+	req->af = af;
-+}
-+static inline void
-+fou_get_req_set_ifindex(struct fou_get_req *req, __s32 ifindex)
-+{
-+	req->_present.ifindex = 1;
-+	req->ifindex = ifindex;
-+}
-+static inline void
-+fou_get_req_set_port(struct fou_get_req *req, __u16 port /* big-endian */)
-+{
-+	req->_present.port = 1;
-+	req->port = port;
-+}
-+static inline void
-+fou_get_req_set_peer_port(struct fou_get_req *req,
-+			  __u16 peer_port /* big-endian */)
-+{
-+	req->_present.peer_port = 1;
-+	req->peer_port = peer_port;
-+}
-+static inline void
-+fou_get_req_set_local_v4(struct fou_get_req *req, __u32 local_v4)
-+{
-+	req->_present.local_v4 = 1;
-+	req->local_v4 = local_v4;
-+}
-+static inline void
-+fou_get_req_set_peer_v4(struct fou_get_req *req, __u32 peer_v4)
-+{
-+	req->_present.peer_v4 = 1;
-+	req->peer_v4 = peer_v4;
-+}
-+static inline void
-+fou_get_req_set_local_v6(struct fou_get_req *req, const void *local_v6,
-+			 size_t len)
-+{
-+	free(req->local_v6);
-+	req->local_v6 = malloc(req->_present.local_v6_len);
-+	memcpy(req->local_v6, local_v6, req->_present.local_v6_len);
-+}
-+static inline void
-+fou_get_req_set_peer_v6(struct fou_get_req *req, const void *peer_v6,
-+			size_t len)
-+{
-+	free(req->peer_v6);
-+	req->peer_v6 = malloc(req->_present.peer_v6_len);
-+	memcpy(req->peer_v6, peer_v6, req->_present.peer_v6_len);
-+}
-+
-+struct fou_get_rsp {
-+	struct {
-+		__u32 port:1;
-+		__u32 ipproto:1;
-+		__u32 type:1;
-+		__u32 remcsum_nopartial:1;
-+		__u32 local_v4:1;
-+		__u32 peer_v4:1;
-+		__u32 local_v6_len;
-+		__u32 peer_v6_len;
-+		__u32 peer_port:1;
-+		__u32 ifindex:1;
-+	} _present;
-+
-+	__u16 port /* big-endian */;
-+	__u8 ipproto;
-+	__u8 type;
-+	__u32 local_v4;
-+	__u32 peer_v4;
-+	void *local_v6;
-+	void *peer_v6;
-+	__u16 peer_port /* big-endian */;
-+	__s32 ifindex;
-+};
-+
-+void fou_get_rsp_free(struct fou_get_rsp *rsp);
-+
-+/*
-+ * Get tunnel info.
-+ */
-+struct fou_get_rsp *fou_get(struct ynl_sock *ys, struct fou_get_req *req);
-+
-+/* FOU_CMD_GET - dump */
-+struct fou_get_list {
-+	struct fou_get_list *next;
-+	struct fou_get_rsp obj __attribute__ ((aligned (8)));
-+};
-+
-+void fou_get_list_free(struct fou_get_list *rsp);
-+
-+struct fou_get_list *fou_get_dump(struct ynl_sock *ys);
-+
-+#endif /* _LINUX_FOU_GEN_H */
-diff --git a/tools/net/ynl/generated/netdev-user.c b/tools/net/ynl/generated/netdev-user.c
-new file mode 100644
-index 000000000000..aea5c7cc8ead
---- /dev/null
-+++ b/tools/net/ynl/generated/netdev-user.c
-@@ -0,0 +1,250 @@
-+// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-+/* Do not edit directly, auto-generated from: */
-+/*	Documentation/netlink/specs/netdev.yaml */
-+/* YNL-GEN user source */
-+
-+#include <stdlib.h>
 +#include "netdev-user.h"
-+#include "ynl.h"
-+#include <linux/netdev.h>
 +
-+#include <stdlib.h>
-+#include <stdio.h>
-+#include <string.h>
-+#include <libmnl/libmnl.h>
-+#include <linux/genetlink.h>
-+
-+/* Enums */
-+static const char * const netdev_op_strmap[] = {
-+	[NETDEV_CMD_DEV_GET] = "dev-get",
-+	[NETDEV_CMD_DEV_ADD_NTF] = "dev-add-ntf",
-+	[NETDEV_CMD_DEV_DEL_NTF] = "dev-del-ntf",
-+	[NETDEV_CMD_DEV_CHANGE_NTF] = "dev-change-ntf",
-+};
-+
-+const char *netdev_op_str(int op)
-+{
-+	if (op < 0 || op >= (int)MNL_ARRAY_SIZE(netdev_op_strmap))
-+		return NULL;
-+	return netdev_op_strmap[op];
-+}
-+
-+static const char * const netdev_xdp_act_strmap[] = {
-+	[0] = "basic",
-+	[1] = "redirect",
-+	[2] = "ndo-xmit",
-+	[3] = "xsk-zerocopy",
-+	[4] = "hw-offload",
-+	[5] = "rx-sg",
-+	[6] = "ndo-xmit-sg",
-+};
-+
-+const char *netdev_xdp_act_str(enum netdev_xdp_act value)
-+{
-+	value = ffs(value) - 1;
-+	if (value < 0 || value >= (int)MNL_ARRAY_SIZE(netdev_xdp_act_strmap))
-+		return NULL;
-+	return netdev_xdp_act_strmap[value];
-+}
-+
-+/* Policies */
-+extern struct ynl_policy_nest netdev_dev_nest;
-+
-+struct ynl_policy_attr netdev_dev_policy[NETDEV_A_DEV_MAX + 1] = {
-+	[NETDEV_A_DEV_IFINDEX] = { .name = "ifindex", .type = YNL_PT_U32, },
-+	[NETDEV_A_DEV_PAD] = { .name = "pad", .type = YNL_PT_IGNORE, },
-+	[NETDEV_A_DEV_XDP_FEATURES] = { .name = "xdp-features", .type = YNL_PT_U64, },
-+};
-+
-+struct ynl_policy_nest netdev_dev_nest = {
-+	.max_attr = NETDEV_A_DEV_MAX,
-+	.table = netdev_dev_policy,
-+};
-+
-+/* Common nested types */
-+/* ============== NETDEV_CMD_DEV_GET ============== */
-+/* NETDEV_CMD_DEV_GET - do */
-+void netdev_dev_get_req_free(struct netdev_dev_get_req *req)
-+{
-+	free(req);
-+}
-+
-+void netdev_dev_get_rsp_free(struct netdev_dev_get_rsp *rsp)
-+{
-+	free(rsp);
-+}
-+
-+int netdev_dev_get_rsp_parse(const struct nlmsghdr *nlh, void *data)
-+{
-+	struct ynl_parse_arg *yarg = data;
-+	struct netdev_dev_get_rsp *dst;
-+	const struct nlattr *attr;
-+
-+	dst = yarg->data;
-+
-+	mnl_attr_for_each(attr, nlh, sizeof(struct genlmsghdr)) {
-+		if (mnl_attr_get_type(attr) == NETDEV_A_DEV_IFINDEX) {
-+			if (ynl_attr_validate(yarg, attr))
-+				return MNL_CB_ERROR;
-+			dst->_present.ifindex = 1;
-+			dst->ifindex = mnl_attr_get_u32(attr);
-+		}
-+		else if (mnl_attr_get_type(attr) == NETDEV_A_DEV_XDP_FEATURES) {
-+			if (ynl_attr_validate(yarg, attr))
-+				return MNL_CB_ERROR;
-+			dst->_present.xdp_features = 1;
-+			dst->xdp_features = mnl_attr_get_u64(attr);
-+		}
-+	}
-+
-+	return MNL_CB_OK;
-+}
-+
-+struct netdev_dev_get_rsp *
-+netdev_dev_get(struct ynl_sock *ys, struct netdev_dev_get_req *req)
-+{
-+	struct ynl_req_state yrs = { .yarg = { .ys = ys, }, };
-+	struct netdev_dev_get_rsp *rsp;
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	nlh = ynl_gemsg_start_req(ys, ys->family_id, NETDEV_CMD_DEV_GET, 1);
-+	ys->req_policy = &netdev_dev_nest;
-+	yrs.yarg.rsp_policy = &netdev_dev_nest;
-+
-+	if (req->_present.ifindex)
-+		mnl_attr_put_u32(nlh, NETDEV_A_DEV_IFINDEX, req->ifindex);
-+
-+	rsp = calloc(1, sizeof(*rsp));
-+	yrs.yarg.data = rsp;
-+	yrs.cb = netdev_dev_get_rsp_parse;
-+	yrs.rsp_cmd = NETDEV_CMD_DEV_GET;
-+
-+	err = ynl_exec(ys, nlh, &yrs);
-+	if (err < 0)
-+		goto err_free;
-+
-+	return rsp;
-+
-+err_free:
-+	netdev_dev_get_rsp_free(rsp);
-+	return NULL;
-+}
-+
-+/* NETDEV_CMD_DEV_GET - dump */
-+void netdev_dev_get_list_free(struct netdev_dev_get_list *rsp)
-+{
-+	struct netdev_dev_get_list *next = rsp;
-+
-+	while ((void *)next != YNL_LIST_END) {
-+		rsp = next;
-+		next = rsp->next;
-+
-+		free(rsp);
-+	}
-+}
-+
-+struct netdev_dev_get_list *netdev_dev_get_dump(struct ynl_sock *ys)
-+{
-+	struct ynl_dump_state yds = {};
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	yds.ys = ys;
-+	yds.alloc_sz = sizeof(struct netdev_dev_get_list);
-+	yds.cb = netdev_dev_get_rsp_parse;
-+	yds.rsp_cmd = NETDEV_CMD_DEV_GET;
-+	yds.rsp_policy = &netdev_dev_nest;
-+
-+	nlh = ynl_gemsg_start_dump(ys, ys->family_id, NETDEV_CMD_DEV_GET, 1);
-+
-+	err = ynl_exec_dump(ys, nlh, &yds);
-+	if (err < 0)
-+		goto free_list;
-+
-+	return yds.first;
-+
-+free_list:
-+	netdev_dev_get_list_free(yds.first);
-+	return NULL;
-+}
-+
-+/* NETDEV_CMD_DEV_GET - notify */
-+void netdev_dev_get_ntf_free(struct netdev_dev_get_ntf *rsp)
-+{
-+	free(rsp);
-+}
-+
-+/* --------------- Common notification parsing --------------- */
-+struct ynl_ntf_base_type *netdev_ntf_parse(struct ynl_sock *ys)
-+{
-+	struct ynl_parse_arg yarg = { .ys = ys, };
-+	struct ynl_ntf_base_type *rsp;
-+	struct genlmsghdr *genlh;
-+	struct nlmsghdr *nlh;
-+	mnl_cb_t parse;
-+	int len, err;
-+
-+	len = mnl_socket_recvfrom(ys->sock, ys->rx_buf, MNL_SOCKET_BUFFER_SIZE);
-+	if (len < (ssize_t)(sizeof(*nlh) + sizeof(*genlh)))
-+		return NULL;
-+
-+	nlh = (struct nlmsghdr *)ys->rx_buf;
-+	genlh = mnl_nlmsg_get_payload(nlh);
-+
-+	switch (genlh->cmd) {
-+	case NETDEV_CMD_DEV_ADD_NTF:
-+	case NETDEV_CMD_DEV_DEL_NTF:
-+	case NETDEV_CMD_DEV_CHANGE_NTF:
-+		rsp = calloc(1, sizeof(struct netdev_dev_get_ntf));
-+		parse = netdev_dev_get_rsp_parse;
-+		yarg.rsp_policy = &netdev_dev_nest;
-+		rsp->free = (void *)netdev_dev_get_ntf_free;
-+		break;
-+	default:
-+		ynl_error_unknown_notification(ys, genlh->cmd);
-+		return NULL;
-+	}
-+
-+	yarg.data = rsp->data;
-+
-+	err = mnl_cb_run2(ys->rx_buf, len, 0, 0, parse, &yarg,
-+			 ynl_cb_array, NLMSG_MIN_TYPE);
-+	if (err < 0)
-+		goto err_free;
-+
-+	rsp->family = nlh->nlmsg_type;
-+	rsp->cmd = genlh->cmd;
-+	return rsp;
-+
-+err_free:
-+	free(rsp);
-+	return NULL;
-+}
-+
-+static const struct ynl_ntf_info netdev_ntf_info[] =  {
-+	[NETDEV_CMD_DEV_ADD_NTF] =  {
-+		.alloc_sz	= sizeof(struct netdev_dev_get_ntf),
-+		.cb		= netdev_dev_get_rsp_parse,
-+		.policy		= &netdev_dev_nest,
-+		.free		= (void *)netdev_dev_get_ntf_free,
-+	},
-+	[NETDEV_CMD_DEV_DEL_NTF] =  {
-+		.alloc_sz	= sizeof(struct netdev_dev_get_ntf),
-+		.cb		= netdev_dev_get_rsp_parse,
-+		.policy		= &netdev_dev_nest,
-+		.free		= (void *)netdev_dev_get_ntf_free,
-+	},
-+	[NETDEV_CMD_DEV_CHANGE_NTF] =  {
-+		.alloc_sz	= sizeof(struct netdev_dev_get_ntf),
-+		.cb		= netdev_dev_get_rsp_parse,
-+		.policy		= &netdev_dev_nest,
-+		.free		= (void *)netdev_dev_get_ntf_free,
-+	},
-+};
-+
-+const struct ynl_family ynl_netdev_family =  {
-+	.name		= "netdev",
-+	.ntf_info	= netdev_ntf_info,
-+	.ntf_info_size	= MNL_ARRAY_SIZE(netdev_ntf_info),
-+};
-diff --git a/tools/net/ynl/generated/netdev-user.h b/tools/net/ynl/generated/netdev-user.h
-new file mode 100644
-index 000000000000..d146bc4b2112
---- /dev/null
-+++ b/tools/net/ynl/generated/netdev-user.h
-@@ -0,0 +1,88 @@
-+/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-+/* Do not edit directly, auto-generated from: */
-+/*	Documentation/netlink/specs/netdev.yaml */
-+/* YNL-GEN user header */
-+
-+#ifndef _LINUX_NETDEV_GEN_H
-+#define _LINUX_NETDEV_GEN_H
-+
-+#include <stdlib.h>
-+#include <string.h>
-+#include <linux/types.h>
-+#include <linux/netdev.h>
-+
-+struct ynl_sock;
-+
-+extern const struct ynl_family ynl_netdev_family;
-+
-+/* Enums */
-+const char *netdev_op_str(int op);
-+const char *netdev_xdp_act_str(enum netdev_xdp_act value);
-+
-+/* Common nested types */
-+/* ============== NETDEV_CMD_DEV_GET ============== */
-+/* NETDEV_CMD_DEV_GET - do */
-+struct netdev_dev_get_req {
-+	struct {
-+		__u32 ifindex:1;
-+	} _present;
-+
-+	__u32 ifindex;
-+};
-+
-+static inline struct netdev_dev_get_req *netdev_dev_get_req_alloc(void)
-+{
-+	return calloc(1, sizeof(struct netdev_dev_get_req));
-+}
-+void netdev_dev_get_req_free(struct netdev_dev_get_req *req);
-+
-+static inline void
-+netdev_dev_get_req_set_ifindex(struct netdev_dev_get_req *req, __u32 ifindex)
-+{
-+	req->_present.ifindex = 1;
-+	req->ifindex = ifindex;
-+}
-+
-+struct netdev_dev_get_rsp {
-+	struct {
-+		__u32 ifindex:1;
-+		__u32 xdp_features:1;
-+	} _present;
-+
-+	__u32 ifindex;
-+	__u64 xdp_features;
-+};
-+
-+void netdev_dev_get_rsp_free(struct netdev_dev_get_rsp *rsp);
-+
-+/*
-+ * Get / dump information about a netdev.
++/* netdev genetlink family code sample
++ * This sample shows off basics of the netdev family but also notification
++ * handling, hence the somewhat odd UI. We subscribe to notifications first
++ * then wait for ifc selection, so the socket may already accumulate
++ * notifications as we wait. This allows us to test that YNL can handle
++ * requests and notifications getting interleaved.
 + */
-+struct netdev_dev_get_rsp *
-+netdev_dev_get(struct ynl_sock *ys, struct netdev_dev_get_req *req);
 +
-+/* NETDEV_CMD_DEV_GET - dump */
-+struct netdev_dev_get_list {
-+	struct netdev_dev_get_list *next;
-+	struct netdev_dev_get_rsp obj __attribute__ ((aligned (8)));
-+};
++static void netdev_print_device(struct netdev_dev_get_rsp *d, unsigned int op)
++{
++	char ifname[IF_NAMESIZE];
++	const char *name;
 +
-+void netdev_dev_get_list_free(struct netdev_dev_get_list *rsp);
++	if (!d->_present.ifindex)
++		return;
 +
-+struct netdev_dev_get_list *netdev_dev_get_dump(struct ynl_sock *ys);
++	name = if_indextoname(d->ifindex, ifname);
++	if (name)
++		printf("%8s", name);
++	printf("[%d]\t", d->ifindex);
 +
-+/* NETDEV_CMD_DEV_GET - notify */
-+struct netdev_dev_get_ntf {
-+	__u16 family;
-+	__u8 cmd;
-+	struct ynl_ntf_base_type *next;
-+	void (*free)(struct netdev_dev_get_ntf *ntf);
-+	struct netdev_dev_get_rsp obj __attribute__ ((aligned (8)));
-+};
++	if (!d->_present.xdp_features)
++		return;
 +
-+void netdev_dev_get_ntf_free(struct netdev_dev_get_ntf *rsp);
++	printf("%llx:", d->xdp_features);
++	for (int i = 0; d->xdp_features > 1U << i; i++) {
++		if (d->xdp_features & (1U << i))
++			printf(" %s", netdev_xdp_act_str(1 << i));
++	}
 +
-+/* --------------- Common notification parsing --------------- */
-+struct ynl_ntf_base_type *netdev_ntf_parse(struct ynl_sock *ys);
++	name = netdev_op_str(op);
++	if (name)
++		printf(" (ntf: %s)", name);
++	printf("\n");
++}
 +
-+#endif /* _LINUX_NETDEV_GEN_H */
++int main(int argc, char **argv)
++{
++	struct netdev_dev_get_list *devs;
++	struct ynl_ntf_base_type *ntf;
++	struct ynl_error yerr;
++	struct ynl_sock *ys;
++	int ifindex = 0;
++
++	if (argc > 1)
++		ifindex = strtol(argv[1], NULL, 0);
++
++	ys = ynl_sock_create(&ynl_netdev_family, &yerr);
++	if (!ys) {
++		fprintf(stderr, "YNL: %s\n", yerr.msg);
++		return 1;
++	}
++
++	if (ynl_subscribe(ys, "mgmt"))
++		goto err_close;
++
++	printf("Select ifc ($ifindex; or 0 = dump; or -2 ntf check): ");
++	scanf("%d", &ifindex);
++
++	if (ifindex > 0) {
++		struct netdev_dev_get_req *req;
++		struct netdev_dev_get_rsp *d;
++
++		req = netdev_dev_get_req_alloc();
++		netdev_dev_get_req_set_ifindex(req, ifindex);
++
++		d = netdev_dev_get(ys, req);
++		netdev_dev_get_req_free(req);
++		if (!d)
++			goto err_close;
++
++		netdev_print_device(d, 0);
++		netdev_dev_get_rsp_free(d);
++	} else if (!ifindex) {
++		devs = netdev_dev_get_dump(ys);
++		if (!devs)
++			goto err_close;
++
++		ynl_dump_foreach(devs, d)
++			netdev_print_device(d, 0);
++		netdev_dev_get_list_free(devs);
++	} else if (ifindex == -2) {
++		ynl_ntf_check(ys);
++	}
++	while ((ntf = ynl_ntf_dequeue(ys))) {
++		netdev_print_device((struct netdev_dev_get_rsp *)&ntf->data,
++				    ntf->cmd);
++		ynl_ntf_free(ntf);
++	}
++
++	ynl_sock_destroy(ys);
++	return 0;
++
++err_close:
++	fprintf(stderr, "YNL: %s\n", ys->err.msg);
++	ynl_sock_destroy(ys);
++	return 2;
++}
 -- 
 2.40.1
 
