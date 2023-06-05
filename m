@@ -1,62 +1,53 @@
-Return-Path: <netdev+bounces-8191-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8190-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A2F1872309B
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 22:01:40 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9CF9B723096
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 22:01:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1654E1C20D3B
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 20:01:37 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B3B2528101E
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 20:01:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B45D224EBE;
-	Mon,  5 Jun 2023 20:01:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F9EF24EAF;
+	Mon,  5 Jun 2023 20:01:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA3E02414D
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 20:01:25 +0000 (UTC)
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ABF4FD
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 13:01:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685995284; x=1717531284;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=fT2guEvWUpPkUReyjtcCwFqtI9nShZWpy2Wk46k8D/A=;
-  b=h7nHNUXFmMD7Yb+GtP3R6eru6XShoaFopr0fTLnHOPrPMkf3lhuqc124
-   G92JV9YGpUc52lqVDxcXiCVaOtXgzcOWpBtd12606/v2lMcCaYPhlNXPc
-   5CJRTRLodjKKRoBWalQhkU/kmQ7o2HpVt/whCVpT75CjGj3x+TAtcKkWR
-   7eRFEisZGTRgT443XuRwjFqFlcQZMSiNy+8x7YadKLS1l8LValb1FN0Rw
-   nnLKSRN8I88eSRq3i+EJ08Hjd8yVHySCjmVNkwGWpCZvdnkzGTrry3VnT
-   GuoeMslSw2XyJ4obbTJmRxd0Sd0Tr+VTsmjgY3v9VEjtOK3OUs4TO/K6W
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="359782015"
-X-IronPort-AV: E=Sophos;i="6.00,218,1681196400"; 
-   d="scan'208";a="359782015"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 13:01:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="708783368"
-X-IronPort-AV: E=Sophos;i="6.00,218,1681196400"; 
-   d="scan'208";a="708783368"
-Received: from lkp-server01.sh.intel.com (HELO 15ab08e44a81) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 05 Jun 2023 13:01:22 -0700
-Received: from kbuild by 15ab08e44a81 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1q6GOH-0004P9-1o;
-	Mon, 05 Jun 2023 20:01:21 +0000
-Date: Tue, 6 Jun 2023 04:00:31 +0800
-From: kernel test robot <lkp@intel.com>
-To: Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc: oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org,
-	Simon Horman <simon.horman@corigine.com>
-Subject: [net-next:main 3/19] csky-linux-ld:
- drivers/net/ethernet/altera/altera_tse_main.c:1451: undefined reference to
- `lynx_pcs_destroy'
-Message-ID: <202306060333.4xvu5BJd-lkp@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04D70DDC0
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 20:01:18 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1DBCFD
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 13:01:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=RWqAgFDkRUrG8WCL//cvPEXkOMA9rPgRzUcII0DDsKI=; b=m0sZbjCwwOmbT1lQbKPC3y7olh
+	j7japn7BK/5JfY4z5AX9cr2Ddr1y4qtmcpn9TddSaavcWyn5dVC9b5jhMs8yH4dUaQu2Tb4PXpvD2
+	R/nBtolzMEnG/cI02QaArwMmayvEJlzBziF6X6hlPrv3YnDONSrI7RkH2Iimsa/Dqrdc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1q6GNt-00Ew83-5G; Mon, 05 Jun 2023 22:00:57 +0200
+Date: Mon, 5 Jun 2023 22:00:57 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: "Fernando Eckhardt Valle (FIPT)" <fevalle@ipt.br>
+Cc: "davem@davemloft.net" <davem@davemloft.net>,
+	"jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>,
+	"anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+	"edumazet@google.com" <edumazet@google.com>,
+	"kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] igc: enable Mac Address Passthrough in Lenovo
+ Thunderbolt 4 Docks
+Message-ID: <91983414-8df7-4cc0-9465-328d47024bcc@lunn.ch>
+References: <20230605185407.5072-1-fevalle@ipt.br>
+ <09c32c5a-73b4-456f-97f9-685820f3ba25@lunn.ch>
+ <CPVP152MB50534DFBCF085A15E2FD37AAD84DA@CPVP152MB5053.LAMP152.PROD.OUTLOOK.COM>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -65,48 +56,47 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+In-Reply-To: <CPVP152MB50534DFBCF085A15E2FD37AAD84DA@CPVP152MB5053.LAMP152.PROD.OUTLOOK.COM>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git main
-head:   69da40ac3481993d6f599c98e84fcdbbf0bcd7e0
-commit: db48abbaa18e571106711b42affe68ca6f36ca5a [3/19] net: ethernet: altera-tse: Convert to mdio-regmap and use PCS Lynx
-config: csky-randconfig-r004-20230605 (https://download.01.org/0day-ci/archive/20230606/202306060333.4xvu5BJd-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 12.3.0
-reproduce (this is a W=1 build):
-        mkdir -p ~/bin
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=db48abbaa18e571106711b42affe68ca6f36ca5a
-        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-        git fetch --no-tags net-next main
-        git checkout db48abbaa18e571106711b42affe68ca6f36ca5a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.3.0 ~/bin/make.cross W=1 O=build_dir ARCH=csky olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.3.0 ~/bin/make.cross W=1 O=build_dir ARCH=csky SHELL=/bin/bash
+On Mon, Jun 05, 2023 at 07:47:43PM +0000, Fernando Eckhardt Valle (FIPT) wrote:
+> 
+>     Module parameters are very much frowned upon. Please try to find
+>     another solution.
+> 
+>     What does the copy of the MAC address? Can it signal when it is done,
+>     and when there is nothing to do?
+> 
+> 
+> When the mac address passthrough feature is enabled in the computer's BIOS, it
+> is necessary to copy the computer's mac address to the Ethernet device of the
+> dock station. This way, the dock station's mac address will be the same as the
+> computer's, and that's what should happen. However, this process is not given
+> enough time to occur, hence the msleep(600), with this small delay, the dock is
+> able to copy the computer's mac address.
+> 
+> The parameters are precisely meant to avoid having to use msleep() every time
+> the module is loaded.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202306060333.4xvu5BJd-lkp@intel.com/
+MAC address passthrought seems in general to be a big collection of
+vendor hacks which in general are broken in most corner cases, and
+even in the middle cases. What really needs to happen is that the
+vendors get together and standardize on one solution, and make sure
+they involved the kernel developers in the design.
 
-All errors (new ones prefixed by >>):
+O.K, so why is the kernel involved? It sounds like userspace should be
+solving this. It is easy for userspace to get a notification when the
+dock pops into existence. It can then walk the tree of devices and
+find that the IGC is in a dock, its the first dock, not the 42nd dock
+in a long chain. User space also has access to the BIOS version so it
+knows the BIOS will at some point execute this proprietary extension
+and copy the MAC address to one of the docks, maybe even the correct
+one in the chain of 42. It can wait 1 seconds, and then down/up the
+interface?
 
-   csky-linux-ld: drivers/net/ethernet/altera/altera_tse_main.o: in function `altera_tse_remove':
-   drivers/net/ethernet/altera/altera_tse_main.c:1473: undefined reference to `lynx_pcs_destroy'
-   csky-linux-ld: drivers/net/ethernet/altera/altera_tse_main.o: in function `reset_mac':
-   drivers/net/ethernet/altera/altera_tse_main.c:687: undefined reference to `lynx_pcs_destroy'
-   csky-linux-ld: drivers/net/ethernet/altera/altera_tse_main.o: in function `altera_tse_probe':
-   drivers/net/ethernet/altera/altera_tse_main.c:1419: undefined reference to `lynx_pcs_create_mdiodev'
->> csky-linux-ld: drivers/net/ethernet/altera/altera_tse_main.c:1451: undefined reference to `lynx_pcs_destroy'
->> csky-linux-ld: drivers/net/ethernet/altera/altera_tse_main.c:1456: undefined reference to `lynx_pcs_create_mdiodev'
-   csky-linux-ld: drivers/net/ethernet/altera/altera_tse_main.c:1456: undefined reference to `lynx_pcs_destroy'
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+	Andrew
 
