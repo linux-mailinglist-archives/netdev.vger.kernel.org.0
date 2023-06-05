@@ -1,58 +1,58 @@
-Return-Path: <netdev+bounces-7830-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7831-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3C772721C30
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 04:55:09 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 10392721C45
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 04:56:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AAD581C20AD5
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 02:55:05 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B9E812810F2
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 02:56:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4161137D;
-	Mon,  5 Jun 2023 02:55:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0018A37D;
+	Mon,  5 Jun 2023 02:56:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27313198;
-	Mon,  5 Jun 2023 02:55:04 +0000 (UTC)
-Received: from mail-yw1-x1142.google.com (mail-yw1-x1142.google.com [IPv6:2607:f8b0:4864:20::1142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A6E2A9;
-	Sun,  4 Jun 2023 19:55:02 -0700 (PDT)
-Received: by mail-yw1-x1142.google.com with SMTP id 00721157ae682-568928af8f5so65242317b3.1;
-        Sun, 04 Jun 2023 19:55:02 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3E1D198;
+	Mon,  5 Jun 2023 02:56:08 +0000 (UTC)
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE98CC;
+	Sun,  4 Jun 2023 19:56:07 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id 3f1490d57ef6-bab8f66d3a2so5118977276.3;
+        Sun, 04 Jun 2023 19:56:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685933701; x=1688525701;
+        d=gmail.com; s=20221208; t=1685933767; x=1688525767;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=2IVNYUufQ9JCjk49iI258fSjZYigZQWdzvsQcVbQviE=;
-        b=dV4piXu9PusE2f0xIH/vuYYIZdmUHuPOvQr2y4/6tZM/3HCW6JWkANpKLIamWlR+En
-         QBAqp0fj1ylVJ9flBMXgLswL4Mba1+U8kXlIXVHKLX/RQGTc/bH8dPhsoQoXNu9hYnoK
-         LXYNp1/JiP77RxyUi2sA4r5LmJ454in3rYb1kcH4rx31l85gOul/8oXTc2yN/7TLPGc7
-         w2cBC99uUg7+ZeA2MECeBp7Us+A9ag/H2J+buTYBX2zUxn2tgOrMJ+AALc9pDxZqD8xY
-         yqJ8cIMGJZ1YkIls9DlAWl40+NsnRKJo72aF6tpXNEnVewqP4ToM6YMs7YADGn+nznFL
-         o/4w==
+        bh=6gWa0dT2lb5mRzP5Yoj2JMiWsUkD2gLZ1PMNzk7s+Tw=;
+        b=CK7qhsYOmjgD+6hYdUPOE/M3qWHYhw305uD9kDHKRRxJvB88OkYVj01PDMge3IEHg7
+         KkCOC4yWZ7qo5vcfTOFV61JOg3H6TDnQA6pCaixcWzlcZBsmrHYPh9na4Adanyab5Vr1
+         /MGcGK0qeQlyaiUHe9Ydx8uyNvaaaJwu8s32WHn7XOk6TgUhxRol1MvuahFaLH3O/EBG
+         ThfSCQ/Fbyd4R2fETuMaq8uRXUxI42JAqIAwQfLQz6JWcveWhb8wITvimID1KhFKNW1b
+         MwwajOBwJperFn+O7SaczRQmJGV/rPC5XsMlKr41ZJegyz0PCuEsT5j9KXGZR3XdQEaX
+         R9kQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685933701; x=1688525701;
+        d=1e100.net; s=20221208; t=1685933767; x=1688525767;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=2IVNYUufQ9JCjk49iI258fSjZYigZQWdzvsQcVbQviE=;
-        b=Z1A5LXKYAyaa1CMatC0mOlcCxkZ8Zuwn0k/4joLghz5xOGdJypgLP4QEyz0zMObRlG
-         NRzGJJvyfdsnN4EyFwOC3YCB9xNncz7g6Jw51EyS0JPjjQ3HaYpcItbRyO6Irpd9Kt1A
-         yrHjycyVtsa1mUGKJmnDVpk9x7AR5fz+VipE3dQwjjZ7mjvfAuEEYLSJfmmCJh/j+ohE
-         gogo0BBvtzyDKuoZUf6itsr1CGuTArX4hxLSzZZutlu5XxVXEP6+0JIDrJhTH1u5l0xa
-         /uQPPhF4/dHB4cQLB0c3U1+yWrnhzSwLlXCyeCWeR9PtqfwOMdbAyw/YupFuHOOrySDI
-         FJlw==
-X-Gm-Message-State: AC+VfDyLbiy0WKTc8VS1IKq8Wsqyhw0oYU1fFxlOfEYzBK7C7PtOMlQB
-	l4FYvhEd0Anl2eB+66KNMbnWJeUNUR/UFyElvfQ=
-X-Google-Smtp-Source: ACHHUZ6zEr+Ej5npCdWeeKOW11wHgcDU72TKKo9FL4I1iy8UiIFdkMZ8gslHsEFdQ23W6OqOiH84NCNySnDIMcqoCzI=
-X-Received: by 2002:a0d:ea45:0:b0:561:9bcc:6c81 with SMTP id
- t66-20020a0dea45000000b005619bcc6c81mr6969492ywe.24.1685933701633; Sun, 04
- Jun 2023 19:55:01 -0700 (PDT)
+        bh=6gWa0dT2lb5mRzP5Yoj2JMiWsUkD2gLZ1PMNzk7s+Tw=;
+        b=ZLWIXes5gpKe/G9saSXQdNjmpGWtflY31QI+3iQgJGG69dKndFwioKvEHThky5j+Ed
+         /6UKxgxDzEBzSm42zruMnP0+thCX6rjQkITvZpyCpBgd2hzOhuaN+n1ltdwM6sWED8Vj
+         aqqzwP0TRP7/RvJWmAyeZrzafpoY6Nohyz3ZK407BRGRbEBzsViHVFC64KPhFKoeUJQr
+         wfMLWDRcmwrKBqm8/Ozk4RgKPd0YqLw8jlLWup4nKu35xjCZ6wDKTVVvsmIH2PoYq0uv
+         Ua5gQJCWPMLhqvLteixk4IwLkKEtdVL6hC5Ta+Pnv+SG0gA7KaUKIhwvKL4T/oF1N1kD
+         qd/g==
+X-Gm-Message-State: AC+VfDyiWEbpVEmPw61mUrGlgkT0Nob2H+rvoVxqb5afm3LrmM4AU+R3
+	l4RhBCy9rhMFzJa4yMt02DYr7oubTRccCSl/4DA=
+X-Google-Smtp-Source: ACHHUZ7PZuFCppra41w3WE3sTX/zdixviRujMOgi2F7yHrOtjwx2B9DAIC8tnmpdzfd5tqiIFuJoMoio9uVC8+Asxvw=
+X-Received: by 2002:a25:2142:0:b0:bac:652e:b65 with SMTP id
+ h63-20020a252142000000b00bac652e0b65mr10577871ybh.28.1685933766580; Sun, 04
+ Jun 2023 19:56:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -60,13 +60,14 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20230602065958.2869555-1-imagedong@tencent.com>
- <20230602065958.2869555-2-imagedong@tencent.com> <ZHtKl8UE3AmJ3OpH@corigine.com>
-In-Reply-To: <ZHtKl8UE3AmJ3OpH@corigine.com>
+ <20230602065958.2869555-6-imagedong@tencent.com> <CAADnVQLPhhEjp6HfsQhaEdp269MZGs2jBkPtkeBe8i0r-MWnYA@mail.gmail.com>
+In-Reply-To: <CAADnVQLPhhEjp6HfsQhaEdp269MZGs2jBkPtkeBe8i0r-MWnYA@mail.gmail.com>
 From: Menglong Dong <menglong8.dong@gmail.com>
-Date: Mon, 5 Jun 2023 10:54:50 +0800
-Message-ID: <CADxym3ZKi2WV=FBCzU+DrSmtbPC36BZKCs1=_QHXfCbapgU30w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/5] bpf: make MAX_BPF_FUNC_ARGS 14
-To: Simon Horman <simon.horman@corigine.com>
+Date: Mon, 5 Jun 2023 10:55:55 +0800
+Message-ID: <CADxym3ZNwuYTmXyzTuyqhPbwerejJOC8_YuSBsyFwzogOjvagA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 5/5] selftests/bpf: add testcase for
+ FENTRY/FEXIT with 6+ arguments
+To: Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc: Jiri Olsa <olsajiri@gmail.com>, "David S. Miller" <davem@davemloft.net>, 
 	David Ahern <dsahern@kernel.org>, Alexei Starovoitov <ast@kernel.org>, 
 	Daniel Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>, 
@@ -84,64 +85,90 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Sat, Jun 3, 2023 at 10:13=E2=80=AFPM Simon Horman <simon.horman@corigine=
-.com> wrote:
+On Sat, Jun 3, 2023 at 2:32=E2=80=AFAM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> On Fri, Jun 02, 2023 at 02:59:54PM +0800, menglong8.dong@gmail.com wrote:
+> On Fri, Jun 2, 2023 at 12:03=E2=80=AFAM <menglong8.dong@gmail.com> wrote:
+> >
 > > From: Menglong Dong <imagedong@tencent.com>
 > >
-> > According to the current kernel version, below is a statistics of the
-> > function arguments count:
+> > Add test7/test12/test14 in fexit_test.c and fentry_test.c to test the
+> > fentry and fexit whose target function have 7/12/14 arguments.
 > >
-> > argument count | FUNC_PROTO count
-> > 7              | 367
-> > 8              | 196
-> > 9              | 71
-> > 10             | 43
-> > 11             | 22
-> > 12             | 10
-> > 13             | 15
-> > 14             | 4
-> > 15             | 0
-> > 16             | 1
+> > And the testcases passed:
 > >
-> > It's hard to statisics the function count, so I use FUNC_PROTO in the b=
-tf
-> > of vmlinux instead. The function with 16 arguments is ZSTD_buildCTable(=
-),
-> > which I think can be ignored.
+> > ./test_progs -t fexit
+> > $71      fentry_fexit:OK
+> > $73/1    fexit_bpf2bpf/target_no_callees:OK
+> > $73/2    fexit_bpf2bpf/target_yes_callees:OK
+> > $73/3    fexit_bpf2bpf/func_replace:OK
+> > $73/4    fexit_bpf2bpf/func_replace_verify:OK
+> > $73/5    fexit_bpf2bpf/func_sockmap_update:OK
+> > $73/6    fexit_bpf2bpf/func_replace_return_code:OK
+> > $73/7    fexit_bpf2bpf/func_map_prog_compatibility:OK
+> > $73/8    fexit_bpf2bpf/func_replace_multi:OK
+> > $73/9    fexit_bpf2bpf/fmod_ret_freplace:OK
+> > $73/10   fexit_bpf2bpf/func_replace_global_func:OK
+> > $73/11   fexit_bpf2bpf/fentry_to_cgroup_bpf:OK
+> > $73/12   fexit_bpf2bpf/func_replace_progmap:OK
+> > $73      fexit_bpf2bpf:OK
+> > $74      fexit_sleep:OK
+> > $75      fexit_stress:OK
+> > $76      fexit_test:OK
+> > Summary: 5/12 PASSED, 0 SKIPPED, 0 FAILED
 > >
-> > Therefore, let's make the maximum of function arguments count 14. It us=
-ed
-> > to be 12, but it seems that there is no harm to make it big enough.
+> > ./test_progs -t fentry
+> > $71      fentry_fexit:OK
+> > $72      fentry_test:OK
+> > $140     module_fentry_shadow:OK
+> > Summary: 3/0 PASSED, 0 SKIPPED, 0 FAILED
 > >
 > > Reviewed-by: Jiang Biao <benbjiang@tencent.com>
 > > Signed-off-by: Menglong Dong <imagedong@tencent.com>
 > > ---
-> >  include/linux/bpf.h | 9 +++++----
-> >  1 file changed, 5 insertions(+), 4 deletions(-)
+> >  net/bpf/test_run.c                            | 30 +++++++++++++++-
+> >  .../testing/selftests/bpf/progs/fentry_test.c | 34 ++++++++++++++++++
+> >  .../testing/selftests/bpf/progs/fexit_test.c  | 35 +++++++++++++++++++
+> >  3 files changed, 98 insertions(+), 1 deletion(-)
 > >
-> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > index f58895830ada..8b997779faf7 100644
-> > --- a/include/linux/bpf.h
-> > +++ b/include/linux/bpf.h
-> > @@ -961,10 +961,10 @@ enum bpf_cgroup_storage_type {
+> > diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> > index c73f246a706f..e12a72311eca 100644
+> > --- a/net/bpf/test_run.c
+> > +++ b/net/bpf/test_run.c
+> > @@ -536,6 +536,27 @@ int noinline bpf_fentry_test6(u64 a, void *b, shor=
+t c, int d, void *e, u64 f)
+> >         return a + (long)b + c + d + (long)e + f;
+> >  }
 > >
-> >  #define MAX_BPF_CGROUP_STORAGE_TYPE __BPF_CGROUP_STORAGE_MAX
-> >
-> > -/* The longest tracepoint has 12 args.
-> > - * See include/trace/bpf_probe.h
-> > +/* The maximun number of the kernel function arguments.
+> > +noinline int bpf_fentry_test7(u64 a, void *b, short c, int d, void *e,
+> > +                             u64 f, u64 g)
+> > +{
+> > +       return a + (long)b + c + d + (long)e + f + g;
+> > +}
+> > +
+> > +noinline int bpf_fentry_test12(u64 a, void *b, short c, int d, void *e=
+,
+> > +                              u64 f, u64 g, u64 h, u64 i, u64 j,
+> > +                              u64 k, u64 l)
+> > +{
+> > +       return a + (long)b + c + d + (long)e + f + g + h + i + j + k + =
+l;
+> > +}
+> > +
+> > +noinline int bpf_fentry_test14(u64 a, void *b, short c, int d, void *e=
+,
+> > +                              u64 f, u64 g, u64 h, u64 i, u64 j,
+> > +                              u64 k, u64 l, u64 m, u64 n)
+> > +{
+> > +       return a + (long)b + c + d + (long)e + f + g + h + i + j + k + =
+l +
+> > +              m + n;
+> > +}
 >
-> Hi Menglong Dong,
->
-> as it looks like there will be a v3 anyway, please
-> consider correcting the spelling of maximum.
->
+> Please add test func to bpf_testmod instead of here.
 
-According to the advice of Alexei Starovoitov, it seems
-we don't need to modify it here anymore. Anyway,
-Thank you for reminding me of this spelling mistake :)
+Okay!
 
-> ...
+Thanks!
+Menglong Dong
 
