@@ -1,237 +1,98 @@
-Return-Path: <netdev+bounces-7880-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7882-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id A63F1721F44
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:14:08 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 48ECD721F6A
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:21:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D4833281202
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 07:14:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 983882811DC
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 07:21:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E41ED847E;
-	Mon,  5 Jun 2023 07:14:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CFA37AD26;
+	Mon,  5 Jun 2023 07:21:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9B3E194
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 07:14:04 +0000 (UTC)
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA23EE47;
-	Mon,  5 Jun 2023 00:13:42 -0700 (PDT)
-Received: by linux.microsoft.com (Postfix, from userid 1134)
-	id A149020BC618; Mon,  5 Jun 2023 00:13:17 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A149020BC618
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1685949197;
-	bh=VnwuA4SKT0DIE2uS0aw8iGgaRmOgZDkkNsh8tdxtnxU=;
-	h=From:To:Cc:Subject:Date:From;
-	b=TvNjA9LZdCpCDGKLvEMtUgdRObcMH8/bmQL3Y/ErhDDgAHB8VApQDMQ3aPS8SyIuV
-	 H3gv7mVtmLXYuMlA3bwoWs1OcE6ixwfJD23+DIqUWcg3DBlVyloS5B2/etA1QXPC5M
-	 JIZ0rVY3HZ9eop5/znW1JLTf4Qf8bjT2P0j/TfyQ=
-From: Shradha Gupta <shradhagupta@linux.microsoft.com>
-To: linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org,
-	netdev@vger.kernel.org
-Cc: Shradha Gupta <shradhagupta@linux.microsoft.com>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	"K. Y. Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	Long Li <longli@microsoft.com>,
-	Michael Kelley <mikelley@microsoft.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Steen Hegelund <steen.hegelund@microchip.com>,
-	Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH v5] hv_netvsc: Allocate rx indirection table size dynamically
-Date: Mon,  5 Jun 2023 00:13:16 -0700
-Message-Id: <1685949196-16175-1-git-send-email-shradhagupta@linux.microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,
-	USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C37ED194
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 07:21:52 +0000 (UTC)
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897439F
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 00:21:51 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+	by mailout.west.internal (Postfix) with ESMTP id 3628832004ED;
+	Mon,  5 Jun 2023 03:21:50 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Mon, 05 Jun 2023 03:21:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm1; t=1685949709; x=1686036109; bh=oWXfMO/nx5sa7
+	BHXF40FB5mAXYjjrg+o5fWvA+OT6Gg=; b=tNuULxHLEVrU8IYVmM6NHPHbwZSZG
+	t2Pg+kjPxudFX2ShQHcdGv2VIjR4lMMYNHuArbITUNSnAjjrJF+N4bAsojXR41I9
+	v6G1ah9gpNhJCJ5HcEPU1nBqhu9wDIelIT4g6JAzK5a/EDIXtRI+atWtDIsao7Fo
+	7aia4G8Ih7C47syVWzHf1pyIpbQv4B1RSz2Zfm2HJcOXHJufMmOXPHOQP69vnkGW
+	lvFE6/PT5jpP4Y8plgVEscZCh0g8QKt9dcPHGjwIMHb6QYjrfjUPEsHu9r/dvGW+
+	oSfPVGGSmuAVetFCpBewi49lGEUCe0aEiFK5BX6QPNQRSUG1NgfwePFWw==
+X-ME-Sender: <xms:DY19ZL91U1FXScpav333fNXR2OtYy6aHKD5n3y1TBeMqQ9CjGV7gqg>
+    <xme:DY19ZHvYXBJUEXNZH7xwIkpv4uRfp8LHebbF9MWpVPbfnAznXSh65K5Kc0JgpAfOI
+    cj1VbHc9EI19x0>
+X-ME-Received: <xmr:DY19ZJAGy24deWfae5PWHxG3inTE31ird3cbv3UD9sKRm6RfXm6_QPJWnMPJ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeelkedguddukecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
+    htthgvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeej
+    geeghfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:DY19ZHeX-sWAciCnKUbwrJGZGYMRaDj1oC9DZzTyqJpHWKzqMfNlaw>
+    <xmx:DY19ZAMsv3-agXkGjmajBHe1CX9aGL3GnOxrnXVjfJRXmI2hZGZZCw>
+    <xmx:DY19ZJkLm9Nv7oIzgt7qsNXnNl74Rwq1xsWuSE1mLHegHWHA_wWsLQ>
+    <xmx:DY19ZBHFpI_qUDFkcn_tpiIVRJuSrNKOCqZ6Wmta9PzbQjS4i3VOCQ>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 5 Jun 2023 03:21:48 -0400 (EDT)
+Date: Mon, 5 Jun 2023 10:21:46 +0300
+From: Ido Schimmel <idosch@idosch.org>
+To: Zahari Doychev <zahari.doychev@linux.com>
+Cc: netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+	jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, hmehrtens@maxlinear.com,
+	aleksander.lobakin@intel.com, simon.horman@corigine.com,
+	Zahari Doychev <zdoychev@maxlinear.com>
+Subject: Re: [PATCH net-next v5 1/3] net: flow_dissector: add support for cfm
+ packets
+Message-ID: <ZH2NCmmORVfhdpTl@shredder>
+References: <20230604115825.2739031-1-zahari.doychev@linux.com>
+ <20230604115825.2739031-2-zahari.doychev@linux.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230604115825.2739031-2-zahari.doychev@linux.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Allocate the size of rx indirection table dynamically in netvsc
-from the value of size provided by OID_GEN_RECEIVE_SCALE_CAPABILITIES
-query instead of using a constant value of ITAB_NUM.
+On Sun, Jun 04, 2023 at 01:58:23PM +0200, Zahari Doychev wrote:
+> From: Zahari Doychev <zdoychev@maxlinear.com>
+> 
+> Add support for dissecting cfm packets. The cfm packet header
+> fields maintenance domain level and opcode can be dissected.
+> 
+> Signed-off-by: Zahari Doychev <zdoychev@maxlinear.com>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-Signed-off-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-Tested-on: Ubuntu22 (azure VM, SKU size: Standard_F72s_v2)
-Testcases:
-1. ethtool -x eth0 output
-2. LISA testcase:PERF-NETWORK-TCP-THROUGHPUT-MULTICONNECTION-NTTTCP-Synthetic
-3. LISA testcase:PERF-NETWORK-TCP-THROUGHPUT-MULTICONNECTION-NTTTCP-SRIOV
-
----
-Changes in v5:
- * Follwoed the RCT format for varible declarations in rndix_filter.c
----
- drivers/net/hyperv/hyperv_net.h   |  5 ++++-
- drivers/net/hyperv/netvsc_drv.c   | 10 ++++++----
- drivers/net/hyperv/rndis_filter.c | 27 +++++++++++++++++++++++----
- 3 files changed, 33 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-index dd5919ec408b..c40868f287a9 100644
---- a/drivers/net/hyperv/hyperv_net.h
-+++ b/drivers/net/hyperv/hyperv_net.h
-@@ -74,6 +74,7 @@ struct ndis_recv_scale_cap { /* NDIS_RECEIVE_SCALE_CAPABILITIES */
- #define NDIS_RSS_HASH_SECRET_KEY_MAX_SIZE_REVISION_2   40
- 
- #define ITAB_NUM 128
-+#define ITAB_NUM_MAX 256
- 
- struct ndis_recv_scale_param { /* NDIS_RECEIVE_SCALE_PARAMETERS */
- 	struct ndis_obj_header hdr;
-@@ -1034,7 +1035,9 @@ struct net_device_context {
- 
- 	u32 tx_table[VRSS_SEND_TAB_SIZE];
- 
--	u16 rx_table[ITAB_NUM];
-+	u16 *rx_table;
-+
-+	u32 rx_table_sz;
- 
- 	/* Ethtool settings */
- 	u8 duplex;
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 0103ff914024..3ba3c8fb28a5 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -1747,7 +1747,9 @@ static u32 netvsc_get_rxfh_key_size(struct net_device *dev)
- 
- static u32 netvsc_rss_indir_size(struct net_device *dev)
- {
--	return ITAB_NUM;
-+	struct net_device_context *ndc = netdev_priv(dev);
-+
-+	return ndc->rx_table_sz;
- }
- 
- static int netvsc_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
-@@ -1766,7 +1768,7 @@ static int netvsc_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
- 
- 	rndis_dev = ndev->extension;
- 	if (indir) {
--		for (i = 0; i < ITAB_NUM; i++)
-+		for (i = 0; i < ndc->rx_table_sz; i++)
- 			indir[i] = ndc->rx_table[i];
- 	}
- 
-@@ -1792,11 +1794,11 @@ static int netvsc_set_rxfh(struct net_device *dev, const u32 *indir,
- 
- 	rndis_dev = ndev->extension;
- 	if (indir) {
--		for (i = 0; i < ITAB_NUM; i++)
-+		for (i = 0; i < ndc->rx_table_sz; i++)
- 			if (indir[i] >= ndev->num_chn)
- 				return -EINVAL;
- 
--		for (i = 0; i < ITAB_NUM; i++)
-+		for (i = 0; i < ndc->rx_table_sz; i++)
- 			ndc->rx_table[i] = indir[i];
- 	}
- 
-diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
-index eea777ec2541..5a5dd5007590 100644
---- a/drivers/net/hyperv/rndis_filter.c
-+++ b/drivers/net/hyperv/rndis_filter.c
-@@ -21,6 +21,7 @@
- #include <linux/rtnetlink.h>
- #include <linux/ucs2_string.h>
- #include <linux/string.h>
-+#include <linux/slab.h>
- 
- #include "hyperv_net.h"
- #include "netvsc_trace.h"
-@@ -927,7 +928,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
- 	struct rndis_set_request *set;
- 	struct rndis_set_complete *set_complete;
- 	u32 extlen = sizeof(struct ndis_recv_scale_param) +
--		     4 * ITAB_NUM + NETVSC_HASH_KEYLEN;
-+		     4 * ndc->rx_table_sz + NETVSC_HASH_KEYLEN;
- 	struct ndis_recv_scale_param *rssp;
- 	u32 *itab;
- 	u8 *keyp;
-@@ -953,7 +954,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
- 	rssp->hashinfo = NDIS_HASH_FUNC_TOEPLITZ | NDIS_HASH_IPV4 |
- 			 NDIS_HASH_TCP_IPV4 | NDIS_HASH_IPV6 |
- 			 NDIS_HASH_TCP_IPV6;
--	rssp->indirect_tabsize = 4*ITAB_NUM;
-+	rssp->indirect_tabsize = 4 * ndc->rx_table_sz;
- 	rssp->indirect_taboffset = sizeof(struct ndis_recv_scale_param);
- 	rssp->hashkey_size = NETVSC_HASH_KEYLEN;
- 	rssp->hashkey_offset = rssp->indirect_taboffset +
-@@ -961,7 +962,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
- 
- 	/* Set indirection table entries */
- 	itab = (u32 *)(rssp + 1);
--	for (i = 0; i < ITAB_NUM; i++)
-+	for (i = 0; i < ndc->rx_table_sz; i++)
- 		itab[i] = ndc->rx_table[i];
- 
- 	/* Set hask key values */
-@@ -1548,6 +1549,18 @@ struct netvsc_device *rndis_filter_device_add(struct hv_device *dev,
- 	if (ret || rsscap.num_recv_que < 2)
- 		goto out;
- 
-+	if (rsscap.num_indirect_tabent &&
-+	    rsscap.num_indirect_tabent <= ITAB_NUM_MAX)
-+		ndc->rx_table_sz = rsscap.num_indirect_tabent;
-+	else
-+		ndc->rx_table_sz = ITAB_NUM;
-+
-+	ndc->rx_table = kcalloc(ndc->rx_table_sz, sizeof(u16), GFP_KERNEL);
-+	if (!ndc->rx_table) {
-+		ret = -ENOMEM;
-+		goto err_dev_remv;
-+	}
-+
- 	/* This guarantees that num_possible_rss_qs <= num_online_cpus */
- 	num_possible_rss_qs = min_t(u32, num_online_cpus(),
- 				    rsscap.num_recv_que);
-@@ -1558,7 +1571,7 @@ struct netvsc_device *rndis_filter_device_add(struct hv_device *dev,
- 	net_device->num_chn = min(net_device->max_chn, device_info->num_chn);
- 
- 	if (!netif_is_rxfh_configured(net)) {
--		for (i = 0; i < ITAB_NUM; i++)
-+		for (i = 0; i < ndc->rx_table_sz; i++)
- 			ndc->rx_table[i] = ethtool_rxfh_indir_default(
- 						i, net_device->num_chn);
- 	}
-@@ -1596,11 +1609,17 @@ void rndis_filter_device_remove(struct hv_device *dev,
- 				struct netvsc_device *net_dev)
- {
- 	struct rndis_device *rndis_dev = net_dev->extension;
-+	struct net_device_context *ndc = netdev_priv(net);
-+	struct net_device *net = hv_get_drvdata(dev);
- 
- 	/* Halt and release the rndis device */
- 	rndis_filter_halt_device(net_dev, rndis_dev);
- 
- 	netvsc_device_remove(dev);
-+
-+	ndc->rx_table_sz = 0;
-+	kfree(ndc->rx_table);
-+	ndc->rx_table = NULL;
- }
- 
- int rndis_filter_open(struct netvsc_device *nvdev)
--- 
-2.34.1
-
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 
