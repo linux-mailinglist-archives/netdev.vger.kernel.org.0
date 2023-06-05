@@ -1,37 +1,37 @@
-Return-Path: <netdev+bounces-7963-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7962-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id CFAFE722382
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:31:33 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D7C25722380
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:31:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8C8F228125A
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 10:31:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5024E1C2096D
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 10:31:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CD9A617AAB;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 26638171BD;
 	Mon,  5 Jun 2023 10:30:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5DC71801E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A194418018
 	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 10:30:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D40DAC433A7;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F2663C433A8;
 	Mon,  5 Jun 2023 10:30:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685961024;
-	bh=4AQ5/g06koP3UfGOY+KI/8fdUylCLf5TsqPr3nNfEkE=;
+	s=k20201202; t=1685961025;
+	bh=r7SBNDzqQ4HkG3iYEwb6pL1Y01Nzjaui1CwJ0WgZ5iM=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=S5n2rTBZz+CkmmLs8GXRirzEI1nyNxXcuH7cAy8OvCOnTS3b1Yl2sLkaAIeRmQzew
-	 H0w+5yOWVcQclSPoLu7pp60oDxRZzD0pG56Ho7KEIKUBS45KQ78izTXHB14EPk9Srq
-	 +gy97u2Q5ZlaJiFn3O8E6T3oG/CbX9hVldn4Qr1PqAQsuLUD8w8RVeIy8v46tf+Ukn
-	 fCfllaMetTPyfUL2uvTIz5yNT+4mPzidV/OUAseo97bhSUdFSyyPqCxppFPrz5UGx3
-	 6Uv5lZmDCLx7QTktW1wcbzRGMDvLLu5pstn9QOyMjbTwU56IFX6kU8ovZfuYWs0nP6
-	 5Px9dOSdSw9Pg==
+	b=o2hLna/xHHsvisys85SwYE1VKoBEIh5hdOaMAHHcM87tv5pAsgUMZspkTSpIPLJFQ
+	 aPdI5meRPprATPVmR2x6PtdfvjyW1nZ6JsaYBKu8mtDAzx0ygRjfBBbc9NXtFZPtbj
+	 KqrObSzNdt1sCi9pvBgRu7XPIja/z+64wzoiKpflkoenLOkniLx7Ck0KJROQYbd8lN
+	 G4G54wOrjociaXqL2AGgb42s4l/FfhKMJxbgaq+WR/SUEkcbyM61ZPvCNlPrvZjCmk
+	 eMZL5ULx08CoJicLRZt3a5isLTKmI5UZa0HwmkWO2OZ56VgbK9XraIj99tdYRz4OKI
+	 kAEpq/uP0Elcg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id ADED2E87231;
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C021AE8723C;
 	Mon,  5 Jun 2023 10:30:24 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
@@ -41,42 +41,54 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] convert sja1105 xpcs creation and remove
- xpcs_create
+Subject: Re: [PATCH net-next v4 0/4] net: add a regmap-based mdio driver and drop
+ TSE PCS
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168596102470.26938.11958236997158848504.git-patchwork-notify@kernel.org>
+ <168596102478.26938.1530517069555858195.git-patchwork-notify@kernel.org>
 Date: Mon, 05 Jun 2023 10:30:24 +0000
-References: <ZHn1cTGFtEQ1Rv6E@shell.armlinux.org.uk>
-In-Reply-To: <ZHn1cTGFtEQ1Rv6E@shell.armlinux.org.uk>
-To: Russell King (Oracle) <linux@armlinux.org.uk>
-Cc: andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
- edumazet@google.com, f.fainelli@gmail.com, kuba@kernel.org,
- Jose.Abreu@synopsys.com, netdev@vger.kernel.org, pabeni@redhat.com,
- olteanv@gmail.com
+References: <20230601141454.67858-1-maxime.chevallier@bootlin.com>
+In-Reply-To: <20230601141454.67858-1-maxime.chevallier@bootlin.com>
+To: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc: broonie@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, alexis.lothore@bootlin.com,
+ thomas.petazzoni@bootlin.com, andrew@lunn.ch, kuba@kernel.org,
+ edumazet@google.com, pabeni@redhat.com, f.fainelli@gmail.com,
+ hkallweit1@gmail.com, linux@armlinux.org.uk, vladimir.oltean@nxp.com,
+ ioana.ciornei@nxp.com, linux-stm32@st-md-mailman.stormreply.com,
+ linux-arm-kernel@lists.infradead.org, mcoquelin.stm32@gmail.com,
+ joabreu@synopsys.com, alexandre.torgue@foss.st.com, peppe.cavallaro@st.com,
+ simon.horman@corigine.com
 
 Hello:
 
 This series was applied to netdev/net-next.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 2 Jun 2023 14:58:09 +0100 you wrote:
-> Hi,
+On Thu,  1 Jun 2023 16:14:50 +0200 you wrote:
+> Hello everyone,
 > 
-> This series of three patches converts sja1105 to use the newly
-> provided xpcs_create_mdiodev(), and as there become no users of
-> xpcs_create(), removes this function from the global namespace to
-> discourage future direct use.
+> This is the V4 of a series that follows-up on the work [1] aiming to drop the
+> altera TSE PCS driver, as it turns out to be a version of the Lynx PCS exposed
+> as a memory-mapped block, instead of living on an MDIO bus.
+> 
+> One step of this removal involved creating a regmap-based mdio driver
+> that translates MDIO accesses into the actual underlying bus that
+> exposes the register. The register layout must of course match the
+> standard MDIO layout, but we can now account for differences in stride
+> with recent work on the regmap subsystem [2].
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/3] net: dsa: sja1105: allow XPCS to handle mdiodev lifetime
-    https://git.kernel.org/netdev/net-next/c/9607eaadba68
-  - [net-next,2/3] net: dsa: sja1105: use xpcs_create_mdiodev()
-    https://git.kernel.org/netdev/net-next/c/bf9a17b04c85
-  - [net-next,3/3] net: pcs: xpcs: remove xpcs_create() from public view
-    https://git.kernel.org/netdev/net-next/c/4739b9f3d211
+  - [net-next,v4,1/4] net: mdio: Introduce a regmap-based mdio driver
+    https://git.kernel.org/netdev/net-next/c/642af0f92cbe
+  - [net-next,v4,2/4] net: ethernet: altera-tse: Convert to mdio-regmap and use PCS Lynx
+    https://git.kernel.org/netdev/net-next/c/db48abbaa18e
+  - [net-next,v4,3/4] net: pcs: Drop the TSE PCS driver
+    https://git.kernel.org/netdev/net-next/c/196eec4062b0
+  - [net-next,v4,4/4] net: stmmac: dwmac-sogfpga: use the lynx pcs driver
+    https://git.kernel.org/netdev/net-next/c/5d1f3fe7d2d5
 
 You are awesome, thank you!
 -- 
