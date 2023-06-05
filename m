@@ -1,102 +1,77 @@
-Return-Path: <netdev+bounces-7936-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7937-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9087772229E
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:52:09 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1B9B87222B3
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:55:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4B6D7281237
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:52:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 881601C20B9D
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:55:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 96343154A3;
-	Mon,  5 Jun 2023 09:52:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3345A154A6;
+	Mon,  5 Jun 2023 09:55:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A8F7134BB
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 09:52:06 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A6BBD
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 02:52:05 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1q66sU-0008L4-6J; Mon, 05 Jun 2023 11:51:54 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	(Authenticated sender: mkl-all@blackshift.org)
-	by smtp.blackshift.org (Postfix) with ESMTPSA id 854A51D235F;
-	Mon,  5 Jun 2023 09:51:52 +0000 (UTC)
-Date: Mon, 5 Jun 2023 11:51:52 +0200
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: =?utf-8?B?Q3PDs2vDoXM=?= Bence <csokas.bence@prolan.hu>
-Cc: netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-	Richard Cochran <richardcochran@gmail.com>, qiangqing.zhang@nxp.com,
-	kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH resubmit] net: fec: Refactor: rename `adapter` to `fep`
-Message-ID: <20230605-surfboard-implosive-d1700e274b20-mkl@pengutronix.de>
-References: <20230605094402.85071-1-csokas.bence@prolan.hu>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 256AC134D6
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 09:55:51 +0000 (UTC)
+Received: from smtpbg154.qq.com (smtpbg154.qq.com [15.184.224.54])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 221A0B8
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 02:55:48 -0700 (PDT)
+X-QQ-mid: bizesmtp86t1685958940til2nehg
+Received: from localhost.localdomain ( [60.177.99.31])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Mon, 05 Jun 2023 17:55:30 +0800 (CST)
+X-QQ-SSF: 01400000000000N0Z000000A0000000
+X-QQ-FEAT: fp7GbACbaw5YkLigfuXaoRjCkPL5d++OJE7zLv/1wMDlxJYceeDK053MmKywI
+	haLrvOCvly8CCFTT7izazKEd3wVJGrTKM5EbVkFGkzE0wLAyDHBU/4PdllHf+TcB2FEBHfX
+	W3Mz0S906KjtbfxE9aY+UD9e0+2yK5kGF0K1KnH9iHLxYPYfl7lgGFK3/TsSvZKMXFqWoyn
+	ucjtEuH/lYa2ytkJ5SUVSkdKgyTTekaaB8ER+tGO+bKI4cFdu3+lLHhVNCv/4o0d8hQYdnb
+	GkiQBdGc8nYwseR4+vw2Cu2rn+Vva2C3W5XnMIVTCBsUwsoUz0xgpaSw4ozBIxMf4linCn6
+	cDG/h3tiM8GZwYFipt1eT9yjplylI/HdusxvGmYNSJCy2osYaiGB286yMPRbg==
+X-QQ-GoodBg: 2
+X-BIZMAIL-ID: 2970531670337835324
+From: Mengyuan Lou <mengyuanlou@net-swift.com>
+To: netdev@vger.kernel.org
+Cc: jiawenwu@trustnetic.com,
+	Mengyuan Lou <mengyuanlou@net-swift.com>
+Subject: [RFC,PATCH net-next 0/3] wangxun nics add wol ncsi support
+Date: Mon,  5 Jun 2023 17:52:49 +0800
+Message-ID: <6B6FE1F43BAECDA0+20230605095527.57898-1-mengyuanlou@net-swift.com>
+X-Mailer: git-send-email 2.41.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="eykfxuvow6vmx724"
-Content-Disposition: inline
-In-Reply-To: <20230605094402.85071-1-csokas.bence@prolan.hu>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:net-swift.com:qybglogicsvrgz:qybglogicsvrgz5a-3
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+Add support for wangxun nics support WOL or NCSI, which phy should
+not to supsend.
 
---eykfxuvow6vmx724
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Mengyuan Lou (3):
+  net: ngbe: add Wake on Lan support
+  net: core: add member ncsi_enabled to net_device
+  net: ngbe: add support for ncsi nics
 
-On 05.06.2023 11:44:03, Cs=C3=B3k=C3=A1s Bence wrote:
-> Signed-off-by: Cs=C3=B3k=C3=A1s Bence <csokas.bence@prolan.hu>
+ drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.c | 10 ++++++++++
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c    |  2 ++
+ drivers/net/phy/phy_device.c                     |  4 +++-
+ include/linux/netdevice.h                        |  3 +++
+ 4 files changed, 18 insertions(+), 1 deletion(-)
 
-You probably want to add a patch description.
+-- 
+2.41.0
 
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
-
---eykfxuvow6vmx724
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmR9sDUACgkQvlAcSiqK
-BOjJaggAjjb+njE4gPJSl6to+duJbNhmdpk3nPnYuaC7iVwPpHenmI1P2iyN670o
-C197LKGLQ8J5XYtW5wQlxQfBgc/J7RwNOuxbWLDaxmBHoOFUNkb4hFSHn8J+7HiC
-hTybL2JseQppXvcoryWvEUe//bPKTRkml7Gve8oJzALy+eEoVJos0nTBAwF3AIxR
-40ooQqIyKsSsMOHCWwMRXNx8fwtCSVeHyDPYroGuIp9HJFhp/+NoSF4aNoEM8vJw
-2PJCchLQHYmqmJT3XxqnVVU+ga1KMjgmhPwlf8NPLpAigZLKJHt5HXhykk6XT8yV
-dIrXQKVfUJf/pnsy/L54xAQAgBJqOg==
-=qIac
------END PGP SIGNATURE-----
-
---eykfxuvow6vmx724--
 
