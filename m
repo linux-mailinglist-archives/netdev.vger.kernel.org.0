@@ -1,48 +1,47 @@
-Return-Path: <netdev+bounces-7951-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7952-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id F3BF7722325
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:14:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 5D5C3722329
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:14:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1DDE91C20B77
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 10:14:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 987DE1C20C21
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 10:14:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ACC05156EE;
-	Mon,  5 Jun 2023 10:14:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C7978156EF;
+	Mon,  5 Jun 2023 10:14:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 377C4168A2
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 10:14:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F0B0C4339C;
-	Mon,  5 Jun 2023 10:14:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E129C4432
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 10:14:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B82E5C433A1;
+	Mon,  5 Jun 2023 10:14:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685960055;
-	bh=qm6MedU5NkwL9B9WtLNrnQbOBGPrlm1J4Z/H1eepMzg=;
+	s=k20201202; t=1685960059;
+	bh=drWmmpUiSsDN8uf1QAsKyfpb+AIwbJV0q50wmlJyLRw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=vAOLb4xoT3cDCwlstfGfNQU0u1f2bveN1LLHsfojbHcZx7EIVxk9jg0fnHzvZ6Gst
-	 aApjbDwFuyepTarS3Unh/oaUFf3Iv3tHAhTckOjpsrunP0Iy2RH/FXarG/xrCy5zbo
-	 ghKVDxy1MjKnKUMyR4RPFBYYk4YGXfcRdONx+zOv1YvALNwxrBX68su6W71++35RZY
-	 8ad6A/axoGaM/twiOjuxzZKJxoFyLmWST9rGeuj9KBYwVkJADiRd9x+qfD+fZM6HYI
-	 QHq7EyEpc8EE4jw0zt6jS1k00ckyuCo5oicU/YG54jZplOR5CPGSTFVnv1UwWEQGCy
-	 m2QUdASVX8Lew==
+	b=sNfkuMKNg1eLSyqMrAJgmpgnwnrNi48ep4taR+W7H2nu/oVByPFms/t1nW2CCuUNS
+	 quIOwgZ0B2VXy8n2JjTOxoXAVdGyN1HLxIUVBcEZ36eGHEcAt8cHpM5zLIfBW8yDdC
+	 v4JTFc1QowUjZ6QHBVztxvuC6Er3qNZGa0GHNfr0EyP5kBbQ7RysvrTxwcd7KI2Fsm
+	 sRVPdVtcgPb7NcxE5RjFUy+eEJo3Ei3rfIKqtiv4aaA29Mr0owhV0oxggnkehjgLyx
+	 j7oejQhXcTm58yxQvjIH8OUga81WWadsDnooESj+pPmqiWXQagmAX7sCiLfzcbII04
+	 q6atg4KmDGCJQ==
 From: Leon Romanovsky <leon@kernel.org>
 To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Leon Romanovsky <leonro@nvidia.com>,
+Cc: Patrisious Haddad <phaddad@nvidia.com>,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>,
 	linux-rdma@vger.kernel.org,
 	netdev@vger.kernel.org,
 	Paolo Abeni <pabeni@redhat.com>,
-	Patrisious Haddad <phaddad@nvidia.com>,
 	Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH rdma-next v2 2/4] RDMA/mlx5: Reduce QP table exposure
-Date: Mon,  5 Jun 2023 13:14:05 +0300
-Message-Id: <bec0dc1158e795813b135d1143147977f26bf668.1685953497.git.leon@kernel.org>
+Subject: [PATCH rdma-next v2 3/4] RDMA/mlx5: Handle DCT QP logic separately from low level QP interface
+Date: Mon,  5 Jun 2023 13:14:06 +0300
+Message-Id: <4470888466c8a898edc9833286967529cc5f3c0d.1685953497.git.leon@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <cover.1685953497.git.leon@kernel.org>
 References: <cover.1685953497.git.leon@kernel.org>
@@ -54,73 +53,266 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Patrisious Haddad <phaddad@nvidia.com>
 
-driver.h is common header to whole mlx5 code base, but struct
-mlx5_qp_table is used in mlx5_ib driver only. So move that struct
-to be under sole responsibility of mlx5_ib.
+Previously when destroying a DCT, if the firmware function for the
+destruction failed, the common resource would have been destroyed
+either way, since it was destroyed before the firmware object.
+Which leads to kernel warning "refcount_t: underflow" which indicates
+possible use-after-free.
+Which is triggered when we try to destroy the common resource for the
+second time and execute refcount_dec_and_test(&common->refcount).
 
+So, let's fix the destruction order by factoring out the DCT QP logic
+to be in separate XArray database.
+
+refcount_t: underflow; use-after-free.
+WARNING: CPU: 8 PID: 1002 at lib/refcount.c:28 refcount_warn_saturate+0xd8/0xe0
+Modules linked in: xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat br_netfilter rpcrdma rdma_ucm ib_iser libiscsi scsi_transport_iscsi ib_umad rdma_cm ib_ipoib iw_cm ib_cm mlx5_ib ib_uverbs ib_core overlay mlx5_core fuse
+CPU: 8 PID: 1002 Comm: python3 Not tainted 5.16.0-rc5+ #1
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+RIP: 0010:refcount_warn_saturate+0xd8/0xe0
+Code: ff 48 c7 c7 18 f5 23 82 c6 05 60 70 ff 00 01 e8 d0 0a 45 00 0f 0b c3 48 c7 c7 c0 f4 23 82 c6 05 4c 70 ff 00 01 e8 ba 0a 45 00 <0f> 0b c3 0f 1f 44 00 00 8b 07 3d 00 00 00 c0 74 12 83 f8 01 74 13
+RSP: 0018:ffff8881221d3aa8 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: ffff8881313e8d40 RCX: ffff88852cc1b5c8
+RDX: 00000000ffffffd8 RSI: 0000000000000027 RDI: ffff88852cc1b5c0
+RBP: ffff888100f70000 R08: ffff88853ffd1ba8 R09: 0000000000000003
+R10: 00000000fffff000 R11: 3fffffffffffffff R12: 0000000000000246
+R13: ffff888100f71fa0 R14: ffff8881221d3c68 R15: 0000000000000020
+FS:  00007efebbb13740(0000) GS:ffff88852cc00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005611aac29f80 CR3: 00000001313de004 CR4: 0000000000370ea0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ destroy_resource_common+0x6e/0x95 [mlx5_ib]
+ mlx5_core_destroy_rq_tracked+0x38/0xbe [mlx5_ib]
+ mlx5_ib_destroy_wq+0x22/0x80 [mlx5_ib]
+ ib_destroy_wq_user+0x1f/0x40 [ib_core]
+ uverbs_free_wq+0x19/0x40 [ib_uverbs]
+ destroy_hw_idr_uobject+0x18/0x50 [ib_uverbs]
+ uverbs_destroy_uobject+0x2f/0x190 [ib_uverbs]
+ uobj_destroy+0x3c/0x80 [ib_uverbs]
+ ib_uverbs_cmd_verbs+0x3e4/0xb80 [ib_uverbs]
+ ? uverbs_free_wq+0x40/0x40 [ib_uverbs]
+ ? ip_list_rcv+0xf7/0x120
+ ? netif_receive_skb_list_internal+0x1b6/0x2d0
+ ? task_tick_fair+0xbf/0x450
+ ? __handle_mm_fault+0x11fc/0x1450
+ ib_uverbs_ioctl+0xa4/0x110 [ib_uverbs]
+ __x64_sys_ioctl+0x3e4/0x8e0
+ ? handle_mm_fault+0xb9/0x210
+ do_syscall_64+0x3d/0x90
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7efebc0be17b
+Code: 0f 1e fa 48 8b 05 1d ad 0c 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d ed ac 0c 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffe71813e78 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007ffe71813fb8 RCX: 00007efebc0be17b
+RDX: 00007ffe71813fa0 RSI: 00000000c0181b01 RDI: 0000000000000005
+RBP: 00007ffe71813f80 R08: 00005611aae96020 R09: 000000000000004f
+R10: 00007efebbf9ffa0 R11: 0000000000000246 R12: 00007ffe71813f80
+R13: 00007ffe71813f4c R14: 00005611aae2eca0 R15: 00007efeae6c89d0
+ </TASK>
+
+Signed-off-by: Patrisious Haddad <phaddad@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/infiniband/hw/mlx5/mlx5_ib.h |  1 +
- drivers/infiniband/hw/mlx5/qp.h      | 11 ++++++++++-
- include/linux/mlx5/driver.h          |  9 ---------
- 3 files changed, 11 insertions(+), 10 deletions(-)
+ drivers/infiniband/hw/mlx5/qp.h  |  1 +
+ drivers/infiniband/hw/mlx5/qpc.c | 83 +++++++++++++++++++-------------
+ include/linux/mlx5/driver.h      |  1 -
+ 3 files changed, 51 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-index fe5e23a06735..1eefefdaa009 100644
---- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
-+++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-@@ -25,6 +25,7 @@
- #include <rdma/mlx5_user_ioctl_verbs.h>
- 
- #include "srq.h"
-+#include "qp.h"
- 
- #define mlx5_ib_dbg(_dev, format, arg...)                                      \
- 	dev_dbg(&(_dev)->ib_dev.dev, "%s:%d:(pid %d): " format, __func__,      \
 diff --git a/drivers/infiniband/hw/mlx5/qp.h b/drivers/infiniband/hw/mlx5/qp.h
-index 77f9b4a54816..f5130873dd52 100644
+index f5130873dd52..b6ee7c3ee1ca 100644
 --- a/drivers/infiniband/hw/mlx5/qp.h
 +++ b/drivers/infiniband/hw/mlx5/qp.h
-@@ -6,7 +6,16 @@
- #ifndef _MLX5_IB_QP_H
- #define _MLX5_IB_QP_H
+@@ -10,6 +10,7 @@ struct mlx5_ib_dev;
  
--#include "mlx5_ib.h"
-+struct mlx5_ib_dev;
-+
-+struct mlx5_qp_table {
-+	struct notifier_block nb;
-+
-+	/* protect radix tree
-+	 */
-+	spinlock_t lock;
-+	struct radix_tree_root tree;
-+};
+ struct mlx5_qp_table {
+ 	struct notifier_block nb;
++	struct xarray dct_xa;
  
- int mlx5_init_qp_table(struct mlx5_ib_dev *dev);
- void mlx5_cleanup_qp_table(struct mlx5_ib_dev *dev);
+ 	/* protect radix tree
+ 	 */
+diff --git a/drivers/infiniband/hw/mlx5/qpc.c b/drivers/infiniband/hw/mlx5/qpc.c
+index bae0334d6e7f..3a2f755d4985 100644
+--- a/drivers/infiniband/hw/mlx5/qpc.c
++++ b/drivers/infiniband/hw/mlx5/qpc.c
+@@ -88,23 +88,35 @@ static bool is_event_type_allowed(int rsc_type, int event_type)
+ 	}
+ }
+ 
++static int dct_event_notifier(struct mlx5_ib_dev *dev, struct mlx5_eqe *eqe)
++{
++	struct mlx5_core_dct *dct;
++	unsigned long flags;
++	u32 qpn;
++
++	qpn = be32_to_cpu(eqe->data.dct.dctn) & 0xFFFFFF;
++	xa_lock_irqsave(&dev->qp_table.dct_xa, flags);
++	dct = xa_load(&dev->qp_table.dct_xa, qpn);
++	if (dct)
++		complete(&dct->drained);
++	xa_unlock_irqrestore(&dev->qp_table.dct_xa, flags);
++	return NOTIFY_OK;
++}
++
+ static int rsc_event_notifier(struct notifier_block *nb,
+ 			      unsigned long type, void *data)
+ {
++	struct mlx5_ib_dev *dev =
++		container_of(nb, struct mlx5_ib_dev, qp_table.nb);
+ 	struct mlx5_core_rsc_common *common;
+-	struct mlx5_qp_table *table;
+-	struct mlx5_core_dct *dct;
++	struct mlx5_eqe *eqe = data;
+ 	u8 event_type = (u8)type;
+ 	struct mlx5_core_qp *qp;
+-	struct mlx5_eqe *eqe;
+ 	u32 rsn;
+ 
+ 	switch (event_type) {
+ 	case MLX5_EVENT_TYPE_DCT_DRAINED:
+-		eqe = data;
+-		rsn = be32_to_cpu(eqe->data.dct.dctn) & 0xffffff;
+-		rsn |= (MLX5_RES_DCT << MLX5_USER_INDEX_LEN);
+-		break;
++		return dct_event_notifier(dev, eqe);
+ 	case MLX5_EVENT_TYPE_PATH_MIG:
+ 	case MLX5_EVENT_TYPE_COMM_EST:
+ 	case MLX5_EVENT_TYPE_SQ_DRAINED:
+@@ -113,7 +125,6 @@ static int rsc_event_notifier(struct notifier_block *nb,
+ 	case MLX5_EVENT_TYPE_PATH_MIG_FAILED:
+ 	case MLX5_EVENT_TYPE_WQ_INVAL_REQ_ERROR:
+ 	case MLX5_EVENT_TYPE_WQ_ACCESS_ERROR:
+-		eqe = data;
+ 		rsn = be32_to_cpu(eqe->data.qp_srq.qp_srq_n) & 0xffffff;
+ 		rsn |= (eqe->data.qp_srq.type << MLX5_USER_INDEX_LEN);
+ 		break;
+@@ -121,8 +132,7 @@ static int rsc_event_notifier(struct notifier_block *nb,
+ 		return NOTIFY_DONE;
+ 	}
+ 
+-	table = container_of(nb, struct mlx5_qp_table, nb);
+-	common = mlx5_get_rsc(table, rsn);
++	common = mlx5_get_rsc(&dev->qp_table, rsn);
+ 	if (!common)
+ 		return NOTIFY_OK;
+ 
+@@ -137,11 +147,6 @@ static int rsc_event_notifier(struct notifier_block *nb,
+ 		qp->event(qp, event_type);
+ 		/* Need to put resource in event handler */
+ 		return NOTIFY_OK;
+-	case MLX5_RES_DCT:
+-		dct = (struct mlx5_core_dct *)common;
+-		if (event_type == MLX5_EVENT_TYPE_DCT_DRAINED)
+-			complete(&dct->drained);
+-		break;
+ 	default:
+ 		break;
+ 	}
+@@ -188,28 +193,15 @@ static void destroy_resource_common(struct mlx5_ib_dev *dev,
+ }
+ 
+ static int _mlx5_core_destroy_dct(struct mlx5_ib_dev *dev,
+-				  struct mlx5_core_dct *dct, bool need_cleanup)
++				  struct mlx5_core_dct *dct)
+ {
+ 	u32 in[MLX5_ST_SZ_DW(destroy_dct_in)] = {};
+ 	struct mlx5_core_qp *qp = &dct->mqp;
+-	int err;
+ 
+-	err = mlx5_core_drain_dct(dev, dct);
+-	if (err) {
+-		if (dev->mdev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR)
+-			goto destroy;
+-
+-		return err;
+-	}
+-	wait_for_completion(&dct->drained);
+-destroy:
+-	if (need_cleanup)
+-		destroy_resource_common(dev, &dct->mqp);
+ 	MLX5_SET(destroy_dct_in, in, opcode, MLX5_CMD_OP_DESTROY_DCT);
+ 	MLX5_SET(destroy_dct_in, in, dctn, qp->qpn);
+ 	MLX5_SET(destroy_dct_in, in, uid, qp->uid);
+-	err = mlx5_cmd_exec_in(dev->mdev, destroy_dct, in);
+-	return err;
++	return mlx5_cmd_exec_in(dev->mdev, destroy_dct, in);
+ }
+ 
+ int mlx5_core_create_dct(struct mlx5_ib_dev *dev, struct mlx5_core_dct *dct,
+@@ -227,13 +219,13 @@ int mlx5_core_create_dct(struct mlx5_ib_dev *dev, struct mlx5_core_dct *dct,
+ 
+ 	qp->qpn = MLX5_GET(create_dct_out, out, dctn);
+ 	qp->uid = MLX5_GET(create_dct_in, in, uid);
+-	err = create_resource_common(dev, qp, MLX5_RES_DCT);
++	err = xa_err(xa_store_irq(&dev->qp_table.dct_xa, qp->qpn, dct, GFP_KERNEL));
+ 	if (err)
+ 		goto err_cmd;
+ 
+ 	return 0;
+ err_cmd:
+-	_mlx5_core_destroy_dct(dev, dct, false);
++	_mlx5_core_destroy_dct(dev, dct);
+ 	return err;
+ }
+ 
+@@ -284,7 +276,31 @@ static int mlx5_core_drain_dct(struct mlx5_ib_dev *dev,
+ int mlx5_core_destroy_dct(struct mlx5_ib_dev *dev,
+ 			  struct mlx5_core_dct *dct)
+ {
+-	return _mlx5_core_destroy_dct(dev, dct, true);
++	struct mlx5_qp_table *table = &dev->qp_table;
++	struct mlx5_core_dct *tmp;
++	int err;
++
++	err = mlx5_core_drain_dct(dev, dct);
++	if (err) {
++		if (dev->mdev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR)
++			goto destroy;
++
++		return err;
++	}
++	wait_for_completion(&dct->drained);
++
++destroy:
++	tmp = xa_cmpxchg_irq(&table->dct_xa, dct->mqp.qpn, dct, XA_ZERO_ENTRY, GFP_KERNEL);
++	if (WARN_ON(tmp != dct))
++		return xa_err(tmp) ?: -EINVAL;
++
++	err = _mlx5_core_destroy_dct(dev, dct);
++	if (err) {
++		xa_cmpxchg_irq(&table->dct_xa, dct->mqp.qpn, XA_ZERO_ENTRY, dct, 0);
++		return err;
++	}
++	xa_erase_irq(&table->dct_xa, dct->mqp.qpn);
++	return 0;
+ }
+ 
+ int mlx5_core_destroy_qp(struct mlx5_ib_dev *dev, struct mlx5_core_qp *qp)
+@@ -488,6 +504,7 @@ int mlx5_init_qp_table(struct mlx5_ib_dev *dev)
+ 
+ 	spin_lock_init(&table->lock);
+ 	INIT_RADIX_TREE(&table->tree, GFP_ATOMIC);
++	xa_init(&table->dct_xa);
+ 	mlx5_qp_debugfs_init(dev->mdev);
+ 
+ 	table->nb.notifier_call = rsc_event_notifier;
 diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index a4c4f737f9c1..e3b616388b18 100644
+index e3b616388b18..e67c603d507b 100644
 --- a/include/linux/mlx5/driver.h
 +++ b/include/linux/mlx5/driver.h
-@@ -443,15 +443,6 @@ struct mlx5_core_health {
- 	struct delayed_work		update_fw_log_ts_work;
+@@ -382,7 +382,6 @@ enum mlx5_res_type {
+ 	MLX5_RES_SRQ	= 3,
+ 	MLX5_RES_XSRQ	= 4,
+ 	MLX5_RES_XRQ	= 5,
+-	MLX5_RES_DCT	= MLX5_EVENT_QUEUE_TYPE_DCT,
  };
  
--struct mlx5_qp_table {
--	struct notifier_block   nb;
--
--	/* protect radix tree
--	 */
--	spinlock_t		lock;
--	struct radix_tree_root	tree;
--};
--
- enum {
- 	MLX5_PF_NOTIFY_DISABLE_VF,
- 	MLX5_PF_NOTIFY_ENABLE_VF,
+ struct mlx5_core_rsc_common {
 -- 
 2.40.1
 
