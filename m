@@ -1,192 +1,136 @@
-Return-Path: <netdev+bounces-7979-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7980-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 97012722520
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:02:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 6426E72252E
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:03:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4C6DB2810F3
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:02:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1F51E281148
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:03:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B00A17FEC;
-	Mon,  5 Jun 2023 12:02:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6370218018;
+	Mon,  5 Jun 2023 12:03:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16CCC525E
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:02:24 +0000 (UTC)
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2097.outbound.protection.outlook.com [40.107.212.97])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A949DF
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 05:02:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cy9z1/OfzEC2uTNJeFMOYZ+tBsO7qL1qjHrTaijyRMIZZIqowPVBII6qLe9XNabdGVOCUy5tuSrnvAyhF4OCLs8GSOZWy4XvOOBptXoY/10/VQIrYEF5Zbv2I0Dw76HYKP/msqpnDI3gHD/FTChsTjmbwP2zPmrxwrI/JvdjPXUgvQI90vqa3gDo7xBQT8oYMyrJhdawvQHC62bwtvytFgwDSBuzPvNRiRT5lcmrRLIAMsQsARb0AxBgX3mGBQ7mvi4uJbRUqhsQBdONvq/FoELwCT/wq6VADqlEEiGZrXmfhUZsd+caWwQjYoptIvr/KRvdpJ9LDpWtZDPuD0FIpg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TqtHYaZvzO14Slj6gLBGifLxraieUpaPd3lw+9r8fKE=;
- b=Agd6p40AXrVqisl7+YdeU1vUG+t5HUUIyyV1SgaAdaju7retxiElpB5PchkxVc6OGxeUmojXVX3AhMVYXMZxawZNSe+zuqFyju+MiRkXJIuyOUfpiTrZ4SzJrULbUcrjS+KJc2nGnvoQatkCGpw8ziUq7P6WxIVSQyON7Djn/cX55R+GXsenvmA/sLMPdAXgRym31a8IDPSySVP4EWRY5tqqHUMkSnXdcbkw05GnOJEa26JENqf4liBTKVMKNTQIVcx10F0sLDzwGblftvvVmPNn+dRKNxbQRPJBI3XVPn1tUym39zRyowd7KGRTfqqP9TbLFZ62qqwjn6LNhTpiFA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TqtHYaZvzO14Slj6gLBGifLxraieUpaPd3lw+9r8fKE=;
- b=IDwrgH+eERgPsn2Gstjr6CBKcstJmh0ZSzINYPoNm8EzE29KFHatp1gEotbdOsFl8R61/NGEPxcU9eFKv0w3K8uAMU2hdYaT70eO7EVJcHkSnKfwLBEBMC7+7hPBygbR4E0wvYq2Yv83IWGkSYHtEJxK66H3ZJWkTo6QJj7pUPg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH7PR13MB6169.namprd13.prod.outlook.com (2603:10b6:510:240::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.28; Mon, 5 Jun
- 2023 12:02:18 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6455.030; Mon, 5 Jun 2023
- 12:02:18 +0000
-Date: Mon, 5 Jun 2023 14:02:11 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: "Drewek, Wojciech" <wojciech.drewek@intel.com>
-Cc: "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"Lobakin, Aleksander" <aleksander.lobakin@intel.com>,
-	"Ertman, David M" <david.m.ertman@intel.com>,
-	"michal.swiatkowski@linux.intel.com" <michal.swiatkowski@linux.intel.com>,
-	"marcin.szycik@linux.intel.com" <marcin.szycik@linux.intel.com>,
-	"Chmielewski, Pawel" <pawel.chmielewski@intel.com>,
-	"Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-	"pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>,
-	"dan.carpenter@linaro.org" <dan.carpenter@linaro.org>
-Subject: Re: [PATCH iwl-next v4 06/13] ice: Implement basic eswitch bridge
- setup
-Message-ID: <ZH3Ow9vXkNU44n2v@corigine.com>
-References: <20230524122121.15012-1-wojciech.drewek@intel.com>
- <20230524122121.15012-7-wojciech.drewek@intel.com>
- <ZHyYwGf8locVmlCg@corigine.com>
- <MW4PR11MB5776D4B4B3CB687ACCBF49E4FD4DA@MW4PR11MB5776.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MW4PR11MB5776D4B4B3CB687ACCBF49E4FD4DA@MW4PR11MB5776.namprd11.prod.outlook.com>
-X-ClientProxiedBy: AM9P250CA0014.EURP250.PROD.OUTLOOK.COM
- (2603:10a6:20b:21c::19) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55D7A11C9B
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:03:26 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8FBDF;
+	Mon,  5 Jun 2023 05:03:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1685966602; x=1717502602;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=zsidaSn1i/iv5LQiieaPSxJTMyknvoIIzx4eM0WTWl8=;
+  b=l3q8VVdSdp7sfLHWfSZ223lbjTU6+feHJDHf24bvS+W+hipE8yfQ+Fva
+   aWT54+dZ+EYlBPjMR/MAfAldwB/7Jelktn6rErU1CI8xJQuQ51JTnehtV
+   IaYYV2hz5QyB5HBkDujhivPUWNOIbBP6Q1ZPKGtuRk0f5n6/aZYOC9s8H
+   UTz6JUD5Jywsi38pyJqgtJ/YUrLSFfuhM01WiGJjI9w3JbfffWNNbhB1b
+   l5oRFobtSWtEhVr96RR6Sjv0+JcBoAueScBN42iWbzypMm27qgqgQF6mE
+   tA8gFcIivi++7LVWRtUag1REypSogt1KDUcBrphVVeNEdYZT5yE1LZDXm
+   Q==;
+X-IronPort-AV: E=Sophos;i="6.00,217,1681196400"; 
+   d="scan'208";a="216845804"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Jun 2023 05:03:21 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 5 Jun 2023 05:03:16 -0700
+Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Mon, 5 Jun 2023 05:03:09 -0700
+Message-ID: <27d2e946-0f81-40e7-43f9-00369883f68b@microchip.com>
+Date: Mon, 5 Jun 2023 14:03:02 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB6169:EE_
-X-MS-Office365-Filtering-Correlation-Id: eeef2141-a2ea-4565-1fc4-08db65bcb5da
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	pfpr9X+GpiiaGjQ6wPGI9BBLCVIlQaHQMvgSWeS4pc3+fueknln33jRtiuAjmLKt6THaYKaq3SbicWMIck/ZxfGJDSX8M69iURd5k4XqL53bTen1qnRlTY+itQ6CH14ReCmOlmmzKhIJNhU4zVnNy1Xv/UTR2RmGhNYTFMmsagIAore0p/D7gjXnO6NqSH7vudEy7SO4SpOuXMacYgdpuN7CbGmPW28BbB4cCYiPuOJ8esJp+AH8dxat4hPtooAdrtVzRpaztRPREutjnoqhmpLGPYbqg2irIykzkXPT941R5VRLafZVx1hZoTCgokstKaotDvJ7PJ/xXL/c9EORQdzEo3HTbnUixhDmf8XXl7vkkY/1oeGjZLaDqqCfNBljfnU6yDblZw22k5PYh+MsFs8P6h2RyBQzXEbmVcovw6kFQNYFcW7d9q7aQ3Z3YMuGCrp4i9MnxAPO58wHWDZqdYLQEaCw2GHlYu/vWgVaT2A6CcJxRmjT/j0oKgRObyd5XD8vDFXMhPpS07J8jFj0HKCBUT6S2CZup23Zmgl+S6Gl9p3msCbOZWIwd8S8Z8GH
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(396003)(376002)(346002)(366004)(136003)(451199021)(8676002)(8936002)(478600001)(54906003)(6666004)(316002)(5660300002)(41300700001)(6486002)(186003)(53546011)(7416002)(44832011)(6916009)(4326008)(66476007)(66556008)(66946007)(6506007)(6512007)(2616005)(83380400001)(2906002)(38100700002)(86362001)(36756003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?A5lvo/4e1gqxMiXNGoHAGwo6KklOo6e0EhK1k/1KdeWhfwS7FGKcO3DcehES?=
- =?us-ascii?Q?jaeoL8TMEVT2QZNAftdxKZJKQg9BXgN5WlB04A8jnBrIaajANefVMENKgZx1?=
- =?us-ascii?Q?eCrqXMZv5/sI/HjCeiUSl76KbS1BLi20+nH0WDo7jDEoEKORecYVsRNgVeme?=
- =?us-ascii?Q?pGCWaAyV9dIcVxeDt/qES+JQWgyIhopYrceKdtggF8r03OGE9RT5zq3XiGGD?=
- =?us-ascii?Q?m4ihHBv6GtmyYyf6Ovmzu6ErRjBo4w9xyxIFPUH7qrZRUFr3HrLftTUBSy1V?=
- =?us-ascii?Q?K+GHUkYVe4v1AvRCWUq5JfU4ZMvbmNjO3ZbBiFaJpNq5qXSBWZ/Tuy8AISR4?=
- =?us-ascii?Q?MBE7UT44AbK3g+5dcVHdqSUSXsJQoqazn4oMAGgASmRWUkThnHo/oFvgBw9H?=
- =?us-ascii?Q?61tcL9wb0prCFK/p+n+MEo80mQddoijUXLJNtuS+rIClvu/XWEx9HpRGHXn7?=
- =?us-ascii?Q?r75K/1aqe09w3RSZACQtiz3josSXYJpjpB+IigRqFNS+BYfDvOBg/2gJF2pZ?=
- =?us-ascii?Q?T2xiTxshX8DsfdkKfjijhipggY/UCTS56ugOi1A6DbKhXEag0sb9RSIr4Yq/?=
- =?us-ascii?Q?hGYW/oeewVUXf+rqDHU2ypMB9Hyh6LVFGvdi/+TsckE+bSbbHTOvrFpc6MAY?=
- =?us-ascii?Q?RrdjRdRmDssFYJ6bt15w79iQxlG1enBWnK9Ftuh3ZnAk9S0s7/0y1kIYqJrn?=
- =?us-ascii?Q?kTgVVwLbiJG8EAAaE1MzSJ60r2UmsSnpakZOD+X6OGBClIWY1gEQrlytx4SX?=
- =?us-ascii?Q?5mSQeZ34Pq9+ODIcK7k4TcqaELFDZaQlVBnN3EtE7ZAds6t7PabKEOJdgMXG?=
- =?us-ascii?Q?wEY0zucvONLrY25YjJ+79Wkv5h+48mkbb7HRGFGcDXit4soALJvyRYWGU6/k?=
- =?us-ascii?Q?V9460CwdZ0oJrnA4wz3HtlXCTKYIoBK5lptKT5td8YzypGGeHAm0S/LxTa9c?=
- =?us-ascii?Q?jaOXWLAQMwnFaOeOAnYCei++Aa0YHf8tjHxsH9CqhJyVQzwpxcyFfM2C+v/6?=
- =?us-ascii?Q?ilHv5vvookKADZjbtL6SNaX3VufyOWNukzMqG6teZY6wr6MbIJlimLVigNFD?=
- =?us-ascii?Q?tCFG9R8Z2sehSg/q7vjFXP2esj0Ag+Gc5jnFum52253hZOo3jnZmi1wlmsoK?=
- =?us-ascii?Q?4c1LAxr0C9QCUT1XB1rvldPfzTwGbAA2H9NYIx7luJiDOV9FMGRuDKgNFx2V?=
- =?us-ascii?Q?qttcR/Qi9sVR5DdK2MgUotZe3TxEHIruzRAmCuA1iYwSHCDFstQyvfQpv7Qj?=
- =?us-ascii?Q?51J16+QL7t7L6p/04Esq//th1jPtLXoFhpsTUuEx7GY+1CZUYjiK6rCs245b?=
- =?us-ascii?Q?6lkqrriqN1FXCrNkpxQSKsNabelYIqwC7e4T8wPjAHzoqdk0g9DsWFB6Ojn5?=
- =?us-ascii?Q?8biHWneTBKKuAF0F6BRtlnezXvVDPgnse7K7pL2l+8Idy3sNKS6d2W2Xa5qs?=
- =?us-ascii?Q?e97vYAg1udYWpy7bbc2L3v5kffg1XyMufENHKF4EOQuD7rYmxo7QSNgQWsGd?=
- =?us-ascii?Q?P2ZTF0pDbDgPkNxg+T2uySUjyul7hs+CpyFkPCUGuQ9ivQO9nlCCIaLQXb5n?=
- =?us-ascii?Q?IOru/esOJArc1p2gJZGzNQpSPJpFtvGOLv9ONyd2RRWpmoMn+mfY/mszaF+H?=
- =?us-ascii?Q?zB5ZUjLu6n3npp45WSLjTvtnCVzU4b09C73uEFlLxuahuy0iwriMQOaDnMSP?=
- =?us-ascii?Q?0aciag=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: eeef2141-a2ea-4565-1fc4-08db65bcb5da
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2023 12:02:18.3895
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qp3yTim1/rfA5VJGNH4ohQX150lBKVzM6KpX3RATJ5F5dyNx36OF6AmWyw5iXd7JakR53/psQdR6W5rkgA0xdM7cNSI8R3OA3N53zmpkZ7g=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB6169
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH 01/21] dt-bindings: microchip: atmel,at91rm9200-tcb: add
+ sam9x60 compatible
+Content-Language: en-US
+To: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski
+	<krzysztof.kozlowski@linaro.org>, Varshini Rajendran
+	<varshini.rajendran@microchip.com>, Thomas Gleixner <tglx@linutronix.de>,
+	Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	<krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, Claudiu Beznea
+	<claudiu.beznea@microchip.com>, "David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, "Paolo
+ Abeni" <pabeni@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Russell King <linux@armlinux.org.uk>, Michael Turquette
+	<mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Sebastian Reichel
+	<sre@kernel.org>, Mark Brown <broonie@kernel.org>, Gregory Clement
+	<gregory.clement@bootlin.com>, Sudeep Holla <sudeep.holla@arm.com>,
+	Balamanikandan Gunasundar <balamanikandan.gunasundar@microchip.com>,
+	Mihai.Sain <mihai.sain@microchip.com>, <linux-kernel@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>, Netdev
+	<netdev@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+	<linux-clk@vger.kernel.org>, <linux-pm@vger.kernel.org>
+CC: <Hari.PrasathGE@microchip.com>, <cristian.birsan@microchip.com>,
+	<durai.manickamkr@microchip.com>, <manikandan.m@microchip.com>,
+	<dharma.b@microchip.com>, <nayabbasha.sayed@microchip.com>,
+	<balakrishnan.s@microchip.com>
+References: <20230603200243.243878-1-varshini.rajendran@microchip.com>
+ <20230603200243.243878-2-varshini.rajendran@microchip.com>
+ <c72f45ec-c185-8676-b31c-ec48cd46278c@linaro.org>
+ <d95d37f5-5bef-43a9-b319-0bbe0ac366b4@app.fastmail.com>
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <d95d37f5-5bef-43a9-b319-0bbe0ac366b4@app.fastmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 05, 2023 at 10:47:09AM +0000, Drewek, Wojciech wrote:
+On 05/06/2023 at 09:04, Arnd Bergmann wrote:
+> On Mon, Jun 5, 2023, at 08:35, Krzysztof Kozlowski wrote:
+>> On 03/06/2023 22:02, Varshini Rajendran wrote:
+>>> Add sam9x60 compatible string support in the schema file
+>>>
+>>> Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
+>>> ---
+>>>   .../devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml  | 1 +
+>>>   1 file changed, 1 insertion(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml b/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml
+>>> index a46411149571..c70c77a5e8e5 100644
+>>> --- a/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml
+>>> +++ b/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml
+>>> @@ -20,6 +20,7 @@ properties:
+>>>             - atmel,at91rm9200-tcb
+>>>             - atmel,at91sam9x5-tcb
+>>>             - atmel,sama5d2-tcb
+>>> +          - microchip,sam9x60-tcb
+>>
+>> No wildcards.
 > 
-> 
-> > -----Original Message-----
-> > From: Simon Horman <simon.horman@corigine.com>
-> > Sent: niedziela, 4 czerwca 2023 15:59
-> > To: Drewek, Wojciech <wojciech.drewek@intel.com>
-> > Cc: intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; Lobakin, Aleksander <aleksander.lobakin@intel.com>; Ertman, David M
-> > <david.m.ertman@intel.com>; michal.swiatkowski@linux.intel.com; marcin.szycik@linux.intel.com; Chmielewski, Pawel
-> > <pawel.chmielewski@intel.com>; Samudrala, Sridhar <sridhar.samudrala@intel.com>; pmenzel@molgen.mpg.de;
-> > dan.carpenter@linaro.org
-> > Subject: Re: [PATCH iwl-next v4 06/13] ice: Implement basic eswitch bridge setup
-> > 
-> > On Wed, May 24, 2023 at 02:21:14PM +0200, Wojciech Drewek wrote:
-> > > With this patch, ice driver is able to track if the port
-> > > representors or uplink port were added to the linux bridge in
-> > > switchdev mode. Listen for NETDEV_CHANGEUPPER events in order to
-> > > detect this. ice_esw_br data structure reflects the linux bridge
-> > > and stores all the ports of the bridge (ice_esw_br_port) in
-> > > xarray, it's created when the first port is added to the bridge and
-> > > freed once the last port is removed. Note that only one bridge is
-> > > supported per eswitch.
-> > >
-> > > Bridge port (ice_esw_br_port) can be either a VF port representor
-> > > port or uplink port (ice_esw_br_port_type). In both cases bridge port
-> > > holds a reference to the VSI, VF's VSI in case of the PR and uplink
-> > > VSI in case of the uplink. VSI's index is used as an index to the
-> > > xarray in which ports are stored.
-> > >
-> > > Add a check which prevents configuring switchdev mode if uplink is
-> > > already added to any bridge. This is needed because we need to listen
-> > > for NETDEV_CHANGEUPPER events to record if the uplink was added to
-> > > the bridge. Netdevice notifier is registered after eswitch mode
-> > > is changed top switchdev.
-> > 
-> > Hi Wojciech,
-> > 
-> > Does the uplink here model both a physical port and the PF link between the
-> > host and the NIC?  If so, then I think this is ok.
-> > 
-> > I mention this because I am more familiar with a model where these are
-> > separated, in which case I think it would probably be an uplink representor
-> > that is added to the bridge. And I want to make sure make sure that I
-> > understand the model used here correctly.
-> 
-> In our design we don't have separate uplink rpresentor. PF netdev serves as uplink
-> repr once the eswitch mode is changed to switchdev.
+> sam9x60 is the actual name of the chip, it's no wildcard. For sam9x70,
+> sam9x72 and sam9x75, I think using sam9x7 as the compatible string
+> is probably fine, as long as they are actually the same chip. Again,
+> the 'x' in there is not a wildcard but part of the name.
 
-Understood. In that case I think this patch looks good.
+Yes, exactly Arnd, for those two SoC, 'x' is not a wildcard.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Best regards,
+   Nicolas
+
+
+-- 
+Nicolas Ferre
 
 
