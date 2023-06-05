@@ -1,38 +1,39 @@
-Return-Path: <netdev+bounces-7844-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7845-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8D93F721C83
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 05:26:13 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0D6FC721C84
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 05:26:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 07AD81C20905
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 03:26:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AD1102810FE
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 03:26:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC6D61FD3;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C020620FB;
 	Mon,  5 Jun 2023 03:25:32 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98AD9649;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFC5F137D;
 	Mon,  5 Jun 2023 03:25:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C621BC4339C;
-	Mon,  5 Jun 2023 03:25:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36B30C4339B;
+	Mon,  5 Jun 2023 03:25:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1685935530;
-	bh=TW+GSaAsPbeCNFkCLc/u7ZS1XKsJp4Q5/TLco7Isdmc=;
+	bh=YUyzdA7qU9iJt56KPySyZzECEj2SmbL6D5w4307jOiQ=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=J0K8Izp+4z3LUxrX4gpEf5dcvUv0ebjOqKxtOQ84CAQs/S2dmrkLIvH4m4Xa87/Ts
-	 ICHjpZykY+hAM8ZBaWiivh90TFUcGQ5okaovc75vfzmRmSue6LR9EHZ64668Q2Ko3G
-	 QPzg8aTWbKYlvk4D1yeP9eYLF6YtW/oME+dJq/OMeRTKWxs+MeXar3yojjyDTgq67s
-	 DNHtUNq1MMeJrdl3O/OS8SfK1zaCKzt0e/toF6wXDWOEWxnG6JVVM1S4AbFpYuAieS
-	 xBhjJzPJEDEtNsCUIHyXlNP00WolfXDJ6nA5lQxudwnqU934DEYEYJo67Khg5nuC2f
-	 yxWbSQs1w8LSA==
+	b=UwL8LFvw3KFZWf8+jR1+sKRJiG9Nx36ieuplhhpXqVDA6AmYIPbr417MJwhaGwCQk
+	 7nch5K1NMngPTcg+nm9tGjxnzLhosrd31lPQ+lZMIUkAzKQZRUq+L4ahz1TTSeMpUs
+	 ydLHIa/XFeaecJmgBP3kwPLDmMM9knJqNjCpIYYYRw+RyTE94RU/q/SRJy4BrQ4y8S
+	 CwgHbfVPX1bar+DeGr3MUrt3aEez7DZwYNIWDoMRIGH8R8tFUTNRgX2clCkYkIZHSq
+	 Zq98ndYIsw1RnmT26FAKSmP7xTQKCgW0RLAoTgVzA6IuGBhTxitrQyxD2NHGYk3kYe
+	 mUl0hx/Gu5GVQ==
 From: Mat Martineau <martineau@kernel.org>
-Date: Sun, 04 Jun 2023 20:25:19 -0700
-Subject: [PATCH net 3/5] mptcp: add address into userspace pm list
+Date: Sun, 04 Jun 2023 20:25:20 -0700
+Subject: [PATCH net 4/5] selftests: mptcp: update userspace pm subflow
+ tests
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -41,7 +42,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230602-send-net-20230602-v1-3-fe011dfa859d@kernel.org>
+Message-Id: <20230602-send-net-20230602-v1-4-fe011dfa859d@kernel.org>
 References: <20230602-send-net-20230602-v1-0-fe011dfa859d@kernel.org>
 In-Reply-To: <20230602-send-net-20230602-v1-0-fe011dfa859d@kernel.org>
 To: Matthieu Baerts <matthieu.baerts@tessares.net>, 
@@ -55,104 +56,43 @@ X-Mailer: b4 0.12.2
 
 From: Geliang Tang <geliang.tang@suse.com>
 
-Add the address into userspace_pm_local_addr_list when the subflow is
-created. Make sure it can be found in mptcp_nl_cmd_remove(). And delete
-it in the new helper mptcp_userspace_pm_delete_local_addr().
-
-By doing this, the "REMOVE" command also works with subflows that have
-been created via the "SUB_CREATE" command instead of restricting to
-the addresses that have been announced via the "ANNOUNCE" command.
+To align with what is done by the in-kernel PM, update userspace pm
+subflow selftests, by sending the a remove_addrs command together
+before the remove_subflows command. This will get a RM_ADDR in
+chk_rm_nr().
 
 Fixes: d9a4594edabf ("mptcp: netlink: Add MPTCP_PM_CMD_REMOVE")
+Fixes: 5e986ec46874 ("selftests: mptcp: userspace pm subflow tests")
 Link: https://github.com/multipath-tcp/mptcp_net-next/issues/379
 Cc: stable@vger.kernel.org
 Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Signed-off-by: Geliang Tang <geliang.tang@suse.com>
 Signed-off-by: Mat Martineau <martineau@kernel.org>
 ---
- net/mptcp/pm_userspace.c | 41 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
+ tools/testing/selftests/net/mptcp/mptcp_join.sh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/mptcp/pm_userspace.c b/net/mptcp/pm_userspace.c
-index 6beadea8c67d..114548b09f47 100644
---- a/net/mptcp/pm_userspace.c
-+++ b/net/mptcp/pm_userspace.c
-@@ -79,6 +79,30 @@ static int mptcp_userspace_pm_append_new_local_addr(struct mptcp_sock *msk,
- 	return ret;
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+index 651740a656f0..29f0c99d9a46 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+@@ -936,6 +936,7 @@ do_transfer()
+ 				sleep 1
+ 				sp=$(grep "type:10" "$evts_ns2" |
+ 				     sed -n 's/.*\(sport:\)\([[:digit:]]*\).*$/\2/p;q')
++				ip netns exec ${connector_ns} ./pm_nl_ctl rem token $tk id $id
+ 				ip netns exec ${connector_ns} ./pm_nl_ctl dsf lip $addr lport $sp \
+ 									rip $da rport $dp token $tk
+ 			fi
+@@ -3150,7 +3151,7 @@ userspace_tests()
+ 		pm_nl_set_limits $ns1 0 1
+ 		run_tests $ns1 $ns2 10.0.1.1 0 0 userspace_1 slow
+ 		chk_join_nr 1 1 1
+-		chk_rm_nr 0 1
++		chk_rm_nr 1 1
+ 		kill_events_pids
+ 	fi
  }
- 
-+/* If the subflow is closed from the other peer (not via a
-+ * subflow destroy command then), we want to keep the entry
-+ * not to assign the same ID to another address and to be
-+ * able to send RM_ADDR after the removal of the subflow.
-+ */
-+static int mptcp_userspace_pm_delete_local_addr(struct mptcp_sock *msk,
-+						struct mptcp_pm_addr_entry *addr)
-+{
-+	struct mptcp_pm_addr_entry *entry, *tmp;
-+
-+	list_for_each_entry_safe(entry, tmp, &msk->pm.userspace_pm_local_addr_list, list) {
-+		if (mptcp_addresses_equal(&entry->addr, &addr->addr, false)) {
-+			/* TODO: a refcount is needed because the entry can
-+			 * be used multiple times (e.g. fullmesh mode).
-+			 */
-+			list_del_rcu(&entry->list);
-+			kfree(entry);
-+			return 0;
-+		}
-+	}
-+
-+	return -EINVAL;
-+}
-+
- int mptcp_userspace_pm_get_flags_and_ifindex_by_id(struct mptcp_sock *msk,
- 						   unsigned int id,
- 						   u8 *flags, int *ifindex)
-@@ -251,6 +275,7 @@ int mptcp_nl_cmd_sf_create(struct sk_buff *skb, struct genl_info *info)
- 	struct nlattr *raddr = info->attrs[MPTCP_PM_ATTR_ADDR_REMOTE];
- 	struct nlattr *token = info->attrs[MPTCP_PM_ATTR_TOKEN];
- 	struct nlattr *laddr = info->attrs[MPTCP_PM_ATTR_ADDR];
-+	struct mptcp_pm_addr_entry local = { 0 };
- 	struct mptcp_addr_info addr_r;
- 	struct mptcp_addr_info addr_l;
- 	struct mptcp_sock *msk;
-@@ -302,12 +327,24 @@ int mptcp_nl_cmd_sf_create(struct sk_buff *skb, struct genl_info *info)
- 		goto create_err;
- 	}
- 
-+	local.addr = addr_l;
-+	err = mptcp_userspace_pm_append_new_local_addr(msk, &local);
-+	if (err < 0) {
-+		GENL_SET_ERR_MSG(info, "did not match address and id");
-+		goto create_err;
-+	}
-+
- 	lock_sock(sk);
- 
- 	err = __mptcp_subflow_connect(sk, &addr_l, &addr_r);
- 
- 	release_sock(sk);
- 
-+	spin_lock_bh(&msk->pm.lock);
-+	if (err)
-+		mptcp_userspace_pm_delete_local_addr(msk, &local);
-+	spin_unlock_bh(&msk->pm.lock);
-+
-  create_err:
- 	sock_put((struct sock *)msk);
- 	return err;
-@@ -420,7 +457,11 @@ int mptcp_nl_cmd_sf_destroy(struct sk_buff *skb, struct genl_info *info)
- 	ssk = mptcp_nl_find_ssk(msk, &addr_l, &addr_r);
- 	if (ssk) {
- 		struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
-+		struct mptcp_pm_addr_entry entry = { .addr = addr_l };
- 
-+		spin_lock_bh(&msk->pm.lock);
-+		mptcp_userspace_pm_delete_local_addr(msk, &entry);
-+		spin_unlock_bh(&msk->pm.lock);
- 		mptcp_subflow_shutdown(sk, ssk, RCV_SHUTDOWN | SEND_SHUTDOWN);
- 		mptcp_close_ssk(sk, ssk, subflow);
- 		MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_RMSUBFLOW);
 
 -- 
 2.40.1
