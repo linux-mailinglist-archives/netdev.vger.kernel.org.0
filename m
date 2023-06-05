@@ -1,176 +1,158 @@
-Return-Path: <netdev+bounces-8025-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8026-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 96CAA722762
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:28:12 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C6F5D72276D
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:30:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C56B028120E
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 13:28:10 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EAEAA1C20BDF
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 13:30:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 21A951B90C;
-	Mon,  5 Jun 2023 13:28:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 231D21B91B;
+	Mon,  5 Jun 2023 13:30:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F5A8134BE
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 13:28:08 +0000 (UTC)
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2127.outbound.protection.outlook.com [40.107.237.127])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2248812D;
-	Mon,  5 Jun 2023 06:28:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=li04Q5iHRLZuyui0KAPqEE9dkBNr1HPArD78aGrecHa42j4XQGER4BhUahx+iFijzUdRIV3Dv1pX8fAUEz9R7GJqo5l+cDmDdjGjDfleU0GznQlnMTGGXBTDU7y886vvLLopEfP96emi+R6ERmbjJtgdw5+yA7d/5pY5s/NNoHHs/aPxXTSTl7OMKiJn8gRCbj723bKPkITU/pYWOxWULHAsZQTIDzN3LglG+Iq8xvJswL/ZNYdGDEdWHhjxWoyzoUkdGEbDt44YKSpiaers60snUUgAv04qQYhxfPO+iSTFsevGsXY769M0Ofvuv/rt7nHl8MwjnemAIAn5j0lZgw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jPnH+FAuA79ba/hXAMpGfrhV9frIggEEKdLSGFTqJz0=;
- b=A3iVi4LvHaRbgFSYcXwV5kbkorDBkyIbupczheoDK3JOdxfI6gJL+7RFgg04e2QHFroPpvY/OWoiC+dPmnrt8OEt7DoVn7O7USAi/iASDmP8FyiW65YhYAipaIhCn9e5Zd1wJtEQGUFUif9gqygM21u2K+yYy6Wq/VdF8OoHugf7JVfXGWVZlmMrrRiNnk2TtZr0mlF+yGTjIgbDwgh+UMvTG4jcnhgLSsdFrDPasHqR+0b3mMb7eV5ZKxfKPaY6ffIEj9cA9TxFG3Mdf9JRhEsiDF4fhIJhlqYgoQEvRT3TGTP0CXBDVlh/i/76Pmk+FCfFbnlTNR5qfTdbEOY1Ig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jPnH+FAuA79ba/hXAMpGfrhV9frIggEEKdLSGFTqJz0=;
- b=XW7OmpeiTuAcZsv8Dh5ojDqf8+tN+YkUxccTRsZilziVEpQXBu4iyiHeGx6MMAm983zWDnWpw+b69tIV8REkj0kAaS7krQt1kGqknVXAl6qeqse3z1nW3b4DgWbNz13aC1po8I/5OTO+aclqjAPKSI7dhs8du6ah6tNzkpjBjP8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CH0PR13MB5098.namprd13.prod.outlook.com (2603:10b6:610:ed::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Mon, 5 Jun
- 2023 13:27:57 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6455.030; Mon, 5 Jun 2023
- 13:27:57 +0000
-Date: Mon, 5 Jun 2023 15:27:50 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
-	Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
-	Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-	linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-	Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>,
-	Peilin Ye <yepeilin.cs@gmail.com>,
-	Pedro Tammela <pctammela@mojatatu.com>
-Subject: Re: [PATCH RESEND net-next 0/5] Improve the taprio qdisc's
- relationship with its children
-Message-ID: <ZH3i1hxWOuynkbxk@corigine.com>
-References: <20230602103750.2290132-1-vladimir.oltean@nxp.com>
- <20230605125042.lx6ng5jcsxp625ep@skbuf>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230605125042.lx6ng5jcsxp625ep@skbuf>
-X-ClientProxiedBy: AS4P189CA0030.EURP189.PROD.OUTLOOK.COM
- (2603:10a6:20b:5db::17) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14F436FC3
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 13:30:49 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9050AF3
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 06:30:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685971844;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=09h7AR4TuCkDh4zJT0E+2xZhXl8jzj6eU3ZdjKoNbek=;
+	b=gmS4diiYn7Pm676p7UuGn+xWBH7IrpP9pEBE/qaXOsQf+V5KZA89Y379YFE0t1vUZt9YMS
+	naiPfy5exKaWj+EESF6tEaLXQqpvc7vDj1r/wVjfmgKG5qg3WPcRoncJ59VD0lBNckY2eS
+	cJpSC7g31RzM/Gi0fr2gnxrBtFfdt1w=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-662-60SDBZL_Ne6Fcnoiq9Fcmg-1; Mon, 05 Jun 2023 09:30:44 -0400
+X-MC-Unique: 60SDBZL_Ne6Fcnoiq9Fcmg-1
+Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-616731c798dso41641376d6.1
+        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 06:30:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685971843; x=1688563843;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=09h7AR4TuCkDh4zJT0E+2xZhXl8jzj6eU3ZdjKoNbek=;
+        b=StqE1I+txk0oENPVt9KTwHfA1xGAESM2m4S39llGmiR8WGhd4FWkYZsFNRI1K61/sT
+         wk8GgC0NPoXxFa6D93hLFMqus3KM9MHdstPtfk+I61Tpw24zzIm4UWm+wJcwD7rc2h9J
+         S/hUUt9lA4KAPWWwmrFyU3PlmZoRKtHbh1tsuSwC/Mx+llYbM/fVg5jvxq9eBKdFD/dd
+         eCLdGuXLXw09sut78osiVGWavi7oCX5oGOqTeBomZmHISZxBtkfNBc/LrnbGRbPbKFe+
+         8ByCzSdvDqfcBlT/nn6LEBc5s776nwVBCJ+zLhLw2Jn4rwuxxNpIYXg5S7mpbnzoxu/y
+         cR+g==
+X-Gm-Message-State: AC+VfDy+bg/KYRdvLroLQ/V6fT4TEN89x49OSywi+5eyDoAwUdnSVk6F
+	aC4JLSPBmqLgH9AWEkL4b0XYmOwAb+GXwJVY2qz58oT59RvsKjqhUEyBUDWyiYXkzOZpSxrBOWh
+	Ff++oBRUbOGdV2zOdW6B78wsv
+X-Received: by 2002:a05:6214:240b:b0:623:9a08:4edd with SMTP id fv11-20020a056214240b00b006239a084eddmr8345314qvb.25.1685971843176;
+        Mon, 05 Jun 2023 06:30:43 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ59eKAQLHTpxMz4/t5AgUGvFz9F83N7jM9XvbTEJ6IWLoINLpCKUzwbDeHXyzeu5z0HI4vP9w==
+X-Received: by 2002:a05:6214:240b:b0:623:9a08:4edd with SMTP id fv11-20020a056214240b00b006239a084eddmr8345276qvb.25.1685971842889;
+        Mon, 05 Jun 2023 06:30:42 -0700 (PDT)
+Received: from sgarzare-redhat ([5.77.94.106])
+        by smtp.gmail.com with ESMTPSA id ph12-20020a0562144a4c00b0061c83f00767sm4623347qvb.3.2023.06.05.06.30.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Jun 2023 06:30:42 -0700 (PDT)
+Date: Mon, 5 Jun 2023 15:30:35 +0200
+From: Stefano Garzarella <sgarzare@redhat.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>, 
+	Shannon Nelson <shannon.nelson@amd.com>
+Cc: virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, 
+	Jason Wang <jasowang@redhat.com>, Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>, 
+	Tiwei Bie <tiwei.bie@intel.com>, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost-vdpa: filter VIRTIO_F_RING_PACKED feature
+Message-ID: <gi2hngx3ndsgz5d2rpqjywdmou5vxhd7xgi5z2lbachr7yoos4@kpifz37oz2et>
+References: <20230605110644.151211-1-sgarzare@redhat.com>
+ <20230605084104-mutt-send-email-mst@kernel.org>
+ <24fjdwp44hovz3d3qkzftmvjie45er3g3boac7aezpvzbwvuol@lmo47ydvnqau>
+ <20230605085840-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH0PR13MB5098:EE_
-X-MS-Office365-Filtering-Correlation-Id: 544b0370-653d-438b-5237-08db65c8ad1b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	XXGq5wxsDGglAS921gM9duQc00EvAWyScVxMc8MlAEd1andO9341ZmwLw3e9n2+ThBCrk1GBIdOUC3OucdnvCwRFu21xyaSINSyfux+S6+QlkXqkGZ1KykRLcCxzFMF3GMi4G19mPB8KzBMG5HCSSOACqTKEVfgF4ZxVXib+NYv9uMNY3r9sE7CkYrY/thZPQck27hSdkzwfLoGRJzZGd9NmZp7hMqGimRh/+m6BQPN5CEKEeuGvdHnDAYbE55qO4qtzaZo2edQ2+JsAXEKS3lR+GV24oeKsg/azvz3ADykfXYX4bNV5SnyiJHnflG5PCzworH0UDBFj+2kr4qUgpNtRqViweIHeQ90LOmLZs7mV87upJzUJbOxfx6lOSC+VkqigcB5e1lOjQVRCZ94LKpc7XXSD4dMpmFZVyqsptjHwyvD5GbR3t43nkwrD3B0VFmFec0Ikhm/IkkgmWSrZeQxmBRa4GLRV5gB7WXX8ddGrBe2bXvhTUqsVBVCYCkicS/zxCteXt/R57+oV9U+lAWX1/LMecAxS+dMFpfSKEOg=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(396003)(39840400004)(366004)(136003)(451199021)(54906003)(478600001)(5660300002)(8936002)(8676002)(44832011)(7416002)(36756003)(2906002)(86362001)(4326008)(6916009)(66476007)(66556008)(316002)(66946007)(38100700002)(41300700001)(83380400001)(6506007)(2616005)(6512007)(186003)(966005)(6486002)(6666004);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?xsXJ5RrpcHwOGmQ09jPxH3iEnEy6b2KArrJtHVUERhzqHbSh6r2N3wFdqquW?=
- =?us-ascii?Q?+qLNrwabKFdegHoZf0VzgJEI63YP/4DICurIU0ZsSK6Lqkk9NTqYyl7f9ZZ4?=
- =?us-ascii?Q?mwbvtPP76/IMF+eDF0B85QXsUNkh/drZCJJnfhUtRWxqw84K3cfgaamvgw8u?=
- =?us-ascii?Q?gt/nMaGuaqA8lp0VXekpqFwZbDMJPn15f8Hs8ykxQEiPV8+Pym32W3QUlNeG?=
- =?us-ascii?Q?yyULo4pDUCrCml4ec6cSembl5zq7I4d9GsF6X69XiSGL8QGEoD+jdVwDKUbK?=
- =?us-ascii?Q?a30Vqj6zP2B7aDVc77iIVM4+UFli3sELtKyW1d2Q2gvQ9O6B54E5mqRtkZ7Q?=
- =?us-ascii?Q?X55wifohzfjDNVjDxP940ZBl26dGpVKiEOzIoHgaJINLlY3roOU4RlL8fXzB?=
- =?us-ascii?Q?YqpKzMd/cV2/k1Pb10YeD063e3e4g3XNOxT/P0KY2S0EKvJdqHFSXFQNdr5J?=
- =?us-ascii?Q?FCqLPedu3DxqIaKwfPVik/Th3BhoCe555w3096tA+EhxbaF4TeLoP6JYX+dT?=
- =?us-ascii?Q?3K7NcsgD+kPm/wvl+b+wtoFY4Uyaxr08nvGvFu5p31oB1yesoVuqlwv2RE0o?=
- =?us-ascii?Q?1opHgvwcNbLLqXXXE64SU4ZZR/MbbRg8gSXkG3S0R3nQKimvqS/WgdwaM9KF?=
- =?us-ascii?Q?S+YmQJEYmOijSW8dBFxlCwCGg9VQkNYLCWRLJIv0dCluRvxrmhLT+alV1rlc?=
- =?us-ascii?Q?YmFq7TyshBYuI+qU5b0ca29kI/SLpO+bZO9B0HQc829yjfjoDeqH5ECwh62r?=
- =?us-ascii?Q?MOD92MiE8IPQ38SWTK9z3AYpGNeXnsHcnIv/shaL9B7oOemCbQNl3PbOQ3dP?=
- =?us-ascii?Q?Sjh7XiBRQA7ENosURoOYflPdvanmmb87Ns5MXNcvNn6qsTkFLW+9aghA5hck?=
- =?us-ascii?Q?8ymu9zUQ9wOOWuKDACv6dO5vb3Xh/kKAEwAjv7aNfdo0n9l8ISIE63J7lV7G?=
- =?us-ascii?Q?HXxZqVLHW0Fxe79+9Hkw0kXlHYYJswdZ3WC8pgony2eNxrGHgNHl6ZCBJ8e3?=
- =?us-ascii?Q?83xXDb4vThTUaWk9VFBdiYNBl8xtqm/WC3a9SVw2UWcOIl3FosHDOYBQsXFg?=
- =?us-ascii?Q?rOeBZ/57K8I6NTyOfI45N7WUkmsLokvPnlfxbDwBsJfoBN1Po91amj3zW17B?=
- =?us-ascii?Q?+xlRl3JQBP9ad/ZQU4rFcYeKebBg6KHGcDRt+tnXPQASh0ivs9V96OSTi+36?=
- =?us-ascii?Q?hKAMhzvQajlws2ZaxYMWCInV/9UWnBVJyeqm0EO3t4ySyCBXyOw5ROEIIPaG?=
- =?us-ascii?Q?k/QHFWFYXlHxH6TdR7AAkFD70LE8Hhirn/MuyNDRpmDdjT6bsq3miVLSlu9j?=
- =?us-ascii?Q?2fpFst/6FMEUWoPFxKO4IHgb3eJRyVawTrG0/Rvd12K28SEIHBIpj2CrkjeM?=
- =?us-ascii?Q?Ax/urLzmheCk8ugRWTsuMRbyyhX3FOLFVmcjNLCmV4cgR/JFjPUihZU1XNqs?=
- =?us-ascii?Q?d0aYbNUvmzx95nm35nr6//TSUKE8xPeDa4Jk67dGVWpYcSvVRqPJ/fc6gGIS?=
- =?us-ascii?Q?m+rja6hPynGyzEXW3AINSYn2NDU+cjsjOk6whWnL348g4G1K7AkYq0murvsy?=
- =?us-ascii?Q?17yG+5tmfiqpaGHblIYwygvxz+vHec+l6hGbPZ6J1HyVBTBo6hd01kZqOF79?=
- =?us-ascii?Q?w+tkf0R3i0gXEoArK6arcKWb/EHAsHPLRgDVe08ATU18jKh1uQaGXxIALdvd?=
- =?us-ascii?Q?IoRg9Q=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 544b0370-653d-438b-5237-08db65c8ad1b
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2023 13:27:57.6767
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GvyPOLxgM9/j7KYDLtgm6IYJRW56iS+Jqo6nmy6Li5c5W26KcYgTxPeSXKslkCO+hyfVb4J2Y+AY9b17OkuKwBQRID/Ag1sAtd0+qTjCt38=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR13MB5098
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20230605085840-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 05, 2023 at 03:50:42PM +0300, Vladimir Oltean wrote:
-> Hi,
-> 
-> On Fri, Jun 02, 2023 at 01:37:45PM +0300, Vladimir Oltean wrote:
-> > [ Original patch set was lost due to an apparent transient problem with
-> > kernel.org's DNSBL setup. This is an identical resend. ]
-> > 
-> > Prompted by Vinicius' request to consolidate some child Qdisc
-> > dereferences in taprio:
-> > https://lore.kernel.org/netdev/87edmxv7x2.fsf@intel.com/
-> > 
-> > I remembered that I had left some unfinished work in this Qdisc, namely
-> > commit af7b29b1deaa ("Revert "net/sched: taprio: make qdisc_leaf() see
-> > the per-netdev-queue pfifo child qdiscs"").
-> > 
-> > This patch set represents another stab at, essentially, what's in the
-> > title. Not only does taprio not properly detect when it's grafted as a
-> > non-root qdisc, but it also returns incorrect per-class stats.
-> > Eventually, Vinicius' request is addressed too, although in a different
-> > form than the one he requested (which was purely cosmetic).
-> > 
-> > Review from people more experienced with Qdiscs than me would be
-> > appreciated. I tried my best to explain what I consider to be problems.
-> > I am deliberately targeting net-next because the changes are too
-> > invasive for net - they were reverted from stable once already.
-> 
-> I noticed that this patch set has "Changes Requested" in patchwork.
-> 
-> I can't completely exclude the fact that maybe someone has requested
-> some changes to be made, but there is no email in my inbox to that end,
-> and for that matter, neither did patchwork or the email archive process
-> any responses to this thread.
+On Mon, Jun 05, 2023 at 09:00:25AM -0400, Michael S. Tsirkin wrote:
+>On Mon, Jun 05, 2023 at 02:54:20PM +0200, Stefano Garzarella wrote:
+>> On Mon, Jun 05, 2023 at 08:41:54AM -0400, Michael S. Tsirkin wrote:
+>> > On Mon, Jun 05, 2023 at 01:06:44PM +0200, Stefano Garzarella wrote:
+>> > > vhost-vdpa IOCTLs (eg. VHOST_GET_VRING_BASE, VHOST_SET_VRING_BASE)
+>> > > don't support packed virtqueue well yet, so let's filter the
+>> > > VIRTIO_F_RING_PACKED feature for now in vhost_vdpa_get_features().
+>> > >
+>> > > This way, even if the device supports it, we don't risk it being
+>> > > negotiated, then the VMM is unable to set the vring state properly.
+>> > >
+>> > > Fixes: 4c8cf31885f6 ("vhost: introduce vDPA-based backend")
+>> > > Cc: stable@vger.kernel.org
+>> > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>> > > ---
+>> > >
+>> > > Notes:
+>> > >     This patch should be applied before the "[PATCH v2 0/3] vhost_vdpa:
+>> > >     better PACKED support" series [1] and backported in stable branches.
+>> > >
+>> > >     We can revert it when we are sure that everything is working with
+>> > >     packed virtqueues.
+>> > >
+>> > >     Thanks,
+>> > >     Stefano
+>> > >
+>> > >     [1] https://lore.kernel.org/virtualization/20230424225031.18947-1-shannon.nelson@amd.com/
+>> >
+>> > I'm a bit lost here. So why am I merging "better PACKED support" then?
+>>
+>> To really support packed virtqueue with vhost-vdpa, at that point we would
+>> also have to revert this patch.
+>>
+>> I wasn't sure if you wanted to queue the series for this merge window.
+>> In that case do you think it is better to send this patch only for stable
+>> branches?
+>> > Does this patch make them a NOP?
+>>
+>> Yep, after applying the "better PACKED support" series and being sure 
+>> that
+>> the IOCTLs of vhost-vdpa support packed virtqueue, we should revert this
+>> patch.
+>>
+>> Let me know if you prefer a different approach.
+>>
+>> I'm concerned that QEMU uses vhost-vdpa IOCTLs thinking that the kernel
+>> interprets them the right way, when it does not.
+>>
+>> Thanks,
+>> Stefano
+>>
+>
+>If this fixes a bug can you add Fixes tags to each of them? Then it's ok
+>to merge in this window. Probably easier than the elaborate
+>mask/unmask dance.
 
-I concur. Let's see if this sets set it to "Under Review".
+CCing Shannon (the original author of the "better PACKED support"
+series).
 
--- 
-pw-bot: under-review
+IIUC Shannon is going to send a v3 of that series to fix the
+documentation, so Shannon can you also add the Fixes tags?
+
+Thanks,
+Stefano
 
 
