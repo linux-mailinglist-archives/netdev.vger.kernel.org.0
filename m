@@ -1,118 +1,103 @@
-Return-Path: <netdev+bounces-7932-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7934-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id F0A74722270
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:45:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D42F272228B
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:48:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9CBF82811FD
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:45:50 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 44B712811DE
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:48:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6F3715496;
-	Mon,  5 Jun 2023 09:45:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 942621549A;
+	Mon,  5 Jun 2023 09:48:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99C2B4432
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 09:45:48 +0000 (UTC)
-Received: from fw2.prolan.hu (fw2.prolan.hu [193.68.50.107])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA8ED2
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 02:45:46 -0700 (PDT)
-Received: from proxmox-mailgw.intranet.prolan.hu (localhost.localdomain [127.0.0.1])
-	by proxmox-mailgw.intranet.prolan.hu (Proxmox) with ESMTP id 157C7A0545;
-	Mon,  5 Jun 2023 11:45:57 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prolan.hu; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:from:from:message-id:mime-version:reply-to:subject:subject:to
-	:to; s=mail; bh=niCoXEjdbXelAJnVy6YtcGMyxsOEvNVEOZItHmSi/Uw=; b=
-	OLd2IwY82hW/FcFRTK8kTfOi3PknOzhG6dSW0Y2H7AaDPSE+ibG3WDVzeU+2+oSm
-	mOG9J2P6mjxH896rTFqdDMdoM0pGRtz7X0n0YyYYYFN3C4bZ03aIR10TMKpzjFNy
-	AEKXeyYpXRpCL1G9D9qpLngajJZRIhNGKHQCIOFoNXt0ng4Joc5tA5kpQf0S4KgA
-	arr7J2Ukfq0xnE6edsuwInmi0xOCpuyE00vikt50JZK0DxvtaXXL2yzYoFrtGJND
-	FFEFykhT/ndl1GJjhsXWCipOt3idQX9hO1pjxq30MReXCQjc0aKJzhZjiAcsinAu
-	gefvYtoQio92afjiqE0wFj4I1NIJkEb1aJqdkZ2t5sKKQjy+dbu9wyG1f5UnT4Zj
-	62KBB9qTKrthNZajkMqxQBBa/GdFLpqi6uCBmqbg9MYAiKM2RnWvO4W72iiZqk9D
-	gjJKn6uXE9CrKQyBAKEmLfSo5X/dgzwV7WFdR/xjlWUAPD4RqTeyRFqJYdqQdRuX
-	cKTB2Ghfu/8utg3YEJjdFoP995G1/OVJ/OyumI7qr3q9K/WNRA5AFaLvvsBPehZA
-	YePIWEtcuLPLprHnUSfw9/m+GcU25rLKJUHIyhQeWks/rW+ziPmSVMaTlWTBKQI3
-	1KwDj0dYtFwSuUvaJMf4YgzaYimCcVrqSCgsd9wlJ8k=
-From: =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>
-To: <netdev@vger.kernel.org>
-CC: Richard Cochran <richardcochran@gmail.com>, "David S. Miller"
-	<davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-	<qiangqing.zhang@nxp.com>, Andrew Lunn <andrew@lunn.ch>,
-	<kernel@pengutronix.de>, =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?=
-	<csokas.bence@prolan.hu>
-Subject: [PATCH resubmit] net: fec: Refactor: rename `adapter` to `fep`
-Date: Mon, 5 Jun 2023 11:44:03 +0200
-Message-ID: <20230605094402.85071-1-csokas.bence@prolan.hu>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 886F8134BE
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 09:48:16 +0000 (UTC)
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E12BD;
+	Mon,  5 Jun 2023 02:48:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685958495; x=1717494495;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=5BHkuJL29yFojqC18SXx1Au4LfrMLiOdhfB3KfcEDlI=;
+  b=bo6P382Fd3V8TOxHVNV0qBDa7iDs+se9mmxmaLvyeNVpcFwq3bVgSP6z
+   LAdMb5hLJMgJDyARrDWcfx/MIZkiXbIem6EztdyF6X9y0dFdty5fnmPEM
+   2Xcy9YDQE8OezkE7UnJBGzcdMc1e+1VD6TrQxrnoCMGRVB0eFWDyxqS6d
+   ouDB6Q4MLQnTKyTiMal5+GXDibKBMvSOWXFJeGV0+85a45emLoxmuI0I8
+   y7RwD5m2AnWnRpBQMERdeKsCp/N6y81FFWx2Wy88rxBAUtHuIbO/GBGdb
+   1RWjQnnWolv6K/FoTuD/Dw1iFUklW23gVnha7VBf4EKKtC+5g2Sb9oaAz
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10731"; a="419873411"
+X-IronPort-AV: E=Sophos;i="6.00,217,1681196400"; 
+   d="scan'208";a="419873411"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 02:48:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10731"; a="659020263"
+X-IronPort-AV: E=Sophos;i="6.00,217,1681196400"; 
+   d="scan'208";a="659020263"
+Received: from amlin-018-114.igk.intel.com ([10.102.18.114])
+  by orsmga003.jf.intel.com with ESMTP; 05 Jun 2023 02:48:12 -0700
+From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+To: netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	kuba@kernel.org,
+	davem@davemloft.net,
+	pabeni@redhat.com,
+	edumazet@google.com,
+	chuck.lever@oracle.com
+Cc: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+Subject: [PATCH 66/69] ynl: fix nested policy attribute type
+Date: Mon,  5 Jun 2023 11:46:17 +0200
+Message-Id: <20230605094617.3564079-1-arkadiusz.kubalewski@intel.com>
+X-Mailer: git-send-email 2.37.3
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Received-SPF: Fail (atlas.intranet.prolan.hu: domain of csokas.bence@prolan.hu
- does not designate 10.254.7.28 as permitted sender)
- receiver=atlas.intranet.prolan.hu; client-ip=10.254.7.28;
- helo=P-01011.intranet.prolan.hu;
-X-ESET-AS: R=OK;S=0;OP=CALC;TIME=1685958349;VERSION=7954;MC=1783889486;ID=161457;TRN=0;CRV=0;IPC=;SP=0;SIPS=0;PI=3;F=0
-X-ESET-Antispam: OK
-X-EsetResult: clean, is OK
-X-EsetId: 37303A29B0A0C254627165
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
+When nested attribute is used, generated type in the netlink policy
+is NLA_NEST, which is wrong as there is no such type. Fix be adding
+`ed` sufix for policy generated for 'nest' type attribute.
+
+Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
 ---
- drivers/net/ethernet/freescale/fec_ptp.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ tools/net/ynl/ynl-gen-c.py | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
-index ab86bb8562ef..afc658d2c271 100644
---- a/drivers/net/ethernet/freescale/fec_ptp.c
-+++ b/drivers/net/ethernet/freescale/fec_ptp.c
-@@ -443,21 +443,21 @@ static int fec_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
-  */
- static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
- {
--	struct fec_enet_private *adapter =
-+	struct fec_enet_private *fep =
- 	    container_of(ptp, struct fec_enet_private, ptp_caps);
- 	u64 ns;
- 	unsigned long flags;
+diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
+index 28afb0846143..89603866d4a0 100755
+--- a/tools/net/ynl/ynl-gen-c.py
++++ b/tools/net/ynl/ynl-gen-c.py
+@@ -113,7 +113,10 @@ class Type(SpecAttr):
+         return '{ .type = ' + policy + ', }'
  
--	mutex_lock(&adapter->ptp_clk_mutex);
-+	mutex_lock(&fep->ptp_clk_mutex);
- 	/* Check the ptp clock */
--	if (!adapter->ptp_clk_on) {
--		mutex_unlock(&adapter->ptp_clk_mutex);
-+	if (!fep->ptp_clk_on) {
-+		mutex_unlock(&fep->ptp_clk_mutex);
- 		return -EINVAL;
- 	}
--	spin_lock_irqsave(&adapter->tmreg_lock, flags);
--	ns = timecounter_read(&adapter->tc);
--	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
--	mutex_unlock(&adapter->ptp_clk_mutex);
-+	spin_lock_irqsave(&fep->tmreg_lock, flags);
-+	ns = timecounter_read(&fep->tc);
-+	spin_unlock_irqrestore(&fep->tmreg_lock, flags);
-+	mutex_unlock(&fep->ptp_clk_mutex);
+     def attr_policy(self, cw):
+-        policy = c_upper('nla-' + self.attr['type'])
++        if (self.attr['type'] == 'nest'):
++            policy = c_upper('nla-' + self.attr['type'] + 'ed')
++        else:
++            policy = c_upper('nla-' + self.attr['type'])
  
- 	*ts = ns_to_timespec64(ns);
- 
+         spec = self._attr_policy(policy)
+         cw.p(f"\t[{self.enum_name}] = {spec},")
 -- 
-2.25.1
-
+2.31.1
 
 
