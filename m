@@ -1,103 +1,196 @@
-Return-Path: <netdev+bounces-8185-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8186-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1D858722FCB
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:28:30 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id ECA09722FE4
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:38:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CD516281202
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 19:28:28 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D31A41C20988
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 19:38:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF59724E8A;
-	Mon,  5 Jun 2023 19:28:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5922224E97;
+	Mon,  5 Jun 2023 19:38:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D111D2260B
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 19:28:26 +0000 (UTC)
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4BAE8
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:28:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685993305; x=1717529305;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=AFD+y5if85TAm808QiIwk2oVqtc5sYk/jdKDDIr/qqw=;
-  b=RXhRtsKDvsLMpQ7mm3UPQilXXZmpQZjsWtwd/9facLc4+J3g8D5YJCpZ
-   ufsbzknNtC5b5vMHgluE0k/9vPhe+l44Dy9G0GNtrqiyDWofdZbnY02Rf
-   vJAfgr5cIuPmEEMv2C9awc5riaiyQ0YIEw5ht0MJBP60y3h3kjF26Y8nW
-   tdSpvmonXb2N9Hycj/ZcS9gETB2v3pq9qvx5WiR5mAofb58lIpXF5Onkc
-   3E+JZwH2hBBEXniawz06+QC1Gf6wSVtlg5p8MIGFLXT/0rF8Eorbbn1kM
-   Z2KK3yZXfmur6ZOEFpN+EmqW3YCwt3ZMDREY0D2vqkeLlOzBq4c6GBV2C
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="341098723"
-X-IronPort-AV: E=Sophos;i="6.00,218,1681196400"; 
-   d="scan'208";a="341098723"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 12:28:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="798552339"
-X-IronPort-AV: E=Sophos;i="6.00,218,1681196400"; 
-   d="scan'208";a="798552339"
-Received: from lkp-server01.sh.intel.com (HELO 15ab08e44a81) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 05 Jun 2023 12:28:21 -0700
-Received: from kbuild by 15ab08e44a81 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1q6FsK-0004OB-2h;
-	Mon, 05 Jun 2023 19:28:20 +0000
-Date: Tue, 6 Jun 2023 03:28:05 +0800
-From: kernel test robot <lkp@intel.com>
-To: Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc: oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org,
-	Simon Horman <simon.horman@corigine.com>
-Subject: [net-next:main 5/19] ERROR: modpost: "lynx_pcs_destroy"
- [drivers/net/ethernet/stmicro/stmmac/stmmac.ko] undefined!
-Message-ID: <202306060326.B8HGnS3V-lkp@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 475F72415C
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 19:38:28 +0000 (UTC)
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E2AAED
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:38:26 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id 38308e7fff4ca-2b1ac373c9eso49015941fa.0
+        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 12:38:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685993904; x=1688585904;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=U8BceSTb/ueXp+FJPSkU6yGPSfQrcXh8uFcHja7e6jA=;
+        b=dwjV7epPKMIHMcdPFKYglaMzPj7uTI62EO+Ao4GZFVNsRRynAP02mTgs2xf+MFHMZl
+         QTvYUpUmv/MujKb4/9AxTJVXppFa1dZj1MD8/WfLyI5OC09FYD2ZvkCb7gd7XcQosOp4
+         TjKzmytJ4St9YvkDwhknv809U5jFdZxPjp6CNNqkbuBHHU3gUosqPgJ8rHnuwqkb+nwN
+         lKgJyP4gXOceLZhoYv6uCqQXWvsivb2/xXQ5xEHGBotCaW7vqbwejaf0wsxGoXNMW/BF
+         W76xuNVX75q69fcwdOGd1LUZAg2rz/1grfjsP7JIXdsDpuq7/9brra3n/cAwcBuFiPFW
+         Ycmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685993904; x=1688585904;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=U8BceSTb/ueXp+FJPSkU6yGPSfQrcXh8uFcHja7e6jA=;
+        b=biZ2U4OHL7tcjIHuGDGkEXXQ9tDtp59ryWBzQGKkvQVNSSKgLntxqpnTRa/OegXw+u
+         zS6X1q6mxSWA/q7XYAsugmO8MgSTR2rMno987QxS9ZEdRI3rveZcJfp3hDl+4bFtFTcV
+         IRGUJCkJIl7OAD1pxwVajbRLnYSGhtBBXEeo6MyG1N0ucGMXe6rUiiML9EFizAqkgk1K
+         GURtfrMWyTpNM8+lcflIgU4OgA8Z1UNFuV9FwVS9tZ3znt/+JeQzBHZEjk4dOHrqC11k
+         xQUdVXu/hWDqn4uD/p339sc9CFwvKOj2zRjKipQbHQYkT5Khr6wORWILELIbfabb39Jw
+         EYIw==
+X-Gm-Message-State: AC+VfDwFjJ0VdVARLR21crFWRH6C+chh4KHqb6VOiuO7zWr6XOhGDHmG
+	a1ECYvmBkTF4/6Ov1BCNb+iXNqoKUToCC5p1yVML4WrmKBc=
+X-Google-Smtp-Source: ACHHUZ79JoZOtFXzX75fkY5p7L84xPAvi0n7rQ0D3raZZrclooA8Om1FypbIIRMCcxkmgOMv2WE/RJiblWw2tUTQzAo=
+X-Received: by 2002:a05:651c:90:b0:2b1:a8bb:99ab with SMTP id
+ 16-20020a05651c009000b002b1a8bb99abmr120400ljq.19.1685993904092; Mon, 05 Jun
+ 2023 12:38:24 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+References: <0df383e20e5a90494e3cbd0cf23c508c5c943ab4.1685725191.git.chunkeey@gmail.com>
+In-Reply-To: <0df383e20e5a90494e3cbd0cf23c508c5c943ab4.1685725191.git.chunkeey@gmail.com>
+From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date: Mon, 5 Jun 2023 16:38:12 -0300
+Message-ID: <CAJq09z4usfR=TqQMOd6DiPrNKhQi6vr-AWuMbgGvGa+E-RTFbw@mail.gmail.com>
+Subject: Re: [PATCH v1] net: dsa: realtek: rtl8365mb: use mdio passthrough to
+ access PHYs
+To: Christian Lamparter <chunkeey@gmail.com>
+Cc: netdev@vger.kernel.org, alsi@bang-olufsen.dk, linus.walleij@linaro.org, 
+	andrew@lunn.ch, olteanv@gmail.com, f.fainelli@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git main
-head:   69da40ac3481993d6f599c98e84fcdbbf0bcd7e0
-commit: 5d1f3fe7d2d54d04b44aa5b9b62b305fdcf653ec [5/19] net: stmmac: dwmac-sogfpga: use the lynx pcs driver
-config: riscv-rv32_defconfig (https://download.01.org/0day-ci/archive/20230606/202306060326.B8HGnS3V-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 12.3.0
-reproduce (this is a W=1 build):
-        mkdir -p ~/bin
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=5d1f3fe7d2d54d04b44aa5b9b62b305fdcf653ec
-        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-        git fetch --no-tags net-next main
-        git checkout 5d1f3fe7d2d54d04b44aa5b9b62b305fdcf653ec
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.3.0 ~/bin/make.cross W=1 O=build_dir ARCH=riscv olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.3.0 ~/bin/make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+Hi, Christian
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202306060326.B8HGnS3V-lkp@intel.com/
+> when bringing up the PHYs on a Netgear WNDAP660, I observed that
+> none of the PHYs are getting enumerated and the rtl8365mb fails
+> to load.
+>
+> | realtek-mdio [...] lan1 (unini...): validation of gmii with support \
+> |   0...,0.,..6280 and advertisement 0...,0...,6280 failed: -EINVAL
+> | realtek-mdio [...] lan1 (uninit...): failed to connect to PHY: -EINVAL
+> | realtek-mdio [...] lan1 (uninit...): error -22 setting up PHY for
+> |   tree 0, switch 0, port 0
+>
+> with phytool, all registers just returned "0000".
+>
+> Now, the same behavior was present with the swconfig version of
+> rtl8637b.c and in the device's uboot the "mii" register access
+> utility also reports bogus values.
+>
+> The Netgear WNDAP660 might be somewhat special, since the RTL8363SB
+> uses exclusive MDC/MDIO-access (instead of SMI). (And the RTL8363SB
+> is not part of the supported list of this driver).
+>
+> Since this was all hopeless, I dug up some datasheet when searching
+> for solutions:
+> "10/100M & 10/100/1000M Switch Controller Programming Guide".
+> It had an interesting passage that pointed to a magical
+> MDC_MDIO_OPERATION define which resulted in different slave PHY
+> access for the MDIO than it was implemented for SMI.
+>
+> With this implemented, the RTL8363SB PHYs came to live:
+>
+> | [...]: found an RTL8363SB-CG switch
+> | [...]: missing child interrupt-controller node
+> | [...]: no interrupt support
+> | [...]: configuring for fixed/rgmii link mode
+> | [...] lan1 (uninit...): PHY [dsa-0.0:01] driver [Generic PHY] (irq=POLL)
+> | [...] lan2 (uninit...): PHY [dsa-0.0:02] driver [Generic PHY] (irq=POLL)
+> | device eth0 entered promiscuous mode
+> | DSA: tree 0 setup
+> | realtek-mdio 4ef600c00.ethernet:00: Link is Up - 1Gbps/Full - [...]
+>
+> | # phytool lan1/2
+> | ieee-phy: id:0x001cc980 <--- this is correct!!
+> |
+> |  ieee-phy: reg:BMCR(0x00) val:0x1140
+> |     flags:          -reset -loopback +aneg-enable -power-down
+> |                     -isolate -aneg-restart -collision-test
+> |     speed:          1000-full
+> |
+> |  ieee-phy: reg:BMSR(0x01) val:0x7969
+> |     capabilities:   -100-b4 +100-f +100-h +10-f +10-h -100-t2-f
+> |                     -100-t2-h
+> |      flags:         +ext-status +aneg-complete -remote-fault
+> |                     +aneg-capable -link -jabber +ext-register
+>
+> the port statistics are working too and the exported LED triggers.
+> But so far I can't get any traffic to pass.
+>
+> Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+> ---
+> Any good hints or comments? Is the RTL8363SB an odd one here and
+> everybody else can just use SMI?
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+It seems that the indirect read using the register protocol does not
+work with your device. Yes, I could have used the memory mapped under
+the 0x2000 base to read those indirect registers, but I chose to keep
+the SMI-way as it was working even for an MDIO device. Using the same
+code path also helped uncover some issues with SMI. I didn't test
+writing to those registers, but reading from them does work with my
+RTL8367S.
 
->> ERROR: modpost: "lynx_pcs_destroy" [drivers/net/ethernet/stmicro/stmmac/stmmac.ko] undefined!
+Perhaps in your device generation, there is something different in the
+indirect read protocol used by SMI but optional (or non-existing) for
+MDIO devices. It might be worth trying to check if the SMI protocol
+used by other old drivers would work with your device and how they
+differ from the current rtl8365mb.c. If not, another RTL8363SB
+connected through SMI might also break with rtl8365mb.c. I believe
+that keeping a single code path independently the interface is
+beneficial for the driver.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+If we do need to have different phy_read/write methods, especially if
+RTL8363SB SMI needs a different protocol, I think we could convert the
+dsa_switch_ops into a dynamic structure and let the interface driver
+(realtek-smi/mdio) select the methods.
+
+The reason we have two ops for SMI and MDIO is not really related to
+differences between them. It's only because realtek-smi implemented a
+custom slave-mii, while realtek-mdio used the generic one that dsa
+creates. I wrote a series of patches that eliminate that difference
+and clean up some code. It was submitted last year but didn't progress
+any further. I rebased it on net-next:
+
+https://github.com/luizluca/linux/tree/realtek_deprecate_slave_mdio
+
+Alvin, maybe we should revisit the series before introducing more complexity.
+
+> So far, I'm just reusing the existing jam tables. rtl8367b.c jam
+> tables ones don't help with getting "traffic".
+
+I did some decoding while I was debugging an issue during realtek-mdio
+implementation, but I stopped and never submitted it (and I probably
+lost it). There were a lot of register declarations, getters and
+setters, converting a dozen lines into hundreds. Alvin, is that level
+of verbosity acceptable? We could start by declaring the register
+names. We need to read the vendor code to understand the context of
+each register, as the docs we find online (search for "realtek
+unmanaged switch programming guide") don't provide detailed
+information about the registers. Even the vendor code sometimes uses
+magic number shortcuts instead of calling its own functions.
+
+Regarding the non-realtek packets, it might be the switch trapping
+some special cases to the CPU port. Check if the IPv6 case, for
+example, is not actually a multicast request.
+RTL8365MB_CPU_INSERT_TO_ALL should handle that job, but your switch
+might handle things differently.
+
+Regards,
 
