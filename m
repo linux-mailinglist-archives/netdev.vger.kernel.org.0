@@ -1,112 +1,114 @@
-Return-Path: <netdev+bounces-7878-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7877-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7288A721EC7
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:02:45 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A9BAA721EB9
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:02:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2C09D2811B9
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 07:02:44 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 238A11C20AF6
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 07:02:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5F0F86105;
-	Mon,  5 Jun 2023 07:02:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E6EBB6101;
+	Mon,  5 Jun 2023 07:02:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51E24194
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 07:02:42 +0000 (UTC)
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D9FD3;
-	Mon,  5 Jun 2023 00:02:12 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id 41be03b00d2f7-52c84543902so279391a12.0;
-        Mon, 05 Jun 2023 00:02:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685948530; x=1688540530;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=dJT/sRF5KYka/O8wMeQ1HTIrVd4xnv3bYNT/8zFnrPA=;
-        b=qYWmyp7ksT4pI/yXswqnzosuyVhYy6HFFYgDQLcsACELE49rnNkCn88df8p0KR7ck0
-         2YptChW2qB3FhvPO2b7Ox81ZE0XQXH5W0y7ei2GHouls1kW1LpOBBlUIUYqhVTK8x9b6
-         FYixgWUPnMLj6lsibNkgZbHj+bhSgfUbFjSXqc1Igf6ve+f2s9w/UB3E0JCGAXNhoCXV
-         01JnuBAT8dzQpPAUnYLc26CuOmD2MKqYy2FYoOPvbhwbc6YbQ+aKj72PkZZeMUcoIRCG
-         S98VuOULel93hNXJSbp+Qp2n8l3pqzkq55QXGvmbAW7RMeRAEOj341V8kEH7aX+Crmsw
-         Kx/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685948530; x=1688540530;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dJT/sRF5KYka/O8wMeQ1HTIrVd4xnv3bYNT/8zFnrPA=;
-        b=D5+ib7K2e6wboPVG6uY2SXnMZRIfWsDQ+D/s0yN9e2Tt90q5bQ4M5/Ok4cjjgkOncM
-         9XgyffntOaqtk2OuaKAVyFeRXHRByX/2eTm0gZLAZ6i2rhNNTefoI1OP4JwZshal2ctV
-         CcSwbh7q2XIA1s6lELjcvgNl8EOk/VBL7N+IxizwglvF3bFQTMhTWROnMnmrK+IFaZWD
-         /3NmmbNdOUnNCmLJUZ0H/LDzP4+vEwbOFeFKdZrnEzGOKwI3MLOO8lebi6Ph3CaP1yPa
-         GC2+FrX4fQsxYnTsV2Vr6Liqb8PvCdpRQaGIADL32RTjEQEgsVzusSemPzfyEcST+r2D
-         IISg==
-X-Gm-Message-State: AC+VfDzxz4g5Ed1L64xMogJg8jr3oGoUNsTnH0vmLVgKg4aiBWqOELrw
-	8/JUSSCCdCXAMmiGeCB9ch8=
-X-Google-Smtp-Source: ACHHUZ7F9duUYHB7l3iguA5l8Lfnr33TruG8kWXVcSbz+pgdJ4ZmpzwgX+33T0nZKcCuzbYlb80Qgg==
-X-Received: by 2002:a17:90b:4f47:b0:255:c3a3:43a with SMTP id pj7-20020a17090b4f4700b00255c3a3043amr17351826pjb.4.1685948529855;
-        Mon, 05 Jun 2023 00:02:09 -0700 (PDT)
-Received: from hbh25y.mshome.net ([103.114.158.1])
-        by smtp.gmail.com with ESMTPSA id hg12-20020a17090b300c00b002562cfb81dfsm7004534pjb.28.2023.06.05.00.02.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jun 2023 00:02:09 -0700 (PDT)
-From: Hangyu Hua <hbh25y@gmail.com>
-To: jhs@mojatatu.com,
-	xiyou.wangcong@gmail.com,
-	jiri@resnulli.us,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com
-Cc: netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH net] net: sched: fix possible refcount leak in tc_chain_tmplt_add()
-Date: Mon,  5 Jun 2023 15:01:58 +0800
-Message-Id: <20230605070158.48403-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83422194
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 07:02:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F522C433EF;
+	Mon,  5 Jun 2023 07:02:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685948524;
+	bh=UY3nLgx5ktjqstws5tU2oB1vOZhXh6L50Bolq73FYzo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=NjQVjTBw6Rf8UlLW8WTLW3bXDKiDFhS2c9HwJmdPwNLS/oTlipVqQu7dnj7tnt8tF
+	 Q13nE97Xf7UFskZt0KEZaUBYbolmeQVMkRgUEf7oisbmZf1nL4mbUPkSbXiTQZnrtI
+	 iZGuWovK6+7d6zqJD1q4TargREutBqctvZ6nKX6GwPuULvATlI++pclzsYMOMsme/r
+	 NDaWIRUYekDHCMF2RxSJVQgV1UetbNyQLdBVhgWU3ctuhmOMJfCZWMk8/VEKiz8Ct2
+	 fyhlxqo89DZ/o6JQnN/n9WekduA3xGjoam4meOUL+Eb7haV7WwH5EQ5tKTX7BwxxIe
+	 d82v55d1BB35Q==
+Date: Mon, 5 Jun 2023 09:02:00 +0200
+From: Wolfram Sang <wsa@kernel.org>
+To: Jiawen Wu <jiawenwu@trustnetic.com>
+Cc: netdev@vger.kernel.org, jarkko.nikula@linux.intel.com,
+	andriy.shevchenko@linux.intel.com, mika.westerberg@linux.intel.com,
+	jsd@semihalf.com, Jose.Abreu@synopsys.com, andrew@lunn.ch,
+	hkallweit1@gmail.com, linux@armlinux.org.uk,
+	linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+	mengyuanlou@net-swift.com,
+	Piotr Raczynski <piotr.raczynski@intel.com>
+Subject: Re: [PATCH net-next v11 2/9] i2c: designware: Add driver support for
+ Wangxun 10Gb NIC
+Message-ID: <ZH2IaM86ei2gQkfA@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+	Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org,
+	jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com,
+	mika.westerberg@linux.intel.com, jsd@semihalf.com,
+	Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
+	linux@armlinux.org.uk, linux-i2c@vger.kernel.org,
+	linux-gpio@vger.kernel.org, mengyuanlou@net-swift.com,
+	Piotr Raczynski <piotr.raczynski@intel.com>
+References: <20230605025211.743823-1-jiawenwu@trustnetic.com>
+ <20230605025211.743823-3-jiawenwu@trustnetic.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="C7Kg18qcwmutGUSx"
+Content-Disposition: inline
+In-Reply-To: <20230605025211.743823-3-jiawenwu@trustnetic.com>
 
-try_module_get can be called in tcf_proto_lookup_ops. So if ops don't
-implement the corresponding function we should call module_put to drop
-the refcount.
 
-Fixes: 9f407f1768d3 ("net: sched: introduce chain templates")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
----
- net/sched/cls_api.c | 1 +
- 1 file changed, 1 insertion(+)
+--C7Kg18qcwmutGUSx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 2621550bfddc..92bfb892e638 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -2952,6 +2952,7 @@ static int tc_chain_tmplt_add(struct tcf_chain *chain, struct net *net,
- 		return PTR_ERR(ops);
- 	if (!ops->tmplt_create || !ops->tmplt_destroy || !ops->tmplt_dump) {
- 		NL_SET_ERR_MSG(extack, "Chain templates are not supported with specified classifier");
-+		module_put(ops->owner);
- 		return -EOPNOTSUPP;
- 	}
- 
--- 
-2.34.1
+Hi,
 
+On Mon, Jun 05, 2023 at 10:52:04AM +0800, Jiawen Wu wrote:
+> Wangxun 10Gb ethernet chip is connected to Designware I2C, to communicate
+> with SFP.
+>=20
+> Introduce the property "wx,i2c-snps-model" to match device data for Wangx=
+un
+
+Does this not need some binding documentation somewhere?
+
+> in software node case. Since IO resource was mapped on the ethernet drive=
+r,
+> add a model quirk to get regmap from parent device.
+
+All the best,
+
+   Wolfram
+
+
+--C7Kg18qcwmutGUSx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmR9iGUACgkQFA3kzBSg
+KbbYrQ/9FEyXD3uaVkL6TjkfZKbPWVKFYOJxtDnXR8jyBwK1G41bCdSggGp7ShSF
+tcF1YqIbZmDRiElwRDWgeYYvHfWETGFvAx+Jn5njZWOQSp1FeFNZh3//MTBd9Mv2
+weVom24lGR07d61JbAsei3ax3lqGCjkbvOUHXjeQWSAYWA5e6bK/KL3ZkrjJUmjx
+CglJFynmsXdbPMZ/oIFYON7xEJo2LXsd8MfLSoNYyscRA53ntezaOlKRiPd7ASe8
+3LW9y3dYAccZGrEenxoV3CPdCICt8AhE8bZa7/xJOaqjzvHDMOsxr58ptzw6HIRM
+rMAvt7RBiSv6IPBzUWAYh1JOpfjqmKXAi4rL5b6QVjpmxofB2M57kR/imueOHWx9
+12F/CbZj28seONdyDGDzhnwsxXQi6YOslB46b5D/g+K7s8znqmzRqPeN78j0TFoM
+5dUJQqvt/o8BlE9fGawb06rDn3VwDuMLq4+viHsCbQ1ZrTsXA9AtwCpXvaUFS++M
+i/qiUFnClmXtrYmb0PUCaLshQAsDttb1upNzbtzwPo3zDgrscB41tcl9tsZaZeNf
+vpGlPr3gQhk7c3hLCO8lLYfq/q7VtMkVYhQdpDZNHXsVUOEYexiW16Pzphv7kSwz
+LBdgLkNFgSUJaW+jCyX6GxzUMEqlIpfx3q1JFopfbfJJNzI630w=
+=/Ntz
+-----END PGP SIGNATURE-----
+
+--C7Kg18qcwmutGUSx--
 
