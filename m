@@ -1,175 +1,161 @@
-Return-Path: <netdev+bounces-8036-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8037-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 74A7372280C
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 16:02:02 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 786CB722837
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 16:08:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B862B1C20B46
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:01:58 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 29FBD281218
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:08:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 869D81D2D0;
-	Mon,  5 Jun 2023 14:01:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 154EB1DDC6;
+	Mon,  5 Jun 2023 14:08:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79DD11D2BB
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 14:01:59 +0000 (UTC)
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648789E
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 07:01:56 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id ca18e2360f4ac-77499bf8e8bso185448139f.0
-        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 07:01:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1685973716; x=1688565716;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2mUMfWiv7x4vPne13yFpAE+mGkV/EPlC/PX8cap8ovo=;
-        b=ijZBPq5dVCe4H1BFOOFUa3ogSsITeeZ/8L2+ryHSxOgwUG4C4MPLr+kDB1XX01s8EF
-         1/uRUPhhjD2UeQ1OJ2AUI7Okt8JP0CTTt9Aj89Plit7ZpOgTxhn2i+7aMCGBF00gSK5L
-         Fvl1hA02XaQs34D/cq63bfo71dB6KxGwWbN+TuZyh8gLdSZVI+YQ5g1L9TrHMIe1+OhS
-         ZPPIRN+k77qHObUur4A/FKuIMYIs88KyvpDJc3KOCjUruM3sshEIkHu9YcgYt62erQd5
-         AtoPAJWFC17FErtP1/i8ngc5+M7qTgnsiecrLBH+2ntkTTFiyumhTzIVRmtYPto9r7Ty
-         qp0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685973716; x=1688565716;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2mUMfWiv7x4vPne13yFpAE+mGkV/EPlC/PX8cap8ovo=;
-        b=Zjl9eOQiPmlLW2yXEdf59WTOmMsOiGQLDoJpoTNMjgfMhRatQIDWukrceNkArWtOoY
-         e5fdmwuMGOoM0NENTWTdCFh9/dgA0C//SvxXf677lINnu9vYTPv+wt7Ln6FV/0hzaYIP
-         eVaHrUhzuzw41lRAfPxBIl3TrphBAJQNdA0xJY+5YxHjVeTU2PSm9/4IE1zot5W+KvLS
-         yhus9Gfoy5VH1T0pvjIUa/V4bQv5su2fhcdGQgoNXuapBxIUCiqcsbO4CEK0fvoMehmC
-         WRTXWPUsi7yezQqFC81vrRyq3Pa3VTP9K7EpaI2dvxGTPvAsBNxf9kBZVqfnrYjReOmP
-         NE7g==
-X-Gm-Message-State: AC+VfDwsiJhAAPYOqYU75WrxigypBozKjjcl3dBKitU1HiP2dq0kgAyg
-	gGUjWo/nhPk1b9TeQDqmPqSQVO8oZE4K9NWdRjPmYkabcYHPXREHTEI=
-X-Google-Smtp-Source: ACHHUZ5RtwjoES8WU3mVN1YI4z9w97kvV5A/MU/JPwvwdGNMzSh9qYK0eIIndVtuf31QWpUiY1Bbtzfz8XcXiAaWFc8=
-X-Received: by 2002:a5e:dd0b:0:b0:76c:595a:6b5f with SMTP id
- t11-20020a5edd0b000000b0076c595a6b5fmr7066900iop.20.1685973715719; Mon, 05
- Jun 2023 07:01:55 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4C501C777;
+	Mon,  5 Jun 2023 14:08:14 +0000 (UTC)
+Received: from BN6PR00CU002.outbound.protection.outlook.com (mail-eastus2azon11021024.outbound.protection.outlook.com [52.101.57.24])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7132E41;
+	Mon,  5 Jun 2023 07:08:09 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aJI0BUW6vXxXxonYFw2nkZO2oPbXIUtaSmv91TSuujfhOjBiLsmT7nNUPlYH1TAL19LaAjMmwC9hIxBDXtTzKHooWk3N5SgSOLmxNyH+edr8D6hLZlEyeMNWtIg8WJe6UV40thXsxxKVYRrszPkPvqXciAlkP1b1na/OaSCgU1m8yuQcYicdqBc7jofl/wEug7LMfWOLmJVXUFi1gPjzkVRPim2k57Au6BV7BhsM9+MCdsA96GoctQQB4KGU/P7cZiy7Ne9UFJLfz6iqF8y+A6COWvxMWT4juRKuQH9oYtfX4B0ViWbDzs9SNR0S6NZsHsf4tINqb0knsFSrMPRjKA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FUQWGSonvXODnAHx7KGUSRRFmL1aNGXFGJDU4Gm9k88=;
+ b=bTBYogXQiRxygmjqbLO04dho5RGDXyptqrqbvbqTXdGwfjpW4SF0E1IklxCEF6crtn7GSKXPny+eWgWc92L/MDC8jUMojcxNEx8VXM1JZAssW0Ib7Iqj9ZQ1mgI4eaIFvpSP1RwBfpoMBPhRQv3ihoTIeSbw7cd1gOm3pcTKoQuWmiElv5wYkTvs6sVXy+DoWwyazcHGemQR1+y7s8/SKxG5p0r1qCaM9T9iJNuEbBiO27+JeZ4TN9Y0EOMezUx/MB3Gkva+4EEgvyaxjD2RlmpOQbc18s4M4d0f4Nv4OENf/IxsGiPWuGQTsZHSKW2QMnwMT+jEAvP8LHVI2OnJpw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FUQWGSonvXODnAHx7KGUSRRFmL1aNGXFGJDU4Gm9k88=;
+ b=VdnHfoTYfyEWpOGHOAaJGwyLw1WcoYI0YAk7obxT9jXLPNA8pC0Qu39oqtVkQW5/dr/QOJRUcUJ0ukj3Y8lMm+Tzbnr3j4gFxXOqg5XfdMqLROWoHWKp0VmQZWDYfkEQjDsT+bouJtr768SmkwG1j5g0DXh2BJrZ5Ui6QgXC6Js=
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
+ by DM4PR21MB3659.namprd21.prod.outlook.com (2603:10b6:8:ab::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.6; Mon, 5 Jun
+ 2023 14:08:06 +0000
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::7d5d:3139:cf68:64b]) by BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::7d5d:3139:cf68:64b%3]) with mapi id 15.20.6500.004; Mon, 5 Jun 2023
+ 14:08:06 +0000
+From: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To: Linux regressions mailing list <regressions@lists.linux.dev>
+CC: Haiyang Zhang <haiyangz@microsoft.com>, Paolo Abeni <pabeni@redhat.com>,
+	"David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux BPF
+	<bpf@vger.kernel.org>, Linux on Hyper-V <linux-hyperv@vger.kernel.org>, Linux
+ Kernel Network Developers <netdev@vger.kernel.org>, Bagas Sanjaya
+	<bagasdotme@gmail.com>
+Subject: RE: Fwd: nvsp_rndis_pkt_complete error status and net_ratelimit:
+ callbacks suppressed messages on 6.4.0rc4
+Thread-Topic: Fwd: nvsp_rndis_pkt_complete error status and net_ratelimit:
+ callbacks suppressed messages on 6.4.0rc4
+Thread-Index: AQHZkvHeNWWbfmtPQ0KY8Y8df7j5gK98CvoAgAA9AMA=
+Date: Mon, 5 Jun 2023 14:08:06 +0000
+Message-ID:
+ <BYAPR21MB16887C59D2B2C3ADDB61874BD74DA@BYAPR21MB1688.namprd21.prod.outlook.com>
+References: <15dd93af-fcd5-5b9a-a6ba-9781768dbae7@gmail.com>
+ <ebdd877d-f143-487c-04cd-606996eb6176@leemhuis.info>
+In-Reply-To: <ebdd877d-f143-487c-04cd-606996eb6176@leemhuis.info>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=6bed9edf-c80b-44c8-b440-fbba4b01d160;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-06-05T14:06:33Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|DM4PR21MB3659:EE_
+x-ms-office365-filtering-correlation-id: 8be8b2eb-9ba3-4fa7-8a4c-08db65ce48c4
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ C8DFimjaosCje++kC/gpav/hT+h5w5J8t7ssiU5puv0xdOhEXsFHCQU+9myiGpRCtTlzumccmM82sCwKjgxncQ7/gel7+EtxR+yC5AK0HVWNsIoInalqidGjonLa5yEeV//X6KFWZsONcyypQHa4FyL/L7CqRO9vWmbvgfdRkxAOZ4V9eyr5LdgWBb5Rv1UaxWjx3viR+GnYErzv8i/GMWyTkz6CliXS3E8brtdU91kxeTC0qfFvy+iq8Pwjn3x7fyhbFRsvtOiQNh6Se4wX16C4XRRpjmodPxCrP3+FrDtR2RLTNG1lssV81N+ayjwvcOuUHIo3NnxB5aeRywBpF0v0HFEYUINbaGKmAQEXeT5kf9GIeVMVZHN/xPQGVzTxyL2SM78d6ASm/0urMDhK0/TrxlhmVSBWQJreUw0taCGKh9yexd+e+BJOoGOfH8ist2JISz4SsK7gFTSa/0X+Xl8xEP2b12QnX9n++i0I/yV8ebAV/uZglQNQy0MaDUAH/hViBXKdBdKt4Tj48zJ7DXotymhbJvBbkAV6AL8jmzYS05Wtc6MT/LFUptlKU06y2KwZ8SIHH6akBPJ570HkLL39A8lcCsp492aHGM/KtNkxjBBhMKjosrgFyGAEqSsBYHcBAIpYGrRZ8johd5rhXdBFjcW/L4OOZc4BS3YU02w=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(136003)(39860400002)(366004)(346002)(451199021)(52536014)(8676002)(8936002)(5660300002)(4744005)(2906002)(316002)(66446008)(76116006)(66476007)(66556008)(64756008)(66946007)(6916009)(4326008)(41300700001)(8990500004)(10290500003)(15650500001)(54906003)(7696005)(71200400001)(53546011)(6506007)(9686003)(26005)(186003)(83380400001)(122000001)(478600001)(82950400001)(82960400001)(38100700002)(55016003)(33656002)(38070700005)(86362001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?yS5UVX9Y56qACGAav8GYny0kiftZbklgXnzW46m28Hx4SFz9G050Ea6dr3zx?=
+ =?us-ascii?Q?7fOZqpOSjP47HyKTu+SheU2gK3aUjX4/JduNvAXFTYmQJRQommU/SksC1GHg?=
+ =?us-ascii?Q?YXc4XP3FuK0y0qBzHQcsiBmTkXOBKwgx47U2taJ6yRhsDrM6iq/AhGYDthJ2?=
+ =?us-ascii?Q?VEZuETLdJ2g10yx52jZkY0SDwv0KDgtvLbZkOHrGnN+HIvhmpZgF4f2Dk656?=
+ =?us-ascii?Q?yqm01bwRY6WT+XMyOAKY1mbCN+gcHccbqRLce3d6rXZF+kQCj48YQyzBuwda?=
+ =?us-ascii?Q?toXn3DiOx6pr16vypOT3O8bWHn3zxNAPc43nrt2WiCce9JP85sQg/AKHTLCO?=
+ =?us-ascii?Q?CSdPuWaIcmAf6aa5kMGyfYD+m4sU9bEMH7wQFJ7BXNAxt3nnEinVzffbckfS?=
+ =?us-ascii?Q?vu39awiJ8J96N7xC4AayJc5xhzHW88DhG9MxrAw3qK9Vb1k7kdH9wcniDiFz?=
+ =?us-ascii?Q?5MnIqOhMG9LURind5uXYdCWnCgU8K953ldqFvFYcm1vzY6OIAvg18RdxL4sz?=
+ =?us-ascii?Q?ZYQKEEXaI+B5D9LpanNUhOJngEmqb5cICMs+KKIjbmE4hIq8xUkZ8s+ZeaGJ?=
+ =?us-ascii?Q?mxrkxkPMwmb41hiGZ2QfRf7RC6IxqyzX+gUqMpn5miLCcGNZq2xQnQZEJHmM?=
+ =?us-ascii?Q?qKeBNel6YHvS9KIuDO4nExiVw3jvKktANBedDlGuDw3PpCujGDqJxlJEyxJu?=
+ =?us-ascii?Q?7M4HRa7XTsKQKSc/+PjTMZjcq3jrhy9WiDLZVppvyeF5VFTLSBXpGopPAfzp?=
+ =?us-ascii?Q?TfM/ubcsb2urbPdAZQQ2FWI1zL9IFRvzdGcg5ZoQaHZ0tFq1xpshT51uQtU/?=
+ =?us-ascii?Q?wcAXxGmTDFoeR2gZmDnhV6iyE+dkpIma90i5Q/WMNZDfh9Xf78ZXe6aPSlEQ?=
+ =?us-ascii?Q?MsRuGKkEmuszNVhihAN+MgOejKFOwH3RI1gOwwO79Tq9o2gx4XnRM/QfTDFb?=
+ =?us-ascii?Q?F16s8qLaGOwVUClA/k3uXXaLyWmsQp9aUTWnwnZrsdb3g52SaXjaNQ8FxRTe?=
+ =?us-ascii?Q?mfVCiiFgowo5N0uSwfmUUgA0cUxhax1LN6wd/fF8QHs2uU0tuLgIlOITujPH?=
+ =?us-ascii?Q?P+mGCyufW1CdRnr+wtPoV/saCBji3saLpLdnYpiBP24NiNBrPYBJOGI+BOCr?=
+ =?us-ascii?Q?Kt/XbdQwf35HL6pti2X5DIe79AbSpRjDg55A7ijblUXERLpPk5u86utwSiHp?=
+ =?us-ascii?Q?B+AlGa1YenNAzKKldyDvnxbtCrasfwkwq5L5yl9mk5u2mX9RJLWvGgAdA89f?=
+ =?us-ascii?Q?nHvkz/3lXCgeKydWhXjxmAdT+BSgvgRLR1R4YjuIx8a3Bpz3XWMarjb2r/FY?=
+ =?us-ascii?Q?xKBu+RE5gbzWZmHwB5MEkhgZtUDMp8nmP0oFXt/rkDi85rvSq6pX7DoOjyby?=
+ =?us-ascii?Q?qNnWwns+PI5dPUoSZx4OsULza0sU/71hgIKIX6qAsCMfIfZgbNV33Xlkz87N?=
+ =?us-ascii?Q?VJYbRDiIQ/m33UckqWm8o871VEbnPS9BGMu3KZGv44fwM6WDPj/XIVH9GYao?=
+ =?us-ascii?Q?kBMTezYF1lVQChSu6zEvCCMHB2SgBabwD7bXGcdS0edJOFejtCXgxt0U+Eyf?=
+ =?us-ascii?Q?svpz6hhZhdQPfLoeczaPowjJ0qk/Hmvg6pB5wq/vaIsf2rqxgmBirPPRoWM4?=
+ =?us-ascii?Q?Eg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230517110232.29349-1-jhs@mojatatu.com> <20230517110232.29349-4-jhs@mojatatu.com>
- <ZH2wEocXqLEjiaqc@corigine.com> <9a777d0b-b212-4487-b5ac-9a05fafac6c7@kadam.mountain>
-In-Reply-To: <9a777d0b-b212-4487-b5ac-9a05fafac6c7@kadam.mountain>
-From: Jamal Hadi Salim <hadi@mojatatu.com>
-Date: Mon, 5 Jun 2023 10:01:44 -0400
-Message-ID: <CAAFAkD-N4qeYpPMOf7WFORjnt0CDztBzHF2aF2iD+qRNLdCqbA@mail.gmail.com>
-Subject: Re: [p4tc-discussions] Re: [PATCH RFC v2 net-next 04/28] net/sched:
- act_api: add init_ops to struct tc_action_op
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: Simon Horman <simon.horman@corigine.com>, netdev@vger.kernel.org, 
-	deb.chatterjee@intel.com, tom@sipanda.io, p4tc-discussions@netdevconf.info, 
-	Mahesh.Shirshyad@amd.com, Vipin.Jain@amd.com, tomasz.osinski@intel.com, 
-	xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com, 
-	kuba@kernel.org, pabeni@redhat.com, khalidm@nvidia.com, toke@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8be8b2eb-9ba3-4fa7-8a4c-08db65ce48c4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jun 2023 14:08:06.1446
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ZxXKK4EQ65wC0gSpI5lkQG0u/MQBUQ7HdS+M3LQMxkQy08polvnaH4ZcKtc7YDny2WLDBiIPgoxv2zf8l6Sq3of7oaqV38RL1JZl+io1/oo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR21MB3659
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 5, 2023 at 7:39=E2=80=AFAM Dan Carpenter via p4tc-discussions
-<p4tc-discussions@netdevconf.info> wrote:
->
-> On Mon, Jun 05, 2023 at 11:51:14AM +0200, Simon Horman wrote:
-> > > @@ -1494,8 +1494,13 @@ struct tc_action *tcf_action_init_1(struct net=
- *net, struct tcf_proto *tp,
-> > >                     }
-> > >             }
-> > >
-> > > -           err =3D a_o->init(net, tb[TCA_ACT_OPTIONS], est, &a, tp,
-> > > -                           userflags.value | flags, extack);
-> > > +           if (a_o->init)
-> > > +                   err =3D a_o->init(net, tb[TCA_ACT_OPTIONS], est, =
-&a, tp,
-> > > +                                   userflags.value | flags, extack);
-> > > +           else if (a_o->init_ops)
-> > > +                   err =3D a_o->init_ops(net, tb[TCA_ACT_OPTIONS], e=
-st, &a,
-> > > +                                       tp, a_o, userflags.value | fl=
-ags,
-> > > +                                       extack);
+From: Linux regression tracking (Thorsten Leemhuis) <regressions@leemhuis.i=
+nfo> Sent: Monday, June 5, 2023 3:28 AM
+>=20
+> Hi, Thorsten here, the Linux kernel's regression tracker.
+>=20
+> On 30.05.23 14:25, Bagas Sanjaya wrote:
 > >
-> > By my reading the initialisation of a occurs here.
-> > Which is now conditional.
-> >
->
-> Right.  Presumably the author knows that one (and only one) of the
-> ->init or ->init_ops pointers is set.
+> > I notice a regression report on Bugzilla [1]. Quoting from it:
+>=20
+> Hmmm, nobody replied to this yet (or am I missing something?). Doesn't
+> seems like it's something urgent, but nevertheless:
+>=20
+> Michael, Bagas didn't make it obvious at all, hence please allow me to
+> ask: did you notice that this is a regression that is apparently caused
+> by a commit of yours?
+>=20
 
-Yes, this is correct and the code above checks i.e
- -     if (!act->act || !act->dump || !act->init)
- +     if (!act->act || !act->dump || (!act->init && !act->init_ops))
-               return -EINVAL;
+Thanks for flagging this directly to me.  I'll check on it.
 
-> This kind of relationship between
-> two variables is something that Smatch tries to track inside a function
-> but outside of functions, like here, then Smatch doesn't track it.
-> I can't really think of a scalable way to track this.
-
-Could you have used the statement i referred to above as part of the state?
-
-> So there are a couple options:
->
-> 1) Ignore the warning.
-> 2) Remove the second if.
->
->         if (a_o->init)
->                 err =3D a_o->init();
->         else
->                 err =3D a_o->init_ops();
->
-> I kind of like this, because I think it communicates the if ->init()
-> isn't set then ->init_ops() must be.
-
-I like this approach - we'll refactor to remove the !police. (note
-police using some old tc versions is still a pariah and has typically
-to be checked separately, at some point we should audit the code and
-remove any police specific checks).
-
-cheers,
-jamal
-
-> 3) Add a return.
->
->         if (a_o->init) {
->                 err =3D a_o->init();
->         } else if (a_o->init_ops) {
->                 err =3D a_o->init_ops();
->         } else {
->                 WARN_ON(1);
->                 return ERR_PTR(-EINVAL);
->         }
->
-> 4) Add an unreachable.  But the last time I suggested this it led to
-> link errors and I didn't get a chance to investigate so probably don't
-> do this:
->
->         if (a_o->init) {
->                 err =3D a_o->init();
->         } else if (a_o->init_ops) {
->                 err =3D a_o->init_ops();
->         } else {
->                 unreachable();
->         }
->
-> regards,
-> dan carpenter
->
-> _______________________________________________
-> p4tc-discussions mailing list -- p4tc-discussions@netdevconf.info
-> To unsubscribe send an email to p4tc-discussions-leave@netdevconf.info
+Michael
 
