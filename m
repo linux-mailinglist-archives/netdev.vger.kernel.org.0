@@ -1,285 +1,166 @@
-Return-Path: <netdev+bounces-8004-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8006-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 56652722652
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:49:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 48BC6722658
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:50:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C3CC81C20B84
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:49:31 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B55F11C20A17
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:50:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 946611D2A2;
-	Mon,  5 Jun 2023 12:46:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7655918B15;
+	Mon,  5 Jun 2023 12:50:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 888C3156DE
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:46:47 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB33F1
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 05:46:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685969205;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=fV2I/xZhOL8TFCqO/iJxKQbBwABt3P8CReEOZMBw48A=;
-	b=Ksb7QGpexlc1O4rShscqeOS4y2gu9QtJMY6up6ra9RiWzWLgilJWLLcw/25Kd0O16LJ0nT
-	z6Jfj5gxqVG5VFpsfA17F3OuWZLH1mS2+SBBN8ctzuHDEVHNOM1zq0xOQ32umDRk1VxnS7
-	m2bxp2L8471WtpmhtyI5Fv+Yv5dcHwE=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-494-Y1UVt5u7MwKDkWoplay2iw-1; Mon, 05 Jun 2023 08:46:39 -0400
-X-MC-Unique: Y1UVt5u7MwKDkWoplay2iw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 38D8A1C05EC8;
-	Mon,  5 Jun 2023 12:46:38 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 6A3987AE4;
-	Mon,  5 Jun 2023 12:46:36 +0000 (UTC)
-From: David Howells <dhowells@redhat.com>
-To: netdev@vger.kernel.org,
-	Linus Torvalds <torvalds@linux-foundation.org>
-Cc: David Howells <dhowells@redhat.com>,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Boris Pismenny <borisp@nvidia.com>,
-	John Fastabend <john.fastabend@gmail.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6629E17727
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:50:53 +0000 (UTC)
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2066.outbound.protection.outlook.com [40.107.6.66])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E915D2;
+	Mon,  5 Jun 2023 05:50:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bO1laLGxFt5G7G59sXlMQxhccr0HPyrpnXc12BujEr33xsb2SCgIopiH+oLugdGrb2nK4szsyCLG8uR+nhh4XX5ggD19EQUkjcPL6gwO6K+zPg1t00AGe8VL3bY3aKeApzq5Np8BQuSP2ASJS24rRYMub2XSyLrB/wxnG6JHkkmX/I9EKWCqrBBC/hPRb5pdfUBKY4d7cvVUNoo+aONCZoBezFDooQlV9CPhlVG5J3d5fNp8jyQGS1ApHYrliwlloOUKhYixrIuSpoOd7buCW6KOhqKOEEiVITukM7NENDaBFlDRyXgMwlxPchO7PgfEvNUqXddTDh/Bjbkfacudow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ACbil9qtNKyxc/52fzyUNJQmp8y7pLktl0plKURPPpQ=;
+ b=ffKIe+0tP7jUwnwgglrcB2fOVxKDRtwvD/n6uMPv7lQiH+3n6i3KVuzyZTwRkUqGOEfCTldI5PmRssdMrKE7gZOeF19dRlAaGn0P51xcech3jul5nPK8CKsTaClHAmWugFlz5hpo4kvnfMZiXgxVQbFMhtZ3JJoNQdCGlweLxP8SEYCnKC1OC/yBkQG0XmkEka+v3T5cmQYUyN5J1AO98Nz6jClXjZuVHwL4C+GaEpfDIcX6Owy9aJTd8CKfE93G+KPtfIWODpj3wLcKIE+RQsP5qNUiWyOTGrB2CjiF4B5sTb5iPIRtpXioPyX4SsgUlj3jz/5hoa13hoHGo6XsEQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ACbil9qtNKyxc/52fzyUNJQmp8y7pLktl0plKURPPpQ=;
+ b=Cq0gw0IuQQ5DFFp6bX2pR19YeUeGN78ghLCeqHR0QSqBl3cw4YylDdOsVCP6OGVExR4DOu2jEEomBC8CoVoneB9a3+wWhV1DUc6bN4ubE4yxfB7e2Bi0i1CbZsD/KoKiHO5hN7wY7hSdxbbW8P6/677imeFLicyPFGnUMKUUsbc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
+ by AS8PR04MB8103.eurprd04.prod.outlook.com (2603:10a6:20b:3b3::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Mon, 5 Jun
+ 2023 12:50:47 +0000
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::47e4:eb1:e83c:fa4a]) by AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::47e4:eb1:e83c:fa4a%4]) with mapi id 15.20.6455.030; Mon, 5 Jun 2023
+ 12:50:46 +0000
+Date: Mon, 5 Jun 2023 15:50:42 +0300
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+To: "David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	David Ahern <dsahern@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Jens Axboe <axboe@kernel.dk>,
-	linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v4 11/11] tls/device: Convert tls_device_sendpage() to use MSG_SPLICE_PAGES
-Date: Mon,  5 Jun 2023 13:46:00 +0100
-Message-ID: <20230605124600.1722160-12-dhowells@redhat.com>
-In-Reply-To: <20230605124600.1722160-1-dhowells@redhat.com>
-References: <20230605124600.1722160-1-dhowells@redhat.com>
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+	Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
+	Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+	linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+	Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>,
+	Peilin Ye <yepeilin.cs@gmail.com>,
+	Pedro Tammela <pctammela@mojatatu.com>
+Subject: Re: [PATCH RESEND net-next 0/5] Improve the taprio qdisc's
+ relationship with its children
+Message-ID: <20230605125042.lx6ng5jcsxp625ep@skbuf>
+References: <20230602103750.2290132-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230602103750.2290132-1-vladimir.oltean@nxp.com>
+X-ClientProxiedBy: VI1PR08CA0189.eurprd08.prod.outlook.com
+ (2603:10a6:800:d2::19) To AM0PR04MB6452.eurprd04.prod.outlook.com
+ (2603:10a6:208:16d::21)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AS8PR04MB8103:EE_
+X-MS-Office365-Filtering-Correlation-Id: 47f283c7-e6aa-4690-65b4-08db65c37b53
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	TPP9NV09U2CQgU37NWu7XL+HV2Stf+7lYHsZ3H5E/pj6EXzteozebBjgj8kKjHpg1P5qVDlwGL8n4yP1d92RWGwvkePf23Vwr2eSk48ZQFMhLBAaEMGHHUEhc3n9lRPJrnvgL8Fvqz2B7qADKtO9IgyY8Pz1Ri/N7n0Jv5GRU1DOgtsYrAmTTPzjOoYFKItXe9NjQLIJomv4jCp4sKFYKuldQnO4UgjpeTqUU2aNvjKR8i6Toa0uVTmjU1Cry/kbvzeyUQjb1MZuAYrwi+lQPGIpeFBSlUhqclz5BHqxrP58zPupGhfK2HEFn0BBrxrkUBFLVb++FZlRJaaa5aTYy8bOtK4A/YDbemRPNvyU6PXImaVJ1KoJ3yXoRlLv1ZaSTYZFGSkjktRe7sSpfc8QJQOUCuIoKnUAFihu4lIyOS9XOq9HVOj6uju9tlw2ZSjwgoTH2zY/dME1wgeM8eP01AtBqb+TK/CCBPRGJxPuPLawRAvMQPaDQjTYdmiCqoZgJMOREA+QEzaAGSE6kILSrIj0Ldb8ZJiiHR8uyTn9Yj0=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(366004)(376002)(39860400002)(136003)(396003)(346002)(451199021)(66476007)(66946007)(2906002)(478600001)(316002)(4326008)(8936002)(8676002)(41300700001)(54906003)(110136005)(44832011)(66556008)(6666004)(5660300002)(7416002)(6486002)(6512007)(6506007)(1076003)(26005)(9686003)(966005)(38100700002)(33716001)(186003)(83380400001)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ZyasNJfnddlkqMtmmjQtzSZlK4M4212Prff2/AyeANtyHeGiVR6DaZP60L9d?=
+ =?us-ascii?Q?VzOOd1y/Jl+uNhevSRfz3pyVSIp2u9uUsk4exeUDD4EGnoeiY9z35VgWFPd5?=
+ =?us-ascii?Q?DlMzL4hDj5pIKPZSd/le11/4bpFGol52iT8YlDkwCJGh0ORR/iYcvteS4NDS?=
+ =?us-ascii?Q?xc1V0AbXsaDtBx3i8gMaMj3a/JH6oCVYT79VMS8rce2asZ7rq6tmI+ZhMvC7?=
+ =?us-ascii?Q?Ru3f/MpWRxAaRPmQSvVP9bei5B35/P/QVPiBYmzSnOnYssW3sapQ9ijGE/sX?=
+ =?us-ascii?Q?nl4nnNmloFOpc6SoQD293JN/mt7zagnzquqPBm0azNYwaN+tMA0N69AT1Suv?=
+ =?us-ascii?Q?1CLghYYMKKu5O1oh5Z7KV/04xFVx4zitNxJIkX8KgRhyZkxuN4sJ3eo8WRmL?=
+ =?us-ascii?Q?PlPPah9/EFVOA4XvYz0fGuKS0vmMe41UWAcVvMA6vqkOkNWRs4kOP0a9ikT+?=
+ =?us-ascii?Q?E30vVWmk2ia0Md8R6RaYoWXJW4vAATU7AyDvFAQQu0+lRhj3nH6Lv9FhGdAn?=
+ =?us-ascii?Q?eGzp2/L2vlrI3FnJ8EAisOeBqC6iswwbcN3s60PQDRUZRyG5wG8+o2LYkQEt?=
+ =?us-ascii?Q?tn4yZV8NOOHb2+z0XCS1UXLU26kwCl+tsJMPGH/8glUNeFzRx+44h2O+CEFG?=
+ =?us-ascii?Q?RnCrLZr1gOfmgkpWEGRt4vXPkKLZKFz/ZCwK0Q5tXkvhKeCLfwogbf0YMX20?=
+ =?us-ascii?Q?YDouPLS4n53Ked7nFAPOF+jJwWFe/1H5WKK5Yhkx6/8/GdpFTp2ghjHu8AGn?=
+ =?us-ascii?Q?t/Ri3sFgcsUZnTcHY40yw6VZjVrEVRKQ0t+Yzvdl0jrtQBTrHTMjxdIVWVDP?=
+ =?us-ascii?Q?eJOjg9iXrW0xd1f0ZZVrLhkiUOM9lnAWAw59j/fFD3cHkeTkskNcOfRpsxER?=
+ =?us-ascii?Q?E7x8mXgR6kYg48sY2rkMJZUMazRJbrx1ZX4mMBxTsxL0dK+Jo8k5IrLKOreY?=
+ =?us-ascii?Q?alksY7SfZjeYq3ZApwTyo4EZIOOw73BbqMz3+xf7TOhl+lb0IUUHlt6kOjzd?=
+ =?us-ascii?Q?ki36qvTBz0+QVaXCSCpAJnFhfh++9XjXDM7+3wg+U6YttKOADJ0BIjFipkDs?=
+ =?us-ascii?Q?gTAJgVL0QGIE05KOVFvM9VUnZ71OCAR0yZD2OYV5ATqJzNVzbEvvC6229t3o?=
+ =?us-ascii?Q?RWK3Vud2JzpHSaawcYJ2lE9BJD76dYyry+eGsld22gfxw6D2n8lpNUX3bCMk?=
+ =?us-ascii?Q?Fv9OF8IVAjXiUsRUfAB1GQEXq5i6PMROMck+ZKmDdycY7ouVPRd6yvOHYCIv?=
+ =?us-ascii?Q?oD+UqdM9tX+zFWZGAAbIhm7qDTeYEUi9VbuGEakRVv1yT1AQU5zCqyqGexCa?=
+ =?us-ascii?Q?TPbNChK5AB/5lBD7yQor0x0E8gdP1UNajIbbRLIK9bSbJCt6L/zzQA9NPAQf?=
+ =?us-ascii?Q?Kjfih7biqqY2NVVUJfwfWZa7oRywrEYZZ6Obwojrv6Ee7THFYIqF6n+rGOAh?=
+ =?us-ascii?Q?kwqhiEacWpfpwobHhjP56ofwhEI44Ft8e4IVyKZVaSEEcS+4fUPJyBU2ACNn?=
+ =?us-ascii?Q?L8e6Qndwbi5eXtqm6RJoWjPM08fqBUrurPPd6fT9KYTowIf4D6TEAU+WIIbs?=
+ =?us-ascii?Q?k7dgYpP8aEIKiv+HHLWQwe9jlhtHhQhB4Zk9wL5GcvI+DLK5UjtJ7TBxHbEs?=
+ =?us-ascii?Q?og=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 47f283c7-e6aa-4690-65b4-08db65c37b53
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2023 12:50:46.7609
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: X79p2IcbnWppc7uerCQ114IjUTJkWCF0B3PM4EgMRv+NWBKc7PGbzkmjDRG+orsXHpjzvrDX0yUPRoFimTD6Qg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8103
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Convert tls_device_sendpage() to use sendmsg() with MSG_SPLICE_PAGES rather
-than directly splicing in the pages itself.  With that, the tls_iter_offset
-union is no longer necessary and can be replaced with an iov_iter pointer
-and the zc_page argument to tls_push_data() can also be removed.
+Hi,
 
-This allows ->sendpage() to be replaced by something that can handle
-multiple multipage folios in a single transaction.
+On Fri, Jun 02, 2023 at 01:37:45PM +0300, Vladimir Oltean wrote:
+> [ Original patch set was lost due to an apparent transient problem with
+> kernel.org's DNSBL setup. This is an identical resend. ]
+> 
+> Prompted by Vinicius' request to consolidate some child Qdisc
+> dereferences in taprio:
+> https://lore.kernel.org/netdev/87edmxv7x2.fsf@intel.com/
+> 
+> I remembered that I had left some unfinished work in this Qdisc, namely
+> commit af7b29b1deaa ("Revert "net/sched: taprio: make qdisc_leaf() see
+> the per-netdev-queue pfifo child qdiscs"").
+> 
+> This patch set represents another stab at, essentially, what's in the
+> title. Not only does taprio not properly detect when it's grafted as a
+> non-root qdisc, but it also returns incorrect per-class stats.
+> Eventually, Vinicius' request is addressed too, although in a different
+> form than the one he requested (which was purely cosmetic).
+> 
+> Review from people more experienced with Qdiscs than me would be
+> appreciated. I tried my best to explain what I consider to be problems.
+> I am deliberately targeting net-next because the changes are too
+> invasive for net - they were reverted from stable once already.
 
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Chuck Lever <chuck.lever@oracle.com>
-cc: Boris Pismenny <borisp@nvidia.com>
-cc: John Fastabend <john.fastabend@gmail.com>
-cc: Jakub Kicinski <kuba@kernel.org>
-cc: Eric Dumazet <edumazet@google.com>
-cc: "David S. Miller" <davem@davemloft.net>
-cc: Paolo Abeni <pabeni@redhat.com>
-cc: Jens Axboe <axboe@kernel.dk>
-cc: Matthew Wilcox <willy@infradead.org>
-cc: netdev@vger.kernel.org
----
- net/tls/tls_device.c | 92 +++++++++++---------------------------------
- 1 file changed, 23 insertions(+), 69 deletions(-)
+I noticed that this patch set has "Changes Requested" in patchwork.
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index bb3bb523544e..b4864d55900f 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -422,16 +422,10 @@ static int tls_device_copy_data(void *addr, size_t bytes, struct iov_iter *i)
- 	return 0;
- }
- 
--union tls_iter_offset {
--	struct iov_iter *msg_iter;
--	int offset;
--};
--
- static int tls_push_data(struct sock *sk,
--			 union tls_iter_offset iter_offset,
-+			 struct iov_iter *iter,
- 			 size_t size, int flags,
--			 unsigned char record_type,
--			 struct page *zc_page)
-+			 unsigned char record_type)
- {
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
- 	struct tls_prot_info *prot = &tls_ctx->prot_info;
-@@ -500,22 +494,13 @@ static int tls_push_data(struct sock *sk,
- 		record = ctx->open_record;
- 
- 		copy = min_t(size_t, size, max_open_record_len - record->len);
--		if (copy && zc_page) {
--			struct page_frag zc_pfrag;
--
--			zc_pfrag.page = zc_page;
--			zc_pfrag.offset = iter_offset.offset;
--			zc_pfrag.size = copy;
--			tls_append_frag(record, &zc_pfrag, copy);
--
--			iter_offset.offset += copy;
--		} else if (copy && (flags & MSG_SPLICE_PAGES)) {
-+		if (copy && (flags & MSG_SPLICE_PAGES)) {
- 			struct page_frag zc_pfrag;
- 			struct page **pages = &zc_pfrag.page;
- 			size_t off;
- 
--			rc = iov_iter_extract_pages(iter_offset.msg_iter,
--						    &pages, copy, 1, 0, &off);
-+			rc = iov_iter_extract_pages(iter, &pages,
-+						    copy, 1, 0, &off);
- 			if (rc <= 0) {
- 				if (rc == 0)
- 					rc = -EIO;
-@@ -524,7 +509,7 @@ static int tls_push_data(struct sock *sk,
- 			copy = rc;
- 
- 			if (WARN_ON_ONCE(!sendpage_ok(zc_pfrag.page))) {
--				iov_iter_revert(iter_offset.msg_iter, copy);
-+				iov_iter_revert(iter, copy);
- 				rc = -EIO;
- 				goto handle_error;
- 			}
-@@ -537,7 +522,7 @@ static int tls_push_data(struct sock *sk,
- 
- 			rc = tls_device_copy_data(page_address(pfrag->page) +
- 						  pfrag->offset, copy,
--						  iter_offset.msg_iter);
-+						  iter);
- 			if (rc)
- 				goto handle_error;
- 			tls_append_frag(record, pfrag, copy);
-@@ -592,7 +577,6 @@ int tls_device_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- {
- 	unsigned char record_type = TLS_RECORD_TYPE_DATA;
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
--	union tls_iter_offset iter;
- 	int rc;
- 
- 	if (!tls_ctx->zerocopy_sendfile)
-@@ -607,8 +591,8 @@ int tls_device_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 			goto out;
- 	}
- 
--	iter.msg_iter = &msg->msg_iter;
--	rc = tls_push_data(sk, iter, size, msg->msg_flags, record_type, NULL);
-+	rc = tls_push_data(sk, &msg->msg_iter, size, msg->msg_flags,
-+			   record_type);
- 
- out:
- 	release_sock(sk);
-@@ -620,8 +604,7 @@ void tls_device_splice_eof(struct socket *sock)
- {
- 	struct sock *sk = sock->sk;
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
--	union tls_iter_offset iter;
--	struct iov_iter iov_iter = {};
-+	struct iov_iter iter = {};
- 
- 	if (!tls_is_partially_sent_record(tls_ctx))
- 		return;
-@@ -630,9 +613,8 @@ void tls_device_splice_eof(struct socket *sock)
- 	lock_sock(sk);
- 
- 	if (tls_is_partially_sent_record(tls_ctx)) {
--		iov_iter_bvec(&iov_iter, ITER_SOURCE, NULL, 0, 0);
--		iter.msg_iter = &iov_iter;
--		tls_push_data(sk, iter, 0, 0, TLS_RECORD_TYPE_DATA, NULL);
-+		iov_iter_bvec(&iter, ITER_SOURCE, NULL, 0, 0);
-+		tls_push_data(sk, &iter, 0, 0, TLS_RECORD_TYPE_DATA);
- 	}
- 
- 	release_sock(sk);
-@@ -642,44 +624,18 @@ void tls_device_splice_eof(struct socket *sock)
- int tls_device_sendpage(struct sock *sk, struct page *page,
- 			int offset, size_t size, int flags)
- {
--	struct tls_context *tls_ctx = tls_get_ctx(sk);
--	union tls_iter_offset iter_offset;
--	struct iov_iter msg_iter;
--	char *kaddr;
--	struct kvec iov;
--	int rc;
-+	struct bio_vec bvec;
-+	struct msghdr msg = { .msg_flags = flags | MSG_SPLICE_PAGES, };
- 
- 	if (flags & MSG_SENDPAGE_NOTLAST)
--		flags |= MSG_MORE;
--
--	mutex_lock(&tls_ctx->tx_lock);
--	lock_sock(sk);
-+		msg.msg_flags |= MSG_MORE;
- 
--	if (flags & MSG_OOB) {
--		rc = -EOPNOTSUPP;
--		goto out;
--	}
--
--	if (tls_ctx->zerocopy_sendfile) {
--		iter_offset.offset = offset;
--		rc = tls_push_data(sk, iter_offset, size,
--				   flags, TLS_RECORD_TYPE_DATA, page);
--		goto out;
--	}
--
--	kaddr = kmap(page);
--	iov.iov_base = kaddr + offset;
--	iov.iov_len = size;
--	iov_iter_kvec(&msg_iter, ITER_SOURCE, &iov, 1, size);
--	iter_offset.msg_iter = &msg_iter;
--	rc = tls_push_data(sk, iter_offset, size, flags, TLS_RECORD_TYPE_DATA,
--			   NULL);
--	kunmap(page);
-+	if (flags & MSG_OOB)
-+		return -EOPNOTSUPP;
- 
--out:
--	release_sock(sk);
--	mutex_unlock(&tls_ctx->tx_lock);
--	return rc;
-+	bvec_set_page(&bvec, page, size, offset);
-+	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, size);
-+	return tls_device_sendmsg(sk, &msg, size);
- }
- 
- struct tls_record_info *tls_get_record(struct tls_offload_context_tx *context,
-@@ -744,12 +700,10 @@ EXPORT_SYMBOL(tls_get_record);
- 
- static int tls_device_push_pending_record(struct sock *sk, int flags)
- {
--	union tls_iter_offset iter;
--	struct iov_iter msg_iter;
-+	struct iov_iter iter;
- 
--	iov_iter_kvec(&msg_iter, ITER_SOURCE, NULL, 0, 0);
--	iter.msg_iter = &msg_iter;
--	return tls_push_data(sk, iter, 0, flags, TLS_RECORD_TYPE_DATA, NULL);
-+	iov_iter_kvec(&iter, ITER_SOURCE, NULL, 0, 0);
-+	return tls_push_data(sk, &iter, 0, flags, TLS_RECORD_TYPE_DATA);
- }
- 
- void tls_device_write_space(struct sock *sk, struct tls_context *ctx)
-
+I can't completely exclude the fact that maybe someone has requested
+some changes to be made, but there is no email in my inbox to that end,
+and for that matter, neither did patchwork or the email archive process
+any responses to this thread.
 
