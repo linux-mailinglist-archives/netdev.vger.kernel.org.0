@@ -1,259 +1,159 @@
-Return-Path: <netdev+bounces-7909-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7910-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 49FD97220F3
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 10:25:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6ED1C7220F6
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 10:27:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 047D12811DD
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 08:25:53 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DCAD91C20BA1
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 08:27:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2F4B5125DF;
-	Mon,  5 Jun 2023 08:25:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9364D134A0;
+	Mon,  5 Jun 2023 08:27:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B29C17E8
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 08:25:50 +0000 (UTC)
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD545C7
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 01:25:47 -0700 (PDT)
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 30F243F592
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 08:25:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20210705; t=1685953546;
-	bh=w/vz4qy3Kc7GOpDb+K0VZMneVYxuO4mipxqG9LguKK8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type;
-	b=C9C+jzJWn3VQlOLWcKKQC5noy2dPLaxAYs5r5A/oHB5fX+epllJDKV6J8L24p7Q7q
-	 eCN2GcQS9xk0+dM3amZlstyJNnp3lHo+QYMT+ou5qblCkYa6OWZrm2siPHxVsuETxG
-	 GGTgtP4UES9ZpJBy2FH2NbPUCZnppkXYOEw7zHR/aSL3AVMffoh1q6uHEQNrisKyCJ
-	 40Lq11uaJr0sTXfS5lhvxFkJt9LKg6GPanwz6NocWqLptSTVic3SLHPxuPcgqoIS74
-	 q039cGRbS2U73L/hHSQa54j1lGTY2lQFjxxsVYUtJ9lh9VVOQ9x6o8nLCPsdgoVEXh
-	 +LJ4OxrMkcJ1g==
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-75d53bab5a9so124317985a.2
-        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 01:25:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87E4511C97
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 08:27:03 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A09CD
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 01:27:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685953620;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=J8at3jyLYspjW7I0pCXUj/ZCT3YmM7eGZSNtKBL6MtI=;
+	b=ZC7P/pVtDCPvndICFSArghp24mpRlh8fIJ3JU8ug9Jg0xUPa7FIhsJhRj5Qm8oZIuzAuZR
+	GlBvUloe4lJBVpnB2dO4FRx4vcnzWZPm5sKOIdJn2yS1Qu9FaT3GTGLlSJfgogPcQJtzlc
+	fektKEu6cYz39uv0isaKoZSQQ1m7JSw=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-205-pqLyNv6gOcKXjSY0NJ6aEQ-1; Mon, 05 Jun 2023 04:26:58 -0400
+X-MC-Unique: pqLyNv6gOcKXjSY0NJ6aEQ-1
+Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-3f73283f6c7so6806455e9.1
+        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 01:26:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685953544; x=1688545544;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=w/vz4qy3Kc7GOpDb+K0VZMneVYxuO4mipxqG9LguKK8=;
-        b=CMxpl5O/csD0/a4FTIqs0WgCONbj+cWf06TGEHr1bzQ8+m0p1bRApluDennOdla6K+
-         ipKQ6HRDhyd1XRIA2qmB9s9tYo7D/uDOUZi/KSRSCqbRRY8M6DSvJND8Ubzucmm5pI1G
-         4yaI/pgMhYVO4PG1yCDvfAobKNPkoZ+qxj+se368wf7aZrOQbhDmMHcflFF0x98aV8V6
-         4ui+FSRKR1aEWaDetTqu62dBCKSWMm4ybNW6ZeQWgbzedywdcwbSX9iZxVSm+F6glryB
-         90jxkah3TiwSROyJpbfT/6P8ST9BbQhFEp8LZBUGBKh86PlPqpQIjJ+MfN/Lw0jISH69
-         lRfA==
-X-Gm-Message-State: AC+VfDwNCPrPpiiyX3Qysdw2kcD0RiMPQHymMxRi6MKzbMbKwXglwdhd
-	4jAxDWJELmWZ+tPTre6tPd9P0qBW9AMAwqIOEawUv343lP8rGV0zZ1tNcFeyXKTCUng2059JPfd
-	e2k32o6VqM7TC5QGHDWonuQLN4jDfOtKKomauEGNcfsR2xfjq8A==
-X-Received: by 2002:a05:620a:678b:b0:75e:b9b8:ab57 with SMTP id rr11-20020a05620a678b00b0075eb9b8ab57mr1321521qkn.70.1685953544343;
-        Mon, 05 Jun 2023 01:25:44 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4AgPS6tYIm8uNjvjRnd4X/dKtb3kpAGwevuMacOVrV0JiWen9kzqyAmGft2GuHieBV9kyujChRhnQqQi4e9Po=
-X-Received: by 2002:a05:620a:678b:b0:75e:b9b8:ab57 with SMTP id
- rr11-20020a05620a678b00b0075eb9b8ab57mr1321510qkn.70.1685953544065; Mon, 05
- Jun 2023 01:25:44 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685953617; x=1688545617;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=J8at3jyLYspjW7I0pCXUj/ZCT3YmM7eGZSNtKBL6MtI=;
+        b=UG2YR2CMttbjRyqPdv3NB/mmXzwixXe8czNMI0EewSI93xC78mAIAZUrW+jbc1NmE5
+         +o2j1/xsq8TDI0da57xNqJwusyvk3sM0fKf2kY8UdaQGV0zrHqTKTBaiXgrla+W1SSiV
+         DdBozLMkRfELsENc3/UJXZz4QdJZIe4xSew28P8D3kHzgpUKC5xnrca26YhiIgM+GJFV
+         afEP/lXrMuCAbZd5/DC1aTN8XUIZ/xAPzB5nUKzsXxO5dONq10A+MbNP7UV88qp9lZ0i
+         PekpAydZ1B9totW+p9hux+///ZoJVPj+aVufD6LR3qJxFTpuJm49ytotRXTa+aap7LLD
+         BDjw==
+X-Gm-Message-State: AC+VfDwkGBYVbC34EoU2PplS557HosHBr9hBN4Zm+JU58JF2wReTO50a
+	aaeASC8T3l1kdxBlsq6n6iFQoGHYdTU3rqGs5dC02jgdMM/pSKV1n7IHPoHnCoxMTbRb4TZ5D8W
+	L+cUaxmU5CVVs9Kxe
+X-Received: by 2002:a05:600c:1d98:b0:3f7:367a:38cb with SMTP id p24-20020a05600c1d9800b003f7367a38cbmr3232785wms.2.1685953617682;
+        Mon, 05 Jun 2023 01:26:57 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7VE8iVjNCuqsNoEIKvM2en0FHwV2THTF/MEveUKF9yun03XpX+3wMK7X0sxFjbHVuiakb1jg==
+X-Received: by 2002:a05:600c:1d98:b0:3f7:367a:38cb with SMTP id p24-20020a05600c1d9800b003f7367a38cbmr3232772wms.2.1685953617428;
+        Mon, 05 Jun 2023 01:26:57 -0700 (PDT)
+Received: from sgarzare-redhat ([5.77.94.106])
+        by smtp.gmail.com with ESMTPSA id y5-20020adfd085000000b003095bd71159sm9123063wrh.7.2023.06.05.01.26.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Jun 2023 01:26:56 -0700 (PDT)
+Date: Mon, 5 Jun 2023 10:26:54 +0200
+From: Stefano Garzarella <sgarzare@redhat.com>
+To: Mike Christie <michael.christie@oracle.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, 
+	syzbot <syzbot+d0d442c22fa8db45ff0e@syzkaller.appspotmail.com>, jasowang@redhat.com, kvm@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com, 
+	virtualization@lists.linux-foundation.org, stefanha@redhat.com
+Subject: Re: [syzbot] [kvm?] [net?] [virt?] general protection fault in
+ vhost_work_queue
+Message-ID: <4rqrebfglyif4d7i4ufdnj2uqnubvljkeciqmelvotti5iu5ja@fryxznjicgn6>
+References: <CAGxU2F7O7ef3mdvNXtiC0VtWiS2DMnoiGwSR=Z6SWbzqcrBF-g@mail.gmail.com>
+ <CAGxU2F7HK5KRggiY7xnKHeXFRXJmqcKbjf3JnXC3mbmn9xqRtw@mail.gmail.com>
+ <e4589879-1139-22cc-854f-fed22cc18693@oracle.com>
+ <6p7pi6mf3db3gp3xqarap4uzrgwlzqiz7wgg5kn2ep7hvrw5pg@wxowhbw4e7w7>
+ <035e3423-c003-3de9-0805-2091b9efb45d@oracle.com>
+ <CAGxU2F5oTLY_weLixRKMQVqmjpDG_09yL6tS2rF8mwJ7K+xP0Q@mail.gmail.com>
+ <43f67549-fe4d-e3ca-fbb0-33bea6e2b534@oracle.com>
+ <bbe697b6-dd9e-5a8d-21c5-315ab59f0456@oracle.com>
+ <7vk2uizpmf4fi54tmmopnbwwb7fs2xg6vae6ynrcvs26hjmshb@hpjzu4jfj35i>
+ <b5a845e9-1fa0-ea36-98c4-b5da989c44c6@oracle.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230601162537.1163270-1-kai.heng.feng@canonical.com>
- <269262acfcce8eb1b85ee1fe3424a5ef2991f481.camel@gmail.com>
- <CAAd53p7c6eEqxd3jecfgvpxuYO3nmmmovcqD=3PgbqSVCWFfxA@mail.gmail.com> <577f38ed-8532-c32e-07bd-4a3b384d5fe8@molgen.mpg.de>
-In-Reply-To: <577f38ed-8532-c32e-07bd-4a3b384d5fe8@molgen.mpg.de>
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date: Mon, 5 Jun 2023 16:25:32 +0800
-Message-ID: <CAAd53p6TNFLrwJZaR5OJKnbDn6ggidOLgeaFSn8JVf4oXZUBcQ@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Use PME poll to circumvent
- unreliable ACPI wake
-To: Paul Menzel <pmenzel@molgen.mpg.de>
-Cc: Alexander H Duyck <alexander.duyck@gmail.com>, linux-pm@vger.kernel.org, 
-	intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org, 
-	Eric Dumazet <edumazet@google.com>, Jesse Brandeburg <jesse.brandeburg@intel.com>, 
-	Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	"David S. Miller" <davem@davemloft.net>, linux-pci@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b5a845e9-1fa0-ea36-98c4-b5da989c44c6@oracle.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Paul,
+On Thu, Jun 01, 2023 at 11:33:09AM -0500, Mike Christie wrote:
+>On 6/1/23 2:47 AM, Stefano Garzarella wrote:
+>>>
+>>> static void vhost_worker_free(struct vhost_dev *dev)
+>>> {
+>>> -    struct vhost_worker *worker = dev->worker;
+>>> +    struct vhost_task *vtsk = READ_ONCE(dev->worker.vtsk);
+>>>
+>>> -    if (!worker)
+>>> +    if (!vtsk)
+>>>         return;
+>>>
+>>> -    dev->worker = NULL;
+>>> -    WARN_ON(!llist_empty(&worker->work_list));
+>>> -    vhost_task_stop(worker->vtsk);
+>>> -    kfree(worker);
+>>> +    vhost_task_stop(vtsk);
+>>> +    WARN_ON(!llist_empty(&dev->worker.work_list));
+>>> +    WRITE_ONCE(dev->worker.vtsk, NULL);
+>>
+>> The patch LGTM, I just wonder if we should set dev->worker to zero here,
+>
+>We might want to just set kcov_handle to zero for now.
+>
+>In 6.3 and older, I think we could do:
+>
+>1. vhost_dev_set_owner could successfully set dev->worker.
+>2. vhost_transport_send_pkt runs vhost_work_queue and sees worker
+>is set and adds the vhost_work to the work_list.
+>3. vhost_dev_set_owner fails in vhost_attach_cgroups, so we stop
+>the worker before the work can be run and set worker to NULL.
+>4. We clear kcov_handle and return.
+>
+>We leave the work on the work_list.
+>
+>5. Userspace can then retry vhost_dev_set_owner. If that works, then the
+>work gets executed ok eventually.
+>
+>OR
+>
+>Userspace can just close the device. vhost_vsock_dev_release would
+>eventually call vhost_dev_cleanup (vhost_dev_flush won't see a worker
+>so will just return), and that will hit the WARN_ON but we would
+>proceed ok.
+>
+>If I do a memset of the worker, then if userspace were to retry
+>VHOST_SET_OWNER, we would lose the queued work since the work_list would
+>get zero'd. I think it's unlikely this ever happens, but you know best
+>so let me know if this a real issue.
+>
 
-On Fri, Jun 2, 2023 at 4:43=E2=80=AFPM Paul Menzel <pmenzel@molgen.mpg.de> =
-wrote:
->
-> [Cc: linux-pci@vger.kernel.org]
->
-> Dear Kai,
->
->
-> Thank you for your patch.
->
-> Am 02.06.23 um 03:46 schrieb Kai-Heng Feng:
-> > On Fri, Jun 2, 2023 at 4:24=E2=80=AFAM Alexander H Duyck wrote:
-> >>
-> >> On Fri, 2023-06-02 at 00:25 +0800, Kai-Heng Feng wrote:
-> >>> On some I219 devices, ethernet cable plugging detection only works on=
-ce
-> >>> from PCI D3 state. Subsequent cable plugging does set PME bit correct=
-ly,
-> >>> but device still doesn't get woken up.
->
-> Could you please add the list of all the devices with the firmware
-> version, you know this problem exists on? Please also add the URLs of
-> the bug reports at the end of the commit message.
+I don't think it's a problem, though, you're right, we could hide the 
+warning and thus future bugs, better as you proposed.
 
-Firmware do you mean the firmware on I219 device, or BIOS?
+Thanks,
+Stefano
 
->
-> Is that problem logged somehow? Could a log message be added first?
-
-There's nothing gets logged. When this happens the ACPI GPE is dead silent.
-
->
-> >> Do we have a root cause on why things don't get woken up? This seems
-> >> like an issue where something isn't getting reset after the first
-> >> wakeup and so future ones are blocked.
-> >
-> > No we don't know the root cause.
-> > I guess the D3 wake isn't really tested under Windows because I219
-> > doesn't use runtime D3 on Windows.
->
-> How do you know? Where you able to look at the Microsoft Windows driver
-> source code?
-
-Device Manager shows the current PCI state.
-
->
-> >>> Since I219 connects to the root complex directly, it relies on platfo=
-rm
-> >>> firmware (ACPI) to wake it up. In this case, the GPE from _PRW only
-> >>> works for first cable plugging but fails to notify the driver for
-> >>> subsequent plugging events.
-> >>>
-> >>> The issue was originally found on CNP, but the same issue can be foun=
-d
-> >>> on ADL too. So workaround the issue by continuing use PME poll after
->
-> The verb is spelled with a space: work around.
-
-Sure, will change it.
-
->
-> >>> first ACPI wake. As PME poll is always used, the runtime suspend
-> >>> restriction for CNP can also be removed.
->
-> When was that restriction for CNP added?
-
-The restriction for CNP+ was introduced by commit 459d69c407f9
-("e1000e: Disable runtime PM on CNP+") and modified by 3335369bad99
-("e1000e: Remove the runtime suspend restriction on CNP+").
-
->
-> >>> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> >>> ---
-> >>>   drivers/net/ethernet/intel/e1000e/netdev.c | 4 +++-
-> >>>   1 file changed, 3 insertions(+), 1 deletion(-)
-> >>>
-> >>> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net=
-/ethernet/intel/e1000e/netdev.c
-> >>> index bd7ef59b1f2e..f0e48f2bc3a2 100644
-> >>> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
-> >>> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-> >>> @@ -7021,6 +7021,8 @@ static __maybe_unused int e1000e_pm_runtime_res=
-ume(struct device *dev)
-> >>>        struct e1000_adapter *adapter =3D netdev_priv(netdev);
-> >>>        int rc;
-> >>>
-> >>> +     pdev->pme_poll =3D true;
-> >>> +
-> >>>        rc =3D __e1000_resume(pdev);
-> >>>        if (rc)
-> >>>                return rc;
-> >>
-> >> Doesn't this enable this too broadly. I know there are a number of
-> >> devices that run under the e1000e and I would imagine that we don't
-> >> want them all running with "pme_poll =3D true" do we?
-> >
-> > Whack a mole isn't scaling, either.
-> > The generation between CNP and ADL are probably affected too.
-> >
-> >> It seems like at a minimum we should only be setting this for specific
-> >> platofrms or devices instead of on all of them.
-> >>
-> >> Also this seems like something we should be setting on the suspend sid=
-e
-> >> since it seems to be cleared in the wakeup calls.
-> >
-> > pme_poll gets cleared on wakeup, and once it's cleared the device will
-> > be removed from pci_pme_list.
-> >
-> > To prevent that, reset pme_poll to true immediately on runtime resume.
-> >
-> >> Lastly I am not sure the first one is necessarily succeeding. You migh=
-t
-> >> want to check the status of pme_poll before you run your first test.
-> >> From what I can tell it looks like the initial state is true in
-> >> pci_pm_init. If so it might be getting cleared after the first wakeup
-> >> which is what causes your issues.
-> >
-> > That's by design. pme_poll gets cleared when the hardware is capable
-> > to signal wakeup via PME# or ACPI GPE. For detected hardwares, the
-> > pme_poll will never be cleared.
-> > So this becomes tricky for the issue, since the ACPI GPE works for
-> > just one time, but never again.
-> >
-> >>> @@ -7682,7 +7684,7 @@ static int e1000_probe(struct pci_dev *pdev, co=
-nst struct pci_device_id *ent)
-> >>>
-> >>>        dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_SMART_PREPARE);
-> >>>
-> >>> -     if (pci_dev_run_wake(pdev) && hw->mac.type !=3D e1000_pch_cnp)
-> >>> +     if (pci_dev_run_wake(pdev))
-> >>>                pm_runtime_put_noidle(&pdev->dev);
-> >>>
-> >>>        return 0;
-> >>
-> >> I assume this is the original workaround that was put in to address
-> >> this issue. Perhaps you should add a Fixes tag to this to identify
-> >> which workaround this patch is meant to be replacing.
-> >
-> > Another possibility is to remove runtime power management completely.
-> > I wonder why Windows keep the device at D0 all the time?
->
-> Who knows how to contact Intel=E2=80=99s driver developers for Microsoft =
-Windows?
-
-Probably this mailing list?
-
->
-> > Can Linux align with Windows?
->
-> Before deciding this, the power usage in the different states should be
-> measured.
-
-The power usage doesn't matter if the device can't function properly.
-
-Kai-Heng
-
->
->
-> Kind regards,
->
-> Paul
 
