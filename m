@@ -1,260 +1,145 @@
-Return-Path: <netdev+bounces-8174-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8181-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B35F7722F9A
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:18:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id C9900722FB0
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:21:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1C296281409
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 19:18:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 83A6F280D1F
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 19:21:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 921372413C;
-	Mon,  5 Jun 2023 19:18:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9634924EA3;
+	Mon,  5 Jun 2023 19:20:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 845A9DDC0
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 19:18:43 +0000 (UTC)
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC98170A
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:18:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685992693; x=1717528693;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=A3bIyBFC6QJeMbxusZ+E/fEzCeIAJph9hezqtqU2hKk=;
-  b=lu6Ly2ElTrX3yE0h3TQfJ+ZWRW+SkLMgyPOuAmqB9ZBVbcZaM6bm1vzS
-   UuoTaPRPTCExYT/L+P04OtHjDvPwLtNlHtmQDNuFJAI9Ybk+QhSt0b02B
-   Uq9oAEfMyHG8OZACTKjHigMmCTe/pUtnSC0FIgFafw/QaaOdzztS193Qu
-   ATmOP+ELbSr7idJGlhMZio9ICFriM3eImUpqCAYGG5bsskjX0tzL/XAU4
-   c2XPXob0o4nrp+QL/xBh4hhhUi+26ZykQKnqegyb292MhjmNbVXOyMqJ5
-   xRoePpzjEDsDaX+b2J7/KkOAz/5O0AZ1yK+cfym9XbS6xVgVP+PBLMvSC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="422284512"
-X-IronPort-AV: E=Sophos;i="6.00,218,1681196400"; 
-   d="scan'208";a="422284512"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 12:17:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="711919666"
-X-IronPort-AV: E=Sophos;i="6.00,218,1681196400"; 
-   d="scan'208";a="711919666"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga007.fm.intel.com with ESMTP; 05 Jun 2023 12:17:41 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 5 Jun 2023 12:17:41 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 5 Jun 2023 12:17:41 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Mon, 5 Jun 2023 12:17:41 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.172)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Mon, 5 Jun 2023 12:17:40 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82A36DDC0
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 19:20:06 +0000 (UTC)
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2085.outbound.protection.outlook.com [40.107.94.85])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D01EF135
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:19:43 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S3k7MP5DVK9thFrTqGiHslzKcuWGAGqPDWOS1VD4eUt6tvVHAv4bZ+SkYnAOT3xeO3gUtpe32KQT7fMKdjypHiyUmeboHg5b8ZGMjvDTPyJ1DmI43GbCSOnFekcncmdZCKLonXb2pTX8XIm0Rfd0JAc1MHEQTaRwu9KNHFG2RZEUkMq8ulT/ozq1WJyFlFJLTiF5OqqIPfiPT4YFQTHZ1EGhC+HZIlx06yQEQ2zA0u3QT4ROENZg0PzG/qQ2D7JwnG5LDujKFs+xvw7O/wVjcJrCmtiN7FI1EJEt7FuNr30+2dMLdNU2AeQQy81TJGnII6gKVfBkH9C1PYUzUYkpMQ==
+ b=WtJh5utCRxLBpASwK/ADbL28tVBBJiploDEKr/9Nh3GXJcpYsWQ6kg40ooF3c20SpZXMTcbLhwiaLIICWqNFxjzL+t8CooNjTQWzIaZ5n1yny5/wveDXbekEwiZ8iCdxiJEMRi16tMqf1NeIen5rQnjtJtm9OZYg91kggE/tGhRBlQOB4ksId6hwevN5hWPEgJa7g2ftC3A+3zoYQqsA7gLmws9KMCvBMrRIQs/v4yuH4oLv+zvRM6MbuS4ismFH0uxYl7GII6kf4gRdO/zoGy+U5WNUKgXpeyQDkPUlxNNfEzRcuEm/zGiXnSnMuDxwsK83Bqeu2OdxWT6EYp9aFA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t+HXb2RqQ2o6hJKjryV34BVNAIIgc07+iIjRjn7CA0Q=;
- b=iuDE4bxSJaCfQYTCpZ55qDPVklgrixXR9mE0+ZRpnYc1RWAjDFyoALVJ6LfQwYTOyzqL8dQgXqaVQQtDdYeXhQDEo/zzaA5aUkISFfNDuO26NMrvhiUEl2KUISpKAoHUg7i/ORtbpVA6ozvYAB1MClrc67+g11CW0Y2ne3NHd+qZZU72A8NHHMwW0n84lfT5VQz4SA6AObAC3U0QzKNeBLmpipeUaZ90Pvx1PQfgZGF0LfldQb+WKZ3vNangjLDqpMBEn9svkVYeA7oCUE/gDi49T9db6LJa8qRGdUhHg0Vqfpo8AEzi+lW/t/06mr9e0lbcWdUELtDHgpTXTdKvhA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
- MN2PR11MB4760.namprd11.prod.outlook.com (2603:10b6:208:266::22) with
+ bh=MQQdrd32HmDcg1pUhWv+blb0jLQsRmz8e41z7LN2HO0=;
+ b=Rhx0YmwticAQRemzQk47oLvy3u+qcVGYylrOhgY2Tv1upmhM31W3nUfQL7MTC9kIaoi8oQ/2IN0IYNihnawQi5s3kQRN/3/OprZ846U3qdSg9JxsgmJD03M/B9RGU5KPkoPJ5Nx+IUO19BrGujaT5OEXXf6/YrbDKQ0PcLuf8SVo2sWXciafoazTuc6ZqzJ2sXANCT6XVQnK2VLzSN1G7wYGVYdjOpHwZ24YMyJJ4SUh40+EpsaJnN6Hk2C2LIwCrUx0YyzaXovpAUVzE1jNrcF3O0CGEn0d/9HFOH8YoB9/18yA228UkwAz5ZEIsbH44rSE8FhNVSckqZ3W70VG2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MQQdrd32HmDcg1pUhWv+blb0jLQsRmz8e41z7LN2HO0=;
+ b=fqILGuVIebRRcrFOK6fj2nrVbr8fggTnATvuJVpoS4FNly3HBZSFxYyJ3j5QLMEn3aaLRK/CObMSHHkotWs/WuQ9Y057CvajNgRPLNXhyhnRUYAkQ3DM8hnQANViomAmG3v+OLEhR2soMG+Su4b1qr/6X/dU68DRzPh/a1LsM4M=
+Received: from DM6PR06CA0034.namprd06.prod.outlook.com (2603:10b6:5:120::47)
+ by PH7PR12MB8778.namprd12.prod.outlook.com (2603:10b6:510:26b::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Mon, 5 Jun
- 2023 19:17:39 +0000
-Received: from DM4PR11MB6117.namprd11.prod.outlook.com
- ([fe80::9e4f:80cc:e0aa:6809]) by DM4PR11MB6117.namprd11.prod.outlook.com
- ([fe80::9e4f:80cc:e0aa:6809%2]) with mapi id 15.20.6455.030; Mon, 5 Jun 2023
- 19:17:39 +0000
-Date: Mon, 5 Jun 2023 21:17:28 +0200
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To: Tony Nguyen <anthony.l.nguyen@intel.com>
-CC: <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-	<edumazet@google.com>, <netdev@vger.kernel.org>, Przemek Kitszel
-	<przemyslaw.kitszel@intel.com>, Piotr Gardocki <piotrx.gardocki@intel.com>,
-	Michal Swiatkowski <michal.swiatkowski@linux.intel.com>, Rafal Romanowski
-	<rafal.romanowski@intel.com>
-Subject: Re: [PATCH net-next 2/3] iavf: fix err handling for MAC replace
-Message-ID: <ZH40yOEyy4DLkOYt@boxer>
-References: <20230602171302.745492-1-anthony.l.nguyen@intel.com>
- <20230602171302.745492-3-anthony.l.nguyen@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230602171302.745492-3-anthony.l.nguyen@intel.com>
-X-ClientProxiedBy: FR2P281CA0116.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:9d::9) To DM4PR11MB6117.namprd11.prod.outlook.com
- (2603:10b6:8:b3::19)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.24; Mon, 5 Jun
+ 2023 19:18:28 +0000
+Received: from DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:120:cafe::6) by DM6PR06CA0034.outlook.office365.com
+ (2603:10b6:5:120::47) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33 via Frontend
+ Transport; Mon, 5 Jun 2023 19:18:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT047.mail.protection.outlook.com (10.13.172.139) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6455.33 via Frontend Transport; Mon, 5 Jun 2023 19:18:27 +0000
+Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 5 Jun
+ 2023 14:18:25 -0500
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB05.amd.com
+ (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 5 Jun
+ 2023 14:18:11 -0500
+Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34 via Frontend
+ Transport; Mon, 5 Jun 2023 14:18:10 -0500
+From: <edward.cree@amd.com>
+To: <linux-net-drivers@amd.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+	<pabeni@redhat.com>, <edumazet@google.com>
+CC: Edward Cree <ecree.xilinx@gmail.com>, <netdev@vger.kernel.org>,
+	<habetsm.xilinx@gmail.com>
+Subject: [PATCH net-next 0/6] sfc: TC encap actions offload
+Date: Mon, 5 Jun 2023 20:17:33 +0100
+Message-ID: <cover.1685992503.git.ecree.xilinx@gmail.com>
+X-Mailer: git-send-email 2.27.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|MN2PR11MB4760:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5789d557-a25c-4206-d0e6-08db65f986f2
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT047:EE_|PH7PR12MB8778:EE_
+X-MS-Office365-Filtering-Correlation-Id: a4ba46d9-e7ca-4c86-80da-08db65f9a402
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IFFiuEhzT+5H4+PyB2B2lbIEvxQ2rcZ+cd9BsLbMKiP92dTT+vB8czKzkv04K3x8206LjuqGjQciYi/01M7KQ4JZNvXqcq2jVHD/l+kcEtkxH5sTiVc70u4b82bRtdezJL6DwqXMshbQzM4c21e4OijulPpcxoyy50exkC5yogQ1+GHlBuhzKK5ve+IZSvvtN7svFMlaPadWWtx/JmjEDyKmSFUHOH+UZRchqTVVBemrBnSAMs8Zzjr7m8AYDKNVC648kMV8xymglkBPQSIauQG0jOa2LRSz39yLmXeeizm15MJDtKihABtBz3Z2JBnZJpfZbiXPREnBpfSDxTRAIJjiZoGq+X3eo6xER+OInIIoAx7ESPd0piUtc+XagBlpEztatMwgVLPKUS7E6ULefo6jvcehZVjlKAwHvkB3Cb6fUV9gPFkKASDL/3b/pSErkMzl/CQ+wACSZ+mBnfdcNmFjf7n9Ha+8ftHCS9IN95KaaK9mL5TkQ1TtA+JyzLs+9hZ4yQQu7DKr5oguqVUV89NEEIok9T6He2oWMTcPuKbmFvjA0o5gsaiHtS6Y5HI9
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(136003)(346002)(396003)(366004)(376002)(39860400002)(451199021)(83380400001)(82960400001)(54906003)(6636002)(4326008)(66556008)(66946007)(66476007)(38100700002)(6666004)(6486002)(478600001)(186003)(2906002)(33716001)(6862004)(8936002)(8676002)(41300700001)(316002)(5660300002)(86362001)(44832011)(26005)(9686003)(6512007)(6506007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?531f4RDZJZMJXpRHkVT4Z4j4u1t5Ly5qBR/i3D0eLZdcIpP6Oc9ry3ewq9sK?=
- =?us-ascii?Q?nH0xv6To0UkgfBe+A8t3fY3k5hOv8j/On/uMO5jvZNgXUafdmXRa2Hg4f1up?=
- =?us-ascii?Q?KoSVCWKvaUjWSmnImZqMuM/GO5uci92h2SdBEfrXKbOt+5msBQCgg70qqk/Z?=
- =?us-ascii?Q?Ccy0J7dPILquRrNmL41nFP8mDto1nRvx0Ano6meODHQv84Sl4Z1RKYhIpsUP?=
- =?us-ascii?Q?UDLsNRI/5VR9Xu8dMZwFHFDxig72MOLU+Po0XIV4GRdiik8QOAID1ulzsXr7?=
- =?us-ascii?Q?tV8OMWMS2gns7naRVJYnx3fnUIjjVsMvwAd0FhxxcUhJ9/EbACplGx1b6URw?=
- =?us-ascii?Q?/R2TuM6AEfN0s6QPkZ95Sp00ume2mtzXkleSZ9knNK1MxmCCD6J9MGnfhg9+?=
- =?us-ascii?Q?djjv9RiEl1EJUmrnk3EELcZEuF/rbOKcuVAI7DNSG/nOpJSQUPRI+Go9qinL?=
- =?us-ascii?Q?u53uHyr0SCzESanTXnZCT01nU9zXPEPoxfGZPy4s1bKI+4WM5bPDq9JtJlBI?=
- =?us-ascii?Q?e8AXmq6dpCu2YHLZ2KuXRthjGi0L7ujW+YJgzE7ZPnHgEk3AAN+Swcdb0Nmj?=
- =?us-ascii?Q?jLLTL05tjCzF0jFVokjovMnGmRk+MzjvmiFyVv1SjRVfIFlFMWvMh2W5vr/S?=
- =?us-ascii?Q?5WrpCOYofvJJYmXlbhYPZSPR8LHqmXas3zHjvIYHIKu4E/SFfN4AhHv6LC/C?=
- =?us-ascii?Q?rF5yF+iu1JfKhiLDtNK+8oBUUkIomDD15uLy8MUmABk+RFFRyiuPZI4ImvwM?=
- =?us-ascii?Q?d5g5skZ9EhkiRG7B8m4A4Lj1R8k1EY7XtNGEYfBFTeW5q2TuZ34PRvNg3IjM?=
- =?us-ascii?Q?v6zXBqeVC2NdIFqtg5Cz5X5sp6oYKsS/vadqcp7aizVoWWfd2p8+ARnFK1mw?=
- =?us-ascii?Q?w7jrUZWSyiwlZYBKsFU1HToTvoC6hq5UcK1QWiLosneX41makmpoKOqRpgMR?=
- =?us-ascii?Q?AHvTQ1xqF1EdnlPvmcd0nMTUVJSAP0fbulRs6nD5zTC0kne70NyNiGtB9dER?=
- =?us-ascii?Q?gagCX/s+PvjcRR6nN4qIuTFe+4gMq6H7Ejo7PeeSdJBAvhBPpzyMc6FQLcg9?=
- =?us-ascii?Q?ih5Mk/dmMUuUeqanhXASrT4C1sIPr0nKBv0HhoJEZ3FHGCqA9OXhFtfuo8Sy?=
- =?us-ascii?Q?hdvjmkEDebEJ0ioB93ODfp2OL/km1m36MhCQhuOiTBYcnPcJjjpx7sDwfdaJ?=
- =?us-ascii?Q?WDsU73KJpX1OlVXFjmC6w8mA0WwtWhj/IFcBqlvxeXa8OBbVSgkdOr4UEBJ8?=
- =?us-ascii?Q?rR8sd6IAzxgVPkVmJahRet3De3zERue/J77+Gu6qyEwtALYhYStkuUbUV8NP?=
- =?us-ascii?Q?T9LLFe6t6U+sA626XYHjlDBc7g9tXoJq1GK4RK5nRa95DV5yHYendNu9k64y?=
- =?us-ascii?Q?I+WKb3I+3h5arsRfOwCZCLF/1nMBVB6bWIUoON+iRfp7ozEqq5ByL3VVDYEL?=
- =?us-ascii?Q?rNFK2O9L5dnb6gUO6a8OjXhWUJlwWjp5VrrNMMZDW2WFua8o5uKRdc8ebqJ5?=
- =?us-ascii?Q?9CR9i1f+wyIRTY+G6bqaS1pKxHxVHaQZtNlUGtvSnK60mABE63YXeN1+ZWbB?=
- =?us-ascii?Q?pDRYc34c8OS+jWgnHcut/j+bEMFLhZO7B6Q5JzHwFc+56M9SsDStffBP6RGL?=
- =?us-ascii?Q?hg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5789d557-a25c-4206-d0e6-08db65f986f2
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2023 19:17:38.9708
+X-Microsoft-Antispam-Message-Info:
+	6c3HMW+gefxwA4QQQjBFJ+Tjir0kucCWNpyW80cLZXvP3VpKxgZYN0oBDovgz4jwn5hOF/DDSueJbdq9roUVoOnK2gCo1uTgr821G1ZvY+khZBR/XVj9Yk6jkl8qaK8MFEgKN5pL6qKcVhiJwb/cvHf5qhqtP6BKYWM0wKR5P4J0gKxZV700Ssd8ufXo4spJysCUm4aEHPQvb1/B7uG75HY6M6vb51/7DahI2NHjVQZVgsB2/QB+ty8UgmiXBHYghT2McDuWbr1NDyTboe0UmiKIX3uG/8tpyG54Q8gdRr+iB0/i0V55EYeRIrx0LHu9Z8ahAi3+EP97ut0hRAvv/Rti7P1MD4yl0hLpcNG+0V8KS0s43wrIhF9KPu7rTyGm5PtALBnUCmCN8xBne69ip+J2q9Aj1Bj/Hy+Er4JXjLv1oMkJJfFrMx0iGendfm6RV7QSE8+g2SwNYV8t90FxjYP20ZEQrgvRQxHFgGobyJVTzxuPK1YkUsB02sejRslwnfAegCZEW+lb2CVgLfrG24uP1UxaqnRz8NgNKt477bGkJBbbKhpJ/rPrFI7dDMjwlYECIy7mdL2uRsvXsc1BXAop4XsjX4UM18S2483/jaYWsK2rU/1ahFwCsClaRi5jMle3ok8hwwKwZmXaRKGVhoFdiLACngFB+tciIpJLji9PB9WPBK9KB2OGRPTD+3theVTEFfuSkk7BeA/yTjhyMj27IYsgHHyoYbNmJqZjP8FJcKCPWmpfBtG9XNMycBdgAIYBGkWWPmHqnWHySJoFZg==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(376002)(39860400002)(136003)(451199021)(40470700004)(46966006)(36840700001)(5660300002)(9686003)(26005)(2876002)(336012)(47076005)(36860700001)(8936002)(426003)(2906002)(186003)(8676002)(83380400001)(55446002)(41300700001)(478600001)(54906003)(110136005)(40460700003)(316002)(6666004)(82740400003)(356005)(40480700001)(81166007)(82310400005)(86362001)(70586007)(70206006)(4326008)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2023 19:18:27.5165
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Wp0I1BlRqNz4OPfDftmqUiNWZLog+MqB6A9tk3wcYo9iikOcSlJzMq1P18dVr/huV/HHUh/PTueTcF6LsYQ7jvgXlaCOnIAeadBMzBq8rKA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4760
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: a4ba46d9-e7ca-4c86-80da-08db65f9a402
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8778
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 02, 2023 at 10:13:01AM -0700, Tony Nguyen wrote:
-> From: Przemek Kitszel <przemyslaw.kitszel@intel.com>
-> 
-> Defer removal of current primary MAC until a replacement is successfully added.
-> Previous implementation would left filter list with no primary MAC.
+From: Edward Cree <ecree.xilinx@gmail.com>
 
-and this opens up for what kind of issues? do you mean that
-iavf_add_filter() could break and existing primary filter has been marked
-for removal?
+This series adds support for offloading TC tunnel_key set actions to the
+ EF100 driver, supporting VxLAN and GENEVE tunnels over IPv4 or IPv6.
 
-> This was found while reading the code.
-> 
-> The patch takes advantage of the fact that there can only be a single primary
-> MAC filter at any time.
-> 
-> Signed-off-by: Przemek Kitszel <przemyslaw.kitszel@intel.com>
-> Signed-off-by: Piotr Gardocki <piotrx.gardocki@intel.com>
-> Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-> Tested-by: Rafal Romanowski <rafal.romanowski@intel.com>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> ---
->  drivers/net/ethernet/intel/iavf/iavf_main.c | 42 ++++++++++-----------
->  1 file changed, 19 insertions(+), 23 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-> index 420aaca548a0..3a78f86ba4f9 100644
-> --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-> +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-> @@ -1010,40 +1010,36 @@ int iavf_replace_primary_mac(struct iavf_adapter *adapter,
+Edward Cree (6):
+  sfc: add fallback action-set-lists for TC offload
+  sfc: some plumbing towards TC encap action offload
+  sfc: add function to atomically update a rule in the MAE
+  sfc: MAE functions to create/update/delete encap headers
+  sfc: neighbour lookup for TC encap action offload
+  sfc: generate encap headers for TC offload
 
-from what i'm looking at, iavf_replace_primary_mac() could be scoped only
-to iavf_main.c and become static func.
+ drivers/net/ethernet/sfc/Makefile           |   3 +-
+ drivers/net/ethernet/sfc/ef100_netdev.c     |  34 +
+ drivers/net/ethernet/sfc/mae.c              | 113 ++-
+ drivers/net/ethernet/sfc/mae.h              |   8 +
+ drivers/net/ethernet/sfc/net_driver.h       |   3 +
+ drivers/net/ethernet/sfc/tc.c               | 182 ++++-
+ drivers/net/ethernet/sfc/tc.h               |  23 +
+ drivers/net/ethernet/sfc/tc_bindings.c      |  13 +
+ drivers/net/ethernet/sfc/tc_bindings.h      |   2 +
+ drivers/net/ethernet/sfc/tc_encap_actions.c | 742 ++++++++++++++++++++
+ drivers/net/ethernet/sfc/tc_encap_actions.h |  99 +++
+ 11 files changed, 1214 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/net/ethernet/sfc/tc_encap_actions.c
+ create mode 100644 drivers/net/ethernet/sfc/tc_encap_actions.h
 
->  			     const u8 *new_mac)
->  {
->  	struct iavf_hw *hw = &adapter->hw;
-> -	struct iavf_mac_filter *f;
-> +	struct iavf_mac_filter *new_f;
-> +	struct iavf_mac_filter *old_f;
->  
->  	spin_lock_bh(&adapter->mac_vlan_list_lock);
->  
-> -	list_for_each_entry(f, &adapter->mac_filter_list, list) {
-> -		f->is_primary = false;
-> +	new_f = iavf_add_filter(adapter, new_mac);
-> +	if (!new_f) {
-> +		spin_unlock_bh(&adapter->mac_vlan_list_lock);
-> +		return -ENOMEM;
->  	}
->  
-> -	f = iavf_find_filter(adapter, hw->mac.addr);
-> -	if (f) {
-> -		f->remove = true;
-> +	old_f = iavf_find_filter(adapter, hw->mac.addr);
-> +	if (old_f) {
-> +		old_f->is_primary = false;
-> +		old_f->remove = true;
->  		adapter->aq_required |= IAVF_FLAG_AQ_DEL_MAC_FILTER;
->  	}
-> -
-> -	f = iavf_add_filter(adapter, new_mac);
-> -
-> -	if (f) {
-> -		/* Always send the request to add if changing primary MAC
-> -		 * even if filter is already present on the list
-> -		 */
-> -		f->is_primary = true;
-> -		f->add = true;
-> -		adapter->aq_required |= IAVF_FLAG_AQ_ADD_MAC_FILTER;
-> -		ether_addr_copy(hw->mac.addr, new_mac);
-> -	}
-> +	/* Always send the request to add if changing primary MAC,
-> +	 * even if filter is already present on the list
-> +	 */
-> +	new_f->is_primary = true;
-> +	new_f->add = true;
-> +	adapter->aq_required |= IAVF_FLAG_AQ_ADD_MAC_FILTER;
-> +	ether_addr_copy(hw->mac.addr, new_mac);
->  
->  	spin_unlock_bh(&adapter->mac_vlan_list_lock);
->  
->  	/* schedule the watchdog task to immediately process the request */
-> -	if (f) {
-> -		mod_delayed_work(adapter->wq, &adapter->watchdog_task, 0);
-> -		return 0;
-> -	}
-> -	return -ENOMEM;
-> +	mod_delayed_work(adapter->wq, &adapter->watchdog_task, 0);
-> +	return 0;
->  }
->  
->  /**
-> -- 
-> 2.38.1
-> 
-> 
 
