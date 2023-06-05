@@ -1,77 +1,81 @@
-Return-Path: <netdev+bounces-8177-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8179-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C5836722F9F
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:19:50 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5737E722FA8
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:20:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7B3DC280EBC
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 19:19:49 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0D562281192
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 19:20:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 42BD824147;
-	Mon,  5 Jun 2023 19:19:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4A63824147;
+	Mon,  5 Jun 2023 19:20:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31240DDC0
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 19:19:27 +0000 (UTC)
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on20610.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eaa::610])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2700AE58
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:18:56 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38622DDC0
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 19:20:00 +0000 (UTC)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2085.outbound.protection.outlook.com [40.107.223.85])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC38E183
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:19:34 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZdrsnWuGss8nozC4nB/oRjrbKtlpfv0iLUWMEQnhBFanmJGsWJN3NZPgXfMaIUNLUx6GsfJ72Dc6BifkCqyrRwfohz1XVJqi7S3h0u6xyBTnKrIeRrapUkYuJGbjME3ZXwSPOQI96ivGvvCR25BNgiqm8w7NQSqp+jJcc8SO+wQ37++gYxnNoHwkNPcxmryayry8ls2/p8KTlj1Sc+YmFenNOJUcV3q6YAMxRas+xpAIAkKfIdW08cvQAQgQA1Wu2jJ6KaPLEzGUuwDQbiSlMsp4kpREQr6rcSqAdVAT5MuqBIb/dXwd+VOCho8Ho10MbsdRVa7AbVt9CdfpYf7qwg==
+ b=QzZIlFDCC5ELYlwZ1qeUUx5gbwUtukQFnU6jwL7cdsm/Hv722CPoOx9Cnzh6hBRz2NrOulBQ9yQs9d1hl4WjJ+X+BYDUj7y9UkopGsl4peo8M65vuokrzRC8BFLfuedhDWzwxWhk+9FZXYgAO2hgxWjsxYPvF4EEut2V4rHdpGjPU5zQduUQpY2mJhShboBv+uStTjHMy0F7E+GHRkxGidTCRyqbtHqesy4ejZ+vrUizfMSKKCtovC9d7iRvFhrVjfgs3Iodsan4oEPeGmenfu9giOJ7aupnu89Ij+e7zqWjc76EG3/cSgLmj9aELdnHZpJa72V1vTCKnr6kYWAPVw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=A6MSzvLGUR1bl/J+P38xz/IxKA8dBq+VLgsZQKwENQY=;
- b=PWT+dQ5lI4DF8QhL2VVskXOFZI0+V4zwqOnGZeJS01oNEIppcVhpvOMx+Ps6IDrlRu6yqTOYDGysbjPT6Wh6kocwKzL/5RH4Es/P27aDADHd7VE42L+lTavHaVYLKTpxM+4W4g46sEnGwS3DMinV7VowXDf3Pn3ssshHMRszy44MaMhGibi46vEWiZucvoL2uRzmoUTLVeQ1rVECwT2okuWRSTxDF5uOprqzci3b7eHI3RAfkWkYGoTor0qxzZkHa/F84J5tYR2rdmNq0D5sIGSvhgVH6TrJYvQVsxf7AqN5kdNTN96VPD5IjieOmdVVuMDf95MAeDbGDuPbxZaVgg==
+ bh=BUk84BP6IxgcozyuoQ0VZjqc+sgTVc+hwPsjPhS10lM=;
+ b=KR6dTPKRYSoJ6vcg37tLD6uxfJwOh4dM6//8EmJUjsWZ4u62cH7x10nuq1Z/lTPtXddQdfGpHujYp0VhLC1Lr8d8q0yKhnH0VdLHTehVRtcJqkKhy3USukw3sBdZBjI1LtcN4fz3IWcVXv35FqHeRRe2dhR9sAp8lofHD53mKUayYXMaAiTL9YiSns7WTzCFuPxUMVBk7io70JEcQfs4BYPiVyq4SytqatpN5Ve9YSEfcQ/asu3fVt8U7uBtAWSLxTa257GMMkgVLvqwGSWucQvj7xMICHyQ8bdcnEn1+H6y7jKS++0gheXBUrEP23QxVMYR0FxjdHVxg39L1kOueQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=A6MSzvLGUR1bl/J+P38xz/IxKA8dBq+VLgsZQKwENQY=;
- b=EoxKKsCng58HksTaw5V9Yu63VwfEvXh3ZbbZbIeng/FGUD0ZBXnzTUISQLqVRcMW8lysvYPtZfE+wc9w2qDednLk2gZKhmDyJviykE439f65oeoVo/tmk+Znp+7OsBc+v9SnKnsQ81ZgHS+4vdfLg6zD/MH8HNuDXGiyIEDAVjc=
-Received: from BN8PR15CA0043.namprd15.prod.outlook.com (2603:10b6:408:80::20)
- by IA1PR12MB7709.namprd12.prod.outlook.com (2603:10b6:208:423::15) with
+ bh=BUk84BP6IxgcozyuoQ0VZjqc+sgTVc+hwPsjPhS10lM=;
+ b=oWUS0ThLFb4Wu9bRmpCdVF9pyBQR0XKK4KiGvvoTkV/CvuV2YYc0QuimnyKEeCHQA8xKBF/v0TSOeYUNVjbozNuQ5sGiao9H+/2EkRWXCqBy5Jc7u3bWdTKh5Qwg50+uFLqWgSoPo3ko/gA3EYIwB4wgnKbHWXnb1FN4CWqw2gU=
+Received: from DM6PR06CA0004.namprd06.prod.outlook.com (2603:10b6:5:120::17)
+ by MN2PR12MB4407.namprd12.prod.outlook.com (2603:10b6:208:260::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Mon, 5 Jun
- 2023 19:18:21 +0000
-Received: from BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:80:cafe::5a) by BN8PR15CA0043.outlook.office365.com
- (2603:10b6:408:80::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Mon, 5 Jun
+ 2023 19:18:30 +0000
+Received: from DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:120:cafe::7c) by DM6PR06CA0004.outlook.office365.com
+ (2603:10b6:5:120::17) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33 via Frontend
- Transport; Mon, 5 Jun 2023 19:18:21 +0000
+ Transport; Mon, 5 Jun 2023 19:18:30 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- BN8NAM11FT026.mail.protection.outlook.com (10.13.177.51) with Microsoft SMTP
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT047.mail.protection.outlook.com (10.13.172.139) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6455.33 via Frontend Transport; Mon, 5 Jun 2023 19:18:21 +0000
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.6455.33 via Frontend Transport; Mon, 5 Jun 2023 19:18:30 +0000
+Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 5 Jun
- 2023 14:18:17 -0500
+ 2023 14:18:25 -0500
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB06.amd.com
+ (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 5 Jun
+ 2023 14:18:19 -0500
 Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
  (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34 via Frontend
- Transport; Mon, 5 Jun 2023 14:18:16 -0500
+ Transport; Mon, 5 Jun 2023 14:18:18 -0500
 From: <edward.cree@amd.com>
 To: <linux-net-drivers@amd.com>, <davem@davemloft.net>, <kuba@kernel.org>,
 	<pabeni@redhat.com>, <edumazet@google.com>
 CC: Edward Cree <ecree.xilinx@gmail.com>, <netdev@vger.kernel.org>,
 	<habetsm.xilinx@gmail.com>
-Subject: [PATCH net-next 5/6] sfc: neighbour lookup for TC encap action offload
-Date: Mon, 5 Jun 2023 20:17:38 +0100
-Message-ID: <286b3685eabf6cdd98021215b9b00020b442a42b.1685992503.git.ecree.xilinx@gmail.com>
+Subject: [PATCH net-next 6/6] sfc: generate encap headers for TC offload
+Date: Mon, 5 Jun 2023 20:17:39 +0100
+Message-ID: <672e66e6a4cf0f54917eddbca7c27a6f0d2823bf.1685992503.git.ecree.xilinx@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1685992503.git.ecree.xilinx@gmail.com>
 References: <cover.1685992503.git.ecree.xilinx@gmail.com>
@@ -85,362 +89,206 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT026:EE_|IA1PR12MB7709:EE_
-X-MS-Office365-Filtering-Correlation-Id: c0f8af7c-d4ea-4f02-535c-08db65f9a01c
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT047:EE_|MN2PR12MB4407:EE_
+X-MS-Office365-Filtering-Correlation-Id: 341d58f9-b24d-4ad9-2d17-08db65f9a59a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	ShDXKmxbbXczXlTeCgnnU2U4zwLXX9/EtF4dE2QgL+r/S/jVKb08TitpJT5Lpw+mXgN/+gybG8SehjK2WtIQqMhWmkkZ3QEcBnvz567Ak4bn2Wz2y/5yhwmX/hT9BF0NOSw03IqUCTLheGbNaTNirOmUaTZvs5121gefp7IJYIGRU4xWjUpHR/4QuzpTITVftV8uh1Jxbixf2N55C+3ZMWuiVHM/ic7Cut6SS9wJaZWxxDaqYtj1PVD/OSfxNry1c4Fxe7LrYUFvzS9m9NApB1s/lQSmhTTG24wq/ZiXq9f0OqGTw2RCJGiGCRApaasbFI4SMpKJ5lbuDjyqMURQO0I9VQedwRPa8+JzJ7YlhoVlrbSuMBCyq84UlHR91NyAPkd3aAkIuDNzn+w//Pu5vw1TgTZji/MKJfFsBKFIv7OuRFGZSKEr8AVoqbrkWK1gphhB56pJGTf82j4KiqYxrqXByLzAL+RXj+1SKdCF1ei1JYAs5DyfGcDJx/5AHlJDeRbFcEZtXNF8NbA56srRVuXIpbBQp1W6Im/W1psRBwfLguKi5Uf8owMM1/KSXbyd0T8NtN3zUg1/ylLH4tPj8o+ttAAA5uiEEPadGmaJabbMw98m83cWQkJCON4x118NB4m4q3lGo7ZBzKcNanXJN8/JXBgkF0DWjN331lftFQZdbok2WRKQUtwCHMamYsrL6vET9V+UvS6H0UTk6rZpql3aHGvU0K9f5bwwC92VFZ1Xq6nZEOA2auHLkGumOJSGcPJKohHwG2RBv+oIyH9Ocg==
+	J72nSa4eJDTlgpsHYqMe8juXRjv4SoTioR3ae3wWACz8Y8IMqsHrJuoBicnfUY7PmZNsB7o6+CHYcs/0WO/cmfCRNTdDa73Df9+NeV5ffVOELo0UZ2smQ+o2bgniM+GW9+vKhFEldGSdRBn7o3f+nIjwFkaDDlCfMaBa79ld8vEWeX463QF9uOpCVCqb740wmz7r/HpH7poAQdSkeX2gfIJ5WHajQmoUsgX/QSf9SO05PUf5v4k/NBwI07/9PR4pCDqp9GFbdbrfC2JPOMaBY7Lk2qxLuO3mUeWMyeq6NgTAsyXtNJmryhaHNyahKQvabncb2rILXQpiB1rqSEwS0yUsqfmtThaCL9ACMUY8geiBSIe6TvfVeBtUtsRkg3A83L2htz+I/J1CwMjcl2jLig5waHI61aKK1DVCcNesLLoPj8ZsXB4X+MtEvUwSLsjPBxwEcEHdsVCb6Nn57ERFgD4+63iDzzenyHTIS0Lmp0GSB89cOozjQAVTlTnh9N0l3u7jAQCA3i2gzmG/QdYG+WJd2QcJRtmEbv+hRjpdwExKIDbOScu4mCBC4o0V4a3B4UqhFwent+xU5LoyhNTT+3iv4WYU6zRNnG5WRn48kldomkrPj/jssHsC5J5x4aC42jHPKJpV+E2tJ+/R4Oa/DHL7M145QVFhrrAQ6Vn0yj219BmoltWbmZw+tyEM+OW/0lAddf034HIUH9w3mj1qV0KQhXQRTP4XRU2z0h3TfA5l4Pp4twgvA0JLJPe2UfrQxkVBMT++9bp7/G/z+IO8HQ==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(136003)(39860400002)(376002)(451199021)(40470700004)(46966006)(36840700001)(9686003)(26005)(40460700003)(40480700001)(36860700001)(81166007)(36756003)(47076005)(426003)(336012)(83380400001)(55446002)(86362001)(82310400005)(356005)(82740400003)(186003)(41300700001)(54906003)(110136005)(2906002)(30864003)(478600001)(70586007)(70206006)(8676002)(4326008)(8936002)(316002)(5660300002)(2876002)(6666004)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(136003)(39860400002)(346002)(451199021)(36840700001)(40470700004)(46966006)(54906003)(110136005)(40460700003)(478600001)(8936002)(8676002)(5660300002)(36756003)(2876002)(2906002)(86362001)(55446002)(82310400005)(4326008)(70206006)(70586007)(316002)(81166007)(82740400003)(40480700001)(356005)(41300700001)(83380400001)(47076005)(26005)(9686003)(186003)(336012)(426003)(36860700001)(6666004)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2023 19:18:21.0061
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2023 19:18:30.1882
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c0f8af7c-d4ea-4f02-535c-08db65f9a01c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 341d58f9-b24d-4ad9-2d17-08db65f9a59a
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
+	DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7709
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4407
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-	version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 From: Edward Cree <ecree.xilinx@gmail.com>
 
-For each neighbour we're interested in, create a struct efx_neigh_binder
- object which has a list of all the encap_actions using it.  When we
- receive a neighbouring update (through the netevent notifier), find the
- corresponding efx_neigh_binder and update all its users.
-Since the actual generation of encap headers is still only a stub, the
- resulting rules still get left on fallback actions.
+Support constructing VxLAN and GENEVE headers, on either IPv4 or IPv6,
+ using the neighbouring information obtained in encap->neigh to
+ populate the Ethernet header.
+Note that the ef100 hardware does not insert UDP checksums when
+ performing encap, so for IPv6 the remote endpoint will need to be
+ configured with udp6zerocsumrx or equivalent.
 
 Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/ef100_netdev.c     |  34 ++
- drivers/net/ethernet/sfc/net_driver.h       |   3 +
- drivers/net/ethernet/sfc/tc.c               |  12 +-
- drivers/net/ethernet/sfc/tc.h               |   7 +
- drivers/net/ethernet/sfc/tc_bindings.c      |  13 +
- drivers/net/ethernet/sfc/tc_bindings.h      |   2 +
- drivers/net/ethernet/sfc/tc_encap_actions.c | 444 +++++++++++++++++++-
- drivers/net/ethernet/sfc/tc_encap_actions.h |  52 +++
- 8 files changed, 561 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/sfc/tc_encap_actions.c | 194 +++++++++++++++++++-
+ 1 file changed, 185 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef100_netdev.c b/drivers/net/ethernet/sfc/ef100_netdev.c
-index 274f3a2562ad..7f7d560cb2b4 100644
---- a/drivers/net/ethernet/sfc/ef100_netdev.c
-+++ b/drivers/net/ethernet/sfc/ef100_netdev.c
-@@ -24,6 +24,7 @@
- #include "rx_common.h"
- #include "ef100_sriov.h"
- #include "tc_bindings.h"
-+#include "tc_encap_actions.h"
- #include "efx_devlink.h"
- 
- static void ef100_update_name(struct efx_nic *efx)
-@@ -300,14 +301,38 @@ int ef100_netdev_event(struct notifier_block *this,
- {
- 	struct efx_nic *efx = container_of(this, struct efx_nic, netdev_notifier);
- 	struct net_device *net_dev = netdev_notifier_info_to_dev(ptr);
-+	struct ef100_nic_data *nic_data = efx->nic_data;
-+	int err;
- 
- 	if (efx->net_dev == net_dev &&
- 	    (event == NETDEV_CHANGENAME || event == NETDEV_REGISTER))
- 		ef100_update_name(efx);
- 
-+	if (!nic_data->grp_mae)
-+		return NOTIFY_DONE;
-+	err = efx_tc_netdev_event(efx, event, net_dev);
-+	if (err & NOTIFY_STOP_MASK)
-+		return err;
-+
- 	return NOTIFY_DONE;
- }
- 
-+static int ef100_netevent_event(struct notifier_block *this,
-+				unsigned long event, void *ptr)
-+{
-+	struct efx_nic *efx = container_of(this, struct efx_nic, netevent_notifier);
-+	struct ef100_nic_data *nic_data = efx->nic_data;
-+	int err;
-+
-+	if (!nic_data->grp_mae)
-+		return NOTIFY_DONE;
-+	err = efx_tc_netevent_event(efx, event, ptr);
-+	if (err & NOTIFY_STOP_MASK)
-+		return err;
-+
-+	return NOTIFY_DONE;
-+};
-+
- static int ef100_register_netdev(struct efx_nic *efx)
- {
- 	struct net_device *net_dev = efx->net_dev;
-@@ -367,6 +392,7 @@ void ef100_remove_netdev(struct efx_probe_data *probe_data)
- 	rtnl_unlock();
- 
- 	unregister_netdevice_notifier(&efx->netdev_notifier);
-+	unregister_netevent_notifier(&efx->netevent_notifier);
- #if defined(CONFIG_SFC_SRIOV)
- 	if (!efx->type->is_vf)
- 		efx_ef100_pci_sriov_disable(efx, true);
-@@ -487,6 +513,14 @@ int ef100_probe_netdev(struct efx_probe_data *probe_data)
- 		goto fail;
- 	}
- 
-+	efx->netevent_notifier.notifier_call = ef100_netevent_event;
-+	rc = register_netevent_notifier(&efx->netevent_notifier);
-+	if (rc) {
-+		netif_err(efx, probe, efx->net_dev,
-+			  "Failed to register netevent notifier, rc=%d\n", rc);
-+		goto fail;
-+	}
-+
- 	efx_probe_devlink_unlock(efx);
- 	return rc;
- fail:
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index fcd51d3992fa..a7a22b019794 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -27,6 +27,7 @@
- #include <linux/mtd/mtd.h>
- #include <net/busy_poll.h>
- #include <net/xdp.h>
-+#include <net/netevent.h>
- 
- #include "enum.h"
- #include "bitfield.h"
-@@ -996,6 +997,7 @@ struct efx_mae;
-  * @xdp_rxq_info_failed: Have any of the rx queues failed to initialise their
-  *      xdp_rxq_info structures?
-  * @netdev_notifier: Netdevice notifier.
-+ * @netevent_notifier: Netevent notifier (for neighbour updates).
-  * @tc: state for TC offload (EF100).
-  * @devlink: reference to devlink structure owned by this device
-  * @dl_port: devlink port associated with the PF
-@@ -1183,6 +1185,7 @@ struct efx_nic {
- 	bool xdp_rxq_info_failed;
- 
- 	struct notifier_block netdev_notifier;
-+	struct notifier_block netevent_notifier;
- 	struct efx_tc_state *tc;
- 
- 	struct devlink *devlink;
-diff --git a/drivers/net/ethernet/sfc/tc.c b/drivers/net/ethernet/sfc/tc.c
-index 4177feced3e6..77acdb60381e 100644
---- a/drivers/net/ethernet/sfc/tc.c
-+++ b/drivers/net/ethernet/sfc/tc.c
-@@ -34,8 +34,8 @@ enum efx_encap_type efx_tc_indr_netdev_type(struct net_device *net_dev)
-  * May return NULL for the PF (us), or an error pointer for a device that
-  * isn't supported as a TC offload endpoint
-  */
--static struct efx_rep *efx_tc_flower_lookup_efv(struct efx_nic *efx,
--						struct net_device *dev)
-+struct efx_rep *efx_tc_flower_lookup_efv(struct efx_nic *efx,
-+					 struct net_device *dev)
- {
- 	struct efx_rep *efv;
- 
-@@ -71,7 +71,7 @@ static s64 efx_tc_flower_internal_mport(struct efx_nic *efx, struct efx_rep *efv
- }
- 
- /* Convert a driver-internal vport ID into an external device (wire or VF) */
--static s64 efx_tc_flower_external_mport(struct efx_nic *efx, struct efx_rep *efv)
-+s64 efx_tc_flower_external_mport(struct efx_nic *efx, struct efx_rep *efv)
- {
- 	u32 mport;
- 
-@@ -112,8 +112,10 @@ static void efx_tc_free_action_set(struct efx_nic *efx,
- 	}
- 	if (act->count)
- 		efx_tc_flower_put_counter_index(efx, act->count);
--	if (act->encap_md)
-+	if (act->encap_md) {
-+		list_del(&act->encap_user);
- 		efx_tc_flower_release_encap_md(efx, act->encap_md);
-+	}
- 	kfree(act);
- }
- 
-@@ -1115,6 +1117,7 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
- 					goto release;
- 				}
- 				act->encap_md = encap;
-+				list_add_tail(&act->encap_user, &encap->users);
- 				act->dest_mport = encap->dest_mport;
- 				act->deliver = 1;
- 				rc = efx_mae_alloc_action_set(efx, act);
-@@ -1123,6 +1126,7 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
- 					goto release;
- 				}
- 				list_add_tail(&act->list, &rule->acts.list);
-+				act->user = &rule->acts;
- 				act = NULL;
- 				if (fa->id == FLOW_ACTION_REDIRECT)
- 					break; /* end of the line */
-diff --git a/drivers/net/ethernet/sfc/tc.h b/drivers/net/ethernet/sfc/tc.h
-index 5a8f701b05c5..607429f8bb28 100644
---- a/drivers/net/ethernet/sfc/tc.h
-+++ b/drivers/net/ethernet/sfc/tc.h
-@@ -36,6 +36,8 @@ struct efx_tc_action_set {
- 	__be16 vlan_proto[2]; /* Ethertypes for vlan_push */
- 	struct efx_tc_counter_index *count;
- 	struct efx_tc_encap_action *encap_md; /* entry in tc_encap_ht table */
-+	struct list_head encap_user; /* entry on encap_md->users list */
-+	struct efx_tc_action_set_list *user; /* Only populated if encap_md */
- 	u32 dest_mport;
- 	u32 fw_id; /* index of this entry in firmware actions table */
- 	struct list_head list;
-@@ -151,6 +153,7 @@ enum efx_tc_rule_prios {
-  * @encap_ht: Hashtable of TC encap actions
-  * @encap_match_ht: Hashtable of TC encap matches
-  * @match_action_ht: Hashtable of TC match-action rules
-+ * @neigh_ht: Hashtable of neighbour watches (&struct efx_neigh_binder)
-  * @reps_mport_id: MAE port allocated for representor RX
-  * @reps_filter_uc: VNIC filter for representor unicast RX (promisc)
-  * @reps_filter_mc: VNIC filter for representor multicast RX (allmulti)
-@@ -181,6 +184,7 @@ struct efx_tc_state {
- 	struct rhashtable encap_ht;
- 	struct rhashtable encap_match_ht;
- 	struct rhashtable match_action_ht;
-+	struct rhashtable neigh_ht;
- 	u32 reps_mport_id, reps_mport_vport_id;
- 	s32 reps_filter_uc, reps_filter_mc;
- 	bool flush_counters;
-@@ -201,6 +205,9 @@ struct efx_tc_state {
- struct efx_rep;
- 
- enum efx_encap_type efx_tc_indr_netdev_type(struct net_device *net_dev);
-+struct efx_rep *efx_tc_flower_lookup_efv(struct efx_nic *efx,
-+					 struct net_device *dev);
-+s64 efx_tc_flower_external_mport(struct efx_nic *efx, struct efx_rep *efv);
- int efx_tc_configure_default_rule_rep(struct efx_rep *efv);
- void efx_tc_deconfigure_default_rule(struct efx_nic *efx,
- 				     struct efx_tc_flow_rule *rule);
-diff --git a/drivers/net/ethernet/sfc/tc_bindings.c b/drivers/net/ethernet/sfc/tc_bindings.c
-index c18d64519c2d..1b79c535c54e 100644
---- a/drivers/net/ethernet/sfc/tc_bindings.c
-+++ b/drivers/net/ethernet/sfc/tc_bindings.c
-@@ -10,6 +10,7 @@
- 
- #include "tc_bindings.h"
- #include "tc.h"
-+#include "tc_encap_actions.h"
- 
- struct efx_tc_block_binding {
- 	struct list_head list;
-@@ -226,3 +227,15 @@ int efx_tc_setup(struct net_device *net_dev, enum tc_setup_type type,
- 
- 	return -EOPNOTSUPP;
- }
-+
-+int efx_tc_netdev_event(struct efx_nic *efx, unsigned long event,
-+			struct net_device *net_dev)
-+{
-+	if (efx->type->is_vf)
-+		return NOTIFY_DONE;
-+
-+	if (event == NETDEV_UNREGISTER)
-+		efx_tc_unregister_egdev(efx, net_dev);
-+
-+	return NOTIFY_OK;
-+}
-diff --git a/drivers/net/ethernet/sfc/tc_bindings.h b/drivers/net/ethernet/sfc/tc_bindings.h
-index c210bb09150e..095ddeb59eb3 100644
---- a/drivers/net/ethernet/sfc/tc_bindings.h
-+++ b/drivers/net/ethernet/sfc/tc_bindings.h
-@@ -26,4 +26,6 @@ int efx_tc_indr_setup_cb(struct net_device *net_dev, struct Qdisc *sch,
- 			 void *cb_priv, enum tc_setup_type type,
- 			 void *type_data, void *data,
- 			 void (*cleanup)(struct flow_block_cb *block_cb));
-+int efx_tc_netdev_event(struct efx_nic *efx, unsigned long event,
-+			struct net_device *net_dev);
- #endif /* EFX_TC_BINDINGS_H */
 diff --git a/drivers/net/ethernet/sfc/tc_encap_actions.c b/drivers/net/ethernet/sfc/tc_encap_actions.c
-index c41493e659a3..601141190f42 100644
+index 601141190f42..9a51d91d16bd 100644
 --- a/drivers/net/ethernet/sfc/tc_encap_actions.c
 +++ b/drivers/net/ethernet/sfc/tc_encap_actions.c
-@@ -13,6 +13,14 @@
- #include "mae.h"
- #include <net/vxlan.h>
- #include <net/geneve.h>
-+#include <net/netevent.h>
-+#include <net/arp.h>
-+
-+static const struct rhashtable_params efx_neigh_ht_params = {
-+	.key_len	= offsetof(struct efx_neigh_binder, ha),
-+	.key_offset	= 0,
-+	.head_offset	= offsetof(struct efx_neigh_binder, linkage),
-+};
- 
- static const struct rhashtable_params efx_tc_encap_ht_params = {
- 	.key_len	= offsetofend(struct efx_tc_encap_action, key),
-@@ -28,9 +36,32 @@ static void efx_tc_encap_free(void *ptr, void *__unused)
- 	kfree(enc);
+@@ -239,12 +239,183 @@ static void efx_release_neigh(struct efx_nic *efx,
+ 	efx_free_neigh(neigh);
  }
  
-+static void efx_neigh_free(void *ptr, void *__unused)
-+{
-+	struct efx_neigh_binder *neigh = ptr;
+-static void efx_gen_encap_header(struct efx_tc_encap_action *encap)
++static void efx_gen_tun_header_eth(struct efx_tc_encap_action *encap, u16 proto)
+ {
+-	/* stub for now */
+-	encap->n_valid = false;
+-	memset(encap->encap_hdr, 0, sizeof(encap->encap_hdr));
+-	encap->encap_hdr_len = ETH_HLEN;
++	struct efx_neigh_binder *neigh = encap->neigh;
++	struct ethhdr *eth;
 +
-+	WARN_ON(refcount_read(&neigh->ref));
-+	WARN_ON(!list_empty(&neigh->users));
-+	put_net(neigh->net);
-+	dev_put(neigh->egdev);
-+	kfree(neigh);
++	encap->encap_hdr_len = sizeof(*eth);
++	eth = (struct ethhdr *)encap->encap_hdr;
++
++	if (encap->neigh->n_valid)
++		ether_addr_copy(eth->h_dest, neigh->ha);
++	else
++		eth_zero_addr(eth->h_dest);
++	ether_addr_copy(eth->h_source, neigh->egdev->dev_addr);
++	eth->h_proto = htons(proto);
 +}
 +
- int efx_tc_init_encap_actions(struct efx_nic *efx)
- {
--	return rhashtable_init(&efx->tc->encap_ht, &efx_tc_encap_ht_params);
-+	int rc;
++static void efx_gen_tun_header_ipv4(struct efx_tc_encap_action *encap, u8 ipproto, u8 len)
++{
++	struct efx_neigh_binder *neigh = encap->neigh;
++	struct ip_tunnel_key *key = &encap->key;
++	struct iphdr *ip;
 +
-+	rc = rhashtable_init(&efx->tc->neigh_ht, &efx_neigh_ht_params);
-+	if (rc < 0)
-+		goto fail_neigh_ht;
-+	rc = rhashtable_init(&efx->tc->encap_ht, &efx_tc_encap_ht_params);
-+	if (rc < 0)
-+		goto fail_encap_ht;
-+	return 0;
-+fail_encap_ht:
-+	rhashtable_destroy(&efx->tc->neigh_ht);
-+fail_neigh_ht:
-+	return rc;
- }
- 
- /* Only call this in init failure teardown.
-@@ -39,11 +70,333 @@ int efx_tc_init_encap_actions(struct efx_nic *efx)
- void efx_tc_destroy_encap_actions(struct efx_nic *efx)
- {
- 	rhashtable_destroy(&efx->tc->encap_ht);
-+	rhashtable_destroy(&efx->tc->neigh_ht);
- }
- 
- void efx_tc_fini_encap_actions(struct efx_nic *efx)
- {
- 	rhashtable_free_and_destroy(&efx->tc->encap_ht, efx_tc_encap_free, NULL);
-+	rhashtable_free_and_destroy(&efx->tc->neigh_ht, efx_neigh_free, NULL);
++	ip = (struct iphdr *)(encap->encap_hdr + encap->encap_hdr_len);
++	encap->encap_hdr_len += sizeof(*ip);
++
++	ip->daddr = key->u.ipv4.dst;
++	ip->saddr = key->u.ipv4.src;
++	ip->ttl = neigh->ttl;
++	ip->protocol = ipproto;
++	ip->version = 0x4;
++	ip->ihl = 0x5;
++	ip->tot_len = cpu_to_be16(ip->ihl * 4 + len);
++	ip_send_check(ip);
 +}
 +
-+static void efx_neigh_update(struct work_struct *work);
-+
-+static int efx_bind_neigh(struct efx_nic *efx,
-+			  struct efx_tc_encap_action *encap, struct net *net,
-+			  struct netlink_ext_ack *extack)
++#ifdef CONFIG_IPV6
++static void efx_gen_tun_header_ipv6(struct efx_tc_encap_action *encap, u8 ipproto, u8 len)
 +{
-+	struct efx_neigh_binder *neigh, *old;
-+	struct flowi6 flow6 = {};
-+	struct flowi4 flow4 = {};
-+	int rc;
++	struct efx_neigh_binder *neigh = encap->neigh;
++	struct ip_tunnel_key *key = &encap->key;
++	struct ipv6hdr *ip;
++
++	ip = (struct ipv6hdr *)(encap->encap_hdr + encap->encap_hdr_len);
++	encap->encap_hdr_len += sizeof(*ip);
++
++	ip6_flow_hdr(ip, key->tos, key->label);
++	ip->daddr = key->u.ipv6.dst;
++	ip->saddr = key->u.ipv6.src;
++	ip->hop_limit = neigh->ttl;
++	ip->nexthdr = ipproto;
++	ip->version = 0x6;
++	ip->payload_len = cpu_to_be16(len);
++}
++#endif
++
++static void efx_gen_tun_header_udp(struct efx_tc_encap_action *encap, u8 len)
++{
++	struct ip_tunnel_key *key = &encap->key;
++	struct udphdr *udp;
++
++	udp = (struct udphdr *)(encap->encap_hdr + encap->encap_hdr_len);
++	encap->encap_hdr_len += sizeof(*udp);
++
++	udp->dest = key->tp_dst;
++	udp->len = cpu_to_be16(sizeof(*udp) + len);
++}
++
++static void efx_gen_tun_header_vxlan(struct efx_tc_encap_action *encap)
++{
++	struct ip_tunnel_key *key = &encap->key;
++	struct vxlanhdr *vxlan;
++
++	vxlan = (struct vxlanhdr *)(encap->encap_hdr + encap->encap_hdr_len);
++	encap->encap_hdr_len += sizeof(*vxlan);
++
++	vxlan->vx_flags = VXLAN_HF_VNI;
++	vxlan->vx_vni = vxlan_vni_field(tunnel_id_to_key32(key->tun_id));
++}
++
++static void efx_gen_tun_header_geneve(struct efx_tc_encap_action *encap)
++{
++	struct ip_tunnel_key *key = &encap->key;
++	struct genevehdr *geneve;
++	u32 vni;
++
++	geneve = (struct genevehdr *)(encap->encap_hdr + encap->encap_hdr_len);
++	encap->encap_hdr_len += sizeof(*geneve);
++
++	geneve->proto_type = htons(ETH_P_TEB);
++	/* convert tun_id to host-endian so we can use host arithmetic to
++	 * extract individual bytes.
++	 */
++	vni = ntohl(tunnel_id_to_key32(key->tun_id));
++	geneve->vni[0] = vni >> 16;
++	geneve->vni[1] = vni >> 8;
++	geneve->vni[2] = vni;
++}
++
++#define vxlan_header_l4_len	(sizeof(struct udphdr) + sizeof(struct vxlanhdr))
++#define vxlan4_header_len	(sizeof(struct ethhdr) + sizeof(struct iphdr) + vxlan_header_l4_len)
++static void efx_gen_vxlan_header_ipv4(struct efx_tc_encap_action *encap)
++{
++	BUILD_BUG_ON(sizeof(encap->encap_hdr) < vxlan4_header_len);
++	efx_gen_tun_header_eth(encap, ETH_P_IP);
++	efx_gen_tun_header_ipv4(encap, IPPROTO_UDP, vxlan_header_l4_len);
++	efx_gen_tun_header_udp(encap, sizeof(struct vxlanhdr));
++	efx_gen_tun_header_vxlan(encap);
++}
++
++#define geneve_header_l4_len	(sizeof(struct udphdr) + sizeof(struct genevehdr))
++#define geneve4_header_len	(sizeof(struct ethhdr) + sizeof(struct iphdr) + geneve_header_l4_len)
++static void efx_gen_geneve_header_ipv4(struct efx_tc_encap_action *encap)
++{
++	BUILD_BUG_ON(sizeof(encap->encap_hdr) < geneve4_header_len);
++	efx_gen_tun_header_eth(encap, ETH_P_IP);
++	efx_gen_tun_header_ipv4(encap, IPPROTO_UDP, geneve_header_l4_len);
++	efx_gen_tun_header_udp(encap, sizeof(struct genevehdr));
++	efx_gen_tun_header_geneve(encap);
++}
++
++#ifdef CONFIG_IPV6
++#define vxlan6_header_len	(sizeof(struct ethhdr) + sizeof(struct ipv6hdr) + vxlan_header_l4_len)
++static void efx_gen_vxlan_header_ipv6(struct efx_tc_encap_action *encap)
++{
++	BUILD_BUG_ON(sizeof(encap->encap_hdr) < vxlan6_header_len);
++	efx_gen_tun_header_eth(encap, ETH_P_IPV6);
++	efx_gen_tun_header_ipv6(encap, IPPROTO_UDP, vxlan_header_l4_len);
++	efx_gen_tun_header_udp(encap, sizeof(struct vxlanhdr));
++	efx_gen_tun_header_vxlan(encap);
++}
++
++#define geneve6_header_len	(sizeof(struct ethhdr) + sizeof(struct ipv6hdr) + geneve_header_l4_len)
++static void efx_gen_geneve_header_ipv6(struct efx_tc_encap_action *encap)
++{
++	BUILD_BUG_ON(sizeof(encap->encap_hdr) < geneve6_header_len);
++	efx_gen_tun_header_eth(encap, ETH_P_IPV6);
++	efx_gen_tun_header_ipv6(encap, IPPROTO_UDP, geneve_header_l4_len);
++	efx_gen_tun_header_udp(encap, sizeof(struct genevehdr));
++	efx_gen_tun_header_geneve(encap);
++}
++#endif
++
++static void efx_gen_encap_header(struct efx_nic *efx,
++				 struct efx_tc_encap_action *encap)
++{
++	encap->n_valid = encap->neigh->n_valid;
 +
 +	/* GCC stupidly thinks that only values explicitly listed in the enum
 +	 * definition can _possibly_ be sensible case values, so without this
@@ -448,512 +296,63 @@ index c41493e659a3..601141190f42 100644
 +	 */
 +	switch ((int)encap->type) {
 +	case EFX_ENCAP_TYPE_VXLAN:
++		efx_gen_vxlan_header_ipv4(encap);
++		break;
 +	case EFX_ENCAP_TYPE_GENEVE:
-+		flow4.flowi4_proto = IPPROTO_UDP;
-+		flow4.fl4_dport = encap->key.tp_dst;
-+		flow4.flowi4_tos = encap->key.tos;
-+		flow4.daddr = encap->key.u.ipv4.dst;
-+		flow4.saddr = encap->key.u.ipv4.src;
++		efx_gen_geneve_header_ipv4(encap);
 +		break;
++#ifdef CONFIG_IPV6
 +	case EFX_ENCAP_TYPE_VXLAN | EFX_ENCAP_FLAG_IPV6:
-+	case EFX_ENCAP_TYPE_GENEVE | EFX_ENCAP_FLAG_IPV6:
-+		flow6.flowi6_proto = IPPROTO_UDP;
-+		flow6.fl6_dport = encap->key.tp_dst;
-+		flow6.flowlabel = ip6_make_flowinfo(encap->key.tos,
-+						    encap->key.label);
-+		flow6.daddr = encap->key.u.ipv6.dst;
-+		flow6.saddr = encap->key.u.ipv6.src;
++		efx_gen_vxlan_header_ipv6(encap);
 +		break;
++	case EFX_ENCAP_TYPE_GENEVE | EFX_ENCAP_FLAG_IPV6:
++		efx_gen_geneve_header_ipv6(encap);
++		break;
++#endif
 +	default:
-+		NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported encap type %d",
-+				       (int)encap->type);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	neigh = kzalloc(sizeof(*neigh), GFP_KERNEL_ACCOUNT);
-+	if (!neigh)
-+		return -ENOMEM;
-+	neigh->net = get_net(net);
-+	neigh->dst_ip = flow4.daddr;
-+	neigh->dst_ip6 = flow6.daddr;
-+
-+	old = rhashtable_lookup_get_insert_fast(&efx->tc->neigh_ht,
-+						&neigh->linkage,
-+						efx_neigh_ht_params);
-+	if (old) {
-+		/* don't need our new entry */
-+		put_net(neigh->net);
-+		kfree(neigh);
-+		if (!refcount_inc_not_zero(&old->ref))
-+			return -EAGAIN;
-+		/* existing entry found, ref taken */
-+		neigh = old;
-+	} else {
-+		/* New entry.  We need to initiate a lookup */
-+		struct neighbour *n;
-+		struct rtable *rt;
-+
-+		if (encap->type & EFX_ENCAP_FLAG_IPV6) {
-+#if IS_ENABLED(CONFIG_IPV6)
-+			struct dst_entry *dst;
-+
-+			dst = ipv6_stub->ipv6_dst_lookup_flow(net, NULL, &flow6,
-+							      NULL);
-+			rc = PTR_ERR_OR_ZERO(dst);
-+			if (rc) {
-+				NL_SET_ERR_MSG_MOD(extack, "Failed to lookup route for IPv6 encap");
-+				goto out_free;
-+			}
-+			dev_hold(neigh->egdev = dst->dev);
-+			neigh->ttl = ip6_dst_hoplimit(dst);
-+			n = dst_neigh_lookup(dst, &flow6.daddr);
-+			dst_release(dst);
-+#else
-+			/* We shouldn't ever get here, because if IPv6 isn't
-+			 * enabled how did someone create an IPv6 tunnel_key?
-+			 */
-+			rc = -EOPNOTSUPP;
-+			NL_SET_ERR_MSG_MOD(extack, "No IPv6 support (neigh bind)");
-+#endif
-+		} else {
-+			rt = ip_route_output_key(net, &flow4);
-+			if (IS_ERR_OR_NULL(rt)) {
-+				rc = PTR_ERR(rt);
-+				if (!rc)
-+					rc = -EIO;
-+				NL_SET_ERR_MSG_MOD(extack, "Failed to lookup route for encap");
-+				goto out_free;
-+			}
-+			dev_hold(neigh->egdev = rt->dst.dev);
-+			neigh->ttl = ip4_dst_hoplimit(&rt->dst);
-+			n = dst_neigh_lookup(&rt->dst, &flow4.daddr);
-+			ip_rt_put(rt);
-+		}
-+		if (!n) {
-+			rc = -ENETUNREACH;
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to lookup neighbour for encap");
-+			dev_put(neigh->egdev);
-+			goto out_free;
-+		}
-+		refcount_set(&neigh->ref, 1);
-+		INIT_LIST_HEAD(&neigh->users);
-+		read_lock_bh(&n->lock);
-+		ether_addr_copy(neigh->ha, n->ha);
-+		neigh->n_valid = n->nud_state & NUD_VALID;
-+		read_unlock_bh(&n->lock);
-+		rwlock_init(&neigh->lock);
-+		INIT_WORK(&neigh->work, efx_neigh_update);
-+		neigh->efx = efx;
-+		neigh->used = jiffies;
-+		if (!neigh->n_valid)
-+			/* Prod ARP to find us a neighbour */
-+			neigh_event_send(n, NULL);
-+		neigh_release(n);
-+	}
-+	/* Add us to this neigh */
-+	encap->neigh = neigh;
-+	list_add_tail(&encap->list, &neigh->users);
-+	return 0;
-+
-+out_free:
-+	/* cleanup common to several error paths */
-+	rhashtable_remove_fast(&efx->tc->neigh_ht, &neigh->linkage,
-+			       efx_neigh_ht_params);
-+	synchronize_rcu();
-+	put_net(net);
-+	kfree(neigh);
-+	return rc;
-+}
-+
-+static void efx_free_neigh(struct efx_neigh_binder *neigh)
-+{
-+	struct efx_nic *efx = neigh->efx;
-+
-+	rhashtable_remove_fast(&efx->tc->neigh_ht, &neigh->linkage,
-+			       efx_neigh_ht_params);
-+	synchronize_rcu();
-+	dev_put(neigh->egdev);
-+	put_net(neigh->net);
-+	kfree(neigh);
-+}
-+
-+static void efx_release_neigh(struct efx_nic *efx,
-+			      struct efx_tc_encap_action *encap)
-+{
-+	struct efx_neigh_binder *neigh = encap->neigh;
-+
-+	if (!neigh)
-+		return;
-+	list_del(&encap->list);
-+	encap->neigh = NULL;
-+	if (!refcount_dec_and_test(&neigh->ref))
-+		return; /* still in use */
-+	efx_free_neigh(neigh);
-+}
-+
-+static void efx_gen_encap_header(struct efx_tc_encap_action *encap)
-+{
-+	/* stub for now */
-+	encap->n_valid = false;
-+	memset(encap->encap_hdr, 0, sizeof(encap->encap_hdr));
-+	encap->encap_hdr_len = ETH_HLEN;
-+}
-+
-+static void efx_tc_update_encap(struct efx_nic *efx,
-+				struct efx_tc_encap_action *encap)
-+{
-+	struct efx_tc_action_set_list *acts, *fallback;
-+	struct efx_tc_flow_rule *rule;
-+	struct efx_tc_action_set *act;
-+	int rc;
-+
-+	if (encap->n_valid) {
-+		/* Make sure no rules are using this encap while we change it */
-+		list_for_each_entry(act, &encap->users, encap_user) {
-+			acts = act->user;
-+			if (WARN_ON(!acts)) /* can't happen */
-+				continue;
-+			rule = container_of(acts, struct efx_tc_flow_rule, acts);
-+			if (rule->fallback)
-+				fallback = rule->fallback;
-+			else /* fallback fallback: deliver to PF */
-+				fallback = &efx->tc->facts.pf;
-+			rc = efx_mae_update_rule(efx, fallback->fw_id,
-+						 rule->fw_id);
-+			if (rc)
-+				netif_err(efx, drv, efx->net_dev,
-+					  "Failed to update (f) rule %08x rc %d\n",
-+					  rule->fw_id, rc);
-+			else
-+				netif_dbg(efx, drv, efx->net_dev, "Updated (f) rule %08x\n",
-+					  rule->fw_id);
-+		}
-+	}
-+
-+	if (encap->neigh) {
-+		read_lock_bh(&encap->neigh->lock);
-+		efx_gen_encap_header(encap);
-+		read_unlock_bh(&encap->neigh->lock);
-+	} else {
-+		encap->n_valid = false;
-+		memset(encap->encap_hdr, 0, sizeof(encap->encap_hdr));
-+		encap->encap_hdr_len = ETH_HLEN;
-+	}
-+
-+	rc = efx_mae_update_encap_md(efx, encap);
-+	if (rc) {
-+		netif_err(efx, drv, efx->net_dev,
-+			  "Failed to update encap hdr %08x rc %d\n",
-+			  encap->fw_id, rc);
-+		return;
-+	}
-+	netif_dbg(efx, drv, efx->net_dev, "Updated encap hdr %08x\n",
-+		  encap->fw_id);
-+	if (!encap->n_valid)
-+		return;
-+	/* Update rule users: use the action if they are now ready */
-+	list_for_each_entry(act, &encap->users, encap_user) {
-+		acts = act->user;
-+		if (WARN_ON(!acts)) /* can't happen */
-+			continue;
-+		rule = container_of(acts, struct efx_tc_flow_rule, acts);
-+		if (!efx_tc_check_ready(efx, rule))
-+			continue;
-+		rc = efx_mae_update_rule(efx, acts->fw_id, rule->fw_id);
-+		if (rc)
++		/* unhandled encap type, can't happen */
++		if (net_ratelimit())
 +			netif_err(efx, drv, efx->net_dev,
-+				  "Failed to update rule %08x rc %d\n",
-+				  rule->fw_id, rc);
-+		else
-+			netif_dbg(efx, drv, efx->net_dev, "Updated rule %08x\n",
-+				  rule->fw_id);
-+	}
-+}
++				  "Bogus encap type %d, can't generate\n",
++				  encap->type);
 +
-+static void efx_neigh_update(struct work_struct *work)
-+{
-+	struct efx_neigh_binder *neigh = container_of(work, struct efx_neigh_binder, work);
-+	struct efx_tc_encap_action *encap;
-+	struct efx_nic *efx = neigh->efx;
-+
-+	mutex_lock(&efx->tc->mutex);
-+	list_for_each_entry(encap, &neigh->users, list)
-+		efx_tc_update_encap(neigh->efx, encap);
-+	/* release ref taken in efx_neigh_event() */
-+	if (refcount_dec_and_test(&neigh->ref))
-+		efx_free_neigh(neigh);
-+	mutex_unlock(&efx->tc->mutex);
-+}
-+
-+static int efx_neigh_event(struct efx_nic *efx, struct neighbour *n)
-+{
-+	struct efx_neigh_binder keys = {NULL}, *neigh;
-+	bool n_valid, ipv6 = false;
-+	char ha[ETH_ALEN];
-+	size_t keysize;
-+
-+	if (WARN_ON(!efx->tc))
-+		return NOTIFY_DONE;
-+
-+	if (n->tbl == &arp_tbl) {
-+		keysize = sizeof(keys.dst_ip);
-+#if IS_ENABLED(CONFIG_IPV6)
-+	} else if (n->tbl == ipv6_stub->nd_tbl) {
-+		ipv6 = true;
-+		keysize = sizeof(keys.dst_ip6);
-+#endif
-+	} else {
-+		return NOTIFY_DONE;
++		/* Use fallback action. */
++		encap->n_valid = false;
++		break;
 +	}
-+	if (!n->parms) {
-+		netif_warn(efx, drv, efx->net_dev, "neigh_event with no parms!\n");
-+		return NOTIFY_DONE;
-+	}
-+	keys.net = read_pnet(&n->parms->net);
-+	if (n->tbl->key_len != keysize) {
-+		netif_warn(efx, drv, efx->net_dev, "neigh_event with bad key_len %u\n",
-+			   n->tbl->key_len);
-+		return NOTIFY_DONE;
-+	}
-+	read_lock_bh(&n->lock); /* Get a consistent view */
-+	memcpy(ha, n->ha, ETH_ALEN);
-+	n_valid = (n->nud_state & NUD_VALID) && !n->dead;
-+	read_unlock_bh(&n->lock);
-+	if (ipv6)
-+		memcpy(&keys.dst_ip6, n->primary_key, n->tbl->key_len);
-+	else
-+		memcpy(&keys.dst_ip, n->primary_key, n->tbl->key_len);
-+	rcu_read_lock();
-+	neigh = rhashtable_lookup_fast(&efx->tc->neigh_ht, &keys,
-+				       efx_neigh_ht_params);
-+	if (!neigh || neigh->dying)
-+		/* We're not interested in this neighbour */
-+		goto done;
-+	write_lock_bh(&neigh->lock);
-+	if (n_valid == neigh->n_valid && !memcmp(ha, neigh->ha, ETH_ALEN)) {
-+		write_unlock_bh(&neigh->lock);
-+		/* Nothing has changed; no work to do */
-+		goto done;
-+	}
-+	neigh->n_valid = n_valid;
-+	memcpy(neigh->ha, ha, ETH_ALEN);
-+	write_unlock_bh(&neigh->lock);
-+	if (refcount_inc_not_zero(&neigh->ref)) {
-+		rcu_read_unlock();
-+		if (!schedule_work(&neigh->work))
-+			/* failed to schedule, release the ref we just took */
-+			if (refcount_dec_and_test(&neigh->ref))
-+				efx_free_neigh(neigh);
-+	} else {
-+done:
-+		rcu_read_unlock();
-+	}
-+	return NOTIFY_DONE;
  }
  
- bool efx_tc_check_ready(struct efx_nic *efx, struct efx_tc_flow_rule *rule)
-@@ -54,7 +407,7 @@ bool efx_tc_check_ready(struct efx_nic *efx, struct efx_tc_flow_rule *rule)
- 	 * neighbour info for the outer Ethernet header.
- 	 */
- 	list_for_each_entry(act, &rule->acts.list, list)
--		if (act->encap_md) /* neigh bindings not implemented yet */
-+		if (act->encap_md && !act->encap_md->n_valid)
- 			return false;
- 	return true;
- }
-@@ -65,6 +418,7 @@ struct efx_tc_encap_action *efx_tc_flower_create_encap_md(
- {
- 	enum efx_encap_type type = efx_tc_indr_netdev_type(egdev);
- 	struct efx_tc_encap_action *encap, *old;
-+	struct efx_rep *to_efv;
- 	s64 rc;
- 
- 	if (type == EFX_ENCAP_TYPE_NONE) {
-@@ -98,6 +452,7 @@ struct efx_tc_encap_action *efx_tc_flower_create_encap_md(
- 		return ERR_PTR(-ENOMEM);
- 	encap->type = type;
- 	encap->key = info->key;
-+	INIT_LIST_HEAD(&encap->users);
- 	old = rhashtable_lookup_get_insert_fast(&efx->tc->encap_ht,
- 						&encap->linkage,
- 						efx_tc_encap_ht_params);
-@@ -110,9 +465,42 @@ struct efx_tc_encap_action *efx_tc_flower_create_encap_md(
- 		return old;
+ static void efx_tc_update_encap(struct efx_nic *efx,
+@@ -278,14 +449,19 @@ static void efx_tc_update_encap(struct efx_nic *efx,
+ 		}
  	}
  
-+	rc = efx_bind_neigh(efx, encap, dev_net(egdev), extack);
-+	if (rc < 0)
-+		goto out_remove;
-+	to_efv = efx_tc_flower_lookup_efv(efx, encap->neigh->egdev);
-+	if (IS_ERR(to_efv)) {
-+		/* neigh->egdev isn't ours */
-+		NL_SET_ERR_MSG_MOD(extack, "Tunnel egress device not on switch");
-+		rc = PTR_ERR(to_efv);
-+		goto out_release;
-+	}
-+	rc = efx_tc_flower_external_mport(efx, to_efv);
-+	if (rc < 0) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to identify tunnel egress m-port");
-+		goto out_release;
-+	}
-+	encap->dest_mport = rc;
-+	read_lock_bh(&encap->neigh->lock);
-+	efx_gen_encap_header(encap);
-+	read_unlock_bh(&encap->neigh->lock);
++	/* Make sure we don't leak arbitrary bytes on the wire;
++	 * set an all-0s ethernet header.  A successful call to
++	 * efx_gen_encap_header() will overwrite this.
++	 */
++	memset(encap->encap_hdr, 0, sizeof(encap->encap_hdr));
++	encap->encap_hdr_len = ETH_HLEN;
 +
-+	rc = efx_mae_allocate_encap_md(efx, encap);
-+	if (rc < 0) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to write tunnel header to hw");
-+		goto out_release;
-+	}
-+
- 	/* ref and return */
- 	refcount_set(&encap->ref, 1);
- 	return encap;
-+out_release:
-+	efx_release_neigh(efx, encap);
-+out_remove:
-+	rhashtable_remove_fast(&efx->tc->encap_ht, &encap->linkage,
-+			       efx_tc_encap_ht_params);
-+	kfree(encap);
-+	return ERR_PTR(rc);
- }
+ 	if (encap->neigh) {
+ 		read_lock_bh(&encap->neigh->lock);
+-		efx_gen_encap_header(encap);
++		efx_gen_encap_header(efx, encap);
+ 		read_unlock_bh(&encap->neigh->lock);
+ 	} else {
+ 		encap->n_valid = false;
+-		memset(encap->encap_hdr, 0, sizeof(encap->encap_hdr));
+-		encap->encap_hdr_len = ETH_HLEN;
+ 	}
  
- void efx_tc_flower_release_encap_md(struct efx_nic *efx,
-@@ -120,7 +508,59 @@ void efx_tc_flower_release_encap_md(struct efx_nic *efx,
- {
- 	if (!refcount_dec_and_test(&encap->ref))
- 		return; /* still in use */
-+	efx_release_neigh(efx, encap);
- 	rhashtable_remove_fast(&efx->tc->encap_ht, &encap->linkage,
- 			       efx_tc_encap_ht_params);
-+	efx_mae_free_encap_md(efx, encap);
- 	kfree(encap);
- }
-+
-+static void efx_tc_remove_neigh_users(struct efx_nic *efx, struct efx_neigh_binder *neigh)
-+{
-+	struct efx_tc_encap_action *encap, *next;
-+
-+	list_for_each_entry_safe(encap, next, &neigh->users, list) {
-+		/* Should cause neigh usage count to fall to zero, freeing it */
-+		efx_release_neigh(efx, encap);
-+		/* The encap has lost its neigh, so it's now unready */
-+		efx_tc_update_encap(efx, encap);
-+	}
-+}
-+
-+void efx_tc_unregister_egdev(struct efx_nic *efx, struct net_device *net_dev)
-+{
-+	struct efx_neigh_binder *neigh;
-+	struct rhashtable_iter walk;
-+
-+	mutex_lock(&efx->tc->mutex);
-+	rhashtable_walk_enter(&efx->tc->neigh_ht, &walk);
-+	rhashtable_walk_start(&walk);
-+	while ((neigh = rhashtable_walk_next(&walk)) != NULL) {
-+		if (IS_ERR(neigh))
-+			continue;
-+		if (neigh->egdev != net_dev)
-+			continue;
-+		neigh->dying = true;
-+		rhashtable_walk_stop(&walk);
-+		synchronize_rcu(); /* Make sure any updates see dying flag */
-+		efx_tc_remove_neigh_users(efx, neigh); /* might sleep */
-+		rhashtable_walk_start(&walk);
-+	}
-+	rhashtable_walk_stop(&walk);
-+	rhashtable_walk_exit(&walk);
-+	mutex_unlock(&efx->tc->mutex);
-+}
-+
-+int efx_tc_netevent_event(struct efx_nic *efx, unsigned long event,
-+			  void *ptr)
-+{
-+	if (efx->type->is_vf)
-+		return NOTIFY_DONE;
-+
-+	switch (event) {
-+	case NETEVENT_NEIGH_UPDATE:
-+		return efx_neigh_event(efx, ptr);
-+	default:
-+		return NOTIFY_DONE;
-+	}
-+}
-diff --git a/drivers/net/ethernet/sfc/tc_encap_actions.h b/drivers/net/ethernet/sfc/tc_encap_actions.h
-index 1a3679e81f09..79608d7e3deb 100644
---- a/drivers/net/ethernet/sfc/tc_encap_actions.h
-+++ b/drivers/net/ethernet/sfc/tc_encap_actions.h
-@@ -15,6 +15,50 @@
- #include <linux/refcount.h>
- #include <net/tc_act/tc_tunnel_key.h>
+ 	rc = efx_mae_update_encap_md(efx, encap);
+@@ -482,7 +658,7 @@ struct efx_tc_encap_action *efx_tc_flower_create_encap_md(
+ 	}
+ 	encap->dest_mport = rc;
+ 	read_lock_bh(&encap->neigh->lock);
+-	efx_gen_encap_header(encap);
++	efx_gen_encap_header(efx, encap);
+ 	read_unlock_bh(&encap->neigh->lock);
  
-+/**
-+ * struct efx_neigh_binder - driver state for a neighbour entry
-+ * @net: the network namespace in which this neigh resides
-+ * @dst_ip: the IPv4 destination address resolved by this neigh
-+ * @dst_ip6: the IPv6 destination address resolved by this neigh
-+ * @ha: the hardware (Ethernet) address of the neighbour
-+ * @n_valid: true if the neighbour is in NUD_VALID state
-+ * @lock: protects @ha and @n_valid
-+ * @ttl: Time To Live associated with the route used
-+ * @dying: set when egdev is going away, to skip further updates
-+ * @egdev: egress device from the route lookup.  Holds a reference
-+ * @ref: counts encap actions referencing this entry
-+ * @used: jiffies of last time traffic hit any encap action using this.
-+ *      When counter reads update this, a new neighbour event is sent to
-+ *      indicate that the neighbour entry is still in use.
-+ * @users: list of &struct efx_tc_encap_action
-+ * @linkage: entry in efx->neigh_ht (keys are @net, @dst_ip, @dst_ip6).
-+ * @work: processes neighbour state changes, updates the encap actions
-+ * @efx: owning NIC instance.
-+ *
-+ * Associates a neighbour entry with the encap actions that are
-+ * interested in it, allowing the latter to be updated when the
-+ * neighbour details change.
-+ * Whichever of @dst_ip and @dst_ip6 is not in use will be all-zeroes,
-+ * this distinguishes IPv4 from IPv6 entries.
-+ */
-+struct efx_neigh_binder {
-+	struct net *net;
-+	__be32 dst_ip;
-+	struct in6_addr dst_ip6;
-+	char ha[ETH_ALEN];
-+	bool n_valid;
-+	rwlock_t lock;
-+	u8 ttl;
-+	bool dying;
-+	struct net_device *egdev;
-+	refcount_t ref;
-+	unsigned long used;
-+	struct list_head users;
-+	struct rhash_head linkage;
-+	struct work_struct work;
-+	struct efx_nic *efx;
-+};
-+
- /* This limit is arbitrary; current hardware (SN1022) handles encap headers
-  * of up to 126 bytes, but that limit is not enshrined in the MCDI protocol.
-  */
-@@ -24,7 +68,11 @@ struct efx_tc_encap_action {
- 	struct ip_tunnel_key key; /* 52 bytes */
- 	u32 dest_mport; /* is copied into struct efx_tc_action_set */
- 	u8 encap_hdr_len;
-+	bool n_valid;
- 	u8 encap_hdr[EFX_TC_MAX_ENCAP_HDR];
-+	struct efx_neigh_binder *neigh;
-+	struct list_head list; /* entry on neigh->users list */
-+	struct list_head users; /* action sets using this encap_md */
- 	struct rhash_head linkage; /* efx->tc_encap_ht */
- 	refcount_t ref;
- 	u32 fw_id; /* index of this entry in firmware encap table */
-@@ -44,4 +92,8 @@ struct efx_tc_encap_action *efx_tc_flower_create_encap_md(
- void efx_tc_flower_release_encap_md(struct efx_nic *efx,
- 				    struct efx_tc_encap_action *encap);
- 
-+void efx_tc_unregister_egdev(struct efx_nic *efx, struct net_device *net_dev);
-+int efx_tc_netevent_event(struct efx_nic *efx, unsigned long event,
-+			  void *ptr);
-+
- #endif /* EFX_TC_ENCAP_ACTIONS_H */
+ 	rc = efx_mae_allocate_encap_md(efx, encap);
 
