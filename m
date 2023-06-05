@@ -1,175 +1,127 @@
-Return-Path: <netdev+bounces-7975-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7976-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 999027224E9
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 13:52:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 8BE087224EB
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 13:52:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 837962810D8
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:52:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2232F281177
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:52:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8A61417AB8;
-	Mon,  5 Jun 2023 11:52:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3CABA17ACC;
+	Mon,  5 Jun 2023 11:52:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71D0B11C9B
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 11:52:04 +0000 (UTC)
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2104.outbound.protection.outlook.com [40.107.96.104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1492ED3
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 04:51:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VNIiKHN3xhJWP5RiuC33KKqnRIg50uLoF+ta+lyLeEcROiMPE0C0qEBFlmht4bLyYHZlt0kvdjEnu1ptpBc9jtMaYhiRY1EDttG5Wd5wxeibMi6EBNmGBDDAJPEiBTw5lDpAE4RYLh0WlsNEA+F4V18xoy9/61lK4qO5Sv3ogjiiXvIw/nyfp2hkxNwJjSqnEty7SqA2nrZQEhlgLXQgoKb8jMubcfMZ5DHpHI2bGCYTyyEzPjLh+umPuM/fia25US1bTlTXL6jAtz9l2g08BegQ29a0m4cUrGFKgvIspI/9boRydHogaHq41D5+XF1g3b/3e1Em1H32St9ne91O+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UxlTuSqthydB0Y72H5ksX2bPClzyaZ7ILOrci045wVg=;
- b=isIVw0BBJuySY/tKaFC5HyXWgaJFu+xEWn99HmHDzN7hp1yJi8bSx2koQstKI2Y9V4IugRg88teTpVrfEvJ3Xpb2yYFrzq8rm0EYiORy0FeTFRhhmmmvey24dCcbMHv1PsfNvnmSMMw6kzUzSxjzUqEUvzFZD1ph31uWZDN+3FjBFSV9OWBY6PKpU2M1HFUgjP5S1tIZGviBqi1y/st9fVxfQDFclVX3AlTFUsJl8DvMTyeFF43Mee3hW4bRpGPeH+nZg0uTiJk9CIh3tpWUGYNMLUquhQ7jNy3tTSertzZjknmJ3PswIhnFHjKdjoVV+p8nS00Rfme26XTsh5t6ug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30D3DF9E8
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 11:52:20 +0000 (UTC)
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8B8E6
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 04:52:18 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id 98e67ed59e1d1-2563aaceda9so1623097a91.1
+        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 04:52:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UxlTuSqthydB0Y72H5ksX2bPClzyaZ7ILOrci045wVg=;
- b=u99MKq0LfPx+S5v2ynYZwJaGVr2ESRMOPt2UEpyIw7mTp+LsJ7VsgpnfREb3P72ma6eLjOEod5PfcWT+ecqwrS+krz6dyzwlw20yf+EyQqi6DtIpdgcOT8Yi0fgoApeagDXb8HtWoZ2Xl2KZWNvlQD2ipY04DDM0vguxY3BkZIU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BY5PR13MB4424.namprd13.prod.outlook.com (2603:10b6:a03:1d9::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Mon, 5 Jun
- 2023 11:51:54 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6455.030; Mon, 5 Jun 2023
- 11:51:54 +0000
-Date: Mon, 5 Jun 2023 13:51:48 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-	pabeni@redhat.com
-Subject: Re: [PATCH net-next 2/4] tools: ynl: user space helpers
-Message-ID: <ZH3MVCH766QotC5K@corigine.com>
-References: <20230603052547.631384-1-kuba@kernel.org>
- <20230603052547.631384-3-kuba@kernel.org>
- <ZHtSbn1oHl4KcfUL@corigine.com>
- <20230604110034.08015f1b@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230604110034.08015f1b@kernel.org>
-X-ClientProxiedBy: AS4P190CA0044.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:5d1::8) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=bytedance.com; s=google; t=1685965938; x=1688557938;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=JyOkEllK607lv9MCxWlko/8/h878DjdboSx2KDG6rPU=;
+        b=eabMDt3oXuyeHqL6H95VDxv5qnDlp7C/hXkIKi9mE5RBAoY3t66MibAVJ1OyJOW3RI
+         LESpN9wTXsuJaXmyQk+hrcImYockzT2vENkn0uB59YWGFQT7hU0htS22r94rGoWZJ1YS
+         eoMFe+spUeV1gW22xOKgrGgYhj/hXExeWe7dvKuanyNNdN57KqW3msbApkAjrVNHxOtH
+         2EV24MAFpyA7wBZbT8EjHQGq6521MTjFuENHeMbCjF6EV2PW0DHne8ZVihA3/f7CW1fQ
+         8Bv+F4Ee4r1/xl5PFWZJhZqmG6IGRtjbIuE4DZGEOct1kfALIIWaFsW2cZWi2tbimrFI
+         H4JQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685965938; x=1688557938;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=JyOkEllK607lv9MCxWlko/8/h878DjdboSx2KDG6rPU=;
+        b=aifKdVkYL9f2Ln6wFKvpsz4jZX10GpCs+yCocDuAua7HtJVGTof/MswxCtScqPGMEr
+         w7AGv81U4LbLcswe082ojSTPVMOf4FFRfEQMi5w9KzomxZWJ+AlQNP4GZv4EeWBoMlBE
+         GmiLlttHT2uDl1zsvO+lhuM4StJxfPE8go1EvPBsYcdsir42X1PomJGFApuw+2XqHYNq
+         OT4qWep++KM8I57yRu+xz37bJV3/W9vYdWzcdBAjMd4GbL2WO6p9SOl+6IrdW/in5zLV
+         x9ukmgLGPsMNjv5RqDDgy2liutTyU2ZFhv4cp9pGkRD6BCoQgwmUOjKxov3Sy3Q4Hqh+
+         f5NA==
+X-Gm-Message-State: AC+VfDwAeZWmTWH/aAtBr4JT4zL0vgHe9ttGj8HwnkLJLBVdHpXn8AgM
+	W6iqqrY3W4gH4rTsM6yF/M08wA==
+X-Google-Smtp-Source: ACHHUZ7Fn8Dm7pVHQjYxiahDIQS4qNAmj5o8qKZRySqarCR1X7QLuv0XMXLIlT9L0JsS4a61YdP0fA==
+X-Received: by 2002:a17:90a:be10:b0:256:c324:7ae4 with SMTP id a16-20020a17090abe1000b00256c3247ae4mr2478790pjs.16.1685965937953;
+        Mon, 05 Jun 2023 04:52:17 -0700 (PDT)
+Received: from [10.254.80.225] ([139.177.225.255])
+        by smtp.gmail.com with ESMTPSA id p6-20020a17090a284600b00247735d1463sm6089046pjf.39.2023.06.05.04.52.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 05 Jun 2023 04:52:17 -0700 (PDT)
+Message-ID: <2a45da69-b164-0a4f-eb45-fe57f301bc4b@bytedance.com>
+Date: Mon, 5 Jun 2023 19:52:10 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY5PR13MB4424:EE_
-X-MS-Office365-Filtering-Correlation-Id: 896cba1e-c45b-4218-f918-08db65bb419c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	hxK2iI8ntUdm69ges8Xu30la/QrrzEeqVxbT0DsX8EKBgLakZIait5nFGmfsGCQOR+z9dVbcOtuVZk1XFD1LOVPAbnWCX2qYFd+F+oYnjLjsiFravSawSyH/NlY3KWLKrxIRi/a5FrT36IPDw3devmDj64fcTHN1xh+6rlTeATPD9Go/Ak25gYX6XN/WlgLPw9QJ66OxrgE02lltqdDrwi2uBk1SdhyBp6Zv2hIwDuG7Ucz3CBya51VWZVWZqLG/p3Yy6r1iUdWYR79JOYFI42NWNc+dam86crRBLMR9Zgpk8hXvBtcY5vB7uf6ac5EGlJdaNPgB+sUd3ZG7vAUZPq2HsOK14Sa5MJoVpG+k+DpVutDbTTqBkntL3V0EZ3TWJV3hpTMyDutqYnrgvlFUfz2TC9mVvgwFUdn40wiamiM2szfH1oDnEw2ArmGCUSTBZmIgtD6ywjWGyvlpy+++NDCLB7bbZYpmQ9ArbmTweMkT9cLlWO9pIsMNIZ0e0iVTGGVKCxFGhPSZ9McGoYSMTxAqkZGlxHuCuNcJCAcs+gvfcIGTfJStJyI2EE5mOkvN
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(39830400003)(376002)(396003)(366004)(346002)(451199021)(36756003)(2906002)(86362001)(44832011)(5660300002)(83380400001)(6666004)(6486002)(186003)(6506007)(6512007)(478600001)(6916009)(316002)(38100700002)(66476007)(4326008)(66946007)(66556008)(2616005)(41300700001)(8936002)(8676002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?2zfdEx/QMP37mglxe7JDZkKrHb60YE9h9Bzr8E8J5Dl/LpTs8Q9gu6bvaHbi?=
- =?us-ascii?Q?eR2tUJgPpMeLuPIJiDKjTdvNeLmWvauGO926pVJ1TfiXRzwWoo+ymIXtdiAQ?=
- =?us-ascii?Q?nH5S5EzjqtsnxzjPNR4fsAUisIYb3PTeQh4l0PDJR7rg4zZay+uZN5NEYWCp?=
- =?us-ascii?Q?Vi7rfE/pTCROebgpFA+dYMMc4mBi0lSA+Sm6u0XKysEyAktAO3t+7vV1aY2T?=
- =?us-ascii?Q?n7WWz3nGdhUa2ZrP33/A5zQvMqx2WXEdJTEtY9wBWKHDNqbJACd0hGk3Js03?=
- =?us-ascii?Q?PAgzAjINwiDRoo8kP0ti6pvor4VoMymqXyLQ4kGXatuTvfKYs8uoiCEzv+mF?=
- =?us-ascii?Q?aGN68hhoglXwNpvld0SyVB57SieRpTH5WkzO5oxb7rWGMe2pvybj4NoR03Tu?=
- =?us-ascii?Q?KJ3yizhP0gzB75f10umLUFby5tJUeq1oKdWCLtt9fB9RuX/0/sV8woFat71d?=
- =?us-ascii?Q?xvc+gIBc6tVPMb7VJ6ZxPF6tMdHhqBymYkmMuiB4dVwdERI0lTw01FPhiLCy?=
- =?us-ascii?Q?tvF9j+n7VQRxHdbmf4hI3q95OrHpnzAmdWkD6j0Rzu10faMoTBKOjd8eMtw5?=
- =?us-ascii?Q?MpX10R/K797VzjG1YJXOUXJOxYmZ808Xexhg4XzpKn7vsOdu+rAeBWe6lEOO?=
- =?us-ascii?Q?PgScvQ1YKQvO6eMQtSfYGgRZSCs6eAvOc8F1gpic21s4rXnKjjymOOYppHM1?=
- =?us-ascii?Q?iUJVROfQ4ROB3P64xsw9s80UL5K9odgIenc1lh9ZewL3oRq41J7SikXWC13y?=
- =?us-ascii?Q?hep3BvyMzqZAsWDFSWWIZt9999m716UC6mmNEZ4YYRs4bw4I3YeHQ/6nUQTr?=
- =?us-ascii?Q?KL3u3yF5L+GL+X/tx6gU/E7fSUPe4fR2pAMwwEmavvl8VJaIXrUcFH9b40Tq?=
- =?us-ascii?Q?vQAP4QRSE6pKD2Vt9h2eAeu8+NClw6ildSrF0JI6974EB2TF9HgJYdnNBouN?=
- =?us-ascii?Q?78c8C7XQ8nehr6oOKKIBG3E4q5OEuPRQlfPf57Tnax7+/1JFH5pFXn2NOv2P?=
- =?us-ascii?Q?x6a+nWjPLKzmT2nvNm+sQ96mDCAi3z4ovJBBqLwEL3L8KXHPTl0MaaNV5t7u?=
- =?us-ascii?Q?884McHP4ijiuXwrDZWwK4K5zYlYnOu+2w4tin94dQOPIq2h4g6oUb41v3qQp?=
- =?us-ascii?Q?CDK0bOAo07umSF+dzsQFJQ9BffVsVtGrlonEPtuuA2QtzAQXBukHKoLFfoT1?=
- =?us-ascii?Q?o+j05lMa14ECwhg/GpwytuffZrc7hXjyKDhCmfd6SgLinJiAOBVeXbzqvzA3?=
- =?us-ascii?Q?K1tX/+EAooNVR/9lGX7cleAoMrzPqjNkOmrpFNE5fWVuMzS7E5rqd+3h/7jW?=
- =?us-ascii?Q?IOpXKiQq/EU2EXTmF8nnw91WZBzDijgX1gPiUljMJQj5rLlOfwMHWqi2Iekf?=
- =?us-ascii?Q?HMDuV/dhgnw29N005EFhSYnfSrLY/Avk88l7qfFXastZOafxMPhubXSAGuAW?=
- =?us-ascii?Q?HlDhwdYuzC3qRnnQyQ+ILJWvQW2GoaobWs1lUDAQi++QgJavNAr8/cExXrQo?=
- =?us-ascii?Q?u23uCbRoYYabOdWkAvnj16ggwkDoZFuNLcMYcAvobcebenGnQhuL1viFeNQb?=
- =?us-ascii?Q?LOduOb9/2SPjru82yFMJzPzLQWV4g9c8pSCwh0XpUtX/j65EMiNeP+s0BCE/?=
- =?us-ascii?Q?yB3pUfcQizXsZRtSjv2yEpr/Uhxgl+xinbSMkfxMCRDKTzFBJC7QdnnLBHp9?=
- =?us-ascii?Q?+wCJdw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 896cba1e-c45b-4218-f918-08db65bb419c
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2023 11:51:53.8702
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XyaQm2XWUHUv5qP28iSiGmkFcoxvO9/UQpKWOPtn7j5O0onW3coWomLjHFo03VqfZAWXC0hEk2s6xRQ7vk6/wj6KNwl/d6mRViuKyAhEBmk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR13MB4424
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.11.2
+Subject: Re: Re: [PATCH net-next v5 1/3] net-memcg: Fold dependency into memcg
+ pressure cond
+Content-Language: en-US
+To: Shakeel Butt <shakeelb@google.com>
+Cc: "David S . Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>,
+ Michal Hocko <mhocko@kernel.org>, Vladimir Davydov <vdavydov.dev@gmail.com>,
+ Muchun Song <muchun.song@linux.dev>, Simon Horman
+ <simon.horman@corigine.com>, netdev@vger.kernel.org, linux-mm@kvack.org,
+ cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230602081135.75424-1-wuyun.abel@bytedance.com>
+ <20230602081135.75424-2-wuyun.abel@bytedance.com>
+ <20230602202549.7nvrv4bx4cu7qxdn@google.com>
+From: Abel Wu <wuyun.abel@bytedance.com>
+In-Reply-To: <20230602202549.7nvrv4bx4cu7qxdn@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Sun, Jun 04, 2023 at 11:00:34AM -0700, Jakub Kicinski wrote:
-> On Sat, 3 Jun 2023 16:47:10 +0200 Simon Horman wrote:
-> > > +/**
-> > > + * struct ynl_error - error encountered by YNL
-> > > + * Users should interact with the err member of struct ynl_sock directly.
-> > > + * The main exception to that rule is ynl_sock_create().  
-> > 
-> > nit: As this is a kernel doc, maybe document the structure members here.
-> > 
-> > > + */
-> > > +struct ynl_error {
-> > > +	enum ynl_error_code code;
-> > > +	unsigned int attr_offs;
-> > > +	char msg[512];
-> > > +};
-> > > +
-> > > +/**
-> > > + * struct ynl_family - YNL family info
-> > > + * Family description generated by codegen.  
-> > 
-> > And here.
-> > 
-> > > + */
-> > > +struct ynl_family {
-> > > +	const char *name;
-> > > +	const struct ynl_ntf_info *ntf_info;
-> > > +	unsigned int ntf_info_size;
-> > > +};  
-> > 
-> > ...
-> > 
-> > > +/**
-> > > + * ynl_has_ntf() - check if socket has *parsed* notifications
-> > > + * Note that this does not take into account notifications sitting
-> > > + * in netlink socket, just the notifications which have already been
-> > > + * read and parsed (e.g. during a ynl_ntf_check() call).  
-> > 
-> > And the parameter of this function here.
+On 6/3/23 4:25 AM, Shakeel Butt wrote:
+> On Fri, Jun 02, 2023 at 04:11:33PM +0800, Abel Wu wrote:
+>> The callers of mem_cgroup_under_socket_pressure() should always make
+>> sure that (mem_cgroup_sockets_enabled && sk->sk_memcg) is true. So
+>> instead of coding around all the callsites, put the dependencies into
+>> mem_cgroup_under_socket_pressure() to avoid redundancy and possibly
+>> bugs.
+>>
+>> This change might also introduce slight function call overhead *iff*
+>> the function gets expanded in the future. But for now this change
+>> doesn't make binaries different (checked by vimdiff) except the one
+>> net/ipv4/tcp_input.o (by scripts/bloat-o-meter), which is probably
+>> negligible to performance:
+>>
+>> add/remove: 0/0 grow/shrink: 1/2 up/down: 5/-5 (0)
+>> Function                                     old     new   delta
+>> tcp_grow_window                              573     578      +5
+>> tcp_try_rmem_schedule                       1083    1081      -2
+>> tcp_check_space                              324     321      -3
+>> Total: Before=44647, After=44647, chg +0.00%
+>>
+>> So folding the dependencies into mem_cgroup_under_socket_pressure()
+>> is generally a good thing and provides better readablility.
+>>
 > 
-> Thanks, not sure why my brain considered this "not really kernel code
-> so I don't have to obey the rules" :S I marked the innards of the
-> family as private, and tossed in the other descriptions. v2 posted.
+> I don't see how it is improving readability. If you have removed the use
+> of mem_cgroup_sockets_enabled completely from the networking then I can
+> understand but this change IMHO will actually decrease the readability
+> because the later readers will have to reason why we are doing this
+> check at some places but not other.
 
-Thanks, I assumed it was something like that.
+Yes, I agree. I am trying to let networking get rid of this macro
+entirely, but get stuck on inet_csk_accept().. :(
 
