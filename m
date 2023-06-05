@@ -1,176 +1,170 @@
-Return-Path: <netdev+bounces-8207-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8208-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4B9327231DF
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 23:03:01 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 38E037231F9
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 23:11:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5ED761C20D61
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:02:57 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E9090281427
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:11:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE107261EA;
-	Mon,  5 Jun 2023 21:02:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB020261FB;
+	Mon,  5 Jun 2023 21:11:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9839323E
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 21:02:57 +0000 (UTC)
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2083.outbound.protection.outlook.com [40.107.244.83])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5395FEE;
-	Mon,  5 Jun 2023 14:02:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Kgiuiu32p7f7vx0ZvO6Cj0jXONqR3E9mGlKSnMJsf5rN08MZUNWjxd1eAO0qJuJCoixhUz+pDE4g8nuscJgntSZOJpquLOkSHG3U88V4CWaDwLIC1JPHj1pVCPQRbBBUp/E3o3oGnXACBkNHzQG3tooBHvqbdDsQkPcBwB+xiZznDuIoGznTZ71x0eyVVkHEdBvwH3vfrR63w1GbsrmA0EXZFCF2mtM3hu8yXIYdbp+Yo+75bfRNKBwIC6qGaJnZrz/+uzi2hRmIWoAmyyUjG9wCFZIRpYmHvMWqIJTelkkWt4zye+KXqXdiewE80TNmK094gy6SFhy1+Wy+4KypTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZCDFlm4mgU1SCuMik1qhSnoLJxenSA7DFJawM2C+UZU=;
- b=G4R1IVEOUD/ji7PbtqBYWPrU/CJDvJYjeQn3xm/KdtYLI7nNyuGe/ktqlDPZHcy2yqlu4T6vNMfzMNulSLZqgCWJfP8HiHzytBBRkd+PeWTNhyWGOarg0by17DDICSUQeFVeLSTNOdy+uxFnR7f0V5hVXebPc5DOOvAWRaPeDcJ55fwQwksTP6nMoG4YRMwQue+t/G6yBz6WM8SyUhm4hvyKi8pXC0ra+nEVt2OR/iXCLOr03o+2T+phiiwdQuKuZZh8zjFzyCOR0pAlbv+aeRaoxacVzkzyJkaPcAJfBLAaYqCd59yacAurQGYaEdGcNeNYoY0xXFL/R5aT1Ov0Nw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZCDFlm4mgU1SCuMik1qhSnoLJxenSA7DFJawM2C+UZU=;
- b=PWlJRyfiNT7Y3Va3jT9A+1SPEMyVOyGP7DzQgj7Zw152Wgy6YHTPbBPsRTr7li8ekQ37wciEktIHtAQMs2l7uyi98w8Nb6zH3aUCfM0jc6ijToT/yQFQhZKs2rKBfBGrYipRsHbfthD/xXDG4McvbV9LVBj/cM85dhk7q7uMkLE=
-Received: from DM6PR08CA0010.namprd08.prod.outlook.com (2603:10b6:5:80::23) by
- PH7PR12MB6978.namprd12.prod.outlook.com (2603:10b6:510:1b8::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Mon, 5 Jun
- 2023 21:02:52 +0000
-Received: from CY4PEPF0000EE36.namprd05.prod.outlook.com
- (2603:10b6:5:80:cafe::81) by DM6PR08CA0010.outlook.office365.com
- (2603:10b6:5:80::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33 via Frontend
- Transport; Mon, 5 Jun 2023 21:02:52 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CY4PEPF0000EE36.mail.protection.outlook.com (10.167.242.42) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6477.13 via Frontend Transport; Mon, 5 Jun 2023 21:02:52 +0000
-Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 5 Jun
- 2023 16:02:48 -0500
-From: Brett Creeley <brett.creeley@amd.com>
-To: <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-	<virtualization@lists.linux-foundation.org>, <alvaro.karsz@solid-run.com>,
-	<pabeni@redhat.com>, <kuba@kernel.org>, <edumazet@google.com>,
-	<davem@davemloft.net>, <xuanzhuo@linux.alibaba.com>, <jasowang@redhat.com>,
-	<mst@redhat.com>
-CC: <brett.creeley@amd.com>, <shannon.nelson@amd.com>
-Subject: [RFC PATCH net] virtio_net: Prevent napi_weight changes with VIRTIO_NET_F_NOTF_COAL support
-Date: Mon, 5 Jun 2023 14:02:36 -0700
-Message-ID: <20230605210237.60988-1-brett.creeley@amd.com>
-X-Mailer: git-send-email 2.17.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4031323E;
+	Mon,  5 Jun 2023 21:11:43 +0000 (UTC)
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A404ED;
+	Mon,  5 Jun 2023 14:11:41 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id 98e67ed59e1d1-2565a9107d2so4561552a91.0;
+        Mon, 05 Jun 2023 14:11:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685999501; x=1688591501;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Zh4jJxTAKzbJ9SX27hDt/5kPD49tOPRL7suMPY4/khA=;
+        b=HQ7E4KTQocAnFq6ymEbiyQe+71wz1QqkMTqstF6yByE1aQ/3L9xGlsoHE2ty/KmNGx
+         kkEIZdBdUpFN5pBuGWGPof3JHvwTsAFbFOBh8LvcbfvZDQcWxan7GhR3qRzMUhCbsynv
+         VMO/o8hLS0MUfiw6kmRJdp5TDSqJf1Z98tzNg0TBILGUxmterYeS+YBt+Dmye8jo/cGp
+         xxgae6ukPX27OAi5ZxAJI04J0vRi0aYxFh2wrhremSn2C6an+j6jLOUDoZZnWpJAGoFM
+         QcM8CesR+0JfQo9SpvdWxAM1li3oZzB0tJjW4MpOn6edHy3LBmjFeUMOqWOY59vgg4DJ
+         JYag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685999501; x=1688591501;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Zh4jJxTAKzbJ9SX27hDt/5kPD49tOPRL7suMPY4/khA=;
+        b=GW0+fjMMwHvn/EUwctN+yNljKAGIzWHs8mQ2TQ9xwKHzWXX8xA+25xqMgpX3ksUsLO
+         dSUDEC4eHITWu2mX07+7MQHvOz7mDIY9acicwIk3jzAl5MfSUM9l1B1yNCzBXB6mxDMC
+         B9drTk8qLxI1Nt/aEcw0mmlIIUKXqSi3gIs7iLdXYPr9MuFphU8/zwQsspmy040Dmnfh
+         9gvD9aV608+UhTexp4yNDNavub2dhRIziYocETy2PCZ6wOk5CGIC+CiAiVHQlLRECwIl
+         OD75x9nlKcgi5z+/fEEeped4MA9cPAW1VRe2//N99eR219ZFCQ/wPncb/jv2ylYcuN/B
+         MY+w==
+X-Gm-Message-State: AC+VfDxeOaomLjcMbmPj3aD2xU2svtNHmsaw6gyzCY236Q0/4+sAsyxy
+	1AIZ9WY13/Hrkx9Hs3FVQg4=
+X-Google-Smtp-Source: ACHHUZ7ezCBLFh/r5MtsTw99vS986tpwZwM/H7CRc906oLC1p2PgTYZQRvrDYW2mCxZli0+0MYt3BQ==
+X-Received: by 2002:a17:90b:1c06:b0:258:9180:1999 with SMTP id oc6-20020a17090b1c0600b0025891801999mr8816659pjb.32.1685999500386;
+        Mon, 05 Jun 2023 14:11:40 -0700 (PDT)
+Received: from smtpclient.apple (c-24-6-216-183.hsd1.ca.comcast.net. [24.6.216.183])
+        by smtp.gmail.com with ESMTPSA id gz18-20020a17090b0ed200b00246f9725ffcsm6255974pjb.33.2023.06.05.14.11.37
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 05 Jun 2023 14:11:39 -0700 (PDT)
+Content-Type: text/plain;
+	charset=utf-8
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE36:EE_|PH7PR12MB6978:EE_
-X-MS-Office365-Filtering-Correlation-Id: b0e932df-8954-46c0-5a3e-08db66083a24
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	UcKMaLgz0ojVSk6MUDTJAQVmHi3vWN4o37gWSjdp3OlJZqWtqML7uISJNjbVEo95NmzEq24iiywJcI+SccWw9uW403LQMRHRQQg8gWvG2L4lXVqtSPRcJl3bf+zXdFo41iNKtn335foIgDto8tPO7p9QKniGtirHMlVvlZMuCzc9ycqhnIWgrtw1M+WipPTwKtZ2FFw+AlE1OAV9yH+7fA5g6A1YVFniLVMHf1PVZi3MB3H9TF0mqsmrAcERzkELy2fRqv6Efluv0gT0WOihBbjlFEw34WYegPFQzL0lThnRVd+G/0Cn54Yg7SHwYMAdMtNPgCnjaNwjSe2m33TGu+8Dnag+6BUMn1UMDLNvzbUCLpBdl5hdTpYHTH0U0dX+E7FrslSElxaDVeUJUwXDqQCU1wSn6cmq9z8mSF/FQ0jX1oeX9EmdL7PxqCA8FXE8bvpp8XG4nzkizVs3m9x6M2PLMBNCy3PjQcwllw9sp+p5kHre4F6mwmpdmTJgwCWt4Z2jaiEkhMz5au6vfop3zXlBOI3PZXh2oW899hxXFBryxp3KMvSGKnoXXMYeSTocJ0MOvI/M++UDiy5EUXAk4kuw8A0IT+ZRZyltrRVPl6X7bZgvJ9QxB8HQlh3Lz4j2o4iES2UobI0cZrOMPqJQXWpHQUPz0LEXUAsKecBvp1VUxB3x9RlhE7xQBgtqY19RakywcsmnUL29pjr164+F6hqu/IXPbkv+/X4FLO+ymtWJsskShtMJJDZzOdSN+q2tyEySIz3rDALvL+Fl6tut1odr3nTevGV5OozkCTYNpTYOct6CGQ9/xXvY5aia8sjo
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(376002)(346002)(39860400002)(451199021)(40470700004)(46966006)(36840700001)(8676002)(7416002)(4326008)(5660300002)(8936002)(70586007)(70206006)(316002)(40480700001)(41300700001)(54906003)(110136005)(44832011)(40460700003)(2906002)(478600001)(921005)(82740400003)(81166007)(186003)(356005)(1076003)(26005)(86362001)(16526019)(36756003)(47076005)(36860700001)(2616005)(83380400001)(336012)(82310400005)(426003)(6666004)(16393002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2023 21:02:52.3195
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b0e932df-8954-46c0-5a3e-08db66083a24
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EE36.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6978
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.600.7\))
+Subject: Re: [PATCH 12/13] x86/jitalloc: prepare to allocate exectuatble
+ memory as ROX
+From: Nadav Amit <nadav.amit@gmail.com>
+In-Reply-To: <88a62f834688ed77d08c778e1e427014cf7d3c1b.camel@intel.com>
+Date: Mon, 5 Jun 2023 14:11:26 -0700
+Cc: "rostedt@goodmis.org" <rostedt@goodmis.org>,
+ "rppt@kernel.org" <rppt@kernel.org>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ "deller@gmx.de" <deller@gmx.de>,
+ "mcgrof@kernel.org" <mcgrof@kernel.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+ "davem@davemloft.net" <davem@davemloft.net>,
+ "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+ "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+ "hca@linux.ibm.com" <hca@linux.ibm.com>,
+ "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "kent.overstreet@linux.dev" <kent.overstreet@linux.dev>,
+ "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+ "palmer@dabbelt.com" <palmer@dabbelt.com>,
+ "chenhuacai@kernel.org" <chenhuacai@kernel.org>,
+ "tsbogend@alpha.franken.de" <tsbogend@alpha.franken.de>,
+ "linux-trace-kernel@vger.kernel.org" <linux-trace-kernel@vger.kernel.org>,
+ "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+ "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+ "x86@kernel.org" <x86@kernel.org>,
+ "christophe.leroy@csgroup.eu" <christophe.leroy@csgroup.eu>,
+ "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+ Will Deacon <will@kernel.org>,
+ "dinguyen@kernel.org" <dinguyen@kernel.org>,
+ "naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
+ "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+ "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+ "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ "song@kernel.org" <song@kernel.org>,
+ "linux-mm@kvack.org" <linux-mm@kvack.org>,
+ "loongarch@lists.linux.dev" <loongarch@lists.linux.dev>,
+ Andrew Morton <akpm@linux-foundation.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <B021EE82-9741-4B41-8FF7-91A9336EDD7C@gmail.com>
+References: <20230601101257.530867-1-rppt@kernel.org>
+ <20230601101257.530867-13-rppt@kernel.org>
+ <0f50ac52a5280d924beeb131e6e4717b6ad9fdf7.camel@intel.com>
+ <ZHjcr26YskTm+0EF@moria.home.lan>
+ <a51c041b61e2916d2b91c990349aabc6cb9836aa.camel@intel.com>
+ <ZHjljJfQjhVV/jNS@moria.home.lan>
+ <68b8160454518387c53508717ba5ed5545ff0283.camel@intel.com>
+ <50D768D7-15BF-43B8-A5FD-220B25595336@gmail.com>
+ <20230604225244.65be9103@rorschach.local.home>
+ <20230605081143.GA3460@kernel.org>
+ <88a62f834688ed77d08c778e1e427014cf7d3c1b.camel@intel.com>
+To: "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+X-Mailer: Apple Mail (2.3731.600.7)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Commit 699b045a8e43 ("net: virtio_net: notifications coalescing
-support") added support for VIRTIO_NET_F_NOTF_COAL. The get_coalesce
-call made changes to report "1" in tx_max_coalesced_frames if
-VIRTIO_NET_F_NOTF_COAL is not supported and napi.weight is non-zero.
-However, the napi_weight value could still be changed by the
-set_coalesce call regardless of whether or not the device supports
-VIRTIO_NET_F_NOTF_COAL.
 
-It seems like the tx_max_coalesced_frames value should not control more
-than 1 thing (i.e. napi_weight and the device's tx_max_packets). So, fix
-this by only allowing the napi_weight change if VIRTIO_NET_F_NOTF_COAL
-is not supported by the virtio device.
 
-It wasn't clear to me if this was the intended behavior, so that's why
-I'm sending this as an RFC patch initially. Based on the feedback, I
-will resubmit as an official patch.
+> On Jun 5, 2023, at 9:10 AM, Edgecombe, Rick P =
+<rick.p.edgecombe@intel.com> wrote:
+>=20
+> On Mon, 2023-06-05 at 11:11 +0300, Mike Rapoport wrote:
+>> On Sun, Jun 04, 2023 at 10:52:44PM -0400, Steven Rostedt wrote:
+>>> On Thu, 1 Jun 2023 16:54:36 -0700
+>>> Nadav Amit <nadav.amit@gmail.com> wrote:
+>>>=20
+>>>>> The way text_poke() is used here, it is creating a new writable
+>>>>> alias
+>>>>> and flushing it for *each* write to the module (like for each
+>>>>> write of
+>>>>> an individual relocation, etc). I was just thinking it might
+>>>>> warrant
+>>>>> some batching or something. =20
+>>=20
+>>>> I am not advocating to do so, but if you want to have many
+>>>> efficient
+>>>> writes, perhaps you can just disable CR0.WP. Just saying that if
+>>>> you
+>>>> are about to write all over the memory, text_poke() does not
+>>>> provide
+>>>> too much security for the poking thread.
+>>=20
+>> Heh, this is definitely and easier hack to implement :)
+>=20
+> I don't know the details, but previously there was some strong dislike
+> of CR0.WP toggling. And now there is also the problem of CET. Setting
+> CR0.WP=3D0 will #GP if CR4.CET is 1 (as it currently is for kernel =
+IBT).
+> I guess you might get away with toggling them both in some controlled
+> situation, but it might be a lot easier to hack up then to be made
+> fully acceptable. It does sound much more efficient though.
 
-Fixes: 699b045a8e43 ("net: virtio_net: notifications coalescing support")
-Signed-off-by: Brett Creeley <brett.creeley@amd.com>
----
- drivers/net/virtio_net.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 486b5849033d..e28387866909 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2990,19 +2990,21 @@ static int virtnet_set_coalesce(struct net_device *dev,
- 	int ret, i, napi_weight;
- 	bool update_napi = false;
- 
--	/* Can't change NAPI weight if the link is up */
--	napi_weight = ec->tx_max_coalesced_frames ? NAPI_POLL_WEIGHT : 0;
--	if (napi_weight ^ vi->sq[0].napi.weight) {
--		if (dev->flags & IFF_UP)
--			return -EBUSY;
--		else
--			update_napi = true;
--	}
--
--	if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL))
-+	if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL)) {
- 		ret = virtnet_send_notf_coal_cmds(vi, ec);
--	else
-+	} else {
-+		/* Can't change NAPI weight if the link is up */
-+		napi_weight = ec->tx_max_coalesced_frames ?
-+			NAPI_POLL_WEIGHT : 0;
-+		if (napi_weight ^ vi->sq[0].napi.weight) {
-+			if (dev->flags & IFF_UP)
-+				return -EBUSY;
-+			else
-+				update_napi = true;
-+		}
-+
- 		ret = virtnet_coal_params_supported(ec);
-+	}
- 
- 	if (ret)
- 		return ret;
--- 
-2.17.1
+Thanks for highlighting this issue. I understand the limitations of
+CR0.WP. There is also always the concerns that without CET or other
+control flow integrity mechanism, someone would abuse (using ROP/JOP)
+functions that clear CR0.WP=E2=80=A6
 
 
