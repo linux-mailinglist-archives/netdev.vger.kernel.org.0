@@ -1,88 +1,97 @@
-Return-Path: <netdev+bounces-8155-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8156-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 31587722ED5
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 20:39:22 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 33C7D722ED7
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 20:40:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 937C22813F9
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 18:39:20 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E38F42813A8
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 18:40:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E2E60168C6;
-	Mon,  5 Jun 2023 18:39:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 461A31EA80;
+	Mon,  5 Jun 2023 18:40:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 696C620EA
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 18:39:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6422CC433D2;
-	Mon,  5 Jun 2023 18:39:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2889168C6
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 18:40:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC8A6C433EF;
+	Mon,  5 Jun 2023 18:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685990356;
-	bh=33+KTPIjPakdBxCr6qfiCLnamUiHY+NjSa8DozXb0qo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=o/iwLQHCoNd7FLrkgJNiVjXsBomsWPngNGuK9A/Zf0WcwHYrFOLpEoooPn8j0t79T
-	 +rg5f8MTO/QxHt46ePHsDL5Waf/h6XNHmjw9bPLGEuen+YIJnIcdCdhcr3Tk6MA+fv
-	 R30t50LVXJ4LpX06A4Y+EnqFhFML5fPCattWPxGfob4GVQUxQDUgEXFo82F+MusJ54
-	 14mCk5vMS78FLCoeeulOEYrS3s50gG/e4vhqTXSMqex7myFHUXzhf/20RvQQVhBdhK
-	 bbS++cVXnht0zwzUc/uOF3WOFMoyOZZx7TX+M9ejUL72dTuK86/aqbPZgk68Ca+Zmd
-	 F+gvWp2C248bw==
-Date: Mon, 5 Jun 2023 11:39:15 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Ding Hui <dinghui@sangfor.com.cn>
-Cc: Alexander Duyck <alexander.duyck@gmail.com>, Andrew Lunn
- <andrew@lunn.ch>, davem@davemloft.net, edumazet@google.com,
- pabeni@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- pengdonglin@sangfor.com.cn, huangcun@sangfor.com.cn
-Subject: Re: [PATCH net-next] net: ethtool: Fix out-of-bounds copy to user
-Message-ID: <20230605113915.4258af7f@kernel.org>
-In-Reply-To: <f6ad6281-df30-93cf-d057-5841b8c1e2e6@sangfor.com.cn>
-References: <20230601112839.13799-1-dinghui@sangfor.com.cn>
-	<135a45b2c388fbaf9db4620cb01b95230709b9ac.camel@gmail.com>
-	<eed0cbf7-ff12-057e-e133-0ddf5e98ef68@sangfor.com.cn>
-	<6110cf9f-c10e-4b9b-934d-8d202b7f5794@lunn.ch>
-	<f7e23fe6-4d30-ef1b-a431-3ef6ec6f77ba@sangfor.com.cn>
-	<6e28cea9-d615-449d-9c68-aa155efc8444@lunn.ch>
-	<CAKgT0UdyykQL-BidjaNpjX99FwJTxET51U29q4_CDqmABUuVbw@mail.gmail.com>
-	<ece228a3-5c31-4390-b6ba-ec3f2b6c5dcb@lunn.ch>
-	<CAKgT0Uf+XaKCFgBRTn-viVsKkNE7piAuDpht=efixsAV=3JdFQ@mail.gmail.com>
-	<44905acd-3ac4-cfe5-5e91-d182c1959407@sangfor.com.cn>
-	<20230602225519.66c2c987@kernel.org>
-	<5f0f2bab-ae36-8b13-2c6d-c69c6ff4a43f@sangfor.com.cn>
-	<20230604104718.4bf45faf@kernel.org>
-	<f6ad6281-df30-93cf-d057-5841b8c1e2e6@sangfor.com.cn>
+	s=k20201202; t=1685990408;
+	bh=XKLcmGPK84JD3Ot5TEo2paSYMsmxdjiXdEhcQA58p48=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=W6KRlRDVgS2tYxiaLey3JvbUEo+ByRhdvpawL1zsKqQX+QUT9RlnaY18uX2EDoVrn
+	 JmJtcS1wwOUxmRfUiHCGWqQpMSHD1lxxlMNJGSObY5Lt3OUuGtMhpQ+W7OXb/ru23W
+	 QcqBU3FWYXcxhybpR5n0wkQMKnqJ7QmsDMED9xBHu/3e7MwmgZjKQm8Gxfa8WkbXw6
+	 XTiwyyegPnQB6ZstJBVOMrFm0hqy8uAUBID28Mf/7M8QT8Z5Tfm7JpxZWaVeb1fNE+
+	 MfkdKsbBf3tBiof9oVFQ6qUQjEtsyzTcz+buE7PKwkDaLIvQ8GeTDcbs5xDmb+mTQ7
+	 vseXmvBAtze7g==
+Date: Mon, 5 Jun 2023 20:40:04 +0200
+From: Simon Horman <horms@kernel.org>
+To: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc: Jakub Kicinski <kuba@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+	Jiawen Wu <jiawenwu@trustnetic.com>,
+	Mengyuan Lou <mengyuanlou@net-swift.com>,
+	Dan Carpenter <dan.carpenter@linaro.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: txgbe: Avoid passing uninitialised
+ parameter to pci_wake_from_d3()
+Message-ID: <ZH4sBF6frp9YjW4T@kernel.org>
+References: <20230605-txgbe-wake-v1-1-ea6c441780f9@kernel.org>
+ <ZH4n7vOXVh9KGExD@boxer>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZH4n7vOXVh9KGExD@boxer>
 
-On Mon, 5 Jun 2023 11:39:59 +0800 Ding Hui wrote:
-> Case 1:
-> If the user len/n_stats is not zero, we will treat it as correct usage
-> (although we cannot distinguish between the real correct usage and
-> uninitialized usage). Return -EINVAL if current length exceed the one
-> user specified.
+On Mon, Jun 05, 2023 at 08:22:38PM +0200, Maciej Fijalkowski wrote:
+> On Mon, Jun 05, 2023 at 04:20:28PM +0200, Simon Horman wrote:
+> 
+> Hey Simon,
+> 
+> > txgbe_shutdown() relies on txgbe_dev_shutdown() to initialise
+> > wake by passing it by reference. However, txgbe_dev_shutdown()
+> > doesn't use this parameter at all.
+> > 
+> > wake is then passed uninitialised by txgbe_dev_shutdown()
+> > to pci_wake_from_d3().
+> > 
+> > Resolve this problem by:
+> > * Removing the unused parameter from txgbe_dev_shutdown()
+> > * Removing the uninitialised variable wake from txgbe_dev_shutdown()
+> > * Passing false to pci_wake_from_d3() - this assumes that
+> >   although uninitialised wake was in practice false (0).
+> > 
+> > I'm not sure that this counts as a bug, as I'm not sure that
+> > it manifests in any unwanted behaviour. But in any case, the issue
+> > was introduced by:
+> > 
+> >   bbd22f34b47c ("net: txgbe: Avoid passing uninitialised parameter to pci_wake_from_d3()")
+> 
+> wait, you are pointing to your own commit here?
+> 
+> this supposed to be:
+> 3ce7547e5b71 net: txgbe: Add build support for txgbe
+> 
+> no?
 
-This assumes user will zero-initialize the value rather than do
-something like:
+Yes, sorry about that.
 
-	buf = malloc(1 << 16); // 64k should always be enough
-	ioctl(s, ETHTOOL_GSTATS, buf)
+Will fix in a v2.
 
-	for (i = 0; i < buf.n_stats; i++)
-		/* use stats */
+...
 
-:(
+-- 
+pw-bot: cr
 
-> Case 2:
-> If it is zero, we will treat it as incorrect usage, we can add a
-> pr_err_once() for it and keep to be compatible with it for a period of time.
-> At a suitable time in the future, this part can be removed by maintainers.
 
