@@ -1,103 +1,131 @@
-Return-Path: <netdev+bounces-7903-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7905-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6CC657220A2
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 10:11:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 30CD97220AA
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 10:12:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DA7391C20B70
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 08:11:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9ED5E1C20842
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 08:12:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E51B125A4;
-	Mon,  5 Jun 2023 08:10:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E422B125C1;
+	Mon,  5 Jun 2023 08:12:13 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83F7C8BEA
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 08:10:45 +0000 (UTC)
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77E4A1;
-	Mon,  5 Jun 2023 01:10:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685952644; x=1717488644;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=HPWdNa03m1xAyahf1uKBoWWQIEqxfz9qy1zZwFxRaa4=;
-  b=HPlk27kssthwPCwqNY8L1QjO+Vf4ke7H3UGtqDrk5SiLgug7BllZw3Th
-   XOgv2Tns35wbdr/KUHtYOzxMkSO5R4PbxgG+fbnlqsqpMQLLcf46gN1EC
-   Ncmjtdi8+S4dQV6rCTY8I1EXLBvoptrTBH7AxRPEpi8xhRtkvZ2eJdLxi
-   Z8DAQrt7pXmseseyhPk4ZlNEWTT+tMZmxGoWH9GgLI6IJaTXcho6ZltVK
-   t1Z947An/txQ+Kyf/DjuEKB7VQYMhZaeI+O/l/muuaNNAwat8kqRCuwkF
-   5EBdgWSfRO1XlX7xjjZOlys+RydSK36wLP/R2CI8fQc/X8QqmUu+SxSRz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10731"; a="359623653"
-X-IronPort-AV: E=Sophos;i="6.00,217,1681196400"; 
-   d="scan'208";a="359623653"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 01:10:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10731"; a="658985053"
-X-IronPort-AV: E=Sophos;i="6.00,217,1681196400"; 
-   d="scan'208";a="658985053"
-Received: from mylly.fi.intel.com (HELO [10.237.72.143]) ([10.237.72.143])
-  by orsmga003.jf.intel.com with ESMTP; 05 Jun 2023 01:10:40 -0700
-Message-ID: <c3399327-37ee-f34c-4a48-7c1f1a62a785@linux.intel.com>
-Date: Mon, 5 Jun 2023 11:10:39 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C82D125A0;
+	Mon,  5 Jun 2023 08:12:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD463C433D2;
+	Mon,  5 Jun 2023 08:12:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685952732;
+	bh=0a3Erj1+y05IXqjDMWsbKoIt+bMhOMaYKv6SbF8QYx8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Zu6xmXaSJOaYGEZ1M18sqNTyQoodb/FtprpnZS9jE7WS1RsqZh7vr80D82GP+H1i8
+	 Qbu+kLGLXkmXcf2oXs54XG8W5AAc+Szj5iw7w1esJF0pl3B4pku9TUNP0nnZRtgroI
+	 L7ysBaeg9qWTT4omm1x3jmC2/a5iIXjq4VNltoSIXSnirdvBxVCgizUUrQFclxA9A9
+	 JI6H8n/NsAtikP0Klus6G9HwEipbiVd/EmoeyXvbNSuuqp00lQftKP5siTorJJyFWk
+	 NlQqlLQB4dqezssu+rEQF7hm50+nogklsOxP5i6Esuay261E/tRiQMISJtPYoOP/Ua
+	 Cp41VdtuUrJ+Q==
+Date: Mon, 5 Jun 2023 11:11:43 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Steven Rostedt <rostedt@goodmis.org>
+Cc: Nadav Amit <nadav.amit@gmail.com>,
+	"Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+	"kent.overstreet@linux.dev" <kent.overstreet@linux.dev>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	"mcgrof@kernel.org" <mcgrof@kernel.org>,
+	"deller@gmx.de" <deller@gmx.de>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"davem@davemloft.net" <davem@davemloft.net>,
+	"linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+	"linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+	"hca@linux.ibm.com" <hca@linux.ibm.com>,
+	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+	"palmer@dabbelt.com" <palmer@dabbelt.com>,
+	"chenhuacai@kernel.org" <chenhuacai@kernel.org>,
+	"mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+	"x86@kernel.org" <x86@kernel.org>,
+	"tsbogend@alpha.franken.de" <tsbogend@alpha.franken.de>,
+	"linux-trace-kernel@vger.kernel.org" <linux-trace-kernel@vger.kernel.org>,
+	"linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+	"christophe.leroy@csgroup.eu" <christophe.leroy@csgroup.eu>,
+	Will Deacon <will@kernel.org>,
+	"dinguyen@kernel.org" <dinguyen@kernel.org>,
+	"naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
+	"sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+	"linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+	"bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"song@kernel.org" <song@kernel.org>,
+	"linux-mm@kvack.org" <linux-mm@kvack.org>,
+	"loongarch@lists.linux.dev" <loongarch@lists.linux.dev>,
+	Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH 12/13] x86/jitalloc: prepare to allocate exectuatble
+ memory as ROX
+Message-ID: <20230605081143.GA3460@kernel.org>
+References: <20230601101257.530867-1-rppt@kernel.org>
+ <20230601101257.530867-13-rppt@kernel.org>
+ <0f50ac52a5280d924beeb131e6e4717b6ad9fdf7.camel@intel.com>
+ <ZHjcr26YskTm+0EF@moria.home.lan>
+ <a51c041b61e2916d2b91c990349aabc6cb9836aa.camel@intel.com>
+ <ZHjljJfQjhVV/jNS@moria.home.lan>
+ <68b8160454518387c53508717ba5ed5545ff0283.camel@intel.com>
+ <50D768D7-15BF-43B8-A5FD-220B25595336@gmail.com>
+ <20230604225244.65be9103@rorschach.local.home>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.11.0
-Subject: Re: [PATCH net-next v11 2/9] i2c: designware: Add driver support for
- Wangxun 10Gb NIC
-Content-Language: en-US
-To: Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org,
- andriy.shevchenko@linux.intel.com, mika.westerberg@linux.intel.com,
- jsd@semihalf.com, Jose.Abreu@synopsys.com, andrew@lunn.ch,
- hkallweit1@gmail.com, linux@armlinux.org.uk
-Cc: linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
- mengyuanlou@net-swift.com, Piotr Raczynski <piotr.raczynski@intel.com>
-References: <20230605025211.743823-1-jiawenwu@trustnetic.com>
- <20230605025211.743823-3-jiawenwu@trustnetic.com>
-From: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-In-Reply-To: <20230605025211.743823-3-jiawenwu@trustnetic.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230604225244.65be9103@rorschach.local.home>
 
-On 6/5/23 05:52, Jiawen Wu wrote:
-> Wangxun 10Gb ethernet chip is connected to Designware I2C, to communicate
-> with SFP.
+On Sun, Jun 04, 2023 at 10:52:44PM -0400, Steven Rostedt wrote:
+> On Thu, 1 Jun 2023 16:54:36 -0700
+> Nadav Amit <nadav.amit@gmail.com> wrote:
 > 
-> Introduce the property "wx,i2c-snps-model" to match device data for Wangxun
-> in software node case. Since IO resource was mapped on the ethernet driver,
-> add a model quirk to get regmap from parent device.
+> > > The way text_poke() is used here, it is creating a new writable alias
+> > > and flushing it for *each* write to the module (like for each write of
+> > > an individual relocation, etc). I was just thinking it might warrant
+> > > some batching or something.  
+
+> > I am not advocating to do so, but if you want to have many efficient
+> > writes, perhaps you can just disable CR0.WP. Just saying that if you
+> > are about to write all over the memory, text_poke() does not provide
+> > too much security for the poking thread.
+
+Heh, this is definitely and easier hack to implement :)
+
+> Batching does exist, which is what the text_poke_queue() thing does.
+
+For module loading text_poke_queue() will still be much slower than a bunch
+of memset()s for no good reason because we don't need all the complexity of
+text_poke_bp_batch() for module initialization because we are sure we are
+not patching live code.
+
+What we'd need here is a new batching mode that will create a writable
+alias mapping at the beginning of apply_relocate_*() and module_finalize(),
+then it will use memcpy() to that writable alias and will tear the mapping
+down in the end.
+
+Another option is to teach alternatives to update a writable copy rather
+than do in place changes like Song suggested. My feeling is that it will be
+more intrusive change though.
+
+> -- Steve
 > 
-> The exists IP limitations are dealt as workarounds:
-> - IP does not support interrupt mode, it works on polling mode.
-> - Additionally set FIFO depth address the chip issue.
-> 
-> Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
-> Reviewed-by: Piotr Raczynski <piotr.raczynski@intel.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->   drivers/i2c/busses/i2c-designware-common.c  |  8 ++
->   drivers/i2c/busses/i2c-designware-core.h    |  4 +
->   drivers/i2c/busses/i2c-designware-master.c  | 89 +++++++++++++++++++--
->   drivers/i2c/busses/i2c-designware-platdrv.c | 15 ++++
->   4 files changed, 111 insertions(+), 5 deletions(-)
-> 
-Acked-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+
+-- 
+Sincerely yours,
+Mike.
 
