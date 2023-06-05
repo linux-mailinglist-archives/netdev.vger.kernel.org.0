@@ -1,201 +1,209 @@
-Return-Path: <netdev+bounces-8084-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8085-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3AE68722A31
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 17:04:52 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 11827722A50
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 17:08:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E5928281010
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:04:50 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 43E921C20BB2
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:08:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 265CA1F92C;
-	Mon,  5 Jun 2023 15:04:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 113A71F931;
+	Mon,  5 Jun 2023 15:08:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1970D6FDE
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 15:04:48 +0000 (UTC)
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60AEE9C
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 08:04:47 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-565c7399afaso54334667b3.1
-        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 08:04:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3EE71F169
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 15:08:42 +0000 (UTC)
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20494D2;
+	Mon,  5 Jun 2023 08:08:41 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id 98e67ed59e1d1-256931ec244so4199110a91.3;
+        Mon, 05 Jun 2023 08:08:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1685977486; x=1688569486;
+        d=gmail.com; s=20221208; t=1685977720; x=1688569720;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SjbbBA7EontyB9HzSIqPzzJatS75a7JE8YVdrZrGYTE=;
-        b=H0WAJfZCnQWtUwg66hVGjFLtBxr7jex6m2+ftYdjEDx22aHUaMnFuseL6Z3p0MabgF
-         vPz42FEpePd271ITIEWgvrf/Jhx+HRhPrBU4eGdLtyvRldN5sEGSHaqKn8N+F76nOOhA
-         m94rRASS5uxoa8iL7NJurLj19KGOgWYIybOsHktx4GG6VxD4+FB+TfLheJ805iQUdtLn
-         hGGZh5sD9T/ZY3mrpIQK1Eum+xVAflL42bxtUUoZgEhIaCTxkSnMuUk0Rd3LZm9nU9sZ
-         JehMrmP/hFa/CBR5GZKivrxlGxwQ9W6l4pTKKAoejeiEaX7Hx3U+VzteyPgl5qdIxBl9
-         cCEA==
+        bh=qfcSNUYUmDUgquuvvHEXrBXWzd6JH10uE8W/bdq1wnA=;
+        b=ICpze0AqwuFmYOgDUEmRa3QpzXBKVAHqOA7og3EWW3qA/8JQgi/DpJHQJzGLnLn2cy
+         CVxWwhuD1ZnTc7OGnm5sUi+LGYm7mI+dQ2pc6TPOs0jbi4z49sMsvaLE17Xjo7HV4IWj
+         ZOe+uk+zE+90pmq1dFz3xoD6/ogL27QXJF9FsZ7at25pr0ITI88jLCxdG78Urz3c7keo
+         Pblf9c5JVMVfpDjyKCOFjUPQXsP2wOsyF69EvXM5nkDOaWrOYtkvgDj2FTk/J21nyobB
+         01iohAuw4Ld9viaX8DP1q1gMOLIDMR6zlMrbMTPOv8nDhhw6QEJQ91jiNNjr49V4gqQJ
+         ksgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685977486; x=1688569486;
+        d=1e100.net; s=20221208; t=1685977720; x=1688569720;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=SjbbBA7EontyB9HzSIqPzzJatS75a7JE8YVdrZrGYTE=;
-        b=HLkgzunscMOoedLKhMn05f4CvSl5ix1NGIMJZhu8FLUnLhz8yOZX2wKPj/w5bLu/ii
-         0+oO37ECPZnjzgvr4O6KIpNf8Ul2EQ2jrMc0YY62xEwWDAViasCnH34Z1TPnnqDE72l6
-         lLnrnWKYUVFMFF/jmZ0K6Ig07s2q5J1iipn+/sVfejRvpHWtZB9mWcVTcZOdF1IZaJXm
-         mbxAaan1yRzTGYQAKFw1BFvtesxin97kWvXD3l11awcCLZ1SfJBerjwofnLfVUOOuN7p
-         RW8rbF46QDTJooIIqhqTKEkLbXhvTM1xftEYy4L1WDsppexWjN1ePV1vLn/jj5uq6PD8
-         0GTA==
-X-Gm-Message-State: AC+VfDypkJxJMbPnTAzSeksVsI/7Q9v1K3MPgcZVnzzSYXdVhhalKyk4
-	kIguSGunYyOarkZ2pjca7jSc0E6Radffemaa8ZM9IQ==
-X-Google-Smtp-Source: ACHHUZ4xl/httMV2kWtvZPSn3MgEda8DNQVfguIJ6PbcSeS4xHHbfrqhqH4TOsiSMvNtwuWKGQ2v0b/TmC40+40uCe0=
-X-Received: by 2002:a0d:d594:0:b0:561:90b3:e712 with SMTP id
- x142-20020a0dd594000000b0056190b3e712mr10418898ywd.28.1685977486585; Mon, 05
- Jun 2023 08:04:46 -0700 (PDT)
+        bh=qfcSNUYUmDUgquuvvHEXrBXWzd6JH10uE8W/bdq1wnA=;
+        b=MF9SKHXZLUuvCCDckNASH+ct0C2zM7EkRCGUlKY9o864rgQ714NlGRplMhf9+VuDtL
+         t7GGQo7xglOGiVqW2CdK8+UXM8CEpr914hBv5djRiqO+S1Nkc9Rem14gPYywhTSr6xcv
+         bme4nn/2ebRA0aqJDnnRoSZd2D0UFJtAatnyo+LofT3H5BQRLVICTKe39fS8s8v8nKl8
+         QUxjMjnG2J3q4udgZbyCLJvISAjd7ogCDxyacxaIN8zzHqUeI0WuSuHqRlqdGy6P3b5B
+         inejNFxpkIYEDj1BVGRitLRo4Y2NOUTOXEl3F5GH++pKeta+NdFVEvzXsNicH9CW9Jej
+         G5pA==
+X-Gm-Message-State: AC+VfDySGEfxV2VHQhDBnrltcF0BXv/2wJtSZYG2RcJ1gZXNl7/dnaR6
+	QmNNoGysiT5cOy/e+RttfkmDQ0WrmehdCciD3F0=
+X-Google-Smtp-Source: ACHHUZ6pXV8q1rJ5RRvcqIO8cB26hqFAIJ997bObF4oXwe9sUn8cQs/9VJj/X0hq8+T7qn8Sl7uchaEnqD/6IhCswr8=
+X-Received: by 2002:a17:90a:9201:b0:255:cddf:a0c8 with SMTP id
+ m1-20020a17090a920100b00255cddfa0c8mr7152108pjo.41.1685977720251; Mon, 05 Jun
+ 2023 08:08:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230517110232.29349-1-jhs@mojatatu.com> <20230517110232.29349-5-jhs@mojatatu.com>
- <ZH2xKs65IZe1LMTC@corigine.com> <CAAFAkD8dUoPjff+VaRY95VsvQDpSzBdtUg=JzjJnrqsKc7AHJA@mail.gmail.com>
- <ZH3x3mT+80K1BR1O@corigine.com>
-In-Reply-To: <ZH3x3mT+80K1BR1O@corigine.com>
-From: Jamal Hadi Salim <jhs@mojatatu.com>
-Date: Mon, 5 Jun 2023 11:04:35 -0400
-Message-ID: <CAM0EoMk1HNE5zgnjs_YozQcXuQWw9kn6QKHZp+dJU5zhPGhpeg@mail.gmail.com>
-Subject: Re: [p4tc-discussions] Re: [PATCH RFC v2 net-next 05/28] net/sched:
- act_api: introduce tc_lookup_action_byid()
-To: Simon Horman <simon.horman@corigine.com>
-Cc: Jamal Hadi Salim <hadi@mojatatu.com>, netdev@vger.kernel.org, deb.chatterjee@intel.com, 
-	tom@sipanda.io, p4tc-discussions@netdevconf.info, Mahesh.Shirshyad@amd.com, 
-	Vipin.Jain@amd.com, tomasz.osinski@intel.com, xiyou.wangcong@gmail.com, 
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
-	khalidm@nvidia.com, toke@redhat.com
+References: <20230529092840.40413-1-linyunsheng@huawei.com>
+ <20230529092840.40413-3-linyunsheng@huawei.com> <977d55210bfcb4f454b9d740fcbe6c451079a086.camel@gmail.com>
+ <2e4f0359-151a-5cff-6d31-0ea0f014ef9a@huawei.com> <CAKgT0UcGYXstFP_H8VQtUooYEaYgDpG_crkodYOEyX4q0D58LQ@mail.gmail.com>
+ <8c9d5dd8-b654-2d50-039d-9b7732e7746f@huawei.com> <CAKgT0UchHBO+kyPZMYJR7JHfqYsk+qSeuvXzA-H9w3VH-9Tfrg@mail.gmail.com>
+ <f5e372ca-e637-4873-0bea-b1b19c623124@gmail.com>
+In-Reply-To: <f5e372ca-e637-4873-0bea-b1b19c623124@gmail.com>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Mon, 5 Jun 2023 08:08:04 -0700
+Message-ID: <CAKgT0UfsKzaQT3NffKTcuWXGup595Z-sXiqX5vtvjypXJ4QHkA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/3] page_pool: support non-frag page for page_pool_alloc_frag()
+To: Yunsheng Lin <yunshenglin0825@gmail.com>
+Cc: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net, kuba@kernel.org, 
+	pabeni@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Lorenzo Bianconi <lorenzo@kernel.org>, Jesper Dangaard Brouer <hawk@kernel.org>, 
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 5, 2023 at 10:32=E2=80=AFAM Simon Horman <simon.horman@corigine=
+On Fri, Jun 2, 2023 at 9:20=E2=80=AFPM Yunsheng Lin <yunshenglin0825@gmail.=
+com> wrote:
+>
+> On 2023/6/2 23:57, Alexander Duyck wrote:
+> > On Fri, Jun 2, 2023 at 5:23=E2=80=AFAM Yunsheng Lin <linyunsheng@huawei=
 .com> wrote:
 >
-> On Mon, Jun 05, 2023 at 10:17:57AM -0400, Jamal Hadi Salim wrote:
-> > Hi Simon,
-> > Thanks for the reviews.
-> >
-> > On Mon, Jun 5, 2023 at 5:56=E2=80=AFAM Simon Horman via p4tc-discussion=
+> ...
+>
+> >>
+> >> According to my defination in this patchset:
+> >> frag page: page alloced from page_pool_alloc_frag() with page->pp_frag=
+_count
+> >>            being greater than one.
+> >> non-frag page:page alloced return from both page_pool_alloc_frag() and
+> >>               page_pool_alloc_pages() with page->pp_frag_count being o=
+ne.
+> >>
+> >> I assume the above 'non-page pool pages' refer to what I call as 'non-=
+frag
+> >> page' alloced return from both page_pool_alloc_frag(), right? And it i=
 s
-> > <p4tc-discussions@netdevconf.info> wrote:
-> > >
-> > > On Wed, May 17, 2023 at 07:02:09AM -0400, Jamal Hadi Salim wrote:
-> > > > Introduce a lookup helper to retrieve the tc_action_ops
-> > > > instance given its action id.
-> > > >
-> > > > Co-developed-by: Victor Nogueira <victor@mojatatu.com>
-> > > > Signed-off-by: Victor Nogueira <victor@mojatatu.com>
-> > > > Co-developed-by: Pedro Tammela <pctammela@mojatatu.com>
-> > > > Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
-> > > > Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
-> > > > ---
-> > > >  include/net/act_api.h |  1 +
-> > > >  net/sched/act_api.c   | 35 +++++++++++++++++++++++++++++++++++
-> > > >  2 files changed, 36 insertions(+)
-> > > >
-> > > > diff --git a/include/net/act_api.h b/include/net/act_api.h
-> > > > index 363f7f8b5586..34b9a9ff05ee 100644
-> > > > --- a/include/net/act_api.h
-> > > > +++ b/include/net/act_api.h
-> > > > @@ -205,6 +205,7 @@ int tcf_idr_release(struct tc_action *a, bool b=
-ind);
-> > > >
-> > > >  int tcf_register_action(struct tc_action_ops *a, struct pernet_ope=
-rations *ops);
-> > > >  int tcf_register_dyn_action(struct net *net, struct tc_action_ops =
-*act);
-> > > > +struct tc_action_ops *tc_lookup_action_byid(struct net *net, u32 a=
-ct_id);
-> > > >  int tcf_unregister_action(struct tc_action_ops *a,
-> > > >                         struct pernet_operations *ops);
-> > > >  int tcf_unregister_dyn_action(struct net *net, struct tc_action_op=
-s *act);
-> > > > diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-> > > > index 0ba5a4b5db6f..101c6debf356 100644
-> > >
-> > > > --- a/net/sched/act_api.c
-> > > > +++ b/net/sched/act_api.c
-> > > > @@ -1084,6 +1084,41 @@ int tcf_unregister_dyn_action(struct net *ne=
-t, struct tc_action_ops *act)
-> > > >  }
-> > > >  EXPORT_SYMBOL(tcf_unregister_dyn_action);
-> > > >
-> > > > +/* lookup by ID */
-> > > > +struct tc_action_ops *tc_lookup_action_byid(struct net *net, u32 a=
-ct_id)
-> > > > +{
-> > > > +     struct tcf_dyn_act_net *base_net;
-> > > > +     struct tc_action_ops *a, *res =3D NULL;
-> > >
-> > > Hi Jamal, Victor and Pedro,
-> > >
-> > > A minor nit from my side: as this is networking code, please use reve=
-rse
-> > > xmas tree - longest line to shortest - for local variable declaration=
-s.
-> > >
+> >> still about doing the (size << 1 > max_size)' checking at the begin in=
+stead
+> >> of at the middle right now to avoid extra steps for 'non-frag page' ca=
+se?
 > >
-> > Will do in the next update.
-> >
-> > > > +
-> > > > +     if (!act_id)
-> > > > +             return NULL;
-> > > > +
-> > > > +     read_lock(&act_mod_lock);
-> > > > +
-> > > > +     list_for_each_entry(a, &act_base, head) {
-> > > > +             if (a->id =3D=3D act_id) {
-> > > > +                     if (try_module_get(a->owner)) {
-> > > > +                             read_unlock(&act_mod_lock);
-> > > > +                             return a;
-> > > > +                     }
-> > > > +                     break;
-> > > > +             }
-> > > > +     }
-> > > > +     read_unlock(&act_mod_lock);
-> > > > +
-> > > > +     read_lock(&base_net->act_mod_lock);
-> > >
-> > > base_net does not appear to be initialised here.
-> >
-> > Yayawiya. Excellent catch. Not sure how even coverity didnt catch this
-> > or our own internal review. I am guessing you either caught this by
-> > eyeballing or some tool. If it is a tool we should add it to our CICD.
-> > We have the clang static analyser but that thing produces so many
-> > false positives that it is intense labor to review some of the
-> > nonsense it spews - so it may have caught it and we missed it.
+> > Yeah, the non-page I was referring to were you mono-frag pages.
 >
-> Hi Jamal,
->
-> My eyes are not so good these days, so I use tooling.
->
-> In this case it is caught by a W=3D1 build using both gcc-12 and clang-16=
-,
-> and by Smatch. I would also recommend running Sparse, Coccinelle,
-> and the xmastree check from Edward Cree [1].
->
-> [1] https://github.com/ecree-solarflare/xmastree
->
-> FWIIW, I only reviewed the first 12 patches of this series.
-> If you could run the above mentioned tools over the remaining patches you
-> may find some more things of interest.
+> I was using 'frag page' and 'non-frag page' per the defination above,
+> and you were using 'mono-frag' mostly and 'non-page' sometimes.
+> I am really confused by them as I felt like I got what they meant and
+> then I was lost when you used them in the next comment. I really hope
+> that you could describe what do you mean in more detailed by using
+> 'mono-frag pages' and 'non-page', so that we can choose the right
+> naming to continue the discussion without further misunderstanding
+> and confusion.
 
-We will certainly be doing this in the next day or two.
+I will try to be consistent about this going forward:
+non-fragmented - legacy page pool w/o page frags
+mono-frag - after this page page pool w/o frags
+fragmented - before/after this patch w/ frags
 
-cheers,
-jamal
+> >
+> >>>
+> >>>>>
+> >>>>>> -    if (page && *offset + size > max_size) {
+> >>>>>> +    if (page) {
+> >>>>>> +            *offset =3D pool->frag_offset;
+> >>>>>> +
+> >>>>>> +            if (*offset + size <=3D max_size) {
+> >>>>>> +                    pool->frag_users++;
+> >>>>>> +                    pool->frag_offset =3D *offset + size;
+> >>>>>> +                    alloc_stat_inc(pool, fast);
+> >>>>>> +                    return page;
+> >>>>
+> >>>> Note that we still allow frag page here when '(size << 1 > max_size)=
+'.
+> >>
+> >> This is the optimization I was taking about: suppose we start
+> >> from a clean state with 64K page size, if page_pool_alloc_frag()
+> >> is called with size being 2K and then 34K, we only need one page
+> >> to satisfy caller's need as we do the '*offset + size > max_size'
+> >> checking before the '(size << 1 > max_size)' checking.
+> >
+> > The issue is the unaccounted for waste. We are supposed to know the
+> > general size of the frags being used so we can compute truesize. If
+>
+> Note, for case of veth and virtio_net, the driver may only know the
+> current frag size when calling page_pool_alloc_frag(), it does not
+> konw what is the size of the frags will be used next time, how exactly
+> are we going to compute the truesize for cases with different frag
+> size?  As far as I can tell, we may only do something like virtio_net
+> is doing with 'page_frag' for the last frag as below, for other frags,
+> the truesize may need to take accounting to the aligning requirement:
+> https://elixir.bootlin.com/linux/v6.3.5/source/drivers/net/virtio_net.c#L=
+1638
+
+Yeah, that is more-or-less what I am getting at. This is why drivers
+will tend to want to allocate a mono-frag themselves and then take
+care of adding additional fragmentation as needed. If you are
+abstracting that away from the driver then it makes it much harder to
+track that truesize.
+
+> > for example you are using an order 3 page and you are splitting it
+> > between a 2K and a 17K fragment the 2K fragments will have a massive
+> > truesize underestimate that can lead to memory issues if those smaller
+> > fragments end up holding onto the pages.
+> >
+> > As such we should try to keep the small fragments away from anything
+> > larger than half of the page.
+>
+> IMHO, doing the above only alleviate the problem. How is above splitting
+> different from splitting it evently with 16 2K fragments, and when 15 fra=
+g
+> is released, we still have the last 2K fragment holding onto 32K memory,
+> doesn't that also cause massive truesize underestimate? Not to mention th=
+at
+> for system with 64K page size.
+
+Yes, that is a known issue. That is why I am not wanting us to further
+exacerbate the issue.
+
+> In RFC patch below, 'page_pool_frag' is used to report the truesize, but
+> I was thinking both 'page_frag' and 'page_frag_cache' both have a similia=
+r
+> problem, so I dropped it in V1 and left that as a future improvement.
+>
+> I can pick it up again if 'truesize' is really the concern, but we have t=
+o
+> align on how to compute the truesize here first.
+>
+> https://patchwork.kernel.org/project/netdevbpf/patch/20230516124801.2465-=
+4-linyunsheng@huawei.com/
+
+I am assuming this is the same one you mentioned in the other patch.
+As I said the problem is the remainder is being ignored. The logic
+should be pushed to the drivers to handle the truesize and is one of
+the reasons why the expectation is that either the driver will use
+something like a fixed constant size if it is using the raw page pool
+fragments, or if it is going to do random sized chunks then it will
+track the size of the chunks of the page is it using and assign the
+remainders to the last fragment used in a given page.
 
