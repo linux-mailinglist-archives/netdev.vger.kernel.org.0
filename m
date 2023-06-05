@@ -1,91 +1,95 @@
-Return-Path: <netdev+bounces-8238-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8239-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E1C31723399
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 01:16:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 8C8C072339D
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 01:19:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 557211C20D5C
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 23:16:54 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AC7231C20932
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 23:19:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C366128C04;
-	Mon,  5 Jun 2023 23:16:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4FAB328C04;
+	Mon,  5 Jun 2023 23:19:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B24A5256;
-	Mon,  5 Jun 2023 23:16:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7039C433D2;
-	Mon,  5 Jun 2023 23:16:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F72F5256
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 23:19:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79E29C433EF;
+	Mon,  5 Jun 2023 23:19:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686007012;
-	bh=N0okavvmW+hN+zvpU/6hPbUTjAPKTkWMzVLTCfODKj0=;
+	s=k20201202; t=1686007163;
+	bh=aWQhnRxHE164WalESsY2Agv+EkbUckwBu8/Kcr/s6Dw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=oxFFZGeRo8w3FyjbFp8iGddkfxEkSm6B7ROKwrdD+49820oQHrBDX8pULUmIFAJAW
-	 BnZ4XHz/+UUUv00BYv/XgrekfAscVRexvdC/jGjZ3AXdXdLqXsuGCdRJdqejPYNoUA
-	 +coVOUM0GUiTbFv0VbHcsO19NhI8HzXYCsYqTPN9/Wh/T0WeMv9WzauRRhAkrCPNB1
-	 7G6g4pE0SLuxuV8IbhPGSYNq3D4BTYISTw/UXwYtLMQSoh//yzHOVmmNO2cxARKvOh
-	 goVUi+tfdy0EBW0gpXZaRLvKfD1Z4PBFlmuGMfFmu5Hn4Osxm4u6KhVyC+Z+3CXFvw
-	 qfVbV/VNAWFQA==
-Date: Mon, 5 Jun 2023 16:16:50 -0700
+	b=MXmixwPsNly4LfElyNJSjFJQfstd1C1O9n82CX/qq5+1Xtie5h4TwLe57xsM3PDrP
+	 NkSplDXl47Vhyp6PAWeH0qwxRquKg1FN6t8zWZd+E4awKx/Mk2Vw+lom1CtMjRPfgU
+	 lzCRvBKez7sCaZpoYDt7J0Zc84OjjcRQd1/QqrPbRkAfJmR6CiJrU//Xsx3xq6aOfy
+	 Ya3latCAbcU5vRzzD+usC5LvAllYbz+l+shAtV1M0vlaqcKMx5G6kwwFOE0nBag8pC
+	 xpyhuUC5waTRWSMoS9CpHYCB0yqfVqeFvK5Uv5P6fGfur2GphD0cSI/3V36WreY6QO
+	 xhdAf5I/eEscw==
+Date: Mon, 5 Jun 2023 16:19:22 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc: mptcp@lists.linux.dev, "David S. Miller" <davem@davemloft.net>, Eric
- Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, David Ahern
- <dsahern@kernel.org>, Mat Martineau <martineau@kernel.org>, Stephen
- Hemminger <stephen@networkplumber.org>, Hideaki YOSHIFUJI
- <yoshfuji@linux-ipv6.org>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] ipv6: lower "link become ready"'s level
- message
-Message-ID: <20230605161650.4a844f42@kernel.org>
-In-Reply-To: <20230601-net-next-skip_print_link_becomes_ready-v1-1-7ff2b88dc9b8@tessares.net>
-References: <20230601-net-next-skip_print_link_becomes_ready-v1-1-7ff2b88dc9b8@tessares.net>
+To: "luwei (O)" <luwei32@huawei.com>
+Cc: Networking <netdev@vger.kernel.org>
+Subject: Re: [Question] integer overflow in function
+ __qdisc_calculate_pkt_len()
+Message-ID: <20230605161922.5e417434@kernel.org>
+In-Reply-To: <7723cc01-57bf-2b64-7f78-98a0e6508a2e@huawei.com>
+References: <7723cc01-57bf-2b64-7f78-98a0e6508a2e@huawei.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 02 Jun 2023 11:36:07 +0200 Matthieu Baerts wrote:
-> This following message is printed in the console each time a network
-> device configured with an IPv6 addresses is ready to be used:
-> 
->   ADDRCONF(NETDEV_CHANGE): <iface>: link becomes ready
-> 
-> When netns are being extensively used -- e.g. by re-creating netns' with
-> veth to discuss with each others for testing purposes like mptcp_join.sh
-> selftest does -- it generates a lot of messages like that: more than 700
-> when executing mptcp_join.sh with the latest version.
-> 
-> It looks like this message is not that helpful after all: maybe it can
-> be used as a sign to know if there is something wrong, e.g. if a device
-> is being regularly reconfigured by accident? But even then, there are
-> better ways to monitor and diagnose such issues.
-> 
-> When looking at commit 3c21edbd1137 ("[IPV6]: Defer IPv6 device
-> initialization until the link becomes ready.") which introduces this new
-> message, it seems it had been added to verify that the new feature was
-> working as expected. It could have then used a lower level than "info"
-> from the beginning but it was fine like that back then: 17 years ago.
-> 
-> It seems then OK today to simply lower its level, similar to commit
-> 7c62b8dd5ca8 ("net/ipv6: lower the level of "link is not ready" messages")
-> and as suggested by Mat [1], Stephen and David [2].
-> 
-> Link: https://lore.kernel.org/mptcp/614e76ac-184e-c553-af72-084f792e60b0@kernel.org/T/ [1]
-> Link: https://lore.kernel.org/netdev/68035bad-b53e-91cb-0e4a-007f27d62b05@tessares.net/T/ [2]
-> Suggested-by: Mat Martineau <martineau@kernel.org>
-> Suggested-by: Stephen Hemminger <stephen@networkplumber.org>
-> Suggested-by: David Ahern <dsahern@kernel.org>
-> Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+On Fri, 2 Jun 2023 10:50:44 +0800 luwei (O) wrote:
+>  =C2=A0=C2=A0=C2=A0 I found an integer overflow issue in function=20
+> __qdisc_calculate_pkt_len(), the root cause is overhead and cell_align=20
+> in stab is not checked.
+>=20
+> For example, if overhead is set to -2147483559 and cell_align is set to=20
+> -32767 (tc tool limit it to 0 and -1, but other values can be set with=20
+> netlink api),
+>=20
+> the integer overflow occurs:
+>=20
+>  =C2=A0568 void __qdisc_calculate_pkt_len(struct sk_buff *skb,
+>  =C2=A0569=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struct qdisc_size_ta=
+ble *stab)
+>  =C2=A0570 {
+>  =C2=A0571=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int pkt_len, s=
+lot;
+>  =C2=A0572
+>  =C2=A0573=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pkt_len =3D sk=
+b->len + stab->szopts.overhead; (1)
+>  =C2=A0574=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (unlikely(!=
+stab->szopts.tsize))
+>  =C2=A0575=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto out;
+>  =C2=A0576
+>  =C2=A0577=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 slot =3D pkt_l=
+en + stab->szopts.cell_align; =C2=A0 (2)
+>  =C2=A0578=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (unlikely(s=
+lot < 0))
+>  =C2=A0579=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 slot =3D 0;
+>=20
+> if skb->len is 66, slot will be 66 + (-2147483559) + (-32767) =3D=20
+> 2147451036, and pkt_len will be 2147451040 finally.=C2=A0 I think the val=
+ue=20
+> of overhead and cell_align
+>=20
+> should be limited, but not sure to which values they should be limited,=20
+> can any one give me some suggestions?
 
-This appears to have been applied as commit f69de8aa4752 ("ipv6: lower
-"link become ready"'s level message") in net-next, thank you!
+on a quick look limiting the cell_align to S16_MIN at the netlink level
+(NLA_POLICY_MIN()) seems reasonable, feel free to send a patch.
 
