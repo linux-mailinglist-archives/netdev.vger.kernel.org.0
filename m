@@ -1,166 +1,176 @@
-Return-Path: <netdev+bounces-7942-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7943-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 849877222BE
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:57:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 73ACB7222C9
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:59:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F1E741C20B71
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:57:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E12281C20AFF
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:59:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 78BFD156C6;
-	Mon,  5 Jun 2023 09:57:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 68E9B156C8;
+	Mon,  5 Jun 2023 09:59:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64B625680
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 09:57:20 +0000 (UTC)
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972A6D3
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 02:57:18 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id d9443c01a7336-1b0201d9a9eso33281825ad.0
-        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 02:57:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1685959038; x=1688551038;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=TyuCPt1vQNlaWH7tCffqZV2k/RtNlXHoU62GbJy8Xjk=;
-        b=KKGiHDA+xwC+Nm4KS7WEjinOuCG1iVjs4z+FmI8SpBouzvSfV4RqeQidTBGyVkA19I
-         Oh0TRdzdP3GJkcP6FekYo8ImlboVTxzu/vCtrxiT+dkG2TBAvOliU6hwgC3b5yQCwkZV
-         ue8mOe5XCOP2vcouiSDq+wVpvmWTG/JDCIfoUa4Pyh87YXdvAXY7EDkQVKzI/nyoPaWV
-         gWrnFcvLgMQqHdqUnwpFVXl7QK+x1EbdnB8dsjpgLIjIozZlTX8BW9drTjYqqlP7v9oY
-         Igs9eoVOUVnNsUfVZM7CU8zm4TwVsb3znjj/lBNSD/l+EYn15Btp40XCSuplRIWpCx/E
-         4jxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685959038; x=1688551038;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TyuCPt1vQNlaWH7tCffqZV2k/RtNlXHoU62GbJy8Xjk=;
-        b=l4Ct63EfMqyYlROzM77mM3nWSAag5lfVhU1IkimYHE2VfeEmC91z3nOhlaraYTK2Ds
-         jG3k+EZX4PYqOR2yK9mZaXRKIxSAkmtyZ2tLlYgl0uLTfsYkPPh3rXtSKjKxf0Ug7UEE
-         xqo8Wnns+SFkyw2QKMJPafZn1TJV6vBrofLS3mD0mwpTL2QxMFjV3QJ8bCWfhXvZVBe8
-         Hqbp4erG+mAPAgAZ4TSGhQqFAXjmZMOMzmDB54+UF0y93StzAmPukG9+bWg3WvbmcwGb
-         lTs5F/sNnQ9yda6v+0VXQGCrH1aO7X5mkUejfNd5KQhmXApqGVZpi+0OYDVRHiydqTj9
-         WFww==
-X-Gm-Message-State: AC+VfDwofY7zLz41Hq+8O5QEryZ8123TYKLCsmqbetXBZY0w3S1nWABz
-	dGoM3cxB+YHunDmE1xc2GZ+0zg==
-X-Google-Smtp-Source: ACHHUZ7UU+7VhOoZ+LaCsaa8oefNZLkAgK8CdKo9gcU9SGPUfv5AJPuReZuksUmH0QYq0D1i0CWW5Q==
-X-Received: by 2002:a17:903:2305:b0:1b0:4c6c:716 with SMTP id d5-20020a170903230500b001b04c6c0716mr9054747plh.4.1685959038094;
-        Mon, 05 Jun 2023 02:57:18 -0700 (PDT)
-Received: from [10.254.80.225] ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id x21-20020a17090300d500b001ae469ca0c0sm6152081plc.245.2023.06.05.02.57.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Jun 2023 02:57:17 -0700 (PDT)
-Message-ID: <806149cf-cc07-ad5a-267e-94a6bc3b4106@bytedance.com>
-Date: Mon, 5 Jun 2023 17:57:09 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A6E55680
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 09:59:50 +0000 (UTC)
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7EBCB0;
+	Mon,  5 Jun 2023 02:59:44 -0700 (PDT)
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+	(No client certificate requested)
+	(Authenticated sender: marex@denx.de)
+	by phobos.denx.de (Postfix) with ESMTPSA id A97BA8467E;
+	Mon,  5 Jun 2023 11:59:41 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+	s=phobos-20191101; t=1685959182;
+	bh=yzbvSbjMl2YsxvMpDx5BjJDvIMXshX3uhOceQVaVxY0=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=BfeQy4uEUo7AB4FOoIvmC4FJ4E9Z+0xqfKR0xig5ibbGvSQXKXho9lpOeHnC6c2T3
+	 KaxGAaS2VYZo5X5wgkjgieo0quT7f2Qha1UUcjMD1+4AH96zoQE4wwT2ZwnWv2V3YT
+	 6RIQKVwprTDJCHLwAGXQvF5UO3pSShrJhx+A9Emhd3uqC/rWwj2LbA6h75kVpYCVtU
+	 t+CovtAB/LF9DK6wGSdUCZwXbTCoxL7jJ9Bn/GgEswtIlAwwlcaYKfltVc/VEI+SuV
+	 EZ4K9eyYPpiAXbyX2VoKtLkQi32JCjptXBnh3XhRZiyclaJvW8INEyPXAlavd2CdH7
+	 3M3tlRBorghNg==
+Message-ID: <dd9a86af-e41a-3450-5e52-6473561a3e18@denx.de>
+Date: Mon, 5 Jun 2023 11:59:41 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.11.2
-Subject: Re: Re: Re: [PATCH net-next v5 2/3] sock: Always take memcg pressure
- into consideration
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH v3] MAINTAINERS: Add new maintainers to Redpine driver
 Content-Language: en-US
-To: Paolo Abeni <pabeni@redhat.com>,
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
- Shakeel Butt <shakeelb@google.com>
-Cc: "David S . Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>,
- Vladimir Davydov <vdavydov.dev@gmail.com>,
- Muchun Song <muchun.song@linux.dev>, Simon Horman
- <simon.horman@corigine.com>, netdev@vger.kernel.org, linux-mm@kvack.org,
- cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230602081135.75424-1-wuyun.abel@bytedance.com>
- <20230602081135.75424-3-wuyun.abel@bytedance.com>
- <20230602204159.vo7fmuvh3y2pdfi5@google.com>
- <CAF=yD-LFQRreWq1RMkvLw9Nj3NQpJwbDSCfECUhh-aVchR-jsg@mail.gmail.com>
- <6f67c3ca-5e73-d7ac-f32a-42a21d3ea576@bytedance.com>
- <727b1fb64d04deb8b2a9ae1fec4b51dafa1ff2b5.camel@redhat.com>
-From: Abel Wu <wuyun.abel@bytedance.com>
-In-Reply-To: <727b1fb64d04deb8b2a9ae1fec4b51dafa1ff2b5.camel@redhat.com>
+To: =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
+ Kalle Valo <kvalo@kernel.org>,
+ Ganapathi Kondraju <ganapathi.kondraju@silabs.com>
+Cc: linux-wireless@vger.kernel.org, Amitkumar Karwar <amitkarwar@gmail.com>,
+ Amol Hanwate <amol.hanwate@silabs.com>, Angus Ainslie <angus@akkea.ca>,
+ Jakub Kicinski <kuba@kernel.org>, Johannes Berg <johannes@sipsolutions.net>,
+ Martin Fuzzey <martin.fuzzey@flowbird.group>,
+ Martin Kepplinger <martink@posteo.de>,
+ Narasimha Anumolu <narasimha.anumolu@silabs.com>,
+ Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+ Shivanadam Gude <shivanadam.gude@silabs.com>,
+ Siva Rebbagondla <siva8118@gmail.com>,
+ Srinivas Chappidi <srinivas.chappidi@silabs.com>, netdev@vger.kernel.org
+References: <1675433281-6132-1-git-send-email-ganapathi.kondraju@silabs.com>
+ <87lekj1jx2.fsf@kernel.org> <8eb3f1fc-0dee-3e5d-b309-e62349820be8@denx.de>
+ <112376890.nniJfEyVGO@pc-42>
+From: Marek Vasut <marex@denx.de>
+In-Reply-To: <112376890.nniJfEyVGO@pc-42>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
 	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 6/5/23 4:27 PM, Paolo Abeni wrote:
-> On Mon, 2023-06-05 at 11:44 +0800, Abel Wu wrote:
->> On 6/4/23 6:36 PM, Willem de Bruijn wrote:
->>> On Fri, Jun 2, 2023 at 10:42 PM Shakeel Butt <shakeelb@google.com> wrote:
->>>>
->>>> On Fri, Jun 02, 2023 at 04:11:34PM +0800, Abel Wu wrote:
->>>>> The sk_under_memory_pressure() is called to check whether there is
->>>>> memory pressure related to this socket. But now it ignores the net-
->>>>> memcg's pressure if the proto of the socket doesn't care about the
->>>>> global pressure, which may put burden on its memcg compaction or
->>>>> reclaim path (also remember that socket memory is un-reclaimable).
->>>>>
->>>>> So always check the memcg's vm status to alleviate memstalls when
->>>>> it's in pressure.
->>>>>
->>>>
->>>> This is interesting. UDP is the only protocol which supports memory
->>>> accounting (i.e. udp_memory_allocated) but it does not define
->>>> memory_pressure. In addition, it does have sysctl_udp_mem. So
->>>> effectively UDP supports a hard limit and ignores memcg pressure at the
->>>> moment. This patch will change its behavior to consider memcg pressure
->>>> as well. I don't have any objection but let's get opinion of UDP
->>>> maintainer.
-> 
-> Thanks for the head-up, I did not notice the side effect on UDP.
-> 
->>
->>> So this commit only affects the only other protocol-independent
->>> caller, __sk_mem_reduce_allocated, to possibly call
->>> sk_leave_memory_pressure if now under the global limit.
+On 6/1/23 12:47, Jérôme Pouiller wrote:
+> On Saturday 27 May 2023 23:12:16 CEST Marek Vasut wrote:
+>> On 2/27/23 11:28, Kalle Valo wrote:
+>>> Ganapathi Kondraju <ganapathi.kondraju@silabs.com> writes:
 >>>
->>> What is the expected behavioral change in practice of this commit?
+>>>> Silicon Labs acquired Redpine Signals recently. It needs to continue
+>>>> giving support to the existing REDPINE WIRELESS DRIVER. This patch adds
+>>>> new Maintainers for it.
+>>>>
+>>>> Signed-off-by: Ganapathi Kondraju <ganapathi.kondraju@silabs.com>
+>>>> ---
+>>>> V2:
+>>>> - Add proper prefix for patch subject.
+>>>> - Reorder the maintainers list alphabetically.
+>>>> - Add a new member to the list.
+>>>> ---
+>>>> V3:
+>>>> - Fix sentence formation in the patch subject and description.
+>>>> ---
+>>>>
+>>>>    MAINTAINERS | 8 +++++++-
+>>>>    1 file changed, 7 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/MAINTAINERS b/MAINTAINERS
+>>>> index ea941dc..04a08c7 100644
+>>>> --- a/MAINTAINERS
+>>>> +++ b/MAINTAINERS
+>>>> @@ -17709,8 +17709,14 @@ S:  Maintained
+>>>>    F: drivers/net/wireless/realtek/rtw89/
+>>>>
+>>>>    REDPINE WIRELESS DRIVER
+>>>> +M:  Amol Hanwate <amol.hanwate@silabs.com>
+>>>> +M:  Ganapathi Kondraju <ganapathi.kondraju@silabs.com>
+>>>> +M:  Jérôme Pouiller <jerome.pouiller@silabs.com>
+>>>> +M:  Narasimha Anumolu <narasimha.anumolu@silabs.com>
+>>>> +M:  Shivanadam Gude <shivanadam.gude@silabs.com>
+>>>> +M:  Srinivas Chappidi <srinivas.chappidi@silabs.com>
+>>>>    L: linux-wireless@vger.kernel.org
+>>>> -S:  Orphan
+>>>> +S:  Maintained
+>>>>    F: drivers/net/wireless/rsi/
+>>>
+>>> For me six maintainers is way too much. Just last November I marked this
+>>> driver as orphan, I really do not want to add all these people to
+>>> MAINTAINERS and never hear from them again.
+>>>
+>>> Ideally I would prefer to have one or two maintainers who would be
+>>> actively working with the drivers. And also I would like to see some
+>>> proof (read: reviewing patches and providing feedback) that the
+>>> maintainers are really parciticiping in upstream before changing the
+>>> status.
 >>
->> Be more conservative on sockmem alloc if under memcg pressure, to
->> avoid worse memstall/latency.
+>> Has there been any progress on improving this driver maintainership
+>> since this patch ?
 > 
-> I guess the above is for TCP sockets only, right? Or at least not for
-> UDP sockets?
-
-Yes, I started off with TCP but wondering if it is applicable to the
-others too as the 'problem' sounds really generic to me.
-
+> Hello Marek,
 > 
-> If so, I think we should avoid change of behaviour for UDP - e.g.
-> keeping the initial 'if (!sk->sk_prot->memory_pressure)' in
-> sk_under_memory_pressure(), with some comments about the rationale for
-> future memory. That should preserve the whole patchset effect for other
-> protocols, right?
+> The situation is still blurry. There is a willing to maintain this driver
+> (and several people would like I take care of that). However, the effort
+> to properly support this driver is still unknown (in fact, I have not yet
+> started to really look at the situation).
 
-Keeping the if statement as it is would imply the prot pressure as a
-master 'switch' to all kinds of pressure. IMHO this might hurt other
-protocols with pressure enabled if they are all used in one memcg which
-happens to be under vmpressure, IOW UDP allocations are given higher
-priority than others.
+I have to admit, the aforementioned paragraph is quite disturbing, 
+considering that this patch adds 6 maintainers, is already in V3, and so 
+far it is not even clear to silabs how much effort it would be to 
+maintain driver for their own hardware, worse, silabs didn't even check. 
+What is the point of adding those maintainers then ?
 
-> 
-> If instead you are also interested into UDP sockets under pressure, how
-> that is going to work? UDP sockets can reclaim memory only at send and
-> close time. A memcg under pressure could starve some sockets forever if
-> the the ones keeping the memory busy are left untouched.
+> Is this driver blocking some architectural changes? Kalle is talking about
+> patches to review. Can you point me on them?
 
-Yes.. And it starts to get me confused that why&when should the memcg
-pressure be used given that we don't want to put harsh constrains on
-sockmem even under memcg pressure.
+You can look up patches at patchwork.kernel.org or lore.kernel.org and 
+search for "rsi:" or "wifi: rsi:" tags.
 
-Thanks!
-	Abel
+This driver is basically unusable and I am tempted to send a patch to 
+move it to staging and possibly remove it altogether.
+
+WiFi/BT coex is broken, WiFi stability is flaky at best, BT often 
+crashes the firmware. There are very iffy design decisions in the driver 
+and other weird defects I keep finding.
+
+Multiple people tried to fix at least a couple of basic problems, so the 
+driver can be used at all, but there is no documentation and getting 
+support regarding anything from RSI is a total waste of time. Sadly, the 
+only reference material I could find and work with is some downstream 
+goo, which is released in enormous single-commit code dumps with +/- 
+thousands of lines of changes and with zero explanation what each change 
+means.
+
+> Anyway, I would like to come back with a plan by the end of the summer.
+
+Sure.
+
+In the meantime, since RSI neglected this driver for years, what would 
+be the suggestion for people who are stuck with the RSI WiFi hardware?
 
