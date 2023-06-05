@@ -1,46 +1,47 @@
-Return-Path: <netdev+bounces-7938-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7939-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 796AC7222B4
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:56:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 1A54E7222B9
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:56:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 33C762811CC
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:56:12 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CA6B1281215
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:56:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C28B154A9;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F041156D9;
 	Mon,  5 Jun 2023 09:55:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2181B134BB
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 09:55:58 +0000 (UTC)
-Received: from smtpbg153.qq.com (smtpbg153.qq.com [13.245.218.24])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DEAD3
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 02:55:55 -0700 (PDT)
-X-QQ-mid: bizesmtp86t1685958945tf7p5e7d
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81768156D0
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 09:55:59 +0000 (UTC)
+Received: from smtpbg156.qq.com (smtpbg156.qq.com [15.184.82.18])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6CDB8
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 02:55:56 -0700 (PDT)
+X-QQ-mid: bizesmtp86t1685958949thg5h7d1
 Received: from localhost.localdomain ( [60.177.99.31])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Mon, 05 Jun 2023 17:55:42 +0800 (CST)
+	id ; Mon, 05 Jun 2023 17:55:48 +0800 (CST)
 X-QQ-SSF: 01400000000000N0Z000000A0000000
-X-QQ-FEAT: q+EIYT+FhZr/VWuGHW5yOVBJty4/KxOGCld9HRMpYcy/D5WeCYPAUYbZz9UH+
-	J/kAH6IeVNcesMFgtGGtJLGbwYvCyZlUFJGssk0Dz8LEe2RgAfCaZo+ZWAFLfzJMFnuIo0o
-	SklNtt3yOzWkQmAHsvCAQtT4Z/eE2X/mVangy09ChbeBR+D8tZl6ESh1sR33jQCXvhNjJmt
-	PhNv4l0EVvL1tJm/AZpQMU4nkuozLW9fpftWcyGlV0ehvTmFAOMJA0vDK5SaKwFSnKmva92
-	taBgQFUeb9JKQOE2zvIH2hHhHiDrpMs+QJYEigDaT8VJiBt0taLZwiTAqHEnHp1upD920W0
-	QD1lSWrZQcZaXVMzxOCvQPWT8TGs76h9HFYBn/vCP7Y0M+zXOawBwrh9X24N7OapQhkLQ9b
+X-QQ-FEAT: I8hG9CuxGDK0dYQWPu8BK+vCoQHoPW8MS8SPSQ87/wRkRRiNJs521qRw/iu+6
+	E8wXtilwc8HvhNUdviDfw3Wb+22TA4d2GRyi365FGivCrZ+BouYOCXGmIXP+YCiNCc2Ms2K
+	zCzUXsDIhEPgZz7shRMNiErHr4mUKZpvgD9OCwSMLnKkxkgeeKy65Whr4etFYfWC3TfYF8k
+	JS2k8VYBVe8niYhtA+0harSwgsjOMa+czWdH1Cf3dGpLACnWHA0skqtxJN4ZY0xCxH2aHCG
+	KH8NzmUD5Nt/Q1IjnWetu9tIVfNhkgq8A0uFpxzKEvsp/5IF3zs0C3mh5MweDoA/sgRyP85
+	BXvp0UZHv/DTX7p0m3DBadeCOfVRe/IDbMxZEly64gYAJGncG5gAAxGVS2Lnahra0qPOKpP
+	YTG6hNN49Ww=
 X-QQ-GoodBg: 2
-X-BIZMAIL-ID: 11037389191732909534
+X-BIZMAIL-ID: 2369341711221289698
 From: Mengyuan Lou <mengyuanlou@net-swift.com>
 To: netdev@vger.kernel.org
 Cc: jiawenwu@trustnetic.com,
 	Mengyuan Lou <mengyuanlou@net-swift.com>
-Subject: [RFC,PATCH net-next 1/3] net: ngbe: add Wake on Lan support
-Date: Mon,  5 Jun 2023 17:52:50 +0800
-Message-ID: <6DD3D5EDF01AE3F5+20230605095527.57898-2-mengyuanlou@net-swift.com>
+Subject: [RFC,PATCH net-next 2/3] net: core: add member ncsi_enabled to net_device
+Date: Mon,  5 Jun 2023 17:52:51 +0800
+Message-ID: <BEDE537DCE76BDAF+20230605095527.57898-3-mengyuanlou@net-swift.com>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230605095527.57898-1-mengyuanlou@net-swift.com>
 References: <20230605095527.57898-1-mengyuanlou@net-swift.com>
@@ -59,57 +60,52 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Implement ethtool_ops get_wol.
-Implement Wake-on-LAN support.
-
-Magic packets are checked by fw, for now just support
-WAKE_MAGIC and do not supoort to set_wol.
+Add flag ncsi_enabled to struct net_device indicating whether
+NCSI is enabled. Phy_suspend() will use it to decide whether PHY
+can be suspended or not.
 
 Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
 ---
- drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.c | 10 ++++++++++
- drivers/net/ethernet/wangxun/ngbe/ngbe_main.c    |  1 +
- 2 files changed, 11 insertions(+)
+ drivers/net/phy/phy_device.c | 4 +++-
+ include/linux/netdevice.h    | 3 +++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.c
-index 5b25834baf38..2bc54fdafb31 100644
---- a/drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.c
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.c
-@@ -8,12 +8,22 @@
- #include "../libwx/wx_ethtool.h"
- #include "ngbe_ethtool.h"
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 2cad9cc3f6b8..6587b35071e9 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1859,7 +1859,9 @@ int phy_suspend(struct phy_device *phydev)
+ 		return 0;
  
-+static void ngbe_get_wol(struct net_device *netdev,
-+			 struct ethtool_wolinfo *wol)
-+{
-+	if (!netdev->wol_enabled)
-+		return;
-+	wol->supported = WAKE_MAGIC;
-+	wol->wolopts = WAKE_MAGIC;
-+}
-+
- static const struct ethtool_ops ngbe_ethtool_ops = {
- 	.get_drvinfo		= wx_get_drvinfo,
- 	.get_link		= ethtool_op_get_link,
- 	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
- 	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
- 	.nway_reset		= phy_ethtool_nway_reset,
-+	.get_wol		= ngbe_get_wol,
- };
+ 	phy_ethtool_get_wol(phydev, &wol);
+-	phydev->wol_enabled = wol.wolopts || (netdev && netdev->wol_enabled);
++	phydev->wol_enabled = wol.wolopts ||
++			      (netdev && netdev->wol_enabled) ||
++			      (netdev && netdev->ncsi_enabled);
+ 	/* If the device has WOL enabled, we cannot suspend the PHY */
+ 	if (phydev->wol_enabled && !(phydrv->flags & PHY_ALWAYS_CALL_SUSPEND))
+ 		return -EBUSY;
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 08fbd4622ccf..7650b6a210ff 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2021,6 +2021,8 @@ enum netdev_ml_priv_type {
+  *
+  *	@wol_enabled:	Wake-on-LAN is enabled
+  *
++ *	@ncsi_enabled:	NCSI is enabled
++ *
+  *	@threaded:	napi threaded mode is enabled
+  *
+  *	@net_notifier_list:	List of per-net netdev notifier block
+@@ -2390,6 +2392,7 @@ struct net_device {
+ 	struct lock_class_key	*qdisc_tx_busylock;
+ 	bool			proto_down;
+ 	unsigned		wol_enabled:1;
++	unsigned		ncsi_enabled:1;
+ 	unsigned		threaded:1;
  
- void ngbe_set_ethtool_ops(struct net_device *netdev)
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-index c99a5d3de72e..5d013ac3acd1 100644
---- a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-@@ -628,6 +628,7 @@ static int ngbe_probe(struct pci_dev *pdev,
- 	wr32(wx, NGBE_PSR_WKUP_CTL, wx->wol);
- 
- 	device_set_wakeup_enable(&pdev->dev, wx->wol);
-+	netdev->wol_enabled = wx->wol_enabled;
- 
- 	/* Save off EEPROM version number and Option Rom version which
- 	 * together make a unique identify for the eeprom
+ 	struct list_head	net_notifier_list;
 -- 
 2.41.0
 
