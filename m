@@ -1,150 +1,309 @@
-Return-Path: <netdev+bounces-7856-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7857-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E9F88721D87
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 07:34:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 6E501721D93
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 07:39:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4F1A21C20B11
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 05:34:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 85DAC1C20AF2
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 05:38:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 949FA17FC;
-	Mon,  5 Jun 2023 05:34:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4B9D72100;
+	Mon,  5 Jun 2023 05:38:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E6EB17F4
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 05:34:08 +0000 (UTC)
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB37D3
-	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 22:34:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1685943246; x=1717479246;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=hSGY5yP+GLYnKDAjBuRmiqQxTYxVL9UtHMOWJllYykc=;
-  b=VTP2j+pXoKivuPiM01ejFiU9Hsgifx+mAckb6NcqvWBfSeLiETYAId7/
-   rO0Nq+wEc3HUuuEbobsnV9CL/wInlQOEHQrgXc4f9uP9Txtf8chjRX+ql
-   XgsYGwc1qpgdtLdK8sg/axw4D4Ft/Fe36y9WxS7dntQZgzfsPu+1D9Rd6
-   le8rbnqwLBnFZzDHVl1N0Gzmb4CbzYx9a/LgjqjEG0XzHoJEYq6rtCC3p
-   mblACAyeRLO0j2o0Lk5VMPT1/vVyVpa17Kt7gU036ubGsMxAkahnVR91c
-   VlOrQD4k0rGnHhmWESZhAskr4QdFT1tSEF073ijBsNKe86sh99fAZeBOM
-   g==;
-X-IronPort-AV: E=Sophos;i="6.00,217,1681196400"; 
-   d="scan'208";a="155501138"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jun 2023 22:34:05 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Sun, 4 Jun 2023 22:34:04 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Sun, 4 Jun 2023 22:34:01 -0700
-Date: Mon, 5 Jun 2023 11:04:00 +0530
-From: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-To: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-CC: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 355CB631
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 05:38:58 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18A24A9
+	for <netdev@vger.kernel.org>; Sun,  4 Jun 2023 22:38:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685943536;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=WRJJH0OW2J50d9NADx5u5KL1sSbMX6qrZ3gY09U8zZ0=;
+	b=MNEd6gp9qoztVJ0ZXwQOGRvrXR5IvLNbROgCB13q5RzI6nHQ1q/N0Btt5/X5KOk2L2qBEX
+	4GCv4/5wcOerIazU7jgy5E4JY3j8KX8CRT8LAob6VCBmop6phXDtpIjJnw+medyN/oEHCS
+	UKIEHlt42g70SCPOuFmvPJ8IFPUdoGk=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-631-r59y7sOEPwacXvJ0F4KYiQ-1; Mon, 05 Jun 2023 01:38:54 -0400
+X-MC-Unique: r59y7sOEPwacXvJ0F4KYiQ-1
+Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-30b218c0bbbso1806216f8f.3
+        for <netdev@vger.kernel.org>; Sun, 04 Jun 2023 22:38:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685943533; x=1688535533;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=WRJJH0OW2J50d9NADx5u5KL1sSbMX6qrZ3gY09U8zZ0=;
+        b=E+VafOl0eASdKATgTy4Ro3cYaNjf9jkaYiQfI503b9Eb/gry/Q5sxxwN7hUVmmweil
+         RE5HIe0aXTbEy7yCV5lKWO5g8eS0xnF0MPZ5/w+AchK6a1WOshxbuA7XBYZKwV7w9M9Y
+         IUEm+X/17kBIIvS6DwonHrn/dmnVXxzPg8oV264V/v8j/gykYW7cmNjxO3Nx4Tbk8sJu
+         2xNluJG1fyEJtXW9TGgArf7bzMQUKyavLe4ul4pRkmQI7UUjKrIm7Rkwd/Y+TmTi/E21
+         KQX97bQYIn3lq5n29SC/OeSBGRTbZZbrGsYxwKEAFY/T3NX4tzovWszzuYBT8/yZY6vC
+         f2dg==
+X-Gm-Message-State: AC+VfDy7fxzUogWYnwelTDATak1KVnOeC16Am8wfV/6PUEXa+MQRour5
+	RpgsBsWd2iBqvqf/yhr+BFSKTeMrD28R4w58phZlLBVHvWSU3u3Dx949XFY9g0nVyAEtzBMtnPV
+	wsQk+o2h9yOoLcemUVn2aWCHE
+X-Received: by 2002:a5d:6b86:0:b0:30a:b4e1:a89c with SMTP id n6-20020a5d6b86000000b0030ab4e1a89cmr3896118wrx.66.1685943533204;
+        Sun, 04 Jun 2023 22:38:53 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7bhQbx+cGVISzu+LTDpd2WoPYUQfudCiV0v4tPmO0GTljBr2mjJBinEUeuco5jPdn8SzBrbQ==
+X-Received: by 2002:a5d:6b86:0:b0:30a:b4e1:a89c with SMTP id n6-20020a5d6b86000000b0030ab4e1a89cmr3896101wrx.66.1685943532831;
+        Sun, 04 Jun 2023 22:38:52 -0700 (PDT)
+Received: from redhat.com ([2.55.41.2])
+        by smtp.gmail.com with ESMTPSA id m10-20020adfe94a000000b0030c6751a49dsm8552160wrn.115.2023.06.04.22.38.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 04 Jun 2023 22:38:52 -0700 (PDT)
+Date: Mon, 5 Jun 2023 01:38:48 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: virtualization@lists.linux-foundation.org,
+	Jason Wang <jasowang@redhat.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	<netdev@vger.kernel.org>
-Subject: Re: [PATCH net] net: phylink: actually fix ksettings_set() ethtool
- call
-Message-ID: <20230605053400.GA273955@raju-project-pc>
-References: <E1q4eLm-00Ayxk-GZ@rmk-PC.armlinux.org.uk>
+	Alexei Starovoitov <ast@kernel.org>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	John Fastabend <john.fastabend@gmail.com>, netdev@vger.kernel.org,
+	bpf@vger.kernel.org
+Subject: Re: [PATCH vhost v10 07/10] virtio_ring: introduce helpers for
+ premapped
+Message-ID: <20230605013658-mutt-send-email-mst@kernel.org>
+References: <20230602092206.50108-1-xuanzhuo@linux.alibaba.com>
+ <20230602092206.50108-8-xuanzhuo@linux.alibaba.com>
+ <20230604094122-mutt-send-email-mst@kernel.org>
+ <1685930811.137484-1-xuanzhuo@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <E1q4eLm-00Ayxk-GZ@rmk-PC.armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <1685930811.137484-1-xuanzhuo@linux.alibaba.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The 06/01/2023 10:12, Russell King (Oracle) wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+On Mon, Jun 05, 2023 at 10:06:51AM +0800, Xuan Zhuo wrote:
+> On Sun, 4 Jun 2023 09:45:14 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > On Fri, Jun 02, 2023 at 05:22:03PM +0800, Xuan Zhuo wrote:
+> > > This patch introduces three helpers for premapped mode.
+> > >
+> > > * virtqueue_get_buf_premapped
+> > > * virtqueue_detach_unused_buf_premapped
+> > >
+> > > The above helpers work like the non-premapped funcs. But a cursor is
+> > > passed.
+> > >
+> > > virtqueue_detach is used to get the dma info of the last buf by
+> > >   cursor.
+> >
+> > This isn't very clear from the description but virtqueue_detach is
+> > also introduced by this patch as opposed to being used.
+> >
+> >
+> > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > ---
+> > >  drivers/virtio/virtio_ring.c | 83 ++++++++++++++++++++++++++++++++++++
+> > >  include/linux/virtio.h       | 10 +++++
+> > >  2 files changed, 93 insertions(+)
+> > >
+> > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > > index cbc22daae7e1..6771b9661798 100644
+> > > --- a/drivers/virtio/virtio_ring.c
+> > > +++ b/drivers/virtio/virtio_ring.c
+> > > @@ -2555,6 +2555,66 @@ void *virtqueue_get_buf(struct virtqueue *_vq, unsigned int *len)
+> > >  	return virtqueue_get_buf_ctx(_vq, len, NULL);
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(virtqueue_get_buf);
+> > > +
+> > > +/**
+> > > + * virtqueue_get_buf_premapped - get the next used buffer
+> > > + * @_vq: the struct virtqueue we're talking about.
+> > > + * @len: the length written into the buffer
+> > > + * @ctx: extra context for the token
+> > > + * @cursor: detach cursor
+> > > + *
+> > > + * If the device wrote data into the buffer, @len will be set to the
+> > > + * amount written.  This means you don't need to clear the buffer
+> > > + * beforehand to ensure there's no data leakage in the case of short
+> > > + * writes.
+> > > + *
+> > > + * Caller must ensure we don't call this with other virtqueue
+> > > + * operations at the same time (except where noted).
+> > > + *
+> > > + * This is used for the premapped vq. The cursor is passed by the dirver, that
+> > > + * is used for virtqueue_detach. That will be initialized by virtio core
+> > > + * internally.
+> > > + *
+> > > + * Returns NULL if there are no used buffers, or the "data" token
+> > > + * handed to virtqueue_add_*().
+> > > + */
+> > > +void *virtqueue_get_buf_premapped(struct virtqueue *_vq, unsigned int *len,
+> > > +				  void **ctx,
+> > > +				  struct virtqueue_detach_cursor *cursor)
+> > > +{
+> > > +	struct vring_virtqueue *vq = to_vvq(_vq);
+> > > +
+> > > +	return vq->packed_ring ? virtqueue_get_buf_ctx_packed(_vq, len, ctx, cursor) :
+> > > +				 virtqueue_get_buf_ctx_split(_vq, len, ctx, cursor);
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(virtqueue_get_buf_premapped);
+> > > +
+> > > +/**
+> > > + * virtqueue_detach - get the dma info of last buf
+> >
+> > detach what from what then?
+> > I am guessing this is not the only thing this function does?
+> > sounds like a bad name for a function.
 > 
-> Raju Lakkaraju reported that the below commit caused a regression
-> with Lan743x drivers and a 2.5G SFP. Sadly, this is because the commit
-> was utterly wrong. Let's fix this properly by not moving the
-> linkmode_and(), but instead copying the link ksettings and then
-> modifying the advertising mask before passing the modified link
-> ksettings to phylib.
+> Let me think of a good name
 > 
-> Fixes: df0acdc59b09 ("net: phylink: fix ksettings_set() ethtool call")
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> ---
-> Raju,
+> >
+> > > + * @_vq: the struct virtqueue we're talking about.
+> > > + * @cursor: detach cursor
+> > > + * @addr: the dma address
+> >
+> > what address?  it's the 1st time you mention an address ...
 > 
-> Given the number of cockups I've made with this so far, it would be a
-> really good idea if you can explicitly test this patch and provide a
-> tested-by. Also it would be good to have a reported-by as well.
+> Will fix.
+> 
+> 
+> >
+> > > + * @len: the length of the dma address
+> > > + * @dir: the direction of the dma address
+> > > + *
+> > > + * This is used for the premapped vq. The cursor is initialized by
+> > > + * virtqueue_get_buf_premapped or virtqueue_detach_unused_buf_premapped.
+> > > + *
+> > > + * Returns:
+> > > + * -EAGAIN: there are more dma info, this function should be called more.
+> >
+> > here too, pls don't return -EAGAIN not in an error case.
+> > something like "1" will do.
+> 
+> While I agree with you, -EAGAIN seems to be a commonly used method.
 
-Tested this patch with 1G Speed Cu SFP (Axcen Photonics - AXGT-R1T4-05I1) with
-different speeds (1G/100M/10M bps) changes.. Working as expected.
+Where is it used like this? A typical use is e.g. in read(2):
 
-Tested-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-Reported-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+      EAGAIN The file descriptor fd refers to a file other than a socket and has been marked nonblocking (O_NONBLOCK), and  the  read
+              would block.  See open(2) for further details on the O_NONBLOCK flag.
 
-Thanks,
-Raju
+a better analog here is read filling up all its buffer, in which
+case it returns the # of bytes returned.
+
+
+> How about we
+> return EAGAIN instead of -EAGAIN ?
 > 
 > Thanks.
 > 
->  drivers/net/phy/phylink.c | 15 ++++++++++-----
->  1 file changed, 10 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> index e237949deee6..b4831110003c 100644
-> --- a/drivers/net/phy/phylink.c
-> +++ b/drivers/net/phy/phylink.c
-> @@ -2225,11 +2225,13 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
 > 
->         ASSERT_RTNL();
-> 
-> -       /* Mask out unsupported advertisements */
-> -       linkmode_and(config.advertising, kset->link_modes.advertising,
-> -                    pl->supported);
-> -
->         if (pl->phydev) {
-> +               struct ethtool_link_ksettings phy_kset = *kset;
-> +
-> +               linkmode_and(phy_kset.link_modes.advertising,
-> +                            phy_kset.link_modes.advertising,
-> +                            pl->supported);
-> +
->                 /* We can rely on phylib for this update; we also do not need
->                  * to update the pl->link_config settings:
->                  * - the configuration returned via ksettings_get() will come
-> @@ -2248,10 +2250,13 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
->                  *   the presence of a PHY, this should not be changed as that
->                  *   should be determined from the media side advertisement.
->                  */
-> -               return phy_ethtool_ksettings_set(pl->phydev, kset);
-> +               return phy_ethtool_ksettings_set(pl->phydev, &phy_kset);
->         }
-> 
->         config = pl->link_config;
-> +       /* Mask out unsupported advertisements */
-> +       linkmode_and(config.advertising, kset->link_modes.advertising,
-> +                    pl->supported);
-> 
->         /* FIXME: should we reject autoneg if phy/mac does not support it? */
->         switch (kset->base.autoneg) {
-> --
-> 2.30.2
-> 
+> >
+> > > + * -EINVAL: the process is done, should not call this function
+> > > + * 0: no more dma info
+> > > + */
+> > > +int virtqueue_detach(struct virtqueue *_vq, struct virtqueue_detach_cursor *cursor,
+> > > +		     dma_addr_t *addr, u32 *len, enum dma_data_direction *dir)
+> > > +{
+> > > +	struct vring_virtqueue *vq = to_vvq(_vq);
+> > > +
+> > > +	return vq->packed_ring ? virtqueue_detach_packed(_vq, cursor, addr, len, dir) :
+> > > +				 virtqueue_detach_split(_vq, cursor, addr, len, dir);
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(virtqueue_detach);
+> > > +
+> > >  /**
+> > >   * virtqueue_disable_cb - disable callbacks
+> > >   * @_vq: the struct virtqueue we're talking about.
+> > > @@ -2682,6 +2742,29 @@ void *virtqueue_detach_unused_buf(struct virtqueue *_vq)
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(virtqueue_detach_unused_buf);
+> > >
+> > > +/**
+> > > + * virtqueue_detach_unused_buf_premapped - detach first unused buffer
+> > > + * @_vq: the struct virtqueue we're talking about.
+> > > + * @cursor: detach cursor
+> > > + *
+> > > + * This is used for the premapped vq. The cursor is passed by the dirver, that
+> > > + * is used for virtqueue_detach. That will be initialized by virtio core
+> > > + * internally.
+> > > + *
+> > > + * Returns NULL or the "data" token handed to virtqueue_add_*().
+> > > + * This is not valid on an active queue; it is useful for device
+> > > + * shutdown or the reset queue.
+> > > + */
+> > > +void *virtqueue_detach_unused_buf_premapped(struct virtqueue *_vq,
+> > > +					    struct virtqueue_detach_cursor *cursor)
+> > > +{
+> > > +	struct vring_virtqueue *vq = to_vvq(_vq);
+> > > +
+> > > +	return vq->packed_ring ? virtqueue_detach_unused_buf_packed(_vq, cursor) :
+> > > +				 virtqueue_detach_unused_buf_split(_vq, cursor);
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(virtqueue_detach_unused_buf_premapped);
+> > > +
+> > >  static inline bool more_used(const struct vring_virtqueue *vq)
+> > >  {
+> > >  	return vq->packed_ring ? more_used_packed(vq) : more_used_split(vq);
+> > > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+> > > index 7f137c7a9034..0a11c5b32fe5 100644
+> > > --- a/include/linux/virtio.h
+> > > +++ b/include/linux/virtio.h
+> > > @@ -3,6 +3,7 @@
+> > >  #define _LINUX_VIRTIO_H
+> > >  /* Everything a virtio driver needs to work with any particular virtio
+> > >   * implementation. */
+> > > +#include <linux/dma-mapping.h>
+> > >  #include <linux/types.h>
+> > >  #include <linux/scatterlist.h>
+> > >  #include <linux/spinlock.h>
+> > > @@ -88,6 +89,10 @@ void *virtqueue_get_buf(struct virtqueue *vq, unsigned int *len);
+> > >  void *virtqueue_get_buf_ctx(struct virtqueue *vq, unsigned int *len,
+> > >  			    void **ctx);
+> > >
+> > > +void *virtqueue_get_buf_premapped(struct virtqueue *_vq, unsigned int *len,
+> > > +				  void **ctx,
+> > > +				  struct virtqueue_detach_cursor *cursor);
+> > > +
+> > >  void virtqueue_disable_cb(struct virtqueue *vq);
+> > >
+> > >  bool virtqueue_enable_cb(struct virtqueue *vq);
+> > > @@ -101,6 +106,8 @@ bool virtqueue_poll(struct virtqueue *vq, unsigned);
+> > >  bool virtqueue_enable_cb_delayed(struct virtqueue *vq);
+> > >
+> > >  void *virtqueue_detach_unused_buf(struct virtqueue *vq);
+> > > +void *virtqueue_detach_unused_buf_premapped(struct virtqueue *_vq,
+> > > +					    struct virtqueue_detach_cursor *cursor);
+> > >
+> > >  unsigned int virtqueue_get_vring_size(const struct virtqueue *vq);
+> > >
+> > > @@ -114,6 +121,9 @@ dma_addr_t virtqueue_get_used_addr(const struct virtqueue *vq);
+> > >  int virtqueue_resize(struct virtqueue *vq, u32 num,
+> > >  		     void (*recycle)(struct virtqueue *vq, void *buf));
+> > >
+> > > +int virtqueue_detach(struct virtqueue *_vq, struct virtqueue_detach_cursor *cursor,
+> > > +		     dma_addr_t *addr, u32 *len, enum dma_data_direction *dir);
+> > > +
+> > >  /**
+> > >   * struct virtio_device - representation of a device using virtio
+> > >   * @index: unique position on the virtio bus
+> > > --
+> > > 2.32.0.3.g01195cf9f
+> >
 
 
