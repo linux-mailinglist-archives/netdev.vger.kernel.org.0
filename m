@@ -1,147 +1,184 @@
-Return-Path: <netdev+bounces-8204-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8203-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 59BE17231B1
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 22:47:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3ABE57231A3
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 22:43:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6B36F28145F
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 20:47:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EAF11281463
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 20:43:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8C3AB261CE;
-	Mon,  5 Jun 2023 20:47:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 66259261C2;
+	Mon,  5 Jun 2023 20:43:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F9F9323E
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 20:47:08 +0000 (UTC)
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 569FDFD;
-	Mon,  5 Jun 2023 13:47:05 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-	by mx.sberdevices.ru (Postfix) with ESMTP id 335C65FD21;
-	Mon,  5 Jun 2023 23:47:02 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-	s=mail; t=1685998022;
-	bh=9ATC+GxW8KMEIiHiF6ecJMk0sOenmSubs/SZ/yQ2/y0=;
-	h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-	b=K9EnAk+J1wH+cYPUXAMNufinG+iVezeNRNWTqHdXbSzRlA6+zhToK67+XSsWRyesN
-	 K6nuQFG2JC6hnCSryQInquMb02IFsXO41w/tLq7Gv6QmBEBBOYpic4xPL+nOl6HfLV
-	 0ljgDI6MBVPlBQCTgHCz18HWMhVBdz8eUbwA9OZiWa9GZJsQ/pr2tVknUq7VdAq2bZ
-	 3jGtUwiQKnBogUUuAFQMbk2H4GM6D0vH2c21u5/50TmWB0QitQHkm61Zn1cl7cuugC
-	 PQzUMc1A0HIZDRmMQg/1AW8SOB/y0VBBFCYOpBUWFeyS1xFViBcl9cn/wxXNxM5+QG
-	 KzNrDwusABegQ==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-	by mx.sberdevices.ru (Postfix) with ESMTP;
-	Mon,  5 Jun 2023 23:46:58 +0300 (MSK)
-Message-ID: <2830ac58-fd77-7e5f-5565-eb47dd027d81@sberdevices.ru>
-Date: Mon, 5 Jun 2023 23:42:06 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1A7EBE59;
+	Mon,  5 Jun 2023 20:43:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0414C433D2;
+	Mon,  5 Jun 2023 20:43:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685997807;
+	bh=We5qywEUXFBvYr91+f59TuYCdj8cINMwKn3eQvO6qKo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=I7xvXQXLM0Tk+V+96RzBdr/UoRB92a3ftHnZrilLQZvr5w3AlNjzmN9wbeCqkkbCl
+	 DDUm1W1zxfiZwe+gjXC6K0QMqz8d9USg05gKXvmHLfrAf+FqT+OTOcMK6aGFqzG1zb
+	 E86H0paXXm7ihSYO0CbgPPXfw8rIsLX4qwzhB6/StpLTRz6eVNJy8R0u2bcXb5AObl
+	 Ay16QdoRp1sSVGG9bP4FMnVsq9x+ifwOZH0isH9pe4CqYdVcIo5Tq1wLxq/sUlyaRg
+	 pXJxzrOzrppU5klX4Kcg/mPHvek90M1w/P5hCMfIv1PTbM22Z3AvfuML6Ql3ohsT7Q
+	 qhU+5loHIlZWg==
+Date: Mon, 5 Jun 2023 23:42:56 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc: "rostedt@goodmis.org" <rostedt@goodmis.org>,
+	"tglx@linutronix.de" <tglx@linutronix.de>,
+	"deller@gmx.de" <deller@gmx.de>,
+	"mcgrof@kernel.org" <mcgrof@kernel.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"nadav.amit@gmail.com" <nadav.amit@gmail.com>,
+	"linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+	"davem@davemloft.net" <davem@davemloft.net>,
+	"linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+	"hca@linux.ibm.com" <hca@linux.ibm.com>,
+	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"kent.overstreet@linux.dev" <kent.overstreet@linux.dev>,
+	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+	"palmer@dabbelt.com" <palmer@dabbelt.com>,
+	"chenhuacai@kernel.org" <chenhuacai@kernel.org>,
+	"tsbogend@alpha.franken.de" <tsbogend@alpha.franken.de>,
+	"linux-trace-kernel@vger.kernel.org" <linux-trace-kernel@vger.kernel.org>,
+	"mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+	"linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+	"x86@kernel.org" <x86@kernel.org>,
+	"christophe.leroy@csgroup.eu" <christophe.leroy@csgroup.eu>,
+	"linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+	"will@kernel.org" <will@kernel.org>,
+	"dinguyen@kernel.org" <dinguyen@kernel.org>,
+	"naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
+	"sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+	"linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+	"bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"song@kernel.org" <song@kernel.org>,
+	"linux-mm@kvack.org" <linux-mm@kvack.org>,
+	"loongarch@lists.linux.dev" <loongarch@lists.linux.dev>,
+	"akpm@linux-foundation.org" <akpm@linux-foundation.org>
+Subject: Re: [PATCH 12/13] x86/jitalloc: prepare to allocate exectuatble
+ memory as ROX
+Message-ID: <20230605204256.GA52412@kernel.org>
+References: <20230601101257.530867-13-rppt@kernel.org>
+ <0f50ac52a5280d924beeb131e6e4717b6ad9fdf7.camel@intel.com>
+ <ZHjcr26YskTm+0EF@moria.home.lan>
+ <a51c041b61e2916d2b91c990349aabc6cb9836aa.camel@intel.com>
+ <ZHjljJfQjhVV/jNS@moria.home.lan>
+ <68b8160454518387c53508717ba5ed5545ff0283.camel@intel.com>
+ <50D768D7-15BF-43B8-A5FD-220B25595336@gmail.com>
+ <20230604225244.65be9103@rorschach.local.home>
+ <20230605081143.GA3460@kernel.org>
+ <88a62f834688ed77d08c778e1e427014cf7d3c1b.camel@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Content-Language: en-US
-In-Reply-To: <20230413-b4-vsock-dgram-v3-0-c2414413ef6a@bytedance.com>
-To: Bobby Eshleman <bobby.eshleman@bytedance.com>, Stefan Hajnoczi
-	<stefanha@redhat.com>, Stefano Garzarella <sgarzare@redhat.com>, "Michael S.
- Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, "David S.
- Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub
- Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, "K. Y.
- Srinivasan" <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, Wei
- Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, Bryan Tan
-	<bryantan@vmware.com>
-CC: <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-	<netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-hyperv@vger.kernel.org>, Bobby Eshleman
-	<bobby.eshleman@bytedance.com>, Jiang Wang <jiang.wang@bytedance.com>
-From: Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: Re: [PATCH RFC net-next v3 0/8] virtio/vsock: support datagrams
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/06/05 17:23:00 #21436105
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <88a62f834688ed77d08c778e1e427014cf7d3c1b.camel@intel.com>
 
-Hello Bobby!
+On Mon, Jun 05, 2023 at 04:10:21PM +0000, Edgecombe, Rick P wrote:
+> On Mon, 2023-06-05 at 11:11 +0300, Mike Rapoport wrote:
+> > On Sun, Jun 04, 2023 at 10:52:44PM -0400, Steven Rostedt wrote:
+> > > On Thu, 1 Jun 2023 16:54:36 -0700
+> > > Nadav Amit <nadav.amit@gmail.com> wrote:
+> > > 
+> > > > > The way text_poke() is used here, it is creating a new writable
+> > > > > alias
+> > > > > and flushing it for *each* write to the module (like for each
+> > > > > write of
+> > > > > an individual relocation, etc). I was just thinking it might
+> > > > > warrant
+> > > > > some batching or something.  
+> > 
+> > > > I am not advocating to do so, but if you want to have many
+> > > > efficient
+> > > > writes, perhaps you can just disable CR0.WP. Just saying that if
+> > > > you
+> > > > are about to write all over the memory, text_poke() does not
+> > > > provide
+> > > > too much security for the poking thread.
+> > 
+> > Heh, this is definitely and easier hack to implement :)
+> 
+> I don't know the details, but previously there was some strong dislike
+> of CR0.WP toggling. And now there is also the problem of CET. Setting
+> CR0.WP=0 will #GP if CR4.CET is 1 (as it currently is for kernel IBT).
+> I guess you might get away with toggling them both in some controlled
+> situation, but it might be a lot easier to hack up then to be made
+> fully acceptable. It does sound much more efficient though.
+ 
+I don't think we'd really want that, especially looking at 
 
-Thanks for this patchset, really interesting!
+		WARN_ONCE(bits_missing, "CR0 WP bit went missing!?\n");
 
-I applied it on head:
+at native_write_cr0().
+ 
+> > > Batching does exist, which is what the text_poke_queue() thing
+> > > does.
+> > 
+> > For module loading text_poke_queue() will still be much slower than a
+> > bunch
+> > of memset()s for no good reason because we don't need all the
+> > complexity of
+> > text_poke_bp_batch() for module initialization because we are sure we
+> > are
+> > not patching live code.
+> > 
+> > What we'd need here is a new batching mode that will create a
+> > writable
+> > alias mapping at the beginning of apply_relocate_*() and
+> > module_finalize(),
+> > then it will use memcpy() to that writable alias and will tear the
+> > mapping
+> > down in the end.
+> 
+> It's probably only a tiny bit faster than keeping a separate writable
+> allocation and text_poking it in at the end.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=d20dd0ea14072e8a90ff864b2c1603bd68920b4b
+Right, but it still will be faster than text_poking every relocation.
+ 
+> > Another option is to teach alternatives to update a writable copy
+> > rather
+> > than do in place changes like Song suggested. My feeling is that it
+> > will be
+> > more intrusive change though.
+> 
+> You mean keeping a separate RW allocation and then text_poking() the
+> whole thing in when you are done? That is what I was trying to say at
+> the beginning of this thread. The other benefit is you don't make the
+> intermediate loading states of the module, executable.
+> 
+> I tried this technique previously [0], and I thought it was not too
+> bad. In most of the callers it looks similar to what you have in
+> do_text_poke(). Sometimes less, sometimes more. It might need
+> enlightening of some of the stuff currently using text_poke() during
+> module loading, like jump labels. So that bit is more intrusive, yea.
+> But it sounds so much cleaner and well controlled. Did you have a
+> particular trouble spot in mind?
 
-And tried to run ./vsock_test (client in the guest, server in the host), I had the following crash:
+Nothing in particular, except the intrusive part. Except the changes in
+modules.c we'd need to teach alternatives to deal with a writable copy.
+ 
+> [0]
+> https://lore.kernel.org/lkml/20201120202426.18009-5-rick.p.edgecombe@intel.com/
 
-Control socket connected to 192.168.1.1:12345.                          
-0 - SOCK_STREAM connection reset...                                     
-[    8.050215] BUG: kernel NULL pointer derefer                         
-[    8.050960] #PF: supervisor read access in kernel mode               
-[    8.050960] #PF: error_code(0x0000) - not-present page               
-[    8.050960] PGD 0 P4D 0                                              
-[    8.050960] Oops: 0000 [#1] PREEMPT SMP PTI                          
-[    8.050960] CPU: 0 PID: 109 Comm: vsock_test Not tainted 6.4.0-rc3-gd707c220a700
-[    8.050960] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14
-[    8.050960] RIP: 0010:static_key_count+0x0/0x20                      
-[    8.050960] Code: 04 4c 8b 46 08 49 29 c0 4c 01 c8 4c 89 47 08 89 0e 89 56 04 4f
-[    8.050960] RSP: 0018:ffffa9a1c021bdc0 EFLAGS: 00010202              
-[    8.050960] RAX: ffffffffac309880 RBX: ffffffffc02fc140 RCX: 0000000000000000
-[    8.050960] RDX: ffff9a5eff944600 RSI: 0000000000000000 RDI: 0000000000000000
-[    8.050960] RBP: ffff9a5ec2371900 R08: ffffa9a1c021bd30 R09: ffff9a5eff98e0c0
-[    8.050960] R10: 0000000000001000 R11: 0000000000000000 R12: ffffa9a1c021be80
-[    8.050960] R13: 0000000000000000 R14: 0000000000000002 R15: ffff9a5ec1cfca80
-[    8.050960] FS:  00007fa9bf88c5c0(0000) GS:ffff9a5efe400000(0000) knlGS:00000000
-[    8.050960] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033        
-[    8.050960] CR2: 0000000000000000 CR3: 00000000023e0000 CR4: 00000000000006f0
-[    8.050960] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[    8.050960] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[    8.050960] Call Trace:                                              
-[    8.050960]  <TASK>                                                  
-[    8.050960]  once_deferred+0xd/0x30                                  
-[    8.050960]  vsock_assign_transport+0xa2/0x1b0 [vsock]               
-[    8.050960]  vsock_connect+0xb4/0x3a0 [vsock]                        
-[    8.050960]  ? var_wake_function+0x60/0x60                           
-[    8.050960]  __sys_connect+0x9e/0xd0                                 
-[    8.050960]  ? _raw_spin_unlock_irq+0xe/0x30                         
-[    8.050960]  ? do_setitimer+0x128/0x1f0                              
-[    8.050960]  ? alarm_setitimer+0x4c/0x90                             
-[    8.050960]  ? fpregs_assert_state_consistent+0x1d/0x50              
-[    8.050960]  ? exit_to_user_mode_prepare+0x36/0x130                  
-[    8.050960]  __x64_sys_connect+0x11/0x20                             
-[    8.050960]  do_syscall_64+0x3b/0xc0                                 
-[    8.050960]  entry_SYSCALL_64_after_hwframe+0x4b/0xb5                
-[    8.050960] RIP: 0033:0x7fa9bf7c4d13                                 
-[    8.050960] Code: 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 48
-[    8.050960] RSP: 002b:00007ffdf2d96cc8 EFLAGS: 00000246 ORIG_RAX: 0000000000000a
-[    8.050960] RAX: ffffffffffffffda RBX: 0000560c305d0020 RCX: 00007fa9bf7c4d13
-[    8.050960] RDX: 0000000000000010 RSI: 00007ffdf2d96ce0 RDI: 0000000000000004
-[    8.050960] RBP: 0000000000000004 R08: 0000560c317dc018 R09: 0000000000000000
-[    8.050960] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-[    8.050960] R13: 0000560c305ccc2d R14: 00007ffdf2d96ce0 R15: 00007ffdf2d96d70
-[    8.050960]  </TASK>  
-
-
-I guess crash is somewhere near:
-
-old_info->transport->release(vsk); in vsock_assign_transport(). May be my config is wrong...
-
-Thanks, Arseniy
+-- 
+Sincerely yours,
+Mike.
 
