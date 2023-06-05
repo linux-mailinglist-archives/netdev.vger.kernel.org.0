@@ -1,132 +1,124 @@
-Return-Path: <netdev+bounces-7820-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7821-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7F1B0721B24
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 02:08:32 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 50E18721B58
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 02:59:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8A044280FEA
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 00:08:30 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D4F651C20A75
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 00:59:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 64A73181;
-	Mon,  5 Jun 2023 00:08:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 42652379;
+	Mon,  5 Jun 2023 00:59:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 595D2160
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 00:08:27 +0000 (UTC)
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6CBCA;
-	Sun,  4 Jun 2023 17:08:25 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 4QZDTZ5MLPz4x3x;
-	Mon,  5 Jun 2023 10:08:18 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-	s=201702; t=1685923699;
-	bh=pOuSQOaAtbYZsqBRiDrrigcw5i1OYkXIadN59Arc/E0=;
-	h=Date:From:To:Cc:Subject:From;
-	b=CwEbPaMySvPrNOJMWKcrPQ2k2yRRLUopa4U+AObiivGk8UZY3mxuwRhdvUKEAG68D
-	 55ECZO3XcxU3XRa0iqCtNqAGH4FDhwOxuQ8sWov2L8EO8rTusoUNwUjvsyRrOAR7lv
-	 PJx6e2mNnG8kWAzQTdR6ancCX3B6ttHoL6TDddGg57hw+jpWqq9XmvBEEzkmHai2e8
-	 +XnZ6WarUIzwOcJcggjg3uQGC080HfwPooynDp8txv7NelD9MyERQsdWB5y8Q685JK
-	 SPKRTkvOIxyHUUioNHZ2mYtFNG3Arb5ff/XOXhknoMoB9BnZlWdufpHZ2mHifyjtZa
-	 Dp21JstSvMDJA==
-Date: Mon, 5 Jun 2023 10:08:16 +1000
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-To: David Miller <davem@davemloft.net>, Networking <netdev@vger.kernel.org>
-Cc: Akihiro Suda <akihiro.suda.cz@hco.ntt.co.jp>, Akihiro Suda
- <suda.gitsendemail@gmail.com>, David Morley <morleyd@google.com>, Kuniyuki
- Iwashima <kuniyu@amazon.com>, Linux Kernel Mailing List
- <linux-kernel@vger.kernel.org>, Linux Next Mailing List
- <linux-next@vger.kernel.org>, Neal Cardwell <ncardwell@google.com>, Paolo
- Abeni <pabeni@redhat.com>, Yuchung Cheng <ycheng@google.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20230605100816.08d41a7b@canb.auug.org.au>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 359CC19B
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 00:59:27 +0000 (UTC)
+Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC620B8;
+	Sun,  4 Jun 2023 17:59:24 -0700 (PDT)
+Received: from loongson.cn (unknown [10.20.42.116])
+	by gateway (Coremail) with SMTP id _____8AxhPBrM31kzHcEAA--.9081S3;
+	Mon, 05 Jun 2023 08:59:23 +0800 (CST)
+Received: from [10.20.42.116] (unknown [10.20.42.116])
+	by localhost.localdomain (Coremail) with SMTP id AQAAf8BxWdJrM31kxQeKAA--.24862S3;
+	Mon, 05 Jun 2023 08:59:23 +0800 (CST)
+Subject: Re: [PATCH pci] PCI: don't skip probing entire device if first fn OF
+ node has status = "disabled"
+To: Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc: Liu Peibao <liupeibao@loongson.cn>, Bjorn Helgaas <helgaas@kernel.org>,
+ linux-pci@vger.kernel.org, netdev@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, Rob Herring <robh@kernel.org>,
+ Claudiu Manoil <claudiu.manoil@nxp.com>, Michael Walle <michael@walle.cc>,
+ linux-kernel@vger.kernel.org, Binbin Zhou <zhoubinbin@loongson.cn>,
+ Huacai Chen <chenhuacai@loongson.cn>
+References: <20230601163335.6zw4ojbqxz2ws6vx@skbuf>
+ <ZHjaq+TDW/RFcoxW@bhelgaas> <20230601221532.2rfcda4sg5nl7pzp@skbuf>
+ <dc430271-8511-e6e4-041b-ede197e7665d@loongson.cn>
+ <7a7f78ae-7fd8-b68d-691c-609a38ab3161@loongson.cn>
+ <20230602101628.jkgq3cmwccgsfb4c@skbuf>
+ <87f2b231-2e16-e7b8-963b-fc86c407bc96@loongson.cn>
+ <20230604085500.ioaos3ydehvqq24i@skbuf>
+From: Jianmin Lv <lvjianmin@loongson.cn>
+Message-ID: <ad969019-e763-b06f-d557-be4e672c68db@loongson.cn>
+Date: Mon, 5 Jun 2023 08:59:23 +0800
+User-Agent: Mozilla/5.0 (X11; Linux loongarch64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/u3D+RwDlPWSFsvlRdb6GZfK";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230604085500.ioaos3ydehvqq24i@skbuf>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:AQAAf8BxWdJrM31kxQeKAA--.24862S3
+X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+X-Coremail-Antispam: 1Uk129KBjvJXoW7tr4rWFyUuF1kAFW7XFyxZrb_yoW8CF43pa
+	y3AFWFkF4kKr4Ik3sxZw4rGF1ft39Fy395Jr4kJr90kws8Z34ftr1I9r45Xay7uw4xZay2
+	vFy0qrs5Ca4kA3DanT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUj1kv1TuYvTs0mT0YCTnIWj
+	qI5I8CrVACY4xI64kE6c02F40Ex7xfYxn0WfASr-VFAUDa7-sFnT9fnUUIcSsGvfJTRUUU
+	bI8YFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s
+	1l1IIY67AEw4v_Jrv_JF1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xv
+	wVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwA2z4
+	x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4UJVWxJr1l
+	e2I262IYc4CY6c8Ij28IcVAaY2xG8wAqjxCEc2xF0cIa020Ex4CE44I27wAqx4xG64xvF2
+	IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r1j6r4U
+	McvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvEwIxGrwCYjI0SjxkI62AI1cAE67vIY487Mx
+	AIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_
+	Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwI
+	xGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8
+	JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcV
+	C2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjxU7_MaUUUUU
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---Sig_/u3D+RwDlPWSFsvlRdb6GZfK
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
 
-Today's linux-next merge of the net-next tree got a conflict in:
+On 2023/6/4 下午4:55, Vladimir Oltean wrote:
+> On Sat, Jun 03, 2023 at 10:35:50AM +0800, Jianmin Lv wrote:
+>>> How about 3. handle of_device_is_available() in the probe function of
+>>> the "loongson, pci-gmac" driver? Would that not work?
+>>>
+>> This way does work only for the specified device. There are other devices,
+>> such as HDA, I2S, etc, which have shared pins. Then we have to add
+>> of_device_is_available() checking to those drivers one by one. And we are
+>> not sure if there are other devices in new generation chips in future. So
+>> I'm afraid that the way you mentioned is not suitable for us.
+> 
+> Got it, so you have more on-chip PCIe devices than the ones listed in
+> loongson64-2k1000.dtsi, and you don't want to describe them in the
+> device tree just to put status = "disabled" for those devices/functions
+> that you don't want Linux to use - although you could, and it wouldn't
+> be that hard or have unintended side effects.
+> 
+> Though you need to admit, in case you had an on-chip multi-function PCIe
+> device like the NXP ENETC, and you wanted Linux to not use function 0,
+> the strategy you're suggesting here that is acceptable for Loongson
+> would not have worked.
+> 
+> I believe we need a bit of coordination from PCIe and device tree
+> maintainers, to suggest what would be the encouraged best practices and
+> ways to solve this regression for the ENETC.
+> 
 
-  net/ipv4/sysctl_net_ipv4.c
+For a multi-function device, if func 0 is not allowed to be scanned, as 
+I said in way of 2, the other funcs of the device will be described as 
+platform devices instead of pci and be not scanned either, which is 
+acceptable for Loongson. The main goal by any way for us is to resolve 
+the problem that shared pins can not be used simultaneously by devices 
+sharing them. IMO, configure them in DT one by one may be reasonable, 
+but adapting each driver will be bothered.
 
-between commit:
+Any way, let's listen to opinions from Bjorn and Rob.
 
-  e209fee4118f ("net/ipv4: ping_group_range: allow GID from 2147483648 to 4=
-294967294")
-
-from the net tree and commit:
-
-  ccce324dabfe ("tcp: make the first N SYN RTO backoffs linear")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc net/ipv4/sysctl_net_ipv4.c
-index 88dfe51e68f3,6ae3345a3bdf..000000000000
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@@ -34,8 -34,9 +34,9 @@@ static int ip_ttl_min =3D 1
-  static int ip_ttl_max =3D 255;
-  static int tcp_syn_retries_min =3D 1;
-  static int tcp_syn_retries_max =3D MAX_TCP_SYNCNT;
-+ static int tcp_syn_linear_timeouts_max =3D MAX_TCP_SYNCNT;
- -static int ip_ping_group_range_min[] =3D { 0, 0 };
- -static int ip_ping_group_range_max[] =3D { GID_T_MAX, GID_T_MAX };
- +static unsigned long ip_ping_group_range_min[] =3D { 0, 0 };
- +static unsigned long ip_ping_group_range_max[] =3D { GID_T_MAX, GID_T_MAX=
- };
-  static u32 u32_max_div_HZ =3D UINT_MAX / HZ;
-  static int one_day_secs =3D 24 * 3600;
-  static u32 fib_multipath_hash_fields_all_mask __maybe_unused =3D
-
---Sig_/u3D+RwDlPWSFsvlRdb6GZfK
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmR9J3AACgkQAVBC80lX
-0Gw4KAf/WUlZ1HiMtDpseIqqq8A4ZUoXPy7QxK8guXuvpKEBN7LIV8ZXr7vwVeOQ
-oQBEXwg18mLRT8L5KBVRrcg0GZXSgLkN/ZPcROcMiB9imC56Ag3j9H21zlLEpL29
-LEGDlfneaNTnJdSx3aBKsg6Wne7BTh9EQED/7a0IHAOOIfYLRT8Mf7ic6Y7Dl8p0
-Xl8j9O8bBvP+IB2dw/wOiTlECY+IIlQQyEr+zJKLjjFYV7Sw402J/IFhf+iihHhd
-BSlETxgZZyknOuN6PSUfAgXigaVKDi/LKuAXft37RTPRl6bdAgNpEmhWEMx17aJ3
-l8k0Kl+LEwpObX54frPxvZwuD94oZA==
-=HRyB
------END PGP SIGNATURE-----
-
---Sig_/u3D+RwDlPWSFsvlRdb6GZfK--
 
