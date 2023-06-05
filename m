@@ -1,150 +1,201 @@
-Return-Path: <netdev+bounces-8088-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8084-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 92C53722A8E
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 17:13:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3AE68722A31
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 17:04:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 42E7D281152
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:13:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E5928281010
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:04:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9E9071F93E;
-	Mon,  5 Jun 2023 15:13:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 265CA1F92C;
+	Mon,  5 Jun 2023 15:04:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93A6B6FDE
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 15:13:04 +0000 (UTC)
-X-Greylist: delayed 626 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 05 Jun 2023 08:12:51 PDT
-Received: from smtp-bc08.mail.infomaniak.ch (smtp-bc08.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc08])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C2C10E0
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 08:12:51 -0700 (PDT)
-Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-	by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4QZcK92Hf0zMqYTR;
-	Mon,  5 Jun 2023 17:02:21 +0200 (CEST)
-Received: from unknown by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4QZcK80Jb5zMrK3h;
-	Mon,  5 Jun 2023 17:02:19 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-	s=20191114; t=1685977341;
-	bh=8LypuOr5m5yp1T2kVIMo8zx5AGopO/50AfLfFNI9IN4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=GV+QlfYKG5GPSIziXgCRfwpuQRwlP414bzmpoP1sl0tm9vwznegS1NFMnLY5mTKZa
-	 9DlM2goDlktzM/q/GFQEOxk8hZE5racUBGyTzDAvWWNHW1BKBSHmkBdL7+XeO2oiDh
-	 +FvNXv88/gA1ptQeoSBeCXaZ1uQoC2epRpqEmLc0=
-Message-ID: <8f3d242a-c0ee-217e-8094-84093ce4e134@digikod.net>
-Date: Mon, 5 Jun 2023 17:02:19 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1970D6FDE
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 15:04:48 +0000 (UTC)
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60AEE9C
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 08:04:47 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-565c7399afaso54334667b3.1
+        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 08:04:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1685977486; x=1688569486;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SjbbBA7EontyB9HzSIqPzzJatS75a7JE8YVdrZrGYTE=;
+        b=H0WAJfZCnQWtUwg66hVGjFLtBxr7jex6m2+ftYdjEDx22aHUaMnFuseL6Z3p0MabgF
+         vPz42FEpePd271ITIEWgvrf/Jhx+HRhPrBU4eGdLtyvRldN5sEGSHaqKn8N+F76nOOhA
+         m94rRASS5uxoa8iL7NJurLj19KGOgWYIybOsHktx4GG6VxD4+FB+TfLheJ805iQUdtLn
+         hGGZh5sD9T/ZY3mrpIQK1Eum+xVAflL42bxtUUoZgEhIaCTxkSnMuUk0Rd3LZm9nU9sZ
+         JehMrmP/hFa/CBR5GZKivrxlGxwQ9W6l4pTKKAoejeiEaX7Hx3U+VzteyPgl5qdIxBl9
+         cCEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685977486; x=1688569486;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SjbbBA7EontyB9HzSIqPzzJatS75a7JE8YVdrZrGYTE=;
+        b=HLkgzunscMOoedLKhMn05f4CvSl5ix1NGIMJZhu8FLUnLhz8yOZX2wKPj/w5bLu/ii
+         0+oO37ECPZnjzgvr4O6KIpNf8Ul2EQ2jrMc0YY62xEwWDAViasCnH34Z1TPnnqDE72l6
+         lLnrnWKYUVFMFF/jmZ0K6Ig07s2q5J1iipn+/sVfejRvpHWtZB9mWcVTcZOdF1IZaJXm
+         mbxAaan1yRzTGYQAKFw1BFvtesxin97kWvXD3l11awcCLZ1SfJBerjwofnLfVUOOuN7p
+         RW8rbF46QDTJooIIqhqTKEkLbXhvTM1xftEYy4L1WDsppexWjN1ePV1vLn/jj5uq6PD8
+         0GTA==
+X-Gm-Message-State: AC+VfDypkJxJMbPnTAzSeksVsI/7Q9v1K3MPgcZVnzzSYXdVhhalKyk4
+	kIguSGunYyOarkZ2pjca7jSc0E6Radffemaa8ZM9IQ==
+X-Google-Smtp-Source: ACHHUZ4xl/httMV2kWtvZPSn3MgEda8DNQVfguIJ6PbcSeS4xHHbfrqhqH4TOsiSMvNtwuWKGQ2v0b/TmC40+40uCe0=
+X-Received: by 2002:a0d:d594:0:b0:561:90b3:e712 with SMTP id
+ x142-20020a0dd594000000b0056190b3e712mr10418898ywd.28.1685977486585; Mon, 05
+ Jun 2023 08:04:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent:
-Subject: Re: [PATCH v11 00/12] Network support for Landlock
-Content-Language: en-US
-To: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc: willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
- linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
- netfilter-devel@vger.kernel.org, yusongping@huawei.com,
- artem.kuzin@huawei.com, =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack3000@gmail.com>
-References: <20230515161339.631577-1-konstantin.meskhidze@huawei.com>
-From: =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <20230515161339.631577-1-konstantin.meskhidze@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Infomaniak-Routing: alpha
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-	version=3.4.6
+References: <20230517110232.29349-1-jhs@mojatatu.com> <20230517110232.29349-5-jhs@mojatatu.com>
+ <ZH2xKs65IZe1LMTC@corigine.com> <CAAFAkD8dUoPjff+VaRY95VsvQDpSzBdtUg=JzjJnrqsKc7AHJA@mail.gmail.com>
+ <ZH3x3mT+80K1BR1O@corigine.com>
+In-Reply-To: <ZH3x3mT+80K1BR1O@corigine.com>
+From: Jamal Hadi Salim <jhs@mojatatu.com>
+Date: Mon, 5 Jun 2023 11:04:35 -0400
+Message-ID: <CAM0EoMk1HNE5zgnjs_YozQcXuQWw9kn6QKHZp+dJU5zhPGhpeg@mail.gmail.com>
+Subject: Re: [p4tc-discussions] Re: [PATCH RFC v2 net-next 05/28] net/sched:
+ act_api: introduce tc_lookup_action_byid()
+To: Simon Horman <simon.horman@corigine.com>
+Cc: Jamal Hadi Salim <hadi@mojatatu.com>, netdev@vger.kernel.org, deb.chatterjee@intel.com, 
+	tom@sipanda.io, p4tc-discussions@netdevconf.info, Mahesh.Shirshyad@amd.com, 
+	Vipin.Jain@amd.com, tomasz.osinski@intel.com, xiyou.wangcong@gmail.com, 
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
+	khalidm@nvidia.com, toke@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Konstantin,
+On Mon, Jun 5, 2023 at 10:32=E2=80=AFAM Simon Horman <simon.horman@corigine=
+.com> wrote:
+>
+> On Mon, Jun 05, 2023 at 10:17:57AM -0400, Jamal Hadi Salim wrote:
+> > Hi Simon,
+> > Thanks for the reviews.
+> >
+> > On Mon, Jun 5, 2023 at 5:56=E2=80=AFAM Simon Horman via p4tc-discussion=
+s
+> > <p4tc-discussions@netdevconf.info> wrote:
+> > >
+> > > On Wed, May 17, 2023 at 07:02:09AM -0400, Jamal Hadi Salim wrote:
+> > > > Introduce a lookup helper to retrieve the tc_action_ops
+> > > > instance given its action id.
+> > > >
+> > > > Co-developed-by: Victor Nogueira <victor@mojatatu.com>
+> > > > Signed-off-by: Victor Nogueira <victor@mojatatu.com>
+> > > > Co-developed-by: Pedro Tammela <pctammela@mojatatu.com>
+> > > > Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+> > > > Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+> > > > ---
+> > > >  include/net/act_api.h |  1 +
+> > > >  net/sched/act_api.c   | 35 +++++++++++++++++++++++++++++++++++
+> > > >  2 files changed, 36 insertions(+)
+> > > >
+> > > > diff --git a/include/net/act_api.h b/include/net/act_api.h
+> > > > index 363f7f8b5586..34b9a9ff05ee 100644
+> > > > --- a/include/net/act_api.h
+> > > > +++ b/include/net/act_api.h
+> > > > @@ -205,6 +205,7 @@ int tcf_idr_release(struct tc_action *a, bool b=
+ind);
+> > > >
+> > > >  int tcf_register_action(struct tc_action_ops *a, struct pernet_ope=
+rations *ops);
+> > > >  int tcf_register_dyn_action(struct net *net, struct tc_action_ops =
+*act);
+> > > > +struct tc_action_ops *tc_lookup_action_byid(struct net *net, u32 a=
+ct_id);
+> > > >  int tcf_unregister_action(struct tc_action_ops *a,
+> > > >                         struct pernet_operations *ops);
+> > > >  int tcf_unregister_dyn_action(struct net *net, struct tc_action_op=
+s *act);
+> > > > diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+> > > > index 0ba5a4b5db6f..101c6debf356 100644
+> > >
+> > > > --- a/net/sched/act_api.c
+> > > > +++ b/net/sched/act_api.c
+> > > > @@ -1084,6 +1084,41 @@ int tcf_unregister_dyn_action(struct net *ne=
+t, struct tc_action_ops *act)
+> > > >  }
+> > > >  EXPORT_SYMBOL(tcf_unregister_dyn_action);
+> > > >
+> > > > +/* lookup by ID */
+> > > > +struct tc_action_ops *tc_lookup_action_byid(struct net *net, u32 a=
+ct_id)
+> > > > +{
+> > > > +     struct tcf_dyn_act_net *base_net;
+> > > > +     struct tc_action_ops *a, *res =3D NULL;
+> > >
+> > > Hi Jamal, Victor and Pedro,
+> > >
+> > > A minor nit from my side: as this is networking code, please use reve=
+rse
+> > > xmas tree - longest line to shortest - for local variable declaration=
+s.
+> > >
+> >
+> > Will do in the next update.
+> >
+> > > > +
+> > > > +     if (!act_id)
+> > > > +             return NULL;
+> > > > +
+> > > > +     read_lock(&act_mod_lock);
+> > > > +
+> > > > +     list_for_each_entry(a, &act_base, head) {
+> > > > +             if (a->id =3D=3D act_id) {
+> > > > +                     if (try_module_get(a->owner)) {
+> > > > +                             read_unlock(&act_mod_lock);
+> > > > +                             return a;
+> > > > +                     }
+> > > > +                     break;
+> > > > +             }
+> > > > +     }
+> > > > +     read_unlock(&act_mod_lock);
+> > > > +
+> > > > +     read_lock(&base_net->act_mod_lock);
+> > >
+> > > base_net does not appear to be initialised here.
+> >
+> > Yayawiya. Excellent catch. Not sure how even coverity didnt catch this
+> > or our own internal review. I am guessing you either caught this by
+> > eyeballing or some tool. If it is a tool we should add it to our CICD.
+> > We have the clang static analyser but that thing produces so many
+> > false positives that it is intense labor to review some of the
+> > nonsense it spews - so it may have caught it and we missed it.
+>
+> Hi Jamal,
+>
+> My eyes are not so good these days, so I use tooling.
+>
+> In this case it is caught by a W=3D1 build using both gcc-12 and clang-16=
+,
+> and by Smatch. I would also recommend running Sparse, Coccinelle,
+> and the xmastree check from Edward Cree [1].
+>
+> [1] https://github.com/ecree-solarflare/xmastree
+>
+> FWIIW, I only reviewed the first 12 patches of this series.
+> If you could run the above mentioned tools over the remaining patches you
+> may find some more things of interest.
 
-The kernel code looks good. I found some issues in tests and 
-documentation, and I'm still reviewing the whole patches. In the 
-meantime, I've pushed it in -next, we'll see how it goes.
+We will certainly be doing this in the next day or two.
 
-We need to have this new code covered by syzkaller. I'll work on that 
-unless you want to.
-
-Regards,
-  Mickaël
-
-
-On 15/05/2023 18:13, Konstantin Meskhidze wrote:
-> Hi,
-> This is a new V11 patch related to Landlock LSM network confinement.
-> It is based on the landlock's -next branch on top of v6.2-rc3+ kernel version:
-> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=next
-> 
-> It brings refactoring of previous patch version V10.
-> Mostly there are fixes of logic and typos, refactoring some selftests.
-> 
-> All test were run in QEMU evironment and compiled with
->   -static flag.
->   1. network_test: 36/36 tests passed.
->   2. base_test: 7/7 tests passed.
->   3. fs_test: 78/78 tests passed.
->   4. ptrace_test: 8/8 tests passed.
-> 
-> Previous versions:
-> v10: https://lore.kernel.org/linux-security-module/20230323085226.1432550-1-konstantin.meskhidze@huawei.com/
-> v9: https://lore.kernel.org/linux-security-module/20230116085818.165539-1-konstantin.meskhidze@huawei.com/
-> v8: https://lore.kernel.org/linux-security-module/20221021152644.155136-1-konstantin.meskhidze@huawei.com/
-> v7: https://lore.kernel.org/linux-security-module/20220829170401.834298-1-konstantin.meskhidze@huawei.com/
-> v6: https://lore.kernel.org/linux-security-module/20220621082313.3330667-1-konstantin.meskhidze@huawei.com/
-> v5: https://lore.kernel.org/linux-security-module/20220516152038.39594-1-konstantin.meskhidze@huawei.com
-> v4: https://lore.kernel.org/linux-security-module/20220309134459.6448-1-konstantin.meskhidze@huawei.com/
-> v3: https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
-> v2: https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
-> v1: https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
-> 
-> Konstantin Meskhidze (11):
->    landlock: Make ruleset's access masks more generic
->    landlock: Refactor landlock_find_rule/insert_rule
->    landlock: Refactor merge/inherit_ruleset functions
->    landlock: Move and rename layer helpers
->    landlock: Refactor layer helpers
->    landlock: Refactor landlock_add_rule() syscall
->    landlock: Add network rules and TCP hooks support
->    selftests/landlock: Share enforce_ruleset()
->    selftests/landlock: Add 11 new test suites dedicated to network
->    samples/landlock: Add network demo
->    landlock: Document Landlock's network support
-> 
-> Mickaël Salaün (1):
->    landlock: Allow filesystem layout changes for domains without such
->      rule type
-> 
->   Documentation/userspace-api/landlock.rst     |   89 +-
->   include/uapi/linux/landlock.h                |   48 +
->   samples/landlock/sandboxer.c                 |  128 +-
->   security/landlock/Kconfig                    |    1 +
->   security/landlock/Makefile                   |    2 +
->   security/landlock/fs.c                       |  232 +--
->   security/landlock/limits.h                   |    7 +-
->   security/landlock/net.c                      |  174 +++
->   security/landlock/net.h                      |   26 +
->   security/landlock/ruleset.c                  |  405 +++++-
->   security/landlock/ruleset.h                  |  185 ++-
->   security/landlock/setup.c                    |    2 +
->   security/landlock/syscalls.c                 |  163 ++-
->   tools/testing/selftests/landlock/base_test.c |    2 +-
->   tools/testing/selftests/landlock/common.h    |   10 +
->   tools/testing/selftests/landlock/config      |    4 +
->   tools/testing/selftests/landlock/fs_test.c   |   74 +-
->   tools/testing/selftests/landlock/net_test.c  | 1317 ++++++++++++++++++
->   18 files changed, 2520 insertions(+), 349 deletions(-)
->   create mode 100644 security/landlock/net.c
->   create mode 100644 security/landlock/net.h
->   create mode 100644 tools/testing/selftests/landlock/net_test.c
-> 
-> --
-> 2.25.1
-> 
+cheers,
+jamal
 
