@@ -1,180 +1,202 @@
-Return-Path: <netdev+bounces-8209-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8212-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 092417231FC
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 23:13:46 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 31113723223
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 23:20:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 739E21C20D6F
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:13:42 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 74F4C1C20B71
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 21:20:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 15CDD261FB;
-	Mon,  5 Jun 2023 21:13:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1AB65271EF;
+	Mon,  5 Jun 2023 21:20:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A36024134
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 21:13:42 +0000 (UTC)
-Received: from out-32.mta0.migadu.com (out-32.mta0.migadu.com [IPv6:2001:41d0:1004:224b::20])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6025BFD
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 14:13:40 -0700 (PDT)
-Date: Mon, 5 Jun 2023 17:13:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1685999618;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=oI/D2KsCHwim00FnKX8JEpI3trD4/Ay4oLN6y5jMs+w=;
-	b=Ou0t5k0wdLvYQe4I1KiKwwoZvxsvVwlNJliRyeWssvJBsu1TjLT0R5xnAEF8ghzWl5EIl9
-	wvjRxKwXo9+fHBI+ActLKXfymEdPx4wflBDdlUy8yktx25QJFLEuEOLWYXAN1GppOyjRcm
-	hR70f2tpuOItMjMDbRE2yoaC4QllkuI=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, linux-kernel@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	"David S. Miller" <davem@davemloft.net>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Russell King <linux@armlinux.org.uk>, Song Liu <song@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
-	bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-mips@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, linux-parisc@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	loongarch@lists.linux.dev, netdev@vger.kernel.org,
-	sparclinux@vger.kernel.org, x86@kernel.org
-Subject: Re: [PATCH 00/13] mm: jit/text allocator
-Message-ID: <ZH5P+iKOnoqYjbPq@moria.home.lan>
-References: <20230601101257.530867-1-rppt@kernel.org>
- <ZHjDU/mxE+cugpLj@FVFF77S0Q05N.cambridge.arm.com>
- <ZHjgIH3aX9dCvVZc@moria.home.lan>
- <ZHm3zUUbwqlsZBBF@FVFF77S0Q05N>
- <20230605092040.GB3460@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 077F3271E6
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 21:20:37 +0000 (UTC)
+Received: from 66-220-144-178.mail-mxout.facebook.com (66-220-144-178.mail-mxout.facebook.com [66.220.144.178])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF2CF9
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 14:20:35 -0700 (PDT)
+Received: by devbig1114.prn1.facebook.com (Postfix, from userid 425415)
+	id 9975D6992184; Mon,  5 Jun 2023 14:20:21 -0700 (PDT)
+From: Stefan Roesch <shr@devkernel.io>
+To: io-uring@vger.kernel.org,
+	kernel-team@fb.com
+Cc: shr@devkernel.io,
+	axboe@kernel.dk,
+	ammarfaizi2@gnuweeb.org,
+	netdev@vger.kernel.org,
+	kuba@kernel.org,
+	olivier@trillion01.com
+Subject: [PATCH v14 0/8] io_uring: add napi busy polling support 
+Date: Mon,  5 Jun 2023 14:20:01 -0700
+Message-Id: <20230605212009.1992313-1-shr@devkernel.io>
+X-Mailer: git-send-email 2.39.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230605092040.GB3460@kernel.org>
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,RDNS_DYNAMIC,
+	SPF_HELO_PASS,SPF_NEUTRAL,TVD_RCVD_IP,T_SCC_BODY_TEXT_LINE
+	autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 05, 2023 at 12:20:40PM +0300, Mike Rapoport wrote:
-> On Fri, Jun 02, 2023 at 10:35:09AM +0100, Mark Rutland wrote:
-> > On Thu, Jun 01, 2023 at 02:14:56PM -0400, Kent Overstreet wrote:
-> > > On Thu, Jun 01, 2023 at 05:12:03PM +0100, Mark Rutland wrote:
-> > > > For a while I have wanted to give kprobes its own allocator so that it can work
-> > > > even with CONFIG_MODULES=n, and so that it doesn't have to waste VA space in
-> > > > the modules area.
-> > > > 
-> > > > Given that, I think these should have their own allocator functions that can be
-> > > > provided independently, even if those happen to use common infrastructure.
-> > > 
-> > > How much memory can kprobes conceivably use? I think we also want to try
-> > > to push back on combinatorial new allocators, if we can.
-> > 
-> > That depends on who's using it, and how (e.g. via BPF).
-> > 
-> > To be clear, I'm not necessarily asking for entirely different allocators, but
-> > I do thinkg that we want wrappers that can at least pass distinct start+end
-> > parameters to a common allocator, and for arm64's modules code I'd expect that
-> > we'd keep the range falblack logic out of the common allcoator, and just call
-> > it twice.
-> > 
-> > > > > Several architectures override module_alloc() because of various
-> > > > > constraints where the executable memory can be located and this causes
-> > > > > additional obstacles for improvements of code allocation.
-> > > > > 
-> > > > > This set splits code allocation from modules by introducing
-> > > > > jit_text_alloc(), jit_data_alloc() and jit_free() APIs, replaces call
-> > > > > sites of module_alloc() and module_memfree() with the new APIs and
-> > > > > implements core text and related allocation in a central place.
-> > > > > 
-> > > > > Instead of architecture specific overrides for module_alloc(), the
-> > > > > architectures that require non-default behaviour for text allocation must
-> > > > > fill jit_alloc_params structure and implement jit_alloc_arch_params() that
-> > > > > returns a pointer to that structure. If an architecture does not implement
-> > > > > jit_alloc_arch_params(), the defaults compatible with the current
-> > > > > modules::module_alloc() are used.
-> > > > 
-> > > > As above, I suspect that each of the callsites should probably be using common
-> > > > infrastructure, but I don't think that a single jit_alloc_arch_params() makes
-> > > > sense, since the parameters for each case may need to be distinct.
-> > > 
-> > > I don't see how that follows. The whole point of function parameters is
-> > > that they may be different :)
-> > 
-> > What I mean is that jit_alloc_arch_params() tries to aggregate common
-> > parameters, but they aren't actually common (e.g. the actual start+end range
-> > for allocation).
-> 
-> jit_alloc_arch_params() tries to aggregate architecture constraints and
-> requirements for allocations of executable memory and this exactly what
-> the first 6 patches of this set do.
-> 
-> A while ago Thomas suggested to use a structure that parametrizes
-> architecture constraints by the memory type used in modules [1] and Song
-> implemented the infrastructure for it and x86 part [2].
-> 
-> I liked the idea of defining parameters in a single structure, but I
-> thought that approaching the problem from the arch side rather than from
-> modules perspective will be better starting point, hence these patches.
-> 
-> I don't see a fundamental reason why a single structure cannot describe
-> what is needed for different code allocation cases, be it modules, kprobes
-> or bpf. There is of course an assumption that the core allocations will be
-> the same for all the users, and it seems to me that something like 
-> 
-> * allocate physical memory if allocator caches are empty
-> * map it in vmalloc or modules address space
-> * return memory from the allocator cache to the caller
-> 
-> will work for all usecases.
-> 
-> We might need separate caches for different cases on different
-> architectures, and a way to specify what cache should be used in the
-> allocator API, but that does not contradict a single structure for arch
-> specific parameters, but only makes it more elaborate, e.g. something like
-> 
-> enum jit_type {
-> 	JIT_MODULES_TEXT,
-> 	JIT_MODULES_DATA,
-> 	JIT_KPROBES,
-> 	JIT_FTRACE,
-> 	JIT_BPF,
-> 	JIT_TYPE_MAX,
-> };
+This adds the napi busy polling support in io_uring.c. It adds a new
+napi_list to the io_ring_ctx structure. This list contains the list of
+napi_id's that are currently enabled for busy polling. This list is
+used to determine which napi id's enabled busy polling. For faster
+access it also adds a hash table.
 
-Why would we actually need different enums for modules_text, kprobes,
-ftrace and bpf? Why can't we treat all text allocations the same?
+When a new napi id is added, the hash table is used to locate if
+the napi id has already been added. When processing the busy poll
+loop the list is used to process the individual elements.
 
-The reason we can't do that currently is because modules need to go in a
-128Mb region on some archs, and without sub page allocation
-bpf/kprobes/etc. burn a full page for each allocation. But we're doing
-sub page allocation - right?
+io-uring allows specifying two parameters:
+- busy poll timeout and
+- prefer busy poll to call of io_napi_busy_loop()
+This sets the above parameters for the ring. The settings are passed
+with a new structure io_uring_napi.
 
-That leaves module data - which really needs to be split out into rw,
-ro, ro_after_init - but I'm not sure we'd even want the same API for
-those, they need fairly different page permissions handling.
+There is also a corresponding liburing patch series, which enables this
+feature. The name of the series is "liburing: add add api for napi busy
+poll timeout". It also contains two programs to test the this.
+
+Testing has shown that the round-trip times are reduced to 38us from
+55us by enabling napi busy polling with a busy poll timeout of 100us.
+More detailled results are part of the commit message of the first
+patch.
+
+Changes:
+- V14:
+  - Rephrased comment for napi_busy_loop_rcu() funnction
+  - Added new function _napi_busy_loop() to remove code
+    duplication in napi_busy_loop() and napi_busy_loop_rcu()
+- V13:
+  - split off __napi_busy_loop() from napi_busy_loop()
+  - introduce napi_busy_loop_no_lock()
+  - use napi_busy_loop_no_lock in io_napi_blocking_busy_loop
+- V12:
+  - introduce io_napi_hash_find()
+  - use rcu for changes to the hash table
+  - use rcu for searching if a napi id is in the napi hash table
+  - use rcu hlist functions for adding and removing items from the hash
+    table
+  - add stale entry detection in __io_napi_do_busy_loop and remove stale
+    entries in io_napi_blocking_busy_loop() and io_napi_sqpoll_busy_loop(=
+)
+  - create io_napi_remove_stale() and __io_napi_remove_stale()
+  - __io_napi_do_busy_loop() takes additional loop_end_arg and does stale
+    entry detection
+  - io_napi_multi_busy_loop is removed. Logic is moved to
+    io_napi_blocking_busy_loop()
+  - io_napi_free uses rcu function to free
+  - io_napi_busy_loop no longer splices
+  - io_napi_sqpoll_busy_poll uses rcu
+- V11:
+  - Fixed long comment lines and whitespace issues
+  - Refactor new code io_cqring_wait()
+  - Refactor io_napi_adjust_timeout() and remove adjust_timeout
+  - Rename io_napi_adjust_timeout to __io_napi_adjust_timeout
+  - Add new function io_napi_adjust_timeout
+  - Cleanup calls to list_is_singular() in io_napi_multi_busy_loop()
+    and io_napi_blocking_busy_loop()
+  - Cleanup io_napi_busy_loop_should_end()
+  - Rename __io_napi_busy_loop to __io_napi_do_busy_loop()=20
+- V10:
+  - Refreshed to io-uring/for-6.4
+  - Repeated performance measurements for 6.4 (same/similar results)
+- V9:
+  - refreshed to io-uring/for-6.3
+  - folded patch 2 and 3 into patch 4
+  - fixed commit description for last 2 patches
+  - fixed some whitespace issues
+  - removed io_napi_busy_loop_on helper
+  - removed io_napi_setup_busy helper
+  - renamed io_napi_end_busy_loop to io_napi_busy_loop
+  - removed NAPI_LIST_HEAD macro
+  - split io_napi_blocking_busy_loop into two functions
+  - added io_napi function
+  - comment for sqpoll check
+- V8:
+  - added new file napi.c and add napi functions to this file
+  - added NAPI_LIST_HEAD function so no ifdef is necessary
+  - added io_napi_init and io_napi_free function
+  - added io_napi_setup_busy loop helper function
+  - added io_napi_adjust_busy_loop helper function
+  - added io_napi_end_busy_loop helper function
+  - added io_napi_sqpoll_busy_poll helper function
+  - some of the definitions in napi.h are macros to avoid ifdef
+    definitions in io_uring.c, poll.c and sqpoll.c
+  - changed signature of io_napi_add function
+  - changed size of hashtable to 16. The number of entries is limited
+    by the number of nic queues.
+  - Removed ternary in io_napi_blocking_busy_loop
+  - Rewrote io_napi_blocking_busy_loop to make it more readable
+  - Split off 3 more patches
+- V7:
+  - allow unregister with NULL value for arg parameter
+  - return -EOPNOTSUPP if CONFIG_NET_RX_BUSY_POLL is not enabled
+- V6:
+  - Add a hash table on top of the list for faster access during the
+    add operation. The linked list and the hash table use the same
+    data structure
+- V5:
+  - Refreshed to 6.1-rc6
+  - Use copy_from_user instead of memdup/kfree
+  - Removed the moving of napi_busy_poll_to
+  - Return -EINVAL if any of the reserved or padded fields are not 0.
+- V4:
+  - Pass structure for napi config, instead of individual parameters
+- V3:
+  - Refreshed to 6.1-rc5
+  - Added a new io-uring api for the prefer napi busy poll api and wire
+    it to io_napi_busy_loop().
+  - Removed the unregister (implemented as register)
+  - Added more performance results to the first commit message.
+- V2:
+  - Add missing defines if CONFIG_NET_RX_BUSY_POLL is not defined
+  - Changes signature of function io_napi_add_list to static inline
+    if CONFIG_NET_RX_BUSY_POLL is not defined
+  - define some functions as static
+
+
+
+Stefan Roesch (8):
+  net: split off __napi_busy_poll from napi_busy_poll
+  net: introduce napi_busy_loop_rcu()
+  net: split off _napi_busy_loop()
+  io-uring: move io_wait_queue definition to header file
+  io-uring: add napi busy poll support
+  io-uring: add sqpoll support for napi busy poll
+  io_uring: add register/unregister napi function
+  io_uring: add prefer busy poll to register and unregister napi api
+
+ include/linux/io_uring_types.h |  11 ++
+ include/net/busy_poll.h        |   4 +
+ include/uapi/linux/io_uring.h  |  12 ++
+ io_uring/Makefile              |   1 +
+ io_uring/io_uring.c            |  41 ++--
+ io_uring/io_uring.h            |  26 +++
+ io_uring/napi.c                | 331 +++++++++++++++++++++++++++++++++
+ io_uring/napi.h                | 104 +++++++++++
+ io_uring/poll.c                |   2 +
+ io_uring/sqpoll.c              |   4 +
+ net/core/dev.c                 | 134 ++++++++-----
+ 11 files changed, 602 insertions(+), 68 deletions(-)
+ create mode 100644 io_uring/napi.c
+ create mode 100644 io_uring/napi.h
+
+
+base-commit: d2b7fa6174bc4260e496cbf84375c73636914641
+--=20
+2.39.1
+
 
