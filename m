@@ -1,165 +1,162 @@
-Return-Path: <netdev+bounces-8114-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8115-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id DABD9722C53
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 18:16:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 184E1722C71
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 18:26:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 93798281342
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 16:16:54 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ADDC2281342
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 16:26:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 137032260A;
-	Mon,  5 Jun 2023 16:16:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B85AE2260F;
+	Mon,  5 Jun 2023 16:26:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08168DF54
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 16:16:52 +0000 (UTC)
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747AACD
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 09:16:49 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-565a33c35b1so74762067b3.0
-        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 09:16:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1685981808; x=1688573808;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=m1HzTmHu7OiMOSvYpAxyjAUzkmTs3IsZFnSOjhMlyfA=;
-        b=Crrrt+s2UzNVz7CwOp3SwQ4wrsqUIu8G2S3XcNYBrooSxLPlXuOKX4zcd+5kuuVwu9
-         K+66GF8T9qVgNEKMhGSop4WtDfFsgeCuO6ZBYxuOw69vg36t1DD+iyI2QKODQEPpGqqe
-         XlbaBwVAWc2OX2neVC+CkXrTbFUos0FmYfkpCwRyNL1iBlLKrzqlQplBi37b4Fz5KiST
-         7foKYV0CG52hyn76do3dTPoSCMmPs3QBQ19by77ppuDty317uXRimpL6ZUkhuyXoknOz
-         OYFB8/acEY603wdLYuDxTmwnjeF1aTXGBHLRlLzglsL/1q1I29gegBET7ka1YpbnGoSR
-         MuGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685981808; x=1688573808;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=m1HzTmHu7OiMOSvYpAxyjAUzkmTs3IsZFnSOjhMlyfA=;
-        b=EvieLgrIW/LKCA+8kfW9WFhIwBmcvVD7UQcC+2gxb76R8CuJ64VQrhQQl9Cn2K8hN8
-         scFGHXRzif1oZjIuuZGz9oQwtxVV0rSqZ7dOwMeTyteBQrl1ToLpPTQUwvglLw0zFIsI
-         uJjhANi5Pa5ncqKK1tQEiWM4Lurogph+ruWZyp8x05g/D7zXhQwOI+g5EpADiVouu8S+
-         VLM8tRI3897zt6wKhZKBMSzPped47dDHIg0nqzdzH/pAlWCFgrtMgf/b2yUr3H9rs8V7
-         +XL50Ps8eMPKxMgHQQ6bvBHkAUmGP7YfUytf1nJjqos0OkzgldF+SloRS8T2VEY587yp
-         wgww==
-X-Gm-Message-State: AC+VfDx2MJHLmCg3Z08e9dDvth6YSLvr4gS1/TpLiGdIC9LHD2s6jdor
-	q0vO+YP/o05cDzDax58ojMTkZDLdMfIYnQ==
-X-Google-Smtp-Source: ACHHUZ747G4lcsl48KSrxPDvoKJP7muGWZD2dp6RQAE9vFRxmcB3qawBg0xL92J0ZK+yTyiDPfz+YWzDz9ZIyg==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a25:c5c8:0:b0:ba8:2e79:c193 with SMTP id
- v191-20020a25c5c8000000b00ba82e79c193mr3673636ybe.12.1685981808723; Mon, 05
- Jun 2023 09:16:48 -0700 (PDT)
-Date: Mon,  5 Jun 2023 16:16:47 +0000
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A68A021CFC
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 16:26:31 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2042.outbound.protection.outlook.com [40.107.220.42])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DE8ACD
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 09:26:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=S/YchuO/LMOsOluZGLmcrYC08+X8IlaxC6DHFqYwzhi4Iux7FRp7maczBI4ytG3+S75qItgpomMaLHasjqYQkFDgMKtKoKrYrpcN7qxtBqKrJp8pOXK0XKP9KuimfmYFGLSE+3csIfFi+ycZZxDUZzWBGivSjXSuzwNRoZqmG44uYyNf6xjbCP5wpXgPy2OHw11xqGkNI8GXPW3cMKK151DF6pALzf5VYg2PlWZeamVDMQh8hsdcyBD0uEznbIEOJzIFS1gU8w10wVOXj+tiCeaGrdplZ9M8jSikYOchtHvQAZI6wTapOR4KQasmxBiXFd9h+HhJo1bPiN7ZS5vGCw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+NpTookXFvlpO04iKjNka97BTlkxCCYV1rtO6yQojyo=;
+ b=G6psYWPn5Mrc5EeVb6DN8dc8aDbyfraMLjgF+qI/NkH6LxVYsBRPwumpKpB4af9cLSCxz8Atg306oK2i/ziHNrzIsoPPR6hI0PYNMZxx7IcsADAEqAQvGET7+uAYIWAG0EmUuu9o4Zi05A6lSwtgb0GRFSCG6MzAuMssbw5YSVrxu1V0HZX4AIN8T3rEbNw7Ip722f1iFjsrHuzHSOFLMSkfmkwxnUaHOqXJEQwWkpf3ArUxu9e++Qpbnm/SiveMpCiD5N/qLhf6bdgte1Apk0iymp5KgdynjGL8RU13FSF6+JPxrJdL/tUv/KwLPzepCd3iyEUkbYgQkwXaqihT8Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+NpTookXFvlpO04iKjNka97BTlkxCCYV1rtO6yQojyo=;
+ b=BoWlxlMUIQNdNoG9svETmCF8EIcXCJvNmqSnnsp5KtS4ltHllTPaMvuA0i9UkXxtdPvlBTnST6lAdeHMJBW7p37C0WQSuzQnQNZVIboG8JY9fsiVbFftfEcP0AzuDaRoF7Odn5APaM884jUnvn0Lksky5bFBAVOwYiB9ttzjX6w=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
+ DS7PR12MB5743.namprd12.prod.outlook.com (2603:10b6:8:72::14) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6455.32; Mon, 5 Jun 2023 16:26:28 +0000
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::611f:a9a7:c228:c89a]) by DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::611f:a9a7:c228:c89a%6]) with mapi id 15.20.6455.030; Mon, 5 Jun 2023
+ 16:26:28 +0000
+Message-ID: <be5f26b8-fbe5-841d-5469-3adcfc178ab3@amd.com>
+Date: Mon, 5 Jun 2023 09:26:25 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.1
+Subject: Re: [PATCH net-next] ionic: add support for ethtool extended stat
+ link_down_count
+Content-Language: en-US
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org, davem@davemloft.net, brett.creeley@amd.com,
+ drivers@pensando.io, Nitya Sunkad <nitya.sunkad@amd.com>
+References: <20230602173252.35711-1-shannon.nelson@amd.com>
+ <20230602234708.03fbb00e@kernel.org>
+From: Shannon Nelson <shannon.nelson@amd.com>
+In-Reply-To: <20230602234708.03fbb00e@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0296.namprd03.prod.outlook.com
+ (2603:10b6:a03:39e::31) To DS0PR12MB6583.namprd12.prod.outlook.com
+ (2603:10b6:8:d1::12)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.41.0.rc0.172.g3f132b7071-goog
-Message-ID: <20230605161647.3624428-1-edumazet@google.com>
-Subject: [PATCH v2 net] tcp: gso: really support BIG TCP
-From: Eric Dumazet <edumazet@google.com>
-To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org, eric.dumazet@gmail.com, 
-	Eric Dumazet <edumazet@google.com>, Alexander Duyck <alexanderduyck@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|DS7PR12MB5743:EE_
+X-MS-Office365-Filtering-Correlation-Id: c3ede61e-387a-4f4b-7bac-08db65e19cf6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	/3ed+ZkGGclcuTRUNONXiQRzJV8F3MEt4CZTa1Hj3VzGZoPuTEyjdElVtBFUAXRCAzrx5swKpYZVUaL87jG2RELfxCAH3OOC7jdjzYvGRDRKQtAZOhCvm08gFpCkxlAYU2ZtofF1KDItmzfLGv+RFj5xPpGURsRL1nW+X3ug3Jb3Rtu85tNKowix+mQRcLH8h92MNkYARGyZeUHs9GSnZ7hoQJ5TvTk0dVzOLbsjstwAfQF+s8nscDYCVSkHZBYKPkgK1OPgdfdmgEGOMycwNzAXVzEeIvbAsZeHbaW6VEebu/7Jy38JD8RBKcVQ09nJSDHN2h20YSs1GCpyDaDQ/qIWi0QkqRQ9OKO2S8RohnQXDHkYrvRiT0xjNlvzUZ47qsUigO4j9ayJYm9jhykMQ/57mO8iWRfrxXcHf/jM2EEvyLxh6iFlR05gDq+7kCMPFxHW5uPx8iILGXp0u5OudNKHPKJoBWz4mGghrjiYok90Jz4n85/23WHpz5FXaAqbN9SMJ5crInyHUx251rojcISF2eI4oqjQPtTqhoiArvEXxF4ewY/wGK6QHHqvuYaAAW/g/rwYWsLWk6XU71Sub0boTAwxKt85Fkd09KElHWt2KLFCFzGNINWVShNaDo+KTQ+H5GBhvrWKcgNBsFIhhQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(376002)(396003)(136003)(39860400002)(346002)(451199021)(6506007)(53546011)(6512007)(38100700002)(2616005)(41300700001)(31686004)(6486002)(6666004)(186003)(26005)(478600001)(4326008)(6916009)(66476007)(66556008)(66946007)(316002)(8936002)(8676002)(5660300002)(44832011)(2906002)(31696002)(86362001)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VEdtc3NDK0I0eDNvRkV3RU9qNlJ0MzhlaUp6MmZPSWhrWTRtWHcyY2ZsbkQr?=
+ =?utf-8?B?S2cxL0RzZU1Qd0MyeHI2MW02bFk5eG94Q2d2c0RLWXd6MFFtNHBhdmVwQ1VF?=
+ =?utf-8?B?WnRzS3dzUFRreHdNNGF6ZTI1SFJ5eDIvY0gyaVVuSFpyYUR5THVhaHBhTzF4?=
+ =?utf-8?B?WlduQ2JpMjJqTXdydS8wU2lueXZtZEpmUHk4QVVyWUJWMGpQOWRxRmNHNkdU?=
+ =?utf-8?B?eUsxTkdGYUxxYk9xRzN5UjJjYlV2clVZRlIyNjhVYzJYT1NqdWdlV0hPOUpK?=
+ =?utf-8?B?OVpNRDlFN1p5SUdBRGpJZllDTHZManJCeGEveFg4M3FnNkc2MWtrVUxTeDVX?=
+ =?utf-8?B?TU5yQmY3Yk9CMXo3N045Y3YyQU1KMUxvYWdJN3J1SlA4UUpLM2FQa25EZm9i?=
+ =?utf-8?B?N0doWUZEbVdOZElvYmFoeEFKSGRpeHNDT1ovcEVKdjczRVpVOEtGMm1ZMUZD?=
+ =?utf-8?B?Q0NJVURWNU5pZ0NmRWhjR2R4WTN4WTRrQVdXTkw4LzRZSVplRjY4SDc1VUxs?=
+ =?utf-8?B?ZTZMK3htRTdhVDNPbkJzZWp0aVllVWJ1YThUUGF3TDJ6RXoyclEvTmI1MXl0?=
+ =?utf-8?B?RGpLZG5CQ0JTQU9ISzNSRXhkV3V3UDY4dUpBcEpMeGVDUlZITUdkNUhkVEk4?=
+ =?utf-8?B?SGNucHd3K3lkY3ZaUzZ0LzJUbDNVWGdYUVpCQmZJZXBsY2dKT2RCT2JxQlJB?=
+ =?utf-8?B?dUE2eXJyb0F1T2JaT1ZwVldQNEZJNDdTa0R6RnhIdmV1dXB2aFU5NlJLSy9m?=
+ =?utf-8?B?bXFqOUF3K2h6aXdndXdleDhSVy9WeTRlZlJQbVJ4YnNwT25NaG92Z2xsWEdv?=
+ =?utf-8?B?SUE0NmxreDdIdzJ1aWU4US9zTXMyKzU1blp1RWZqR1RiYldBVS9iemNoRXdm?=
+ =?utf-8?B?NmFqc3VwMEdmREdGMkR3Zlc5bjBteU9IQnhzSkRXaEpRZXllRDdxdm5CYmkx?=
+ =?utf-8?B?Q01wWVB0RVVqdWgwOGdGSzJ1R3BpOFBpMEVINllZbUllUUpsZ1pvak85bitV?=
+ =?utf-8?B?Tlp0YmdWbGZpWmNZSGJ4T2VFRkdBVnRxVytXbnJEeEQvUVdicWlaSUFmZWlu?=
+ =?utf-8?B?bU1ZWDJhVW80enk5TkV0dFBldUcyeDVwbm43ODRuMzBSaDMxRXBUN0Vramtv?=
+ =?utf-8?B?aUhmYTYwNHloWFU1ZlFCaE1jZTdEdkM0eGdvL1VSS2pCdHZCWXhSOW15OFlT?=
+ =?utf-8?B?cVdGcWNPNmZWRTZad2prdkRTRHQ5Q2NNbXVCREc2WnQ5SE1vVVFKQ2haYmFE?=
+ =?utf-8?B?L0JJV2hGS09teXd2ajhmY1VrMTB2QndDM2Jkang4djhjUmVkSy8yVHZOd0lu?=
+ =?utf-8?B?M200RFR4Ykx2a0tQTXFIOERGVDBTUFVCR1FZOHN0RTczZEZzcWhra3dadXVt?=
+ =?utf-8?B?R2Zmb1NzWC8xaFFXNEEwWi9mWjlUMDVnb244OGM1Q1ZMRUdzOWMzNnZhMk9L?=
+ =?utf-8?B?eWVvS3RjSXNlZXBHLzhJeVplc1VzOGpuaUM3TWt1RUN5ckhidzlwMU04VDRi?=
+ =?utf-8?B?NVV3YXVvN0pWbWlUdXg1RCszT2pja1Q0K0lOMDZOZktTeGdUMUdydzE4QUt6?=
+ =?utf-8?B?UGxoWkt6YkQ5TFY2WW1nRk56QW1wTUEvbTFaSVRQN3JTVTAzNlZ1aWVRVHoy?=
+ =?utf-8?B?TGxKdjV6ajRLSG93T1ZhY1hjaEVkTUFRdEVnVHlmS05wUm9WRWYyVHZabVJK?=
+ =?utf-8?B?M3FnWlBkZkgrc3R1d1ZvMG1HRng3QWJhTEYvQklzNXd4R09qVlNwL09iUEcy?=
+ =?utf-8?B?a0xnWGZKSkJmY0QzUkJJWmRuUlZhU1Z2V2xDTW91Q0V4RnFzSUQvSkRBZXoy?=
+ =?utf-8?B?UjJhVnBscnZsdkE0dWo2OC9pU3RCbG4xOStYa0tVSFFPcjViTHZUTEVwWWdk?=
+ =?utf-8?B?R29VT3V4a29RWW1OWWFLL043TCthSHdsWEc3TStzZWMxWjBSS3ppTGdGQjQw?=
+ =?utf-8?B?U2FlVEJqR2lPci9NcGlwN3ZKUGEzVHgzUzhleG5mMEJDdkhYT003RjhPTjlp?=
+ =?utf-8?B?RE5GcWkrQVllY0I3TzJNR2Z5SGhRcUo3aHZSaDR6TnZwbmhyRzRuczdtdmFv?=
+ =?utf-8?B?emN1UWJXcFFDYUowZy8wbzQ5aDN4YWFsNGlIcS9sbXNiRjhBRjZRKzJVdmlY?=
+ =?utf-8?Q?buQp3tWPQEPLkC3kkQ5T+gple?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c3ede61e-387a-4f4b-7bac-08db65e19cf6
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2023 16:26:28.0206
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ry9FcHXv0YahQWp5aZ0FAyanaJngsK/i/xqa37t2mnBvDdchazrTXvwpAA9DCJUvhpXN6xEagUA/gIySwB7Kfg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5743
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-We missed that tcp_gso_segment() was assuming skb->len was smaller than 65535 :
+On 6/2/23 11:47 PM, Jakub Kicinski wrote:
+> On Fri, 2 Jun 2023 10:32:52 -0700 Shannon Nelson wrote:
+>> Following the example of 9a0f830f8026 ("ethtool: linkstate: add a statistic
+>> for PHY down events"), added support for link down events.
+>>
+>> Added callback ionic_get_link_ext_stats to ionic_ethtool.c to support
+>> link_down_count, a property of netdev that gets incremented every time
+>> the device link goes down.
+> 
+> Hm, could you say more about motivation? The ethtool stat is supposed to
+> come from HW and represent PHY-level flap count. It's used primarily to
+> find bad cables in a datacenter. Is this also the use case for ionic?
+> It's unclear to me whether ionic interfaces are seeing an actual PHY or
+> just some virtual link state of the IPU and in the latter case it's not
+> really a match.
 
-oldlen = (u16)~skb->len;
+This is a fair question - yes, it is possible that the FW could fake it, 
+but normally this is a signal from the HW.  However, I suppose it would 
+be best to only have the PF reporting this counter, and not the VFs, 
+which is currently the case here.  I'll have Nitya modify this for PF only.
 
-This part came with commit 0718bcc09b35 ("[NET]: Fix CHECKSUM_HW GSO problems.")
-
-This leads to wrong TCP checksum.
-
-Adapt the code to accept arbitrary packet length.
-
-v2:
-  - use two csum_add() instead of csum_fold() (Alexander Duyck)
-  - Change delta type to __wsum to reduce casts (Alexander Duyck)
-
-Fixes: 09f3d1a3a52c ("ipv6/gso: remove temporary HBH/jumbo header")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
----
- net/ipv4/tcp_offload.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
-
-diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c
-index 45dda788938704c3f762256266d9ea29b6ded4a5..4851211aa60d6eaf7d1c5e4f90bbcf621ee4c69b 100644
---- a/net/ipv4/tcp_offload.c
-+++ b/net/ipv4/tcp_offload.c
-@@ -60,12 +60,12 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
- 	struct tcphdr *th;
- 	unsigned int thlen;
- 	unsigned int seq;
--	__be32 delta;
- 	unsigned int oldlen;
- 	unsigned int mss;
- 	struct sk_buff *gso_skb = skb;
- 	__sum16 newcheck;
- 	bool ooo_okay, copy_destructor;
-+	__wsum delta;
- 
- 	th = tcp_hdr(skb);
- 	thlen = th->doff * 4;
-@@ -75,7 +75,7 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
- 	if (!pskb_may_pull(skb, thlen))
- 		goto out;
- 
--	oldlen = (u16)~skb->len;
-+	oldlen = ~skb->len;
- 	__skb_pull(skb, thlen);
- 
- 	mss = skb_shinfo(skb)->gso_size;
-@@ -110,7 +110,7 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
- 	if (skb_is_gso(segs))
- 		mss *= skb_shinfo(segs)->gso_segs;
- 
--	delta = htonl(oldlen + (thlen + mss));
-+	delta = (__force __wsum)htonl(oldlen + thlen + mss);
- 
- 	skb = segs;
- 	th = tcp_hdr(skb);
-@@ -119,8 +119,7 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
- 	if (unlikely(skb_shinfo(gso_skb)->tx_flags & SKBTX_SW_TSTAMP))
- 		tcp_gso_tstamp(segs, skb_shinfo(gso_skb)->tskey, seq, mss);
- 
--	newcheck = ~csum_fold((__force __wsum)((__force u32)th->check +
--					       (__force u32)delta));
-+	newcheck = ~csum_fold(csum_add(csum_unfold(th->check), delta));
- 
- 	while (skb->next) {
- 		th->fin = th->psh = 0;
-@@ -165,11 +164,11 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
- 			WARN_ON_ONCE(refcount_sub_and_test(-delta, &skb->sk->sk_wmem_alloc));
- 	}
- 
--	delta = htonl(oldlen + (skb_tail_pointer(skb) -
--				skb_transport_header(skb)) +
--		      skb->data_len);
--	th->check = ~csum_fold((__force __wsum)((__force u32)th->check +
--				(__force u32)delta));
-+	delta = (__force __wsum)htonl(oldlen +
-+				      (skb_tail_pointer(skb) -
-+				       skb_transport_header(skb)) +
-+				      skb->data_len);
-+	th->check = ~csum_fold(csum_add(csum_unfold(th->check), delta));
- 	if (skb->ip_summed == CHECKSUM_PARTIAL)
- 		gso_reset_checksum(skb, ~th->check);
- 	else
--- 
-2.41.0.rc0.172.g3f132b7071-goog
-
+Thanks,
+sln
 
