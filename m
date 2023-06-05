@@ -1,148 +1,150 @@
-Return-Path: <netdev+bounces-7984-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7985-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7D2AE72256E
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:20:51 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C8DCC722582
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:22:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D96CE28110F
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:20:49 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 82FDB281138
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:22:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F30218B03;
-	Mon,  5 Jun 2023 12:20:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B856B18B04;
+	Mon,  5 Jun 2023 12:22:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02804525E
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:20:47 +0000 (UTC)
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF29E9C;
-	Mon,  5 Jun 2023 05:20:44 -0700 (PDT)
-X-GND-Sasl: maxime.chevallier@bootlin.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1685967643;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=nMy8jOn3QwsSSA0c+m8gW2VcF2TjCe8+rIvNflPEe5k=;
-	b=Bbjt27xU7k12RxSL8+07oLlYoRcikhvnrVDE5aZOhSaz1GdvhkP2zA/wu+rokBrIgtSFaM
-	pYZINe36JMe+jVf40wve8mh1Jly7o1wkPMRg1/RAlFuLa1w7tZHP+o24TYkQoDqom/bFdA
-	DaJ9zp7qgfYrzUaaS1p5CO58HIJxaLSJuKFJhEeJixkN6nKsF2CbF2dO+y2DEPb8RezTgb
-	dXwKsoOz6awL5ovsMiD/JvzRpMosXOKoVYoQp4tDtBNxq240+cggA5uRm2UBxif7zd650x
-	xlA6Oocq5hnD9szrTh5IFatkBkVWDAw/dgbgTn1jq2HePcsaFO7Gss883c9Pmg==
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 7079B24000A;
-	Mon,  5 Jun 2023 12:20:40 +0000 (UTC)
-Date: Mon, 5 Jun 2023 14:20:39 +0200
-From: Maxime Chevallier <maxime.chevallier@bootlin.com>
-To: patchwork-bot+netdevbpf@kernel.org
-Cc: broonie@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, alexis.lothore@bootlin.com,
- thomas.petazzoni@bootlin.com, andrew@lunn.ch, kuba@kernel.org,
- edumazet@google.com, pabeni@redhat.com, f.fainelli@gmail.com,
- hkallweit1@gmail.com, linux@armlinux.org.uk, vladimir.oltean@nxp.com,
- ioana.ciornei@nxp.com, linux-stm32@st-md-mailman.stormreply.com,
- linux-arm-kernel@lists.infradead.org, mcoquelin.stm32@gmail.com,
- joabreu@synopsys.com, alexandre.torgue@foss.st.com, peppe.cavallaro@st.com,
- simon.horman@corigine.com
-Subject: Re: [PATCH net-next v4 0/4] net: add a regmap-based mdio driver and
- drop TSE PCS
-Message-ID: <20230605142039.3f8d1530@pc-7.home>
-In-Reply-To: <168596102478.26938.1530517069555858195.git-patchwork-notify@kernel.org>
-References: <20230601141454.67858-1-maxime.chevallier@bootlin.com>
-	<168596102478.26938.1530517069555858195.git-patchwork-notify@kernel.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-redhat-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A998417AD1
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:22:40 +0000 (UTC)
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1FAE68;
+	Mon,  5 Jun 2023 05:22:15 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+	by mailout.west.internal (Postfix) with ESMTP id 9A3D53200913;
+	Mon,  5 Jun 2023 08:22:11 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Mon, 05 Jun 2023 08:22:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm1; t=1685967731; x=1686054131; bh=7W
+	iLrLsF5xVxXNcAy4Mh7e7hxHBVb5egJsZ8LOLNRvo=; b=2o1kwlV3Do2loqfo88
+	8E8nDDB5CavhahXYo6NRabED24JsbSPlA/28nBdwLSv8pPi6tdbInnX6ZLfYGJIm
+	d/ZZHp7m3paDvnOH0noWl7Ko/QtboQpabiwAApHaYpbnOwCG8p32w6UHX3sH2Ryu
+	+1MCyFRdDI/RN6Vs811t++D4ZDUd9Q086Ay7fCnXsIeNNYynG3hZ+0AZcg8R/dGf
+	/pCFJ5fYIIzQeWOQ9TU+7r18p7N0MpyKzCac44ZpElncC9G/hZJVnXyo8ZaNm+H5
+	Xu64ngLXypJBb9h19upA8yk8tu8iWMkH+/NUkndFMdFatP/V6RtvpzMYJ0L+1GlG
+	BYjw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm1; t=1685967731; x=1686054131; bh=7WiLrLsF5xVxX
+	NcAy4Mh7e7hxHBVb5egJsZ8LOLNRvo=; b=bMOmsPyCvbE5xOYlrfbDXKiyTdvl0
+	h1VBo3CiJg9/m3T4yfz7v6rr4FNGm/olLi+ic+M4vg1lnfrcUE5OFFK2K9z+7YPV
+	1uLrhqglfmTMp0PhHZ40d1x813XFyKNPtEhylYRwrnhGTJrWr6J4kNdDxDPFe7HG
+	Bq3psbyd1ZbIVb5pPBWyAH2s78xfNogW1DvNWuncHMbTSH7xFkyBLGVqKRpaEK1Q
+	u+SEAeHhjPQPRh6JCOdsylGdjmsMme9LyKKeqNNtfyhSVnrf2ka0IyRtrUXjnn/C
+	A8jkfIUvqaljFkLxBRaemIN76g3qGznuTBwEZYlOUJEyOl1SkhQw2DpNA==
+X-ME-Sender: <xms:ctN9ZDmD-tSymJN54hej2KEc-SLnn0p6xZC_NVsNaNZlh6NPqUqI2g>
+    <xme:ctN9ZG0xEW8krpuXFulA_rknWNdgRDA6LQIUcgWN1ZWQM7VKvzUCWUu-a9tdf802u
+    avA_EX3MyQOR_4oRfo>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeelledgheduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:ctN9ZJpRlsoxA7UiHkqptL34w_v_IjkGD8QhakerALnfohbmRYGSYQ>
+    <xmx:ctN9ZLmGLFrIAbb-zW7rxXN7J0076toHehHcVydIzI9Z0PlSSDgacg>
+    <xmx:ctN9ZB1Xz0IQNNTMSL3_dcw1XG4Q85C4_eI4tBnm94D3uLNNSd1GFQ>
+    <xmx:c9N9ZOLlaiJV7ZDVd7olUsSd-GhbZoNUddglv_9XL9y0u-TTf6ke2w>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 96776B60086; Mon,  5 Jun 2023 08:22:10 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-447-ge2460e13b3-fm-20230525.001-ge2460e13
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+Message-Id: <d98d050a-29dd-4ee7-86cd-bad4e6a04584@app.fastmail.com>
+In-Reply-To: <3e262485-bf5f-1a98-e399-e02add3eaa89@microchip.com>
+References: <20230603200243.243878-1-varshini.rajendran@microchip.com>
+ <20230603200243.243878-22-varshini.rajendran@microchip.com>
+ <be3716e0-383f-e79a-b441-c606c0e049df@linaro.org>
+ <3e262485-bf5f-1a98-e399-e02add3eaa89@microchip.com>
+Date: Mon, 05 Jun 2023 14:21:50 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Nicolas Ferre" <nicolas.ferre@microchip.com>,
+ "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
+ "Varshini Rajendran" <varshini.rajendran@microchip.com>,
+ "Thomas Gleixner" <tglx@linutronix.de>, "Marc Zyngier" <maz@kernel.org>,
+ "Rob Herring" <robh+dt@kernel.org>, krzysztof.kozlowski+dt@linaro.org,
+ "Conor Dooley" <conor+dt@kernel.org>,
+ "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
+ "Claudiu Beznea" <claudiu.beznea@microchip.com>,
+ "David S . Miller" <davem@davemloft.net>,
+ "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>,
+ "Paolo Abeni" <pabeni@redhat.com>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Russell King" <linux@armlinux.org.uk>,
+ "Michael Turquette" <mturquette@baylibre.com>,
+ "Stephen Boyd" <sboyd@kernel.org>, "Sebastian Reichel" <sre@kernel.org>,
+ "Mark Brown" <broonie@kernel.org>,
+ "Gregory Clement" <gregory.clement@bootlin.com>,
+ "Sudeep Holla" <sudeep.holla@arm.com>,
+ "Balamanikandan Gunasundar" <balamanikandan.gunasundar@microchip.com>,
+ "Mihai.Sain" <mihai.sain@microchip.com>, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
+ linux-clk@vger.kernel.org, linux-pm@vger.kernel.org
+Cc: Hari.PrasathGE@microchip.com, cristian.birsan@microchip.com,
+ durai.manickamkr@microchip.com, manikandan.m@microchip.com,
+ dharma.b@microchip.com, nayabbasha.sayed@microchip.com,
+ balakrishnan.s@microchip.com
+Subject: Re: [PATCH 21/21] net: macb: add support for gmac to sam9x7
+Content-Type: text/plain
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
 	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Dear Maintainers,
+On Mon, Jun 5, 2023, at 14:07, Nicolas Ferre wrote:
+> On 05/06/2023 at 08:42, Krzysztof Kozlowski wrote:
+>>>
+>>> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+>>> index 29a1199dad14..609c8e9305ba 100644
+>>> --- a/drivers/net/ethernet/cadence/macb_main.c
+>>> +++ b/drivers/net/ethernet/cadence/macb_main.c
+>>> @@ -4913,6 +4913,7 @@ static const struct of_device_id macb_dt_ids[] = {
+>>>        { .compatible = "microchip,mpfs-macb", .data = &mpfs_config },
+>>>        { .compatible = "microchip,sama7g5-gem", .data = &sama7g5_gem_config },
+>>>        { .compatible = "microchip,sama7g5-emac", .data = &sama7g5_emac_config },
+>>> +     { .compatible = "microchip,sam9x7-gem", .data = &sama7g5_gem_config },
+>> 
+>> These are compatible, aren't they? Why do you need new entry?
+>
+> The hardware itself is different, even if the new features are not 
+> supported yet in the macb driver.
+> The macb driver will certainly evolve in order to add these features so 
+> we decided to match a new compatible string all the way to the driver.
 
-Thanks for applying the patch, however as mentionned (maybe not
-stressed enough in the cover) this series depends on a patch that went
-through the regmap tree :
+It sounds like you can still drop this patch though, and only add a
+specific entry here after the .data field is actually different
+when those features get added.
 
+The important bit for now is to have the specific string in the binding
+and in the dtb, along with the fallback for I assume "microchip,sama7g5-gem".
 
- https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git/commit/?id=e12ff28764937dd58c8613f16065da60da149048
-
-How can we proceed on that matter ?
-
-Thanks,
-
-Maxime
-
-On Mon, 05 Jun 2023 10:30:24 +0000
-patchwork-bot+netdevbpf@kernel.org wrote:
-
-> Hello:
-> 
-> This series was applied to netdev/net-next.git (main)
-> by David S. Miller <davem@davemloft.net>:
-> 
-> On Thu,  1 Jun 2023 16:14:50 +0200 you wrote:
-> > Hello everyone,
-> > 
-> > This is the V4 of a series that follows-up on the work [1] aiming
-> > to drop the altera TSE PCS driver, as it turns out to be a version
-> > of the Lynx PCS exposed as a memory-mapped block, instead of living
-> > on an MDIO bus.
-> > 
-> > One step of this removal involved creating a regmap-based mdio
-> > driver that translates MDIO accesses into the actual underlying bus
-> > that exposes the register. The register layout must of course match
-> > the standard MDIO layout, but we can now account for differences in
-> > stride with recent work on the regmap subsystem [2].
-> > 
-> > [...]  
-> 
-> Here is the summary with links:
->   - [net-next,v4,1/4] net: mdio: Introduce a regmap-based mdio driver
->     https://git.kernel.org/netdev/net-next/c/642af0f92cbe
->   - [net-next,v4,2/4] net: ethernet: altera-tse: Convert to
-> mdio-regmap and use PCS Lynx
-> https://git.kernel.org/netdev/net-next/c/db48abbaa18e
->   - [net-next,v4,3/4] net: pcs: Drop the TSE PCS driver
->     https://git.kernel.org/netdev/net-next/c/196eec4062b0
->   - [net-next,v4,4/4] net: stmmac: dwmac-sogfpga: use the lynx pcs
-> driver https://git.kernel.org/netdev/net-next/c/5d1f3fe7d2d5
-> 
-> You are awesome, thank you!
-
+     Arnd
 
