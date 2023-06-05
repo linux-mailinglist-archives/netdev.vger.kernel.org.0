@@ -1,121 +1,141 @@
-Return-Path: <netdev+bounces-7967-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7969-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9EBDA72241A
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 13:03:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 5DE3A72242D
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 13:07:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 15E9E1C20ABC
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:03:38 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CA4B01C20B2A
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:07:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7C225168B4;
-	Mon,  5 Jun 2023 11:03:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 444AD168C1;
+	Mon,  5 Jun 2023 11:07:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F980443A
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 11:03:38 +0000 (UTC)
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B1CAEA
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 04:03:36 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-128-_ofKSFr2OpKNCh_xjBwMWA-1; Mon, 05 Jun 2023 12:03:33 +0100
-X-MC-Unique: _ofKSFr2OpKNCh_xjBwMWA-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Mon, 5 Jun
- 2023 12:03:22 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.048; Mon, 5 Jun 2023 12:03:22 +0100
-From: David Laight <David.Laight@ACULAB.COM>
-To: 'Linus Torvalds' <torvalds@linux-foundation.org>, David Howells
-	<dhowells@redhat.com>
-CC: Jakub Kicinski <kuba@kernel.org>, "netdev@vger.kernel.org"
-	<netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>, "Eric
- Dumazet" <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, "Willem de
- Bruijn" <willemdebruijn.kernel@gmail.com>, David Ahern <dsahern@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>,
-	"linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, Chuck Lever <chuck.lever@oracle.com>, "Boris
- Pismenny" <borisp@nvidia.com>, John Fastabend <john.fastabend@gmail.com>,
-	Christoph Hellwig <hch@infradead.org>
-Subject: RE: Bug in short splice to socket?
-Thread-Topic: Bug in short splice to socket?
-Thread-Index: AQHZlJtzNwrvw6NqbEOlRWOj/YHtG698Dbjg
-Date: Mon, 5 Jun 2023 11:03:21 +0000
-Message-ID: <e94820ba53924e96b31ac983c84269f8@AcuMS.aculab.com>
-References: <20230524153311.3625329-1-dhowells@redhat.com>
- <20230524153311.3625329-10-dhowells@redhat.com>
- <20230526180844.73745d78@kernel.org>
- <499791.1685485603@warthog.procyon.org.uk>
- <CAHk-=wgeixW3cc=Ys8eL0_+22FUhqeEru=nzRrSXy1U4YQdE-w@mail.gmail.com>
- <CAHk-=wghhHghtvU_SzXxAzfaX35BkNs-x91-Vj6+6tnVEhPrZg@mail.gmail.com>
- <832277.1685630048@warthog.procyon.org.uk>
- <CAHk-=wji_2UwFMkUYkygsYRek05NwaQkH-vA=yKQtQS9Js+urQ@mail.gmail.com>
-In-Reply-To: <CAHk-=wji_2UwFMkUYkygsYRek05NwaQkH-vA=yKQtQS9Js+urQ@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38C5A154BC
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 11:07:06 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82398FF
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 04:07:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685963224;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=kbCiwyqVxBGMkLGPRwYBBYz8NZcSuztWZwPhXZOo2A4=;
+	b=GYfZjarLxYnHHDi7KyXv1i1bQanf/G4IzQTQ5Ab1y9Dts6l2Q94QxKc4YFDrV/7Ur+m552
+	GmVAQ4vUyBzW1ju3Q193xosCCdf7OeUZiAeVSJWvs7C2n5aAu7yBB+mhKNJ+GUMLfxoCAp
+	5u1UXarKLtmt7wTyWpftDR88ZBkrTLI=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-149-485Aq_LqOzqlq1gCYwZiVg-1; Mon, 05 Jun 2023 07:07:03 -0400
+X-MC-Unique: 485Aq_LqOzqlq1gCYwZiVg-1
+Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-3f739a73ba4so4665875e9.3
+        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 04:07:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685963207; x=1688555207;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kbCiwyqVxBGMkLGPRwYBBYz8NZcSuztWZwPhXZOo2A4=;
+        b=NAVWn2P+FGIzyfJP952La/zLvd3POUBQrRM8YEyKXWozToqNv264yPuMRabtY0Igx/
+         57AWQXiAytG/QZi1kf+CP9pKV5TznTomBKDY2ITyU/E5k3dcngceBp+bNFHl7Fmi5w3B
+         F2sWmSFvuOo2c/AjWefgVLfGvahtlx8Q5CBNW8YgG3pqgixJFf5i/51VU/ZsKrG1mgJQ
+         EQRPJS2OkET+dFGJznVIXrBDtqT7F2SjWPU3++DxU+S1ec8GVviE2XOLHuCPrmvM0tNz
+         kViOXOEXCKr3zXiKdJdVGXdhNj2yDg/VPhyNB1Fk0kgaK8pvg1QIwvfdymvvVcA5qDrJ
+         hTVQ==
+X-Gm-Message-State: AC+VfDxCTYrxecfuw1swSnhad/CHSRrYbk4FG2Zx7rNr39dWzQV6nTzn
+	EiEmzu35bl8aaCQ/Fgz6Kj1HYyVNI35kDAmKPAhOssV1pyUlSucUDi51Pd6D5W43PEMMqrgH37F
+	NePxBBP7ainw0Dw+S
+X-Received: by 2002:a05:600c:2318:b0:3f5:fb97:eafe with SMTP id 24-20020a05600c231800b003f5fb97eafemr6359798wmo.30.1685963207564;
+        Mon, 05 Jun 2023 04:06:47 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ53W9xn9TGBpaX8/z08DhNRppPkhtiy/6dFg/34pYnUjNp28hkX6GPjzKGWmEUJ3a7qTnjMfQ==
+X-Received: by 2002:a05:600c:2318:b0:3f5:fb97:eafe with SMTP id 24-20020a05600c231800b003f5fb97eafemr6359787wmo.30.1685963207240;
+        Mon, 05 Jun 2023 04:06:47 -0700 (PDT)
+Received: from step1.redhat.com ([5.77.94.106])
+        by smtp.gmail.com with ESMTPSA id s5-20020a5d4245000000b0030903d44dbcsm9407323wrr.33.2023.06.05.04.06.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Jun 2023 04:06:46 -0700 (PDT)
+From: Stefano Garzarella <sgarzare@redhat.com>
+To: virtualization@lists.linux-foundation.org
+Cc: netdev@vger.kernel.org,
+	Jason Wang <jasowang@redhat.com>,
+	=?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>,
+	Tiwei Bie <tiwei.bie@intel.com>,
+	kvm@vger.kernel.org,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] vhost-vdpa: filter VIRTIO_F_RING_PACKED feature
+Date: Mon,  5 Jun 2023 13:06:44 +0200
+Message-Id: <20230605110644.151211-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-RnJvbTogTGludXMgVG9ydmFsZHMNCj4gU2VudDogMDEgSnVuZSAyMDIzIDE2OjEyDQo+IA0KPiBP
-biBUaHUsIEp1biAxLCAyMDIzIGF0IDEwOjM04oCvQU0gRGF2aWQgSG93ZWxscyA8ZGhvd2VsbHNA
-cmVkaGF0LmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBBdCB0aGUgbW9tZW50LCBpdCB0cmFuc2NyaWJl
-cyAxNiBwYWdlcyBhdCBhIHRpbWUuICBJIGNvdWxkIG1ha2UgaXQgc2V0DQo+ID4gTVNHX01PUkUg
-b25seSBpZiAoYSkgU1BMSUNFX0ZfTU9SRSB3YXMgcGFzc2VkIGludG8gdGhlIHNwbGljZSgpIHN5
-c2NhbGwgb3IgKGIpDQo+ID4gdGhlcmUncyB5ZXQgbW9yZSBkYXRhIGluIHRoZSBidWZmZXIuDQo+
-IA0KPiBUaGF0IHdvdWxkIGF0IGxlYXN0IGJlIGEgZ29vZCBmaXJzdCBzdGVwLg0KPiANCj4gPiBI
-b3dldmVyLCB0aGlzIG1pZ2h0IHdlbGwgY2F1c2UgYSBtYWxmdW5jdGlvbiBpbiBVRFAsIGZvciBl
-eGFtcGxlLiAgTVNHX01PUkUNCj4gPiBjb3JrcyB0aGUgY3VycmVudCBwYWNrZXQsIHNvIGlmIEkg
-YXNrIHNlbmRmaWxlKCkgc2F5IHNob3ZlIDMySyBpbnRvIGEgcGFja2V0LA0KPiA+IGlmLCBzYXks
-IDE2SyBpcyByZWFkIGZyb20gdGhlIHNvdXJjZSBhbmQgZW50aXJlbHkgdHJhbnNjcmliZWQgaW50
-byB0aGUgcGFja2V0LA0KPiANCj4gSWYgeW91IHVzZSBzcGxpY2UoKSBmb3IgVURQLCBJIGRvbid0
-IHRoaW5rIHlvdSB3b3VsZCBub3JtYWxseSBleHBlY3QNCj4gdG8gZ2V0IGFsbCB0aGF0IHdlbGwt
-ZGVmaW5lZCBwYWNrZXQgYm91bmRhcmllcy4NCg0KRXNwZWNpYWxseSBzaW5jZSAoYXNzdW1pbmcg
-SSd2ZSB1bmRlcnN0b29kIG90aGVyIGJpdHMgb2YgdGhpcyB0aHJlYWQpDQp0aGUgc3BsaWNlKCkg
-Y2FuIGdldCBzcGxpdCBpbnRvIG11bHRpcGxlIHNlbmRtc2coKSBjYWxscyBmb3Igb3RoZXINCnJl
-YXNvbnMuDQoNCldoYXQgc2VtYW50aWNzIGFyZSB5b3UgdHJ5aW5nIHRvIGltcGxlbWVudCBmb3Ig
-QUZfVExTPw0KTVNHX01PUkUgaGFzIGRpZmZlcmVudCBlZmZlY3RzIG9uIGRpZmZlcmVudCBwcm90
-b2NvbHMuDQoNCkZvciBVRFAgdGhlIG5leHQgZGF0YSBpcyBhcHBlbmRlZCB0byB0aGUgZGF0YWdy
-YW0gYmVpbmcgYnVpbHQuDQooVGhpcyBpcyByZWFsbHkgcHJldHR5IHBvaW50bGVzcywgZG9pbmcg
-aXQgaW4gdGhlIGNhbGxlciB3aWxsIGJlIGZhc3RlciEpDQoNCkZvciBUQ1AgaXQgc3RvcHMgdGhl
-IHBlbmRpbmcgZGF0YSBiZWluZyBzZW50IGltbWVkaWF0ZWx5Lg0KQW5kIG1vcmUgZGF0YSBpcyBh
-cHBlbmRlZC4NCkknbSBwcmV0dHkgc3VyZSBpdCBnZXRzIHNlbnQgb24gdGltZW91dC4NCg0KRm9y
-IFNDVFAgdGhlIGRhdGEgY2h1bmsgY3JlYXRlZCBmb3IgdGhlIHNlbmRtc2coKSBpc24ndCBzZW50
-IGltbWVkaWF0ZWx5Lg0KQW55IG1vcmUgc2VuZG1zZyhNU0dfTU9SRSkgZ2V0IHF1ZXVlZCB1bnRp
-bCBhIGZ1bGwgZXRoZXJuZXQgcGFja2V0DQppcyBidWZmZXJlZC4NClRoZSBwZW5kaW5nIGRhdGEg
-aXMgc2VudCBvbiB0aW1lb3V0Lg0KVGhpcyBpcyBwcmV0dHkgbXVjaCB0aGUgb25seSB3YXkgdG8g
-Z2V0IHR3byAob3IgbW9yZSkgREFUQSBjaHVua3MNCmludG8gYW4gZXRoZXJuZXQgZnJhbWUgd2hl
-biBOYWdsZSBpcyBkaXNhYmxlZC4NCg0KQnV0IEkgZ2V0IHRoZSBpbXByZXNzaW9uIEFGX1RMUyBp
-cyBkZWNpZGluZyBub3QgdG8gZW5jb2RlL3NlbmQNCnRoZSBkYXRhIGJlY2F1c2UgJ3RoZXJlIGlz
-bid0IGVub3VnaCcuDQpUaGF0IHNlZW1zIHdyb25nLg0KDQpOb3RlIHRoYXQgeW91IGNhbid0IHVz
-ZSBhIHplcm8gbGVuZ3RoIHNlbmRtc2coKSB0byBmbHVzaCBwZW5kaW5nDQpkYXRhIC0gaWYgdGhl
-cmUgaXMgbm8gcGVuZGluZyBkYXRhIHNvbWUgcHJvdG9jb2xzIHdpbGwgc2VuZCBhIA0KemVybyBs
-ZW5ndGggZGF0YSBtZXNzYWdlLg0KQSBzb2NrZXQgb3B0aW9uL2lvY3RsIChlZyBVTkNPUkspIGNv
-dWxkIGJlIChhYil1c2VkIHRvIGZvcmNlDQpxdWV1ZWQgZGF0YSBiZSBzZW50Lg0KDQoJRGF2aWQN
-Cg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZh
-cm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYg
-KFdhbGVzKQ0K
+vhost-vdpa IOCTLs (eg. VHOST_GET_VRING_BASE, VHOST_SET_VRING_BASE)
+don't support packed virtqueue well yet, so let's filter the
+VIRTIO_F_RING_PACKED feature for now in vhost_vdpa_get_features().
+
+This way, even if the device supports it, we don't risk it being
+negotiated, then the VMM is unable to set the vring state properly.
+
+Fixes: 4c8cf31885f6 ("vhost: introduce vDPA-based backend")
+Cc: stable@vger.kernel.org
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+
+Notes:
+    This patch should be applied before the "[PATCH v2 0/3] vhost_vdpa:
+    better PACKED support" series [1] and backported in stable branches.
+    
+    We can revert it when we are sure that everything is working with
+    packed virtqueues.
+    
+    Thanks,
+    Stefano
+    
+    [1] https://lore.kernel.org/virtualization/20230424225031.18947-1-shannon.nelson@amd.com/
+
+ drivers/vhost/vdpa.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 8c1aefc865f0..ac2152135b23 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -397,6 +397,12 @@ static long vhost_vdpa_get_features(struct vhost_vdpa *v, u64 __user *featurep)
+ 
+ 	features = ops->get_device_features(vdpa);
+ 
++	/*
++	 * IOCTLs (eg. VHOST_GET_VRING_BASE, VHOST_SET_VRING_BASE) don't support
++	 * packed virtqueue well yet, so let's filter the feature for now.
++	 */
++	features &= ~BIT_ULL(VIRTIO_F_RING_PACKED);
++
+ 	if (copy_to_user(featurep, &features, sizeof(features)))
+ 		return -EFAULT;
+ 
+
+base-commit: 9561de3a55bed6bdd44a12820ba81ec416e705a7
+-- 
+2.40.1
 
 
