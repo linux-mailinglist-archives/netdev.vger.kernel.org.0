@@ -1,74 +1,68 @@
-Return-Path: <netdev+bounces-7922-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7923-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D52A17221D8
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:17:07 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5A1BB7221FC
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:21:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 89268281109
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:17:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1434B2810FB
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 09:21:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81271134CB;
-	Mon,  5 Jun 2023 09:17:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0016D134D6;
+	Mon,  5 Jun 2023 09:21:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 758D2804
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 09:17:04 +0000 (UTC)
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EAB9FA;
-	Mon,  5 Jun 2023 02:16:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685956615; x=1717492615;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cgrTKus95w+HymJbLJprRL1OTrYUDbn4V9Ftlx5lOjU=;
-  b=HyIiFsMiD4vCVQUNItKh4fb1cgVIkU/WxdQOabpw0sWVbdTEP9PVRooF
-   4UbEXVPvE2AYsgvHhgXvzLG677TbRO/IvpfoRSVwb1yiCH/3wimJ50Pj0
-   pwq8bakVD7srpJJmxCZDOxFzlrYRWCpjmySweeWB48o7fPOMsgaUQ3zB+
-   OR0IeG57TBy5XwuwSGcdcCFri5ePyb7itiV4CiWu8vaHpRakkK8qpwRaK
-   HHtYSAPZlBrUdsZL8tte2yNLYAA+inw/qz68EPnvVHEPx1E2S6JEdMUft
-   GrgLjSnyr2hHkFP0XQO7k0Micng25gYJbZqMBLRNmpcwo6PCAdkppsyOU
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10731"; a="335938664"
-X-IronPort-AV: E=Sophos;i="6.00,217,1681196400"; 
-   d="scan'208";a="335938664"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 02:15:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10731"; a="778475633"
-X-IronPort-AV: E=Sophos;i="6.00,217,1681196400"; 
-   d="scan'208";a="778475633"
-Received: from lkp-server01.sh.intel.com (HELO 15ab08e44a81) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 05 Jun 2023 02:14:57 -0700
-Received: from kbuild by 15ab08e44a81 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1q66Ii-00043z-0l;
-	Mon, 05 Jun 2023 09:14:56 +0000
-Date: Mon, 5 Jun 2023 17:14:07 +0800
-From: kernel test robot <lkp@intel.com>
-To: Shradha Gupta <shradhagupta@linux.microsoft.com>,
-	linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	netdev@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev,
-	Shradha Gupta <shradhagupta@linux.microsoft.com>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	"K. Y. Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-	Long Li <longli@microsoft.com>,
-	Michael Kelley <mikelley@microsoft.com>,
-	Steen Hegelund <steen.hegelund@microchip.com>,
-	Simon Horman <simon.horman@corigine.com>
-Subject: Re: [PATCH v5] hv_netvsc: Allocate rx indirection table size
- dynamically
-Message-ID: <202306051754.7zMgBFMX-lkp@intel.com>
-References: <1685949196-16175-1-git-send-email-shradhagupta@linux.microsoft.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DBDF804;
+	Mon,  5 Jun 2023 09:21:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69FBDC433EF;
+	Mon,  5 Jun 2023 09:20:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685956870;
+	bh=VAQ7yfzQtWyNohR4wxaMprdeMTDlqPdyTw6okH1kHrg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=jK253SR7yhSPqefNFos3ffgdScPlfxLEgS1so3b12kxeFrCMZRgawvFm8WayBcEJg
+	 gsJRpMEGttvUT3HVy8GIHc65y0zhLLrBx4d+jkyhsnS/hQIbQr5LWBz2vZgDkJqevO
+	 +UIxJzVenJUyw/Uip8ZNP03sQq+Yr8qA1I9bh08IcIOmhh2JIjbopJQQXYTqJDA+gf
+	 Ib8fD2IpqNgfgglvW2/JWPvjCy1i6XCYLFHWvOg0HPpz5vZx6UOnmL3FtqiwyAdfsz
+	 iIun2EVvr5UICgLU5k5gsCEhuKWjokIA4YcB5nFxBvbjMNYU78+Z9LTAA6e8yLvHwk
+	 VVxBZGJqVTgtA==
+Date: Mon, 5 Jun 2023 12:20:40 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: Kent Overstreet <kent.overstreet@linux.dev>,
+	linux-kernel@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	"David S. Miller" <davem@davemloft.net>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Russell King <linux@armlinux.org.uk>, Song Liu <song@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
+	bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-mips@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, linux-parisc@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	loongarch@lists.linux.dev, netdev@vger.kernel.org,
+	sparclinux@vger.kernel.org, x86@kernel.org
+Subject: Re: [PATCH 00/13] mm: jit/text allocator
+Message-ID: <20230605092040.GB3460@kernel.org>
+References: <20230601101257.530867-1-rppt@kernel.org>
+ <ZHjDU/mxE+cugpLj@FVFF77S0Q05N.cambridge.arm.com>
+ <ZHjgIH3aX9dCvVZc@moria.home.lan>
+ <ZHm3zUUbwqlsZBBF@FVFF77S0Q05N>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -77,78 +71,124 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1685949196-16175-1-git-send-email-shradhagupta@linux.microsoft.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+In-Reply-To: <ZHm3zUUbwqlsZBBF@FVFF77S0Q05N>
 
-Hi Shradha,
+On Fri, Jun 02, 2023 at 10:35:09AM +0100, Mark Rutland wrote:
+> On Thu, Jun 01, 2023 at 02:14:56PM -0400, Kent Overstreet wrote:
+> > On Thu, Jun 01, 2023 at 05:12:03PM +0100, Mark Rutland wrote:
+> > > For a while I have wanted to give kprobes its own allocator so that it can work
+> > > even with CONFIG_MODULES=n, and so that it doesn't have to waste VA space in
+> > > the modules area.
+> > > 
+> > > Given that, I think these should have their own allocator functions that can be
+> > > provided independently, even if those happen to use common infrastructure.
+> > 
+> > How much memory can kprobes conceivably use? I think we also want to try
+> > to push back on combinatorial new allocators, if we can.
+> 
+> That depends on who's using it, and how (e.g. via BPF).
+> 
+> To be clear, I'm not necessarily asking for entirely different allocators, but
+> I do thinkg that we want wrappers that can at least pass distinct start+end
+> parameters to a common allocator, and for arm64's modules code I'd expect that
+> we'd keep the range falblack logic out of the common allcoator, and just call
+> it twice.
+> 
+> > > > Several architectures override module_alloc() because of various
+> > > > constraints where the executable memory can be located and this causes
+> > > > additional obstacles for improvements of code allocation.
+> > > > 
+> > > > This set splits code allocation from modules by introducing
+> > > > jit_text_alloc(), jit_data_alloc() and jit_free() APIs, replaces call
+> > > > sites of module_alloc() and module_memfree() with the new APIs and
+> > > > implements core text and related allocation in a central place.
+> > > > 
+> > > > Instead of architecture specific overrides for module_alloc(), the
+> > > > architectures that require non-default behaviour for text allocation must
+> > > > fill jit_alloc_params structure and implement jit_alloc_arch_params() that
+> > > > returns a pointer to that structure. If an architecture does not implement
+> > > > jit_alloc_arch_params(), the defaults compatible with the current
+> > > > modules::module_alloc() are used.
+> > > 
+> > > As above, I suspect that each of the callsites should probably be using common
+> > > infrastructure, but I don't think that a single jit_alloc_arch_params() makes
+> > > sense, since the parameters for each case may need to be distinct.
+> > 
+> > I don't see how that follows. The whole point of function parameters is
+> > that they may be different :)
+> 
+> What I mean is that jit_alloc_arch_params() tries to aggregate common
+> parameters, but they aren't actually common (e.g. the actual start+end range
+> for allocation).
 
-kernel test robot noticed the following build warnings:
+jit_alloc_arch_params() tries to aggregate architecture constraints and
+requirements for allocations of executable memory and this exactly what
+the first 6 patches of this set do.
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on horms-ipvs/master v6.4-rc5 next-20230605]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+A while ago Thomas suggested to use a structure that parametrizes
+architecture constraints by the memory type used in modules [1] and Song
+implemented the infrastructure for it and x86 part [2].
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Shradha-Gupta/hv_netvsc-Allocate-rx-indirection-table-size-dynamically/20230605-151438
-base:   linus/master
-patch link:    https://lore.kernel.org/r/1685949196-16175-1-git-send-email-shradhagupta%40linux.microsoft.com
-patch subject: [PATCH v5] hv_netvsc: Allocate rx indirection table size dynamically
-config: x86_64-rhel-8.3 (https://download.01.org/0day-ci/archive/20230605/202306051754.7zMgBFMX-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/cd4dda15951edad50a4ffd51e084863ef2f50bd3
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Shradha-Gupta/hv_netvsc-Allocate-rx-indirection-table-size-dynamically/20230605-151438
-        git checkout cd4dda15951edad50a4ffd51e084863ef2f50bd3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 olddefconfig
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/hyperv/
+I liked the idea of defining parameters in a single structure, but I
+thought that approaching the problem from the arch side rather than from
+modules perspective will be better starting point, hence these patches.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202306051754.7zMgBFMX-lkp@intel.com/
+I don't see a fundamental reason why a single structure cannot describe
+what is needed for different code allocation cases, be it modules, kprobes
+or bpf. There is of course an assumption that the core allocations will be
+the same for all the users, and it seems to me that something like 
 
-All warnings (new ones prefixed by >>):
+* allocate physical memory if allocator caches are empty
+* map it in vmalloc or modules address space
+* return memory from the allocator cache to the caller
 
-   drivers/net/hyperv/rndis_filter.c: In function 'rndis_filter_device_remove':
-   drivers/net/hyperv/rndis_filter.c:1612:54: error: 'net' undeclared (first use in this function)
-    1612 |         struct net_device_context *ndc = netdev_priv(net);
-         |                                                      ^~~
-   drivers/net/hyperv/rndis_filter.c:1612:54: note: each undeclared identifier is reported only once for each function it appears in
->> drivers/net/hyperv/rndis_filter.c:1613:28: warning: unused variable 'net' [-Wunused-variable]
-    1613 |         struct net_device *net = hv_get_drvdata(dev);
-         |                            ^~~
+will work for all usecases.
 
+We might need separate caches for different cases on different
+architectures, and a way to specify what cache should be used in the
+allocator API, but that does not contradict a single structure for arch
+specific parameters, but only makes it more elaborate, e.g. something like
 
-vim +/net +1613 drivers/net/hyperv/rndis_filter.c
+enum jit_type {
+	JIT_MODULES_TEXT,
+	JIT_MODULES_DATA,
+	JIT_KPROBES,
+	JIT_FTRACE,
+	JIT_BPF,
+	JIT_TYPE_MAX,
+};
 
-  1607	
-  1608	void rndis_filter_device_remove(struct hv_device *dev,
-  1609					struct netvsc_device *net_dev)
-  1610	{
-  1611		struct rndis_device *rndis_dev = net_dev->extension;
-  1612		struct net_device_context *ndc = netdev_priv(net);
-> 1613		struct net_device *net = hv_get_drvdata(dev);
-  1614	
-  1615		/* Halt and release the rndis device */
-  1616		rndis_filter_halt_device(net_dev, rndis_dev);
-  1617	
-  1618		netvsc_device_remove(dev);
-  1619	
-  1620		ndc->rx_table_sz = 0;
-  1621		kfree(ndc->rx_table);
-  1622		ndc->rx_table = NULL;
-  1623	}
-  1624	
+struct jit_alloc_params {
+	struct jit_range	ranges[JIT_TYPE_MAX];
+	/* ... */
+};
+
+> > Can you give more detail on what parameters you need? If the only extra
+> > parameter is just "does this allocation need to live close to kernel
+> > text", that's not that big of a deal.
+> 
+> My thinking was that we at least need the start + end for each caller. That
+> might be it, tbh.
+
+Do you mean that modules will have something like
+
+	jit_text_alloc(size, MODULES_START, MODULES_END);
+
+and kprobes will have
+
+	jit_text_alloc(size, KPROBES_START, KPROBES_END);
+?
+
+It sill can be achieved with a single jit_alloc_arch_params(), just by
+adding enum jit_type parameter to jit_text_alloc().
+
+[1] https://lore.kernel.org/linux-mm/87v8mndy3y.ffs@tglx/ 
+[2] https://lore.kernel.org/all/20230526051529.3387103-1-song@kernel.org
+
+> Thanks,
+> Mark.
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Sincerely yours,
+Mike.
 
