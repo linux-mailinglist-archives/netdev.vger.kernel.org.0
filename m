@@ -1,140 +1,166 @@
-Return-Path: <netdev+bounces-8009-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8008-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7C03D722674
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:54:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 7F164722671
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:54:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DDEEA1C20ACA
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:54:53 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DCB451C20B72
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:54:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5557F18C1C;
-	Mon,  5 Jun 2023 12:54:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8173318C12;
+	Mon,  5 Jun 2023 12:54:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 404B618C12
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:54:50 +0000 (UTC)
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF51113;
-	Mon,  5 Jun 2023 05:54:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1685969679; x=1717505679;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=a+Tn4FBYo0QLrStvlRhVV+bb1iI8O3ndmJkkVSEip2g=;
-  b=UrrUXL2U0aZ/WMYl2TJe4L43Ci0uiIw0ckuebDEMyk9b1eYP6uiGyDm1
-   QZRIV5jHc+n3XRaeYEk9uhNAYpdU2xGvA9w52JKjIivntKsEBbxQD2gtz
-   qLodBXgsC8Dy07GEB+uZMJN37HwXju2ZVRXY/bIs1nLrGaza64xOwcBJQ
-   G29brtYJmJpxPcnYi7M52et78zAPQL+akRqBoScTHRNyJDz4lM9jDd8g1
-   1LasS3xwWpcnIVFa5nO4dqBT6YxnWjGudYhHeJTwJ377WKs6Krxz7FUhu
-   trA+KDCqek4yAFVl+Y/jpwvIaP/209vgvOlQBUweu+/2y2F8ZCCq5d+yY
-   Q==;
-X-IronPort-AV: E=Sophos;i="6.00,217,1681196400"; 
-   d="scan'208";a="155562864"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Jun 2023 05:54:38 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 5 Jun 2023 05:54:37 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Mon, 5 Jun 2023 05:54:25 -0700
-Message-ID: <bf0ab4e0-7e0b-3fb6-f54e-d75acb54ce5e@microchip.com>
-Date: Mon, 5 Jun 2023 14:54:18 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71453171C8
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:54:36 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791C698
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 05:54:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685969669;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=cllYJg4KX1vPMf9LlRacmMLfsZ/aSYb5fS8F5Fzs6S0=;
+	b=BI5Kdmq56EjgQ20pcrSUGAJqCeR838mK1+WHKQ5iDtt2yXoc01uUhS8D3/WjXdXFGuCuEO
+	bW3D53dnzWPAW2NRIWComEUtro4806nsp0FgZxkbZfXR2I3QcaLf1JKtsVk6VFV2puijPi
+	YhVp0cFTeGFbICLZRr6WmUEWVl9S6AE=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-417-3-U4n-ZbPBiP4B-ajfmV8w-1; Mon, 05 Jun 2023 08:54:28 -0400
+X-MC-Unique: 3-U4n-ZbPBiP4B-ajfmV8w-1
+Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-6260b40eac6so34138156d6.0
+        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 05:54:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685969668; x=1688561668;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cllYJg4KX1vPMf9LlRacmMLfsZ/aSYb5fS8F5Fzs6S0=;
+        b=ZFJ/Y89qZazGhWIzDUtmF7cg+8b+iemwb5VwZMNZibZzAVOdO7BdbX7AGboVeUD3sK
+         VGyWd45EU+TUjx992o1l8iIA8GiGhT8yAA8k46+zgudWrC5en+7LVbMY/W0wxKCTH03G
+         NcqkR3wSb7W+CqRfWR6lah3dMgs7O4fxhYHmydorUIo8u+ieqUMpcn1NIUSqKGQsRRqR
+         caJyW9GR6yr0iP6ioJsu/WrIKcz1iAaOwMTfo46VxdTBw3IhnGkpAFbeHaHZ+iBxR/fu
+         yRpz7p1/QZgATKPPvuyO7cZAd9Ef0YS6eH2m+eBZcraUe4Qt9Y32diIb1PrhEJtVctNS
+         RswQ==
+X-Gm-Message-State: AC+VfDx2yQGwC/sXPRcngsDrL84rRDzeNHotAVhg4kfdQvxtMfYr0l+8
+	JX+2vo2Q55U5vH0r1KQh+pyqQkj2z+CGh7dmSVFbS2ezSM+zFZGoX/TVKaAzzV33cndJE1MRX/V
+	OjMnpTzZ3sAi9xHWV
+X-Received: by 2002:a05:6214:2aa1:b0:5e9:48da:9938 with SMTP id js1-20020a0562142aa100b005e948da9938mr5534971qvb.11.1685969668255;
+        Mon, 05 Jun 2023 05:54:28 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7evpJje0CVQr5WLMJUrUmM/oUkM2nmAHq9rmpMI832Wdb8hYuY0N9fs0ZUTOPXxOtGPcdxgA==
+X-Received: by 2002:a05:6214:2aa1:b0:5e9:48da:9938 with SMTP id js1-20020a0562142aa100b005e948da9938mr5534960qvb.11.1685969667992;
+        Mon, 05 Jun 2023 05:54:27 -0700 (PDT)
+Received: from sgarzare-redhat ([5.77.94.106])
+        by smtp.gmail.com with ESMTPSA id cj21-20020a05622a259500b003f364778b2bsm4715846qtb.4.2023.06.05.05.54.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Jun 2023 05:54:27 -0700 (PDT)
+Date: Mon, 5 Jun 2023 14:54:20 +0200
+From: Stefano Garzarella <sgarzare@redhat.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, 
+	Jason Wang <jasowang@redhat.com>, Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>, 
+	Tiwei Bie <tiwei.bie@intel.com>, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost-vdpa: filter VIRTIO_F_RING_PACKED feature
+Message-ID: <24fjdwp44hovz3d3qkzftmvjie45er3g3boac7aezpvzbwvuol@lmo47ydvnqau>
+References: <20230605110644.151211-1-sgarzare@redhat.com>
+ <20230605084104-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH 03/21] dt-bindings: usb: generic-ehci: Document
- clock-names property
-Content-Language: en-US
-To: Conor Dooley <conor@kernel.org>, Varshini Rajendran
-	<varshini.rajendran@microchip.com>
-CC: <tglx@linutronix.de>, <maz@kernel.org>, <robh+dt@kernel.org>,
-	<krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-	<alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
-	<davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-	<pabeni@redhat.com>, <gregkh@linuxfoundation.org>, <linux@armlinux.org.uk>,
-	<mturquette@baylibre.com>, <sboyd@kernel.org>, <sre@kernel.org>,
-	<broonie@kernel.org>, <arnd@arndb.de>, <gregory.clement@bootlin.com>,
-	<sudeep.holla@arm.com>, <balamanikandan.gunasundar@microchip.com>,
-	<mihai.sain@microchip.com>, <linux-kernel@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<netdev@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-	<linux-clk@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-	<Hari.PrasathGE@microchip.com>, <cristian.birsan@microchip.com>,
-	<durai.manickamkr@microchip.com>, <manikandan.m@microchip.com>,
-	<dharma.b@microchip.com>, <nayabbasha.sayed@microchip.com>,
-	<balakrishnan.s@microchip.com>
-References: <20230603200243.243878-1-varshini.rajendran@microchip.com>
- <20230603200243.243878-4-varshini.rajendran@microchip.com>
- <20230603-skincare-ideology-bfbc3fd384c5@spud>
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20230603-skincare-ideology-bfbc3fd384c5@spud>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20230605084104-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 03/06/2023 at 23:15, Conor Dooley wrote:
-> Hey Varshini,
-> 
-> On Sun, Jun 04, 2023 at 01:32:25AM +0530, Varshini Rajendran wrote:
->> Document the property clock-names in the schema.
+On Mon, Jun 05, 2023 at 08:41:54AM -0400, Michael S. Tsirkin wrote:
+>On Mon, Jun 05, 2023 at 01:06:44PM +0200, Stefano Garzarella wrote:
+>> vhost-vdpa IOCTLs (eg. VHOST_GET_VRING_BASE, VHOST_SET_VRING_BASE)
+>> don't support packed virtqueue well yet, so let's filter the
+>> VIRTIO_F_RING_PACKED feature for now in vhost_vdpa_get_features().
 >>
->> It fixes the dtbs_warning,
-> s/dtbs_warning/dtbs_check warning/?
-> 
->> 'clock-names' does not match any of the regexes: 'pinctrl-[0-9]+'
-> Does this fix a warning currently in the tree, or fix a warning
-> introduced by some patches in this series? (Or both?)
-
-Our USB DT pattern is the same on all our newer SoC, to it mustn't be 
-introduced by the addition of this one.
-
-Best regards,
-   Nicolas
-
->> Signed-off-by: Varshini Rajendran<varshini.rajendran@microchip.com>
+>> This way, even if the device supports it, we don't risk it being
+>> negotiated, then the VMM is unable to set the vring state properly.
+>>
+>> Fixes: 4c8cf31885f6 ("vhost: introduce vDPA-based backend")
+>> Cc: stable@vger.kernel.org
+>> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 >> ---
->>   Documentation/devicetree/bindings/usb/generic-ehci.yaml | 4 ++++
->>   1 file changed, 4 insertions(+)
 >>
->> diff --git a/Documentation/devicetree/bindings/usb/generic-ehci.yaml b/Documentation/devicetree/bindings/usb/generic-ehci.yaml
->> index 7e486cc6cfb8..542ac26960fc 100644
->> --- a/Documentation/devicetree/bindings/usb/generic-ehci.yaml
->> +++ b/Documentation/devicetree/bindings/usb/generic-ehci.yaml
->> @@ -102,6 +102,10 @@ properties:
->>           - if a USB DRD channel: first clock should be host and second
->>             one should be peripheral
->>   
->> +  clock-names:
->> +    minItems: 1
->> +    maxItems: 4
->> +
->>     power-domains:
->>       maxItems: 1
->>   
->> -- 
->> 2.25.1
+>> Notes:
+>>     This patch should be applied before the "[PATCH v2 0/3] vhost_vdpa:
+>>     better PACKED support" series [1] and backported in stable branches.
+>>
+>>     We can revert it when we are sure that everything is working with
+>>     packed virtqueues.
+>>
+>>     Thanks,
+>>     Stefano
+>>
+>>     [1] https://lore.kernel.org/virtualization/20230424225031.18947-1-shannon.nelson@amd.com/
+>
+>I'm a bit lost here. So why am I merging "better PACKED support" then?
 
--- 
-Nicolas Ferre
+To really support packed virtqueue with vhost-vdpa, at that point we 
+would also have to revert this patch.
+
+I wasn't sure if you wanted to queue the series for this merge window.
+In that case do you think it is better to send this patch only for 
+stable branches?
+
+>Does this patch make them a NOP?
+
+Yep, after applying the "better PACKED support" series and being sure 
+that the IOCTLs of vhost-vdpa support packed virtqueue, we should revert 
+this patch.
+
+Let me know if you prefer a different approach.
+
+I'm concerned that QEMU uses vhost-vdpa IOCTLs thinking that the kernel 
+interprets them the right way, when it does not.
+
+Thanks,
+Stefano
+
+>
+>>  drivers/vhost/vdpa.c | 6 ++++++
+>>  1 file changed, 6 insertions(+)
+>>
+>> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+>> index 8c1aefc865f0..ac2152135b23 100644
+>> --- a/drivers/vhost/vdpa.c
+>> +++ b/drivers/vhost/vdpa.c
+>> @@ -397,6 +397,12 @@ static long vhost_vdpa_get_features(struct vhost_vdpa *v, u64 __user *featurep)
+>>
+>>  	features = ops->get_device_features(vdpa);
+>>
+>> +	/*
+>> +	 * IOCTLs (eg. VHOST_GET_VRING_BASE, VHOST_SET_VRING_BASE) don't support
+>> +	 * packed virtqueue well yet, so let's filter the feature for now.
+>> +	 */
+>> +	features &= ~BIT_ULL(VIRTIO_F_RING_PACKED);
+>> +
+>>  	if (copy_to_user(featurep, &features, sizeof(features)))
+>>  		return -EFAULT;
+>>
+>>
+>> base-commit: 9561de3a55bed6bdd44a12820ba81ec416e705a7
+>> --
+>> 2.40.1
+>
 
 
