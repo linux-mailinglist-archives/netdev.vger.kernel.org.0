@@ -1,119 +1,186 @@
-Return-Path: <netdev+bounces-7993-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7994-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 57AF872262C
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:44:07 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 64640722633
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:46:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A692B1C20B9F
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:44:03 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1E01428120E
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:46:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 868D21549E;
-	Mon,  5 Jun 2023 12:44:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5194C156F1;
+	Mon,  5 Jun 2023 12:46:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C4666D18
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:44:04 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E895F3
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 05:43:55 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1q69Ys-00060y-GZ; Mon, 05 Jun 2023 14:43:50 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	(Authenticated sender: mkl-all@blackshift.org)
-	by smtp.blackshift.org (Postfix) with ESMTPSA id BE9AF1D2531;
-	Mon,  5 Jun 2023 12:43:48 +0000 (UTC)
-Date: Mon, 5 Jun 2023 14:43:48 +0200
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: =?utf-8?B?Q3PDs2vDoXM=?= Bence <csokas.bence@prolan.hu>
-Cc: netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-	Richard Cochran <richardcochran@gmail.com>, kernel@pengutronix.de,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45B914431
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:46:12 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1D2DA
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 05:46:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685969169;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=3oNyiHHcuQenXH0USNfKt5/XNQyrParESad6JGCD/rQ=;
+	b=doCYBj4ng2wyjsmh964byLEkQmsRbNE6bfRk99hGYGoo8Ffy463cnotEyhPzl3kkOMu9rD
+	CxoHnB7wtEoFMSMzsiOhTOpGxPkBcLKYfUn7yRp6zND6prPow5QzHiLF1oVn3BbEgoKZv1
+	K7FW0ZH6Zn+ACZcFkpgym3n8gn9fc5w=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-417-b6RIPDzwNMy32mVe6queRw-1; Mon, 05 Jun 2023 08:46:06 -0400
+X-MC-Unique: b6RIPDzwNMy32mVe6queRw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id ACBDE8030D3;
+	Mon,  5 Jun 2023 12:46:05 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id A748DC1603B;
+	Mon,  5 Jun 2023 12:46:03 +0000 (UTC)
+From: David Howells <dhowells@redhat.com>
+To: netdev@vger.kernel.org,
+	Linus Torvalds <torvalds@linux-foundation.org>
+Cc: David Howells <dhowells@redhat.com>,
+	Chuck Lever <chuck.lever@oracle.com>,
+	Boris Pismenny <borisp@nvidia.com>,
+	John Fastabend <john.fastabend@gmail.com>,
 	Jakub Kicinski <kuba@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH resubmit] net: fec: Refactor: rename `adapter` to `fep`
-Message-ID: <20230605-majorette-reverse-996f5b76cd77-mkl@pengutronix.de>
-References: <20230605094402.85071-1-csokas.bence@prolan.hu>
- <20230605-surfboard-implosive-d1700e274b20-mkl@pengutronix.de>
- <e67321c3-2a81-170a-0394-bdb00beb7182@prolan.hu>
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+	David Ahern <dsahern@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Jens Axboe <axboe@kernel.dk>,
+	linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v4 00/11] splice, net: Rewrite splice-to-socket, fix SPLICE_F_MORE and handle MSG_SPLICE_PAGES in AF_TLS
+Date: Mon,  5 Jun 2023 13:45:49 +0100
+Message-ID: <20230605124600.1722160-1-dhowells@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="jy6e6ifpre2hxodm"
-Content-Disposition: inline
-In-Reply-To: <e67321c3-2a81-170a-0394-bdb00beb7182@prolan.hu>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+Here are patches to do the following:
 
---jy6e6ifpre2hxodm
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+ (1) Block MSG_SENDPAGE_* flags from leaking into ->sendmsg() from
+     userspace, whilst allowing splice_to_socket() to pass them in.
 
-On 05.06.2023 14:35:33, Cs=C3=B3k=C3=A1s Bence wrote:
-> On 2023. 06. 05. 11:51, Marc Kleine-Budde wrote:
-> > On 05.06.2023 11:44:03, Cs=C3=B3k=C3=A1s Bence wrote:
-> > > Signed-off-by: Cs=C3=B3k=C3=A1s Bence <csokas.bence@prolan.hu>
-> >=20
-> > You probably want to add a patch description.
->=20
-> Is it necessary for such a trivial refactor commit?
+ (2) Allow MSG_SPLICE_PAGES to be passed into tls_*_sendmsg().  Until
+     support is added, it will be ignored and a splice-driven sendmsg()
+     will be treated like a normal sendmsg().  TCP, UDP, AF_UNIX and
+     Chelsio-TLS already handle the flag in net-next.
 
-This is considered good practice.
+ (3) Replace a chain of functions to splice-to-sendpage with a single
+     function to splice via sendmsg() with MSG_SPLICE_PAGES.  This allows a
+     bunch of pages to be spliced from a pipe in a single call using a
+     bio_vec[] and pushes the main processing loop down into the bowels of
+     the protocol driver rather than repeatedly calling in with a page at a
+     time.
 
-> I thought the commit msg
-> already said it all. What else do you think I should include still?
->=20
-> Would something like this be sufficient?
-> "Rename local `struct fec_enet_private *adapter` to `fep` in
-> `fec_ptp_gettime()` to match the rest of the driver"
+ (4) Provide a ->splice_eof() op[2] that allows splice to signal to its
+     output that the input observed a premature EOF and that the caller
+     didn't flag SPLICE_F_MORE, thereby allowing a corked socket to be
+     flushed.  This attempts to maintain the current behaviour.  It is also
+     not called if we didn't manage to read any data and so didn't called
+     the actor function.
 
-Looks good to me.
+     This needs routing though several layers to get it down to the network
+     protocol.
 
-Thanks,
-Marc
+     [!] Note that I chose not to pass in any flags - I'm not sure it's
+     	 particularly useful to pass in the splice flags; I also elected
+     	 not to return any error code - though we might actually want to do
+     	 that.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+ (5) Provide tls_{device,sw}_splice_eof() to flush a pending TLS record if
+     there is one.
 
---jy6e6ifpre2hxodm
-Content-Type: application/pgp-signature; name="signature.asc"
+ (6) Alter the behaviour of sendfile() and fix SPLICE_F_MORE/MSG_MORE
+     signalling[1] such SPLICE_F_MORE is always signalled until we have
+     read sufficient data to finish the request.  If we get a zero-length
+     before we've managed to splice sufficient data, we now leave the
+     socket expecting more data and leave it to userspace to deal with it.
 
------BEGIN PGP SIGNATURE-----
+ (7) Make AF_TLS handle the MSG_SPLICE_PAGES internal sendmsg flag.
+     MSG_SPLICE_PAGES is an internal hint that tells the protocol that it
+     should splice the pages supplied if it can.  Its sendpage
+     implementations are then turned into wrappers around that.
 
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmR92IEACgkQvlAcSiqK
-BOhRQwf/fjVRhgU6fuRp6IaQm03hmgiaXDhBWXG15ofmARVP5BEpDVq89B9emtfs
-2wIbcQzcb/nnopSZ2505gPidrZcN9q70pR0nep0sEcWgu4JmjGFbhMrn+zQdmHEm
-/90coxU3k7/1pdJjdYBzr/ECRYVONZ+LS6K5him+vKXfbTIbGB8mWODDC1W+mnVM
-8FwdM14MZRUWLPa9oAhwSJITKUqJzHDlRUjJkvnXcSxLlWutT9dsVra5tePWbRXr
-Drd5QQTAScr0ECPBDdHqwsfVDnMOfGW2lfiK0d4+xcxyDk078oyv6y8eazl+PrNt
-QfhtTDQthIZYOFC7KJ26GaKM5xGf6Q==
-=rv2h
------END PGP SIGNATURE-----
 
---jy6e6ifpre2hxodm--
+I've pushed the patches here also:
+
+	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=sendpage-2-tls
+
+David
+
+Changes
+=======
+ver #4)
+ - Switch to using ->splice_eof() to signal premature EOF to the splice
+   output[2].
+
+ver #3)
+ - Include the splice-to-socket rewrite patch.
+ - Fix SPLICE_F_MORE/MSG_MORE signalling.
+ - Allow AF_TLS to accept sendmsg() with MSG_SPLICE_PAGES before it is
+   handled.
+ - Allow a zero-length send() to a TLS socket to flush an outstanding
+   record.
+ - Address TLS kselftest failure.
+
+ver #2)
+ - Dropped the slab data copying.
+ - "rls_" should be "tls_".
+ - Attempted to fix splice_direct_to_actor().
+ - Blocked MSG_SENDPAGE_* from being set by userspace.
+
+Link: https://lore.kernel.org/r/499791.1685485603@warthog.procyon.org.uk/ [1]
+Link: https://lore.kernel.org/r/CAHk-=wh=V579PDYvkpnTobCLGczbgxpMgGmmhqiTyE34Cpi5Gg@mail.gmail.com/ [2]
+Link: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=51c78a4d532efe9543a4df019ff405f05c6157f6 # part 1
+Link: https://lore.kernel.org/r/20230524153311.3625329-1-dhowells@redhat.com/ # v1
+
+David Howells (11):
+  net: Block MSG_SENDPAGE_* from being passed to sendmsg() by userspace
+  tls: Allow MSG_SPLICE_PAGES but treat it as normal sendmsg
+  splice, net: Use sendmsg(MSG_SPLICE_PAGES) rather than ->sendpage()
+  splice, net: Add a splice_eof op to file-ops and socket-ops
+  tls/sw: Use splice_eof() to flush
+  tls/device: Use splice_eof() to flush
+  splice, net: Fix SPLICE_F_MORE signalling in splice_direct_to_actor()
+  tls/sw: Support MSG_SPLICE_PAGES
+  tls/sw: Convert tls_sw_sendpage() to use MSG_SPLICE_PAGES
+  tls/device: Support MSG_SPLICE_PAGES
+  tls/device: Convert tls_device_sendpage() to use MSG_SPLICE_PAGES
+
+ fs/splice.c            | 207 ++++++++++++++++++++++++++-------
+ include/linux/fs.h     |   3 +-
+ include/linux/net.h    |   1 +
+ include/linux/socket.h |   4 +-
+ include/linux/splice.h |   3 +
+ include/net/sock.h     |   1 +
+ net/socket.c           |  36 ++----
+ net/tls/tls.h          |   2 +
+ net/tls/tls_device.c   | 110 +++++++++---------
+ net/tls/tls_main.c     |   4 +
+ net/tls/tls_sw.c       | 253 ++++++++++++++++++++++-------------------
+ 11 files changed, 385 insertions(+), 239 deletions(-)
+
 
