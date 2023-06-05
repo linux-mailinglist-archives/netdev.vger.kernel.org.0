@@ -1,174 +1,288 @@
-Return-Path: <netdev+bounces-8046-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8048-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 58D537228EB
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 16:36:11 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id B016E7228F9
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 16:38:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1BE642812B2
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:36:10 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 243091C20C92
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:38:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5078B6FD7;
-	Mon,  5 Jun 2023 14:36:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8FFD179D9;
+	Mon,  5 Jun 2023 14:38:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A41A5238
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 14:36:07 +0000 (UTC)
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2101.outbound.protection.outlook.com [40.107.92.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E17F1
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 07:36:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C9C4KZ3NcR23djtssbW1JW3cryDgGj8W6p0pt/WIrI6RYrqMG8rw3OT0C1sqqlre3iiBbNV29ZhCLAnHbxsSVlk5UNCYu2s2vytIxgdjyaMEjLiRrF75Ef3m/AqoaOOwLWzkrE0mu+BUZ2ft9ZQRMaN/vMa2cVhRfIjaiLL88SP6dnZiTcGfhKehbCSn+Gkacyf5bfuBFVBbwsvVQwUufj4R+31Yi9mdeGDeTEL68sE8PQ+excXiQkhsaGwekLOw7uvDNVncJa4tdxhYCWiVc/popQ76uhFxaXNEuTmB8nDGKYPefxuQveHdL3MJcVIYTyUwEOnySjMJTKnBk61BqQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wPXD8UPS9JcsqJJUUVmDyAYBRZuHfQd872FArH3d/L8=;
- b=g619A8+T58MiQQ0/QWehjJ22tdGDWrSOv/oqXJkquuyGHCnFRkzkDMib5EJ7CbZ19Nytim3hxFcXuQPHDXhsdRahe5boPNxF14fQVZjhqrI7qBTbILqHqytBf15qpHIgZhXE1jhgtByb027sQ0Gkk853lqBRXZdg+KVGdJbeAjQ6iUgBu6/1JNy+8wULv8YrYluyVTYC2TqO2LaN8WxoHP3rhqpKpmTQet4gHvP0JuGC91cmuXRJVPNi+xikusJ1tqRXYJJxOgSjEvVLzX6UXHpwAG+MA5BxJnD27+NZ4x7XzGQJUbBIJxSfWiZq6AUVPY0H2LhGPmHpIYWpPuvxKQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wPXD8UPS9JcsqJJUUVmDyAYBRZuHfQd872FArH3d/L8=;
- b=uL+rhbVaJqbw4QPRYs+wC0YRoCL2tZQvO1+hneg/NsfjN55qLxgbWrgZt91i4NYi9adoQnE42/SFeX+WegZvfJfAtoAwprTtDn1zdE+AtE6UbByu3Ugl8460mTMYoKMtSNUtYzJqIEsJ8PEP7qwQTezfxW+5O/2MiPt8NFrm7r4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BL0PR13MB4468.namprd13.prod.outlook.com (2603:10b6:208:1cf::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Mon, 5 Jun
- 2023 14:36:04 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::5e55:9a39:751f:55f6%3]) with mapi id 15.20.6455.030; Mon, 5 Jun 2023
- 14:36:04 +0000
-Date: Mon, 5 Jun 2023 16:35:57 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Jamal Hadi Salim <hadi@mojatatu.com>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>, netdev@vger.kernel.org,
-	deb.chatterjee@intel.com, tom@sipanda.io,
-	p4tc-discussions@netdevconf.info, Mahesh.Shirshyad@amd.com,
-	Vipin.Jain@amd.com, tomasz.osinski@intel.com,
-	xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, khalidm@nvidia.com,
-	toke@redhat.com
-Subject: Re: [p4tc-discussions] Re: [PATCH RFC v2 net-next 10/28] p4tc: add
- pipeline create, get, update, delete
-Message-ID: <ZH3yzbbkoQVSLuFL@corigine.com>
-References: <20230517110232.29349-1-jhs@mojatatu.com>
- <20230517110232.29349-10-jhs@mojatatu.com>
- <ZH21GzZ6HATUuNyX@corigine.com>
- <CAAFAkD8psofYNvFdKhT48NH-4SF+4j6b=3+L9X9GibuUejFeaQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAAFAkD8psofYNvFdKhT48NH-4SF+4j6b=3+L9X9GibuUejFeaQ@mail.gmail.com>
-X-ClientProxiedBy: AM0PR06CA0140.eurprd06.prod.outlook.com
- (2603:10a6:208:ab::45) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F2685238
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 14:38:35 +0000 (UTC)
+Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52155E8;
+	Mon,  5 Jun 2023 07:38:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1685975828; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=dukgcjv1DYIFnONs1Q8SkNEm+ZyHR4hYRxha29hiozFpf1DlNATDuO/0sdT5a1UuU9KlIuekq5k3tm9SvdFApuXty8H7x3444lt0lhD9qao0QhF/vaBLvaUSAqbbbflY3gbFF6hDM4WcPv7CYz/UsdMkm0Ag++KkLjuceTUnI94=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1685975828; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+	bh=IKz+qkd0dZYFQDYfgHpiD6xVkvr5p+/lUtnpFOmRwAQ=; 
+	b=C7yljG4aDt4vfHsQdTHGElGvlmjxViYp5L1y2xLFBSui2JLBd0MEXa/ZltQyICIrWODlk3ysHw3QcwoWfGqPQCIegJjL3VW7PT87bm0aSjvQ/AhFz2q0Rg+i2naUJCMkq8FHOnde/b1z8g0K/ZRWjBTcrUGdLQO62v+AtxXvCs8=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=arinc9.com;
+	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+	dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1685975828;
+	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+	h=Message-ID:Date:Date:MIME-Version:From:From:Subject:Subject:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=IKz+qkd0dZYFQDYfgHpiD6xVkvr5p+/lUtnpFOmRwAQ=;
+	b=jbhTkyCgioXDKZnCcrHeddw0ZLyB4uhjRyn8bAiPbk6gg/9lgCQ+xX7nfOHRQ+wX
+	q+HNNIAQEbLVXmlsMqokEbYe4KGaA1tpVW6ADbEw/Si6UZDiWSwkmHwcOWazqFlFRwM
+	HgToi1TGe1iUhGXbFbK8amG5ZCkVyVthqmFNuzss=
+Received: from [192.168.83.218] (62.74.57.47 [62.74.57.47]) by mx.zohomail.com
+	with SMTPS id 1685975825815348.2953084133545; Mon, 5 Jun 2023 07:37:05 -0700 (PDT)
+Message-ID: <e2865f69-3254-4768-7a7a-bb84d76a85eb@arinc9.com>
+Date: Mon, 5 Jun 2023 17:36:56 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BL0PR13MB4468:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4db62493-f4d6-4d98-3f24-08db65d230f8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	7rII9B/vT5Kx82CFAhZCa0hnt5o7lmOrnh1KHXoMR10LhRv2IyqijGUF+JimI2CI8RAwa3djo9WzJO2S53I1KDMFk+nW0CzkzRfjrwdXMRPXOCSCYTlASMzOHDgEZ9KKZNVJZ5yQ33rynnXY9yTLxRHLlkIBn8xG0+izRzaaLB8bN+PI5hbnWdu+nxT9zZ8rQyUE6tlWJ8AeTvKk51Om011EB+7MBRwX6XJ1mtr57AaVkS3MeGMO2zVg8cb+rFkKiFg7rrpBfZzhLpI+1piRHkx+3b53g68eOGUtFXQYGuNC6ApaxQQFe2iTl+c4fj1TOVCVsTYlN0VKljTjjs902sWq4XoZiyEv+/wFnRUPrRnnIKtVUm80i3kD2HDaSRe1ncqUO/KpEOQhhvCeqDbqK+89PIB5uYbVCYXPnfTzCtgabTuXM0iozc970b87gbEf29H8fU/PsJsKaBfBwpGnjyoPe8k43zFovTu8kBnjncNSVuMMbJeJPIl4b6qkSS8kMBrm2JpE2VxKWhgI526ZzlV0szt7wyn5gJZNy4/PZtUocazTI5wVNQoe+sqjWmBBFZ+yvVa+Uf0I6vSRUfspTC/0sedyBh1RNBHMrco7cJo=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(39830400003)(366004)(376002)(396003)(451199021)(83380400001)(4326008)(6916009)(38100700002)(66556008)(66946007)(66476007)(6666004)(6486002)(478600001)(36756003)(186003)(2906002)(2616005)(8676002)(8936002)(41300700001)(316002)(15650500001)(5660300002)(86362001)(7416002)(44832011)(53546011)(6512007)(6506007)(32563001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WWtaczdZWDI2Y0ZhS2FYK0wzM3pzdDg5MnppeEI4OUxwandWT3lrRmFmMWpY?=
- =?utf-8?B?KzM1Z25ZLy8vRXdSWkpKRlBweFRCTkFxVVlWZENHQVJYclA2cGN6YTBSN09I?=
- =?utf-8?B?UTcyMnJvd1VzRytVUlBTK3lwZ1Y1cE52dFdmblREOCsrTU5aSlZvVnhWRFc5?=
- =?utf-8?B?ZnJFMGc3c29MN0xKVC9FRjdhOVdFSEpmN1VIaUpiVWNiM3RWNkJsMW1xcDl1?=
- =?utf-8?B?U3FLeHcwOEt1c0N5YXdTOVpWR2hwa2h2SVYxUlA2bDY4WjdLRmZ6eHhaQWt2?=
- =?utf-8?B?ckY5WXRobEFQbk5OWVR4RE43ekdicG4wZGpzN1dkV28rdHUyR3RxWXN2T01m?=
- =?utf-8?B?VVV4RGVxTG9maUs4WXdwcG9vblJLVG56NTFQNXpHNDJ5VFVuTUx2ajJRS2lD?=
- =?utf-8?B?WExscWl5eUxwTEkwZUR0VmV2TXFMbmFJbDlWdGhQQXZiVXdaaDY4cVpWR1pX?=
- =?utf-8?B?UjRBM0t6RTVQL3FUNVE0V0FCTFJTRFZKd1F0amZ4WnhqSkhEQ0kxeVVld1hq?=
- =?utf-8?B?VGFjUE96QVYxaTZ4cmRxYk9RQytGZ3kwdHlZeG1OeXhndlMwVkNUczJHeExO?=
- =?utf-8?B?NG1pTGNtN2Rwei9SS2RjeVJ5UzVxcG5CeUpoVU5ia3VJcEk5cHVoSC9od05o?=
- =?utf-8?B?U3F3bThjYS9oeUkwMkxhRWZPZTl1YnFGUmZkbWlLOXB0Q2dNZy9yU1R5YU1o?=
- =?utf-8?B?cW5SdVd3cmRJZW5XZGQzUk5wL0hkV3A2M2hlK2Q2MHFYV0c3cjNGVVJBRHdX?=
- =?utf-8?B?UENjbDh1Q2xIWG5JaVV4cmMxQjRORjNWYnBrRTVhdHJYTzBuWnpaK0k4YktH?=
- =?utf-8?B?dWZQcmVOdm51ekJnaTM5ek0wTWd1N3ZWUTNKRURFOEFiVkxMbFJkNitGN3BK?=
- =?utf-8?B?S2ZaK09yRFl3Y1JTbVpCbUNXeDFha2xVZ1VQTDI0RWNmbDRYd0pla3JXc0l2?=
- =?utf-8?B?NHN2WGJHOHIzN1JUTjZLK2lIdXFBU0tBSVllSU80ekk2VVVEaU5OYXM0UlJH?=
- =?utf-8?B?c1Vnend1UUtCWVdFNWkyam9zakdIdU01ZWFoNlZ3aDk0R3JsTUlZTlVyL1Yx?=
- =?utf-8?B?WjZTQVp0WGduUGNFYXdKdzE2YUdSSjRnSDR0c0F0TkFxemdIV3p2UzVmenIr?=
- =?utf-8?B?M0xUWmVZelJWUkNyOEE3WmZzZkx5MHlhcENkK2ZIaGFwdmp1S3ZydDNMSmhU?=
- =?utf-8?B?U0U2L3UyYTJ2a0J5dlRjSzBZdDEwN0JNd0xYbEd5aTN3RlFLMVJMd0JaK1or?=
- =?utf-8?B?N3lUVXNIVXEwWi9sdFE3Q2RrT3d3SEJUempsa1hWRENhLzBvclNINlZIWFpx?=
- =?utf-8?B?YnRycmY0aGJnMjlJNWwzRU44THd1N0ZjZFc5RnBCeEJCdHdBWWo0YzFPME9w?=
- =?utf-8?B?RElnbWtJN2xpcHlrSnppdDBjMG5LakUvVkF6K3U4c0dkRWF0bXpjdUNNQUxt?=
- =?utf-8?B?dDkyaS8vMStzNGFVM3EzVndQN2doNTA4eEIwSkJxZDVZUzhOL1pXczRJWWpJ?=
- =?utf-8?B?V0svYi9TcUl5TUt5M0p4Ujl1amJrMFVpOGlxMUFXU0F4WEpnY1FtVFcxWE0w?=
- =?utf-8?B?UDZ1dElKRHlFMVI2Q292dnhBWFFDUGNPSWNudDBxaU1FVVJGWkUyVzM5WGRp?=
- =?utf-8?B?UXEwbE1ETWRKeXR4YlhkcEJ5OFBZT09pVFp3UHFTeGxZVlFhUjlsWnp4M1B3?=
- =?utf-8?B?eUtINjJyNHhhYmpUaDd5eHI0VmVkSWg3TDd3R0N6WDhOdFExM0VrbTd4TjBK?=
- =?utf-8?B?TjRlc0tyMWVPNDB4Z2N2WHk3YWJoODBYL2d5Q0RDeU5GdkE5MnFlejZVZ3hL?=
- =?utf-8?B?QnhtVmlmT09QWHhWK0htcHN6aFlCWmMvVnV5Q0lJSFBDaHZkSXhDcjUybEE1?=
- =?utf-8?B?Z1JtU1FQMTVpSkxGMzMwQ3pLL0lHQUE2aXFJYkpvK2FYN2c3MWlHaEpISGw0?=
- =?utf-8?B?N1ZLbFFKL1JZd0w2M0ZIL1VJMytuZlNXWEVCWEM2NjFPd2hXbnFVVGpzaVBI?=
- =?utf-8?B?NTB1SURhMFl5bFYvZlowMzROZXBvb05jVEcxVnNLcjU3cDRrWWI0WVYyeExw?=
- =?utf-8?B?V3RaeFVaSHljTVJFVkJqbDROeWsvRDhMY0MrZTVjRUY1TWRNajNMbXRuUmJF?=
- =?utf-8?B?OHJwRTdZOUNQRWp1T1Z0WmVaZ2tNTXNiRnJvV0d4YjdKY0NzTU1zMkd5M3Yr?=
- =?utf-8?B?L2lMN3dBK1hoZXVtVktvQ1JlR20zWkpzK0tCSG1QMllHNTZLeGZjMEFJK1po?=
- =?utf-8?B?ZWtvejhhelp1aFkrZk91ZnB4dHNBPT0=?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4db62493-f4d6-4d98-3f24-08db65d230f8
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2023 14:36:04.3201
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QsjotC39DcezswEOlQ3EsNZMaa06TRX2nLnctDE5YfSNVjrgCazUUS3DBoqH0W9WU0DafijMSGfdN4DjPPQEx/jn1K6V2YN/ssumOYh7vzQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR13MB4468
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Subject: Re: [PATCH net-next 08/30] net: dsa: mt7530: change p{5,6}_interface
+ to p{5,6}_configured
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: Vladimir Oltean <olteanv@gmail.com>, Sean Wang <sean.wang@mediatek.com>,
+ Landen Chao <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
+ Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
+ Florian Fainelli <f.fainelli@gmail.com>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Richard van Schagen <richard@routerhints.com>,
+ Richard van Schagen <vschagen@cs.com>,
+ Frank Wunderlich <frank-w@public-files.de>,
+ Bartel Eerdekens <bartel.eerdekens@constell8.be>, erkin.bozoglu@xeront.com,
+ mithat.guner@xeront.com, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org
+References: <20230524175107.hwzygo7p4l4rvawj@skbuf>
+ <576f92b0-1900-f6ff-e92d-4b82e3436ea1@arinc9.com>
+ <20230526130145.7wg75yoe6ut4na7g@skbuf>
+ <7117531f-a9f2-63eb-f69d-23267e5745d0@arinc9.com>
+ <ZHsxdQZLkP/+5TF0@shell.armlinux.org.uk>
+ <826fd2fc-fbf8-dab7-9c90-b726d15e2983@arinc9.com>
+ <ZHyA/AmXmCxO6YMq@shell.armlinux.org.uk>
+ <20230604125517.fwqh2uxzvsa7n5hu@skbuf>
+ <ZHyMezyKizkz2+Wg@shell.armlinux.org.uk>
+ <d269ac88-9923-c00c-8047-cc8c9f94ef2c@arinc9.com>
+ <ZHyqI2oOI4KkvgB8@shell.armlinux.org.uk>
+Content-Language: en-US
+In-Reply-To: <ZHyqI2oOI4KkvgB8@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 05, 2023 at 10:32:20AM -0400, Jamal Hadi Salim wrote:
-> On Mon, Jun 5, 2023 at 6:12 AM Simon Horman via p4tc-discussions
-> <p4tc-discussions@netdevconf.info> wrote:
-> >
-> > On Wed, May 17, 2023 at 07:02:14AM -0400, Jamal Hadi Salim wrote:
-> >
-> > > +static void __tcf_pipeline_init(void)
-> > > +{
-> > > +     int pipeid = P4TC_KERNEL_PIPEID;
-> > > +
-> > > +     root_pipeline = kzalloc(sizeof(*root_pipeline), GFP_ATOMIC);
-> > > +     if (!root_pipeline) {
-> > > +             pr_err("Unable to register kernel pipeline\n");
-> >
-> > Hi Victor, Pedro, and Jamal,
-> >
-> > a minor nit from my side: in general it is preferred not to to log messages
-> > for allocation failures, as the mm core does this already.
-> >
+On 4.06.2023 18:13, Russell King (Oracle) wrote:
+> On Sun, Jun 04, 2023 at 04:14:31PM +0300, Arınç ÜNAL wrote:
+>> On 4.06.2023 16:07, Russell King (Oracle) wrote:
+>>> On Sun, Jun 04, 2023 at 03:55:17PM +0300, Vladimir Oltean wrote:
+>>>> On Sun, Jun 04, 2023 at 01:18:04PM +0100, Russell King (Oracle) wrote:
+>>>>> I don't remember whether Vladimir's firmware validator will fail for
+>>>>> mt753x if CPU ports are not fully described, but that would be well
+>>>>> worth checking. If it does, then we can be confident that phylink
+>>>>> will always be used, and those bypassing calls should not be necessary.
+>>>>
+>>>> It does, I've just retested this:
+>>>>
+>>>> [    8.469152] mscc_felix 0000:00:00.5: OF node /soc/pcie@1f0000000/ethernet-switch@0,5/ports/port@4 of CPU port 4 lacks the required "phy-handle", "fixed-link" or "managed" properties
+>>>> [    8.494571] mscc_felix 0000:00:00.5: error -EINVAL: Failed to register DSA switch
+>>>> [    8.502151] mscc_felix: probe of 0000:00:00.5 failed with error -22
+>>>
+>>> ... which isn't listed in dsa_switches_apply_workarounds[], and
+>>> neither is mt753x. Thanks.
+>>>
+>>> So, that should be sufficient to know that the CPU port will always
+>>> properly described, and thus bypassing phylink in mt753x for the CPU
+>>> port should not be necessary.
+>>
+>> Perfect! If I understand correctly, there's this code - specific to MT7531
+>> and MT7988 ports being used as CPU ports - which runs in addition to what's
+>> in mt753x_phylink_mac_config():
+>>
+>> 	mt7530_write(priv, MT7530_PMCR_P(port),
+>> 		     PMCR_CPU_PORT_SETTING(priv->id));
+>>
+>> This should be put on mt753x_phylink_mac_config(), under priv->id ==
+>> ID_MT7531, priv->id == ID_MT7988, and dsa_is_cpu_port(ds, port) checks?
 > 
-> We debated this one - the justification was we wanted to see more
-> details of what exactly failed since this is invoked earlier in the
-> loading. Thoughts?
+> Please remember that I have very little knowledge of MT753x, so in
+> order to answer this question, I've read through the mt7530 driver
+> code.
+> 
+> Looking at mt7530.h:
+> 
+> #define  PMCR_CPU_PORT_SETTING(id)      (PMCR_FORCE_MODE_ID((id)) | \
+>                                           PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | \
+>                                           PMCR_BACKOFF_EN | PMCR_BACKPR_EN | \
+>                                           PMCR_TX_EN | PMCR_RX_EN | \
+>                                           PMCR_TX_FC_EN | PMCR_RX_FC_EN | \
+>                                           PMCR_FORCE_SPEED_1000 | \
+>                                           PMCR_FORCE_FDX | PMCR_FORCE_LNK)
+> 
+> This seems to be some kind of port control register that sets amongst
+> other things parameters such as whether flow control is enabled, the
+> port speed, the duplex setting, whether link is forced up, etc.
+> 
+> Looking at what mt753x_phylink_mac_link_up() does:
+> 
+> 1. it sets PMCR_RX_EN | PMCR_TX_EN | PMCR_FORCE_LNK.
+> 2. it sets PMCR_FORCE_SPEED_1000 if speed was 1000Mbps, or if using
+>     an internal, TRGMII, 1000base-X or 2500base-X phy interface mode.
+> 3. it sets PMCR_FORCE_FDX if full duplex was requested.
+> 4. it sets PMCR_TX_FC_EN if full duplex was requested with tx pause.
+> 5. it sets PMCR_RX_FC_EN if full duplex was requested with rx pause.
+> 
+> So, provided this is called with the appropriate parameters, for a
+> fixed link, that will leave the following:
+> 
+> 	PMCR_FORCE_MODE_ID(id)
+> 	PMCR_IFG_XMIT(1)
+> 	PMCR_MAC_MODE
+> 	PMCR_BACKOFF_EN
+> 	PMCR_BACKPR_EN
+> 
+> If we now look at mt753x_phylink_mac_config(), this sets
+> PMCR_IFG_XMIT(1), PMCR_MAC_MODE, PMCR_BACKOFF_EN, PMCR_BACKPR_EN,
+> and PMCR_FORCE_MODE_ID(priv->id), which I believe is everything that
+> PMCR_CPU_PORT_SETTING(priv->id) is doing.
+> 
+> So, Wouldn't a fixed-link description indicating 1Gbps, full duplex
+> with pause cause phylink to call both mt753x_phylink_mac_config() and
+> mt753x_phylink_mac_link_up() with appropriate arguments to set all
+> of these parameters in PMCR?
+> 
+> Now, I'm going to analyse something else. mt7531_cpu_port_config()
+> is called from mt753x_cpu_port_enable(), which is itself called from
+> mt7531_setup_common(). That is ultimately called from the DSA switch
+> ops .setup() method.
+> 
+> This method is called from dsa_switch_setup() for each switch in the
+> DSA tree. dsa_tree_setup_switches() calls this, and is called from
+> dsa_tree_setup().  Once dsa_tree_setup_switches() finishes
+> successfully, dsa_tree_setup_ports() will be called. This will then
+> setup DSA and CPU ports, which will then setup a phylink instance
+> for these ports. phylink will parse the firmware description for
+> the port. DSA will then call dsa_port_enable().
+> 
+> dsa_port_enable() will then call any port_enable() method in the
+> mt7530.c driver, which will be mt7530_port_enable(). This then...
+> 
+>          mt7530_clear(priv, MT7530_PMCR_P(port), PMCR_LINK_SETTINGS_MASK);
+> 
+> which is:
+> 
+> #define  PMCR_LINK_SETTINGS_MASK        (PMCR_TX_EN | PMCR_FORCE_SPEED_1000 | \
+>                                           PMCR_RX_EN | PMCR_FORCE_SPEED_100 | \
+>                                           PMCR_TX_FC_EN | PMCR_RX_FC_EN | \
+>                                           PMCR_FORCE_FDX | PMCR_FORCE_LNK | \
+>                                           PMCR_FORCE_EEE1G | PMCR_FORCE_EEE100)
+> 
+> So it wipes out all the PMCR settings that mt7531_cpu_port_config()
+> performed - undoing *everything* below that switch() statement in
+> mt7531_cpu_port_config()!
+> 
+> Once the port_enable() method returns, DSA will then call
+> phylink_start(), which will trigger phylink to bring up the link
+> according to the settings it has, which will mean phylink calls
+> the mac_config(), pcs_config(), pcs_link_up() and mac_link_up()
+> with the appropriate parameters for the firmware described link.
 
-Yeah, this is not so clear cut as the glib remark in my previous email implied.
-I guess the question is: what does this extra message give us?
-If it provides value, I don't object to it staying.
+I'm slowly learning how DSA and phylink works, this is the full code
+path I could make up for the MT7530 DSA subdriver:
+
+mt7530_probe() & mt7988_probe()
+    -> mt7530_probe_common()
+    -> dsa_register_switch()
+       -> dsa_switch_probe()
+          -> dsa_tree_setup()
+             -> dsa_tree_setup_switches()
+                -> dsa_switch_setup()
+                   -> ds->ops->setup(): mt753x_setup()
+                      -> mt7530_setup()
+                         -> mt753x_cpu_port_enable()
+                      -> mt7531_setup()
+                         -> mt7531_setup_common()
+                            -> mt753x_cpu_port_enable()
+                               -> priv->info->cpu_port_config():
+                                  mt7531_cpu_port_config()
+                      -> mt7988_setup()
+                         -> mt7531_setup_common()
+                            -> mt753x_cpu_port_enable()
+                               -> priv->info->cpu_port_config():
+                                  mt7988_cpu_port_config()
+             -> dsa_tree_setup_ports()
+                -> dsa_port_setup()
+                   -> dsa_shared_port_link_register_of()
+                      -> dsa_shared_port_link_register_of()
+                         -> dsa_shared_port_phylink_register()
+                            -> dsa_port_phylink_create()
+                               -> ds->ops->phylink_get_caps():
+                                  mt753x_phylink_get_caps()
+                               -> phylink_create()
+                                  -> INIT_WORK(&pl->resolve, phylink_resolve)
+                   -> dsa_port_enable()
+                      -> dsa_port_enable_rt()
+                         -> ds->ops->port_enable():
+                            mt7530_port_enable()
+                         -> phylink_start()
+                            -> phylink_mac_initial_config()
+                               -> phylink_major_config()
+                                  -> phylink_mac_config()
+                                     -> pl->mac_ops->mac_config():
+                                        dsa_port_phylink_mac_config()
+                                        -> ds->ops->phylink_mac_config():
+                                           mt753x_phylink_mac_config()
+                                  -> pl->pcs->ops->pcs_config():
+                                     mt753x_pcs_config()
+                            -> phylink_enable_and_run_resolve()
+                               -> phylink_run_resolve()
+                                  -> queue_work(system_power_efficient_wq, &pl->resolve)
+                                     -> phylink_link_up()
+                                        -> pl->pcs->ops->pcs_link_up():
+                                           mtk_pcs_lynxi_link_up()
+                                        -> pl->mac_ops->mac_link_up():
+                                           dsa_port_phylink_mac_link_up()
+                                           -> ds->ops->phylink_mac_link_up():
+                                              mt753x_phylink_mac_link_up()
+
+> 
+> So I think I have the answer to my initial thought: do the calls in
+> mt7531_cpu_port_config() to the phylink methods have any use what so
+> ever? The answer is no, they are entirely useless. The same goes for
+> the other cpu_port_config() methods that do something similar. The
+> same goes for the PMCR register write that's changing any bits
+> included in PMCR_LINK_SETTINGS_MASK.
+> 
+> What that means is that mt7988_cpu_port_config() can be entirely
+> removed, it serves no useful purpose what so ever. For
+> mt7531_cpu_port_config(), it only needs to set priv->p[56]_interface
+> which, as far as I can see, probably only avoids mac_config() doing
+> any pad setup (that's a guess.)
+
+This is what I also believe and the reason why I made this patch to
+simplify it. Looks like I'll just remove priv->info->cpu_port_config()
+instead.
+
+Arınç
 
