@@ -1,131 +1,181 @@
-Return-Path: <netdev+bounces-8023-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8024-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 301C6722727
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:15:53 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8D7BF722752
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:26:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DD140281278
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 13:15:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DCBA71C20BC4
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 13:26:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A46991C771;
-	Mon,  5 Jun 2023 13:15:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 339ED19E7B;
+	Mon,  5 Jun 2023 13:26:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 995E419908
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 13:15:22 +0000 (UTC)
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74DD383;
-	Mon,  5 Jun 2023 06:15:20 -0700 (PDT)
-X-GND-Sasl: maxime.chevallier@bootlin.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1685970918;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ezVCXA59R6OoUuoJw4TkUJ8Lfny/r5hrMVf+Oit43HM=;
-	b=pFe/JDymlb8lWaJnLc+kVSQv2RGWrE5mG4o7pyvP3LBJ5Ypix7HyK1wfxtPo1LU+Mq62s+
-	xRdi5Pg+15iCku3Rx/BTziSPmQlJQOpOjlP0eh9SiWM3PnoIL/O1T61yprHFzySc6ilP2H
-	jmfxuqRP8U/FdZApLzD8W9mgqOC9eWuaIfYDmrUHPqC7wcj0GXdIDZbRyIo0Dk09L5v1Kr
-	UEiaAT+IPPC2FyGfv2iRQDK5zNGrRWJ4nKmvvaGJ/lYx0zecNYeQfhdE4LtUplA5aiziTp
-	Kln0ykC1Zef0iG561jiN1eHtpeiAH7WFw5WP9gmx/9f87HciFBXjcAY0dSFcEw==
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 661EE60010;
-	Mon,  5 Jun 2023 13:15:15 +0000 (UTC)
-Date: Mon, 5 Jun 2023 15:15:14 +0200
-From: Maxime Chevallier <maxime.chevallier@bootlin.com>
-To: Mark Brown <broonie@kernel.org>, davem@davemloft.net
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- alexis.lothore@bootlin.com, thomas.petazzoni@bootlin.com, Andrew Lunn
- <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>, Eric Dumazet
- <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Florian Fainelli
- <f.fainelli@gmail.com>, Heiner Kallweit <hkallweit1@gmail.com>, Russell
- King <linux@armlinux.org.uk>, Vladimir Oltean <vladimir.oltean@nxp.com>,
- Ioana Ciornei <ioana.ciornei@nxp.com>,
- linux-stm32@st-md-mailman.stormreply.com,
- linux-arm-kernel@lists.infradead.org, Maxime Coquelin
- <mcoquelin.stm32@gmail.com>, Jose Abreu <joabreu@synopsys.com>, Alexandre
- Torgue <alexandre.torgue@foss.st.com>, Giuseppe Cavallaro
- <peppe.cavallaro@st.com>, Simon Horman <simon.horman@corigine.com>
-Subject: Re: [PATCH net-next v4 2/4] net: ethernet: altera-tse: Convert to
- mdio-regmap and use PCS Lynx
-Message-ID: <20230605151514.20112956@pc-7.home>
-In-Reply-To: <20230601141454.67858-3-maxime.chevallier@bootlin.com>
-References: <20230601141454.67858-1-maxime.chevallier@bootlin.com>
-	<20230601141454.67858-3-maxime.chevallier@bootlin.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-redhat-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C48B6FC3
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 13:26:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99161C433D2;
+	Mon,  5 Jun 2023 13:26:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685971588;
+	bh=7jvreSULTAW1dgm4KKjWd49Rumkiyi/ADlztxfIhpqM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=HSEWBQul/ibrJpxuKnHrM7PPPXULYqwQlh5aV06gtYuVUvbxKx6PdKk5az5fgPOiR
+	 BVyoo7rT18zK9a6IWqdL5S7mllk2X18C5e0HKYhEa0cSzYfeuMopM0QqE0ZP6OskmM
+	 SaQ1OGLILhXFBDTBOeOg367JhaCMWIXVEfj16Y0FfMeGJVJCr/0x/9WqokCPL2/SDZ
+	 eSm9+SV7YKGrO2UVTxaQ4W8Hn5YMPXij2cm1dE5oOX/+8RrmfIvnd5j6agybPbasMZ
+	 pq5QS+KrgPJJCDJ4eLHdMtOYs+RmNENiEPsAr8QCGwyOqMPJVGO6wHQuk427NlrTCd
+	 D3/M7E2/NreIA==
+Date: Mon, 5 Jun 2023 14:26:19 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Varshini Rajendran <varshini.rajendran@microchip.com>,
+	tglx@linutronix.de, maz@kernel.org, robh+dt@kernel.org,
+	krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+	alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, gregkh@linuxfoundation.org,
+	linux@armlinux.org.uk, mturquette@baylibre.com, sboyd@kernel.org,
+	sre@kernel.org, broonie@kernel.org, arnd@arndb.de,
+	gregory.clement@bootlin.com, sudeep.holla@arm.com,
+	balamanikandan.gunasundar@microchip.com, mihai.sain@microchip.com,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+	linux-usb@vger.kernel.org, linux-clk@vger.kernel.org,
+	linux-pm@vger.kernel.org, Hari.PrasathGE@microchip.com,
+	cristian.birsan@microchip.com, durai.manickamkr@microchip.com,
+	manikandan.m@microchip.com, dharma.b@microchip.com,
+	nayabbasha.sayed@microchip.com, balakrishnan.s@microchip.com
+Subject: Re: [PATCH 17/21] power: reset: at91-poweroff: lookup for proper pmc
+ dt node for sam9x7
+Message-ID: <20230605-sedan-gimmick-6381f121cc0a@spud>
+References: <20230603200243.243878-1-varshini.rajendran@microchip.com>
+ <20230603200243.243878-18-varshini.rajendran@microchip.com>
+ <2a538004-351f-487a-361c-df723d186c27@linaro.org>
+ <c3f7c08f-272a-5abb-da78-568c408f40de@microchip.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="qGD4Ahe9OQYksAQU"
+Content-Disposition: inline
+In-Reply-To: <c3f7c08f-272a-5abb-da78-568c408f40de@microchip.com>
 
-Hi,
 
-On Thu,  1 Jun 2023 16:14:52 +0200
-Maxime Chevallier <maxime.chevallier@bootlin.com> wrote:
+--qGD4Ahe9OQYksAQU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> The newly introduced regmap-based MDIO driver allows for an easy mapping
-> of an mdiodevice onto the memory-mapped TSE PCS, which is actually a
-> Lynx PCS.
-> 
-> Convert Altera TSE to use this PCS instead of the pcs-altera-tse, which
-> is nothing more than a memory-mapped Lynx PCS.
-> 
-> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-[ ... ]
+Hey,
 
-> -	ret = request_and_map(pdev, "pcs", &pcs_res,
-> -			      &priv->pcs_base);
-> +	ret = request_and_map(pdev, "pcs", &pcs_res, &priv->pcs_base);
+On Mon, Jun 05, 2023 at 03:04:34PM +0200, Nicolas Ferre wrote:
+> On 05/06/2023 at 08:43, Krzysztof Kozlowski wrote:
+> > On 03/06/2023 22:02, Varshini Rajendran wrote:
+> > > Use sam9x7 pmc's compatible to lookup for in the SHDWC driver
+> > >=20
+> > > Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
+> > > ---
+> > >   drivers/power/reset/at91-sama5d2_shdwc.c | 1 +
+> > >   1 file changed, 1 insertion(+)
+> > >=20
+> > > diff --git a/drivers/power/reset/at91-sama5d2_shdwc.c b/drivers/power=
+/reset/at91-sama5d2_shdwc.c
+> > > index d8ecffe72f16..d0f29b99f25e 100644
+> > > --- a/drivers/power/reset/at91-sama5d2_shdwc.c
+> > > +++ b/drivers/power/reset/at91-sama5d2_shdwc.c
+> > > @@ -326,6 +326,7 @@ static const struct of_device_id at91_pmc_ids[] =
+=3D {
+> > >        { .compatible =3D "atmel,sama5d2-pmc" },
+> > >        { .compatible =3D "microchip,sam9x60-pmc" },
+> > >        { .compatible =3D "microchip,sama7g5-pmc" },
+> > > +     { .compatible =3D "microchip,sam9x7-pmc" },
+> >=20
+> > Why do you need new entry if these are compatible?
+>=20
+> Yes, PMC is very specific to a SoC silicon. As we must look for it in the
+> shutdown controller, I think we need a new entry here.
 
-It turns out I'm missing the zeroing of pcs_regmap_cfg, which can trigger
-errors at probe time. I know this series has been applied, and that I can
-send a followup fix, but due to the missing regmap patch in the net-next
-tree, this series will break altera_tse and dwmac_socfpga anyway,as
-mentionned here (and in the cover):
+Copy-pasting this for a wee bit of context as I have two questions.
 
-https://lore.kernel.org/netdev/20230605142039.3f8d1530@pc-7.home/
+| static const struct of_device_id at91_shdwc_of_match[] =3D {
+| 	{
+| 		.compatible =3D "atmel,sama5d2-shdwc",
+| 		.data =3D &sama5d2_reg_config,
+| 	},
+| 	{
+| 		.compatible =3D "microchip,sam9x60-shdwc",
+| 		.data =3D &sam9x60_reg_config,
+| 	},
+| 	{
+| 		.compatible =3D "microchip,sama7g5-shdwc",
+| 		.data =3D &sama7g5_reg_config,
+| 	}, {
+| 		/*sentinel*/
+| 	}
+| };
+| MODULE_DEVICE_TABLE(of, at91_shdwc_of_match);
+|=20
+| static const struct of_device_id at91_pmc_ids[] =3D {
+| 	{ .compatible =3D "atmel,sama5d2-pmc" },
+| 	{ .compatible =3D "microchip,sam9x60-pmc" },
+| 	{ .compatible =3D "microchip,sama7g5-pmc" },
+| 	{ .compatible =3D "microchip,sam9x7-pmc" },
+| 	{ /* Sentinel. */ }
+| };
 
-Is reverting the way to go then ?
+If there's no changes made to the code, other than adding an entry to
+the list of pmc compatibles, then either this has the same as an
+existing SoC, or there is a bug in the patch, since the behaviour of
+the driver will not have changed.
 
-Best regards,
+Secondly, this patch only updates the at91_pmc_ids and the dts patch
+contains:
+| shutdown_controller: shdwc@fffffe10 {
+| 	compatible =3D "microchip,sam9x60-shdwc";
+| 	reg =3D <0xfffffe10 0x10>;
+| 	clocks =3D <&clk32k 0>;
+| 	#address-cells =3D <1>;
+| 	#size-cells =3D <0>;
+| 	atmel,wakeup-rtc-timer;
+| 	atmel,wakeup-rtt-timer;
+| 	status =3D "disabled";
+| };
 
-Maxime
+=2E..which would mean that the there's nothing different between the
+programming models for the sam9x60 and sam9x7. If that's the case, the
+dt-binding & dts should list the sam9x60 as a fallback for the sam9x7 &
+there is no change required to the driver. If it's not the case, then
+there's a bug in this patch and the dts one :)
 
+In general, if things are the same as previous products, there's no need
+to change the drivers at all & just add fallback compatibles to the
+bindings and dts. IFF some difference pops up in the future, then the
+sam9x7 compatible will already exist in the dts, and can then be added
+to the driver.
+
+Cheers,
+Conor.
+
+
+--qGD4Ahe9OQYksAQU
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZH3iZQAKCRB4tDGHoIJi
+0k26AQCR+FNf+yO4bvvxn9btScRrtb3+MomV/4TeUvmr9kGqvgEAmNYYoMHrjOWk
+oCe+utfYdl8cSw8Jvst3LU6J2uVlQQI=
+=nGf/
+-----END PGP SIGNATURE-----
+
+--qGD4Ahe9OQYksAQU--
 
