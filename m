@@ -1,85 +1,103 @@
-Return-Path: <netdev+bounces-7901-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7903-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7234572209E
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 10:10:58 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6CC657220A2
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 10:11:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2AADD28120A
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 08:10:57 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DA7391C20B70
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 08:11:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B74C011CBE;
-	Mon,  5 Jun 2023 08:10:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E51B125A4;
+	Mon,  5 Jun 2023 08:10:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 371FC134A2
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 08:10:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D733C433A0;
-	Mon,  5 Jun 2023 08:10:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685952607;
-	bh=bsooJ5RgTpZcnA2L4UR5mgAxrPXuxO31pOqhb7t/CdU=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=l6pWaOB1L+fOvDVBdkizrqwKpZtu80JKPiYh+rn7zCRgZGIuAddeJvQZ4Np6kBnza
-	 G7ngEHb3HTYcloy7QtVSTZ4ukbHa8ggYZaR9ry6xpriGXyIwSGTKutlw8XO8xMy99d
-	 DDzdUyQrud5jZNic0DEBk6aIOhhpxhr0DoAIgLq7CCwHM6dkyg0korQlDrJ3Bo+7BM
-	 bF84JiVlmxJ50b0VLtvEhSBmeVgvaWaaCKN0UnMnHmidersBWhf2ThIJ6c49M1uN8d
-	 19K3yhP9k/JDZH3wLJgQAmJYpGU/fyuDMv6NggRCYqeASytAYZzNp6CcXjdyIGjfeQ
-	 2N/kmEIzxxn2g==
-From: Leon Romanovsky <leon@kernel.org>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Leon Romanovsky <leonro@nvidia.com>,
-	Eric Dumazet <edumazet@google.com>,
-	netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>,
-	Patrisious Haddad <phaddad@nvidia.com>,
-	Raed Salem <raeds@nvidia.com>,
-	Saeed Mahameed <saeedm@nvidia.com>,
-	Steffen Klassert <steffen.klassert@secunet.com>
-Subject: [PATCH net 4/4] net/mlx5e: Fix scheduling of IPsec ASO query while in atomic
-Date: Mon,  5 Jun 2023 11:09:52 +0300
-Message-Id: <633cd2b3f23ca9d759781ca1a316f728b001ecd6.1685950599.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <cover.1685950599.git.leonro@nvidia.com>
-References: <cover.1685950599.git.leonro@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83F7C8BEA
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 08:10:45 +0000 (UTC)
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77E4A1;
+	Mon,  5 Jun 2023 01:10:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685952644; x=1717488644;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HPWdNa03m1xAyahf1uKBoWWQIEqxfz9qy1zZwFxRaa4=;
+  b=HPlk27kssthwPCwqNY8L1QjO+Vf4ke7H3UGtqDrk5SiLgug7BllZw3Th
+   XOgv2Tns35wbdr/KUHtYOzxMkSO5R4PbxgG+fbnlqsqpMQLLcf46gN1EC
+   Ncmjtdi8+S4dQV6rCTY8I1EXLBvoptrTBH7AxRPEpi8xhRtkvZ2eJdLxi
+   Z8DAQrt7pXmseseyhPk4ZlNEWTT+tMZmxGoWH9GgLI6IJaTXcho6ZltVK
+   t1Z947An/txQ+Kyf/DjuEKB7VQYMhZaeI+O/l/muuaNNAwat8kqRCuwkF
+   5EBdgWSfRO1XlX7xjjZOlys+RydSK36wLP/R2CI8fQc/X8QqmUu+SxSRz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10731"; a="359623653"
+X-IronPort-AV: E=Sophos;i="6.00,217,1681196400"; 
+   d="scan'208";a="359623653"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 01:10:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10731"; a="658985053"
+X-IronPort-AV: E=Sophos;i="6.00,217,1681196400"; 
+   d="scan'208";a="658985053"
+Received: from mylly.fi.intel.com (HELO [10.237.72.143]) ([10.237.72.143])
+  by orsmga003.jf.intel.com with ESMTP; 05 Jun 2023 01:10:40 -0700
+Message-ID: <c3399327-37ee-f34c-4a48-7c1f1a62a785@linux.intel.com>
+Date: Mon, 5 Jun 2023 11:10:39 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.11.0
+Subject: Re: [PATCH net-next v11 2/9] i2c: designware: Add driver support for
+ Wangxun 10Gb NIC
+Content-Language: en-US
+To: Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org,
+ andriy.shevchenko@linux.intel.com, mika.westerberg@linux.intel.com,
+ jsd@semihalf.com, Jose.Abreu@synopsys.com, andrew@lunn.ch,
+ hkallweit1@gmail.com, linux@armlinux.org.uk
+Cc: linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+ mengyuanlou@net-swift.com, Piotr Raczynski <piotr.raczynski@intel.com>
+References: <20230605025211.743823-1-jiawenwu@trustnetic.com>
+ <20230605025211.743823-3-jiawenwu@trustnetic.com>
+From: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+In-Reply-To: <20230605025211.743823-3-jiawenwu@trustnetic.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-From: Leon Romanovsky <leonro@nvidia.com>
-
-ASO query can be scheduled in atomic context as such it can't use usleep.
-Use udelay as recommended in Documentation/timers/timers-howto.rst.
-
-Fixes: 76e463f6508b ("net/mlx5e: Overcome slow response for first IPsec ASO WQE")
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- .../net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c   | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-index ca16cb9807ea..a3554bde3e07 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-@@ -606,7 +606,8 @@ int mlx5e_ipsec_aso_query(struct mlx5e_ipsec_sa_entry *sa_entry,
- 	do {
- 		ret = mlx5_aso_poll_cq(aso->aso, false);
- 		if (ret)
--			usleep_range(2, 10);
-+			/* We are in atomic context */
-+			udelay(10);
- 	} while (ret && time_is_after_jiffies(expires));
- 	spin_unlock_bh(&aso->lock);
- 	return ret;
--- 
-2.40.1
-
+On 6/5/23 05:52, Jiawen Wu wrote:
+> Wangxun 10Gb ethernet chip is connected to Designware I2C, to communicate
+> with SFP.
+> 
+> Introduce the property "wx,i2c-snps-model" to match device data for Wangxun
+> in software node case. Since IO resource was mapped on the ethernet driver,
+> add a model quirk to get regmap from parent device.
+> 
+> The exists IP limitations are dealt as workarounds:
+> - IP does not support interrupt mode, it works on polling mode.
+> - Additionally set FIFO depth address the chip issue.
+> 
+> Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
+> Reviewed-by: Piotr Raczynski <piotr.raczynski@intel.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>   drivers/i2c/busses/i2c-designware-common.c  |  8 ++
+>   drivers/i2c/busses/i2c-designware-core.h    |  4 +
+>   drivers/i2c/busses/i2c-designware-master.c  | 89 +++++++++++++++++++--
+>   drivers/i2c/busses/i2c-designware-platdrv.c | 15 ++++
+>   4 files changed, 111 insertions(+), 5 deletions(-)
+> 
+Acked-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
 
