@@ -1,48 +1,49 @@
-Return-Path: <netdev+bounces-7994-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7995-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 64640722633
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:46:15 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 58EDC722634
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:46:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1E01428120E
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:46:14 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EC6D228125D
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:46:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5194C156F1;
-	Mon,  5 Jun 2023 12:46:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C715818B0C;
+	Mon,  5 Jun 2023 12:46:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45B914431
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:46:12 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1D2DA
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 05:46:10 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB5E018B05
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:46:14 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDEDA1
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 05:46:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685969169;
+	s=mimecast20190719; t=1685969172;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=3oNyiHHcuQenXH0USNfKt5/XNQyrParESad6JGCD/rQ=;
-	b=doCYBj4ng2wyjsmh964byLEkQmsRbNE6bfRk99hGYGoo8Ffy463cnotEyhPzl3kkOMu9rD
-	CxoHnB7wtEoFMSMzsiOhTOpGxPkBcLKYfUn7yRp6zND6prPow5QzHiLF1oVn3BbEgoKZv1
-	K7FW0ZH6Zn+ACZcFkpgym3n8gn9fc5w=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=704Gul1es5vKB8f3fNlqLP0xfed1dEhsuWb+SLm3klg=;
+	b=CHr9+w62TEpawCNwoKX4Pc8i7mGlzNcBlA0w9umac9MspqPJaSQe9c2uXe0H2GUNWh6iI1
+	+nSev6Y7jtoQRFj9r3XG435qkwQDnZSx6WVdXKH17dAyUCUooRlDVMQoSmWkWRBVmkJbvX
+	ekXHZt4XML5/N+RqZt+XrLFJD95czvo=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-417-b6RIPDzwNMy32mVe6queRw-1; Mon, 05 Jun 2023 08:46:06 -0400
-X-MC-Unique: b6RIPDzwNMy32mVe6queRw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+ us-mta-638-MPVBXKHIMYqM4_90ThZprA-1; Mon, 05 Jun 2023 08:46:09 -0400
+X-MC-Unique: MPVBXKHIMYqM4_90ThZprA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id ACBDE8030D3;
-	Mon,  5 Jun 2023 12:46:05 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 67A5C1C0878A;
+	Mon,  5 Jun 2023 12:46:08 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id A748DC1603B;
-	Mon,  5 Jun 2023 12:46:03 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 682677AE4;
+	Mon,  5 Jun 2023 12:46:06 +0000 (UTC)
 From: David Howells <dhowells@redhat.com>
 To: netdev@vger.kernel.org,
 	Linus Torvalds <torvalds@linux-foundation.org>
@@ -60,9 +61,11 @@ Cc: David Howells <dhowells@redhat.com>,
 	Jens Axboe <axboe@kernel.dk>,
 	linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v4 00/11] splice, net: Rewrite splice-to-socket, fix SPLICE_F_MORE and handle MSG_SPLICE_PAGES in AF_TLS
-Date: Mon,  5 Jun 2023 13:45:49 +0100
-Message-ID: <20230605124600.1722160-1-dhowells@redhat.com>
+Subject: [PATCH net-next v4 01/11] net: Block MSG_SENDPAGE_* from being passed to sendmsg() by userspace
+Date: Mon,  5 Jun 2023 13:45:50 +0100
+Message-ID: <20230605124600.1722160-2-dhowells@redhat.com>
+In-Reply-To: <20230605124600.1722160-1-dhowells@redhat.com>
+References: <20230605124600.1722160-1-dhowells@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -70,117 +73,59 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Here are patches to do the following:
+It is necessary to allow MSG_SENDPAGE_* to be passed into ->sendmsg() to
+allow sendmsg(MSG_SPLICE_PAGES) to replace ->sendpage().  Unblocking them
+in the network protocol, however, allows these flags to be passed in by
+userspace too[1].
 
- (1) Block MSG_SENDPAGE_* flags from leaking into ->sendmsg() from
-     userspace, whilst allowing splice_to_socket() to pass them in.
+Fix this by marking MSG_SENDPAGE_NOPOLICY, MSG_SENDPAGE_NOTLAST and
+MSG_SENDPAGE_DECRYPTED as internal flags, which causes sendmsg() to object
+if they are passed to sendmsg() by userspace.  Network protocol ->sendmsg()
+implementations can then allow them through.
 
- (2) Allow MSG_SPLICE_PAGES to be passed into tls_*_sendmsg().  Until
-     support is added, it will be ignored and a splice-driven sendmsg()
-     will be treated like a normal sendmsg().  TCP, UDP, AF_UNIX and
-     Chelsio-TLS already handle the flag in net-next.
+Note that it should be possible to remove MSG_SENDPAGE_NOTLAST once
+sendpage is removed as a whole slew of pages will be passed in in one go by
+splice through sendmsg, with MSG_MORE being set if it has more data waiting
+in the pipe.
 
- (3) Replace a chain of functions to splice-to-sendpage with a single
-     function to splice via sendmsg() with MSG_SPLICE_PAGES.  This allows a
-     bunch of pages to be spliced from a pipe in a single call using a
-     bio_vec[] and pushes the main processing loop down into the bowels of
-     the protocol driver rather than repeatedly calling in with a page at a
-     time.
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Jakub Kicinski <kuba@kernel.org>
+cc: Chuck Lever <chuck.lever@oracle.com>
+cc: Boris Pismenny <borisp@nvidia.com>
+cc: John Fastabend <john.fastabend@gmail.com>
+cc: Eric Dumazet <edumazet@google.com>
+cc: "David S. Miller" <davem@davemloft.net>
+cc: Paolo Abeni <pabeni@redhat.com>
+cc: Jens Axboe <axboe@kernel.dk>
+cc: Matthew Wilcox <willy@infradead.org>
+cc: netdev@vger.kernel.org
+Link: https://lore.kernel.org/r/20230526181338.03a99016@kernel.org/ [1]
+---
+ include/linux/socket.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
- (4) Provide a ->splice_eof() op[2] that allows splice to signal to its
-     output that the input observed a premature EOF and that the caller
-     didn't flag SPLICE_F_MORE, thereby allowing a corked socket to be
-     flushed.  This attempts to maintain the current behaviour.  It is also
-     not called if we didn't manage to read any data and so didn't called
-     the actor function.
-
-     This needs routing though several layers to get it down to the network
-     protocol.
-
-     [!] Note that I chose not to pass in any flags - I'm not sure it's
-     	 particularly useful to pass in the splice flags; I also elected
-     	 not to return any error code - though we might actually want to do
-     	 that.
-
- (5) Provide tls_{device,sw}_splice_eof() to flush a pending TLS record if
-     there is one.
-
- (6) Alter the behaviour of sendfile() and fix SPLICE_F_MORE/MSG_MORE
-     signalling[1] such SPLICE_F_MORE is always signalled until we have
-     read sufficient data to finish the request.  If we get a zero-length
-     before we've managed to splice sufficient data, we now leave the
-     socket expecting more data and leave it to userspace to deal with it.
-
- (7) Make AF_TLS handle the MSG_SPLICE_PAGES internal sendmsg flag.
-     MSG_SPLICE_PAGES is an internal hint that tells the protocol that it
-     should splice the pages supplied if it can.  Its sendpage
-     implementations are then turned into wrappers around that.
-
-
-I've pushed the patches here also:
-
-	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=sendpage-2-tls
-
-David
-
-Changes
-=======
-ver #4)
- - Switch to using ->splice_eof() to signal premature EOF to the splice
-   output[2].
-
-ver #3)
- - Include the splice-to-socket rewrite patch.
- - Fix SPLICE_F_MORE/MSG_MORE signalling.
- - Allow AF_TLS to accept sendmsg() with MSG_SPLICE_PAGES before it is
-   handled.
- - Allow a zero-length send() to a TLS socket to flush an outstanding
-   record.
- - Address TLS kselftest failure.
-
-ver #2)
- - Dropped the slab data copying.
- - "rls_" should be "tls_".
- - Attempted to fix splice_direct_to_actor().
- - Blocked MSG_SENDPAGE_* from being set by userspace.
-
-Link: https://lore.kernel.org/r/499791.1685485603@warthog.procyon.org.uk/ [1]
-Link: https://lore.kernel.org/r/CAHk-=wh=V579PDYvkpnTobCLGczbgxpMgGmmhqiTyE34Cpi5Gg@mail.gmail.com/ [2]
-Link: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=51c78a4d532efe9543a4df019ff405f05c6157f6 # part 1
-Link: https://lore.kernel.org/r/20230524153311.3625329-1-dhowells@redhat.com/ # v1
-
-David Howells (11):
-  net: Block MSG_SENDPAGE_* from being passed to sendmsg() by userspace
-  tls: Allow MSG_SPLICE_PAGES but treat it as normal sendmsg
-  splice, net: Use sendmsg(MSG_SPLICE_PAGES) rather than ->sendpage()
-  splice, net: Add a splice_eof op to file-ops and socket-ops
-  tls/sw: Use splice_eof() to flush
-  tls/device: Use splice_eof() to flush
-  splice, net: Fix SPLICE_F_MORE signalling in splice_direct_to_actor()
-  tls/sw: Support MSG_SPLICE_PAGES
-  tls/sw: Convert tls_sw_sendpage() to use MSG_SPLICE_PAGES
-  tls/device: Support MSG_SPLICE_PAGES
-  tls/device: Convert tls_device_sendpage() to use MSG_SPLICE_PAGES
-
- fs/splice.c            | 207 ++++++++++++++++++++++++++-------
- include/linux/fs.h     |   3 +-
- include/linux/net.h    |   1 +
- include/linux/socket.h |   4 +-
- include/linux/splice.h |   3 +
- include/net/sock.h     |   1 +
- net/socket.c           |  36 ++----
- net/tls/tls.h          |   2 +
- net/tls/tls_device.c   | 110 +++++++++---------
- net/tls/tls_main.c     |   4 +
- net/tls/tls_sw.c       | 253 ++++++++++++++++++++++-------------------
- 11 files changed, 385 insertions(+), 239 deletions(-)
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index bd1cc3238851..3fd3436bc09f 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -339,7 +339,9 @@ struct ucred {
+ #endif
+ 
+ /* Flags to be cleared on entry by sendmsg and sendmmsg syscalls */
+-#define MSG_INTERNAL_SENDMSG_FLAGS (MSG_SPLICE_PAGES)
++#define MSG_INTERNAL_SENDMSG_FLAGS \
++	(MSG_SPLICE_PAGES | MSG_SENDPAGE_NOPOLICY | MSG_SENDPAGE_NOTLAST | \
++	 MSG_SENDPAGE_DECRYPTED)
+ 
+ /* Setsockoptions(2) level. Thanks to BSD these must match IPPROTO_xxx */
+ #define SOL_IP		0
 
 
