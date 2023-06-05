@@ -1,191 +1,188 @@
-Return-Path: <netdev+bounces-8079-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8080-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9442F722A0E
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 16:58:14 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A4A89722A13
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 16:58:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0BD6A1C20CBB
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:58:11 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5C101280FFD
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:58:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B64662106A;
-	Mon,  5 Jun 2023 14:56:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E337F1F16E;
+	Mon,  5 Jun 2023 14:56:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9C3F10FB
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 14:56:08 +0000 (UTC)
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAC0A7
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 07:56:07 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id e9e14a558f8ab-33d269dd56bso13316935ab.1
-        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 07:56:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1685976966; x=1688568966;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hsjnvYo005eC+L8nxmBDjDjky4ckEQgn5pPpk2NUDZA=;
-        b=f35TRSQBO4C0CbpcXyXtKAIMkZuulsoa/zkhLdbTNoNCAI8DvmBq/AUyD27GC2N8/H
-         7R+bAYElKK3zeY54Pz9mQ5lg+fVwFPE0kl9oINmbGILvsT/T4Bhf3+onNmfLr59Ob6K2
-         ppza6LTOE8SCPqNoi/p7/dPxbmCg1FRvZLfGhZoHr13dxpa29f2sZjRKBWD2ci3Rs85T
-         fxFMurMJoVJ1Y49CzSt83xo2fi9VYZbxFfGZFsE/ztFenBfyMXZZeEl7mz0EmYdBWPrW
-         MYQx5MhQB/Hd1qZwhF6dHFPBVqvu08bpzjccuNQH3zvX3N/TfFa1acNxp8GJ8B30LT+K
-         WV9Q==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D785910FB
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 14:56:45 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA24DF4
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 07:56:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685977002;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=iM7FqUtZoblM2J1vfVR4GtdyLSINqEtLQvkMkp8oaNA=;
+	b=HmLcKQwlB/y3tWxgbZXxkssRTQOgsBaf5TpixlHGtpWkw9Yg2mqA1r1AHxNyzIeBMzFfAf
+	Aox+HV59/Ow7QDFfBFSqY7XjExdMoaZGMiQWzZMGgT4q7GbzKXLgN3QpkEBxLoab4k9Fye
+	KZCfBRIMaVIC7xUNVIzHJCsMxrDUDAQ=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-121-UFhvGX34MnuABopEP9EVQA-1; Mon, 05 Jun 2023 10:56:41 -0400
+X-MC-Unique: UFhvGX34MnuABopEP9EVQA-1
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-3f41a04a297so23987465e9.3
+        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 07:56:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685976966; x=1688568966;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hsjnvYo005eC+L8nxmBDjDjky4ckEQgn5pPpk2NUDZA=;
-        b=cHXMV4Xyitnk8LtCXFCSUlKq1VMsvBNyaTqn86snm/gUPC+52bKlS2WemNq9/9/ZZ/
-         b/ilUg2joX8kZKl6uqEX2Ch/qX20odsdfr3MQ64EqoNj7TCHm3gzmXD+9LjJ4MGQa1Dv
-         AlURmk/1BIqXuIVhATmti+V4YOII79bEap+pj5JQcndhbiblXueF8/AvlmOdWNPuo0mm
-         KUFJ/nh4864Owpwi5r/l1xrA6NrIicDIHPFNdhG/ALhj5WpnjQt6sUDehYlzAxaZJpUD
-         P6D0t2waSBjQ4HYOCaD9YMr99e1+LomgBLJVVivWrWpTqqaQODsstWAc/TnDrjoCsCRQ
-         QcEQ==
-X-Gm-Message-State: AC+VfDzsURnuSod3Utsj80euF0dKnzzXl8x8hH0nhX0kWXA3CRB3cUAV
-	BuYHmJfkeNR153xB/HMnFYDlH5yTgvS0sP4O+D/tRQ==
-X-Google-Smtp-Source: ACHHUZ7kaYV+R4/IVvSH9UxzS7XKer1+ZKED0Wh1d5a1CEPaQSIFX8Nod7pBXEpUxl/CATtjb+/jBFtuWWZ5rpPFL6k=
-X-Received: by 2002:a92:502:0:b0:33d:8b4e:6613 with SMTP id
- q2-20020a920502000000b0033d8b4e6613mr53699ile.15.1685976966682; Mon, 05 Jun
- 2023 07:56:06 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685977000; x=1688569000;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iM7FqUtZoblM2J1vfVR4GtdyLSINqEtLQvkMkp8oaNA=;
+        b=AwiU3hcvVAsHJku0KbUPS2n17K3iUIlwESxW5y1Fem8eVo4/wXgoj8NjsA9F01lDEI
+         sS/60TIyyKcrc7S/AD67H8VYoBGsbWN0tOcexKREJbuMvXka8aNNIxJjcLddaIJOJ9u4
+         DfzGzBEiO2wP6ste1HwOh7NFd31vp1PnCKDYYBCcbwN2oSF0UkmqsS28z/n+2ahY6Rrg
+         xEQpLTQrAnEisFh0f+sXyQ3VVLTP3l4I3pcXHYOueBP1FhaoDMOSw5K4TyVZA6NF28Iv
+         mZlxHuQhGVNzFHJ6i5r5PPeDCduzHmp7Vl+Fsora/aQsIigsgjmjZxVOXk95wu3VdsHq
+         XPgA==
+X-Gm-Message-State: AC+VfDy3BJL266CMTqcmMrUjxwOhOZEtN8CCVxqlJODL4AOuMFdqR1IT
+	FPRj8sfqkfWHnMJx2mkkIr8vWDB1j2soktPOo0CpBkum9NBYiGYBgFfTQ22gHWJOmGGtYVAd1Dk
+	PuN2MC1cJT+fHVxMs
+X-Received: by 2002:a7b:c3d0:0:b0:3f6:1a3:4cee with SMTP id t16-20020a7bc3d0000000b003f601a34ceemr7047077wmj.14.1685977000614;
+        Mon, 05 Jun 2023 07:56:40 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7l4TdvDr6o9XW/L55yGS61L3quL2CQtXB9IsLkpcz4S8Wf/T1gUnxE76eS3+xlCYUvLcEtYw==
+X-Received: by 2002:a7b:c3d0:0:b0:3f6:1a3:4cee with SMTP id t16-20020a7bc3d0000000b003f601a34ceemr7047062wmj.14.1685977000262;
+        Mon, 05 Jun 2023 07:56:40 -0700 (PDT)
+Received: from sgarzare-redhat ([5.77.94.106])
+        by smtp.gmail.com with ESMTPSA id o7-20020a05600c4fc700b003f71ad792f2sm20247339wmq.1.2023.06.05.07.56.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Jun 2023 07:56:39 -0700 (PDT)
+Date: Mon, 5 Jun 2023 16:56:37 +0200
+From: Stefano Garzarella <sgarzare@redhat.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Shannon Nelson <shannon.nelson@amd.com>, 
+	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>, 
+	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>, Tiwei Bie <tiwei.bie@intel.com>, kvm@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost-vdpa: filter VIRTIO_F_RING_PACKED feature
+Message-ID: <32ejjuvhvcicv7wjuetkv34qtlpa657n4zlow4eq3fsi2twozk@iqnd2t5tw2an>
+References: <20230605110644.151211-1-sgarzare@redhat.com>
+ <20230605084104-mutt-send-email-mst@kernel.org>
+ <24fjdwp44hovz3d3qkzftmvjie45er3g3boac7aezpvzbwvuol@lmo47ydvnqau>
+ <20230605085840-mutt-send-email-mst@kernel.org>
+ <gi2hngx3ndsgz5d2rpqjywdmou5vxhd7xgi5z2lbachr7yoos4@kpifz37oz2et>
+ <20230605095404-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230517110232.29349-1-jhs@mojatatu.com> <20230517110232.29349-5-jhs@mojatatu.com>
- <CALnP8ZYDriSnxVtdUD5_hcvop_ojuTHWoK8DpQ+x4KgBqRTD2w@mail.gmail.com>
- <CAM0EoMnBCHyG0w4wV6abAL1X9GU2vMK=nK8e66G-EDttQhKTpw@mail.gmail.com> <CALnP8Za_MOB-m2u=jQe3_GZFhwJJSHZcL5A1P6iytxD+0hvvZA@mail.gmail.com>
-In-Reply-To: <CALnP8Za_MOB-m2u=jQe3_GZFhwJJSHZcL5A1P6iytxD+0hvvZA@mail.gmail.com>
-From: Jamal Hadi Salim <hadi@mojatatu.com>
-Date: Mon, 5 Jun 2023 10:55:56 -0400
-Message-ID: <CAAFAkD8XKBfNEQW7J7KP90eYcuA62gOD+i1ifP+xZUZD6-=Nug@mail.gmail.com>
-Subject: Re: [p4tc-discussions] Re: [PATCH RFC v2 net-next 05/28] net/sched:
- act_api: introduce tc_lookup_action_byid()
-To: Marcelo Ricardo Leitner <mleitner@redhat.com>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>, netdev@vger.kernel.org, deb.chatterjee@intel.com, 
-	tom@sipanda.io, p4tc-discussions@netdevconf.info, Mahesh.Shirshyad@amd.com, 
-	Vipin.Jain@amd.com, tomasz.osinski@intel.com, xiyou.wangcong@gmail.com, 
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
-	khalidm@nvidia.com, toke@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20230605095404-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 5, 2023 at 8:08=E2=80=AFAM Marcelo Ricardo Leitner via
-p4tc-discussions <p4tc-discussions@netdevconf.info> wrote:
+On Mon, Jun 05, 2023 at 09:54:57AM -0400, Michael S. Tsirkin wrote:
+>On Mon, Jun 05, 2023 at 03:30:35PM +0200, Stefano Garzarella wrote:
+>> On Mon, Jun 05, 2023 at 09:00:25AM -0400, Michael S. Tsirkin wrote:
+>> > On Mon, Jun 05, 2023 at 02:54:20PM +0200, Stefano Garzarella wrote:
+>> > > On Mon, Jun 05, 2023 at 08:41:54AM -0400, Michael S. Tsirkin wrote:
+>> > > > On Mon, Jun 05, 2023 at 01:06:44PM +0200, Stefano Garzarella wrote:
+>> > > > > vhost-vdpa IOCTLs (eg. VHOST_GET_VRING_BASE, VHOST_SET_VRING_BASE)
+>> > > > > don't support packed virtqueue well yet, so let's filter the
+>> > > > > VIRTIO_F_RING_PACKED feature for now in vhost_vdpa_get_features().
+>> > > > >
+>> > > > > This way, even if the device supports it, we don't risk it being
+>> > > > > negotiated, then the VMM is unable to set the vring state properly.
+>> > > > >
+>> > > > > Fixes: 4c8cf31885f6 ("vhost: introduce vDPA-based backend")
+>> > > > > Cc: stable@vger.kernel.org
+>> > > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>> > > > > ---
+>> > > > >
+>> > > > > Notes:
+>> > > > >     This patch should be applied before the "[PATCH v2 0/3] vhost_vdpa:
+>> > > > >     better PACKED support" series [1] and backported in stable branches.
+>> > > > >
+>> > > > >     We can revert it when we are sure that everything is working with
+>> > > > >     packed virtqueues.
+>> > > > >
+>> > > > >     Thanks,
+>> > > > >     Stefano
+>> > > > >
+>> > > > >     [1] https://lore.kernel.org/virtualization/20230424225031.18947-1-shannon.nelson@amd.com/
+>> > > >
+>> > > > I'm a bit lost here. So why am I merging "better PACKED support" then?
+>> > >
+>> > > To really support packed virtqueue with vhost-vdpa, at that point we would
+>> > > also have to revert this patch.
+>> > >
+>> > > I wasn't sure if you wanted to queue the series for this merge window.
+>> > > In that case do you think it is better to send this patch only for stable
+>> > > branches?
+>> > > > Does this patch make them a NOP?
+>> > >
+>> > > Yep, after applying the "better PACKED support" series and being
+>> > > sure that
+>> > > the IOCTLs of vhost-vdpa support packed virtqueue, we should revert this
+>> > > patch.
+>> > >
+>> > > Let me know if you prefer a different approach.
+>> > >
+>> > > I'm concerned that QEMU uses vhost-vdpa IOCTLs thinking that the kernel
+>> > > interprets them the right way, when it does not.
+>> > >
+>> > > Thanks,
+>> > > Stefano
+>> > >
+>> >
+>> > If this fixes a bug can you add Fixes tags to each of them? Then it's ok
+>> > to merge in this window. Probably easier than the elaborate
+>> > mask/unmask dance.
+>>
+>> CCing Shannon (the original author of the "better PACKED support"
+>> series).
+>>
+>> IIUC Shannon is going to send a v3 of that series to fix the
+>> documentation, so Shannon can you also add the Fixes tags?
+>>
+>> Thanks,
+>> Stefano
 >
-> On Sat, Jun 03, 2023 at 09:14:53AM -0400, Jamal Hadi Salim wrote:
-> > On Fri, Jun 2, 2023 at 3:36=E2=80=AFPM Marcelo Ricardo Leitner
-> > <mleitner@redhat.com> wrote:
-> > >
-> > > On Wed, May 17, 2023 at 07:02:09AM -0400, Jamal Hadi Salim wrote:
-> > > > +/* lookup by ID */
-> > > > +struct tc_action_ops *tc_lookup_action_byid(struct net *net, u32 a=
-ct_id)
-> > > > +{
-> > > > +     struct tcf_dyn_act_net *base_net;
-> > > > +     struct tc_action_ops *a, *res =3D NULL;
-> > > > +
-> > > > +     if (!act_id)
-> > > > +             return NULL;
-> > > > +
-> > > > +     read_lock(&act_mod_lock);
-> > > > +
-> > > > +     list_for_each_entry(a, &act_base, head) {
-> > > > +             if (a->id =3D=3D act_id) {
-> > > > +                     if (try_module_get(a->owner)) {
-> > > > +                             read_unlock(&act_mod_lock);
-> > > > +                             return a;
-> > > > +                     }
-> > > > +                     break;
-> > >
-> > > It shouldn't call break here but instead already return NULL:
-> > > if id matched, it cannot be present on the dyn list.
-> > >
-> > > Moreover, the search be optimized: now that TCA_ID_ is split between
-> > > fixed and dynamic ranges (patch #3), it could jump directly into the
-> > > right list. Control path performance is also important..
-> >
-> >
-> >
-> > Sorry - didnt respond to this last part: We could use standard tc
-> > actions in a P4 program and we prioritize looking at them first. This
-> > helper is currently only needed for us - so you could argue that we
-> > should only look TCA_ID_DYN onwards but it is useful to be more
-> > generic and since this is a slow path it is not critical. Unless i
->
-> Yes, and no. Control path is not as critical as datapath, I agree with
-> that, but it's also important. It's a small change, but oh well.. it
-> should accumulate on complex datapaths.
->
-> > misunderstood what you said.
->
-> I meant something like this:
->
-> +     if (act_id < TCA_ID_DYN) {
-> +         read_lock(&act_mod_lock);
-> +
-> +         list_for_each_entry(a, &act_base, head) {
-> +                 if (a->id =3D=3D act_id) {
-> +                         if (try_module_get(a->owner)) {
-> +                                 read_unlock(&act_mod_lock);
-> +                                 return a;
-> +                         }
-> +                         break; /* now break; is okay */
-> +                 }
-> +         }
-> +         read_unlock(&act_mod_lock);
-> +     } else {
-> +         read_lock(&base_net->act_mod_lock);
-> +
-> +         base_net =3D net_generic(net, dyn_act_net_id);
-> +         a =3D idr_find(&base_net->act_base, act_id);
-> +         if (a && try_module_get(a->owner))
-> +                 res =3D a;
-> +
-> +         read_unlock(&base_net->act_mod_lock);
-> +     }
+>Well this is in my tree already. Just reply with
+>Fixes: <>
+>to each and I will add these tags.
 
-Reasonable. We will update with this approach. Thanks Marcelo.
+I tried, but it is not easy since we added the support for packed 
+virtqueue in vdpa and vhost incrementally.
 
-cheers,
-jamal
+Initially I was thinking of adding the same tag used here:
 
-> >
-> > cheers,
-> > jamal
-> >
-> > > > +             }
-> > > > +     }
-> > > > +     read_unlock(&act_mod_lock);
-> > > > +
-> > > > +     read_lock(&base_net->act_mod_lock);
-> > > > +
-> > > > +     base_net =3D net_generic(net, dyn_act_net_id);
-> > > > +     a =3D idr_find(&base_net->act_base, act_id);
-> > > > +     if (a && try_module_get(a->owner))
-> > > > +             res =3D a;
-> > > > +
-> > > > +     read_unlock(&base_net->act_mod_lock);
-> > > > +
-> > > > +     return res;
-> > > > +}
-> > > > +EXPORT_SYMBOL(tc_lookup_action_byid);
-> > >
-> >
->
-> _______________________________________________
-> p4tc-discussions mailing list -- p4tc-discussions@netdevconf.info
-> To unsubscribe send an email to p4tc-discussions-leave@netdevconf.info
+Fixes: 4c8cf31885f6 ("vhost: introduce vDPA-based backend")
+
+Then I discovered that vq_state wasn't there, so I was thinking of
+
+Fixes: 530a5678bc00 ("vdpa: support packed virtqueue for set/get_vq_state()")
+
+So we would have to backport quite a few patches into the stable branches.
+I don't know if it's worth it...
+
+I still think it is better to disable packed in the stable branches,
+otherwise I have to make a list of all the patches we need.
+
+Any other ideas?
+
+Thanks,
+Stefano
+
 
