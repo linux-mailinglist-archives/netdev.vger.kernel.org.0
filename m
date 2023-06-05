@@ -1,57 +1,60 @@
-Return-Path: <netdev+bounces-8141-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8143-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5DACB722E85
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 20:21:21 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DF061722E93
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 20:21:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C83B41C209E8
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 18:21:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1F6591C20CE6
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 18:21:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3020C22637;
-	Mon,  5 Jun 2023 18:21:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AEABE23D44;
+	Mon,  5 Jun 2023 18:21:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24EFEAD2E
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 18:21:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A46CEAD2E
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 18:21:20 +0000 (UTC)
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CA7D9
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 11:21:16 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B9DD3
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 11:21:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685989276; x=1717525276;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=PC18PsFltwR2GsxT9mIFpq4wqdFbufA/F6ksuBmYKrw=;
-  b=HwasIw49Ag57t9aObgoLFJfWz2Um7vtzkVYZmFW+048b/WNv9lClb1pf
-   HHh2hrggcQSUedwoCzNKQWJy48md6TRTxhEZayCwgbmgo7DW8T2KYcL0t
-   suBOps0kSVqE9jVD5RQYQzt7ZZDc38exbqtOLsmHgjgMY+8e7KUeXhQ57
-   HlDNkmLxnAvY3jkK64E3leyq64jSlCNLHt0lfV4A3KnYc7jiMdUYyHfLx
-   Ye9UFYUzWuqS3KUj47yj37lPaqfbRMCc4fiOdrcoiW4MqL0Bxvn1tjM8c
-   y3cUDJMedKpnWm67xk/539dcuC10cC7MP8zYrb7H/eNNPzbAaU3iwibWf
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="358896799"
+  t=1685989279; x=1717525279;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=3HEfb0+Du9CKPz7B2iEe9q9csLd2CcxkbnPCXgyv8I0=;
+  b=WLy5foIr8QWRgFW7jCtmbv/K4VWG0UyjSUxkbhXgXZwnKEMtUmbxfuOp
+   7lLZzeeVNvVbO8gy3ySXekJooMUqDGdq+/4U06xLk89KvbKfmVbi0h6TC
+   bNEa3Uc8swNBEzfXQIVM18uemlq+t7L5yHAXqIiQvp8t643z4znKdHMVv
+   IlPYy3NQKaxz8g4kfekqGX2/XsH4Wop05LirQTOzfwGn73Vegrqwdtn9y
+   Km0NJgCcOAWnHJjkZPs5UQLFrX4UJaDpVIlrEUuRpAJCGbhMokNuIF1Ln
+   ByJQ6IV6oZi1ur/PTHEHTGlwr92EvSa9AzR3vmbAxArq+oFOGICx8YHlT
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="358896806"
 X-IronPort-AV: E=Sophos;i="6.00,218,1681196400"; 
-   d="scan'208";a="358896799"
+   d="scan'208";a="358896806"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 11:21:16 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="1038863356"
+X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="1038863363"
 X-IronPort-AV: E=Sophos;i="6.00,218,1681196400"; 
-   d="scan'208";a="1038863356"
+   d="scan'208";a="1038863363"
 Received: from dmert-dev.jf.intel.com ([10.166.241.14])
   by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 11:21:15 -0700
 From: Dave Ertman <david.m.ertman@intel.com>
 To: intel-wired-lan@lists.osuosl.org
-Cc: netdev@vger.kernel.org
-Subject: [PATCH net v2 00/10] Implement support for SRIOV + LAG
-Date: Mon,  5 Jun 2023 11:22:48 -0700
-Message-Id: <20230605182258.557933-1-david.m.ertman@intel.com>
+Cc: netdev@vger.kernel.org,
+	Jacob Keller <jacob.e.keller@intel.com>
+Subject: [PATCH net v2 01/10] ice: Correctly initialize queue context values
+Date: Mon,  5 Jun 2023 11:22:49 -0700
+Message-Id: <20230605182258.557933-2-david.m.ertman@intel.com>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230605182258.557933-1-david.m.ertman@intel.com>
+References: <20230605182258.557933-1-david.m.ertman@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -66,62 +69,92 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Implement support for SRIOV VF's on interfaces that are in an
-aggregate interface.
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-The first interface added into the aggregate will be flagged as
-the primary interface, and this primary interface will be
-responsible for managing the VF's resources.  VF's created on the
-primary are the only VFs that will be supported on the aggregate.
-Only Active-Backup mode will be supported and only aggregates whose
-primary interface is in switchdev mode will be supported.
+The ice_alloc_lan_q_ctx function allocates the queue context array for a
+given traffic class. This function uses devm_kcalloc which will
+zero-allocate the structure. Thus, prior to any queue being setup by
+ice_ena_vsi_txq, the q_ctx structure will have a q_handle of 0 and a q_teid
+of 0. These are potentially valid values.
 
-Additional restrictions on what interfaces can be added to the aggregate
-and still support SRIOV VFs are:
-- interfaces have to all be on the same physical NIC
-- all interfaces have to have the same QoS settings
-- interfaces have to have the FW LLDP agent disabled
-- only the primary interface is to be put into switchdev mode
-- no more than two interfaces in the aggregate
+Modify the ice_alloc_lan_q_ctx function to initialize every member of the
+q_ctx array to have invalid values. Modify ice_dis_vsi_txq to ensure that
+it assigns q_teid to an invalid value when it assigns q_handle to the
+invalid value as well.
 
-Changes since v1:
-Fix typo in commit message
-Fix typos in warning messages
-Fix typo in function header
-Use correct bitwise operator instead of boolean
+This will allow other code to check whether the queue context is currently
+valid before operating on it.
 
-Dave Ertman (9):
-  ice: Add driver support for firmware changes for LAG
-  ice: changes to the interface with the HW and FW for SRIOV_VF+LAG
-  ice: implement lag netdev event handler
-  ice: process events created by lag netdev event handler
-  ice: Flesh out implementation of support for SRIOV on bonded interface
-  ice: support non-standard teardown of bond interface
-  ice: enforce interface eligibility and add messaging for SRIOV LAG
-  ice: enforce no DCB config changing when in bond
-  ice: update reset path for SRIOV LAG support
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_common.c |  1 +
+ drivers/net/ethernet/intel/ice/ice_sched.c  | 23 ++++++++++++++++-----
+ 2 files changed, 19 insertions(+), 5 deletions(-)
 
-Jacob Keller (1):
-  ice: Correctly initialize queue context values
-
- drivers/net/ethernet/intel/ice/ice.h          |    5 +
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   53 +-
- drivers/net/ethernet/intel/ice/ice_common.c   |   57 +-
- drivers/net/ethernet/intel/ice/ice_common.h   |    4 +
- drivers/net/ethernet/intel/ice/ice_dcb_nl.c   |   50 +
- drivers/net/ethernet/intel/ice/ice_lag.c      | 1912 ++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_lag.h      |   34 +-
- drivers/net/ethernet/intel/ice/ice_lib.c      |    2 +-
- drivers/net/ethernet/intel/ice/ice_lib.h      |    1 +
- drivers/net/ethernet/intel/ice/ice_main.c     |   26 +-
- drivers/net/ethernet/intel/ice/ice_sched.c    |   37 +-
- drivers/net/ethernet/intel/ice/ice_sched.h    |   21 +
- drivers/net/ethernet/intel/ice/ice_switch.c   |   89 +-
- drivers/net/ethernet/intel/ice/ice_switch.h   |   29 +
- drivers/net/ethernet/intel/ice/ice_type.h     |    2 +
- drivers/net/ethernet/intel/ice/ice_virtchnl.c |    2 +
- 16 files changed, 2193 insertions(+), 131 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index a9f2e6bff806..23a9f169bc71 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -4708,6 +4708,7 @@ ice_dis_vsi_txq(struct ice_port_info *pi, u16 vsi_handle, u8 tc, u8 num_queues,
+ 			break;
+ 		ice_free_sched_node(pi, node);
+ 		q_ctx->q_handle = ICE_INVAL_Q_HANDLE;
++		q_ctx->q_teid = ICE_INVAL_TEID;
+ 	}
+ 	mutex_unlock(&pi->sched_lock);
+ 	kfree(qg_list);
+diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
+index 824bac5ce003..0db9eb8fd402 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sched.c
++++ b/drivers/net/ethernet/intel/ice/ice_sched.c
+@@ -572,18 +572,24 @@ ice_alloc_lan_q_ctx(struct ice_hw *hw, u16 vsi_handle, u8 tc, u16 new_numqs)
+ {
+ 	struct ice_vsi_ctx *vsi_ctx;
+ 	struct ice_q_ctx *q_ctx;
++	u16 idx;
+ 
+ 	vsi_ctx = ice_get_vsi_ctx(hw, vsi_handle);
+ 	if (!vsi_ctx)
+ 		return -EINVAL;
+ 	/* allocate LAN queue contexts */
+ 	if (!vsi_ctx->lan_q_ctx[tc]) {
+-		vsi_ctx->lan_q_ctx[tc] = devm_kcalloc(ice_hw_to_dev(hw),
+-						      new_numqs,
+-						      sizeof(*q_ctx),
+-						      GFP_KERNEL);
+-		if (!vsi_ctx->lan_q_ctx[tc])
++		q_ctx = devm_kcalloc(ice_hw_to_dev(hw), new_numqs,
++				     sizeof(*q_ctx), GFP_KERNEL);
++		if (!q_ctx)
+ 			return -ENOMEM;
++
++		for (idx = 0; idx < new_numqs; idx++) {
++			q_ctx[idx].q_handle = ICE_INVAL_Q_HANDLE;
++			q_ctx[idx].q_teid = ICE_INVAL_TEID;
++		}
++
++		vsi_ctx->lan_q_ctx[tc] = q_ctx;
+ 		vsi_ctx->num_lan_q_entries[tc] = new_numqs;
+ 		return 0;
+ 	}
+@@ -595,9 +601,16 @@ ice_alloc_lan_q_ctx(struct ice_hw *hw, u16 vsi_handle, u8 tc, u16 new_numqs)
+ 				     sizeof(*q_ctx), GFP_KERNEL);
+ 		if (!q_ctx)
+ 			return -ENOMEM;
++
+ 		memcpy(q_ctx, vsi_ctx->lan_q_ctx[tc],
+ 		       prev_num * sizeof(*q_ctx));
+ 		devm_kfree(ice_hw_to_dev(hw), vsi_ctx->lan_q_ctx[tc]);
++
++		for (idx = prev_num; idx < new_numqs; idx++) {
++			q_ctx[idx].q_handle = ICE_INVAL_Q_HANDLE;
++			q_ctx[idx].q_teid = ICE_INVAL_TEID;
++		}
++
+ 		vsi_ctx->lan_q_ctx[tc] = q_ctx;
+ 		vsi_ctx->num_lan_q_entries[tc] = new_numqs;
+ 	}
 -- 
 2.40.1
 
