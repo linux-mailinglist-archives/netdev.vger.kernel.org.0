@@ -1,156 +1,115 @@
-Return-Path: <netdev+bounces-7970-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7971-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id AD596722434
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 13:09:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id C54E5722467
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 13:17:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 268791C20A34
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:09:42 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3DA8D1C209B7
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 11:17:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9AE9D168CA;
-	Mon,  5 Jun 2023 11:09:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF100168DA;
+	Mon,  5 Jun 2023 11:17:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CF0C525E
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 11:09:42 +0000 (UTC)
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3265EA
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 04:09:40 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id ffacd0b85a97d-307d58b3efbso4052585f8f.0
-        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 04:09:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1685963379; x=1688555379;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AFYjsG2ADeG/Hnb5HRqfQRl/DjCBoXvjMmf5GZ+DDDU=;
-        b=zS9ZNcCWqwj4tVrDWiJD4VskPa5v6OcV5jb117mCrt2KMp0LSEr1gmokNBXxGzzJWq
-         cXmt9OfqpqCaBPEYxs3bFyqvUM1985wmtV//VGeUKj12aXWqpgLa5z/8tXIr48aaosy4
-         ooiZUsv/cEKNNwmZJ+j2YcAcPhm+j2MtA1oQN/tn4Ok0sHkSqruQPgvU3vjozkz4naa/
-         vpVokcj8NY6zlfTazvrnZLNljQllxjtAyclrmRs1nsIbL+ls774N6bqb0ypr6CdFULqe
-         W5uxblhEOx4Lp1cWdPcosS/C7VRUGbTltxZnWR5fQCq6eUZ/OPrydNmbrDFQwQwWCzhA
-         CFpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685963379; x=1688555379;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AFYjsG2ADeG/Hnb5HRqfQRl/DjCBoXvjMmf5GZ+DDDU=;
-        b=Oo0T2NpefpL1NloFzNTND0xqd5Jhfb3WfI9WPK381thNRjMZTpAxVtEjk/7i76vRox
-         9R+Z59i+AH94qD+imxLTMcChb8WRrZyMmsswwPm+h5G2hj588KbN+oCr6nFX2TSWKA2p
-         u/2w5rn0171tacsN7M5AdOrm1gJlc8yFgKceok+MYFnOMae0pg/aaRSoj6qk39bL83ja
-         uzw6n0IDiNkY9B4goaDWW6GJngAOJXVUdf+NAT15jdTfMt/Gce5VexfDTeQ1/7NBwHDd
-         j4lkdU8PjONEbHZJk/+8iQFTpWCnr9uX6qDfbaunHRyU94LnU8ijv3cQGclpl0Xi3PeF
-         zgcg==
-X-Gm-Message-State: AC+VfDx/+DyNLFJBj2j5LbIUiOWq68E3wuwUUlNDHn8t0GFxDD7Fl6n6
-	M6zgrA2vibPWaGDnvkb6EJQkNsV1hl9uMKynKjo=
-X-Google-Smtp-Source: ACHHUZ5U4Bo8KRcxutfCVTlubgXmGZghqSwEMHExv3vZEN+D3B2jTHXhFZ+GUCOuSsQM9E98raVL8g==
-X-Received: by 2002:a5d:4346:0:b0:30c:5535:77a7 with SMTP id u6-20020a5d4346000000b0030c553577a7mr4681518wrr.56.1685963379162;
-        Mon, 05 Jun 2023 04:09:39 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id w16-20020adfd4d0000000b0030aefa3a957sm9480713wrk.28.2023.06.05.04.09.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jun 2023 04:09:37 -0700 (PDT)
-Date: Mon, 5 Jun 2023 14:09:32 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Simon Horman <simon.horman@corigine.com>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>, netdev@vger.kernel.org,
-	deb.chatterjee@intel.com, anjali.singhai@intel.com,
-	namrata.limaye@intel.com, tom@sipanda.io,
-	p4tc-discussions@netdevconf.info, mleitner@redhat.com,
-	Mahesh.Shirshyad@amd.com, Vipin.Jain@amd.com,
-	tomasz.osinski@intel.com, jiri@resnulli.us,
-	xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, vladbu@nvidia.com,
-	khalidm@nvidia.com, toke@redhat.com
-Subject: Re: [PATCH RFC v2 net-next 04/28] net/sched: act_api: add init_ops
- to struct tc_action_op
-Message-ID: <9a777d0b-b212-4487-b5ac-9a05fafac6c7@kadam.mountain>
-References: <20230517110232.29349-1-jhs@mojatatu.com>
- <20230517110232.29349-4-jhs@mojatatu.com>
- <ZH2wEocXqLEjiaqc@corigine.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4B67111B5
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 11:17:27 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6429DF2
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 04:17:04 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mkl@pengutronix.de>)
+	id 1q68CX-0003EX-Lc; Mon, 05 Jun 2023 13:16:41 +0200
+Received: from pengutronix.de (unknown [172.20.34.65])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	(Authenticated sender: mkl-all@blackshift.org)
+	by smtp.blackshift.org (Postfix) with ESMTPSA id 05EFD1D248B;
+	Mon,  5 Jun 2023 11:16:37 +0000 (UTC)
+Date: Mon, 5 Jun 2023 13:16:37 +0200
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+	edumazet@google.com, netdev@vger.kernel.org,
+	Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+	sasha.neftin@intel.com, richardcochran@gmail.com,
+	Kurt Kanzenbach <kurt@linutronix.de>,
+	Naama Meir <naamax.meir@linux.intel.com>
+Subject: Re: [PATCH net 3/4] igc: Retrieve TX timestamp during interrupt
+ handling
+Message-ID: <20230605-distort-jab-ce1f3ece058a-mkl@pengutronix.de>
+References: <20230530174928.2516291-1-anthony.l.nguyen@intel.com>
+ <20230530174928.2516291-4-anthony.l.nguyen@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="hdpqt2u6gtk3ko7j"
 Content-Disposition: inline
-In-Reply-To: <ZH2wEocXqLEjiaqc@corigine.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+In-Reply-To: <20230530174928.2516291-4-anthony.l.nguyen@intel.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
 	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 05, 2023 at 11:51:14AM +0200, Simon Horman wrote:
-> > @@ -1494,8 +1494,13 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
-> >  			}
-> >  		}
-> >  
-> > -		err = a_o->init(net, tb[TCA_ACT_OPTIONS], est, &a, tp,
-> > -				userflags.value | flags, extack);
-> > +		if (a_o->init)
-> > +			err = a_o->init(net, tb[TCA_ACT_OPTIONS], est, &a, tp,
-> > +					userflags.value | flags, extack);
-> > +		else if (a_o->init_ops)
-> > +			err = a_o->init_ops(net, tb[TCA_ACT_OPTIONS], est, &a,
-> > +					    tp, a_o, userflags.value | flags,
-> > +					    extack);
-> 
-> By my reading the initialisation of a occurs here.
-> Which is now conditional.
-> 
 
-Right.  Presumably the author knows that one (and only one) of the
-->init or ->init_ops pointers is set.  This kind of relationship between
-two variables is something that Smatch tries to track inside a function
-but outside of functions, like here, then Smatch doesn't track it.
-I can't really think of a scalable way to track this.
+--hdpqt2u6gtk3ko7j
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-So there are a couple options:
+On 30.05.2023 10:49:27, Tony Nguyen wrote:
+> From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+>=20
+> When the interrupt is handled, the TXTT_0 bit in the TSYNCTXCTL
+> register should already be set and the timestamp value already loaded
+> in the appropriate register.
+>=20
+> This simplifies the handling, and reduces the latency for retrieving
+> the TX timestamp, which increase the amount of TX timestamps that can
+> be handled in a given time period.
 
-1) Ignore the warning.
-2) Remove the second if.
+What about renaming the igc_ptp_tx_work() function, as it's not
+scheduled work anymore, also IMHO you should update the function's
+comment.
 
-	if (a_o->init)
-		err = a_o->init();
-	else
-		err = a_o->init_ops();
+Marc
 
-I kind of like this, because I think it communicates the if ->init()
-isn't set then ->init_ops() must be.
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde          |
+Embedded Linux                   | https://www.pengutronix.de |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
 
-3) Add a return.
+--hdpqt2u6gtk3ko7j
+Content-Type: application/pgp-signature; name="signature.asc"
 
-	if (a_o->init) {
-		err = a_o->init();
-	} else if (a_o->init_ops) {
-		err = a_o->init_ops();
-	} else {
-		WARN_ON(1);
-		return ERR_PTR(-EINVAL);
-	}
+-----BEGIN PGP SIGNATURE-----
 
-4) Add an unreachable.  But the last time I suggested this it led to
-link errors and I didn't get a chance to investigate so probably don't
-do this:
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmR9xBIACgkQvlAcSiqK
+BOiY0wgArz/JseGdOyK9EYdiHWYkC6yBgRBS2PjAZvGMu9jqJTKiY0TPWNy/L2Pe
+B5wzNsPneJ5WD86gOrAjkeDqM5fwSFpcnorf20WQH9VaicTYdFQxYUJ/mcqZ2U96
+vy9GF2Ufa9P47cek/toU8dIJ7JYVk3jAV+wQWAlfDhmzHh4KMENxb9jdd7wus6vs
++2TlaMs/uIphilophN2O8iD5vgDcRDJUSjvCjmMjzihf0zLUKuEnWMfAFTBHEtBZ
+y1J0gX9+cInu5WqmzENWaqlAThR18uFehiQQgymzpbZ/Dgv33DeFErXXcuPNC2t4
+oadUf1An+t8CdBt1Zf7xFnvLIG9F+A==
+=kuvR
+-----END PGP SIGNATURE-----
 
-	if (a_o->init) {
-		err = a_o->init();
-	} else if (a_o->init_ops) {
-		err = a_o->init_ops();
-	} else {
-		unreachable();
-	}
-
-regards,
-dan carpenter
-
+--hdpqt2u6gtk3ko7j--
 
