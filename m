@@ -1,479 +1,208 @@
-Return-Path: <netdev+bounces-8151-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8154-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9DBF4722EA3
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 20:24:38 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id DEE59722EA9
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 20:27:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5323728139E
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 18:24:37 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 46DFF1C20CB5
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 18:27:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C967624141;
-	Mon,  5 Jun 2023 18:21:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B3C1623D45;
+	Mon,  5 Jun 2023 18:27:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B90DF24EA4
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 18:21:25 +0000 (UTC)
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3926D9
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 11:21:23 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0467DDD0
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 18:27:55 +0000 (UTC)
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7422ECD
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 11:27:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685989283; x=1717525283;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=jwhOMMoefBQW6N6VJt5vylFEbWGBTA/aw79xbpsCQM4=;
-  b=PMzVURDxbLD8XJ6O+NeRFHbtGm3r0CV5FlfyUcZ8qZMPapxCU4V0R2Tu
-   muvpWy9TatuFBxqTr0lMjq8LTdekQbLQIKZD6WRH+j4Vp6Aj2lCYiZ3f7
-   MKgcy+nHoyg/Wq43ONDvnU2uo5RhfBONI2T7G0R34Q4NLZtYuviFvNoQ2
-   J4ww5pPxpoys2J0CZbWI7Xpil6UV6+2hZHQMPBkq47YOyA/UFklU3m1bz
-   c1EHaXohj8Ipu8gZQeZhR5H+GSrO8wAr/8VuyisWqK077oV+h3BJtOtYK
-   xr3fqw7W0CKwePUWci+2lAAVuBtBgewLigMILvSW8u8xF2Px1fF2drEDn
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="358896824"
+  t=1685989674; x=1717525674;
+  h=date:from:to:cc:subject:message-id:references:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=rkjxUh77Jj3tGicIg10/wBLmu9XFZqhFPVqYQlyohn0=;
+  b=AAZ7t9fK6PuJ+IMztantXhT4gbw2uVfPo6LJKxgK22Ip7/KqhX+1aN55
+   JmcrK3fDA+LeCL7PIr3qilYCNuLDjh2VdXr2EwX49cfoXUh+ihSIBNhPi
+   aqrv8hV70ZzyXTxe3tBDhj4zuKLwnXCM5TNWupHvXsFj0pd3+34yIYRK5
+   NAkH+VCKne3fK7VBjXTC7PtPJl4YnMIsid3jchvABsZ0m0gc7zqO4WYrA
+   vxLFyus2+A64zowDn+I7/ncR+722XlG4fiQAdIKx+/36wwrQIjqJDUUBY
+   fYky6LTfkTpOKQ/CVcMRYx44wsZcXFtaCDPXNbVy9TXdRxF7+0VR31kMv
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="353938118"
 X-IronPort-AV: E=Sophos;i="6.00,218,1681196400"; 
-   d="scan'208";a="358896824"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 11:21:18 -0700
+   d="scan'208";a="353938118"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 11:27:48 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="1038863384"
+X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="821281146"
 X-IronPort-AV: E=Sophos;i="6.00,218,1681196400"; 
-   d="scan'208";a="1038863384"
-Received: from dmert-dev.jf.intel.com ([10.166.241.14])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 11:21:17 -0700
-From: Dave Ertman <david.m.ertman@intel.com>
-To: intel-wired-lan@lists.osuosl.org
-Cc: netdev@vger.kernel.org
-Subject: [PATCH net v2 10/10] ice: update reset path for SRIOV LAG support
-Date: Mon,  5 Jun 2023 11:22:58 -0700
-Message-Id: <20230605182258.557933-11-david.m.ertman@intel.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230605182258.557933-1-david.m.ertman@intel.com>
-References: <20230605182258.557933-1-david.m.ertman@intel.com>
+   d="scan'208";a="821281146"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmsmga002.fm.intel.com with ESMTP; 05 Jun 2023 11:27:48 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Mon, 5 Jun 2023 11:27:47 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Mon, 5 Jun 2023 11:27:47 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.106)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Mon, 5 Jun 2023 11:27:47 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jhF3PRvKtro02+wl1g5A+X8oZp9A3dsdGqphCYyqMaaypBtIi6Rcat2OfNDZpHroawwWIFbZIBLwUlZb9QqAd4j+zGCHJfAhmJoluo+0P2uI5nbSZHQhlWdyGSc18YBJIFmio+JMPubXuUXKmLJopPT5EWXi4z2DmQ6/UFPLw766B3b4ZYhObAEiL07BX/MWNOIWl3gOvVKPCka6dLbJj9vus6PYylYw0Ntvnluko1AjPrcuBvP9BZiauq0Caxfxeng2lFeONl/uB142+f5FE2QP1/2IF4vd/sr7a1c4VTLcszzt7v0sJEzONyjHgYmB3Glnx2KHe/FXTGj0R3eQCg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oBJhwmIS9TeFMVR7xGrgZLZE5Gv2Cc9k2r++GGVT728=;
+ b=f3B2o/rYloJIUgZPL7IkPjFLZXixidzTgP5hn6ABHyIGbgb0eAEEBHS/0BSKQ+u/x5H3I/4AJQB8/R15vSwc36Sj8Dd8AOXD7fW91qGZPUzfvbhwHPs5dzhPLMkwAkMRFwzWF2jTF2aI6UY+J35kD7B3JEXtxvlTiJFiv9gCk9JU5OXIevt8n81wx1Oju89rJAHbLU/sMHD3yJXlHVlDZfx/5LcFIipN392VQDpt0ZJjyUuEAaVOhUzgZgKk881sPwJPiv+kkdpmxAOygWiiIGdud/Jsco0vrC81k+ZbDftUOZQRwtBiWECt31UatQxpk+XzuyclMeXHTOjtPIR8Sw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
+ CO6PR11MB5666.namprd11.prod.outlook.com (2603:10b6:303:13a::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Mon, 5 Jun
+ 2023 18:27:46 +0000
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::9e4f:80cc:e0aa:6809]) by DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::9e4f:80cc:e0aa:6809%2]) with mapi id 15.20.6455.030; Mon, 5 Jun 2023
+ 18:27:45 +0000
+Date: Mon, 5 Jun 2023 20:27:38 +0200
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To: =?iso-8859-1?B?Q3Pza+Fz?= Bence <csokas.bence@prolan.hu>
+CC: <netdev@vger.kernel.org>, Richard Cochran <richardcochran@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+	<qiangqing.zhang@nxp.com>, Andrew Lunn <andrew@lunn.ch>,
+	<kernel@pengutronix.de>
+Subject: Re: [PATCH resubmit] net: fec: Refactor: rename `adapter` to `fep`
+Message-ID: <ZH4pGitjMPiiGgE8@boxer>
+References: <20230605094402.85071-1-csokas.bence@prolan.hu>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230605094402.85071-1-csokas.bence@prolan.hu>
+X-ClientProxiedBy: FR2P281CA0146.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:98::7) To DM4PR11MB6117.namprd11.prod.outlook.com
+ (2603:10b6:8:b3::19)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|CO6PR11MB5666:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1ba64187-cc30-473a-eab5-08db65f28ee1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6xrKmlPgzpJqoMrdre6hlC6lCpP8Kmk5P8L3/4T2vMe49vYoxmyKrKGtz5tv0iJNKvZIA5XURiTWHK6Ry10DxnU5V6HeHtUcobZGOppo0SoDxGLstdot5Yz+qKnBo00mtRC8P/pYViiGeZGNqAfhLTkBWKblaUfNJkNUIo4xkt9J+g46etbilYB1O84oKX075c7qPwTNwZO4nawLksoaHhuvVWKqLcV98VHMMFMrirbyRupD6WTSSBOhMrtmwocXVlaYGjwNUYyPgR/pvLlJy4GqxqrytMz7UkKNKRYNe29680wB+SKFVfm2MuHDGvDyUPq56lZKFZgMqMiY2S/0eUPhbenH2HV6PJzNlvCDjcZR9I5RLnHsVJxL3XTZVJi93Wd61TSPWdhGWVClIoV5eY6maxXdIi65muj1Z/IQ1EDQGxglk8/iXcNY6XvXH/I1Yk8BfnUyN8/U+gvNuSeVKno4V97HgDPZ+bQIEgHqjeEgUk6TA1pcR9+X6+AcxL2l798tLKh34gvdPUx8oPHxVSbLfG17dQ6RNA5VdRkwYHw9atIrITqZCAdLgkO8mUPwyN7KtC9bPJ1IRAchn6B7uOfx+rVj/QTbQJ91LVOGBY8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(366004)(136003)(39860400002)(376002)(396003)(346002)(451199021)(86362001)(186003)(5660300002)(26005)(6666004)(6512007)(6506007)(9686003)(2906002)(33716001)(44832011)(316002)(8676002)(8936002)(54906003)(41300700001)(4326008)(6916009)(38100700002)(82960400001)(66946007)(66476007)(66556008)(478600001)(6486002)(83380400001)(66574015)(81973001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?AGN0EyT2cUTXft7kqnjQcn5PJWyWtkb2NpR9Ew8mAAeWv6Qd/RGi4higoj?=
+ =?iso-8859-1?Q?7OhE9M9paTKHrkyPJ/MczBCAXa25eqQzv58iWycpCrfqr1JmLESmJ2cC0S?=
+ =?iso-8859-1?Q?dj9F8IhZ4TqjJ+vcVSFeA8DiIZTnWlkRzXsMvfmR0ATDXEpHoUoaJdtdu3?=
+ =?iso-8859-1?Q?V3aYmztmiDONep7qbFblCcjr0CnCZXmXKne9HN8FXs8mexDF+sCH8aRh5k?=
+ =?iso-8859-1?Q?BYOnEOOE/05Y9LwnYGrwJi8yVewCz4eoba1ViEW5k1mZYo5VJh13UjrqDD?=
+ =?iso-8859-1?Q?dChL4JqnlCd2cI0dAa+VgigjpkQw8ANtTePM3lcydUwgWaQj0gHHR3QXGk?=
+ =?iso-8859-1?Q?8F6LWFFy1z9uLNBfBiygSBDBtv95Xj6GcRelbZRmcv5RqX6dXmBn2IgJg0?=
+ =?iso-8859-1?Q?IoECuYX1i5MQzggIpDuiph7+fl+2+2/bu3jlDMF7sLtXsePGfonzyF09kw?=
+ =?iso-8859-1?Q?wPIa79DRiz/L63szHfAbcQratCnKnkjiRWLyj3ig5qiW4ivBeNX1TYDOjg?=
+ =?iso-8859-1?Q?TUEmPPHSKopfSnJZ7CDC/saIsfPbBOTJOgZ8gUR+HVMoXDZraM3CcbYTAG?=
+ =?iso-8859-1?Q?R7FnqgbxJVVJYpvc9g+EchP8uXwwQOyScGY7F/tkFI3spbzCm8CMwjvyXK?=
+ =?iso-8859-1?Q?xNpEXX4/WQxTvayzDA5hNi4DRyQFrd3mX5ZIFdlyy8ZtJBWThWk7Z1I5+0?=
+ =?iso-8859-1?Q?ur68gvSF2wLaiKLpF/7cVuSEUjTa+mkE5fgfDeyaOzQ5+LjtUU/RB9FTWT?=
+ =?iso-8859-1?Q?Aphm44GBvhgHVHHdBl5Je7zKGcSwuTq0C/C8B3jQjanMtCxtjAAnmsRcfH?=
+ =?iso-8859-1?Q?GkhRl+1jRIcf+XifQtQVPsHR/HzsZEcGCeFVQ03YVFF9con8wFNoaTInMD?=
+ =?iso-8859-1?Q?FtcEnk1GgyVr1e2O5sre8lGPbogn4YNie58zgIu6xzfKzETUdZkvLz1Gm+?=
+ =?iso-8859-1?Q?eALnk+KwnjfzsmXkSnCQEPfE4Z9o0TxS5G7KI3XikOm9d3UUn6ljhJZGXh?=
+ =?iso-8859-1?Q?8KpY7zDXjUzXGlctmGn7bvO966vqUHCpS5XVJWpEPvtg4CpP9gZu7V4gGf?=
+ =?iso-8859-1?Q?CzfSZfwz7i3enhVFKUg57Cg7TrgMMmBU2C41Eu9i+Cfn4CljS9G/kcVxIN?=
+ =?iso-8859-1?Q?Tosg7t7f/eHoyvd79e0nDtjigY01B7Y798n6jpqsl2jeC+NsyAHJjyQWAy?=
+ =?iso-8859-1?Q?rD5zaBeTZTfnyKfK/fThuhWQPI0BXK1eN4tiJk8xeAG9UQOGu0+8cIfk2j?=
+ =?iso-8859-1?Q?ExsxrQHpb8unFHElHogumx1NspmtS5vmjH054E3BaussLhaa1rKVt6lPtc?=
+ =?iso-8859-1?Q?iRBS3nv6e/CcOSmhefYhK0eJdC3fKJMaIL2qenOC5A9x8VtuNpGv4xgxYk?=
+ =?iso-8859-1?Q?efhBmF6hsXEhrOQyOOM/HKXtVnt3GWbULG/Epuj0zt/A43tOv1MhgDU5HW?=
+ =?iso-8859-1?Q?nWKKaJjYMAfsLSCBwjwzFKx/paG5yXrYiQph8kmuw8ztdrP2a78oHqMD5s?=
+ =?iso-8859-1?Q?L3rDfo9/ACDX4MoX5oWtY83gD8XKm/daMJon8LJ0c+6lMFPsZGmjrTR/3E?=
+ =?iso-8859-1?Q?vyvRyjti2v6FegYqVBoIyMC30uNwjiXM7/iymmXLGMNx7TtgVaS+23PLNv?=
+ =?iso-8859-1?Q?ay4faAqM/Y2tj2opfhRFIoBkqmNYtqdN2I5BE8MPUVsq6LtAR84mX0VQ?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ba64187-cc30-473a-eab5-08db65f28ee1
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2023 18:27:45.8859
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QvR0e9g5C4FcYOU6MEg37HN7TnrFUxV8rnd2jbSSq8FkbriV8cmmHhd22WnENEgQzCFLuHCirXNSJYMc6jiHh1dm9NYqqedUQSQz7DaS+/g=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR11MB5666
+X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add code to rebuild the LAG resources when rebuilding the state of the
-interface after a reset.
+On Mon, Jun 05, 2023 at 11:44:03AM +0200, Csókás Bence wrote:
 
-Also added in a function for building per-queue information into the buffer
-used to configure VF queues for LAG fail-over.  This improves code reuse.
+please provide a motivation behind this rename in the commit message.
 
-Due to differences in timing per interface for recovering from a reset, add
-in the ability to retry on non-local dependencies where needed.
-
-Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_lag.c  | 287 +++++++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_lag.h  |   3 +
- drivers/net/ethernet/intel/ice/ice_main.c |  14 +-
- 3 files changed, 300 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_lag.c b/drivers/net/ethernet/intel/ice/ice_lag.c
-index ffad9f3a5576..4c07d1b9e338 100644
---- a/drivers/net/ethernet/intel/ice/ice_lag.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lag.c
-@@ -997,6 +997,7 @@ static void ice_lag_link_unlink(struct ice_lag *lag, void *ptr)
-  * @link: Is this a linking activity
-  *
-  * If link is false, then primary_swid should be expected to not be valid
-+ * This function should never be called in interrupt context.
-  */
- static void
- ice_lag_set_swid(u16 primary_swid, struct ice_lag *local_lag,
-@@ -1006,7 +1007,7 @@ ice_lag_set_swid(u16 primary_swid, struct ice_lag *local_lag,
- 	struct ice_aqc_set_port_params *cmd;
- 	struct ice_aq_desc desc;
- 	u16 buf_len, swid;
--	int status;
-+	int status, i;
- 
- 	buf_len = struct_size(buf, elem, 1);
- 	buf = kzalloc(buf_len, GFP_KERNEL);
-@@ -1057,7 +1058,20 @@ ice_lag_set_swid(u16 primary_swid, struct ice_lag *local_lag,
- 	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_set_port_params);
- 
- 	cmd->swid = cpu_to_le16(ICE_AQC_PORT_SWID_VALID | swid);
--	status = ice_aq_send_cmd(&local_lag->pf->hw, &desc, NULL, 0, NULL);
-+	/* If this is happening in reset context, it is possible that the
-+	 * primary interface has not finished setting its SWID to SHARED
-+	 * yet.  Allow retries to account for this timing issue between
-+	 * interfaces.
-+	 */
-+	for (i = 0; i < ICE_LAG_RESET_RETRIES; i++) {
-+		status = ice_aq_send_cmd(&local_lag->pf->hw, &desc, NULL, 0,
-+					 NULL);
-+		if (!status)
-+			break;
-+
-+		usleep_range(1000, 2000);
-+	}
-+
- 	if (status)
- 		dev_err(ice_pf_to_dev(local_lag->pf), "Error setting SWID in port params %d\n",
- 			status);
-@@ -1065,7 +1079,7 @@ ice_lag_set_swid(u16 primary_swid, struct ice_lag *local_lag,
- 
- /**
-  * ice_lag_primary_swid - set/clear the SHARED attrib of primary's SWID
-- * @lag: primary interfaces lag struct
-+ * @lag: primary interface's lag struct
-  * @link: is this a linking activity
-  *
-  * Implement setting primary SWID as shared using 0x020B
-@@ -1788,6 +1802,191 @@ static u16 ice_create_lag_recipe(struct ice_hw *hw, const u8 *base_recipe,
- 	return rid;
- }
- 
-+/**
-+ * ice_lag_move_vf_nodes_tc_sync - move a VF's nodes for a tc during reset
-+ * @lag: primary interfaces lag struct
-+ * @dest_hw: HW struct for destination's interface
-+ * @vsi_num: VSI index in PF space
-+ * @tc: traffic class to move
-+ */
-+static void
-+ice_lag_move_vf_nodes_tc_sync(struct ice_lag *lag, struct ice_hw *dest_hw,
-+			      u16 vsi_num, u8 tc)
-+{
-+	u16 num_nodes[ICE_AQC_TOPO_MAX_LEVEL_NUM] = { 0 };
-+	struct ice_sched_node *n_prt, *tc_node, *aggnode;
-+	u16 numq, valq, buf_size, num_moved, qbuf_size;
-+	struct device *dev = ice_pf_to_dev(lag->pf);
-+	struct ice_aqc_cfg_txqs_buf *qbuf;
-+	struct ice_aqc_move_elem *buf;
-+	struct ice_port_info *pi;
-+	__le32 teid, parent_teid;
-+	struct ice_vsi_ctx *ctx;
-+	struct ice_hw *hw;
-+	u8 aggl, vsil;
-+	u32 tmp_teid;
-+	int n;
-+
-+	hw = &lag->pf->hw;
-+	ctx = ice_get_vsi_ctx(hw, vsi_num);
-+	if (!ctx) {
-+		dev_warn(dev, "LAG rebuild failed after reset due to VSI Context failure\n");
-+		return;
-+	}
-+
-+	if (!ctx->sched.vsi_node[tc])
-+		return;
-+
-+	numq = ctx->num_lan_q_entries[tc];
-+	teid = ctx->sched.vsi_node[tc]->info.node_teid;
-+	tmp_teid = le32_to_cpu(teid);
-+	parent_teid = ctx->sched.vsi_node[tc]->info.parent_teid;
-+
-+	if (!tmp_teid || !numq)
-+		return;
-+
-+	if (ice_sched_suspend_resume_elems(hw, 1, &tmp_teid, true))
-+		dev_dbg(dev, "Problem suspending traffic during reset rebuild\n");
-+
-+	/* reconfig queues for new port */
-+	qbuf_size = struct_size(qbuf, queue_info, numq);
-+	qbuf = kzalloc(qbuf_size, GFP_KERNEL);
-+	if (!qbuf) {
-+		dev_warn(dev, "Failure allocating VF queue recfg buffer for reset rebuild\n");
-+		goto resume_sync;
-+	}
-+
-+	/* add the per queue info for the reconfigure command buffer */
-+	valq = ice_lag_qbuf_recfg(hw, qbuf, vsi_num, numq, tc);
-+	if (!valq) {
-+		dev_warn(dev, "Failure to reconfig queues for LAG reset rebuild\n");
-+		goto sync_none;
-+	}
-+
-+	if (ice_aq_cfg_lan_txq(hw, qbuf, qbuf_size, numq, hw->port_info->lport,
-+			       dest_hw->port_info->lport, NULL)) {
-+		dev_warn(dev, "Failure to configure queues for LAG reset rebuild\n");
-+		goto sync_qerr;
-+	}
-+
-+sync_none:
-+	kfree(qbuf);
-+
-+	/* find parent in destination tree */
-+	pi = dest_hw->port_info;
-+	tc_node = ice_sched_get_tc_node(pi, tc);
-+	if (!tc_node) {
-+		dev_warn(dev, "Failure to find TC node in secondary tree for reset rebuild\n");
-+		goto resume_sync;
-+	}
-+
-+	aggnode = ice_sched_get_agg_node(pi, tc_node, ICE_DFLT_AGG_ID);
-+	if (!aggnode) {
-+		dev_warn(dev, "Failure to find agg node in secondary tree for reset rebuild\n");
-+		goto resume_sync;
-+	}
-+
-+	aggl = ice_sched_get_agg_layer(dest_hw);
-+	vsil = ice_sched_get_vsi_layer(dest_hw);
-+
-+	for (n = aggl + 1; n < vsil; n++)
-+		num_nodes[n] = 1;
-+
-+	for (n = 0; n < aggnode->num_children; n++) {
-+		n_prt = ice_sched_get_free_vsi_parent(dest_hw,
-+						      aggnode->children[n],
-+						      num_nodes);
-+		if (n_prt)
-+			break;
-+	}
-+
-+	/* if no free parent found - add one */
-+	if (!n_prt) {
-+		u16 num_nodes_added;
-+		u32 first_teid;
-+		int status;
-+
-+		n_prt = aggnode;
-+		for (n = aggl + 1; n < vsil; n++) {
-+			status = ice_sched_add_nodes_to_layer(pi, tc_node,
-+							      n_prt, n,
-+							      num_nodes[n],
-+							      &first_teid,
-+							      &num_nodes_added);
-+			if (status || num_nodes[n] != num_nodes_added)
-+				goto resume_sync;
-+
-+			if (num_nodes_added)
-+				n_prt = ice_sched_find_node_by_teid(tc_node,
-+								    first_teid);
-+			else
-+				n_prt = n_prt->children[0];
-+
-+			if (!n_prt) {
-+				dev_warn(dev, "Failure to add new parent for LAG reset rebuild\n");
-+				goto resume_sync;
-+			}
-+		}
-+	}
-+
-+	/* Move node to new parent */
-+	buf_size = struct_size(buf, teid, 1);
-+	buf = kzalloc(buf_size, GFP_KERNEL);
-+	if (!buf) {
-+		dev_warn(dev, "Failure to alloc for VF node move in reset rebuild\n");
-+		goto resume_sync;
-+	}
-+
-+	buf->hdr.src_parent_teid = parent_teid;
-+	buf->hdr.dest_parent_teid = n_prt->info.node_teid;
-+	buf->hdr.num_elems = cpu_to_le16(1);
-+	buf->hdr.mode = ICE_AQC_MOVE_ELEM_MODE_KEEP_OWN;
-+	buf->teid[0] = teid;
-+
-+	if (ice_aq_move_sched_elems(&lag->pf->hw, 1, buf, buf_size, &num_moved,
-+				    NULL))
-+		dev_warn(dev, "Failure to move VF nodes for LAG reset rebuild\n");
-+	else
-+		ice_sched_update_parent(n_prt, ctx->sched.vsi_node[tc]);
-+
-+	kfree(buf);
-+	goto resume_sync;
-+
-+sync_qerr:
-+	kfree(qbuf);
-+
-+resume_sync:
-+	if (ice_sched_suspend_resume_elems(hw, 1, &tmp_teid, false))
-+		dev_warn(dev, "Problem restarting traffic for LAG node reset rebuild\n");
-+}
-+
-+/**
-+ * ice_lag_move_vf_nodes_sync - move vf nodes to active interface
-+ * @lag: primary interfaces lag struct
-+ * @dest_hw: lport value for currently active port
-+ *
-+ * This function is used in a reset context, outside of event handling,
-+ * to move the VF nodes to the secondary interface when that interface
-+ * is the active interface during a reset rebuild
-+ */
-+static void
-+ice_lag_move_vf_nodes_sync(struct ice_lag *lag, struct ice_hw *dest_hw)
-+{
-+	struct ice_pf *pf;
-+	int i, tc;
-+
-+	if (!lag->primary || !dest_hw)
-+		return;
-+
-+	pf = lag->pf;
-+	ice_for_each_vsi(pf, i)
-+		if (pf->vsi[i] && (pf->vsi[i]->type == ICE_VSI_VF ||
-+				   pf->vsi[i]->type == ICE_VSI_SWITCHDEV_CTRL))
-+			ice_for_each_traffic_class(tc)
-+				ice_lag_move_vf_nodes_tc_sync(lag, dest_hw, i,
-+							      tc);
-+}
-+
- /**
-  * ice_init_lag - initialize support for LAG
-  * @pf: PF struct
-@@ -1890,3 +2089,85 @@ void ice_deinit_lag(struct ice_pf *pf)
- 
- 	pf->lag = NULL;
- }
-+
-+/**
-+ * ice_lag_rebuild - rebuild lag resources after reset
-+ * @pf: pointer to local pf struct
-+ *
-+ * PF resets are promoted to CORER resets when interface in an aggregate.  This
-+ * means that we need to rebuild the PF resources for the interface.  Since
-+ * this will happen outside the normal event processing, need to acquire the lag
-+ * lock.
-+ *
-+ * This function will also evaluate the VF resources if this is the primary
-+ * interface.
-+ */
-+void ice_lag_rebuild(struct ice_pf *pf)
-+{
-+	struct ice_lag_netdev_list ndlist;
-+	struct ice_lag *lag, *prim_lag;
-+	struct list_head *tmp, *n;
-+	u8 act_port, loc_port;
-+
-+	if (!pf->lag || !pf->lag->bonded)
-+		return;
-+
-+	mutex_lock(&pf->lag_mutex);
-+
-+	lag = pf->lag;
-+	if (lag->primary) {
-+		prim_lag = lag;
-+	} else {
-+		struct ice_lag_netdev_list *nl;
-+		struct net_device *tmp_nd;
-+
-+		INIT_LIST_HEAD(&ndlist.node);
-+		rcu_read_lock();
-+		for_each_netdev_in_bond_rcu(lag->upper_netdev, tmp_nd) {
-+			nl = kzalloc(sizeof(*nl), GFP_KERNEL);
-+			if (!nl)
-+				break;
-+
-+			nl->netdev = tmp_nd;
-+			list_add(&nl->node, &ndlist.node);
-+		}
-+		rcu_read_unlock();
-+		lag->netdev_head = &ndlist.node;
-+		prim_lag = ice_lag_find_primary(lag);
-+	}
-+
-+	if (!prim_lag) {
-+		dev_dbg(ice_pf_to_dev(pf), "No primary interface in aggregate, can't rebuild\n");
-+		goto lag_rebuild_out;
-+	}
-+
-+	act_port = prim_lag->active_port;
-+	loc_port = lag->pf->hw.port_info->lport;
-+
-+	/* configure SWID for this port */
-+	if (lag->primary) {
-+		ice_lag_primary_swid(lag, true);
-+	} else {
-+		ice_lag_set_swid(prim_lag->pf->hw.port_info->sw_id, lag, true);
-+		ice_lag_add_prune_list(prim_lag, pf);
-+		if (act_port == loc_port)
-+			ice_lag_move_vf_nodes_sync(prim_lag, &pf->hw);
-+	}
-+
-+	ice_lag_cfg_cp_fltr(lag, true);
-+
-+	if (lag->pf_rule_id)
-+		if (ice_lag_cfg_dflt_fltr(lag, true))
-+			dev_err(ice_pf_to_dev(pf), "Error adding default VSI rule in rebuild\n");
-+
-+	ice_clear_rdma_cap(pf);
-+lag_rebuild_out:
-+	list_for_each_safe(tmp, n, &ndlist.node) {
-+		struct ice_lag_netdev_list *entry;
-+
-+		entry = list_entry(tmp, struct ice_lag_netdev_list, node);
-+		list_del(&entry->node);
-+		kfree(entry);
-+	}
-+	mutex_unlock(&pf->lag_mutex);
-+}
-diff --git a/drivers/net/ethernet/intel/ice/ice_lag.h b/drivers/net/ethernet/intel/ice/ice_lag.h
-index df4af5184a75..18075b82485a 100644
---- a/drivers/net/ethernet/intel/ice/ice_lag.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lag.h
-@@ -16,6 +16,8 @@ enum ice_lag_role {
- 
- #define ICE_LAG_INVALID_PORT 0xFF
- 
-+#define ICE_LAG_RESET_RETRIES		5
-+
- struct ice_pf;
- struct ice_vf;
- 
-@@ -59,4 +61,5 @@ struct ice_lag_work {
- void ice_lag_move_new_vf_nodes(struct ice_vf *vf);
- int ice_init_lag(struct ice_pf *pf);
- void ice_deinit_lag(struct ice_pf *pf);
-+void ice_lag_rebuild(struct ice_pf *pf);
- #endif /* _ICE_LAG_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 7030b2e54d2b..a27381ec37cd 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -636,6 +636,11 @@ static void ice_do_reset(struct ice_pf *pf, enum ice_reset_req reset_type)
- 
- 	dev_dbg(dev, "reset_type 0x%x requested\n", reset_type);
- 
-+	if (pf->lag && pf->lag->bonded && reset_type == ICE_RESET_PFR) {
-+		dev_dbg(dev, "PFR on a bonded interface, promoting to CORER\n");
-+		reset_type = ICE_RESET_CORER;
-+	}
-+
- 	ice_prepare_for_reset(pf, reset_type);
- 
- 	/* trigger the reset */
-@@ -719,8 +724,13 @@ static void ice_reset_subtask(struct ice_pf *pf)
- 	}
- 
- 	/* No pending resets to finish processing. Check for new resets */
--	if (test_bit(ICE_PFR_REQ, pf->state))
-+	if (test_bit(ICE_PFR_REQ, pf->state)) {
- 		reset_type = ICE_RESET_PFR;
-+		if (pf->lag && pf->lag->bonded) {
-+			dev_dbg(ice_pf_to_dev(pf), "PFR on a bonded interface, promoting to CORER\n");
-+			reset_type = ICE_RESET_CORER;
-+		}
-+	}
- 	if (test_bit(ICE_CORER_REQ, pf->state))
- 		reset_type = ICE_RESET_CORER;
- 	if (test_bit(ICE_GLOBR_REQ, pf->state))
-@@ -7421,6 +7431,8 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
- 	clear_bit(ICE_RESET_FAILED, pf->state);
- 
- 	ice_plug_aux_dev(pf);
-+	if (ice_is_feature_supported(pf, ICE_F_SRIOV_LAG))
-+		ice_lag_rebuild(pf);
- 	return;
- 
- err_vsi_rebuild:
--- 
-2.40.1
-
+> Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
+> ---
+>  drivers/net/ethernet/freescale/fec_ptp.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
+> index ab86bb8562ef..afc658d2c271 100644
+> --- a/drivers/net/ethernet/freescale/fec_ptp.c
+> +++ b/drivers/net/ethernet/freescale/fec_ptp.c
+> @@ -443,21 +443,21 @@ static int fec_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+>   */
+>  static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+>  {
+> -	struct fec_enet_private *adapter =
+> +	struct fec_enet_private *fep =
+>  	    container_of(ptp, struct fec_enet_private, ptp_caps);
+>  	u64 ns;
+>  	unsigned long flags;
+>  
+> -	mutex_lock(&adapter->ptp_clk_mutex);
+> +	mutex_lock(&fep->ptp_clk_mutex);
+>  	/* Check the ptp clock */
+> -	if (!adapter->ptp_clk_on) {
+> -		mutex_unlock(&adapter->ptp_clk_mutex);
+> +	if (!fep->ptp_clk_on) {
+> +		mutex_unlock(&fep->ptp_clk_mutex);
+>  		return -EINVAL;
+>  	}
+> -	spin_lock_irqsave(&adapter->tmreg_lock, flags);
+> -	ns = timecounter_read(&adapter->tc);
+> -	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
+> -	mutex_unlock(&adapter->ptp_clk_mutex);
+> +	spin_lock_irqsave(&fep->tmreg_lock, flags);
+> +	ns = timecounter_read(&fep->tc);
+> +	spin_unlock_irqrestore(&fep->tmreg_lock, flags);
+> +	mutex_unlock(&fep->ptp_clk_mutex);
+>  
+>  	*ts = ns_to_timespec64(ns);
+>  
+> -- 
+> 2.25.1
+> 
+> 
+> 
 
