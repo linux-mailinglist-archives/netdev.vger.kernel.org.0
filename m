@@ -1,126 +1,150 @@
-Return-Path: <netdev+bounces-8083-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8088-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0E940722A24
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 17:02:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 92C53722A8E
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 17:13:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BB442280EBF
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:02:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 42E7D281152
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:13:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8BFBD1F924;
-	Mon,  5 Jun 2023 15:02:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9E9071F93E;
+	Mon,  5 Jun 2023 15:13:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EEE11F169
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 15:02:23 +0000 (UTC)
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E261F3
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 08:02:21 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id d2e1a72fcca58-65311774e52so1543918b3a.3
-        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 08:02:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1685977341; x=1688569341;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OO58eKmVoWNsJKlnEQ40hLV33QS8rL9+7/JiEiwU3VQ=;
-        b=wNwI0FdhDQtPsD4p3JIxN6jRJlBNj/+C5EVNx5TKsfXIlvR2EGL0GSlBFv0SzqDYJQ
-         eGc0+2YJv8nleUC+bOfqZgRorTp3saC/myeSFjVAdxoHqure5aWIS+ug+eWnyufedeVs
-         MfEM8NSpPDrn3gEWCea0XkxJ8VlN2uRtSMAX931I+UiCZkYfWNwLHG/zIy9N2bTGqOQ0
-         Bk71/PF/c9VEM0Jrl3TxOyxiiNwymG1Bsl5E+HiEdJ/0K4qbMTH+QMS3vedkRF+X80na
-         PAvLA3j+91PYnmGmmlN1pVe8CB9h3Lxoehe/MjeMEvYytPLxo/2xUXc9L3dJ18YuZwxj
-         hung==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685977341; x=1688569341;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OO58eKmVoWNsJKlnEQ40hLV33QS8rL9+7/JiEiwU3VQ=;
-        b=R50A+1wPHcPANkDv6l01s+U6Xng3D98Wr0vtsk/M8xPmscCS/yYuDT9J0oGK4BjYnU
-         DzRIpE694LteWMPf58YjCkifMhBwyDb57belzd5JIOkang32Y37SXjdOAWlUewE6NnEm
-         pnFR+pRN0p2BexfaDMqVRl/Efoa0oaM36LWStAExoSLwR4kh1bciRuCVqOJm58mQ3JUx
-         9W2t5IVGqBPJa+E0K1Yh+ga6v+3if+RrJyQIoWcjTh95xeHv+Tw93QjTqXvKW7q5sJeE
-         DY37sytHxyHPEP9rXGp+SvIBFc8pwdLDc+dAtBAJBIeaayIrW1RbOIx+0ZjcirETKui0
-         3Wtw==
-X-Gm-Message-State: AC+VfDz34GvXwPmNqwRceDvhVvJaDjrDkVGkaUhysVfbBth+NTV9SqwE
-	4P7iOXBItuqMK93JhV7Icco8/w==
-X-Google-Smtp-Source: ACHHUZ74qqJ7F9OGrEO1EpIxpyLjKfsjK0pa3GifYIyQvvkaGIsxWklU/tgpW4fZ0vK8b7+hB+Uwgg==
-X-Received: by 2002:a05:6a00:881:b0:641:d9b:a444 with SMTP id q1-20020a056a00088100b006410d9ba444mr15624597pfj.31.1685977340938;
-        Mon, 05 Jun 2023 08:02:20 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id v3-20020aa78083000000b0062bc045bf4fsm5524750pff.19.2023.06.05.08.02.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jun 2023 08:02:19 -0700 (PDT)
-Date: Mon, 5 Jun 2023 08:02:17 -0700
-From: Stephen Hemminger <stephen@networkplumber.org>
-To: Ido Schimmel <idosch@idosch.org>
-Cc: Vladimir Nikishkin <vladimir@nikishkin.pw>, netdev@vger.kernel.org,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, eng.alaamohamedsoliman.am@gmail.com, gnault@redhat.com,
- razor@blackwall.org, idosch@nvidia.com, liuhangbin@gmail.com,
- eyal.birger@gmail.com, jtoppins@redhat.com
-Subject: Re: [PATCH iproute2-next v7] ip-link: add support for nolocalbypass
- in vxlan
-Message-ID: <20230605080217.441e1973@hermes.local>
-In-Reply-To: <ZH2cUO7pFnU/tcXL@shredder>
-References: <20230604140051.4523-1-vladimir@nikishkin.pw>
-	<ZH2CeAWH7uMLkFcj@shredder>
-	<87sfb6pfqh.fsf@laptop.lockywolf.net>
-	<ZH2cUO7pFnU/tcXL@shredder>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93A6B6FDE
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 15:13:04 +0000 (UTC)
+X-Greylist: delayed 626 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 05 Jun 2023 08:12:51 PDT
+Received: from smtp-bc08.mail.infomaniak.ch (smtp-bc08.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc08])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C2C10E0
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 08:12:51 -0700 (PDT)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+	by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4QZcK92Hf0zMqYTR;
+	Mon,  5 Jun 2023 17:02:21 +0200 (CEST)
+Received: from unknown by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4QZcK80Jb5zMrK3h;
+	Mon,  5 Jun 2023 17:02:19 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+	s=20191114; t=1685977341;
+	bh=8LypuOr5m5yp1T2kVIMo8zx5AGopO/50AfLfFNI9IN4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=GV+QlfYKG5GPSIziXgCRfwpuQRwlP414bzmpoP1sl0tm9vwznegS1NFMnLY5mTKZa
+	 9DlM2goDlktzM/q/GFQEOxk8hZE5racUBGyTzDAvWWNHW1BKBSHmkBdL7+XeO2oiDh
+	 +FvNXv88/gA1ptQeoSBeCXaZ1uQoC2epRpqEmLc0=
+Message-ID: <8f3d242a-c0ee-217e-8094-84093ce4e134@digikod.net>
+Date: Mon, 5 Jun 2023 17:02:19 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent:
+Subject: Re: [PATCH v11 00/12] Network support for Landlock
+Content-Language: en-US
+To: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc: willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
+ linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+ netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+ artem.kuzin@huawei.com, =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack3000@gmail.com>
+References: <20230515161339.631577-1-konstantin.meskhidze@huawei.com>
+From: =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <20230515161339.631577-1-konstantin.meskhidze@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Infomaniak-Routing: alpha
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, 5 Jun 2023 11:26:56 +0300
-Ido Schimmel <idosch@idosch.org> wrote:
+Hi Konstantin,
 
-> On Mon, Jun 05, 2023 at 02:47:12PM +0800, Vladimir Nikishkin wrote:
-> > 
-> > Ido Schimmel <idosch@idosch.org> writes:
-> >   
-> > > On Sun, Jun 04, 2023 at 10:00:51PM +0800, Vladimir Nikishkin wrote:  
-> > >> Add userspace support for the [no]localbypass vxlan netlink
-> > >> attribute. With localbypass on (default), the vxlan driver processes
-> > >> the packets destined to the local machine by itself, bypassing the
-> > >> userspace nework stack. With nolocalbypass the packets are always
-> > >> forwarded to the userspace network stack, so userspace programs,
-> > >> such as tcpdump have a chance to process them.
-> > >> 
-> > >> Signed-off-by: Vladimir Nikishkin <vladimir@nikishkin.pw>
-> > >> ---  
-> > >> v6=>v7:  
-> > >> Use the new vxlan_opts data structure. Rely on the printing loop
-> > >> in vxlan_print_opt when printing the value of [no] localbypass.  
-> > >
-> > > Stephen's changes are still not present in the next branch so this patch
-> > > does not apply  
-> > 
-> > Sorry for the confusion, I thought that the tree to develop against is
-> > git://git.kernel.org/pub/scm/linux/kernel/git/shemminger/iproute2.git  
-> 
-> iproute2-next is developed at
-> git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
-> 
-> See the README file.
-> 
-> Anyway, patch looks fine, but indentation is a bit off. Please fold this
-> in:
+The kernel code looks good. I found some issues in tests and 
+documentation, and I'm still reviewing the whole patches. In the 
+meantime, I've pushed it in -next, we'll see how it goes.
 
-David will to a merge from main to next if asked.
+We need to have this new code covered by syzkaller. I'll work on that 
+unless you want to.
 
+Regards,
+  Mickaël
+
+
+On 15/05/2023 18:13, Konstantin Meskhidze wrote:
+> Hi,
+> This is a new V11 patch related to Landlock LSM network confinement.
+> It is based on the landlock's -next branch on top of v6.2-rc3+ kernel version:
+> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=next
+> 
+> It brings refactoring of previous patch version V10.
+> Mostly there are fixes of logic and typos, refactoring some selftests.
+> 
+> All test were run in QEMU evironment and compiled with
+>   -static flag.
+>   1. network_test: 36/36 tests passed.
+>   2. base_test: 7/7 tests passed.
+>   3. fs_test: 78/78 tests passed.
+>   4. ptrace_test: 8/8 tests passed.
+> 
+> Previous versions:
+> v10: https://lore.kernel.org/linux-security-module/20230323085226.1432550-1-konstantin.meskhidze@huawei.com/
+> v9: https://lore.kernel.org/linux-security-module/20230116085818.165539-1-konstantin.meskhidze@huawei.com/
+> v8: https://lore.kernel.org/linux-security-module/20221021152644.155136-1-konstantin.meskhidze@huawei.com/
+> v7: https://lore.kernel.org/linux-security-module/20220829170401.834298-1-konstantin.meskhidze@huawei.com/
+> v6: https://lore.kernel.org/linux-security-module/20220621082313.3330667-1-konstantin.meskhidze@huawei.com/
+> v5: https://lore.kernel.org/linux-security-module/20220516152038.39594-1-konstantin.meskhidze@huawei.com
+> v4: https://lore.kernel.org/linux-security-module/20220309134459.6448-1-konstantin.meskhidze@huawei.com/
+> v3: https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
+> v2: https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
+> v1: https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
+> 
+> Konstantin Meskhidze (11):
+>    landlock: Make ruleset's access masks more generic
+>    landlock: Refactor landlock_find_rule/insert_rule
+>    landlock: Refactor merge/inherit_ruleset functions
+>    landlock: Move and rename layer helpers
+>    landlock: Refactor layer helpers
+>    landlock: Refactor landlock_add_rule() syscall
+>    landlock: Add network rules and TCP hooks support
+>    selftests/landlock: Share enforce_ruleset()
+>    selftests/landlock: Add 11 new test suites dedicated to network
+>    samples/landlock: Add network demo
+>    landlock: Document Landlock's network support
+> 
+> Mickaël Salaün (1):
+>    landlock: Allow filesystem layout changes for domains without such
+>      rule type
+> 
+>   Documentation/userspace-api/landlock.rst     |   89 +-
+>   include/uapi/linux/landlock.h                |   48 +
+>   samples/landlock/sandboxer.c                 |  128 +-
+>   security/landlock/Kconfig                    |    1 +
+>   security/landlock/Makefile                   |    2 +
+>   security/landlock/fs.c                       |  232 +--
+>   security/landlock/limits.h                   |    7 +-
+>   security/landlock/net.c                      |  174 +++
+>   security/landlock/net.h                      |   26 +
+>   security/landlock/ruleset.c                  |  405 +++++-
+>   security/landlock/ruleset.h                  |  185 ++-
+>   security/landlock/setup.c                    |    2 +
+>   security/landlock/syscalls.c                 |  163 ++-
+>   tools/testing/selftests/landlock/base_test.c |    2 +-
+>   tools/testing/selftests/landlock/common.h    |   10 +
+>   tools/testing/selftests/landlock/config      |    4 +
+>   tools/testing/selftests/landlock/fs_test.c   |   74 +-
+>   tools/testing/selftests/landlock/net_test.c  | 1317 ++++++++++++++++++
+>   18 files changed, 2520 insertions(+), 349 deletions(-)
+>   create mode 100644 security/landlock/net.c
+>   create mode 100644 security/landlock/net.h
+>   create mode 100644 tools/testing/selftests/landlock/net_test.c
+> 
+> --
+> 2.25.1
+> 
 
