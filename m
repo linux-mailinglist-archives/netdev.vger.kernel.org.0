@@ -1,150 +1,140 @@
-Return-Path: <netdev+bounces-7985-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-7986-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C8DCC722582
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:22:43 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 74E7872259D
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 14:25:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 82FDB281138
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:22:42 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E1ADB1C209A5
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 12:25:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B856B18B04;
-	Mon,  5 Jun 2023 12:22:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E49718B0C;
+	Mon,  5 Jun 2023 12:25:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A998417AD1
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:22:40 +0000 (UTC)
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1FAE68;
-	Mon,  5 Jun 2023 05:22:15 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-	by mailout.west.internal (Postfix) with ESMTP id 9A3D53200913;
-	Mon,  5 Jun 2023 08:22:11 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Mon, 05 Jun 2023 08:22:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm1; t=1685967731; x=1686054131; bh=7W
-	iLrLsF5xVxXNcAy4Mh7e7hxHBVb5egJsZ8LOLNRvo=; b=2o1kwlV3Do2loqfo88
-	8E8nDDB5CavhahXYo6NRabED24JsbSPlA/28nBdwLSv8pPi6tdbInnX6ZLfYGJIm
-	d/ZZHp7m3paDvnOH0noWl7Ko/QtboQpabiwAApHaYpbnOwCG8p32w6UHX3sH2Ryu
-	+1MCyFRdDI/RN6Vs811t++D4ZDUd9Q086Ay7fCnXsIeNNYynG3hZ+0AZcg8R/dGf
-	/pCFJ5fYIIzQeWOQ9TU+7r18p7N0MpyKzCac44ZpElncC9G/hZJVnXyo8ZaNm+H5
-	Xu64ngLXypJBb9h19upA8yk8tu8iWMkH+/NUkndFMdFatP/V6RtvpzMYJ0L+1GlG
-	BYjw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm1; t=1685967731; x=1686054131; bh=7WiLrLsF5xVxX
-	NcAy4Mh7e7hxHBVb5egJsZ8LOLNRvo=; b=bMOmsPyCvbE5xOYlrfbDXKiyTdvl0
-	h1VBo3CiJg9/m3T4yfz7v6rr4FNGm/olLi+ic+M4vg1lnfrcUE5OFFK2K9z+7YPV
-	1uLrhqglfmTMp0PhHZ40d1x813XFyKNPtEhylYRwrnhGTJrWr6J4kNdDxDPFe7HG
-	Bq3psbyd1ZbIVb5pPBWyAH2s78xfNogW1DvNWuncHMbTSH7xFkyBLGVqKRpaEK1Q
-	u+SEAeHhjPQPRh6JCOdsylGdjmsMme9LyKKeqNNtfyhSVnrf2ka0IyRtrUXjnn/C
-	A8jkfIUvqaljFkLxBRaemIN76g3qGznuTBwEZYlOUJEyOl1SkhQw2DpNA==
-X-ME-Sender: <xms:ctN9ZDmD-tSymJN54hej2KEc-SLnn0p6xZC_NVsNaNZlh6NPqUqI2g>
-    <xme:ctN9ZG0xEW8krpuXFulA_rknWNdgRDA6LQIUcgWN1ZWQM7VKvzUCWUu-a9tdf802u
-    avA_EX3MyQOR_4oRfo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeelledgheduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
-    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
-    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
-    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
-    hrnhgusegrrhhnuggsrdguvg
-X-ME-Proxy: <xmx:ctN9ZJpRlsoxA7UiHkqptL34w_v_IjkGD8QhakerALnfohbmRYGSYQ>
-    <xmx:ctN9ZLmGLFrIAbb-zW7rxXN7J0076toHehHcVydIzI9Z0PlSSDgacg>
-    <xmx:ctN9ZB1Xz0IQNNTMSL3_dcw1XG4Q85C4_eI4tBnm94D3uLNNSd1GFQ>
-    <xmx:c9N9ZOLlaiJV7ZDVd7olUsSd-GhbZoNUddglv_9XL9y0u-TTf6ke2w>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-	id 96776B60086; Mon,  5 Jun 2023 08:22:10 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-447-ge2460e13b3-fm-20230525.001-ge2460e13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81D8F525E
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 12:25:35 +0000 (UTC)
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC58F7
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 05:25:27 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id ffacd0b85a97d-30ae69ef78aso4365695f8f.1
+        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 05:25:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685967925; x=1688559925;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=sJB4I9XF3euDnetyF47YxxSCps0bNVDe3GpO+Wob5AY=;
+        b=IUTtSbUe2dNmMuBUScQfzzUcpClRRyti0mt/hCFNuXOT31Iwwvz0vWwrX380xgHMtT
+         MKA32M+HuenCPi8hltngWGss3PwYoOQDI6fK6Z4nBf/s8+wfVrJ38DDsIH2y0pgLoScU
+         MfTCHhntcDybEKFOO7gPtA99XX2oy0gmvdihhGCgt9wRVbc6hnE0Zatn+kejanB4Jhjc
+         R8TOZhpzdX4xWDoMVRMSiknd/SFoL7EWVtZ6FmOkRzasaYw0dnBhia0qCVY58ttkaMLC
+         lg3cpHZlw0gxJ30TXs4/zsq+JAia2RQif7U1rdlNUwmUq/eC9jshPLwhZ3lMuH2Kbto/
+         b0bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685967925; x=1688559925;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sJB4I9XF3euDnetyF47YxxSCps0bNVDe3GpO+Wob5AY=;
+        b=REO/4U7C1PzMkIyJfhzCwlgzVbjXmxxEQwJwJy+JrsiQ0tfq87NPuotH3wEoG+Ut6G
+         jRFKVXdnh0po3hRTtE6FqUvbM1fXGob56oGUA2Yg5H+2H2ToreqY3ZciwwxauCzG9I2z
+         GMwh0QqV5kAa5YNDavqKGJ6ImDtMafWDBRuVxZQ3jydiiuhzpp6Qvw/4r1ExMNPhFiy6
+         lLMR1dqFEHO3RJpvvDge3/vpr85iwcnE71ueGsOJ02vCIfS5A2iJma+0S82DWrVvt5FB
+         Nere7yG4l9rAxCnM/qTsrG6IFv14qD5/7+fCco7wHALVY42Mp4ymYDRQwrXrSVCoDbh1
+         LQOg==
+X-Gm-Message-State: AC+VfDyCFJO0XyVEkPKuPR1uOvjVg4+otp1ISNlgSviF4uIyBhWAWTFz
+	e0CgNjLbKtMTBPXjgPn91dk=
+X-Google-Smtp-Source: ACHHUZ6s/ij7cM9WeaAPFlRfVdBagH860ZsDeF5xmcrIMoazOKE3CcfBCYObALQa+Qx2Zn04Y8UFSg==
+X-Received: by 2002:adf:cf04:0:b0:30a:ea65:6676 with SMTP id o4-20020adfcf04000000b0030aea656676mr6086726wrj.23.1685967925426;
+        Mon, 05 Jun 2023 05:25:25 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id u16-20020a05600c211000b003f4fe09aa43sm14309999wml.8.2023.06.05.05.25.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Jun 2023 05:25:25 -0700 (PDT)
+Date: Mon, 5 Jun 2023 15:25:23 +0300
+From: Vladimir Oltean <olteanv@gmail.com>
+To: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc: "Russell King (Oracle)" <linux@armlinux.org.uk>,
+	Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: Re: QUSGMII control word
+Message-ID: <20230605122523.a6hrfyt43xblnnac@skbuf>
+References: <ZHnd+6FUO77XFJvQ@shell.armlinux.org.uk>
+ <20230605081334.3258befa@pc-7.home>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Message-Id: <d98d050a-29dd-4ee7-86cd-bad4e6a04584@app.fastmail.com>
-In-Reply-To: <3e262485-bf5f-1a98-e399-e02add3eaa89@microchip.com>
-References: <20230603200243.243878-1-varshini.rajendran@microchip.com>
- <20230603200243.243878-22-varshini.rajendran@microchip.com>
- <be3716e0-383f-e79a-b441-c606c0e049df@linaro.org>
- <3e262485-bf5f-1a98-e399-e02add3eaa89@microchip.com>
-Date: Mon, 05 Jun 2023 14:21:50 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Nicolas Ferre" <nicolas.ferre@microchip.com>,
- "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
- "Varshini Rajendran" <varshini.rajendran@microchip.com>,
- "Thomas Gleixner" <tglx@linutronix.de>, "Marc Zyngier" <maz@kernel.org>,
- "Rob Herring" <robh+dt@kernel.org>, krzysztof.kozlowski+dt@linaro.org,
- "Conor Dooley" <conor+dt@kernel.org>,
- "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
- "Claudiu Beznea" <claudiu.beznea@microchip.com>,
- "David S . Miller" <davem@davemloft.net>,
- "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>,
- "Paolo Abeni" <pabeni@redhat.com>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Russell King" <linux@armlinux.org.uk>,
- "Michael Turquette" <mturquette@baylibre.com>,
- "Stephen Boyd" <sboyd@kernel.org>, "Sebastian Reichel" <sre@kernel.org>,
- "Mark Brown" <broonie@kernel.org>,
- "Gregory Clement" <gregory.clement@bootlin.com>,
- "Sudeep Holla" <sudeep.holla@arm.com>,
- "Balamanikandan Gunasundar" <balamanikandan.gunasundar@microchip.com>,
- "Mihai.Sain" <mihai.sain@microchip.com>, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
- linux-clk@vger.kernel.org, linux-pm@vger.kernel.org
-Cc: Hari.PrasathGE@microchip.com, cristian.birsan@microchip.com,
- durai.manickamkr@microchip.com, manikandan.m@microchip.com,
- dharma.b@microchip.com, nayabbasha.sayed@microchip.com,
- balakrishnan.s@microchip.com
-Subject: Re: [PATCH 21/21] net: macb: add support for gmac to sam9x7
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230605081334.3258befa@pc-7.home>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 5, 2023, at 14:07, Nicolas Ferre wrote:
-> On 05/06/2023 at 08:42, Krzysztof Kozlowski wrote:
->>>
->>> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
->>> index 29a1199dad14..609c8e9305ba 100644
->>> --- a/drivers/net/ethernet/cadence/macb_main.c
->>> +++ b/drivers/net/ethernet/cadence/macb_main.c
->>> @@ -4913,6 +4913,7 @@ static const struct of_device_id macb_dt_ids[] = {
->>>        { .compatible = "microchip,mpfs-macb", .data = &mpfs_config },
->>>        { .compatible = "microchip,sama7g5-gem", .data = &sama7g5_gem_config },
->>>        { .compatible = "microchip,sama7g5-emac", .data = &sama7g5_emac_config },
->>> +     { .compatible = "microchip,sam9x7-gem", .data = &sama7g5_gem_config },
->> 
->> These are compatible, aren't they? Why do you need new entry?
->
-> The hardware itself is different, even if the new features are not 
-> supported yet in the macb driver.
-> The macb driver will certainly evolve in order to add these features so 
-> we decided to match a new compatible string all the way to the driver.
+On Mon, Jun 05, 2023 at 08:13:34AM +0200, Maxime Chevallier wrote:
+> Hello Russell,
+> 
+> On Fri, 2 Jun 2023 13:18:03 +0100
+> "Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+> 
+> > Hi Maxime,
+> > 
+> > Looking at your commit which introduced QUSGMII -
+> > 5e61fe157a27 ("net: phy: Introduce QUSGMII PHY mode"), are you sure
+> > your decoding of the control word is correct?
+> > 
+> > I've found some information online which suggests that QUSGMII uses a
+> > slightly different format to the control word from SGMII. Most of the
+> > bits are the same, but the speed bits occupy the three bits from 11:9,
+> > and 10M, 100M and 1G are encoded using bits 10:9, whereas in SGMII
+> > they are bits 11:10. In other words, in QUSGMII they are shifted one
+> > bit down. In your commit, you used the SGMII decoder for QUSGMII,
+> > which would mean we'd be picking out the wrong bits for decoding the
+> > speed.
+> > 
+> > QUSGMII also introduces EEE information into bits 8 and 7 whereas
+> > these are reserved in SGMII.
+> > 
+> > Please could you take a look, because I think we need a different
+> > decoder for the QUSGMII speed bits.
+> 
+> I've taken a look at it, back when I sent that patch I didn't have
+> access to the full documentation and used a vendor reference
+> implementation as a basis... I managed to get my hands on the proper
+> doc and the control word being used looks to be the usxgmii control
+> word, which matches with the offset you are seeing.
 
-It sounds like you can still drop this patch though, and only add a
-specific entry here after the .data field is actually different
-when those features get added.
+Just to be on the same page with everyone regarding what Q-USGMII is.
 
-The important bit for now is to have the specific string in the binding
-and in the dtb, along with the fallback for I assume "microchip,sama7g5-gem".
+Commit 5e61fe157a27 ("net: phy: Introduce QUSGMII PHY mode") says that
+phy-mode "qusgmii" is a derivative of phy-mode "usxgmii". I don't think
+that wording was particularly helpful.
 
-     Arnd
+I've downloaded the 3 specifications at
+https://developer.cisco.com/site/usgmii-usxgmii/, and it says that
+4-port Q-USGMII is capable of speeds 10/100/1000 over each port, with
+a maximum SERDES speed of 10 Gbps, and with the 8b/10b coding. But
+phylink_interface_max_speed() lists PHY_INTERFACE_MODE_QUSGMII as
+supporting 10G per port, which is also incorrect in addition to what
+Russell already noticed about the in-band autoneg code word.
+
+The autoneg message is indeed structurally similar to the autoneg
+message from USXGMII, save for the fact that speed encodings (bits 11:9)
+higher than 1G are reserved. Also (big difference), USXGMII uses the
+64b/66b coding scheme rather than the 8b/10b of USGMII / Q-USGMII.
+
+I hope there is no confusion between Q-USGMII and the quad-port variant
+of USXGMII: 10G-QXGMII! The latter also uses a SERDES speed of 10.3125
+Gbps, but individual port speeds are 10/100/1000/2500, and the coding
+scheme is 64b/66b. 10G-QXGMII is what I would think of as the quad-port
+derivative of USXGMII...
 
