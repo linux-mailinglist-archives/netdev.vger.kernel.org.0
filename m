@@ -1,139 +1,158 @@
-Return-Path: <netdev+bounces-8111-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8112-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8DA10722BB6
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 17:45:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 26EF1722BF6
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 17:52:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C45E028131D
-	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:45:52 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4838C1C20953
+	for <lists+netdev@lfdr.de>; Mon,  5 Jun 2023 15:52:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1404A21088;
-	Mon,  5 Jun 2023 15:45:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7CCA2109F;
+	Mon,  5 Jun 2023 15:52:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 026356FC3
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 15:45:50 +0000 (UTC)
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9536D1733
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 08:45:32 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id 46e09a7af769-6b166023d47so1260910a34.1
-        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 08:45:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1685979869; x=1688571869;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=A90Mk0zhGtoGmxJxaQafKo6YzBEDqEFCob4w8O1kVaw=;
-        b=zuuikebe6licttv8Tse/5e+gzZZ4D4z2gmA3z8mMAX2SdXkArSL4TUDb45v6l9IvZm
-         b6obQZQle3xp/hYInx2KWqpyQimwN/Zvin1udaN/o69/8313VKYotWXdbfUbz35UEKSz
-         2l+BkCjqdSvM9Sw+7OpfSR7iaJ8L+gpE///pmBMS5iX82JUaP0KajO2hFaFAD5BAA0fm
-         CKO4vHpAzRbeqfq+FhBbKhFOfcmIyCPYp33PFMGhgmoB60APrXrx/XIPVWVTRWZTnwEi
-         n78sZ3QHSwLwLTkFCoHIC7aqzfCR99mAzaU+vvCvm5LfLGdxzZIRWJUFMo+8EV4w/Ae6
-         Q/tQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685979869; x=1688571869;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=A90Mk0zhGtoGmxJxaQafKo6YzBEDqEFCob4w8O1kVaw=;
-        b=g3Ff38iDDPfDhQXq8N2KlmMufdEvmA8Mt3+NOqa2ZlTjE2dTQbZNgCnM9UehBOmfQK
-         w5gZghiYvnQaf0kV2RNlnlskp3doj30BejvQjEtFjcqL90Pod8s43zv11nBUjCYPvr25
-         YeAZlD4m6rfmKQ8SzyI60OSaaOk9ovQs7QCca671+rLNTbJMnI2wpruvCswq3OLJqbr+
-         RlRSeViU1/mmZlFEsWNTtLiRefzJD1wE0UwYTnBrJdXoQU8DQMs+iFwYvTUuOqrBDXN6
-         aDDiyh+tLG9JCggwFjnD9uWtH7HCYNmREUAda5E9py4VZ+P44mgwbQr1zGBb38o6McuD
-         2SFg==
-X-Gm-Message-State: AC+VfDw7HInvOKwQzPWtSPjesbwMsojYD2vsPi8EXPuHjRfcBf9YFVId
-	HAk7EHuPpy0+KcdQwr2QVuGiybEpc3LeJL2J14f21A==
-X-Google-Smtp-Source: ACHHUZ4Tfjk8gbHFmBO99ECiDhiiGggbXGg15OtrRRxs+VRwIA/aSz9fY0Br9IG0xAYSxlcMfU2eCUAgu9MaGurWj+k=
-X-Received: by 2002:a05:6358:c4a9:b0:129:d026:e9f2 with SMTP id
- fg41-20020a056358c4a900b00129d026e9f2mr188619rwb.11.1685979868907; Mon, 05
- Jun 2023 08:44:28 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDC726FC3
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 15:52:23 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9147B98
+	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 08:52:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685980341;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=sbYi2SqNkU8HcJmItNwFRpx+Pi9dAFWzLYDLig6jfuY=;
+	b=IR1UXzFnrLyonYb7h94aVhivedPOGVWc3CDsBQxRgiKggXQRh3yGCMjk2/pvH2JznK1j6V
+	AOPDszfwdefSEwZZnWPN6dREBXWp5mckYNceZStRBtS9NDnMACKJKUXmm4Z8YTwlbGxvhB
+	LC7Z2uPuK9eNM7YIWFW37IHHjeVEar8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-185-mCEpg48XNU-DQyoEqEYCzA-1; Mon, 05 Jun 2023 11:52:16 -0400
+X-MC-Unique: mCEpg48XNU-DQyoEqEYCzA-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5604B811E8F;
+	Mon,  5 Jun 2023 15:52:15 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 436CB403174;
+	Mon,  5 Jun 2023 15:52:13 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <e94820ba53924e96b31ac983c84269f8@AcuMS.aculab.com>
+References: <e94820ba53924e96b31ac983c84269f8@AcuMS.aculab.com> <20230524153311.3625329-1-dhowells@redhat.com> <20230524153311.3625329-10-dhowells@redhat.com> <20230526180844.73745d78@kernel.org> <499791.1685485603@warthog.procyon.org.uk> <CAHk-=wgeixW3cc=Ys8eL0_+22FUhqeEru=nzRrSXy1U4YQdE-w@mail.gmail.com> <CAHk-=wghhHghtvU_SzXxAzfaX35BkNs-x91-Vj6+6tnVEhPrZg@mail.gmail.com> <832277.1685630048@warthog.procyon.org.uk> <CAHk-=wji_2UwFMkUYkygsYRek05NwaQkH-vA=yKQtQS9Js+urQ@mail.gmail.com>
+To: David Laight <David.Laight@ACULAB.COM>
+Cc: dhowells@redhat.com,
+    'Linus Torvalds' <torvalds@linux-foundation.org>,
+    Jakub Kicinski <kuba@kernel.org>,
+    "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+    "David S. Miller" <davem@davemloft.net>,
+    "Eric
+ Dumazet" <edumazet@google.com>,
+    Paolo Abeni <pabeni@redhat.com>,
+    "Willem de
+ Bruijn" <willemdebruijn.kernel@gmail.com>,
+    David Ahern <dsahern@kernel.org>,
+    Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>,
+    "linux-mm@kvack.org" <linux-mm@kvack.org>,
+    "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+    Chuck Lever <chuck.lever@oracle.com>,
+    "Boris
+ Pismenny" <borisp@nvidia.com>,
+    John Fastabend <john.fastabend@gmail.com>,
+    Christoph Hellwig <hch@infradead.org>
+Subject: Re: Bug in short splice to socket?
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230602103750.2290132-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20230602103750.2290132-1-vladimir.oltean@nxp.com>
-From: Jamal Hadi Salim <jhs@mojatatu.com>
-Date: Mon, 5 Jun 2023 11:44:17 -0400
-Message-ID: <CAM0EoMnqscw=OfWzyEKV10qFW5+EFMd5JWZxPSPCod3TvqpnuQ@mail.gmail.com>
-Subject: Re: [PATCH RESEND net-next 0/5] Improve the taprio qdisc's
- relationship with its children
-To: Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>, 
-	Vinicius Costa Gomes <vinicius.gomes@intel.com>, linux-kernel@vger.kernel.org, 
-	intel-wired-lan@lists.osuosl.org, 
-	Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>, Peilin Ye <yepeilin.cs@gmail.com>, 
-	Pedro Tammela <pctammela@mojatatu.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1732083.1685980332.1@warthog.procyon.org.uk>
+Date: Mon, 05 Jun 2023 16:52:12 +0100
+Message-ID: <1732084.1685980332@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 2, 2023 at 6:38=E2=80=AFAM Vladimir Oltean <vladimir.oltean@nxp=
-.com> wrote:
->
-> [ Original patch set was lost due to an apparent transient problem with
-> kernel.org's DNSBL setup. This is an identical resend. ]
->
-> Prompted by Vinicius' request to consolidate some child Qdisc
-> dereferences in taprio:
-> https://lore.kernel.org/netdev/87edmxv7x2.fsf@intel.com/
->
-> I remembered that I had left some unfinished work in this Qdisc, namely
-> commit af7b29b1deaa ("Revert "net/sched: taprio: make qdisc_leaf() see
-> the per-netdev-queue pfifo child qdiscs"").
->
-> This patch set represents another stab at, essentially, what's in the
-> title. Not only does taprio not properly detect when it's grafted as a
-> non-root qdisc, but it also returns incorrect per-class stats.
-> Eventually, Vinicius' request is addressed too, although in a different
-> form than the one he requested (which was purely cosmetic).
->
-> Review from people more experienced with Qdiscs than me would be
-> appreciated. I tried my best to explain what I consider to be problems.
+David Laight <David.Laight@ACULAB.COM> wrote:
 
-I havent been following - but if you show me sample intended tc
-configs for both s/w and hardware offloads i can comment.
+> > > However, this might well cause a malfunction in UDP, for example.
+> > > MSG_MORE corks the current packet, so if I ask sendfile() say shove 32K
+> > > into a packet, if, say, 16K is read from the source and entirely
+> > > transcribed into the packet,
+> > 
+> > If you use splice() for UDP, I don't think you would normally expect
+> > to get all that well-defined packet boundaries.
+> 
+> Especially since (assuming I've understood other bits of this thread)
+> the splice() can get split into multiple sendmsg() calls for other
+> reasons.
 
-In my cursory look i assumed you wanted to go along the path of mqprio
-where nothing much happens in the s/w datapath other than requeues
-when the tx hardware path is busy (notice it is missing an
-enqueue/deque ops). In that case the hardware selection is essentially
-of a DMA ring based on skb tags. It seems you took it up a notch by
-infact having a choice of whether to have pure s/w or offload path.
+Yes - with SPLICE_F_MORE/MSG_MORE set on all but the last piece.  The issue is
+what happens if the input side gets a premature EOF after we've passed a chunk
+with MSG_MORE set when the caller didn't indicate SPLICE_F_MORE?
 
-cheers,
-jamal
-> I am deliberately targeting net-next because the changes are too
-> invasive for net - they were reverted from stable once already.
->
-> Vladimir Oltean (5):
->   net/sched: taprio: don't access q->qdiscs[] in unoffloaded mode during
->     attach()
->   net/sched: taprio: keep child Qdisc refcount elevated at 2 in offload
->     mode
->   net/sched: taprio: try again to report q->qdiscs[] to qdisc_leaf()
->   net/sched: taprio: delete misleading comment about preallocating child
->     qdiscs
->   net/sched: taprio: dump class stats for the actual q->qdiscs[]
->
->  net/sched/sch_taprio.c | 60 ++++++++++++++++++++++++------------------
->  1 file changed, 35 insertions(+), 25 deletions(-)
->
-> --
-> 2.34.1
->
+> What semantics are you trying to implement for AF_TLS?
+
+As I understand it, deasserting MSG_MORE causes a record boundary to be
+interposed on TLS.
+
+> MSG_MORE has different effects on different protocols.
+
+Do you mean "different protocols" in relation to TLS specifically? Software vs
+device vs device-specific like Chelsio-TLS?
+
+> For UDP the next data is appended to the datagram being built.
+> (This is really pretty pointless, doing it in the caller will be faster!)
+
+Splice with SPLICE_F_MORE seems to work the same as sendmsg with MSG_MORE
+here.  You get an error if you try to append with splice or sendmsg more than
+a single packet will hold.
+
+> For TCP it stops the pending data being sent immediately.
+> And more data is appended.
+> I'm pretty sure it gets sent on timeout.
+
+Yeah - corking is used by some network filesystem protocols, presumably to
+better place RPC messages into TCP packets.
+
+> For SCTP the data chunk created for the sendmsg() isn't sent immediately.
+> Any more sendmsg(MSG_MORE) get queued until a full ethernet packet
+> is buffered.
+> The pending data is sent on timeout.
+> This is pretty much the only way to get two (or more) DATA chunks
+> into an ethernet frame when Nagle is disabled.
+
+SCTP doesn't support sendpage, so that's not an issue.
+
+> But I get the impression AF_TLS is deciding not to encode/send
+> the data because 'there isn't enough'.
+> That seems wrong.
+> 
+> Note that you can't use a zero length sendmsg() to flush pending
+> data - if there is no pending data some protocols will send a 
+> zero length data message.
+> A socket option/ioctl (eg UNCORK) could be (ab)used to force
+> queued data be sent.
+
+Yeah - I've changed that, see v4.  I've implemented Linus's ->splice_eof()
+idea.
+
+David
+
 
