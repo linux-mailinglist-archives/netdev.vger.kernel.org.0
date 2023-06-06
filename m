@@ -1,92 +1,71 @@
-Return-Path: <netdev+bounces-8444-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8445-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 75141724140
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 13:43:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 0B5D272415C
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 13:56:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E12411C20ECF
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:43:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 321F71C20F43
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:56:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C017B15AFE;
-	Tue,  6 Jun 2023 11:43:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D8D0916406;
+	Tue,  6 Jun 2023 11:56:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B47F315AD2
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 11:43:24 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E97F10D9
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 04:43:19 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE90D15ACE
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 11:56:46 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 232DDE47
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 04:56:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686051798;
+	s=mimecast20190719; t=1686052604;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0iOkAk95XE8FQwpIhnDE1IKjJKk6zhtO1ZOnSmwwQSI=;
-	b=PJrVf1sI8+0PXEVw8bdqbq4eoJ6s2K3v5C19czWzrKlnTjVgk5LXV2rq43t9/lqE8/a8gk
-	yVhFiR+d2NpgsDzqaStxUJAgVgTM2HYf2TnY9Cq8CSvZOI42etFmBUApSNqdb14TlBjk3/
-	xknfO+kMw0aC5/rX59kTTFqEN9x5ZEw=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-541-Bc012nv-NeqiiCkWIuJD8A-1; Tue, 06 Jun 2023 07:43:17 -0400
-X-MC-Unique: Bc012nv-NeqiiCkWIuJD8A-1
-Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-626204b0663so10975136d6.1
-        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 04:43:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686051797; x=1688643797;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0iOkAk95XE8FQwpIhnDE1IKjJKk6zhtO1ZOnSmwwQSI=;
-        b=Oc76q3SQV41KC/AgauTJgEjta3C0oyWwUzavuaDMJWiJO6ZNQGPEH0Zji8rf0dWJBU
-         vvd5Dq8b+2/7NPGaQqQL8Nj4Ztvyeoe5BXu9bxx6N5eU6dzwgLUO7jJQwf0mBL/5Cs6g
-         8lh6MGKsnUfYyTf6fzlXPRlbScuL24O4w6rUMk/Wcf5J//y1GJbdWWMFdIXL0KpdFSKy
-         pJCs0zNAtDaf/DRJ8yOWmE0Of9p//GH32L3P4xbxgXe6xdK4zhqN/n3dygBxwBZEm1hx
-         pRpzQ3S8UHjGGS92kMH7RxYBpOh7pOxM+hGHqI/n4IJY6WfUpqij45mDKoeSpAa7GrVC
-         XxVA==
-X-Gm-Message-State: AC+VfDzzyiUs5lUxN9k1U0MLiX5eoq3XaGCjQjshz6mGm5Jc2Sj+gzer
-	xNTd0gZ14YrdqxxDe1dTu0J+x5+rODOR8nAcQVk3BCZBguVDc7YgE/MfZb76AdBkCjmobo+TszB
-	HETXmxZdlpPAzZe7y
-X-Received: by 2002:ad4:5ba3:0:b0:61b:73b2:85ca with SMTP id 3-20020ad45ba3000000b0061b73b285camr1881468qvq.5.1686051796874;
-        Tue, 06 Jun 2023 04:43:16 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ61p1vk3RjEBKS2PqfFs3Br6L/1FIQ6CTrfW33hVbFPA/Ryxr+gq3ovb1lFdTIclm2YApTUtw==
-X-Received: by 2002:ad4:5ba3:0:b0:61b:73b2:85ca with SMTP id 3-20020ad45ba3000000b0061b73b285camr1881461qvq.5.1686051796640;
-        Tue, 06 Jun 2023 04:43:16 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-114-89.dyn.eolo.it. [146.241.114.89])
-        by smtp.gmail.com with ESMTPSA id j6-20020a056214032600b00626137a0b95sm5292387qvu.96.2023.06.06.04.43.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jun 2023 04:43:16 -0700 (PDT)
-Message-ID: <21755d7f0d8bb51f748e65dde09986665c439341.camel@redhat.com>
-Subject: Re: [ovs-dev] [PATCH net] net: openvswitch: fix upcall counter
- access before allocation
-From: Paolo Abeni <pabeni@redhat.com>
-To: Simon Horman <horms@kernel.org>, Eelco Chaudron <echaudro@redhat.com>
-Cc: Simon Horman <simon.horman@corigine.com>, dev@openvswitch.org, 
- netdev@vger.kernel.org, edumazet@google.com, kuba@kernel.org,
- davem@davemloft.net
-Date: Tue, 06 Jun 2023 13:43:13 +0200
-In-Reply-To: <ZH3zUdkxvxgaYjxf@kernel.org>
-References: <168595558535.1618839.4634246126873842766.stgit@ebuild>
-	 <ZH3X/lLNwfAIZfdq@corigine.com>
-	 <FD16AC44-E1DA-4E6A-AE3E-905D55AB1A7D@redhat.com>
-	 <ZH3eCENbZeSJ3MZS@corigine.com>
-	 <69E863E6-89C0-4AC7-85F1-022451CAD41A@redhat.com>
-	 <ZH3zUdkxvxgaYjxf@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=AVi2jOX5sx0HcyFFKbxiEGxS7O0tlDZzrMIDcTAF4AY=;
+	b=PATzA7mioTfNDWB1oOouqWpq8dCy/iNc18o5EYSnodQRrr7fNwx91eLw3iaPXV8GGPMwYI
+	D5yz+iV5gF49gsjvzNZCwPxEYiAKTOxQKQ31l4o4G6mDyvBtl0q3AkVSj/8H9+l3j2V6hg
+	RWUzqjVRgjv+iNdlCrrQT6Q1Adop1JA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-92-ZxC7fLJ9MmGaLY3ILVqhxQ-1; Tue, 06 Jun 2023 07:56:40 -0400
+X-MC-Unique: ZxC7fLJ9MmGaLY3ILVqhxQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 75D611C04189;
+	Tue,  6 Jun 2023 11:56:40 +0000 (UTC)
+Received: from ebuild.redhat.com (unknown [10.39.195.16])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id DB710C1603B;
+	Tue,  6 Jun 2023 11:56:38 +0000 (UTC)
+From: Eelco Chaudron <echaudro@redhat.com>
+To: netdev@vger.kernel.org
+Cc: pshelar@ovn.org,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	dev@openvswitch.org,
+	aconole@redhat.com,
+	simon.horman@corigine.com
+Subject: [PATCH net v2] net: openvswitch: fix upcall counter access before allocation
+Date: Tue,  6 Jun 2023 13:56:35 +0200
+Message-Id: <168605257118.1677939.2593213990325886393.stgit@ebuild>
+User-Agent: StGit/1.5
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -94,26 +73,167 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, 2023-06-05 at 16:38 +0200, Simon Horman wrote:
-> On Mon, Jun 05, 2023 at 03:53:59PM +0200, Eelco Chaudron wrote:
-> > > Yeah, I see that. And I might have done the same thing.
-> > > But, OTOH, this change is making the error path more complex
-> > > (or at least more prone to error).
-> > >=20
-> > > In any case, the fix looks good.
-> >=20
-> > Thanks, just to clarify if we get no further feedback on this
-> > patch, do you prefer a v2 with the error path changes?
->=20
-> Thanks Eelco,
->=20
-> Yes, that is my preference.
+Currently, the per cpu upcall counters are allocated after the vport is
+created and inserted into the system. This could lead to the datapath
+accessing the counters before they are allocated resulting in a kernel
+Oops.
 
-I concur with Simon: Eelco, please post a v2 including the error path
-changes.
+Here is an example:
 
-Thanks!
+  PID: 59693    TASK: ffff0005f4f51500  CPU: 0    COMMAND: "ovs-vswitchd"
+   #0 [ffff80000a39b5b0] __switch_to at ffffb70f0629f2f4
+   #1 [ffff80000a39b5d0] __schedule at ffffb70f0629f5cc
+   #2 [ffff80000a39b650] preempt_schedule_common at ffffb70f0629fa60
+   #3 [ffff80000a39b670] dynamic_might_resched at ffffb70f0629fb58
+   #4 [ffff80000a39b680] mutex_lock_killable at ffffb70f062a1388
+   #5 [ffff80000a39b6a0] pcpu_alloc at ffffb70f0594460c
+   #6 [ffff80000a39b750] __alloc_percpu_gfp at ffffb70f05944e68
+   #7 [ffff80000a39b760] ovs_vport_cmd_new at ffffb70ee6961b90 [openvswitch]
+   ...
 
-Paolo
+  PID: 58682    TASK: ffff0005b2f0bf00  CPU: 0    COMMAND: "kworker/0:3"
+   #0 [ffff80000a5d2f40] machine_kexec at ffffb70f056a0758
+   #1 [ffff80000a5d2f70] __crash_kexec at ffffb70f057e2994
+   #2 [ffff80000a5d3100] crash_kexec at ffffb70f057e2ad8
+   #3 [ffff80000a5d3120] die at ffffb70f0628234c
+   #4 [ffff80000a5d31e0] die_kernel_fault at ffffb70f062828a8
+   #5 [ffff80000a5d3210] __do_kernel_fault at ffffb70f056a31f4
+   #6 [ffff80000a5d3240] do_bad_area at ffffb70f056a32a4
+   #7 [ffff80000a5d3260] do_translation_fault at ffffb70f062a9710
+   #8 [ffff80000a5d3270] do_mem_abort at ffffb70f056a2f74
+   #9 [ffff80000a5d32a0] el1_abort at ffffb70f06297dac
+  #10 [ffff80000a5d32d0] el1h_64_sync_handler at ffffb70f06299b24
+  #11 [ffff80000a5d3410] el1h_64_sync at ffffb70f056812dc
+  #12 [ffff80000a5d3430] ovs_dp_upcall at ffffb70ee6963c84 [openvswitch]
+  #13 [ffff80000a5d3470] ovs_dp_process_packet at ffffb70ee6963fdc [openvswitch]
+  #14 [ffff80000a5d34f0] ovs_vport_receive at ffffb70ee6972c78 [openvswitch]
+  #15 [ffff80000a5d36f0] netdev_port_receive at ffffb70ee6973948 [openvswitch]
+  #16 [ffff80000a5d3720] netdev_frame_hook at ffffb70ee6973a28 [openvswitch]
+  #17 [ffff80000a5d3730] __netif_receive_skb_core.constprop.0 at ffffb70f06079f90
+
+We moved the per cpu upcall counter allocation to the existing vport
+alloc and free functions to solve this.
+
+Fixes: 95637d91fefd ("net: openvswitch: release vport resources on failure")
+Fixes: 1933ea365aa7 ("net: openvswitch: Add support to count upcall packets")
+Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+---
+
+v2: - Cleaned up error handling as Simon suggested.
+
+ net/openvswitch/datapath.c |   19 -------------------
+ net/openvswitch/vport.c    |   18 ++++++++++++++++--
+ 2 files changed, 16 insertions(+), 21 deletions(-)
+
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index fcee6012293b..58f530f60172 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -236,9 +236,6 @@ void ovs_dp_detach_port(struct vport *p)
+ 	/* First drop references to device. */
+ 	hlist_del_rcu(&p->dp_hash_node);
+ 
+-	/* Free percpu memory */
+-	free_percpu(p->upcall_stats);
+-
+ 	/* Then destroy it. */
+ 	ovs_vport_del(p);
+ }
+@@ -1858,12 +1855,6 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 		goto err_destroy_portids;
+ 	}
+ 
+-	vport->upcall_stats = netdev_alloc_pcpu_stats(struct vport_upcall_stats_percpu);
+-	if (!vport->upcall_stats) {
+-		err = -ENOMEM;
+-		goto err_destroy_vport;
+-	}
+-
+ 	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
+ 				   info->snd_seq, 0, OVS_DP_CMD_NEW);
+ 	BUG_ON(err < 0);
+@@ -1876,8 +1867,6 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	ovs_notify(&dp_datapath_genl_family, reply, info);
+ 	return 0;
+ 
+-err_destroy_vport:
+-	ovs_dp_detach_port(vport);
+ err_destroy_portids:
+ 	kfree(rcu_dereference_raw(dp->upcall_portids));
+ err_unlock_and_destroy_meters:
+@@ -2322,12 +2311,6 @@ static int ovs_vport_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 		goto exit_unlock_free;
+ 	}
+ 
+-	vport->upcall_stats = netdev_alloc_pcpu_stats(struct vport_upcall_stats_percpu);
+-	if (!vport->upcall_stats) {
+-		err = -ENOMEM;
+-		goto exit_unlock_free_vport;
+-	}
+-
+ 	err = ovs_vport_cmd_fill_info(vport, reply, genl_info_net(info),
+ 				      info->snd_portid, info->snd_seq, 0,
+ 				      OVS_VPORT_CMD_NEW, GFP_KERNEL);
+@@ -2345,8 +2328,6 @@ static int ovs_vport_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	ovs_notify(&dp_vport_genl_family, reply, info);
+ 	return 0;
+ 
+-exit_unlock_free_vport:
+-	ovs_dp_detach_port(vport);
+ exit_unlock_free:
+ 	ovs_unlock();
+ 	kfree_skb(reply);
+diff --git a/net/openvswitch/vport.c b/net/openvswitch/vport.c
+index 7e0f5c45b512..972ae01a70f7 100644
+--- a/net/openvswitch/vport.c
++++ b/net/openvswitch/vport.c
+@@ -124,6 +124,7 @@ struct vport *ovs_vport_alloc(int priv_size, const struct vport_ops *ops,
+ {
+ 	struct vport *vport;
+ 	size_t alloc_size;
++	int err;
+ 
+ 	alloc_size = sizeof(struct vport);
+ 	if (priv_size) {
+@@ -135,17 +136,29 @@ struct vport *ovs_vport_alloc(int priv_size, const struct vport_ops *ops,
+ 	if (!vport)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	vport->upcall_stats = netdev_alloc_pcpu_stats(struct vport_upcall_stats_percpu);
++	if (!vport->upcall_stats) {
++		err = -ENOMEM;
++		goto err_kfree_vport;
++	}
++
+ 	vport->dp = parms->dp;
+ 	vport->port_no = parms->port_no;
+ 	vport->ops = ops;
+ 	INIT_HLIST_NODE(&vport->dp_hash_node);
+ 
+ 	if (ovs_vport_set_upcall_portids(vport, parms->upcall_portids)) {
+-		kfree(vport);
+-		return ERR_PTR(-EINVAL);
++		err = -EINVAL;
++		goto err_free_percpu;
+ 	}
+ 
+ 	return vport;
++
++err_free_percpu:
++	free_percpu(vport->upcall_stats);
++err_kfree_vport:
++	kfree(vport);
++	return ERR_PTR(err);
+ }
+ EXPORT_SYMBOL_GPL(ovs_vport_alloc);
+ 
+@@ -165,6 +178,7 @@ void ovs_vport_free(struct vport *vport)
+ 	 * it is safe to use raw dereference.
+ 	 */
+ 	kfree(rcu_dereference_raw(vport->upcall_portids));
++	free_percpu(vport->upcall_stats);
+ 	kfree(vport);
+ }
+ EXPORT_SYMBOL_GPL(ovs_vport_free);
 
 
