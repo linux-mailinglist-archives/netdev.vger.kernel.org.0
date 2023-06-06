@@ -1,39 +1,39 @@
-Return-Path: <netdev+bounces-8507-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8508-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A0F637245B8
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 16:22:33 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id EBA817245BA
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 16:22:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1213A1C20A08
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 14:22:30 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A67F6280FFD
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 14:22:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 56B972DBCB;
-	Tue,  6 Jun 2023 14:21:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 216E82DBD5;
+	Tue,  6 Jun 2023 14:21:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CDB737B71
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 14:21:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 175C337B71
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 14:21:58 +0000 (UTC)
 Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC222E78;
-	Tue,  6 Jun 2023 07:21:54 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F7AE6E;
+	Tue,  6 Jun 2023 07:21:56 -0700 (PDT)
 X-GND-Sasl: maxime.chevallier@bootlin.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1686061313;
+	t=1686061315;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=zTsUPxX5JlG8pNvfHUdTE26pyVIUcwJBtGhnOrSoCew=;
-	b=Lf9ryONeXllUx+y4UnnpxTOBWaSY3Mu+sF4cqKHkWFe5PsvljjEO9gMDIThxE6CRG6QEQB
-	XOc7hkCId3+f7/fZhrFflV0JJvNV60qyhLdqyN7fJonyzDbwjAo4MZ3+JAr/4KUlKeKkqQ
-	I1Bk9Yp1buLsrgVNAjFg9xde1WOG+Ycb8xaMxWJhF5/X6Nzz4QBQyJPrlpKij5wUO2PibU
-	VwRuRZk2lix8GHIHSO67HQT/hclmhZxCNXWHsr8ft4ggPdpnpi17/M1LO7hufMVtI9r5r3
-	Zv664s2CUKiFMwr4hW8zVpNcoMVvBeYEMuFC8YjAYOhv2lmr9gvj1YNVMQZ7ew==
+	bh=Aus9EhxnuypVHJz+n+8T0gWLvZSkfscoIF7dmEyGuTs=;
+	b=kLEY0sJMP559X0ta4SVVD/7nI8L471Z1ofzQR6WYY82SbwBigvxuTACNJ6LbFP8yHP3F8n
+	CMNb2m56iQTIlPH9lawzgJmb4EoDmurwraKFoqVA9SUePDXV63kAMvCASSSdLomdfH5RbR
+	kfavFb0foudEEH56LEwMFfcLXrb+vg4DHUsw4+C7BEHDCJ2ieN/F5A+yv+EOlf0nn9ok4B
+	bZAwdI9hpiU/B3Ulnhyzrfwx+ypz70YQQbmlx/QbRJv8peAGiK1bvE/t6zBUsSlpRGAaJv
+	cdJuGevorfpimNWAvud7fmhUsbx1tMYo2YDZa53N9JEB+1KhSIsdBhXd6zf1vA==
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
@@ -55,8 +55,9 @@ X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 3D18AC0009;
-	Tue,  6 Jun 2023 14:21:51 +0000 (UTC)
+X-GND-Sasl: maxime.chevallier@bootlin.com
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 997DFC0012;
+	Tue,  6 Jun 2023 14:21:53 +0000 (UTC)
 From: Maxime Chevallier <maxime.chevallier@bootlin.com>
 To: davem@davemloft.net
 Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
@@ -79,10 +80,11 @@ Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
 	Jose Abreu <joabreu@synopsys.com>,
 	Alexandre Torgue <alexandre.torgue@foss.st.com>,
 	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-	Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v2 2/3] net: altera_tse: Use the correct Kconfig option for the PCS_LYNX depenency
-Date: Tue,  6 Jun 2023 16:21:43 +0200
-Message-Id: <20230606142144.308675-3-maxime.chevallier@bootlin.com>
+	Simon Horman <simon.horman@corigine.com>,
+	Russell King <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH net-next v2 3/3] net: stmmac: make the pcs_lynx cleanup sequence specific to dwmac_socfpga
+Date: Tue,  6 Jun 2023 16:21:44 +0200
+Message-Id: <20230606142144.308675-4-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230606142144.308675-1-maxime.chevallier@bootlin.com>
 References: <20230606142144.308675-1-maxime.chevallier@bootlin.com>
@@ -100,30 +102,87 @@ X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Use the correct Kconfig dependency for altera_tse as PCS_ALTERA_TSE was
-replaced by PCS_LYNX.
+So far, only the dwmac_socfpga variant of stmmac uses PCS Lynx. Use a
+dedicated cleanup sequence for dwmac_socfpga instead of using the
+generic stmmac one.
 
-Fixes: db48abbaa18e ("net: ethernet: altera-tse: Convert to mdio-regmap and use PCS Lynx")
+Fixes: 5d1f3fe7d2d5 ("net: stmmac: dwmac-sogfpga: use the lynx pcs driver")
+Suggested-By: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 ---
 V1->V2 : New patch
 
- drivers/net/ethernet/altera/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/common.h      |  1 -
+ .../net/ethernet/stmicro/stmmac/dwmac-socfpga.c   | 15 ++++++++++++++-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c |  3 ---
+ 3 files changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/altera/Kconfig b/drivers/net/ethernet/altera/Kconfig
-index 93533ba03429..17985319088c 100644
---- a/drivers/net/ethernet/altera/Kconfig
-+++ b/drivers/net/ethernet/altera/Kconfig
-@@ -4,7 +4,7 @@ config ALTERA_TSE
- 	depends on HAS_DMA
- 	select PHYLIB
- 	select PHYLINK
--	select PCS_ALTERA_TSE
-+	select PCS_LYNX
- 	select MDIO_REGMAP
- 	select REGMAP_MMIO
- 	help
+diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
+index 52c5ec553276..16e67c18b6f7 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/common.h
++++ b/drivers/net/ethernet/stmicro/stmmac/common.h
+@@ -16,7 +16,6 @@
+ #include <linux/stmmac.h>
+ #include <linux/phy.h>
+ #include <linux/pcs/pcs-xpcs.h>
+-#include <linux/pcs-lynx.h>
+ #include <linux/module.h>
+ #if IS_ENABLED(CONFIG_VLAN_8021Q)
+ #define STMMAC_VLAN_TAG_USED
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+index e399fccbafe5..ad66e128bff9 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+@@ -11,6 +11,7 @@
+ #include <linux/phy.h>
+ #include <linux/regmap.h>
+ #include <linux/mdio/mdio-regmap.h>
++#include <linux/pcs-lynx.h>
+ #include <linux/reset.h>
+ #include <linux/stmmac.h>
+ 
+@@ -494,6 +495,18 @@ static int socfpga_dwmac_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+ 
++static void socfpga_dwmac_remove(struct platform_device *pdev)
++{
++	struct net_device *ndev = platform_get_drvdata(pdev);
++	struct stmmac_priv *priv = netdev_priv(ndev);
++	struct phylink_pcs *pcs = priv->hw->lynx_pcs;
++
++	stmmac_pltfr_remove(pdev);
++
++	lynx_pcs_destroy(pcs);
++}
++
++
+ #ifdef CONFIG_PM_SLEEP
+ static int socfpga_dwmac_resume(struct device *dev)
+ {
+@@ -565,7 +578,7 @@ MODULE_DEVICE_TABLE(of, socfpga_dwmac_match);
+ 
+ static struct platform_driver socfpga_dwmac_driver = {
+ 	.probe  = socfpga_dwmac_probe,
+-	.remove_new = stmmac_pltfr_remove,
++	.remove_new = socfpga_dwmac_remove,
+ 	.driver = {
+ 		.name           = "socfpga-dwmac",
+ 		.pm		= &socfpga_dwmac_pm_ops,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+index c784a6731f08..3db1cb0fd160 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+@@ -665,9 +665,6 @@ int stmmac_mdio_unregister(struct net_device *ndev)
+ 	if (priv->hw->xpcs)
+ 		xpcs_destroy(priv->hw->xpcs);
+ 
+-	if (priv->hw->lynx_pcs)
+-		lynx_pcs_destroy(priv->hw->lynx_pcs);
+-
+ 	mdiobus_unregister(priv->mii);
+ 	priv->mii->priv = NULL;
+ 	mdiobus_free(priv->mii);
 -- 
 2.40.1
 
