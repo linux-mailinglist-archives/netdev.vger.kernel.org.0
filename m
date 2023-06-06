@@ -1,76 +1,105 @@
-Return-Path: <netdev+bounces-8521-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8522-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 305DB724726
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 17:01:37 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 99D5F72472E
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 17:04:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 63EB5281082
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 15:01:35 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F02E11C20A17
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 15:04:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BA0AF23C72;
-	Tue,  6 Jun 2023 15:01:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BE6DC2109A;
+	Tue,  6 Jun 2023 15:04:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B06D137B97
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 15:01:10 +0000 (UTC)
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050:0:465::201])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D6F10DF
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 08:00:50 -0700 (PDT)
-Received: from smtp202.mailbox.org (smtp202.mailbox.org [IPv6:2001:67c:2050:b231:465::202])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4QbDDv2nyMz9sq3;
-	Tue,  6 Jun 2023 17:00:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-	s=MBO0001; t=1686063647;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=xEZNkj4eEFVqk30LZ5kudZsuu376FvQRvCQXB5PhLAw=;
-	b=f5mbJs2VGtzl6O/DxpGUgfraO+QfMFpTHd/k8P+y5jj11uLGZTv4T5WW1BPQ1MVGjk0u/Z
-	pDSQ4LCIAOfiba7AzhWuan4BEkX/OQcZrFoOMBucwnOvynVS96zzKCrWv9Mt+qT3zgSsyC
-	0UbCUM4rLyIeX7+e7+POgdgEv4Td/uZEa+eb7dV6mOrpmDzgZre2Hlr9vSqYZUzuTsKWsd
-	BP4qTfVEQou5WRjLi3kXlLFo4poIGB7708efUr6zQpOjI8Us8BYJ0x6N1XEuTIdD4VHzNH
-	kQlrcYgPaVv62LNkJ8hsegdTEdR3ycRB7UUIyIuHq2G5LUef1XccVbXyK0yKeA==
-References: <20230510-dcb-rewr-v3-0-60a766f72e61@microchip.com>
- <20230510-dcb-rewr-v3-1-60a766f72e61@microchip.com>
-From: Petr Machata <me@pmachata.org>
-To: Daniel Machon <daniel.machon@microchip.com>
-Cc: netdev@vger.kernel.org, dsahern@kernel.org, stephen@networkplumber.org,
- petrm@nvidia.com, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH iproute2-next v3 01/12] dcb: app: add new dcbnl
- attribute field
-Date: Tue, 06 Jun 2023 17:00:36 +0200
-In-reply-to: <20230510-dcb-rewr-v3-1-60a766f72e61@microchip.com>
-Message-ID: <87fs7463fm.fsf@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0E7A37B97
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 15:04:03 +0000 (UTC)
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3237EB0
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 08:04:02 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id 5b1f17b1804b1-3f70fc4682aso54137355e9.1
+        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 08:04:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686063840; x=1688655840;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dHvIdPwB/BrRaOe4zEURclmNORaYsg2Ls6xxuspe6oE=;
+        b=VB4K6hcoa2Q3fjB++LmauxTbURUq5ITRbQGEAYf3AT8fRymDOKsqv7M04tapOZVKrh
+         7Sb6ikfoPOQy0XMSY9bylPKl2an6FldJixCAQvW8fbsDcuUAGYGkWXipDTrMaCaqSvbJ
+         pUO1ltwHlpJjV7x0DprFoMER0prQAmxbeGmg7kYk5aem0yiuICM1O23NNQ+ETEEibtGe
+         pBV7yQUKQOHja31GptT/bMD5J9ViD+pShcRkwaQTnyRfM9LbAJw3bZUElcHuLFk0YvXS
+         qhfISLF1eGUqhWDP5BYXkXhx15CArSEyxHkreOAyaIBzJJMGDdt9QAkV4kYTPcq+UI0j
+         GaWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686063840; x=1688655840;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dHvIdPwB/BrRaOe4zEURclmNORaYsg2Ls6xxuspe6oE=;
+        b=IOhNLAfijrl493C4yhTGstNJydIPZF92NBxkr/7KKInfqnDcUR6j0jli32HqIuUr7g
+         kKQljXeKGRKjI2VeEq4jOlH74rLQlWhdRxB/PRlcvjO9wbA3HpQuqky2J/nCW0+G+kYi
+         72YDuxVjljdPt5b5/F1T4wxLF88nRjccW09vgNK2TfMIyVxExmlmLlcytqmevsrl+J3I
+         4VHSJLkqt67eVzm6PUCQm96NEMr6l4vupzwOcTipx7HetINQlip1vAJQJz9C3N9vunDY
+         +jHEVdzpuc17AWxVCSA7DE/c8IyzGyweGp2lBD9NRXh8UAzLgwXnOAecMNTpeXZBioxT
+         4lZw==
+X-Gm-Message-State: AC+VfDyCB3t55iJgoy7TzTp4XaoCxz7s/18PxOj6jhuEaSa97vRdkX7v
+	vTeedErMJJ6/fZJxKYCVZIM=
+X-Google-Smtp-Source: ACHHUZ4y0+A+ZaS7iBd3zBt0zOShp+1uI6QNEjoXeyqnJAqrcHysKXPbQ6M37d6ei32S+YJvUjE3Gg==
+X-Received: by 2002:a7b:ca58:0:b0:3f1:70a2:ceb5 with SMTP id m24-20020a7bca58000000b003f170a2ceb5mr2372728wml.13.1686063840500;
+        Tue, 06 Jun 2023 08:04:00 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id c18-20020adfed92000000b0030ae499da59sm12861282wro.111.2023.06.06.08.03.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Jun 2023 08:04:00 -0700 (PDT)
+Subject: Re: [PATCH net-next 6/6] sfc: generate encap headers for TC offload
+To: Hao Lan <lanhao@huawei.com>, edward.cree@amd.com,
+ linux-net-drivers@amd.com, davem@davemloft.net, kuba@kernel.org,
+ pabeni@redhat.com, edumazet@google.com
+Cc: netdev@vger.kernel.org, habetsm.xilinx@gmail.com
+References: <cover.1685992503.git.ecree.xilinx@gmail.com>
+ <672e66e6a4cf0f54917eddbca7c27a6f0d2823bf.1685992503.git.ecree.xilinx@gmail.com>
+ <dd491618-6a36-ee7a-0581-c533fa245ce9@huawei.com>
+From: Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <5a26664a-56a4-5424-f2a9-a429633607c3@gmail.com>
+Date: Tue, 6 Jun 2023 16:03:59 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Rspamd-Queue-Id: 4QbDDv2nyMz9sq3
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+In-Reply-To: <dd491618-6a36-ee7a-0581-c533fa245ce9@huawei.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On 06/06/2023 04:52, Hao Lan wrote:
+> Why do you need to refactor the efx_gen_encap_header function in the same series?
+> I saw that patch 5 defined this function, and patch 6 refactored it,
+> instead of writing it all at once?
 
-Daniel Machon <daniel.machon@microchip.com> writes:
+Patch 5 introduces it only as a stub, because the calling code needs
+ it to exist.  Patch 6 then provides the implementation; this is not
+ a refactoring.
+They're in separate patches to split things up logically for review
+ and to assist future bisection.  Patch 5 is already big and complex
+ without this part.
 
-> Add a new field 'attr' to the dcb_app_table struct, in order to inject
-> different dcbnl get/set attributes for APP and rewrite.
->
-> Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+(Also, please trim your quotes when replying to patches: you only
+ need to quote the part you're commenting on.)
 
-Reviewed-by: Petr Machata <me@pmachata.org>
+-ed
 
