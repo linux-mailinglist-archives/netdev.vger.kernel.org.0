@@ -1,161 +1,356 @@
-Return-Path: <netdev+bounces-8395-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8396-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 06238723E59
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:52:15 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 00320723E88
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:56:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 61A1C2815B4
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:52:13 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 59BF01C20E1C
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:56:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B98762A6E6;
-	Tue,  6 Jun 2023 09:52:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF8A52A6E7;
+	Tue,  6 Jun 2023 09:56:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8B9E294DC
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:52:11 +0000 (UTC)
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2102.outbound.protection.outlook.com [40.107.244.102])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC207E77;
-	Tue,  6 Jun 2023 02:52:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S+5/ksfjVYFka/zA2axv1+NYLRxMWe6kOq7WjE39lMlkEkIHfsUli3H7Qj2ytTNKNRC3JoRQWmbiCwPdAy7tMqZUlUL/EKWPJ8VXfGbu8R2Y1xVwDRzfOWAZE1a3kRN9JB2rDROD/ZiA05fE22HA1U+qVGl+V3WDILBG1FmRdukfDHNKLTZhp96V3CMCBZcVVReW+qwkRxq9xok7FKkpN2HATfPSR3yJuQ1Lcvx81XM/BFPRG0rAE1epE58XOMi+57TQGk4YmgaSiAmD57yUjHuPy8z574qI2NHF1Cee+FqfQf17b/0o/luREYpGWnyU+hl+KQrGhuUpQJNSCgoKHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AEc8Gp935aVOc2UAQrYUn1ViRFIJSpPT27h+pxQHNDU=;
- b=VTkWh9jUdy6OeBcm+HpNeimsmCQb3U84HSK3bRQhlNClbdpA0uBGlgrrBbO57GwCBzj4euYgUjdx/aFInCMZfe/0ioxZ74PQ/Fxla3lnAonN6V4KNwudV4n0Lc0DeAFFE116hUFUMD3JLRq6G7gVE+/BzcDfkvZYzm4cccER0l+DMFZPow1zxHQfrpmMOc/uJ/TJWFWsXAJExHEQZi+COkD6mVcIIYnD3hazbi+X//M7taXsKSZm/0UlOKPxhVn4TIbx2C6ypCp1eL7PWbUMsJTb1VWJqhS6RCWQ+Y8cJ2IHG9hpM9hAH4dIDtAHYJOZBDSoREN/jMtUNoD1Tudeog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AEc8Gp935aVOc2UAQrYUn1ViRFIJSpPT27h+pxQHNDU=;
- b=uZB3vxtRhb3KnnQKf3s2745QC7ofQpPROnG9J30PgUJSwu8Wvcz5RnCMSnaygmJCBTbOUAF+14e9THXY+9EJU7ItRiNnR/fNXLQajnuwTXa2O+UGke7dFrD9WBUL57ASarCf/PIXIMAWhoRNR+3WmKbp4eZjNaBzUnq6F3nbbI0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MN2PR13MB3928.namprd13.prod.outlook.com (2603:10b6:208:26d::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.27; Tue, 6 Jun
- 2023 09:52:07 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6455.030; Tue, 6 Jun 2023
- 09:52:06 +0000
-Date: Tue, 6 Jun 2023 11:51:59 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Shradha Gupta <shradhagupta@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	"K. Y. Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-	Long Li <longli@microsoft.com>,
-	Michael Kelley <mikelley@microsoft.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Steen Hegelund <steen.hegelund@microchip.com>,
-	Praveen Kumar <kumarpraveen@linux.microsoft.com>
-Subject: Re: [PATCH v6] hv_netvsc: Allocate rx indirection table size
- dynamically
-Message-ID: <ZH8Bv624GxCf1PKq@corigine.com>
-References: <1685964606-24690-1-git-send-email-shradhagupta@linux.microsoft.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1685964606-24690-1-git-send-email-shradhagupta@linux.microsoft.com>
-X-ClientProxiedBy: AS4P190CA0034.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:5d1::10) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF6A9294DC
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:56:54 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D68E79
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 02:56:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1686045412; x=1717581412;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xEynJz9AB3jf5azRasYeZne2KYih1icg4WDIz7g/rHk=;
+  b=IYZ7wXEAX58mvb1WX4KIG+6atrcbn64KzMvePl17+Qmm8+v7gEqcgIkh
+   FGTSVtPFXvQ79PhyPz/riSded/7+/RCFNVAv6+5zsqkdfbqvCQVgexZgk
+   zsA7pETsfH1QXda4TQAMiP9VuGwcEzRfHTtvIcwZaLCpX1rdVddtiKhff
+   N/PDI3+YnSmGV9Jy7lJTZzUTqN8Czld+yR/bbbE/sYjgomCZ7Wgv+JuQY
+   LSaHDl/AluNHPwIGCtVnyIcSxbLN6yQEkM1WQmirFsQanP20vVtXImYO0
+   VSuBWl/eY60OkWzjEEK+EvlxLJM/zdG0TRaaH1TsXXs/9oZWG7vAXanY8
+   Q==;
+X-IronPort-AV: E=Sophos;i="6.00,219,1681196400"; 
+   d="scan'208";a="219047637"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jun 2023 02:56:51 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Tue, 6 Jun 2023 02:56:50 -0700
+Received: from DEN-LT-70577 (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Tue, 6 Jun 2023 02:56:49 -0700
+Date: Tue, 6 Jun 2023 09:56:48 +0000
+From: Daniel Machon <daniel.machon@microchip.com>
+To: Dave Ertman <david.m.ertman@intel.com>
+CC: <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH net v2 04/10] ice: implement lag netdev event handler
+Message-ID: <20230606095648.xy5d7mdzqyhqwqdg@DEN-LT-70577>
+References: <20230605182258.557933-1-david.m.ertman@intel.com>
+ <20230605182258.557933-5-david.m.ertman@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB3928:EE_
-X-MS-Office365-Filtering-Correlation-Id: f3236244-8913-4f44-0088-08db6673b03b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	VcoaWO1YWiOSFcqaghYq8aRbvNoe6emTNRzEJbhGSVCBW/z7UUNFUiLLHwmiVplD+77xkLg0yMMEIjKiT6UJqT/6APKBoqAVeXB/8uhzAR2CxUJglV93VEepnIK2KSC23lwN0Jo5LhLbJUg/0FwhHj3ccwNy3WzDlVuco1/NV7XhLb7FXA9hvoJSgdVdjIn+kcPc3U5XK0iDhOZH66gi6aCYjTaJ+edLXiftrPD0hmbqGLj380qPmhbrWNpzGX16nMh11fUCWHc9J6nccOe9fY9M3gU/xz+82YL0/NfJdi2sjvANlJgcnu0xO2INZ5hc/Nz7/iFq0pPlq2Ilkl3tHt/PfLidZdPwdZ3mPC/JyWMDAyAFys0YTVcCH63HlHXwKVmmqvS8F9Fxv9krv6yvbUdvRp1wGhZlYUpaOg5oE70US9+AAbi+KFK99/tfbFP4u6QGSHqCoR+GkWwRn0U9kYYoAO3/bYLZHBi3IOFarc/5Mb5aPwbrepMOLyzmiVih69g0wMLVI9/1ZtZU4kIPWwLzi0ThFeFQvCAcTJV7EC50MtAYgNUGZy8pkvqL7Mn2IvHnwg3GU88xCpdUX5PXAWU5NXPax62stDM2OAuLvcw=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(376002)(136003)(396003)(39840400004)(346002)(451199021)(83380400001)(2616005)(36756003)(2906002)(4744005)(38100700002)(966005)(41300700001)(6486002)(6666004)(316002)(4326008)(86362001)(5660300002)(8936002)(8676002)(6916009)(54906003)(478600001)(66556008)(66946007)(66476007)(45080400002)(6512007)(6506007)(186003)(44832011)(7416002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Weqm80Q4snuSZ79NDOeVEp0BfwZJFW7Uzz726tPm7FhGaQoGQ7MGzCxdBgbL?=
- =?us-ascii?Q?3l1YlBH0v+OS1U72Wj96yxN1DlTWjyARju94eh0Mf9JRFuX4DR3pBKoM3aLe?=
- =?us-ascii?Q?ps42uaNKCjKy+Us3Atnx5N3jdUXc9YL/r9pM3aAn2BiSA+2+AhqL2iDAp5jo?=
- =?us-ascii?Q?p+2ROFMDV9ei/zrB4uvbDzkcZIFcYqPZ3rBqfBtxCEOtKnrK4LSx+pES8EpZ?=
- =?us-ascii?Q?6jKNN9ojfzJeXHJdiPaUg+mWtH24epuQXNQBD4/yEi9xpd1wtCAbk6DFnAMH?=
- =?us-ascii?Q?vq9pA3/2wByCs80P8A+Z/+lOzMSgVrUEgAVFL/1h8hcjfOUIywbRxkZfksI6?=
- =?us-ascii?Q?w85Ss4ywIlgS5CILifxvhwmUI2gbaJAqgJY3Kc6dS9LkX5Y0Skv8p2RWpFYc?=
- =?us-ascii?Q?IQHRi2wxYqqu4nUeqemsP0WUsq/xmrPnZLBy8KQvvf4s+dBdlGrpUoFvp512?=
- =?us-ascii?Q?6mGT+4C5ufWiwCozaZe9MKhwPldHig3EDScXzcC68qhmrd0K6QELcBJzLZrR?=
- =?us-ascii?Q?WExbOso/ksE+0ZcFcJzXs3JKV0vH69YAuyksYnCS5WrMY5mhdwcgQmOaj7+y?=
- =?us-ascii?Q?YCDyqVTmjkZ1RG4Zd7SxzTL1tgUrQvTwDw475XHP6AkSr8rFm4T7fKwLHqM+?=
- =?us-ascii?Q?uIocaiRya7pLjQdVakIWjQVNPyhyF8vhkt/xAt3ETPO/umL6/MSM+88MRttF?=
- =?us-ascii?Q?rDUlz+OHBpgMgg9OhXEkm8snQqUDy7td/NSdRdLmf5qJLFlDuT+qMUDYlNOp?=
- =?us-ascii?Q?1QvPUf49+d5opikqQMIu6V25NaJwrkKBjxrxjzOup3X5DNpV7NYGaCzi2cjc?=
- =?us-ascii?Q?tvV5qXXrAe39/P9+cqhcQ1pAcSLorfNAEFCrwXSC16fJQTKxukl3fPIaWHnm?=
- =?us-ascii?Q?X/5MxLYttt+AhDXl1K3lo/pN8Di00CBsAiYlgs8gXYwu6I/KMAaoHsILq0Tp?=
- =?us-ascii?Q?RhNOIaRR+61UAaV49iha0BRyX+ANhOaxzvq7EvI+xlNW0llLMiwm8Vk3rB21?=
- =?us-ascii?Q?BDQT9abDfqDTXNoTChnoMjakaXPUeg35q3+xOVYqtRadZ4CvGHd/6NAKUbGI?=
- =?us-ascii?Q?ELPC3LQQNsOXo500P5fEpAUwea5xalanzCOP8XwYRRULXkjsrsUqt7lVref8?=
- =?us-ascii?Q?xb2cMbJiXcNZlErUVoL0CAdu0Ojd92Qi2abwvaZKHEQ/ccd5MZJNJP9xnolV?=
- =?us-ascii?Q?oIaoRTX+MzufQ9I3ynJgKzUHODMOs7k3QlmWLc9Y1T3Y8rpQO/kklfu6jrCR?=
- =?us-ascii?Q?jbugqw/Gh4RtHIMvt8xboTRQX209cXG9oTE+lbPhd/Rk5Mn9WVqMrdgg18Iu?=
- =?us-ascii?Q?f9Nj+tgSw6j6rA2KC1TXv4pLCdyeufzfuZIJR37raO8eHrqIMNVtZoW13TAh?=
- =?us-ascii?Q?vQjHVVa5RWLBdGJkXI4CrDu2YMrjRWeacW8z6V/JPAfuvw7gN1A6JqiB3EBE?=
- =?us-ascii?Q?qaWmGJrgretOMWBXNCYY53b4l/rFc3W0kfHd2KwQfr8bE4bfkv5G8gbySmli?=
- =?us-ascii?Q?qEXxhlFdQqtkHdU0djc4YOomTZ8oAdxraevaA2LigL+ZjlhmKzDLnbS/NgTc?=
- =?us-ascii?Q?LzpZJUYFt73PJUIrZ/HQcSJSTYJZnyhGHH+W9IXSi0xXUjSVWyeu0eakvF4b?=
- =?us-ascii?Q?J9JZkmTvUJ8jve7hnzvTYwLLsJdtwWmL7b/Gkrj653vArgrYLYTjPMBAsrvm?=
- =?us-ascii?Q?Mg2niw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3236244-8913-4f44-0088-08db6673b03b
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2023 09:52:06.8029
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wdMEEWxTgu6G4bo/lFgrSEKI9kXUZdNX9cLAnurU8Gx/lgytt01u1fcIGrL2VyfTwowP5AC4TTbltrjeitWfOjcHFga3lDyO3Ztfh1UV6bY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3928
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20230605182258.557933-5-david.m.ertman@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-+ Praveen Kumar
-
-On Mon, Jun 05, 2023 at 04:30:06AM -0700, Shradha Gupta wrote:
-> Allocate the size of rx indirection table dynamically in netvsc
-> from the value of size provided by OID_GEN_RECEIVE_SCALE_CAPABILITIES
-> query instead of using a constant value of ITAB_NUM.
+> The event handler for LAG will create a work item to place on the ordered
+> workqueue to be processed.
 > 
-> Signed-off-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
-> Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-> Tested-on: Ubuntu22 (azure VM, SKU size: Standard_F72s_v2)
-> Testcases:
-> 1. ethtool -x eth0 output
-> 2. LISA testcase:PERF-NETWORK-TCP-THROUGHPUT-MULTICONNECTION-NTTTCP-Synthetic
-> 3. LISA testcase:PERF-NETWORK-TCP-THROUGHPUT-MULTICONNECTION-NTTTCP-SRIOV
+> Add in defines for training packets and new recipes to be used by the
+> switching block of the HW for LAG packet steering.
+> 
+> Update the ice_lag struct to reflect the new processing methodology.
+> 
+> Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_lag.c      | 125 ++++++++++++++++--
+>  drivers/net/ethernet/intel/ice/ice_lag.h      |  31 ++++-
+>  drivers/net/ethernet/intel/ice/ice_virtchnl.c |   2 +
+>  3 files changed, 144 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_lag.c b/drivers/net/ethernet/intel/ice/ice_lag.c
+> index 73bfc5cd8b37..529abfb904d0 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_lag.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_lag.c
+> @@ -56,11 +56,10 @@ static void ice_lag_set_backup(struct ice_lag *lag)
+>   */
+>  static void ice_display_lag_info(struct ice_lag *lag)
+>  {
+> -       const char *name, *peer, *upper, *role, *bonded, *primary;
+> +       const char *name, *upper, *role, *bonded, *primary;
+>         struct device *dev = &lag->pf->pdev->dev;
+> 
+>         name = lag->netdev ? netdev_name(lag->netdev) : "unset";
+> -       peer = lag->peer_netdev ? netdev_name(lag->peer_netdev) : "unset";
+>         upper = lag->upper_netdev ? netdev_name(lag->upper_netdev) : "unset";
+>         primary = lag->primary ? "TRUE" : "FALSE";
+>         bonded = lag->bonded ? "BONDED" : "UNBONDED";
+> @@ -82,8 +81,8 @@ static void ice_display_lag_info(struct ice_lag *lag)
+>                 role = "ERROR";
+>         }
+> 
+> -       dev_dbg(dev, "%s %s, peer:%s, upper:%s, role:%s, primary:%s\n", name,
+> -               bonded, peer, upper, role, primary);
+> +       dev_dbg(dev, "%s %s, upper:%s, role:%s, primary:%s\n", name, bonded,
+> +               upper, role, primary);
+>  }
+> 
+>  /**
+> @@ -198,7 +197,6 @@ ice_lag_unlink(struct ice_lag *lag,
+>                 lag->upper_netdev = NULL;
+>         }
+> 
+> -       lag->peer_netdev = NULL;
+>         ice_set_rdma_cap(pf);
+>         lag->bonded = false;
+>         lag->role = ICE_LAG_NONE;
+> @@ -288,6 +286,60 @@ static void ice_lag_changeupper_event(struct ice_lag *lag, void *ptr)
+>         ice_display_lag_info(lag);
+>  }
+> 
+> +/**
+> + * ice_lag_process_event - process a task assigned to the lag_wq
+> + * @work: pointer to work_struct
+> + */
+> +static void ice_lag_process_event(struct work_struct *work)
+> +{
+> +       struct netdev_notifier_changeupper_info *info;
+> +       struct ice_lag_work *lag_work;
+> +       struct net_device *netdev;
+> +       struct list_head *tmp, *n;
+> +       struct ice_pf *pf;
+> +
+> +       lag_work = container_of(work, struct ice_lag_work, lag_task);
+> +       pf = lag_work->lag->pf;
+> +
+> +       mutex_lock(&pf->lag_mutex);
+> +       lag_work->lag->netdev_head = &lag_work->netdev_list.node;
+> +
+> +       switch (lag_work->event) {
+> +       case NETDEV_CHANGEUPPER:
+> +               info = &lag_work->info.changeupper_info;
+> +               if (ice_is_feature_supported(pf, ICE_F_SRIOV_LAG))
+> +                       ice_lag_changeupper_event(lag_work->lag, info);
+> +               break;
+> +       case NETDEV_BONDING_INFO:
+> +               ice_lag_info_event(lag_work->lag, &lag_work->info.bonding_info);
+> +               break;
+> +       case NETDEV_UNREGISTER:
+> +               if (ice_is_feature_supported(pf, ICE_F_SRIOV_LAG)) {
+> +                       netdev = lag_work->info.bonding_info.info.dev;
+> +                       if ((netdev == lag_work->lag->netdev ||
+> +                            lag_work->lag->primary) && lag_work->lag->bonded)
+> +                               ice_lag_unregister(lag_work->lag, netdev);
+> +               }
+> +               break;
+> +       default:
+> +               break;
+> +       }
+> +
+> +       /* cleanup resources allocated for this work item */
+> +       list_for_each_safe(tmp, n, &lag_work->netdev_list.node) {
+> +               struct ice_lag_netdev_list *entry;
+> +
+> +               entry = list_entry(tmp, struct ice_lag_netdev_list, node);
+> +               list_del(&entry->node);
+> +               kfree(entry);
+> +       }
+> +       lag_work->lag->netdev_head = NULL;
+> +
+> +       mutex_unlock(&pf->lag_mutex);
+> +
+> +       kfree(work);
+> +}
+> +
+>  /**
+>   * ice_lag_event_handler - handle LAG events from netdev
+>   * @notif_blk: notifier block registered by this netdev
+> @@ -299,31 +351,79 @@ ice_lag_event_handler(struct notifier_block *notif_blk, unsigned long event,
+>                       void *ptr)
+>  {
+>         struct net_device *netdev = netdev_notifier_info_to_dev(ptr);
+> +       struct net_device *upper_netdev;
+> +       struct ice_lag_work *lag_work;
+>         struct ice_lag *lag;
+> 
+> -       lag = container_of(notif_blk, struct ice_lag, notif_block);
+> +       if (!netif_is_ice(netdev))
+> +               return NOTIFY_DONE;
+> +
+> +       if (event != NETDEV_CHANGEUPPER && event != NETDEV_BONDING_INFO &&
+> +           event != NETDEV_UNREGISTER)
+> +               return NOTIFY_DONE;
+> 
+> +       if (!(netdev->priv_flags & IFF_BONDING))
+> +               return NOTIFY_DONE;
+> +
+> +       lag = container_of(notif_blk, struct ice_lag, notif_block);
+>         if (!lag->netdev)
+>                 return NOTIFY_DONE;
+> 
+> -       /* Check that the netdev is in the working namespace */
+>         if (!net_eq(dev_net(netdev), &init_net))
+>                 return NOTIFY_DONE;
+> 
+> +       /* This memory will be freed at the end of ice_lag_process_event */
+> +       lag_work = kzalloc(sizeof(*lag_work), GFP_KERNEL);
+> +       if (!lag_work)
+> +               return -ENOMEM;
+> +
+> +       lag_work->event_netdev = netdev;
+> +       lag_work->lag = lag;
+> +       lag_work->event = event;
+> +       if (event == NETDEV_CHANGEUPPER) {
+> +               struct netdev_notifier_changeupper_info *info;
+> +
+> +               info = ptr;
+> +               upper_netdev = info->upper_dev;
+> +       } else {
+> +               upper_netdev = netdev_master_upper_dev_get(netdev);
+> +       }
+> +
+> +       INIT_LIST_HEAD(&lag_work->netdev_list.node);
+> +       if (upper_netdev) {
+> +               struct ice_lag_netdev_list *nd_list;
+> +               struct net_device *tmp_nd;
+> +
+> +               rcu_read_lock();
+> +               for_each_netdev_in_bond_rcu(upper_netdev, tmp_nd) {
+> +                       nd_list = kzalloc(sizeof(*nd_list), GFP_KERNEL);
+> +                       if (!nd_list)
+> +                               break;
 
-Hi Praveen, all,
+Further up, -ENOMEM is returned in case kzalloc fails. Here the error is
+silently ignored - is this correct? :)
 
-it seems that there has not been any non-trivial review of this
-patchset since v3. But at that point there was some feedback
-from you. So I'd like to ask if you have any feedback on v6 [1].
-
-[1] https://lore.kernel.org/all/1685964606-24690-1-git-send-email-shradhagupta@linux.microsoft.com/
-
+> +
+> +                       nd_list->netdev = tmp_nd;
+> +                       list_add(&nd_list->node, &lag_work->netdev_list.node);
+> +               }
+> +               rcu_read_unlock();
+> +       }
+> +
+>         switch (event) {
+>         case NETDEV_CHANGEUPPER:
+> -               ice_lag_changeupper_event(lag, ptr);
+> +               lag_work->info.changeupper_info =
+> +                       *((struct netdev_notifier_changeupper_info *)ptr);
+>                 break;
+>         case NETDEV_BONDING_INFO:
+> -               ice_lag_info_event(lag, ptr);
+> -               break;
+> -       case NETDEV_UNREGISTER:
+> -               ice_lag_unregister(lag, netdev);
+> +               lag_work->info.bonding_info =
+> +                       *((struct netdev_notifier_bonding_info *)ptr);
+>                 break;
+>         default:
+> +               lag_work->info.notifier_info =
+> +                       *((struct netdev_notifier_info *)ptr);
+>                 break;
+>         }
+> 
+> +       INIT_WORK(&lag_work->lag_task, ice_lag_process_event);
+> +       queue_work(ice_lag_wq, &lag_work->lag_task);
+> +
+>         return NOTIFY_DONE;
+>  }
+> 
+> @@ -398,7 +498,6 @@ int ice_init_lag(struct ice_pf *pf)
+>         lag->netdev = vsi->netdev;
+>         lag->role = ICE_LAG_NONE;
+>         lag->bonded = false;
+> -       lag->peer_netdev = NULL;
+>         lag->upper_netdev = NULL;
+>         lag->notif_block.notifier_call = NULL;
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_lag.h b/drivers/net/ethernet/intel/ice/ice_lag.h
+> index 2c373676c42f..df4af5184a75 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_lag.h
+> +++ b/drivers/net/ethernet/intel/ice/ice_lag.h
+> @@ -14,20 +14,49 @@ enum ice_lag_role {
+>         ICE_LAG_UNSET
+>  };
+> 
+> +#define ICE_LAG_INVALID_PORT 0xFF
+> +
+>  struct ice_pf;
+> +struct ice_vf;
+> +
+> +struct ice_lag_netdev_list {
+> +       struct list_head node;
+> +       struct net_device *netdev;
+> +};
+> 
+>  /* LAG info struct */
+>  struct ice_lag {
+>         struct ice_pf *pf; /* backlink to PF struct */
+>         struct net_device *netdev; /* this PF's netdev */
+> -       struct net_device *peer_netdev;
+>         struct net_device *upper_netdev; /* upper bonding netdev */
+> +       struct list_head *netdev_head;
+>         struct notifier_block notif_block;
+> +       s32 bond_mode;
+> +       u16 bond_swid; /* swid for primary interface */
+> +       u8 active_port; /* lport value for the current active port */
+>         u8 bonded:1; /* currently bonded */
+>         u8 primary:1; /* this is primary */
+> +       u16 pf_recipe;
+> +       u16 pf_rule_id;
+> +       u16 cp_rule_idx;
+>         u8 role;
+>  };
+> 
+> +/* LAG workqueue struct */
+> +struct ice_lag_work {
+> +       struct work_struct lag_task;
+> +       struct ice_lag_netdev_list netdev_list;
+> +       struct ice_lag *lag;
+> +       unsigned long event;
+> +       struct net_device *event_netdev;
+> +       union {
+> +               struct netdev_notifier_changeupper_info changeupper_info;
+> +               struct netdev_notifier_bonding_info bonding_info;
+> +               struct netdev_notifier_info notifier_info;
+> +       } info;
+> +};
+> +
+> +void ice_lag_move_new_vf_nodes(struct ice_vf *vf);
+>  int ice_init_lag(struct ice_pf *pf);
+>  void ice_deinit_lag(struct ice_pf *pf);
+>  #endif /* _ICE_LAG_H_ */
+> diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+> index efbc2968a7bf..625da88e7965 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+> @@ -1724,6 +1724,8 @@ static int ice_vc_cfg_qs_msg(struct ice_vf *vf, u8 *msg)
+>                                 vf->vf_id, i);
+>         }
+> 
+> +       ice_lag_move_new_vf_nodes(vf);
+> +
+>         /* send the response to the VF */
+>         return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_CONFIG_VSI_QUEUES,
+>                                      VIRTCHNL_STATUS_ERR_PARAM, NULL, 0);
+> --
+> 2.40.1
+> 
+> 
 
