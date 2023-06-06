@@ -1,109 +1,78 @@
-Return-Path: <netdev+bounces-8364-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8365-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 50630723D25
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:23:15 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id AE73B723D27
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:23:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F0AA6281591
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:23:13 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 21B431C20CD6
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:23:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DAE482910A;
-	Tue,  6 Jun 2023 09:23:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E383A29119;
+	Tue,  6 Jun 2023 09:23:13 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDE8C290E1
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:23:11 +0000 (UTC)
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 257A9E69
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 02:23:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686043390; x=1717579390;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=mSy3qpakabSmjdCp2CSmnbaC/BFwYzQmSyhFL21xyko=;
-  b=HKDFwUc9eqq7Pxkey3cTepDp9Hxfu/Wd3I4xLJtyyDINR5pQgBZfINhg
-   14DKsFSigWhmR7axL2yvqZ81aTts0IUJXlJAqXQ9FC7v118/esPLHp2dF
-   vypn/2K8wvaXUFwubEL0eI2uYMKegRgE5fb+qMTN0JraPYkdFqSrxRqmn
-   ZddewATTaoFEeMgyloX4cUDpO2AlxtISaEpLxZt6CmkqimMsjvB5/YG7j
-   pMu+Hv7I+ypVmKu9nXRU1TEr24pSm3Dc0+ZcSIAqSP5AiNTZy2QQ8M7pv
-   kQ4IJFJPtjNVe2KYGZPtPTSiVGVQQgZuS1cA7ryCQfGipkfk4ASxNUFGy
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="422439671"
-X-IronPort-AV: E=Sophos;i="6.00,219,1681196400"; 
-   d="scan'208";a="422439671"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2023 02:23:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="703082761"
-X-IronPort-AV: E=Sophos;i="6.00,219,1681196400"; 
-   d="scan'208";a="703082761"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga007.jf.intel.com with ESMTP; 06 Jun 2023 02:23:07 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 6 Jun 2023 02:23:07 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 6 Jun 2023 02:23:06 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Tue, 6 Jun 2023 02:23:06 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.171)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Tue, 6 Jun 2023 02:23:05 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1BB6290E1
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:23:13 +0000 (UTC)
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2136.outbound.protection.outlook.com [40.107.92.136])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E294E51
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 02:23:11 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C9WTyHfTtiOt1eOUe32M0O2oTPmLh19F77MQV5nyuhcgexI1omX+i7984gTLLtqLj2InK7vNI6//0jwTMlygTVhAlpeb0vIV7sZ9scd2/YELIrIkvLBp9daPWxfbi8OGWQ4UgLFlmCuuAZxNb5HbKipqpcS4cYYEMJzqs8EFforezg1lglDuTdIYi3d9MZP1Mero2YZUCWAHE/TH5yi4E3Wh4ac6eB9Bf86SnFsYkt/PjB7KCdzJ/Q4x+N4qhi0PlHNSACMOSbxBMQURBjTQW5Ecrs/YfuA38L4pe39lWEusyAZPwepFBOhkxkuyYGJAsZEUhHXndQc5Jt2Cacvh9g==
+ b=BrD3Vcgrsdz8icUnsDDtxV3r6Co8VeJPSMVji+0iivHVhtEpErOkAgNDKeyfWUYTeyQGjCJ2mFhTnP3JO6CUfvCxbuCcXuQF9BMLsNk1jD57Osk+4cv5MlSkySzNN0C6GnknWAcXu4gHjVbo+Xyyfrg698aTEwhi1DYJYXo6yHxJW+5tdU+Cd1wxk6WUQG/B9+DHi1iOZoT1kIo1OZ94Da+XoLOEiK1yi4pJ5EjdTA/cCbx5mWo97kGPD5d6/Kll8f5A8z9Z0a5AUjdQg/rADXkZ1oxjzVYYp9p6+eLM22+xL313CHUfKB/mx/NEvzkHmrZfSEFqGjPNV8ijnr03hQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oZsZOK5pbDAxfzMDD5DPjqpCnHuDzvPKXipm0dxLXWY=;
- b=HHx6hEjCgbzgf47ZwF9jaPA7wzVJjI0X/XiWFnX8MDNl+zueVnVfQxjWaW5IowgFLBzauOZDqGSAf6bHjESew8WFtEkJLyyj1O51FwDEwRGU+/TNSujPTi9IPFg8xwa+xg7Z4BTuhbHfnjXCl8RR20IyBkTvpyQfEIWXcL8iAjFlH8iLhvOjfXo5xvo/qzxU4imTTqKvQGSIxYfTwTNjyXInsnF6ER60Kwkf/62fICmSWt/gBodbIrkaAFqFnH25WGCjFOd+ZhSOqx8291dHtdnBKb1h0PlCnwhx2bwodcdtraZDptkuI0bppZ8Ly8PcPuupN1eD/xdZWQNpc81jtQ==
+ bh=Twvlf0n7jlnM6uC/LdmW2MXSrCLC15MD5g3Z7q3Fjtg=;
+ b=LR6z4jgdZmeElk9oDi87x8qelS5ZcRh6tqaubIGDnPSynJEhM4DRK9PQdTdHdFaXVOsV9oss2Tt3F9VjI8K2GfEjFVSvFE3JgZp1sx86/JPlddUYRbZkXasIPocrntRNHTi+chcBFnyJHQnuYpwrgwsPJr4J/y1Wkz9wMHfZwJ0neV3abVsxHbuIVkkOQcDKIZ+hEdRfjL2GbR2c/qokiQO9NpjgaIIvV+e4z8e6KtRccgJ5EDqQkxtLcEAOZXzcFwlXaZaJRtqOIT3FLC43t/OdjByHsVI6DuhCFYRCzxMyNtLGJVO1JqGOTT8tuQu6NXIojtA8Kep2L6bonYeNBQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Twvlf0n7jlnM6uC/LdmW2MXSrCLC15MD5g3Z7q3Fjtg=;
+ b=Gjp/swQiwF5xxz3EZYXatlxiAKqJLUMOJ75/lAXkifDFSrwwVH4mo0W+N0+C37UeV43hN+yjVHzzUPCTBGeihYJp1QIOdDTZeCPWVDexehkYybo47eTIxtu35Tcupu6EqAwfAc2JxZoSxrbXTiVszVshvpHIbBTLIygNEXA8sNo=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BY5PR11MB4451.namprd11.prod.outlook.com (2603:10b6:a03:1cb::30)
- by CH3PR11MB7299.namprd11.prod.outlook.com (2603:10b6:610:14b::11) with
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by LV8PR13MB6397.namprd13.prod.outlook.com (2603:10b6:408:185::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Tue, 6 Jun
- 2023 09:23:03 +0000
-Received: from BY5PR11MB4451.namprd11.prod.outlook.com
- ([fe80::c5b8:6699:99fa:fbeb]) by BY5PR11MB4451.namprd11.prod.outlook.com
- ([fe80::c5b8:6699:99fa:fbeb%5]) with mapi id 15.20.6455.030; Tue, 6 Jun 2023
- 09:23:03 +0000
-Message-ID: <e7f7d9f7-315d-91a8-0dc3-55beb76fab1c@intel.com>
-Date: Tue, 6 Jun 2023 11:22:55 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.2
-Subject: Re: [PATCH net-next 1/3] iavf: add check for current MAC address in
- set_mac callback
-To: Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Tony Nguyen
-	<anthony.l.nguyen@intel.com>
-CC: <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-	<edumazet@google.com>, <netdev@vger.kernel.org>, Michal Swiatkowski
-	<michal.swiatkowski@linux.intel.com>, Rafal Romanowski
-	<rafal.romanowski@intel.com>
-References: <20230602171302.745492-1-anthony.l.nguyen@intel.com>
- <20230602171302.745492-2-anthony.l.nguyen@intel.com> <ZH4xXCGWI31FB/pD@boxer>
-Content-Language: en-US
-From: Piotr Gardocki <piotrx.gardocki@intel.com>
-In-Reply-To: <ZH4xXCGWI31FB/pD@boxer>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO2P265CA0133.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:9f::25) To BY5PR11MB4451.namprd11.prod.outlook.com
- (2603:10b6:a03:1cb::30)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.18; Tue, 6 Jun
+ 2023 09:23:09 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6455.030; Tue, 6 Jun 2023
+ 09:23:09 +0000
+Date: Tue, 6 Jun 2023 11:23:01 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: "Drewek, Wojciech" <wojciech.drewek@intel.com>
+Cc: "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"Lobakin, Aleksander" <aleksander.lobakin@intel.com>,
+	"Ertman, David M" <david.m.ertman@intel.com>,
+	"michal.swiatkowski@linux.intel.com" <michal.swiatkowski@linux.intel.com>,
+	"marcin.szycik@linux.intel.com" <marcin.szycik@linux.intel.com>,
+	"Chmielewski, Pawel" <pawel.chmielewski@intel.com>,
+	"Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+	"pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>,
+	"dan.carpenter@linaro.org" <dan.carpenter@linaro.org>
+Subject: Re: [PATCH iwl-next v4 09/13] ice: Accept LAG netdevs in bridge
+ offloads
+Message-ID: <ZH769agjmFeTLkq9@corigine.com>
+References: <20230524122121.15012-1-wojciech.drewek@intel.com>
+ <20230524122121.15012-10-wojciech.drewek@intel.com>
+ <ZHy2m2fATV0mXgBT@corigine.com>
+ <MW4PR11MB5776E0183A1A0683D726F0EFFD4DA@MW4PR11MB5776.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <MW4PR11MB5776E0183A1A0683D726F0EFFD4DA@MW4PR11MB5776.namprd11.prod.outlook.com>
+X-ClientProxiedBy: AM3PR05CA0115.eurprd05.prod.outlook.com
+ (2603:10a6:207:2::17) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -111,139 +80,104 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BY5PR11MB4451:EE_|CH3PR11MB7299:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2c8fdd75-6865-41ff-4468-08db666fa0b3
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|LV8PR13MB6397:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5b5f7806-33b1-4659-5041-08db666fa46a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fhO+kchKb/5Dpe/czzgp+XRsoNnfN3yavhzz8d68SF8TluqOsX2pwl6RF5ZUmTuPAWmtcL2dZto/sXyiWdfaxWvfrpve9M/Wa6GqAZd8M5/FwY+zuYKHk0kcrWtQznn/Jkqv2H1BK1fsbD8PW9dzWrNp6F63out4HFeDjFoQcVFsTDloSVJjki6neblyVe8pOHBAwlodJyyKsd8S7aun/ddmlVgCxbp0LRvuzHqvSW+naG6FvRGyDBiRrfzUQZsIQ2OjjTLPhA2OA1QrK0b/TteTIoNR55ghzvNdrY+ts8n/MW+05GtDR3pNHCPPkZ6HRnY6xpngsuVfaAGdXTnF6/rmNPvU0KQ9n6waJV7wb2A1+xSSfqRQxZi8p3/a3aFvojbQHJSvVI5Rb2KuUd0lKe2QqFksQdb1+4m/RgutUYzl6XRJyV/q/e4ntnPRq2HLGD3EvCRLtRenKewK0X7vvtgX7W0mjip6Lfb/ytkZGkvHoGRJJ3+82Mbe5GiZ7SVEIAnTVLfxHjwPfxfNqb+HKT7LVYimAzWsuGErooP6pr0XBSD/gOxrc/HbeQbHVcnliaOtcTlqRwsT18i61LqUzv7gejq9V0dR60+sqKE5PzIVjaojKHZMYb5NQok1HkG8Wi5032bpsIM5eo5gdIpmyQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR11MB4451.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(39860400002)(396003)(376002)(346002)(366004)(451199021)(54906003)(110136005)(82960400001)(478600001)(8936002)(8676002)(5660300002)(36756003)(31696002)(86362001)(2906002)(6636002)(4326008)(66476007)(66556008)(66946007)(316002)(38100700002)(41300700001)(2616005)(53546011)(6512007)(6506007)(26005)(83380400001)(6486002)(186003)(31686004)(6666004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info:
+	7htIjdcqMCfEMG2JDaM8UTUQFGLrvZxnwnT6lA6zF/vCOIa+g7I8BV1p6mwSJBH8GOJIEhTnrDOobvOB3uA950J9e80Tamw7ZM/HmdDCJ1aRxCTUE1+FdLYcKyoeP50+yH/HbA1H65MRgwTK2Np9elNDHp5d4DO6Hg+yCp1ghjQiYUgMvXigJP8zXxL488pgZVz88tSgaF36mf/AeFI80e4vylChg9lACLgZNFYROomlVPRvYEAgCQS+5wacKUfdEuWQmmdQJU8uFjkQiIHJTzM3BJ2tatsqATaOxeeP9MPmWuKMt+Y7JggMvoNVvVl0N+cTBLnw5pehXG3JJs/IZbUxxznUxJ50oGiNaGBXebalHmPThLmyBXUjrw/m2hYP1p3sOcz8Wu6QFkyZtsToFjrPzqomgjPQQZbi8ZvwtyGcfuVM8cHstB6LZGcAgKweAlZ+x2Pt4HMHlU00lTt9hbrjSCzYU+ONX1F9nDhm5qyax+9Wi0LFbFrqt+0Qkv0+hsMmhmCXaAeMxFBysxre7Ro4s474jLmCEvkCKXhC2OE=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(376002)(396003)(346002)(39840400004)(136003)(451199021)(66476007)(66946007)(2906002)(478600001)(316002)(8936002)(6916009)(4326008)(8676002)(41300700001)(54906003)(44832011)(66556008)(6666004)(7416002)(5660300002)(6486002)(6512007)(53546011)(6506007)(966005)(38100700002)(186003)(2616005)(83380400001)(36756003)(86362001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eEJzVzBWck94ckgwYW92K3U4VFJDcHBzNXlvTWRHSVhRUXpMM1NzZ2ovUFJV?=
- =?utf-8?B?M0RMNzRuNzdSdHJFUitHdW83Y0owVnorUy9HMk5rd2w0Z29FMVNDdmt1Ukw1?=
- =?utf-8?B?Qk9GblpaWkJzT3BKdWk3TU5qS1ZUZ3R0MWdUNkxJdFczekEvVy9xME5qMjRx?=
- =?utf-8?B?Vmk5S3F1SWo1YnJqMEpiSVQ1Z09qTEdGR3RNanYvOU9qZVAzTTlnMzljLzFU?=
- =?utf-8?B?aVZsdC91WVhVZnBTMFU3QzNtcDNwSEtUR09VMitLV3lGc1cwOUg4MXFPeUIr?=
- =?utf-8?B?bEp6amlKZzZHRGlzWXVlVzlBWm5XV3ZaY2RDR2ZndUxZYWxxSGlsc1I1bU4r?=
- =?utf-8?B?ajZqUkpkTFRhOTZ0TWRPS1MvV2ZtcFM2UFJjZUZZRGFUcTF6eU5UWkV2K2tj?=
- =?utf-8?B?K0d1Z1JnUmU1MjUxMngvK3hXTDFBSFFwQnY0VnBFVDVpcHVJdHZ2M3prbXVU?=
- =?utf-8?B?RzhhNGkxNVhjODdnTCtWRXZoRFduUDEyWjJkcS9XeDRVNXlMWmZxWWt6QjVj?=
- =?utf-8?B?WWJ5YTV4bDFWcXpNcEZ3a1poT05jUUZxOEpnbU5uUGs3SXI1Wjc4NTNESmRR?=
- =?utf-8?B?YkNaNlZaUlNOMmtXUXpka05COURianVycnUwOVBRSTJvK25WaTZtcGJQa3l5?=
- =?utf-8?B?NFlxVEFMeSt0U3RSbFFFRmNtN3l1MEM2RjV5UkJzcFJmVXFHbHZ5U211ZGtF?=
- =?utf-8?B?TFdOOXdDdTkvWFhtYVdra2k3OXZJYkV2VWhMckVzdXZ4a3dIcE0wYUliSnBr?=
- =?utf-8?B?T1hjUkxtSW95dzdPdjRlWDgrU3Z3NUxHdTZReERWeVU4TkZOZWdqb2lFeFov?=
- =?utf-8?B?L2R2eitiMlNjMWZ4MnAwenEvY1RoWTkySFdYZGNqcGNjWFJKZUdhT01PRDlB?=
- =?utf-8?B?MFE5U0xsWUkwUVhEMEVUc3hoQkwrQXNBQXpPaXNxUm00NlEvNkFnTDNCYmRZ?=
- =?utf-8?B?bzVTZjJIVGlXeDRjSzVwOWFuRjVLWEZ0SFJ3dmdIK1UvL2ppTlNYQ2l6OVU0?=
- =?utf-8?B?N0E2eFQ5T04zYkxsM2ppc1pFeGFITW1UaFUxSGcrWW9xQnpPMVRHMkx1NkUw?=
- =?utf-8?B?TTV1eXVjL3lGRjZJTEFUaTYya1BJU3AzMWZmY3IzbGJYUzJ0NWdhQ2tSRTJp?=
- =?utf-8?B?bm14U1lLV2JRMitiRTVoY1pnTS8xWjhJREdsWUkrUmR1SFVlbGpjbjk4THh6?=
- =?utf-8?B?MlpuY3AvSXY5Y0dYQUhvZCtCcGFKYWFsYWloWHd6SzJRWWZ2bnlHQzhERG1W?=
- =?utf-8?B?NXZwY1ZjVHB4UTQrOGVzcGZNV0tFSnBIQW00cExXczVZM1JLdFZiRlM2aExL?=
- =?utf-8?B?czBSVWVHbEdvK3VDZ2E5T0M5WGw0cVpOUEpMUTVvTEhnNVdHWlZjQnJnQ3RZ?=
- =?utf-8?B?ZGNYY092alQ0ZHR6MzZMTGVkRDBNOHM0QmUvaDVXVGJWWnYwRkhodzBDcmYr?=
- =?utf-8?B?VU85TGpGUkR1VWVESUVya2hlVy9PR1pmRXJDbGVMNENlOXN6c2kvdm1FT25M?=
- =?utf-8?B?bG9WTHM2VTZyK0NMMmF2blhQclloQVpFM3AzTW5QeWNtR0pzUDZRdXdqaXNj?=
- =?utf-8?B?bllzS2tNTkp3cTJsNjhVZ0V1cXRacTlncG5YQkJRMEUxWG9QZVY0OFJFeVNI?=
- =?utf-8?B?WENpL0tTbkxrZW03UDhINTU2bkNaYmYvNzllWjV3Z0FZNjBmT1BweXp3VE1x?=
- =?utf-8?B?MUQ0WGV0R2VxY3l5ZmV3R2lxNlVza3NWbEs0M3FJY2grY1hMT2FuQ2wvZXB4?=
- =?utf-8?B?a1B1ZUNOVVRuT3JHbGprRU1qRExJS3BiOTRzVjYwbW9veXlxMTFzNDJKWFhh?=
- =?utf-8?B?YTFpY2NHdk5KeWNGVVJ4cjBuVko0UzdibzEvWGxrVElvdWU5ZmRheDNOVGox?=
- =?utf-8?B?RXJUaXNTUWFPcFBXUjZ2ODNlNjZVVFBzUWMyMEltdlFLbXo5VmpvZTRscXN1?=
- =?utf-8?B?ZkY0QW51NXc4Y0JOcExvQTdZeUlZODRUN3UvTDhvYzAwM0NyMHhvbWJPcnBt?=
- =?utf-8?B?RlZsMEFZZkpKK2lIeTlQdlpKTU90b0tWWDVsRXVzQmxqY0ozMlR0d2orNnFj?=
- =?utf-8?B?V2NOZVlGTHR6MWlwcE85Z0I0QUN2bkV2eVZwRnVYdXlGSUl4ckVQVjZsL3lo?=
- =?utf-8?B?Rm81ZEtCZG5ySjBIbUFNaEUrVzBoSS8zZDR5TkUvNThOZFNRUjJvQjZPU3lV?=
- =?utf-8?B?RUE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2c8fdd75-6865-41ff-4468-08db666fa0b3
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR11MB4451.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?/GS9ZRPG2bIFTf71St7lbG9QIhBp/q4VDoBfpPyAuwb5WX+Gp8+ceBHhbV3j?=
+ =?us-ascii?Q?IApxiLwdqz3fwcw8rcp+vdcZpd6IS2UfDd7eW6e0CQZ8QF5dL/c43cLlNz4W?=
+ =?us-ascii?Q?XB7ROa9T5PKLr7hBQ8q2iaDuMZLULXscyScOY7Wf4fgYf7NtBWBJr5VL/Xmf?=
+ =?us-ascii?Q?SPpUvfVkgQcFDGco3aJ1x510/4OBwWMXDfJuLJY6+FVDeXvJ1qGE6g8dyymS?=
+ =?us-ascii?Q?ROcAQKnvwBAyFlH8ncsURnfcNB7MzXfpBuVb5RL6hXgnRZg09iZqoDCGa2C+?=
+ =?us-ascii?Q?WbUcAZPdQgqquPTtwEGAqGConEiDcsIeupP9/qmoHvIuzPkrJHgp1Mx7HFYd?=
+ =?us-ascii?Q?Kyn8BeAcMeAsYN69U4sE49rkyROoCzpTeA6Fj52nOMQVKRnO4o6g0/NGwkyd?=
+ =?us-ascii?Q?ih5BqhO/tFoJEZaZd7RLgotWIbhyoYFOGjPCo3oy9YhVX7ur6Ti/lpAYjlkH?=
+ =?us-ascii?Q?r5uCZDeIt+1tMSFm6nrg1FS/H3DvZn7UvcniRBut5WAFMaU6tNa/bEiLjij3?=
+ =?us-ascii?Q?ogBSprWno/GwPZg5CxcLNaQphWsD2i/1Ww3BCvssPLER8cRWWFkUgRZPINOZ?=
+ =?us-ascii?Q?QjGPvx3eftR5wTU8h/KA9qrotrGUgigh7CgCGNXWpicDgFq8KdzmVfyPJNX+?=
+ =?us-ascii?Q?ziqUP7F5H/DSKbflpolCIFp6ASo4RZcMXa2IQc6h8DUXdyL1ruQDJFpWwyQN?=
+ =?us-ascii?Q?IHf83fxCYxYv5g/KblZSZ/sAj+rwQd2vSxubd9/m2At4mLB8mX1+j7KSh/It?=
+ =?us-ascii?Q?hR6WVhqjNkhB8t2v1AnACUV8iIB9nO3K+yAizPanbQgABRpUvQwSAvf+Ty8E?=
+ =?us-ascii?Q?8qAX2GWEjTXaF+6HbRsvhMPIR+8/xJtICbi5yjF/DB3kKlh+DFxTLrlYDgWK?=
+ =?us-ascii?Q?mnFjX8MIgjWm4B5OFGjAg6CHTVr7Xu2AOHGXYWIkS3biz1DII9FZyTj8VvJm?=
+ =?us-ascii?Q?0ObXjgDENpDauIognXSE4bvD9meDSlfK7LTn0dtY2P7Lbofe5Fkoz6UJFKkx?=
+ =?us-ascii?Q?yDDSgyiLPtn2/wbo8j0+DvekmYH0w8tHlxXANMHfWd0JHNZklBj8f/dhkAwn?=
+ =?us-ascii?Q?jQe3SfmiK86JQjs+gn3Yq+3d/+Ebak2F8Hc3IeH5I9dKWyTPDtqILshgNQp7?=
+ =?us-ascii?Q?gSNC9Etq/1zrkUyEmV/auXYSdsAV2+3/TWmLVIVKrn3ePwWmbbdAEKE1ipi1?=
+ =?us-ascii?Q?fz0/RPhWh/iWfHWNFkUCOqTJXrWZ9YUlMrouIwRPOu7RgPeQ8PfSvp43FpVK?=
+ =?us-ascii?Q?MROpEAJipvoGUwYe7vfSe9UZQFL+SlaUthxPN1vZQ/YRUiotr/kH+C9orrb2?=
+ =?us-ascii?Q?O0KBGZOJI+CvN/8+fyEw1OJ8KN9F4M3oji0gYoNyr3bdGLOMoGh1W+FcZJl4?=
+ =?us-ascii?Q?0ObLc+UCuSEScFgnohcsjUJUPZa6ys4rQqIkP81cMglrNvTDLHSWS311LvCK?=
+ =?us-ascii?Q?yvjHcdJT3Q/gGv7KGLyWtWOCyhNiZh8u7O01MVBLxM0ws2IWfT2D3m16LdXX?=
+ =?us-ascii?Q?yAQk3SLUAz9Di8Ss9qYXk8YrFHc1G5X3E9CJ94aplns7xanWPMflLUDz/MhO?=
+ =?us-ascii?Q?Lc/WKzVpaAGEQ9JQboozpMeyEDWaPNnA54ffgez7NsR6eL6zRiVPqKZo70Ni?=
+ =?us-ascii?Q?nVuHhU90E4qXaB42rCrVKhbkwfHWa7N5CDmE0r5BEgKzbQwq7gUQts5VOmQQ?=
+ =?us-ascii?Q?m6gc6A=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5b5f7806-33b1-4659-5041-08db666fa46a
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2023 09:23:02.9680
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2023 09:23:09.1465
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KHHqhXx2cVZMKQWIzBCJ4yBAJ/cB+nso3oZDuKBZYOnc/4GvBkt3XmzmbsTEkxnrJCh8H2IdZsOzK910ZlHQhqm0WR9l5qTFTQ1rL+HoMpE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7299
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: U/jOZbgK6UifMUAinzukwjutC0BA+kozgQs3nOct44gzWL/5j7D0lZTS2bE3of/Cp24/mwIRy33RUULRIZOhq1xppJKFwk+0uwjR2c87JW4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR13MB6397
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 05.06.2023 21:02, Maciej Fijalkowski wrote:
-> On Fri, Jun 02, 2023 at 10:13:00AM -0700, Tony Nguyen wrote:
->> From: Piotr Gardocki <piotrx.gardocki@intel.com>
->>
->> In some cases it is possible for kernel to come with request
->> to change primary MAC address to the address that is actually
->> already set on the given interface.
->>
->> If the old and new MAC addresses are equal there is no need
->> for going through entire routine, including AdminQ and
->> waitqueue.
->>
->> This patch adds proper check to return fast from the function
->> in these cases. The same check can also be found in i40e and
->> ice drivers.
+On Mon, Jun 05, 2023 at 05:12:39PM +0000, Drewek, Wojciech wrote:
 > 
-> couldn't this be checked the layer above then? and pulled out of drivers?
 > 
-
-Probably it could, but I can't tell for all drivers if such request should
-always be ignored. I'm not aware of all possible use cases for this callback
-to be called and I can imagine designs where such request should be
-always handled.
-
->>
->> An example of such case is adding an interface to bonding
->> channel in balance-alb mode:
->> modprobe bonding mode=balance-alb miimon=100 max_bonds=1
->> ip link set bond0 up
->> ifenslave bond0 <eth>
->>
->> Signed-off-by: Piotr Gardocki <piotrx.gardocki@intel.com>
->> Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
->> Tested-by: Rafal Romanowski <rafal.romanowski@intel.com>
->> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
->> ---
->>  drivers/net/ethernet/intel/iavf/iavf_main.c | 6 ++++++
->>  1 file changed, 6 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
->> index 2de4baff4c20..420aaca548a0 100644
->> --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
->> +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
->> @@ -1088,6 +1088,12 @@ static int iavf_set_mac(struct net_device *netdev, void *p)
->>  	if (!is_valid_ether_addr(addr->sa_data))
->>  		return -EADDRNOTAVAIL;
->>  
->> +	if (ether_addr_equal(netdev->dev_addr, addr->sa_data)) {
->> +		netdev_dbg(netdev, "already using mac address %pM\n",
->> +			   addr->sa_data);
+> > -----Original Message-----
+> > From: Simon Horman <simon.horman@corigine.com>
+> > Sent: niedziela, 4 czerwca 2023 18:07
+> > To: Drewek, Wojciech <wojciech.drewek@intel.com>
+> > Cc: intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; Lobakin, Aleksander <aleksander.lobakin@intel.com>; Ertman, David M
+> > <david.m.ertman@intel.com>; michal.swiatkowski@linux.intel.com; marcin.szycik@linux.intel.com; Chmielewski, Pawel
+> > <pawel.chmielewski@intel.com>; Samudrala, Sridhar <sridhar.samudrala@intel.com>; pmenzel@molgen.mpg.de;
+> > dan.carpenter@linaro.org
+> > Subject: Re: [PATCH iwl-next v4 09/13] ice: Accept LAG netdevs in bridge offloads
+> > 
+> > On Wed, May 24, 2023 at 02:21:17PM +0200, Wojciech Drewek wrote:
+> > > Allow LAG interfaces to be used in bridge offload using
+> > > netif_is_lag_master. In this case, search for ice netdev in
+> > > the list of LAG's lower devices.
+> > 
+> > Hi Wojciech,
+> > 
+> > As this uses the first lower device found that is an ICE netdev, it is a
+> > little unclear to me how this handles the (likely) case of a LAG having
+> > more than one lower device, each of which are ICE netdevs belonging to the
+> > same eswitch. And the perhaps less likely case where it has more than
+> > once lower devices, but they don't all belong to the same ICE eswitch.
 > 
-> i am not sure if this is helpful message, you end up with an address that
-> you requested, why would you care that it was already same us you wanted?
-> 
+> The only use case here is Active-Backup bond which is send in separate patchset[1].
+> 6th patch of the series[2] makes sure that that below scenarios will not happen:
+> - non-ice devices
+> - more than 2 devices
+> So the only possible scenario would be 2 PFs of the same nic bonded together.
+> In this patch we want to handle the situation when such bond is added to the bridge.
 
-You can find similar message in i40e and ice drivers. Please note that this
-is a debug message, so it won't print by default. I would leave it this way,
-it might be useful in a future for debugging.
+Thanks, I think that should cover the bases.
+Although I haven't reviewed [2] (yet).
 
->> +		return 0;
->> +	}
->> +
->>  	ret = iavf_replace_primary_mac(adapter, addr->sa_data);
->>  
->>  	if (ret)
->> -- 
->> 2.38.1
->>
->>
+> Maybe we should wait with this patch until the LAG series will be accepted?
 
-Regards,
-Piotr
+Yes, perhaps that is a good idea.
+
+> [1] http://patchwork.ozlabs.org/project/intel-wired-lan/list/?series=355487&state=*
+> [2] http://patchwork.ozlabs.org/project/intel-wired-lan/patch/20230517230028.321350-7-david.m.ertman@intel.com/
 
