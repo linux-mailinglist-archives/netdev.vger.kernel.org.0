@@ -1,71 +1,737 @@
-Return-Path: <netdev+bounces-8548-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8549-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 96A57724833
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 17:49:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 94ABC724839
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 17:51:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5154E280FB2
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 15:49:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4A32A280C05
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 15:51:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 92F0330B75;
-	Tue,  6 Jun 2023 15:49:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C20EC30B77;
+	Tue,  6 Jun 2023 15:51:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64D5E37B97
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 15:49:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8D15C433EF;
-	Tue,  6 Jun 2023 15:49:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686066560;
-	bh=o3yIyCgRGH5S/mkc72bZVcX1gFYjf6Gdv8HpJ7qF+LU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=q6g8lMbvdId+tdw4GDmeH3iPjXPM1hrXJwWCMtjZ1/6w8jA1rh8Z0afNx+werNP1l
-	 o/9wul1LtP/LDysdjREGdKRrEzDp7lgdHlzDWht4Ru/0KjeXHRzL/Jjof1zHmUXYUF
-	 cr3cuV2fGPN782BxwYjayQ9UEOkL+WaksOpbwaSpLKY6ZCoUJdOleT4gZ4ca7Wde46
-	 zEk3CHW8Gtzr/HblztuiSpWoCEXM8jXtjDkZ40xjxdECY/035mJX3k+DxIpABh+qsX
-	 Qb6/Ulo59sFh4bf23uezvjEPqua6wf6tl/A+XJy04MlJ+f6TOTN7u6ms+4fzV2RupW
-	 h/lhZ37Ph/JIw==
-Date: Tue, 6 Jun 2023 08:49:19 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: "luwei (O)" <luwei32@huawei.com>
-Cc: Networking <netdev@vger.kernel.org>
-Subject: Re: [Question] integer overflow in function
- __qdisc_calculate_pkt_len()
-Message-ID: <20230606084919.5549dd58@kernel.org>
-In-Reply-To: <c6ab254d-76c3-7507-3935-e9bad4da0bab@huawei.com>
-References: <7723cc01-57bf-2b64-7f78-98a0e6508a2e@huawei.com>
-	<20230605161922.5e417434@kernel.org>
-	<c6ab254d-76c3-7507-3935-e9bad4da0bab@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B092C37B97
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 15:51:00 +0000 (UTC)
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5356C10CB
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 08:50:57 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-565c9109167so58062557b3.2
+        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 08:50:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1686066656; x=1688658656;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=k27QXxtC+QxMwfJ5B7/l1irdbxOH86zfMfCnka+F/C4=;
+        b=a7Ox6SOSyNSQZmB2DekhHg9/wotajNyTjSD7PvvF9G7V2qiu2BdrpbsmT+vCjmOGkJ
+         +WKcpnddLkA5qX3+RyVrTqaT+wqeYtsY51RMsa1KdlrwyxcPPoExhoKB++BhopYVndyC
+         rBuD+Nh+jMZBEEn1m+RJyk7wpgeZQAGLg+1BoPcEnWMSpqmtWEbF5kCuCiBcW44olVR0
+         vuGxU+M2PWFH5WtXNiQUxSxinkqrHwkWUlg4FDmryhpwrXo8ell4MYwmOaHxecSqXgoV
+         4JOJbOAqRNZcHf6hJQGNzVHzyFEu0M/lyxhy5sARaqCUnznkhdDlK2A3Sc5d3cJh9Wf8
+         TSZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686066656; x=1688658656;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=k27QXxtC+QxMwfJ5B7/l1irdbxOH86zfMfCnka+F/C4=;
+        b=StTCj17uKk1Hz+hJZRVRjpESoYiJ9mWycotp2rTUGGK9JBezMe7Gb21YoZqCH6Sv9j
+         tZekSujxRw89jaAPnG4iebxf7dsDt1MtZ9dw/AHq7+E5Z/Q5kCBitil1/HSnkBYdIVUR
+         QUKAo8qtlzX/0RXU0GY4s++9dKz775sqfO7CsGfeDl/vCqavSNPJ40wos9L/soyNnNG1
+         DaCmWrALBCsHuNPrcb25bpALth7VVCWNEnhLMlz8DC2nJN4QAs9+U3os69AfxDDAQB+X
+         nt/v6VMTXO5XpXW2oQ4X+gJ6EfzMRRnLqVE9sY9GCm/bYjwDMDjT6k7LjtG+WGbdS6ex
+         PU5Q==
+X-Gm-Message-State: AC+VfDy9YP4pqgxvOz3y9ju8pGPdmY8ZwXMzKffT09a2oc2FErw7o/or
+	KWgMd9ON0gwFPtkCYifXR3YJd4H8kOmqOiVkkrOs4A==
+X-Google-Smtp-Source: ACHHUZ5Mc2kcxpj/JlOrUUBtH0VXy1EvxH7hC85RGiiv2Yc0sK+EdlIuR/jvSsn2fOG5rsGxJp0mfb1nHjNYJgjqWUg=
+X-Received: by 2002:a81:5c07:0:b0:565:98a7:acc6 with SMTP id
+ q7-20020a815c07000000b0056598a7acc6mr2514696ywb.20.1686066656326; Tue, 06 Jun
+ 2023 08:50:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20230606111929.4122528-1-edumazet@google.com>
+In-Reply-To: <20230606111929.4122528-1-edumazet@google.com>
+From: Jamal Hadi Salim <jhs@mojatatu.com>
+Date: Tue, 6 Jun 2023 11:50:45 -0400
+Message-ID: <CAM0EoMk+uj9UZERGLuNf_T65iGwPP04hsN5cwsNj3_YcXzM1ew@mail.gmail.com>
+Subject: Re: [PATCH net] net: sched: add rcu annotations around qdisc->qdisc_sleeping
+To: Eric Dumazet <edumazet@google.com>
+Cc: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>, Cong Wang <xiyou.wangcong@gmail.com>, 
+	Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org, eric.dumazet@gmail.com, 
+	syzbot <syzkaller@googlegroups.com>, Vlad Buslov <vladbu@nvidia.com>, 
+	Peilin Ye <yepeilin.cs@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Tue, 6 Jun 2023 20:54:47 +0800 luwei (O) wrote:
-> > on a quick look limiting the cell_align to S16_MIN at the netlink level
-> > (NLA_POLICY_MIN()) seems reasonable, feel free to send a patch.
-> > . =20
->=20
-> Thanks for your reply, but do your mean cell_align or overhead? It seems=
-=20
-> limit cell_align to
->=20
-> S16_MIN(-32768) can still cause the overflow:
->=20
->  =C2=A0=C2=A0=C2=A0 66 + (-2147483559) + (-32767) =3D 2147451036
->=20
->    skb->len =3D 66
->    stab->szopts.overhead =3D -2147483559
->    stab->szopts.cell_align =3D -32767
+On Tue, Jun 6, 2023 at 7:19=E2=80=AFAM Eric Dumazet <edumazet@google.com> w=
+rote:
+>
+> syzbot reported a race around qdisc->qdisc_sleeping [1]
+>
+> It is time we add proper annotations to reads and writes to/from
+> qdisc->qdisc_sleeping.
+>
+> [1]
+> BUG: KCSAN: data-race in dev_graft_qdisc / qdisc_lookup_rcu
+>
+> read to 0xffff8881286fc618 of 8 bytes by task 6928 on cpu 1:
+> qdisc_lookup_rcu+0x192/0x2c0 net/sched/sch_api.c:331
+> __tcf_qdisc_find+0x74/0x3c0 net/sched/cls_api.c:1174
+> tc_get_tfilter+0x18f/0x990 net/sched/cls_api.c:2547
+> rtnetlink_rcv_msg+0x7af/0x8c0 net/core/rtnetlink.c:6386
+> netlink_rcv_skb+0x126/0x220 net/netlink/af_netlink.c:2546
+> rtnetlink_rcv+0x1c/0x20 net/core/rtnetlink.c:6413
+> netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+> netlink_unicast+0x56f/0x640 net/netlink/af_netlink.c:1365
+> netlink_sendmsg+0x665/0x770 net/netlink/af_netlink.c:1913
+> sock_sendmsg_nosec net/socket.c:724 [inline]
+> sock_sendmsg net/socket.c:747 [inline]
+> ____sys_sendmsg+0x375/0x4c0 net/socket.c:2503
+> ___sys_sendmsg net/socket.c:2557 [inline]
+> __sys_sendmsg+0x1e3/0x270 net/socket.c:2586
+> __do_sys_sendmsg net/socket.c:2595 [inline]
+> __se_sys_sendmsg net/socket.c:2593 [inline]
+> __x64_sys_sendmsg+0x46/0x50 net/socket.c:2593
+> do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
+> entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>
+> write to 0xffff8881286fc618 of 8 bytes by task 6912 on cpu 0:
+> dev_graft_qdisc+0x4f/0x80 net/sched/sch_generic.c:1115
+> qdisc_graft+0x7d0/0xb60 net/sched/sch_api.c:1103
+> tc_modify_qdisc+0x712/0xf10 net/sched/sch_api.c:1693
+> rtnetlink_rcv_msg+0x807/0x8c0 net/core/rtnetlink.c:6395
+> netlink_rcv_skb+0x126/0x220 net/netlink/af_netlink.c:2546
+> rtnetlink_rcv+0x1c/0x20 net/core/rtnetlink.c:6413
+> netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+> netlink_unicast+0x56f/0x640 net/netlink/af_netlink.c:1365
+> netlink_sendmsg+0x665/0x770 net/netlink/af_netlink.c:1913
+> sock_sendmsg_nosec net/socket.c:724 [inline]
+> sock_sendmsg net/socket.c:747 [inline]
+> ____sys_sendmsg+0x375/0x4c0 net/socket.c:2503
+> ___sys_sendmsg net/socket.c:2557 [inline]
+> __sys_sendmsg+0x1e3/0x270 net/socket.c:2586
+> __do_sys_sendmsg net/socket.c:2595 [inline]
+> __se_sys_sendmsg net/socket.c:2593 [inline]
+> __x64_sys_sendmsg+0x46/0x50 net/socket.c:2593
+> do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
+> entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>
+> Reported by Kernel Concurrency Sanitizer on:
+> CPU: 0 PID: 6912 Comm: syz-executor.5 Not tainted 6.4.0-rc3-syzkaller-001=
+90-g0d85b27b0cc6 #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS G=
+oogle 05/16/2023
+>
+> Fixes: 3a7d0d07a386 ("net: sched: extend Qdisc with rcu")
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Vlad Buslov <vladbu@nvidia.com>
 
-Could you explain what the problem caused by the overflow will be?
+Acked-by: Jamal Hadi Salim<jhs@mojatatu.com>
+
++Cc Peilin. Peilin any update on what you are chasing on grafting?
+
+cheers,
+jamal
+
+cheers,
+jamal
+> ---
+>  include/linux/netdevice.h |  2 +-
+>  include/net/sch_generic.h |  6 ++++--
+>  net/core/dev.c            |  2 +-
+>  net/sched/sch_api.c       | 26 ++++++++++++++++----------
+>  net/sched/sch_fq_pie.c    |  2 ++
+>  net/sched/sch_generic.c   | 30 +++++++++++++++---------------
+>  net/sched/sch_mq.c        |  8 ++++----
+>  net/sched/sch_mqprio.c    |  8 ++++----
+>  net/sched/sch_pie.c       |  5 ++++-
+>  net/sched/sch_red.c       |  5 ++++-
+>  net/sched/sch_sfq.c       |  5 ++++-
+>  net/sched/sch_taprio.c    |  6 +++---
+>  net/sched/sch_teql.c      |  2 +-
+>  13 files changed, 63 insertions(+), 44 deletions(-)
+>
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index e6f22b7403d014a2cf4d81d931109a594ce1398e..c2f0c6002a84b206b26a16c43=
+2920b92740391b4 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -620,7 +620,7 @@ struct netdev_queue {
+>         netdevice_tracker       dev_tracker;
+>
+>         struct Qdisc __rcu      *qdisc;
+> -       struct Qdisc            *qdisc_sleeping;
+> +       struct Qdisc __rcu      *qdisc_sleeping;
+>  #ifdef CONFIG_SYSFS
+>         struct kobject          kobj;
+>  #endif
+> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+> index fab5ba3e61b7c8ca92d9f9386fb2aa9a50d6b365..27271f2b37cb37ecbf1c48dcf=
+b6f6b5845296fd2 100644
+> --- a/include/net/sch_generic.h
+> +++ b/include/net/sch_generic.h
+> @@ -545,7 +545,7 @@ static inline struct Qdisc *qdisc_root_bh(const struc=
+t Qdisc *qdisc)
+>
+>  static inline struct Qdisc *qdisc_root_sleeping(const struct Qdisc *qdis=
+c)
+>  {
+> -       return qdisc->dev_queue->qdisc_sleeping;
+> +       return rcu_dereference_rtnl(qdisc->dev_queue->qdisc_sleeping);
+>  }
+>
+>  static inline spinlock_t *qdisc_root_sleeping_lock(const struct Qdisc *q=
+disc)
+> @@ -754,7 +754,9 @@ static inline bool qdisc_tx_changing(const struct net=
+_device *dev)
+>
+>         for (i =3D 0; i < dev->num_tx_queues; i++) {
+>                 struct netdev_queue *txq =3D netdev_get_tx_queue(dev, i);
+> -               if (rcu_access_pointer(txq->qdisc) !=3D txq->qdisc_sleepi=
+ng)
+> +
+> +               if (rcu_access_pointer(txq->qdisc) !=3D
+> +                   rcu_access_pointer(txq->qdisc_sleeping))
+>                         return true;
+>         }
+>         return false;
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 1495f8aff288e944c8cab21297f244a6fcde752f..c29f3e1db3ca752f21baa68ff=
+651ce694973a020 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -10543,7 +10543,7 @@ struct netdev_queue *dev_ingress_queue_create(str=
+uct net_device *dev)
+>                 return NULL;
+>         netdev_init_one_queue(dev, queue, NULL);
+>         RCU_INIT_POINTER(queue->qdisc, &noop_qdisc);
+> -       queue->qdisc_sleeping =3D &noop_qdisc;
+> +       RCU_INIT_POINTER(queue->qdisc_sleeping, &noop_qdisc);
+>         rcu_assign_pointer(dev->ingress_queue, queue);
+>  #endif
+>         return queue;
+> diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+> index 9ea51812b9cf28f0121daba1206e34ec864df595..e4b6452318c0afd6e77ec8234=
+c351b2613a8cb19 100644
+> --- a/net/sched/sch_api.c
+> +++ b/net/sched/sch_api.c
+> @@ -309,7 +309,7 @@ struct Qdisc *qdisc_lookup(struct net_device *dev, u3=
+2 handle)
+>
+>         if (dev_ingress_queue(dev))
+>                 q =3D qdisc_match_from_root(
+> -                       dev_ingress_queue(dev)->qdisc_sleeping,
+> +                       rtnl_dereference(dev_ingress_queue(dev)->qdisc_sl=
+eeping),
+>                         handle);
+>  out:
+>         return q;
+> @@ -328,7 +328,8 @@ struct Qdisc *qdisc_lookup_rcu(struct net_device *dev=
+, u32 handle)
+>
+>         nq =3D dev_ingress_queue_rcu(dev);
+>         if (nq)
+> -               q =3D qdisc_match_from_root(nq->qdisc_sleeping, handle);
+> +               q =3D qdisc_match_from_root(rcu_dereference(nq->qdisc_sle=
+eping),
+> +                                         handle);
+>  out:
+>         return q;
+>  }
+> @@ -634,8 +635,13 @@ EXPORT_SYMBOL(qdisc_watchdog_init);
+>  void qdisc_watchdog_schedule_range_ns(struct qdisc_watchdog *wd, u64 exp=
+ires,
+>                                       u64 delta_ns)
+>  {
+> -       if (test_bit(__QDISC_STATE_DEACTIVATED,
+> -                    &qdisc_root_sleeping(wd->qdisc)->state))
+> +       bool deactivated;
+> +
+> +       rcu_read_lock();
+> +       deactivated =3D test_bit(__QDISC_STATE_DEACTIVATED,
+> +                              &qdisc_root_sleeping(wd->qdisc)->state);
+> +       rcu_read_unlock();
+> +       if (deactivated)
+>                 return;
+>
+>         if (hrtimer_is_queued(&wd->timer)) {
+> @@ -1478,7 +1484,7 @@ static int tc_get_qdisc(struct sk_buff *skb, struct=
+ nlmsghdr *n,
+>                                 }
+>                                 q =3D qdisc_leaf(p, clid);
+>                         } else if (dev_ingress_queue(dev)) {
+> -                               q =3D dev_ingress_queue(dev)->qdisc_sleep=
+ing;
+> +                               q =3D rtnl_dereference(dev_ingress_queue(=
+dev)->qdisc_sleeping);
+>                         }
+>                 } else {
+>                         q =3D rtnl_dereference(dev->qdisc);
+> @@ -1564,7 +1570,7 @@ static int tc_modify_qdisc(struct sk_buff *skb, str=
+uct nlmsghdr *n,
+>                                 }
+>                                 q =3D qdisc_leaf(p, clid);
+>                         } else if (dev_ingress_queue_create(dev)) {
+> -                               q =3D dev_ingress_queue(dev)->qdisc_sleep=
+ing;
+> +                               q =3D rtnl_dereference(dev_ingress_queue(=
+dev)->qdisc_sleeping);
+>                         }
+>                 } else {
+>                         q =3D rtnl_dereference(dev->qdisc);
+> @@ -1805,8 +1811,8 @@ static int tc_dump_qdisc(struct sk_buff *skb, struc=
+t netlink_callback *cb)
+>
+>                 dev_queue =3D dev_ingress_queue(dev);
+>                 if (dev_queue &&
+> -                   tc_dump_qdisc_root(dev_queue->qdisc_sleeping, skb, cb=
+,
+> -                                      &q_idx, s_q_idx, false,
+> +                   tc_dump_qdisc_root(rtnl_dereference(dev_queue->qdisc_=
+sleeping),
+> +                                      skb, cb, &q_idx, s_q_idx, false,
+>                                        tca[TCA_DUMP_INVISIBLE]) < 0)
+>                         goto done;
+>
+> @@ -2249,8 +2255,8 @@ static int tc_dump_tclass(struct sk_buff *skb, stru=
+ct netlink_callback *cb)
+>
+>         dev_queue =3D dev_ingress_queue(dev);
+>         if (dev_queue &&
+> -           tc_dump_tclass_root(dev_queue->qdisc_sleeping, skb, tcm, cb,
+> -                               &t, s_t, false) < 0)
+> +           tc_dump_tclass_root(rtnl_dereference(dev_queue->qdisc_sleepin=
+g),
+> +                               skb, tcm, cb, &t, s_t, false) < 0)
+>                 goto done;
+>
+>  done:
+> diff --git a/net/sched/sch_fq_pie.c b/net/sched/sch_fq_pie.c
+> index c699e5095607dedbc921802f31e8f4c78c35985f..591d87d5e5c0f10379645da9e=
+b0f4e7309d74916 100644
+> --- a/net/sched/sch_fq_pie.c
+> +++ b/net/sched/sch_fq_pie.c
+> @@ -379,6 +379,7 @@ static void fq_pie_timer(struct timer_list *t)
+>         spinlock_t *root_lock; /* to lock qdisc for probability calculati=
+ons */
+>         u32 idx;
+>
+> +       rcu_read_lock();
+>         root_lock =3D qdisc_lock(qdisc_root_sleeping(sch));
+>         spin_lock(root_lock);
+>
+> @@ -391,6 +392,7 @@ static void fq_pie_timer(struct timer_list *t)
+>                 mod_timer(&q->adapt_timer, jiffies + q->p_params.tupdate)=
+;
+>
+>         spin_unlock(root_lock);
+> +       rcu_read_unlock();
+>  }
+>
+>  static int fq_pie_init(struct Qdisc *sch, struct nlattr *opt,
+> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+> index 37e41f972f69fbff15b1817908c473d22ba410d3..3248259eba32ac21276d5d2e2=
+e3613ec9e707d06 100644
+> --- a/net/sched/sch_generic.c
+> +++ b/net/sched/sch_generic.c
+> @@ -648,7 +648,7 @@ struct Qdisc_ops noop_qdisc_ops __read_mostly =3D {
+>
+>  static struct netdev_queue noop_netdev_queue =3D {
+>         RCU_POINTER_INITIALIZER(qdisc, &noop_qdisc),
+> -       .qdisc_sleeping =3D       &noop_qdisc,
+> +       RCU_POINTER_INITIALIZER(qdisc_sleeping, &noop_qdisc),
+>  };
+>
+>  struct Qdisc noop_qdisc =3D {
+> @@ -1103,7 +1103,7 @@ EXPORT_SYMBOL(qdisc_put_unlocked);
+>  struct Qdisc *dev_graft_qdisc(struct netdev_queue *dev_queue,
+>                               struct Qdisc *qdisc)
+>  {
+> -       struct Qdisc *oqdisc =3D dev_queue->qdisc_sleeping;
+> +       struct Qdisc *oqdisc =3D rtnl_dereference(dev_queue->qdisc_sleepi=
+ng);
+>         spinlock_t *root_lock;
+>
+>         root_lock =3D qdisc_lock(oqdisc);
+> @@ -1112,7 +1112,7 @@ struct Qdisc *dev_graft_qdisc(struct netdev_queue *=
+dev_queue,
+>         /* ... and graft new one */
+>         if (qdisc =3D=3D NULL)
+>                 qdisc =3D &noop_qdisc;
+> -       dev_queue->qdisc_sleeping =3D qdisc;
+> +       rcu_assign_pointer(dev_queue->qdisc_sleeping, qdisc);
+>         rcu_assign_pointer(dev_queue->qdisc, &noop_qdisc);
+>
+>         spin_unlock_bh(root_lock);
+> @@ -1125,12 +1125,12 @@ static void shutdown_scheduler_queue(struct net_d=
+evice *dev,
+>                                      struct netdev_queue *dev_queue,
+>                                      void *_qdisc_default)
+>  {
+> -       struct Qdisc *qdisc =3D dev_queue->qdisc_sleeping;
+> +       struct Qdisc *qdisc =3D rtnl_dereference(dev_queue->qdisc_sleepin=
+g);
+>         struct Qdisc *qdisc_default =3D _qdisc_default;
+>
+>         if (qdisc) {
+>                 rcu_assign_pointer(dev_queue->qdisc, qdisc_default);
+> -               dev_queue->qdisc_sleeping =3D qdisc_default;
+> +               rcu_assign_pointer(dev_queue->qdisc_sleeping, qdisc_defau=
+lt);
+>
+>                 qdisc_put(qdisc);
+>         }
+> @@ -1154,7 +1154,7 @@ static void attach_one_default_qdisc(struct net_dev=
+ice *dev,
+>
+>         if (!netif_is_multiqueue(dev))
+>                 qdisc->flags |=3D TCQ_F_ONETXQUEUE | TCQ_F_NOPARENT;
+> -       dev_queue->qdisc_sleeping =3D qdisc;
+> +       rcu_assign_pointer(dev_queue->qdisc_sleeping, qdisc);
+>  }
+>
+>  static void attach_default_qdiscs(struct net_device *dev)
+> @@ -1167,7 +1167,7 @@ static void attach_default_qdiscs(struct net_device=
+ *dev)
+>         if (!netif_is_multiqueue(dev) ||
+>             dev->priv_flags & IFF_NO_QUEUE) {
+>                 netdev_for_each_tx_queue(dev, attach_one_default_qdisc, N=
+ULL);
+> -               qdisc =3D txq->qdisc_sleeping;
+> +               qdisc =3D rtnl_dereference(txq->qdisc_sleeping);
+>                 rcu_assign_pointer(dev->qdisc, qdisc);
+>                 qdisc_refcount_inc(qdisc);
+>         } else {
+> @@ -1186,7 +1186,7 @@ static void attach_default_qdiscs(struct net_device=
+ *dev)
+>                 netdev_for_each_tx_queue(dev, shutdown_scheduler_queue, &=
+noop_qdisc);
+>                 dev->priv_flags |=3D IFF_NO_QUEUE;
+>                 netdev_for_each_tx_queue(dev, attach_one_default_qdisc, N=
+ULL);
+> -               qdisc =3D txq->qdisc_sleeping;
+> +               qdisc =3D rtnl_dereference(txq->qdisc_sleeping);
+>                 rcu_assign_pointer(dev->qdisc, qdisc);
+>                 qdisc_refcount_inc(qdisc);
+>                 dev->priv_flags ^=3D IFF_NO_QUEUE;
+> @@ -1202,7 +1202,7 @@ static void transition_one_qdisc(struct net_device =
+*dev,
+>                                  struct netdev_queue *dev_queue,
+>                                  void *_need_watchdog)
+>  {
+> -       struct Qdisc *new_qdisc =3D dev_queue->qdisc_sleeping;
+> +       struct Qdisc *new_qdisc =3D rtnl_dereference(dev_queue->qdisc_sle=
+eping);
+>         int *need_watchdog_p =3D _need_watchdog;
+>
+>         if (!(new_qdisc->flags & TCQ_F_BUILTIN))
+> @@ -1272,7 +1272,7 @@ static void dev_reset_queue(struct net_device *dev,
+>         struct Qdisc *qdisc;
+>         bool nolock;
+>
+> -       qdisc =3D dev_queue->qdisc_sleeping;
+> +       qdisc =3D rtnl_dereference(dev_queue->qdisc_sleeping);
+>         if (!qdisc)
+>                 return;
+>
+> @@ -1303,7 +1303,7 @@ static bool some_qdisc_is_busy(struct net_device *d=
+ev)
+>                 int val;
+>
+>                 dev_queue =3D netdev_get_tx_queue(dev, i);
+> -               q =3D dev_queue->qdisc_sleeping;
+> +               q =3D rtnl_dereference(dev_queue->qdisc_sleeping);
+>
+>                 root_lock =3D qdisc_lock(q);
+>                 spin_lock_bh(root_lock);
+> @@ -1379,7 +1379,7 @@ EXPORT_SYMBOL(dev_deactivate);
+>  static int qdisc_change_tx_queue_len(struct net_device *dev,
+>                                      struct netdev_queue *dev_queue)
+>  {
+> -       struct Qdisc *qdisc =3D dev_queue->qdisc_sleeping;
+> +       struct Qdisc *qdisc =3D rtnl_dereference(dev_queue->qdisc_sleepin=
+g);
+>         const struct Qdisc_ops *ops =3D qdisc->ops;
+>
+>         if (ops->change_tx_queue_len)
+> @@ -1404,7 +1404,7 @@ void mq_change_real_num_tx(struct Qdisc *sch, unsig=
+ned int new_real_tx)
+>         unsigned int i;
+>
+>         for (i =3D new_real_tx; i < dev->real_num_tx_queues; i++) {
+> -               qdisc =3D netdev_get_tx_queue(dev, i)->qdisc_sleeping;
+> +               qdisc =3D rtnl_dereference(netdev_get_tx_queue(dev, i)->q=
+disc_sleeping);
+>                 /* Only update the default qdiscs we created,
+>                  * qdiscs with handles are always hashed.
+>                  */
+> @@ -1412,7 +1412,7 @@ void mq_change_real_num_tx(struct Qdisc *sch, unsig=
+ned int new_real_tx)
+>                         qdisc_hash_del(qdisc);
+>         }
+>         for (i =3D dev->real_num_tx_queues; i < new_real_tx; i++) {
+> -               qdisc =3D netdev_get_tx_queue(dev, i)->qdisc_sleeping;
+> +               qdisc =3D rtnl_dereference(netdev_get_tx_queue(dev, i)->q=
+disc_sleeping);
+>                 if (qdisc !=3D &noop_qdisc && !qdisc->handle)
+>                         qdisc_hash_add(qdisc, false);
+>         }
+> @@ -1449,7 +1449,7 @@ static void dev_init_scheduler_queue(struct net_dev=
+ice *dev,
+>         struct Qdisc *qdisc =3D _qdisc;
+>
+>         rcu_assign_pointer(dev_queue->qdisc, qdisc);
+> -       dev_queue->qdisc_sleeping =3D qdisc;
+> +       rcu_assign_pointer(dev_queue->qdisc_sleeping, qdisc);
+>  }
+>
+>  void dev_init_scheduler(struct net_device *dev)
+> diff --git a/net/sched/sch_mq.c b/net/sched/sch_mq.c
+> index d0bc660d7401f9d0b1509ac65e641622f51a99b3..c860119a8f091c68c64932dee=
+48465f4bca6f901 100644
+> --- a/net/sched/sch_mq.c
+> +++ b/net/sched/sch_mq.c
+> @@ -141,7 +141,7 @@ static int mq_dump(struct Qdisc *sch, struct sk_buff =
+*skb)
+>          * qdisc totals are added at end.
+>          */
+>         for (ntx =3D 0; ntx < dev->num_tx_queues; ntx++) {
+> -               qdisc =3D netdev_get_tx_queue(dev, ntx)->qdisc_sleeping;
+> +               qdisc =3D rtnl_dereference(netdev_get_tx_queue(dev, ntx)-=
+>qdisc_sleeping);
+>                 spin_lock_bh(qdisc_lock(qdisc));
+>
+>                 gnet_stats_add_basic(&sch->bstats, qdisc->cpu_bstats,
+> @@ -202,7 +202,7 @@ static struct Qdisc *mq_leaf(struct Qdisc *sch, unsig=
+ned long cl)
+>  {
+>         struct netdev_queue *dev_queue =3D mq_queue_get(sch, cl);
+>
+> -       return dev_queue->qdisc_sleeping;
+> +       return rtnl_dereference(dev_queue->qdisc_sleeping);
+>  }
+>
+>  static unsigned long mq_find(struct Qdisc *sch, u32 classid)
+> @@ -221,7 +221,7 @@ static int mq_dump_class(struct Qdisc *sch, unsigned =
+long cl,
+>
+>         tcm->tcm_parent =3D TC_H_ROOT;
+>         tcm->tcm_handle |=3D TC_H_MIN(cl);
+> -       tcm->tcm_info =3D dev_queue->qdisc_sleeping->handle;
+> +       tcm->tcm_info =3D rtnl_dereference(dev_queue->qdisc_sleeping)->ha=
+ndle;
+>         return 0;
+>  }
+>
+> @@ -230,7 +230,7 @@ static int mq_dump_class_stats(struct Qdisc *sch, uns=
+igned long cl,
+>  {
+>         struct netdev_queue *dev_queue =3D mq_queue_get(sch, cl);
+>
+> -       sch =3D dev_queue->qdisc_sleeping;
+> +       sch =3D rtnl_dereference(dev_queue->qdisc_sleeping);
+>         if (gnet_stats_copy_basic(d, sch->cpu_bstats, &sch->bstats, true)=
+ < 0 ||
+>             qdisc_qstats_copy(d, sch) < 0)
+>                 return -1;
+> diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
+> index dc5a0ff50b142f61c17661590b985a348b51691d..ab69ff7577fc7dba0cc9d899c=
+25bc6a2fcee4b43 100644
+> --- a/net/sched/sch_mqprio.c
+> +++ b/net/sched/sch_mqprio.c
+> @@ -557,7 +557,7 @@ static int mqprio_dump(struct Qdisc *sch, struct sk_b=
+uff *skb)
+>          * qdisc totals are added at end.
+>          */
+>         for (ntx =3D 0; ntx < dev->num_tx_queues; ntx++) {
+> -               qdisc =3D netdev_get_tx_queue(dev, ntx)->qdisc_sleeping;
+> +               qdisc =3D rtnl_dereference(netdev_get_tx_queue(dev, ntx)-=
+>qdisc_sleeping);
+>                 spin_lock_bh(qdisc_lock(qdisc));
+>
+>                 gnet_stats_add_basic(&sch->bstats, qdisc->cpu_bstats,
+> @@ -604,7 +604,7 @@ static struct Qdisc *mqprio_leaf(struct Qdisc *sch, u=
+nsigned long cl)
+>         if (!dev_queue)
+>                 return NULL;
+>
+> -       return dev_queue->qdisc_sleeping;
+> +       return rtnl_dereference(dev_queue->qdisc_sleeping);
+>  }
+>
+>  static unsigned long mqprio_find(struct Qdisc *sch, u32 classid)
+> @@ -637,7 +637,7 @@ static int mqprio_dump_class(struct Qdisc *sch, unsig=
+ned long cl,
+>                 tcm->tcm_parent =3D (tc < 0) ? 0 :
+>                         TC_H_MAKE(TC_H_MAJ(sch->handle),
+>                                   TC_H_MIN(tc + TC_H_MIN_PRIORITY));
+> -               tcm->tcm_info =3D dev_queue->qdisc_sleeping->handle;
+> +               tcm->tcm_info =3D rtnl_dereference(dev_queue->qdisc_sleep=
+ing)->handle;
+>         } else {
+>                 tcm->tcm_parent =3D TC_H_ROOT;
+>                 tcm->tcm_info =3D 0;
+> @@ -693,7 +693,7 @@ static int mqprio_dump_class_stats(struct Qdisc *sch,=
+ unsigned long cl,
+>         } else {
+>                 struct netdev_queue *dev_queue =3D mqprio_queue_get(sch, =
+cl);
+>
+> -               sch =3D dev_queue->qdisc_sleeping;
+> +               sch =3D rtnl_dereference(dev_queue->qdisc_sleeping);
+>                 if (gnet_stats_copy_basic(d, sch->cpu_bstats,
+>                                           &sch->bstats, true) < 0 ||
+>                     qdisc_qstats_copy(d, sch) < 0)
+> diff --git a/net/sched/sch_pie.c b/net/sched/sch_pie.c
+> index 2152a56d73f86eddc432a47c0cf6383c59ab2d43..2da6250ec3463686a1d588da2=
+24314befcc1478b 100644
+> --- a/net/sched/sch_pie.c
+> +++ b/net/sched/sch_pie.c
+> @@ -421,8 +421,10 @@ static void pie_timer(struct timer_list *t)
+>  {
+>         struct pie_sched_data *q =3D from_timer(q, t, adapt_timer);
+>         struct Qdisc *sch =3D q->sch;
+> -       spinlock_t *root_lock =3D qdisc_lock(qdisc_root_sleeping(sch));
+> +       spinlock_t *root_lock;
+>
+> +       rcu_read_lock();
+> +       root_lock =3D qdisc_lock(qdisc_root_sleeping(sch));
+>         spin_lock(root_lock);
+>         pie_calculate_probability(&q->params, &q->vars, sch->qstats.backl=
+og);
+>
+> @@ -430,6 +432,7 @@ static void pie_timer(struct timer_list *t)
+>         if (q->params.tupdate)
+>                 mod_timer(&q->adapt_timer, jiffies + q->params.tupdate);
+>         spin_unlock(root_lock);
+> +       rcu_read_unlock();
+>  }
+>
+>  static int pie_init(struct Qdisc *sch, struct nlattr *opt,
+> diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
+> index 98129324e1573b5178c60300ac93666afe154dbe..16277b6a0238dabc18ef78768=
+ad4495d23999025 100644
+> --- a/net/sched/sch_red.c
+> +++ b/net/sched/sch_red.c
+> @@ -321,12 +321,15 @@ static inline void red_adaptative_timer(struct time=
+r_list *t)
+>  {
+>         struct red_sched_data *q =3D from_timer(q, t, adapt_timer);
+>         struct Qdisc *sch =3D q->sch;
+> -       spinlock_t *root_lock =3D qdisc_lock(qdisc_root_sleeping(sch));
+> +       spinlock_t *root_lock;
+>
+> +       rcu_read_lock();
+> +       root_lock =3D qdisc_lock(qdisc_root_sleeping(sch));
+>         spin_lock(root_lock);
+>         red_adaptative_algo(&q->parms, &q->vars);
+>         mod_timer(&q->adapt_timer, jiffies + HZ/2);
+>         spin_unlock(root_lock);
+> +       rcu_read_unlock();
+>  }
+>
+>  static int red_init(struct Qdisc *sch, struct nlattr *opt,
+> diff --git a/net/sched/sch_sfq.c b/net/sched/sch_sfq.c
+> index abd436307d6a8492d2d297c138d3b3e0309b949f..66dcb18638fea440f6f5bce2c=
+a45b6179b060408 100644
+> --- a/net/sched/sch_sfq.c
+> +++ b/net/sched/sch_sfq.c
+> @@ -606,10 +606,12 @@ static void sfq_perturbation(struct timer_list *t)
+>  {
+>         struct sfq_sched_data *q =3D from_timer(q, t, perturb_timer);
+>         struct Qdisc *sch =3D q->sch;
+> -       spinlock_t *root_lock =3D qdisc_lock(qdisc_root_sleeping(sch));
+> +       spinlock_t *root_lock;
+>         siphash_key_t nkey;
+>
+>         get_random_bytes(&nkey, sizeof(nkey));
+> +       rcu_read_lock();
+> +       root_lock =3D qdisc_lock(qdisc_root_sleeping(sch));
+>         spin_lock(root_lock);
+>         q->perturbation =3D nkey;
+>         if (!q->filter_list && q->tail)
+> @@ -618,6 +620,7 @@ static void sfq_perturbation(struct timer_list *t)
+>
+>         if (q->perturb_period)
+>                 mod_timer(&q->perturb_timer, jiffies + q->perturb_period)=
+;
+> +       rcu_read_unlock();
+>  }
+>
+>  static int sfq_change(struct Qdisc *sch, struct nlattr *opt)
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index 76db9a10ef504d6f6adeea1c920bf0e3d49c2df8..dd7dea2f6e836da4051c1726d=
+202e53fe15627ff 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -2358,7 +2358,7 @@ static struct Qdisc *taprio_leaf(struct Qdisc *sch,=
+ unsigned long cl)
+>         if (!dev_queue)
+>                 return NULL;
+>
+> -       return dev_queue->qdisc_sleeping;
+> +       return rtnl_dereference(dev_queue->qdisc_sleeping);
+>  }
+>
+>  static unsigned long taprio_find(struct Qdisc *sch, u32 classid)
+> @@ -2377,7 +2377,7 @@ static int taprio_dump_class(struct Qdisc *sch, uns=
+igned long cl,
+>
+>         tcm->tcm_parent =3D TC_H_ROOT;
+>         tcm->tcm_handle |=3D TC_H_MIN(cl);
+> -       tcm->tcm_info =3D dev_queue->qdisc_sleeping->handle;
+> +       tcm->tcm_info =3D rtnl_dereference(dev_queue->qdisc_sleeping)->ha=
+ndle;
+>
+>         return 0;
+>  }
+> @@ -2389,7 +2389,7 @@ static int taprio_dump_class_stats(struct Qdisc *sc=
+h, unsigned long cl,
+>  {
+>         struct netdev_queue *dev_queue =3D taprio_queue_get(sch, cl);
+>
+> -       sch =3D dev_queue->qdisc_sleeping;
+> +       sch =3D rtnl_dereference(dev_queue->qdisc_sleeping);
+>         if (gnet_stats_copy_basic(d, NULL, &sch->bstats, true) < 0 ||
+>             qdisc_qstats_copy(d, sch) < 0)
+>                 return -1;
+> diff --git a/net/sched/sch_teql.c b/net/sched/sch_teql.c
+> index 16f9238aa51d133f7004b97b7aa558354634b73d..7721239c185fb0d54ab36300f=
+9138dbc98521ace 100644
+> --- a/net/sched/sch_teql.c
+> +++ b/net/sched/sch_teql.c
+> @@ -297,7 +297,7 @@ static netdev_tx_t teql_master_xmit(struct sk_buff *s=
+kb, struct net_device *dev)
+>                 struct net_device *slave =3D qdisc_dev(q);
+>                 struct netdev_queue *slave_txq =3D netdev_get_tx_queue(sl=
+ave, 0);
+>
+> -               if (slave_txq->qdisc_sleeping !=3D q)
+> +               if (rcu_access_pointer(slave_txq->qdisc_sleeping) !=3D q)
+>                         continue;
+>                 if (netif_xmit_stopped(netdev_get_tx_queue(slave, subq)) =
+||
+>                     !netif_running(slave)) {
+> --
+> 2.41.0.rc0.172.g3f132b7071-goog
+>
 
