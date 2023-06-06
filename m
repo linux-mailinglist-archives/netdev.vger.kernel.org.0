@@ -1,141 +1,129 @@
-Return-Path: <netdev+bounces-8346-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8353-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4C33A723C6D
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:00:12 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 283DB723C99
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:10:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 07D98281559
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:00:11 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5CFBA1C20EAE
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:10:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5921328C1C;
-	Tue,  6 Jun 2023 09:00:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BE22290EC;
+	Tue,  6 Jun 2023 09:10:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D81E3D8A
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:00:09 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E01E8
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 02:00:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686042007;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=nE77/PGW00ePiumkpu3hzk+sXBS9GQxpADNCUK4kjrY=;
-	b=Zd6h0pO2VbnpXJpd+rsZjDGfrQx/lcqEioNfSBNMENfGDpW1CFyQxJT5kqIhXO6JN/9hpa
-	2y3NlTBi/fhi3W+2fIYm+FjLJMZs2xNCGeqxg83f7VwEc9e63BRvxntSZCxSsy9ixNaRyT
-	0f56+UfYLnHiLBry8Y1hiMK90NOBveM=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-330-1tI9oq-tOq-_vI2O3Z6dAw-1; Tue, 06 Jun 2023 05:00:06 -0400
-X-MC-Unique: 1tI9oq-tOq-_vI2O3Z6dAw-1
-Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-3f7e6648625so2817145e9.1
-        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 02:00:05 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20676125C0
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:10:06 +0000 (UTC)
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE934100;
+	Tue,  6 Jun 2023 02:10:05 -0700 (PDT)
+Received: by mail-il1-f175.google.com with SMTP id e9e14a558f8ab-33b0bfb76cfso24356305ab.2;
+        Tue, 06 Jun 2023 02:10:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686042005; x=1688634005;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=nE77/PGW00ePiumkpu3hzk+sXBS9GQxpADNCUK4kjrY=;
-        b=BmSFRLiZqhIutfEKWnb4X8hx4livq8syGP2+jbNIV1ESsF/hOBOcZyYr+6OPtThm1P
-         KdTrxA+j8xpjKH2rnqjP8TE9bc2CF0CvGCkQbpqOqxE6J4sVlArZjXSuvsZz1l5iW0q/
-         NGx59SqR85BPl5DZFtw8SaxUxQdLVu909N+tRro3ObA/37zvdRvvDtFSAWu8V+Z9YHdG
-         ZJUQtnbN55oAyuiEQCPsjTIKsoChk0qAV6xRO+SpLjXyK2d03Jbr3m1GzO8wb6HmrYC9
-         Cto3UMhbLqhK8T5ViFjlTkT3fVZv2AHJt5AjozRk/a4qF37Gij8GEPHxVGor75bxhM7J
-         Z8hg==
-X-Gm-Message-State: AC+VfDzXVAQPE9X2NSOM6ns3ca036t2PzNLLxPfRf9TZV+byp7GIgrtA
-	ybYmfxW0dYJCySpcivgrkO0gMmdt+9Z0uWfSzq5IfYf5wDxIhB1YXLzB4q4uZlu55XCSLwKOO7X
-	B9UGj496YET2xJG/3
-X-Received: by 2002:a05:600c:1c26:b0:3f7:3a2f:35ec with SMTP id j38-20020a05600c1c2600b003f73a2f35ecmr2121567wms.2.1686042005099;
-        Tue, 06 Jun 2023 02:00:05 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4nMW2ZxYmp2BjKFt0zgPi8AR01qUkYolCtDK0fOgYD9ytZTIMSa1sHbzT24zAhoWWsDDQWaw==
-X-Received: by 2002:a05:600c:1c26:b0:3f7:3a2f:35ec with SMTP id j38-20020a05600c1c2600b003f73a2f35ecmr2121536wms.2.1686042004812;
-        Tue, 06 Jun 2023 02:00:04 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-114-89.dyn.eolo.it. [146.241.114.89])
-        by smtp.gmail.com with ESMTPSA id f18-20020a1cc912000000b003f4e3ed98ffsm13282106wmb.35.2023.06.06.02.00.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jun 2023 02:00:04 -0700 (PDT)
-Message-ID: <9eb5ab9385ba4af322f5bb9e8c9112414ab7027b.camel@redhat.com>
-Subject: Re: [PATCH net-next v2 01/10] Drop the netfs_ prefix from
- netfs_extract_iter_to_sg()
-From: Paolo Abeni <pabeni@redhat.com>
-To: David Howells <dhowells@redhat.com>, netdev@vger.kernel.org
-Cc: Herbert Xu <herbert@gondor.apana.org.au>, "David S. Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
- <kuba@kernel.org>, Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
- David Ahern <dsahern@kernel.org>, Matthew Wilcox <willy@infradead.org>,
- Jens Axboe <axboe@kernel.dk>,  linux-crypto@vger.kernel.org,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org,  Jeff Layton
- <jlayton@kernel.org>, Steve French <sfrench@samba.org>, Shyam Prasad N
- <nspmangalore@gmail.com>,  Rohith Surabattula <rohiths.msft@gmail.com>,
- linux-cachefs@redhat.com, linux-cifs@vger.kernel.org, 
- linux-fsdevel@vger.kernel.org
-Date: Tue, 06 Jun 2023 11:00:02 +0200
-In-Reply-To: <20230530141635.136968-2-dhowells@redhat.com>
-References: <20230530141635.136968-1-dhowells@redhat.com>
-	 <20230530141635.136968-2-dhowells@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        d=1e100.net; s=20221208; t=1686042605; x=1688634605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JsblPXknZ5GIdBcvT6axVzmA1IISIV/7YdlNXuNCOIg=;
+        b=aXftCyN5vDj6Yk+E/L3vX1CmRx1jVHRWP0GWPUaxZ3qxKNS+JLTHs7GOAriMI/kilj
+         akvPfHM0L/O/ezCAkaKRA3TExqGYWQxi7dZFNnc6R3Fg/6VU+Xw40p5k4BSx/dFC84xh
+         XBG99gRsZ+UOgthiVWF9HCWR56HtTZ3OJqPzDjJy6v3gu3a8Q2eZuj4hXlSHmWtLr9hd
+         IjONJBQ2b0UF72PQU6t1SdfkXZxaFALX9EUE1GGxSfINY9EyhWZ8j7vWMX8jibzjwASX
+         C2jT8qzTXghJ/3cZ3tRW/upG8OZ84/+HvkKxGAfcQwtZVE/vqfiI2bXhkmLF8blBxBM4
+         9JMg==
+X-Gm-Message-State: AC+VfDyfaBCzAhHEOVX2mzvtbDTaUhoNDrNRpL3Bk4VC1vPcvQ08CIlo
+	9TryqlEPASyRpTJlGynOszmn2NWtv2/MTQ==
+X-Google-Smtp-Source: ACHHUZ5wh3jLQizgP0cwlJNWSdX88FVpA2JFJ/P2XluCzNQUJglNSRg+QbKrnfRGScboTFf92K5Aeg==
+X-Received: by 2002:a92:ce46:0:b0:33c:b395:a898 with SMTP id a6-20020a92ce46000000b0033cb395a898mr1460748ilr.18.1686042604901;
+        Tue, 06 Jun 2023 02:10:04 -0700 (PDT)
+Received: from mail-io1-f54.google.com (mail-io1-f54.google.com. [209.85.166.54])
+        by smtp.gmail.com with ESMTPSA id c6-20020a92cf06000000b0033aa769d1a9sm2962156ilo.72.2023.06.06.02.10.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Jun 2023 02:10:04 -0700 (PDT)
+Received: by mail-io1-f54.google.com with SMTP id ca18e2360f4ac-77499bf8e8bso228187139f.0;
+        Tue, 06 Jun 2023 02:10:04 -0700 (PDT)
+X-Received: by 2002:a0d:df90:0:b0:55a:26cf:33e with SMTP id
+ i138-20020a0ddf90000000b0055a26cf033emr1300837ywe.42.1686042115920; Tue, 06
+ Jun 2023 02:01:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <CA+G9fYv0a-XxXfG6bNuPZGT=fzjtEfRGEYwk3n6M1WhEHUPo9g@mail.gmail.com>
+ <CA+G9fYueN0xti1SDtYVZstPt104sUj06GfOzyqDNrd3s3xXBkA@mail.gmail.com>
+In-Reply-To: <CA+G9fYueN0xti1SDtYVZstPt104sUj06GfOzyqDNrd3s3xXBkA@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 6 Jun 2023 11:01:44 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX7hqipiMCF9uxpU+_RbLmzyHeo-D0tCE_Hx8eTqQ7Pig@mail.gmail.com>
+Message-ID: <CAMuHMdX7hqipiMCF9uxpU+_RbLmzyHeo-D0tCE_Hx8eTqQ7Pig@mail.gmail.com>
+Subject: Re: arm: shmobile_defconfig: ld.lld: error: undefined symbol: lynx_pcs_destroy
+To: Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc: open list <linux-kernel@vger.kernel.org>, 
+	Linux-Next Mailing List <linux-next@vger.kernel.org>, lkft-triage@lists.linaro.org, 
+	clang-built-linux <llvm@lists.linux.dev>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, 
+	Linux ARM <linux-arm-kernel@lists.infradead.org>, Netdev <netdev@vger.kernel.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Arnd Bergmann <arnd@arndb.de>, Anders Roxell <anders.roxell@linaro.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>, maxime.chevallier@bootlin.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, 2023-05-30 at 15:16 +0100, David Howells wrote:
-> Rename netfs_extract_iter_to_sg() and its auxiliary functions to drop the
-> netfs_ prefix.
->=20
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> cc: Jeff Layton <jlayton@kernel.org>
-> cc: Steve French <sfrench@samba.org>
-> cc: Shyam Prasad N <nspmangalore@gmail.com>
-> cc: Rohith Surabattula <rohiths.msft@gmail.com>
-> cc: Jens Axboe <axboe@kernel.dk>
-> cc: Herbert Xu <herbert@gondor.apana.org.au>
-> cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>
-> cc: "David S. Miller" <davem@davemloft.net>
-> cc: Eric Dumazet <edumazet@google.com>
-> cc: Jakub Kicinski <kuba@kernel.org>
-> cc: Paolo Abeni <pabeni@redhat.com>
-> cc: linux-crypto@vger.kernel.org
-> cc: linux-cachefs@redhat.com
-> cc: linux-cifs@vger.kernel.org
-> cc: linux-fsdevel@vger.kernel.org
-> cc: netdev@vger.kernel.org
-> ---
->=20
-> Notes:
->     ver #2:
->      - Put the "netfs_" prefix removal first to shorten lines and avoid
->        checkpatch 80-char warnings.
->=20
->  fs/cifs/smb2ops.c     |  4 +--
->  fs/cifs/smbdirect.c   |  2 +-
+Hi Naresh,
 
-This patch does not apply anymore to net-next as the cifs contents have
-been moved into fs/smb/client.
+On Tue, Jun 6, 2023 at 10:53=E2=80=AFAM Naresh Kamboju
+<naresh.kamboju@linaro.org> wrote:
+> On Tue, 6 Jun 2023 at 14:17, Naresh Kamboju <naresh.kamboju@linaro.org> w=
+rote:
+> > Following build regressions found while building arm shmobile_defconfig=
+ on
+> > Linux next-20230606.
+> >
+> > Regressions found on arm:
+> >
+> >  - build/clang-16-shmobile_defconfig
+> >  - build/gcc-8-shmobile_defconfig
+> >  - build/gcc-12-shmobile_defconfig
+> >  - build/clang-nightly-shmobile_defconfig
+>
+> And mips defconfig builds failed.
+> Regressions found on mips:
+>
+>   - build/clang-16-defconfig
+>   - build/gcc-12-defconfig
+>   - build/gcc-8-defconfig
+>   - build/clang-nightly-defconfig
 
-You need at least to rebase the series on top of commit
-38c8a9a52082579090e34c033d439ed2cd1a462d.
+Please give my fix a try:
+https://lore.kernel.org/linux-renesas-soc/7b36ac43778b41831debd5c30b5b37d26=
+8512195.1686039915.git.geert+renesas@glider.be
 
 Thanks!
 
-Paolo
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
 
