@@ -1,217 +1,207 @@
-Return-Path: <netdev+bounces-8248-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8249-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6164B72347A
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 03:29:43 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4A416723485
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 03:32:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9AB262814B8
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 01:29:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0138C28148A
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 01:32:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E62E2386;
-	Tue,  6 Jun 2023 01:29:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E4EA438B;
+	Tue,  6 Jun 2023 01:32:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8DBC7F
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 01:29:39 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD45E103
-	for <netdev@vger.kernel.org>; Mon,  5 Jun 2023 18:29:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686014977;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=LO0PcoIQipRUJHYAP4IZqQY6Y4aLmW6KIu9FvB1onCA=;
-	b=ggVnQReOn2wuDhgo2dFb62pht5aKUqJ28qX4EgOOxx2sJUiVk3cVFTRI8Qul2YMeXsZlIO
-	UHhDuj8LSV6rfr6vedM7rxwLDX2930+6Xh2zTCJv+Ipw9A5Dgfv7JJxnWtROmn+yyTqyd6
-	ibLf+VpMDzq6g/EQX3S+YFhmtZ4YgA8=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-577-Ok7dA-pDPy2i847RAmGZ4Q-1; Mon, 05 Jun 2023 21:29:35 -0400
-X-MC-Unique: Ok7dA-pDPy2i847RAmGZ4Q-1
-Received: by mail-lj1-f200.google.com with SMTP id 38308e7fff4ca-2b1bbe83720so17520981fa.0
-        for <netdev@vger.kernel.org>; Mon, 05 Jun 2023 18:29:35 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2F577F;
+	Tue,  6 Jun 2023 01:32:12 +0000 (UTC)
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B070DC;
+	Mon,  5 Jun 2023 18:32:10 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id 2adb3069b0e04-4f624daccd1so2742078e87.0;
+        Mon, 05 Jun 2023 18:32:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686015129; x=1688607129;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nKXeYLBgNZsLD/+IxPwyyN63h/BVDg7LwOnNrEDBze0=;
+        b=seM8DoJuA+l2/qluDMFHOqVY2TU0LJEsce5E3zY3BfHXHqYaAoQIn0CcRJVxEiYkeX
+         ueig2x+BcON7b3hxf82SBc6l8PbMtq4dUUcKED2ECulGGEw8YTmbReZY5raJxynbLWYH
+         J9JeYjQuOEvrKBuDThQR39KCrrrmOCQSwS492duLcJ/KfwdyKnVK2MqZaLe2qCpWlreh
+         ATkJkwBLHbj51yPzGh1iKBuit1jUH4WrNFzJ8d/tHdPVOvbrSvBkuBk5fBD/5hjx7tZB
+         hvNmbxkl4kAJgOqDogjNztOz6Dw1NyYjYumFZpe26RxkMpJWsTkFj25n9Bjoa3LU72b6
+         okpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686014974; x=1688606974;
+        d=1e100.net; s=20221208; t=1686015129; x=1688607129;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=LO0PcoIQipRUJHYAP4IZqQY6Y4aLmW6KIu9FvB1onCA=;
-        b=U6pUj5zbipJHQqSjLD1pqL0hKQtuVzh/Tk20ZQyWZM0zLZdgEon8OPSvE7b2v/SRvY
-         Su8Ks151g2xUGK2eRVM4jQA3XHXQqXdJye7utTn9/4Z/0kGp8pOeqMWB6A10RP2h3Dyv
-         j6ovTDH/ADCdo0i5qLT3hf8IpjYUxmFHcDXMW5SnXRuJyf+or1ABmpFgu7rST3dPnSr4
-         dlVUgdbWT7KtC4IbahHfwT5iuA0TD/1aMauOkaSop9ANWnI9DsM07zJUZnDVseSz/pdj
-         iidIJwZ2J0oQtZEELVcVBZR+eoQ6exGclorS9a7chY6niZIjtd9A5/E9YA02QyFfKuPf
-         NgUw==
-X-Gm-Message-State: AC+VfDzeY/GcghehWkS7fnejLnkaS7HR8ZLaESfw1bynGL2/Stxj9tlS
-	4pOUTvt1EMZcU4AFfrSpjAP+PlZPimox2ACSpDOJPdQKZOTJxMqvM1ASZ2G5rwTlX16yIJGwgz9
-	Uc+gvGYHga1NrAPnOZAXRYxd99yxIdJDq
-X-Received: by 2002:a05:651c:90:b0:2ac:770f:8831 with SMTP id 16-20020a05651c009000b002ac770f8831mr471623ljq.40.1686014974165;
-        Mon, 05 Jun 2023 18:29:34 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7q8xwsG2H2HJLbjrNSEB15Tcb4Vhw2h23yOvguszqhRoiFXNx/aA4LQRn2qI/jZv0NF0GvO+g7EwDrFoZVmEY=
-X-Received: by 2002:a05:651c:90:b0:2ac:770f:8831 with SMTP id
- 16-20020a05651c009000b002ac770f8831mr471619ljq.40.1686014973831; Mon, 05 Jun
- 2023 18:29:33 -0700 (PDT)
+        bh=nKXeYLBgNZsLD/+IxPwyyN63h/BVDg7LwOnNrEDBze0=;
+        b=kjLxcs+WiVJ4dyorV4B7lzSHbAoY6fRqHbjjxckuXrK3oQp8eSok6pW0Uz3uGe9mtP
+         qjN5+QApp/K+6WPTbmLM7momAYHvtiKgKIfNisiZmjC3Go4BejfiBsdSeiKqV1LLULEM
+         Q0c1wzqMr+RZfFHYemargTdqZFNLjK3g8YlGrxoL+MIqTZA+9DEExhrMZicH9rcLaIi7
+         bbfd0kAAauhXG9PjKKoCO5TYEAEBTdWDDcobBOWZvkIQswzRZoyHpxc2ESKh8WHnadJ8
+         qk1JugnZyhauyKwihYzy5J14WSFmXHwB1bntLqGUJuNLn8+DXgqI9T0uM8CEQ4HrDK21
+         +cqg==
+X-Gm-Message-State: AC+VfDwj9PTr0O+75yhITU9cfaaaxNeKZUi0mmFGMsUxpdYTpN4DgCyJ
+	b8MQskKdrJx69XC502zxX+j2ROPEBbAyCip10b4=
+X-Google-Smtp-Source: ACHHUZ4CSyaN+1CA8HNujlJTstB9XfEYJXvLicNt50Ql/A2r+8dDz8Zj9rIXpCiTUQYHEpEA2sDAUBbj+rGoJvM5mI4=
+X-Received: by 2002:a2e:7219:0:b0:2b1:c389:c424 with SMTP id
+ n25-20020a2e7219000000b002b1c389c424mr648772ljc.12.1686015128552; Mon, 05 Jun
+ 2023 18:32:08 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230605110644.151211-1-sgarzare@redhat.com> <20230605084104-mutt-send-email-mst@kernel.org>
- <24fjdwp44hovz3d3qkzftmvjie45er3g3boac7aezpvzbwvuol@lmo47ydvnqau>
- <20230605085840-mutt-send-email-mst@kernel.org> <gi2hngx3ndsgz5d2rpqjywdmou5vxhd7xgi5z2lbachr7yoos4@kpifz37oz2et>
- <20230605095404-mutt-send-email-mst@kernel.org> <32ejjuvhvcicv7wjuetkv34qtlpa657n4zlow4eq3fsi2twozk@iqnd2t5tw2an>
-In-Reply-To: <32ejjuvhvcicv7wjuetkv34qtlpa657n4zlow4eq3fsi2twozk@iqnd2t5tw2an>
-From: Jason Wang <jasowang@redhat.com>
-Date: Tue, 6 Jun 2023 09:29:22 +0800
-Message-ID: <CACGkMEu3PqQ99UoKF5NHgVADD3q=BF6jhLiyumeT4S1QCqN1tw@mail.gmail.com>
-Subject: Re: [PATCH] vhost-vdpa: filter VIRTIO_F_RING_PACKED feature
-To: Stefano Garzarella <sgarzare@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Shannon Nelson <shannon.nelson@amd.com>, 
-	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, 
-	=?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>, 
-	Tiwei Bie <tiwei.bie@intel.com>, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230605164955.GA1977@templeofstupid.com> <CAADnVQK7PQxj5jjfUu9sO524yLMPqE6vmzcipno1WYoeu0q-Gw@mail.gmail.com>
+ <20230606004139.GE1977@templeofstupid.com>
+In-Reply-To: <20230606004139.GE1977@templeofstupid.com>
+From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date: Mon, 5 Jun 2023 18:31:57 -0700
+Message-ID: <CAADnVQLhqCVRcPuJ8JEZfd5ii+-TsSs4+AsJC0sbjwPMv7LX_Q@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: search_bpf_extables should search subprogram extables
+To: Krister Johansen <kjlx@templeofstupid.com>
+Cc: bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>, 
+	Daniel Borkmann <daniel@iogearbox.net>, John Fastabend <john.fastabend@gmail.com>, 
+	Andrii Nakryiko <andrii@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>, 
+	Yonghong Song <yhs@fb.com>, KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>, 
+	Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>, 
+	"David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
+	Jesper Dangaard Brouer <hawk@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+	Nick Desaulniers <ndesaulniers@google.com>, Tom Rix <trix@redhat.com>, 
+	LKML <linux-kernel@vger.kernel.org>, Network Development <netdev@vger.kernel.org>, 
+	clang-built-linux <llvm@lists.linux.dev>, stable <stable@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 5, 2023 at 10:58=E2=80=AFPM Stefano Garzarella <sgarzare@redhat=
-.com> wrote:
+On Mon, Jun 5, 2023 at 5:46=E2=80=AFPM Krister Johansen <kjlx@templeofstupi=
+d.com> wrote:
 >
-> On Mon, Jun 05, 2023 at 09:54:57AM -0400, Michael S. Tsirkin wrote:
-> >On Mon, Jun 05, 2023 at 03:30:35PM +0200, Stefano Garzarella wrote:
-> >> On Mon, Jun 05, 2023 at 09:00:25AM -0400, Michael S. Tsirkin wrote:
-> >> > On Mon, Jun 05, 2023 at 02:54:20PM +0200, Stefano Garzarella wrote:
-> >> > > On Mon, Jun 05, 2023 at 08:41:54AM -0400, Michael S. Tsirkin wrote=
-:
-> >> > > > On Mon, Jun 05, 2023 at 01:06:44PM +0200, Stefano Garzarella wro=
-te:
-> >> > > > > vhost-vdpa IOCTLs (eg. VHOST_GET_VRING_BASE, VHOST_SET_VRING_B=
-ASE)
-> >> > > > > don't support packed virtqueue well yet, so let's filter the
-> >> > > > > VIRTIO_F_RING_PACKED feature for now in vhost_vdpa_get_feature=
-s().
-> >> > > > >
-> >> > > > > This way, even if the device supports it, we don't risk it bei=
-ng
-> >> > > > > negotiated, then the VMM is unable to set the vring state prop=
-erly.
-> >> > > > >
-> >> > > > > Fixes: 4c8cf31885f6 ("vhost: introduce vDPA-based backend")
-> >> > > > > Cc: stable@vger.kernel.org
-> >> > > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> >> > > > > ---
-> >> > > > >
-> >> > > > > Notes:
-> >> > > > >     This patch should be applied before the "[PATCH v2 0/3] vh=
-ost_vdpa:
-> >> > > > >     better PACKED support" series [1] and backported in stable=
- branches.
-> >> > > > >
-> >> > > > >     We can revert it when we are sure that everything is worki=
-ng with
-> >> > > > >     packed virtqueues.
-> >> > > > >
-> >> > > > >     Thanks,
-> >> > > > >     Stefano
-> >> > > > >
-> >> > > > >     [1] https://lore.kernel.org/virtualization/20230424225031.=
-18947-1-shannon.nelson@amd.com/
-> >> > > >
-> >> > > > I'm a bit lost here. So why am I merging "better PACKED support"=
- then?
-> >> > >
-> >> > > To really support packed virtqueue with vhost-vdpa, at that point =
-we would
-> >> > > also have to revert this patch.
-> >> > >
-> >> > > I wasn't sure if you wanted to queue the series for this merge win=
-dow.
-> >> > > In that case do you think it is better to send this patch only for=
- stable
-> >> > > branches?
-> >> > > > Does this patch make them a NOP?
-> >> > >
-> >> > > Yep, after applying the "better PACKED support" series and being
-> >> > > sure that
-> >> > > the IOCTLs of vhost-vdpa support packed virtqueue, we should rever=
-t this
-> >> > > patch.
-> >> > >
-> >> > > Let me know if you prefer a different approach.
-> >> > >
-> >> > > I'm concerned that QEMU uses vhost-vdpa IOCTLs thinking that the k=
-ernel
-> >> > > interprets them the right way, when it does not.
-> >> > >
-> >> > > Thanks,
-> >> > > Stefano
-> >> > >
-> >> >
-> >> > If this fixes a bug can you add Fixes tags to each of them? Then it'=
-s ok
-> >> > to merge in this window. Probably easier than the elaborate
-> >> > mask/unmask dance.
-> >>
-> >> CCing Shannon (the original author of the "better PACKED support"
-> >> series).
-> >>
-> >> IIUC Shannon is going to send a v3 of that series to fix the
-> >> documentation, so Shannon can you also add the Fixes tags?
-> >>
-> >> Thanks,
-> >> Stefano
+> On Mon, Jun 05, 2023 at 04:30:29PM -0700, Alexei Starovoitov wrote:
+> > On Mon, Jun 5, 2023 at 9:50=E2=80=AFAM Krister Johansen <kjlx@templeofs=
+tupid.com> wrote:
+> > > +                       if (!aux->func[i]->aux->num_exentries ||
+> > > +                           aux->func[i]->aux->extable =3D=3D NULL)
+> > > +                               continue;
+> > > +                       e =3D search_extable(aux->func[i]->aux->extab=
+le,
+> > > +                           aux->func[i]->aux->num_exentries, addr);
+> > > +               }
+> > > +       }
 > >
-> >Well this is in my tree already. Just reply with
-> >Fixes: <>
-> >to each and I will add these tags.
+> > something odd here.
+> > We do bpf_prog_kallsyms_add(func[i]); for each subprog.
+> > So bpf_prog_ksym_find() in search_bpf_extables()
+> > should be finding ksym and extable of the subprog
+> > and not the main prog.
+> > The bug is probably elsewhere.
 >
-> I tried, but it is not easy since we added the support for packed
-> virtqueue in vdpa and vhost incrementally.
->
-> Initially I was thinking of adding the same tag used here:
->
-> Fixes: 4c8cf31885f6 ("vhost: introduce vDPA-based backend")
->
-> Then I discovered that vq_state wasn't there, so I was thinking of
->
-> Fixes: 530a5678bc00 ("vdpa: support packed virtqueue for set/get_vq_state=
-()")
->
-> So we would have to backport quite a few patches into the stable branches=
-.
-> I don't know if it's worth it...
->
-> I still think it is better to disable packed in the stable branches,
-> otherwise I have to make a list of all the patches we need.
->
-> Any other ideas?
+> I have a kdump (or more) of this bug so if there's additional state
+> you'd like me to share, let me know.
 
-AFAIK, except for vp_vdpa, pds seems to be the first parent that
-supports packed virtqueue. Users should not notice anything wrong if
-they don't use packed virtqueue. And the problem of vp_vdpa + packed
-virtqueue came since the day0 of vp_vdpa. It seems fine to do nothing
-I guess.
+Please convert the test into selftest.
+Then everyone will be able to reproduce easily
+and it will serve us later to make sure we don't regress.
 
-Thanks
+> With your comments in mind, I took
+> another look at the ksym fields in the aux structs.  I have this in the
+> main program:
+>
+>   ksym =3D {
+>     start =3D 18446744072638420852,
+>     end =3D 18446744072638423040,
+>     name =3D <...>
+>     lnode =3D {
+>       next =3D 0xffff88d9c1065168,
+>       prev =3D 0xffff88da91609168
+>     },
+>     tnode =3D {
+>       node =3D {{
+>           __rb_parent_color =3D 18446613068361611640,
+>           rb_right =3D 0xffff88da91609178,
+>           rb_left =3D 0xffff88d9f0c5a578
+>         }, {
+>           __rb_parent_color =3D 18446613068361611664,
+>           rb_right =3D 0xffff88da91609190,
+>           rb_left =3D 0xffff88d9f0c5a590
+>         }}
+>     },
+>     prog =3D true
+>   },
+>
+> and this in the func[0] subprogram:
+>
+>   ksym =3D {
+>     start =3D 18446744072638420852,
+>     end =3D 18446744072638423040,
+>     name =3D <...>
+>     lnode =3D {
+>       next =3D 0xffff88da91609168,
+>       prev =3D 0xffffffff981f8990 <bpf_kallsyms>
+>     },
+>     tnode =3D {
+>       node =3D {{
+>           __rb_parent_color =3D 18446613068361606520,
+>           rb_right =3D 0x0,
+>           rb_left =3D 0x0
+>         }, {
+>           __rb_parent_color =3D 18446613068361606544,
+>           rb_right =3D 0x0,
+>           rb_left =3D 0x0
+>         }}
+>     },
+>     prog =3D true
+>   },
+>
+> That sure looks like func[0] is a leaf in the rbtree and the main
+> program is an intermediate node with leaves.  If that's the case, then
+> bpf_prog_ksym_find may have found the main program instead of the
+> subprogram.  In that case, do you think it's better to skip the main
+> program's call to bpf_prog_ksym_set_addr() if it has subprograms instead
+> of searching for subprograms if the main program is found?
 
->
-> Thanks,
-> Stefano
->
->
+I see.
+Looks like we're doing double bpf_prog_kallsyms_add().
+First in in jit_subprogs():
+        for (i =3D 0; i < env->subprog_cnt; i++) {
+                bpf_prog_lock_ro(func[i]);
+                bpf_prog_kallsyms_add(func[i]);
+        }
+and then again:
+bpf_prog_kallsyms_add(prog);
+in bpf_prog_load().
 
+because func[0] is the main prog.
+
+We are also doing double bpf_prog_lock_ro() for main prog,
+but that's not causing harm.
+
+The fix is probably just this:
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 1e38584d497c..89266dac9c12 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -17633,7 +17633,7 @@ static int jit_subprogs(struct bpf_verifier_env *en=
+v)
+        /* finally lock prog and jit images for all functions and
+         * populate kallsysm
+         */
+-       for (i =3D 0; i < env->subprog_cnt; i++) {
++       for (i =3D 1; i < env->subprog_cnt; i++) {
+                bpf_prog_lock_ro(func[i]);
+                bpf_prog_kallsyms_add(func[i]);
+        }
 
