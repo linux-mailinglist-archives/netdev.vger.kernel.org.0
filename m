@@ -1,810 +1,327 @@
-Return-Path: <netdev+bounces-8649-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8650-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id DB2F97250CA
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 01:27:32 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 74F887250F9
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 01:57:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 77DAA281044
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 23:27:31 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C9F231C20BE0
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 23:57:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7C18934D62;
-	Tue,  6 Jun 2023 23:27:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BE73034D6E;
+	Tue,  6 Jun 2023 23:57:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6778E7E4
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 23:27:29 +0000 (UTC)
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048D61706;
-	Tue,  6 Jun 2023 16:27:26 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id 38308e7fff4ca-2b1b66a8fd5so55053651fa.0;
-        Tue, 06 Jun 2023 16:27:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686094044; x=1688686044;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6Q+L+L9DLQME3Ovcj68Z2TW5sWtJPin3tlzVXFqoVd8=;
-        b=i/TRs+EuZInOTWVUZ9V3lmopzuCEErjeBhqrVgLmqc+y0YKwvTsvaId5Xpy1uKYxlc
-         qfRTheDiYhOlw04JeoKv6CV3GmrOHpntaSwlrJkPKRncrdeTSaio7Rx0rg7lyP6geD7y
-         E3lVHZDobTw2TsQw1/acVSuQ1O0h+rmwLQbomk/sYchQJJ3jjyPC84ro0z2mun9yJFXk
-         1iHopXIIL9GHE21EcwLwVaccIFhAmFIiNWshwupAPuIuHnho4EusDwju7nLn/Q8vbc7u
-         I4+clKQ1Aq1XpG58MecOrcpzZGqXXb7pVkcjgso7PMr1V4Beqfe8UaOxP6yqOI8dg0rg
-         qL9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686094044; x=1688686044;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6Q+L+L9DLQME3Ovcj68Z2TW5sWtJPin3tlzVXFqoVd8=;
-        b=FgeMS/nRb6j0ZhBhZUK6srKSq+Sf5+NjEEwS8P0F678DwlfwZNwNPgVLz/V5VaCz9V
-         ZF6egniAeiQsh89Yzh8eMmwjHmkDk+imw+R04hyey/ekq0UQR6ydHWUQ3beusPW0Nmyb
-         xSDnT7HlB9V2H/lFhLCgUPsdDdk1sZQD83bevxeMsSidTvfjX79BC9EFSQVqF0psFiFH
-         pBf249T/pHLMaTh/3095eb6mbvOs4rr4SNRT2D8qlOoScfGePipeOTFr8cE+fT68hh7x
-         P4QfSZvLbuOLpOUCAm5PROHsb7xqBh0mnAlKQVYcJbC/sgLm3szxP++7wG4A08LXxIu7
-         K0aw==
-X-Gm-Message-State: AC+VfDyzWOpnnPkXAmBqGKQV5pNMLWPUfi0+C1u1pAzhXPNWByup8KoL
-	lVHqWHMnpZjqORYLViDBPA1iHpI6pQST5cDukz4=
-X-Google-Smtp-Source: ACHHUZ6p3o9/+8IApPlSGGqvmlRp/B4UpJVznLGe6PwCeEnAGxvYLaQvxOr1R67/CI9gjsnXbrCcByILKIOGohdyFVI=
-X-Received: by 2002:a2e:4949:0:b0:2b2:a0:e7fd with SMTP id b9-20020a2e4949000000b002b200a0e7fdmr92735ljd.32.1686094043817;
- Tue, 06 Jun 2023 16:27:23 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD76E7E4
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 23:57:55 +0000 (UTC)
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2121.outbound.protection.outlook.com [40.107.113.121])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B8E11A;
+	Tue,  6 Jun 2023 16:57:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LjZqo1iKQz0Xc9ShzHvpHsbXd66eeQUzg/mSxuNVWXOH48jl+6CdPvq8x1EMclxd/FtTXdgKOsy+DhqDTY/pvOWYlUNs6oHwb8q4R3RORkPuvTRLX+b7z0rKNw7C6OcoQn2MUnLvGHmhZnOssilvlPd5MaPd1rvv/qenu9O3Dxz8UuRxRSMh1RvtikJqj49yNVhoq1Ez9ormeDeScE+dPBnC8pR0ZD6rKITY61VPbvsU+2h7ROODJwE/peJ30xa1FkqYbP+Oy2EB9XCHkXOUBmJWt/ZChDHqQAxgzZOEy5X12nefL69Z5fvJJ7ucnM4MefgBwFwuMEVbudWqe4PYpw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BK2DE6z1iCc1nhIgRWo+daJQYX8L9/ByU1FdAJX32nc=;
+ b=eg7vMqeekq5HNcg6jf5zC+LSnGtP0dBjfgc4p9hsZRYcDLLn2EiBsnaZTl2cXBbg9qWv5W6/j10zsuYkywhcKWJXHAs/MWY8LfccPeY7Ei1YWMrGKu76yZb/cguL/mk0G4Dmg5fJSfSLSILmGkEjdiCmgv+PhiimjwOSaVZsRGelwg+7kbr8m8UGG81ZOoImJ6tpxtQP9MAJKOX+xtVu17pTu94tchbyISUK2ItAfqHwAiTiX/m2HmWb0Y8ITBx4iuMHvKbD4MeiOcSHtMMWpJGqGsD9WZ+uDZfIn66s+wiRd/oKHhzq56ZvlgTD+5kBQt3DGNtKN2e81oA8sclaNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BK2DE6z1iCc1nhIgRWo+daJQYX8L9/ByU1FdAJX32nc=;
+ b=Gj8VNBWdWWelA8arQqFxPaaOXlwMzqUDhbxtpru+AqOBNbvRhj89uD2GoCeVomuNYoi4wvWdaMO4wxJIVPY3SnVAa4oye1XHLWVAfZOOwdP8e3bXvyi3D8apy7MvJ23JmvwCnEjdNqmbuT9Q5WP3u0XtW3Xo8s9LjNfYZURIC54=
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ (2603:1096:404:8028::13) by TYAPR01MB5404.jpnprd01.prod.outlook.com
+ (2603:1096:404:8030::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.19; Tue, 6 Jun
+ 2023 23:57:50 +0000
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::711d:f870:2e08:b6e1]) by TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::711d:f870:2e08:b6e1%3]) with mapi id 15.20.6455.030; Tue, 6 Jun 2023
+ 23:57:50 +0000
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+CC: "s.shtylyov@omp.ru" <s.shtylyov@omp.ru>, "davem@davemloft.net"
+	<davem@davemloft.net>, "edumazet@google.com" <edumazet@google.com>,
+	"kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com" <pabeni@redhat.com>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH net-next v2 2/2] net: renesas: rswitch: Use hardware pause
+ features
+Thread-Topic: [PATCH net-next v2 2/2] net: renesas: rswitch: Use hardware
+ pause features
+Thread-Index: AQHZmFS79DoiVT5Vgkyv7LZ1N2TEja9+DzqAgABkkOA=
+Date: Tue, 6 Jun 2023 23:57:50 +0000
+Message-ID:
+ <TYBPR01MB5341534AB8479C3AC0510259D852A@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+References: <20230606085558.1708766-1-yoshihiro.shimoda.uh@renesas.com>
+ <20230606085558.1708766-3-yoshihiro.shimoda.uh@renesas.com>
+ <ZH9y13KXF128Dgbf@boxer>
+In-Reply-To: <ZH9y13KXF128Dgbf@boxer>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TYBPR01MB5341:EE_|TYAPR01MB5404:EE_
+x-ms-office365-filtering-correlation-id: f2b72f6d-f7b6-4f58-74ef-08db66e9d5fc
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ GDXsPnp40wXmTkBEZHzDYBMt7ZgHoRDYdmh+LJ14onqcn8SQkv8uMSirFnq+LM/+0kh32Z0gGkIjgC+IsFzyrXzYALGo9Ph6TvVCL7ftP+zEGaqoLY/NVoRxa13PpObDo+fBzw+9IqGTjBXfF6XPxtvbmUdVo+nhmxHFk+HaAs0PKqnAyV6qHiWaL8bjkb4SwbJXsGPss+I1L9w2T4IHmN0k7Dw+3aRGvdXnredVnaBfYR0JTOjwyPLs0CQVgQafV1xDXx99UkKabrry7Z1em/5CzaHvgjgMGDja5Yv6ODaSsZ7hZytcLAFAwv2q4Lno0Mu+muVOWkgmhcMv2vgQfL1W6hR+yhbmI0jnmzRIvbGZ6Hra4Ndinay0JLRs4wjAAcOyDvcMcWgTLNpscwFhSAwOPw5JAUIXhbw/EjOTLoikfWU+jd5uXjIdMsAqVwKumAXyUF29jGek4LIh2QrzWvgeNGPhcqVrfHEYJeYIQflDpWjlP+VJ2uybwCGcUAjGlVPxiaJ8P9rRQMYo8+3j6FG+3LjfCevZXpg4EjyiQq/VUd1h8aoaMCubwJakFJhCYbunrIgEx1/eJJciWySvZvS++elsNExm18rvua22Gdf1pkVmnErZZRcS2+Wjm3vA
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(136003)(366004)(39860400002)(376002)(451199021)(316002)(7696005)(41300700001)(83380400001)(86362001)(38070700005)(6506007)(9686003)(186003)(2906002)(33656002)(122000001)(38100700002)(55016003)(5660300002)(52536014)(8676002)(8936002)(66946007)(66556008)(66476007)(66446008)(64756008)(76116006)(54906003)(478600001)(71200400001)(4326008)(6916009);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?wWHUt4enCS4rHKKxiwOhpQ8mFLD2m+3c7xjWIbZv5uCZ+sIuAYdhtB8/dmMu?=
+ =?us-ascii?Q?ezsNnwgGgw21LVR+RvETi10uN+tRUDm9toFpYA4PIGVp9/Nb+EHOyqM5CgXZ?=
+ =?us-ascii?Q?fdQTA4Z288R8+ZoA09VkcY5Ql+FGYkmNDUIpmmeNR6LtN1ZVXi4VyFTrcIzg?=
+ =?us-ascii?Q?ZGzKUZyaXXmNe4+ec68cxEWcenWQW5uRMki+4kDHTSJEKSTHZXku4PB/ZF/8?=
+ =?us-ascii?Q?TVzjl6I5JmUSjp51r2zTZ2VURHlrbv7/Wn67T/JfsXC2LV6yW//SVPP6pY3+?=
+ =?us-ascii?Q?aW4EBIBva+YC5ReC0k72lD89oFJ8fqhdtn/m73RC75dFBk5fEVU8IhesslGs?=
+ =?us-ascii?Q?gvdhi25ai2ysLU7sYxSGHIzLh9fkWAV34tQhlpr8oVzv5MEpyyhoqfDgj+a5?=
+ =?us-ascii?Q?1EeGpfIblQnLeNfsjq/D1vgWakGHxmj+XTukDHCrM3uECBDf4od5sNh+hLGO?=
+ =?us-ascii?Q?GnLOT8DvAu5S+n0rsa1UTN/i5fM9+Y/mo8IqQU/Uq2B7JLZ7nkfwnxgOH62u?=
+ =?us-ascii?Q?wNhuldjHtiTYxlM6vtW4inDwhVXZD9MBbRQyeRbxfsNN/9OC5DZG2tDuquhX?=
+ =?us-ascii?Q?3wReUu+QcYGo0+URlJQJuDDcPQExirVMrnVwwjieRi0GNxe7PIZ07UqtcXUo?=
+ =?us-ascii?Q?0mPQvc+R+NWYEfbADY+D51q+L95VfOmcyo4XcYP2sAttsUMl0wL3beyM/gRl?=
+ =?us-ascii?Q?vvgpHfMWiV5w+XMcAmM8RTutIR6hnK/exb5KoJea65/AIwlzmDkv+3JNp3iE?=
+ =?us-ascii?Q?OJe4r+lFlJO/to7FxF3ksySCKfxgsoLgb+PlyodyfP+K3Nbip2izWScn5DxT?=
+ =?us-ascii?Q?6R5PyLZaL3Jk1R5YgIRV8trOwBmy1G9lq7D2Vl310DQ6XWDVZw0g69zjdpTw?=
+ =?us-ascii?Q?yoimoR+RGH5KQMhpFhF6KmnGmAY8zj+eOdzrlrVd/sWXoVMz9HT8f2h5Q0a/?=
+ =?us-ascii?Q?8Pki6QnRzl7FLUFakbNU6BZhwVGpHNJ/GN8QdWIA0uTR88BdNI3jgO6h6ZRG?=
+ =?us-ascii?Q?xVV2DbulhZ0o98wmGIN1NPKtKh6YBd2D52ymAa0qiZIHMAGxACufJCUCIuCP?=
+ =?us-ascii?Q?FTpathz4nEieq16uiiV9ls7GbrRF2xY2uS5pi5Se4sA7/jF6igwme8FMOGKV?=
+ =?us-ascii?Q?WfcsRUg4fklhYuhNGk663uWZg2HL/N8vePJhF+uRx+euVmr5wjpPdvPxHRql?=
+ =?us-ascii?Q?9dlMwSgkJF2QVvgnAcwbiBTogDakb0+D3c5BuIIY8eEIOBklx6Z/lqW0pi8u?=
+ =?us-ascii?Q?z3pLNDNcmP6y+1Qx1ZuojkfWwALyPVj8TlMlzA6lWPHh9X7K0c8mAsucXr4I?=
+ =?us-ascii?Q?qUhFQsWAKB3OrItAkzlyumas/UW+LG/jeEBldkTqFIhdSRmiwvsguimmB2TW?=
+ =?us-ascii?Q?lq7nrhOoA7ICiyve2Aocd9AwX5AkwBYjJ/TASK9t7Vc+w/rlkNQfGWmciRbg?=
+ =?us-ascii?Q?CjM681V5s1PtSWdh6O9b76uR83Ctzx4gp4zmlLfUBUXPuQZvdNneLbSN0la7?=
+ =?us-ascii?Q?4Fs1uhTiYuHydNF6TGLrp2prLsKqrhIkFsqIJtqjCX3wtlQx9u9kTmPFMOvX?=
+ =?us-ascii?Q?Q5JNQFB/9FJ4PfhpIq9VrFlpMfLtsFrPSOYm0ArWCkyiGUYdUaxSqbcRP1DD?=
+ =?us-ascii?Q?iEiWXSCrEC7h9p6ELDsbIm0uo32DZcgPmw6C/Sd1XQOZmzusEWaAHt8QvPu+?=
+ =?us-ascii?Q?bZYT6Q=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230518113021.30431-1-hildawu@realtek.com>
-In-Reply-To: <20230518113021.30431-1-hildawu@realtek.com>
-From: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date: Tue, 6 Jun 2023 16:27:11 -0700
-Message-ID: <CABBYNZ+xD9gxcjQWJ0r5ehCmu-GDunu-isOVq_vQHCN6uDMheA@mail.gmail.com>
-Subject: Re: [PATCH v4] Bluetooth: msft: Extended monitor tracking by address filter
-To: hildawu@realtek.com
-Cc: marcel@holtmann.org, johan.hedberg@gmail.com, davem@davemloft.net, 
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
-	linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, apusaka@chromium.org, mmandlik@google.com, 
-	yinghsu@chromium.org, simon.horman@corigine.com, max.chou@realtek.com, 
-	alex_lu@realsil.com.cn, kidman@realtek.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5341.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f2b72f6d-f7b6-4f58-74ef-08db66e9d5fc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jun 2023 23:57:50.6162
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: W/E3C5lwACUeyuYcblXI4FOz6Kvd+1pT0dzwpFWfH6lbnu14NZ5LpxMKXXKEUSPr00klGswHSwGeDa+45XyxnY46YkmmdLpplkvZ9oi1yaA2kiw/aLHIWqEcHD8tTmeW
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB5404
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Hilda,
+Hello Maciej,
 
-On Thu, May 18, 2023 at 4:30=E2=80=AFAM <hildawu@realtek.com> wrote:
->
-> From: Hilda Wu <hildawu@realtek.com>
->
-> Since limited tracking device per condition, this feature is to support
-> tracking multiple devices concurrently.
-> When a pattern monitor detects the device, this feature issues an address
-> monitor for tracking that device. Let pattern monitor can keep monitor
-> new devices.
-> This feature adds an address filter when receiving a LE monitor device
-> event which monitor handle is for a pattern, and the controller started
-> monitoring the device. And this feature also has cancelled the monitor
-> advertisement from address filters when receiving a LE monitor device
-> event when the controller stopped monitoring the device specified by an
-> address and monitor handle.
->
-> Signed-off-by: Alex Lu <alex_lu@realsil.com.cn>
-> Signed-off-by: Hilda Wu <hildawu@realtek.com>
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> ---
-> Changes in v4:
-> - Follow suggested, modification include allocate an address_filter
->   cb and pass to hci_cmd_sync_queue, etc.
->
-> Changes in v3:
-> - Added flag for the feature.
-> - Modified debug message level.
-> - Follow suggested, using reverse xmas tree in new code.
->
-> Changes in v2:
-> - Fixed build bot warning, removed un-used parameter.
-> - Follow suggested, adjust for readability and idiomatic, modified
->   error case, etc.
-> ---
-> ---
->  drivers/bluetooth/btrtl.c   |   4 +
->  include/net/bluetooth/hci.h |   9 +
->  net/bluetooth/msft.c        | 412 ++++++++++++++++++++++++++++++++++--
->  3 files changed, 410 insertions(+), 15 deletions(-)
->
-> diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
-> index 2915c82d719d..846e0a60cd8d 100644
-> --- a/drivers/bluetooth/btrtl.c
-> +++ b/drivers/bluetooth/btrtl.c
-> @@ -1180,6 +1180,10 @@ void btrtl_set_quirks(struct hci_dev *hdev, struct=
- btrtl_device_info *btrtl_dev)
->                 if (btrtl_dev->project_id =3D=3D CHIP_ID_8852C)
->                         btrealtek_set_flag(hdev, REALTEK_ALT6_CONTINUOUS_=
-TX_CHIP);
->
-> +               if (btrtl_dev->project_id =3D=3D CHIP_ID_8852A ||
-> +                   btrtl_dev->project_id =3D=3D CHIP_ID_8852C)
-> +                       set_bit(HCI_QUIRK_MSFT_EXT_MAF_SUPPORTED, &hdev->=
-quirks);
-> +
->                 hci_set_aosp_capable(hdev);
->                 break;
->         default:
-> diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-> index 07df96c47ef4..48d8068a5a18 100644
-> --- a/include/net/bluetooth/hci.h
-> +++ b/include/net/bluetooth/hci.h
-> @@ -309,6 +309,15 @@ enum {
->          * to support it.
->          */
->         HCI_QUIRK_BROKEN_SET_RPA_TIMEOUT,
-> +
-> +       /* When this quirk is set, extended monitor tracking by address f=
-ilter
-> +        * (MAF) is supported by the driver since limited tracking device=
- per
-> +        * condition, this feature is to support tracking multiple device=
-s
-> +        * concurrently, a driver flag is use to convey this support.
-> +        *
-> +        * This quirk must be set before hci_register_dev is called.
-> +        */
-> +       HCI_QUIRK_MSFT_EXT_MAF_SUPPORTED,
+> From: Maciej Fijalkowski, Sent: Wednesday, June 7, 2023 2:55 AM
+>=20
+> On Tue, Jun 06, 2023 at 05:55:58PM +0900, Yoshihiro Shimoda wrote:
+> > Use "per priority pause" feature of GWCA and "global pause" feature of
+> > COMA instead of "global rate limiter" of GWCA. Otherwise TX performance
+> > will be low when we use multiple ports at the same time.
+>=20
+> does it mean that global pause feature is completely useless?
 
-I'm a little unsure how to interpret these comments above, usually
-quirks are used when a driver has some broken feature, or deviates
-from the specification, in this case it seems you guys have added an
-extension on top of MSFT vendor commands? Or are there updates to the
-MSFT vendor commands specification?
+The global rate limiter is useless, not global pause. I'll revise this
+description on v2.
 
-Anyway it would be great if we can get the decoding support for these
-commands and an example of how they can be used, in fact one long
-standing gap is to write proper testing to mgmt-tester since the
-emulator already supports MSFT vendor commands, that way our CI can
-validate this sort of changes don't break anything.
-
->  };
->
->  /* HCI device flags */
-> diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-> index bf5cee48916c..59a995bd4bcc 100644
-> --- a/net/bluetooth/msft.c
-> +++ b/net/bluetooth/msft.c
-> @@ -91,6 +91,33 @@ struct msft_ev_le_monitor_device {
->  struct msft_monitor_advertisement_handle_data {
->         __u8  msft_handle;
->         __u16 mgmt_handle;
-> +       __s8 rssi_high;
-> +       __s8 rssi_low;
-> +       __u8 rssi_low_interval;
-> +       __u8 rssi_sampling_period;
-> +       __u8 cond_type;
-> +       struct list_head list;
-> +};
-> +
-> +enum monitor_addr_filter_state {
-> +       AF_STATE_IDLE,
-> +       AF_STATE_ADDING,
-> +       AF_STATE_ADDED,
-> +       AF_STATE_REMOVING,
-> +};
-> +
-> +#define MSFT_MONITOR_ADVERTISEMENT_TYPE_ADDR   0x04
-> +struct msft_monitor_addr_filter_data {
-> +       __u8     msft_handle;
-> +       __u8     pattern_handle; /* address filters pertain to */
-> +       __u16    mgmt_handle;
-> +       int      state;
-> +       __s8     rssi_high;
-> +       __s8     rssi_low;
-> +       __u8     rssi_low_interval;
-> +       __u8     rssi_sampling_period;
-> +       __u8     addr_type;
-> +       bdaddr_t bdaddr;
->         struct list_head list;
->  };
->
-> @@ -99,9 +126,12 @@ struct msft_data {
->         __u8  evt_prefix_len;
->         __u8  *evt_prefix;
->         struct list_head handle_map;
-> +       struct list_head address_filters;
->         __u8 resuming;
->         __u8 suspending;
->         __u8 filter_enabled;
-> +       /* To synchronize add/remove address filter and monitor device ev=
-ent.*/
-> +       struct mutex filter_lock;
->  };
->
->  bool msft_monitor_supported(struct hci_dev *hdev)
-> @@ -180,6 +210,24 @@ static struct msft_monitor_advertisement_handle_data=
- *msft_find_handle_data
->         return NULL;
->  }
->
-> +/* This function requires the caller holds msft->filter_lock */
-> +static struct msft_monitor_addr_filter_data *msft_find_address_data
-> +                       (struct hci_dev *hdev, u8 addr_type, bdaddr_t *ad=
-dr,
-> +                        u8 pattern_handle)
-> +{
-> +       struct msft_monitor_addr_filter_data *entry;
-> +       struct msft_data *msft =3D hdev->msft_data;
-> +
-> +       list_for_each_entry(entry, &msft->address_filters, list) {
-> +               if (entry->pattern_handle =3D=3D pattern_handle &&
-> +                   addr_type =3D=3D entry->addr_type &&
-> +                   !bacmp(addr, &entry->bdaddr))
-> +                       return entry;
-> +       }
-> +
-> +       return NULL;
-> +}
-> +
->  /* This function requires the caller holds hdev->lock */
->  static int msft_monitor_device_del(struct hci_dev *hdev, __u16 mgmt_hand=
-le,
->                                    bdaddr_t *bdaddr, __u8 addr_type,
-> @@ -240,6 +288,7 @@ static int msft_le_monitor_advertisement_cb(struct hc=
-i_dev *hdev, u16 opcode,
->
->         handle_data->mgmt_handle =3D monitor->handle;
->         handle_data->msft_handle =3D rp->handle;
-> +       handle_data->cond_type   =3D MSFT_MONITOR_ADVERTISEMENT_TYPE_PATT=
-ERN;
->         INIT_LIST_HEAD(&handle_data->list);
->         list_add(&handle_data->list, &msft->handle_map);
->
-> @@ -254,6 +303,70 @@ static int msft_le_monitor_advertisement_cb(struct h=
-ci_dev *hdev, u16 opcode,
->         return status;
->  }
->
-> +/* This function requires the caller holds hci_req_sync_lock */
-> +static void msft_remove_addr_filters_sync(struct hci_dev *hdev, u8 handl=
-e)
-> +{
-> +       struct msft_monitor_addr_filter_data *address_filter, *n;
-> +       struct msft_cp_le_cancel_monitor_advertisement cp;
-> +       struct msft_data *msft =3D hdev->msft_data;
-> +       struct list_head head;
-> +       struct sk_buff *skb;
-> +
-> +       INIT_LIST_HEAD(&head);
-> +
-> +       /* Cancel all corresponding address monitors */
-> +       mutex_lock(&msft->filter_lock);
-> +
-> +       list_for_each_entry_safe(address_filter, n, &msft->address_filter=
-s,
-> +                                list) {
-> +               if (address_filter->pattern_handle !=3D handle)
-> +                       continue;
-> +
-> +               list_del(&address_filter->list);
-> +
-> +               /* Keep the address filter and let
-> +                * msft_add_address_filter_sync() remove and free the add=
-ress
-> +                * filter.
-> +                */
-> +               if (address_filter->state =3D=3D AF_STATE_ADDING) {
-> +                       address_filter->state =3D AF_STATE_REMOVING;
-> +                       continue;
-> +               }
-> +
-> +               /* Keep the address filter and let
-> +                * msft_cancel_address_filter_sync() remove and free the =
-address
-> +                * filter
-> +                */
-> +               if (address_filter->state =3D=3D AF_STATE_REMOVING)
-> +                       continue;
-> +
-> +               list_add_tail(&address_filter->list, &head);
-> +       }
-> +
-> +       mutex_unlock(&msft->filter_lock);
-> +
-> +       list_for_each_entry_safe(address_filter, n, &head, list) {
-> +               list_del(&address_filter->list);
-> +
-> +               cp.sub_opcode =3D MSFT_OP_LE_CANCEL_MONITOR_ADVERTISEMENT=
-;
-> +               cp.handle =3D address_filter->msft_handle;
-> +
-> +               skb =3D __hci_cmd_sync(hdev, hdev->msft_opcode, sizeof(cp=
-), &cp,
-> +                                    HCI_CMD_TIMEOUT);
-> +               if (IS_ERR_OR_NULL(skb)) {
-> +                       kfree(address_filter);
-> +                       continue;
-> +               }
-> +
-> +               kfree_skb(skb);
-> +
-> +               bt_dev_dbg(hdev, "MSFT: Canceled device %pMR address filt=
-er",
-> +                          &address_filter->bdaddr);
-> +
-> +               kfree(address_filter);
-> +       }
-> +}
-> +
->  static int msft_le_cancel_monitor_advertisement_cb(struct hci_dev *hdev,
->                                                    u16 opcode,
->                                                    struct adv_monitor *mo=
-nitor,
-> @@ -263,6 +376,7 @@ static int msft_le_cancel_monitor_advertisement_cb(st=
-ruct hci_dev *hdev,
->         struct msft_monitor_advertisement_handle_data *handle_data;
->         struct msft_data *msft =3D hdev->msft_data;
->         int status =3D 0;
-> +       u8 msft_handle;
->
->         rp =3D (struct msft_rp_le_cancel_monitor_advertisement *)skb->dat=
-a;
->         if (skb->len < sizeof(*rp)) {
-> @@ -293,11 +407,17 @@ static int msft_le_cancel_monitor_advertisement_cb(=
-struct hci_dev *hdev,
->                                                 NULL, 0, false);
->                 }
->
-> +               msft_handle =3D handle_data->msft_handle;
-> +
->                 list_del(&handle_data->list);
->                 kfree(handle_data);
-> -       }
->
-> -       hci_dev_unlock(hdev);
-> +               hci_dev_unlock(hdev);
-> +
-> +               msft_remove_addr_filters_sync(hdev, msft_handle);
-> +       } else {
-> +               hci_dev_unlock(hdev);
-> +       }
->
->  done:
->         return status;
-> @@ -394,12 +514,14 @@ static int msft_add_monitor_sync(struct hci_dev *hd=
-ev,
->  {
->         struct msft_cp_le_monitor_advertisement *cp;
->         struct msft_le_monitor_advertisement_pattern_data *pattern_data;
-> +       struct msft_monitor_advertisement_handle_data *handle_data;
->         struct msft_le_monitor_advertisement_pattern *pattern;
->         struct adv_pattern *entry;
->         size_t total_size =3D sizeof(*cp) + sizeof(*pattern_data);
->         ptrdiff_t offset =3D 0;
->         u8 pattern_count =3D 0;
->         struct sk_buff *skb;
-> +       int err;
->
->         if (!msft_monitor_pattern_valid(monitor))
->                 return -EINVAL;
-> @@ -436,16 +558,31 @@ static int msft_add_monitor_sync(struct hci_dev *hd=
-ev,
->
->         skb =3D __hci_cmd_sync(hdev, hdev->msft_opcode, total_size, cp,
->                              HCI_CMD_TIMEOUT);
-> -       kfree(cp);
->
->         if (IS_ERR_OR_NULL(skb)) {
-> -               if (!skb)
-> -                       return -EIO;
-> -               return PTR_ERR(skb);
-> +               err =3D PTR_ERR(skb);
-> +               goto out_free;
->         }
->
-> -       return msft_le_monitor_advertisement_cb(hdev, hdev->msft_opcode,
-> -                                               monitor, skb);
-> +       err =3D msft_le_monitor_advertisement_cb(hdev, hdev->msft_opcode,
-> +                                              monitor, skb);
-> +       if (err)
-> +               goto out_free;
-> +
-> +       handle_data =3D msft_find_handle_data(hdev, monitor->handle, true=
+> >
+> > Note that these features are not related to the ethernet PAUSE frame.
+> >
+> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> > ---
+> >  drivers/net/ethernet/renesas/rswitch.c | 36 ++++++++++----------------
+> >  drivers/net/ethernet/renesas/rswitch.h |  6 +++++
+> >  2 files changed, 20 insertions(+), 22 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/renesas/rswitch.c b/drivers/net/ether=
+net/renesas/rswitch.c
+> > index 7bb0a6d594a0..84f62c77eb8f 100644
+> > --- a/drivers/net/ethernet/renesas/rswitch.c
+> > +++ b/drivers/net/ethernet/renesas/rswitch.c
+> > @@ -90,6 +90,11 @@ static int rswitch_bpool_config(struct rswitch_priva=
+te *priv)
+> >  	return rswitch_reg_wait(priv->addr, CABPIRM, CABPIRM_BPR, CABPIRM_BPR=
 );
-> +       if (!handle_data) {
-> +               err =3D -ENODATA;
-> +               goto out_free;
-> +       }
-> +
-> +       handle_data->rssi_high  =3D cp->rssi_high;
-> +       handle_data->rssi_low   =3D cp->rssi_low;
-> +       handle_data->rssi_low_interval    =3D cp->rssi_low_interval;
-> +       handle_data->rssi_sampling_period =3D cp->rssi_sampling_period;
-> +
-> +out_free:
-> +       kfree(cp);
-> +       return err;
->  }
->
->  /* This function requires the caller holds hci_req_sync_lock */
-> @@ -538,6 +675,7 @@ void msft_do_close(struct hci_dev *hdev)
->  {
->         struct msft_data *msft =3D hdev->msft_data;
->         struct msft_monitor_advertisement_handle_data *handle_data, *tmp;
-> +       struct msft_monitor_addr_filter_data *address_filter, *n;
->         struct adv_monitor *monitor;
->
->         if (!msft)
-> @@ -559,6 +697,14 @@ void msft_do_close(struct hci_dev *hdev)
->                 kfree(handle_data);
->         }
->
-> +       mutex_lock(&msft->filter_lock);
-> +       list_for_each_entry_safe(address_filter, n, &msft->address_filter=
-s,
-> +                                list) {
-> +               list_del(&address_filter->list);
-> +               kfree(address_filter);
-> +       }
-> +       mutex_unlock(&msft->filter_lock);
-> +
->         hci_dev_lock(hdev);
->
->         /* Clear any devices that are being monitored and notify device l=
-ost */
-> @@ -568,6 +714,49 @@ void msft_do_close(struct hci_dev *hdev)
->         hci_dev_unlock(hdev);
->  }
->
-> +static int msft_cancel_address_filter_sync(struct hci_dev *hdev, void *d=
-ata)
-> +{
-> +       struct msft_monitor_addr_filter_data *address_filter =3D data;
-> +       struct msft_cp_le_cancel_monitor_advertisement cp;
-> +       struct msft_data *msft =3D hdev->msft_data;
-> +       struct sk_buff *skb;
-> +       int err =3D 0;
-> +
-> +       if (!msft) {
-> +               bt_dev_err(hdev, "MSFT: msft data is freed");
-> +               return -EINVAL;
-> +       }
-> +
-> +       /* The address filter has been removed by hci dev close */
-> +       if (!test_bit(HCI_UP, &hdev->flags))
-> +               return 0;
-> +
-> +       mutex_lock(&msft->filter_lock);
-> +       list_del(&address_filter->list);
-> +       mutex_unlock(&msft->filter_lock);
-> +
-> +       cp.sub_opcode =3D MSFT_OP_LE_CANCEL_MONITOR_ADVERTISEMENT;
-> +       cp.handle =3D address_filter->msft_handle;
-> +
-> +       skb =3D __hci_cmd_sync(hdev, hdev->msft_opcode, sizeof(cp), &cp,
-> +                            HCI_CMD_TIMEOUT);
-> +       if (IS_ERR_OR_NULL(skb)) {
-> +               bt_dev_err(hdev, "MSFT: Failed to cancel address (%pMR) f=
-ilter",
-> +                          &address_filter->bdaddr);
-> +               err =3D EIO;
-> +               goto done;
-> +       }
-> +       kfree_skb(skb);
-> +
-> +       bt_dev_dbg(hdev, "MSFT: Canceled device %pMR address filter",
-> +                  &address_filter->bdaddr);
-> +
-> +done:
-> +       kfree(address_filter);
-> +
-> +       return err;
-> +}
-> +
->  void msft_register(struct hci_dev *hdev)
->  {
->         struct msft_data *msft =3D NULL;
-> @@ -581,7 +770,9 @@ void msft_register(struct hci_dev *hdev)
->         }
->
->         INIT_LIST_HEAD(&msft->handle_map);
-> +       INIT_LIST_HEAD(&msft->address_filters);
->         hdev->msft_data =3D msft;
-> +       mutex_init(&msft->filter_lock);
->  }
->
->  void msft_unregister(struct hci_dev *hdev)
-> @@ -596,6 +787,7 @@ void msft_unregister(struct hci_dev *hdev)
->         hdev->msft_data =3D NULL;
->
->         kfree(msft->evt_prefix);
-> +       mutex_destroy(&msft->filter_lock);
->         kfree(msft);
->  }
->
-> @@ -645,11 +837,149 @@ static void *msft_skb_pull(struct hci_dev *hdev, s=
-truct sk_buff *skb,
->         return data;
->  }
->
-> +static int msft_add_address_filter_sync(struct hci_dev *hdev, void *data=
-)
-> +{
-> +       struct msft_monitor_addr_filter_data *address_filter =3D data;
-> +       struct msft_rp_le_monitor_advertisement *rp;
-> +       struct msft_cp_le_monitor_advertisement *cp;
-> +       struct msft_data *msft =3D hdev->msft_data;
-> +       struct sk_buff *skb =3D NULL;
-> +       bool remove =3D false;
-> +       size_t size;
-> +
-> +       if (!msft) {
-> +               bt_dev_err(hdev, "MSFT: msft data is freed");
-> +               return -EINVAL;
-> +       }
-> +
-> +       /* The address filter has been removed by hci dev close */
-> +       if (!test_bit(HCI_UP, &hdev->flags))
-> +               return -ENODEV;
-> +
-> +       /* We are safe to use the address filter from now on.
-> +        * msft_monitor_device_evt() wouldn't delete this filter because =
-it's
-> +        * not been added by now.
-> +        * And all other functions that requiring hci_req_sync_lock would=
-n't
-> +        * touch this filter before this func completes because it's prot=
-ected
-> +        * by hci_req_sync_lock.
-> +        */
-> +
-> +       if (address_filter->state =3D=3D AF_STATE_REMOVING) {
-> +               mutex_lock(&msft->filter_lock);
-> +               list_del(&address_filter->list);
-> +               mutex_unlock(&msft->filter_lock);
-> +               kfree(address_filter);
-> +               return 0;
-> +       }
-> +
-> +       size =3D sizeof(*cp) +
-> +              sizeof(address_filter->addr_type) +
-> +              sizeof(address_filter->bdaddr);
-> +       cp =3D kzalloc(size, GFP_KERNEL);
-> +       if (!cp) {
-> +               bt_dev_err(hdev, "MSFT: Alloc cmd param err");
-> +               remove =3D true;
-> +               goto done;
-> +       }
-> +       cp->sub_opcode           =3D MSFT_OP_LE_MONITOR_ADVERTISEMENT;
-> +       cp->rssi_high            =3D address_filter->rssi_high;
-> +       cp->rssi_low             =3D address_filter->rssi_low;
-> +       cp->rssi_low_interval    =3D address_filter->rssi_low_interval;
-> +       cp->rssi_sampling_period =3D address_filter->rssi_sampling_period=
-;
-> +       cp->cond_type            =3D MSFT_MONITOR_ADVERTISEMENT_TYPE_ADDR=
-;
-> +       cp->data[0]              =3D address_filter->addr_type;
-> +       memcpy(&cp->data[1], &address_filter->bdaddr,
-> +              sizeof(address_filter->bdaddr));
-> +
-> +       skb =3D __hci_cmd_sync(hdev, hdev->msft_opcode, size, cp,
-> +                            HCI_CMD_TIMEOUT);
-> +       if (IS_ERR_OR_NULL(skb)) {
-> +               bt_dev_err(hdev, "Failed to enable address %pMR filter",
-> +                          &address_filter->bdaddr);
-> +               skb =3D NULL;
-> +               remove =3D true;
-> +               goto done;
-> +       }
-> +
-> +       rp =3D skb_pull_data(skb, sizeof(*rp));
-> +       if (!rp || rp->sub_opcode !=3D MSFT_OP_LE_MONITOR_ADVERTISEMENT |=
-|
-> +           rp->status)
-> +               remove =3D true;
-> +
-> +done:
-> +       mutex_lock(&msft->filter_lock);
-> +
-> +       if (remove) {
-> +               bt_dev_warn(hdev, "MSFT: Remove address (%pMR) filter",
-> +                           &address_filter->bdaddr);
-> +               list_del(&address_filter->list);
-> +               kfree(address_filter);
-> +       } else {
-> +               address_filter->state =3D AF_STATE_ADDED;
-> +               address_filter->msft_handle =3D rp->handle;
-> +               bt_dev_dbg(hdev, "MSFT: Address %pMR filter enabled",
-> +                          &address_filter->bdaddr);
-> +       }
-> +       mutex_unlock(&msft->filter_lock);
-> +
-> +       kfree_skb(skb);
-> +
-> +       return 0;
-> +}
-> +
-> +/* This function requires the caller holds msft->filter_lock */
-> +static struct msft_monitor_addr_filter_data *msft_add_address_filter
-> +               (struct hci_dev *hdev, u8 addr_type, bdaddr_t *bdaddr,
-> +                struct msft_monitor_advertisement_handle_data *handle_da=
-ta)
-> +{
-> +       struct msft_monitor_addr_filter_data *address_filter =3D NULL;
-> +       struct msft_data *msft =3D hdev->msft_data;
-> +       int err;
-> +
-> +       address_filter =3D kzalloc(sizeof(*address_filter), GFP_KERNEL);
-> +       if (!address_filter)
-> +               return NULL;
-> +
-> +       address_filter->state             =3D AF_STATE_ADDING;
-> +       address_filter->msft_handle       =3D 0xff;
-> +       address_filter->pattern_handle    =3D handle_data->msft_handle;
-> +       address_filter->mgmt_handle       =3D handle_data->mgmt_handle;
-> +       address_filter->rssi_high         =3D handle_data->rssi_high;
-> +       address_filter->rssi_low          =3D handle_data->rssi_low;
-> +       address_filter->rssi_low_interval =3D handle_data->rssi_low_inter=
-val;
-> +       address_filter->rssi_sampling_period =3D handle_data->rssi_sampli=
-ng_period;
-> +       address_filter->addr_type            =3D addr_type;
-> +       bacpy(&address_filter->bdaddr, bdaddr);
-> +
-> +       /* With the above AF_STATE_ADDING, duplicated address filter can =
-be
-> +        * avoided when receiving monitor device event (found/lost) frequ=
-ently
-> +        * for the same device.
-> +        */
-> +       list_add_tail(&address_filter->list, &msft->address_filters);
-> +
-> +       err =3D hci_cmd_sync_queue(hdev, msft_add_address_filter_sync,
-> +                                address_filter, NULL);
-> +       if (err < 0) {
-> +               bt_dev_err(hdev, "MSFT: Add address %pMR filter err", bda=
-ddr);
-> +               list_del(&address_filter->list);
-> +               kfree(address_filter);
-> +               return NULL;
-> +       }
-> +
-> +       bt_dev_dbg(hdev, "MSFT: Add device %pMR address filter",
-> +                  &address_filter->bdaddr);
-> +
-> +       return address_filter;
-> +}
-> +
->  /* This function requires the caller holds hdev->lock */
->  static void msft_monitor_device_evt(struct hci_dev *hdev, struct sk_buff=
- *skb)
->  {
-> +       struct msft_monitor_addr_filter_data *n, *address_filter =3D NULL=
-;
->         struct msft_ev_le_monitor_device *ev;
->         struct msft_monitor_advertisement_handle_data *handle_data;
-> +       struct msft_data *msft =3D hdev->msft_data;
-> +       u16 mgmt_handle =3D 0xffff;
->         u8 addr_type;
->
->         ev =3D msft_skb_pull(hdev, skb, MSFT_EV_LE_MONITOR_DEVICE, sizeof=
-(*ev));
-> @@ -662,9 +992,53 @@ static void msft_monitor_device_evt(struct hci_dev *=
-hdev, struct sk_buff *skb)
->                    ev->monitor_state, &ev->bdaddr);
->
->         handle_data =3D msft_find_handle_data(hdev, ev->monitor_handle, f=
-alse);
-> -       if (!handle_data)
-> +
-> +       if (!test_bit(HCI_QUIRK_MSFT_EXT_MAF_SUPPORTED, &hdev->quirks)) {
-> +               if (!handle_data)
-> +                       return;
-> +               mgmt_handle =3D handle_data->mgmt_handle;
-> +               goto report_state;
-> +       }
-> +
-> +       if (handle_data) {
-> +               /* Don't report any device found/lost event from pattern
-> +                * monitors. Pattern monitor always has its address filte=
-rs for
-> +                * tracking devices.
-> +                */
-> +
-> +               address_filter =3D msft_find_address_data(hdev, ev->addr_=
-type,
-> +                                                       &ev->bdaddr,
-> +                                                       handle_data->msft=
-_handle);
-> +               if (address_filter)
-> +                       return;
-> +
-> +               if (ev->monitor_state && handle_data->cond_type =3D=3D
-> +                               MSFT_MONITOR_ADVERTISEMENT_TYPE_PATTERN)
-> +                       msft_add_address_filter(hdev, ev->addr_type,
-> +                                               &ev->bdaddr, handle_data)=
-;
-> +
->                 return;
-> +       }
->
-> +       /* This device event is not from pattern monitor.
-> +        * Report it if there is a corresponding address_filter for it.
-> +        */
-> +       list_for_each_entry(n, &msft->address_filters, list) {
-> +               if (n->state =3D=3D AF_STATE_ADDED &&
-> +                   n->msft_handle =3D=3D ev->monitor_handle) {
-> +                       mgmt_handle =3D n->mgmt_handle;
-> +                       address_filter =3D n;
-> +                       break;
-> +               }
-> +       }
-> +
-> +       if (!address_filter) {
-> +               bt_dev_warn(hdev, "MSFT: Unexpected device event %pMR, %u=
-, %u",
-> +                           &ev->bdaddr, ev->monitor_handle, ev->monitor_=
-state);
-> +               return;
-> +       }
-> +
-> +report_state:
->         switch (ev->addr_type) {
->         case ADDR_LE_DEV_PUBLIC:
->                 addr_type =3D BDADDR_LE_PUBLIC;
-> @@ -681,12 +1055,18 @@ static void msft_monitor_device_evt(struct hci_dev=
- *hdev, struct sk_buff *skb)
->                 return;
->         }
->
-> -       if (ev->monitor_state)
-> -               msft_device_found(hdev, &ev->bdaddr, addr_type,
-> -                                 handle_data->mgmt_handle);
-> -       else
-> -               msft_device_lost(hdev, &ev->bdaddr, addr_type,
-> -                                handle_data->mgmt_handle);
-> +       if (ev->monitor_state) {
-> +               msft_device_found(hdev, &ev->bdaddr, addr_type, mgmt_hand=
-le);
-> +       } else {
-> +               if (address_filter && address_filter->state =3D=3D AF_STA=
-TE_ADDED) {
-> +                       address_filter->state =3D AF_STATE_REMOVING;
-> +                       hci_cmd_sync_queue(hdev,
-> +                                          msft_cancel_address_filter_syn=
-c,
-> +                                          address_filter,
-> +                                          NULL);
-> +               }
-> +               msft_device_lost(hdev, &ev->bdaddr, addr_type, mgmt_handl=
-e);
-> +       }
->  }
->
->  void msft_vendor_evt(struct hci_dev *hdev, void *data, struct sk_buff *s=
-kb)
-> @@ -724,7 +1104,9 @@ void msft_vendor_evt(struct hci_dev *hdev, void *dat=
-a, struct sk_buff *skb)
->
->         switch (*evt) {
->         case MSFT_EV_LE_MONITOR_DEVICE:
-> +               mutex_lock(&msft->filter_lock);
->                 msft_monitor_device_evt(hdev, skb);
-> +               mutex_unlock(&msft->filter_lock);
->                 break;
->
->         default:
-> --
-> 2.17.1
->
+> >  }
+> >
+> > +static void rswitch_coma_init(struct rswitch_private *priv)
+> > +{
+> > +	iowrite32(CABPPFLC_INIT_VALUE, priv->addr + CABPPFLC0);
+> > +}
+> > +
+> >  /* R-Switch-2 block (TOP) */
+> >  static void rswitch_top_init(struct rswitch_private *priv)
+> >  {
+> > @@ -156,24 +161,6 @@ static int rswitch_gwca_axi_ram_reset(struct rswit=
+ch_private *priv)
+> >  	return rswitch_reg_wait(priv->addr, GWARIRM, GWARIRM_ARR, GWARIRM_ARR=
+);
+> >  }
+> >
+> > -static void rswitch_gwca_set_rate_limit(struct rswitch_private *priv, =
+int rate)
+> > -{
+> > -	u32 gwgrlulc, gwgrlc;
+> > -
+> > -	switch (rate) {
+> > -	case 1000:
+> > -		gwgrlulc =3D 0x0000005f;
+> > -		gwgrlc =3D 0x00010260;
+> > -		break;
+> > -	default:
+> > -		dev_err(&priv->pdev->dev, "%s: This rate is not supported (%d)\n", _=
+_func__, rate);
+> > -		return;
+> > -	}
+> > -
+> > -	iowrite32(gwgrlulc, priv->addr + GWGRLULC);
+> > -	iowrite32(gwgrlc, priv->addr + GWGRLC);
+> > -}
+> > -
+> >  static bool rswitch_is_any_data_irq(struct rswitch_private *priv, u32 =
+*dis, bool tx)
+> >  {
+> >  	u32 *mask =3D tx ? priv->gwca.tx_irq_bits : priv->gwca.rx_irq_bits;
+> > @@ -402,7 +389,7 @@ static int rswitch_gwca_queue_format(struct net_dev=
+ice *ndev,
+> >  	linkfix->die_dt =3D DT_LINKFIX;
+> >  	rswitch_desc_set_dptr(linkfix, gq->ring_dma);
+> >
+> > -	iowrite32(GWDCC_BALR | (gq->dir_tx ? GWDCC_DQT : 0) | GWDCC_EDE,
+> > +	iowrite32(GWDCC_BALR | (gq->dir_tx ? GWDCC_DCP(GWCA_IPV_NUM) | GWDCC_=
+DQT : 0) | GWDCC_EDE,
+> >  		  priv->addr + GWDCC_OFFS(gq->index));
+> >
+> >  	return 0;
+> > @@ -500,7 +487,8 @@ static int rswitch_gwca_queue_ext_ts_format(struct =
+net_device *ndev,
+> >  	linkfix->die_dt =3D DT_LINKFIX;
+> >  	rswitch_desc_set_dptr(linkfix, gq->ring_dma);
+> >
+> > -	iowrite32(GWDCC_BALR | (gq->dir_tx ? GWDCC_DQT : 0) | GWDCC_ETS | GWD=
+CC_EDE,
+> > +	iowrite32(GWDCC_BALR | (gq->dir_tx ? GWDCC_DCP(GWCA_IPV_NUM) | GWDCC_=
+DQT : 0) |
+> > +		  GWDCC_ETS | GWDCC_EDE,
+> >  		  priv->addr + GWDCC_OFFS(gq->index));
+> >
+> >  	return 0;
+> > @@ -649,7 +637,8 @@ static int rswitch_gwca_hw_init(struct rswitch_priv=
+ate *priv)
+> >  	iowrite32(lower_32_bits(priv->gwca.ts_queue.ring_dma), priv->addr + G=
+WTDCAC10);
+> >  	iowrite32(upper_32_bits(priv->gwca.ts_queue.ring_dma), priv->addr + G=
+WTDCAC00);
+> >  	iowrite32(GWCA_TS_IRQ_BIT, priv->addr + GWTSDCC0);
+> > -	rswitch_gwca_set_rate_limit(priv, priv->gwca.speed);
+> > +
+> > +	iowrite32(GWTPC_PPPL(GWCA_IPV_NUM), priv->addr + GWTPC0);
+> >
+> >  	for (i =3D 0; i < RSWITCH_NUM_PORTS; i++) {
+> >  		err =3D rswitch_rxdmac_init(priv, i);
+> > @@ -1502,7 +1491,8 @@ static netdev_tx_t rswitch_start_xmit(struct sk_b=
+uff *skb, struct net_device *nd
+> >  	rswitch_desc_set_dptr(&desc->desc, dma_addr);
+> >  	desc->desc.info_ds =3D cpu_to_le16(skb->len);
+> >
+> > -	desc->info1 =3D cpu_to_le64(INFO1_DV(BIT(rdev->etha->index)) | INFO1_=
+FMT);
+> > +	desc->info1 =3D cpu_to_le64(INFO1_DV(BIT(rdev->etha->index)) |
+> > +				  INFO1_IPV(GWCA_IPV_NUM) | INFO1_FMT);
+> >  	if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) {
+> >  		struct rswitch_gwca_ts_info *ts_info;
+> >
+> > @@ -1772,6 +1762,8 @@ static int rswitch_init(struct rswitch_private *p=
+riv)
+> >  	if (err < 0)
+> >  		return err;
+> >
+> > +	rswitch_coma_init(priv);
+> > +
+> >  	err =3D rswitch_gwca_linkfix_alloc(priv);
+> >  	if (err < 0)
+> >  		return -ENOMEM;
+> > diff --git a/drivers/net/ethernet/renesas/rswitch.h b/drivers/net/ether=
+net/renesas/rswitch.h
+> > index b3e0411b408e..08dadd28001e 100644
+> > --- a/drivers/net/ethernet/renesas/rswitch.h
+> > +++ b/drivers/net/ethernet/renesas/rswitch.h
+> > @@ -48,6 +48,7 @@
+> >  #define GWCA_NUM_IRQS		8
+> >  #define GWCA_INDEX		0
+> >  #define AGENT_INDEX_GWCA	3
+> > +#define GWCA_IPV_NUM		0
+> >  #define GWRO			RSWITCH_GWCA0_OFFSET
+> >
+> >  #define GWCA_TS_IRQ_RESOURCE_NAME	"gwca0_rxts0"
+> > @@ -768,11 +769,13 @@ enum rswitch_gwca_mode {
+> >  #define GWARIRM_ARR		BIT(1)
+> >
+> >  #define GWDCC_BALR		BIT(24)
+> > +#define GWDCC_DCP(prio)		(((prio) & 0x07) << 16)
+>=20
+> I'd be glad to see defines for magic numbers above.
 
+I'll add defines about 0x07 and 16 on v2.
 
---=20
-Luiz Augusto von Dentz
+Best regards,
+Yoshihiro Shimoda
+
+> >  #define GWDCC_DQT		BIT(11)
+> >  #define GWDCC_ETS		BIT(9)
+> >  #define GWDCC_EDE		BIT(8)
+> >
+> >  #define GWTRC(queue)		(GWTRC0 + (queue) / 32 * 4)
+> > +#define GWTPC_PPPL(ipv)		BIT(ipv)
+> >  #define GWDCC_OFFS(queue)	(GWDCC0 + (queue) * 4)
+> >
+> >  #define GWDIS(i)		(GWDIS0 + (i) * 0x10)
+> > @@ -789,6 +792,8 @@ enum rswitch_gwca_mode {
+> >  #define CABPIRM_BPIOG		BIT(0)
+> >  #define CABPIRM_BPR		BIT(1)
+> >
+> > +#define CABPPFLC_INIT_VALUE	0x00800080
+> > +
+> >  /* MFWD */
+> >  #define FWPC0_LTHTA		BIT(0)
+> >  #define FWPC0_IP4UE		BIT(3)
+> > @@ -863,6 +868,7 @@ enum DIE_DT {
+> >
+> >  /* For transmission */
+> >  #define INFO1_TSUN(val)		((u64)(val) << 8ULL)
+> > +#define INFO1_IPV(prio)		((u64)(prio) << 28ULL)
+> >  #define INFO1_CSD0(index)	((u64)(index) << 32ULL)
+> >  #define INFO1_CSD1(index)	((u64)(index) << 40ULL)
+> >  #define INFO1_DV(port_vector)	((u64)(port_vector) << 48ULL)
+> > --
+> > 2.25.1
+> >
+> >
 
