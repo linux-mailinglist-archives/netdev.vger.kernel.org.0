@@ -1,194 +1,163 @@
-Return-Path: <netdev+bounces-8517-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8518-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9EB277246E4
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 16:54:34 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id A436872471C
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 17:00:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 90E19280F70
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 14:54:32 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 65756280FA0
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 15:00:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F0BC71E528;
-	Tue,  6 Jun 2023 14:54:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 603EB1F16C;
+	Tue,  6 Jun 2023 15:00:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0DC61B8FA
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 14:54:30 +0000 (UTC)
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F6810CA
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 07:54:06 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id 3f1490d57ef6-ba8374001abso6944214276.2
-        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 07:54:06 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C78A37B97
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 15:00:06 +0000 (UTC)
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DCDE1998;
+	Tue,  6 Jun 2023 07:59:41 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 41be03b00d2f7-543c6a2aa07so1127757a12.0;
+        Tue, 06 Jun 2023 07:59:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google; t=1686063245; x=1688655245;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7UebjJiEriep1eTAlD1huPfb0FQGz+rK49aASRy6Hlo=;
-        b=FC5Bh7r0qDmhwAP1NrNOGdp0BQXyj9/5/fgMCmyIOnyP46LWgSNINmR5YcCak3fNVE
-         Hu/vlD4PTDSVwV8wUjWw+wOq10bNp4AmcAgx/Lab5kxwSaJ+1LBKCu4aq2hph63R89cA
-         fVjPsd3Qbm6bpiL2+2yQP7XZvKBctYjaajHHw=
+        d=gmail.com; s=20221208; t=1686063580; x=1688655580;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Wqe+EMfTqwgCzibqmrP4x167w3kg6AGKeWhHsuYgmqo=;
+        b=c89hhqFN81vIg5IN2rpZKauKAqHYf+KMSB7oh1dAt0i49A3ucUMkyTzxUCrj2WWs+g
+         /LU3Xr/oSOgiCs+CzGUU8pWhEpDacm5mxkJpE/5clGHyANc/lNkJmfLq/aJVfdcjT8UL
+         eBL06dgnIyAp6shIXHNvUuno3W6Sk3jssjkHEmrtsXS0ehGnvMz9fE+mUbSyT7V/DtJ8
+         YEYyGAmkm7jdPB+ETVRV6oGB43zryHGlxwY1MiyEjreIcHwBO4xpm30cOGoi+5sxuVuw
+         QGY0ItDFmMr8lVYp12VI5cDd1e62KrSFDl9FQbjPsohnlfnzU1oGnGODof+74Twn0KQQ
+         vCow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686063245; x=1688655245;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7UebjJiEriep1eTAlD1huPfb0FQGz+rK49aASRy6Hlo=;
-        b=jGKCT4qNo6wp6IcgChr2IoOYag3olUKrvHF90zjZpvLpj4NVKXXRJKWABGXu7m5hoh
-         wC+8Cs5Bvv7oKJFtjCT2Ple6xNH3dtVfcROxfF1XzzaGrSI83vG6aMrP4dOnGwkfORfm
-         0oMVANgKHuWpRwHXG382H2qXa/+o/fEnO9ytdcxuj/YsfRXZ2owqD5H+cD2ZWfLEQG03
-         DeJTndIFtwxtiVmfJRsBB5cA3JcH2Zpq0jrnNlInDknhND0507vvGHBROPQ+9zjkT5PV
-         XqsBLc5+E2udk7iVP4TBiyFI45UVyCNCgw5d6EAg3zfmkY6SGGR1kjPuYZMssnWtOcnA
-         pfQA==
-X-Gm-Message-State: AC+VfDz7E18LQqCmRFUAeaw1DH3/jc7XnFEuQgQDttZQ/rsUmUXmX0ec
-	CofdxTVG4g6KZfMPWsTyakUCRA==
-X-Google-Smtp-Source: ACHHUZ70hBhfrEp2BOIKMO3sqtOg1CAXZuCAS0g+fFLSkgnKjRhM/Vzinzr7aFZzECo1YTWvcxDwow==
-X-Received: by 2002:a81:6f07:0:b0:565:1058:abbd with SMTP id k7-20020a816f07000000b005651058abbdmr2554089ywc.35.1686063245436;
-        Tue, 06 Jun 2023 07:54:05 -0700 (PDT)
-Received: from [192.168.2.144] ([169.197.147.212])
-        by smtp.gmail.com with ESMTPSA id d3-20020a816803000000b00568e7e21db7sm4127402ywc.96.2023.06.06.07.54.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Jun 2023 07:54:05 -0700 (PDT)
-Message-ID: <c83bac54-e40b-cca5-4bb4-742f3dc90440@cloudflare.com>
-Date: Tue, 6 Jun 2023 09:54:03 -0500
+        d=1e100.net; s=20221208; t=1686063580; x=1688655580;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Wqe+EMfTqwgCzibqmrP4x167w3kg6AGKeWhHsuYgmqo=;
+        b=M9kchvmXuRXWO1Gxhd25eSlmsJXMaMrjGVZ+OetUuvuG48I/yum5fa3dNUL5GuIc7d
+         IiDZBu2zwMNrcXGE39FjCqvq4+ljf1rTav8g+uid4woRfooEu4aGWuROT4ypKRIbygvB
+         yVrrqpT74A+csxzdKl6X0xx1nNj8KWUNVUop/JCnzS/NILJP/SUZG9OqAojnQ+01pRrg
+         jxyZvJAouoARrfLkoc4d2EPJ2aAeZpF4pqBqhICKiRz/qNwgtAJGPImgighx6AvHISzI
+         jUye4hD4q5iHvVfdl1Jj6hZSrtOE1mYZUD9LuilTPqT0ZzfbByb5OM4XEIZNUmWtoarl
+         A8gg==
+X-Gm-Message-State: AC+VfDyrHqMrqGKRIgM2qCyzU4+338HeZ9FSiaSaNODBtwiJ7gHa9XoY
+	dZxZU+VXZ62f1dJZ2zSM9N2qng/EvGbONO+WStk=
+X-Google-Smtp-Source: ACHHUZ7R3wIBiwS3qmIDAIVJhRLmDVW+rENmgn5tSeT1A0bMQm4kGe5M15s7kly86oJcM/F8JJJXG4R4/1qAqmUxppw=
+X-Received: by 2002:a05:6a20:3d83:b0:117:a2f3:3c93 with SMTP id
+ s3-20020a056a203d8300b00117a2f33c93mr14207pzi.2.1686063579863; Tue, 06 Jun
+ 2023 07:59:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH] Add a sysctl to allow TCP window shrinking in order to
- honor memory limits
-To: Stephen Hemminger <stephen@networkplumber.org>
-Cc: netdev@vger.kernel.org, kernel-team@cloudflare.com
-References: <20230605203857.1672816-1-mfreemon@cloudflare.com>
- <20230605154229.6077983e@hermes.local>
-Content-Language: en-US
-From: Mike Freemon <mfreemon@cloudflare.com>
-In-Reply-To: <20230605154229.6077983e@hermes.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+References: <20230524153311.3625329-1-dhowells@redhat.com> <20230524153311.3625329-5-dhowells@redhat.com>
+ <a819dd80-54cc-695f-f142-e3d42ce815a7@huawei.com> <f7919c2c9e1cb6218a0b0f55ddaa9a34f7d2b9a7.camel@gmail.com>
+ <1841913.1686039913@warthog.procyon.org.uk>
+In-Reply-To: <1841913.1686039913@warthog.procyon.org.uk>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Tue, 6 Jun 2023 07:59:02 -0700
+Message-ID: <CAKgT0Ud=ZWVnpwqbLqGovjPM2VR_V1-Ak=meveqnG01tGWTTeA@mail.gmail.com>
+Subject: Re: [PATCH net-next 04/12] mm: Make the page_frag_cache allocator use
+ multipage folios
+To: David Howells <dhowells@redhat.com>
+Cc: Yunsheng Lin <linyunsheng@huawei.com>, netdev@vger.kernel.org, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, David Ahern <dsahern@kernel.org>, 
+	Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>, linux-mm@kvack.org, 
+	linux-kernel@vger.kernel.org, Jeroen de Borst <jeroendb@google.com>, 
+	Catherine Sullivan <csully@google.com>, Shailend Chand <shailend@google.com>, Felix Fietkau <nbd@nbd.name>, 
+	John Crispin <john@phrozen.org>, Sean Wang <sean.wang@mediatek.com>, 
+	Mark Lee <Mark-MC.Lee@mediatek.com>, Lorenzo Bianconi <lorenzo@kernel.org>, 
+	Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Keith Busch <kbusch@kernel.org>, 
+	Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>, 
+	Chaitanya Kulkarni <kch@nvidia.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, 
+	linux-nvme@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Tue, Jun 6, 2023 at 1:25=E2=80=AFAM David Howells <dhowells@redhat.com> =
+wrote:
+>
+> Alexander H Duyck <alexander.duyck@gmail.com> wrote:
+>
+> > Also I have some concerns about going from page to folio as it seems
+> > like the folio_alloc setups the transparent hugepage destructor instead
+> > of using the compound page destructor. I would think that would slow
+> > down most users as it looks like there is a spinlock that is taken in
+> > the hugepage destructor that isn't there in the compound page
+> > destructor.
+>
+> Note that this code is going to have to move to folios[*] at some point.
+> "Old-style" compound pages are going to go away, I believe.  Matthew Wilc=
+ox
+> and the mm folks are on a drive towards simplifying memory management,
+> formalising chunks larger than a single page - with the ultimate aim of
+> reducing the page struct to a single, typed pointer.
 
-On 6/5/23 17:42, Stephen Hemminger wrote:
-> On Mon,  5 Jun 2023 15:38:57 -0500
-> Mike Freemon <mfreemon@cloudflare.com> wrote:
-> 
->> From: "mfreemon@cloudflare.com" <mfreemon@cloudflare.com>
->>
->> Under certain circumstances, the tcp receive buffer memory limit
->> set by autotuning is ignored, and the receive buffer can grow
->> unrestrained until it reaches tcp_rmem[2].
->>
->> To reproduce:  Connect a TCP session with the receiver doing
->> nothing and the sender sending small packets (an infinite loop
->> of socket send() with 4 bytes of payload with a sleep of 1 ms
->> in between each send()).  This will fill the tcp receive buffer
->> all the way to tcp_rmem[2], ignoring the autotuning limit
->> (sk_rcvbuf).
->>
->> As a result, a host can have individual tcp sessions with receive
->> buffers of size tcp_rmem[2], and the host itself can reach tcp_mem
->> limits, causing the host to go into tcp memory pressure mode.
->>
->> The fundamental issue is the relationship between the granularity
->> of the window scaling factor and the number of byte ACKed back
->> to the sender.  This problem has previously been identified in
->> RFC 7323, appendix F [1].
->>
->> The Linux kernel currently adheres to never shrinking the window.
->>
->> In addition to the overallocation of memory mentioned above, this
->> is also functionally incorrect, because once tcp_rmem[2] is
->> reached, the receiver will drop in-window packets resulting in
->> retransmissions and an eventual timeout of the tcp session.  A
->> receive buffer full condition should instead result in a zero
->> window and an indefinite wait.
->>
->> In practice, this problem is largely hidden for most flows.  It
->> is not applicable to mice flows.  Elephant flows can send data
->> fast enough to "overrun" the sk_rcvbuf limit (in a single ACK),
->> triggering a zero window.
->>
->> But this problem does show up for other types of flows.  A good
->> example are websockets and other type of flows that send small
->> amounts of data spaced apart slightly in time.  In these cases,
->> we directly encounter the problem described in [1].
->>
->> RFC 7323, section 2.4 [2], says there are instances when a retracted
->> window can be offered, and that TCP implementations MUST ensure
->> that they handle a shrinking window, as specified in RFC 1122,
->> section 4.2.2.16 [3].  All prior RFCs on the topic of tcp window
->> management have made clear that sender must accept a shrunk window
->> from the receiver, including RFC 793 [4] and RFC 1323 [5].
->>
->> This patch implements the functionality to shrink the tcp window
->> when necessary to keep the right edge within the memory limit by
->> autotuning (sk_rcvbuf).  This new functionality is enabled with
->> the following sysctl:
->>
->> sysctl: net.ipv4.tcp_shrink_window
->>
->> This sysctl changes how the TCP window is calculated.
->>
->> If sysctl tcp_shrink_window is zero (the default value), then the
->> window is never shrunk.
->>
->> If sysctl tcp_shrink_window is non-zero, then the memory limit
->> set by autotuning is honored.  This requires that the TCP window
->> be shrunk ("retracted") as described in RFC 1122.
->>
->> [1] https://www.rfc-editor.org/rfc/rfc7323#appendix-F
->> [2] https://www.rfc-editor.org/rfc/rfc7323#section-2.4
->> [3] https://www.rfc-editor.org/rfc/rfc1122#page-91
->> [4] https://www.rfc-editor.org/rfc/rfc793
->> [5] https://www.rfc-editor.org/rfc/rfc1323
->>
->> Signed-off-by: Mike Freemon <mfreemon@cloudflare.com>
-> 
-> Does Linux TCP really need another tuning parameter?
+I'm not against making the move, but as others have pointed out this
+is getting into unrelated things. One of those being the fact that to
+transition to using folios we don't need to get rid of the use of the
+virtual address. The idea behind using the virtual address here is
+that we can avoid a bunch of address translation overhead since we
+only need to use the folio if we are going to allocate, retire, or
+recycle a page/folio. If we are using an order 3 page that shouldn't
+be very often.
 
-It's useful to make testing faster, i.e. comparing enabled vs disabled.
-It could also be useful as a quick diagnostic test, i.e. someone is
-having a problem and they want to quickly eliminate this patch as a
-cause.
+> So, take, for example, a folio: As I understand it, this will no longer
+> overlay struct page, but rather will become a single, dynamically-allocat=
+ed
+> struct that covers a pow-of-2 number of pages.  A contiguous subset of pa=
+ge
+> structs will point at it.
+>
+> However, rather than using a folio, we could define a "page fragment" mem=
+ory
+> type.  Rather than having all the flags and fields to be found in struct
+> folio, it could have just the set to be found in page_frag_cache.
 
-But I left it in mainly as a risk response.  This patch requires that
-the receiving TCP implementation handle the shrinking window correctly.  
-This patch has been deployed at Cloudflare and we have not discovered
-any cases where the peer TCP fails to be RFC compliant.  But we cannot
-rule out the possibility completely.  The concern is what if someone is
-running some old software on a non-public network and their software
-does not handle a shrinking window.  Simply disabling this feature via
-a sysctl parameter seems like a good solution for that situation.
+I don't think we need a new memory type. For the most part the page
+fragment code is really more a subset of something like a
+__get_free_pages where the requester provides the size, is just given
+a virtual address, and we shouldn't need to be allocating a new page
+as often as ideally the allocations are 2K or less in size.
 
-If the consensus is to not have a sysctl parameter, I am happy to
-remove it.
+Also one thing I would want to avoid is adding complexity to the
+freeing path. The general idea with page frags is that they are meant
+to be lightweight in terms of freeing as well. So just as they are
+similar to __get_free_pages in terms of allocation the freeing is
+meant to be similar to free_pages.
 
-A related question:  If we leave it in, what do we think the default
-value should be?  It's disabled by default right now, but that is just
-me being conservative.  If we are comfortable enabling this by default,
-I'm happy to do that too.
+> David
+>
+> [*] It will be possible to have some other type than "folio".  See "struc=
+t
+> slab" in mm/slab.h for example.  struct slab corresponds to a set of page=
+s
+> and, in the future, a number of struct pages will point at it.
 
-> Will tests get run with both feature on and off?
-
-More background and details about the patch is here, including the test
-results you're looking for:
-https://blog.cloudflare.com/unbounded-memory-usage-by-tcp-for-receive-buffers-and-how-we-fixed-it/
-
-> What default will distributions ship with?
-
-I'm not sure how to answer this.  Isn't that up to the distributions to decide?
+I want to avoid getting anywhere near the complexity of a slab
+allocator. The whole point of this was to keep it simple so that
+drivers could use it and get decent performance. When I had
+implemented it in the Intel drivers back in the day this approach was
+essentially just a reference count/page offset hack that allowed us to
+split a page in 2 and use the pages as a sort of mobius strip within
+the ring buffer.
 
