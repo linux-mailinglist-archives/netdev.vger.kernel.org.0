@@ -1,157 +1,130 @@
-Return-Path: <netdev+bounces-8415-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8416-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 55F4D723F77
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 12:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D49A1723F88
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 12:32:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0C5FE2811D7
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 10:30:16 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8EDAB281697
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 10:32:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6DAB5468F;
-	Tue,  6 Jun 2023 10:30:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ECD4B33C85;
+	Tue,  6 Jun 2023 10:32:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BCE42A9E7
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 10:30:14 +0000 (UTC)
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2078.outbound.protection.outlook.com [40.107.92.78])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02D710C4
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 03:30:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BhOQIgIkoQOS8Q/p4fs5OheWT1xTlmO5HWymHLertHE/TSuJqKaT1OBc+HRxD8z6GGaCLXNQPAev/67G0KNoQVMBBlklKw8Knb4f64obnQD2qPpvaf8Lg/T5uz5NeAkUG190r1257Zp031tl0LcbhoWM4T6YvjLNnKd9tPhOoOcGgcLi8MBqm1UO/n+4l3IXgy3HxneQbsg/C2I4O36w11kpIWoHmtGvg6J81nBZ/damZI7SxMN8/hbkruqZZd8ZmwrX8ueox60pFNaABQUwK4LQDhZSiR2caxmfrtwi40K7jnW4QDuBxde3i9vIMo5k4sV6A4GuYp2Zgw9QSgzpgQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qGlAAu4GQkefziD06QDGRB2cix5iyDswOaNXkxt53fo=;
- b=lYpo/WIE9GzXm2mgnRFXoVmd+zsrOHepcLRPI4G9MCK+CKUkC7B7GsuUXdaIsRtHgxVGuDpfgNfinIMF4mjTEPx/HScaaK3jT6kxuSXReYg6QUo4zH3jp+sJHlFbKpVXjlzCMeLQO1XJf9Wx632Vzu3uXXVnMPT9P7/7K+ZfJRqNVxE8Xs4lx7PAfoQ8RcYoSDr/Xr3XLpDrDKEBLdB28JxRQc6RjtDQJkb9izBXmjPyViRIXi4oOqoAsqEolgkSLl0MaLAYrxi58ZK1D1yJSm/L86VyD9lDhPNGbg8iXWMkaG96EOS1ZY6Qa1p6Cph/MDL1C4jNPsXFEgM8qAbDbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qGlAAu4GQkefziD06QDGRB2cix5iyDswOaNXkxt53fo=;
- b=i393XxRLhYXrqB+b229qlLFN6vHcOvZFPi8X7V2CRDcqUX9v0wHqJXyCKcy4D6IZjSWlOIVrbbZGP0Y09bjwywOcxBmyhO4EgRatsmRAyVX084iINbqJQolIUPjXzXf7ZNZyS76uzvblQDpTcdKKd8gP2IzDVHIjDLJNf43opro=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5398.namprd12.prod.outlook.com (2603:10b6:8:3f::5) by
- BY5PR12MB4033.namprd12.prod.outlook.com (2603:10b6:a03:213::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Tue, 6 Jun
- 2023 10:30:07 +0000
-Received: from DM8PR12MB5398.namprd12.prod.outlook.com
- ([fe80::5d1b:c70c:78c9:6b54]) by DM8PR12MB5398.namprd12.prod.outlook.com
- ([fe80::5d1b:c70c:78c9:6b54%6]) with mapi id 15.20.6455.030; Tue, 6 Jun 2023
- 10:30:07 +0000
-Message-ID: <b65e34f9-cdc6-533e-6e1c-a36043856939@amd.com>
-Date: Tue, 6 Jun 2023 11:30:00 +0100
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.11.2
-From: Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
-Subject: Re: [PATCH net-next 2/6] sfc: some plumbing towards TC encap action
- offload
-To: edward.cree@amd.com, linux-net-drivers@amd.com, davem@davemloft.net,
- kuba@kernel.org, pabeni@redhat.com, edumazet@google.com
-Cc: Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
- habetsm.xilinx@gmail.com
-References: <cover.1685992503.git.ecree.xilinx@gmail.com>
- <8664a34d8286c166c6058527374c11058019591b.1685992503.git.ecree.xilinx@gmail.com>
-Content-Language: en-US
-In-Reply-To: <8664a34d8286c166c6058527374c11058019591b.1685992503.git.ecree.xilinx@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P265CA0253.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:37c::6) To DM8PR12MB5398.namprd12.prod.outlook.com
- (2603:10b6:8:3f::5)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2CE915AC4
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 10:32:17 +0000 (UTC)
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8368B10C6;
+	Tue,  6 Jun 2023 03:32:15 -0700 (PDT)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-565e6beb7aaso75470907b3.2;
+        Tue, 06 Jun 2023 03:32:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686047534; x=1688639534;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=fJBagGQruk41RMozweoSMnqFuyRsRNH9Kz3lbWgCrDg=;
+        b=ZS4n6g8Xn9pk4nj/555htUTZOSc3WAhyKl7lZxoWnNUCmiV5fgcCNC/PhotXbPf7gl
+         7iGyMFv0NimGObo93vTrWfDJg4BNoGG+wE4Rm1UXTlRcH8sAHQxv2FrF8aVZoUgB2Vpi
+         MvyZOtu04sl2xHpwjpKLmYiFwt4m6A8w5oTvInlNow73LPrHN9jnjelFVyTjZam0kogB
+         5C5kzjKpoEUzhc+DS20k/VpFI+JG6WGtMAf7e1t6Ez6ca4Hbb1K32w9aoucDCCtx1Bjd
+         HivJvd3mhkb07hftmu5NXp8MwdksBcxykdE07iuwlEBAZeh5si/zBLXvh+roetEohXzZ
+         pWNQ==
+X-Gm-Message-State: AC+VfDw8uO7qVNwTCLMg+fWwp27Aambqkq4WBEsVImKPQqx15B/sK/iw
+	KfyS5LE5frSELhMhr90g596dAY8AFNbVvw==
+X-Google-Smtp-Source: ACHHUZ4q5szX1RObq5yPUhreT12sVZhtZW/dFFxSSS4CPkePjU0Br+flDkjfHEu5G/vYpBo3/iyuXA==
+X-Received: by 2002:a0d:e6d4:0:b0:565:e87f:a78f with SMTP id p203-20020a0de6d4000000b00565e87fa78fmr1872057ywe.25.1686047534573;
+        Tue, 06 Jun 2023 03:32:14 -0700 (PDT)
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
+        by smtp.gmail.com with ESMTPSA id h66-20020a0dde45000000b0055d7f00d4f7sm3927127ywe.22.2023.06.06.03.32.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Jun 2023 03:32:12 -0700 (PDT)
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-568ba7abc11so75529947b3.3;
+        Tue, 06 Jun 2023 03:32:11 -0700 (PDT)
+X-Received: by 2002:a0d:df91:0:b0:55a:3560:8ee0 with SMTP id
+ i139-20020a0ddf91000000b0055a35608ee0mr1959649ywe.20.1686047531077; Tue, 06
+ Jun 2023 03:32:11 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5398:EE_|BY5PR12MB4033:EE_
-X-MS-Office365-Filtering-Correlation-Id: 19a8d300-73a5-4bd6-99e1-08db6678ff64
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	lc7UhiVkTrcmkyhxYV4jg5+cirOHdukfIHLyHFPxy5MZNd8aQQltFjCJxYk/IUr0Nfla11BxTqwHHIcKe2mm4SPucJqKNF5CQxOGzlQImv2wnIY0KK6FKDDqBlEqB55P0BgfkUZ1qyf69VNftW8N1S12f63oUqAnt4xE7Gqzx0xfxbxLsokAfUGc1nhQ70qGs4QfKGQDdOlNj5UJR9rg1sYWTwJKuuHx1Zh0tZZ2COT8hcyMFJ6yuHx+cDGmtqs/epkhzM6k+6ClrInlhoZauPKJmxuulOsRmAhIfNm255/ogXrtactxmIfvtBAQH7S7IGrjVS4KjIrWmBwS1KGZUQC18IS1UJ6BAACCNwCazD0CnIP9+7KI4zl2FDc1xoeXEsKGArBCUClglMvJtyXjjOM7dBhJVAHHGQHMywKKadczkMXcjD4fidu63GeQTt7td484Cnbmh1nrMfgBfCJttw1kkYDajCdC+JFUwcEaQlBty/hzv9/0PH5C8Y3RfamZBZ8ofB04BzmLqfhqH6pa6ijqfKQt6fgdov2SnMD3LdLILsutR01GdBCQ5wTjjAbL8XN6UrJu9Pa9drgFeJn3Ho+3OPAzWOCYeGA3eeo7JALWLoSZKKMPllD1ArDOw/jZ5bHqsmFd/oeBso2s9Fbscg==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5398.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(136003)(39860400002)(346002)(376002)(451199021)(478600001)(2906002)(4744005)(26005)(36756003)(6486002)(6666004)(2616005)(53546011)(86362001)(31696002)(186003)(6506007)(38100700002)(6512007)(316002)(5660300002)(8676002)(66946007)(8936002)(31686004)(4326008)(66556008)(66476007)(41300700001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Wm0vYW1xeGtsVjJzWTZZVVNDNmtySHlNTW1rcWRNRHdjWXFac0hEL1hLcFNO?=
- =?utf-8?B?N2NFc1I4MHl3SDgrSngzc0FNblFuYk41QXZCREdaYUtjRXJwRVBtckYyK0RR?=
- =?utf-8?B?YWl4ZEhQZm56bHhNYW5wSjFJeFN1Tk9nNkZHbXEvOVAzSys3azFqckFXbmdO?=
- =?utf-8?B?U2JSSFBkdUJ6bjh2R1FpMkNZQ01iOC8yd1I0RHNGL0N0R1p1a2RVTXVMVXBK?=
- =?utf-8?B?Y1BLQ2NQM1RTNkF2L3FjZGVUMXB2YzdGeGk1Ullob2U3QXFScUZPU01YTElj?=
- =?utf-8?B?WmpicGFLcldVaTdJTDlPMUs5WkM5UHhjMXpENlJLNXZaZ0ZHcTJ1T0s2ZVJW?=
- =?utf-8?B?NGx2THdmMy9qZkdMdGRONWYrMC92MUFUT1lrYkdsV3g5Mno4NXhmZXRzdnpI?=
- =?utf-8?B?Z3hNMGNkZE85NW0rcjlSSS9LWG9SVjlrZXZZMEZieXBDa3JiYVlLYVJiOGtB?=
- =?utf-8?B?NlZhMDRUc2hpSGJ2UmVDbzd3MU9IUFNGRnpuR3ltMkUvSUEyT1I3M3FIS2Y3?=
- =?utf-8?B?OU5kVzVKWUZ0L3VqME12MW5SK25xZXY4eTNqcHVCNGdUcTFWekdSWFZJTlpl?=
- =?utf-8?B?ZEY4QU5EVW5IeUFnTlh1K1Zma1EvcFRrbkdVVGQ2OEpyM3FLWURraUZFRjh6?=
- =?utf-8?B?L0h0MnB4RHZvVkNQUkk0RnNLSysvTk0ydmxrNkJNNUFlTFZBemx4Y2ZHK2NG?=
- =?utf-8?B?ZUF1YXV0VWVMZWdvcTM0NDBsSmdMd0ZVUDlCdmd6QXRNelZNM2NqN0lHWmRL?=
- =?utf-8?B?TjhyOEwyNEs1VXdjRCtEd1daQlFIYkFla2cwdHFMK281VmVIU0t1aS9JTUR2?=
- =?utf-8?B?aDdyYTA5R0h2c3hpTDcvYmpYb0dLaFNiZlltdC81SlVxSHZZVkZnQ1F1NU9C?=
- =?utf-8?B?ZHpxdmFDM0Z2MHFDWXpmOXpsZ0xYZUMvWW1kcHBGU0pIQWhIeFlGZ0gwUkkx?=
- =?utf-8?B?RlFlVFFtMS9jaTFvQ2UxSEg5dzdYaWRSd0R6R2JlenhMaUFJRWQzNXo1V3Zr?=
- =?utf-8?B?U2drODhNcTlqdElhV2dyMzNPb25wSkVWL1FBZEU3MHNLZFl3VjVMMy9GcGt4?=
- =?utf-8?B?SjBIK1RwWkFKQnQ1UW03ZHhuRy83bWJVNWJjb1J5cWh5UjYyRS9jQVpCUTN3?=
- =?utf-8?B?YndqYjNsRmxqSlFBN2J3Rll0eVgyWXRTRUFFbll6TmEyam1zN2I1dE9MZmFj?=
- =?utf-8?B?amRWWDZQUDlieGNIWFJRWGVuQ3h5R0xLYnZxejNHSUp1U1NsSTdZdzVjRzc1?=
- =?utf-8?B?RUFzbHc2bjFodU5Ub0ExbkJLWVFGSEhHMTNyUFRjczNneDkrOXJtbjNRZW0x?=
- =?utf-8?B?N2JlRGpHYkg5RkxDa2wvNXZKbDkwaWdnOEJyemJHcmlZTFlHZXhHU1NwK0JU?=
- =?utf-8?B?TFl3UW1jRWtQMm9iQVFLYUJZS3pzaS91WHN2MVlRODZHZ0FhWmZBVTgycEl1?=
- =?utf-8?B?UjBmazBFemhzZExlT3pxNmJ6ZkxOSEQ4eHRLbU1Qb1VXZWhFRGlqOWFiN1Nw?=
- =?utf-8?B?dUJkTlVWZ3AyMzZyTTRlbEF1OGQzZVZLNmcxY2pKTXQ1M1lreUwxOWxwcjZC?=
- =?utf-8?B?K1NHQkk1bWdHdTFIQ25NNEVoR1ZTbkZLWGs2U0hOVmhFdnpOQkRRQkRZRmd1?=
- =?utf-8?B?MnlvV2tpZTBjZjg5ZUVWU3B3QzlnSVRhbW5pc2hkcWlYTFNBTWtxUHQ2N3FH?=
- =?utf-8?B?MUJzVWwwQ3B3SHhHVFFiOXVkaGtFc3FMbmtZU1VSZGlkemZHbFlxTDlFaDdX?=
- =?utf-8?B?ckN3U1UxSGt6cjhrRDY2U2xnOHV0TEorUXdPNU5HSm4yK085UzZuVHFGY2Rr?=
- =?utf-8?B?aXVBc1paRDlCYU1IMTU3WjB2SXllRE5WZDE0UE5mQ0UzUDRVTEgzc3dxVWhI?=
- =?utf-8?B?Q20yNzBxdEhNZnIwQ1c1aXZMa0lzNEVnd0F5KzlqQXh1a2xnbTAraEt2NFJ3?=
- =?utf-8?B?eFZjTDRHcUtVR3FMY1NWK3ZleE9GYlpNUGp2TGwzajFlQTJwaHl2UHdZNzVr?=
- =?utf-8?B?NE9Bb0EvbkVmZ2psRllUSGpLKzJBYyt1ZTZFc3Y3cUx0L0w2SlJ4R25NOXlC?=
- =?utf-8?B?bHlBZmhWVGhndDBCYzRCS2pmVzBNTDcyVXp3UVFvQTNKclZmVEpVV2MyeDNm?=
- =?utf-8?Q?EO+zIuZ0+RAmjcFE5+dCyXcNb?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 19a8d300-73a5-4bd6-99e1-08db6678ff64
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5398.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2023 10:30:07.2737
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hbxPrZBnSqi6UbO/4K6pmClqxiwJ0U9bQ9RwaxvWiXYC8MQk0bbzMj26vMJ+iAYZ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4033
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.6
+References: <CA+G9fYv0a-XxXfG6bNuPZGT=fzjtEfRGEYwk3n6M1WhEHUPo9g@mail.gmail.com>
+ <CA+G9fYueN0xti1SDtYVZstPt104sUj06GfOzyqDNrd3s3xXBkA@mail.gmail.com>
+ <CAMuHMdX7hqipiMCF9uxpU+_RbLmzyHeo-D0tCE_Hx8eTqQ7Pig@mail.gmail.com>
+ <11bd37e9-c62e-46ba-9456-8e3b353df28f@app.fastmail.com> <CAMuHMdUH2Grrv6842YWXHDmd+O3iHdwqTVjYf8f1nbVRzGA+6w@mail.gmail.com>
+ <8db9886f-e24f-44ee-8f8a-880dc3e4bf75@app.fastmail.com>
+In-Reply-To: <8db9886f-e24f-44ee-8f8a-880dc3e4bf75@app.fastmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 6 Jun 2023 12:31:59 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWKL3UHzkEq3qOChMsgOsr+9uj215x55xLzbOUJWwQVzg@mail.gmail.com>
+Message-ID: <CAMuHMdWKL3UHzkEq3qOChMsgOsr+9uj215x55xLzbOUJWwQVzg@mail.gmail.com>
+Subject: Re: arm: shmobile_defconfig: ld.lld: error: undefined symbol: lynx_pcs_destroy
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Naresh Kamboju <naresh.kamboju@linaro.org>, open list <linux-kernel@vger.kernel.org>, 
+	linux-next <linux-next@vger.kernel.org>, lkft-triage@lists.linaro.org, 
+	clang-built-linux <llvm@lists.linux.dev>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, 
+	Linux ARM <linux-arm-kernel@lists.infradead.org>, Netdev <netdev@vger.kernel.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Anders Roxell <anders.roxell@linaro.org>, Geert Uytterhoeven <geert+renesas@glider.be>, 
+	"David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>, maxime.chevallier@bootlin.com, 
+	Simon Horman <simon.horman@corigine.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+Hi Arnd,
 
+On Tue, Jun 6, 2023 at 12:21=E2=80=AFPM Arnd Bergmann <arnd@arndb.de> wrote=
+:
+> On Tue, Jun 6, 2023, at 11:28, Geert Uytterhoeven wrote:
+> > On Tue, Jun 6, 2023 at 11:16=E2=80=AFAM Arnd Bergmann <arnd@arndb.de> w=
+rote:
+> >> On Tue, Jun 6, 2023, at 11:01, Geert Uytterhoeven wrote:
+> >>
+> >> This won't work when PCS_LYNX is a loadable module and
+> >> STMMAC is built-in. I think we should just select PCS_LYNX
+> >
+> > Oops, you're right, forgot about that case.
+> > What about using IS_REACHABLE() instead?
+> > No, that won't work either, as DWMAC_SOCFPGA can be modular,
+> > with STMMAC builtin.
+>
+> It would work because of the 'select PCS_LYNX' below DWMAC_SOCFPGA,
 
-On 05/06/2023 20:17, edward.cree@amd.com wrote:
-> From: Edward Cree <ecree.xilinx@gmail.com>
-> 
-> Create software objects to manage the metadata for encap actions that
->  can be attached to TC rules.  However, since we don't yet have the
->  neighbouring information (needed to generate the Ethernet header),
->  all rules with encap actions are marked as "unready" and thus insert
->  the fallback action into hardware rather than actually offloading the
->  encapsulation action.
-> 
-> Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
+That was my first thought, but it won't work, as DWMAC_SOCFPGA=3Dm
+causes PCS_LYNX=3Dm, while main STMMAC can still be builtin.
 
-Reviewed-by: Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
+> but I think that's too fragile and would easily break when another
+> dwmac front-end starts using PCS_LYNX without have the same select
+> statement. I think we should always avoid IS_REACHABLE().
+
+;-)
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
 
