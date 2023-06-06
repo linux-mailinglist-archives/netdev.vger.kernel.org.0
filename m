@@ -1,121 +1,119 @@
-Return-Path: <netdev+bounces-8443-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8444-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 33C2B724138
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 13:42:49 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 75141724140
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 13:43:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5BED5281561
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:42:47 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E12411C20ECF
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:43:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7DFF315AFB;
-	Tue,  6 Jun 2023 11:42:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C017B15AFE;
+	Tue,  6 Jun 2023 11:43:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 741F215ACE
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 11:42:45 +0000 (UTC)
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E810310D5
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 04:42:35 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id 3f1490d57ef6-bb397723627so1036440276.1
-        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 04:42:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1686051755; x=1688643755;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=uIatdOpJsDSo1SfdpzGEqsy6C4wmRjOxQNmYeUR8mwE=;
-        b=Z/TuiCbwqYKXbqQGZtBPxCc7BIfVs+qk4Is1zJWK7ZWzqMd3qyaHvkcjOsFiOMGMwp
-         gfDxHIcdC6e7QGT1w3zmIzJ1Ppo5RLu45Vit4zFsL8+dPUHPKp2KpOQ1UKssmpJUkYCo
-         2iplsXuhuYWXap07umiIf735xP1kVZwqNooB5DMToF5O+RBer9EUx/zL5RqSmeQ+xAM1
-         lIS9tGlEInieiXyN+p598Cln71LOcG+/ucAHtxGARs0hzPXX4yrM6Zzncc/da7Z+qEJf
-         b/zMZwmefnovgNVb502v/YNgm0XMmyw2gYJWlVRthEajyUczNh3Yq7Tl6UfPss4iYLBB
-         PYTQ==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B47F315AD2
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 11:43:24 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E97F10D9
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 04:43:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686051798;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=0iOkAk95XE8FQwpIhnDE1IKjJKk6zhtO1ZOnSmwwQSI=;
+	b=PJrVf1sI8+0PXEVw8bdqbq4eoJ6s2K3v5C19czWzrKlnTjVgk5LXV2rq43t9/lqE8/a8gk
+	yVhFiR+d2NpgsDzqaStxUJAgVgTM2HYf2TnY9Cq8CSvZOI42etFmBUApSNqdb14TlBjk3/
+	xknfO+kMw0aC5/rX59kTTFqEN9x5ZEw=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-541-Bc012nv-NeqiiCkWIuJD8A-1; Tue, 06 Jun 2023 07:43:17 -0400
+X-MC-Unique: Bc012nv-NeqiiCkWIuJD8A-1
+Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-626204b0663so10975136d6.1
+        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 04:43:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686051755; x=1688643755;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+        d=1e100.net; s=20221208; t=1686051797; x=1688643797;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=uIatdOpJsDSo1SfdpzGEqsy6C4wmRjOxQNmYeUR8mwE=;
-        b=UT5d7hagVqlQDZ/Phtj2OCO2v9UKkjCr7O49ltLEGvGtmt2tDSIWCMFMd/YEMKHFsH
-         iLkNlGP57Mm5VM0kUaoj0hRhEgoxsJI7Ct0iOS/OPn1FnVXetOgHR0csAP33OUpRAOCQ
-         AltGZ/YiNZ7pWzmRnLWtsv1oejoZD0YlU3MFo9g661y/gqj7FXKMRSPGy58zDuMXx65r
-         fGkKq1aDNntA1RJjkB5gYJsDrMdhFAWFDoz/NsVw8iyM8NIRQqIBZpFpUGnW8q7UFpJX
-         DBOBxeyBf+iZzoqBm2IWlWH0MtZ2FQw7121teWIaPYKywDfgBO8ca/C+PDbDYCUB0Z4y
-         pIlg==
-X-Gm-Message-State: AC+VfDxRMg4NZ5gherqTG/jbs1qQz95Ey5n59yhhQjm5CCSz9vWDrQJ+
-	vOS9zXES8Birih019CGC+Hmlam9iHSSPqA==
-X-Google-Smtp-Source: ACHHUZ5FRSrPi2utc6I2y7lQZBRdW0RQuzFJIjaKIQSItUENSNvcZI8oLeJLY+QZf5O0e0RlYi6SdOXH0dXp9w==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a25:8d86:0:b0:ba8:b828:c8ff with SMTP id
- o6-20020a258d86000000b00ba8b828c8ffmr583414ybl.10.1686051755230; Tue, 06 Jun
- 2023 04:42:35 -0700 (PDT)
-Date: Tue,  6 Jun 2023 11:42:33 +0000
+        bh=0iOkAk95XE8FQwpIhnDE1IKjJKk6zhtO1ZOnSmwwQSI=;
+        b=Oc76q3SQV41KC/AgauTJgEjta3C0oyWwUzavuaDMJWiJO6ZNQGPEH0Zji8rf0dWJBU
+         vvd5Dq8b+2/7NPGaQqQL8Nj4Ztvyeoe5BXu9bxx6N5eU6dzwgLUO7jJQwf0mBL/5Cs6g
+         8lh6MGKsnUfYyTf6fzlXPRlbScuL24O4w6rUMk/Wcf5J//y1GJbdWWMFdIXL0KpdFSKy
+         pJCs0zNAtDaf/DRJ8yOWmE0Of9p//GH32L3P4xbxgXe6xdK4zhqN/n3dygBxwBZEm1hx
+         pRpzQ3S8UHjGGS92kMH7RxYBpOh7pOxM+hGHqI/n4IJY6WfUpqij45mDKoeSpAa7GrVC
+         XxVA==
+X-Gm-Message-State: AC+VfDzzyiUs5lUxN9k1U0MLiX5eoq3XaGCjQjshz6mGm5Jc2Sj+gzer
+	xNTd0gZ14YrdqxxDe1dTu0J+x5+rODOR8nAcQVk3BCZBguVDc7YgE/MfZb76AdBkCjmobo+TszB
+	HETXmxZdlpPAzZe7y
+X-Received: by 2002:ad4:5ba3:0:b0:61b:73b2:85ca with SMTP id 3-20020ad45ba3000000b0061b73b285camr1881468qvq.5.1686051796874;
+        Tue, 06 Jun 2023 04:43:16 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ61p1vk3RjEBKS2PqfFs3Br6L/1FIQ6CTrfW33hVbFPA/Ryxr+gq3ovb1lFdTIclm2YApTUtw==
+X-Received: by 2002:ad4:5ba3:0:b0:61b:73b2:85ca with SMTP id 3-20020ad45ba3000000b0061b73b285camr1881461qvq.5.1686051796640;
+        Tue, 06 Jun 2023 04:43:16 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-114-89.dyn.eolo.it. [146.241.114.89])
+        by smtp.gmail.com with ESMTPSA id j6-20020a056214032600b00626137a0b95sm5292387qvu.96.2023.06.06.04.43.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Jun 2023 04:43:16 -0700 (PDT)
+Message-ID: <21755d7f0d8bb51f748e65dde09986665c439341.camel@redhat.com>
+Subject: Re: [ovs-dev] [PATCH net] net: openvswitch: fix upcall counter
+ access before allocation
+From: Paolo Abeni <pabeni@redhat.com>
+To: Simon Horman <horms@kernel.org>, Eelco Chaudron <echaudro@redhat.com>
+Cc: Simon Horman <simon.horman@corigine.com>, dev@openvswitch.org, 
+ netdev@vger.kernel.org, edumazet@google.com, kuba@kernel.org,
+ davem@davemloft.net
+Date: Tue, 06 Jun 2023 13:43:13 +0200
+In-Reply-To: <ZH3zUdkxvxgaYjxf@kernel.org>
+References: <168595558535.1618839.4634246126873842766.stgit@ebuild>
+	 <ZH3X/lLNwfAIZfdq@corigine.com>
+	 <FD16AC44-E1DA-4E6A-AE3E-905D55AB1A7D@redhat.com>
+	 <ZH3eCENbZeSJ3MZS@corigine.com>
+	 <69E863E6-89C0-4AC7-85F1-022451CAD41A@redhat.com>
+	 <ZH3zUdkxvxgaYjxf@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.41.0.rc0.172.g3f132b7071-goog
-Message-ID: <20230606114233.4160703-1-edumazet@google.com>
-Subject: [PATCH net] net: sched: move rtm_tca_policy declaration to include file
-From: Eric Dumazet <edumazet@google.com>
-To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>, Cong Wang <xiyou.wangcong@gmail.com>, 
-	Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org, eric.dumazet@gmail.com, 
-	Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-rtm_tca_policy is used from net/sched/sch_api.c and net/sched/cls_api.c,
-thus should be declared in an include file.
+On Mon, 2023-06-05 at 16:38 +0200, Simon Horman wrote:
+> On Mon, Jun 05, 2023 at 03:53:59PM +0200, Eelco Chaudron wrote:
+> > > Yeah, I see that. And I might have done the same thing.
+> > > But, OTOH, this change is making the error path more complex
+> > > (or at least more prone to error).
+> > >=20
+> > > In any case, the fix looks good.
+> >=20
+> > Thanks, just to clarify if we get no further feedback on this
+> > patch, do you prefer a v2 with the error path changes?
+>=20
+> Thanks Eelco,
+>=20
+> Yes, that is my preference.
 
-This fixes the following sparse warning:
-net/sched/sch_api.c:1434:25: warning: symbol 'rtm_tca_policy' was not declared. Should it be static?
+I concur with Simon: Eelco, please post a v2 including the error path
+changes.
 
-Fixes: e331473fee3d ("net/sched: cls_api: add missing validation of netlink attributes")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/net/pkt_sched.h | 2 ++
- net/sched/cls_api.c     | 2 --
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Thanks!
 
-diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-index f436688b6efc8f20ee5ede6ee94404e22bbebf3f..5722931d83d431d8cc625d44ba2bc22d88301d5b 100644
---- a/include/net/pkt_sched.h
-+++ b/include/net/pkt_sched.h
-@@ -127,6 +127,8 @@ static inline void qdisc_run(struct Qdisc *q)
- 	}
- }
- 
-+extern const struct nla_policy rtm_tca_policy[TCA_MAX + 1];
-+
- /* Calculate maximal size of packet seen by hard_start_xmit
-    routine of this device.
-  */
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 2621550bfddc1e466b6a03b0ce6eb5de25ab7476..b2432ee04f3193f6bbcb7986fd950d470fd28e55 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -43,8 +43,6 @@
- #include <net/flow_offload.h>
- #include <net/tc_wrapper.h>
- 
--extern const struct nla_policy rtm_tca_policy[TCA_MAX + 1];
--
- /* The list of all installed classifier types */
- static LIST_HEAD(tcf_proto_base);
- 
--- 
-2.41.0.rc0.172.g3f132b7071-goog
+Paolo
 
 
