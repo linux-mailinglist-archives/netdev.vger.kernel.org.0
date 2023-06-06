@@ -1,159 +1,148 @@
-Return-Path: <netdev+bounces-8354-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8355-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6F4A9723CA0
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:11:01 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 23395723CB5
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:13:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2B8B228156D
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:11:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 894C61C20E60
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:13:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 823A1290EE;
-	Tue,  6 Jun 2023 09:10:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6A12E290F6;
+	Tue,  6 Jun 2023 09:13:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77B90125C0
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:10:58 +0000 (UTC)
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B71048F;
-	Tue,  6 Jun 2023 02:10:55 -0700 (PDT)
-Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.201])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Qb4QX1kDtz67gyM;
-	Tue,  6 Jun 2023 17:08:36 +0800 (CST)
-Received: from [10.123.123.126] (10.123.123.126) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 6 Jun 2023 10:10:52 +0100
-Message-ID: <ea810d57-93fe-1724-4aab-5cbc1a35062f@huawei.com>
-Date: Tue, 6 Jun 2023 12:10:51 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 588D3125C0
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:13:06 +0000 (UTC)
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2139.outbound.protection.outlook.com [40.107.237.139])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8718510C4
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 02:12:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jFqzqZbUG1zlYvihIkDE28+URIslWq9zlUqPuG/pAJ/N79ue1lAPJgfc612z0Qnefc1qJhr5j60+1MqG/JbATDvZUBTKAN1XX0hPL85guKHR+l7IqLSjMSm7CAX904WowgTGoVKA7owyC2OBVdxy9S/eEqi40r9ivvRNOktSh7Ihplb+kz4lgQu6xdt/AMVNc3BYr8AhuwD/cmdFthASPc+CP+YJtejbu+BrhICYzQ47YeVARaN9vgnmc/TIzUgBPeEN16uPIOKB2iP64jtdkmUW8gpfCpY8vUfPvW7RsS8wseJX9Op9xfV/dU8032vKGZLPauLk5cLXkInK+wcMgA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aUhe9iULvc00/8W5NNykb8vhjr1f/vmdWtcMYrP6+II=;
+ b=WpyWIFzP947SKLXMIxaoQdNl2GHkUx1KpxpTDZjdeTug4lVMNggo0u78RZXnBE6ULNuP3W1EgFM1WmyPjmIuM52q8GijJQDBHNo0pV+B4AsyfW/LEax3Ifupz7De76lNJJ4o8uh7A5KuJH0o74Hrbx6jocWvNLTrzgrKBzEvCy6R0Kjz2PzXMfOb1boKs2dy1iXiiX3HyqG34KNGC9b35ixI/9wQmTnKhfhwkh5pTsCptl6pu1oeRcrJWjZabDqY53MxkWs+9U/khuSCMtJQC9XFOpgRzVmK5JJo7XQnb4WLD/Adne9RnvSMoGzjHSB+tP+QiekObeSqciv6iwV5KQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aUhe9iULvc00/8W5NNykb8vhjr1f/vmdWtcMYrP6+II=;
+ b=vYgKG9HcCCAKRnG11VQvgGbCE+w3z5L4SHOkWfI45x/nPgPBX9VWJxBQyvya69UQpD77KZAnd4P83cv8C/+ZHpLvWBRSaz6kniybtBfspwZhR38ermxrVMRHN4c6rBuhwPIJNBsx6dWFIJTZlHnsrgwWqXMWaPOYtqRxMBKVrmk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH7PR13MB6366.namprd13.prod.outlook.com (2603:10b6:510:2f8::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.19; Tue, 6 Jun
+ 2023 09:12:55 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6455.030; Tue, 6 Jun 2023
+ 09:12:55 +0000
+Date: Tue, 6 Jun 2023 11:12:48 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Jakub Kicinski <kuba@kernel.org>, Leon Romanovsky <leonro@nvidia.com>,
+	Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+	Paolo Abeni <pabeni@redhat.com>,
+	Patrisious Haddad <phaddad@nvidia.com>,
+	Raed Salem <raeds@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
+	Steffen Klassert <steffen.klassert@secunet.com>
+Subject: Re: [PATCH net 3/4] net/mlx5e: Drop XFRM state lock when modifying
+ flow steering
+Message-ID: <ZH74kFXcey96w9/7@corigine.com>
+References: <cover.1685950599.git.leonro@nvidia.com>
+ <63612a659fe38ec043f2f791acb95ab3134e577d.1685950599.git.leonro@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <63612a659fe38ec043f2f791acb95ab3134e577d.1685950599.git.leonro@nvidia.com>
+X-ClientProxiedBy: AM0PR06CA0118.eurprd06.prod.outlook.com
+ (2603:10a6:208:ab::23) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v11 00/12] Network support for Landlock
-Content-Language: ru
-To: =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC: <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
-	<linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-	<netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-	<artem.kuzin@huawei.com>
-References: <20230515161339.631577-1-konstantin.meskhidze@huawei.com>
- <8f3d242a-c0ee-217e-8094-84093ce4e134@digikod.net>
-From: "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <8f3d242a-c0ee-217e-8094-84093ce4e134@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.123.126]
-X-ClientProxiedBy: lhrpeml500002.china.huawei.com (7.191.160.78) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB6366:EE_
+X-MS-Office365-Filtering-Correlation-Id: 142e5c13-50b9-4e25-66ae-08db666e365e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	fc2G2BhztAju2cN/GuKRrk/r0PENKC85c3cjP7pKRFLb7f4aIuJCYmoxa89DGBtgO9MJRFvRmvS6mbTXkbNXDYIdw4GjFYJlMhwx7Dz+ZAwAUzl0Ju0fvBA0nHG52m/uxKCfwag3cr5Zjo2uZdPFvEZcTc/JJoG3jhLVjAffdt8ieE/1Ylsuh9WsxJGhHp2iruvjJ6W3+jrCpLLoH/jKN8Psu5BnkbmSITxOjnmxxWJ3e145PnPxrbqRsp9zfxgh6kOXIzAhq5ouBkhIxiIiz+4/UCAroADo7r5c+eq1pFOsI6Y53octaJzmbpCUoSGE6ZiFgBhPgun2Eax72SwS7eYMbIAaiQ5u9wDjWV0eDNClxiR9uDk2+zCcnXkngFx0xjKvratJYnR/8nIof5v0amt0aViqz2waE9m9MS1EZucmMcMUQqOBNi57/NEJSmli4+bO2S95GdrVG1e500WQNz8NRcKUYFVOMSGe+Jr5Jn6hprIig59uFNkMFe1hlSwFmvYTIphAcwjjzr5Vqf+gePXV82glfsRPZqyrC5LT9aTFqRYFQfhqMYrMuZkCxhTPrwSxmMTv5KzZxP66veElLpovPrItjE2hVHSKmfT7Oc8=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(376002)(366004)(396003)(346002)(136003)(451199021)(6486002)(6666004)(2906002)(4744005)(66946007)(66556008)(66476007)(54906003)(44832011)(38100700002)(5660300002)(8936002)(36756003)(7416002)(86362001)(8676002)(41300700001)(6916009)(4326008)(316002)(478600001)(2616005)(6512007)(6506007)(186003)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?2a3As6d0eUWQmMSGPolLtGbjbjSRJHmwXd/DmZKC/r/ZYptp47Dt+Y1fTBxH?=
+ =?us-ascii?Q?1EoPwCZ9PhlORbBNzlWglAtpPJKLbHTbaBL6eYDNKdglG4yacA4HGbFnXhC1?=
+ =?us-ascii?Q?cEKD9fws3nSvZG6jXqO8xpi0Kwy/O0L8+nScQw7w2a2USrhoDbxNXQOQuL+q?=
+ =?us-ascii?Q?JlC5MdR+eP2AsKVzgkwdCkxUSNzW1vUR3VmAzVnkG8vyiLCeXal9+6/x2gXJ?=
+ =?us-ascii?Q?lH4/+WMBPesPdUNm+HMW/m9Y34Zeyd30teNW9yVooSbEIv4lnyejH0k3SbPy?=
+ =?us-ascii?Q?NH2eZmMWkD+pR7IXFJF2Ajh/kweYNGaIo6GskKsWZw1wkGc5/ZcFcNrTg+G/?=
+ =?us-ascii?Q?hOJgoDOuEHwfFEwAFfcoZVFyQNDMYs3if22jZK/NrHu9rlmo5tJf1E2a9/Ji?=
+ =?us-ascii?Q?srcyWIvIXhyNc5kwFoKbaIpOGiY2sV5u2tLnv0rRzx4pXslo/3q0Hl2s52K9?=
+ =?us-ascii?Q?TUCpbFq56h7KUK+2NDRDWUcTA4PMLlC/7Gderc4meG4ImdDKdimy/F7UWe1X?=
+ =?us-ascii?Q?4RqPkx6zo5K41+zazx7DGIlHh0r5tbFqNL1/9jsmwIoPREeNAlP5ALma8g+J?=
+ =?us-ascii?Q?KcKkQZE03s5P5wDAyoeIi2OlIhOO5keiiAgy1leJv/tazQxGu2K4l+C8g69P?=
+ =?us-ascii?Q?buXxSF/gjemCdB7z+K1umiQC7RZrMeye+FdhRti6L4XkUXogwuo9QsVeiz2B?=
+ =?us-ascii?Q?7upSecD2dw3fzzmD/mZmdJ39pSW6m/jYkf5pjXwBF93U6lVdMT6LdeZz8NP5?=
+ =?us-ascii?Q?sOK4nV93Gge2l7c+hQcgYIJMctjROReIMnrAALzgNVg5hrLIcTM0h+b27bKP?=
+ =?us-ascii?Q?O0+bKYkooM95VIFmDFFo/CTehNT8/2K2LV1pqcIhkZzXZQO+l6koIytHgwoH?=
+ =?us-ascii?Q?U25vy73tcXILBkkRR/SbAFbsXsV2ZsRurllUzOmmyveXED9iFfxSbIlWPbVL?=
+ =?us-ascii?Q?7+CcsP/TGk/XmMJ5R6GdJ+LJtoRZBMYkmm+UccpxYFFFODil1QBE/4GRO9MI?=
+ =?us-ascii?Q?/pN4YQrMqIigOCokHywUdpzdf+26MGbKo6i9R31kpucAYHHpN8QFsFz2i/fO?=
+ =?us-ascii?Q?LmGE8v4FMpZ3bu9s4qxDmfpzniwWogCabiXlFralH7aFbpMWNV8omqpoBdiA?=
+ =?us-ascii?Q?R6866MVR3Q+ZEhKgz/EyiHNzLOXkxmwkTp2KYCr5fPE1IKo7ZW7VAhKx97Cx?=
+ =?us-ascii?Q?+EI0kpCRrIMpNs745p4wbqvm1gHCBbvXTh2swyFNHCbWnKfFqXAnMWNrO0+r?=
+ =?us-ascii?Q?jnHwHnwI6Yfhfa9UUFd3L/HGQ71o586PAvLXJsRHP52lqPPrHvMpPPB6R1C6?=
+ =?us-ascii?Q?ffTk3AfmsBVCkyjSiCots/RhzTPx+fXX2gz2DRhBisldu1xi0aEldszB7z/6?=
+ =?us-ascii?Q?wb2tqw0XNMtrax4TriX/QNmwpKkmk6SQLIl06zE9fPqAA3FmTFkMgzvA/GlZ?=
+ =?us-ascii?Q?Q5giwYCR7491UkKBVEWBy55v9hkygSl0b+uOdEga5nNd9T/lDqYVfB4EQHi3?=
+ =?us-ascii?Q?VEJjaDOoMlCMWTKoY7+WpSaQtdtMdZlv3MQ+k7v90ZwlSfZhWMiLuRSMNgqQ?=
+ =?us-ascii?Q?qerFupGPletmO4wmwm9+pg4SUYb/boW77JMbDPMzAbcFQe+ho9yUf2o2u/T5?=
+ =?us-ascii?Q?I4NAJZLLk0vx8SVzOk4tAZpMVHOc/NQ/n7ZV9P71b+zqwem/9SwybfuG6uN6?=
+ =?us-ascii?Q?KDkR8A=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 142e5c13-50b9-4e25-66ae-08db666e365e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2023 09:12:54.9577
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /zn3GU3aO6SP/GNn1jbFBeNQsDR/dWHKOiq46Yku0nys/Fl8x+njHWIHVBg6f/jsttER4Ai1cNAxqxQBXj0Rnx3SK+DeP2eq9oZUbcGQ6sk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB6366
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Mon, Jun 05, 2023 at 11:09:51AM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> XFRM state which is changed to be XFRM_STATE_EXPIRED doesn't really
+> need to hold lock while modifying flow steering rules to drop traffic.
+> 
+> That state can be deleted only and as such mlx5e_ipsec_handle_tx_limit()
+> work will be canceled anyway and won't run in parallel.
+> 
+> Fixes: b2f7b01d36a9 ("net/mlx5e: Simulate missing IPsec TX limits hardware functionality")
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-6/5/2023 6:02 PM, Mickaël Salaün пишет:
-> Hi Konstantin,
-> 
-> The kernel code looks good. I found some issues in tests and
-> documentation, and I'm still reviewing the whole patches. In the
-> meantime, I've pushed it in -next, we'll see how it goes.
-> 
-> We need to have this new code covered by syzkaller. I'll work on that
-> unless you want to.
-> 
-> Regards,
->    Mickaël
-> 
-   Hi, Mickaël!
-   I have never set up syzkaller. Do you have a syzkaller scenario for 
-Landlock code? I need some hints. I will give it a shot.
-
-  Regards,
-     Konstantin.
-> 
-> On 15/05/2023 18:13, Konstantin Meskhidze wrote:
->> Hi,
->> This is a new V11 patch related to Landlock LSM network confinement.
->> It is based on the landlock's -next branch on top of v6.2-rc3+ kernel version:
->> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=next
->> 
->> It brings refactoring of previous patch version V10.
->> Mostly there are fixes of logic and typos, refactoring some selftests.
->> 
->> All test were run in QEMU evironment and compiled with
->>   -static flag.
->>   1. network_test: 36/36 tests passed.
->>   2. base_test: 7/7 tests passed.
->>   3. fs_test: 78/78 tests passed.
->>   4. ptrace_test: 8/8 tests passed.
->> 
->> Previous versions:
->> v10: https://lore.kernel.org/linux-security-module/20230323085226.1432550-1-konstantin.meskhidze@huawei.com/
->> v9: https://lore.kernel.org/linux-security-module/20230116085818.165539-1-konstantin.meskhidze@huawei.com/
->> v8: https://lore.kernel.org/linux-security-module/20221021152644.155136-1-konstantin.meskhidze@huawei.com/
->> v7: https://lore.kernel.org/linux-security-module/20220829170401.834298-1-konstantin.meskhidze@huawei.com/
->> v6: https://lore.kernel.org/linux-security-module/20220621082313.3330667-1-konstantin.meskhidze@huawei.com/
->> v5: https://lore.kernel.org/linux-security-module/20220516152038.39594-1-konstantin.meskhidze@huawei.com
->> v4: https://lore.kernel.org/linux-security-module/20220309134459.6448-1-konstantin.meskhidze@huawei.com/
->> v3: https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
->> v2: https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
->> v1: https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
->> 
->> Konstantin Meskhidze (11):
->>    landlock: Make ruleset's access masks more generic
->>    landlock: Refactor landlock_find_rule/insert_rule
->>    landlock: Refactor merge/inherit_ruleset functions
->>    landlock: Move and rename layer helpers
->>    landlock: Refactor layer helpers
->>    landlock: Refactor landlock_add_rule() syscall
->>    landlock: Add network rules and TCP hooks support
->>    selftests/landlock: Share enforce_ruleset()
->>    selftests/landlock: Add 11 new test suites dedicated to network
->>    samples/landlock: Add network demo
->>    landlock: Document Landlock's network support
->> 
->> Mickaël Salaün (1):
->>    landlock: Allow filesystem layout changes for domains without such
->>      rule type
->> 
->>   Documentation/userspace-api/landlock.rst     |   89 +-
->>   include/uapi/linux/landlock.h                |   48 +
->>   samples/landlock/sandboxer.c                 |  128 +-
->>   security/landlock/Kconfig                    |    1 +
->>   security/landlock/Makefile                   |    2 +
->>   security/landlock/fs.c                       |  232 +--
->>   security/landlock/limits.h                   |    7 +-
->>   security/landlock/net.c                      |  174 +++
->>   security/landlock/net.h                      |   26 +
->>   security/landlock/ruleset.c                  |  405 +++++-
->>   security/landlock/ruleset.h                  |  185 ++-
->>   security/landlock/setup.c                    |    2 +
->>   security/landlock/syscalls.c                 |  163 ++-
->>   tools/testing/selftests/landlock/base_test.c |    2 +-
->>   tools/testing/selftests/landlock/common.h    |   10 +
->>   tools/testing/selftests/landlock/config      |    4 +
->>   tools/testing/selftests/landlock/fs_test.c   |   74 +-
->>   tools/testing/selftests/landlock/net_test.c  | 1317 ++++++++++++++++++
->>   18 files changed, 2520 insertions(+), 349 deletions(-)
->>   create mode 100644 security/landlock/net.c
->>   create mode 100644 security/landlock/net.h
->>   create mode 100644 tools/testing/selftests/landlock/net_test.c
->> 
->> --
->> 2.25.1
->> 
-> .
 
