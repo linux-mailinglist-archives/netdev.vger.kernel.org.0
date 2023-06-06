@@ -1,142 +1,193 @@
-Return-Path: <netdev+bounces-8419-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8418-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8B045723FAE
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 12:35:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id BF956723FA6
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 12:35:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 45919280C83
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 10:35:31 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1A3D0280F23
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 10:35:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1FFDD125B6;
-	Tue,  6 Jun 2023 10:35:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6D84E4A1A;
+	Tue,  6 Jun 2023 10:35:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 149EB290E6
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 10:35:10 +0000 (UTC)
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 403A7E8;
-	Tue,  6 Jun 2023 03:35:05 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-	by mailout.nyi.internal (Postfix) with ESMTP id A4ADA5C0195;
-	Tue,  6 Jun 2023 06:35:04 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Tue, 06 Jun 2023 06:35:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:sender:subject:subject:to:to; s=fm1; t=
-	1686047704; x=1686134104; bh=IJQmq65vo/TbxYcHIKSUTBkPubJ2sYVBmz1
-	OpSutP+s=; b=tCzQEzAjGZmWxxg0Ys+hL5Ofm4CPVdUeLjDckZFymKghC6s96mw
-	gMZl3xgVf8H37np+jaeqlCqbYevDJiRbGY2Y/QQ3IWuFNAlXeGCZdi08Vcfcc0Ig
-	diYEzw+rSM+Dzk3BSpaMiv5GE0Fdz8jHigsmr2UdmhCzl01x59DJi5TjtiytNiF3
-	UmOcaqRaB/zgz8hccLy+dYgfs9m6tLz0fEqLkFzvZBkzQhcG0X2aUR4HFOcN7nKA
-	zoPHmevhyLm+ezVo8xuA7PC1C+GcKT3KKVImStNZyAK6BwbbCg9o0lkHOmE54UP5
-	wHIx6YkhU6aW08qloWot58nqZUIXbHvKWpg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:sender:subject:subject:to:to:x-me-proxy
-	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-	1686047704; x=1686134104; bh=IJQmq65vo/TbxYcHIKSUTBkPubJ2sYVBmz1
-	OpSutP+s=; b=E+EsLFO/5IILXucgn/rmLn2SynkIfpG6UlhSY0K+d6ngVmYtFVs
-	Z93C/0xl1wEd9cJuq/V7RM1yR871b8XT72xa8VF5BfojzjVwVY9SI3T6z56OzxcX
-	UmlQD5SeAHvx+UVVQtlDHz9DSferigh6Cd3G8ySCrXy/vq/+MHIlBcOXrgplqddG
-	T8v5++J4OnGDCHmBw9BALl2hV0SAJ89NvPz84hYO5OhJIFHy3AfNkeCIc04HqDTL
-	FeCp5OAAqigWhxJ15dRDmgGU7/ABUqyW+WRY4MG5+0HcnE+W6ib6GXrjkuRc+W7e
-	GKi0U8F0krbMsqOy99KcTeyEHnTYONae/dw==
-X-ME-Sender: <xms:2At_ZFQXGlpaLXRb-FKKTAqrc0pulFP8udxzt88XqjyQ8K0UFsM3jQ>
-    <xme:2At_ZOyCd28aXyALQC3PVPO6o0PaGmP23JkWndPkNur32dASExOlo_ffc07G7id5B
-    hmtzMPp-va_RxleymQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgedtuddgfedtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtgfesthhqredtreerjeenucfhrhhomhepfdet
-    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
-    htthgvrhhnpeegfeejhedvledvffeijeeijeeivddvhfeliedvleevheejleetgedukedt
-    gfejveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    grrhhnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:2At_ZK0ecybGQW_MNqaqlU7GoWujfE7ptyRpbrOeIJ0DHP3iTunStA>
-    <xmx:2At_ZNDp8l6mOdR2eQLeedsNGAnqjJSZUE06SxrIINLmHvtQiG-hsw>
-    <xmx:2At_ZOgxgtPbSIXKXmeDmjXO9ttv-P5WyjQ83itGHa1fyUDSDJl8Vw>
-    <xmx:2At_ZJWZ6PzikjwmYUrIDoA3aSGEwuKMI9vaMequyXHCoawrETVi-Q>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-	id 675B9B60086; Tue,  6 Jun 2023 06:35:04 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-447-ge2460e13b3-fm-20230525.001-ge2460e13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 623D715AC7
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 10:35:06 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0D7BE;
+	Tue,  6 Jun 2023 03:34:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=YGQ2Bv3kGFq35R0tej3M/wC9jHmJwxihT/B4NZfZ6TU=; b=v4NYY2xYaGVu/ck2Y1Dcz7cNlc
+	kV6ccR1w7wZ3zHyk7wNy8kFVl5L4IIb0H4cpNfOiVIo/yU2KogUbuTzaEpN6ZEkmposQ4kTBWDq6f
+	yLft8IBYY/FrKMu9YP7ZrITAmtia2J9XFMyO3bKIgbrGCc9EScU7B7ptUlBIzU76Jlc2rGulSriAU
+	3HuaJAcFIfg3/rbY4094CvBiFtIbCN2lmd9gbgrnA49PlxaJU896mPtv45lWuNrw+YUI8Q7FyufUq
+	Aqqn44QWzzJd3rl+StV2V9GClQwAZ2JyYJ4klpqfNN+Gz5jorCjlDTAuJ2owExjdWuwCLJzNRMySC
+	gdMujS4g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54368)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q6U1X-0005U2-8c; Tue, 06 Jun 2023 11:34:47 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q6U1U-00073a-73; Tue, 06 Jun 2023 11:34:44 +0100
+Date: Tue, 6 Jun 2023 11:34:44 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, davem@davemloft.net,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	alexis.lothore@bootlin.com, thomas.petazzoni@bootlin.com,
+	Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Vladimir Oltean <vladimir.oltean@nxp.com>,
+	Ioana Ciornei <ioana.ciornei@nxp.com>,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Jose Abreu <joabreu@synopsys.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Simon Horman <simon.horman@corigine.com>
+Subject: Re: [PATCH net-next 1/2] net: stmmac: Add PCS_LYNX as a dependency
+ for the whole driver
+Message-ID: <ZH8LxGIvHd+B1eNm@shell.armlinux.org.uk>
+References: <20230606064914.134945-1-maxime.chevallier@bootlin.com>
+ <20230606064914.134945-2-maxime.chevallier@bootlin.com>
+ <889297a0-88c3-90df-7752-efa00184859@linux-m68k.org>
+ <ZH78uGBfeHjI4Cdn@shell.armlinux.org.uk>
+ <20230606121311.3cc5aa78@pc-7.home>
+ <ZH8JxF+TNuX0C1vC@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Message-Id: <34b7bbab-a301-42ad-a2cc-3b68ee1475b7@app.fastmail.com>
-In-Reply-To: 
- <CAMuHMdWKL3UHzkEq3qOChMsgOsr+9uj215x55xLzbOUJWwQVzg@mail.gmail.com>
-References: 
- <CA+G9fYv0a-XxXfG6bNuPZGT=fzjtEfRGEYwk3n6M1WhEHUPo9g@mail.gmail.com>
- <CA+G9fYueN0xti1SDtYVZstPt104sUj06GfOzyqDNrd3s3xXBkA@mail.gmail.com>
- <CAMuHMdX7hqipiMCF9uxpU+_RbLmzyHeo-D0tCE_Hx8eTqQ7Pig@mail.gmail.com>
- <11bd37e9-c62e-46ba-9456-8e3b353df28f@app.fastmail.com>
- <CAMuHMdUH2Grrv6842YWXHDmd+O3iHdwqTVjYf8f1nbVRzGA+6w@mail.gmail.com>
- <8db9886f-e24f-44ee-8f8a-880dc3e4bf75@app.fastmail.com>
- <CAMuHMdWKL3UHzkEq3qOChMsgOsr+9uj215x55xLzbOUJWwQVzg@mail.gmail.com>
-Date: Tue, 06 Jun 2023 12:34:43 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Geert Uytterhoeven" <geert@linux-m68k.org>
-Cc: "Naresh Kamboju" <naresh.kamboju@linaro.org>,
- "open list" <linux-kernel@vger.kernel.org>,
- linux-next <linux-next@vger.kernel.org>, lkft-triage@lists.linaro.org,
- clang-built-linux <llvm@lists.linux.dev>,
- Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
- "Linux ARM" <linux-arm-kernel@lists.infradead.org>,
- Netdev <netdev@vger.kernel.org>, "Nathan Chancellor" <nathan@kernel.org>,
- "Nick Desaulniers" <ndesaulniers@google.com>,
- "Anders Roxell" <anders.roxell@linaro.org>,
- "Geert Uytterhoeven" <geert+renesas@glider.be>,
- "David S . Miller" <davem@davemloft.net>,
- "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>,
- "Paolo Abeni" <pabeni@redhat.com>,
- "Maxime Coquelin" <mcoquelin.stm32@gmail.com>, maxime.chevallier@bootlin.com,
- "Simon Horman" <simon.horman@corigine.com>
-Subject: Re: arm: shmobile_defconfig: ld.lld: error: undefined symbol: lynx_pcs_destroy
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZH8JxF+TNuX0C1vC@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 6, 2023, at 12:31, Geert Uytterhoeven wrote:
-> On Tue, Jun 6, 2023 at 12:21=E2=80=AFPM Arnd Bergmann <arnd@arndb.de> =
-wrote:
->> On Tue, Jun 6, 2023, at 11:28, Geert Uytterhoeven wrote:
->> > On Tue, Jun 6, 2023 at 11:16=E2=80=AFAM Arnd Bergmann <arnd@arndb.d=
-e> wrote:
->> >> On Tue, Jun 6, 2023, at 11:01, Geert Uytterhoeven wrote:
->> >>
->> >> This won't work when PCS_LYNX is a loadable module and
->> >> STMMAC is built-in. I think we should just select PCS_LYNX
->> >
->> > Oops, you're right, forgot about that case.
->> > What about using IS_REACHABLE() instead?
->> > No, that won't work either, as DWMAC_SOCFPGA can be modular,
->> > with STMMAC builtin.
->>
->> It would work because of the 'select PCS_LYNX' below DWMAC_SOCFPGA,
->
-> That was my first thought, but it won't work, as DWMAC_SOCFPGA=3Dm
-> causes PCS_LYNX=3Dm, while main STMMAC can still be builtin.
+On Tue, Jun 06, 2023 at 11:26:12AM +0100, Russell King (Oracle) wrote:
+> On Tue, Jun 06, 2023 at 12:13:11PM +0200, Maxime Chevallier wrote:
+> > Hello Geert, Russell,
+> > 
+> > On Tue, 6 Jun 2023 10:30:32 +0100
+> > "Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+> > 
+> > > On Tue, Jun 06, 2023 at 10:29:20AM +0200, Geert Uytterhoeven wrote:
+> > > > 	Hi Maxime,
+> > > > 
+> > > > On Tue, 6 Jun 2023, Maxime Chevallier wrote:  
+> > > > > Although pcs_lynx is only used on dwmac_socfpga for now, the cleanup
+> > > > > path is in the generic driver, and triggers build issues for other
+> > > > > stmmac variants. Make sure we build pcs_lynx in all cases too, as for
+> > > > > XPCS.  
+> > > > 
+> > > > That seems suboptimal to me, as it needlesly increases kernel size for
+> > > > people who do not use dwmac_socfpga.  Hence I made an alternative patch:
+> > > > https://lore.kernel/org/7b36ac43778b41831debd5c30b5b37d268512195.1686039915.git.geert+renesas@glider.be  
+> > > 
+> > > A better solution would be to re-architect the removal code so that
+> > > whatever creates the PCS is also responsible for removing it.
+> > > 
+> > > Also, dwmac_socfpga nees to be reorganised anyway, because it calls
+> > > stmmac_dvr_probe() which then goes on to call register_netdev(),
+> > > publishing the network device, and then after stmmac_dvr_probe(),
+> > > further device setup is done. As the basic driver probe flow should
+> > > be setup and then publish, the existing code structure violates that.
+> > > 
+> > 
+> > I agree that this solution is definitely suboptimal, I wanted mostly to get it
+> > fixed quickly as this breaks other stmmac variants.
+> > 
+> > Do we still go on with the current patch (as Geert's has issues) and then
+> > consider reworking dwmac_socfpga ?
+> 
+> As Geert himself mentioned, passed on from Arnd:
+>   As pointed out by Arnd, this doesn't work when PCS_LYNX is a loadable
+>   module and STMMAC is built-in:
+>   https://lore.kernel.org/r/11bd37e9-c62e-46ba-9456-8e3b353df28f@app.fastmail.com
+> 
+> So Geert's solution will just get rid of the build error, but leave the
+> Lynx PCS undestroyed. I take Geert's comment as a self-nack on his
+> proposed patch.
+> 
+> The changes are only in net-next at the moment, and we're at -rc5.
+> There's probably about 2.5 weeks to get this sorted before the merge
+> window opens.
+> 
+> So, we currently have your suggestion. Here's mine as an immediate
+> fix. This doesn't address all the points I've raised, but should
+> resolve the immediate issue.
+> 
+> Untested since I don't have the hardware... (the test build is
+> running):
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+> index e399fccbafe5..239c7e9ed41d 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+> @@ -494,6 +494,17 @@ static int socfpga_dwmac_probe(struct platform_device *pdev)
+>  	return ret;
+>  }
+>  
+> +static void socfpga_dwmac_remove(struct platform_device *pdev)
+> +{
+> +	struct net_device *ndev = platform_get_drvdata(pdev);
+> +	struct stmmac_priv *priv = netdev_priv(ndev);
+> +	struct phylink_pcs *pcs = priv->hw->lynx_pcs;
+> +
+> +	stmmac_pltfr_remove(pdev);
+> +
+> +	lynx_pcs_destroy(pcs);
+> +}
+> +
+>  #ifdef CONFIG_PM_SLEEP
+>  static int socfpga_dwmac_resume(struct device *dev)
+>  {
+> @@ -565,7 +576,7 @@ MODULE_DEVICE_TABLE(of, socfpga_dwmac_match);
+>  
+>  static struct platform_driver socfpga_dwmac_driver = {
+>  	.probe  = socfpga_dwmac_probe,
+> -	.remove_new = stmmac_pltfr_remove,
+> +	.remove_new = socfpga_dwmac_remove,
+>  	.driver = {
+>  		.name           = "socfpga-dwmac",
+>  		.pm		= &socfpga_dwmac_pm_ops,
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index fa07b0d50b46..1801f8cc8413 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -940,9 +940,6 @@ static struct phylink_pcs *stmmac_mac_select_pcs(struct phylink_config *config,
+>  	if (priv->hw->xpcs)
+>  		return &priv->hw->xpcs->pcs;
+>  
+> -	if (priv->hw->lynx_pcs)
+> -		return priv->hw->lynx_pcs;
+> -
 
-Right, got it now.
+This hunk is completely wrong... but I guess you spotted that anyway.
 
-     Arnd
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
