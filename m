@@ -1,71 +1,48 @@
-Return-Path: <netdev+bounces-8378-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8379-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A0456723D76
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:30:52 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E02F1723D7F
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:31:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5C88628160E
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:30:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4F55C1C20EE3
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:31:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D42E294C8;
-	Tue,  6 Jun 2023 09:30:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 99B7A294C8;
+	Tue,  6 Jun 2023 09:30:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13438125AB
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:30:45 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6E4E5F;
-	Tue,  6 Jun 2023 02:30:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=bX3B+1lGIzcbVKfEHUtN8MUbXcfS9WOFyXQZwIDBExg=; b=airJ5LgE8sLzCto3YG0rNnzbDT
-	wHfh1Yn2sZQC2ZvFGnCWeyz1D3DYJoMe6cuQZycBlKJ9o2WWpuxbzZfSLGFOIa7ZTYKsSTqGm9w6K
-	axLGxhjDbyxQNsQMRSJcEW/U8ZVO+qfNtfES5A8l5MNm9nCqTSEzG0cn4SVGUEfcHD3H6f2LYRO0s
-	MtPjqphT+cEgtVi/heGupqlRTLgc56a2cjbXo/j9PFRo8748Prpt4xcMRijl3R9utJR/1O0/GCnIb
-	GyV+iv3vN5+PF+decbKdjm8bE6zotFRFRnt3x7OqCGmJZ8SpzuAXvcRoIGhw536861xjQBWYjfe9Y
-	uSLLYlLw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34232)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q6T1Q-0005NP-Tg; Tue, 06 Jun 2023 10:30:36 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q6T1M-00070y-6f; Tue, 06 Jun 2023 10:30:32 +0100
-Date: Tue, 6 Jun 2023 10:30:32 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>, davem@davemloft.net,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	alexis.lothore@bootlin.com, thomas.petazzoni@bootlin.com,
-	Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Vladimir Oltean <vladimir.oltean@nxp.com>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Jose Abreu <joabreu@synopsys.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-	Simon Horman <simon.horman@corigine.com>
-Subject: Re: [PATCH net-next 1/2] net: stmmac: Add PCS_LYNX as a dependency
- for the whole driver
-Message-ID: <ZH78uGBfeHjI4Cdn@shell.armlinux.org.uk>
-References: <20230606064914.134945-1-maxime.chevallier@bootlin.com>
- <20230606064914.134945-2-maxime.chevallier@bootlin.com>
- <889297a0-88c3-90df-7752-efa00184859@linux-m68k.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 908A0125AB
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:30:58 +0000 (UTC)
+Received: from 167-179-156-38.a7b39c.syd.nbn.aussiebb.net (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5375EE64;
+	Tue,  6 Jun 2023 02:30:54 -0700 (PDT)
+Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
+	by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+	id 1q6T1N-00HHlY-27; Tue, 06 Jun 2023 17:30:34 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Tue, 06 Jun 2023 17:30:33 +0800
+Date: Tue, 6 Jun 2023 17:30:33 +0800
+From: Herbert Xu <herbert@gondor.apana.org.au>
+To: David Howells <dhowells@redhat.com>
+Cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+	David Ahern <dsahern@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>,
+	linux-crypto@vger.kernel.org, linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 10/10] crypto: af_alg/hash: Support
+ MSG_SPLICE_PAGES
+Message-ID: <ZH78uQsrUz4fxZmm@gondor.apana.org.au>
+References: <ZH7xzYfwQoWZLUYa@gondor.apana.org.au>
+ <20230530141635.136968-1-dhowells@redhat.com>
+ <20230530141635.136968-11-dhowells@redhat.com>
+ <1845449.1686043495@warthog.procyon.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -74,38 +51,34 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <889297a0-88c3-90df-7752-efa00184859@linux-m68k.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+In-Reply-To: <1845449.1686043495@warthog.procyon.org.uk>
+X-Spam-Status: No, score=2.7 required=5.0 tests=BAYES_00,HELO_DYNAMIC_IPADDR2,
+	PDS_RDNS_DYNAMIC_FP,RDNS_DYNAMIC,SPF_HELO_NONE,SPF_PASS,TVD_RCVD_IP,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 06, 2023 at 10:29:20AM +0200, Geert Uytterhoeven wrote:
-> 	Hi Maxime,
-> 
-> On Tue, 6 Jun 2023, Maxime Chevallier wrote:
-> > Although pcs_lynx is only used on dwmac_socfpga for now, the cleanup
-> > path is in the generic driver, and triggers build issues for other
-> > stmmac variants. Make sure we build pcs_lynx in all cases too, as for
-> > XPCS.
-> 
-> That seems suboptimal to me, as it needlesly increases kernel size for
-> people who do not use dwmac_socfpga.  Hence I made an alternative patch:
-> https://lore.kernel/org/7b36ac43778b41831debd5c30b5b37d268512195.1686039915.git.geert+renesas@glider.be
+On Tue, Jun 06, 2023 at 10:24:55AM +0100, David Howells wrote:
+>
+> If the iov_iter is a user-backed type (IOVEC or UBUF) then it's not relaxed.
+> max_pages is ALG_MAX_PAGES here (actually, I should just move that here so
+> that it's clearer).
 
-A better solution would be to re-architect the removal code so that
-whatever creates the PCS is also responsible for removing it.
+Even if it's kernel memory they can't be freed during the hashing
+operation, which could be long if the amount is large (or the algo
+is slow).
 
-Also, dwmac_socfpga nees to be reorganised anyway, because it calls
-stmmac_dvr_probe() which then goes on to call register_netdev(),
-publishing the network device, and then after stmmac_dvr_probe(),
-further device setup is done. As the basic driver probe flow should
-be setup and then publish, the existing code structure violates that.
+The reason for the limit here is to stop a malicious user from
+pinning an unlimited amount of memory by doing a hashing operation,
+IOW a DoS attack.
 
+So I think we should keep the limit as is.
+
+Cheers,
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
 
