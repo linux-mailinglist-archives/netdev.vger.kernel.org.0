@@ -1,122 +1,152 @@
-Return-Path: <netdev+bounces-8375-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8384-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8005F723D47
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:26:57 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 96052723DA9
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:35:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3BE0B280D60
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:26:56 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 090DA1C20F27
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:35:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1BB1D294C3;
-	Tue,  6 Jun 2023 09:25:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4755F294E2;
+	Tue,  6 Jun 2023 09:35:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 121F5125AB
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:25:06 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3090E51
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 02:25:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686043505;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=1FjaNZ7+M8ixgklXKY7vWvF9ET0ANZmsx5DhZNKDjLs=;
-	b=Rx0hf1JA3jaTb8gqEvPVy1fCrVF5vPw/KsKAy6UFz8hV/18fOnSMK+gToHQp0img9kiHNK
-	/iHKinTiOgmngz3IoEiEGnlZswpTIos5Y9f1suJBfd9rukTxSwkEYsn4+i+VdtJUgv6J2J
-	PH4iqXPBgyHXMcyBq4CP35nsrxfvOGM=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-435-THFJdaEpPA-GwDd5F7Zibg-1; Tue, 06 Jun 2023 05:25:01 -0400
-X-MC-Unique: THFJdaEpPA-GwDd5F7Zibg-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9D65A1C068EC;
-	Tue,  6 Jun 2023 09:25:00 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 01E5E492B00;
-	Tue,  6 Jun 2023 09:24:56 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <ZH7xzYfwQoWZLUYa@gondor.apana.org.au>
-References: <ZH7xzYfwQoWZLUYa@gondor.apana.org.au> <20230530141635.136968-1-dhowells@redhat.com> <20230530141635.136968-11-dhowells@redhat.com>
-To: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: dhowells@redhat.com, netdev@vger.kernel.org,
-    "David S. Miller" <davem@davemloft.net>,
-    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
-    Paolo Abeni <pabeni@redhat.com>,
-    Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-    David Ahern <dsahern@kernel.org>,
-    Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>,
-    linux-crypto@vger.kernel.org, linux-mm@kvack.org,
-    linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 10/10] crypto: af_alg/hash: Support MSG_SPLICE_PAGES
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C912125AB
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:35:28 +0000 (UTC)
+Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C7CE6B;
+	Tue,  6 Jun 2023 02:35:26 -0700 (PDT)
+Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-558cf19575dso1490483eaf.3;
+        Tue, 06 Jun 2023 02:35:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686044126; x=1688636126;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/ZvMEy864MwTP2VbOIQdW/FR/SOtiCNc16GfTX7zCXs=;
+        b=DL3It4Ca5xJL/vrKrqFBS9qmXsmu3UKzAg1VS+THcByn5cqRrkqYYoRy7Cx563ryEF
+         +jQ8LwKnGZug6cXlyR9SDaHb2Lh+h0CWc9y/8gNGOmZyAXo1v1Y7JohAKdmu0NkIo1Mb
+         aecOs4cvMhjA5j5jQIIam/rlVdRLCoaNYlS/goZjkHTaSILCJd8p2RsG1mn9tY504Ibn
+         KVb+rzaSVZzPQavhuOoGaw/rcnAoOPKQMYMx1B6iez2mTBUb0XAY9SSBC9PPrlJXudUS
+         KsDh8rUXLN2UxwzfhA4Av4lDw/bC5sQozlUJFUHwOaE4fvm6sz2CGhwxhNRhxdODEkSf
+         0k4A==
+X-Gm-Message-State: AC+VfDwP0Whb3napDvq0mUv1kUApSnDUoDg0JZJe6C8GtoNLFgzTd1jf
+	4puVAT1yrGXLkR90d6VEvoA8am9aMjL3jw==
+X-Google-Smtp-Source: ACHHUZ74uwk7tLOm3rALLOfpRcP3tLWD/D7I3Nks2fgxWfU5uoiBSZm7WX8ZjKo+uHkFWxJyeu3ILA==
+X-Received: by 2002:a4a:a688:0:b0:558:b5b2:72fe with SMTP id f8-20020a4aa688000000b00558b5b272femr1155642oom.2.1686044125525;
+        Tue, 06 Jun 2023 02:35:25 -0700 (PDT)
+Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com. [209.85.210.47])
+        by smtp.gmail.com with ESMTPSA id j15-20020a9d7f0f000000b006a43519523fsm4207977otq.1.2023.06.06.02.35.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Jun 2023 02:35:25 -0700 (PDT)
+Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-6b16cbe4fb6so1808314a34.1;
+        Tue, 06 Jun 2023 02:35:25 -0700 (PDT)
+X-Received: by 2002:a0d:cb47:0:b0:565:c96b:f526 with SMTP id
+ n68-20020a0dcb47000000b00565c96bf526mr1400799ywd.19.1686043729823; Tue, 06
+ Jun 2023 02:28:49 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1845448.1686043495.1@warthog.procyon.org.uk>
-Date: Tue, 06 Jun 2023 10:24:55 +0100
-Message-ID: <1845449.1686043495@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+References: <CA+G9fYv0a-XxXfG6bNuPZGT=fzjtEfRGEYwk3n6M1WhEHUPo9g@mail.gmail.com>
+ <CA+G9fYueN0xti1SDtYVZstPt104sUj06GfOzyqDNrd3s3xXBkA@mail.gmail.com>
+ <CAMuHMdX7hqipiMCF9uxpU+_RbLmzyHeo-D0tCE_Hx8eTqQ7Pig@mail.gmail.com> <11bd37e9-c62e-46ba-9456-8e3b353df28f@app.fastmail.com>
+In-Reply-To: <11bd37e9-c62e-46ba-9456-8e3b353df28f@app.fastmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 6 Jun 2023 11:28:38 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUH2Grrv6842YWXHDmd+O3iHdwqTVjYf8f1nbVRzGA+6w@mail.gmail.com>
+Message-ID: <CAMuHMdUH2Grrv6842YWXHDmd+O3iHdwqTVjYf8f1nbVRzGA+6w@mail.gmail.com>
+Subject: Re: arm: shmobile_defconfig: ld.lld: error: undefined symbol: lynx_pcs_destroy
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Naresh Kamboju <naresh.kamboju@linaro.org>, open list <linux-kernel@vger.kernel.org>, 
+	linux-next <linux-next@vger.kernel.org>, lkft-triage@lists.linaro.org, 
+	clang-built-linux <llvm@lists.linux.dev>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, 
+	Linux ARM <linux-arm-kernel@lists.infradead.org>, Netdev <netdev@vger.kernel.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Anders Roxell <anders.roxell@linaro.org>, Geert Uytterhoeven <geert+renesas@glider.be>, 
+	"David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>, maxime.chevallier@bootlin.com, 
+	Simon Horman <simon.horman@corigine.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Herbert Xu <herbert@gondor.apana.org.au> wrote:
+Hi Arnd,
 
-> > -	if (limit > sk->sk_sndbuf)
-> > -		limit = sk->sk_sndbuf;
-> > +	/* Don't limit to ALG_MAX_PAGES if the pages are all already pinned. */
-> > +	if (!user_backed_iter(&msg->msg_iter))
-> > +		max_pages = INT_MAX;
+On Tue, Jun 6, 2023 at 11:16=E2=80=AFAM Arnd Bergmann <arnd@arndb.de> wrote=
+:
+> On Tue, Jun 6, 2023, at 11:01, Geert Uytterhoeven wrote:
+> > On Tue, Jun 6, 2023 at 10:53=E2=80=AFAM Naresh Kamboju
+> > <naresh.kamboju@linaro.org> wrote:
+> >> On Tue, 6 Jun 2023 at 14:17, Naresh Kamboju <naresh.kamboju@linaro.org=
+> wrote:
+> >> > Following build regressions found while building arm shmobile_defcon=
+fig on
+> >> > Linux next-20230606.
+> >> >
+> >> > Regressions found on arm:
+> >> >
+> >> >  - build/clang-16-shmobile_defconfig
+> >> >  - build/gcc-8-shmobile_defconfig
+> >> >  - build/gcc-12-shmobile_defconfig
+> >> >  - build/clang-nightly-shmobile_defconfig
+> >>
+> >> And mips defconfig builds failed.
+> >> Regressions found on mips:
+> >>
+> >>   - build/clang-16-defconfig
+> >>   - build/gcc-12-defconfig
+> >>   - build/gcc-8-defconfig
+> >>   - build/clang-nightly-defconfig
+> >
+> > Please give my fix a try:
+> > https://lore.kernel.org/linux-renesas-soc/7b36ac43778b41831debd5c30b5b3=
+7d268512195.1686039915.git.geert+renesas@glider.be
+>
+> This won't work when PCS_LYNX is a loadable module and
+> STMMAC is built-in. I think we should just select PCS_LYNX
 
-If the iov_iter is a kernel-backed type (BVEC, KVEC, XARRAY) then (a) all the
-pages it refers to must already be pinned in memory and (b) the caller must
-have limited it in some way (splice is limited by the pipe capacity, for
-instance).  In which case, it seems pointless taking more than one pass of the
-while loop if we can avoid it - at least from the point of view of memory
-handling; granted there might be other criteria such as hogging crypto offload
-hardware.
+Oops, you're right, forgot about that case.
+What about using IS_REACHABLE() instead?
+No, that won't work either, as DWMAC_SOCFPGA can be modular,
+with STMMAC builtin.
 
-> > +	else
-> > +		max_pages = min_t(size_t, max_pages,
-> > +				  DIV_ROUND_UP(sk->sk_sndbuf, PAGE_SIZE));
-> 
-> What's the purpose of relaxing this limit?
+> unconditionally from stmmac even if no front-end driver
+> using it is enabled.
+>
+> I tried to come up with a way to move the dependency into
+> the altera specific front-end, but couldn't find an obvious
+> or simple way to do this.
+>
+> Having a proper abstraction for PCS drivers instead of
+> directly calling into exported driver symbols might help
+> here, but that would add complexity elsewhere.
 
-If the iov_iter is a user-backed type (IOVEC or UBUF) then it's not relaxed.
-max_pages is ALG_MAX_PAGES here (actually, I should just move that here so
-that it's clearer).
+Gr{oetje,eeting}s,
 
-I am, however, applying the sk_sndbuf limit here also - there's no point
-extracting more pages than we need to if ALG_MAX_PAGES of whole pages would
-overrun the byte limit.
+                        Geert
 
-> Even if there is a reason for this shouldn't this be in a patch by itself?
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
-I suppose I could do it as a follow-on patch; use ALG_MAX_PAGES and sk_sndbuf
-before that as for user-backed iterators.
-
-Actually, is it worth paying attention to sk_sndbuf for kernel-backed
-iterators?
-
-David
-
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
 
