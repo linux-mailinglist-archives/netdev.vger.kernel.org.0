@@ -1,35 +1,88 @@
-Return-Path: <netdev+bounces-8276-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8277-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DAC3272380A
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 08:46:38 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id AC0E0723819
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 08:49:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4E3AA1C20E2E
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 06:46:35 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 54A90281554
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 06:49:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F31273FFF;
-	Tue,  6 Jun 2023 06:46:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A25E9651;
+	Tue,  6 Jun 2023 06:49:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E34E0813
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 06:46:35 +0000 (UTC)
-Received: from baidu.com (mx21.baidu.com [220.181.3.85])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3368CE4C;
-	Mon,  5 Jun 2023 23:46:32 -0700 (PDT)
-From: Duan Muquan <duanmuquan@baidu.com>
-To: <davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
-	<kuba@kernel.org>, <pabeni@redhat.com>
-CC: <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Duan Muquan
-	<duanmuquan@baidu.com>
-Subject: [PATCH v2] tcp: fix connection reset due to tw hashdance race.
-Date: Tue, 6 Jun 2023 14:43:06 +0800
-Message-ID: <20230606064306.9192-1-duanmuquan@baidu.com>
-X-Mailer: git-send-email 2.32.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97D5F813
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 06:49:25 +0000 (UTC)
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99BD7C7;
+	Mon,  5 Jun 2023 23:49:23 -0700 (PDT)
+X-GND-Sasl: maxime.chevallier@bootlin.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1686034162;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=pqgOJXwBoPubmsCRLCNbmpzSgJcOsyXt2BEzdUDwp6M=;
+	b=MAhzZgNJUwvQedy+ZDEZ9gLaQn8BPqg82Oryj7d11RI9AY8misaMf52mxSACr16e4A8/Kc
+	4/rOaK/33j024rfzRvM+xElxBKTOYk6yq+LrWj3VpHN/Z2voi1iXwK1v3jxcR5dJWvrQRh
+	T+9MTINwj1l5OGedX0WcuyjXhmKPV+SQY1YIS8hLsqKyNX1JM1finciP3nKlGb4tQuiZ9+
+	gyyIGhgWNsMpSz3ExeFF7GSVWDALPJnPehi1RZdXdOtIc1b08OnNWz2XnNb3LK5jbPlwza
+	YsNqQwtnNTJQk/Q09k/bqWbfVeU9RIlopqSffHQF42NLT4vEcWDuRYPu7p+g4A==
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+X-GND-Sasl: maxime.chevallier@bootlin.com
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 04E88FF806;
+	Tue,  6 Jun 2023 06:49:15 +0000 (UTC)
+From: Maxime Chevallier <maxime.chevallier@bootlin.com>
+To: davem@davemloft.net
+Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	alexis.lothore@bootlin.com,
+	thomas.petazzoni@bootlin.com,
+	Andrew Lunn <andrew@lunn.ch>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Eric Dumazet <edumazet@google.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Vladimir Oltean <vladimir.oltean@nxp.com>,
+	Ioana Ciornei <ioana.ciornei@nxp.com>,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Jose Abreu <joabreu@synopsys.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH net-next 0/2] Followup fixes for the dwmac and altera lynx conversion
+Date: Tue,  6 Jun 2023 08:49:12 +0200
+Message-Id: <20230606064914.134945-1-maxime.chevallier@bootlin.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -37,213 +90,32 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.31.62.13]
-X-ClientProxiedBy: BC-Mail-Ex21.internal.baidu.com (172.31.51.15) To
- BJHW-MAIL-EX26.internal.baidu.com (10.127.64.41)
-X-FEAS-Client-IP: 10.127.64.13
-X-FE-Policy-ID: 15:10:21:SYSTEM
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-If the FIN from passive closer and the ACK for active closer's FIN are
-processed on different CPUs concurrently, tw hashdance race may occur.
-On loopback interface, transmit function queues a skb to current CPU's
-softnet's input queue by default. Suppose active closer runs on CPU 0,
-and passive closer runs on CPU 1. If the ACK for the active closer's
-FIN is sent with no delay, it will be processed and tw hashdance will
-be done on CPU 0; The passive closer's FIN will be sent in another
-segment and processed on CPU 1, it may fail to find tw sock in the
-ehash table due to tw hashdance on CPU 0, then get a RESET.
-If application reconnects immediately with the same source port, it
-will get reset because tw sock's tw_substate is still TCP_FIN_WAIT2.
+This series is a couple of fixes for errors that were detected following
+the conversion of altera TSE and dwmac_socfpga to PCS Lynx.
 
-The dmesg to trace down this issue:
+These are targeted towards net-next as the patches they fix are also in
+net-next.
 
-.333516] tcp_send_fin: sk 0000000092105ad2 cookie 9 cpu 3
-.333524] rcv_state_process:FIN_WAIT2 sk 0000000092105ad2 cookie 9 cpu 3
-.333534] tcp_close: tcp_time_wait: sk 0000000092105ad2 cookie 9 cpu 3
-.333538] hashdance: tw 00000000690fdb7a added to ehash cookie 9 cpu 3
-.333541] hashdance: sk 0000000092105ad2 removed cookie 9 cpu 3
-.333544] __inet_lookup_established: Failed the refcount check:
-		 !refcount_inc_not_zero 00000000690fdb7a ref 0 cookie 9 cpu 0
-.333549] hashdance: tw 00000000690fdb7a before add ref 0 cookie 9 cpu 3
-.333552] rcv_state: RST for FIN listen 000000003c50afa6 cookie 0 cpu 0
-.333574] tcp_send_fin: sk 0000000066757bf8 ref 2 cookie 0 cpu 0
-.333611] timewait_state: TCP_TW_RST tw 00000000690fdb7a cookie 9 cpu 0
-.333626] tcp_connect: sk 0000000066757bf8 cpu 0 cookie 0
+Sorry about the bugs,
 
-Here is the call trace map:
+Maxime
 
-CPU 0                                    CPU 1
+Maxime Chevallier (2):
+  net: stmmac: Add PCS_LYNX as a dependency for the whole driver
+  net: altera-tse: Initialize the regmap_config struct before using it
 
---------                                 --------
-tcp_close()
-tcp_send_fin()
-loopback_xmit()
-netif_rx()
-tcp_v4_rcv()
-tcp_ack_snd_check()
-loopback_xmit
-netif_rx()                              tcp_close()
-...                                     tcp_send_fin()
-										loopback_xmit()
-										netif_rx()
-										tcp_v4_rcv()
-										...
-tcp_time_wait()
-inet_twsk_hashdance() {
-...
-                                    <-__inet_lookup_established()
-								(bad case (1), find sk, may fail tw_refcnt check)
-inet_twsk_add_node_tail_rcu(tw, ...)
-                                    <-__inet_lookup_established()
-								(bad case (1), find sk, may fail tw_refcnt check)
+ drivers/net/ethernet/altera/altera_tse_main.c | 1 +
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-__sk_nulls_del_node_init_rcu(sk)
-                                    <-__inet_lookup_established()
-								(bad case (2), find tw, may fail tw_refcnt check)
-refcount_set(&tw->tw_refcnt, 3)
-                                    <-__inet_lookup_established()
-								(good case, find tw, tw_refcnt is not 0)
-...
-}
-
-This issue occurs with a small probability on our application working
-on loopback interface, client gets a connection refused error when it
-reconnects. In reproducing environments on kernel 4.14,5.10 and
-6.4-rc1, modify tcp_ack_snd_check() to disable delay ack all the
-time; Let client connect server and server sends a message to client
-then close the connection; Repeat this process forever; Let the client
-bind the same source port every time, it can be reproduced in about 20
-minutes.
-
-Brief of the scenario:
-
-1. Server runs on CPU 0 and Client runs on CPU 1. Server closes
-connection actively and sends a FIN to client. The lookback's driver
-enqueues the FIN segment to backlog queue of CPU 0 via
-loopback_xmit()->netif_rx(), one of the conditions for non-delay ack
-meets in __tcp_ack_snd_check(), and the ACK is sent immediately.
-
-2. On loopback interface, the ACK is received and processed on CPU 0,
-the 'dance' from original sock to tw sock will perfrom, tw sock will
-be inserted to ehash table, then the original sock will be removed.
-
-3. On CPU 1, client closes the connection, a FIN segment is sent and
-processed on CPU 1. When it is looking up sock in ehash table (with no
-lock), tw hashdance race may occur, it fails to find the tw sock and
-get a listener sock in the flowing 3 cases:
-
-  (1) Original sock is found, but it has been destroyed and sk_refcnt
-	  has become 0 when validating it.
-  (2) tw sock is found, but its tw_refcnt has not been set to 3, it is
-	  still 0, validating for sk_refcnt will fail.
-  (3) For versions without Eric and Jason's commit(3f4ca5fafc08881d7a5
-	  7daa20449d171f2887043), tw sock is added to the head of the list.
-	  It will be missed if the list is traversed before tw sock is
-	  added. And if the original sock is removed before it is found, no
-	  established sock will be found.
-
-The listener sock will reset the FIN segment which has ack bit set.
-
-4. If client reconnects immediately and is assigned with the same
-source port as previous connection, the tw sock with tw_substate
-TCP_FIN_WAIT2 will reset client's SYN and destroy itself in
-inet_twsk_deschedule_put(). Application gets a connection refused
-error.
-
-5. If client reconnects again, it will succeed.
-
-Introduce the flowing 2 modifications to solve the above 3 bad cases:
-
-For bad case (2):
-Set tw_refcnt to 3 before adding it into list.
-
-For bad case (1):
-In function tcp_v4_rcv(), if __inet_lookup_skb() returns a listener
-sock and this segment has FIN bit set, then retry the lookup process
-one time. This fix can cover bad case (3) for the versions without
-Eric and Jason's fix.
-
-There may be another bad case, if the original sock is found and passes
-validation, but during further process for the passive closer's FIN on
-CPU 1, the sock has been destroyed on CPU 0, then the FIN segment will
-be dropped and retransmitted. This case does not hurt application as
-much as resetting reconnection, and this case has less possibility than
-the other bad cases, it does not occur on our product and in
-experimental environment, so it is not considered in this patch.
-
-Could you please check whether this fix is OK, or any suggestions?
-Looking forward for your precious comments!
-
-Signed-off-by: Duan Muquan <duanmuquan@baidu.com>
----
- net/ipv4/inet_timewait_sock.c | 15 +++++++--------
- net/ipv4/tcp_ipv4.c           | 13 +++++++++++++
- 2 files changed, 20 insertions(+), 8 deletions(-)
-
-diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
-index 40052414c7c7..ed1f255c9aa8 100644
---- a/net/ipv4/inet_timewait_sock.c
-+++ b/net/ipv4/inet_timewait_sock.c
-@@ -144,14 +144,6 @@ void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
- 
- 	spin_lock(lock);
- 
--	inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
--
--	/* Step 3: Remove SK from hash chain */
--	if (__sk_nulls_del_node_init_rcu(sk))
--		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
--
--	spin_unlock(lock);
--
- 	/* tw_refcnt is set to 3 because we have :
- 	 * - one reference for bhash chain.
- 	 * - one reference for ehash chain.
-@@ -162,6 +154,13 @@ void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
- 	 * so we are not allowed to use tw anymore.
- 	 */
- 	refcount_set(&tw->tw_refcnt, 3);
-+	inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
-+
-+	/* Step 3: Remove SK from hash chain */
-+	if (__sk_nulls_del_node_init_rcu(sk))
-+		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
-+
-+	spin_unlock(lock);
- }
- EXPORT_SYMBOL_GPL(inet_twsk_hashdance);
- 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 06d2573685ca..3e3cef202f76 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -2018,6 +2018,19 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 	sk = __inet_lookup_skb(net->ipv4.tcp_death_row.hashinfo,
- 			       skb, __tcp_hdrlen(th), th->source,
- 			       th->dest, sdif, &refcounted);
-+
-+	/* If tw "dance" is performed on another CPU, the lookup process may find
-+	 * no tw sock for the passive closer's FIN segment, but a listener sock,
-+	 * which will reset the FIN segment. If application reconnects immediately
-+	 * with the same source port, it will get reset because the tw sock's
-+	 * tw_substate is still TCP_FIN_WAIT2. Try to get the tw sock in another try.
-+	 */
-+	if (unlikely(th->fin && sk && sk->sk_state == TCP_LISTEN)) {
-+		sk = __inet_lookup_skb(net->ipv4.tcp_death_row.hashinfo,
-+				       skb, __tcp_hdrlen(th), th->source,
-+				       th->dest, sdif, &refcounted);
-+	}
-+
- 	if (!sk)
- 		goto no_tcp_socket;
- 
 -- 
-2.32.0
+2.40.1
 
 
