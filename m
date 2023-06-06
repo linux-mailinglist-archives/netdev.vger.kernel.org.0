@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-8631-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8632-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id CF134724EF4
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 23:43:36 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id BA4A3724EFA
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 23:44:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 484551C20BC7
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 21:43:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7241D281100
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 21:44:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C74602DBC2;
-	Tue,  6 Jun 2023 21:43:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3168830B87;
+	Tue,  6 Jun 2023 21:43:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA62B2DBBD;
-	Tue,  6 Jun 2023 21:43:09 +0000 (UTC)
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1501E1702;
-	Tue,  6 Jun 2023 14:43:08 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id 41be03b00d2f7-5428f63c73aso3376559a12.1;
-        Tue, 06 Jun 2023 14:43:08 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24F222D247;
+	Tue,  6 Jun 2023 21:43:16 +0000 (UTC)
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D362A7;
+	Tue,  6 Jun 2023 14:43:14 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id d9443c01a7336-1b02497f4cfso35047515ad.3;
+        Tue, 06 Jun 2023 14:43:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686087787; x=1688679787;
+        d=gmail.com; s=20221208; t=1686087793; x=1688679793;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bVp3sxGYYmvDAXqCieOLHVX04weYGZl76ejiM9qiOig=;
-        b=fqET+JlDRntgb32iyH8TFVlq9tCg5tef16N87Ywknv/Aq2IVb8THmvh0ZaEPrvpmvb
-         ItLXX3s1P+GOE833peHemYfag3nF1dNySynWachycA+Vlr0sYxjV9mtu8EiDuijtOTh8
-         hNE5KaNjDjH8Oo8F+6EFagol7T1stiiEk21nGLK6tvPSvUP6+gjSmUFESAFEORXN1GUM
-         xmhRql0x8ksYfnZSvBfI8xBDbd8lPVUPOQbB5cvt0JVdvrKaYaM5Lh078wGd7PIZkJo8
-         xwcRtKCfiQxp8l4B3bgUCJXBw6iINzDwsEWHvUtMXVRR8DUkiC6MY4CtUYyJYHeOeI4t
-         2krQ==
+        bh=5MMO0TnXSE1/BWLsLd/D7WLh4FdYRdFBDc2FwYF+MRQ=;
+        b=rpKiA35NXaeO1qzzL5PjF8bHM7B0RDMIht6YKgnVk81RTEBzg0f8I0ZvGr2PFcwoEg
+         mFZwErjy3FUOulh1g3yF41/oBcxvzQGBI7YpmjekiGcn+OyY9guACdnWtudETnwCPRQC
+         93NdZUypLXakAiSKLrsm+uFu5RpucpuKKrEi+Yk2JNsUBUe8SF9jtcndTGovHYO/3C13
+         VLjJqEl3kbEzDwTCLNcFsx5Z0j6QUv32CFQryKaKdF7b06Hc2SxuEmgI4HBFEW+m+plC
+         QC2DeSSYyppf3mkPitVZNLQvw4COmNZu6SVKKjmd6GRvrHztPAHnWkuYu5B8dFn3zKG3
+         f4BQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686087787; x=1688679787;
+        d=1e100.net; s=20221208; t=1686087793; x=1688679793;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=bVp3sxGYYmvDAXqCieOLHVX04weYGZl76ejiM9qiOig=;
-        b=SsVLoVzQr04RXTQqLeaQsvxXy+n0tmPYwSWpLsOv00yYgpp2ihCR2iPevdWfhfUpcz
-         renqdSLGd9NG4zziGqm5616EOfkRNeEOgHeLIl2uMTBWrZl9KyDoXIH+N6hU+wlAqpeD
-         DzuE034H8Rp7YI6vUaQSzlN96qGabGAkVGBPLVCNEwBi31Jwrc//WtPZZKjwmapCRwH3
-         3nIJqtLGmxy9Wo+oLE+maNn7HTNPsz1rXUyhhJLWYHo0BwghNY8NNnvEIPJBS9M2rBNA
-         59l29fyUijOGtX63ri9UkcEHyI/TvNUxriSBwgdfrDZUE+9kT/uyaeLBwZ3RB8NEgLPY
-         J/9g==
-X-Gm-Message-State: AC+VfDxMk6K7sUcLmVZkRa3Yg4AIF/4oU+HNmXzDQGC2BSduhSa13l2W
-	/nG3OCFb5UusFVOSLgDeeTPnphtO+FK6i9yh
-X-Google-Smtp-Source: ACHHUZ6HTjhIseQC+YX/8i7KuQIZNvRMZxqXKIURAQEx6g1gRz8rkAFe31oux7Yb1V6BKUW61mc4yw==
-X-Received: by 2002:a05:6a21:9101:b0:103:73a6:5cc1 with SMTP id tn1-20020a056a21910100b0010373a65cc1mr763646pzb.4.1686087787031;
-        Tue, 06 Jun 2023 14:43:07 -0700 (PDT)
+        bh=5MMO0TnXSE1/BWLsLd/D7WLh4FdYRdFBDc2FwYF+MRQ=;
+        b=XUwG7V2dbkS0URgvlQT3Sht+mIl6ChduiRM6eW25KEDWnlSdyTT632plH6xDr/gvcK
+         Ta4nVcgHdsBYXjbT8EBJNpJyL8Bm4d8y0w+JKYY3A+nP640ddQXTKk8BQ8uIQK5t5KtL
+         i3n23y3+Xu6YFGIBv0lmx2fKC2/iaXXAoMGm0XAeEhMW/Km+hP7IwSMy489zLLUj0IeO
+         lQzvROghOCa0L0JAaNEw6vdd/dyiTWjNni6z7cN5sxldLNYJdNL9kQcLe6ji/JgYHk3p
+         mYH0iKANb8H5URSeaacfHJaiwqkbaIq8GDA4F33qAZGpYvGkrV5pAY2n37zUXOVbhDxJ
+         f7Wg==
+X-Gm-Message-State: AC+VfDzdvj3lbvjWRQlu6XVkEeCgJXWxQGWrYhh/BcHxs0GgUEHqA7P1
+	yEjE/4Fx+CkDXJUHyKjVENA1nx7IKKE3nQ+G
+X-Google-Smtp-Source: ACHHUZ75JvnKyNPowykam0LclpYCBpD+nMETJsUw9f6LPFTg0aqDGCwMBXCpEhEdQ0vny5b5P7nV5g==
+X-Received: by 2002:a17:903:41cf:b0:1b1:76c2:296a with SMTP id u15-20020a17090341cf00b001b176c2296amr2071193ple.60.1686087793333;
+        Tue, 06 Jun 2023 14:43:13 -0700 (PDT)
 Received: from localhost ([87.118.116.103])
-        by smtp.gmail.com with ESMTPSA id z9-20020a170902834900b001b0142908f7sm8880294pln.291.2023.06.06.14.43.05
+        by smtp.gmail.com with ESMTPSA id 12-20020a170902c24c00b001aafdf8063dsm8965254plg.157.2023.06.06.14.43.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jun 2023 14:43:06 -0700 (PDT)
+        Tue, 06 Jun 2023 14:43:12 -0700 (PDT)
 From: Maxim Mikityanskiy <maxtram95@gmail.com>
 To: bpf@vger.kernel.org
 Cc: netdev@vger.kernel.org,
@@ -78,9 +78,9 @@ Cc: netdev@vger.kernel.org,
 	"David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: [PATCH bpf v3 1/2] bpf: Fix verifier tracking scalars on spill
-Date: Wed,  7 Jun 2023 00:42:45 +0300
-Message-Id: <20230606214246.403579-2-maxtram95@gmail.com>
+Subject: [PATCH bpf v3 2/2] selftests/bpf: Add test cases to assert proper ID tracking on spill
+Date: Wed,  7 Jun 2023 00:42:46 +0300
+Message-Id: <20230606214246.403579-3-maxtram95@gmail.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230606214246.403579-1-maxtram95@gmail.com>
 References: <20230606214246.403579-1-maxtram95@gmail.com>
@@ -102,72 +102,222 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Maxim Mikityanskiy <maxim@isovalent.com>
 
-The following scenario describes a verifier bypass in privileged mode
-(CAP_BPF or CAP_SYS_ADMIN):
+The previous commit fixed a verifier bypass by ensuring that ID is not
+preserved on narrowing spills. Add the test cases to check the
+problematic patterns.
 
-1. Prepare a 32-bit rogue number.
-2. Put the rogue number into the upper half of a 64-bit register, and
-   roll a random (unknown to the verifier) bit in the lower half. The
-   rest of the bits should be zero (although variations are possible).
-3. Assign an ID to the register by MOVing it to another arbitrary
-   register.
-4. Perform a 32-bit spill of the register, then perform a 32-bit fill to
-   another register. Due to a bug in the verifier, the ID will be
-   preserved, although the new register will contain only the lower 32
-   bits, i.e. all zeros except one random bit.
-
-At this point there are two registers with different values but the same
-ID, which means the integrity of the verifier state has been corrupted.
-Next steps show the actual bypass:
-
-5. Compare the new 32-bit register with 0. In the branch where it's
-   equal to 0, the verifier will believe that the original 64-bit
-   register is also 0, because it has the same ID, but its actual value
-   still contains the rogue number in the upper half.
-   Some optimizations of the verifier prevent the actual bypass, so
-   extra care is needed: the comparison must be between two registers,
-   and both branches must be reachable (this is why one random bit is
-   needed). Both branches are still suitable for the bypass.
-6. Right shift the original register by 32 bits to pop the rogue number.
-7. Use the rogue number as an offset with any pointer. The verifier will
-   believe that the offset is 0, while in reality it's the given number.
-
-The fix is similar to the 32-bit BPF_MOV handling in check_alu_op for
-SCALAR_VALUE. If the spill is narrowing the actual register value, don't
-keep the ID, make sure it's reset to 0.
-
-Fixes: 354e8f1970f8 ("bpf: Support <8-byte scalar spill and refill")
 Signed-off-by: Maxim Mikityanskiy <maxim@isovalent.com>
 ---
- kernel/bpf/verifier.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ .../selftests/bpf/progs/verifier_spill_fill.c | 198 ++++++++++++++++++
+ 1 file changed, 198 insertions(+)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 5871aa78d01a..7be23eced561 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -3856,6 +3856,8 @@ static int check_stack_write_fixed_off(struct bpf_verifier_env *env,
- 	mark_stack_slot_scratched(env, spi);
- 	if (reg && !(off % BPF_REG_SIZE) && register_is_bounded(reg) &&
- 	    !register_is_null(reg) && env->bpf_capable) {
-+		bool reg_value_fits;
+diff --git a/tools/testing/selftests/bpf/progs/verifier_spill_fill.c b/tools/testing/selftests/bpf/progs/verifier_spill_fill.c
+index 136e5530b72c..999677acc8ae 100644
+--- a/tools/testing/selftests/bpf/progs/verifier_spill_fill.c
++++ b/tools/testing/selftests/bpf/progs/verifier_spill_fill.c
+@@ -371,4 +371,202 @@ __naked void and_then_at_fp_8(void)
+ "	::: __clobber_all);
+ }
+ 
++SEC("xdp")
++__description("32-bit spill of 64-bit reg should clear ID")
++__failure __msg("math between ctx pointer and 4294967295 is not allowed")
++__naked void spill_32bit_of_64bit_fail(void)
++{
++	asm volatile ("					\
++	r6 = r1;					\
++	/* Roll one bit to force the verifier to track both branches. */\
++	call %[bpf_get_prandom_u32];			\
++	r0 &= 0x8;					\
++	/* Put a large number into r1. */		\
++	r1 = 0xffffffff;				\
++	r1 <<= 32;					\
++	r1 += r0;					\
++	/* Assign an ID to r1. */			\
++	r2 = r1;					\
++	/* 32-bit spill r1 to stack - should clear the ID! */\
++	*(u32*)(r10 - 8) = r1;				\
++	/* 32-bit fill r2 from stack. */		\
++	r2 = *(u32*)(r10 - 8);				\
++	/* Compare r2 with another register to trigger find_equal_scalars.\
++	 * Having one random bit is important here, otherwise the verifier cuts\
++	 * the corners. If the ID was mistakenly preserved on spill, this would\
++	 * cause the verifier to think that r1 is also equal to zero in one of\
++	 * the branches, and equal to eight on the other branch.\
++	 */						\
++	r3 = 0;						\
++	if r2 != r3 goto l0_%=;				\
++l0_%=:	r1 >>= 32;					\
++	/* At this point, if the verifier thinks that r1 is 0, an out-of-bounds\
++	 * read will happen, because it actually contains 0xffffffff.\
++	 */						\
++	r6 += r1;					\
++	r0 = *(u32*)(r6 + 0);				\
++	exit;						\
++"	:
++	: __imm(bpf_get_prandom_u32)
++	: __clobber_all);
++}
 +
- 		if (dst_reg != BPF_REG_FP) {
- 			/* The backtracking logic can only recognize explicit
- 			 * stack slot address like [fp - 8]. Other spill of
-@@ -3867,7 +3869,12 @@ static int check_stack_write_fixed_off(struct bpf_verifier_env *env,
- 			if (err)
- 				return err;
- 		}
++SEC("xdp")
++__description("16-bit spill of 64-bit reg should clear ID")
++__failure __msg("math between ctx pointer and 4294967295 is not allowed")
++__naked void spill_16bit_of_64bit_fail(void)
++{
++	asm volatile ("					\
++	r6 = r1;					\
++	/* Roll one bit to force the verifier to track both branches. */\
++	call %[bpf_get_prandom_u32];			\
++	r0 &= 0x8;					\
++	/* Put a large number into r1. */		\
++	r1 = 0xffffffff;				\
++	r1 <<= 32;					\
++	r1 += r0;					\
++	/* Assign an ID to r1. */			\
++	r2 = r1;					\
++	/* 16-bit spill r1 to stack - should clear the ID! */\
++	*(u16*)(r10 - 8) = r1;				\
++	/* 16-bit fill r2 from stack. */		\
++	r2 = *(u16*)(r10 - 8);				\
++	/* Compare r2 with another register to trigger find_equal_scalars.\
++	 * Having one random bit is important here, otherwise the verifier cuts\
++	 * the corners. If the ID was mistakenly preserved on spill, this would\
++	 * cause the verifier to think that r1 is also equal to zero in one of\
++	 * the branches, and equal to eight on the other branch.\
++	 */						\
++	r3 = 0;						\
++	if r2 != r3 goto l0_%=;				\
++l0_%=:	r1 >>= 32;					\
++	/* At this point, if the verifier thinks that r1 is 0, an out-of-bounds\
++	 * read will happen, because it actually contains 0xffffffff.\
++	 */						\
++	r6 += r1;					\
++	r0 = *(u32*)(r6 + 0);				\
++	exit;						\
++"	:
++	: __imm(bpf_get_prandom_u32)
++	: __clobber_all);
++}
 +
-+		reg_value_fits = fls64(reg->umax_value) <= BITS_PER_BYTE * size;
- 		save_register_state(state, spi, reg, size);
-+		/* Break the relation on a narrowing spill. */
-+		if (!reg_value_fits)
-+			state->stack[spi].spilled_ptr.id = 0;
- 	} else if (!reg && !(off % BPF_REG_SIZE) && is_bpf_st_mem(insn) &&
- 		   insn->imm != 0 && env->bpf_capable) {
- 		struct bpf_reg_state fake_reg = {};
++SEC("xdp")
++__description("8-bit spill of 64-bit reg should clear ID")
++__failure __msg("math between ctx pointer and 4294967295 is not allowed")
++__naked void spill_8bit_of_64bit_fail(void)
++{
++	asm volatile ("					\
++	r6 = r1;					\
++	/* Roll one bit to force the verifier to track both branches. */\
++	call %[bpf_get_prandom_u32];			\
++	r0 &= 0x8;					\
++	/* Put a large number into r1. */		\
++	r1 = 0xffffffff;				\
++	r1 <<= 32;					\
++	r1 += r0;					\
++	/* Assign an ID to r1. */			\
++	r2 = r1;					\
++	/* 8-bit spill r1 to stack - should clear the ID! */\
++	*(u8*)(r10 - 8) = r1;				\
++	/* 8-bit fill r2 from stack. */		\
++	r2 = *(u8*)(r10 - 8);				\
++	/* Compare r2 with another register to trigger find_equal_scalars.\
++	 * Having one random bit is important here, otherwise the verifier cuts\
++	 * the corners. If the ID was mistakenly preserved on spill, this would\
++	 * cause the verifier to think that r1 is also equal to zero in one of\
++	 * the branches, and equal to eight on the other branch.\
++	 */						\
++	r3 = 0;						\
++	if r2 != r3 goto l0_%=;				\
++l0_%=:	r1 >>= 32;					\
++	/* At this point, if the verifier thinks that r1 is 0, an out-of-bounds\
++	 * read will happen, because it actually contains 0xffffffff.\
++	 */						\
++	r6 += r1;					\
++	r0 = *(u32*)(r6 + 0);				\
++	exit;						\
++"	:
++	: __imm(bpf_get_prandom_u32)
++	: __clobber_all);
++}
++
++SEC("xdp")
++__description("16-bit spill of 32-bit reg should clear ID")
++__failure __msg("dereference of modified ctx ptr R6 off=65535 disallowed")
++__naked void spill_16bit_of_32bit_fail(void)
++{
++	asm volatile ("					\
++	r6 = r1;					\
++	/* Roll one bit to force the verifier to track both branches. */\
++	call %[bpf_get_prandom_u32];			\
++	r0 &= 0x8;					\
++	/* Put a large number into r1. */		\
++	w1 = 0xffff0000;				\
++	r1 += r0;					\
++	/* Assign an ID to r1. */			\
++	r2 = r1;					\
++	/* 16-bit spill r1 to stack - should clear the ID! */\
++	*(u16*)(r10 - 8) = r1;				\
++	/* 16-bit fill r2 from stack. */		\
++	r2 = *(u16*)(r10 - 8);				\
++	/* Compare r2 with another register to trigger find_equal_scalars.\
++	 * Having one random bit is important here, otherwise the verifier cuts\
++	 * the corners. If the ID was mistakenly preserved on spill, this would\
++	 * cause the verifier to think that r1 is also equal to zero in one of\
++	 * the branches, and equal to eight on the other branch.\
++	 */						\
++	r3 = 0;						\
++	if r2 != r3 goto l0_%=;				\
++l0_%=:	r1 >>= 16;					\
++	/* At this point, if the verifier thinks that r1 is 0, an out-of-bounds\
++	 * read will happen, because it actually contains 0xffff.\
++	 */						\
++	r6 += r1;					\
++	r0 = *(u32*)(r6 + 0);				\
++	exit;						\
++"	:
++	: __imm(bpf_get_prandom_u32)
++	: __clobber_all);
++}
++
++SEC("xdp")
++__description("8-bit spill of 32-bit reg should clear ID")
++__failure __msg("dereference of modified ctx ptr R6 off=65535 disallowed")
++__naked void spill_8bit_of_32bit_fail(void)
++{
++	asm volatile ("					\
++	r6 = r1;					\
++	/* Roll one bit to force the verifier to track both branches. */\
++	call %[bpf_get_prandom_u32];			\
++	r0 &= 0x8;					\
++	/* Put a large number into r1. */		\
++	w1 = 0xffff0000;				\
++	r1 += r0;					\
++	/* Assign an ID to r1. */			\
++	r2 = r1;					\
++	/* 8-bit spill r1 to stack - should clear the ID! */\
++	*(u8*)(r10 - 8) = r1;				\
++	/* 8-bit fill r2 from stack. */			\
++	r2 = *(u8*)(r10 - 8);				\
++	/* Compare r2 with another register to trigger find_equal_scalars.\
++	 * Having one random bit is important here, otherwise the verifier cuts\
++	 * the corners. If the ID was mistakenly preserved on spill, this would\
++	 * cause the verifier to think that r1 is also equal to zero in one of\
++	 * the branches, and equal to eight on the other branch.\
++	 */						\
++	r3 = 0;						\
++	if r2 != r3 goto l0_%=;				\
++l0_%=:	r1 >>= 16;					\
++	/* At this point, if the verifier thinks that r1 is 0, an out-of-bounds\
++	 * read will happen, because it actually contains 0xffff.\
++	 */						\
++	r6 += r1;					\
++	r0 = *(u32*)(r6 + 0);				\
++	exit;						\
++"	:
++	: __imm(bpf_get_prandom_u32)
++	: __clobber_all);
++}
++
+ char _license[] SEC("license") = "GPL";
 -- 
 2.40.1
 
