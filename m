@@ -1,91 +1,120 @@
-Return-Path: <netdev+bounces-8468-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8469-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8DDD0724377
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 15:00:04 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id BED98724386
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 15:03:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4A4F12816BE
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 13:00:03 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 12EC81C20F54
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 13:03:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C142937B9B;
-	Tue,  6 Jun 2023 13:00:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D39A937B9F;
+	Tue,  6 Jun 2023 13:03:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B43BD37B90
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 13:00:01 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46419173A;
-	Tue,  6 Jun 2023 05:59:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=JBzFOAQ3XIEwIfPf6gzDHs3g12s3r3/k8QYv78kFr9Q=; b=iJ1GBZU7395iT/S0hTb4/CFA8+
-	epY/qHDWZSXzrOrO2QucaB9FHlqgHXvlVh3wnykYMiF7GZ+5Bx/xn13fNR+b062vjpD6k2Hn7VLXo
-	4bmiea3UoRMbpk7VOeT4HDObgGm1M/qcW9jR+6HIE46xmOGsfwP8qqCD5Uwu1xYx22ms=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1q6WH6-00F1Mf-AK; Tue, 06 Jun 2023 14:59:00 +0200
-Date: Tue, 6 Jun 2023 14:59:00 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, mhi@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, loic.poulain@linaro.org
-Subject: Re: [PATCH 0/3] Add MHI Endpoint network driver
-Message-ID: <c769c95d-e8cb-4cf6-a41a-9bef5a786bb1@lunn.ch>
-References: <20230606123119.57499-1-manivannan.sadhasivam@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8B9D37B6F
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 13:03:26 +0000 (UTC)
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 765A4F4;
+	Tue,  6 Jun 2023 06:03:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686056605; x=1717592605;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=SoK98zYoZg/QJdhX9TAOHffu0QsXR3TmI0mQNbTwSWA=;
+  b=BU2b4VJQwD2k/AfzYICbGtQfUDdeGwCHMvMoBbDTi3sgIirAXNFL3mTj
+   Jf+weopn4+6ZciLZ4sbdiwJvl5SpjomxkdJvZr13acMkJ4328Nd+j4zSo
+   SfLCAhSkttexqnn1zutoIN9dMoSduWnwJiayK03QJYGjTg3LpAlzOaG6f
+   M0Uy8fvvQr+MNtZMOMdFN1r6WPbGmpyJzT4S2/qOcr0tKH9gqSXIy4Bnu
+   LN0fBMDdhtCX3dCN0ZyaCzZ5QrxQAo1fmXx4wdbTZSBhZODiv4IJ+XGIP
+   Bptc79V6gMjLX95OpiHDJsVX/JdtzAyh4wL7t80X8qOEEpQrxj+u+U8wu
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="384974419"
+X-IronPort-AV: E=Sophos;i="6.00,221,1681196400"; 
+   d="scan'208";a="384974419"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2023 06:03:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="778989489"
+X-IronPort-AV: E=Sophos;i="6.00,221,1681196400"; 
+   d="scan'208";a="778989489"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004.fm.intel.com with ESMTP; 06 Jun 2023 06:03:22 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1q6WLI-001dDJ-0Z;
+	Tue, 06 Jun 2023 16:03:20 +0300
+Date: Tue, 6 Jun 2023 16:03:19 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Miquel Raynal <miquel.raynal@bootlin.com>
+Cc: Alexander Aring <aahringo@redhat.com>,
+	Simon Horman <simon.horman@corigine.com>,
+	Stefan Schmidt <stefan@datenfreihafen.org>,
+	linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Alexander Aring <alex.aring@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v1 1/1] ieee802154: ca8210: Remove stray
+ gpiod_unexport() call
+Message-ID: <ZH8ulwyl6e/eLfA0@smile.fi.intel.com>
+References: <20230528140938.34034-1-andriy.shevchenko@linux.intel.com>
+ <ZHWo3LHLunOkXaqW@corigine.com>
+ <ZH3srm+8PnZ1rJm9@smile.fi.intel.com>
+ <CAK-6q+hkL8cStdSPnZF_D1CtLvJZ=P16TJ8BCGpkGwrbh8uN3A@mail.gmail.com>
+ <20230606114743.30f7567e@xps-13>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230606123119.57499-1-manivannan.sadhasivam@linaro.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230606114743.30f7567e@xps-13>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
 	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 06, 2023 at 06:01:16PM +0530, Manivannan Sadhasivam wrote:
-> Hi,
+On Tue, Jun 06, 2023 at 11:47:43AM +0200, Miquel Raynal wrote:
+> aahringo@redhat.com wrote on Tue, 6 Jun 2023 05:33:47 -0400:
+> > On Mon, Jun 5, 2023 at 10:12 AM Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com> wrote:
+> > > On Tue, May 30, 2023 at 09:42:20AM +0200, Simon Horman wrote:  
+> > > > On Sun, May 28, 2023 at 05:09:38PM +0300, Andy Shevchenko wrote:  
+> > > > > There is no gpiod_export() and gpiod_unexport() looks pretty much stray.
+> > > > > The gpiod_export() and gpiod_unexport() shouldn't be used in the code,
+> > > > > GPIO sysfs is deprecated. That said, simply drop the stray call.
+> > > > >
+> > > > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>  
+> > > >
+> > > > Reviewed-by: Simon Horman <simon.horman@corigine.com>  
+> > >
+> > > Thank you!
+> > > Can this be applied now?  
+> > 
+> > ping, Miquel? :)
 > 
-> This series adds a network driver for the Modem Host Interface (MHI) endpoint
-> devices that provides network interfaces to the PCIe based Qualcomm endpoint
-> devices supporting MHI bus (like Modems). This driver allows the MHI endpoint
-> devices to establish IP communication with the host machines (x86, ARM64) over
-> MHI bus.
-> 
-> On the host side, the existing mhi_net driver provides the network connectivity
-> to the host.
-> 
-> - Mani
-> 
-> Manivannan Sadhasivam (3):
->   net: Add MHI Endpoint network driver
->   MAINTAINERS: Add entry for MHI networking drivers under MHI bus
->   net: mhi: Increase the default MTU from 16K to 32K
-> 
->  MAINTAINERS              |   1 +
->  drivers/net/Kconfig      |   9 ++
->  drivers/net/Makefile     |   1 +
->  drivers/net/mhi_ep_net.c | 331 +++++++++++++++++++++++++++++++++++++++
->  drivers/net/mhi_net.c    |   2 +-
+> I already applied it locally, but I am trying to fix my "thanks for
+> patch" routine to not tell you it was applied on the mtd tree :-p
 
-Should we add a drivers/net/modem directory? Maybe modem is too
-generic, we want something which represents GSM, LTE, UMTS, 3G, 4G,
-5G, ... XG etc.
+Good to know and thank you!
 
-    Andrew
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
 
