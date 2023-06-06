@@ -1,119 +1,94 @@
-Return-Path: <netdev+bounces-8554-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8555-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D56F972486A
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 18:02:06 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 497477248C7
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 18:17:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0FEFF281048
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 16:02:05 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 96BF81C20A87
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 16:17:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6746430B85;
-	Tue,  6 Jun 2023 16:02:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 36D6B30B93;
+	Tue,  6 Jun 2023 16:17:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C99637B97
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 16:02:03 +0000 (UTC)
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C787E4F
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:01:59 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-5664b14966bso76329517b3.1
-        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 09:01:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1686067318; x=1688659318;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lF2UGEA9OrkpXye5dI96ZgQtY63NyK9cI7pFh0ko5gI=;
-        b=3fZhuuShZmXH9aTBKu5VMEf5zlchzOlrEF8VKtlM4k+5vXkqLj+MhKffHkfh10Btl5
-         5QmXifAjXi+9X5cb+YnLilHFbe9VhrMdTZ6bgvl+EPYxGOwkE8wb0q7UzxOrtLdULlH4
-         3kPLuFxTiJ7ZTbUexBNyvYF/kOu0J7WQiPR+BHyraAsXkPBxaPVctAwflcCEY1BCdhTG
-         JT+OJVavWQuYMhwbLGZy5WWqz3ALlC1cg8r0YibIRIYnH8j78Rxl8EjTaRISR2qyzJPg
-         DhgqRm1ejSmmTChRkgTjYYBQLMqOuhb0YJY4+RInJYTD+02T3rL/wTf2bHUCyhPHQtu5
-         P63A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686067318; x=1688659318;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lF2UGEA9OrkpXye5dI96ZgQtY63NyK9cI7pFh0ko5gI=;
-        b=j/FHBCfrsMoZbLS69vkFEIldUDaJHvP63B4N9vn94/5CVMJUKwOVxhg4jv/wFFTDwf
-         TyjPBokWhLQPaa9wIfdtJHV6qy5/bw++7BZsnFaW6opWF8B5FqsNOVR8Vt2sunJfvp6O
-         hao6OTxfK6b+TI76bYN7uoTjtsUa+mS8knFkgyZq+xSOMllcCDDTwQmg4ZyqjtTCHVPw
-         laMcIklh0icJ3OoLGsPQcrG9+IVj6BG/W8LlARfu/fNYiUrIPJK5wZ23FFP/c038GJpo
-         WIdL3ZBKUHHyeKcwqndAa4pFu+9dCKI+0gA+c18VYOnTgSwtdVd4UH/dGuwt48D1m1tJ
-         yIsQ==
-X-Gm-Message-State: AC+VfDyd80zDKL9Ao3/8zHE9uujMqMpedHlxPoIVw2bGSaYcmIA0OLtb
-	AW9rPpY41UQ6W31R1nShS6G1Tgc3aqGXqcJ/kaJvOA==
-X-Google-Smtp-Source: ACHHUZ5bzvxdH/e2OcvNNOB0H3xPGdj2sLKDeMs6TlDgqMP5ta4ePGFx2oX5OHvj0PSfPRpJOa84Q6uXA0h0s02B4l4=
-X-Received: by 2002:a0d:e88f:0:b0:565:d40b:f695 with SMTP id
- r137-20020a0de88f000000b00565d40bf695mr2995573ywe.48.1686067318256; Tue, 06
- Jun 2023 09:01:58 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19F7E37B97
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 16:17:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 391D8C4339B;
+	Tue,  6 Jun 2023 16:17:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686068227;
+	bh=fj73aW60IcK4Ac6zvS/nWXzMdOyCqRJ+FWVy8Lw8onI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=UHxMx6HJc6jlhI6HdrUsVz4PZ0U6xkHe2WGCxCWMp+V5k+TwWZF1Etz8E04ZXruX0
+	 4mGY9a5KedFw+OYB3c7J7NV0a9sIDxbnO5tIA/CmsYREPIgsRcOG6qvNYUxviDfhj7
+	 v20D3mxAf6XKo/3+fecN7Iss9xY26Kiz2hVpDwjrTpsdz2Zu/NqsSeBmtfQYMtH5TS
+	 EDflT00zIckMLFD4vagS3KTnPLR6Vmj46gqrtKefjuySDou4+ff0Zt9m/QJGLxE2A7
+	 GfKGA1apKxsmrvZaZlbRDvb6gVg05kJoLLpYSpI+KTx6XPaou+qmfk3rCrM7j5WUdC
+	 diduyEnYwh2BA==
+Date: Tue, 6 Jun 2023 09:17:06 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Gal Pressman <gal@nvidia.com>
+Cc: Edwin Peer <espeer@gmail.com>, David Ahern <dsahern@gmail.com>, netdev
+ <netdev@vger.kernel.org>, Andrew Gospodarek
+ <andrew.gospodarek@broadcom.com>, Michael Chan <michael.chan@broadcom.com>,
+ Stephen Hemminger <stephen@networkplumber.org>, Michal Kubecek
+ <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next 1/4] netlink: truncate overlength attribute
+ list in nla_nest_end()
+Message-ID: <20230606091706.47d2544d@kernel.org>
+In-Reply-To: <0c04665f-545a-7552-a4c2-c7b9b2ee4e6b@nvidia.com>
+References: <20210123045321.2797360-1-edwin.peer@broadcom.com>
+	<20210123045321.2797360-2-edwin.peer@broadcom.com>
+	<1dc163b0-d4b0-8f6c-d047-7eae6dc918c4@gmail.com>
+	<CAKOOJTwKK5AgTf+g5LS4MMwR_HwbdFS6U7SFH0jZe8FuJMgNgA@mail.gmail.com>
+	<CAKOOJTzwdSdwBF=H-h5qJzXaFDiMoX=vjrMi_vKfZoLrkt4=Lg@mail.gmail.com>
+	<62a12b2c-c94e-8d89-0e75-f01dc6abbe92@gmail.com>
+	<CAKOOJTwBcRJah=tngJH3EaHCCXb6T_ptAV+GMvqX_sZONeKe9w@mail.gmail.com>
+	<cdbd5105-973a-2fa0-279b-0d81a1a637b9@nvidia.com>
+	<20230605115849.0368b8a7@kernel.org>
+	<CAOpCrH4-KgqcmfXdMjpp2PrDtSA4v3q+TCe3C9E5D3Lu-9YQKg@mail.gmail.com>
+	<0c04665f-545a-7552-a4c2-c7b9b2ee4e6b@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230606131304.4183359-1-edumazet@google.com> <ZH9PB79LUMXLZOPR@corigine.com>
-In-Reply-To: <ZH9PB79LUMXLZOPR@corigine.com>
-From: Jamal Hadi Salim <jhs@mojatatu.com>
-Date: Tue, 6 Jun 2023 12:01:47 -0400
-Message-ID: <CAM0EoMn1veKy2-qX5zcfbx3pcXhiVmBMTcV7JHv6jREuxgrFhw@mail.gmail.com>
-Subject: Re: [PATCH net] net: sched: act_police: fix sparse errors in tcf_police_dump()
-To: Simon Horman <simon.horman@corigine.com>
-Cc: Eric Dumazet <edumazet@google.com>, "David S . Miller" <davem@davemloft.net>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org, 
-	eric.dumazet@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jun 6, 2023 at 11:21=E2=80=AFAM Simon Horman <simon.horman@corigine=
-.com> wrote:
->
-> On Tue, Jun 06, 2023 at 01:13:04PM +0000, Eric Dumazet wrote:
-> > Fixes following sparse errors:
-> >
-> > net/sched/act_police.c:360:28: warning: dereference of noderef expressi=
-on
-> > net/sched/act_police.c:362:45: warning: dereference of noderef expressi=
-on
-> > net/sched/act_police.c:362:45: warning: dereference of noderef expressi=
-on
-> > net/sched/act_police.c:368:28: warning: dereference of noderef expressi=
-on
-> > net/sched/act_police.c:370:45: warning: dereference of noderef expressi=
-on
-> > net/sched/act_police.c:370:45: warning: dereference of noderef expressi=
-on
-> > net/sched/act_police.c:376:45: warning: dereference of noderef expressi=
-on
-> > net/sched/act_police.c:376:45: warning: dereference of noderef expressi=
-on
-> >
-> > Fixes: d1967e495a8d ("net_sched: act_police: add 2 new attributes to su=
-pport police 64bit rate and peakrate")
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
->
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+On Tue, 6 Jun 2023 11:01:14 +0300 Gal Pressman wrote:
+> On 05/06/2023 22:27, Edwin Peer wrote:
+> > Thanks for the CC, I left Broadcom quite some time ago and am no
+> > longer subscribed to netdev as a result (been living in firmware land
+> > doing work in Rust).
+> > 
+> > I have no immediate plans to pick this up, at least not in the short
+> > to medium term. My work in progress was on the laptop I returned and I
+> > cannot immediately recall what solution I had in mind here.
+> 
+> Jakub, sorry if this has been discussed already in the past, but can you
+> please clarify what is an accepted (or more importantly, not accepted)
+> solution for this issue? I'm not familiar with the history and don't
+> want to repeat previous mistakes.
 
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+The problem is basically that attributes can only be 64kB and 
+the legacy SR-IOV API wraps all the link info in an attribute.
 
-Trivial comment: Eric, for completion, does it make sense to also convert
-opt.action =3D police->tcf_action to opt.action =3D p->tcf_action;
-and moving it after p =3D rcu_dereference_protected()?
+> So far I've seen discussions about increasing the recv buffer size, and
+> this patchset which changes the GETLINK ABI, both of which were nacked.
 
+Filtering out some of the info, like the stats, is okay, but that just
+increases the limit. A limit still exists.
 
-cheers,
-jamal
+> Having 'ip link show' broken is very unfortunate :\, how should one
+> approach this issue in 2023?
+
+Sure is, which is why we should be moving away from the legacy SR-IOV
+APIs.
 
