@@ -1,101 +1,151 @@
-Return-Path: <netdev+bounces-8470-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8471-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D37C072438E
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 15:04:34 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 190EB7243D3
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 15:10:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 10D73281684
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 13:04:33 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 354351C20EE3
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 13:09:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3A989125B1;
-	Tue,  6 Jun 2023 13:04:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B07EF125B6;
+	Tue,  6 Jun 2023 13:09:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 304DC37B6F
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 13:04:30 +0000 (UTC)
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B278512F;
-	Tue,  6 Jun 2023 06:04:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686056669; x=1717592669;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6IT171qT5AmKSzBUAJosoEK6YDtge7/tdK9pVWUW290=;
-  b=eVq9NSneULmj6hAKDPws5JxkXH4V1LTjRRT613NUhhdXwrXtinlzDhal
-   qgn+WI3lFerDBtw7emJyqrOYKq6InClPQI01812kadlsyJnKam6HvB82y
-   1aTOcMzW+fNtwxRUiUkoZHkys7KjtjuqjfMpxO0sbpXzTwQXOi0dirxHX
-   AGtiiKei1Km7YEbZ2TZu7+RaxL7o3NNlUQGPoUYnitOBQ6rz3AjayY+15
-   tY8rNOJxd1axUgVHWcL3EvD1hiogwdLEkuBAV795QPpcXe4r/ESE300EN
-   PLCxJplqNkJZZTMDjpzSlQ70/fQuiLo3CKIo+MU6/LAKKR8n6u32ZaZMt
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="355516183"
-X-IronPort-AV: E=Sophos;i="6.00,221,1681196400"; 
-   d="scan'208";a="355516183"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2023 06:04:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10732"; a="833219876"
-X-IronPort-AV: E=Sophos;i="6.00,221,1681196400"; 
-   d="scan'208";a="833219876"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004.jf.intel.com with ESMTP; 06 Jun 2023 06:04:26 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1q6WML-001dDy-13;
-	Tue, 06 Jun 2023 16:04:25 +0300
-Date: Tue, 6 Jun 2023 16:04:24 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Paolo Abeni <pabeni@redhat.com>
-Cc: Simon Horman <simon.horman@corigine.com>, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DF1537B99
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 13:09:59 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D027172C
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 06:09:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686056951;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=xU6E2fjjhcVwKorersDkYRkNjPEQVcB/v3lc/5jlH4Q=;
+	b=eq63PwoJkDHngCBkU0HdNd+ubLNblS0MPBb++auwlgg9ITZye8gPL8mLE8tBsIQJrCP1/5
+	PRDbJ95sKPqHUwEI5IyjjZZMiGlUNC4+n3VL0zYiBqx189Zi8dC6y6GeqLzVk1ygVZq8xr
+	5MycMWieSH1maLIf5Q3nyQHeIXyWta0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-648-zAky1qSONByxa_4w_IiLQw-1; Tue, 06 Jun 2023 09:09:05 -0400
+X-MC-Unique: zAky1qSONByxa_4w_IiLQw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C5BED8039B6;
+	Tue,  6 Jun 2023 13:09:04 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 7DCF64022C5;
+	Tue,  6 Jun 2023 13:09:02 +0000 (UTC)
+From: David Howells <dhowells@redhat.com>
+To: netdev@vger.kernel.org
+Cc: David Howells <dhowells@redhat.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next v1 1/1] mac_pton: Clean up the header inclusions
-Message-ID: <ZH8u2LLdTeDBQ6ZI@smile.fi.intel.com>
-References: <20230604132858.6650-1-andriy.shevchenko@linux.intel.com>
- <ZH7xgznYTfyLIslo@corigine.com>
- <d61eea76bfff30ced8462aeb98409caa9b2232a2.camel@redhat.com>
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+	David Ahern <dsahern@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Jens Axboe <axboe@kernel.dk>,
+	linux-crypto@vger.kernel.org,
+	linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v3 00/10] crypto, splice, net: Make AF_ALG handle sendmsg(MSG_SPLICE_PAGES)
+Date: Tue,  6 Jun 2023 14:08:46 +0100
+Message-ID: <20230606130856.1970660-1-dhowells@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d61eea76bfff30ced8462aeb98409caa9b2232a2.camel@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 06, 2023 at 01:20:57PM +0200, Paolo Abeni wrote:
-> On Tue, 2023-06-06 at 10:42 +0200, Simon Horman wrote:
-> > On Sun, Jun 04, 2023 at 04:28:58PM +0300, Andy Shevchenko wrote:
-> > > Since hex_to_bin() is provided by hex.h there is no need to require
-> > > kernel.h. Replace the latter by the former and add missing export.h.
+Here are patches to make AF_ALG handle the MSG_SPLICE_PAGES internal
+sendmsg flag.  MSG_SPLICE_PAGES is an internal hint that tells the protocol
+that it should splice the pages supplied if it can.  The sendpage functions
+are then turned into wrappers around that.
 
-...
+This set consists of the following parts:
 
-> > is there a tool that you used to verify this change?
-> 
-> I guess build testing it should suffice ;)
+ (1) Move netfs_extract_iter_to_sg() to somewhere more general and rename
+     it to drop the "netfs" prefix.  We use this to extract directly from
+     an iterator into a scatterlist.
 
-Yes, it was my brain work with reading the code + compile test on x86.
+ (2) Make AF_ALG use iov_iter_extract_pages().  This has the additional
+     effect of pinning pages obtained from userspace rather than taking
+     refs on them.  Pages from kernel-backed iterators would not be pinned,
+     but AF_ALG isn't really meant for use by kernel services.
 
--- 
-With Best Regards,
-Andy Shevchenko
+ (3) Change AF_ALG still further to use extract_iter_to_sg().
 
+ (4) Make af_alg_sendmsg() support MSG_SPLICE_PAGES support and make
+     af_alg_sendpage() just a wrapper around sendmsg().  This has to take
+     refs on the pages pinned for the moment.
+
+ (5) Make hash_sendmsg() support MSG_SPLICE_PAGES by simply ignoring it.
+     hash_sendpage() is left untouched to be removed later, after the
+     splice core has been changed to call sendmsg().
+
+I've pushed the patches here also:
+
+	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=sendpage-2-alg
+
+David
+
+ver #3)
+ - Rebase and deal with fs/cifs/ moving.
+ - Reimpose the ALG_MAX_PAGES limit in hash_sendmsg() for kernel iters.
+ - Remove BVEC iter restriction when using MSG_SPLICE_PAGES.
+
+ver #2)
+ - Put the "netfs_" prefix removal first to shorten lines and avoid
+   checkpatch 80-char warnings.
+ - Fix a couple of spelling mistakes.
+ - Wrap some lines at 80 chars.
+
+Link: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=51c78a4d532efe9543a4df019ff405f05c6157f6 # part 1
+Link: https://lore.kernel.org/r/20230526143104.882842-1-dhowells@redhat.com/ # v1
+Link: https://lore.kernel.org/r/20230530141635.136968-1-dhowells@redhat.com/ # v2
+
+David Howells (10):
+  Drop the netfs_ prefix from netfs_extract_iter_to_sg()
+  Fix a couple of spelling mistakes
+  Wrap lines at 80
+  Move netfs_extract_iter_to_sg() to lib/scatterlist.c
+  crypto: af_alg: Pin pages rather than ref'ing if appropriate
+  crypto: af_alg: Use extract_iter_to_sg() to create scatterlists
+  crypto: af_alg: Indent the loop in af_alg_sendmsg()
+  crypto: af_alg: Support MSG_SPLICE_PAGES
+  crypto: af_alg: Convert af_alg_sendpage() to use MSG_SPLICE_PAGES
+  crypto: af_alg/hash: Support MSG_SPLICE_PAGES
+
+ crypto/af_alg.c           | 181 +++++++++++--------------
+ crypto/algif_aead.c       |  38 +++---
+ crypto/algif_hash.c       | 110 ++++++++++------
+ crypto/algif_skcipher.c   |  10 +-
+ fs/netfs/iterator.c       | 266 -------------------------------------
+ fs/smb/client/smb2ops.c   |   4 +-
+ fs/smb/client/smbdirect.c |   2 +-
+ include/crypto/if_alg.h   |   7 +-
+ include/linux/netfs.h     |   4 -
+ include/linux/uio.h       |   5 +
+ lib/scatterlist.c         | 269 ++++++++++++++++++++++++++++++++++++++
+ 11 files changed, 451 insertions(+), 445 deletions(-)
 
 
