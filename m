@@ -1,194 +1,159 @@
-Return-Path: <netdev+bounces-8352-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8354-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A781F723C8D
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:08:30 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6F4A9723CA0
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:11:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5CF96281584
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:08:29 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2B8B228156D
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:11:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D65A9290E9;
-	Tue,  6 Jun 2023 09:08:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 823A1290EE;
+	Tue,  6 Jun 2023 09:10:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8D35125C0
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:08:27 +0000 (UTC)
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 798F48F
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 02:08:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E0KH1ysgboSwkmsFm1ZHsVARyYFqL5Z2Rj/fKrZiCDBJe6FwzKeIPvFnavc0IeRT8Gw/4VIgYMjQkKCEbvHtJr0GMqx/HJNyqajTKEMlc10AW5UDF0+fejOG+6os1DHEDNj1sVDKEcENGd/1UERK0mLVip7fJnaN+D7+ME6opWbvfTxWMKXxFpgBRPgt+pPppl/os7YsJD5oXUszil3xb1kEgD9X63OqilrmTYLrjtqTztZvv3CuJjGk3T2fSFlVyXt3RrqfzKd3aISnRmGyefaGALIBEz5tX2PMsI6AQ819/GTaQXFr6LkKgzQkZaBwmIa8sqt4u4TbDA9GDwXuWA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oDcamnDVyMHwqwZMXGctvdXppxusRPW+Egz9obY6mq4=;
- b=GzLOQ4I/M/KVObMyH9lKjvVz2mbBkBr2inJdqHZ7C7+jVQWl7ODBr4mUobhOC9vl8mRDXr2pT6045ZSVpB0mHeeAlB68sre92yCaZ5hhb+Z88xeLJRRBPJy0qpiJ/jG8cj2l+hRvmPZX7Bkn+1x7/zr+3tcW4WZhtC2tXtA5CoidEn8gzBknDQQHN+5/dgtIrPTt3ClpoahmalQfJy8SV4e555ikdVJcvh0OHwKAXEZMxCLyA/MM0BlEI2uDXfO7CzvWCdlxBJcfNapB+cdLnPtb/lf5i2yzIDULtzKkfOr3JsQEGaSUR8LscQzru/iRMPKHMCjyW0snFiMQiBHo1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oDcamnDVyMHwqwZMXGctvdXppxusRPW+Egz9obY6mq4=;
- b=dsXvX+BSgDOe2pID6j0uPgEl+xXYLyXr4fl/HHHw1ON4yD2hMJQS+p+sz2VH3RSlfaiVC+Dmku2P1IoBMfYbE0RaXV+ZqMYoO6xmLQIdePPaRl1pkOO7fKWDHUdESu7FjDMXne1ir3Pkepqwac4RWYM3X8w1zNFodtWpFsZUMMk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SJ0PR13MB5802.namprd13.prod.outlook.com (2603:10b6:a03:3e9::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.27; Tue, 6 Jun
- 2023 09:08:25 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6455.030; Tue, 6 Jun 2023
- 09:08:24 +0000
-Date: Tue, 6 Jun 2023 11:08:18 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Jakub Kicinski <kuba@kernel.org>,
-	Patrisious Haddad <phaddad@nvidia.com>,
-	Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
-	Saeed Mahameed <saeedm@nvidia.com>,
-	Steffen Klassert <steffen.klassert@secunet.com>
-Subject: Re: [PATCH net 2/4] net/mlx5e: Fix ESN update kernel panic
-Message-ID: <ZH73gi4JgGu1MZkD@corigine.com>
-References: <cover.1685950599.git.leonro@nvidia.com>
- <acc45e30ff0cf5220a3fda02411d22880878102f.1685950599.git.leonro@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <acc45e30ff0cf5220a3fda02411d22880878102f.1685950599.git.leonro@nvidia.com>
-X-ClientProxiedBy: AM9P192CA0011.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:20b:21d::16) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77B90125C0
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:10:58 +0000 (UTC)
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B71048F;
+	Tue,  6 Jun 2023 02:10:55 -0700 (PDT)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.201])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Qb4QX1kDtz67gyM;
+	Tue,  6 Jun 2023 17:08:36 +0800 (CST)
+Received: from [10.123.123.126] (10.123.123.126) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Tue, 6 Jun 2023 10:10:52 +0100
+Message-ID: <ea810d57-93fe-1724-4aab-5cbc1a35062f@huawei.com>
+Date: Tue, 6 Jun 2023 12:10:51 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB5802:EE_
-X-MS-Office365-Filtering-Correlation-Id: d0201542-4f66-4aae-68cd-08db666d955f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	rajN15KtVzjuWRumvZ+nfRiXnZguicaK6n+W/WVFmZm+0psI5HW3QXDpXwetAw9KqwXHqA7ECKU9NES8NTSo3wk7ssAhdmJEGIkI9hyXc3Bs/jazeqXr+ih3LONw3NHqfjlSs44PZBE//ntgrdyPrBkS+w2dMuNKYsoq8wAM8LKPHhvvz8DHcOxe+GR+E6vxuRZSs9SEN9CLUi90pHaZ3WJ6UlVCmGJ7KSOABGDf0ilStfxBf5nSTEN7gaTMPvo5jocdFIktRUbmSCoF+kphpqrtGbQkOMOeV9svaMx8JbKnH1xft+RVyexhjUjR4yRjsiM6wjsy9QnAx4BO2QnmD4KyNNz318brOLAlmFY/3sNs+IMNSJvGILn4ap3gBTlkHounVuuOFyxxf6Qx2AfovdaVP7E4gaSvUs391f9JVMn+V9HeEfQC+UKKkevR6vvZSLxbT0YMQbRCAySXIpQoOskF0DlumQ9zZTc3qUN2JUUbPQfwGKNK7NaWirWFrlAj9XUOalAysy8+Iwayz2A+OoUEqis9hAshnJqJOI8EvdtZRUy/mQB8E/OtIlyVIeHJ
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(346002)(136003)(366004)(396003)(376002)(451199021)(6486002)(6666004)(6506007)(186003)(6512007)(83380400001)(2616005)(36756003)(86362001)(38100700002)(54906003)(44832011)(5660300002)(316002)(41300700001)(6916009)(8936002)(8676002)(66476007)(66946007)(66556008)(4326008)(478600001)(15650500001)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?UZtUwk/ly9WbKUCsUbaci8aROJ60IX1ptHM0pOeInk0kDBEywXEEP4sKa/9V?=
- =?us-ascii?Q?rfadR8N1OJ0Hs68R8mnH7mtlT9M6XxW8mjf/piAMkU6lmUFeJ23Q7pvhT0jF?=
- =?us-ascii?Q?fC9UUwohOIy1YIChDv0O6DHJLThId5ZuC0T6fTUNafYD7mMlOMI3KrQ/KulY?=
- =?us-ascii?Q?b0U/b3wrMXCLhY2zVYIGTxFihipNTEG30P5icqWL1EnjiSsuI119y9jkaawp?=
- =?us-ascii?Q?FSTxpVicW+clXkWfxlB5FtAuBtVs2WRttJBtNPIxi4kuhMRaZniuruHrat8d?=
- =?us-ascii?Q?lysuh8AILGxDD0lRDX4LkYldCYNTLmsyMG4QaAztYR6c3T7YHEoefDCTtzeC?=
- =?us-ascii?Q?Uvx/PMHS30aCqvDNG6UztCjiFzIV/x1GcTTNEorwzJsu/xlJNgoT7Z96jgdu?=
- =?us-ascii?Q?8f8fU8EdaGKGYmpDnQfXpcmll220VTGnfjBhvjRqXKd5Rv7ZIyYimmMLJ2/I?=
- =?us-ascii?Q?V2G+EWtmVD7DvCRl7HaBhnCPdjqEBwiHbHlAoGL4yRfgDjPxQNt7FknWDiZ0?=
- =?us-ascii?Q?sTiKv0DmvFjfekdTv6Droj76XNENUSklDUZ+/3dQFVW1ury0ab/uG/aqeLoz?=
- =?us-ascii?Q?9v3ZCziTOKvr8M8/Xl4ePvKw01vZG1LRzwihY+m+kV5IiVYPqH9ekBNMv4qK?=
- =?us-ascii?Q?F6sp3W6BKP5vTtw8oFhtNP1cXLYgR+RaHvOyxpFbpST+7AMm5FggSegPbmmt?=
- =?us-ascii?Q?9wTplZKBtMRiwSR+AYCs64ZkDdnyP2Q7rg3AfM2Kwnm9Ikv2yui4/QX/Pbt9?=
- =?us-ascii?Q?VW7vF7vu0FsJ3UXk5qUqsgom46bD6Mpd2bcrkGgqMnmutvFsGgsWxlKcI9sT?=
- =?us-ascii?Q?P05MsFtuGO/DsJiQEcdbfU08NcruXMikfuY4tYLwGrrKgAgYHz8hTqWDQd4x?=
- =?us-ascii?Q?93FZ5M1OqJo2j47c7KkGJ4PLxtm+BRVk8Chj7acKxc7VTR5T13NsZfEkHs0N?=
- =?us-ascii?Q?hw1iUsu1DELGFjzaKn9wlqZDdJMoRBVuYZN1Ga9fCk8BjwmK4zFGADIaHjxT?=
- =?us-ascii?Q?6uvfl4/vsM9ymJrVt42PRSTjGj+fk0eqy2mCT7okJA0tDF4fPLlrRMtgXPOJ?=
- =?us-ascii?Q?fNJ4qVZ+lsBPft8OhWPma6eQRtvmYaA8b30lSrHMI19U24lEttJwK9I53IyD?=
- =?us-ascii?Q?FWaHVqnTEE/pb/5a2j+2uYFMzWwBkB9NbVKr/ZwlkA3uR1iFsCJcifEpvrpz?=
- =?us-ascii?Q?j8URylAkhPkbLr9MSwq7kgOSHkmslHzDutitnriMga9ssGhfQ+rcC+IW+aXi?=
- =?us-ascii?Q?AVR9hScgS9bG+PM5amgP9T1w3WVOqNk+D8d7xBc3NRGdCUZncA52KPYQFxIu?=
- =?us-ascii?Q?Mgp7ukt81sVk9OI3RUY0pqjSCK67OqYeiZtP9OTh/ejOPLyWR7RYQdWnNfB2?=
- =?us-ascii?Q?ltBiAA5c+UhC5xgyVniOz+4Cu/iYyqaRZbdsjgEmnuIUrbJJamF3ikStMxME?=
- =?us-ascii?Q?1CMd8O/dUoiBnBFifveNGRGx5S5S+CIljKL54S0LNN/M1YdG5WWhOPm/LbRP?=
- =?us-ascii?Q?Dw2Yj4P5sXSDb7idGJ7CUAyUnk6+JBmoKNv+6Vf5VuBdMNHryo5S+hjWuqGg?=
- =?us-ascii?Q?Z0/zJobelZr4lRY960K1cCdODsg26nEopTIBJybAwE6TXChuRL9yHyz782Z2?=
- =?us-ascii?Q?0sPwdKI3nDxF7RqskyMm9wmE+lOXzOLKUdNtBwMev1aTH07pqWoHuQi6Hn/5?=
- =?us-ascii?Q?4YkB6A=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0201542-4f66-4aae-68cd-08db666d955f
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2023 09:08:24.8957
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EUcsckmoQDgIM7/EMxnV94y5f84FKYdgVL0XX8bh/4a5BbHauu6VMvYRBQVWOF4VyDe/uWnS8b7CITJvLV8dzMLYPpkcQB+fDXcOP++ybrA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5802
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v11 00/12] Network support for Landlock
+Content-Language: ru
+To: =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC: <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
+	<linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+	<netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+	<artem.kuzin@huawei.com>
+References: <20230515161339.631577-1-konstantin.meskhidze@huawei.com>
+ <8f3d242a-c0ee-217e-8094-84093ce4e134@digikod.net>
+From: "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <8f3d242a-c0ee-217e-8094-84093ce4e134@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.123.123.126]
+X-ClientProxiedBy: lhrpeml500002.china.huawei.com (7.191.160.78) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 05, 2023 at 11:09:50AM +0300, Leon Romanovsky wrote:
-> From: Patrisious Haddad <phaddad@nvidia.com>
-> 
-> Previously during mlx5e_ipsec_handle_event the driver tried to execute
-> an operation that could sleep, while holding a spinlock, which caused
-> the kernel panic mentioned below.
-> 
-> Move the function call that can sleep outside of the spinlock context.
-> 
->  Call Trace:
->  <TASK>
->  dump_stack_lvl+0x49/0x6c
->  __schedule_bug.cold+0x42/0x4e
->  schedule_debug.constprop.0+0xe0/0x118
->  __schedule+0x59/0x58a
->  ? __mod_timer+0x2a1/0x3ef
->  schedule+0x5e/0xd4
->  schedule_timeout+0x99/0x164
->  ? __pfx_process_timeout+0x10/0x10
->  __wait_for_common+0x90/0x1da
->  ? __pfx_schedule_timeout+0x10/0x10
->  wait_func+0x34/0x142 [mlx5_core]
->  mlx5_cmd_invoke+0x1f3/0x313 [mlx5_core]
->  cmd_exec+0x1fe/0x325 [mlx5_core]
->  mlx5_cmd_do+0x22/0x50 [mlx5_core]
->  mlx5_cmd_exec+0x1c/0x40 [mlx5_core]
->  mlx5_modify_ipsec_obj+0xb2/0x17f [mlx5_core]
->  mlx5e_ipsec_update_esn_state+0x69/0xf0 [mlx5_core]
->  ? wake_affine+0x62/0x1f8
->  mlx5e_ipsec_handle_event+0xb1/0xc0 [mlx5_core]
->  process_one_work+0x1e2/0x3e6
->  ? __pfx_worker_thread+0x10/0x10
->  worker_thread+0x54/0x3ad
->  ? __pfx_worker_thread+0x10/0x10
->  kthread+0xda/0x101
->  ? __pfx_kthread+0x10/0x10
->  ret_from_fork+0x29/0x37
->  </TASK>
->  BUG: workqueue leaked lock or atomic: kworker/u256:4/0x7fffffff/189754#012     last function: mlx5e_ipsec_handle_event [mlx5_core]
->  CPU: 66 PID: 189754 Comm: kworker/u256:4 Kdump: loaded Tainted: G        W          6.2.0-2596.20230309201517_5.el8uek.rc1.x86_64 #2
->  Hardware name: Oracle Corporation ORACLE SERVER X9-2/ASMMBX9-2, BIOS 61070300 08/17/2022
->  Workqueue: mlx5e_ipsec: eth%d mlx5e_ipsec_handle_event [mlx5_core]
->  Call Trace:
->  <TASK>
->  dump_stack_lvl+0x49/0x6c
->  process_one_work.cold+0x2b/0x3c
->  ? __pfx_worker_thread+0x10/0x10
->  worker_thread+0x54/0x3ad
->  ? __pfx_worker_thread+0x10/0x10
->  kthread+0xda/0x101
->  ? __pfx_kthread+0x10/0x10
->  ret_from_fork+0x29/0x37
->  </TASK>
->  BUG: scheduling while atomic: kworker/u256:4/189754/0x00000000
-> 
-> Fixes: cee137a63431 ("net/mlx5e: Handle ESN update events")
-> Signed-off-by: Patrisious Haddad <phaddad@nvidia.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
+6/5/2023 6:02 PM, Mickaël Salaün пишет:
+> Hi Konstantin,
+> 
+> The kernel code looks good. I found some issues in tests and
+> documentation, and I'm still reviewing the whole patches. In the
+> meantime, I've pushed it in -next, we'll see how it goes.
+> 
+> We need to have this new code covered by syzkaller. I'll work on that
+> unless you want to.
+> 
+> Regards,
+>    Mickaël
+> 
+   Hi, Mickaël!
+   I have never set up syzkaller. Do you have a syzkaller scenario for 
+Landlock code? I need some hints. I will give it a shot.
+
+  Regards,
+     Konstantin.
+> 
+> On 15/05/2023 18:13, Konstantin Meskhidze wrote:
+>> Hi,
+>> This is a new V11 patch related to Landlock LSM network confinement.
+>> It is based on the landlock's -next branch on top of v6.2-rc3+ kernel version:
+>> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=next
+>> 
+>> It brings refactoring of previous patch version V10.
+>> Mostly there are fixes of logic and typos, refactoring some selftests.
+>> 
+>> All test were run in QEMU evironment and compiled with
+>>   -static flag.
+>>   1. network_test: 36/36 tests passed.
+>>   2. base_test: 7/7 tests passed.
+>>   3. fs_test: 78/78 tests passed.
+>>   4. ptrace_test: 8/8 tests passed.
+>> 
+>> Previous versions:
+>> v10: https://lore.kernel.org/linux-security-module/20230323085226.1432550-1-konstantin.meskhidze@huawei.com/
+>> v9: https://lore.kernel.org/linux-security-module/20230116085818.165539-1-konstantin.meskhidze@huawei.com/
+>> v8: https://lore.kernel.org/linux-security-module/20221021152644.155136-1-konstantin.meskhidze@huawei.com/
+>> v7: https://lore.kernel.org/linux-security-module/20220829170401.834298-1-konstantin.meskhidze@huawei.com/
+>> v6: https://lore.kernel.org/linux-security-module/20220621082313.3330667-1-konstantin.meskhidze@huawei.com/
+>> v5: https://lore.kernel.org/linux-security-module/20220516152038.39594-1-konstantin.meskhidze@huawei.com
+>> v4: https://lore.kernel.org/linux-security-module/20220309134459.6448-1-konstantin.meskhidze@huawei.com/
+>> v3: https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
+>> v2: https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
+>> v1: https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
+>> 
+>> Konstantin Meskhidze (11):
+>>    landlock: Make ruleset's access masks more generic
+>>    landlock: Refactor landlock_find_rule/insert_rule
+>>    landlock: Refactor merge/inherit_ruleset functions
+>>    landlock: Move and rename layer helpers
+>>    landlock: Refactor layer helpers
+>>    landlock: Refactor landlock_add_rule() syscall
+>>    landlock: Add network rules and TCP hooks support
+>>    selftests/landlock: Share enforce_ruleset()
+>>    selftests/landlock: Add 11 new test suites dedicated to network
+>>    samples/landlock: Add network demo
+>>    landlock: Document Landlock's network support
+>> 
+>> Mickaël Salaün (1):
+>>    landlock: Allow filesystem layout changes for domains without such
+>>      rule type
+>> 
+>>   Documentation/userspace-api/landlock.rst     |   89 +-
+>>   include/uapi/linux/landlock.h                |   48 +
+>>   samples/landlock/sandboxer.c                 |  128 +-
+>>   security/landlock/Kconfig                    |    1 +
+>>   security/landlock/Makefile                   |    2 +
+>>   security/landlock/fs.c                       |  232 +--
+>>   security/landlock/limits.h                   |    7 +-
+>>   security/landlock/net.c                      |  174 +++
+>>   security/landlock/net.h                      |   26 +
+>>   security/landlock/ruleset.c                  |  405 +++++-
+>>   security/landlock/ruleset.h                  |  185 ++-
+>>   security/landlock/setup.c                    |    2 +
+>>   security/landlock/syscalls.c                 |  163 ++-
+>>   tools/testing/selftests/landlock/base_test.c |    2 +-
+>>   tools/testing/selftests/landlock/common.h    |   10 +
+>>   tools/testing/selftests/landlock/config      |    4 +
+>>   tools/testing/selftests/landlock/fs_test.c   |   74 +-
+>>   tools/testing/selftests/landlock/net_test.c  | 1317 ++++++++++++++++++
+>>   18 files changed, 2520 insertions(+), 349 deletions(-)
+>>   create mode 100644 security/landlock/net.c
+>>   create mode 100644 security/landlock/net.h
+>>   create mode 100644 tools/testing/selftests/landlock/net_test.c
+>> 
+>> --
+>> 2.25.1
+>> 
+> .
 
