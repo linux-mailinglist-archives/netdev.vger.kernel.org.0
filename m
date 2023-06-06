@@ -1,71 +1,71 @@
-Return-Path: <netdev+bounces-8350-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8351-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id E1BAA723C83
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:06:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 449AA723C8C
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:08:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2AB50280FB3
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:06:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F1B9028153D
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:08:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4D2E5290E2;
-	Tue,  6 Jun 2023 09:06:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 44EE0290E7;
+	Tue,  6 Jun 2023 09:07:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A21F125C0
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:06:30 +0000 (UTC)
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2134.outbound.protection.outlook.com [40.107.223.134])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA98E8
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 02:06:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39B8A125C0
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:07:58 +0000 (UTC)
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6FD109
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 02:07:57 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B7GhtnkBG1kpomY4BqVpfkmZtzAlnZeh73qTSOBd6P1imSoXHE/h4d9s0LX8MYWn4qgf3GTUQcbML7MJZV5cjRB92HuvbTEuFt/L+yeMo9jgTQbQ5aqMPsWfAZ4JF87ZgdMYrdhz54J3cCaH+Lp/wkFLYkygPRAdTILNR2wcPF9tQ+wEnAUWkJd0yAnYSFWyWDVc+5jTESeDy0cLaR2Fu+DhPEhYq4geRmjLU26Z3Y5qOUNvlLLF2zujbqV2EewvReYMY7XKEQlDKCpU8F0gklUVGknIyOe8PXsXo2JiyFgeNp4uSUpDwpxrgB7SPbCo/m7FzK+rPjYRx/SBFcP3uw==
+ b=RoZlcnu5FqR0r/PIEtE+pm4yDysxJ2o6/WK3n0pYjG9315BzlOv2Yb/iK8VHzJcpD+xEPJ9B0rku7miUVFJg5/9rI+ynQ5L0hV00t5l4sAHuRmiIZZID0EuWjnZU74HSH2LFb2QfrY1RFPjixtI4+SAFCh72H1+m5hXmL8tuFo4IxK6+g1hUlJH7HDWwbZNe2ZVKZCmCqodpYW7sXdH9OIC2VUgR16T7A8N36LIQJHFzoAYm/lxKqZGJy2HYvwFLVl+JFLJ4p37m/f6Rqz0+otqaRG3luTcuVfZq1s8Y8LJbMTIOmCBjiABhhvyBvEMVvM8d8zCDrFtoS8ux/cK0TA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/I6VqDFUrVcWUpHhlmrzDYAIOcMWa32iPyga0AAbFdM=;
- b=A6dX3nnsJJldvgr5pGwRw1n9hzDYnlnwpAwXf/M0gLa3oC16aICFjYJb3BFfg0azzSKTZTYUZ+gQ4gdOZWol+5jfHDvMPhYK+2Ah72ETkXxbWhfcm5wx6i4jIMgNm+a1qbDr4w0jQcO5wT3jYMHjtTnttgkLY2UZt7ZExDLydM4Ef0lfIZUyeQPMeGxQp/G6XD8aQtTH7oddEfLZYmDaoIy7tGv4BqHtbVx5go0t/hZlbcERqSXXDIQ+iefLiOM0EqyDCBpuA6wOjpuhDQuCpgGC8VHrowr+JEAFzwlb8X7eZZ7HS3VrHQsyaOO/U2BuIDSkvjymJdgSby0WgJagJA==
+ bh=jjVezmjnAW7TpccvOWoJoxku1GyScIhpk4E4keOLamU=;
+ b=KdjIc0lZBUFq0kUlq+zzrh32xmpX+1hS5yPqSj8khUrO4CPu8dPNupPjPPNCTw3P82hFcCe/Fd8MqvflrCrVVyf6k+8G0yWjXG8Y8WTDLZgifqjGPQ0/rwLWkJWJahy+LHmiCJ85r7so1Lmb/z9q9lFDeDsIIjoknXA1YViki9sLok2RL2iT5W5SeYKxXdePMzH3PBWF4g2RrQtJIST+GIPRl7IDXTpj4X1U2CqUTzliXNsTt0v0vRGPImoeXJkuUwDjuIOdzFNVKBLJbNQuqv2qUufMPz23rimmQGi+9PT5wSvCYs5iqARFiZDXHmr79TdedZgTC+1K5VfF75PUrw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/I6VqDFUrVcWUpHhlmrzDYAIOcMWa32iPyga0AAbFdM=;
- b=bPj4+So3dM7QZJYRkF/bYO7nEZy43OQlQp8Z6YnIiihiyK3rUUVmH8px6fXZIgUGDsoGahdWAPaQtnAKQL0M+0a7VVEHC3j+Ahc0QYKpXcSz8YQNxiDmdoUDRO2fA+2N1VqYQppdPXnERvWo7M3mjS7uogrVdr4sE38ZXSWx8dk=
+ bh=jjVezmjnAW7TpccvOWoJoxku1GyScIhpk4E4keOLamU=;
+ b=S6rqW669OemIijUDIop2GWoOoCaYSx0eJ1IjrhJt9CZpZ0mY+UDcgg00N6p8VL6FXMjzO8/YgOqwwrGa5kktKk31lQCwYX7WWCHUG5AcaNNGG+yx3EvwtRd6tmZKJK1MiveWoFMHvM76WW0YV6UCp/kTdxHpK9W/WkhFgNBBsYM=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by SJ0PR13MB5802.namprd13.prod.outlook.com (2603:10b6:a03:3e9::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.27; Tue, 6 Jun
- 2023 09:06:25 +0000
+ 2023 09:07:55 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6455.030; Tue, 6 Jun 2023
- 09:06:24 +0000
-Date: Tue, 6 Jun 2023 11:06:18 +0200
+ 09:07:55 +0000
+Date: Tue, 6 Jun 2023 11:07:49 +0200
 From: Simon Horman <simon.horman@corigine.com>
 To: Leon Romanovsky <leon@kernel.org>
-Cc: Steffen Klassert <steffen.klassert@secunet.com>,
-	Leon Romanovsky <leonro@nvidia.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>
-Subject: Re: [PATCH ipsec-rc] xfrm: add missed call to delete offloaded
- policies
-Message-ID: <ZH73CjnLlHj8l3iE@corigine.com>
-References: <45c05c0028fd9bbd42893966caee2a314af91bab.1685950471.git.leonro@nvidia.com>
+Cc: Jakub Kicinski <kuba@kernel.org>, Leon Romanovsky <leonro@nvidia.com>,
+	Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+	Paolo Abeni <pabeni@redhat.com>,
+	Patrisious Haddad <phaddad@nvidia.com>,
+	Raed Salem <raeds@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
+	Steffen Klassert <steffen.klassert@secunet.com>
+Subject: Re: [PATCH net 1/4] net/mlx5e: Don't delay release of hardware
+ objects
+Message-ID: <ZH73Zd+gP7/Gpyuy@corigine.com>
+References: <cover.1685950599.git.leonro@nvidia.com>
+ <e89e4c68b70d8b469e7a31613d56ce2974bc943d.1685950599.git.leonro@nvidia.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <45c05c0028fd9bbd42893966caee2a314af91bab.1685950471.git.leonro@nvidia.com>
-X-ClientProxiedBy: AS4PR10CA0010.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:5dc::7) To PH0PR13MB4842.namprd13.prod.outlook.com
+In-Reply-To: <e89e4c68b70d8b469e7a31613d56ce2974bc943d.1685950599.git.leonro@nvidia.com>
+X-ClientProxiedBy: AS4P189CA0003.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d7::8) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -75,71 +75,122 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB5802:EE_
-X-MS-Office365-Filtering-Correlation-Id: 66ea591d-47b7-4cb6-d57f-08db666d4de0
+X-MS-Office365-Filtering-Correlation-Id: a3ff17e2-1b5e-4459-880e-08db666d8419
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	uSZl5H9MBdTjmjjgpYvO4qyBM3UobW9U2SmRkJ7B3pCi8PPesE2cJU7nXoUy/WgAbJTGSNfxo2EeM6XYx8Vt1Kq92CS0eom7DYbuh360M+P949rl4ldRetkG2RRx0KY+ErgU7GdVbnWPGtyCC+GuqwSAySffHlbYC31eg8FfuW+vkoPpFplaF+qPcczgryS91sJsTkIRVXppu4h5tUr1LiJv4ax/aZeQx6o+FLVpFT9j0qSVmODSiRIMFoC12+9FyXXinS4r0qKFcmemEWPTm2gabWy+Y6PCiZSwXj7rPFWZzgaAbWOMePGHW8I05O89hQsSFtiyznFaNOLOSSP5bU6FJGBWF1CiTbOapbNhfYQ9hR2kKE5NQDA0uaYUsI7oVgD+0oP6+rGlRMSM+dOsUK5N/6d8XV+Rd9lmi63u7GQuMj9GVrbsKLARUlbK1YYKFJ7NgwrD5tkQY4xRzbOMRQ+A/EVrWlpOdmFHxP7yA0m6dMgPqqQRBMpGpAColn0vYINM50GjgOt3qyaJUFEchP3Fe7LE68aheqHmEaKb4BEJuPaf04jCYk1h6FL9SK0t
+	2XMyWCX7dJSVa/sfnQuC6r9f99sDKOLhrjT8dhmkpAStdHdzJmRDDb8qG2GmxtnmPeeAvQ0GWMCTSkrMMmjnBvRJnC/OV1QE3UKazCRBz28f3UkEbIr4jiizHyged5969SISiJZCxQWZ1EqaAxsVmqXQe+fuGMW93yJW6n9GSfLmwNcCllJFR6+DC1mRypjpphVxT2EIj5tkGL8HlLEitY0+9bklCYNC5knA2O27inLdWdSuJqrOJnui8Fd0wH2vu85BQCtL77drAYQNO3RIhPQAa9rXJ0ViGwnI/RVr0RbdMrwIdSGjJEaqE06dU7tGJLdZrj+HJb07+ibX1MY3eHgqryI3E3Kt12OwZrXYAr01NP5K0qLXsfyEd8xHkY6f/NgPGlP9iAxO1is28KXI0DB/YwXG5x3fIKZHkfJzPMgIE8sivtdrCWTPzBzjqyIKc41jCTd1MQPnzbEZxAQUEaeyDb3zdL7n3GrwRRf/2rlDqV++wmT7wq6ZlyqorXSrZj0bke+hcsoyOFEbHzNVxRGuRzOmLIxCFYzojdVFpUY0IXgCT/RwluJz+izIfcWV
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(346002)(136003)(366004)(396003)(376002)(451199021)(6486002)(6666004)(6506007)(186003)(6512007)(83380400001)(2616005)(36756003)(86362001)(38100700002)(54906003)(7416002)(44832011)(5660300002)(316002)(41300700001)(6916009)(8936002)(8676002)(66476007)(66946007)(66556008)(4326008)(478600001)(4744005)(2906002);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(346002)(136003)(366004)(396003)(376002)(451199021)(6486002)(6666004)(6506007)(186003)(6512007)(83380400001)(2616005)(36756003)(86362001)(38100700002)(54906003)(7416002)(44832011)(5660300002)(316002)(41300700001)(6916009)(8936002)(8676002)(66476007)(66946007)(66556008)(4326008)(45080400002)(478600001)(2906002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ETs0lZld86rwH/KkqMwb2+6qxnXUYUJGXHx7r8u7/PxRv8Bk2ZC/5JhPXKjF?=
- =?us-ascii?Q?9z45PAU3yRdT09dMGqZ0IQAK6ibGlmojTo1qNWCsJrgwqZVA+ENxiFMDP7HM?=
- =?us-ascii?Q?ZSQtJwsjwNCkUdv6J0ACWxIHOeEtrionCEkn2NTecHYiDPmgh+jm5gOptadl?=
- =?us-ascii?Q?t/sajPU1q0LYc63o2qbUQExNpLpyskiLdr02uQLhz+KLucDoJqzuWDYLeIEP?=
- =?us-ascii?Q?n/gOJP71HST2Dh0i2snKfdeipiiOJ/BG/2ixhwG2EHKg2j/2Sn1aW+RBzbo7?=
- =?us-ascii?Q?UlVaUfopEee0kqvdSAMpVMwfXr6LvPrXG4DZIiKKMYKPgMuL5akqtbvKzFWK?=
- =?us-ascii?Q?wCUvk0vknojzboPR1WJle6mjB6OK7DeWiHpxuaQMriDVoNmYFBl038ALJlkl?=
- =?us-ascii?Q?d/U5+ZwIfIxFkn8q079NwfnYjqGkIpZQ8AqPDp+hpQV5vqsD4QDbYtSWG0Vw?=
- =?us-ascii?Q?rgu5mr3hjajXAWSI7JCBIc5DTp8jIfnBkfwI5mXC1/y7JHstwLOwGDMQX5d8?=
- =?us-ascii?Q?0qIakzPzmPut80Ern01Kf2iJSLGtG26TWc0prKIrgsfYceCxibYcGvbPMykI?=
- =?us-ascii?Q?ziEF2NNLh+BgsKPT20uOgIL6C2y3CCyV2opjxSIQevYBhGHeSa8aEFqUD0rm?=
- =?us-ascii?Q?4rQYnKb4xCAH42PoI1f5yawdG1b0BmnHMZWLeasqx/fM3g8Pb2IQOrHatEPo?=
- =?us-ascii?Q?AEfyTN08ggJ5ptD3VsypiVRfkMNeAAuL9oxa3aVD4sUfapQ8RQn3U7Cp7ny2?=
- =?us-ascii?Q?DlcNBqEv4ayCXMvnWpbp34AG0xXwYRDSCZlwEwtj7vWlqmE+m0L3acEm4GpY?=
- =?us-ascii?Q?lbGa8UC/9a1Y4V96+9KuedJYL0GjQJwjIBzdrasOuPy99qY6fBsZ1dWyvahb?=
- =?us-ascii?Q?+S3jVARJb0W/paOppjWL/D8NpImmQeGryCo1VTtYxIM09ykQ4jsvxaMnch2W?=
- =?us-ascii?Q?Beimk/LISL2Afe6UAFpaD99SiAbNJCjByEpul/9R1y7M5XsmOhZqmYLlUkgF?=
- =?us-ascii?Q?Gnc80QrqQPVEE0zXrrgJ13PXH/2qgwQMpMGXYy8mmhCC7oFggN7DVpsNLdfD?=
- =?us-ascii?Q?HucDbQ9JKICWEMB4IkYvWUT5/YXCOTfU8nrQBwQW5hedKIXzWpoTAc+k1Bsi?=
- =?us-ascii?Q?fNNAdAOrCIIjmVslV41VNVcnTG8P7exuhcgc5ZCpo/FRmG1xhm5ju623jX+5?=
- =?us-ascii?Q?9fFYSWt+TiAECUSb8y+Se4bIitNJZ1xIYlM3nkqCF3hganITjdB7ubZvsQ0E?=
- =?us-ascii?Q?qMQn9JxB/uaDfoShf7y7OGGq7Wsbd1vaY5pcUsQuE1rZD/M2NTJNtOgqHaQ/?=
- =?us-ascii?Q?nD+fdPPp9VEyK3jxXsKKF4lds26qx8R+13486RkD/P1tnXzxmscYMAcMcStf?=
- =?us-ascii?Q?fz6FDCy8jjhH/fXb1OePhYeWO7L8GMGtGy+ZFctnaa56dVaSQiVygkqlZ38O?=
- =?us-ascii?Q?t5gpV+3oPUnIhVGI4NPobBmKUPyM7K0sPILIyMow0KyWTiDzSFvmCr8yeilh?=
- =?us-ascii?Q?eYLicqZOWfqphEh+7KPaNAtE+XAXGZFCcreBjbRw6D8qEyLOraxq/bwSR4Qx?=
- =?us-ascii?Q?+Jiak+mDcXaQ//z/x0Y6v62fCSNd4eZNfTQm0JMj3tDUpIeFUaoDmSh3qseA?=
- =?us-ascii?Q?dnwLvuka40z9yVo253A3gnK/iZVD/IGHdOmsTSn4hnIxOziaJgEPNYYK2KXq?=
- =?us-ascii?Q?W1/0gA=3D=3D?=
+	=?us-ascii?Q?XsExLFT5PFyyyALqOVaAQaccPzY32N7TGI2Wl1qPMMroJI/UfTK8RsfYttnZ?=
+ =?us-ascii?Q?VFj3iHl9SmNFkXsDajAtIRB1Yf4yyDCbwWSSOjcnuD4OUcB6iWE27hjqYV41?=
+ =?us-ascii?Q?tbPiAfpuJ+36RGX/5GUY22aWEpsb4YQFOV4nNIoaayj5cqRfeAOQf3410KxP?=
+ =?us-ascii?Q?VUF0AkFq1FOKDpMatX0Gh+iX+isj7Yel3a0iFWTQNN37StSJo072XXsLXLgw?=
+ =?us-ascii?Q?G5rWHLnM1IJdpmmIzQ+RAme9rD+yARmN1FFIvmvnmXwQAJzt5TUujJ4ZE2Ho?=
+ =?us-ascii?Q?Bh96xuWfZ4K6rOB74G0a0MNMe9g48I+JBqWvxJ3NCNnwDiHAIWIfUxhBRboV?=
+ =?us-ascii?Q?tl9FDRj3lDub1DW0wRPMxgckRKlzS/4tnQEokAAnWLBl9dRM3/IByg6SF2dh?=
+ =?us-ascii?Q?xBAwFu6SmrWCvKkxm6TvAji/rc3A7mNFBfcrNX3JBsM5lOGNBvY6WjQPnvG4?=
+ =?us-ascii?Q?eNWcUny7awZEJlIv9owTQkLmgrgVUhTF9Tl3bTip6k1BNVuwMYFvzBh7bYSW?=
+ =?us-ascii?Q?NmfqkJIrnCERKOkeJSnTvbfCFYw4p3mDUTK2w0vQwFX2vnJfZ+lUScOY0qoB?=
+ =?us-ascii?Q?M1ceXPg+JtrT0htnoA2gDyGaoWuwDQPwsftuOcRUFvpOCP5P8dsD+y+LPhh9?=
+ =?us-ascii?Q?P1wG9wiFlzcuDfNp/BijPht1ZFO56PgjRrDG5J/DOJOXaEP5KsxaoxzdQZ/R?=
+ =?us-ascii?Q?mkABXDTO/C5rctzcbX3qRRDxn5GA0aQX8f4ZWfjB3wmtwHTMp67Arapp7wD4?=
+ =?us-ascii?Q?N4FWAjlQ5daLlV2b5lw4GmulojUf52kl7ePv9uutavZ7XBQxvUjhRchde+sm?=
+ =?us-ascii?Q?+HsFXmpeEP+RLarCAcGXUzwRijiVZlK235empWoSFdi0o+KLuD9hzHw9BCsy?=
+ =?us-ascii?Q?IBXfanUUS14xZrGjDmpHk9AdPzTvUMAtLliN2eXBRzCTMfVPxXLBCYg1qMTx?=
+ =?us-ascii?Q?bMHJV32c4KyucxqNEWfO4NfE/DHDBC9tokA0wuvQDbjGtYY3NNkKr9qbcIaj?=
+ =?us-ascii?Q?TCYyV0BdoD/81w770OrR9YP9Fr+nwpeuLZfQC4w5n3/ns6zZBo0JKQJ1zu73?=
+ =?us-ascii?Q?nkP0KrEqGaG+Qh5szZcqI7G/n4843MUb32m8/+RNECrD/kKRqRYqQHf5RdEC?=
+ =?us-ascii?Q?56uH3nnqYYzMwWFL5s7h6pyk7ZYFOQvMDPSp7FEtbR6F8IABevELn0iUyO4m?=
+ =?us-ascii?Q?s9q7oQ+z66QNT/oJTqDemERGD64C8NyFs+cFYTvSGhxmailaBu24EY0rp0tg?=
+ =?us-ascii?Q?nRm0DEZrStYFAltsOtHI8B/nm7tqWgyznTT7xrYBcGzAcssunZt1+5T6JGXW?=
+ =?us-ascii?Q?AY1UfQ8C3HJ7h1WbTjBqj/fE17rVEuUF3+d71iaqpYr7eOm4uPx5PzY8MQXZ?=
+ =?us-ascii?Q?6I93jmEu0HBy0mJ6JeEEL9ecpAmk2oiLsoWVZl/aUaBrIzGY7jmVb5bukTyV?=
+ =?us-ascii?Q?2T1P0OdSaAct9Js/QyScQg/GC8v3vP2JwI+qWPGGu8Kxo7A/twHrgpNlmhYG?=
+ =?us-ascii?Q?t2yKkOvAjSDMMeZRJsjnCxeHDonEHkcLf4Ym9j8pgPqDHbpIxYh2IX6d1b1A?=
+ =?us-ascii?Q?0QzKa4QqOTIKGSCHHA6WwGxHzzekZfs9bCKtBLo5n22DeakNXswCt2y0cs/e?=
+ =?us-ascii?Q?+LmLeWhJUiYX5kV6DG8r7j5Af6ki6cNBM/RWwhNIygqPBRPVcX1Z/cyEOFlo?=
+ =?us-ascii?Q?RUtCbg=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66ea591d-47b7-4cb6-d57f-08db666d4de0
+X-MS-Exchange-CrossTenant-Network-Message-Id: a3ff17e2-1b5e-4459-880e-08db666d8419
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2023 09:06:24.8292
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2023 09:07:55.7817
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: x/Ku5t2Yr4MFRiA5sUmcSkk/klS2gsmUuaJzsGgD3NCZJtjvhIquXIe0+wo2a9AErRXw1Macl+vj+oh7VS2tnVh+i8VndiYg645hT/85yMY=
+X-MS-Exchange-CrossTenant-UserPrincipalName: j2xVedE8Eph00KbkqXlgpUJykebZG57FonMhGZcTSmOZFUWwU8t4TDvTcXe4k9zmOCPNf59PLpAk3q5q3LyE8kfg9AOLA23oJVxqX8mObaw=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5802
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 05, 2023 at 10:36:15AM +0300, Leon Romanovsky wrote:
+On Mon, Jun 05, 2023 at 11:09:49AM +0300, Leon Romanovsky wrote:
 > From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> Offloaded policies are deleted through two flows: netdev is going
-> down and policy flush.
+> XFRM core provides two callbacks to release resources, one is .xdo_dev_policy_delete()
+> and another is .xdo_dev_policy_free(). This separation allows delayed release so
+> "ip xfrm policy free" commands won't starve. Unfortunately, mlx5 command interface
+> can't run in .xdo_dev_policy_free() callbacks as the latter runs in ATOMIC context.
 > 
-> In both cases, the code lacks relevant call to delete offloaded policy.
+>  BUG: scheduling while atomic: swapper/7/0/0x00000100
+>  Modules linked in: act_mirred act_tunnel_key cls_flower sch_ingress vxlan mlx5_vdpa vringh vhost_iotlb vdpa rpcrdma rdma_ucm ib_iser libiscsi ib_umad scsi_transport_iscsi rdma_cm ib_ipoib iw_cm ib_cm mlx5_ib ib_uverbs ib_core xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat br_netfilter rpcsec_gss_krb5 auth_rpcgss oid_registry overlay mlx5_core zram zsmalloc fuse
+>  CPU: 7 PID: 0 Comm: swapper/7 Not tainted 6.3.0+ #1
+>  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+>  Call Trace:
+>   <IRQ>
+>   dump_stack_lvl+0x33/0x50
+>   __schedule_bug+0x4e/0x60
+>   __schedule+0x5d5/0x780
+>   ? __mod_timer+0x286/0x3d0
+>   schedule+0x50/0x90
+>   schedule_timeout+0x7c/0xf0
+>   ? __bpf_trace_tick_stop+0x10/0x10
+>   __wait_for_common+0x88/0x190
+>   ? usleep_range_state+0x90/0x90
+>   cmd_exec+0x42e/0xb40 [mlx5_core]
+>   mlx5_cmd_do+0x1e/0x40 [mlx5_core]
+>   mlx5_cmd_exec+0x18/0x30 [mlx5_core]
+>   mlx5_cmd_delete_fte+0xa8/0xd0 [mlx5_core]
+>   del_hw_fte+0x60/0x120 [mlx5_core]
+>   mlx5_del_flow_rules+0xec/0x270 [mlx5_core]
+>   ? default_send_IPI_single_phys+0x26/0x30
+>   mlx5e_accel_ipsec_fs_del_pol+0x1a/0x60 [mlx5_core]
+>   mlx5e_xfrm_free_policy+0x15/0x20 [mlx5_core]
+>   xfrm_policy_destroy+0x5a/0xb0
+>   xfrm4_dst_destroy+0x7b/0x100
+>   dst_destroy+0x37/0x120
+>   rcu_core+0x2d6/0x540
+>   __do_softirq+0xcd/0x273
+>   irq_exit_rcu+0x82/0xb0
+>   sysvec_apic_timer_interrupt+0x72/0x90
+>   </IRQ>
+>   <TASK>
+>   asm_sysvec_apic_timer_interrupt+0x16/0x20
+>  RIP: 0010:default_idle+0x13/0x20
+>  Code: c0 08 00 00 00 4d 29 c8 4c 01 c7 4c 29 c2 e9 72 ff ff ff cc cc cc cc 8b 05 7a 4d ee 00 85 c0 7e 07 0f 00 2d 2f 98 2e 00 fb f4 <fa> c3 66 66 2e 0f 1f 84 00 00 00 00 00 65 48 8b 04 25 40 b4 02 00
+>  RSP: 0018:ffff888100843ee0 EFLAGS: 00000242
+>  RAX: 0000000000000001 RBX: ffff888100812b00 RCX: 4000000000000000
+>  RDX: 0000000000000001 RSI: 0000000000000083 RDI: 000000000002d2ec
+>  RBP: 0000000000000007 R08: 00000021daeded59 R09: 0000000000000001
+>  R10: 0000000000000000 R11: 000000000000000f R12: 0000000000000000
+>  R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+>   default_idle_call+0x30/0xb0
+>   do_idle+0x1c1/0x1d0
+>   cpu_startup_entry+0x19/0x20
+>   start_secondary+0xfe/0x120
+>   secondary_startup_64_no_verify+0xf3/0xfb
+>   </TASK>
+>  bad: scheduling from the idle thread!
 > 
-> Fixes: 919e43fad516 ("xfrm: add an interface to offload policy")
+> Fixes: a5b8ca9471d3 ("net/mlx5e: Add XFRM policy offload logic")
 > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
