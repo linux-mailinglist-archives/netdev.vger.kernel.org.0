@@ -1,55 +1,55 @@
-Return-Path: <netdev+bounces-8306-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8305-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E776B7238DC
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:22:23 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id AA00D7238D7
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:21:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 59E391C20E15
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 07:22:20 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 65343281421
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 07:21:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6FC9E261D0;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 30838134D9;
 	Tue,  6 Jun 2023 07:20:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FEBC24132
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2446811CB7
 	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 07:20:33 +0000 (UTC)
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECBC10CB
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 00:20:15 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1388E40
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 00:20:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1686036015; x=1717572015;
+  t=1686036017; x=1717572017;
   h=from:date:subject:mime-version:content-transfer-encoding:
    message-id:references:in-reply-to:to:cc;
-  bh=/mGXLFJ93FJ8GUFL1KF9OktNd9g1tlzoZgFFvKACtu0=;
-  b=MPC03y9vcjQJ5cXxctHzTXM/Lfxi0OE8xg8zcT1HUhpmUrmU08OlJiGf
-   9COCm9isKAKgtqOlo4OexTlJzDLSvNV7rdvq3TADDkQIgxScHD0WSIAD8
-   2ZvjPJo6pfEt02qk3xhVYJv6iL2NwjCLqG+XCq/pvG9iftnz4pt4dgoAK
-   xZrOj97Q7pnTRGe3oLjwOyEOHLsRV+7rF9uMSoHC5ja+UdkPO5A/4mJfh
-   2UA96kKrIvitKJEYHv9EYRNtr43EIV0P1ARZYDBhhtAaV/9FJFFyZWKBp
-   tnYh4yZQygz+A6pqzxwJoP8sxrWCFYkfBxTQFrQZg+ZKYAZNR80flAZ6L
-   g==;
+  bh=/b0vlFBMmpaGtvdJcraK0mZPYL+hb/4YXfWKj4Xsn0g=;
+  b=jkR/aOdw4mwNVxAvzFKnGDSl6/2BBr6usj/126HxQgGxSwVM+enhOZUi
+   e03qRkO387P/SFeCL/ITk31IOjCBtWv8xJ/EYS8yk7KYpq6KJvR0TJ9OQ
+   1oawrBsFq8zU0UfHX7aW/LNhPPEiznwJy1VTpRpD7kvvFTgy9Ic8BWLbZ
+   oqoICnxD0BjnavOu7kI6ot69vqL/WnT6lnK29nogbD7WVrcP8F8qgfDnO
+   hauF6DEWZ2wW7PdKzX4KEqYg+evXj1roAOTEgOLrXB0jz70O+9kzOhy70
+   BLXX1jhkttrONTJnKFAYqXTSxw07MxkArw6bM+N+Ru09rpvUiyTcAIKlI
+   w==;
 X-IronPort-AV: E=Sophos;i="6.00,219,1681196400"; 
-   d="scan'208";a="228600036"
+   d="scan'208";a="216378703"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jun 2023 00:20:15 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jun 2023 00:20:17 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
  chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 6 Jun 2023 00:20:15 -0700
+ 15.1.2507.21; Tue, 6 Jun 2023 00:20:16 -0700
 Received: from [10.205.21.38] (10.10.115.15) by chn-vm-ex02.mchp-main.com
  (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Tue, 6 Jun 2023 00:20:13 -0700
+ Transport; Tue, 6 Jun 2023 00:20:15 -0700
 From: Daniel Machon <daniel.machon@microchip.com>
-Date: Tue, 6 Jun 2023 09:19:40 +0200
-Subject: [PATCH iproute2-next v3 05/12] dcb: app: modify
- dcb_app_print_filtered() for dcb-rewr reuse
+Date: Tue, 6 Jun 2023 09:19:41 +0200
+Subject: [PATCH iproute2-next v3 06/12] dcb: app: modify
+ dcb_app_table_remove_replaced() for dcb-rewr reuse
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -58,7 +58,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20230510-dcb-rewr-v3-5-60a766f72e61@microchip.com>
+Message-ID: <20230510-dcb-rewr-v3-6-60a766f72e61@microchip.com>
 References: <20230510-dcb-rewr-v3-0-60a766f72e61@microchip.com>
 In-Reply-To: <20230510-dcb-rewr-v3-0-60a766f72e61@microchip.com>
 To: <netdev@vger.kernel.org>
@@ -72,115 +72,66 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Where dcb-app requires protocol to be the printed key, dcb-rewr requires
-it to be the priority. Adapt existing dcb-app print functions for this.
+When doing a replace command, entries are checked against selector and
+protocol. Rewrite requires the check to be against selector and
+priority.
 
-dcb_app_print_filtered() has been modified, to take two callbacks; one
-for printing the entire string (pid and prio), and one for the pid type
-(dec, hex, dscp, pcp). This saves us for making one dedicated function
-for each pid type for both app and rewr.
-
-Also, printing the colon is now expected to be handled by the
-print_pid_prio() callback.
+Adapt the existing dcb_app_table_remove_replace function for this, by
+using callback functions for selector, pid and prio checks.
 
 Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
 ---
- dcb/dcb_app.c | 37 ++++++++++++++++++++++++++-----------
- 1 file changed, 26 insertions(+), 11 deletions(-)
+ dcb/dcb_app.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
 diff --git a/dcb/dcb_app.c b/dcb/dcb_app.c
-index a8f3424db9f7..aa248cc40bdf 100644
+index aa248cc40bdf..4b309016fb65 100644
 --- a/dcb/dcb_app.c
 +++ b/dcb/dcb_app.c
-@@ -434,7 +434,9 @@ static int dcb_app_print_pid_pcp(__u16 protocol)
- 
- static void dcb_app_print_filtered(const struct dcb_app_table *tab,
- 				   bool (*filter)(const struct dcb_app *),
--				   int (*print_key)(__u16 protocol),
-+				   void (*print_pid_prio)(int (*print_pid)(__u16),
-+							  const struct dcb_app *),
-+				   int (*print_pid)(__u16 protocol),
- 				   const char *json_name,
- 				   const char *fp_name)
- {
-@@ -453,8 +455,8 @@ static void dcb_app_print_filtered(const struct dcb_app_table *tab,
- 		}
- 
- 		open_json_array(PRINT_JSON, NULL);
--		print_key(app->protocol);
--		print_uint(PRINT_ANY, NULL, ":%u ", app->priority);
-+		print_pid_prio(print_pid, app);
-+		print_string(PRINT_ANY, NULL, "%s", " ");
- 		close_json_array(PRINT_JSON, NULL);
- 	}
- 
-@@ -464,9 +466,17 @@ static void dcb_app_print_filtered(const struct dcb_app_table *tab,
- 	}
+@@ -153,8 +153,16 @@ static void dcb_app_table_remove_existing(struct dcb_app_table *a,
+ 	a->n_apps = ja;
  }
  
-+static void dcb_app_print_pid_prio(int (*print_pid)(__u16 protocol),
-+				   const struct dcb_app *app)
++static bool dcb_app_pid_eq(const struct dcb_app *aa, const struct dcb_app *ab)
 +{
-+	print_pid(app->protocol);
-+	print_uint(PRINT_ANY, NULL, ":%u", app->priority);
++	return aa->selector == ab->selector &&
++	       aa->protocol == ab->protocol;
 +}
 +
- static void dcb_app_print_ethtype_prio(const struct dcb_app_table *tab)
+ static void dcb_app_table_remove_replaced(struct dcb_app_table *a,
+-					  const struct dcb_app_table *b)
++				   const struct dcb_app_table *b,
++				   bool (*key_eq)(const struct dcb_app *aa,
++						  const struct dcb_app *ab))
  {
--	dcb_app_print_filtered(tab, dcb_app_is_ethtype,  dcb_app_print_pid_hex,
-+	dcb_app_print_filtered(tab, dcb_app_is_ethtype,
-+			       dcb_app_print_pid_prio, dcb_app_print_pid_hex,
- 			       "ethtype_prio", "ethtype-prio");
- }
+ 	size_t ia, ja;
+ 	size_t ib;
+@@ -167,13 +175,13 @@ static void dcb_app_table_remove_replaced(struct dcb_app_table *a,
+ 		for (ib = 0; ib < b->n_apps; ib++) {
+ 			const struct dcb_app *ab = &b->apps[ib];
  
-@@ -474,8 +484,9 @@ static void dcb_app_print_pcp_prio(const struct dcb *dcb,
- 				   const struct dcb_app_table *tab)
- {
- 	dcb_app_print_filtered(tab, dcb_app_is_pcp,
--			       dcb->numeric ? dcb_app_print_pid_dec
--					    : dcb_app_print_pid_pcp,
-+			       dcb_app_print_pid_prio,
-+			       dcb->numeric ? dcb_app_print_pid_dec :
-+					      dcb_app_print_pid_pcp,
- 			       "pcp_prio", "pcp-prio");
- }
+-			if (aa->selector == ab->selector &&
+-			    aa->protocol == ab->protocol)
++			if (key_eq(aa, ab))
+ 				present = true;
+ 			else
+ 				continue;
  
-@@ -483,26 +494,30 @@ static void dcb_app_print_dscp_prio(const struct dcb *dcb,
- 				    const struct dcb_app_table *tab)
- {
- 	dcb_app_print_filtered(tab, dcb_app_is_dscp,
--			       dcb->numeric ? dcb_app_print_pid_dec
--					    : dcb_app_print_pid_dscp,
-+			       dcb_app_print_pid_prio,
-+			       dcb->numeric ? dcb_app_print_pid_dec :
-+					      dcb_app_print_pid_dscp,
- 			       "dscp_prio", "dscp-prio");
- }
+-			if (aa->priority == ab->priority) {
++			if (aa->protocol == ab->protocol &&
++			    aa->priority == ab->priority) {
+ 				found = true;
+ 				break;
+ 			}
+@@ -892,7 +900,7 @@ static int dcb_cmd_app_replace(struct dcb *dcb, const char *dev, int argc, char
+ 	}
  
- static void dcb_app_print_stream_port_prio(const struct dcb_app_table *tab)
- {
--	dcb_app_print_filtered(tab, dcb_app_is_stream_port, dcb_app_print_pid_dec,
-+	dcb_app_print_filtered(tab, dcb_app_is_stream_port,
-+			       dcb_app_print_pid_prio, dcb_app_print_pid_dec,
- 			       "stream_port_prio", "stream-port-prio");
- }
- 
- static void dcb_app_print_dgram_port_prio(const struct dcb_app_table *tab)
- {
--	dcb_app_print_filtered(tab, dcb_app_is_dgram_port, dcb_app_print_pid_dec,
-+	dcb_app_print_filtered(tab, dcb_app_is_dgram_port,
-+			       dcb_app_print_pid_prio, dcb_app_print_pid_dec,
- 			       "dgram_port_prio", "dgram-port-prio");
- }
- 
- static void dcb_app_print_port_prio(const struct dcb_app_table *tab)
- {
--	dcb_app_print_filtered(tab, dcb_app_is_port, dcb_app_print_pid_dec,
-+	dcb_app_print_filtered(tab, dcb_app_is_port,
-+			       dcb_app_print_pid_prio, dcb_app_print_pid_dec,
- 			       "port_prio", "port-prio");
- }
- 
+ 	/* Remove the obsolete entries. */
+-	dcb_app_table_remove_replaced(&orig, &tab);
++	dcb_app_table_remove_replaced(&orig, &tab, dcb_app_pid_eq);
+ 	ret = dcb_app_add_del(dcb, dev, DCB_CMD_IEEE_DEL, &orig, NULL);
+ 	if (ret != 0) {
+ 		fprintf(stderr, "Could not remove replaced APP entries\n");
 
 -- 
 2.34.1
