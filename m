@@ -1,487 +1,224 @@
-Return-Path: <netdev+bounces-8387-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8385-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 757BE723DE3
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:39:30 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E7AE6723DBD
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:35:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9F96A281624
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:39:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8CF3528157D
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:35:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D546E294E9;
-	Tue,  6 Jun 2023 09:39:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC6F3294E2;
+	Tue,  6 Jun 2023 09:35:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C29D829106
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:39:26 +0000 (UTC)
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895CD1733;
-	Tue,  6 Jun 2023 02:39:21 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-	by mx.sberdevices.ru (Postfix) with ESMTP id C33345FD1B;
-	Tue,  6 Jun 2023 12:39:18 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-	s=mail; t=1686044358;
-	bh=VsLRnna6tc/S+J2EUt6rD5Z2Q76GP290WHdkcRtMHVU=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Content-Type;
-	b=VwpBMG7cM9eD1ivCA/6Pys2s/QQ5okpKOxGuoP7RMZ2oQDNS2uaw5DLrv1sReyt2g
-	 Hl3CHyqL32Q16oIyERngK4hk9tfCXdM01nEx3y3PkB1Ub2zpGobrr3nXPuYVWbivgY
-	 mrmO9J9oJ+r1lGS768cfzeq3q6FG4OCVgVL+/h7ig8UcNOnAPL6lleASrLHaxKDizq
-	 sZDi4ZjLw8IzYC72InmSiJm/g2AZPUwloSrHYQhSXDwezccHWHDSPOVpJ3rMn7sbCj
-	 fL2YsNeTx2MeOwCwzO4I7+m9tsEw9udMcytQy9XPUVbdts6RYyCYesnmGutU/KHlPN
-	 FKTbYc3+Lk7sQ==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-	by mx.sberdevices.ru (Postfix) with ESMTP;
-	Tue,  6 Jun 2023 12:39:14 +0300 (MSK)
-Message-ID: <0bd40fd8-e666-e2a3-04da-501a0e7b97a9@sberdevices.ru>
-Date: Tue, 6 Jun 2023 12:34:22 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B384125AB
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:35:35 +0000 (UTC)
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on0721.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0e::721])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E3CD126
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 02:35:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OW9ztsE0/HErPR6BUIRTvncaceK5rwOVT74YPPe/mx6IwKTtlzIDtD3c9btBD2VAtX3pTQCc9JXuAh+u1FkWtHdb1pcVTBOT4XgCo+MMaq+DkjEnsJj60PWbRfRxWNgUkZPOj/PyojFPyLQ4CHww3JcEcVo7ADSi0hezy88X9OWYxhSIQ0KCs58tQZmXmQlVsiZBf702u2Oxoj+9ergMedXYdXe0YUdEpDVbE8rKNG4PE6EupNOOfsFrAx5vYLfOUjE2ZV64qD2mRv7W1xT0di0KHU613uSr+CQuH21HXnwMx8eE8IohWB/keJb5cAcT25MS1N6CtDpSc54Z6GYbTQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1Gl6GL28dVN+ExbdXXi1rU9ZPEX46q30BFQ7Pqo6DrE=;
+ b=oe6iLRZVPPmNg34vgjqdmHElE1SAGiU9/T3GQjpy+JgPyuT60GACpt6rYnJ7dSvHeTVpGRtBLM0DRaaT6kMO83yyD/8+ZLVSM7UUNRw3UqCaZ6rJs5H+rJHCqjsNdV5B6Cr57ktBtrkGWds8ZIbG9lJUwdi2EJocisPwVzQZMn8gkQteLZrc2Cm/jJGW8EapH0h4iwkHOf1DFNwa4lE/i4iexqUUpvAj2YW3Vc6g6jAe7s5gTYZ/zXCBTcBjmzjex0h+NcxHOCtGhH+DXk4n+2B5VX5VumgpEbIgFg23T/HjrhB7qbG9ww7QdqMoFAtYCynnBRgMJV4moNorqUpbSw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dektech.com.au; dmarc=pass action=none
+ header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1Gl6GL28dVN+ExbdXXi1rU9ZPEX46q30BFQ7Pqo6DrE=;
+ b=O0YjjPWqsTOTRiRKFTJEgHIJ9N02+zIQuJp/F77fTFSzmIrLYe2URXz5x9MvZf1sTB1Ay1kVCAC1PZ4Aal+LgQqGfxhxbX+7Gw67it8HpmmQWUbjuKyu0o8y/HnFOK1EMFwAA05xJYuBsTeqOoRWo4DwLAXcYrfsfWcdbE4pkFY=
+Received: from DB9PR05MB9078.eurprd05.prod.outlook.com (2603:10a6:10:36a::7)
+ by VE1PR05MB7488.eurprd05.prod.outlook.com (2603:10a6:800:1aa::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Tue, 6 Jun
+ 2023 09:35:27 +0000
+Received: from DB9PR05MB9078.eurprd05.prod.outlook.com
+ ([fe80::bb8:eab5:13e9:6d25]) by DB9PR05MB9078.eurprd05.prod.outlook.com
+ ([fe80::bb8:eab5:13e9:6d25%6]) with mapi id 15.20.6455.030; Tue, 6 Jun 2023
+ 09:35:27 +0000
+From: Tung Quang Nguyen <tung.q.nguyen@dektech.com.au>
+To: Xin Long <lucien.xin@gmail.com>, network dev <netdev@vger.kernel.org>,
+	"tipc-discussion@lists.sourceforge.net"
+	<tipc-discussion@lists.sourceforge.net>
+CC: "davem@davemloft.net" <davem@davemloft.net>, "kuba@kernel.org"
+	<kuba@kernel.org>, Eric Dumazet <edumazet@google.com>, Paolo Abeni
+	<pabeni@redhat.com>, Jon Maloy <jmaloy@redhat.com>
+Subject: RE: [PATCH net-next] tipc: replace open-code bearer rcu_dereference
+ access in bearer.c
+Thread-Topic: [PATCH net-next] tipc: replace open-code bearer rcu_dereference
+ access in bearer.c
+Thread-Index: AQHZl7u5E1FWjZeUk0qr3XUaqpEC5a99hLfA
+Date: Tue, 6 Jun 2023 09:35:27 +0000
+Message-ID:
+ <DB9PR05MB9078509738F92193703C464E8852A@DB9PR05MB9078.eurprd05.prod.outlook.com>
+References:
+ <1072588a8691f970bda950c7e2834d1f2983f58e.1685976044.git.lucien.xin@gmail.com>
+In-Reply-To:
+ <1072588a8691f970bda950c7e2834d1f2983f58e.1685976044.git.lucien.xin@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=dektech.com.au;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DB9PR05MB9078:EE_|VE1PR05MB7488:EE_
+x-ms-office365-filtering-correlation-id: 1604b385-334f-4794-d3ff-08db66715cb9
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ 4hxQJa8vVfNJQ5HvYUXH0hnGImljnyyPw9Ral4CWtb3e9aQudM4eeq6QzTXmbVZUumj/C+foo0yBxm3bHMHr4LHB/4di/kWhcvSdm7FhFtYnkPLQyi3ijXhGga2qkmrg+IgyjKhnS6ivUiR/ku4CDNPZik3rtEJYkGg3K3LjTUG16umcWQLhLXkwJ+mF9W/5eFCGuYoOVFMtVf0+WUE8ooSjYqRKm4sQsgVuNHPj8r1tvec5Isny9t3Z52qQHuFxbhNlaPhYNaHGUoDArFn/o8XdXZmlbQdXPLs/1EftavnQvpa9r3vtKSYDtnCZ+aNeOD3UgtjuXPqKQnOOLvX5+plQK7PBz1WGfYqusFISezCVarN43Og1kIMhkC6eION7ITBa2eqbSeWuzyI7MGXn8Og8JLL0Gs/ibmfB5CBQxvP+BCEsoAvvs3O/HdVehv6AtsFY9nUVPrxRUj4k4YSMCfB+oZp6wiRabcXPtSadnn2jQjDMn1RaYQekE8zdKN2dO4oPYFR4Om7kGxR8CYIxXtp61TNrx2Zl9APbBxmB28o9ax1kIU0a5KS9pTpyTZLfm/EGw6/BWrh9MrL5cw9yyH4OHSbDru+65r3Lx0Qcs3Qe3/6FLpF13acJmcc6K6O5
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR05MB9078.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(39840400004)(366004)(376002)(396003)(451199021)(8676002)(8936002)(7696005)(478600001)(110136005)(54906003)(55016003)(41300700001)(52536014)(6506007)(5660300002)(316002)(66446008)(26005)(4326008)(64756008)(66556008)(66476007)(71200400001)(76116006)(66946007)(9686003)(186003)(83380400001)(2906002)(122000001)(38100700002)(86362001)(33656002)(38070700005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?pvdIAGK59uxertXFx4D6iTvTHjm40TrMHqcLFvpUWHPONyG6auLZ+GGZ0vV+?=
+ =?us-ascii?Q?rat01SKy1b+6SlxfcA/JyHj/xkyVKSkyAK4zNPPfTkFJmBps1vpBT9V93bF1?=
+ =?us-ascii?Q?5fH/x6r9STd1kuRy+uQOkivlBVTo1R1Rel1bWKI2SOPcm5fFPhcnmTu1w95y?=
+ =?us-ascii?Q?DQ8rFQrQpgNm6Y0J02k3m8jw7XBpRjrjYHtA2JpfkW0Y3taiTQeNpEy8aJtw?=
+ =?us-ascii?Q?S27Y8rRWc13bmQm4olbmUAolMo9VUp4sJsRTtJiCm446Rzl66qDonMFbWV+y?=
+ =?us-ascii?Q?J1ZEK5JIHTYuf80Sc936154XIwYiBIwo5seRPbeGaParNR7WQ0Cc83n+/4QL?=
+ =?us-ascii?Q?KAagw5pWY7FSlQ8I+UsxGhCTxuYTxXgzZZvEbBUdp4ZVyexDCMrBlMux17R+?=
+ =?us-ascii?Q?e4e/L1pw+Mh+NGu6pb+iS+mYKjVfm5yRQwF7TplYFnZ6rHBy2yROocxry5S9?=
+ =?us-ascii?Q?fQAUexDJKz12sylqGBoGOwdS3GR0bosi3we1riXi52DFBYmaQaTb5lKhnYce?=
+ =?us-ascii?Q?VH6dIRjq6s/P2lkjwunbCh8SEqSEPqO7/RGDQnm4oQxbapLjNd6ODT+fCMrl?=
+ =?us-ascii?Q?SZlY693ZqfBFMwZ2p4ZMCJu5/bUW/8Omq7yJlLh7BvkUhYJcl5YTbcr2pjW6?=
+ =?us-ascii?Q?rmkucuiMCZhPxBd5sRiQe2VEEjd7QEonkuK72zmGxKIioI996vAG1QObBOf7?=
+ =?us-ascii?Q?LgA2PSZD73/CuCDF967E27jldklcompKcdxopgyHxn540DdXmjuU6KGD1/PV?=
+ =?us-ascii?Q?CRn6YihkW3MX2kQEI3O29Xh+kMwHyflKmF4dpIm7lsONK7xMOWrLf0vZWgi+?=
+ =?us-ascii?Q?GRyFhbB21+jtn5FtGTdL23PtMrBbZ0B5HA4XTKUmoqYKjhuLpuObEPoUPE/+?=
+ =?us-ascii?Q?T07MXSpXEsCCqUHundo24WJx4ZO3L3wUnpRdiY86M1W8+CRzoGvljLyWL/aZ?=
+ =?us-ascii?Q?LAj1edueSRZ0dhlANNq4G9zK+Aufj177Npcys7WJVkKfEtuEYv2I1+RZiaDF?=
+ =?us-ascii?Q?rPdr39QCR0G1RcrbAi7gExE8HRiVutFhr9ShH9BbkjeLPpt+F26NACb1l2ZK?=
+ =?us-ascii?Q?f5Nv7RD1YvRa5QfMocszj9qn7dUv+hXxL0Rvf53POj1oIcnL4iNhBt8dO4eU?=
+ =?us-ascii?Q?JilImiOumE69nnA/rlUWsWfucwrZpQDSra9gt9HGaa86VKkHggRftuRmeKGq?=
+ =?us-ascii?Q?W0Fh8/1tJy3brphwlDqnfNFKXSIqVlLV7s7SqQJo2ut7+0wap7/2+fBaFqio?=
+ =?us-ascii?Q?Zh9NVjfgnxb1EFPZR5nezJi8bhCs5DIDPTcUD9HEyJ02FF0PGG76qtIgV6ur?=
+ =?us-ascii?Q?1QyNHRT2kUgobZ5OgG+ppVhle+yt60LSvAmqN7RHPIdK1wB/a3f2Y8IJ+il8?=
+ =?us-ascii?Q?tPXZquPeVM0dgxl1cKOOd+mEsp5dGBM5Kg3BIkpx64DRrbolexethf16ETnL?=
+ =?us-ascii?Q?Emb7eTOXHAV2GGv/vq9NUDCTlFGTV1cIw6LP/Hd6d1Nbf4cjdoWF9h4co1J5?=
+ =?us-ascii?Q?DXX6ca6D500rOZO7/yatbo0AMtM37RWBMx8AlrS2oYIl2S0UGCGjQ8fFtrki?=
+ =?us-ascii?Q?e6Lsk165C5OZRe3Q15WFnikK1i4fKzvnhmSIw1bV?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH RFC net-next v3 8/8] tests: add vsock dgram tests
-Content-Language: en-US
-From: Arseniy Krasnov <avkrasnov@sberdevices.ru>
-To: Bobby Eshleman <bobby.eshleman@bytedance.com>, Jiang Wang
-	<jiang.wang@bytedance.com>
-CC: Stefan Hajnoczi <stefanha@redhat.com>, Stefano Garzarella
-	<sgarzare@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang
-	<jasowang@redhat.com>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, "K. Y. Srinivasan" <kys@microsoft.com>, Haiyang Zhang
-	<haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>, Dexuan Cui
-	<decui@microsoft.com>, Bryan Tan <bryantan@vmware.com>, Vishnu Dasa
-	<vdasa@vmware.com>, VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-	Krasnov Arseniy <oxffffaa@gmail.com>, <kvm@vger.kernel.org>,
-	<virtualization@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-hyperv@vger.kernel.org>
-References: <7dbec78e-ea44-4684-6d02-5d6d5051187e@sberdevices.ru>
-In-Reply-To: <7dbec78e-ea44-4684-6d02-5d6d5051187e@sberdevices.ru>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/06/06 07:40:00 #21442908
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+X-OriginatorOrg: dektech.com.au
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR05MB9078.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1604b385-334f-4794-d3ff-08db66715cb9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jun 2023 09:35:27.5759
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7+yJNzMszWxopgKOiGPlD/VBpqGVO4QZ1ZyZuZu9gg4jAcu8fS1RfNv7tT3CQA6owqFHSWV6d0qVzqmF4r1J/5HW5I1awCcaodqK05gdEWM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR05MB7488
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
+	T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Sorry, CC mailing lists
+>Subject: [PATCH net-next] tipc: replace open-code bearer rcu_dereference a=
+ccess in bearer.c
+>
+>Replace these open-code bearer rcu_dereference access with bearer_get(),
+>like other places in bearer.c. While at it, also use tipc_net() instead
+>of net_generic(net, tipc_net_id) to get "tn" in bearer.c.
+>
+>Signed-off-by: Xin Long <lucien.xin@gmail.com>
+>---
+Reviewed-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
 
-On 06.06.2023 12:29, Arseniy Krasnov wrote:
-> Hello Bobby and Jiang! Small remarks(sorry for this letter layout, I add multiple newline over comments):
-> 
-> diff --git a/tools/testing/vsock/util.c b/tools/testing/vsock/util.c
-> index 01b636d3039a..45e35da48b40 100644
-> --- a/tools/testing/vsock/util.c
-> +++ b/tools/testing/vsock/util.c
-> @@ -260,6 +260,57 @@ void send_byte(int fd, int expected_ret, int flags)
->  	}
->  }
->  
-> +/* Transmit one byte and check the return value.
-> + *
-> + * expected_ret:
-> + *  <0 Negative errno (for testing errors)
-> + *   0 End-of-file
-> + *   1 Success
-> + */
-> +void sendto_byte(int fd, const struct sockaddr *dest_addr, int len, int expected_ret,
-> +		 int flags)
-> +{
-> +	const uint8_t byte = 'A';
-> +	ssize_t nwritten;
-> +
-> +	timeout_begin(TIMEOUT);
-> +	do {
-> +		nwritten = sendto(fd, &byte, sizeof(byte), flags, dest_addr,
-> +				  len);
-> +		timeout_check("write");
-> +	} while (nwritten < 0 && errno == EINTR);
-> +	timeout_end();
-> +
-> +	if (expected_ret < 0) {
-> +		if (nwritten != -1) {
-> +			fprintf(stderr, "bogus sendto(2) return value %zd\n",
-> +				nwritten);
-> +			exit(EXIT_FAILURE);
-> +		}
-> +		if (errno != -expected_ret) {
-> +			perror("write");
-> +			exit(EXIT_FAILURE);
-> +		}
-> +		return;
-> +	}
-> +
-> +	if (nwritten < 0) {
-> +		perror("write");
-> +		exit(EXIT_FAILURE);
-> +	}
-> +	if (nwritten == 0) {
-> +		if (expected_ret == 0)
-> +			return;
-> +
-> +		fprintf(stderr, "unexpected EOF while sending byte\n");
-> +		exit(EXIT_FAILURE);
-> +	}
-> +	if (nwritten != sizeof(byte)) {
-> +		fprintf(stderr, "bogus sendto(2) return value %zd\n", nwritten);
-> +		exit(EXIT_FAILURE);
-> +
-> 	}
-> 
-> 
-> 
-> ^^^
-> May be short check that 'nwritten' != 'expected_ret' will be enough? Then print expected and
-> real value. Here and in 'recvfrom_byte()' below.
-> 
-> 
-> 
-> 
-> +}
-> +
->  /* Receive one byte and check the return value.
->   *
->   * expected_ret:
-> @@ -313,6 +364,60 @@ void recv_byte(int fd, int expected_ret, int flags)
->  	}
->  }
->  
-> +/* Receive one byte and check the return value.
-> + *
-> + * expected_ret:
-> + *  <0 Negative errno (for testing errors)
-> + *   0 End-of-file
-> + *   1 Success
-> + */
-> +void recvfrom_byte(int fd, struct sockaddr *src_addr, socklen_t *addrlen,
-> +		   int expected_ret, int flags)
-> +{
-> +	uint8_t byte;
-> +	ssize_t nread;
-> +
-> +	timeout_begin(TIMEOUT);
-> +	do {
-> +		nread = recvfrom(fd, &byte, sizeof(byte), flags, src_addr, addrlen);
-> +		timeout_check("read");
-> +	} while (nread < 0 && errno == EINTR);
-> +	timeout_end();
-> +
-> +	if (expected_ret < 0) {
-> +		if (nread != -1) {
-> +			fprintf(stderr, "bogus recvfrom(2) return value %zd\n",
-> +				nread);
-> +			exit(EXIT_FAILURE);
-> +		}
-> +		if (errno != -expected_ret) {
-> +			perror("read");
-> +			exit(EXIT_FAILURE);
-> +		}
-> +		return;
-> +	}
-> +
-> +	if (nread < 0) {
-> +		perror("read");
-> +		exit(EXIT_FAILURE);
-> +	}
-> +	if (nread == 0) {
-> +		if (expected_ret == 0)
-> +			return;
-> +
-> +		fprintf(stderr, "unexpected EOF while receiving byte\n");
-> +		exit(EXIT_FAILURE);
-> +	}
-> +	if (nread != sizeof(byte)) {
-> +		fprintf(stderr, "bogus recvfrom(2) return value %zd\n", nread);
-> +		exit(EXIT_FAILURE);
-> +	}
-> +	if (byte != 'A') {
-> +		fprintf(stderr, "unexpected byte read %c\n", byte);
-> +		exit(EXIT_FAILURE);
-> +	}
-> +}
-> +
->  /* Run test cases.  The program terminates if a failure occurs. */
->  void run_tests(const struct test_case *test_cases,
->  	       const struct test_opts *opts)
-> diff --git a/tools/testing/vsock/util.h b/tools/testing/vsock/util.h
-> index fb99208a95ea..6e5cd610bf05 100644
-> --- a/tools/testing/vsock/util.h
-> +++ b/tools/testing/vsock/util.h
-> @@ -43,7 +43,11 @@ int vsock_seqpacket_accept(unsigned int cid, unsigned int port,
->  			   struct sockaddr_vm *clientaddrp);
->  void vsock_wait_remote_close(int fd);
->  void send_byte(int fd, int expected_ret, int flags);
-> +void sendto_byte(int fd, const struct sockaddr *dest_addr, int len, int expected_ret,
-> +		 int flags);
->  void recv_byte(int fd, int expected_ret, int flags);
-> +void recvfrom_byte(int fd, struct sockaddr *src_addr, socklen_t *addrlen,
-> +		   int expected_ret, int flags);
->  void run_tests(const struct test_case *test_cases,
->  	       const struct test_opts *opts);
->  void list_tests(const struct test_case *test_cases);
-> diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
-> index ac1bd3ac1533..851c3d65178d 100644
-> --- a/tools/testing/vsock/vsock_test.c
-> +++ b/tools/testing/vsock/vsock_test.c
-> @@ -202,6 +202,113 @@ static void test_stream_server_close_server(const struct test_opts *opts)
->  	close(fd);
->  }
->  
-> +static void test_dgram_sendto_client(const struct test_opts *opts)
-> +{
-> +	union {
-> +		struct sockaddr sa;
-> +		struct sockaddr_vm svm;
-> +	} addr = {
-> +		.svm = {
-> +			.svm_family = AF_VSOCK,
-> +			.svm_port = 1234,
-> +			.svm_cid = opts->peer_cid,
-> +		},
-> +	};
-> +	int fd;
-> +
-> +	/* Wait for the server to be ready */
-> +	control_expectln("BIND");
-> +
-> +	fd = socket(AF_VSOCK, SOCK_DGRAM, 0);
-> +	if (fd < 0) {
-> +		perror("socket");
-> +		exit(EXIT_FAILURE);
-> +	}
-> +
-> +	sendto_byte(fd, &addr.sa, sizeof(addr.svm), 1, 0);
-> +
-> +	/* Notify the server that the client has finished */
-> +	control_writeln("DONE");
-> +
-> +	close(fd);
-> +}
-> +
-> +static void test_dgram_sendto_server(const struct test_opts *opts)
-> +{
-> +	union {
-> +		struct sockaddr sa;
-> +		struct sockaddr_vm svm;
-> +	} addr = {
-> +		.svm = {
-> +			.svm_family = AF_VSOCK,
-> +			.svm_port = 1234,
-> +			.svm_cid = VMADDR_CID_ANY,
-> +		},
-> +	};
-> +	int fd;
-> +	int len = sizeof(addr.sa);
-> +
-> +	fd = socket(AF_VSOCK, SOCK_DGRAM, 0);
-> 
-> 
-> 
-> ^^^
-> I think we can check 'socket()' return value;
-> 
-> 
-> 
-> 
-> +
-> +	if (bind(fd, &addr.sa, sizeof(addr.svm)) < 0) {
-> +		perror("bind");
-> +		exit(EXIT_FAILURE);
-> +	}
-> +
-> +	/* Notify the client that the server is ready */
-> +	control_writeln("BIND");
-> +
-> +	recvfrom_byte(fd, &addr.sa, &len, 1, 0);
-> +
-> +	/* Wait for the client to finish */
-> +	control_expectln("DONE");
-> +
-> +	close(fd);
-> +}
-> +
-> +static void test_dgram_connect_client(const struct test_opts *opts)
-> +{
-> +	union {
-> +		struct sockaddr sa;
-> +		struct sockaddr_vm svm;
-> +	} addr = {
-> +		.svm = {
-> +			.svm_family = AF_VSOCK,
-> +			.svm_port = 1234,
-> +			.svm_cid = opts->peer_cid,
-> +		},
-> +	};
-> +	int fd;
-> +	int ret;
-> +
-> +	/* Wait for the server to be ready */
-> +	control_expectln("BIND");
-> +
-> +	fd = socket(AF_VSOCK, SOCK_DGRAM, 0);
-> +	if (fd < 0) {
-> +		perror("bind");
-> +		exit(EXIT_FAILURE);
-> +	}
-> +
-> +	ret = connect(fd, &addr.sa, sizeof(addr.svm));
-> +	if (ret < 0) {
-> +		perror("connect");
-> +		exit(EXIT_FAILURE);
-> +	}
-> +
-> +	send_byte(fd, 1, 0);
-> +
-> +	/* Notify the server that the client has finished */
-> +	control_writeln("DONE");
-> +
-> +	close(fd);
-> +}
-> +
-> +static void test_dgram_connect_server(const struct test_opts *opts)
-> +{
-> +	test_dgram_sendto_server(opts);
-> +}
-> +
->  /* With the standard socket sizes, VMCI is able to support about 100
->   * concurrent stream connections.
->   */
-> @@ -255,6 +362,77 @@ static void test_stream_multiconn_server(const struct test_opts *opts)
->  		close(fds[i]);
->  }
->  
-> +static void test_dgram_multiconn_client(const struct test_opts *opts)
-> +{
-> +	int fds[MULTICONN_NFDS];
-> +	int i;
-> +	union {
-> +		struct sockaddr sa;
-> +		struct sockaddr_vm svm;
-> +	} addr = {
-> +		.svm = {
-> +			.svm_family = AF_VSOCK,
-> +			.svm_port = 1234,
-> +			.svm_cid = opts->peer_cid,
-> +		},
-> +	};
-> +
-> +	/* Wait for the server to be ready */
-> +	control_expectln("BIND");
-> +
-> +	for (i = 0; i < MULTICONN_NFDS; i++) {
-> +		fds[i] = socket(AF_VSOCK, SOCK_DGRAM, 0);
-> +		if (fds[i] < 0) {
-> +			perror("socket");
-> +			exit(EXIT_FAILURE);
-> +		}
-> +	}
-> +
-> +	for (i = 0; i < MULTICONN_NFDS; i++)
-> +		sendto_byte(fds[i], &addr.sa, sizeof(addr.svm), 1, 0);
-> +
-> +	/* Notify the server that the client has finished */
-> +	control_writeln("DONE");
-> +
-> +	for (i = 0; i < MULTICONN_NFDS; i++)
-> +		close(fds[i]);
-> +}
-> +
-> +static void test_dgram_multiconn_server(const struct test_opts *opts)
-> +{
-> +	union {
-> +		struct sockaddr sa;
-> +		struct sockaddr_vm svm;
-> +	} addr = {
-> +		.svm = {
-> +			.svm_family = AF_VSOCK,
-> +			.svm_port = 1234,
-> +			.svm_cid = VMADDR_CID_ANY,
-> +		},
-> +	};
-> +	int fd;
-> +	int len = sizeof(addr.sa);
-> +	int i;
-> +
-> +	fd = socket(AF_VSOCK, SOCK_DGRAM, 0);
-> 
-> 
-> 
-> ^^^
-> I think we can check 'socket()' return value;
-> 
-> 
-> 
-> +
-> +	if (bind(fd, &addr.sa, sizeof(addr.svm)) < 0) {
-> +		perror("bind");
-> +		exit(EXIT_FAILURE);
-> +	}
-> +
-> +	/* Notify the client that the server is ready */
-> +	control_writeln("BIND");
-> +
-> +	for (i = 0; i < MULTICONN_NFDS; i++)
-> +		recvfrom_byte(fd, &addr.sa, &len, 1, 0);
-> +
-> +	/* Wait for the client to finish */
-> +	control_expectln("DONE");
-> +
-> +	close(fd);
-> +}
-> +
->  static void test_stream_msg_peek_client(const struct test_opts *opts)
->  {
->  	int fd;
-> @@ -1128,6 +1306,21 @@ static struct test_case test_cases[] = {
->  		.run_client = test_stream_virtio_skb_merge_client,
->  		.run_server = test_stream_virtio_skb_merge_server,
->  	},
-> +	{
-> +		.name = "SOCK_DGRAM client close",
-> +		.run_client = test_dgram_sendto_client,
-> +		.run_server = test_dgram_sendto_server,
-> +	},
-> +	{
-> +		.name = "SOCK_DGRAM client connect",
-> +		.run_client = test_dgram_connect_client,
-> +		.run_server = test_dgram_connect_server,
-> +	},
-> +	{
-> +		.name = "SOCK_DGRAM multiple connections",
-> +		.run_client = test_dgram_multiconn_client,
-> +		.run_server = test_dgram_multiconn_server,
-> +	},
-> 
-> 
-> 
-> 
-> SOCK_DGRAM guarantees message bounds, I think it will be good to add such test like in SOCK_SEQPACKET tests.
-> 
-> Thanks, Arseniy
-> 
-> 
->  	{},
->  };
->  
-> 
+> net/tipc/bearer.c | 14 ++++++--------
+> 1 file changed, 6 insertions(+), 8 deletions(-)
+>
+>diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+>index 114140c49108..1d5d3677bdaf 100644
+>--- a/net/tipc/bearer.c
+>+++ b/net/tipc/bearer.c
+>@@ -176,7 +176,7 @@ static int bearer_name_validate(const char *name,
+>  */
+> struct tipc_bearer *tipc_bearer_find(struct net *net, const char *name)
+> {
+>-	struct tipc_net *tn =3D net_generic(net, tipc_net_id);
+>+	struct tipc_net *tn =3D tipc_net(net);
+> 	struct tipc_bearer *b;
+> 	u32 i;
+>
+>@@ -211,11 +211,10 @@ int tipc_bearer_get_name(struct net *net, char *name=
+, u32 bearer_id)
+>
+> void tipc_bearer_add_dest(struct net *net, u32 bearer_id, u32 dest)
+> {
+>-	struct tipc_net *tn =3D net_generic(net, tipc_net_id);
+> 	struct tipc_bearer *b;
+>
+> 	rcu_read_lock();
+>-	b =3D rcu_dereference(tn->bearer_list[bearer_id]);
+>+	b =3D bearer_get(net, bearer_id);
+> 	if (b)
+> 		tipc_disc_add_dest(b->disc);
+> 	rcu_read_unlock();
+>@@ -223,11 +222,10 @@ void tipc_bearer_add_dest(struct net *net, u32 beare=
+r_id, u32 dest)
+>
+> void tipc_bearer_remove_dest(struct net *net, u32 bearer_id, u32 dest)
+> {
+>-	struct tipc_net *tn =3D net_generic(net, tipc_net_id);
+> 	struct tipc_bearer *b;
+>
+> 	rcu_read_lock();
+>-	b =3D rcu_dereference(tn->bearer_list[bearer_id]);
+>+	b =3D bearer_get(net, bearer_id);
+> 	if (b)
+> 		tipc_disc_remove_dest(b->disc);
+> 	rcu_read_unlock();
+>@@ -534,7 +532,7 @@ int tipc_bearer_mtu(struct net *net, u32 bearer_id)
+> 	struct tipc_bearer *b;
+>
+> 	rcu_read_lock();
+>-	b =3D rcu_dereference(tipc_net(net)->bearer_list[bearer_id]);
+>+	b =3D bearer_get(net, bearer_id);
+> 	if (b)
+> 		mtu =3D b->mtu;
+> 	rcu_read_unlock();
+>@@ -745,7 +743,7 @@ void tipc_bearer_cleanup(void)
+>
+> void tipc_bearer_stop(struct net *net)
+> {
+>-	struct tipc_net *tn =3D net_generic(net, tipc_net_id);
+>+	struct tipc_net *tn =3D tipc_net(net);
+> 	struct tipc_bearer *b;
+> 	u32 i;
+>
+>@@ -881,7 +879,7 @@ int tipc_nl_bearer_dump(struct sk_buff *skb, struct ne=
+tlink_callback *cb)
+> 	struct tipc_bearer *bearer;
+> 	struct tipc_nl_msg msg;
+> 	struct net *net =3D sock_net(skb->sk);
+>-	struct tipc_net *tn =3D net_generic(net, tipc_net_id);
+>+	struct tipc_net *tn =3D tipc_net(net);
+>
+> 	if (i =3D=3D MAX_BEARERS)
+> 		return 0;
+>--
+>2.39.1
+
 
