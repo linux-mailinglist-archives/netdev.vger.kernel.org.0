@@ -1,55 +1,55 @@
-Return-Path: <netdev+bounces-8312-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8311-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 29E7C7238E8
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:24:07 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E982A7238E7
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:24:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 911E21C20E9E
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 07:24:03 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5C1EB1C20E84
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 07:23:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A9F41290E4;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F9CE290E1;
 	Tue,  6 Jun 2023 07:20:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EE05290E0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 960D228C24
 	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 07:20:37 +0000 (UTC)
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C588E53
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 00:20:27 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3944E6A
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 00:20:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1686036027; x=1717572027;
+  t=1686036028; x=1717572028;
   h=from:date:subject:mime-version:content-transfer-encoding:
    message-id:references:in-reply-to:to:cc;
-  bh=mtr0h9VSvF+WISdT9y1UHZ72141SUkMcfTrhzE1QMIg=;
-  b=wIDrUNjLzOW37TIyVi/PaHzmFAkEnsHQ01NZvomXOMlr5c071/nz0Spp
-   EPChjzToCIb1f6jNCHCfOaU0J0SXsGBOT8qHmYOaiokJhrqquglXHLtr+
-   sjIskx/EGb+ULUAs6MZgE+cJObh7zvIuvol6dVBVLHarqXQ3FYNO9Rqkq
-   WGqr02TGljMGrcm7uPq+1kK/3SDW+EcBQE1JwbuvGHQLFcuczRDyZIFs9
-   PX7y2gPhy/pAN5Zh/OV04YB/2Lv2TxoU14UnmIAvBUKqmBLAM3dUuEXZt
-   dfmQ3j43uK3T++JxksLSL+abuyXBQzQchbYuTT4Ou/S+Z5rz4Hlia+Kyq
+  bh=AGv4lPXHU5eJgtaaPAoaB4UPxBdJkz1z16tKjNX6mzI=;
+  b=oUUd7Qd426dF2JDzWVJL4pL8GA/Yiz5YnjEIQV/5BmUTF8fMkg7ETupU
+   2Dr0dkdGMm+cGg8V8NZkRmTpsrynlDOP9Yzuvn+vTTIoUyE35xffadM6P
+   p7iLmqZp2wDzFiJw/Ikxc2DSN1AoGZlBNktoRZ5tA1PNQf0qQi1Da1Vti
+   fBXyK9P7jifoXmDjScsTDrEoAaGwnXDGw+xLKIO4IG40az3MT+ZJ3FqJ2
+   b3jhmOQ8n9+XZwoirW8MhLcjo9PS5Y3rSld+JFQaEMFS7Efw8zGeq2M55
+   VCMH0bAbcK9n5+0z0372YDvyHheJx2YynPmTzo+vzIlaaU8vjVVhkpXeV
    g==;
 X-IronPort-AV: E=Sophos;i="6.00,219,1681196400"; 
-   d="scan'208";a="155720539"
+   d="scan'208";a="155720552"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jun 2023 00:20:26 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jun 2023 00:20:28 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 6 Jun 2023 00:20:25 -0700
+ 15.1.2507.21; Tue, 6 Jun 2023 00:20:27 -0700
 Received: from [10.205.21.38] (10.10.115.15) by chn-vm-ex02.mchp-main.com
  (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Tue, 6 Jun 2023 00:20:24 -0700
+ Transport; Tue, 6 Jun 2023 00:20:26 -0700
 From: Daniel Machon <daniel.machon@microchip.com>
-Date: Tue, 6 Jun 2023 09:19:46 +0200
-Subject: [PATCH iproute2-next v3 11/12] man: dcb: add additional references
- under 'SEE ALSO'
+Date: Tue, 6 Jun 2023 09:19:47 +0200
+Subject: [PATCH iproute2-next v3 12/12] man: dcb-app: clean up a few
+ mistakes
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -58,7 +58,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20230510-dcb-rewr-v3-11-60a766f72e61@microchip.com>
+Message-ID: <20230510-dcb-rewr-v3-12-60a766f72e61@microchip.com>
 References: <20230510-dcb-rewr-v3-0-60a766f72e61@microchip.com>
 In-Reply-To: <20230510-dcb-rewr-v3-0-60a766f72e61@microchip.com>
 To: <netdev@vger.kernel.org>
@@ -73,33 +73,61 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add dcb-apptrust and dcb-rewr to the 'SEE ALSO' section of the dcb
-manpage.
+While referencing the dcb-app manpage, I spotted a few mistakes. Lets
+fix them.
 
 Reviewed-by: Petr Machata <me@pmachata.org>
 Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
 ---
- man/man8/dcb.8 | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ man/man8/dcb-app.8 | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/man/man8/dcb.8 b/man/man8/dcb.8
-index 24944b73816b..a1d6505e93b4 100644
---- a/man/man8/dcb.8
-+++ b/man/man8/dcb.8
-@@ -140,10 +140,12 @@ Exit status is 0 if command was successful or a positive integer upon failure.
+diff --git a/man/man8/dcb-app.8 b/man/man8/dcb-app.8
+index ecb38591168e..be505a0be308 100644
+--- a/man/man8/dcb-app.8
++++ b/man/man8/dcb-app.8
+@@ -1,4 +1,4 @@
+-.TH DCB-ETS 8 "6 December 2020" "iproute2" "Linux"
++.TH DCB-APP 8 "6 December 2020" "iproute2" "Linux"
+ .SH NAME
+ dcb-app \- show / manipulate application priority table of
+ the DCB (Data Center Bridging) subsystem
+@@ -26,7 +26,7 @@ the DCB (Data Center Bridging) subsystem
+ .RB "[ " pcp-prio " ]"
  
- .SH SEE ALSO
- .BR dcb-app (8),
-+.BR dcb-apptrust (8),
- .BR dcb-buffer (8),
- .BR dcb-ets (8),
- .BR dcb-maxrate (8),
--.BR dcb-pfc (8)
-+.BR dcb-pfc (8),
-+.BR dcb-rewr (8)
+ .ti -8
+-.B dcb ets " { " add " | " del " | " replace " } " dev
++.B dcb app " { " add " | " del " | " replace " } " dev
+ .RI DEV
+ .RB "[ " default-prio " " \fIPRIO-LIST\fB " ]"
+ .RB "[ " ethtype-prio " " \fIET-MAP\fB " ]"
+@@ -106,7 +106,7 @@ individual APP 3-tuples through
+ .B add
+ and
+ .B del
+-commands. On the other other hand, the command
++commands. On the other hand, the command
+ .B replace
+ does what one would typically want in this situation--first adds the new
+ configuration, and then removes the obsolete one, so that only one
+@@ -184,7 +184,7 @@ for details. Keys are DSCP points, values are priorities assigned to
+ traffic with matching DSCP. DSCP points can be written either directly as
+ numeric values, or using symbolic names specified in
+ .B /etc/iproute2/rt_dsfield
+-(however note that that file specifies full 8-bit dsfield values, whereas
++(however note that the file specifies full 8-bit dsfield values, whereas
+ .B dcb app
+ will only use the higher six bits).
+ .B dcb app show
+@@ -230,7 +230,7 @@ priority 4:
+ .P
+ # dcb app replace dev eth0 dscp-prio 24:4
  .br
+-# dcb app show dev eth0 dscp-prio
++# dcb app -N show dev eth0 dscp-prio
+ .br
+ dscp-prio 0:0 24:4 48:6
  
- .SH REPORTING BUGS
 
 -- 
 2.34.1
