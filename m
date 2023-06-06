@@ -1,129 +1,79 @@
-Return-Path: <netdev+bounces-8436-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8437-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E8E5E7240CC
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 13:25:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 224F77240DE
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 13:30:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5728E1C20F43
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:25:50 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 828C21C20EBF
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:30:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 35E7115ADA;
-	Tue,  6 Jun 2023 11:25:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A60C815AE2;
+	Tue,  6 Jun 2023 11:30:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BAD2468F
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 11:25:50 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8326B1
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 04:25:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=0cFOXbqCS+yA/fAj3HipkNbFW2UqjGIVrc97LrAKoG0=; b=xkgqlpK7V1AFqem6pwW+Vvwe0b
-	btxvqF+MKU//qJVrYc2tuKyO7KdcbJRz3THdroNFrMyo1oGCFMg06RipXAlHuGrPgIP0+6QuCN6B0
-	03LfdkU23npMs85yZTWVkfV6zyGWKgEYd9zM57BUO/Vas2rJRO72fMpFa3j33WAhC47Mmtl5fXDqB
-	DiNEjfAgyUdCGYgP4T8S07GsEXrwETExXt68cCKu34+bkU5uvyv1ACYd94f6E5HXQnY/lZVGK/zGQ
-	r1Hb1YyYqdT5ebR06G2+yu0lepA0h20NvA5lDpel1UNc7zm9yuugnlLBsnuTuOk+2dg8Ay+Frh9Ka
-	1fBasrHw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35064)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q6Uoo-0005ZO-Sn; Tue, 06 Jun 2023 12:25:42 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q6Uon-00076U-5L; Tue, 06 Jun 2023 12:25:41 +0100
-Date: Tue, 6 Jun 2023 12:25:41 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Sean Anderson <sean.anderson@seco.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next 4/8] net: pcs: lynx: add lynx_pcs_create_fwnode()
-Message-ID: <ZH8Xtb4X7q8SkfES@shell.armlinux.org.uk>
-References: <ZHoOe9K/dZuW2pOe@shell.armlinux.org.uk>
- <E1q56y1-00Bsum-Hx@rmk-PC.armlinux.org.uk>
- <64b55156-81e2-44cf-224d-d362e10955e3@seco.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92B7714264
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 11:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 148F8C4339E;
+	Tue,  6 Jun 2023 11:30:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686051021;
+	bh=+GThaHVT+qaHI+cqd/x4rjJc6jDzm//8cY4CxzFrVMs=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=DjR57w2DwR9WcAARvuk9aItCNQDcNLUxYK+aG1inaYVmeTKhpdWXbDctklWE0dFVf
+	 SYf/8vyhYerC3Sk8+r9Wdpg6zqKlisF3K6UNHIiOLqrNw1ClhfY7Y4VZg1ZwagNwmw
+	 7Zk046y8tSxONzO9q8wvm4DhGyrUfDTwibU5YZ3hES/H3IRG+vCwkNFhzfd3L4swhd
+	 aMtl0H0ea55ghsRKFK/pAwCqPG61AEr/AIoaSC5rg6wGOMfO3TLdZ+gT2rrJ6vQ1KE
+	 h/QeEYsLGVbAlYy94v7+HpKsElJ4UHKGxPAGwGmvXOAmh1LcQ1nSaxDHyqZ70JJ+I0
+	 FWLRazqu/HEKA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E3B5FE29F3A;
+	Tue,  6 Jun 2023 11:30:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <64b55156-81e2-44cf-224d-d362e10955e3@seco.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v1 1/1] mac_pton: Clean up the header inclusions
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168605102092.13924.10367724282967389042.git-patchwork-notify@kernel.org>
+Date: Tue, 06 Jun 2023 11:30:20 +0000
+References: <20230604132858.6650-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20230604132858.6650-1-andriy.shevchenko@linux.intel.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, davem@davemloft.net,
+ edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
 
-On Fri, Jun 02, 2023 at 11:51:23AM -0400, Sean Anderson wrote:
-> On 6/2/23 11:45, Russell King (Oracle) wrote:
-> > Add a helper to create a lynx PCS from a fwnode handle.
-> > 
-> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> > ---
-> >  drivers/net/pcs/pcs-lynx.c | 29 +++++++++++++++++++++++++++++
-> >  include/linux/pcs-lynx.h   |  1 +
-> >  2 files changed, 30 insertions(+)
-> > 
-> > diff --git a/drivers/net/pcs/pcs-lynx.c b/drivers/net/pcs/pcs-lynx.c
-> > index a90f74172f49..b0907c67d469 100644
-> > --- a/drivers/net/pcs/pcs-lynx.c
-> > +++ b/drivers/net/pcs/pcs-lynx.c
-> > @@ -353,6 +353,35 @@ struct phylink_pcs *lynx_pcs_create_mdiodev(struct mii_bus *bus, int addr)
-> >  }
-> >  EXPORT_SYMBOL(lynx_pcs_create_mdiodev);
-> >  
-> > +struct phylink_pcs *lynx_pcs_create_fwnode(struct fwnode_handle *node)
-> > +{
-> > +	struct mdio_device *mdio;
-> > +	struct phylink_pcs *pcs;
+Hello:
+
+This patch was applied to netdev/net-next.git (main)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Sun,  4 Jun 2023 16:28:58 +0300 you wrote:
+> Since hex_to_bin() is provided by hex.h there is no need to require
+> kernel.h. Replace the latter by the former and add missing export.h.
 > 
-> I think you should put the available check here as well.
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  lib/net_utils.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-Sorry, I totally missed your comment.
+Here is the summary with links:
+  - [net-next,v1,1/1] mac_pton: Clean up the header inclusions
+    https://git.kernel.org/netdev/net-next/c/8d2b2281aea9
 
-Yes, that would also fix the refcount leak in memac_pcs_create(). I
-thought about that, but I decided against it because in dpaa2:
-
-        if (!fwnode_device_is_available(node)) {
-                netdev_err(mac->net_dev, "pcs-handle node not available\n");
-                fwnode_handle_put(node);
-                return -ENODEV;
-        }
-
-would become:
-
-        if (IS_ERR(pcs)) {
-                netdev_err(mac->net_dev,
-                           "lynx_pcs_create_fwnode() failed: %pe\n", pcs);
-
-If the device is not available, the error message changes from
-	pcs-handle node not available
-to
-	lynx_pcs_create_fwnode() failed: ENODEV
-
-which doesn't really say what the problem was. Is this something that
-the DPAA2 maintainers care about?
-
+You are awesome, thank you!
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
 
