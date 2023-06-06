@@ -1,125 +1,174 @@
-Return-Path: <netdev+bounces-8595-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8597-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 89B57724AFC
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 20:13:09 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9CBF8724B1C
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 20:21:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DF5DF1C20ADF
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 18:13:05 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 564FE2810B8
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 18:21:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B5C6922E37;
-	Tue,  6 Jun 2023 18:13:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 56E2522E41;
+	Tue,  6 Jun 2023 18:21:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB14C19915
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 18:13:06 +0000 (UTC)
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE681B5
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 11:13:05 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id d9443c01a7336-1b02fddb908so6918925ad.1
-        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 11:13:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686075185; x=1688667185;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=PvBd89GxTeguLjUzh8dEicRmm1f20khOqnMDSoGF/6k=;
-        b=ObNtymrL+2tK46WnFdBi2j0ugisfk/viGZ0M66Fe8fKDbDyKEt+BAydaW+s/DjXrTc
-         oEhViJ+DY23nTSwjdi2f/8c/gsPI+oU/Xl+3nOcUW+FKithiBmzBWdootNvx1vj5J5S0
-         m24AeZZ4NStelV0LAj0SMR4TvWG0AGfmtGJ8hg/t41vMp3Ses+pHGx13tr/+wIiH7NhJ
-         pm+I5Ad6zWIDhvdGR3slGq0WlfNmz45JxsScHYKwiSCuqJyu/Yj//CkpJsQTsoY8/GU8
-         GkbRO4qSMn4ZjGbMxQ7cwADM1kIaMZdSccLp3sG/ec8uVrX++/ruaFOzoNWiB7CYIJoi
-         r8uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686075185; x=1688667185;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=PvBd89GxTeguLjUzh8dEicRmm1f20khOqnMDSoGF/6k=;
-        b=ZUsjeeSWZUOx8D+1eCZUwSTRd1FNK45xOn3rmMUKd5McVWS9l77m8TIGCYUEOeDlE8
-         LWm0ivmARscwQXxKuHE5RQ4ipqwfAV+OJgjWf9IhlVUWdu6Ri7sQXDKbt6LXuXjqcPQQ
-         M/eIyyw2xcWBLGVtYxY4XzWe3Z3J2JLHgTLXQ6HTp5dDzX78+/7UhovrYoiDEyEdtF/L
-         xukerfVfS7W1dhb7RZJvQtk0KLVQYm9RIsckYA4y0Y5/5caaZCXeUB9A+LB2D3McZMg6
-         b3T5oj0WyTSZptRuELnXBiJ/5oEtyDTOUDLbiNG6R/wVzPjvdsI/NIAsXWBT4rkT18JJ
-         YsEg==
-X-Gm-Message-State: AC+VfDyeoWEN3s2WQ+kOxzWriL70YSnPZuOZAxHZJVZSLPWlGZtflEdY
-	SGe1PhZAR5jlvYvfW1IyTax/TpABpts=
-X-Google-Smtp-Source: ACHHUZ58aWqJw4BwMQ2biuyUCD97+cblLW54UJz+ensoOADaEbtQmP9cI8v+kuF1PNPXPmziz1KyGQ==
-X-Received: by 2002:a17:903:22cf:b0:1ae:3ff8:7fa7 with SMTP id y15-20020a17090322cf00b001ae3ff87fa7mr3202901plg.4.1686075184903;
-        Tue, 06 Jun 2023 11:13:04 -0700 (PDT)
-Received: from dmoe.c.googlers.com.com (25.11.145.34.bc.googleusercontent.com. [34.145.11.25])
-        by smtp.gmail.com with ESMTPSA id f3-20020a170902ce8300b001ac7af58b66sm8848805plg.224.2023.06.06.11.13.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jun 2023 11:13:04 -0700 (PDT)
-From: David Morley <morleyd.kernel@gmail.com>
-To: David Miller <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org,
-	David Morley <morleyd@google.com>,
-	Neal Cardwell <ncardwell@google.com>
-Subject: [PATCH net-next] tcp: fix formatting in sysctl_net_ipv4.c
-Date: Tue,  6 Jun 2023 18:12:33 +0000
-Message-ID: <20230606181233.373319-1-morleyd.kernel@gmail.com>
-X-Mailer: git-send-email 2.41.0.rc0.172.g3f132b7071-goog
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3956E19915
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 18:21:04 +0000 (UTC)
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F46139;
+	Tue,  6 Jun 2023 11:20:59 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+	by mx.sberdevices.ru (Postfix) with ESMTP id 716E05FD54;
+	Tue,  6 Jun 2023 21:20:57 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+	s=mail; t=1686075657;
+	bh=B5Qw5duyjB9cR794f+VlBhHzBAd7Vjp1cXPs9T2oIMA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	b=IgIzcHYhG1Tzv1L+X3M/QmEQyzGQ0gtieCwr3yaCyMTa8cu0OTxWxlQf1AhGAOnh9
+	 CmhW3+EcitR9CaB1EWqbOvBwlMRL/Vvrn124XlE2XNCKY5M2eRwF9IHnOMD+WAybZ7
+	 3QuGShSd4VD2+cQbHFjUmtzLfkOLUQS5WrD5vXMxrKNmJEsa6nBR69Fe5HmtSpnKlh
+	 mIn35Svw7CGxVVfYjpwp3s0FQPKcLiRnuVHBSx407V8eZOeb72e4HOCC2LjTnRk0CR
+	 2h6I/+bv0M5ngvUcW0VCVWJfqyKn2JgFBhJMuRJ1/v81tzkq3xGCGYzsy07V8XZLUU
+	 IH9TBKQFV9r0g==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+	by mx.sberdevices.ru (Postfix) with ESMTP;
+	Tue,  6 Jun 2023 21:20:52 +0300 (MSK)
+Message-ID: <33fae8f8-9dd3-d5ee-2081-dd7c6a61f744@sberdevices.ru>
+Date: Tue, 6 Jun 2023 21:15:55 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH RFC net-next v3 0/8] virtio/vsock: support datagrams
+To: Bobby Eshleman <bobbyeshleman@gmail.com>
+CC: Bobby Eshleman <bobby.eshleman@bytedance.com>, Stefan Hajnoczi
+	<stefanha@redhat.com>, Stefano Garzarella <sgarzare@redhat.com>, "Michael S.
+ Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, "David S.
+ Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub
+ Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, "K. Y.
+ Srinivasan" <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, Wei
+ Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, Bryan Tan
+	<bryantan@vmware.com>, <kvm@vger.kernel.org>,
+	<virtualization@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-hyperv@vger.kernel.org>, Jiang Wang
+	<jiang.wang@bytedance.com>
+References: <20230413-b4-vsock-dgram-v3-0-c2414413ef6a@bytedance.com>
+ <2830ac58-fd77-7e5f-5565-eb47dd027d81@sberdevices.ru>
+ <ZHe3v8PHcIdFk+R5@bullseye>
+Content-Language: en-US
+From: Arseniy Krasnov <avkrasnov@sberdevices.ru>
+In-Reply-To: <ZHe3v8PHcIdFk+R5@bullseye>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/06/06 14:43:00 #21444531
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: David Morley <morleyd@google.com>
 
-Fix incorrectly formatted tcp_syn_linear_timeouts sysctl in the
-ipv4_net_table.
 
-Fixes: ccce324dabfe ("tcp: make the first N SYN RTO backoffs linear")
-Signed-off-by: David Morley <morleyd@google.com>
-Signed-off-by: Neal Cardwell <ncardwell@google.com>
-Tested-by: David Morley <morleyd@google.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/sysctl_net_ipv4.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+On 01.06.2023 00:10, Bobby Eshleman wrote:
+> On Mon, Jun 05, 2023 at 11:42:06PM +0300, Arseniy Krasnov wrote:
+>> Hello Bobby!
+>>
+>> Thanks for this patchset, really interesting!
+>>
+>> I applied it on head:
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=d20dd0ea14072e8a90ff864b2c1603bd68920b4b
+>>
+>> And tried to run ./vsock_test (client in the guest, server in the host), I had the following crash:
+>>
+>> Control socket connected to 192.168.1.1:12345.                          
+>> 0 - SOCK_STREAM connection reset...                                     
+>> [    8.050215] BUG: kernel NULL pointer derefer                         
+>> [    8.050960] #PF: supervisor read access in kernel mode               
+>> [    8.050960] #PF: error_code(0x0000) - not-present page               
+>> [    8.050960] PGD 0 P4D 0                                              
+>> [    8.050960] Oops: 0000 [#1] PREEMPT SMP PTI                          
+>> [    8.050960] CPU: 0 PID: 109 Comm: vsock_test Not tainted 6.4.0-rc3-gd707c220a700
+>> [    8.050960] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14
+>> [    8.050960] RIP: 0010:static_key_count+0x0/0x20                      
+>> [    8.050960] Code: 04 4c 8b 46 08 49 29 c0 4c 01 c8 4c 89 47 08 89 0e 89 56 04 4f
+>> [    8.050960] RSP: 0018:ffffa9a1c021bdc0 EFLAGS: 00010202              
+>> [    8.050960] RAX: ffffffffac309880 RBX: ffffffffc02fc140 RCX: 0000000000000000
+>> [    8.050960] RDX: ffff9a5eff944600 RSI: 0000000000000000 RDI: 0000000000000000
+>> [    8.050960] RBP: ffff9a5ec2371900 R08: ffffa9a1c021bd30 R09: ffff9a5eff98e0c0
+>> [    8.050960] R10: 0000000000001000 R11: 0000000000000000 R12: ffffa9a1c021be80
+>> [    8.050960] R13: 0000000000000000 R14: 0000000000000002 R15: ffff9a5ec1cfca80
+>> [    8.050960] FS:  00007fa9bf88c5c0(0000) GS:ffff9a5efe400000(0000) knlGS:00000000
+>> [    8.050960] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033        
+>> [    8.050960] CR2: 0000000000000000 CR3: 00000000023e0000 CR4: 00000000000006f0
+>> [    8.050960] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>> [    8.050960] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>> [    8.050960] Call Trace:                                              
+>> [    8.050960]  <TASK>                                                  
+>> [    8.050960]  once_deferred+0xd/0x30                                  
+>> [    8.050960]  vsock_assign_transport+0xa2/0x1b0 [vsock]               
+>> [    8.050960]  vsock_connect+0xb4/0x3a0 [vsock]                        
+>> [    8.050960]  ? var_wake_function+0x60/0x60                           
+>> [    8.050960]  __sys_connect+0x9e/0xd0                                 
+>> [    8.050960]  ? _raw_spin_unlock_irq+0xe/0x30                         
+>> [    8.050960]  ? do_setitimer+0x128/0x1f0                              
+>> [    8.050960]  ? alarm_setitimer+0x4c/0x90                             
+>> [    8.050960]  ? fpregs_assert_state_consistent+0x1d/0x50              
+>> [    8.050960]  ? exit_to_user_mode_prepare+0x36/0x130                  
+>> [    8.050960]  __x64_sys_connect+0x11/0x20                             
+>> [    8.050960]  do_syscall_64+0x3b/0xc0                                 
+>> [    8.050960]  entry_SYSCALL_64_after_hwframe+0x4b/0xb5                
+>> [    8.050960] RIP: 0033:0x7fa9bf7c4d13                                 
+>> [    8.050960] Code: 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 48
+>> [    8.050960] RSP: 002b:00007ffdf2d96cc8 EFLAGS: 00000246 ORIG_RAX: 0000000000000a
+>> [    8.050960] RAX: ffffffffffffffda RBX: 0000560c305d0020 RCX: 00007fa9bf7c4d13
+>> [    8.050960] RDX: 0000000000000010 RSI: 00007ffdf2d96ce0 RDI: 0000000000000004
+>> [    8.050960] RBP: 0000000000000004 R08: 0000560c317dc018 R09: 0000000000000000
+>> [    8.050960] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+>> [    8.050960] R13: 0000560c305ccc2d R14: 00007ffdf2d96ce0 R15: 00007ffdf2d96d70
+>> [    8.050960]  </TASK>  
+>>
+>>
+>> I guess crash is somewhere near:
+>>
+>> old_info->transport->release(vsk); in vsock_assign_transport(). May be my config is wrong...
+>>
+>> Thanks, Arseniy
+> 
+> Thanks Arseniy!
+> 
+> I now see I broke the tests, but did't break the stream/dgram socket
+> utility I was using in development.
+> 
+> I'll track this down and include a fix in the next rev.
 
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 6ae3345a3bdf..ef26f9013a0f 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -1472,13 +1472,13 @@ static struct ctl_table ipv4_net_table[] = {
- 		.extra2         = &tcp_plb_max_cong_thresh,
- 	},
- 	{
--		.procname = "tcp_syn_linear_timeouts",
--		.data = &init_net.ipv4.sysctl_tcp_syn_linear_timeouts,
--		.maxlen = sizeof(u8),
--		.mode = 0644,
--		.proc_handler = proc_dou8vec_minmax,
--		.extra1 = SYSCTL_ZERO,
--		.extra2 = &tcp_syn_linear_timeouts_max,
-+		.procname	= "tcp_syn_linear_timeouts",
-+		.data		= &init_net.ipv4.sysctl_tcp_syn_linear_timeouts,
-+		.maxlen		= sizeof(u8),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dou8vec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= &tcp_syn_linear_timeouts_max,
- 	},
- 	{ }
- };
--- 
-2.41.0.rc0.172.g3f132b7071-goog
+Great! Thanks!
 
+Thanks, Arseniy
+
+> 
+> I should have warned this v3 is pretty under-tested. Being unsure if
+> some of the design choices would be accepted at all, I didn't want to
+> waste too much time until things were accepted at a high level.
+> 
+> Best,
+> Bobby
 
