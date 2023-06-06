@@ -1,346 +1,189 @@
-Return-Path: <netdev+bounces-8570-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8571-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8C9E87249A0
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 18:58:34 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9A9CB7249A9
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 18:59:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E37921C20994
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 16:58:30 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 09B151C20AD8
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 16:59:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D5CD1ED2E;
-	Tue,  6 Jun 2023 16:58:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8097D1ED33;
+	Tue,  6 Jun 2023 16:59:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E660174D4
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 16:58:31 +0000 (UTC)
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3961710EC
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:58:29 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-565bdae581eso76886347b3.2
-        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 09:58:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F6CE19915
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 16:59:12 +0000 (UTC)
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2758010EB
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:59:10 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id 46e09a7af769-6b162fa87d8so1208520a34.3
+        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 09:59:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google; t=1686070708; x=1688662708;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=viZNr+fM75fASOpTB1QO8Rbk4fMQnD+g2AGB+nsGbd4=;
-        b=iXJv2D0tXNPUilFSlNi9liEszWBzskTWy5YRRnRJbzOgrW4Gf0LiHyoCccVenBLENz
-         dfMYOKQ7jclLnIz+oeS7Uspgh/0eEu2UtaP8ACKC4dJ+WjrMWTUPbhEu3diZZSIZBkrk
-         eSZ3gKaKZr6B5Fst+ShHrwX3oprcE7AA28evA=
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1686070749; x=1688662749;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=yQmOWCPShTey+INULM70m4JM3+cpB6VfrKxNpQFvEmA=;
+        b=kT7VCg0Z9RQXkKBr50UPE0CyETCzvLg8blLKiRF0K5rGL6hsBuzstadznudTAfcfEu
+         jbJW1z3malS0cRFPe09UYXMAiOHJYKI1cSB4g470s1yP7fPAyvGCKI7uszTvaBYn9TXn
+         iEuPvUIYFR6CLEDzCSk7gx8GdQhJKcgjE/9qK5Zh0A9B8JauD6EmIUw45vkB9SPiuh9r
+         OKxVDBNXusHcXHfEhUq7lt/1v6LdhtmmPqSDXcJl8k7QF7kr86fqEacbFK/FRaTHbtAq
+         DHhNwX9NQ+YRwxndPhnl93Kqzw6Atb3Q1IHw4rNNp1C4ZbDWqhyc9cULTj38MDiCmn12
+         bpig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686070708; x=1688662708;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=viZNr+fM75fASOpTB1QO8Rbk4fMQnD+g2AGB+nsGbd4=;
-        b=MlcJCB65vHpOztYtBS+wRo+EYqnZD0SCjMlm+tFJcXkUZPirK1URoDdwb1Tp4YjfHY
-         5r5R/Ktke7XoyNH4Xe+UbFUCGptqxB0NZLLH2xkLtu7qfh8Bt9L2WXmDgmakz1m3TQKc
-         opdXoAVE7gNcUqwcXzVDTX8AOyu9Rar9QmvOR0UN7SYbCrOnQJKDpHXZqQDihV/BllR+
-         tBBZwfaXxHqwTyLa0dtdN4ySQm5/IClQL4JHX1X/YfPX4el4AMNalM1lk4nh1mwS3ul8
-         4YhxRnj63r0Swmnj59kUE4F5j85GL6m8nv8hLO3H8XVdvldIB01NYThwns81P2GJVvNT
-         SNGA==
-X-Gm-Message-State: AC+VfDyYuI8Dqm5fjfQOW6PKS3DxuLZtuD5nB1aeMYyilVPX0fLKptTf
-	0myrVsgSF9IHJi6W3QYvLLKOe/YGAocglwpNoXB+iw==
-X-Google-Smtp-Source: ACHHUZ4jFTs1zpLn5qJqzPIqO6Ph2R+zPZSLGbz4LZqNBglTGrPe18rw9uX6Wc18kLG8yBXIDkB9IQ==
-X-Received: by 2002:a81:6fd4:0:b0:559:deed:f363 with SMTP id k203-20020a816fd4000000b00559deedf363mr3218490ywc.2.1686070707979;
-        Tue, 06 Jun 2023 09:58:27 -0700 (PDT)
-Received: from mfreemon-cf-laptop.. ([169.197.147.212])
-        by smtp.gmail.com with ESMTPSA id a129-20020a0dd887000000b00545a08184edsm4174926ywe.125.2023.06.06.09.58.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jun 2023 09:58:27 -0700 (PDT)
-From: Mike Freemon <mfreemon@cloudflare.com>
-To: netdev@vger.kernel.org
-Cc: kernel-team@cloudflare.com,
-	edumazet@google.com,
-	mfreemon@cloudflare.com
-Subject: [PATCH v2] tcp: enforce receive buffer memory limits by allowing the tcp window to shrink
-Date: Tue,  6 Jun 2023 11:57:25 -0500
-Message-Id: <20230606165726.1749783-1-mfreemon@cloudflare.com>
-X-Mailer: git-send-email 2.40.0
+        d=1e100.net; s=20221208; t=1686070749; x=1688662749;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=yQmOWCPShTey+INULM70m4JM3+cpB6VfrKxNpQFvEmA=;
+        b=SaYLxiT/qt+RNkYkNHZ0fGwDNK5CeCHga0l0dEB/1Jaae19cEJeAbWTrBCbiy2oT1u
+         F3DlnVLdovu04bYM58OK8ObZ1tpZyPWJ8qKz7gnyVVt0xQJLafU2lXh4ux6Q2mBG3gwc
+         V1Uhnv58RNXisRakmQZUpFD/Sz7mApp77PvpAotG+ANCpiXuc27nOlPoFd/xlwc2JFro
+         dMpxGLfMp7owpylQEJkdRsqD/74lkmLfMmy0l4aricvpSPrnT4Cllf6zDv0uK1K3rR3E
+         7ZBf8yOvoS/iTDxWkO6WWKeEm1MgmRBuncaXKT+pGxE5cjf9Dlc4KbMEZca86z0tewsg
+         pRBw==
+X-Gm-Message-State: AC+VfDydGBVOAV2SScdjDQYLQtyW95ku9Apjn0RGovzwfdHqr+5zUfC7
+	vcMb6zSVuYRFTSBUNla1xyEgjA==
+X-Google-Smtp-Source: ACHHUZ6FYTab5Lg2xV9YOubMZ4IQx6jzQMIMMnLnA7DYUjuLkl4ZXIOW8Iy/UVTVaK1aEchHCl66CA==
+X-Received: by 2002:a9d:67c1:0:b0:6b2:9bdd:69e with SMTP id c1-20020a9d67c1000000b006b29bdd069emr897388otn.0.1686070749418;
+        Tue, 06 Jun 2023 09:59:09 -0700 (PDT)
+Received: from ?IPV6:2804:14d:5c5e:44fb:9148:dfc3:4a0d:3b4e? ([2804:14d:5c5e:44fb:9148:dfc3:4a0d:3b4e])
+        by smtp.gmail.com with ESMTPSA id r6-20020a9d7506000000b006af9d8af435sm4490187otk.50.2023.06.06.09.59.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Jun 2023 09:59:08 -0700 (PDT)
+Message-ID: <81cd0ecb-29a6-d748-8962-dc741a02e691@mojatatu.com>
+Date: Tue, 6 Jun 2023 13:59:04 -0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH] net/sched: Set the flushing flags to false to prevent an
+ infinite loop
+Content-Language: en-US
+To: renmingshuai <renmingshuai@huawei.com>, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+ jiri@resnulli.us, davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com
+Cc: liaichun@huawei.com, caowangbao@huawei.com, yanan@huawei.com,
+ liubo335@huawei.com
+References: <20230606144511.1520657-1-renmingshuai@huawei.com>
+From: Pedro Tammela <pctammela@mojatatu.com>
+In-Reply-To: <20230606144511.1520657-1-renmingshuai@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: "mfreemon@cloudflare.com" <mfreemon@cloudflare.com>
+On 06/06/2023 11:45, renmingshuai wrote:
+> When a new chain is added by using tc, one soft lockup alarm will be
+>   generated after delete the prio 0 filter of the chain. To reproduce
+>   the problem, perform the following steps:
+> (1) tc qdisc add dev eth0 root handle 1: htb default 1
+> (2) tc chain add dev eth0
+> (3) tc filter del dev eth0 chain 0 parent 1: prio 0
+> (4) tc filter add dev eth0 chain 0 parent 1:
 
-Under certain circumstances, the tcp receive buffer memory limit
-set by autotuning is ignored, and the receive buffer can grow
-unrestrained until it reaches tcp_rmem[2].
+This seems like it could be added to tdc or 3 and 4 must be run in parallel?
 
-To reproduce:  Connect a TCP session with the receiver doing
-nothing and the sender sending small packets (an infinite loop
-of socket send() with 4 bytes of payload with a sleep of 1 ms
-in between each send()).  This will fill the tcp receive buffer
-all the way to tcp_rmem[2], ignoring the autotuning limit
-(sk_rcvbuf).
-
-As a result, a host can have individual tcp sessions with receive
-buffers of size tcp_rmem[2], and the host itself can reach tcp_mem
-limits, causing the host to go into tcp memory pressure mode.
-
-The fundamental issue is the relationship between the granularity
-of the window scaling factor and the number of byte ACKed back
-to the sender.  This problem has previously been identified in
-RFC 7323, appendix F [1].
-
-The Linux kernel currently adheres to never shrinking the window.
-
-In addition to the overallocation of memory mentioned above, this
-is also functionally incorrect, because once tcp_rmem[2] is
-reached, the receiver will drop in-window packets resulting in
-retransmissions and an eventual timeout of the tcp session.  A
-receive buffer full condition should instead result in a zero
-window and an indefinite wait.
-
-In practice, this problem is largely hidden for most flows.  It
-is not applicable to mice flows.  Elephant flows can send data
-fast enough to "overrun" the sk_rcvbuf limit (in a single ACK),
-triggering a zero window.
-
-But this problem does show up for other types of flows.  A good
-example are websockets and other type of flows that send small
-amounts of data spaced apart slightly in time.  In these cases,
-we directly encounter the problem described in [1].
-
-RFC 7323, section 2.4 [2], says there are instances when a retracted
-window can be offered, and that TCP implementations MUST ensure
-that they handle a shrinking window, as specified in RFC 1122,
-section 4.2.2.16 [3].  All prior RFCs on the topic of tcp window
-management have made clear that sender must accept a shrunk window
-from the receiver, including RFC 793 [4] and RFC 1323 [5].
-
-This patch implements the functionality to shrink the tcp window
-when necessary to keep the right edge within the memory limit by
-autotuning (sk_rcvbuf).  This new functionality is enabled with
-the following sysctl:
-
-sysctl: net.ipv4.tcp_shrink_window
-
-This sysctl changes how the TCP window is calculated.
-
-If sysctl tcp_shrink_window is zero (the default value), then the
-window is never shrunk.
-
-If sysctl tcp_shrink_window is non-zero, then the memory limit
-set by autotuning is honored.  This requires that the TCP window
-be shrunk ("retracted") as described in RFC 1122.
-
-[1] https://www.rfc-editor.org/rfc/rfc7323#appendix-F
-[2] https://www.rfc-editor.org/rfc/rfc7323#section-2.4
-[3] https://www.rfc-editor.org/rfc/rfc1122#page-91
-[4] https://www.rfc-editor.org/rfc/rfc793
-[5] https://www.rfc-editor.org/rfc/rfc1323
-
-Signed-off-by: Mike Freemon <mfreemon@cloudflare.com>
----
- Documentation/networking/ip-sysctl.rst | 14 ++++++
- include/net/netns/ipv4.h               |  1 +
- net/ipv4/sysctl_net_ipv4.c             |  9 ++++
- net/ipv4/tcp_ipv4.c                    |  2 +
- net/ipv4/tcp_output.c                  | 59 +++++++++++++++++++-------
- 5 files changed, 70 insertions(+), 15 deletions(-)
-
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 3f6d3d5f56..96cd82b3c9 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -981,6 +981,20 @@ tcp_tw_reuse - INTEGER
- tcp_window_scaling - BOOLEAN
- 	Enable window scaling as defined in RFC1323.
- 
-+tcp_shrink_window - BOOLEAN
-+	This changes how the TCP receive window is calculated when window
-+	scaling is in effect.
-+
-+	RFC 7323, section 2.4, says there are instances when a retracted
-+	window can be offered, and that TCP implementations MUST ensure
-+	that they handle a shrinking window, as specified in RFC 1122.
-+
-+	- 0 - Disabled.	The window is never shrunk.
-+	- 1 - Enabled.	The window is shrunk when necessary to remain within
-+			the memory limit set by autotuning (sk_rcvbuf).
-+
-+	Default: 0
-+
- tcp_wmem - vector of 3 INTEGERs: min, default, max
- 	min: Amount of memory reserved for send buffers for TCP sockets.
- 	Each TCP socket has rights to use it due to fact of its birth.
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index a4efb7a279..f003747181 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -65,6 +65,7 @@ struct netns_ipv4 {
- #endif
- 	bool			fib_has_custom_local_routes;
- 	bool			fib_offload_disabled;
-+	u8			sysctl_tcp_shrink_window;
- #ifdef CONFIG_IP_ROUTE_CLASSID
- 	atomic_t		fib_num_tclassid_users;
- #endif
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 6ae3345a3b..c1fe66b32e 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -1480,6 +1480,15 @@ static struct ctl_table ipv4_net_table[] = {
- 		.extra1 = SYSCTL_ZERO,
- 		.extra2 = &tcp_syn_linear_timeouts_max,
- 	},
-+	{
-+		.procname	= "tcp_shrink_window",
-+		.data		= &init_net.ipv4.sysctl_tcp_shrink_window,
-+		.maxlen		= sizeof(u8),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dou8vec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE,
-+	},
- 	{ }
- };
- 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 53e9ce2f05..637f112296 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -3280,6 +3280,8 @@ static int __net_init tcp_sk_init(struct net *net)
- 		net->ipv4.tcp_congestion_control = &tcp_reno;
- 
- 	net->ipv4.sysctl_tcp_syn_linear_timeouts = 4;
-+	net->ipv4.sysctl_tcp_shrink_window = 0;
-+
- 	return 0;
- }
- 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index cfe128b81a..6bdd597160 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -260,8 +260,8 @@ static u16 tcp_select_window(struct sock *sk)
- 	u32 old_win = tp->rcv_wnd;
- 	u32 cur_win = tcp_receive_window(tp);
- 	u32 new_win = __tcp_select_window(sk);
-+	struct net *net = sock_net(sk);
- 
--	/* Never shrink the offered window */
- 	if (new_win < cur_win) {
- 		/* Danger Will Robinson!
- 		 * Don't update rcv_wup/rcv_wnd here or else
-@@ -270,11 +270,15 @@ static u16 tcp_select_window(struct sock *sk)
- 		 *
- 		 * Relax Will Robinson.
- 		 */
--		if (new_win == 0)
--			NET_INC_STATS(sock_net(sk),
--				      LINUX_MIB_TCPWANTZEROWINDOWADV);
--		new_win = ALIGN(cur_win, 1 << tp->rx_opt.rcv_wscale);
-+		if (!net->ipv4.sysctl_tcp_shrink_window) {
-+			/* Never shrink the offered window */
-+			if (new_win == 0)
-+				NET_INC_STATS(sock_net(sk),
-+					      LINUX_MIB_TCPWANTZEROWINDOWADV);
-+			new_win = ALIGN(cur_win, 1 << tp->rx_opt.rcv_wscale);
-+		}
- 	}
-+
- 	tp->rcv_wnd = new_win;
- 	tp->rcv_wup = tp->rcv_nxt;
- 
-@@ -2947,6 +2951,7 @@ u32 __tcp_select_window(struct sock *sk)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
-+	struct net *net = sock_net(sk);
- 	/* MSS for the peer's data.  Previous versions used mss_clamp
- 	 * here.  I don't know if the value based on our guesses
- 	 * of peer's MSS is better for the performance.  It's more correct
-@@ -2968,16 +2973,24 @@ u32 __tcp_select_window(struct sock *sk)
- 		if (mss <= 0)
- 			return 0;
- 	}
-+
-+	if (net->ipv4.sysctl_tcp_shrink_window) {
-+		/* new window should always be an exact multiple of scaling factor */
-+		free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
-+	}
-+
- 	if (free_space < (full_space >> 1)) {
- 		icsk->icsk_ack.quick = 0;
- 
- 		if (tcp_under_memory_pressure(sk))
- 			tcp_adjust_rcv_ssthresh(sk);
- 
--		/* free_space might become our new window, make sure we don't
--		 * increase it due to wscale.
--		 */
--		free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
-+		if (!net->ipv4.sysctl_tcp_shrink_window) {
-+			/* free_space might become our new window, make sure we don't
-+			 * increase it due to wscale.
-+			 */
-+			free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
-+		}
- 
- 		/* if free space is less than mss estimate, or is below 1/16th
- 		 * of the maximum allowed, try to move to zero-window, else
-@@ -2988,10 +3001,24 @@ u32 __tcp_select_window(struct sock *sk)
- 		 */
- 		if (free_space < (allowed_space >> 4) || free_space < mss)
- 			return 0;
-+
-+		if (net->ipv4.sysctl_tcp_shrink_window && free_space < (1 << tp->rx_opt.rcv_wscale))
-+			return 0;
- 	}
- 
--	if (free_space > tp->rcv_ssthresh)
-+	if (free_space > tp->rcv_ssthresh) {
- 		free_space = tp->rcv_ssthresh;
-+		if (net->ipv4.sysctl_tcp_shrink_window) {
-+			/* new window should always be an exact multiple of scaling factor
-+			 *
-+			 * For this case, we ALIGN "up" (increase free_space) because
-+			 * we know free_space is not zero here, it has been reduced from
-+			 * the memory-based limit, and rcv_ssthresh is not a hard limit
-+			 * (unlike sk_rcvbuf).
-+			 */
-+			free_space = ALIGN(free_space, (1 << tp->rx_opt.rcv_wscale));
-+		}
-+	}
- 
- 	/* Don't do rounding if we are using window scaling, since the
- 	 * scaled window will not line up with the MSS boundary anyway.
-@@ -2999,11 +3026,13 @@ u32 __tcp_select_window(struct sock *sk)
- 	if (tp->rx_opt.rcv_wscale) {
- 		window = free_space;
- 
--		/* Advertise enough space so that it won't get scaled away.
--		 * Import case: prevent zero window announcement if
--		 * 1<<rcv_wscale > mss.
--		 */
--		window = ALIGN(window, (1 << tp->rx_opt.rcv_wscale));
-+		if (!net->ipv4.sysctl_tcp_shrink_window) {
-+			/* Advertise enough space so that it won't get scaled away.
-+			 * Import case: prevent zero window announcement if
-+			 * 1<<rcv_wscale > mss.
-+			 */
-+			window = ALIGN(window, (1 << tp->rx_opt.rcv_wscale));
-+		}
- 	} else {
- 		window = tp->rcv_wnd;
- 		/* Get the largest window that is a nice multiple of mss.
--- 
-2.40.0
+> 
+> 
+> The refcnt of the chain added by step 2 is equal to 1. After step 3,
+>   the flushing flag of the chain is set to true in the tcf_chain_flush()
+>   called by tc_del_tfilter() because the prio is 0. In this case, if
+>   we add a new filter to this chain, it will never succeed and try again
+>   and again because the refresh flash is always true and refcnt is 1.
+>   A soft lock alarm is generated 20 seconds later.
+> The stack is show as below:
+> 
+> Kernel panic - not syncing: softlockup: hung tasks
+> CPU: 2 PID: 3321861 Comm: tc Kdump: loaded Tainted: G
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+> Call Trace:
+>   <IRQ>
+>   dump_stack+0x57/0x6e
+>   panic+0x196/0x3ec
+>   watchdog_timer_fn.cold+0x16/0x5c
+>   __run_hrtimer+0x5e/0x190
+>   __hrtimer_run_queues+0x8a/0xe0
+>   hrtimer_interrupt+0x110/0x2c0
+>   ? irqtime_account_irq+0x49/0xf0
+>   __sysvec_apic_timer_interrupt+0x5f/0xe0
+>   asm_call_irq_on_stack+0x12/0x20
+>   </IRQ>
+>   sysvec_apic_timer_interrupt+0x72/0x80
+>   asm_sysvec_apic_timer_interrupt+0x12/0x20
+> RIP: 0010:mutex_lock+0x24/0x70
+> RSP: 0018:ffffa836004ab9a8 EFLAGS: 00000246
+> RAX: 0000000000000000 RBX: ffff95bb02d76700 RCX: 0000000000000000
+> RDX: ffff95bb27462100 RSI: 0000000000000000 RDI: ffff95ba5b527000
+> RBP: ffff95ba5b527000 R08: 0000000000000001 R09: ffffa836004abbb8
+> R10: 000000000000000f R11: 0000000000000000 R12: 0000000000000000
+> R13: ffff95ba5b527000 R14: ffffa836004abbb8 R15: 0000000000000001
+>   __tcf_chain_put+0x27/0x200
+>   tc_new_tfilter+0x5e8/0x810
+>   ? tc_setup_cb_add+0x210/0x210
+>   rtnetlink_rcv_msg+0x2e3/0x380
+>   ? rtnl_calcit.isra.0+0x120/0x120
+>   netlink_rcv_skb+0x50/0x100
+>   netlink_unicast+0x12d/0x1d0
+>   netlink_sendmsg+0x286/0x490
+>   sock_sendmsg+0x62/0x70
+>   ____sys_sendmsg+0x24c/0x2c0
+>   ? import_iovec+0x17/0x20
+>   ? sendmsg_copy_msghdr+0x80/0xa0
+>   ___sys_sendmsg+0x75/0xc0
+>   ? do_fault_around+0x118/0x160
+>   ? do_read_fault+0x68/0xf0
+>   ? __handle_mm_fault+0x3f9/0x6f0
+>   __sys_sendmsg+0x59/0xa0
+>   do_syscall_64+0x33/0x40
+>   entry_SYSCALL_64_after_hwframe+0x61/0xc6
+> RIP: 0033:0x7f96705b8247
+> RSP: 002b:00007ffe552e9dc8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f96705b8247
+> RDX: 0000000000000000 RSI: 00007ffe552e9e40 RDI: 0000000000000003
+> RBP: 0000000000000001 R08: 0000000000000001 R09: 0000558113f678b0
+> R10: 00007f967069ab00 R11: 0000000000000246 R12: 00000000647ea089
+> R13: 00007ffe552e9f30 R14: 0000000000000001 R15: 0000558113175f00
+> 
+> To avoid this case, set chain->flushing to be false if the chain->refcnt
+>   is 1 after flushing the chain when prio is 0.
+> 
+> Fixes: 726d061286ce ("net: sched: prevent insertion of new classifiers during chain flush")
+> Signed-off-by: Ren Mingshuai <renmingshuai@huawei.com>
+> ---
+>   net/sched/cls_api.c | 7 +++++++
+>   1 file changed, 7 insertions(+)
+> 
+> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+> index 2621550bfddc..68be55d75831 100644
+> --- a/net/sched/cls_api.c
+> +++ b/net/sched/cls_api.c
+> @@ -2442,6 +2442,13 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+>   		tfilter_notify_chain(net, skb, block, q, parent, n,
+>   				     chain, RTM_DELTFILTER, extack);
+>   		tcf_chain_flush(chain, rtnl_held);
+> +		/* Set the flushing flags to false to prevent an infinite loop
+> +		 * when a new filter is added.
+> +		 */
+> +		mutex_lock(&chain->filter_chain_lock);
+> +		if (chain->refcnt == 1)
+> +			chain->flushing = false;
+> +		mutex_unlock(&chain->filter_chain_lock);
+>   		err = 0;
+>   		goto errout;
+>   	}
 
 
