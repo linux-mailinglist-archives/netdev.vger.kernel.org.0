@@ -1,224 +1,598 @@
-Return-Path: <netdev+bounces-8385-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8386-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E7AE6723DBD
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:35:49 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id D5B82723DCE
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 11:36:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8CF3528157D
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:35:48 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 652002815CF
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:36:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC6F3294E2;
-	Tue,  6 Jun 2023 09:35:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91A7E294E6;
+	Tue,  6 Jun 2023 09:36:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B384125AB
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:35:35 +0000 (UTC)
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on0721.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0e::721])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E3CD126
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 02:35:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OW9ztsE0/HErPR6BUIRTvncaceK5rwOVT74YPPe/mx6IwKTtlzIDtD3c9btBD2VAtX3pTQCc9JXuAh+u1FkWtHdb1pcVTBOT4XgCo+MMaq+DkjEnsJj60PWbRfRxWNgUkZPOj/PyojFPyLQ4CHww3JcEcVo7ADSi0hezy88X9OWYxhSIQ0KCs58tQZmXmQlVsiZBf702u2Oxoj+9ergMedXYdXe0YUdEpDVbE8rKNG4PE6EupNOOfsFrAx5vYLfOUjE2ZV64qD2mRv7W1xT0di0KHU613uSr+CQuH21HXnwMx8eE8IohWB/keJb5cAcT25MS1N6CtDpSc54Z6GYbTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1Gl6GL28dVN+ExbdXXi1rU9ZPEX46q30BFQ7Pqo6DrE=;
- b=oe6iLRZVPPmNg34vgjqdmHElE1SAGiU9/T3GQjpy+JgPyuT60GACpt6rYnJ7dSvHeTVpGRtBLM0DRaaT6kMO83yyD/8+ZLVSM7UUNRw3UqCaZ6rJs5H+rJHCqjsNdV5B6Cr57ktBtrkGWds8ZIbG9lJUwdi2EJocisPwVzQZMn8gkQteLZrc2Cm/jJGW8EapH0h4iwkHOf1DFNwa4lE/i4iexqUUpvAj2YW3Vc6g6jAe7s5gTYZ/zXCBTcBjmzjex0h+NcxHOCtGhH+DXk4n+2B5VX5VumgpEbIgFg23T/HjrhB7qbG9ww7QdqMoFAtYCynnBRgMJV4moNorqUpbSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1Gl6GL28dVN+ExbdXXi1rU9ZPEX46q30BFQ7Pqo6DrE=;
- b=O0YjjPWqsTOTRiRKFTJEgHIJ9N02+zIQuJp/F77fTFSzmIrLYe2URXz5x9MvZf1sTB1Ay1kVCAC1PZ4Aal+LgQqGfxhxbX+7Gw67it8HpmmQWUbjuKyu0o8y/HnFOK1EMFwAA05xJYuBsTeqOoRWo4DwLAXcYrfsfWcdbE4pkFY=
-Received: from DB9PR05MB9078.eurprd05.prod.outlook.com (2603:10a6:10:36a::7)
- by VE1PR05MB7488.eurprd05.prod.outlook.com (2603:10a6:800:1aa::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Tue, 6 Jun
- 2023 09:35:27 +0000
-Received: from DB9PR05MB9078.eurprd05.prod.outlook.com
- ([fe80::bb8:eab5:13e9:6d25]) by DB9PR05MB9078.eurprd05.prod.outlook.com
- ([fe80::bb8:eab5:13e9:6d25%6]) with mapi id 15.20.6455.030; Tue, 6 Jun 2023
- 09:35:27 +0000
-From: Tung Quang Nguyen <tung.q.nguyen@dektech.com.au>
-To: Xin Long <lucien.xin@gmail.com>, network dev <netdev@vger.kernel.org>,
-	"tipc-discussion@lists.sourceforge.net"
-	<tipc-discussion@lists.sourceforge.net>
-CC: "davem@davemloft.net" <davem@davemloft.net>, "kuba@kernel.org"
-	<kuba@kernel.org>, Eric Dumazet <edumazet@google.com>, Paolo Abeni
-	<pabeni@redhat.com>, Jon Maloy <jmaloy@redhat.com>
-Subject: RE: [PATCH net-next] tipc: replace open-code bearer rcu_dereference
- access in bearer.c
-Thread-Topic: [PATCH net-next] tipc: replace open-code bearer rcu_dereference
- access in bearer.c
-Thread-Index: AQHZl7u5E1FWjZeUk0qr3XUaqpEC5a99hLfA
-Date: Tue, 6 Jun 2023 09:35:27 +0000
-Message-ID:
- <DB9PR05MB9078509738F92193703C464E8852A@DB9PR05MB9078.eurprd05.prod.outlook.com>
-References:
- <1072588a8691f970bda950c7e2834d1f2983f58e.1685976044.git.lucien.xin@gmail.com>
-In-Reply-To:
- <1072588a8691f970bda950c7e2834d1f2983f58e.1685976044.git.lucien.xin@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=dektech.com.au;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DB9PR05MB9078:EE_|VE1PR05MB7488:EE_
-x-ms-office365-filtering-correlation-id: 1604b385-334f-4794-d3ff-08db66715cb9
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 4hxQJa8vVfNJQ5HvYUXH0hnGImljnyyPw9Ral4CWtb3e9aQudM4eeq6QzTXmbVZUumj/C+foo0yBxm3bHMHr4LHB/4di/kWhcvSdm7FhFtYnkPLQyi3ijXhGga2qkmrg+IgyjKhnS6ivUiR/ku4CDNPZik3rtEJYkGg3K3LjTUG16umcWQLhLXkwJ+mF9W/5eFCGuYoOVFMtVf0+WUE8ooSjYqRKm4sQsgVuNHPj8r1tvec5Isny9t3Z52qQHuFxbhNlaPhYNaHGUoDArFn/o8XdXZmlbQdXPLs/1EftavnQvpa9r3vtKSYDtnCZ+aNeOD3UgtjuXPqKQnOOLvX5+plQK7PBz1WGfYqusFISezCVarN43Og1kIMhkC6eION7ITBa2eqbSeWuzyI7MGXn8Og8JLL0Gs/ibmfB5CBQxvP+BCEsoAvvs3O/HdVehv6AtsFY9nUVPrxRUj4k4YSMCfB+oZp6wiRabcXPtSadnn2jQjDMn1RaYQekE8zdKN2dO4oPYFR4Om7kGxR8CYIxXtp61TNrx2Zl9APbBxmB28o9ax1kIU0a5KS9pTpyTZLfm/EGw6/BWrh9MrL5cw9yyH4OHSbDru+65r3Lx0Qcs3Qe3/6FLpF13acJmcc6K6O5
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR05MB9078.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(39840400004)(366004)(376002)(396003)(451199021)(8676002)(8936002)(7696005)(478600001)(110136005)(54906003)(55016003)(41300700001)(52536014)(6506007)(5660300002)(316002)(66446008)(26005)(4326008)(64756008)(66556008)(66476007)(71200400001)(76116006)(66946007)(9686003)(186003)(83380400001)(2906002)(122000001)(38100700002)(86362001)(33656002)(38070700005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?pvdIAGK59uxertXFx4D6iTvTHjm40TrMHqcLFvpUWHPONyG6auLZ+GGZ0vV+?=
- =?us-ascii?Q?rat01SKy1b+6SlxfcA/JyHj/xkyVKSkyAK4zNPPfTkFJmBps1vpBT9V93bF1?=
- =?us-ascii?Q?5fH/x6r9STd1kuRy+uQOkivlBVTo1R1Rel1bWKI2SOPcm5fFPhcnmTu1w95y?=
- =?us-ascii?Q?DQ8rFQrQpgNm6Y0J02k3m8jw7XBpRjrjYHtA2JpfkW0Y3taiTQeNpEy8aJtw?=
- =?us-ascii?Q?S27Y8rRWc13bmQm4olbmUAolMo9VUp4sJsRTtJiCm446Rzl66qDonMFbWV+y?=
- =?us-ascii?Q?J1ZEK5JIHTYuf80Sc936154XIwYiBIwo5seRPbeGaParNR7WQ0Cc83n+/4QL?=
- =?us-ascii?Q?KAagw5pWY7FSlQ8I+UsxGhCTxuYTxXgzZZvEbBUdp4ZVyexDCMrBlMux17R+?=
- =?us-ascii?Q?e4e/L1pw+Mh+NGu6pb+iS+mYKjVfm5yRQwF7TplYFnZ6rHBy2yROocxry5S9?=
- =?us-ascii?Q?fQAUexDJKz12sylqGBoGOwdS3GR0bosi3we1riXi52DFBYmaQaTb5lKhnYce?=
- =?us-ascii?Q?VH6dIRjq6s/P2lkjwunbCh8SEqSEPqO7/RGDQnm4oQxbapLjNd6ODT+fCMrl?=
- =?us-ascii?Q?SZlY693ZqfBFMwZ2p4ZMCJu5/bUW/8Omq7yJlLh7BvkUhYJcl5YTbcr2pjW6?=
- =?us-ascii?Q?rmkucuiMCZhPxBd5sRiQe2VEEjd7QEonkuK72zmGxKIioI996vAG1QObBOf7?=
- =?us-ascii?Q?LgA2PSZD73/CuCDF967E27jldklcompKcdxopgyHxn540DdXmjuU6KGD1/PV?=
- =?us-ascii?Q?CRn6YihkW3MX2kQEI3O29Xh+kMwHyflKmF4dpIm7lsONK7xMOWrLf0vZWgi+?=
- =?us-ascii?Q?GRyFhbB21+jtn5FtGTdL23PtMrBbZ0B5HA4XTKUmoqYKjhuLpuObEPoUPE/+?=
- =?us-ascii?Q?T07MXSpXEsCCqUHundo24WJx4ZO3L3wUnpRdiY86M1W8+CRzoGvljLyWL/aZ?=
- =?us-ascii?Q?LAj1edueSRZ0dhlANNq4G9zK+Aufj177Npcys7WJVkKfEtuEYv2I1+RZiaDF?=
- =?us-ascii?Q?rPdr39QCR0G1RcrbAi7gExE8HRiVutFhr9ShH9BbkjeLPpt+F26NACb1l2ZK?=
- =?us-ascii?Q?f5Nv7RD1YvRa5QfMocszj9qn7dUv+hXxL0Rvf53POj1oIcnL4iNhBt8dO4eU?=
- =?us-ascii?Q?JilImiOumE69nnA/rlUWsWfucwrZpQDSra9gt9HGaa86VKkHggRftuRmeKGq?=
- =?us-ascii?Q?W0Fh8/1tJy3brphwlDqnfNFKXSIqVlLV7s7SqQJo2ut7+0wap7/2+fBaFqio?=
- =?us-ascii?Q?Zh9NVjfgnxb1EFPZR5nezJi8bhCs5DIDPTcUD9HEyJ02FF0PGG76qtIgV6ur?=
- =?us-ascii?Q?1QyNHRT2kUgobZ5OgG+ppVhle+yt60LSvAmqN7RHPIdK1wB/a3f2Y8IJ+il8?=
- =?us-ascii?Q?tPXZquPeVM0dgxl1cKOOd+mEsp5dGBM5Kg3BIkpx64DRrbolexethf16ETnL?=
- =?us-ascii?Q?Emb7eTOXHAV2GGv/vq9NUDCTlFGTV1cIw6LP/Hd6d1Nbf4cjdoWF9h4co1J5?=
- =?us-ascii?Q?DXX6ca6D500rOZO7/yatbo0AMtM37RWBMx8AlrS2oYIl2S0UGCGjQ8fFtrki?=
- =?us-ascii?Q?e6Lsk165C5OZRe3Q15WFnikK1i4fKzvnhmSIw1bV?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81325125AB
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 09:36:49 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87F710E5
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 02:36:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1686044207; x=1717580207;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lnuy7pcQlz+4lWr2E9+l0pUi/uOy2CpXn8sn+We6R/o=;
+  b=DnY/5R4BmepBZoNID6kSAZSm2fix2FlU34KxChusdJdOeYYy4x7cExhp
+   ux/lniwvk1aMe1wafgXxC7xO6ibKR6/0+N0JuHAcKGXuH4pRgVJFK3YvL
+   tJmMbM5UwmyL6jVYDAEy3Ml8mS4o+m3DKxWyU4LmNvpCa9iQozxS4XO33
+   E1GWKDLZtBnQYDJQnepCC5KD6Soay+TUjB5BYvAUl8aZ+VIQggQ2B8Pc5
+   Kvdj0I0uHEZ/kIclkUaJEWZq37mhkUUoMzI9GL+hmBeRmU5YEBoy0YMyd
+   oDf/gXnew5qKYvYOkVlFcSs9yCwelGvHt563wbPjUrOfMM0IjXnp+66w/
+   Q==;
+X-IronPort-AV: E=Sophos;i="6.00,219,1681196400"; 
+   d="scan'208";a="217006493"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jun 2023 02:36:47 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Tue, 6 Jun 2023 02:36:45 -0700
+Received: from DEN-LT-70577 (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Tue, 6 Jun 2023 02:36:44 -0700
+Date: Tue, 6 Jun 2023 09:36:43 +0000
+From: Daniel Machon <daniel.machon@microchip.com>
+To: Dave Ertman <david.m.ertman@intel.com>
+CC: <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH net v2 03/10] ice: changes to the interface with the HW
+ and FW for SRIOV_VF+LAG
+Message-ID: <20230606093643.ntrpa4wqilntkw4i@DEN-LT-70577>
+References: <20230605182258.557933-1-david.m.ertman@intel.com>
+ <20230605182258.557933-4-david.m.ertman@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR05MB9078.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1604b385-334f-4794-d3ff-08db66715cb9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jun 2023 09:35:27.5759
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7+yJNzMszWxopgKOiGPlD/VBpqGVO4QZ1ZyZuZu9gg4jAcu8fS1RfNv7tT3CQA6owqFHSWV6d0qVzqmF4r1J/5HW5I1awCcaodqK05gdEWM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR05MB7488
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
-	T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20230605182258.557933-4-david.m.ertman@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
->Subject: [PATCH net-next] tipc: replace open-code bearer rcu_dereference a=
-ccess in bearer.c
->
->Replace these open-code bearer rcu_dereference access with bearer_get(),
->like other places in bearer.c. While at it, also use tipc_net() instead
->of net_generic(net, tipc_net_id) to get "tn" in bearer.c.
->
->Signed-off-by: Xin Long <lucien.xin@gmail.com>
->---
-Reviewed-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+> Add defines needed for interaction with the FW admin queue interface
+> in relation to supporting LAG and SRIOV VFs interacting.
+> 
+> Add code, or make non-static previously static functions, to access
+> the new and changed admin queue calls for LAG.
+> 
+> Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+> ---
+>  .../net/ethernet/intel/ice/ice_adminq_cmd.h   | 50 +++++++++++-
+>  drivers/net/ethernet/intel/ice/ice_common.c   | 47 +++++++++++
+>  drivers/net/ethernet/intel/ice/ice_common.h   |  4 +
+>  drivers/net/ethernet/intel/ice/ice_sched.c    | 14 ++--
+>  drivers/net/ethernet/intel/ice/ice_sched.h    | 21 +++++
+>  drivers/net/ethernet/intel/ice/ice_switch.c   | 79 ++++++++++++++-----
+>  drivers/net/ethernet/intel/ice/ice_switch.h   | 26 ++++++
+>  7 files changed, 212 insertions(+), 29 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+> index 05ae65f1dd27..2309972fb167 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+> +++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+> @@ -236,6 +236,8 @@ struct ice_aqc_set_port_params {
+>  #define ICE_AQC_SET_P_PARAMS_DOUBLE_VLAN_ENA   BIT(2)
+>         __le16 bad_frame_vsi;
+>         __le16 swid;
+> +#define ICE_AQC_PORT_SWID_VALID                        BIT(15)
+> +#define ICE_AQC_PORT_SWID_M                    0xFF
+>         u8 reserved[10];
+>  };
+> 
+> @@ -245,10 +247,12 @@ struct ice_aqc_set_port_params {
+>   * Allocate Resources command (indirect 0x0208)
+>   * Free Resources command (indirect 0x0209)
+>   * Get Allocated Resource Descriptors Command (indirect 0x020A)
+> + * Share Resource command (indirect 0x020B)
+>   */
+>  #define ICE_AQC_RES_TYPE_VSI_LIST_REP                  0x03
+>  #define ICE_AQC_RES_TYPE_VSI_LIST_PRUNE                        0x04
+>  #define ICE_AQC_RES_TYPE_RECIPE                                0x05
+> +#define ICE_AQC_RES_TYPE_SWID                          0x07
+>  #define ICE_AQC_RES_TYPE_FDIR_COUNTER_BLOCK            0x21
+>  #define ICE_AQC_RES_TYPE_FDIR_GUARANTEED_ENTRIES       0x22
+>  #define ICE_AQC_RES_TYPE_FDIR_SHARED_ENTRIES           0x23
+> @@ -268,6 +272,7 @@ struct ice_aqc_set_port_params {
+> 
+>  /* Allocate Resources command (indirect 0x0208)
+>   * Free Resources command (indirect 0x0209)
+> + * Share Resource command (indirect 0x020B)
+>   */
+>  struct ice_aqc_alloc_free_res_cmd {
+>         __le16 num_entries; /* Number of Resource entries */
+> @@ -839,7 +844,11 @@ struct ice_aqc_txsched_move_grp_info_hdr {
+>         __le32 src_parent_teid;
+>         __le32 dest_parent_teid;
+>         __le16 num_elems;
+> -       __le16 reserved;
+> +       u8 mode;
+> +#define ICE_AQC_MOVE_ELEM_MODE_SAME_PF         0x0
+> +#define ICE_AQC_MOVE_ELEM_MODE_GIVE_OWN                0x1
+> +#define ICE_AQC_MOVE_ELEM_MODE_KEEP_OWN                0x2
+> +       u8 reserved;
+>  };
+> 
+>  struct ice_aqc_move_elem {
+> @@ -1953,6 +1962,42 @@ struct ice_aqc_dis_txq_item {
+>         __le16 q_id[];
+>  } __packed;
+> 
+> +/* Move/Reconfigure Tx queue (indirect 0x0C32) */
+> +struct ice_aqc_cfg_txqs {
+> +       u8 cmd_type;
+> +#define ICE_AQC_Q_CFG_MOVE_NODE                0x1
+> +#define ICE_AQC_Q_CFG_TC_CHNG          0x2
+> +#define ICE_AQC_Q_CFG_MOVE_TC_CHNG     0x3
+> +#define ICE_AQC_Q_CFG_SUBSEQ_CALL      BIT(2)
+> +#define ICE_AQC_Q_CFG_FLUSH            BIT(3)
+> +       u8 num_qs;
+> +       u8 port_num_chng;
+> +#define ICE_AQC_Q_CFG_SRC_PRT_M                0x7
+> +#define ICE_AQC_Q_CFG_DST_PRT_S                3
+> +#define ICE_AQC_Q_CFG_DST_PRT_M                (0x7 << ICE_AQC_Q_CFG_DST_PRT_S)
+> +       u8 time_out;
+> +#define ICE_AQC_Q_CFG_TIMEOUT_S                2
+> +#define ICE_AQC_Q_CFG_TIMEOUT_M                (0x1F << ICE_AQC_Q_CFG_TIMEOUT_S)
+> +       __le32 blocked_cgds;
+> +       __le32 addr_high;
+> +       __le32 addr_low;
+> +};
+> +
+> +/* Per Q struct for Move/Reconfigure Tx LAN Queues (indirect 0x0C32) */
+> +struct ice_aqc_cfg_txq_perq {
+> +       __le16 q_handle;
+> +       u8 tc;
+> +       u8 rsvd;
+> +       __le32 q_teid;
+> +};
+> +
+> +/* The buffer for Move/Reconfigure Tx LAN Queues (indirect 0x0C32) */
+> +struct ice_aqc_cfg_txqs_buf {
+> +       __le32 src_parent_teid;
+> +       __le32 dst_parent_teid;
+> +       struct ice_aqc_cfg_txq_perq queue_info[];
+> +};
+> +
+>  /* Add Tx RDMA Queue Set (indirect 0x0C33) */
+>  struct ice_aqc_add_rdma_qset {
+>         u8 num_qset_grps;
+> @@ -2211,6 +2256,7 @@ struct ice_aq_desc {
+>                 struct ice_aqc_neigh_dev_req neigh_dev;
+>                 struct ice_aqc_add_txqs add_txqs;
+>                 struct ice_aqc_dis_txqs dis_txqs;
+> +               struct ice_aqc_cfg_txqs cfg_txqs;
+>                 struct ice_aqc_add_rdma_qset add_rdma_qset;
+>                 struct ice_aqc_add_get_update_free_vsi vsi_cmd;
+>                 struct ice_aqc_add_update_free_vsi_resp add_update_free_vsi_res;
+> @@ -2294,6 +2340,7 @@ enum ice_adminq_opc {
+>         /* Alloc/Free/Get Resources */
+>         ice_aqc_opc_alloc_res                           = 0x0208,
+>         ice_aqc_opc_free_res                            = 0x0209,
+> +       ice_aqc_opc_share_res                           = 0x020B,
+>         ice_aqc_opc_set_vlan_mode_parameters            = 0x020C,
+>         ice_aqc_opc_get_vlan_mode_parameters            = 0x020D,
+> 
+> @@ -2390,6 +2437,7 @@ enum ice_adminq_opc {
+>         /* Tx queue handling commands/events */
+>         ice_aqc_opc_add_txqs                            = 0x0C30,
+>         ice_aqc_opc_dis_txqs                            = 0x0C31,
+> +       ice_aqc_opc_cfg_txqs                            = 0x0C32,
+>         ice_aqc_opc_add_rdma_qset                       = 0x0C33,
+> 
+>         /* package commands */
+> diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+> index fd21b5e38600..46b5de358a93 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_common.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_common.c
+> @@ -4236,6 +4236,53 @@ ice_aq_dis_lan_txq(struct ice_hw *hw, u8 num_qgrps,
+>         return status;
+>  }
+> 
+> +/**
+> + * ice_aq_cfg_lan_txq
+> + * @hw: pointer to the hardware structure
+> + * @buf: buffer for command
+> + * @buf_size: size of buffer in bytes
+> + * @num_qs: number of qeueues being configured
 
-> net/tipc/bearer.c | 14 ++++++--------
-> 1 file changed, 6 insertions(+), 8 deletions(-)
->
->diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
->index 114140c49108..1d5d3677bdaf 100644
->--- a/net/tipc/bearer.c
->+++ b/net/tipc/bearer.c
->@@ -176,7 +176,7 @@ static int bearer_name_validate(const char *name,
->  */
-> struct tipc_bearer *tipc_bearer_find(struct net *net, const char *name)
-> {
->-	struct tipc_net *tn =3D net_generic(net, tipc_net_id);
->+	struct tipc_net *tn =3D tipc_net(net);
-> 	struct tipc_bearer *b;
-> 	u32 i;
->
->@@ -211,11 +211,10 @@ int tipc_bearer_get_name(struct net *net, char *name=
-, u32 bearer_id)
->
-> void tipc_bearer_add_dest(struct net *net, u32 bearer_id, u32 dest)
-> {
->-	struct tipc_net *tn =3D net_generic(net, tipc_net_id);
-> 	struct tipc_bearer *b;
->
-> 	rcu_read_lock();
->-	b =3D rcu_dereference(tn->bearer_list[bearer_id]);
->+	b =3D bearer_get(net, bearer_id);
-> 	if (b)
-> 		tipc_disc_add_dest(b->disc);
-> 	rcu_read_unlock();
->@@ -223,11 +222,10 @@ void tipc_bearer_add_dest(struct net *net, u32 beare=
-r_id, u32 dest)
->
-> void tipc_bearer_remove_dest(struct net *net, u32 bearer_id, u32 dest)
-> {
->-	struct tipc_net *tn =3D net_generic(net, tipc_net_id);
-> 	struct tipc_bearer *b;
->
-> 	rcu_read_lock();
->-	b =3D rcu_dereference(tn->bearer_list[bearer_id]);
->+	b =3D bearer_get(net, bearer_id);
-> 	if (b)
-> 		tipc_disc_remove_dest(b->disc);
-> 	rcu_read_unlock();
->@@ -534,7 +532,7 @@ int tipc_bearer_mtu(struct net *net, u32 bearer_id)
-> 	struct tipc_bearer *b;
->
-> 	rcu_read_lock();
->-	b =3D rcu_dereference(tipc_net(net)->bearer_list[bearer_id]);
->+	b =3D bearer_get(net, bearer_id);
-> 	if (b)
-> 		mtu =3D b->mtu;
-> 	rcu_read_unlock();
->@@ -745,7 +743,7 @@ void tipc_bearer_cleanup(void)
->
-> void tipc_bearer_stop(struct net *net)
-> {
->-	struct tipc_net *tn =3D net_generic(net, tipc_net_id);
->+	struct tipc_net *tn =3D tipc_net(net);
-> 	struct tipc_bearer *b;
-> 	u32 i;
->
->@@ -881,7 +879,7 @@ int tipc_nl_bearer_dump(struct sk_buff *skb, struct ne=
-tlink_callback *cb)
-> 	struct tipc_bearer *bearer;
-> 	struct tipc_nl_msg msg;
-> 	struct net *net =3D sock_net(skb->sk);
->-	struct tipc_net *tn =3D net_generic(net, tipc_net_id);
->+	struct tipc_net *tn =3D tipc_net(net);
->
-> 	if (i =3D=3D MAX_BEARERS)
-> 		return 0;
->--
->2.39.1
+nit s/qeueues/queues
 
+> + * @oldport: origination lport
+> + * @newport: destination lport
+> + * @cd: pointer to command details structure or NULL
+> + *
+> + * Move/Configure LAN Tx queue (0x0C32)
+> + *
+> + * There is a better AQ command to use for moving nodes, so only coding
+> + * this one for configuring the node.
+> + */
+> +int
+> +ice_aq_cfg_lan_txq(struct ice_hw *hw, struct ice_aqc_cfg_txqs_buf *buf,
+> +                  u16 buf_size, u16 num_qs, u8 oldport, u8 newport,
+> +                  struct ice_sq_cd *cd)
+> +{
+> +       struct ice_aqc_cfg_txqs *cmd;
+> +       struct ice_aq_desc desc;
+> +       int status;
+> +
+> +       cmd = &desc.params.cfg_txqs;
+> +       ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_cfg_txqs);
+> +       desc.flags |= cpu_to_le16(ICE_AQ_FLAG_RD);
+> +
+> +       if (!buf)
+> +               return -EINVAL;
+> +
+> +       cmd->cmd_type = ICE_AQC_Q_CFG_TC_CHNG;
+> +       cmd->num_qs = num_qs;
+> +       cmd->port_num_chng = (oldport & ICE_AQC_Q_CFG_SRC_PRT_M);
+> +       cmd->port_num_chng |= (newport << ICE_AQC_Q_CFG_DST_PRT_S) &
+> +                             ICE_AQC_Q_CFG_DST_PRT_M;
+> +       cmd->time_out = (5 << ICE_AQC_Q_CFG_TIMEOUT_S) &
+> +                       ICE_AQC_Q_CFG_TIMEOUT_M;
+> +       cmd->blocked_cgds = 0;
+> +
+> +       status = ice_aq_send_cmd(hw, &desc, buf, buf_size, cd);
+> +       if (status)
+> +               ice_debug(hw, ICE_DBG_SCHED, "Failed to reconfigure nodes %d\n",
+> +                         hw->adminq.sq_last_status);
+> +       return status;
+> +}
+> +
+>  /**
+>   * ice_aq_add_rdma_qsets
+>   * @hw: pointer to the hardware structure
+> diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+> index 8ba5f935a092..faacc5a72877 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_common.h
+> +++ b/drivers/net/ethernet/intel/ice/ice_common.h
+> @@ -186,6 +186,10 @@ int
+>  ice_ena_vsi_txq(struct ice_port_info *pi, u16 vsi_handle, u8 tc, u16 q_handle,
+>                 u8 num_qgrps, struct ice_aqc_add_tx_qgrp *buf, u16 buf_size,
+>                 struct ice_sq_cd *cd);
+> +int
+> +ice_aq_cfg_lan_txq(struct ice_hw *hw, struct ice_aqc_cfg_txqs_buf *buf,
+> +                  u16 buf_size, u16 num_qs, u8 oldport, u8 newport,
+> +                  struct ice_sq_cd *cd);
+>  int ice_replay_vsi(struct ice_hw *hw, u16 vsi_handle);
+>  void ice_replay_post(struct ice_hw *hw);
+>  void ice_output_fw_log(struct ice_hw *hw, struct ice_aq_desc *desc, void *buf);
+> diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
+> index 0db9eb8fd402..22adfc2ccb44 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_sched.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_sched.c
+> @@ -450,7 +450,7 @@ ice_aq_cfg_sched_elems(struct ice_hw *hw, u16 elems_req,
+>   *
+>   * Move scheduling elements (0x0408)
+>   */
+> -static int
+> +int
+>  ice_aq_move_sched_elems(struct ice_hw *hw, u16 grps_req,
+>                         struct ice_aqc_move_elem *buf, u16 buf_size,
+>                         u16 *grps_movd, struct ice_sq_cd *cd)
+> @@ -529,7 +529,7 @@ ice_aq_query_sched_res(struct ice_hw *hw, u16 buf_size,
+>   *
+>   * This function suspends or resumes HW nodes
+>   */
+> -static int
+> +int
+>  ice_sched_suspend_resume_elems(struct ice_hw *hw, u8 num_nodes, u32 *node_teids,
+>                                bool suspend)
+>  {
+> @@ -1062,7 +1062,7 @@ ice_sched_add_nodes_to_hw_layer(struct ice_port_info *pi,
+>   *
+>   * This function add nodes to a given layer.
+>   */
+> -static int
+> +int
+>  ice_sched_add_nodes_to_layer(struct ice_port_info *pi,
+>                              struct ice_sched_node *tc_node,
+>                              struct ice_sched_node *parent, u8 layer,
+> @@ -1137,7 +1137,7 @@ static u8 ice_sched_get_qgrp_layer(struct ice_hw *hw)
+>   *
+>   * This function returns the current VSI layer number
+>   */
+> -static u8 ice_sched_get_vsi_layer(struct ice_hw *hw)
+> +u8 ice_sched_get_vsi_layer(struct ice_hw *hw)
+>  {
+>         /* Num Layers       VSI layer
+>          *     9               6
+> @@ -1159,7 +1159,7 @@ static u8 ice_sched_get_vsi_layer(struct ice_hw *hw)
+>   *
+>   * This function returns the current aggregator layer number
+>   */
+> -static u8 ice_sched_get_agg_layer(struct ice_hw *hw)
+> +u8 ice_sched_get_agg_layer(struct ice_hw *hw)
+>  {
+>         /* Num Layers       aggregator layer
+>          *     9               4
+> @@ -1597,7 +1597,7 @@ ice_sched_get_vsi_node(struct ice_port_info *pi, struct ice_sched_node *tc_node,
+>   * This function retrieves an aggregator node for a given aggregator ID from
+>   * a given TC branch
+>   */
+> -static struct ice_sched_node *
+> +struct ice_sched_node *
+>  ice_sched_get_agg_node(struct ice_port_info *pi, struct ice_sched_node *tc_node,
+>                        u32 agg_id)
+>  {
+> @@ -2159,7 +2159,7 @@ ice_get_agg_info(struct ice_hw *hw, u32 agg_id)
+>   * This function walks through the aggregator subtree to find a free parent
+>   * node
+>   */
+> -static struct ice_sched_node *
+> +struct ice_sched_node *
+>  ice_sched_get_free_vsi_parent(struct ice_hw *hw, struct ice_sched_node *node,
+>                               u16 *num_nodes)
+>  {
+> diff --git a/drivers/net/ethernet/intel/ice/ice_sched.h b/drivers/net/ethernet/intel/ice/ice_sched.h
+> index 1d01a1898b8b..728a65355b51 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_sched.h
+> +++ b/drivers/net/ethernet/intel/ice/ice_sched.h
+> @@ -149,8 +149,29 @@ ice_sched_set_node_bw_lmt_per_tc(struct ice_port_info *pi, u32 id,
+>                                  enum ice_agg_type agg_type, u8 tc,
+>                                  enum ice_rl_type rl_type, u32 bw);
+>  int ice_cfg_rl_burst_size(struct ice_hw *hw, u32 bytes);
+> +int
+> +ice_sched_suspend_resume_elems(struct ice_hw *hw, u8 num_nodes, u32 *node_teids,
+> +                              bool suspend);
+> +struct ice_sched_node *
+> +ice_sched_get_agg_node(struct ice_port_info *pi, struct ice_sched_node *tc_node,
+> +                      u32 agg_id);
+> +u8 ice_sched_get_agg_layer(struct ice_hw *hw);
+> +u8 ice_sched_get_vsi_layer(struct ice_hw *hw);
+> +struct ice_sched_node *
+> +ice_sched_get_free_vsi_parent(struct ice_hw *hw, struct ice_sched_node *node,
+> +                             u16 *num_nodes);
+> +int
+> +ice_sched_add_nodes_to_layer(struct ice_port_info *pi,
+> +                            struct ice_sched_node *tc_node,
+> +                            struct ice_sched_node *parent, u8 layer,
+> +                            u16 num_nodes, u32 *first_node_teid,
+> +                            u16 *num_nodes_added);
+>  void ice_sched_replay_agg_vsi_preinit(struct ice_hw *hw);
+>  void ice_sched_replay_agg(struct ice_hw *hw);
+> +int
+> +ice_aq_move_sched_elems(struct ice_hw *hw, u16 grps_req,
+> +                       struct ice_aqc_move_elem *buf, u16 buf_size,
+> +                       u16 *grps_movd, struct ice_sq_cd *cd);
+>  int ice_replay_vsi_agg(struct ice_hw *hw, u16 vsi_handle);
+>  int ice_sched_replay_q_bw(struct ice_port_info *pi, struct ice_q_ctx *q_ctx);
+>  #endif /* _ICE_SCHED_H_ */
+> diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
+> index 2ea9e1ae5517..e373bd3f8e09 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_switch.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_switch.c
+> @@ -20,10 +20,10 @@
+>   * byte 0 = 0x2: to identify it as locally administered DA MAC
+>   * byte 6 = 0x2: to identify it as locally administered SA MAC
+>   * byte 12 = 0x81 & byte 13 = 0x00:
+> - *     In case of VLAN filter first two bytes defines ether type (0x8100)
+> - *     and remaining two bytes are placeholder for programming a given VLAN ID
+> - *     In case of Ether type filter it is treated as header without VLAN tag
+> - *     and byte 12 and 13 is used to program a given Ether type instead
+> + *      In case of VLAN filter first two bytes defines ether type (0x8100)
+> + *      and remaining two bytes are placeholder for programming a given VLAN ID
+> + *      In case of Ether type filter it is treated as header without VLAN tag
+> + *      and byte 12 and 13 is used to program a given Ether type instead
+>   */
+>  #define DUMMY_ETH_HDR_LEN              16
+>  static const u8 dummy_eth_header[DUMMY_ETH_HDR_LEN] = { 0x2, 0, 0, 0, 0, 0,
+> @@ -1369,14 +1369,6 @@ static const struct ice_dummy_pkt_profile ice_dummy_pkt_profiles[] = {
+>         ICE_PKT_PROFILE(tcp, 0),
+>  };
+> 
+> -#define ICE_SW_RULE_RX_TX_HDR_SIZE(s, l)       struct_size((s), hdr_data, (l))
+> -#define ICE_SW_RULE_RX_TX_ETH_HDR_SIZE(s)      \
+> -       ICE_SW_RULE_RX_TX_HDR_SIZE((s), DUMMY_ETH_HDR_LEN)
+> -#define ICE_SW_RULE_RX_TX_NO_HDR_SIZE(s)       \
+> -       ICE_SW_RULE_RX_TX_HDR_SIZE((s), 0)
+> -#define ICE_SW_RULE_LG_ACT_SIZE(s, n)          struct_size((s), act, (n))
+> -#define ICE_SW_RULE_VSI_LIST_SIZE(s, n)                struct_size((s), vsi, (n))
+> -
+>  /* this is a recipe to profile association bitmap */
+>  static DECLARE_BITMAP(recipe_to_profile[ICE_MAX_NUM_RECIPES],
+>                           ICE_MAX_NUM_PROFILES);
+> @@ -1846,8 +1838,13 @@ ice_aq_alloc_free_vsi_list(struct ice_hw *hw, u16 *vsi_list_id,
+>             lkup_type == ICE_SW_LKUP_DFLT) {
+>                 sw_buf->res_type = cpu_to_le16(ICE_AQC_RES_TYPE_VSI_LIST_REP);
+>         } else if (lkup_type == ICE_SW_LKUP_VLAN) {
+> -               sw_buf->res_type =
+> -                       cpu_to_le16(ICE_AQC_RES_TYPE_VSI_LIST_PRUNE);
+> +               if (opc == ice_aqc_opc_alloc_res)
+> +                       sw_buf->res_type =
+> +                               cpu_to_le16(ICE_AQC_RES_TYPE_VSI_LIST_PRUNE |
+> +                                           ICE_AQC_RES_TYPE_FLAG_SHARED);
+> +               else
+> +                       sw_buf->res_type =
+> +                               cpu_to_le16(ICE_AQC_RES_TYPE_VSI_LIST_PRUNE);
+>         } else {
+>                 status = -EINVAL;
+>                 goto ice_aq_alloc_free_vsi_list_exit;
+> @@ -1915,7 +1912,7 @@ ice_aq_sw_rules(struct ice_hw *hw, void *rule_list, u16 rule_list_sz,
+>   *
+>   * Add(0x0290)
+>   */
+> -static int
+> +int
+>  ice_aq_add_recipe(struct ice_hw *hw,
+>                   struct ice_aqc_recipe_data_elem *s_recipe_list,
+>                   u16 num_recipes, struct ice_sq_cd *cd)
+> @@ -1952,7 +1949,7 @@ ice_aq_add_recipe(struct ice_hw *hw,
+>   * The caller must supply enough space in s_recipe_list to hold all possible
+>   * recipes and *num_recipes must equal ICE_MAX_NUM_RECIPES.
+>   */
+> -static int
+> +int
+>  ice_aq_get_recipe(struct ice_hw *hw,
+>                   struct ice_aqc_recipe_data_elem *s_recipe_list,
+>                   u16 *num_recipes, u16 recipe_root, struct ice_sq_cd *cd)
+> @@ -2045,7 +2042,7 @@ ice_update_recipe_lkup_idx(struct ice_hw *hw,
+>   * @cd: pointer to command details structure or NULL
+>   * Recipe to profile association (0x0291)
+>   */
+> -static int
+> +int
+>  ice_aq_map_recipe_to_profile(struct ice_hw *hw, u32 profile_id, u8 *r_bitmap,
+>                              struct ice_sq_cd *cd)
+>  {
+> @@ -2071,7 +2068,7 @@ ice_aq_map_recipe_to_profile(struct ice_hw *hw, u32 profile_id, u8 *r_bitmap,
+>   * @cd: pointer to command details structure or NULL
+>   * Associate profile ID with given recipe (0x0293)
+>   */
+> -static int
+> +int
+>  ice_aq_get_recipe_to_profile(struct ice_hw *hw, u32 profile_id, u8 *r_bitmap,
+>                              struct ice_sq_cd *cd)
+>  {
+> @@ -2095,7 +2092,7 @@ ice_aq_get_recipe_to_profile(struct ice_hw *hw, u32 profile_id, u8 *r_bitmap,
+>   * @hw: pointer to the hardware structure
+>   * @rid: recipe ID returned as response to AQ call
+>   */
+> -static int ice_alloc_recipe(struct ice_hw *hw, u16 *rid)
+> +int ice_alloc_recipe(struct ice_hw *hw, u16 *rid)
+>  {
+>         struct ice_aqc_alloc_free_res_elem *sw_buf;
+>         u16 buf_len;
+> @@ -3123,7 +3120,7 @@ ice_find_rule_entry(struct ice_hw *hw, u8 recp_id, struct ice_fltr_info *f_info)
+>   * handle element. This can be extended further to search VSI list with more
+>   * than 1 vsi_count. Returns pointer to VSI list entry if found.
+>   */
+> -static struct ice_vsi_list_map_info *
+> +struct ice_vsi_list_map_info *
+>  ice_find_vsi_list_entry(struct ice_hw *hw, u8 recp_id, u16 vsi_handle,
+>                         u16 *vsi_list_id)
+>  {
+> @@ -3134,7 +3131,7 @@ ice_find_vsi_list_entry(struct ice_hw *hw, u8 recp_id, u16 vsi_handle,
+> 
+>         list_head = &sw->recp_list[recp_id].filt_rules;
+>         list_for_each_entry(list_itr, list_head, list_entry) {
+> -               if (list_itr->vsi_count == 1 && list_itr->vsi_list_info) {
+> +               if (list_itr->vsi_list_info) {
+>                         map_info = list_itr->vsi_list_info;
+>                         if (test_bit(vsi_handle, map_info->vsi_map)) {
+>                                 *vsi_list_id = map_info->vsi_list_id;
+> @@ -4545,6 +4542,46 @@ ice_free_res_cntr(struct ice_hw *hw, u8 type, u8 alloc_shared, u16 num_items,
+>         .offs           = {__VA_ARGS__},        \
+>  }
+> 
+> +/**
+> + * ice_share_res - set a resource as shared or dedicated
+> + * @hw: hw struct of original owner of resource
+> + * @type: resource type
+> + * @shared: is the resource being set to shared
+> + * @res_id: resource id (descriptor)
+> + */
+> +int ice_share_res(struct ice_hw *hw, u16 type, u8 shared, u16 res_id)
+> +{
+> +       struct ice_aqc_alloc_free_res_elem *buf;
+> +       u16 buf_len;
+> +       int status;
+> +
+> +       buf_len = struct_size(buf, elem, 1);
+> +       buf = kzalloc(buf_len, GFP_KERNEL);
+> +       if (!buf)
+> +               return -ENOMEM;
+> +
+> +       buf->num_elems = cpu_to_le16(1);
+> +       if (shared)
+> +               buf->res_type = cpu_to_le16(((type << ICE_AQC_RES_TYPE_S) &
+> +                                            ICE_AQC_RES_TYPE_M) |
+> +                                           ICE_AQC_RES_TYPE_FLAG_SHARED);
+> +       else
+> +               buf->res_type = cpu_to_le16(((type << ICE_AQC_RES_TYPE_S) &
+> +                                            ICE_AQC_RES_TYPE_M) &
+> +                                           ~ICE_AQC_RES_TYPE_FLAG_SHARED);
+> +
+> +       buf->elem[0].e.sw_resp = cpu_to_le16(res_id);
+> +       status = ice_aq_alloc_free_res(hw, 1, buf, buf_len,
+> +                                      ice_aqc_opc_share_res, NULL);
+> +
+> +       if (status)
+> +               ice_debug(hw, ICE_DBG_SW, "Could not set resource type %d id %d to %s\n",
+> +                         type, res_id, shared ? "SHARED" : "DEDICATED");
+
+Likewise: type, res_id and shared are all unsigned here - consider %u.
+
+> +
+> +       kfree(buf);
+> +       return status;
+> +}
+> +
+>  /* This is mapping table entry that maps every word within a given protocol
+>   * structure to the real byte offset as per the specification of that
+>   * protocol header.
+> diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
+> index c84b56fe84a5..fb45cb5fe414 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_switch.h
+> +++ b/drivers/net/ethernet/intel/ice/ice_switch.h
+> @@ -22,6 +22,14 @@
+>  #define ICE_PROFID_IPV6_GTPU_TEID                      46
+>  #define ICE_PROFID_IPV6_GTPU_IPV6_TCP_INNER            70
+> 
+> +#define ICE_SW_RULE_VSI_LIST_SIZE(s, n)                struct_size((s), vsi, (n))
+> +#define ICE_SW_RULE_RX_TX_HDR_SIZE(s, l)       struct_size((s), hdr_data, (l))
+> +#define ICE_SW_RULE_RX_TX_ETH_HDR_SIZE(s)      \
+> +       ICE_SW_RULE_RX_TX_HDR_SIZE((s), DUMMY_ETH_HDR_LEN)
+> +#define ICE_SW_RULE_RX_TX_NO_HDR_SIZE(s)       \
+> +       ICE_SW_RULE_RX_TX_HDR_SIZE((s), 0)
+> +#define ICE_SW_RULE_LG_ACT_SIZE(s, n)          struct_size((s), act, (n))
+> +
+>  /* VSI context structure for add/get/update/free operations */
+>  struct ice_vsi_ctx {
+>         u16 vsi_num;
+> @@ -340,6 +348,7 @@ ice_alloc_res_cntr(struct ice_hw *hw, u8 type, u8 alloc_shared, u16 num_items,
+>  int
+>  ice_free_res_cntr(struct ice_hw *hw, u8 type, u8 alloc_shared, u16 num_items,
+>                   u16 counter_id);
+> +int ice_share_res(struct ice_hw *hw, u16 type, u8 shared, u16 res_id);
+> 
+>  /* Switch/bridge related commands */
+>  void ice_rule_add_tunnel_metadata(struct ice_adv_lkup_elem *lkup);
+> @@ -397,4 +406,21 @@ int
+>  ice_update_recipe_lkup_idx(struct ice_hw *hw,
+>                            struct ice_update_recipe_lkup_idx_params *params);
+>  void ice_change_proto_id_to_dvm(void);
+> +struct ice_vsi_list_map_info *
+> +ice_find_vsi_list_entry(struct ice_hw *hw, u8 recp_id, u16 vsi_handle,
+> +                       u16 *vsi_list_id);
+> +int ice_alloc_recipe(struct ice_hw *hw, u16 *rid);
+> +int ice_aq_get_recipe(struct ice_hw *hw,
+> +                     struct ice_aqc_recipe_data_elem *s_recipe_list,
+> +                     u16 *num_recipes, u16 recipe_root, struct ice_sq_cd *cd);
+> +int ice_aq_add_recipe(struct ice_hw *hw,
+> +                     struct ice_aqc_recipe_data_elem *s_recipe_list,
+> +                     u16 num_recipes, struct ice_sq_cd *cd);
+> +int
+> +ice_aq_get_recipe_to_profile(struct ice_hw *hw, u32 profile_id, u8 *r_bitmap,
+> +                            struct ice_sq_cd *cd);
+> +int
+> +ice_aq_map_recipe_to_profile(struct ice_hw *hw, u32 profile_id, u8 *r_bitmap,
+> +                            struct ice_sq_cd *cd);
+> +
+>  #endif /* _ICE_SWITCH_H_ */
+> --
+> 2.40.1
+> 
+> 
 
