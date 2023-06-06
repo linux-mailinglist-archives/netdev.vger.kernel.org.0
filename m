@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-8615-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8616-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4BCA6724D63
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 21:44:00 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0A92A724D6A
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 21:44:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 06F6C28102A
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 19:43:59 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6052A1C2093F
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 19:44:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63A3228C1A;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF2E52A9C9;
 	Tue,  6 Jun 2023 19:43:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4F7623C92
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 19:43:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11B7EC4339E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2163D261E7
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 19:43:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AC1DC433A1;
 	Tue,  6 Jun 2023 19:43:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1686080599;
-	bh=xub2e/hMBYWQKwxfR/GuJ3tWcPCh0chrgfYsiXnbpbk=;
+	bh=Bj/XKmEmrjjd2hRzavH/fB3wrWn/2OySZ04lmKH5Pa4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=RHccs3lc9AZE/2uUB1Gcs3iiwPzzn0D7xHrsGdv3Fru9PKKPt+RUbDtamE78f77aD
-	 4gxciNko5D5LHbx6xhxmsTbTDMVsNn+5+nUCrc8eQr6qW8h8t7l76r+sTiFXIHGwe8
-	 D7N5ZETIrMAVkL9ZS0O79woR2SPIF6nZEfUEWbeOy7d5czLGBYdr/wbFQkR+XvBpRb
-	 XkMhyPzl85AzXq1CaN2gZBs+h7EqAgLb6WxP6dWUt/8QV4FNmB1qb0D9+3PDFenhYq
-	 6E3CMVH0TFXt8FgkAlkLdhZjaoFHAU59R6wHgCQNiyuo9cr0bWOUoLrC7tUtrYk5Gg
-	 5Bj4DqhTVLuYA==
+	b=cj0mWYT/gSLzBl9Ddu6gqT95GWtlOLsPsqw0WS3FeEzp+rNlGv/E347aCu430+I14
+	 7r/f+nDpuwKyhW6IggU8xSJl1zNeWtUxgal3SeGDhb/OCJeD0KCWjGCDAxDqL00szm
+	 TvC5kcbW3WgnddCF7xTKca9yuhoPQ0jxagXPOSl9kBnS4cdmhIC3Avg/CLSF3QSODs
+	 aUqkAlVmOyfTryadBxiAQ/lEyoO+JUD5+0LAJf2JOw+zMhSFy1pUS0/uasE8F9m9Py
+	 02G7p6Fit4CKuqaH2AwHJs3x1x5S3G68QjD0LijmS1dWaBrNccaYTX9H+nxhbblpx9
+	 Ic/3NEWc8/7Tg==
 From: Jakub Kicinski <kuba@kernel.org>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
@@ -39,9 +39,9 @@ Cc: netdev@vger.kernel.org,
 	willemdebruijn.kernel@gmail.com,
 	chuck.lever@oracle.com,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 2/3] tools: ynl-gen: improve unwind on parsing errors
-Date: Tue,  6 Jun 2023 12:43:01 -0700
-Message-Id: <20230606194302.919343-3-kuba@kernel.org>
+Subject: [PATCH net-next 3/3] tools: ynl: generate code for the handshake family
+Date: Tue,  6 Jun 2023 12:43:02 -0700
+Message-Id: <20230606194302.919343-4-kuba@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230606194302.919343-1-kuba@kernel.org>
 References: <20230606194302.919343-1-kuba@kernel.org>
@@ -53,83 +53,575 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-When parsing multi-attr we count the objects and then allocate
-an array to hold the parsed objects. If an attr space has multiple
-multi-attr objects, however, if parsing the first array fails
-we'll leave the object count for the second even tho the second
-array was never allocated.
-
-This may cause crashes when freeing objects on error.
-
-Count attributes to a variable on the stack and only set the count
-in the object once the memory was allocated.
+Generate support for the handshake family.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/net/ynl/ynl-gen-c.py | 22 +++++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
+ tools/net/ynl/generated/Makefile         |   2 +-
+ tools/net/ynl/generated/handshake-user.c | 385 +++++++++++++++++++++++
+ tools/net/ynl/generated/handshake-user.h | 148 +++++++++
+ 3 files changed, 534 insertions(+), 1 deletion(-)
+ create mode 100644 tools/net/ynl/generated/handshake-user.c
+ create mode 100644 tools/net/ynl/generated/handshake-user.h
 
-diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
-index 0a043edf5e03..c07340715601 100755
---- a/tools/net/ynl/ynl-gen-c.py
-+++ b/tools/net/ynl/ynl-gen-c.py
-@@ -488,7 +488,7 @@ from lib import SpecFamily, SpecAttrSet, SpecAttr, SpecOperation, SpecEnumSet, S
-             raise Exception(f"Sub-type {self.attr['type']} not supported yet")
+diff --git a/tools/net/ynl/generated/Makefile b/tools/net/ynl/generated/Makefile
+index bbf5d83755c9..916723193b60 100644
+--- a/tools/net/ynl/generated/Makefile
++++ b/tools/net/ynl/generated/Makefile
+@@ -9,7 +9,7 @@ endif
  
-     def _attr_get(self, ri, var):
--        return f'{var}->n_{self.c_name}++;', None, None
-+        return f'n_{self.c_name}++;', None, None
+ TOOL:=../ynl-gen-c.py
  
-     def attr_put(self, ri, var):
-         if self.attr['type'] in scalars:
-@@ -1306,6 +1306,11 @@ _C_KW = {
-         local_vars.append('struct ynl_parse_arg parg;')
-         init_lines.append('parg.ys = yarg->ys;')
- 
-+    all_multi = array_nests | multi_attrs
+-GENS:=fou netdev
++GENS:=handshake fou netdev
+ SRCS=$(patsubst %,%-user.c,${GENS})
+ HDRS=$(patsubst %,%-user.h,${GENS})
+ OBJS=$(patsubst %,%-user.o,${GENS})
+diff --git a/tools/net/ynl/generated/handshake-user.c b/tools/net/ynl/generated/handshake-user.c
+new file mode 100644
+index 000000000000..fe99c4ef7373
+--- /dev/null
++++ b/tools/net/ynl/generated/handshake-user.c
+@@ -0,0 +1,385 @@
++// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
++/* Do not edit directly, auto-generated from: */
++/*	Documentation/netlink/specs/handshake.yaml */
++/* YNL-GEN user source */
 +
-+    for anest in sorted(all_multi):
-+        local_vars.append(f"unsigned int n_{struct[anest].c_name} = 0;")
++#include <stdlib.h>
++#include "handshake-user.h"
++#include "ynl.h"
++#include <linux/handshake.h>
 +
-     ri.cw.block_start()
-     ri.cw.write_func_lvar(local_vars)
- 
-@@ -1316,6 +1321,11 @@ _C_KW = {
-     for arg in struct.inherited:
-         ri.cw.p(f'dst->{arg} = {arg};')
- 
-+    for anest in sorted(all_multi):
-+        aspec = struct[anest]
-+        ri.cw.p(f"if (dst->{aspec.c_name})")
-+        ri.cw.p(f'return ynl_error_parse(yarg, "attribute already present ({struct.attr_set.name}.{aspec.name})");')
++#include <stdlib.h>
++#include <stdio.h>
++#include <string.h>
++#include <libmnl/libmnl.h>
++#include <linux/genetlink.h>
 +
-     ri.cw.nl()
-     ri.cw.block_start(line=iter_line)
- 
-@@ -1331,8 +1341,9 @@ _C_KW = {
-     for anest in sorted(array_nests):
-         aspec = struct[anest]
- 
--        ri.cw.block_start(line=f"if (dst->n_{aspec.c_name})")
--        ri.cw.p(f"dst->{aspec.c_name} = calloc(dst->n_{aspec.c_name}, sizeof(*dst->{aspec.c_name}));")
-+        ri.cw.block_start(line=f"if (n_{aspec.c_name})")
-+        ri.cw.p(f"dst->{aspec.c_name} = calloc({aspec.c_name}, sizeof(*dst->{aspec.c_name}));")
-+        ri.cw.p(f"dst->n_{aspec.c_name} = n_{aspec.c_name};")
-         ri.cw.p('i = 0;')
-         ri.cw.p(f"parg.rsp_policy = &{aspec.nested_render_name}_nest;")
-         ri.cw.block_start(line=f"mnl_attr_for_each_nested(attr, attr_{aspec.c_name})")
-@@ -1346,8 +1357,9 @@ _C_KW = {
- 
-     for anest in sorted(multi_attrs):
-         aspec = struct[anest]
--        ri.cw.block_start(line=f"if (dst->n_{aspec.c_name})")
--        ri.cw.p(f"dst->{aspec.c_name} = calloc(dst->n_{aspec.c_name}, sizeof(*dst->{aspec.c_name}));")
-+        ri.cw.block_start(line=f"if (n_{aspec.c_name})")
-+        ri.cw.p(f"dst->{aspec.c_name} = calloc(n_{aspec.c_name}, sizeof(*dst->{aspec.c_name}));")
-+        ri.cw.p(f"dst->n_{aspec.c_name} = n_{aspec.c_name};")
-         ri.cw.p('i = 0;')
-         if 'nested-attributes' in aspec:
-             ri.cw.p(f"parg.rsp_policy = &{aspec.nested_render_name}_nest;")
++/* Enums */
++static const char * const handshake_op_strmap[] = {
++	[HANDSHAKE_CMD_READY] = "ready",
++	[HANDSHAKE_CMD_ACCEPT] = "accept",
++	[HANDSHAKE_CMD_DONE] = "done",
++};
++
++const char *handshake_op_str(int op)
++{
++	if (op < 0 || op >= (int)MNL_ARRAY_SIZE(handshake_op_strmap))
++		return NULL;
++	return handshake_op_strmap[op];
++}
++
++static const char * const handshake_handler_class_strmap[] = {
++	[0] = "none",
++	[1] = "tlshd",
++	[2] = "max",
++};
++
++const char *handshake_handler_class_str(enum handshake_handler_class value)
++{
++	if (value < 0 || value >= (int)MNL_ARRAY_SIZE(handshake_handler_class_strmap))
++		return NULL;
++	return handshake_handler_class_strmap[value];
++}
++
++static const char * const handshake_msg_type_strmap[] = {
++	[0] = "unspec",
++	[1] = "clienthello",
++	[2] = "serverhello",
++};
++
++const char *handshake_msg_type_str(enum handshake_msg_type value)
++{
++	if (value < 0 || value >= (int)MNL_ARRAY_SIZE(handshake_msg_type_strmap))
++		return NULL;
++	return handshake_msg_type_strmap[value];
++}
++
++static const char * const handshake_auth_strmap[] = {
++	[0] = "unspec",
++	[1] = "unauth",
++	[2] = "psk",
++	[3] = "x509",
++};
++
++const char *handshake_auth_str(enum handshake_auth value)
++{
++	if (value < 0 || value >= (int)MNL_ARRAY_SIZE(handshake_auth_strmap))
++		return NULL;
++	return handshake_auth_strmap[value];
++}
++
++/* Policies */
++extern struct ynl_policy_nest handshake_x509_nest;
++extern struct ynl_policy_nest handshake_accept_nest;
++extern struct ynl_policy_nest handshake_done_nest;
++
++struct ynl_policy_attr handshake_x509_policy[HANDSHAKE_A_X509_MAX + 1] = {
++	[HANDSHAKE_A_X509_CERT] = { .name = "cert", .type = YNL_PT_U32, },
++	[HANDSHAKE_A_X509_PRIVKEY] = { .name = "privkey", .type = YNL_PT_U32, },
++};
++
++struct ynl_policy_nest handshake_x509_nest = {
++	.max_attr = HANDSHAKE_A_X509_MAX,
++	.table = handshake_x509_policy,
++};
++
++struct ynl_policy_attr handshake_accept_policy[HANDSHAKE_A_ACCEPT_MAX + 1] = {
++	[HANDSHAKE_A_ACCEPT_SOCKFD] = { .name = "sockfd", .type = YNL_PT_U32, },
++	[HANDSHAKE_A_ACCEPT_HANDLER_CLASS] = { .name = "handler-class", .type = YNL_PT_U32, },
++	[HANDSHAKE_A_ACCEPT_MESSAGE_TYPE] = { .name = "message-type", .type = YNL_PT_U32, },
++	[HANDSHAKE_A_ACCEPT_TIMEOUT] = { .name = "timeout", .type = YNL_PT_U32, },
++	[HANDSHAKE_A_ACCEPT_AUTH_MODE] = { .name = "auth-mode", .type = YNL_PT_U32, },
++	[HANDSHAKE_A_ACCEPT_PEER_IDENTITY] = { .name = "peer-identity", .type = YNL_PT_U32, },
++	[HANDSHAKE_A_ACCEPT_CERTIFICATE] = { .name = "certificate", .type = YNL_PT_NEST, .nest = &handshake_x509_nest, },
++	[HANDSHAKE_A_ACCEPT_PEERNAME] = { .name = "peername", .type = YNL_PT_NUL_STR, },
++};
++
++struct ynl_policy_nest handshake_accept_nest = {
++	.max_attr = HANDSHAKE_A_ACCEPT_MAX,
++	.table = handshake_accept_policy,
++};
++
++struct ynl_policy_attr handshake_done_policy[HANDSHAKE_A_DONE_MAX + 1] = {
++	[HANDSHAKE_A_DONE_STATUS] = { .name = "status", .type = YNL_PT_U32, },
++	[HANDSHAKE_A_DONE_SOCKFD] = { .name = "sockfd", .type = YNL_PT_U32, },
++	[HANDSHAKE_A_DONE_REMOTE_AUTH] = { .name = "remote-auth", .type = YNL_PT_U32, },
++};
++
++struct ynl_policy_nest handshake_done_nest = {
++	.max_attr = HANDSHAKE_A_DONE_MAX,
++	.table = handshake_done_policy,
++};
++
++/* Common nested types */
++void handshake_x509_free(struct handshake_x509 *obj)
++{
++}
++
++int handshake_x509_parse(struct ynl_parse_arg *yarg,
++			 const struct nlattr *nested)
++{
++	struct handshake_x509 *dst = yarg->data;
++	const struct nlattr *attr;
++
++	mnl_attr_for_each_nested(attr, nested) {
++		if (mnl_attr_get_type(attr) == HANDSHAKE_A_X509_CERT) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.cert = 1;
++			dst->cert = mnl_attr_get_u32(attr);
++		}
++		else if (mnl_attr_get_type(attr) == HANDSHAKE_A_X509_PRIVKEY) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.privkey = 1;
++			dst->privkey = mnl_attr_get_u32(attr);
++		}
++	}
++
++	return 0;
++}
++
++/* ============== HANDSHAKE_CMD_ACCEPT ============== */
++/* HANDSHAKE_CMD_ACCEPT - do */
++void handshake_accept_req_free(struct handshake_accept_req *req)
++{
++	free(req);
++}
++
++void handshake_accept_rsp_free(struct handshake_accept_rsp *rsp)
++{
++	unsigned int i;
++
++	free(rsp->peer_identity);
++	for (i = 0; i < rsp->n_certificate; i++)
++		handshake_x509_free(&rsp->certificate[i]);
++	free(rsp->certificate);
++	free(rsp->peername);
++	free(rsp);
++}
++
++int handshake_accept_rsp_parse(const struct nlmsghdr *nlh, void *data)
++{
++	struct ynl_parse_arg *yarg = data;
++	struct handshake_accept_rsp *dst;
++	unsigned int n_peer_identity = 0;
++	unsigned int n_certificate = 0;
++	const struct nlattr *attr;
++	struct ynl_parse_arg parg;
++	int i;
++
++	dst = yarg->data;
++	parg.ys = yarg->ys;
++
++	if (dst->certificate)
++		return ynl_error_parse(yarg, "attribute already present (accept.certificate)");
++	if (dst->peer_identity)
++		return ynl_error_parse(yarg, "attribute already present (accept.peer-identity)");
++
++	mnl_attr_for_each(attr, nlh, sizeof(struct genlmsghdr)) {
++		if (mnl_attr_get_type(attr) == HANDSHAKE_A_ACCEPT_SOCKFD) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.sockfd = 1;
++			dst->sockfd = mnl_attr_get_u32(attr);
++		}
++		else if (mnl_attr_get_type(attr) == HANDSHAKE_A_ACCEPT_MESSAGE_TYPE) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.message_type = 1;
++			dst->message_type = mnl_attr_get_u32(attr);
++		}
++		else if (mnl_attr_get_type(attr) == HANDSHAKE_A_ACCEPT_TIMEOUT) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.timeout = 1;
++			dst->timeout = mnl_attr_get_u32(attr);
++		}
++		else if (mnl_attr_get_type(attr) == HANDSHAKE_A_ACCEPT_AUTH_MODE) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.auth_mode = 1;
++			dst->auth_mode = mnl_attr_get_u32(attr);
++		}
++		else if (mnl_attr_get_type(attr) == HANDSHAKE_A_ACCEPT_PEER_IDENTITY) {
++			n_peer_identity++;
++		}
++		else if (mnl_attr_get_type(attr) == HANDSHAKE_A_ACCEPT_CERTIFICATE) {
++			n_certificate++;
++		}
++		else if (mnl_attr_get_type(attr) == HANDSHAKE_A_ACCEPT_PEERNAME) {
++			unsigned int len;
++
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++
++			len = strnlen(mnl_attr_get_str(attr), mnl_attr_get_payload_len(attr));
++			dst->_present.peername_len = len;
++			dst->peername = malloc(len + 1);
++			memcpy(dst->peername, mnl_attr_get_str(attr), len);
++			dst->peername[len] = 0;
++		}
++	}
++
++	if (n_certificate) {
++		dst->certificate = calloc(n_certificate, sizeof(*dst->certificate));
++		dst->n_certificate = n_certificate;
++		i = 0;
++		parg.rsp_policy = &handshake_x509_nest;
++		mnl_attr_for_each(attr, nlh, sizeof(struct genlmsghdr)) {
++			if (mnl_attr_get_type(attr) == HANDSHAKE_A_ACCEPT_CERTIFICATE) {
++				parg.data = &dst->certificate[i];
++				if (handshake_x509_parse(&parg, attr))
++					return MNL_CB_ERROR;
++				i++;
++			}
++		}
++	}
++	if (n_peer_identity) {
++		dst->peer_identity = calloc(n_peer_identity, sizeof(*dst->peer_identity));
++		dst->n_peer_identity = n_peer_identity;
++		i = 0;
++		mnl_attr_for_each(attr, nlh, sizeof(struct genlmsghdr)) {
++			if (mnl_attr_get_type(attr) == HANDSHAKE_A_ACCEPT_PEER_IDENTITY) {
++				dst->peer_identity[i] = mnl_attr_get_u32(attr);
++				i++;
++			}
++		}
++	}
++
++	return MNL_CB_OK;
++}
++
++struct handshake_accept_rsp *
++handshake_accept(struct ynl_sock *ys, struct handshake_accept_req *req)
++{
++	struct ynl_req_state yrs = { .yarg = { .ys = ys, }, };
++	struct handshake_accept_rsp *rsp;
++	struct nlmsghdr *nlh;
++	int err;
++
++	nlh = ynl_gemsg_start_req(ys, ys->family_id, HANDSHAKE_CMD_ACCEPT, 1);
++	ys->req_policy = &handshake_accept_nest;
++	yrs.yarg.rsp_policy = &handshake_accept_nest;
++
++	if (req->_present.handler_class)
++		mnl_attr_put_u32(nlh, HANDSHAKE_A_ACCEPT_HANDLER_CLASS, req->handler_class);
++
++	rsp = calloc(1, sizeof(*rsp));
++	yrs.yarg.data = rsp;
++	yrs.cb = handshake_accept_rsp_parse;
++	yrs.rsp_cmd = HANDSHAKE_CMD_ACCEPT;
++
++	err = ynl_exec(ys, nlh, &yrs);
++	if (err < 0)
++		goto err_free;
++
++	return rsp;
++
++err_free:
++	handshake_accept_rsp_free(rsp);
++	return NULL;
++}
++
++/* HANDSHAKE_CMD_ACCEPT - notify */
++void handshake_accept_ntf_free(struct handshake_accept_ntf *rsp)
++{
++	unsigned int i;
++
++	free(rsp->obj.peer_identity);
++	for (i = 0; i < rsp->obj.n_certificate; i++)
++		handshake_x509_free(&rsp->obj.certificate[i]);
++	free(rsp->obj.certificate);
++	free(rsp->obj.peername);
++	free(rsp);
++}
++
++/* ============== HANDSHAKE_CMD_DONE ============== */
++/* HANDSHAKE_CMD_DONE - do */
++void handshake_done_req_free(struct handshake_done_req *req)
++{
++	free(req->remote_auth);
++	free(req);
++}
++
++int handshake_done(struct ynl_sock *ys, struct handshake_done_req *req)
++{
++	struct nlmsghdr *nlh;
++	int err;
++
++	nlh = ynl_gemsg_start_req(ys, ys->family_id, HANDSHAKE_CMD_DONE, 1);
++	ys->req_policy = &handshake_done_nest;
++
++	if (req->_present.status)
++		mnl_attr_put_u32(nlh, HANDSHAKE_A_DONE_STATUS, req->status);
++	if (req->_present.sockfd)
++		mnl_attr_put_u32(nlh, HANDSHAKE_A_DONE_SOCKFD, req->sockfd);
++	for (unsigned int i = 0; i < req->n_remote_auth; i++)
++		mnl_attr_put_u32(nlh, HANDSHAKE_A_DONE_REMOTE_AUTH, req->remote_auth[i]);
++
++	err = ynl_exec(ys, nlh, NULL);
++	if (err < 0)
++		return -1;
++
++	return 0;
++}
++
++/* --------------- Common notification parsing --------------- */
++struct ynl_ntf_base_type *handshake_ntf_parse(struct ynl_sock *ys)
++{
++	struct ynl_parse_arg yarg = { .ys = ys, };
++	struct ynl_ntf_base_type *rsp;
++	struct genlmsghdr *genlh;
++	struct nlmsghdr *nlh;
++	mnl_cb_t parse;
++	int len, err;
++
++	len = mnl_socket_recvfrom(ys->sock, ys->rx_buf, MNL_SOCKET_BUFFER_SIZE);
++	if (len < (ssize_t)(sizeof(*nlh) + sizeof(*genlh)))
++		return NULL;
++
++	nlh = (struct nlmsghdr *)ys->rx_buf;
++	genlh = mnl_nlmsg_get_payload(nlh);
++
++	switch (genlh->cmd) {
++	case HANDSHAKE_CMD_READY:
++		rsp = calloc(1, sizeof(struct handshake_accept_ntf));
++		parse = handshake_accept_rsp_parse;
++		yarg.rsp_policy = &handshake_accept_nest;
++		rsp->free = (void *)handshake_accept_ntf_free;
++		break;
++	default:
++		ynl_error_unknown_notification(ys, genlh->cmd);
++		return NULL;
++	}
++
++	yarg.data = rsp->data;
++
++	err = mnl_cb_run2(ys->rx_buf, len, 0, 0, parse, &yarg,
++			 ynl_cb_array, NLMSG_MIN_TYPE);
++	if (err < 0)
++		goto err_free;
++
++	rsp->family = nlh->nlmsg_type;
++	rsp->cmd = genlh->cmd;
++	return rsp;
++
++err_free:
++	free(rsp);
++	return NULL;
++}
++
++static const struct ynl_ntf_info handshake_ntf_info[] =  {
++	[HANDSHAKE_CMD_READY] =  {
++		.alloc_sz	= sizeof(struct handshake_accept_ntf),
++		.cb		= handshake_accept_rsp_parse,
++		.policy		= &handshake_accept_nest,
++		.free		= (void *)handshake_accept_ntf_free,
++	},
++};
++
++const struct ynl_family ynl_handshake_family =  {
++	.name		= "handshake",
++	.ntf_info	= handshake_ntf_info,
++	.ntf_info_size	= MNL_ARRAY_SIZE(handshake_ntf_info),
++};
+diff --git a/tools/net/ynl/generated/handshake-user.h b/tools/net/ynl/generated/handshake-user.h
+new file mode 100644
+index 000000000000..38e0844f2efd
+--- /dev/null
++++ b/tools/net/ynl/generated/handshake-user.h
+@@ -0,0 +1,148 @@
++/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
++/* Do not edit directly, auto-generated from: */
++/*	Documentation/netlink/specs/handshake.yaml */
++/* YNL-GEN user header */
++
++#ifndef _LINUX_HANDSHAKE_GEN_H
++#define _LINUX_HANDSHAKE_GEN_H
++
++#include <stdlib.h>
++#include <string.h>
++#include <linux/types.h>
++#include <linux/handshake.h>
++
++struct ynl_sock;
++
++extern const struct ynl_family ynl_handshake_family;
++
++/* Enums */
++const char *handshake_op_str(int op);
++const char *handshake_handler_class_str(enum handshake_handler_class value);
++const char *handshake_msg_type_str(enum handshake_msg_type value);
++const char *handshake_auth_str(enum handshake_auth value);
++
++/* Common nested types */
++struct handshake_x509 {
++	struct {
++		__u32 cert:1;
++		__u32 privkey:1;
++	} _present;
++
++	__u32 cert;
++	__u32 privkey;
++};
++
++/* ============== HANDSHAKE_CMD_ACCEPT ============== */
++/* HANDSHAKE_CMD_ACCEPT - do */
++struct handshake_accept_req {
++	struct {
++		__u32 handler_class:1;
++	} _present;
++
++	enum handshake_handler_class handler_class;
++};
++
++static inline struct handshake_accept_req *handshake_accept_req_alloc(void)
++{
++	return calloc(1, sizeof(struct handshake_accept_req));
++}
++void handshake_accept_req_free(struct handshake_accept_req *req);
++
++static inline void
++handshake_accept_req_set_handler_class(struct handshake_accept_req *req,
++				       enum handshake_handler_class handler_class)
++{
++	req->_present.handler_class = 1;
++	req->handler_class = handler_class;
++}
++
++struct handshake_accept_rsp {
++	struct {
++		__u32 sockfd:1;
++		__u32 message_type:1;
++		__u32 timeout:1;
++		__u32 auth_mode:1;
++		__u32 peername_len;
++	} _present;
++
++	__u32 sockfd;
++	enum handshake_msg_type message_type;
++	__u32 timeout;
++	enum handshake_auth auth_mode;
++	unsigned int n_peer_identity;
++	__u32 *peer_identity;
++	unsigned int n_certificate;
++	struct handshake_x509 *certificate;
++	char *peername;
++};
++
++void handshake_accept_rsp_free(struct handshake_accept_rsp *rsp);
++
++/*
++ * Handler retrieves next queued handshake request
++ */
++struct handshake_accept_rsp *
++handshake_accept(struct ynl_sock *ys, struct handshake_accept_req *req);
++
++/* HANDSHAKE_CMD_ACCEPT - notify */
++struct handshake_accept_ntf {
++	__u16 family;
++	__u8 cmd;
++	struct ynl_ntf_base_type *next;
++	void (*free)(struct handshake_accept_ntf *ntf);
++	struct handshake_accept_rsp obj __attribute__ ((aligned (8)));
++};
++
++void handshake_accept_ntf_free(struct handshake_accept_ntf *rsp);
++
++/* ============== HANDSHAKE_CMD_DONE ============== */
++/* HANDSHAKE_CMD_DONE - do */
++struct handshake_done_req {
++	struct {
++		__u32 status:1;
++		__u32 sockfd:1;
++	} _present;
++
++	__u32 status;
++	__u32 sockfd;
++	unsigned int n_remote_auth;
++	__u32 *remote_auth;
++};
++
++static inline struct handshake_done_req *handshake_done_req_alloc(void)
++{
++	return calloc(1, sizeof(struct handshake_done_req));
++}
++void handshake_done_req_free(struct handshake_done_req *req);
++
++static inline void
++handshake_done_req_set_status(struct handshake_done_req *req, __u32 status)
++{
++	req->_present.status = 1;
++	req->status = status;
++}
++static inline void
++handshake_done_req_set_sockfd(struct handshake_done_req *req, __u32 sockfd)
++{
++	req->_present.sockfd = 1;
++	req->sockfd = sockfd;
++}
++static inline void
++__handshake_done_req_set_remote_auth(struct handshake_done_req *req,
++				     __u32 *remote_auth,
++				     unsigned int n_remote_auth)
++{
++	free(req->remote_auth);
++	req->remote_auth = remote_auth;
++	req->n_remote_auth = n_remote_auth;
++}
++
++/*
++ * Handler reports handshake completion
++ */
++int handshake_done(struct ynl_sock *ys, struct handshake_done_req *req);
++
++/* --------------- Common notification parsing --------------- */
++struct ynl_ntf_base_type *handshake_ntf_parse(struct ynl_sock *ys);
++
++#endif /* _LINUX_HANDSHAKE_GEN_H */
 -- 
 2.40.1
 
