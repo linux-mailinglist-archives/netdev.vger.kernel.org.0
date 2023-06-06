@@ -1,134 +1,118 @@
-Return-Path: <netdev+bounces-8321-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8322-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id AA8127239B2
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:42:13 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 31D3A723A07
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 09:43:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 163111C20E76
-	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 07:42:05 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6B8561C20D85
+	for <lists+netdev@lfdr.de>; Tue,  6 Jun 2023 07:43:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F048417FF1;
-	Tue,  6 Jun 2023 07:41:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7552122627;
+	Tue,  6 Jun 2023 07:43:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E65691C29
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 07:41:34 +0000 (UTC)
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF7810C9
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 00:41:21 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id 3f1490d57ef6-bad1c8dce48so7933083276.0
-        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 00:41:21 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B902611C
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 07:43:51 +0000 (UTC)
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E93A2133
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 00:43:15 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id 5b1f17b1804b1-3f7359a3b78so50185e9.0
+        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 00:43:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1686037280; x=1688629280;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZFjKdHmrntpuHkrgo6auPnB3E7mtl4GL225od8JlKGA=;
-        b=Kx78+Au8Lg4d6sql4Ow73q/Ekz1eiJ2/riJaKLT7fuUfXz7ubA+a93vYQehCWcyc01
-         7sxJ4US1tId5DdkTj33estO563J1YLPv0CbmWt2+TfAsyiir62yMUFbsTXT1fx5HiKsG
-         dNna8HD9nUqoiuFr6xuimfH2Nk8bFRDzYOITw7YPd1TUv4anGPNuMKjSTDTlj/QkFmQy
-         b67+oLLPeZbWf4QMxUTqYzRRId9wbIFBWY+L9qEOr5mBhtnZnp0FtIBcoX/tUWdnouLK
-         3etFwtRA2NPx/kfKhh1gCV2S4biRalsPV68LpINofsZ4MV85ozEHuo2lqSR4239qUl9D
-         XyWw==
+        d=google.com; s=20221208; t=1686037392; x=1688629392;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YJBUgJzMxmaKZc/DYKCAnxSXkWETIyFkdIdcIwxmtdg=;
+        b=67bIEnAVYA2ECeBtkkfC5hPwlwQRZC0wYd++NsqA/3dV8C4Rn6lWn6sUOZisLB1K1Q
+         BN/Jol6J8qQOpfKEbYceL8mBqHcL1jt/faXuZ8ELo7iD+Uv63/3IxWdSC0akrRkZHgSg
+         daHdnEu5V+Aa9u1FKaTYXhStSFB9b78air8YRK7Vu+oJ2IyuW/NwrxQTcIBFTta7Svkl
+         /6xXGxMnRo69rvSGwW7aOK4C3UyyJf78225fHxCzPXunnfRQc4JEiWG4euN+977EIO4B
+         vGY7hEVcKuyVIbVlKSsGnYSjTIBq+26TcKRjD0yJjySO06ODSqXt8eIdeM2lgWM33psW
+         AWkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686037280; x=1688629280;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZFjKdHmrntpuHkrgo6auPnB3E7mtl4GL225od8JlKGA=;
-        b=e7TRWBwi4i/X6Y6qEdBHlDZaHdww1yKaLgcWpZNwZY1umaz+T/y6T4JC3Vc9sC7FcV
-         QbNRRfl1Oae+uzyVLnPYxpOzLuOTaUJSDM6ad5uneIRWTn6uEaPQk38/WuBaJ/3XsDUO
-         BE8eS+3VxJTqHwba/YWfSDmdHbsiDjPx9m383M4WhQgdyXkvvVhaTznX6iqZFvk73NpH
-         kCaVmt/544PZsGlumCe+76d4AlUm6p5j/t8wo3MJDfKadhtIWHAsv2T6kkr/hmQ1T7it
-         nNrV7/iK6YrdsjHGP7BHYMeMaC719Kqru4Q/Z2uf49v8RrX6LnJfgyDxeQhLUOUsHBMp
-         BDbA==
-X-Gm-Message-State: AC+VfDzZ40dlGz/IkZFBEJwYWkOMZYI8uWmv8r3SDZDFD4+2aR455vjN
-	J7kSS0K4AA/QL1SyU/mcNyFscHfRiGuUnA==
-X-Google-Smtp-Source: ACHHUZ5om8L5wJIeFd/KgBkNYu+d/INf1F6yn/at8bvqPg87KvfH2wf6vk5KV5JER95PvL4uURxUTk8yCMyrjQ==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:100c:b0:ba8:4ff5:3217 with SMTP
- id w12-20020a056902100c00b00ba84ff53217mr378080ybt.3.1686037280627; Tue, 06
- Jun 2023 00:41:20 -0700 (PDT)
-Date: Tue,  6 Jun 2023 07:41:15 +0000
-In-Reply-To: <20230606074115.3789733-1-edumazet@google.com>
+        d=1e100.net; s=20221208; t=1686037392; x=1688629392;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=YJBUgJzMxmaKZc/DYKCAnxSXkWETIyFkdIdcIwxmtdg=;
+        b=hLzAPDEzQM0FDzYEIAIOYVAB+g2bqk557UBNodUlvXZywn4063VXi9j3yKXdgsVlde
+         VMYA62+wFi+mwuohyJCPX9slttjXIkQe2L78EfAGzqhCFW4pVVRUWIZ4U2ZLJDBhM3bs
+         lS1kZNBB045iNTNuVSwdVaMPzdAqP/qOaBGgG0OtgN+LIu4kweTSlxEYqpAfaQH6DwbW
+         NK3Ob1nLpK2QZ5579rVJ1NxSPpUkmZm5Fwfmcf2v5tka5uwny3PiychedpYaEM6zyqX0
+         L34dQdxmJXZYbSES/96rtgFDlfv2NQV+aUZQyj0kuAhTFBIu7OvK0Tne0T5l+ns6gCIc
+         snaw==
+X-Gm-Message-State: AC+VfDz5L+BCD378JVwVs1DkRMOUuo59fUhe5hNQ99+kE0Mk121BV+oG
+	eBClIBlziVXXjjFxXveEIWfNPMvvwL60Pk4uz9p2WrqexfL01XbnnEDJvg==
+X-Google-Smtp-Source: ACHHUZ6PrdQC/kp4WyLpHsgueD8Uv55Y26nEKEqkPGSKwcyCZyzIaBzhMSY2vJOnsLlVx2Q9s6hLOHPq4DOFlC3Vl7k=
+X-Received: by 2002:a05:600c:8088:b0:3f7:e463:a0d6 with SMTP id
+ ew8-20020a05600c808800b003f7e463a0d6mr149833wmb.0.1686037392464; Tue, 06 Jun
+ 2023 00:43:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <20230606074115.3789733-1-edumazet@google.com>
-X-Mailer: git-send-email 2.41.0.rc0.172.g3f132b7071-goog
-Message-ID: <20230606074115.3789733-3-edumazet@google.com>
-Subject: [PATCH v2 net 2/2] rfs: annotate lockless accesses to RFS sock flow table
+MIME-Version: 1.0
+References: <20230602163141.2115187-1-edumazet@google.com> <20230602163141.2115187-2-edumazet@google.com>
+ <20230605155253.1cedfdb0@kernel.org> <CANn89iKhSv981L-WHn=479U2XniQXU0qNX=yoAaWBA1LdY4B4g@mail.gmail.com>
+In-Reply-To: <CANn89iKhSv981L-WHn=479U2XniQXU0qNX=yoAaWBA1LdY4B4g@mail.gmail.com>
 From: Eric Dumazet <edumazet@google.com>
-To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>
-Cc: Simon Horman <simon.horman@corigine.com>, netdev@vger.kernel.org, 
-	eric.dumazet@gmail.com, Eric Dumazet <edumazet@google.com>
+Date: Tue, 6 Jun 2023 09:43:00 +0200
+Message-ID: <CANn89iLcaNO8K14vC7o6WGTSSOtNpDgopWz0pT2r0LBpUSDFFQ@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] rfs: annotate lockless accesses to sk->sk_rxhash
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: "David S . Miller" <davem@davemloft.net>, Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org, 
+	eric.dumazet@gmail.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add READ_ONCE()/WRITE_ONCE() on accesses to the sock flow table.
+On Tue, Jun 6, 2023 at 9:30=E2=80=AFAM Eric Dumazet <edumazet@google.com> w=
+rote:
+>
+> On Tue, Jun 6, 2023 at 12:52=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> =
+wrote:
+> >
+> > On Fri,  2 Jun 2023 16:31:40 +0000 Eric Dumazet wrote:
+> > > +             if (sk->sk_state =3D=3D TCP_ESTABLISHED) {
+> > > +                     /* This READ_ONCE() is paired with the WRITE_ON=
+CE()
+> > > +                      * from sock_rps_save_rxhash() and sock_rps_res=
+et_rxhash().
+> > > +                      */
+> > > +                     sock_rps_record_flow_hash(READ_ONCE(sk->sk_rxha=
+sh));
+> > > +                     }
+> >
+> > Hi Eric, the series got "changes requested", a bit unclear why,
+> > I'm guessing it's because it lacks Fixes tags.
+> >
+> > I also noticed that the closing bracket above looks misaligned.
+>
+> Right I think Simon gave this feedback.
 
-This also prevents a (smart ?) compiler to remove the condition in:
+Oops, that was Kuniyuki
 
-if (table->ents[index] != newval)
-        table->ents[index] = newval;
+Kuniyuki, do you mind adding your Reviewed-by: tag that I forgot to add ?
 
-We need the condition to avoid dirtying a shared cache line.
+>
+> >
+> > Would you mind reposting? If you prefer not to add Fixes tag
+> > a mention that it's intentional in the cover letter is enough.
+>
+> Yes, I do not think a Fixes: tag is necessary.
 
-Fixes: fec5e652e58f ("rfs: Receive Flow Steering")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/linux/netdevice.h | 7 +++++--
- net/core/dev.c            | 6 ++++--
- 2 files changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 08fbd4622ccf731daaee34ad99773d6dc2e82fa6..e6f22b7403d014a2cf4d81d931109a594ce1398e 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -768,8 +768,11 @@ static inline void rps_record_sock_flow(struct rps_sock_flow_table *table,
- 		/* We only give a hint, preemption can change CPU under us */
- 		val |= raw_smp_processor_id();
- 
--		if (table->ents[index] != val)
--			table->ents[index] = val;
-+		/* The following WRITE_ONCE() is paired with the READ_ONCE()
-+		 * here, and another one in get_rps_cpu().
-+		 */
-+		if (READ_ONCE(table->ents[index]) != val)
-+			WRITE_ONCE(table->ents[index], val);
- 	}
- }
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index b3c13e0419356b943e90b1f46dd7e035c6ec1a9c..1495f8aff288e944c8cab21297f244a6fcde752f 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4471,8 +4471,10 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
- 		u32 next_cpu;
- 		u32 ident;
- 
--		/* First check into global flow table if there is a match */
--		ident = sock_flow_table->ents[hash & sock_flow_table->mask];
-+		/* First check into global flow table if there is a match.
-+		 * This READ_ONCE() pairs with WRITE_ONCE() from rps_record_sock_flow().
-+		 */
-+		ident = READ_ONCE(sock_flow_table->ents[hash & sock_flow_table->mask]);
- 		if ((ident ^ hash) & ~rps_cpu_mask)
- 			goto try_rps;
- 
--- 
-2.41.0.rc0.172.g3f132b7071-goog
-
+I added them, because why not ;)
 
