@@ -1,38 +1,39 @@
-Return-Path: <netdev+bounces-8824-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8825-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 37BF6725DFB
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:08:22 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 60ECD725E01
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:08:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 926031C20DE9
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 12:08:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9140C280DD0
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 12:08:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3710533CB5;
-	Wed,  7 Jun 2023 12:08:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C493434443;
+	Wed,  7 Jun 2023 12:08:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BF9730B90
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 12:08:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B95A130B90
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 12:08:21 +0000 (UTC)
 Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5921E1BD5;
-	Wed,  7 Jun 2023 05:08:17 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF3F51BD4;
+	Wed,  7 Jun 2023 05:08:19 -0700 (PDT)
 X-GND-Sasl: maxime.chevallier@bootlin.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1686139695;
+	t=1686139698;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=zDOmdelsTF8Z6hYisJ6LU6CbovJMoLnJ7YdYJmDf1ok=;
-	b=DBOeENL1aunjzqB9GnjIuX+NQpbFPAUgX9U+zqJRBmOJxQGc3aLUl/x4yyNnyA690SBdsT
-	fam6eB4E74ikXWnKneFeZPBdZrRCANi7s9PH7c0FWqcZH0cHTe8CJz1RF01/C0CE2/R9VA
-	1DNMpqioOz63xeQNMQ7bvPttk78uEDN4jFs27talQoWIv2XSz1mwGISQwhHHokvoI7V23v
-	TzE+M1fHhUwA8RcIdjhwKAk/D0q4YnDxGjsWd70t4sYyrQsrQJPgqcp5X76RO/9E52rNUN
-	b1PGPonop4DMBh2o4mt27FHFm7zQGDDg9b018BjLUdHqKPNf4HyVKITkegFcEQ==
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=6WgS2itewXgwIqmxjlbCVju713PZbtSt5czOzpTuXBA=;
+	b=INw8V+2UyFA/SPRFanuth0K/BngfjNL1jgchzheesyHYptmp5GvGnc+eRJ3pkV5Gs1jTRf
+	u000j3TuffrZhH+D4bfp2tGaxRae2v5NO547fXC+VWipEBuHWo1969nY0W7t6xUtCWbJGo
+	9lPidmLHPTrqJxsOs0RFWaFWlI45okDOx6QBUJTYWugXu4nEN2ohE5cMINXi+rMJRRF6ua
+	jn0ivkiOYqYr8+Dors43NrstoqhZbrv8fAgd+F4GTPi9pQpuVDtQIDTIrX8SMb0ofGrr97
+	26hwkPgxT8FC8tdyYIP4qg6TNqjAmUlJkobM+Bcz/EUrW9m6mfi1D5M8TQaDRQ==
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
@@ -56,8 +57,8 @@ X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 2CF07E0009;
-	Wed,  7 Jun 2023 12:08:11 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id EAB9DE000D;
+	Wed,  7 Jun 2023 12:08:15 +0000 (UTC)
 From: Maxime Chevallier <maxime.chevallier@bootlin.com>
 To: davem@davemloft.net
 Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
@@ -83,10 +84,12 @@ Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
 	Simon Horman <simon.horman@corigine.com>,
 	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
 	Feiyang Chen <chenfeiyang@loongson.cn>
-Subject: [PATCH net-next v4 0/5] Followup fixes for the dwmac and altera lynx conversion
-Date: Wed,  7 Jun 2023 15:59:36 +0200
-Message-Id: <20230607135941.407054-1-maxime.chevallier@bootlin.com>
+Subject: [PATCH net-next v4 1/5] net: altera-tse: Initialize local structs before using it
+Date: Wed,  7 Jun 2023 15:59:37 +0200
+Message-Id: <20230607135941.407054-2-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230607135941.407054-1-maxime.chevallier@bootlin.com>
+References: <20230607135941.407054-1-maxime.chevallier@bootlin.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -101,41 +104,33 @@ X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello everyone,
+The regmap_config and mdio_regmap_config objects needs to be zeroed before
+using them. This will cause spurious errors at probe time as config->pad_bits
+is containing random uninitialized data.
 
-Here's yet another version of the cleanup series for the TSE PCS replacement
-by PCS Lynx. It includes Kconfig fixups, some missing initialisations
-and a slight rework suggested by Russell for the dwmac cleanup sequence,
-along with more explicit zeroing of local structures as per MAciej's
-review.
+Fixes: db48abbaa18e ("net: ethernet: altera-tse: Convert to mdio-regmap and use PCS Lynx")
+Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+---
+V3->V4 : Also zero "mrc" from Maciej's review
+V2->V3 : No changes
+V1->V2 : No changes
 
-V3->V4 :
- - Zero mdio_regmap_config objects
- - Make regmap config more local in dwmac_socfpga
-V2->V3 :
- - Fix uninitialized .autoscan field for mdio regmap configuration in
-   both altera_tse and dwmac_socfpga
-V1->V2 : 
- - Fix a Kconfig inconsistency
- - rework the dwmac_socfpga cleanup sequence
+ drivers/net/ethernet/altera/altera_tse_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Maxime Chevallier (5):
-  net: altera-tse: Initialize local structs before using it
-  net: altera_tse: Use the correct Kconfig option for the PCS_LYNX
-    dependency
-  net: stmmac: make the pcs_lynx cleanup sequence specific to
-    dwmac_socfpga
-  net: altera_tse: explicitly disable autoscan on the regmap-mdio bus
-  net: dwmac_socfpga: initialize local data for mdio regmap
-    configuration
-
- drivers/net/ethernet/altera/Kconfig           |  2 +-
- drivers/net/ethernet/altera/altera_tse_main.c |  3 ++
- drivers/net/ethernet/stmicro/stmmac/common.h  |  1 -
- .../ethernet/stmicro/stmmac/dwmac-socfpga.c   | 29 ++++++++++++++-----
- .../net/ethernet/stmicro/stmmac/stmmac_mdio.c |  3 --
- 5 files changed, 26 insertions(+), 12 deletions(-)
-
+diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
+index d866c0f1b503..215f9fb89c5b 100644
+--- a/drivers/net/ethernet/altera/altera_tse_main.c
++++ b/drivers/net/ethernet/altera/altera_tse_main.c
+@@ -1255,6 +1255,8 @@ static int altera_tse_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_free_netdev;
+ 
++	memset(&pcs_regmap_cfg, 0, sizeof(pcs_regmap_cfg));
++	memset(&mrc, 0, sizeof(mrc));
+ 	/* SGMII PCS address space. The location can vary depending on how the
+ 	 * IP is integrated. We can have a resource dedicated to it at a specific
+ 	 * address space, but if it's not the case, we fallback to the mdiophy0
 -- 
 2.40.1
 
