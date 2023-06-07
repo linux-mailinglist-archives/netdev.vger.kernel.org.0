@@ -1,150 +1,523 @@
-Return-Path: <netdev+bounces-8916-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8917-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4821E726477
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 17:26:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 07E987264A5
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 17:28:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9EEB81C20D88
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 15:26:44 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5655C1C20D8F
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 15:28:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 838BB33C89;
-	Wed,  7 Jun 2023 15:26:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0470B34447;
+	Wed,  7 Jun 2023 15:28:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 715E31ACB5
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 15:26:45 +0000 (UTC)
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on20701.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eaa::701])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74417213A;
-	Wed,  7 Jun 2023 08:26:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nxX+GKH1fK4d/DuOLHLXhZjHY2BEZIrUkL5dWIjBnhqQ2LYL17h1u6G4TqWRFexsJuYPXvbYrjUkhrGaQyNkJFNo8jQjAPuruIrxzhb36Tp9Wd1u59ljWtY+KmM4q1Ls/7NHWzeDDps99sPAQBGYlE1y593b1v5A0/jkceunQoMUpFQiI8O4vuI8ocsOcRW3pVkpsgn9WqzDk5DfYhArwBAuNmfqNPZCjSRU/kJqeccJgyi7BeAwskEYLT4YCigi9o4dfW9pTvpB08VBGrCp0phvVozgDH7CY/Ufsflx8BwlpRLO/Xm72IeNAzc4MdJcMJWhgBb+saScuOD66l6o3g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cdGs+UP+tZtUpZHUFqOu72LeoR349IV+SKtaB4r8TH4=;
- b=UKtLXcmKlVOimG4eGw5yvqrJe6Dix9SxlSgZhhzV7JFzzfCj+6HYE9Trn+5SaeFfihnhb7bXZFzU3//RT7zcaZ3iaQ4vI6xMTfNB6BAoGn8eMonPELqkx4h7e0I3ZHnABQgrn2Pr6JNalwhH27u8D28gCxd65y3rnnPDoL7x9Jo+wHTaGtq3pj/iDNvaL2xVO3tHxITwKQ1dlQ581IgBJPgrexi0u69nQrnmwXKxDTo5pIn33FqWzzNTe8Fi0iBJD6GMLX7CI1clTcJOSiEpUeeu64qZnHkS7cm8ogkrRkPGUsbZQE2sXr9P57VE1kzSzT7c+yoKhVPcJ2Li0o0wNA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5B6C1ACB5
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 15:28:34 +0000 (UTC)
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD8B271E
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 08:28:07 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id 2adb3069b0e04-4f61efe4584so2878e87.1
+        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 08:28:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cdGs+UP+tZtUpZHUFqOu72LeoR349IV+SKtaB4r8TH4=;
- b=jqMVo2q0/mnpsv0z759zC9fKtJwkKC/3DgDshSbl0Mz48qlCXFm7dRynoXfHiUxfvUOKTQkB9VRVktijVBfEtrmfYTFjr1IyOl3b6vxho/K3l+EPjJ/ozUJdSNw1sEwMfPi4/gXLBlccp1igxCJm45WieAFstb9GC1vEKAzrnZ0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from BY3PR13MB4834.namprd13.prod.outlook.com (2603:10b6:a03:36b::10)
- by BY1PR13MB6261.namprd13.prod.outlook.com (2603:10b6:a03:52f::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Wed, 7 Jun
- 2023 15:25:49 +0000
-Received: from BY3PR13MB4834.namprd13.prod.outlook.com
- ([fe80::9e79:5a11:b59:4e2e]) by BY3PR13MB4834.namprd13.prod.outlook.com
- ([fe80::9e79:5a11:b59:4e2e%7]) with mapi id 15.20.6455.037; Wed, 7 Jun 2023
- 15:25:49 +0000
-Date: Wed, 7 Jun 2023 17:25:41 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: s.shtylyov@omp.ru, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Phong Hoang <phong.hoang.wz@renesas.com>
-Subject: Re: [PATCH net v2] net: renesas: rswitch: Fix timestamp feature
- after all descriptors are used
-Message-ID: <ZIChdcJ1e2cl5epK@corigine.com>
-References: <20230607070141.1795982-1-yoshihiro.shimoda.uh@renesas.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230607070141.1795982-1-yoshihiro.shimoda.uh@renesas.com>
-X-ClientProxiedBy: AM9P192CA0014.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:20b:21d::19) To BY3PR13MB4834.namprd13.prod.outlook.com
- (2603:10b6:a03:36b::10)
+        d=google.com; s=20221208; t=1686151659; x=1688743659;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qObgbYaFcaskIbABQbPOzpT+mA1o63LMYBFQa3B3P2M=;
+        b=6n6UeIP091KfURrhFgJ09uB3YFwdIlch5kic/RctRkl7/jVjNarsD8uJjeYjjM5PhO
+         NH8lnkqOyYhR7ywmU0XxTqSPycWMblRyq2sOq4hUp49a2f454QeHbAETRS99mFkx2sOl
+         d+HtJXJ2XyiDNodn7pM5N0MsTQFXmO7iPv48h7bV7iZB8SKJK/d7HGtc7oEVOLTSs3nA
+         RqT5XxHn1P3KbvhGLxELLcSVPKe+WCcUVlfu/hEs1RIzCwEFhUYtzErBaTO9G4Mz+yi9
+         kXenX/yU/+hOiiBN51slZP0aav+NjyHj8eq3fqBRZPplvQzGbfCTqrEJYnfcs5iUs/ON
+         7tRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686151659; x=1688743659;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=qObgbYaFcaskIbABQbPOzpT+mA1o63LMYBFQa3B3P2M=;
+        b=DFZWh1+xPIOPNWVmg9Xa01MSaDTqWiShZJiYJkXSJZEtUyP1Xr1cGCF58iaHstkaFl
+         fS9+Lr59BWDz5RNhItIGx5+xbQ72W6EFyHYg1h6BbfhnlAbDDdeAmzRE+yUx24z832Wl
+         17sJN0iQCRVR+I9XTSqraFGeJ5sIDfgkWp+nq7LeR4NY7u6+PXAquD45imdD3HeMYmqu
+         vPd14QThHpQwS4xw1OIHY+iYC6HRJBNB1413qYriy2E0J8GpNB03x87mHs+z0t3xCLMZ
+         eNXsckL34p1qKK7jx7OKzrFi2DLOTaQ5M4EB1AulspLG6wFWXBfbJcxSb9Ue3LyTrhto
+         0KTg==
+X-Gm-Message-State: AC+VfDw8MwKrVu9t76k8OXyD7n/iXMKfu5SMWMWBld6g8LfUXp2ySr/9
+	9sAG+Ji1WR7y67cETKxrQLg/oX1wJFQB+gA9wTQseg==
+X-Google-Smtp-Source: ACHHUZ7LR5vou+bNzEEV30UgzqIxuSFs8cJa1chfHdUPUXM3u8u+HRCQXfq8gt5UwysxnkKyyixxka9le/heRotPrZc=
+X-Received: by 2002:ac2:5392:0:b0:4f6:132d:a9c2 with SMTP id
+ g18-20020ac25392000000b004f6132da9c2mr117671lfh.3.1686151658685; Wed, 07 Jun
+ 2023 08:27:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BY3PR13MB4834:EE_|BY1PR13MB6261:EE_
-X-MS-Office365-Filtering-Correlation-Id: edefac6f-274a-473f-052e-08db676b78cc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	tYxzbtpF7WgcN3fqMoVJixqVdf9zF3dzsdJQ4mFAR8h5WDG82N7DomToj/cGQsOPkfNOEOlGrCzBj+MgupAW06bYqnr0cKa4ylmfDUOGj1a6J/esfiNxF3Ucup/CQFvUilB4ed1aTF00P956bXIE9yHGWVgrtxtyb9jPRYH7WKUNISgSUDbBLPl2SwwHCujk//BXTg7EoUCTsKEIJNIyyqYT+6R9KThkF1k6I4KoP41J/Cng5j4JCxSH6PkWaVmEg7ks/SdoFzuEMq+4DNCbvPOEFQAaOTGzmFsnGkPyNMlJvT7dl9o5nXrMJjd3HfljWKms1Ld6PvC73sVEjFSruXkht78dBq8+/dHd4McI8y3XVMMacGlBxkwqtYUBrQcGU/UZJwXztXck3xL5s+x1wt0AKcAoXbRkn1dv7vfCDu9yyMIcxW5EZYZBM9pqS+zAMqIlTuwpgT+IFXfHp7zZiO8HR1NyzVNbMUGDtFaAuBnVJHGLeO6579YblT8Z2yehYNILqlqqG1wMdlmVtzLkne5gg5KMWFtfXdVsLmCcUed9PpnRLL4D2rb/vHIxDQG6
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR13MB4834.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(136003)(39840400004)(346002)(376002)(451199021)(6506007)(6666004)(6512007)(2616005)(478600001)(186003)(6486002)(66556008)(66946007)(4326008)(6916009)(66476007)(316002)(38100700002)(8676002)(8936002)(44832011)(5660300002)(2906002)(4744005)(86362001)(36756003)(41300700001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?OujqBLvPz4ciQ5pvMWPVVrncw76AOd90pTjIAk+2hPN35rOcT12I70nNagpv?=
- =?us-ascii?Q?WfzwuEeTI/DWSAHgWZprt+WdTwpxZZOaOLfOSpDjVVgvH0OM/AH1JTVGa3Ht?=
- =?us-ascii?Q?OP2xBfO1AZQessuIpeMf3SPx06R6/VGctNhEtA6Buw7KZvjRMggirxcY7OPt?=
- =?us-ascii?Q?9SsiqOAt7FQR2XgbUFU2Ocog44G3Esr7z9et6I3UaKKQOdnzGtlmSu/7H8ya?=
- =?us-ascii?Q?uT1iakTqRQxLlF8ZF3LgFB58b8Xzd4nyhzUp/Q+FBYNuOWkYgWx92AmJeTnI?=
- =?us-ascii?Q?J5J7QSN4Cc7JWAUx8XCgkvZCnMAyMic5/Pej7qRXpy5D1VbLs1y5FUY2kQdZ?=
- =?us-ascii?Q?1Gsuso1rJiIczB+C4t2qTnpEJhVv+ZDPWDbAeMTlkZKLz9NN+xu897EeKJH8?=
- =?us-ascii?Q?JMJH4HlrYdiDec7iv+NKHTzmp0v48cjL8aePDmJQr5awwEMZi26JuhChXXEb?=
- =?us-ascii?Q?CEXusuNESqhmZhjNnw3/H8LrWi89BWpgX2AIhT7SmaUMsw5mq6YRtWf9gFir?=
- =?us-ascii?Q?Ihwsyx6hkjCrJ5z7l60JXWCfkVzMYHj75sh6TybKnVUS0830fJL+thjp7sam?=
- =?us-ascii?Q?AYrclxEXgu/rpwn0/OnrPp6tR3oijz1as4X8UUcuZ3c2FkT9MtQ0ri3LdQ2H?=
- =?us-ascii?Q?OIBCKCGgEWebIkgW8oyJCba3e8x0uC/6nlPrn3kjCsZnXanwm4Y1IJdpFiZ3?=
- =?us-ascii?Q?kwEyCsARU9XPJIB49XWN9pG0NQgGqWAxa64AuSJcOQMznu23VmqsZiTK+xa9?=
- =?us-ascii?Q?7YXESLVk/+GMb87aSOPTlqKb8JKHaWaUJyFgkTJpv9VcUpOa1LAR6OMuIs8Q?=
- =?us-ascii?Q?VuY9hPa4bizSVq+J7+dMBxKrmGLK0FsBTHvuJBARuGDgOpNg6XIychudaUw2?=
- =?us-ascii?Q?NrEXhN6mgmNlPqwCNWY5Vr1E3PEK81Nw4b3SctACygOuK+zhd/Bphi0+1guJ?=
- =?us-ascii?Q?XNyefraLfJOnCTH+dNsU40H5TmGGptAUbvMLTDQJjZOpsKbBGVwIgX1pPReg?=
- =?us-ascii?Q?8oGooSyyPcK564pMKpFZS0HV9t0u3Qxyl5op9ADVX+kHyotAuK0UiPRamd1g?=
- =?us-ascii?Q?8bn5LquMQe8Lyw5mylocacFfUZaaP9m+Z3ndzXHn1UEsUQGZuE2NbqHeghgT?=
- =?us-ascii?Q?4k0So6a6tzv1UiMJcbruGh/6+4c4HTQMCbeY+0qBN8ANDtxMIY2ySoYfsshD?=
- =?us-ascii?Q?Er8cT5DPbI+zxnsGY5KE1i6xT6DDu9y1vCuMtXXZb9NNH6htfhHo2MTQMuNM?=
- =?us-ascii?Q?h4Fz/sCc3GVPSuFbRbsxJ5Ug+Kzww8UkOJ/ix62Ulhk5xjoyi+iGEoKAmJpv?=
- =?us-ascii?Q?Tygrsg5S+1y8dvQbAF6Ttcpjdn708TJhDQef/moEWcXQj0bmFvjnoNXj22Se?=
- =?us-ascii?Q?6ZzdUgEYVvRcZY+hObvfhSXdwtAOUtgGRnxsydLHDJtT7uiC5J7fUQ7Sz8Gz?=
- =?us-ascii?Q?0JuxAiIh+VQIQx2KM6w1QbxJEfSslX99kHJ0YlO2KwjN2Jf7pP1dz1JVOk3P?=
- =?us-ascii?Q?5EfHiD2DJ4Nk3xdoh93+rTcyrxtz1RgmLckeLM+GJauZQlIDdNCMKWGJ1pgv?=
- =?us-ascii?Q?mnGJhE6VG+a+zWiv6Kjnk86sPC7YCjzCzW8SvFcORqYm3plWkwzT0NXwaYJq?=
- =?us-ascii?Q?F1sbxZERKuh2y0AmLvq6g4Iw/3F+2MnvweQtaltXkJJokovDdkrK1jXlBHkT?=
- =?us-ascii?Q?xQ1r3A=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: edefac6f-274a-473f-052e-08db676b78cc
-X-MS-Exchange-CrossTenant-AuthSource: BY3PR13MB4834.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2023 15:25:49.2234
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +K9736JIVxdxpDxYZFb6lCH5ugsRFxDiYS+H86Simwp5cLk0XboFBZvFrX7O/J5M6T9HVCo4rDclmrBoGAVpV36IRod1ScFvUFGW4QUaFow=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY1PR13MB6261
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <20230606064306.9192-1-duanmuquan@baidu.com> <CANn89iKwzEtNWME+1Xb57DcT=xpWaBf59hRT4dYrw-jsTdqeLA@mail.gmail.com>
+ <DFBEBE81-34A5-4394-9C5B-1A849A6415F1@baidu.com> <CANn89iLm=UeSLBVjACnqyaLo7oMTrY7Ok8RXP9oGDHVwe8LVng@mail.gmail.com>
+ <D8D0327E-CEF0-4DFC-83AB-BC20EE3DFCDE@baidu.com>
+In-Reply-To: <D8D0327E-CEF0-4DFC-83AB-BC20EE3DFCDE@baidu.com>
+From: Eric Dumazet <edumazet@google.com>
+Date: Wed, 7 Jun 2023 17:27:26 +0200
+Message-ID: <CANn89iKXttFLj4WCVjWNeograv=LHta4erhtqm=fpfiEWscJCA@mail.gmail.com>
+Subject: Re: [PATCH v2] tcp: fix connection reset due to tw hashdance race.
+To: "Duan,Muquan" <duanmuquan@baidu.com>
+Cc: "davem@davemloft.net" <davem@davemloft.net>, "dsahern@kernel.org" <dsahern@kernel.org>, 
+	"kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com" <pabeni@redhat.com>, 
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED,USER_IN_DEF_DKIM_WL,
+	USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, Jun 07, 2023 at 04:01:41PM +0900, Yoshihiro Shimoda wrote:
-> The timestamp descriptors were intended to act cyclically. Descriptors
-> from index 0 through gq->ring_size - 1 contain actual information, and
-> the last index (gq->ring_size) should have LINKFIX to indicate
-> the first index 0 descriptor. However, thie LINKFIX value is missing,
+On Wed, Jun 7, 2023 at 5:18=E2=80=AFPM Duan,Muquan <duanmuquan@baidu.com> w=
+rote:
+>
+> Hi, Eric,
+>
+> Thanks for your reply!
+> One module of our CDN product suffered from the  connection refuse error =
+caused by the hashdance race,    I am trying to solve this issue that hurt =
+userland applications, not  all the possible cases. Except this reset case,=
+ the worst case I can figure out is the lost of the passive closer=E2=80=99=
+s FIN which will cause a retransmission, this kind of case will not cause a=
+n error on applications, and the possibility is very small, I think we do n=
+ot need to introduce reader=E2=80=99s lock for this kind of cases.
+>
+> I can't agree more that we tried too hard to =E2=80=98detect races=E2=80=
+=99, but I also have concern about the performance if introducing reader=E2=
+=80=99s lock, do we have any test result about the performance with the rea=
+der=E2=80=99s lock? I will also do some test on this, if the impact can be =
+tolerated, we=E2=80=99d better introduce the lock.
+>
+> Anyway, I think tw sock's tw_refcnt should be set before added tw into th=
+e list, and  this modification can make the setting of refcnt in the spin_l=
+ock=E2=80=99s protection,  what is your opinion about this modification?
 
-Hi Shimoda-san,
+My opinion is that we should set the refcnt to not zero only at when
+the tw object is ready to be seen by other cpus.
 
-a very minor nit, in case you end up posting a v3 for some other reason:
+Moving this earlier can trigger subtle bugs with RCU lookups,
+that might see a non zero refcnt on an object still containing garbage.
 
-	thie -> the
+You missed the important comment :
 
-> causing the timestamp feature to stop after all descriptors are used.
-> To resolve this issue, set the LINKFIX to the timestamp descritors.
-> 
-> Reported-by: Phong Hoang <phong.hoang.wz@renesas.com>
-> Fixes: 33f5d733b589 ("net: renesas: rswitch: Improve TX timestamp accuracy")
+> 153      * Also note that after this point, we lost our implicit referenc=
+e
+> 154      * so we are not allowed to use tw anymore.
 
-...
+We are not _allowed_ to access tw anymore after setting its refcnt to 3.
+
+Again, this patch does not fix the fundamental issue, just moving
+things around and hope for the best.
+
+>
+> 145    spin_lock(lock);
+> 146
+> 147     /* tw_refcnt is set to 3 because we have :
+> 148      * - one reference for bhash chain.
+> 149      * - one reference for ehash chain.
+> 150      * - one reference for timer.
+> 151      * We can use atomic_set() because prior spin_lock()/spin_unlock(=
+)
+> 152      * committed into memory all tw fields.
+> 153      * Also note that after this point, we lost our implicit referenc=
+e
+> 154      * so we are not allowed to use tw anymore.
+> 155      */
+> 156     refcount_set(&tw->tw_refcnt, 3);                                 =
+<-----------------------------------------------
+> 157     inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
+> 158
+> 159     /* Step 3: Remove SK from hash chain */
+> 160     if (__sk_nulls_del_node_init_rcu(sk))
+> 161         sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
+> 162
+> 163     spin_unlock(lock);
+>
+>
+>
+> BTW, I met trouble on sending emails,  and some emails may not delivered,=
+ thanks a lot for Jason and Simon=E2=80=99s comments!
+>
+> Best Regards!
+> Duan
+>
+>
+>
+>
+> > 2023=E5=B9=B46=E6=9C=887=E6=97=A5 =E4=B8=8B=E5=8D=889:32=EF=BC=8CEric D=
+umazet <edumazet@google.com> =E5=86=99=E9=81=93=EF=BC=9A
+> >
+> > On Wed, Jun 7, 2023 at 1:59=E2=80=AFPM Duan,Muquan <duanmuquan@baidu.co=
+m> wrote:
+> >>
+> >> Hi, Eric,
+> >>
+> >> Thanks for your comments!
+> >>
+> >> About the second lookup, I am sorry that I did not give enough explana=
+tions about it. Here are some details:
+> >>
+> >> 1.  The second lookup can find the tw sock and avoid the connection re=
+fuse error on userland applications:
+> >>
+> >> If the original sock is found, but when validating its refcnt, it has =
+been destroyed and sk_refcnt has become 0 after decreased by tcp_time_wait(=
+)->tcp_done()->inet_csk_destory_sock()->sock_put().The validation for refcn=
+t fails and the lookup process gets a listener sock.
+> >>
+> >> When this case occurs, the hashdance has definitely finished=EF=BC=8Cb=
+ecause tcp_done() is executed after inet_twsk_hashdance(). Then if look up =
+the ehash table again, hashdance has already finished, tw sock will be foun=
+d.
+> >>
+> >> With this fix, logically we can solve the connection reset issue compl=
+etely when no established sock is found due to hashdance race.In my reprodu=
+cing environment, the connection refuse error will occur about every 6 hour=
+s with only the fix of bad case (2). But with both of the 2 fixes, I tested=
+ it many times, the longest test continues for 10 days, it does not occur a=
+gain,
+> >>
+> >>
+> >>
+> >> 2. About the performance impact:
+> >>
+> >>     A similar scenario is that __inet_lookup_established() will do ine=
+t_match() check for the second time, if fails it will look up    the list a=
+gain. It is the extra effort to reduce the race impact without using reader=
+ lock. inet_match() failure occurs with about the same probability with ref=
+cnt validation failure in my test environment.
+> >>
+> >> The second lookup will only be done in the condition that FIN segment =
+gets a listener sock.
+> >>
+> >>  About the performance impact:
+> >>
+> >> 1)  Most of the time, this condition will not met, the added codes int=
+roduces at most 3 comparisons for each segment.
+> >>
+> >> The second inet_match() in __inet_lookup_established()  does least 3 c=
+omparisons for each segmet.
+> >>
+> >>
+> >> 2)  When this condition is met, the probability is very small. The imp=
+act is similar to the second try due to inet_match() failure. Since tw sock=
+ can definitely be found in the second try, I think this cost is worthy to =
+avoid connection reused error on userland applications.
+> >>
+> >>
+> >>
+> >> My understanding is, current philosophy is avoiding the reader lock by=
+ tolerating the minor defect which occurs in a small probability.For exampl=
+e, if the FIN from passive closer is dropped due to the found sock is destr=
+oyed, a retransmission can be tolerated, it only makes the connection termi=
+nation slower. But I think the bottom line is that it does not affect the u=
+serland applications=E2=80=99 functionality. If application fails to connec=
+t due to the hashdance race, it can=E2=80=99t be tolerated. In fact, guys f=
+rom product department push hard on the connection refuse error.
+> >>
+> >>
+> >> About bad case (2):
+> >>
+> >> tw sock is found, but its tw_refcnt has not been set to 3, it is still=
+ 0, validating for sk_refcnt will fail.
+> >>
+> >> I do not know the reason why setting tw_refcnt after adding it into li=
+st, could anyone help point out the reason? It adds  extra race because the=
+ new added tw sock may be found and checked in other CPU concurrently befor=
+e =C6=92setting tw_refcnt to 3.
+> >>
+> >> By setting tw_refcnt to 3 before adding it into list, this case will b=
+e solved, and almost no cost. In my reproducing environment, it occurs more=
+ frequently than bad case (1), it appears about every 20 minutes, bad case =
+(1) appears about every 6 hours.
+> >>
+> >>
+> >>
+> >> About the bucket spinlock, the original established sock and tw sock a=
+re stored in the ehash table, I concern about the performance when there ar=
+e lots of short TCP connections, the reader lock may affect the performance=
+ of connection creation and termination. Could you share some details of yo=
+ur idea? Thanks in advance.
+> >>
+> >>
+> >
+> > Again, you can write a lot of stuff, the fact is that your patch does
+> > not solve the issue.
+> >
+> > You could add 10 lookups, and still miss some cases, because they are
+> > all RCU lookups with no barriers.
+> >
+> > In order to solve the issue of packets for the same 4-tuple being
+> > processed by many cpus, the only way to solve races is to add mutual
+> > exclusion.
+> >
+> > Note that we already have to lock the bucket spinlock every time we
+> > transition a request socket to socket, a socket to timewait, or any
+> > insert/delete.
+> >
+> > We need to expand the scope of this lock, and cleanup things that we
+> > added in the past, because we tried too hard to 'detect races'
+> >
+> >>
+> >>
+> >>
+> >> Best Regards!
+> >>
+> >> Duan
+> >>
+> >>
+> >> 2023=E5=B9=B46=E6=9C=886=E6=97=A5 =E4=B8=8B=E5=8D=883:07=EF=BC=8CEric =
+Dumazet <edumazet@google.com> =E5=86=99=E9=81=93=EF=BC=9A
+> >>
+> >> On Tue, Jun 6, 2023 at 8:43=E2=80=AFAM Duan Muquan <duanmuquan@baidu.c=
+om> wrote:
+> >>
+> >>
+> >> If the FIN from passive closer and the ACK for active closer's FIN are
+> >> processed on different CPUs concurrently, tw hashdance race may occur.
+> >> On loopback interface, transmit function queues a skb to current CPU's
+> >> softnet's input queue by default. Suppose active closer runs on CPU 0,
+> >> and passive closer runs on CPU 1. If the ACK for the active closer's
+> >> FIN is sent with no delay, it will be processed and tw hashdance will
+> >> be done on CPU 0; The passive closer's FIN will be sent in another
+> >> segment and processed on CPU 1, it may fail to find tw sock in the
+> >> ehash table due to tw hashdance on CPU 0, then get a RESET.
+> >> If application reconnects immediately with the same source port, it
+> >> will get reset because tw sock's tw_substate is still TCP_FIN_WAIT2.
+> >>
+> >> The dmesg to trace down this issue:
+> >>
+> >> .333516] tcp_send_fin: sk 0000000092105ad2 cookie 9 cpu 3
+> >> .333524] rcv_state_process:FIN_WAIT2 sk 0000000092105ad2 cookie 9 cpu =
+3
+> >> .333534] tcp_close: tcp_time_wait: sk 0000000092105ad2 cookie 9 cpu 3
+> >> .333538] hashdance: tw 00000000690fdb7a added to ehash cookie 9 cpu 3
+> >> .333541] hashdance: sk 0000000092105ad2 removed cookie 9 cpu 3
+> >> .333544] __inet_lookup_established: Failed the refcount check:
+> >>                !refcount_inc_not_zero 00000000690fdb7a ref 0 cookie 9 =
+cpu 0
+> >> .333549] hashdance: tw 00000000690fdb7a before add ref 0 cookie 9 cpu =
+3
+> >> .333552] rcv_state: RST for FIN listen 000000003c50afa6 cookie 0 cpu 0
+> >> .333574] tcp_send_fin: sk 0000000066757bf8 ref 2 cookie 0 cpu 0
+> >> .333611] timewait_state: TCP_TW_RST tw 00000000690fdb7a cookie 9 cpu 0
+> >> .333626] tcp_connect: sk 0000000066757bf8 cpu 0 cookie 0
+> >>
+> >> Here is the call trace map:
+> >>
+> >> CPU 0                                    CPU 1
+> >>
+> >> --------                                 --------
+> >> tcp_close()
+> >> tcp_send_fin()
+> >> loopback_xmit()
+> >> netif_rx()
+> >> tcp_v4_rcv()
+> >> tcp_ack_snd_check()
+> >> loopback_xmit
+> >> netif_rx()                              tcp_close()
+> >> ...                                     tcp_send_fin()
+> >>                                                                       =
+        loopback_xmit()
+> >>                                                                       =
+        netif_rx()
+> >>                                                                       =
+        tcp_v4_rcv()
+> >>                                                                       =
+        ...
+> >> tcp_time_wait()
+> >> inet_twsk_hashdance() {
+> >> ...
+> >>                                   <-__inet_lookup_established()
+> >>                                                               (bad cas=
+e (1), find sk, may fail tw_refcnt check)
+> >> inet_twsk_add_node_tail_rcu(tw, ...)
+> >>                                   <-__inet_lookup_established()
+> >>                                                               (bad cas=
+e (1), find sk, may fail tw_refcnt check)
+> >>
+> >> __sk_nulls_del_node_init_rcu(sk)
+> >>                                   <-__inet_lookup_established()
+> >>                                                               (bad cas=
+e (2), find tw, may fail tw_refcnt check)
+> >> refcount_set(&tw->tw_refcnt, 3)
+> >>                                   <-__inet_lookup_established()
+> >>                                                               (good ca=
+se, find tw, tw_refcnt is not 0)
+> >> ...
+> >> }
+> >>
+> >> This issue occurs with a small probability on our application working
+> >> on loopback interface, client gets a connection refused error when it
+> >> reconnects. In reproducing environments on kernel 4.14,5.10 and
+> >> 6.4-rc1, modify tcp_ack_snd_check() to disable delay ack all the
+> >> time; Let client connect server and server sends a message to client
+> >> then close the connection; Repeat this process forever; Let the client
+> >> bind the same source port every time, it can be reproduced in about 20
+> >> minutes.
+> >>
+> >> Brief of the scenario:
+> >>
+> >> 1. Server runs on CPU 0 and Client runs on CPU 1. Server closes
+> >> connection actively and sends a FIN to client. The lookback's driver
+> >> enqueues the FIN segment to backlog queue of CPU 0 via
+> >> loopback_xmit()->netif_rx(), one of the conditions for non-delay ack
+> >> meets in __tcp_ack_snd_check(), and the ACK is sent immediately.
+> >>
+> >> 2. On loopback interface, the ACK is received and processed on CPU 0,
+> >> the 'dance' from original sock to tw sock will perfrom, tw sock will
+> >> be inserted to ehash table, then the original sock will be removed.
+> >>
+> >> 3. On CPU 1, client closes the connection, a FIN segment is sent and
+> >> processed on CPU 1. When it is looking up sock in ehash table (with no
+> >> lock), tw hashdance race may occur, it fails to find the tw sock and
+> >> get a listener sock in the flowing 3 cases:
+> >>
+> >> (1) Original sock is found, but it has been destroyed and sk_refcnt
+> >>         has become 0 when validating it.
+> >> (2) tw sock is found, but its tw_refcnt has not been set to 3, it is
+> >>         still 0, validating for sk_refcnt will fail.
+> >> (3) For versions without Eric and Jason's commit(3f4ca5fafc08881d7a5
+> >>         7daa20449d171f2887043), tw sock is added to the head of the li=
+st.
+> >>         It will be missed if the list is traversed before tw sock is
+> >>         added. And if the original sock is removed before it is found,=
+ no
+> >>         established sock will be found.
+> >>
+> >> The listener sock will reset the FIN segment which has ack bit set.
+> >>
+> >> 4. If client reconnects immediately and is assigned with the same
+> >> source port as previous connection, the tw sock with tw_substate
+> >> TCP_FIN_WAIT2 will reset client's SYN and destroy itself in
+> >> inet_twsk_deschedule_put(). Application gets a connection refused
+> >> error.
+> >>
+> >> 5. If client reconnects again, it will succeed.
+> >>
+> >> Introduce the flowing 2 modifications to solve the above 3 bad cases:
+> >>
+> >> For bad case (2):
+> >> Set tw_refcnt to 3 before adding it into list.
+> >>
+> >> For bad case (1):
+> >> In function tcp_v4_rcv(), if __inet_lookup_skb() returns a listener
+> >> sock and this segment has FIN bit set, then retry the lookup process
+> >> one time. This fix can cover bad case (3) for the versions without
+> >> Eric and Jason's fix.
+> >>
+> >> There may be another bad case, if the original sock is found and passe=
+s
+> >> validation, but during further process for the passive closer's FIN on
+> >> CPU 1, the sock has been destroyed on CPU 0, then the FIN segment will
+> >> be dropped and retransmitted. This case does not hurt application as
+> >> much as resetting reconnection, and this case has less possibility tha=
+n
+> >> the other bad cases, it does not occur on our product and in
+> >> experimental environment, so it is not considered in this patch.
+> >>
+> >> Could you please check whether this fix is OK, or any suggestions?
+> >> Looking forward for your precious comments!
+> >>
+> >> Signed-off-by: Duan Muquan <duanmuquan@baidu.com>
+> >> ---
+> >> net/ipv4/inet_timewait_sock.c | 15 +++++++--------
+> >> net/ipv4/tcp_ipv4.c           | 13 +++++++++++++
+> >> 2 files changed, 20 insertions(+), 8 deletions(-)
+> >>
+> >> diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_so=
+ck.c
+> >> index 40052414c7c7..ed1f255c9aa8 100644
+> >> --- a/net/ipv4/inet_timewait_sock.c
+> >> +++ b/net/ipv4/inet_timewait_sock.c
+> >> @@ -144,14 +144,6 @@ void inet_twsk_hashdance(struct inet_timewait_soc=
+k *tw, struct sock *sk,
+> >>
+> >>       spin_lock(lock);
+> >>
+> >> -       inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
+> >> -
+> >> -       /* Step 3: Remove SK from hash chain */
+> >> -       if (__sk_nulls_del_node_init_rcu(sk))
+> >> -               sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
+> >> -
+> >> -       spin_unlock(lock);
+> >> -
+> >>       /* tw_refcnt is set to 3 because we have :
+> >>        * - one reference for bhash chain.
+> >>        * - one reference for ehash chain.
+> >> @@ -162,6 +154,13 @@ void inet_twsk_hashdance(struct inet_timewait_soc=
+k *tw, struct sock *sk,
+> >>        * so we are not allowed to use tw anymore.
+> >>        */
+> >>       refcount_set(&tw->tw_refcnt, 3);
+> >> +       inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
+> >> +
+> >> +       /* Step 3: Remove SK from hash chain */
+> >> +       if (__sk_nulls_del_node_init_rcu(sk))
+> >> +               sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
+> >> +
+> >> +       spin_unlock(lock);
+> >> }
+> >> EXPORT_SYMBOL_GPL(inet_twsk_hashdance);
+> >>
+> >> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> >> index 06d2573685ca..3e3cef202f76 100644
+> >> --- a/net/ipv4/tcp_ipv4.c
+> >> +++ b/net/ipv4/tcp_ipv4.c
+> >> @@ -2018,6 +2018,19 @@ int tcp_v4_rcv(struct sk_buff *skb)
+> >>       sk =3D __inet_lookup_skb(net->ipv4.tcp_death_row.hashinfo,
+> >>                              skb, __tcp_hdrlen(th), th->source,
+> >>                              th->dest, sdif, &refcounted);
+> >> +
+> >> +       /* If tw "dance" is performed on another CPU, the lookup proce=
+ss may find
+> >> +        * no tw sock for the passive closer's FIN segment, but a list=
+ener sock,
+> >> +        * which will reset the FIN segment. If application reconnects=
+ immediately
+> >> +        * with the same source port, it will get reset because the tw=
+ sock's
+> >> +        * tw_substate is still TCP_FIN_WAIT2. Try to get the tw sock =
+in another try.
+> >> +        */
+> >> +       if (unlikely(th->fin && sk && sk->sk_state =3D=3D TCP_LISTEN))=
+ {
+> >> +               sk =3D __inet_lookup_skb(net->ipv4.tcp_death_row.hashi=
+nfo,
+> >> +                                      skb, __tcp_hdrlen(th), th->sour=
+ce,
+> >> +                                      th->dest, sdif, &refcounted);
+> >> +       }
+> >> +
+> >>
+> >>
+> >> I do not think this fixes anything, there is no barrier between first
+> >> and second lookup.
+> >> This might reduce race a little bit, but at the expense of extra code
+> >> in the fast path.
+> >>
+> >> If you want to fix this properly, I think we need to revisit handling
+> >> for non established sockets,
+> >> to hold the bucket spinlock over the whole thing.
+> >>
+> >> This will be slightly more complex than this...
+> >>
+> >>
+>
 
