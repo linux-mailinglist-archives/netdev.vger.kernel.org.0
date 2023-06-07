@@ -1,205 +1,149 @@
-Return-Path: <netdev+bounces-8723-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8724-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 47B947255DA
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:36:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 9420572560E
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:41:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 572F31C20CD0
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:36:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F0CC81C20CB8
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:41:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA2D26AC2;
-	Wed,  7 Jun 2023 07:36:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF0E26D22;
+	Wed,  7 Jun 2023 07:41:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C210B6AAE;
-	Wed,  7 Jun 2023 07:36:38 +0000 (UTC)
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D569268F;
-	Wed,  7 Jun 2023 00:36:20 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id 2adb3069b0e04-4f6170b1486so374250e87.0;
-        Wed, 07 Jun 2023 00:36:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE7A41C3A
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:41:38 +0000 (UTC)
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA522702
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 00:41:36 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id 98e67ed59e1d1-2566ed9328eso5992560a91.2
+        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 00:41:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686123378; x=1688715378;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=2V3s3icJTC6LaLSn3oBF3M+3j5PZ/qbP3uDWciuJbcU=;
-        b=fn2KcYq5uY2mH+HBy/a6NAnSP+8+9rQr82d+AuBIReLJOJ3cCVmW+3wr4VfxsM87BJ
-         OMfKWaQ/mVrNrACzq5kUcPkCS/Q0xWVDHqyPJRRSmsPCAdMiPfl/Qv8hYQ84AJrRKaOe
-         YDReSxP1+MEXJ4bCT9Dqm4Yzhd1c7MX/QuXdC3HohpTyuNP68nbtUvNEUydzmAhxxULl
-         Q75bWHaJLVigND99EyKafEWnXnd5UMVjWsz+pIX2pC+S8Wqv6qCjWPcn6a/0zm0lZ3qa
-         DVNboeHMPeGP5b7KJQ4Q1c2X3HDFPEKCFiRlXmG9h8Vix1Rv+/NskHW66qCSUGIOQYnr
-         ZbTw==
+        d=linaro.org; s=google; t=1686123696; x=1688715696;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=PjfFNwe8EaTiGUc0QuU/z5HZzTxOk+LVPPYj8mjsNzM=;
+        b=hS/0Qma+MSVMOmezs7ae7p8C6lqEhrJlH4f8w//ca/fANrvQFpvioDvwVaAwPHQSzE
+         EL+56AyeCdS0kQd3cWCnJCzDFlyZ0NgUkjIKhc+IBMpxxfgC/UIbczsJD5rvidJWiFP9
+         nsxFpkRubavOeHiiEIqmlgS/LCSdacfRd/nv2kdeFYj/T3jfPhrkGiOcxQ8TLNcAk9Mc
+         NTiF2gKhlqebuJ/MTHPTamqsd29u40mFj8p5BVVapN6n6TGCmK0Q/ELwrFvNDnVn/Jw5
+         JqSy0dBoTifuelcf07VOm2+g3Cg+A5XuT+aYXYH4rcXRsPuNJr31a1KxDYscNwARPcOh
+         Q/FA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686123378; x=1688715378;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2V3s3icJTC6LaLSn3oBF3M+3j5PZ/qbP3uDWciuJbcU=;
-        b=FJMpdptjmH3sP2FZJpj1yo6bboxJt9wdqlTk2HCW49jkB2s9I3Hsi/ugIo+x9EgWMI
-         oBAlWZuZLTSeA0RShAYe8gcZ8zJbKgt/EZ9QNbWYKqab5ebrAmUR526x/geBb7UgQ1gP
-         fEQl5SoTjHT5gH3di4lmPoEjyE+we+bhxXHhiy7TCux5NYl5Zj4mC+B7tj13KIrQUZCj
-         RBl9yd+jT0ZrkUBII6S/S7l/KyezzvcaeFXAAnRiQL1SnCU+ekn9cWCCIhcDBh6IO9Bh
-         DbYG3OHAUsmd+mpSMdWHJLYgs/iNE2eZsDmgA+yzLeQxk+2IKbzznj2HIX1gLQqHg7Yh
-         jzIw==
-X-Gm-Message-State: AC+VfDz98j5J1Fj1sp/C7NBW/eefcxlcTazVUuagsM3XmsCKCm8qk0Ak
-	nc00+zaQ35iGeJl+RSUqQBClposvnNfCZZaFb6E=
-X-Google-Smtp-Source: ACHHUZ74hYkDawUW0WJQlvYeMDw0pQKYrsLM1xjWznMqVZsLTownFItoGHR+rqczsq4O7/6SX3mgbQ==
-X-Received: by 2002:a05:6512:3f0f:b0:4f3:b324:ea8 with SMTP id y15-20020a0565123f0f00b004f3b3240ea8mr4594590lfa.19.1686123378290;
-        Wed, 07 Jun 2023 00:36:18 -0700 (PDT)
-Received: from localhost ([171.25.193.78])
-        by smtp.gmail.com with ESMTPSA id w18-20020a19c512000000b004f252f48e5fsm1731415lfe.40.2023.06.07.00.36.16
+        d=1e100.net; s=20221208; t=1686123696; x=1688715696;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PjfFNwe8EaTiGUc0QuU/z5HZzTxOk+LVPPYj8mjsNzM=;
+        b=MGfwTH13aOOIrspWoY4BiHv48iaZWh8a1aJ/IntPGinNPgUKIBwDVsuNHbWhquc8lv
+         nMDu2D6t5lIKP2CT1TvWvQoMLvQ4Bm1cOUq5E8T5r/y6gDjr/nUWzCWv4PGh15owswIV
+         NxNbP9aHifRRrM5UfhErNOYMPvyvfBtn2BLDrcUVRHD89EBRk9icz2yRAU2i0fdga5JZ
+         W9JOabf0y+xAjgF2nzD3LRD5lPWUJPz1uLVOydDIYTYCzCScFBGsY0nda5FkXLeKscDs
+         q9bOs9AAGIh2pU9Ntwd2feQqdFAwADq5CXCUFReOK0n4fn2LegNc6b/LINnf3ZlMlmoJ
+         5YRw==
+X-Gm-Message-State: AC+VfDyww0IhI6DflMo00+kmegmqGn9CGiPo44obJ1EHIi0tAeS2wfNr
+	NIeYhLGwUUkHjVxjtPqsO66T
+X-Google-Smtp-Source: ACHHUZ50Fei3Zw35iH9ZCnQkZU/3FdMXz9ZIxWFCszlfvuqnYaKVV+Vt/Nyt3IqrO4RypPINYFkinw==
+X-Received: by 2002:a17:90b:3846:b0:253:49d7:ce19 with SMTP id nl6-20020a17090b384600b0025349d7ce19mr3930719pjb.18.1686123695820;
+        Wed, 07 Jun 2023 00:41:35 -0700 (PDT)
+Received: from thinkpad ([59.92.97.244])
+        by smtp.gmail.com with ESMTPSA id 8-20020a17090a1a4800b0023a84911df2sm788372pjl.7.2023.06.07.00.41.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jun 2023 00:36:17 -0700 (PDT)
-Date: Wed, 7 Jun 2023 10:36:03 +0300
-From: Maxim Mikityanskiy <maxtram95@gmail.com>
-To: Yonghong Song <yhs@meta.com>
-Cc: bpf@vger.kernel.org, netdev@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	John Fastabend <john.fastabend@gmail.com>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Andrii Nakryiko <andrii@kernel.org>,
-	Martin KaFai Lau <martin.lau@linux.dev>,
-	Eduard Zingerman <eddyz87@gmail.com>,
-	Maxim Mikityanskiy <maxim@isovalent.com>,
-	Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-	KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>,
-	Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-	Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: Re: [PATCH bpf v3 1/2] bpf: Fix verifier tracking scalars on spill
-Message-ID: <ZIAzY8C0-X6UXjY-@mail.gmail.com>
-References: <20230606214246.403579-1-maxtram95@gmail.com>
- <20230606214246.403579-2-maxtram95@gmail.com>
- <11eb089f-9e71-856f-7f01-375176bd5edf@meta.com>
+        Wed, 07 Jun 2023 00:41:35 -0700 (PDT)
+Date: Wed, 7 Jun 2023 13:11:18 +0530
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To: Loic Poulain <loic.poulain@linaro.org>
+Cc: Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, mhi@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] Add MHI Endpoint network driver
+Message-ID: <20230607074118.GD5025@thinkpad>
+References: <20230606123119.57499-1-manivannan.sadhasivam@linaro.org>
+ <c769c95d-e8cb-4cf6-a41a-9bef5a786bb1@lunn.ch>
+ <20230607065652.GA5025@thinkpad>
+ <CAMZdPi-xJAj_eFvosVTmSzA99m3eYhrwoKPfBk-qH87yZzNupQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <11eb089f-9e71-856f-7f01-375176bd5edf@meta.com>
-X-Spam-Status: No, score=2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: **
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMZdPi-xJAj_eFvosVTmSzA99m3eYhrwoKPfBk-qH87yZzNupQ@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, 06 Jun 2023 at 18:32:37 -0700, Yonghong Song wrote:
+On Wed, Jun 07, 2023 at 09:12:00AM +0200, Loic Poulain wrote:
+> On Wed, 7 Jun 2023 at 08:56, Manivannan Sadhasivam
+> <manivannan.sadhasivam@linaro.org> wrote:
+> >
+> > On Tue, Jun 06, 2023 at 02:59:00PM +0200, Andrew Lunn wrote:
+> > > On Tue, Jun 06, 2023 at 06:01:16PM +0530, Manivannan Sadhasivam wrote:
+> > > > Hi,
+> > > >
+> > > > This series adds a network driver for the Modem Host Interface (MHI) endpoint
+> > > > devices that provides network interfaces to the PCIe based Qualcomm endpoint
+> > > > devices supporting MHI bus (like Modems). This driver allows the MHI endpoint
+> > > > devices to establish IP communication with the host machines (x86, ARM64) over
+> > > > MHI bus.
+> > > >
+> > > > On the host side, the existing mhi_net driver provides the network connectivity
+> > > > to the host.
+> > > >
+> > > > - Mani
+> > > >
+> > > > Manivannan Sadhasivam (3):
+> > > >   net: Add MHI Endpoint network driver
+> > > >   MAINTAINERS: Add entry for MHI networking drivers under MHI bus
+> > > >   net: mhi: Increase the default MTU from 16K to 32K
+> > > >
+> > > >  MAINTAINERS              |   1 +
+> > > >  drivers/net/Kconfig      |   9 ++
+> > > >  drivers/net/Makefile     |   1 +
+> > > >  drivers/net/mhi_ep_net.c | 331 +++++++++++++++++++++++++++++++++++++++
+> > > >  drivers/net/mhi_net.c    |   2 +-
+> > >
+> > > Should we add a drivers/net/modem directory? Maybe modem is too
+> > > generic, we want something which represents GSM, LTE, UMTS, 3G, 4G,
+> > > 5G, ... XG etc.
+> > >
+> >
+> > The generic modem hierarchy sounds good to me because most of the times a
+> > single driver handles multiple technologies. The existing drivers supporting
+> > modems are already under different hierarchy like usb, wwan etc... So unifying
+> > them makes sense. But someone from networking community should take a call.
 > 
 > 
-> On 6/6/23 2:42 PM, Maxim Mikityanskiy wrote:
-> > From: Maxim Mikityanskiy <maxim@isovalent.com>
-> > 
-> > The following scenario describes a verifier bypass in privileged mode
-> > (CAP_BPF or CAP_SYS_ADMIN):
-> > 
-> > 1. Prepare a 32-bit rogue number.
-> > 2. Put the rogue number into the upper half of a 64-bit register, and
-> >     roll a random (unknown to the verifier) bit in the lower half. The
-> >     rest of the bits should be zero (although variations are possible).
-> > 3. Assign an ID to the register by MOVing it to another arbitrary
-> >     register.
-> > 4. Perform a 32-bit spill of the register, then perform a 32-bit fill to
-> >     another register. Due to a bug in the verifier, the ID will be
-> >     preserved, although the new register will contain only the lower 32
-> >     bits, i.e. all zeros except one random bit.
-> > 
-> > At this point there are two registers with different values but the same
-> > ID, which means the integrity of the verifier state has been corrupted.
-> > Next steps show the actual bypass:
-> > 
-> > 5. Compare the new 32-bit register with 0. In the branch where it's
-> >     equal to 0, the verifier will believe that the original 64-bit
-> >     register is also 0, because it has the same ID, but its actual value
-> >     still contains the rogue number in the upper half.
-> >     Some optimizations of the verifier prevent the actual bypass, so
-> >     extra care is needed: the comparison must be between two registers,
-> >     and both branches must be reachable (this is why one random bit is
-> >     needed). Both branches are still suitable for the bypass.
-> > 6. Right shift the original register by 32 bits to pop the rogue number.
-> > 7. Use the rogue number as an offset with any pointer. The verifier will
-> >     believe that the offset is 0, while in reality it's the given number.
-> > 
-> > The fix is similar to the 32-bit BPF_MOV handling in check_alu_op for
-> > SCALAR_VALUE. If the spill is narrowing the actual register value, don't
-> > keep the ID, make sure it's reset to 0.
-> > 
-> > Fixes: 354e8f1970f8 ("bpf: Support <8-byte scalar spill and refill")
-> > Signed-off-by: Maxim Mikityanskiy <maxim@isovalent.com>
-> 
-> LGTM with a small nit below.
-> 
-> Acked-by: Yonghong Song <yhs@fb.com>
-> 
-> > ---
-> >   kernel/bpf/verifier.c | 7 +++++++
-> >   1 file changed, 7 insertions(+)
-> > 
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index 5871aa78d01a..7be23eced561 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -3856,6 +3856,8 @@ static int check_stack_write_fixed_off(struct bpf_verifier_env *env,
-> >   	mark_stack_slot_scratched(env, spi);
-> >   	if (reg && !(off % BPF_REG_SIZE) && register_is_bounded(reg) &&
-> >   	    !register_is_null(reg) && env->bpf_capable) {
-> > +		bool reg_value_fits;
-> > +
-> >   		if (dst_reg != BPF_REG_FP) {
-> >   			/* The backtracking logic can only recognize explicit
-> >   			 * stack slot address like [fp - 8]. Other spill of
-> > @@ -3867,7 +3869,12 @@ static int check_stack_write_fixed_off(struct bpf_verifier_env *env,
-> >   			if (err)
-> >   				return err;
-> >   		}
-> > +
-> > +		reg_value_fits = fls64(reg->umax_value) <= BITS_PER_BYTE * size;
-> >   		save_register_state(state, spi, reg, size);
-> > +		/* Break the relation on a narrowing spill. */
-> > +		if (!reg_value_fits)
-> > +			state->stack[spi].spilled_ptr.id = 0;
-> 
-> I think the code can be simplied like below:
-> 
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -4230,6 +4230,8 @@ static int check_stack_write_fixed_off(struct
-> bpf_verifier_env *env,
->                                 return err;
->                 }
->                 save_register_state(state, spi, reg, size);
-> +               if (fls64(reg->umax_value) > BITS_PER_BYTE * size)
-> +                       state->stack[spi].spilled_ptr.id = 0;
->         } else if (!reg && !(off % BPF_REG_SIZE) && is_bpf_st_mem(insn) &&
->                    insn->imm != 0 && env->bpf_capable) {
->                 struct bpf_reg_state fake_reg = {};
+> Yes, so there is already a drivers/net/wwan directory for this, in
+> which there are drivers for control and data path, that together
+> represent a given 'wwan' (modem) entity. So the generic mhi_net could
+> be moved there, but the point is AFAIU, that MHI, despite his name, is
+> not (more) used only for modem, but as a generic memory sharing based
+> transport protocol, such as virtio. It would then not be necessarily
+> true that a peripheral exposing MHI net channel is actually a modem?
 > 
 
-That's true, I kept the variable to avoid churn when I send a follow-up
-improvement:
+Agree, mhi_*_net drivers can be used by non-modem devices too as long as they
+support MHI protocol.
 
-+               /* Make sure that reg had an ID to build a relation on spill. */
-+               if (reg_value_fits && !reg->id)
-+                       reg->id = ++env->id_gen;
-                save_register_state(state, spi, reg, size);
+- Mani
 
-But yeah, I agree, let's simplify it for now, there is no guarantee that
-the follow-up patch will be accepted as is. Thanks for the review!
+> Regards,
+> Loic
 
-> >   	} else if (!reg && !(off % BPF_REG_SIZE) && is_bpf_st_mem(insn) &&
-> >   		   insn->imm != 0 && env->bpf_capable) {
-> >   		struct bpf_reg_state fake_reg = {};
+-- 
+மணிவண்ணன் சதாசிவம்
 
