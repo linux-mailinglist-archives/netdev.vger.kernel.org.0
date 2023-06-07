@@ -1,201 +1,168 @@
-Return-Path: <netdev+bounces-8739-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8737-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0FF817257AA
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 10:31:55 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id DAC47725761
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 10:21:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EB54C280F38
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 08:31:52 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 67A5928113A
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 08:21:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3239E8BE7;
-	Wed,  7 Jun 2023 08:31:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 666347499;
+	Wed,  7 Jun 2023 08:21:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EDD68C00
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 08:31:51 +0000 (UTC)
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2046.outbound.protection.outlook.com [40.107.220.46])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934A283
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 01:31:49 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54A576FA8
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 08:21:00 +0000 (UTC)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2134.outbound.protection.outlook.com [40.107.223.134])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D131FD6;
+	Wed,  7 Jun 2023 01:20:50 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jhD1QKukLlmcs/hk5BXoQdxXVtRaGvjqebysV0G0/6mPbrsU1XwMr1zdwLqdfBbDln1Qt+6dot24DfrSIlf6vbzlps+oQLmLEoaFspSS12MAePb9cRzOvPunFCOvSFKUcCoP4+iNSsYcWhcZ6jsMvPvPGB0FWQYvdXVR9x4f4hW3peG9HcLuWxtpviIxawHe6KtK+Q7BmVC0CstbDnDrBL3H3l1V1tbB+crgMwQ+CNWlAoKYYRwR4+ZpH/EG7q/scoSbObzCrYt50GX/0vebuHUeYmYXE0venDj9/qplB36LRRb+6InUjUkFY9Jyx/l+risQq1qUIfte2N4l5UqAig==
+ b=nDQHR1+GnozoCIBHJImy4X/oFimfO4dePCowKt3kKcR2ccw8G46KpNe/nnxQDaCoolaCli1nocLSsyuxrIigZmDEKDMM2YQ71o+ox9qxwu12i+czbSC8l4SnrHGmVFVtA6Erf/Xt+j/TX1yc1zg4162rhrFTcNQYyWd1YEKmE6j/jP3C/yK3xxwPev7/ksXUDGGNDkqM4aIZ1dhxxitVSPSimymRQoXsAaaV6kXAsradzBrrvYsxRXoytLBE/40okot3OhV4Ch0D2Du562xg/OQEOXWK58snUEesQt4XHYjsx02lLy8jiH3tZk1ySleTbRyU9TTMcLkxQB0HD5PjGQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ykTC8ER8LHl5IGyK6rhJS7r0eLbWcSojVe2NKEll70s=;
- b=llJ5aSzUAVYJ1xxmlFgT+oweQtBMGAS7ekKxiKS/OstXZnrexOqBoR3vKF5VFObekYyiUPUH44di5zGhhYXi7VJnU/5Chj7VhGWZbMzFwjyckxWYkBQo2PMFOfPiBOELA4neQBXbGrcOYHVdpooEdlK0BbNNlDVkpulIH2L0sCtmWTwT7wCyt4/vJVL/fgiSbQGE/jhNyXtXu4WNhu6h7z5SuOza0FNx9seKpgMvBYlgWww/Xsdm6cUdJqZWQQfjVSNMxTvG/jge3ydwMDJPQzy66kBPDvP/GUXSWoedjmSCwPzBiBVWUk4XP1ubHQT82GLKQ/cu8kU38w3MPWdY6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=bytedance.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=YR/ZmXNy/SilguqtFWQXjZgn1W/8DWp7dYFHP5xioq4=;
+ b=kQF0TlFEWMZ2Q53xQ0ZDlxRQ7Xb4iDTPzH/5Vf6OcNRRW2N3CDX7RKQ7YIlckYovFGbgtoALHs1MP/fra72Xy+vywG/rqocfsLAPL1vkJ+1L3mwRJYg+mDVbm5D1OHAS0maD70yopgh+cTJbdkU8mXFSZAdOvsy3scIp6e6tdWnXgO6nqeSf3vvoz0l4VVTcKEVEnQB4BLn5gUQVjJIYOJBNnCj3yJKjysMYxzsZ/lBBKg2OE95zBh1FNliEIGkMZ13hKorZL9sCNTk2lhskqh/pqHeEZbsyZkhfIyozxxjGtZ0ya0owd335D1mL02k5sHMcOgbk9QYUn+eCrS0c3w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ykTC8ER8LHl5IGyK6rhJS7r0eLbWcSojVe2NKEll70s=;
- b=EW5Dt45U+WAfBJVhe/rsOGXM1/YN3SKStwKe2aRFEyU9lgoRXuOedmaBnQezf4Os9EHJdu1lbhVHShsRQvLjewvu0F1j75V4Exm/MoCUP8t1j+HzLuqcMxJ5snBqOGXJkgS4E5eWEOLmbLhvptA+UuAp9noQ39FG04TJlM9XZxroSMkrWfX7DGOrPUU+WEhvXlPMHwuoJcsr1JDB8hU2vxlnqweXKUAzsELyK1oA1d3f8w4Tn2ISZ0v4PK0XXYYogU4f8uj/ZebzoknLnAzniKz9Xa0sqRDs2fNPXIgAOSCeCVqqfS6AO+sYExBL9QUv5x/5hewFKgvsQusfZYeuGA==
-Received: from BN0PR02CA0007.namprd02.prod.outlook.com (2603:10b6:408:e4::12)
- by PH7PR12MB7378.namprd12.prod.outlook.com (2603:10b6:510:20d::20) with
+ bh=YR/ZmXNy/SilguqtFWQXjZgn1W/8DWp7dYFHP5xioq4=;
+ b=EoHTZVoknMfkpeu1FvrawMmh7Kzs0EHHTPFSRR3nYxVxW0SLGTfV+UyyPYsJMBMzyZA+2RolAs4ploHcMbxp/posiTkpFwwiCoSdDwIrTr/Zu65rNR7PedOLMlawtas3Jtq2Hw2O6EJlUKX8qCBJ+RhqrEbSX8B+CD1edR2bq/s=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SA1PR13MB6053.namprd13.prod.outlook.com (2603:10b6:806:33a::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.19; Wed, 7 Jun
- 2023 08:31:46 +0000
-Received: from BN8NAM11FT050.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e4:cafe::6d) by BN0PR02CA0007.outlook.office365.com
- (2603:10b6:408:e4::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33 via Frontend
- Transport; Wed, 7 Jun 2023 08:31:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BN8NAM11FT050.mail.protection.outlook.com (10.13.177.5) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6477.24 via Frontend Transport; Wed, 7 Jun 2023 08:31:46 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 7 Jun 2023
- 01:31:33 -0700
-Received: from fedora.nvidia.com (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 7 Jun 2023
- 01:31:29 -0700
-References: <ZHE8P9Bi6FlKz4US@C02FL77VMD6R.googleapis.com>
- <20230526193324.41dfafc8@kernel.org>
- <ZHG+AR8qgpJ6/Zhx@C02FL77VMD6R.googleapis.com>
- <CAM0EoM=xLkAr5EF7bty+ETmZ3GXnmB9De3fYSCrQjKPb8qDy7Q@mail.gmail.com>
- <87jzwrxrz8.fsf@nvidia.com> <87fs7fxov6.fsf@nvidia.com>
- <ZHW9tMw5oCkratfs@C02FL77VMD6R.googleapis.com> <87bki2xb3d.fsf@nvidia.com>
- <ZHgXL+Bsm2M+ZMiM@C02FL77VMD6R.googleapis.com> <877csny9rd.fsf@nvidia.com>
- <ZH/V5gf+YjKuC0bn@C02FL77VMD6R.googleapis.com>
-User-agent: mu4e 1.8.11; emacs 28.2
-From: Vlad Buslov <vladbu@nvidia.com>
-To: Peilin Ye <yepeilin.cs@gmail.com>
-CC: Jamal Hadi Salim <jhs@mojatatu.com>, Jakub Kicinski <kuba@kernel.org>,
-	Pedro Tammela <pctammela@mojatatu.com>, "David S. Miller"
-	<davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Paolo Abeni
-	<pabeni@redhat.com>, Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko
-	<jiri@resnulli.us>, Peilin Ye <peilin.ye@bytedance.com>, Daniel Borkmann
-	<daniel@iogearbox.net>, John Fastabend <john.fastabend@gmail.com>, "Hillf
- Danton" <hdanton@sina.com>, <netdev@vger.kernel.org>, Cong Wang
-	<cong.wang@bytedance.com>
-Subject: Re: [PATCH v5 net 6/6] net/sched: qdisc_destroy() old ingress and
- clsact Qdiscs before grafting
-Date: Wed, 7 Jun 2023 11:18:32 +0300
-In-Reply-To: <ZH/V5gf+YjKuC0bn@C02FL77VMD6R.googleapis.com>
-Message-ID: <87y1kvwu5c.fsf@nvidia.com>
+ 2023 08:20:47 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6455.030; Wed, 7 Jun 2023
+ 08:20:47 +0000
+Date: Wed, 7 Jun 2023 10:20:39 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, mhi@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, loic.poulain@linaro.org
+Subject: Re: [PATCH 1/3] net: Add MHI Endpoint network driver
+Message-ID: <ZIA910jCjl+dxc/a@corigine.com>
+References: <20230606123119.57499-1-manivannan.sadhasivam@linaro.org>
+ <20230606123119.57499-2-manivannan.sadhasivam@linaro.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230606123119.57499-2-manivannan.sadhasivam@linaro.org>
+X-ClientProxiedBy: AS4P189CA0033.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5dd::6) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT050:EE_|PH7PR12MB7378:EE_
-X-MS-Office365-Filtering-Correlation-Id: dc5708e5-c254-41b4-47a9-08db6731a1aa
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB6053:EE_
+X-MS-Office365-Filtering-Correlation-Id: 24af3d82-f628-488c-ec8c-08db673017fc
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	V9RNjk/0xYqvSvYf9BtKlLGwAwmwOcJG0MSENCK+xx1WvHDsu5rnKUz51FZKB9Ug2fEs1L2BWnyeWhyy5YfHEvIraiAYaJ3OXwnGz4YnajROr9X45JJ8F8Ji5BJU4eKyCIG3CtAqgxSvhAY0Idc3SFrBD5mvCBG2l6pTcWf14BT33Rco/WvKcjpb0nQoBh1s1wWwjtDF0ZBACOLdSUyvoZo0GizDSYaewfWR5v+kxZD5pyEgUcrM6XxNJl+XwFjn5ZyyOYt+F6VQIX4eUq5j4foG9zvzvAFKrGNLaw6XCH9gQpjp5QFwUnEsGN4wO9/TPqD/VUdwxpM+EMhjLcGhnYhi25mPYxiAW/2ZwMFRILI4bnwKqYZ04D1RUH8eAz8Il3w3rqbYzlijq0yThtywjS6zJCR29T6z9BJ8iD4hAiL8MyaGik5PBLB4IW+YleqY4Tre15xe/SSwVFvIPmmS5QbPqeLcjcm3iKdF9xWeGAnOm2GtlclhemeLl8YUF0FC9RrJbX4FYjrByMMjmguhT/sYyo1HDrNTNXuXda74mUieiLhKlaeoi9N2RU+BGD0lsi5Ay/eAOAjmJax0f5rGlwn28dOcoEelmigSdPBdXFMrTeAGYLfDjh5skKFVKlaIMq8hMy4kxBIpmnT5uoMKT7PUZS3eqYqdY+o/g2WxG0ryLxSiEicfknBdrR2y50xsZ90s3fKEI/Jy5UTOY+N8a7yey2uEdoo1gh6rzth5ro4HvFDQrcOBjfDOLHDkH9sf
+	ovgVlFcOt6n9d7ucc2CehBBSpEDR4DpeB2555ltUHide8lH1+p84XfwiFkDvgyR4FqMBYBiod8X1qc9Ww/zRIulSZaeJ0bNv/iwoymrRCHwnY0ZBsycpQZoMZx+bbil59zYUgqz2rcLRy41jHABOpvw6S+pG0rr7cZfbSG7ArvMfK/R5v9RiPXzKsoefUoKRHjR2YY8uZ7xJsayPOKDBuSU0x1NyyX+GgSAMBt/Uj0r0PIGew0lunnHWm1vD66/CvVmfIoBP3qR0UsZUpt20vGVqlbqbP8ds4RngM9GxOxM/7TmhWyArSK03rZb0K/Iq6ApPCilJYn/k2ZW0+xTihZPM34EGaukjNigTYU59VyOLpoxgvuCTqfga8O7iIqPJvxDuKikKz2oWdgysIeUtjeXdtMLX3abTY6giBSdrZ+9lvrTFZXWPSGOaMinKCw6fKxeMtfuzpBJbU5Tomc/FRM8fDK1AHFHExfTVz1r6TftFlqwWMQoXXtCZ6TQuY4/CCvGH12QPVyPzPUIG9/MDm3RnZ9+CILbEx82/NcLYO8qrV4wtLdZSExME0vDaTf+V
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(136003)(376002)(39860400002)(451199021)(36840700001)(46966006)(40470700004)(82310400005)(36860700001)(41300700001)(5660300002)(40460700003)(8676002)(8936002)(478600001)(54906003)(6916009)(6666004)(70206006)(70586007)(4326008)(40480700001)(316002)(7696005)(82740400003)(356005)(7636003)(36756003)(86362001)(336012)(186003)(16526019)(426003)(83380400001)(2906002)(2616005)(7416002)(47076005)(26005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2023 08:31:46.4375
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(376002)(346002)(39840400004)(366004)(451199021)(2906002)(8676002)(8936002)(7416002)(44832011)(5660300002)(6666004)(66476007)(4326008)(66556008)(6916009)(38100700002)(316002)(6486002)(66946007)(36756003)(41300700001)(83380400001)(86362001)(2616005)(478600001)(186003)(4744005)(6512007)(6506007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?9DXySo02p3/mMLv26QWkW9qZIWshdOVAUEJPsr5Mc1wRsVnYAOiBgO+fBu+H?=
+ =?us-ascii?Q?gOWdTLniF3Wc3FLbVrwwQ+MnNvLuCnkJhrwr17PbIG+bKFv2N5FFz83VqTva?=
+ =?us-ascii?Q?RcawPyea5X0Mcn0UcrzNGrk3UVuyyiM6gnKb199CMqPy9ACcZRoVW8RDoFX+?=
+ =?us-ascii?Q?4PQi/pZk2SmWVueYLlTO0v93gFySuwoHnbMCJ7KBV8T1eWxkDHs7udJg+FcL?=
+ =?us-ascii?Q?arqCbTOYPSLkJ2b1H/VvsA1FPbwnm9vB7DErHXBTUNhnZstkACtfqoU05YAl?=
+ =?us-ascii?Q?aFAiOsLYCtgFevqEuSlxPSCY3n/vdCOkfAgCxRA2suQByUT2sPrHi2qyR61M?=
+ =?us-ascii?Q?67rUzsSB05eTPL1Pq6yFtdiwpVV+tf+d4jdnCTaPV+s5r+JRq75eBwFzN60H?=
+ =?us-ascii?Q?RIy1AsslbJQDiJy2q+0OXRR7k9JHrjWTvKhKtz70MtSIhmhbudKR544oVF0D?=
+ =?us-ascii?Q?dQVxTA28V6fB6seVo0/Zez7A+pys0kaThmyDau8eGeq5Ny5gljjTaGQ1m85r?=
+ =?us-ascii?Q?19Fr3aqbbh0O0zHWydEyuV1XupHkdaaADXvHMtikyQHbnggGZ5XayRRM+bdv?=
+ =?us-ascii?Q?Bkh50hMUXakQXFAdqzOY6YyL97glfEdDZaigeu+0Q8cvQxIN7s5kzBOqCpnr?=
+ =?us-ascii?Q?PtE78AOhM+INDn10Evu79I/fbRoRpMfg9JKhXZgaz89g1bLUBOMfDad6oxw/?=
+ =?us-ascii?Q?uk5jiz0Q7MgMXlr9DEcH30BLTuDsu6ElTJQDFP2cgL/R/7m9TLoy9SKV8+iD?=
+ =?us-ascii?Q?qU88TCYjJWrzazj/1W8ZnglQxAAM7KKqb3qRsCkwJeggFu6N6R7uIZZFmBMl?=
+ =?us-ascii?Q?ZoBVmd8CxwfOGq3ICOdl5nm+NrE0p8smGu3ZPMAExdXF+ODleA+9a37WKRaj?=
+ =?us-ascii?Q?yIEw77sJNM/LqE1IIEBGYS9MqtcyS27xT9P7Fk2Jmm4ezwuE8CKpeIojrDmJ?=
+ =?us-ascii?Q?qFAdaJV68tCFvVGg7BGVkoYwD7DBXihBUbMpK1mXT+/IiphSfoKCkg0ZHc1W?=
+ =?us-ascii?Q?QhNTmH/6zEJdQL0EvaemGH4eRhK7acVMtP5f+IBt+eRfAiX0ufHJ8xUtipGn?=
+ =?us-ascii?Q?dhrerB1aPoIPqbulRqf8NqmKmU8PSblFPchC5Qz3AEFOiKroLj7U/ZPt8evy?=
+ =?us-ascii?Q?fJmIC18BLO1AOPmHWcGJnYpjEqZL/u20UGsB9C5Dc+LQc2w12Ikgz7edt60S?=
+ =?us-ascii?Q?N6V1evqJ1m/CHF5C8h9JzcyXWwpZljQ7946WDZUnh+qAuESlM6oKV1Ln63tN?=
+ =?us-ascii?Q?Ir3jEZSZp9UpBMpUdC2xGy9NiS2C3WWd/v+2+5KAUx8NFc6RnnNWSY2y1tcu?=
+ =?us-ascii?Q?PIYXpSI/qmCWJ1WNus98QdtzARQ42YfBgnZMJ2aJ3jYZFvl+UqiPwOiTXq8m?=
+ =?us-ascii?Q?PRHkwRvzK1eGqcn64qJlQcXKS7YyzVZ3+605HcvUWgANCPOHvBecABeSxfRc?=
+ =?us-ascii?Q?oh1ISfHUXm+gQok9f/akRaPYaBv4L2+sfhxjRlp8LL4otPkZkwfu+bLEgM2g?=
+ =?us-ascii?Q?phTsXyTNBTrBWLHTm6iz5nnN/+UDlMdpVxM3pDRnMRbnXqGSXg5MR2j+Ps/v?=
+ =?us-ascii?Q?8XsVqDHFIabLy6fWhDyLlC7VvW/+BIr9hJ5rjeIYD1VBk1tnxc/8nSdpUCi5?=
+ =?us-ascii?Q?hC41/D/jnoyAGUHZSNk9iw+DCkuu0Sub0NTURfRstFQ4DG3MJLIiceD93SdZ?=
+ =?us-ascii?Q?zJOY+A=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24af3d82-f628-488c-ec8c-08db673017fc
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2023 08:20:47.5901
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: dc5708e5-c254-41b4-47a9-08db6731a1aa
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT050.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7378
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: erylb27CsLmvN2mJr1xfPoNhflm2moEkVUvKRUSn8SECa2GNqpdyhpjsKjvIC6/6kEJ0K+opP0Wd5EvaVeCaME7hkWsCL2XGnSyOE7XQJUQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB6053
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue 06 Jun 2023 at 17:57, Peilin Ye <yepeilin.cs@gmail.com> wrote:
-> On Thu, Jun 01, 2023 at 09:20:39AM +0300, Vlad Buslov wrote:
->> On Wed 31 May 2023 at 20:57, Peilin Ye <yepeilin.cs@gmail.com> wrote:
->> > +static inline bool qdisc_is_destroying(const struct Qdisc *qdisc)
->> > +{
->> > +       return qdisc->flags & TCQ_F_DESTROYING;
->> 
->> Hmm, do we need at least some kind of {READ|WRITE}_ONCE() for accessing
->> flags since they are now used in unlocked filter code path?
->
-> Thanks, after taking another look at cls_api.c, I noticed this code in
-> tc_new_tfilter():
->
-> 	err = tp->ops->change(net, skb, tp, cl, t->tcm_handle, tca, &fh,
-> 			      flags, extack);
-> 	if (err == 0) {
-> 		tfilter_notify(net, skb, n, tp, block, q, parent, fh,
-> 			       RTM_NEWTFILTER, false, rtnl_held, extack);
-> 		tfilter_put(tp, fh);
-> 		/* q pointer is NULL for shared blocks */
-> 		if (q)
-> 			q->flags &= ~TCQ_F_CAN_BYPASS;
-> 	}               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
->
-> TCQ_F_CAN_BYPASS is cleared after e.g. adding a filter to the Qdisc, and it
-> isn't atomic [1].
+On Tue, Jun 06, 2023 at 06:01:17PM +0530, Manivannan Sadhasivam wrote:
 
-Yeah, I see we have already got such behavior in 3f05e6886a59
-("net_sched: unset TCQ_F_CAN_BYPASS when adding filters").
+...
 
->
-> We also have this:
->
->   ->dequeue()
->     htb_dequeue()
->       htb_dequeue_tree()
->         qdisc_warn_nonwc():
->
->   void qdisc_warn_nonwc(const char *txt, struct Qdisc *qdisc)
->   {
->           if (!(qdisc->flags & TCQ_F_WARN_NONWC)) {
->                   pr_warn("%s: %s qdisc %X: is non-work-conserving?\n",
->                           txt, qdisc->ops->id, qdisc->handle >> 16);
->                   qdisc->flags |= TCQ_F_WARN_NONWC;
->           }       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
->   }
->   EXPORT_SYMBOL(qdisc_warn_nonwc);
->
-> Also non-atomic; isn't it possible for the above 2 underlined statements to
-> race with each other?  If true, I think we need to change Qdisc::flags to
-> use atomic bitops, just like what we're doing for Qdisc::state and
-> ::state2.  It feels like a separate TODO, however.
+> +static void mhi_ep_net_dev_process_queue_packets(struct work_struct *work)
+> +{
+> +	struct mhi_ep_net_dev *mhi_ep_netdev = container_of(work,
+> +			struct mhi_ep_net_dev, xmit_work);
+> +	struct mhi_ep_device *mdev = mhi_ep_netdev->mdev;
+> +	struct sk_buff_head q;
+> +	struct sk_buff *skb;
+> +	int ret;
+> +
+> +	if (mhi_ep_queue_is_empty(mdev, DMA_FROM_DEVICE)) {
+> +		netif_stop_queue(mhi_ep_netdev->ndev);
+> +		return;
+> +	}
+> +
+> +	__skb_queue_head_init(&q);
+> +
+> +	spin_lock_bh(&mhi_ep_netdev->tx_lock);
+> +	skb_queue_splice_init(&mhi_ep_netdev->tx_buffers, &q);
+> +	spin_unlock_bh(&mhi_ep_netdev->tx_lock);
+> +
+> +	while ((skb = __skb_dequeue(&q))) {
+> +		ret = mhi_ep_queue_skb(mdev, skb);
+> +		if (ret) {
 
-It looks like even though 3f05e6886a59 ("net_sched: unset
-TCQ_F_CAN_BYPASS when adding filters") was introduced after cls api
-unlock by now we have these in exactly the same list of supported
-kernels (5.4 LTS and newer). Considering this, the conversion to the
-atomic bitops can be done as a standalone fix for cited commit and after
-it will have been accepted and backported the qdisc fix can just assume
-that qdisc->flags is an atomic bitops field in all target kernels and
-use it as-is. WDYT?
+Hi Manivannan,
 
->
-> I also thought about adding the new DELETED-REJECT-NEW-FILTERS flag to
-> ::state2, but not sure if it's okay to extend it for our purpose.
+I wonder if this should be kfree_skb(skb);
 
-As you described above qdisc->flags is already used to interact with cls
-api (including changing it dynamically), so I don't see why not.
+> +			kfree(skb);
+> +			goto exit_drop;
+> +		}
 
+...
 
