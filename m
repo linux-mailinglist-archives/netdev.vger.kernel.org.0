@@ -1,103 +1,79 @@
-Return-Path: <netdev+bounces-8822-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8838-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 22435725DEA
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:01:49 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 93190725F81
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:32:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D16D42813D4
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 12:01:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4D665281439
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 12:32:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F27E533CA4;
-	Wed,  7 Jun 2023 11:59:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BBD548BEE;
+	Wed,  7 Jun 2023 12:32:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5AD633C86
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 11:59:22 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FCF1BD8
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 04:59:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=NHDIoX7XSuEhtcjBSj36oTpLvD2AfY5ZCtScnFjDg+8=; b=AskZKrc+WPjpu+t4AdbeWyP0tK
-	dSixdJvcKsD0PMGTc+7lzCtIiBbE+U3Q3O+48YtUEXFe7FIZyAHWVTTAAoefgPYrZGdAo+u6ls+Kp
-	YB6/G1EDXuULoXG4Rlw3blWxH+1EYHbIM+YIay178s/rp81Drefu1w1+dZmOylPBByTTjr3TlXzSm
-	NxCc6uOH4uMrfKz3v7KxGNSllXiYsqKvoD67ckdXS4thJWeu1jA2bhWZKIeGRlKC4DZbOmHtFmxqD
-	vKsO4jQvPzd88zXdusy9Njsn1lHDwy9QmB6Az5ZvlrNcKcGMnmXNY2l9H1uLZNe+f4HOBc7wcpmp7
-	oCysdpvw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:47188 helo=rmk-PC.armlinux.org.uk)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <rmk@armlinux.org.uk>)
-	id 1q6rof-0007NW-Gi; Wed, 07 Jun 2023 12:59:05 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-	id 1q6roe-00Cfb6-TS; Wed, 07 Jun 2023 12:59:04 +0100
-In-Reply-To: <ZIBwuw+IuGQo5yV8@shell.armlinux.org.uk>
-References: <ZIBwuw+IuGQo5yV8@shell.armlinux.org.uk>
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To: Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Madalin Bucur <madalin.bucur@nxp.com>,
-	netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>,
-	Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH net-next v2 11/11] net: fman_memac: use pcs-lynx's check for
- fwnode availability
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1DCE35B3C
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 12:32:18 +0000 (UTC)
+Received: from baidu.com (mx20.baidu.com [111.202.115.85])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5FCE62;
+	Wed,  7 Jun 2023 05:32:16 -0700 (PDT)
+From: "Duan,Muquan" <duanmuquan@baidu.com>
+To: Simon Horman <simon.horman@corigine.com>
+CC: "davem@davemloft.net" <davem@davemloft.net>, "dsahern@kernel.org"
+	<dsahern@kernel.org>, "edumazet@google.com" <edumazet@google.com>,
+	"kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com" <pabeni@redhat.com>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1] tcp: fix connection reset due to tw hashdance race.
+Thread-Topic: [PATCH v1] tcp: fix connection reset due to tw hashdance race.
+Thread-Index: AQHZl2EOPgCVvIYh+EyVtuZIPXSv7q989RIAgAHFnQA=
+Date: Wed, 7 Jun 2023 12:01:23 +0000
+Message-ID: <A280D6B1-6CAE-4255-9542-21268D9F8997@baidu.com>
+References: <20230605035140.89106-1-duanmuquan@baidu.com>
+ <ZH71DvVRewnmRdC9@corigine.com>
+In-Reply-To: <ZH71DvVRewnmRdC9@corigine.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [172.22.196.162]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <26401C5E3F057C4DBF421F6F2C8CB3FE@internal.baidu.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1q6roe-00Cfb6-TS@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date: Wed, 07 Jun 2023 12:59:04 +0100
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+X-FEAS-Client-IP: 172.31.51.56
+X-FE-Last-Public-Client-IP: 100.100.100.49
+X-FE-Policy-ID: 15:10:21:SYSTEM
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Use pcs-lynx's check rather than our own when determining if the device
-is available. This fixes a bug where the reference gained by
-of_parse_phandle() is not dropped if the device is not available.
-
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/ethernet/freescale/fman/fman_memac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
-index 4fbdae996d05..3b75cc543be9 100644
---- a/drivers/net/ethernet/freescale/fman/fman_memac.c
-+++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
-@@ -1042,7 +1042,7 @@ static struct phylink_pcs *memac_pcs_create(struct device_node *mac_node,
- 	struct phylink_pcs *pcs;
- 
- 	node = of_parse_phandle(mac_node, "pcsphy-handle", index);
--	if (!node || !of_device_is_available(node))
-+	if (!node)
- 		return ERR_PTR(-ENODEV);
- 
- 	pcs = lynx_pcs_create_fwnode(of_fwnode_handle(node));
--- 
-2.30.2
-
+SGksIFNpbW9uLA0KDQpUaGFuayB5b3UgZm9yIHBvaW50aW5nIG91dCB0aGUgZXJyb3IsIEkgd2ls
+bCBjb3JyZWN0IGl0IGluIG5leHQgcGF0Y2guDQoNCkJlc3QgUmVnYXJkcyENCkR1YW4NCg0KPiAy
+MDIz5bm0NuaciDbml6Ug5LiL5Y2INDo1N++8jFNpbW9uIEhvcm1hbiA8c2ltb24uaG9ybWFuQGNv
+cmlnaW5lLmNvbT4g5YaZ6YGT77yaDQo+IA0KPiBPbiBNb24sIEp1biAwNSwgMjAyMyBhdCAxMTo1
+MTo0MEFNICswODAwLCBEdWFuIE11cXVhbiB3cm90ZToNCj4gDQo+IC4uLg0KPiANCj4+IEJyaWVm
+IG9mIHRoZSBzY2VuYXJpbzoNCj4+IA0KPj4gMS4gU2VydmVyIHJ1bnMgb24gQ1BVIDAgYW5kIENs
+aWVudCBydW5zIG9uIENQVSAxLiBTZXJ2ZXIgY2xvc2VzDQo+PiBjb25uZWN0aW9uIGFjdGl2ZWx5
+IGFuZCBzZW5kcyBhIEZJTiB0byBjbGllbnQuIFRoZSBsb29rYmFjaydzIGRyaXZlcg0KPj4gZW5x
+dWV1ZXMgdGhlIEZJTiBzZWdtZW50IHRvIGJhY2tsb2cgcXVldWUgb2YgQ1BVIDAgdmlhDQo+PiBs
+b29wYmFja194bWl0KCktPm5ldGlmX3J4KCksIG9uZSBvZiB0aGUgY29uZGl0aW9ucyBmb3Igbm9u
+LWRlbGF5IGFjaw0KPj4gbWVldHMgaW4gX190Y3BfYWNrX3NuZF9jaGVjaygpLCBhbmQgdGhlIEFD
+SyBpcyBzZW50IGltbWVkaWF0ZWx5Lg0KPj4gDQo+PiAyLiBPbiBsb29wYmFjayBpbnRlcmZhY2Us
+IHRoZSBBQ0sgaXMgcmVjZWl2ZWQgYW5kIHByb2Nlc3NlZCBvbiBDUFUgMCwNCj4+IHRoZSAnZGFu
+Y2UnIGZyb20gb3JpZ2luYWwgc29jayB0byB0dyBzb2NrIHdpbGwgcGVyZnJvbSwgdHcgc29jayB3
+aWxsDQo+IA0KPiBIaSBEdWFuIE11cXVhbiwNCj4gDQo+IGEgbWlub3Igbml0IGZyb20gbXkgc2lk
+ZTogcGVyZnJvbSAtPiBwZXJmb3JtDQo+IA0KPj4gYmUgaW5zZXJ0ZWQgdG8gZWhhc2ggdGFibGUs
+IHRoZW4gdGhlIG9yaWdpbmFsIHNvY2sgd2lsbCBiZSByZW1vdmVkLg0KPiANCj4gLi4uDQoNCg==
 
