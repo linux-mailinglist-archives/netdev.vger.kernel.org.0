@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-9070-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9071-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 37ED472703E
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 23:06:34 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D9E2B727040
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 23:06:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E67A9280DF8
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 21:06:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3E6B61C20F13
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 21:06:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1B2D73B8CC;
-	Wed,  7 Jun 2023 21:04:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 35A6F3B8D6;
+	Wed,  7 Jun 2023 21:04:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0E963AE5F
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 21:04:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A68DDC43443;
-	Wed,  7 Jun 2023 21:04:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D32E63AE5F
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 21:04:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D1B4C43443;
+	Wed,  7 Jun 2023 21:04:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686171873;
-	bh=TxslIJuegigARBUmcC/zoGAApJ4huayWW1+6cWeHxpg=;
+	s=k20201202; t=1686171875;
+	bh=TvvFLrdrNCJQMZKS4rYmyo47SA0euHg3Lv0phWxoJSM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=kYx5RbsLi1Kzi0ybBEfI1pY1di15TKg7oIC628VTgPV6sdOH7y9vxyrfvnqbGib2X
-	 GSuZgTJdl2Ko0xxxlR1f1sJxV0/fRPMTg3wla86eRZL3cb+sKrzH4Qz3HWaQRzQU7E
-	 g4EUbr2KwXp2MJ7eEvU8gtlcGjJvsrxGmZOAKFsmYsuVQ0d+GH2sCA7Vzo5TVcnzu7
-	 5qsUvbMVXx0bUEyi4mJ7T2Sg7UbSjS34RPbcz962HmNlNg/e6/s3KkA9wQzOJkqdxI
-	 QHH4JUG4/FwhrDJRFs/uwByXEgbT7HYw3f0EW/jsMb8SvYh7Dul3bKHfYr9/NOWlK/
-	 xPSNAHuejGVjA==
+	b=PSWxJPR2XDTZfBHykvj3Orgtd0KwdyvdROlOKqzrpvobz37Hfi5QWOXjJb0E/L9hw
+	 6SEqTNlgh55ooJYUJlu/eMjueshE324T0W4/0exVgcpm4bMJF+8/ZA0m5I89pttwiM
+	 fBAblx+im4Il8qgr0ZtjTVVq108/GDYG6M5xjwwFhsoudIIDJg68vWjoTyy3jeD27o
+	 aXdOrmDmF2j167gIQjyZwiee4BoeyxKfaseXStucoYbaxhIwXRBd/msdKQkpu/ENS3
+	 ke3Zqfzh1w8LUXsR/wvS9BhE7jW5VF6zEgLpoHZcF57lktX5te74O2JBVwW9AnytJA
+	 MRuzzRg++/YLg==
 From: Saeed Mahameed <saeed@kernel.org>
 To: "David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -42,9 +42,9 @@ Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	linux-rdma@vger.kernel.org,
 	Shay Drory <shayd@nvidia.com>,
 	Mark Bloch <mbloch@nvidia.com>
-Subject: [net-next V2 06/14] net/mlx5: LAG, block multipath LAG in case ldev have more than 2 ports
-Date: Wed,  7 Jun 2023 14:04:02 -0700
-Message-Id: <20230607210410.88209-7-saeed@kernel.org>
+Subject: [net-next V2 07/14] net/mlx5: LAG, block multiport eswitch LAG in case ldev have more than 2 ports
+Date: Wed,  7 Jun 2023 14:04:03 -0700
+Message-Id: <20230607210410.88209-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230607210410.88209-1-saeed@kernel.org>
 References: <20230607210410.88209-1-saeed@kernel.org>
@@ -58,38 +58,38 @@ Content-Transfer-Encoding: 8bit
 
 From: Shay Drory <shayd@nvidia.com>
 
-multipath LAG is not supported over more than two ports. Add a check in
-order to block multipath LAG over such configurations.
+multiport eswitch LAG is not supported over more than two ports. Add a check in
+order to block multiport eswitch LAG over such devices.
 
 Signed-off-by: Shay Drory <shayd@nvidia.com>
 Reviewed-by: Mark Bloch <mbloch@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c | 4 ++++
+ drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
-index d85a8dfc153d..976caa8e6922 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
-@@ -14,6 +14,7 @@ static bool __mlx5_lag_is_multipath(struct mlx5_lag *ldev)
- 	return ldev->mode == MLX5_LAG_MODE_MULTIPATH;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c
+index 0c0ef600f643..0e869a76dfe4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c
+@@ -65,6 +65,7 @@ static int mlx5_mpesw_metadata_set(struct mlx5_lag *ldev)
+ 	return err;
  }
  
-+#define MLX5_LAG_MULTIPATH_OFFLOADS_SUPPORTED_PORTS 2
- static bool mlx5_lag_multipath_check_prereq(struct mlx5_lag *ldev)
++#define MLX5_LAG_MPESW_OFFLOADS_SUPPORTED_PORTS 2
+ static int enable_mpesw(struct mlx5_lag *ldev)
  {
- 	if (!mlx5_lag_is_ready(ldev))
-@@ -22,6 +23,9 @@ static bool mlx5_lag_multipath_check_prereq(struct mlx5_lag *ldev)
- 	if (__mlx5_lag_is_active(ldev) && !__mlx5_lag_is_multipath(ldev))
- 		return false;
+ 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
+@@ -74,6 +75,9 @@ static int enable_mpesw(struct mlx5_lag *ldev)
+ 	if (ldev->mode != MLX5_LAG_MODE_NONE)
+ 		return -EINVAL;
  
-+	if (ldev->ports > MLX5_LAG_MULTIPATH_OFFLOADS_SUPPORTED_PORTS)
-+		return false;
++	if (ldev->ports > MLX5_LAG_MPESW_OFFLOADS_SUPPORTED_PORTS)
++		return -EOPNOTSUPP;
 +
- 	return mlx5_esw_multipath_prereq(ldev->pf[MLX5_LAG_P1].dev,
- 					 ldev->pf[MLX5_LAG_P2].dev);
- }
+ 	if (mlx5_eswitch_mode(dev0) != MLX5_ESWITCH_OFFLOADS ||
+ 	    !MLX5_CAP_PORT_SELECTION(dev0, port_select_flow_table) ||
+ 	    !MLX5_CAP_GEN(dev0, create_lag_when_not_master_up) ||
 -- 
 2.40.1
 
