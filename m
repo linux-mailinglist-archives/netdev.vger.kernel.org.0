@@ -1,88 +1,138 @@
-Return-Path: <netdev+bounces-9022-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9023-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4B148726985
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 21:10:14 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 96DCE7269B9
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 21:26:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2B0642812D2
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 19:10:12 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 09BF71C20E48
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 19:26:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 44B1A35B49;
-	Wed,  7 Jun 2023 19:10:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F05C137354;
+	Wed,  7 Jun 2023 19:26:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8F256118
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 19:10:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E68EC433EF;
-	Wed,  7 Jun 2023 19:10:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686165008;
-	bh=8D1/cxGhHDE49qugp8X6axwPXEqLwTjbyCSi4J025Js=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=fRiFRWcFAxQg98gD5jA276ahg7V1ajs8KVdPYPNLoXTkP8UwdGtcFKYCj1qZG7OCI
-	 2LHznSA9B5i/6Lpe136ECjTbMQSFjdlRyKIbY5DAYTDCTOWOJD5gvLmwXrBHB7muEA
-	 w4wg/M45FSQdkuce8tXj264VuS0IrSlEDLnI4ihEGwkEIV+Qt6g8q5SI0suyFn5UTJ
-	 5/71F0d2pj2MAU+EqF1fClQIIAoou8nGdCKU5slFBvVof3Pg1/XbUF3R7mAiEgWZMB
-	 dY8jgIjc90Lf2eav3yLKWRj0nw468+Y4z1cuNCIayzLIf6JxOODkKI0mlbqy55FJtw
-	 8hGv0LeJZDPiw==
-Date: Wed, 7 Jun 2023 12:10:06 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: "Linga, Pavan Kumar" <pavan.kumar.linga@intel.com>, Tony Nguyen
- <anthony.l.nguyen@intel.com>, davem@davemloft.net, pabeni@redhat.com,
- edumazet@google.com, netdev@vger.kernel.org, emil.s.tantilov@intel.com,
- jesse.brandeburg@intel.com, sridhar.samudrala@intel.com,
- shiraz.saleem@intel.com, sindhu.devale@intel.com, willemb@google.com,
- decot@google.com, andrew@lunn.ch, leon@kernel.org, mst@redhat.com,
- simon.horman@corigine.com, shannon.nelson@amd.com,
- stephen@networkplumber.org, Alan Brady <alan.brady@intel.com>, Joshua Hay
- <joshua.a.hay@intel.com>, Madhu Chittim <madhu.chittim@intel.com>, Phani
- Burra <phani.r.burra@intel.com>, Shailendra Bhatnagar
- <shailendra.bhatnagar@intel.com>, Krishneil Singh
- <krishneil.k.singh@intel.com>
-Subject: Re: [PATCH net-next 05/15] idpf: add create vport and netdev
- configuration
-Message-ID: <20230607121006.59d57ca0@kernel.org>
-In-Reply-To: <CAF=yD-KAQceDE9UmJAvepz8tWGgqyr+drv_WYp-q=7vEEUTfiA@mail.gmail.com>
-References: <20230530234501.2680230-1-anthony.l.nguyen@intel.com>
-	<20230530234501.2680230-6-anthony.l.nguyen@intel.com>
-	<20230531232239.5db93c09@kernel.org>
-	<3fe3bf2a-6cb2-c3a1-3fa3-ed9a5425e603@intel.com>
-	<CAF=yD-KAQceDE9UmJAvepz8tWGgqyr+drv_WYp-q=7vEEUTfiA@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7BCC6118;
+	Wed,  7 Jun 2023 19:26:39 +0000 (UTC)
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1FB51FDE;
+	Wed,  7 Jun 2023 12:26:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:MIME-Version:
+	Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References;
+	bh=3Xi0WEnTaxZKt77bQRN8LV1oOyRPlPvGmnT+c3YFP6E=; b=BF64uvKCAWWKb7kmOo8ANZlzXI
+	P2vuB+uQjkaovq13FWuJJaATOhiWYHPGeHAayJHDEs+I1URZ0MzTn8fWaS7v7Ca0OVg7mzKQvl12P
+	wUbGYMFuevXL7IcnNLt1igaCdHZA8nRWdn9nj+pLSyGhzDCrwua/RWPUenUY3S+mDmPe3NBmu1UXY
+	Ch+r8apBWn4sPyj1aEFSc1HGHolqi7GcMjZf8LywNhW0NBY61yq4lTrh2a8ZkIYNqQlP7+SLAGZYs
+	h2upeMCFAHrKJ4q0qYQm+QIZkXMw6n/PUQDa9Bm/HiLogNklvojteRoxwoo9dOXkmZzJul3tnQFbG
+	Mf64tzUw==;
+Received: from 49.248.197.178.dynamic.dsl-lte-bonding.zhbmb00p-msn.res.cust.swisscom.ch ([178.197.248.49] helo=localhost)
+	by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <daniel@iogearbox.net>)
+	id 1q6ynh-000CXQ-JC; Wed, 07 Jun 2023 21:26:33 +0200
+From: Daniel Borkmann <daniel@iogearbox.net>
+To: ast@kernel.org
+Cc: andrii@kernel.org,
+	martin.lau@linux.dev,
+	razor@blackwall.org,
+	sdf@google.com,
+	john.fastabend@gmail.com,
+	kuba@kernel.org,
+	dxu@dxuuu.xyz,
+	joe@cilium.io,
+	toke@kernel.org,
+	davem@davemloft.net,
+	bpf@vger.kernel.org,
+	netdev@vger.kernel.org,
+	Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH bpf-next v2 0/7] BPF link support for tc BPF programs
+Date: Wed,  7 Jun 2023 21:26:18 +0200
+Message-Id: <20230607192625.22641-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.8/26931/Wed Jun  7 09:23:57 2023)
+X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_SBL_CSS,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.6
+X-Spam-Level: *
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Wed, 7 Jun 2023 20:20:57 +0200 Willem de Bruijn wrote:
-> > > Please use locks. Every single Intel driver comes with gazillion flags
-> > > and endless bugs when the flags go out of sync.  
-> >
-> > Thanks for the feedback. Will use mutex lock instead of 'VC_MSG_PENDING'
-> > flag.  
-> 
-> Was that the intent of the comment?
-> 
-> Or is it to replace these individual atomic test_and_set bit
-> operations with a single spinlock-protected critical section around
-> all the flag operations?
+This series adds BPF link support for tc BPF programs. We initially
+presented the motivation, related work and design at last year's LPC
+conference in the networking & BPF track [0], and a recent update on
+our progress of the rework during this year's LSF/MM/BPF summit [1].
+The main changes are in first two patches and the last two have an
+extensive batch of test cases we developed along with it, please see
+individual patches for details. We tested this series with tc-testing
+selftest suite as well as BPF CI/selftests. Thanks!
 
-No, no. Intel drivers have a history of adding flags to work around
-locking problems. Whatever this bit is protecting should be protected
-by a normal synchronization primitive instead.
+  [0] https://lpc.events/event/16/contributions/1353/
+  [1] http://vger.kernel.org/bpfconf2023_material/tcx_meta_netdev_borkmann.pdf
 
-I don't understand why.
+Daniel Borkmann (7):
+  bpf: Add generic attach/detach/query API for multi-progs
+  bpf: Add fd-based tcx multi-prog infra with link support
+  libbpf: Add opts-based attach/detach/query API for tcx
+  libbpf: Add link-based API for tcx
+  bpftool: Extend net dump with tcx progs
+  selftests/bpf: Add mprog API tests for BPF tcx opts
+  selftests/bpf: Add mprog API tests for BPF tcx links
 
-Replacing an atomic bitop with a spin lock is a non-change.
+ MAINTAINERS                                   |    5 +-
+ include/linux/bpf_mprog.h                     |  245 ++
+ include/linux/netdevice.h                     |   15 +-
+ include/linux/skbuff.h                        |    4 +-
+ include/net/sch_generic.h                     |    2 +-
+ include/net/tcx.h                             |  157 +
+ include/uapi/linux/bpf.h                      |   72 +-
+ kernel/bpf/Kconfig                            |    1 +
+ kernel/bpf/Makefile                           |    3 +-
+ kernel/bpf/mprog.c                            |  476 +++
+ kernel/bpf/syscall.c                          |   95 +-
+ kernel/bpf/tcx.c                              |  347 +++
+ net/Kconfig                                   |    5 +
+ net/core/dev.c                                |  267 +-
+ net/core/filter.c                             |    4 +-
+ net/sched/Kconfig                             |    4 +-
+ net/sched/sch_ingress.c                       |   45 +-
+ tools/bpf/bpftool/net.c                       |   92 +-
+ tools/include/uapi/linux/bpf.h                |   72 +-
+ tools/lib/bpf/bpf.c                           |   83 +-
+ tools/lib/bpf/bpf.h                           |   61 +-
+ tools/lib/bpf/libbpf.c                        |   50 +-
+ tools/lib/bpf/libbpf.h                        |   17 +
+ tools/lib/bpf/libbpf.map                      |    2 +
+ .../selftests/bpf/prog_tests/tc_helpers.h     |   72 +
+ .../selftests/bpf/prog_tests/tc_links.c       | 2279 ++++++++++++++
+ .../selftests/bpf/prog_tests/tc_opts.c        | 2698 +++++++++++++++++
+ .../selftests/bpf/progs/test_tc_link.c        |   40 +
+ 28 files changed, 6995 insertions(+), 218 deletions(-)
+ create mode 100644 include/linux/bpf_mprog.h
+ create mode 100644 include/net/tcx.h
+ create mode 100644 kernel/bpf/mprog.c
+ create mode 100644 kernel/bpf/tcx.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_helpers.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_links.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_opts.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_tc_link.c
 
-> That's how I read the suggestion.
+-- 
+2.34.1
+
 
