@@ -1,39 +1,39 @@
-Return-Path: <netdev+bounces-8825-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8826-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 60ECD725E01
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:08:41 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 44854725E05
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:08:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9140C280DD0
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 12:08:39 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F41B728134D
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 12:08:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C493434443;
-	Wed,  7 Jun 2023 12:08:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE95834450;
+	Wed,  7 Jun 2023 12:08:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B95A130B90
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 12:08:21 +0000 (UTC)
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF3F51BD4;
-	Wed,  7 Jun 2023 05:08:19 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D472130B90
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 12:08:23 +0000 (UTC)
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A95B1BD6;
+	Wed,  7 Jun 2023 05:08:21 -0700 (PDT)
 X-GND-Sasl: maxime.chevallier@bootlin.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1686139698;
+	t=1686139700;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=6WgS2itewXgwIqmxjlbCVju713PZbtSt5czOzpTuXBA=;
-	b=INw8V+2UyFA/SPRFanuth0K/BngfjNL1jgchzheesyHYptmp5GvGnc+eRJ3pkV5Gs1jTRf
-	u000j3TuffrZhH+D4bfp2tGaxRae2v5NO547fXC+VWipEBuHWo1969nY0W7t6xUtCWbJGo
-	9lPidmLHPTrqJxsOs0RFWaFWlI45okDOx6QBUJTYWugXu4nEN2ohE5cMINXi+rMJRRF6ua
-	jn0ivkiOYqYr8+Dors43NrstoqhZbrv8fAgd+F4GTPi9pQpuVDtQIDTIrX8SMb0ofGrr97
-	26hwkPgxT8FC8tdyYIP4qg6TNqjAmUlJkobM+Bcz/EUrW9m6mfi1D5M8TQaDRQ==
+	bh=At0AjpP7baWbSDLanUe9mFxHCTEVmm+qTfAUCvB7Gp8=;
+	b=dQMSXiIW3ZWK0uFu2pu1VSHFpPXVLAHgvFKT8zjRVURaM47m9LfzUQygnPD5QLsZKNeUSf
+	0s/oLjaS8mTjTAOxjUGxDcL/x1TSZ5qfyyfF2klC7b9vQ58bVNdQpMxXpOlIQTW2+kbarU
+	1AwqItuhADOeUwOl8WnaP4Pg1g1EbsuzCPsyVzD/NCqmmm0zokKFqLjF+jz5+C5s05AU0k
+	rRPbTJFlZsseWdPft8CGQ0BC+BPaTIStpdlZ7ymUm3xeAgMA8K+pCwqfr8fK8rsAphqBkT
+	Os652C7hkCVRjY2e4lxZPPR12yRLj+b4lVCIFVFc0nXmwjenOuvF5upae5axKw==
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
@@ -57,8 +57,8 @@ X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id EAB9DE000D;
-	Wed,  7 Jun 2023 12:08:15 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id AA75FE0011;
+	Wed,  7 Jun 2023 12:08:18 +0000 (UTC)
 From: Maxime Chevallier <maxime.chevallier@bootlin.com>
 To: davem@davemloft.net
 Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
@@ -84,9 +84,9 @@ Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
 	Simon Horman <simon.horman@corigine.com>,
 	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
 	Feiyang Chen <chenfeiyang@loongson.cn>
-Subject: [PATCH net-next v4 1/5] net: altera-tse: Initialize local structs before using it
-Date: Wed,  7 Jun 2023 15:59:37 +0200
-Message-Id: <20230607135941.407054-2-maxime.chevallier@bootlin.com>
+Subject: [PATCH net-next v4 2/5] net: altera_tse: Use the correct Kconfig option for the PCS_LYNX dependency
+Date: Wed,  7 Jun 2023 15:59:38 +0200
+Message-Id: <20230607135941.407054-3-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230607135941.407054-1-maxime.chevallier@bootlin.com>
 References: <20230607135941.407054-1-maxime.chevallier@bootlin.com>
@@ -98,39 +98,39 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The regmap_config and mdio_regmap_config objects needs to be zeroed before
-using them. This will cause spurious errors at probe time as config->pad_bits
-is containing random uninitialized data.
+Use the correct Kconfig dependency for altera_tse as PCS_ALTERA_TSE was
+replaced by PCS_LYNX.
 
 Fixes: db48abbaa18e ("net: ethernet: altera-tse: Convert to mdio-regmap and use PCS Lynx")
 Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 ---
-V3->V4 : Also zero "mrc" from Maciej's review
-V2->V3 : No changes
-V1->V2 : No changes
+V3->V4 : No changes
+V2->V3 : Fix a typo in the commit title
+V1->V2 : New patch
 
- drivers/net/ethernet/altera/altera_tse_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/altera/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
-index d866c0f1b503..215f9fb89c5b 100644
---- a/drivers/net/ethernet/altera/altera_tse_main.c
-+++ b/drivers/net/ethernet/altera/altera_tse_main.c
-@@ -1255,6 +1255,8 @@ static int altera_tse_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_free_netdev;
- 
-+	memset(&pcs_regmap_cfg, 0, sizeof(pcs_regmap_cfg));
-+	memset(&mrc, 0, sizeof(mrc));
- 	/* SGMII PCS address space. The location can vary depending on how the
- 	 * IP is integrated. We can have a resource dedicated to it at a specific
- 	 * address space, but if it's not the case, we fallback to the mdiophy0
+diff --git a/drivers/net/ethernet/altera/Kconfig b/drivers/net/ethernet/altera/Kconfig
+index 93533ba03429..17985319088c 100644
+--- a/drivers/net/ethernet/altera/Kconfig
++++ b/drivers/net/ethernet/altera/Kconfig
+@@ -4,7 +4,7 @@ config ALTERA_TSE
+ 	depends on HAS_DMA
+ 	select PHYLIB
+ 	select PHYLINK
+-	select PCS_ALTERA_TSE
++	select PCS_LYNX
+ 	select MDIO_REGMAP
+ 	select REGMAP_MMIO
+ 	help
 -- 
 2.40.1
 
