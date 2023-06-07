@@ -1,103 +1,160 @@
-Return-Path: <netdev+bounces-8943-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8944-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B99CC7265F1
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 18:30:06 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C67EA72660D
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 18:32:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7561C280D78
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 16:30:05 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7DDEC2812F1
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 16:32:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BBEB437339;
-	Wed,  7 Jun 2023 16:29:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D34653AE45;
+	Wed,  7 Jun 2023 16:32:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B07E8370F8
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 16:29:53 +0000 (UTC)
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234A0210D;
-	Wed,  7 Jun 2023 09:29:28 -0700 (PDT)
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 357EqCQl015786;
-	Wed, 7 Jun 2023 16:29:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=9nrQBIXtdNUx9JeZ1Z1+4kKEbqvzN1eFuc+10QOn6N8=;
- b=HSrk0FENJj1kzcG/57Kf2xOO873kfTB1Y7IiyiVYLQC2ZnO/33rbvMAHkjO0il2nxEmf
- 1NB9K5MLslyzko1CUPJo21Tck9Y1b0ex9tGLqUW/DBBIs9LRA00WmTdofMx/UCoGFcry
- mxur6dQ87xtDTJpHdGcqww3bw5j7lvHcP3iVQtn1v+xC4+hk3KGVt2wd0l4wuMhxIC9t
- 8i/xW3AJ6hfxKz/SVErjTMsojnetACb2CPH2kuZRFflUmGd4fAug8GD8Pfikvd+DaAOP
- 99fvPKyLIF8Mg1TaqM15b5w4tnY1U2gIc28IpgPZg+6R7CZEiPF3E39bleUX8ATQHVVR OQ== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3r2a6ytcrq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 07 Jun 2023 16:29:08 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 357GT7XQ022524
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 7 Jun 2023 16:29:07 GMT
-Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.42; Wed, 7 Jun 2023
- 09:29:06 -0700
-Message-ID: <36d5b410-3cc1-473f-acac-6963aa89aa9a@quicinc.com>
-Date: Wed, 7 Jun 2023 10:29:05 -0600
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C519E3733F
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 16:32:53 +0000 (UTC)
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C2311F;
+	Wed,  7 Jun 2023 09:32:28 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+	by mailout.nyi.internal (Postfix) with ESMTP id AEDC05C00C4;
+	Wed,  7 Jun 2023 12:32:24 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Wed, 07 Jun 2023 12:32:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm1; t=1686155544; x=1686241944; bh=Qr/Gw0RZ06Pyq
+	6A7s5pLn8myn4McikOyjbd6/dNG4wU=; b=IMnILY+CISLnMsTcq0PZ8TsWuV3y2
+	GPCWuZuvMFGNw+p0JxP2+o9KrONAyJRET4ZszVsE/beyRuIJ9BTO/ZmI/ZCWwqB2
+	avVVLxpIPBVVfOFDMYV3b01ag28saZqLOrNnFRYD8yQw1PEpA36WdCxcSvL1qEf6
+	suY769EcRm08RwGi4E3E9ZaJyFZURlfLSD3X8BIxDJrOr8ZcAZLFLuvltUDi0+JX
+	F+pHRCxJVfpQf6NXz/mdMh0U4Zc5jwnMuiS85duphzbbl0O2LtUb3YTnhmDIU8ZZ
+	JqpKeyXYIYmkrRrSZTBdqnUlMVoRl/H8INapIBionPC1s9nN/whdj0UHA==
+X-ME-Sender: <xms:GLGAZNT7aG3WXi9oTB4zoRv7baMhBHHIgzZNwvh5YqHPhQsdK9pcbw>
+    <xme:GLGAZGzNWS9FFIRopISYgP4USDZccEjHXiNEg4c3cuAIhYlDFjVmCtAgRy2TYTwJs
+    ZZnm4Ur6M5RhOc>
+X-ME-Received: <xmr:GLGAZC3Xu9Z3V9BOGg6Ouqwj2J74omQl4dQoosFwT8BET493ZZMIgacOi28eY3DQ_KxNbHCxogpJ-5MKGeUl53MEOs8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgedtgedguddtvdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enfghrlhcuvffnffculdduhedmnecujfgurhepfffhvfevuffkfhggtggujgesthdtredt
+    tddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughosh
+    gthhdrohhrgheqnecuggftrfgrthhtvghrnhepgfevjedutdekheefieduiedutdffhffh
+    keduhfffhffghfehvddtffefteeivefhnecuffhomhgrihhnpegrtggtvghpthgvugdrth
+    hoohhlshdpthgvshhtvhiglhgrnhhnohhlohgtrghlsgihphgrshhsrdhshhenucevlhhu
+    shhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesih
+    guohhstghhrdhorhhg
+X-ME-Proxy: <xmx:GLGAZFB4rNlRRGJBjHq6RzahslXON6VCtpJPCqGAIrHUhw7Yr39GeQ>
+    <xmx:GLGAZGjeiiijJV52IjcPh-kCek8w3Hjeb5vLSM17eXDrtshye_PwTw>
+    <xmx:GLGAZJq-uL8U4B4UO1sZcVGdzUu-rmSFuKtWkzoxAEcsp-iog49Pzw>
+    <xmx:GLGAZNTgyC9Qer47btdllpnpj3r37YWJ0CyrpHfWD9e9PWBcQsTMog>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 7 Jun 2023 12:32:23 -0400 (EDT)
+Date: Wed, 7 Jun 2023 19:32:20 +0300
+From: Ido Schimmel <idosch@idosch.org>
+To: Vladimir Nikishkin <vladimir@nikishkin.pw>
+Cc: netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com,
+	eng.alaamohamedsoliman.am@gmail.com, gnault@redhat.com,
+	razor@blackwall.org, idosch@nvidia.com, liuhangbin@gmail.com,
+	eyal.birger@gmail.com, jtoppins@redhat.com, shuah@kernel.org,
+	linux-kselftest@vger.kernel.org, stephen@networkplumber.org
+Subject: Re: [PATCH net-next] selftests: net: vxlan: Fix selftest after
+ changes in iproute2.
+Message-ID: <ZICxFL8RXuUPp+at@shredder>
+References: <20230607130620.32599-1-vladimir@nikishkin.pw>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v2 2/2] MAINTAINERS: Add entry for MHI networking drivers
- under MHI bus
-Content-Language: en-US
-To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC: <mhi@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <loic.poulain@linaro.org>
-References: <20230607152427.108607-1-manivannan.sadhasivam@linaro.org>
- <20230607152427.108607-3-manivannan.sadhasivam@linaro.org>
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
-In-Reply-To: <20230607152427.108607-3-manivannan.sadhasivam@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: tMmwxk2Lt4nzs7IqK67szmPbJ2AdLRLO
-X-Proofpoint-GUID: tMmwxk2Lt4nzs7IqK67szmPbJ2AdLRLO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-06-07_07,2023-06-07_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
- bulkscore=0 priorityscore=1501 mlxlogscore=397 adultscore=0 suspectscore=0
- phishscore=0 lowpriorityscore=0 mlxscore=0 spamscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2305260000
- definitions=main-2306070140
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230607130620.32599-1-vladimir@nikishkin.pw>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 6/7/2023 9:24 AM, Manivannan Sadhasivam wrote:
-> The host MHI net driver was not listed earlier. So let's add both host and
-> endpoint MHI net drivers under MHI bus.
-> 
-> Cc: Loic Poulain <loic.poulain@linaro.org>
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+On Wed, Jun 07, 2023 at 09:06:21PM +0800, Vladimir Nikishkin wrote:
+> 1. Make test_vxlan_nolocalbypass.sh uses ip -j JSON output.
+> 2. Make sure that vxlan nolocalbypass tests pass with the upstream iproute2.
 
-Reviewed-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+I would drop this numbering and just state:
+
+"
+The iproute2 output that eventually landed upstream is different than
+the one used in this test, resulting in failures. Fix by adjusting the
+test to use iproute2's JSON output, which is more stable than regular
+output.
+
+Fixes: 305c04189997 ("selftests: net: vxlan: Add tests for vxlan nolocalbypass option.")
+"
+
+> 
+> Signed-off-by: Vladimir Nikishkin <vladimir@nikishkin.pw>
+> ---
+> 
+> This is version 0. As suggested in the mailing list, fix tests
+> after the change to iproute2 is accepted.
+> 
+>  tools/testing/selftests/net/test_vxlan_nolocalbypass.sh | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/net/test_vxlan_nolocalbypass.sh b/tools/testing/selftests/net/test_vxlan_nolocalbypass.sh
+> index 46067db53068..1189842c188b 100755
+> --- a/tools/testing/selftests/net/test_vxlan_nolocalbypass.sh
+> +++ b/tools/testing/selftests/net/test_vxlan_nolocalbypass.sh
+> @@ -130,7 +130,7 @@ nolocalbypass()
+>  	run_cmd "tc -n ns1 qdisc add dev lo clsact"
+>  	run_cmd "tc -n ns1 filter add dev lo ingress pref 1 handle 101 proto ip flower ip_proto udp dst_port 4790 action drop"
+>  
+> -	run_cmd "ip -n ns1 -d link show dev vx0 | grep ' localbypass'"
+> +        run_cmd "ip -n ns1 -d -j link show dev vx0 | jq -e '.[][\"linkinfo\"][\"info_data\"][\"localbypass\"] == true'"
+
+Please replace the 8 spaces with a tab (like in the rest of the test).
+Same in other places.
+
+Thanks
+
+>  	log_test $? 0 "localbypass enabled"
+>  
+>  	run_cmd "ip netns exec ns1 mausezahn vx0 -a $smac -b $dmac -c 1 -p 100 -q"
+> @@ -140,7 +140,7 @@ nolocalbypass()
+>  
+>  	run_cmd "ip -n ns1 link set dev vx0 type vxlan nolocalbypass"
+>  
+> -	run_cmd "ip -n ns1 -d link show dev vx0 | grep 'nolocalbypass'"
+> +        run_cmd "ip -n ns1 -d -j link show dev vx0 | jq -e '.[][\"linkinfo\"][\"info_data\"][\"localbypass\"] == false'"
+>  	log_test $? 0 "localbypass disabled"
+>  
+>  	run_cmd "ip netns exec ns1 mausezahn vx0 -a $smac -b $dmac -c 1 -p 100 -q"
+> @@ -150,7 +150,7 @@ nolocalbypass()
+>  
+>  	run_cmd "ip -n ns1 link set dev vx0 type vxlan localbypass"
+>  
+> -	run_cmd "ip -n ns1 -d link show dev vx0 | grep ' localbypass'"
+> +        run_cmd "ip -n ns1 -d -j link show dev vx0 | jq -e '.[][\"linkinfo\"][\"info_data\"][\"localbypass\"] == true'"
+>  	log_test $? 0 "localbypass enabled"
+>  
+>  	run_cmd "ip netns exec ns1 mausezahn vx0 -a $smac -b $dmac -c 1 -p 100 -q"
+> -- 
+> 2.35.8
+> 
+> --
+> Fastmail.
+> 
+> 
 
