@@ -1,285 +1,123 @@
-Return-Path: <netdev+bounces-8895-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8870-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8ABCE726336
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 16:46:25 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id BADEE726269
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 16:10:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CDDB51C20D70
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:46:21 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 76B1E2812F4
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:10:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 996641ACAA;
-	Wed,  7 Jun 2023 14:46:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ED038370C2;
+	Wed,  7 Jun 2023 14:10:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F2808C1D
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 14:46:22 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3EF1BD2
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:46:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686149179;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=fV2I/xZhOL8TFCqO/iJxKQbBwABt3P8CReEOZMBw48A=;
-	b=W+0m1DLcSh0s9uZcvuJrAaINGRJ4MvZHyTJZ8cjZwXGOpTv3atwCDPLaDjt695g9rw2wI3
-	8EUEELNgmMWs5RaTlealwZQwtjjdIaKt+141HZNxKg3ER2iI5Au9+rroqtZwI5/e1piYxo
-	Ch/9fsE5xBLlB2lcPstRESqQJKUe484=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-161-2n5XUvA3MTCdrcbHpThPWA-1; Wed, 07 Jun 2023 10:07:06 -0400
-X-MC-Unique: 2n5XUvA3MTCdrcbHpThPWA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 210662999B2F;
-	Wed,  7 Jun 2023 14:07:03 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 1F8B7140E954;
-	Wed,  7 Jun 2023 14:07:00 +0000 (UTC)
-From: David Howells <dhowells@redhat.com>
-To: netdev@vger.kernel.org,
-	Linus Torvalds <torvalds@linux-foundation.org>
-Cc: David Howells <dhowells@redhat.com>,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Boris Pismenny <borisp@nvidia.com>,
-	John Fastabend <john.fastabend@gmail.com>,
-	Jakub Kicinski <kuba@kernel.org>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E260F34448
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 14:10:52 +0000 (UTC)
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413231BE6
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:10:45 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id d9443c01a7336-1b01d912a76so33681375ad.2
+        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 07:10:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1686147044; x=1688739044;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=UA4hO4Sg2XutErgapC8W1zkxrTNWaXjtaVy5iI3CNaw=;
+        b=gQrGNBCN6wg3gDSkzHUPCLOTgDfaTcWrZTB0MLWuAr16iUZyxRyQVaoV/HlulE6Ke7
+         vOiBehRR3EKFzUy/z/uOVwK9d0qLc6axSRyi5BSwc5VLE+AWORAIx1ji14Qy0uPW/eHD
+         Xg1PX6HvaZijyrrUvxZQSBNwEkYNHyT+1tckU2H+bZ4YqVAv3xHt3veT16xsmld6FoOf
+         6vyJnqqpz8poqsyESJ4nGlCMuouGE9KnjAwESQ6ESKmHiu4JXxhkoUHVhez92Lpmd/oo
+         DiR/b4tWZK8yODvRb4eH8rPZCopGKs/c0wchrTL2wbJLtqiTKMV6AqGeMBTx92rmms5W
+         Bbgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686147044; x=1688739044;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UA4hO4Sg2XutErgapC8W1zkxrTNWaXjtaVy5iI3CNaw=;
+        b=G3bKw0dgcrkZOHiM3grIRflVNJSBhq0F20Tb3XA4GddDXHnPsM/2BEG8DSbs68wzvp
+         k1ExVIDrm0VoBpgqKUylXo9cz0uylHyga1HQBwmd6j5mI0lNvBKIfa3Mytc9JUZoO2qC
+         E6u6D3u0uISMnS74ovM3DwZ6jyFV73Zw8+a4Vlm3wpBOWkstXeDhb1zAA0pdAeFmq6Z4
+         Sr11r6prl4DVZ35Kd7YqTnRJcyIYw1q/g3UQJNf8muRL1PGnQYP0Kg5u0B2N36P20HeB
+         6MUVzcNlPfLQQe46SdUMVR7Nn7KyYpsEwFUZNmLaiG+6KXXwiO+fc2KoV/P/BmNxkinv
+         aD4g==
+X-Gm-Message-State: AC+VfDybLs9US9AXpJtvtaMBMVwMae0x42DodBUpzFTgoYJMdHtmOAKq
+	E7dVF3AzD06VY6NA83Ot/7a7Pg==
+X-Google-Smtp-Source: ACHHUZ5a5P5mqNb85Pd/vXMXSm7nE4E7+voSPGauH9t/Ggi2PDbGp1xcEDYRTN/Lmu7n3ZvVuqakoQ==
+X-Received: by 2002:a17:902:f54f:b0:1b2:24e4:8889 with SMTP id h15-20020a170902f54f00b001b224e48889mr2373341plf.14.1686147044665;
+        Wed, 07 Jun 2023 07:10:44 -0700 (PDT)
+Received: from ziepe.ca ([206.223.160.26])
+        by smtp.gmail.com with ESMTPSA id t9-20020a170902bc4900b001b0772fe3fdsm10516761plz.265.2023.06.07.07.10.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Jun 2023 07:10:44 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1q6ts2-0039y5-6X;
+	Wed, 07 Jun 2023 11:10:42 -0300
+Date: Wed, 7 Jun 2023 11:10:42 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Saeed Mahameed <saeed@kernel.org>,
 	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	David Ahern <dsahern@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Jens Axboe <axboe@kernel.dk>,
-	linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v5 14/14] tls/device: Convert tls_device_sendpage() to use MSG_SPLICE_PAGES
-Date: Wed,  7 Jun 2023 15:05:59 +0100
-Message-ID: <20230607140559.2263470-15-dhowells@redhat.com>
-In-Reply-To: <20230607140559.2263470-1-dhowells@redhat.com>
-References: <20230607140559.2263470-1-dhowells@redhat.com>
+	Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>,
+	Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+	Tariq Toukan <tariqt@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>, linux-rdma@vger.kernel.org,
+	Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [net-next 13/15] net/mlx5: Skip inline mode check after
+ mlx5_eswitch_enable_locked() failure
+Message-ID: <ZICP4kWm5moYRKm1@ziepe.ca>
+References: <20230606071219.483255-1-saeed@kernel.org>
+ <20230606071219.483255-14-saeed@kernel.org>
+ <20230606220117.0696be3e@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230606220117.0696be3e@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Convert tls_device_sendpage() to use sendmsg() with MSG_SPLICE_PAGES rather
-than directly splicing in the pages itself.  With that, the tls_iter_offset
-union is no longer necessary and can be replaced with an iov_iter pointer
-and the zc_page argument to tls_push_data() can also be removed.
+On Tue, Jun 06, 2023 at 10:01:17PM -0700, Jakub Kicinski wrote:
+> On Tue,  6 Jun 2023 00:12:17 -0700 Saeed Mahameed wrote:
+> > Fixes: bffaa916588e ("net/mlx5: E-Switch, Add control for inline mode")
+> > Fixes: 8c98ee77d911 ("net/mlx5e: E-Switch, Add extack messages to devlink callbacks")
+> 
+> The combination of net-next and Fixes is always odd.
+> Why? 
+> Either it's important enough to be a fix or its not important 
+> and can go to net-next...
 
-This allows ->sendpage() to be replaced by something that can handle
-multiple multipage folios in a single transaction.
+Generally I tell people to mark things as Fixes if it is a fix,
+regardless of how small, minor or unimportant.
 
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Chuck Lever <chuck.lever@oracle.com>
-cc: Boris Pismenny <borisp@nvidia.com>
-cc: John Fastabend <john.fastabend@gmail.com>
-cc: Jakub Kicinski <kuba@kernel.org>
-cc: Eric Dumazet <edumazet@google.com>
-cc: "David S. Miller" <davem@davemloft.net>
-cc: Paolo Abeni <pabeni@redhat.com>
-cc: Jens Axboe <axboe@kernel.dk>
-cc: Matthew Wilcox <willy@infradead.org>
-cc: netdev@vger.kernel.org
----
- net/tls/tls_device.c | 92 +++++++++++---------------------------------
- 1 file changed, 23 insertions(+), 69 deletions(-)
+It helps backporters because they can suck in the original patch and
+all the touchups then test that result. If people try to predict if it
+is "important" or not they get it wrong quite often.
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index bb3bb523544e..b4864d55900f 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -422,16 +422,10 @@ static int tls_device_copy_data(void *addr, size_t bytes, struct iov_iter *i)
- 	return 0;
- }
- 
--union tls_iter_offset {
--	struct iov_iter *msg_iter;
--	int offset;
--};
--
- static int tls_push_data(struct sock *sk,
--			 union tls_iter_offset iter_offset,
-+			 struct iov_iter *iter,
- 			 size_t size, int flags,
--			 unsigned char record_type,
--			 struct page *zc_page)
-+			 unsigned char record_type)
- {
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
- 	struct tls_prot_info *prot = &tls_ctx->prot_info;
-@@ -500,22 +494,13 @@ static int tls_push_data(struct sock *sk,
- 		record = ctx->open_record;
- 
- 		copy = min_t(size_t, size, max_open_record_len - record->len);
--		if (copy && zc_page) {
--			struct page_frag zc_pfrag;
--
--			zc_pfrag.page = zc_page;
--			zc_pfrag.offset = iter_offset.offset;
--			zc_pfrag.size = copy;
--			tls_append_frag(record, &zc_pfrag, copy);
--
--			iter_offset.offset += copy;
--		} else if (copy && (flags & MSG_SPLICE_PAGES)) {
-+		if (copy && (flags & MSG_SPLICE_PAGES)) {
- 			struct page_frag zc_pfrag;
- 			struct page **pages = &zc_pfrag.page;
- 			size_t off;
- 
--			rc = iov_iter_extract_pages(iter_offset.msg_iter,
--						    &pages, copy, 1, 0, &off);
-+			rc = iov_iter_extract_pages(iter, &pages,
-+						    copy, 1, 0, &off);
- 			if (rc <= 0) {
- 				if (rc == 0)
- 					rc = -EIO;
-@@ -524,7 +509,7 @@ static int tls_push_data(struct sock *sk,
- 			copy = rc;
- 
- 			if (WARN_ON_ONCE(!sendpage_ok(zc_pfrag.page))) {
--				iov_iter_revert(iter_offset.msg_iter, copy);
-+				iov_iter_revert(iter, copy);
- 				rc = -EIO;
- 				goto handle_error;
- 			}
-@@ -537,7 +522,7 @@ static int tls_push_data(struct sock *sk,
- 
- 			rc = tls_device_copy_data(page_address(pfrag->page) +
- 						  pfrag->offset, copy,
--						  iter_offset.msg_iter);
-+						  iter);
- 			if (rc)
- 				goto handle_error;
- 			tls_append_frag(record, pfrag, copy);
-@@ -592,7 +577,6 @@ int tls_device_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- {
- 	unsigned char record_type = TLS_RECORD_TYPE_DATA;
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
--	union tls_iter_offset iter;
- 	int rc;
- 
- 	if (!tls_ctx->zerocopy_sendfile)
-@@ -607,8 +591,8 @@ int tls_device_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 			goto out;
- 	}
- 
--	iter.msg_iter = &msg->msg_iter;
--	rc = tls_push_data(sk, iter, size, msg->msg_flags, record_type, NULL);
-+	rc = tls_push_data(sk, &msg->msg_iter, size, msg->msg_flags,
-+			   record_type);
- 
- out:
- 	release_sock(sk);
-@@ -620,8 +604,7 @@ void tls_device_splice_eof(struct socket *sock)
- {
- 	struct sock *sk = sock->sk;
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
--	union tls_iter_offset iter;
--	struct iov_iter iov_iter = {};
-+	struct iov_iter iter = {};
- 
- 	if (!tls_is_partially_sent_record(tls_ctx))
- 		return;
-@@ -630,9 +613,8 @@ void tls_device_splice_eof(struct socket *sock)
- 	lock_sock(sk);
- 
- 	if (tls_is_partially_sent_record(tls_ctx)) {
--		iov_iter_bvec(&iov_iter, ITER_SOURCE, NULL, 0, 0);
--		iter.msg_iter = &iov_iter;
--		tls_push_data(sk, iter, 0, 0, TLS_RECORD_TYPE_DATA, NULL);
-+		iov_iter_bvec(&iter, ITER_SOURCE, NULL, 0, 0);
-+		tls_push_data(sk, &iter, 0, 0, TLS_RECORD_TYPE_DATA);
- 	}
- 
- 	release_sock(sk);
-@@ -642,44 +624,18 @@ void tls_device_splice_eof(struct socket *sock)
- int tls_device_sendpage(struct sock *sk, struct page *page,
- 			int offset, size_t size, int flags)
- {
--	struct tls_context *tls_ctx = tls_get_ctx(sk);
--	union tls_iter_offset iter_offset;
--	struct iov_iter msg_iter;
--	char *kaddr;
--	struct kvec iov;
--	int rc;
-+	struct bio_vec bvec;
-+	struct msghdr msg = { .msg_flags = flags | MSG_SPLICE_PAGES, };
- 
- 	if (flags & MSG_SENDPAGE_NOTLAST)
--		flags |= MSG_MORE;
--
--	mutex_lock(&tls_ctx->tx_lock);
--	lock_sock(sk);
-+		msg.msg_flags |= MSG_MORE;
- 
--	if (flags & MSG_OOB) {
--		rc = -EOPNOTSUPP;
--		goto out;
--	}
--
--	if (tls_ctx->zerocopy_sendfile) {
--		iter_offset.offset = offset;
--		rc = tls_push_data(sk, iter_offset, size,
--				   flags, TLS_RECORD_TYPE_DATA, page);
--		goto out;
--	}
--
--	kaddr = kmap(page);
--	iov.iov_base = kaddr + offset;
--	iov.iov_len = size;
--	iov_iter_kvec(&msg_iter, ITER_SOURCE, &iov, 1, size);
--	iter_offset.msg_iter = &msg_iter;
--	rc = tls_push_data(sk, iter_offset, size, flags, TLS_RECORD_TYPE_DATA,
--			   NULL);
--	kunmap(page);
-+	if (flags & MSG_OOB)
-+		return -EOPNOTSUPP;
- 
--out:
--	release_sock(sk);
--	mutex_unlock(&tls_ctx->tx_lock);
--	return rc;
-+	bvec_set_page(&bvec, page, size, offset);
-+	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, size);
-+	return tls_device_sendmsg(sk, &msg, size);
- }
- 
- struct tls_record_info *tls_get_record(struct tls_offload_context_tx *context,
-@@ -744,12 +700,10 @@ EXPORT_SYMBOL(tls_get_record);
- 
- static int tls_device_push_pending_record(struct sock *sk, int flags)
- {
--	union tls_iter_offset iter;
--	struct iov_iter msg_iter;
-+	struct iov_iter iter;
- 
--	iov_iter_kvec(&msg_iter, ITER_SOURCE, NULL, 0, 0);
--	iter.msg_iter = &msg_iter;
--	return tls_push_data(sk, iter, 0, flags, TLS_RECORD_TYPE_DATA, NULL);
-+	iov_iter_kvec(&iter, ITER_SOURCE, NULL, 0, 0);
-+	return tls_push_data(sk, &iter, 0, flags, TLS_RECORD_TYPE_DATA);
- }
- 
- void tls_device_write_space(struct sock *sk, struct tls_context *ctx)
+Fixes is not supposed to mean "this is important" or "send this to
+-rc" or "apply it to -stable"
 
+If it is really important add a 'cc: stable'.
+
+If it is sort of important then send it to the -rc tree.
+
+Otherwise dump it in the merge window.
+
+But mark it with Fixes regardless
+
+Jason
 
