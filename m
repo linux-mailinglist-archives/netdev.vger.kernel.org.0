@@ -1,56 +1,56 @@
-Return-Path: <netdev+bounces-8732-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8733-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3FAB8725689
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:56:24 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E4CF0725692
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:56:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7629A2804CD
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:56:22 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A4191280E86
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:56:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E6E1C8C05;
-	Wed,  7 Jun 2023 07:54:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1E1438BE7;
+	Wed,  7 Jun 2023 07:54:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D418A8BE7
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:54:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E2308C17
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:54:53 +0000 (UTC)
 Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54BDEAA
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 00:54:50 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id 6a1803df08f44-6261367d2f1so51746836d6.3
-        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 00:54:50 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D582712C
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 00:54:51 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id 6a1803df08f44-6261a25e9b6so54615196d6.0
+        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 00:54:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1686124489; x=1688716489;
+        d=broadcom.com; s=google; t=1686124491; x=1688716491;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=fg/Qb98GLEbdpBWb9kRatcISpRG+6EjwC/InVO03vSE=;
-        b=NYAxV6zKT6i8XVq5pk+baLevmSJ0NGvsuSGubst37AzxTM7ID6M9NQRaqNPYRDez4q
-         XMGK2AzptW9Idn+ZWiON3b96Rr2lGZ/4EW52FbT2TiDI7+z0fy5qUJ4eTY2RzRybkG5w
-         9RwWncqsc6vxIxCZHm+vl55Hha5fHR/aeygA0=
+        bh=LRKOglwD3AsGQYSa90njgP9irkgUlrrVJCiqcer2iww=;
+        b=LkMrzPLcYOtSYc2qKLgV5jGPl56Nljwu+BX5ile/RTqz1fNytPtryX8hC10sOWYY+x
+         OaaUsDk0kvSEeSWKyCevDam3G3dCc7P7hyfH+3JWgI68khe7m1JKQWXjThcynPlbxMxn
+         /dDieFWv/9ZrTeO/K8IXrVNeZeYbHp+Z0tW2Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686124489; x=1688716489;
+        d=1e100.net; s=20221208; t=1686124491; x=1688716491;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fg/Qb98GLEbdpBWb9kRatcISpRG+6EjwC/InVO03vSE=;
-        b=fBl94VhSdESWc/SAUMU3FElBDfeE0uS0mg+RcgRvHbhdNwUZnxLwwG7CDeDEGc8/kd
-         YJnQl0mHiWO3VHMZN1xCxWTEF1y7POc+PutHhtzrBdCXd0JuHqQ6efN7/bxet/ZAeftD
-         l3fY+0fH6cguDCSsq0J01rKcUccRcMwJUz8IyE3FHPYa4j0vVbEzYfeQK5SMJniurh8e
-         Dtd274rWFMj4sXmXRD0ydu2v3O0ZsXBZi7WyhWBo7/Txa3CaLmYKNN4uJsYj5lzeIayZ
-         c1M91E2EaoSMiFURt3SKMzkS+DuhxD5/bb2LbiKlaKs5yYPLCzRJs2qtkaH6bjY3/OVQ
-         2Nig==
-X-Gm-Message-State: AC+VfDxIF3GPgkg3L4yEOiOlk+moKAqP3X0QttYWMksjCRcCL/mFjElU
-	GbWtSZv9xVclw9T96yt+4IIVqg==
-X-Google-Smtp-Source: ACHHUZ508WKWfuuRS25FtvLLsk0E4B/aD/qOthTS5tME8mcUd5Edjx2mGzokWxHZN43lU19tyueWXg==
-X-Received: by 2002:ad4:5f8d:0:b0:621:4669:c806 with SMTP id jp13-20020ad45f8d000000b006214669c806mr2449642qvb.37.1686124489235;
-        Wed, 07 Jun 2023 00:54:49 -0700 (PDT)
+        bh=LRKOglwD3AsGQYSa90njgP9irkgUlrrVJCiqcer2iww=;
+        b=OPebix8W6veEvkxBmICUMJtjaPeWpKr3XrQ3y1FTISDv+umhgO34k67qDvvi9Ty3Ni
+         Q813GRm9ZmDfTjwhTOCGyn7dDbSmVOfuyYkcluuufA/Eon+r7CrCafFr6GBsMR/Npe47
+         q+h+C3UYnAE/Lmb9gbr+p2Sge2EUvVSyT8ZnhEX5Wxr6Txx6T/CUHwyB1Fot0XJSPG+y
+         GzECkGGkRP+/OUq8Nge/EhZzEfMKCX82Mgu3FQ4xNHZ7iyQln3AtyS7jHRP25EZwJgMD
+         Dan/YbdsoOmapoEhxIWI+ctNtQb3Um7pTtBokeNAxMVIC0Ctdp1460RVxl5yuhnOtYRc
+         mSaQ==
+X-Gm-Message-State: AC+VfDzaeg2dsiMLXIPnH8I2H0p9MoNlpC/zdHDnzV2lS+vlpWrSBWrY
+	KesBpvJjT7UaVWA4rHjLeejuUg==
+X-Google-Smtp-Source: ACHHUZ7iuEv9G2oIvo94cbRUq+NJJN6H9iBE78rJjerQB22xksBpvH0ZKK0AgM4OhJEk2SnjWvrCJQ==
+X-Received: by 2002:a05:6214:258b:b0:628:6879:ee34 with SMTP id fq11-20020a056214258b00b006286879ee34mr2814201qvb.46.1686124490758;
+        Wed, 07 Jun 2023 00:54:50 -0700 (PDT)
 Received: from lvnvda5233.lvn.broadcom.net ([192.19.161.250])
-        by smtp.gmail.com with ESMTPSA id cs12-20020ad44c4c000000b00626362f1bf1sm5850817qvb.63.2023.06.07.00.54.47
+        by smtp.gmail.com with ESMTPSA id cs12-20020ad44c4c000000b00626362f1bf1sm5850817qvb.63.2023.06.07.00.54.49
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Jun 2023 00:54:48 -0700 (PDT)
+        Wed, 07 Jun 2023 00:54:50 -0700 (PDT)
 From: Michael Chan <michael.chan@broadcom.com>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
@@ -58,10 +58,11 @@ Cc: netdev@vger.kernel.org,
 	kuba@kernel.org,
 	pabeni@redhat.com,
 	gospo@broadcom.com,
-	Pavan Chebbi <pavan.chebbi@broadcom.com>
-Subject: [PATCH net 5/6] bnxt_en: Prevent kernel panic when receiving unexpected PHC_UPDATE event
-Date: Wed,  7 Jun 2023 00:54:08 -0700
-Message-Id: <20230607075409.228450-6-michael.chan@broadcom.com>
+	Somnath Kotur <somnath.kotur@broadcom.com>,
+	Kalesh Anakkur Purayil <kalesh-anakkur.purayil@broadcom.com>
+Subject: [PATCH net 6/6] bnxt_en: Implement .set_port / .unset_port UDP tunnel callbacks
+Date: Wed,  7 Jun 2023 00:54:09 -0700
+Message-Id: <20230607075409.228450-7-michael.chan@broadcom.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20230607075409.228450-1-michael.chan@broadcom.com>
 References: <20230607075409.228450-1-michael.chan@broadcom.com>
@@ -72,7 +73,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="0000000000004148d905fd85734e"
+	boundary="000000000000593c4905fd8573bd"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
@@ -80,68 +81,83 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---0000000000004148d905fd85734e
+--000000000000593c4905fd8573bd
 Content-Transfer-Encoding: 8bit
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+From: Somnath Kotur <somnath.kotur@broadcom.com>
 
-The firmware can send PHC_RTC_UPDATE async event on a PF that may not
-have PTP registered. In such a case, there will be a null pointer
-deference for bp->ptp_cfg when we try to handle the event.
+As per the new udp tunnel framework, drivers which need to know the
+details of a port entry (i.e. port type) when it gets deleted should
+use the .set_port / .unset_port callbacks.
 
-Fix it by not registering for this event with the firmware if !bp->ptp_cfg.
-Also, check that bp->ptp_cfg is valid before proceeding when we receive
-the event.
+Implementing the current .udp_tunnel_sync callback would mean that the
+deleted tunnel port entry would be all zeros.  This used to work on
+older firmware because it would not check the input when deleting a
+tunnel port.  With newer firmware, the delete will now fail and
+subsequent tunnel port allocation will fail as a result.
 
-Fixes: 8bcf6f04d4a5 ("bnxt_en: Handle async event when the PHC is updated in RTC mode")
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Fixes: 442a35a5a7aa ("bnxt: convert to new udp_tunnel_nic infra")
+Reviewed-by: Kalesh Anakkur Purayil <kalesh-anakkur.purayil@broadcom.com>
+Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 6 ++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 1 +
- 2 files changed, 7 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 25 ++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 5c8d409d7af8..c0b0423de338 100644
+index c0b0423de338..d5dc5ee70a48 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2365,6 +2365,9 @@ static int bnxt_async_event_process(struct bnxt *bp,
- 				struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
- 				u64 ns;
+@@ -13036,26 +13036,37 @@ static void bnxt_cfg_ntp_filters(struct bnxt *bp)
  
-+				if (!ptp)
-+					goto async_event_process_exit;
+ #endif /* CONFIG_RFS_ACCEL */
+ 
+-static int bnxt_udp_tunnel_sync(struct net_device *netdev, unsigned int table)
++static int bnxt_udp_tunnel_set_port(struct net_device *netdev, unsigned int table,
++				    unsigned int entry, struct udp_tunnel_info *ti)
+ {
+ 	struct bnxt *bp = netdev_priv(netdev);
+-	struct udp_tunnel_info ti;
+ 	unsigned int cmd;
+ 
+-	udp_tunnel_nic_get_port(netdev, table, 0, &ti);
+-	if (ti.type == UDP_TUNNEL_TYPE_VXLAN)
++	if (ti->type == UDP_TUNNEL_TYPE_VXLAN)
+ 		cmd = TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_VXLAN;
+ 	else
+ 		cmd = TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_GENEVE;
+ 
+-	if (ti.port)
+-		return bnxt_hwrm_tunnel_dst_port_alloc(bp, ti.port, cmd);
++	return bnxt_hwrm_tunnel_dst_port_alloc(bp, ti->port, cmd);
++}
 +
- 				spin_lock_bh(&ptp->ptp_lock);
- 				bnxt_ptp_update_current_time(bp);
- 				ns = (((u64)BNXT_EVENT_PHC_RTC_UPDATE(data1) <<
-@@ -4763,6 +4766,9 @@ int bnxt_hwrm_func_drv_rgtr(struct bnxt *bp, unsigned long *bmap, int bmap_size,
- 		if (event_id == ASYNC_EVENT_CMPL_EVENT_ID_ERROR_RECOVERY &&
- 		    !(bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY))
- 			continue;
-+		if (event_id == ASYNC_EVENT_CMPL_EVENT_ID_PHC_UPDATE &&
-+		    !bp->ptp_cfg)
-+			continue;
- 		__set_bit(bnxt_async_events_arr[i], async_events_bmap);
- 	}
- 	if (bmap && bmap_size) {
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index e46689128e32..f3886710e778 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -952,6 +952,7 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
- 		bnxt_ptp_timecounter_init(bp, true);
- 		bnxt_ptp_adjfine_rtc(bp, 0);
- 	}
-+	bnxt_hwrm_func_drv_rgtr(bp, NULL, 0, true);
++static int bnxt_udp_tunnel_unset_port(struct net_device *netdev, unsigned int table,
++				      unsigned int entry, struct udp_tunnel_info *ti)
++{
++	struct bnxt *bp = netdev_priv(netdev);
++	unsigned int cmd;
++
++	if (ti->type == UDP_TUNNEL_TYPE_VXLAN)
++		cmd = TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_VXLAN;
++	else
++		cmd = TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_GENEVE;
  
- 	ptp->ptp_info = bnxt_ptp_caps;
- 	if ((bp->fw_cap & BNXT_FW_CAP_PTP_PPS)) {
+ 	return bnxt_hwrm_tunnel_dst_port_free(bp, cmd);
+ }
+ 
+ static const struct udp_tunnel_nic_info bnxt_udp_tunnels = {
+-	.sync_table	= bnxt_udp_tunnel_sync,
++	.set_port	= bnxt_udp_tunnel_set_port,
++	.unset_port	= bnxt_udp_tunnel_unset_port,
+ 	.flags		= UDP_TUNNEL_NIC_INFO_MAY_SLEEP |
+ 			  UDP_TUNNEL_NIC_INFO_OPEN_ONLY,
+ 	.tables		= {
 -- 
 2.30.1
 
 
---0000000000004148d905fd85734e
+--000000000000593c4905fd8573bd
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -212,14 +228,14 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJFniyjcZJQ7lidHA8KToyojrJLZf/43
-lJdi4gDB8JacMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYw
-NzA3NTQ0OVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIK23Nd6Qk8jt2GmlierGUfosc8oTAj9e
+kqUTVTUFYHRBMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYw
+NzA3NTQ1MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAIBEtNQkzvU8AlDuYegQJVqIsSFxxi8QGQl891na3EP+mkjGiM
-8C0HA1pxl/3bx5qHosV1PD815atDrQbTQSw422W3hPonqRKPceK7ZfqN9IxNvhYTXhVtNW4rkWkt
-ZsCECjeKpZeZmFc4KAxxkhvT1Ov4hv+ZaW16SrITjFaX5CNnG1t6zFSuBI9UA3QKQXCtrB9x51/I
-DzQQ/WXtkXuBqhrrJvEb4R+pxB2AGFPbYxT6DhcHXV61fHfOPGceGui5Sft96gUQQazy+fz+J2ck
-9BpnpUP9QD9+Z4GfXUgMGlo8IEVpZcU39MNdM7iwkl00wdZOv3FDZJdo43emDmvT
---0000000000004148d905fd85734e--
+ATANBgkqhkiG9w0BAQEFAASCAQCeDpnswrqW+0ix+xpOX2+ICABLJ9XNqzOZ1nZ09GENHVG0Q2/w
+YWxUDBDD3w9uNknOEZTLI8c5PwrHKPcBA8gQqPOvTIP/4leomKmbc/035KJLcck2wZZU2omXBNGM
+wXsuKXGak2bnp56TPR0Pzw037dV8aDBMyyeVBmBdWc11hJT+mSeRyMjzTMVbrIdD99powKHCf5DZ
+UX+MjfYXINNM528pbE71VFwJ1IWfYC4HBICKiS8Vk1oMQwQ0x88cLjon2G/4+JtzAVI9N6Nj9dJk
+XQ8tLnscoo2qLQmngrmJcyMTHLq8ijBroZhm644E6DxzI4QGQKQ1bdwUuxUOcoRY
+--000000000000593c4905fd8573bd--
 
