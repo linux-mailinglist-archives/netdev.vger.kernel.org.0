@@ -1,56 +1,56 @@
-Return-Path: <netdev+bounces-8731-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8732-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 27FC6725685
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:56:04 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3FAB8725689
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:56:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8FE121C20C76
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:56:00 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7629A2804CD
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:56:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69B7B79F7;
-	Wed,  7 Jun 2023 07:54:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E6E1C8C05;
+	Wed,  7 Jun 2023 07:54:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F95D8BE7
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:54:50 +0000 (UTC)
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E882D12C
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 00:54:48 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id 6a1803df08f44-62b69b95a33so6608366d6.0
-        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 00:54:48 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D418A8BE7
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:54:51 +0000 (UTC)
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54BDEAA
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 00:54:50 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id 6a1803df08f44-6261367d2f1so51746836d6.3
+        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 00:54:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1686124488; x=1688716488;
+        d=broadcom.com; s=google; t=1686124489; x=1688716489;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=GRAWd5TgIlg3a1V00WobIR052JIKpWNHFDlf8mAf2dU=;
-        b=hrqO19W4ECOHk7KW85jKiLaJEVz21WymK/r0rbHF7pn1i2+1wYHjkNx3kBnXLcAs7l
-         tVEvU647BLdDARc6ZOKIbUkPpQKeQ0hPxPVQgIYX1AOc+U1Ot0qf3gpjLE02MS31xhfC
-         qGCGmQmlNjbc+zFMn4SK0vxATmOCLh8jVAF2M=
+        bh=fg/Qb98GLEbdpBWb9kRatcISpRG+6EjwC/InVO03vSE=;
+        b=NYAxV6zKT6i8XVq5pk+baLevmSJ0NGvsuSGubst37AzxTM7ID6M9NQRaqNPYRDez4q
+         XMGK2AzptW9Idn+ZWiON3b96Rr2lGZ/4EW52FbT2TiDI7+z0fy5qUJ4eTY2RzRybkG5w
+         9RwWncqsc6vxIxCZHm+vl55Hha5fHR/aeygA0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686124488; x=1688716488;
+        d=1e100.net; s=20221208; t=1686124489; x=1688716489;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GRAWd5TgIlg3a1V00WobIR052JIKpWNHFDlf8mAf2dU=;
-        b=ML3wgTjLYwzXnpof0Qs1s9+u+zkkxlepClfs72BOyy+rTHK8t/FshNHtf0itmZgwR8
-         q/UWpLEDLj7iyrYZuzhuoHwHVJPvxDRa/PYWZ/jT6KQmY5g+GTn3Fmf8CbkgN1Awee7Y
-         5ZCuEMm1DaJod+EtEpueFJ1duzUTMpjJ0MpBYy0Aqnjw6p5rUorvqYHgEFmkYDqSzTOe
-         wrS+0K+q8ADzF0+ffET6QDycGzNHVhUc4Kszv7NB/QRhTbxYDkGJze4vIsYKSz0oJRyx
-         21jZQZM4wLqjrYjaK6nyZjWhrQMJmwJiwqrcsVyO+x6KmnSq7kBPFmv4Nw1iWTaKfqA9
-         /NfA==
-X-Gm-Message-State: AC+VfDz1kd4/oAQml/FR1/AIBW1EtOdoPGRdQhFDKUqcjbsJkm6+7Ext
-	Duig5OB0K+18acHl2HLgMGheFrrpMe2CCTOkW2o=
-X-Google-Smtp-Source: ACHHUZ6rzCZHgIO4xF42KoW1AsUANe8/+MkTRF/TFlvJXGScCOsq7NnLO+Qvi3wkU2ulLZP/WpWyRA==
-X-Received: by 2002:a05:6214:21eb:b0:629:78ae:80f8 with SMTP id p11-20020a05621421eb00b0062978ae80f8mr2348156qvj.10.1686124487603;
-        Wed, 07 Jun 2023 00:54:47 -0700 (PDT)
+        bh=fg/Qb98GLEbdpBWb9kRatcISpRG+6EjwC/InVO03vSE=;
+        b=fBl94VhSdESWc/SAUMU3FElBDfeE0uS0mg+RcgRvHbhdNwUZnxLwwG7CDeDEGc8/kd
+         YJnQl0mHiWO3VHMZN1xCxWTEF1y7POc+PutHhtzrBdCXd0JuHqQ6efN7/bxet/ZAeftD
+         l3fY+0fH6cguDCSsq0J01rKcUccRcMwJUz8IyE3FHPYa4j0vVbEzYfeQK5SMJniurh8e
+         Dtd274rWFMj4sXmXRD0ydu2v3O0ZsXBZi7WyhWBo7/Txa3CaLmYKNN4uJsYj5lzeIayZ
+         c1M91E2EaoSMiFURt3SKMzkS+DuhxD5/bb2LbiKlaKs5yYPLCzRJs2qtkaH6bjY3/OVQ
+         2Nig==
+X-Gm-Message-State: AC+VfDxIF3GPgkg3L4yEOiOlk+moKAqP3X0QttYWMksjCRcCL/mFjElU
+	GbWtSZv9xVclw9T96yt+4IIVqg==
+X-Google-Smtp-Source: ACHHUZ508WKWfuuRS25FtvLLsk0E4B/aD/qOthTS5tME8mcUd5Edjx2mGzokWxHZN43lU19tyueWXg==
+X-Received: by 2002:ad4:5f8d:0:b0:621:4669:c806 with SMTP id jp13-20020ad45f8d000000b006214669c806mr2449642qvb.37.1686124489235;
+        Wed, 07 Jun 2023 00:54:49 -0700 (PDT)
 Received: from lvnvda5233.lvn.broadcom.net ([192.19.161.250])
-        by smtp.gmail.com with ESMTPSA id cs12-20020ad44c4c000000b00626362f1bf1sm5850817qvb.63.2023.06.07.00.54.45
+        by smtp.gmail.com with ESMTPSA id cs12-20020ad44c4c000000b00626362f1bf1sm5850817qvb.63.2023.06.07.00.54.47
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Jun 2023 00:54:46 -0700 (PDT)
+        Wed, 07 Jun 2023 00:54:48 -0700 (PDT)
 From: Michael Chan <michael.chan@broadcom.com>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
@@ -58,12 +58,10 @@ Cc: netdev@vger.kernel.org,
 	kuba@kernel.org,
 	pabeni@redhat.com,
 	gospo@broadcom.com,
-	Vikas Gupta <vikas.gupta@broadcom.com>,
-	Somnath Kotur <somnath.kotur@broadcom.com>,
 	Pavan Chebbi <pavan.chebbi@broadcom.com>
-Subject: [PATCH net 4/6] bnxt_en: Skip firmware fatal error recovery if chip is not accessible
-Date: Wed,  7 Jun 2023 00:54:07 -0700
-Message-Id: <20230607075409.228450-5-michael.chan@broadcom.com>
+Subject: [PATCH net 5/6] bnxt_en: Prevent kernel panic when receiving unexpected PHC_UPDATE event
+Date: Wed,  7 Jun 2023 00:54:08 -0700
+Message-Id: <20230607075409.228450-6-michael.chan@broadcom.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20230607075409.228450-1-michael.chan@broadcom.com>
 References: <20230607075409.228450-1-michael.chan@broadcom.com>
@@ -74,7 +72,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="0000000000002a758105fd857336"
+	boundary="0000000000004148d905fd85734e"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
@@ -82,62 +80,68 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---0000000000002a758105fd857336
+--0000000000004148d905fd85734e
 Content-Transfer-Encoding: 8bit
 
-From: Vikas Gupta <vikas.gupta@broadcom.com>
+From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-Driver starts firmware fatal error recovery by detecting
-heartbeat failure or fw reset count register changing.  But
-these checks are not reliable if the device is not accessible.
-This can happen while DPC (Downstream Port containment) is in
-progress.  Skip firmware fatal recovery if pci_device_is_present()
-returns false.
+The firmware can send PHC_RTC_UPDATE async event on a PF that may not
+have PTP registered. In such a case, there will be a null pointer
+deference for bp->ptp_cfg when we try to handle the event.
 
-Fixes: acfb50e4e773 ("bnxt_en: Add FW fatal devlink_health_reporter.")
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
+Fix it by not registering for this event with the firmware if !bp->ptp_cfg.
+Also, check that bp->ptp_cfg is valid before proceeding when we receive
+the event.
+
+Fixes: 8bcf6f04d4a5 ("bnxt_en: Handle async event when the PHC is updated in RTC mode")
+Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 6 ++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 1 +
+ 2 files changed, 7 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 2d39b43ee7cd..5c8d409d7af8 100644
+index 5c8d409d7af8..c0b0423de338 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -11602,6 +11602,7 @@ static void bnxt_tx_timeout(struct net_device *dev, unsigned int txqueue)
- static void bnxt_fw_health_check(struct bnxt *bp)
- {
- 	struct bnxt_fw_health *fw_health = bp->fw_health;
-+	struct pci_dev *pdev = bp->pdev;
- 	u32 val;
+@@ -2365,6 +2365,9 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 				struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
+ 				u64 ns;
  
- 	if (!fw_health->enabled || test_bit(BNXT_STATE_IN_FW_RESET, &bp->state))
-@@ -11615,7 +11616,7 @@ static void bnxt_fw_health_check(struct bnxt *bp)
++				if (!ptp)
++					goto async_event_process_exit;
++
+ 				spin_lock_bh(&ptp->ptp_lock);
+ 				bnxt_ptp_update_current_time(bp);
+ 				ns = (((u64)BNXT_EVENT_PHC_RTC_UPDATE(data1) <<
+@@ -4763,6 +4766,9 @@ int bnxt_hwrm_func_drv_rgtr(struct bnxt *bp, unsigned long *bmap, int bmap_size,
+ 		if (event_id == ASYNC_EVENT_CMPL_EVENT_ID_ERROR_RECOVERY &&
+ 		    !(bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY))
+ 			continue;
++		if (event_id == ASYNC_EVENT_CMPL_EVENT_ID_PHC_UPDATE &&
++		    !bp->ptp_cfg)
++			continue;
+ 		__set_bit(bnxt_async_events_arr[i], async_events_bmap);
  	}
+ 	if (bmap && bmap_size) {
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+index e46689128e32..f3886710e778 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+@@ -952,6 +952,7 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
+ 		bnxt_ptp_timecounter_init(bp, true);
+ 		bnxt_ptp_adjfine_rtc(bp, 0);
+ 	}
++	bnxt_hwrm_func_drv_rgtr(bp, NULL, 0, true);
  
- 	val = bnxt_fw_health_readl(bp, BNXT_FW_HEARTBEAT_REG);
--	if (val == fw_health->last_fw_heartbeat) {
-+	if (val == fw_health->last_fw_heartbeat && pci_device_is_present(pdev)) {
- 		fw_health->arrests++;
- 		goto fw_reset;
- 	}
-@@ -11623,7 +11624,7 @@ static void bnxt_fw_health_check(struct bnxt *bp)
- 	fw_health->last_fw_heartbeat = val;
- 
- 	val = bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
--	if (val != fw_health->last_fw_reset_cnt) {
-+	if (val != fw_health->last_fw_reset_cnt && pci_device_is_present(pdev)) {
- 		fw_health->discoveries++;
- 		goto fw_reset;
- 	}
+ 	ptp->ptp_info = bnxt_ptp_caps;
+ 	if ((bp->fw_cap & BNXT_FW_CAP_PTP_PPS)) {
 -- 
 2.30.1
 
 
---0000000000002a758105fd857336
+--0000000000004148d905fd85734e
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -208,14 +212,14 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINAq12AeF1UNc/8E1uSFpPvNn9Apj8Fy
-/1SImh8maYb/MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYw
-NzA3NTQ0OFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJFniyjcZJQ7lidHA8KToyojrJLZf/43
+lJdi4gDB8JacMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYw
+NzA3NTQ0OVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAL1ERaKq1BVC61zf5XlT7WBIYOEYpWAkxjzNCHYFeeW+9iWPgL
-AcINK64Ge2K3xc9wfLKXkdPdyXHM6MczONwNqif1pGL0j1IOXPSum7XGut77YWz+jhecoJLl3s7n
-4UmIAnoi9+AkDnoSX2ednUqY1sw/m7JTF0iNGYR1X7LFdnmCcMP5eku1+wuEpxx3PAu+70bfsNCr
-KY1uYLPJytjAt0fZH//ZZcgcDXWzememaurB3TeZJsvi07Z5BhQKa6nGoijj9RqR7oh4CfkBObv9
-rhEVJGliVHgXEuZwpnq8hVzpzalnwZUxtpu1T+Um50k0MfUCX4QXc64XqZLzZwvj
---0000000000002a758105fd857336--
+ATANBgkqhkiG9w0BAQEFAASCAQAIBEtNQkzvU8AlDuYegQJVqIsSFxxi8QGQl891na3EP+mkjGiM
+8C0HA1pxl/3bx5qHosV1PD815atDrQbTQSw422W3hPonqRKPceK7ZfqN9IxNvhYTXhVtNW4rkWkt
+ZsCECjeKpZeZmFc4KAxxkhvT1Ov4hv+ZaW16SrITjFaX5CNnG1t6zFSuBI9UA3QKQXCtrB9x51/I
+DzQQ/WXtkXuBqhrrJvEb4R+pxB2AGFPbYxT6DhcHXV61fHfOPGceGui5Sft96gUQQazy+fz+J2ck
+9BpnpUP9QD9+Z4GfXUgMGlo8IEVpZcU39MNdM7iwkl00wdZOv3FDZJdo43emDmvT
+--0000000000004148d905fd85734e--
 
