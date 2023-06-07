@@ -1,180 +1,160 @@
-Return-Path: <netdev+bounces-9080-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9081-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 65FBF7270A6
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 23:41:21 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id E9076727147
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 00:05:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 211662815A0
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 21:41:20 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2CED01C20F68
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 22:05:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 130E83B8B6;
-	Wed,  7 Jun 2023 21:41:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 909A43B8C6;
+	Wed,  7 Jun 2023 22:05:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 023D03AE7F
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 21:41:17 +0000 (UTC)
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181D01BF9
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 14:41:16 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id 3f1490d57ef6-bb3855c34deso4177370276.2
-        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 14:41:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1686174075; x=1688766075;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=FHk40y/zBOQU71kLbZonwMTr0ZjqRJZDnZJAsGqPwPw=;
-        b=DudGYa6a7oqiNngPkm40MK1gP/1VPuM9TheEELaVDefrw/BjoSJq4xQTOWOWV5RrvU
-         t8cdESGGRXZFi76+GKa41coR3eyBj1VU1kuobHtBRTJdEPYnyv+MDLgTnKa9wKaSrEgn
-         BjPLlEnXtIVu8czH5oMPR/vs62zNLkOmgR1TAWijWRVPvi2bnI+0eL2z7lLu1q+X4jdO
-         i6Vl9txbvvBMa8IMg36RB1N+7ZENuEeq1OJxjBHPPyUFjWCXNMdF8unhhIRqCzduRCpK
-         ZAJ6tzxBFfGEe2fQEkCcd/ygwSkrujA/tIRx01Pn7kFdyMmeVVqNiC1eSGsjFZWz/9wP
-         9ijg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686174075; x=1688766075;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FHk40y/zBOQU71kLbZonwMTr0ZjqRJZDnZJAsGqPwPw=;
-        b=jG85JcL5mTe0Jp4Yw3TkRjtY581b9pdEKOomALG5T1GQxl6ftMyX9A0CE7SgyEr3bb
-         3OdWOEpDNfaO2yyyq+N67Wg9kWL3/NnnqbgsGKGGcqgq0elDRz3zb1WFtadQOlofzYu7
-         cKR+AhG9qR2ymyP2R4KtZ7yDfIWgY6I1fCwB56At+Kk5Ohe8Xq9PASrKRaPz1dJqjQjx
-         92jz4Kbim4A2+6VWEABgw7kaPW7R6OlqRQr6KRp8DFyrD0x4NsJWNQDYQnlQBrt7GNCM
-         vRn2bfxC0n7oZyoFdJqbTx9oYdc7r3z8OrB5HfUHVRzGKcVnPBFBlpdg46F/Ckz3ZzYs
-         ZSVg==
-X-Gm-Message-State: AC+VfDxjEyDGgJ8RdKuiAzPw2IiF3ZCgzW8Bj9btqVsR5pbYjcjA4uZK
-	vCazoDvvT93DSitVUcxGhTR2uJE+2cs4Fw==
-X-Google-Smtp-Source: ACHHUZ6UJUnsR9ghhnIzoY6QQBQ49zj55WAznYW4TzOpeEacPqUd8CdPuiFbtJmLAhOXKE+rDzUV/i1xSXWwwQ==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a25:686:0:b0:bad:99d:f089 with SMTP id
- 128-20020a250686000000b00bad099df089mr3765051ybg.8.1686174075332; Wed, 07 Jun
- 2023 14:41:15 -0700 (PDT)
-Date: Wed,  7 Jun 2023 21:41:13 +0000
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FF9D3AE79;
+	Wed,  7 Jun 2023 22:05:20 +0000 (UTC)
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65FE81FF5;
+	Wed,  7 Jun 2023 15:05:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:MIME-Version:
+	Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References;
+	bh=HDQn7GhrKxRvcDjYng03SxeeUrtT/+oJ8ZCHtGzjJMc=; b=UMJsoNU8ABHPloFXguz1LIPLqO
+	STm1YbWqe/n5QsGX9y/IICa4hJSy+NvtjnNxbnDhAhtHwnDcKKK+YDh+PanldGwrNaqn/RQZAqRqv
+	HQ/Z8VygYMJE/PcahnZUKFma+s0X3jUwfnrwfZLkaResTk8+6RLXFGzuPD3dI1QKoV2mrYJOpttmU
+	fmFznN5qmNJzfnTCLdg83oEM8MlUF393pzhv9zmjS7fr6+GHRssLWthivDT6jD7gSPcWhN2NIWHri
+	BbDq+Ap9jUs7Nb53AR2kCgItECWyvfhog5eo4h9Kqgm5R/SlNrCEm6lP4sQaRfjWROPg2OYhZKmM0
+	wZ5meWNg==;
+Received: from 49.248.197.178.dynamic.dsl-lte-bonding.zhbmb00p-msn.res.cust.swisscom.ch ([178.197.248.49] helo=localhost)
+	by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <daniel@iogearbox.net>)
+	id 1q71HG-0007yn-LV; Thu, 08 Jun 2023 00:05:14 +0200
+From: Daniel Borkmann <daniel@iogearbox.net>
+To: davem@davemloft.net
+Cc: kuba@kernel.org,
+	pabeni@redhat.com,
+	edumazet@google.com,
+	daniel@iogearbox.net,
+	ast@kernel.org,
+	andrii@kernel.org,
+	martin.lau@linux.dev,
+	netdev@vger.kernel.org,
+	bpf@vger.kernel.org
+Subject: pull-request: bpf 2023-06-07
+Date: Thu,  8 Jun 2023 00:05:14 +0200
+Message-Id: <20230607220514.29698-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.41.0.rc0.172.g3f132b7071-goog
-Message-ID: <20230607214113.1992947-1-edumazet@google.com>
-Subject: [PATCH net-next] tcp: let tcp_mtu_probe() build headless packets
-From: Eric Dumazet <edumazet@google.com>
-To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>
-Cc: Simon Horman <simon.horman@corigine.com>, netdev@vger.kernel.org, 
-	eric.dumazet@gmail.com, Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.8/26931/Wed Jun  7 09:23:57 2023)
+X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_SBL_CSS,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-tcp_mtu_probe() is still copying payload from skbs in the write queue,
-using skb_copy_bits(), ignoring potential errors.
+Hi David, hi Jakub, hi Paolo, hi Eric,
 
-Modern TCP stack wants to only deal with payload found in page frags,
-as this is a prereq for TCPDirect (host stack might not have access
-to the payload)
+The following pull-request contains BPF updates for your *net* tree.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/tcp_output.c | 60 +++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 58 insertions(+), 2 deletions(-)
+We've added 7 non-merge commits during the last 7 day(s) which contain
+a total of 12 files changed, 112 insertions(+), 7 deletions(-).
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index cfe128b81a010339b486dd6a40b077cee9570d08..f8ce77ce7c3ef783717e60cce03d70aa10a4b9a8 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -2319,6 +2319,57 @@ static bool tcp_can_coalesce_send_queue_head(struct sock *sk, int len)
- 	return true;
- }
- 
-+static int tcp_clone_payload(struct sock *sk, struct sk_buff *to,
-+			     int probe_size)
-+{
-+	skb_frag_t *lastfrag = NULL, *fragto = skb_shinfo(to)->frags;
-+	int i, todo, len = 0, nr_frags = 0;
-+	const struct sk_buff *skb;
-+
-+	if (!sk_wmem_schedule(sk, to->truesize + probe_size))
-+		return -ENOMEM;
-+
-+	skb_queue_walk(&sk->sk_write_queue, skb) {
-+		const skb_frag_t *fragfrom = skb_shinfo(skb)->frags;
-+
-+		if (skb_headlen(skb))
-+			return -EINVAL;
-+
-+		for (i = 0; i < skb_shinfo(skb)->nr_frags; i++, fragfrom++) {
-+			if (len >= probe_size)
-+				goto commit;
-+			todo = min_t(int, skb_frag_size(fragfrom),
-+				     probe_size - len);
-+			len += todo;
-+			if (lastfrag &&
-+			    skb_frag_page(fragfrom) == skb_frag_page(lastfrag) &&
-+			    skb_frag_off(fragfrom) == skb_frag_off(lastfrag) +
-+						      skb_frag_size(lastfrag)) {
-+				skb_frag_size_add(lastfrag, todo);
-+				continue;
-+			}
-+			if (unlikely(nr_frags == MAX_SKB_FRAGS))
-+				return -E2BIG;
-+			skb_frag_page_copy(fragto, fragfrom);
-+			skb_frag_off_copy(fragto, fragfrom);
-+			skb_frag_size_set(fragto, todo);
-+			nr_frags++;
-+			lastfrag = fragto++;
-+		}
-+	}
-+commit:
-+	WARN_ON_ONCE(len != probe_size);
-+	for (i = 0; i < nr_frags; i++)
-+		skb_frag_ref(to, i);
-+
-+	skb_shinfo(to)->nr_frags = nr_frags;
-+	to->truesize += probe_size;
-+	to->len += probe_size;
-+	to->data_len += probe_size;
-+	__skb_header_release(to);
-+	return 0;
-+}
-+
- /* Create a new MTU probe if we are ready.
-  * MTU probe is regularly attempting to increase the path MTU by
-  * deliberately sending larger packets.  This discovers routing
-@@ -2395,9 +2446,15 @@ static int tcp_mtu_probe(struct sock *sk)
- 		return -1;
- 
- 	/* We're allowed to probe.  Build it now. */
--	nskb = tcp_stream_alloc_skb(sk, probe_size, GFP_ATOMIC, false);
-+	nskb = tcp_stream_alloc_skb(sk, 0, GFP_ATOMIC, false);
- 	if (!nskb)
- 		return -1;
-+
-+	/* build the payload, and be prepared to abort if this fails. */
-+	if (tcp_clone_payload(sk, nskb, probe_size)) {
-+		consume_skb(nskb);
-+		return -1;
-+	}
- 	sk_wmem_queued_add(sk, nskb->truesize);
- 	sk_mem_charge(sk, nskb->truesize);
- 
-@@ -2415,7 +2472,6 @@ static int tcp_mtu_probe(struct sock *sk)
- 	len = 0;
- 	tcp_for_write_queue_from_safe(skb, next, sk) {
- 		copy = min_t(int, skb->len, probe_size - len);
--		skb_copy_bits(skb, 0, skb_put(nskb, copy), copy);
- 
- 		if (skb->len <= copy) {
- 			/* We've eaten all the data from this skb.
--- 
-2.41.0.rc0.172.g3f132b7071-goog
+The main changes are:
 
+1) Fix a use-after-free in BPF's task local storage, from KP Singh.
+
+2) Make struct path handling more robust in bpf_d_path, from Jiri Olsa.
+
+3) Fix a syzbot NULL-pointer dereference in sockmap, from Eric Dumazet.
+
+4) UAPI fix for BPF_NETFILTER before final kernel ships, from Florian Westphal.
+
+5) Fix map-in-map array_map_gen_lookup code generation where elem_size was
+   not being set for inner maps, from Rhys Rustad-Elliott.
+
+6) Fix sockopt_sk selftest's NETLINK_LIST_MEMBERSHIPS assertion, from Yonghong Song.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git tags/for-netdev
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Anastasios Papagiannis, John Fastabend, Kuba Piecuch, Song Liu, 
+Stanislav Fomichev, syzbot, Yonghong Song
+
+----------------------------------------------------------------
+
+The following changes since commit be7f8012a513f5099916ee2da28420156cbb8cf3:
+
+  net: ipa: Use correct value for IPA_STATUS_SIZE (2023-06-01 13:29:18 +0200)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git tags/for-netdev
+
+for you to fetch changes up to f46fab0e36e611a2389d3843f34658c849b6bd60:
+
+  bpf: Add extra path pointer check to d_path helper (2023-06-07 15:03:43 +0200)
+
+----------------------------------------------------------------
+bpf-for-netdev
+
+----------------------------------------------------------------
+Eric Dumazet (1):
+      bpf, sockmap: Avoid potential NULL dereference in sk_psock_verdict_data_ready()
+
+Florian Westphal (1):
+      bpf: netfilter: Add BPF_NETFILTER bpf_attach_type
+
+Jiri Olsa (1):
+      bpf: Add extra path pointer check to d_path helper
+
+KP Singh (1):
+      bpf: Fix UAF in task local storage
+
+Martin KaFai Lau (1):
+      Merge branch 'Fix elem_size not being set for inner maps'
+
+Rhys Rustad-Elliott (2):
+      bpf: Fix elem_size not being set for inner maps
+      selftests/bpf: Add access_inner_map selftest
+
+Yonghong Song (1):
+      selftests/bpf: Fix sockopt_sk selftest
+
+ include/uapi/linux/bpf.h                           |  1 +
+ kernel/bpf/map_in_map.c                            |  8 +++-
+ kernel/bpf/syscall.c                               |  9 +++++
+ kernel/fork.c                                      |  2 +-
+ kernel/trace/bpf_trace.c                           | 12 +++++-
+ net/core/skmsg.c                                   |  3 +-
+ tools/include/uapi/linux/bpf.h                     |  1 +
+ tools/lib/bpf/libbpf.c                             |  3 +-
+ tools/lib/bpf/libbpf_probes.c                      |  2 +
+ .../selftests/bpf/prog_tests/inner_array_lookup.c  | 31 +++++++++++++++
+ .../testing/selftests/bpf/prog_tests/sockopt_sk.c  |  2 +-
+ .../selftests/bpf/progs/inner_array_lookup.c       | 45 ++++++++++++++++++++++
+ 12 files changed, 112 insertions(+), 7 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/inner_array_lookup.c
+ create mode 100644 tools/testing/selftests/bpf/progs/inner_array_lookup.c
 
