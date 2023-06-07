@@ -1,400 +1,190 @@
-Return-Path: <netdev+bounces-8692-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8693-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id DFD057253A5
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:47:02 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id A331E7253AE
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:49:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 309911C20C67
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 05:46:59 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AD5AE2811F6
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 05:49:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E107E10FC;
-	Wed,  7 Jun 2023 05:46:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DDE381388;
+	Wed,  7 Jun 2023 05:49:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D07A510F7
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 05:46:59 +0000 (UTC)
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A2D19B9
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 22:46:55 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id 5614622812f47-39c4c3da9cbso785020b6e.2
-        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 22:46:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1686116815; x=1688708815;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GyERF0RS7JY1jKOtadu+WV5iG7DwiHrgJtcnyQtVxBs=;
-        b=GlOMRdsW7+vgAflLBokBqQInqf2YvCY16X9F7c0oI8vzt5RrnAH0JABHIBuBY1W1eM
-         uO8Gz5eaHaY73kqV41aFZc7ygwYaAPKAUYPtbxB/gIv3p/rF0qCAe/jT/CsRsq0pDJt6
-         oy2OnS0/M3yFeSnWibgScbxQoNEsTapqvob48=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686116815; x=1688708815;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GyERF0RS7JY1jKOtadu+WV5iG7DwiHrgJtcnyQtVxBs=;
-        b=V/TvcWk/84DmaY4ZO6A1wOSU7QXfpfgTZkEamskwEIrs2aQyiiRBcF3nldTdo9dWnM
-         rzE5oor4Hl+/hTGojhYtbcXMta+gIx191XwkMNrDcGF8+jkv0Y1Nu3fxFSjhqg3GqE+r
-         ztspdzm4+sGB7gc/QNlMAxOh7UfOH4dDlA3V986PdXh5MHu4NLXleoK53iU9a8agHlfD
-         1KKjTCuEolKUZBUcxAfH0v7xucgGY0qkpjAINzhLt1ZUedM5jHqpbipRQw9+V2eivY1j
-         W//HfrFiNZrXjFIMiK0nJGB2x4E6xmVXuXHy9Eyb3EboUFCQ6oz6pRsbfbNFnSolMPG8
-         xVug==
-X-Gm-Message-State: AC+VfDxW1jswJ7bMneWoXSRY8Mf546Q3YkEhLzZpJTanRReMjhIyYT1I
-	tCj/soP4OMa5UyAMSnGtiLcZmh2Iz2ptJ7Lk7n0J+w==
-X-Google-Smtp-Source: ACHHUZ5zS5dgpa7YaYuHV2jJugHaYJIOv9d28BunL9wYs4BNz5uH8Cp/8zFK5xbtcki3Nii4xLGr3KpAncBsV1F6M2Y=
-X-Received: by 2002:a05:6808:4287:b0:397:ec35:f5a6 with SMTP id
- dq7-20020a056808428700b00397ec35f5a6mr2109539oib.57.1686116814839; Tue, 06
- Jun 2023 22:46:54 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C903C1385
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 05:49:25 +0000 (UTC)
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 195291BC7
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 22:49:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686116962; x=1717652962;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=qrXkHIxtfOiwX9kZF+y2Qiyu0drNRMZcW/dT/NkDcLs=;
+  b=GFC3kEbqxUJEBpCtzj2o7EopYBX9RezCEleQgg27/wR9zKA2XAWBtNxW
+   OtmKYRSGc8rE6HFAi/eBXcyCgoF5ZpIH0FuJPEkdezDY0HM7BGtUOIWIi
+   S3/UIgh5pWpP+pStO+tinXU6mmWSYIGmk1YsZkPPeEfS9/XKHHg2K6WK5
+   g0sH9nvxDRjE3sNb95nt7RrZdkdovRDUTJ3pg9m7gieDu+R7f67z72Avs
+   EWmEtScYV3qGQouTg0+C1NxG7kaFiCljTTt8MHTJUwVGYT6WeircV8N/M
+   pWCX9UP7E6WVLBrDY1U9MxAuN3Fbd4bhzC3Vh78YQXoDcxuWNaNk4juUF
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10733"; a="422734908"
+X-IronPort-AV: E=Sophos;i="6.00,223,1681196400"; 
+   d="scan'208";a="422734908"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2023 22:49:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10733"; a="853696049"
+X-IronPort-AV: E=Sophos;i="6.00,223,1681196400"; 
+   d="scan'208";a="853696049"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga001.fm.intel.com with ESMTP; 06 Jun 2023 22:49:20 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Tue, 6 Jun 2023 22:49:20 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Tue, 6 Jun 2023 22:49:19 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Tue, 6 Jun 2023 22:49:19 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Tue, 6 Jun 2023 22:49:19 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hg8pBbc7UhfKcVOqZ+4qJaOFD9IaVDShPaQ4D1AGNtJEV370Wud7xzliBDb/ionwr2CEL405JM37AwO/WJQZlcwySeBz1j/3osnP5Mw2AGOrdrVVYQRuxHwkD/2pkdm7IoH6tD7+cwp2sIuRl71zU22BJ2+jYbNVlbLQ0HzVOqkBOC5gE6eT66kNW/1L3vBRiK9VmpzHuKMD22mplAy5P0z+UBr2d3dBjY1KhiojUG7fZQK46h+8IRlTual3cJGkPu9KezUorv0V8n/SEsCLXHDLBDZN6P/2U2YL1SmSGOueSSI+9oMYoUnG/yLjklch13dps8fVKH3hLxgsiJdj+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ett3TFbHby3hCvkZt76wI/jg3aLa1v7vJiH9orv0hV4=;
+ b=mZmV+3opzZvSKyUVmTO3V1DzTVVU3Lk8y9bwkik1eM8C5ucwUSpa7m/ieKTz84McRH19LywMchSrmZLg/73IESvAeh8tbWMa9ZxXMXwk8yr9avchoXcrRYPBFbhe9e/RTNKyT5AUJAx2ZNZR9XxSmXf7h5fWIc/SX3fFQP/7LZH2P4SYWoDbJlDimOhzWhfK7XHIpn3EWkv5rwqyHrQcLyzKSxzo/QQsKtyExoO8vKvZrzu95TFWmwJx8lWngYyHVfn/6T45tNadpbmtTgUXUOR/RCpk09LKq2heNibYwvouLqtzFi1DJYIQUNRvVDXcfh+SeIFcoK1r5GrVS81dow==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from PH0PR11MB5013.namprd11.prod.outlook.com (2603:10b6:510:30::21)
+ by DS0PR11MB7649.namprd11.prod.outlook.com (2603:10b6:8:146::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Wed, 7 Jun
+ 2023 05:49:17 +0000
+Received: from PH0PR11MB5013.namprd11.prod.outlook.com
+ ([fe80::fcef:c262:ba36:c42f]) by PH0PR11MB5013.namprd11.prod.outlook.com
+ ([fe80::fcef:c262:ba36:c42f%4]) with mapi id 15.20.6455.030; Wed, 7 Jun 2023
+ 05:49:17 +0000
+From: "Buvaneswaran, Sujai" <sujai.buvaneswaran@intel.com>
+To: "Drewek, Wojciech" <wojciech.drewek@intel.com>,
+	"intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC: "pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, "simon.horman@corigine.com"
+	<simon.horman@corigine.com>, "dan.carpenter@linaro.org"
+	<dan.carpenter@linaro.org>
+Subject: RE: [Intel-wired-lan] [PATCH iwl-next v4 01/13] ice: Skip adv rules
+ removal upon switchdev release
+Thread-Topic: [Intel-wired-lan] [PATCH iwl-next v4 01/13] ice: Skip adv rules
+ removal upon switchdev release
+Thread-Index: AQHZjjp8BqSX+UcWVk6B2RL/sACSs69+6vkg
+Date: Wed, 7 Jun 2023 05:49:17 +0000
+Message-ID: <PH0PR11MB5013624B1FD449D782E839D99653A@PH0PR11MB5013.namprd11.prod.outlook.com>
+References: <20230524122121.15012-1-wojciech.drewek@intel.com>
+ <20230524122121.15012-2-wojciech.drewek@intel.com>
+In-Reply-To: <20230524122121.15012-2-wojciech.drewek@intel.com>
+Accept-Language: en-IN, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR11MB5013:EE_|DS0PR11MB7649:EE_
+x-ms-office365-filtering-correlation-id: af2da7fc-f01c-4770-697a-08db671aeea0
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 8roU9a/uWDW3gt/m90UYwGegX9Wq6yk2nrj6NKw4geHFk99vMbWi29f3/KmznpxtswOa6GyUVsbQOpUsp5SFij182c4envPTtB74Mx5aH36MQLAbaPNbaRAU9N7eNriGrAxUxyK9w98ZhH30eTES7YaxOX6g6K3EaECkkmIR3zTGlciji3EKyjHhJB83STN5urA6lYiJqgZGuDaIURMzMwXe5PIoRxOc+4p6RETwwTmbyH4PjrpjFZILsBU9PVh3B2re2KmawHu58VsT4ST2K02fhvLu+OFfYJwxo1bSDc9qrIuZ49KJQWu8a3KVD49Xxu0Nqb0HNGpj/xO2K418JZne+HdO95QOlTfBQ+64ImQTbhniegv3788Xp76pzRbbk1z9z+rJeSlmiRDDNwkuZzsjh8IC2xRQwEmHhy6Zwxk6hudHrpNbMx+lhDo4+WetZB7iMKoXC9b9KDALfyvCqY98mP+sil+NL+3ctmOmsp9fp3iGSuh6u+615OqUEV5ihd0ssrJWgNUNVlIesreB88T3m7mD0ZjvfwYy7NrvAhmVmwAg0M5rmmzGSqClsQWG0jSmD+I611UvtNhgxF3jY2Zypt0q/CMkCfA9SUPGEv0=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5013.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(136003)(396003)(39860400002)(376002)(346002)(451199021)(110136005)(54906003)(71200400001)(478600001)(52536014)(5660300002)(8936002)(38070700005)(33656002)(4744005)(2906002)(86362001)(8676002)(66946007)(76116006)(4326008)(122000001)(64756008)(66556008)(66446008)(316002)(66476007)(55016003)(82960400001)(38100700002)(83380400001)(41300700001)(26005)(9686003)(6506007)(53546011)(186003)(7696005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?qJ8OjY0z+Xu/6k6Lx59NW5Ep4AA7BEC3c3H46nI8OOgeGp6pT1J71Df/0Klo?=
+ =?us-ascii?Q?sN16+QdsygnJE6VqkDJ5PH1XnuX7SbCWWgAxY6jOM2PbuKGk2/PJVEuWb2a1?=
+ =?us-ascii?Q?DAEYSk5Ij+I2f72g1Xjv5msvPFgCkBKttDGhCkhgu/Ptv05WA2WdzF5ofO//?=
+ =?us-ascii?Q?G2TxZDkDkWZF59IgP3CU2D5fEbpXAK02kYcdMBDHfbP5qxgTuDHQS+GlQPB9?=
+ =?us-ascii?Q?pciaIludYMBZ3uo8lXbLASPIKmkluG9Fnh7Esv/wNtQz+Xqpnrrp2H7KzunQ?=
+ =?us-ascii?Q?kGLFSr1MMFoKPKetXEl8SgNQGlFDScYEZsWOSXlOWRUwuZ8jn6LsU9qdAtsp?=
+ =?us-ascii?Q?R7ZGCzFUz6KylA85EcU88Wjsc0yUF+uObVUlq0TcqtssSRqfFRin1wAX411Y?=
+ =?us-ascii?Q?AjHFapP5jBC9fqGA2u3RposeyfHtAbS3rnZHIkT+23ehyLnhY0qowcICPi1T?=
+ =?us-ascii?Q?vCtnbU8PUDnXzj3/rE3rIW9b06Pug65cIv2nueN76oEfI11xXVVacELN16nV?=
+ =?us-ascii?Q?EDy4cGxf5yaKb44tQKOzw5761cmpNsIPf0ZKM9RLFG89CFs4/fJ9h+SZZUDJ?=
+ =?us-ascii?Q?JYY6MiT/zsiqY/tjzoiD9Ynng0WSP4PH5PV/off2flmE+Du5qXJiW+3fqUV6?=
+ =?us-ascii?Q?v01M7xx/o9N9XugH25BG7V2Wv3M++g37sEvptkjvGcE6jF8pdhG9o2p5dI0p?=
+ =?us-ascii?Q?1ztjuqkswhSwp+tUA1vQrX4iWqEUPjY14HaS7dI6RjnE/N+uI6MbDX8/otRw?=
+ =?us-ascii?Q?n59ZvGKpShC38Vp+Wku9GirlL0PWBcmfRlQL9TOkwp9e+GktpjJTSOgnERvO?=
+ =?us-ascii?Q?EVfD80w3HkbXiIyk3/IgLEN+Ub6i3w4/OXfrERzJSoIUDSJ5zYLv/HXP3iyh?=
+ =?us-ascii?Q?e+PK2GjNeJlC5iWZxcvHDbH6q9ramlNDo05QCNOf7RFHEizuDw4WwkTfiDLz?=
+ =?us-ascii?Q?LLtpEzNGupH+j1cMJ8qST29W8kxRI4Bbbq3U8CDAP4r2x0MX3YAk5o8L+7aY?=
+ =?us-ascii?Q?KnXGdCRmlFO4OcFr2aYEAycZUPbZevN0ZnUzxQUZ3z//1Va7MXyH1ccAARkH?=
+ =?us-ascii?Q?2tixQWeaPVYdYVNqDc2xdONq7PYcEFgmj5CUdgnFV4CfuJtEg8Uhib4/plul?=
+ =?us-ascii?Q?EkxgJCms1ZYqrZ6HuCKxQ2ie1wfpAG3jROmMK4KK9xMvopCl/oDegk4jFRZp?=
+ =?us-ascii?Q?3HU9ZiRkE7YttFvSokHrhSLfWKsWjArx2BC2rJh+kZirQkk5cXrUMN7ieQOY?=
+ =?us-ascii?Q?SgAyz4T7mPpsyw+UmddZS7sWq+VgxCK/IL6Dq6BIu1/ZP+zOohvVfiHxU5jZ?=
+ =?us-ascii?Q?kdR8q/Ox8pA8v8Z6rNF3etOi9RZ41jteFVkh7elBHNq50nV60ATYcRBPcRCX?=
+ =?us-ascii?Q?PmYv+3SQhxKdU9yKGACYNtnCyV8NwkAe0jtfTKyhvVbtT+TT+Y77Bsb99zWi?=
+ =?us-ascii?Q?6eiThripz7vJBr+C9C8LPUtpP6cWcxqNGmZIYLveQEjUuxmtFbqaH5yXxAmq?=
+ =?us-ascii?Q?Gi5cMLzV+i0dveRCNAwj7m+s8yoPYHGjaWeQG9+t7tn30P286B90WC404apW?=
+ =?us-ascii?Q?xQgGZdsBprnHXwekKJe/RgEWlaA/KLzmoDou6aTYNsq3EEkhjgOYYTPYgPeX?=
+ =?us-ascii?Q?Fw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230515161339.631577-1-konstantin.meskhidze@huawei.com>
- <20230515161339.631577-13-konstantin.meskhidze@huawei.com> <ZH89Pi1QAqNW2QgG@google.com>
-In-Reply-To: <ZH89Pi1QAqNW2QgG@google.com>
-From: Jeff Xu <jeffxu@chromium.org>
-Date: Tue, 6 Jun 2023 22:46:43 -0700
-Message-ID: <CABi2SkWqHeLkmqONbmavcp2SCiwe6YeH_3dkBLZwSsk7neyPMw@mail.gmail.com>
-Subject: Re: [PATCH v11 12/12] landlock: Document Landlock's network support
-To: =?UTF-8?Q?G=C3=BCnther_Noack?= <gnoack@google.com>
-Cc: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>, mic@digikod.net, 
-	willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com, 
-	linux-security-module@vger.kernel.org, netdev@vger.kernel.org, 
-	netfilter-devel@vger.kernel.org, yusongping@huawei.com, 
-	artem.kuzin@huawei.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5013.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: af2da7fc-f01c-4770-697a-08db671aeea0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2023 05:49:17.2864
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lDWyt5Q/aqrAimrSGhu2RzmwrA/JXXxYfW/IuavTiS2cZIp9RKj2h3QkeSKk0cCLFYZFyT+TV23ulb5EIYlicokoSsXXewDFAe7NB8NKSf4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7649
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 6, 2023 at 7:09=E2=80=AFAM G=C3=BCnther Noack <gnoack@google.co=
-m> wrote:
->
-> On Tue, May 16, 2023 at 12:13:39AM +0800, Konstantin Meskhidze wrote:
-> > Describe network access rules for TCP sockets. Add network access
-> > example in the tutorial. Add kernel configuration support for network.
-> >
-> > Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-> > ---
-> >
-> > Changes since v10:
-> > * Fixes documentaion as Micka=D1=91l suggested:
-> > https://lore.kernel.org/linux-security-module/ec23be77-566e-c8fd-179e-f=
-50e025ac2cf@digikod.net/
-> >
-> > Changes since v9:
-> > * Minor refactoring.
-> >
-> > Changes since v8:
-> > * Minor refactoring.
-> >
-> > Changes since v7:
-> > * Fixes documentaion logic errors and typos as Micka=D1=91l suggested:
-> > https://lore.kernel.org/netdev/9f354862-2bc3-39ea-92fd-53803d9bbc21@dig=
-ikod.net/
-> >
-> > Changes since v6:
-> > * Adds network support documentaion.
-> >
-> > ---
-> >  Documentation/userspace-api/landlock.rst | 83 ++++++++++++++++++------
-> >  1 file changed, 62 insertions(+), 21 deletions(-)
-> >
-> > diff --git a/Documentation/userspace-api/landlock.rst b/Documentation/u=
-serspace-api/landlock.rst
-> > index f6a7da21708a..f185dbaa726a 100644
-> > --- a/Documentation/userspace-api/landlock.rst
-> > +++ b/Documentation/userspace-api/landlock.rst
-> > @@ -11,10 +11,10 @@ Landlock: unprivileged access control
-> >  :Date: October 2022
-> >
-> >  The goal of Landlock is to enable to restrict ambient rights (e.g. glo=
-bal
-> > -filesystem access) for a set of processes.  Because Landlock is a stac=
-kable
-> > -LSM, it makes possible to create safe security sandboxes as new securi=
-ty layers
-> > -in addition to the existing system-wide access-controls. This kind of =
-sandbox
-> > -is expected to help mitigate the security impact of bugs or
-> > +filesystem or network access) for a set of processes.  Because Landloc=
-k
-> > +is a stackable LSM, it makes possible to create safe security sandboxe=
-s as new
-> > +security layers in addition to the existing system-wide access-control=
-s. This
-> > +kind of sandbox is expected to help mitigate the security impact of bu=
-gs or
-> >  unexpected/malicious behaviors in user space applications.  Landlock e=
-mpowers
-> >  any process, including unprivileged ones, to securely restrict themsel=
-ves.
-> >
-> > @@ -28,20 +28,24 @@ appropriately <kernel_support>`.
-> >  Landlock rules
-> >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >
-> > -A Landlock rule describes an action on an object.  An object is curren=
-tly a
-> > -file hierarchy, and the related filesystem actions are defined with `a=
-ccess
-> > -rights`_.  A set of rules is aggregated in a ruleset, which can then r=
-estrict
-> > -the thread enforcing it, and its future children.
-> > +A Landlock rule describes an action on a kernel object.  Filesystem
-> > +objects can be defined with a file hierarchy.  Since the fourth ABI
-> > +version, TCP ports enable to identify inbound or outbound connections.
-> > +Actions on these kernel objects are defined according to `access
-> > +rights`_.  A set of rules is aggregated in a ruleset, which
-> > +can then restrict the thread enforcing it, and its future children.
->
-> I feel that this paragraph is a bit long-winded to read when the
-> additional networking aspect is added on top as well.  Maybe it would
-> be clearer if we spelled it out in a more structured way, splitting up
-> the filesystem/networking aspects?
->
-> Suggestion:
->
->   A Landlock rule describes an action on an object which the process
->   intends to perform.  A set of rules is aggregated in a ruleset,
->   which can then restrict the thread enforcing it, and its future
->   children.
->
->   The two existing types of rules are:
->
->   Filesystem rules
->       For these rules, the object is a file hierarchy,
->       and the related filesystem actions are defined with
->       `filesystem access rights`.
->
->   Network rules (since ABI v4)
->       For these rules, the object is currently a TCP port,
-Remote port or local port ?
-
-
->       and the related actions are defined with `network access rights`.
->
-> Please note that the landlock(7) man page is in large parts using the
-> same phrasing as the kernel documentation.  It might be a good idea to
-> keep them in sync and structured similarly.  (On that mailing list,
-> the reviews are a bit more focused on good writing style.)
->
-> The same reasoning applies to the example below as well.  Explaining
-> multiple aspects of a thing in a single example can muddy the message,
-> let's try to avoid that.  But I can also see that if we had two
-> separate examples, a large part of the example would be duplicated.
->
-> >  Defining and enforcing a security policy
-> >  ----------------------------------------
-> >
-> >  We first need to define the ruleset that will contain our rules.  For =
-this
-> > -example, the ruleset will contain rules that only allow read actions, =
-but write
-> > -actions will be denied.  The ruleset then needs to handle both of thes=
-e kind of
-> > -actions.  This is required for backward and forward compatibility (i.e=
-. the
-> > -kernel and user space may not know each other's supported restrictions=
-), hence
-> > -the need to be explicit about the denied-by-default access rights.
-> > +example, the ruleset will contain rules that only allow filesystem rea=
-d actions
-> > +and establish a specific TCP connection, but filesystem write actions
-> > +and other TCP actions will be denied.  The ruleset then needs to handl=
-e both of
-> > +these kind of actions.  This is required for backward and forward comp=
-atibility
-> > +(i.e. the kernel and user space may not know each other's supported
-> > +restrictions), hence the need to be explicit about the denied-by-defau=
-lt access
-> > +rights.
->
-> I think it became a bit long - I'd suggest to split it into multiple
-> paragraphs, one after "our rules." (in line with landlock(7)), and one
-> after "will be denied."
->
-> Maybe the long sentence "For this example, ..." in the middle
-> paragraph could also be split up in two, to make it more readable?  I
-> think the point of that sentence is really just to give a brief
-> overview over what ruleset we are setting out to write.
->
-> >
-> >  .. code-block:: c
-> >
-> > @@ -62,6 +66,9 @@ the need to be explicit about the denied-by-default a=
-ccess rights.
-> >              LANDLOCK_ACCESS_FS_MAKE_SYM |
-> >              LANDLOCK_ACCESS_FS_REFER |
-> >              LANDLOCK_ACCESS_FS_TRUNCATE,
-> > +        .handled_access_net =3D
-> > +            LANDLOCK_ACCESS_NET_BIND_TCP |
-> > +            LANDLOCK_ACCESS_NET_CONNECT_TCP,
-> >      };
-> >
-> >  Because we may not know on which kernel version an application will be
-> > @@ -70,14 +77,18 @@ should try to protect users as much as possible wha=
-tever the kernel they are
-> >  using.  To avoid binary enforcement (i.e. either all security features=
- or
-> >  none), we can leverage a dedicated Landlock command to get the current=
- version
-> >  of the Landlock ABI and adapt the handled accesses.  Let's check if we=
- should
-> > -remove the ``LANDLOCK_ACCESS_FS_REFER`` or ``LANDLOCK_ACCESS_FS_TRUNCA=
-TE``
-> > -access rights, which are only supported starting with the second and t=
-hird
-> > -version of the ABI.
-> > +remove the ``LANDLOCK_ACCESS_FS_REFER`` or ``LANDLOCK_ACCESS_FS_TRUNCA=
-TE`` or
-> > +network access rights, which are only supported starting with the seco=
-nd,
-> > +third and fourth version of the ABI.
->
-> At some point it becomes too much to spell it out in one sentence; I'd re=
-commend
->
->   Let's check if we should remove access rights which are only supported
->   in higher versions of the ABI.
->
-> >
-> >  .. code-block:: c
-> >
-> >      int abi;
-> >
-> > +    #define ACCESS_NET_BIND_CONNECT ( \
-> > +        LANDLOCK_ACCESS_NET_BIND_TCP | \
-> > +        LANDLOCK_ACCESS_NET_CONNECT_TCP)
-> > +
->
-> This #define does not seem to be used? -- Drop it?
->
->
-> >      abi =3D landlock_create_ruleset(NULL, 0, LANDLOCK_CREATE_RULESET_V=
-ERSION);
-> >      if (abi < 0) {
-> >          /* Degrades gracefully if Landlock is not handled. */
-> > @@ -92,6 +103,11 @@ version of the ABI.
-> >      case 2:
-> >          /* Removes LANDLOCK_ACCESS_FS_TRUNCATE for ABI < 3 */
-> >          ruleset_attr.handled_access_fs &=3D ~LANDLOCK_ACCESS_FS_TRUNCA=
-TE;
-> > +    case 3:
-> > +        /* Removes network support for ABI < 4 */
-> > +        ruleset_attr.handled_access_net &=3D
-> > +            ~(LANDLOCK_ACCESS_NET_BIND_TCP |
-> > +              LANDLOCK_ACCESS_NET_CONNECT_TCP);
-> >      }
-> >
-> >  This enables to create an inclusive ruleset that will contain our rule=
-s.
-> > @@ -143,10 +159,23 @@ for the ruleset creation, by filtering access rig=
-hts according to the Landlock
-> >  ABI version.  In this example, this is not required because all of the=
- requested
-> >  ``allowed_access`` rights are already available in ABI 1.
-> >
-> > -We now have a ruleset with one rule allowing read access to ``/usr`` w=
-hile
-> > -denying all other handled accesses for the filesystem.  The next step =
-is to
-> > -restrict the current thread from gaining more privileges (e.g. thanks =
-to a SUID
-> > -binary).
-> > +For network access-control, we can add a set of rules that allow to us=
-e a port
-> > +number for a specific action: HTTPS connections.
-> > +
-> > +.. code-block:: c
-> > +
-> > +    struct landlock_net_service_attr net_service =3D {
-> > +        .allowed_access =3D NET_CONNECT_TCP,
-> > +        .port =3D 443,
-> > +    };
-> > +
-> > +    err =3D landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
-> > +                            &net_service, 0);
-> > +
-> > +The next step is to restrict the current thread from gaining more priv=
-ileges
-> > +(e.g. through a SUID binary). We now have a ruleset with the first rul=
-e allowing
-> > +read access to ``/usr`` while denying all other handled accesses for t=
-he filesystem,
-> > +and a second rule allowing HTTPS connections.
-> >
-> >  .. code-block:: c
-> >
-> > @@ -355,7 +384,7 @@ Access rights
-> >  -------------
-> >
-> >  .. kernel-doc:: include/uapi/linux/landlock.h
-> > -    :identifiers: fs_access
-> > +    :identifiers: fs_access net_access
-> >
-> >  Creating a new ruleset
-> >  ----------------------
-> > @@ -374,6 +403,7 @@ Extending a ruleset
-> >
-> >  .. kernel-doc:: include/uapi/linux/landlock.h
-> >      :identifiers: landlock_rule_type landlock_path_beneath_attr
-> > +                  landlock_net_service_attr
-> >
-> >  Enforcing a ruleset
-> >  -------------------
-> > @@ -451,6 +481,12 @@ always allowed when using a kernel that only suppo=
-rts the first or second ABI.
-> >  Starting with the Landlock ABI version 3, it is now possible to secure=
-ly control
-> >  truncation thanks to the new ``LANDLOCK_ACCESS_FS_TRUNCATE`` access ri=
-ght.
-> >
-> > +Network support (ABI < 4)
-> > +-------------------------
-> > +
-> > +Starting with the Landlock ABI version 4, it is now possible to restri=
-ct TCP
-> > +bind and connect actions to only a set of allowed ports.
-> > +
-> >  .. _kernel_support:
-> >
-> >  Kernel support
-> > @@ -469,6 +505,11 @@ still enable it by adding ``lsm=3Dlandlock,[...]``=
- to
-> >  Documentation/admin-guide/kernel-parameters.rst thanks to the bootload=
-er
-> >  configuration.
-> >
-> > +To be able to explicitly allow TCP operations (e.g., adding a network =
-rule with
-> > +``LANDLOCK_ACCESS_NET_TCP_BIND``), the kernel must support TCP (``CONF=
-IG_INET=3Dy``).
-> > +Otherwise, sys_landlock_add_rule() returns an ``EAFNOSUPPORT`` error, =
-which can
-> > +safely be ignored because this kind of TCP operation is already not po=
-ssible.
-> > +
-> >  Questions and answers
-> >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >
-> > --
-> > 2.25.1
-> >
->
-> =E2=80=94G=C3=BCnther
->
-> --
-> Sent using Mutt =F0=9F=90=95 Woof Woof
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Wojciech Drewek
+> Sent: Wednesday, May 24, 2023 5:51 PM
+> To: intel-wired-lan@lists.osuosl.org
+> Cc: pmenzel@molgen.mpg.de; netdev@vger.kernel.org;
+> simon.horman@corigine.com; dan.carpenter@linaro.org
+> Subject: [Intel-wired-lan] [PATCH iwl-next v4 01/13] ice: Skip adv rules
+> removal upon switchdev release
+>=20
+> Advanced rules for ctrl VSI will be removed anyway when the VSI will clea=
+ned
+> up, no need to do it explicitly.
+>=20
+> Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+> Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_eswitch.c | 1 -
+>  1 file changed, 1 deletion(-)
+>=20
+Tested-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>
 
