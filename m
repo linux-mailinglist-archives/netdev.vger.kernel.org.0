@@ -1,134 +1,181 @@
-Return-Path: <netdev+bounces-8790-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8798-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4202D725CF6
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 13:21:54 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 460C7725D57
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 13:39:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6992F2812A9
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 11:21:52 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D12A42812F1
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 11:39:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C8423D314;
-	Wed,  7 Jun 2023 11:21:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D5C36290F1;
+	Wed,  7 Jun 2023 11:39:13 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE5DF6AB4
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 11:21:50 +0000 (UTC)
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90E1E6C
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 04:21:48 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id 98e67ed59e1d1-256931ec244so6207507a91.3
-        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 04:21:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1686136908; x=1688728908;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=sXtu7T4BuQTlc5G2QE10guaIjIMheRY/q8IpaabYJXE=;
-        b=mJcJOtf9cKn2YYWGd/imMh8cq1rB3fGhC5WYLbJRmA79Z2r356m97G9o9T0VhQ42Or
-         dGQ2nwHsJ4TRNWy3H7od5UQpyhwG096mKD468OFXY99pwzrF2BSE37k0C9MnHN5it1nm
-         ToW6hfUtdLfQadVYPGvDPW5Ivrc7sHhY8MGVJ2NUL5A4butCHKYWvRDgmSgTBmSQC1Mf
-         9CtXIVdDDwEWlNZ7VV6Vwl74N4JWJreGrfVIKIY9ZMvjwZXHX6fsVQ2zE47tv4WQ2lj3
-         GOH0dad4BC210GQnP0xEuBUv17WSwMbwPDiPFrgoi2LXCp/laF6+QoADHUZH63rHXcRe
-         p49w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686136908; x=1688728908;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sXtu7T4BuQTlc5G2QE10guaIjIMheRY/q8IpaabYJXE=;
-        b=e4TwmZJgKO4ukdpmk83jMDVYYnepLmt3A6jIpe7CPFfWd4S4TbTqxDXH6OOSeDWckT
-         2bYyTRZPtuFPahd5CkRbNf978uR6VJ3EepyiQGSp921UWHrqCoGAJ/FfoVJ42PlVg9vJ
-         vah3bmJK4+19dn0IVLs3LqklE9P8eI9M7RgFrE17/q256VJNxHOEIRyvZ4VNVVNWd1b/
-         cnB+PAe5cP5LBFf3P8Q3JJO1Osn9VqlPACcZSgGi78AHAroaqpU2l+hetK9oRjksg/1p
-         nqqfE/e2Z9X62W+G3w6J5h9HfECrSloSqdK8g3GMddEE4sd/W2Hd0ESVT/GwC16ek1Jp
-         ridA==
-X-Gm-Message-State: AC+VfDywr/t0r2TC5eDDjinOaC1lEm8wrcE+J6V8Mv92kJjo5+ujsWja
-	WuPzjk5wQcuSqNHf7UQNgKPT
-X-Google-Smtp-Source: ACHHUZ75KNTAVNCWXJU3GsKBzmblvZ/f6zZCceUwhTqXHVFfvpwuY3PBfdfhrO3xihSUnq5IJQZR0g==
-X-Received: by 2002:a17:90a:195b:b0:259:c015:9fa1 with SMTP id 27-20020a17090a195b00b00259c0159fa1mr1754510pjh.46.1686136908342;
-        Wed, 07 Jun 2023 04:21:48 -0700 (PDT)
-Received: from thinkpad ([59.92.97.244])
-        by smtp.gmail.com with ESMTPSA id 30-20020a17090a001e00b00250bf8495b3sm1217420pja.39.2023.06.07.04.21.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jun 2023 04:21:47 -0700 (PDT)
-Date: Wed, 7 Jun 2023 16:51:43 +0530
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To: Simon Horman <simon.horman@corigine.com>
-Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, mhi@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, loic.poulain@linaro.org
-Subject: Re: [PATCH 1/3] net: Add MHI Endpoint network driver
-Message-ID: <20230607112143.GE5025@thinkpad>
-References: <20230606123119.57499-1-manivannan.sadhasivam@linaro.org>
- <20230606123119.57499-2-manivannan.sadhasivam@linaro.org>
- <ZIA910jCjl+dxc/a@corigine.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C26FF6AB7
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 11:39:13 +0000 (UTC)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D251BC5
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 04:39:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686137951; x=1717673951;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nJdwnhqUfLW2jkB9G4+38IddQSxXCMP8Qf0KgJvsePc=;
+  b=A8Er++Sg/wcGgX0TYMEBT63eoGX9YWGLdzj6N7DbAa2EwfwtyhcLfLEw
+   mEZSuZJkjwXfYyA0xDlkcgq+Ado6y24+ytykTyjpKZKDE2Oprq892ENup
+   fjEbdSwMyD/3dHJuazao5ZCkV1xuYTL0kj649gyNjJazcNWl4fvh9ICxe
+   hXGEGYtQ2k39XUZIPN9l6v3Ln+sTEwJm08bIwE5ovGjOUO+9BQ1phi4AU
+   g7Vn8blmHvZataRCPoOmeX/x48RljhVphnT7bqJVyxVZiOzUlvC6iHiwA
+   +JOTQ2VaB3QXOJwjJ9dJThMct66wiIxhnKfQX7NexrHXrLdoUAhDS7cTY
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10733"; a="359432137"
+X-IronPort-AV: E=Sophos;i="6.00,223,1681196400"; 
+   d="scan'208";a="359432137"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2023 04:39:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10733"; a="686935532"
+X-IronPort-AV: E=Sophos;i="6.00,223,1681196400"; 
+   d="scan'208";a="686935532"
+Received: from irvmail002.ir.intel.com ([10.43.11.120])
+  by orsmga006.jf.intel.com with ESMTP; 07 Jun 2023 04:39:02 -0700
+Received: from giewont.igk.intel.com (giewont.igk.intel.com [10.211.8.15])
+	by irvmail002.ir.intel.com (Postfix) with ESMTP id 618983490E;
+	Wed,  7 Jun 2023 12:39:01 +0100 (IST)
+From: Marcin Szycik <marcin.szycik@linux.intel.com>
+To: intel-wired-lan@lists.osuosl.org
+Cc: netdev@vger.kernel.org,
+	wojciech.drewek@intel.com,
+	michal.swiatkowski@linux.intel.com,
+	aleksander.lobakin@intel.com,
+	davem@davemloft.net,
+	kuba@kernel.org,
+	jiri@resnulli.us,
+	pabeni@redhat.com,
+	jesse.brandeburg@intel.com,
+	simon.horman@corigine.com,
+	idosch@nvidia.com,
+	Marcin Szycik <marcin.szycik@linux.intel.com>
+Subject: [PATCH iwl-next v2 0/6] ice: Add PFCP filter support
+Date: Wed,  7 Jun 2023 13:26:00 +0200
+Message-Id: <20230607112606.15899-1-marcin.szycik@linux.intel.com>
+X-Mailer: git-send-email 2.31.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZIA910jCjl+dxc/a@corigine.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, Jun 07, 2023 at 10:20:39AM +0200, Simon Horman wrote:
-> On Tue, Jun 06, 2023 at 06:01:17PM +0530, Manivannan Sadhasivam wrote:
-> 
-> ...
-> 
-> > +static void mhi_ep_net_dev_process_queue_packets(struct work_struct *work)
-> > +{
-> > +	struct mhi_ep_net_dev *mhi_ep_netdev = container_of(work,
-> > +			struct mhi_ep_net_dev, xmit_work);
-> > +	struct mhi_ep_device *mdev = mhi_ep_netdev->mdev;
-> > +	struct sk_buff_head q;
-> > +	struct sk_buff *skb;
-> > +	int ret;
-> > +
-> > +	if (mhi_ep_queue_is_empty(mdev, DMA_FROM_DEVICE)) {
-> > +		netif_stop_queue(mhi_ep_netdev->ndev);
-> > +		return;
-> > +	}
-> > +
-> > +	__skb_queue_head_init(&q);
-> > +
-> > +	spin_lock_bh(&mhi_ep_netdev->tx_lock);
-> > +	skb_queue_splice_init(&mhi_ep_netdev->tx_buffers, &q);
-> > +	spin_unlock_bh(&mhi_ep_netdev->tx_lock);
-> > +
-> > +	while ((skb = __skb_dequeue(&q))) {
-> > +		ret = mhi_ep_queue_skb(mdev, skb);
-> > +		if (ret) {
-> 
-> Hi Manivannan,
-> 
-> I wonder if this should be kfree_skb(skb);
-> 
+Add support for creating PFCP filters in switchdev mode. Add pfcp module
+that allows to create a PFCP-type netdev. The netdev then can be passed to
+tc when creating a filter to indicate that PFCP filter should be created.
 
-Good catch! Will fix it.
+To add a PFCP filter, a special netdev must be created and passed to tc
+command:
 
-- Mani
+ip link add pfcp0 type pfcp
+tc filter add dev eth0 ingress prio 1 flower pfcp_opts \
+1:123/ff:fffffffffffffff0 skip_hw action mirred egress redirect dev pfcp0
 
-> > +			kfree(skb);
-> > +			goto exit_drop;
-> > +		}
-> 
-> ...
+Changes in iproute2 are required to be able to add the pfcp netdev and use
+pfcp_opts in tc (patchset will be submitted later).
+
+ICE COMMS package is required as it contains PFCP profiles.
+
+Part of this patchset modifies IP_TUNNEL_*_OPTs, which were previously
+stored in a __be16. All possible values have already been used, making it
+impossible to add new ones.
+
+Alexander Lobakin (2):
+  ip_tunnel: use a separate struct to store tunnel params in the kernel
+  ip_tunnel: convert __be16 tunnel flags to bitmaps
+
+Marcin Szycik (2):
+  ice: refactor ICE_TC_FLWR_FIELD_ENC_OPTS
+  ice: Add support for PFCP hardware offload in switchdev
+
+Michal Swiatkowski (1):
+  pfcp: always set pfcp metadata
+
+Wojciech Drewek (1):
+  pfcp: add PFCP module
+
+ drivers/net/Kconfig                           |  13 +
+ drivers/net/Makefile                          |   1 +
+ drivers/net/bareudp.c                         |  19 +-
+ drivers/net/ethernet/intel/ice/ice_ddp.c      |   9 +
+ .../net/ethernet/intel/ice/ice_flex_type.h    |   4 +-
+ .../ethernet/intel/ice/ice_protocol_type.h    |  12 +
+ drivers/net/ethernet/intel/ice/ice_switch.c   |  85 +++++
+ drivers/net/ethernet/intel/ice/ice_switch.h   |   2 +
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c   |  68 +++-
+ drivers/net/ethernet/intel/ice/ice_tc_lib.h   |   7 +-
+ .../ethernet/mellanox/mlx5/core/en/tc_tun.h   |   2 +-
+ .../mellanox/mlx5/core/en/tc_tun_encap.c      |   6 +-
+ .../mellanox/mlx5/core/en/tc_tun_geneve.c     |  12 +-
+ .../mellanox/mlx5/core/en/tc_tun_gre.c        |   9 +-
+ .../mellanox/mlx5/core/en/tc_tun_vxlan.c      |   9 +-
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   |  15 +-
+ .../ethernet/mellanox/mlxsw/spectrum_ipip.c   |  62 ++--
+ .../ethernet/mellanox/mlxsw/spectrum_ipip.h   |   2 +-
+ .../ethernet/mellanox/mlxsw/spectrum_span.c   |  10 +-
+ .../ethernet/netronome/nfp/flower/action.c    |  12 +-
+ drivers/net/geneve.c                          |  46 ++-
+ drivers/net/pfcp.c                            | 303 ++++++++++++++++++
+ drivers/net/vxlan/vxlan_core.c                |  14 +-
+ include/linux/netdevice.h                     |   7 +-
+ include/net/dst_metadata.h                    |  10 +-
+ include/net/flow_dissector.h                  |   2 +-
+ include/net/gre.h                             |  59 ++--
+ include/net/ip6_tunnel.h                      |   4 +-
+ include/net/ip_tunnels.h                      | 106 +++++-
+ include/net/pfcp.h                            |  83 +++++
+ include/net/udp_tunnel.h                      |   4 +-
+ include/uapi/linux/if_tunnel.h                |  36 +++
+ include/uapi/linux/pkt_cls.h                  |  14 +
+ net/bridge/br_vlan_tunnel.c                   |   5 +-
+ net/core/filter.c                             |  20 +-
+ net/core/flow_dissector.c                     |  12 +-
+ net/ipv4/fou_bpf.c                            |   2 +-
+ net/ipv4/gre_demux.c                          |   2 +-
+ net/ipv4/ip_gre.c                             | 148 +++++----
+ net/ipv4/ip_tunnel.c                          |  92 ++++--
+ net/ipv4/ip_tunnel_core.c                     |  83 +++--
+ net/ipv4/ip_vti.c                             |  43 ++-
+ net/ipv4/ipip.c                               |  33 +-
+ net/ipv4/ipmr.c                               |   2 +-
+ net/ipv4/udp_tunnel_core.c                    |   5 +-
+ net/ipv6/addrconf.c                           |   3 +-
+ net/ipv6/ip6_gre.c                            |  87 ++---
+ net/ipv6/ip6_tunnel.c                         |  14 +-
+ net/ipv6/sit.c                                |  47 ++-
+ net/netfilter/ipvs/ip_vs_core.c               |   6 +-
+ net/netfilter/ipvs/ip_vs_xmit.c               |  20 +-
+ net/netfilter/nft_tunnel.c                    |  45 +--
+ net/openvswitch/flow_netlink.c                |  55 ++--
+ net/psample/psample.c                         |  26 +-
+ net/sched/act_tunnel_key.c                    |  39 +--
+ net/sched/cls_flower.c                        | 134 +++++++-
+ 56 files changed, 1501 insertions(+), 469 deletions(-)
+ create mode 100644 drivers/net/pfcp.c
+ create mode 100644 include/net/pfcp.h
 
 -- 
-மணிவண்ணன் சதாசிவம்
+2.31.1
+
 
