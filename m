@@ -1,60 +1,61 @@
-Return-Path: <netdev+bounces-8839-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8840-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 629FB725FB9
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:41:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 7DEBA725FC2
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:41:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 773FA1C20E8F
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 12:41:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CC3441C20D9E
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 12:41:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2593D210A;
-	Wed,  7 Jun 2023 12:41:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC918BE72;
+	Wed,  7 Jun 2023 12:41:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 105F8626;
-	Wed,  7 Jun 2023 12:41:05 +0000 (UTC)
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD751BF5;
-	Wed,  7 Jun 2023 05:40:37 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-516a0546230so551959a12.3;
-        Wed, 07 Jun 2023 05:40:37 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0A6C626;
+	Wed,  7 Jun 2023 12:41:07 +0000 (UTC)
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3F5D1FCE;
+	Wed,  7 Jun 2023 05:40:38 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-51492ae66a4so1200351a12.1;
+        Wed, 07 Jun 2023 05:40:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686141596; x=1688733596;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=hQn0uFJCpJmXCmOjjUjAo32a6wELEyxybu3QCQdKk+w=;
-        b=bv6hmv2YOewAE7kjkWMOVJmTObd3L/faqOwrXginYUwm21qYyRIJzStoFTUNs2YgoE
-         fcRDRzyCaC65CDT85Sl1sYiKHSeFvrmswE/ODpQwPGQIe952ATGdAgHgSWOZKQhGU+ir
-         GdIAKR4MqubC9TZy2Mt2UJTOJtBluVXG02bpZBQ318vY//DKo1BDvpw4Pa8m+ryCoAoj
-         OQTyvomDkiRwboC4u3m8hbiNlPrWgl2cJArQwEeX+VMlxVqMD27jLJL+39hJpw5/3xCb
-         aqjTfTQHRJYzx5eAlyKHF//hV0lLl/bG8ojCZ5B5LZvnvOktb1sE58njba3Xafan0e+i
-         Nftw==
+        d=gmail.com; s=20221208; t=1686141598; x=1688733598;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oyRCnZIlgTCZS2k2cmw93gRfUkOIg3FCKHPsHdQmeTI=;
+        b=lTn59UvZK+9m4otDdCVvmwo232X4opAq22YknH/PcMiXVPVtRJoFEl63k3iNbGvIOL
+         j44U9wcpWQ6o+d3+3hshH25V99ElOO+NBe++S80p3y6ZT7/w/ajrGMGZg6tDm8Fide3j
+         em7Gu8NhAyAqwTUD9zaWE154sNNrS0BRQx2WTxnz5LeHT3DzqZNaqg4LhoLcUN3meCdH
+         NGYCT/spStzrJFzLbBsOMPW12aeg1QpoJNxXBe1BgQgMdthROTnuKTg3GX4EnUs7l1g8
+         F+w0G5ZIV7Tn3fs1/roex23dRpv4KPuaqqbpd//X3eKtIxgBQiuOod2whacm6vQYaFzQ
+         KzUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686141596; x=1688733596;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hQn0uFJCpJmXCmOjjUjAo32a6wELEyxybu3QCQdKk+w=;
-        b=TiyUxO1nCoCutKb1htyd5aA+rc0qNl5zZyrIG06+Ep5Z5O8QZCutKkt4/Q+bdATJEW
-         IuG85xYJWoi3gryEZLSqSsC0iYDo+zsx94hEfyvqoge0fP3ALmp4SsnDg43F2JQWlbOi
-         1OsLf3Sub7cs0hH0GV7HrOYO6T2/6G107p/4lWnAdsTauEWytMkYOffIj6dki+jfv4ki
-         VJ8ywcaXtcgEX6EtfOnXybUGq9b8gm6QX80Csp5tVJ44IMkVmuRnf/RmX3SSnkuwoIWg
-         3/n0CQlSnMIczSt2gazp5oj7OFCczmCw8MrIIjinVcmIqCNRShzVKwmdEZ8SBhF1Wrmh
-         6z3w==
-X-Gm-Message-State: AC+VfDziyAt3QlqvVOGntgpfcktJl0DIVUajETtL3Wu+c8ItDYePAUp7
-	wn5jljsdvXO8NQl3XNo+NsOiG4U8ZpC6jnVDNLY=
-X-Google-Smtp-Source: ACHHUZ5Eh44eDjG3RkZNH5AkQmsbiHi9keicnz4mxbPsfBxR7ahInzXb0pw3Ji16qhGi48b7TAM7Zg==
-X-Received: by 2002:aa7:c1c4:0:b0:514:a452:3f5 with SMTP id d4-20020aa7c1c4000000b00514a45203f5mr3944373edp.32.1686141595779;
-        Wed, 07 Jun 2023 05:39:55 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1686141598; x=1688733598;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=oyRCnZIlgTCZS2k2cmw93gRfUkOIg3FCKHPsHdQmeTI=;
+        b=hkHdsPME8J6LzPxjkUduVUo5ARD6Bn4wlqg/47o0pf7eIT8/VOwyHlEpwz0OBlpIiD
+         te2cyWnCUbeAly9td0ObsOKRUrntAQi19MH2iwfIWy032lJfsSmCT7sy3ChmBY2cF26S
+         ZAp1pwf7SpWvp13/EW6MorzxokVTjCJxl+14UIwSygYh1EL7aPT3EbN0uFggaxeiuNg4
+         TwmK82FFdOiMu5pdnSsovI3qbfV8ytKtZCwkqPXDNJgKRQyyBj/ou2o6oyBoPPkb9lm9
+         hwE1NVQ65hKvx0Qu3NXqaXINRak7TIOGRsEcR6cVvP7dRsET6Vnk+UYt6Efpvd052Q82
+         zEZw==
+X-Gm-Message-State: AC+VfDw0YJCmrqGxNYbK9pjzBPKhktQN43Qnh00y+DobohDiNGlkrE7o
+	7F2pZr3Lrpg46P/TEKF+k9NgfXYwittjtFIklF8=
+X-Google-Smtp-Source: ACHHUZ6g9G0Sg19PYJ91PERIrVvtJwYa3xtlsNxjuvp5JETX3NxH955Y9/Y7ynmSsxeFpTciUipMsg==
+X-Received: by 2002:a05:6402:31e2:b0:514:8d9a:386 with SMTP id dy2-20020a05640231e200b005148d9a0386mr4498975edb.30.1686141597690;
+        Wed, 07 Jun 2023 05:39:57 -0700 (PDT)
 Received: from localhost (tor-exit-48.for-privacy.net. [185.220.101.48])
-        by smtp.gmail.com with ESMTPSA id w8-20020aa7dcc8000000b00514a6d05de9sm6126356edu.88.2023.06.07.05.39.54
+        by smtp.gmail.com with ESMTPSA id c17-20020aa7c751000000b0050bc6d0e880sm5135597eds.61.2023.06.07.05.39.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jun 2023 05:39:55 -0700 (PDT)
+        Wed, 07 Jun 2023 05:39:57 -0700 (PDT)
 From: Maxim Mikityanskiy <maxtram95@gmail.com>
 To: bpf@vger.kernel.org
 Cc: netdev@vger.kernel.org,
@@ -77,10 +78,12 @@ Cc: netdev@vger.kernel.org,
 	"David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: [PATCH bpf v4 0/2] Fix verifier id tracking of scalars on spill
-Date: Wed,  7 Jun 2023 15:39:49 +0300
-Message-Id: <20230607123951.558971-1-maxtram95@gmail.com>
+Subject: [PATCH bpf v4 1/2] bpf: Fix verifier id tracking of scalars on spill
+Date: Wed,  7 Jun 2023 15:39:50 +0300
+Message-Id: <20230607123951.558971-2-maxtram95@gmail.com>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230607123951.558971-1-maxtram95@gmail.com>
+References: <20230607123951.558971-1-maxtram95@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -99,38 +102,61 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Maxim Mikityanskiy <maxim@isovalent.com>
 
-See the details in the commit message (TL/DR: under CAP_BPF, the
-verifier can incorrectly conclude that a scalar is zero while in
-fact it can be crafted to a predefined number.)
+The following scenario describes a bug in the verifier where it
+incorrectly concludes about equivalent scalar IDs which could lead to
+verifier bypass in privileged mode:
 
-v1 and v2 were sent off-list.
+1. Prepare a 32-bit rogue number.
+2. Put the rogue number into the upper half of a 64-bit register, and
+   roll a random (unknown to the verifier) bit in the lower half. The
+   rest of the bits should be zero (although variations are possible).
+3. Assign an ID to the register by MOVing it to another arbitrary
+   register.
+4. Perform a 32-bit spill of the register, then perform a 32-bit fill to
+   another register. Due to a bug in the verifier, the ID will be
+   preserved, although the new register will contain only the lower 32
+   bits, i.e. all zeros except one random bit.
 
-v2 changes:
+At this point there are two registers with different values but the same
+ID, which means the integrity of the verifier state has been corrupted.
 
-Added more tests, migrated them to inline asm, started using
-bpf_get_prandom_u32, switched to a more bulletproof dead branch check
-and modified the failing spill test scenarios so that an unauthorized
-access attempt is performed in both branches.
+5. Compare the new 32-bit register with 0. In the branch where it's
+   equal to 0, the verifier will believe that the original 64-bit
+   register is also 0, because it has the same ID, but its actual value
+   still contains the rogue number in the upper half.
+   Some optimizations of the verifier prevent the actual bypass, so
+   extra care is needed: the comparison must be between two registers,
+   and both branches must be reachable (this is why one random bit is
+   needed). Both branches are still suitable for the bypass.
+6. Right shift the original register by 32 bits to pop the rogue number.
+7. Use the rogue number as an offset with any pointer. The verifier will
+   believe that the offset is 0, while in reality it's the given number.
 
-v3 changes:
+The fix is similar to the 32-bit BPF_MOV handling in check_alu_op for
+SCALAR_VALUE. If the spill is narrowing the actual register value, don't
+keep the ID, make sure it's reset to 0.
 
-Dropped an improvement not necessary for the fix, changed the Fixes tag.
+Fixes: 354e8f1970f8 ("bpf: Support <8-byte scalar spill and refill")
+Signed-off-by: Maxim Mikityanskiy <maxim@isovalent.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+---
+ kernel/bpf/verifier.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-v4 changes:
-
-Dropped supposedly redundant tests, kept the ones that result in
-different verifier verdicts. Dropped the variable that is not yet
-useful in this patch. Rephrased the commit message with Daniel's
-suggestions.
-
-Maxim Mikityanskiy (2):
-  bpf: Fix verifier id tracking of scalars on spill
-  selftests/bpf: Add test cases to assert proper ID tracking on spill
-
- kernel/bpf/verifier.c                         |  3 +
- .../selftests/bpf/progs/verifier_spill_fill.c | 79 +++++++++++++++++++
- 2 files changed, 82 insertions(+)
-
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 5871aa78d01a..0dd8adc7a159 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -3868,6 +3868,9 @@ static int check_stack_write_fixed_off(struct bpf_verifier_env *env,
+ 				return err;
+ 		}
+ 		save_register_state(state, spi, reg, size);
++		/* Break the relation on a narrowing spill. */
++		if (fls64(reg->umax_value) > BITS_PER_BYTE * size)
++			state->stack[spi].spilled_ptr.id = 0;
+ 	} else if (!reg && !(off % BPF_REG_SIZE) && is_bpf_st_mem(insn) &&
+ 		   insn->imm != 0 && env->bpf_capable) {
+ 		struct bpf_reg_state fake_reg = {};
 -- 
 2.40.1
 
