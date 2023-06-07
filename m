@@ -1,37 +1,37 @@
-Return-Path: <netdev+bounces-8796-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8793-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9E2C8725D27
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 13:31:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id C3CCC725D1F
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 13:30:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5962F2812E1
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 11:31:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7D24C28123A
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 11:30:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5548833C8C;
-	Wed,  7 Jun 2023 11:30:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 80BDD30B73;
+	Wed,  7 Jun 2023 11:30:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE48712B99
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8702E6AB4
 	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 11:30:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 107A8C4339E;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0707CC433D2;
 	Wed,  7 Jun 2023 11:30:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1686137421;
-	bh=JtgpHR9jAS/ES9xJatWYkrumSaRdfcu4RH4GfXLyJIo=;
+	bh=kW5Gh94b6D34f0zWR2zmd7ZyrG4ZdsBBEc6aVrZCfos=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=W+2wQDkPbMwBNqcWiPok8wepVuZYyPYBE+lwrT3PF49s4uHygUxgeC1Qlelg9igGT
-	 BAavRtgoFpWU6aB8DsVv/z597bufe7s+LkPbUgrjgUDVtZLgasNpO+rIQ34tMjIFuy
-	 3uS99u2I/AIx2B0kLWrmi8PHvaQ1WcauCZnMOlScd0ckPvU9X94IidvjitfPKNyO56
-	 O5HuWswXt0G1l8E4aPpPItr7YjXSHhw/GxW2UtNhOzqqfZrE0LqUEL002F+L/c7/V6
-	 yTDYozPykWzUou6oABowcEBJNtN3RccwOhSCYvD9l06rjyhzEtNwVOG5dFO8L9IHqL
-	 vbsJlyxAlogBA==
+	b=MjdUnd9Z5LGtdfpaXe3Fm96ZNeJgy29KQ1CELvK3Px2Hr652FXxAmUbhvko5qoovt
+	 CeNOb9MHgY+23Q1aOEQuUtTeYzHoR38Z0MSXRRobqVdAR75yd6r77AF8+R16qqVWRY
+	 JGnrnR16pSeI9nQoiZBqlI1xEM1EcFVHoT5ZhlqESP3gLe0KzoKSaal2tTPGhTGYej
+	 1mQXlfM0nQyrW8pGP5Cn1ixPLFIe0y2C7Nv1lzTLseCY8XjI7XATxNDQQB7iH6hUMB
+	 aCGPZbxfw3hvQ9fyVWgXYsXGBclURweU6wvpfbLpcvzN/anfDr5RzkgdKIBQaTds7K
+	 nvsh5QLV8uBQQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EA25CE29F3C;
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DF15CE4F13A;
 	Wed,  7 Jun 2023 11:30:20 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
@@ -41,37 +41,41 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net: openvswitch: fix upcall counter access before
- allocation
+Subject: Re: [PATCH net] net: sched: act_police: fix sparse errors in
+ tcf_police_dump()
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168613742095.29815.15904515822900962652.git-patchwork-notify@kernel.org>
+ <168613742091.29815.7165661965376671329.git-patchwork-notify@kernel.org>
 Date: Wed, 07 Jun 2023 11:30:20 +0000
-References: <168605257118.1677939.2593213990325886393.stgit@ebuild>
-In-Reply-To: <168605257118.1677939.2593213990325886393.stgit@ebuild>
-To: Eelco Chaudron <echaudro@redhat.com>
-Cc: netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
- edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, dev@openvswitch.org,
- aconole@redhat.com, simon.horman@corigine.com
+References: <20230606131304.4183359-1-edumazet@google.com>
+In-Reply-To: <20230606131304.4183359-1-edumazet@google.com>
+To: Eric Dumazet <edumazet@google.com>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com, jhs@mojatatu.com,
+ xiyou.wangcong@gmail.com, jiri@resnulli.us, netdev@vger.kernel.org,
+ eric.dumazet@gmail.com
 
 Hello:
 
 This patch was applied to netdev/net.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue,  6 Jun 2023 13:56:35 +0200 you wrote:
-> Currently, the per cpu upcall counters are allocated after the vport is
-> created and inserted into the system. This could lead to the datapath
-> accessing the counters before they are allocated resulting in a kernel
-> Oops.
+On Tue,  6 Jun 2023 13:13:04 +0000 you wrote:
+> Fixes following sparse errors:
 > 
-> Here is an example:
+> net/sched/act_police.c:360:28: warning: dereference of noderef expression
+> net/sched/act_police.c:362:45: warning: dereference of noderef expression
+> net/sched/act_police.c:362:45: warning: dereference of noderef expression
+> net/sched/act_police.c:368:28: warning: dereference of noderef expression
+> net/sched/act_police.c:370:45: warning: dereference of noderef expression
+> net/sched/act_police.c:370:45: warning: dereference of noderef expression
+> net/sched/act_police.c:376:45: warning: dereference of noderef expression
+> net/sched/act_police.c:376:45: warning: dereference of noderef expression
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2] net: openvswitch: fix upcall counter access before allocation
-    https://git.kernel.org/netdev/net/c/de9df6c6b27e
+  - [net] net: sched: act_police: fix sparse errors in tcf_police_dump()
+    https://git.kernel.org/netdev/net/c/682881ee45c8
 
 You are awesome, thank you!
 -- 
