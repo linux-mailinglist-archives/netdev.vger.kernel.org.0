@@ -1,58 +1,58 @@
-Return-Path: <netdev+bounces-9015-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9016-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 337587268EA
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 20:36:04 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B58AF7268ED
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 20:36:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 81C401C20850
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 18:36:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0E78F1C20F83
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 18:36:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63E091ACC7;
-	Wed,  7 Jun 2023 18:35:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AB157370E3;
+	Wed,  7 Jun 2023 18:35:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 522F1154B2
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 18:35:28 +0000 (UTC)
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128241984
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 11:35:20 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id d9443c01a7336-1b00ecabdf2so71286115ad.2
-        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 11:35:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99485154B2
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 18:35:29 +0000 (UTC)
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2D61BF0
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 11:35:22 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id d9443c01a7336-1b011cffe7fso35861895ad.1
+        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 11:35:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1686162920; x=1688754920;
+        d=broadcom.com; s=google; t=1686162921; x=1688754921;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=lE338jeb3Rs/l2eAM4ZqlNHYKIJcpgtIXSQAEIi0p+o=;
-        b=R+RKWzvV9IJy8qnxfWMZbw/acRHqfBz2qekwVas+gfFmzQ92LvYEcYkUTqXew/OjAV
-         BR0dDq415HDDVg+SxTmsxioKK3vN0N+gLRGc5qmQoTdP4J5ctMzfJ3In7+pn4FRCg5sY
-         2mv55p8ZLMIBXDyg+qErZNAcQ+Q+a41MkFnRg=
+        bh=m8FWFscsK98eHJgkzcfoHPhLFlJbDxjHHQzQurqGzs4=;
+        b=Teae8jQIMgG0mAiL42LmvILvXvFt/UzGVbFumcUoxvoyfkUH3rq+nhxYRhgAtd2onC
+         Z2v+otxwI/UsFp7u4Iqjx8PEUTy+hM7lJ7criVjrc5lfwX+btHhRHRDmu5hZmvRSRU1Z
+         kwRHQDeVbljexb1SapBmzq7qE8laFjHqsONRI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686162920; x=1688754920;
+        d=1e100.net; s=20221208; t=1686162921; x=1688754921;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lE338jeb3Rs/l2eAM4ZqlNHYKIJcpgtIXSQAEIi0p+o=;
-        b=dFlX6tgrbvYHE+rI2n4XpRaNpg0J0XGCXc6wAhUApB/kfMxQHgkKWvCqoVEOE1RiEy
-         0CUq8JN0tkWKL4qk01y+CcvmD+XI8hOPoBu4B+tdmIehN1JZNwtNL/M74ZYi+AIs7M84
-         yHlx4QP8mZ6m35IoFC6fRy6luRut2HQu3N+D0B3W/YeKQo+5AdpzKUII/IfSrkv9QrMh
-         SSbW4EL7n2+Kkc0ATsUpMN31F2QepmIUTfHTMupQFRm2NlBxfYOrtXakgmOE/Z6LPlUE
-         5raxmW1wbdJC1XMWrz3d+V+3V6iu5iIY9k7yQ9paJw5WHWXNfaiVZhYc6hKHZnDj/P/i
-         Rvhw==
-X-Gm-Message-State: AC+VfDzt42WPuWLtfa6fDCDnWwTNsE9/RkygjrvL4/qvJt+nODc/BY9h
-	PfN+PqzmsLVM8K4YpaluQSEqq1aJ0EV1fFHf4XHuWmq/vhtSrGnq5ESeyZTyOTqWw7zZzC8/8Uy
-	omqyefck5bdpkz/id0+dp4eo4oqhw2awJu1DUNnpOyDuBg2ZdO1PNBBJAOOOGp6g49LCK7hu6ju
-	Sw4E11SDbpTw==
-X-Google-Smtp-Source: ACHHUZ4QE6eIoIvy0EpNGIEH38hTHzaiIHXx5LXq/Y70Do4Pc/zfgwH1S1QF+x5O3u1kSBAlWZQGqw==
-X-Received: by 2002:a17:902:e5c9:b0:1b0:637e:e25a with SMTP id u9-20020a170902e5c900b001b0637ee25amr7089787plf.67.1686162919834;
-        Wed, 07 Jun 2023 11:35:19 -0700 (PDT)
+        bh=m8FWFscsK98eHJgkzcfoHPhLFlJbDxjHHQzQurqGzs4=;
+        b=ICczrguwuM7J8oib10TiTrOPWN/E4qF31HdNirwUHG7ppB4QQJs41d4aiOb5hJInYx
+         bIa4yyIsQul9cHdWFcQMzz339JusgGPz5j0qanNA5kSmnHjI+AqKY96XULsBpFEba887
+         fOcHsfvi0e5s+dDoea0n+h7wVteQ/z6tcREK1nmnzNoQm62auBwr7MS+8gPvxxDpZoi6
+         qFvgEAMYfeuhOtl6fMK66y0qMK1gGLOKyh1vK3vd28ikXu3TVIL15R78CGBw5tUS/6TY
+         HD4adcDtWT7dj7OlLlJfqh1KofZwi+BARtOAQdQ5Yjue8jgXMGvPgn6y7H4wgMlh2zVp
+         1FNg==
+X-Gm-Message-State: AC+VfDxCS/70EXjed4frkbUfdRR4AcpXIo9y0vvggblt/vwNNJfIPLY2
+	E8uOT39N1Tyr2+pt6olOdmKy3G9ymQzQkdE1HThomRfe1vztg36ubAJjltIw/sNC0g5oCIpD8o3
+	CwDGT0c2euhjshkg/4HxC4j42LPjCcILAfUGJS7PIyo1lqDUWhBoSf07LudQxJuzaNVvli06ued
+	3fg9m/pYV2Ig==
+X-Google-Smtp-Source: ACHHUZ5Vbu7utgT0DjLDbMONNgmpUnwWq4D1FnR9dQBYr0iKqweFiM5C37CVCqusXR35MvzvdbTw7A==
+X-Received: by 2002:a17:902:ecc5:b0:1b0:5425:216f with SMTP id a5-20020a170902ecc500b001b05425216fmr3185535plh.34.1686162921347;
+        Wed, 07 Jun 2023 11:35:21 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id je12-20020a170903264c00b001addf547a6esm10746876plb.17.2023.06.07.11.35.18
+        by smtp.gmail.com with ESMTPSA id je12-20020a170903264c00b001addf547a6esm10746876plb.17.2023.06.07.11.35.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jun 2023 11:35:19 -0700 (PDT)
+        Wed, 07 Jun 2023 11:35:20 -0700 (PDT)
 From: Florian Fainelli <florian.fainelli@broadcom.com>
 To: netdev@vger.kernel.org
 Cc: Florian Fainelli <florian.fainelli@broadcom.com>,
@@ -66,9 +66,9 @@ Cc: Florian Fainelli <florian.fainelli@broadcom.com>,
 	Heiner Kallweit <hkallweit1@gmail.com>,
 	Russell King <linux@armlinux.org.uk>,
 	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 1/2] net: phy: broadcom: Rename LED registers
-Date: Wed,  7 Jun 2023 11:34:52 -0700
-Message-Id: <20230607183453.2587726-2-florian.fainelli@broadcom.com>
+Subject: [PATCH 2/2] net: phy: broadcom: Add support for setting LED brightness
+Date: Wed,  7 Jun 2023 11:34:53 -0700
+Message-Id: <20230607183453.2587726-3-florian.fainelli@broadcom.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230607183453.2587726-1-florian.fainelli@broadcom.com>
 References: <20230607183453.2587726-1-florian.fainelli@broadcom.com>
@@ -79,7 +79,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="000000000000e572be05fd8e6565"
+	boundary="000000000000fc69cc05fd8e65cb"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
@@ -87,57 +87,215 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---000000000000e572be05fd8e6565
+--000000000000fc69cc05fd8e65cb
 Content-Transfer-Encoding: 8bit
 
-These registers are common to most PHYs and are not specific to the
-BCM5482, renamed the constants accordingly, no functional change.
+Broadcom PHYs have two LEDs selector registers which allow us to control
+the LED assignment, including how to turn them on/off.
 
 Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
 ---
- drivers/net/phy/broadcom.c | 10 +++++-----
- include/linux/brcmphy.h    |  6 +++---
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/net/phy/bcm-phy-lib.c | 27 +++++++++++++++++++++++++++
+ drivers/net/phy/bcm-phy-lib.h |  3 +++
+ drivers/net/phy/broadcom.c    | 15 +++++++++++++++
+ include/linux/brcmphy.h       |  3 +++
+ 4 files changed, 48 insertions(+)
 
+diff --git a/drivers/net/phy/bcm-phy-lib.c b/drivers/net/phy/bcm-phy-lib.c
+index c6e2e5f636d4..876f28fd8256 100644
+--- a/drivers/net/phy/bcm-phy-lib.c
++++ b/drivers/net/phy/bcm-phy-lib.c
+@@ -1039,6 +1039,33 @@ irqreturn_t bcm_phy_wol_isr(int irq, void *dev_id)
+ }
+ EXPORT_SYMBOL_GPL(bcm_phy_wol_isr);
+ 
++int bcm_phy_led_brightness_set(struct phy_device *phydev,
++			       u8 index, enum led_brightness value)
++{
++	u8 led_num;
++	int ret;
++	u16 reg;
++
++	if (index >= 4)
++		return -EINVAL;
++
++	/* Two LEDS per register */
++	led_num = index % 2;
++	reg = index >= 2 ? BCM54XX_SHD_LEDS2 : BCM54XX_SHD_LEDS1;
++
++	ret = bcm_phy_read_shadow(phydev, reg);
++	if (ret < 0)
++		return ret;
++
++	ret &= ~(BCM_LED_SRC_MASK << BCM54XX_SHD_LEDS_SHIFT(led_num));
++	if (value == LED_OFF)
++		ret |= BCM_LED_SRC_OFF << BCM54XX_SHD_LEDS_SHIFT(led_num);
++	else
++		ret |= BCM_LED_SRC_ON << BCM54XX_SHD_LEDS_SHIFT(led_num);
++	return bcm_phy_write_shadow(phydev, reg, ret);
++}
++EXPORT_SYMBOL_GPL(bcm_phy_led_brightness_set);
++
+ MODULE_DESCRIPTION("Broadcom PHY Library");
+ MODULE_LICENSE("GPL v2");
+ MODULE_AUTHOR("Broadcom Corporation");
+diff --git a/drivers/net/phy/bcm-phy-lib.h b/drivers/net/phy/bcm-phy-lib.h
+index 2f30ce0cab0e..b52189e45a84 100644
+--- a/drivers/net/phy/bcm-phy-lib.h
++++ b/drivers/net/phy/bcm-phy-lib.h
+@@ -118,4 +118,7 @@ int bcm_phy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol);
+ void bcm_phy_get_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol);
+ irqreturn_t bcm_phy_wol_isr(int irq, void *dev_id);
+ 
++int bcm_phy_led_brightness_set(struct phy_device *phydev,
++			       u8 index, enum led_brightness value);
++
+ #endif /* _LINUX_BCM_PHY_LIB_H */
 diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index 822c8b01dc53..57a865aa1fe5 100644
+index 57a865aa1fe5..9f0a9c575bd7 100644
 --- a/drivers/net/phy/broadcom.c
 +++ b/drivers/net/phy/broadcom.c
-@@ -414,13 +414,13 @@ static int bcm54xx_config_init(struct phy_device *phydev)
- 	 * these settings will cause LOS to malfunction.
- 	 */
- 	if (!phy_on_sfp(phydev)) {
--		val = BCM5482_SHD_LEDS1_LED1(BCM_LED_SRC_MULTICOLOR1) |
--			BCM5482_SHD_LEDS1_LED3(BCM_LED_SRC_MULTICOLOR1);
--		bcm_phy_write_shadow(phydev, BCM5482_SHD_LEDS1, val);
-+		val = BCM54XX_SHD_LEDS1_LED1(BCM_LED_SRC_MULTICOLOR1) |
-+			BCM54XX_SHD_LEDS1_LED3(BCM_LED_SRC_MULTICOLOR1);
-+		bcm_phy_write_shadow(phydev, BCM54XX_SHD_LEDS1, val);
- 
- 		val = BCM_LED_MULTICOLOR_IN_PHASE |
--			BCM5482_SHD_LEDS1_LED1(BCM_LED_MULTICOLOR_LINK_ACT) |
--			BCM5482_SHD_LEDS1_LED3(BCM_LED_MULTICOLOR_LINK_ACT);
-+			BCM54XX_SHD_LEDS1_LED1(BCM_LED_MULTICOLOR_LINK_ACT) |
-+			BCM54XX_SHD_LEDS1_LED3(BCM_LED_MULTICOLOR_LINK_ACT);
- 		bcm_phy_write_exp(phydev, BCM_EXP_MULTICOLOR, val);
- 	}
- 
+@@ -1031,6 +1031,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.resume		= bcm54xx_resume,
+ 	.get_wol	= bcm54xx_phy_get_wol,
+ 	.set_wol	= bcm54xx_phy_set_wol,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id		= PHY_ID_BCM5461,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1044,6 +1045,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.config_intr	= bcm_phy_config_intr,
+ 	.handle_interrupt = bcm_phy_handle_interrupt,
+ 	.link_change_notify	= bcm54xx_link_change_notify,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id		= PHY_ID_BCM54612E,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1057,6 +1059,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.config_intr	= bcm_phy_config_intr,
+ 	.handle_interrupt = bcm_phy_handle_interrupt,
+ 	.link_change_notify	= bcm54xx_link_change_notify,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id		= PHY_ID_BCM54616S,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1070,6 +1073,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.read_status	= bcm54616s_read_status,
+ 	.probe		= bcm54616s_probe,
+ 	.link_change_notify	= bcm54xx_link_change_notify,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id		= PHY_ID_BCM5464,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1085,6 +1089,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
+ 	.link_change_notify	= bcm54xx_link_change_notify,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id		= PHY_ID_BCM5481,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1099,6 +1104,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.config_intr	= bcm_phy_config_intr,
+ 	.handle_interrupt = bcm_phy_handle_interrupt,
+ 	.link_change_notify	= bcm54xx_link_change_notify,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id         = PHY_ID_BCM54810,
+ 	.phy_id_mask    = 0xfffffff0,
+@@ -1115,6 +1121,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.suspend	= bcm54xx_suspend,
+ 	.resume		= bcm54xx_resume,
+ 	.link_change_notify	= bcm54xx_link_change_notify,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id         = PHY_ID_BCM54811,
+ 	.phy_id_mask    = 0xfffffff0,
+@@ -1131,6 +1138,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.suspend	= bcm54xx_suspend,
+ 	.resume		= bcm54xx_resume,
+ 	.link_change_notify	= bcm54xx_link_change_notify,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id		= PHY_ID_BCM5482,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1144,6 +1152,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.config_intr	= bcm_phy_config_intr,
+ 	.handle_interrupt = bcm_phy_handle_interrupt,
+ 	.link_change_notify	= bcm54xx_link_change_notify,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id		= PHY_ID_BCM50610,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1159,6 +1168,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.link_change_notify	= bcm54xx_link_change_notify,
+ 	.suspend	= bcm54xx_suspend,
+ 	.resume		= bcm54xx_resume,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id		= PHY_ID_BCM50610M,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1174,6 +1184,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.link_change_notify	= bcm54xx_link_change_notify,
+ 	.suspend	= bcm54xx_suspend,
+ 	.resume		= bcm54xx_resume,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id		= PHY_ID_BCM57780,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1187,6 +1198,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.config_intr	= bcm_phy_config_intr,
+ 	.handle_interrupt = bcm_phy_handle_interrupt,
+ 	.link_change_notify	= bcm54xx_link_change_notify,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id		= PHY_ID_BCMAC131,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1218,6 +1230,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.get_stats	= bcm54xx_get_stats,
+ 	.probe		= bcm54xx_phy_probe,
+ 	.link_change_notify	= bcm54xx_link_change_notify,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id		= PHY_ID_BCM53125,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1232,6 +1245,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.config_intr	= bcm_phy_config_intr,
+ 	.handle_interrupt = bcm_phy_handle_interrupt,
+ 	.link_change_notify	= bcm54xx_link_change_notify,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id		= PHY_ID_BCM53128,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1246,6 +1260,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.config_intr	= bcm_phy_config_intr,
+ 	.handle_interrupt = bcm_phy_handle_interrupt,
+ 	.link_change_notify	= bcm54xx_link_change_notify,
++	.led_brightness_set	= bcm_phy_led_brightness_set,
+ }, {
+ 	.phy_id         = PHY_ID_BCM89610,
+ 	.phy_id_mask    = 0xfffffff0,
 diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
-index 251833ab271f..ab21b8a1b2c8 100644
+index ab21b8a1b2c8..5d732f48f787 100644
 --- a/include/linux/brcmphy.h
 +++ b/include/linux/brcmphy.h
-@@ -206,11 +206,11 @@
- #define  BCM_NO_ANEG_APD_EN		0x0060 /* bits 5 & 6 */
- #define  BCM_APD_SINGLELP_EN	0x0100 /* Bit 8 */
+@@ -161,6 +161,7 @@
+ #define BCM_LED_SRC_OPENSHORT	0xb
+ #define BCM_LED_SRC_OFF		0xe	/* Tied high */
+ #define BCM_LED_SRC_ON		0xf	/* Tied low */
++#define BCM_LED_SRC_MASK	GENMASK(3, 0)
  
--#define BCM5482_SHD_LEDS1	0x0d	/* 01101: LED Selector 1 */
-+#define BCM54XX_SHD_LEDS1	0x0d	/* 01101: LED Selector 1 */
+ /*
+  * Broadcom Multicolor LED configurations (expansion register 4)
+@@ -208,9 +209,11 @@
+ 
+ #define BCM54XX_SHD_LEDS1	0x0d	/* 01101: LED Selector 1 */
  					/* LED3 / ~LINKSPD[2] selector */
--#define BCM5482_SHD_LEDS1_LED3(src)	((src & 0xf) << 4)
-+#define BCM54XX_SHD_LEDS1_LED3(src)	((src & 0xf) << 4)
++#define BCM54XX_SHD_LEDS_SHIFT(led)	(4 * (led))
+ #define BCM54XX_SHD_LEDS1_LED3(src)	((src & 0xf) << 4)
  					/* LED1 / ~LINKSPD[1] selector */
--#define BCM5482_SHD_LEDS1_LED1(src)	((src & 0xf) << 0)
-+#define BCM54XX_SHD_LEDS1_LED1(src)	((src & 0xf) << 0)
+ #define BCM54XX_SHD_LEDS1_LED1(src)	((src & 0xf) << 0)
++#define BCM54XX_SHD_LEDS2	0x0e	/* 01110: LED Selector 2 */
  #define BCM54XX_SHD_RGMII_MODE	0x0b	/* 01011: RGMII Mode Selector */
  #define BCM5482_SHD_SSD		0x14	/* 10100: Secondary SerDes control */
  #define BCM5482_SHD_SSD_LEDM	0x0008	/* SSD LED Mode enable */
@@ -145,7 +303,7 @@ index 251833ab271f..ab21b8a1b2c8 100644
 2.34.1
 
 
---000000000000e572be05fd8e6565
+--000000000000fc69cc05fd8e65cb
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -216,15 +374,15 @@ kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
 NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
 AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
-/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJTMJUfr7888Gk2o
-pTIDDKyCIz7i6Am61JYVmZfFD9hkMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIzMDYwNzE4MzUyMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJ5uTuzn4eQtFz9t
+e7TRFcmNl1P7wCmhQsLnLQ5b/6AeMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIzMDYwNzE4MzUyMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
 AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBihQkEpF/XExa465wp41URKAVwO51LluFN
-vhcpge2TPQClyRd1aCg6ZoCfCc0VR38ukXZyxhWSvAFI1LjahW5Zlk/7TQNrkVM8vKZFkETwFPDD
-xe5+y1/NukYqparwk0s4nJn6UDjxdRgu18To8kzcTBeg4mC/GvnTGRn92dL39tlfBiZ9KaA12vKw
-5HFCWUMUMaenR/FeZJVCHM+Chf1OKUTCWp6NlsD0fmXLC6Oea4R4Hpxnj9fVL30Er2GmFYSmI+Xe
-ki2OavuUqPdxpsRnfPaoDBq65Za+BJIFF5J6wD8yHjxZDOdZuKXMRg3WRC0+xOEfm7KU+MtZqwA3
-z/Hu
---000000000000e572be05fd8e6565--
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBq8ZZluzgROZZWX3f1M6VoYQJt+plwlEvj
+ZUMAdr1uMp69dbqH0cd+yaWbmVcUhXrjligTnvFy6fRTcn90ua0q/hXDix9Cz/TN4DOmAAfifgoI
+m9hI0SNbvhkq5/2OoqW7YO3wg7FukYbN1WSnviLqFVZsncbRf7z0uGTDJR0qRbZBzOuvtp+ORBuX
+X+Exra7wYZvRQrEjkZyeHnR3LwKICeU19tZTNfA/x/NRFQDvgte8cvm7YIOOZsigLQaQCpGE4CkD
+q4/r5b8mpGE7J+OojzWkCYNHpbldAG2+bIQZ/kG7IBk1XEd9Ne7UrtL073laE8P2/fVFbizUk8w2
+x4pa
+--000000000000fc69cc05fd8e65cb--
 
