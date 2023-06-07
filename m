@@ -1,93 +1,158 @@
-Return-Path: <netdev+bounces-8651-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8652-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B05EE725113
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 02:16:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 7CC2172514B
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 02:57:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7B6122810F3
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 00:16:11 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 25943281148
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 00:57:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BFC2C368;
-	Wed,  7 Jun 2023 00:16:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E641620;
+	Wed,  7 Jun 2023 00:57:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DB847C
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 00:16:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C86E9C433EF;
-	Wed,  7 Jun 2023 00:16:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686096967;
-	bh=CWFasZaJOed9oYdPj/iRxWloXiVd+HoiWc32ZvjGn6M=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=QJ6o6XBP1+rKTs0mr+FNRRl9AfnoHx2AQ6hfFsukq6JktBEkaeeUZusc93iTSG5/E
-	 9X6nho+NYjfMMm4MXXUktFhM3DjojpG230V5REgbnYqzSTe6WKznZDJVy9Se6Xo9bx
-	 7m6kWQaNMFVnBPvMnGc3ZKTxZmmzUmwPhhKNyZycVtSSpSkmbgkfkiWgedZPPj3Vjl
-	 7XNtKYxhjZsP79OcL0uRfJORRPs5EQDCh7P8IVoWFRTQYThZx0L271g/UF/NvCmLRM
-	 9t+PsjoPAXGeqPZnXF2+ETihM+O4FcsQ6fzWTqUZKVqjQ2yjuzvwrc03WjYvbH764j
-	 2Rq0f8pfS86vg==
-Date: Tue, 6 Jun 2023 17:16:05 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Justin Chen <justin.chen@broadcom.com>
-Cc: netdev@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- bcm-kernel-feedback-list@broadcom.com, florian.fainelli@broadcom.com,
- davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
- robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
- opendmb@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
- linux@armlinux.org.uk, richardcochran@gmail.com, sumit.semwal@linaro.org,
- christian.koenig@amd.com, simon.horman@corigine.com
-Subject: Re: [PATCH net-next v6 3/6] net: bcmasp: Add support for ASP2.0
- Ethernet controller
-Message-ID: <20230606171605.3c20ae79@kernel.org>
-In-Reply-To: <956dc20f-386c-f4fe-b827-1a749ee8af02@broadcom.com>
-References: <1685657551-38291-1-git-send-email-justin.chen@broadcom.com>
-	<1685657551-38291-4-git-send-email-justin.chen@broadcom.com>
-	<20230602235859.79042ff0@kernel.org>
-	<956dc20f-386c-f4fe-b827-1a749ee8af02@broadcom.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 404C37C
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 00:57:19 +0000 (UTC)
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3399919AC
+	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 17:57:18 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id af79cd13be357-75d4dd6f012so480931785a.2
+        for <netdev@vger.kernel.org>; Tue, 06 Jun 2023 17:57:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686099437; x=1688691437;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=I5TDBlJmRu77ewZOtX5/KWHfzgX+9F2Jklmj6FIBCZ0=;
+        b=pdpFVqhVe8CTVVvyVefmVoMiEq9CLLhcJflyxZzcvM1otyckEd0GrPwULG1BW0iIVW
+         ADbLVnhPXEhh6pBneKL5Jw8Jicgza/evXU7AlP2yyeQFefTO7bvuikc6oVF6TRXheoY/
+         mWs1tkD+y6fIfw6b3CcOBRaUBktuVHNecxcno36t4kWw7xQGVnabcmSyixJxd1CcW9Pl
+         9u80zRMmqkrGLML7kZBE1lO/Gu1k0y1PPd9IPOEDZRpXh/ZWAdH2rXzu265oEnUiduEM
+         SZvCQSpaqn5BdoewiTA4O/aJ9ALTAyYhxm0t07hE2lGggIs/eRMf/NP8ymh7ksBFUFaj
+         +Siw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686099437; x=1688691437;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=I5TDBlJmRu77ewZOtX5/KWHfzgX+9F2Jklmj6FIBCZ0=;
+        b=L8KCKMFGWcB/on9jMp7EFZ/T7aQGMywVzYctR+qB5DxmyUXwEzNg0D2naPU1b1kmjN
+         +M4pjg4A1T6mnT7nezf3UWIneoYo/fyqvnWagmqqbBYhkc9WAGDr3PUHDhFCVqTSKrBr
+         7ASWyxLmuIogPSIGqzAkirvpbN1WsPlyzM4C2VZBTcBwtANijZLwnl3Es8+SnUcr3Dff
+         SYHHytjo7xD6g8B8g6RVJfkWauJ/hYzTbBZ5Dr0HZg/nSr8EiYe78apNJ+aBGQq2ec6K
+         DzT/7eS6d0es/BNeVd1/OugLIMlClod7KXtZxAH0oDS8eiH9LdvWjZK5mSZ0oJkB/lPG
+         RCeA==
+X-Gm-Message-State: AC+VfDyohygwFqvIZXGdt0p6dhsi5xXTQXkwy8W8+S5fTJKN7w4O2Jg1
+	atDckUuidJVMTGe/HM0Xpg==
+X-Google-Smtp-Source: ACHHUZ42hecNzQlBCBW6GO24Nr0woa8Wwk/W/9EVbRQEFZZwwzNxeY8jSIa89BEgT1b095dVHK1n0w==
+X-Received: by 2002:a05:620a:f10:b0:75b:23a0:de91 with SMTP id v16-20020a05620a0f1000b0075b23a0de91mr592466qkl.15.1686099437156;
+        Tue, 06 Jun 2023 17:57:17 -0700 (PDT)
+Received: from C02FL77VMD6R.googleapis.com ([2600:1700:d860:12b0:6c60:5e57:914a:4abf])
+        by smtp.gmail.com with ESMTPSA id b10-20020a05620a118a00b0074ca7c33b79sm5343757qkk.23.2023.06.06.17.57.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Jun 2023 17:57:16 -0700 (PDT)
+Date: Tue, 6 Jun 2023 17:57:10 -0700
+From: Peilin Ye <yepeilin.cs@gmail.com>
+To: Vlad Buslov <vladbu@nvidia.com>
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>, Jakub Kicinski <kuba@kernel.org>,
+	Pedro Tammela <pctammela@mojatatu.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+	Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
+	Peilin Ye <peilin.ye@bytedance.com>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	John Fastabend <john.fastabend@gmail.com>,
+	Hillf Danton <hdanton@sina.com>, netdev@vger.kernel.org,
+	Cong Wang <cong.wang@bytedance.com>
+Subject: Re: [PATCH v5 net 6/6] net/sched: qdisc_destroy() old ingress and
+ clsact Qdiscs before grafting
+Message-ID: <ZH/V5gf+YjKuC0bn@C02FL77VMD6R.googleapis.com>
+References: <ZHE8P9Bi6FlKz4US@C02FL77VMD6R.googleapis.com>
+ <20230526193324.41dfafc8@kernel.org>
+ <ZHG+AR8qgpJ6/Zhx@C02FL77VMD6R.googleapis.com>
+ <CAM0EoM=xLkAr5EF7bty+ETmZ3GXnmB9De3fYSCrQjKPb8qDy7Q@mail.gmail.com>
+ <87jzwrxrz8.fsf@nvidia.com>
+ <87fs7fxov6.fsf@nvidia.com>
+ <ZHW9tMw5oCkratfs@C02FL77VMD6R.googleapis.com>
+ <87bki2xb3d.fsf@nvidia.com>
+ <ZHgXL+Bsm2M+ZMiM@C02FL77VMD6R.googleapis.com>
+ <877csny9rd.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <877csny9rd.fsf@nvidia.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Tue, 6 Jun 2023 15:58:21 -0700 Justin Chen wrote:
-> On 6/2/23 11:58 PM, Jakub Kicinski wrote:
-> > On Thu,  1 Jun 2023 15:12:28 -0700 Justin Chen wrote:  
-> >> +	/* general stats */
-> >> +	STAT_NETDEV(rx_packets),
-> >> +	STAT_NETDEV(tx_packets),
-> >> +	STAT_NETDEV(rx_bytes),
-> >> +	STAT_NETDEV(tx_bytes),
-> >> +	STAT_NETDEV(rx_errors),
-> >> +	STAT_NETDEV(tx_errors),
-> >> +	STAT_NETDEV(rx_dropped),
-> >> +	STAT_NETDEV(tx_dropped),
-> >> +	STAT_NETDEV(multicast),  
-> > 
-> > please don't report standard interface stats in ethtool -S
-> >   
+On Thu, Jun 01, 2023 at 09:20:39AM +0300, Vlad Buslov wrote:
+> On Wed 31 May 2023 at 20:57, Peilin Ye <yepeilin.cs@gmail.com> wrote:
+> > +static inline bool qdisc_is_destroying(const struct Qdisc *qdisc)
+> > +{
+> > +       return qdisc->flags & TCQ_F_DESTROYING;
 > 
-> These are not netdev statistics but MAC block counters. Guess it is not 
-> clear with the naming here, will fix this. We have a use case where the 
-> MAC traffic may be redirected from the associated net dev, so the 
-> counters may not be the same.
+> Hmm, do we need at least some kind of {READ|WRITE}_ONCE() for accessing
+> flags since they are now used in unlocked filter code path?
 
-You seem to be dumping straight from the stats member of struct
-net_device:
+Thanks, after taking another look at cls_api.c, I noticed this code in
+tc_new_tfilter():
 
-+		if (s->type == BCMASP_STAT_NETDEV)
-+			p = (char *)&dev->stats;
+	err = tp->ops->change(net, skb, tp, cl, t->tcm_handle, tca, &fh,
+			      flags, extack);
+	if (err == 0) {
+		tfilter_notify(net, skb, n, tp, block, q, parent, fh,
+			       RTM_NEWTFILTER, false, rtnl_held, extack);
+		tfilter_put(tp, fh);
+		/* q pointer is NULL for shared blocks */
+		if (q)
+			q->flags &= ~TCQ_F_CAN_BYPASS;
+	}               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-No?
+TCQ_F_CAN_BYPASS is cleared after e.g. adding a filter to the Qdisc, and it
+isn't atomic [1].
 
-Also - can you describe how you can have multiple netdevs for 
-the same MAC?
+We also have this:
+
+  ->dequeue()
+    htb_dequeue()
+      htb_dequeue_tree()
+        qdisc_warn_nonwc():
+
+  void qdisc_warn_nonwc(const char *txt, struct Qdisc *qdisc)
+  {
+          if (!(qdisc->flags & TCQ_F_WARN_NONWC)) {
+                  pr_warn("%s: %s qdisc %X: is non-work-conserving?\n",
+                          txt, qdisc->ops->id, qdisc->handle >> 16);
+                  qdisc->flags |= TCQ_F_WARN_NONWC;
+          }       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  }
+  EXPORT_SYMBOL(qdisc_warn_nonwc);
+
+Also non-atomic; isn't it possible for the above 2 underlined statements to
+race with each other?  If true, I think we need to change Qdisc::flags to
+use atomic bitops, just like what we're doing for Qdisc::state and
+::state2.  It feels like a separate TODO, however.
+
+I also thought about adding the new DELETED-REJECT-NEW-FILTERS flag to
+::state2, but not sure if it's okay to extend it for our purpose.
+
+Thanks,
+Peilin Ye
+
+[1] Compiled to this on my Intel 64:
+
+   0x0000000000017788 <+6472>:	83 62 10 fb        	andl   $0xfffffffb,0x10(%rdx)
+
 
