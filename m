@@ -1,65 +1,123 @@
-Return-Path: <netdev+bounces-8965-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8967-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9BD3B7266A1
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 18:58:47 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3E8D77266CA
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 19:10:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 051321C20E08
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 16:58:44 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E6C412812FE
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 17:10:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E4BAF370F8;
-	Wed,  7 Jun 2023 16:58:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A06B37323;
+	Wed,  7 Jun 2023 17:10:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F9C463B5
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 16:58:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25DE5C433EF;
-	Wed,  7 Jun 2023 16:58:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686157122;
-	bh=exiwNMtro5HZ3RTiNqye9ih4jHEqnpnzeZJ2eAQPXh4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=H1vZGGGrAefzYt3YUbVr2VTjdG3ZuzagxJr9pFbQvwg3+wG+vM9fhrQwLYiySKC8J
-	 bPEJw2Ig/z8qobZwKfHHz8w+67d/aPU84K9tm9SyyMkFvc8x0nwoOJm4OObzCoNUbm
-	 UtBcvVtwj0LxVFadTBDx6BxNhN55TzSH5jUVM4esHYUPeBWW0q0VBn2OXJJQXdmUuW
-	 ULNc2zCWHq81EKoBdF6k7DEovs8RvE+CuZd8JMVLjvjUvNCz+6lNvER+J8gELA60H7
-	 Hs86QMzwg/6UWxAZguASPAHCUeqTtKXErsuqeXOI+l4X2ZD3Uy7SNsheG1fel1ZlL+
-	 oV2Qp40oZMvDg==
-Date: Wed, 7 Jun 2023 09:58:41 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: David Howells <dhowells@redhat.com>
-Cc: netdev@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
- Chuck Lever <chuck.lever@oracle.com>, Boris Pismenny <borisp@nvidia.com>,
- John Fastabend <john.fastabend@gmail.com>, "David S. Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Paolo Abeni
- <pabeni@redhat.com>, Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
- David Ahern <dsahern@kernel.org>, Matthew Wilcox <willy@infradead.org>,
- Jens Axboe <axboe@kernel.dk>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v5 06/14] tls/device: Use splice_eof() to flush
-Message-ID: <20230607095841.6e0edf7e@kernel.org>
-In-Reply-To: <20230607140559.2263470-7-dhowells@redhat.com>
-References: <20230607140559.2263470-1-dhowells@redhat.com>
-	<20230607140559.2263470-7-dhowells@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F029863B5
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 17:10:07 +0000 (UTC)
+X-Greylist: delayed 519 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 07 Jun 2023 10:10:05 PDT
+Received: from knopi.disroot.org (knopi.disroot.org [178.21.23.139])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FECA1FC2;
+	Wed,  7 Jun 2023 10:10:05 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+	by disroot.org (Postfix) with ESMTP id D3F4A40625;
+	Wed,  7 Jun 2023 19:01:18 +0200 (CEST)
+X-Virus-Scanned: SPAM Filter at disroot.org
+Received: from knopi.disroot.org ([127.0.0.1])
+	by localhost (disroot.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vliWW6Kk02sA; Wed,  7 Jun 2023 19:01:17 +0200 (CEST)
+From: Marco Giorgi <giorgi.marco.96@disroot.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
+	t=1686157277; bh=lZZ++WwSaQKCWAG2lUZFQgL5M2d2kWKGbJCXtIUfVJk=;
+	h=From:To:Cc:Subject:Date;
+	b=d9KmY3FASaiZoDGXQd1dKs9fXRg059+yGpLtgmPeojYEd0yYHAukNa+mG2ThsWeGC
+	 M/8b24Ec8QhHeB5jf4d5RjWKW/kwXY+umx6qd/0mJ+nDqjV4nSo8DNyVwrjOb7R6Op
+	 sUYCBGE7ABgnlmbukkhixYFPRLP4RmNlD493NSxg4U9IZWcjQhm6p/XDA3gKbHptF1
+	 2SwGpFJdTDVZksTQbL6LHGwoU9Rl5V6swX8KovaAoQoQKSnIAlbE6jHeTm+mtwjqEm
+	 5YLsW7f12sHtnf0HmKbBtD/FF4bR8kTGcI5ty2t14I7IK2G/v3dWgJZdCeU8Ud19+R
+	 rHUqgAqvNuOXA==
+To: netdev@vger.kernel.org
+Cc: krzysztof.kozlowski@linaro.org,
+	u.kleine-koenig@pengutronix.de,
+	davem@davemloft.net,
+	michael@walle.cc,
+	kuba@kernel.org,
+	linux-kernel@vger.kernel.org,
+	Marco Giorgi <giorgi.marco.96@disroot.org>
+Subject: [PATCH RFC net 0/2] nfc: nxp-nci: Fix i2c read on ThinkPad hardware
+Date: Wed,  7 Jun 2023 19:00:07 +0200
+Message-ID: <20230607170009.9458-1-giorgi.marco.96@disroot.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.9 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Wed,  7 Jun 2023 15:05:51 +0100 David Howells wrote:
-> Allow splice to end a TLS record after prematurely ending a splice/sendfile
-> due to getting an EOF condition (->splice_read() returned 0) after splice
-> had called TLS with a sendmsg() with MSG_MORE set when the user didn't set
-> MSG_MORE.
+This patch addresses issues with "I2C" read on ThinkPad hardware.
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+My machine (ThinkPad T590) is equipped with an NXP1001 NFC reader, although
+working flawlessly with Lenovo's Windows drivers, on Linux the driver
+implementation doesn't work.
+
+My speculation on the error is that the IRQ which is associated with the device
+doesn't take into account the device's IRQ GPIO value. This patch addresses
+that by exiting from the IRQ if the GPIO is low.
+
+With this, I've been able to read a tag with neard's nfctool.
+
+This is the behavior of the mainline `nxp_nci_i2c` driver:
+
+# nfctool -d nfc0 -1 
+Connection timed out
+# dmesg -Wtd 
+[<   0.000000>] nxp-nci_i2c i2c-NXP1001:00: NFC: Read failed with error -121 
+[<   5.142581>] nci: __nci_request: wait_for_completion_interruptible_timeout failed 0 
+[<   0.013474>] nxp-nci_i2c i2c-NXP1001:00: NFC: Read failed with error -121 
+
+This is the patched `nxp_nci_i2c` driver:
+
+# nfctool -d nfc0 -1 
+nfc0: 
+         Tags: [ ] 
+         Devices: [ ] 
+         Protocols: [ Felica MIFARE Jewel ISO-DEP NFC-DEP ] 
+         Powered: Yes 
+         RF Mode: None 
+         lto: 0 
+         rw: 0 
+         miux: 0 
+ 
+# nfctool -d nfc0 -p 
+Start polling on nfc0 as initiator 
+ 
+Targets found for nfc0 
+ Tags: [ tag0 ] 
+ Devices: [ ] 
+
+
+No output from `dmesg`
+
+Marco Giorgi (2):
+  nfc: nxp-nci: Fix i2c read on ThinkPad hardware
+  nfc: nxp-nci: Fix i2c read on ThinkPad hardware
+
+ drivers/nfc/nxp-nci/i2c.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+
+base-commit: 44f8baaf230c655c249467ca415b570deca8df77
+-- 
+2.41.0
+
 
