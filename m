@@ -1,205 +1,222 @@
-Return-Path: <netdev+bounces-8841-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8842-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E46ED725FC8
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:42:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3094E725FD3
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:46:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3A8191C20E97
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 12:42:03 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 788471C20E32
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 12:46:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 266F51F952;
-	Wed,  7 Jun 2023 12:41:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A3708F57;
+	Wed,  7 Jun 2023 12:46:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A14E1426E;
-	Wed,  7 Jun 2023 12:41:08 +0000 (UTC)
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB901988;
-	Wed,  7 Jun 2023 05:40:43 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id 4fb4d7f45d1cf-51491b87565so1475729a12.1;
-        Wed, 07 Jun 2023 05:40:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686141600; x=1688733600;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pBz2MV4ztkt691mrrB3N7hlq0WVgCYoQcpwdekr5XV0=;
-        b=r2axeMD7pa5eUbn2PSOaNvou4awVkiAgtBMdK05OnUTiPTCNRzbsd93yB5KWdJAJBx
-         aiuEEXNMcyJ57TyABJqi5ZxU734RrU2egayQDci3VyFmGNurNFS1JQ7HLvZQCpU48UqE
-         Ap9kQUa1/6B6ePXRseYcrMLJ1b0vTVlLh2u7cYQFlSuTrpqW2zRceIkVkhxtt/609MxD
-         YrUZfExyl4o8aph+EGVGOEQ5BewO7xJXi6lPvKzfMxt5kZ+P3AvVHuzQ8UCCBYcVDPBC
-         /I+XnERJ3HJbel9+ZQj8JlFFpSO9vaV+pUiWtKsKg4rer9L7QV42hJ9rneqmeSOu2YaJ
-         wwjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686141600; x=1688733600;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pBz2MV4ztkt691mrrB3N7hlq0WVgCYoQcpwdekr5XV0=;
-        b=cv/gEE7hIzttfpJK+ZSzGESztde3c2/lmm1XcqO9c8BdddnbITBg9y1U7ELFlLc7tZ
-         nTNCAoDKzjM9VL+QE+WgvZaOo5ZEO5dkK2D8ltTP1kKitL7F2z9BlOIrpdjMLO/w4wnP
-         kR/pv+aEJlXY4Vaq8BOpsayFm1zEolqruTj9MBtieI6QK8aIvS9/p1g2XGHUyAmPOCDP
-         6VZO4f7a+osdZfQrAZOsVeuvBBrPuUBbJ05kBJp0J+rnePuIemcRScTdSeUYaqAqSvUi
-         cGvqI6kEPY6oLjwziogyaZiuGJgvAVEnMlGRKt/kXtGTGDK5pj0O1KmtjsOvYEVKs0Jl
-         +afA==
-X-Gm-Message-State: AC+VfDw+v9RgtmZp42lfULGoFPl3pzEAFn91rod7+mmaDQrbTCIGqleL
-	/d5t9BIFnqNGymej2JaToRxXNlgp3WXWROW/Rh8=
-X-Google-Smtp-Source: ACHHUZ6FxDnAxua6geAAvzRbOYl0As0JGMHFLUcojlHJZyN1WrWlLUBxp3/J6donrAgh3Njt7XtM1Q==
-X-Received: by 2002:aa7:c507:0:b0:50c:3dc:2262 with SMTP id o7-20020aa7c507000000b0050c03dc2262mr3653027edq.39.1686141599613;
-        Wed, 07 Jun 2023 05:39:59 -0700 (PDT)
-Received: from localhost (tor-exit-48.for-privacy.net. [185.220.101.48])
-        by smtp.gmail.com with ESMTPSA id c26-20020aa7df1a000000b0051560edc8d4sm6151436edy.45.2023.06.07.05.39.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jun 2023 05:39:59 -0700 (PDT)
-From: Maxim Mikityanskiy <maxtram95@gmail.com>
-To: bpf@vger.kernel.org
-Cc: netdev@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	John Fastabend <john.fastabend@gmail.com>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Andrii Nakryiko <andrii@kernel.org>,
-	Martin KaFai Lau <martin.lau@linux.dev>,
-	Eduard Zingerman <eddyz87@gmail.com>,
-	Maxim Mikityanskiy <maxim@isovalent.com>,
-	Song Liu <song@kernel.org>,
-	Yonghong Song <yhs@fb.com>,
-	KP Singh <kpsingh@kernel.org>,
-	Stanislav Fomichev <sdf@google.com>,
-	Hao Luo <haoluo@google.com>,
-	Jiri Olsa <jolsa@kernel.org>,
-	Mykola Lysenko <mykolal@fb.com>,
-	Shuah Khan <shuah@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: [PATCH bpf v4 2/2] selftests/bpf: Add test cases to assert proper ID tracking on spill
-Date: Wed,  7 Jun 2023 15:39:51 +0300
-Message-Id: <20230607123951.558971-3-maxtram95@gmail.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230607123951.558971-1-maxtram95@gmail.com>
-References: <20230607123951.558971-1-maxtram95@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1076C139F
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 12:46:39 +0000 (UTC)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABCF310C6;
+	Wed,  7 Jun 2023 05:46:35 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.55])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4QbnC7557jzTkH5;
+	Wed,  7 Jun 2023 20:46:11 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Wed, 7 Jun
+ 2023 20:46:32 +0800
+Subject: Re: [PATCH net-next v2 1/3] page_pool: unify frag page and non-frag
+ page handling
+To: Alexander Duyck <alexander.duyck@gmail.com>
+CC: Yunsheng Lin <yunshenglin0825@gmail.com>, <davem@davemloft.net>,
+	<kuba@kernel.org>, <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Lorenzo Bianconi <lorenzo@kernel.org>, Jesper
+ Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas
+	<ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>, Dragos
+ Tatulea <dtatulea@nvidia.com>, Saeed Mahameed <saeedm@mellanox.com>
+References: <20230529092840.40413-1-linyunsheng@huawei.com>
+ <20230529092840.40413-2-linyunsheng@huawei.com>
+ <e8db47e3fe99349a998ded1ce4f8da88ea9cc660.camel@gmail.com>
+ <5d728f88-2bd0-7e78-90d5-499e85dc6fdf@huawei.com>
+ <160fea176559526b38a4080cc0f52666634a7a4f.camel@gmail.com>
+ <21f2fe04-8674-cc73-7a6c-cb0765c84dba@gmail.com>
+ <CAKgT0Ueoq9WgSPz1anWdCH1mkRt9cKmRz+wNJSZfdo-YwLjXCQ@mail.gmail.com>
+ <1486a84f-14fa-0121-15a2-d3c6fd8f76c2@huawei.com>
+ <CAKgT0Udmk4K=aOKC9k2M5WcBKremveqGo_YQy=7+VWdNP3DiKw@mail.gmail.com>
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <1af7a553-14ce-f74c-9493-859b7492d487@huawei.com>
+Date: Wed, 7 Jun 2023 20:46:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+In-Reply-To: <CAKgT0Udmk4K=aOKC9k2M5WcBKremveqGo_YQy=7+VWdNP3DiKw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: **
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Maxim Mikityanskiy <maxim@isovalent.com>
+On 2023/6/6 23:33, Alexander Duyck wrote:
+>> Do you mean doing something like below? isn't it dirtying the cache line
+>> of 'struct page' whenever a page is recycled, which means we may not be
+>> able to the maintain current performance for non-fragmented or mono-frag
+>> case?
+>>
+>> --- a/net/core/page_pool.c
+>> +++ b/net/core/page_pool.c
+>> @@ -583,6 +583,10 @@ static __always_inline struct page *
+>>  __page_pool_put_page(struct page_pool *pool, struct page *page,
+>>                      unsigned int dma_sync_size, bool allow_direct)
+>>  {
+>> +
+>> +       if (!page_pool_defrag_page(page, 1))
+>> +               return NULL;
+>> +
+> 
+> Yes, that is pretty much it. This would be your standard case page
+> pool put path. Basically it allows us to start getting rid of a bunch
+> of noise in the fragmented path.
+> 
+>>         /* This allocator is optimized for the XDP mode that uses
+>>          * one-frame-per-page, but have fallbacks that act like the
+>>          * regular page allocator APIs.
+>> @@ -594,6 +598,7 @@ __page_pool_put_page(struct page_pool *pool, struct page *page,
+>>          */
+>>         if (likely(page_ref_count(page) == 1 && !page_is_pfmemalloc(page))) {
+>>                 /* Read barrier done in page_ref_count / READ_ONCE */
+>> +               page_pool_fragment_page(page, 1);
+> 
+> I wouldn't bother resetting this to 1 until after you have recycled it
+> and pulled it back out again as an allocation. Basically when the
+> pages are sitting in the pool the frag_count should be 0. That way it
+> makes it easier to track and is similar to how the memory allocator
+> actually deals with the page reference count. Basically if the page is
+> sitting in the pool the frag_count is 0, once it comes out it should
+> be 1 or more indicating it is in use.
 
-The previous commit fixed a verifier bypass by ensuring that ID is not
-preserved on narrowing spills. Add the test cases to check the
-problematic patterns.
+Let's be more specific about what we want to do here：
 
-Signed-off-by: Maxim Mikityanskiy <maxim@isovalent.com>
----
- .../selftests/bpf/progs/verifier_spill_fill.c | 79 +++++++++++++++++++
- 1 file changed, 79 insertions(+)
+For a specific page without splitting, the journey that it will go
+through is as below before this patch:
+1. It is allocated from the page allocator.
+2. It is initialized in page_pool_set_pp_info().
+3. It is passed to driver by page pool.
+4. It is passed to stack by the driver.
+5. It is passed back to the page pool by the stack, depending on the
+   page_ref_count() checking:
+   5.1 page_ref_count() being one, the page is now owned by the page
+       pool, and may be passed to the driver by going to step 3.
+   5.2 page_ref_count() not being one, the page is released by page
+       pool doing resoure cleaning like dma mapping and put_page().
 
-diff --git a/tools/testing/selftests/bpf/progs/verifier_spill_fill.c b/tools/testing/selftests/bpf/progs/verifier_spill_fill.c
-index 136e5530b72c..6115520154e3 100644
---- a/tools/testing/selftests/bpf/progs/verifier_spill_fill.c
-+++ b/tools/testing/selftests/bpf/progs/verifier_spill_fill.c
-@@ -371,4 +371,83 @@ __naked void and_then_at_fp_8(void)
- "	::: __clobber_all);
- }
- 
-+SEC("xdp")
-+__description("32-bit spill of 64-bit reg should clear ID")
-+__failure __msg("math between ctx pointer and 4294967295 is not allowed")
-+__naked void spill_32bit_of_64bit_fail(void)
-+{
-+	asm volatile ("					\
-+	r6 = r1;					\
-+	/* Roll one bit to force the verifier to track both branches. */\
-+	call %[bpf_get_prandom_u32];			\
-+	r0 &= 0x8;					\
-+	/* Put a large number into r1. */		\
-+	r1 = 0xffffffff;				\
-+	r1 <<= 32;					\
-+	r1 += r0;					\
-+	/* Assign an ID to r1. */			\
-+	r2 = r1;					\
-+	/* 32-bit spill r1 to stack - should clear the ID! */\
-+	*(u32*)(r10 - 8) = r1;				\
-+	/* 32-bit fill r2 from stack. */		\
-+	r2 = *(u32*)(r10 - 8);				\
-+	/* Compare r2 with another register to trigger find_equal_scalars.\
-+	 * Having one random bit is important here, otherwise the verifier cuts\
-+	 * the corners. If the ID was mistakenly preserved on spill, this would\
-+	 * cause the verifier to think that r1 is also equal to zero in one of\
-+	 * the branches, and equal to eight on the other branch.\
-+	 */						\
-+	r3 = 0;						\
-+	if r2 != r3 goto l0_%=;				\
-+l0_%=:	r1 >>= 32;					\
-+	/* At this point, if the verifier thinks that r1 is 0, an out-of-bounds\
-+	 * read will happen, because it actually contains 0xffffffff.\
-+	 */						\
-+	r6 += r1;					\
-+	r0 = *(u32*)(r6 + 0);				\
-+	exit;						\
-+"	:
-+	: __imm(bpf_get_prandom_u32)
-+	: __clobber_all);
-+}
-+
-+SEC("xdp")
-+__description("16-bit spill of 32-bit reg should clear ID")
-+__failure __msg("dereference of modified ctx ptr R6 off=65535 disallowed")
-+__naked void spill_16bit_of_32bit_fail(void)
-+{
-+	asm volatile ("					\
-+	r6 = r1;					\
-+	/* Roll one bit to force the verifier to track both branches. */\
-+	call %[bpf_get_prandom_u32];			\
-+	r0 &= 0x8;					\
-+	/* Put a large number into r1. */		\
-+	w1 = 0xffff0000;				\
-+	r1 += r0;					\
-+	/* Assign an ID to r1. */			\
-+	r2 = r1;					\
-+	/* 16-bit spill r1 to stack - should clear the ID! */\
-+	*(u16*)(r10 - 8) = r1;				\
-+	/* 16-bit fill r2 from stack. */		\
-+	r2 = *(u16*)(r10 - 8);				\
-+	/* Compare r2 with another register to trigger find_equal_scalars.\
-+	 * Having one random bit is important here, otherwise the verifier cuts\
-+	 * the corners. If the ID was mistakenly preserved on spill, this would\
-+	 * cause the verifier to think that r1 is also equal to zero in one of\
-+	 * the branches, and equal to eight on the other branch.\
-+	 */						\
-+	r3 = 0;						\
-+	if r2 != r3 goto l0_%=;				\
-+l0_%=:	r1 >>= 16;					\
-+	/* At this point, if the verifier thinks that r1 is 0, an out-of-bounds\
-+	 * read will happen, because it actually contains 0xffff.\
-+	 */						\
-+	r6 += r1;					\
-+	r0 = *(u32*)(r6 + 0);				\
-+	exit;						\
-+"	:
-+	: __imm(bpf_get_prandom_u32)
-+	: __clobber_all);
-+}
-+
- char _license[] SEC("license") = "GPL";
--- 
-2.40.1
+So a page may go through step 3 ~ 5.1 many times without dirtying
+the cache line of  'struct page' as my understanding.
 
+
+If I follow your suggestion here, It seems for a specific page without
+splitting, it may go through:
+1. It is allocated from the page allocator.
+2. It is initialized in page_pool_set_pp_info().
+3. It's pp_frag_count is set to one.
+4. It is passed to driver by page pool.
+5. It is passed to stack by the driver.
+6. It is passed back to the page pool by the stack, depending on the
+   pp_frag_count and page_ref_count() checking:
+   6.1 pp_frag_count and page_ref_count() being one, the page is now
+       owned by the page pool, and may be passed to the driver by
+       going to step 3.
+   6.2 otherwise the page is released by page pool doing resoure
+       cleaning like dma mapping and put_page().
+
+Aren't we dirtying the cache line of  'struct page' everytime the page
+is recycled? Or did I miss something obvious here?
+
+For my implementation, for a specific page without splitting, it may
+go through:
+1. It is allocated from the page allocator.
+2. It is initialized in page_pool_set_pp_info() and it's pp_frag_count
+   set to one.
+3. It is passed to driver by page pool.
+4. It is passed to stack by the driver.
+5. It is passed back to the page pool by the stack, depending on the
+   page_ref_count() checking:
+   5.1 pp_frag_count and page_ref_count() being one, the page is now
+       owned by the page pool, and as the optimization by not updating
+       page->pp_frag_count in page_pool_defrag_page() for the last
+       frag user, it can be passed to the driver by going to step 3
+       without resetting the pp_frag_count to 1, which may dirty
+       the cache line of  'struct page'.
+   5.2 otherwise the page is released by page pool doing resoure
+       cleaning like dma mapping and put_page().
+
+Does it make any sense, or it doesn't really matter we are dirtying
+the cache line of  'struct page' whenever a page without splitted is
+recycled?
+
+
+>>
+>> Does 'defragging a fragmented page' mean doing decrementing pp_frag_count?
+>> "freeing it" mean calling put_page()? What does 'combined' really means
+>> here?
+> 
+> The change is that the code would do the subtraction and if it hit 0
+> it was freeing the page. That is the one piece that gets more
+> complicated because we really should be hitting 1. So we may be adding
+> a few more operations to that case.
+> 
+>>>
+
+I am not sure I understand it. Does 'gets more complicated' means doing
+some optimization like page_pool_defrag_page() does?
+https://elixir.bootlin.com/linux/v6.4-rc5/source/include/net/page_pool.h#L314
+
+> 
+>>>
+>>> With that you could then let drivers like the Mellanox one handle its
+>>> own fragmenting knowing it has to return things to a mono-frag in
+>>> order for it to be working correctly.
+>>
+>> I still really don't how it will be better for mlx5 to handle its
+>> own fragmenting yet?
+>>
+>> +cc Dragos & Saeed to share some info here, so that we can see
+>> if page pool learn from it.
+> 
+> It has more to do with the fact that the driver knows what it is going
+> to do beforehand. In many cases it can look at the page and know that
+> it isn't going to reuse it again so it can just report the truesize
+> being the length from the current pointer to the end of the page.
+> 
+> You can think of it as the performance advantage of a purpose built
+> ASIC versus a general purpose CPU. The fact is we are able to cut out
+> much of the unnecessary overhead if we know exactly how we are going
+> to use the memory in the driver versus having to guess at it in the
+> page pool API.
+
+In general, I would agree with that.
+But for the specific case with mlx5, I am not sure about that, that's
+why I am curious about what is the exact reason about it doing the
+complicated frag_count handing in the driver instead of improving
+the page pool to support it's usecase, if it is about the last frag
+truesize problem here, we can do something like virtio_net do in the
+page pool too.
+
+> 
+> .
+> 
 
