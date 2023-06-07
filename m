@@ -1,140 +1,122 @@
-Return-Path: <netdev+bounces-8707-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8708-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D739D72548B
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 08:42:48 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 93F83725492
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 08:44:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 86DC82810E1
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 06:42:47 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A5D551C20A98
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 06:44:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B06821C01;
-	Wed,  7 Jun 2023 06:42:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8851D440C;
+	Wed,  7 Jun 2023 06:44:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5B257FC
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 06:42:45 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910CA172B
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 23:42:42 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1q6msR-0004I5-7z; Wed, 07 Jun 2023 08:42:39 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1q6msO-005gKv-8Y; Wed, 07 Jun 2023 08:42:36 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1q6msN-00Bvl5-CQ; Wed, 07 Jun 2023 08:42:35 +0200
-Date: Wed, 7 Jun 2023 08:42:35 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc: Madalin Bucur <madalin.bucur@nxp.com>,
-	Madalin Bucur <madalin.bucur@oss.nxp.com>, netdev@vger.kernel.org,
-	Russell King <linux@armlinux.org.uk>,
-	Eric Dumazet <edumazet@google.com>,
-	Michal Kubiak <michal.kubiak@intel.com>, kernel@pengutronix.de,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	"David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v2 1/8] net: dpaa: Improve error reporting
-Message-ID: <20230607064235.5uylgrxef574eitw@pengutronix.de>
-References: <20230606162829.166226-1-u.kleine-koenig@pengutronix.de>
- <20230606162829.166226-2-u.kleine-koenig@pengutronix.de>
- <ZH9m4wFPTWsXXBAD@boxer>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E5337F7
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 06:44:09 +0000 (UTC)
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8C4710C3;
+	Tue,  6 Jun 2023 23:44:07 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="6.00,223,1681138800"; 
+   d="scan'208";a="162521557"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 07 Jun 2023 15:44:07 +0900
+Received: from localhost.localdomain (unknown [10.166.15.32])
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id F04F74005E29;
+	Wed,  7 Jun 2023 15:44:06 +0900 (JST)
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: s.shtylyov@omp.ru,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com
+Cc: netdev@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+	Phong Hoang <phong.hoang.wz@renesas.com>
+Subject: [PATCH net] net: renesas: rswitch: Fix timestamp feature after all descritors are used
+Date: Wed,  7 Jun 2023 15:44:02 +0900
+Message-Id: <20230607064402.1795548-1-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="dvizdpvsfxqzotgd"
-Content-Disposition: inline
-In-Reply-To: <ZH9m4wFPTWsXXBAD@boxer>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=1.1 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+	autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+The timestamp descriptors were intended to act cyclically. Descriptors
+from index 0 through gq->ring_size - 1 contain actual information, and
+the last index (gq->ring_size) should have LINKFIX to indicate
+the first index 0 descriptor. However, thie LINKFIX value is missing,
+causing the timestamp feature to stop after all descriptors are used.
+To resolve this issue, set the LINKFIX to the timestamp descritors.
 
---dvizdpvsfxqzotgd
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Reported-by: Phong Hoang <phong.hoang.wz@renesas.com>
+Fixes: 33f5d733b589 ("net: renesas: rswitch: Improve TX timestamp accuracy")
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+ Since I got this report locally, I didn't add Closes: tag.
 
-On Tue, Jun 06, 2023 at 07:03:31PM +0200, Maciej Fijalkowski wrote:
-> On Tue, Jun 06, 2023 at 06:28:22PM +0200, Uwe Kleine-K=F6nig wrote:
-> > Instead of the generic error message emitted by the driver core when a
-> > remove callback returns an error code ("remove callback returned a
-> > non-zero value. This will be ignored."), emit a message describing the
-> > actual problem and return zero to suppress the generic message.
-> >=20
-> > Note that apart from suppressing the generic error message there are no
-> > side effects by changing the return value to zero. This prepares
-> > changing the remove callback to return void.
-> >=20
-> > Acked-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
-> > Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > ---
-> >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/n=
-et/ethernet/freescale/dpaa/dpaa_eth.c
-> > index 431f8917dc39..6226c03cfca0 100644
-> > --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > @@ -3516,6 +3516,8 @@ static int dpaa_remove(struct platform_device *pd=
-ev)
-> >  	phylink_destroy(priv->mac_dev->phylink);
-> > =20
-> >  	err =3D dpaa_fq_free(dev, &priv->dpaa_fq_list);
-> > +	if (err)
-> > +		dev_err(dev, "Failed to free FQs on remove\n");
->=20
-> so 'err' is now redundant - if you don't have any value in printing this
-> out then you could remove this variable altogether.
+ drivers/net/ethernet/renesas/rswitch.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-Good hint, err can have different values here (at least -EINVAL and
--EBUSY), so printing it has some values. I'll wait a bit for more
-feedback to this series and then prepare a v3 with
+diff --git a/drivers/net/ethernet/renesas/rswitch.c b/drivers/net/ethernet/renesas/rswitch.c
+index aace87139cea..049adbf5a642 100644
+--- a/drivers/net/ethernet/renesas/rswitch.c
++++ b/drivers/net/ethernet/renesas/rswitch.c
+@@ -420,7 +420,7 @@ static int rswitch_gwca_queue_format(struct net_device *ndev,
+ }
+ 
+ static void rswitch_gwca_ts_queue_fill(struct rswitch_private *priv,
+-				       int start_index, int num)
++				       int start_index, int num, bool last)
+ {
+ 	struct rswitch_gwca_queue *gq = &priv->gwca.ts_queue;
+ 	struct rswitch_ts_desc *desc;
+@@ -431,6 +431,12 @@ static void rswitch_gwca_ts_queue_fill(struct rswitch_private *priv,
+ 		desc = &gq->ts_ring[index];
+ 		desc->desc.die_dt = DT_FEMPTY_ND | DIE;
+ 	}
++
++	if (last) {
++		desc = &gq->ts_ring[gq->ring_size];
++		rswitch_desc_set_dptr(&desc->desc, gq->ring_dma);
++		desc->desc.die_dt = DT_LINKFIX;
++	}
+ }
+ 
+ static int rswitch_gwca_queue_ext_ts_fill(struct net_device *ndev,
+@@ -941,7 +947,7 @@ static void rswitch_ts(struct rswitch_private *priv)
+ 	}
+ 
+ 	num = rswitch_get_num_cur_queues(gq);
+-	rswitch_gwca_ts_queue_fill(priv, gq->dirty, num);
++	rswitch_gwca_ts_queue_fill(priv, gq->dirty, num, false);
+ 	gq->dirty = rswitch_next_queue_index(gq, false, num);
+ }
+ 
+@@ -1780,7 +1786,7 @@ static int rswitch_init(struct rswitch_private *priv)
+ 	if (err < 0)
+ 		goto err_ts_queue_alloc;
+ 
+-	rswitch_gwca_ts_queue_fill(priv, 0, TS_RING_SIZE);
++	rswitch_gwca_ts_queue_fill(priv, 0, TS_RING_SIZE, true);
+ 	INIT_LIST_HEAD(&priv->gwca.ts_info_list);
+ 
+ 	for (i = 0; i < RSWITCH_NUM_PORTS; i++) {
+-- 
+2.25.1
 
-	dev_err(dev, "Failed to free FQs on remove (%pE)\n", err);
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---dvizdpvsfxqzotgd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmSAJtoACgkQj4D7WH0S
-/k5/8AgAmvmpwyr7uEA2SI65fWA/Za97B4qNVPmOqshZD7IoTYkhmX0NT9JogHhB
-83/+SH58MbFP17d28wuRBMs0znd80lYxqe76Zix8VaqufYgZEa8tX094wGNo6SX2
-hvEmRImg9+lcPk7NhX1IZqrPsT3H2iM6+jLQ+Qz4DfC9V8IZ6ta6R4CeXVt9YfWj
-Eyg0RvrU4R+k2Za4hobqfgloh6l2hyyUAoRKOLudYmoGhAhBXUZ+OFCuVRUIgQih
-dS3s5cuHguBxaxv1goZTn2CgDRkftbaiPN6JmzMgMIrwKeKCzkC93iD1yEg8lKwg
-xQV8mzN8Ue9WXiwrVzUygDOvONpSeA==
-=MOiB
------END PGP SIGNATURE-----
-
---dvizdpvsfxqzotgd--
 
