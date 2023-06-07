@@ -1,151 +1,116 @@
-Return-Path: <netdev+bounces-8956-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8957-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 264B4726673
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 18:52:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4F8EE726676
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 18:53:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 823C41C20E32
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 16:52:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AD2711C20A2D
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 16:52:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6EB091ACBD;
-	Wed,  7 Jun 2023 16:52:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A76341ACD4;
+	Wed,  7 Jun 2023 16:52:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6251B63B5
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 16:52:18 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606DFE46
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 09:52:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686156724;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=E+Camu/wrYylmYMS88G8cmb/R4NWSFmH8HlRp/yIaXc=;
-	b=bHb4p4Uz2smGJdBcrkzJYoJbg1KQQuqdr/kGxs3KpvC29k5+VzAaDJxPbL1sop6mjVkav7
-	2r4UdxEhKA195sU1GU/J+LazUVhizHByMu8W/mbmNbQKFHLMOi1cK5CHV1jrYS55yVylIr
-	E43XE5XGsaYSKNeUrYalWdBpaXGkkf4=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-556-hY7vuqS1MdulhAMPbzDpXA-1; Wed, 07 Jun 2023 12:52:03 -0400
-X-MC-Unique: hY7vuqS1MdulhAMPbzDpXA-1
-Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-30932d15a30so4150209f8f.1
-        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 09:52:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686156722; x=1688748722;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C13C174CB
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 16:52:58 +0000 (UTC)
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E287BA
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 09:52:57 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id 46e09a7af769-6af8b25fc72so5646350a34.3
+        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 09:52:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1686156777; x=1688748777;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=E+Camu/wrYylmYMS88G8cmb/R4NWSFmH8HlRp/yIaXc=;
-        b=ejKTAZ79CeW2CT57MVdmNoP+sbolIo51eSBGrwIL+osyKVTvx/tokxLoGSat6GcYvC
-         ulw6o0OyoUdBhp7I3eSs7EJUrzSG68j5eUDgcDTGFY4pFHgXNJ0EAMwDxhm+jbiT2Iiz
-         vFSZmaSLdMLRaO7jMMiCMfQIsjmg67T5D8M4hmTVCpwcL14wD63JDwcnpak+hHxZhtWy
-         A669MT2UHuIoxowxv270Hv2lxjhNAXlG2q+s+6Cc1NBYBy/87aRXlNfsm7pk7bi8SpMR
-         lOEvwAlLB0+1gJr9+SzKNUDYPTuIa8jSS2Z9vmCWBBMXBvFcjf3Pkgl9n2jEsnOvmxwS
-         B5rw==
-X-Gm-Message-State: AC+VfDzmM3vjMGLrXemNhwUcNUBm2+NjTZUv3sDySq3KS5edsyog7qlw
-	ixYZi1Gx04x3WzbBi/kd9I7azGBgB5t2uimFIvQA3WoadFyd9sUfU9nuShO+jBwNy73c2W2hDU9
-	/S7qV+wPhGInOQH6p
-X-Received: by 2002:a5d:5687:0:b0:309:838:8c21 with SMTP id f7-20020a5d5687000000b0030908388c21mr4844406wrv.38.1686156722207;
-        Wed, 07 Jun 2023 09:52:02 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7xPltdMzBs9LNvRUqNzLN0Hg5c1lRRR0kmkHjhr8XETs7I3mNU/9WXnzEVajwk2UZq5vgngg==
-X-Received: by 2002:a5d:5687:0:b0:309:838:8c21 with SMTP id f7-20020a5d5687000000b0030908388c21mr4844395wrv.38.1686156721825;
-        Wed, 07 Jun 2023 09:52:01 -0700 (PDT)
-Received: from debian (2a01cb058d652b00ba1a24d15502040a.ipv6.abo.wanadoo.fr. [2a01:cb05:8d65:2b00:ba1a:24d1:5502:40a])
-        by smtp.gmail.com with ESMTPSA id z18-20020a1c4c12000000b003f60d0eef36sm2747537wmf.48.2023.06.07.09.52.00
+        bh=15OvLU4bZZp/QMnLQsShIQCCNaBoSVvMpM7tsFhmiSY=;
+        b=fYCu5JzQLHFqZubZDWbroyyNv5zyT/+nxCDUrNXOuJjtL6jHNN7J9zG9SRzF4mgsU1
+         TS6DotmMHIjpH2GFsDFYJAvnjHRT8sIp/caRQokrduuzF7yPUOA5LGeveZlfUJ/UO8Z5
+         cKxeOwtUfsSdd0gCoPrPHDeZakQ+XbhpefJjn9b/Covtxz3QeJ4m4cEJG+/MGY0UgFeV
+         BgMIsHNTRDDOVWSonUJ0ToNG7eAnIe2l7/D3qDOMFrt8D8xLGPS/xoIucmGjoeaD3lgz
+         8gNUf5ymj7Ikdg8Z7kK906Hpg1egCK3NrCjo94FQ4Xyylk5RUv50p0Fvw5Ldn8NAyRu/
+         JxJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686156777; x=1688748777;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=15OvLU4bZZp/QMnLQsShIQCCNaBoSVvMpM7tsFhmiSY=;
+        b=liWWtyvUR5XJSbIxqW0mMcHxnga9n/B3UTczsqwnvDisqENP5bTJIJmbvZpzeNyYpY
+         h8rC3ZHP5De8bAK2hlY3y17VdifYy4NdmhMQjZL6LdB4V6X4fQaeQkrp3/i3wr6ZZ/X2
+         1wO7NKLAG2UW6LrxqunycM+PjdHkM++5YvQdcyQk0Kp7ciBDpay98JhP//HdAKDrJhs/
+         jHPHLhoWnmALpY+j7v9F7TS+TIb34yxV0ZzhDcZB1OIv2/YeL9bSK/kTAAPu5rL6zDhj
+         XuxqCIMiVNT1uGxPJPKcZcNSE3l63in5NhQDWmw0i42k0+s3aopj9dpL5yCfaifdoyk8
+         2uNw==
+X-Gm-Message-State: AC+VfDzGOptKl6GVieKASnkCi1gYkWdTkPNhWtLlDTyLkNsli/c5V9Zy
+	yAgKJy8ce6qjPlWKSFZy9buqXA==
+X-Google-Smtp-Source: ACHHUZ55sDwDShzh5tnLLDl6xwKbNF3bN+Mcf88+fJp+qFjG2Z1KSSlQiEm2nAxaq4s9ZHPPx6oWTA==
+X-Received: by 2002:a05:6830:150e:b0:6b0:c632:ff59 with SMTP id k14-20020a056830150e00b006b0c632ff59mr5686629otp.19.1686156776800;
+        Wed, 07 Jun 2023 09:52:56 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id lk8-20020a17090b33c800b0024de5227d1fsm1594786pjb.40.2023.06.07.09.52.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jun 2023 09:52:01 -0700 (PDT)
-Date: Wed, 7 Jun 2023 18:51:59 +0200
-From: Guillaume Nault <gnault@redhat.com>
-To: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
-Cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org
-Subject: Re: POSSIBLE BUG: selftests/net/fcnal-test.sh: [FAIL][FIX TESTED] in
- vrf "bind - ns-B IPv6 LLA" test
-Message-ID: <ZIC1r6IHOM5nr9QD@debian>
-References: <b6191f90-ffca-dbca-7d06-88a9788def9c@alu.unizg.hr>
- <ZHeN3bg28pGFFjJN@debian>
- <a379796a-5cd6-caa7-d11d-5ffa7419b90e@alu.unizg.hr>
- <ZH84zGEODT97TEXG@debian>
- <48cfd903-ad2f-7da7-e5a6-a22392dc8650@alu.unizg.hr>
- <ZH+BhFzvJkWyjBE0@debian>
- <a3b2891d-d355-dacd-24ec-af9f8aacac57@alu.unizg.hr>
+        Wed, 07 Jun 2023 09:52:56 -0700 (PDT)
+Date: Wed, 7 Jun 2023 09:52:54 -0700
+From: Stephen Hemminger <stephen@networkplumber.org>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Gal Pressman <gal@nvidia.com>, Edwin Peer <espeer@gmail.com>, David
+ Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>, Andrew
+ Gospodarek <andrew.gospodarek@broadcom.com>, Michael Chan
+ <michael.chan@broadcom.com>, Michal Kubecek <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next 1/4] netlink: truncate overlength attribute
+ list in nla_nest_end()
+Message-ID: <20230607095254.20a3394c@hermes.local>
+In-Reply-To: <20230607093324.2b7712d9@kernel.org>
+References: <20210123045321.2797360-1-edwin.peer@broadcom.com>
+	<20210123045321.2797360-2-edwin.peer@broadcom.com>
+	<1dc163b0-d4b0-8f6c-d047-7eae6dc918c4@gmail.com>
+	<CAKOOJTwKK5AgTf+g5LS4MMwR_HwbdFS6U7SFH0jZe8FuJMgNgA@mail.gmail.com>
+	<CAKOOJTzwdSdwBF=H-h5qJzXaFDiMoX=vjrMi_vKfZoLrkt4=Lg@mail.gmail.com>
+	<62a12b2c-c94e-8d89-0e75-f01dc6abbe92@gmail.com>
+	<CAKOOJTwBcRJah=tngJH3EaHCCXb6T_ptAV+GMvqX_sZONeKe9w@mail.gmail.com>
+	<cdbd5105-973a-2fa0-279b-0d81a1a637b9@nvidia.com>
+	<20230605115849.0368b8a7@kernel.org>
+	<CAOpCrH4-KgqcmfXdMjpp2PrDtSA4v3q+TCe3C9E5D3Lu-9YQKg@mail.gmail.com>
+	<0c04665f-545a-7552-a4c2-c7b9b2ee4e6b@nvidia.com>
+	<20230606091706.47d2544d@kernel.org>
+	<f2a02c4f-a9c0-a586-1bde-ff2779933270@nvidia.com>
+	<20230607093324.2b7712d9@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a3b2891d-d355-dacd-24ec-af9f8aacac57@alu.unizg.hr>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, Jun 07, 2023 at 12:04:52AM +0200, Mirsad Goran Todorovac wrote:
-> I cannot tell if those are new for the architecture (Ubuntu 22.04 + AMD Ryzen)
-> 
-> However, Ubuntu's unsigned 6.3.1 generic mainline kernel is also affected.
-> So, it might seem like an old problem.
-> 
-> (If you could isolate the exact tests, I could try a bisect.)
-> 
-> [...]
-> TEST: ping local, VRF bind - ns-A IP                                          [ OK ]
-> TEST: ping local, VRF bind - VRF IP                                           [FAIL]
-> TEST: ping local, VRF bind - loopback                                         [ OK ]
-> TEST: ping local, device bind - ns-A IP                                       [FAIL]
-> TEST: ping local, device bind - VRF IP                                        [ OK ]
-> [...]
-> 
-> SYSCTL: net.ipv4.raw_l3mdev_accept=1
-> 
-> [...]
-> TEST: ping local, VRF bind - ns-A IP                                          [ OK ]
-> TEST: ping local, VRF bind - VRF IP                                           [FAIL]
-> TEST: ping local, VRF bind - loopback                                         [ OK ]
-> TEST: ping local, device bind - ns-A IP                                       [FAIL]
-> TEST: ping local, device bind - VRF IP                                        [ OK ]
-> [...]
-> 
-> Yes, just tested, w commit 42510dffd0e2 these are still present
-> in fcnal-test.sh output:
-> 
-> [...]
-> TEST: ping local, VRF bind - ns-A IP                                          [ OK ]
-> TEST: ping local, VRF bind - VRF IP                                           [FAIL]
-> TEST: ping local, VRF bind - loopback                                         [ OK ]
-> TEST: ping local, device bind - ns-A IP                                       [FAIL]
-> TEST: ping local, device bind - VRF IP                                        [ OK ]
-> [...]
-> TEST: ping local, VRF bind - ns-A IP                                          [ OK ]
-> TEST: ping local, VRF bind - VRF IP                                           [FAIL]
-> TEST: ping local, VRF bind - loopback                                         [ OK ]
-> TEST: ping local, device bind - ns-A IP                                       [FAIL]
-> TEST: ping local, device bind - VRF IP                                        [ OK ]
-> [...]
+On Wed, 7 Jun 2023 09:33:24 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-I have the same failures here. They don't seem to be recent.
-I'll take a look.
-
-> I have attached the config used and lshw.
+> > > 
+> > > The problem is basically that attributes can only be 64kB and 
+> > > the legacy SR-IOV API wraps all the link info in an attribute.    
+> > 
+> > Isn't that a second order issue? The skb itself is limited to 32kB AFAICT.  
 > 
-> Best regards,
-> Mirsad
+> Hm, you're right. But allocation larger than 32kB are costly.
+> We can't make every link dump allocate 64kB, it will cause
+> regressions on systems under memory pressure (== real world).
+> 
+> You'd need to come up with some careful scheme of using larger
+> buffers.
 
-
-
+Why does it all have to be a single message?
+Things like 3 million routes are dumped fine, as multiple messages.
 
