@@ -1,58 +1,51 @@
-Return-Path: <netdev+bounces-8674-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8675-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C6556725282
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 05:45:08 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9E430725297
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 05:54:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1BB2A1C20C9D
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 03:45:05 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5B1A52811E2
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 03:54:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 99DF47EE;
-	Wed,  7 Jun 2023 03:45:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9DD9C80B;
+	Wed,  7 Jun 2023 03:54:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9ADAD7C
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 03:45:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40975C4339B;
-	Wed,  7 Jun 2023 03:45:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A64447C
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 03:54:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B54CC433EF;
+	Wed,  7 Jun 2023 03:54:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686109502;
-	bh=23b85ddF74DRpHqNGxTgfBMNcy0hEkGn39jASt7LXGY=;
+	s=k20201202; t=1686110079;
+	bh=lipBdfsrWW5U0xjBpTPT3ABPpxcdQFIPfd2IFiOUgNc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=KozwMzbBcxqF3yspohCRX5N5zMV5Za8U22w+oHAcz4yDr/yx1eMfv3Zq40lwSaijF
-	 x0eJyRdVwKLJ5NPv9mpvUfstSDXmaXlFVfo34sWCVZGru8tfdtocvayA4TeNF9Idp9
-	 UyUJaAe2AgbYmC4GdN/M3yHcRS3KEZ79wX8Oe5mQV0F5bXNFUWoWC8zS5WELlJj4Dj
-	 obSKgYeqc9TnlFJn/AMk5GftaUWN2PwejIPzl3Z2Tyd2ZANoYWY7TGLx4enOa1SO9U
-	 GoyaGShdEoxet7hftBuqRs9b9NwWeZs0dDCSJDgrh48NEQnUJO8oyI1tmKgKo6XNim
-	 D7EnPd94tiBww==
-Date: Tue, 6 Jun 2023 20:45:00 -0700
+	b=QCV6XLflw/NJOGtOegGp36oA4bQY0p+0RGE1AEmJjv5H22cdKjzlh/chTPZSCqo7d
+	 o4sUJdtoHGCBdw1euRdxLQB5HqDooBMdFj6eA4JnDP9gkY5j3epfFaobL4/4I7BQUq
+	 j+nbKWAwIWKBpwLxea+zZPyAzAE6Sx6/QtsHM9gUPSJ9H+5+b5MBMX4wqIjBIrocGA
+	 EoEdbZu11I60omxq/SZtoACfjxvGwvHFUH/xXfjzSxTy9XliOdyojXgk0ADcnjcRGM
+	 OUrbNPCOazk3O6FKI7uVjlbMjTz3QIPDoo8z9LsFvWfTclJIiHwfHW86jvz88yys82
+	 jIew+n89qRt3Q==
+Date: Tue, 6 Jun 2023 20:54:37 -0700
 From: Jakub Kicinski <kuba@kernel.org>
 To: Justin Chen <justin.chen@broadcom.com>
-Cc: netdev@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- bcm-kernel-feedback-list@broadcom.com, florian.fainelli@broadcom.com,
- davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
- robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
- opendmb@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
- linux@armlinux.org.uk, richardcochran@gmail.com, sumit.semwal@linaro.org,
- christian.koenig@amd.com, simon.horman@corigine.com
-Subject: Re: [PATCH net-next v6 3/6] net: bcmasp: Add support for ASP2.0
- Ethernet controller
-Message-ID: <20230606204500.04083bd8@kernel.org>
-In-Reply-To: <024a6733-f552-c538-2b59-26058c750d66@broadcom.com>
-References: <1685657551-38291-1-git-send-email-justin.chen@broadcom.com>
-	<1685657551-38291-4-git-send-email-justin.chen@broadcom.com>
-	<20230602235859.79042ff0@kernel.org>
-	<956dc20f-386c-f4fe-b827-1a749ee8af02@broadcom.com>
-	<20230606171605.3c20ae79@kernel.org>
-	<8601be87-4bcb-8e6b-5124-1c63150c7c40@broadcom.com>
-	<20230606185453.582d3831@kernel.org>
-	<024a6733-f552-c538-2b59-26058c750d66@broadcom.com>
+Cc: netdev@vger.kernel.org, simon.horman@corigine.com, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Paolo Abeni
+ <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>, Daniil Tatianin
+ <d-tatianin@yandex-team.ru>, Marco Bonelli <marco@mebeim.net>, Gal Pressman
+ <gal@nvidia.com>, Jiri Pirko <jiri@resnulli.us>, Sean Anderson
+ <sean.anderson@seco.com>, Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+ Kuniyuki Iwashima <kuniyu@amazon.com>, linux-kernel@vger.kernel.org (open
+ list)
+Subject: Re: [PATCH net-next] ethtool: ioctl: improve error checking for
+ set_wol
+Message-ID: <20230606205437.49378d25@kernel.org>
+In-Reply-To: <1685990778-34039-1-git-send-email-justin.chen@broadcom.com>
+References: <1685990778-34039-1-git-send-email-justin.chen@broadcom.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -62,13 +55,13 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 6 Jun 2023 19:33:13 -0700 Justin Chen wrote:
-> >> Not netdevs per se, but packets can be redirected to an offload
-> >> co-processor.  
-> > 
-> > How is the redirecting configured?
-> 
-> Through filters that can be programmed by the Host cpu or co-processor.
+On Mon,  5 Jun 2023 11:46:16 -0700 Justin Chen wrote:
+> +	if (wol.wolopts & ~cur_wol.supported)
+> +		return -EOPNOTSUPP;
 
-How are the filter programmed by the host (in terms of user API)?
+One small comment - I think we should return -EINVAL here.
+That's what netlink return and we seem to mostly return -EOPNOTSUPP
+if the operation is completely not supported.
+-- 
+pw-bot: cr
 
