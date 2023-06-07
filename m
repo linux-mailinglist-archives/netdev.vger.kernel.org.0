@@ -1,96 +1,90 @@
-Return-Path: <netdev+bounces-8758-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8759-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id CB0DE7258F2
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 10:58:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 5B556725906
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 11:00:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 35F3A1C20CEE
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 08:58:36 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BA18D1C20D58
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:00:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF9A58F43;
-	Wed,  7 Jun 2023 08:58:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9B3F28F46;
+	Wed,  7 Jun 2023 09:00:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E57AF6AB9
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 08:58:36 +0000 (UTC)
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FAE91990
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 01:58:07 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-	by a.mx.secunet.com (Postfix) with ESMTP id E99FA2083E;
-	Wed,  7 Jun 2023 10:57:39 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-	by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UJ9Gqfqmjvrx; Wed,  7 Jun 2023 10:57:39 +0200 (CEST)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by a.mx.secunet.com (Postfix) with ESMTPS id 7181A207B0;
-	Wed,  7 Jun 2023 10:57:39 +0200 (CEST)
-Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-	by mailout1.secunet.com (Postfix) with ESMTP id 62F3480004A;
-	Wed,  7 Jun 2023 10:57:39 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 7 Jun 2023 10:57:39 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Wed, 7 Jun
- 2023 10:57:38 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-	id 9C95231844F3; Wed,  7 Jun 2023 10:57:38 +0200 (CEST)
-Date: Wed, 7 Jun 2023 10:57:38 +0200
-From: Steffen Klassert <steffen.klassert@secunet.com>
-To: Herbert Xu <herbert@gondor.apana.org.au>
-CC: <netdev@vger.kernel.org>, David George <David.George@sophos.com>, "Markus
- Trapp" <markus.trapp@secunet.com>
-Subject: Re: [PATCH] xfrm: Use xfrm_state selector for BEET input
-Message-ID: <ZIBGgjWwILqQziGe@gauss3.secunet.de>
-References: <ZAr3rc+QvKs50xkm@gondor.apana.org.au>
- <ZH8OSd1ElPIKCFa+@gauss3.secunet.de>
- <ZIBCFyszqwJlZd/V@gondor.apana.org.au>
- <ZIBEMe8SXYMIuOqK@gauss3.secunet.de>
- <ZIBE62PYoLGzHgz7@gondor.apana.org.au>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FA27882D
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 09:00:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CDF71C4339C;
+	Wed,  7 Jun 2023 09:00:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686128421;
+	bh=F5+N75Zg/ewS0cV/xECJGMYPsMqht0e4NrsDhr0XjP8=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=AjcGkpYAI0O1/OHrmPdmhO8Sb3CmVRjmE1lVgGz0lQGffqHwgxDwzlsSDcygN91gB
+	 XjLNZ4AFdkZOQCo1nNREtUavVyKPwR8zUlYfMqbIrCGDVZGF4OZp4p14Fu6SFKUtD4
+	 c2m+1T0fBPmtY2lp9nZFJUMCDNbwht7RlmFcuCboIDfSYe7LOavvRmlUsmaOEVin9V
+	 779yk1ashNkfWVUMVTRPleemh68x6Po9Dx7+Xa4c7XvOd7yDCMVFHxfunh/vx7mPJ8
+	 bKJA7yvcz1CJ90gzlgHmAYmgmT/QBDfuBXEJhnf6npZyqRotAHo8szBQfsL3ifo6cE
+	 WAImxORBhu/MA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B598FE4D016;
+	Wed,  7 Jun 2023 09:00:21 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZIBE62PYoLGzHgz7@gondor.apana.org.au>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 0/3] net: phy: realtek: Support external PHY clock
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168612842173.26370.13026780994764936762.git-patchwork-notify@kernel.org>
+Date: Wed, 07 Jun 2023 09:00:21 +0000
+References: <20230605154010.49611-1-detlev.casanova@collabora.com>
+In-Reply-To: <20230605154010.49611-1-detlev.casanova@collabora.com>
+To: Detlev Casanova <detlev.casanova@collabora.com>
+Cc: linux-kernel@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+ linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+ kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, f.fainelli@gmail.com,
+ netdev@vger.kernel.org, devicetree@vger.kernel.org
 
-On Wed, Jun 07, 2023 at 04:50:51PM +0800, Herbert Xu wrote:
-> On Wed, Jun 07, 2023 at 10:47:45AM +0200, Steffen Klassert wrote:
-> >
-> > Hm, I thought about that one too. But x->sel.family can
-> > also be AF_UNSPEC, in which case we used the address
-> > family of the inner mode before your change.
+Hello:
+
+This series was applied to netdev/net-next.git (main)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon,  5 Jun 2023 11:40:07 -0400 you wrote:
+> Some PHYs can use an external clock that must be enabled before
+> communicating with them.
 > 
-> It must not be AF_UNSPECT for BEET.  How would you even get the
-> inner addresses if it were UNSPEC?
-> 
-> With BEET the inner addresses are stored in the IPsec SA rather
-> than the actual packet.  So the family is also fixed for a given
-> SA (which we call xfrm_state).
+> Changes since v3:
+>  * Do not call genphy_suspend if WoL is enabled.
+> Changes since v2:
+>  * Reword documentation commit message
+> Changes since v1:
+>  * Remove the clock name as it is not guaranteed to be identical across
+>    different PHYs
+>  * Disable/Enable the clock when suspending/resuming
 
-Right, Good point.
+Here is the summary with links:
+  - [v4,1/3] net: phy: realtek: Add optional external PHY clock
+    https://git.kernel.org/netdev/net-next/c/7300c9b574cc
+  - [v4,2/3] dt-bindings: net: phy: Document support for external PHY clk
+    https://git.kernel.org/netdev/net-next/c/350b7a258f20
+  - [v4,3/3] net: phy: realtek: Disable clock on suspend
+    https://git.kernel.org/netdev/net-next/c/59e227e2894b
 
-Thanks!
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
 
