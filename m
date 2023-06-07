@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-9049-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9051-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id AD90D726BA8
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 22:27:01 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 64C96726BBB
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 22:27:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 156561C20F05
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 20:26:58 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1A431281562
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 20:27:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 290EC3B8D9;
-	Wed,  7 Jun 2023 20:24:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 917484251D;
+	Wed,  7 Jun 2023 20:24:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C86173AE55
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 20:24:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28DF8C433A7;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 394903B8C1
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 20:24:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD996C43444;
 	Wed,  7 Jun 2023 20:24:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686169451;
-	bh=5TsyhqLckU3T3bRcGBqL2TUgNr3hViXw7QjCJNyslDA=;
+	s=k20201202; t=1686169452;
+	bh=63MaFOuf9Z89ihvHbjOJBVpYv41G1pWXtu+ZmK5iboo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=dQSNA8Ur0stmFWcuxflofgjf6zfDiHievpWB+p0nuP9Pgov2EUhtzqVmLL/MfvlPQ
-	 KhnKzGvn31ChChs0G1Jsc1RTBA3uukUSdV+gGFesrW+fGYpTWVCK0joAsFb4ruxLK3
-	 zn8aF7cv2YsTQ0PURqmInWz47YdiryQKJzHSReAPsEkiFcFMUnDbtkducEexgGdSmR
-	 pPnVJRtg8v7ZJEbiFw9XuAbS36cxPQRxvarW3sYYdrLbhTyU2+UCcPditMX3A3I+JM
-	 yiFhDlQG+q1Qk6WoXmLw1eWL1J073EABH0Hub51ZO8vBW2jZaXj9kaoT47mCGhM4a4
-	 Ixz9vHR/GOiOA==
+	b=hCZxblHtnoE9LEEAVqESCC4BuDMbM+jBvadzYHjPtbfdjP//d6QiiIqS4V7w8f8uJ
+	 0VXf5dspAzf0SG0Yd0EUA7+ogtwZ5g0/UgdcaGE0eCWaEiCroOzKLBA0siIXfwtxrI
+	 QgvQ6Ehv76mRG0ADppDgW+IG9e9Semt84T1vXYUjLZZojs3c9Bfdmmb4DhYQkuzq2d
+	 40OfIKPNBRGOWEP/QVRGRKfZx+s9cX/hQ+ZqZ9UO3iVvDVA0SRBG+6vMDeE80wu9Js
+	 snN3Mr7RwqH19RXS9cgl44gSex8Dwvu0Aj1QDADFYohOAh087dfkajQLMq++Hitsig
+	 o2RsvzgohWrXw==
 From: Jakub Kicinski <kuba@kernel.org>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
@@ -37,9 +37,9 @@ Cc: netdev@vger.kernel.org,
 	pabeni@redhat.com,
 	jiri@resnulli.us,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 09/11] tools: ynl-gen: don't generate forward declarations for policies - regen
-Date: Wed,  7 Jun 2023 13:24:01 -0700
-Message-Id: <20230607202403.1089925-10-kuba@kernel.org>
+Subject: [PATCH net-next 10/11] tools: ynl: generate code for the devlink family
+Date: Wed,  7 Jun 2023 13:24:02 -0700
+Message-Id: <20230607202403.1089925-11-kuba@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230607202403.1089925-1-kuba@kernel.org>
 References: <20230607202403.1089925-1-kuba@kernel.org>
@@ -51,56 +51,977 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Renegerate code after dropping forward declarations for policies.
+Admittedly the devlink.yaml spec is fairly limitted,
+it only covers basic device get and info-get ops.
+That's sufficient to be useful (monitoring FW versions
+in the fleet). Plus it gives us a chance to exercise
+deep nesting and directional messaging in YNL.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/net/ynl/generated/fou-user.c       | 2 --
- tools/net/ynl/generated/handshake-user.c | 4 ----
- tools/net/ynl/generated/netdev-user.c    | 2 --
- 3 files changed, 8 deletions(-)
+ tools/net/ynl/generated/Makefile       |   2 +-
+ tools/net/ynl/generated/devlink-user.c | 721 +++++++++++++++++++++++++
+ tools/net/ynl/generated/devlink-user.h | 210 +++++++
+ 3 files changed, 932 insertions(+), 1 deletion(-)
+ create mode 100644 tools/net/ynl/generated/devlink-user.c
+ create mode 100644 tools/net/ynl/generated/devlink-user.h
 
-diff --git a/tools/net/ynl/generated/fou-user.c b/tools/net/ynl/generated/fou-user.c
-index a0f33bb882e4..c08c85a6b6c4 100644
---- a/tools/net/ynl/generated/fou-user.c
-+++ b/tools/net/ynl/generated/fou-user.c
-@@ -42,8 +42,6 @@ const char *fou_encap_type_str(int value)
- }
+diff --git a/tools/net/ynl/generated/Makefile b/tools/net/ynl/generated/Makefile
+index 916723193b60..8ce610910b8d 100644
+--- a/tools/net/ynl/generated/Makefile
++++ b/tools/net/ynl/generated/Makefile
+@@ -9,7 +9,7 @@ endif
  
- /* Policies */
--extern struct ynl_policy_nest fou_nest;
--
- struct ynl_policy_attr fou_policy[FOU_ATTR_MAX + 1] = {
- 	[FOU_ATTR_UNSPEC] = { .name = "unspec", .type = YNL_PT_REJECT, },
- 	[FOU_ATTR_PORT] = { .name = "port", .type = YNL_PT_U16, },
-diff --git a/tools/net/ynl/generated/handshake-user.c b/tools/net/ynl/generated/handshake-user.c
-index fe99c4ef7373..72eb1c52a8fc 100644
---- a/tools/net/ynl/generated/handshake-user.c
-+++ b/tools/net/ynl/generated/handshake-user.c
-@@ -69,10 +69,6 @@ const char *handshake_auth_str(enum handshake_auth value)
- }
+ TOOL:=../ynl-gen-c.py
  
- /* Policies */
--extern struct ynl_policy_nest handshake_x509_nest;
--extern struct ynl_policy_nest handshake_accept_nest;
--extern struct ynl_policy_nest handshake_done_nest;
--
- struct ynl_policy_attr handshake_x509_policy[HANDSHAKE_A_X509_MAX + 1] = {
- 	[HANDSHAKE_A_X509_CERT] = { .name = "cert", .type = YNL_PT_U32, },
- 	[HANDSHAKE_A_X509_PRIVKEY] = { .name = "privkey", .type = YNL_PT_U32, },
-diff --git a/tools/net/ynl/generated/netdev-user.c b/tools/net/ynl/generated/netdev-user.c
-index aea5c7cc8ead..3db6921b9fab 100644
---- a/tools/net/ynl/generated/netdev-user.c
-+++ b/tools/net/ynl/generated/netdev-user.c
-@@ -48,8 +48,6 @@ const char *netdev_xdp_act_str(enum netdev_xdp_act value)
- }
- 
- /* Policies */
--extern struct ynl_policy_nest netdev_dev_nest;
--
- struct ynl_policy_attr netdev_dev_policy[NETDEV_A_DEV_MAX + 1] = {
- 	[NETDEV_A_DEV_IFINDEX] = { .name = "ifindex", .type = YNL_PT_U32, },
- 	[NETDEV_A_DEV_PAD] = { .name = "pad", .type = YNL_PT_IGNORE, },
+-GENS:=handshake fou netdev
++GENS:=devlink handshake fou netdev
+ SRCS=$(patsubst %,%-user.c,${GENS})
+ HDRS=$(patsubst %,%-user.h,${GENS})
+ OBJS=$(patsubst %,%-user.o,${GENS})
+diff --git a/tools/net/ynl/generated/devlink-user.c b/tools/net/ynl/generated/devlink-user.c
+new file mode 100644
+index 000000000000..c3204e20b971
+--- /dev/null
++++ b/tools/net/ynl/generated/devlink-user.c
+@@ -0,0 +1,721 @@
++// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
++/* Do not edit directly, auto-generated from: */
++/*	Documentation/netlink/specs/devlink.yaml */
++/* YNL-GEN user source */
++
++#include <stdlib.h>
++#include "devlink-user.h"
++#include "ynl.h"
++#include <linux/devlink.h>
++
++#include <stdlib.h>
++#include <stdio.h>
++#include <string.h>
++#include <libmnl/libmnl.h>
++#include <linux/genetlink.h>
++
++/* Enums */
++static const char * const devlink_op_strmap[] = {
++	[3] = "get",
++	[DEVLINK_CMD_INFO_GET] = "info-get",
++};
++
++const char *devlink_op_str(int op)
++{
++	if (op < 0 || op >= (int)MNL_ARRAY_SIZE(devlink_op_strmap))
++		return NULL;
++	return devlink_op_strmap[op];
++}
++
++/* Policies */
++struct ynl_policy_attr devlink_dl_info_version_policy[DEVLINK_ATTR_MAX + 1] = {
++	[DEVLINK_ATTR_INFO_VERSION_NAME] = { .name = "info-version-name", .type = YNL_PT_NUL_STR, },
++	[DEVLINK_ATTR_INFO_VERSION_VALUE] = { .name = "info-version-value", .type = YNL_PT_NUL_STR, },
++};
++
++struct ynl_policy_nest devlink_dl_info_version_nest = {
++	.max_attr = DEVLINK_ATTR_MAX,
++	.table = devlink_dl_info_version_policy,
++};
++
++struct ynl_policy_attr devlink_dl_reload_stats_entry_policy[DEVLINK_ATTR_MAX + 1] = {
++	[DEVLINK_ATTR_RELOAD_STATS_LIMIT] = { .name = "reload-stats-limit", .type = YNL_PT_U8, },
++	[DEVLINK_ATTR_RELOAD_STATS_VALUE] = { .name = "reload-stats-value", .type = YNL_PT_U32, },
++};
++
++struct ynl_policy_nest devlink_dl_reload_stats_entry_nest = {
++	.max_attr = DEVLINK_ATTR_MAX,
++	.table = devlink_dl_reload_stats_entry_policy,
++};
++
++struct ynl_policy_attr devlink_dl_reload_act_stats_policy[DEVLINK_ATTR_MAX + 1] = {
++	[DEVLINK_ATTR_RELOAD_STATS_ENTRY] = { .name = "reload-stats-entry", .type = YNL_PT_NEST, .nest = &devlink_dl_reload_stats_entry_nest, },
++};
++
++struct ynl_policy_nest devlink_dl_reload_act_stats_nest = {
++	.max_attr = DEVLINK_ATTR_MAX,
++	.table = devlink_dl_reload_act_stats_policy,
++};
++
++struct ynl_policy_attr devlink_dl_reload_act_info_policy[DEVLINK_ATTR_MAX + 1] = {
++	[DEVLINK_ATTR_RELOAD_ACTION] = { .name = "reload-action", .type = YNL_PT_U8, },
++	[DEVLINK_ATTR_RELOAD_ACTION_STATS] = { .name = "reload-action-stats", .type = YNL_PT_NEST, .nest = &devlink_dl_reload_act_stats_nest, },
++};
++
++struct ynl_policy_nest devlink_dl_reload_act_info_nest = {
++	.max_attr = DEVLINK_ATTR_MAX,
++	.table = devlink_dl_reload_act_info_policy,
++};
++
++struct ynl_policy_attr devlink_dl_reload_stats_policy[DEVLINK_ATTR_MAX + 1] = {
++	[DEVLINK_ATTR_RELOAD_ACTION_INFO] = { .name = "reload-action-info", .type = YNL_PT_NEST, .nest = &devlink_dl_reload_act_info_nest, },
++};
++
++struct ynl_policy_nest devlink_dl_reload_stats_nest = {
++	.max_attr = DEVLINK_ATTR_MAX,
++	.table = devlink_dl_reload_stats_policy,
++};
++
++struct ynl_policy_attr devlink_dl_dev_stats_policy[DEVLINK_ATTR_MAX + 1] = {
++	[DEVLINK_ATTR_RELOAD_STATS] = { .name = "reload-stats", .type = YNL_PT_NEST, .nest = &devlink_dl_reload_stats_nest, },
++	[DEVLINK_ATTR_REMOTE_RELOAD_STATS] = { .name = "remote-reload-stats", .type = YNL_PT_NEST, .nest = &devlink_dl_reload_stats_nest, },
++};
++
++struct ynl_policy_nest devlink_dl_dev_stats_nest = {
++	.max_attr = DEVLINK_ATTR_MAX,
++	.table = devlink_dl_dev_stats_policy,
++};
++
++struct ynl_policy_attr devlink_policy[DEVLINK_ATTR_MAX + 1] = {
++	[DEVLINK_ATTR_BUS_NAME] = { .name = "bus-name", .type = YNL_PT_NUL_STR, },
++	[DEVLINK_ATTR_DEV_NAME] = { .name = "dev-name", .type = YNL_PT_NUL_STR, },
++	[DEVLINK_ATTR_PORT_INDEX] = { .name = "port-index", .type = YNL_PT_U32, },
++	[DEVLINK_ATTR_INFO_DRIVER_NAME] = { .name = "info-driver-name", .type = YNL_PT_NUL_STR, },
++	[DEVLINK_ATTR_INFO_SERIAL_NUMBER] = { .name = "info-serial-number", .type = YNL_PT_NUL_STR, },
++	[DEVLINK_ATTR_INFO_VERSION_FIXED] = { .name = "info-version-fixed", .type = YNL_PT_NEST, .nest = &devlink_dl_info_version_nest, },
++	[DEVLINK_ATTR_INFO_VERSION_RUNNING] = { .name = "info-version-running", .type = YNL_PT_NEST, .nest = &devlink_dl_info_version_nest, },
++	[DEVLINK_ATTR_INFO_VERSION_STORED] = { .name = "info-version-stored", .type = YNL_PT_NEST, .nest = &devlink_dl_info_version_nest, },
++	[DEVLINK_ATTR_INFO_VERSION_NAME] = { .name = "info-version-name", .type = YNL_PT_NUL_STR, },
++	[DEVLINK_ATTR_INFO_VERSION_VALUE] = { .name = "info-version-value", .type = YNL_PT_NUL_STR, },
++	[DEVLINK_ATTR_RELOAD_FAILED] = { .name = "reload-failed", .type = YNL_PT_U8, },
++	[DEVLINK_ATTR_RELOAD_ACTION] = { .name = "reload-action", .type = YNL_PT_U8, },
++	[DEVLINK_ATTR_DEV_STATS] = { .name = "dev-stats", .type = YNL_PT_NEST, .nest = &devlink_dl_dev_stats_nest, },
++	[DEVLINK_ATTR_RELOAD_STATS] = { .name = "reload-stats", .type = YNL_PT_NEST, .nest = &devlink_dl_reload_stats_nest, },
++	[DEVLINK_ATTR_RELOAD_STATS_ENTRY] = { .name = "reload-stats-entry", .type = YNL_PT_NEST, .nest = &devlink_dl_reload_stats_entry_nest, },
++	[DEVLINK_ATTR_RELOAD_STATS_LIMIT] = { .name = "reload-stats-limit", .type = YNL_PT_U8, },
++	[DEVLINK_ATTR_RELOAD_STATS_VALUE] = { .name = "reload-stats-value", .type = YNL_PT_U32, },
++	[DEVLINK_ATTR_REMOTE_RELOAD_STATS] = { .name = "remote-reload-stats", .type = YNL_PT_NEST, .nest = &devlink_dl_reload_stats_nest, },
++	[DEVLINK_ATTR_RELOAD_ACTION_INFO] = { .name = "reload-action-info", .type = YNL_PT_NEST, .nest = &devlink_dl_reload_act_info_nest, },
++	[DEVLINK_ATTR_RELOAD_ACTION_STATS] = { .name = "reload-action-stats", .type = YNL_PT_NEST, .nest = &devlink_dl_reload_act_stats_nest, },
++};
++
++struct ynl_policy_nest devlink_nest = {
++	.max_attr = DEVLINK_ATTR_MAX,
++	.table = devlink_policy,
++};
++
++/* Common nested types */
++void devlink_dl_info_version_free(struct devlink_dl_info_version *obj)
++{
++	free(obj->info_version_name);
++	free(obj->info_version_value);
++}
++
++int devlink_dl_info_version_parse(struct ynl_parse_arg *yarg,
++				  const struct nlattr *nested)
++{
++	struct devlink_dl_info_version *dst = yarg->data;
++	const struct nlattr *attr;
++
++	mnl_attr_for_each_nested(attr, nested) {
++		if (mnl_attr_get_type(attr) == DEVLINK_ATTR_INFO_VERSION_NAME) {
++			unsigned int len;
++
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++
++			len = strnlen(mnl_attr_get_str(attr), mnl_attr_get_payload_len(attr));
++			dst->_present.info_version_name_len = len;
++			dst->info_version_name = malloc(len + 1);
++			memcpy(dst->info_version_name, mnl_attr_get_str(attr), len);
++			dst->info_version_name[len] = 0;
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_INFO_VERSION_VALUE) {
++			unsigned int len;
++
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++
++			len = strnlen(mnl_attr_get_str(attr), mnl_attr_get_payload_len(attr));
++			dst->_present.info_version_value_len = len;
++			dst->info_version_value = malloc(len + 1);
++			memcpy(dst->info_version_value, mnl_attr_get_str(attr), len);
++			dst->info_version_value[len] = 0;
++		}
++	}
++
++	return 0;
++}
++
++void
++devlink_dl_reload_stats_entry_free(struct devlink_dl_reload_stats_entry *obj)
++{
++}
++
++int devlink_dl_reload_stats_entry_parse(struct ynl_parse_arg *yarg,
++					const struct nlattr *nested)
++{
++	struct devlink_dl_reload_stats_entry *dst = yarg->data;
++	const struct nlattr *attr;
++
++	mnl_attr_for_each_nested(attr, nested) {
++		if (mnl_attr_get_type(attr) == DEVLINK_ATTR_RELOAD_STATS_LIMIT) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.reload_stats_limit = 1;
++			dst->reload_stats_limit = mnl_attr_get_u8(attr);
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_RELOAD_STATS_VALUE) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.reload_stats_value = 1;
++			dst->reload_stats_value = mnl_attr_get_u32(attr);
++		}
++	}
++
++	return 0;
++}
++
++void devlink_dl_reload_act_stats_free(struct devlink_dl_reload_act_stats *obj)
++{
++	unsigned int i;
++
++	for (i = 0; i < obj->n_reload_stats_entry; i++)
++		devlink_dl_reload_stats_entry_free(&obj->reload_stats_entry[i]);
++	free(obj->reload_stats_entry);
++}
++
++int devlink_dl_reload_act_stats_parse(struct ynl_parse_arg *yarg,
++				      const struct nlattr *nested)
++{
++	struct devlink_dl_reload_act_stats *dst = yarg->data;
++	unsigned int n_reload_stats_entry = 0;
++	const struct nlattr *attr;
++	struct ynl_parse_arg parg;
++	int i;
++
++	parg.ys = yarg->ys;
++
++	if (dst->reload_stats_entry)
++		return ynl_error_parse(yarg, "attribute already present (dl-reload-act-stats.reload-stats-entry)");
++
++	mnl_attr_for_each_nested(attr, nested) {
++		if (mnl_attr_get_type(attr) == DEVLINK_ATTR_RELOAD_STATS_ENTRY) {
++			n_reload_stats_entry++;
++		}
++	}
++
++	if (n_reload_stats_entry) {
++		dst->reload_stats_entry = calloc(n_reload_stats_entry, sizeof(*dst->reload_stats_entry));
++		dst->n_reload_stats_entry = n_reload_stats_entry;
++		i = 0;
++		parg.rsp_policy = &devlink_dl_reload_stats_entry_nest;
++		mnl_attr_for_each_nested(attr, nested) {
++			if (mnl_attr_get_type(attr) == DEVLINK_ATTR_RELOAD_STATS_ENTRY) {
++				parg.data = &dst->reload_stats_entry[i];
++				if (devlink_dl_reload_stats_entry_parse(&parg, attr))
++					return MNL_CB_ERROR;
++				i++;
++			}
++		}
++	}
++
++	return 0;
++}
++
++void devlink_dl_reload_act_info_free(struct devlink_dl_reload_act_info *obj)
++{
++	unsigned int i;
++
++	for (i = 0; i < obj->n_reload_action_stats; i++)
++		devlink_dl_reload_act_stats_free(&obj->reload_action_stats[i]);
++	free(obj->reload_action_stats);
++}
++
++int devlink_dl_reload_act_info_parse(struct ynl_parse_arg *yarg,
++				     const struct nlattr *nested)
++{
++	struct devlink_dl_reload_act_info *dst = yarg->data;
++	unsigned int n_reload_action_stats = 0;
++	const struct nlattr *attr;
++	struct ynl_parse_arg parg;
++	int i;
++
++	parg.ys = yarg->ys;
++
++	if (dst->reload_action_stats)
++		return ynl_error_parse(yarg, "attribute already present (dl-reload-act-info.reload-action-stats)");
++
++	mnl_attr_for_each_nested(attr, nested) {
++		if (mnl_attr_get_type(attr) == DEVLINK_ATTR_RELOAD_ACTION) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.reload_action = 1;
++			dst->reload_action = mnl_attr_get_u8(attr);
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_RELOAD_ACTION_STATS) {
++			n_reload_action_stats++;
++		}
++	}
++
++	if (n_reload_action_stats) {
++		dst->reload_action_stats = calloc(n_reload_action_stats, sizeof(*dst->reload_action_stats));
++		dst->n_reload_action_stats = n_reload_action_stats;
++		i = 0;
++		parg.rsp_policy = &devlink_dl_reload_act_stats_nest;
++		mnl_attr_for_each_nested(attr, nested) {
++			if (mnl_attr_get_type(attr) == DEVLINK_ATTR_RELOAD_ACTION_STATS) {
++				parg.data = &dst->reload_action_stats[i];
++				if (devlink_dl_reload_act_stats_parse(&parg, attr))
++					return MNL_CB_ERROR;
++				i++;
++			}
++		}
++	}
++
++	return 0;
++}
++
++void devlink_dl_reload_stats_free(struct devlink_dl_reload_stats *obj)
++{
++	unsigned int i;
++
++	for (i = 0; i < obj->n_reload_action_info; i++)
++		devlink_dl_reload_act_info_free(&obj->reload_action_info[i]);
++	free(obj->reload_action_info);
++}
++
++int devlink_dl_reload_stats_parse(struct ynl_parse_arg *yarg,
++				  const struct nlattr *nested)
++{
++	struct devlink_dl_reload_stats *dst = yarg->data;
++	unsigned int n_reload_action_info = 0;
++	const struct nlattr *attr;
++	struct ynl_parse_arg parg;
++	int i;
++
++	parg.ys = yarg->ys;
++
++	if (dst->reload_action_info)
++		return ynl_error_parse(yarg, "attribute already present (dl-reload-stats.reload-action-info)");
++
++	mnl_attr_for_each_nested(attr, nested) {
++		if (mnl_attr_get_type(attr) == DEVLINK_ATTR_RELOAD_ACTION_INFO) {
++			n_reload_action_info++;
++		}
++	}
++
++	if (n_reload_action_info) {
++		dst->reload_action_info = calloc(n_reload_action_info, sizeof(*dst->reload_action_info));
++		dst->n_reload_action_info = n_reload_action_info;
++		i = 0;
++		parg.rsp_policy = &devlink_dl_reload_act_info_nest;
++		mnl_attr_for_each_nested(attr, nested) {
++			if (mnl_attr_get_type(attr) == DEVLINK_ATTR_RELOAD_ACTION_INFO) {
++				parg.data = &dst->reload_action_info[i];
++				if (devlink_dl_reload_act_info_parse(&parg, attr))
++					return MNL_CB_ERROR;
++				i++;
++			}
++		}
++	}
++
++	return 0;
++}
++
++void devlink_dl_dev_stats_free(struct devlink_dl_dev_stats *obj)
++{
++	devlink_dl_reload_stats_free(&obj->reload_stats);
++	devlink_dl_reload_stats_free(&obj->remote_reload_stats);
++}
++
++int devlink_dl_dev_stats_parse(struct ynl_parse_arg *yarg,
++			       const struct nlattr *nested)
++{
++	struct devlink_dl_dev_stats *dst = yarg->data;
++	const struct nlattr *attr;
++	struct ynl_parse_arg parg;
++
++	parg.ys = yarg->ys;
++
++	mnl_attr_for_each_nested(attr, nested) {
++		if (mnl_attr_get_type(attr) == DEVLINK_ATTR_RELOAD_STATS) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.reload_stats = 1;
++
++			parg.rsp_policy = &devlink_dl_reload_stats_nest;
++			parg.data = &dst->reload_stats;
++			if (devlink_dl_reload_stats_parse(&parg, attr))
++				return MNL_CB_ERROR;
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_REMOTE_RELOAD_STATS) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.remote_reload_stats = 1;
++
++			parg.rsp_policy = &devlink_dl_reload_stats_nest;
++			parg.data = &dst->remote_reload_stats;
++			if (devlink_dl_reload_stats_parse(&parg, attr))
++				return MNL_CB_ERROR;
++		}
++	}
++
++	return 0;
++}
++
++/* ============== DEVLINK_CMD_GET ============== */
++/* DEVLINK_CMD_GET - do */
++void devlink_get_req_free(struct devlink_get_req *req)
++{
++	free(req->bus_name);
++	free(req->dev_name);
++	free(req);
++}
++
++void devlink_get_rsp_free(struct devlink_get_rsp *rsp)
++{
++	free(rsp->bus_name);
++	free(rsp->dev_name);
++	devlink_dl_dev_stats_free(&rsp->dev_stats);
++	free(rsp);
++}
++
++int devlink_get_rsp_parse(const struct nlmsghdr *nlh, void *data)
++{
++	struct ynl_parse_arg *yarg = data;
++	struct devlink_get_rsp *dst;
++	const struct nlattr *attr;
++	struct ynl_parse_arg parg;
++
++	dst = yarg->data;
++	parg.ys = yarg->ys;
++
++	mnl_attr_for_each(attr, nlh, sizeof(struct genlmsghdr)) {
++		if (mnl_attr_get_type(attr) == DEVLINK_ATTR_BUS_NAME) {
++			unsigned int len;
++
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++
++			len = strnlen(mnl_attr_get_str(attr), mnl_attr_get_payload_len(attr));
++			dst->_present.bus_name_len = len;
++			dst->bus_name = malloc(len + 1);
++			memcpy(dst->bus_name, mnl_attr_get_str(attr), len);
++			dst->bus_name[len] = 0;
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_DEV_NAME) {
++			unsigned int len;
++
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++
++			len = strnlen(mnl_attr_get_str(attr), mnl_attr_get_payload_len(attr));
++			dst->_present.dev_name_len = len;
++			dst->dev_name = malloc(len + 1);
++			memcpy(dst->dev_name, mnl_attr_get_str(attr), len);
++			dst->dev_name[len] = 0;
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_RELOAD_FAILED) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.reload_failed = 1;
++			dst->reload_failed = mnl_attr_get_u8(attr);
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_RELOAD_ACTION) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.reload_action = 1;
++			dst->reload_action = mnl_attr_get_u8(attr);
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_DEV_STATS) {
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++			dst->_present.dev_stats = 1;
++
++			parg.rsp_policy = &devlink_dl_dev_stats_nest;
++			parg.data = &dst->dev_stats;
++			if (devlink_dl_dev_stats_parse(&parg, attr))
++				return MNL_CB_ERROR;
++		}
++	}
++
++	return MNL_CB_OK;
++}
++
++struct devlink_get_rsp *
++devlink_get(struct ynl_sock *ys, struct devlink_get_req *req)
++{
++	struct ynl_req_state yrs = { .yarg = { .ys = ys, }, };
++	struct devlink_get_rsp *rsp;
++	struct nlmsghdr *nlh;
++	int err;
++
++	nlh = ynl_gemsg_start_req(ys, ys->family_id, DEVLINK_CMD_GET, 1);
++	ys->req_policy = &devlink_nest;
++	yrs.yarg.rsp_policy = &devlink_nest;
++
++	if (req->_present.bus_name_len)
++		mnl_attr_put_strz(nlh, DEVLINK_ATTR_BUS_NAME, req->bus_name);
++	if (req->_present.dev_name_len)
++		mnl_attr_put_strz(nlh, DEVLINK_ATTR_DEV_NAME, req->dev_name);
++
++	rsp = calloc(1, sizeof(*rsp));
++	yrs.yarg.data = rsp;
++	yrs.cb = devlink_get_rsp_parse;
++	yrs.rsp_cmd = 3;
++
++	err = ynl_exec(ys, nlh, &yrs);
++	if (err < 0)
++		goto err_free;
++
++	return rsp;
++
++err_free:
++	devlink_get_rsp_free(rsp);
++	return NULL;
++}
++
++/* DEVLINK_CMD_GET - dump */
++void devlink_get_list_free(struct devlink_get_list *rsp)
++{
++	struct devlink_get_list *next = rsp;
++
++	while ((void *)next != YNL_LIST_END) {
++		rsp = next;
++		next = rsp->next;
++
++		free(rsp->obj.bus_name);
++		free(rsp->obj.dev_name);
++		devlink_dl_dev_stats_free(&rsp->obj.dev_stats);
++		free(rsp);
++	}
++}
++
++struct devlink_get_list *devlink_get_dump(struct ynl_sock *ys)
++{
++	struct ynl_dump_state yds = {};
++	struct nlmsghdr *nlh;
++	int err;
++
++	yds.ys = ys;
++	yds.alloc_sz = sizeof(struct devlink_get_list);
++	yds.cb = devlink_get_rsp_parse;
++	yds.rsp_cmd = 3;
++	yds.rsp_policy = &devlink_nest;
++
++	nlh = ynl_gemsg_start_dump(ys, ys->family_id, DEVLINK_CMD_GET, 1);
++
++	err = ynl_exec_dump(ys, nlh, &yds);
++	if (err < 0)
++		goto free_list;
++
++	return yds.first;
++
++free_list:
++	devlink_get_list_free(yds.first);
++	return NULL;
++}
++
++/* ============== DEVLINK_CMD_INFO_GET ============== */
++/* DEVLINK_CMD_INFO_GET - do */
++void devlink_info_get_req_free(struct devlink_info_get_req *req)
++{
++	free(req->bus_name);
++	free(req->dev_name);
++	free(req);
++}
++
++void devlink_info_get_rsp_free(struct devlink_info_get_rsp *rsp)
++{
++	unsigned int i;
++
++	free(rsp->bus_name);
++	free(rsp->dev_name);
++	free(rsp->info_driver_name);
++	free(rsp->info_serial_number);
++	for (i = 0; i < rsp->n_info_version_fixed; i++)
++		devlink_dl_info_version_free(&rsp->info_version_fixed[i]);
++	free(rsp->info_version_fixed);
++	for (i = 0; i < rsp->n_info_version_running; i++)
++		devlink_dl_info_version_free(&rsp->info_version_running[i]);
++	free(rsp->info_version_running);
++	for (i = 0; i < rsp->n_info_version_stored; i++)
++		devlink_dl_info_version_free(&rsp->info_version_stored[i]);
++	free(rsp->info_version_stored);
++	free(rsp);
++}
++
++int devlink_info_get_rsp_parse(const struct nlmsghdr *nlh, void *data)
++{
++	unsigned int n_info_version_running = 0;
++	unsigned int n_info_version_stored = 0;
++	unsigned int n_info_version_fixed = 0;
++	struct ynl_parse_arg *yarg = data;
++	struct devlink_info_get_rsp *dst;
++	const struct nlattr *attr;
++	struct ynl_parse_arg parg;
++	int i;
++
++	dst = yarg->data;
++	parg.ys = yarg->ys;
++
++	if (dst->info_version_fixed)
++		return ynl_error_parse(yarg, "attribute already present (devlink.info-version-fixed)");
++	if (dst->info_version_running)
++		return ynl_error_parse(yarg, "attribute already present (devlink.info-version-running)");
++	if (dst->info_version_stored)
++		return ynl_error_parse(yarg, "attribute already present (devlink.info-version-stored)");
++
++	mnl_attr_for_each(attr, nlh, sizeof(struct genlmsghdr)) {
++		if (mnl_attr_get_type(attr) == DEVLINK_ATTR_BUS_NAME) {
++			unsigned int len;
++
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++
++			len = strnlen(mnl_attr_get_str(attr), mnl_attr_get_payload_len(attr));
++			dst->_present.bus_name_len = len;
++			dst->bus_name = malloc(len + 1);
++			memcpy(dst->bus_name, mnl_attr_get_str(attr), len);
++			dst->bus_name[len] = 0;
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_DEV_NAME) {
++			unsigned int len;
++
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++
++			len = strnlen(mnl_attr_get_str(attr), mnl_attr_get_payload_len(attr));
++			dst->_present.dev_name_len = len;
++			dst->dev_name = malloc(len + 1);
++			memcpy(dst->dev_name, mnl_attr_get_str(attr), len);
++			dst->dev_name[len] = 0;
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_INFO_DRIVER_NAME) {
++			unsigned int len;
++
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++
++			len = strnlen(mnl_attr_get_str(attr), mnl_attr_get_payload_len(attr));
++			dst->_present.info_driver_name_len = len;
++			dst->info_driver_name = malloc(len + 1);
++			memcpy(dst->info_driver_name, mnl_attr_get_str(attr), len);
++			dst->info_driver_name[len] = 0;
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_INFO_SERIAL_NUMBER) {
++			unsigned int len;
++
++			if (ynl_attr_validate(yarg, attr))
++				return MNL_CB_ERROR;
++
++			len = strnlen(mnl_attr_get_str(attr), mnl_attr_get_payload_len(attr));
++			dst->_present.info_serial_number_len = len;
++			dst->info_serial_number = malloc(len + 1);
++			memcpy(dst->info_serial_number, mnl_attr_get_str(attr), len);
++			dst->info_serial_number[len] = 0;
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_INFO_VERSION_FIXED) {
++			n_info_version_fixed++;
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_INFO_VERSION_RUNNING) {
++			n_info_version_running++;
++		}
++		else if (mnl_attr_get_type(attr) == DEVLINK_ATTR_INFO_VERSION_STORED) {
++			n_info_version_stored++;
++		}
++	}
++
++	if (n_info_version_fixed) {
++		dst->info_version_fixed = calloc(n_info_version_fixed, sizeof(*dst->info_version_fixed));
++		dst->n_info_version_fixed = n_info_version_fixed;
++		i = 0;
++		parg.rsp_policy = &devlink_dl_info_version_nest;
++		mnl_attr_for_each(attr, nlh, sizeof(struct genlmsghdr)) {
++			if (mnl_attr_get_type(attr) == DEVLINK_ATTR_INFO_VERSION_FIXED) {
++				parg.data = &dst->info_version_fixed[i];
++				if (devlink_dl_info_version_parse(&parg, attr))
++					return MNL_CB_ERROR;
++				i++;
++			}
++		}
++	}
++	if (n_info_version_running) {
++		dst->info_version_running = calloc(n_info_version_running, sizeof(*dst->info_version_running));
++		dst->n_info_version_running = n_info_version_running;
++		i = 0;
++		parg.rsp_policy = &devlink_dl_info_version_nest;
++		mnl_attr_for_each(attr, nlh, sizeof(struct genlmsghdr)) {
++			if (mnl_attr_get_type(attr) == DEVLINK_ATTR_INFO_VERSION_RUNNING) {
++				parg.data = &dst->info_version_running[i];
++				if (devlink_dl_info_version_parse(&parg, attr))
++					return MNL_CB_ERROR;
++				i++;
++			}
++		}
++	}
++	if (n_info_version_stored) {
++		dst->info_version_stored = calloc(n_info_version_stored, sizeof(*dst->info_version_stored));
++		dst->n_info_version_stored = n_info_version_stored;
++		i = 0;
++		parg.rsp_policy = &devlink_dl_info_version_nest;
++		mnl_attr_for_each(attr, nlh, sizeof(struct genlmsghdr)) {
++			if (mnl_attr_get_type(attr) == DEVLINK_ATTR_INFO_VERSION_STORED) {
++				parg.data = &dst->info_version_stored[i];
++				if (devlink_dl_info_version_parse(&parg, attr))
++					return MNL_CB_ERROR;
++				i++;
++			}
++		}
++	}
++
++	return MNL_CB_OK;
++}
++
++struct devlink_info_get_rsp *
++devlink_info_get(struct ynl_sock *ys, struct devlink_info_get_req *req)
++{
++	struct ynl_req_state yrs = { .yarg = { .ys = ys, }, };
++	struct devlink_info_get_rsp *rsp;
++	struct nlmsghdr *nlh;
++	int err;
++
++	nlh = ynl_gemsg_start_req(ys, ys->family_id, DEVLINK_CMD_INFO_GET, 1);
++	ys->req_policy = &devlink_nest;
++	yrs.yarg.rsp_policy = &devlink_nest;
++
++	if (req->_present.bus_name_len)
++		mnl_attr_put_strz(nlh, DEVLINK_ATTR_BUS_NAME, req->bus_name);
++	if (req->_present.dev_name_len)
++		mnl_attr_put_strz(nlh, DEVLINK_ATTR_DEV_NAME, req->dev_name);
++
++	rsp = calloc(1, sizeof(*rsp));
++	yrs.yarg.data = rsp;
++	yrs.cb = devlink_info_get_rsp_parse;
++	yrs.rsp_cmd = DEVLINK_CMD_INFO_GET;
++
++	err = ynl_exec(ys, nlh, &yrs);
++	if (err < 0)
++		goto err_free;
++
++	return rsp;
++
++err_free:
++	devlink_info_get_rsp_free(rsp);
++	return NULL;
++}
++
++const struct ynl_family ynl_devlink_family =  {
++	.name		= "devlink",
++};
+diff --git a/tools/net/ynl/generated/devlink-user.h b/tools/net/ynl/generated/devlink-user.h
+new file mode 100644
+index 000000000000..a008b99b6e24
+--- /dev/null
++++ b/tools/net/ynl/generated/devlink-user.h
+@@ -0,0 +1,210 @@
++/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
++/* Do not edit directly, auto-generated from: */
++/*	Documentation/netlink/specs/devlink.yaml */
++/* YNL-GEN user header */
++
++#ifndef _LINUX_DEVLINK_GEN_H
++#define _LINUX_DEVLINK_GEN_H
++
++#include <stdlib.h>
++#include <string.h>
++#include <linux/types.h>
++#include <linux/devlink.h>
++
++struct ynl_sock;
++
++extern const struct ynl_family ynl_devlink_family;
++
++/* Enums */
++const char *devlink_op_str(int op);
++
++/* Common nested types */
++struct devlink_dl_info_version {
++	struct {
++		__u32 info_version_name_len;
++		__u32 info_version_value_len;
++	} _present;
++
++	char *info_version_name;
++	char *info_version_value;
++};
++
++struct devlink_dl_reload_stats_entry {
++	struct {
++		__u32 reload_stats_limit:1;
++		__u32 reload_stats_value:1;
++	} _present;
++
++	__u8 reload_stats_limit;
++	__u32 reload_stats_value;
++};
++
++struct devlink_dl_reload_act_stats {
++	unsigned int n_reload_stats_entry;
++	struct devlink_dl_reload_stats_entry *reload_stats_entry;
++};
++
++struct devlink_dl_reload_act_info {
++	struct {
++		__u32 reload_action:1;
++	} _present;
++
++	__u8 reload_action;
++	unsigned int n_reload_action_stats;
++	struct devlink_dl_reload_act_stats *reload_action_stats;
++};
++
++struct devlink_dl_reload_stats {
++	unsigned int n_reload_action_info;
++	struct devlink_dl_reload_act_info *reload_action_info;
++};
++
++struct devlink_dl_dev_stats {
++	struct {
++		__u32 reload_stats:1;
++		__u32 remote_reload_stats:1;
++	} _present;
++
++	struct devlink_dl_reload_stats reload_stats;
++	struct devlink_dl_reload_stats remote_reload_stats;
++};
++
++/* ============== DEVLINK_CMD_GET ============== */
++/* DEVLINK_CMD_GET - do */
++struct devlink_get_req {
++	struct {
++		__u32 bus_name_len;
++		__u32 dev_name_len;
++	} _present;
++
++	char *bus_name;
++	char *dev_name;
++};
++
++static inline struct devlink_get_req *devlink_get_req_alloc(void)
++{
++	return calloc(1, sizeof(struct devlink_get_req));
++}
++void devlink_get_req_free(struct devlink_get_req *req);
++
++static inline void
++devlink_get_req_set_bus_name(struct devlink_get_req *req, const char *bus_name)
++{
++	free(req->bus_name);
++	req->_present.bus_name_len = strlen(bus_name);
++	req->bus_name = malloc(req->_present.bus_name_len + 1);
++	memcpy(req->bus_name, bus_name, req->_present.bus_name_len);
++	req->bus_name[req->_present.bus_name_len] = 0;
++}
++static inline void
++devlink_get_req_set_dev_name(struct devlink_get_req *req, const char *dev_name)
++{
++	free(req->dev_name);
++	req->_present.dev_name_len = strlen(dev_name);
++	req->dev_name = malloc(req->_present.dev_name_len + 1);
++	memcpy(req->dev_name, dev_name, req->_present.dev_name_len);
++	req->dev_name[req->_present.dev_name_len] = 0;
++}
++
++struct devlink_get_rsp {
++	struct {
++		__u32 bus_name_len;
++		__u32 dev_name_len;
++		__u32 reload_failed:1;
++		__u32 reload_action:1;
++		__u32 dev_stats:1;
++	} _present;
++
++	char *bus_name;
++	char *dev_name;
++	__u8 reload_failed;
++	__u8 reload_action;
++	struct devlink_dl_dev_stats dev_stats;
++};
++
++void devlink_get_rsp_free(struct devlink_get_rsp *rsp);
++
++/*
++ * Get devlink instances.
++ */
++struct devlink_get_rsp *
++devlink_get(struct ynl_sock *ys, struct devlink_get_req *req);
++
++/* DEVLINK_CMD_GET - dump */
++struct devlink_get_list {
++	struct devlink_get_list *next;
++	struct devlink_get_rsp obj __attribute__ ((aligned (8)));
++};
++
++void devlink_get_list_free(struct devlink_get_list *rsp);
++
++struct devlink_get_list *devlink_get_dump(struct ynl_sock *ys);
++
++/* ============== DEVLINK_CMD_INFO_GET ============== */
++/* DEVLINK_CMD_INFO_GET - do */
++struct devlink_info_get_req {
++	struct {
++		__u32 bus_name_len;
++		__u32 dev_name_len;
++	} _present;
++
++	char *bus_name;
++	char *dev_name;
++};
++
++static inline struct devlink_info_get_req *devlink_info_get_req_alloc(void)
++{
++	return calloc(1, sizeof(struct devlink_info_get_req));
++}
++void devlink_info_get_req_free(struct devlink_info_get_req *req);
++
++static inline void
++devlink_info_get_req_set_bus_name(struct devlink_info_get_req *req,
++				  const char *bus_name)
++{
++	free(req->bus_name);
++	req->_present.bus_name_len = strlen(bus_name);
++	req->bus_name = malloc(req->_present.bus_name_len + 1);
++	memcpy(req->bus_name, bus_name, req->_present.bus_name_len);
++	req->bus_name[req->_present.bus_name_len] = 0;
++}
++static inline void
++devlink_info_get_req_set_dev_name(struct devlink_info_get_req *req,
++				  const char *dev_name)
++{
++	free(req->dev_name);
++	req->_present.dev_name_len = strlen(dev_name);
++	req->dev_name = malloc(req->_present.dev_name_len + 1);
++	memcpy(req->dev_name, dev_name, req->_present.dev_name_len);
++	req->dev_name[req->_present.dev_name_len] = 0;
++}
++
++struct devlink_info_get_rsp {
++	struct {
++		__u32 bus_name_len;
++		__u32 dev_name_len;
++		__u32 info_driver_name_len;
++		__u32 info_serial_number_len;
++	} _present;
++
++	char *bus_name;
++	char *dev_name;
++	char *info_driver_name;
++	char *info_serial_number;
++	unsigned int n_info_version_fixed;
++	struct devlink_dl_info_version *info_version_fixed;
++	unsigned int n_info_version_running;
++	struct devlink_dl_info_version *info_version_running;
++	unsigned int n_info_version_stored;
++	struct devlink_dl_info_version *info_version_stored;
++};
++
++void devlink_info_get_rsp_free(struct devlink_info_get_rsp *rsp);
++
++/*
++ * Get device information, like driver name, hardware and firmware versions etc.
++ */
++struct devlink_info_get_rsp *
++devlink_info_get(struct ynl_sock *ys, struct devlink_info_get_req *req);
++
++#endif /* _LINUX_DEVLINK_GEN_H */
 -- 
 2.40.1
 
