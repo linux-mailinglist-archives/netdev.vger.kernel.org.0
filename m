@@ -1,196 +1,249 @@
-Return-Path: <netdev+bounces-8719-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8720-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B62EC725545
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:19:01 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1D421725548
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:19:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 58A5C28120C
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:19:00 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CC56A2811A2
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:19:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 905AD6AA6;
-	Wed,  7 Jun 2023 07:18:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D09BF6AAA;
+	Wed,  7 Jun 2023 07:19:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B9121C3A
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:18:58 +0000 (UTC)
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8CFBE6B;
-	Wed,  7 Jun 2023 00:18:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686122337; x=1717658337;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=U9BMiHlbFJNvV44cawwgmHJfPZst8d6vbpWFC5n0oo8=;
-  b=DPfg/cvvDwxBVEivyMQwRQ0WPPyBvlLjp4ze//cL0/mjsIiaY5gkT66F
-   HhKTJUsjb0yyD7DYQa39BSz2nai/Ux9Zuk/4+BkWbu844WlfJ2xezi/CF
-   t3MD+vcWTSJWt4md/m+j+r272Dq9FG+diRSEk45oijSYjimm7E+THvYSL
-   y24gJNomJqOGxb3PRmBI09P0/gO+HseDoeszH6th2pouQdHeLc95w2MbG
-   xXKEmy478++8jMqt+9N7hp35qL7raH2LcMedmC+sQn/Gzn8OcFbhVfdRp
-   UIhV5N6vctr3i4A9Yvx5PwL02hQePYsWFNhzk9KNyB+zE7EhkxCKrNh+e
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10733"; a="420461772"
-X-IronPort-AV: E=Sophos;i="6.00,223,1681196400"; 
-   d="scan'208";a="420461772"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2023 00:18:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10733"; a="833552774"
-X-IronPort-AV: E=Sophos;i="6.00,223,1681196400"; 
-   d="scan'208";a="833552774"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga004.jf.intel.com with ESMTP; 07 Jun 2023 00:18:55 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 7 Jun 2023 00:18:55 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 7 Jun 2023 00:18:55 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Wed, 7 Jun 2023 00:18:55 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Wed, 7 Jun 2023 00:18:53 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EG+zngTyWI0cZqfM1aH7ukOU9FomMOQwGW63s1glIRon1a7ghoKkRe++TduSYiwYF73yKSKyZiUGGwtQCkGstWU6ObS7P4sjunx7WG/WfD+C9Q8cn8n5gUwsca7VIbhg7NyhbP83d/J6myssv4LHKGkBXREKWhu0zUXwR3gruKkQw4GCYvcgJoU7OwQye1PNVgp/WGO8t0upyVyS2GUi5Jh+XFnRCW5z7sVo0wOjdYvnBEBhKZwoLdSrrnVM5e6NJtdnVgCXaGqpTRXU9n02IhWJ8WSh5FfltE2Q0rKEtH0mtOApQXMK5nC4NuPDSCZuiyxVEok8NuUI6S+z0AixDg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vLC0UU0PVcfkyTb3Axm+8MBdI/8sGCCCx1tjt6UiWIQ=;
- b=Z/qKrP9cEO4ZnQGDP7UUGVttcfjrB3/oecVDqgoi4Q5tRWJtQuRBn1ANl3vt10oKre38Wa3TpqD5CRokSDmUMFAEtDVCZVxm44WFA1hbqzjo6zrsRVYg1wJZTDcmavDVqn51xSTHKGjy1Bw/8xYJrhwoRMRYoe0hyJP7iEVb4KphE8qGySPaNMd1yZLgOHLJBuksna1UNWRgQVu5LXReZl3wiGt5ZCOsyZJxYWF/ojGZtCgeS9kwTa5Rs62XpHzXh9qSDH0keiaqJoxkt4pyvtVMCbOhCWVyDXM8E/1hmZoIW1K9so4O3wVh5TpXf13CYNQtc4JPmFETJhnxECP23Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from SN7PR11MB7540.namprd11.prod.outlook.com (2603:10b6:806:340::7)
- by DS0PR11MB6351.namprd11.prod.outlook.com (2603:10b6:8:cc::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Wed, 7 Jun
- 2023 07:18:51 +0000
-Received: from SN7PR11MB7540.namprd11.prod.outlook.com
- ([fe80::9376:9c9d:424a:a0fe]) by SN7PR11MB7540.namprd11.prod.outlook.com
- ([fe80::9376:9c9d:424a:a0fe%5]) with mapi id 15.20.6455.030; Wed, 7 Jun 2023
- 07:18:51 +0000
-Date: Wed, 7 Jun 2023 09:15:52 +0200
-From: Larysa Zaremba <larysa.zaremba@intel.com>
-To: Hangyu Hua <hbh25y@gmail.com>
-CC: <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-	<davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-	<pabeni@redhat.com>, <simon.horman@corigine.com>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net v2] net: sched: fix possible refcount leak in
- tc_chain_tmplt_add()
-Message-ID: <ZIAuqHiemLrpH6Fr@lincoln>
-References: <20230607022301.6405-1-hbh25y@gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230607022301.6405-1-hbh25y@gmail.com>
-X-ClientProxiedBy: FR0P281CA0125.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:97::20) To SN7PR11MB7540.namprd11.prod.outlook.com
- (2603:10b6:806:340::7)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6A3F63D7
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:19:28 +0000 (UTC)
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC4391732;
+	Wed,  7 Jun 2023 00:19:26 -0700 (PDT)
+Received: from [10.156.157.27] (unknown [167.220.238.91])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 344CA20BE4AD;
+	Wed,  7 Jun 2023 00:19:20 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 344CA20BE4AD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1686122366;
+	bh=hC04ECWbb5T3YWmxhrXYUuU9xPByhL7qzku92/Ib+7E=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=NnCdw/anKSUo1+TfPk0ja10z+B6ASJIuLyypJ3RbYoOdmmcWliNlfVYQHz0m+kOKx
+	 xUVA/ciA/FkoVAggzQsXq6iw2aJJqRf/xY2T9XvQ2qIvVIG6cukfwA/hBHDcKJ0UUW
+	 /hqewoB2AZskATaRovVmmHpc9dr5WSvJmAavjO0o=
+Message-ID: <bb461c30-3eb0-74c0-d637-c4a3bdf84565@linux.microsoft.com>
+Date: Wed, 7 Jun 2023 12:49:18 +0530
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN7PR11MB7540:EE_|DS0PR11MB6351:EE_
-X-MS-Office365-Filtering-Correlation-Id: 674c6cc5-4ea9-49cc-7e88-08db6727717a
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /j0e4NncTXptfCdLHkEfKaEjaT4dZgNtxsd1zlv8PkLBxckzFQxC4ujFemppw7SIixhJooABiVq247GAFjlF1Q3jBMx6AKA+Tpdf7k57I19G5GIr/R/SfWqu4vMP8SbB+XjUUyMytm4Tgfrmtli/sFjbHb9h/cTuAwMyKb1M/nssvyoG0i8GUOUFuFS++b+zsPlhDS5tApenVMXTRhQSGRIcEZ4N5PU3M0JdJ7UV4gEfHot3ajE3Jv35oeGUvKkbQ348KJEvxxDC+Ra4AZKfPa9dx37oNSc8ibuMBxbN/yPdHbp4BLrGsOj4nwpU/nzUH0jsvRi4H6y8lrtQOwMVvyU/9ry8/Lg+1jorYQTQook2MnZJhJf+cyIuRLW4Vik69FgdfuX5HmjS45iqYLa67d6vPW7yuJCDZNRopNGEzSZ+5VZqWZRMHhhly3GG0nJ7lBZzeiIOAqdhb3Nm9d0TGI6itbKOhACRWNKc9fdPzd3jduwk1zbp452Ar6+rQMZHu1eW29vgADQCix2tcU+R5hW+bV6WFzqE18kUqNex5av0Mwx+O5UHfo9mqCEfpk/F
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN7PR11MB7540.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(39860400002)(136003)(346002)(366004)(376002)(396003)(451199021)(4744005)(2906002)(33716001)(86362001)(82960400001)(38100700002)(41300700001)(6486002)(316002)(5660300002)(8936002)(8676002)(478600001)(66946007)(66556008)(66476007)(6916009)(4326008)(6506007)(9686003)(6512007)(26005)(186003)(7416002)(44832011);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fACWIt3uoGJ+qX1uakAq1C2/uSxDwymw/svzHDyxNDhUNdSDQmM5/zG9wGah?=
- =?us-ascii?Q?C+ZuEV530kPF1FoVp7fJHC9G9Pr5P3/ldHNUALYdD/aDSFOeeMbf+Pb9dSCy?=
- =?us-ascii?Q?BzjXL1mRK/VEhIivOGB87gszlxn/Ekc/JDEe1ppEfjIhwLe5WOunL0WUr15f?=
- =?us-ascii?Q?RaGOHqX5A1do2NDvZ/dxEcjIVL9hg+w1c8C40YeKG5vkDlf0EwnrU/f0IaID?=
- =?us-ascii?Q?FkP8nBw6pKueh7e0ds3zUe7/rvhowNUxQUkl7H+tdF+/feHBGAoFiiqW5TfC?=
- =?us-ascii?Q?jhgXmBKOs1I7unCzV8H1u0zhtq2Zv/MTDdcAUIRyOkqJMOh2q3DGnFy1SVyR?=
- =?us-ascii?Q?ANUIe4mHoyXd5zRx21KADkA6Cm2jYnEadEgGB+jQ3ekdKkkl5JJhCAwFrMoF?=
- =?us-ascii?Q?JBrV+xKw4nbXSXxhA5WIDmtOUQOsYZkamIKvLReG2jZAOcCd8OrViaHVvUQA?=
- =?us-ascii?Q?1KqK+T0ugzlVhzF6rx50pMdmCrHHtPxox6/jxUI+RaSn2HcVChhWPFt6GmRS?=
- =?us-ascii?Q?F0NT/4bgE038B/mEtDzhgDrX/Vp6No3TGapzRytq1QvLzDYqNtxmYabaKWRa?=
- =?us-ascii?Q?fPmB/wvTXKBq7zxt2PONBU3wUXOGNZ7Ulz3mVkn0ybzy+Yw+oyGMV/B5EJww?=
- =?us-ascii?Q?uQXJ8nApLmWSpblyp+KYozMmbb1uCVAyLL2lvxrvPm3XMgFoI9apnr49f2Xb?=
- =?us-ascii?Q?eCb+QmvIZqcTzeSucmQl3ivZQsm9vm5c3tsrto9TE75+piJfhrmqHUwNkLJR?=
- =?us-ascii?Q?FOKnkVUW4fiG4IYJMUTWCrRTd3wVgYwnS5jYCPotQl32qDLidCP/Owq9qpGI?=
- =?us-ascii?Q?/CcVXclfEtJ8UCE9Cbn28BsclrIICZArnDdy0XawPGbmJLPaIqYzdTkXKbu0?=
- =?us-ascii?Q?vQKDZTk/UO/fqjUW92OWL/+HHdu61kmwjM8Lw563Lw93mK0WRvTlsb4j2bRo?=
- =?us-ascii?Q?rwwOFfQ7Wx5BnLhXCxhZU40BA6FyiEvm9g+muBF88O+eHFXx9YMM9j4DwBc3?=
- =?us-ascii?Q?/YdWFUCzEj829dFxrQUui/Vua7O0JxMH7InAK4JkGMUntSFOzf8xDmrKkKYv?=
- =?us-ascii?Q?p7WC/tAP1oJIs/coNFTZPi5wG1px2LoBAqvosvsHuJbEbv5el8HTMi6DSMRN?=
- =?us-ascii?Q?Aag+hgjnFrQK8YMHIGLjmuLa5KyxtrF9mo3fmZrBkKvFj5Fo82IWNmf2eTNP?=
- =?us-ascii?Q?LI6lF+zA/lweD2G8YfzZ/UA/uwRDY8cXy5qAbPJYqkgCTdgzisHgFPvN1mIL?=
- =?us-ascii?Q?sVCeyC+VrIuuMPzsKM0K0syYMqwsJ79gIPkQkOusvTJXoyYmVuihDyXw2EzT?=
- =?us-ascii?Q?Dl+IfI6u9u5rsexKRVClIh6sxd4QbQVuZu8ATSa1XtAVwrzRE9b6MDrWQc/z?=
- =?us-ascii?Q?Z/979nd6EvmXbS90VeP1ROBC9rhENdzGeg4uftVy7lSE48CVnsSt0q9lU5Ed?=
- =?us-ascii?Q?+ACo3vX8kFtL+UtUVjrvBFeKvJ2GFBI65HYSv8EUO8dCacWNu3XWupzeS/7F?=
- =?us-ascii?Q?Lw9IIcyFU5rt1Ow4KVrvrjUU6l++e0syeTAN3Rjmvbn19fmT/pkIJNhoe/6j?=
- =?us-ascii?Q?FJIgPi8DI1BtvH8oHnjh78ggLwjyUyIb1BvSgPq4jBammOCmKnof8hLRJRMW?=
- =?us-ascii?Q?xg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 674c6cc5-4ea9-49cc-7e88-08db6727717a
-X-MS-Exchange-CrossTenant-AuthSource: SN7PR11MB7540.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2023 07:18:50.9657
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FVeYhCc6JO6vW6ClUrMQZ50Qh9POMj/6v+t46xdU795AhWS6NK74J6FVSzFnxOJgPeyDgTQlxuViig6afixL0qeMfA5Os6auGt43DHTeCmk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB6351
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH v3] hv_netvsc: Allocate rx indirection table size
+ dynamically
+To: Shradha Gupta <shradhagupta@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>,
+ Michael Kelley <mikelley@microsoft.com>,
+ "David S. Miller" <davem@davemloft.net>,
+ Steen Hegelund <steen.hegelund@microchip.com>,
+ Simon Horman <simon.horman@corigine.com>
+References: <1685080949-18316-1-git-send-email-shradhagupta@linux.microsoft.com>
+ <5fc413e5-77d2-814d-250a-7ddf8eb6d6ad@linux.microsoft.com>
+ <20230529111733.GA21447@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+Content-Language: en-US
+From: Praveen Kumar <kumarpraveen@linux.microsoft.com>
+In-Reply-To: <20230529111733.GA21447@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-19.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, Jun 07, 2023 at 10:23:01AM +0800, Hangyu Hua wrote:
-> try_module_get will be called in tcf_proto_lookup_ops. So module_put needs
-> to be called to drop the refcount if ops don't implement the required
-> function.
+On 5/29/2023 4:47 PM, Shradha Gupta wrote:
+> On Mon, May 29, 2023 at 03:09:49PM +0530, Praveen Kumar wrote:
+>> On 5/26/2023 11:32 AM, Shradha Gupta wrote:
+>>> Allocate the size of rx indirection table dynamically in netvsc
+>>> from the value of size provided by OID_GEN_RECEIVE_SCALE_CAPABILITIES
+>>> query instead of using a constant value of ITAB_NUM.
+>>>
+>>> Signed-off-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
+>>> Tested-on: Ubuntu22 (azure VM, SKU size: Standard_F72s_v2)
+>>> Testcases:
+>>> 1. ethtool -x eth0 output
+>>> 2. LISA testcase:PERF-NETWORK-TCP-THROUGHPUT-MULTICONNECTION-NTTTCP-Synthetic
+>>> 3. LISA testcase:PERF-NETWORK-TCP-THROUGHPUT-MULTICONNECTION-NTTTCP-SRIOV
+>>>
+>>> ---
+>>> Changes in v3:
+>>>  * Changed the data type of rx_table_sz to u32
+>>>  * Moved the rx indirection table free to rndis_filter_device_remove()
+>>>  * Device add will fail with error if not enough memory is available
+>>>  * Changed kzmalloc to kcalloc as suggested in checkpatch script
+>>>  * Removed redundant log if memory allocation failed.
+>>> ---
+>>>  drivers/net/hyperv/hyperv_net.h   |  5 ++++-
+>>>  drivers/net/hyperv/netvsc_drv.c   | 10 ++++++----
+>>>  drivers/net/hyperv/rndis_filter.c | 27 +++++++++++++++++++++++----
+>>>  3 files changed, 33 insertions(+), 9 deletions(-)
+>>>
+>>> diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
+>>> index dd5919ec408b..c40868f287a9 100644
+>>> --- a/drivers/net/hyperv/hyperv_net.h
+>>> +++ b/drivers/net/hyperv/hyperv_net.h
+>>> @@ -74,6 +74,7 @@ struct ndis_recv_scale_cap { /* NDIS_RECEIVE_SCALE_CAPABILITIES */
+>>>  #define NDIS_RSS_HASH_SECRET_KEY_MAX_SIZE_REVISION_2   40
+>>>  
+>>>  #define ITAB_NUM 128
+>>> +#define ITAB_NUM_MAX 256
+>>>  
+>>>  struct ndis_recv_scale_param { /* NDIS_RECEIVE_SCALE_PARAMETERS */
+>>>  	struct ndis_obj_header hdr;
+>>> @@ -1034,7 +1035,9 @@ struct net_device_context {
+>>>  
+>>>  	u32 tx_table[VRSS_SEND_TAB_SIZE];
+>>>  
+>>> -	u16 rx_table[ITAB_NUM];
+>>> +	u16 *rx_table;
+>>> +
+>>> +	u32 rx_table_sz;
+>>>  
+>>>  	/* Ethtool settings */
+>>>  	u8 duplex;
+>>> diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+>>> index 0103ff914024..3ba3c8fb28a5 100644
+>>> --- a/drivers/net/hyperv/netvsc_drv.c
+>>> +++ b/drivers/net/hyperv/netvsc_drv.c
+>>> @@ -1747,7 +1747,9 @@ static u32 netvsc_get_rxfh_key_size(struct net_device *dev)
+>>>  
+>>>  static u32 netvsc_rss_indir_size(struct net_device *dev)
+>>>  {
+>>> -	return ITAB_NUM;
+>>> +	struct net_device_context *ndc = netdev_priv(dev);
+>>> +
+>>> +	return ndc->rx_table_sz;
+>>>  }
+>>>  
+>>>  static int netvsc_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
+>>> @@ -1766,7 +1768,7 @@ static int netvsc_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
+>>>  
+>>>  	rndis_dev = ndev->extension;
+>>>  	if (indir) {
+>>> -		for (i = 0; i < ITAB_NUM; i++)
+>>> +		for (i = 0; i < ndc->rx_table_sz; i++)
+>>>  			indir[i] = ndc->rx_table[i];
+>>>  	}
+>>>  
+>>> @@ -1792,11 +1794,11 @@ static int netvsc_set_rxfh(struct net_device *dev, const u32 *indir,
+>>>  
+>>>  	rndis_dev = ndev->extension;
+>>>  	if (indir) {
+>>> -		for (i = 0; i < ITAB_NUM; i++)
+>>> +		for (i = 0; i < ndc->rx_table_sz; i++)
+>>>  			if (indir[i] >= ndev->num_chn)
+>>>  				return -EINVAL;
+>>>  
+>>> -		for (i = 0; i < ITAB_NUM; i++)
+>>> +		for (i = 0; i < ndc->rx_table_sz; i++)
+>>>  			ndc->rx_table[i] = indir[i];
+>>>  	}
+>>>  
+>>> diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
+>>> index eea777ec2541..dc7b9b326690 100644
+>>> --- a/drivers/net/hyperv/rndis_filter.c
+>>> +++ b/drivers/net/hyperv/rndis_filter.c
+>>> @@ -21,6 +21,7 @@
+>>>  #include <linux/rtnetlink.h>
+>>>  #include <linux/ucs2_string.h>
+>>>  #include <linux/string.h>
+>>> +#include <linux/slab.h>
+>>>  
+>>>  #include "hyperv_net.h"
+>>>  #include "netvsc_trace.h"
+>>> @@ -927,7 +928,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
+>>>  	struct rndis_set_request *set;
+>>>  	struct rndis_set_complete *set_complete;
+>>>  	u32 extlen = sizeof(struct ndis_recv_scale_param) +
+>>> -		     4 * ITAB_NUM + NETVSC_HASH_KEYLEN;
+>>> +		     4 * ndc->rx_table_sz + NETVSC_HASH_KEYLEN;
+>>>  	struct ndis_recv_scale_param *rssp;
+>>>  	u32 *itab;
+>>>  	u8 *keyp;
+>>> @@ -953,7 +954,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
+>>>  	rssp->hashinfo = NDIS_HASH_FUNC_TOEPLITZ | NDIS_HASH_IPV4 |
+>>>  			 NDIS_HASH_TCP_IPV4 | NDIS_HASH_IPV6 |
+>>>  			 NDIS_HASH_TCP_IPV6;
+>>> -	rssp->indirect_tabsize = 4*ITAB_NUM;
+>>> +	rssp->indirect_tabsize = 4 * ndc->rx_table_sz;
+>>>  	rssp->indirect_taboffset = sizeof(struct ndis_recv_scale_param);
+>>>  	rssp->hashkey_size = NETVSC_HASH_KEYLEN;
+>>>  	rssp->hashkey_offset = rssp->indirect_taboffset +
+>>> @@ -961,7 +962,7 @@ static int rndis_set_rss_param_msg(struct rndis_device *rdev,
+>>>  
+>>>  	/* Set indirection table entries */
+>>>  	itab = (u32 *)(rssp + 1);
+>>> -	for (i = 0; i < ITAB_NUM; i++)
+>>> +	for (i = 0; i < ndc->rx_table_sz; i++)
+>>>  		itab[i] = ndc->rx_table[i];
+>>>  
+>>>  	/* Set hask key values */
+>>> @@ -1548,6 +1549,17 @@ struct netvsc_device *rndis_filter_device_add(struct hv_device *dev,
+>>>  	if (ret || rsscap.num_recv_que < 2)
+>>>  		goto out;
+>>>  
+>>> +	if (rsscap.num_indirect_tabent &&
+>>> +	    rsscap.num_indirect_tabent <= ITAB_NUM_MAX)
+>>> +		ndc->rx_table_sz = rsscap.num_indirect_tabent;
+>>> +	else
+>>> +		ndc->rx_table_sz = ITAB_NUM;
+>>> +
+>>> +	ndc->rx_table = kcalloc(ndc->rx_table_sz, sizeof(u16),
+>>> +				GFP_KERNEL);
+>>> +	if (!ndc->rx_table)
+>>> +		goto err_dev_remv;
+>>> +
+>>>  	/* This guarantees that num_possible_rss_qs <= num_online_cpus */
+>>>  	num_possible_rss_qs = min_t(u32, num_online_cpus(),
+>>>  				    rsscap.num_recv_que);
+>>> @@ -1558,7 +1570,7 @@ struct netvsc_device *rndis_filter_device_add(struct hv_device *dev,
+>>>  	net_device->num_chn = min(net_device->max_chn, device_info->num_chn);
+>>>  
+>>>  	if (!netif_is_rxfh_configured(net)) {
+>>> -		for (i = 0; i < ITAB_NUM; i++)
+>>> +		for (i = 0; i < ndc->rx_table_sz; i++)
+>>>  			ndc->rx_table[i] = ethtool_rxfh_indir_default(
+>>>  						i, net_device->num_chn);
+>>>  	}
+>>> @@ -1596,11 +1608,18 @@ void rndis_filter_device_remove(struct hv_device *dev,
+>>>  				struct netvsc_device *net_dev)
+>>>  {
+>>>  	struct rndis_device *rndis_dev = net_dev->extension;
+>>> +	struct net_device *net = hv_get_drvdata(dev);
+>>> +	struct net_device_context *ndc = netdev_priv(net);
+>>>  
+>>>  	/* Halt and release the rndis device */
+>>>  	rndis_filter_halt_device(net_dev, rndis_dev);
+>>>  
+>>>  	netvsc_device_remove(dev);
+>>
+>> Shouldn't the netvsc_device_remove be called post table cleanup ? or better, the cleanup should happen as part of netvsc_device_remove operation ? This looks a bug to me as with remove operation, we already cleaned up the device and the association between context and device is removed.
 > 
-> Fixes: 9f407f1768d3 ("net: sched: introduce chain templates")
+> The netvsc_device_remove() function is responsible for cleaning up/removing the netvsc_device structures upon events like remove/suspend. The net_device and net_device_context structures(where the rx indirection table exists) remain untouched in netvsc_device_remove(). They(net_device, net_device_context) only get cleaned up in netvsc_remove(). So, the netvsc_device_remove() should not affect the cleanup for the rx indirection table, that we did.
+> 
 
-Reviewed-by: Larysa Zaremba <larysa.zaremba@intel.com>
+Thanks.
 
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-> ---
-> 	
-> 	v2: fix the patch description.
-> 
->  net/sched/cls_api.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> index 2621550bfddc..92bfb892e638 100644
-> --- a/net/sched/cls_api.c
-> +++ b/net/sched/cls_api.c
-> @@ -2952,6 +2952,7 @@ static int tc_chain_tmplt_add(struct tcf_chain *chain, struct net *net,
->  		return PTR_ERR(ops);
->  	if (!ops->tmplt_create || !ops->tmplt_destroy || !ops->tmplt_dump) {
->  		NL_SET_ERR_MSG(extack, "Chain templates are not supported with specified classifier");
-> +		module_put(ops->owner);
->  		return -EOPNOTSUPP;
->  	}
->  
-> -- 
-> 2.34.1
-> 
+Reviewed-by: Praveen Kumar <kumarpraveen@linux.microsoft.com>
+
 
