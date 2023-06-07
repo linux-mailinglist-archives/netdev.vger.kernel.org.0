@@ -1,264 +1,390 @@
-Return-Path: <netdev+bounces-8922-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8923-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 35B417264CA
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 17:37:35 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id CCF3A7264F1
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 17:44:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 84B021C20E06
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 15:37:31 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 82A7B281285
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 15:44:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6C7F6370DB;
-	Wed,  7 Jun 2023 15:37:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9D76A370E1;
+	Wed,  7 Jun 2023 15:44:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58A3A34D94
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 15:37:32 +0000 (UTC)
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2053.outbound.protection.outlook.com [40.107.93.53])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 721D8125
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 08:37:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GZkqMnF3H108zy20XCBDlmPVKT9bf4TJKdDiOZpkmBYqthkSb6+BvHXvTgqjHoUa6ezxe90uCzdPK07jNlqLpD8m2xRUDq0WdlicgqIEwQmKSpns1ER7P9pm6vnl0dcno6GN7gXo84BLCIcY8S6RL3CQoKmmf9Zp0D2hvG2NrbHNEQ89ZeotMnwt20Y/Z6v8srgtWC03quWAgRFJxp8BAMdrCBnRj9kv7iMNntNZC1hKxouZJGztBmGw+VutlitC1r646BKlM9QpYFYdqz8IlZq2fg1iK6HTAlbNFt69FHcjxjt1OECCCsUFABLZEb7EFh/LTsq4Mpn1lYeWq5yCOg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FYKof1jr9XN+Zhvk1p7yHKVn/uOcreVze/0mFvuRYT0=;
- b=ENP9wFBpwgwRloVodV2qpyuyPdKyEedvpgubD8od7FM0k7hGtqlSW6vaz7vY+XLTn7ofAfpEBt/CLgNnLbpb5rb+EPVT6Jj/ag+SOesKHh/XVVRyocz2VXNaL93m1iNqpGNISIT1xjgzXBfaXiqviUXITb23eGW9vNXzCNN98wDKqmGfcCiBzN1dKQXhXH/Ney/DbymayeJLyjkVoUBQJi2KnAxvkeWUrY7FHdUwwIMZvIKxhRiTaCSrmsqLPdYt2X2c3bSGcI5wwFd7Mxm49LR7bu5G1tSjX+NJICSrAcEYHMdHLTqtzOH67LPDCVJN2WvpEEm3qeGIoaDFEEIumg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FYKof1jr9XN+Zhvk1p7yHKVn/uOcreVze/0mFvuRYT0=;
- b=Y8Ad3O0qp/M3l/W++4kP78JeGg7l6jAgIpVwK3+rSqNfABlMf+oOzu2Sdod+ZvHV/j75ryleBrDDV4tWN2ajR/iBSzT97HaUXzsX8CwqrKDr8ISsz8DoRrYqfm95frLFiaBKpEs8Xu8M7LSK7bnaxYFM1QCbrN5Y+vFwjEeWyd4YS4noG9kc/Tp3s920aHYu6rMuurStzZrJtCkAbuYN+aq61KM6XZ9OpAfL5SCUJS6oPjaIK+J1plSdngRsBk0ygm3sM5dLOKjlk3F8/gbVL0hY9yrSRpjdqzEZ/KfJhyHu8Y1+VUV69k5jXZrgcMW1JTw5EqVCZgpOYx9wz7b4ew==
-Received: from PH0PR07CA0044.namprd07.prod.outlook.com (2603:10b6:510:e::19)
- by PH8PR12MB7423.namprd12.prod.outlook.com (2603:10b6:510:229::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Wed, 7 Jun
- 2023 15:37:27 +0000
-Received: from SN1PEPF000252A3.namprd05.prod.outlook.com
- (2603:10b6:510:e:cafe::a9) by PH0PR07CA0044.outlook.office365.com
- (2603:10b6:510:e::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.19 via Frontend
- Transport; Wed, 7 Jun 2023 15:37:27 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SN1PEPF000252A3.mail.protection.outlook.com (10.167.242.10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6477.13 via Frontend Transport; Wed, 7 Jun 2023 15:37:26 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 7 Jun 2023
- 08:37:14 -0700
-Received: from dev-r-vrt-155.mtr.labs.mlnx (10.126.230.35) by
- rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Wed, 7 Jun 2023 08:37:12 -0700
-From: Ido Schimmel <idosch@nvidia.com>
-To: <netdev@vger.kernel.org>
-CC: <dsahern@gmail.com>, <stephen@networkplumber.org>, <jiri@nvidia.com>,
-	<razor@blackwall.org>, <petrm@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH iproute2-next] f_flower: Add l2_miss support
-Date: Wed, 7 Jun 2023 18:35:50 +0300
-Message-ID: <20230607153550.3829340-1-idosch@nvidia.com>
-X-Mailer: git-send-email 2.40.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A6E234D94
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 15:44:31 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30DEE1BFE
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 08:44:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686152661;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=14yiDpYkKYs4TQY/X5LH0xGhtBv8ANPV+qMb6wpWFxQ=;
+	b=UPQ4po1iPbkboeTm7MvknVHzm4iIi705CdxymCsBhWH3d/qY0wv8ozxXJeWA8W0UiYeHoC
+	pZklpEQpPhCBBWEd/amuh1CEolomXp9NJ/KxJPaE+DEYArB/tbjRc/2zE3rTf3ID4S/fcK
+	L8cxjjoRci+/otkhvJRXJdIwjo33ueM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-609--IKtO5XMOhymtrXPOTu1mQ-1; Wed, 07 Jun 2023 11:44:17 -0400
+X-MC-Unique: -IKtO5XMOhymtrXPOTu1mQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 45126803CA7;
+	Wed,  7 Jun 2023 15:43:56 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id A03032166B25;
+	Wed,  7 Jun 2023 15:43:53 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <20230607153232.93980-1-kuniyu@amazon.com>
+References: <20230607153232.93980-1-kuniyu@amazon.com> <20230607140559.2263470-8-dhowells@redhat.com>
+To: Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc: dhowells@redhat.com, axboe@kernel.dk, borisp@nvidia.com,
+    chuck.lever@oracle.com, davem@davemloft.net, dsahern@kernel.org,
+    edumazet@google.com, john.fastabend@gmail.com, kuba@kernel.org,
+    linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+    netdev@vger.kernel.org, pabeni@redhat.com,
+    torvalds@linux-foundation.org, willemdebruijn.kernel@gmail.com,
+    willy@infradead.org
+Subject: Re: [PATCH net-next v5 07/14] ipv4, ipv6: Use splice_eof() to flush
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF000252A3:EE_|PH8PR12MB7423:EE_
-X-MS-Office365-Filtering-Correlation-Id: 561f04da-2f48-4c1b-ccbc-08db676d18f5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	4mCA4rBTuenOZO3IB+okofLa3ZvtDSKwHvjutjjpe/2Cwt9AX8mPCWsTe6Kn6cs/AuioxJvCCPbf0J0T+nFMufB+Saz9+e5hnJjtiwSwPoy8wEnivyxxhNBBwL82LFkqTWiLB+PoslQy5qN2RtHEQMXcamxVFXfdmlxC6TvHbcN7lVzjmIhtH0gfkpqc3erqZiPCLLw5VxZiJqu86uNxGO7Tkgne1EI8TisFzRGXGHMWeAgc7t+A0O9vdLk2/31zrUuk1s7zeZZtwbBmCMeb0gETZ2eN6yoz7tXUo+/G+bNcvj3Jp9talcwog68XErQi6gosCZRQu3DduWL8k/8tzYmbTeDjb1QjGDZBza7Oi+NWXmnPaXi5ntC/Ixw0p8iBPYK6JkUOOo88UXyUVq0eJEzLN271Bx6vevTC/auon89r7F9x9YEb90YCJYWB94MMmDehiYWRiWGxoVDweFbepBAlkKQD6hecXyLIX5AFFPadhnzNjTkQrC1fYE9J0asgLpnuOUaTHDHmAvTT8YJo7AvH0KuJsO5otak7MAr1uid1lvT0TRsew8AJrygqupbSO+JDSq9SRRWwuytWDfLhCSJT3+9woimXcEcSktgj4Pyp2x3VHMut7OD3zeCYXRS0c4agtlnNNxdiWX3nOLCSyQw6S4OF747aJIg51FuOK/o2EQ9BNK+W44zfGNsGcx9W+Th90BUeXjICHvNkTsUaAXe8pTvb9zuUIciPy62zhrIZXpwMda3rQwrsxLnVs1O/
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(39860400002)(136003)(346002)(451199021)(36840700001)(40470700004)(46966006)(86362001)(47076005)(83380400001)(336012)(426003)(478600001)(40480700001)(82740400003)(40460700003)(8936002)(8676002)(316002)(41300700001)(356005)(54906003)(7636003)(70586007)(70206006)(6916009)(5660300002)(4326008)(6666004)(36756003)(2906002)(82310400005)(36860700001)(26005)(107886003)(186003)(16526019)(1076003)(2616005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2023 15:37:26.9665
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 561f04da-2f48-4c1b-ccbc-08db676d18f5
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF000252A3.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7423
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2269949.1686152632.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 07 Jun 2023 16:43:52 +0100
+Message-ID: <2269950.1686152632@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add the ability to match on packets that encountered a layer 2 miss in
-bridge driver's FDB / MDB. Example:
+Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
 
- # tc filter add dev swp2 egress pref 1 proto all flower indev swp1 l2_miss 1 action drop
- # tc filter add dev swp2 egress pref 1 proto all flower indev swp1 l2_miss 0 action drop
+> > +	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
+> > +	prot =3D READ_ONCE(sk->sk_prot);
+> > +	if (prot->splice_eof)
+> > +		sk->sk_prot->splice_eof(sock);
+> =
 
- # tc filter show dev swp2 egress
- filter protocol all pref 1 flower chain 0
- filter protocol all pref 1 flower chain 0 handle 0x1
-   indev swp1
-   l2_miss 1
-   not_in_hw
-         action order 1: gact action drop
-          random type none pass val 0
-          index 1 ref 1 bind 1
+> We need to use prot here.
 
- filter protocol all pref 1 flower chain 0 handle 0x2
-   indev swp1
-   l2_miss 0
-   not_in_hw
-         action order 1: gact action drop
-          random type none pass val 0
-          index 2 ref 1 bind 1
+Yeah.
 
- # tc -j -p filter show dev swp2 egress
- [ {
-         "protocol": "all",
-         "pref": 1,
-         "kind": "flower",
-         "chain": 0
-     },{
-         "protocol": "all",
-         "pref": 1,
-         "kind": "flower",
-         "chain": 0,
-         "options": {
-             "handle": 1,
-             "indev": "swp1",
-             "keys": {
-                 "l2_miss": 1
-             },
-             "not_in_hw": true,
-             "actions": [ {
- [...]
-                 } ]
-         }
-     },{
-         "protocol": "all",
-         "pref": 1,
-         "kind": "flower",
-         "chain": 0,
-         "options": {
-             "handle": 2,
-             "indev": "swp1",
-             "keys": {
-                 "l2_miss": 0
-             },
-             "not_in_hw": true,
-             "actions": [ {
- [...]
-                 } ]
-         }
-     } ]
+> > +	if (up->pending =3D=3D AF_INET)
+> > +		udp_splice_eof(sock);
+> =
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> Do we need this ?
+
+Actually, no.  udp_v6_push_pending_frames() will do this.
+
+> > +	lock_sock(sk);
+> > +	if (up->pending && !READ_ONCE(up->corkflag))
+> > +		udp_push_pending_frames(sk);
+> =
+
+> We should use udp_v6_push_pending_frames(sk) as up->pending
+> could be AF_INET even after the test above.
+
+Yeah.
+
+Updated version attached for your perusal (I will post a v6 too).
+
+David
 ---
-Initially I used true / false instead of 1 / 0. If this patch is
-accepted, I will adjust the kernel selftest accordingly.
----
- man/man8/tc-flower.8 | 10 +++++++++-
- tc/f_flower.c        | 18 ++++++++++++++++++
- 2 files changed, 27 insertions(+), 1 deletion(-)
+commit 8b95b9cd654835eb2ff1ad24cd6de802836c4062
+Author: David Howells <dhowells@redhat.com>
+Date:   Wed Jun 7 14:44:34 2023 +0100
 
-diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
-index fc73da93c5c3..cd99745065cf 100644
---- a/man/man8/tc-flower.8
-+++ b/man/man8/tc-flower.8
-@@ -100,7 +100,9 @@ flower \- flow based traffic control filter
+    ipv4, ipv6: Use splice_eof() to flush
+    =
+
+    Allow splice to undo the effects of MSG_MORE after prematurely ending =
+a
+    splice/sendfile due to getting an EOF condition (->splice_read() retur=
+ned
+    0) after splice had called sendmsg() with MSG_MORE set when the user d=
+idn't
+    set MSG_MORE.
+    =
+
+    For UDP, a pending packet will not be emitted if the socket is closed
+    before it is flushed; with this change, it be flushed by ->splice_eof(=
+).
+    =
+
+    For TCP, it's not clear that MSG_MORE is actually effective.
+    =
+
+    Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+    Link: https://lore.kernel.org/r/CAHk-=3Dwh=3DV579PDYvkpnTobCLGczbgxpMg=
+GmmhqiTyE34Cpi5Gg@mail.gmail.com/
+    Signed-off-by: David Howells <dhowells@redhat.com>
+    cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+    cc: Eric Dumazet <edumazet@google.com>
+    cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+    cc: David Ahern <dsahern@kernel.org>
+    cc: "David S. Miller" <davem@davemloft.net>
+    cc: Jakub Kicinski <kuba@kernel.org>
+    cc: Paolo Abeni <pabeni@redhat.com>
+    cc: Jens Axboe <axboe@kernel.dk>
+    cc: Matthew Wilcox <willy@infradead.org>
+    cc: netdev@vger.kernel.org
+
+Notes:
+    ver #6)
+     - In inet_splice_eof(), use prot after deref of sk->sk_prot.
+     - In udpv6_splice_eof(), use udp_v6_push_pending_frames().
+     - In udpv6_splice_eof(), don't check for AF_INET.
+
+diff --git a/include/net/inet_common.h b/include/net/inet_common.h
+index 77f4b0ef5b92..a75333342c4e 100644
+--- a/include/net/inet_common.h
++++ b/include/net/inet_common.h
+@@ -35,6 +35,7 @@ void __inet_accept(struct socket *sock, struct socket *n=
+ewsock,
+ 		   struct sock *newsk);
+ int inet_send_prepare(struct sock *sk);
+ int inet_sendmsg(struct socket *sock, struct msghdr *msg, size_t size);
++void inet_splice_eof(struct socket *sock);
+ ssize_t inet_sendpage(struct socket *sock, struct page *page, int offset,
+ 		      size_t size, int flags);
+ int inet_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 68990a8f556a..49611af31bb7 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -327,6 +327,7 @@ int tcp_sendmsg(struct sock *sk, struct msghdr *msg, s=
+ize_t size);
+ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size);
+ int tcp_sendmsg_fastopen(struct sock *sk, struct msghdr *msg, int *copied=
+,
+ 			 size_t size, struct ubuf_info *uarg);
++void tcp_splice_eof(struct socket *sock);
+ int tcp_sendpage(struct sock *sk, struct page *page, int offset, size_t s=
+ize,
+ 		 int flags);
+ int tcp_sendpage_locked(struct sock *sk, struct page *page, int offset,
+diff --git a/include/net/udp.h b/include/net/udp.h
+index 5cad44318d71..4ed0b47c5582 100644
+--- a/include/net/udp.h
++++ b/include/net/udp.h
+@@ -278,6 +278,7 @@ int udp_get_port(struct sock *sk, unsigned short snum,
+ int udp_err(struct sk_buff *, u32);
+ int udp_abort(struct sock *sk, int err);
+ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len);
++void udp_splice_eof(struct socket *sock);
+ int udp_push_pending_frames(struct sock *sk);
+ void udp_flush_pending_frames(struct sock *sk);
+ int udp_cmsg_send(struct sock *sk, struct msghdr *msg, u16 *gso_size);
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index b5735b3551cf..fd233c4195ac 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -831,6 +831,21 @@ int inet_sendmsg(struct socket *sock, struct msghdr *=
+msg, size_t size)
  }
- .IR OPTIONS " | "
- .BR ip_flags
--.IR IP_FLAGS " }"
-+.IR IP_FLAGS " | "
-+.B l2_miss
-+.IR L2_MISS " }"
- 
- .ti -8
- .IR LSE_LIST " := [ " LSE_LIST " ] " LSE
-@@ -493,6 +495,12 @@ respectively. firstfrag and nofirstfrag can be used to further distinguish
- fragmented packet. firstfrag can be used to indicate the first fragmented
- packet. nofirstfrag can be used to indicates subsequent fragmented packets
- or non-fragmented packets.
-+.TP
-+.BI l2_miss " L2_MISS"
-+Match on layer 2 miss in the bridge driver's FDB / MDB. \fIL2_MISS\fR may be 0
-+or 1. When 1, match on packets that encountered a layer 2 miss. When 0, match
-+on packets that were forwarded using an FDB / MDB entry. Note that broadcast
-+packets do not encounter a miss since a lookup is not performed for them.
- .SH NOTES
- As stated above where applicable, matches of a certain layer implicitly depend
- on the matches of the next lower layer. Precisely, layer one and two matches
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index c73c46dd234b..f1a351fbaa03 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -91,6 +91,7 @@ static void explain(void)
- 		"			erspan_opts MASKED-OPTIONS |\n"
- 		"			gtp_opts MASKED-OPTIONS |\n"
- 		"			ip_flags IP-FLAGS |\n"
-+		"			l2_miss L2_MISS |\n"
- 		"			enc_dst_port [ port_number ] |\n"
- 		"			ct_state MASKED_CT_STATE |\n"
- 		"			ct_label MASKED_CT_LABEL |\n"
-@@ -1520,6 +1521,15 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
- 				fprintf(stderr, "Illegal \"ip_flags\"\n");
- 				return -1;
- 			}
-+		} else if (strcmp(*argv, "l2_miss") == 0) {
-+			__u8 l2_miss;
+ EXPORT_SYMBOL(inet_sendmsg);
+ =
+
++void inet_splice_eof(struct socket *sock)
++{
++	const struct proto *prot;
++	struct sock *sk =3D sock->sk;
 +
-+			NEXT_ARG();
-+			if (get_u8(&l2_miss, *argv, 10)) {
-+				fprintf(stderr, "Illegal \"l2_miss\"\n");
-+				return -1;
-+			}
-+			addattr8(n, MAX_MSG, TCA_FLOWER_L2_MISS, l2_miss);
- 		} else if (matches(*argv, "verbose") == 0) {
- 			flags |= TCA_CLS_FLAGS_VERBOSE;
- 		} else if (matches(*argv, "skip_hw") == 0) {
-@@ -2983,6 +2993,14 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 				    tb[TCA_FLOWER_KEY_FLAGS],
- 				    tb[TCA_FLOWER_KEY_FLAGS_MASK]);
- 
-+	if (tb[TCA_FLOWER_L2_MISS]) {
-+		struct rtattr *attr = tb[TCA_FLOWER_L2_MISS];
++	if (unlikely(inet_send_prepare(sk)))
++		return;
 +
-+		print_nl();
-+		print_uint(PRINT_ANY, "l2_miss", "  l2_miss %d",
-+			   rta_getattr_u8(attr));
-+	}
++	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
++	prot =3D READ_ONCE(sk->sk_prot);
++	if (prot->splice_eof)
++		prot->splice_eof(sock);
++}
++EXPORT_SYMBOL_GPL(inet_splice_eof);
 +
- 	flower_print_ct_state(tb[TCA_FLOWER_KEY_CT_STATE],
- 			      tb[TCA_FLOWER_KEY_CT_STATE_MASK]);
- 	flower_print_ct_zone(tb[TCA_FLOWER_KEY_CT_ZONE],
--- 
-2.40.1
+ ssize_t inet_sendpage(struct socket *sock, struct page *page, int offset,
+ 		      size_t size, int flags)
+ {
+@@ -1050,6 +1065,7 @@ const struct proto_ops inet_stream_ops =3D {
+ #ifdef CONFIG_MMU
+ 	.mmap		   =3D tcp_mmap,
+ #endif
++	.splice_eof	   =3D inet_splice_eof,
+ 	.sendpage	   =3D inet_sendpage,
+ 	.splice_read	   =3D tcp_splice_read,
+ 	.read_sock	   =3D tcp_read_sock,
+@@ -1084,6 +1100,7 @@ const struct proto_ops inet_dgram_ops =3D {
+ 	.read_skb	   =3D udp_read_skb,
+ 	.recvmsg	   =3D inet_recvmsg,
+ 	.mmap		   =3D sock_no_mmap,
++	.splice_eof	   =3D inet_splice_eof,
+ 	.sendpage	   =3D inet_sendpage,
+ 	.set_peek_off	   =3D sk_set_peek_off,
+ #ifdef CONFIG_COMPAT
+@@ -1115,6 +1132,7 @@ static const struct proto_ops inet_sockraw_ops =3D {
+ 	.sendmsg	   =3D inet_sendmsg,
+ 	.recvmsg	   =3D inet_recvmsg,
+ 	.mmap		   =3D sock_no_mmap,
++	.splice_eof	   =3D inet_splice_eof,
+ 	.sendpage	   =3D inet_sendpage,
+ #ifdef CONFIG_COMPAT
+ 	.compat_ioctl	   =3D inet_compat_ioctl,
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 53b7751b68e1..09f03221a6f1 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1371,6 +1371,22 @@ int tcp_sendmsg(struct sock *sk, struct msghdr *msg=
+, size_t size)
+ }
+ EXPORT_SYMBOL(tcp_sendmsg);
+ =
+
++void tcp_splice_eof(struct socket *sock)
++{
++	struct sock *sk =3D sock->sk;
++	struct tcp_sock *tp =3D tcp_sk(sk);
++	int mss_now, size_goal;
++
++	if (!tcp_write_queue_tail(sk))
++		return;
++
++	lock_sock(sk);
++	mss_now =3D tcp_send_mss(sk, &size_goal, 0);
++	tcp_push(sk, 0, mss_now, tp->nonagle, size_goal);
++	release_sock(sk);
++}
++EXPORT_SYMBOL_GPL(tcp_splice_eof);
++
+ /*
+  *	Handle reading urgent data. BSD has very simple semantics for
+  *	this, no blocking and very strange errors 8)
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 53e9ce2f05bb..84a5d557dc1a 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -3116,6 +3116,7 @@ struct proto tcp_prot =3D {
+ 	.keepalive		=3D tcp_set_keepalive,
+ 	.recvmsg		=3D tcp_recvmsg,
+ 	.sendmsg		=3D tcp_sendmsg,
++	.splice_eof		=3D tcp_splice_eof,
+ 	.sendpage		=3D tcp_sendpage,
+ 	.backlog_rcv		=3D tcp_v4_do_rcv,
+ 	.release_cb		=3D tcp_release_cb,
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index fd3dae081f3a..df5e407286d7 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1324,6 +1324,21 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg=
+, size_t len)
+ }
+ EXPORT_SYMBOL(udp_sendmsg);
+ =
+
++void udp_splice_eof(struct socket *sock)
++{
++	struct sock *sk =3D sock->sk;
++	struct udp_sock *up =3D udp_sk(sk);
++
++	if (!up->pending || READ_ONCE(up->corkflag))
++		return;
++
++	lock_sock(sk);
++	if (up->pending && !READ_ONCE(up->corkflag))
++		udp_push_pending_frames(sk);
++	release_sock(sk);
++}
++EXPORT_SYMBOL_GPL(udp_splice_eof);
++
+ int udp_sendpage(struct sock *sk, struct page *page, int offset,
+ 		 size_t size, int flags)
+ {
+@@ -2918,6 +2933,7 @@ struct proto udp_prot =3D {
+ 	.getsockopt		=3D udp_getsockopt,
+ 	.sendmsg		=3D udp_sendmsg,
+ 	.recvmsg		=3D udp_recvmsg,
++	.splice_eof		=3D udp_splice_eof,
+ 	.sendpage		=3D udp_sendpage,
+ 	.release_cb		=3D ip4_datagram_release_cb,
+ 	.hash			=3D udp_lib_hash,
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index 2bbf13216a3d..564942bee067 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -695,6 +695,7 @@ const struct proto_ops inet6_stream_ops =3D {
+ #ifdef CONFIG_MMU
+ 	.mmap		   =3D tcp_mmap,
+ #endif
++	.splice_eof	   =3D inet_splice_eof,
+ 	.sendpage	   =3D inet_sendpage,
+ 	.sendmsg_locked    =3D tcp_sendmsg_locked,
+ 	.sendpage_locked   =3D tcp_sendpage_locked,
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index d657713d1c71..c17c8ff94b79 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -2150,6 +2150,7 @@ struct proto tcpv6_prot =3D {
+ 	.keepalive		=3D tcp_set_keepalive,
+ 	.recvmsg		=3D tcp_recvmsg,
+ 	.sendmsg		=3D tcp_sendmsg,
++	.splice_eof		=3D tcp_splice_eof,
+ 	.sendpage		=3D tcp_sendpage,
+ 	.backlog_rcv		=3D tcp_v6_do_rcv,
+ 	.release_cb		=3D tcp_release_cb,
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index e5a337e6b970..3a592dc129e9 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -1653,6 +1653,20 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *m=
+sg, size_t len)
+ }
+ EXPORT_SYMBOL(udpv6_sendmsg);
+ =
+
++static void udpv6_splice_eof(struct socket *sock)
++{
++	struct sock *sk =3D sock->sk;
++	struct udp_sock *up =3D udp_sk(sk);
++
++	if (!up->pending || READ_ONCE(up->corkflag))
++		return;
++
++	lock_sock(sk);
++	if (up->pending && !READ_ONCE(up->corkflag))
++		udp_push_pending_frames(sk);
++	release_sock(sk);
++}
++
+ void udpv6_destroy_sock(struct sock *sk)
+ {
+ 	struct udp_sock *up =3D udp_sk(sk);
+@@ -1764,6 +1778,7 @@ struct proto udpv6_prot =3D {
+ 	.getsockopt		=3D udpv6_getsockopt,
+ 	.sendmsg		=3D udpv6_sendmsg,
+ 	.recvmsg		=3D udpv6_recvmsg,
++	.splice_eof		=3D udpv6_splice_eof,
+ 	.release_cb		=3D ip6_datagram_release_cb,
+ 	.hash			=3D udp_lib_hash,
+ 	.unhash			=3D udp_lib_unhash,
 
 
