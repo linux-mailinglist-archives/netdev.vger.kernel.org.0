@@ -1,38 +1,38 @@
-Return-Path: <netdev+bounces-8902-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8903-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4028C7263A3
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 17:03:42 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id C0B107263A4
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 17:04:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9CFA11C20E33
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 15:03:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5A0D92812F0
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 15:03:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 64B9E1ACCF;
-	Wed,  7 Jun 2023 15:03:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC5E51ACCE;
+	Wed,  7 Jun 2023 15:03:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A8801ACCE
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 15:03:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0E8F1ACC1
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 15:03:26 +0000 (UTC)
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBAA61720
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 08:03:20 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 273B619BC
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 08:03:25 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
 	(envelope-from <fw@breakpoint.cc>)
-	id 1q6ugx-0001DD-GX; Wed, 07 Jun 2023 17:03:19 +0200
+	id 1q6uh1-0001DS-Kb; Wed, 07 Jun 2023 17:03:23 +0200
 From: Florian Westphal <fw@strlen.de>
 To: <netdev@vger.kernel.org>
 Cc: jhs@mojatatu.com,
 	xiyou.wangcong@gmail.com,
 	jiri@resnulli.us,
 	Florian Westphal <fw@strlen.de>
-Subject: [PATCH net 1/3] net/sched: act_ipt: add sanity checks on table name and hook locations
-Date: Wed,  7 Jun 2023 16:59:52 +0200
-Message-Id: <20230607145954.19324-2-fw@strlen.de>
+Subject: [PATCH net 2/3] net/sched: act_ipt: add sanity checks on skb before calling target
+Date: Wed,  7 Jun 2023 16:59:53 +0200
+Message-Id: <20230607145954.19324-3-fw@strlen.de>
 X-Mailer: git-send-email 2.39.3
 In-Reply-To: <20230607145954.19324-1-fw@strlen.de>
 References: <20230607145954.19324-1-fw@strlen.de>
@@ -45,95 +45,82 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Looks like "tc" hard-codes "mangle" as the only supported table
-name, but on kernel side there are no checks.
+Netfilter targets make assumptions on the skb state, for example
+iphdr is supposed to be in the linear area.
 
-This is wrong.  Not all xtables targets are safe to call from tc.
-E.g. "nat" targets assume skb has a conntrack object assigned to it.
-Normally those get called from netfilter nat core which consults the
-nat table to obtain the address mapping.
+This is normally done by IP stack, but in act_ipt case no
+such checks are made.
 
-"tc" userspace either sets PRE or POSTROUTING as hook number, but there
-is no validation of this on kernel side, so update netlink policy to
-reject bogus numbers.  Some targets may assume skb_dst is set for
-input/forward hooks, so prevent those from being used.
+Some targets can even assume that skb_dst will be valid.
+Make a minimum effort to check for this:
 
-act_ipt uses the hook number in two places:
-1. the state hook number, this is fine as-is
-2. to set par.hook_mask
-
-The latter is a bit mask, so update the assignment to make
-xt_check_target() to the right thing.
-
-Followup patch adds required checks for the skb/packet headers before
-calling the targets evaluation function.
+- Don't call the targets eval function for non-ipv4 skbs.
+- Don't call the targets eval function for POSTROUTING
+  emulation when the skb has no dst set.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- net/sched/act_ipt.c | 27 ++++++++++++++++++++-------
- 1 file changed, 20 insertions(+), 7 deletions(-)
+ net/sched/act_ipt.c | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
 diff --git a/net/sched/act_ipt.c b/net/sched/act_ipt.c
-index 5d96ffebd40f..ea7f151e7dd2 100644
+index ea7f151e7dd2..2f0b39cc4e37 100644
 --- a/net/sched/act_ipt.c
 +++ b/net/sched/act_ipt.c
-@@ -48,7 +48,7 @@ static int ipt_init_target(struct net *net, struct xt_entry_target *t,
- 	par.entryinfo = &e;
- 	par.target    = target;
- 	par.targinfo  = t->data;
--	par.hook_mask = hook;
-+	par.hook_mask = 1 << hook;
- 	par.family    = NFPROTO_IPV4;
+@@ -230,6 +230,26 @@ static int tcf_xt_init(struct net *net, struct nlattr *nla,
+ 			      a, &act_xt_ops, tp, flags);
+ }
  
- 	ret = xt_check_target(&par, t->u.target_size - sizeof(*t), 0, false);
-@@ -85,7 +85,8 @@ static void tcf_ipt_release(struct tc_action *a)
- 
- static const struct nla_policy ipt_policy[TCA_IPT_MAX + 1] = {
- 	[TCA_IPT_TABLE]	= { .type = NLA_STRING, .len = IFNAMSIZ },
--	[TCA_IPT_HOOK]	= { .type = NLA_U32 },
-+	[TCA_IPT_HOOK]	= NLA_POLICY_RANGE(NLA_U32, NF_INET_PRE_ROUTING,
-+					   NF_INET_NUMHOOKS),
- 	[TCA_IPT_INDEX]	= { .type = NLA_U32 },
- 	[TCA_IPT_TARG]	= { .len = sizeof(struct xt_entry_target) },
- };
-@@ -158,15 +159,27 @@ static int __tcf_ipt_init(struct net *net, unsigned int id, struct nlattr *nla,
- 			return -EEXIST;
- 		}
- 	}
++static bool tcf_ipt_act_check(struct sk_buff *skb)
++{
++	const struct iphdr *iph;
++	unsigned int nhoff, len;
 +
-+	err = -EINVAL;
- 	hook = nla_get_u32(tb[TCA_IPT_HOOK]);
-+	switch (hook) {
-+	case NF_INET_PRE_ROUTING:
-+		break;
-+	case NF_INET_POST_ROUTING:
-+		break;
-+	default:
-+		goto err1;
++	if (!pskb_may_pull(skb, sizeof(struct iphdr)))
++		return false;
++
++	nhoff = skb_network_offset(skb);
++	iph = ip_hdr(skb);
++	if (iph->ihl < 5 || iph->version != 4)
++		return false;
++
++	len = skb_ip_totlen(skb);
++	if (skb->len < nhoff + len || len < (iph->ihl * 4u))
++		return false;
++
++	return pskb_may_pull(skb, iph->ihl * 4u);
++}
++
+ TC_INDIRECT_SCOPE int tcf_ipt_act(struct sk_buff *skb,
+ 				  const struct tc_action *a,
+ 				  struct tcf_result *res)
+@@ -244,9 +264,22 @@ TC_INDIRECT_SCOPE int tcf_ipt_act(struct sk_buff *skb,
+ 		.pf	= NFPROTO_IPV4,
+ 	};
+ 
++	if (skb->protocol != htons(ETH_P_IP))
++		return TC_ACT_UNSPEC;
++
+ 	if (skb_unclone(skb, GFP_ATOMIC))
+ 		return TC_ACT_UNSPEC;
+ 
++	if (!tcf_ipt_act_check(skb))
++		return TC_ACT_UNSPEC;
++
++	if (state.hook == NF_INET_POST_ROUTING) {
++		if (!skb_dst(skb))
++			return TC_ACT_UNSPEC;
++
++		state.out = skb->dev;
 +	}
 +
-+	if (tb[TCA_IPT_TABLE]) {
-+		/* mangle only for now */
-+		if (nla_strcmp(tb[TCA_IPT_TABLE], "mangle"))
-+			goto err1;
-+	}
+ 	spin_lock(&ipt->tcf_lock);
  
--	err = -ENOMEM;
--	tname = kmalloc(IFNAMSIZ, GFP_KERNEL);
-+	tname = kstrdup("mangle", GFP_KERNEL);
- 	if (unlikely(!tname))
- 		goto err1;
--	if (tb[TCA_IPT_TABLE] == NULL ||
--	    nla_strscpy(tname, tb[TCA_IPT_TABLE], IFNAMSIZ) >= IFNAMSIZ)
--		strcpy(tname, "mangle");
- 
- 	t = kmemdup(td, td->u.target_size, GFP_KERNEL);
- 	if (unlikely(!t))
+ 	tcf_lastuse_update(&ipt->tcf_tm);
 -- 
 2.39.3
 
