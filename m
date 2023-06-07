@@ -1,56 +1,56 @@
-Return-Path: <netdev+bounces-8728-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8729-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id AF91872567B
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:55:05 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 200D772567E
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:55:25 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 737BB280DD3
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:55:04 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3DC171C20CEF
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:55:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC67E746A;
-	Wed,  7 Jun 2023 07:54:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 035887480;
+	Wed,  7 Jun 2023 07:54:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC2C37465
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:54:44 +0000 (UTC)
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7724C10C6
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 00:54:43 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id 6a1803df08f44-62b65e4c42eso6758226d6.3
-        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 00:54:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E76507465
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:54:46 +0000 (UTC)
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3690812C
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 00:54:45 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id 6a1803df08f44-62615694bb9so48057556d6.0
+        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 00:54:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1686124482; x=1688716482;
+        d=broadcom.com; s=google; t=1686124484; x=1688716484;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=00fRL8RxD9SowKNUqYjLLBgtoj6CGuSVSaOL5LoZUh0=;
-        b=Hj6Zfq/t9PX5vlpNJfmgNqItzpMyg9RnWNixOonRgJpod2PJrPVFOzO852q6owz3ke
-         5LSuH3QTpaD+Bor3cvsAXVZ12ZfSIULteCIN+lzSBF54WMf7mpDpawJY8Cq7OtWM33NA
-         veIyqKABxSl4/8zsaHCKOfXoFlchrkssl5864=
+        bh=0OufplTNJwSbnUq24EenH4KnxC2gWFpCoV7GUxnomWc=;
+        b=RQcfD/mZzArj4G1bxpQwSZ75oN6/7SGRTUFlVp7OM6xIwf3K4wpRVkIsL5hgZeHgYL
+         PyUC8VWIPYtwOZPBk9k+tNuxvCN7qMOevshwDF4oTisaThzpD0Kbtv/zu5Q7udtuuZg9
+         ug5xJXYogVcfmH5rkEfo/CKqpXZ5CXCGLQkUk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686124482; x=1688716482;
+        d=1e100.net; s=20221208; t=1686124484; x=1688716484;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=00fRL8RxD9SowKNUqYjLLBgtoj6CGuSVSaOL5LoZUh0=;
-        b=LxtN18805l1cUCNEC4GFWSld06VutG198SJssr4KOazQfzRwoDmTh2EGPcKxNv7eUi
-         ZS1wSJ6xfgP02BoA3wYJlWAIFaoBG9I7NpYWYn4shs94CEU5/kPJt2CvfDjM+XsqWku9
-         1vrIrdlwQpHNa8qrGby8c7+Qq/N+RpZPxvHsAgRvsgP4oRYN1JjyE9eWpRal0emIP32B
-         BjzFguqBT/BHyHg2nZ0lm5CsN+0Y9pQz0ej32jXcpUgGJSe3sHB4jPXDZKGSfuJ8lbnT
-         2dLYYAC9ZRSbH1tlgknD3f+OCQgXehBitI1fAuOeXqN/eT0So6SXcLguDR3woJ5eI1nW
-         o+jA==
-X-Gm-Message-State: AC+VfDyMxpy4Z8UsCCFRA0IqS565VFQtqjCloRRmDEGmw0PYHvMlXpDH
-	cbrR2wOdr42d7LG3J3V5Mb5s/MH0ln3S5gXika4=
-X-Google-Smtp-Source: ACHHUZ54AXTNz0Qg8k+NtWfSiZBv4kFwJDYB/0K+y3bDEiMTmtWzHw+ScOei7qCz+X9/m9w8mqPGeg==
-X-Received: by 2002:ad4:5747:0:b0:629:78ae:80f0 with SMTP id q7-20020ad45747000000b0062978ae80f0mr2786147qvx.8.1686124482516;
-        Wed, 07 Jun 2023 00:54:42 -0700 (PDT)
+        bh=0OufplTNJwSbnUq24EenH4KnxC2gWFpCoV7GUxnomWc=;
+        b=Z/fdmrR2DIqQ5E1rXVm/pAhR8Lcv9smA4CPPA1TdFZkKrZ88rSWcf6hJZ63Ismp2g7
+         6W/ptGPymWf1DIisZowehP+jb4Q+e+Eq14jImDK1IggOhSWY1FEsgHxmYDZsxW20izjM
+         ikVMX3YH9/xJhz1KceqzZs7VLhTujLF6KL2liVLdjNRAC2cxtK1LYPkw4P7m+FbwY4Ye
+         uWZ6Dq9cz01jDN/zxYWZRC3uNVgX8djoGgSqsqyYnPpIz7BYpD515UeBWJPVngAY+PBp
+         eB7dQwqsLMsB0aY0ktopivBIzIko++pEtBJrpK/gn5nVvJ5N3QN3GcdGCrVAwvM4cQWh
+         vUQQ==
+X-Gm-Message-State: AC+VfDw7Km9Eq7M+bK5RzINMYtpcLVSvdEsuWd2fM06ac4nSbFdfjMQh
+	ip4BmoIgvxr0AniD2JTmRyXseQ==
+X-Google-Smtp-Source: ACHHUZ6PEPP2YRej8grIx9ouO8QIocDF8HdTwOTckZA7VBkv+0stWBKGJ682b2wu8POHl10zRiFQig==
+X-Received: by 2002:a05:6214:d0a:b0:626:17b2:5583 with SMTP id 10-20020a0562140d0a00b0062617b25583mr2114271qvh.0.1686124484123;
+        Wed, 07 Jun 2023 00:54:44 -0700 (PDT)
 Received: from lvnvda5233.lvn.broadcom.net ([192.19.161.250])
-        by smtp.gmail.com with ESMTPSA id cs12-20020ad44c4c000000b00626362f1bf1sm5850817qvb.63.2023.06.07.00.54.40
+        by smtp.gmail.com with ESMTPSA id cs12-20020ad44c4c000000b00626362f1bf1sm5850817qvb.63.2023.06.07.00.54.42
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Jun 2023 00:54:41 -0700 (PDT)
+        Wed, 07 Jun 2023 00:54:43 -0700 (PDT)
 From: Michael Chan <michael.chan@broadcom.com>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
@@ -58,12 +58,11 @@ Cc: netdev@vger.kernel.org,
 	kuba@kernel.org,
 	pabeni@redhat.com,
 	gospo@broadcom.com,
-	Pavan Chebbi <pavan.chebbi@broadcom.com>,
-	Kalesh Anakkur Purayil <kalesh-anakkur.purayil@broadcom.com>,
-	Somnath Kotur <somnath.kotur@broadcom.com>
-Subject: [PATCH net 1/6] bnxt_en: Fix bnxt_hwrm_update_rss_hash_cfg()
-Date: Wed,  7 Jun 2023 00:54:04 -0700
-Message-Id: <20230607075409.228450-2-michael.chan@broadcom.com>
+	Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+	Pavan Chebbi <pavan.chebbi@broadcom.com>
+Subject: [PATCH net 2/6] bnxt_en: Don't issue AP reset during ethtool's reset operation
+Date: Wed,  7 Jun 2023 00:54:05 -0700
+Message-Id: <20230607075409.228450-3-michael.chan@broadcom.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20230607075409.228450-1-michael.chan@broadcom.com>
 References: <20230607075409.228450-1-michael.chan@broadcom.com>
@@ -74,7 +73,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="000000000000d9595305fd85724a"
+	boundary="000000000000f3112a05fd857219"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
@@ -82,40 +81,45 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---000000000000d9595305fd85724a
+--000000000000f3112a05fd857219
 Content-Transfer-Encoding: 8bit
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
 
-We must specify the vnic id of the vnic in the input structure of this
-firmware message.  Otherwise we will get an error from the firmware.
+Only older NIC controller's firmware uses the PROC AP reset type.
+Firmware on 5731X/5741X and newer chips does not support this reset
+type.  When bnxt_reset() issues a series of resets, this PROC AP
+reset may actually fail on these newer chips because the firmware
+is not ready to accept this unsupported command yet.  Avoid this
+unnecessary error by skipping this reset type on chips that don't
+support it.
 
-Fixes: 98a4322b70e8 ("bnxt_en: update RSS config using difference algorithm")
-Reviewed-by: Kalesh Anakkur Purayil <kalesh-anakkur.purayil@broadcom.com>
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Fixes: 7a13240e3718 ("bnxt_en: fix ethtool_reset_flags ABI violations")
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index dcd9367f05af..4aa490cb2fe0 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -5350,6 +5350,7 @@ static void bnxt_hwrm_update_rss_hash_cfg(struct bnxt *bp)
- 	if (hwrm_req_init(bp, req, HWRM_VNIC_RSS_QCFG))
- 		return;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 2dd8ee4a6f75..8fd5071d8b09 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -3831,7 +3831,7 @@ static int bnxt_reset(struct net_device *dev, u32 *flags)
+ 		}
+ 	}
  
-+	req->vnic_id = cpu_to_le16(vnic->fw_vnic_id);
- 	/* all contexts configured to same hash_type, zero always exists */
- 	req->rss_ctx_idx = cpu_to_le16(vnic->fw_rss_cos_lb_ctx[0]);
- 	resp = hwrm_req_hold(bp, req);
+-	if (req & BNXT_FW_RESET_AP) {
++	if (!BNXT_CHIP_P4_PLUS(bp) && (req & BNXT_FW_RESET_AP)) {
+ 		/* This feature is not supported in older firmware versions */
+ 		if (bp->hwrm_spec_code >= 0x10803) {
+ 			if (!bnxt_firmware_reset_ap(dev)) {
 -- 
 2.30.1
 
 
---000000000000d9595305fd85724a
+--000000000000f3112a05fd857219
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -186,14 +190,14 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIN8mGM1wLO+rEuMBI1EKF5+88aE1JjBO
-CamtlUSbKjo+MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYw
-NzA3NTQ0MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIEEokQD7pkVs+QHxQL//wekREQSORzDv
+/Xw6aTNNABKdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYw
+NzA3NTQ0NFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBPukBRgkKRYHxS26n2MAhll2qyejKzLIzqCB7eGvsikdH/Zh90
-Kz0uvvO2EVgq8boC99kzp201RKXPqyE2BESTX8cBbfaV0a/Z4V4ZDmF6QpIkYUrC8t53K/yiijwz
-FqVEkmafv1/BW8jLAe3WEQJAmpUKnAUsu5++GGc6gRCzWzGffvJRVzaVb6LRp6NcX982HHiXMNKJ
-qze13t4uiWbraWR/Mn9uaTrTOss69whJddZsqyhrAi6spvE7F4az6cdK2SW3lPzyjMt3JqCsacTS
-Iyk4Vnceu9jQ8zQfYSSmlUxyiu9/QEvdXs4ufdhIc9PycxIYgK29Raq+LRAIxqjA
---000000000000d9595305fd85724a--
+ATANBgkqhkiG9w0BAQEFAASCAQA+e4I6TDrW9NnvVw+D2oRHDhiRme/1dZV3fNjIcQdItcflm/jJ
+fuzHJGzmrCLlIOWSiJB0+kLS4BBHHf1tfMG1WVlhIj0Zu+ooGf6XC87c4EoZ6z1JudTz3d+131Gj
+HnWslsb0S7e2rUm8u3+Ho1c5Xws1GQFApw3sUbxtuyxLQW08ZAtF4+vQrF8qvDj4Rb40gYd1xk5D
+hvDwCW8VwmCiPW0E7ujBgB9tHBf9JVcyohk321+5FT2neQ/WoMzeb99qsmtTrvXro/hz32Nc8SxX
+s7eDZQ+4/pqx8OdSvo5KwW3GaKvlmHYnHbzpjUjgfklGg8j8gp/t4jTvx49NG5GC
+--000000000000f3112a05fd857219--
 
