@@ -1,107 +1,107 @@
-Return-Path: <netdev+bounces-8664-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8666-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5A87D7251D2
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 03:55:00 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 521AB7251DC
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 03:57:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6487D1C20B3A
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 01:54:56 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E2F142810F8
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 01:57:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0E2FD641;
-	Wed,  7 Jun 2023 01:54:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CD5DB65E;
+	Wed,  7 Jun 2023 01:56:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFF707C
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 01:54:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B06EC433EF;
-	Wed,  7 Jun 2023 01:54:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686102895;
-	bh=L5++KAY1MZjlyXEgE62/aSSXjGPmyMxfne3vd2s3Qh0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=mCWRdAv9G9mqhBqQL78XetAXwO85iy64XPDCYeMLzla2fz2hjB5WC6W++watZjd0s
-	 oaLdHFMuRkCtMN8Kuhq8OwNylmDR1p439v2jHKPaCmwerg/RNg/h8GmPHlonUjSRE9
-	 sgAfLkEhP/2C5uFWAg0e1Kfd+sihCI6EXlz8mp2x9xvkFRcIccQXLQYybbo+wuLxcs
-	 XHkx7gPJn+QqcQMpgdLj9yYAODmRwZknUfyZCN6DdQRAtgUWY4mUmX+jbi/1F9fS6O
-	 IdrfgStPm1AbFEOvapklC8HpviuJTVRt9pHfufo6OxwEEKqklpPuLBpKQpCTEKaW6m
-	 McbRq3mezKn1g==
-Date: Tue, 6 Jun 2023 18:54:53 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Justin Chen <justin.chen@broadcom.com>
-Cc: netdev@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- bcm-kernel-feedback-list@broadcom.com, florian.fainelli@broadcom.com,
- davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
- robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
- opendmb@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
- linux@armlinux.org.uk, richardcochran@gmail.com, sumit.semwal@linaro.org,
- christian.koenig@amd.com, simon.horman@corigine.com
-Subject: Re: [PATCH net-next v6 3/6] net: bcmasp: Add support for ASP2.0
- Ethernet controller
-Message-ID: <20230606185453.582d3831@kernel.org>
-In-Reply-To: <8601be87-4bcb-8e6b-5124-1c63150c7c40@broadcom.com>
-References: <1685657551-38291-1-git-send-email-justin.chen@broadcom.com>
-	<1685657551-38291-4-git-send-email-justin.chen@broadcom.com>
-	<20230602235859.79042ff0@kernel.org>
-	<956dc20f-386c-f4fe-b827-1a749ee8af02@broadcom.com>
-	<20230606171605.3c20ae79@kernel.org>
-	<8601be87-4bcb-8e6b-5124-1c63150c7c40@broadcom.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF7BE64E
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 01:56:55 +0000 (UTC)
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6B8DE43;
+	Tue,  6 Jun 2023 18:56:52 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="6.00,222,1681138800"; 
+   d="scan'208";a="166015942"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 07 Jun 2023 10:56:51 +0900
+Received: from localhost.localdomain (unknown [10.166.15.32])
+	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 1C608411C514;
+	Wed,  7 Jun 2023 10:56:51 +0900 (JST)
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: s.shtylyov@omp.ru,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com
+Cc: maciej.fijalkowski@intel.com,
+	netdev@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH net-next v3 0/2] net: renesas: rswitch: Improve perfromance of TX/RX
+Date: Wed,  7 Jun 2023 10:56:39 +0900
+Message-Id: <20230607015641.1724057-1-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=1.1 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+	autolearn_force=no version=3.4.6
+X-Spam-Level: *
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Tue, 6 Jun 2023 18:35:51 -0700 Justin Chen wrote:
-> > Also - can you describe how you can have multiple netdevs for
-> > the same MAC?  
-> 
-> Not netdevs per se, but packets can be redirected to an offload 
-> co-processor.
+This patch series is based on net-next.git / main branch [1]. This patch
+series can improve perfromance of TX in a specific condition. The previous code
+used "global rate limiter" feature so that this is possible to cause
+performance down if we use multiple ports at the same time. To resolve this
+issue, use "hardware pause" features of GWCA and COMA. Note that this is not
+related to the ethernet PAUSE frames.
 
-How is the redirecting configured?
+< UDP TX by iperf3 >
+ before: about 450Mbps on both tsn0 and tsn1
+ after:  about 950Mbps on both tsn0 and tsn1
 
-Could you split this patch into basic netdev datapath,
-and then as separate patches support for ethtool configuration features,
-each with its own patch? This will make it easier for area experts to
-review.
+Also, this patch series can improve performance of RX by using
+napi_gro_receive().
 
-The base patch can probably include these:
+< TCP RX by iperf >
+ before: about 670Mbps on tsn0
+ after:  about 840Mbps on tsn0
 
-+	.get_drvinfo		= bcmasp_get_drvinfo,
-+	.get_link		= ethtool_op_get_link,
-+	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
-+	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
-+	.get_msglevel		= bcmasp_get_msglevel,
-+	.set_msglevel		= bcmasp_set_msglevel,
+[1]
+The commit 2dc476404efa ("Merge branch 'tools-ynl-user-space-c'")
 
-WoL can be a separate patch:
+Changes from v2:
+https://lore.kernel.org/all/20230606085558.1708766-1-yoshihiro.shimoda.uh@renesas.com/
+ - Rebased on the latest net-next.git / main branch.
+ - Added Reviewed-by in the patch 1/2. (Maciej, thanks!)
+ - Revise the commit description in the patch 2/2.
+ - Add definition to remove magic hardcoded numbers in the patch 2/2.
 
-+	.get_wol		= bcmasp_get_wol,
-+	.set_wol		= bcmasp_set_wol,
+Changes from v1:
+https://lore.kernel.org/all/20230529080840.1156458-1-yoshihiro.shimoda.uh@renesas.com/
+ - Rebased on the latest net-next.git / main branch.
+ - Use "hardware pause" feature instead of "per-queue limiter" feature.
+ - Drop refactaring for "per-queue limiter".
+ - Drop dt-bindings update because "hardware pause" doesn't need additional
+   clock information.
+ - Use napi_gro_receive() to improve RX performance.
 
-Stats a separate patch:
+Yoshihiro Shimoda (2):
+  net: renesas: rswitch: Use napi_gro_receive() in RX
+  net: renesas: rswitch: Use hardware pause features
 
-+	.get_strings		= bcmasp_get_strings,
-+	.get_ethtool_stats	= bcmasp_get_ethtool_stats,
-+	.get_sset_count		= bcmasp_get_sset_count,
-+	.nway_reset		= phy_ethtool_nway_reset,
+ drivers/net/ethernet/renesas/rswitch.c | 38 ++++++++++----------------
+ drivers/net/ethernet/renesas/rswitch.h |  7 +++++
+ 2 files changed, 22 insertions(+), 23 deletions(-)
 
-Flow steering separate:
+-- 
+2.25.1
 
-+	.get_rxnfc		= bcmasp_get_rxnfc,
-+	.set_rxnfc		= bcmasp_set_rxnfc,
-
-EEE separate:
-
-+	.set_eee		= bcmasp_set_eee,
-+	.get_eee		= bcmasp_get_eee,
 
