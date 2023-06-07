@@ -1,37 +1,37 @@
-Return-Path: <netdev+bounces-8688-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8689-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id CB95C725315
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:00:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id BA18072531E
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:00:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 85DA51C20BD5
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 05:00:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2628C1C20BA5
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 05:00:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B0D5A5E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3F7ADED9;
 	Wed,  7 Jun 2023 05:00:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9A8DA3B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF9BF7C
 	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 05:00:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4A9FCC4339C;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 29606C433EF;
 	Wed,  7 Jun 2023 05:00:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1686114022;
-	bh=ZO2jlGjckUSBt9bnQ1g4uzThdD6UwH7dkpjQwUFb6EM=;
+	bh=35GoLuq0jnw4Y6qI56ro58x+k/+rR5iCO9IAcUOyr/E=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=Tip1HI8TdY4jyXLKAW86Xrpxw0GTDpxeGw5JL+uSAGcfrLsDGRGe0bidD1Q8VXrCo
-	 U+OmE8FysY2AxQHwurM7i82DqM+NMCONhn6WQP1+jK/T6Y/1hSianbLeChY+peCXl6
-	 M0Q6grqidzaYjAjSVu5vSMSjWNKhmtAh9k0Lh3NWcF8Uqo9dkv0IrAKUmKXcfAbGek
-	 STNCCYsUolW0OfEe/K7GBENay8XEGzbk6ZyMHv3pL0iqeewo4ZpmCe/GHm7xf75Ghi
-	 qCstpb+FuGw6Syz3Mcu8EC4z86mlJJgUQL27XMtNnwgYN5iEMgaLcyOS12QhXqwi13
-	 j2DRLrOYtHcGA==
+	b=fPCeESEnWOfht6fCCJeq44BP02Gg4A0GIvjgsOcnH1ZZdHgaw1eP4E1vvX3oclk9i
+	 aOqeO1goEUYxcXUABjsyCA8mHkXIpACp2DWFPo/gsvrajMYlxI7Uh5Nwjw1LZpR3gL
+	 S1JvUZCp4D9iudyh94GV37ZbFhKeW7jqT9goa1OKSLMP34/ZT/8Hxjfu/6Frk5aJ0+
+	 bqQ2mjApXABMuvH/YZc+xO91/rLXC3AqtdZ/ZPbdwrmO7CBcNA1bLKK8O8qOwtckV6
+	 dnTJ5TfLXuc4tnxkh5fhdAlmeDF8vmuAlyOJM6W7iDXS3PCsuap2Hzob62aKj7fo1w
+	 RGKzBXfVcE3SQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 19DB5E4F13A;
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0951CE4D016;
 	Wed,  7 Jun 2023 05:00:22 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
@@ -41,36 +41,46 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: bluetooth 2023-06-05
+Subject: Re: [PATCH net 1/5] netfilter: nf_tables: Add null check for
+ nla_nest_start_noflag() in nft_dump_basechain_hook()
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168611402210.26969.14204667186848677809.git-patchwork-notify@kernel.org>
+ <168611402203.26969.13691085401087491636.git-patchwork-notify@kernel.org>
 Date: Wed, 07 Jun 2023 05:00:22 +0000
-References: <20230606003454.2392552-1-luiz.dentz@gmail.com>
-In-Reply-To: <20230606003454.2392552-1-luiz.dentz@gmail.com>
-To: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc: davem@davemloft.net, kuba@kernel.org, linux-bluetooth@vger.kernel.org,
- netdev@vger.kernel.org
+References: <20230606225851.67394-2-pablo@netfilter.org>
+In-Reply-To: <20230606225851.67394-2-pablo@netfilter.org>
+To: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: netfilter-devel@vger.kernel.org, davem@davemloft.net,
+ netdev@vger.kernel.org, kuba@kernel.org, pabeni@redhat.com,
+ edumazet@google.com, fw@strlen.de
 
 Hello:
 
-This pull request was applied to netdev/net.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+This series was applied to netdev/net.git (main)
+by Pablo Neira Ayuso <pablo@netfilter.org>:
 
-On Mon,  5 Jun 2023 17:34:54 -0700 you wrote:
-> The following changes since commit fb928170e32ebf4f983db7ea64901b1ea19ceadf:
+On Wed,  7 Jun 2023 00:58:47 +0200 you wrote:
+> From: Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
 > 
->   Merge branch 'mptcp-addr-adv-fixes' (2023-06-05 15:15:57 +0100)
+> The nla_nest_start_noflag() function may fail and return NULL;
+> the return value needs to be checked.
 > 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2023-06-05
+> Found by InfoTeCS on behalf of Linux Verification Center
+> (linuxtesting.org) with SVACE.
 > 
 > [...]
 
 Here is the summary with links:
-  - pull-request: bluetooth 2023-06-05
-    https://git.kernel.org/netdev/net/c/ab39b113e747
+  - [net,1/5] netfilter: nf_tables: Add null check for nla_nest_start_noflag() in nft_dump_basechain_hook()
+    https://git.kernel.org/netdev/net/c/bd058763a624
+  - [net,2/5] netfilter: nft_bitwise: fix register tracking
+    https://git.kernel.org/netdev/net/c/14e8b2939037
+  - [net,3/5] netfilter: conntrack: fix NULL pointer dereference in nf_confirm_cthelper
+    https://git.kernel.org/netdev/net/c/e1f543dc660b
+  - [net,4/5] netfilter: ipset: Add schedule point in call_ad().
+    https://git.kernel.org/netdev/net/c/24e227896bbf
+  - [net,5/5] netfilter: nf_tables: out-of-bound check in chain blob
+    https://git.kernel.org/netdev/net/c/08e42a0d3ad3
 
 You are awesome, thank you!
 -- 
