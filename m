@@ -1,390 +1,186 @@
-Return-Path: <netdev+bounces-8923-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8924-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id CCF3A7264F1
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 17:44:34 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 75AD87264F5
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 17:45:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 82A7B281285
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 15:44:33 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D39761C20E32
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 15:45:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9D76A370E1;
-	Wed,  7 Jun 2023 15:44:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A76A4370E5;
+	Wed,  7 Jun 2023 15:45:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A6E234D94
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 15:44:31 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30DEE1BFE
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 08:44:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686152661;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=14yiDpYkKYs4TQY/X5LH0xGhtBv8ANPV+qMb6wpWFxQ=;
-	b=UPQ4po1iPbkboeTm7MvknVHzm4iIi705CdxymCsBhWH3d/qY0wv8ozxXJeWA8W0UiYeHoC
-	pZklpEQpPhCBBWEd/amuh1CEolomXp9NJ/KxJPaE+DEYArB/tbjRc/2zE3rTf3ID4S/fcK
-	L8cxjjoRci+/otkhvJRXJdIwjo33ueM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-609--IKtO5XMOhymtrXPOTu1mQ-1; Wed, 07 Jun 2023 11:44:17 -0400
-X-MC-Unique: -IKtO5XMOhymtrXPOTu1mQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 45126803CA7;
-	Wed,  7 Jun 2023 15:43:56 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id A03032166B25;
-	Wed,  7 Jun 2023 15:43:53 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <20230607153232.93980-1-kuniyu@amazon.com>
-References: <20230607153232.93980-1-kuniyu@amazon.com> <20230607140559.2263470-8-dhowells@redhat.com>
-To: Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc: dhowells@redhat.com, axboe@kernel.dk, borisp@nvidia.com,
-    chuck.lever@oracle.com, davem@davemloft.net, dsahern@kernel.org,
-    edumazet@google.com, john.fastabend@gmail.com, kuba@kernel.org,
-    linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-    netdev@vger.kernel.org, pabeni@redhat.com,
-    torvalds@linux-foundation.org, willemdebruijn.kernel@gmail.com,
-    willy@infradead.org
-Subject: Re: [PATCH net-next v5 07/14] ipv4, ipv6: Use splice_eof() to flush
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9444134D94
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 15:45:20 +0000 (UTC)
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2044.outbound.protection.outlook.com [40.107.7.44])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 313C5173B
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 08:45:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IHVIRAitib+eXZ0REoAZ4iUqWyK3b4OxgP2SGrwNdOdwhxk4jXmA7xAvfRYJieDlFheFMIRgzmCAwFE0sk43EqESZkrfp9ClHH+vKmt7wbxqier9QwZPK4TvMxSmulG5tDQrZ2VdJF7WgHqj3Na++m9KckApSdEiaVMDTts4ujRwIDw9nDoG+fyS6jkqO2nHBo8NGv4frMTGt1D9ozfgb4pD1ZXmzCMlQQSZMwztfiAVBDYebHk4UDd9KM5/7nCGBlk+9JlCQZvUoJX5EIIWjhkcf8aEDeCUd5dbymK3aNvSuTTXuiO97RqvXk5aMEt7F4Dp25LiodHJJL6o4/8voQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Dp6ix70vqmc+KX/P1bC9k9tF8UX9OJ/AiYwLgqXKdYE=;
+ b=OhggiU7APVewCXCxbxc4r++Y41GPYrol0+NAI44iyuK8vI6iNZMXUoSLw5glf0bFSQAs6N3FkwOGyRPnPwASZ4tNUdj6Ss8tyiLouUJd/reuO4doNESTNYrpu/oVMONeGKqHvkbA0qf1V0+mKj8wpGoozBuSZRYA0yhVvtUEj9eFPjgONPe4IlWOw2gtfmaUguVoJAydv/fIgqVpfNfw7T9t4JPRP4FoWX413xX2G4/s12CYJGmSKKQlPDv6E5nvvY/o6etO+KCoBwdCRz3MFrMEQExrqFRoq1PTiAjqdbytVbK+Zk8ssJRqv5BWRYci0Ybtjl5cVeTRBZoIqxwU2g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Dp6ix70vqmc+KX/P1bC9k9tF8UX9OJ/AiYwLgqXKdYE=;
+ b=HRLhuL3MMqXcimx7iAv1je4V9Gmxsj4lopJ0sOwKhUCfV1yqQmxXmU90sEalU9H4LdinCqP5FaumaT6LJwaZlSLPB+n3rFbHZhpzEWxm4Er+y8+TsFxHtK+PQP1jmOXH+zVuV4DO974mDw3zvBh4YXmDWfpeRFr9/soUup1+Oyc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
+ by AM7PR04MB6869.eurprd04.prod.outlook.com (2603:10a6:20b:dc::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Wed, 7 Jun
+ 2023 15:45:16 +0000
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::c40e:d76:fd88:f460]) by AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::c40e:d76:fd88:f460%4]) with mapi id 15.20.6455.030; Wed, 7 Jun 2023
+ 15:45:16 +0000
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+To: netdev@vger.kernel.org
+Cc: David Ahern <dsahern@kernel.org>,
+	Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH v2 iproute2-next] tc/taprio: print the offload xstats
+Date: Wed,  7 Jun 2023 18:45:04 +0300
+Message-Id: <20230607154504.4085041-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: VI1PR09CA0136.eurprd09.prod.outlook.com
+ (2603:10a6:803:12c::20) To AM0PR04MB6452.eurprd04.prod.outlook.com
+ (2603:10a6:208:16d::21)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2269949.1686152632.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 07 Jun 2023 16:43:52 +0100
-Message-ID: <2269950.1686152632@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AM7PR04MB6869:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4942762a-45ce-4980-5988-08db676e30b1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	+0IoS5FWuuN4Dn4eQHLWE9JUJiXO6uWo1spEXCOw+7IvraoxDsvcxBo4GpLB7kGJOrOrMvAWcaGKkFuFwrQsHSkGbh8NTtyRlf8M5XB2mbMNFf+Xar5tlluG+DMHCMgttQw/XK/D1yzZTKrkPRXigmg7qZ3m5O4nKS5CcXKD/Il+Kvnz00qlXj7QJG84In/Q65oMyoHGnh6/CkmkM7Qm9L/xlZGU9DGn8VZlONDiTPYLGEU+9BNo+eMQHsKsbsokrek+8L/1vCAIu6fWwuQiGDCRO/BGC5wbAM71cMeaI0ElDm1M+QQlOYnJ+PFpq/IeMTIsoNBc6WvL9UwxI/+1/0QVkJ3OV/citsXjiJ/VavcYKCb5doezZ9Bq3RQ+WxSMNr0cQwYnfdqeI6ZlIO025JASrRCvbdTUXWYp1JmFAMDry0fVsSh01rws8EWBJ3+DfkDdGSalykONgqoCronbEhNC1vwVp8nVIfIBoBFdvvc40Ldh7PhIk32JrKXR108Xfl/5UsFfDHrz8zEkXlZ1Ip+6Le/OgYiEv5KzETnJIYLPF2d+/YmvEhFyS9uup3k3qvfBrsy8YdWBb58+Sg1wnXMgh9gYwn2wf9okny4XtLRF4REVnv5z4z/Iz5oSWIF9
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(39860400002)(366004)(396003)(376002)(451199021)(66556008)(66946007)(66476007)(2906002)(38350700002)(186003)(38100700002)(4326008)(5660300002)(36756003)(6486002)(316002)(6666004)(41300700001)(8936002)(8676002)(6916009)(54906003)(478600001)(86362001)(52116002)(1076003)(26005)(6506007)(2616005)(44832011)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?gfyhT7omwMjXkwKBCYfd1+wODag8KavrSAt8xul04lby8Wl94OJJQddN1ThM?=
+ =?us-ascii?Q?LVKEgqDF+bX0WeWdKBK14UXXMINmfBAFhLAiszni/VMWZ6R/AX9DWJaGyKmr?=
+ =?us-ascii?Q?JHwVxOIEdVz+O+HR3YoBT3QcHArxW+C9uCQyLz4/HyISxfVgqdxFuDBwcNDR?=
+ =?us-ascii?Q?P0xiUD3Mt/AW8AtT4LFyu+IRaEHZpGcnVfcigUW3/dK2JPdGk6T8eeub7SPp?=
+ =?us-ascii?Q?0/pmg2tISMEXoppckqNwLYDpxYw23i3quzcEShCSjUOWx5fdKI2jflRy+y14?=
+ =?us-ascii?Q?w+jge0OVDdak8zVejOmsQoFdfVYnjl8p3ikftl73e1Z7B28nQTI7y/aRUYam?=
+ =?us-ascii?Q?VmkcSVze3idCcuSM8Yp37KAAFLuBuWaPPkAILfO3n6i5utx4fGdmrWyyP0/2?=
+ =?us-ascii?Q?Yu71y5G+WFE914fFBj3WJwjZXHb3lEEDJfkYCzXKN5Ie32VRgKy1o2P83Mlj?=
+ =?us-ascii?Q?ZPjNM+mQ6mN2O0UCR7xpl0HHhgdQv5QmqOl0G4NlPjnr+hTwZhbS9W4qSJzf?=
+ =?us-ascii?Q?yh32Svfg0gAj70xyZGMr+xGKY3cHOYPbONKvPKTGis+z8mjz8kRak3X0hFb1?=
+ =?us-ascii?Q?PastCghFxwNTHqfbu90izIErvwAmQjzuLd9EDQfgaKr9FTfG69z5bcQ5WAEv?=
+ =?us-ascii?Q?O2wYsypH0JZvSHxkxKEY0xPhS/K4f/8n/iWOy6ZUU4ihOosHgwiqHOCn1O6U?=
+ =?us-ascii?Q?XLDqvgHAfEGjpovp9pa1T3p2/ziFijLyrUFOzbV1hB07SO/PIO4HgbBMXZlf?=
+ =?us-ascii?Q?kDOu7Z339I+MOnVnV5qaE1CMVtBcpA0YyQyQ9fegsDEoGx4dAL48dYiZUg/Y?=
+ =?us-ascii?Q?zA+Ck1OvgZOQKd0KDsNJ/6eOcYUsExKkmFmW/HcbvGlp2gZ3EXr1u6t3EleO?=
+ =?us-ascii?Q?so1OKVIbyJSbMDTHuUcoZYIMTrFsMYM20i0UvxaFImyTbXvTPNxCTLr4MjGv?=
+ =?us-ascii?Q?YWM7C8QfnyQlHfncmgVVswx3BziU576BcF/0isJVX46ruwtSDNiuFMu6fd+/?=
+ =?us-ascii?Q?fvBGvzNaFosJl71JPJvg4FP/VbpSmoMWhmK3yCduAY7jTkYZaYSfbZR68Jv7?=
+ =?us-ascii?Q?6COPj5NoiHB0lm37rEsCRl+vlTlqSE6nw3WNUY+7tqxF9FN7EAnxM1bB/K6g?=
+ =?us-ascii?Q?qwxR+iTSpIh6AboyoFuWQm4h6N9CKzRiTn9GSn7e7mgSEjr9khhe2WuWsHHx?=
+ =?us-ascii?Q?eK0tb0O0GqF+Ca9VSwv9cdYwq2DD938HcFX44AkoYHyP0i33+tXkXgZbnAI7?=
+ =?us-ascii?Q?lop0WfOIZHEFD3HSw6VQNFbRv7C9e8NhyOpZowiAA/kNYHX3Gr+JjAdA1En5?=
+ =?us-ascii?Q?cwmkYlqj+BgrMkg3WzV2SKW1WakoRxXT9lKpLvB2NF58U3crvfX3k6nAsmUr?=
+ =?us-ascii?Q?52R8Fvpk85Aa9kqVHJw02MlhxTx0acCZB1Ih7UF905O7NEdGAhUYaVeZXDx5?=
+ =?us-ascii?Q?asXkWOKnnEhPIdPIWUmJgMKkWNCaeAGw0L5kbpuBbYBnkKyb4jA9cG4P3zH8?=
+ =?us-ascii?Q?YJGzcE54jwKzPdhNONqKE+yLnvCI+235pu946U+hM0Px1PfxEEbp9ohnneep?=
+ =?us-ascii?Q?aJeI7sE/9Hi+V9b6AEeuwu/esSYDbRKbZhiCcNMyT5m5F6YmdWGcP7CZ+fYi?=
+ =?us-ascii?Q?lg=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4942762a-45ce-4980-5988-08db676e30b1
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2023 15:45:16.5533
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VZYOrh1PQdGV95DWUtmB37vIRj4i80Ryy1wRss/lzB1aSn02wyrYgdORHfGREahfN9nygSOg5SWpoeCSU5naSQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6869
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+When the kernel reports offload counters through TCA_STATS2 ->
+TCA_STATS_APP for the taprio qdisc, decode and print them.
 
-> > +	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-> > +	prot =3D READ_ONCE(sk->sk_prot);
-> > +	if (prot->splice_eof)
-> > +		sk->sk_prot->splice_eof(sock);
-> =
+Usage:
 
-> We need to use prot here.
+ # Global stats
+ $ tc -s qdisc show dev eth0 root
+ # Per-tc stats
+ $ tc -s class show dev eth0
 
-Yeah.
-
-> > +	if (up->pending =3D=3D AF_INET)
-> > +		udp_splice_eof(sock);
-> =
-
-> Do we need this ?
-
-Actually, no.  udp_v6_push_pending_frames() will do this.
-
-> > +	lock_sock(sk);
-> > +	if (up->pending && !READ_ONCE(up->corkflag))
-> > +		udp_push_pending_frames(sk);
-> =
-
-> We should use udp_v6_push_pending_frames(sk) as up->pending
-> could be AF_INET even after the test above.
-
-Yeah.
-
-Updated version attached for your perusal (I will post a v6 too).
-
-David
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-commit 8b95b9cd654835eb2ff1ad24cd6de802836c4062
-Author: David Howells <dhowells@redhat.com>
-Date:   Wed Jun 7 14:44:34 2023 +0100
+v1->v2:
+- s/st/tb/ for consistency with the rest of q_taprio.c
+- name counters tx_overruns and window_drops for consistency with the
+  printing style of other Qdiscs
 
-    ipv4, ipv6: Use splice_eof() to flush
-    =
+ tc/q_taprio.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-    Allow splice to undo the effects of MSG_MORE after prematurely ending =
-a
-    splice/sendfile due to getting an EOF condition (->splice_read() retur=
-ned
-    0) after splice had called sendmsg() with MSG_MORE set when the user d=
-idn't
-    set MSG_MORE.
-    =
-
-    For UDP, a pending packet will not be emitted if the socket is closed
-    before it is flushed; with this change, it be flushed by ->splice_eof(=
-).
-    =
-
-    For TCP, it's not clear that MSG_MORE is actually effective.
-    =
-
-    Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-    Link: https://lore.kernel.org/r/CAHk-=3Dwh=3DV579PDYvkpnTobCLGczbgxpMg=
-GmmhqiTyE34Cpi5Gg@mail.gmail.com/
-    Signed-off-by: David Howells <dhowells@redhat.com>
-    cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-    cc: Eric Dumazet <edumazet@google.com>
-    cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-    cc: David Ahern <dsahern@kernel.org>
-    cc: "David S. Miller" <davem@davemloft.net>
-    cc: Jakub Kicinski <kuba@kernel.org>
-    cc: Paolo Abeni <pabeni@redhat.com>
-    cc: Jens Axboe <axboe@kernel.dk>
-    cc: Matthew Wilcox <willy@infradead.org>
-    cc: netdev@vger.kernel.org
-
-Notes:
-    ver #6)
-     - In inet_splice_eof(), use prot after deref of sk->sk_prot.
-     - In udpv6_splice_eof(), use udp_v6_push_pending_frames().
-     - In udpv6_splice_eof(), don't check for AF_INET.
-
-diff --git a/include/net/inet_common.h b/include/net/inet_common.h
-index 77f4b0ef5b92..a75333342c4e 100644
---- a/include/net/inet_common.h
-+++ b/include/net/inet_common.h
-@@ -35,6 +35,7 @@ void __inet_accept(struct socket *sock, struct socket *n=
-ewsock,
- 		   struct sock *newsk);
- int inet_send_prepare(struct sock *sk);
- int inet_sendmsg(struct socket *sock, struct msghdr *msg, size_t size);
-+void inet_splice_eof(struct socket *sock);
- ssize_t inet_sendpage(struct socket *sock, struct page *page, int offset,
- 		      size_t size, int flags);
- int inet_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 68990a8f556a..49611af31bb7 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -327,6 +327,7 @@ int tcp_sendmsg(struct sock *sk, struct msghdr *msg, s=
-ize_t size);
- int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size);
- int tcp_sendmsg_fastopen(struct sock *sk, struct msghdr *msg, int *copied=
-,
- 			 size_t size, struct ubuf_info *uarg);
-+void tcp_splice_eof(struct socket *sock);
- int tcp_sendpage(struct sock *sk, struct page *page, int offset, size_t s=
-ize,
- 		 int flags);
- int tcp_sendpage_locked(struct sock *sk, struct page *page, int offset,
-diff --git a/include/net/udp.h b/include/net/udp.h
-index 5cad44318d71..4ed0b47c5582 100644
---- a/include/net/udp.h
-+++ b/include/net/udp.h
-@@ -278,6 +278,7 @@ int udp_get_port(struct sock *sk, unsigned short snum,
- int udp_err(struct sk_buff *, u32);
- int udp_abort(struct sock *sk, int err);
- int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len);
-+void udp_splice_eof(struct socket *sock);
- int udp_push_pending_frames(struct sock *sk);
- void udp_flush_pending_frames(struct sock *sk);
- int udp_cmsg_send(struct sock *sk, struct msghdr *msg, u16 *gso_size);
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index b5735b3551cf..fd233c4195ac 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -831,6 +831,21 @@ int inet_sendmsg(struct socket *sock, struct msghdr *=
-msg, size_t size)
+diff --git a/tc/q_taprio.c b/tc/q_taprio.c
+index bc29710c4686..65d0a30bd67f 100644
+--- a/tc/q_taprio.c
++++ b/tc/q_taprio.c
+@@ -649,8 +649,32 @@ static int taprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	return 0;
  }
- EXPORT_SYMBOL(inet_sendmsg);
- =
-
-+void inet_splice_eof(struct socket *sock)
+ 
++static int taprio_print_xstats(struct qdisc_util *qu, FILE *f,
++			       struct rtattr *xstats)
 +{
-+	const struct proto *prot;
-+	struct sock *sk =3D sock->sk;
++	struct rtattr *tb[TCA_TAPRIO_OFFLOAD_STATS_MAX + 1], *nla;
 +
-+	if (unlikely(inet_send_prepare(sk)))
-+		return;
++	if (!xstats)
++		return 0;
 +
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	prot =3D READ_ONCE(sk->sk_prot);
-+	if (prot->splice_eof)
-+		prot->splice_eof(sock);
-+}
-+EXPORT_SYMBOL_GPL(inet_splice_eof);
++	parse_rtattr_nested(tb, TCA_TAPRIO_OFFLOAD_STATS_MAX, xstats);
 +
- ssize_t inet_sendpage(struct socket *sock, struct page *page, int offset,
- 		      size_t size, int flags)
- {
-@@ -1050,6 +1065,7 @@ const struct proto_ops inet_stream_ops =3D {
- #ifdef CONFIG_MMU
- 	.mmap		   =3D tcp_mmap,
- #endif
-+	.splice_eof	   =3D inet_splice_eof,
- 	.sendpage	   =3D inet_sendpage,
- 	.splice_read	   =3D tcp_splice_read,
- 	.read_sock	   =3D tcp_read_sock,
-@@ -1084,6 +1100,7 @@ const struct proto_ops inet_dgram_ops =3D {
- 	.read_skb	   =3D udp_read_skb,
- 	.recvmsg	   =3D inet_recvmsg,
- 	.mmap		   =3D sock_no_mmap,
-+	.splice_eof	   =3D inet_splice_eof,
- 	.sendpage	   =3D inet_sendpage,
- 	.set_peek_off	   =3D sk_set_peek_off,
- #ifdef CONFIG_COMPAT
-@@ -1115,6 +1132,7 @@ static const struct proto_ops inet_sockraw_ops =3D {
- 	.sendmsg	   =3D inet_sendmsg,
- 	.recvmsg	   =3D inet_recvmsg,
- 	.mmap		   =3D sock_no_mmap,
-+	.splice_eof	   =3D inet_splice_eof,
- 	.sendpage	   =3D inet_sendpage,
- #ifdef CONFIG_COMPAT
- 	.compat_ioctl	   =3D inet_compat_ioctl,
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 53b7751b68e1..09f03221a6f1 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1371,6 +1371,22 @@ int tcp_sendmsg(struct sock *sk, struct msghdr *msg=
-, size_t size)
- }
- EXPORT_SYMBOL(tcp_sendmsg);
- =
-
-+void tcp_splice_eof(struct socket *sock)
-+{
-+	struct sock *sk =3D sock->sk;
-+	struct tcp_sock *tp =3D tcp_sk(sk);
-+	int mss_now, size_goal;
++	nla = tb[TCA_TAPRIO_OFFLOAD_STATS_WINDOW_DROPS];
++	if (nla)
++		print_lluint(PRINT_ANY, "window_drops", " window_drops %llu",
++			     rta_getattr_u64(nla));
 +
-+	if (!tcp_write_queue_tail(sk))
-+		return;
++	nla = tb[TCA_TAPRIO_OFFLOAD_STATS_TX_OVERRUNS];
++	if (nla)
++		print_lluint(PRINT_ANY, "tx_overruns", " tx_overruns %llu",
++			     rta_getattr_u64(nla));
 +
-+	lock_sock(sk);
-+	mss_now =3D tcp_send_mss(sk, &size_goal, 0);
-+	tcp_push(sk, 0, mss_now, tp->nonagle, size_goal);
-+	release_sock(sk);
-+}
-+EXPORT_SYMBOL_GPL(tcp_splice_eof);
-+
- /*
-  *	Handle reading urgent data. BSD has very simple semantics for
-  *	this, no blocking and very strange errors 8)
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 53e9ce2f05bb..84a5d557dc1a 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -3116,6 +3116,7 @@ struct proto tcp_prot =3D {
- 	.keepalive		=3D tcp_set_keepalive,
- 	.recvmsg		=3D tcp_recvmsg,
- 	.sendmsg		=3D tcp_sendmsg,
-+	.splice_eof		=3D tcp_splice_eof,
- 	.sendpage		=3D tcp_sendpage,
- 	.backlog_rcv		=3D tcp_v4_do_rcv,
- 	.release_cb		=3D tcp_release_cb,
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index fd3dae081f3a..df5e407286d7 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1324,6 +1324,21 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg=
-, size_t len)
- }
- EXPORT_SYMBOL(udp_sendmsg);
- =
-
-+void udp_splice_eof(struct socket *sock)
-+{
-+	struct sock *sk =3D sock->sk;
-+	struct udp_sock *up =3D udp_sk(sk);
-+
-+	if (!up->pending || READ_ONCE(up->corkflag))
-+		return;
-+
-+	lock_sock(sk);
-+	if (up->pending && !READ_ONCE(up->corkflag))
-+		udp_push_pending_frames(sk);
-+	release_sock(sk);
-+}
-+EXPORT_SYMBOL_GPL(udp_splice_eof);
-+
- int udp_sendpage(struct sock *sk, struct page *page, int offset,
- 		 size_t size, int flags)
- {
-@@ -2918,6 +2933,7 @@ struct proto udp_prot =3D {
- 	.getsockopt		=3D udp_getsockopt,
- 	.sendmsg		=3D udp_sendmsg,
- 	.recvmsg		=3D udp_recvmsg,
-+	.splice_eof		=3D udp_splice_eof,
- 	.sendpage		=3D udp_sendpage,
- 	.release_cb		=3D ip4_datagram_release_cb,
- 	.hash			=3D udp_lib_hash,
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index 2bbf13216a3d..564942bee067 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -695,6 +695,7 @@ const struct proto_ops inet6_stream_ops =3D {
- #ifdef CONFIG_MMU
- 	.mmap		   =3D tcp_mmap,
- #endif
-+	.splice_eof	   =3D inet_splice_eof,
- 	.sendpage	   =3D inet_sendpage,
- 	.sendmsg_locked    =3D tcp_sendmsg_locked,
- 	.sendpage_locked   =3D tcp_sendpage_locked,
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index d657713d1c71..c17c8ff94b79 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -2150,6 +2150,7 @@ struct proto tcpv6_prot =3D {
- 	.keepalive		=3D tcp_set_keepalive,
- 	.recvmsg		=3D tcp_recvmsg,
- 	.sendmsg		=3D tcp_sendmsg,
-+	.splice_eof		=3D tcp_splice_eof,
- 	.sendpage		=3D tcp_sendpage,
- 	.backlog_rcv		=3D tcp_v6_do_rcv,
- 	.release_cb		=3D tcp_release_cb,
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index e5a337e6b970..3a592dc129e9 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1653,6 +1653,20 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *m=
-sg, size_t len)
- }
- EXPORT_SYMBOL(udpv6_sendmsg);
- =
-
-+static void udpv6_splice_eof(struct socket *sock)
-+{
-+	struct sock *sk =3D sock->sk;
-+	struct udp_sock *up =3D udp_sk(sk);
-+
-+	if (!up->pending || READ_ONCE(up->corkflag))
-+		return;
-+
-+	lock_sock(sk);
-+	if (up->pending && !READ_ONCE(up->corkflag))
-+		udp_push_pending_frames(sk);
-+	release_sock(sk);
++	return 0;
 +}
 +
- void udpv6_destroy_sock(struct sock *sk)
- {
- 	struct udp_sock *up =3D udp_sk(sk);
-@@ -1764,6 +1778,7 @@ struct proto udpv6_prot =3D {
- 	.getsockopt		=3D udpv6_getsockopt,
- 	.sendmsg		=3D udpv6_sendmsg,
- 	.recvmsg		=3D udpv6_recvmsg,
-+	.splice_eof		=3D udpv6_splice_eof,
- 	.release_cb		=3D ip6_datagram_release_cb,
- 	.hash			=3D udp_lib_hash,
- 	.unhash			=3D udp_lib_unhash,
+ struct qdisc_util taprio_qdisc_util = {
+ 	.id		= "taprio",
+ 	.parse_qopt	= taprio_parse_opt,
+ 	.print_qopt	= taprio_print_opt,
++	.print_xstats	= taprio_print_xstats,
+ };
+-- 
+2.34.1
 
 
