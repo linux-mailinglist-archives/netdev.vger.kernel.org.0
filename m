@@ -1,523 +1,353 @@
-Return-Path: <netdev+bounces-8917-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8918-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 07E987264A5
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 17:28:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 1595A7264B7
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 17:33:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5655C1C20D8F
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 15:28:34 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4C41A1C20D95
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 15:32:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0470B34447;
-	Wed,  7 Jun 2023 15:28:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EBC8E370C0;
+	Wed,  7 Jun 2023 15:32:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5B6C1ACB5
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 15:28:34 +0000 (UTC)
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD8B271E
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 08:28:07 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id 2adb3069b0e04-4f61efe4584so2878e87.1
-        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 08:28:07 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFD0D14AA5
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 15:32:58 +0000 (UTC)
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 449E21BC6;
+	Wed,  7 Jun 2023 08:32:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1686151659; x=1688743659;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qObgbYaFcaskIbABQbPOzpT+mA1o63LMYBFQa3B3P2M=;
-        b=6n6UeIP091KfURrhFgJ09uB3YFwdIlch5kic/RctRkl7/jVjNarsD8uJjeYjjM5PhO
-         NH8lnkqOyYhR7ywmU0XxTqSPycWMblRyq2sOq4hUp49a2f454QeHbAETRS99mFkx2sOl
-         d+HtJXJ2XyiDNodn7pM5N0MsTQFXmO7iPv48h7bV7iZB8SKJK/d7HGtc7oEVOLTSs3nA
-         RqT5XxHn1P3KbvhGLxELLcSVPKe+WCcUVlfu/hEs1RIzCwEFhUYtzErBaTO9G4Mz+yi9
-         kXenX/yU/+hOiiBN51slZP0aav+NjyHj8eq3fqBRZPplvQzGbfCTqrEJYnfcs5iUs/ON
-         7tRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686151659; x=1688743659;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qObgbYaFcaskIbABQbPOzpT+mA1o63LMYBFQa3B3P2M=;
-        b=DFZWh1+xPIOPNWVmg9Xa01MSaDTqWiShZJiYJkXSJZEtUyP1Xr1cGCF58iaHstkaFl
-         fS9+Lr59BWDz5RNhItIGx5+xbQ72W6EFyHYg1h6BbfhnlAbDDdeAmzRE+yUx24z832Wl
-         17sJN0iQCRVR+I9XTSqraFGeJ5sIDfgkWp+nq7LeR4NY7u6+PXAquD45imdD3HeMYmqu
-         vPd14QThHpQwS4xw1OIHY+iYC6HRJBNB1413qYriy2E0J8GpNB03x87mHs+z0t3xCLMZ
-         eNXsckL34p1qKK7jx7OKzrFi2DLOTaQ5M4EB1AulspLG6wFWXBfbJcxSb9Ue3LyTrhto
-         0KTg==
-X-Gm-Message-State: AC+VfDw8MwKrVu9t76k8OXyD7n/iXMKfu5SMWMWBld6g8LfUXp2ySr/9
-	9sAG+Ji1WR7y67cETKxrQLg/oX1wJFQB+gA9wTQseg==
-X-Google-Smtp-Source: ACHHUZ7LR5vou+bNzEEV30UgzqIxuSFs8cJa1chfHdUPUXM3u8u+HRCQXfq8gt5UwysxnkKyyixxka9le/heRotPrZc=
-X-Received: by 2002:ac2:5392:0:b0:4f6:132d:a9c2 with SMTP id
- g18-20020ac25392000000b004f6132da9c2mr117671lfh.3.1686151658685; Wed, 07 Jun
- 2023 08:27:38 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1686151977; x=1717687977;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=QApyFybCc0hqZkg39fC3yOeu77CaRCOeQPkvCE9VX+E=;
+  b=kPb9IYalbjlPmqPC2iEYfyjhJ/9z4Y9Nbg0t0kFp7RhOayuXftGoF0Za
+   /4u6b6OwalX8FjEVu8aQrDCDXvaihQTvXWnKRD1YHDkFv3DAAxIGj9r5f
+   C1ZGHTE8PcFW2xW+5uPAEt5YUrBVmWrZ2wx7JnHuE0Ytws7vCczE6pr6c
+   A=;
+X-IronPort-AV: E=Sophos;i="6.00,224,1681171200"; 
+   d="scan'208";a="344248396"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-1cca8d67.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2023 15:32:51 +0000
+Received: from EX19MTAUWC002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+	by email-inbound-relay-pdx-2a-m6i4x-1cca8d67.us-west-2.amazon.com (Postfix) with ESMTPS id 04F428B750;
+	Wed,  7 Jun 2023 15:32:49 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWC002.ant.amazon.com (10.250.64.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Wed, 7 Jun 2023 15:32:43 +0000
+Received: from 88665a182662.ant.amazon.com (10.119.185.127) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Wed, 7 Jun 2023 15:32:40 +0000
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
+To: <dhowells@redhat.com>
+CC: <axboe@kernel.dk>, <borisp@nvidia.com>, <chuck.lever@oracle.com>,
+	<davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
+	<john.fastabend@gmail.com>, <kuba@kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+	<netdev@vger.kernel.org>, <pabeni@redhat.com>,
+	<torvalds@linux-foundation.org>, <willemdebruijn.kernel@gmail.com>,
+	<willy@infradead.org>, <kuniyu@amazon.com>
+Subject: Re: [PATCH net-next v5 07/14] ipv4, ipv6: Use splice_eof() to flush
+Date: Wed, 7 Jun 2023 08:32:32 -0700
+Message-ID: <20230607153232.93980-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230607140559.2263470-8-dhowells@redhat.com>
+References: <20230607140559.2263470-8-dhowells@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230606064306.9192-1-duanmuquan@baidu.com> <CANn89iKwzEtNWME+1Xb57DcT=xpWaBf59hRT4dYrw-jsTdqeLA@mail.gmail.com>
- <DFBEBE81-34A5-4394-9C5B-1A849A6415F1@baidu.com> <CANn89iLm=UeSLBVjACnqyaLo7oMTrY7Ok8RXP9oGDHVwe8LVng@mail.gmail.com>
- <D8D0327E-CEF0-4DFC-83AB-BC20EE3DFCDE@baidu.com>
-In-Reply-To: <D8D0327E-CEF0-4DFC-83AB-BC20EE3DFCDE@baidu.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Wed, 7 Jun 2023 17:27:26 +0200
-Message-ID: <CANn89iKXttFLj4WCVjWNeograv=LHta4erhtqm=fpfiEWscJCA@mail.gmail.com>
-Subject: Re: [PATCH v2] tcp: fix connection reset due to tw hashdance race.
-To: "Duan,Muquan" <duanmuquan@baidu.com>
-Cc: "davem@davemloft.net" <davem@davemloft.net>, "dsahern@kernel.org" <dsahern@kernel.org>, 
-	"kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com" <pabeni@redhat.com>, 
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED,USER_IN_DEF_DKIM_WL,
-	USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.119.185.127]
+X-ClientProxiedBy: EX19D046UWA003.ant.amazon.com (10.13.139.18) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+Precedence: Bulk
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+	T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=ham autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, Jun 7, 2023 at 5:18=E2=80=AFPM Duan,Muquan <duanmuquan@baidu.com> w=
-rote:
->
-> Hi, Eric,
->
-> Thanks for your reply!
-> One module of our CDN product suffered from the  connection refuse error =
-caused by the hashdance race,    I am trying to solve this issue that hurt =
-userland applications, not  all the possible cases. Except this reset case,=
- the worst case I can figure out is the lost of the passive closer=E2=80=99=
-s FIN which will cause a retransmission, this kind of case will not cause a=
-n error on applications, and the possibility is very small, I think we do n=
-ot need to introduce reader=E2=80=99s lock for this kind of cases.
->
-> I can't agree more that we tried too hard to =E2=80=98detect races=E2=80=
-=99, but I also have concern about the performance if introducing reader=E2=
-=80=99s lock, do we have any test result about the performance with the rea=
-der=E2=80=99s lock? I will also do some test on this, if the impact can be =
-tolerated, we=E2=80=99d better introduce the lock.
->
-> Anyway, I think tw sock's tw_refcnt should be set before added tw into th=
-e list, and  this modification can make the setting of refcnt in the spin_l=
-ock=E2=80=99s protection,  what is your opinion about this modification?
+From: David Howells <dhowells@redhat.com>
+Date: Wed,  7 Jun 2023 15:05:52 +0100
+> Allow splice to undo the effects of MSG_MORE after prematurely ending a
+> splice/sendfile due to getting an EOF condition (->splice_read() returned
+> 0) after splice had called sendmsg() with MSG_MORE set when the user didn't
+> set MSG_MORE.
+> 
+> For UDP, a pending packet will not be emitted if the socket is closed
+> before it is flushed; with this change, it be flushed by ->splice_eof().
+> 
+> For TCP, it's not clear that MSG_MORE is actually effective.
+> 
+> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+> Link: https://lore.kernel.org/r/CAHk-=wh=V579PDYvkpnTobCLGczbgxpMgGmmhqiTyE34Cpi5Gg@mail.gmail.com/
+> Signed-off-by: David Howells <dhowells@redhat.com>
+> cc: Eric Dumazet <edumazet@google.com>
+> cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> cc: David Ahern <dsahern@kernel.org>
+> cc: "David S. Miller" <davem@davemloft.net>
+> cc: Jakub Kicinski <kuba@kernel.org>
+> cc: Paolo Abeni <pabeni@redhat.com>
+> cc: Jens Axboe <axboe@kernel.dk>
+> cc: Matthew Wilcox <willy@infradead.org>
+> cc: netdev@vger.kernel.org
+> ---
+>  include/net/inet_common.h |  1 +
+>  include/net/tcp.h         |  1 +
+>  include/net/udp.h         |  1 +
+>  net/ipv4/af_inet.c        | 18 ++++++++++++++++++
+>  net/ipv4/tcp.c            | 16 ++++++++++++++++
+>  net/ipv4/tcp_ipv4.c       |  1 +
+>  net/ipv4/udp.c            | 16 ++++++++++++++++
+>  net/ipv6/af_inet6.c       |  1 +
+>  net/ipv6/tcp_ipv6.c       |  1 +
+>  net/ipv6/udp.c            | 18 ++++++++++++++++++
+>  10 files changed, 74 insertions(+)
+> 
+> diff --git a/include/net/inet_common.h b/include/net/inet_common.h
+> index 77f4b0ef5b92..a75333342c4e 100644
+> --- a/include/net/inet_common.h
+> +++ b/include/net/inet_common.h
+> @@ -35,6 +35,7 @@ void __inet_accept(struct socket *sock, struct socket *newsock,
+>  		   struct sock *newsk);
+>  int inet_send_prepare(struct sock *sk);
+>  int inet_sendmsg(struct socket *sock, struct msghdr *msg, size_t size);
+> +void inet_splice_eof(struct socket *sock);
+>  ssize_t inet_sendpage(struct socket *sock, struct page *page, int offset,
+>  		      size_t size, int flags);
+>  int inet_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index 68990a8f556a..49611af31bb7 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -327,6 +327,7 @@ int tcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t size);
+>  int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size);
+>  int tcp_sendmsg_fastopen(struct sock *sk, struct msghdr *msg, int *copied,
+>  			 size_t size, struct ubuf_info *uarg);
+> +void tcp_splice_eof(struct socket *sock);
+>  int tcp_sendpage(struct sock *sk, struct page *page, int offset, size_t size,
+>  		 int flags);
+>  int tcp_sendpage_locked(struct sock *sk, struct page *page, int offset,
+> diff --git a/include/net/udp.h b/include/net/udp.h
+> index 5cad44318d71..4ed0b47c5582 100644
+> --- a/include/net/udp.h
+> +++ b/include/net/udp.h
+> @@ -278,6 +278,7 @@ int udp_get_port(struct sock *sk, unsigned short snum,
+>  int udp_err(struct sk_buff *, u32);
+>  int udp_abort(struct sock *sk, int err);
+>  int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len);
+> +void udp_splice_eof(struct socket *sock);
+>  int udp_push_pending_frames(struct sock *sk);
+>  void udp_flush_pending_frames(struct sock *sk);
+>  int udp_cmsg_send(struct sock *sk, struct msghdr *msg, u16 *gso_size);
+> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+> index b5735b3551cf..6cfb78592836 100644
+> --- a/net/ipv4/af_inet.c
+> +++ b/net/ipv4/af_inet.c
+> @@ -831,6 +831,21 @@ int inet_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+>  }
+>  EXPORT_SYMBOL(inet_sendmsg);
+>  
+> +void inet_splice_eof(struct socket *sock)
+> +{
+> +	const struct proto *prot;
+> +	struct sock *sk = sock->sk;
+> +
+> +	if (unlikely(inet_send_prepare(sk)))
+> +		return;
+> +
+> +	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
+> +	prot = READ_ONCE(sk->sk_prot);
+> +	if (prot->splice_eof)
+> +		sk->sk_prot->splice_eof(sock);
 
-My opinion is that we should set the refcnt to not zero only at when
-the tw object is ready to be seen by other cpus.
+We need to use prot here.
 
-Moving this earlier can trigger subtle bugs with RCU lookups,
-that might see a non zero refcnt on an object still containing garbage.
 
-You missed the important comment :
+> +}
+> +EXPORT_SYMBOL_GPL(inet_splice_eof);
+> +
+>  ssize_t inet_sendpage(struct socket *sock, struct page *page, int offset,
+>  		      size_t size, int flags)
+>  {
+> @@ -1050,6 +1065,7 @@ const struct proto_ops inet_stream_ops = {
+>  #ifdef CONFIG_MMU
+>  	.mmap		   = tcp_mmap,
+>  #endif
+> +	.splice_eof	   = inet_splice_eof,
+>  	.sendpage	   = inet_sendpage,
+>  	.splice_read	   = tcp_splice_read,
+>  	.read_sock	   = tcp_read_sock,
+> @@ -1084,6 +1100,7 @@ const struct proto_ops inet_dgram_ops = {
+>  	.read_skb	   = udp_read_skb,
+>  	.recvmsg	   = inet_recvmsg,
+>  	.mmap		   = sock_no_mmap,
+> +	.splice_eof	   = inet_splice_eof,
+>  	.sendpage	   = inet_sendpage,
+>  	.set_peek_off	   = sk_set_peek_off,
+>  #ifdef CONFIG_COMPAT
+> @@ -1115,6 +1132,7 @@ static const struct proto_ops inet_sockraw_ops = {
+>  	.sendmsg	   = inet_sendmsg,
+>  	.recvmsg	   = inet_recvmsg,
+>  	.mmap		   = sock_no_mmap,
+> +	.splice_eof	   = inet_splice_eof,
+>  	.sendpage	   = inet_sendpage,
+>  #ifdef CONFIG_COMPAT
+>  	.compat_ioctl	   = inet_compat_ioctl,
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 53b7751b68e1..09f03221a6f1 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -1371,6 +1371,22 @@ int tcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+>  }
+>  EXPORT_SYMBOL(tcp_sendmsg);
+>  
+> +void tcp_splice_eof(struct socket *sock)
+> +{
+> +	struct sock *sk = sock->sk;
+> +	struct tcp_sock *tp = tcp_sk(sk);
+> +	int mss_now, size_goal;
+> +
+> +	if (!tcp_write_queue_tail(sk))
+> +		return;
+> +
+> +	lock_sock(sk);
+> +	mss_now = tcp_send_mss(sk, &size_goal, 0);
+> +	tcp_push(sk, 0, mss_now, tp->nonagle, size_goal);
+> +	release_sock(sk);
+> +}
+> +EXPORT_SYMBOL_GPL(tcp_splice_eof);
+> +
+>  /*
+>   *	Handle reading urgent data. BSD has very simple semantics for
+>   *	this, no blocking and very strange errors 8)
+> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> index 53e9ce2f05bb..84a5d557dc1a 100644
+> --- a/net/ipv4/tcp_ipv4.c
+> +++ b/net/ipv4/tcp_ipv4.c
+> @@ -3116,6 +3116,7 @@ struct proto tcp_prot = {
+>  	.keepalive		= tcp_set_keepalive,
+>  	.recvmsg		= tcp_recvmsg,
+>  	.sendmsg		= tcp_sendmsg,
+> +	.splice_eof		= tcp_splice_eof,
+>  	.sendpage		= tcp_sendpage,
+>  	.backlog_rcv		= tcp_v4_do_rcv,
+>  	.release_cb		= tcp_release_cb,
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> index fd3dae081f3a..df5e407286d7 100644
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -1324,6 +1324,21 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+>  }
+>  EXPORT_SYMBOL(udp_sendmsg);
+>  
+> +void udp_splice_eof(struct socket *sock)
+> +{
+> +	struct sock *sk = sock->sk;
+> +	struct udp_sock *up = udp_sk(sk);
+> +
+> +	if (!up->pending || READ_ONCE(up->corkflag))
+> +		return;
+> +
+> +	lock_sock(sk);
+> +	if (up->pending && !READ_ONCE(up->corkflag))
+> +		udp_push_pending_frames(sk);
+> +	release_sock(sk);
+> +}
+> +EXPORT_SYMBOL_GPL(udp_splice_eof);
+> +
+>  int udp_sendpage(struct sock *sk, struct page *page, int offset,
+>  		 size_t size, int flags)
+>  {
+> @@ -2918,6 +2933,7 @@ struct proto udp_prot = {
+>  	.getsockopt		= udp_getsockopt,
+>  	.sendmsg		= udp_sendmsg,
+>  	.recvmsg		= udp_recvmsg,
+> +	.splice_eof		= udp_splice_eof,
+>  	.sendpage		= udp_sendpage,
+>  	.release_cb		= ip4_datagram_release_cb,
+>  	.hash			= udp_lib_hash,
+> diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+> index 2bbf13216a3d..564942bee067 100644
+> --- a/net/ipv6/af_inet6.c
+> +++ b/net/ipv6/af_inet6.c
+> @@ -695,6 +695,7 @@ const struct proto_ops inet6_stream_ops = {
+>  #ifdef CONFIG_MMU
+>  	.mmap		   = tcp_mmap,
+>  #endif
+> +	.splice_eof	   = inet_splice_eof,
+>  	.sendpage	   = inet_sendpage,
+>  	.sendmsg_locked    = tcp_sendmsg_locked,
+>  	.sendpage_locked   = tcp_sendpage_locked,
+> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> index d657713d1c71..c17c8ff94b79 100644
+> --- a/net/ipv6/tcp_ipv6.c
+> +++ b/net/ipv6/tcp_ipv6.c
+> @@ -2150,6 +2150,7 @@ struct proto tcpv6_prot = {
+>  	.keepalive		= tcp_set_keepalive,
+>  	.recvmsg		= tcp_recvmsg,
+>  	.sendmsg		= tcp_sendmsg,
+> +	.splice_eof		= tcp_splice_eof,
+>  	.sendpage		= tcp_sendpage,
+>  	.backlog_rcv		= tcp_v6_do_rcv,
+>  	.release_cb		= tcp_release_cb,
+> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+> index e5a337e6b970..6c5975b13ae3 100644
+> --- a/net/ipv6/udp.c
+> +++ b/net/ipv6/udp.c
+> @@ -1653,6 +1653,23 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+>  }
+>  EXPORT_SYMBOL(udpv6_sendmsg);
+>  
+> +static void udpv6_splice_eof(struct socket *sock)
+> +{
+> +	struct sock *sk = sock->sk;
+> +	struct udp_sock *up = udp_sk(sk);
+> +
+> +	if (!up->pending || READ_ONCE(up->corkflag))
+> +		return;
+> +
+> +	if (up->pending == AF_INET)
+> +		udp_splice_eof(sock);
 
-> 153      * Also note that after this point, we lost our implicit referenc=
-e
-> 154      * so we are not allowed to use tw anymore.
+Do we need this ?
 
-We are not _allowed_ to access tw anymore after setting its refcnt to 3.
 
-Again, this patch does not fix the fundamental issue, just moving
-things around and hope for the best.
+> +
+> +	lock_sock(sk);
+> +	if (up->pending && !READ_ONCE(up->corkflag))
+> +		udp_push_pending_frames(sk);
 
->
-> 145    spin_lock(lock);
-> 146
-> 147     /* tw_refcnt is set to 3 because we have :
-> 148      * - one reference for bhash chain.
-> 149      * - one reference for ehash chain.
-> 150      * - one reference for timer.
-> 151      * We can use atomic_set() because prior spin_lock()/spin_unlock(=
-)
-> 152      * committed into memory all tw fields.
-> 153      * Also note that after this point, we lost our implicit referenc=
-e
-> 154      * so we are not allowed to use tw anymore.
-> 155      */
-> 156     refcount_set(&tw->tw_refcnt, 3);                                 =
-<-----------------------------------------------
-> 157     inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
-> 158
-> 159     /* Step 3: Remove SK from hash chain */
-> 160     if (__sk_nulls_del_node_init_rcu(sk))
-> 161         sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
-> 162
-> 163     spin_unlock(lock);
->
->
->
-> BTW, I met trouble on sending emails,  and some emails may not delivered,=
- thanks a lot for Jason and Simon=E2=80=99s comments!
->
-> Best Regards!
-> Duan
->
->
->
->
-> > 2023=E5=B9=B46=E6=9C=887=E6=97=A5 =E4=B8=8B=E5=8D=889:32=EF=BC=8CEric D=
-umazet <edumazet@google.com> =E5=86=99=E9=81=93=EF=BC=9A
-> >
-> > On Wed, Jun 7, 2023 at 1:59=E2=80=AFPM Duan,Muquan <duanmuquan@baidu.co=
-m> wrote:
-> >>
-> >> Hi, Eric,
-> >>
-> >> Thanks for your comments!
-> >>
-> >> About the second lookup, I am sorry that I did not give enough explana=
-tions about it. Here are some details:
-> >>
-> >> 1.  The second lookup can find the tw sock and avoid the connection re=
-fuse error on userland applications:
-> >>
-> >> If the original sock is found, but when validating its refcnt, it has =
-been destroyed and sk_refcnt has become 0 after decreased by tcp_time_wait(=
-)->tcp_done()->inet_csk_destory_sock()->sock_put().The validation for refcn=
-t fails and the lookup process gets a listener sock.
-> >>
-> >> When this case occurs, the hashdance has definitely finished=EF=BC=8Cb=
-ecause tcp_done() is executed after inet_twsk_hashdance(). Then if look up =
-the ehash table again, hashdance has already finished, tw sock will be foun=
-d.
-> >>
-> >> With this fix, logically we can solve the connection reset issue compl=
-etely when no established sock is found due to hashdance race.In my reprodu=
-cing environment, the connection refuse error will occur about every 6 hour=
-s with only the fix of bad case (2). But with both of the 2 fixes, I tested=
- it many times, the longest test continues for 10 days, it does not occur a=
-gain,
-> >>
-> >>
-> >>
-> >> 2. About the performance impact:
-> >>
-> >>     A similar scenario is that __inet_lookup_established() will do ine=
-t_match() check for the second time, if fails it will look up    the list a=
-gain. It is the extra effort to reduce the race impact without using reader=
- lock. inet_match() failure occurs with about the same probability with ref=
-cnt validation failure in my test environment.
-> >>
-> >> The second lookup will only be done in the condition that FIN segment =
-gets a listener sock.
-> >>
-> >>  About the performance impact:
-> >>
-> >> 1)  Most of the time, this condition will not met, the added codes int=
-roduces at most 3 comparisons for each segment.
-> >>
-> >> The second inet_match() in __inet_lookup_established()  does least 3 c=
-omparisons for each segmet.
-> >>
-> >>
-> >> 2)  When this condition is met, the probability is very small. The imp=
-act is similar to the second try due to inet_match() failure. Since tw sock=
- can definitely be found in the second try, I think this cost is worthy to =
-avoid connection reused error on userland applications.
-> >>
-> >>
-> >>
-> >> My understanding is, current philosophy is avoiding the reader lock by=
- tolerating the minor defect which occurs in a small probability.For exampl=
-e, if the FIN from passive closer is dropped due to the found sock is destr=
-oyed, a retransmission can be tolerated, it only makes the connection termi=
-nation slower. But I think the bottom line is that it does not affect the u=
-serland applications=E2=80=99 functionality. If application fails to connec=
-t due to the hashdance race, it can=E2=80=99t be tolerated. In fact, guys f=
-rom product department push hard on the connection refuse error.
-> >>
-> >>
-> >> About bad case (2):
-> >>
-> >> tw sock is found, but its tw_refcnt has not been set to 3, it is still=
- 0, validating for sk_refcnt will fail.
-> >>
-> >> I do not know the reason why setting tw_refcnt after adding it into li=
-st, could anyone help point out the reason? It adds  extra race because the=
- new added tw sock may be found and checked in other CPU concurrently befor=
-e =C6=92setting tw_refcnt to 3.
-> >>
-> >> By setting tw_refcnt to 3 before adding it into list, this case will b=
-e solved, and almost no cost. In my reproducing environment, it occurs more=
- frequently than bad case (1), it appears about every 20 minutes, bad case =
-(1) appears about every 6 hours.
-> >>
-> >>
-> >>
-> >> About the bucket spinlock, the original established sock and tw sock a=
-re stored in the ehash table, I concern about the performance when there ar=
-e lots of short TCP connections, the reader lock may affect the performance=
- of connection creation and termination. Could you share some details of yo=
-ur idea? Thanks in advance.
-> >>
-> >>
-> >
-> > Again, you can write a lot of stuff, the fact is that your patch does
-> > not solve the issue.
-> >
-> > You could add 10 lookups, and still miss some cases, because they are
-> > all RCU lookups with no barriers.
-> >
-> > In order to solve the issue of packets for the same 4-tuple being
-> > processed by many cpus, the only way to solve races is to add mutual
-> > exclusion.
-> >
-> > Note that we already have to lock the bucket spinlock every time we
-> > transition a request socket to socket, a socket to timewait, or any
-> > insert/delete.
-> >
-> > We need to expand the scope of this lock, and cleanup things that we
-> > added in the past, because we tried too hard to 'detect races'
-> >
-> >>
-> >>
-> >>
-> >> Best Regards!
-> >>
-> >> Duan
-> >>
-> >>
-> >> 2023=E5=B9=B46=E6=9C=886=E6=97=A5 =E4=B8=8B=E5=8D=883:07=EF=BC=8CEric =
-Dumazet <edumazet@google.com> =E5=86=99=E9=81=93=EF=BC=9A
-> >>
-> >> On Tue, Jun 6, 2023 at 8:43=E2=80=AFAM Duan Muquan <duanmuquan@baidu.c=
-om> wrote:
-> >>
-> >>
-> >> If the FIN from passive closer and the ACK for active closer's FIN are
-> >> processed on different CPUs concurrently, tw hashdance race may occur.
-> >> On loopback interface, transmit function queues a skb to current CPU's
-> >> softnet's input queue by default. Suppose active closer runs on CPU 0,
-> >> and passive closer runs on CPU 1. If the ACK for the active closer's
-> >> FIN is sent with no delay, it will be processed and tw hashdance will
-> >> be done on CPU 0; The passive closer's FIN will be sent in another
-> >> segment and processed on CPU 1, it may fail to find tw sock in the
-> >> ehash table due to tw hashdance on CPU 0, then get a RESET.
-> >> If application reconnects immediately with the same source port, it
-> >> will get reset because tw sock's tw_substate is still TCP_FIN_WAIT2.
-> >>
-> >> The dmesg to trace down this issue:
-> >>
-> >> .333516] tcp_send_fin: sk 0000000092105ad2 cookie 9 cpu 3
-> >> .333524] rcv_state_process:FIN_WAIT2 sk 0000000092105ad2 cookie 9 cpu =
-3
-> >> .333534] tcp_close: tcp_time_wait: sk 0000000092105ad2 cookie 9 cpu 3
-> >> .333538] hashdance: tw 00000000690fdb7a added to ehash cookie 9 cpu 3
-> >> .333541] hashdance: sk 0000000092105ad2 removed cookie 9 cpu 3
-> >> .333544] __inet_lookup_established: Failed the refcount check:
-> >>                !refcount_inc_not_zero 00000000690fdb7a ref 0 cookie 9 =
-cpu 0
-> >> .333549] hashdance: tw 00000000690fdb7a before add ref 0 cookie 9 cpu =
-3
-> >> .333552] rcv_state: RST for FIN listen 000000003c50afa6 cookie 0 cpu 0
-> >> .333574] tcp_send_fin: sk 0000000066757bf8 ref 2 cookie 0 cpu 0
-> >> .333611] timewait_state: TCP_TW_RST tw 00000000690fdb7a cookie 9 cpu 0
-> >> .333626] tcp_connect: sk 0000000066757bf8 cpu 0 cookie 0
-> >>
-> >> Here is the call trace map:
-> >>
-> >> CPU 0                                    CPU 1
-> >>
-> >> --------                                 --------
-> >> tcp_close()
-> >> tcp_send_fin()
-> >> loopback_xmit()
-> >> netif_rx()
-> >> tcp_v4_rcv()
-> >> tcp_ack_snd_check()
-> >> loopback_xmit
-> >> netif_rx()                              tcp_close()
-> >> ...                                     tcp_send_fin()
-> >>                                                                       =
-        loopback_xmit()
-> >>                                                                       =
-        netif_rx()
-> >>                                                                       =
-        tcp_v4_rcv()
-> >>                                                                       =
-        ...
-> >> tcp_time_wait()
-> >> inet_twsk_hashdance() {
-> >> ...
-> >>                                   <-__inet_lookup_established()
-> >>                                                               (bad cas=
-e (1), find sk, may fail tw_refcnt check)
-> >> inet_twsk_add_node_tail_rcu(tw, ...)
-> >>                                   <-__inet_lookup_established()
-> >>                                                               (bad cas=
-e (1), find sk, may fail tw_refcnt check)
-> >>
-> >> __sk_nulls_del_node_init_rcu(sk)
-> >>                                   <-__inet_lookup_established()
-> >>                                                               (bad cas=
-e (2), find tw, may fail tw_refcnt check)
-> >> refcount_set(&tw->tw_refcnt, 3)
-> >>                                   <-__inet_lookup_established()
-> >>                                                               (good ca=
-se, find tw, tw_refcnt is not 0)
-> >> ...
-> >> }
-> >>
-> >> This issue occurs with a small probability on our application working
-> >> on loopback interface, client gets a connection refused error when it
-> >> reconnects. In reproducing environments on kernel 4.14,5.10 and
-> >> 6.4-rc1, modify tcp_ack_snd_check() to disable delay ack all the
-> >> time; Let client connect server and server sends a message to client
-> >> then close the connection; Repeat this process forever; Let the client
-> >> bind the same source port every time, it can be reproduced in about 20
-> >> minutes.
-> >>
-> >> Brief of the scenario:
-> >>
-> >> 1. Server runs on CPU 0 and Client runs on CPU 1. Server closes
-> >> connection actively and sends a FIN to client. The lookback's driver
-> >> enqueues the FIN segment to backlog queue of CPU 0 via
-> >> loopback_xmit()->netif_rx(), one of the conditions for non-delay ack
-> >> meets in __tcp_ack_snd_check(), and the ACK is sent immediately.
-> >>
-> >> 2. On loopback interface, the ACK is received and processed on CPU 0,
-> >> the 'dance' from original sock to tw sock will perfrom, tw sock will
-> >> be inserted to ehash table, then the original sock will be removed.
-> >>
-> >> 3. On CPU 1, client closes the connection, a FIN segment is sent and
-> >> processed on CPU 1. When it is looking up sock in ehash table (with no
-> >> lock), tw hashdance race may occur, it fails to find the tw sock and
-> >> get a listener sock in the flowing 3 cases:
-> >>
-> >> (1) Original sock is found, but it has been destroyed and sk_refcnt
-> >>         has become 0 when validating it.
-> >> (2) tw sock is found, but its tw_refcnt has not been set to 3, it is
-> >>         still 0, validating for sk_refcnt will fail.
-> >> (3) For versions without Eric and Jason's commit(3f4ca5fafc08881d7a5
-> >>         7daa20449d171f2887043), tw sock is added to the head of the li=
-st.
-> >>         It will be missed if the list is traversed before tw sock is
-> >>         added. And if the original sock is removed before it is found,=
- no
-> >>         established sock will be found.
-> >>
-> >> The listener sock will reset the FIN segment which has ack bit set.
-> >>
-> >> 4. If client reconnects immediately and is assigned with the same
-> >> source port as previous connection, the tw sock with tw_substate
-> >> TCP_FIN_WAIT2 will reset client's SYN and destroy itself in
-> >> inet_twsk_deschedule_put(). Application gets a connection refused
-> >> error.
-> >>
-> >> 5. If client reconnects again, it will succeed.
-> >>
-> >> Introduce the flowing 2 modifications to solve the above 3 bad cases:
-> >>
-> >> For bad case (2):
-> >> Set tw_refcnt to 3 before adding it into list.
-> >>
-> >> For bad case (1):
-> >> In function tcp_v4_rcv(), if __inet_lookup_skb() returns a listener
-> >> sock and this segment has FIN bit set, then retry the lookup process
-> >> one time. This fix can cover bad case (3) for the versions without
-> >> Eric and Jason's fix.
-> >>
-> >> There may be another bad case, if the original sock is found and passe=
-s
-> >> validation, but during further process for the passive closer's FIN on
-> >> CPU 1, the sock has been destroyed on CPU 0, then the FIN segment will
-> >> be dropped and retransmitted. This case does not hurt application as
-> >> much as resetting reconnection, and this case has less possibility tha=
-n
-> >> the other bad cases, it does not occur on our product and in
-> >> experimental environment, so it is not considered in this patch.
-> >>
-> >> Could you please check whether this fix is OK, or any suggestions?
-> >> Looking forward for your precious comments!
-> >>
-> >> Signed-off-by: Duan Muquan <duanmuquan@baidu.com>
-> >> ---
-> >> net/ipv4/inet_timewait_sock.c | 15 +++++++--------
-> >> net/ipv4/tcp_ipv4.c           | 13 +++++++++++++
-> >> 2 files changed, 20 insertions(+), 8 deletions(-)
-> >>
-> >> diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_so=
-ck.c
-> >> index 40052414c7c7..ed1f255c9aa8 100644
-> >> --- a/net/ipv4/inet_timewait_sock.c
-> >> +++ b/net/ipv4/inet_timewait_sock.c
-> >> @@ -144,14 +144,6 @@ void inet_twsk_hashdance(struct inet_timewait_soc=
-k *tw, struct sock *sk,
-> >>
-> >>       spin_lock(lock);
-> >>
-> >> -       inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
-> >> -
-> >> -       /* Step 3: Remove SK from hash chain */
-> >> -       if (__sk_nulls_del_node_init_rcu(sk))
-> >> -               sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
-> >> -
-> >> -       spin_unlock(lock);
-> >> -
-> >>       /* tw_refcnt is set to 3 because we have :
-> >>        * - one reference for bhash chain.
-> >>        * - one reference for ehash chain.
-> >> @@ -162,6 +154,13 @@ void inet_twsk_hashdance(struct inet_timewait_soc=
-k *tw, struct sock *sk,
-> >>        * so we are not allowed to use tw anymore.
-> >>        */
-> >>       refcount_set(&tw->tw_refcnt, 3);
-> >> +       inet_twsk_add_node_tail_rcu(tw, &ehead->chain);
-> >> +
-> >> +       /* Step 3: Remove SK from hash chain */
-> >> +       if (__sk_nulls_del_node_init_rcu(sk))
-> >> +               sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
-> >> +
-> >> +       spin_unlock(lock);
-> >> }
-> >> EXPORT_SYMBOL_GPL(inet_twsk_hashdance);
-> >>
-> >> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> >> index 06d2573685ca..3e3cef202f76 100644
-> >> --- a/net/ipv4/tcp_ipv4.c
-> >> +++ b/net/ipv4/tcp_ipv4.c
-> >> @@ -2018,6 +2018,19 @@ int tcp_v4_rcv(struct sk_buff *skb)
-> >>       sk =3D __inet_lookup_skb(net->ipv4.tcp_death_row.hashinfo,
-> >>                              skb, __tcp_hdrlen(th), th->source,
-> >>                              th->dest, sdif, &refcounted);
-> >> +
-> >> +       /* If tw "dance" is performed on another CPU, the lookup proce=
-ss may find
-> >> +        * no tw sock for the passive closer's FIN segment, but a list=
-ener sock,
-> >> +        * which will reset the FIN segment. If application reconnects=
- immediately
-> >> +        * with the same source port, it will get reset because the tw=
- sock's
-> >> +        * tw_substate is still TCP_FIN_WAIT2. Try to get the tw sock =
-in another try.
-> >> +        */
-> >> +       if (unlikely(th->fin && sk && sk->sk_state =3D=3D TCP_LISTEN))=
- {
-> >> +               sk =3D __inet_lookup_skb(net->ipv4.tcp_death_row.hashi=
-nfo,
-> >> +                                      skb, __tcp_hdrlen(th), th->sour=
-ce,
-> >> +                                      th->dest, sdif, &refcounted);
-> >> +       }
-> >> +
-> >>
-> >>
-> >> I do not think this fixes anything, there is no barrier between first
-> >> and second lookup.
-> >> This might reduce race a little bit, but at the expense of extra code
-> >> in the fast path.
-> >>
-> >> If you want to fix this properly, I think we need to revisit handling
-> >> for non established sockets,
-> >> to hold the bucket spinlock over the whole thing.
-> >>
-> >> This will be slightly more complex than this...
-> >>
-> >>
->
+We should use udp_v6_push_pending_frames(sk) as up->pending
+could be AF_INET even after the test above.
+
+
+> +	release_sock(sk);
+> +}
+> +
+>  void udpv6_destroy_sock(struct sock *sk)
+>  {
+>  	struct udp_sock *up = udp_sk(sk);
+> @@ -1764,6 +1781,7 @@ struct proto udpv6_prot = {
+>  	.getsockopt		= udpv6_getsockopt,
+>  	.sendmsg		= udpv6_sendmsg,
+>  	.recvmsg		= udpv6_recvmsg,
+> +	.splice_eof		= udpv6_splice_eof,
+>  	.release_cb		= ip6_datagram_release_cb,
+>  	.hash			= udp_lib_hash,
+>  	.unhash			= udp_lib_unhash,
 
