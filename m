@@ -1,80 +1,68 @@
-Return-Path: <netdev+bounces-8870-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8871-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id BADEE726269
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 16:10:55 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5B96B726274
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 16:12:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 76B1E2812F4
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:10:54 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B91381C20C07
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 14:12:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ED038370C2;
-	Wed,  7 Jun 2023 14:10:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7907B370C6;
+	Wed,  7 Jun 2023 14:12:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E260F34448
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 14:10:52 +0000 (UTC)
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413231BE6
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:10:45 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id d9443c01a7336-1b01d912a76so33681375ad.2
-        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 07:10:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1686147044; x=1688739044;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UA4hO4Sg2XutErgapC8W1zkxrTNWaXjtaVy5iI3CNaw=;
-        b=gQrGNBCN6wg3gDSkzHUPCLOTgDfaTcWrZTB0MLWuAr16iUZyxRyQVaoV/HlulE6Ke7
-         vOiBehRR3EKFzUy/z/uOVwK9d0qLc6axSRyi5BSwc5VLE+AWORAIx1ji14Qy0uPW/eHD
-         Xg1PX6HvaZijyrrUvxZQSBNwEkYNHyT+1tckU2H+bZ4YqVAv3xHt3veT16xsmld6FoOf
-         6vyJnqqpz8poqsyESJ4nGlCMuouGE9KnjAwESQ6ESKmHiu4JXxhkoUHVhez92Lpmd/oo
-         DiR/b4tWZK8yODvRb4eH8rPZCopGKs/c0wchrTL2wbJLtqiTKMV6AqGeMBTx92rmms5W
-         Bbgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686147044; x=1688739044;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UA4hO4Sg2XutErgapC8W1zkxrTNWaXjtaVy5iI3CNaw=;
-        b=G3bKw0dgcrkZOHiM3grIRflVNJSBhq0F20Tb3XA4GddDXHnPsM/2BEG8DSbs68wzvp
-         k1ExVIDrm0VoBpgqKUylXo9cz0uylHyga1HQBwmd6j5mI0lNvBKIfa3Mytc9JUZoO2qC
-         E6u6D3u0uISMnS74ovM3DwZ6jyFV73Zw8+a4Vlm3wpBOWkstXeDhb1zAA0pdAeFmq6Z4
-         Sr11r6prl4DVZ35Kd7YqTnRJcyIYw1q/g3UQJNf8muRL1PGnQYP0Kg5u0B2N36P20HeB
-         6MUVzcNlPfLQQe46SdUMVR7Nn7KyYpsEwFUZNmLaiG+6KXXwiO+fc2KoV/P/BmNxkinv
-         aD4g==
-X-Gm-Message-State: AC+VfDybLs9US9AXpJtvtaMBMVwMae0x42DodBUpzFTgoYJMdHtmOAKq
-	E7dVF3AzD06VY6NA83Ot/7a7Pg==
-X-Google-Smtp-Source: ACHHUZ5a5P5mqNb85Pd/vXMXSm7nE4E7+voSPGauH9t/Ggi2PDbGp1xcEDYRTN/Lmu7n3ZvVuqakoQ==
-X-Received: by 2002:a17:902:f54f:b0:1b2:24e4:8889 with SMTP id h15-20020a170902f54f00b001b224e48889mr2373341plf.14.1686147044665;
-        Wed, 07 Jun 2023 07:10:44 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id t9-20020a170902bc4900b001b0772fe3fdsm10516761plz.265.2023.06.07.07.10.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jun 2023 07:10:44 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1q6ts2-0039y5-6X;
-	Wed, 07 Jun 2023 11:10:42 -0300
-Date: Wed, 7 Jun 2023 11:10:42 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Saeed Mahameed <saeed@kernel.org>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DC3834448
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 14:12:29 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D25137;
+	Wed,  7 Jun 2023 07:12:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=uVhqIsWCbd8+nVpNyrP6aNc++SDBcJaAni/4NynllGk=; b=1SWC25IVs5qo9VOmQ1jVb+C602
+	76A2R/8zSYH4u5oyF4RF9lv+X5M2bsBGYDANb6ElGArEkxhKvlxM+tosByB71IqW6se1Ur7uuIcS1
+	CcWRbft8cI/KfQ4jIoEd4LA+y8X9NadGyPTsfNxsdh7aJz0zR5oS+lBfPth32k9j9yiU+NMcvVLhM
+	QhDd/AZzUAQGKf7QYj1IGga3RS/EbWB5kzYT5CUUI4lt/2qnBa6ExNJ84fIdFgLd3DuQw+/xHtfKR
+	DQdM+/QCAlW2u8/QL+LQc0osP9aKyRS2oifIkV47H+Nmpv5RGCXaFds0Z0thDPWvDcnl5S/4O7zFF
+	IyZVjQeg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48662)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q6ttO-0007b8-SK; Wed, 07 Jun 2023 15:12:06 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q6ttI-0008IG-UQ; Wed, 07 Jun 2023 15:12:00 +0100
+Date: Wed, 7 Jun 2023 15:12:00 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jose Abreu <joabreu@synopsys.com>,
 	"David S. Miller" <davem@davemloft.net>,
-	Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>,
-	Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-	Tariq Toukan <tariqt@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>, linux-rdma@vger.kernel.org,
-	Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [net-next 13/15] net/mlx5: Skip inline mode check after
- mlx5_eswitch_enable_locked() failure
-Message-ID: <ZICP4kWm5moYRKm1@ziepe.ca>
-References: <20230606071219.483255-1-saeed@kernel.org>
- <20230606071219.483255-14-saeed@kernel.org>
- <20230606220117.0696be3e@kernel.org>
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Simon Horman <simon.horman@corigine.com>,
+	Maxime Chevallier <maxime.chevallier@bootlin.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Christian Marangi <ansuelsmth@gmail.com>,
+	Jon Hunter <jonathanh@nvidia.com>,
+	Bhadram Varka <vbhadram@nvidia.com>,
+	Samin Guo <samin.guo@starfivetech.com>, netdev@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] stmmac: fix pcs_lynx link failure
+Message-ID: <ZICQMHTowGQTzbxm@shell.armlinux.org.uk>
+References: <20230607135638.1341101-1-arnd@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -83,41 +71,37 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230606220117.0696be3e@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230607135638.1341101-1-arnd@kernel.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 06, 2023 at 10:01:17PM -0700, Jakub Kicinski wrote:
-> On Tue,  6 Jun 2023 00:12:17 -0700 Saeed Mahameed wrote:
-> > Fixes: bffaa916588e ("net/mlx5: E-Switch, Add control for inline mode")
-> > Fixes: 8c98ee77d911 ("net/mlx5e: E-Switch, Add extack messages to devlink callbacks")
+On Wed, Jun 07, 2023 at 03:56:32PM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> The combination of net-next and Fixes is always odd.
-> Why? 
-> Either it's important enough to be a fix or its not important 
-> and can go to net-next...
+> The mdio code in stmmac now directly links into both the lynx_pcs and
+> the xpcs device drivers, but the lynx_pcs dependency is only enforced
+> for the altera variant of stmmac, which is the one that actually uses it.
+> 
+> Building stmmac for a non-altera platform therefore causes a link
+> failure:
+> 
+> arm-linux-gnueabi-ld: drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.o: in function `stmmac_mdio_unregister':
+> stmmac_mdio.c:(.text+0x1418): undefined reference to `lynx_pcs_destroy'
+> 
+> I've tried to come up with a patch that moves this dependency back into
+> the dwmac-socfpga.c file, but there was no easy and obvious way to
+> do this. It also seems that this would not be a proper solution, but
+> instead there should be a real abstraction for pcs drivers that lets
+> device drivers handle this transparently.
 
-Generally I tell people to mark things as Fixes if it is a fix,
-regardless of how small, minor or unimportant.
+There is already a patch set on netdev fixing this properly.
 
-It helps backporters because they can suck in the original patch and
-all the touchups then test that result. If people try to predict if it
-is "important" or not they get it wrong quite often.
-
-Fixes is not supposed to mean "this is important" or "send this to
--rc" or "apply it to -stable"
-
-If it is really important add a 'cc: stable'.
-
-If it is sort of important then send it to the -rc tree.
-
-Otherwise dump it in the merge window.
-
-But mark it with Fixes regardless
-
-Jason
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
