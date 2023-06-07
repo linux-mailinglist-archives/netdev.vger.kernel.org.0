@@ -1,60 +1,63 @@
-Return-Path: <netdev+bounces-8757-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8758-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id BC7597258B7
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 10:55:09 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id CB0DE7258F2
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 10:58:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 24EF4281275
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 08:55:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 35F3A1C20CEE
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 08:58:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 936AB8C16;
-	Wed,  7 Jun 2023 08:55:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF9A58F43;
+	Wed,  7 Jun 2023 08:58:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 890028C09
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 08:55:06 +0000 (UTC)
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A493C1994
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 01:54:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1686128075; x=1717664075;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HQz4rwTqsDysvbrLsgRUKg34cXOPwy+EIaHfg0BVeu4=;
-  b=fV+JUhiQHACBYrXBnF4QSem57GsZ7giB79somZQ62zH5aNeFBFRH7Fjt
-   wQQwpajDTI4VqM687dQ9SUjyMytf1SLLF9bEObqGOsTMQALFsX0yu/JPe
-   n0gBSoh5h5ttVjOBdohnzySr73jbqFfxmzV2juv1kA/b3KGdMpGy1w+ep
-   fdlfQ2KpJR9pWBwJ1KKOwkOrPjjh3MA/zpRucBo51YyHth4xRvErfeTd3
-   FwGm8SeXGjCvbsdI6hFYUkic/BkieTaj2AmpJiLWR0K2vFoVbvalPTYwv
-   4uUyeL71hNJdPBSelOL4PVmTXToO86uufB0w/zt0Sw2PIX6sfGhpYaAnq
-   A==;
-X-IronPort-AV: E=Sophos;i="6.00,223,1681196400"; 
-   d="scan'208";a="219220402"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Jun 2023 01:54:05 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E57AF6AB9
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 08:58:36 +0000 (UTC)
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FAE91990
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 01:58:07 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+	by a.mx.secunet.com (Postfix) with ESMTP id E99FA2083E;
+	Wed,  7 Jun 2023 10:57:39 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+	by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id UJ9Gqfqmjvrx; Wed,  7 Jun 2023 10:57:39 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by a.mx.secunet.com (Postfix) with ESMTPS id 7181A207B0;
+	Wed,  7 Jun 2023 10:57:39 +0200 (CEST)
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+	by mailout1.secunet.com (Postfix) with ESMTP id 62F3480004A;
+	Wed,  7 Jun 2023 10:57:39 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Wed, 7 Jun 2023 01:54:05 -0700
-Received: from DEN-LT-70577 (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Wed, 7 Jun 2023 01:54:04 -0700
-Date: Wed, 7 Jun 2023 08:54:03 +0000
-From: Daniel Machon <daniel.machon@microchip.com>
-To: Dave Ertman <david.m.ertman@intel.com>
-CC: <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH net v2 08/10] ice: enforce interface eligibility and add
- messaging for SRIOV LAG
-Message-ID: <20230607085403.vm34kbnw2bajglse@DEN-LT-70577>
-References: <20230605182258.557933-1-david.m.ertman@intel.com>
- <20230605182258.557933-9-david.m.ertman@intel.com>
+ 15.1.2507.23; Wed, 7 Jun 2023 10:57:39 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Wed, 7 Jun
+ 2023 10:57:38 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+	id 9C95231844F3; Wed,  7 Jun 2023 10:57:38 +0200 (CEST)
+Date: Wed, 7 Jun 2023 10:57:38 +0200
+From: Steffen Klassert <steffen.klassert@secunet.com>
+To: Herbert Xu <herbert@gondor.apana.org.au>
+CC: <netdev@vger.kernel.org>, David George <David.George@sophos.com>, "Markus
+ Trapp" <markus.trapp@secunet.com>
+Subject: Re: [PATCH] xfrm: Use xfrm_state selector for BEET input
+Message-ID: <ZIBGgjWwILqQziGe@gauss3.secunet.de>
+References: <ZAr3rc+QvKs50xkm@gondor.apana.org.au>
+ <ZH8OSd1ElPIKCFa+@gauss3.secunet.de>
+ <ZIBCFyszqwJlZd/V@gondor.apana.org.au>
+ <ZIBEMe8SXYMIuOqK@gauss3.secunet.de>
+ <ZIBE62PYoLGzHgz7@gondor.apana.org.au>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -63,30 +66,31 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230605182258.557933-9-david.m.ertman@intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <ZIBE62PYoLGzHgz7@gondor.apana.org.au>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-> Implement checks on what interfaces are eligible for supporting SRIOV VFs
-> when a member of an aggregate interface.
+On Wed, Jun 07, 2023 at 04:50:51PM +0800, Herbert Xu wrote:
+> On Wed, Jun 07, 2023 at 10:47:45AM +0200, Steffen Klassert wrote:
+> >
+> > Hm, I thought about that one too. But x->sel.family can
+> > also be AF_UNSPEC, in which case we used the address
+> > family of the inner mode before your change.
 > 
-> Implement unwind path for interfaces that become ineligible.
+> It must not be AF_UNSPECT for BEET.  How would you even get the
+> inner addresses if it were UNSPEC?
 > 
-> checks for the SRIOV LAG feature bit wrap most of the functional code for
-> manipulating resources that apply to this feature.  Utilize this bit
-> to track compliant aggregates.  Also flag any new entries into the
-> aggregate as not supporting SRIOV LAG for the time they are in the
-> non-compliant aggregate.
-> 
-> Once an aggregate has been flagged as non-compliant, only unpopulating the
-> aggregate and re-populating it will return SRIOV LAG functionality.
-> 
-> Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+> With BEET the inner addresses are stored in the IPsec SA rather
+> than the actual packet.  So the family is also fixed for a given
+> SA (which we call xfrm_state).
 
-Reviewed-by: Daniel Machon <daniel.machon@microchip.com>
+Right, Good point.
 
+Thanks!
 
