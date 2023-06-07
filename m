@@ -1,83 +1,83 @@
-Return-Path: <netdev+bounces-9078-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9079-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1B67172704B
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 23:09:17 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4B434727093
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 23:33:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 76DB21C20F43
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 21:09:13 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F2E6128158D
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 21:33:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AA78051820;
-	Wed,  7 Jun 2023 21:04:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1432B3B8A7;
+	Wed,  7 Jun 2023 21:33:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3589E3D380
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 21:04:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7F56C4331E;
-	Wed,  7 Jun 2023 21:04:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686171884;
-	bh=+x5l76jEigP+jfedcLp5qK2IoJnrnOHNChSi6eV9RfE=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=PlyRi4egE7WcLCeYsXKBDXKkCCNpShyLc063sG6Cw7H0MBCp9cVtbF+m1Vg1FSUOg
-	 3RDim0Fs7km0dhD8Xlx1kX7KPp/Ty1yoEoFek95kfhdH697MkgTXFdDtZnRA4dU3Ut
-	 /RaRbeWqRgvOY0WtjRKtLW3nGWRlVUHKTWchFypVwg5o5owFXt6qNXAK5lkJXbrrCR
-	 A7+YH1tMwdQhs5a7B/iAYEIJaOOLhSKzLw8DddOkeJPD9rdZJhHFG+kw8Z2ve2GvMI
-	 UIQX4oI9p12hQbDltvhDK4owz2AlhCyutDQzliikOcme9tx/hY/USQDpgSQ+Oc1+Ud
-	 3n/c9hnIDF+NQ==
-From: Saeed Mahameed <saeed@kernel.org>
-To: "David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Eric Dumazet <edumazet@google.com>
-Cc: Saeed Mahameed <saeedm@nvidia.com>,
-	netdev@vger.kernel.org,
-	Tariq Toukan <tariqt@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>,
-	linux-rdma@vger.kernel.org
-Subject: [net-next V2 14/14] net/mlx5e: simplify condition after napi budget handling change
-Date: Wed,  7 Jun 2023 14:04:10 -0700
-Message-Id: <20230607210410.88209-15-saeed@kernel.org>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230607210410.88209-1-saeed@kernel.org>
-References: <20230607210410.88209-1-saeed@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 033B612B79
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 21:33:02 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8EDFE4A;
+	Wed,  7 Jun 2023 14:32:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=ubtDMWI6SjDotQFg9rb1A1hZlGcrJfnztwirpseERTc=; b=hiCbn2UfxiRUZFAkqMXaQ/ZmPR
+	ySVzv/petK9AM4b4nZ+j/vmO9ayO6TcLyq2YRiimJE2viynF1jQvLmqZcDbeI+5jb4t7qNrnJ23az
+	z0akFuZJYoUVsiTyERk5ScM9hZGiXZwfxEpruAvJhIPRnDETRle62HS9eyPGPdZpqlS0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1q70lx-00FC1n-0R; Wed, 07 Jun 2023 23:32:53 +0200
+Date: Wed, 7 Jun 2023 23:32:52 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Florian Fainelli <f.fainelli@gmail.com>
+Cc: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Christian Marangi <ansuelsmth@gmail.com>,
+	Vladimir Oltean <olteanv@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+	Lee Jones <lee@kernel.org>,
+	"linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
+Subject: Re: NPD in phy_led_set_brightness+0x3c
+Message-ID: <c8fb4ca8-f6ef-461c-975b-09a15a43e408@lunn.ch>
+References: <9e6da1b3-3749-90e9-6a6a-4775463f5942@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9e6da1b3-3749-90e9-6a6a-4775463f5942@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-From: Jakub Kicinski <kuba@kernel.org>
+> There is no trigger being configured for either LED therefore it is not
+> clear to me why the workqueue is being kicked in the first place?
 
-Since recent commit budget can't be 0 here.
+Since setting LEDs is a sleepable action, it gets offloaded to a
+workqueue.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+My guess is, something in led_classdev_unregister() is triggering it,
+maybe to put the LED into a known state before pulling the
+plug. However, i don't see what.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-index fbb2d963fb7e..a7d9b7cb4297 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-@@ -207,7 +207,7 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
- 		}
- 		ch_stats->aff_change++;
- 		aff_change = true;
--		if (budget && work_done == budget)
-+		if (work_done == budget)
- 			work_done--;
- 	}
- 
--- 
-2.40.1
+I'm also wondering about ordering. The LED is registered with
+devm_led_classdev_register_ext(). So maybe led_classdev_unregister()
+is getting called too late? So maybe we need to replace devm_ with
+manual cleanup.
+
+However, i've done lots of reboots while developing this code, so its
+interesting you can trigger this, and i've not seen it.
+
+	    Andrew
 
 
