@@ -1,179 +1,205 @@
-Return-Path: <netdev+bounces-8722-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8723-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id ADC137255BF
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:34:57 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 47B947255DA
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:36:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 08CB0280D28
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:34:56 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 572F31C20CD0
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:36:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 485216ABB;
-	Wed,  7 Jun 2023 07:34:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA2D26AC2;
+	Wed,  7 Jun 2023 07:36:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AD7263D7
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:34:53 +0000 (UTC)
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2094.outbound.protection.outlook.com [40.107.243.94])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83596E6B
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 00:34:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ghtdgL/+NHl7//lHiFt8eekFrPJmoAHJm6Fb8bi6T8hKlsXXGQSOHVQ7drHHHqn+y64cfctHnloxGrieV4ivJK4/sJYE1fnGdihETwTGSTd+Kmn0UcQrlEJft4KJYvjT4bisdhYxJ41yDr6VqWY3UXWdp4Lo9pTeyKWmyRyJgceLaN/YquAYdOHaQJNQ0oYqc45Kg/mXvvLJuRssLEbjhDuWj4lvpJ+3QR1phlMNEaIEiWpbr+m8f7uIjKb3Dm23wGvBRlLgixrrvq/HPrD1qfcFDampZFi6ZP+lPbboSCrRDbUSzmzBCFfuPzWeKTzFJRGPddE930VdzIgKXWGE+g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DfBHi+ePb6iUNqdqlAC8bAWNI5MhQcAqr7amRNA+L9U=;
- b=MyzC3Iv4zlcX87UIcAcGW5gpzKR2v7Zgpin/AlVAOD/T9e565PbIch1c1eAGLbTdoTyk0nO94T3ZP7V/LvK/RqYYhZhL1MUQnj6BZeZyOiz/9b09vKxWPJYnqa8R+srOId+f1kb7/WrJN9W6KVpQKSzPSqIi1NbyCP3OU83MqzWW7AMsHDXNx/jYK5qn/3GVb8C/k1XFqtxsEjcMIYXCS3GpOJgHUPrt1DpkFYsF+0IG5Xo5578xYswb7BOPcPuXaqLNvY0YcATw/Ts/zebS43XmZyJj8a1jnOUCnavDdxafW1AbX3/fP+QykLvjZ3fG+wulvwbSpCtbBrjp9lRfkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C210B6AAE;
+	Wed,  7 Jun 2023 07:36:38 +0000 (UTC)
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D569268F;
+	Wed,  7 Jun 2023 00:36:20 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id 2adb3069b0e04-4f6170b1486so374250e87.0;
+        Wed, 07 Jun 2023 00:36:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DfBHi+ePb6iUNqdqlAC8bAWNI5MhQcAqr7amRNA+L9U=;
- b=J+Z5RqZCjvgJ3cGoPeFPk5f4nnjyEL6JLOkrlDzeMLiaB5lnTp4I5vw3nf7vfSM9wInhubLK3Tg0EigPqzM5n5sOiZT0oF7IyUGhSKk+rL4HDLqJnV/Mb8CwOk+Ce/fJsQR/SqkJNLkY4GlYox0H9i4df2hwhWAsqpXrLAosrqo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH7PR13MB6219.namprd13.prod.outlook.com (2603:10b6:510:248::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.31; Wed, 7 Jun
- 2023 07:34:48 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6455.030; Wed, 7 Jun 2023
- 07:34:48 +0000
-Date: Wed, 7 Jun 2023 09:34:42 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Przemek Kitszel <przemyslaw.kitszel@intel.com>
-Cc: Alexander Lobakin <aleksander.lobakin@intel.com>,
-	intel-wired-lan@lists.osuosl.org,
-	Jesse Brandeburg <jesse.brandeburg@intel.com>,
-	Tony Nguyen <anthony.l.nguyen@intel.com>,
-	Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-	Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>,
-	netdev@vger.kernel.org
-Subject: Re: [PATCH iwl-next] ice: clean up __ice_aq_get_set_rss_lut()
-Message-ID: <ZIAzEh1Y++os19fl@corigine.com>
-References: <20230606111149.33890-1-przemyslaw.kitszel@intel.com>
- <ZH9S6wPIg9os8HYa@corigine.com>
- <1e11a484-af99-4595-dc1f-80beb23aae9f@intel.com>
- <ZH9hS9BBDhy9lIG1@corigine.com>
- <9b5c6653-3319-3516-0b50-67668dcc88f3@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9b5c6653-3319-3516-0b50-67668dcc88f3@intel.com>
-X-ClientProxiedBy: AM8P190CA0018.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:219::23) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=gmail.com; s=20221208; t=1686123378; x=1688715378;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=2V3s3icJTC6LaLSn3oBF3M+3j5PZ/qbP3uDWciuJbcU=;
+        b=fn2KcYq5uY2mH+HBy/a6NAnSP+8+9rQr82d+AuBIReLJOJ3cCVmW+3wr4VfxsM87BJ
+         OMfKWaQ/mVrNrACzq5kUcPkCS/Q0xWVDHqyPJRRSmsPCAdMiPfl/Qv8hYQ84AJrRKaOe
+         YDReSxP1+MEXJ4bCT9Dqm4Yzhd1c7MX/QuXdC3HohpTyuNP68nbtUvNEUydzmAhxxULl
+         Q75bWHaJLVigND99EyKafEWnXnd5UMVjWsz+pIX2pC+S8Wqv6qCjWPcn6a/0zm0lZ3qa
+         DVNboeHMPeGP5b7KJQ4Q1c2X3HDFPEKCFiRlXmG9h8Vix1Rv+/NskHW66qCSUGIOQYnr
+         ZbTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686123378; x=1688715378;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2V3s3icJTC6LaLSn3oBF3M+3j5PZ/qbP3uDWciuJbcU=;
+        b=FJMpdptjmH3sP2FZJpj1yo6bboxJt9wdqlTk2HCW49jkB2s9I3Hsi/ugIo+x9EgWMI
+         oBAlWZuZLTSeA0RShAYe8gcZ8zJbKgt/EZ9QNbWYKqab5ebrAmUR526x/geBb7UgQ1gP
+         fEQl5SoTjHT5gH3di4lmPoEjyE+we+bhxXHhiy7TCux5NYl5Zj4mC+B7tj13KIrQUZCj
+         RBl9yd+jT0ZrkUBII6S/S7l/KyezzvcaeFXAAnRiQL1SnCU+ekn9cWCCIhcDBh6IO9Bh
+         DbYG3OHAUsmd+mpSMdWHJLYgs/iNE2eZsDmgA+yzLeQxk+2IKbzznj2HIX1gLQqHg7Yh
+         jzIw==
+X-Gm-Message-State: AC+VfDz98j5J1Fj1sp/C7NBW/eefcxlcTazVUuagsM3XmsCKCm8qk0Ak
+	nc00+zaQ35iGeJl+RSUqQBClposvnNfCZZaFb6E=
+X-Google-Smtp-Source: ACHHUZ74hYkDawUW0WJQlvYeMDw0pQKYrsLM1xjWznMqVZsLTownFItoGHR+rqczsq4O7/6SX3mgbQ==
+X-Received: by 2002:a05:6512:3f0f:b0:4f3:b324:ea8 with SMTP id y15-20020a0565123f0f00b004f3b3240ea8mr4594590lfa.19.1686123378290;
+        Wed, 07 Jun 2023 00:36:18 -0700 (PDT)
+Received: from localhost ([171.25.193.78])
+        by smtp.gmail.com with ESMTPSA id w18-20020a19c512000000b004f252f48e5fsm1731415lfe.40.2023.06.07.00.36.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Jun 2023 00:36:17 -0700 (PDT)
+Date: Wed, 7 Jun 2023 10:36:03 +0300
+From: Maxim Mikityanskiy <maxtram95@gmail.com>
+To: Yonghong Song <yhs@meta.com>
+Cc: bpf@vger.kernel.org, netdev@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	John Fastabend <john.fastabend@gmail.com>,
+	Alexei Starovoitov <ast@kernel.org>,
+	Andrii Nakryiko <andrii@kernel.org>,
+	Martin KaFai Lau <martin.lau@linux.dev>,
+	Eduard Zingerman <eddyz87@gmail.com>,
+	Maxim Mikityanskiy <maxim@isovalent.com>,
+	Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+	KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>,
+	Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+	Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Jesper Dangaard Brouer <hawk@kernel.org>
+Subject: Re: [PATCH bpf v3 1/2] bpf: Fix verifier tracking scalars on spill
+Message-ID: <ZIAzY8C0-X6UXjY-@mail.gmail.com>
+References: <20230606214246.403579-1-maxtram95@gmail.com>
+ <20230606214246.403579-2-maxtram95@gmail.com>
+ <11eb089f-9e71-856f-7f01-375176bd5edf@meta.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB6219:EE_
-X-MS-Office365-Filtering-Correlation-Id: f4307ccf-a741-4ab9-2c61-08db6729ac02
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	c2U7SrRaXgQcKId+uHlrTD/XqDefimFbrszWDMl9NeZsOllhGs1JHWW8xaKtZtJxEq5keD1LDIcN1/S9ykVeE7YvrCmhg4Da0+Sxu6dJ1wKZd+LYlWKF5fYvQ2EyngLAdbzob6kDBuFHhA1sYDFK4QCLrau1x3Nhdp+8wkdhlNzQZxywrK29bMZyI6GK0iK/CE+tXiUEITYDyTDW1+AuUphqsywdBxTc/z2Iy4dXShuu+6y420lbau9PauY7WE82e+cdMkuGQ16v8C/03BgCvTuZp29XHE0JJyI99eMhNlJL5uSCjwTh85sS3gE9jk8X0TsTWwBhQLMl0vQeZ/gpci5/5iZd1Udoylza6thmnO6AQz1/N+h9f6CaE9zh7d1Aro1VHgxIS1Wb8piHq3LyeQQ4UJDpMJslLLWOnhdG7L+GJpVD3HpzoHqpseBelpktantM9ID95zq8kd7LkBI7Xm5ON1kvFW3HwfL1Aok/ZcBkvLWSpsepAb96NiPqW0bTGhNcT/3QhRsJD1YpjiAWTc/E/CNOCGBsih11i+aO+efcazkQ/ty08FivDnWo2x/m
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(136003)(376002)(346002)(366004)(396003)(451199021)(6512007)(478600001)(36756003)(6486002)(53546011)(2616005)(6506007)(186003)(6666004)(316002)(41300700001)(66946007)(66556008)(66476007)(44832011)(86362001)(6916009)(4326008)(2906002)(5660300002)(8936002)(8676002)(54906003)(38100700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?LWaflkUYOoJiTPB3uY8ABeWeR7MsgHf/mlYXE+uAWHiM/LRErqxMgtiw13pL?=
- =?us-ascii?Q?u4zc3bRsc029Onz+AJFtr4LoaSKG7vGb4VKI3NRPosmc9Cw9OESpvvfa+Bwt?=
- =?us-ascii?Q?5Qk2HPAK7mN0ZgdpCLZFDzoDUNx4OC8FBuLuShOete+IH1Tw+etIkGkTtjoJ?=
- =?us-ascii?Q?kWzaa9QY0ZDc6dE43Jg54VcI5uUWU5dC+u4u01DnGDqjwj2/IO8NLWKoDpud?=
- =?us-ascii?Q?a6aXMFE9tpRStTfRe1pT7PYKkg/8rVT3Xao6DlvB0W9ffwETqnEX7rPVIlQ+?=
- =?us-ascii?Q?Dr6xIZLwavsIytY+4UbdUmn9j0DMwmSr8xplsL4Ruqy2Jfr8D1TwXlVStFti?=
- =?us-ascii?Q?dPtBnORzM+EYI6jAdQzdrIBwvDXWlbeKe1Zr1zuQKVg55JtqcKurdYSBVS/r?=
- =?us-ascii?Q?z8pzklONPmr3P+GThZz4qmQz7QghrIwTmArVjsIRsZtOKOADUbiiQ7hzuelR?=
- =?us-ascii?Q?vjZ5MeMpu/RMWWOoSoewxxvKQpj3ul1OpymeSpPdgkG2IW/CiiIUzS+AjGBY?=
- =?us-ascii?Q?+asnB8RDOe1Ij0onDQhewVACRUrgBaEInS1iQB/uJ7DL7Xd9B7oJsX9Ar9Ao?=
- =?us-ascii?Q?3lmpaAXb9nwRQEALbbUbJAgVKBXjYnjgz/+uC7s1JtLJeo9vuDtH5wRRuNI0?=
- =?us-ascii?Q?1ic18pTG2rkFCGUq4MvjdshZG3dUnfqCRRULTcaFh6nhUUClPygKWrFx/jCS?=
- =?us-ascii?Q?4WUsR0cqgdNht/cCGalMOgpmOY8/EGL63yfOMKSUC602dbZzBz7zw+TiXNhJ?=
- =?us-ascii?Q?QDPS1paBW8iSPyqVq9oh7Yloa5SDJN1Kb1FQJah9YsvCBPFSIRCttnOEQHCV?=
- =?us-ascii?Q?r2NsjXjhwFlOkjQowrP6hhUSab9Cm7SAbbZZur+D+gZPofFYkSjK2Dcs9W4I?=
- =?us-ascii?Q?ccnrt6C5HNTD9BrK4ZXw3wzo1jkuGBWP3tT11z1CfzGMNogCK7+oPeBjDnzm?=
- =?us-ascii?Q?aWVhoiY5IifibJFD65U1kZ56qCNQplzJPQJJtI41QwQDJa/0En4OeqL0mtwh?=
- =?us-ascii?Q?fRFjveHApBfO2hGPOA7wo26Pej3UI4Hhic7ST7ejqCeycQU4DPZYWxmxrCqh?=
- =?us-ascii?Q?bClTG1wx+EeY0Uy7i/o9XvLI5T9op1liHDSl97LFLPdwo7qB/0D23sJhWnJr?=
- =?us-ascii?Q?8ftb3s9B6XLPH0JFOedP8SkZZ93eBXbdK8RHKqGHL+ZhREVpLe5Al+JZZ6XI?=
- =?us-ascii?Q?NAbyIt46oEW+XUQfvggmylfHSgh1k6/J3sp4o3k9SYei7rSPUlf2eCsrshcS?=
- =?us-ascii?Q?4W0tmu8P9vlZpqEEY/NhNL+yV2+pJagqOvyytFANJdI9ivrAYudmQgqYkJoP?=
- =?us-ascii?Q?mQTSZWumEM9k/1UlXJFHKD62zji/ygaROdDPoJRDBySIsX+x14vmZm/nT7U2?=
- =?us-ascii?Q?nAZbLNfPQVFhR9HjspOdVn7OyCk84ChEu1Y7AOVFAyFd8wUvf2Ew+LVv9nQw?=
- =?us-ascii?Q?k12vqi8UyezvCXAThYFPR9/dOV+ZfTy8ifwsSXQDp3jGZ1GWdGHUlDvEVx2M?=
- =?us-ascii?Q?kESpYs/xgXMWMAShSJ8TiqAeL4+7LNsHmEYk+8V2Vi7vunInl4SA1/gIYP9r?=
- =?us-ascii?Q?ENrq8pCKXV3ReE3hIuJ8Njec4yIyPSYpGhPL8YjPjv8eCE/Cxvqlt2HR0I7o?=
- =?us-ascii?Q?kAqSnBeFsIzB4GJeJgdCE+JxZBupFHXamEjrqZH4fVbM5dLwYiHRFqRaq32g?=
- =?us-ascii?Q?5vbDgQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f4307ccf-a741-4ab9-2c61-08db6729ac02
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2023 07:34:48.2673
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fRV5hKZMOzUWQp0mKjjdcoqZKuFUGFyD+W4zx2PqbPFI6fmu6+Xyw7iZS5q961LD/U4kfstgRDQ9HYli6UqjHjb4IObNz4jNhmv0fyA991Y=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB6219
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <11eb089f-9e71-856f-7f01-375176bd5edf@meta.com>
+X-Spam-Status: No, score=2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 06, 2023 at 11:14:44PM +0200, Przemek Kitszel wrote:
-> On 6/6/23 18:39, Simon Horman wrote:
-> > On Tue, Jun 06, 2023 at 05:42:53PM +0200, Alexander Lobakin wrote:
-> > > From: Simon Horman <simon.horman@corigine.com>
-> > > Date: Tue, 6 Jun 2023 17:38:19 +0200
-> > > 
-> > > > On Tue, Jun 06, 2023 at 01:11:49PM +0200, Przemek Kitszel wrote:
-> > > > 
-> > > > ...
-> > > > 
-> > > > > diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-> > > > > index 6acb40f3c202..af4c8ddcafb0 100644
-> > > > > --- a/drivers/net/ethernet/intel/ice/ice_common.c
-> > > > > +++ b/drivers/net/ethernet/intel/ice/ice_common.c
-> > > > > @@ -3869,6 +3869,30 @@ ice_aq_sff_eeprom(struct ice_hw *hw, u16 lport, u8 bus_addr,
-> > > > >   	return status;
-> > > > >   }
-> > > > > +static enum ice_lut_size ice_lut_type_to_size(enum ice_lut_type type)
-> > > > > +{
-> > > > > +	switch (type) {
-> > > > > +	case ICE_LUT_VSI:
-> > > > > +		return ICE_LUT_VSI_SIZE;
-> > > > > +	case ICE_LUT_GLOBAL:
-> > > > > +		return ICE_LUT_GLOBAL_SIZE;
-> > > > > +	case ICE_LUT_PF:
-> > > > > +		return ICE_LUT_PF_SIZE;
-> > > > > +	}
-> > > > 
-> > > > Hi Przemek,
-> > > > 
-> > > > I see where you are going here, but gcc-12 W=1 wants a return here.
-> > > 
-> > > So that it can't see that every enumeration entry is handled here? O_o
-> > 
-> > Yes, that seems to be the case :(
+On Tue, 06 Jun 2023 at 18:32:37 -0700, Yonghong Song wrote:
 > 
-> it's the same on gcc-13 on default (make M=...) settings, I think, I will
-> post next version that is passing that build, even if to make integration
-> with new gcc easier
+> 
+> On 6/6/23 2:42 PM, Maxim Mikityanskiy wrote:
+> > From: Maxim Mikityanskiy <maxim@isovalent.com>
+> > 
+> > The following scenario describes a verifier bypass in privileged mode
+> > (CAP_BPF or CAP_SYS_ADMIN):
+> > 
+> > 1. Prepare a 32-bit rogue number.
+> > 2. Put the rogue number into the upper half of a 64-bit register, and
+> >     roll a random (unknown to the verifier) bit in the lower half. The
+> >     rest of the bits should be zero (although variations are possible).
+> > 3. Assign an ID to the register by MOVing it to another arbitrary
+> >     register.
+> > 4. Perform a 32-bit spill of the register, then perform a 32-bit fill to
+> >     another register. Due to a bug in the verifier, the ID will be
+> >     preserved, although the new register will contain only the lower 32
+> >     bits, i.e. all zeros except one random bit.
+> > 
+> > At this point there are two registers with different values but the same
+> > ID, which means the integrity of the verifier state has been corrupted.
+> > Next steps show the actual bypass:
+> > 
+> > 5. Compare the new 32-bit register with 0. In the branch where it's
+> >     equal to 0, the verifier will believe that the original 64-bit
+> >     register is also 0, because it has the same ID, but its actual value
+> >     still contains the rogue number in the upper half.
+> >     Some optimizations of the verifier prevent the actual bypass, so
+> >     extra care is needed: the comparison must be between two registers,
+> >     and both branches must be reachable (this is why one random bit is
+> >     needed). Both branches are still suitable for the bypass.
+> > 6. Right shift the original register by 32 bits to pop the rogue number.
+> > 7. Use the rogue number as an offset with any pointer. The verifier will
+> >     believe that the offset is 0, while in reality it's the given number.
+> > 
+> > The fix is similar to the 32-bit BPF_MOV handling in check_alu_op for
+> > SCALAR_VALUE. If the spill is narrowing the actual register value, don't
+> > keep the ID, make sure it's reset to 0.
+> > 
+> > Fixes: 354e8f1970f8 ("bpf: Support <8-byte scalar spill and refill")
+> > Signed-off-by: Maxim Mikityanskiy <maxim@isovalent.com>
+> 
+> LGTM with a small nit below.
+> 
+> Acked-by: Yonghong Song <yhs@fb.com>
+> 
+> > ---
+> >   kernel/bpf/verifier.c | 7 +++++++
+> >   1 file changed, 7 insertions(+)
+> > 
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index 5871aa78d01a..7be23eced561 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -3856,6 +3856,8 @@ static int check_stack_write_fixed_off(struct bpf_verifier_env *env,
+> >   	mark_stack_slot_scratched(env, spi);
+> >   	if (reg && !(off % BPF_REG_SIZE) && register_is_bounded(reg) &&
+> >   	    !register_is_null(reg) && env->bpf_capable) {
+> > +		bool reg_value_fits;
+> > +
+> >   		if (dst_reg != BPF_REG_FP) {
+> >   			/* The backtracking logic can only recognize explicit
+> >   			 * stack slot address like [fp - 8]. Other spill of
+> > @@ -3867,7 +3869,12 @@ static int check_stack_write_fixed_off(struct bpf_verifier_env *env,
+> >   			if (err)
+> >   				return err;
+> >   		}
+> > +
+> > +		reg_value_fits = fls64(reg->umax_value) <= BITS_PER_BYTE * size;
+> >   		save_register_state(state, spi, reg, size);
+> > +		/* Break the relation on a narrowing spill. */
+> > +		if (!reg_value_fits)
+> > +			state->stack[spi].spilled_ptr.id = 0;
+> 
+> I think the code can be simplied like below:
+> 
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -4230,6 +4230,8 @@ static int check_stack_write_fixed_off(struct
+> bpf_verifier_env *env,
+>                                 return err;
+>                 }
+>                 save_register_state(state, spi, reg, size);
+> +               if (fls64(reg->umax_value) > BITS_PER_BYTE * size)
+> +                       state->stack[spi].spilled_ptr.id = 0;
+>         } else if (!reg && !(off % BPF_REG_SIZE) && is_bpf_st_mem(insn) &&
+>                    insn->imm != 0 && env->bpf_capable) {
+>                 struct bpf_reg_state fake_reg = {};
+> 
 
-Thanks. TBH it does seem a bit silly to me.
-But GCC builds failing does seem to be a problem that warrants being addressed.
+That's true, I kept the variable to avoid churn when I send a follow-up
+improvement:
+
++               /* Make sure that reg had an ID to build a relation on spill. */
++               if (reg_value_fits && !reg->id)
++                       reg->id = ++env->id_gen;
+                save_register_state(state, spi, reg, size);
+
+But yeah, I agree, let's simplify it for now, there is no guarantee that
+the follow-up patch will be accepted as is. Thanks for the review!
+
+> >   	} else if (!reg && !(off % BPF_REG_SIZE) && is_bpf_st_mem(insn) &&
+> >   		   insn->imm != 0 && env->bpf_capable) {
+> >   		struct bpf_reg_state fake_reg = {};
 
