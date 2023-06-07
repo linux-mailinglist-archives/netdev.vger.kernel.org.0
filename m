@@ -1,43 +1,47 @@
-Return-Path: <netdev+bounces-8654-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8655-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1383A72515E
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 03:06:47 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id F1485725160
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 03:08:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2CDF21C20BD5
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 01:06:43 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AF463281152
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 01:08:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BFCD2627;
-	Wed,  7 Jun 2023 01:06:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0EAEA62A;
+	Wed,  7 Jun 2023 01:08:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B274A7C
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 01:06:43 +0000 (UTC)
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 06 Jun 2023 18:06:39 PDT
-Received: from unicom146.biz-email.net (unicom146.biz-email.net [210.51.26.146])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8D810F9
-	for <netdev@vger.kernel.org>; Tue,  6 Jun 2023 18:06:39 -0700 (PDT)
-Received: from unicom146.biz-email.net
-        by unicom146.biz-email.net ((D)) with ASMTP (SSL) id CXM00032;
-        Wed, 07 Jun 2023 09:05:32 +0800
-Received: from localhost.localdomain (10.180.204.158) by
- jtjnmail201609.home.langchao.com (10.100.2.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 7 Jun 2023 09:05:31 +0800
-From: wangchuanlei <wangchuanlei@inspur.com>
-To: <echaudro@redhat.com>
-CC: <aconole@redhat.com>, <dev@openvswitch.org>, <netdev@vger.kernel.org>,
-	<simon.horman@corigine.com>, <wangpeihui@inspur.com>, <kuba@kernel.org>,
-	<pabeni@redhat.com>, <davem@davemloft.net>
-Subject: Re: [ovs-dev] [PATCH net v2] net: openvswitch: fix upcall counter access before allocation
-Date: Tue, 6 Jun 2023 21:05:29 -0400
-Message-ID: <20230607010529.1085986-1-wangchuanlei@inspur.com>
-X-Mailer: git-send-email 2.27.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E00457C
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 01:08:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE560C433D2;
+	Wed,  7 Jun 2023 01:08:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686100108;
+	bh=3e2m0ANaODjZQ6OCWGCXqO65I3TmhSwyWFSXVVgxLm4=;
+	h=From:To:Cc:Subject:Date:From;
+	b=hWeJ5yoqnE3u56uTRRTtpZuqQp7VbMIuzl6D3oZBGvvlFr++yLm26xjD6BAeIv8Zi
+	 3k5T+qWWGgnbyh19bFsEpkQDtutggdIO7QflMad00fmJvoed8vHABdlj4WSo8t+qqU
+	 co/D0u59pRPNXzqITjCQwp3ZkeIdmMYa2ShZ6lHHKwbp38ZvAG6tXTU3M8KkAMNXQS
+	 rJRXT+dB82SxhWA881CdR3U8QJ7xCM3uA7LzDFnNp7Zw5Y1xata+Q0gjaIYAxB3kRF
+	 YshrXSS0qf5ufsM7voPjOzY1ShZ5m5ZVo5csebFo7oYtQTL2AC0gIcytGcF9GDQ+Kg
+	 TyRgeirmOgTaA==
+From: Jakub Kicinski <kuba@kernel.org>
+To: davem@davemloft.net
+Cc: netdev@vger.kernel.org,
+	edumazet@google.com,
+	pabeni@redhat.com,
+	Jakub Kicinski <kuba@kernel.org>,
+	David Wei <davidhwei@meta.com>,
+	michael.chan@broadcom.com
+Subject: [PATCH net 1/2] eth: bnxt: fix the wake condition
+Date: Tue,  6 Jun 2023 18:08:25 -0700
+Message-Id: <20230607010826.960226-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -45,80 +49,42 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.204.158]
-X-ClientProxiedBy: Jtjnmail201615.home.langchao.com (10.100.2.15) To
- jtjnmail201609.home.langchao.com (10.100.2.9)
-tUid: 202360709053210db7de47ad23185cd2c1d3bfdee0f30
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-Thanks for fix this, in common enviroment, it's a 
-small probability event.
+The down condition should be the negation of the wake condition,
+IOW when I moved it from:
 
-> Eelco Chaudron <echaudro@redhat.com> writes:
+ if (cond && wake())
+to
+ if (__netif_txq_completed_wake(cond))
 
-> Currently, the per cpu upcall counters are allocated after the vport 
-> is created and inserted into the system. This could lead to the 
-> datapath accessing the counters before they are allocated resulting in 
-> a kernel Oops.
->
-> Here is an example:
->
->   PID: 59693    TASK: ffff0005f4f51500  CPU: 0    COMMAND: "ovs-vswitchd"
->    #0 [ffff80000a39b5b0] __switch_to at ffffb70f0629f2f4
->    #1 [ffff80000a39b5d0] __schedule at ffffb70f0629f5cc
->    #2 [ffff80000a39b650] preempt_schedule_common at ffffb70f0629fa60
->    #3 [ffff80000a39b670] dynamic_might_resched at ffffb70f0629fb58
->    #4 [ffff80000a39b680] mutex_lock_killable at ffffb70f062a1388
->    #5 [ffff80000a39b6a0] pcpu_alloc at ffffb70f0594460c
->    #6 [ffff80000a39b750] __alloc_percpu_gfp at ffffb70f05944e68
->    #7 [ffff80000a39b760] ovs_vport_cmd_new at ffffb70ee6961b90 [openvswitch]
->    ...
->
->   PID: 58682    TASK: ffff0005b2f0bf00  CPU: 0    COMMAND: "kworker/0:3"
->    #0 [ffff80000a5d2f40] machine_kexec at ffffb70f056a0758
->    #1 [ffff80000a5d2f70] __crash_kexec at ffffb70f057e2994
->    #2 [ffff80000a5d3100] crash_kexec at ffffb70f057e2ad8
->    #3 [ffff80000a5d3120] die at ffffb70f0628234c
->    #4 [ffff80000a5d31e0] die_kernel_fault at ffffb70f062828a8
->    #5 [ffff80000a5d3210] __do_kernel_fault at ffffb70f056a31f4
->    #6 [ffff80000a5d3240] do_bad_area at ffffb70f056a32a4
->    #7 [ffff80000a5d3260] do_translation_fault at ffffb70f062a9710
->    #8 [ffff80000a5d3270] do_mem_abort at ffffb70f056a2f74
->    #9 [ffff80000a5d32a0] el1_abort at ffffb70f06297dac
->   #10 [ffff80000a5d32d0] el1h_64_sync_handler at ffffb70f06299b24
->   #11 [ffff80000a5d3410] el1h_64_sync at ffffb70f056812dc
->   #12 [ffff80000a5d3430] ovs_dp_upcall at ffffb70ee6963c84 [openvswitch]
->   #13 [ffff80000a5d3470] ovs_dp_process_packet at ffffb70ee6963fdc [openvswitch]
->   #14 [ffff80000a5d34f0] ovs_vport_receive at ffffb70ee6972c78 [openvswitch]
->   #15 [ffff80000a5d36f0] netdev_port_receive at ffffb70ee6973948 [openvswitch]
->   #16 [ffff80000a5d3720] netdev_frame_hook at ffffb70ee6973a28 [openvswitch]
->   #17 [ffff80000a5d3730] __netif_receive_skb_core.constprop.0 at 
-> ffffb70f06079f90
->
-> We moved the per cpu upcall counter allocation to the existing vport 
-> alloc and free functions to solve this.
->
-> Fixes: 95637d91fefd ("net: openvswitch: release vport resources on 
-> failure")
-> Fixes: 1933ea365aa7 ("net: openvswitch: Add support to count upcall 
-> packets")
-> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
-> ---
+Cond should have been negated. Flip it now.
 
-Acked-by: Aaron Conole <aconole@redhat.com>
+This bug leads to occasional crashes with netconsole.
+It may also lead to queue never waking up in case BQL is not enabled.
 
-_______________________________________________
-dev mailing list
-dev@openvswitch.org
-https://mail.openvswitch.org/mailman/listinfo/ovs-dev
+Reported-by: David Wei <davidhwei@meta.com>
+Fixes: 08a096780d92 ("bnxt: use new queue try_stop/try_wake macros")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: michael.chan@broadcom.com
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index dcd9367f05af..1f04cd4cfab9 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -692,7 +692,7 @@ static void bnxt_tx_int(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
+ 
+ 	__netif_txq_completed_wake(txq, nr_pkts, tx_bytes,
+ 				   bnxt_tx_avail(bp, txr), bp->tx_wake_thresh,
+-				   READ_ONCE(txr->dev_state) != BNXT_DEV_STATE_CLOSING);
++				   READ_ONCE(txr->dev_state) == BNXT_DEV_STATE_CLOSING);
+ }
+ 
+ static struct page *__bnxt_alloc_rx_page(struct bnxt *bp, dma_addr_t *mapping,
+-- 
+2.40.1
 
 
