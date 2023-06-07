@@ -1,56 +1,56 @@
-Return-Path: <netdev+bounces-8730-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-8731-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9ED63725682
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:55:44 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 27FC6725685
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 09:56:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 59397280994
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:55:43 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8FE121C20C76
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 07:56:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 537008463;
-	Wed,  7 Jun 2023 07:54:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69B7B79F7;
+	Wed,  7 Jun 2023 07:54:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49AA679F7
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:54:48 +0000 (UTC)
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEC8AA
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 00:54:46 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id d75a77b69052e-3f86b426371so36847361cf.2
-        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 00:54:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F95D8BE7
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 07:54:50 +0000 (UTC)
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E882D12C
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 00:54:48 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id 6a1803df08f44-62b69b95a33so6608366d6.0
+        for <netdev@vger.kernel.org>; Wed, 07 Jun 2023 00:54:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1686124486; x=1688716486;
+        d=broadcom.com; s=google; t=1686124488; x=1688716488;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ShfgLXpfqQqI3OlrtyH1zehmhMcHSWoyygIdkOp/ypo=;
-        b=M/A5Ce+Wwu0DpO+we/LwDiDMGS3Xl77MgvBcB/OTUfh//atBcnYPX/9mINmZhYKl/v
-         U40cXvlZXFfQIKhVfXyc9v6Edu/aaSdb+TaHiv8haprSGG/mP2w7WI7/UqbL5lVUiV9o
-         F43T7X1Z95FRW+kjWjJXTOPaetYzOnsvZZkwQ=
+        bh=GRAWd5TgIlg3a1V00WobIR052JIKpWNHFDlf8mAf2dU=;
+        b=hrqO19W4ECOHk7KW85jKiLaJEVz21WymK/r0rbHF7pn1i2+1wYHjkNx3kBnXLcAs7l
+         tVEvU647BLdDARc6ZOKIbUkPpQKeQ0hPxPVQgIYX1AOc+U1Ot0qf3gpjLE02MS31xhfC
+         qGCGmQmlNjbc+zFMn4SK0vxATmOCLh8jVAF2M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686124486; x=1688716486;
+        d=1e100.net; s=20221208; t=1686124488; x=1688716488;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ShfgLXpfqQqI3OlrtyH1zehmhMcHSWoyygIdkOp/ypo=;
-        b=PGcNgTXtsQC1vQQ9V15KCTw3cJNzleFZdXI+S9yRf4de1ybIqa3BcI8d7mbWHOxv/W
-         gKsKueqC3OwZxerttckANBFOoi6S3L2E+ZDccRrTrGs0E/Y6PxcKwgQBtHru7/Xvi4RY
-         Oa7VUH+1EL7vVjIwaJjbDBuX52G2lnzhqtJ0Olo+WdTOn8WLnufYqqLyUd7r16SBnhUH
-         vt18U8EONYXkF+Ukrw9N2yau0z/4gIUiCeSy7A2Wt43m9rnFom4hvOu0KNnxiwrvYbUz
-         +xY+7CZ8EDMVct8spd4+LdqyKDXAOamvfYfqK1otDTgGJ22C8VErF912HsoHY5I26i+M
-         7uig==
-X-Gm-Message-State: AC+VfDxfRGjPXT5/KqfZBvN7Ys/RZq2tJh12bZqhbdTudPAViq/SASy0
-	XYA+pzEIFV9RgSUmCVaq/N8Kyw==
-X-Google-Smtp-Source: ACHHUZ7h/nwqbtKK8RilkYV1grkVhDcruwvI3nlNGmlqGz7ebFl9gxeK3RfSyw4aLv4n3lLRBYKe/g==
-X-Received: by 2002:ac8:7f4a:0:b0:3f7:f60c:7806 with SMTP id g10-20020ac87f4a000000b003f7f60c7806mr2949292qtk.12.1686124485716;
-        Wed, 07 Jun 2023 00:54:45 -0700 (PDT)
+        bh=GRAWd5TgIlg3a1V00WobIR052JIKpWNHFDlf8mAf2dU=;
+        b=ML3wgTjLYwzXnpof0Qs1s9+u+zkkxlepClfs72BOyy+rTHK8t/FshNHtf0itmZgwR8
+         q/UWpLEDLj7iyrYZuzhuoHwHVJPvxDRa/PYWZ/jT6KQmY5g+GTn3Fmf8CbkgN1Awee7Y
+         5ZCuEMm1DaJod+EtEpueFJ1duzUTMpjJ0MpBYy0Aqnjw6p5rUorvqYHgEFmkYDqSzTOe
+         wrS+0K+q8ADzF0+ffET6QDycGzNHVhUc4Kszv7NB/QRhTbxYDkGJze4vIsYKSz0oJRyx
+         21jZQZM4wLqjrYjaK6nyZjWhrQMJmwJiwqrcsVyO+x6KmnSq7kBPFmv4Nw1iWTaKfqA9
+         /NfA==
+X-Gm-Message-State: AC+VfDz1kd4/oAQml/FR1/AIBW1EtOdoPGRdQhFDKUqcjbsJkm6+7Ext
+	Duig5OB0K+18acHl2HLgMGheFrrpMe2CCTOkW2o=
+X-Google-Smtp-Source: ACHHUZ6rzCZHgIO4xF42KoW1AsUANe8/+MkTRF/TFlvJXGScCOsq7NnLO+Qvi3wkU2ulLZP/WpWyRA==
+X-Received: by 2002:a05:6214:21eb:b0:629:78ae:80f8 with SMTP id p11-20020a05621421eb00b0062978ae80f8mr2348156qvj.10.1686124487603;
+        Wed, 07 Jun 2023 00:54:47 -0700 (PDT)
 Received: from lvnvda5233.lvn.broadcom.net ([192.19.161.250])
-        by smtp.gmail.com with ESMTPSA id cs12-20020ad44c4c000000b00626362f1bf1sm5850817qvb.63.2023.06.07.00.54.44
+        by smtp.gmail.com with ESMTPSA id cs12-20020ad44c4c000000b00626362f1bf1sm5850817qvb.63.2023.06.07.00.54.45
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Jun 2023 00:54:45 -0700 (PDT)
+        Wed, 07 Jun 2023 00:54:46 -0700 (PDT)
 From: Michael Chan <michael.chan@broadcom.com>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
@@ -58,11 +58,12 @@ Cc: netdev@vger.kernel.org,
 	kuba@kernel.org,
 	pabeni@redhat.com,
 	gospo@broadcom.com,
+	Vikas Gupta <vikas.gupta@broadcom.com>,
 	Somnath Kotur <somnath.kotur@broadcom.com>,
 	Pavan Chebbi <pavan.chebbi@broadcom.com>
-Subject: [PATCH net 3/6] bnxt_en: Query default VLAN before VNIC setup on a VF
-Date: Wed,  7 Jun 2023 00:54:06 -0700
-Message-Id: <20230607075409.228450-4-michael.chan@broadcom.com>
+Subject: [PATCH net 4/6] bnxt_en: Skip firmware fatal error recovery if chip is not accessible
+Date: Wed,  7 Jun 2023 00:54:07 -0700
+Message-Id: <20230607075409.228450-5-michael.chan@broadcom.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20230607075409.228450-1-michael.chan@broadcom.com>
 References: <20230607075409.228450-1-michael.chan@broadcom.com>
@@ -73,7 +74,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="0000000000000bb74405fd8573a1"
+	boundary="0000000000002a758105fd857336"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
@@ -81,53 +82,62 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---0000000000000bb74405fd8573a1
+--0000000000002a758105fd857336
 Content-Transfer-Encoding: 8bit
 
-From: Somnath Kotur <somnath.kotur@broadcom.com>
+From: Vikas Gupta <vikas.gupta@broadcom.com>
 
-We need to call bnxt_hwrm_func_qcfg() on a VF to query the default
-VLAN that may be setup by the PF.  If a default VLAN is enabled,
-the VF cannot support VLAN acceleration on the receive side and
-the VNIC must be setup to strip out the default VLAN tag.  If a
-default VLAN is not enabled, the VF can support VLAN acceleration
-on the receive side.  The VNIC should be set up to strip or not
-strip the VLAN based on the RX VLAN acceleration setting.
+Driver starts firmware fatal error recovery by detecting
+heartbeat failure or fw reset count register changing.  But
+these checks are not reliable if the device is not accessible.
+This can happen while DPC (Downstream Port containment) is in
+progress.  Skip firmware fatal recovery if pci_device_is_present()
+returns false.
 
-Without this call to determine the default VLAN before calling
-bnxt_setup_vnic(), the VNIC may not be set up correctly.  For
-example, bnxt_setup_vnic() may set up to strip the VLAN tag based
-on stale default VLAN information.  If RX VLAN acceleration is
-not enabled, the VLAN tag will be incorrectly stripped and the
-RX data path will not work correctly.
-
-Fixes: cf6645f8ebc6 ("bnxt_en: Add function for VF driver to query default VLAN.")
+Fixes: acfb50e4e773 ("bnxt_en: Add FW fatal devlink_health_reporter.")
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
 Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 4aa490cb2fe0..2d39b43ee7cd 100644
+index 2d39b43ee7cd..5c8d409d7af8 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8813,6 +8813,9 @@ static int bnxt_init_chip(struct bnxt *bp, bool irq_re_init)
- 		goto err_out;
+@@ -11602,6 +11602,7 @@ static void bnxt_tx_timeout(struct net_device *dev, unsigned int txqueue)
+ static void bnxt_fw_health_check(struct bnxt *bp)
+ {
+ 	struct bnxt_fw_health *fw_health = bp->fw_health;
++	struct pci_dev *pdev = bp->pdev;
+ 	u32 val;
+ 
+ 	if (!fw_health->enabled || test_bit(BNXT_STATE_IN_FW_RESET, &bp->state))
+@@ -11615,7 +11616,7 @@ static void bnxt_fw_health_check(struct bnxt *bp)
  	}
  
-+	if (BNXT_VF(bp))
-+		bnxt_hwrm_func_qcfg(bp);
-+
- 	rc = bnxt_setup_vnic(bp, 0);
- 	if (rc)
- 		goto err_out;
+ 	val = bnxt_fw_health_readl(bp, BNXT_FW_HEARTBEAT_REG);
+-	if (val == fw_health->last_fw_heartbeat) {
++	if (val == fw_health->last_fw_heartbeat && pci_device_is_present(pdev)) {
+ 		fw_health->arrests++;
+ 		goto fw_reset;
+ 	}
+@@ -11623,7 +11624,7 @@ static void bnxt_fw_health_check(struct bnxt *bp)
+ 	fw_health->last_fw_heartbeat = val;
+ 
+ 	val = bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
+-	if (val != fw_health->last_fw_reset_cnt) {
++	if (val != fw_health->last_fw_reset_cnt && pci_device_is_present(pdev)) {
+ 		fw_health->discoveries++;
+ 		goto fw_reset;
+ 	}
 -- 
 2.30.1
 
 
---0000000000000bb74405fd8573a1
+--0000000000002a758105fd857336
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -198,14 +208,14 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIT6mPOT/P74ood19YPpXEd2A6fwxu65
-0MQikrjVxifHMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYw
-NzA3NTQ0NlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINAq12AeF1UNc/8E1uSFpPvNn9Apj8Fy
+/1SImh8maYb/MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYw
+NzA3NTQ0OFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQALH5zbMAmptC0wiia0wA0hH2HS5FOnNsUnQsefOAvfhX/fUScN
-54NBxtpQAKvbs6NE3sZTZtr0jLzo5nmXtyTUUU+fR3tQfJzzWykbSmxwy2BOSmsDC70XxT41nXMJ
-8YTzLzhImMSld4grwSThfwuSByvX6RVznba8DxiIFWQIuMmGMw20Rfej833NXvny+3EAwo8q0OMm
-zlTfZ3GglFl1pu+DFaC8PNPFsjiAv+gpmsI5VOM5mwA8w4VFU/RAORByYUFqw0JrSdIg2MuTOGcP
-9lQvAfSQk+WhERG4eNHucW4vrCnmuQI6YfZi4tdOWihydDtBg0pybtVeJ4GK4oiH
---0000000000000bb74405fd8573a1--
+ATANBgkqhkiG9w0BAQEFAASCAQAL1ERaKq1BVC61zf5XlT7WBIYOEYpWAkxjzNCHYFeeW+9iWPgL
+AcINK64Ge2K3xc9wfLKXkdPdyXHM6MczONwNqif1pGL0j1IOXPSum7XGut77YWz+jhecoJLl3s7n
+4UmIAnoi9+AkDnoSX2ednUqY1sw/m7JTF0iNGYR1X7LFdnmCcMP5eku1+wuEpxx3PAu+70bfsNCr
+KY1uYLPJytjAt0fZH//ZZcgcDXWzememaurB3TeZJsvi07Z5BhQKa6nGoijj9RqR7oh4CfkBObv9
+rhEVJGliVHgXEuZwpnq8hVzpzalnwZUxtpu1T+Um50k0MfUCX4QXc64XqZLzZwvj
+--0000000000002a758105fd857336--
 
