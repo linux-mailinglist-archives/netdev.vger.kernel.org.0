@@ -1,49 +1,49 @@
-Return-Path: <netdev+bounces-8999-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9000-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 76E39726857
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 20:20:34 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A208D72685D
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 20:20:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B3329281485
-	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 18:20:32 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EC0F11C20EA7
+	for <lists+netdev@lfdr.de>; Wed,  7 Jun 2023 18:20:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D2F93923C;
-	Wed,  7 Jun 2023 18:19:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AAF2D39247;
+	Wed,  7 Jun 2023 18:19:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6279D39220
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 18:19:46 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA0010D7
-	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 11:19:44 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A051639220
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 18:19:47 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A908B1FC3
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 11:19:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686161983;
+	s=mimecast20190719; t=1686161984;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=JYxfz2KU2rDSnmTtDbyA2cmeEZ/0Wy2M8yN6PdMuUwk=;
-	b=JXNucl9ZD8u+kZEJojjgbqSmmzCFpd1dZgw0wbpuse+3uEWzHzbeaFAN0SzdrZkDN1NKKP
-	A0naBZ6QBo1HONRkQ2bxyzCaCj0qBX4h+ZsXirVSY2DG7AW9M46MrrC5mtVjsZdByCAsOx
-	a+3XTDXjhIdbUoBbIiXLKd1NVsQ9ltk=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=OL+TnlQNDjtbdgR92AyZlN3k/q2TbFv+1S0kh3gXGzs=;
+	b=izEH8nlj8wOMl1gqQZlQtLJeGyEg8CgqGO6RG59FTRsbUTINJdkKc1DNpO6NwyKT4uFBOY
+	aEnnsmYPOmuDLB9OSvH4KUBcLPZreNK9HOWVluLuVfrFy5d6nHJtTohb0KkZRjouVjrMLt
+	uqipZLzfygiENb2gLMVIhAVXP71hriQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-507-hsnqYwbtNHan5Bnn4xTm2w-1; Wed, 07 Jun 2023 14:19:37 -0400
-X-MC-Unique: hsnqYwbtNHan5Bnn4xTm2w-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+ us-mta-480-BNnBFgYAMHmHweMCL8Mjlg-1; Wed, 07 Jun 2023 14:19:41 -0400
+X-MC-Unique: BNnBFgYAMHmHweMCL8Mjlg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 104C13802139;
-	Wed,  7 Jun 2023 18:19:37 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 525B5811E7F;
+	Wed,  7 Jun 2023 18:19:40 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 15D3C9E8D;
-	Wed,  7 Jun 2023 18:19:33 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id C4BF82166B25;
+	Wed,  7 Jun 2023 18:19:37 +0000 (UTC)
 From: David Howells <dhowells@redhat.com>
 To: netdev@vger.kernel.org,
 	Linus Torvalds <torvalds@linux-foundation.org>
@@ -60,10 +60,18 @@ Cc: David Howells <dhowells@redhat.com>,
 	Matthew Wilcox <willy@infradead.org>,
 	Jens Axboe <axboe@kernel.dk>,
 	linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v6 03/14] splice, net: Use sendmsg(MSG_SPLICE_PAGES) rather than ->sendpage()
-Date: Wed,  7 Jun 2023 19:19:09 +0100
-Message-ID: <20230607181920.2294972-4-dhowells@redhat.com>
+	linux-kernel@vger.kernel.org,
+	Christoph Hellwig <hch@lst.de>,
+	Al Viro <viro@zeniv.linux.org.uk>,
+	Jan Kara <jack@suse.cz>,
+	Jeff Layton <jlayton@kernel.org>,
+	David Hildenbrand <david@redhat.com>,
+	Christian Brauner <brauner@kernel.org>,
+	linux-fsdevel@vger.kernel.org,
+	linux-block@vger.kernel.org
+Subject: [PATCH net-next v6 04/14] splice, net: Add a splice_eof op to file-ops and socket-ops
+Date: Wed,  7 Jun 2023 19:19:10 +0100
+Message-ID: <20230607181920.2294972-5-dhowells@redhat.com>
 In-Reply-To: <20230607181920.2294972-1-dhowells@redhat.com>
 References: <20230607181920.2294972-1-dhowells@redhat.com>
 Precedence: bulk
@@ -73,7 +81,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
@@ -81,325 +89,208 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Replace generic_splice_sendpage() + splice_from_pipe + pipe_to_sendpage()
-with a net-specific handler, splice_to_socket(), that calls sendmsg() with
-MSG_SPLICE_PAGES set instead of calling ->sendpage().
+Add an optional method, ->splice_eof(), to allow splice to indicate the
+premature termination of a splice to struct file_operations and struct
+proto_ops.
 
-MSG_MORE is used to indicate if the sendmsg() is expected to be followed
-with more data.
+This is called if sendfile() or splice() encounters all of the following
+conditions inside splice_direct_to_actor():
 
-This allows multiple pipe-buffer pages to be passed in a single call in a
-BVEC iterator, allowing the processing to be pushed down to a loop in the
-protocol driver.  This helps pave the way for passing multipage folios down
-too.
+ (1) the user did not set SPLICE_F_MORE (splice only), and
 
-Protocols that haven't been converted to handle MSG_SPLICE_PAGES yet should
-just ignore it and do a normal sendmsg() for now - although that may be a
-bit slower as it may copy everything.
+ (2) an EOF condition occurred (->splice_read() returned 0), and
 
+ (3) we haven't read enough to fulfill the request (ie. len > 0 still), and
+
+ (4) we have already spliced at least one byte.
+
+A further patch will modify the behaviour of SPLICE_F_MORE to always be
+passed to the actor if either the user set it or we haven't yet read
+sufficient data to fulfill the request.
+
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Link: https://lore.kernel.org/r/CAHk-=wh=V579PDYvkpnTobCLGczbgxpMgGmmhqiTyE34Cpi5Gg@mail.gmail.com/
 Signed-off-by: David Howells <dhowells@redhat.com>
 Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-cc: "David S. Miller" <davem@davemloft.net>
-cc: Eric Dumazet <edumazet@google.com>
-cc: Paolo Abeni <pabeni@redhat.com>
 cc: Jens Axboe <axboe@kernel.dk>
+cc: Christoph Hellwig <hch@lst.de>
+cc: Al Viro <viro@zeniv.linux.org.uk>
 cc: Matthew Wilcox <willy@infradead.org>
+cc: Jan Kara <jack@suse.cz>
+cc: Jeff Layton <jlayton@kernel.org>
+cc: David Hildenbrand <david@redhat.com>
+cc: Christian Brauner <brauner@kernel.org>
+cc: Chuck Lever <chuck.lever@oracle.com>
+cc: Boris Pismenny <borisp@nvidia.com>
+cc: John Fastabend <john.fastabend@gmail.com>
+cc: Eric Dumazet <edumazet@google.com>
+cc: "David S. Miller" <davem@davemloft.net>
+cc: Paolo Abeni <pabeni@redhat.com>
+cc: linux-fsdevel@vger.kernel.org
+cc: linux-block@vger.kernel.org
+cc: linux-mm@kvack.org
 cc: netdev@vger.kernel.org
 ---
-
-Notes:
-    ver #5)
-     - Preclear ret just in case len is 0.
-
- fs/splice.c            | 158 +++++++++++++++++++++++++++++++++--------
- include/linux/fs.h     |   2 -
- include/linux/splice.h |   2 +
- net/socket.c           |  26 +------
- 4 files changed, 131 insertions(+), 57 deletions(-)
+ fs/splice.c            | 31 ++++++++++++++++++++++++++++++-
+ include/linux/fs.h     |  1 +
+ include/linux/net.h    |  1 +
+ include/linux/splice.h |  1 +
+ include/net/sock.h     |  1 +
+ net/socket.c           | 10 ++++++++++
+ 6 files changed, 44 insertions(+), 1 deletion(-)
 
 diff --git a/fs/splice.c b/fs/splice.c
-index 3e06611d19ae..e337630aed64 100644
+index e337630aed64..67dbd85db207 100644
 --- a/fs/splice.c
 +++ b/fs/splice.c
-@@ -33,6 +33,7 @@
- #include <linux/fsnotify.h>
- #include <linux/security.h>
- #include <linux/gfp.h>
-+#include <linux/net.h>
- #include <linux/socket.h>
- #include <linux/sched/signal.h>
+@@ -969,6 +969,17 @@ static long do_splice_from(struct pipe_inode_info *pipe, struct file *out,
+ 	return out->f_op->splice_write(pipe, out, ppos, len, flags);
+ }
  
-@@ -448,30 +449,6 @@ const struct pipe_buf_operations nosteal_pipe_buf_ops = {
- };
- EXPORT_SYMBOL(nosteal_pipe_buf_ops);
- 
--/*
-- * Send 'sd->len' bytes to socket from 'sd->file' at position 'sd->pos'
-- * using sendpage(). Return the number of bytes sent.
-- */
--static int pipe_to_sendpage(struct pipe_inode_info *pipe,
--			    struct pipe_buffer *buf, struct splice_desc *sd)
--{
--	struct file *file = sd->u.file;
--	loff_t pos = sd->pos;
--	int more;
--
--	if (!likely(file->f_op->sendpage))
--		return -EINVAL;
--
--	more = (sd->flags & SPLICE_F_MORE) ? MSG_MORE : 0;
--
--	if (sd->len < sd->total_len &&
--	    pipe_occupancy(pipe->head, pipe->tail) > 1)
--		more |= MSG_SENDPAGE_NOTLAST;
--
--	return file->f_op->sendpage(file, buf->page, buf->offset,
--				    sd->len, &pos, more);
--}
--
- static void wakeup_pipe_writers(struct pipe_inode_info *pipe)
- {
- 	smp_mb();
-@@ -652,7 +629,7 @@ static void splice_from_pipe_end(struct pipe_inode_info *pipe, struct splice_des
-  * Description:
-  *    This function does little more than loop over the pipe and call
-  *    @actor to do the actual moving of a single struct pipe_buffer to
-- *    the desired destination. See pipe_to_file, pipe_to_sendpage, or
-+ *    the desired destination. See pipe_to_file, pipe_to_sendmsg, or
-  *    pipe_to_user.
-  *
-  */
-@@ -833,8 +810,9 @@ iter_file_splice_write(struct pipe_inode_info *pipe, struct file *out,
- 
- EXPORT_SYMBOL(iter_file_splice_write);
- 
-+#ifdef CONFIG_NET
- /**
-- * generic_splice_sendpage - splice data from a pipe to a socket
-+ * splice_to_socket - splice data from a pipe to a socket
-  * @pipe:	pipe to splice from
-  * @out:	socket to write to
-  * @ppos:	position in @out
-@@ -846,13 +824,131 @@ EXPORT_SYMBOL(iter_file_splice_write);
-  *    is involved.
-  *
-  */
--ssize_t generic_splice_sendpage(struct pipe_inode_info *pipe, struct file *out,
--				loff_t *ppos, size_t len, unsigned int flags)
-+ssize_t splice_to_socket(struct pipe_inode_info *pipe, struct file *out,
-+			 loff_t *ppos, size_t len, unsigned int flags)
- {
--	return splice_from_pipe(pipe, out, ppos, len, flags, pipe_to_sendpage);
--}
-+	struct socket *sock = sock_from_file(out);
-+	struct bio_vec bvec[16];
-+	struct msghdr msg = {};
-+	ssize_t ret = 0;
-+	size_t spliced = 0;
-+	bool need_wakeup = false;
-+
-+	pipe_lock(pipe);
-+
-+	while (len > 0) {
-+		unsigned int head, tail, mask, bc = 0;
-+		size_t remain = len;
-+
-+		/*
-+		 * Check for signal early to make process killable when there
-+		 * are always buffers available
-+		 */
-+		ret = -ERESTARTSYS;
-+		if (signal_pending(current))
-+			break;
- 
--EXPORT_SYMBOL(generic_splice_sendpage);
-+		while (pipe_empty(pipe->head, pipe->tail)) {
-+			ret = 0;
-+			if (!pipe->writers)
-+				goto out;
-+
-+			if (spliced)
-+				goto out;
-+
-+			ret = -EAGAIN;
-+			if (flags & SPLICE_F_NONBLOCK)
-+				goto out;
-+
-+			ret = -ERESTARTSYS;
-+			if (signal_pending(current))
-+				goto out;
-+
-+			if (need_wakeup) {
-+				wakeup_pipe_writers(pipe);
-+				need_wakeup = false;
-+			}
-+
-+			pipe_wait_readable(pipe);
-+		}
-+
-+		head = pipe->head;
-+		tail = pipe->tail;
-+		mask = pipe->ring_size - 1;
-+
-+		while (!pipe_empty(head, tail)) {
-+			struct pipe_buffer *buf = &pipe->bufs[tail & mask];
-+			size_t seg;
-+
-+			if (!buf->len) {
-+				tail++;
-+				continue;
-+			}
-+
-+			seg = min_t(size_t, remain, buf->len);
-+			seg = min_t(size_t, seg, PAGE_SIZE);
-+
-+			ret = pipe_buf_confirm(pipe, buf);
-+			if (unlikely(ret)) {
-+				if (ret == -ENODATA)
-+					ret = 0;
-+				break;
-+			}
-+
-+			bvec_set_page(&bvec[bc++], buf->page, seg, buf->offset);
-+			remain -= seg;
-+			if (seg >= buf->len)
-+				tail++;
-+			if (bc >= ARRAY_SIZE(bvec))
-+				break;
-+		}
-+
-+		if (!bc)
-+			break;
-+
-+		msg.msg_flags = MSG_SPLICE_PAGES;
-+		if (flags & SPLICE_F_MORE)
-+			msg.msg_flags |= MSG_MORE;
-+		if (remain && pipe_occupancy(pipe->head, tail) > 0)
-+			msg.msg_flags |= MSG_MORE;
-+
-+		iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, bvec, bc,
-+			      len - remain);
-+		ret = sock_sendmsg(sock, &msg);
-+		if (ret <= 0)
-+			break;
-+
-+		spliced += ret;
-+		len -= ret;
-+		tail = pipe->tail;
-+		while (ret > 0) {
-+			struct pipe_buffer *buf = &pipe->bufs[tail & mask];
-+			size_t seg = min_t(size_t, ret, buf->len);
-+
-+			buf->offset += seg;
-+			buf->len -= seg;
-+			ret -= seg;
-+
-+			if (!buf->len) {
-+				pipe_buf_release(pipe, buf);
-+				tail++;
-+			}
-+		}
-+
-+		if (tail != pipe->tail) {
-+			pipe->tail = tail;
-+			if (pipe->files)
-+				need_wakeup = true;
-+		}
-+	}
-+
-+out:
-+	pipe_unlock(pipe);
-+	if (need_wakeup)
-+		wakeup_pipe_writers(pipe);
-+	return spliced ?: ret;
++/*
++ * Indicate to the caller that there was a premature EOF when reading from the
++ * source and the caller didn't indicate they would be sending more data after
++ * this.
++ */
++static void do_splice_eof(struct splice_desc *sd)
++{
++	if (sd->splice_eof)
++		sd->splice_eof(sd);
 +}
-+#endif
++
+ /*
+  * Attempt to initiate a splice from a file to a pipe.
+  */
+@@ -1068,7 +1079,7 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
  
- static int warn_unsupported(struct file *file, const char *op)
- {
+ 		ret = do_splice_to(in, &pos, pipe, len, flags);
+ 		if (unlikely(ret <= 0))
+-			goto out_release;
++			goto read_failure;
+ 
+ 		read_len = ret;
+ 		sd->total_len = read_len;
+@@ -1108,6 +1119,15 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
+ 	file_accessed(in);
+ 	return bytes;
+ 
++read_failure:
++	/*
++	 * If the user did *not* set SPLICE_F_MORE *and* we didn't hit that
++	 * "use all of len" case that cleared SPLICE_F_MORE, *and* we did a
++	 * "->splice_in()" that returned EOF (ie zero) *and* we have sent at
++	 * least 1 byte *then* we will also do the ->splice_eof() call.
++	 */
++	if (ret == 0 && !more && len > 0 && bytes)
++		do_splice_eof(sd);
+ out_release:
+ 	/*
+ 	 * If we did an incomplete transfer we must release
+@@ -1136,6 +1156,14 @@ static int direct_splice_actor(struct pipe_inode_info *pipe,
+ 			      sd->flags);
+ }
+ 
++static void direct_file_splice_eof(struct splice_desc *sd)
++{
++	struct file *file = sd->u.file;
++
++	if (file->f_op->splice_eof)
++		file->f_op->splice_eof(file);
++}
++
+ /**
+  * do_splice_direct - splices data directly between two files
+  * @in:		file to splice from
+@@ -1161,6 +1189,7 @@ long do_splice_direct(struct file *in, loff_t *ppos, struct file *out,
+ 		.flags		= flags,
+ 		.pos		= *ppos,
+ 		.u.file		= out,
++		.splice_eof	= direct_file_splice_eof,
+ 		.opos		= opos,
+ 	};
+ 	long ret;
 diff --git a/include/linux/fs.h b/include/linux/fs.h
-index 133f0640fb24..df92f4b3d122 100644
+index df92f4b3d122..de2cb1132f07 100644
 --- a/include/linux/fs.h
 +++ b/include/linux/fs.h
-@@ -2759,8 +2759,6 @@ extern ssize_t generic_file_splice_read(struct file *, loff_t *,
- 		struct pipe_inode_info *, size_t, unsigned int);
- extern ssize_t iter_file_splice_write(struct pipe_inode_info *,
- 		struct file *, loff_t *, size_t, unsigned int);
--extern ssize_t generic_splice_sendpage(struct pipe_inode_info *pipe,
--		struct file *out, loff_t *, size_t len, unsigned int flags);
- extern long do_splice_direct(struct file *in, loff_t *ppos, struct file *out,
- 		loff_t *opos, size_t len, unsigned int flags);
+@@ -1796,6 +1796,7 @@ struct file_operations {
+ 	int (*flock) (struct file *, int, struct file_lock *);
+ 	ssize_t (*splice_write)(struct pipe_inode_info *, struct file *, loff_t *, size_t, unsigned int);
+ 	ssize_t (*splice_read)(struct file *, loff_t *, struct pipe_inode_info *, size_t, unsigned int);
++	void (*splice_eof)(struct file *file);
+ 	int (*setlease)(struct file *, long, struct file_lock **, void **);
+ 	long (*fallocate)(struct file *file, int mode, loff_t offset,
+ 			  loff_t len);
+diff --git a/include/linux/net.h b/include/linux/net.h
+index b73ad8e3c212..8defc8f1d82e 100644
+--- a/include/linux/net.h
++++ b/include/linux/net.h
+@@ -210,6 +210,7 @@ struct proto_ops {
+ 				      int offset, size_t size, int flags);
+ 	ssize_t 	(*splice_read)(struct socket *sock,  loff_t *ppos,
+ 				       struct pipe_inode_info *pipe, size_t len, unsigned int flags);
++	void		(*splice_eof)(struct socket *sock);
+ 	int		(*set_peek_off)(struct sock *sk, int val);
+ 	int		(*peek_len)(struct socket *sock);
  
 diff --git a/include/linux/splice.h b/include/linux/splice.h
-index a55179fd60fc..991ae318b6eb 100644
+index 991ae318b6eb..4fab18a6e371 100644
 --- a/include/linux/splice.h
 +++ b/include/linux/splice.h
-@@ -84,6 +84,8 @@ extern long do_splice(struct file *in, loff_t *off_in,
- 
- extern long do_tee(struct file *in, struct file *out, size_t len,
- 		   unsigned int flags);
-+extern ssize_t splice_to_socket(struct pipe_inode_info *pipe, struct file *out,
-+				loff_t *ppos, size_t len, unsigned int flags);
- 
- /*
-  * for dynamic pipe sizing
+@@ -38,6 +38,7 @@ struct splice_desc {
+ 		struct file *file;	/* file to read/write */
+ 		void *data;		/* cookie */
+ 	} u;
++	void (*splice_eof)(struct splice_desc *sd); /* Unexpected EOF handler */
+ 	loff_t pos;			/* file position */
+ 	loff_t *opos;			/* sendfile: output position */
+ 	size_t num_spliced;		/* number of bytes already spliced */
+diff --git a/include/net/sock.h b/include/net/sock.h
+index b418425d7230..ae2d74a0bc4c 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1271,6 +1271,7 @@ struct proto {
+ 					   size_t len, int flags, int *addr_len);
+ 	int			(*sendpage)(struct sock *sk, struct page *page,
+ 					int offset, size_t size, int flags);
++	void			(*splice_eof)(struct socket *sock);
+ 	int			(*bind)(struct sock *sk,
+ 					struct sockaddr *addr, int addr_len);
+ 	int			(*bind_add)(struct sock *sk,
 diff --git a/net/socket.c b/net/socket.c
-index 3df96e9ba4e2..c4d9104418c8 100644
+index c4d9104418c8..b778fc03c6e0 100644
 --- a/net/socket.c
 +++ b/net/socket.c
-@@ -57,6 +57,7 @@
- #include <linux/mm.h>
- #include <linux/socket.h>
- #include <linux/file.h>
-+#include <linux/splice.h>
- #include <linux/net.h>
- #include <linux/interrupt.h>
- #include <linux/thread_info.h>
-@@ -126,8 +127,6 @@ static long compat_sock_ioctl(struct file *file,
- 			      unsigned int cmd, unsigned long arg);
- #endif
- static int sock_fasync(int fd, struct file *filp, int on);
--static ssize_t sock_sendpage(struct file *file, struct page *page,
--			     int offset, size_t size, loff_t *ppos, int more);
+@@ -130,6 +130,7 @@ static int sock_fasync(int fd, struct file *filp, int on);
  static ssize_t sock_splice_read(struct file *file, loff_t *ppos,
  				struct pipe_inode_info *pipe, size_t len,
  				unsigned int flags);
-@@ -162,8 +161,7 @@ static const struct file_operations socket_file_ops = {
- 	.mmap =		sock_mmap,
- 	.release =	sock_close,
++static void sock_splice_eof(struct file *file);
+ 
+ #ifdef CONFIG_PROC_FS
+ static void sock_show_fdinfo(struct seq_file *m, struct file *f)
+@@ -163,6 +164,7 @@ static const struct file_operations socket_file_ops = {
  	.fasync =	sock_fasync,
--	.sendpage =	sock_sendpage,
--	.splice_write = generic_splice_sendpage,
-+	.splice_write = splice_to_socket,
+ 	.splice_write = splice_to_socket,
  	.splice_read =	sock_splice_read,
++	.splice_eof =	sock_splice_eof,
  	.show_fdinfo =	sock_show_fdinfo,
  };
-@@ -1066,26 +1064,6 @@ int kernel_recvmsg(struct socket *sock, struct msghdr *msg,
- }
- EXPORT_SYMBOL(kernel_recvmsg);
  
--static ssize_t sock_sendpage(struct file *file, struct page *page,
--			     int offset, size_t size, loff_t *ppos, int more)
--{
--	struct socket *sock;
--	int flags;
--	int ret;
--
--	sock = file->private_data;
--
--	flags = (file->f_flags & O_NONBLOCK) ? MSG_DONTWAIT : 0;
--	/* more is a combination of MSG_MORE and MSG_SENDPAGE_NOTLAST */
--	flags |= more;
--
--	ret = kernel_sendpage(sock, page, offset, size, flags);
--
--	if (trace_sock_send_length_enabled())
--		call_trace_sock_send_length(sock->sk, ret, 0);
--	return ret;
--}
--
- static ssize_t sock_splice_read(struct file *file, loff_t *ppos,
- 				struct pipe_inode_info *pipe, size_t len,
- 				unsigned int flags)
+@@ -1076,6 +1078,14 @@ static ssize_t sock_splice_read(struct file *file, loff_t *ppos,
+ 	return sock->ops->splice_read(sock, ppos, pipe, len, flags);
+ }
+ 
++static void sock_splice_eof(struct file *file)
++{
++	struct socket *sock = file->private_data;
++
++	if (sock->ops->splice_eof)
++		sock->ops->splice_eof(sock);
++}
++
+ static ssize_t sock_read_iter(struct kiocb *iocb, struct iov_iter *to)
+ {
+ 	struct file *file = iocb->ki_filp;
 
 
