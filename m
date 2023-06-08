@@ -1,130 +1,129 @@
-Return-Path: <netdev+bounces-9243-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9244-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D72C87282D2
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:36:00 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0CAF67282DC
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:37:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3AC1F1C20FD7
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 14:35:57 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6C3041C20A5B
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 14:37:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DBEEC10975;
-	Thu,  8 Jun 2023 14:35:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2F3BA1118F;
+	Thu,  8 Jun 2023 14:37:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE699C2DA
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 14:35:57 +0000 (UTC)
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1872D58;
-	Thu,  8 Jun 2023 07:35:52 -0700 (PDT)
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-3f732d37d7cso6156945e9.2;
-        Thu, 08 Jun 2023 07:35:52 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2426528F3
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 14:37:30 +0000 (UTC)
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5B0273A
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 07:37:28 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id 5614622812f47-39a3f2668d5so482512b6e.1
+        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 07:37:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1686235047; x=1688827047;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Wkp11mGb7Y6Wz5I0W/WSpFxDQu84gcRYJNkM5DBTCVo=;
+        b=PqCk0/um1V9YbdSUxSlKPYPemv5fpxy3njVZOYlvJ2iUpiIXdToN4GoWp5nvnpdKb3
+         O2cM6Rl7598kOscoWt9Qs1ZQxcLnLBWOL+bLwx9Il1r9N12fAIhb7FOTrAOuIF2mwkOl
+         vv9VguCEHFoCk5KtURTfj3UEtjVnaua7Pt/mMbMKur2Y79wfHwrSVSZVf1mqGyw+mmKM
+         s4u/MyQd9jcrzh97QZPdFMM95klWruvTVGSUnu525xdQG4zyw8oimNDPpV8oanXoupdT
+         7qHu876oBgozkbgJrX7B7NK4WDB3biz8DI8g693qaM58TsxU12nyGBHlLjREhjv3URXI
+         Oc3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686234951; x=1688826951;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=40BlcYIOiCiG2tmKHXdb8ewCMjsbNxSjJq3O+2btqpQ=;
-        b=LVrKO6oUKvcg8/2nyEi5q5+WzyFpfXLtC9snIpVkUhAF/im6GPJ9K1UHCkpj3grB7i
-         Tga1U0dBib2zApXx2OAuv4qnBbIRYP+Zp+pQz7juSH74Bqv2ggKKvImI9gi1dyKxO+a0
-         WZ8K8GJyV2pElh6tPS0H7FvPJNgRTmk36qRWGy07BY6JbkvMtBhsjLiRHNortriPPEiK
-         tVV4VYD3ELDTAvCL8LgkQsqudKFsOlczE1r9jY07Pu2PwvTyX2pMxNKpDV/72LDtsVJD
-         9DUmRM0itaOUoPRDPLce+z26UaJx5r7RtLoiwHt1ZspbI/fw7SIZ3zSHB0f+CLjMDF+y
-         Hmqg==
-X-Gm-Message-State: AC+VfDzFYv4Os6ikUPuim7meOkSrFWoM2rHKy33n8MVaIGSVIiDuocVf
-	SZ2E+4ruHgz0f6tcVjzENdY=
-X-Google-Smtp-Source: ACHHUZ7lcmNByqTAh5kYMjYbTAGup97yib7alUhZBsoWDIpWRK0lV++ETpqXpbGcOWVV1+uiD32naw==
-X-Received: by 2002:a05:600c:21cf:b0:3f6:143:7c4b with SMTP id x15-20020a05600c21cf00b003f601437c4bmr1728617wmj.6.1686234951071;
-        Thu, 08 Jun 2023 07:35:51 -0700 (PDT)
-Received: from gmail.com (fwdproxy-cln-027.fbsv.net. [2a03:2880:31ff:1b::face:b00c])
-        by smtp.gmail.com with ESMTPSA id s5-20020a7bc385000000b003f7e60622f0sm2212389wmj.6.2023.06.08.07.35.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jun 2023 07:35:50 -0700 (PDT)
-Date: Thu, 8 Jun 2023 07:35:48 -0700
-From: Breno Leitao <leitao@debian.org>
-To: Paolo Abeni <pabeni@redhat.com>
-Cc: Kuniyuki Iwashima <kuniyu@amazon.com>, alex.aring@gmail.com,
-	andrea.righi@canonical.com, asml.silence@gmail.com, ast@kernel.org,
-	axboe@kernel.dk, courmisch@gmail.com, davem@davemloft.net,
-	dccp@vger.kernel.org, dsahern@kernel.org, edumazet@google.com,
-	gnault@redhat.com, hbh25y@gmail.com, joannelkoong@gmail.com,
-	kernelxing@tencent.com, kuba@kernel.org, leit@fb.com,
-	linux-kernel@vger.kernel.org, linux-sctp@vger.kernel.org,
-	linux-wpan@vger.kernel.org, lucien.xin@gmail.com,
-	marcelo.leitner@gmail.com, martin.lau@kernel.org,
-	martineau@kernel.org, matthieu.baerts@tessares.net,
-	miquel.raynal@bootlin.com, mptcp@lists.linux.dev,
-	netdev@vger.kernel.org, stefan@datenfreihafen.org,
-	willemdebruijn.kernel@gmail.com, wojciech.drewek@intel.com
-Subject: Re: [PATCH net-next v6] net: ioctl: Use kernel memory on protocol
- ioctl callbacks
-Message-ID: <ZIHnRFu0ceUxOOvg@gmail.com>
-References: <20230606180045.827659-1-leitao@debian.org>
- <20230607173142.86395-1-kuniyu@amazon.com>
- <ZIGUofpP4k24qfQs@gmail.com>
- <5bd6ced877e97ac674d1308eab0b8d2107b7ab85.camel@redhat.com>
+        d=1e100.net; s=20221208; t=1686235047; x=1688827047;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Wkp11mGb7Y6Wz5I0W/WSpFxDQu84gcRYJNkM5DBTCVo=;
+        b=QG8Wogrj+gSS21VLP0E+vEV/Z2T9py5zMU/YqW3BIY4gnwgC/+dfQEx532G2YPJnp5
+         WAE4pjEx4OIqPuVMbek63K0XsBZezb/fLTCKrpIDG6X/Vw+b6HSpbF9PUFUKtIMY/BlU
+         cAYdv8KUpmALinnjij26pPkyjDUESJZYTZugev/HVwxutJJmezXGgPlpxb06oRzuosb2
+         9AMGfR63pijdkthSA1mht9F1Y1G2WoI9lDnXmQOL2dehZV76BDUNio/8NDTGz8k15f48
+         Rlf0bvL8RSxz424MNbskLZmpOjyJExQzYDWT4KyxwlvyzDsfF1XRm84Vp7DNuWTdMviO
+         yEmw==
+X-Gm-Message-State: AC+VfDyjvZh1+A/fec+LhQISvrAcsyxVpzRDtmqdD21jTAizXf+HKZ7i
+	zZ/4zSNM5toM56QfjUZH/6tAlQ==
+X-Google-Smtp-Source: ACHHUZ4J3AFGTu/bJU7e4t/xvlV3P5k9aTl87g6TKaQaasrbQ1nS3MOt0NOGdCh4noHJB46Qq0bJKQ==
+X-Received: by 2002:aca:1a0b:0:b0:39a:9e6e:9a9d with SMTP id a11-20020aca1a0b000000b0039a9e6e9a9dmr5666744oia.8.1686235047614;
+        Thu, 08 Jun 2023 07:37:27 -0700 (PDT)
+Received: from ?IPV6:2804:14d:5c5e:44fb:bbfb:717f:472:7a01? ([2804:14d:5c5e:44fb:bbfb:717f:472:7a01])
+        by smtp.gmail.com with ESMTPSA id z2-20020aca3302000000b0038ee0c3b38esm495764oiz.44.2023.06.08.07.37.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Jun 2023 07:37:27 -0700 (PDT)
+Message-ID: <a25ab68b-0256-97b3-842e-0840bf2c0013@mojatatu.com>
+Date: Thu, 8 Jun 2023 11:37:22 -0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5bd6ced877e97ac674d1308eab0b8d2107b7ab85.camel@redhat.com>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,FSL_HELO_FAKE,
-	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-	autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH net,v2] net/sched: taprio: fix slab-out-of-bounds Read in
+ taprio_dequeue_from_txq
+Content-Language: en-US
+To: Zhengchao Shao <shaozhengchao@huawei.com>, netdev@vger.kernel.org,
+ vinicius.gomes@intel.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+ jiri@resnulli.us, davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com
+Cc: vladimir.oltean@nxp.com, weiyongjun1@huawei.com, yuehaibing@huawei.com
+References: <20230608062756.3626573-1-shaozhengchao@huawei.com>
+From: Pedro Tammela <pctammela@mojatatu.com>
+In-Reply-To: <20230608062756.3626573-1-shaozhengchao@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 08, 2023 at 03:57:48PM +0200, Paolo Abeni wrote:
-> On Thu, 2023-06-08 at 01:43 -0700, Breno Leitao wrote:
-> > Hello Kuniyuki,
-> > On Wed, Jun 07, 2023 at 10:31:42AM -0700, Kuniyuki Iwashima wrote:
-> > > > +/* This is the most common ioctl prep function, where the result (4 bytes) is
-> > > > + * copied back to userspace if the ioctl() returns successfully. No input is
-> > > > + * copied from userspace as input argument.
-> > > > + */
-> > > > +static int sock_ioctl_out(struct sock *sk, unsigned int cmd, void __user *arg)
-> > > > +{
-> > > > +	int ret, karg = 0;
-> > > > +
-> > > > +	ret = sk->sk_prot->ioctl(sk, cmd, &karg);
-> > > 
-> > > We need READ_ONCE(sk->sk_prot) as IPv4 conversion or ULP chnage could
-> > > occur at the same time.
-> > 
-> > Thanks for the heads-up. I would like to pick you brain and understand
-> > a bit more about READ_ONCE() and what is the situation that READ_ONCE()
-> > will solve.
+On 08/06/2023 03:27, Zhengchao Shao wrote:
+> As shown in [1], out-of-bounds access occurs in two cases:
+> 1)when the qdisc of the taprio type is used to replace the previously
+> configured taprio, count and offset in tc_to_txq can be set to 0. In this
+> case, the value of *txq in taprio_next_tc_txq() will increases
+> continuously. When the number of accessed queues exceeds the number of
+> queues on the device, out-of-bounds access occurs.
+> 2)When packets are dequeued, taprio can be deleted. In this case, the tc
+> rule of dev is cleared. The count and offset values are also set to 0. In
+> this case, out-of-bounds access is also caused.
 > 
-> AFAICS, in this specific case READ_ONCE() should not address any "real"
-> bug causing visible issue.
+> Now the restriction on the queue number is added.
 > 
-> Still the lack of it will likely cause syzkaller report for (harmless,
-> AFAICS) 'data races' around sk->sk_prot. We want to avoid such reports,
-> even if harmless, because they can end-up hiding more relevant bugs.
-> 
-> > Is the situation related to when sock_ioctl_out() start to execute, and
-> > "sk->sk_prot" changes in a different thread? If that is the case, the
-> > arguments (cmd and arg) will be from the "previous" instance.
-> > 
-> > Also, grepping for "sk->sk_prot->", I see more than a bunch of calls
-> > that do not use READ_ONCE() barrier. Why is this case different?
-> 
-> Races on sk->sk_prot can happen only on inet6_stream_ops (due to ulp
-> and/or ADDRFORM) inet6_dgram_ops (due to ADDRFORM). AFAICS here
-> READ_ONCE() is  needed as we can reach here via inet6_stream_ops-
-> >inet6_ioctl
+> [1] https://groups.google.com/g/syzkaller-bugs/c/_lYOKgkBVMg
+> Fixes: 2f530df76c8c ("net/sched: taprio: give higher priority to higher TCs in software dequeue mode")
+> Reported-by: syzbot+04afcb3d2c840447559a@syzkaller.appspotmail.com
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 
-Thanks for the clarification, I will send a v6 with the READ_ONCE().
+Tested-by: Pedro Tammela <pctammela@mojatatu.com>
 
-Breno
+> ---
+> v2: set q->cur_txq[tc] to prevent out-of-bounds access during next dequeue
+> ---
+>   net/sched/sch_taprio.c | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index 3c4c2c334878..82983a6eb8f8 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -799,6 +799,9 @@ static struct sk_buff *taprio_dequeue_tc_priority(struct Qdisc *sch,
+>   
+>   			taprio_next_tc_txq(dev, tc, &q->cur_txq[tc]);
+>   
+> +			if (q->cur_txq[tc] >= dev->num_tx_queues)
+> +				q->cur_txq[tc] = first_txq;
+> +
+>   			if (skb)
+>   				return skb;
+>   		} while (q->cur_txq[tc] != first_txq);
+
 
