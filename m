@@ -1,174 +1,203 @@
-Return-Path: <netdev+bounces-9250-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9283-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D849B72843F
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 17:53:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id BCED17285A2
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:44:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C73551C20FEE
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 15:52:58 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1FE3B1C2104F
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:44:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8601315AC3;
-	Thu,  8 Jun 2023 15:52:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B047617FE2;
+	Thu,  8 Jun 2023 16:43:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77941174CD
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 15:52:04 +0000 (UTC)
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC7530C1;
-	Thu,  8 Jun 2023 08:51:43 -0700 (PDT)
-X-GND-Sasl: maxime.chevallier@bootlin.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1686239502;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=C4HWsGpzkoFGrF2QEu9yk0kkw2l8QL+Vcx0ZQoZOw4Y=;
-	b=TkCouUfK9yU3pOqfJL8pfY9GNp+gYl9ldNM03VgVv9DUkJTiKLn7/EyDPIDe2AONR3ML3M
-	37ZQqHMOpzFLIS5Bof15p4xWSyF5nWpAoEnqFZrdM+Jv/0DoZtb0swRzfL1751Bj7fidP+
-	Lg1Zi8oCc07/ScByUwnpoXrv6r/Sow/5n2gdOKJUw5e95lChqXzhdYSapDoHS65Dgqf6hI
-	5euLD+cBEI3ZmZtZtWmU4duuqmXZ9dmF4YF3r71f13u70mLz5DDr4M1TvdHDqr97LXSYd1
-	tiqO9vr/8Arz2dXSfUiOfVx110roCokdh8klZpciUNXfOvtzkIKpwak/pygZxw==
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-X-GND-Sasl: maxime.chevallier@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id C5B3D60010;
-	Thu,  8 Jun 2023 15:51:40 +0000 (UTC)
-From: Maxime Chevallier <maxime.chevallier@bootlin.com>
-To: davem@davemloft.net
-Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5DC623D7
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 16:43:35 +0000 (UTC)
+Received: from 66-220-144-179.mail-mxout.facebook.com (66-220-144-179.mail-mxout.facebook.com [66.220.144.179])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522CC30E5
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 09:43:17 -0700 (PDT)
+Received: by devbig1114.prn1.facebook.com (Postfix, from userid 425415)
+	id B71BC6BD0FB6; Thu,  8 Jun 2023 09:38:40 -0700 (PDT)
+From: Stefan Roesch <shr@devkernel.io>
+To: io-uring@vger.kernel.org,
+	kernel-team@fb.com
+Cc: shr@devkernel.io,
+	axboe@kernel.dk,
+	ammarfaizi2@gnuweeb.org,
 	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	thomas.petazzoni@bootlin.com,
-	Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	linux-arm-kernel@lists.infradead.org,
-	Horatiu.Vultur@microchip.com,
-	Allan.Nielsen@microchip.com,
-	UNGLinuxDriver@microchip.com,
-	Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net 2/2] net: phylink: use USXGMII control-word format to parse Q-USGMII word
-Date: Thu,  8 Jun 2023 18:34:15 +0200
-Message-Id: <20230608163415.511762-4-maxime.chevallier@bootlin.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230608163415.511762-1-maxime.chevallier@bootlin.com>
-References: <20230608163415.511762-1-maxime.chevallier@bootlin.com>
+	kuba@kernel.org,
+	olivier@trillion01.com
+Subject: [PATCH v15 0/7] io_uring: add napi busy polling support 
+Date: Thu,  8 Jun 2023 09:38:32 -0700
+Message-Id: <20230608163839.2891748-1-shr@devkernel.io>
+X-Mailer: git-send-email 2.39.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,RDNS_DYNAMIC,
+	SPF_HELO_PASS,SPF_NEUTRAL,TVD_RCVD_IP,T_SCC_BODY_TEXT_LINE
+	autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Q-USGMII is a derivative of USGMII, that uses a specific formatting for
-the control word. The layout is close to the USXGMII control word, but
-doesn't support speeds over 1Gbps. Use a dedicated decoding logic for
-the USGMII control word, re-using USXGMII definitions with a custom mask
-and only considering 10/100/1000 speeds
+This adds the napi busy polling support in io_uring.c. It adds a new
+napi_list to the io_ring_ctx structure. This list contains the list of
+napi_id's that are currently enabled for busy polling. This list is
+used to determine which napi id's enabled busy polling. For faster
+access it also adds a hash table.
 
-Fixes: 5e61fe157a27 ("net: phy: Introduce QUSGMII PHY mode")
-Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
----
- drivers/net/phy/phylink.c | 39 ++++++++++++++++++++++++++++++++++++++-
- include/uapi/linux/mdio.h |  3 +++
- 2 files changed, 41 insertions(+), 1 deletion(-)
+When a new napi id is added, the hash table is used to locate if
+the napi id has already been added. When processing the busy poll
+loop the list is used to process the individual elements.
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 809e6d5216dc..730f8860d2a6 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -3298,6 +3298,41 @@ void phylink_decode_usxgmii_word(struct phylink_link_state *state,
- }
- EXPORT_SYMBOL_GPL(phylink_decode_usxgmii_word);
- 
-+/**
-+ * phylink_decode_usgmii_word() - decode the USGMII word from a MAC PCS
-+ * @state: a pointer to a struct phylink_link_state.
-+ * @lpa: a 16 bit value which stores the USGMII auto-negotiation word
-+ *
-+ * Helper for MAC PCS supporting the USGMII protocol and the auto-negotiation
-+ * code word.  Decode the USGMII code word and populate the corresponding fields
-+ * (speed, duplex) into the phylink_link_state structure. The structure for this
-+ * word is the same as the USXGMII word, expect it only supports speeds up to
-+ * 1Gbps.
-+ */
-+static void phylink_decode_usgmii_word(struct phylink_link_state *state,
-+				 uint16_t lpa)
-+{
-+	switch (lpa & MDIO_USGMII_SPD_MASK) {
-+	case MDIO_USXGMII_10:
-+		state->speed = SPEED_10;
-+		break;
-+	case MDIO_USXGMII_100:
-+		state->speed = SPEED_100;
-+		break;
-+	case MDIO_USXGMII_1000:
-+		state->speed = SPEED_1000;
-+		break;
-+	default:
-+		state->link = false;
-+		return;
-+	}
-+
-+	if (lpa & MDIO_USXGMII_FULL_DUPLEX)
-+		state->duplex = DUPLEX_FULL;
-+	else
-+		state->duplex = DUPLEX_HALF;
-+}
-+
- /**
-  * phylink_mii_c22_pcs_decode_state() - Decode MAC PCS state from MII registers
-  * @state: a pointer to a &struct phylink_link_state.
-@@ -3335,9 +3370,11 @@ void phylink_mii_c22_pcs_decode_state(struct phylink_link_state *state,
- 
- 	case PHY_INTERFACE_MODE_SGMII:
- 	case PHY_INTERFACE_MODE_QSGMII:
--	case PHY_INTERFACE_MODE_QUSGMII:
- 		phylink_decode_sgmii_word(state, lpa);
- 		break;
-+	case PHY_INTERFACE_MODE_QUSGMII:
-+		phylink_decode_usgmii_word(state, lpa);
-+		break;
- 
- 	default:
- 		state->link = false;
-diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
-index 256b463e47a6..1d20a9082507 100644
---- a/include/uapi/linux/mdio.h
-+++ b/include/uapi/linux/mdio.h
-@@ -444,4 +444,7 @@ static inline __u16 mdio_phy_id_c45(int prtad, int devad)
- #define MDIO_USXGMII_5000FULL		0x1a00	/* 5000Mbps full-duplex */
- #define MDIO_USXGMII_LINK		0x8000	/* PHY link with copper-side partner */
- 
-+/* Usgmii control word is based on Usxgmii, masking away 2.5, 5 and 10Gbps */
-+#define MDIO_USGMII_SPD_MASK		0x0600
-+
- #endif /* _UAPI__LINUX_MDIO_H__ */
--- 
-2.40.1
+io-uring allows specifying two parameters:
+- busy poll timeout and
+- prefer busy poll to call of io_napi_busy_loop()
+This sets the above parameters for the ring. The settings are passed
+with a new structure io_uring_napi.
+
+There is also a corresponding liburing patch series, which enables this
+feature. The name of the series is "liburing: add add api for napi busy
+poll timeout". It also contains two programs to test the this.
+
+Testing has shown that the round-trip times are reduced to 38us from
+55us by enabling napi busy polling with a busy poll timeout of 100us.
+More detailled results are part of the commit message of the first
+patch.
+
+Changes:
+- V15:
+  - Combined _napi_busy_loop() and __napi_busy_loop() function
+  - Rephrased comment
+- V14:
+  - Rephrased comment for napi_busy_loop_rcu() funnction
+  - Added new function _napi_busy_loop() to remove code
+    duplication in napi_busy_loop() and napi_busy_loop_rcu()
+- V13:
+  - split off __napi_busy_loop() from napi_busy_loop()
+  - introduce napi_busy_loop_no_lock()
+  - use napi_busy_loop_no_lock in io_napi_blocking_busy_loop
+- V12:
+  - introduce io_napi_hash_find()
+  - use rcu for changes to the hash table
+  - use rcu for searching if a napi id is in the napi hash table
+  - use rcu hlist functions for adding and removing items from the hash
+    table
+  - add stale entry detection in __io_napi_do_busy_loop and remove stale
+    entries in io_napi_blocking_busy_loop() and io_napi_sqpoll_busy_loop(=
+)
+  - create io_napi_remove_stale() and __io_napi_remove_stale()
+  - __io_napi_do_busy_loop() takes additional loop_end_arg and does stale
+    entry detection
+  - io_napi_multi_busy_loop is removed. Logic is moved to
+    io_napi_blocking_busy_loop()
+  - io_napi_free uses rcu function to free
+  - io_napi_busy_loop no longer splices
+  - io_napi_sqpoll_busy_poll uses rcu
+- V11:
+  - Fixed long comment lines and whitespace issues
+  - Refactor new code io_cqring_wait()
+  - Refactor io_napi_adjust_timeout() and remove adjust_timeout
+  - Rename io_napi_adjust_timeout to __io_napi_adjust_timeout
+  - Add new function io_napi_adjust_timeout
+  - Cleanup calls to list_is_singular() in io_napi_multi_busy_loop()
+    and io_napi_blocking_busy_loop()
+  - Cleanup io_napi_busy_loop_should_end()
+  - Rename __io_napi_busy_loop to __io_napi_do_busy_loop()=20
+- V10:
+  - Refreshed to io-uring/for-6.4
+  - Repeated performance measurements for 6.4 (same/similar results)
+- V9:
+  - refreshed to io-uring/for-6.3
+  - folded patch 2 and 3 into patch 4
+  - fixed commit description for last 2 patches
+  - fixed some whitespace issues
+  - removed io_napi_busy_loop_on helper
+  - removed io_napi_setup_busy helper
+  - renamed io_napi_end_busy_loop to io_napi_busy_loop
+  - removed NAPI_LIST_HEAD macro
+  - split io_napi_blocking_busy_loop into two functions
+  - added io_napi function
+  - comment for sqpoll check
+- V8:
+  - added new file napi.c and add napi functions to this file
+  - added NAPI_LIST_HEAD function so no ifdef is necessary
+  - added io_napi_init and io_napi_free function
+  - added io_napi_setup_busy loop helper function
+  - added io_napi_adjust_busy_loop helper function
+  - added io_napi_end_busy_loop helper function
+  - added io_napi_sqpoll_busy_poll helper function
+  - some of the definitions in napi.h are macros to avoid ifdef
+    definitions in io_uring.c, poll.c and sqpoll.c
+  - changed signature of io_napi_add function
+  - changed size of hashtable to 16. The number of entries is limited
+    by the number of nic queues.
+  - Removed ternary in io_napi_blocking_busy_loop
+  - Rewrote io_napi_blocking_busy_loop to make it more readable
+  - Split off 3 more patches
+- V7:
+  - allow unregister with NULL value for arg parameter
+  - return -EOPNOTSUPP if CONFIG_NET_RX_BUSY_POLL is not enabled
+- V6:
+  - Add a hash table on top of the list for faster access during the
+    add operation. The linked list and the hash table use the same
+    data structure
+- V5:
+  - Refreshed to 6.1-rc6
+  - Use copy_from_user instead of memdup/kfree
+  - Removed the moving of napi_busy_poll_to
+  - Return -EINVAL if any of the reserved or padded fields are not 0.
+- V4:
+  - Pass structure for napi config, instead of individual parameters
+- V3:
+  - Refreshed to 6.1-rc5
+  - Added a new io-uring api for the prefer napi busy poll api and wire
+    it to io_napi_busy_loop().
+  - Removed the unregister (implemented as register)
+  - Added more performance results to the first commit message.
+- V2:
+  - Add missing defines if CONFIG_NET_RX_BUSY_POLL is not defined
+  - Changes signature of function io_napi_add_list to static inline
+    if CONFIG_NET_RX_BUSY_POLL is not defined
+  - define some functions as static
+
+
+Stefan Roesch (7):
+  net: split off __napi_busy_poll from napi_busy_poll
+  net: add napi_busy_loop_rcu()
+  io-uring: move io_wait_queue definition to header file
+  io-uring: add napi busy poll support
+  io-uring: add sqpoll support for napi busy poll
+  io_uring: add register/unregister napi function
+  io_uring: add prefer busy poll to register and unregister napi api
+
+ include/linux/io_uring_types.h |  11 ++
+ include/net/busy_poll.h        |   4 +
+ include/uapi/linux/io_uring.h  |  12 ++
+ io_uring/Makefile              |   1 +
+ io_uring/io_uring.c            |  41 ++--
+ io_uring/io_uring.h            |  26 +++
+ io_uring/napi.c                | 331 +++++++++++++++++++++++++++++++++
+ io_uring/napi.h                | 104 +++++++++++
+ io_uring/poll.c                |   2 +
+ io_uring/sqpoll.c              |   4 +
+ net/core/dev.c                 |  34 +++-
+ 11 files changed, 544 insertions(+), 26 deletions(-)
+ create mode 100644 io_uring/napi.c
+ create mode 100644 io_uring/napi.h
+
+
+base-commit: f026be0e1e881e3395c3d5418ffc8c2a2203c3f3
+--=20
+2.39.1
 
 
