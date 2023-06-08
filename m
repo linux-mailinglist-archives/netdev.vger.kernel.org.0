@@ -1,105 +1,160 @@
-Return-Path: <netdev+bounces-9227-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9228-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id F243A72815F
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 15:30:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 6A304728166
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 15:32:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EA2C71C20EDE
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 13:30:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 640851C20F08
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 13:32:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C1B2F12B73;
-	Thu,  8 Jun 2023 13:30:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C6DFA12B7F;
+	Thu,  8 Jun 2023 13:32:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1165947B
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 13:30:10 +0000 (UTC)
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED043E4A;
-	Thu,  8 Jun 2023 06:30:07 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4QcQ3n4m2VzLqRV;
-	Thu,  8 Jun 2023 21:27:01 +0800 (CST)
-Received: from [10.67.102.37] (10.67.102.37) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Thu, 8 Jun
- 2023 21:30:04 +0800
-Subject: Re: [PATCH net v2] net: renesas: rswitch: Fix timestamp feature after
- all descriptors are used
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, "s.shtylyov@omp.ru"
-	<s.shtylyov@omp.ru>, "davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>, "kuba@kernel.org"
-	<kuba@kernel.org>, "pabeni@redhat.com" <pabeni@redhat.com>
-References: <20230607070141.1795982-1-yoshihiro.shimoda.uh@renesas.com>
- <1df24847-6523-12df-2cba-f51412463347@huawei.com>
- <TYBPR01MB5341D374AC1DE6CFEE237647D850A@TYBPR01MB5341.jpnprd01.prod.outlook.com>
- <TYBPR01MB53412B2656A2B4756258042BD850A@TYBPR01MB5341.jpnprd01.prod.outlook.com>
-CC: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	Phong Hoang <phong.hoang.wz@renesas.com>
-From: Hao Lan <lanhao@huawei.com>
-Message-ID: <08006a4c-0627-9779-2260-a7e10dda454e@huawei.com>
-Date: Thu, 8 Jun 2023 21:30:03 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BADC1BA3A
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 13:32:30 +0000 (UTC)
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10055268E;
+	Thu,  8 Jun 2023 06:32:29 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id 41be03b00d2f7-53f7bef98b7so385418a12.3;
+        Thu, 08 Jun 2023 06:32:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686231148; x=1688823148;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mKuPQbcDXEDTbQg5IlNEBVSbNApnUsiE30Zl4xCvysE=;
+        b=a3ihC8Jb7VSgDNtee2BzJlhd02bP9qLThPAty1R/pUygyUp287UJWvu92ojdkZG+Pt
+         hax6IUF7dkDqB2y3L+/YwEC/gjoy1YjXEeSttEZTcGgUt9K6MxDebjHmut6eYj1JThCK
+         B7xvAlga9Ms+AKQD0aZIzSHPYtruGC1W1FYbXamdmjQZkj2AmNwmSimhDsJ3j19FxL7R
+         8CkPX+tIouZbj1XvySlYvhZEgxyN3YdsbQumztVJysdxwLAo5VuntQmV+6/4nhMhGKZP
+         Jfwhd9iO9ZEeKbshNwgSW/Tm9kDec4qP6d9wtYWJ0WV7i1rewZxBoyfIGdikdW9hzITR
+         fB3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686231148; x=1688823148;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=mKuPQbcDXEDTbQg5IlNEBVSbNApnUsiE30Zl4xCvysE=;
+        b=UcD1cmkyx9VdVcNTX/M03vpIhBu+XPkySWPhbhAPba3ySRhLoGmiy2eCj3wFt/vhz0
+         foFLfzJBoiXmfzXc7Q9YjJnWlLg5i0hOMONAQ9Hi2T3h2MtXKukafyf8jRFVVpzFkh6G
+         DQFNbBQ0EEkNAR4SRosW8sbJKuoIPYAK6sL15DmKfRccHSQDTTG8LdOKp0ygJuFIPtz3
+         oFceow79MJkrC99s8p03gCm2+wEi9JTFLkKrb9F7NEzWMJsuB7ioz7fC9rhQVoI/1OtW
+         sufqRIBSrP4q/DJJlNkoEI/6VZZoMFeG9iBgywArNeeX1ifi6rrZaBk+rmveH1ATocSl
+         OZeA==
+X-Gm-Message-State: AC+VfDxobuOE/ANH5szsbwX/mL0PTvK8nGG0E0Snn5rki5VkumSaKA6e
+	uqPr2i+eMhwQGofUdiRLgXo=
+X-Google-Smtp-Source: ACHHUZ7PHGRSAoYcpZ8O6w/mA3Ym2Zk5KMOPorRkI6kVX3bVOimkaVaG+sK9sm4Vo/S2Imo6sPIBew==
+X-Received: by 2002:a17:90a:8417:b0:256:c632:9848 with SMTP id j23-20020a17090a841700b00256c6329848mr7532847pjn.29.1686231148298;
+        Thu, 08 Jun 2023 06:32:28 -0700 (PDT)
+Received: from [192.168.43.80] (subs09a-223-255-225-66.three.co.id. [223.255.225.66])
+        by smtp.gmail.com with ESMTPSA id 30-20020a17090a191e00b0025632363477sm1379148pjg.14.2023.06.08.06.32.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Jun 2023 06:32:27 -0700 (PDT)
+Message-ID: <31ab2156-e93e-4e0d-73a7-313d9d24ee6b@gmail.com>
+Date: Thu, 8 Jun 2023 20:32:22 +0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <TYBPR01MB53412B2656A2B4756258042BD850A@TYBPR01MB5341.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.102.37]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Content-Language: en-US
+To: Jes Sorensen <Jes.Sorensen@gmail.com>, Kalle Valo <kvalo@kernel.org>,
+ dbnusr495 <se6gtm+8fyzh7983xt40@guerrillamail.org>
+Cc: Linux Wireless <linux-wireless@vger.kernel.org>,
+ Linux Kernel Network Developers <netdev@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: Fwd: rtl8xxxu kernel module deauthenticate session from public open
+ Wifi AP
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+Hi,
 
+I notice a bug report on Bugzilla [1]. Quoting from it:
 
-On 2023/6/8 8:57, Yoshihiro Shimoda wrote:
-> Hi again,
+> With Debian Sid, trying to use two different Realtek USB Wifi Adapters (with
+> Antenna).
 > 
->> From: Yoshihiro Shimoda, Sent: Thursday, June 8, 2023 9:21 AM
->>
->> Hi Hao,
->>
->>> From: Hao Lan, Sent: Wednesday, June 7, 2023 8:28 PM
->>> Hello Yoshihiro Shimoda，
->>>
->>> Does your function set the last descriptor to hardware on initialization, but not at other times?
->>
->> The last descriptor initialization is needed at the first time. So, after the initialization,
->> the last setting will not run anymore.
->>
->>> I think rswitch_gwca_ts_queue_fill should be implemented in a separate function,
->>> not use the 'last' distinguish the last descriptor.
->>
->> I got it. I'll modify this patch on v3.
->>
->>> But if it should be setting every cycle, I think rswitch_gwca_queue_ext_ts_fill should
->>> check if the descriptor is the last in the queue and set the LINKFIX flag.
->>
->> Thank you for the comment. The last descriptor should not be setting every cycle.
->> To implement the code for consistency, I think that I should add rswitch_tsdesc_init()
->> rswitch_gwca_queue_format() like rswitch_txdmac_init() and rswitch_gwca_queue_format()
+> Using kernels including various Liquorix 6.2.x, 6.3.x , and the most recent
 > 
-> About ts_queue, it is similar with linkfix, not txdmac. So, now I'm thinking that modifying
-> the rswitch_gwca_ts_queue_alloc() is suitable.
+>     linux-image-6.3.4-1-liquorix-amd64
 > 
-> Best regards,
-> Yoshihiro Shimoda
+> also, Debian experimental
 > 
+>     Debian (experimental) linux-image-6.3.0-0-amd64-unsigned
+> 6.3.5-1~exp1
+> 
+>     Debian's linux-image-6.3.0-0-amd64 (Linux  6.3.0-0-amd64 #1 SMP
+> PREEMPT_DYNAMIC Debian 6.3.2-1~exp1 (2023-05-15) x86_64 GNU/Linux)
+> 
+> same problem.
+> 
+> At local library's public open wifi, no password required.  Using either
+> 
+>     0bda:0179 (rtl8188eu) USB Wifi adapter,
+> 
+> or
+> 
+>     0bda:f179 (rtl8188fu) USB Wifi adapter
+> 
+> Both adapters are loading
+> 
+>     rtl8xxxu kernel module
+> 
+> Using ( manual Wifi connection ) script , the system was able to obtain DHCP IP
+> address.  Normally, all HTTP(S) requests get redirected to a public usage
+> policy web page, where users have to click on "I agree" to continue.  Which
+> works fine with another USB adapter (mt7601 kernel module).
+> 
+> However, with both Realtek adapters above, web browser will just time out, will
+> NOT even get redirect to a "Public Use Notice" web page.
+> 
+> The relevant error message from system log shows
+> 
+>     2023-05-15T16:57:48.491567-04:00 usrhostname kernel: wlan1: deauthenticated
+> from 7a:83:c2:8a:f1:13 (Reason: 6=CLASS2_FRAME_FROM_NONAUTH_STA)
+> 
+> Apparently, the rtl8xxxu driver assumes an error condition, and immediately
+> deauthenticates and drops the Wifi connection, will not complete the
+> redirection to the "Public Use Notice" web page.
+> 
+> Try to connect again, same problem, repeating itself, not allowing any
+> additional wifi traffic at all.
 
-Reviewed-by: Hao Lan <lanhao@huawei.com>
+See Bugzilla for the full thread.
+
+The reporter said that this is known rtl8xxxu issue (unusable on public,
+open WiFi access points [no WPA authentication?]). From his analysis:
+
+> Let me know if I need to do anything else.  I looek at the code briefly, I belive the rtl8xxxu called a function from 802.11 layer to handle the return code (Reason code 6), which promptly call a function to deauthenticate the session, thus disconnected the device from further wifi traffic.
+> 
+> I believe the 802.11 level handling is too harsh for public open AP.  However, i think the Realtek level code is too lazy.  Realtek driver code should check for reasonable return codes for situations like this and allow paasing at least a few of these before considering these as hacking attempts, which require deauthenticating, or disconnecting.  But then again, this would also be too strict for monitor mode handling of traffic.
+> 
+> Don't know if 802.11 level specs even have considerations for situations like these at all, or they simply handle lower level logic and leave these things for the device drivers to cooperate with application layers to handle these.
+
+Jes and Kalle, would you like to take a look on checking return codes
+(as reporter demands)?
+
+Thanks.
+
+[1]: https://bugzilla.kernel.org/show_bug.cgi?id=217531
+
+-- 
+An old man doll... just what I always wanted! - Clara
 
