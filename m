@@ -1,59 +1,62 @@
-Return-Path: <netdev+bounces-9185-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9186-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 09C36727D2E
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 12:50:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 53B21727D32
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 12:50:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B26772816AF
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 10:50:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 04F1B28159B
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 10:50:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B9BEC2D1;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 53DC3C8E7;
 	Thu,  8 Jun 2023 10:50:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3A87A3D
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 10:50:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44681C2F6
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 10:50:24 +0000 (UTC)
 Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F07E6C;
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE65A269A;
 	Thu,  8 Jun 2023 03:50:22 -0700 (PDT)
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-	by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3587nH4x023576;
-	Thu, 8 Jun 2023 03:50:14 -0700
+	by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3587nH50023576;
+	Thu, 8 Jun 2023 03:50:17 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=BMVJmJ9Wwi6DDocbr4R9KPClTDmv0/mHZ1/q6UzlCfI=;
- b=QurfP6dYARjjkKu5KfT8RXzOYC4Z8wfDYrAkuG9SSCKUw0ZQ+sJ6Tg68o0+TtdlZX6PS
- pJ8/sVezW8dGekRdmwoDXpHzDKEmTCP1RbkOo86/1qpLMjS36PiGqgRbZ0bwFz5sc//p
- UuksD7xgc9EPQjvYWNzoHlag6QVKJy6+8Bk2s8B2nBj6HJVuGy0UtnnktwTRg0ry6cXQ
- PGNJpcuqL29kTMzkkx5AmT106a2Xneu0Gwdpgo5ha1w4VNsbdsegOILeHsdbwqHpnkSA
- MoE74ZZCyW31saG+xeVTIP5D0UFcrqvL/ZaR4YdO8pE5D0xUbJ3NIimRRWb0GcVCsbE+ 8w== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-	by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3r329c2c2v-1
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0220;
+ bh=L2TeqzzSAJW3Y0ujjwLs+3OlJYXWv6M+88djxLDuzzk=;
+ b=b0nljOoXhMD9NayzOdT2KlvF5u1a0ivMgpbneDuDdvw8cKag8fNYHIrFkWaC2YyU+JRO
+ fMq7WryeKpaLAr4aeJEfC/OZHWyfXsxOiC7NwOOUcoMaJnARFZIGf4S+/zO1nxBeQvXG
+ bAJ6zI+7/6kWRwt8h9XUslR+My3FciwEsp2iGd5kKb4LyyPW/59zgzo5j2OdA0ZQC/ux
+ v4eibrsIIAOI+7qrGCfeufhewSAFJ14NCos3NvMjxrmHf9E3wC4dE+mbVq6O/1muk7wx
+ sEIdWRm3lorXBSPKvQowVLCtam8R/DLJYG3yXooYyQjcktijf1wvb0bmmoTETRQKqdhc aQ== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+	by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3r329c2c30-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-	Thu, 08 Jun 2023 03:50:13 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 8 Jun
- 2023 03:50:12 -0700
+	Thu, 08 Jun 2023 03:50:16 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 8 Jun
+ 2023 03:50:15 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Thu, 8 Jun 2023 03:50:12 -0700
+ Transport; Thu, 8 Jun 2023 03:50:15 -0700
 Received: from #hyd1583.marvell.com (unknown [10.29.37.44])
-	by maili.marvell.com (Postfix) with ESMTP id E39EC3F707C;
-	Thu,  8 Jun 2023 03:50:09 -0700 (PDT)
+	by maili.marvell.com (Postfix) with ESMTP id DF6573F707F;
+	Thu,  8 Jun 2023 03:50:12 -0700 (PDT)
 From: Naveen Mamindlapalli <naveenm@marvell.com>
 To: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>
 CC: Naveen Mamindlapalli <naveenm@marvell.com>
-Subject: [net-next PATCH 0/6] RVU NIX AF driver updates 
-Date: Thu, 8 Jun 2023 16:20:01 +0530
-Message-ID: <20230608105007.26924-1-naveenm@marvell.com>
+Subject: [net-next PATCH 1/6] octeontx2-af: Add devlink option to adjust mcam high prio zone entries
+Date: Thu, 8 Jun 2023 16:20:02 +0530
+Message-ID: <20230608105007.26924-2-naveenm@marvell.com>
 X-Mailer: git-send-email 2.39.0.198.ga38d39a4c5
+In-Reply-To: <20230608105007.26924-1-naveenm@marvell.com>
+References: <20230608105007.26924-1-naveenm@marvell.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -62,8 +65,8 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: 0E6211XKDvYHVOopBTFzgbz-lCOZVwPz
-X-Proofpoint-ORIG-GUID: 0E6211XKDvYHVOopBTFzgbz-lCOZVwPz
+X-Proofpoint-GUID: gT39MCYMJMLnozTCBMUbCjhRItGLTfBo
+X-Proofpoint-ORIG-GUID: gT39MCYMJMLnozTCBMUbCjhRItGLTfBo
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
  definitions=2023-06-08_07,2023-06-08_01,2023-05-22_02
@@ -74,65 +77,131 @@ X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This patch series includes a few enhancements and other updates to the
-RVU NIX AF driver.
+The NPC MCAM entries are currently divided into three priority zones
+in AF driver: high, mid, and low. The high priority zone and low priority
+zone take up 1/8th (each) of the available MCAM entries, and remaining
+going to the mid priority zone.
 
-The first patch adds devlink option to configure NPC MCAM high priority
-zone entries reservation. This is useful when the requester needs more
-high priority entries than default reserved entries.
+The current allocation scheme may not meet certain requirements, such
+as when a requester needs more high priority zone entries than are
+reserved. This patch adds a devlink configurable option to increase the
+number of high priority zone entries that can be allocated by requester.
+The max number of entries that can be reserved for high priority usage
+is 100% of available MCAM entries.
 
-The second patch adds support for RSS hash computation using L3 SRC or
-DST only, or L4 SRC or DST only.
+Usage:
+1) Change high priority zone percentage to 75%:
+devlink -p dev param set pci/0002:01:00.0 name npc_mcam_high_zone_percent \
+value 75 cmode runtime
 
-The third patch updates DWRR MTU configuration for CN10KB silicon. HW uses 
-the DWRR MTU to compute DWRR weight.
+2) Read high priority zone percentage:
+devlink -p dev param show pci/0002:01:00.0 name npc_mcam_high_zone_percent
 
-Patch 4 configures the LBK link in TL3_TL2 configuration only when switch
-mode is enabled.
+The devlink set configuration is only permitted when no MCAM entries
+are assigned, i.e., all MCAM entries are free, indicating that no PF/VF
+driver is loaded. So user must unload/unbind PF/VF driver/devices before
+modifying the high priority zone percentage.
 
-Patch 5 adds an option in the mailbox request to enable/disable DROP_RE bit
-which drops packets with L2 errors when set.
+Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+---
+ .../marvell/octeontx2/af/rvu_devlink.c        | 68 +++++++++++++++++++
+ 1 file changed, 68 insertions(+)
 
-Patch 6 updates SMQ flush mechanism to stop other child nodes from
-enqueuing any packets while SMQ flush is active. Otherwise SMQ flush may
-timeout.
-
-Kiran Kumar K (1):
-  octeontx2-af: extend RSS supported offload types
-
-Naveen Mamindlapalli (2):
-  octeontx2-af: Add devlink option to adjust mcam high prio zone entries
-  octeontx2-af: Set XOFF on other child transmit schedulers during SMQ
-    flush
-
-Nithin Dabilpuram (1):
-  octeontx2-af: add option to toggle DROP_RE enable in rx cfg
-
-Subbaraya Sundeep (1):
-  octeontx2-af: Enable LBK links only when switch mode is on.
-
-Sunil Goutham (1):
-  octeontx2-af: cn10k: Set NIX DWRR MTU for CN10KB silicon
-
- .../ethernet/marvell/octeontx2/af/common.h    |   7 +
- .../net/ethernet/marvell/octeontx2/af/mbox.h  |  11 +-
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |  20 ++
- .../marvell/octeontx2/af/rvu_devlink.c        |  74 +++++-
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 247 ++++++++++++++++--
- .../ethernet/marvell/octeontx2/af/rvu_reg.h   |   3 +-
- .../marvell/octeontx2/af/rvu_switch.c         |  18 ++
- .../marvell/octeontx2/nic/otx2_common.c       |  18 +-
- .../marvell/octeontx2/nic/otx2_common.h       |   1 +
- 9 files changed, 379 insertions(+), 20 deletions(-)
-
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+index bda1a6fa2ec4..64b8beaa7247 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+@@ -1438,6 +1438,7 @@ enum rvu_af_dl_param_id {
+ 	RVU_AF_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
+ 	RVU_AF_DEVLINK_PARAM_ID_DWRR_MTU,
+ 	RVU_AF_DEVLINK_PARAM_ID_NPC_EXACT_FEATURE_DISABLE,
++	RVU_AF_DEVLINK_PARAM_ID_NPC_MCAM_ZONE_PERCENT,
+ };
+ 
+ static int rvu_af_npc_exact_feature_get(struct devlink *devlink, u32 id,
+@@ -1494,6 +1495,67 @@ static int rvu_af_npc_exact_feature_validate(struct devlink *devlink, u32 id,
+ 	return -EFAULT;
+ }
+ 
++static int rvu_af_dl_npc_mcam_high_zone_percent_get(struct devlink *devlink, u32 id,
++						    struct devlink_param_gset_ctx *ctx)
++{
++	struct rvu_devlink *rvu_dl = devlink_priv(devlink);
++	struct rvu *rvu = rvu_dl->rvu;
++	struct npc_mcam *mcam;
++	u32 percent;
++
++	mcam = &rvu->hw->mcam;
++	percent = (mcam->hprio_count * 100) / mcam->bmap_entries;
++	ctx->val.vu8 = (u8)percent;
++
++	return 0;
++}
++
++static int rvu_af_dl_npc_mcam_high_zone_percent_set(struct devlink *devlink, u32 id,
++						    struct devlink_param_gset_ctx *ctx)
++{
++	struct rvu_devlink *rvu_dl = devlink_priv(devlink);
++	struct rvu *rvu = rvu_dl->rvu;
++	struct npc_mcam *mcam;
++	u32 percent;
++
++	percent = ctx->val.vu8;
++	mcam = &rvu->hw->mcam;
++	mcam->hprio_count = (mcam->bmap_entries * percent) / 100;
++	mcam->hprio_end = mcam->hprio_count;
++	mcam->lprio_count = (mcam->bmap_entries - mcam->hprio_count) / 2;
++	mcam->lprio_start = mcam->bmap_entries - mcam->lprio_count;
++
++	return 0;
++}
++
++static int rvu_af_dl_npc_mcam_high_zone_percent_validate(struct devlink *devlink, u32 id,
++							 union devlink_param_value val,
++							 struct netlink_ext_ack *extack)
++{
++	struct rvu_devlink *rvu_dl = devlink_priv(devlink);
++	struct rvu *rvu = rvu_dl->rvu;
++	struct npc_mcam *mcam;
++
++	/* The percent of high prio zone must range from 12% to 100% of unreserved mcam space */
++	if (val.vu8 < 12 || val.vu8 > 100) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "mcam high zone percent must be between 12% to 100%");
++		return -EINVAL;
++	}
++
++	/* Do not allow user to modify the high priority zone entries while mcam entries
++	 * have already been assigned.
++	 */
++	mcam = &rvu->hw->mcam;
++	if (mcam->bmap_fcnt < mcam->bmap_entries) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "mcam entries have already been assigned, can't resize");
++		return -EPERM;
++	}
++
++	return 0;
++}
++
+ static const struct devlink_param rvu_af_dl_params[] = {
+ 	DEVLINK_PARAM_DRIVER(RVU_AF_DEVLINK_PARAM_ID_DWRR_MTU,
+ 			     "dwrr_mtu", DEVLINK_PARAM_TYPE_U32,
+@@ -1506,6 +1568,12 @@ static const struct devlink_param rvu_af_dl_params[] = {
+ 			     rvu_af_npc_exact_feature_get,
+ 			     rvu_af_npc_exact_feature_disable,
+ 			     rvu_af_npc_exact_feature_validate),
++	DEVLINK_PARAM_DRIVER(RVU_AF_DEVLINK_PARAM_ID_NPC_MCAM_ZONE_PERCENT,
++			     "npc_mcam_high_zone_percent", DEVLINK_PARAM_TYPE_U8,
++			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
++			     rvu_af_dl_npc_mcam_high_zone_percent_get,
++			     rvu_af_dl_npc_mcam_high_zone_percent_set,
++			     rvu_af_dl_npc_mcam_high_zone_percent_validate),
+ };
+ 
+ /* Devlink switch mode */
 -- 
 2.39.0.198.ga38d39a4c5
 
-0000-cover-letter.patch
-0001-octeontx2-af-Add-devlink-option-to-adjust-mcam-high-.patch
-0002-octeontx2-af-extend-RSS-supported-offload-types.patch
-0003-octeontx2-af-cn10k-Set-NIX-DWRR-MTU-for-CN10KB-silic.patch
-0004-octeontx2-af-Enable-LBK-links-only-when-switch-mode-.patch
-0005-octeontx2-af-add-option-to-toggle-DROP_RE-enable-in-.patch
-0006-octeontx2-af-Set-XOFF-on-other-child-transmit-schedu.patch
 
