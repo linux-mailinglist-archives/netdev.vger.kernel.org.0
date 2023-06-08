@@ -1,282 +1,162 @@
-Return-Path: <netdev+bounces-9191-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9192-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 00337727D3D
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 12:52:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D4E04727D42
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 12:52:41 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5AFEC2816FA
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 10:52:20 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9048528159D
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 10:52:40 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 84E1FC8FC;
-	Thu,  8 Jun 2023 10:50:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A4724C2F3;
+	Thu,  8 Jun 2023 10:52:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F9811187
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 10:50:48 +0000 (UTC)
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4816E2D41;
-	Thu,  8 Jun 2023 03:50:42 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-	by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35838QYa023519;
-	Thu, 8 Jun 2023 03:50:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=4cyWdPq2awzrKVLCMzcQ/M2cjI+AAxSFQEvtCVM6Dcs=;
- b=hYc2uF4ZdZTgPl2LZb6QLgXuuBO4Av2jrUTN6WvX6LzYM5j2uEw7Mzql1iXSrECn70fD
- WquqpCSuOw/pkCYI1I/FsmRQ/7HnhK6AqS/Xk7j7ZHmWaK4ywlONSLXjkonmldk0mX36
- s6hCytiCbc0fdMOJkyvDdILkii1ZPjg/rr9a5CvAptI6yjBJkCTffhGrthLvJ6OYczEN
- K5lDhMcW50HUjVf7v/plk3Djour8YxvYy8oLBdK0uXh3OTphrEbImPFPw/ycLwY0nDQg
- F9eDqob/0CVSda4WCkEvO91v0zMVWlDvlxI0fAkjgVUSHTPgVn5MZI1fcYSnNRerb0by GA== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-	by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3r30eu27dp-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-	Thu, 08 Jun 2023 03:50:33 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 8 Jun
- 2023 03:50:31 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Thu, 8 Jun 2023 03:50:31 -0700
-Received: from #hyd1583.marvell.com (unknown [10.29.37.44])
-	by maili.marvell.com (Postfix) with ESMTP id 01CD33F707C;
-	Thu,  8 Jun 2023 03:50:28 -0700 (PDT)
-From: Naveen Mamindlapalli <naveenm@marvell.com>
-To: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>
-CC: Naveen Mamindlapalli <naveenm@marvell.com>
-Subject: [net-next PATCH 6/6] octeontx2-af: Set XOFF on other child transmit schedulers during SMQ flush
-Date: Thu, 8 Jun 2023 16:20:07 +0530
-Message-ID: <20230608105007.26924-7-naveenm@marvell.com>
-X-Mailer: git-send-email 2.39.0.198.ga38d39a4c5
-In-Reply-To: <20230608105007.26924-1-naveenm@marvell.com>
-References: <20230608105007.26924-1-naveenm@marvell.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 927A1A3D
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 10:52:16 +0000 (UTC)
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2113.outbound.protection.outlook.com [40.107.102.113])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9248271B
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 03:52:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=R3qoyl38h3uOsEgimC1S+GdY+brdeAfTSqNIlhRG2Du/Xj42bSjGUFdI7fPuhCeG1FQ+wCSZyO7jW+4ZKgWI1ERlipdAW1Kv6Z+QDeyW/zDSZ8mx4uYk0hxVXx4t89pYfcg35t0npmsimE/A+5vIopAlVf6nmGA660Plu4NAXwVrabSsg1W+GOey11YfhcZiJwOraOecSZ7PlKPH/dARjPMx5MaeyoHZynXtT8/U5hQ1qYozHouLaUNAuM1MR78SMIOp5rv+sd4X7FYan4VDOF0MubszihvS5FWDadIiVnQCFjnp9aVqVgSKD02cxjTrFxcezanFhK8hev+TFq4GSw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hilW77sTNVYRVr8/JivmpfVak8a69xVjdwQK05aFjEw=;
+ b=J1EOMGBdP7gN+WXT8b2M9TN0s0fJQsb5ByQmRmPqLnn2cAWqqBY8p2fScy7EjpFaYjt9HUyZ5Uu6rMn2EW358ffBcfOuvHVn0YScmnQy/oG82+U8XCVmAPQf1RJU5TAM+LeucfaPW5x+Ylk5dD0d1/gquKQWljiTbgnUyGac6U8D0exIcHKqTUY49u5si/3u89P4/j7JJ5+rO1KI+8jiOctpOyCwCdVJYPxY5ERLXn29b6e0cmOrajteevxgbEcfu6Zy5za+RnvpVdxnNYoHRgWzLqQHX64/o18Ny9e28NNZ8rCqhMoEMtQy8eXy9F2tmErMmi3GvhsiDwWGC0sdrA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hilW77sTNVYRVr8/JivmpfVak8a69xVjdwQK05aFjEw=;
+ b=TIGzuJ8bNVDpzrawUMBhG3DRdsgniugQgV3RBg0GnyaJcNuPgyvPXMWKKy/Khr+qOfyUSIuHa0DNJ6Ad/8ymK4gwhAk3P2tDXqOkH6hCgbGUQiDvrC/cTJpy5PJa421q1z2y6U2ICuU0D+ujk3jvkzng88Ex4OA/pQhhduT0HzA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CO1PR13MB4997.namprd13.prod.outlook.com (2603:10b6:303:fb::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Thu, 8 Jun
+ 2023 10:51:57 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6455.030; Thu, 8 Jun 2023
+ 10:51:57 +0000
+Date: Thu, 8 Jun 2023 12:51:50 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+	edumazet@google.com, netdev@vger.kernel.org,
+	Yuezhen Luan <eggcar.luan@gmail.com>, kernel.hbk@gmail.com,
+	richardcochran@gmail.com, Jacob Keller <jacob.e.keller@intel.com>,
+	Pucha Himasekhar Reddy <himasekharx.reddy.pucha@intel.com>
+Subject: Re: [PATCH net] igb: Fix extts capture value format for
+ 82580/i354/i350
+Message-ID: <ZIGyxlOyR4Jxum0u@corigine.com>
+References: <20230607164116.3768175-1-anthony.l.nguyen@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230607164116.3768175-1-anthony.l.nguyen@intel.com>
+X-ClientProxiedBy: AS4P192CA0009.EURP192.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5da::16) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: FxoRhPXoPdjRf6ap7frjR4m4FBxdzeVJ
-X-Proofpoint-GUID: FxoRhPXoPdjRf6ap7frjR4m4FBxdzeVJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-06-08_07,2023-06-08_01,2023-05-22_02
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO1PR13MB4997:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0b3ee754-5ab1-4b1b-7d4c-08db680e613a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Ify1qj/pK6VOl+TbcOcKHON1lHRFJWKX5bIsr5QYcSI+hmUlQnPVRcLkwasMLmSEJihON54XIo2iVuLufa/7N/XlCzI4KLfbn8i4Q1AD1BSFPyafM3M12+uJqfJkIloWiHDKvQ/FH763qeVaUW6pJ66mLfgaBXPCSGBZ/2SmeZMhHZnHQtQa8bmPvo5HYZDaTcrNDh1DfdIlTa3lhKgQqH3ADbXOIc3gvayOWQ0bB4VoD8ABJ66oJKOA983heJYI0z3D66G8VTKxlASC3Y6M9qZSOZTPySRpjYNnJ+eaoLyNUWDdW219N2QDmKuBlKDXZFjlsuHOsRSECT50iG4g65SGFTxTFX4f4JVkzfHNweewwcRg4Z2C2QQHbhBXlt8xN1s4G+EuVVG8noq3GOAIl+WG/JHUpm/B9+M0tZz5r3PpmmnRSYWhOvcp7Bw4ZTKjUwPwAf7bTZIPNg3XgMS0Au5fwxYpixeW90l58B/SQwDkjlGO9DjLWgUTD3E9Ky8dBcrY+Dtw/BVD+cJ3zK7eAJoPLmGgqW957f6cOppcudvwyIgc1Kt94HLD5+VRmGBe/LcRHf0jSpiZWSjGoYCR24Hkx2Ha8X4MOEvCNv9Pglw=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(136003)(39840400004)(376002)(346002)(451199021)(2616005)(6506007)(6512007)(44832011)(6916009)(316002)(66556008)(4326008)(66476007)(66946007)(6486002)(6666004)(186003)(478600001)(36756003)(54906003)(2906002)(5660300002)(8676002)(8936002)(86362001)(7416002)(41300700001)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?0/LhM7Jm9sBAPFAJPLO37iWkZbZtr47FAjYPYjHzljSK4rS5tX2RoqTmbrGu?=
+ =?us-ascii?Q?RkDE8OYhpyp3MSYu/iT+WS8dMjb8O3DUQv9fNeY6ELZWeRiOgoDSKqVu71Ir?=
+ =?us-ascii?Q?xfXBFNdGxKWty3KulBsDxvkJ1VEK+qdqsLn9VI+sFK+M1QpQH3Y6/0OXgQ9x?=
+ =?us-ascii?Q?vRG04hC6FPkrg2aTxbpjmferdzdpJ9gQsE1aT4YJnmr+XXm8Iao05LecOaAt?=
+ =?us-ascii?Q?MISGsL5U+pw1jtRNiNel8l3df99I++NHZfaFQ5hNiqzQnXBQL8A+bj7EzMpG?=
+ =?us-ascii?Q?Nq8/ekzVbQOgay4GQQKCHHzCvlNQHh+GQ767V3J4DJJlQBschxF/SujW6amM?=
+ =?us-ascii?Q?/lLxETWEBmY0BThgbI1PvmbrWi99RTbAXHqpVFGtK0pCBeMDk4JgOzyPa1U6?=
+ =?us-ascii?Q?z/6DtKWu5XEHWrrupZbSCW0hR0boIxDITW/SpTXyLcnc+S+50fCoe4DUyFI9?=
+ =?us-ascii?Q?h0NbziKsV4wXlWQYNClJTUh8SiNHjaeAYCMArsXfFUgS42/riX4VqSUrHK4O?=
+ =?us-ascii?Q?H2FpQ8kMReTqe+LFCdTtMY6eePW/ZhApMqBl+P8v54GETW+YDSE6qYG3yFLe?=
+ =?us-ascii?Q?993y0qubtc74xbvBSyRECFZ158iF3FUOGBx7NOiw7hbgLAHKCzZZLH8dtCPj?=
+ =?us-ascii?Q?7EAMZYqiieV7CoBaI4Xb5BV0/m5Yc3jS30DjwRLdkwhk0EaZDeV68yZJepby?=
+ =?us-ascii?Q?ax1mj2szFK+SRaZVtPI8H5UFi83FU0pUK/V0fAvMNmU9Y0jZxwCrvDzG0+wM?=
+ =?us-ascii?Q?Se64TPr073OXi82BbhpnqEKYD2BW+i8CKP+vMfYss/f0VPcvfn9sAW+RGE7J?=
+ =?us-ascii?Q?WPerULXzBDPWFQBTo+fcaCZeoKRUEk+P0YFb75qW1mT/Gj30luPJ28Qa1oef?=
+ =?us-ascii?Q?zJ/3DhEcIwqg9kn6biB8si5tupyI3ozuFxRB6G0IbP/GjW0FlBoKrDNS0eYY?=
+ =?us-ascii?Q?jZQjzyoeHX0c+U3kcsr5Jx8T9MJrwyr1BVw4XvSzyNYmxt43SxHYiCKw4mwb?=
+ =?us-ascii?Q?q/1r4oFnW4jVvOMrvfbbeghcJszrVelqLJBLYyZ+PwClqGyVrUZLwC3EA78F?=
+ =?us-ascii?Q?LMWZYmWOKzCBg723Et6tCOK4sdh+pIjdEjG9iZArP1+s/+bn4Ul9SPzAUpbq?=
+ =?us-ascii?Q?8UfzupqCU8ZpG6729lGIRg/g9dR8Rkcpdf/ht8kC6/u7ZyibVcay/Hy2sHRl?=
+ =?us-ascii?Q?m3Hj7y01txoHn6ZUB7I3LHPSniuoePmvtYlV4xSTY53z/2f4NWSi+O/0pCDT?=
+ =?us-ascii?Q?vp6xzOUTkxc8hSbOPlIPo8OfiNC+WWrhjIPaR5y6Oj7Ie1+7nYHcoOYV6NIw?=
+ =?us-ascii?Q?citkQfF9xDlz0Fn9zv3fXnoPMeN3GYEQg18uwhgyhp80s49yey4YEdE8Q2RT?=
+ =?us-ascii?Q?xPYECxi41CtpV+S3T+iA8MtX9er53PLoqfyCOwaxGQCajuaPIAYx8SSCm0z6?=
+ =?us-ascii?Q?obFL2421dvgsneLIdLfPHRWfIP/P2MVY3kkECqupciTyNqrsqXywJbRM+qe9?=
+ =?us-ascii?Q?qy9ZB9IRn50o9iHAEj6HGAxbi5V7h2y7RW56pR3PdVcbvCiSEfA+ldr9/ifz?=
+ =?us-ascii?Q?DBmo4+xMIClBSKp5bcf6+/FB2aKF/xh2PULO0V2vEsByFZ8cHTsv4c6q0ev6?=
+ =?us-ascii?Q?R1ql7+2n6UoKhZGBJEgNLnUm/5KonVx3wlqcIBsRqKjQX/t3BNhzl4Mz0ov3?=
+ =?us-ascii?Q?8/LyKg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b3ee754-5ab1-4b1b-7d4c-08db680e613a
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2023 10:51:57.4236
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: N4OFkt1V9hGz+bLb9X5unoBZBnOC5qQvFfSUydLcunCAItH2SQAbjnxtmmWBqFnC80BzwMdT/T0ya67lpp9afIXGnGMgSPev1SpDXmaa8pc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR13MB4997
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-When multiple transmit scheduler queues feed a TL1 transmit link, the
-SMQ flush initiated on a low priority queue might get stuck when a high
-priority queue fully subscribes the transmit link. This inturn effects
-interface teardown. To avoid this, temporarily XOFF all TL1's other
-immediate child transmit scheduler queues and also clear any rate limit
-configuration on all the scheduler queues in SMQ(flush) hierarchy.
+On Wed, Jun 07, 2023 at 09:41:16AM -0700, Tony Nguyen wrote:
+> From: Yuezhen Luan <eggcar.luan@gmail.com>
+> 
+> 82580/i354/i350 features circle-counter-like timestamp registers
+> that are different with newer i210. The EXTTS capture value in
+> AUXTSMPx should be converted from raw circle counter value to
+> timestamp value in resolution of 1 nanosec by the driver.
+> 
+> This issue can be reproduced on i350 nics, connecting an 1PPS
+> signal to a SDP pin, and run 'ts2phc' command to read external
+> 1PPS timestamp value. On i210 this works fine, but on i350 the
+> extts is not correctly converted.
+> 
+> The i350/i354/82580's SYSTIM and other timestamp registers are
+> 40bit counters, presenting time range of 2^40 ns, that means these
+> registers overflows every about 1099s. This causes all these regs
+> can't be used directly in contrast to the newer i210/i211s.
+> 
+> The igb driver needs to convert these raw register values to
+> valid time stamp format by using kernel timecounter apis for i350s
+> families. Here the igb_extts() just forgot to do the convert.
+> 
+> Fixes: 38970eac41db ("igb: support EXTTS on 82580/i354/i350")
+> Signed-off-by: Yuezhen Luan <eggcar.luan@gmail.com>
+> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+> Tested-by: Pucha Himasekhar Reddy <himasekharx.reddy.pucha@intel.com> (A Contingent worker at Intel)
+> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 
-Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |  16 +++
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 130 +++++++++++++++++-
- 2 files changed, 144 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index 78c796fb2bb4..8a825b983320 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -283,6 +283,22 @@ struct nix_mark_format {
- 	u32 *cfg;
- };
- 
-+/* smq(flush) to tl1 cir/pir info */
-+struct nix_smq_tree_ctx {
-+	u64 cir_off;
-+	u64 cir_val;
-+	u64 pir_off;
-+	u64 pir_val;
-+};
-+
-+/* smq flush context */
-+struct nix_smq_flush_ctx {
-+	int smq;
-+	u16 tl1_schq;
-+	u16 tl2_schq;
-+	struct nix_smq_tree_ctx smq_tree_ctx[NIX_TXSCH_LVL_CNT];
-+};
-+
- struct npc_pkind {
- 	struct rsrc_bmap rsrc;
- 	u32	*pfchan_map;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 18a146e9c4ef..eb5c11d06d7f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -2062,9 +2062,121 @@ int rvu_mbox_handler_nix_txsch_alloc(struct rvu *rvu,
- 	return rc;
- }
- 
-+static void nix_smq_flush_fill_ctx(struct rvu *rvu, int blkaddr, int smq,
-+				   struct nix_smq_flush_ctx *smq_flush_ctx)
-+{
-+	struct nix_smq_tree_ctx *smq_tree_ctx;
-+	u64 parent_off, regval;
-+	u16 schq;
-+	int lvl;
-+
-+	smq_flush_ctx->smq = smq;
-+
-+	schq = smq;
-+	for (lvl = NIX_TXSCH_LVL_SMQ; lvl <= NIX_TXSCH_LVL_TL1; lvl++) {
-+		smq_tree_ctx = &smq_flush_ctx->smq_tree_ctx[lvl];
-+		if (lvl == NIX_TXSCH_LVL_TL1) {
-+			smq_flush_ctx->tl1_schq = schq;
-+			smq_tree_ctx->cir_off = NIX_AF_TL1X_CIR(schq);
-+			smq_tree_ctx->pir_off = 0;
-+			smq_tree_ctx->pir_val = 0;
-+			parent_off = 0;
-+		} else if (lvl == NIX_TXSCH_LVL_TL2) {
-+			smq_flush_ctx->tl2_schq = schq;
-+			smq_tree_ctx->cir_off = NIX_AF_TL2X_CIR(schq);
-+			smq_tree_ctx->pir_off = NIX_AF_TL2X_PIR(schq);
-+			parent_off = NIX_AF_TL2X_PARENT(schq);
-+		} else if (lvl == NIX_TXSCH_LVL_TL3) {
-+			smq_tree_ctx->cir_off = NIX_AF_TL3X_CIR(schq);
-+			smq_tree_ctx->pir_off = NIX_AF_TL3X_PIR(schq);
-+			parent_off = NIX_AF_TL3X_PARENT(schq);
-+		} else if (lvl == NIX_TXSCH_LVL_TL4) {
-+			smq_tree_ctx->cir_off = NIX_AF_TL4X_CIR(schq);
-+			smq_tree_ctx->pir_off = NIX_AF_TL4X_PIR(schq);
-+			parent_off = NIX_AF_TL4X_PARENT(schq);
-+		} else if (lvl == NIX_TXSCH_LVL_MDQ) {
-+			smq_tree_ctx->cir_off = NIX_AF_MDQX_CIR(schq);
-+			smq_tree_ctx->pir_off = NIX_AF_MDQX_PIR(schq);
-+			parent_off = NIX_AF_MDQX_PARENT(schq);
-+		}
-+		/* save cir/pir register values */
-+		smq_tree_ctx->cir_val = rvu_read64(rvu, blkaddr, smq_tree_ctx->cir_off);
-+		if (smq_tree_ctx->pir_off)
-+			smq_tree_ctx->pir_val = rvu_read64(rvu, blkaddr, smq_tree_ctx->pir_off);
-+
-+		/* get parent txsch node */
-+		if (parent_off) {
-+			regval = rvu_read64(rvu, blkaddr, parent_off);
-+			schq = (regval >> 16) & 0x1FF;
-+		}
-+	}
-+}
-+
-+static void nix_smq_flush_enadis_xoff(struct rvu *rvu, int blkaddr,
-+				      struct nix_smq_flush_ctx *smq_flush_ctx, bool enable)
-+{
-+	struct nix_txsch *txsch;
-+	struct nix_hw *nix_hw;
-+	u64 regoff;
-+	int tl2;
-+
-+	nix_hw = get_nix_hw(rvu->hw, blkaddr);
-+	if (!nix_hw)
-+		return;
-+
-+	/* loop through all TL2s with matching PF_FUNC */
-+	txsch = &nix_hw->txsch[NIX_TXSCH_LVL_TL2];
-+	for (tl2 = 0; tl2 < txsch->schq.max; tl2++) {
-+		/* skip the smq(flush) TL2 */
-+		if (tl2 == smq_flush_ctx->tl2_schq)
-+			continue;
-+		/* skip unused TL2s */
-+		if (TXSCH_MAP_FLAGS(txsch->pfvf_map[tl2]) & NIX_TXSCHQ_FREE)
-+			continue;
-+		/* skip if PF_FUNC doesn't match */
-+		if ((TXSCH_MAP_FUNC(txsch->pfvf_map[tl2]) & ~RVU_PFVF_FUNC_MASK) !=
-+		    (TXSCH_MAP_FUNC(txsch->pfvf_map[smq_flush_ctx->tl2_schq] &
-+				    ~RVU_PFVF_FUNC_MASK)))
-+			continue;
-+		/* enable/disable XOFF */
-+		regoff = NIX_AF_TL2X_SW_XOFF(tl2);
-+		if (enable)
-+			rvu_write64(rvu, blkaddr, regoff, 0x1);
-+		else
-+			rvu_write64(rvu, blkaddr, regoff, 0x0);
-+	}
-+}
-+
-+static void nix_smq_flush_enadis_rate(struct rvu *rvu, int blkaddr,
-+				      struct nix_smq_flush_ctx *smq_flush_ctx, bool enable)
-+{
-+	u64 cir_off, pir_off, cir_val, pir_val;
-+	struct nix_smq_tree_ctx *smq_tree_ctx;
-+	int lvl;
-+
-+	for (lvl = NIX_TXSCH_LVL_SMQ; lvl <= NIX_TXSCH_LVL_TL1; lvl++) {
-+		smq_tree_ctx = &smq_flush_ctx->smq_tree_ctx[lvl];
-+		cir_off = smq_tree_ctx->cir_off;
-+		cir_val = smq_tree_ctx->cir_val;
-+		pir_off = smq_tree_ctx->pir_off;
-+		pir_val = smq_tree_ctx->pir_val;
-+
-+		if (enable) {
-+			rvu_write64(rvu, blkaddr, cir_off, cir_val);
-+			if (lvl != NIX_TXSCH_LVL_TL1)
-+				rvu_write64(rvu, blkaddr, pir_off, pir_val);
-+		} else {
-+			rvu_write64(rvu, blkaddr, cir_off, 0x0);
-+			if (lvl != NIX_TXSCH_LVL_TL1)
-+				rvu_write64(rvu, blkaddr, pir_off, 0x0);
-+		}
-+	}
-+}
-+
- static int nix_smq_flush(struct rvu *rvu, int blkaddr,
- 			 int smq, u16 pcifunc, int nixlf)
- {
-+	struct nix_smq_flush_ctx *smq_flush_ctx;
- 	int pf = rvu_get_pf(pcifunc);
- 	u8 cgx_id = 0, lmac_id = 0;
- 	int err, restore_tx_en = 0;
-@@ -2077,6 +2189,14 @@ static int nix_smq_flush(struct rvu *rvu, int blkaddr,
- 						   lmac_id, true);
- 	}
- 
-+	/* XOFF all TL2s whose parent TL1 matches SMQ tree TL1 */
-+	smq_flush_ctx = kzalloc(sizeof(*smq_flush_ctx), GFP_KERNEL);
-+	if (!smq_flush_ctx)
-+		return -ENOMEM;
-+	nix_smq_flush_fill_ctx(rvu, blkaddr, smq, smq_flush_ctx);
-+	nix_smq_flush_enadis_xoff(rvu, blkaddr, smq_flush_ctx, true);
-+	nix_smq_flush_enadis_rate(rvu, blkaddr, smq_flush_ctx, false);
-+
- 	cfg = rvu_read64(rvu, blkaddr, NIX_AF_SMQX_CFG(smq));
- 	/* Do SMQ flush and set enqueue xoff */
- 	cfg |= BIT_ULL(50) | BIT_ULL(49);
-@@ -2091,8 +2211,14 @@ static int nix_smq_flush(struct rvu *rvu, int blkaddr,
- 	err = rvu_poll_reg(rvu, blkaddr,
- 			   NIX_AF_SMQX_CFG(smq), BIT_ULL(49), true);
- 	if (err)
--		dev_err(rvu->dev,
--			"NIXLF%d: SMQ%d flush failed\n", nixlf, smq);
-+		dev_info(rvu->dev,
-+			 "NIXLF%d: SMQ%d flush failed, txlink might be busy\n",
-+			 nixlf, smq);
-+
-+	/* clear XOFF on TL2s */
-+	nix_smq_flush_enadis_rate(rvu, blkaddr, smq_flush_ctx, true);
-+	nix_smq_flush_enadis_xoff(rvu, blkaddr, smq_flush_ctx, false);
-+	kfree(smq_flush_ctx);
- 
- 	rvu_cgx_enadis_rx_bp(rvu, pf, true);
- 	/* restore cgx tx state */
--- 
-2.39.0.198.ga38d39a4c5
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
 
