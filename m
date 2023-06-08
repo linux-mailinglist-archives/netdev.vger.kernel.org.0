@@ -1,71 +1,71 @@
-Return-Path: <netdev+bounces-9301-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9302-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id AFB097285F0
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 19:06:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id C09367285F8
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 19:08:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EA8A51C20B59
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 17:06:01 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DBFF21C20BB9
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 17:08:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A8B71990D;
-	Thu,  8 Jun 2023 17:06:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B4CF19911;
+	Thu,  8 Jun 2023 17:08:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A10A171CB
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 17:06:02 +0000 (UTC)
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5424E210E
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 10:06:00 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-565cd2fc9acso7962957b3.0
-        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 10:06:00 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75BA5182DA
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 17:08:37 +0000 (UTC)
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB0F2136
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 10:08:35 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id 3f1490d57ef6-bb1f7c5495dso946138276.3
+        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 10:08:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1686243959; x=1688835959;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1686244115; x=1688836115;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=JB0omjtmUi/Rg6T2WVdvYdMF3u/oqn2KDIpUtLQPAbY=;
-        b=b0mZb9/ivmiIfYXvbLgRE4P/dpGdSsx1aAwGVq/0EEJLnlXffBwRADcOZk3TgwHFCF
-         xDQjkRZFu2GoKC3K1O0gb/pYzvnboG759v9I3yX6masu7dHKV4NgEmEdKTxiPi2j0zRj
-         5TNcGaMQDECj90FcVyw4BThLr11ygGYZJJzpo/aPwhZ6rl2EeuULv2a2gos6nxJs+/H0
-         nfkxdp5d1s2HmY7NDOe0m84WlQn5Cx3NYc6I7ozWqSaRYjm7W9+epmdF6fGPF20H7zyP
-         38xeJgkDgEFAzS6BlZHcSMH1wgPeXg3r1bi0dF45ure4AmiloZJR426xQBrGTAYg28OU
-         s0WQ==
+        bh=PxyC+RS44UxMAlB5syapo/ejzzpJ3Tx9+tfTfv1MFhw=;
+        b=P01SlFxcBoIk4VY1+Q0mwrrN+pGDHEzR9S5MGnD92PoKaHTRXa2PYcWq1nE7/c4RGQ
+         8qoYIhKf5oxXcSKqR3bV7Rb8Acd+BuFRYCFJOcWxtQa667tZ9pAiyIYdZicOa2gIM/v2
+         dY8r2Ti0+F0z3068TP944j3/KWpCEqnmDLjM7Iz2Zy4R44rJS0WdMua+DmK1BB2dE+va
+         5iCOqtezKV3oLiLGddqTmQ711VWsAHyO/eA6A3iA3A4YDUMmDYLim237O34fYYgGEvLZ
+         NcdOheYRj39tVM+6BhFtdX/2NojwBxwonQY8Fl3UZ54Dw+NZf3mqALhVfPdkUQ+oF5Qn
+         8s+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686243959; x=1688835959;
+        d=1e100.net; s=20221208; t=1686244115; x=1688836115;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=JB0omjtmUi/Rg6T2WVdvYdMF3u/oqn2KDIpUtLQPAbY=;
-        b=RXG3LBiFxxd9/A88P+X0Lo3HmFKIgq/Bn+224yzsKrd5O3rQ4O0W/YXwfBj9+XDoK6
-         0TQxcRLRTIlnRxGq0UFma66dbzELggvRqHCEuuQSqOVcYDP81yscNylPqqYqZ5UVOdUF
-         lfadjhSbBjX6Fk6juyco4+rovcfDHxvzzJ7WLLyC2+QuRzsFIKCFMCfPJ8XfkMgnffCt
-         3OAbVJhOHE4LkTkNhTXJtX+XdzAJFlIQpG0x/1XB0YpFLrO/OMhV8HHQFuR8lZOHTsly
-         hinJ0AllTUHKAQEL8OCXWeet5X4hZzMlmdC7Z6kTXolJx7uuX6uxzn7rwJs8j9O1qw1p
-         N1KA==
-X-Gm-Message-State: AC+VfDwXZ0+rKAmK0aJVxMpedg3cAk+whv7omnxhBO/k8UVpEYBx5htj
-	FbBSa2TXN82gMnqEXyh8ZWUbxTULvenF6nJfeR6idA==
-X-Google-Smtp-Source: ACHHUZ7dRHBpZ/5tqylZDKD/lBDjLFfUPHTPMyV7dILdOL7cusywdmoik43yZBOryD0BV3quaXfg0Ebr3V/9IHUIXB4=
-X-Received: by 2002:a81:4f57:0:b0:569:51d4:e723 with SMTP id
- d84-20020a814f57000000b0056951d4e723mr284594ywb.36.1686243959542; Thu, 08 Jun
- 2023 10:05:59 -0700 (PDT)
+        bh=PxyC+RS44UxMAlB5syapo/ejzzpJ3Tx9+tfTfv1MFhw=;
+        b=hmK6x+wCRq2v5UwX8P/V8rIQg+ecltdZH2Lit+4In6uqaO176XkOhkVH8u1iBnZ7Cj
+         VBIBiBZIs5kxKEgEilI6dZehvAB/NKE+4Up8lBTYEZ1gyf9uytbP4Yfj9OBYmiNhh6CF
+         wvN0NbbmPLw6dXXZBQiO5WQBK4pnuhaueGe0pxI6Zoqn1rgaf/vOJt5f/1fGaYCtTjm9
+         OxrPmePEs+2nnYuQFb0FEx4TpSyK4fuIJ4qr032rhcFTM8WgQEOJFpC/+w5sMSLaeuab
+         uQT0DJ5AtBQkAOXhyn8xKvOs/ZYPHMK8s3egmTICvxfXV8HiVQ0mnSu8/5wZfbebvmST
+         S6Nw==
+X-Gm-Message-State: AC+VfDzsoqCwsYmeTI6xLw+EnmHXEM5Zp5qpqdWvBmT7JYOafO1p3eg7
+	PkrWOIZpr4pLtK44/YAiSAzxNNQEGq4Klj3qF+VCsA==
+X-Google-Smtp-Source: ACHHUZ7+Tjkt+U9Q1WeKF1Em4vGXxkZnZcs7nsaxw/5BbDAtF0ml5DjY9yRnj8sAx8MlISlwHeCcHex7OddfVAoUMNs=
+X-Received: by 2002:a0d:df41:0:b0:567:2891:a2ec with SMTP id
+ i62-20020a0ddf41000000b005672891a2ecmr317689ywe.22.1686244114870; Thu, 08 Jun
+ 2023 10:08:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230608140246.15190-1-fw@strlen.de> <20230608140246.15190-4-fw@strlen.de>
-In-Reply-To: <20230608140246.15190-4-fw@strlen.de>
+References: <20230608140246.15190-1-fw@strlen.de> <20230608140246.15190-3-fw@strlen.de>
+In-Reply-To: <20230608140246.15190-3-fw@strlen.de>
 From: Jamal Hadi Salim <jhs@mojatatu.com>
-Date: Thu, 8 Jun 2023 13:05:48 -0400
-Message-ID: <CAM0EoMkMxOwxNVANaYjd6GBFOkkhkNz=n9xyTnLR6=OmB9nVAw@mail.gmail.com>
-Subject: Re: [PATCH net v2 3/3] net/sched: act_ipt: zero skb->cb before
- calling target
+Date: Thu, 8 Jun 2023 13:08:23 -0400
+Message-ID: <CAM0EoMkDHQYdL+0cgOzbEemAOfFXPJSe-z0Bgez=YbyQ56iLoQ@mail.gmail.com>
+Subject: Re: [PATCH net v2 2/3] net/sched: act_ipt: add sanity checks on skb
+ before calling target
 To: Florian Westphal <fw@strlen.de>
 Cc: netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com, 
 	davem@davemloft.net, pabeni@redhat.com, xiyou.wangcong@gmail.com, 
@@ -81,114 +81,92 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 On Thu, Jun 8, 2023 at 10:03=E2=80=AFAM Florian Westphal <fw@strlen.de> wro=
 te:
 >
-> xtables relies on skb being owned by ip stack, i.e. with ipv4
-> check in place skb->cb is supposed to be IPCB.
+> Netfilter targets make assumptions on the skb state, for example
+> iphdr is supposed to be in the linear area.
 >
-> I don't see an immediate problem (REJECT target cannot be used anymore
-> now that PRE/POSTROUTING hook validation has been fixed), but better be
-> safe than sorry.
+> This is normally done by IP stack, but in act_ipt case no
+> such checks are made.
 >
-> A much better patch would be to either mark act_ipt as
-> "depends on BROKEN" or remove it altogether. I plan to do this
-> for -next in the near future.
-
-Let me handle this part please.
-
-> This tc extension is broken in the sense that tc lacks an
-> equivalent of NF_STOLEN verdict.
-> With NF_STOLEN, target function takes complete ownership of skb, caller
-> cannot dereference it anymore.
+> Some targets can even assume that skb_dst will be valid.
+> Make a minimum effort to check for this:
 >
-> ACT_STOLEN cannot be used for this: it has a different meaning, caller
-> is allowed to dereference the skb.
->
-
-ACT_STOLEN requires that the target clones the packet and the caller
-to free the skb.
-
-> At this time NF_STOLEN won't be returned by any targets as far as I can
-> see, but this may change in the future.
->
-> It might be possible to work around this via list of allowed
-> target extensions known to only return DROP or ACCEPT verdicts, but this
-> is error prone/fragile.
-
-I didnt quiet follow why ACT_STOLEN if this action frees the packet
-and returns NF_STOLEN
-
-> Existing selftest only validates xt_LOG and act_ipt is restricted
-> to ipv4 so I don't think this action is used widely.
+> - Don't call the targets eval function for non-ipv4 skbs.
+> - Don't call the targets eval function for POSTROUTING
+>   emulation when the skb has no dst set.
 >
 > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 > Signed-off-by: Florian Westphal <fw@strlen.de>
 > Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-Other than that:
+Other than the comment from Davide (which makes sense) I would say:
 Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-
-And thank you for doing this Florian.
 
 cheers,
 jamal
+
+
 > ---
->  v2: add Fixes tag, fix typo in commit message, diff unchanged.
+>  v2: add Fixes tag, diff unchanged.
 >
->  net/sched/act_ipt.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+>  net/sched/act_ipt.c | 33 +++++++++++++++++++++++++++++++++
+>  1 file changed, 33 insertions(+)
 >
 > diff --git a/net/sched/act_ipt.c b/net/sched/act_ipt.c
-> index 2f0b39cc4e37..ec04bcfa0f4b 100644
+> index ea7f151e7dd2..2f0b39cc4e37 100644
 > --- a/net/sched/act_ipt.c
 > +++ b/net/sched/act_ipt.c
-> @@ -21,6 +21,7 @@
->  #include <linux/tc_act/tc_ipt.h>
->  #include <net/tc_act/tc_ipt.h>
->  #include <net/tc_wrapper.h>
-> +#include <net/ip.h>
+> @@ -230,6 +230,26 @@ static int tcf_xt_init(struct net *net, struct nlatt=
+r *nla,
+>                               a, &act_xt_ops, tp, flags);
+>  }
 >
->  #include <linux/netfilter_ipv4/ip_tables.h>
->
-> @@ -254,6 +255,7 @@ TC_INDIRECT_SCOPE int tcf_ipt_act(struct sk_buff *skb=
-,
+> +static bool tcf_ipt_act_check(struct sk_buff *skb)
+> +{
+> +       const struct iphdr *iph;
+> +       unsigned int nhoff, len;
+> +
+> +       if (!pskb_may_pull(skb, sizeof(struct iphdr)))
+> +               return false;
+> +
+> +       nhoff =3D skb_network_offset(skb);
+> +       iph =3D ip_hdr(skb);
+> +       if (iph->ihl < 5 || iph->version !=3D 4)
+> +               return false;
+> +
+> +       len =3D skb_ip_totlen(skb);
+> +       if (skb->len < nhoff + len || len < (iph->ihl * 4u))
+> +               return false;
+> +
+> +       return pskb_may_pull(skb, iph->ihl * 4u);
+> +}
+> +
+>  TC_INDIRECT_SCOPE int tcf_ipt_act(struct sk_buff *skb,
 >                                   const struct tc_action *a,
 >                                   struct tcf_result *res)
->  {
-> +       char saved_cb[sizeof_field(struct sk_buff, cb)];
->         int ret =3D 0, result =3D 0;
->         struct tcf_ipt *ipt =3D to_ipt(a);
->         struct xt_action_param par;
-> @@ -280,6 +282,8 @@ TC_INDIRECT_SCOPE int tcf_ipt_act(struct sk_buff *skb=
-,
->                 state.out =3D skb->dev;
->         }
+> @@ -244,9 +264,22 @@ TC_INDIRECT_SCOPE int tcf_ipt_act(struct sk_buff *sk=
+b,
+>                 .pf     =3D NFPROTO_IPV4,
+>         };
 >
-> +       memcpy(saved_cb, skb->cb, sizeof(saved_cb));
+> +       if (skb->protocol !=3D htons(ETH_P_IP))
+> +               return TC_ACT_UNSPEC;
+> +
+>         if (skb_unclone(skb, GFP_ATOMIC))
+>                 return TC_ACT_UNSPEC;
+>
+> +       if (!tcf_ipt_act_check(skb))
+> +               return TC_ACT_UNSPEC;
+> +
+> +       if (state.hook =3D=3D NF_INET_POST_ROUTING) {
+> +               if (!skb_dst(skb))
+> +                       return TC_ACT_UNSPEC;
+> +
+> +               state.out =3D skb->dev;
+> +       }
 > +
 >         spin_lock(&ipt->tcf_lock);
 >
 >         tcf_lastuse_update(&ipt->tcf_tm);
-> @@ -292,6 +296,9 @@ TC_INDIRECT_SCOPE int tcf_ipt_act(struct sk_buff *skb=
-,
->         par.state    =3D &state;
->         par.target   =3D ipt->tcfi_t->u.kernel.target;
->         par.targinfo =3D ipt->tcfi_t->data;
-> +
-> +       memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
-> +
->         ret =3D par.target->target(skb, &par);
->
->         switch (ret) {
-> @@ -312,6 +319,9 @@ TC_INDIRECT_SCOPE int tcf_ipt_act(struct sk_buff *skb=
-,
->                 break;
->         }
->         spin_unlock(&ipt->tcf_lock);
-> +
-> +       memcpy(skb->cb, saved_cb, sizeof(skb->cb));
-> +
->         return result;
->
->  }
 > --
 > 2.40.1
 >
