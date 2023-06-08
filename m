@@ -1,78 +1,66 @@
-Return-Path: <netdev+bounces-9176-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9177-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id B58C0727C50
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 12:07:03 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0BD56727C57
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 12:08:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0B1521C20F50
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 10:07:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 551551C20FC2
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 10:08:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 97638BA26;
-	Thu,  8 Jun 2023 10:07:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E0E7BBA36;
+	Thu,  8 Jun 2023 10:08:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D829A945
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 10:07:00 +0000 (UTC)
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on20627.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eab::627])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D592D65
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 03:06:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lg6kRWLjXYIEXlUtnIrmVOlzxHaR47rLRGZZrVGrR/JyThqR+daiSntJ4r4SwQXIANZxe5fsh4b6AS0dxOw8UOJUoAbLnw1R/1LmpOG58LfK+r+b5E8rbiBozApyOaAToqlNoyBctm8GKoxhqIZz8ixJo4v4K3q2votbUCovOwbZN8qO47zbC+/uNS3SQZHE8Pv/+NdXra3+CidEKuvO5hyARP4BpsX7nOLiDPzdB/EfU5mXD51KGT50Au7vywWKSyJSeU91wHGDFD6wT8tXYe8m8+b/WawK7YlFmOGsIpLXtrM8xjsi9Tti3WU6HD+99J0l34NFi+p82M01vrQtVQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Z+msxoza05NmpAkVu86jFS6y82ULnUOG+WwooMrMCAg=;
- b=ZD7wrgqptGAmYNWu25USwbQnwO4WqD0s9Zr/zbn7DRtH+FxYDPQ9Gt3I0Y830A+XJtmTIU9RxHT/zhPuRw1nODIBBUv59r1ROiEXTPhRi/K5Djo2z5HUMRAWGyfEsS9+vs4O7vtJ4Q5C0iJGm4+Z5qfvI6EAF6tplpyPA4Q93KhIz6kINjtX5Y2HHbMzKOPeKHFaclts9CFLNJ+FDgENNhw+GSguxjgs6OY9G1YWhpVUiZCmd6NIqjiqqCD1tmmxrvRCKgtHwkDLrwhnrbYUZ29Aieo2lf1qOQt+A6HY8vZOnuIASSa9Sq9NNSIP31ntYLYV07vSTVUEF4E+u2t8BQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z+msxoza05NmpAkVu86jFS6y82ULnUOG+WwooMrMCAg=;
- b=l1+Cofchxv0SsGex/JQ+Cg63klGuQIn9u9CViJLTuVAD6rUPqY3400dzntF+sF53fLoz+YKmS6KQcU0lnkVqmGBMmSeOAjzgJA7Ot409NnL462KRcft3BFuA5Lny024CWblS2+ydqSs4OTzkXNzWggzhhEv71hmkxFZa148BHKx+kNQR2iR3cBLiZUObXTAjuF8KVRmdZloKR5Zhgcay9aWw2fzZyntTKiW2kG9A6DZXIfX32SSiELBcBpA44gtu4mm/jGcLMMUaMqtpEyb9YejBDPb6Jn/uN24U7oIO3uUWe5LqBZDt4x78r9KCqF37EXrVaATF1j0qajVs+QEvfA==
-Received: from BN9PR03CA0122.namprd03.prod.outlook.com (2603:10b6:408:fe::7)
- by SJ0PR12MB8116.namprd12.prod.outlook.com (2603:10b6:a03:4ec::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Thu, 8 Jun
- 2023 10:06:15 +0000
-Received: from BN8NAM11FT037.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fe:cafe::c8) by BN9PR03CA0122.outlook.office365.com
- (2603:10b6:408:fe::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.26 via Frontend
- Transport; Thu, 8 Jun 2023 10:06:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BN8NAM11FT037.mail.protection.outlook.com (10.13.177.182) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6477.24 via Frontend Transport; Thu, 8 Jun 2023 10:06:15 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 8 Jun 2023
- 03:06:04 -0700
-Received: from dev-r-vrt-155.mtr.labs.mlnx (10.126.231.35) by
- rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Thu, 8 Jun 2023 03:06:01 -0700
-From: Ido Schimmel <idosch@nvidia.com>
-To: <netdev@vger.kernel.org>
-CC: <dsahern@gmail.com>, <stephen@networkplumber.org>, <jiri@nvidia.com>,
-	<razor@blackwall.org>, <petrm@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH iproute2-next v2] f_flower: Add l2_miss support
-Date: Thu, 8 Jun 2023 13:05:32 +0300
-Message-ID: <20230608100532.4146080-1-idosch@nvidia.com>
-X-Mailer: git-send-email 2.40.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0CA63B3FA
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 10:08:18 +0000 (UTC)
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F9B1FE9
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 03:08:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686218896; x=1717754896;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Z4045QyoqPWLPTGouGyVm8MQuqusvAeuwC7pOKkRe2g=;
+  b=XWh+dWyxgx2YEwMRd4SwR/usZhsVLegw14t8F8j2lAuW9Y38iXxD5N/0
+   qb6nefLx+peCc5e+hemhlEFVmJNYCjjNn9qvfnWZyrHId8xymbH/74a0i
+   KFeFWzyARFzl22npKg5XQZumLS/ro5kbo40yq5xpMi0JXkw9jzCzAdw5H
+   IoYg46gRU4opMvWsaD1wcavl2OJvUMYNyAiTAKNSCqzxgij7n0B3Pnwgg
+   yai/01y4UxGAFYSuXnasDV8u/S04NPENqJFmQI9CvghQL8LrFHdGj25XW
+   AXYLJwOWCJ2UTp+Ep8qIXLG3IDX4YBTrDhc8r+z0tV7dVvdUOjbzllYa6
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10734"; a="341923469"
+X-IronPort-AV: E=Sophos;i="6.00,226,1681196400"; 
+   d="scan'208";a="341923469"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2023 03:08:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10734"; a="709922941"
+X-IronPort-AV: E=Sophos;i="6.00,226,1681196400"; 
+   d="scan'208";a="709922941"
+Received: from bswcg4446240.iind.intel.com ([10.224.174.140])
+  by orsmga002.jf.intel.com with ESMTP; 08 Jun 2023 03:08:11 -0700
+From: m.chetan.kumar@linux.intel.com
+To: netdev@vger.kernel.org
+Cc: kuba@kernel.org,
+	davem@davemloft.net,
+	johannes@sipsolutions.net,
+	ryazanov.s.a@gmail.com,
+	loic.poulain@linaro.org,
+	linuxwwan@intel.com,
+	m.chetan.kumar@intel.com,
+	edumazet@google.com,
+	pabeni@redhat.com,
+	M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+Subject: [PATCH net-next] net: wwan: iosm: enable runtime pm support for 7560
+Date: Thu,  8 Jun 2023 15:38:03 +0530
+Message-Id: <1b0829943267c30de27f271666cb7ce897f5b54a.1686218573.git.m.chetan.kumar@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -80,186 +68,299 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT037:EE_|SJ0PR12MB8116:EE_
-X-MS-Office365-Filtering-Correlation-Id: 48db1af5-30fd-4284-1e02-08db6807fed6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	oSX/2SqFo2Q0r/sG8U8QmM5FAC1W3VIPIxwA/AwJtiBTGooho8Ut5HLVLu49pHhcMAEwn74EUJWfD8Oaqy7Mne5CdkRSOjADkDgHKG3rAdGFWtjx/5gHVsA7uHF+6NfyT8Hzv+thR12bre4wlgBKY4yIPO1Gdl0BWxZlqQaMSUysS7ieHfRxtkIyuURMvmsq+KsuP91npPx7VxPMhCA2R74hX0xW73Bf63nyXG0oaYLENifBfbCMLjicF2vj4S//P4Zud3W0V4L4/7NK5uEO1jTnkdWm6u1sTl/UbrqP/TgecZEUDyj1TqjQh5k5Cip1w/jCkT4OI7L0ioncR5Y+mt3ecjWITOpuJitUf09ZXwk/nw+8fMD3hb64yhO0cNTB43mhriz0l93FzFMKJDEQUWDuhkP7LLy0OAwZzlCLgWV4wQwLDvugc1t9OyuZ9SnzLKE1xcWkDx/EwStNIs/OrZyR+j1rkg2qSsqMwwxDgJN4HuqvJdb1VdQOW+zqYsGNvlUOV9uMn8HYWncn2Pf0YcFSTwS0sUGiLdHobdYCobPtUOqlz48o5JxAxtaAbAqoN3NixGHmdmXx8pz1B4WEHceq9sfff3whTZsOuQGYLReBYyASTHz05rzaFuVvHq/zWSP/UWyWjsZ9+9JflsA0XIpAJ781R+yS+QzKToF1aERfPR4LMXEYAzr84R+9H+WXVTjSumFiTKckdBldhpLD08+xNRceybUPXzvZZZHCtDzIf5TJF2tOBNLgQMkZWpXK
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(396003)(346002)(136003)(451199021)(46966006)(40470700004)(36840700001)(47076005)(26005)(1076003)(2616005)(6916009)(356005)(40480700001)(7636003)(316002)(83380400001)(70206006)(70586007)(4326008)(16526019)(6666004)(107886003)(186003)(36860700001)(336012)(426003)(82310400005)(54906003)(478600001)(36756003)(40460700003)(2906002)(5660300002)(8936002)(8676002)(82740400003)(86362001)(41300700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2023 10:06:15.0687
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 48db1af5-30fd-4284-1e02-08db6807fed6
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT037.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8116
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
-	autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add the ability to match on packets that encountered a layer 2 miss in
-bridge driver's FDB / MDB. Example:
+From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 
- # tc filter add dev swp2 egress pref 1 proto all flower indev swp1 l2_miss 1 action drop
- # tc filter add dev swp2 egress pref 1 proto all flower indev swp1 l2_miss 0 action drop
+Adds runtime pm support for 7560.
 
- # tc filter show dev swp2 egress
- filter protocol all pref 1 flower chain 0
- filter protocol all pref 1 flower chain 0 handle 0x1
-   indev swp1
-   l2_miss 1
-   not_in_hw
-         action order 1: gact action drop
-          random type none pass val 0
-          index 1 ref 1 bind 1
+As part of probe procedure auto suspend is enabled and auto suspend
+delay is set to 5000 ms for runtime pm use. Later auto flag is set
+to power manage the device at run time.
 
- filter protocol all pref 1 flower chain 0 handle 0x2
-   indev swp1
-   l2_miss 0
-   not_in_hw
-         action order 1: gact action drop
-          random type none pass val 0
-          index 2 ref 1 bind 1
+On successful communication establishment between host and device the
+device usage counter is dropped and request to put the device into
+sleep state (suspend).
 
- # tc -j -p filter show dev swp2 egress
- [ {
-         "protocol": "all",
-         "pref": 1,
-         "kind": "flower",
-         "chain": 0
-     },{
-         "protocol": "all",
-         "pref": 1,
-         "kind": "flower",
-         "chain": 0,
-         "options": {
-             "handle": 1,
-             "indev": "swp1",
-             "keys": {
-                 "l2_miss": 1
-             },
-             "not_in_hw": true,
-             "actions": [ {
- [...]
-                 } ]
-         }
-     },{
-         "protocol": "all",
-         "pref": 1,
-         "kind": "flower",
-         "chain": 0,
-         "options": {
-             "handle": 2,
-             "indev": "swp1",
-             "keys": {
-                 "l2_miss": 0
-             },
-             "not_in_hw": true,
-             "actions": [ {
- [...]
-                 } ]
-         }
-     } ]
+In TX path, the device usage counter is raised and device is moved out
+of sleep(resume) for data transmission. In RX path, if the device has
+some data to be sent it request host platform to change the power state
+by giving PCI PME message.
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 ---
+ drivers/net/wwan/iosm/iosm_ipc_imem.c  | 17 +++++++++++++++++
+ drivers/net/wwan/iosm/iosm_ipc_imem.h  |  2 ++
+ drivers/net/wwan/iosm/iosm_ipc_pcie.c  |  4 +++-
+ drivers/net/wwan/iosm/iosm_ipc_port.c  | 17 ++++++++++++++++-
+ drivers/net/wwan/iosm/iosm_ipc_trace.c |  8 ++++++++
+ drivers/net/wwan/iosm/iosm_ipc_wwan.c  | 21 +++++++++++++++++++--
+ 6 files changed, 65 insertions(+), 4 deletions(-)
 
-Notes:
-    v2:
-    * Use '%u' instead of '%d'.
-
- man/man8/tc-flower.8 | 10 +++++++++-
- tc/f_flower.c        | 18 ++++++++++++++++++
- 2 files changed, 27 insertions(+), 1 deletion(-)
-
-diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
-index fc73da93c5c3..cd99745065cf 100644
---- a/man/man8/tc-flower.8
-+++ b/man/man8/tc-flower.8
-@@ -100,7 +100,9 @@ flower \- flow based traffic control filter
- }
- .IR OPTIONS " | "
- .BR ip_flags
--.IR IP_FLAGS " }"
-+.IR IP_FLAGS " | "
-+.B l2_miss
-+.IR L2_MISS " }"
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.c b/drivers/net/wwan/iosm/iosm_ipc_imem.c
+index 829515a601b3..635301d677e1 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_imem.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_imem.c
+@@ -4,6 +4,7 @@
+  */
  
- .ti -8
- .IR LSE_LIST " := [ " LSE_LIST " ] " LSE
-@@ -493,6 +495,12 @@ respectively. firstfrag and nofirstfrag can be used to further distinguish
- fragmented packet. firstfrag can be used to indicate the first fragmented
- packet. nofirstfrag can be used to indicates subsequent fragmented packets
- or non-fragmented packets.
-+.TP
-+.BI l2_miss " L2_MISS"
-+Match on layer 2 miss in the bridge driver's FDB / MDB. \fIL2_MISS\fR may be 0
-+or 1. When 1, match on packets that encountered a layer 2 miss. When 0, match
-+on packets that were forwarded using an FDB / MDB entry. Note that broadcast
-+packets do not encounter a miss since a lookup is not performed for them.
- .SH NOTES
- As stated above where applicable, matches of a certain layer implicitly depend
- on the matches of the next lower layer. Precisely, layer one and two matches
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index c73c46dd234b..b9fe6afb49b2 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -91,6 +91,7 @@ static void explain(void)
- 		"			erspan_opts MASKED-OPTIONS |\n"
- 		"			gtp_opts MASKED-OPTIONS |\n"
- 		"			ip_flags IP-FLAGS |\n"
-+		"			l2_miss L2_MISS |\n"
- 		"			enc_dst_port [ port_number ] |\n"
- 		"			ct_state MASKED_CT_STATE |\n"
- 		"			ct_label MASKED_CT_LABEL |\n"
-@@ -1520,6 +1521,15 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
- 				fprintf(stderr, "Illegal \"ip_flags\"\n");
- 				return -1;
- 			}
-+		} else if (strcmp(*argv, "l2_miss") == 0) {
-+			__u8 l2_miss;
-+
-+			NEXT_ARG();
-+			if (get_u8(&l2_miss, *argv, 10)) {
-+				fprintf(stderr, "Illegal \"l2_miss\"\n");
-+				return -1;
-+			}
-+			addattr8(n, MAX_MSG, TCA_FLOWER_L2_MISS, l2_miss);
- 		} else if (matches(*argv, "verbose") == 0) {
- 			flags |= TCA_CLS_FLAGS_VERBOSE;
- 		} else if (matches(*argv, "skip_hw") == 0) {
-@@ -2983,6 +2993,14 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 				    tb[TCA_FLOWER_KEY_FLAGS],
- 				    tb[TCA_FLOWER_KEY_FLAGS_MASK]);
+ #include <linux/delay.h>
++#include <linux/pm_runtime.h>
  
-+	if (tb[TCA_FLOWER_L2_MISS]) {
-+		struct rtattr *attr = tb[TCA_FLOWER_L2_MISS];
-+
-+		print_nl();
-+		print_uint(PRINT_ANY, "l2_miss", "  l2_miss %u",
-+			   rta_getattr_u8(attr));
+ #include "iosm_ipc_chnl_cfg.h"
+ #include "iosm_ipc_devlink.h"
+@@ -631,6 +632,11 @@ static void ipc_imem_run_state_worker(struct work_struct *instance)
+ 	/* Complete all memory stores after setting bit */
+ 	smp_mb__after_atomic();
+ 
++	if (ipc_imem->pcie->pci->device == INTEL_CP_DEVICE_7560_ID) {
++		pm_runtime_mark_last_busy(ipc_imem->dev);
++		pm_runtime_put_autosuspend(ipc_imem->dev);
 +	}
 +
- 	flower_print_ct_state(tb[TCA_FLOWER_KEY_CT_STATE],
- 			      tb[TCA_FLOWER_KEY_CT_STATE_MASK]);
- 	flower_print_ct_zone(tb[TCA_FLOWER_KEY_CT_ZONE],
+ 	return;
+ 
+ err_ipc_mux_deinit:
+@@ -1234,6 +1240,7 @@ void ipc_imem_cleanup(struct iosm_imem *ipc_imem)
+ 
+ 	/* forward MDM_NOT_READY to listeners */
+ 	ipc_uevent_send(ipc_imem->dev, UEVENT_MDM_NOT_READY);
++	pm_runtime_get_sync(ipc_imem->dev);
+ 
+ 	hrtimer_cancel(&ipc_imem->td_alloc_timer);
+ 	hrtimer_cancel(&ipc_imem->tdupdate_timer);
+@@ -1419,6 +1426,16 @@ struct iosm_imem *ipc_imem_init(struct iosm_pcie *pcie, unsigned int device_id,
+ 
+ 		set_bit(IOSM_DEVLINK_INIT, &ipc_imem->flag);
+ 	}
++
++	if (!pm_runtime_enabled(ipc_imem->dev))
++		pm_runtime_enable(ipc_imem->dev);
++
++	pm_runtime_set_autosuspend_delay(ipc_imem->dev,
++					 IPC_MEM_AUTO_SUSPEND_DELAY_MS);
++	pm_runtime_use_autosuspend(ipc_imem->dev);
++	pm_runtime_allow(ipc_imem->dev);
++	pm_runtime_mark_last_busy(ipc_imem->dev);
++
+ 	return ipc_imem;
+ devlink_channel_fail:
+ 	ipc_devlink_deinit(ipc_imem->ipc_devlink);
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.h b/drivers/net/wwan/iosm/iosm_ipc_imem.h
+index 5664ac507c90..0144b45e2afb 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_imem.h
++++ b/drivers/net/wwan/iosm/iosm_ipc_imem.h
+@@ -103,6 +103,8 @@ struct ipc_chnl_cfg;
+ #define FULLY_FUNCTIONAL 0
+ #define IOSM_DEVLINK_INIT 1
+ 
++#define IPC_MEM_AUTO_SUSPEND_DELAY_MS 5000
++
+ /* List of the supported UL/DL pipes. */
+ enum ipc_mem_pipes {
+ 	IPC_MEM_PIPE_0 = 0,
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_pcie.c b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+index 04517bd3325a..3a259c9abefd 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_pcie.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+@@ -6,6 +6,7 @@
+ #include <linux/acpi.h>
+ #include <linux/bitfield.h>
+ #include <linux/module.h>
++#include <linux/pm_runtime.h>
+ #include <net/rtnetlink.h>
+ 
+ #include "iosm_ipc_imem.h"
+@@ -437,7 +438,8 @@ static int __maybe_unused ipc_pcie_resume_cb(struct device *dev)
+ 	return 0;
+ }
+ 
+-static SIMPLE_DEV_PM_OPS(iosm_ipc_pm, ipc_pcie_suspend_cb, ipc_pcie_resume_cb);
++static DEFINE_RUNTIME_DEV_PM_OPS(iosm_ipc_pm, ipc_pcie_suspend_cb,
++				 ipc_pcie_resume_cb, NULL);
+ 
+ static struct pci_driver iosm_ipc_driver = {
+ 	.name = KBUILD_MODNAME,
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_port.c b/drivers/net/wwan/iosm/iosm_ipc_port.c
+index 5d5b4183e14a..2ba1ddca3945 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_port.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_port.c
+@@ -3,6 +3,8 @@
+  * Copyright (C) 2020-21 Intel Corporation.
+  */
+ 
++#include <linux/pm_runtime.h>
++
+ #include "iosm_ipc_chnl_cfg.h"
+ #include "iosm_ipc_imem_ops.h"
+ #include "iosm_ipc_port.h"
+@@ -13,12 +15,16 @@ static int ipc_port_ctrl_start(struct wwan_port *port)
+ 	struct iosm_cdev *ipc_port = wwan_port_get_drvdata(port);
+ 	int ret = 0;
+ 
++	pm_runtime_get_sync(ipc_port->ipc_imem->dev);
+ 	ipc_port->channel = ipc_imem_sys_port_open(ipc_port->ipc_imem,
+ 						   ipc_port->chl_id,
+ 						   IPC_HP_CDEV_OPEN);
+ 	if (!ipc_port->channel)
+ 		ret = -EIO;
+ 
++	pm_runtime_mark_last_busy(ipc_port->ipc_imem->dev);
++	pm_runtime_put_autosuspend(ipc_port->ipc_imem->dev);
++
+ 	return ret;
+ }
+ 
+@@ -27,15 +33,24 @@ static void ipc_port_ctrl_stop(struct wwan_port *port)
+ {
+ 	struct iosm_cdev *ipc_port = wwan_port_get_drvdata(port);
+ 
++	pm_runtime_get_sync(ipc_port->ipc_imem->dev);
+ 	ipc_imem_sys_port_close(ipc_port->ipc_imem, ipc_port->channel);
++	pm_runtime_mark_last_busy(ipc_port->ipc_imem->dev);
++	pm_runtime_put_autosuspend(ipc_port->ipc_imem->dev);
+ }
+ 
+ /* transfer control data to modem */
+ static int ipc_port_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
+ {
+ 	struct iosm_cdev *ipc_port = wwan_port_get_drvdata(port);
++	int ret;
+ 
+-	return ipc_imem_sys_cdev_write(ipc_port, skb);
++	pm_runtime_get_sync(ipc_port->ipc_imem->dev);
++	ret = ipc_imem_sys_cdev_write(ipc_port, skb);
++	pm_runtime_mark_last_busy(ipc_port->ipc_imem->dev);
++	pm_runtime_put_autosuspend(ipc_port->ipc_imem->dev);
++
++	return ret;
+ }
+ 
+ static const struct wwan_port_ops ipc_wwan_ctrl_ops = {
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_trace.c b/drivers/net/wwan/iosm/iosm_ipc_trace.c
+index eeecfa3d10c5..4368373797b6 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_trace.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_trace.c
+@@ -3,7 +3,9 @@
+  * Copyright (C) 2020-2021 Intel Corporation.
+  */
+ 
++#include <linux/pm_runtime.h>
+ #include <linux/wwan.h>
++
+ #include "iosm_ipc_trace.h"
+ 
+ /* sub buffer size and number of sub buffer */
+@@ -97,6 +99,8 @@ static ssize_t ipc_trace_ctrl_file_write(struct file *filp,
+ 	if (ret)
+ 		return ret;
+ 
++	pm_runtime_get_sync(ipc_trace->ipc_imem->dev);
++
+ 	mutex_lock(&ipc_trace->trc_mutex);
+ 	if (val == TRACE_ENABLE && ipc_trace->mode != TRACE_ENABLE) {
+ 		ipc_trace->channel = ipc_imem_sys_port_open(ipc_trace->ipc_imem,
+@@ -117,6 +121,10 @@ static ssize_t ipc_trace_ctrl_file_write(struct file *filp,
+ 	ret = count;
+ unlock:
+ 	mutex_unlock(&ipc_trace->trc_mutex);
++
++	pm_runtime_mark_last_busy(ipc_trace->ipc_imem->dev);
++	pm_runtime_put_autosuspend(ipc_trace->ipc_imem->dev);
++
+ 	return ret;
+ }
+ 
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_wwan.c b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
+index ff747fc79aaf..93d17de08786 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_wwan.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
+@@ -6,6 +6,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/if_arp.h>
+ #include <linux/if_link.h>
++#include <linux/pm_runtime.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/wwan.h>
+ #include <net/pkt_sched.h>
+@@ -51,11 +52,13 @@ static int ipc_wwan_link_open(struct net_device *netdev)
+ 	struct iosm_netdev_priv *priv = wwan_netdev_drvpriv(netdev);
+ 	struct iosm_wwan *ipc_wwan = priv->ipc_wwan;
+ 	int if_id = priv->if_id;
++	int ret = 0;
+ 
+ 	if (if_id < IP_MUX_SESSION_START ||
+ 	    if_id >= ARRAY_SIZE(ipc_wwan->sub_netlist))
+ 		return -EINVAL;
+ 
++	pm_runtime_get_sync(ipc_wwan->ipc_imem->dev);
+ 	/* get channel id */
+ 	priv->ch_id = ipc_imem_sys_wwan_open(ipc_wwan->ipc_imem, if_id);
+ 
+@@ -63,7 +66,8 @@ static int ipc_wwan_link_open(struct net_device *netdev)
+ 		dev_err(ipc_wwan->dev,
+ 			"cannot connect wwan0 & id %d to the IPC mem layer",
+ 			if_id);
+-		return -ENODEV;
++		ret = -ENODEV;
++		goto err_out;
+ 	}
+ 
+ 	/* enable tx path, DL data may follow */
+@@ -72,7 +76,11 @@ static int ipc_wwan_link_open(struct net_device *netdev)
+ 	dev_dbg(ipc_wwan->dev, "Channel id %d allocated to if_id %d",
+ 		priv->ch_id, priv->if_id);
+ 
+-	return 0;
++err_out:
++	pm_runtime_mark_last_busy(ipc_wwan->ipc_imem->dev);
++	pm_runtime_put_autosuspend(ipc_wwan->ipc_imem->dev);
++
++	return ret;
+ }
+ 
+ /* Bring-down the wwan net link */
+@@ -82,9 +90,12 @@ static int ipc_wwan_link_stop(struct net_device *netdev)
+ 
+ 	netif_stop_queue(netdev);
+ 
++	pm_runtime_get_sync(priv->ipc_wwan->ipc_imem->dev);
+ 	ipc_imem_sys_wwan_close(priv->ipc_wwan->ipc_imem, priv->if_id,
+ 				priv->ch_id);
+ 	priv->ch_id = -1;
++	pm_runtime_mark_last_busy(priv->ipc_wwan->ipc_imem->dev);
++	pm_runtime_put_autosuspend(priv->ipc_wwan->ipc_imem->dev);
+ 
+ 	return 0;
+ }
+@@ -106,6 +117,7 @@ static netdev_tx_t ipc_wwan_link_transmit(struct sk_buff *skb,
+ 	    if_id >= ARRAY_SIZE(ipc_wwan->sub_netlist))
+ 		return -EINVAL;
+ 
++	pm_runtime_get(ipc_wwan->ipc_imem->dev);
+ 	/* Send the SKB to device for transmission */
+ 	ret = ipc_imem_sys_wwan_transmit(ipc_wwan->ipc_imem,
+ 					 if_id, priv->ch_id, skb);
+@@ -119,9 +131,14 @@ static netdev_tx_t ipc_wwan_link_transmit(struct sk_buff *skb,
+ 		ret = NETDEV_TX_BUSY;
+ 		dev_err(ipc_wwan->dev, "unable to push packets");
+ 	} else {
++		pm_runtime_mark_last_busy(ipc_wwan->ipc_imem->dev);
++		pm_runtime_put_autosuspend(ipc_wwan->ipc_imem->dev);
+ 		goto exit;
+ 	}
+ 
++	pm_runtime_mark_last_busy(ipc_wwan->ipc_imem->dev);
++	pm_runtime_put_autosuspend(ipc_wwan->ipc_imem->dev);
++
+ 	return ret;
+ 
+ exit:
 -- 
-2.40.1
+2.34.1
 
 
