@@ -1,114 +1,133 @@
-Return-Path: <netdev+bounces-9245-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9246-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id F34AE72833A
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 17:05:18 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 311B27283B8
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 17:27:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0664E1C20F3B
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 15:05:15 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 94791281717
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 15:27:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CDF8512B80;
-	Thu,  8 Jun 2023 15:05:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0D04314AA8;
+	Thu,  8 Jun 2023 15:27:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C24B1D2FA
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 15:05:15 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD21B2D61
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 08:05:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686236712;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F14A528F3
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 15:27:46 +0000 (UTC)
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B42A172E;
+	Thu,  8 Jun 2023 08:27:43 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+	by smtp-out2.suse.de (Postfix) with ESMTP id 2496D1FDE6;
+	Thu,  8 Jun 2023 15:27:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1686238062; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=n9DQyeVPqiHPj8YrryZ9yiwKZv7WusIMiEyAhefqDyM=;
-	b=dLAr6+sGDRJWqr+L8K1Uk8UWfIm2HL6xmqTNmEehHiH2EgQ+lMI0acb7aKuwdgYYtPskaR
-	O4GbgLvzj34hVJHCHdCRTzUjitRGiEgp0tqUJN7saGZVk553H+jBqzQbqdnn47sjF2iRFe
-	nEkLX79DiNgYT7WSFt/jdLM8jCxoBWE=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-77-fi8jaPWJPyWGKThANUBgZA-1; Thu, 08 Jun 2023 11:05:11 -0400
-X-MC-Unique: fi8jaPWJPyWGKThANUBgZA-1
-Received: by mail-lj1-f197.google.com with SMTP id 38308e7fff4ca-2b1abdb8ef9so3738821fa.2
-        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 08:05:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686236709; x=1688828709;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=n9DQyeVPqiHPj8YrryZ9yiwKZv7WusIMiEyAhefqDyM=;
-        b=RMFbOCJ60OBpJV5jPtOEBKFajno1ZBV9KRrX8T5lHY7Knoq+hk92g5InopFxFNlono
-         oEJ/kND87lX51h7BYbsO6egRp7/QMFY9fehGmfA0ofj9d70vl6u6EBO0FYGSU+rMNB8F
-         Oq9irsEwepPEHh1hvLR9ULXKmGgec1andEh6unkYCCZrecMtQhbAyt+//9qAGzyVAxlc
-         WQ/UFhdJbKZbvoPcjZ3e1MxXU950CSEM4vxY8tSnw1OifZ/fnpKGApPEtZucm/9LL0fo
-         2vBRYYt1NWp472M0r5NS6e0/7nzbL99Z+VKpynC9LWvPZ9YKXKrl21/570eO1a5ndlnE
-         P7Rg==
-X-Gm-Message-State: AC+VfDxcN1YUwENUbfBCOZgerYa1NZhyDedZsTMa7/gQHRb3CvKtA/NE
-	txgeFV7oxRH3uztFlnm8z6DWJKqdsfA7KqJbFMzWMyyfCSTa1vbwjMh+fopaaPjogGjfvqkXNcv
-	lPRD2FuWN4DM2SI44DSQpstuRxVZhPMxN
-X-Received: by 2002:a2e:7c01:0:b0:2b1:b647:2782 with SMTP id x1-20020a2e7c01000000b002b1b6472782mr3139071ljc.45.1686236709547;
-        Thu, 08 Jun 2023 08:05:09 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6uP1EqrR8KdqwSgFsfiAVx/Ilq1qJJ4Z/jedklINYudqjMIUQLfY6Hm6spvRi50Y8J+Y1mYQGaRVXUtTatAJ4=
-X-Received: by 2002:a2e:7c01:0:b0:2b1:b647:2782 with SMTP id
- x1-20020a2e7c01000000b002b1b6472782mr3139054ljc.45.1686236709186; Thu, 08 Jun
- 2023 08:05:09 -0700 (PDT)
+	bh=YjexGMdyJWeBEjd6xCsB5dyXSs2Z5hB+eEW3odtxG74=;
+	b=SfueeyNYTBrTihKqx8oxJyfXgJUEO72qrEaWzKN9n/xvcrRpUuC7wTlr5iQ5JU20AoKVk+
+	RIlBFvY+Q+Do9PokOXqyijq2TF/CAdHol/tiqVodfAgEosBNsgNhjvbDhDhwUi/3kUlSxU
+	tJXq1cRpat2EYGkHF7TOihaLs/AntV8=
+Received: from suse.cz (unknown [10.100.208.146])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by relay2.suse.de (Postfix) with ESMTPS id 162EF2C141;
+	Thu,  8 Jun 2023 15:27:41 +0000 (UTC)
+Date: Thu, 8 Jun 2023 17:27:40 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Kees Cook <keescook@chromium.org>
+Cc: Richard Weinberger <richard@nod.at>, linux-hardening@vger.kernel.org,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Wedson Almeida Filho <wedsonaf@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Alexei Starovoitov <ast@kernel.org>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [RFC PATCH 0/1] Integer overflows while scanning for integers
+Message-ID: <ZIHzbBXlxEz6As9N@alley>
+References: <20230607223755.1610-1-richard@nod.at>
+ <202306071634.51BBAFD14@keescook>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230608140246.15190-1-fw@strlen.de> <20230608140246.15190-3-fw@strlen.de>
-In-Reply-To: <20230608140246.15190-3-fw@strlen.de>
-From: Davide Caratti <dcaratti@redhat.com>
-Date: Thu, 8 Jun 2023 17:04:57 +0200
-Message-ID: <CAKa-r6uyObXeAUTj28=f+V8BvrUQpXGP12JHRikct3SB=x48GA@mail.gmail.com>
-Subject: Re: [PATCH net v2 2/3] net/sched: act_ipt: add sanity checks on skb
- before calling target
-To: Florian Westphal <fw@strlen.de>
-Cc: netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com, 
-	davem@davemloft.net, pabeni@redhat.com, jhs@mojatatu.com, 
-	xiyou.wangcong@gmail.com, jiri@resnulli.us, 
-	Simon Horman <simon.horman@corigine.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202306071634.51BBAFD14@keescook>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-hello Florian,
+On Wed 2023-06-07 16:36:12, Kees Cook wrote:
+> On Thu, Jun 08, 2023 at 12:37:54AM +0200, Richard Weinberger wrote:
+> > Hi!
+> > 
+> > Lately I wondered whether users of integer scanning functions check
+> > for overflows.
+> > To detect such overflows around scanf I came up with the following
+> > patch. It simply triggers a WARN_ON_ONCE() upon an overflow.
+> > 
+> > After digging into various scanf users I found that the network device
+> > naming code can trigger an overflow.
+> > 
+> > e.g:
+> > $ ip link add 1 type veth peer name 9999999999
+> > $ ip link set name "%d" dev 1
+> > 
+> > It will trigger the following WARN_ON_ONCE():
+> > ------------[ cut here ]------------
+> > WARNING: CPU: 2 PID: 433 at lib/vsprintf.c:3701 vsscanf+0x6ce/0x990
+> 
+> Hm, it's considered a bug if a WARN or BUG can be reached from
+> userspace,
 
-On Thu, Jun 8, 2023 at 4:04=E2=80=AFPM Florian Westphal <fw@strlen.de> wrot=
-e:
->
-> Netfilter targets make assumptions on the skb state, for example
-> iphdr is supposed to be in the linear area.
->
-[...]
+Good point. WARN() does not look like the right way in this case.
 
-> @@ -244,9 +264,22 @@ TC_INDIRECT_SCOPE int tcf_ipt_act(struct sk_buff *sk=
-b,
->                 .pf     =3D NFPROTO_IPV4,
->         };
->
-> +       if (skb->protocol !=3D htons(ETH_P_IP))
-> +               return TC_ACT_UNSPEC;
-> +
+Another problem is that some users use panic_on_warn. In this case,
+the above "ip" command calls would trigger panic(). And it does not
+look like an optimal behavior.
 
-maybe this can be converted to skb_protocol(skb, ...)  so that it's
-clear how VLAN packets are treated ?
-thanks!
---=20
-davide
+I know there already are some WARN_ONs for similar situations, e.g.
+set_field_width() or set_precision(). But these do not get random
+values. And it would actually be nice to introduce something like
+INFO() that would be usable for these less serious problems where
+the backtrace is useful but they should never trigger panic().
 
+> so this probably needs to be rearranged (or callers fixed).
+> Do we need to change the scanf API for sane use inside the kernel?
+
+It seems that userspace implementation of sscanf() and vsscanf()
+returns -ERANGE in this case. It might be a reasonable solution.
+
+Well, there is a risk of introducing security problems. The error
+value might cause an underflow/overflow when the caller does not expect
+a negative value.
+
+Alternative solution would be to update the "ip" code so that it
+reads the number separately and treat zero return value as
+-EINVAL.
+
+Best Regards,
+Petr
 
