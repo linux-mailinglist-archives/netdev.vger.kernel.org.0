@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-9252-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9254-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2F419728478
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:01:57 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id D202772847A
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:02:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8495C1C20FF7
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:01:53 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 920A6281756
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:02:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BEAF16414;
-	Thu,  8 Jun 2023 16:01:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D37751641A;
+	Thu,  8 Jun 2023 16:02:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7451628F3
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 16:01:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00FC0C433EF;
-	Thu,  8 Jun 2023 16:01:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8606B16403
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 16:02:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1744BC433D2;
+	Thu,  8 Jun 2023 16:02:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686240111;
-	bh=uxVKn8B7UnQ7DreeWBr1pGGtJNVRbe4Xc8LONzaoKIo=;
+	s=k20201202; t=1686240145;
+	bh=3wFt8CGVTKC+TV3zZFmR8UtSu/tv1yh19COQfQNVFV4=;
 	h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-	b=HmC8d/8cWuDnixAGJOBiwaVNqpPdxrnj2y90EpYHdD9J3T1n9znwL8njhjbYfG5K6
-	 P/b/3utJHAuGyP363I8W6hymnA6B5oypOD4H29DCTtAvrExZcvH1NUhfIpXgqRkTkQ
-	 s5PVA8Hj33SfKBm53uffoR3sp0SqRBNXQwIUO9l7VzWaoFdSwuvOOUo9hTko1GYP9/
-	 LoB5/vdyFN9l0L7xXluzMYAL0UUro9wSSeg9LEhaPMrZ0Sk6YaG6hcmeR8UcKfSvn8
-	 TUt/iifOyBpgGx/HZtLMXJPsaZTpnHUjAHeKhcPMyKxaDB0eBBVzvUzSWQwQ/9Vd7/
-	 2e/wVIC3KKqXw==
+	b=cv4XJmPuQhkV96OOPDNq0lLupc7lCsqeokuA03XXvMGRry4tK26h71egDKttjmlnL
+	 DwMaDWPJV/j7vzhRobwpIdZoNkRGJSyuJbyxE2mhAYGWbITyJwaPSCE6wU5E4fNnXz
+	 Nw0DOhHHAD+hOw6rzL3BtXn+VzlSGfQYay923C8EbCOWpIkHlCviuPpbDbQcGKwro3
+	 Q2juei7vt2k8ERpdiDLbSAoSA9Y8mLw8pAuiSUse37u3XeBD8E+IPO0hRj/1GdkxoM
+	 xvOV9mUyFjO5aECHAK0HAYz9tvX7B8Kv5JIX5GThzyPdkbT/YrjW3k60Bi4CuqorrU
+	 UvwSHk7DprqNA==
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -38,46 +38,36 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] wifi: rsi: Do not configure WoWlan in shutdown hook if
- not
- enabled
+Subject: Re: [PATCH] wifi: rsi: Do not set MMC_PM_KEEP_POWER in shutdown
 From: Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20230527222833.273741-1-marex@denx.de>
-References: <20230527222833.273741-1-marex@denx.de>
+In-Reply-To: <20230527222859.273768-1-marex@denx.de>
+References: <20230527222859.273768-1-marex@denx.de>
 To: Marek Vasut <marex@denx.de>
 Cc: linux-wireless@vger.kernel.org, Marek Vasut <marex@denx.de>,
  "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
  Jakub Kicinski <kuba@kernel.org>, Jilin Yuan <yuanjilin@cdjrlc.com>,
  Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
 User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <168624010800.5828.9610241801394227388.kvalo@kernel.org>
-Date: Thu,  8 Jun 2023 16:01:49 +0000 (UTC)
+Message-ID: <168624014117.5828.4271353370998823332.kvalo@kernel.org>
+Date: Thu,  8 Jun 2023 16:02:22 +0000 (UTC)
 
 Marek Vasut <marex@denx.de> wrote:
 
-> In case WoWlan was never configured during the operation of the system,
-> the hw->wiphy->wowlan_config will be NULL. rsi_config_wowlan() checks
-> whether wowlan_config is non-NULL and if it is not, then WARNs about it.
-> The warning is valid, as during normal operation the rsi_config_wowlan()
-> should only ever be called with non-NULL wowlan_config. In shutdown this
-> rsi_config_wowlan() should only ever be called if WoWlan was configured
-> before by the user.
+> It makes no sense to set MMC_PM_KEEP_POWER in shutdown. The flag
+> indicates to the MMC subsystem to keep the slot powered on during
+> suspend, but in shutdown the slot should actually be powered off.
+> Drop this call.
 > 
-> Add checks for non-NULL wowlan_config into the shutdown hook. While at it,
-> check whether the wiphy is also non-NULL before accessing wowlan_config .
-> Drop the single-use wowlan_config variable, just inline it into function
-> call.
-> 
-> Fixes: 16bbc3eb8372 ("rsi: fix null pointer dereference during rsi_shutdown()")
+> Fixes: 063848c3e155 ("rsi: sdio: Add WOWLAN support for S5 shutdown state")
 > Signed-off-by: Marek Vasut <marex@denx.de>
 > Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
 Patch applied to wireless-next.git, thanks.
 
-b241e260820b wifi: rsi: Do not configure WoWlan in shutdown hook if not enabled
+e74f562328b0 wifi: rsi: Do not set MMC_PM_KEEP_POWER in shutdown
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20230527222833.273741-1-marex@denx.de/
+https://patchwork.kernel.org/project/linux-wireless/patch/20230527222859.273768-1-marex@denx.de/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
