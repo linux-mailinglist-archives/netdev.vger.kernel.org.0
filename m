@@ -1,74 +1,75 @@
-Return-Path: <netdev+bounces-9298-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9299-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2E1467285C9
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 921757285CF
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:52:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8E1BA1C21007
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:50:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E83AB1C21009
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:52:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 53C3E18015;
-	Thu,  8 Jun 2023 16:50:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A3382182B8;
+	Thu,  8 Jun 2023 16:52:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4765710973
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 16:50:18 +0000 (UTC)
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34846125
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 09:50:15 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id 5614622812f47-39c7f5706f0so529439b6e.3
-        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 09:50:15 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96F6417FE9
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 16:52:17 +0000 (UTC)
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36691BE2
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 09:52:03 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-568f9caff33so7190667b3.2
+        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 09:52:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1686243014; x=1688835014;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1686243123; x=1688835123;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=IECq8KyOKR32OJ+rnKQtgyrHARYp4mOJM0dHXG0n6bk=;
-        b=LqfPqWVaI7J26WyIYJY6FbTyqb0AQDxw2gCqTGttONMMUV3dJO3RXB/G+SYjKuHCv0
-         MyxQnw/E7Ye6ct+KIdyGj89J2HNX+OHL2x058gzZ6TFUFPQOJaSvSumkJ8yuJ+bp5d+C
-         tzd1wrhIoPLJaTR+eO3719tbhqD9AOUypq0eCnXNAriAltT1coQqARIlyVSU3uUKq2oM
-         DuSQCs95wJFCyTbuu4BWLRebzPK61DurXhjp67AeGZbOMZUJ0uJS3owO7q5EeCgIrdkt
-         A0q4dfhQowo2To0mqZoua5yIpyQdzlyumNf9wVrreOCu0LfnlXqs9DpVEbOl4jkfYDVb
-         x8jw==
+        bh=ex5SxXxMZHySOL7xX/t6ob44vxnfsnMabgoOst0WIsk=;
+        b=PBGgNLDPMiyBo5qps8SvwkgO1tVDbBUwnU3KRjarpbtGX3NaHyv2OeeaC5kD86Hvlk
+         TW41qUaOU/eiqA8K+Ohr+u66c4Npv+b3VDanC1aqzVnkIiGVQbbjj6dixgJW510zPr82
+         pv9uUZTO2BnR060CakKTKG1gktTniHRWiLiVlaYfv2N9vjiry38TJ1UnWd9Ye96EwT7c
+         2zAFmw5xLRTijEA2v5p/0Iz7in4uHu48V3DUdJ+/SbSoVrsn5FGXa/aWb8X1wiIe+DH/
+         EN+Kh+Oh3VYNjTPbEfHw1VKVIxO90k34fGhNuJD10QZjgHlpM7/Y1JiTfaor1UIWTBs3
+         eWNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686243014; x=1688835014;
+        d=1e100.net; s=20221208; t=1686243123; x=1688835123;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=IECq8KyOKR32OJ+rnKQtgyrHARYp4mOJM0dHXG0n6bk=;
-        b=OEQcggElu/7xJ4nT7x+r7dbuivcdqCAb5edLkQS+89vCHiPAp/lqhTHqtD7+g57z4f
-         u+bljDDfQEqW3voxb0k8fwsJd/SLkYnzsWIOeXMc0ibEmxt3rwUTV6zUlMXVuhpWTWVb
-         HMnXOY9CFzu9O87aiTj8Mvs0pOGzVPs1go5M6vSfyOUVCMIipJVX2D4afk8ze9VtKfkc
-         uZYLUSuB1xnP/4wXoupkhXPGJnAf2i3BVu51ytJEFSCuyB2l6rVOIIaYBGNp7dpiKTSP
-         M7sNIm2BXkv8wecVgixrB8r3oX+Gv02n/L2a+zQ4oTqg7RHOusXGqX388+D0ehyPoUAd
-         vlTA==
-X-Gm-Message-State: AC+VfDy2kUdbXhSYT78OiiyJWol8ua628nvvE0hZAyboSdtDn8BiHkV+
-	sUBxWhZuvt/50JMTijaIbmN2M5nXkuYdATyY6O/j+RguYfkp4oEO
-X-Google-Smtp-Source: ACHHUZ5O/+/QzJultL1FBKZvqh7v+znjyfAj7OQfVOK1HSLMtLFEHsueBEr2yUpTBWgAsBLIxWmT7VGNxWJ/ezn1wRw=
-X-Received: by 2002:a05:6808:1ca:b0:398:57fe:5fa with SMTP id
- x10-20020a05680801ca00b0039857fe05famr5246523oic.29.1686243014538; Thu, 08
- Jun 2023 09:50:14 -0700 (PDT)
+        bh=ex5SxXxMZHySOL7xX/t6ob44vxnfsnMabgoOst0WIsk=;
+        b=lOtmY8CoGGQSfO3ZClBKkt6MT0RzrW5NuMGdAU4ktOrGwYG8GntEn6is/CIsQw1Jjj
+         Wb1c4qb+V9opVc9hRNKOQq/XmIMErRff7793RO2p8sBGFmoBlWB4RmbHzpZJloK/StOF
+         /qEKgvsFj/+H767GngUFEv+4+Cp7U/AMSu7PjxAei0Et/K47hVw6Bi7GfVPO2qjcaMv5
+         cqOqieNAHYj3sJ4R+ZYnW9oNzPv+joEjhlipbi7U0z5pWmR7kQiIPSGqHe2wtG2khcu5
+         qHWm+kDCGzjUYu0Ao8PSienSJ01tZME5qrtdEi/ORNsbWPvKM6430zYP/Ra3T6ddz/GG
+         18+w==
+X-Gm-Message-State: AC+VfDxLNKZ+NAikBL273pA/nN/ua08ZatWhLZ1DmyTTEQ6MS/uG+AW+
+	reCSabiFbLgGTRgHx03aJ/yCKZB5Mp0im2mm1EKX9Q==
+X-Google-Smtp-Source: ACHHUZ7IGQqy3F6KncI9VKP8kUGTzitXQar+yj6CWRRKDVssUENNtbJGwWXAY7zk52hQ8i52YYu9HS169xwAQuxdmaQ=
+X-Received: by 2002:a0d:e8ce:0:b0:561:be2a:43f9 with SMTP id
+ r197-20020a0de8ce000000b00561be2a43f9mr229448ywe.41.1686243122936; Thu, 08
+ Jun 2023 09:52:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230608140246.15190-1-fw@strlen.de>
-In-Reply-To: <20230608140246.15190-1-fw@strlen.de>
+References: <20230608140246.15190-1-fw@strlen.de> <20230608140246.15190-2-fw@strlen.de>
+In-Reply-To: <20230608140246.15190-2-fw@strlen.de>
 From: Jamal Hadi Salim <jhs@mojatatu.com>
-Date: Thu, 8 Jun 2023 12:50:03 -0400
-Message-ID: <CAM0EoMmcgoTbneB+JYt_oUKwsFMiA7xsuCWA=epr=mZnzhaX6w@mail.gmail.com>
-Subject: Re: [PATCH net v2 0/3] net/sched: act_ipt bug fixes
+Date: Thu, 8 Jun 2023 12:51:51 -0400
+Message-ID: <CAM0EoMk6_CMeOGG1KMjNthgUXnB-fHtz4U2Uje+aYpxXe9HuPA@mail.gmail.com>
+Subject: Re: [PATCH net v2 1/3] net/sched: act_ipt: add sanity checks on table
+ name and hook locations
 To: Florian Westphal <fw@strlen.de>
 Cc: netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com, 
 	davem@davemloft.net, pabeni@redhat.com, xiyou.wangcong@gmail.com, 
-	jiri@resnulli.us
+	jiri@resnulli.us, Simon Horman <simon.horman@corigine.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -80,45 +81,105 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 On Thu, Jun 8, 2023 at 10:03=E2=80=AFAM Florian Westphal <fw@strlen.de> wro=
 te:
 >
-> v2: add "Fixes" tags, no other changes, so retaining Simons RvB tag.
+> Looks like "tc" hard-codes "mangle" as the only supported table
+> name, but on kernel side there are no checks.
 >
-> While checking if netfilter could be updated to replace selected
-> instances of NF_DROP with kfree_skb_reason+NF_STOLEN to improve
-> debugging info via drop monitor I found that act_ipt is incompatible
-> with such an approach.  Moreover, it lacks multiple sanity checks
-> to avoid certain code paths that make assumptions that the tc layer
-> doesn't meet, such as header sanity checks, availability of skb_dst
-> skb_nfct() and so on.
+> This is wrong.  Not all xtables targets are safe to call from tc.
+> E.g. "nat" targets assume skb has a conntrack object assigned to it.
+> Normally those get called from netfilter nat core which consults the
+> nat table to obtain the address mapping.
 >
-> act_ipt test in the tc selftest still pass with this applied.
+> "tc" userspace either sets PRE or POSTROUTING as hook number, but there
+> is no validation of this on kernel side, so update netlink policy to
+> reject bogus numbers.  Some targets may assume skb_dst is set for
+> input/forward hooks, so prevent those from being used.
 >
-> I think that we should consider removal of this module, while
-> this should take care of all problems, its ipv4 only and I don't
-> think there are any netfilter targets that lack a native tc
-> equivalent, even when ignoring bpf.
+> act_ipt uses the hook number in two places:
+> 1. the state hook number, this is fine as-is
+> 2. to set par.hook_mask
 >
+> The latter is a bit mask, so update the assignment to make
+> xt_check_target() to the right thing.
+>
+> Followup patch adds required checks for the skb/packet headers before
+> calling the targets evaluation function.
+>
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Signed-off-by: Florian Westphal <fw@strlen.de>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-I am all for removing it - but i am worried there are users based on
-past interactions. Will try to ping some users and see if they
-actually were using it. I will send a patch to retire it if it looks
-safe.
-Unfortunately ipt suffered because we couldnt coordinate between the
-netfilter and tc subsystem. In the old days so calling/callee bugs
-fixed in the netfilter world find their way into ipt. At some point
-that stopped. Also the user space interfacing suffered from similar
-issues.
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
 cheers,
 jamal
 
-> Florian Westphal (3):
->   net/sched: act_ipt: add sanity checks on table name and hook locations
->   net/sched: act_ipt: add sanity checks on skb before calling target
->   net/sched: act_ipt: zero skb->cb before calling target
+> ---
+>  v2: add Fixes tag, diff unchanged.
 >
->  net/sched/act_ipt.c | 70 ++++++++++++++++++++++++++++++++++++++++-----
->  1 file changed, 63 insertions(+), 7 deletions(-)
+>  net/sched/act_ipt.c | 27 ++++++++++++++++++++-------
+>  1 file changed, 20 insertions(+), 7 deletions(-)
 >
+> diff --git a/net/sched/act_ipt.c b/net/sched/act_ipt.c
+> index 5d96ffebd40f..ea7f151e7dd2 100644
+> --- a/net/sched/act_ipt.c
+> +++ b/net/sched/act_ipt.c
+> @@ -48,7 +48,7 @@ static int ipt_init_target(struct net *net, struct xt_e=
+ntry_target *t,
+>         par.entryinfo =3D &e;
+>         par.target    =3D target;
+>         par.targinfo  =3D t->data;
+> -       par.hook_mask =3D hook;
+> +       par.hook_mask =3D 1 << hook;
+>         par.family    =3D NFPROTO_IPV4;
+>
+>         ret =3D xt_check_target(&par, t->u.target_size - sizeof(*t), 0, f=
+alse);
+> @@ -85,7 +85,8 @@ static void tcf_ipt_release(struct tc_action *a)
+>
+>  static const struct nla_policy ipt_policy[TCA_IPT_MAX + 1] =3D {
+>         [TCA_IPT_TABLE] =3D { .type =3D NLA_STRING, .len =3D IFNAMSIZ },
+> -       [TCA_IPT_HOOK]  =3D { .type =3D NLA_U32 },
+> +       [TCA_IPT_HOOK]  =3D NLA_POLICY_RANGE(NLA_U32, NF_INET_PRE_ROUTING=
+,
+> +                                          NF_INET_NUMHOOKS),
+>         [TCA_IPT_INDEX] =3D { .type =3D NLA_U32 },
+>         [TCA_IPT_TARG]  =3D { .len =3D sizeof(struct xt_entry_target) },
+>  };
+> @@ -158,15 +159,27 @@ static int __tcf_ipt_init(struct net *net, unsigned=
+ int id, struct nlattr *nla,
+>                         return -EEXIST;
+>                 }
+>         }
+> +
+> +       err =3D -EINVAL;
+>         hook =3D nla_get_u32(tb[TCA_IPT_HOOK]);
+> +       switch (hook) {
+> +       case NF_INET_PRE_ROUTING:
+> +               break;
+> +       case NF_INET_POST_ROUTING:
+> +               break;
+> +       default:
+> +               goto err1;
+> +       }
+> +
+> +       if (tb[TCA_IPT_TABLE]) {
+> +               /* mangle only for now */
+> +               if (nla_strcmp(tb[TCA_IPT_TABLE], "mangle"))
+> +                       goto err1;
+> +       }
+>
+> -       err =3D -ENOMEM;
+> -       tname =3D kmalloc(IFNAMSIZ, GFP_KERNEL);
+> +       tname =3D kstrdup("mangle", GFP_KERNEL);
+>         if (unlikely(!tname))
+>                 goto err1;
+> -       if (tb[TCA_IPT_TABLE] =3D=3D NULL ||
+> -           nla_strscpy(tname, tb[TCA_IPT_TABLE], IFNAMSIZ) >=3D IFNAMSIZ=
+)
+> -               strcpy(tname, "mangle");
+>
+>         t =3D kmemdup(td, td->u.target_size, GFP_KERNEL);
+>         if (unlikely(!t))
 > --
 > 2.40.1
 >
