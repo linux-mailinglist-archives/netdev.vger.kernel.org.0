@@ -1,129 +1,114 @@
-Return-Path: <netdev+bounces-9244-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9245-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0CAF67282DC
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:37:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id F34AE72833A
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 17:05:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6C3041C20A5B
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 14:37:29 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0664E1C20F3B
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 15:05:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2F3BA1118F;
-	Thu,  8 Jun 2023 14:37:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CDF8512B80;
+	Thu,  8 Jun 2023 15:05:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2426528F3
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 14:37:30 +0000 (UTC)
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5B0273A
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 07:37:28 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id 5614622812f47-39a3f2668d5so482512b6e.1
-        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 07:37:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1686235047; x=1688827047;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Wkp11mGb7Y6Wz5I0W/WSpFxDQu84gcRYJNkM5DBTCVo=;
-        b=PqCk0/um1V9YbdSUxSlKPYPemv5fpxy3njVZOYlvJ2iUpiIXdToN4GoWp5nvnpdKb3
-         O2cM6Rl7598kOscoWt9Qs1ZQxcLnLBWOL+bLwx9Il1r9N12fAIhb7FOTrAOuIF2mwkOl
-         vv9VguCEHFoCk5KtURTfj3UEtjVnaua7Pt/mMbMKur2Y79wfHwrSVSZVf1mqGyw+mmKM
-         s4u/MyQd9jcrzh97QZPdFMM95klWruvTVGSUnu525xdQG4zyw8oimNDPpV8oanXoupdT
-         7qHu876oBgozkbgJrX7B7NK4WDB3biz8DI8g693qaM58TsxU12nyGBHlLjREhjv3URXI
-         Oc3g==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C24B1D2FA
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 15:05:15 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD21B2D61
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 08:05:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686236712;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=n9DQyeVPqiHPj8YrryZ9yiwKZv7WusIMiEyAhefqDyM=;
+	b=dLAr6+sGDRJWqr+L8K1Uk8UWfIm2HL6xmqTNmEehHiH2EgQ+lMI0acb7aKuwdgYYtPskaR
+	O4GbgLvzj34hVJHCHdCRTzUjitRGiEgp0tqUJN7saGZVk553H+jBqzQbqdnn47sjF2iRFe
+	nEkLX79DiNgYT7WSFt/jdLM8jCxoBWE=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-77-fi8jaPWJPyWGKThANUBgZA-1; Thu, 08 Jun 2023 11:05:11 -0400
+X-MC-Unique: fi8jaPWJPyWGKThANUBgZA-1
+Received: by mail-lj1-f197.google.com with SMTP id 38308e7fff4ca-2b1abdb8ef9so3738821fa.2
+        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 08:05:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686235047; x=1688827047;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Wkp11mGb7Y6Wz5I0W/WSpFxDQu84gcRYJNkM5DBTCVo=;
-        b=QG8Wogrj+gSS21VLP0E+vEV/Z2T9py5zMU/YqW3BIY4gnwgC/+dfQEx532G2YPJnp5
-         WAE4pjEx4OIqPuVMbek63K0XsBZezb/fLTCKrpIDG6X/Vw+b6HSpbF9PUFUKtIMY/BlU
-         cAYdv8KUpmALinnjij26pPkyjDUESJZYTZugev/HVwxutJJmezXGgPlpxb06oRzuosb2
-         9AMGfR63pijdkthSA1mht9F1Y1G2WoI9lDnXmQOL2dehZV76BDUNio/8NDTGz8k15f48
-         Rlf0bvL8RSxz424MNbskLZmpOjyJExQzYDWT4KyxwlvyzDsfF1XRm84Vp7DNuWTdMviO
-         yEmw==
-X-Gm-Message-State: AC+VfDyjvZh1+A/fec+LhQISvrAcsyxVpzRDtmqdD21jTAizXf+HKZ7i
-	zZ/4zSNM5toM56QfjUZH/6tAlQ==
-X-Google-Smtp-Source: ACHHUZ4J3AFGTu/bJU7e4t/xvlV3P5k9aTl87g6TKaQaasrbQ1nS3MOt0NOGdCh4noHJB46Qq0bJKQ==
-X-Received: by 2002:aca:1a0b:0:b0:39a:9e6e:9a9d with SMTP id a11-20020aca1a0b000000b0039a9e6e9a9dmr5666744oia.8.1686235047614;
-        Thu, 08 Jun 2023 07:37:27 -0700 (PDT)
-Received: from ?IPV6:2804:14d:5c5e:44fb:bbfb:717f:472:7a01? ([2804:14d:5c5e:44fb:bbfb:717f:472:7a01])
-        by smtp.gmail.com with ESMTPSA id z2-20020aca3302000000b0038ee0c3b38esm495764oiz.44.2023.06.08.07.37.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Jun 2023 07:37:27 -0700 (PDT)
-Message-ID: <a25ab68b-0256-97b3-842e-0840bf2c0013@mojatatu.com>
-Date: Thu, 8 Jun 2023 11:37:22 -0300
+        d=1e100.net; s=20221208; t=1686236709; x=1688828709;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=n9DQyeVPqiHPj8YrryZ9yiwKZv7WusIMiEyAhefqDyM=;
+        b=RMFbOCJ60OBpJV5jPtOEBKFajno1ZBV9KRrX8T5lHY7Knoq+hk92g5InopFxFNlono
+         oEJ/kND87lX51h7BYbsO6egRp7/QMFY9fehGmfA0ofj9d70vl6u6EBO0FYGSU+rMNB8F
+         Oq9irsEwepPEHh1hvLR9ULXKmGgec1andEh6unkYCCZrecMtQhbAyt+//9qAGzyVAxlc
+         WQ/UFhdJbKZbvoPcjZ3e1MxXU950CSEM4vxY8tSnw1OifZ/fnpKGApPEtZucm/9LL0fo
+         2vBRYYt1NWp472M0r5NS6e0/7nzbL99Z+VKpynC9LWvPZ9YKXKrl21/570eO1a5ndlnE
+         P7Rg==
+X-Gm-Message-State: AC+VfDxcN1YUwENUbfBCOZgerYa1NZhyDedZsTMa7/gQHRb3CvKtA/NE
+	txgeFV7oxRH3uztFlnm8z6DWJKqdsfA7KqJbFMzWMyyfCSTa1vbwjMh+fopaaPjogGjfvqkXNcv
+	lPRD2FuWN4DM2SI44DSQpstuRxVZhPMxN
+X-Received: by 2002:a2e:7c01:0:b0:2b1:b647:2782 with SMTP id x1-20020a2e7c01000000b002b1b6472782mr3139071ljc.45.1686236709547;
+        Thu, 08 Jun 2023 08:05:09 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6uP1EqrR8KdqwSgFsfiAVx/Ilq1qJJ4Z/jedklINYudqjMIUQLfY6Hm6spvRi50Y8J+Y1mYQGaRVXUtTatAJ4=
+X-Received: by 2002:a2e:7c01:0:b0:2b1:b647:2782 with SMTP id
+ x1-20020a2e7c01000000b002b1b6472782mr3139054ljc.45.1686236709186; Thu, 08 Jun
+ 2023 08:05:09 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net,v2] net/sched: taprio: fix slab-out-of-bounds Read in
- taprio_dequeue_from_txq
-Content-Language: en-US
-To: Zhengchao Shao <shaozhengchao@huawei.com>, netdev@vger.kernel.org,
- vinicius.gomes@intel.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
- jiri@resnulli.us, davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com
-Cc: vladimir.oltean@nxp.com, weiyongjun1@huawei.com, yuehaibing@huawei.com
-References: <20230608062756.3626573-1-shaozhengchao@huawei.com>
-From: Pedro Tammela <pctammela@mojatatu.com>
-In-Reply-To: <20230608062756.3626573-1-shaozhengchao@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20230608140246.15190-1-fw@strlen.de> <20230608140246.15190-3-fw@strlen.de>
+In-Reply-To: <20230608140246.15190-3-fw@strlen.de>
+From: Davide Caratti <dcaratti@redhat.com>
+Date: Thu, 8 Jun 2023 17:04:57 +0200
+Message-ID: <CAKa-r6uyObXeAUTj28=f+V8BvrUQpXGP12JHRikct3SB=x48GA@mail.gmail.com>
+Subject: Re: [PATCH net v2 2/3] net/sched: act_ipt: add sanity checks on skb
+ before calling target
+To: Florian Westphal <fw@strlen.de>
+Cc: netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com, 
+	davem@davemloft.net, pabeni@redhat.com, jhs@mojatatu.com, 
+	xiyou.wangcong@gmail.com, jiri@resnulli.us, 
+	Simon Horman <simon.horman@corigine.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 08/06/2023 03:27, Zhengchao Shao wrote:
-> As shown in [1], out-of-bounds access occurs in two cases:
-> 1)when the qdisc of the taprio type is used to replace the previously
-> configured taprio, count and offset in tc_to_txq can be set to 0. In this
-> case, the value of *txq in taprio_next_tc_txq() will increases
-> continuously. When the number of accessed queues exceeds the number of
-> queues on the device, out-of-bounds access occurs.
-> 2)When packets are dequeued, taprio can be deleted. In this case, the tc
-> rule of dev is cleared. The count and offset values are also set to 0. In
-> this case, out-of-bounds access is also caused.
-> 
-> Now the restriction on the queue number is added.
-> 
-> [1] https://groups.google.com/g/syzkaller-bugs/c/_lYOKgkBVMg
-> Fixes: 2f530df76c8c ("net/sched: taprio: give higher priority to higher TCs in software dequeue mode")
-> Reported-by: syzbot+04afcb3d2c840447559a@syzkaller.appspotmail.com
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+hello Florian,
 
-Tested-by: Pedro Tammela <pctammela@mojatatu.com>
+On Thu, Jun 8, 2023 at 4:04=E2=80=AFPM Florian Westphal <fw@strlen.de> wrot=
+e:
+>
+> Netfilter targets make assumptions on the skb state, for example
+> iphdr is supposed to be in the linear area.
+>
+[...]
 
-> ---
-> v2: set q->cur_txq[tc] to prevent out-of-bounds access during next dequeue
-> ---
->   net/sched/sch_taprio.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-> index 3c4c2c334878..82983a6eb8f8 100644
-> --- a/net/sched/sch_taprio.c
-> +++ b/net/sched/sch_taprio.c
-> @@ -799,6 +799,9 @@ static struct sk_buff *taprio_dequeue_tc_priority(struct Qdisc *sch,
->   
->   			taprio_next_tc_txq(dev, tc, &q->cur_txq[tc]);
->   
-> +			if (q->cur_txq[tc] >= dev->num_tx_queues)
-> +				q->cur_txq[tc] = first_txq;
+> @@ -244,9 +264,22 @@ TC_INDIRECT_SCOPE int tcf_ipt_act(struct sk_buff *sk=
+b,
+>                 .pf     =3D NFPROTO_IPV4,
+>         };
+>
+> +       if (skb->protocol !=3D htons(ETH_P_IP))
+> +               return TC_ACT_UNSPEC;
 > +
->   			if (skb)
->   				return skb;
->   		} while (q->cur_txq[tc] != first_txq);
+
+maybe this can be converted to skb_protocol(skb, ...)  so that it's
+clear how VLAN packets are treated ?
+thanks!
+--=20
+davide
 
 
