@@ -1,44 +1,44 @@
-Return-Path: <netdev+bounces-9371-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9372-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6EE7E728A04
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 23:13:26 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4129A728A06
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 23:13:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 29B662814A9
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 21:13:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E764A2814A9
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 21:13:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 05D4934CFF;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C083834D73;
 	Thu,  8 Jun 2023 21:12:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EF302D279
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1C6734477
 	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 21:12:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D32A1C433A0;
-	Thu,  8 Jun 2023 21:12:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CDACC433A1;
+	Thu,  8 Jun 2023 21:12:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1686258728;
-	bh=sdPMttPAC7NLqbfsAKC51kUhhrDKGJbXSmLqmflSMtw=;
+	bh=5B2RO3RKhnK9Jhgm16WdJDVhtoS0BxAfX7e4Nj0zxGs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=UMfVBTvbK/cL7MzPApPg69zEVSwmfkDFGPbo0Y0yX3tLQR9k+tf0BsBLgoJTqrxoL
-	 S54YyM56lfbpAgxDEkeIW0DpDm2xXQKTxdwC4ORvAasXPkulMOZlSFu7sYKEtfKu1d
-	 /kY0LRo9fhFv4Fuk2Cy6rDE3NKIlkzTUVkxArMiu+6ib9n0lxRc5GmDOlcZIayfhs/
-	 Ht34AyHmz1Ev8seNH6FD81A7RDr+rAKCBEjuFmGIkjYDga13kmfEZc9IKfEfinS7Th
-	 oi/19buwsSDobpOPa1v4mrf1wDeT1Oyawbyz4ZCQjvW9FtOK8N3HaHWXQHm+p0tHte
-	 xvwpszRtn86fw==
+	b=OmxiCV0K1ubrzvxpM0Wfrk3AbXOWthyQ/OAxjMV4BfSWqu9FCuA4EaAGxOwiIq4j9
+	 3nGElqG3Rh/rIx1ZdvcqWyS9YTM457Q9dfRGkQiUmmPJb5biLnS3kA6iQE+6pq1S3W
+	 Wz18b9pKTgzLAGHk9mgymc/0GQ4vAzJXGjxCZH3plUH32tInewSIxCdvibk7ZFIyqc
+	 tCnAymrm5UGW3Sswrsa5ukwPFs73j0YaTMEYUqHGIMKAso/KONF+qRl3AVOCg3tK8r
+	 g/3HdB0ohszLorPT2/3+uBLWnKYSoZ/9BMepxDnuYZyCUI4xpy+h12cInN0v/5AjeM
+	 P+XS/YZN8taFA==
 From: Jakub Kicinski <kuba@kernel.org>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
 	edumazet@google.com,
 	pabeni@redhat.com,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 02/12] tools: ynl: regen: cleanup user space header includes
-Date: Thu,  8 Jun 2023 14:11:50 -0700
-Message-Id: <20230608211200.1247213-3-kuba@kernel.org>
+Subject: [PATCH net-next 03/12] tools: ynl-gen: complete the C keyword list
+Date: Thu,  8 Jun 2023 14:11:51 -0700
+Message-Id: <20230608211200.1247213-4-kuba@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230608211200.1247213-1-kuba@kernel.org>
 References: <20230608211200.1247213-1-kuba@kernel.org>
@@ -50,91 +50,59 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Remove unnecessary includes.
+C keywords need to be avoided when naming things.
+Complete the list (ethtool has at least one thing called "auto").
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/net/ynl/generated/devlink-user.c   | 4 +---
- tools/net/ynl/generated/fou-user.c       | 4 +---
- tools/net/ynl/generated/handshake-user.c | 4 +---
- tools/net/ynl/generated/netdev-user.c    | 4 +---
- 4 files changed, 4 insertions(+), 12 deletions(-)
+ tools/net/ynl/ynl-gen-c.py | 35 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 34 insertions(+), 1 deletion(-)
 
-diff --git a/tools/net/ynl/generated/devlink-user.c b/tools/net/ynl/generated/devlink-user.c
-index c3204e20b971..4604b6829fd0 100644
---- a/tools/net/ynl/generated/devlink-user.c
-+++ b/tools/net/ynl/generated/devlink-user.c
-@@ -4,13 +4,11 @@
- /* YNL-GEN user source */
+diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
+index e1b86b1fba66..9b6ff256f80e 100755
+--- a/tools/net/ynl/ynl-gen-c.py
++++ b/tools/net/ynl/ynl-gen-c.py
+@@ -1172,7 +1172,40 @@ op_mode_to_wrapper = {
+ }
  
- #include <stdlib.h>
-+#include <string.h>
- #include "devlink-user.h"
- #include "ynl.h"
- #include <linux/devlink.h>
+ _C_KW = {
+-    'do'
++    'auto',
++    'bool',
++    'break',
++    'case',
++    'char',
++    'const',
++    'continue',
++    'default',
++    'do',
++    'double',
++    'else',
++    'enum',
++    'extern',
++    'float',
++    'for',
++    'goto',
++    'if',
++    'inline',
++    'int',
++    'long',
++    'register',
++    'return',
++    'short',
++    'signed',
++    'sizeof',
++    'static',
++    'struct',
++    'switch',
++    'typedef',
++    'union',
++    'unsigned',
++    'void',
++    'volatile',
++    'while'
+ }
  
--#include <stdlib.h>
--#include <stdio.h>
--#include <string.h>
- #include <libmnl/libmnl.h>
- #include <linux/genetlink.h>
- 
-diff --git a/tools/net/ynl/generated/fou-user.c b/tools/net/ynl/generated/fou-user.c
-index c08c85a6b6c4..23c8f347547e 100644
---- a/tools/net/ynl/generated/fou-user.c
-+++ b/tools/net/ynl/generated/fou-user.c
-@@ -4,13 +4,11 @@
- /* YNL-GEN user source */
- 
- #include <stdlib.h>
-+#include <string.h>
- #include "fou-user.h"
- #include "ynl.h"
- #include <linux/fou.h>
- 
--#include <stdlib.h>
--#include <stdio.h>
--#include <string.h>
- #include <libmnl/libmnl.h>
- #include <linux/genetlink.h>
- 
-diff --git a/tools/net/ynl/generated/handshake-user.c b/tools/net/ynl/generated/handshake-user.c
-index 72eb1c52a8fc..7c204bf4c7cb 100644
---- a/tools/net/ynl/generated/handshake-user.c
-+++ b/tools/net/ynl/generated/handshake-user.c
-@@ -4,13 +4,11 @@
- /* YNL-GEN user source */
- 
- #include <stdlib.h>
-+#include <string.h>
- #include "handshake-user.h"
- #include "ynl.h"
- #include <linux/handshake.h>
- 
--#include <stdlib.h>
--#include <stdio.h>
--#include <string.h>
- #include <libmnl/libmnl.h>
- #include <linux/genetlink.h>
- 
-diff --git a/tools/net/ynl/generated/netdev-user.c b/tools/net/ynl/generated/netdev-user.c
-index 3db6921b9fab..fe0da71f653c 100644
---- a/tools/net/ynl/generated/netdev-user.c
-+++ b/tools/net/ynl/generated/netdev-user.c
-@@ -4,13 +4,11 @@
- /* YNL-GEN user source */
- 
- #include <stdlib.h>
-+#include <string.h>
- #include "netdev-user.h"
- #include "ynl.h"
- #include <linux/netdev.h>
- 
--#include <stdlib.h>
--#include <stdio.h>
--#include <string.h>
- #include <libmnl/libmnl.h>
- #include <linux/genetlink.h>
  
 -- 
 2.40.1
