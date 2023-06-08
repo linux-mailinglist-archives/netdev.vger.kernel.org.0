@@ -1,39 +1,39 @@
-Return-Path: <netdev+bounces-9249-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9250-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 175B4728437
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 17:52:13 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D849B72843F
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 17:53:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6E1461C20FD7
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 15:52:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C73551C20FEE
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 15:52:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C599716418;
-	Thu,  8 Jun 2023 15:52:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8601315AC3;
+	Thu,  8 Jun 2023 15:52:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFB0C15AC3
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 15:52:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77941174CD
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 15:52:04 +0000 (UTC)
 Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8D292718;
-	Thu,  8 Jun 2023 08:51:41 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC7530C1;
+	Thu,  8 Jun 2023 08:51:43 -0700 (PDT)
 X-GND-Sasl: maxime.chevallier@bootlin.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1686239500;
+	t=1686239502;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
 	bh=C4HWsGpzkoFGrF2QEu9yk0kkw2l8QL+Vcx0ZQoZOw4Y=;
-	b=ov0tYYI6P9Nam51C5snonGKLQjwNwTE2TuDYrR2Ygmivu1eCHw+Zx09wK8Nvk60MFMhNDp
-	tuxWx0YvPjIeQlWbjNv8wnDHvsc8tFuHb0XLOIt4V59Z4v/i/R7muBPoqtdqL+YukusECG
-	1kaIsVO4J2RmVMM4/qSwxA2bqW8KCYrpfP7HkbTpW5VRiQLiekn3TZ2PFY9Ycf7KyEQcMz
-	IT6w3r3kZuWM/bl4ZFmhIfvPwhN8t+0R5xewFZsY3I+TlDJ9zFrnSzTLkpHK13OmuWfuw6
-	8NC5TeJWpsbcn+w3muz7o3UXBZSmcQw8XAmbOrMHhdsw2Ogv0tF7exL/gaLbjQ==
+	b=TkCouUfK9yU3pOqfJL8pfY9GNp+gYl9ldNM03VgVv9DUkJTiKLn7/EyDPIDe2AONR3ML3M
+	37ZQqHMOpzFLIS5Bof15p4xWSyF5nWpAoEnqFZrdM+Jv/0DoZtb0swRzfL1751Bj7fidP+
+	Lg1Zi8oCc07/ScByUwnpoXrv6r/Sow/5n2gdOKJUw5e95lChqXzhdYSapDoHS65Dgqf6hI
+	5euLD+cBEI3ZmZtZtWmU4duuqmXZ9dmF4YF3r71f13u70mLz5DDr4M1TvdHDqr97LXSYd1
+	tiqO9vr/8Arz2dXSfUiOfVx110roCokdh8klZpciUNXfOvtzkIKpwak/pygZxw==
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
@@ -47,8 +47,8 @@ X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
 X-GND-Sasl: maxime.chevallier@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 7620160006;
-	Thu,  8 Jun 2023 15:51:39 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id C5B3D60010;
+	Thu,  8 Jun 2023 15:51:40 +0000 (UTC)
 From: Maxime Chevallier <maxime.chevallier@bootlin.com>
 To: davem@davemloft.net
 Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
@@ -64,9 +64,9 @@ Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
 	Allan.Nielsen@microchip.com,
 	UNGLinuxDriver@microchip.com,
 	Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net 2/2] net: phylink: use a dedicated helper to parse usgmii control word
-Date: Thu,  8 Jun 2023 18:34:14 +0200
-Message-Id: <20230608163415.511762-3-maxime.chevallier@bootlin.com>
+Subject: [PATCH net 2/2] net: phylink: use USXGMII control-word format to parse Q-USGMII word
+Date: Thu,  8 Jun 2023 18:34:15 +0200
+Message-Id: <20230608163415.511762-4-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230608163415.511762-1-maxime.chevallier@bootlin.com>
 References: <20230608163415.511762-1-maxime.chevallier@bootlin.com>
