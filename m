@@ -1,239 +1,231 @@
-Return-Path: <netdev+bounces-9330-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9331-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 53AEF728764
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 20:41:59 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 84D31728770
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 20:45:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 44D131C2085B
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:41:55 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BC01C280EDA
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:45:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C141B1953B;
-	Thu,  8 Jun 2023 18:41:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CEA4C19930;
+	Thu,  8 Jun 2023 18:45:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45F987E3;
-	Thu,  8 Jun 2023 18:41:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A486DC433D2;
-	Thu,  8 Jun 2023 18:41:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686249710;
-	bh=4a7fPJtZnT2G3XUHjxk53JytGZ7vtRhXAZPweGPLJ7Y=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Zf6igQH5RfRjPL1LLNRp2u8iNNy6O+kF/bGYFX3Nrh8fUdglTmP/qjkVHeDHFuQNr
-	 jn2Uh6KySMX6f0GTo02MvlJp6Rv68cW/69I/MFZtSdKzOt0NBFweVHnVybdzHgWXfl
-	 KvtLJ4ESmigmI/uc0oNYGCIO7NHmoF2IrKkybPAl+gdBXFQ0P23XDeYWK4z9h15oKv
-	 ZKGiTpWdZVp/QxM4gHnWF1LN14ykgAc8/vUL3ndVfxx63Am/uu3wKbhKbUkF+Bi6Ox
-	 4oM/zbXXCqLIwER2tnq6O7dDS4+mh/aE4qybCY5QC5PMes/KnyWH9l0FxBIq6F8Dg4
-	 8wj5ZhMvd7MFQ==
-Date: Thu, 8 Jun 2023 21:41:16 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: Song Liu <song@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>,
-	Kent Overstreet <kent.overstreet@linux.dev>,
-	linux-kernel@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	"David S. Miller" <davem@davemloft.net>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
-	bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-mips@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, linux-parisc@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	loongarch@lists.linux.dev, netdev@vger.kernel.org,
-	sparclinux@vger.kernel.org, x86@kernel.org
-Subject: Re: [PATCH 00/13] mm: jit/text allocator
-Message-ID: <20230608184116.GJ52412@kernel.org>
-References: <20230601101257.530867-1-rppt@kernel.org>
- <ZHjDU/mxE+cugpLj@FVFF77S0Q05N.cambridge.arm.com>
- <ZHjgIH3aX9dCvVZc@moria.home.lan>
- <ZHm3zUUbwqlsZBBF@FVFF77S0Q05N>
- <20230605092040.GB3460@kernel.org>
- <ZH20XkD74prrdN4u@FVFF77S0Q05N>
- <CAPhsuW7ntn_HpVWdGK_hYVd3zsPEFToBNfmtt0m6K8SwfxJ66Q@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7FD014ABB
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 18:45:00 +0000 (UTC)
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB8EE43
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 11:44:58 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id 46e09a7af769-6b28eefb49cso23470a34.0
+        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 11:44:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1686249898; x=1688841898;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yt12+1+dARtKc3fRLQ7ivDg1sn89g+SY2IZ1KjaiaJs=;
+        b=0sPZpYtCx2uIcWQN2SI/AEQ/WWZcXhOA/di7WAeDir9+IxajPlSiVl+Hm2Chzremmo
+         dNc1GyBIQugOsTs0Op4y9GnHpYJA6Lk2SzxfAFqSh7gT18FVPy6ip84ibVOzTAH/UfUA
+         ZvZjqPRxbDJ1qCdiplb3WeEslaA6HHFH8lOx/eE5silGncLGYYiL5xP/SkdO+VG6Dm5D
+         1eFQ20JbZf12nZYUu92bxsTJf6ot+K12YXjoCdFGJuDefST2cgBxazwwt2XthTgYPA/o
+         sHIPKcuZ2bM83dfwq5rhxfjHleCZJVwihFvLBLGwll/oJeiCqDdp3ptsYVl+seJdxQ30
+         YSqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686249898; x=1688841898;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yt12+1+dARtKc3fRLQ7ivDg1sn89g+SY2IZ1KjaiaJs=;
+        b=RMbzNSuV0kZeACdsmmDj66nGAL63cHaAPIcqzKlpyws7Qc7z8j4msBtwW6q8p014+R
+         B9rC5mtk2OoO71G0x95QulSiLjOyiVS8OpJck2shGj0fRQYDGivVAVaJMiIkKdcsr1N6
+         voUabZIbJFs/+BZeAOWar0qaHl4i1+QgsxEJsqMzM6G7VloqJL8/t1MM/AMkg6KqgXq7
+         XEZAQXeU25fwYMG6nl4GP+iasK2wAszCYFkTWjfnefmhfsDn9e/4EWdRooTYebeFwn4Z
+         gc26OBYu0aTaHGjLdfAOr83fAvIC0nAGEXYmjCEiQrgMvoudX/ArzRX2JVtU7H0xOlzi
+         P7+Q==
+X-Gm-Message-State: AC+VfDzIxmqBKf5VyQTYtGLYDOBrIq0g+vMpt6gWoL6pKJ1jXR4T3gQI
+	mEKVePldCA12qjGDvB5b1njiIHDu6EEQYRs55N5X8Q==
+X-Google-Smtp-Source: ACHHUZ6qTt2rGt9wmZJ/SPf4KQOMj4ZBEd3BOO3j7B2iz3zwr55Kb1Y6wu4JUoLhK2C91muXfFqoZoIhgmucd8I7ZNU=
+X-Received: by 2002:a05:6359:a9b:b0:129:b9a9:7858 with SMTP id
+ em27-20020a0563590a9b00b00129b9a97858mr3725483rwb.3.1686249897389; Thu, 08
+ Jun 2023 11:44:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPhsuW7ntn_HpVWdGK_hYVd3zsPEFToBNfmtt0m6K8SwfxJ66Q@mail.gmail.com>
+References: <20230602103750.2290132-1-vladimir.oltean@nxp.com> <20230602103750.2290132-6-vladimir.oltean@nxp.com>
+In-Reply-To: <20230602103750.2290132-6-vladimir.oltean@nxp.com>
+From: Jamal Hadi Salim <jhs@mojatatu.com>
+Date: Thu, 8 Jun 2023 14:44:46 -0400
+Message-ID: <CAM0EoM=P9+wNnNQ=ky96rwCx1z20fR21EWEdx+Na39NCqqG=3A@mail.gmail.com>
+Subject: Re: [PATCH RESEND net-next 5/5] net/sched: taprio: dump class stats
+ for the actual q->qdiscs[]
+To: Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>, 
+	Vinicius Costa Gomes <vinicius.gomes@intel.com>, linux-kernel@vger.kernel.org, 
+	intel-wired-lan@lists.osuosl.org, 
+	Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>, Peilin Ye <yepeilin.cs@gmail.com>, 
+	Pedro Tammela <pctammela@mojatatu.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Tue, Jun 06, 2023 at 11:21:59AM -0700, Song Liu wrote:
-> On Mon, Jun 5, 2023 at 3:09 AM Mark Rutland <mark.rutland@arm.com> wrote:
-> 
-> [...]
-> 
-> > > > > Can you give more detail on what parameters you need? If the only extra
-> > > > > parameter is just "does this allocation need to live close to kernel
-> > > > > text", that's not that big of a deal.
-> > > >
-> > > > My thinking was that we at least need the start + end for each caller. That
-> > > > might be it, tbh.
-> > >
-> > > Do you mean that modules will have something like
-> > >
-> > >       jit_text_alloc(size, MODULES_START, MODULES_END);
-> > >
-> > > and kprobes will have
-> > >
-> > >       jit_text_alloc(size, KPROBES_START, KPROBES_END);
-> > > ?
-> >
-> > Yes.
-> 
-> How about we start with two APIs:
->      jit_text_alloc(size);
->      jit_text_alloc_range(size, start, end);
-> 
-> AFAICT, arm64 is the only arch that requires the latter API. And TBH, I am
-> not quite convinced it is needed.
- 
-Right now arm64 and riscv override bpf and kprobes allocations to use the
-entire vmalloc address space, but having the ability to allocate generated
-code outside of modules area may be useful for other architectures.
+On Fri, Jun 2, 2023 at 6:38=E2=80=AFAM Vladimir Oltean <vladimir.oltean@nxp=
+.com> wrote:
+>
+> This makes a difference for the software scheduling mode, where
+> dev_queue->qdisc_sleeping is the same as the taprio root Qdisc itself,
+> but when we're talking about what Qdisc and stats get reported for a
+> traffic class, the root taprio isn't what comes to mind, but q->qdiscs[]
+> is.
+>
+> To understand the difference, I've attempted to send 100 packets in
+> software mode through traffic class 0 (they are in the Qdisc's backlog),
+> and recorded the stats before and after the change.
+>
 
-Still the start + end for the callers feels backwards to me because the
-callers do not define the ranges, but rather the architectures, so we still
-need a way for architectures to define how they want allocate memory for
-the generated code.
+Other than the refcount issue i think the approach looks reasonable to
+me. The stats before/after you are showing below though are
+interesting; are you showing a transient phase where packets are
+temporarily in the backlog. Typically the backlog is a transient phase
+which lasts a very short period. Maybe it works differently for
+taprio? I took a quick look at the code and do see to decrement the
+backlog in the dequeue, so if it is not transient then some code path
+is not being hit.
 
-> > > It sill can be achieved with a single jit_alloc_arch_params(), just by
-> > > adding enum jit_type parameter to jit_text_alloc().
-> >
-> > That feels backwards to me; it centralizes a bunch of information about
-> > distinct users to be able to shove that into a static array, when the callsites
-> > can pass that information.
-> 
-> I think we only two type of users: module and everything else (ftrace, kprobe,
-> bpf stuff). The key differences are:
-> 
->   1. module uses text and data; while everything else only uses text.
->   2. module code is generated by the compiler, and thus has stronger
->   requirements in address ranges; everything else are generated via some
->   JIT or manual written assembly, so they are more flexible with address
->   ranges (in JIT, we can avoid using instructions that requires a specific
->   address range).
-> 
-> The next question is, can we have the two types of users share the same
-> address ranges? If not, we can reserve the preferred range for modules,
-> and let everything else use the other range. I don't see reasons to further
-> separate users in the "everything else" group.
- 
-I agree that we can define only two types: modules and everything else and
-let the architectures define if they need different ranges for these two
-types, or want the same range for everything.
+Aside: I realize you are busy - but if you get time and provide some
+sample tc command lines for testing we could help create the tests for
+you, at least the first time. The advantage of putting these tests in
+tools/testing/selftests/tc-testing/ is that there are test tools out
+there that run these tests and so regressions are easier to catch
+sooner.
 
-With only two types we can have two API calls for alloc, and a single
-structure that defines the ranges etc from the architecture side rather
-than spread all over.
+cheers,
+jamal
 
-Like something along these lines:
-
-	struct execmem_range {
-		unsigned long   start;
-		unsigned long   end;
-		unsigned long   fallback_start;
-		unsigned long   fallback_end;
-		pgprot_t        pgprot;
-		unsigned int	alignment;
-	};
-
-	struct execmem_modules_range {
-		enum execmem_module_flags flags;
-		struct execmem_range text;
-		struct execmem_range data;
-	};
-
-	struct execmem_jit_range {
-		struct execmem_range text;
-	};
-
-	struct execmem_params {
-		struct execmem_modules_range	modules;
-		struct execmem_jit_range	jit;
-	};
-
-	struct execmem_params *execmem_arch_params(void);
-
-	void *execmem_text_alloc(size_t size);
-	void *execmem_data_alloc(size_t size);
-	void execmem_free(void *ptr);
-
-	void *jit_text_alloc(size_t size);
-	void jit_free(void *ptr);
-
-Modules or anything that must live close to the kernel image can use
-execmem_*_alloc() and the callers that don't generally care about relative
-addressing will use jit_text_alloc(), presuming that arch will restrict jit
-range if necessary, like e.g. below for arm64 jit can be anywhere in
-vmalloc and for x86 and s390 it will share the modules range. 
-
-
-	struct execmem_params arm64_execmem = {
-		.modules = {
-			.flags = KASAN,
-			.text = {
-				.start = MODULES_VADDR,
-				.end = MODULES_END,
-				.pgprot = PAGE_KERNEL_ROX,
-				.fallback_start = VMALLOC_START,
-				.fallback_start = VMALLOC_END,
-			},
-		},
-		.jit = {
-			.text = {
-				.start = VMALLOC_START,
-				.end = VMALLOC_END,
-				.pgprot = PAGE_KERNEL_ROX,
-			},
-		},
-	};
-
-	/* x86 and s390 */
-	struct execmem_params cisc_execmem = {
-		.modules = {
-			.flags = KASAN,
-			.text = {
-				.start = MODULES_VADDR,
-				.end = MODULES_END,
-				.pgprot = PAGE_KERNEL_ROX,
-			},
-		},
-		.jit_range = {},	/* impplies reusing .modules */
-	};
-
-	struct execmem_params default_execmem = {
-		.modules = {
-			.flags = KASAN,
-			.text = {
-				.start = VMALLOC_START,
-				.end = VMALLOC_END,
-				.pgprot = PAGE_KERNEL_EXEC,
-			},
-		},
-	};
-
--- 
-Sincerely yours,
-Mike.
+> Here is before:
+>
+> $ tc -s class show dev eth0
+> class taprio 8001:1 root leaf 8001:
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 9400b 100p requeues 0
+>  Window drops: 0
+> class taprio 8001:2 root leaf 8001:
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 9400b 100p requeues 0
+>  Window drops: 0
+> class taprio 8001:3 root leaf 8001:
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 9400b 100p requeues 0
+>  Window drops: 0
+> class taprio 8001:4 root leaf 8001:
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 9400b 100p requeues 0
+>  Window drops: 0
+> class taprio 8001:5 root leaf 8001:
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 9400b 100p requeues 0
+>  Window drops: 0
+> class taprio 8001:6 root leaf 8001:
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 9400b 100p requeues 0
+>  Window drops: 0
+> class taprio 8001:7 root leaf 8001:
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 9400b 100p requeues 0
+>  Window drops: 0
+> class taprio 8001:8 root leaf 8001:
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 9400b 100p requeues 0
+>  Window drops: 0
+>
+> and here is after:
+>
+> class taprio 8001:1 root
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 9400b 100p requeues 0
+>  Window drops: 0
+> class taprio 8001:2 root
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 0b 0p requeues 0
+>  Window drops: 0
+> class taprio 8001:3 root
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 0b 0p requeues 0
+>  Window drops: 0
+> class taprio 8001:4 root
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 0b 0p requeues 0
+>  Window drops: 0
+> class taprio 8001:5 root
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 0b 0p requeues 0
+>  Window drops: 0
+> class taprio 8001:6 root
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 0b 0p requeues 0
+>  Window drops: 0
+> class taprio 8001:7 root leaf 8010:
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 0b 0p requeues 0
+>  Window drops: 0
+> class taprio 8001:8 root
+>  Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>  backlog 0b 0p requeues 0
+>  Window drops: 0
+>
+> The most glaring (and expected) difference is that before, all class
+> stats reported the global stats, whereas now, they really report just
+> the counters for that traffic class.
+>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  net/sched/sch_taprio.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+>
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index cc7ff98e5e86..23b98c3af8b2 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -2452,11 +2452,11 @@ static unsigned long taprio_find(struct Qdisc *sc=
+h, u32 classid)
+>  static int taprio_dump_class(struct Qdisc *sch, unsigned long cl,
+>                              struct sk_buff *skb, struct tcmsg *tcm)
+>  {
+> -       struct netdev_queue *dev_queue =3D taprio_queue_get(sch, cl);
+> +       struct Qdisc *child =3D taprio_leaf(sch, cl);
+>
+>         tcm->tcm_parent =3D TC_H_ROOT;
+>         tcm->tcm_handle |=3D TC_H_MIN(cl);
+> -       tcm->tcm_info =3D dev_queue->qdisc_sleeping->handle;
+> +       tcm->tcm_info =3D child->handle;
+>
+>         return 0;
+>  }
+> @@ -2466,8 +2466,7 @@ static int taprio_dump_class_stats(struct Qdisc *sc=
+h, unsigned long cl,
+>         __releases(d->lock)
+>         __acquires(d->lock)
+>  {
+> -       struct netdev_queue *dev_queue =3D taprio_queue_get(sch, cl);
+> -       struct Qdisc *child =3D dev_queue->qdisc_sleeping;
+> +       struct Qdisc *child =3D taprio_leaf(sch, cl);
+>         struct tc_taprio_qopt_offload offload =3D {
+>                 .cmd =3D TAPRIO_CMD_TC_STATS,
+>                 .tc_stats =3D {
+> --
+> 2.34.1
+>
 
