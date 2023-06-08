@@ -1,180 +1,197 @@
-Return-Path: <netdev+bounces-9134-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9135-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DA05E72768D
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 07:16:49 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 403647276A0
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 07:24:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 665DB28166B
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 05:16:48 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 40B411C20F15
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 05:24:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 900C54A15;
-	Thu,  8 Jun 2023 05:16:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BDB024C7D;
+	Thu,  8 Jun 2023 05:24:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B3ED628
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 05:16:46 +0000 (UTC)
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B7426B6;
-	Wed,  7 Jun 2023 22:16:45 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-	by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 357LwKrE023704;
-	Wed, 7 Jun 2023 22:16:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=m6eXUjhW/7LpIx2wbG81CQCd5iUqZ1757BwskOGc+V0=;
- b=CqfEKN4SfkTA40lfojxLRMkCfZxYk1zKzdyWSLiPELPLjsKH8t0WvX8n/PeLXkjYmG3o
- RZZRFrqsRfBD8USNGR3Y407rZ/1ctJAB49i3RI0qxl+LF6t4YudZe9ZtbSNLSNOdRI0h
- n04o4Y52F15E+cR3812Zf/jIyaGEWAJmQrEzK7QF8Ne9zncspCP7s0oRJgM39Is/Jnu/
- aOarOlG4HGQoV9XhKigYoJwPSGAIViFbj7FFAk/9KjTGQ/9vrmDs+8HM3hsF3oIPtwFv
- sSlDKtdlxlsB9T7OuROTBipRq9i/oMfDSGELx4f5rM3hvFdXXdvoHBHp9NBPWnVHMzcE vA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-	by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3r329c1913-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-	Wed, 07 Jun 2023 22:16:32 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Wed, 7 Jun
- 2023 22:16:30 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Wed, 7 Jun 2023 22:16:30 -0700
-Received: from localhost.localdomain (unknown [10.28.36.165])
-	by maili.marvell.com (Postfix) with ESMTP id 64D413F703F;
-	Wed,  7 Jun 2023 22:16:27 -0700 (PDT)
-From: Ratheesh Kannoth <rkannoth@marvell.com>
-To: <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: <sgoutham@marvell.com>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <sbhatta@marvell.com>,
-        <gakula@marvell.com>, <schalla@marvell.com>, <hkelam@marvell.com>,
-        "Ratheesh
- Kannoth" <rkannoth@marvell.com>
-Subject: [PATCH net] octeontx2-af: Fix promiscuous mode
-Date: Thu, 8 Jun 2023 10:46:25 +0530
-Message-ID: <20230608051625.2731378-1-rkannoth@marvell.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A904646B6
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 05:24:38 +0000 (UTC)
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2780919BB
+	for <netdev@vger.kernel.org>; Wed,  7 Jun 2023 22:24:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686201877; x=1717737877;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=RKyOqNBDhpLljA37JV8+3gkVxIM78NHwXylCaJZ/MEg=;
+  b=ONjEgrAGIsS06xnjW0oKrzhwHck5/ModRqJbFByP9/n9LmrqZtYmZy99
+   QaaTsN16byAfwokDuXqTbSIg7oL5QnyFAWEbXbGNRIkG/4xGh+IXwv17Z
+   y/UVlFYK5MovpJLm84vXySikfgwlmGaS6y4FfO5i3rgZ/V9fAhdWP1bDY
+   ErWKJVaUKqUNoeqgK7fADaM4VCWcyZxR1FRfVLGWh6RIqeXNeIrLzbgwg
+   iXfSwm3sZcCr7kEBNJL8SLYe3BXQAlQFqks6YVvHBGiUxA5zcuTyq3ynC
+   pI2Uj6U1iLL+gigzy9iQHwdBQHQulq0aXVs264ERk1xIwSePo53vg3lD0
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10734"; a="356063259"
+X-IronPort-AV: E=Sophos;i="6.00,226,1681196400"; 
+   d="scan'208";a="356063259"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2023 22:24:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10734"; a="834021898"
+X-IronPort-AV: E=Sophos;i="6.00,226,1681196400"; 
+   d="scan'208";a="834021898"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga004.jf.intel.com with ESMTP; 07 Jun 2023 22:24:15 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Wed, 7 Jun 2023 22:24:14 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Wed, 7 Jun 2023 22:24:14 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.176)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Wed, 7 Jun 2023 22:24:14 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EMCBFhDjMFLHzJD9OsVWcmEeoqZgIWBeVjZktCWKc67vtpytt0eF/oQO2nWI3Wl2/jU1GBBIjBgbv1/TR+uQZGTKOFvbMoGXO7UqVrI/C0vdwQIAMvYqfxI7WMJdw5137BAv0pw0FvHcofXcQLAoJzT2zB4BFRUwwsywsxLoxaHX7bSHpb3YXDU3I6nl/4CNuctpKNiLGkF77pzT4SpuuX5C3C1l4CCmXVYuYKKkssLKXTPEgYYjD/uOwANS0ACEKNVQMmFEbMIy8O1TFL/FKaZ4lGGFmaO6xhEb2+d+z3S8luOmfPRtohygih/ukb8htPMJ/AeZNWC5hybDTmcG6w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=f6BjzAvhj+4hlg4Mqe1+2Z9tFv7qkcNiuaWo5xe1sx8=;
+ b=CuAwfVFy1O5y5tkV6hVZvnAEycNq91iW0bK3BNeyOlkj2VUv+YpIC86UXFJWww6Tt9qIruFDhNKYJ7PSwOgRP8Ro/xO8tDqXrVW5jc+GyOx77YGmu34fzbTkFS0eQyefhG8aoG0H6o+RBxP506hFPwI9FbQGz87iDn+Hog/r6+86Imu9FmcNob0Hm40bgRcHL1FD2nL+KAKourPzm0ko4d6IFFnRCc0717rXzJau15bkNq8wIiO4aq/646hX0xSNU+aSx2y9zZhGaq3L8XVmn0vW8/R1vzgYzbA3jlp2I90VSbBfyyPpPOmCqmgH5jzEC5emx63lYTjekfHNX1u6mQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by CY5PR11MB6391.namprd11.prod.outlook.com (2603:10b6:930:38::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Thu, 8 Jun
+ 2023 05:24:12 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::4e5a:e4d6:5676:b0ab]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::4e5a:e4d6:5676:b0ab%5]) with mapi id 15.20.6455.030; Thu, 8 Jun 2023
+ 05:24:12 +0000
+From: "Keller, Jacob E" <jacob.e.keller@intel.com>
+To: Jakub Kicinski <kuba@kernel.org>, Simon Wunderlich <sw@simonwunderlich.de>
+CC: "davem@davemloft.net" <davem@davemloft.net>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, "b.a.t.m.a.n@lists.open-mesh.org"
+	<b.a.t.m.a.n@lists.open-mesh.org>, Vladislav Efanov <VEfanov@ispras.ru>,
+	"stable@kernel.org" <stable@kernel.org>, Sven Eckelmann <sven@narfation.org>
+Subject: RE: [PATCH 1/1] batman-adv: Broken sync while rescheduling delayed
+ work
+Thread-Topic: [PATCH 1/1] batman-adv: Broken sync while rescheduling delayed
+ work
+Thread-Index: AQHZmVqTyaVqKE3l2kyKiD2rtI51La+AWdkAgAAGE9A=
+Date: Thu, 8 Jun 2023 05:24:12 +0000
+Message-ID: <CO1PR11MB5089F99A62265CE85CCB413CD650A@CO1PR11MB5089.namprd11.prod.outlook.com>
+References: <20230607155515.548120-1-sw@simonwunderlich.de>
+	<20230607155515.548120-2-sw@simonwunderlich.de>
+ <20230607220126.26c6ee40@kernel.org>
+In-Reply-To: <20230607220126.26c6ee40@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CO1PR11MB5089:EE_|CY5PR11MB6391:EE_
+x-ms-office365-filtering-correlation-id: 7f8a6002-be4a-4806-de1a-08db67e09827
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: mn7ebdCO2aVaZs+xOHyGtAxQqJlD2YukkRY3K9sBQcd4brv0t1OyIti7d+L8z7DERTZoiMQ3rxzc6kGpSgDe/mfAhFA1c28aKSFuqLCg3jP3ULATG6z82x0znjF3JWTyPr/AYLGei3B7J7AVf1LfqmTkMNrRvYGAdrXRtFSHyqHabFsbWTIB/skI6bMu8l3qGMHuYjreZUd2OI5u27BSmXTZsnxoEqOY2tCzb+OrJhfcYf6GRHltG9ORRQ3FaVC6hWefqCrfk9YSWeOGGQdTVKPoDBM1QecGmu5g0MFiBjem1NFZj4ZKQuUlhLSek0h+WjLEHAn039v/7fRfdhrPiEho4iVPiNHxO9+WV3pGlHnQvlCevYMWwZVlDX8FSBrIkBaKcgIzrqevHxAPTrnPAPsM9IaOnPsC/ToeV7Cjy2OrLHkEGik+gdZh1RxOidVW0Ovjaw7vF6+I94ygLDurXHH7ntJ2CWVNQnCpxS6NZEbyEr3JInFXzgqktZfrfQQo4iTYrxCuit3my0/AaCDXpvSJOX9H7UQ28/C5SnQ6t2SLma4jplhGCmnsazADGzGl63yHv4XX8cc0rXLsgcz0peAhqyiYoqgkf51IlNFiXH2n005UEbRKGGDmVOcLGj52
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(136003)(366004)(396003)(39860400002)(376002)(451199021)(8676002)(8936002)(54906003)(7696005)(110136005)(478600001)(55016003)(52536014)(5660300002)(41300700001)(316002)(26005)(186003)(76116006)(6506007)(64756008)(71200400001)(66556008)(66946007)(66446008)(53546011)(9686003)(4326008)(66476007)(83380400001)(2906002)(38100700002)(82960400001)(122000001)(38070700005)(33656002)(86362001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?hO3FCintRRBlOEud8OaHrl+wvMwObcgph75bdocLN+kVUG8B+HzN7PA9j3pH?=
+ =?us-ascii?Q?I1KK9CPM3xu20eZD0X4BUdHeNz3ugcbNtEwggboLdY8LcHFfJ94w0701Li8r?=
+ =?us-ascii?Q?81GaahSeSYTV0jCsiPAiJVJUrljlk4e4iIK8S5uL+48/3GBZv9EzsA6DudyJ?=
+ =?us-ascii?Q?VhOqcRMv+5Oj4VS0kpApOLvnxefAeSdcLWcPXmFdw1FOcxIrC83VaFRXvt8h?=
+ =?us-ascii?Q?MvSDqV5pDfBBRZDcPQLSHZd7dpZLFejygleof5WdJLPUvaA/fDV95MYwMok9?=
+ =?us-ascii?Q?Hx4b/PkpsjbCM/OrUKg4H7fJ4Tm2kzFH1wcEPr9g0x7yLnwwvrjj0nYfWJUo?=
+ =?us-ascii?Q?hO61J0Au4bVgtvT9tlVBE1r9SZegwSIcfPrQ5zWLu5mxJLY2AdD4NDihfSa8?=
+ =?us-ascii?Q?XVOxQX+HXO5sWhH42eDFZmKHHf6lc/6LQHUH2Jjj6ROoXIa/ZMopTdKSvv7E?=
+ =?us-ascii?Q?ty2C/ueKInQJlXPoOftRk9xGgX4QjaaNdPqbh+NIwItkh+zKzEj5xLsBOQL6?=
+ =?us-ascii?Q?BTiZwIrDk7R1d/kuCElBNeBhXZyAPJrtJAcx96FZ/0U2ehAwstMFL7mJepwF?=
+ =?us-ascii?Q?5l0LD+NuWBVJaa0yG4CNe7Gjye8ospqMTXG66opke5MDk2oue/+jSU+Ca6E0?=
+ =?us-ascii?Q?x/afn4TGRBn2piywSf8EyIkqYYi74xZTf1icc7gMDepko3F1TJ23I6EO54JS?=
+ =?us-ascii?Q?5qCXvqidmGMJztl/kYmfifn+yleI9HNDGj8f0ksgKJyqDY1GB/GXPkaID+Qp?=
+ =?us-ascii?Q?tAp/7RZ8TAxEt832Pbl0L0QaR++Pq+XqB5lMVfIcqjkD36XxFILbV+1hhquR?=
+ =?us-ascii?Q?NI5/Nbgfgd9BCLJFSxTz2n6StUtHyUlrY3uZYZG+oNs5kaSJ5kqS84DUl9jp?=
+ =?us-ascii?Q?WWVMnpxbmWeJBhUOFyjlLP4bp4wWU6mKLawteuoO7rC4BD60V0id9BF9Euxn?=
+ =?us-ascii?Q?wHwRxeP5ZiXMN+ejyf+XJ0V2l4RKkNFl9Y+LiDqIlHnpCUG2O/KlUcQDSpdd?=
+ =?us-ascii?Q?nUqMY/7H2OsXApZ63DzNMYVEEvNmSIp8B45yKoL79EiBgUxTXL+DL9eqdBkH?=
+ =?us-ascii?Q?Y1714KdqY9L9AByT63M00/vjpfE47/Rf2UvQV6T5iq/VTi2EMAUC8gsceD0V?=
+ =?us-ascii?Q?FAXvtdYnZtgf3nUPaidh+cALCPDrTvaTuUK5rsmay/mTkOP/48n0sKVMYRDT?=
+ =?us-ascii?Q?YNpsXSQOsyScu5zm+xGxYrTGo5dgO4uPDTMH5tqjQ9QhEv8TU+2/tajwbd4P?=
+ =?us-ascii?Q?q2VVhjwfK7UM3+U5jyHVtL0jtOLrSYg47JfnItCmcO3HY/z4bogyuC2uSjBM?=
+ =?us-ascii?Q?jm5/DkmqfmgyCJ9tISn+dlqQUyi6MKyMBqbm7vKrBPPMV6mOrcSYxWpsCmKl?=
+ =?us-ascii?Q?GZzjPt5c29GauzERvRfTwKsZ18H2uY3QFX6/uqPFeUYGL+qI+zGO7zQwJeYM?=
+ =?us-ascii?Q?4hnzJNdyMwfJtBFIGhKMTyLhsAcf7iMyzkghwkvjxWAND8vPx+SfkzRMrxf+?=
+ =?us-ascii?Q?kLjqotqvPKe6S6aeVDM4id1AyQtS1Kc21hoSwwyoPwoLoqezpp6Yo6t00BBv?=
+ =?us-ascii?Q?1ODHUJ2b772ilHwRZI7Y+tXCnqKkB63vr7kDV6iO?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: 4ZBe907Ts0Vq0a3MbPSrm6swUbAjXPz1
-X-Proofpoint-ORIG-GUID: 4ZBe907Ts0Vq0a3MbPSrm6swUbAjXPz1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-06-08_02,2023-06-07_01,2023-05-22_02
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f8a6002-be4a-4806-de1a-08db67e09827
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jun 2023 05:24:12.5764
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: hVPOfWmYP5xMtf5fcFNfZH0PxXDlQiCfi4vIzf176QAaEJzzaq5ETKbzskLAETxZ/YVLCbwsjaRpEOLbuKbB3DmOI4UmSKQ/NuiwJOMdbQs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR11MB6391
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-CN10KB silicon introduced a new exact match feature,
-which is used for DMAC filtering. The state of installed
-DMAC filters in this exact match table is getting corrupted
-when promiscuous mode is toggled. Fix this by not touching
-Exact match related config when promiscuous mode is toggled.
 
-Fixes: 2dba9459d2c9 ("octeontx2-af: Wrapper functions for MAC addr add/del/update/reset")
-Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
----
- .../marvell/octeontx2/af/rvu_npc_hash.c       | 29 ++-----------------
- 1 file changed, 2 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-index 51209119f0f2..9f11c1e40737 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-@@ -1164,10 +1164,8 @@ static u16 __rvu_npc_exact_cmd_rules_cnt_update(struct rvu *rvu, int drop_mcam_i
- {
- 	struct npc_exact_table *table;
- 	u16 *cnt, old_cnt;
--	bool promisc;
- 
- 	table = rvu->hw->table;
--	promisc = table->promisc_mode[drop_mcam_idx];
- 
- 	cnt = &table->cnt_cmd_rules[drop_mcam_idx];
- 	old_cnt = *cnt;
-@@ -1179,16 +1177,13 @@ static u16 __rvu_npc_exact_cmd_rules_cnt_update(struct rvu *rvu, int drop_mcam_i
- 
- 	*enable_or_disable_cam = false;
- 
--	if (promisc)
--		goto done;
--
--	/* If all rules are deleted and not already in promisc mode; disable cam */
-+	/* If all rules are deleted, disable cam */
- 	if (!*cnt && val < 0) {
- 		*enable_or_disable_cam = true;
- 		goto done;
- 	}
- 
--	/* If rule got added and not already in promisc mode; enable cam */
-+	/* If rule got added, enable cam */
- 	if (!old_cnt && val > 0) {
- 		*enable_or_disable_cam = true;
- 		goto done;
-@@ -1443,7 +1438,6 @@ int rvu_npc_exact_promisc_disable(struct rvu *rvu, u16 pcifunc)
- 	u32 drop_mcam_idx;
- 	bool *promisc;
- 	bool rc;
--	u32 cnt;
- 
- 	table = rvu->hw->table;
- 
-@@ -1466,17 +1460,8 @@ int rvu_npc_exact_promisc_disable(struct rvu *rvu, u16 pcifunc)
- 		return LMAC_AF_ERR_INVALID_PARAM;
- 	}
- 	*promisc = false;
--	cnt = __rvu_npc_exact_cmd_rules_cnt_update(rvu, drop_mcam_idx, 0, NULL);
- 	mutex_unlock(&table->lock);
- 
--	/* If no dmac filter entries configured, disable drop rule */
--	if (!cnt)
--		rvu_npc_enable_mcam_by_entry_index(rvu, drop_mcam_idx, NIX_INTF_RX, false);
--	else
--		rvu_npc_enable_mcam_by_entry_index(rvu, drop_mcam_idx, NIX_INTF_RX, !*promisc);
--
--	dev_dbg(rvu->dev, "%s: disabled  promisc mode (cgx=%d lmac=%d, cnt=%d)\n",
--		__func__, cgx_id, lmac_id, cnt);
- 	return 0;
- }
- 
-@@ -1494,7 +1479,6 @@ int rvu_npc_exact_promisc_enable(struct rvu *rvu, u16 pcifunc)
- 	u32 drop_mcam_idx;
- 	bool *promisc;
- 	bool rc;
--	u32 cnt;
- 
- 	table = rvu->hw->table;
- 
-@@ -1517,17 +1501,8 @@ int rvu_npc_exact_promisc_enable(struct rvu *rvu, u16 pcifunc)
- 		return LMAC_AF_ERR_INVALID_PARAM;
- 	}
- 	*promisc = true;
--	cnt = __rvu_npc_exact_cmd_rules_cnt_update(rvu, drop_mcam_idx, 0, NULL);
- 	mutex_unlock(&table->lock);
- 
--	/* If no dmac filter entries configured, disable drop rule */
--	if (!cnt)
--		rvu_npc_enable_mcam_by_entry_index(rvu, drop_mcam_idx, NIX_INTF_RX, false);
--	else
--		rvu_npc_enable_mcam_by_entry_index(rvu, drop_mcam_idx, NIX_INTF_RX, !*promisc);
--
--	dev_dbg(rvu->dev, "%s: Enabled promisc mode (cgx=%d lmac=%d cnt=%d)\n",
--		__func__, cgx_id, lmac_id, cnt);
- 	return 0;
- }
- 
--- 
-2.25.1
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Wednesday, June 7, 2023 10:01 PM
+> To: Simon Wunderlich <sw@simonwunderlich.de>
+> Cc: davem@davemloft.net; netdev@vger.kernel.org; b.a.t.m.a.n@lists.open-
+> mesh.org; Vladislav Efanov <VEfanov@ispras.ru>; stable@kernel.org; Sven
+> Eckelmann <sven@narfation.org>
+> Subject: Re: [PATCH 1/1] batman-adv: Broken sync while rescheduling delay=
+ed
+> work
+>=20
+> On Wed,  7 Jun 2023 17:55:15 +0200 Simon Wunderlich wrote:
+> > The reason for these issues is the lack of synchronization. Delayed
+> > work (batadv_dat_purge) schedules new timer/work while the device
+> > is being deleted. As the result new timer/delayed work is set after
+> > cancel_delayed_work_sync() was called. So after the device is freed
+> > the timer list contains pointer to already freed memory.
+>=20
+> I guess this is better than status quo but is the fix really complete?
+> We're still not preventing the timer / work from getting scheduled
+> and staying alive after the netdev has been freed, right?
 
+Yea, I would expect some synchronization mechanism to ensure that after can=
+cel_delayed_work_sync() you can't queue the work again.
+
+I know for timers there is recently timer_shutdown_sync() which can be used=
+ to guarantee a timer can't re-arm at all, and its intended for some situat=
+ions where there is a cyclic dependency...
+
+Thanks,
+Jake
 
