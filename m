@@ -1,116 +1,114 @@
-Return-Path: <netdev+bounces-9261-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9262-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1AED07284E3
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:26:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 620697284ED
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:27:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 102531C20FF6
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:26:10 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B8BD01C20FEB
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:27:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C5F90174E8;
-	Thu,  8 Jun 2023 16:26:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6CADB1772A;
+	Thu,  8 Jun 2023 16:27:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B956B3B407
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 16:26:09 +0000 (UTC)
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED381270F;
-	Thu,  8 Jun 2023 09:26:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686241564; x=1717777564;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=1Ix6mB8UFb8SSOuSRxqsX7mIqiQc4nCyUN2OzGZ9Vw8=;
-  b=QSqMalvl40gfsLHsWhIdhBNbc6lWL6qs5U4VFWEFmFWVldDt/TWjfdOF
-   jkn/1U5RRVfP3Q9+Q4EuEcxw1LDeIAz5FpyrfK/14mu4baH9Ixk64YKgR
-   +lL9sz87TREDGgXICwFm+J74X5S2W5KGLqo2664Z8fgTXLCoVxj3gPclq
-   gjVPqvm4pM90AKO1FzHtB3YLevrfEOYY4D7SG4tKfm5AfNZpMJkVk9UHY
-   BOTnSQGWAXSJuK9dt/BPINTERjWbLtJotS2kaDfWMoWExF7oeeOoKsBev
-   HpQvGdEkzMn1W/wYFJSOlAEAz8YXUGvo1+vJV45dVbZyDcfdLwziZ6wUc
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="354847130"
-X-IronPort-AV: E=Sophos;i="6.00,227,1681196400"; 
-   d="scan'208";a="354847130"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2023 09:24:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="956790891"
-X-IronPort-AV: E=Sophos;i="6.00,227,1681196400"; 
-   d="scan'208";a="956790891"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga006.fm.intel.com with ESMTP; 08 Jun 2023 09:24:01 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1q7IQY-002Cny-1m;
-	Thu, 08 Jun 2023 19:23:58 +0300
-Date: Thu, 8 Jun 2023 19:23:58 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Richard Weinberger <richard@nod.at>
-Cc: linux-hardening <linux-hardening@vger.kernel.org>,
-	netdev <netdev@vger.kernel.org>,
-	linux-kernel <linux-kernel@vger.kernel.org>,
-	Kees Cook <keescook@chromium.org>, Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	senozhatsky <senozhatsky@chromium.org>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	davem <davem@davemloft.net>, edumazet <edumazet@google.com>,
-	kuba <kuba@kernel.org>, pabeni <pabeni@redhat.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Wedson Almeida Filho <wedsonaf@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [RFC PATCH 1/1] vsprintf: Warn on integer scanning overflows
-Message-ID: <ZIIAnhriitHDR2Vq@smile.fi.intel.com>
-References: <20230607223755.1610-1-richard@nod.at>
- <20230607223755.1610-2-richard@nod.at>
- <ZIHlZsPMZ2dI5/yG@smile.fi.intel.com>
- <1744246043.3699439.1686240873455.JavaMail.zimbra@nod.at>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59587174FD
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 16:27:31 +0000 (UTC)
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F387270F
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 09:27:28 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id 98e67ed59e1d1-2563aaceda9so456631a91.1
+        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 09:27:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1686241648; x=1688833648;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=L3eYHbt3Lra1h4IhwyjExc7YWHHEJ0+HYZYvn3NDBAE=;
+        b=ZEJf3h16GMcrTLSlduQ0E82dKUprjaM9roz0jT7T7pEe7G3uVc1dE05sNT+LkTDrEC
+         /qM3OyDEQ+QOYC47l4Xdub3HV/0619WfaOevCghUyImF9dg+U824Zbsj/noxGajNsdyq
+         JQxCGez9axSQNYR16Ilj6r4Jn5HGh83iRTX1H6tIPI59k29BTqDao4EkJ18lavFNzg9F
+         pmKx17nnmxG2R67NCCmpuP6IJLy4D2Ij+7AE+qxn6f3VXR1NjOZF0LCBPqXM5+9YvSDf
+         YHXrw5kzs7XlSsrW1YXQGvFdr79UIZKyEv86TPjupcMONY0prUBil6Qdth2yzYBsPKRK
+         jtkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686241648; x=1688833648;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=L3eYHbt3Lra1h4IhwyjExc7YWHHEJ0+HYZYvn3NDBAE=;
+        b=aph2RxCglTgAlGA241LF6vVcp145T257SudJFx7zEuek7XGVKjPjqudVSCVI6aC0Z4
+         GXToPbokxGoRCM/zf3rQGaMc0KXd7LzeQ7LfefdacqHuExhjXxnfb0ZQkNGHCVrtWilu
+         FYcOCHbBibUzJvfcqNVrQq3FEn29yRCqNQE6dfpRnsngQo/FFdCbMpiV1Opd7GYqg4g9
+         Y3UwtYG55du4m/uk0Jz2+e+yejX+W5e1gDs0CXQC4rgn86PzxVFPEuiYwAFUaNEFkq4y
+         BnZ68bRVthIqga1L7idpOiMk1wHfincEulO+3x4JxuUuUt1z9U9Mwxx5/tTSOO4Yhl5Q
+         nIbg==
+X-Gm-Message-State: AC+VfDxSDGH4BNgRudCyrWA5q3LGubOIX+XNWCtXMCjy14c5+mx+rb52
+	N84jta7LuVjlf0Qj0LSoMRts8ADUgttR2xU09m5Mog==
+X-Google-Smtp-Source: ACHHUZ5qItCfNUSImOGTZHLML//41tvvyp8NY5dYgoTsxWTmx4DIWjL9Wm8uizV3JycuCeZu1n8kXr3UNcJAUdYi8f4=
+X-Received: by 2002:a17:90b:1b4b:b0:256:3fc7:59fa with SMTP id
+ nv11-20020a17090b1b4b00b002563fc759famr3963530pjb.9.1686241647804; Thu, 08
+ Jun 2023 09:27:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1744246043.3699439.1686240873455.JavaMail.zimbra@nod.at>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+References: <ZH4a1l1pfG8ewo3v@google.com> <20230608125820.726340-1-zhangmingyi5@huawei.com>
+In-Reply-To: <20230608125820.726340-1-zhangmingyi5@huawei.com>
+From: Stanislav Fomichev <sdf@google.com>
+Date: Thu, 8 Jun 2023 09:27:16 -0700
+Message-ID: <CAKH8qBunUNSHDHQysavzS2PwXuro8aHanS8_3=8GYSEvib=5SQ@mail.gmail.com>
+Subject: Re: [PATCH] libbpf:fix use empty function pointers in ringbuf_poll
+To: zhangmingyi <zhangmingyi5@huawei.com>
+Cc: andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org, 
+	daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com, 
+	hsinweih@uci.edu, jakub@cloudflare.com, john.fastabend@gmail.com, 
+	kongweibin2@huawei.com, kuba@kernel.org, linux-kernel@vger.kernel.org, 
+	liuxin350@huawei.com, netdev@vger.kernel.org, pabeni@redhat.com, 
+	syzbot+49f6cef45247ff249498@syzkaller.appspotmail.com, 
+	syzkaller-bugs@googlegroups.com, wuchangye@huawei.com, xiesongyang@huawei.com, 
+	yanan@huawei.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 08, 2023 at 06:14:33PM +0200, Richard Weinberger wrote:
-> ----- Ursprüngliche Mail -----
-> > Von: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>
-> >>  	if (prefix_chars < max_chars) {
-> >>  		rv = _parse_integer_limit(cp, base, &result, max_chars - prefix_chars);
-> >> +		WARN_ON_ONCE(rv & KSTRTOX_OVERFLOW);
-> > 
-> > This seems incorrect. simple_strto*() are okay to overflow. It's by design.
-> 
-> Is this design decision also known to all users of scanf functions in the kernel?
+On Thu, Jun 8, 2023 at 6:00=E2=80=AFAM zhangmingyi <zhangmingyi5@huawei.com=
+> wrote:
+>
+> On 06/06,Stanislav Fomichev wrote:
+>
+> > On 06/05, Xin Liu wrote:
+> > > From: zhangmingyi <zhangmingyi5@huawei.com>
+> >
+> > > The sample_cb of the ring_buffer__new interface can transfer NULL. Ho=
+wever,
+> > > the system does not check whether sample_cb is NULL during
+> > > ring_buffer__poll, null pointer is used.
+>
+> > What is the point of calling ring_buffer__new with sample_cb =3D=3D NUL=
+L?
+>
+> Yes, as you said, passing sample_cb in ring_buffer__new to NULL doesn't
+> make sense, and few people use it that way, but that doesn't prevent this
+> from being a allowed and supported scenario. And when ring_buffer__poll i=
+s
+> called, it leads to a segmentation fault (core dump), which I think needs
+> to be fixed to ensure the security quality of libbpf.
 
-We have test_scanf.c. Does it miss any test cases? Please add them!
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+I dunno. I'd argue that passing a NULL to ring_buffer__new is an API
+misuse. Maybe ring_buffer__new should return -EINVAL instead when
+passed NULL sample_cb? Although, we don't usually have those checks
+for the majority of the arguments in libbpf...
 
