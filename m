@@ -1,269 +1,124 @@
-Return-Path: <netdev+bounces-9218-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9219-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 14978728015
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 14:33:03 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8B0A172802E
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 14:37:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6C2011C21011
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 12:32:59 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 35E4D28174E
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 12:37:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 08145947B;
-	Thu,  8 Jun 2023 12:33:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 043B1BA40;
+	Thu,  8 Jun 2023 12:37:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F12272599
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 12:32:59 +0000 (UTC)
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF171FDF;
-	Thu,  8 Jun 2023 05:32:51 -0700 (PDT)
-Received: from dggpemm500011.china.huawei.com (unknown [172.30.72.56])
-	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4QcNlg1r92z18M19;
-	Thu,  8 Jun 2023 20:27:59 +0800 (CST)
-Received: from localhost.huawei.com (10.137.16.203) by
- dggpemm500011.china.huawei.com (7.185.36.110) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 8 Jun 2023 20:32:47 +0800
-From: renmingshuai <renmingshuai@huawei.com>
-To: <pctammela@mojatatu.com>
-CC: <caowangbao@huawei.com>, <davem@davemloft.net>, <edumazet@google.com>,
-	<jhs@mojatatu.com>, <jiri@resnulli.us>, <kuba@kernel.org>,
-	<liaichun@huawei.com>, <linux-kernel@vger.kernel.org>, <liubo335@huawei.com>,
-	<netdev@vger.kernel.org>, <pabeni@redhat.com>, <renmingshuai@huawei.com>,
-	<xiyou.wangcong@gmail.com>, <yanan@huawei.com>
-Subject: [PATCH v2] net/sched: Set the flushing flags to false to prevent an infinite loop and add one test to tdc
-Date: Thu, 8 Jun 2023 20:32:24 +0800
-Message-ID: <20230608123224.3191731-1-renmingshuai@huawei.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <3679ed57-a0b9-4af2-cf83-e8aaa4bbd29e@mojatatu.com>
-References: <3679ed57-a0b9-4af2-cf83-e8aaa4bbd29e@mojatatu.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E76C3D2FC
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 12:37:27 +0000 (UTC)
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20871E43
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 05:37:26 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id 41be03b00d2f7-53fe2275249so251849a12.2
+        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 05:37:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1686227845; x=1688819845;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=vF7BJHmnxG54wdpwiHNjVAE0LjJI9FuEL9uTFxii16I=;
+        b=Aiihaxqbz67spa16+ZNOJjy54FXq89dppdCCz9Lcbhkd1yMhtCvLFtvwjOBywkj95T
+         gZo1sybXE7ojr4Mpm+2zdshpW7LLYICvQXmckN7RsoPdmf+ajw2t3ShsnENqNzpyL0jc
+         n3TUh5i2XOfPD9zSWWou5wq+rd5FQ9VRL/C5w0rT/oHrYuFtHyXO9VEqP600FaiZQNuC
+         wvmkXmP6rYdrESm3zrPXrqjiXGjz+GD/R64YTsoi8kCuMzvm2d6lZHjPGm2UhG/xAV+Q
+         N001B3KB1Yv8ywbvOgjN8qmr29lrg22Q+MsgF2mpA+k/RfVRIPRwxwrcWXqgvDa+MZkx
+         FjOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686227845; x=1688819845;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vF7BJHmnxG54wdpwiHNjVAE0LjJI9FuEL9uTFxii16I=;
+        b=ArH36h/3Edne2TU4QfG46Gl5+3MdUL80ZGYHoQRuCH1PK2NXoHStQuLnQHn+uHi/UZ
+         kvuolwOtxxiOPts63z33QGMG2enRSC70xb0qn/sMUV0CnR7SrayOcqbYxDHoOS1YpFxX
+         nrALoBnEwhxEzIykOk6NEyLNJ8m+2k31HhYVaQZr6t07xk4rmvt3g1pcLl0foeT4sltt
+         7gFTag9tJr38cM6CLvSIiXlbMiEwG6PMCgH9cfJbB01K+Spp+h0Vohck5npMhefvDK+D
+         /xwuA8Ptx+4IsvEOxayZWYcMhNZsW99fLwHYlAB38IMwYQWdyh0+lOBehmMXphADPr4F
+         cgew==
+X-Gm-Message-State: AC+VfDwKHFvVBFez/iaga+4wpK4DfEkrhyHZCP7Ng6PCKg7eJ8hiCMDu
+	353J7v9/lk3SZobbRvfTfAZBeTG77f100n9AIQ==
+X-Google-Smtp-Source: ACHHUZ6tZyhqvp7cqUQlsZZN44LfD6nkDhNPmbUYwX0UZxMiBiudwS0spmZHcsUdiFOa9lkqBcSCYg==
+X-Received: by 2002:a17:90a:fa42:b0:259:e35f:ab2e with SMTP id dt2-20020a17090afa4200b00259e35fab2emr1853190pjb.4.1686227845577;
+        Thu, 08 Jun 2023 05:37:25 -0700 (PDT)
+Received: from thinkpad ([117.202.186.138])
+        by smtp.gmail.com with ESMTPSA id 22-20020a17090a19d600b0024c1ac09394sm1288861pjj.19.2023.06.08.05.37.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Jun 2023 05:37:25 -0700 (PDT)
+Date: Thu, 8 Jun 2023 18:07:20 +0530
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+	mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	loic.poulain@linaro.org
+Subject: Re: [PATCH v2 0/2] Add MHI Endpoint network driver
+Message-ID: <20230608123720.GC5672@thinkpad>
+References: <20230607152427.108607-1-manivannan.sadhasivam@linaro.org>
+ <20230607094922.43106896@kernel.org>
+ <20230607171153.GA109456@thinkpad>
+ <20230607104350.03a51711@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.137.16.203]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500011.china.huawei.com (7.185.36.110)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+In-Reply-To: <20230607104350.03a51711@kernel.org>
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
->On 07/06/2023 01:19, renmingshuai wrote:
->>> On 06/06/2023 11:45, renmingshuai wrote:
->>>> When a new chain is added by using tc, one soft lockup alarm will
->>>> be
->>>>    generated after delete the prio 0 filter of the chain. To
->>>>    reproduce
->>>>    the problem, perform the following steps:
->>>> (1) tc qdisc add dev eth0 root handle 1: htb default 1
->>>> (2) tc chain add dev eth0
->>>> (3) tc filter del dev eth0 chain 0 parent 1: prio 0
->>>> (4) tc filter add dev eth0 chain 0 parent 1:
->>>
->>> This seems like it could be added to tdc or 3 and 4 must be run in
->>> parallel?
->> 3 and 4 do not need to be run inparallel. When a new chain is added
->> by the
->>   way as step 1 and the step 3 is completed, this problem always
->>   occurs
->>   whenever step 4 is run.
->
->Got it,
->The test still hangs with the provided patch.
->
->+ tc qdisc add dev lo root handle 1: htb default 1
->+ tc chain add dev lo
->+ tc filter del dev lo chain 0 parent 1: prio 0
->[   68.790030][ T6704] [+]
->[   68.790060][ T6704] chain refcnt 2
->[   68.790951][ T6704] [-]
->+ tc filter add dev lo chain 0 parent 1:
-><hangs>
->
->Also please add this test to tdc, it should be straightforward.
->
-Sorry for not testing before. I forgot that the chain->refcnt was
-increased by 1 when tcf_chain_get() is called in tc_del_tfilter().
- The value of chain->refcnt is 2 after chain flush. The test
- result is as follows:
-[root@localhost ~]# tc qdisc add dev eth2 root handle 1: htb default 1
-[root@localhost ~]# tc chain add dev eth2
-[root@localhost ~]# tc filter del dev eth2 chain 0 parent 1: prio 0
-[root@localhost ~]# tc filter add dev eth2 chain 0 parent 1:
-Error: Filter kind and protocol must be specified.
-We have an error talking to the kernel
+On Wed, Jun 07, 2023 at 10:43:50AM -0700, Jakub Kicinski wrote:
+> On Wed, 7 Jun 2023 22:41:53 +0530 Manivannan Sadhasivam wrote:
+> > > In any case, I'm opposed to reuse of the networking stack to talk
+> > > to firmware. It's a local device. The networking subsystem doesn't
+> > > have to cater to fake networks. Please carry:
+> > > 
+> > > Nacked-by: Jakub Kicinski <kuba@kernel.org>
+> > > 
+> > > if there are future submissions.  
+> > 
+> > Why shouldn't it be? With this kind of setup one could share the data connectivity
+> > available in the device with the host over IP tunneling. If the IP source in the
+> > device (like modem DSP) has no way to be shared with the host, then those IP
+> > packets could be tunneled through this interface for providing connectivity to
+> > the host.
+> > 
+> > I believe this is a common usecase among the PCIe based wireless endpoint
+> > devices.
+> 
+> We can handwave our way into many scenarios and terrible architectures.
+> I don't see any compelling reason to merge this.
 
-And I have add this test to tdc:
-[root@localhost tc-testing]# ./tdc.py -f tc-tests/filters/tests.json
-ok 7 c2b4 - Adding a new fiter after deleting a filter in a chain does
-not cause  an infinite loop
+These kind of usecases exist in the products out there in the market. Regarding
+your comment on "opposed to reuse of the network stack to talk to firmware", it
+not the just the firmware, it is the device in general that is talking to the
+host over this interface. And I don't see how different it is from the host
+perspective.
 
-Fixes: 726d061286ce ("net: sched: prevent insertion of new classifiers during chain flush")
-Signed-off-by: renmingshuai <renmingshuai@huawei.com>
----
- net/sched/cls_api.c                           |  7 +++++
- .../tc-testing/tc-tests/filters/tests.json    | 26 ++++++++++++++++---
- 2 files changed, 30 insertions(+), 3 deletions(-)
+And these kind of scenarios exist with all types of interfaces like usb-gadget,
+virtio etc... So not sure why the rule is different for networking subsystem.
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 2621550bfddc..3ea054e03fbf 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -2442,6 +2442,13 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
- 		tfilter_notify_chain(net, skb, block, q, parent, n,
- 				     chain, RTM_DELTFILTER, extack);
- 		tcf_chain_flush(chain, rtnl_held);
-+		/* Set the flushing flags to false to prevent an infinite loop
-+		 * when a new filter is added.
-+		 */
-+		mutex_lock(&chain->filter_chain_lock);
-+		if (chain->refcnt == 2)
-+			chain->flushing = false;
-+		mutex_unlock(&chain->filter_chain_lock);
- 		err = 0;
- 		goto errout;
- 	}
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-index 361235ad574b..f165ca091109 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-@@ -125,5 +125,25 @@
-         "teardown": [
-             "$TC qdisc del dev $DEV2 ingress"
-         ]
-+    },
-+    {
-+        "id": "c2b4",
-+        "name": "Adding a new fiter after deleting a filter in a chain does not cause an infinite loop",
-+        "category": [
-+            "filter",
-+            "prio"
-+        ],
-+        "setup": [
-+            "$TC qdisc add dev $DEV1 root handle 1: htb default 1",
-+            "$TC chain add dev $DEV1"
-+        ],
-+        "cmdUnderTest": "$TC filter del dev $DEV1 chain 0 parent 1: prio 0",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter add dev $DEV1 chain 0 parent 1:",
-+        "matchPattern": "Error: Filter kind and protocol must be specified.",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 root handle 1: htb default 1"
-+        ]
-     }
- ]
---
-2.27.0
->>>>
->>>>
->>>> The refcnt of the chain added by step 2 is equal to 1. After step
->>>> 3,
->>>>    the flushing flag of the chain is set to true in the
->>>>    tcf_chain_flush()
->>>>    called by tc_del_tfilter() because the prio is 0. In this case,
->>>>    if
->>>>    we add a new filter to this chain, it will never succeed and try
->>>>    again
->>>>    and again because the refresh flash is always true and refcnt is
->>>>    1.
->>>>    A soft lock alarm is generated 20 seconds later.
->>>> The stack is show as below:
->>>>
->>>> Kernel panic - not syncing: softlockup: hung tasks
->>>> CPU: 2 PID: 3321861 Comm: tc Kdump: loaded Tainted: G
->>>> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
->>>> Call Trace:
->>>>    <IRQ>
->>>>    dump_stack+0x57/0x6e
->>>>    panic+0x196/0x3ec
->>>>    watchdog_timer_fn.cold+0x16/0x5c
->>>>    __run_hrtimer+0x5e/0x190
->>>>    __hrtimer_run_queues+0x8a/0xe0
->>>>    hrtimer_interrupt+0x110/0x2c0
->>>>    ? irqtime_account_irq+0x49/0xf0
->>>>    __sysvec_apic_timer_interrupt+0x5f/0xe0
->>>>    asm_call_irq_on_stack+0x12/0x20
->>>>    </IRQ>
->>>>    sysvec_apic_timer_interrupt+0x72/0x80
->>>>    asm_sysvec_apic_timer_interrupt+0x12/0x20
->>>> RIP: 0010:mutex_lock+0x24/0x70
->>>> RSP: 0018:ffffa836004ab9a8 EFLAGS: 00000246
->>>> RAX: 0000000000000000 RBX: ffff95bb02d76700 RCX: 0000000000000000
->>>> RDX: ffff95bb27462100 RSI: 0000000000000000 RDI: ffff95ba5b527000
->>>> RBP: ffff95ba5b527000 R08: 0000000000000001 R09: ffffa836004abbb8
->>>> R10: 000000000000000f R11: 0000000000000000 R12: 0000000000000000
->>>> R13: ffff95ba5b527000 R14: ffffa836004abbb8 R15: 0000000000000001
->>>>    __tcf_chain_put+0x27/0x200
->>>>    tc_new_tfilter+0x5e8/0x810
->>>>    ? tc_setup_cb_add+0x210/0x210
->>>>    rtnetlink_rcv_msg+0x2e3/0x380
->>>>    ? rtnl_calcit.isra.0+0x120/0x120
->>>>    netlink_rcv_skb+0x50/0x100
->>>>    netlink_unicast+0x12d/0x1d0
->>>>    netlink_sendmsg+0x286/0x490
->>>>    sock_sendmsg+0x62/0x70
->>>>    ____sys_sendmsg+0x24c/0x2c0
->>>>    ? import_iovec+0x17/0x20
->>>>    ? sendmsg_copy_msghdr+0x80/0xa0
->>>>    ___sys_sendmsg+0x75/0xc0
->>>>    ? do_fault_around+0x118/0x160
->>>>    ? do_read_fault+0x68/0xf0
->>>>    ? __handle_mm_fault+0x3f9/0x6f0
->>>>    __sys_sendmsg+0x59/0xa0
->>>>    do_syscall_64+0x33/0x40
->>>>    entry_SYSCALL_64_after_hwframe+0x61/0xc6
->>>> RIP: 0033:0x7f96705b8247
->>>> RSP: 002b:00007ffe552e9dc8 EFLAGS: 00000246 ORIG_RAX:
->>>> 000000000000002e
->>>> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f96705b8247
->>>> RDX: 0000000000000000 RSI: 00007ffe552e9e40 RDI: 0000000000000003
->>>> RBP: 0000000000000001 R08: 0000000000000001 R09: 0000558113f678b0
->>>> R10: 00007f967069ab00 R11: 0000000000000246 R12: 00000000647ea089
->>>> R13: 00007ffe552e9f30 R14: 0000000000000001 R15: 0000558113175f00
->>>>
->>>> To avoid this case, set chain->flushing to be false if the
->>>> chain->refcnt
->>>>    is 1 after flushing the chain when prio is 0.
->>>>
->>>> Fixes: 726d061286ce ("net: sched: prevent insertion of new
->>>> classifiers during chain flush")
->>>> Signed-off-by: Ren Mingshuai <renmingshuai@huawei.com>
->>>> ---
->>>>    net/sched/cls_api.c | 7 +++++++
->>>>    1 file changed, 7 insertions(+)
->>>>
->>>> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
->>>> index 2621550bfddc..68be55d75831 100644
->>>> --- a/net/sched/cls_api.c
->>>> +++ b/net/sched/cls_api.c
->>>> @@ -2442,6 +2442,13 @@ static int tc_del_tfilter(struct sk_buff
->>>> *skb, struct nlmsghdr *n,
->>>>    		tfilter_notify_chain(net, skb, block, q, parent,
->>>>    		n,
->>>>    				     chain, RTM_DELTFILTER,
->>>>    				     extack);
->>>>    		tcf_chain_flush(chain, rtnl_held);
->>>> +		/* Set the flushing flags to false to prevent an
->>>> infinite loop
->>>> +		 * when a new filter is added.
->>>> +		 */
->>>> +		mutex_lock(&chain->filter_chain_lock);
->>>> +		if (chain->refcnt == 1)
->>>> +			chain->flushing = false;
->>>> +		mutex_unlock(&chain->filter_chain_lock);
->>>>    		err = 0;
->>>>    		goto errout;
->>>>    	}
+- Mani
+
+-- 
+மணிவண்ணன் சதாசிவம்
 
