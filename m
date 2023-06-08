@@ -1,114 +1,103 @@
-Return-Path: <netdev+bounces-9262-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9263-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 620697284ED
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:27:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id CEA797284FE
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:33:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B8BD01C20FEB
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:27:39 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 313501C20FF4
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:33:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6CADB1772A;
-	Thu,  8 Jun 2023 16:27:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E757523D7;
+	Thu,  8 Jun 2023 16:33:01 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59587174FD
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 16:27:31 +0000 (UTC)
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F387270F
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 09:27:28 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id 98e67ed59e1d1-2563aaceda9so456631a91.1
-        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 09:27:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1686241648; x=1688833648;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=L3eYHbt3Lra1h4IhwyjExc7YWHHEJ0+HYZYvn3NDBAE=;
-        b=ZEJf3h16GMcrTLSlduQ0E82dKUprjaM9roz0jT7T7pEe7G3uVc1dE05sNT+LkTDrEC
-         /qM3OyDEQ+QOYC47l4Xdub3HV/0619WfaOevCghUyImF9dg+U824Zbsj/noxGajNsdyq
-         JQxCGez9axSQNYR16Ilj6r4Jn5HGh83iRTX1H6tIPI59k29BTqDao4EkJ18lavFNzg9F
-         pmKx17nnmxG2R67NCCmpuP6IJLy4D2Ij+7AE+qxn6f3VXR1NjOZF0LCBPqXM5+9YvSDf
-         YHXrw5kzs7XlSsrW1YXQGvFdr79UIZKyEv86TPjupcMONY0prUBil6Qdth2yzYBsPKRK
-         jtkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686241648; x=1688833648;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=L3eYHbt3Lra1h4IhwyjExc7YWHHEJ0+HYZYvn3NDBAE=;
-        b=aph2RxCglTgAlGA241LF6vVcp145T257SudJFx7zEuek7XGVKjPjqudVSCVI6aC0Z4
-         GXToPbokxGoRCM/zf3rQGaMc0KXd7LzeQ7LfefdacqHuExhjXxnfb0ZQkNGHCVrtWilu
-         FYcOCHbBibUzJvfcqNVrQq3FEn29yRCqNQE6dfpRnsngQo/FFdCbMpiV1Opd7GYqg4g9
-         Y3UwtYG55du4m/uk0Jz2+e+yejX+W5e1gDs0CXQC4rgn86PzxVFPEuiYwAFUaNEFkq4y
-         BnZ68bRVthIqga1L7idpOiMk1wHfincEulO+3x4JxuUuUt1z9U9Mwxx5/tTSOO4Yhl5Q
-         nIbg==
-X-Gm-Message-State: AC+VfDxSDGH4BNgRudCyrWA5q3LGubOIX+XNWCtXMCjy14c5+mx+rb52
-	N84jta7LuVjlf0Qj0LSoMRts8ADUgttR2xU09m5Mog==
-X-Google-Smtp-Source: ACHHUZ5qItCfNUSImOGTZHLML//41tvvyp8NY5dYgoTsxWTmx4DIWjL9Wm8uizV3JycuCeZu1n8kXr3UNcJAUdYi8f4=
-X-Received: by 2002:a17:90b:1b4b:b0:256:3fc7:59fa with SMTP id
- nv11-20020a17090b1b4b00b002563fc759famr3963530pjb.9.1686241647804; Thu, 08
- Jun 2023 09:27:27 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB742110E
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 16:33:01 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D54BA2;
+	Thu,  8 Jun 2023 09:32:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=1jYpLgX3TyKo27bhaTBgrRuXiTSjl0K9lkey+D4tgic=; b=pjTEEGJMNwzFRrqZOgtgTVTn/W
+	z+5eGQ69RyPJ9ZeVT9PITVdfenLOoOc8c2qAgN0/fsk9/uVkRbJcm1/KrUvvGxHOCgOLsVwtSHy6I
+	2iK4xGuga/IA/ZRGLhShHVQlvZ3Jt19Fz/X8jUpHd3pB8VwfgphY2vTx+hOzXeOq13i4vM4ii4gYs
+	MfmDtV6gn5Jptu7n5sRHlYk/TRJdZoL+hrW/SrKsEKqS/9oTr6T2IJVVNhqT1eYOkWQnADKmoJQDt
+	TR/lUjQmiZBIqer580/a/Z2033P2jrxi3aVj8jEWVVfqH9t5RE7zVwrtWioFkOJM1zscr2yb50nc+
+	oTWji+Ww==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58578)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q7IZC-0000g0-Km; Thu, 08 Jun 2023 17:32:54 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q7IZA-0000xW-5O; Thu, 08 Jun 2023 17:32:52 +0100
+Date: Thu, 8 Jun 2023 17:32:52 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc: davem@davemloft.net, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
+	Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	linux-arm-kernel@lists.infradead.org, Horatiu.Vultur@microchip.com,
+	Allan.Nielsen@microchip.com, UNGLinuxDriver@microchip.com,
+	Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net 2/2] net: phylink: use USXGMII control-word format to
+ parse Q-USGMII word
+Message-ID: <ZIICtN5zrxvTuEwz@shell.armlinux.org.uk>
+References: <20230608163415.511762-1-maxime.chevallier@bootlin.com>
+ <20230608163415.511762-4-maxime.chevallier@bootlin.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <ZH4a1l1pfG8ewo3v@google.com> <20230608125820.726340-1-zhangmingyi5@huawei.com>
-In-Reply-To: <20230608125820.726340-1-zhangmingyi5@huawei.com>
-From: Stanislav Fomichev <sdf@google.com>
-Date: Thu, 8 Jun 2023 09:27:16 -0700
-Message-ID: <CAKH8qBunUNSHDHQysavzS2PwXuro8aHanS8_3=8GYSEvib=5SQ@mail.gmail.com>
-Subject: Re: [PATCH] libbpf:fix use empty function pointers in ringbuf_poll
-To: zhangmingyi <zhangmingyi5@huawei.com>
-Cc: andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org, 
-	daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com, 
-	hsinweih@uci.edu, jakub@cloudflare.com, john.fastabend@gmail.com, 
-	kongweibin2@huawei.com, kuba@kernel.org, linux-kernel@vger.kernel.org, 
-	liuxin350@huawei.com, netdev@vger.kernel.org, pabeni@redhat.com, 
-	syzbot+49f6cef45247ff249498@syzkaller.appspotmail.com, 
-	syzkaller-bugs@googlegroups.com, wuchangye@huawei.com, xiesongyang@huawei.com, 
-	yanan@huawei.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230608163415.511762-4-maxime.chevallier@bootlin.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 8, 2023 at 6:00=E2=80=AFAM zhangmingyi <zhangmingyi5@huawei.com=
-> wrote:
->
-> On 06/06,Stanislav Fomichev wrote:
->
-> > On 06/05, Xin Liu wrote:
-> > > From: zhangmingyi <zhangmingyi5@huawei.com>
-> >
-> > > The sample_cb of the ring_buffer__new interface can transfer NULL. Ho=
-wever,
-> > > the system does not check whether sample_cb is NULL during
-> > > ring_buffer__poll, null pointer is used.
->
-> > What is the point of calling ring_buffer__new with sample_cb =3D=3D NUL=
-L?
->
-> Yes, as you said, passing sample_cb in ring_buffer__new to NULL doesn't
-> make sense, and few people use it that way, but that doesn't prevent this
-> from being a allowed and supported scenario. And when ring_buffer__poll i=
-s
-> called, it leads to a segmentation fault (core dump), which I think needs
-> to be fixed to ensure the security quality of libbpf.
+On Thu, Jun 08, 2023 at 06:34:15PM +0200, Maxime Chevallier wrote:
+> diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
+> index 256b463e47a6..1d20a9082507 100644
+> --- a/include/uapi/linux/mdio.h
+> +++ b/include/uapi/linux/mdio.h
+> @@ -444,4 +444,7 @@ static inline __u16 mdio_phy_id_c45(int prtad, int devad)
+>  #define MDIO_USXGMII_5000FULL		0x1a00	/* 5000Mbps full-duplex */
+>  #define MDIO_USXGMII_LINK		0x8000	/* PHY link with copper-side partner */
+>  
+> +/* Usgmii control word is based on Usxgmii, masking away 2.5, 5 and 10Gbps */
+> +#define MDIO_USGMII_SPD_MASK		0x0600
 
-I dunno. I'd argue that passing a NULL to ring_buffer__new is an API
-misuse. Maybe ring_buffer__new should return -EINVAL instead when
-passed NULL sample_cb? Although, we don't usually have those checks
-for the majority of the arguments in libbpf...
+This isn't correct:
+
+11:9	Speed: Bit 11, 10, 9:
+	1 1 1 to 011 = Reserved
+	0 1 0 = 1000 Mbps: 1000BASE-TX, 1000BASE-X
+	0 0 1 = 100 Mbps: 100BASE-TX, 100BASE-FX
+	0 0 0 = 10 Mbps: 10BASET, 10BASE2, 10BASE5
+
+If we only look at bits 10 and 9, then we're interpreting the reserved
+combinations as valid as well.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
