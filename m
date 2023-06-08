@@ -1,125 +1,177 @@
-Return-Path: <netdev+bounces-9310-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9311-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7C9D0728673
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 19:38:56 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 000D972868B
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 19:45:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D33BF1C2103B
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 17:38:52 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5485D28166D
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 17:45:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 99E331DCC7;
-	Thu,  8 Jun 2023 17:38:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 951071DCCA;
+	Thu,  8 Jun 2023 17:45:32 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83F3A18011;
-	Thu,  8 Jun 2023 17:38:51 +0000 (UTC)
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E281D2D55;
-	Thu,  8 Jun 2023 10:38:46 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-977d7bdde43so191834866b.0;
-        Thu, 08 Jun 2023 10:38:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 820EF10973
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 17:45:32 +0000 (UTC)
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2095.outbound.protection.outlook.com [40.107.243.95])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8F82D42;
+	Thu,  8 Jun 2023 10:45:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cm20NTzM7KvA9rDnBof17wbDLKc2BEQ7uFD0IAIKb3KMzmx4wIogaVkmQrCpHR6PvrLsFu1xgMOrZbPjZW/FwyUEo8pc9k7EOLJ8fVVk7W+ay3TwQT60/fzuY1GFKJlhWEe2Q4AmmsVY0s7hZUdaJxEh40yR8dIEQTonikQg4G17YSPqqr12W9vTvqCFYJC6vFuHyGIRCQ3oQYBrZscvb0nzdqIh8IufyTKGtdDAZd5V82rVFwGHrwnAZmtQijThTeJDlq2+fldWSIoUnA5Igv9SQ4Pjuzpaz09MKomc7NuxYU6sv0OtwdvSxm7G17X7EHK+jF/fHCN2v6jU4piM+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=YlCQ8aRKcjWKW5BdLJSLMCKDAIDBzq0DD6M/twJ1ay4=;
+ b=n4TAjfsqIFTpXkFqPA/v4POXmOPdP+z691pGFOIVj/Zp/K6oSozYS7/tcmZlj44remVYH5vxb9WTaAVVTd+zzDbRzn0IWz20emZIZ7NXQNRnjQJQOlBdJWkw1+yvIIZmuV+YeyeOBac0loq739Vyd+R+YmJ18fF6LHFRYIRxDTiu7aQKPLZZGD2+gyGnUFL/B6bZcwHK8YuIIi+jM3gVfET7NyDIMvh90FXEzYtztWksspGhALUzMubQFswx2Xz9jF9QqpTddilF2hMGSR7JD9B2brkYudqC9ucO9w7qzcfC9a5BI2kqa35Tkv8sWXJctSfnSAMLufl5E1tFBWgryA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686245925; x=1688837925;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ff0sWLws5Xaq7O24yT6WqYHWuKSh3wtpXB/C2lu5Ovk=;
-        b=mu/l35IYxUbQLaIyq4ylFKbzYLiErz85A9NiSRiqQOfX9yUdP7jIYoc1h4f9gVsNmW
-         LwBPOjDW46jPLbBpZUOpoF8FSaKaFImNKIda/d6A8E7wwo71DZ/C8KhRJv9K1UfQ+IWe
-         Ch6Pqei1KFgLqFYAdwCLFFF9LWuvqqKJQtWyShFOqO1rCA6cLu5YBr2wP8R+nRT11/UK
-         P53xP0aaXmFc/RGmZyh51K7UrBJI2RhqUWY6OW9etGsAGFvsEY+Oxdz/I56PoYW9VWrK
-         5PS6PctZSbQ3nY7sYM3x2hsVt0yyLADscCysobVbMvhdqtJdf+sqMlhjqvrlf1qwAqnx
-         aw3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686245925; x=1688837925;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Ff0sWLws5Xaq7O24yT6WqYHWuKSh3wtpXB/C2lu5Ovk=;
-        b=i5T/nUSyrnPrXd1OVWkD8yIW07rypRlV6qK7NrxEnm6eW4ya3DTYS9kAGMGyLufiDY
-         CzDeTumdc9IG4lR3e2Spa3pCN3ppF3TMerkuDyCaEaU/r7w0HwUJig9shJwxgQxV78b2
-         tgf3uOC9dzTDVOy8yy+keibfDrjp/7djUMb8mSXnVX6kbHElU0NzsoUnrae6WTGNbSDF
-         DZ+76jHgh0VsXzrqPceJmBv0swRRBxNnBFQ3JNvbbG1Pg640S8rxtQPeGYHgOEmR7dDX
-         ertHiTqLBJpUIlw1qeSNkcqwQzf5+yfPHVkNWTbxakFGAkQyArLwgeN9zqPaCLrUFpw3
-         TwkA==
-X-Gm-Message-State: AC+VfDwylnSTv2jKa43DOxagUY+E8GqnIbX+x9N1lRix/665o49Reu60
-	oDZCEz9ZXmhaGOFLf05Z203r0w0L/NrKJaaf/PA=
-X-Google-Smtp-Source: ACHHUZ6A6ALkrrYZIfKPIjiS+4jEmJ2VMv12VuJ+B5kUum8b8htMh10NQ9KfQkviuKvmjuiqVUPeNbhWSf+dOYXJWjI=
-X-Received: by 2002:a17:906:58d5:b0:977:e501:cc01 with SMTP id
- e21-20020a17090658d500b00977e501cc01mr288236ejs.24.1686245925056; Thu, 08 Jun
- 2023 10:38:45 -0700 (PDT)
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YlCQ8aRKcjWKW5BdLJSLMCKDAIDBzq0DD6M/twJ1ay4=;
+ b=vfGNv0pHDERZwj+jx9880DmhVM5B12ErT3UTIk3xZJWA7xI1rQfYbgju/trcschD1naqmjGcONWGAMyKQwZBN2XwcTtYkIKhEq7LA6JT5uf+nHLOrEUTZIWiWYvPWLvycfFKofUHPtxizMqqmwOCDzIobWuyqZFn89VvOKdNO8A=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH7PR13MB6365.namprd13.prod.outlook.com (2603:10b6:510:2f9::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.19; Thu, 8 Jun
+ 2023 17:45:24 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6455.030; Thu, 8 Jun 2023
+ 17:45:24 +0000
+Date: Thu, 8 Jun 2023 19:45:16 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc: davem@davemloft.net, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
+	Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	linux-arm-kernel@lists.infradead.org, Horatiu.Vultur@microchip.com,
+	Allan.Nielsen@microchip.com, UNGLinuxDriver@microchip.com,
+	Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net 2/2] net: phylink: use USXGMII control-word format to
+ parse Q-USGMII word
+Message-ID: <ZIITrPpnQB2rQNUr@corigine.com>
+References: <20230608163415.511762-1-maxime.chevallier@bootlin.com>
+ <20230608163415.511762-4-maxime.chevallier@bootlin.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230608163415.511762-4-maxime.chevallier@bootlin.com>
+X-ClientProxiedBy: AM9P193CA0018.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21e::23) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <ZH4a1l1pfG8ewo3v@google.com> <20230608125820.726340-1-zhangmingyi5@huawei.com>
- <CAKH8qBunUNSHDHQysavzS2PwXuro8aHanS8_3=8GYSEvib=5SQ@mail.gmail.com>
-In-Reply-To: <CAKH8qBunUNSHDHQysavzS2PwXuro8aHanS8_3=8GYSEvib=5SQ@mail.gmail.com>
-From: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date: Thu, 8 Jun 2023 10:38:32 -0700
-Message-ID: <CAEf4Bzb2_THiWkqNRnbN5LsOif6+9=GY7LrtEbQf6o24cihhMQ@mail.gmail.com>
-Subject: Re: [PATCH] libbpf:fix use empty function pointers in ringbuf_poll
-To: Stanislav Fomichev <sdf@google.com>
-Cc: zhangmingyi <zhangmingyi5@huawei.com>, andrii@kernel.org, ast@kernel.org, 
-	bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net, 
-	edumazet@google.com, hsinweih@uci.edu, jakub@cloudflare.com, 
-	john.fastabend@gmail.com, kongweibin2@huawei.com, kuba@kernel.org, 
-	linux-kernel@vger.kernel.org, liuxin350@huawei.com, netdev@vger.kernel.org, 
-	pabeni@redhat.com, syzbot+49f6cef45247ff249498@syzkaller.appspotmail.com, 
-	syzkaller-bugs@googlegroups.com, wuchangye@huawei.com, xiesongyang@huawei.com, 
-	yanan@huawei.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB6365:EE_
+X-MS-Office365-Filtering-Correlation-Id: b98410ae-c19b-4039-04a4-08db684822dc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	nGPAox+yaHOBTAGo0Q4Qvjhz3Yjyr4ZhrfOE7mJEg+WHdhT2HUGxeOz560LhXYV1iJWE+T/Xmx4xZCxpgOxakESGPXe90BltcTEESVaXEuzckwT8wpNjwR77W54/KAj61rwfNFKqnM55DhjH0Y7mhqA8+JnQ4EHFk0xEg31c/WBrHNaFiPdcmWfThNgydDl3AAnBM6C5NWzUa0A0gcNr4w80w7UEew1V8B14XWCkrnZqPHvjurrulyf7GX6Aacbnb2WVBnuLOcbQFTDCbBQKdSC42ca/1uCtYlyAMRy+p/KExz+2xuW2eD4IVGIt+9BqSxqZ4a0fJ540Q+t8jE2xlrVezImMk7T4cxxqCO729YajcOKowX3+v8aclgGaWFfw2qjcIF6cLAMu2KzV1FD7aNTuivBXWiu2ojzYT6RDTIpTAYTvZXidEvE/D/4zaSkgAEvGBZvLs78FpiJnGpHNAtARyToN7le+mhVYV1KLJ8bfMlxCkTjEWEWpl5OoFUn/HFOprwXaiGsRpuF4Ig7BxUgGI7jek/FD38IlKd/rkV+ZwyMGRk8Flzn8gdyf/uBM
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(39840400004)(136003)(396003)(366004)(376002)(451199021)(5660300002)(44832011)(7416002)(316002)(4326008)(6916009)(66946007)(66476007)(66556008)(8936002)(8676002)(38100700002)(41300700001)(86362001)(36756003)(2906002)(2616005)(6512007)(6506007)(6666004)(6486002)(186003)(83380400001)(54906003)(478600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ijE7iVRZs4HHcyhJ4sPR8wcXDQtiY04gID9bPgVWyqCrxIly/HFA+TKOltSB?=
+ =?us-ascii?Q?5vExkdf9ilnhv/uOeASTXghq3qnabeAlGgT7UinrVntiwd1+U0bUWwczZ9OK?=
+ =?us-ascii?Q?YPJiaBKRTW2vTqo5ifUxb10Z78sDVHh1mHDA9Uee3rSoUUB47nvdkIbgWauY?=
+ =?us-ascii?Q?aIMvrvfLIhn3gFGE94bcUNx6jd4WnL9oVwythV6fX/wyhTlZ0yQ3YbIKtmH9?=
+ =?us-ascii?Q?KOIZ/OEobbIV4tVqqGkieWDAKkpVR7XsFUBiaSG/8TiFVLybiWAtpfGWwqD1?=
+ =?us-ascii?Q?tpMcRi/XfOrYabftlrC8GLwiAg62GZHMCCGRstZMnNP8Uh+RESJBVl64mecX?=
+ =?us-ascii?Q?JX3hm4GhwvKHQlfAnpF13L1frBtqslpp8aWLqzNDm/9m/iTIE5sZxZoyhU3Q?=
+ =?us-ascii?Q?OAWTmDn50nhBXo4ytHADX5pUBNGPIp8bw+jneWPPBde/2LDhkuPyaEGdYKoW?=
+ =?us-ascii?Q?WOY6G3IV1dyqgKwQztUmoQN1ERsVeLDQlLc50R8HY7Udo1MOd6EFLVwPPpAp?=
+ =?us-ascii?Q?riITX2+wn1EPLSzXOSP6X1QXEjEbyrT+H8LQqkNs9XPu7if9mCLGcPzS1PFr?=
+ =?us-ascii?Q?/gmZYY/S+wawQWyBHNaKrYEsOIH/Eiv0GQE5cepwXRtCsZsBHenwsFXyqFvh?=
+ =?us-ascii?Q?3Dx0UvTHtRdUTqLgHeaEUST9GyzwPFp8xYbVD+6NvWnsfMJAL641L0700M7I?=
+ =?us-ascii?Q?ibNAd6oWfpct3B897DSiIh7HFWyoRj0/QgygMzHgJGLzrRQa5OWntsIpM7IW?=
+ =?us-ascii?Q?SmooiORz2XnXpciYP2xzeWL7PE2ALh2tPdoXEWzpnYuFiLUFhq65p+OWTjVo?=
+ =?us-ascii?Q?flEX+ezy2Ln6rp0/VcMKJ5n/KV+7/koN1p2/6KpsUokvxgqoWINkAEeQ4qnE?=
+ =?us-ascii?Q?niKUTQtWdoyseapNKTINJ8XwNnh+jF0BKMMnznupuUVhaBNZT55iYS3ij41x?=
+ =?us-ascii?Q?A/FBADFlaZainYKX7C6hTdURufvq6OHb76uFmxXuubc50hQV/Ek12aYVYw5o?=
+ =?us-ascii?Q?SV5aVJk61kc4Nt5hmOsMdvhi8n594FPMm4+MLBorupgQZMXDcsqfweaPDtXn?=
+ =?us-ascii?Q?zeqmLTjBdFvmm33u7mMCxz1madu92FkGQaxhpDonxgjWTS3VxbD5Qv3gY8P3?=
+ =?us-ascii?Q?ndcnXbKk5Om3p40zkIJCY0CABoXPgVlVyLgO7c9bJdefm9lF3VZ4fu4teUQu?=
+ =?us-ascii?Q?IeriNOQOnzgH1knvY4VvT+Xa9UJXPjErrAklwJ3nLSGaXEdlB5+M0mkf0/5M?=
+ =?us-ascii?Q?VyWs0K4NZlPF79Y8+64M+QuK6uZnyroB93cG5/QaR3HVGII4CPRpARodsSGA?=
+ =?us-ascii?Q?1PsHXzXjpQkqb6EHXUHnoVVGEK6gNp69WTP5lBt3CJlx35l8ZrD/D6GrnvMX?=
+ =?us-ascii?Q?FrsYDG2QbOCnE6nz5Tpdhs3d2dHWBSYmacvYeix+7IR8zolpd1Fwp86GEcBX?=
+ =?us-ascii?Q?CLClm5nCRWxVpThWBfREZ+sP2FQse4CfRIm9SgpCOBSYohtq6OBuEp7vslbL?=
+ =?us-ascii?Q?RyOP3JbytJdpEc+c4nOx9a/X3VfmblnrY7Q6USoNEd83SSvNtX1LZvp/sZ/2?=
+ =?us-ascii?Q?LnTJaDtlTjF8azrooWt+sVD4ygHzHrTYxhN+5tF2jHFpIC0bgJdIH7EAY6X+?=
+ =?us-ascii?Q?vQo0CWW59alV7Lz2uH0vbZHGWfpgJbhk7p7babdexbOdQFwWDmVU0y8YDu6I?=
+ =?us-ascii?Q?bJz03A=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b98410ae-c19b-4039-04a4-08db684822dc
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2023 17:45:24.2271
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: osaehbduf2yXjwhy9GP6vQrcFtjQr7ww6w5BIfcvqulN0NrwsWE7bH9HfYdHk4T9yOQZgCBz/Hj7ZKUbuqrzdIB+AD4bllGIY5mkZtXA76Y=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB6365
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 8, 2023 at 9:27=E2=80=AFAM Stanislav Fomichev <sdf@google.com> =
-wrote:
->
-> On Thu, Jun 8, 2023 at 6:00=E2=80=AFAM zhangmingyi <zhangmingyi5@huawei.c=
-om> wrote:
-> >
-> > On 06/06,Stanislav Fomichev wrote:
-> >
-> > > On 06/05, Xin Liu wrote:
-> > > > From: zhangmingyi <zhangmingyi5@huawei.com>
-> > >
-> > > > The sample_cb of the ring_buffer__new interface can transfer NULL. =
-However,
-> > > > the system does not check whether sample_cb is NULL during
-> > > > ring_buffer__poll, null pointer is used.
-> >
-> > > What is the point of calling ring_buffer__new with sample_cb =3D=3D N=
-ULL?
-> >
-> > Yes, as you said, passing sample_cb in ring_buffer__new to NULL doesn't
-> > make sense, and few people use it that way, but that doesn't prevent th=
-is
-> > from being a allowed and supported scenario. And when ring_buffer__poll=
- is
-> > called, it leads to a segmentation fault (core dump), which I think nee=
-ds
-> > to be fixed to ensure the security quality of libbpf.
->
-> I dunno. I'd argue that passing a NULL to ring_buffer__new is an API
-> misuse. Maybe ring_buffer__new should return -EINVAL instead when
-> passed NULL sample_cb? Although, we don't usually have those checks
-> for the majority of the arguments in libbpf...
+On Thu, Jun 08, 2023 at 06:34:15PM +0200, Maxime Chevallier wrote:
 
-Right. I'd say we should add a proper doc comment specifying all
-arguments and which ones are optional or not. And make it explicit
-that callback is not optional. If we start checking every possible
-pointer for NULL, libbpf will be littered with NULL checks, I'm not
-sure that's good.
+...
+
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index 809e6d5216dc..730f8860d2a6 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -3298,6 +3298,41 @@ void phylink_decode_usxgmii_word(struct phylink_link_state *state,
+>  }
+>  EXPORT_SYMBOL_GPL(phylink_decode_usxgmii_word);
+>  
+> +/**
+> + * phylink_decode_usgmii_word() - decode the USGMII word from a MAC PCS
+> + * @state: a pointer to a struct phylink_link_state.
+> + * @lpa: a 16 bit value which stores the USGMII auto-negotiation word
+> + *
+> + * Helper for MAC PCS supporting the USGMII protocol and the auto-negotiation
+> + * code word.  Decode the USGMII code word and populate the corresponding fields
+> + * (speed, duplex) into the phylink_link_state structure. The structure for this
+> + * word is the same as the USXGMII word, expect it only supports speeds up to
+> + * 1Gbps.
+> + */
+> +static void phylink_decode_usgmii_word(struct phylink_link_state *state,
+> +				 uint16_t lpa)
+
+Hi Maxime,
+
+a minor nit from my side: the indentation of the line above should line up
+with the inside of the opening parentheses on the previous line.
+
+static void phylink_decode_usgmii_word(struct phylink_link_state *state,
+				       uint16_t lpa)
+
+...
+
+As I see there is feedback from Russell, of a more substantial nature,
+and it looks will be a v2, I'll mark this as changes requested in patchwork.
+
+pw-bot: cr
 
