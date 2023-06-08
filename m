@@ -1,39 +1,72 @@
-Return-Path: <netdev+bounces-9329-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9330-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5743C728754
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 20:36:43 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 53AEF728764
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 20:41:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E078C2817DA
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:36:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 44D131C2085B
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:41:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EBA42168CE;
-	Thu,  8 Jun 2023 18:36:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C141B1953B;
+	Thu,  8 Jun 2023 18:41:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E022F7E3
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 18:36:39 +0000 (UTC)
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD952697
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 11:36:38 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-	(envelope-from <fw@strlen.de>)
-	id 1q7KUu-0002gl-Ke; Thu, 08 Jun 2023 20:36:36 +0200
-Date: Thu, 8 Jun 2023 20:36:36 +0200
-From: Florian Westphal <fw@strlen.de>
-To: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-	kuba@kernel.org, edumazet@google.com, davem@davemloft.net,
-	pabeni@redhat.com, xiyou.wangcong@gmail.com, jiri@resnulli.us
-Subject: Re: [PATCH net v2 0/3] net/sched: act_ipt bug fixes
-Message-ID: <20230608183636.GG27126@breakpoint.cc>
-References: <20230608140246.15190-1-fw@strlen.de>
- <CAM0EoMmcgoTbneB+JYt_oUKwsFMiA7xsuCWA=epr=mZnzhaX6w@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45F987E3;
+	Thu,  8 Jun 2023 18:41:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A486DC433D2;
+	Thu,  8 Jun 2023 18:41:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686249710;
+	bh=4a7fPJtZnT2G3XUHjxk53JytGZ7vtRhXAZPweGPLJ7Y=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Zf6igQH5RfRjPL1LLNRp2u8iNNy6O+kF/bGYFX3Nrh8fUdglTmP/qjkVHeDHFuQNr
+	 jn2Uh6KySMX6f0GTo02MvlJp6Rv68cW/69I/MFZtSdKzOt0NBFweVHnVybdzHgWXfl
+	 KvtLJ4ESmigmI/uc0oNYGCIO7NHmoF2IrKkybPAl+gdBXFQ0P23XDeYWK4z9h15oKv
+	 ZKGiTpWdZVp/QxM4gHnWF1LN14ykgAc8/vUL3ndVfxx63Am/uu3wKbhKbUkF+Bi6Ox
+	 4oM/zbXXCqLIwER2tnq6O7dDS4+mh/aE4qybCY5QC5PMes/KnyWH9l0FxBIq6F8Dg4
+	 8wj5ZhMvd7MFQ==
+Date: Thu, 8 Jun 2023 21:41:16 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Song Liu <song@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>,
+	Kent Overstreet <kent.overstreet@linux.dev>,
+	linux-kernel@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	"David S. Miller" <davem@davemloft.net>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
+	bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-mips@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, linux-parisc@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	loongarch@lists.linux.dev, netdev@vger.kernel.org,
+	sparclinux@vger.kernel.org, x86@kernel.org
+Subject: Re: [PATCH 00/13] mm: jit/text allocator
+Message-ID: <20230608184116.GJ52412@kernel.org>
+References: <20230601101257.530867-1-rppt@kernel.org>
+ <ZHjDU/mxE+cugpLj@FVFF77S0Q05N.cambridge.arm.com>
+ <ZHjgIH3aX9dCvVZc@moria.home.lan>
+ <ZHm3zUUbwqlsZBBF@FVFF77S0Q05N>
+ <20230605092040.GB3460@kernel.org>
+ <ZH20XkD74prrdN4u@FVFF77S0Q05N>
+ <CAPhsuW7ntn_HpVWdGK_hYVd3zsPEFToBNfmtt0m6K8SwfxJ66Q@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -43,31 +76,164 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAM0EoMmcgoTbneB+JYt_oUKwsFMiA7xsuCWA=epr=mZnzhaX6w@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+In-Reply-To: <CAPhsuW7ntn_HpVWdGK_hYVd3zsPEFToBNfmtt0m6K8SwfxJ66Q@mail.gmail.com>
 
-Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> On Thu, Jun 8, 2023 at 10:03 AM Florian Westphal <fw@strlen.de> wrote:
-> > I think that we should consider removal of this module, while
-> > this should take care of all problems, its ipv4 only and I don't
-> > think there are any netfilter targets that lack a native tc
-> > equivalent, even when ignoring bpf.
-> >
+On Tue, Jun 06, 2023 at 11:21:59AM -0700, Song Liu wrote:
+> On Mon, Jun 5, 2023 at 3:09 AM Mark Rutland <mark.rutland@arm.com> wrote:
 > 
-> I am all for removing it - but i am worried there are users based on
-> past interactions. Will try to ping some users and see if they
-> actually were using it.
+> [...]
+> 
+> > > > > Can you give more detail on what parameters you need? If the only extra
+> > > > > parameter is just "does this allocation need to live close to kernel
+> > > > > text", that's not that big of a deal.
+> > > >
+> > > > My thinking was that we at least need the start + end for each caller. That
+> > > > might be it, tbh.
+> > >
+> > > Do you mean that modules will have something like
+> > >
+> > >       jit_text_alloc(size, MODULES_START, MODULES_END);
+> > >
+> > > and kprobes will have
+> > >
+> > >       jit_text_alloc(size, KPROBES_START, KPROBES_END);
+> > > ?
+> >
+> > Yes.
+> 
+> How about we start with two APIs:
+>      jit_text_alloc(size);
+>      jit_text_alloc_range(size, start, end);
+> 
+> AFAICT, arm64 is the only arch that requires the latter API. And TBH, I am
+> not quite convinced it is needed.
+ 
+Right now arm64 and riscv override bpf and kprobes allocations to use the
+entire vmalloc address space, but having the ability to allocate generated
+code outside of modules area may be useful for other architectures.
 
-Thanks Jamal.  I'd also be interested in what xt module(s) are used,
-if any.
+Still the start + end for the callers feels backwards to me because the
+callers do not define the ranges, but rather the architectures, so we still
+need a way for architectures to define how they want allocate memory for
+the generated code.
 
-> I will send a patch to retire it if it looks
-> safe.
+> > > It sill can be achieved with a single jit_alloc_arch_params(), just by
+> > > adding enum jit_type parameter to jit_text_alloc().
+> >
+> > That feels backwards to me; it centralizes a bunch of information about
+> > distinct users to be able to shove that into a static array, when the callsites
+> > can pass that information.
+> 
+> I think we only two type of users: module and everything else (ftrace, kprobe,
+> bpf stuff). The key differences are:
+> 
+>   1. module uses text and data; while everything else only uses text.
+>   2. module code is generated by the compiler, and thus has stronger
+>   requirements in address ranges; everything else are generated via some
+>   JIT or manual written assembly, so they are more flexible with address
+>   ranges (in JIT, we can avoid using instructions that requires a specific
+>   address range).
+> 
+> The next question is, can we have the two types of users share the same
+> address ranges? If not, we can reserve the preferred range for modules,
+> and let everything else use the other range. I don't see reasons to further
+> separate users in the "everything else" group.
+ 
+I agree that we can define only two types: modules and everything else and
+let the architectures define if they need different ranges for these two
+types, or want the same range for everything.
 
-Thanks.
+With only two types we can have two API calls for alloc, and a single
+structure that defines the ranges etc from the architecture side rather
+than spread all over.
+
+Like something along these lines:
+
+	struct execmem_range {
+		unsigned long   start;
+		unsigned long   end;
+		unsigned long   fallback_start;
+		unsigned long   fallback_end;
+		pgprot_t        pgprot;
+		unsigned int	alignment;
+	};
+
+	struct execmem_modules_range {
+		enum execmem_module_flags flags;
+		struct execmem_range text;
+		struct execmem_range data;
+	};
+
+	struct execmem_jit_range {
+		struct execmem_range text;
+	};
+
+	struct execmem_params {
+		struct execmem_modules_range	modules;
+		struct execmem_jit_range	jit;
+	};
+
+	struct execmem_params *execmem_arch_params(void);
+
+	void *execmem_text_alloc(size_t size);
+	void *execmem_data_alloc(size_t size);
+	void execmem_free(void *ptr);
+
+	void *jit_text_alloc(size_t size);
+	void jit_free(void *ptr);
+
+Modules or anything that must live close to the kernel image can use
+execmem_*_alloc() and the callers that don't generally care about relative
+addressing will use jit_text_alloc(), presuming that arch will restrict jit
+range if necessary, like e.g. below for arm64 jit can be anywhere in
+vmalloc and for x86 and s390 it will share the modules range. 
+
+
+	struct execmem_params arm64_execmem = {
+		.modules = {
+			.flags = KASAN,
+			.text = {
+				.start = MODULES_VADDR,
+				.end = MODULES_END,
+				.pgprot = PAGE_KERNEL_ROX,
+				.fallback_start = VMALLOC_START,
+				.fallback_start = VMALLOC_END,
+			},
+		},
+		.jit = {
+			.text = {
+				.start = VMALLOC_START,
+				.end = VMALLOC_END,
+				.pgprot = PAGE_KERNEL_ROX,
+			},
+		},
+	};
+
+	/* x86 and s390 */
+	struct execmem_params cisc_execmem = {
+		.modules = {
+			.flags = KASAN,
+			.text = {
+				.start = MODULES_VADDR,
+				.end = MODULES_END,
+				.pgprot = PAGE_KERNEL_ROX,
+			},
+		},
+		.jit_range = {},	/* impplies reusing .modules */
+	};
+
+	struct execmem_params default_execmem = {
+		.modules = {
+			.flags = KASAN,
+			.text = {
+				.start = VMALLOC_START,
+				.end = VMALLOC_END,
+				.pgprot = PAGE_KERNEL_EXEC,
+			},
+		},
+	};
+
+-- 
+Sincerely yours,
+Mike.
 
