@@ -1,223 +1,265 @@
-Return-Path: <netdev+bounces-9175-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9176-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E9239727BDB
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 11:48:17 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id B58C0727C50
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 12:07:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9698328163E
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 09:48:16 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0B1521C20F50
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 10:07:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E72A0AD35;
-	Thu,  8 Jun 2023 09:48:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 97638BA26;
+	Thu,  8 Jun 2023 10:07:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3FAAAD33
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 09:48:14 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 418CD2D40
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 02:48:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686217682;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=qJkqbDxJbGuLRNFoh+RhZZol0vchzC/C3TXtJPnBQMs=;
-	b=AdloyzYUx0BsUo+9XtBjGdeFdBptXhk7e5MHmTIhGAQ7CW00AOf5QnNGZMLTdeRbYBuU4k
-	k2JB5y/bKUMjE+ND5A+ATAYzhoJJ2KRKS44TvlI26eOusqo+E8jEiDdG/dG7icJ/08+E2T
-	OYXVKiDBkqejV+RNyFay36/M4me1Z1w=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-155-aMaWgD0VMcift27yJpqB1A-1; Thu, 08 Jun 2023 05:48:01 -0400
-X-MC-Unique: aMaWgD0VMcift27yJpqB1A-1
-Received: by mail-ej1-f69.google.com with SMTP id a640c23a62f3a-9745c72d99cso60958166b.1
-        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 02:48:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686217680; x=1688809680;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qJkqbDxJbGuLRNFoh+RhZZol0vchzC/C3TXtJPnBQMs=;
-        b=ZLMJQaCQOcCfXV48qcq3J8b64pEsJddhqfCMwfkbgApdMBE1LYlFvAABu5bsVOJleY
-         3jsHDRaybBx1Or+ZzIMHxx2NEbOTCYO08rIhc5fSFHle6P45nEA1J0OU2gBjj9e46tpF
-         EWDiMpolB4aTpB+IW74YWgoazqvHAtnyP2DIdDCv9QrLyJMpLvEXZQ8e+SYVmInMf137
-         fYfQnVZSwB5AjDjckw9M45GK8PK0HxeyMD+MY9ErSgNd29oCeA3N/ETYtdxWInnfcxnn
-         F/vW8zDnVKrYbveLOwSPP/QDlLp1HOkNbM8nVij5Je1vA+k+BlWoHli40dtD5/FS0yOL
-         sFDw==
-X-Gm-Message-State: AC+VfDx6dcXxabEcRSC21hROD0pHMXDC2Y99t+QJ/GKL6qU9NPThqQsv
-	33nsQjyGTQ5jQQ89tkYVNyTnEHLFKXZRv67O7oANpgrBqvlkl9Xyg71DljfBVN2c7lPE0xqKrTt
-	jxtQ4KSA89nizswO+xRhtcpeH
-X-Received: by 2002:a17:906:fe4d:b0:969:e9ec:9a0 with SMTP id wz13-20020a170906fe4d00b00969e9ec09a0mr8201380ejb.77.1686217679943;
-        Thu, 08 Jun 2023 02:47:59 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6NJp+wlr+w+M7l9N5lK1cvOGgUHySBO4evePM0JMqeGlWTtsRtzk3HhVko4gsZJNpXU4WPjA==
-X-Received: by 2002:a17:906:fe4d:b0:969:e9ec:9a0 with SMTP id wz13-20020a170906fe4d00b00969e9ec09a0mr8201367ejb.77.1686217679599;
-        Thu, 08 Jun 2023 02:47:59 -0700 (PDT)
-Received: from sgarzare-redhat (host-87-12-25-111.business.telecomitalia.it. [87.12.25.111])
-        by smtp.gmail.com with ESMTPSA id t7-20020a1c7707000000b003f6cf9afc25sm4641635wmi.40.2023.06.08.02.47.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jun 2023 02:47:59 -0700 (PDT)
-Date: Thu, 8 Jun 2023 11:47:56 +0200
-From: Stefano Garzarella <sgarzare@redhat.com>
-To: Jason Wang <jasowang@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, 
-	Shannon Nelson <shannon.nelson@amd.com>, virtualization@lists.linux-foundation.org, 
-	netdev@vger.kernel.org, Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>, 
-	Tiwei Bie <tiwei.bie@intel.com>, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vhost-vdpa: filter VIRTIO_F_RING_PACKED feature
-Message-ID: <t6ci7ek54zwss2w3kxaduirfi7vp5df5ydjxjlnr5fhv4ji3c5@aw26xy66pjc7>
-References: <20230606085643-mutt-send-email-mst@kernel.org>
- <CAGxU2F7fkgL-HpZdj=5ZEGNWcESCHQpgRAYQA3W2sPZaoEpNyQ@mail.gmail.com>
- <20230607054246-mutt-send-email-mst@kernel.org>
- <CACGkMEuUapKvUYiJiLwtsN+x941jafDKS9tuSkiNrvkrrSmQkg@mail.gmail.com>
- <20230608020111-mutt-send-email-mst@kernel.org>
- <CACGkMEt4=3BRVNX38AD+mJU8v3bmqO-CdNj5NkFP-SSvsuy2Hg@mail.gmail.com>
- <5giudxjp6siucr4l3i4tggrh2dpqiqhhihmdd34w3mq2pm5dlo@mrqpbwckpxai>
- <CACGkMEtqn1dbrQZn3i-W_7sVikY4sQjwLRC5xAhMnyqkc3jwOw@mail.gmail.com>
- <lw3nmkdszqo6jjtneyp4kjlmutooozz7xj2fqyxgh4v2ralptc@vkimgnbfafvi>
- <CACGkMEt1yRV9qOLBqtQQmJA_UoRLCpznT=Gvd5D51Uaz2jakHA@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D829A945
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 10:07:00 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on20627.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eab::627])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D592D65
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 03:06:38 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lg6kRWLjXYIEXlUtnIrmVOlzxHaR47rLRGZZrVGrR/JyThqR+daiSntJ4r4SwQXIANZxe5fsh4b6AS0dxOw8UOJUoAbLnw1R/1LmpOG58LfK+r+b5E8rbiBozApyOaAToqlNoyBctm8GKoxhqIZz8ixJo4v4K3q2votbUCovOwbZN8qO47zbC+/uNS3SQZHE8Pv/+NdXra3+CidEKuvO5hyARP4BpsX7nOLiDPzdB/EfU5mXD51KGT50Au7vywWKSyJSeU91wHGDFD6wT8tXYe8m8+b/WawK7YlFmOGsIpLXtrM8xjsi9Tti3WU6HD+99J0l34NFi+p82M01vrQtVQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Z+msxoza05NmpAkVu86jFS6y82ULnUOG+WwooMrMCAg=;
+ b=ZD7wrgqptGAmYNWu25USwbQnwO4WqD0s9Zr/zbn7DRtH+FxYDPQ9Gt3I0Y830A+XJtmTIU9RxHT/zhPuRw1nODIBBUv59r1ROiEXTPhRi/K5Djo2z5HUMRAWGyfEsS9+vs4O7vtJ4Q5C0iJGm4+Z5qfvI6EAF6tplpyPA4Q93KhIz6kINjtX5Y2HHbMzKOPeKHFaclts9CFLNJ+FDgENNhw+GSguxjgs6OY9G1YWhpVUiZCmd6NIqjiqqCD1tmmxrvRCKgtHwkDLrwhnrbYUZ29Aieo2lf1qOQt+A6HY8vZOnuIASSa9Sq9NNSIP31ntYLYV07vSTVUEF4E+u2t8BQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Z+msxoza05NmpAkVu86jFS6y82ULnUOG+WwooMrMCAg=;
+ b=l1+Cofchxv0SsGex/JQ+Cg63klGuQIn9u9CViJLTuVAD6rUPqY3400dzntF+sF53fLoz+YKmS6KQcU0lnkVqmGBMmSeOAjzgJA7Ot409NnL462KRcft3BFuA5Lny024CWblS2+ydqSs4OTzkXNzWggzhhEv71hmkxFZa148BHKx+kNQR2iR3cBLiZUObXTAjuF8KVRmdZloKR5Zhgcay9aWw2fzZyntTKiW2kG9A6DZXIfX32SSiELBcBpA44gtu4mm/jGcLMMUaMqtpEyb9YejBDPb6Jn/uN24U7oIO3uUWe5LqBZDt4x78r9KCqF37EXrVaATF1j0qajVs+QEvfA==
+Received: from BN9PR03CA0122.namprd03.prod.outlook.com (2603:10b6:408:fe::7)
+ by SJ0PR12MB8116.namprd12.prod.outlook.com (2603:10b6:a03:4ec::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Thu, 8 Jun
+ 2023 10:06:15 +0000
+Received: from BN8NAM11FT037.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:fe:cafe::c8) by BN9PR03CA0122.outlook.office365.com
+ (2603:10b6:408:fe::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.26 via Frontend
+ Transport; Thu, 8 Jun 2023 10:06:15 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN8NAM11FT037.mail.protection.outlook.com (10.13.177.182) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6477.24 via Frontend Transport; Thu, 8 Jun 2023 10:06:15 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 8 Jun 2023
+ 03:06:04 -0700
+Received: from dev-r-vrt-155.mtr.labs.mlnx (10.126.231.35) by
+ rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Thu, 8 Jun 2023 03:06:01 -0700
+From: Ido Schimmel <idosch@nvidia.com>
+To: <netdev@vger.kernel.org>
+CC: <dsahern@gmail.com>, <stephen@networkplumber.org>, <jiri@nvidia.com>,
+	<razor@blackwall.org>, <petrm@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH iproute2-next v2] f_flower: Add l2_miss support
+Date: Thu, 8 Jun 2023 13:05:32 +0300
+Message-ID: <20230608100532.4146080-1-idosch@nvidia.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACGkMEt1yRV9qOLBqtQQmJA_UoRLCpznT=Gvd5D51Uaz2jakHA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT037:EE_|SJ0PR12MB8116:EE_
+X-MS-Office365-Filtering-Correlation-Id: 48db1af5-30fd-4284-1e02-08db6807fed6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	oSX/2SqFo2Q0r/sG8U8QmM5FAC1W3VIPIxwA/AwJtiBTGooho8Ut5HLVLu49pHhcMAEwn74EUJWfD8Oaqy7Mne5CdkRSOjADkDgHKG3rAdGFWtjx/5gHVsA7uHF+6NfyT8Hzv+thR12bre4wlgBKY4yIPO1Gdl0BWxZlqQaMSUysS7ieHfRxtkIyuURMvmsq+KsuP91npPx7VxPMhCA2R74hX0xW73Bf63nyXG0oaYLENifBfbCMLjicF2vj4S//P4Zud3W0V4L4/7NK5uEO1jTnkdWm6u1sTl/UbrqP/TgecZEUDyj1TqjQh5k5Cip1w/jCkT4OI7L0ioncR5Y+mt3ecjWITOpuJitUf09ZXwk/nw+8fMD3hb64yhO0cNTB43mhriz0l93FzFMKJDEQUWDuhkP7LLy0OAwZzlCLgWV4wQwLDvugc1t9OyuZ9SnzLKE1xcWkDx/EwStNIs/OrZyR+j1rkg2qSsqMwwxDgJN4HuqvJdb1VdQOW+zqYsGNvlUOV9uMn8HYWncn2Pf0YcFSTwS0sUGiLdHobdYCobPtUOqlz48o5JxAxtaAbAqoN3NixGHmdmXx8pz1B4WEHceq9sfff3whTZsOuQGYLReBYyASTHz05rzaFuVvHq/zWSP/UWyWjsZ9+9JflsA0XIpAJ781R+yS+QzKToF1aERfPR4LMXEYAzr84R+9H+WXVTjSumFiTKckdBldhpLD08+xNRceybUPXzvZZZHCtDzIf5TJF2tOBNLgQMkZWpXK
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(396003)(346002)(136003)(451199021)(46966006)(40470700004)(36840700001)(47076005)(26005)(1076003)(2616005)(6916009)(356005)(40480700001)(7636003)(316002)(83380400001)(70206006)(70586007)(4326008)(16526019)(6666004)(107886003)(186003)(36860700001)(336012)(426003)(82310400005)(54906003)(478600001)(36756003)(40460700003)(2906002)(5660300002)(8936002)(8676002)(82740400003)(86362001)(41300700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2023 10:06:15.0687
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48db1af5-30fd-4284-1e02-08db6807fed6
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT037.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8116
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 08, 2023 at 05:29:58PM +0800, Jason Wang wrote:
->On Thu, Jun 8, 2023 at 5:21 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->>
->> On Thu, Jun 08, 2023 at 05:00:00PM +0800, Jason Wang wrote:
->> >On Thu, Jun 8, 2023 at 4:00 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->> >>
->> >> On Thu, Jun 08, 2023 at 03:46:00PM +0800, Jason Wang wrote:
->> >>
->> >> [...]
->> >>
->> >> >> > > > > I have a question though, what if down the road there
->> >> >> > > > > is a new feature that needs more changes? It will be
->> >> >> > > > > broken too just like PACKED no?
->> >> >> > > > > Shouldn't vdpa have an allowlist of features it knows how
->> >> >> > > > > to support?
->> >> >> > > >
->> >> >> > > > It looks like we had it, but we took it out (by the way, we were
->> >> >> > > > enabling packed even though we didn't support it):
->> >> >> > > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6234f80574d7569444d8718355fa2838e92b158b
->> >> >> > > >
->> >> >> > > > The only problem I see is that for each new feature we have to modify
->> >> >> > > > the kernel.
->> >> >> > > > Could we have new features that don't require handling by vhost-vdpa?
->> >> >> > > >
->> >> >> > > > Thanks,
->> >> >> > > > Stefano
->> >> >> > >
->> >> >> > > Jason what do you say to reverting this?
->> >> >> >
->> >> >> > I may miss something but I don't see any problem with vDPA core.
->> >> >> >
->> >> >> > It's the duty of the parents to advertise the features it has. For example,
->> >> >> >
->> >> >> > 1) If some kernel version that is packed is not supported via
->> >> >> > set_vq_state, parents should not advertise PACKED features in this
->> >> >> > case.
->> >> >> > 2) If the kernel has support packed set_vq_state(), but it's emulated
->> >> >> > cvq doesn't support, parents should not advertise PACKED as well
->> >> >> >
->> >> >> > If a parent violates the above 2, it looks like a bug of the parents.
->> >> >> >
->> >> >> > Thanks
->> >> >>
->> >> >> Yes but what about vhost_vdpa? Talking about that not the core.
->> >> >
->> >> >Not sure it's a good idea to workaround parent bugs via vhost-vDPA.
->> >>
->> >> Sorry, I'm getting lost...
->> >> We were talking about the fact that vhost-vdpa doesn't handle
->> >> SET_VRING_BASE/GET_VRING_BASE ioctls well for packed virtqueue before
->> >> that series [1], no?
->> >>
->> >> The parents seem okay, but maybe I missed a few things.
->> >>
->> >> [1] https://lore.kernel.org/virtualization/20230424225031.18947-1-shannon.nelson@amd.com/
->> >
->> >Yes, more below.
->> >
->> >>
->> >> >
->> >> >> Should that not have a whitelist of features
->> >> >> since it interprets ioctls differently depending on this?
->> >> >
->> >> >If there's a bug, it might only matter the following setup:
->> >> >
->> >> >SET_VRING_BASE/GET_VRING_BASE + VDUSE.
->> >> >
->> >> >This seems to be broken since VDUSE was introduced. If we really want
->> >> >to backport something, it could be a fix to filter out PACKED in
->> >> >VDUSE?
->> >>
->> >> mmm it doesn't seem to be a problem in VDUSE, but in vhost-vdpa.
->> >> I think VDUSE works fine with packed virtqueue using virtio-vdpa
->> >> (I haven't tried), so why should we filter PACKED in VDUSE?
->> >
->> >I don't think we need any filtering since:
->> >
->> >PACKED features has been advertised to userspace via uAPI since
->> >6234f80574d7569444d8718355fa2838e92b158b. Once we relax in uAPI, it
->> >would be very hard to restrict it again. For the userspace that tries
->> >to negotiate PACKED:
->> >
->> >1) if it doesn't use SET_VRING_BASE/GET_VRING_BASE, everything works well
->> >2) if it uses SET_VRING_BASE/GET_VRING_BASE. it might fail or break silently
->> >
->> >If we backport the fixes to -stable, we may break the application at
->> >least in the case 1).
->>
->> Okay, I see now, thanks for the details!
->>
->> Maybe instead of "break silently", we can return an explicit error for
->> SET_VRING_BASE/GET_VRING_BASE in stable branches.
->> But if there are not many cases, we can leave it like that.
->
->A second thought, if we need to do something for stable. is it better
->if we just backport Shannon's series to stable?
+Add the ability to match on packets that encountered a layer 2 miss in
+bridge driver's FDB / MDB. Example:
 
-I tried to look at it, but it looks like we have to backport quite a few
-patches, I wrote a few things here:
+ # tc filter add dev swp2 egress pref 1 proto all flower indev swp1 l2_miss 1 action drop
+ # tc filter add dev swp2 egress pref 1 proto all flower indev swp1 l2_miss 0 action drop
 
-https://lore.kernel.org/virtualization/32ejjuvhvcicv7wjuetkv34qtlpa657n4zlow4eq3fsi2twozk@iqnd2t5tw2an/
+ # tc filter show dev swp2 egress
+ filter protocol all pref 1 flower chain 0
+ filter protocol all pref 1 flower chain 0 handle 0x1
+   indev swp1
+   l2_miss 1
+   not_in_hw
+         action order 1: gact action drop
+          random type none pass val 0
+          index 1 ref 1 bind 1
 
-But if you think it's the best way, though, we can take a better look
-at how many patches are to backport and whether it's risky or not.
+ filter protocol all pref 1 flower chain 0 handle 0x2
+   indev swp1
+   l2_miss 0
+   not_in_hw
+         action order 1: gact action drop
+          random type none pass val 0
+          index 2 ref 1 bind 1
 
->
->>
->> I was just concerned about how does the user space understand that it
->> can use SET_VRING_BASE/GET_VRING_BASE for PACKED virtqueues in a given
->> kernel or not.
->
->My understanding is that if packed is advertised, the application
->should assume SET/GET_VRING_BASE work.
->
+ # tc -j -p filter show dev swp2 egress
+ [ {
+         "protocol": "all",
+         "pref": 1,
+         "kind": "flower",
+         "chain": 0
+     },{
+         "protocol": "all",
+         "pref": 1,
+         "kind": "flower",
+         "chain": 0,
+         "options": {
+             "handle": 1,
+             "indev": "swp1",
+             "keys": {
+                 "l2_miss": 1
+             },
+             "not_in_hw": true,
+             "actions": [ {
+ [...]
+                 } ]
+         }
+     },{
+         "protocol": "all",
+         "pref": 1,
+         "kind": "flower",
+         "chain": 0,
+         "options": {
+             "handle": 2,
+             "indev": "swp1",
+             "keys": {
+                 "l2_miss": 0
+             },
+             "not_in_hw": true,
+             "actions": [ {
+ [...]
+                 } ]
+         }
+     } ]
 
-Same here. So as an alternative to backporting a large set of patches,
-I proposed to completely disable packed for stable branches where
-vhost-vdpa IOCTLs doesn't support them very well.
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
 
-Thanks,
-Stefano
+Notes:
+    v2:
+    * Use '%u' instead of '%d'.
+
+ man/man8/tc-flower.8 | 10 +++++++++-
+ tc/f_flower.c        | 18 ++++++++++++++++++
+ 2 files changed, 27 insertions(+), 1 deletion(-)
+
+diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
+index fc73da93c5c3..cd99745065cf 100644
+--- a/man/man8/tc-flower.8
++++ b/man/man8/tc-flower.8
+@@ -100,7 +100,9 @@ flower \- flow based traffic control filter
+ }
+ .IR OPTIONS " | "
+ .BR ip_flags
+-.IR IP_FLAGS " }"
++.IR IP_FLAGS " | "
++.B l2_miss
++.IR L2_MISS " }"
+ 
+ .ti -8
+ .IR LSE_LIST " := [ " LSE_LIST " ] " LSE
+@@ -493,6 +495,12 @@ respectively. firstfrag and nofirstfrag can be used to further distinguish
+ fragmented packet. firstfrag can be used to indicate the first fragmented
+ packet. nofirstfrag can be used to indicates subsequent fragmented packets
+ or non-fragmented packets.
++.TP
++.BI l2_miss " L2_MISS"
++Match on layer 2 miss in the bridge driver's FDB / MDB. \fIL2_MISS\fR may be 0
++or 1. When 1, match on packets that encountered a layer 2 miss. When 0, match
++on packets that were forwarded using an FDB / MDB entry. Note that broadcast
++packets do not encounter a miss since a lookup is not performed for them.
+ .SH NOTES
+ As stated above where applicable, matches of a certain layer implicitly depend
+ on the matches of the next lower layer. Precisely, layer one and two matches
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index c73c46dd234b..b9fe6afb49b2 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -91,6 +91,7 @@ static void explain(void)
+ 		"			erspan_opts MASKED-OPTIONS |\n"
+ 		"			gtp_opts MASKED-OPTIONS |\n"
+ 		"			ip_flags IP-FLAGS |\n"
++		"			l2_miss L2_MISS |\n"
+ 		"			enc_dst_port [ port_number ] |\n"
+ 		"			ct_state MASKED_CT_STATE |\n"
+ 		"			ct_label MASKED_CT_LABEL |\n"
+@@ -1520,6 +1521,15 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
+ 				fprintf(stderr, "Illegal \"ip_flags\"\n");
+ 				return -1;
+ 			}
++		} else if (strcmp(*argv, "l2_miss") == 0) {
++			__u8 l2_miss;
++
++			NEXT_ARG();
++			if (get_u8(&l2_miss, *argv, 10)) {
++				fprintf(stderr, "Illegal \"l2_miss\"\n");
++				return -1;
++			}
++			addattr8(n, MAX_MSG, TCA_FLOWER_L2_MISS, l2_miss);
+ 		} else if (matches(*argv, "verbose") == 0) {
+ 			flags |= TCA_CLS_FLAGS_VERBOSE;
+ 		} else if (matches(*argv, "skip_hw") == 0) {
+@@ -2983,6 +2993,14 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
+ 				    tb[TCA_FLOWER_KEY_FLAGS],
+ 				    tb[TCA_FLOWER_KEY_FLAGS_MASK]);
+ 
++	if (tb[TCA_FLOWER_L2_MISS]) {
++		struct rtattr *attr = tb[TCA_FLOWER_L2_MISS];
++
++		print_nl();
++		print_uint(PRINT_ANY, "l2_miss", "  l2_miss %u",
++			   rta_getattr_u8(attr));
++	}
++
+ 	flower_print_ct_state(tb[TCA_FLOWER_KEY_CT_STATE],
+ 			      tb[TCA_FLOWER_KEY_CT_STATE_MASK]);
+ 	flower_print_ct_zone(tb[TCA_FLOWER_KEY_CT_ZONE],
+-- 
+2.40.1
 
 
