@@ -1,44 +1,44 @@
-Return-Path: <netdev+bounces-9374-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9375-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id ECFD7728A09
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 23:14:05 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id CBE6A728A0A
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 23:14:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4F2631C210A1
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 21:14:02 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 775D2281771
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 21:14:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3554B34D7F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 509A434D85;
 	Thu,  8 Jun 2023 21:12:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECAD434CDD
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 21:12:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C2BFC4339C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7438731F1A
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 21:12:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC8BBC433B0;
 	Thu,  8 Jun 2023 21:12:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686258729;
-	bh=UIF+37/PWhwBeICz/O++NhivvtVT/LP6wwoyc5uBeaw=;
+	s=k20201202; t=1686258730;
+	bh=5V+K+CXMn3CYKrnw5jUizVXFYYfCOTmFP0Pps/1mKtQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=TA/dOnYLw+pjXFE4l26PAmpb5OPOGwma3BTX83YoB2kVwAVoifIbwM+Bzl7bBWuox
-	 R1JwupymwgnyPbxdpjr6MvR6Hx2xehiVccp2kiO9u8MJLZpWdIMK0gt90jerXQcq92
-	 L/DlJX7C2QfQrGEa/akYRn1yYRcRriL1a+Tqpwh0vtFTvmNovvf6n1UxB00Cxlu9LS
-	 iCzfzQ65tZIgAcIKLrRN554GbDzPj9uJ5ceJfxsUudNpdA5OJryJxTVHG6tEJtf/Qx
-	 SI5Ba/bw7e8tNVZkzUn2e6wYHwG+DYwx9peOsElN81fzPg2kh82hKFq0b/dTokq5P9
-	 Gcq5kkmzuMSXw==
+	b=uRdrxCBoTkVk57ZrG4cy2B+9x5FwvHsvxJ5DD+r+dhdbvrB2y6m9cUV7MGVak50Ux
+	 sXv9O6jYlh/ealQUpYWdEARvRjbLO55ZSOjZ3E+UuB58+8rXVPN5H4hcjOnAJc342S
+	 CjfVlTwLC+rQPumgSTENigLXKZoYRwUjYwnyP0BpevVuAGGQy8eBdFXQJ2Qz7bJV9U
+	 VWNgnjNdgJBfC2fUp/kgjx2SEy18ea19qPQmHctm4sw+05YURYwuc7xjAX1dN4toWf
+	 zym53oqJfbdKeEAFD9JF32I77SUgC6mMvxMTgHvueA3JkHoC2eu636akpJsVwCCd0L
+	 udCCxbHA1j7qQ==
 From: Jakub Kicinski <kuba@kernel.org>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
 	edumazet@google.com,
 	pabeni@redhat.com,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 07/12] tools: ynl-gen: stop generating common notification handlers
-Date: Thu,  8 Jun 2023 14:11:55 -0700
-Message-Id: <20230608211200.1247213-8-kuba@kernel.org>
+Subject: [PATCH net-next 08/12] tools: ynl: regen: stop generating common notification handlers
+Date: Thu,  8 Jun 2023 14:11:56 -0700
+Message-Id: <20230608211200.1247213-9-kuba@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230608211200.1247213-1-kuba@kernel.org>
 References: <20230608211200.1247213-1-kuba@kernel.org>
@@ -50,114 +50,154 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Common notification handler was supposed to be a way for the user
-to parse the notifications from a socket synchronously.
-I don't think we'll end up using it, ynl_ntf_check() works for
-all known use cases.
+Remove unused notification handlers.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/net/ynl/ynl-gen-c.py | 73 --------------------------------------
- 1 file changed, 73 deletions(-)
+ tools/net/ynl/generated/handshake-user.c | 45 -----------------------
+ tools/net/ynl/generated/handshake-user.h |  3 --
+ tools/net/ynl/generated/netdev-user.c    | 47 ------------------------
+ tools/net/ynl/generated/netdev-user.h    |  3 --
+ 4 files changed, 98 deletions(-)
 
-diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
-index ecd8beba7e0d..f88417947e60 100755
---- a/tools/net/ynl/ynl-gen-c.py
-+++ b/tools/net/ynl/ynl-gen-c.py
-@@ -1810,70 +1810,6 @@ _C_KW = {
-     ri.cw.nl()
+diff --git a/tools/net/ynl/generated/handshake-user.c b/tools/net/ynl/generated/handshake-user.c
+index 3a0392b3355e..7c67765daf90 100644
+--- a/tools/net/ynl/generated/handshake-user.c
++++ b/tools/net/ynl/generated/handshake-user.c
+@@ -315,51 +315,6 @@ int handshake_done(struct ynl_sock *ys, struct handshake_done_req *req)
+ 	return 0;
+ }
  
+-/* --------------- Common notification parsing --------------- */
+-struct ynl_ntf_base_type *handshake_ntf_parse(struct ynl_sock *ys)
+-{
+-	struct ynl_parse_arg yarg = { .ys = ys, };
+-	struct ynl_ntf_base_type *rsp;
+-	struct genlmsghdr *genlh;
+-	struct nlmsghdr *nlh;
+-	mnl_cb_t parse;
+-	int len, err;
+-
+-	len = mnl_socket_recvfrom(ys->sock, ys->rx_buf, MNL_SOCKET_BUFFER_SIZE);
+-	if (len < (ssize_t)(sizeof(*nlh) + sizeof(*genlh)))
+-		return NULL;
+-
+-	nlh = (struct nlmsghdr *)ys->rx_buf;
+-	genlh = mnl_nlmsg_get_payload(nlh);
+-
+-	switch (genlh->cmd) {
+-	case HANDSHAKE_CMD_READY:
+-		rsp = calloc(1, sizeof(struct handshake_accept_ntf));
+-		parse = handshake_accept_rsp_parse;
+-		yarg.rsp_policy = &handshake_accept_nest;
+-		rsp->free = (void *)handshake_accept_ntf_free;
+-		break;
+-	default:
+-		ynl_error_unknown_notification(ys, genlh->cmd);
+-		return NULL;
+-	}
+-
+-	yarg.data = rsp->data;
+-
+-	err = mnl_cb_run2(ys->rx_buf, len, 0, 0, parse, &yarg,
+-			 ynl_cb_array, NLMSG_MIN_TYPE);
+-	if (err < 0)
+-		goto err_free;
+-
+-	rsp->family = nlh->nlmsg_type;
+-	rsp->cmd = genlh->cmd;
+-	return rsp;
+-
+-err_free:
+-	free(rsp);
+-	return NULL;
+-}
+-
+ static const struct ynl_ntf_info handshake_ntf_info[] =  {
+ 	[HANDSHAKE_CMD_READY] =  {
+ 		.alloc_sz	= sizeof(struct handshake_accept_ntf),
+diff --git a/tools/net/ynl/generated/handshake-user.h b/tools/net/ynl/generated/handshake-user.h
+index 38e0844f2efd..47646bb91cea 100644
+--- a/tools/net/ynl/generated/handshake-user.h
++++ b/tools/net/ynl/generated/handshake-user.h
+@@ -142,7 +142,4 @@ __handshake_done_req_set_remote_auth(struct handshake_done_req *req,
+  */
+ int handshake_done(struct ynl_sock *ys, struct handshake_done_req *req);
  
--def print_ntf_parse_prototype(family, cw, suffix=';'):
--    cw.write_func_prot('struct ynl_ntf_base_type *', f"{family['name']}_ntf_parse",
--                       ['struct ynl_sock *ys'], suffix=suffix)
+-/* --------------- Common notification parsing --------------- */
+-struct ynl_ntf_base_type *handshake_ntf_parse(struct ynl_sock *ys);
 -
--
--def print_ntf_type_parse(family, cw, ku_mode):
--    print_ntf_parse_prototype(family, cw, suffix='')
--    cw.block_start()
--    cw.write_func_lvar(['struct genlmsghdr *genlh;',
--                        'struct nlmsghdr *nlh;',
--                        'struct ynl_parse_arg yarg = { .ys = ys, };',
--                        'struct ynl_ntf_base_type *rsp;',
--                        'int len, err;',
--                        'mnl_cb_t parse;'])
--    cw.p('len = mnl_socket_recvfrom(ys->sock, ys->rx_buf, MNL_SOCKET_BUFFER_SIZE);')
--    cw.p('if (len < (ssize_t)(sizeof(*nlh) + sizeof(*genlh)))')
--    cw.p('return NULL;')
--    cw.nl()
--    cw.p('nlh = (struct nlmsghdr *)ys->rx_buf;')
--    cw.p('genlh = mnl_nlmsg_get_payload(nlh);')
--    cw.nl()
--    cw.block_start(line='switch (genlh->cmd)')
--    for ntf_op in sorted(family.all_notify.keys()):
--        op = family.ops[ntf_op]
--        ri = RenderInfo(cw, family, ku_mode, op, ntf_op, "notify")
--        for ntf in op['notify']['cmds']:
--            cw.p(f"case {ntf.enum_name}:")
--        cw.p(f"rsp = calloc(1, sizeof({type_name(ri, 'notify')}));")
--        cw.p(f"parse = {op_prefix(ri, 'reply', deref=True)}_parse;")
--        cw.p(f"yarg.rsp_policy = &{ri.struct['reply'].render_name}_nest;")
--        cw.p(f"rsp->free = (void *){op_prefix(ri, 'notify')}_free;")
--        cw.p('break;')
--    for op_name, op in family.ops.items():
--        if 'event' not in op:
--            continue
--        ri = RenderInfo(cw, family, ku_mode, op, op_name, "event")
--        cw.p(f"case {op.enum_name}:")
--        cw.p(f"rsp = calloc(1, sizeof({type_name(ri, 'event')}));")
--        cw.p(f"parse = {op_prefix(ri, 'reply', deref=True)}_parse;")
--        cw.p(f"yarg.rsp_policy = &{ri.struct['reply'].render_name}_nest;")
--        cw.p(f"rsp->free = (void *){op_prefix(ri, 'notify')}_free;")
--        cw.p('break;')
--    cw.p('default:')
--    cw.p('ynl_error_unknown_notification(ys, genlh->cmd);')
--    cw.p('return NULL;')
--    cw.block_end()
--    cw.nl()
--    cw.p('yarg.data = rsp->data;')
--    cw.nl()
--    cw.p(f"err = {cw.nlib.parse_cb_run('parse', '&yarg', True)};")
--    cw.p('if (err < 0)')
--    cw.p('goto err_free;')
--    cw.nl()
--    cw.p('rsp->family = nlh->nlmsg_type;')
--    cw.p('rsp->cmd = genlh->cmd;')
--    cw.p('return rsp;')
--    cw.nl()
--    cw.p('err_free:')
--    cw.p('free(rsp);')
--    cw.p('return NULL;')
--    cw.block_end()
--    cw.nl()
--
--
- def print_req_policy_fwd(cw, struct, ri=None, terminate=True):
-     if terminate and ri and kernel_can_gen_family_struct(struct.family):
-         return
-@@ -2513,10 +2449,6 @@ _C_KW = {
-                     print_rsp_type(ri)
-                     cw.nl()
-                     print_wrapped_type(ri)
--
--            if parsed.has_notifications():
--                cw.p('/* --------------- Common notification parsing --------------- */')
--                print_ntf_parse_prototype(parsed, cw)
-             cw.nl()
-         else:
-             cw.p('/* Enums */')
-@@ -2580,11 +2512,6 @@ _C_KW = {
+ #endif /* _LINUX_HANDSHAKE_GEN_H */
+diff --git a/tools/net/ynl/generated/netdev-user.c b/tools/net/ynl/generated/netdev-user.c
+index 12069784637e..4eb8aefef0cd 100644
+--- a/tools/net/ynl/generated/netdev-user.c
++++ b/tools/net/ynl/generated/netdev-user.c
+@@ -172,53 +172,6 @@ void netdev_dev_get_ntf_free(struct netdev_dev_get_ntf *rsp)
+ 	free(rsp);
+ }
  
-                     ri = RenderInfo(cw, parsed, args.mode, op, op_name, "event")
-                     print_ntf_type_free(ri)
+-/* --------------- Common notification parsing --------------- */
+-struct ynl_ntf_base_type *netdev_ntf_parse(struct ynl_sock *ys)
+-{
+-	struct ynl_parse_arg yarg = { .ys = ys, };
+-	struct ynl_ntf_base_type *rsp;
+-	struct genlmsghdr *genlh;
+-	struct nlmsghdr *nlh;
+-	mnl_cb_t parse;
+-	int len, err;
 -
--            if parsed.has_notifications():
--                cw.p('/* --------------- Common notification parsing --------------- */')
--                print_ntf_type_parse(parsed, cw, args.mode)
+-	len = mnl_socket_recvfrom(ys->sock, ys->rx_buf, MNL_SOCKET_BUFFER_SIZE);
+-	if (len < (ssize_t)(sizeof(*nlh) + sizeof(*genlh)))
+-		return NULL;
 -
-             cw.nl()
-             render_user_family(parsed, cw, False)
+-	nlh = (struct nlmsghdr *)ys->rx_buf;
+-	genlh = mnl_nlmsg_get_payload(nlh);
+-
+-	switch (genlh->cmd) {
+-	case NETDEV_CMD_DEV_ADD_NTF:
+-	case NETDEV_CMD_DEV_DEL_NTF:
+-	case NETDEV_CMD_DEV_CHANGE_NTF:
+-		rsp = calloc(1, sizeof(struct netdev_dev_get_ntf));
+-		parse = netdev_dev_get_rsp_parse;
+-		yarg.rsp_policy = &netdev_dev_nest;
+-		rsp->free = (void *)netdev_dev_get_ntf_free;
+-		break;
+-	default:
+-		ynl_error_unknown_notification(ys, genlh->cmd);
+-		return NULL;
+-	}
+-
+-	yarg.data = rsp->data;
+-
+-	err = mnl_cb_run2(ys->rx_buf, len, 0, 0, parse, &yarg,
+-			 ynl_cb_array, NLMSG_MIN_TYPE);
+-	if (err < 0)
+-		goto err_free;
+-
+-	rsp->family = nlh->nlmsg_type;
+-	rsp->cmd = genlh->cmd;
+-	return rsp;
+-
+-err_free:
+-	free(rsp);
+-	return NULL;
+-}
+-
+ static const struct ynl_ntf_info netdev_ntf_info[] =  {
+ 	[NETDEV_CMD_DEV_ADD_NTF] =  {
+ 		.alloc_sz	= sizeof(struct netdev_dev_get_ntf),
+diff --git a/tools/net/ynl/generated/netdev-user.h b/tools/net/ynl/generated/netdev-user.h
+index d146bc4b2112..5554dc69bb9c 100644
+--- a/tools/net/ynl/generated/netdev-user.h
++++ b/tools/net/ynl/generated/netdev-user.h
+@@ -82,7 +82,4 @@ struct netdev_dev_get_ntf {
  
+ void netdev_dev_get_ntf_free(struct netdev_dev_get_ntf *rsp);
+ 
+-/* --------------- Common notification parsing --------------- */
+-struct ynl_ntf_base_type *netdev_ntf_parse(struct ynl_sock *ys);
+-
+ #endif /* _LINUX_NETDEV_GEN_H */
 -- 
 2.40.1
 
