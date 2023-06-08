@@ -1,44 +1,44 @@
-Return-Path: <netdev+bounces-9369-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9370-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id B7B7D728A00
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 23:12:48 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id C7684728A01
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 23:12:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B88301C21054
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 21:12:44 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 832BC2817FC
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 21:12:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91E9634CE6;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F24834CE9;
 	Thu,  8 Jun 2023 21:12:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C5E93447E
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 21:12:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AEFFC433D2;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 429CC34CC6
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 21:12:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC704C433A7;
 	Thu,  8 Jun 2023 21:12:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686258728;
-	bh=fS9wOUNqS0HPqIDFPaSCWLoeJVXn4rhA7pXpeCUR2L0=;
+	s=k20201202; t=1686258729;
+	bh=S1fPLZA1Krg4ATGmPWSiv0K/bSJIx7dA5pthAGgsQGA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Ptn1IgHVGi+ahn/L+62sXHImi96Kn5bF7+s3txHs9rxS7lwK6bGoNLlnS5SVUf2B/
-	 UHhxJwuYsckHthUMr6+MR5fc+T4/101z7Ka4Lsr6xaHJbDDHak3lVE0HeNiSrj4f49
-	 2gRw2++R53q4WX3Q59tF5cqV/8FToIJ6mjm3n1+c7kkWrs62lAmOY9LM4Ly39H+UDY
-	 Hr/qNhJqLHERln2CaQh3BRsXx45JMYBcpR2VItI+oABJlQIt634Dw9yugMpFEBVbnJ
-	 hFBMwU5USTkd4qxH8iVEd57P1kEwENwrCuC11vbpNjoYYqV6IezPnAgQz7YNDzt+rq
-	 ShSa9Bmmg1QAA==
+	b=BiJSqbKj5b2M3PU1TI+ZfWi26ich8USzH8HoUNl6KmD9/A7+fXhh5gfHNJpEERIQb
+	 jZS1lOvWUzQX8k9SrIlEfMPSS4f3cL9EeCdBLk5macqLuuOPSXL/RdrrMuw7iH2Xtg
+	 E8U8Ogv9UWs+EU5RBIYYWqZwG/ZhIgzgJn2JKCxBWZwCB69YH2mlYJNqn3mvZmH2rK
+	 cT4N1P6n048aJq3hgF9D2ihDt08a/rrH5wZDl2Ej/KS4GXKIa8Kn9I1riNk3Bp9R/N
+	 qdBwfprGC3CtapG277FWL7PIN5z/zgqZnsI1KJPzZQNeqo3Qrpo2EDJKQ0FTB5BsFa
+	 i9h6cqpXV/xCw==
 From: Jakub Kicinski <kuba@kernel.org>
 To: davem@davemloft.net
 Cc: netdev@vger.kernel.org,
 	edumazet@google.com,
 	pabeni@redhat.com,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 04/12] tools: ynl-gen: combine else with closing bracket
-Date: Thu,  8 Jun 2023 14:11:52 -0700
-Message-Id: <20230608211200.1247213-5-kuba@kernel.org>
+Subject: [PATCH net-next 05/12] tools: ynl-gen: get attr type outside of if()
+Date: Thu,  8 Jun 2023 14:11:53 -0700
+Message-Id: <20230608211200.1247213-6-kuba@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230608211200.1247213-1-kuba@kernel.org>
 References: <20230608211200.1247213-1-kuba@kernel.org>
@@ -50,69 +50,37 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Code gen currently prints:
-
-  }
-  else if (...
-
-This is really ugly. Fix it by delaying printing of closing
-brackets in anticipation of else coming along.
+Reading attr type with mnl_attr_get_type() for each condition
+leads to most conditions being longer than 80 chars.
+Avoid this by reading the type to a variable on the stack.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/net/ynl/ynl-gen-c.py | 23 +++++++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
+ tools/net/ynl/ynl-gen-c.py | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
-index 9b6ff256f80e..d2edded5f747 100755
+index d2edded5f747..ecd8beba7e0d 100755
 --- a/tools/net/ynl/ynl-gen-c.py
 +++ b/tools/net/ynl/ynl-gen-c.py
-@@ -1017,6 +1017,7 @@ from lib import SpecFamily, SpecAttrSet, SpecAttr, SpecOperation, SpecEnumSet, S
-         self.nlib = nlib
+@@ -153,7 +153,7 @@ from lib import SpecFamily, SpecAttrSet, SpecAttr, SpecOperation, SpecEnumSet, S
+             init_lines = [init_lines]
  
-         self._nl = False
-+        self._block_end = False
-         self._silent_block = False
-         self._ind = 0
-         self._out = out_file
-@@ -1025,11 +1026,18 @@ from lib import SpecFamily, SpecAttrSet, SpecAttr, SpecOperation, SpecEnumSet, S
-     def _is_cond(cls, line):
-         return line.startswith('if') or line.startswith('while') or line.startswith('for')
+         kw = 'if' if first else 'else if'
+-        ri.cw.block_start(line=f"{kw} (mnl_attr_get_type(attr) == {self.enum_name})")
++        ri.cw.block_start(line=f"{kw} (type == {self.enum_name})")
+         if local_vars:
+             for local in local_vars:
+                 ri.cw.p(local)
+@@ -1418,6 +1418,8 @@ _C_KW = {
  
--    def p(self, line, add_ind=0, eat_nl=False):
-+    def p(self, line, add_ind=0):
-+        if self._block_end:
-+            self._block_end = False
-+            if line.startswith('else'):
-+                line = '} ' + line
-+            else:
-+                self._out.write('\t' * self._ind + '}\n')
-+
-         if self._nl:
--            if not eat_nl:
--                self._out.write('\n')
-+            self._out.write('\n')
-             self._nl = False
-+
-         ind = self._ind
-         if line[-1] == ':':
-             ind -= 1
-@@ -1053,7 +1061,14 @@ from lib import SpecFamily, SpecAttrSet, SpecAttr, SpecOperation, SpecEnumSet, S
-         if line and line[0] not in {';', ','}:
-             line = ' ' + line
-         self._ind -= 1
--        self.p('}' + line, eat_nl=True)
-+        self._nl = False
-+        if not line:
-+            # Delay printing closing bracket in case "else" comes next
-+            if self._block_end:
-+                self._out.write('\t' * (self._ind + 1) + '}\n')
-+            self._block_end = True
-+        else:
-+            self.p('}' + line)
+     ri.cw.nl()
+     ri.cw.block_start(line=iter_line)
++    ri.cw.p('unsigned int type = mnl_attr_get_type(attr);')
++    ri.cw.nl()
  
-     def write_doc_line(self, doc, indent=True):
-         words = doc.split()
+     first = True
+     for _, arg in struct.member_list():
 -- 
 2.40.1
 
