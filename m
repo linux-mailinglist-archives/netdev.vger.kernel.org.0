@@ -1,62 +1,61 @@
-Return-Path: <netdev+bounces-9189-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9187-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A2E6F727D3B
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 12:51:43 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 76DBD727D36
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 12:51:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 071061C20FF6
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 10:51:40 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1E194281614
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 10:51:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B9E0C8CD;
-	Thu,  8 Jun 2023 10:50:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E9A8CC2D2;
+	Thu,  8 Jun 2023 10:50:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A2D810974
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 10:50:36 +0000 (UTC)
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61D102D57;
-	Thu,  8 Jun 2023 03:50:34 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-	by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35838QYX023519;
-	Thu, 8 Jun 2023 03:50:21 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6FB41094D
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 10:50:31 +0000 (UTC)
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C252CE6C;
+	Thu,  8 Jun 2023 03:50:29 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+	by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3588EvXt023828;
+	Thu, 8 Jun 2023 03:50:23 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=Ax/yq4NvinpMK8sJ/K+gDkMxqN6eTkspj5OjglVD590=;
- b=Axo9Eo7fdadz1X/0vNv7dhNZglsIvJHge3iqS2RhCy5oMTUJc6S4DfBZW4W/P9N87N/C
- gNO9nnLKWRsW6egNKe/jf++REG5u8WQsdCwnJgBZNnhf4GKsnxLAnh3uuDI0Byl4Wt8J
- X9il6lKXBL3AE0Ieh35Mx6q+8pXuWkEtCSzpenEVnauH7p5F816+UOBCly8aVIKDxa6z
- 9Mq9UlyCisMTg83dYa1uphW69rB4vhhqVjJC7oz0tlJ+t15hKTUiOCtPXPGRWD4GFx4n
- ExbaY/Ft50ZlLAQ47y8383zjfl0/r7N7UOQ4vl3+Ckdn8MvyEMOtRaooT5obDJ3kf33n Xw== 
+ bh=Vv7HiX1LYJQPoGFMza8lr/qn0akT9GHlrSMcoOdYePg=;
+ b=DiEPPnwWcThk7XYkyRTi8IpfIdEDQTYoGoUBhAdbo7t27WuZfELABl+AjB01fcdwECst
+ kX/N1J/Sazgm0XeALcSLJ+s+LfWayRdon6IprUSzJ2AD5oBKZtTnVkFMaD18ZY9OVMhK
+ gLjzQcVfyebD8hUr1qF1OoS5hEl5x2iYvxnhKoMkrjcYDU/846MUtzq4FRuiJcE+yjDx
+ i55RZg1FdCDvhKywV91Zj+ZQ5CWbXKFqBAl9qwupgnKYWQgQEN52LkUUaYinmy1rJMdK
+ j+ilLqbfuM+WJmEiD1m5cf7Gpj0U7bVv1xFAQFE+OUo3Gn0/aeRwLzaxU/Ar3+PNnF/4 /Q== 
 Received: from dc5-exch01.marvell.com ([199.233.59.181])
-	by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3r30eu27cx-2
+	by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3r329c2c34-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-	Thu, 08 Jun 2023 03:50:21 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+	Thu, 08 Jun 2023 03:50:23 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 8 Jun
- 2023 03:50:19 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Thu, 8 Jun 2023 03:50:18 -0700
+ 2023 03:50:21 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
+ Transport; Thu, 8 Jun 2023 03:50:21 -0700
 Received: from #hyd1583.marvell.com (unknown [10.29.37.44])
-	by maili.marvell.com (Postfix) with ESMTP id CCC183F70B6;
-	Thu,  8 Jun 2023 03:50:15 -0700 (PDT)
+	by maili.marvell.com (Postfix) with ESMTP id 40CD63F707C;
+	Thu,  8 Jun 2023 03:50:19 -0700 (PDT)
 From: Naveen Mamindlapalli <naveenm@marvell.com>
 To: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>
-CC: Kiran Kumar K <kirankumark@marvell.com>,
-        Geetha sowjanya
-	<gakula@marvell.com>,
-        Naveen Mamindlapalli <naveenm@marvell.com>
-Subject: [net-next PATCH 2/6] octeontx2-af: extend RSS supported offload types
-Date: Thu, 8 Jun 2023 16:20:03 +0530
-Message-ID: <20230608105007.26924-3-naveenm@marvell.com>
+CC: Geetha sowjanya <gakula@marvell.com>,
+        Naveen Mamindlapalli
+	<naveenm@marvell.com>
+Subject: [net-next PATCH 3/6] octeontx2-af: cn10k: Set NIX DWRR MTU for CN10KB silicon
+Date: Thu, 8 Jun 2023 16:20:04 +0530
+Message-ID: <20230608105007.26924-4-naveenm@marvell.com>
 X-Mailer: git-send-email 2.39.0.198.ga38d39a4c5
 In-Reply-To: <20230608105007.26924-1-naveenm@marvell.com>
 References: <20230608105007.26924-1-naveenm@marvell.com>
@@ -68,8 +67,8 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: zB_6fweu-mb1lf41PfabjLNfBp-D11ag
-X-Proofpoint-GUID: zB_6fweu-mb1lf41PfabjLNfBp-D11ag
+X-Proofpoint-GUID: RQinqoKWA7bNOIMazj95o584NnEWLeMd
+X-Proofpoint-ORIG-GUID: RQinqoKWA7bNOIMazj95o584NnEWLeMd
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
  definitions=2023-06-08_07,2023-06-08_01,2023-05-22_02
@@ -80,148 +79,279 @@ X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Kiran Kumar K <kirankumark@marvell.com>
+From: Sunil Goutham <sgoutham@marvell.com>
 
-Add support to select L3 SRC or DST only, L4 SRC or DST only for RSS
-calculation.
+The DWRR MTU config added for SDP and RPM/LBK links on CN10K
+silicon is further extended on CK10KB silicon variant and made
+it configurable. Now there are 4 DWRR MTU config to choose while
+setting transmit scheduler's RR_WEIGHT.
 
-AF consumer may have requirement as we can select only SRC or DST data for
-RSS calculation in L3, L4 layers. With this requirement there will be
-following combinations, IPV[4,6]_SRC_ONLY, IPV[4,6]_DST_ONLY,
-[TCP,UDP,SCTP]_SRC_ONLY, [TCP,UDP,SCTP]_DST_ONLY. So, instead of creating
-a bit for each combination, we are using upper 4 bits (31:28) in the
-flow_key_cfg to represent the SRC, DST selection. 31 => L3_SRC,
-30 => L3_DST, 29 => L4_SRC, 28 => L4_DST. These won't be part of flow_cfg,
-so that we don't need to change the existing ABI.
+Here we are reserving one config for each of RPM, SDP and LBK.
+NIXX_AF_DWRR_MTUX(0) ---> RPM
+NIXX_AF_DWRR_MTUX(1) ---> SDP
+NIXX_AF_DWRR_MTUX(2) ---> LBK
 
-Signed-off-by: Kiran Kumar K <kirankumark@marvell.com>
+PF/VF drivers can choose the DWRR_MTU to be used by setting
+SMQX_CFG[pkt_link_type] to one of above. TLx_SCHEDULE[RR_WEIGHT]
+is to be as configured 'quantum / 2^DWRR_MTUX[MTU]'. DWRR_MTU
+of each link is exposed to PF/VF drivers via mailbox for
+RR_WEIGHT calculation.
+
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 Signed-off-by: Geetha sowjanya <gakula@marvell.com>
 Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
 ---
- .../net/ethernet/marvell/octeontx2/af/mbox.h  |  6 ++
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 57 +++++++++++++++++++
- 2 files changed, 63 insertions(+)
+ .../ethernet/marvell/octeontx2/af/common.h    |  7 +++
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  4 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |  2 +
+ .../marvell/octeontx2/af/rvu_devlink.c        |  6 ++-
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 44 ++++++++++++++++---
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |  3 +-
+ .../marvell/octeontx2/nic/otx2_common.c       | 18 +++++++-
+ .../marvell/octeontx2/nic/otx2_common.h       |  1 +
+ 8 files changed, 73 insertions(+), 12 deletions(-)
 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/common.h b/drivers/net/ethernet/marvell/octeontx2/af/common.h
+index 8931864ee110..b2d9dac7030b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/common.h
+@@ -145,6 +145,13 @@ enum nix_scheduler {
+ #define TXSCH_TL1_DFLT_RR_PRIO		(0x1ull)
+ #define CN10K_MAX_DWRR_WEIGHT          16384 /* Weight is 14bit on CN10K */
+ 
++/* Don't change the order as on CN10K (except CN10KB)
++ * SMQX_CFG[SDP] value should be 1 for SDP flows.
++ */
++#define SMQ_LINK_TYPE_RPM		0
++#define SMQ_LINK_TYPE_SDP		1
++#define SMQ_LINK_TYPE_LBK		2
++
+ /* Min/Max packet sizes, excluding FCS */
+ #define	NIC_HW_MIN_FRS			40
+ #define	NIC_HW_MAX_FRS			9212
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index d2584ebb7a70..43968f0b6218 100644
+index 43968f0b6218..f233f98cbeea 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -1074,6 +1074,8 @@ struct nix_vtag_config_rsp {
- 	 */
+@@ -1237,7 +1237,9 @@ struct nix_hw_info {
+ 	u16 min_mtu;
+ 	u32 rpm_dwrr_mtu;
+ 	u32 sdp_dwrr_mtu;
+-	u64 rsvd[16]; /* Add reserved fields for future expansion */
++	u32 lbk_dwrr_mtu;
++	u32 rsvd32[1];
++	u64 rsvd[15]; /* Add reserved fields for future expansion */
  };
  
-+#define NIX_FLOW_KEY_TYPE_L3_L4_MASK (~(0xf << 28))
-+
- struct nix_rss_flowkey_cfg {
- 	struct mbox_msghdr hdr;
- 	int	mcam_index;  /* MCAM entry index to modify */
-@@ -1099,6 +1101,10 @@ struct nix_rss_flowkey_cfg {
- #define NIX_FLOW_KEY_TYPE_IPV4_PROTO	BIT(21)
- #define NIX_FLOW_KEY_TYPE_AH		BIT(22)
- #define NIX_FLOW_KEY_TYPE_ESP		BIT(23)
-+#define NIX_FLOW_KEY_TYPE_L4_DST_ONLY BIT(28)
-+#define NIX_FLOW_KEY_TYPE_L4_SRC_ONLY BIT(29)
-+#define NIX_FLOW_KEY_TYPE_L3_DST_ONLY BIT(30)
-+#define NIX_FLOW_KEY_TYPE_L3_SRC_ONLY BIT(31)
- 	u32	flowkey_cfg; /* Flowkey types selected */
- 	u8	group;       /* RSS context or group */
+ struct nix_bandprof_alloc_req {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index 7f0a64731c67..54c3fa815e37 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -344,6 +344,7 @@ struct hw_cap {
+ 	bool	per_pf_mbox_regs; /* PF mbox specified in per PF registers ? */
+ 	bool	programmable_chans; /* Channels programmable ? */
+ 	bool	ipolicer;
++	bool	nix_multiple_dwrr_mtu;   /* Multiple DWRR_MTU to choose from */
+ 	bool	npc_hash_extract; /* Hash extract enabled ? */
+ 	bool	npc_exact_match_enabled; /* Exact match supported ? */
  };
+@@ -785,6 +786,7 @@ int nix_aq_context_read(struct rvu *rvu, struct nix_hw *nix_hw,
+ 			struct nix_cn10k_aq_enq_rsp *aq_rsp,
+ 			u16 pcifunc, u8 ctype, u32 qidx);
+ int rvu_get_nix_blkaddr(struct rvu *rvu, u16 pcifunc);
++int nix_get_dwrr_mtu_reg(struct rvu_hwinfo *hw, int smq_link_type);
+ u32 convert_dwrr_mtu_to_bytes(u8 dwrr_mtu);
+ u32 convert_bytes_to_dwrr_mtu(u32 bytes);
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+index 64b8beaa7247..2a35bd5d26d3 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+@@ -1413,7 +1413,8 @@ static int rvu_af_dl_dwrr_mtu_set(struct devlink *devlink, u32 id,
+ 	u64 dwrr_mtu;
+ 
+ 	dwrr_mtu = convert_bytes_to_dwrr_mtu(ctx->val.vu32);
+-	rvu_write64(rvu, BLKADDR_NIX0, NIX_AF_DWRR_RPM_MTU, dwrr_mtu);
++	rvu_write64(rvu, BLKADDR_NIX0,
++		    nix_get_dwrr_mtu_reg(rvu->hw, SMQ_LINK_TYPE_RPM), dwrr_mtu);
+ 
+ 	return 0;
+ }
+@@ -1428,7 +1429,8 @@ static int rvu_af_dl_dwrr_mtu_get(struct devlink *devlink, u32 id,
+ 	if (!rvu->hw->cap.nix_common_dwrr_mtu)
+ 		return -EOPNOTSUPP;
+ 
+-	dwrr_mtu = rvu_read64(rvu, BLKADDR_NIX0, NIX_AF_DWRR_RPM_MTU);
++	dwrr_mtu = rvu_read64(rvu, BLKADDR_NIX0,
++			      nix_get_dwrr_mtu_reg(rvu->hw, SMQ_LINK_TYPE_RPM));
+ 	ctx->val.vu32 = convert_dwrr_mtu_to_bytes(dwrr_mtu);
+ 
+ 	return 0;
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 6b8747ebc08c..d40bde3948b4 100644
+index d40bde3948b4..74793dd7d895 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -3287,6 +3287,7 @@ static int set_flowkey_fields(struct nix_rx_flowkey_alg *alg, u32 flow_cfg)
- 	struct nix_rx_flowkey_alg *field;
- 	struct nix_rx_flowkey_alg tmp;
- 	u32 key_type, valid_key;
-+	u32 l3_l4_src_dst;
- 	int l4_key_offset = 0;
+@@ -191,6 +191,18 @@ struct nix_hw *get_nix_hw(struct rvu_hwinfo *hw, int blkaddr)
+ 	return NULL;
+ }
  
- 	if (!alg)
-@@ -3314,6 +3315,15 @@ static int set_flowkey_fields(struct nix_rx_flowkey_alg *alg, u32 flow_cfg)
- 	 * group_member - Enabled when protocol is part of a group.
++int nix_get_dwrr_mtu_reg(struct rvu_hwinfo *hw, int smq_link_type)
++{
++	if (hw->cap.nix_multiple_dwrr_mtu)
++		return NIX_AF_DWRR_MTUX(smq_link_type);
++
++	if (smq_link_type == SMQ_LINK_TYPE_SDP)
++		return NIX_AF_DWRR_SDP_MTU;
++
++	/* Here it's same reg for RPM and LBK */
++	return NIX_AF_DWRR_RPM_MTU;
++}
++
+ u32 convert_dwrr_mtu_to_bytes(u8 dwrr_mtu)
+ {
+ 	dwrr_mtu &= 0x1FULL;
+@@ -3125,10 +3137,16 @@ static int nix_setup_txschq(struct rvu *rvu, struct nix_hw *nix_hw, int blkaddr)
+ 	}
+ 
+ 	/* Setup a default value of 8192 as DWRR MTU */
+-	if (rvu->hw->cap.nix_common_dwrr_mtu) {
+-		rvu_write64(rvu, blkaddr, NIX_AF_DWRR_RPM_MTU,
++	if (rvu->hw->cap.nix_common_dwrr_mtu ||
++	    rvu->hw->cap.nix_multiple_dwrr_mtu) {
++		rvu_write64(rvu, blkaddr,
++			    nix_get_dwrr_mtu_reg(rvu->hw, SMQ_LINK_TYPE_RPM),
+ 			    convert_bytes_to_dwrr_mtu(8192));
+-		rvu_write64(rvu, blkaddr, NIX_AF_DWRR_SDP_MTU,
++		rvu_write64(rvu, blkaddr,
++			    nix_get_dwrr_mtu_reg(rvu->hw, SMQ_LINK_TYPE_LBK),
++			    convert_bytes_to_dwrr_mtu(8192));
++		rvu_write64(rvu, blkaddr,
++			    nix_get_dwrr_mtu_reg(rvu->hw, SMQ_LINK_TYPE_SDP),
+ 			    convert_bytes_to_dwrr_mtu(8192));
+ 	}
+ 
+@@ -3226,19 +3244,28 @@ int rvu_mbox_handler_nix_get_hw_info(struct rvu *rvu, struct msg_req *req,
+ 
+ 	rsp->min_mtu = NIC_HW_MIN_FRS;
+ 
+-	if (!rvu->hw->cap.nix_common_dwrr_mtu) {
++	if (!rvu->hw->cap.nix_common_dwrr_mtu &&
++	    !rvu->hw->cap.nix_multiple_dwrr_mtu) {
+ 		/* Return '1' on OTx2 */
+ 		rsp->rpm_dwrr_mtu = 1;
+ 		rsp->sdp_dwrr_mtu = 1;
++		rsp->lbk_dwrr_mtu = 1;
+ 		return 0;
+ 	}
+ 
+-	dwrr_mtu = rvu_read64(rvu, BLKADDR_NIX0, NIX_AF_DWRR_RPM_MTU);
++	/* Return DWRR_MTU for TLx_SCHEDULE[RR_WEIGHT] config */
++	dwrr_mtu = rvu_read64(rvu, blkaddr,
++			      nix_get_dwrr_mtu_reg(rvu->hw, SMQ_LINK_TYPE_RPM));
+ 	rsp->rpm_dwrr_mtu = convert_dwrr_mtu_to_bytes(dwrr_mtu);
+ 
+-	dwrr_mtu = rvu_read64(rvu, BLKADDR_NIX0, NIX_AF_DWRR_SDP_MTU);
++	dwrr_mtu = rvu_read64(rvu, blkaddr,
++			      nix_get_dwrr_mtu_reg(rvu->hw, SMQ_LINK_TYPE_SDP));
+ 	rsp->sdp_dwrr_mtu = convert_dwrr_mtu_to_bytes(dwrr_mtu);
+ 
++	dwrr_mtu = rvu_read64(rvu, blkaddr,
++			      nix_get_dwrr_mtu_reg(rvu->hw, SMQ_LINK_TYPE_LBK));
++	rsp->lbk_dwrr_mtu = convert_dwrr_mtu_to_bytes(dwrr_mtu);
++
+ 	return 0;
+ }
+ 
+@@ -4305,8 +4332,11 @@ static void rvu_nix_setup_capabilities(struct rvu *rvu, int blkaddr)
+ 	 * Check if HW uses a common MTU for all DWRR quantum configs.
+ 	 * On OcteonTx2 this register field is '0'.
  	 */
+-	if (((hw_const >> 56) & 0x10) == 0x10)
++	if ((((hw_const >> 56) & 0x10) == 0x10) && !(hw_const & BIT_ULL(61)))
+ 		hw->cap.nix_common_dwrr_mtu = true;
++
++	if (hw_const & BIT_ULL(61))
++		hw->cap.nix_multiple_dwrr_mtu = true;
+ }
  
-+	/* Last 4 bits (31:28) are reserved to specify SRC, DST
-+	 * selection for L3, L4 i.e IPV[4,6]_SRC, IPV[4,6]_DST,
-+	 * [TCP,UDP,SCTP]_SRC, [TCP,UDP,SCTP]_DST
-+	 * 31 => L3_SRC, 30 => L3_DST, 29 => L4_SRC, 28 => L4_DST
-+	 */
-+	l3_l4_src_dst = flow_cfg;
-+	/* Reset these 4 bits, so that these won't be part of key */
-+	flow_cfg &= NIX_FLOW_KEY_TYPE_L3_L4_MASK;
-+
- 	keyoff_marker = 0; max_key_off = 0; group_member = 0;
- 	nr_field = 0; key_off = 0; field_marker = 1;
- 	field = &tmp; max_bit_pos = fls(flow_cfg);
-@@ -3351,6 +3361,22 @@ static int set_flowkey_fields(struct nix_rx_flowkey_alg *alg, u32 flow_cfg)
- 			}
- 			field->hdr_offset = 12; /* SIP offset */
- 			field->bytesm1 = 7; /* SIP + DIP, 8 bytes */
-+
-+			/* Only SIP */
-+			if (l3_l4_src_dst & NIX_FLOW_KEY_TYPE_L3_SRC_ONLY)
-+				field->bytesm1 = 3; /* SIP, 4 bytes */
-+
-+			if (l3_l4_src_dst & NIX_FLOW_KEY_TYPE_L3_DST_ONLY) {
-+				/* Both SIP + DIP */
-+				if (field->bytesm1 == 3) {
-+					field->bytesm1 = 7; /* SIP + DIP, 8B */
-+				} else {
-+					/* Only DIP */
-+					field->hdr_offset = 16; /* DIP off */
-+					field->bytesm1 = 3; /* DIP, 4 bytes */
-+				}
-+			}
-+
- 			field->ltype_mask = 0xF; /* Match only IPv4 */
- 			keyoff_marker = false;
- 			break;
-@@ -3364,6 +3390,22 @@ static int set_flowkey_fields(struct nix_rx_flowkey_alg *alg, u32 flow_cfg)
- 			}
- 			field->hdr_offset = 8; /* SIP offset */
- 			field->bytesm1 = 31; /* SIP + DIP, 32 bytes */
-+
-+			/* Only SIP */
-+			if (l3_l4_src_dst & NIX_FLOW_KEY_TYPE_L3_SRC_ONLY)
-+				field->bytesm1 = 15; /* SIP, 16 bytes */
-+
-+			if (l3_l4_src_dst & NIX_FLOW_KEY_TYPE_L3_DST_ONLY) {
-+				/* Both SIP + DIP */
-+				if (field->bytesm1 == 15) {
-+					/* SIP + DIP, 32 bytes */
-+					field->bytesm1 = 31;
-+				} else {
-+					/* Only DIP */
-+					field->hdr_offset = 24; /* DIP off */
-+					field->bytesm1 = 15; /* DIP,16 bytes */
-+				}
-+			}
- 			field->ltype_mask = 0xF; /* Match only IPv6 */
- 			break;
- 		case NIX_FLOW_KEY_TYPE_TCP:
-@@ -3379,6 +3421,21 @@ static int set_flowkey_fields(struct nix_rx_flowkey_alg *alg, u32 flow_cfg)
- 				field->lid = NPC_LID_LH;
- 			field->bytesm1 = 3; /* Sport + Dport, 4 bytes */
+ static int rvu_nix_block_init(struct rvu *rvu, struct nix_hw *nix_hw)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+index 0e0d536645ac..6b0105c895a4 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+@@ -271,7 +271,8 @@
+ #define NIX_AF_DEBUG_NPC_RESP_DATAX(a)          (0x680 | (a) << 3)
+ #define NIX_AF_SMQX_CFG(a)                      (0x700 | (a) << 16)
+ #define NIX_AF_SQM_DBG_CTL_STATUS               (0x750)
+-#define NIX_AF_DWRR_SDP_MTU                     (0x790)
++#define NIX_AF_DWRR_SDP_MTU                     (0x790) /* All CN10K except CN10KB */
++#define NIX_AF_DWRR_MTUX(a)			(0x790 | (a) << 16) /* Only for CN10KB */
+ #define NIX_AF_DWRR_RPM_MTU                     (0x7A0)
+ #define NIX_AF_PSE_CHANNEL_LEVEL                (0x800)
+ #define NIX_AF_PSE_SHAPER_CFG                   (0x810)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index 88f8772a61cd..10faa50c876b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -8,6 +8,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/pci.h>
+ #include <net/tso.h>
++#include <linux/bitfield.h>
  
-+			if (l3_l4_src_dst & NIX_FLOW_KEY_TYPE_L4_SRC_ONLY)
-+				field->bytesm1 = 1; /* SRC, 2 bytes */
+ #include "otx2_reg.h"
+ #include "otx2_common.h"
+@@ -616,6 +617,10 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl, int prio, bool txschq_for
+ 		req->regval[0] = ((u64)pfvf->tx_max_pktlen << 8) | OTX2_MIN_MTU;
+ 		req->regval[0] |= (0x20ULL << 51) | (0x80ULL << 39) |
+ 				  (0x2ULL << 36);
++		/* Set link type for DWRR MTU selection on CN10K silicons */
++		if (!is_dev_otx2(pfvf->pdev))
++			req->regval[0] |= FIELD_PREP(GENMASK_ULL(58, 57),
++						(u64)hw->smq_link_type);
+ 		req->num_regs++;
+ 		/* MDQ config */
+ 		parent = schq_list[NIX_TXSCH_LVL_TL4][prio];
+@@ -1734,6 +1739,17 @@ void otx2_set_cints_affinity(struct otx2_nic *pfvf)
+ 	}
+ }
+ 
++static u32 get_dwrr_mtu(struct otx2_nic *pfvf, struct nix_hw_info *hw)
++{
++	if (is_otx2_lbkvf(pfvf->pdev)) {
++		pfvf->hw.smq_link_type = SMQ_LINK_TYPE_LBK;
++		return hw->lbk_dwrr_mtu;
++	}
 +
-+			if (l3_l4_src_dst & NIX_FLOW_KEY_TYPE_L4_DST_ONLY) {
-+				/* Both SRC + DST */
-+				if (field->bytesm1 == 1) {
-+					/* SRC + DST, 4 bytes */
-+					field->bytesm1 = 3;
-+				} else {
-+					/* Only DIP */
-+					field->hdr_offset = 2; /* DST off */
-+					field->bytesm1 = 1; /* DST, 2 bytes */
-+				}
-+			}
++	pfvf->hw.smq_link_type = SMQ_LINK_TYPE_RPM;
++	return hw->rpm_dwrr_mtu;
++}
 +
- 			/* Enum values for NPC_LID_LD and NPC_LID_LG are same,
- 			 * so no need to change the ltype_match, just change
- 			 * the lid for inner protocols
+ u16 otx2_get_max_mtu(struct otx2_nic *pfvf)
+ {
+ 	struct nix_hw_info *rsp;
+@@ -1763,7 +1779,7 @@ u16 otx2_get_max_mtu(struct otx2_nic *pfvf)
+ 		max_mtu = rsp->max_mtu - 8 - OTX2_ETH_HLEN;
+ 
+ 		/* Also save DWRR MTU, needed for DWRR weight calculation */
+-		pfvf->hw.dwrr_mtu = rsp->rpm_dwrr_mtu;
++		pfvf->hw.dwrr_mtu = get_dwrr_mtu(pfvf, rsp);
+ 		if (!pfvf->hw.dwrr_mtu)
+ 			pfvf->hw.dwrr_mtu = 1;
+ 	}
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 5bee3c3a7ce4..aa07069cd9dc 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -209,6 +209,7 @@ struct otx2_hw {
+ 	u16			txschq_list[NIX_TXSCH_LVL_CNT][MAX_TXSCHQ_PER_FUNC];
+ 	u16			matchall_ipolicer;
+ 	u32			dwrr_mtu;
++	u8			smq_link_type;
+ 
+ 	/* HW settings, coalescing etc */
+ 	u16			rx_chan_base;
 -- 
 2.39.0.198.ga38d39a4c5
 
