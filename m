@@ -1,61 +1,66 @@
-Return-Path: <netdev+bounces-9345-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9346-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 949E3728923
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 22:05:51 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C1002728927
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 22:06:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 47E972817A5
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 20:05:50 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 21BF81C2108E
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 20:06:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8FFA12D264;
-	Thu,  8 Jun 2023 20:05:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8AB2C2D279;
+	Thu,  8 Jun 2023 20:05:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FA2617740
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 20:05:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C82617740
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 20:05:49 +0000 (UTC)
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA2F270B
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F20BF2733
 	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 13:05:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686254747; x=1717790747;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=EjIOxdGM6OYpqyB/WzSbxPau0l0YEkeOYcC98seklK0=;
-  b=HPtrIVPTq4wXMso/fe0vQIr+roxfh6CL9DZGpswbmomLCj7LyazN0i6X
-   Xu3CVKAscLaR/P4DdrfHT3AZ01tzstfzZtP5j+F2oTdClee2EDpEdNtca
-   u1OHwMMJGSaM+fCF8PP2Llv2Fd/1OqISN6pHeHS47n1L5kO1JNANPdeFF
-   K21EvE0HS5UtzgVonMcsDdmvZR1STXNRt/6u8UvkJTnaSHBgQhC1tMjuu
-   yvetuoGqwBaB2yFQRVBHl4MJEE+1Cgd6DccW2URmvBFnjcZ70ypqrFZW+
-   KJnHFJLsqt7vae1fbMgyOtoimoYTjsKi57BRKDFVaFebul93R1fpj433w
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="385770826"
+  t=1686254748; x=1717790748;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=0nKCzFsjArFwo+MBC4fMQ+mEcxw6W9Emtf6+mOr1Jgk=;
+  b=PxEzPKidCRX8ZYseh03L2tc7pCOKMSdR8y+IV+Bb4HXwoqAvMyiPv2MA
+   6g9J9Y17HHzoaefwLfkZWxtR4fAnJLVljA7j7nzV7qKqSSBwafntm35DX
+   ouJl5YngPqFQzwpe9wYVB4Ojythz+suTDWaT6qlWfgaw/RmQi4Fy6h3OT
+   L4H449Q+R7E63kyfVo4SrK9zvoJGNJl5Eou5wVaCV4LZ7kzgyI8O09b/d
+   149mt8tbm35opVBaNHKiQmEpRl+uhVdRDQPdfF13V7JxAvCw0ozJPM4W9
+   pyRRNWwCDk//8HJJkmUn9R1lN1YXxLYmw3YQndxPSjWcSjWVzz0O3FkMX
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="385770846"
 X-IronPort-AV: E=Sophos;i="6.00,227,1681196400"; 
-   d="scan'208";a="385770826"
+   d="scan'208";a="385770846"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2023 13:05:25 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2023 13:05:29 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="687486291"
+X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="687486318"
 X-IronPort-AV: E=Sophos;i="6.00,227,1681196400"; 
-   d="scan'208";a="687486291"
+   d="scan'208";a="687486318"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by orsmga006.jf.intel.com with ESMTP; 08 Jun 2023 13:05:24 -0700
+  by orsmga006.jf.intel.com with ESMTP; 08 Jun 2023 13:05:28 -0700
 From: Tony Nguyen <anthony.l.nguyen@intel.com>
 To: davem@davemloft.net,
 	kuba@kernel.org,
 	pabeni@redhat.com,
 	edumazet@google.com,
 	netdev@vger.kernel.org
-Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates 2023-06-08 (ice)
-Date: Thu,  8 Jun 2023 13:00:49 -0700
-Message-Id: <20230608200051.451752-1-anthony.l.nguyen@intel.com>
+Cc: Simon Horman <horms@kernel.org>,
+	anthony.l.nguyen@intel.com,
+	Tariq Toukan <tariqt@nvidia.com>,
+	Sunitha Mekala <sunithax.d.mekala@intel.com>
+Subject: [PATCH net 1/2] ice: Don't dereference NULL in ice_gnss_read error path
+Date: Thu,  8 Jun 2023 13:00:50 -0700
+Message-Id: <20230608200051.451752-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20230608200051.451752-1-anthony.l.nguyen@intel.com>
+References: <20230608200051.451752-1-anthony.l.nguyen@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -70,27 +75,54 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This series contains updates to ice driver only.
+From: Simon Horman <horms@kernel.org>
 
-Simon Horman stops null pointer dereference for GNSS error path.
+If pf is NULL in ice_gnss_read() then it will be dereferenced
+in the error path by a call to dev_dbg(ice_pf_to_dev(pf), ...).
 
-Kamil fixes memory leak when downing interface when XDP is enabled.
+Avoid this by simply returning in this case.
+If logging is desired an alternate approach might be to
+use pr_err() before returning.
 
-The following are changes since commit 6c0ec7ab5aaff3706657dd4946798aed483b9471:
-  Merge branch 'bnxt_en-bug-fixes'
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
+Flagged by Smatch as:
 
-Kamil Maziarz (1):
-  ice: Fix XDP memory leak when NIC is brought up and down
+  .../ice_gnss.c:196 ice_gnss_read() error: we previously assumed 'pf' could be null (see line 131)
 
-Simon Horman (1):
-  ice: Don't dereference NULL in ice_gnss_read error path
-
+Fixes: 43113ff73453 ("ice: add TTY for GNSS module for E810T device")
+Signed-off-by: Simon Horman <horms@kernel.org>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Tested-by: Sunitha Mekala <sunithax.d.mekala@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
  drivers/net/ethernet/intel/ice/ice_gnss.c | 8 +-------
- drivers/net/ethernet/intel/ice/ice_main.c | 4 ++++
- 2 files changed, 5 insertions(+), 7 deletions(-)
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
+diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.c b/drivers/net/ethernet/intel/ice/ice_gnss.c
+index bd0ed155e11b..75c9de675f20 100644
+--- a/drivers/net/ethernet/intel/ice/ice_gnss.c
++++ b/drivers/net/ethernet/intel/ice/ice_gnss.c
+@@ -96,12 +96,7 @@ static void ice_gnss_read(struct kthread_work *work)
+ 	int err = 0;
+ 
+ 	pf = gnss->back;
+-	if (!pf) {
+-		err = -EFAULT;
+-		goto exit;
+-	}
+-
+-	if (!test_bit(ICE_FLAG_GNSS, pf->flags))
++	if (!pf || !test_bit(ICE_FLAG_GNSS, pf->flags))
+ 		return;
+ 
+ 	hw = &pf->hw;
+@@ -159,7 +154,6 @@ static void ice_gnss_read(struct kthread_work *work)
+ 	free_page((unsigned long)buf);
+ requeue:
+ 	kthread_queue_delayed_work(gnss->kworker, &gnss->read_work, delay);
+-exit:
+ 	if (err)
+ 		dev_dbg(ice_pf_to_dev(pf), "GNSS failed to read err=%d\n", err);
+ }
 -- 
 2.38.1
 
