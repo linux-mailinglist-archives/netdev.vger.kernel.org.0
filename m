@@ -1,314 +1,1740 @@
-Return-Path: <netdev+bounces-9312-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9313-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 957B5728697
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 19:48:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 65F8572869C
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 19:50:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9161A1C21006
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 17:48:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4E8F91C20FEE
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 17:50:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0E7951DCCB;
-	Thu,  8 Jun 2023 17:48:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AB7431DCCF;
+	Thu,  8 Jun 2023 17:50:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF4D31DCBC
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 17:48:00 +0000 (UTC)
-Received: from DM6FTOPR00CU001.outbound.protection.outlook.com (mail-centralusazon11020019.outbound.protection.outlook.com [52.101.61.19])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4504CE2;
-	Thu,  8 Jun 2023 10:47:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=naoy/Qk/TXrH5V2/xY8GK6D2O/pXx1q2iqY8B1B12R6ndLB9weN1WX6F0sFGHRnyzij5GETqzmG0aSkfnhoNd65XrMdvYK9xErmr9mWIDVRbjyxT/oEfLtIPvDc9ZMih7v85Ma+AEzPra4tSBcZ5tzBtpglqcbYzQ0YVEAe5+3qV2NLmv6k8BtFZv5W/lgD/geFiFGHXjP0Oj7u0wX9maNWFK2tXWasniJDmZ9jEY/6P2lEVV/bH8KSaW8YQ4T65p4/QS5suTzpUU+7fAV7ungVeXqGGQOs3T5awPZFc44yLYoUagnkYhVHuzkM+tBFMpvMvI3YqQnQaP2F7fDkdnQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/5scAxNWFt4g5otw+BxCcoVlu7zi2Ep/yZDbdRiaNrI=;
- b=aGfLQjyDPMIO3q9phlKVLP8+ekLjF4dV+UUyaqqv5i7oRSC9JStCAW3svX83nuidJXu9+zF8Yu1b7xhKUwOgAQe+nJ0wnvfSqOB/kclXJxY0GTIac+sRt/NUNfNTjjnIwsWuM/Zxv/nfWhgm3kk9RQkcbrgXDLMYR0oCgGVe8rOY0j0uSgm4gqXbVggZ4AeUr1nX263eoyTEe1ecDm8CnyV73+mCiGCDohXIG/KxqhNLZDGopzr8Dh2f9yyvc0AZ7YFjKmOZNxHmgy7wzYa/zGyrokpxUyfIW4PG8HRHwa8nD7ql+xLkdxDs6t+iB9P8haOznP2py7+h39bvEyxWKQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/5scAxNWFt4g5otw+BxCcoVlu7zi2Ep/yZDbdRiaNrI=;
- b=i1pq39GDfgRgSMdx6dPY1Ufi5u76Kztk6b4GGkeYL2Zhe6aM0lotp3rBm4TZWglNqQFoiSkFHXv4uBs6VMfWmojC2HClWkdPJVaemo5IAE8l++sGEQ4Jt/2ygQVELgbk2qg7IqvbYl7Nwj/dVp/LiCm25bLxMwgC9LgCiMjzCNs=
-Received: from PH7PR21MB3263.namprd21.prod.outlook.com (2603:10b6:510:1db::16)
- by SJ1PR21MB3456.namprd21.prod.outlook.com (2603:10b6:a03:454::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.12; Thu, 8 Jun
- 2023 17:47:56 +0000
-Received: from PH7PR21MB3263.namprd21.prod.outlook.com
- ([fe80::86cc:ee17:391f:9e45]) by PH7PR21MB3263.namprd21.prod.outlook.com
- ([fe80::86cc:ee17:391f:9e45%4]) with mapi id 15.20.6500.004; Thu, 8 Jun 2023
- 17:47:56 +0000
-From: Long Li <longli@microsoft.com>
-To: Wei Hu <weh@microsoft.com>, "netdev@vger.kernel.org"
-	<netdev@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
-	<linux-hyperv@vger.kernel.org>, "linux-rdma@vger.kernel.org"
-	<linux-rdma@vger.kernel.org>, Ajay Sharma <sharmaajay@microsoft.com>,
-	"jgg@ziepe.ca" <jgg@ziepe.ca>, "leon@kernel.org" <leon@kernel.org>, KY
- Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
-	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>, "vkuznets@redhat.com"
-	<vkuznets@redhat.com>, "ssengar@linux.microsoft.com"
-	<ssengar@linux.microsoft.com>, "shradhagupta@linux.microsoft.com"
-	<shradhagupta@linux.microsoft.com>
-Subject: RE: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to mana ib
- driver.
-Thread-Topic: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to mana ib
- driver.
-Thread-Index: AQHZmIoxGgRZCanZmkK6Z33s8kWpWa9/0eVwgADyswCAAGyLQA==
-Date: Thu, 8 Jun 2023 17:47:56 +0000
-Message-ID:
- <PH7PR21MB3263782C842638253C1FDB0CCE50A@PH7PR21MB3263.namprd21.prod.outlook.com>
-References: <20230606151747.1649305-1-weh@microsoft.com>
- <PH7PR21MB32634CB06AFF8BFFDBC003B3CE53A@PH7PR21MB3263.namprd21.prod.outlook.com>
- <SI2P153MB0441EC655394CEA3E8E727E7BB50A@SI2P153MB0441.APCP153.PROD.OUTLOOK.COM>
-In-Reply-To:
- <SI2P153MB0441EC655394CEA3E8E727E7BB50A@SI2P153MB0441.APCP153.PROD.OUTLOOK.COM>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=6ddf424f-7835-43f4-b969-27a83fd42970;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-06-07T20:49:00Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH7PR21MB3263:EE_|SJ1PR21MB3456:EE_
-x-ms-office365-filtering-correlation-id: ed8b3543-c6e9-4795-ba94-08db68487dd1
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- OZwyC8qZdWeHEmFI4cKHNeo5BtS4UZAl+/U3Ks86NE0jUTd/wMBOAaUP2M2G2UaMz8OdsYD2jYjjmd7F8epk9wsHtjeou7rG+GXHORKVE654YJMWxVJrihm2pRpuy8s5BmVlOw1Y10WR7P6lBtsUxjy4FkUUafV8hnwYG03WPnL6Qv3qNC6IhQMXirp4NZFQI0sMb8OtoQQtg1O/HfifRYS1cHkozvl2sO7Z10wsGnLwRY/urS/7qAfHLN0AfJjhBWqTTjgXdw1iknKXPYBH/dVUprlOvLdJqGReAYqo5XU7bq7vJkjWhqLCNtlNg9TkbWipVg9pp4aCr82NGd96t953+jfSRcIOFPLnkvYUTXXOyIFJz33lWRBKWJzjZlsJy+3GDKedMWv1Te6UlCaBe6ZLUR/Nsc9zt1jC+pBTRv4/PHaTjd7uWpfnhnf/9lLkt4CoJ7k0yJuO8yeIFOT4ekV4GF+8dHowziSMGIStJa9M03/pxqULAWJ8v2GVqO6sEbcyLQWo34M8y3EOcebJvyj4CHJgn74ujO3R2MykZ0rbMXBQPkuaicb0CtZUoglQqV2oh9OnKvoV+BARJyA6sWmEwxKxaOzAfja8zsOKSwyXX1aT1KIsLFSCKaNHvgYZGH8JSgt0fmz6UeWYbsgotkKxd3ObB+dJvK3exjwLQp/mbxgZuVTAKNbG0qbPZnSt
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR21MB3263.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(376002)(136003)(39860400002)(346002)(451199021)(7696005)(316002)(41300700001)(55016003)(8990500004)(86362001)(83380400001)(38070700005)(9686003)(186003)(6506007)(7416002)(26005)(33656002)(2906002)(82950400001)(82960400001)(921005)(122000001)(38100700002)(5660300002)(52536014)(8936002)(8676002)(76116006)(66446008)(66556008)(66476007)(66946007)(64756008)(110136005)(478600001)(10290500003)(66899021)(71200400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?qMlG62AR7MvrPM6oOd8iNrYh51ZicDCxOipzLdq9EQRj1J2Unm+TSoV6hmK/?=
- =?us-ascii?Q?o3mtITWOuM9LDLfew1CrrcYXDKh/+xXDUSDWFMX4UiKoWciIZ4f+uv2sbUkA?=
- =?us-ascii?Q?/cHrk9/UipTPL1ieZowNtrDW0CrghkZUSSYZYSM4zOkNc/CKSSG8OX+tazwL?=
- =?us-ascii?Q?IfXK4hvL1CXwK7mm3dmv0Sl38Ibb2kE3/Cdb7uQ+qukrYWrclwnkBSDcQDHG?=
- =?us-ascii?Q?5r50iDcSnYPntNmQSyUPhWm7wU/Pj//j94sMnUxOruPZGOOcc71CtHa03INp?=
- =?us-ascii?Q?8NLgY6VsuzFAWDCghYxSjybC0XjJpz2UYjuVLGniZzVaPCkDifI2QFgWBWhH?=
- =?us-ascii?Q?+ZKWmGsz6MMiYK7+L+9jhFUVRdUpmV987xEQwX6D6dUmqr3n+EQWtwdk1rBu?=
- =?us-ascii?Q?F+om248yWHVIL3B8h4ZyFG2hy3y8cH1Q8n+61YaG93XlrTtM1id9pYRZXA91?=
- =?us-ascii?Q?1XZLU9NF8dwAKOs7nxVaP1aV0nmpnBxlY86nODJkaLAlE/RuWvJXuBWE9dHY?=
- =?us-ascii?Q?JyD0wMGrEoZ43ooafPcJmmjLo+WIF8s+DOpj54EqncdyYVcnLLcGl/oQ/JAn?=
- =?us-ascii?Q?2UI6GKSRnU0Wqqk2gAp6syW0Y39LsfP/PIkq1pAFcT8wYGCDG9UkHfsgySME?=
- =?us-ascii?Q?XoJYrCIdWNMGNMVcsHQQk6LQslqXgjuf/a6LynCKoDdddsb0jH8yO7JBBnld?=
- =?us-ascii?Q?ZfUZGH61ITFLqSlWqwF4fKyMpkc9si2TlyRFJKMjXc/uDHRhZx2o03F/0kyW?=
- =?us-ascii?Q?bbCu8IOvH0YFWpbiaRQzXI9ix0OyoanRb/bh/SqJ6esC18RDFSdxleU1hTOU?=
- =?us-ascii?Q?3eLQ7pfC4rNaMi5tYSUeBO5e9SHtwOyQEjyM19l/y2CiqfD+0+SI1f5SyKcc?=
- =?us-ascii?Q?nuoFQg5zUZREsRzLIVVbeaKtRc0J7ut09sJklqCvYxcGiQgpGGCOZlIJJDj4?=
- =?us-ascii?Q?SDU/TorDlgllfi+tJv6Z8y99lX2A2ZopJn2+F6U1cvLATav1ubWqAfsnwK63?=
- =?us-ascii?Q?y3WecfyWhAGv3mj1db2CthsiJrYDeI3iaZX2Af8s4/b2ZASEmAm99UxGKFUJ?=
- =?us-ascii?Q?oISmcONJILoyg+4GQqsWx2pNiuJvdkSaLuOun/CIhTDPnxUNPiQuYWfeA2Kl?=
- =?us-ascii?Q?/tojPGxEZkdgFCv0c9AAnNkJ74UCDRK8lb3PjAFxsCHg0oJHUV8LSzIydMeG?=
- =?us-ascii?Q?2oMiV/BLIcWU3KOQBruailw0kikIOqd2qxaBLnfxkLjA8051QVrdv2zEsqOF?=
- =?us-ascii?Q?pNSquN8+rLJ0yQlp2o1tGFjnDHDvTlhgXVZdX+AZX0n3MK9UUxopK7B7TjhJ?=
- =?us-ascii?Q?D6UlHxLmXQy+pvgLHVxSyX9oBohR21iwnbxKFHUm1DAVtdRxdqbCDE/JFtSA?=
- =?us-ascii?Q?LXwz3MURibJcXWqh4QaPPg30poulUkDClkUGOQHrQsiADJoCMb9vJMHMCiko?=
- =?us-ascii?Q?xkVaqGbhM40AUA1DdlPQgBIu8LKGxCNVwz3J/zKzeQzPrEOkz7zFt4vng4om?=
- =?us-ascii?Q?hBIQP1yb6ABcLsX5yOR33R033bzNtABAIhZmsho8MUZVArLRN2cUHzu/40jY?=
- =?us-ascii?Q?hOTNo/OSgEW7TNMh84VOdzc8IuIXIq6VgL7Mrl+m?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9375210973
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 17:50:12 +0000 (UTC)
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE511E2
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 10:50:06 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id 98e67ed59e1d1-2568fd3f360so491359a91.2
+        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 10:50:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1686246606; x=1688838606;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xzp5uxEEBLw7pO/cCK8Yk11Z8plJejfyPzG55TJAur0=;
+        b=km2dzvfPf7lM7KkkEcWKFvmQ7CAZNufJGq1QwpQjtU3Td2vE9EY+msoY44poOjxjxB
+         rzg+Ybu3LhdNbG2jvtcoOyjSLg1sEMNGJroA0N6cWXvAer96yzpeu2YA/D8esVQYu4w2
+         U8pLcf2ojACdcKXY7E/ZMMJRJZKfc2AOUjxvxe7zB4Y30d5Xgl1ZRYW+uXqm+xtfUDmz
+         PX+T36/vf8cUgIqadG1FXxmmgRiSDnYc1zFNCjD8l/qtxmTO5xcnP/82mU1CESCB2+Wy
+         wloGcix0/fvQmsHvw+lOVMRclfFkgx3pPVKo8gjZeXO3eNYfvZXDc63j/WZ1gsrc7pdH
+         fDhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686246606; x=1688838606;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xzp5uxEEBLw7pO/cCK8Yk11Z8plJejfyPzG55TJAur0=;
+        b=kGG2tNrx6CKJrkP/fAS1CnL/KN4Q0NFPRp04ncqsJkz/ZIGC7VPF4o2sxWOPm/y1MI
+         rqYqJzs4odp5VLlMNlwZBVOzQK+Q50ZV4DlpBqRSa4RHrkYN7rEkkN/gOi5Hsr95YQFT
+         ItJn2oxqpZIAR1uCYZrAf5IeaPZ5OqODT8aiL//nAXVVLgSFa3TwwaScacMTP2d5yNYZ
+         nObpi/VR0N7k5BJ7YzBNf/RKx3TnI9fpqO3dpkui9d3eaLX3sI4NxfYB8Yum2w95kuMX
+         9VUcQchx7urbkAjJyHIsCXxycdTJ1JL7E/5aIjIQ8pFsO+qApZPP9ZqMYD+edAzCDtTW
+         da6w==
+X-Gm-Message-State: AC+VfDxQuzeYis7KF6TeAgQKQS2YJdkyqvwPglmRd7Gr3RPRy4N+fpu2
+	Bloxwp6nPGKsOlTmvHr9ZOFo1S0=
+X-Google-Smtp-Source: ACHHUZ4EGsM4tBgkmvR0hiUuNgqBAtPLsZZBIV38le5Xd1ns9RDvBCcaEPF8IvnhjGk2A/qu16eDMNk=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a17:90a:fe8c:b0:253:83ef:7368 with SMTP id
+ co12-20020a17090afe8c00b0025383ef7368mr2278736pjb.5.1686246606213; Thu, 08
+ Jun 2023 10:50:06 -0700 (PDT)
+Date: Thu, 8 Jun 2023 10:50:04 -0700
+In-Reply-To: <20230607192625.22641-3-daniel@iogearbox.net>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR21MB3263.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ed8b3543-c6e9-4795-ba94-08db68487dd1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jun 2023 17:47:56.0273
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VzQYf19ImwqhhPxymRj/ZhUMQ7n7c8q+b5VhfzgHY7t0IQKcLucPHcMv7QIIxyIOFnTmZcA5mPRd9jcRaK67tw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR21MB3456
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Mime-Version: 1.0
+References: <20230607192625.22641-1-daniel@iogearbox.net> <20230607192625.22641-3-daniel@iogearbox.net>
+Message-ID: <ZIIUzDVta4krD6c6@google.com>
+Subject: Re: [PATCH bpf-next v2 2/7] bpf: Add fd-based tcx multi-prog infra
+ with link support
+From: Stanislav Fomichev <sdf@google.com>
+To: Daniel Borkmann <daniel@iogearbox.net>
+Cc: ast@kernel.org, andrii@kernel.org, martin.lau@linux.dev, 
+	razor@blackwall.org, john.fastabend@gmail.com, kuba@kernel.org, dxu@dxuuu.xyz, 
+	joe@cilium.io, toke@kernel.org, davem@davemloft.net, bpf@vger.kernel.org, 
+	netdev@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-> Subject: RE: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to
-> mana ib driver.
->=20
->=20
->=20
-> > -----Original Message-----
-> > Subject: RE: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to
-> > mana ib driver.
-> >
-> > > Subject: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to
-> > > mana ib driver.
-> > >
-> > > Add EQ interrupt support for mana ib driver. Allocate EQs per
-> > > ucontext to receive interrupt. Attach EQ when CQ is created. Call CQ
-> > > interrupt handler when completion interrupt happens. EQs are
-> > > destroyed when
-> > ucontext is deallocated.
-> > >
-> > > The change calls some public APIs in mana ethernet driver to
-> > > allocate EQs and other resources. Ehe EQ process routine is also
-> > > shared by mana ethernet and mana ib drivers.
-> > >
-> > > Co-developed-by: Ajay Sharma <sharmaajay@microsoft.com>
-> > > Signed-off-by: Ajay Sharma <sharmaajay@microsoft.com>
-> > > Signed-off-by: Wei Hu <weh@microsoft.com>
-> > > ---
-> > >
-> > > v2: Use ibdev_dbg to print error messages and return -ENOMEN
-> > >     when kzalloc fails.
-> > >
-> > >  drivers/infiniband/hw/mana/cq.c               |  32 ++++-
-> > >  drivers/infiniband/hw/mana/main.c             |  87 ++++++++++++
-> > >  drivers/infiniband/hw/mana/mana_ib.h          |   4 +
-> > >  drivers/infiniband/hw/mana/qp.c               |  90 +++++++++++-
-> > >  .../net/ethernet/microsoft/mana/gdma_main.c   | 131 ++++++++++------=
--
+On 06/07, Daniel Borkmann wrote:
+> This work refactors and adds a lightweight extension ("tcx") to the tc BPF
+> ingress and egress data path side for allowing BPF program management based
+> on fds via bpf() syscall through the newly added generic multi-prog API.
+> The main goal behind this work which we also presented at LPC [0] last year
+> and a recent update at LSF/MM/BPF this year [3] is to support long-awaited
+> BPF link functionality for tc BPF programs, which allows for a model of safe
+> ownership and program detachment.
+> 
+> Given the rise in tc BPF users in cloud native environments, this becomes
+> necessary to avoid hard to debug incidents either through stale leftover
+> programs or 3rd party applications accidentally stepping on each others toes.
+> As a recap, a BPF link represents the attachment of a BPF program to a BPF
+> hook point. The BPF link holds a single reference to keep BPF program alive.
+> Moreover, hook points do not reference a BPF link, only the application's
+> fd or pinning does. A BPF link holds meta-data specific to attachment and
+> implements operations for link creation, (atomic) BPF program update,
+> detachment and introspection. The motivation for BPF links for tc BPF programs
+> is multi-fold, for example:
+> 
+>   - From Meta: "It's especially important for applications that are deployed
+>     fleet-wide and that don't "control" hosts they are deployed to. If such
+>     application crashes and no one notices and does anything about that, BPF
+>     program will keep running draining resources or even just, say, dropping
+>     packets. We at FB had outages due to such permanent BPF attachment
+>     semantics. With fd-based BPF link we are getting a framework, which allows
+>     safe, auto-detachable behavior by default, unless application explicitly
+>     opts in by pinning the BPF link." [1]
+> 
+>   - From Cilium-side the tc BPF programs we attach to host-facing veth devices
+>     and phys devices build the core datapath for Kubernetes Pods, and they
+>     implement forwarding, load-balancing, policy, EDT-management, etc, within
+>     BPF. Currently there is no concept of 'safe' ownership, e.g. we've recently
+>     experienced hard-to-debug issues in a user's staging environment where
+>     another Kubernetes application using tc BPF attached to the same prio/handle
+>     of cls_bpf, accidentally wiping all Cilium-based BPF programs from underneath
+>     it. The goal is to establish a clear/safe ownership model via links which
+>     cannot accidentally be overridden. [0,2]
+> 
+> BPF links for tc can co-exist with non-link attachments, and the semantics are
+> in line also with XDP links: BPF links cannot replace other BPF links, BPF
+> links cannot replace non-BPF links, non-BPF links cannot replace BPF links and
+> lastly only non-BPF links can replace non-BPF links. In case of Cilium, this
+> would solve mentioned issue of safe ownership model as 3rd party applications
+> would not be able to accidentally wipe Cilium programs, even if they are not
+> BPF link aware.
+> 
+> Earlier attempts [4] have tried to integrate BPF links into core tc machinery
+> to solve cls_bpf, which has been intrusive to the generic tc kernel API with
+> extensions only specific to cls_bpf and suboptimal/complex since cls_bpf could
+> be wiped from the qdisc also. Locking a tc BPF program in place this way, is
+> getting into layering hacks given the two object models are vastly different.
+> 
+> We instead implemented the tcx (tc 'express') layer which is an fd-based tc BPF
+> attach API, so that the BPF link implementation blends in naturally similar to
+> other link types which are fd-based and without the need for changing core tc
+> internal APIs. BPF programs for tc can then be successively migrated from classic
+> cls_bpf to the new tc BPF link without needing to change the program's source
+> code, just the BPF loader mechanics for attaching is sufficient.
+> 
+> For the current tc framework, there is no change in behavior with this change
+> and neither does this change touch on tc core kernel APIs. The gist of this
+> patch is that the ingress and egress hook have a lightweight, qdisc-less
+> extension for BPF to attach its tc BPF programs, in other words, a minimal
+> entry point for tc BPF. The name tcx has been suggested from discussion of
+> earlier revisions of this work as a good fit, and to more easily differ between
+> the classic cls_bpf attachment and the fd-based one.
+> 
+> For the ingress and egress tcx points, the device holds a cache-friendly array
+> with program pointers which is separated from control plane (slow-path) data.
+> Earlier versions of this work used priority to determine ordering and expression
+> of dependencies similar as with classic tc, but it was challenged that for
+> something more future-proof a better user experience is required. Hence this
+> resulted in the design and development of the generic attach/detach/query API
+> for multi-progs. See prior patch with its discussion on the API design. tcx is
+> the first user and later we plan to integrate also others, for example, one
+> candidate is multi-prog support for XDP which would benefit and have the same
+> 'look and feel' from API perspective.
+> 
+> The goal with tcx is to have maximum compatibility to existing tc BPF programs,
+> so they don't need to be rewritten specifically. Compatibility to call into
+> classic tcf_classify() is also provided in order to allow successive migration
+> or both to cleanly co-exist where needed given its all one logical tc layer.
+> tcx supports the simplified return codes TCX_NEXT which is non-terminating (go
+> to next program) and terminating ones with TCX_PASS, TCX_DROP, TCX_REDIRECT.
+> The fd-based API is behind a static key, so that when unused the code is also
+> not entered. The struct tcx_entry's program array is currently static, but
+> could be made dynamic if necessary at a point in future. The a/b pair swap
+> design has been chosen so that for detachment there are no allocations which
+> otherwise could fail. The work has been tested with tc-testing selftest suite
+> which all passes, as well as the tc BPF tests from the BPF CI, and also with
+> Cilium's L4LB.
+> 
+> Kudos also to Nikolay Aleksandrov and Martin Lau for in-depth early reviews
+> of this work.
+> 
+>   [0] https://lpc.events/event/16/contributions/1353/
+>   [1] https://lore.kernel.org/bpf/CAEf4BzbokCJN33Nw_kg82sO=xppXnKWEncGTWCTB9vGCmLB6pw@mail.gmail.com/
+>   [2] https://colocatedeventseu2023.sched.com/event/1Jo6O/tales-from-an-ebpf-programs-murder-mystery-hemanth-malla-guillaume-fournier-datadog
+>   [3] http://vger.kernel.org/bpfconf2023_material/tcx_meta_netdev_borkmann.pdf
+>   [4] https://lore.kernel.org/bpf/20210604063116.234316-1-memxor@gmail.com/
+> 
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> ---
+>  MAINTAINERS                    |   4 +-
+>  include/linux/netdevice.h      |  15 +-
+>  include/linux/skbuff.h         |   4 +-
+>  include/net/sch_generic.h      |   2 +-
+>  include/net/tcx.h              | 157 +++++++++++++++
+>  include/uapi/linux/bpf.h       |  35 +++-
+>  kernel/bpf/Kconfig             |   1 +
+>  kernel/bpf/Makefile            |   1 +
+>  kernel/bpf/syscall.c           |  95 +++++++--
+>  kernel/bpf/tcx.c               | 347 +++++++++++++++++++++++++++++++++
+>  net/Kconfig                    |   5 +
+>  net/core/dev.c                 | 267 +++++++++++++++----------
+>  net/core/filter.c              |   4 +-
+>  net/sched/Kconfig              |   4 +-
+>  net/sched/sch_ingress.c        |  45 ++++-
+>  tools/include/uapi/linux/bpf.h |  35 +++-
+>  16 files changed, 877 insertions(+), 144 deletions(-)
+>  create mode 100644 include/net/tcx.h
+>  create mode 100644 kernel/bpf/tcx.c
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 754a9eeca0a1..7a0d0b0c5a5e 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -3827,13 +3827,15 @@ L:	netdev@vger.kernel.org
+>  S:	Maintained
+>  F:	kernel/bpf/bpf_struct*
+>  
+> -BPF [NETWORKING] (tc BPF, sock_addr)
+> +BPF [NETWORKING] (tcx & tc BPF, sock_addr)
+>  M:	Martin KaFai Lau <martin.lau@linux.dev>
+>  M:	Daniel Borkmann <daniel@iogearbox.net>
+>  R:	John Fastabend <john.fastabend@gmail.com>
+>  L:	bpf@vger.kernel.org
+>  L:	netdev@vger.kernel.org
+>  S:	Maintained
+> +F:	include/net/tcx.h
+> +F:	kernel/bpf/tcx.c
+>  F:	net/core/filter.c
+>  F:	net/sched/act_bpf.c
+>  F:	net/sched/cls_bpf.c
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 08fbd4622ccf..fd4281d1cdbb 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -1927,8 +1927,7 @@ enum netdev_ml_priv_type {
+>   *
+>   *	@rx_handler:		handler for received packets
+>   *	@rx_handler_data: 	XXX: need comments on this one
+> - *	@miniq_ingress:		ingress/clsact qdisc specific data for
+> - *				ingress processing
+> + *	@tcx_ingress:		BPF & clsact qdisc specific data for ingress processing
+>   *	@ingress_queue:		XXX: need comments on this one
+>   *	@nf_hooks_ingress:	netfilter hooks executed for ingress packets
+>   *	@broadcast:		hw bcast address
+> @@ -1949,8 +1948,7 @@ enum netdev_ml_priv_type {
+>   *	@xps_maps:		all CPUs/RXQs maps for XPS device
+>   *
+>   *	@xps_maps:	XXX: need comments on this one
+> - *	@miniq_egress:		clsact qdisc specific data for
+> - *				egress processing
+> + *	@tcx_egress:		BPF & clsact qdisc specific data for egress processing
+>   *	@nf_hooks_egress:	netfilter hooks executed for egress packets
+>   *	@qdisc_hash:		qdisc hash table
+>   *	@watchdog_timeo:	Represents the timeout that is used by
+> @@ -2249,9 +2247,8 @@ struct net_device {
+>  	unsigned int		gro_ipv4_max_size;
+>  	rx_handler_func_t __rcu	*rx_handler;
+>  	void __rcu		*rx_handler_data;
 > -
-> > >  drivers/net/ethernet/microsoft/mana/mana_en.c |   1 +
-> > >  include/net/mana/gdma.h                       |   9 +-
-> > >  7 files changed, 290 insertions(+), 64 deletions(-)
-> > >
-> > > diff --git a/drivers/infiniband/hw/mana/cq.c
-> > > b/drivers/infiniband/hw/mana/cq.c index d141cab8a1e6..3cd680e0e753
-> > > 100644
-> > > --- a/drivers/infiniband/hw/mana/cq.c
-> > > +++ b/drivers/infiniband/hw/mana/cq.c
-> > > @@ -12,13 +12,20 @@ int mana_ib_create_cq(struct ib_cq *ibcq, const
-> > > struct ib_cq_init_attr *attr,
-> > >  	struct ib_device *ibdev =3D ibcq->device;
-> > >  	struct mana_ib_create_cq ucmd =3D {};
-> > >  	struct mana_ib_dev *mdev;
-> > > +	struct gdma_context *gc;
-> > > +	struct gdma_dev *gd;
-> > >  	int err;
-> > >
-> > >  	mdev =3D container_of(ibdev, struct mana_ib_dev, ib_dev);
-> > > +	gd =3D mdev->gdma_dev;
-> > > +	gc =3D gd->gdma_context;
-> > >
-> > >  	if (udata->inlen < sizeof(ucmd))
-> > >  		return -EINVAL;
-> > >
-> > > +	cq->comp_vector =3D attr->comp_vector > gc->max_num_queues ?
-> > > +				0 : attr->comp_vector;
-> > > +
-> > >  	err =3D ib_copy_from_udata(&ucmd, udata, min(sizeof(ucmd), udata-
-> > > >inlen));
-> > >  	if (err) {
-> > >  		ibdev_dbg(ibdev,
-> > > @@ -69,11 +76,32 @@ int mana_ib_destroy_cq(struct ib_cq *ibcq,
-> > > struct ib_udata *udata)
-> > >  	struct mana_ib_cq *cq =3D container_of(ibcq, struct mana_ib_cq, ibc=
-q);
-> > >  	struct ib_device *ibdev =3D ibcq->device;
-> > >  	struct mana_ib_dev *mdev;
-> > > +	struct gdma_context *gc;
-> > > +	struct gdma_dev *gd;
-> > > +
-> > >
-> > >  	mdev =3D container_of(ibdev, struct mana_ib_dev, ib_dev);
-> > > +	gd =3D mdev->gdma_dev;
-> > > +	gc =3D gd->gdma_context;
-> > >
-> > > -	mana_ib_gd_destroy_dma_region(mdev, cq->gdma_region);
-> > > -	ib_umem_release(cq->umem);
-> > > +
-> > > +
-> > > +	if (atomic_read(&ibcq->usecnt) =3D=3D 0) {
-> > > +		mana_ib_gd_destroy_dma_region(mdev, cq->gdma_region);
-> >
-> > Need to check if this function fails. The following code will call
-> > kfree(gc-
-> > >cq_table[cq->id]), it's possible that IRQ is happening at the same
-> > >time if CQ
-> > is not destroyed.
-> >
->=20
-> Sure. Will update.
->=20
-> > > +		ibdev_dbg(ibdev, "freeing gdma cq %p\n", gc->cq_table[cq-
-> > >id]);
-> > > +		kfree(gc->cq_table[cq->id]);
-> > > +		gc->cq_table[cq->id] =3D NULL;
-> > > +		ib_umem_release(cq->umem);
-> > > +	}
-> > >
-> > >  	return 0;
-> > >  }
-> > > +
-> > > +void mana_ib_cq_handler(void *ctx, struct gdma_queue *gdma_cq) {
-> > > +	struct mana_ib_cq *cq =3D ctx;
-> > > +	struct ib_device *ibdev =3D cq->ibcq.device;
-> > > +
-> > > +	ibdev_dbg(ibdev, "Enter %s %d\n", __func__, __LINE__);
-> >
-> > This debug message seems overkill?
-> >
-> > > +	cq->ibcq.comp_handler(&cq->ibcq, cq->ibcq.cq_context); }
-> > > diff --git a/drivers/infiniband/hw/mana/main.c
-> > > b/drivers/infiniband/hw/mana/main.c
-> > > index 7be4c3adb4e2..e4efbcaed10e 100644
-> > > --- a/drivers/infiniband/hw/mana/main.c
-> > > +++ b/drivers/infiniband/hw/mana/main.c
-> > > @@ -143,6 +143,81 @@ int mana_ib_dealloc_pd(struct ib_pd *ibpd,
-> > > struct ib_udata *udata)
-> > >  	return err;
-> > >  }
-> > >
-> > > +static void mana_ib_destroy_eq(struct mana_ib_ucontext *ucontext,
-> > > +			       struct mana_ib_dev *mdev) {
-> > > +	struct gdma_context *gc =3D mdev->gdma_dev->gdma_context;
-> > > +	struct ib_device *ibdev =3D ucontext->ibucontext.device;
-> > > +	struct gdma_queue *eq;
-> > > +	int i;
-> > > +
-> > > +	if (!ucontext->eqs)
-> > > +		return;
-> > > +
-> > > +	for (i =3D 0; i < gc->max_num_queues; i++) {
-> > > +		eq =3D ucontext->eqs[i].eq;
-> > > +		if (!eq)
-> > > +			continue;
-> > > +
-> > > +		mana_gd_destroy_queue(gc, eq);
-> > > +	}
-> > > +
-> > > +	kfree(ucontext->eqs);
-> > > +	ucontext->eqs =3D NULL;
-> > > +
-> > > +	ibdev_dbg(ibdev, "destroyed eq's count %d\n", gc-
-> > >max_num_queues); }
-> >
-> > Will gc->max_num_queues change after destroying a EQ?
-> >
->=20
-> I think it will not change. Also the compiler might optimize the code to =
-just
-> read the value once and store it in a register.
->=20
-> Thanks,
-> Wei
+> -#ifdef CONFIG_NET_CLS_ACT
+> -	struct mini_Qdisc __rcu	*miniq_ingress;
+> +#ifdef CONFIG_NET_XGRESS
+> +	struct bpf_mprog_entry __rcu *tcx_ingress;
+>  #endif
+>  	struct netdev_queue __rcu *ingress_queue;
+>  #ifdef CONFIG_NETFILTER_INGRESS
+> @@ -2279,8 +2276,8 @@ struct net_device {
+>  #ifdef CONFIG_XPS
+>  	struct xps_dev_maps __rcu *xps_maps[XPS_MAPS_MAX];
+>  #endif
+> -#ifdef CONFIG_NET_CLS_ACT
+> -	struct mini_Qdisc __rcu	*miniq_egress;
+> +#ifdef CONFIG_NET_XGRESS
+> +	struct bpf_mprog_entry __rcu *tcx_egress;
+>  #endif
+>  #ifdef CONFIG_NETFILTER_EGRESS
+>  	struct nf_hook_entries __rcu *nf_hooks_egress;
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 5951904413ab..48c3e307f057 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -943,7 +943,7 @@ struct sk_buff {
+>  	__u8			__mono_tc_offset[0];
+>  	/* public: */
+>  	__u8			mono_delivery_time:1;	/* See SKB_MONO_DELIVERY_TIME_MASK */
+> -#ifdef CONFIG_NET_CLS_ACT
+> +#ifdef CONFIG_NET_XGRESS
+>  	__u8			tc_at_ingress:1;	/* See TC_AT_INGRESS_MASK */
+>  	__u8			tc_skip_classify:1;
+>  #endif
+> @@ -992,7 +992,7 @@ struct sk_buff {
+>  	__u8			csum_not_inet:1;
+>  #endif
+>  
+> -#ifdef CONFIG_NET_SCHED
+> +#if defined(CONFIG_NET_SCHED) || defined(CONFIG_NET_XGRESS)
+>  	__u16			tc_index;	/* traffic control index */
+>  #endif
+>  
+> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+> index fab5ba3e61b7..0ade5d1a72b2 100644
+> --- a/include/net/sch_generic.h
+> +++ b/include/net/sch_generic.h
+> @@ -695,7 +695,7 @@ int skb_do_redirect(struct sk_buff *);
+>  
+>  static inline bool skb_at_tc_ingress(const struct sk_buff *skb)
+>  {
+> -#ifdef CONFIG_NET_CLS_ACT
+> +#ifdef CONFIG_NET_XGRESS
+>  	return skb->tc_at_ingress;
+>  #else
+>  	return false;
+> diff --git a/include/net/tcx.h b/include/net/tcx.h
+> new file mode 100644
+> index 000000000000..27885ecedff9
+> --- /dev/null
+> +++ b/include/net/tcx.h
+> @@ -0,0 +1,157 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/* Copyright (c) 2023 Isovalent */
+> +#ifndef __NET_TCX_H
+> +#define __NET_TCX_H
+> +
+> +#include <linux/bpf.h>
+> +#include <linux/bpf_mprog.h>
+> +
+> +#include <net/sch_generic.h>
+> +
+> +struct mini_Qdisc;
+> +
+> +struct tcx_entry {
+> +	struct bpf_mprog_bundle		bundle;
+> +	struct mini_Qdisc __rcu		*miniq;
+> +};
+> +
+> +struct tcx_link {
+> +	struct bpf_link link;
+> +	struct net_device *dev;
+> +	u32 location;
+> +	u32 flags;
+> +};
+> +
+> +static inline struct tcx_link *tcx_link(struct bpf_link *link)
+> +{
+> +	return container_of(link, struct tcx_link, link);
+> +}
+> +
+> +static inline const struct tcx_link *tcx_link_const(const struct bpf_link *link)
+> +{
+> +	return tcx_link((struct bpf_link *)link);
+> +}
+> +
+> +static inline void tcx_set_ingress(struct sk_buff *skb, bool ingress)
+> +{
+> +#ifdef CONFIG_NET_XGRESS
+> +	skb->tc_at_ingress = ingress;
+> +#endif
+> +}
+> +
+> +#ifdef CONFIG_NET_XGRESS
+> +void tcx_inc(void);
+> +void tcx_dec(void);
+> +
+> +static inline struct tcx_entry *tcx_entry(struct bpf_mprog_entry *entry)
+> +{
+> +	return container_of(entry->parent, struct tcx_entry, bundle);
+> +}
+> +
+> +static inline void
+> +tcx_entry_update(struct net_device *dev, struct bpf_mprog_entry *entry, bool ingress)
+> +{
+> +	ASSERT_RTNL();
+> +	if (ingress)
+> +		rcu_assign_pointer(dev->tcx_ingress, entry);
+> +	else
+> +		rcu_assign_pointer(dev->tcx_egress, entry);
+> +}
+> +
+> +static inline struct bpf_mprog_entry *
+> +dev_tcx_entry_fetch(struct net_device *dev, bool ingress)
+> +{
+> +	ASSERT_RTNL();
+> +	if (ingress)
+> +		return rcu_dereference_rtnl(dev->tcx_ingress);
+> +	else
+> +		return rcu_dereference_rtnl(dev->tcx_egress);
+> +}
+> +
+> +static inline struct bpf_mprog_entry *
 
-This message is confusing. How about changing it to " destroyed eq. Maximum=
- count %d", or just remove the count as it's not informational.
+[..]
 
-Long
+> +dev_tcx_entry_fetch_or_create(struct net_device *dev, bool ingress, bool *created)
+
+Regarding 'created' argument: any reason we are not doing conventional
+reference counting on bpf_mprog_entry? I wonder if there is a better way
+to hide those places where we handle BPF_MPROG_FREE explicitly.
+
+Btw, thinking of this a/b arrays, should we call them active/inactive?
+
+> +{
+> +	struct bpf_mprog_entry *entry = dev_tcx_entry_fetch(dev, ingress);
+> +
+> +	*created = false;
+> +	if (!entry) {
+> +		entry = bpf_mprog_create(sizeof_field(struct tcx_entry,
+> +						      miniq));
+> +		if (!entry)
+> +			return NULL;
+> +		*created = true;
+> +	}
+> +	return entry;
+> +}
+> +
+> +static inline void tcx_skeys_inc(bool ingress)
+> +{
+> +	tcx_inc();
+> +	if (ingress)
+> +		net_inc_ingress_queue();
+> +	else
+> +		net_inc_egress_queue();
+> +}
+> +
+> +static inline void tcx_skeys_dec(bool ingress)
+> +{
+> +	if (ingress)
+> +		net_dec_ingress_queue();
+> +	else
+> +		net_dec_egress_queue();
+> +	tcx_dec();
+> +}
+> +
+> +static inline enum tcx_action_base tcx_action_code(struct sk_buff *skb, int code)
+> +{
+> +	switch (code) {
+> +	case TCX_PASS:
+> +		skb->tc_index = qdisc_skb_cb(skb)->tc_classid;
+> +		fallthrough;
+> +	case TCX_DROP:
+> +	case TCX_REDIRECT:
+> +		return code;
+> +	case TCX_NEXT:
+> +	default:
+> +		return TCX_NEXT;
+> +	}
+> +}
+> +#endif /* CONFIG_NET_XGRESS */
+> +
+> +#if defined(CONFIG_NET_XGRESS) && defined(CONFIG_BPF_SYSCALL)
+> +int tcx_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog);
+> +int tcx_link_attach(const union bpf_attr *attr, struct bpf_prog *prog);
+> +int tcx_prog_detach(const union bpf_attr *attr, struct bpf_prog *prog);
+> +int tcx_prog_query(const union bpf_attr *attr,
+> +		   union bpf_attr __user *uattr);
+> +void dev_tcx_uninstall(struct net_device *dev);
+> +#else
+> +static inline int tcx_prog_attach(const union bpf_attr *attr,
+> +				  struct bpf_prog *prog)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+> +static inline int tcx_link_attach(const union bpf_attr *attr,
+> +				  struct bpf_prog *prog)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+> +static inline int tcx_prog_detach(const union bpf_attr *attr,
+> +				  struct bpf_prog *prog)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+> +static inline int tcx_prog_query(const union bpf_attr *attr,
+> +				 union bpf_attr __user *uattr)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+> +static inline void dev_tcx_uninstall(struct net_device *dev)
+> +{
+> +}
+> +#endif /* CONFIG_NET_XGRESS && CONFIG_BPF_SYSCALL */
+> +#endif /* __NET_TCX_H */
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 207f8a37b327..e7584e24bc83 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -1035,6 +1035,8 @@ enum bpf_attach_type {
+>  	BPF_TRACE_KPROBE_MULTI,
+>  	BPF_LSM_CGROUP,
+>  	BPF_STRUCT_OPS,
+> +	BPF_TCX_INGRESS,
+> +	BPF_TCX_EGRESS,
+>  	__MAX_BPF_ATTACH_TYPE
+>  };
+>  
+> @@ -1052,7 +1054,7 @@ enum bpf_link_type {
+>  	BPF_LINK_TYPE_KPROBE_MULTI = 8,
+>  	BPF_LINK_TYPE_STRUCT_OPS = 9,
+>  	BPF_LINK_TYPE_NETFILTER = 10,
+> -
+> +	BPF_LINK_TYPE_TCX = 11,
+>  	MAX_BPF_LINK_TYPE,
+>  };
+>  
+> @@ -1559,13 +1561,13 @@ union bpf_attr {
+>  			__u32		map_fd;		/* struct_ops to attach */
+>  		};
+>  		union {
+> -			__u32		target_fd;	/* object to attach to */
+> -			__u32		target_ifindex; /* target ifindex */
+> +			__u32	target_fd;	/* target object to attach to or ... */
+> +			__u32	target_ifindex; /* target ifindex */
+>  		};
+>  		__u32		attach_type;	/* attach type */
+>  		__u32		flags;		/* extra flags */
+>  		union {
+> -			__u32		target_btf_id;	/* btf_id of target to attach to */
+> +			__u32	target_btf_id;	/* btf_id of target to attach to */
+>  			struct {
+>  				__aligned_u64	iter_info;	/* extra bpf_iter_link_info */
+>  				__u32		iter_info_len;	/* iter_info length */
+> @@ -1599,6 +1601,13 @@ union bpf_attr {
+>  				__s32		priority;
+>  				__u32		flags;
+>  			} netfilter;
+> +			struct {
+> +				union {
+> +					__u32	relative_fd;
+> +					__u32	relative_id;
+> +				};
+> +				__u32		expected_revision;
+> +			} tcx;
+>  		};
+>  	} link_create;
+>  
+> @@ -6207,6 +6216,19 @@ struct bpf_sock_tuple {
+>  	};
+>  };
+>  
+> +/* (Simplified) user return codes for tcx prog type.
+> + * A valid tcx program must return one of these defined values. All other
+> + * return codes are reserved for future use. Must remain compatible with
+> + * their TC_ACT_* counter-parts. For compatibility in behavior, unknown
+> + * return codes are mapped to TCX_NEXT.
+> + */
+> +enum tcx_action_base {
+> +	TCX_NEXT	= -1,
+> +	TCX_PASS	= 0,
+> +	TCX_DROP	= 2,
+> +	TCX_REDIRECT	= 7,
+> +};
+> +
+>  struct bpf_xdp_sock {
+>  	__u32 queue_id;
+>  };
+> @@ -6459,6 +6481,11 @@ struct bpf_link_info {
+>  			__s32 priority;
+>  			__u32 flags;
+>  		} netfilter;
+> +		struct {
+> +			__u32 ifindex;
+> +			__u32 attach_type;
+> +			__u32 flags;
+> +		} tcx;
+>  	};
+>  } __attribute__((aligned(8)));
+>  
+> diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
+> index 2dfe1079f772..6a906ff93006 100644
+> --- a/kernel/bpf/Kconfig
+> +++ b/kernel/bpf/Kconfig
+> @@ -31,6 +31,7 @@ config BPF_SYSCALL
+>  	select TASKS_TRACE_RCU
+>  	select BINARY_PRINTF
+>  	select NET_SOCK_MSG if NET
+> +	select NET_XGRESS if NET
+>  	select PAGE_POOL if NET
+>  	default n
+>  	help
+> diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+> index 1bea2eb912cd..f526b7573e97 100644
+> --- a/kernel/bpf/Makefile
+> +++ b/kernel/bpf/Makefile
+> @@ -21,6 +21,7 @@ obj-$(CONFIG_BPF_SYSCALL) += devmap.o
+>  obj-$(CONFIG_BPF_SYSCALL) += cpumap.o
+>  obj-$(CONFIG_BPF_SYSCALL) += offload.o
+>  obj-$(CONFIG_BPF_SYSCALL) += net_namespace.o
+> +obj-$(CONFIG_BPF_SYSCALL) += tcx.o
+>  endif
+>  ifeq ($(CONFIG_PERF_EVENTS),y)
+>  obj-$(CONFIG_BPF_SYSCALL) += stackmap.o
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 92a57efc77de..e2c219d053f4 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -37,6 +37,8 @@
+>  #include <linux/trace_events.h>
+>  #include <net/netfilter/nf_bpf_link.h>
+>  
+> +#include <net/tcx.h>
+> +
+>  #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
+>  			  (map)->map_type == BPF_MAP_TYPE_CGROUP_ARRAY || \
+>  			  (map)->map_type == BPF_MAP_TYPE_ARRAY_OF_MAPS)
+> @@ -3522,31 +3524,57 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
+>  		return BPF_PROG_TYPE_XDP;
+>  	case BPF_LSM_CGROUP:
+>  		return BPF_PROG_TYPE_LSM;
+> +	case BPF_TCX_INGRESS:
+> +	case BPF_TCX_EGRESS:
+> +		return BPF_PROG_TYPE_SCHED_CLS;
+>  	default:
+>  		return BPF_PROG_TYPE_UNSPEC;
+>  	}
+>  }
+>  
+> -#define BPF_PROG_ATTACH_LAST_FIELD replace_bpf_fd
+> +#define BPF_PROG_ATTACH_LAST_FIELD expected_revision
+> +
+> +#define BPF_F_ATTACH_MASK_BASE	\
+> +	(BPF_F_ALLOW_OVERRIDE |	\
+> +	 BPF_F_ALLOW_MULTI |	\
+> +	 BPF_F_REPLACE)
+> +
+> +#define BPF_F_ATTACH_MASK_MPROG	\
+> +	(BPF_F_REPLACE |	\
+> +	 BPF_F_BEFORE |		\
+> +	 BPF_F_AFTER |		\
+> +	 BPF_F_FIRST |		\
+> +	 BPF_F_LAST |		\
+> +	 BPF_F_ID |		\
+> +	 BPF_F_LINK)
+>  
+> -#define BPF_F_ATTACH_MASK \
+> -	(BPF_F_ALLOW_OVERRIDE | BPF_F_ALLOW_MULTI | BPF_F_REPLACE)
+> +static bool bpf_supports_mprog(enum bpf_prog_type ptype)
+> +{
+> +	switch (ptype) {
+> +	case BPF_PROG_TYPE_SCHED_CLS:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+>  
+>  static int bpf_prog_attach(const union bpf_attr *attr)
+>  {
+>  	enum bpf_prog_type ptype;
+>  	struct bpf_prog *prog;
+> +	u32 mask;
+>  	int ret;
+>  
+>  	if (CHECK_ATTR(BPF_PROG_ATTACH))
+>  		return -EINVAL;
+>  
+> -	if (attr->attach_flags & ~BPF_F_ATTACH_MASK)
+> -		return -EINVAL;
+> -
+>  	ptype = attach_type_to_prog_type(attr->attach_type);
+>  	if (ptype == BPF_PROG_TYPE_UNSPEC)
+>  		return -EINVAL;
+> +	mask = bpf_supports_mprog(ptype) ?
+> +	       BPF_F_ATTACH_MASK_MPROG : BPF_F_ATTACH_MASK_BASE;
+> +	if (attr->attach_flags & ~mask)
+> +		return -EINVAL;
+>  
+>  	prog = bpf_prog_get_type(attr->attach_bpf_fd, ptype);
+>  	if (IS_ERR(prog))
+> @@ -3582,6 +3610,9 @@ static int bpf_prog_attach(const union bpf_attr *attr)
+>  		else
+>  			ret = cgroup_bpf_prog_attach(attr, ptype, prog);
+>  		break;
+> +	case BPF_PROG_TYPE_SCHED_CLS:
+> +		ret = tcx_prog_attach(attr, prog);
+> +		break;
+>  	default:
+>  		ret = -EINVAL;
+>  	}
+> @@ -3591,25 +3622,42 @@ static int bpf_prog_attach(const union bpf_attr *attr)
+>  	return ret;
+>  }
+>  
+> -#define BPF_PROG_DETACH_LAST_FIELD attach_type
+> +#define BPF_PROG_DETACH_LAST_FIELD expected_revision
+>  
+>  static int bpf_prog_detach(const union bpf_attr *attr)
+>  {
+> +	struct bpf_prog *prog = NULL;
+>  	enum bpf_prog_type ptype;
+> +	int ret;
+>  
+>  	if (CHECK_ATTR(BPF_PROG_DETACH))
+>  		return -EINVAL;
+>  
+>  	ptype = attach_type_to_prog_type(attr->attach_type);
+> +	if (bpf_supports_mprog(ptype)) {
+> +		if (ptype == BPF_PROG_TYPE_UNSPEC)
+> +			return -EINVAL;
+> +		if (attr->attach_flags & ~BPF_F_ATTACH_MASK_MPROG)
+> +			return -EINVAL;
+> +		prog = bpf_prog_get_type(attr->attach_bpf_fd, ptype);
+> +		if (IS_ERR(prog)) {
+> +			if ((int)attr->attach_bpf_fd > 0)
+> +				return PTR_ERR(prog);
+> +			prog = NULL;
+> +		}
+> +	}
+>  
+>  	switch (ptype) {
+>  	case BPF_PROG_TYPE_SK_MSG:
+>  	case BPF_PROG_TYPE_SK_SKB:
+> -		return sock_map_prog_detach(attr, ptype);
+> +		ret = sock_map_prog_detach(attr, ptype);
+> +		break;
+>  	case BPF_PROG_TYPE_LIRC_MODE2:
+> -		return lirc_prog_detach(attr);
+> +		ret = lirc_prog_detach(attr);
+> +		break;
+>  	case BPF_PROG_TYPE_FLOW_DISSECTOR:
+> -		return netns_bpf_prog_detach(attr, ptype);
+> +		ret = netns_bpf_prog_detach(attr, ptype);
+> +		break;
+>  	case BPF_PROG_TYPE_CGROUP_DEVICE:
+>  	case BPF_PROG_TYPE_CGROUP_SKB:
+>  	case BPF_PROG_TYPE_CGROUP_SOCK:
+> @@ -3618,13 +3666,21 @@ static int bpf_prog_detach(const union bpf_attr *attr)
+>  	case BPF_PROG_TYPE_CGROUP_SYSCTL:
+>  	case BPF_PROG_TYPE_SOCK_OPS:
+>  	case BPF_PROG_TYPE_LSM:
+> -		return cgroup_bpf_prog_detach(attr, ptype);
+> +		ret = cgroup_bpf_prog_detach(attr, ptype);
+> +		break;
+> +	case BPF_PROG_TYPE_SCHED_CLS:
+> +		ret = tcx_prog_detach(attr, prog);
+> +		break;
+>  	default:
+> -		return -EINVAL;
+> +		ret = -EINVAL;
+>  	}
+> +
+> +	if (prog)
+> +		bpf_prog_put(prog);
+> +	return ret;
+>  }
+>  
+> -#define BPF_PROG_QUERY_LAST_FIELD query.prog_attach_flags
+> +#define BPF_PROG_QUERY_LAST_FIELD query.link_attach_flags
+>  
+>  static int bpf_prog_query(const union bpf_attr *attr,
+>  			  union bpf_attr __user *uattr)
+> @@ -3672,6 +3728,9 @@ static int bpf_prog_query(const union bpf_attr *attr,
+>  	case BPF_SK_MSG_VERDICT:
+>  	case BPF_SK_SKB_VERDICT:
+>  		return sock_map_bpf_prog_query(attr, uattr);
+> +	case BPF_TCX_INGRESS:
+> +	case BPF_TCX_EGRESS:
+> +		return tcx_prog_query(attr, uattr);
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -4629,6 +4688,13 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+>  			goto out;
+>  		}
+>  		break;
+> +	case BPF_PROG_TYPE_SCHED_CLS:
+> +		if (attr->link_create.attach_type != BPF_TCX_INGRESS &&
+> +		    attr->link_create.attach_type != BPF_TCX_EGRESS) {
+> +			ret = -EINVAL;
+> +			goto out;
+> +		}
+> +		break;
+>  	default:
+>  		ptype = attach_type_to_prog_type(attr->link_create.attach_type);
+>  		if (ptype == BPF_PROG_TYPE_UNSPEC || ptype != prog->type) {
+> @@ -4680,6 +4746,9 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+>  	case BPF_PROG_TYPE_XDP:
+>  		ret = bpf_xdp_link_attach(attr, prog);
+>  		break;
+> +	case BPF_PROG_TYPE_SCHED_CLS:
+> +		ret = tcx_link_attach(attr, prog);
+> +		break;
+>  	case BPF_PROG_TYPE_NETFILTER:
+>  		ret = bpf_nf_link_attach(attr, prog);
+>  		break;
+> diff --git a/kernel/bpf/tcx.c b/kernel/bpf/tcx.c
+> new file mode 100644
+> index 000000000000..d3d23b4ed4f0
+> --- /dev/null
+> +++ b/kernel/bpf/tcx.c
+> @@ -0,0 +1,347 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2023 Isovalent */
+> +
+> +#include <linux/bpf.h>
+> +#include <linux/bpf_mprog.h>
+> +#include <linux/netdevice.h>
+> +
+> +#include <net/tcx.h>
+> +
+> +int tcx_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+> +{
+> +	bool created, ingress = attr->attach_type == BPF_TCX_INGRESS;
+> +	struct net *net = current->nsproxy->net_ns;
+> +	struct bpf_mprog_entry *entry;
+> +	struct net_device *dev;
+> +	int ret;
+> +
+> +	rtnl_lock();
+> +	dev = __dev_get_by_index(net, attr->target_ifindex);
+> +	if (!dev) {
+> +		ret = -ENODEV;
+> +		goto out;
+> +	}
+> +	entry = dev_tcx_entry_fetch_or_create(dev, ingress, &created);
+> +	if (!entry) {
+> +		ret = -ENOMEM;
+> +		goto out;
+> +	}
+> +	ret = bpf_mprog_attach(entry, prog, NULL, attr->attach_flags,
+> +			       attr->relative_fd, attr->expected_revision);
+> +	if (ret >= 0) {
+> +		if (ret == BPF_MPROG_SWAP)
+> +			tcx_entry_update(dev, bpf_mprog_peer(entry), ingress);
+> +		bpf_mprog_commit(entry);
+> +		tcx_skeys_inc(ingress);
+> +		ret = 0;
+> +	} else if (created) {
+> +		bpf_mprog_free(entry);
+> +	}
+> +out:
+> +	rtnl_unlock();
+> +	return ret;
+> +}
+> +
+> +static bool tcx_release_entry(struct bpf_mprog_entry *entry, int code)
+> +{
+> +	return code == BPF_MPROG_FREE && !tcx_entry(entry)->miniq;
+> +}
+> +
+> +int tcx_prog_detach(const union bpf_attr *attr, struct bpf_prog *prog)
+> +{
+> +	bool tcx_release, ingress = attr->attach_type == BPF_TCX_INGRESS;
+> +	struct net *net = current->nsproxy->net_ns;
+> +	struct bpf_mprog_entry *entry, *peer;
+> +	struct net_device *dev;
+> +	int ret;
+> +
+> +	rtnl_lock();
+> +	dev = __dev_get_by_index(net, attr->target_ifindex);
+> +	if (!dev) {
+> +		ret = -ENODEV;
+> +		goto out;
+> +	}
+> +	entry = dev_tcx_entry_fetch(dev, ingress);
+> +	if (!entry) {
+> +		ret = -ENOENT;
+> +		goto out;
+> +	}
+> +	ret = bpf_mprog_detach(entry, prog, NULL, attr->attach_flags,
+> +			       attr->relative_fd, attr->expected_revision);
+> +	if (ret >= 0) {
+> +		tcx_release = tcx_release_entry(entry, ret);
+> +		peer = tcx_release ? NULL : bpf_mprog_peer(entry);
+> +		if (ret == BPF_MPROG_SWAP || ret == BPF_MPROG_FREE)
+> +			tcx_entry_update(dev, peer, ingress);
+> +		bpf_mprog_commit(entry);
+> +		tcx_skeys_dec(ingress);
+> +		if (tcx_release)
+> +			bpf_mprog_free(entry);
+> +		ret = 0;
+> +	}
+> +out:
+> +	rtnl_unlock();
+> +	return ret;
+> +}
+> +
+> +static void tcx_uninstall(struct net_device *dev, bool ingress)
+> +{
+> +	struct bpf_tuple tuple = {};
+> +	struct bpf_mprog_entry *entry;
+> +	struct bpf_mprog_fp *fp;
+> +	struct bpf_mprog_cp *cp;
+> +
+> +	entry = dev_tcx_entry_fetch(dev, ingress);
+> +	if (!entry)
+> +		return;
+> +	tcx_entry_update(dev, NULL, ingress);
+> +	bpf_mprog_commit(entry);
+> +	bpf_mprog_foreach_tuple(entry, fp, cp, tuple) {
+> +		if (tuple.link)
+> +			tcx_link(tuple.link)->dev = NULL;
+> +		else
+> +			bpf_prog_put(tuple.prog);
+> +		tcx_skeys_dec(ingress);
+> +	}
+> +	WARN_ON_ONCE(tcx_entry(entry)->miniq);
+> +	bpf_mprog_free(entry);
+> +}
+> +
+> +void dev_tcx_uninstall(struct net_device *dev)
+> +{
+> +	ASSERT_RTNL();
+> +	tcx_uninstall(dev, true);
+> +	tcx_uninstall(dev, false);
+> +}
+> +
+> +int tcx_prog_query(const union bpf_attr *attr, union bpf_attr __user *uattr)
+> +{
+> +	bool ingress = attr->query.attach_type == BPF_TCX_INGRESS;
+> +	struct net *net = current->nsproxy->net_ns;
+> +	struct bpf_mprog_entry *entry;
+> +	struct net_device *dev;
+> +	int ret;
+> +
+> +	rtnl_lock();
+> +	dev = __dev_get_by_index(net, attr->query.target_ifindex);
+> +	if (!dev) {
+> +		ret = -ENODEV;
+> +		goto out;
+> +	}
+> +	entry = dev_tcx_entry_fetch(dev, ingress);
+> +	if (!entry) {
+> +		ret = -ENOENT;
+> +		goto out;
+> +	}
+> +	ret = bpf_mprog_query(attr, uattr, entry);
+> +out:
+> +	rtnl_unlock();
+> +	return ret;
+> +}
+> +
+> +static int tcx_link_prog_attach(struct bpf_link *l, u32 flags, u32 object,
+> +				u32 expected_revision)
+> +{
+> +	struct tcx_link *link = tcx_link(l);
+> +	bool created, ingress = link->location == BPF_TCX_INGRESS;
+> +	struct net_device *dev = link->dev;
+> +	struct bpf_mprog_entry *entry;
+> +	int ret;
+> +
+> +	ASSERT_RTNL();
+> +	entry = dev_tcx_entry_fetch_or_create(dev, ingress, &created);
+> +	if (!entry)
+> +		return -ENOMEM;
+> +	ret = bpf_mprog_attach(entry, l->prog, l, flags, object,
+> +			       expected_revision);
+> +	if (ret >= 0) {
+> +		if (ret == BPF_MPROG_SWAP)
+> +			tcx_entry_update(dev, bpf_mprog_peer(entry), ingress);
+> +		bpf_mprog_commit(entry);
+> +		tcx_skeys_inc(ingress);
+> +		ret = 0;
+> +	} else if (created) {
+> +		bpf_mprog_free(entry);
+> +	}
+> +	return ret;
+> +}
+> +
+> +static void tcx_link_release(struct bpf_link *l)
+> +{
+> +	struct tcx_link *link = tcx_link(l);
+> +	bool tcx_release, ingress = link->location == BPF_TCX_INGRESS;
+> +	struct bpf_mprog_entry *entry, *peer;
+> +	struct net_device *dev;
+> +	int ret = 0;
+> +
+> +	rtnl_lock();
+> +	dev = link->dev;
+> +	if (!dev)
+> +		goto out;
+> +	entry = dev_tcx_entry_fetch(dev, ingress);
+> +	if (!entry) {
+> +		ret = -ENOENT;
+> +		goto out;
+> +	}
+> +	ret = bpf_mprog_detach(entry, l->prog, l, link->flags, 0, 0);
+> +	if (ret >= 0) {
+> +		tcx_release = tcx_release_entry(entry, ret);
+> +		peer = tcx_release ? NULL : bpf_mprog_peer(entry);
+> +		if (ret == BPF_MPROG_SWAP || ret == BPF_MPROG_FREE)
+> +			tcx_entry_update(dev, peer, ingress);
+> +		bpf_mprog_commit(entry);
+> +		tcx_skeys_dec(ingress);
+> +		if (tcx_release)
+> +			bpf_mprog_free(entry);
+> +		link->dev = NULL;
+> +		ret = 0;
+> +	}
+> +out:
+> +	WARN_ON_ONCE(ret);
+> +	rtnl_unlock();
+> +}
+> +
+> +static int tcx_link_update(struct bpf_link *l, struct bpf_prog *nprog,
+> +			   struct bpf_prog *oprog)
+> +{
+> +	struct tcx_link *link = tcx_link(l);
+> +	bool ingress = link->location == BPF_TCX_INGRESS;
+> +	struct net_device *dev = link->dev;
+> +	struct bpf_mprog_entry *entry;
+> +	int ret = 0;
+> +
+> +	rtnl_lock();
+> +	if (!link->dev) {
+> +		ret = -ENOLINK;
+> +		goto out;
+> +	}
+> +	if (oprog && l->prog != oprog) {
+> +		ret = -EPERM;
+> +		goto out;
+> +	}
+> +	oprog = l->prog;
+> +	if (oprog == nprog) {
+> +		bpf_prog_put(nprog);
+> +		goto out;
+> +	}
+> +	entry = dev_tcx_entry_fetch(dev, ingress);
+> +	if (!entry) {
+> +		ret = -ENOENT;
+> +		goto out;
+> +	}
+> +	ret = bpf_mprog_attach(entry, nprog, l,
+> +			       BPF_F_REPLACE | BPF_F_ID | link->flags,
+> +			       l->prog->aux->id, 0);
+> +	if (ret >= 0) {
+> +		if (ret == BPF_MPROG_SWAP)
+> +			tcx_entry_update(dev, bpf_mprog_peer(entry), ingress);
+> +		bpf_mprog_commit(entry);
+> +		tcx_skeys_inc(ingress);
+> +		oprog = xchg(&l->prog, nprog);
+> +		bpf_prog_put(oprog);
+> +		ret = 0;
+> +	}
+> +out:
+> +	rtnl_unlock();
+> +	return ret;
+> +}
+> +
+> +static void tcx_link_dealloc(struct bpf_link *l)
+> +{
+> +	kfree(tcx_link(l));
+> +}
+> +
+> +static void tcx_link_fdinfo(const struct bpf_link *l, struct seq_file *seq)
+> +{
+> +	const struct tcx_link *link = tcx_link_const(l);
+> +	u32 ifindex = 0;
+> +
+> +	rtnl_lock();
+> +	if (link->dev)
+> +		ifindex = link->dev->ifindex;
+> +	rtnl_unlock();
+> +
+> +	seq_printf(seq, "ifindex:\t%u\n", ifindex);
+> +	seq_printf(seq, "attach_type:\t%u (%s)\n",
+> +		   link->location,
+> +		   link->location == BPF_TCX_INGRESS ? "ingress" : "egress");
+> +	seq_printf(seq, "flags:\t%u\n", link->flags);
+> +}
+> +
+> +static int tcx_link_fill_info(const struct bpf_link *l,
+> +			      struct bpf_link_info *info)
+> +{
+> +	const struct tcx_link *link = tcx_link_const(l);
+> +	u32 ifindex = 0;
+> +
+> +	rtnl_lock();
+> +	if (link->dev)
+> +		ifindex = link->dev->ifindex;
+> +	rtnl_unlock();
+> +
+> +	info->tcx.ifindex = ifindex;
+> +	info->tcx.attach_type = link->location;
+> +	info->tcx.flags = link->flags;
+> +	return 0;
+> +}
+> +
+> +static int tcx_link_detach(struct bpf_link *l)
+> +{
+> +	tcx_link_release(l);
+> +	return 0;
+> +}
+> +
+> +static const struct bpf_link_ops tcx_link_lops = {
+> +	.release	= tcx_link_release,
+> +	.detach		= tcx_link_detach,
+> +	.dealloc	= tcx_link_dealloc,
+> +	.update_prog	= tcx_link_update,
+> +	.show_fdinfo	= tcx_link_fdinfo,
+> +	.fill_link_info	= tcx_link_fill_info,
+> +};
+> +
+> +int tcx_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+> +{
+> +	struct net *net = current->nsproxy->net_ns;
+> +	struct bpf_link_primer link_primer;
+> +	struct net_device *dev;
+> +	struct tcx_link *link;
+> +	int fd, err;
+> +
+> +	dev = dev_get_by_index(net, attr->link_create.target_ifindex);
+> +	if (!dev)
+> +		return -EINVAL;
+> +	link = kzalloc(sizeof(*link), GFP_USER);
+> +	if (!link) {
+> +		err = -ENOMEM;
+> +		goto out_put;
+> +	}
+> +
+> +	bpf_link_init(&link->link, BPF_LINK_TYPE_TCX, &tcx_link_lops, prog);
+> +	link->location = attr->link_create.attach_type;
+> +	link->flags = attr->link_create.flags & (BPF_F_FIRST | BPF_F_LAST);
+> +	link->dev = dev;
+> +
+> +	err = bpf_link_prime(&link->link, &link_primer);
+> +	if (err) {
+> +		kfree(link);
+> +		goto out_put;
+> +	}
+> +	rtnl_lock();
+> +	err = tcx_link_prog_attach(&link->link, attr->link_create.flags,
+> +				   attr->link_create.tcx.relative_fd,
+> +				   attr->link_create.tcx.expected_revision);
+> +	if (!err)
+> +		fd = bpf_link_settle(&link_primer);
+> +	rtnl_unlock();
+> +	if (err) {
+> +		link->dev = NULL;
+> +		bpf_link_cleanup(&link_primer);
+> +		goto out_put;
+> +	}
+> +	dev_put(dev);
+> +	return fd;
+> +out_put:
+> +	dev_put(dev);
+> +	return err;
+> +}
+> diff --git a/net/Kconfig b/net/Kconfig
+> index 2fb25b534df5..d532ec33f1fe 100644
+> --- a/net/Kconfig
+> +++ b/net/Kconfig
+> @@ -52,6 +52,11 @@ config NET_INGRESS
+>  config NET_EGRESS
+>  	bool
+>  
+> +config NET_XGRESS
+> +	select NET_INGRESS
+> +	select NET_EGRESS
+> +	bool
+> +
+>  config NET_REDIRECT
+>  	bool
+>  
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 3393c2f3dbe8..95c7e3189884 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -107,6 +107,7 @@
+>  #include <net/pkt_cls.h>
+>  #include <net/checksum.h>
+>  #include <net/xfrm.h>
+> +#include <net/tcx.h>
+>  #include <linux/highmem.h>
+>  #include <linux/init.h>
+>  #include <linux/module.h>
+> @@ -154,7 +155,6 @@
+>  #include "dev.h"
+>  #include "net-sysfs.h"
+>  
+> -
+>  static DEFINE_SPINLOCK(ptype_lock);
+>  struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
+>  struct list_head ptype_all __read_mostly;	/* Taps */
+> @@ -3923,69 +3923,200 @@ int dev_loopback_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
+>  EXPORT_SYMBOL(dev_loopback_xmit);
+>  
+>  #ifdef CONFIG_NET_EGRESS
+> -static struct sk_buff *
+> -sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+> +static struct netdev_queue *
+> +netdev_tx_queue_mapping(struct net_device *dev, struct sk_buff *skb)
+> +{
+> +	int qm = skb_get_queue_mapping(skb);
+> +
+> +	return netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, qm));
+> +}
+> +
+> +static bool netdev_xmit_txqueue_skipped(void)
+>  {
+> +	return __this_cpu_read(softnet_data.xmit.skip_txqueue);
+> +}
+> +
+> +void netdev_xmit_skip_txqueue(bool skip)
+> +{
+> +	__this_cpu_write(softnet_data.xmit.skip_txqueue, skip);
+> +}
+> +EXPORT_SYMBOL_GPL(netdev_xmit_skip_txqueue);
+> +#endif /* CONFIG_NET_EGRESS */
+> +
+> +#ifdef CONFIG_NET_XGRESS
+> +static int tc_run(struct tcx_entry *entry, struct sk_buff *skb)
+> +{
+> +	int ret = TC_ACT_UNSPEC;
+>  #ifdef CONFIG_NET_CLS_ACT
+> -	struct mini_Qdisc *miniq = rcu_dereference_bh(dev->miniq_egress);
+> -	struct tcf_result cl_res;
+> +	struct mini_Qdisc *miniq = rcu_dereference_bh(entry->miniq);
+> +	struct tcf_result res;
+>  
+>  	if (!miniq)
+> -		return skb;
+> +		return ret;
+>  
+> -	/* qdisc_skb_cb(skb)->pkt_len was already set by the caller. */
+>  	tc_skb_cb(skb)->mru = 0;
+>  	tc_skb_cb(skb)->post_ct = false;
+> -	mini_qdisc_bstats_cpu_update(miniq, skb);
+>  
+> -	switch (tcf_classify(skb, miniq->block, miniq->filter_list, &cl_res, false)) {
+> +	mini_qdisc_bstats_cpu_update(miniq, skb);
+> +	ret = tcf_classify(skb, miniq->block, miniq->filter_list, &res, false);
+> +	/* Only tcf related quirks below. */
+> +	switch (ret) {
+> +	case TC_ACT_SHOT:
+> +		mini_qdisc_qstats_cpu_drop(miniq);
+> +		break;
+>  	case TC_ACT_OK:
+>  	case TC_ACT_RECLASSIFY:
+> -		skb->tc_index = TC_H_MIN(cl_res.classid);
+> +		skb->tc_index = TC_H_MIN(res.classid);
+>  		break;
+> +	}
+> +#endif /* CONFIG_NET_CLS_ACT */
+> +	return ret;
+> +}
+> +
+> +static DEFINE_STATIC_KEY_FALSE(tcx_needed_key);
+> +
+> +void tcx_inc(void)
+> +{
+> +	static_branch_inc(&tcx_needed_key);
+> +}
+> +EXPORT_SYMBOL_GPL(tcx_inc);
+> +
+> +void tcx_dec(void)
+> +{
+> +	static_branch_dec(&tcx_needed_key);
+> +}
+> +EXPORT_SYMBOL_GPL(tcx_dec);
+> +
+> +static __always_inline enum tcx_action_base
+> +tcx_run(const struct bpf_mprog_entry *entry, struct sk_buff *skb,
+> +	const bool needs_mac)
+> +{
+> +	const struct bpf_mprog_fp *fp;
+> +	const struct bpf_prog *prog;
+> +	int ret = TCX_NEXT;
+> +
+> +	if (needs_mac)
+> +		__skb_push(skb, skb->mac_len);
+> +	bpf_mprog_foreach_prog(entry, fp, prog) {
+> +		bpf_compute_data_pointers(skb);
+> +		ret = bpf_prog_run(prog, skb);
+> +		if (ret != TCX_NEXT)
+> +			break;
+> +	}
+> +	if (needs_mac)
+> +		__skb_pull(skb, skb->mac_len);
+> +	return tcx_action_code(skb, ret);
+> +}
+> +
+> +static __always_inline struct sk_buff *
+> +sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
+> +		   struct net_device *orig_dev, bool *another)
+> +{
+> +	struct bpf_mprog_entry *entry = rcu_dereference_bh(skb->dev->tcx_ingress);
+> +	int sch_ret;
+> +
+> +	if (!entry)
+> +		return skb;
+> +	if (*pt_prev) {
+> +		*ret = deliver_skb(skb, *pt_prev, orig_dev);
+> +		*pt_prev = NULL;
+> +	}
+> +
+> +	qdisc_skb_cb(skb)->pkt_len = skb->len;
+> +	tcx_set_ingress(skb, true);
+> +
+> +	if (static_branch_unlikely(&tcx_needed_key)) {
+> +		sch_ret = tcx_run(entry, skb, true);
+> +		if (sch_ret != TC_ACT_UNSPEC)
+> +			goto ingress_verdict;
+> +	}
+> +	sch_ret = tc_run(container_of(entry->parent, struct tcx_entry, bundle), skb);
+> +ingress_verdict:
+> +	switch (sch_ret) {
+> +	case TC_ACT_REDIRECT:
+> +		/* skb_mac_header check was done by BPF, so we can safely
+> +		 * push the L2 header back before redirecting to another
+> +		 * netdev.
+> +		 */
+> +		__skb_push(skb, skb->mac_len);
+> +		if (skb_do_redirect(skb) == -EAGAIN) {
+> +			__skb_pull(skb, skb->mac_len);
+> +			*another = true;
+> +			break;
+> +		}
+> +		*ret = NET_RX_SUCCESS;
+> +		return NULL;
+>  	case TC_ACT_SHOT:
+> -		mini_qdisc_qstats_cpu_drop(miniq);
+> -		*ret = NET_XMIT_DROP;
+> -		kfree_skb_reason(skb, SKB_DROP_REASON_TC_EGRESS);
+> +		kfree_skb_reason(skb, SKB_DROP_REASON_TC_INGRESS);
+> +		*ret = NET_RX_DROP;
+>  		return NULL;
+> +	/* used by tc_run */
+>  	case TC_ACT_STOLEN:
+>  	case TC_ACT_QUEUED:
+>  	case TC_ACT_TRAP:
+> -		*ret = NET_XMIT_SUCCESS;
+>  		consume_skb(skb);
+> +		fallthrough;
+> +	case TC_ACT_CONSUMED:
+> +		*ret = NET_RX_SUCCESS;
+>  		return NULL;
+> +	}
+> +
+> +	return skb;
+> +}
+> +
+> +static __always_inline struct sk_buff *
+> +sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+> +{
+> +	struct bpf_mprog_entry *entry = rcu_dereference_bh(dev->tcx_egress);
+> +	int sch_ret;
+> +
+> +	if (!entry)
+> +		return skb;
+> +
+> +	/* qdisc_skb_cb(skb)->pkt_len & tcx_set_ingress() was
+> +	 * already set by the caller.
+> +	 */
+> +	if (static_branch_unlikely(&tcx_needed_key)) {
+> +		sch_ret = tcx_run(entry, skb, false);
+> +		if (sch_ret != TC_ACT_UNSPEC)
+> +			goto egress_verdict;
+> +	}
+> +	sch_ret = tc_run(container_of(entry->parent, struct tcx_entry, bundle), skb);
+> +egress_verdict:
+> +	switch (sch_ret) {
+>  	case TC_ACT_REDIRECT:
+>  		/* No need to push/pop skb's mac_header here on egress! */
+>  		skb_do_redirect(skb);
+>  		*ret = NET_XMIT_SUCCESS;
+>  		return NULL;
+> -	default:
+> -		break;
+> +	case TC_ACT_SHOT:
+> +		kfree_skb_reason(skb, SKB_DROP_REASON_TC_EGRESS);
+> +		*ret = NET_XMIT_DROP;
+> +		return NULL;
+> +	/* used by tc_run */
+> +	case TC_ACT_STOLEN:
+> +	case TC_ACT_QUEUED:
+> +	case TC_ACT_TRAP:
+> +		*ret = NET_XMIT_SUCCESS;
+> +		return NULL;
+>  	}
+> -#endif /* CONFIG_NET_CLS_ACT */
+>  
+>  	return skb;
+>  }
+> -
+> -static struct netdev_queue *
+> -netdev_tx_queue_mapping(struct net_device *dev, struct sk_buff *skb)
+> -{
+> -	int qm = skb_get_queue_mapping(skb);
+> -
+> -	return netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, qm));
+> -}
+> -
+> -static bool netdev_xmit_txqueue_skipped(void)
+> +#else
+> +static __always_inline struct sk_buff *
+> +sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
+> +		   struct net_device *orig_dev, bool *another)
+>  {
+> -	return __this_cpu_read(softnet_data.xmit.skip_txqueue);
+> +	return skb;
+>  }
+>  
+> -void netdev_xmit_skip_txqueue(bool skip)
+> +static __always_inline struct sk_buff *
+> +sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+>  {
+> -	__this_cpu_write(softnet_data.xmit.skip_txqueue, skip);
+> +	return skb;
+>  }
+> -EXPORT_SYMBOL_GPL(netdev_xmit_skip_txqueue);
+> -#endif /* CONFIG_NET_EGRESS */
+> +#endif /* CONFIG_NET_XGRESS */
+>  
+>  #ifdef CONFIG_XPS
+>  static int __get_xps_queue_idx(struct net_device *dev, struct sk_buff *skb,
+> @@ -4169,9 +4300,7 @@ int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+>  	skb_update_prio(skb);
+>  
+>  	qdisc_pkt_len_init(skb);
+> -#ifdef CONFIG_NET_CLS_ACT
+> -	skb->tc_at_ingress = 0;
+> -#endif
+> +	tcx_set_ingress(skb, false);
+>  #ifdef CONFIG_NET_EGRESS
+>  	if (static_branch_unlikely(&egress_needed_key)) {
+>  		if (nf_hook_egress_active()) {
+> @@ -5103,72 +5232,6 @@ int (*br_fdb_test_addr_hook)(struct net_device *dev,
+>  EXPORT_SYMBOL_GPL(br_fdb_test_addr_hook);
+>  #endif
+>  
+> -static inline struct sk_buff *
+> -sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
+> -		   struct net_device *orig_dev, bool *another)
+> -{
+> -#ifdef CONFIG_NET_CLS_ACT
+> -	struct mini_Qdisc *miniq = rcu_dereference_bh(skb->dev->miniq_ingress);
+> -	struct tcf_result cl_res;
+> -
+> -	/* If there's at least one ingress present somewhere (so
+> -	 * we get here via enabled static key), remaining devices
+> -	 * that are not configured with an ingress qdisc will bail
+> -	 * out here.
+> -	 */
+> -	if (!miniq)
+> -		return skb;
+> -
+> -	if (*pt_prev) {
+> -		*ret = deliver_skb(skb, *pt_prev, orig_dev);
+> -		*pt_prev = NULL;
+> -	}
+> -
+> -	qdisc_skb_cb(skb)->pkt_len = skb->len;
+> -	tc_skb_cb(skb)->mru = 0;
+> -	tc_skb_cb(skb)->post_ct = false;
+> -	skb->tc_at_ingress = 1;
+> -	mini_qdisc_bstats_cpu_update(miniq, skb);
+> -
+> -	switch (tcf_classify(skb, miniq->block, miniq->filter_list, &cl_res, false)) {
+> -	case TC_ACT_OK:
+> -	case TC_ACT_RECLASSIFY:
+> -		skb->tc_index = TC_H_MIN(cl_res.classid);
+> -		break;
+> -	case TC_ACT_SHOT:
+> -		mini_qdisc_qstats_cpu_drop(miniq);
+> -		kfree_skb_reason(skb, SKB_DROP_REASON_TC_INGRESS);
+> -		*ret = NET_RX_DROP;
+> -		return NULL;
+> -	case TC_ACT_STOLEN:
+> -	case TC_ACT_QUEUED:
+> -	case TC_ACT_TRAP:
+> -		consume_skb(skb);
+> -		*ret = NET_RX_SUCCESS;
+> -		return NULL;
+> -	case TC_ACT_REDIRECT:
+> -		/* skb_mac_header check was done by cls/act_bpf, so
+> -		 * we can safely push the L2 header back before
+> -		 * redirecting to another netdev
+> -		 */
+> -		__skb_push(skb, skb->mac_len);
+> -		if (skb_do_redirect(skb) == -EAGAIN) {
+> -			__skb_pull(skb, skb->mac_len);
+> -			*another = true;
+> -			break;
+> -		}
+> -		*ret = NET_RX_SUCCESS;
+> -		return NULL;
+> -	case TC_ACT_CONSUMED:
+> -		*ret = NET_RX_SUCCESS;
+> -		return NULL;
+> -	default:
+> -		break;
+> -	}
+> -#endif /* CONFIG_NET_CLS_ACT */
+> -	return skb;
+> -}
+> -
+>  /**
+>   *	netdev_is_rx_handler_busy - check if receive handler is registered
+>   *	@dev: device to check
+> @@ -10873,7 +10936,7 @@ void unregister_netdevice_many_notify(struct list_head *head,
+>  
+>  		/* Shutdown queueing discipline. */
+>  		dev_shutdown(dev);
+> -
+> +		dev_tcx_uninstall(dev);
+>  		dev_xdp_uninstall(dev);
+>  		bpf_dev_bound_netdev_unregister(dev);
+>  
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index d25d52854c21..1ff9a0988ea6 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -9233,7 +9233,7 @@ static struct bpf_insn *bpf_convert_tstamp_read(const struct bpf_prog *prog,
+>  	__u8 value_reg = si->dst_reg;
+>  	__u8 skb_reg = si->src_reg;
+>  
+> -#ifdef CONFIG_NET_CLS_ACT
+> +#ifdef CONFIG_NET_XGRESS
+>  	/* If the tstamp_type is read,
+>  	 * the bpf prog is aware the tstamp could have delivery time.
+>  	 * Thus, read skb->tstamp as is if tstamp_type_access is true.
+> @@ -9267,7 +9267,7 @@ static struct bpf_insn *bpf_convert_tstamp_write(const struct bpf_prog *prog,
+>  	__u8 value_reg = si->src_reg;
+>  	__u8 skb_reg = si->dst_reg;
+>  
+> -#ifdef CONFIG_NET_CLS_ACT
+> +#ifdef CONFIG_NET_XGRESS
+>  	/* If the tstamp_type is read,
+>  	 * the bpf prog is aware the tstamp could have delivery time.
+>  	 * Thus, write skb->tstamp as is if tstamp_type_access is true.
+> diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+> index 4b95cb1ac435..470c70deffe2 100644
+> --- a/net/sched/Kconfig
+> +++ b/net/sched/Kconfig
+> @@ -347,8 +347,7 @@ config NET_SCH_FQ_PIE
+>  config NET_SCH_INGRESS
+>  	tristate "Ingress/classifier-action Qdisc"
+>  	depends on NET_CLS_ACT
+> -	select NET_INGRESS
+> -	select NET_EGRESS
+> +	select NET_XGRESS
+>  	help
+>  	  Say Y here if you want to use classifiers for incoming and/or outgoing
+>  	  packets. This qdisc doesn't do anything else besides running classifiers,
+> @@ -679,6 +678,7 @@ config NET_EMATCH_IPT
+>  config NET_CLS_ACT
+>  	bool "Actions"
+>  	select NET_CLS
+> +	select NET_XGRESS
+>  	help
+>  	  Say Y here if you want to use traffic control actions. Actions
+>  	  get attached to classifiers and are invoked after a successful
+> diff --git a/net/sched/sch_ingress.c b/net/sched/sch_ingress.c
+> index 84838128b9c5..4af1360f537e 100644
+> --- a/net/sched/sch_ingress.c
+> +++ b/net/sched/sch_ingress.c
+> @@ -13,6 +13,7 @@
+>  #include <net/netlink.h>
+>  #include <net/pkt_sched.h>
+>  #include <net/pkt_cls.h>
+> +#include <net/tcx.h>
+>  
+>  struct ingress_sched_data {
+>  	struct tcf_block *block;
+> @@ -78,11 +79,18 @@ static int ingress_init(struct Qdisc *sch, struct nlattr *opt,
+>  {
+>  	struct ingress_sched_data *q = qdisc_priv(sch);
+>  	struct net_device *dev = qdisc_dev(sch);
+> +	struct bpf_mprog_entry *entry;
+> +	bool created;
+>  	int err;
+>  
+>  	net_inc_ingress_queue();
+>  
+> -	mini_qdisc_pair_init(&q->miniqp, sch, &dev->miniq_ingress);
+> +	entry = dev_tcx_entry_fetch_or_create(dev, true, &created);
+> +	if (!entry)
+> +		return -ENOMEM;
+> +	mini_qdisc_pair_init(&q->miniqp, sch, &tcx_entry(entry)->miniq);
+> +	if (created)
+> +		tcx_entry_update(dev, entry, true);
+>  
+>  	q->block_info.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+>  	q->block_info.chain_head_change = clsact_chain_head_change;
+> @@ -93,15 +101,20 @@ static int ingress_init(struct Qdisc *sch, struct nlattr *opt,
+>  		return err;
+>  
+>  	mini_qdisc_pair_block_init(&q->miniqp, q->block);
+> -
+>  	return 0;
+>  }
+>  
+>  static void ingress_destroy(struct Qdisc *sch)
+>  {
+>  	struct ingress_sched_data *q = qdisc_priv(sch);
+> +	struct net_device *dev = qdisc_dev(sch);
+> +	struct bpf_mprog_entry *entry = rtnl_dereference(dev->tcx_ingress);
+>  
+>  	tcf_block_put_ext(q->block, sch, &q->block_info);
+> +	if (entry && !bpf_mprog_total(entry)) {
+> +		tcx_entry_update(dev, NULL, true);
+> +		bpf_mprog_free(entry);
+> +	}
+>  	net_dec_ingress_queue();
+>  }
+>  
+> @@ -217,12 +230,19 @@ static int clsact_init(struct Qdisc *sch, struct nlattr *opt,
+>  {
+>  	struct clsact_sched_data *q = qdisc_priv(sch);
+>  	struct net_device *dev = qdisc_dev(sch);
+> +	struct bpf_mprog_entry *entry;
+> +	bool created;
+>  	int err;
+>  
+>  	net_inc_ingress_queue();
+>  	net_inc_egress_queue();
+>  
+> -	mini_qdisc_pair_init(&q->miniqp_ingress, sch, &dev->miniq_ingress);
+> +	entry = dev_tcx_entry_fetch_or_create(dev, true, &created);
+> +	if (!entry)
+> +		return -ENOMEM;
+> +	mini_qdisc_pair_init(&q->miniqp_ingress, sch, &tcx_entry(entry)->miniq);
+> +	if (created)
+> +		tcx_entry_update(dev, entry, true);
+>  
+>  	q->ingress_block_info.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+>  	q->ingress_block_info.chain_head_change = clsact_chain_head_change;
+> @@ -235,7 +255,12 @@ static int clsact_init(struct Qdisc *sch, struct nlattr *opt,
+>  
+>  	mini_qdisc_pair_block_init(&q->miniqp_ingress, q->ingress_block);
+>  
+> -	mini_qdisc_pair_init(&q->miniqp_egress, sch, &dev->miniq_egress);
+> +	entry = dev_tcx_entry_fetch_or_create(dev, false, &created);
+> +	if (!entry)
+> +		return -ENOMEM;
+> +	mini_qdisc_pair_init(&q->miniqp_egress, sch, &tcx_entry(entry)->miniq);
+> +	if (created)
+> +		tcx_entry_update(dev, entry, false);
+>  
+>  	q->egress_block_info.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_EGRESS;
+>  	q->egress_block_info.chain_head_change = clsact_chain_head_change;
+> @@ -247,9 +272,21 @@ static int clsact_init(struct Qdisc *sch, struct nlattr *opt,
+>  static void clsact_destroy(struct Qdisc *sch)
+>  {
+>  	struct clsact_sched_data *q = qdisc_priv(sch);
+> +	struct net_device *dev = qdisc_dev(sch);
+> +	struct bpf_mprog_entry *ingress_entry = rtnl_dereference(dev->tcx_ingress);
+> +	struct bpf_mprog_entry *egress_entry = rtnl_dereference(dev->tcx_egress);
+>  
+>  	tcf_block_put_ext(q->egress_block, sch, &q->egress_block_info);
+> +	if (egress_entry && !bpf_mprog_total(egress_entry)) {
+> +		tcx_entry_update(dev, NULL, false);
+> +		bpf_mprog_free(egress_entry);
+> +	}
+> +
+>  	tcf_block_put_ext(q->ingress_block, sch, &q->ingress_block_info);
+> +	if (ingress_entry && !bpf_mprog_total(ingress_entry)) {
+> +		tcx_entry_update(dev, NULL, true);
+> +		bpf_mprog_free(ingress_entry);
+> +	}
+>  
+>  	net_dec_ingress_queue();
+>  	net_dec_egress_queue();
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index 207f8a37b327..e7584e24bc83 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -1035,6 +1035,8 @@ enum bpf_attach_type {
+>  	BPF_TRACE_KPROBE_MULTI,
+>  	BPF_LSM_CGROUP,
+>  	BPF_STRUCT_OPS,
+> +	BPF_TCX_INGRESS,
+> +	BPF_TCX_EGRESS,
+>  	__MAX_BPF_ATTACH_TYPE
+>  };
+>  
+> @@ -1052,7 +1054,7 @@ enum bpf_link_type {
+>  	BPF_LINK_TYPE_KPROBE_MULTI = 8,
+>  	BPF_LINK_TYPE_STRUCT_OPS = 9,
+>  	BPF_LINK_TYPE_NETFILTER = 10,
+> -
+> +	BPF_LINK_TYPE_TCX = 11,
+>  	MAX_BPF_LINK_TYPE,
+>  };
+>  
+> @@ -1559,13 +1561,13 @@ union bpf_attr {
+>  			__u32		map_fd;		/* struct_ops to attach */
+>  		};
+>  		union {
+> -			__u32		target_fd;	/* object to attach to */
+> -			__u32		target_ifindex; /* target ifindex */
+> +			__u32	target_fd;	/* target object to attach to or ... */
+> +			__u32	target_ifindex; /* target ifindex */
+>  		};
+>  		__u32		attach_type;	/* attach type */
+>  		__u32		flags;		/* extra flags */
+>  		union {
+> -			__u32		target_btf_id;	/* btf_id of target to attach to */
+> +			__u32	target_btf_id;	/* btf_id of target to attach to */
+>  			struct {
+>  				__aligned_u64	iter_info;	/* extra bpf_iter_link_info */
+>  				__u32		iter_info_len;	/* iter_info length */
+> @@ -1599,6 +1601,13 @@ union bpf_attr {
+>  				__s32		priority;
+>  				__u32		flags;
+>  			} netfilter;
+> +			struct {
+> +				union {
+> +					__u32	relative_fd;
+> +					__u32	relative_id;
+> +				};
+> +				__u32		expected_revision;
+> +			} tcx;
+>  		};
+>  	} link_create;
+>  
+> @@ -6207,6 +6216,19 @@ struct bpf_sock_tuple {
+>  	};
+>  };
+>  
+> +/* (Simplified) user return codes for tcx prog type.
+> + * A valid tcx program must return one of these defined values. All other
+> + * return codes are reserved for future use. Must remain compatible with
+> + * their TC_ACT_* counter-parts. For compatibility in behavior, unknown
+> + * return codes are mapped to TCX_NEXT.
+> + */
+> +enum tcx_action_base {
+> +	TCX_NEXT	= -1,
+> +	TCX_PASS	= 0,
+> +	TCX_DROP	= 2,
+> +	TCX_REDIRECT	= 7,
+> +};
+> +
+>  struct bpf_xdp_sock {
+>  	__u32 queue_id;
+>  };
+> @@ -6459,6 +6481,11 @@ struct bpf_link_info {
+>  			__s32 priority;
+>  			__u32 flags;
+>  		} netfilter;
+> +		struct {
+> +			__u32 ifindex;
+> +			__u32 attach_type;
+> +			__u32 flags;
+> +		} tcx;
+>  	};
+>  } __attribute__((aligned(8)));
+>  
+> -- 
+> 2.34.1
+> 
 
