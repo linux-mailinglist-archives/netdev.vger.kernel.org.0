@@ -1,39 +1,91 @@
-Return-Path: <netdev+bounces-9203-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9204-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DFA9D727EFB
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 13:40:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 37EF2727F09
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 13:42:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9B4E52815BF
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 11:40:26 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6B1432816F1
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 11:42:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AA7B81118C;
-	Thu,  8 Jun 2023 11:40:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB9B911196;
+	Thu,  8 Jun 2023 11:42:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55F8B11189
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 11:40:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BE0B8C4339C;
-	Thu,  8 Jun 2023 11:40:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686224422;
-	bh=Xb0c2eFPQSfWbZXxVY/N3wmksxoTmIIHFKUhff2jICE=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=BBu8USMJ20dP1CD7K2ZnyXZUilBZnlOM+rh7UtLT2Sye0EXfSKnCJiZLxbLwcMtRl
-	 G/06g+wIvJTRjYC+zJIuMK08hT1k1oZiBjJVtuFEYlPuMCVAmnHZvHkl4s9tkDxeX5
-	 bD+IoHi1F7tJefG6Cat4lmr6H48SF9C1D54JMlTynpitbE9Af5DfBRQU3LYVz0Zin7
-	 kaYdiU8PLRudC1M2ImykmcO6iRw9TyYCyOAfMe8RJ2N0JzXOIG5wvL0Pqp2I5XkqSd
-	 3qgAhuBlVz6hrYtDkunZA5DtwiAA+UisHyLQTlQWX748zi2MJtD+cDz2r+e2jVM09p
-	 fDd3z93uexxZQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9D015E4D015;
-	Thu,  8 Jun 2023 11:40:22 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A62EF63CF;
+	Thu,  8 Jun 2023 11:42:10 +0000 (UTC)
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA63A1FF5;
+	Thu,  8 Jun 2023 04:42:01 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id ffacd0b85a97d-30e5b017176so348848f8f.1;
+        Thu, 08 Jun 2023 04:42:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686224520; x=1688816520;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=HKO4XV+hpTrRt0GM3KS4NAMo/ycXBKZUbmq0E+OLn3Y=;
+        b=Z5tO79ASIgPnOSjT/ZvwDMxyebdf7fPOF9Nwh1X8r+lPFUSdXnSKsR0rmQccHJ9E0R
+         wTCmCEfJRmUTfGNMaWD0DCPYnzUW8qogyb551QYC3tYyUHVp5nKj4mrw07aIXMm/Deta
+         roOY7cg04YRPjq7HjBlIpJp5qe7OdYsRinf7/J/Nxrd4rfQaLX6h6Lgg3hKhlUh/Ll+1
+         jvJJazEamodc2TjIRxaoOjPGKOiqROGdpxFulIpklT4Lk+aguc615vyXc5xhnkvyrBqh
+         Lis5AXCJK+vuJxrvGQReMj3nhg4nalyJY4fITN1rhNrzm8NGByzsKJY3RBXbivXJ5yy/
+         hmCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686224520; x=1688816520;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HKO4XV+hpTrRt0GM3KS4NAMo/ycXBKZUbmq0E+OLn3Y=;
+        b=humnOHbADrGETAejAaY1XJWesKwUFwxUb6pjzRP7nIc5OMHQ2YjhHlMUxmX3oa/0C8
+         b+7/dTEdCqtoILpFHJOYtEITEaOvG1E7ZwK8WwBr/TZSi7kfE2S9BUuuK7aF7alMsmcd
+         DJNd4EPMMUdf2lF0bI0yU5lxBpNyM20rlIk3ckiWsjMfYTJn+3s1zzRcQmIBlaNy3H50
+         C2CNhDfkgAKZ4JiJ1LL3aQPRZISJSEOXcFoZHDx0Q/tfZu+5YMpQcu8VB0+ySWfyMCX8
+         AkGgViD6pKjaNu+XezEmsZkx0GaOoud79tL7jWPhPxVs8G6hQtxEMX0u4MErmaHS3rVr
+         soRw==
+X-Gm-Message-State: AC+VfDwXBfBO669BqvTht2x35R0jB/cgJp4fsKGkokPzC7cAV93nw86s
+	AUSuO7WK9PdOrN/QEEEZmyU=
+X-Google-Smtp-Source: ACHHUZ7zVTZ82qBxoo9qz8MrK6a/R0YVUM4En6oX0l+TAxuve+NiDMf7Ln9MyUP1m04nGMbwX+fS8g==
+X-Received: by 2002:a5d:464e:0:b0:306:37bf:ca5a with SMTP id j14-20020a5d464e000000b0030637bfca5amr6295141wrs.47.1686224520077;
+        Thu, 08 Jun 2023 04:42:00 -0700 (PDT)
+Received: from gsever-Latitude-7400.corp.proofpoint.com ([46.120.112.185])
+        by smtp.gmail.com with ESMTPSA id s2-20020adfecc2000000b0030aed4223e0sm1326158wro.105.2023.06.08.04.41.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Jun 2023 04:41:59 -0700 (PDT)
+From: Gilad Sever <gilad9366@gmail.com>
+To: dsahern@kernel.org,
+	martin.lau@linux.dev,
+	daniel@iogearbox.net,
+	john.fastabend@gmail.com,
+	ast@kernel.org,
+	andrii@kernel.org,
+	song@kernel.org,
+	yhs@fb.com,
+	kpsingh@kernel.org,
+	sdf@google.com,
+	haoluo@google.com,
+	jolsa@kernel.org,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	mykolal@fb.com,
+	shuah@kernel.org,
+	hawk@kernel.org,
+	joe@wand.net.nz
+Cc: eyal.birger@gmail.com,
+	shmulik.ladkani@gmail.com,
+	bpf@vger.kernel.org,
+	netdev@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	Gilad Sever <gilad9366@gmail.com>
+Subject: [PATCH bpf,v5 0/4] Socket lookup BPF API from tc/xdp ingress does not respect VRF bindings.
+Date: Thu,  8 Jun 2023 14:41:51 +0300
+Message-Id: <20230608114155.39367-1-gilad9366@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -41,57 +93,56 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v12 0/8] TXGBE PHYLINK support
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168622442263.17370.16554373092861552237.git-patchwork-notify@kernel.org>
-Date: Thu, 08 Jun 2023 11:40:22 +0000
-References: <20230606092107.764621-1-jiawenwu@trustnetic.com>
-In-Reply-To: <20230606092107.764621-1-jiawenwu@trustnetic.com>
-To: Jiawen Wu <jiawenwu@trustnetic.com>
-Cc: netdev@vger.kernel.org, andriy.shevchenko@linux.intel.com,
- Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
- linux@armlinux.org.uk, linux-gpio@vger.kernel.org, mengyuanlou@net-swift.com
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
+When calling socket lookup from L2 (tc, xdp), VRF boundaries aren't
+respected. This patchset fixes this by regarding the incoming device's
+VRF attachment when performing the socket lookups from tc/xdp.
 
-This series was applied to netdev/net-next.git (main)
-by Paolo Abeni <pabeni@redhat.com>:
+The first two patches are coding changes which factor out the tc helper's
+logic which was shared with cg/sk_skb (which operate correctly).
 
-On Tue,  6 Jun 2023 17:20:59 +0800 you wrote:
-> Implement I2C, SFP, GPIO and PHYLINK to setup TXGBE link.
-> 
-> Because our I2C and PCS are based on Synopsys Designware IP-core, extend
-> the i2c-designware and pcs-xpcs driver to realize our functions.
-> 
-> v11 -> v12:
-> - split I2C designware patch (2/9) to I2C tree, repost remaining 8
->   patches
-> 
-> [...]
+This refactoring is needed in order to avoid affecting the cgroup/sk_skb
+flows as there does not seem to be a strict criteria for discerning which
+flow the helper is called from based on the net device or packet
+information.
 
-Here is the summary with links:
-  - [net-next,v12,1/8] net: txgbe: Add software nodes to support phylink
-    https://git.kernel.org/netdev/net-next/c/c3e382ad6d15
-  - [net-next,v12,2/8] net: txgbe: Register fixed rate clock
-    https://git.kernel.org/netdev/net-next/c/b63f20485e43
-  - [net-next,v12,3/8] net: txgbe: Register I2C platform device
-    https://git.kernel.org/netdev/net-next/c/c625e72561f6
-  - [net-next,v12,4/8] net: txgbe: Add SFP module identify
-    https://git.kernel.org/netdev/net-next/c/04d94236182e
-  - [net-next,v12,5/8] net: txgbe: Support GPIO to SFP socket
-    https://git.kernel.org/netdev/net-next/c/b83c37315a62
-  - [net-next,v12,6/8] net: pcs: Add 10GBASE-R mode for Synopsys Designware XPCS
-    https://git.kernel.org/netdev/net-next/c/af8de1e307bf
-  - [net-next,v12,7/8] net: txgbe: Implement phylink pcs
-    https://git.kernel.org/netdev/net-next/c/854cace61387
-  - [net-next,v12,8/8] net: txgbe: Support phylink MAC layer
-    https://git.kernel.org/netdev/net-next/c/08f08f9390e4
+The third patch contains the actual bugfix.
 
-You are awesome, thank you!
+The fourth patch adds bpf tests for these lookup functions.
+---
+v5: Use reverse xmas tree indentation
+
+v4: - Move dev_sdif() to include/linux/netdevice.h as suggested by Stanislav Fomichev
+    - Remove SYS and SYS_NOFAIL duplicate definitions
+
+v3: - Rename bpf_l2_sdif() to dev_sdif() as suggested by Stanislav Fomichev
+    - Added xdp tests as suggested by Daniel Borkmann
+    - Use start_server() to avoid duplicate code as suggested by Stanislav Fomichev
+
+v2: Fixed uninitialized var in test patch (4).
+
+Gilad Sever (4):
+  bpf: factor out socket lookup functions for the TC hookpoint.
+  bpf: Call __bpf_sk_lookup()/__bpf_skc_lookup() directly via TC
+    hookpoint
+  bpf: fix bpf socket lookup from tc/xdp to respect socket VRF bindings
+  selftests/bpf: Add vrf_socket_lookup tests
+
+ include/linux/netdevice.h                     |   9 +
+ net/core/filter.c                             | 123 +++++--
+ .../bpf/prog_tests/vrf_socket_lookup.c        | 312 ++++++++++++++++++
+ .../selftests/bpf/progs/vrf_socket_lookup.c   |  88 +++++
+ 4 files changed, 511 insertions(+), 21 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/vrf_socket_lookup.c
+ create mode 100644 tools/testing/selftests/bpf/progs/vrf_socket_lookup.c
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
 
