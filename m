@@ -1,65 +1,65 @@
-Return-Path: <netdev+bounces-9277-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9276-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id A9232728591
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:42:48 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 53165728590
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 18:42:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 64BE02817D9
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:42:47 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A94511C2104D
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 16:42:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA7F41DCB7;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA7731DCB6;
 	Thu,  8 Jun 2023 16:39:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C55B81DCB4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCC6A1DCB5
 	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 16:39:40 +0000 (UTC)
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D214935B7
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC24735B8
 	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 09:39:18 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id ffacd0b85a97d-30ad458f085so671984f8f.0
+Received: by mail-wr1-x431.google.com with SMTP id ffacd0b85a97d-30ae61354fbso653306f8f.3
         for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 09:39:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google; t=1686242345; x=1688834345;
+        d=tessares.net; s=google; t=1686242346; x=1688834346;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Kh1r2jxB7ScuO/6zF4R4uXq5Ks2IDFHVjEbkZQpHayQ=;
-        b=RKqKzS8QPbGaeIBMGTZRNc05LSqhiwAp4jXdLWKgA4QtgOPYxhnnAXoS/zIa1FRHzw
-         SJI/A16CDCg+8s/QqlgRmOhnNEKdnSuTz6l26p9ojwJS5NsNAtxLH6g+ifJm/2lqHyQ/
-         KzHSGSa12I2z1pPhxb7eioT5ThmWWEJ/Ee8e1WPT9D6MqhtsJUCEacvN/Aq0K0c3+INl
-         CpvLO7ZA3+hAPHt7zXK4+TNfQD1UF6A63U9yFbGBdwqjPnHBwsrdVGV601r1ODsTP8mR
-         TDsiaEYiJv3DhxydZKT/PQ05An43Sw3KFh5x3N2ElnBPYO/pAhh2d8OquOH1P4TkuaMk
-         trWA==
+        bh=25ZaF3JsFYErEFoIbwPYOVDqmdE5+qzB+30gx62T0y8=;
+        b=bLE4kzr1bCQ0rzhbxY0Bt2OGLWYWKUZUwOYk/Uv3yrqZC4kbVx5rg5DiQzYVWyZa+R
+         FaZQ+3Ucbvs9Q0kYkMlU6FkvzDbO9YKspfiklSDL8M/PjPOtuK4VmxEMue8L5L4sNjwK
+         Elfr4IyYglh1HPIsBF/Jo76xv6l0n6yddU7X1jLX83bevK1ZGiERRZK1v9Tb27hbH0RJ
+         Jei0rFxsjerhn+sFbdi6juWAKH9iQTNQ/FTCBq3RDDe9A/2lRyL3hp+ILbQAQ5yyUQ1a
+         YJjCWU888tmCtXnPr6UdXbQGkhdeKubc4ZTxnKqeLDqE33HltjLTZpa1jfJlTrtm7OVR
+         TVTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686242345; x=1688834345;
+        d=1e100.net; s=20221208; t=1686242346; x=1688834346;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Kh1r2jxB7ScuO/6zF4R4uXq5Ks2IDFHVjEbkZQpHayQ=;
-        b=VGuNMPy8Gow4eRbGgCDwHeQjYgJfdqafCbHgVqxf2w9kRXdqkfBuVOLYzMm+YwzoZ4
-         u+FS9LIS3pi8Jo7v1Khu7wIqJsy8Im9PiTJQUPXYMWNrxcamvX3ohxv1Oml4LhibgH2X
-         k1u+/uJQ39U3IKDDcTYXvGGtoX6yXFsKGWzy9REse4RQo4pKtmuUsxeBgpJ/+c6KHeMZ
-         YHp4HBnz2oSA+l1t3Jy65oHkPgGqLGV/qnIJr775l4n+r+MmDjKJF3ZHihfOsWyGATzL
-         Th01EWnngeamjRr209f+krSTIxIGxYxDZcrsNsYHZJdP7lkudoGg62Q73qsFY9tX7O8X
-         tHoQ==
-X-Gm-Message-State: AC+VfDwi5tdxGur57ESTp78mp0pOvNwjqKjrrOcqZWxaZI5dq92e4WFj
-	imwwjCLxN8hI0Ry6ShRm83dXoQ==
-X-Google-Smtp-Source: ACHHUZ7tnKmsx4hYMI+pCbVjaBxTj0d1u3pf22ESdyXQkXihNLJxr3z02asgW4yGdc+E9apx/5T5yw==
-X-Received: by 2002:adf:f9c7:0:b0:30a:8e58:7955 with SMTP id w7-20020adff9c7000000b0030a8e587955mr2292429wrr.13.1686242344924;
-        Thu, 08 Jun 2023 09:39:04 -0700 (PDT)
+        bh=25ZaF3JsFYErEFoIbwPYOVDqmdE5+qzB+30gx62T0y8=;
+        b=gs0q7+6boJtvTpMUy9+SFSI2bzqVcTXSEeC67oIqHwEEKkJYYKFvMVygTnWfmZnyEm
+         2hDxTssWvACz1v95gZAas/OgwYfFb5942AuFoecc9jrKqIhNwYvaweTLWq0QEtpqcHmU
+         fd+QVsE5rsY3AbH2DZijs36kRwU/SSN0fArc7+W2TWywCMT9HiwKP+zmgGQB9s/oifxl
+         b/d83t/PR2eKL+cmAE80OT4prGoTy62BdimrYWLGlTvN8ZWv5u9DwykMYlJP+8XJd03F
+         NdMVfEDFZrvTFOnHKCGXvK0XVBhKRsQHkjpTdEcEf5pFa9uzOgIgC2yqEA83q47UBG+m
+         3Emg==
+X-Gm-Message-State: AC+VfDyepOlUYzC+AN1pVYxP8VQebNedxmPk73/uGRmGNOarc3RI5M2G
+	VfRsNeWxmyvJwKpL8UQHKQqGrA==
+X-Google-Smtp-Source: ACHHUZ65wUtjJyqPFNvZuE1f6WBvIeZZIadiu1Pgy4n7Ffa7OL1OMBN55r1OPGcfegL0pNfZ2vA9Ww==
+X-Received: by 2002:a5d:5915:0:b0:30e:438f:8ceb with SMTP id v21-20020a5d5915000000b0030e438f8cebmr7199002wrd.59.1686242346219;
+        Thu, 08 Jun 2023 09:39:06 -0700 (PDT)
 Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id e13-20020adfef0d000000b0030aeb3731d0sm2038215wro.98.2023.06.08.09.39.03
+        by smtp.gmail.com with ESMTPSA id e13-20020adfef0d000000b0030aeb3731d0sm2038215wro.98.2023.06.08.09.39.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jun 2023 09:39:04 -0700 (PDT)
+        Thu, 08 Jun 2023 09:39:05 -0700 (PDT)
 From: Matthieu Baerts <matthieu.baerts@tessares.net>
-Date: Thu, 08 Jun 2023 18:38:52 +0200
-Subject: [PATCH net 10/14] selftests: mptcp: sockopt: skip getsockopt
- checks if not supported
+Date: Thu, 08 Jun 2023 18:38:53 +0200
+Subject: [PATCH net 11/14] selftests: mptcp: sockopt: skip TCP_INQ checks
+ if not supported
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -68,7 +68,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230608-upstream-net-20230608-mptcp-selftests-support-old-kernels-part-2-v1-10-20997a6fd841@tessares.net>
+Message-Id: <20230608-upstream-net-20230608-mptcp-selftests-support-old-kernels-part-2-v1-11-20997a6fd841@tessares.net>
 References: <20230608-upstream-net-20230608-mptcp-selftests-support-old-kernels-part-2-v1-0-20997a6fd841@tessares.net>
 In-Reply-To: <20230608-upstream-net-20230608-mptcp-selftests-support-old-kernels-part-2-v1-0-20997a6fd841@tessares.net>
 To: mptcp@lists.linux.dev, Mat Martineau <martineau@kernel.org>, 
@@ -82,26 +82,26 @@ Cc: Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
  linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Matthieu Baerts <matthieu.baerts@tessares.net>, stable@vger.kernel.org
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1522;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2133;
  i=matthieu.baerts@tessares.net; h=from:subject:message-id;
- bh=uRooKe+CzLnbd+RolTp1KPScrbpPmueveZsvj6eHVbc=;
- b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBkggQaCPNceWDOur+3v2zawhBoDqTcRbUXxos8C
- qPz2ZqvR7uJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCZIIEGgAKCRD2t4JPQmmg
- c40+D/0Xggte0l8UQZafD2aZynfUG/9JaLeHYjbwxPH/3cUBzx2qqOfLuegnHPdzz6jRinLi47J
- hX6k+TzdlvwJvFx0xuAvIbnyUVY+W/s7N0xXKZMTWA2erSbhdr8rQYprDFlP8YWCt3F8TiCXbfj
- hm2Fmuk6ic7ik4U3zTW7ptIMPlhoMqmyWJsgEBXy/9L5APoVQyF6lfAV61NY+mmHe/Brviam2Yk
- e8Hc471uZeJPPw5bCbgVvfdg7N81OgOtKjh1o1eKeh9E+77D2L/c04fjOk9/RnfJq5fs0wNrnj+
- iae6vhgbzxC1Eau9UuqMzwQdM8wUI5qrdp3suSpAdPYYDqYVLkex9b2dhkd4nawxW8O1QEn9Qz5
- hSTipJubRm2mnKAfoOOo3OCBJ8xwuhmJveyd3JuTBAThrkKgPcVqaxtL9DdrWrny9UbMPkUzTaZ
- eMRxOC0KjXrN7XbYRUJjvqoSXFWuKZoIItqtGHMaMbc4OG+aU8whOevwNnsrFaCM4gY/lWBDY3Y
- K2wxo+iSBNc6m4PBvyz2eAyC7fucRBt4i3xX198srFx8AsK8fSZRpRoZVeq2Au5jK29N0N08LXO
- TJYSQt+8TSyBeFi5e0E5V9bGFeoZYN5w/u+6KY/sXl1H/GOeWBnUS9S2g6ybIw7wIUlpI/mv8c4
- 6vis+MPkfQtVJmg==
+ bh=1OsCicu/3vbKAvtKytrt0z0ywt61KRKpMc3STXoQXA8=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBkggQawz6TxWhaJHOCzsoj7Dunv2uUMLzRPPKj2
+ W1VAUZNjaiJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCZIIEGgAKCRD2t4JPQmmg
+ c+JJD/4nMV96ft2RW4sWQl2h5V60vSuGvtu8Fj57RT4rjI8alspOTImfQDSHV2VT0jvyK73a2NN
+ JcBwh0n2KlCAcqU3yRL5Yxe36fHk2ZMJMUi4WUnc1KhOauu9GbtXDgKqgLjk50w69a2msxXrB1/
+ BzP0Ih1mfkVrKPnsUwbORN+wUjE5jqy+9rP78316DlCkrihfSV9o5yXiwOJJ6qfSbqSKCSt2vMR
+ vdwYxKtLLh137dUTEzaIymzu8z6ZeFw8FXUmGwXXuHHqy7tmr04vFFtP5+Pe0dwZr/1eCP4sOKy
+ +bBIkjQAaz0hzN09loIChJYeJIziWtfxC8KDkpIWl/Voqdfnye2MfE7q4PLN16+Xro81sf8WhQJ
+ rzq0VzRkLDWcXAeiUAgLUw0DfCZsJy33gLTuAMfLqDLW9waL/rbJLF46zo2GBmRTBDPHexcgwHj
+ ht4DgOE/Mgl5XUWbcH36p2TPiR8jK8JIt7Q8+OVNlU9HUTnB1KwzF59WViYddFICF4NxK3+5s99
+ I3psrh50vH4op27pQiGJkm0wibIQAqED5A8ezAJJ8XAyG3Kplv8RTlQKz4bURFrv0QEWEBKVprp
+ y4qGrl3N5S/nGIe9cptNKHf0m+gS8irTTywG5VbZkeronyhJu2GKkAKYH9Ty8YAwO66aIYObQkN
+ /bhqNwA09G2k+EA==
 X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp;
  fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
@@ -109,46 +109,62 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 Selftests are supposed to run on any kernels, including the old ones not
 supporting all MPTCP features.
 
-One of them is the getsockopt(SOL_MPTCP) to get info about the MPTCP
-connections introduced by commit 55c42fa7fa33 ("mptcp: add MPTCP_INFO
-getsockopt") and the following ones.
+One of them is TCP_INQ cmsg support introduced in commit 2c9e77659a0c
+("mptcp: add TCP_INQ cmsg support").
 
-It is possible to look for "mptcp_diag_fill_info" in kallsyms because
-it is introduced by the mentioned feature. So we can know in advance if
-the feature is supported and skip the sub-test if not.
+It is possible to look for "mptcp_ioctl" in kallsyms because it was
+needed to introduce the mentioned feature. We can skip these tests and
+not set TCPINQ option if the feature is not supported.
 
 Link: https://github.com/multipath-tcp/mptcp_net-next/issues/368
-Fixes: ce9979129a0b ("selftests: mptcp: add mptcp getsockopt test cases")
+Fixes: 5cbd886ce2a9 ("selftests: mptcp: add TCP_INQ support")
 Cc: stable@vger.kernel.org
 Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 ---
- tools/testing/selftests/net/mptcp/mptcp_sockopt.sh | 6 ++++++
- 1 file changed, 6 insertions(+)
+ tools/testing/selftests/net/mptcp/mptcp_sockopt.sh | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/tools/testing/selftests/net/mptcp/mptcp_sockopt.sh b/tools/testing/selftests/net/mptcp/mptcp_sockopt.sh
-index ff5adbb9c7f2..1d4ae8792227 100755
+index 1d4ae8792227..f295a371ff14 100755
 --- a/tools/testing/selftests/net/mptcp/mptcp_sockopt.sh
 +++ b/tools/testing/selftests/net/mptcp/mptcp_sockopt.sh
-@@ -87,6 +87,7 @@ cleanup()
- }
+@@ -187,9 +187,14 @@ do_transfer()
+ 		local_addr="0.0.0.0"
+ 	fi
  
- mptcp_lib_check_mptcp
-+mptcp_lib_check_kallsyms
++	cmsg="TIMESTAMPNS"
++	if mptcp_lib_kallsyms_has "mptcp_ioctl$"; then
++		cmsg+=",TCPINQ"
++	fi
++
+ 	timeout ${timeout_test} \
+ 		ip netns exec ${listener_ns} \
+-			$mptcp_connect -t ${timeout_poll} -l -M 1 -p $port -s ${srv_proto} -c TIMESTAMPNS,TCPINQ \
++			$mptcp_connect -t ${timeout_poll} -l -M 1 -p $port -s ${srv_proto} -c "${cmsg}" \
+ 				${local_addr} < "$sin" > "$sout" &
+ 	local spid=$!
  
- ip -Version > /dev/null 2>&1
- if [ $? -ne 0 ];then
-@@ -253,6 +254,11 @@ do_mptcp_sockopt_tests()
+@@ -197,7 +202,7 @@ do_transfer()
+ 
+ 	timeout ${timeout_test} \
+ 		ip netns exec ${connector_ns} \
+-			$mptcp_connect -t ${timeout_poll} -M 2 -p $port -s ${cl_proto} -c TIMESTAMPNS,TCPINQ \
++			$mptcp_connect -t ${timeout_poll} -M 2 -p $port -s ${cl_proto} -c "${cmsg}" \
+ 				$connect_addr < "$cin" > "$cout" &
+ 
+ 	local cpid=$!
+@@ -313,6 +318,11 @@ do_tcpinq_tests()
  {
  	local lret=0
  
-+	if ! mptcp_lib_kallsyms_has "mptcp_diag_fill_info$"; then
-+		echo "INFO: MPTCP sockopt not supported: SKIP"
++	if ! mptcp_lib_kallsyms_has "mptcp_ioctl$"; then
++		echo "INFO: TCP_INQ not supported: SKIP"
 +		return
 +	fi
 +
- 	ip netns exec "$ns_sbox" ./mptcp_sockopt
- 	lret=$?
- 
+ 	local args
+ 	for args in "-t tcp" "-r tcp"; do
+ 		do_tcpinq_test $args
 
 -- 
 2.40.1
