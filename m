@@ -1,225 +1,420 @@
-Return-Path: <netdev+bounces-9380-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9381-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8B076728A12
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 23:16:26 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 38FCB728A2A
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 23:20:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3826F2817F1
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 21:16:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E3C1A281770
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 21:20:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A073C34CDC;
-	Thu,  8 Jun 2023 21:13:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C3FDC34CD2;
+	Thu,  8 Jun 2023 21:20:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87C7A2D279;
-	Thu,  8 Jun 2023 21:13:41 +0000 (UTC)
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6E12D74;
-	Thu,  8 Jun 2023 14:13:39 -0700 (PDT)
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-	by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 358GmS3G016818;
-	Thu, 8 Jun 2023 14:12:55 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=s2048-2021-q4;
- bh=4wr8b+paBWEP/y+xRSVouRil5605j63PYXpW58nMnXo=;
- b=h3xa74gDN3zwnJKeqqzUAnCkULX5QoMGtpDilB8uRxuJw4Pyeni7H8qKE4iJPaWN0yHN
- o/7APJaw3C5898r+OHcx93E/gWSfmc1DKW8+kV7B4ay9aqwceZVLW+q0isCzEw+9sHNz
- XasUy97RiAwjBE026QHSwM9WargRqZLFvHSOLhVbhZWB8uNKu/PYT7c2inb/e2aTZa/y
- KAA4TPQhs7BJXIt8od6yqcwFHrBiujZo+BFKSnxhmwsH4+VIuEb7WEp+TqL9KHQbqMoK
- bKOOrOWDecGvIshMRWwIyKnUtoaq27vmX8z+tfdSzwvKnsv/nKHZoVsJ5BuIlEQ/AByk NA== 
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2177.outbound.protection.outlook.com [104.47.56.177])
-	by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3r2qbsn1jd-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 08 Jun 2023 14:12:55 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AK0EyPaWwEr1kKSazmABeMRU7JCAjTnjQXQur2BCj+g6HEQNXb7Afg/O1pegmafVD61z3U4qPDca0YKSLwritZeEhfvpI/ORYP/hA7WLicizgbUnwvrkefq+TdJ68BNxWJEBVHGDq4M9vt4jlt1LDP5HElWHfxmeh0cPWTLEFjYZa2ZRJAjO1BS1m90/l0Os8cJlt8ts+BxeUInrHT7AzEfxFYxZFUWfX56nmCgluPrLnpH/mjth2cL2fxgc8PNNTwYD0BP51k4XXExneUhy1/s6oW3lBKdscdBf/niqL9lUZv276wlY5/f/wBQHGwoQjwdLchGDxFAqvufCDg6jlA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4wr8b+paBWEP/y+xRSVouRil5605j63PYXpW58nMnXo=;
- b=icWxDL0O+2YunEGziMRtGIDiXAzT0gG/kUNZteu1qW0hIGBpVN2Jn07qJ8HwkS86ZFp+lE9NOflWQciTZ2HPvPgA56GM/tFkJjFewrmZ7iMp3WcXlt4xX++4r/BJLiaViG1BbK4Uo13RkYzrhr8NISH98L2Zz3Br8pDGYkR3ueiPxd+uvplrH+Oc6X/0yABUngtsN83RShoKVwSl5s7/iRMAZG13n5hvS2y86a7CDyMo2G8rHce/O2zxTYa9As0L3d4CFkH6GR6yVnFFNqbJJZTzA3oMVJ5tkSJtDNW6K8CYNv7Dt1x0xgzBp9MdnMaIJfF+24r96v7vp19idXn3ZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
- dkim=pass header.d=meta.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by DM4PR15MB5565.namprd15.prod.outlook.com (2603:10b6:8:10e::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Thu, 8 Jun
- 2023 21:12:52 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::bf7d:a453:b8d9:cf0]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::bf7d:a453:b8d9:cf0%6]) with mapi id 15.20.6455.030; Thu, 8 Jun 2023
- 21:12:52 +0000
-Message-ID: <2fb8c454-1ae7-27cd-a9fa-0d8dda18a900@meta.com>
-Date: Thu, 8 Jun 2023 14:12:49 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.11.2
-Subject: Re: [PATCH bpf-next v3 1/3] bpf, x86: allow function arguments up to
- 12 for TRACING
-Content-Language: en-US
-To: Menglong Dong <menglong8.dong@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc: davem@davemloft.net, dsahern@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, sdf@google.com, x86@kernel.org,
-        imagedong@tencent.com, benbjiang@tencent.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-References: <20230607125911.145345-1-imagedong@tencent.com>
- <20230607125911.145345-2-imagedong@tencent.com>
- <20230607200905.5tbosnupodvydezq@macbook-pro-8.dhcp.thefacebook.com>
- <CADxym3abYOZ5JVa4FP5R-Vi7HAk=n_0vTmMGveDH8xvFtuaBDw@mail.gmail.com>
-From: Yonghong Song <yhs@meta.com>
-In-Reply-To: <CADxym3abYOZ5JVa4FP5R-Vi7HAk=n_0vTmMGveDH8xvFtuaBDw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SJ0PR03CA0295.namprd03.prod.outlook.com
- (2603:10b6:a03:39e::30) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8C821DCDC;
+	Thu,  8 Jun 2023 21:20:17 +0000 (UTC)
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA152D7B;
+	Thu,  8 Jun 2023 14:20:14 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id 4fb4d7f45d1cf-5149b63151aso1882352a12.3;
+        Thu, 08 Jun 2023 14:20:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686259213; x=1688851213;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mOvSh+fOBaKywhUMpRbCMW91BJyD+dHQ1LQJBzikVHQ=;
+        b=rNpTkzg+Jj1+VVVqgPgHXngYtrkUAGsPJBO5TSnrsfJ1IPB6IE9k+kZp8xoNRimzRk
+         SlhEuQ0BzIID6YpusHOst27zN9iimDbZEUTmpU1BHnYm6I9reBK10+XeOr4JXnhnLB80
+         gLnhENO2vq4ZGym/jnLkXb/h5/UtW1oJSM9mAOrdaZ3GGZNY1f//vBgy15p4EgGMyQzk
+         /nKhGsRQKM7vECvfNN+m99Qx0cEViso5NnfJ59W6Ivrm7SVPRhmuKXv9qLKB04fzcPoI
+         ru940E01My3+Yw4wLgncao7sqF3Xu+2yqdzOftQ+vnD3Zgp41JATf9M5R91UJWNDs84X
+         kCFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686259213; x=1688851213;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=mOvSh+fOBaKywhUMpRbCMW91BJyD+dHQ1LQJBzikVHQ=;
+        b=QrNmy1kQB7oSde44iOKoCk1UQ3yySzgTlCpxEJ+FyV8AZn5vtX/yctV1t3iJYj9No/
+         w/BQ4AlONpPDRxp4fzpLru6qbQaKXnmrbhQijeQqgyrncPIQBa74m/uxTNa7GTv98kND
+         b9gAveNQ06ulN5bFV1ZHtBPRI4Tg3mmCCl1SXP2PiZNH2imVZysE5sjAUykalMLddP0o
+         KvU7hW7xAm3EW6t6GIDmgv5NKPlIQPqeh+xOxqrcvhqT1wf7SrM/RwFEB3DS8Sxdb5Xu
+         Z4GqChCf35MkMo4xELa2ocZJGZNNOdzuQIOcULcrHR5GRgBrHwt9GKbH12H/kCiyn+R8
+         aaiQ==
+X-Gm-Message-State: AC+VfDzRMTsKFTf4LvIhUO9qYawWqJpkbQfIG0iSZ3t+xrls9yV1cfiE
+	zfZ3YUknyRtpl9Bk+95CS1aOHnQBJoPSFpuC7PYUpflob60=
+X-Google-Smtp-Source: ACHHUZ4mWMVH8zp9fvbDwwrFSXbmyElyPSdBe6cFyqhIFk3Yb+gUnqsnfr+c/zck+PeMnknSC/LHdfsqU8KkahRn5pg=
+X-Received: by 2002:a17:907:868d:b0:978:6f83:54f with SMTP id
+ qa13-20020a170907868d00b009786f83054fmr355404ejc.57.1686259212840; Thu, 08
+ Jun 2023 14:20:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN6PR1501MB2064:EE_|DM4PR15MB5565:EE_
-X-MS-Office365-Filtering-Correlation-Id: bf545347-1364-490e-c88f-08db68651f1a
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	lEz6Zf7sfOv8mqiQQq+x1KUJJNVIpOUTU9hQQurv443qR9Cmb5gaOyGzDlPKpoAOx07yYwMGCKptNiiFSzCzRkt81Aw+70Xcd8k5TlMHGw5OiJsD5HVgSXDyiCcWqemJ+QndqYm0NaeVVuMJQoduUS1c8pSqvOxeih6zxOFGYMZ+B8G6ypel5qk3VVGiF9zQRhJZNYtdZR8bpqhuZvbwlFw5UIC+bM2m4w1yZBO+HSFgnYuQi1SuW8dRZv29oCAjlJcwp2ssguGsoLNzKiVVDjrIjcdOc4q8rnjzPZ+Kwh9/BHHrlUnta/Y7Rb51qnNwZwd3bZYuCJbOjfxdDF4MuY/l2idIAmrPE264w28XfdM1SxLfts210g9pRf+3Q2ikI0CXiWB74NY4MIi5a2Zny2YSuDbuDsGVgMstUDW/1/DNDq7Zyk/2T6ejc2+dQG22Mv3Z5dxajj7+OTc+gZhcU66lfZ/k8wqeL1OhPTcccRoJhvI8CFHm59zN1pTGViCIawMUmxGzH0edaYsSxTRArOKb4W+G3cqvRLmLYPchLrBuNgAolpNHGLuFH2tgrE8Ksn7qwl/zDI0QoNio0nqVbtvaYIe1iYOa3+ZQuj0oOBSOvFA5aHS5tbeonnES++zETP3DU86rB1xm8F0vv+HASMIbM32WYduQC0YH4rfGLbc=
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(346002)(39860400002)(136003)(366004)(451199021)(7416002)(31686004)(2906002)(41300700001)(8936002)(5660300002)(8676002)(316002)(66556008)(66946007)(4326008)(110136005)(478600001)(66476007)(6666004)(36756003)(6486002)(186003)(53546011)(31696002)(86362001)(2616005)(6512007)(6506007)(38100700002)(21314003)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?utf-8?B?ZVovZXVka2NzNUl4UzNMaGhXeCtBMkFZL2h0c2ZSV3N3bEFETHBrcWY4N3hq?=
- =?utf-8?B?NHpyWUJBaHlNWCtLaklXc01SMGhBelhKNGFVbHMzZDhPa0xuWnZ4YmdJR0hR?=
- =?utf-8?B?MlFCTlFZaXFHNEY3TkEwOW5HZzQ3UWdadDF4TitvV2RsMEdoVkw2WVN1aVFr?=
- =?utf-8?B?VW1FK1g0clcwdDlDbzVtMTJpQmpBcWlaeWpwdVlkMGhPWHFGZ3o3UkVBd0Nt?=
- =?utf-8?B?Z3QyUGJJSGpPcmJQRGdVSFVmZWpOaytVa0RzLzZPVWsrQTloeTVBeUhOcUdE?=
- =?utf-8?B?N3R0aW1ibEZFbkVLWU9QL0IvYk1hcmdTYlNtV0d4LzNyVnpaT01tZCt6cjBZ?=
- =?utf-8?B?cklZdGR2MVg5ZkVsemVFVWM2S1Yzc3d6YXBvemxsWURZVXU2YWJQS3RtcjVu?=
- =?utf-8?B?UTgvdHJGQ09NR2VtdEpuTmlDZUxxckovdW9HSnprK0lwM3hxTmErSnZHRFpk?=
- =?utf-8?B?TUlYcy9hczNEcXJQOUZPZnl6anZJeW5Td2ZMdmhkR2lDRWRreHNta2VQQklh?=
- =?utf-8?B?dzNBVUJrcWhjUDVLam9ESzI4c1BPTldGVlVWbmFlRTk4ZmlDWHM4NXNuemtX?=
- =?utf-8?B?S1J4NjZtL0Nta1pXalpyVlVjNjhmQmhndnRnNlg1c2JuSzV0WUJqMzNORjJW?=
- =?utf-8?B?YUhhWUdrYW9teFB5dUR3OU12VGpaNEsrczdNTmZST1NXamFsRDh2NEdiajg3?=
- =?utf-8?B?Yk45OG93WVEvM1ZHUW84R3RmUHVqbnU0NG9EVFExYVJtT3Z1U0JFVTNFeFRh?=
- =?utf-8?B?aFNFTDRXeVpUWUkyMGQ3MkRhVDZ1b1BFaVh4c1JreTgwRHd2NzJla2dUUmlw?=
- =?utf-8?B?QUJaOHF2elUySFd6OWpodUZMUUxFZHg1a29oYW1EcFhXeUVyUWJUaWdFYzlo?=
- =?utf-8?B?a0dCcnlGdXIxOEFsdjA4UVp2UVVneWwzdEhscFEzMTFQaXl6MUJmOVJuL2c0?=
- =?utf-8?B?M1hhT3RHVXFycDdMTTVKcEZPYkkyaG1YOTZUNit2ejl1cktIanhOaXZ1VlJn?=
- =?utf-8?B?U2NtR21mTjN0cTVRSlhtbVJmUUhhUnh3RTZlazNTZDJDTVZqN0RxU2dOS1dt?=
- =?utf-8?B?ckc1OUZQbHl5cFdDelZRMFVSbitDME9sTUxRdEZCcS9xYXRkVG0rRGlHckxn?=
- =?utf-8?B?UWdnWGRmcjlCbFJtS0hsckhnWTR1S29vNGpJM1FPSnUrSFBKY3IxdjloL0FJ?=
- =?utf-8?B?WnhNazVicWN4cjJGRklmUWtDWXQ4enIyODlCM05tczlPc3dlczZiSVg5d1F5?=
- =?utf-8?B?UEYvcjlkTVJSZ2wveDRxM2trUVNQMkhjbUxGZ2RFdll1NXN5V0hqRDgyVHhM?=
- =?utf-8?B?TU9kYnZYOGtJRmN1aGNLNTkwcTlxRERiczN0Y1dBdEErcURKZUdrMVNlZWhs?=
- =?utf-8?B?dzZrOTBHbGpXUjNIOHh4UlhibmUyNGd3MkNtcll5ajl6Mm1YVUJGckVVUTQ1?=
- =?utf-8?B?bmIrUzY1ZHdsYUZFUStSbXZBN0l1R0YxeElKL0F6NEJteCtDSVkwb3pCTnpR?=
- =?utf-8?B?UDF4RkVCLzc3ZDZMbmxDSlpjaEpBMTgxeVR0bCtSODVDZEFHNUdIREJkTXJK?=
- =?utf-8?B?Y2FMbjhjYVdOTnRxSFZwelRZL1hHU0I3VUNJNWFiVU1oN3pHTHU5Y3FvL04x?=
- =?utf-8?B?RFpoWnR0aXhyajFPNzhBellKUlI0NmtPTFVrWlRsMWIvdS9leWVLYnVZUm12?=
- =?utf-8?B?cmQ5THZ4ZkRhK2tMcUNJOUdRNzVSM01hWFJGTnZlalI4Uy8yUFJ5bW4rNDRw?=
- =?utf-8?B?T1hSMTVrN25CRDllNXUxZ2YzL3IzUGlETmJYdkNlUkFDSzM2ZVFiTWFhTGYr?=
- =?utf-8?B?amU4TU8rYzFkcG10NnlsZlNWVzdlL1p4L0hjVjVPM2t3NHpzZjFOU2tHNndY?=
- =?utf-8?B?OFlkSFBTZlNDQmJ6KzAreWl3M29pd0szTExFeUxMbW5pYzNzSXM5Sy9xczA2?=
- =?utf-8?B?ZE9TYzlpekdXYXpzVmRXV3RieUN6WFYyc3hmbDc1YVhKWXVJbTNBYkRNSk1Q?=
- =?utf-8?B?ZlBlQXhXbFFyRUM1UUlROEUyc2c3STUzVjJQY3BkWThPMXBIQXB1Nk4xQldx?=
- =?utf-8?B?dmJqSnpkWjJvNXc2Q1pESHpTT1crZTVFZlh0TkkvUXZQSnFuc01QVjlTcm9R?=
- =?utf-8?B?LzVONGEyZlEwZVh5TjdVRElMMDVjM1VhdUNES09VZnhrU2xIeU1rM3FNdklm?=
- =?utf-8?B?M2c9PQ==?=
-X-OriginatorOrg: meta.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bf545347-1364-490e-c88f-08db68651f1a
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2023 21:12:52.7842
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rLFfQIak2TMBwTyaFgi+HnpKzW4Ydf2SwGYKhAfvuxtfxjR+2VzNO7THnu5YFBtl
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR15MB5565
-X-Proofpoint-ORIG-GUID: Nge8sMlHz9LD4SY7U6nYejA66eDt3qU9
-X-Proofpoint-GUID: Nge8sMlHz9LD4SY7U6nYejA66eDt3qU9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-06-08_16,2023-06-08_01,2023-05-22_02
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20230607192625.22641-1-daniel@iogearbox.net> <20230607192625.22641-3-daniel@iogearbox.net>
+In-Reply-To: <20230607192625.22641-3-daniel@iogearbox.net>
+From: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date: Thu, 8 Jun 2023 14:20:00 -0700
+Message-ID: <CAEf4BzZK7gkQ2B3XguXjs2SALLmV54WXCdGPhkh6VE3s0J-WVg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/7] bpf: Add fd-based tcx multi-prog infra
+ with link support
+To: Daniel Borkmann <daniel@iogearbox.net>
+Cc: ast@kernel.org, andrii@kernel.org, martin.lau@linux.dev, 
+	razor@blackwall.org, sdf@google.com, john.fastabend@gmail.com, 
+	kuba@kernel.org, dxu@dxuuu.xyz, joe@cilium.io, toke@kernel.org, 
+	davem@davemloft.net, bpf@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Wed, Jun 7, 2023 at 12:27=E2=80=AFPM Daniel Borkmann <daniel@iogearbox.n=
+et> wrote:
+>
+> This work refactors and adds a lightweight extension ("tcx") to the tc BP=
+F
+> ingress and egress data path side for allowing BPF program management bas=
+ed
+> on fds via bpf() syscall through the newly added generic multi-prog API.
+> The main goal behind this work which we also presented at LPC [0] last ye=
+ar
+> and a recent update at LSF/MM/BPF this year [3] is to support long-awaite=
+d
+> BPF link functionality for tc BPF programs, which allows for a model of s=
+afe
+> ownership and program detachment.
+>
+> Given the rise in tc BPF users in cloud native environments, this becomes
+> necessary to avoid hard to debug incidents either through stale leftover
+> programs or 3rd party applications accidentally stepping on each others t=
+oes.
+> As a recap, a BPF link represents the attachment of a BPF program to a BP=
+F
+> hook point. The BPF link holds a single reference to keep BPF program ali=
+ve.
+> Moreover, hook points do not reference a BPF link, only the application's
+> fd or pinning does. A BPF link holds meta-data specific to attachment and
+> implements operations for link creation, (atomic) BPF program update,
+> detachment and introspection. The motivation for BPF links for tc BPF pro=
+grams
+> is multi-fold, for example:
+>
+>   - From Meta: "It's especially important for applications that are deplo=
+yed
+>     fleet-wide and that don't "control" hosts they are deployed to. If su=
+ch
+>     application crashes and no one notices and does anything about that, =
+BPF
+>     program will keep running draining resources or even just, say, dropp=
+ing
+>     packets. We at FB had outages due to such permanent BPF attachment
+>     semantics. With fd-based BPF link we are getting a framework, which a=
+llows
+>     safe, auto-detachable behavior by default, unless application explici=
+tly
+>     opts in by pinning the BPF link." [1]
+>
+>   - From Cilium-side the tc BPF programs we attach to host-facing veth de=
+vices
+>     and phys devices build the core datapath for Kubernetes Pods, and the=
+y
+>     implement forwarding, load-balancing, policy, EDT-management, etc, wi=
+thin
+>     BPF. Currently there is no concept of 'safe' ownership, e.g. we've re=
+cently
+>     experienced hard-to-debug issues in a user's staging environment wher=
+e
+>     another Kubernetes application using tc BPF attached to the same prio=
+/handle
+>     of cls_bpf, accidentally wiping all Cilium-based BPF programs from un=
+derneath
+>     it. The goal is to establish a clear/safe ownership model via links w=
+hich
+>     cannot accidentally be overridden. [0,2]
+>
+> BPF links for tc can co-exist with non-link attachments, and the semantic=
+s are
+> in line also with XDP links: BPF links cannot replace other BPF links, BP=
+F
+> links cannot replace non-BPF links, non-BPF links cannot replace BPF link=
+s and
+> lastly only non-BPF links can replace non-BPF links. In case of Cilium, t=
+his
+> would solve mentioned issue of safe ownership model as 3rd party applicat=
+ions
+> would not be able to accidentally wipe Cilium programs, even if they are =
+not
+> BPF link aware.
+>
+> Earlier attempts [4] have tried to integrate BPF links into core tc machi=
+nery
+> to solve cls_bpf, which has been intrusive to the generic tc kernel API w=
+ith
+> extensions only specific to cls_bpf and suboptimal/complex since cls_bpf =
+could
+> be wiped from the qdisc also. Locking a tc BPF program in place this way,=
+ is
+> getting into layering hacks given the two object models are vastly differ=
+ent.
+>
+> We instead implemented the tcx (tc 'express') layer which is an fd-based =
+tc BPF
+> attach API, so that the BPF link implementation blends in naturally simil=
+ar to
+> other link types which are fd-based and without the need for changing cor=
+e tc
+> internal APIs. BPF programs for tc can then be successively migrated from=
+ classic
+> cls_bpf to the new tc BPF link without needing to change the program's so=
+urce
+> code, just the BPF loader mechanics for attaching is sufficient.
+>
+> For the current tc framework, there is no change in behavior with this ch=
+ange
+> and neither does this change touch on tc core kernel APIs. The gist of th=
+is
+> patch is that the ingress and egress hook have a lightweight, qdisc-less
+> extension for BPF to attach its tc BPF programs, in other words, a minima=
+l
+> entry point for tc BPF. The name tcx has been suggested from discussion o=
+f
+> earlier revisions of this work as a good fit, and to more easily differ b=
+etween
+> the classic cls_bpf attachment and the fd-based one.
+>
+> For the ingress and egress tcx points, the device holds a cache-friendly =
+array
+> with program pointers which is separated from control plane (slow-path) d=
+ata.
+> Earlier versions of this work used priority to determine ordering and exp=
+ression
+> of dependencies similar as with classic tc, but it was challenged that fo=
+r
+> something more future-proof a better user experience is required. Hence t=
+his
+> resulted in the design and development of the generic attach/detach/query=
+ API
+> for multi-progs. See prior patch with its discussion on the API design. t=
+cx is
+> the first user and later we plan to integrate also others, for example, o=
+ne
+> candidate is multi-prog support for XDP which would benefit and have the =
+same
+> 'look and feel' from API perspective.
+>
+> The goal with tcx is to have maximum compatibility to existing tc BPF pro=
+grams,
+> so they don't need to be rewritten specifically. Compatibility to call in=
+to
+> classic tcf_classify() is also provided in order to allow successive migr=
+ation
+> or both to cleanly co-exist where needed given its all one logical tc lay=
+er.
+> tcx supports the simplified return codes TCX_NEXT which is non-terminatin=
+g (go
+> to next program) and terminating ones with TCX_PASS, TCX_DROP, TCX_REDIRE=
+CT.
+> The fd-based API is behind a static key, so that when unused the code is =
+also
+> not entered. The struct tcx_entry's program array is currently static, bu=
+t
+> could be made dynamic if necessary at a point in future. The a/b pair swa=
+p
+> design has been chosen so that for detachment there are no allocations wh=
+ich
+> otherwise could fail. The work has been tested with tc-testing selftest s=
+uite
+> which all passes, as well as the tc BPF tests from the BPF CI, and also w=
+ith
+> Cilium's L4LB.
+>
+> Kudos also to Nikolay Aleksandrov and Martin Lau for in-depth early revie=
+ws
+> of this work.
+>
+>   [0] https://lpc.events/event/16/contributions/1353/
+>   [1] https://lore.kernel.org/bpf/CAEf4BzbokCJN33Nw_kg82sO=3DxppXnKWEncGT=
+WCTB9vGCmLB6pw@mail.gmail.com/
+>   [2] https://colocatedeventseu2023.sched.com/event/1Jo6O/tales-from-an-e=
+bpf-programs-murder-mystery-hemanth-malla-guillaume-fournier-datadog
+>   [3] http://vger.kernel.org/bpfconf2023_material/tcx_meta_netdev_borkman=
+n.pdf
+>   [4] https://lore.kernel.org/bpf/20210604063116.234316-1-memxor@gmail.co=
+m/
+>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> ---
+>  MAINTAINERS                    |   4 +-
+>  include/linux/netdevice.h      |  15 +-
+>  include/linux/skbuff.h         |   4 +-
+>  include/net/sch_generic.h      |   2 +-
+>  include/net/tcx.h              | 157 +++++++++++++++
+>  include/uapi/linux/bpf.h       |  35 +++-
+>  kernel/bpf/Kconfig             |   1 +
+>  kernel/bpf/Makefile            |   1 +
+>  kernel/bpf/syscall.c           |  95 +++++++--
+>  kernel/bpf/tcx.c               | 347 +++++++++++++++++++++++++++++++++
+>  net/Kconfig                    |   5 +
+>  net/core/dev.c                 | 267 +++++++++++++++----------
+>  net/core/filter.c              |   4 +-
+>  net/sched/Kconfig              |   4 +-
+>  net/sched/sch_ingress.c        |  45 ++++-
+>  tools/include/uapi/linux/bpf.h |  35 +++-
+>  16 files changed, 877 insertions(+), 144 deletions(-)
+>  create mode 100644 include/net/tcx.h
+>  create mode 100644 kernel/bpf/tcx.c
+>
 
+[...]
 
-On 6/7/23 8:17 PM, Menglong Dong wrote:
-> On Thu, Jun 8, 2023 at 4:09 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
->>
->> On Wed, Jun 07, 2023 at 08:59:09PM +0800, menglong8.dong@gmail.com wrote:
->>> From: Menglong Dong <imagedong@tencent.com>
->>>
->>> For now, the BPF program of type BPF_PROG_TYPE_TRACING can only be used
->>> on the kernel functions whose arguments count less than 6. This is not
->>> friendly at all, as too many functions have arguments count more than 6.
->>>
->>> Therefore, let's enhance it by increasing the function arguments count
->>> allowed in arch_prepare_bpf_trampoline(), for now, only x86_64.
->>>
->>> For the case that we don't need to call origin function, which means
->>> without BPF_TRAMP_F_CALL_ORIG, we need only copy the function arguments
->>> that stored in the frame of the caller to current frame. The arguments
->>> of arg6-argN are stored in "$rbp + 0x18", we need copy them to
->>> "$rbp - regs_off + (6 * 8)".
->>>
->>> For the case with BPF_TRAMP_F_CALL_ORIG, we need prepare the arguments
->>> in stack before call origin function, which means we need alloc extra
->>> "8 * (arg_count - 6)" memory in the top of the stack. Note, there should
->>> not be any data be pushed to the stack before call the origin function.
->>> Then, we have to store rbx with 'mov' instead of 'push'.
->>
->> x86-64 psABI requires stack to be 16-byte aligned when args are passed on the stack.
->> I don't see this logic in the patch.
-> 
-> Yeah, it seems I missed this logic......:)
-> 
-> I have not figure out the rule of the alignment, but after
-> observing the behavior of the compiler, the stack seems
-> should be like this:
-> 
-> ------ stack frame begin
-> rbp
-> 
-> xxx   -- this part should be aligned in 16-byte
-> 
-> ------ end of arguments in stack
-> xxx
-> ------ begin of arguments in stack
-> 
-> So the code should be:
-> 
-> +       if (nr_regs > 6 && (flags & BPF_TRAMP_F_CALL_ORIG)) {
-> +                stack_size = ALIGN(stack_size, 16);
-> +                stack_size += (nr_regs - 6) * 8;
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 207f8a37b327..e7584e24bc83 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -1035,6 +1035,8 @@ enum bpf_attach_type {
+>         BPF_TRACE_KPROBE_MULTI,
+>         BPF_LSM_CGROUP,
+>         BPF_STRUCT_OPS,
+> +       BPF_TCX_INGRESS,
+> +       BPF_TCX_EGRESS,
+>         __MAX_BPF_ATTACH_TYPE
+>  };
+>
+> @@ -1052,7 +1054,7 @@ enum bpf_link_type {
+>         BPF_LINK_TYPE_KPROBE_MULTI =3D 8,
+>         BPF_LINK_TYPE_STRUCT_OPS =3D 9,
+>         BPF_LINK_TYPE_NETFILTER =3D 10,
+> -
+> +       BPF_LINK_TYPE_TCX =3D 11,
+>         MAX_BPF_LINK_TYPE,
+>  };
+>
+> @@ -1559,13 +1561,13 @@ union bpf_attr {
+>                         __u32           map_fd;         /* struct_ops to =
+attach */
+>                 };
+>                 union {
+> -                       __u32           target_fd;      /* object to atta=
+ch to */
+> -                       __u32           target_ifindex; /* target ifindex=
+ */
+> +                       __u32   target_fd;      /* target object to attac=
+h to or ... */
+> +                       __u32   target_ifindex; /* target ifindex */
+>                 };
+>                 __u32           attach_type;    /* attach type */
+>                 __u32           flags;          /* extra flags */
+>                 union {
+> -                       __u32           target_btf_id;  /* btf_id of targ=
+et to attach to */
+> +                       __u32   target_btf_id;  /* btf_id of target to at=
+tach to */
+
+nit: should this part be in patch 1?
+
+>                         struct {
+>                                 __aligned_u64   iter_info;      /* extra =
+bpf_iter_link_info */
+>                                 __u32           iter_info_len;  /* iter_i=
+nfo length */
+> @@ -1599,6 +1601,13 @@ union bpf_attr {
+>                                 __s32           priority;
+>                                 __u32           flags;
+>                         } netfilter;
+> +                       struct {
+> +                               union {
+> +                                       __u32   relative_fd;
+> +                                       __u32   relative_id;
+> +                               };
+> +                               __u32           expected_revision;
+> +                       } tcx;
+>                 };
+>         } link_create;
+>
+
+[...]
+
+> +int tcx_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+> +{
+> +       struct net *net =3D current->nsproxy->net_ns;
+> +       struct bpf_link_primer link_primer;
+> +       struct net_device *dev;
+> +       struct tcx_link *link;
+> +       int fd, err;
+> +
+> +       dev =3D dev_get_by_index(net, attr->link_create.target_ifindex);
+> +       if (!dev)
+> +               return -EINVAL;
+> +       link =3D kzalloc(sizeof(*link), GFP_USER);
+> +       if (!link) {
+> +               err =3D -ENOMEM;
+> +               goto out_put;
 > +       }
-> 
-> Am I right?
+> +
+> +       bpf_link_init(&link->link, BPF_LINK_TYPE_TCX, &tcx_link_lops, pro=
+g);
+> +       link->location =3D attr->link_create.attach_type;
+> +       link->flags =3D attr->link_create.flags & (BPF_F_FIRST | BPF_F_LA=
+ST);
+> +       link->dev =3D dev;
+> +
+> +       err =3D bpf_link_prime(&link->link, &link_primer);
+> +       if (err) {
+> +               kfree(link);
+> +               goto out_put;
+> +       }
+> +       rtnl_lock();
+> +       err =3D tcx_link_prog_attach(&link->link, attr->link_create.flags=
+,
+> +                                  attr->link_create.tcx.relative_fd,
+> +                                  attr->link_create.tcx.expected_revisio=
+n);
+> +       if (!err)
+> +               fd =3D bpf_link_settle(&link_primer);
 
-This is the stack_size, you should ensure stack pointer is 16-byte aligned.
+why this early settle? makes the error handling logic more convoluted.
+Maybe leave link->dev as is and let bpf_link_cleanup() handle
+dev_put(dev)? Can it be just:
 
-> 
-> Thanks!
-> Menglong Dong
+err =3D tcx_link_prog_attach(...);
+
+rtnl_unlock();
+
+if (err) {
+    link->dev =3D NULL;
+    bpf_link_cleanup(&link_primer);
+    goto out_put;
+}
+
+dev_put(dev);
+return bpf_link_settle(&link_primer);
+
+?
+
+> +       rtnl_unlock();
+> +       if (err) {
+> +               link->dev =3D NULL;
+> +               bpf_link_cleanup(&link_primer);
+> +               goto out_put;
+> +       }
+> +       dev_put(dev);
+> +       return fd;
+> +out_put:
+> +       dev_put(dev);
+> +       return err;
+> +}
+
+[...]
 
