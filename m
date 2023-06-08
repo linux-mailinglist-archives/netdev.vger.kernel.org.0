@@ -1,293 +1,229 @@
-Return-Path: <netdev+bounces-9364-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9365-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9DA4C7289C0
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 22:59:52 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7A6DE7289EF
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 23:08:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 588312816BA
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 20:59:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 886B71C21016
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 21:07:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F03831F19;
-	Thu,  8 Jun 2023 20:59:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C03734474;
+	Thu,  8 Jun 2023 21:07:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C0211DCDC;
-	Thu,  8 Jun 2023 20:59:49 +0000 (UTC)
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DB6E61;
-	Thu,  8 Jun 2023 13:59:46 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-514924ca903so1632085a12.2;
-        Thu, 08 Jun 2023 13:59:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686257985; x=1688849985;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=d9qacWQXjA+oXDojChRddTQg/JrgJ/B2FSoCeX7QaMc=;
-        b=Oe7AliTTcF0PiFzkRTryhGWLn/qUosUz8ReQD3qORJW2YhPYEmuR9dQAqwzh5kM2WL
-         3yEZiAVnnbFZoI8Nhj5hPHKhrt+aIIPQ2Gt6X6rU+hjqdaj3bCwjyIEinD4OmHUwFLnY
-         Yr5jgu5k5BsecAqLKoT/I3zEg7E9cw9DvlTFmR/xFWCyvXN5gchbZ4TLyLezyFfHNVso
-         R2Hqbs8I/KLM0QzzaOa+5yckX8x/ZQHnnEXN4ExK9R3PM8ZKwstveXQsddWKYuFozQu3
-         E7JZiHv3HZmc5A1p4AjHbJAB+YgOxpfNnHSZ/184WC3hL4Jy3twgFZLl987Q3ttFS/fp
-         L9oQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686257985; x=1688849985;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=d9qacWQXjA+oXDojChRddTQg/JrgJ/B2FSoCeX7QaMc=;
-        b=GtetEHTLKV8wvo9cV3BKhrXBQ4VMpeGuEbh2gHjBYno3deRz7ywL0BwESMWpZPXaeB
-         Yq8TSa9BUO/d+gK+J3wYxilIICVctnuQbYJbz+QfUSxzzkHo/oEl+d2P1HkJqaWrYE9+
-         /IyH6OCa+ImPQ2D3iXYCivm+eET+V2CS3x41+WGkcCsFl2iNYiFLBtztu14pyoDb9fWe
-         h/5XNN/ZjLY5vncAUZ8ODQRSKkV/K85RAFTq6D8+L1PnaEYJsw4ByZrQd+pzN0F/9Rjf
-         mFOD+uHlh5d/XdJoLah8iF2G+SXzWnZ5A2GroTudBZ2OaoocF661DqXh0UuHnydVWhMA
-         0DBw==
-X-Gm-Message-State: AC+VfDwGnFLmb9OV8MpKx2UeFWypYWMPKGubvWO/A8d+q6XIX8lpY6AU
-	83KYuYQs6nMyMyhfymReCDOi461Gcccr+iDwUUk=
-X-Google-Smtp-Source: ACHHUZ5YVB42WK80yd3Kga+IY012KPKfFwpi0ilrpO21+Rf+ICcsiP7xFOl9HLENB9sUKe0d2fxUwN1WOVE+fyPyrNU=
-X-Received: by 2002:a17:907:805:b0:92b:3c78:91fa with SMTP id
- wv5-20020a170907080500b0092b3c7891famr277683ejb.28.1686257984719; Thu, 08 Jun
- 2023 13:59:44 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B11431EEE;
+	Thu,  8 Jun 2023 21:07:57 +0000 (UTC)
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B71F2D42;
+	Thu,  8 Jun 2023 14:07:55 -0700 (PDT)
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+	by m0001303.ppops.net (8.17.1.19/8.17.1.19) with ESMTP id 358Gmvaa020704;
+	Thu, 8 Jun 2023 14:07:11 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=s2048-2021-q4;
+ bh=n63nSmaJuUIoK1z2sPRQ4AfXZLgi0W4CcBjJZp2U1xk=;
+ b=SGyiU3kyk73AlxxlhOo8+ommK54fye8xSPI2cQeJ+CnU+/txGJaPhnb71JELAaeDUT0v
+ gl0Ck4adRxqe5mJ+9ioncAVVzQIx+84JuCTEshBemeDE2ZwWNEYHm6+aHGVpk2nVKfCd
+ SVj35SEwiPy7yBDiIQyxoFGLzyjBNbLeqwOlLlY7rOQRwPO9o/CHRyX43hvIA2Sx14tX
+ HfbP4nJ7nd1lAqgxjLZ7rO3laMiSjSy0zEakjZCwqbXPPGK7QMGzIyO7BYhDq90aGcQo
+ 6mLYJRzcfuKZYkn+KV8pmEskOJ+I8iTd+vMTIS6GWwb/Cr7H5zS81a9mtVWbaPinLFx3 YQ== 
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2169.outbound.protection.outlook.com [104.47.58.169])
+	by m0001303.ppops.net (PPS) with ESMTPS id 3r34d0yaqr-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 08 Jun 2023 14:07:11 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ahBET+gjuCryrG72W7denPT0LUI8KM0C9UnjHKBBdOQZ0Y3zLsyQBbKMGqbEcpNUGyln3QwLhYmakYPacc2/hSylirD9u2zXq58miUDF3E5zdCwgFWBVkCrYLybnd+zkNAqV/BFo1sJE3tW0Kln4kZyJbZh+v4hRDhyWxPtPHRb/4FzrdWpo6mpz7N5d38HE0iRQ2P1ApozEP3gd84l7BogpxV2z0zVftUiJoYgpNlHxW18jpjflpGeckwM3DxN3rdHV14L52Y5Pslhql7O7q1Mh4Xu9WDnhikSDiSJbaSBGGBCFDZlAjasDcUCsJ8GM5UdSmRzwz7bqcIPbbUUrrw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=n63nSmaJuUIoK1z2sPRQ4AfXZLgi0W4CcBjJZp2U1xk=;
+ b=hQ/mb9RFn/R4sozFZCo/FU1LqvzcSitqkbTJMcdv+f3wMk7iJgbL80cFCwlBL4x9txz1adj5Lg0R6l0D++YjIcaGc++hA37/5xIqWxejC8M5maLrAD1gusatb7wEcPj2PW14Oe6OMHlUFWcJZnEYTkp/c5iuR4/v1U2fwRjWLq+gUkcpf8qls6SyRoYOXFkbxbvQR+lqT886bTPM6y/CrxxTcp4XCu2g9WUNVThnnQeoowDM4JLdNgv/JhYpbD45KguU5ocqSWSFchAKFBUxSqO/z0BUKC8KUWs0TaciI8bsgfPlBIc3b80PlThoPmg8o53A4o9HaeRMAy5ZIDJJNQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
+ dkim=pass header.d=meta.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by SJ2PR15MB5647.namprd15.prod.outlook.com (2603:10b6:a03:4d1::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.36; Thu, 8 Jun
+ 2023 21:07:09 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::bf7d:a453:b8d9:cf0]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::bf7d:a453:b8d9:cf0%6]) with mapi id 15.20.6455.030; Thu, 8 Jun 2023
+ 21:07:08 +0000
+Message-ID: <4ca27e23-b027-0e39-495b-2ba3376342cc@meta.com>
+Date: Thu, 8 Jun 2023 14:07:05 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.11.2
+Subject: Re: [PATCH bpf-next v3 1/3] bpf, x86: allow function arguments up to
+ 12 for TRACING
+Content-Language: en-US
+To: menglong8.dong@gmail.com, alexei.starovoitov@gmail.com
+Cc: davem@davemloft.net, dsahern@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, sdf@google.com, x86@kernel.org,
+        imagedong@tencent.com, benbjiang@tencent.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+References: <20230607125911.145345-1-imagedong@tencent.com>
+ <20230607125911.145345-2-imagedong@tencent.com>
+From: Yonghong Song <yhs@meta.com>
+In-Reply-To: <20230607125911.145345-2-imagedong@tencent.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR13CA0086.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c4::31) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230607192625.22641-1-daniel@iogearbox.net> <20230607192625.22641-2-daniel@iogearbox.net>
- <ZIIOr1zvdRNTFKR7@google.com>
-In-Reply-To: <ZIIOr1zvdRNTFKR7@google.com>
-From: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date: Thu, 8 Jun 2023 13:59:33 -0700
-Message-ID: <CAEf4BzbEf+U53UY6o+g5OZ6rg+T65_Aou4Nvrdbo-8sAjmdJmA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/7] bpf: Add generic attach/detach/query API
- for multi-progs
-To: Stanislav Fomichev <sdf@google.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org, andrii@kernel.org, 
-	martin.lau@linux.dev, razor@blackwall.org, john.fastabend@gmail.com, 
-	kuba@kernel.org, dxu@dxuuu.xyz, joe@cilium.io, toke@kernel.org, 
-	davem@davemloft.net, bpf@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN6PR1501MB2064:EE_|SJ2PR15MB5647:EE_
+X-MS-Office365-Filtering-Correlation-Id: d781b75c-4733-41f5-6d3b-08db6864520a
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 
+	mhbHtT4SHGVbjeG9+peYTt0TTV7rEqv9lHgRArqxTHCNuMGnRpyIPIj8pLZbY4oERhHtcDW36KooCZGu6rjWd7cmwVh+9nCZ6sVgqlq6XnqwABaaY3GcXbK7cFhg0FVcwMhXZ248/Thh1233YT62SI8seMFlw13pPGw0YKBT7BCsrkhyo+X7l02T+g7pQDBLBTXAfc0iqEHAZv/o6bpEIbjiMzu09bdk2refV2xC72OUKPvks7lJOea5H2BiXN6qaLcWzoDvkEAbKuuSkdpAU+OfYsPef2AkHu/yN+R5NIPoV3Uuj1mCnrvuBPPmDR4AzMISidoRARNBCiTJ0Gm61Pl6R7SstRaH6Wp01DeH/MadvDNhkMrxmj9uq5LB6bhvrAPN91gR6eiDunBQmanBjm0bjWVbWUog+po5yIGN3xIxAffY6KlC1umesiT4aLlN027tGrVUZgMG7eCGl7GxooBpOprGeowfGbn1z2VIMbOD8/czEp4iO35W1hRAwJ8wXgeE9uU0OAgdLp2apoZm8VvxEJrA0BrE2/kEV5g76aGqn+2dS+GBk5rmFwP0PY+s89/V6mCchOIT7rGCUQcKmRSEROxGKZ+7EwBHCz5kRXdhPa0gfYY4j2wHLm4rOsC4jW6lKAr/FXTMKHh1sEgdhw==
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(376002)(346002)(396003)(39860400002)(451199021)(31686004)(6512007)(6506007)(41300700001)(5660300002)(186003)(53546011)(36756003)(7416002)(4326008)(66476007)(66556008)(6666004)(66946007)(8936002)(83380400001)(8676002)(2616005)(478600001)(2906002)(86362001)(31696002)(6486002)(316002)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?utf-8?B?UG12aUVrWGNFL3FCYllTRGVqSVhiZytIRUJxRE95NE9IRzlGd1NQM3JDUXB6?=
+ =?utf-8?B?ekJzWUY5WnR1NXhBUThSUzAyWXFqVS9iQjRZVWlGZnQ1MThqOHVHaWlDOWZ6?=
+ =?utf-8?B?d2FlNzYrLzV5L21ySkVJQkFGNGJuNnNzNzFMc3hBbm1YR1JoRFdoNFZmQjVV?=
+ =?utf-8?B?RlVkMU0wMGFqZEJHejZpbkp5RExkQUtyZlRzMndjLzNXcDk4emcrOHphMlhD?=
+ =?utf-8?B?VC9VUVBiVUhoU1ZKN2RPek9UeHlmSGZNSVFNeXMyT1ZhZ0ZPS09UWm5QRUFF?=
+ =?utf-8?B?MWxVNVROclFtbnZuaERBclFjbG8yN2hjZkVBOC80Zjdmd0pXWE1GSnVIQUV5?=
+ =?utf-8?B?R2NDMUxIZXEwS2RCNnVSdDVLbnh3ZFZxVTQwYUZHalZyOWxCT0tGNFozL0hv?=
+ =?utf-8?B?SWdNeUN3aTE0dm45RisweVJ0NWlYaUl1S0N2YkdNbTVLTW1ISlVpUGFjTVky?=
+ =?utf-8?B?bWhIWVZNWTJuT3B3eTd3anU5QU9WV1cxMWd5bC96dGZMY3RjSTcyWXRoaVJH?=
+ =?utf-8?B?VTY4VzVRaldLQ2QyZkNKenRlMmtIV1RvVzdTUTU2R3pOZVFXejBuRGUvWFpC?=
+ =?utf-8?B?cWhxWWhMNXEzckw4czRwZGdzb0xuQ0p2bGp2a2R0a1dwWVRid29HMUpheEdE?=
+ =?utf-8?B?YjB5eHNCcXA2ZDNSaTRTZlNSbXZkVVM5VHFKMHFEaG9LOUJ1UVdraXhKRDVp?=
+ =?utf-8?B?ZHhGS0xmcFp0bktXd1hZLzVadDFDZUY3Uzl2T1d5cHRGc3MzQ3RTVTMzeGhF?=
+ =?utf-8?B?dGM2bG96U3BJazRPdUNHZ0cwMFoyZndGK0xscE1CYlhVMHN5OXZMK0hPbFpq?=
+ =?utf-8?B?ZDdBN0tzWjdwbUF3QlB2SGlRWS8zaWZIYkJlaVk5Z1VxK2orcU8rUzNiTEUw?=
+ =?utf-8?B?ZnBOUkhrbFlQQ25jY2hWNUxqTzduNVdnQmNGOG02MjNUenpiaGNTV29OUkQ0?=
+ =?utf-8?B?UkZTdjRNYVE2L2JZTXp1dUIybnM5Y2d2eU8yZ0pucFo3dVN6dWV1RWU0MFlR?=
+ =?utf-8?B?M2Q0QUtOWHBlaDM2UUs5YWlySmtjZ0JnMzNlVXdxSE84c09xekFSSFY0S3cr?=
+ =?utf-8?B?eFZMUkk5Rjc5SmJ4U1gwYjJOcHJHMUdoRm1HYmhPbEFMajViQ1VTaENNKzRF?=
+ =?utf-8?B?WndzWUdkYi9iT1NtaTFLRzhwdm51ZHQrZEFaZnlReUh0eXJnOGYwNGQ4LzUx?=
+ =?utf-8?B?UW5mY2xKN1hQby9TbTl2Z092bjhpbHZXaVVUYzMzRDFEbVdkaXQ4VTM1RWQ4?=
+ =?utf-8?B?bmhObEk5d2hWODVLQUVkWWRDVlA5YWNIR1krby9mMWJEWWMxZ2E5YnYxeXNJ?=
+ =?utf-8?B?MVZaYmFsekI2RUtjRFVnSVp0ckJWU1VxVGJoVFU5VGxWU0RPblA4NDUySG8v?=
+ =?utf-8?B?U2padUpNY1lqdXN6NW5JUWtYREJ6a24rUUp1MGcvUGZtM0hIQVpLamFKMm4z?=
+ =?utf-8?B?YUNGclp0a1F2dWJYQVBOWGJKS1ZDQXVQRCtrVmMrbnc1WGg0MFJrcVdBRGtz?=
+ =?utf-8?B?RWtIT0hRRFZpanFheEJlczQwaEZPcVVOY2VzRzUvZjNGMHZoZDNIWk5jQkp2?=
+ =?utf-8?B?KzZWK3kvNHZrQ2o1bldSUGVLT3krU09ZUk9WY2ZCU01ud0dKK3VPUGEvWHJ0?=
+ =?utf-8?B?QnBHeDNFSzZZejhHSzg3QWp3RHRKYkdZbUtLaUNvU253dVArSnpkUHpMMVMv?=
+ =?utf-8?B?MVVFaGh4bUpzUFJWMEZIWDJScmRBUXJHZ1A3bWxRMVdlVUhBU3FtYmtZd2to?=
+ =?utf-8?B?RVN0SldFa2hVMmMzRGZlNnpOc3NrWmhUUTJxN3lVb2JvRWNlMnpiTFJnVU1G?=
+ =?utf-8?B?dlluNGM1dElBS3RxSEI2ZVBMMU1MQjJkVWJkWVVWeHo3OVdDWXZqUGxmeTV3?=
+ =?utf-8?B?azVwcWxWVk1FSlIyYXR5bTRhNDljSXEzckhEb1JQQzdYanFlNjNVem5HcnJW?=
+ =?utf-8?B?ZjFYbHRsUVhHbkZ4VHFvWjl3U3VuaHVUR2pFU0xYK3JsWFRGRHM3bW84UUM2?=
+ =?utf-8?B?MG9sZ1IrQWx2SU9kSDVJZVg0NVI4UE9vb3IvYVpMdFVHbFNQb2FwT0pjMURW?=
+ =?utf-8?B?Q00xUURJZGh6YjFhU2RNb3FydThFS3FBQ2ZjbHljbFpBejZiNE9OOVdnK1dY?=
+ =?utf-8?B?T0hRV21yL3VIQW9YaVA4ZEJqdWhFSy83YjFWT0pCeWt3K2QzRVQ2SWdHc2ty?=
+ =?utf-8?B?MFE9PQ==?=
+X-OriginatorOrg: meta.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d781b75c-4733-41f5-6d3b-08db6864520a
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2023 21:07:08.9294
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qSWejcwrRj5TwA/CTWfDHqTWtaVG4UtUrNfnze6Y307H5qyX45TW/kPN2oc6P7QA
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR15MB5647
+X-Proofpoint-GUID: 2JpqSjwo74rTcOOZSe2HqLP4KWF56roJ
+X-Proofpoint-ORIG-GUID: 2JpqSjwo74rTcOOZSe2HqLP4KWF56roJ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-06-08_16,2023-06-08_01,2023-05-22_02
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 8, 2023 at 10:24=E2=80=AFAM Stanislav Fomichev <sdf@google.com>=
- wrote:
->
-> On 06/07, Daniel Borkmann wrote:
-> > This adds a generic layer called bpf_mprog which can be reused by diffe=
-rent
-> > attachment layers to enable multi-program attachment and dependency res=
-olution.
-> > In-kernel users of the bpf_mprog don't need to care about the dependenc=
-y
-> > resolution internals, they can just consume it with few API calls.
-> >
-> > The initial idea of having a generic API sparked out of discussion [0] =
-from an
-> > earlier revision of this work where tc's priority was reused and expose=
-d via
-> > BPF uapi as a way to coordinate dependencies among tc BPF programs, sim=
-ilar
-> > as-is for classic tc BPF. The feedback was that priority provides a bad=
- user
-> > experience and is hard to use [1], e.g.:
-> >
-> >   I cannot help but feel that priority logic copy-paste from old tc, ne=
-tfilter
-> >   and friends is done because "that's how things were done in the past"=
-. [...]
-> >   Priority gets exposed everywhere in uapi all the way to bpftool when =
-it's
-> >   right there for users to understand. And that's the main problem with=
- it.
-> >
-> >   The user don't want to and don't need to be aware of it, but uapi for=
-ces them
-> >   to pick the priority. [...] Your cover letter [0] example proves that=
- in
-> >   real life different service pick the same priority. They simply don't=
- know
-> >   any better. Priority is an unnecessary magic that apps _have_ to pick=
-, so
-> >   they just copy-paste and everyone ends up using the same.
-> >
-> > The course of the discussion showed more and more the need for a generi=
-c,
-> > reusable API where the "same look and feel" can be applied for various =
-other
-> > program types beyond just tc BPF, for example XDP today does not have m=
-ulti-
-> > program support in kernel, but also there was interest around this API =
-for
-> > improving management of cgroup program types. Such common multi-program
-> > management concept is useful for BPF management daemons or user space B=
-PF
-> > applications coordinating about their attachments.
-> >
-> > Both from Cilium and Meta side [2], we've collected the following requi=
-rements
-> > for a generic attach/detach/query API for multi-progs which has been im=
-plemented
-> > as part of this work:
-> >
-> >   - Support prog-based attach/detach and link API
-> >   - Dependency directives (can also be combined):
-> >     - BPF_F_{BEFORE,AFTER} with relative_{fd,id} which can be {prog,lin=
-k,none}
-> >       - BPF_F_ID flag as {fd,id} toggle
-> >       - BPF_F_LINK flag as {prog,link} toggle
-> >       - If relative_{fd,id} is none, then BPF_F_BEFORE will just prepen=
-d, and
-> >         BPF_F_AFTER will just append for the case of attaching
-> >       - Enforced only at attach time
-> >     - BPF_F_{FIRST,LAST}
-> >       - Enforced throughout the bpf_mprog state's lifetime
-> >       - Admin override possible (e.g. link detach, prog-based BPF_F_REP=
-LACE)
-> >   - Internal revision counter and optionally being able to pass expecte=
-d_revision
-> >   - User space daemon can query current state with revision, and pass i=
-t along
-> >     for attachment to assert current state before doing updates
-> >   - Query also gets extension for link_ids array and link_attach_flags:
-> >     - prog_ids are always filled with program IDs
-> >     - link_ids are filled with link IDs when link was used, otherwise 0
-> >     - {prog,link}_attach_flags for holding {prog,link}-specific flags
-> >   - Must be easy to integrate/reuse for in-kernel users
-> >
-> > The uapi-side changes needed for supporting bpf_mprog are rather minima=
-l,
-> > consisting of the additions of the attachment flags, revision counter, =
-and
-> > expanding existing union with relative_{fd,id} member.
-> >
-> > The bpf_mprog framework consists of an bpf_mprog_entry object which hol=
-ds
-> > an array of bpf_mprog_fp (fast-path structure) and bpf_mprog_cp (contro=
-l-path
-> > structure). Both have been separated, so that fast-path gets efficient =
-packing
-> > of bpf_prog pointers for maximum cache efficieny. Also, array has been =
-chosen
-> > instead of linked list or other structures to remove unnecessary indire=
-ctions
-> > for a fast point-to-entry in tc for BPF. The bpf_mprog_entry comes as a=
- pair
-> > via bpf_mprog_bundle so that in case of updates the peer bpf_mprog_entr=
-y
-> > is populated and then just swapped which avoids additional allocations =
-that
-> > could otherwise fail, for example, in detach case. bpf_mprog_{fp,cp} ar=
-rays are
-> > currently static, but they could be converted to dynamic allocation if =
-necessary
-> > at a point in future. Locking is deferred to the in-kernel user of bpf_=
-mprog,
-> > for example, in case of tcx which uses this API in the next patch, it p=
-iggy-
-> > backs on rtnl. The nitty-gritty details are in the bpf_mprog_{replace,h=
-ead_tail,
-> > add,del} implementation and an extensive test suite for checking all as=
-pects
-> > of this API for prog-based attach/detach and link API as BPF selftests =
-in
-> > this series.
-> >
-> > Kudos also to Andrii Nakryiko for API discussions wrt Meta's BPF manage=
-ment daemon.
-> >
-> >   [0] https://lore.kernel.org/bpf/20221004231143.19190-1-daniel@iogearb=
-ox.net/
-> >   [1] https://lore.kernel.org/bpf/CAADnVQ+gEY3FjCR=3D+DmjDR4gp5bOYZUFJQ=
-Xj4agKFHT9CQPZBw@mail.gmail.com
-> >   [2] http://vger.kernel.org/bpfconf2023_material/tcx_meta_netdev_borkm=
-ann.pdf
-> >
-> > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> > ---
-> >  MAINTAINERS                    |   1 +
-> >  include/linux/bpf_mprog.h      | 245 +++++++++++++++++
-> >  include/uapi/linux/bpf.h       |  37 ++-
-> >  kernel/bpf/Makefile            |   2 +-
-> >  kernel/bpf/mprog.c             | 476 +++++++++++++++++++++++++++++++++
-> >  tools/include/uapi/linux/bpf.h |  37 ++-
-> >  6 files changed, 781 insertions(+), 17 deletions(-)
-> >  create mode 100644 include/linux/bpf_mprog.h
-> >  create mode 100644 kernel/bpf/mprog.c
-> >
 
-[...]
 
-> > diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/=
-bpf.h
-> > index a7b5e91dd768..207f8a37b327 100644
-> > --- a/tools/include/uapi/linux/bpf.h
-> > +++ b/tools/include/uapi/linux/bpf.h
-> > @@ -1102,7 +1102,14 @@ enum bpf_link_type {
-> >   */
-> >  #define BPF_F_ALLOW_OVERRIDE (1U << 0)
-> >  #define BPF_F_ALLOW_MULTI    (1U << 1)
-> > +/* Generic attachment flags. */
-> >  #define BPF_F_REPLACE                (1U << 2)
-> > +#define BPF_F_BEFORE         (1U << 3)
-> > +#define BPF_F_AFTER          (1U << 4)
->
-> [..]
->
-> > +#define BPF_F_FIRST          (1U << 5)
-> > +#define BPF_F_LAST           (1U << 6)
->
-> I'm still not sure whether the hard semantics of first/last is really
-> useful. My worry is that some prog will just use BPF_F_FIRST which
-> would prevent the rest of the users.. (starting with only
-> F_BEFORE/F_AFTER feels 'safer'; we can iterate later on if we really
-> need first/laste).
+On 6/7/23 5:59 AM, menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <imagedong@tencent.com>
+> 
+> For now, the BPF program of type BPF_PROG_TYPE_TRACING can only be used
+> on the kernel functions whose arguments count less than 6. This is not
+> friendly at all, as too many functions have arguments count more than 6.
 
-Without FIRST/LAST some scenarios cannot be guaranteed to be safely
-implemented. E.g., if I have some hard audit requirements and I need
-to guarantee that my program runs first and observes each event, I'll
-enforce BPF_F_FIRST when attaching it. And if that attachment fails,
-then server setup is broken and my application cannot function.
+Since you already have some statistics, maybe listed in the commit message.
 
-In a setup where we expect multiple applications to co-exist, it
-should be a rule that no one is using FIRST/LAST (unless it's
-absolutely required). And if someone doesn't comply, then that's a bug
-and has to be reported to application owners.
+> 
+> Therefore, let's enhance it by increasing the function arguments count
+> allowed in arch_prepare_bpf_trampoline(), for now, only x86_64.
+> 
+> For the case that we don't need to call origin function, which means
+> without BPF_TRAMP_F_CALL_ORIG, we need only copy the function arguments
+> that stored in the frame of the caller to current frame. The arguments
+> of arg6-argN are stored in "$rbp + 0x18", we need copy them to
+> "$rbp - regs_off + (6 * 8)".
 
-But it's not up to the kernel to enforce this cooperation by
-disallowing FIRST/LAST semantics, because that semantics is critical
-for some applications, IMO.
+Maybe I missed something, could you explain why it is '$rbp + 0x18'?
 
->
-> But if everyone besides myself is on board with first/last, maybe at leas=
-t
-> put a comment here saying that only a single program can be first/last?
-> And the users are advised not to use these unless they really really real=
-ly
-> need to be first/last. (IOW, feels like first/last should be reserved
-> for observability tools/etc).
+In the current upstream code, we have
 
-+1, we can definitely make it clear in API that this will prevent
-anyone else from being attached as FIRST/LAST, so it's not cooperative
-in nature and has to be very consciously evaluated.
+         /* Generated trampoline stack layout:
+          *
+          * RBP + 8         [ return address  ]
+          * RBP + 0         [ RBP             ]
+          *
+          * RBP - 8         [ return value    ]  BPF_TRAMP_F_CALL_ORIG or
+          * 
+BPF_TRAMP_F_RET_FENTRY_RET flags
+          *
+          *                 [ reg_argN        ]  always
+          *                 [ ...             ]
+          * RBP - regs_off  [ reg_arg1        ]  program's ctx pointer
+          *
+          * RBP - nregs_off [ regs count      ]  always
+          *
+          * RBP - ip_off    [ traced function ]  BPF_TRAMP_F_IP_ARG flag
+          *
+          * RBP - run_ctx_off [ bpf_tramp_run_ctx ]
+          */
 
->
-> > +#define BPF_F_ID             (1U << 7)
-> > +#define BPF_F_LINK           BPF_F_LINK /* 1 << 13 */
-> >
-> >  /* If BPF_F_STRICT_ALIGNMENT is used in BPF_PROG_LOAD command, the
-> >   * verifier will perform strict alignment checking as if the kernel
+Next on-stack argument will be RBP + 16, right?
 
+> 
+> For the case with BPF_TRAMP_F_CALL_ORIG, we need prepare the arguments
+> in stack before call origin function, which means we need alloc extra
+> "8 * (arg_count - 6)" memory in the top of the stack. Note, there should
+> not be any data be pushed to the stack before call the origin function.
+> Then, we have to store rbx with 'mov' instead of 'push'.
+> 
+> We use EMIT3_off32() or EMIT4() for "lea" and "sub". The range of the
+> imm in "lea" and "sub" is [-128, 127] if EMIT4() is used. Therefore,
+> we use EMIT3_off32() instead if the imm out of the range.
+> 
+> It works well for the FENTRY and FEXIT, I'm not sure if there are other
+> complicated cases.
+
+MODIFY_RETURN is also impacted by this patch.
+
+> 
+> Reviewed-by: Jiang Biao <benbjiang@tencent.com>
+> Signed-off-by: Menglong Dong <imagedong@tencent.com>
 [...]
 
