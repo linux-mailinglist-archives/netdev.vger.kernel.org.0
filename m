@@ -1,185 +1,269 @@
-Return-Path: <netdev+bounces-9217-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9218-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id F15FC728004
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 14:30:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 14978728015
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 14:33:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A38A32816E8
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 12:30:26 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6C2011C21011
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 12:32:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0E2F19460;
-	Thu,  8 Jun 2023 12:30:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 08145947B;
+	Thu,  8 Jun 2023 12:33:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDB3412B73
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 12:30:24 +0000 (UTC)
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2096.outbound.protection.outlook.com [40.107.101.96])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1E99E62;
-	Thu,  8 Jun 2023 05:30:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H61fSCKrJ9UvQR+jEWFPZby/83Z89uOTC+JMO/mR38rzICnmLhu4iV1Ov5Ijd1cS0lF/yEnilga4E0rxH3cKI8PiMJ2Ci+3liIv1xE9Z4Fh3ik3TR5fiE8f5mZgLsDOjt+KQ8CYpWq77bQnDUd0jz2SCmNPOZyCFg1zmbIATpImmtn08GU5rquCFfMa4dODslLAiKrt64P1RWNGSz8N47JrF/0/z8zh/0A6C/1Y1pWwtRRxNBrlyeIrVRFBNVhEBY07n45OHbMQZDj1k1r8KQ81ksNB71XZQMvAyQK7QvuGq/anLKq23SVc0PiVymxkCfh5pfGrGQ5AfaI6Lj+fdBA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=43FwK1BCdDBrNv1SgOsKy96ExJFo+k+52Wzn8S5Pyqk=;
- b=cwN3Nq0kvsIR4XeWug8z8IGOML6n21UgBbTmeg1pa/sbEVSx6+vVJqvevNVf0CxnlBVxPzzJ978sOHfPuU6AyuyIQsey/TCgiut6uRXJpXdy78/REQJIeVX32+6thJeTBsW2Amgxolewt7C2xI6rp2xEvqmNOVkvOjxCeYmiwWi4orVZljzcOBncUGAypIL5kFqsDF0TaKmb6vS9N3DLKY1PBG++NGG9sMFB48afnoHjOuRlQBvgD+fey6dtAq/mSIynD3xI3CB+/idwJsUChJQldbGxr/PGb/UrMx90yjTokp/6NCO7UDJw2/4hO4+u4NnivAMtNRmOtMvCLd/hOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=43FwK1BCdDBrNv1SgOsKy96ExJFo+k+52Wzn8S5Pyqk=;
- b=dKaYuF/uFbkI3ZMTN8QAXKWHHnbiuetg+oHSqVL4iU1MlrBq8DvkXAWz/0V6fJpm7Hf1ElZBeCPmwqZoRp6MFzyuGJkjiEq468dANA1SYtdzphBQJ/zL/EGzh8pHW6ZnqSxUUi+BeqFADrVY2qgNl4EKOVUWv4TDMSuzKNpN8Wg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BL3PR13MB5209.namprd13.prod.outlook.com (2603:10b6:208:340::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Thu, 8 Jun
- 2023 12:30:17 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6455.030; Thu, 8 Jun 2023
- 12:30:17 +0000
-Date: Thu, 8 Jun 2023 14:30:10 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Yang Li <yang.lee@linux.alibaba.com>
-Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, kys@microsoft.com, haiyangz@microsoft.com,
-	wei.liu@kernel.org, decui@microsoft.com,
-	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH -next] net: hv_netvsc: Remove duplicated include in
- rndis_filter.c
-Message-ID: <ZIHJ0pxnv63jGkuW@corigine.com>
-References: <20230608080316.84203-1-yang.lee@linux.alibaba.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230608080316.84203-1-yang.lee@linux.alibaba.com>
-X-ClientProxiedBy: AS4P191CA0024.EURP191.PROD.OUTLOOK.COM
- (2603:10a6:20b:5d9::18) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F12272599
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 12:32:59 +0000 (UTC)
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF171FDF;
+	Thu,  8 Jun 2023 05:32:51 -0700 (PDT)
+Received: from dggpemm500011.china.huawei.com (unknown [172.30.72.56])
+	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4QcNlg1r92z18M19;
+	Thu,  8 Jun 2023 20:27:59 +0800 (CST)
+Received: from localhost.huawei.com (10.137.16.203) by
+ dggpemm500011.china.huawei.com (7.185.36.110) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 8 Jun 2023 20:32:47 +0800
+From: renmingshuai <renmingshuai@huawei.com>
+To: <pctammela@mojatatu.com>
+CC: <caowangbao@huawei.com>, <davem@davemloft.net>, <edumazet@google.com>,
+	<jhs@mojatatu.com>, <jiri@resnulli.us>, <kuba@kernel.org>,
+	<liaichun@huawei.com>, <linux-kernel@vger.kernel.org>, <liubo335@huawei.com>,
+	<netdev@vger.kernel.org>, <pabeni@redhat.com>, <renmingshuai@huawei.com>,
+	<xiyou.wangcong@gmail.com>, <yanan@huawei.com>
+Subject: [PATCH v2] net/sched: Set the flushing flags to false to prevent an infinite loop and add one test to tdc
+Date: Thu, 8 Jun 2023 20:32:24 +0800
+Message-ID: <20230608123224.3191731-1-renmingshuai@huawei.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <3679ed57-a0b9-4af2-cf83-e8aaa4bbd29e@mojatatu.com>
+References: <3679ed57-a0b9-4af2-cf83-e8aaa4bbd29e@mojatatu.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BL3PR13MB5209:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1231e974-f3ec-47e1-2881-08db681c1db1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	1LyqXVzU3K21tlvbe+/CXRXtwGm/NDC0r4nURT5kmD0BWtwy/uQirpFX0MxdPaLQRIzuNNazo0ABpSqfp8NTjyT+8HOX95hCoUE/WVn5CoccoQU43PmNi+q8JT1r7R8gUDrapD3LtNOs/3U48tXLHNLer2OygTYDK1Ud3l2UQLX6C26QbYAsAnU7+G+evNW76k3xOHj84L0POYw1sgV8nsRDTGhKkWF27pYA7MScOcJa/MwN6hBJs85sE99hdV3C1aCXNfk4yqjFLg1hr2VeD7F0fSgUYK6X6oVTYjtmR+FCckx/+jdTd3Aubub81s9uzku9o5YsxC4KDOWYYelWV1rbNXLjta870FogJ/E9TuMBcH2uR0+Sgbs+5c+zPZlTo7jdftWDsg0a9l8ds7f0u9YhQfqIfUYaoXSMPMgv/vhl1o5MLCD6p2ZDSzXHMbj4OcOM+FjCnsJrYUnTq9XFlyE15EvuVhGyFVScBs/hGy5yYtC/1vbWb5ew1lGvM5jE97Fafg7y/Ca32BOuIkOLoYEWTysHd3WyVdcw3OkQJdQ=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(366004)(39840400004)(346002)(376002)(451199021)(966005)(6512007)(2616005)(6666004)(6506007)(478600001)(186003)(6486002)(83380400001)(66476007)(66946007)(4326008)(6916009)(66556008)(316002)(38100700002)(8676002)(8936002)(44832011)(5660300002)(7416002)(2906002)(41300700001)(36756003)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?sw4tA6th8gdGxLho9BhMA8w+IgbZ6eoAUbqA49YrLxfO3//2+wpwNO1nRmaM?=
- =?us-ascii?Q?taagZI76IVcecTPTfKr6zVh0+SghBhengHfzTcMvpPlOgtgMsjwcS441Oo8b?=
- =?us-ascii?Q?5xGZ7vv6kVIXukmq+dOCUewB86tv5EeeRCR/N+BmR7IwMb9C7PKdYhTA5C9M?=
- =?us-ascii?Q?88sHHV6jt0h4llUte8/LLtyGlvqNKqQRfeSvb9y+8+dFbhNrCzUF4Ot52jJA?=
- =?us-ascii?Q?yUTP381/xhH1A6Ygyktt6+BixFvr3xAGqy14h6fzcjNyLMoyGh8RR1WhM8ny?=
- =?us-ascii?Q?UOuxJo1nwsRnIlqG5MH1YvXi4MwylOqv9esbU6iBUlmz+j+Ph+LF1iwGq702?=
- =?us-ascii?Q?wTBuQVwgagHXcdUZQnSfB9DF5Oe93dWXQ+NUkGfMjbAJ3fXWBAWdcm6UD7Jq?=
- =?us-ascii?Q?InPekm0ljX+ks9touPh9cbPGG4ZVSPiFqBCHZX52oDwYSJ/SckMVpFNqXgm5?=
- =?us-ascii?Q?+gIFeaoxTnFVsSq4MqfwhLLH/4BSU9Io0iATHB/e+5yAqMLyt1vH84UspThz?=
- =?us-ascii?Q?Z7VnIMdaqdLOk+yzYkIlaYIoORjlLlgKatvnzGePaa1HtYkFZCkAhP+6g+XX?=
- =?us-ascii?Q?R4N90Kma1ufaiQfMiHtYRnwYh0X2F3z6MV9P4aH50kEZeSFddMxmcuXhkogm?=
- =?us-ascii?Q?uW2cpLrxlfvDUrJmkdfTCv2ocN41mdrH+pPo9ENI6NrQ0sDcdAuZ/9r0ClmY?=
- =?us-ascii?Q?nnWIwVHUPxDwmT6gk2rsUjP5ccc2PTggcauC79m7jYF9R9x7Il5Wy7xG2Zn7?=
- =?us-ascii?Q?gZQBtGOuATmpz554Vk5xuOVEKk8VbuvSy57xmNmlS67SSTFQt4WjFHLg3tqt?=
- =?us-ascii?Q?pZ8cjiUuFbo4A6p9pqgPBrCqvY1G1XsPeQ/f5QGgj12fJQBhbiTMlWL4kjTL?=
- =?us-ascii?Q?+Y6c155cGtyfbxFN1/wzAgExsSRZyQwb/CiprfWSTgpu4HDR4RI4q09Xn36B?=
- =?us-ascii?Q?7KvroHGpPzssy8l7mTCzz/xbDoOxrg1wO+aQLPkT+3SVFGfvN7MnDdi2G0vs?=
- =?us-ascii?Q?VXV2DjXDMX5eUyDwc1Ai1JoF2duK0bbU9vc6Ug3KS5rY6UG4rW1eKIOtTxcb?=
- =?us-ascii?Q?aQrYFcNtFLsWDXmOoJ1XYjWNFNelU+moYZDGC+BcLTXgo4q+pr0W3i1oW6lq?=
- =?us-ascii?Q?UjSVs3PzLDRAvI+8S8T8jns9zzoFeunqCm/K4KyH5qZkQ6i0R0fhFFuw0JLS?=
- =?us-ascii?Q?ZM1cLz1xZYYPLhzSgIWZtnWb8v+hiCQyak0ggpnosDVwpLBGbslbGA0HssR0?=
- =?us-ascii?Q?9yp6Vo7ny0AeW6QOuMo1DhUTvRWGokJEj4OZ0lRvh7dml3KcUeDmiQtprroS?=
- =?us-ascii?Q?FHZMcfCFZgBwXQ19Bbr8+8/y2eejEHEspR1GNLMKQVNtdb7Vn5MTwcZ9UUmz?=
- =?us-ascii?Q?xgoKS3UByRHOuAKIRK2vsYiQ+3rPS4rEob5Elye4zsZ+slqru8xrZhHRFRVD?=
- =?us-ascii?Q?egJRsgyo6kPBbFqC4Anm7lZdqoQIL4bWTNTqWA9KB0dsyf5Dnieuk8uT5ER3?=
- =?us-ascii?Q?o7o+59KDdbzVbVLY18RvcTYs6qJ3bbr54DQdiCcDhGORtt7x3Xf0qw1EAkoA?=
- =?us-ascii?Q?TQ96HPb5XPORh/gsem5s8TiTIcZiHoufDqnt1fnpwTwSSuMl1BjJ3q87VQRz?=
- =?us-ascii?Q?KraM7y9/3nsfvKkrxNT9uyfVdmnZ4KuNDeN+738AjUq06DLfhq05W5Tssib5?=
- =?us-ascii?Q?VQcZeQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1231e974-f3ec-47e1-2881-08db681c1db1
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2023 12:30:17.1154
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EgLW48DTnoOA9U40tG8ze3MBJlrKhLrUwnYJ1a8DeZazhzUz8PJIdp2AEytW8HQ0oWGXXt1rUxYUHzgKy15aXqw7oMrnZlFiAGjPP1dXXNc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR13MB5209
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.137.16.203]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500011.china.huawei.com (7.185.36.110)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 08, 2023 at 04:03:16PM +0800, Yang Li wrote:
-> ./drivers/net/hyperv/rndis_filter.c: linux/slab.h is included more than once.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Closes: https://bugzilla.openanolis.cn/show_bug.cgi?id=5462
-> Fixes: 4cab498f33f7 ("hv_netvsc: Allocate rx indirection table size dynamically")
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+>On 07/06/2023 01:19, renmingshuai wrote:
+>>> On 06/06/2023 11:45, renmingshuai wrote:
+>>>> When a new chain is added by using tc, one soft lockup alarm will
+>>>> be
+>>>>    generated after delete the prio 0 filter of the chain. To
+>>>>    reproduce
+>>>>    the problem, perform the following steps:
+>>>> (1) tc qdisc add dev eth0 root handle 1: htb default 1
+>>>> (2) tc chain add dev eth0
+>>>> (3) tc filter del dev eth0 chain 0 parent 1: prio 0
+>>>> (4) tc filter add dev eth0 chain 0 parent 1:
+>>>
+>>> This seems like it could be added to tdc or 3 and 4 must be run in
+>>> parallel?
+>> 3 and 4 do not need to be run inparallel. When a new chain is added
+>> by the
+>>   way as step 1 and the step 3 is completed, this problem always
+>>   occurs
+>>   whenever step 4 is run.
+>
+>Got it,
+>The test still hangs with the provided patch.
+>
+>+ tc qdisc add dev lo root handle 1: htb default 1
+>+ tc chain add dev lo
+>+ tc filter del dev lo chain 0 parent 1: prio 0
+>[   68.790030][ T6704] [+]
+>[   68.790060][ T6704] chain refcnt 2
+>[   68.790951][ T6704] [-]
+>+ tc filter add dev lo chain 0 parent 1:
+><hangs>
+>
+>Also please add this test to tdc, it should be straightforward.
+>
+Sorry for not testing before. I forgot that the chain->refcnt was
+increased by 1 when tcf_chain_get() is called in tc_del_tfilter().
+ The value of chain->refcnt is 2 after chain flush. The test
+ result is as follows:
+[root@localhost ~]# tc qdisc add dev eth2 root handle 1: htb default 1
+[root@localhost ~]# tc chain add dev eth2
+[root@localhost ~]# tc filter del dev eth2 chain 0 parent 1: prio 0
+[root@localhost ~]# tc filter add dev eth2 chain 0 parent 1:
+Error: Filter kind and protocol must be specified.
+We have an error talking to the kernel
 
-Hi Yang Li,
+And I have add this test to tdc:
+[root@localhost tc-testing]# ./tdc.py -f tc-tests/filters/tests.json
+ok 7 c2b4 - Adding a new fiter after deleting a filter in a chain does
+not cause  an infinite loop
 
-A few nits from my side;
+Fixes: 726d061286ce ("net: sched: prevent insertion of new classifiers during chain flush")
+Signed-off-by: renmingshuai <renmingshuai@huawei.com>
+---
+ net/sched/cls_api.c                           |  7 +++++
+ .../tc-testing/tc-tests/filters/tests.json    | 26 ++++++++++++++++---
+ 2 files changed, 30 insertions(+), 3 deletions(-)
 
-1. The subject should include the target tree, in this case net-next.
-
-	[PATCH net-next] ...
-
-2. I don't think this needs a fixes tag: nothing was broken
-
-I'm not sure this warrants a v2.
-If you do decide to post a v2, please allow for 24h since
-v1 was posted.
-
-Link: https://kernel.org/doc/html/v6.3/process/maintainer-netdev.html
-
-Lastly, I think at least one other similar change has been posted recently.
-Please consider batching up such changes, say in groups of 10 patches,
-and posting them as a patch-set.
-
-
-The change itself seems fine to me.
-
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-
-> ---
->  drivers/net/hyperv/rndis_filter.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
-> index af95947a87c5..ecc2128ca9b7 100644
-> --- a/drivers/net/hyperv/rndis_filter.c
-> +++ b/drivers/net/hyperv/rndis_filter.c
-> @@ -21,7 +21,6 @@
->  #include <linux/rtnetlink.h>
->  #include <linux/ucs2_string.h>
->  #include <linux/string.h>
-> -#include <linux/slab.h>
->  
->  #include "hyperv_net.h"
->  #include "netvsc_trace.h"
-> -- 
-> 2.20.1.7.g153144c
-> 
-> 
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 2621550bfddc..3ea054e03fbf 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -2442,6 +2442,13 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 		tfilter_notify_chain(net, skb, block, q, parent, n,
+ 				     chain, RTM_DELTFILTER, extack);
+ 		tcf_chain_flush(chain, rtnl_held);
++		/* Set the flushing flags to false to prevent an infinite loop
++		 * when a new filter is added.
++		 */
++		mutex_lock(&chain->filter_chain_lock);
++		if (chain->refcnt == 2)
++			chain->flushing = false;
++		mutex_unlock(&chain->filter_chain_lock);
+ 		err = 0;
+ 		goto errout;
+ 	}
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
+index 361235ad574b..f165ca091109 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
+@@ -125,5 +125,25 @@
+         "teardown": [
+             "$TC qdisc del dev $DEV2 ingress"
+         ]
++    },
++    {
++        "id": "c2b4",
++        "name": "Adding a new fiter after deleting a filter in a chain does not cause an infinite loop",
++        "category": [
++            "filter",
++            "prio"
++        ],
++        "setup": [
++            "$TC qdisc add dev $DEV1 root handle 1: htb default 1",
++            "$TC chain add dev $DEV1"
++        ],
++        "cmdUnderTest": "$TC filter del dev $DEV1 chain 0 parent 1: prio 0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC filter add dev $DEV1 chain 0 parent 1:",
++        "matchPattern": "Error: Filter kind and protocol must be specified.",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DEV1 root handle 1: htb default 1"
++        ]
+     }
+ ]
+--
+2.27.0
+>>>>
+>>>>
+>>>> The refcnt of the chain added by step 2 is equal to 1. After step
+>>>> 3,
+>>>>    the flushing flag of the chain is set to true in the
+>>>>    tcf_chain_flush()
+>>>>    called by tc_del_tfilter() because the prio is 0. In this case,
+>>>>    if
+>>>>    we add a new filter to this chain, it will never succeed and try
+>>>>    again
+>>>>    and again because the refresh flash is always true and refcnt is
+>>>>    1.
+>>>>    A soft lock alarm is generated 20 seconds later.
+>>>> The stack is show as below:
+>>>>
+>>>> Kernel panic - not syncing: softlockup: hung tasks
+>>>> CPU: 2 PID: 3321861 Comm: tc Kdump: loaded Tainted: G
+>>>> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+>>>> Call Trace:
+>>>>    <IRQ>
+>>>>    dump_stack+0x57/0x6e
+>>>>    panic+0x196/0x3ec
+>>>>    watchdog_timer_fn.cold+0x16/0x5c
+>>>>    __run_hrtimer+0x5e/0x190
+>>>>    __hrtimer_run_queues+0x8a/0xe0
+>>>>    hrtimer_interrupt+0x110/0x2c0
+>>>>    ? irqtime_account_irq+0x49/0xf0
+>>>>    __sysvec_apic_timer_interrupt+0x5f/0xe0
+>>>>    asm_call_irq_on_stack+0x12/0x20
+>>>>    </IRQ>
+>>>>    sysvec_apic_timer_interrupt+0x72/0x80
+>>>>    asm_sysvec_apic_timer_interrupt+0x12/0x20
+>>>> RIP: 0010:mutex_lock+0x24/0x70
+>>>> RSP: 0018:ffffa836004ab9a8 EFLAGS: 00000246
+>>>> RAX: 0000000000000000 RBX: ffff95bb02d76700 RCX: 0000000000000000
+>>>> RDX: ffff95bb27462100 RSI: 0000000000000000 RDI: ffff95ba5b527000
+>>>> RBP: ffff95ba5b527000 R08: 0000000000000001 R09: ffffa836004abbb8
+>>>> R10: 000000000000000f R11: 0000000000000000 R12: 0000000000000000
+>>>> R13: ffff95ba5b527000 R14: ffffa836004abbb8 R15: 0000000000000001
+>>>>    __tcf_chain_put+0x27/0x200
+>>>>    tc_new_tfilter+0x5e8/0x810
+>>>>    ? tc_setup_cb_add+0x210/0x210
+>>>>    rtnetlink_rcv_msg+0x2e3/0x380
+>>>>    ? rtnl_calcit.isra.0+0x120/0x120
+>>>>    netlink_rcv_skb+0x50/0x100
+>>>>    netlink_unicast+0x12d/0x1d0
+>>>>    netlink_sendmsg+0x286/0x490
+>>>>    sock_sendmsg+0x62/0x70
+>>>>    ____sys_sendmsg+0x24c/0x2c0
+>>>>    ? import_iovec+0x17/0x20
+>>>>    ? sendmsg_copy_msghdr+0x80/0xa0
+>>>>    ___sys_sendmsg+0x75/0xc0
+>>>>    ? do_fault_around+0x118/0x160
+>>>>    ? do_read_fault+0x68/0xf0
+>>>>    ? __handle_mm_fault+0x3f9/0x6f0
+>>>>    __sys_sendmsg+0x59/0xa0
+>>>>    do_syscall_64+0x33/0x40
+>>>>    entry_SYSCALL_64_after_hwframe+0x61/0xc6
+>>>> RIP: 0033:0x7f96705b8247
+>>>> RSP: 002b:00007ffe552e9dc8 EFLAGS: 00000246 ORIG_RAX:
+>>>> 000000000000002e
+>>>> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f96705b8247
+>>>> RDX: 0000000000000000 RSI: 00007ffe552e9e40 RDI: 0000000000000003
+>>>> RBP: 0000000000000001 R08: 0000000000000001 R09: 0000558113f678b0
+>>>> R10: 00007f967069ab00 R11: 0000000000000246 R12: 00000000647ea089
+>>>> R13: 00007ffe552e9f30 R14: 0000000000000001 R15: 0000558113175f00
+>>>>
+>>>> To avoid this case, set chain->flushing to be false if the
+>>>> chain->refcnt
+>>>>    is 1 after flushing the chain when prio is 0.
+>>>>
+>>>> Fixes: 726d061286ce ("net: sched: prevent insertion of new
+>>>> classifiers during chain flush")
+>>>> Signed-off-by: Ren Mingshuai <renmingshuai@huawei.com>
+>>>> ---
+>>>>    net/sched/cls_api.c | 7 +++++++
+>>>>    1 file changed, 7 insertions(+)
+>>>>
+>>>> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+>>>> index 2621550bfddc..68be55d75831 100644
+>>>> --- a/net/sched/cls_api.c
+>>>> +++ b/net/sched/cls_api.c
+>>>> @@ -2442,6 +2442,13 @@ static int tc_del_tfilter(struct sk_buff
+>>>> *skb, struct nlmsghdr *n,
+>>>>    		tfilter_notify_chain(net, skb, block, q, parent,
+>>>>    		n,
+>>>>    				     chain, RTM_DELTFILTER,
+>>>>    				     extack);
+>>>>    		tcf_chain_flush(chain, rtnl_held);
+>>>> +		/* Set the flushing flags to false to prevent an
+>>>> infinite loop
+>>>> +		 * when a new filter is added.
+>>>> +		 */
+>>>> +		mutex_lock(&chain->filter_chain_lock);
+>>>> +		if (chain->refcnt == 1)
+>>>> +			chain->flushing = false;
+>>>> +		mutex_unlock(&chain->filter_chain_lock);
+>>>>    		err = 0;
+>>>>    		goto errout;
+>>>>    	}
 
