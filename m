@@ -1,202 +1,118 @@
-Return-Path: <netdev+bounces-9336-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9337-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id CA0D67288A0
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 21:33:50 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E2DE47288D4
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 21:40:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CF12D1C21061
-	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 19:33:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 06452281790
+	for <lists+netdev@lfdr.de>; Thu,  8 Jun 2023 19:40:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C0DC1F191;
-	Thu,  8 Jun 2023 19:33:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 399651F930;
+	Thu,  8 Jun 2023 19:40:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C4211EA64
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 19:33:47 +0000 (UTC)
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 773FC18C;
-	Thu,  8 Jun 2023 12:33:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686252825; x=1717788825;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=F+OxDi++6B6OT7qYKbXPAOLDtvQSIYmKdr7y1Cz75FI=;
-  b=Nq9TDjJQNtCinP5XbULtlGexzuZMXiuZ+rmE2lfeLAffNoHDgTzjmyus
-   psg8JdCF9XUpV1mOG/fn0ezt2IhhOl6lhyGYxfkq7s7xkFL9q4GdLL8LE
-   MxOMw4CufvzguLExcVwJE8Eb9DoFUja8NnTCQvVXvJuWKykx6HslkFY5Z
-   hr72UOGA4K2Us9uXazY3J8Jtd2dKNP0uAsKP0pL7I06hepSgqmCqIToOC
-   US3TIcfFYjQZDl4ThbQg0ZTehLNS/LThijbc9HuZpManNBHmCNKfS7hXC
-   uBS0V+pONJOnZ5zzYj+Vm1Wj9ggB5/ze4yhoqIFalp1g2PXNDKe4Cyhwz
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="420998008"
-X-IronPort-AV: E=Sophos;i="6.00,227,1681196400"; 
-   d="scan'208";a="420998008"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2023 12:33:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="854468968"
-X-IronPort-AV: E=Sophos;i="6.00,227,1681196400"; 
-   d="scan'208";a="854468968"
-Received: from lkp-server01.sh.intel.com (HELO 15ab08e44a81) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 08 Jun 2023 12:33:42 -0700
-Received: from kbuild by 15ab08e44a81 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1q7LO9-0008CA-1w;
-	Thu, 08 Jun 2023 19:33:41 +0000
-Date: Fri, 9 Jun 2023 03:33:04 +0800
-From: kernel test robot <lkp@intel.com>
-To: Stefan Roesch <shr@devkernel.io>, io-uring@vger.kernel.org,
-	kernel-team@fb.com
-Cc: oe-kbuild-all@lists.linux.dev, shr@devkernel.io, axboe@kernel.dk,
-	ammarfaizi2@gnuweeb.org, netdev@vger.kernel.org, kuba@kernel.org,
-	olivier@trillion01.com
-Subject: Re: [PATCH v15 1/7] net: split off __napi_busy_poll from
- napi_busy_poll
-Message-ID: <202306090341.ShxjwRn1-lkp@intel.com>
-References: <20230608163839.2891748-2-shr@devkernel.io>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B1F0168CE
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 19:40:09 +0000 (UTC)
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11557134
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 12:40:08 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id 3f1490d57ef6-ba8cd61ee2dso3074111276.1
+        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 12:40:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore.com; s=google; t=1686253207; x=1688845207;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5dJBCTsq9Xw5p421JbO2Khi1BzsFXDH5KI5pOiwejyE=;
+        b=T8+ajB0IGaul1f4L9rSxr7/sO33HCz42RRag+mNL8dvn6SBlBQFzcr/KANcsaZnvaj
+         ZwPFxcHeRf3RARJ2g31tSBQQjG8/c9VridAq3j+SXN5jvfDA1REreBx4NySPMG0DLtsQ
+         BteLRnXcaZMUP5zSDD4PYcpg/A0L0NqBeRO+CsdKlh9lqxI/uZdGa/kFjliAnIKX/2m6
+         acYZnOJVy4sQscQUCBe5mRkVrbG4vwEH6dQ8ABBVlRfnj6olPHwjyN/tn+Mb1iXFJ13X
+         HSywuz+7HXNrV3/5QlE911s1K/2jEIxDWwLcMrc0vUEhAUr5TUyNERJpj60wWa1FUCAj
+         8Gjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686253207; x=1688845207;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5dJBCTsq9Xw5p421JbO2Khi1BzsFXDH5KI5pOiwejyE=;
+        b=aRQdTJ/oxnUzOPA353jq/GryRDtWlof2c20lD/W6/MlK3EA6QLz+LqJo2gfa/z8FfY
+         ai+9W4STphZMA4aooYXxFTWxpsvRQ3igKgaeimnhAbWo6MyYN1lJzF1ymvInx8/gmXEP
+         P5R+U/CEaQHFVDGknxIV3vx1Dr+UWFGNzzLScvhv6Nk9AupewQQ/ueVDIWEu4oGKuel8
+         i6Bes1GdzJxTZtBqh8+QpjpPWEtkeJVAHSqWJOb6rdxz8Nz8B1yoyFQbbBGaa9QBuHYE
+         AOI64cX0/UHvr8lekAT5DJu6jWahOvdyurH02LWl28wTzDQkLNZyQBWXywTsjmCM4D/C
+         y3vw==
+X-Gm-Message-State: AC+VfDxxUCSP4N3821aemJZEsWUQ0yCqMOxjko6NXqRS+9V67I5e+4+v
+	D13cOnZNsPETtbRQVgsXVrtjYGY9p3l9z+jG0rfzpHbPF8vFfnc=
+X-Google-Smtp-Source: ACHHUZ49nh4oyyb4CFZgWniE1i3Pa7CJZ8qs4NQxwbKEeSQhylZPIIIuabe6hbeH2QUXqSwGtIouVaoc/kjRFSbDY34=
+X-Received: by 2002:a81:6ccd:0:b0:569:ef2b:e20 with SMTP id
+ h196-20020a816ccd000000b00569ef2b0e20mr482524ywc.23.1686253207277; Thu, 08
+ Jun 2023 12:40:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230608163839.2891748-2-shr@devkernel.io>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <20230608191304.253977-2-paul@paul-moore.com>
+In-Reply-To: <20230608191304.253977-2-paul@paul-moore.com>
+From: Paul Moore <paul@paul-moore.com>
+Date: Thu, 8 Jun 2023 15:39:56 -0400
+Message-ID: <CAHC9VhTcLJRc-8z86Re1=5HxSQkvgr0cSH_TArAOuC+jGr3PzQ@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: move labeled networking to "supported"
+To: linux-security-module@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Stefan,
+On Thu, Jun 8, 2023 at 3:13=E2=80=AFPM Paul Moore <paul@paul-moore.com> wro=
+te:
+>
+> My current employer, Microsoft, cares very much about the development
+> and maintenance of the upstream Linux Kernel so we can consider
+> labeled networking to be "supported" according to the definition in
+> MAINTAINERS:
+>
+>   S: *Status*, one of the following:
+>       Supported:  Someone is actually paid to look after this.
+>       Maintained: Someone actually looks after it.
+>       ...
+>
+> Signed-off-by: Paul Moore <paul@paul-moore.com>
+> ---
+>  MAINTAINERS | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-kernel test robot noticed the following build warnings:
+FYI, I just merged this via lsm/next.
 
-[auto build test WARNING on f026be0e1e881e3395c3d5418ffc8c2a2203c3f3]
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 7e0b87d5aa2e..8818cd866009 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -14667,7 +14667,7 @@ NETWORKING [LABELED] (NetLabel, Labeled IPsec, SE=
+CMARK)
+>  M:     Paul Moore <paul@paul-moore.com>
+>  L:     netdev@vger.kernel.org
+>  L:     linux-security-module@vger.kernel.org
+> -S:     Maintained
+> +S:     Supported
+>  W:     https://github.com/netlabel
+>  F:     Documentation/netlabel/
+>  F:     include/net/calipso.h
+> --
+> 2.41.0
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Stefan-Roesch/net-split-off-__napi_busy_poll-from-napi_busy_poll/20230609-010104
-base:   f026be0e1e881e3395c3d5418ffc8c2a2203c3f3
-patch link:    https://lore.kernel.org/r/20230608163839.2891748-2-shr%40devkernel.io
-patch subject: [PATCH v15 1/7] net: split off __napi_busy_poll from napi_busy_poll
-config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20230609/202306090341.ShxjwRn1-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 12.3.0
-reproduce (this is a W=1 build):
-        mkdir -p ~/bin
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git checkout f026be0e1e881e3395c3d5418ffc8c2a2203c3f3
-        b4 shazam https://lore.kernel.org/r/20230608163839.2891748-2-shr@devkernel.io
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.3.0 ~/bin/make.cross W=1 O=build_dir ARCH=alpha olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.3.0 ~/bin/make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash net/core/
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202306090341.ShxjwRn1-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> net/core/dev.c:6182:6: warning: no previous prototype for '__napi_busy_loop' [-Wmissing-prototypes]
-    6182 | void __napi_busy_loop(unsigned int napi_id,
-         |      ^~~~~~~~~~~~~~~~
-
-
-vim +/__napi_busy_loop +6182 net/core/dev.c
-
-  6181	
-> 6182	void __napi_busy_loop(unsigned int napi_id,
-  6183			      bool (*loop_end)(void *, unsigned long),
-  6184			      void *loop_end_arg, bool prefer_busy_poll, u16 budget,
-  6185			      bool rcu)
-  6186	{
-  6187		unsigned long start_time = loop_end ? busy_loop_current_time() : 0;
-  6188		int (*napi_poll)(struct napi_struct *napi, int budget);
-  6189		void *have_poll_lock = NULL;
-  6190		struct napi_struct *napi;
-  6191	
-  6192	restart:
-  6193		napi_poll = NULL;
-  6194	
-  6195		if (!rcu)
-  6196			rcu_read_lock();
-  6197	
-  6198		napi = napi_by_id(napi_id);
-  6199		if (!napi)
-  6200			goto out;
-  6201	
-  6202		preempt_disable();
-  6203		for (;;) {
-  6204			int work = 0;
-  6205	
-  6206			local_bh_disable();
-  6207			if (!napi_poll) {
-  6208				unsigned long val = READ_ONCE(napi->state);
-  6209	
-  6210				/* If multiple threads are competing for this napi,
-  6211				 * we avoid dirtying napi->state as much as we can.
-  6212				 */
-  6213				if (val & (NAPIF_STATE_DISABLE | NAPIF_STATE_SCHED |
-  6214					   NAPIF_STATE_IN_BUSY_POLL)) {
-  6215					if (prefer_busy_poll)
-  6216						set_bit(NAPI_STATE_PREFER_BUSY_POLL, &napi->state);
-  6217					goto count;
-  6218				}
-  6219				if (cmpxchg(&napi->state, val,
-  6220					    val | NAPIF_STATE_IN_BUSY_POLL |
-  6221						  NAPIF_STATE_SCHED) != val) {
-  6222					if (prefer_busy_poll)
-  6223						set_bit(NAPI_STATE_PREFER_BUSY_POLL, &napi->state);
-  6224					goto count;
-  6225				}
-  6226				have_poll_lock = netpoll_poll_lock(napi);
-  6227				napi_poll = napi->poll;
-  6228			}
-  6229			work = napi_poll(napi, budget);
-  6230			trace_napi_poll(napi, work, budget);
-  6231			gro_normal_list(napi);
-  6232	count:
-  6233			if (work > 0)
-  6234				__NET_ADD_STATS(dev_net(napi->dev),
-  6235						LINUX_MIB_BUSYPOLLRXPACKETS, work);
-  6236			local_bh_enable();
-  6237	
-  6238			if (!loop_end || loop_end(loop_end_arg, start_time))
-  6239				break;
-  6240	
-  6241			if (unlikely(need_resched())) {
-  6242				if (rcu)
-  6243					break;
-  6244				if (napi_poll)
-  6245					busy_poll_stop(napi, have_poll_lock, prefer_busy_poll, budget);
-  6246				preempt_enable();
-  6247				rcu_read_unlock();
-  6248				cond_resched();
-  6249				if (loop_end(loop_end_arg, start_time))
-  6250					return;
-  6251				goto restart;
-  6252			}
-  6253			cpu_relax();
-  6254		}
-  6255		if (napi_poll)
-  6256			busy_poll_stop(napi, have_poll_lock, prefer_busy_poll, budget);
-  6257		preempt_enable();
-  6258	out:
-  6259		if (!rcu)
-  6260			rcu_read_unlock();
-  6261	}
-  6262	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+--=20
+paul-moore.com
 
