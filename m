@@ -1,298 +1,392 @@
-Return-Path: <netdev+bounces-9452-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9453-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id EEDE97292F6
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 10:25:12 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6BE32729314
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 10:28:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A430E2817F7
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 08:25:11 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BC70928185C
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 08:28:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A11DFBA23;
-	Fri,  9 Jun 2023 08:25:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B7C30BA24;
+	Fri,  9 Jun 2023 08:28:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E74BAD51
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 08:25:03 +0000 (UTC)
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2103.outbound.protection.outlook.com [40.107.223.103])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E30A49EA;
-	Fri,  9 Jun 2023 01:24:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QjhdVpTgBOHs/vGqzW+9wXod16fyC3ojULwrFQHidpNo2x59cOSzXHpygY3n1EQjDY7cERniv5wCcPUctXOyzVBLNBPf+2M39Y6jKFcD48ItWSNseDHaN77TqplAsbKfe1UYzX+zUAdJ21d6DtVdVgaWDX9gXzsUSXuTWNul0/gLuitb+7O5X6NQEWDATXlvOI3Tjwi9gY+SL7UMnobGRDkuVjx52YzYivDRp+6Zhu09CFf3CBC5hNAvnkPZ3akuCMhDw8m1T0QKoz+Jy4tNHPwZNn6RJof/7dsipQ/Jl78q/Jl7Lx+2lOeQOO900D7gcTfCWqLo62JQCC0BNxQvBA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6jBWq3F/bgn3Jwk5K89azg3MaHwtb4tLqIHzi5a6KyQ=;
- b=Vbp+jch1oEdMDDtQB5sr8em6O9vukbrNkfHeXdnIkTpki6fyfbGHCwh19mLfmn/gsWZl9R7+wZO8b6mVq5bBOAsa3ed5JDSpZJo0dicvrogyW11Jz8lFy2g0ZHzHJ/0BvczQE5tJm+i9m5CSedOOTm9+lZuNVLoht8c70HUb9qrweUd++QkQX6LuBVxCGL7WJCeoeI+2uXq34yAfFhALV5D624EdwCKyKqXmY1NVxOSF+Q6cEFSc0wezw9MBkxZqoJCa6xPLFGMkroS7MPUwVKQ8IKvjr3Cki7hHdZADJhYgoUHIvpSKWlqsdGeLhZ0ft0gYs+eIqzIZscmwBuaMtA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5873A92E
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 08:28:15 +0000 (UTC)
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B801B3AA8
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 01:28:10 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id 41be03b00d2f7-543c6a2aa07so461531a12.0
+        for <netdev@vger.kernel.org>; Fri, 09 Jun 2023 01:28:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6jBWq3F/bgn3Jwk5K89azg3MaHwtb4tLqIHzi5a6KyQ=;
- b=XY8MUPooA6f0W2P+xmRDpDCJT8OexZy0EFLp/sKooQV2WPP7KpQFV/relZc/ltPnylDbw87Ni3rTRrtjTrZc+dPdnxHcGlGIWg7Fc/pUvferf/Vli6YQK9wEktYDubHalqQPQDqHAGjK874aid/EYKkLux3mmEZ+MdedBC004CQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SA0PR13MB4125.namprd13.prod.outlook.com (2603:10b6:806:73::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.19; Fri, 9 Jun
- 2023 08:24:20 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6455.030; Fri, 9 Jun 2023
- 08:24:19 +0000
-Date: Fri, 9 Jun 2023 10:24:12 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: renmingshuai <renmingshuai@huawei.com>
-Cc: pctammela@mojatatu.com, caowangbao@huawei.com, davem@davemloft.net,
-	edumazet@google.com, jhs@mojatatu.com, jiri@resnulli.us,
-	kuba@kernel.org, liaichun@huawei.com, linux-kernel@vger.kernel.org,
-	liubo335@huawei.com, netdev@vger.kernel.org, pabeni@redhat.com,
-	xiyou.wangcong@gmail.com, yanan@huawei.com
-Subject: Re: [PATCH v3] net/sched: Set the flushing flags to false to prevent
- an infinite loop and add one test to tdc
-Message-ID: <ZILhrPYdQ4qRVDg/@corigine.com>
-References: <91e6a8cd-2775-d759-4462-b1be7dc79bbe@mojatatu.com>
- <20230609033115.3738692-1-renmingshuai@huawei.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230609033115.3738692-1-renmingshuai@huawei.com>
-X-ClientProxiedBy: AM4PR0501CA0051.eurprd05.prod.outlook.com
- (2603:10a6:200:68::19) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=bytedance.com; s=google; t=1686299290; x=1688891290;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=3Mnn0NJnMdo5oou5LijiWQTnrZb/85o7p3nvJNaAHoM=;
+        b=jsw3R6na+7LqrydPc0FvDpVQhH7T6IEkvxDv7igYNc4VoPgzY5x138m6Ufz7zAWNyh
+         ka3dcEilI6dmem3GetyUB7wv/wXMY57kojWZ9cxIb5EnhQmcOOsuWZxBdMsPaoh99AqB
+         B6XUvC6+N8caa3EoRa7tgVqcb9x+qj5WLqDC4KkAXMDsH/Newo4Z4/LuOJsgQBye6Ocs
+         EnU3Cp3MVnMyFXpLqMsh77rVJmlIsEdTIQxqr+tJ3JQITj8H3Z4jcCqQoao5hD162/rM
+         XKHOW/Glgi2xoYiE19QmBByld9VX0RLsq/IHjNR1Q+uXH+CvZE03RlvQAkruEzxL6kzf
+         oC5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686299290; x=1688891290;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3Mnn0NJnMdo5oou5LijiWQTnrZb/85o7p3nvJNaAHoM=;
+        b=M0Vjoif6OQb5cPcuchRih+VkE3mVON8JW1iFFXfVvUg6QYIirOJEKPba6EB/4YBqBP
+         n1xqrCEDIa0AIh9jZEeEKLN4yWFXFsNh9DC7L6NNWLm2SMdHOR34HQFHfrXp71wB2is8
+         GyWTTMMYqo4b0Ow3TaR/poqwNMqe4f5QKehWA0D6/7q6XOHwFW4pWmRQScdKYid1GDzm
+         rTNkkNDJLVm99b+ngy693HuscYkRWwlDwRN+HILtfQHVXDJGmMNHzg4HEEpxWzLp4HjB
+         iFTB77XabfQfPMnCfpJqq3L6yNEQbiL46pN3qlaXQxn3Qi7M3nS4RuaCtLd5stQIuLwC
+         myNw==
+X-Gm-Message-State: AC+VfDzzxEh/I2aRPpNO9PrJiCxJvbqqmq8dHvYbwumepVMjGJEekZSh
+	NNpmawi5pn+Jp/6PuhjAejnybw==
+X-Google-Smtp-Source: ACHHUZ4vyQNHvw2dp1onWfxhxBw2KSsxsWbMp6td9W0bKDrPtVX1Xcit67MBSHQY1dlOFrCHm8jLTg==
+X-Received: by 2002:a17:903:496:b0:1af:f8a8:5ba4 with SMTP id jj22-20020a170903049600b001aff8a85ba4mr432039plb.4.1686299289673;
+        Fri, 09 Jun 2023 01:28:09 -0700 (PDT)
+Received: from C02DV8HUMD6R.bytedance.net ([139.177.225.255])
+        by smtp.gmail.com with ESMTPSA id g7-20020a1709026b4700b001ab2b415bdbsm2692437plt.45.2023.06.09.01.28.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Jun 2023 01:28:08 -0700 (PDT)
+From: Abel Wu <wuyun.abel@bytedance.com>
+To: Tejun Heo <tj@kernel.org>,
+	Christian Warloe <cwarloe@google.com>,
+	Wei Wang <weiwan@google.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Johannes Weiner <hannes@cmpxchg.org>,
+	Michal Hocko <mhocko@kernel.org>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Shakeel Butt <shakeelb@google.com>,
+	Muchun Song <muchun.song@linux.dev>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	David Ahern <dsahern@kernel.org>,
+	Yosry Ahmed <yosryahmed@google.com>,
+	"Matthew Wilcox (Oracle)" <willy@infradead.org>,
+	Yu Zhao <yuzhao@google.com>,
+	Vasily Averin <vasily.averin@linux.dev>,
+	Kuniyuki Iwashima <kuniyu@amazon.com>,
+	Martin KaFai Lau <martin.lau@kernel.org>,
+	Abel Wu <wuyun.abel@bytedance.com>,
+	Xin Long <lucien.xin@gmail.com>,
+	Jason Xing <kernelxing@tencent.com>
+Cc: Michal Hocko <mhocko@suse.com>,
+	Alexei Starovoitov <ast@kernel.org>,
+	linux-kernel@vger.kernel.org (open list),
+	netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
+	cgroups@vger.kernel.org (open list:CONTROL GROUP - MEMORY RESOURCE CONTROLLER (MEMCG)),
+	linux-mm@kvack.org (open list:CONTROL GROUP - MEMORY RESOURCE CONTROLLER (MEMCG))
+Subject: [RFC PATCH net-next] sock: Propose socket.urgent for sockmem isolation
+Date: Fri,  9 Jun 2023 16:27:03 +0800
+Message-Id: <20230609082712.34889-1-wuyun.abel@bytedance.com>
+X-Mailer: git-send-email 2.37.3
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA0PR13MB4125:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9cddf0d5-b476-486c-04cb-08db68c2ebf8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	JxQDJ4BjEhrFmxk11obNbjW1eUt1DZaKQhZJfDsG/7Ki/3h28MtGV6P3/cWekcUFW1399hySheADodilxcKkqG4qIItMzflajHsnrAnsrAkZUymox3ift2fSPs6rzd6hHYQgCdRx1zEOajyiIip4Z+UCD9TI+5RHxPwMKyPbjBMbL2Uf/7XkgT//gglzpBQqgxAPpff9hjgDo4OUGpX/l5Qpu/HoV3xBbslut5UHSTl9XAf09BlFgGyn/jnZR5m+944COjVnoaqDVnpUtlxGYVtgns4/VOttXIt/xSMY8Gzz4eM1bIs3MHfngQiOIO8tixnEB3DJabRxzuEyaDMFet0nbHG7bLjCLoCPc6NNSupiPGbXlogmqHKfyfug16uHSL1WW1dGnqMMAFLHedj3vMzA6NM6hXD+xbJNIga4NThoNCZvBdZSr6vdQ8fMDbLToZYH8gnTMwmsqZK7wXySvSzf/EMFmd/tiORbMIod/upnMGqMs3NcRpEh0Sc9zMdbv79YNaLQcJZeJMT88AaXg9P8PchG7xvl8TYm8Iqbttk=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(39840400004)(346002)(136003)(366004)(451199021)(186003)(83380400001)(478600001)(6666004)(6506007)(6512007)(53546011)(2616005)(66899021)(8936002)(86362001)(66556008)(44832011)(316002)(4326008)(6916009)(66476007)(36756003)(6486002)(66946007)(5660300002)(2906002)(966005)(41300700001)(38100700002)(8676002)(7416002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?lXxlqyX76xDQNB+TWEeRgCQlJu4oISa8MtgOryIBwP1Q0gqSGrtHnzUoxDBF?=
- =?us-ascii?Q?647UDlk7QkNJbwHwNdy0GD2DaHN38rnQV2JUzPXnX+nMWP9v3FwCJNnd06VJ?=
- =?us-ascii?Q?uwQ+9FWo8sVPiFbMwb3fq6zQlMXdpP4ibJZssIx3t8Xpx16sx3tdwSR5PGlT?=
- =?us-ascii?Q?jLCrifOyygB7PoRWihHLIH+XD7dl1hg2zF6vMaWGJQY6mY+SrVwXu99F7PpR?=
- =?us-ascii?Q?/OD0XwlTlv7DfVtN68LPtBVdee3F7ZOOIjOc6s2pwlnuc7E1nnvMj8Xku6eF?=
- =?us-ascii?Q?s6FdGWTnhkYkXDTwOjMBevo1d0Z3mZvCX9N0MH2NFPKDFvqNbyc5YTFtrJsx?=
- =?us-ascii?Q?lg9iSykqUYCQw1ADERQLmnywAxtvR8uEAz9OZNwRs2feKWZzlfvUJQ5t37cB?=
- =?us-ascii?Q?a89LL/Vu+B1ny2oyfqU6PoIYy7JSAfW0T6+xEjM7INMJBYtzPZnlZ4h4pqSt?=
- =?us-ascii?Q?pU0FqJbXSPY1463OVT1KTv3GxJj7S9GYPRdL9c0SKAd2esftEBLt7w0QI+Oq?=
- =?us-ascii?Q?wWuXNeup4cIuKyqN9FuiP4EaNFZ2kMgmRH5ojmM0z/mJngpdMPX8HiT1pSRK?=
- =?us-ascii?Q?VU6LFOfVp0eTo7AJXiNFNBYO8ZqRt5Bgy1TkDyBlO8UHMdn7JKLXqbXjDlxe?=
- =?us-ascii?Q?T6GsMVaDN2RL0YDeybeHiQZnP9Y4zSP3lfMsNflPO4dkvW+PZaLWxV48MbIO?=
- =?us-ascii?Q?X90nd5P+D4MduOvRaqoIhkBqyJUbiRd/t6nlpsHrzsIM2S1rCMKOKNsGL2Lq?=
- =?us-ascii?Q?/DSl5jz673l8+kCBCV91udy5tpzvOdalfnaCDVSNyKupjfK9EL2WKl6wd8Fe?=
- =?us-ascii?Q?PWQv46xaAqJA+oNofbmA7PWmL7PWwacm3DfnSwz1kqU9l3uAJuyYjOkAboDh?=
- =?us-ascii?Q?EKHowlfo+6bdeEP55irfpICyb/0Y5W285rUiCYSeQTcx8AVLQga5/7CeAIv4?=
- =?us-ascii?Q?73vhBoY5n+IHOTYMvHoBKrl6NChef9nYwNZPwUT2sP5esSuWcr46tQUMEOwy?=
- =?us-ascii?Q?13pVPcqNx+KZxqX806sN2sfJEEuFIAg6A9pHUB5BTfFy1EsrMzvB06b4UUlK?=
- =?us-ascii?Q?HzDCAQzkuLABUVBnTOvrbM3xzNQ16f9XLKi3j03zx2cXkcUvkUYGThv5oVix?=
- =?us-ascii?Q?wxU0XXSpHDHyq+9Ef9noATbTJcRerL8UJqkGkH1eqws0qJvVzh7mlz1q78De?=
- =?us-ascii?Q?M5M34znQUJdIZGtmxRrAmWtLdaUJhaCuIj4lBf6UCrxccySQNjbNM7TLsPAn?=
- =?us-ascii?Q?r2D2bs8olA4prYCqgRzo8cj25nSU1ZMe/rnd5AtcH19vShnR84KTO9RDwhvE?=
- =?us-ascii?Q?zys3Usb2qLMQcw+QkenFoiBhFdrWOZkXge0zvqNWMvc9HQ/qZYbTOhrz2j+L?=
- =?us-ascii?Q?wpu9gGOw9daT75UfNtb8UQjjIIUUMNqIKOUKobjwLjqceveG/q6sj1EO2qY8?=
- =?us-ascii?Q?vGw5YnnWpOc3ho2FYE7pp8/2KS4h+YNH/LhWKWJgmbJde8To6BxQl4ot/CUa?=
- =?us-ascii?Q?h4eUVGqzCnXqg1gmwlzUcVoVM8BzyAzW0kjMlqV6aArIuEBEyzyPcn9JwCpE?=
- =?us-ascii?Q?cRg+evvwEbyCS8ByclbHq69/VfYhWa6NwMyJGwAnZHlyVEmhipsaide2KJr8?=
- =?us-ascii?Q?v6mPzTaOAlx42soAZ+ipBrqwfM9SpYWwKm7Wvyaq4wRy1WgMhV37Z2eLJkDJ?=
- =?us-ascii?Q?jEj13A=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9cddf0d5-b476-486c-04cb-08db68c2ebf8
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2023 08:24:19.7051
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zN5xFaLRaciF9cGuqzsxEJ3tMQwj3qL+qaqrP4bf8FRuvbcS0pv5N3Dgmla33bQJdrwmZtoI2urgNKw4qoD44JsHd92gQUMjZqJ7uVsWJ7s=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR13MB4125
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 09, 2023 at 11:31:15AM +0800, renmingshuai wrote:
-> >On 08/06/2023 09:32, renmingshuai wrote:
-> >>> On 07/06/2023 01:19, renmingshuai wrote:
-> >>>>> On 06/06/2023 11:45, renmingshuai wrote:
-> >>>>>> When a new chain is added by using tc, one soft lockup alarm will
-> >>>>>> be
-> >>>>>>     generated after delete the prio 0 filter of the chain. To
-> >>>>>>     reproduce
-> >>>>>>     the problem, perform the following steps:
-> >>>>>> (1) tc qdisc add dev eth0 root handle 1: htb default 1
-> >>>>>> (2) tc chain add dev eth0
-> >>>>>> (3) tc filter del dev eth0 chain 0 parent 1: prio 0
-> >>>>>> (4) tc filter add dev eth0 chain 0 parent 1:
-> >>>>>
-> >>>>> This seems like it could be added to tdc or 3 and 4 must be run in
-> >>>>> parallel?
-> >>>> 3 and 4 do not need to be run inparallel. When a new chain is added
-> >>>> by the
-> >>>>    way as step 1 and the step 3 is completed, this problem always
-> >>>>    occurs
-> >>>>    whenever step 4 is run.
-> >>>
-> >>> Got it,
-> >>> The test still hangs with the provided patch.
-> >>>
-> >>> + tc qdisc add dev lo root handle 1: htb default 1
-> >>> + tc chain add dev lo
-> >>> + tc filter del dev lo chain 0 parent 1: prio 0
-> >>> [   68.790030][ T6704] [+]
-> >>> [   68.790060][ T6704] chain refcnt 2
-> >>> [   68.790951][ T6704] [-]
-> >>> + tc filter add dev lo chain 0 parent 1:
-> >>> <hangs>
-> >>>
-> >>> Also please add this test to tdc, it should be straightforward.
-> >>>
-> >> Sorry for not testing before. I forgot that the chain->refcnt was
-> >> increased by 1 when tcf_chain_get() is called in tc_del_tfilter().
-> >>   The value of chain->refcnt is 2 after chain flush. The test
-> >>   result is as follows:
-> >> [root@localhost ~]# tc qdisc add dev eth2 root handle 1: htb default 1
-> >> [root@localhost ~]# tc chain add dev eth2
-> >> [root@localhost ~]# tc filter del dev eth2 chain 0 parent 1: prio 0
-> >> [root@localhost ~]# tc filter add dev eth2 chain 0 parent 1:
-> >> Error: Filter kind and protocol must be specified.
-> >> We have an error talking to the kernel
-> >> 
-> >> And I have add this test to tdc:
-> >> [root@localhost tc-testing]# ./tdc.py -f tc-tests/filters/tests.json
-> >> ok 7 c2b4 - Adding a new fiter after deleting a filter in a chain does
-> >> not cause  an infinite loop
-> >> 
-> >> Fixes: 726d061286ce ("net: sched: prevent insertion of new classifiers during chain flush")
-> >> Signed-off-by: renmingshuai <renmingshuai@huawei.com>
-> >
-> >Please respin with the following applied:
-> >
-> >diff --git 
-> >a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json 
-> >b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-> >index c759c3db9a37..361235ad574b 100644
-> >--- a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-> >+++ b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-> >@@ -125,25 +125,5 @@
-> >          "teardown": [
-> >              "$TC qdisc del dev $DEV2 ingress"
-> >          ]
-> >-    },
-> >-    {
-> >-        "id": "c2b4",
-> >-        "name": "Adding a new fiter after deleting a filter in a chain 
-> >does not cause an infinite loop",
-> >-        "category": [
-> >-            "filter",
-> >-            "prio"
-> >-        ],
-> >-        "setup": [
-> >-            "$TC qdisc add dev $DEV1 root handle 1: htb default 1",
-> >-            "$TC chain add dev $DEV1"
-> >-        ],
-> >-        "cmdUnderTest": "$TC filter del dev $DEV1 chain 0 parent 1: 
-> >prio 0",
-> >-        "expExitCode": "0",
-> >-        "verifyCmd": "$TC filter add dev $DEV1 chain 0 parent 1:",
-> >-        "matchPattern": "Error: Filter kind and protocol must be 
-> >specified.",
-> >-        "matchCount": "1",
-> >-        "teardown": [
-> >-            "$TC qdisc del dev $DEV1 root handle 1: htb default 1"
-> >-        ]
-> >      }
-> >  ]
-> >diff --git 
-> >a/tools/testing/selftests/tc-testing/tc-tests/infra/filters.json 
-> >b/tools/testing/selftests/tc-testing/tc-tests/infra/filters.
-> >json
-> >new file mode 100644
-> >index 000000000000..55d6f209c388
-> >--- /dev/null
-> >+++ b/tools/testing/selftests/tc-testing/tc-tests/infra/filters.json
-> >@@ -0,0 +1,24 @@
-> >+[
-> >+    {
-> >+        "id": "c2b4",
-> >+        "name": "Adding a new filter after flushing empty chain doesnt 
-> >cause an infinite loop",
-> >+        "category": [
-> >+            "filter",
-> >+            "chain"
-> >+        ],
-> >+        "setup": [
-> >+            "$IP link add dev $DUMMY type dummy || /bin/true",
-> >+            "$TC qdisc add dev $DUMMY root handle 1: htb default 1",
-> >+            "$TC chain add dev $DUMMY",
-> >+            "$TC filter del dev $DUMMY chain 0 parent 1: prio 0"
-> >+        ],
-> >+        "cmdUnderTest": "$TC filter add dev $DUMMY chain 0 parent 1:",
-> >+        "expExitCode": "2",
-> >+        "verifyCmd": "$TC chain ls dev $DUMMY",
-> >+        "matchPattern": "chain parent 1: chain 0",
-> >+        "matchCount": "1",
-> >+        "teardown": [
-> >+            "$TC qdisc del dev $DUMMY root handle 1: htb default 1"
-> >+        ]
-> >+    }
-> >+]
-> 
-> Ok. The new test is passed.
-> [root@localhost tc-testing]# ./tdc.py -f tc-tests/infra/filter.json
-> Test c2b4: Adding a new filter after flushing empty chain doesn't cause an infinite loop
-> All test results:
-> 1..1
-> ok 1 c2b4 - Adding a new filter after flushing empty chain doesn't cause an infinite loop
-> 
-> Fixes: 726d061286ce ("net: sched: prevent insertion of new classifiers during chain flush")
-> Signed-off-by: renmingshuai <renmingshuai@huawei.com>
+This is just a PoC patch intended to resume the discussion about
+tcpmem isolation opened by Google in LPC'22 [1].
 
-Hi renmingshuai,
+We are facing the same problem that the global shared threshold can
+cause isolation issues. Low priority jobs can hog TCP memory and
+adversely impact higher priority jobs. What's worse is that these
+low priority jobs usually have smaller cpu weights leading to poor
+ability to consume rx data.
 
-the above text, in it's entirety, does not meet the needs
-of a patch submission for the Linux kernel. In particular:
+To tackle this problem, an interface for non-root cgroup memory
+controller named 'socket.urgent' is proposed. It determines whether
+the sockets of this cgroup and its descendants can escape from the
+constrains or not under global socket memory pressure.
 
-* All the context from previous discussion (the bits prefixed by '>')
-  should be removed.
-* The patch description should consist of just that, a description of
-  the patch. Any relevant test results are also welcome here.
-* Information about changes from previous versions should be provided
-  in the form of a changelog, typically below the scissors (---).
+The 'urgent' semantics will not take effect under memcg pressure in
+order to protect against worse memstalls, thus will be the same as
+before without this patch.
 
-A recent example is here:
-- https://lore.kernel.org/all/20230607162353.3631199-1-mtottenh@akamai.com/
-  [PATCH v3] net/sched: act_pedit: Parse L3 Header for L4 offset
+This proposal doesn't remove protocal's threshold as we found it
+useful in restraining memory defragment. As aforementioned the low
+priority jobs can hog lots of memory, which is unreclaimable and
+unmovable, for some time due to small cpu weight.
 
-Also, please consider using spaces and capital letters
-in your name in the from and signed-off parts of your submission.
+So in practice we allow high priority jobs with net-memcg accounting
+enabled to escape the global constrains if the net-memcg itselt is
+not under pressure. While for lower priority jobs, the budget will
+be tightened as the memory usage of 'urgent' jobs increases. In this
+way we can finally achieve:
 
-e.g.: Mingshuai Ren <...> or Ren Mingshuai <...>
+  - Important jobs won't be priority inversed by the background
+    jobs in terms of socket memory pressure/limit.
 
-...
+  - Global constrains are still effective, but only on non-urgent
+    jobs, useful for admins on policy decision on defrag.
 
+Comments/Ideas are welcomed, thanks!
+
+[1] https://lpc.events/event/16/contributions/1212/
+
+Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
+---
+ include/linux/memcontrol.h | 15 +++++++++++++--
+ include/net/sock.h         | 11 ++++++++---
+ include/net/tcp.h          | 26 ++++++++++++++++++++------
+ mm/memcontrol.c            | 35 +++++++++++++++++++++++++++++++++++
+ net/core/sock.c            | 22 ++++++++++++++++++----
+ net/ipv4/tcp_input.c       | 10 +++++++---
+ 6 files changed, 101 insertions(+), 18 deletions(-)
+
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 222d7370134c..f8c1c108aa28 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -284,7 +284,13 @@ struct mem_cgroup {
+ 	atomic_long_t		memory_events[MEMCG_NR_MEMORY_EVENTS];
+ 	atomic_long_t		memory_events_local[MEMCG_NR_MEMORY_EVENTS];
+ 
++	/*
++	 * Urgent sockets can escape from the contrains under global memory
++	 * pressure/limit iff !socket_pressure. So this two variables are
++	 * always used together, make sure they are in same cacheline.
++	 */
+ 	unsigned long		socket_pressure;
++	bool			socket_urgent;
+ 
+ 	/* Legacy tcp memory accounting */
+ 	bool			tcpmem_active;
+@@ -1741,13 +1747,17 @@ extern struct static_key_false memcg_sockets_enabled_key;
+ #define mem_cgroup_sockets_enabled static_branch_unlikely(&memcg_sockets_enabled_key)
+ void mem_cgroup_sk_alloc(struct sock *sk);
+ void mem_cgroup_sk_free(struct sock *sk);
+-static inline bool mem_cgroup_under_socket_pressure(struct mem_cgroup *memcg)
++
++static inline bool mem_cgroup_under_socket_pressure(struct mem_cgroup *memcg,
++						    bool *is_urgent)
+ {
+ 	if (!cgroup_subsys_on_dfl(memory_cgrp_subsys) && memcg->tcpmem_pressure)
+ 		return true;
+ 	do {
+ 		if (time_before(jiffies, READ_ONCE(memcg->socket_pressure)))
+ 			return true;
++		if (is_urgent && !*is_urgent && READ_ONCE(memcg->socket_urgent))
++			*is_urgent = true;
+ 	} while ((memcg = parent_mem_cgroup(memcg)));
+ 	return false;
+ }
+@@ -1760,7 +1770,8 @@ void reparent_shrinker_deferred(struct mem_cgroup *memcg);
+ #define mem_cgroup_sockets_enabled 0
+ static inline void mem_cgroup_sk_alloc(struct sock *sk) { };
+ static inline void mem_cgroup_sk_free(struct sock *sk) { };
+-static inline bool mem_cgroup_under_socket_pressure(struct mem_cgroup *memcg)
++static inline bool mem_cgroup_under_socket_pressure(struct mem_cgroup *memcg,
++						    bool *is_urgent)
+ {
+ 	return false;
+ }
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 656ea89f60ff..80e1240ffc35 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1414,9 +1414,14 @@ static inline bool sk_under_memory_pressure(const struct sock *sk)
+ 	if (!sk->sk_prot->memory_pressure)
+ 		return false;
+ 
+-	if (mem_cgroup_sockets_enabled && sk->sk_memcg &&
+-	    mem_cgroup_under_socket_pressure(sk->sk_memcg))
+-		return true;
++	if (mem_cgroup_sockets_enabled && sk->sk_memcg) {
++		bool urgent;
++
++		if (mem_cgroup_under_socket_pressure(sk->sk_memcg, &urgent))
++			return true;
++		if (urgent)
++			return false;
++	}
+ 
+ 	return !!*sk->sk_prot->memory_pressure;
+ }
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 14fa716cac50..9fa8d8fcb992 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -259,9 +259,14 @@ extern unsigned long tcp_memory_pressure;
+ /* optimized version of sk_under_memory_pressure() for TCP sockets */
+ static inline bool tcp_under_memory_pressure(const struct sock *sk)
+ {
+-	if (mem_cgroup_sockets_enabled && sk->sk_memcg &&
+-	    mem_cgroup_under_socket_pressure(sk->sk_memcg))
+-		return true;
++	if (mem_cgroup_sockets_enabled && sk->sk_memcg) {
++		bool urgent;
++
++		if (mem_cgroup_under_socket_pressure(sk->sk_memcg, &urgent))
++			return true;
++		if (urgent)
++			return false;
++	}
+ 
+ 	return READ_ONCE(tcp_memory_pressure);
+ }
+@@ -284,9 +289,18 @@ static inline bool between(__u32 seq1, __u32 seq2, __u32 seq3)
+ 
+ static inline bool tcp_out_of_memory(struct sock *sk)
+ {
+-	if (sk->sk_wmem_queued > SOCK_MIN_SNDBUF &&
+-	    sk_memory_allocated(sk) > sk_prot_mem_limits(sk, 2))
+-		return true;
++	if (sk->sk_wmem_queued > SOCK_MIN_SNDBUF) {
++		bool urgent = false;
++
++		if (mem_cgroup_sockets_enabled && sk->sk_memcg &&
++		    !mem_cgroup_under_socket_pressure(sk->sk_memcg, &urgent) &&
++		    urgent)
++			return false;
++
++		if (sk_memory_allocated(sk) > sk_prot_mem_limits(sk, 2))
++			return true;
++	}
++
+ 	return false;
+ }
+ 
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 4b27e245a055..d620c4d9b2cc 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -6753,6 +6753,35 @@ static ssize_t memory_reclaim(struct kernfs_open_file *of, char *buf,
+ 	return nbytes;
+ }
+ 
++static int memory_sock_urgent_show(struct seq_file *m, void *v)
++{
++	struct mem_cgroup *memcg = mem_cgroup_from_seq(m);
++
++	seq_printf(m, "%d\n", READ_ONCE(memcg->socket_urgent));
++
++	return 0;
++}
++
++static ssize_t memory_sock_urgent_write(struct kernfs_open_file *of,
++					char *buf, size_t nbytes, loff_t off)
++{
++	struct mem_cgroup *memcg = mem_cgroup_from_css(of_css(of));
++	bool socket_urgent;
++	int ret;
++
++	buf = strstrip(buf);
++	if (!buf)
++		return -EINVAL;
++
++	ret = kstrtobool(buf, &socket_urgent);
++	if (ret)
++		return ret;
++
++	WRITE_ONCE(memcg->socket_urgent, socket_urgent);
++
++	return nbytes;
++}
++
+ static struct cftype memory_files[] = {
+ 	{
+ 		.name = "current",
+@@ -6821,6 +6850,12 @@ static struct cftype memory_files[] = {
+ 		.flags = CFTYPE_NS_DELEGATABLE,
+ 		.write = memory_reclaim,
+ 	},
++	{
++		.name = "socket.urgent",
++		.flags = CFTYPE_NOT_ON_ROOT | CFTYPE_NS_DELEGATABLE,
++		.seq_show = memory_sock_urgent_show,
++		.write = memory_sock_urgent_write,
++	},
+ 	{ }	/* terminate */
+ };
+ 
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 5440e67bcfe3..29d2b03595cf 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2982,10 +2982,24 @@ int __sk_mem_raise_allocated(struct sock *sk, int size, int amt, int kind)
+ 
+ 	sk_memory_allocated_add(sk, amt);
+ 	allocated = sk_memory_allocated(sk);
+-	if (memcg_charge &&
+-	    !(charged = mem_cgroup_charge_skmem(sk->sk_memcg, amt,
+-						gfp_memcg_charge())))
+-		goto suppress_allocation;
++
++	if (memcg_charge) {
++		bool urgent;
++
++		charged = mem_cgroup_charge_skmem(sk->sk_memcg, amt,
++						  gfp_memcg_charge());
++		if (!charged)
++			goto suppress_allocation;
++
++		if (!mem_cgroup_under_socket_pressure(sk->sk_memcg, &urgent)) {
++			/* Urgent sockets by design escape from the constrains
++			 * under global memory pressure/limit iff there is no
++			 * pressure in the net-memcg to avoid priority inversion.
++			 */
++			if (urgent)
++				return 1;
++		}
++	}
+ 
+ 	/* Under limit. */
+ 	if (allocated <= sk_prot_mem_limits(sk, 0)) {
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 61b6710f337a..7d5d4b4e17b4 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5439,6 +5439,7 @@ static int tcp_prune_queue(struct sock *sk, const struct sk_buff *in_skb)
+ static bool tcp_should_expand_sndbuf(struct sock *sk)
+ {
+ 	const struct tcp_sock *tp = tcp_sk(sk);
++	bool under_pressure, urgent = false;
+ 
+ 	/* If the user specified a specific send buffer setting, do
+ 	 * not modify it.
+@@ -5446,8 +5447,11 @@ static bool tcp_should_expand_sndbuf(struct sock *sk)
+ 	if (sk->sk_userlocks & SOCK_SNDBUF_LOCK)
+ 		return false;
+ 
+-	/* If we are under global TCP memory pressure, do not expand.  */
+-	if (tcp_under_memory_pressure(sk)) {
++	under_pressure = mem_cgroup_sockets_enabled && sk->sk_memcg &&
++			 mem_cgroup_under_socket_pressure(sk->sk_memcg, &urgent);
++
++	/* If we are under net-memcg/TCP memory pressure, do not expand.  */
++	if (under_pressure || (!urgent && READ_ONCE(tcp_memory_pressure))) {
+ 		int unused_mem = sk_unused_reserved_mem(sk);
+ 
+ 		/* Adjust sndbuf according to reserved mem. But make sure
+@@ -5461,7 +5465,7 @@ static bool tcp_should_expand_sndbuf(struct sock *sk)
+ 	}
+ 
+ 	/* If we are under soft global TCP memory pressure, do not expand.  */
+-	if (sk_memory_allocated(sk) >= sk_prot_mem_limits(sk, 0))
++	if (!urgent && sk_memory_allocated(sk) >= sk_prot_mem_limits(sk, 0))
+ 		return false;
+ 
+ 	/* If we filled the congestion window, do not expand.  */
 -- 
-pw-bot: cr
-
+2.37.3
 
 
