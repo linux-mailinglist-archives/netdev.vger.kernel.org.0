@@ -1,142 +1,129 @@
-Return-Path: <netdev+bounces-9460-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9461-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2AF82729431
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 11:08:42 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4F4BF729465
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 11:13:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7CDC01C210FE
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 09:08:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 96DF0281916
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 09:12:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2AB08C12C;
-	Fri,  9 Jun 2023 09:08:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A3C80C8FF;
+	Fri,  9 Jun 2023 09:12:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C0EDBE53
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 09:08:38 +0000 (UTC)
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B59249ED
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 02:08:00 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id e9e14a558f8ab-33d928a268eso244195ab.0
-        for <netdev@vger.kernel.org>; Fri, 09 Jun 2023 02:08:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1686301639; x=1688893639;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vVqqNiTWipF9tqQGIXfWiYHdhPZGr5sY95HAiAKaa/c=;
-        b=hCpzPeWKrNa3kekE9t5+6tDGSGcCQNB3zp8QEUHG4S9aAMvfBGhQ4PfM93rGsuXPFa
-         XAdMHbYGoAgMHUdP7C86X3/YC5WBNHcO+tYLDQ7WJRH3KHMLAhAPceHEz5V+7a0eNz8n
-         6BdC2h3I6c52v+lOoNNkqwgFIRxI4y27BpE5+EQ5P94dTP6vMSPoEzHQ766ExdYHZyCe
-         bWLvSKay1lJ71VzY0BYjxm0cgMMSDA5XA4F8DOYu6EbSlK4V1KEpgo0701dPY9IADLJR
-         imqcGAwsIwdrHTunYAFWuUgoUTl9bxSM7r7RNzf7zJJvpJRLUZXM/8Sz3/X1hRhSW5jD
-         GJUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686301639; x=1688893639;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vVqqNiTWipF9tqQGIXfWiYHdhPZGr5sY95HAiAKaa/c=;
-        b=RYPucEJWgdbtYbdF6u5SbRdaDFDAcY33GjYI9SEHqcXvP2aiPyRsj9yD5uI3icCHdA
-         OIDwK4NLpZtWScZZMp2dhQu9uGsHR0PJmtRSCz+XAMWmt9QBf/Ck85BREAoS2XoNhbQB
-         gF5OSAKzAnM4h++jmsaFXfugWY0jU7eIsUi+qa4W89Mzo/cCIr6KCqYRRSl2oG9Hp85i
-         9vwyg7Gc4/TPF4YvWBL7Ps7d5kDZITG9r1+ebjS0Aib/NtHD5tVWU29X4F//XKe6YUaQ
-         Uv5svEfjEpPOWpTrjfLQW56Gq4SL0b8Qd4F1BonWC/rIuwryrgXb4D8eeJo6/0BjbcXF
-         rYyg==
-X-Gm-Message-State: AC+VfDxoijfr7zAaCE+vQu5DS6watwn6L97wVEVCP9jtcPd5jdU3taEO
-	kzPi0JCdGJAt6qp5tHRgpvmm/25V9daeWmN7g9k3HA==
-X-Google-Smtp-Source: ACHHUZ5vmT2eOAYEGZtWaf9C1WLVOXwyQP5WUv2+r5yCqWBKuOI1tIBVQM0GgqzsQe0OOAWiCe5U+vDQbastTKW7LbQ=
-X-Received: by 2002:a05:6e02:1b01:b0:33d:ac65:f95e with SMTP id
- i1-20020a056e021b0100b0033dac65f95emr341983ilv.12.1686301639383; Fri, 09 Jun
- 2023 02:07:19 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9599BBA3F
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 09:12:57 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEEAD46A0
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 02:12:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=6oAmBDJZQ0GbB16kcOqOf5PrImdP5GDBxyET5fEnL4A=; b=XwPVax/LFA2gMwSDg4gsLyS6+U
+	LsGO4/m5h2cNv9dw3hKHPtRAtRJ1HoIo7xmFJmQrUzTSUBCkt/mtOfx8oRFztT38LH/OU98jaIpQB
+	66LrNZBBIct17+LrvQeHzC7kHZ5WqJKvkkfypo/J4H99PGoI5xt8bCNLajcNOuFkoaEfhJ7XiDsaP
+	mAkNDBRf6yL4Xl/stG1Hobj1z8Z4l0cfgFYqL5q8PHJ5hRGZcs9vWZEXGAVrkDVNFS13UJWzb6zAr
+	SD4u9Y9EHCNQDMoGL4p68ldZWXNWbXcwKJ1uS7AUoutPnXUAvdpWObijgH62vv4mRTYW804F+ZEJv
+	hr0ECWFg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46354)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q7Y9D-0001jC-TT; Fri, 09 Jun 2023 10:11:07 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q7Y9B-0001jX-Ny; Fri, 09 Jun 2023 10:11:05 +0100
+Date: Fri, 9 Jun 2023 10:11:05 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Marcin Wojtas <mw@semihalf.com>,
+	netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH RFC net-next 0/4] phylink EEE support
+Message-ID: <ZILsqV0gkSMMdinU@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230609082712.34889-1-wuyun.abel@bytedance.com>
-In-Reply-To: <20230609082712.34889-1-wuyun.abel@bytedance.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Fri, 9 Jun 2023 11:07:05 +0200
-Message-ID: <CANn89i+Qqq5nV0oRLh_KEHRV6VmSbS5PsSvayVHBi52FbB=sKA@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next] sock: Propose socket.urgent for sockmem isolation
-To: Abel Wu <wuyun.abel@bytedance.com>
-Cc: Tejun Heo <tj@kernel.org>, Christian Warloe <cwarloe@google.com>, Wei Wang <weiwan@google.com>, 
-	"David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>, 
-	Roman Gushchin <roman.gushchin@linux.dev>, Shakeel Butt <shakeelb@google.com>, 
-	Muchun Song <muchun.song@linux.dev>, Andrew Morton <akpm@linux-foundation.org>, 
-	David Ahern <dsahern@kernel.org>, Yosry Ahmed <yosryahmed@google.com>, 
-	"Matthew Wilcox (Oracle)" <willy@infradead.org>, Yu Zhao <yuzhao@google.com>, 
-	Vasily Averin <vasily.averin@linux.dev>, Kuniyuki Iwashima <kuniyu@amazon.com>, 
-	Martin KaFai Lau <martin.lau@kernel.org>, Xin Long <lucien.xin@gmail.com>, 
-	Jason Xing <kernelxing@tencent.com>, Michal Hocko <mhocko@suse.com>, 
-	Alexei Starovoitov <ast@kernel.org>, open list <linux-kernel@vger.kernel.org>, 
-	"open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>, 
-	"open list:CONTROL GROUP - MEMORY RESOURCE CONTROLLER (MEMCG)" <cgroups@vger.kernel.org>, 
-	"open list:CONTROL GROUP - MEMORY RESOURCE CONTROLLER (MEMCG)" <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 9, 2023 at 10:28=E2=80=AFAM Abel Wu <wuyun.abel@bytedance.com> =
-wrote:
->
-> This is just a PoC patch intended to resume the discussion about
-> tcpmem isolation opened by Google in LPC'22 [1].
->
-> We are facing the same problem that the global shared threshold can
-> cause isolation issues. Low priority jobs can hog TCP memory and
-> adversely impact higher priority jobs. What's worse is that these
-> low priority jobs usually have smaller cpu weights leading to poor
-> ability to consume rx data.
->
-> To tackle this problem, an interface for non-root cgroup memory
-> controller named 'socket.urgent' is proposed. It determines whether
-> the sockets of this cgroup and its descendants can escape from the
-> constrains or not under global socket memory pressure.
->
-> The 'urgent' semantics will not take effect under memcg pressure in
-> order to protect against worse memstalls, thus will be the same as
-> before without this patch.
->
-> This proposal doesn't remove protocal's threshold as we found it
-> useful in restraining memory defragment. As aforementioned the low
-> priority jobs can hog lots of memory, which is unreclaimable and
-> unmovable, for some time due to small cpu weight.
->
-> So in practice we allow high priority jobs with net-memcg accounting
-> enabled to escape the global constrains if the net-memcg itselt is
-> not under pressure. While for lower priority jobs, the budget will
-> be tightened as the memory usage of 'urgent' jobs increases. In this
-> way we can finally achieve:
->
->   - Important jobs won't be priority inversed by the background
->     jobs in terms of socket memory pressure/limit.
->
->   - Global constrains are still effective, but only on non-urgent
->     jobs, useful for admins on policy decision on defrag.
->
-> Comments/Ideas are welcomed, thanks!
->
+Hi,
 
-This seems to go in a complete opposite direction than memcg promises.
+There has been some recent discussion on generalising EEE support so
+that drivers implement it more consistently. This has mostly focused
+around phylib, but there are other situations where EEE may be useful.
 
-Can we fix memcg, so that :
+To illustrate this, in both USGMII and UXGMII communicate EEE through
+the configuration word - bit 8 indicates EEE capability and bit 7
+indicates the clock stop capability. The PHY may not be accessible.
+Another case would be a PHY on a SFP module that may not be accessible,
+signalling LPI to it may result in power savings if it has negotiated
+with the link partner. My understanding is that signalling LPI when
+negotiation hasn't agreed EEE support should be fine. In the classic
+model, LPI informs the PHY that the MAC is idle, and gives it
+permission to enter low power. It will only enter low power when the
+MAC sends LPI and the remote PHY also agrees to enter low power.
 
-Each group can use the memory it was provisioned (this includes TCP buffers=
-)
+mvneta has had EEE support for a while, but the implementation has its
+quirks. This series implements EEE handling in phylink. To make use of
+it, a MAC driver needs to fill in the default parameters for EEE, and
+provide the enable and disable functions for LPI.
 
-Global tcp_memory can disappear (set tcp_mem to infinity)
+This series also adds EEE for mvpp2, which is only supported by the
+GMAC (up to 1G) and not the XLG (5G,10G) MAC.
+
+There is further work that needs to be considered - 802.3 has the
+facility to negotiate the Tw (wake to data) parameter via packets.
+Also, timing parameters are speed and media type specific, some
+implementations need these parameters reprogrammed each time the speed
+changes (e.g. mvneta and mvpp2.)
+
+Patch 1 adds a structure to store the runtime EEE configuration  state,
+a helper to decode the state to indicate whether LPI can be enabled (it
+remains the responsibility of the user to determine whether EEE has
+been negotiated.) A couple of helpers are provided to insert and
+extract the EEE configuration from the ethtool EEE structure.
+
+Patch 2 adds the phylink implementation.
+
+Patch 3 converts mvneta to use phylink's implementation.
+
+Patch 4 adds mvpp2 support.
+
+This uses the current code from phylib, and is only functional when we
+have a phylib PHY, but can be easily extended so that when we have a
+SFP socket without a PHY, we can enable LPI signalling.
+
+ drivers/net/ethernet/marvell/mvneta.c           | 95 ++++++++++++++++---------
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  5 ++
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 85 ++++++++++++++++++++++
+ drivers/net/phy/phylink.c                       | 82 +++++++++++++++++++--
+ include/linux/phylink.h                         | 32 +++++++++
+ include/net/eee.h                               | 38 ++++++++++
+ 6 files changed, 298 insertions(+), 39 deletions(-)
+ create mode 100644 include/net/eee.h
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
