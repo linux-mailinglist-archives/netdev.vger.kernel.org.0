@@ -1,47 +1,47 @@
-Return-Path: <netdev+bounces-9611-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9613-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3ACCA72A03F
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 18:35:21 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4FD3272A042
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 18:36:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3EF4B2819E3
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 16:35:19 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A013C1C211C2
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 16:36:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63C7619BB2;
-	Fri,  9 Jun 2023 16:34:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7190A15495;
+	Fri,  9 Jun 2023 16:35:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54A5F18C1A
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 16:34:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 655051B8EA
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 16:35:04 +0000 (UTC)
 Received: from sender3-op-o18.zoho.com (sender3-op-o18.zoho.com [136.143.184.18])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 043961FDF;
-	Fri,  9 Jun 2023 09:34:52 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF241BCC;
+	Fri,  9 Jun 2023 09:35:02 -0700 (PDT)
 Delivered-To: arinc.unal@arinc9.com
-ARC-Seal: i=1; a=rsa-sha256; t=1686328460; cv=none; 
+ARC-Seal: i=1; a=rsa-sha256; t=1686328466; cv=none; 
 	d=zohomail.com; s=zohoarc; 
-	b=hkYiuoaBGNcicBJqMrGa+snCNfic5+pcclNmkiojIZFM3G7OItv+puQxS/mRxyIxdfCHwJHqs4o/e93wKDzBSEOvyQVZl6Z6r2kC08kWe1XTVpZ7Q/gPIaGGADwqHeuQJZUAiNnEiyZz0ErLAmJRtQ8z45tQNNXn+R3yJOf6UVA=
+	b=QuZMmV8/YwTVvEjCLAoUiijA4iO50VqCfBa+H5/lTcymqhkNSoAXffjLzZYn2/6+Zqvq/vhWvda5J9BnM9/BWtchPN0ULLboEllyGfUZpWYaI2xE/s79HqGuQZN1ctrxcremz8ykTe3tirLuR3lLcuR4Ez6DUa5/oa9k9ACRaB8=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1686328460; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-	bh=aMifJN4jd3TEuoV/A1C1hcI6+kLjQwx0MeZB39jRuMI=; 
-	b=Y+a1k8yfkLy8hNrO+k/rajLXz0KFDC6nTRVY3W0VLTJ8qgkIYpWKwMYhC53+zUwVlqyno27z2V4T9MzZdjIDdRWZS249M6b/7b1HCLtr3NpZpnsq1uypN/Jz++LFU/G79v+H6CnUh9/4ducMiZqCqV+6sCb6tQ83S4dtldnNZ3E=
+	t=1686328466; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+	bh=Atc+TvYEEosIOFDKzmslM57zX/4H0k5Y4Sf4I02uDEc=; 
+	b=NF/7QkD0Wn/WPhJ1gLiRAvMilB2geSRYUfS8pGSrXtv3v9ahAcU1nR7PnqR/VkyBpmI9QBtCV885uD3HLuapfJR7EbAgegvjOjRgqGCytjjrsa0bVIZNvjh1e3Fa1uOHXwT3fJ+ZRvK48RKtCYJBAJBMi5/dtfDh98B2gho2WC0=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
 	dkim=pass  header.i=arinc9.com;
 	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
 	dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1686328460;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1686328466;
 	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
 	h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-	bh=aMifJN4jd3TEuoV/A1C1hcI6+kLjQwx0MeZB39jRuMI=;
-	b=DFyRV3X/taR7GcoW+p/IW6RLDHJCXicDmoS9WmiBXeT56swvQexR8GLmK9HbvCdt
-	dTAW/1bkdbTpZi2epobukNpUs+OGWsVShsJjMVr3X5ConHHOLWwCWF4R9SozgrqyN3X
-	dAVJzA+JzHsGrQKPXUTC3he8Tr4kbX1PTFv5SKxI=
+	bh=Atc+TvYEEosIOFDKzmslM57zX/4H0k5Y4Sf4I02uDEc=;
+	b=bxHqjJCW73PB2ZfrdkcmJyBaAPC8iQwPxmkm8BBuivR8LSALZ0si6T/pv62RWxJD
+	a9J4Kh8ezwKiEutSdGQS4l3ZXzw/ik836GP7pFj7Qb4Nt94mXpp9pfggH67vB8UMPsy
+	L2wX60GWja2HRLH0RMFSVpavTzZLyPXxdRsVrr+Q=
 Received: from arinc9-Xeront.. (62.74.20.25 [62.74.20.25]) by mx.zohomail.com
-	with SMTPS id 168632845896422.032713514232114; Fri, 9 Jun 2023 09:34:18 -0700 (PDT)
+	with SMTPS id 1686328465173539.5619989375218; Fri, 9 Jun 2023 09:34:25 -0700 (PDT)
 From: =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
 To: =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
 	Daniel Golle <daniel@makrotopia.org>,
@@ -67,9 +67,9 @@ Cc: Landen Chao <landen.chao@mediatek.com>,
 	netdev@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-mediatek@lists.infradead.org
-Subject: [PATCH net 3/5] net: dsa: mt7530: fix trapping frames on non-MT7621 SoC MT7530 switch
-Date: Fri,  9 Jun 2023 19:33:51 +0300
-Message-Id: <20230609163353.78941-3-arinc.unal@arinc9.com>
+Subject: [PATCH net 4/5] net: dsa: introduce preferred_default_local_cpu_port and use on MT7530
+Date: Fri,  9 Jun 2023 19:33:52 +0300
+Message-Id: <20230609163353.78941-4-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230609163353.78941-1-arinc.unal@arinc9.com>
 References: <20230609163353.78941-1-arinc.unal@arinc9.com>
@@ -90,28 +90,166 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The check for setting the CPU_PORT bits must include the non-MT7621 SoC
-MT7530 switch variants to trap frames. Expand the check to include them.
+From: Vladimir Oltean <olteanv@gmail.com>
 
-Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
+Since the introduction of the OF bindings, DSA has always had a policy that
+in case multiple CPU ports are present in the device tree, the numerically
+smallest one is always chosen.
+
+The MT7530 switch family, except the switch on the MT7988 SoC, has 2 CPU
+ports, 5 and 6, where port 6 is preferable on the MT7531BE switch because
+it has higher bandwidth.
+
+The MT7530 driver developers had 3 options:
+- to modify DSA when the MT7531 switch support was introduced, such as to
+  prefer the better port
+- to declare both CPU ports in device trees as CPU ports, and live with the
+  sub-optimal performance resulting from not preferring the better port
+- to declare just port 6 in the device tree as a CPU port
+
+Of course they chose the path of least resistance (3rd option), kicking the
+can down the road. The hardware description in the device tree is supposed
+to be stable - developers are not supposed to adopt the strategy of
+piecemeal hardware description, where the device tree is updated in
+lockstep with the features that the kernel currently supports.
+
+Now, as a result of the fact that they did that, any attempts to modify the
+device tree and describe both CPU ports as CPU ports would make DSA change
+its default selection from port 6 to 5, effectively resulting in a
+performance degradation visible to users with the MT7531BE switch as can be
+seen below.
+
+Without preferring port 6:
+
+[ ID][Role] Interval           Transfer     Bitrate         Retr
+[  5][TX-C]   0.00-20.00  sec   374 MBytes   157 Mbits/sec  734    sender
+[  5][TX-C]   0.00-20.00  sec   373 MBytes   156 Mbits/sec    receiver
+[  7][RX-C]   0.00-20.00  sec  1.81 GBytes   778 Mbits/sec    0    sender
+[  7][RX-C]   0.00-20.00  sec  1.81 GBytes   777 Mbits/sec    receiver
+
+With preferring port 6:
+
+[ ID][Role] Interval           Transfer     Bitrate         Retr
+[  5][TX-C]   0.00-20.00  sec  1.99 GBytes   856 Mbits/sec  273    sender
+[  5][TX-C]   0.00-20.00  sec  1.99 GBytes   855 Mbits/sec    receiver
+[  7][RX-C]   0.00-20.00  sec  1.72 GBytes   737 Mbits/sec   15    sender
+[  7][RX-C]   0.00-20.00  sec  1.71 GBytes   736 Mbits/sec    receiver
+
+Using one port for WAN and the other ports for LAN is a very popular use
+case which is what this test emulates.
+
+As such, this change proposes that we retroactively modify stable kernels
+to keep the mt7530 driver preferring port 6 even with device trees where
+the hardware is more fully described.
+
+Fixes: c288575f7810 ("net: dsa: mt7530: Add the support of MT7531 switch")
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/mt7530.c | 15 +++++++++++++++
+ include/net/dsa.h        |  8 ++++++++
+ net/dsa/dsa.c            | 24 +++++++++++++++++++++++-
+ 3 files changed, 46 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index da75f9b312bc..df2626f72367 100644
+index df2626f72367..8ae068a148c7 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -3073,7 +3073,7 @@ mt753x_master_state_change(struct dsa_switch *ds,
- 	 * the numerically smallest CPU port which is affine to the DSA conduit
- 	 * interface that is up.
- 	 */
--	if (priv->id != ID_MT7621)
-+	if (priv->id != ID_MT7530 && priv->id != ID_MT7621)
- 		return;
+@@ -399,6 +399,20 @@ static void mt7530_pll_setup(struct mt7530_priv *priv)
+ 	core_set(priv, CORE_TRGMII_GSW_CLK_CG, REG_GSWCK_EN);
+ }
  
- 	if (operational)
++/* If port 6 is available as a CPU port, always prefer that as the default,
++ * otherwise don't care.
++ */
++static struct dsa_port *
++mt753x_preferred_default_local_cpu_port(struct dsa_switch *ds)
++{
++	struct dsa_port *cpu_dp = dsa_to_port(ds, 6);
++
++	if (dsa_port_is_cpu(cpu_dp))
++		return cpu_dp;
++
++	return NULL;
++}
++
+ /* Setup port 6 interface mode and TRGMII TX circuit */
+ static int
+ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
+@@ -3110,6 +3124,7 @@ static int mt7988_setup(struct dsa_switch *ds)
+ const struct dsa_switch_ops mt7530_switch_ops = {
+ 	.get_tag_protocol	= mtk_get_tag_protocol,
+ 	.setup			= mt753x_setup,
++	.preferred_default_local_cpu_port = mt753x_preferred_default_local_cpu_port,
+ 	.get_strings		= mt7530_get_strings,
+ 	.get_ethtool_stats	= mt7530_get_ethtool_stats,
+ 	.get_sset_count		= mt7530_get_sset_count,
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 8903053fa5aa..ab0f0a5b0860 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -958,6 +958,14 @@ struct dsa_switch_ops {
+ 			       struct phy_device *phy);
+ 	void	(*port_disable)(struct dsa_switch *ds, int port);
+ 
++	/*
++	 * Compatibility between device trees defining multiple CPU ports and
++	 * drivers which are not OK to use by default the numerically smallest
++	 * CPU port of a switch for its local ports. This can return NULL,
++	 * meaning "don't know/don't care".
++	 */
++	struct dsa_port *(*preferred_default_local_cpu_port)(struct dsa_switch *ds);
++
+ 	/*
+ 	 * Port's MAC EEE settings
+ 	 */
+diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+index ab1afe67fd18..1afed89e03c0 100644
+--- a/net/dsa/dsa.c
++++ b/net/dsa/dsa.c
+@@ -403,6 +403,24 @@ static int dsa_tree_setup_default_cpu(struct dsa_switch_tree *dst)
+ 	return 0;
+ }
+ 
++static struct dsa_port *
++dsa_switch_preferred_default_local_cpu_port(struct dsa_switch *ds)
++{
++	struct dsa_port *cpu_dp;
++
++	if (!ds->ops->preferred_default_local_cpu_port)
++		return NULL;
++
++	cpu_dp = ds->ops->preferred_default_local_cpu_port(ds);
++	if (!cpu_dp)
++		return NULL;
++
++	if (WARN_ON(!dsa_port_is_cpu(cpu_dp) || cpu_dp->ds != ds))
++		return NULL;
++
++	return cpu_dp;
++}
++
+ /* Perform initial assignment of CPU ports to user ports and DSA links in the
+  * fabric, giving preference to CPU ports local to each switch. Default to
+  * using the first CPU port in the switch tree if the port does not have a CPU
+@@ -410,12 +428,16 @@ static int dsa_tree_setup_default_cpu(struct dsa_switch_tree *dst)
+  */
+ static int dsa_tree_setup_cpu_ports(struct dsa_switch_tree *dst)
+ {
+-	struct dsa_port *cpu_dp, *dp;
++	struct dsa_port *preferred_cpu_dp, *cpu_dp, *dp;
+ 
+ 	list_for_each_entry(cpu_dp, &dst->ports, list) {
+ 		if (!dsa_port_is_cpu(cpu_dp))
+ 			continue;
+ 
++		preferred_cpu_dp = dsa_switch_preferred_default_local_cpu_port(cpu_dp->ds);
++		if (preferred_cpu_dp && preferred_cpu_dp != cpu_dp)
++			continue;
++
+ 		/* Prefer a local CPU port */
+ 		dsa_switch_for_each_port(dp, cpu_dp->ds) {
+ 			/* Prefer the first local CPU port found */
 -- 
 2.39.2
 
