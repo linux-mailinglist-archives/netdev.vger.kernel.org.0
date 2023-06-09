@@ -1,323 +1,240 @@
-Return-Path: <netdev+bounces-9440-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9441-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7BDC07290B3
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 09:16:24 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7BCB27290C1
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 09:17:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B88101C210AE
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 07:16:20 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 85C821C210CF
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 07:17:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF32E748C;
-	Fri,  9 Jun 2023 07:16:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5AD29749F;
+	Fri,  9 Jun 2023 07:17:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C241263D5;
-	Fri,  9 Jun 2023 07:16:18 +0000 (UTC)
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D460435B6;
-	Fri,  9 Jun 2023 00:15:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:Subject:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=y5Db9W0rnz8v36Neaj/TG+14wi3CCswdccZ0b9U6YUk=; b=hqUsYWy6XBM+/X8MMETeozoKTx
-	YNaCZYxBLzAte0FYICO9UQZWqLyFVC4JH8AeOhdtq3F86YLNY6IR7/M6oBJvPLzQ4RXnsIfR9BQu7
-	dOIPYP9LqUCteT7mdKOf+8eZ+hvyWS5yefkzHJsDjMQUHVaPLRfmYKbhGotQMF5E+ULcy+QVOMzYN
-	lRP0g05pmVCnNl/ai0o19WSKyn7lbqNGbds020s+aVkzxfPJVD951uN4ZatrGBqGue+RKMRLZRane
-	ph9CBg0MNsfD4tdLI6dJ2G4Jh43xanmhHtVhiH20ZtZLkNjxeiGhXiQbY1N6sO67mgnJu+QABM2+j
-	oz96AX5w==;
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-	by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <daniel@iogearbox.net>)
-	id 1q7WLP-000Fua-Ov; Fri, 09 Jun 2023 09:15:35 +0200
-Received: from [178.197.249.34] (helo=linux.home)
-	by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <daniel@iogearbox.net>)
-	id 1q7WLP-0004uV-5g; Fri, 09 Jun 2023 09:15:35 +0200
-Subject: Re: [PATCH bpf-next v2 1/7] bpf: Add generic attach/detach/query API
- for multi-progs
-From: Daniel Borkmann <daniel@iogearbox.net>
-To: =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@kernel.org>,
- Stanislav Fomichev <sdf@google.com>,
- Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc: ast@kernel.org, andrii@kernel.org, martin.lau@linux.dev,
- razor@blackwall.org, john.fastabend@gmail.com, kuba@kernel.org,
- dxu@dxuuu.xyz, joe@cilium.io, davem@davemloft.net, bpf@vger.kernel.org,
- netdev@vger.kernel.org
-References: <20230607192625.22641-1-daniel@iogearbox.net>
- <20230607192625.22641-2-daniel@iogearbox.net> <ZIIOr1zvdRNTFKR7@google.com>
- <CAEf4BzbEf+U53UY6o+g5OZ6rg+T65_Aou4Nvrdbo-8sAjmdJmA@mail.gmail.com>
- <ZIJNlxCX4ksBFFwN@google.com>
- <CAEf4BzYbr5G8ZGnWEndiZ1-7_XqYfKFTorDvvafwZY0XJUn7cw@mail.gmail.com>
- <ZIJe5Ml6ILFa6tKP@google.com> <87a5x91nr8.fsf@toke.dk>
- <3a315a0d-52dd-7671-f6c1-bb681604c815@iogearbox.net>
-Message-ID: <b22129f6-6bb4-0813-2efd-e80a883407a8@iogearbox.net>
-Date: Fri, 9 Jun 2023 09:15:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 494083B407
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 07:17:31 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB07F3595
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 00:17:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686295047;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=15kZRnaZwPiIUtkudYdawd69yNtpyzsjo2sikqV4oqc=;
+	b=QzPLPBXgRgryd1xGQuNIjJXhnFbLjaPVr8/Pge65yJ6h/33uTZpyb11Y670tIAbRlD6RDL
+	HX6jzgKgGy5lnbLcSuzz26rjo6NcMET7Sq/3IBAT2uTEKIyFcrWLV1eVscWuPFJ/N1OGl1
+	KBkdzZKDpsPWA3kexsLO07uJGF2WG6I=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-640-KwRmV46ON4y0xCch7Ofjng-1; Fri, 09 Jun 2023 03:17:26 -0400
+X-MC-Unique: KwRmV46ON4y0xCch7Ofjng-1
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-3f7ecfccf2eso7059225e9.1
+        for <netdev@vger.kernel.org>; Fri, 09 Jun 2023 00:17:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686295045; x=1688887045;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=15kZRnaZwPiIUtkudYdawd69yNtpyzsjo2sikqV4oqc=;
+        b=laRZvNSqtv25qgyDii2skQwdfda4+QwAOCRL9Lp1dQzdcZIkWvpHfDvX9F22wvmFka
+         sZLTgVtWeih0ZASPD7kbQfw3jUOvyIhB0vbpSTEJ09Idhr9xZunYGk4pCirLhbvaNkuO
+         7jEkrUpAIMh4CVFvu0cLVHTDC54kw6JOQFh4ghiYTM6hqU6T59IHMG4F/rEJ7Y5vc20n
+         OnmRHlBD8lbzM9xem+ca/6O15EdH4415HnhSXnWj3Gjz4mE4y1IUOnEpHTg5zxxQ5BRC
+         LDXqlgCdn/KoTWsjMcutNr1UWcff6jdhvLGWFa3Jt6SCfNogwjBcFgb4JHW/POhz09rr
+         /cfQ==
+X-Gm-Message-State: AC+VfDyvPIfr9ss0yCOV4uaUYCN7ddDSJWsYm98zYn2nIS/23HC61Qe8
+	N/BCBZWX/E1tvdEWQiXJcMfxSqH0dl7t47nReZXtMlU1b3tbSS+AWYSLrfXW3qdwAJFIO7mFbvV
+	4JhXd4CtcbFsSgGrF
+X-Received: by 2002:a05:600c:c2:b0:3f7:30c0:c6a with SMTP id u2-20020a05600c00c200b003f730c00c6amr433287wmm.25.1686295045441;
+        Fri, 09 Jun 2023 00:17:25 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7waRKCvgqgJoAjOYyIenyGhdYJn4/2vpRsAbVkjBZW18/rDXsC3rXgUmARtFQATJ5s/wzvLA==
+X-Received: by 2002:a05:600c:c2:b0:3f7:30c0:c6a with SMTP id u2-20020a05600c00c200b003f730c00c6amr433267wmm.25.1686295045075;
+        Fri, 09 Jun 2023 00:17:25 -0700 (PDT)
+Received: from redhat.com ([2.55.4.169])
+        by smtp.gmail.com with ESMTPSA id k15-20020a7bc40f000000b003f7f1b3aff1sm1711774wmi.26.2023.06.09.00.17.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Jun 2023 00:17:24 -0700 (PDT)
+Date: Fri, 9 Jun 2023 03:17:20 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Jason Wang <jasowang@redhat.com>
+Cc: Stefano Garzarella <sgarzare@redhat.com>,
+	Shannon Nelson <shannon.nelson@amd.com>,
+	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+	Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+	Tiwei Bie <tiwei.bie@intel.com>, kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost-vdpa: filter VIRTIO_F_RING_PACKED feature
+Message-ID: <20230609031610-mutt-send-email-mst@kernel.org>
+References: <20230607054246-mutt-send-email-mst@kernel.org>
+ <CACGkMEuUapKvUYiJiLwtsN+x941jafDKS9tuSkiNrvkrrSmQkg@mail.gmail.com>
+ <20230608020111-mutt-send-email-mst@kernel.org>
+ <CACGkMEt4=3BRVNX38AD+mJU8v3bmqO-CdNj5NkFP-SSvsuy2Hg@mail.gmail.com>
+ <5giudxjp6siucr4l3i4tggrh2dpqiqhhihmdd34w3mq2pm5dlo@mrqpbwckpxai>
+ <CACGkMEtqn1dbrQZn3i-W_7sVikY4sQjwLRC5xAhMnyqkc3jwOw@mail.gmail.com>
+ <lw3nmkdszqo6jjtneyp4kjlmutooozz7xj2fqyxgh4v2ralptc@vkimgnbfafvi>
+ <CACGkMEt1yRV9qOLBqtQQmJA_UoRLCpznT=Gvd5D51Uaz2jakHA@mail.gmail.com>
+ <20230608102259-mutt-send-email-mst@kernel.org>
+ <CACGkMEvirfb8g0ev=b0CjpL5_SPJabqiQKxdwuRNqG2E=N7iGA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <3a315a0d-52dd-7671-f6c1-bb681604c815@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.8/26933/Thu Jun  8 09:26:06 2023)
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+In-Reply-To: <CACGkMEvirfb8g0ev=b0CjpL5_SPJabqiQKxdwuRNqG2E=N7iGA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 6/9/23 8:52 AM, Daniel Borkmann wrote:
-> On 6/9/23 2:29 AM, Toke Høiland-Jørgensen wrote:
->> Stanislav Fomichev <sdf@google.com> writes:
->>> On 06/08, Andrii Nakryiko wrote:
->>>> On Thu, Jun 8, 2023 at 2:52 PM Stanislav Fomichev <sdf@google.com> wrote:
->>>>> On 06/08, Andrii Nakryiko wrote:
->>>>>> On Thu, Jun 8, 2023 at 10:24 AM Stanislav Fomichev <sdf@google.com> wrote:
->>>>>>> On 06/07, Daniel Borkmann wrote:
->>>>>>>> This adds a generic layer called bpf_mprog which can be reused by different
->>>>>>>> attachment layers to enable multi-program attachment and dependency resolution.
->>>>>>>> In-kernel users of the bpf_mprog don't need to care about the dependency
->>>>>>>> resolution internals, they can just consume it with few API calls.
->>>>>>>>
->>>>>>>> The initial idea of having a generic API sparked out of discussion [0] from an
->>>>>>>> earlier revision of this work where tc's priority was reused and exposed via
->>>>>>>> BPF uapi as a way to coordinate dependencies among tc BPF programs, similar
->>>>>>>> as-is for classic tc BPF. The feedback was that priority provides a bad user
->>>>>>>> experience and is hard to use [1], e.g.:
->>>>>>>>
->>>>>>>>    I cannot help but feel that priority logic copy-paste from old tc, netfilter
->>>>>>>>    and friends is done because "that's how things were done in the past". [...]
->>>>>>>>    Priority gets exposed everywhere in uapi all the way to bpftool when it's
->>>>>>>>    right there for users to understand. And that's the main problem with it.
->>>>>>>>
->>>>>>>>    The user don't want to and don't need to be aware of it, but uapi forces them
->>>>>>>>    to pick the priority. [...] Your cover letter [0] example proves that in
->>>>>>>>    real life different service pick the same priority. They simply don't know
->>>>>>>>    any better. Priority is an unnecessary magic that apps _have_ to pick, so
->>>>>>>>    they just copy-paste and everyone ends up using the same.
->>>>>>>>
->>>>>>>> The course of the discussion showed more and more the need for a generic,
->>>>>>>> reusable API where the "same look and feel" can be applied for various other
->>>>>>>> program types beyond just tc BPF, for example XDP today does not have multi-
->>>>>>>> program support in kernel, but also there was interest around this API for
->>>>>>>> improving management of cgroup program types. Such common multi-program
->>>>>>>> management concept is useful for BPF management daemons or user space BPF
->>>>>>>> applications coordinating about their attachments.
->>>>>>>>
->>>>>>>> Both from Cilium and Meta side [2], we've collected the following requirements
->>>>>>>> for a generic attach/detach/query API for multi-progs which has been implemented
->>>>>>>> as part of this work:
->>>>>>>>
->>>>>>>>    - Support prog-based attach/detach and link API
->>>>>>>>    - Dependency directives (can also be combined):
->>>>>>>>      - BPF_F_{BEFORE,AFTER} with relative_{fd,id} which can be {prog,link,none}
->>>>>>>>        - BPF_F_ID flag as {fd,id} toggle
->>>>>>>>        - BPF_F_LINK flag as {prog,link} toggle
->>>>>>>>        - If relative_{fd,id} is none, then BPF_F_BEFORE will just prepend, and
->>>>>>>>          BPF_F_AFTER will just append for the case of attaching
->>>>>>>>        - Enforced only at attach time
->>>>>>>>      - BPF_F_{FIRST,LAST}
->>>>>>>>        - Enforced throughout the bpf_mprog state's lifetime
->>>>>>>>        - Admin override possible (e.g. link detach, prog-based BPF_F_REPLACE)
->>>>>>>>    - Internal revision counter and optionally being able to pass expected_revision
->>>>>>>>    - User space daemon can query current state with revision, and pass it along
->>>>>>>>      for attachment to assert current state before doing updates
->>>>>>>>    - Query also gets extension for link_ids array and link_attach_flags:
->>>>>>>>      - prog_ids are always filled with program IDs
->>>>>>>>      - link_ids are filled with link IDs when link was used, otherwise 0
->>>>>>>>      - {prog,link}_attach_flags for holding {prog,link}-specific flags
->>>>>>>>    - Must be easy to integrate/reuse for in-kernel users
->>>>>>>>
->>>>>>>> The uapi-side changes needed for supporting bpf_mprog are rather minimal,
->>>>>>>> consisting of the additions of the attachment flags, revision counter, and
->>>>>>>> expanding existing union with relative_{fd,id} member.
->>>>>>>>
->>>>>>>> The bpf_mprog framework consists of an bpf_mprog_entry object which holds
->>>>>>>> an array of bpf_mprog_fp (fast-path structure) and bpf_mprog_cp (control-path
->>>>>>>> structure). Both have been separated, so that fast-path gets efficient packing
->>>>>>>> of bpf_prog pointers for maximum cache efficieny. Also, array has been chosen
->>>>>>>> instead of linked list or other structures to remove unnecessary indirections
->>>>>>>> for a fast point-to-entry in tc for BPF. The bpf_mprog_entry comes as a pair
->>>>>>>> via bpf_mprog_bundle so that in case of updates the peer bpf_mprog_entry
->>>>>>>> is populated and then just swapped which avoids additional allocations that
->>>>>>>> could otherwise fail, for example, in detach case. bpf_mprog_{fp,cp} arrays are
->>>>>>>> currently static, but they could be converted to dynamic allocation if necessary
->>>>>>>> at a point in future. Locking is deferred to the in-kernel user of bpf_mprog,
->>>>>>>> for example, in case of tcx which uses this API in the next patch, it piggy-
->>>>>>>> backs on rtnl. The nitty-gritty details are in the bpf_mprog_{replace,head_tail,
->>>>>>>> add,del} implementation and an extensive test suite for checking all aspects
->>>>>>>> of this API for prog-based attach/detach and link API as BPF selftests in
->>>>>>>> this series.
->>>>>>>>
->>>>>>>> Kudos also to Andrii Nakryiko for API discussions wrt Meta's BPF management daemon.
->>>>>>>>
->>>>>>>>    [0] https://lore.kernel.org/bpf/20221004231143.19190-1-daniel@iogearbox.net/
->>>>>>>>    [1] https://lore.kernel.org/bpf/CAADnVQ+gEY3FjCR=+DmjDR4gp5bOYZUFJQXj4agKFHT9CQPZBw@mail.gmail.com
->>>>>>>>    [2] http://vger.kernel.org/bpfconf2023_material/tcx_meta_netdev_borkmann.pdf
->>>>>>>>
->>>>>>>> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
->>>>>>>> ---
->>>>>>>>   MAINTAINERS                    |   1 +
->>>>>>>>   include/linux/bpf_mprog.h      | 245 +++++++++++++++++
->>>>>>>>   include/uapi/linux/bpf.h       |  37 ++-
->>>>>>>>   kernel/bpf/Makefile            |   2 +-
->>>>>>>>   kernel/bpf/mprog.c             | 476 +++++++++++++++++++++++++++++++++
->>>>>>>>   tools/include/uapi/linux/bpf.h |  37 ++-
->>>>>>>>   6 files changed, 781 insertions(+), 17 deletions(-)
->>>>>>>>   create mode 100644 include/linux/bpf_mprog.h
->>>>>>>>   create mode 100644 kernel/bpf/mprog.c
->>>>>>
->>>>>> [...]
->>>>>>
->>>>>>>> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
->>>>>>>> index a7b5e91dd768..207f8a37b327 100644
->>>>>>>> --- a/tools/include/uapi/linux/bpf.h
->>>>>>>> +++ b/tools/include/uapi/linux/bpf.h
->>>>>>>> @@ -1102,7 +1102,14 @@ enum bpf_link_type {
->>>>>>>>    */
->>>>>>>>   #define BPF_F_ALLOW_OVERRIDE (1U << 0)
->>>>>>>>   #define BPF_F_ALLOW_MULTI    (1U << 1)
->>>>>>>> +/* Generic attachment flags. */
->>>>>>>>   #define BPF_F_REPLACE                (1U << 2)
->>>>>>>> +#define BPF_F_BEFORE         (1U << 3)
->>>>>>>> +#define BPF_F_AFTER          (1U << 4)
->>>>>>>
->>>>>>> [..]
->>>>>>>
->>>>>>>> +#define BPF_F_FIRST          (1U << 5)
->>>>>>>> +#define BPF_F_LAST           (1U << 6)
->>>>>>>
->>>>>>> I'm still not sure whether the hard semantics of first/last is really
->>>>>>> useful. My worry is that some prog will just use BPF_F_FIRST which
->>>>>>> would prevent the rest of the users.. (starting with only
->>>>>>> F_BEFORE/F_AFTER feels 'safer'; we can iterate later on if we really
->>>>>>> need first/laste).
->>>>>>
->>>>>> Without FIRST/LAST some scenarios cannot be guaranteed to be safely
->>>>>> implemented. E.g., if I have some hard audit requirements and I need
->>>>>> to guarantee that my program runs first and observes each event, I'll
->>>>>> enforce BPF_F_FIRST when attaching it. And if that attachment fails,
->>>>>> then server setup is broken and my application cannot function.
->>>>>>
->>>>>> In a setup where we expect multiple applications to co-exist, it
->>>>>> should be a rule that no one is using FIRST/LAST (unless it's
->>>>>> absolutely required). And if someone doesn't comply, then that's a bug
->>>>>> and has to be reported to application owners.
->>>>>>
->>>>>> But it's not up to the kernel to enforce this cooperation by
->>>>>> disallowing FIRST/LAST semantics, because that semantics is critical
->>>>>> for some applications, IMO.
->>>>>
->>>>> Maybe that's something that should be done by some other mechanism?
->>>>> (and as a follow up, if needed) Something akin to what Toke
->>>>> mentioned with another program doing sorting or similar.
->>>>
->>>> The goal of this API is to avoid needing some extra special program to
->>>> do this sorting
->>>>
->>>>> Otherwise, those first/last are just plain simple old priority bands;
->>>>> only we have two now, not u16.
->>>>
->>>> I think it's different. FIRST/LAST has to be used judiciously, of
->>>> course, but when they are needed, they will have no alternative.
->>>>
->>>> Also, specifying FIRST + LAST is the way to say "I want my program to
->>>> be the only one attached". Should we encourage such use cases? No, of
->>>> course. But I think it's fair  for users to be able to express this.
->>>>
->>>>> I'm mostly coming from the observability point: imagine I have my fancy
->>>>> tc_ingress_tcpdump program that I want to attach as a first program to debug
->>>>> some issue, but it won't work because there is already a 'first' program
->>>>> installed.. Or the assumption that I'd do F_REPLACE | F_FIRST ?
->>>>
->>>> If your production setup requires that some important program has to
->>>> be FIRST, then yeah, your "let me debug something" program shouldn't
->>>> interfere with it (assuming that FIRST requirement is a real
->>>> requirement and not someone just thinking they need to be first; but
->>>> that's up to user space to decide). Maybe the solution for you in that
->>>> case would be freplace program installed on top of that stubborn FIRST
->>>> program? And if we are talking about local debugging and development,
->>>> then you are a sysadmin and you should be able to force-detach that
->>>> program that is getting in the way.
->>>
->>> I'm not really concerned about our production environment. It's pretty
->>> controlled and restricted and I'm pretty certain we can avoid doing
->>> something stupid. Probably the same for your env.
->>>
->>> I'm mostly fantasizing about upstream world where different users don't
->>> know about each other and start doing stupid things like F_FIRST where
->>> they don't really have to be first. It's that "used judiciously" part
->>> that I'm a bit skeptical about :-D
+On Fri, Jun 09, 2023 at 10:16:50AM +0800, Jason Wang wrote:
+> On Thu, Jun 8, 2023 at 10:23 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Thu, Jun 08, 2023 at 05:29:58PM +0800, Jason Wang wrote:
+> > > On Thu, Jun 8, 2023 at 5:21 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+> > > >
+> > > > On Thu, Jun 08, 2023 at 05:00:00PM +0800, Jason Wang wrote:
+> > > > >On Thu, Jun 8, 2023 at 4:00 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+> > > > >>
+> > > > >> On Thu, Jun 08, 2023 at 03:46:00PM +0800, Jason Wang wrote:
+> > > > >>
+> > > > >> [...]
+> > > > >>
+> > > > >> >> > > > > I have a question though, what if down the road there
+> > > > >> >> > > > > is a new feature that needs more changes? It will be
+> > > > >> >> > > > > broken too just like PACKED no?
+> > > > >> >> > > > > Shouldn't vdpa have an allowlist of features it knows how
+> > > > >> >> > > > > to support?
+> > > > >> >> > > >
+> > > > >> >> > > > It looks like we had it, but we took it out (by the way, we were
+> > > > >> >> > > > enabling packed even though we didn't support it):
+> > > > >> >> > > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6234f80574d7569444d8718355fa2838e92b158b
+> > > > >> >> > > >
+> > > > >> >> > > > The only problem I see is that for each new feature we have to modify
+> > > > >> >> > > > the kernel.
+> > > > >> >> > > > Could we have new features that don't require handling by vhost-vdpa?
+> > > > >> >> > > >
+> > > > >> >> > > > Thanks,
+> > > > >> >> > > > Stefano
+> > > > >> >> > >
+> > > > >> >> > > Jason what do you say to reverting this?
+> > > > >> >> >
+> > > > >> >> > I may miss something but I don't see any problem with vDPA core.
+> > > > >> >> >
+> > > > >> >> > It's the duty of the parents to advertise the features it has. For example,
+> > > > >> >> >
+> > > > >> >> > 1) If some kernel version that is packed is not supported via
+> > > > >> >> > set_vq_state, parents should not advertise PACKED features in this
+> > > > >> >> > case.
+> > > > >> >> > 2) If the kernel has support packed set_vq_state(), but it's emulated
+> > > > >> >> > cvq doesn't support, parents should not advertise PACKED as well
+> > > > >> >> >
+> > > > >> >> > If a parent violates the above 2, it looks like a bug of the parents.
+> > > > >> >> >
+> > > > >> >> > Thanks
+> > > > >> >>
+> > > > >> >> Yes but what about vhost_vdpa? Talking about that not the core.
+> > > > >> >
+> > > > >> >Not sure it's a good idea to workaround parent bugs via vhost-vDPA.
+> > > > >>
+> > > > >> Sorry, I'm getting lost...
+> > > > >> We were talking about the fact that vhost-vdpa doesn't handle
+> > > > >> SET_VRING_BASE/GET_VRING_BASE ioctls well for packed virtqueue before
+> > > > >> that series [1], no?
+> > > > >>
+> > > > >> The parents seem okay, but maybe I missed a few things.
+> > > > >>
+> > > > >> [1] https://lore.kernel.org/virtualization/20230424225031.18947-1-shannon.nelson@amd.com/
+> > > > >
+> > > > >Yes, more below.
+> > > > >
+> > > > >>
+> > > > >> >
+> > > > >> >> Should that not have a whitelist of features
+> > > > >> >> since it interprets ioctls differently depending on this?
+> > > > >> >
+> > > > >> >If there's a bug, it might only matter the following setup:
+> > > > >> >
+> > > > >> >SET_VRING_BASE/GET_VRING_BASE + VDUSE.
+> > > > >> >
+> > > > >> >This seems to be broken since VDUSE was introduced. If we really want
+> > > > >> >to backport something, it could be a fix to filter out PACKED in
+> > > > >> >VDUSE?
+> > > > >>
+> > > > >> mmm it doesn't seem to be a problem in VDUSE, but in vhost-vdpa.
+> > > > >> I think VDUSE works fine with packed virtqueue using virtio-vdpa
+> > > > >> (I haven't tried), so why should we filter PACKED in VDUSE?
+> > > > >
+> > > > >I don't think we need any filtering since:
+> > > > >
+> > > > >PACKED features has been advertised to userspace via uAPI since
+> > > > >6234f80574d7569444d8718355fa2838e92b158b. Once we relax in uAPI, it
+> > > > >would be very hard to restrict it again. For the userspace that tries
+> > > > >to negotiate PACKED:
+> > > > >
+> > > > >1) if it doesn't use SET_VRING_BASE/GET_VRING_BASE, everything works well
+> > > > >2) if it uses SET_VRING_BASE/GET_VRING_BASE. it might fail or break silently
+> > > > >
+> > > > >If we backport the fixes to -stable, we may break the application at
+> > > > >least in the case 1).
+> > > >
+> > > > Okay, I see now, thanks for the details!
+> > > >
+> > > > Maybe instead of "break silently", we can return an explicit error for
+> > > > SET_VRING_BASE/GET_VRING_BASE in stable branches.
+> > > > But if there are not many cases, we can leave it like that.
+> > >
+> > > A second thought, if we need to do something for stable. is it better
+> > > if we just backport Shannon's series to stable?
+> > >
+> > > >
+> > > > I was just concerned about how does the user space understand that it
+> > > > can use SET_VRING_BASE/GET_VRING_BASE for PACKED virtqueues in a given
+> > > > kernel or not.
+> > >
+> > > My understanding is that if packed is advertised, the application
+> > > should assume SET/GET_VRING_BASE work.
+> > >
+> > > Thanks
+> >
+> >
+> > Let me ask you this. This is a bugfix yes?
 > 
-> But in the end how is that different from just attaching themselves blindly
-> into the first position (e.g. with before and relative_fd as 0 or the fd/id
-> of the current first program) - same, they don't really have to be first.
-> How would that not result in doing something stupid? ;) To add to Andrii's
-> earlier DDoS mitigation example ... think of K8s environment: one project
-> is implementing DDoS mitigation with BPF, another one wants to monitor/
-> sample traffic to user space with BPF. Both install as first position by
-> default (before + 0). In K8s, there is no built-in Pod dependency management
-> so you cannot guarantee whether Pod A comes up before Pod B. So you'll end
-> up in a situation where sometimes the monitor runs before the DDoS mitigation
-> and on some other nodes it's vice versa. The other case where this gets
-> broken (assuming a node where we get first the DDoS mitigation, then the
-> monitoring) is when you need to upgrade one of the Pods: monitoring Pod
-> gets a new stable update and is being re-rolled out, then it inserts
-> itself before the DDoS mitigation mechanism, potentially causing outage.
-> With the first/last mechanism these two situations cannot happen. The DDoS
-> mitigation software uses first and the monitoring uses before + 0, then no
-> matter the re-rollouts or the ordering in which Pods come up, it's always
-> at the expected/correct location.
-> 
->>> Because even with this new ordering scheme, there still should be
->>> some entity to do relative ordering (systemd-style, maybe CNI?).
+> Not sure since it may break existing user space applications which
+> make it hard to be backported to -stable.
 
-Just to add, in K8s there can be multiple CNIs chained together, and there
-is also no common management daemon as you have in G or Meta. So yes, K8s is
-special snowflake, but everyone outside of the big hyperscalers are relying
-on it as a platform, so we do need to have a solution for the trivial, above-
-mentioned scenario if we drop the first/last.
+Sorry, I was actually referring to 
+    vhost_vdpa: support PACKED when setting-getting vring_base
+and friends.
 
->>> And if it does the ordering, I don't really see why we need
->>> F_FIRST/F_LAST.
->>
->> I can see I'm a bit late to the party, but FWIW I agree with this:
->> FIRST/LAST will definitely be abused if we add it. It also seems to me
-> 
-> See above on the issues w/o the first/last. How would you work around them
-> in practice so they cannot happen?
-> 
->> to be policy in the kernel, which would be much better handled in
->> userspace like we do for so many other things. So we should rather
->> expose a hook to allow userspace to set the policy, as we've discussed
->> before; I definitely think we should add that at some point! Although
->> obviously it doesn't have to be part of this series...
-> 
-> Imo, it would be better if we could avoid that.. it feels like we're
-> trying to shoot sparrows with cannon, e.g. when this API gets reused
-> for other attach hooks, then for each of them you need yet another
-> policy program. I don't think that's a good user experience, and I
-> presume this is then single-user program, thus you'll run into the same
-> race in the end - whichever management daemon or application gets to
-> install this policy program first wins. This is potentially just
-> shifting the same issue one level higher, imo.
+These are bugfixes yes?  What is the appropriate Fixes tag?
 
-Thanks,
-Daniel
+
+> Before the fix, PACKED might work if SET/GET_VRING_BASE is not used.
+> After the fix, PACKED won't work at all.
+> 
+> Thanks
+> 
+> What is the appropriate Fixes
+> > tag?
+> >
+> > > >
+> > > > Thanks,
+> > > > Stefano
+> > > >
+> >
+
 
