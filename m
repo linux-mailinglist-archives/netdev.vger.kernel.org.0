@@ -1,46 +1,39 @@
-Return-Path: <netdev+bounces-9428-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9429-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3ABD6728E92
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 05:31:50 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8CBD3728EA3
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 05:40:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8E2B41C20FA5
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 03:31:46 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C70171C21068
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 03:40:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 631EF1C10;
-	Fri,  9 Jun 2023 03:31:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F5C31FB1;
+	Fri,  9 Jun 2023 03:40:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D1BC1879
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 03:31:46 +0000 (UTC)
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5A930FE;
-	Thu,  8 Jun 2023 20:31:42 -0700 (PDT)
-Received: from dggpemm500011.china.huawei.com (unknown [172.30.72.56])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Qcmlc1ChSzkXMB;
-	Fri,  9 Jun 2023 11:29:16 +0800 (CST)
-Received: from localhost.huawei.com (10.137.16.203) by
- dggpemm500011.china.huawei.com (7.185.36.110) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 9 Jun 2023 11:31:38 +0800
-From: renmingshuai <renmingshuai@huawei.com>
-To: <pctammela@mojatatu.com>
-CC: <caowangbao@huawei.com>, <davem@davemloft.net>, <edumazet@google.com>,
-	<jhs@mojatatu.com>, <jiri@resnulli.us>, <kuba@kernel.org>,
-	<liaichun@huawei.com>, <linux-kernel@vger.kernel.org>, <liubo335@huawei.com>,
-	<netdev@vger.kernel.org>, <pabeni@redhat.com>, <renmingshuai@huawei.com>,
-	<xiyou.wangcong@gmail.com>, <yanan@huawei.com>
-Subject: [PATCH v3] net/sched: Set the flushing flags to false to prevent an infinite loop and add one test to tdc
-Date: Fri, 9 Jun 2023 11:31:15 +0800
-Message-ID: <20230609033115.3738692-1-renmingshuai@huawei.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <91e6a8cd-2775-d759-4462-b1be7dc79bbe@mojatatu.com>
-References: <91e6a8cd-2775-d759-4462-b1be7dc79bbe@mojatatu.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E88521C39
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 03:40:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 52A2BC4339B;
+	Fri,  9 Jun 2023 03:40:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686282024;
+	bh=w11E+BzqlydikRfXTEIIQBAdVc8hakr3dPgbmMH3HgU=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=KW0A4Punlrc6eVPf6AUMtRz8QhFWzew4U8M+yZJSIU7p3DPmKmjm8BerQoH6viZfh
+	 LHHkxH/p9f1drczq5VZDpZEvMAiHfhlukr5ddpUQkbvR40V6eZjb2jADuiIovFOiif
+	 nYf5rhTCfIJ2jfdYMaCIIMp8Ua8r7yzdbXt2DHLMHgvbIws1OG0peuW1t/TN5lljqg
+	 GEKY/3mXeq91CaXpT5RloBfe3fBTcca0b0E8WkiexhUTGikvpqV77/fyTqn3nq/Scb
+	 cmnXbHujF7QhSftptLoWXgsvSFSEjqifS5FQxiHzuaeQV5sMEelXTJEl20OZHugqcq
+	 cVuYxbn+HnZXQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3540CE29F37;
+	Fri,  9 Jun 2023 03:40:24 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -48,208 +41,73 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.137.16.203]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500011.china.huawei.com (7.185.36.110)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Subject: Re: [PATCH net-next v6 00/14] splice, net: Rewrite splice-to-socket,
+ fix SPLICE_F_MORE and handle MSG_SPLICE_PAGES in AF_TLS
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168628202421.7487.4215663670045533118.git-patchwork-notify@kernel.org>
+Date: Fri, 09 Jun 2023 03:40:24 +0000
+References: <20230607181920.2294972-1-dhowells@redhat.com>
+In-Reply-To: <20230607181920.2294972-1-dhowells@redhat.com>
+To: David Howells <dhowells@redhat.com>
+Cc: netdev@vger.kernel.org, torvalds@linux-foundation.org,
+ chuck.lever@oracle.com, borisp@nvidia.com, john.fastabend@gmail.com,
+ kuba@kernel.org, davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+ willemdebruijn.kernel@gmail.com, dsahern@kernel.org, willy@infradead.org,
+ axboe@kernel.dk, linux-mm@kvack.org, linux-kernel@vger.kernel.org
 
->On 08/06/2023 09:32, renmingshuai wrote:
->>> On 07/06/2023 01:19, renmingshuai wrote:
->>>>> On 06/06/2023 11:45, renmingshuai wrote:
->>>>>> When a new chain is added by using tc, one soft lockup alarm will
->>>>>> be
->>>>>>     generated after delete the prio 0 filter of the chain. To
->>>>>>     reproduce
->>>>>>     the problem, perform the following steps:
->>>>>> (1) tc qdisc add dev eth0 root handle 1: htb default 1
->>>>>> (2) tc chain add dev eth0
->>>>>> (3) tc filter del dev eth0 chain 0 parent 1: prio 0
->>>>>> (4) tc filter add dev eth0 chain 0 parent 1:
->>>>>
->>>>> This seems like it could be added to tdc or 3 and 4 must be run in
->>>>> parallel?
->>>> 3 and 4 do not need to be run inparallel. When a new chain is added
->>>> by the
->>>>    way as step 1 and the step 3 is completed, this problem always
->>>>    occurs
->>>>    whenever step 4 is run.
->>>
->>> Got it,
->>> The test still hangs with the provided patch.
->>>
->>> + tc qdisc add dev lo root handle 1: htb default 1
->>> + tc chain add dev lo
->>> + tc filter del dev lo chain 0 parent 1: prio 0
->>> [   68.790030][ T6704] [+]
->>> [   68.790060][ T6704] chain refcnt 2
->>> [   68.790951][ T6704] [-]
->>> + tc filter add dev lo chain 0 parent 1:
->>> <hangs>
->>>
->>> Also please add this test to tdc, it should be straightforward.
->>>
->> Sorry for not testing before. I forgot that the chain->refcnt was
->> increased by 1 when tcf_chain_get() is called in tc_del_tfilter().
->>   The value of chain->refcnt is 2 after chain flush. The test
->>   result is as follows:
->> [root@localhost ~]# tc qdisc add dev eth2 root handle 1: htb default 1
->> [root@localhost ~]# tc chain add dev eth2
->> [root@localhost ~]# tc filter del dev eth2 chain 0 parent 1: prio 0
->> [root@localhost ~]# tc filter add dev eth2 chain 0 parent 1:
->> Error: Filter kind and protocol must be specified.
->> We have an error talking to the kernel
->> 
->> And I have add this test to tdc:
->> [root@localhost tc-testing]# ./tdc.py -f tc-tests/filters/tests.json
->> ok 7 c2b4 - Adding a new fiter after deleting a filter in a chain does
->> not cause  an infinite loop
->> 
->> Fixes: 726d061286ce ("net: sched: prevent insertion of new classifiers during chain flush")
->> Signed-off-by: renmingshuai <renmingshuai@huawei.com>
->
->Please respin with the following applied:
->
->diff --git 
->a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json 
->b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
->index c759c3db9a37..361235ad574b 100644
->--- a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
->+++ b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
->@@ -125,25 +125,5 @@
->          "teardown": [
->              "$TC qdisc del dev $DEV2 ingress"
->          ]
->-    },
->-    {
->-        "id": "c2b4",
->-        "name": "Adding a new fiter after deleting a filter in a chain 
->does not cause an infinite loop",
->-        "category": [
->-            "filter",
->-            "prio"
->-        ],
->-        "setup": [
->-            "$TC qdisc add dev $DEV1 root handle 1: htb default 1",
->-            "$TC chain add dev $DEV1"
->-        ],
->-        "cmdUnderTest": "$TC filter del dev $DEV1 chain 0 parent 1: 
->prio 0",
->-        "expExitCode": "0",
->-        "verifyCmd": "$TC filter add dev $DEV1 chain 0 parent 1:",
->-        "matchPattern": "Error: Filter kind and protocol must be 
->specified.",
->-        "matchCount": "1",
->-        "teardown": [
->-            "$TC qdisc del dev $DEV1 root handle 1: htb default 1"
->-        ]
->      }
->  ]
->diff --git 
->a/tools/testing/selftests/tc-testing/tc-tests/infra/filters.json 
->b/tools/testing/selftests/tc-testing/tc-tests/infra/filters.
->json
->new file mode 100644
->index 000000000000..55d6f209c388
->--- /dev/null
->+++ b/tools/testing/selftests/tc-testing/tc-tests/infra/filters.json
->@@ -0,0 +1,24 @@
->+[
->+    {
->+        "id": "c2b4",
->+        "name": "Adding a new filter after flushing empty chain doesnt 
->cause an infinite loop",
->+        "category": [
->+            "filter",
->+            "chain"
->+        ],
->+        "setup": [
->+            "$IP link add dev $DUMMY type dummy || /bin/true",
->+            "$TC qdisc add dev $DUMMY root handle 1: htb default 1",
->+            "$TC chain add dev $DUMMY",
->+            "$TC filter del dev $DUMMY chain 0 parent 1: prio 0"
->+        ],
->+        "cmdUnderTest": "$TC filter add dev $DUMMY chain 0 parent 1:",
->+        "expExitCode": "2",
->+        "verifyCmd": "$TC chain ls dev $DUMMY",
->+        "matchPattern": "chain parent 1: chain 0",
->+        "matchCount": "1",
->+        "teardown": [
->+            "$TC qdisc del dev $DUMMY root handle 1: htb default 1"
->+        ]
->+    }
->+]
+Hello:
 
-Ok. The new test is passed.
-[root@localhost tc-testing]# ./tdc.py -f tc-tests/infra/filter.json
-Test c2b4: Adding a new filter after flushing empty chain doesn't cause an infinite loop
-All test results:
-1..1
-ok 1 c2b4 - Adding a new filter after flushing empty chain doesn't cause an infinite loop
+This series was applied to netdev/net-next.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Fixes: 726d061286ce ("net: sched: prevent insertion of new classifiers during chain flush")
-Signed-off-by: renmingshuai <renmingshuai@huawei.com>
----
- net/sched/cls_api.c                           |  7 ++++++
- .../tc-testing/tc-tests/infra/filter.json     | 25 +++++++++++++++++++
- 2 files changed, 32 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/infra/filter.json
+On Wed,  7 Jun 2023 19:19:06 +0100 you wrote:
+> Here are patches to do the following:
+> 
+>  (1) Block MSG_SENDPAGE_* flags from leaking into ->sendmsg() from
+>      userspace, whilst allowing splice_to_socket() to pass them in.
+> 
+>  (2) Allow MSG_SPLICE_PAGES to be passed into tls_*_sendmsg().  Until
+>      support is added, it will be ignored and a splice-driven sendmsg()
+>      will be treated like a normal sendmsg().  TCP, UDP, AF_UNIX and
+>      Chelsio-TLS already handle the flag in net-next.
+> 
+> [...]
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 2621550bfddc..3ea054e03fbf 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -2442,6 +2442,13 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
- 		tfilter_notify_chain(net, skb, block, q, parent, n,
- 				     chain, RTM_DELTFILTER, extack);
- 		tcf_chain_flush(chain, rtnl_held);
-+		/* Set the flushing flags to false to prevent an infinite loop
-+		 * when a new filter is added.
-+		 */
-+		mutex_lock(&chain->filter_chain_lock);
-+		if (chain->refcnt == 2)
-+			chain->flushing = false;
-+		mutex_unlock(&chain->filter_chain_lock);
- 		err = 0;
- 		goto errout;
- 	}
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/infra/filter.json b/tools/testing/selftests/tc-testing/tc-tests/infra/filter.json
-new file mode 100644
-index 000000000000..db3b42aaa4fa
---- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/infra/filter.json
-@@ -0,0 +1,25 @@
-+[
-+    {
-+        "id": "c2b4",
-+        "name": "Adding a new filter after flushing empty chain doesn't cause an infinite loop",
-+        "category": [
-+            "filter",
-+            "chain"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY root handle 1: htb default 1",
-+            "$TC chain add dev $DUMMY",
-+            "$TC filter del dev $DUMMY chain 0 parent 1: prio 0"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DUMMY chain 0 parent 1:",
-+        "expExitCode": "2",
-+        "verifyCmd": "$TC chain ls dev $DUMMY",
-+        "matchPattern": "chain parent 1: chain 0",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY root handle 1: htb default 1",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    }
-+]
+Here is the summary with links:
+  - [net-next,v6,01/14] net: Block MSG_SENDPAGE_* from being passed to sendmsg() by userspace
+    https://git.kernel.org/netdev/net-next/c/4fe38acdac8a
+  - [net-next,v6,02/14] tls: Allow MSG_SPLICE_PAGES but treat it as normal sendmsg
+    https://git.kernel.org/netdev/net-next/c/81840b3b91aa
+  - [net-next,v6,03/14] splice, net: Use sendmsg(MSG_SPLICE_PAGES) rather than ->sendpage()
+    https://git.kernel.org/netdev/net-next/c/2dc334f1a63a
+  - [net-next,v6,04/14] splice, net: Add a splice_eof op to file-ops and socket-ops
+    https://git.kernel.org/netdev/net-next/c/2bfc66850952
+  - [net-next,v6,05/14] tls/sw: Use splice_eof() to flush
+    https://git.kernel.org/netdev/net-next/c/df720d288dbb
+  - [net-next,v6,06/14] tls/device: Use splice_eof() to flush
+    https://git.kernel.org/netdev/net-next/c/d4c1e80b0d1b
+  - [net-next,v6,07/14] ipv4, ipv6: Use splice_eof() to flush
+    https://git.kernel.org/netdev/net-next/c/1d7e4538a546
+  - [net-next,v6,08/14] chelsio/chtls: Use splice_eof() to flush
+    https://git.kernel.org/netdev/net-next/c/c289a1601abd
+  - [net-next,v6,09/14] kcm: Use splice_eof() to flush
+    https://git.kernel.org/netdev/net-next/c/951ace995138
+  - [net-next,v6,10/14] splice, net: Fix SPLICE_F_MORE signalling in splice_direct_to_actor()
+    https://git.kernel.org/netdev/net-next/c/219d92056ba3
+  - [net-next,v6,11/14] tls/sw: Support MSG_SPLICE_PAGES
+    https://git.kernel.org/netdev/net-next/c/fe1e81d4f73b
+  - [net-next,v6,12/14] tls/sw: Convert tls_sw_sendpage() to use MSG_SPLICE_PAGES
+    https://git.kernel.org/netdev/net-next/c/45e5be844ab6
+  - [net-next,v6,13/14] tls/device: Support MSG_SPLICE_PAGES
+    https://git.kernel.org/netdev/net-next/c/24763c9c0980
+  - [net-next,v6,14/14] tls/device: Convert tls_device_sendpage() to use MSG_SPLICE_PAGES
+    https://git.kernel.org/netdev/net-next/c/3dc8976c7ad6
+
+You are awesome, thank you!
 -- 
-2.27.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
 
