@@ -1,290 +1,160 @@
-Return-Path: <netdev+bounces-9565-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9566-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id F3BD4729C96
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 16:18:58 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0D28A729CE2
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 16:29:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3AC651C20F05
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 14:18:55 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1FB20281863
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 14:29:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 839C7182D2;
-	Fri,  9 Jun 2023 14:18:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 48E72182B5;
+	Fri,  9 Jun 2023 14:29:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77ED7182B5
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 14:18:22 +0000 (UTC)
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E8B30FA;
-	Fri,  9 Jun 2023 07:18:17 -0700 (PDT)
-X-GND-Sasl: alexis.lothore@bootlin.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1686320296;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31E6217757
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 14:29:23 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 833C4273A
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 07:29:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686320961;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=b39bYWGKkS87Qxp1JUHAqabHNNEbNwI74c/phbn31+I=;
-	b=byMhOSIVwIq6RrEKs4zYdzD9eigsgnGZkUQyJ4z9mb6bVKhZbFQ8NhgI7iOjSapeebQxZT
-	LUZdQG/ItC9f1X7v59MXhOQd6lXaD+dhTZ2Z+wPtINu/j1JSNkZHqMgCn1symqj7BecWDG
-	LPJzumjYfHkh4tUJFcY8z4DLwKdARMwEU5Pkl66Z4LpNk4wKh280ILfEubs/SEB08QWFjL
-	VIV+9M2389h3VdP3UbPhCR18QQaOGikPjHkbA9gFBVWTLLm5ge4ZPBSQV8Y44TEN6wwcXO
-	2BM8DayNULsaDkSCpphplsD1/S9vI17AcQ+hkKPh3CTD2dBNhQjboyfIJ4JIEA==
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 494F12000C;
-	Fri,  9 Jun 2023 14:18:15 +0000 (UTC)
-From: alexis.lothore@bootlin.com
-To: Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>
-Cc: linux-kernel@vger.kernel.org ,
-	netdev@vger.kernel.org ,
-	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-	paul.arola@telus.com ,
-	scott.roberts@telus.com 
-Subject: [PATCH net-next 2/2] net: dsa: mv88e6xxx: implement egress tbf qdisc for 6393x family
-Date: Fri,  9 Jun 2023 16:18:12 +0200
-Message-ID: <20230609141812.297521-3-alexis.lothore@bootlin.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230609141812.297521-1-alexis.lothore@bootlin.com>
-References: <20230609141812.297521-1-alexis.lothore@bootlin.com>
+	bh=SeFjQ+AIqSoCw9oUu0kheJJ6w4RLgwEZPguDnMov+Ro=;
+	b=Jt9wSEpMLIQg3X78KTApvIPitabofva+3/b9CVg6xSBIBkN83TWajt0unsS50iqxdFFle8
+	tOgicfBVeNFO2jtqi8iVWBZZjYN54fhEHzvAT1I4wzBV2E2rg650wnWcfwq0BQp5Ei8lzM
+	8NNG53uPemeQhFJpVqdZE+wZIt3Q2e4=
+Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com
+ [209.85.219.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-14-l-2ONb1fNxqxvtwrpzzYqA-1; Fri, 09 Jun 2023 10:29:20 -0400
+X-MC-Unique: l-2ONb1fNxqxvtwrpzzYqA-1
+Received: by mail-yb1-f197.google.com with SMTP id 3f1490d57ef6-bacd408046cso2572368276.3
+        for <netdev@vger.kernel.org>; Fri, 09 Jun 2023 07:29:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686320960; x=1688912960;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SeFjQ+AIqSoCw9oUu0kheJJ6w4RLgwEZPguDnMov+Ro=;
+        b=eH+WW1EUPqZO6a0IFuY8jTleAhko2yZSd3LK4xXRm6WGj3POYo8wCG0X+qfDS09y9d
+         /QCAdGxeDWKpoHR9PLx6je6Pcu9PZZ+yA2U8u0QEX6FVFJeNfSHdtEvtxmJ6aqULZ93e
+         1hjvkDKueNjuCc70QxrrwQasLwFSPV05Mv4BlVZk7IK/n6Q4iHeWwJzm60BRWfEYwa9X
+         qo76pEGsYKKLWhY0O/QFAkYA9VWw+j8g+7rqvjkhYzxYpQbKM7e05Zv0Qq1/4/XVdrNp
+         YC69yvFoQ/RGobUzH9T8JXrSC25vDgq9aKhXm9QGajo2LfevDrYvoE4PSRayVX16h7dh
+         /Hpw==
+X-Gm-Message-State: AC+VfDz9jcVk+I7MFbdMnAuDSdtYFMsMhe3Z83Svx8VHPdrsCeD0+IHb
+	w8i7PAcj0L6EEXwWxaJTYYUzlQxqpYneuTmXJcGX/VGGgQ89KFuwhqin/sUx3KrSTjCAZcz6YaC
+	1GQFagc5JtNra9hxW
+X-Received: by 2002:a25:f50f:0:b0:ba8:66fb:dd84 with SMTP id a15-20020a25f50f000000b00ba866fbdd84mr1101338ybe.20.1686320960004;
+        Fri, 09 Jun 2023 07:29:20 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4TEL5O7n3UfPsYTiUfzgwgsZext91z/RVtBWG4mbDyI3+V4ZyAbGaL21xcL2PV/gyhI4oc1Q==
+X-Received: by 2002:a25:f50f:0:b0:ba8:66fb:dd84 with SMTP id a15-20020a25f50f000000b00ba866fbdd84mr1101326ybe.20.1686320959702;
+        Fri, 09 Jun 2023 07:29:19 -0700 (PDT)
+Received: from brian-x1 (c-73-214-169-22.hsd1.pa.comcast.net. [73.214.169.22])
+        by smtp.gmail.com with ESMTPSA id c5-20020a5b0145000000b00bb144da7d68sm905217ybp.13.2023.06.09.07.29.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Jun 2023 07:29:18 -0700 (PDT)
+Date: Fri, 9 Jun 2023 10:29:16 -0400
+From: Brian Masney <bmasney@redhat.com>
+To: Andrew Halaney <ahalaney@redhat.com>
+Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+	konrad.dybcio@linaro.org, andersson@kernel.org, agross@kernel.org,
+	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+	conor+dt@kernel.org, richardcochran@gmail.com, echanude@redhat.com
+Subject: Re: [PATCH] arm64: dts: qcom: sa8540p-ride: Specify ethernet phy OUI
+Message-ID: <ZIM3PPXi+ed3CJ2J@brian-x1>
+References: <20230608201513.882950-1-ahalaney@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230608201513.882950-1-ahalaney@redhat.com>
+User-Agent: Mutt/2.2.9 (2022-11-12)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Alexis Lothoré <alexis.lothore@bootlin.com>
+On Thu, Jun 08, 2023 at 03:15:13PM -0500, Andrew Halaney wrote:
+> With wider usage on more boards, there have been reports of the
+> following:
+> 
+>     [  315.016174] qcom-ethqos 20000.ethernet eth0: no phy at addr -1
+>     [  315.016179] qcom-ethqos 20000.ethernet eth0: __stmmac_open: Cannot attach to PHY (error: -19)
+> 
+> which has been fairly random and isolated to specific boards.
+> Early reports were written off as a hardware issue, but it has been
+> prevalent enough on boards that theory seems unlikely.
+> 
+> In bring up of a newer piece of hardware, similar was seen, but this
+> time _consistently_. Moving the reset to the mdio bus level (which isn't
+> exactly a lie, it is the only device on the bus so one could model it as
+> such) fixed things on that platform. Analysis on sa8540p-ride shows that
+> the phy's reset is not being handled during the OUI scan if the reset
+> lives in the phy node:
+> 
+>     # gpio 752 is the reset, and is active low, first mdio reads are the OUI
+>     modprobe-420     [006] .....   154.738544: mdio_access: stmmac-0 read  phy:0x08 reg:0x02 val:0x0141
+>     modprobe-420     [007] .....   154.738665: mdio_access: stmmac-0 read  phy:0x08 reg:0x03 val:0x0dd4
+>     modprobe-420     [004] .....   154.741357: gpio_value: 752 set 1
+>     modprobe-420     [004] .....   154.741358: gpio_direction: 752 out (0)
+>     modprobe-420     [004] .....   154.741360: gpio_value: 752 set 0
+>     modprobe-420     [006] .....   154.762751: gpio_value: 752 set 1
+>     modprobe-420     [007] .....   154.846857: gpio_value: 752 set 1
+>     modprobe-420     [004] .....   154.937824: mdio_access: stmmac-0 write phy:0x08 reg:0x0d val:0x0003
+>     modprobe-420     [004] .....   154.937932: mdio_access: stmmac-0 write phy:0x08 reg:0x0e val:0x0014
+> 
+> Moving it to the bus level, or specifying the OUI in the phy's
+> compatible ensures the reset is handled before any mdio access
+> Here is tracing with the OUI approach (which skips scanning the OUI):
+> 
+>     modprobe-549     [007] .....    63.860295: gpio_value: 752 set 1
+>     modprobe-549     [007] .....    63.860297: gpio_direction: 752 out (0)
+>     modprobe-549     [007] .....    63.860299: gpio_value: 752 set 0
+>     modprobe-549     [004] .....    63.882599: gpio_value: 752 set 1
+>     modprobe-549     [005] .....    63.962132: gpio_value: 752 set 1
+>     modprobe-549     [006] .....    64.049379: mdio_access: stmmac-0 write phy:0x08 reg:0x0d val:0x0003
+>     modprobe-549     [006] .....    64.049490: mdio_access: stmmac-0 write phy:0x08 reg:0x0e val:0x0014
+> 
+> The OUI approach is taken given the description matches the situation
+> perfectly (taken from ethernet-phy.yaml):
+> 
+>     - pattern: "^ethernet-phy-id[a-f0-9]{4}\\.[a-f0-9]{4}$"
+>       description:
+>         If the PHY reports an incorrect ID (or none at all) then the
+>         compatible list may contain an entry with the correct PHY ID
+>         in the above form.
+>         The first group of digits is the 16 bit Phy Identifier 1
+>         register, this is the chip vendor OUI bits 3:18. The
+>         second group of digits is the Phy Identifier 2 register,
+>         this is the chip vendor OUI bits 19:24, followed by 10
+>         bits of a vendor specific ID.
+> 
+> With this in place the sa8540p-ride's phy is probing consistently, so
+> it seems the floating reset during mdio access was the issue. In either
+> case, it shouldn't be floating so this improves the situation. The below
+> link discusses some of the relationship of mdio, its phys, and points to
+> this OUI compatible as a way to opt out of the OUI scan pre-reset
+> handling which influenced this decision.
+> 
+> Link: https://lore.kernel.org/all/dca54c57-a3bd-1147-63b2-4631194963f0@gmail.com/
+> Fixes: 57827e87be54 ("arm64: dts: qcom: sa8540p-ride: Add ethernet nodes")
+> Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
 
-The 6393x switches family has a basic, per-port egress rate limit
-capability. This feature allows to configure any rate limit between 64kbps
-and 10Gbps. This rate limit is said to be "burstless"
-The switch offers the following controls, per port:
-- count mode: frames, L1 bytes, L2 bytes, L3 bytes
-- egress rate: recommended fixed values to be programmed, depending on
-  actually targeted rate:
-  - 64 kbps for rate between 64kbps and 1Mbps
-  - 1 Mbps for rate between 1Mbps and 100Mbps
-  - 10 Mbps for rate between 100Mbps and 1Gbps
-  - 100Mbps for rate between 1Gbps and 10Gbps
-- egress decrement rate, as number of steps programmed in egress rate
-- an optional frame overhead count(0 to 60), which will be added to counted
-  bytes to adjust (decrease) rate limiting. Could be used for example to
-  avoid saturating a receiving side which add more encapsulation to frames
-
-Signed-off-by: Alexis Lothoré <alexis.lothore@bootlin.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c |   1 +
- drivers/net/dsa/mv88e6xxx/port.c | 104 +++++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/port.h |  17 ++++-
- 3 files changed, 120 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 0f1ae2aeaf00..901698513f26 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -5633,6 +5633,7 @@ static const struct mv88e6xxx_ops mv88e6393x_ops = {
- 	.port_set_cmode = mv88e6393x_port_set_cmode,
- 	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.port_set_upstream_port = mv88e6393x_port_set_upstream_port,
-+	.port_setup_tc = mv88e6393x_port_setup_tc,
- 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6390_g1_stats_set_histogram,
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index dd66ec902d4c..b2f0087807ad 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -12,12 +12,16 @@
- #include <linux/if_bridge.h>
- #include <linux/phy.h>
- #include <linux/phylink.h>
-+#include <net/pkt_cls.h>
- 
- #include "chip.h"
- #include "global2.h"
- #include "port.h"
- #include "serdes.h"
- 
-+#define MBPS_TO_KBPS(x)	((x) * 1000)
-+#define GBPS_TO_KBPS(x)	(MBPS_TO_KBPS(x) * 1000)
-+
- int mv88e6xxx_port_read(struct mv88e6xxx_chip *chip, int port, int reg,
- 			u16 *val)
- {
-@@ -1497,6 +1501,106 @@ int mv88e6393x_port_set_upstream_port(struct mv88e6xxx_chip *chip, int port,
- 	return mv88e6393x_port_policy_write(chip, port, ptr, data);
- }
- 
-+int mv88e6393x_tbf_add(struct mv88e6xxx_chip *chip, int port,
-+		       struct tc_tbf_qopt_offload_replace_params *replace_params)
-+{
-+	int rate_kbps = DIV_ROUND_UP(replace_params->rate.rate_bytes_ps * 8, 1000);
-+	int overhead = DIV_ROUND_UP(replace_params->rate.overhead, 4);
-+	int rate_step, decrement_rate, err;
-+	u16 val;
-+
-+	if (rate_kbps < MV88E6393X_PORT_EGRESS_RATE_MIN_KBPS ||
-+	    rate_kbps >= MV88E6393X_PORT_EGRESS_RATE_MAX_KBPS)
-+		return -EOPNOTSUPP;
-+
-+	if (replace_params->rate.overhead > MV88E6393X_PORT_EGRESS_MAX_OVERHEAD)
-+		return -EOPNOTSUPP;
-+
-+	/* Switch supports only max rate configuration. There is no
-+	 * configurable burst/max size nor latency.
-+	 * Formula defining registers value is:
-+	 * EgressRate = 8 * EgressDec / (16ns * desired Rate)
-+	 * EgressRate is a set of fixed values depending of targeted range
-+	 */
-+	if (rate_kbps < MBPS_TO_KBPS(1)) {
-+		decrement_rate = rate_kbps / 64;
-+		rate_step = MV88E6XXX_PORT_EGRESS_RATE_CTL1_STEP_64_KBPS;
-+	} else if (rate_kbps < MBPS_TO_KBPS(100)) {
-+		decrement_rate = rate_kbps / MBPS_TO_KBPS(1);
-+		rate_step = MV88E6XXX_PORT_EGRESS_RATE_CTL1_STEP_1_MBPS;
-+	} else if (rate_kbps < GBPS_TO_KBPS(1)) {
-+		decrement_rate = rate_kbps / MBPS_TO_KBPS(10);
-+		rate_step = MV88E6XXX_PORT_EGRESS_RATE_CTL1_STEP_10_MBPS;
-+	} else {
-+		decrement_rate = rate_kbps / MBPS_TO_KBPS(100);
-+		rate_step = MV88E6XXX_PORT_EGRESS_RATE_CTL1_STEP_100_MBPS;
-+	}
-+
-+	dev_dbg(chip->dev, "p%d: adding egress tbf qdisc with %dkbps rate",
-+		port, rate_kbps);
-+	val = decrement_rate;
-+	val |= (overhead << MV88E6XXX_PORT_EGRESS_RATE_CTL1_FRAME_OVERHEAD_SHIFT);
-+	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_EGRESS_RATE_CTL1,
-+				   val);
-+	if (err)
-+		return err;
-+
-+	val = rate_step;
-+	/* Configure mode to bits per second mode, on layer 1 */
-+	val |= MV88E6XXX_PORT_EGRESS_RATE_CTL2_COUNT_L1_BYTES;
-+	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_EGRESS_RATE_CTL2,
-+				   val);
-+	if (err)
-+		return err;
-+
-+	return 0;
-+}
-+
-+int mv88e6393x_tbf_del(struct mv88e6xxx_chip *chip, int port)
-+{
-+	int err;
-+
-+	dev_dbg(chip->dev, "p%d: removing tbf qdisc", port);
-+	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_EGRESS_RATE_CTL2,
-+				   0x0000);
-+	if (err)
-+		return err;
-+	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_EGRESS_RATE_CTL1,
-+				    0x0001);
-+}
-+
-+static int mv88e6393x_tc_setup_qdisc_tbf(struct mv88e6xxx_chip *chip, int port,
-+					 struct tc_tbf_qopt_offload *qopt)
-+{
-+	/* Device only supports per-port egress rate limiting */
-+	if (qopt->parent != TC_H_ROOT)
-+		return -EOPNOTSUPP;
-+
-+	switch (qopt->command) {
-+	case TC_TBF_REPLACE:
-+		return mv88e6393x_tbf_add(chip, port, &qopt->replace_params);
-+	case TC_TBF_DESTROY:
-+		return mv88e6393x_tbf_del(chip, port);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+int mv88e6393x_port_setup_tc(struct dsa_switch *ds, int port,
-+			     enum tc_setup_type type, void *type_data)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+
-+	switch (type) {
-+	case TC_SETUP_QDISC_TBF:
-+		return mv88e6393x_tc_setup_qdisc_tbf(chip, port, type_data);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- int mv88e6393x_port_mgmt_rsvd2cpu(struct mv88e6xxx_chip *chip)
- {
- 	u16 ptr;
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index 86deeb347cbc..791ad335b647 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -222,10 +222,21 @@
- #define MV88E6095_PORT_CTL2_CPU_PORT_MASK		0x000f
- 
- /* Offset 0x09: Egress Rate Control */
--#define MV88E6XXX_PORT_EGRESS_RATE_CTL1		0x09
-+#define MV88E6XXX_PORT_EGRESS_RATE_CTL1				0x09
-+#define MV88E6XXX_PORT_EGRESS_RATE_CTL1_STEP_64_KBPS		0x1E84
-+#define MV88E6XXX_PORT_EGRESS_RATE_CTL1_STEP_1_MBPS		0x01F4
-+#define MV88E6XXX_PORT_EGRESS_RATE_CTL1_STEP_10_MBPS		0x0032
-+#define MV88E6XXX_PORT_EGRESS_RATE_CTL1_STEP_100_MBPS		0x0005
-+#define MV88E6XXX_PORT_EGRESS_RATE_CTL1_FRAME_OVERHEAD_SHIFT	8
-+#define MV88E6393X_PORT_EGRESS_RATE_MIN_KBPS			64
-+#define MV88E6393X_PORT_EGRESS_RATE_MAX_KBPS			10000000
-+#define MV88E6393X_PORT_EGRESS_MAX_OVERHEAD			60
- 
- /* Offset 0x0A: Egress Rate Control 2 */
--#define MV88E6XXX_PORT_EGRESS_RATE_CTL2		0x0a
-+#define MV88E6XXX_PORT_EGRESS_RATE_CTL2				0x0a
-+#define MV88E6XXX_PORT_EGRESS_RATE_CTL2_COUNT_L1_BYTES		0x4000
-+#define MV88E6XXX_PORT_EGRESS_RATE_CTL2_COUNT_L2_BYTES		0x8000
-+#define MV88E6XXX_PORT_EGRESS_RATE_CTL2_COUNT_L3_BYTES		0xC000
- 
- /* Offset 0x0B: Port Association Vector */
- #define MV88E6XXX_PORT_ASSOC_VECTOR			0x0b
-@@ -415,6 +426,8 @@ int mv88e6393x_set_egress_port(struct mv88e6xxx_chip *chip,
- 			       int port);
- int mv88e6393x_port_set_upstream_port(struct mv88e6xxx_chip *chip, int port,
- 				      int upstream_port);
-+int mv88e6393x_port_setup_tc(struct dsa_switch *ds, int port,
-+			     enum tc_setup_type type, void *type_data);
- int mv88e6393x_port_mgmt_rsvd2cpu(struct mv88e6xxx_chip *chip);
- int mv88e6393x_port_set_ether_type(struct mv88e6xxx_chip *chip, int port,
- 				   u16 etype);
--- 
-2.41.0
+Reviewed-by: Brian Masney <bmasney@redhat.com>
 
 
