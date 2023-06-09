@@ -1,56 +1,56 @@
-Return-Path: <netdev+bounces-9399-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9400-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3D8FC728C1F
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 02:01:19 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 78C2A728C22
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 02:01:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3DD701C20B17
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 00:01:15 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C07A11C20F0C
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 00:01:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23EED163;
-	Fri,  9 Jun 2023 00:01:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 70FF7163;
+	Fri,  9 Jun 2023 00:01:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11A04161
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 00:01:08 +0000 (UTC)
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5479F30D6
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 17:01:07 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id d75a77b69052e-3f9aeba6cc4so10146781cf.2
-        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 17:01:07 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F801161
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 00:01:31 +0000 (UTC)
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18434273D
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 17:01:30 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id af79cd13be357-75d536afa43so66493085a.1
+        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 17:01:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1686268866; x=1688860866;
+        d=broadcom.com; s=google; t=1686268889; x=1688860889;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=X4A2hsYlEQbt/J2Z+0bIm898UXb7PonMjdwWlgQ14dM=;
-        b=BpB6yQo1dDlHtRaA1VTocNkqnCySKPJsJNiFslYfxXXyOLN1PeUgdzqmX3R35dLd0E
-         ILEknBF9Rb6Tcne/qslINHKf3CUfmWgOB1KBHxIn1q4rlP293oYiAhyzySVNNO+yHQfV
-         a6sUUWpNuUwtZMue2U8+YlgNfsxyNLAiOCT6w=
+        bh=5Wb08jzFXbZt5tpzlDQyS+IiFBzCFjWcqaenSAX9KwU=;
+        b=IHHTrbL+lAFQAclJFhJiZeor5nT4CqhohFTkMkKvAVNEtt4hxE0tql1Vn8fUlB5Cv/
+         bmF6KGk5iTm/6FA9c9bOvC3knpsp3I+ZTqxZuHt1HhhOYyKqWmdQpIujrB5hKo/f1mNn
+         dgawioG5iAEuI3xLOb6km9yZKF3uaFOWL7gkw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686268866; x=1688860866;
+        d=1e100.net; s=20221208; t=1686268889; x=1688860889;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=X4A2hsYlEQbt/J2Z+0bIm898UXb7PonMjdwWlgQ14dM=;
-        b=Og0LheiXHXYvowSI18w32zB+rIb/1M/CMRO+YOWxCQiCrzkRgpANg94yoDIwnkTZcf
-         SgKVF1wKT4wufI7XADkP0wySmIrp1eVJGsbUj+EfI9hFEx995qRVnL9Z/OSM3madNzg2
-         IX2Ji6Um+Q8ZUPG1/UGvx8D+lXhwLD7yTxVHCWv2tiecTdpwMYlTdCg7kHWPRuw43w3/
-         oWvK1aBrYiIwudHo61QSO/qXpLQvo3eis6QMoA254XOGn2igSn/KavR4h/Ek+lFoMCcq
-         8p7sdHUnRL5pZu2ZRFapGUi4wUP2H4x6se/zNhQl6QyLjX+QSddzCecv9Wz/syJSIDcR
-         edSQ==
-X-Gm-Message-State: AC+VfDxbDEWK3d2/spXxXP3Wgi8k1nUxki1CAMQzMYurMCv2GfAodpPd
-	h7HEXGNIRin9pNd5kOjcVkYAUA==
-X-Google-Smtp-Source: ACHHUZ7SZLAaO4dOBHnHZyK7z766ToaMHLVaVTK1diI4fuZwk0ylFKFEbDqWTSvqhaqCv8AGbJCzig==
-X-Received: by 2002:a05:622a:112:b0:3f4:ee64:e30c with SMTP id u18-20020a05622a011200b003f4ee64e30cmr9455790qtw.52.1686268866027;
-        Thu, 08 Jun 2023 17:01:06 -0700 (PDT)
+        bh=5Wb08jzFXbZt5tpzlDQyS+IiFBzCFjWcqaenSAX9KwU=;
+        b=SKOIh2UffL/feGl7MzaBRK3WOHYSPVlJ+G9kGJ1JcpwtQMN/TihXHy2wVKbB/lFe5O
+         fKbaF6Sk6W6xzkvzg4LkOKOHcQC3c6QmdqWmE/sjbuR0FxVBuf0YgUwmHqHZ7jjW7fUt
+         xopBHXyPUhp/wl4DMFljXTpgWxnKJmmONmKUm6JfDJx+qJRSK61qJYtcZZqBFUcGc31u
+         con1fQpwsWJZgxWGMQIjfNWzQPGw+nDbccgi8YfhSktZ68mRJD/a/+FFL/gEqn7Zd4kv
+         VV3aDVpnh9kKv227CJUP5iivAn9ukkNKIxanjFXInOkICRlTQ+OV4kCcGByJVvtzIEPO
+         d4Vw==
+X-Gm-Message-State: AC+VfDy1i0v0oPlK3Q4xtbJjFBLi6+3Bwrc15zbVC3rOabbmZVLLZX8p
+	C2ckZC1Y8PNoISyrH34od8M/YQ==
+X-Google-Smtp-Source: ACHHUZ7uPIQwzlgi1Qf8uWg4kO1Ncyak9AH/v0UuYK1EDEHVgsQgrL2fSd0zfDtnKhdMHi+AYb31PA==
+X-Received: by 2002:a05:620a:3989:b0:75e:c7cb:d75d with SMTP id ro9-20020a05620a398900b0075ec7cbd75dmr3711423qkn.17.1686268889172;
+        Thu, 08 Jun 2023 17:01:29 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t15-20020ac8760f000000b003f90562e54csm732628qtq.36.2023.06.08.17.01.03
+        by smtp.gmail.com with ESMTPSA id s1-20020a05620a16a100b0075b35e72a21sm674025qkj.86.2023.06.08.17.01.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jun 2023 17:01:05 -0700 (PDT)
+        Thu, 08 Jun 2023 17:01:28 -0700 (PDT)
 From: Florian Fainelli <florian.fainelli@broadcom.com>
 To: bcm-kernel-feedback-list@broadcom.com,
 	=?iso-8859-2?q?Rafa=B3_Mi=B3ecki?= <zajec5@gmail.com>,
@@ -70,12 +70,12 @@ Cc: Florian Fainelli <f.fainelli@gmail.com>,
 	devicetree@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	=?iso-8859-2?q?Rafa=B3_Mi=B3ecki?= <rafal@milecki.pl>
-Subject: Re: [PATCH 2/3] dt-bindings: net: wireless: brcm,bcm4329-fmac: allow generic properties
-Date: Thu,  8 Jun 2023 17:01:02 -0700
-Message-Id: <20230609000102.2986501-1-florian.fainelli@broadcom.com>
+Subject: Re: [PATCH 3/3] ARM: dts: BCM5301X: Add Netgear R8000 WiFi regulator mappings
+Date: Thu,  8 Jun 2023 17:01:25 -0700
+Message-Id: <20230609000125.2986600-1-florian.fainelli@broadcom.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230602135925.14143-2-zajec5@gmail.com>
-References: <20230602135925.14143-1-zajec5@gmail.com> <20230602135925.14143-2-zajec5@gmail.com>
+In-Reply-To: <20230602135925.14143-3-zajec5@gmail.com>
+References: <20230602135925.14143-1-zajec5@gmail.com> <20230602135925.14143-3-zajec5@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -83,7 +83,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="000000000000cb06d805fda710c5"
+	boundary="0000000000002757a705fda71233"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -91,18 +91,16 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---000000000000cb06d805fda710c5
+--0000000000002757a705fda71233
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 From: Florian Fainelli <f.fainelli@gmail.com>
 
-On Fri,  2 Jun 2023 15:59:24 +0200, Rafał Miłecki <zajec5@gmail.com> wrote:
+On Fri,  2 Jun 2023 15:59:25 +0200, Rafał Miłecki <zajec5@gmail.com> wrote:
 > From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> Include ieee80211.yaml to allow using generic 802.11 properties for
-> bindings of Broadcom FullMAC devices. That allows specifying frequencies
-> ranges.
+> This allows setting FullMAC firmware regulatory domain.
 > 
 > Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 > ---
@@ -111,7 +109,7 @@ Applied to https://github.com/Broadcom/stblinux/commits/devicetree/next, thanks!
 --
 Florian
 
---000000000000cb06d805fda710c5
+--0000000000002757a705fda71233
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -182,15 +180,15 @@ kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
 NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
 AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
-/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBO+Tf064cPmkOk7
-GEenybzPXSZBJXRCU4APynv8ApKbMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIzMDYwOTAwMDEwNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIGQhvSL5MC6QYY2C
+9kZr3t6AWjpqm4oly7nr1sdNYDHLMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIzMDYwOTAwMDEyOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
 AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQDeS6PWrmyvgND/OfrjFS2BuX1pblsxy/Qy
-LEkSsYvRu5i+IaePJYnoFj4b12xOhxJVXgwtJZ4JuZ8qCePTqKMXl4F4FJA6wumKywgVkXivI+cA
-2szfMHJAJfQbbnpx+doGS34teoyNnb0Myuc+1kMtRA4bb+yEmZgJX038gq+6QT1UvoNnYEFp8yRN
-RkJ6fK4V+i2/+27+BLLUoORKjGGMDEKpnQdFOzNXZCME80UCpUK5tNFGdRc2kHdru++iD0toOfH9
-u8FjMhXMUcYTY81GdP5jNHFWTTyHhq0nX0+llrzyhBs+Tzu49FXYoVHrA1mkZeAri0z/pufVNx/l
-kf3l
---000000000000cb06d805fda710c5--
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCS72yl9Tpu5osQAleo4OvLn+/dyFRJdrqa
+bPCidTD2z0+OmZXPSdDc4WUwrg7wcK0fA7NcurPCSAsxhmHve7WaUjpNKtGbKtL+19J3ey0exsB0
+L3e/ZUd/ZHgLj3kmD+4tehboHH2Z7yOsU2F1LY6O34m1+e5buoe8ipy02vRLsFn05wq+Lh11mjQD
+rTbGKWyHiowCF4KBxRBwLdipGAhtPABC30agiEV/2ELKNUCy+XhNbU5hysllO96BMrWBPwoDdMXO
+6U9iNYwa5OuXSBix8j4XmQk2BG4w84VPmOjqHpJDoV2VFB84uCALBVQvXVVJMGhfvstGwA2F0Xs5
+G91s
+--0000000000002757a705fda71233--
 
