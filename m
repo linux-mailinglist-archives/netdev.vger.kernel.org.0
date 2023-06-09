@@ -1,127 +1,109 @@
-Return-Path: <netdev+bounces-9593-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9596-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9420F729F51
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 17:56:11 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6F5D5729FD8
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 18:15:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2068B28199A
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 15:56:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2BFE2281983
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 16:15:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81DD919E65;
-	Fri,  9 Jun 2023 15:56:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 743EC1F166;
+	Fri,  9 Jun 2023 16:15:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 779C817757
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 15:56:08 +0000 (UTC)
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21873589
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 08:56:03 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id 3f1490d57ef6-bacfcc7d1b2so1831082276.2
-        for <netdev@vger.kernel.org>; Fri, 09 Jun 2023 08:56:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1686326163; x=1688918163;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hjQ4waiFgY2SpS6vfX+NQ6H8ClBpY8gsNtdTsuAeGow=;
-        b=Hahr+2kwlcgcYlWWa13W2s5PfYpu9RxRktd/OckDlJw9u8XVx/J/BE4+y95GCyz6ZI
-         CgBOCMtmD/sEHGjXj0z40ZX07nkj9iPEx3IbqIFVqftn5dkB2ym/CYLNzNK/Fzuc0qu4
-         QV0Qlwkl48D/y5ECYJInJZLAmAe3k23hcW6yyfs4bUnhvcjhEj+u4Bnrbvx4SEIYKKO9
-         DBpFjQHUWGvecCRtzMk6kQmubkvsTni8r1HSyx3s1dDurs7O4Eo/72xYMtlTmC7sYTGq
-         Rg+cJi0Wwoz8fo1cYBw6G4G30t7XIuQ8ZpAyXH07Tuno6pfThfSeoh1q53y8IynYj2AW
-         Z/1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686326163; x=1688918163;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hjQ4waiFgY2SpS6vfX+NQ6H8ClBpY8gsNtdTsuAeGow=;
-        b=iPyVhpwW42eHuaAc87pP3rPtX9QJGaXGbPn1uhyztOHh1gizMe4rSlU2v+ULhJt1d/
-         9aO/1TOpYmC77KJUtR2IFgIVfsDhFkwYDIo/c3hcjST60mNl5DJZ1GBqkfxgWxnh0175
-         6Sfzl1ePD9prH7yx/xO5P7rpgFsb54mLZuyV2hZmHKh43jvvDIFTE6hhAfH/j3i4nv+q
-         XenbnqhW4veHwxjiST0LefQizlaSD/pWl6N0yfTkVBEEcvzceDKfnJd9AL/Pdb8wZtUN
-         P5n0mrRNaQoscPBFXz/Z2QrXIuPVhkTgVMeAutCO53rftgdiWHBePQ2J7qqonIX3/pf2
-         8zbw==
-X-Gm-Message-State: AC+VfDxMGIZEawqqklrf69aVTjay2hMlxu0gBOn67nOIxgxkLp07xXi2
-	sn42oGzqc8uiD+G/ywGKtEWHf/HBfg1/VQhbrdReiw==
-X-Google-Smtp-Source: ACHHUZ4Pt3PfyCqbPbNK66rSrdmIz2exluZc2a1ZLp43ZMopF+KntRAFTyk/pOU1yJ+KQ3AZfNGHs7d+xb71DioOybc=
-X-Received: by 2002:a0d:cf86:0:b0:565:2328:1db5 with SMTP id
- r128-20020a0dcf86000000b0056523281db5mr1284744ywd.48.1686326162595; Fri, 09
- Jun 2023 08:56:02 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6835217757
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 16:15:31 +0000 (UTC)
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A5C30CD
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 09:15:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686327329; x=1717863329;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OrL7aB8LmUrNfMrokIaEPFmgmiDoe7gqvjSP6HMc+nA=;
+  b=OZKsyQKt83S+ybJIr6VeGF3D8KDnZ5ko0hvmKD9O5O7fDgL8azXhiia7
+   jvDPtjXceN8yDrwBpe3X0OGkOgbWj+wa3G6QciLqAxLve45hTY2XBaK4k
+   DfKXC5+JVRBU1v6Yw0KX51CRlimXJXbQFZjJhi7LYbORfEeAUPA/Tj5jW
+   9nJOqOagqaf+rliXZAkbjNkfQQ7iE8c9nWae5/tQJZzopWkNgEp7BlV1F
+   n/+/sNHhey5sjw/4vRsmcMtlf3Jf28NTn+dnPsi90DQ7q31SEc2ZaoAkx
+   BJQvbUprSGi/xv0QyJSlayFa+5w19Wy/P98RU2oxuMUo+ALnjF9Ppk3i9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10736"; a="423511374"
+X-IronPort-AV: E=Sophos;i="6.00,229,1681196400"; 
+   d="scan'208";a="423511374"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2023 09:15:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10736"; a="884645652"
+X-IronPort-AV: E=Sophos;i="6.00,229,1681196400"; 
+   d="scan'208";a="884645652"
+Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
+  by orsmga005.jf.intel.com with ESMTP; 09 Jun 2023 09:15:28 -0700
+From: Tony Nguyen <anthony.l.nguyen@intel.com>
+To: davem@davemloft.net,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	edumazet@google.com,
+	netdev@vger.kernel.org
+Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH net v2 0/3][pull request] Intel Wired LAN Driver Updates 2023-06-09 (igc, igb)
+Date: Fri,  9 Jun 2023 09:10:55 -0700
+Message-Id: <20230609161058.3485225-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.38.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230609070117.100507-1-jiapeng.chong@linux.alibaba.com> <ce770d0f-20b4-8040-8625-365758351998@mojatatu.com>
-In-Reply-To: <ce770d0f-20b4-8040-8625-365758351998@mojatatu.com>
-From: Jamal Hadi Salim <jhs@mojatatu.com>
-Date: Fri, 9 Jun 2023 11:55:50 -0400
-Message-ID: <CAM0EoMm_w5vCfdTTJrPfFCrmWOuqL1_yqCmwHFAZSDdHqVMKZg@mail.gmail.com>
-Subject: Re: [PATCH] net/sched: act_pedit: Use kmemdup() to replace kmalloc + memcpy
-To: Pedro Tammela <pctammela@mojatatu.com>
-Cc: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>, xiyou.wangcong@gmail.com, 
-	jiri@resnulli.us, davem@davemloft.net, edumazet@google.com, kuba@kernel.org, 
-	pabeni@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Abaci Robot <abaci@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 9, 2023 at 8:30=E2=80=AFAM Pedro Tammela <pctammela@mojatatu.co=
-m> wrote:
->
-> On 09/06/2023 04:01, Jiapeng Chong wrote:
-> > ./net/sched/act_pedit.c:245:21-28: WARNING opportunity for kmemdup.
-> >
-> > Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> > Closes: https://bugzilla.openanolis.cn/show_bug.cgi?id=3D5478
-> > Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
->
-> LGTM,
->
-> Reviewed-by: Pedro Tammela <pctammela@mojatatu.com>
+This series contains updates to igc and igb drivers.
 
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Husaini clears Tx rings when interface is brought down for igc.
 
-cheers,
-jamal
+Vinicius disables PTM and PCI busmaster when removing igc driver.
 
-> > ---
-> >   net/sched/act_pedit.c | 4 +---
-> >   1 file changed, 1 insertion(+), 3 deletions(-)
-> >
-> > diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-> > index fc945c7e4123..8c4e7fddddbf 100644
-> > --- a/net/sched/act_pedit.c
-> > +++ b/net/sched/act_pedit.c
-> > @@ -242,14 +242,12 @@ static int tcf_pedit_init(struct net *net, struct=
- nlattr *nla,
-> >       nparms->tcfp_flags =3D parm->flags;
-> >       nparms->tcfp_nkeys =3D parm->nkeys;
-> >
-> > -     nparms->tcfp_keys =3D kmalloc(ksize, GFP_KERNEL);
-> > +     nparms->tcfp_keys =3D kmemdup(parm->keys, ksize, GFP_KERNEL);
-> >       if (!nparms->tcfp_keys) {
-> >               ret =3D -ENOMEM;
-> >               goto put_chain;
-> >       }
-> >
-> > -     memcpy(nparms->tcfp_keys, parm->keys, ksize);
-> > -
-> >       for (i =3D 0; i < nparms->tcfp_nkeys; ++i) {
-> >               u32 offmask =3D nparms->tcfp_keys[i].offmask;
-> >               u32 cur =3D nparms->tcfp_keys[i].off;
->
+Alex adds error check and path for NVM read error on igb.
+---
+v2:
+Patch 1
+ - Changes to commit message
+ - Disable TX Queue ring during ndo_stop()
+
+v1: https://lore.kernel.org/netdev/20230509170935.2237051-1-anthony.l.nguyen@intel.com/
+
+The following are changes since commit 04c55383fa5689357bcdd2c8036725a55ed632bc:
+  net/sched: cls_u32: Fix reference counter leak leading to overflow
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 1GbE
+
+Aleksandr Loktionov (1):
+  igb: fix nvm.ops.read() error handling
+
+Muhammad Husaini Zulkifli (1):
+  igc: Clean the TX buffer and TX descriptor ring
+
+Vinicius Costa Gomes (1):
+  igc: Fix possible system crash when loading module
+
+ drivers/net/ethernet/intel/igb/igb_ethtool.c |  4 +++-
+ drivers/net/ethernet/intel/igc/igc_main.c    | 12 +++++++++++-
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+
+-- 
+2.38.1
+
 
