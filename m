@@ -1,152 +1,106 @@
-Return-Path: <netdev+bounces-9589-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9594-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7D8B6729ED4
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 17:42:37 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9F7C0729F9C
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 18:05:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 38530281988
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 15:42:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5921928198E
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 16:05:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E81381993B;
-	Fri,  9 Jun 2023 15:42:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6B5D519E77;
+	Fri,  9 Jun 2023 16:05:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC95417757
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 15:42:34 +0000 (UTC)
-Received: from mail-0301.mail-europe.com (mail-0301.mail-europe.com [188.165.51.139])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6938930F7
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 08:42:33 -0700 (PDT)
-Date: Fri, 09 Jun 2023 15:42:23 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1686325349; x=1686584549;
-	bh=xadFqMnNfgl6gT0vaVLmkE//dImhTGrrvi/LgkS3A0c=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=eM8aZ7y+NM3rLwsevMhMxoeqKFgofaRbvBfA1ynKoGI8Oykbrfy6mIfE5ahu+SvWa
-	 xjwl76l4Bkqg6hiGtbDzfAJrnovcwfOFSTJugu/P9xK7W8QfKrc8Vw+mzFk6GvaIUR
-	 91Dl98z0l7AAGCsKtC1OGNdv2tj48u+7LInVGv18OW+11cAo+SKAMB8esB9kD+XDuK
-	 7Anic43oM4dz0RtpOnWpwksrVOrSvMvS6+6zjsQf6EWO4uLjGSzZVJ5LRCHouvaYz3
-	 xF9Jk6wqpm+TeOUcF4DsyhyHMeGKhReUpAgEwPgFoGwVHylaEBkCJ3x2RcNAfsNng2
-	 PtWc9X6Ru8UDg==
-To: linux-kernel@vger.kernel.org
-From: Raymond Hackley <raymondhackley@protonmail.com>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, "David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh+dt@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Michael Walle <michael@walle.cc>, =?utf-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Jeremy Kerr <jk@codeconstruct.com.au>, Raymond Hackley <raymondhackley@protonmail.com>, netdev@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v2 2/2] NFC: nxp-nci: Add pad supply voltage pvdd-supply
-Message-ID: <20230609154200.3620-1-raymondhackley@protonmail.com>
-In-Reply-To: <20230609154033.3511-1-raymondhackley@protonmail.com>
-References: <20230609154033.3511-1-raymondhackley@protonmail.com>
-Feedback-ID: 49437091:user:proton
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 590FF17757
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 16:05:36 +0000 (UTC)
+X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 09 Jun 2023 09:05:33 PDT
+Received: from node.akkea.ca (li1434-30.members.linode.com [45.33.107.30])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505A835A3
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 09:05:33 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+	by node.akkea.ca (Postfix) with ESMTP id D9E464E200E;
+	Fri,  9 Jun 2023 15:46:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
+	t=1686325588; bh=LAlFToPdxEjfDDOxau4rnrHY/5HdHkZYkM3bM6GWhss=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=THoZhJEcLFt2yQ73IygMtJS0dPoRZd3dAhP/UOyicRHfbLJ4/p84ZPM8/XKpT2Pqo
+	 lEd42rn5GK7ZprF77LPoUZq6OS2G0VK4gM8yHLai6M4MC4HSKjyeB6rdXWz0NueQCl
+	 VTwjMQhUTvLaE7zbXY6OIf9/v2B5D0j/byHFwUsQ=
+X-Virus-Scanned: Debian amavisd-new at mail.akkea.ca
+Received: from node.akkea.ca ([127.0.0.1])
+	by localhost (mail.akkea.ca [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6LidfUErIBoC; Fri,  9 Jun 2023 15:46:28 +0000 (UTC)
+Received: from www.akkea.ca (localhost [127.0.0.1])
+	by node.akkea.ca (Postfix) with ESMTP id 505664E200C;
+	Fri,  9 Jun 2023 15:46:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
+	t=1686325588; bh=LAlFToPdxEjfDDOxau4rnrHY/5HdHkZYkM3bM6GWhss=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=THoZhJEcLFt2yQ73IygMtJS0dPoRZd3dAhP/UOyicRHfbLJ4/p84ZPM8/XKpT2Pqo
+	 lEd42rn5GK7ZprF77LPoUZq6OS2G0VK4gM8yHLai6M4MC4HSKjyeB6rdXWz0NueQCl
+	 VTwjMQhUTvLaE7zbXY6OIf9/v2B5D0j/byHFwUsQ=
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Date: Fri, 09 Jun 2023 08:46:28 -0700
+From: Angus Ainslie <angus@akkea.ca>
+To: =?UTF-8?Q?J=C3=A9r=C3=B4me_Pouiller?= <jerome.pouiller@silabs.com>
+Cc: Kalle Valo <kvalo@kernel.org>, Ganapathi Kondraju
+ <ganapathi.kondraju@silabs.com>, Marek Vasut <marex@denx.de>,
+ linux-wireless@vger.kernel.org, Amitkumar Karwar <amitkarwar@gmail.com>,
+ Amol Hanwate <amol.hanwate@silabs.com>, Jakub Kicinski <kuba@kernel.org>,
+ Johannes Berg <johannes@sipsolutions.net>, Martin Fuzzey
+ <martin.fuzzey@flowbird.group>, Martin Kepplinger <martink@posteo.de>,
+ Narasimha Anumolu <narasimha.anumolu@silabs.com>, Sebastian Krzyszkowiak
+ <sebastian.krzyszkowiak@puri.sm>, Shivanadam Gude
+ <shivanadam.gude@silabs.com>, Siva Rebbagondla <siva8118@gmail.com>,
+ Srinivas Chappidi <srinivas.chappidi@silabs.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v3] MAINTAINERS: Add new maintainers to Redpine driver
+In-Reply-To: <3166282.5fSG56mABF@pc-42>
+References: <1675433281-6132-1-git-send-email-ganapathi.kondraju@silabs.com>
+ <112376890.nniJfEyVGO@pc-42> <dd9a86af-e41a-3450-5e52-6473561a3e18@denx.de>
+ <3166282.5fSG56mABF@pc-42>
+Message-ID: <50ab38c7104b99277bca512ba8f59255@akkea.ca>
+X-Sender: angus@akkea.ca
+User-Agent: Roundcube Webmail/1.3.17
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-PN547/553, QN310/330 chips on some devices require a pad supply voltage
-(PVDD). Otherwise, the NFC won't power up.
+Hi Jérôme,
 
-Implement support for pad supply voltage pvdd-supply that is enabled by
-the nxp-nci driver so that the regulator gets enabled when needed.
+On 2023-06-09 08:10, Jérôme Pouiller wrote:
+> 
+> You are talking about this driver[1] I assume?
+> 
+> [1]: https://github.com/SiliconLabs/RS911X-nLink-OSD
+> 
+> [...]
+>> In the meantime, since RSI neglected this driver for years, what would
+>> be the suggestion for people who are stuck with the RSI WiFi hardware?
+> 
+> Unfortunately, my only suggestion is to use the downstream driver we
+> mentioned above.
 
-Signed-off-by: Raymond Hackley <raymondhackley@protonmail.com>
----
- drivers/nfc/nxp-nci/i2c.c | 42 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+That driver isn't really a solution as it rarely applies cleanly to 
+recent kernels.
 
-diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
-index d4c299be7949..1b8877757cee 100644
---- a/drivers/nfc/nxp-nci/i2c.c
-+++ b/drivers/nfc/nxp-nci/i2c.c
-@@ -35,6 +35,7 @@ struct nxp_nci_i2c_phy {
-=20
- =09struct gpio_desc *gpiod_en;
- =09struct gpio_desc *gpiod_fw;
-+=09struct regulator *pvdd;
-=20
- =09int hard_fault; /*
- =09=09=09 * < 0 if hardware error occurred (e.g. i2c err)
-@@ -263,6 +264,22 @@ static const struct acpi_gpio_mapping acpi_nxp_nci_gpi=
-os[] =3D {
- =09{ }
- };
-=20
-+static void nxp_nci_i2c_poweroff(void *data)
-+{
-+=09struct nxp_nci_i2c_phy *phy =3D data;
-+=09struct device *dev =3D &phy->i2c_dev->dev;
-+=09struct regulator *pvdd =3D phy->pvdd;
-+=09int r;
-+
-+=09if (!IS_ERR(pvdd) && regulator_is_enabled(pvdd)) {
-+=09=09r =3D regulator_disable(pvdd);
-+=09=09if (r < 0)
-+=09=09=09dev_warn(dev,
-+=09=09=09=09 "Failed to disable regulator pvdd: %d\n",
-+=09=09=09=09 r);
-+=09}
-+}
-+
- static int nxp_nci_i2c_probe(struct i2c_client *client)
- {
- =09struct device *dev =3D &client->dev;
-@@ -298,6 +315,29 @@ static int nxp_nci_i2c_probe(struct i2c_client *client=
-)
- =09=09return PTR_ERR(phy->gpiod_fw);
- =09}
-=20
-+=09phy->pvdd =3D devm_regulator_get_optional(dev, "pvdd");
-+=09if (IS_ERR(phy->pvdd)) {
-+=09=09r =3D PTR_ERR(phy->pvdd);
-+=09=09if (r !=3D -ENODEV)
-+=09=09=09return dev_err_probe(dev, r,
-+=09=09=09=09=09     "Failed to get regulator pvdd\n");
-+=09} else {
-+=09=09r =3D regulator_enable(phy->pvdd);
-+=09=09if (r < 0) {
-+=09=09=09nfc_err(dev,
-+=09=09=09=09"Failed to enable regulator pvdd: %d\n",
-+=09=09=09=09r);
-+=09=09=09return r;
-+=09=09}
-+=09}
-+
-+=09r =3D devm_add_action_or_reset(dev, nxp_nci_i2c_poweroff, phy);
-+=09if (r < 0) {
-+=09=09nfc_err(dev, "Failed to install poweroff handler: %d\n",
-+=09=09=09r);
-+=09=09return r;
-+=09}
-+
- =09r =3D nxp_nci_probe(phy, &client->dev, &i2c_phy_ops,
- =09=09=09  NXP_NCI_I2C_MAX_PAYLOAD, &phy->ndev);
- =09if (r < 0)
-@@ -319,6 +359,8 @@ static void nxp_nci_i2c_remove(struct i2c_client *clien=
-t)
-=20
- =09nxp_nci_remove(phy->ndev);
- =09free_irq(client->irq, phy);
-+
-+=09nxp_nci_i2c_poweroff(phy);
- }
-=20
- static const struct i2c_device_id nxp_nci_i2c_id_table[] =3D {
---=20
-2.30.2
+The lack of proper commit messages also makes the changes opaque.
 
-
+Cheers
+Angus
 
