@@ -1,58 +1,58 @@
-Return-Path: <netdev+bounces-9705-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9706-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D2A0672A4DB
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 22:43:30 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1679A72A4E0
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 22:43:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8C7A3281A83
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 20:43:29 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 51D4E1C2118C
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 20:43:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1FD5D1E500;
-	Fri,  9 Jun 2023 20:42:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8762E1E514;
+	Fri,  9 Jun 2023 20:42:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14DA81B902
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 20:42:54 +0000 (UTC)
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F053584
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 13:42:52 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id 3f1490d57ef6-ba8c3186735so2778158276.3
-        for <netdev@vger.kernel.org>; Fri, 09 Jun 2023 13:42:52 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7552B1B902
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 20:42:56 +0000 (UTC)
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A10D32D7C
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 13:42:54 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id 3f1490d57ef6-bb397723627so2638639276.1
+        for <netdev@vger.kernel.org>; Fri, 09 Jun 2023 13:42:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1686343372; x=1688935372;
+        d=google.com; s=20221208; t=1686343374; x=1688935374;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mnOHGdVAoFxRsL1qunGJo2mCHrEl0ykyVupOVQwR7Fs=;
-        b=0ZTqMlJIqKcGwzNcIfdOfQkceoGSrXVJtSPWbbWPkGCmLG9ZELymVo++Aao7+zkJyK
-         JOc+NIIiSr4JIDi3fdGgq19wa9s61Y1oHy37crmnlP+ZvgOTZc2R7YeJqd2hYi12Ytdr
-         ZU5zKiYkTsf0O80RTtrJPddp+jRfljYWG2PB9JDrkMTEVcnm8/wVxQvJTR3kvdz9MUaV
-         bqVJ8mMQaoT37Ha+tFG5MSr63JvNkFSg7PM9KjJQ9Tb1Vkd8bsdCmV7kYMmIb4v3kjaY
-         YxrcBGJ/PdsFBEr0AeQnXd9EmGW6+UIsV1edqz1fu8m9Mp8/CzApIrArxbJVX5C81ELX
-         POKQ==
+        bh=5mGIknPiNpVJCDj5zjG6P1QgIWrS0Jhg4SkZk7u1X18=;
+        b=g/8z30ELirl9SesuQdLPpYJdoYWCW5OToABsBvOrEx+ZCixT5fYPlmeSXEFfn855zM
+         hLhouiZJekP5TOl0+eInOf4n6nBqKqy77cMdSJcz66bct980L7rF+N1jG5bIILVg3XOD
+         SU6+KZ6QpzTiCUNjtRzdmTeDnMrOSdrXLKkAPsd/itjBfB+sJV8IneBeqOPqaZRUgqtH
+         nIu5D/QAGvSsdJFibC1xnXKjsSubjMa9pY2CEEhxTdm+WdHJ4cKPZxV4NgPaRe0sezJ0
+         BO0+F//hq2TWs0kk/0OVbi2X5R+bCxCRWrjhGc9QheYao0yaFfBJa0RPrxqTnpmMZfo4
+         cQUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686343372; x=1688935372;
+        d=1e100.net; s=20221208; t=1686343374; x=1688935374;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mnOHGdVAoFxRsL1qunGJo2mCHrEl0ykyVupOVQwR7Fs=;
-        b=Tp2AwtvQRfv1s6U63LMGFbYLHMOZPPp8MzsXRZPZ/B27zcVpf90l+4B9ngeMsCPRhv
-         NWOMSoNdi4qy2Cnr+4+lMLcRPBIusFfQoWAe4vUFP0v1SeGa+/C2wpj8ADBdIU9053pJ
-         fxR7Lslfb5CvTlz5t+jj8+5UkRh4Ko9cJttTVnQOG9R7t6tVB1avaptwrrVjXU+K8zUz
-         55zQsp0fygM6WcV3OJvLOg9y4626KJlU+fguASTdH+mYUGMUxvqt9spS5dFA7+69E81g
-         m85CPUbE2G3R8tT0bc3fwuCDPDS293cKb/Kuxb4ar7ryjmYY7S5bx5pjLTSXQ3wsl10X
-         a/cg==
-X-Gm-Message-State: AC+VfDxJdzPLrkd15w3NHaSS+gwad2WPW5rVpgo892kSbXtQjPyujIvZ
-	noiEO4K43ZKsWwPWUGteERobfXIDGxuAhg==
-X-Google-Smtp-Source: ACHHUZ7nUeCLO1zCGT6jgP+39JqVAYCmc03xOl97vpyIZWUe7X/xgkOajBp4DEZKOx4ttwvFQU0HSv4nYUMG9g==
+        bh=5mGIknPiNpVJCDj5zjG6P1QgIWrS0Jhg4SkZk7u1X18=;
+        b=S9eGkjd8BXYM6ncj142SKerCkBsrF5x8wYyAIdAZfeKiyZhkbItGa4bsdrGP6uhwNl
+         91Zyg3j8apkxsSDYKBt9tHNeTwFHMTfLFIT5G2id77CIi5Ct14kPDV7k0ZxEdXrLO012
+         NXst1OdvrCZR4T9qOaXAImrnWpocVfFtB4Bkyx3HghUVIHioG4XMtNKaUz7x26NeE3uE
+         uSoga4czb/rrK8pkixp0hNpUeEbUFR3D6744KREOj3doz2vsQ9TAIIlZGFHv2iwVI42M
+         q4V3ZlDFYaa06PvZzOHgzkCj5C1tUvD69dWZCvmF383D5TaIKt29gbo1A7DY31ZEwzl9
+         1LVw==
+X-Gm-Message-State: AC+VfDyNhiMOotQWiSulyp2j4ZTAzjpyV8Q8pspSH31kD4IwhirWG8A/
+	pqwdfEhtIeDn0FTO3j65EbRNES8GfbqyLg==
+X-Google-Smtp-Source: ACHHUZ4gVRNwJMVyIcKP4lFCKEd4o5IK0ajslO9jtinD+92vfIwfagReY2hV4Y9ZYEtbQjhkluLsMWqt6trilw==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a25:ab62:0:b0:ba8:8ec4:db50 with SMTP id
- u89-20020a25ab62000000b00ba88ec4db50mr654129ybi.1.1686343372080; Fri, 09 Jun
- 2023 13:42:52 -0700 (PDT)
-Date: Fri,  9 Jun 2023 20:42:45 +0000
+ (user=edumazet job=sendgmr) by 2002:a25:b10:0:b0:bc2:3b92:316e with SMTP id
+ 16-20020a250b10000000b00bc23b92316emr375387ybl.4.1686343373847; Fri, 09 Jun
+ 2023 13:42:53 -0700 (PDT)
+Date: Fri,  9 Jun 2023 20:42:46 +0000
 In-Reply-To: <20230609204246.715667-1-edumazet@google.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -62,8 +62,8 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0
 References: <20230609204246.715667-1-edumazet@google.com>
 X-Mailer: git-send-email 2.41.0.162.gfafddb0af9-goog
-Message-ID: <20230609204246.715667-3-edumazet@google.com>
-Subject: [PATCH net-next 2/3] tcp: remove some dead code
+Message-ID: <20230609204246.715667-4-edumazet@google.com>
+Subject: [PATCH net-next 3/3] tcp: remove size parameter from tcp_stream_alloc_skb()
 From: Eric Dumazet <edumazet@google.com>
 To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
 	Paolo Abeni <pabeni@redhat.com>
@@ -77,113 +77,105 @@ X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Now all skbs in write queue do not contain any payload in skb->head,
-we can remove some dead code.
+Now all tcp_stream_alloc_skb() callers pass @size == 0, we can
+remove this parameter.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/tcp_output.c | 40 ++++++++++++----------------------------
- 1 file changed, 12 insertions(+), 28 deletions(-)
+ include/net/tcp.h     |  2 +-
+ net/ipv4/tcp.c        |  6 +++---
+ net/ipv4/tcp_output.c | 10 +++++-----
+ 3 files changed, 9 insertions(+), 9 deletions(-)
 
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index f718ed258f07caedca41d01670b1c91fc11e2233..bf9f56225821fbb0b7a377b51b3b597b95985b4c 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -350,7 +350,7 @@ void tcp_twsk_purge(struct list_head *net_exit_list, int family);
+ ssize_t tcp_splice_read(struct socket *sk, loff_t *ppos,
+ 			struct pipe_inode_info *pipe, size_t len,
+ 			unsigned int flags);
+-struct sk_buff *tcp_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
++struct sk_buff *tcp_stream_alloc_skb(struct sock *sk, gfp_t gfp,
+ 				     bool force_schedule);
+ 
+ void tcp_enter_quickack_mode(struct sock *sk, unsigned int max_quickacks);
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index da7f156d9fad93b0ab97cd52bc9e7f9cd3822ea2..fba6578bc98f98feae8afea522e113ea3994eea0 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -858,12 +858,12 @@ ssize_t tcp_splice_read(struct socket *sock, loff_t *ppos,
+ }
+ EXPORT_SYMBOL(tcp_splice_read);
+ 
+-struct sk_buff *tcp_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
++struct sk_buff *tcp_stream_alloc_skb(struct sock *sk, gfp_t gfp,
+ 				     bool force_schedule)
+ {
+ 	struct sk_buff *skb;
+ 
+-	skb = alloc_skb_fclone(size + MAX_TCP_HEADER, gfp);
++	skb = alloc_skb_fclone(MAX_TCP_HEADER, gfp);
+ 	if (likely(skb)) {
+ 		bool mem_scheduled;
+ 
+@@ -1178,7 +1178,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 					goto restart;
+ 			}
+ 			first_skb = tcp_rtx_and_write_queues_empty(sk);
+-			skb = tcp_stream_alloc_skb(sk, 0, sk->sk_allocation,
++			skb = tcp_stream_alloc_skb(sk, sk->sk_allocation,
+ 						   first_skb);
+ 			if (!skb)
+ 				goto wait_for_space;
 diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index d0396633735932857e131709a893b2a811fe4bd6..fedbe842abdd027a95f2ac7960185fd2906a04bc 100644
+index fedbe842abdd027a95f2ac7960185fd2906a04bc..660eac4bf2a77080def76b4ee8ae6fbfc4e13284 100644
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -1530,7 +1530,7 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct sk_buff *buff;
--	int nsize, old_factor;
-+	int old_factor;
- 	long limit;
- 	int nlen;
- 	u8 flags;
-@@ -1538,9 +1538,7 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
- 	if (WARN_ON(len > skb->len))
- 		return -EINVAL;
- 
--	nsize = skb_headlen(skb) - len;
--	if (nsize < 0)
--		nsize = 0;
-+	DEBUG_NET_WARN_ON_ONCE(skb_headlen(skb));
- 
- 	/* tcp_sendmsg() can overshoot sk_wmem_queued by one full size skb.
- 	 * We need some allowance to not penalize applications setting small
-@@ -1560,7 +1558,7 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
+@@ -1558,7 +1558,7 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
  		return -ENOMEM;
  
  	/* Get a new skb... force flag on. */
--	buff = tcp_stream_alloc_skb(sk, nsize, gfp, true);
-+	buff = tcp_stream_alloc_skb(sk, 0, gfp, true);
+-	buff = tcp_stream_alloc_skb(sk, 0, gfp, true);
++	buff = tcp_stream_alloc_skb(sk, gfp, true);
  	if (!buff)
  		return -ENOMEM; /* We'll just try again later. */
  	skb_copy_decrypted(buff, skb);
-@@ -1568,7 +1566,7 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
- 
- 	sk_wmem_queued_add(sk, buff->truesize);
- 	sk_mem_charge(sk, buff->truesize);
--	nlen = skb->len - len - nsize;
-+	nlen = skb->len - len;
- 	buff->truesize += nlen;
- 	skb->truesize -= nlen;
- 
-@@ -1626,13 +1624,7 @@ static int __pskb_trim_head(struct sk_buff *skb, int len)
- 	struct skb_shared_info *shinfo;
- 	int i, k, eat;
- 
--	eat = min_t(int, len, skb_headlen(skb));
--	if (eat) {
--		__skb_pull(skb, eat);
--		len -= eat;
--		if (!len)
--			return 0;
--	}
-+	DEBUG_NET_WARN_ON_ONCE(skb_headlen(skb));
- 	eat = len;
- 	k = 0;
- 	shinfo = skb_shinfo(skb);
-@@ -1671,12 +1663,10 @@ int tcp_trim_head(struct sock *sk, struct sk_buff *skb, u32 len)
- 
- 	TCP_SKB_CB(skb)->seq += len;
- 
--	if (delta_truesize) {
--		skb->truesize	   -= delta_truesize;
--		sk_wmem_queued_add(sk, -delta_truesize);
--		if (!skb_zcopy_pure(skb))
--			sk_mem_uncharge(sk, delta_truesize);
--	}
-+	skb->truesize	   -= delta_truesize;
-+	sk_wmem_queued_add(sk, -delta_truesize);
-+	if (!skb_zcopy_pure(skb))
-+		sk_mem_uncharge(sk, delta_truesize);
- 
- 	/* Any change of skb->len requires recalculation of tso factor. */
- 	if (tcp_skb_pcount(skb) > 1)
-@@ -2126,9 +2116,7 @@ static int tso_fragment(struct sock *sk, struct sk_buff *skb, unsigned int len,
- 	u8 flags;
- 
+@@ -2118,7 +2118,7 @@ static int tso_fragment(struct sock *sk, struct sk_buff *skb, unsigned int len,
  	/* All of a TSO frame must be composed of paged data.  */
--	if (skb->len != skb->data_len)
--		return tcp_fragment(sk, TCP_FRAG_IN_WRITE_QUEUE,
--				    skb, len, mss_now, gfp);
-+	DEBUG_NET_WARN_ON_ONCE(skb->len != skb->data_len);
+ 	DEBUG_NET_WARN_ON_ONCE(skb->len != skb->data_len);
  
- 	buff = tcp_stream_alloc_skb(sk, 0, gfp, true);
+-	buff = tcp_stream_alloc_skb(sk, 0, gfp, true);
++	buff = tcp_stream_alloc_skb(sk, gfp, true);
  	if (unlikely(!buff))
-@@ -2487,12 +2475,8 @@ static int tcp_mtu_probe(struct sock *sk)
- 		} else {
- 			TCP_SKB_CB(nskb)->tcp_flags |= TCP_SKB_CB(skb)->tcp_flags &
- 						   ~(TCPHDR_FIN|TCPHDR_PSH);
--			if (!skb_shinfo(skb)->nr_frags) {
--				skb_pull(skb, copy);
--			} else {
--				__pskb_trim_head(skb, copy);
--				tcp_set_skb_tso_segs(skb, mss_now);
--			}
-+			__pskb_trim_head(skb, copy);
-+			tcp_set_skb_tso_segs(skb, mss_now);
- 			TCP_SKB_CB(skb)->seq += copy;
- 		}
+ 		return -ENOMEM;
+ 	skb_copy_decrypted(buff, skb);
+@@ -2434,7 +2434,7 @@ static int tcp_mtu_probe(struct sock *sk)
+ 		return -1;
+ 
+ 	/* We're allowed to probe.  Build it now. */
+-	nskb = tcp_stream_alloc_skb(sk, 0, GFP_ATOMIC, false);
++	nskb = tcp_stream_alloc_skb(sk, GFP_ATOMIC, false);
+ 	if (!nskb)
+ 		return -1;
+ 
+@@ -3811,7 +3811,7 @@ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
+ 	    !skb_page_frag_refill(min_t(size_t, space, PAGE_SIZE),
+ 				  pfrag, sk->sk_allocation))
+ 		goto fallback;
+-	syn_data = tcp_stream_alloc_skb(sk, 0, sk->sk_allocation, false);
++	syn_data = tcp_stream_alloc_skb(sk, sk->sk_allocation, false);
+ 	if (!syn_data)
+ 		goto fallback;
+ 	memcpy(syn_data->cb, syn->cb, sizeof(syn->cb));
+@@ -3896,7 +3896,7 @@ int tcp_connect(struct sock *sk)
+ 		return 0;
+ 	}
+ 
+-	buff = tcp_stream_alloc_skb(sk, 0, sk->sk_allocation, true);
++	buff = tcp_stream_alloc_skb(sk, sk->sk_allocation, true);
+ 	if (unlikely(!buff))
+ 		return -ENOBUFS;
  
 -- 
 2.41.0.162.gfafddb0af9-goog
