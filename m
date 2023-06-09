@@ -1,48 +1,48 @@
-Return-Path: <netdev+bounces-9723-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9724-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1ACBF72A53F
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 23:17:21 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3F52172A542
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 23:18:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C9F8B281AB9
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 21:17:19 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E9BE3281AE5
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 21:18:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2ABC023D61;
-	Fri,  9 Jun 2023 21:14:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 40EB023C79;
+	Fri,  9 Jun 2023 21:14:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 155DE23C97
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 21:14:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3618224EAA
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 21:14:57 +0000 (UTC)
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A4A35A7
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 14:14:53 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7293235A2
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 14:14:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686345293; x=1717881293;
+  t=1686345295; x=1717881295;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=fCymMh11BDM0sIUq78o1Kso+F0PGaNZuR5UarBdn8Jc=;
-  b=gyv2bRR6sYkxXwnGyCD+1XUXyO9zeZ/xZz8XpS2BGSnRtC98BUN5gxhK
-   UO5tvKvxVPFfUII4oWGIr+dXzP3DKkCwVGvClzfnveYDmdyo3qBkBlHWa
-   cfk911DrYvkj3KFUr1kyApt9SRnu/ACySHBTeLTFLoU387EgNJ0qyoKIm
-   NjjwXWIZVZNFkjVTsSYoDY9Sv11QDHJcRM0Mtd9SYwv5XKLaMj/GKWfS2
-   vgMWqjrjXUKFQklcHrr8d+wx/J1ExAvfLRQ8Ii1XKZOufQ8sxsaWvTpEj
-   v/AWv/UDmFHAlGVZJlpWyGh3RijhIAw6CgX5pRmJ9+ClCDG23ZE5dcyyA
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10736"; a="356583200"
+  bh=Hwo7TBIc23t9NmGsQCwz7xWiGLnZOu6fZaBG9OSb2Wg=;
+  b=E1Kk+u9JXuqWqGUJlQwQn2fQPr/aqiDvrpB1IbFFfUHItluzvHE4k+M+
+   vWpnuet117QjlY3cw+7B/DzRW3hIQai4J6fpwIR7I69VpuWwS16w8BauJ
+   ue5mCXKmROIhQftL4SOq0oLu1sVQxZmH8diM8mOfMRrfKZPV4N/1SthMG
+   ND2/ZmsenSxIHI3QboyN5io+Y9Szv5nvU+DyrXGR2zfRcJRp/A5k/8yAe
+   IjM5Wc/bZVTi+Jxov3fKZgPu1lpkm7Pt4bpuqIFeL/zrs/nIjL4+P1q1X
+   0W7G96COaRz2w4F2ME3l+ydO926pUPqBDc4cb9+shjR/+I3lNGcPUjCZh
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10736"; a="356583205"
 X-IronPort-AV: E=Sophos;i="6.00,230,1681196400"; 
-   d="scan'208";a="356583200"
+   d="scan'208";a="356583205"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2023 14:14:49 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10736"; a="823194640"
+X-IronPort-AV: E=McAfee;i="6600,9927,10736"; a="823194642"
 X-IronPort-AV: E=Sophos;i="6.00,230,1681196400"; 
-   d="scan'208";a="823194640"
+   d="scan'208";a="823194642"
 Received: from dmert-dev.jf.intel.com ([10.166.241.14])
   by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2023 14:14:49 -0700
 From: Dave Ertman <david.m.ertman@intel.com>
@@ -50,9 +50,9 @@ To: intel-wired-lan@lists.osuosl.org
 Cc: daniel.machon@microchip.com,
 	simon.horman@corigine.com,
 	netdev@vger.kernel.org
-Subject: [PATCH iwl-next v4 09/10] ice: enforce no DCB config changing when in bond
-Date: Fri,  9 Jun 2023 14:16:25 -0700
-Message-Id: <20230609211626.621968-10-david.m.ertman@intel.com>
+Subject: [PATCH iwl-next v4 10/10] ice: update reset path for SRIOV LAG support
+Date: Fri,  9 Jun 2023 14:16:26 -0700
+Message-Id: <20230609211626.621968-11-david.m.ertman@intel.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230609211626.621968-1-david.m.ertman@intel.com>
 References: <20230609211626.621968-1-david.m.ertman@intel.com>
@@ -70,142 +70,356 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-To support SRIOV LAG, the driver cannot allow changes to an interface's DCB
-configuration when in a bond.  This would break the ability to modify
-interfaces Tx scheduling for fail-over interfaces.
+Add code to rebuild the LAG resources when rebuilding the state of the
+interface after a reset.
 
-Block kernel generated DCB config events when in a bond.
+Also added in a function for building per-queue information into the buffer
+used to configure VF queues for LAG fail-over.  This improves code reuse.
+
+Due to differences in timing per interface for recovering from a reset, add
+in the ability to retry on non-local dependencies where needed.
 
 Reviewed-by: Daniel Machon <daniel.machon@microchip.com>
 Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_dcb_nl.c | 50 +++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_lag.c  | 231 +++++++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_lag.h  |   3 +
+ drivers/net/ethernet/intel/ice/ice_main.c |  14 +-
+ 3 files changed, 244 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_nl.c b/drivers/net/ethernet/intel/ice/ice_dcb_nl.c
-index 3eb01731e496..e1fbc6de452d 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb_nl.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb_nl.c
-@@ -70,6 +70,11 @@ static int ice_dcbnl_setets(struct net_device *netdev, struct ieee_ets *ets)
- 	    !(pf->dcbx_cap & DCB_CAP_DCBX_VER_IEEE))
- 		return -EINVAL;
+diff --git a/drivers/net/ethernet/intel/ice/ice_lag.c b/drivers/net/ethernet/intel/ice/ice_lag.c
+index d08217c04727..e636b0259e0e 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lag.c
++++ b/drivers/net/ethernet/intel/ice/ice_lag.c
+@@ -954,6 +954,7 @@ static void ice_lag_link_unlink(struct ice_lag *lag, void *ptr)
+  * @link: Is this a linking activity
+  *
+  * If link is false, then primary_swid should be expected to not be valid
++ * This function should never be called in interrupt context.
+  */
+ static void
+ ice_lag_set_swid(u16 primary_swid, struct ice_lag *local_lag,
+@@ -963,7 +964,7 @@ ice_lag_set_swid(u16 primary_swid, struct ice_lag *local_lag,
+ 	struct ice_aqc_set_port_params *cmd;
+ 	struct ice_aq_desc desc;
+ 	u16 buf_len, swid;
+-	int status;
++	int status, i;
  
-+	if (pf->lag && pf->lag->bonded) {
-+		netdev_err(netdev, "DCB changes not allowed when in a bond\n");
-+		return -EINVAL;
+ 	buf_len = struct_size(buf, elem, 1);
+ 	buf = kzalloc(buf_len, GFP_KERNEL);
+@@ -1014,7 +1015,20 @@ ice_lag_set_swid(u16 primary_swid, struct ice_lag *local_lag,
+ 	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_set_port_params);
+ 
+ 	cmd->swid = cpu_to_le16(ICE_AQC_PORT_SWID_VALID | swid);
+-	status = ice_aq_send_cmd(&local_lag->pf->hw, &desc, NULL, 0, NULL);
++	/* If this is happening in reset context, it is possible that the
++	 * primary interface has not finished setting its SWID to SHARED
++	 * yet.  Allow retries to account for this timing issue between
++	 * interfaces.
++	 */
++	for (i = 0; i < ICE_LAG_RESET_RETRIES; i++) {
++		status = ice_aq_send_cmd(&local_lag->pf->hw, &desc, NULL, 0,
++					 NULL);
++		if (!status)
++			break;
++
++		usleep_range(1000, 2000);
 +	}
 +
- 	new_cfg = &pf->hw.port_info->qos_cfg.desired_dcbx_cfg;
+ 	if (status)
+ 		dev_err(ice_pf_to_dev(local_lag->pf), "Error setting SWID in port params %d\n",
+ 			status);
+@@ -1022,7 +1036,7 @@ ice_lag_set_swid(u16 primary_swid, struct ice_lag *local_lag,
  
- 	mutex_lock(&pf->tc_mutex);
-@@ -170,6 +175,11 @@ static u8 ice_dcbnl_setdcbx(struct net_device *netdev, u8 mode)
- 	if (mode == pf->dcbx_cap)
- 		return ICE_DCB_NO_HW_CHG;
+ /**
+  * ice_lag_primary_swid - set/clear the SHARED attrib of primary's SWID
+- * @lag: primary interfaces lag struct
++ * @lag: primary interface's lag struct
+  * @link: is this a linking activity
+  *
+  * Implement setting primary SWID as shared using 0x020B
+@@ -1745,6 +1759,135 @@ static int ice_create_lag_recipe(struct ice_hw *hw, u16 *rid,
+ 	return err;
+ }
  
-+	if (pf->lag && pf->lag->bonded) {
-+		netdev_err(netdev, "DCB changes not allowed when in a bond\n");
-+		return ICE_DCB_NO_HW_CHG;
-+	}
++/**
++ * ice_lag_move_vf_nodes_tc_sync - move a VF's nodes for a tc during reset
++ * @lag: primary interfaces lag struct
++ * @dest_hw: HW struct for destination's interface
++ * @vsi_num: VSI index in PF space
++ * @tc: traffic class to move
++ */
++static void
++ice_lag_move_vf_nodes_tc_sync(struct ice_lag *lag, struct ice_hw *dest_hw,
++			      u16 vsi_num, u8 tc)
++{
++	u16 numq, valq, buf_size, num_moved, qbuf_size;
++	struct device *dev = ice_pf_to_dev(lag->pf);
++	struct ice_aqc_cfg_txqs_buf *qbuf;
++	struct ice_aqc_move_elem *buf;
++	struct ice_sched_node *n_prt;
++	__le32 teid, parent_teid;
++	struct ice_vsi_ctx *ctx;
++	struct ice_hw *hw;
++	u32 tmp_teid;
 +
- 	qos_cfg = &pf->hw.port_info->qos_cfg;
- 
- 	/* DSCP configuration is not DCBx negotiated */
-@@ -261,6 +271,11 @@ static int ice_dcbnl_setpfc(struct net_device *netdev, struct ieee_pfc *pfc)
- 	    !(pf->dcbx_cap & DCB_CAP_DCBX_VER_IEEE))
- 		return -EINVAL;
- 
-+	if (pf->lag && pf->lag->bonded) {
-+		netdev_err(netdev, "DCB changes not allowed when in a bond\n");
-+		return -EINVAL;
-+	}
-+
- 	mutex_lock(&pf->tc_mutex);
- 
- 	new_cfg = &pf->hw.port_info->qos_cfg.desired_dcbx_cfg;
-@@ -323,6 +338,11 @@ static void ice_dcbnl_set_pfc_cfg(struct net_device *netdev, int prio, u8 set)
- 	if (prio >= ICE_MAX_USER_PRIORITY)
- 		return;
- 
-+	if (pf->lag && pf->lag->bonded) {
-+		netdev_err(netdev, "DCB changes not allowed when in a bond\n");
++	hw = &lag->pf->hw;
++	ctx = ice_get_vsi_ctx(hw, vsi_num);
++	if (!ctx) {
++		dev_warn(dev, "LAG rebuild failed after reset due to VSI Context failure\n");
 +		return;
 +	}
 +
- 	new_cfg = &pf->hw.port_info->qos_cfg.desired_dcbx_cfg;
- 
- 	new_cfg->pfc.pfccap = pf->hw.func_caps.common_cap.maxtc;
-@@ -379,6 +399,11 @@ static u8 ice_dcbnl_setstate(struct net_device *netdev, u8 state)
- 	    !(pf->dcbx_cap & DCB_CAP_DCBX_VER_CEE))
- 		return ICE_DCB_NO_HW_CHG;
- 
-+	if (pf->lag && pf->lag->bonded) {
-+		netdev_err(netdev, "DCB changes not allowed when in a bond\n");
-+		return ICE_DCB_NO_HW_CHG;
-+	}
-+
- 	/* Nothing to do */
- 	if (!!state == test_bit(ICE_FLAG_DCB_ENA, pf->flags))
- 		return ICE_DCB_NO_HW_CHG;
-@@ -451,6 +476,11 @@ ice_dcbnl_set_pg_tc_cfg_tx(struct net_device *netdev, int tc,
- 	if (tc >= ICE_MAX_TRAFFIC_CLASS)
- 		return;
- 
-+	if (pf->lag && pf->lag->bonded) {
-+		netdev_err(netdev, "DCB changes not allowed when in a bond\n");
++	if (!ctx->sched.vsi_node[tc])
 +		return;
-+	}
 +
- 	new_cfg = &pf->hw.port_info->qos_cfg.desired_dcbx_cfg;
- 
- 	/* prio_type, bwg_id and bw_pct per UP are not supported */
-@@ -505,6 +535,11 @@ ice_dcbnl_set_pg_bwg_cfg_tx(struct net_device *netdev, int pgid, u8 bw_pct)
- 	if (pgid >= ICE_MAX_TRAFFIC_CLASS)
- 		return;
- 
-+	if (pf->lag && pf->lag->bonded) {
-+		netdev_err(netdev, "DCB changes not allowed when in a bond\n");
++	numq = ctx->num_lan_q_entries[tc];
++	teid = ctx->sched.vsi_node[tc]->info.node_teid;
++	tmp_teid = le32_to_cpu(teid);
++	parent_teid = ctx->sched.vsi_node[tc]->info.parent_teid;
++
++	if (!tmp_teid || !numq)
 +		return;
++
++	if (ice_sched_suspend_resume_elems(hw, 1, &tmp_teid, true))
++		dev_dbg(dev, "Problem suspending traffic during reset rebuild\n");
++
++	/* reconfig queues for new port */
++	qbuf_size = struct_size(qbuf, queue_info, numq);
++	qbuf = kzalloc(qbuf_size, GFP_KERNEL);
++	if (!qbuf) {
++		dev_warn(dev, "Failure allocating VF queue recfg buffer for reset rebuild\n");
++		goto resume_sync;
 +	}
 +
- 	new_cfg = &pf->hw.port_info->qos_cfg.desired_dcbx_cfg;
++	/* add the per queue info for the reconfigure command buffer */
++	valq = ice_lag_qbuf_recfg(hw, qbuf, vsi_num, numq, tc);
++	if (!valq) {
++		dev_warn(dev, "Failure to reconfig queues for LAG reset rebuild\n");
++		goto sync_none;
++	}
++
++	if (ice_aq_cfg_lan_txq(hw, qbuf, qbuf_size, numq, hw->port_info->lport,
++			       dest_hw->port_info->lport, NULL)) {
++		dev_warn(dev, "Failure to configure queues for LAG reset rebuild\n");
++		goto sync_qerr;
++	}
++
++sync_none:
++	kfree(qbuf);
++
++	/* find parent in destination tree */
++	n_prt = ice_lag_get_sched_parent(dest_hw, tc);
++	if (!n_prt)
++		goto resume_sync;
++
++	/* Move node to new parent */
++	buf_size = struct_size(buf, teid, 1);
++	buf = kzalloc(buf_size, GFP_KERNEL);
++	if (!buf) {
++		dev_warn(dev, "Failure to alloc for VF node move in reset rebuild\n");
++		goto resume_sync;
++	}
++
++	buf->hdr.src_parent_teid = parent_teid;
++	buf->hdr.dest_parent_teid = n_prt->info.node_teid;
++	buf->hdr.num_elems = cpu_to_le16(1);
++	buf->hdr.mode = ICE_AQC_MOVE_ELEM_MODE_KEEP_OWN;
++	buf->teid[0] = teid;
++
++	if (ice_aq_move_sched_elems(&lag->pf->hw, 1, buf, buf_size, &num_moved,
++				    NULL))
++		dev_warn(dev, "Failure to move VF nodes for LAG reset rebuild\n");
++	else
++		ice_sched_update_parent(n_prt, ctx->sched.vsi_node[tc]);
++
++	kfree(buf);
++	goto resume_sync;
++
++sync_qerr:
++	kfree(qbuf);
++
++resume_sync:
++	if (ice_sched_suspend_resume_elems(hw, 1, &tmp_teid, false))
++		dev_warn(dev, "Problem restarting traffic for LAG node reset rebuild\n");
++}
++
++/**
++ * ice_lag_move_vf_nodes_sync - move vf nodes to active interface
++ * @lag: primary interfaces lag struct
++ * @dest_hw: lport value for currently active port
++ *
++ * This function is used in a reset context, outside of event handling,
++ * to move the VF nodes to the secondary interface when that interface
++ * is the active interface during a reset rebuild
++ */
++static void
++ice_lag_move_vf_nodes_sync(struct ice_lag *lag, struct ice_hw *dest_hw)
++{
++	struct ice_pf *pf;
++	int i, tc;
++
++	if (!lag->primary || !dest_hw)
++		return;
++
++	pf = lag->pf;
++	ice_for_each_vsi(pf, i)
++		if (pf->vsi[i] && (pf->vsi[i]->type == ICE_VSI_VF ||
++				   pf->vsi[i]->type == ICE_VSI_SWITCHDEV_CTRL))
++			ice_for_each_traffic_class(tc)
++				ice_lag_move_vf_nodes_tc_sync(lag, dest_hw, i,
++							      tc);
++}
++
+ /**
+  * ice_init_lag - initialize support for LAG
+  * @pf: PF struct
+@@ -1846,3 +1989,85 @@ void ice_deinit_lag(struct ice_pf *pf)
  
- 	new_cfg->etscfg.tcbwtable[pgid] = bw_pct;
-@@ -725,6 +760,11 @@ static int ice_dcbnl_setapp(struct net_device *netdev, struct dcb_app *app)
- 		return -EINVAL;
+ 	pf->lag = NULL;
+ }
++
++/**
++ * ice_lag_rebuild - rebuild lag resources after reset
++ * @pf: pointer to local pf struct
++ *
++ * PF resets are promoted to CORER resets when interface in an aggregate.  This
++ * means that we need to rebuild the PF resources for the interface.  Since
++ * this will happen outside the normal event processing, need to acquire the lag
++ * lock.
++ *
++ * This function will also evaluate the VF resources if this is the primary
++ * interface.
++ */
++void ice_lag_rebuild(struct ice_pf *pf)
++{
++	struct ice_lag_netdev_list ndlist;
++	struct ice_lag *lag, *prim_lag;
++	struct list_head *tmp, *n;
++	u8 act_port, loc_port;
++
++	if (!pf->lag || !pf->lag->bonded)
++		return;
++
++	mutex_lock(&pf->lag_mutex);
++
++	lag = pf->lag;
++	if (lag->primary) {
++		prim_lag = lag;
++	} else {
++		struct ice_lag_netdev_list *nl;
++		struct net_device *tmp_nd;
++
++		INIT_LIST_HEAD(&ndlist.node);
++		rcu_read_lock();
++		for_each_netdev_in_bond_rcu(lag->upper_netdev, tmp_nd) {
++			nl = kzalloc(sizeof(*nl), GFP_KERNEL);
++			if (!nl)
++				break;
++
++			nl->netdev = tmp_nd;
++			list_add(&nl->node, &ndlist.node);
++		}
++		rcu_read_unlock();
++		lag->netdev_head = &ndlist.node;
++		prim_lag = ice_lag_find_primary(lag);
++	}
++
++	if (!prim_lag) {
++		dev_dbg(ice_pf_to_dev(pf), "No primary interface in aggregate, can't rebuild\n");
++		goto lag_rebuild_out;
++	}
++
++	act_port = prim_lag->active_port;
++	loc_port = lag->pf->hw.port_info->lport;
++
++	/* configure SWID for this port */
++	if (lag->primary) {
++		ice_lag_primary_swid(lag, true);
++	} else {
++		ice_lag_set_swid(prim_lag->pf->hw.port_info->sw_id, lag, true);
++		ice_lag_add_prune_list(prim_lag, pf);
++		if (act_port == loc_port)
++			ice_lag_move_vf_nodes_sync(prim_lag, &pf->hw);
++	}
++
++	ice_lag_cfg_cp_fltr(lag, true);
++
++	if (lag->pf_rule_id)
++		if (ice_lag_cfg_dflt_fltr(lag, true))
++			dev_err(ice_pf_to_dev(pf), "Error adding default VSI rule in rebuild\n");
++
++	ice_clear_rdma_cap(pf);
++lag_rebuild_out:
++	list_for_each_safe(tmp, n, &ndlist.node) {
++		struct ice_lag_netdev_list *entry;
++
++		entry = list_entry(tmp, struct ice_lag_netdev_list, node);
++		list_del(&entry->node);
++		kfree(entry);
++	}
++	mutex_unlock(&pf->lag_mutex);
++}
+diff --git a/drivers/net/ethernet/intel/ice/ice_lag.h b/drivers/net/ethernet/intel/ice/ice_lag.h
+index df4af5184a75..18075b82485a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lag.h
++++ b/drivers/net/ethernet/intel/ice/ice_lag.h
+@@ -16,6 +16,8 @@ enum ice_lag_role {
+ 
+ #define ICE_LAG_INVALID_PORT 0xFF
+ 
++#define ICE_LAG_RESET_RETRIES		5
++
+ struct ice_pf;
+ struct ice_vf;
+ 
+@@ -59,4 +61,5 @@ struct ice_lag_work {
+ void ice_lag_move_new_vf_nodes(struct ice_vf *vf);
+ int ice_init_lag(struct ice_pf *pf);
+ void ice_deinit_lag(struct ice_pf *pf);
++void ice_lag_rebuild(struct ice_pf *pf);
+ #endif /* _ICE_LAG_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index e01834d0417e..af57102538d1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -636,6 +636,11 @@ static void ice_do_reset(struct ice_pf *pf, enum ice_reset_req reset_type)
+ 
+ 	dev_dbg(dev, "reset_type 0x%x requested\n", reset_type);
+ 
++	if (pf->lag && pf->lag->bonded && reset_type == ICE_RESET_PFR) {
++		dev_dbg(dev, "PFR on a bonded interface, promoting to CORER\n");
++		reset_type = ICE_RESET_CORER;
++	}
++
+ 	ice_prepare_for_reset(pf, reset_type);
+ 
+ 	/* trigger the reset */
+@@ -719,8 +724,13 @@ static void ice_reset_subtask(struct ice_pf *pf)
  	}
  
-+	if (pf->lag && pf->lag->bonded) {
-+		netdev_err(netdev, "DCB changes not allowed when in a bond\n");
-+		return -EINVAL;
+ 	/* No pending resets to finish processing. Check for new resets */
+-	if (test_bit(ICE_PFR_REQ, pf->state))
++	if (test_bit(ICE_PFR_REQ, pf->state)) {
+ 		reset_type = ICE_RESET_PFR;
++		if (pf->lag && pf->lag->bonded) {
++			dev_dbg(ice_pf_to_dev(pf), "PFR on a bonded interface, promoting to CORER\n");
++			reset_type = ICE_RESET_CORER;
++		}
 +	}
-+
- 	max_tc = pf->hw.func_caps.common_cap.maxtc;
- 	if (app->priority >= max_tc) {
- 		netdev_err(netdev, "TC %d out of range, max TC %d\n",
-@@ -836,6 +876,11 @@ static int ice_dcbnl_delapp(struct net_device *netdev, struct dcb_app *app)
- 		return -EINVAL;
- 	}
+ 	if (test_bit(ICE_CORER_REQ, pf->state))
+ 		reset_type = ICE_RESET_CORER;
+ 	if (test_bit(ICE_GLOBR_REQ, pf->state))
+@@ -7361,6 +7371,8 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+ 	clear_bit(ICE_RESET_FAILED, pf->state);
  
-+	if (pf->lag && pf->lag->bonded) {
-+		netdev_err(netdev, "DCB changes not allowed when in a bond\n");
-+		return -EINVAL;
-+	}
-+
- 	mutex_lock(&pf->tc_mutex);
- 	old_cfg = &pf->hw.port_info->qos_cfg.local_dcbx_cfg;
+ 	ice_plug_aux_dev(pf);
++	if (ice_is_feature_supported(pf, ICE_F_SRIOV_LAG))
++		ice_lag_rebuild(pf);
+ 	return;
  
-@@ -937,6 +982,11 @@ static u8 ice_dcbnl_cee_set_all(struct net_device *netdev)
- 	    !(pf->dcbx_cap & DCB_CAP_DCBX_VER_CEE))
- 		return ICE_DCB_NO_HW_CHG;
- 
-+	if (pf->lag && pf->lag->bonded) {
-+		netdev_err(netdev, "DCB changes not allowed when in a bond\n");
-+		return ICE_DCB_NO_HW_CHG;
-+	}
-+
- 	new_cfg = &pf->hw.port_info->qos_cfg.desired_dcbx_cfg;
- 
- 	mutex_lock(&pf->tc_mutex);
+ err_vsi_rebuild:
 -- 
 2.40.1
 
