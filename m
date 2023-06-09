@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-9579-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9580-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 48731729E16
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 17:14:49 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 085BA729E17
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 17:15:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 02EE7281961
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 15:14:48 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5940B1C20E81
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 15:15:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DAF5319530;
-	Fri,  9 Jun 2023 15:13:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 825FC1952B;
+	Fri,  9 Jun 2023 15:13:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFC911952B
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 15:13:54 +0000 (UTC)
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4921FEB
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 08:13:53 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id 5614622812f47-39c7f7a151fso654887b6e.0
-        for <netdev@vger.kernel.org>; Fri, 09 Jun 2023 08:13:53 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 772B51991B
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 15:13:57 +0000 (UTC)
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7B61FF3
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 08:13:56 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id 5614622812f47-39c7f78c237so681049b6e.3
+        for <netdev@vger.kernel.org>; Fri, 09 Jun 2023 08:13:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1686323632; x=1688915632;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1686323635; x=1688915635;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=zqUtzMv9176eVmaGGpavOuZ/bRr8DznLogOIZDXKbuk=;
-        b=gh1Cy2/LWH6TMihQKqdzE2eAXcVS9qSUUaL5D1jn9Lnm6QeM2RaUTbVXMVrlTEcsIw
-         dBAaM+ArEq6+qXtOMYfC01tgZO7WX6GEAdkKAQLHRw8G6nbFTqobSOXgIJgs4C7ohXp5
-         zeeuAp2rR0OBT5cBuXvuwR1o/SmT78l3LusnR+d1/6YrlpKl/cVc237CLiRxm/5MaMsR
-         tUCxJT+woGZvlEPWiEJleQkr0aDDTnupDdf5thi0JTUVwscphMW1X29WGq4FN1cX1UWa
-         fVqB271QewQAE7CpIURRdT6nPbPca3Vc1EFeWsJuKPHCnxf77Wr+AreqdUTFW28+VwuA
-         ss5g==
+        bh=QM5JDAuNZuAnLZxiWDER0g18nXNzg7qD4OHp9FyblC4=;
+        b=SSNZJBlayjEBT9BCH6Md6blZYczAvD37fBYc2wwrOw3KVAFHRG53D2fe4Otp0btOpE
+         Kzkf8qWH6MZSRO5XWPcpywifFTLhqxDmhb4KV5Gx5QFMuV2TRwnMH3ujru4AcKJMqYEj
+         NkcMaUIZTuYBNdKswaq5FQejQpYmufG2sYHWHPIfNQHxdjTT5xcakNDXeA3l7wG9g6C6
+         6JjiPIP0CNzXDeGGHcn+6vSX8V/8PoepeqwZoU7uo3Q2kwacwhPMg63KgDMiFSJuJTWR
+         1ugJPi+h0kJJXg7QOrhdgjakethfMiy6d2d7jlJwVywO2447o9235eo2tYLsHgwtVRit
+         KDkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686323632; x=1688915632;
+        d=1e100.net; s=20221208; t=1686323635; x=1688915635;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=zqUtzMv9176eVmaGGpavOuZ/bRr8DznLogOIZDXKbuk=;
-        b=AmnvcikERKCtIL1mSMXanUEFnHYofvTnpnzJonnz7W3UEttf3HOSS9BqREPG/PyPOC
-         YgNHTEbHmkYAkTkj2VdGSmJcnZoYYKeO0OrfogAzPGQAh+uBHtxA+Usml/9dTA4lMz3U
-         7W2jiSbaS64recwc54v/+Fh6B1cqAPecvdDU7LGHwaU8mDDRBd5YH2zKEpRCFbHokpy/
-         ab6Y3GTSFZnm5D35MRcbSIeLJALO0pC1RKc2QgjF7DDhN8q8ma+w4B04Q136It1eBZJN
-         bcdMbhEPOgkcadflpBYfCGM0sO1S0+BRLJRcqmXeKiF4qSYgqz8qKQn/R8lnhLkUwGqJ
-         SeiA==
-X-Gm-Message-State: AC+VfDyKUOAV8fXDjIsODd7sFxMxQYtn3+/uVjV+yJPcDeI7ChrheE+3
-	bjHLIYFmOw6a3Jr81AwDUmu3WlUvNtMByYAc2D8=
-X-Google-Smtp-Source: ACHHUZ4QOhXsshrZWGRNmpetK7tvidgyf/3hR5jUdGIunaYtUeWIsM1WeMsegDi1kVcokHxZVgPC/A==
-X-Received: by 2002:a05:6808:349:b0:398:850:6206 with SMTP id j9-20020a056808034900b0039808506206mr1876733oie.27.1686323632609;
-        Fri, 09 Jun 2023 08:13:52 -0700 (PDT)
+        bh=QM5JDAuNZuAnLZxiWDER0g18nXNzg7qD4OHp9FyblC4=;
+        b=iyD4Kgwf/s9QbIResDlYdFNgIFxB8HBhLPlx9MlOCk5il5kzM3ifXcXTXc9ZW+qPeo
+         o5eF/CHFZvK00ZD3M7p0vNG9glqR2fze0leEfJ2xxH67P8apIa7J1+hZWyuM6Kro/dqJ
+         4zeuTb9ZW5w+aHvcZIfTIsVA1ONZ7AiKm2JIUb/i1pa0BmVxA1cplByo6PUefkIamtp1
+         Mt+w42dUzL4AkcG4jpS3aj9N73Kv4vtZ6mT1OeWRv7MLnuH2QoC7jIO8jnW3G1pyU6l+
+         3Pj2PHe1Oj78FJVFd1/GSK7O7mOr2s5feQ39jvzyd8dmos/bKonHh2DZUEcoQ5XpRlIb
+         cRVQ==
+X-Gm-Message-State: AC+VfDxuMQwYLW2GXYPtunkXhHoM7fifr55ny1eFwYe7pZt0JLYaPUt5
+	ADpny7C5fFmGpg6GnzXkdZXY8VakKnCcLNhRYv8=
+X-Google-Smtp-Source: ACHHUZ4wfkiCdGtng7QaS48b7Y4W6ccrypBFPDYWYMfflLzIXnzXxRHwSOmakjPgWj4PAV2NGebp2w==
+X-Received: by 2002:a05:6808:114d:b0:39a:bc5c:f265 with SMTP id u13-20020a056808114d00b0039abc5cf265mr2476709oiu.28.1686323635299;
+        Fri, 09 Jun 2023 08:13:55 -0700 (PDT)
 Received: from rogue-one.tail33bf8.ts.net ([2804:14d:5c5e:44fb:643a:b27d:4a69:3b94])
-        by smtp.gmail.com with ESMTPSA id z2-20020aca3302000000b0038ee0c3b38esm1536449oiz.44.2023.06.09.08.13.50
+        by smtp.gmail.com with ESMTPSA id z2-20020aca3302000000b0038ee0c3b38esm1536449oiz.44.2023.06.09.08.13.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Jun 2023 08:13:52 -0700 (PDT)
+        Fri, 09 Jun 2023 08:13:55 -0700 (PDT)
 From: Pedro Tammela <pctammela@mojatatu.com>
 To: netdev@vger.kernel.org
 Cc: tgraf@suug.ch,
@@ -66,9 +66,9 @@ Cc: tgraf@suug.ch,
 	kuba@kernel.org,
 	pabeni@redhat.com,
 	Pedro Tammela <pctammela@mojatatu.com>
-Subject: [RFC PATCH net-next 2/4] rhashtable: use new length helpers
-Date: Fri,  9 Jun 2023 12:13:30 -0300
-Message-Id: <20230609151332.263152-3-pctammela@mojatatu.com>
+Subject: [RFC PATCH net-next 3/4] net/ipv4: use rhashtable length helper
+Date: Fri,  9 Jun 2023 12:13:31 -0300
+Message-Id: <20230609151332.263152-4-pctammela@mojatatu.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230609151332.263152-1-pctammela@mojatatu.com>
 References: <20230609151332.263152-1-pctammela@mojatatu.com>
@@ -85,43 +85,34 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Use the new length helpers instead of open coding the length read
+Avoid open coding the rhashtable length read
 
 Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 ---
- lib/rhashtable.c      | 2 +-
- lib/test_rhashtable.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ net/ipv4/proc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/lib/rhashtable.c b/lib/rhashtable.c
-index 6ae2ba8e06a2..1f8ca27af853 100644
---- a/lib/rhashtable.c
-+++ b/lib/rhashtable.c
-@@ -390,7 +390,7 @@ static int rhashtable_rehash_alloc(struct rhashtable *ht,
- static int rhashtable_shrink(struct rhashtable *ht)
- {
- 	struct bucket_table *old_tbl = rht_dereference(ht->tbl, ht);
--	unsigned int nelems = atomic_read(&ht->nelems);
-+	unsigned int nelems = rhashtable_len(ht);
- 	unsigned int size = 0;
+diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
+index eaf1d3113b62..cab1edc3c416 100644
+--- a/net/ipv4/proc.c
++++ b/net/ipv4/proc.c
+@@ -42,6 +42,7 @@
+ #include <linux/export.h>
+ #include <net/sock.h>
+ #include <net/raw.h>
++#include <linux/rhashtable.h>
  
- 	if (nelems)
-diff --git a/lib/test_rhashtable.c b/lib/test_rhashtable.c
-index c20f6cb4bf55..5853b83d9ad1 100644
---- a/lib/test_rhashtable.c
-+++ b/lib/test_rhashtable.c
-@@ -199,9 +199,9 @@ static void test_bucket_stats(struct rhashtable *ht, unsigned int entries)
- 	rhashtable_walk_exit(&hti);
+ #define TCPUDP_MIB_MAX max_t(u32, UDP_MIB_MAX, TCP_MIB_MAX)
  
- 	pr_info("  Traversal complete: counted=%u, nelems=%u, entries=%d, table-jumps=%u\n",
--		total, atomic_read(&ht->nelems), entries, chain_len);
-+		total, rhashtable_len(ht), entries, chain_len);
- 
--	if (total != atomic_read(&ht->nelems) || total != entries)
-+	if (total != rhashtable_len(ht) || total != entries)
- 		pr_warn("Test failed: Total count mismatch ^^^");
+@@ -69,7 +70,7 @@ static int sockstat_seq_show(struct seq_file *seq, void *v)
+ 	seq_printf(seq, "RAW: inuse %d\n",
+ 		   sock_prot_inuse_get(net, &raw_prot));
+ 	seq_printf(seq,  "FRAG: inuse %u memory %lu\n",
+-		   atomic_read(&net->ipv4.fqdir->rhashtable.nelems),
++		   rhashtable_len(&net->ipv4.fqdir->rhashtable),
+ 		   frag_mem_limit(net->ipv4.fqdir));
+ 	return 0;
  }
- 
 -- 
 2.39.2
 
