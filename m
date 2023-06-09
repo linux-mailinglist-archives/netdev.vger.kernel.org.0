@@ -1,335 +1,521 @@
-Return-Path: <netdev+bounces-9407-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9408-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A282B728CF0
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 03:15:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 31ECB728D16
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 03:31:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E45F41C2106A
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 01:15:15 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 304D41C21026
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 01:31:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91E00A4C;
-	Fri,  9 Jun 2023 01:15:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BA264EBC;
+	Fri,  9 Jun 2023 01:31:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E189A44
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 01:15:16 +0000 (UTC)
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2096.outbound.protection.outlook.com [40.107.255.96])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEBEB184;
-	Thu,  8 Jun 2023 18:15:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Evtmu9STm27LN5CgdHJokZCjc7DlINtxhAfiwiHeyN8gMsEBSdnn0QaTPp8+swPqPYTE9why+ccJ2/85eJxayyA6QJGT/BCr8ANuxROLpIhh008HQJEcU11oKse+AwdJLtC1Dj4yBOz5bRotvwKF3e+5eg+zp+CXEW5/XReLbtjtxvgE/mEiaIeF4vixTbRCKYmkvgl0PFqkmBVKVETrT2rZvFe8KoFBPKX02VxE0xSkM9Z2vLOZ3QycBZx4GhDQvyOQS7lbGfe5Lfk7LI7u+0NVSNtFzTdgADTTQDU3tLqnQ/5T6SGueSERyGDZv0UP/hdeJdff0YexrO0JaHDDFw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0Z7QdwHyte/oTmgA/M4V7iV/JcKvsRwc8mKw1FWY+oU=;
- b=AJ3UOrE5VkFFhXGb6jxUhdnrpMaH+dOtQtYpoLrlrq9uhLz9VDJhKvf1fsSHly7QNd2YZpsDGO9hf2+etGQq7xfogj0zc+TGXvljLLkMy9HFAbxbiOd2Ek13526JsJ7dltWNYzFmlTcHlHpf50tHSJqCsJriVO3L5Rmxd6hUXqrwnJH+RaeRr3c1Fx6/V4IVUP/b8EiXpFpVI0KvYGgMgkwLitAL5t2aI7NM22arf52xCnlmPOjt45GYXnbkHCzwVS9JG0TdmV2fv/sWUIX3gMIfoWxIHwCYVnQclCLBc+c55PU/8EL/KkeC/cBiCUBuaFoUuwChvQaQSh9JbPKBtA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0Z7QdwHyte/oTmgA/M4V7iV/JcKvsRwc8mKw1FWY+oU=;
- b=ZhYfMp6yjUiDWOQ6BsPZ44JAZjTWq1AMi/0b4YLuV9OrKBrNerxYIexilZjZux9LeREgVwGvPFjYQvm1fILoo24jHAGCRCK7QsO7Z36GuNRM49+Td0kRWVP7ULR2uehCVLmC0xgvAYGnKfZAyOuXUQaSRkRpNKLcG5AJhI1EHuY=
-Received: from SI2P153MB0441.APCP153.PROD.OUTLOOK.COM (2603:1096:4:fc::7) by
- SI2P153MB0492.APCP153.PROD.OUTLOOK.COM (2603:1096:4:125::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6500.14; Fri, 9 Jun 2023 01:15:08 +0000
-Received: from SI2P153MB0441.APCP153.PROD.OUTLOOK.COM
- ([fe80::643:ed9:497b:3cac]) by SI2P153MB0441.APCP153.PROD.OUTLOOK.COM
- ([fe80::643:ed9:497b:3cac%4]) with mapi id 15.20.6500.010; Fri, 9 Jun 2023
- 01:15:07 +0000
-From: Wei Hu <weh@microsoft.com>
-To: Long Li <longli@microsoft.com>, "netdev@vger.kernel.org"
-	<netdev@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
-	<linux-hyperv@vger.kernel.org>, "linux-rdma@vger.kernel.org"
-	<linux-rdma@vger.kernel.org>, Ajay Sharma <sharmaajay@microsoft.com>,
-	"jgg@ziepe.ca" <jgg@ziepe.ca>, "leon@kernel.org" <leon@kernel.org>, KY
- Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
-	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>, "vkuznets@redhat.com"
-	<vkuznets@redhat.com>, "ssengar@linux.microsoft.com"
-	<ssengar@linux.microsoft.com>, "shradhagupta@linux.microsoft.com"
-	<shradhagupta@linux.microsoft.com>
-Subject: RE: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to mana ib
- driver.
-Thread-Topic: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to mana ib
- driver.
-Thread-Index: AQHZmIoyK0/pJvWPX0+gdBo6594smK9/1dWAgADsBLCAAG/JAIAAe1lA
-Date: Fri, 9 Jun 2023 01:15:07 +0000
-Message-ID:
- <SI2P153MB04416E4B445A988965398AB5BB51A@SI2P153MB0441.APCP153.PROD.OUTLOOK.COM>
-References: <20230606151747.1649305-1-weh@microsoft.com>
- <PH7PR21MB32634CB06AFF8BFFDBC003B3CE53A@PH7PR21MB3263.namprd21.prod.outlook.com>
- <SI2P153MB0441EC655394CEA3E8E727E7BB50A@SI2P153MB0441.APCP153.PROD.OUTLOOK.COM>
- <PH7PR21MB3263782C842638253C1FDB0CCE50A@PH7PR21MB3263.namprd21.prod.outlook.com>
-In-Reply-To:
- <PH7PR21MB3263782C842638253C1FDB0CCE50A@PH7PR21MB3263.namprd21.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=6ddf424f-7835-43f4-b969-27a83fd42970;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-06-07T20:49:00Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SI2P153MB0441:EE_|SI2P153MB0492:EE_
-x-ms-office365-filtering-correlation-id: 519510b9-cf64-438a-3585-08db6886f68a
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- AzXRPeZsGLMLQg3fdszXTOfnISNKFvK1jUGrX2A2dBZFcdI414lU5if9cNUKZ30ijKyY5GuTM04ekeFyj+xWICCO6zUM8KKSFml9PasH/AR8iq01kOO+CRdQ2OZsNM3hN+fbgOY4QczFb7tpzZ2f0X+fBP0RTpNo8aYtil1/x19mnXR6QR2H7nOd0XoS7dkOTd7V0kncOyukVk1iJBw/Z3MwH5eqah8WFUTkulNNZF/NCKHT+VtI5EpKo9UicXijbTIGQZZRp+Ho7xLTW7FeIB13RnkHZhvwtGLpCeWn/M6wqi12A6vEES1cWb3o6CAo9DhK33D/xPFjp8HcjTxBwvNJwF0YcH+cU2SWdyyeJWA11xZD+IMeN6N1w9Uxy5NetcR3UV1LE2lkUBb1vErexnDX+v9sCHyDTZMSVypCFPPeA6lo6R8Y2MXvXx3VYJai1YndpDZ/sjjik8xL+IQkuoUsaQTfKmpNEiWBySOT8QL8p5wIuzbhBelcyPui4sEjHSyuATogZrlcYlK+dePVD96sWD+vgpvSOiAqzi90LY+5ertXa6iATO1zSeWbIs7kKPjdeGg8GDjwW6LnJ74JmAC+orYCNQWM3QHvuT13ZCcrRNA40f8woJ9Omc27DjUm3JS9hhtCMBcWARW2nK0iD6uOCl/ODPi71LzWdRaMysst4rfDx0o7zglAIQjLEIM/
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SI2P153MB0441.APCP153.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(136003)(396003)(366004)(376002)(451199021)(8990500004)(2906002)(38070700005)(7416002)(33656002)(5660300002)(52536014)(86362001)(66899021)(55016003)(7696005)(71200400001)(83380400001)(186003)(6506007)(53546011)(26005)(9686003)(122000001)(921005)(478600001)(82950400001)(82960400001)(110136005)(66476007)(66446008)(316002)(66946007)(66556008)(64756008)(38100700002)(76116006)(41300700001)(10290500003)(8676002)(8936002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?wPpNBy+wo09yTedafsff00Vp87HQooLNO11Sx57MEqwhHxKWnW9nPVEU9x13?=
- =?us-ascii?Q?3ZE932YsCTHyB5NoI9hTmb0wJwvR2QOEd67ywJD8oLVew/1u8mNTFXV/r/RC?=
- =?us-ascii?Q?n7qEwIzdmWVYSIbAbR9KbFVIktIih8NmVhw9UqXfBjadBTbC4SI2OIjERvgK?=
- =?us-ascii?Q?Mkx+QBLk6bY2e/CUoZfn7UeAdnoU4cabFkFQI5GJN61FQg+UDVqMzFW7rYjV?=
- =?us-ascii?Q?6sMi7Uti174Mjankj+vLMLr1hml0Wj3c/YAPzyQQVPCLuNHzqp4bs9H4VzpD?=
- =?us-ascii?Q?/G7z0h39s6LP8Hw428t7oMcEdvrj9WVtNEABtesMOEsm4HO/nGazHun5ZT1s?=
- =?us-ascii?Q?N0aA3BIUIMlO8GKZOrHw88XqlCNESfxRDCaqKL1d/sWNMM0IVA3yiHOFryea?=
- =?us-ascii?Q?FBdaevwuq8UfOVzYjRcV22J6Co+dmDIar4z7hXdttscnV/nXqSGx2F0bPQGc?=
- =?us-ascii?Q?GFVdrEmMdi5Nw20Y1NdJOIw4GUjIEsuKlW15GClTbYm+KqNYJF5JHGU+ykAl?=
- =?us-ascii?Q?lYwGyddKClSfU0rFqgqGNOsGTC3HWnoG6mj3wCFFDeHWR35Awh0el4jFuaYy?=
- =?us-ascii?Q?k+jJnfE27Qxb9fotB7fFbwNyqYnXpQZ108HHXAvUKLts1If2alcc6wcTLEV6?=
- =?us-ascii?Q?04jLakpM0kpKy4rSS+YRdzLAJkQi5IpnjxLUZ9mNjQwQq7U536Bps5kQMVF7?=
- =?us-ascii?Q?hFyJ1K8vCoAlsOLUtPqy1XkUXGQVbL8vImagl236FNv0UW3PGG3joAZ1OSLG?=
- =?us-ascii?Q?mGlcSkdqumgzhEkVEO3IuIvZ2DC8Q6c31L4VjeRJiXDGmul/TStH7VT/vynw?=
- =?us-ascii?Q?cLFxjjzigBQHXGg5lu1byeGjoinzuZfwGftC00HjjDyJGvqAF3AmRIiMtDRr?=
- =?us-ascii?Q?Vxr60EXnhOI6K+bmwW8r0ktp2PvIQ5CsATCc9mP18TTbbQcWe5EoVBCaKHu+?=
- =?us-ascii?Q?ExYuX/HNvyO+BEeQdp6VP+Zsr2sN/dslavagc9TrT4gKOL+jpvlUe2ru99mt?=
- =?us-ascii?Q?rpdnMAExEAUPyvfAnTnE1CSoiHyDOiERIkcaSu8BDJdBMIefCI+/HFFBdlmG?=
- =?us-ascii?Q?dgu1ztJpqPQ9A2ZDHeObGO0l6mdPGuMs92u11RV8S2o8oOpG4acWY/9sgyih?=
- =?us-ascii?Q?/PcT+MLU96JP+L9kp72jKvBQJ1EzxGxpf0ud3dt7XeyDxFc3QEtxzGr+nJrq?=
- =?us-ascii?Q?hXlrEXdZasZJLcU33gXhPSHsiGjaH69lm7LujNpf+UyhWir5OlFe0/OZzg/W?=
- =?us-ascii?Q?N0iZTImAL58idmV5wzicg4SzptPEJc2fQlztrG3tqOXcOOQAjLxL8QziaQav?=
- =?us-ascii?Q?3JtsWQpnso1XZ3GIzqvXpqgzfR8bdDW4dfR/ar9mHGxbG+lAZEhAM8n4c9o0?=
- =?us-ascii?Q?eianKMIPb8jjeqevdAX1HNb5r6fvtUly5bcGlTNBFoR2dCjn/lSn7Ov/Vc7y?=
- =?us-ascii?Q?5Eay+GKKrgcpifmc+WRKNDl6k7FJu3uzlJ3kl39h4ezRLX4pv6ugjxx19Hhr?=
- =?us-ascii?Q?Oo9GJy6RKhbMz3wy2zJuUnuBSExJSI1QUE+FcsTzxe33gcXJAVk3ppjhZ8m3?=
- =?us-ascii?Q?0WYhqI61t/e7h2Zppmg=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8679EA9
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 01:31:11 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A642D4F
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 18:31:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1686274266; x=1717810266;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=tmGYjDlo/fMCDYRatFuFleskrvJ0AZ9x2Njo/Rhy8cA=;
+  b=gTwkl8fgptqe03zqjJ7bjEKWmEgXmScm3b25B5t2unOPSY2fftx8rRky
+   xSZisJ84Y0UQkbJFj3lH5K4PZbRQGSzM94yNZe+ROEQ4khTEUBo+YzzSA
+   DwjWm2AQkoGPzyvXXjioe18ijxugAF3a70Imi2Jh5GNDagH8QituzvgUt
+   EwEXMTrwSYfvbx5U1QY0HqZ/idEs6QFKejic66RxdS/oEIGrAiJ+NfXEQ
+   9PvqK2EPX9jdYz6Ta2uWKGC7q24UHi4fNHZz5R+L7p2KnpffRZrGUafgs
+   xNvgVQxI4UY0rsEqh2ZMtAuRFK7j+ELalEIB9GsYvthIe421WrrrQDrDz
+   w==;
+X-IronPort-AV: E=Sophos;i="6.00,228,1681196400"; 
+   d="scan'208";a="229231710"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jun 2023 18:31:06 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Thu, 8 Jun 2023 18:30:57 -0700
+Received: from hat-linux.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.21 via Frontend Transport; Thu, 8 Jun 2023 18:30:57 -0700
+From: <Tristram.Ha@microchip.com>
+To: Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>
+CC: <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>, Tristram Ha
+	<Tristram.Ha@microchip.com>
+Subject: [PATCH v1 net-next] net: phy: smsc: add WoL support to LAN8740/LAN8742 PHYs
+Date: Thu, 8 Jun 2023 18:31:20 -0700
+Message-ID: <1686274280-2994-1-git-send-email-Tristram.Ha@microchip.com>
+X-Mailer: git-send-email 1.9.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SI2P153MB0441.APCP153.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 519510b9-cf64-438a-3585-08db6886f68a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jun 2023 01:15:07.3731
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: I7zopuQ0+LUEo4u1thSSKx9OM3OmRG9Qsdxs8JZsBkopuxGSKHPrMx+ZYFM/9uUAa1vrOlfg/WWYRl+yImgjiQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2P153MB0492
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+From: Tristram Ha <Tristram.Ha@microchip.com>
 
+Microchip LAN8740/LAN8742 PHYs support basic unicast, broadcast, and
+Magic Packet WoL.  They have one pattern filter matching up to 128 bytes
+of frame data, which can be used to implement ARP or multicast WoL.
 
-> -----Original Message-----
-> From: Long Li <longli@microsoft.com>
-> Sent: Friday, June 9, 2023 1:48 AM
-> To: Wei Hu <weh@microsoft.com>; netdev@vger.kernel.org; linux-
-> hyperv@vger.kernel.org; linux-rdma@vger.kernel.org; Ajay Sharma
-> <sharmaajay@microsoft.com>; jgg@ziepe.ca; leon@kernel.org; KY
-> Srinivasan <kys@microsoft.com>; Haiyang Zhang <haiyangz@microsoft.com>;
-> wei.liu@kernel.org; Dexuan Cui <decui@microsoft.com>;
-> davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
-> pabeni@redhat.com; vkuznets@redhat.com; ssengar@linux.microsoft.com;
-> shradhagupta@linux.microsoft.com
-> Subject: RE: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to
-> mana ib driver.
->=20
-> > Subject: RE: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to
-> > mana ib driver.
-> >
-> >
-> >
-> > > -----Original Message-----
-> > > Subject: RE: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support
-> > > to mana ib driver.
-> > >
-> > > > Subject: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to
-> > > > mana ib driver.
-> > > >
-> > > > Add EQ interrupt support for mana ib driver. Allocate EQs per
-> > > > ucontext to receive interrupt. Attach EQ when CQ is created. Call
-> > > > CQ interrupt handler when completion interrupt happens. EQs are
-> > > > destroyed when
-> > > ucontext is deallocated.
-> > > >
-> > > > The change calls some public APIs in mana ethernet driver to
-> > > > allocate EQs and other resources. Ehe EQ process routine is also
-> > > > shared by mana ethernet and mana ib drivers.
-> > > >
-> > > > Co-developed-by: Ajay Sharma <sharmaajay@microsoft.com>
-> > > > Signed-off-by: Ajay Sharma <sharmaajay@microsoft.com>
-> > > > Signed-off-by: Wei Hu <weh@microsoft.com>
-> > > > ---
-> > > >
-> > > > v2: Use ibdev_dbg to print error messages and return -ENOMEN
-> > > >     when kzalloc fails.
-> > > >
-> > > >  drivers/infiniband/hw/mana/cq.c               |  32 ++++-
-> > > >  drivers/infiniband/hw/mana/main.c             |  87 ++++++++++++
-> > > >  drivers/infiniband/hw/mana/mana_ib.h          |   4 +
-> > > >  drivers/infiniband/hw/mana/qp.c               |  90 +++++++++++-
-> > > >  .../net/ethernet/microsoft/mana/gdma_main.c   | 131 ++++++++++---
-> ----
-> > -
-> > > >  drivers/net/ethernet/microsoft/mana/mana_en.c |   1 +
-> > > >  include/net/mana/gdma.h                       |   9 +-
-> > > >  7 files changed, 290 insertions(+), 64 deletions(-)
-> > > >
-> > > > diff --git a/drivers/infiniband/hw/mana/cq.c
-> > > > b/drivers/infiniband/hw/mana/cq.c index
-> d141cab8a1e6..3cd680e0e753
-> > > > 100644
-> > > > --- a/drivers/infiniband/hw/mana/cq.c
-> > > > +++ b/drivers/infiniband/hw/mana/cq.c
-> > > > @@ -12,13 +12,20 @@ int mana_ib_create_cq(struct ib_cq *ibcq,
-> > > > const struct ib_cq_init_attr *attr,
-> > > >  	struct ib_device *ibdev =3D ibcq->device;
-> > > >  	struct mana_ib_create_cq ucmd =3D {};
-> > > >  	struct mana_ib_dev *mdev;
-> > > > +	struct gdma_context *gc;
-> > > > +	struct gdma_dev *gd;
-> > > >  	int err;
-> > > >
-> > > >  	mdev =3D container_of(ibdev, struct mana_ib_dev, ib_dev);
-> > > > +	gd =3D mdev->gdma_dev;
-> > > > +	gc =3D gd->gdma_context;
-> > > >
-> > > >  	if (udata->inlen < sizeof(ucmd))
-> > > >  		return -EINVAL;
-> > > >
-> > > > +	cq->comp_vector =3D attr->comp_vector > gc->max_num_queues ?
-> > > > +				0 : attr->comp_vector;
-> > > > +
-> > > >  	err =3D ib_copy_from_udata(&ucmd, udata, min(sizeof(ucmd), udata-
-> > > > >inlen));
-> > > >  	if (err) {
-> > > >  		ibdev_dbg(ibdev,
-> > > > @@ -69,11 +76,32 @@ int mana_ib_destroy_cq(struct ib_cq *ibcq,
-> > > > struct ib_udata *udata)
-> > > >  	struct mana_ib_cq *cq =3D container_of(ibcq, struct mana_ib_cq, i=
-bcq);
-> > > >  	struct ib_device *ibdev =3D ibcq->device;
-> > > >  	struct mana_ib_dev *mdev;
-> > > > +	struct gdma_context *gc;
-> > > > +	struct gdma_dev *gd;
-> > > > +
-> > > >
-> > > >  	mdev =3D container_of(ibdev, struct mana_ib_dev, ib_dev);
-> > > > +	gd =3D mdev->gdma_dev;
-> > > > +	gc =3D gd->gdma_context;
-> > > >
-> > > > -	mana_ib_gd_destroy_dma_region(mdev, cq->gdma_region);
-> > > > -	ib_umem_release(cq->umem);
-> > > > +
-> > > > +
-> > > > +	if (atomic_read(&ibcq->usecnt) =3D=3D 0) {
-> > > > +		mana_ib_gd_destroy_dma_region(mdev, cq->gdma_region);
-> > >
-> > > Need to check if this function fails. The following code will call
-> > > kfree(gc-
-> > > >cq_table[cq->id]), it's possible that IRQ is happening at the same
-> > > >time if CQ
-> > > is not destroyed.
-> > >
-> >
-> > Sure. Will update.
-> >
-> > > > +		ibdev_dbg(ibdev, "freeing gdma cq %p\n", gc->cq_table[cq-
-> > > >id]);
-> > > > +		kfree(gc->cq_table[cq->id]);
-> > > > +		gc->cq_table[cq->id] =3D NULL;
-> > > > +		ib_umem_release(cq->umem);
-> > > > +	}
-> > > >
-> > > >  	return 0;
-> > > >  }
-> > > > +
-> > > > +void mana_ib_cq_handler(void *ctx, struct gdma_queue *gdma_cq) {
-> > > > +	struct mana_ib_cq *cq =3D ctx;
-> > > > +	struct ib_device *ibdev =3D cq->ibcq.device;
-> > > > +
-> > > > +	ibdev_dbg(ibdev, "Enter %s %d\n", __func__, __LINE__);
-> > >
-> > > This debug message seems overkill?
-> > >
-> > > > +	cq->ibcq.comp_handler(&cq->ibcq, cq->ibcq.cq_context); }
-> > > > diff --git a/drivers/infiniband/hw/mana/main.c
-> > > > b/drivers/infiniband/hw/mana/main.c
-> > > > index 7be4c3adb4e2..e4efbcaed10e 100644
-> > > > --- a/drivers/infiniband/hw/mana/main.c
-> > > > +++ b/drivers/infiniband/hw/mana/main.c
-> > > > @@ -143,6 +143,81 @@ int mana_ib_dealloc_pd(struct ib_pd *ibpd,
-> > > > struct ib_udata *udata)
-> > > >  	return err;
-> > > >  }
-> > > >
-> > > > +static void mana_ib_destroy_eq(struct mana_ib_ucontext *ucontext,
-> > > > +			       struct mana_ib_dev *mdev) {
-> > > > +	struct gdma_context *gc =3D mdev->gdma_dev->gdma_context;
-> > > > +	struct ib_device *ibdev =3D ucontext->ibucontext.device;
-> > > > +	struct gdma_queue *eq;
-> > > > +	int i;
-> > > > +
-> > > > +	if (!ucontext->eqs)
-> > > > +		return;
-> > > > +
-> > > > +	for (i =3D 0; i < gc->max_num_queues; i++) {
-> > > > +		eq =3D ucontext->eqs[i].eq;
-> > > > +		if (!eq)
-> > > > +			continue;
-> > > > +
-> > > > +		mana_gd_destroy_queue(gc, eq);
-> > > > +	}
-> > > > +
-> > > > +	kfree(ucontext->eqs);
-> > > > +	ucontext->eqs =3D NULL;
-> > > > +
-> > > > +	ibdev_dbg(ibdev, "destroyed eq's count %d\n", gc-
-> > > >max_num_queues); }
-> > >
-> > > Will gc->max_num_queues change after destroying a EQ?
-> > >
-> >
-> > I think it will not change. Also the compiler might optimize the code
-> > to just read the value once and store it in a register.
-> >
-> > Thanks,
-> > Wei
->=20
-> This message is confusing. How about changing it to " destroyed eq.
-> Maximum count %d", or just remove the count as it's not informational.
->=20
-> Long
+ARP WoL matches ARP request for IPv4 address of the net device using the
+PHY.
 
-Sure. I will remove the count from the message.
+Multicast WoL matches IPv6 Neighbor Solicitation which is sent when
+somebody wants to talk to the net device using IPv6.  This
+implementation may not be appropriate and can be changed by users later.
 
-Thanks,
-Wei
+Signed-off-by: Tristram Ha <Tristram.Ha@microchip.com>
+---
+v1
+- use in_dev_get() to retrieve IP address to avoid compiler warning
+- use ipv6_get_lladdr() to retrieve IPv6 address
+- use that function only when IPv6 support is enabled
+- export that function in addrconf.c
+- program the MAC address in a loop
+- always set datalen in lan874x_chk_wol_pattern()
+- add spaces around "<<"
+- select CRC16 in Kconfig as crc16() is used in driver
+
+ drivers/net/phy/Kconfig |   1 +
+ drivers/net/phy/smsc.c  | 296 +++++++++++++++++++++++++++++++++++++++-
+ include/linux/smscphy.h |  34 +++++
+ net/ipv6/addrconf.c     |   1 +
+ 4 files changed, 330 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 059bd06a8cce..973f94882953 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -332,6 +332,7 @@ config ROCKCHIP_PHY
+ 
+ config SMSC_PHY
+ 	tristate "SMSC PHYs"
++	select CRC16
+ 	help
+ 	  Currently supports the LAN83C185, LAN8187 and LAN8700 PHYs
+ 
+diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+index 692930750215..937fdad1227a 100644
+--- a/drivers/net/phy/smsc.c
++++ b/drivers/net/phy/smsc.c
+@@ -20,6 +20,12 @@
+ #include <linux/of.h>
+ #include <linux/phy.h>
+ #include <linux/netdevice.h>
++#include <linux/crc16.h>
++#include <linux/etherdevice.h>
++#include <linux/inetdevice.h>
++#include <net/addrconf.h>
++#include <net/if_inet6.h>
++#include <net/ipv6.h>
+ #include <linux/smscphy.h>
+ 
+ /* Vendor-specific PHY Definitions */
+@@ -51,6 +57,7 @@ struct smsc_phy_priv {
+ 	unsigned int edpd_enable:1;
+ 	unsigned int edpd_mode_set_by_user:1;
+ 	unsigned int edpd_max_wait_ms;
++	bool wol_arp;
+ };
+ 
+ static int smsc_phy_ack_interrupt(struct phy_device *phydev)
+@@ -258,6 +265,283 @@ int lan87xx_read_status(struct phy_device *phydev)
+ }
+ EXPORT_SYMBOL_GPL(lan87xx_read_status);
+ 
++static int lan874x_phy_config_init(struct phy_device *phydev)
++{
++	u16 val;
++	int rc;
++
++	/* Setup LED2/nINT/nPME pin to function as nPME.  May need user option
++	 * to use LED1/nINT/nPME.
++	 */
++	val = MII_LAN874X_PHY_PME2_SET;
++
++	/* The bits MII_LAN874X_PHY_WOL_PFDA_FR, MII_LAN874X_PHY_WOL_WUFR,
++	 * MII_LAN874X_PHY_WOL_MPR, and MII_LAN874X_PHY_WOL_BCAST_FR need to
++	 * be cleared to de-assert PME signal after a WoL event happens, but
++	 * using PME auto clear gets around that.
++	 */
++	val |= MII_LAN874X_PHY_PME_SELF_CLEAR;
++	rc = phy_write_mmd(phydev, MDIO_MMD_PCS, MII_LAN874X_PHY_MMD_WOL_WUCSR,
++			   val);
++	if (rc < 0)
++		return rc;
++
++	/* set nPME self clear delay time */
++	rc = phy_write_mmd(phydev, MDIO_MMD_PCS, MII_LAN874X_PHY_MMD_MCFGR,
++			   MII_LAN874X_PHY_PME_SELF_CLEAR_DELAY);
++	if (rc < 0)
++		return rc;
++
++	return smsc_phy_config_init(phydev);
++}
++
++static void lan874x_get_wol(struct phy_device *phydev,
++			    struct ethtool_wolinfo *wol)
++{
++	struct smsc_phy_priv *priv = phydev->priv;
++	int rc;
++
++	wol->supported = (WAKE_UCAST | WAKE_BCAST | WAKE_MAGIC |
++			  WAKE_ARP | WAKE_MCAST);
++	wol->wolopts = 0;
++
++	rc = phy_read_mmd(phydev, MDIO_MMD_PCS, MII_LAN874X_PHY_MMD_WOL_WUCSR);
++	if (rc < 0)
++		return;
++
++	if (rc & MII_LAN874X_PHY_WOL_PFDAEN)
++		wol->wolopts |= WAKE_UCAST;
++
++	if (rc & MII_LAN874X_PHY_WOL_BCSTEN)
++		wol->wolopts |= WAKE_BCAST;
++
++	if (rc & MII_LAN874X_PHY_WOL_MPEN)
++		wol->wolopts |= WAKE_MAGIC;
++
++	if (rc & MII_LAN874X_PHY_WOL_WUEN) {
++		if (priv->wol_arp)
++			wol->wolopts |= WAKE_ARP;
++		else
++			wol->wolopts |= WAKE_MCAST;
++	}
++}
++
++static u16 smsc_crc16(const u8 *buffer, size_t len)
++{
++	return bitrev16(crc16(0xFFFF, buffer, len));
++}
++
++static int lan874x_chk_wol_pattern(const u8 pattern[], const u16 *mask,
++				   u8 len, u8 *data, u8 *datalen)
++{
++	size_t i, j, k;
++	int ret = 0;
++	u16 bits;
++
++	i = 0;
++	k = 0;
++	while (len > 0) {
++		bits = *mask;
++		for (j = 0; j < 16; j++, i++, len--) {
++			/* No more pattern. */
++			if (!len) {
++				/* The rest of bitmap is not empty. */
++				if (bits)
++					ret = i + 1;
++				break;
++			}
++			if (bits & 1)
++				data[k++] = pattern[i];
++			bits >>= 1;
++		}
++		mask++;
++	}
++	*datalen = k;
++	return ret;
++}
++
++static int lan874x_set_wol_pattern(struct phy_device *phydev, u16 val,
++				   const u8 data[], u8 datalen,
++				   const u16 *mask, u8 masklen)
++{
++	u16 crc, reg;
++	int rc;
++
++	val |= MII_LAN874X_PHY_WOL_FILTER_EN;
++	rc = phy_write_mmd(phydev, MDIO_MMD_PCS,
++			   MII_LAN874X_PHY_MMD_WOL_WUF_CFGA, val);
++	if (rc < 0)
++		return rc;
++
++	crc = smsc_crc16(data, datalen);
++	rc = phy_write_mmd(phydev, MDIO_MMD_PCS,
++			   MII_LAN874X_PHY_MMD_WOL_WUF_CFGB, crc);
++	if (rc < 0)
++		return rc;
++
++	masklen = (masklen + 15) & ~0xf;
++	reg = MII_LAN874X_PHY_MMD_WOL_WUF_MASK7;
++	while (masklen >= 16) {
++		rc = phy_write_mmd(phydev, MDIO_MMD_PCS, reg, *mask);
++		if (rc < 0)
++			return rc;
++		reg--;
++		mask++;
++		masklen -= 16;
++	}
++
++	/* Clear out the rest of mask registers. */
++	while (reg != MII_LAN874X_PHY_MMD_WOL_WUF_MASK0) {
++		phy_write_mmd(phydev, MDIO_MMD_PCS, reg, 0);
++		reg--;
++	}
++	return rc;
++}
++
++static int lan874x_set_wol(struct phy_device *phydev,
++			   struct ethtool_wolinfo *wol)
++{
++	struct net_device *ndev = phydev->attached_dev;
++	struct smsc_phy_priv *priv = phydev->priv;
++	u16 val, val_wucsr;
++	u8 data[128];
++	u8 datalen;
++	int rc;
++
++	if (wol->wolopts & WAKE_PHY)
++		return -EOPNOTSUPP;
++
++	/* lan874x has only one WoL filter pattern */
++	if ((wol->wolopts & (WAKE_ARP | WAKE_MCAST)) ==
++	    (WAKE_ARP | WAKE_MCAST)) {
++		phydev_info(phydev,
++			    "lan874x WoL supports one of ARP|MCAST at a time\n");
++		return -EOPNOTSUPP;
++	}
++
++	rc = phy_read_mmd(phydev, MDIO_MMD_PCS, MII_LAN874X_PHY_MMD_WOL_WUCSR);
++	if (rc < 0)
++		return rc;
++
++	val_wucsr = rc;
++
++	if (wol->wolopts & WAKE_UCAST)
++		val_wucsr |= MII_LAN874X_PHY_WOL_PFDAEN;
++	else
++		val_wucsr &= ~MII_LAN874X_PHY_WOL_PFDAEN;
++
++	if (wol->wolopts & WAKE_BCAST)
++		val_wucsr |= MII_LAN874X_PHY_WOL_BCSTEN;
++	else
++		val_wucsr &= ~MII_LAN874X_PHY_WOL_BCSTEN;
++
++	if (wol->wolopts & WAKE_MAGIC)
++		val_wucsr |= MII_LAN874X_PHY_WOL_MPEN;
++	else
++		val_wucsr &= ~MII_LAN874X_PHY_WOL_MPEN;
++
++	/* Need to use pattern matching */
++	if (wol->wolopts & (WAKE_ARP | WAKE_MCAST))
++		val_wucsr |= MII_LAN874X_PHY_WOL_WUEN;
++	else
++		val_wucsr &= ~MII_LAN874X_PHY_WOL_WUEN;
++
++	if (wol->wolopts & WAKE_ARP) {
++		const u16 mask[3] = { 0xF03F, 0x003F, 0x03C0 };
++		const struct in_ifaddr *ifa = NULL;
++		struct in_device *idev;
++		u8 pattern[42] = {
++			0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
++			0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			0x08, 0x06,
++			0x00, 0x01, 0x08, 0x00, 0x06, 0x04, 0x00, 0x01,
++			0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			0x00, 0x00, 0x00, 0x00,
++			0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			0x00, 0x00, 0x00, 0x00 };
++		u8 len = 42;
++
++		idev = in_dev_get(ndev);
++		if (idev) {
++			ifa = rcu_dereference(idev->ifa_list);
++			if (ifa)
++				memcpy(&pattern[38], &ifa->ifa_address, 4);
++			in_dev_put(idev);
++		}
++
++		/* IPv4 address is not available when the link is down. */
++		if (!ifa)
++			phydev_info(phydev,
++				    "Link is needed to retrieve IP address\n");
++		rc = lan874x_chk_wol_pattern(pattern, mask, len, data,
++					     &datalen);
++		if (rc)
++			phydev_dbg(phydev, "pattern not valid at %d\n", rc);
++
++		/* Need to match broadcast destination address. */
++		val = MII_LAN874X_PHY_WOL_FILTER_BCSTEN;
++		rc = lan874x_set_wol_pattern(phydev, val, data, datalen, mask,
++					     len);
++		if (rc < 0)
++			return rc;
++		priv->wol_arp = true;
++	}
++
++	if (wol->wolopts & WAKE_MCAST) {
++		u8 pattern[6] = { 0x33, 0x33, 0xFF, 0x00, 0x00, 0x00 };
++		u16 mask[1] = { 0x0007 };
++		u8 len = 0;
++
++#if IS_ENABLED(CONFIG_IPV6)
++		/* Try to match IPv6 Neighbor Solicitation.
++		 * If IPv6 link address is not available the effect is to
++		 * match any multicast address.
++		 */
++		do {
++			struct in6_addr addr;
++
++			if (!ipv6_get_lladdr(ndev, &addr, IFA_F_TENTATIVE)) {
++				memcpy(&pattern[3], &addr.s6_addr[13], 3);
++				mask[0] = 0x003F;
++				len = 6;
++			}
++		} while (0);
++#endif
++		rc = lan874x_chk_wol_pattern(pattern, mask, len, data,
++					     &datalen);
++		if (rc)
++			phydev_dbg(phydev, "pattern not valid at %d\n", rc);
++
++		/* Need to match multicast destination address. */
++		val = MII_LAN874X_PHY_WOL_FILTER_MCASTTEN;
++		rc = lan874x_set_wol_pattern(phydev, val, data, datalen, mask,
++					     len);
++		if (rc < 0)
++			return rc;
++		priv->wol_arp = false;
++	}
++
++	if (wol->wolopts & (WAKE_MAGIC | WAKE_UCAST)) {
++		const u8 *mac = (const u8 *)ndev->dev_addr;
++		int i, reg;
++
++		reg = MII_LAN874X_PHY_MMD_WOL_RX_ADDRC;
++		for (i = 0; i < 6; i += 2, reg--) {
++			rc = phy_write_mmd(phydev, MDIO_MMD_PCS, reg,
++					   ((mac[i + 1] << 8) | mac[i]));
++			if (rc < 0)
++				return rc;
++		}
++	}
++
++	rc = phy_write_mmd(phydev, MDIO_MMD_PCS, MII_LAN874X_PHY_MMD_WOL_WUCSR,
++			   val_wucsr);
++	if (rc < 0)
++		return rc;
++
++	return 0;
++}
++
+ static int smsc_get_sset_count(struct phy_device *phydev)
+ {
+ 	return ARRAY_SIZE(smsc_hw_stats);
+@@ -533,7 +817,7 @@ static struct phy_driver smsc_phy_driver[] = {
+ 
+ 	/* basic functions */
+ 	.read_status	= lan87xx_read_status,
+-	.config_init	= smsc_phy_config_init,
++	.config_init	= lan874x_phy_config_init,
+ 	.soft_reset	= smsc_phy_reset,
+ 
+ 	/* IRQ related */
+@@ -548,6 +832,10 @@ static struct phy_driver smsc_phy_driver[] = {
+ 	.get_tunable	= smsc_phy_get_tunable,
+ 	.set_tunable	= smsc_phy_set_tunable,
+ 
++	/* WoL */
++	.set_wol	= lan874x_set_wol,
++	.get_wol	= lan874x_get_wol,
++
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
+ }, {
+@@ -566,7 +854,7 @@ static struct phy_driver smsc_phy_driver[] = {
+ 
+ 	/* basic functions */
+ 	.read_status	= lan87xx_read_status,
+-	.config_init	= smsc_phy_config_init,
++	.config_init	= lan874x_phy_config_init,
+ 	.soft_reset	= smsc_phy_reset,
+ 
+ 	/* IRQ related */
+@@ -581,6 +869,10 @@ static struct phy_driver smsc_phy_driver[] = {
+ 	.get_tunable	= smsc_phy_get_tunable,
+ 	.set_tunable	= smsc_phy_set_tunable,
+ 
++	/* WoL */
++	.set_wol	= lan874x_set_wol,
++	.get_wol	= lan874x_get_wol,
++
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
+ } };
+diff --git a/include/linux/smscphy.h b/include/linux/smscphy.h
+index e1c88627755a..1a6a851d2cf8 100644
+--- a/include/linux/smscphy.h
++++ b/include/linux/smscphy.h
+@@ -38,4 +38,38 @@ int smsc_phy_set_tunable(struct phy_device *phydev,
+ 			 struct ethtool_tunable *tuna, const void *data);
+ int smsc_phy_probe(struct phy_device *phydev);
+ 
++#define MII_LAN874X_PHY_MMD_WOL_WUCSR		0x8010
++#define MII_LAN874X_PHY_MMD_WOL_WUF_CFGA	0x8011
++#define MII_LAN874X_PHY_MMD_WOL_WUF_CFGB	0x8012
++#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK0	0x8021
++#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK1	0x8022
++#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK2	0x8023
++#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK3	0x8024
++#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK4	0x8025
++#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK5	0x8026
++#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK6	0x8027
++#define MII_LAN874X_PHY_MMD_WOL_WUF_MASK7	0x8028
++#define MII_LAN874X_PHY_MMD_WOL_RX_ADDRA	0x8061
++#define MII_LAN874X_PHY_MMD_WOL_RX_ADDRB	0x8062
++#define MII_LAN874X_PHY_MMD_WOL_RX_ADDRC	0x8063
++#define MII_LAN874X_PHY_MMD_MCFGR		0x8064
++
++#define MII_LAN874X_PHY_PME1_SET		(2 << 13)
++#define MII_LAN874X_PHY_PME2_SET		(2 << 11)
++#define MII_LAN874X_PHY_PME_SELF_CLEAR		BIT(9)
++#define MII_LAN874X_PHY_WOL_PFDA_FR		BIT(7)
++#define MII_LAN874X_PHY_WOL_WUFR		BIT(6)
++#define MII_LAN874X_PHY_WOL_MPR			BIT(5)
++#define MII_LAN874X_PHY_WOL_BCAST_FR		BIT(4)
++#define MII_LAN874X_PHY_WOL_PFDAEN		BIT(3)
++#define MII_LAN874X_PHY_WOL_WUEN		BIT(2)
++#define MII_LAN874X_PHY_WOL_MPEN		BIT(1)
++#define MII_LAN874X_PHY_WOL_BCSTEN		BIT(0)
++
++#define MII_LAN874X_PHY_WOL_FILTER_EN		BIT(15)
++#define MII_LAN874X_PHY_WOL_FILTER_MCASTTEN	BIT(9)
++#define MII_LAN874X_PHY_WOL_FILTER_BCSTEN	BIT(8)
++
++#define MII_LAN874X_PHY_PME_SELF_CLEAR_DELAY	0x1000 /* 81 milliseconds */
++
+ #endif /* __LINUX_SMSCPHY_H__ */
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 5479da08ef40..162331a7f602 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -1879,6 +1879,7 @@ int ipv6_get_lladdr(struct net_device *dev, struct in6_addr *addr,
+ 	rcu_read_unlock();
+ 	return err;
+ }
++EXPORT_SYMBOL(ipv6_get_lladdr);
+ 
+ static int ipv6_count_addresses(const struct inet6_dev *idev)
+ {
+-- 
+2.17.1
+
 
