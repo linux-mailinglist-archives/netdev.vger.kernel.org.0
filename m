@@ -1,223 +1,222 @@
-Return-Path: <netdev+bounces-9628-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9629-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7038372A0D4
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 19:02:38 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 51B7172A0D6
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 19:03:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B0A921C21149
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 17:02:34 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A21711C209F5
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 17:03:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B4FF81C743;
-	Fri,  9 Jun 2023 17:02:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 421EC1B915;
+	Fri,  9 Jun 2023 17:03:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37C221B904;
-	Fri,  9 Jun 2023 17:02:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C774BC433A1;
-	Fri,  9 Jun 2023 17:02:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686330151;
-	bh=vxAb82+vAl+BH98Z/zX2UFkfYunrykLKznTO4Bf32/o=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=mi+1/ju1etiB6d0wiW4caAjQqZLe00FeV1NkWgT7OHTC7YXhbWrImPhkjcdfLthep
-	 R4NctZPvMcT6YU1NN0hlAPJu7mKlMOhF8XW1w/JUcKEX6IymvTValQ7iJLgbthe+rr
-	 JB0Y/WdslTbhCTkFmElAt6A2q9AjkZ65JlkLpT6RWSVvoxHuctv3jAm4tkLSY6DnGo
-	 sjANix/3DDuGcfUiGq4bVWyWyi4Aib0wLcEVEjV2uGWiQih+ufGfWA3fM021KKgeWY
-	 Dt91VQ5xBfF0lTdjr2IkoyUEOPUU+/xMsQaC1Ua+lm/Kg5AHwmxvY3mxjDI1kZZXq8
-	 eusqU7U1U5lpg==
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-4f644dffd71so2619959e87.1;
-        Fri, 09 Jun 2023 10:02:31 -0700 (PDT)
-X-Gm-Message-State: AC+VfDx+c0l4S1qiuEKAlyt/LCqcUkiHM3tSjSq0oVFlun3511lj+UTt
-	ZK2TksPRMtOFMcLNOK/fpzzBuN4Bs/Joh/DUnuY=
-X-Google-Smtp-Source: ACHHUZ4u3y79XyQLMHF4er59h6QhhYai8KonYYOOA8YDDos4NgFbnLZdqPfEIRGQCpyydTzD04kcj6u0lkxU6y+OWW4=
-X-Received: by 2002:a2e:9891:0:b0:2b1:e5d8:d008 with SMTP id
- b17-20020a2e9891000000b002b1e5d8d008mr1338098ljj.37.1686330149805; Fri, 09
- Jun 2023 10:02:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 311FC171B4
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 17:03:07 +0000 (UTC)
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DEAB1BD;
+	Fri,  9 Jun 2023 10:03:06 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+	by smtp-out1.suse.de (Postfix) with ESMTP id AA04D21A86;
+	Fri,  9 Jun 2023 17:03:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1686330184; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=REEDDTYjANwf4OYVzWw7svHHjEF/SXbfklTXuE905lA=;
+	b=EBNbp4pA5hDPn36pel+HGgMRUTpI5M+3xek6bwhBJkIIqV6PK9wc3FqPA1Ilo8PmKXJ7DD
+	5V1rDdeK/QSi0rMKdm5LIbTe/n9zH7N2OdhyL2krBe+FtcqKs6tzdb+2FsgQFgm6qf1evt
+	c6pmx4EZfvvohKqa9+pJbZ9e1jxJVc4=
+Received: from suse.cz (pmladek.tcp.ovpn2.prg.suse.de [10.100.208.146])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by relay2.suse.de (Postfix) with ESMTPS id 9A8042C23D;
+	Fri,  9 Jun 2023 17:03:03 +0000 (UTC)
+Date: Fri, 9 Jun 2023 19:02:59 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc: Kees Cook <keescook@chromium.org>, Richard Weinberger <richard@nod.at>,
+	linux-hardening@vger.kernel.org, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Wedson Almeida Filho <wedsonaf@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Alexei Starovoitov <ast@kernel.org>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	John Fastabend <john.fastabend@gmail.com>,
+	Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [RFC PATCH 0/1] Integer overflows while scanning for integers
+Message-ID: <ZINbQ3eyMB2OGfiN@alley>
+References: <20230607223755.1610-1-richard@nod.at>
+ <202306071634.51BBAFD14@keescook>
+ <ZIHzbBXlxEz6As9N@alley>
+ <9cd596d9-0ecb-29fc-fe18-f19b86a5ba44@rasmusvillemoes.dk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230601101257.530867-1-rppt@kernel.org> <ZHjDU/mxE+cugpLj@FVFF77S0Q05N.cambridge.arm.com>
- <ZHjgIH3aX9dCvVZc@moria.home.lan> <ZHm3zUUbwqlsZBBF@FVFF77S0Q05N>
- <20230605092040.GB3460@kernel.org> <ZH20XkD74prrdN4u@FVFF77S0Q05N>
- <CAPhsuW7ntn_HpVWdGK_hYVd3zsPEFToBNfmtt0m6K8SwfxJ66Q@mail.gmail.com> <20230608184116.GJ52412@kernel.org>
-In-Reply-To: <20230608184116.GJ52412@kernel.org>
-From: Song Liu <song@kernel.org>
-Date: Fri, 9 Jun 2023 10:02:16 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5YYa6nQhO2=zor75XkdKpFysZD42DgDRkKZvQT6aMqcA@mail.gmail.com>
-Message-ID: <CAPhsuW5YYa6nQhO2=zor75XkdKpFysZD42DgDRkKZvQT6aMqcA@mail.gmail.com>
-Subject: Re: [PATCH 00/13] mm: jit/text allocator
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, Kent Overstreet <kent.overstreet@linux.dev>, 
-	linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
-	"David S. Miller" <davem@davemloft.net>, Dinh Nguyen <dinguyen@kernel.org>, 
-	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>, 
-	Luis Chamberlain <mcgrof@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, 
-	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Russell King <linux@armlinux.org.uk>, Steven Rostedt <rostedt@goodmis.org>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner <tglx@linutronix.de>, 
-	Will Deacon <will@kernel.org>, bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-modules@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-s390@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev, 
-	netdev@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9cd596d9-0ecb-29fc-fe18-f19b86a5ba44@rasmusvillemoes.dk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Thu, Jun 8, 2023 at 11:41=E2=80=AFAM Mike Rapoport <rppt@kernel.org> wro=
-te:
->
-> On Tue, Jun 06, 2023 at 11:21:59AM -0700, Song Liu wrote:
-> > On Mon, Jun 5, 2023 at 3:09=E2=80=AFAM Mark Rutland <mark.rutland@arm.c=
-om> wrote:
-> >
-> > [...]
-> >
-> > > > > > Can you give more detail on what parameters you need? If the on=
-ly extra
-> > > > > > parameter is just "does this allocation need to live close to k=
-ernel
-> > > > > > text", that's not that big of a deal.
-> > > > >
-> > > > > My thinking was that we at least need the start + end for each ca=
-ller. That
-> > > > > might be it, tbh.
-> > > >
-> > > > Do you mean that modules will have something like
-> > > >
-> > > >       jit_text_alloc(size, MODULES_START, MODULES_END);
-> > > >
-> > > > and kprobes will have
-> > > >
-> > > >       jit_text_alloc(size, KPROBES_START, KPROBES_END);
-> > > > ?
-> > >
-> > > Yes.
-> >
-> > How about we start with two APIs:
-> >      jit_text_alloc(size);
-> >      jit_text_alloc_range(size, start, end);
-> >
-> > AFAICT, arm64 is the only arch that requires the latter API. And TBH, I=
- am
-> > not quite convinced it is needed.
->
-> Right now arm64 and riscv override bpf and kprobes allocations to use the
-> entire vmalloc address space, but having the ability to allocate generate=
-d
-> code outside of modules area may be useful for other architectures.
->
-> Still the start + end for the callers feels backwards to me because the
-> callers do not define the ranges, but rather the architectures, so we sti=
-ll
-> need a way for architectures to define how they want allocate memory for
-> the generated code.
+Added Linus into CC. Quick summary for him:
 
-Yeah, this makes sense.
+1. The original problem is best described in the cover letter, see
+   https://lore.kernel.org/r/20230607223755.1610-1-richard@nod.at
 
->
-> > > > It sill can be achieved with a single jit_alloc_arch_params(), just=
- by
-> > > > adding enum jit_type parameter to jit_text_alloc().
-> > >
-> > > That feels backwards to me; it centralizes a bunch of information abo=
-ut
-> > > distinct users to be able to shove that into a static array, when the=
- callsites
-> > > can pass that information.
-> >
-> > I think we only two type of users: module and everything else (ftrace, =
-kprobe,
-> > bpf stuff). The key differences are:
-> >
-> >   1. module uses text and data; while everything else only uses text.
-> >   2. module code is generated by the compiler, and thus has stronger
-> >   requirements in address ranges; everything else are generated via som=
-e
-> >   JIT or manual written assembly, so they are more flexible with addres=
-s
-> >   ranges (in JIT, we can avoid using instructions that requires a speci=
-fic
-> >   address range).
-> >
-> > The next question is, can we have the two types of users share the same
-> > address ranges? If not, we can reserve the preferred range for modules,
-> > and let everything else use the other range. I don't see reasons to fur=
-ther
-> > separate users in the "everything else" group.
->
-> I agree that we can define only two types: modules and everything else an=
-d
-> let the architectures define if they need different ranges for these two
-> types, or want the same range for everything.
->
-> With only two types we can have two API calls for alloc, and a single
-> structure that defines the ranges etc from the architecture side rather
-> than spread all over.
->
-> Like something along these lines:
->
->         struct execmem_range {
->                 unsigned long   start;
->                 unsigned long   end;
->                 unsigned long   fallback_start;
->                 unsigned long   fallback_end;
->                 pgprot_t        pgprot;
->                 unsigned int    alignment;
->         };
->
->         struct execmem_modules_range {
->                 enum execmem_module_flags flags;
->                 struct execmem_range text;
->                 struct execmem_range data;
->         };
->
->         struct execmem_jit_range {
->                 struct execmem_range text;
->         };
->
->         struct execmem_params {
->                 struct execmem_modules_range    modules;
->                 struct execmem_jit_range        jit;
->         };
->
->         struct execmem_params *execmem_arch_params(void);
->
->         void *execmem_text_alloc(size_t size);
->         void *execmem_data_alloc(size_t size);
->         void execmem_free(void *ptr);
+2. I think that we actually have two problems:
 
-With the jit variation, maybe we can just call these
-module_[text|data]_alloc()?
+     a) How to find a code where sscanf() might get invalid output.
+	Such a code might require some special/better handling
+	of this situation.
 
-btw: Depending on the implementation of the allocator, we may also
-need separate free()s for text and data.
+     b) How to eventually provide a useful message back to
+	userspace.
 
->
->         void *jit_text_alloc(size_t size);
->         void jit_free(void *ptr);
->
 
-[...]
+On Fri 2023-06-09 12:10:29, Rasmus Villemoes wrote:
+> On 08/06/2023 17.27, Petr Mladek wrote:
+> > On Wed 2023-06-07 16:36:12, Kees Cook wrote:
+> 
+> > It seems that userspace implementation of sscanf() and vsscanf()
+> > returns -ERANGE in this case. It might be a reasonable solution.
+> 
+> Well. _Some_ userspace implementation does that. It's not in POSIX.
+> While "man scanf" lists that ERANGE error, it also explicitly says that:
+> 
+> CONFORMING TO
+>        The functions fscanf(), scanf(), and sscanf() conform to C89 and
+> C99 and POSIX.1-2001.  These standards do  not  specify  the
+>        ERANGE error.
+> 
+> I can't figure out what POSIX actually says should or could happen with
+> sscanf("99999999999999", "%i", &x);
 
-How should we move ahead from here?
+It looks to me that it does not say anything about it. Even the latest
+IEEE Std 1003.1-2017 says just this:
 
-AFAICT, all these changes can be easily extended and refactored
-in the future, so we don't have to make it perfect the first time.
-OTOH, having the interface committed (either this set or my
-module_alloc_type version) can unblock works in the binpack
-allocator and the users side. Therefore, I think we can move
-relatively fast here?
+--- cut ---
+RETURN VALUE
+Upon successful completion, these functions shall return the number of
+successfully matched and assigned input items; this number can be zero
+in the event of an early matching failure. If the input ends before
+the first conversion (if any) has completed, and without a matching
+failure having occurred, EOF shall be returned. If an error occurs
+before the first conversion (if any) has completed, and without
+a matching failure having occurred, EOF shall be returned
+and errno shall be set to indicate the error. If a read error
+occurs, the error indicator for the stream shall be set.
 
-Thanks,
-Song
+ERRORS
+For the conditions under which the fscanf() functions fail and may
+fail, refer to fgetc or fgetwc.
+
+In addition, the fscanf() function shall fail if:
+
+[EILSEQ]
+Input byte sequence does not form a valid character.
+[ENOMEM]
+Insufficient storage space is available.
+In addition, the fscanf() function may fail if:
+
+[EINVAL]
+There are insufficient arguments.
+--- cut ---
+
+I do not see anything about overflow anywhere.
+
+Well, the -ERANGE returned by the Linux implementation looks
+quite practical.
+
+> > Well, there is a risk of introducing security problems. The error
+> > value might cause an underflow/overflow when the caller does not expect
+> > a negative value.
+> 
+> There is absolutely no way we can start letting sscanf() return a
+> negative err value, in exactly the same way we cannot possibly let
+> vsnprintf() do that.
+
+I agree.
+
+> We can stop early, possibly with a WARNing if it's
+
+Thinking more about it, the WARN() is a really big hammer even
+if we introduced a never-panicking alternative, e.g. INFO()
+or REPORT().
+
+sscanf() does not know in which situation it is used and how
+serious the overflow would be. I mean that it does not know
+how to provide useful report and if it is needed at all.
+
+Also WARN()-like report would only help with the 1st problem,
+how find the code where the overflow might happen.
+But it would not help to handle it a reasonable way.
+
+> > Alternative solution would be to update the "ip" code so that it
+> > reads the number separately and treat zero return value as
+> > -EINVAL.
+> 
+> The netdev naming code _could_ be updated to just not use scanf at all
+> or the bitmap of in-use numbers, just do the "sprintf(buf, fmt, i)" in a
+> loop and stop when the name is not in use. That's a win as long as there
+> are less than ~256 names already matching the pattern, but the
+> performance absolutely tanks if there are many more than that. So I
+> won't actually suggest that.
+
+Yes, sscanf() might be replaced by a tricky code to better handle possible
+wrong input.
+
+Alternatively, we could provide sscanf_with_err() [*] which would
+return the error codes. It might be used in situations where
+the caller is ready to handle it.
+
+For example, __dev_alloc_name() might return -ERANGE or -EINVAL.
+As a result "ip" might exit with 2 status. It means an error
+from kernel. __dev_alloc_name() might eventually print some
+useful message into the kernel log. Normal user would not be
+able to read it. But they might ask admin to check the kernel log...
+
+
+My opinion:
+
+1. I would prefer to avoid WARN() even when a non-panic alternative
+   is used. It might be too noisy.
+
+   Well, it might be acceptable when it is enabled only with some
+   CONFIG_DEBUG_SSCANF. But the question is who would enable it.
+   If a developer knew that the problem might be in sscanf() then
+   they probably are close to the buggy code anyway.
+
+
+2. The sscanf_with_err() [*] variant looks practical to actually
+   handle the wrong input.
+
+
+[*] sscanf_with_error() is super ugly name. Any better idea is
+    welcome.
+
+Best Regards,
+Petr
 
