@@ -1,227 +1,316 @@
-Return-Path: <netdev+bounces-9541-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9542-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0CB73729AC8
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 14:56:10 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 78CC7729B2A
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 15:11:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A9C05281956
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 12:56:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 504FB1C20B12
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 13:11:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 60ACF171B8;
-	Fri,  9 Jun 2023 12:56:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0FFCA174CE;
+	Fri,  9 Jun 2023 13:11:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D27E168CD
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 12:56:00 +0000 (UTC)
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95AF359A;
-	Fri,  9 Jun 2023 05:55:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686315345; x=1717851345;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=umpiFHjRSsvdbUFmv/o8QAntSsc4C5n2e0v8vqrxJz4=;
-  b=Whj03zGqv5DoldehSc6RMQer0l4058q7bPN9sOgA/DxIvJMO2Q0YNizf
-   pneP70vMES1TT0WnqbInpBejbABwe76jLyul8ZVlw7JSp7c9ExiC9AeOX
-   F0ane2hjgzMIdBekMXSMN0Pa804inK03r4tz1NnKHYKGSeUFvU/JxWh40
-   x2z4T2Wp8sIzoXS8jgqU6ZjmY8vi6nE+RAB7es5Ur0ThAxR/HuzQ5741Z
-   HBxsLiu23l7kNns6/cfC2XY7xQry9xl4fUDijquigZCo+5ZCJLwE/qZ+7
-   91qyNJxh6jhb3PMPw7AB/eLRuSNYhhXh6OpQt6EHRrSAu+O7AQA0yCAtQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10736"; a="357591860"
-X-IronPort-AV: E=Sophos;i="6.00,229,1681196400"; 
-   d="scan'208";a="357591860"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2023 05:54:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10736"; a="660753482"
-X-IronPort-AV: E=Sophos;i="6.00,229,1681196400"; 
-   d="scan'208";a="660753482"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga003.jf.intel.com with ESMTP; 09 Jun 2023 05:54:43 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 9 Jun 2023 05:54:43 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 9 Jun 2023 05:54:42 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Fri, 9 Jun 2023 05:54:42 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.109)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Fri, 9 Jun 2023 05:54:41 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=foB8H/oDZl6ZScedkUPyodUv/fFPtDQrUqNPkVp+UZ1HjWkF38zbsWVYYu+nPOsA/8nMHhgLJgJuJbVgicsQOyH4+BVi8vZFMUWrzFajkrcZ1STK8Dp/YloQHZGS7CdxiCntJbiZQrl2SQC+j4fiyA7yAS7kZp0HQ0pBxg/L7XgwsjJALoNE6krdlH0lPU4b10b38lCFm3+NK3+oZ1oNJPHiuTtkIuzxjF6Ulo1B5rogTIENJty28e6F6yTd6za9oSARfRers9BKIFBljNSLHpFQXTk6wIw7/DXhXSTOZ7zD++apq5+AkLz/i1fEROSen+4AfyeH6PYM2DsF6dI9Vg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4OmuCtea3uy2o+gSWzQOm8b2iShoxhNlJhrgiIkG/nY=;
- b=PB4AvLJYV0UOMi05lz3B+b3Q28+WOWhM1Svxy78pT6o06YjyoaFMZ4hstFhtV7lia+6fu/oHWOtH7kfDxYM4cv5AixHPYC/aFSza8deDXJw3EVk3XBin0j+QpzOUVTaLS8aGXfJn5Vz+RRMKwvPnx3CxueGIXW7Qq3pWB4d4HtMTl0A+i+ntAgjd6jM2/0KkRjzA2IvRlD7lXtcRDoK/hL3UsDo9KEPkIRXHfsSnuqopqmfwE/UEmu7tfOMojcFaFNwul4fMUl36I8G0iKb12fen4i6H7ZyRhjcVMVp+QalEf+MFwihG/nJwJUfdvEoLf+SdvJqE6c1nYLz/DGX2cw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
- MN6PR11MB8194.namprd11.prod.outlook.com (2603:10b6:208:477::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Fri, 9 Jun
- 2023 12:54:20 +0000
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::24bd:974b:5c01:83d6]) by DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::24bd:974b:5c01:83d6%3]) with mapi id 15.20.6455.030; Fri, 9 Jun 2023
- 12:54:20 +0000
-From: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
-To: Jakub Kicinski <kuba@kernel.org>, Vadim Fedorenko <vadfed@meta.com>
-CC: Jiri Pirko <jiri@resnulli.us>, Jonathan Lemon <jonathan.lemon@gmail.com>,
-	Paolo Abeni <pabeni@redhat.com>, "Olech, Milena" <milena.olech@intel.com>,
-	"Michalik, Michal" <michal.michalik@intel.com>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, Vadim Fedorenko
-	<vadim.fedorenko@linux.dev>, poros <poros@redhat.com>, mschmidt
-	<mschmidt@redhat.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Subject: RE: [RFC PATCH v7 2/8] dpll: Add DPLL framework base functions
-Thread-Topic: [RFC PATCH v7 2/8] dpll: Add DPLL framework base functions
-Thread-Index: AQHZeWdERHWnlPmo9kOdLErcTLxvj69KqfKAgDgGFOA=
-Date: Fri, 9 Jun 2023 12:54:20 +0000
-Message-ID: <DM6PR11MB465741624AC5C49C4CDEB3AF9B51A@DM6PR11MB4657.namprd11.prod.outlook.com>
-References: <20230428002009.2948020-1-vadfed@meta.com>
-	<20230428002009.2948020-3-vadfed@meta.com>
- <20230504142123.5fdb4e96@kernel.org>
-In-Reply-To: <20230504142123.5fdb4e96@kernel.org>
-Accept-Language: pl-PL, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|MN6PR11MB8194:EE_
-x-ms-office365-filtering-correlation-id: 9a5c91ca-6f73-4aa3-566d-08db68e8a4ba
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: er/J8kg/FTAlxBEooTQ2YjM8MNjE1JfxM3mPXpQ6oUgd11gYeDu5kjFPhnZI6aaiQXPOgyE4Fiuhq0poYFynt1M0DAA66zs6jotIFNEl0kgFUJq8QOU8JkH3MMFYDyGgdo3yPIXbn89GtmRb5S6Qujz7fEKASiP45hXjbk2a3fTd3LC8kYwUighO+IhS655eSWLwX8LBZ+IqUt4gzdxQLrILUx6C0NyW/R+PoAqK7pQo2zqJadu/Bmo36EZIdAv31xChUgSLE5YPRO8QL7l0Tw+DRr2TPL9xJeEe3zLLOxp0QE3Dqg3l/MUdzh9EIX2d1N8M9VAAIPZWl2YUx0QmSSTVFGF9iEUt1OevNYJWlp6XSJJWmqvqfe0c3xS5dUpfjHZr/JGxTpkayGDDiUVgbC19NAOx/CAJaS4uNTsgmObh8+3+dLvyy70pHisj0Ld3/C0ddh+DKaw8srDWcZmtrn4P9fqDIe2CO8NEYP8TmVujK5yikGwCt73MMzyE0RQ5mdCmn9byGZnLvH9po6gV1IDvsYOfCa6uQDUH2ajaWVTKJPHqNKp2MVh+t1HkWbG51q1/4EuFMdZztxizE6D6LgkHhF6uNyWnrW/AhzkWd7bbbgYnxHm6PBgYEEUU2fC2
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(346002)(396003)(136003)(376002)(39860400002)(451199021)(86362001)(8676002)(8936002)(110136005)(7696005)(54906003)(478600001)(41300700001)(55016003)(5660300002)(52536014)(316002)(6506007)(66446008)(26005)(4326008)(66476007)(71200400001)(64756008)(66556008)(76116006)(66946007)(9686003)(186003)(83380400001)(7416002)(2906002)(122000001)(82960400001)(38100700002)(33656002)(38070700005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ghx0rAekN+Lg+plg/xI0fbtiHM+7BCjV58LOPsWXuAadYm1nNNEGqs+fiWQz?=
- =?us-ascii?Q?FPkcmOPKc8d2Ss+Vs0/9KgesRJ5Ofpa3ISWC7EkhEjXaYo2UcRyoGrmjGi1d?=
- =?us-ascii?Q?hZ52EeD+3beHW5v/gmN0Q4Vb/qwmv8Gecfq0mGiKsGDgMJH3hG7yw+I8sdk/?=
- =?us-ascii?Q?oLN7/RlAKPtD5ht5DepgnraEngqAtJEhjkih8iPTQ7zRUBXMf3yA/QdgBJMv?=
- =?us-ascii?Q?y/6oTF9T2KlTpuKs/27RWHBCZZWBE2IaA9t0V08I4bDA8ykXzXP+VfTEPUMt?=
- =?us-ascii?Q?1VFTGCnc+5LT20SLK8YUZyQHJPtoKp4q0lSIjH6FEWGvV4cK8yjiW+xfrk5r?=
- =?us-ascii?Q?I8qF9+D6mM2rZwbK17PYE1iWJsgCm3k2E+pWDpxhBv/1kuMwOfusUBB9bf1N?=
- =?us-ascii?Q?kAikmKzffOam2x6dcbQc8zzHAfy3t6Kh9RbFwl/q07HCpOYpHvnPeatxT0Vt?=
- =?us-ascii?Q?Ya/nH/qylvy85o1XZlFU4tExn5ZjRiD+DaKDhJIhiFJrdjOCsXvesSEJCqcm?=
- =?us-ascii?Q?gb+h4YiARw5Ne/xsjWxKGde5PQRNvOMpMfS+83GgoDQAwMaHKkAcHEL5Xkxd?=
- =?us-ascii?Q?L7Sgy6Ee5pWR+61MlHeWbxctx9MAcNJ5F7J4NO3WbMnDqTgccYtCWsj1OtH3?=
- =?us-ascii?Q?pB88W8azlS4YrJMssPvDQQPfbBewVkCBZKWwT3lRKE+E0lC2LDWQgquwj5zm?=
- =?us-ascii?Q?K+yi96hBQyoRtX1ifz3SsBeBRuVN+KYC4we6Rs12ThLCnY+Qsj8xUC6NoE4J?=
- =?us-ascii?Q?tUYhUeo3ie6Yz3OSZJB/3TFcoY92jRsCntewS+kLJJ/ZekJdYAj3XaCHGoaU?=
- =?us-ascii?Q?Qgak8BkLGd8W9vx3ftZzIVtyJJHFAReclXDGC/vHiNKRZKSV8l4FRU7wHVqt?=
- =?us-ascii?Q?NxFDshWoBjAwcrMH9SerMkHU00G71MnfK8wCjUsrg/YP0rLh9wjS3q8xCSO7?=
- =?us-ascii?Q?adQEIwUfrc6u6AZ2UjRTVua0DQEd+59AfqvOA7374RIscctgZy+mxo6qG2Ub?=
- =?us-ascii?Q?1cQKqSlrQmMZtREFZeQJ0em3CQFu+K5O3I0uIUnPGSHr6+i+k9rRMkJTfT8U?=
- =?us-ascii?Q?pRzffgH/6YbRE5V8hmOX6hG0YH66Jf9DogJQVIik2vZI+2yWa6SXC2bbkNtp?=
- =?us-ascii?Q?NrGzgct6awpzwVfaNbpzct1uarooYSrYtdoWyoU57weCbqjRqw1mURhDGcvc?=
- =?us-ascii?Q?ahghFdiC+SZ+6L5uiyYvVmDPAWfiKUCAixa2dPnqcsA++1H0kuvPTtqa1tfj?=
- =?us-ascii?Q?YYHk8AdVmgOOrnG12NpuO1gmBTzO4gs4nnuSu5S82om3aOoiGOdh9xItbiJ6?=
- =?us-ascii?Q?zzaK82brL2z1ZuVzgWxtBPy+CrdADV3dH0nNzOeRxTWqfVxOc/64d6c9OEAE?=
- =?us-ascii?Q?0TBzg3aSgOMK8g/1u7Xw8rpZTk2JUihQ8hFEFhWJZS+m84A6VZq0IXpPUbnJ?=
- =?us-ascii?Q?R9cN0t08mtlt4+AM0BZW5/FVMFuBqPTibYs+UepXNrbxGDgZ+3CTwetdXJiD?=
- =?us-ascii?Q?MwUqkvejcVPrnz4yzKxxIWQTxzpsmAj2T23uas+NZYjnFGGb75ortno/CZq+?=
- =?us-ascii?Q?ir8s6B9/aPscKfFMVmRJzkINqGRz5P5cBicEJx0w1eO5Sj8rJun0wmVFGiBn?=
- =?us-ascii?Q?rQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30E7279E5;
+	Fri,  9 Jun 2023 13:11:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57E80C433D2;
+	Fri,  9 Jun 2023 13:11:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686316302;
+	bh=PmsrRFhPPeHgUi1WPpAEAkyqbvkhDaBrr6icE/lOttU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=GOumSRLCsVIxWesR9+wIN3jua+C/BeFL7x/UVgRSuRx2aXDmC1lgzWl1pkjZFWuab
+	 4FngF+b5zkAQlf/OzTTr3VzIku/3Qfr2OMe1/FTpjiSxVNUsYUnYchI/blQP6cjB1h
+	 M2KyP6GEoWPSwTWVL2oR85UNeMzjaZ09RmHNYeK6d0fvDqu9nKM07dA/Tu7hNPv8cu
+	 kRAfjEVr4ocOPU9NlGd7VT9b6dl0EeS8DZ6+uURdfNs1KUk+ih1vGL9WcP9qJW+EmQ
+	 EUa+K5IjfhCLBd2oTalz6DzluhGaq91H4+T0EetYhwjIimgMOpED5825qV2CeDsXmE
+	 goBSaAqzaTvbw==
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+	id 36FD9BBE31A; Fri,  9 Jun 2023 15:11:39 +0200 (CEST)
+From: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
+To: Timo Beckers <timo@incline.eu>, Daniel Borkmann <daniel@iogearbox.net>,
+ Stanislav Fomichev <sdf@google.com>, Andrii Nakryiko
+ <andrii.nakryiko@gmail.com>
+Cc: ast@kernel.org, andrii@kernel.org, martin.lau@linux.dev,
+ razor@blackwall.org, john.fastabend@gmail.com, kuba@kernel.org,
+ dxu@dxuuu.xyz, joe@cilium.io, davem@davemloft.net, bpf@vger.kernel.org,
+ netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 1/7] bpf: Add generic attach/detach/query
+ API for multi-progs
+In-Reply-To: <1a73a1b9-c72a-de81-4fce-7ba4fb6d7900@incline.eu>
+References: <20230607192625.22641-1-daniel@iogearbox.net>
+ <20230607192625.22641-2-daniel@iogearbox.net>
+ <ZIIOr1zvdRNTFKR7@google.com>
+ <CAEf4BzbEf+U53UY6o+g5OZ6rg+T65_Aou4Nvrdbo-8sAjmdJmA@mail.gmail.com>
+ <ZIJNlxCX4ksBFFwN@google.com>
+ <CAEf4BzYbr5G8ZGnWEndiZ1-7_XqYfKFTorDvvafwZY0XJUn7cw@mail.gmail.com>
+ <ZIJe5Ml6ILFa6tKP@google.com> <87a5x91nr8.fsf@toke.dk>
+ <3a315a0d-52dd-7671-f6c1-bb681604c815@iogearbox.net>
+ <874jng28xk.fsf@toke.dk> <1a73a1b9-c72a-de81-4fce-7ba4fb6d7900@incline.eu>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date: Fri, 09 Jun 2023 15:11:39 +0200
+Message-ID: <87sfb0zsok.fsf@toke.dk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9a5c91ca-6f73-4aa3-566d-08db68e8a4ba
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jun 2023 12:54:20.8296
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: A41nV1pw3snTm5opuo6/PtAE7g/0QevMW9zGafvE6b2PU2tj45uiruvEFr9lHdAFHGs1EJrkU038eYa9I7m4W5NpTzCiMg7FrKW8XkE9io0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR11MB8194
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
->From: Jakub Kicinski <kuba@kernel.org>
->Sent: Thursday, May 4, 2023 11:21 PM
+Timo Beckers <timo@incline.eu> writes:
+
+> On 6/9/23 13:04, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Daniel Borkmann <daniel@iogearbox.net> writes:
+>>
+>>>>>>>>> I'm still not sure whether the hard semantics of first/last is re=
+ally
+>>>>>>>>> useful. My worry is that some prog will just use BPF_F_FIRST which
+>>>>>>>>> would prevent the rest of the users.. (starting with only
+>>>>>>>>> F_BEFORE/F_AFTER feels 'safer'; we can iterate later on if we rea=
+lly
+>>>>>>>>> need first/laste).
+>>>>>>>> Without FIRST/LAST some scenarios cannot be guaranteed to be safely
+>>>>>>>> implemented. E.g., if I have some hard audit requirements and I ne=
+ed
+>>>>>>>> to guarantee that my program runs first and observes each event, I=
+'ll
+>>>>>>>> enforce BPF_F_FIRST when attaching it. And if that attachment fail=
+s,
+>>>>>>>> then server setup is broken and my application cannot function.
+>>>>>>>>
+>>>>>>>> In a setup where we expect multiple applications to co-exist, it
+>>>>>>>> should be a rule that no one is using FIRST/LAST (unless it's
+>>>>>>>> absolutely required). And if someone doesn't comply, then that's a=
+ bug
+>>>>>>>> and has to be reported to application owners.
+>>>>>>>>
+>>>>>>>> But it's not up to the kernel to enforce this cooperation by
+>>>>>>>> disallowing FIRST/LAST semantics, because that semantics is critic=
+al
+>>>>>>>> for some applications, IMO.
+>>>>>>> Maybe that's something that should be done by some other mechanism?
+>>>>>>> (and as a follow up, if needed) Something akin to what Toke
+>>>>>>> mentioned with another program doing sorting or similar.
+>>>>>> The goal of this API is to avoid needing some extra special program =
+to
+>>>>>> do this sorting
+>>>>>>
+>>>>>>> Otherwise, those first/last are just plain simple old priority band=
+s;
+>>>>>>> only we have two now, not u16.
+>>>>>> I think it's different. FIRST/LAST has to be used judiciously, of
+>>>>>> course, but when they are needed, they will have no alternative.
+>>>>>>
+>>>>>> Also, specifying FIRST + LAST is the way to say "I want my program to
+>>>>>> be the only one attached". Should we encourage such use cases? No, of
+>>>>>> course. But I think it's fair  for users to be able to express this.
+>>>>>>
+>>>>>>> I'm mostly coming from the observability point: imagine I have my f=
+ancy
+>>>>>>> tc_ingress_tcpdump program that I want to attach as a first program=
+ to debug
+>>>>>>> some issue, but it won't work because there is already a 'first' pr=
+ogram
+>>>>>>> installed.. Or the assumption that I'd do F_REPLACE | F_FIRST ?
+>>>>>> If your production setup requires that some important program has to
+>>>>>> be FIRST, then yeah, your "let me debug something" program shouldn't
+>>>>>> interfere with it (assuming that FIRST requirement is a real
+>>>>>> requirement and not someone just thinking they need to be first; but
+>>>>>> that's up to user space to decide). Maybe the solution for you in th=
+at
+>>>>>> case would be freplace program installed on top of that stubborn FIR=
+ST
+>>>>>> program? And if we are talking about local debugging and development,
+>>>>>> then you are a sysadmin and you should be able to force-detach that
+>>>>>> program that is getting in the way.
+>>>>> I'm not really concerned about our production environment. It's pretty
+>>>>> controlled and restricted and I'm pretty certain we can avoid doing
+>>>>> something stupid. Probably the same for your env.
+>>>>>
+>>>>> I'm mostly fantasizing about upstream world where different users don=
+'t
+>>>>> know about each other and start doing stupid things like F_FIRST where
+>>>>> they don't really have to be first. It's that "used judiciously" part
+>>>>> that I'm a bit skeptical about :-D
+>>> But in the end how is that different from just attaching themselves bli=
+ndly
+>>> into the first position (e.g. with before and relative_fd as 0 or the f=
+d/id
+>>> of the current first program) - same, they don't really have to be firs=
+t.
+>>> How would that not result in doing something stupid? ;) To add to Andri=
+i's
+>>> earlier DDoS mitigation example ... think of K8s environment: one proje=
+ct
+>>> is implementing DDoS mitigation with BPF, another one wants to monitor/
+>>> sample traffic to user space with BPF. Both install as first position by
+>>> default (before + 0). In K8s, there is no built-in Pod dependency manag=
+ement
+>>> so you cannot guarantee whether Pod A comes up before Pod B. So you'll =
+end
+>>> up in a situation where sometimes the monitor runs before the DDoS miti=
+gation
+>>> and on some other nodes it's vice versa. The other case where this gets
+>>> broken (assuming a node where we get first the DDoS mitigation, then the
+>>> monitoring) is when you need to upgrade one of the Pods: monitoring Pod
+>>> gets a new stable update and is being re-rolled out, then it inserts
+>>> itself before the DDoS mitigation mechanism, potentially causing outage.
+>>> With the first/last mechanism these two situations cannot happen. The D=
+DoS
+>>> mitigation software uses first and the monitoring uses before + 0, then=
+ no
+>>> matter the re-rollouts or the ordering in which Pods come up, it's alwa=
+ys
+>>> at the expected/correct location.
+>> I'm not disputing that these kinds of policy issues need to be solved
+>> somehow. But adding the first/last pinning as part of the kernel hooks
+>> doesn't solve the policy problem, it just hard-codes a solution for one
+>> particular instance of the problem.
+>>
+>> Taking your example from above, what happens when someone wants to
+>> deploy those tools in reverse order? Say the monitoring tool counts
+>> packets and someone wants to also count the DDOS traffic; but the DDOS
+>> protection tool has decided for itself (by setting the FIRST) flag that
+>> it can *only* run as the first program, so there is no way to achieve
+>> this without modifying the application itself.
+>>
+>>>>> Because even with this new ordering scheme, there still should be
+>>>>> some entity to do relative ordering (systemd-style, maybe CNI?).
+>>>>> And if it does the ordering, I don't really see why we need
+>>>>> F_FIRST/F_LAST.
+>>>> I can see I'm a bit late to the party, but FWIW I agree with this:
+>>>> FIRST/LAST will definitely be abused if we add it. It also seems to me
+> It's in the prisoners' best interest to collaborate (and they do! see
+> https://www.youtube.com/watch?v=3DYK7GyEJdJGo), except the current
+> prio system is limiting and turns out to be really fragile in practice.
 >
->On Thu, 27 Apr 2023 17:20:03 -0700 Vadim Fedorenko wrote:
->> +/**
->> + * struct dpll_pin - structure for a dpll pin
->> + * @idx:		unique idx given by alloc on global pin's XA
->> + * @dev_driver_id:	id given by dev driver
->> + * @clock_id:		clock_id of creator
->> + * @module:		module of creator
->> + * @dpll_refs:		hold referencees to dplls that pin is registered
->with
->> + * @pin_refs:		hold references to pins that pin is registered with
->> + * @prop:		properties given by registerer
->> + * @rclk_dev_name:	holds name of device when pin can recover clock
->from it
->> + * @refcount:		refcount
->> + **/
->> +struct dpll_pin {
->> +	u32 id;
->> +	u32 pin_idx;
->> +	u64 clock_id;
->> +	struct module *module;
->> +	struct xarray dpll_refs;
->> +	struct xarray parent_refs;
->> +	struct dpll_pin_properties prop;
->> +	char *rclk_dev_name;
->> +	refcount_t refcount;
->> +};
+> If your tool wants to attach to tc prio 1 and there's already a prog=20
+> attached,
+> the most reliable option is basically to blindly replace the attachment,=
+=20
+> unless
+> you have the possibility to inspect the attached prog and try to figure=20
+> out if it
+> belongs to another tool. This is fragile in and of itself, and only=20
+> possible on
+> more recent kernels iirc.
 >
->The kdoc for structures is quite out of date, please run
->./scripts/kernel-doc -none $DPLL_FILES
+> With tcx, Cilium could make an initial attachment using F_FIRST and simply
+> update a link at well-known path on subsequent startups. If there's no=20
+> existing
+> link, and F_FIRST is taken, bail out with an error. The owner of the=20
+> existing
+> F_FIRST program can be queried and logged; we know for sure the program
+> doesn't belong to Cilium, and we have no interest in detaching it.
+
+That's conflating the benefit of F_FIRST with that of bpf_link, though;
+you can have the replace thing without the exclusive locking.
+
+>>> See above on the issues w/o the first/last. How would you work around t=
+hem
+>>> in practice so they cannot happen?
+>> By having an ordering configuration that is deterministic. Enforced by
+>> the system-wide management daemon by whichever mechanism suits it. We
+>> could implement a minimal reference policy agent that just reads a
+>> config file in /etc somewhere, and *that* could implement FIRST/LAST
+>> semantics.
+> I think this particular perspective is what's deadlocking this discussion.
+> To me, it looks like distros and hyperscalers are in the same boat with
+> regards to the possibility of coordination between tools. Distros are only
+> responsible for the tools they package themselves, and hyperscalers
+> run a tight ship with mostly in-house tooling already. When it comes to
+> projects out in the wild, that all goes out the window.
+
+Not really: from the distro PoV we absolutely care about arbitrary
+combinations of programs with different authors. Which is why I'm
+arguing against putting anything into the kernel where the first program
+to come along can just grab a hook and lock everyone out.
+
+My assumption is basically this: A system administrator installs
+packages A and B that both use the TC hook. The developers of A and B
+have never heard about each other. It should be possible for that admin
+to run A and B in whichever order they like, without making any changes
+to A and B themselves.
+
+> Regardless of merit or feasability of a system-wide bpf management
+> daemon for k8s, there _is no ordering configuration possible_. K8s is not
+> a distro where package maintainers (or anyone else, really) can coordinate
+> on correctly defining priority of each of the tools they ship. This is=20
+> effectively
+> the prisoner's dilemma. I feel like most of the discussion so far has been
+> very hand-wavy in 'user space should solve it'. Well, we are user space, =
+and
+> we're here trying to solve it. :)
 >
-
-Done.
-
->> +/**
->> + * dpll_device_notify - notify on dpll device change
->> + * @dpll: dpll device pointer
->> + * @attr: changed attribute
->> + *
->> + * Broadcast event to the netlink multicast registered listeners.
->> + *
->> + * Return:
->> + * * 0 - success
->> + * * negative - error
->> + */
+> A hypothetical policy/gatekeeper/ordering daemon doesn't possess
+> implicit knowledge about which program needs to go where in the chain,
+> nor is there an obvious heuristic about how to order things. Maintaining
+> such a configuration for all cloud-native tooling out there that possibly
+> uses bpf is simply impossible, as even a tool like Cilium can change
+> dramatically from one release to the next. Having to manage this too
+> would put a significant burden on velocity and flexibility for arguably
+> little benefit to the user.
 >
->Let's move the kdoc to the implementation. I believe that's
->the preferred kernel coding style.
+> So, daemon/kernel will need to be told how to order things, preferably by
+> the tools (Cilium/datadog-agent) themselves, since the user/admin of the
+> system cannot be expected to know where to position the hundreds of progs
+> loaded by Cilium and how they might interfere with other tools. Figuring
+> this out is the job of the tool, daemon or not.
+>
+> The prisoners _must_ communicate (so, not abuse F_FIRST) for things to
+> work correctly, and it's 100% in their best interest in doing so. Let's n=
+ot
+> pretend like we're able to solve game theory on this mailing list. :)
+> We'll have to settle for the next-best thing: give user space a safe and=
+=20
+> clear
+> API to allow it to coordinate and make the right decisions.
 
-Sure, fixed.
+But "always first" is not a meaningful concept. It's just what we have
+today (everyone picks priority 1), except now if there are two programs
+that want the same hook, it will be the first program that wins the
+contest (by locking the second one out), instead of the second program
+winning (by overriding the first one) as is the case with the silent
+override semantics we have with TC today. So we haven't solved the
+problem, we've just shifted the breakage.
 
-Thank you,
-Arkadiusz
+> To circle back to the observability case: in offline discussions with=20
+> Daniel,
+> I've mentioned the need for 'shadow' progs that only collect data and
+> pump it to user space, attached at specific points in the chain (still=20
+> within tcx!).
+> Their retcodes would be ignored, and context modifications would be
+> rejected, so attaching multiple to the same hook can always succeed,
+> much like cgroup multi. Consider the following:
+>
+> To attach a shadow prog before F_FIRST, a caller could use F_BEFORE |=20
+> F_FIRST |
+> F_RDONLY. Attaching between first and the 'relative' section: F_AFTER |=20
+> F_FIRST |
+> F_RDONLY, etc. The rdonly flag could even be made redundant if a new prog/
+> attach type is added for progs like these.
+>
+> This is still perfectly possible to implement on top of Daniel's=20
+> proposal, and
+> to me looks like it could address many of the concerns around ordering of
+> progs I've seen in this thread, many mention data exfiltration.
+
+It may well be that semantics like this will turn out to be enough. Or
+it may not (I personally believe we'll need something more expressive
+still, and where the system admin has the option to override things; but
+I may turn out to be wrong). Ultimately, my main point wrt this series
+is that this kind of policy decision can be added later, and it's better
+to merge the TCX infrastructure without it, instead of locking ourselves
+into an API that is way too limited today. TCX (and in-kernel XDP
+multiprog) has value without it, so let's merge that first and iterate
+on the policy aspects.
+
+-Toke
 
