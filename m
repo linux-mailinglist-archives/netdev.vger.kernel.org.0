@@ -1,116 +1,158 @@
-Return-Path: <netdev+bounces-9645-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9647-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 611B472A1A6
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 19:53:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 2FD7672A1AE
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 19:54:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7F3631C210FF
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 17:53:10 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4764C1C210FF
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 17:54:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3EBD9206B7;
-	Fri,  9 Jun 2023 17:53:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 06C88206BB;
+	Fri,  9 Jun 2023 17:54:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA70419BA3
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 17:53:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C87FC433D2;
-	Fri,  9 Jun 2023 17:53:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686333189;
-	bh=BZ4LW9yQtmYSq1v+GgFTnuPjo9FB2FZms3pxwBFzl2c=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=N0Rq8BzdL3qrqoWP8Qhh3lNehik/jQ/iB3qdwsFlpE4XOohQma9e2xR9e/+1tfCxy
-	 xBsy/5H/cnJWyXRJ6KeHrcFr11nuGzs6jxZOjhgsLbT5rYGbNycC+ab0UKQk75PpqB
-	 4qbdlbE/fnlO934f68DHpA8keMBj+xPykmK9qxtJUs2ZTsCBW9X9sO5vBKzcnfgKSz
-	 qU8JwnX6v36pCBgUAx1RSv3UdeRIsWRPVQ8RPfoQlPT2KTKJuOiCtuyAc4Tw5cG8eC
-	 OJ9QbMmrO5SwNrJYs5EyxqBbyIb8UJryrUX20WBzhOwWIrfr0PLkL/Vps6nrfKN0sX
-	 XPGbxYQ3M6wHQ==
-Date: Fri, 9 Jun 2023 10:53:07 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Magali Lemes <magali.lemes@canonical.com>
-Cc: davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
- shuah@kernel.org, vfedorenko@novek.ru, tianjia.zhang@linux.alibaba.com,
- andrei.gherzan@canonical.com, netdev@vger.kernel.org,
- linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v2 1/3] selftests: net: tls: check if FIPS mode is
- enabled
-Message-ID: <20230609105307.492cd1f2@kernel.org>
-In-Reply-To: <20230609164324.497813-2-magali.lemes@canonical.com>
-References: <20230609164324.497813-1-magali.lemes@canonical.com>
-	<20230609164324.497813-2-magali.lemes@canonical.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F047019BA3
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 17:54:10 +0000 (UTC)
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4BE835A7
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 10:54:02 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id d75a77b69052e-3f98276f89cso13151cf.1
+        for <netdev@vger.kernel.org>; Fri, 09 Jun 2023 10:54:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1686333242; x=1688925242;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=80A8FjuVOOa9xV5urorcQcKqtLHX/x3yj6q554YpmN4=;
+        b=3aDAkRb3lc+9oQjqGBI7DxxQhUAZCXyJz4umZdc4T+QCL+WhlmT6IcVLQeZPvpuc1t
+         WaMCCTXRNkd48dRGNKGZEyL3tawhP6gy7GZ/+mPabZRJ3ySOkh6qKrqMQU+9R2JSghhR
+         dMi9fNhDt+RgOePLbLSV32bwAdP1jAaW1MU5HJwdU/m9ss40PrWSVoklPyaec+qBNwwy
+         Ms+Eh1bui8+GG4xojnc/FFU18ZLKSBkS/7ywj8Tt5cWDQ5TF9MmwrGqNc/CtWDCgD5Jy
+         k1YFAWQYH2r9Yj8cnmBMYIc3RV/2HP2lIoMdSHUYdbCW5r/DjAPhCqjvIoRpkaw7fJrB
+         T36g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686333242; x=1688925242;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=80A8FjuVOOa9xV5urorcQcKqtLHX/x3yj6q554YpmN4=;
+        b=cX61hc2BMUr+f4s6C/Ey36jg1/BpIas02+AxIkaf1srSkQuIQGf6DE9labvX5popqb
+         rLlNN2uvIOKhZRT6oA+VdWDOnseuo36mmU7B+4+xeYgTbxmsic0Moim/TfqlPAgdKZ0n
+         G4X0a63e0ayHUlZ0MJ9nrQBOapoS21a61j9FSh2bSObwBAx2jiLiP/CMyz9yEz6oORuz
+         md/6S1AkbCJ4UALzDFPEFINsrpB+7zLLOykldtCcWRU0ZEMBPWzXGmV7+pUadGQ3gn18
+         temGwFQFmSj2HedybLRymU9jXX4cDnLOl5mWRomfyP34dIu2Lkgg1O+kdGn+NY0ixYXd
+         BoTg==
+X-Gm-Message-State: AC+VfDwl/VEMB22+JWM/zcEA6FxslLcoLU/1c0JRyQiaPh6v+fGztAAb
+	+/qD0VeV8sYSvjLrRAwfkd0zwLDE9PQehtqTzvh0kw==
+X-Google-Smtp-Source: ACHHUZ7wpAp4kNm4XE+nmsNmT+6iKQaK3dMunm88OVGoM6QMdbZslAcsNjcQkvXXaVHYApeSLPpZAD6e/s+V0TxCxxU=
+X-Received: by 2002:ac8:5b04:0:b0:3e3:8c75:461 with SMTP id
+ m4-20020ac85b04000000b003e38c750461mr368917qtw.6.1686333241816; Fri, 09 Jun
+ 2023 10:54:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20230609082712.34889-1-wuyun.abel@bytedance.com> <CANn89i+Qqq5nV0oRLh_KEHRV6VmSbS5PsSvayVHBi52FbB=sKA@mail.gmail.com>
+In-Reply-To: <CANn89i+Qqq5nV0oRLh_KEHRV6VmSbS5PsSvayVHBi52FbB=sKA@mail.gmail.com>
+From: Shakeel Butt <shakeelb@google.com>
+Date: Fri, 9 Jun 2023 22:53:50 +0500
+Message-ID: <CALvZod4BuY=kHnQov6Ho+UT0_0oG6nEX1Z-pU-f4Yt9w7-=5Hg@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next] sock: Propose socket.urgent for sockmem isolation
+To: Eric Dumazet <edumazet@google.com>
+Cc: Abel Wu <wuyun.abel@bytedance.com>, Tejun Heo <tj@kernel.org>, 
+	Christian Warloe <cwarloe@google.com>, Wei Wang <weiwan@google.com>, 
+	"David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Muchun Song <muchun.song@linux.dev>, 
+	Andrew Morton <akpm@linux-foundation.org>, David Ahern <dsahern@kernel.org>, 
+	Yosry Ahmed <yosryahmed@google.com>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, Yu Zhao <yuzhao@google.com>, 
+	Vasily Averin <vasily.averin@linux.dev>, Kuniyuki Iwashima <kuniyu@amazon.com>, 
+	Martin KaFai Lau <martin.lau@kernel.org>, Xin Long <lucien.xin@gmail.com>, 
+	Jason Xing <kernelxing@tencent.com>, Michal Hocko <mhocko@suse.com>, 
+	Alexei Starovoitov <ast@kernel.org>, open list <linux-kernel@vger.kernel.org>, 
+	"open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>, 
+	"open list:CONTROL GROUP - MEMORY RESOURCE CONTROLLER (MEMCG)" <cgroups@vger.kernel.org>, 
+	"open list:CONTROL GROUP - MEMORY RESOURCE CONTROLLER (MEMCG)" <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Fri,  9 Jun 2023 13:43:22 -0300 Magali Lemes wrote:
-> diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
-> index e699548d4247..0725c60f227c 100644
-> --- a/tools/testing/selftests/net/tls.c
-> +++ b/tools/testing/selftests/net/tls.c
-> @@ -25,6 +25,8 @@
->  #define TLS_PAYLOAD_MAX_LEN 16384
->  #define SOL_TLS 282
->  
-> +static int fips_enabled = 0;
+On Fri, Jun 9, 2023 at 2:07=E2=80=AFPM Eric Dumazet <edumazet@google.com> w=
+rote:
+>
+> On Fri, Jun 9, 2023 at 10:28=E2=80=AFAM Abel Wu <wuyun.abel@bytedance.com=
+> wrote:
+> >
+> > This is just a PoC patch intended to resume the discussion about
+> > tcpmem isolation opened by Google in LPC'22 [1].
+> >
+> > We are facing the same problem that the global shared threshold can
+> > cause isolation issues. Low priority jobs can hog TCP memory and
+> > adversely impact higher priority jobs. What's worse is that these
+> > low priority jobs usually have smaller cpu weights leading to poor
+> > ability to consume rx data.
+> >
+> > To tackle this problem, an interface for non-root cgroup memory
+> > controller named 'socket.urgent' is proposed. It determines whether
+> > the sockets of this cgroup and its descendants can escape from the
+> > constrains or not under global socket memory pressure.
+> >
+> > The 'urgent' semantics will not take effect under memcg pressure in
+> > order to protect against worse memstalls, thus will be the same as
+> > before without this patch.
+> >
+> > This proposal doesn't remove protocal's threshold as we found it
+> > useful in restraining memory defragment. As aforementioned the low
+> > priority jobs can hog lots of memory, which is unreclaimable and
+> > unmovable, for some time due to small cpu weight.
+> >
+> > So in practice we allow high priority jobs with net-memcg accounting
+> > enabled to escape the global constrains if the net-memcg itselt is
+> > not under pressure. While for lower priority jobs, the budget will
+> > be tightened as the memory usage of 'urgent' jobs increases. In this
+> > way we can finally achieve:
+> >
+> >   - Important jobs won't be priority inversed by the background
+> >     jobs in terms of socket memory pressure/limit.
+> >
+> >   - Global constrains are still effective, but only on non-urgent
+> >     jobs, useful for admins on policy decision on defrag.
+> >
+> > Comments/Ideas are welcomed, thanks!
+> >
+>
+> This seems to go in a complete opposite direction than memcg promises.
+>
+> Can we fix memcg, so that :
+>
+> Each group can use the memory it was provisioned (this includes TCP buffe=
+rs)
+>
+> Global tcp_memory can disappear (set tcp_mem to infinity)
 
-No need to zero init static variables, but really instead of doing 
-the main() hack you should init this to a return value of a function.
-And have that function read the value.
+I agree with Eric and this is exactly how we at Google overcome the
+isolation issue. We have set tcp_mem to unlimited and enabled memcg
+accounting of network memory (by surgically incorporating v2 semantics
+of network memory accounting in our v1 environment).
 
->  struct tls_crypto_info_keys {
->  	union {
->  		struct tls12_crypto_info_aes_gcm_128 aes128;
+I do have one question though:
 
-> @@ -311,6 +317,9 @@ FIXTURE_SETUP(tls)
->  	int one = 1;
->  	int ret;
->  
-> +	if (fips_enabled && variant->fips_non_compliant)
-> +		return;
+> This proposal doesn't remove protocal's threshold as we found it
+> useful in restraining memory defragment.
 
-Eh, let me help you, this should really be part of the SETUP() function
-but SETUP() doesn't currently handle SKIP(). So you'll need to add this
-to your series:
-
-diff --git a/tools/testing/selftests/kselftest_harness.h b/tools/testing/selftests/kselftest_harness.h
-index d8bff2005dfc..3091c345452e 100644
---- a/tools/testing/selftests/kselftest_harness.h
-+++ b/tools/testing/selftests/kselftest_harness.h
-@@ -249,7 +249,7 @@
- 
- /**
-  * FIXTURE_SETUP() - Prepares the setup function for the fixture.
-- * *_metadata* is included so that EXPECT_* and ASSERT_* work correctly.
-+ * *_metadata* is included so that EXPECT_*, ASSERT_* etc. work correctly.
-  *
-  * @fixture_name: fixture name
-  *
-@@ -275,7 +275,7 @@
- 
- /**
-  * FIXTURE_TEARDOWN()
-- * *_metadata* is included so that EXPECT_* and ASSERT_* work correctly.
-+ * *_metadata* is included so that EXPECT_*, ASSERT_* etc. work correctly.
-  *
-  * @fixture_name: fixture name
-  *
-@@ -388,7 +388,7 @@
- 		if (setjmp(_metadata->env) == 0) { \
- 			fixture_name##_setup(_metadata, &self, variant->data); \
- 			/* Let setup failure terminate early. */ \
--			if (!_metadata->passed) \
-+			if (!_metadata->passed || _metadata->skip) \
- 				return; \
- 			_metadata->setup_completed = true; \
- 			fixture_name##_##test_name(_metadata, &self, variant->data); \
+Can you explain how you find the global tcp limit useful? What does
+memory defragment mean?
 
