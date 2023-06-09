@@ -1,56 +1,56 @@
-Return-Path: <netdev+bounces-9398-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9399-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0E3C6728C1B
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 02:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3D8FC728C1F
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 02:01:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5E8161C20F25
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 00:00:56 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3DD701C20B17
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 00:01:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF977A23;
-	Fri,  9 Jun 2023 00:00:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23EED163;
+	Fri,  9 Jun 2023 00:01:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E06E464A
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 00:00:56 +0000 (UTC)
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383992D42
-	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 17:00:55 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id d75a77b69052e-3f80fef8b48so6748441cf.0
-        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 17:00:55 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11A04161
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 00:01:08 +0000 (UTC)
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5479F30D6
+	for <netdev@vger.kernel.org>; Thu,  8 Jun 2023 17:01:07 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id d75a77b69052e-3f9aeba6cc4so10146781cf.2
+        for <netdev@vger.kernel.org>; Thu, 08 Jun 2023 17:01:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1686268854; x=1688860854;
+        d=broadcom.com; s=google; t=1686268866; x=1688860866;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=IAuW3uBlhYavO/QS0aFpiH6ovusd68kXHdXdddnOVKg=;
-        b=DAklGz5dZJoWdnqbvHv267mu3M6g54qsUV1RSkmrOZErB/keNePWTqxR0AQU0oJAO3
-         Oxi31B3ovP5m/BaKLxh3YsWY/zQznMNhzbBrwvLRJCdthEE8abQQrknEnt2+6BSFmee8
-         AUWzweoQST9MlNc+z8Ie8SZWsf9UbCEpGFlGY=
+        bh=X4A2hsYlEQbt/J2Z+0bIm898UXb7PonMjdwWlgQ14dM=;
+        b=BpB6yQo1dDlHtRaA1VTocNkqnCySKPJsJNiFslYfxXXyOLN1PeUgdzqmX3R35dLd0E
+         ILEknBF9Rb6Tcne/qslINHKf3CUfmWgOB1KBHxIn1q4rlP293oYiAhyzySVNNO+yHQfV
+         a6sUUWpNuUwtZMue2U8+YlgNfsxyNLAiOCT6w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686268854; x=1688860854;
+        d=1e100.net; s=20221208; t=1686268866; x=1688860866;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=IAuW3uBlhYavO/QS0aFpiH6ovusd68kXHdXdddnOVKg=;
-        b=MDFrxk7tgYomalY3s3BtoXDxXfOo7Mu4AjTpAbiF0wZTPOmvl1BzLZxfd02p4MyOgM
-         6WeuxZd0dxpsPYv3WNM9i/9btCWLVX8eMGjTEMZwuGatZV4ng06CSeKC21qzOh8DGKR0
-         Xzgy7+35VU16TrJg7J88+sEzBIuLuNK6SkbTRSM/br+e51GSD/HAgKdNreyZcWkLD6Dd
-         Bh4PVrjCItKCYgb32chqK/C2bCJdGjjW8AnvPqSh1dLQ1KImNY4M9Hi8R1d5flL93bKq
-         Czm1Q8h3sDUJGaWEUUU924NKoBVIQ9RpzvaNP/JoSsa4PYyaRvRbPUd5KzuVWuBLGBc8
-         3TDg==
-X-Gm-Message-State: AC+VfDzE/qswNMU0TRNJvNevpmeUhd3TT6SFe2bHb6TkAJiuh0fXTQdb
-	XMnP+4ohGL72wx5AHclrx6Idig==
-X-Google-Smtp-Source: ACHHUZ4s45lAPH6Y+drnrhqbzpj8plY2+oVJoqNvW6AvXkkg0gX+Nn3vk7faxBSlcaw3jATp+nMV0A==
-X-Received: by 2002:a05:622a:4b:b0:3f6:adda:afd6 with SMTP id y11-20020a05622a004b00b003f6addaafd6mr270680qtw.10.1686268854067;
-        Thu, 08 Jun 2023 17:00:54 -0700 (PDT)
+        bh=X4A2hsYlEQbt/J2Z+0bIm898UXb7PonMjdwWlgQ14dM=;
+        b=Og0LheiXHXYvowSI18w32zB+rIb/1M/CMRO+YOWxCQiCrzkRgpANg94yoDIwnkTZcf
+         SgKVF1wKT4wufI7XADkP0wySmIrp1eVJGsbUj+EfI9hFEx995qRVnL9Z/OSM3madNzg2
+         IX2Ji6Um+Q8ZUPG1/UGvx8D+lXhwLD7yTxVHCWv2tiecTdpwMYlTdCg7kHWPRuw43w3/
+         oWvK1aBrYiIwudHo61QSO/qXpLQvo3eis6QMoA254XOGn2igSn/KavR4h/Ek+lFoMCcq
+         8p7sdHUnRL5pZu2ZRFapGUi4wUP2H4x6se/zNhQl6QyLjX+QSddzCecv9Wz/syJSIDcR
+         edSQ==
+X-Gm-Message-State: AC+VfDxbDEWK3d2/spXxXP3Wgi8k1nUxki1CAMQzMYurMCv2GfAodpPd
+	h7HEXGNIRin9pNd5kOjcVkYAUA==
+X-Google-Smtp-Source: ACHHUZ7SZLAaO4dOBHnHZyK7z766ToaMHLVaVTK1diI4fuZwk0ylFKFEbDqWTSvqhaqCv8AGbJCzig==
+X-Received: by 2002:a05:622a:112:b0:3f4:ee64:e30c with SMTP id u18-20020a05622a011200b003f4ee64e30cmr9455790qtw.52.1686268866027;
+        Thu, 08 Jun 2023 17:01:06 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id x13-20020a05622a000d00b003e3918f350dsm741295qtw.25.2023.06.08.17.00.51
+        by smtp.gmail.com with ESMTPSA id t15-20020ac8760f000000b003f90562e54csm732628qtq.36.2023.06.08.17.01.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jun 2023 17:00:53 -0700 (PDT)
+        Thu, 08 Jun 2023 17:01:05 -0700 (PDT)
 From: Florian Fainelli <florian.fainelli@broadcom.com>
 To: bcm-kernel-feedback-list@broadcom.com,
 	=?iso-8859-2?q?Rafa=B3_Mi=B3ecki?= <zajec5@gmail.com>,
@@ -70,12 +70,12 @@ Cc: Florian Fainelli <f.fainelli@gmail.com>,
 	devicetree@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	=?iso-8859-2?q?Rafa=B3_Mi=B3ecki?= <rafal@milecki.pl>
-Subject: Re: [PATCH 1/3] dt-bindings: net: wireless: brcm,bcm4329-fmac: add BCM4366 binding
-Date: Thu,  8 Jun 2023 17:00:50 -0700
-Message-Id: <20230609000050.2986414-1-florian.fainelli@broadcom.com>
+Subject: Re: [PATCH 2/3] dt-bindings: net: wireless: brcm,bcm4329-fmac: allow generic properties
+Date: Thu,  8 Jun 2023 17:01:02 -0700
+Message-Id: <20230609000102.2986501-1-florian.fainelli@broadcom.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230602135925.14143-1-zajec5@gmail.com>
-References: <20230602135925.14143-1-zajec5@gmail.com>
+In-Reply-To: <20230602135925.14143-2-zajec5@gmail.com>
+References: <20230602135925.14143-1-zajec5@gmail.com> <20230602135925.14143-2-zajec5@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -83,7 +83,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="0000000000000f61d505fda71066"
+	boundary="000000000000cb06d805fda710c5"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -91,17 +91,18 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---0000000000000f61d505fda71066
+--000000000000cb06d805fda710c5
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 From: Florian Fainelli <f.fainelli@gmail.com>
 
-On Fri,  2 Jun 2023 15:59:23 +0200, Rafał Miłecki <zajec5@gmail.com> wrote:
+On Fri,  2 Jun 2023 15:59:24 +0200, Rafał Miłecki <zajec5@gmail.com> wrote:
 > From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> It's an 802.11ac chipset that can be found hardwired in a lot of
-> Northstar based routers.
+> Include ieee80211.yaml to allow using generic 802.11 properties for
+> bindings of Broadcom FullMAC devices. That allows specifying frequencies
+> ranges.
 > 
 > Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 > ---
@@ -110,7 +111,7 @@ Applied to https://github.com/Broadcom/stblinux/commits/devicetree/next, thanks!
 --
 Florian
 
---0000000000000f61d505fda71066
+--000000000000cb06d805fda710c5
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -181,15 +182,15 @@ kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
 NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
 AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
-/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINy1EKe5iRSeIEAM
-sTSLhJ6Yq0TFdKTkBCLXTiLEj/xtMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIzMDYwOTAwMDA1NFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBO+Tf064cPmkOk7
+GEenybzPXSZBJXRCU4APynv8ApKbMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIzMDYwOTAwMDEwNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
 AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCuqBl/WC0t5awiziiHhhLHoFj8TDG1/uDY
-AGNehtkLaNGxbmPCqMW/Q/E3C7UyNEfz05AxQcVNYTI/8Kh6Z/CJMTS1PbmAN7d6CWoz4u1hzrn4
-xYel3eKPV/GOY3YZytbcq2CPz52yNhVewx27GPlMAs1APdld6ouAodCEzb9SPHquY0Rw8pQvljF1
-OL6q8oYdQTc3gnagHr1DGH6ujXLH92Hv+u+d6GOATu6G9fYJo81cZrWQiWUtYGfSuDN2e3SVPCPP
-36eNMP/uKQbvDzv7PZ4qYBy8rpyZo20gtQzsLJ3g78czXwAdB/KWiS3/od/UvkyUC0LDvZC6tSGi
-EX6C
---0000000000000f61d505fda71066--
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQDeS6PWrmyvgND/OfrjFS2BuX1pblsxy/Qy
+LEkSsYvRu5i+IaePJYnoFj4b12xOhxJVXgwtJZ4JuZ8qCePTqKMXl4F4FJA6wumKywgVkXivI+cA
+2szfMHJAJfQbbnpx+doGS34teoyNnb0Myuc+1kMtRA4bb+yEmZgJX038gq+6QT1UvoNnYEFp8yRN
+RkJ6fK4V+i2/+27+BLLUoORKjGGMDEKpnQdFOzNXZCME80UCpUK5tNFGdRc2kHdru++iD0toOfH9
+u8FjMhXMUcYTY81GdP5jNHFWTTyHhq0nX0+llrzyhBs+Tzu49FXYoVHrA1mkZeAri0z/pufVNx/l
+kf3l
+--000000000000cb06d805fda710c5--
 
