@@ -1,33 +1,33 @@
-Return-Path: <netdev+bounces-9633-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9634-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3B1F472A143
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 19:33:06 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id E50F472A147
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 19:33:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C8FA42819C6
-	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 17:33:04 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 353531C20EA2
+	for <lists+netdev@lfdr.de>; Fri,  9 Jun 2023 17:33:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F2C3D1D2BE;
-	Fri,  9 Jun 2023 17:33:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 594FE20696;
+	Fri,  9 Jun 2023 17:33:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2BD619E52
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 17:33:02 +0000 (UTC)
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D812EE4E
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 10:33:00 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C9E019E52
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 17:33:04 +0000 (UTC)
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2040.outbound.protection.outlook.com [40.107.100.40])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AA1B1FDB
+	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 10:33:02 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SZSZ3ne6iTnrT9k2Lrhlq4pruJTGB3UgSpdJw3srrzPGuYIZmlg8jUhnFCyFZxHXXjaxXpVV8ePQU3xoQ4sTLalvhS930jd6Fhji+3znHslT/WtC37jD/7oAjvjEiP16Mcz2WWkmhqHAY8YQk5OFx6KKDQYOo/qpuEIkq36nhDQ3jLcUiVJSO/hJsLTo2vhP9G9QEnGeZIHqaHIwPVlSD8eHlaESekOALX2EpBe1aBt9VmcvVc6BQrytmtKhtSrqk/SHaAGubl2W2mOdXakI1+gb1lHh+uXya6kRG9k/uWBbreFyYxr653N1+T3WZAX+p5d7NHZir7rAmAHPBr7exQ==
+ b=IgE36ejAfhotib1soVKOd5QW1FX83weasoOBzTPgfE0zEaOhMpRTyS+U/x0CMIa09PmkLLKCaWBrJ7jB+1Mi8drNVycB3LIIakUtteVqPkxwBzesU+A0btZfYffx/lkujsf0RhApR3yZ0aOY8uVtqRxA1Q/Tg37Ab+UVHrsVhv6fgrUpLuwpxeiYZr8Ix5mD5kgBWvJZhzbkmpABZSmVN9Ai2CRsycZhXTCZnYnZDTpw72vXs4lL42pd3LK2Yz/a0qblYMqjQRg4Hyu4Zrlu/0IxeZzeDtStzX/peT1I9a/dGwAipPAbQEGsrTAo3NJ3bghW/C13SjPvgl3M+nWOTw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NhuKfyTt8tU1PqInX8nPourkDNNowskeLnt1mVmINJ8=;
- b=SVTBUm4mS8uYln38ApnAJhlABqv3vvuD+VLouzMXfNf0Yg/SDlwy7F2w0VACiUCU0zCW/VJoIGc6Ik1SnpX5wlAuj1N9e5/ayuEmLFz05S1jO68Sp+v0lLkhTRr9uH9fn1S/BwIH7Z0YEYltZts2U5vTvRsDK2g5LWtpdw5hqlos9yGUBMhrhEZtSjwDcSnRoHqOugLmAyRoF9+nAI304pdUdHzDDs3OXcPJU6Ifhe3gKB6dx99N0m/5Cbg3e8v6rhiCXq9cm0ifzNgts3ff/kedX11stbOl6Jwy8V52AROGA7P4EY85V3gYEXB90xaGGPr6XTbHiX5VTy4E9JS86A==
+ bh=OhPM5gAji0J3SJGI6nrMuSIjM7zs9fqv/nyaRP7KZ0U=;
+ b=bODA8eAqhVDAN4ZkD5FrdEQQNkTkYnxHM8bKbsVQGHlVvbsgzDoiSiyLtvGvCVNZhTOwna55Jkr6fw77lad0B1IBK7gU9Ij3h/LTfOMszO8/joteu3rWrKescfvqGD1HiXzbZ6Tb8h+d8Vo8Oy9EDD+aaa7R8lbkK+mh71bfnRG+2xg4RBdnKe5XsJ9xlvrR8Ck8LqoR/mKMGDUqi8yyzLpFCNnVStvALZV/Fr5a+cXqzMS8fsDh1cw+QvHS8po8DzNj7tAbtc2dce7o8ET60zuXsTDDJY8+mUJNqwnHRovKv3F703wWoJ0usFW/MbYjUr/VVzoKtdioc93B/ciRBw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -35,18 +35,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NhuKfyTt8tU1PqInX8nPourkDNNowskeLnt1mVmINJ8=;
- b=aN2y5rM5DlaYto45gIuMFVfYEHU1Q89YFpA4UO9ywyZo/KlQ2u53yDUrjSm2J9wbIGTw5GLfx+cY7JNRsLK3Z1TvA2WiyIIej5J0mvOJj6A3THvBuMitRKmOmBp1GrWSACta+xOPeJp6tWBRyhwFd6RXgaQca+sP+Z6tVzSXSVuDnV/yfibnhlVjsgaVh+Tl9dwoTIpd7oFyAP8ctiW1co3nP8BmNd3LNpFaROYRI27adfagi7n+vng64H58x5JQV0W7VUNvrwR8QgBwDic+DgTv+qr3nNpjzau07BeEGcsWYekNrULuC5Ax4EEapYVmZ9cWHYz0SjR8BqVAo8XQ8g==
-Received: from DM5PR08CA0031.namprd08.prod.outlook.com (2603:10b6:4:60::20) by
- SJ0PR12MB7005.namprd12.prod.outlook.com (2603:10b6:a03:486::10) with
+ bh=OhPM5gAji0J3SJGI6nrMuSIjM7zs9fqv/nyaRP7KZ0U=;
+ b=T//3OVQUePuAZJISqqWGTbHZnNxVKqKeqSurIPKp8QI0FLUL83FAG3hmIPes6AKWeJNgA1kJ+IzteZSW++pnGTHKnHRkGgnEj41crG/Th15gkverHrNq9xc1vMwdMpGYdWR2cxOWqiveQjBo23J1pPqrvLmpC06zzXoCLMLxNbdlXzYjHanuerD3tv2OG8sVFpM0kVIRr1UhMgcpAMtmAok0AfTTCW/ivEuiUvKi8z1bo65dYkFL/FpCagc0+/LjyNIOIG1XzUBwLRS/6gBLyC6LM+qWcBWNICIgvj4qPTocWAJtegWCT5QK3/UanEZdTkEDf8+3X+JgJ85/yt7N4g==
+Received: from DS0PR17CA0005.namprd17.prod.outlook.com (2603:10b6:8:191::6) by
+ IA1PR12MB7734.namprd12.prod.outlook.com (2603:10b6:208:422::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.41; Fri, 9 Jun
- 2023 17:32:58 +0000
-Received: from CY4PEPF0000E9D9.namprd05.prod.outlook.com
- (2603:10b6:4:60:cafe::59) by DM5PR08CA0031.outlook.office365.com
- (2603:10b6:4:60::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.26 via Frontend
- Transport; Fri, 9 Jun 2023 17:32:58 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Fri, 9 Jun
+ 2023 17:33:00 +0000
+Received: from CY4PEPF0000E9D6.namprd05.prod.outlook.com
+ (2603:10b6:8:191:cafe::ba) by DS0PR17CA0005.outlook.office365.com
+ (2603:10b6:8:191::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.29 via Frontend
+ Transport; Fri, 9 Jun 2023 17:33:01 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -54,27 +54,29 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.160 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.160) by
- CY4PEPF0000E9D9.mail.protection.outlook.com (10.167.241.77) with Microsoft
+ CY4PEPF0000E9D6.mail.protection.outlook.com (10.167.241.80) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6477.13 via Frontend Transport; Fri, 9 Jun 2023 17:32:57 +0000
+ 15.20.6477.13 via Frontend Transport; Fri, 9 Jun 2023 17:32:59 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 9 Jun 2023
- 10:32:41 -0700
+ 10:32:43 -0700
 Received: from yaviefel.vdiclient.nvidia.com (10.126.230.35) by
  rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Fri, 9 Jun 2023 10:32:38 -0700
+ 15.2.986.37; Fri, 9 Jun 2023 10:32:41 -0700
 From: Petr Machata <petrm@nvidia.com>
 To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
 	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
 	<pabeni@redhat.com>, <netdev@vger.kernel.org>
 CC: Ido Schimmel <idosch@nvidia.com>, Petr Machata <petrm@nvidia.com>, "Amit
  Cohen" <amcohen@nvidia.com>, <mlxsw@nvidia.com>
-Subject: [PATCH net-next 0/8] mlxsw: Cleanups in router code
-Date: Fri, 9 Jun 2023 19:32:05 +0200
-Message-ID: <cover.1686330238.git.petrm@nvidia.com>
+Subject: [PATCH net-next 1/8] mlxsw: spectrum_router: mlxsw_sp_router_fini(): Extract a helper variable
+Date: Fri, 9 Jun 2023 19:32:06 +0200
+Message-ID: <c79d2114b7764b3191ebdb0a8e81b61b53a48528.1686330238.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <cover.1686330238.git.petrm@nvidia.com>
+References: <cover.1686330238.git.petrm@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -88,26 +90,26 @@ X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D9:EE_|SJ0PR12MB7005:EE_
-X-MS-Office365-Filtering-Correlation-Id: a40a7f49-32ea-45b4-b146-08db690f90df
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D6:EE_|IA1PR12MB7734:EE_
+X-MS-Office365-Filtering-Correlation-Id: 40ed7dc4-e847-4b14-8d09-08db690f922b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	uc9wcf6PKvOaChWk3fgyHN49OGcGEEshmZ4z9GTib6wmFwcYSo9677LcnzUqBof/tkS+nhr6dZ7ZOt7uBGSReU4jetUwpERfGeLFyXtbMIXrA0RpmFxSQO+K2y3yAkWiu/0EBo5iLy/ExYcF7ZGXGQ4LcWp019B32YDtsZ+voFC3tE1VpabnObeqH+8QtjQ5YLDohJiX19qfKfkQnI8L4IJMQ5VbVDFNGHbv/kHhyA8Bnf32HLxhK/S3sjdENs2fy1s38UMAL+mCGfPfj/FBQVRz/OrOvBzTm8iItz9jto0gNIcoISlLmFbsXgu2Ns7VKXRX4wBl9AlVQTWCdgUbh71PexBKBf3RrahMfp0En11ONV3puNnnGwkEqGdsmKz3tDiSI+Mmnks469ZMQQuLLYQL9GDrMy1TDNLs9c8EajO/TUjNPPoxaCFrJGzT3+OKyZkF0gELgHH0FFfUSsM2GNJAbHhq+Fqx5qtvG5+MN3UIWXsRDwUSeFNZgqqngxd/d1XjkXbvmZeKp++a+db8DYqo1Xu35RFK8t/bSLRRBiY87E/aopKpsFXeYVG+rInUAPa9rC96wGZumdX8YrkpQhPZ/DNhyNcVWliZwwi/u/faftc1KuYQ8aPf/MmADnuxOzwv9k4LFY7k6ObDXG8HvX6TZ6cnrcZpfbIB3PlR1WNNGir1b/QnpSqwD8s0X5FD6A1guehz/6krX4TZl7aO9Wdt+EzJEdywzoVPW7yQ1ZuYpvI5Sea3WAlIzEjKYEEK
+	ZxbGXp84jpDB2UAwmAc8NplAjDqbD7cEXJPLOFAnyLwNVOc9d25vS1W3b9VbM0f/nLZvq3wrsMBLTSLzLw4u/PR2oG7ZGTwoypJVuAKZRWlG7lCKQP+XSKd4nNnVkvpOh9tcpDJyDxFDGBJDSjSrjHm4rDDV5InlNM6KgOYwFBCM8nJJXanBExQnVeosnJMY+N2f5QZYP+DecTRIBYD+XFR1bQfStl9FnNvC/YzlNsj4J50wNNM8ct4u+7CAq9wCG8qWS7QklduqXC6UuDefakUqr00vixTt8/r9YaBHjA2gx0j2BHWbd0sCZk2bbmKiIEBaxGYYERc/wMeicAM7ggjxiyyjo2Zxrsm2s3ZofAkX1SxlKpiX8NCIWLsebowILzp8tl21ajWm+gy4rKWrMrmygUn85GLodXz6nW9gIsqf+e6x6oVjNT54B/JLbBjG4taN1ODHTguMk3BGvnVTFsjSWwBkebhT1yckaqxoHSuU7TQEztYEL80cCNw5aaoXthza3Ifap1QJBkxOu15RCMeGkpfp/Crz6ELY9tF7b/l7ZKvCnjxzJzGbmPM6XL2WJ5Np/ME5rgdRE9o3pW9sjwM14x+uFSjzjFs7dR0WT/lYNgj2ehl1dB5s5kelRRFrH/Yt/MkP2Jfp+8OAf8FNtVvKn77L5tla538nShFl8+NynIoQI+adHOPMRzmMBwzqlVloeeDzzlmI4HnqF7aAUTGdwk+gD2IZlyqft5CP6cY9KIayBm5DGkc1vjjS6Cfp
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(136003)(396003)(39860400002)(451199021)(46966006)(40470700004)(36840700001)(36756003)(86362001)(110136005)(478600001)(4326008)(54906003)(70586007)(70206006)(316002)(107886003)(40480700001)(356005)(8936002)(8676002)(41300700001)(2906002)(5660300002)(82310400005)(82740400003)(7636003)(2616005)(36860700001)(426003)(336012)(26005)(186003)(16526019)(47076005)(83380400001)(66574015)(6666004)(7696005)(40460700003);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(376002)(396003)(39860400002)(451199021)(36840700001)(40470700004)(46966006)(40460700003)(82310400005)(66574015)(40480700001)(26005)(107886003)(41300700001)(5660300002)(426003)(16526019)(186003)(36756003)(36860700001)(47076005)(70206006)(316002)(6666004)(70586007)(8936002)(83380400001)(336012)(478600001)(2616005)(54906003)(8676002)(110136005)(86362001)(2906002)(7636003)(82740400003)(7696005)(356005)(4326008);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2023 17:32:57.7968
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2023 17:32:59.9716
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a40a7f49-32ea-45b4-b146-08db690f90df
+X-MS-Exchange-CrossTenant-Network-Message-Id: 40ed7dc4-e847-4b14-8d09-08db690f922b
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9D9.namprd05.prod.outlook.com
+	CY4PEPF0000E9D6.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB7005
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7734
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
 	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -116,56 +118,63 @@ X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This patchset moves some router-related code from spectrum.c to
-spectrum_router.c where it should be. It also simplifies handlers of
-netevent notifications.
+Make mlxsw_sp_router_fini() more similar to the _init() function (and more
+concise) by extracting the `router' handle to a named variable and using
+that throughout. The availability of a dedicated `router' variable will
+come in handy in following patches.
 
-- Patch #1 caches router pointer in a dedicated variable. This obviates the
-  need to access the same as mlxsw_sp->router, making lines shorter, and
-  permitting a future patch to add code that fits within 80 character
-  limit.
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Reviewed-by: Amit Cohen <amcohen@nvidia.com>
+---
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 25 ++++++++++---------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
-- Patch #2 moves IP / IPv6 validation notifier blocks from spectrum.c
-  to spectrum_router, where the handlers are anyway.
-
-- In patch #3, pass router pointer to scheduler of deferred work directly,
-  instead of having it deduce it on its own.
-
-- This makes the router pointer available in the handler function
-  mlxsw_sp_router_netevent_event(), so in patch #4, use it directly,
-  instead of finding it through mlxsw_sp_port.
-
-- In patch #5, extend mlxsw_sp_router_schedule_work() so that the
-  NETEVENT_NEIGH_UPDATE handler can use it directly instead of inlining
-  equivalent code.
-
-- In patches #6 and #7, add helpers for two common operations involving
-  a backing netdev of a RIF. This makes it unnecessary for the function
-  mlxsw_sp_rif_dev() to be visible outside of the router module, so in
-  patch #8, hide it.
-
-Petr Machata (8):
-  mlxsw: spectrum_router: mlxsw_sp_router_fini(): Extract a helper
-    variable
-  mlxsw: spectrum_router: Move here inetaddr validator notifiers
-  mlxsw: spectrum_router: Pass router to mlxsw_sp_router_schedule_work()
-    directly
-  mlxsw: spectrum_router: Use the available router pointer for netevent
-    handling
-  mlxsw: spectrum_router: Reuse work neighbor initialization in work
-    scheduler
-  mlxsw: Convert RIF-has-netdevice queries to a dedicated helper
-  mlxsw: Convert does-RIF-have-this-netdev queries to a dedicated helper
-  mlxsw: spectrum_router: Privatize mlxsw_sp_rif_dev()
-
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |  18 +--
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |   4 -
- .../ethernet/mellanox/mlxsw/spectrum_dpipe.c  |   2 +-
- .../net/ethernet/mellanox/mlxsw/spectrum_mr.c |  19 ++-
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 123 +++++++++++-------
- .../ethernet/mellanox/mlxsw/spectrum_router.h |   6 +-
- 6 files changed, 90 insertions(+), 82 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 7304e8a29cf9..583d0b717e25 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -10664,15 +10664,16 @@ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp,
+ 
+ void mlxsw_sp_router_fini(struct mlxsw_sp *mlxsw_sp)
+ {
++	struct mlxsw_sp_router *router = mlxsw_sp->router;
++
+ 	unregister_netdevice_notifier_net(mlxsw_sp_net(mlxsw_sp),
+-					  &mlxsw_sp->router->netdevice_nb);
+-	unregister_fib_notifier(mlxsw_sp_net(mlxsw_sp),
+-				&mlxsw_sp->router->fib_nb);
++					  &router->netdevice_nb);
++	unregister_fib_notifier(mlxsw_sp_net(mlxsw_sp), &router->fib_nb);
+ 	unregister_nexthop_notifier(mlxsw_sp_net(mlxsw_sp),
+-				    &mlxsw_sp->router->nexthop_nb);
+-	unregister_netevent_notifier(&mlxsw_sp->router->netevent_nb);
+-	unregister_inet6addr_notifier(&mlxsw_sp->router->inet6addr_nb);
+-	unregister_inetaddr_notifier(&mlxsw_sp->router->inetaddr_nb);
++				    &router->nexthop_nb);
++	unregister_netevent_notifier(&router->netevent_nb);
++	unregister_inet6addr_notifier(&router->inet6addr_nb);
++	unregister_inetaddr_notifier(&router->inetaddr_nb);
+ 	mlxsw_core_flush_owq();
+ 	mlxsw_sp_mp_hash_fini(mlxsw_sp);
+ 	mlxsw_sp_neigh_fini(mlxsw_sp);
+@@ -10680,12 +10681,12 @@ void mlxsw_sp_router_fini(struct mlxsw_sp *mlxsw_sp)
+ 	mlxsw_sp_vrs_fini(mlxsw_sp);
+ 	mlxsw_sp_mr_fini(mlxsw_sp);
+ 	mlxsw_sp_lpm_fini(mlxsw_sp);
+-	rhashtable_destroy(&mlxsw_sp->router->nexthop_group_ht);
+-	rhashtable_destroy(&mlxsw_sp->router->nexthop_ht);
++	rhashtable_destroy(&router->nexthop_group_ht);
++	rhashtable_destroy(&router->nexthop_ht);
+ 	mlxsw_sp_ipips_fini(mlxsw_sp);
+ 	mlxsw_sp_rifs_fini(mlxsw_sp);
+ 	__mlxsw_sp_router_fini(mlxsw_sp);
+-	cancel_delayed_work_sync(&mlxsw_sp->router->nh_grp_activity_dw);
+-	mutex_destroy(&mlxsw_sp->router->lock);
+-	kfree(mlxsw_sp->router);
++	cancel_delayed_work_sync(&router->nh_grp_activity_dw);
++	mutex_destroy(&router->lock);
++	kfree(router);
+ }
 -- 
 2.40.1
 
