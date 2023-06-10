@@ -1,64 +1,65 @@
-Return-Path: <netdev+bounces-9832-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9833-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 526E072AD31
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 18:20:11 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id DECCB72AD32
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 18:20:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0C7A8281028
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 16:20:10 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 26B781C20B36
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 16:20:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67DE32413B;
-	Sat, 10 Jun 2023 16:12:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 86DC9200A8;
+	Sat, 10 Jun 2023 16:12:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B28A1B91D
-	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 16:12:36 +0000 (UTC)
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D23422B
-	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 09:12:26 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id ffacd0b85a97d-30fba11b1ceso94105f8f.1
-        for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 09:12:26 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79EA7C8F6
+	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 16:12:45 +0000 (UTC)
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDCB3C16
+	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 09:12:31 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id ffacd0b85a97d-3090d3e9c92so2664270f8f.2
+        for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 09:12:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google; t=1686413527; x=1689005527;
+        d=tessares.net; s=google; t=1686413528; x=1689005528;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=apU7a4gXwlkiybZ6x2mBbA+4PV1TUCSDbsUSYzUKd4U=;
-        b=TRoaGryL5w2MiomzDEAi90aHYFZPMUKIrI1Wh0XjQTGOHUrmV0MWwELt1kGLP1nNW+
-         67w0t7y9sdwelvUVLcWZ4UdR2Lj7y93qAQzehEO3C4PGA7mvkB3q75/jKFfD9DVTsdKj
-         ZFDHYfhkcdfBQCEEPV8GdvOROKbWOjK6WxlmP3HCm97fk1ZOkR34At/xukDfvHWCbily
-         tO1tNOY2pmX+r6aWY3HOWqwiXU1iojxdiYh5uqmpSP74oeXuvkJH8h3p5XecRTtxb6BM
-         G/rkLGkkk/Nc8lqTrKmfhdtGHaOiM0Xop9dSwWN2mp43Zd41DbEYEf0UU4+jhIKot72m
-         u6WA==
+        bh=pwYMvVDtDeMxDpan+XQeqhiNTjyJ3BxX8xvun0+4810=;
+        b=YLQzMRZ1lO1BQlvkOaAElWb6EEYz7qAiLXE1NJI526f6ZfJlQsCHNnwBD63aNm/EmS
+         eH80JouKXGbLHungB+13HYoHRhkqTcGv9EJ0sQdN+Bgtq956IGIqv9Fc/1Gafs7PS+Dc
+         +VzcqhrdW0fyCzYCG0juZPpPz2iU1HASKc6CARhlkwo7GYiubdbp/Xo+J66GBXiFbQLI
+         sSDKmJiwSmz98SXm65vAdEihbVbJL7oBrO9kbr9JRrVZlha3a0xM1ASubBPHOzywJdU3
+         uMhskFgOJe8NtPlHJpdyqsPyXaYGq83RC5Xe1gqhKnGDSp3fhg+TwpIA/+R4MtGYi5ae
+         fIeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686413527; x=1689005527;
+        d=1e100.net; s=20221208; t=1686413528; x=1689005528;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=apU7a4gXwlkiybZ6x2mBbA+4PV1TUCSDbsUSYzUKd4U=;
-        b=OP4uwSy3FTGTu3PzXAdV3Ok1FUNR78GUdcyhAdwJjdPg2gOSCSJLE/5kfELWMPuxvN
-         1b84I6k3cg5J9Vcl2K/JpaZufSDAVJwpaO5VgoIaJ4Z/NQXjW1BPJa3hpKG0vHXYx22k
-         guK6MAOEEewKA15gfMxx+1OqzI0FTuDaXibvIgGKgH5yJzZTX2YSSoZf73+RRb3Dy8rw
-         1yUWa7qIXVNzMv700Yq1z8QfNRuHIJl1s99Xp0lEM+NnZbNEL2nXgoJ2EMtOqRKtFPBO
-         coFDMZ6PBeEUjjxLtgho2EqkOTnn8e4bWdTZKyBpqdyk8AW8fsSnqO5N5VjVFSAtYH4p
-         SLYA==
-X-Gm-Message-State: AC+VfDwvU9ng3Lo+3Zk5ygtEd64LJhAos04CvFPdeoG3P3zLVHe1Ml40
-	2SWCudP5e5oKotrAw9Gbo06cLA==
-X-Google-Smtp-Source: ACHHUZ58BD2I7xOIcVcJp9qZu3IPomsyDwwMCh6HFJ49+hti+CDLhIbtS5cEW8YWEj/2Hde1xhEkjA==
-X-Received: by 2002:a5d:44d2:0:b0:306:2eab:fb8c with SMTP id z18-20020a5d44d2000000b003062eabfb8cmr1628506wrr.42.1686413527023;
-        Sat, 10 Jun 2023 09:12:07 -0700 (PDT)
+        bh=pwYMvVDtDeMxDpan+XQeqhiNTjyJ3BxX8xvun0+4810=;
+        b=Yf7fOSKa1WU+ZGuZsXJe5ryvjGmsDpXcj27aZz7EF1CAzTLgwCN81mXFp3HcslgY/M
+         tekwO6uYxnVhjdY297QoeGG/0J+mkk4xzAtXseyzOVEdZdNgF4V1qNbOLxBVLbxaGdGT
+         +EQh+fgAUMyk/FmbrtKvK7Mo7ERNkRV0IcovxhxK6OZDctm7y1bTYOdYUdiY3ctrYxdl
+         akeHJQvoU7DTpZ056BtyYR6u8p3fjwFDTCwYrgA1geLwl55I6kj424fEaE4hreZYImJU
+         1Qx8kOCmYH/PbtKm/A3/EhhYdBrhD5+UppjcQfxRQjKmHpkzqYsYLosdQrdhD7GMyadz
+         qezw==
+X-Gm-Message-State: AC+VfDx8F6oW3+vWRhT4STxkYzVv1UfIapIO+hQ1lCV80XI1l5sPsthk
+	rly2CGTTmEiDuAu0RaalRQKkLw==
+X-Google-Smtp-Source: ACHHUZ6yqy6/s9krkQFTqNF4ENRu4006HuXc7bosbag+gxCH24WeaXJOz579H6GEDA0cDujFgzri5w==
+X-Received: by 2002:adf:f701:0:b0:30a:ea8a:7a6d with SMTP id r1-20020adff701000000b0030aea8a7a6dmr1560264wrp.16.1686413528543;
+        Sat, 10 Jun 2023 09:12:08 -0700 (PDT)
 Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id u9-20020a5d4349000000b003079c402762sm7431145wrr.19.2023.06.10.09.12.05
+        by smtp.gmail.com with ESMTPSA id u9-20020a5d4349000000b003079c402762sm7431145wrr.19.2023.06.10.09.12.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Jun 2023 09:12:06 -0700 (PDT)
+        Sat, 10 Jun 2023 09:12:08 -0700 (PDT)
 From: Matthieu Baerts <matthieu.baerts@tessares.net>
-Date: Sat, 10 Jun 2023 18:11:51 +0200
-Subject: [PATCH net 16/17] selftests: mptcp: join: uniform listener tests
+Date: Sat, 10 Jun 2023 18:11:52 +0200
+Subject: [PATCH net 17/17] selftests: mptcp: join: skip mixed tests if not
+ supported
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -67,7 +68,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230609-upstream-net-20230610-mptcp-selftests-support-old-kernels-part-3-v1-16-2896fe2ee8a3@tessares.net>
+Message-Id: <20230609-upstream-net-20230610-mptcp-selftests-support-old-kernels-part-3-v1-17-2896fe2ee8a3@tessares.net>
 References: <20230609-upstream-net-20230610-mptcp-selftests-support-old-kernels-part-3-v1-0-2896fe2ee8a3@tessares.net>
 In-Reply-To: <20230609-upstream-net-20230610-mptcp-selftests-support-old-kernels-part-3-v1-0-2896fe2ee8a3@tessares.net>
 To: mptcp@lists.linux.dev, Mat Martineau <martineau@kernel.org>, 
@@ -80,109 +81,95 @@ Cc: netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
  linux-kernel@vger.kernel.org, bpf@vger.kernel.org, 
  Matthieu Baerts <matthieu.baerts@tessares.net>, stable@vger.kernel.org
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3166;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2834;
  i=matthieu.baerts@tessares.net; h=from:subject:message-id;
- bh=UUluy+Qb+5XbOXHPZryUKVcouQr2uln8U24KgOhfIuY=;
- b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBkhKC+6E5eKBWGTd7nLKzfXoWu5/T2jfNbwj9oW
- cNi8wJ6o6mJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCZISgvgAKCRD2t4JPQmmg
- c+2mEADul/6GZQjUkWGyziq7Gyz4hkpO5ThJk7PNIpeDHYU5fS6QxKSNhUKdc2yxdSw5S+rj7Sr
- 6wnuHmSGr4lxfrLoVi/fEjK5WXtUyVHZoq6IFB3BYJCZnf3CEk/wLpi5S9623gq65lUlsNV5kLK
- 9+j4KpPcvJsPh88Gpx9UbR9zteChbcqRsyt8naOll3c1bzAc4ILU3kMLzShMmP69PX4YVhEfltG
- 9Ht3wJm5YSabM90VLIrUESJQaHISuPN+UXACiM7bMLYMQsbPKmg6gVd9/x8EYoXThyd0uYLwE5c
- wauA/giOtswJT449ay9FyBCv7pc1yVH6Q1pBC/tjQglOKyz9XBTAXu8XytscXXfa0IaDBJqxj7P
- SoMWcIawO0thWQ7OO70AtwxBh6Tk6jew7kBml90kHFkNa8BQvHOXq6+M89ZSMpkROEY7aAJWJHa
- B1HUYX2LAnWhjD+QG1ILhE4Un5mdpDUBx3oMo8ouHUJLUCHPASjoyjMtHN9yQn4Dslm079RN5Bf
- Ia8/rr+yyUQ0lqPr1x4UrLwr3EPcOefcRgKfzPBLE3ZmB2pgAOyPqsyp953NMz2R590p1QBrqzC
- XrG3us0i5sU7pEomHGhiqWkIPy1iCyURsEoZIf4CUBJ0qxz/JW+dJvt4xqVststmG0eiQIatsqO
- ZjP8aq3aKZ0lViQ==
+ bh=PI3L9ABnerswxTMqx6UTE581B0kBCB3cu6Q+YqONX60=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBkhKC/oSOXJtkmjY+HOVFkhrxqwZyGqCtAlqidW
+ LDI+5gIZlyJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCZISgvwAKCRD2t4JPQmmg
+ c3IwD/48YMd8rDjzHYVBYD4HEfyc4z5nj3ogAwDh2ngzuk/Mjcow/1HLqoZV/fbF/bAYcUxjZ4K
+ UvL0n3qPjbEH1ubK4XWLhgw2csjThEQq1zk9USJQqVqP88tZBQsZuEDxjwlfmkK4g1IJ/VD4UXt
+ 5XJylV/IVb8qKni3FoidLF0aMtYOjZT7hXbjGsj98yFmpUNLH0H1A8Ng+M3QzIb5ZJCFuzFkdkY
+ MtGTJPbQjZxpuu9P0aa1WmydhNbDZar8rNWp0c1NfzNEMv/WIbTY6NuOSUntikgHANbMeAxlKH0
+ RvhfZ0n6ra/gQiz1WhEC4Yt4JBVgQBnbWwZQ3JkbvbaNatv4T140Sl/l7O3ETiBmJhF0IfR08mR
+ qi+GcDjJLol3L45uWun6IFlNhCilDj7I2gDHgP5K8H8ahxmF/ppMOCY1wFaP+96EX6sIr9GoqLj
+ NnHkwMlLcZopqktA2bJMyRQV4EzCM6/xg2Lz56YuqtUtAt6ZhN1fhQZLBDRmoTHYQzZH26/W5rF
+ yq7tgYbB8ZKebHXNRZLGqVmsxDz480JmMeT0iEdkg39WVj/tMn5Wok/0q0IV4cAUnoCti3uRRAk
+ jyiR4qgkHPuN1rmMSU1PSULgN+hUmUeR5YWAye5ZfXKTY4RTdOdIWkzZHCo0KNznSsAb56CrzMD
+ gSvSCkmxAsN7wfA==
 X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp;
  fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The alignment was different from the other tests because tabs were used
-instead of spaces.
+Selftests are supposed to run on any kernels, including the old ones not
+supporting all MPTCP features.
 
-While at it, also use 'echo' instead of 'printf' to print the result to
-keep the same style as done in the other sub-tests. And, even if it
-should be better with, also remove 'stdbuf' and sed's '--unbuffered'
-option because they are not used in the other subtests and they are not
-available when using a minimal environment with busybox.
+One of them is the support of a mix of subflows in v4 and v6 by the
+in-kernel PM introduced by commit b9d69db87fb7 ("mptcp: let the
+in-kernel PM use mixed IPv4 and IPv6 addresses").
+
+It looks like there is no external sign we can use to predict the
+expected behaviour. Instead of accepting different behaviours and thus
+not really checking for the expected behaviour, we are looking here for
+a specific kernel version. That's not ideal but it looks better than
+removing the test because it cannot support older kernel versions.
 
 Link: https://github.com/multipath-tcp/mptcp_net-next/issues/368
-Fixes: 178d023208eb ("selftests: mptcp: listener test for in-kernel PM")
+Fixes: ad3493746ebe ("selftests: mptcp: add test-cases for mixed v4/v6 subflows")
 Cc: stable@vger.kernel.org
 Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 ---
- tools/testing/selftests/net/mptcp/mptcp_join.sh | 30 ++++++++++++-------------
- 1 file changed, 14 insertions(+), 16 deletions(-)
+ tools/testing/selftests/net/mptcp/mptcp_join.sh | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
 diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 0c22efeba675..281581d3c8eb 100755
+index 281581d3c8eb..0ae8cafde439 100755
 --- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
 +++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -2765,43 +2765,41 @@ verify_listener_events()
- 	local family
- 	local saddr
- 	local sport
-+	local name
+@@ -2637,7 +2637,8 @@ v4mapped_tests()
  
- 	if [ $e_type = $LISTENER_CREATED ]; then
--		stdbuf -o0 -e0 printf "\t\t\t\t\t CREATE_LISTENER %s:%s"\
--			$e_saddr $e_sport
-+		name="LISTENER_CREATED"
- 	elif [ $e_type = $LISTENER_CLOSED ]; then
--		stdbuf -o0 -e0 printf "\t\t\t\t\t CLOSE_LISTENER %s:%s "\
--			$e_saddr $e_sport
-+		name="LISTENER_CLOSED"
-+	else
-+		name="$e_type"
+ mixed_tests()
+ {
+-	if reset "IPv4 sockets do not use IPv6 addresses"; then
++	if reset "IPv4 sockets do not use IPv6 addresses" &&
++	   continue_if mptcp_lib_kversion_ge 6.3; then
+ 		pm_nl_set_limits $ns1 0 1
+ 		pm_nl_set_limits $ns2 1 1
+ 		pm_nl_add_endpoint $ns1 dead:beef:2::1 flags signal
+@@ -2646,7 +2647,8 @@ mixed_tests()
  	fi
  
-+	printf "%-${nr_blank}s %s %s:%s " " " "$name" "$e_saddr" "$e_sport"
-+
- 	if ! mptcp_lib_kallsyms_has "mptcp_event_pm_listener$"; then
- 		printf "[skip]: event not supported\n"
- 		return
+ 	# Need an IPv6 mptcp socket to allow subflows of both families
+-	if reset "simult IPv4 and IPv6 subflows"; then
++	if reset "simult IPv4 and IPv6 subflows" &&
++	   continue_if mptcp_lib_kversion_ge 6.3; then
+ 		pm_nl_set_limits $ns1 0 1
+ 		pm_nl_set_limits $ns2 1 1
+ 		pm_nl_add_endpoint $ns1 10.0.1.1 flags signal
+@@ -2655,7 +2657,8 @@ mixed_tests()
  	fi
  
--	type=$(grep "type:$e_type," $evt |
--	       sed --unbuffered -n 's/.*\(type:\)\([[:digit:]]*\).*$/\2/p;q')
--	family=$(grep "type:$e_type," $evt |
--		 sed --unbuffered -n 's/.*\(family:\)\([[:digit:]]*\).*$/\2/p;q')
--	sport=$(grep "type:$e_type," $evt |
--		sed --unbuffered -n 's/.*\(sport:\)\([[:digit:]]*\).*$/\2/p;q')
-+	type=$(grep "type:$e_type," $evt | sed -n 's/.*\(type:\)\([[:digit:]]*\).*$/\2/p;q')
-+	family=$(grep "type:$e_type," $evt | sed -n 's/.*\(family:\)\([[:digit:]]*\).*$/\2/p;q')
-+	sport=$(grep "type:$e_type," $evt | sed -n 's/.*\(sport:\)\([[:digit:]]*\).*$/\2/p;q')
- 	if [ $family ] && [ $family = $AF_INET6 ]; then
--		saddr=$(grep "type:$e_type," $evt |
--			sed --unbuffered -n 's/.*\(saddr6:\)\([0-9a-f:.]*\).*$/\2/p;q')
-+		saddr=$(grep "type:$e_type," $evt | sed -n 's/.*\(saddr6:\)\([0-9a-f:.]*\).*$/\2/p;q')
- 	else
--		saddr=$(grep "type:$e_type," $evt |
--			sed --unbuffered -n 's/.*\(saddr4:\)\([0-9.]*\).*$/\2/p;q')
-+		saddr=$(grep "type:$e_type," $evt | sed -n 's/.*\(saddr4:\)\([0-9.]*\).*$/\2/p;q')
- 	fi
+ 	# cross families subflows will not be created even in fullmesh mode
+-	if reset "simult IPv4 and IPv6 subflows, fullmesh 1x1"; then
++	if reset "simult IPv4 and IPv6 subflows, fullmesh 1x1" &&
++	   continue_if mptcp_lib_kversion_ge 6.3; then
+ 		pm_nl_set_limits $ns1 0 4
+ 		pm_nl_set_limits $ns2 1 4
+ 		pm_nl_add_endpoint $ns2 dead:beef:2::2 flags subflow,fullmesh
+@@ -2666,7 +2669,8 @@ mixed_tests()
  
- 	if [ $type ] && [ $type = $e_type ] &&
- 	   [ $family ] && [ $family = $e_family ] &&
- 	   [ $saddr ] && [ $saddr = $e_saddr ] &&
- 	   [ $sport ] && [ $sport = $e_sport ]; then
--		stdbuf -o0 -e0 printf "[ ok ]\n"
-+		echo "[ ok ]"
- 		return 0
- 	fi
- 	fail_test
--	stdbuf -o0 -e0 printf "[fail]\n"
-+	echo "[fail]"
- }
- 
- add_addr_ports_tests()
+ 	# fullmesh still tries to create all the possibly subflows with
+ 	# matching family
+-	if reset "simult IPv4 and IPv6 subflows, fullmesh 2x2"; then
++	if reset "simult IPv4 and IPv6 subflows, fullmesh 2x2" &&
++	   continue_if mptcp_lib_kversion_ge 6.3; then
+ 		pm_nl_set_limits $ns1 0 4
+ 		pm_nl_set_limits $ns2 2 4
+ 		pm_nl_add_endpoint $ns1 10.0.2.1 flags signal
 
 -- 
 2.40.1
