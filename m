@@ -1,127 +1,120 @@
-Return-Path: <netdev+bounces-9801-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9802-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 62B8372A9EA
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 09:32:46 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0244572A9F5
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 09:39:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 85C281C20D39
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 07:32:42 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 18CCB1C20DA4
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 07:39:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3B24CA943;
-	Sat, 10 Jun 2023 07:32:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9CEABA94D;
+	Sat, 10 Jun 2023 07:39:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 280575C85
-	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 07:32:42 +0000 (UTC)
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565613A8C
-	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 00:32:41 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id a640c23a62f3a-977d4a1cf0eso371538266b.1
-        for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 00:32:41 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DD223C0B
+	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 07:39:06 +0000 (UTC)
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 729BF35B0;
+	Sat, 10 Jun 2023 00:39:04 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id d9443c01a7336-1b24cd75989so11994345ad.1;
+        Sat, 10 Jun 2023 00:39:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1686382360; x=1688974360;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=l7M0YngHom5+WNuAaqS8ORg1O1Fioma4l8vDyZ5uMCE=;
-        b=FD2ljasmKR4FCNVKlrbvbiFQif9C0mf2yzEBy4Qx3/P9vPzkYiPKpRpLusAqq+LHU7
-         WwEwp25JWtWMjVCKxCuTx0YY3fuyrcT2TpwayU1x39KF3SCY/fcG2yn991d4FPSgfhla
-         r0KE1RndWSboXnv9iOkGlNuoupLmUH2YEGQmtcZGgLTcODd51dqFJM+aIHbP7c2tgf71
-         QGppQ21EIY9jI+eGnPzKAJaT7WZ3veTnSShuNlv/p4ciM6sXWwP8AVd0XK2uW1zlWrVD
-         fcLnhGqEwqo4wbPZy2gc35QP+i9fF+Jg8QnKyIoDm39/3JVCx0GpfJ/G8E4PGnuB3/uE
-         7LpQ==
+        d=gmail.com; s=20221208; t=1686382744; x=1688974744;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GsNUoF97Ojf8i4nmjXrcSgoP9RKyKJanJ2CtBfvra6I=;
+        b=E2++uQgpt6i01Zb9xtZ4zaxEauzl8V0qDODOXlnopq6D1JRcm1A9wuLwcsyZMq3zOz
+         1Gv4Cke8VXo7AJ5cRFDZullSPyECiJikHr7WxxM96sPAE6T3fnX+Jb2QOSYmo5cy4haU
+         xGipf5UnUbHEqZe9iafH94Omh6tF3w6URoih/mEhg2vbmNuSmh/208BxgZD6lXkdCRaB
+         vMnAjkra5Vuf74YefM1DCi938GH/fMQLbizHfv6gAtOIkPGwKbl5mOZUvTX5oPxboRxs
+         rZe7EBonyN7rdgarx+R2VuY65t00pb8nVvoo9FjWW7a246Q7L/t1ytWJdWLLO475Z09D
+         fMvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686382360; x=1688974360;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=l7M0YngHom5+WNuAaqS8ORg1O1Fioma4l8vDyZ5uMCE=;
-        b=INYJ4hhPZS8WNvEefSMIgaLetJGhd7ttpubmZ6C5lod73YG4YHhaL9vf1j3mpjZfcO
-         aG9gxl3qEjZNEpQmQIH2+Pmz84buL8t8VkQdA8BTQEBTgJmp21VjgN0g5WOYdatnCGH7
-         bTzCfEzOS2RJJJQ5RVoLqOl7Wj2rjZbchhiAAtrGOZqGsiBcbdPFlG5fzPIo557PdI2+
-         B+o7Z+wdnhe9vSV1wqm/CMqmMyx8du68dhUHxFmHYXLZE5YX2AAyQAMCAqPwR26Kc8pd
-         yiL1u8wIs+3atquysrCF58Q/ntBhfwx26ze6hUGirMvn5Cl8vZikOkjJISxXboed4JI/
-         57dQ==
-X-Gm-Message-State: AC+VfDyH9B5sUZSPCuaM1N9PipK6fljZay6bveGnKyLMW2qp0uZIAvWw
-	nI02OgjeL2qTvT5b608H82V+Zg==
-X-Google-Smtp-Source: ACHHUZ6TNnOo+D3MGLaaLLt1WOqYeiIrCCME57vcIFwab6WYjt9d7cZidy6pJt20xNgdAB/dJoH9Sg==
-X-Received: by 2002:a17:907:7212:b0:978:8a30:aaf with SMTP id dr18-20020a170907721200b009788a300aafmr3607778ejc.64.1686382359799;
-        Sat, 10 Jun 2023 00:32:39 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id f10-20020a170906824a00b00971433ed5fesm2223482ejx.184.2023.06.10.00.32.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Jun 2023 00:32:39 -0700 (PDT)
-Date: Sat, 10 Jun 2023 09:32:38 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Cc: kuba@kernel.org, vadfed@meta.com, jonathan.lemon@gmail.com,
-	pabeni@redhat.com, corbet@lwn.net, davem@davemloft.net,
-	edumazet@google.com, vadfed@fb.com, jesse.brandeburg@intel.com,
-	anthony.l.nguyen@intel.com, saeedm@nvidia.com, leon@kernel.org,
-	richardcochran@gmail.com, sj@kernel.org, javierm@redhat.com,
-	ricardo.canuelo@collabora.com, mst@redhat.com, tzimmermann@suse.de,
-	michal.michalik@intel.com, gregkh@linuxfoundation.org,
-	jacek.lawrynowicz@linux.intel.com, airlied@redhat.com,
-	ogabbay@kernel.org, arnd@arndb.de, nipun.gupta@amd.com,
-	axboe@kernel.dk, linux@zary.sk, masahiroy@kernel.org,
-	benjamin.tissoires@redhat.com, geert+renesas@glider.be,
-	milena.olech@intel.com, kuniyu@amazon.com, liuhangbin@gmail.com,
-	hkallweit1@gmail.com, andy.ren@getcruise.com, razor@blackwall.org,
-	idosch@nvidia.com, lucien.xin@gmail.com, nicolas.dichtel@6wind.com,
-	phil@nwl.cc, claudiajkang@gmail.com, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-	intel-wired-lan@lists.osuosl.org, linux-rdma@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, poros@redhat.com,
-	mschmidt@redhat.com, linux-clk@vger.kernel.org,
-	vadim.fedorenko@linux.dev
-Subject: Re: [RFC PATCH v8 05/10] dpll: api header: Add DPLL framework base
- functions
-Message-ID: <ZIQnFqRBhmv3+SF8@nanopsycho>
-References: <20230609121853.3607724-1-arkadiusz.kubalewski@intel.com>
- <20230609121853.3607724-6-arkadiusz.kubalewski@intel.com>
+        d=1e100.net; s=20221208; t=1686382744; x=1688974744;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GsNUoF97Ojf8i4nmjXrcSgoP9RKyKJanJ2CtBfvra6I=;
+        b=dt3F9nIBMV+vJD74zRukzv95N6Fm4X5FPRRm07k/w5KaoiRVtDbW7NAkz27fx3NqYz
+         dbHjOIyu9dewagm4kBAZeu72fq77Ji1TurlyECCBb5Cu5Ll/SNLicQhBhruzxMppH9eo
+         c9cMi/7Lq9smV7Y01GVa5VbONMXOU8g0MPxyTeJ8dsrRDofpSHmxvW5yfczFY6aCc9yW
+         ogcThkCHQj4yz5hJT9wAHn8QIcK9zJYTjUaUp5Sw3ZTvNHHi1s/iQ/tEoBQPU+8sGo6H
+         k3d8M6bbvYnhMVHNs8+Z9pzNgj9GeTZ+QRy+/Nkd76bM62uOs1tICcPa5qh0KcR+ngTu
+         N+/Q==
+X-Gm-Message-State: AC+VfDxmyia5G7pVb7chbAo+hMFNoH9bKErqFtIYCakaLzLsd4W0vePS
+	rhuH9WA+c1U3WJ/NodvWjws=
+X-Google-Smtp-Source: ACHHUZ5MRqYSis2oCTgqmli//xNpQt7In/tGIP5SV0p3yGoBfy+MsOY+Iwvwe28NlmEhGBVsIVtH3g==
+X-Received: by 2002:a17:902:c111:b0:1b3:95a9:3fb3 with SMTP id 17-20020a170902c11100b001b395a93fb3mr1064209pli.3.1686382743838;
+        Sat, 10 Jun 2023 00:39:03 -0700 (PDT)
+Received: from [192.168.43.80] (subs09a-223-255-225-69.three.co.id. [223.255.225.69])
+        by smtp.gmail.com with ESMTPSA id w10-20020a17090a1b8a00b00247164c1947sm7587181pjc.0.2023.06.10.00.39.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 10 Jun 2023 00:39:03 -0700 (PDT)
+Message-ID: <08dd7a08-62d2-8efe-91ea-fb4ffd4548f2@gmail.com>
+Date: Sat, 10 Jun 2023 14:38:59 +0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230609121853.3607724-6-arkadiusz.kubalewski@intel.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: Fwd: rtl8xxxu kernel module deauthenticate session from public
+ open Wifi AP
+To: Kalle Valo <kvalo@kernel.org>
+Cc: Jes Sorensen <Jes.Sorensen@gmail.com>, dbnusr495 <dbnusr4950@proton.me>,
+ Linux Wireless <linux-wireless@vger.kernel.org>,
+ Linux Kernel Network Developers <netdev@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <31ab2156-e93e-4e0d-73a7-313d9d24ee6b@gmail.com>
+ <f969c91f-f7a1-bea8-ae72-67543bb3df83@gmail.com> <877csbhj38.fsf@kernel.org>
+Content-Language: en-US
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <877csbhj38.fsf@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Fri, Jun 09, 2023 at 02:18:48PM CEST, arkadiusz.kubalewski@intel.com wrote:
->From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+On 6/10/23 14:28, Kalle Valo wrote:
+>> FYI, from Bugzilla [1], the reporter posted (untested) fix. Would you
+>> like to review it?
+>>
+>> Thanks.
+>>
+>> [1]: https://bugzilla.kernel.org/show_bug.cgi?id=217531#c8
+> 
+> I'm not seeing any fix from the reporter, where is it?
+> 
 
-[...]
+Oops, the Bugzilla diff link above just adds pr_warn() debugging info.
+No fixes yet.
 
->+struct dpll_device_ops {
->+	int (*mode_get)(const struct dpll_device *dpll, void *dpll_priv,
->+			enum dpll_mode *mode, struct netlink_ext_ack *extack);
->+	int (*mode_set)(const struct dpll_device *dpll, void *dpll_priv,
->+			const enum dpll_mode mode,
->+			struct netlink_ext_ack *extack);
->+	bool (*mode_supported)(const struct dpll_device *dpll, void *dpll_priv,
->+			       const enum dpll_mode mode,
->+			       struct netlink_ext_ack *extack);
->+	int (*source_pin_idx_get)(const struct dpll_device *dpll,
->+				  void *dpll_priv,
->+				  u32 *pin_idx,
->+				  struct netlink_ext_ack *extack);
+Sorry for inconvenience...
 
-I'm pretty sure I wrote this to the last patchset version as well.
-You call this op from anywhere, it's a leftover, please remove it.
-In ptp_ocp remove it as well and implement the state_on_dpll pin op
-instead. I'm pretty sure no one tested ptp_ocp with this patchset
-version otherwise this would show-up :/
+> Also more information would be good to have to pinpoint where the actual
+> problem is. For example, it would be good to test different APs with
+> different encryption methods and make a list what works and what doesn't
+> on his device. There can be numerous reasons for the problem.
+> 
 
-[...]
+In the starting BZ thread, the reporter had issue with WPA enterprise
+(as he can't reach login and usage disclaimer page).
+
+Thanks.
+
+-- 
+An old man doll... just what I always wanted! - Clara
+
 
