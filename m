@@ -1,87 +1,47 @@
-Return-Path: <netdev+bounces-9837-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9838-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 158EB72AD5B
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 18:36:51 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 765EE72AD9F
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 19:11:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BE87A28147C
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 16:36:49 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3DB612814E3
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 17:10:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E018CC8E8;
-	Sat, 10 Jun 2023 16:36:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3853E19E55;
+	Sat, 10 Jun 2023 17:10:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D347D23C5
-	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 16:36:47 +0000 (UTC)
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E73D359A
-	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 09:36:44 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id a640c23a62f3a-974638ed5c5so592852066b.1
-        for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 09:36:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1686415002; x=1689007002;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=X8VbRFbQOuqhFAPglq3rUuEFETDHIQvOfBEZigyYE00=;
-        b=fcZwhYQXbZrGUCxD2cxWjeGu7RFEU0ScoH6Fu1j8oZlTPWxdTpxZpMcmjp2EzDf/9d
-         FfZHTb9Jegul55u7V0zCjPzL5GRZCoYWPuup8y0FgDEX/VE4abtLSaelCPLmqGhOFvXf
-         0hiMFMG0SHOUJHmTFAtrpSUozKDhB5uBNbxOAm1l9CSRT6MqowUWZKvUTc/wZ1A942wY
-         p8bL7na2XtF6nwgC4GwchfUxPf/wCWr8c/90iLSEeM82o53tpfNniHl2LweqNqiJTqEo
-         8La/4VPf8P1Wsh/9IK2QftfK8rl0/botcKtufVlRAOULG+cZ15IapPXlNaqykMscXVUg
-         hfOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686415002; x=1689007002;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=X8VbRFbQOuqhFAPglq3rUuEFETDHIQvOfBEZigyYE00=;
-        b=WYl6ZPDmYEIrO4JA3d2Xu14nPox2NqKHASjDhKFakpKynp/yO1mQR01zcURUCculfR
-         mYm+DzqW0haTx9x2p/F3hNP71CtA8O0p859MBs5f1SeHvSiuI8j4VrWBe9jr2k4STy9K
-         k0/duVRxf7S2az8PdWHyEdFD2YhOktpqSpXvkZOqFEVUtTW9CgDd1NP3OL6TFJw4xeRI
-         YayaTTo/VpAnMI6pXb2W1RemT7kAdEKXTwtGVHqlr7DtIIH8NZrw64mRPQdJQr4sjaci
-         mIp7G50+Q3WhWwRpzTXspx3fIwfh4rSa/zP5aN3VyxxpTyjWvsQ0FNOE7TnqVDo4HAN7
-         kZoQ==
-X-Gm-Message-State: AC+VfDy7h1y53c1rshux0r6WHYe7704P3tPKdBe/owZmEPIyGUnBHN61
-	XVIy/YllzvIAG2MjuP/nGu92sA==
-X-Google-Smtp-Source: ACHHUZ4Vwbn5FWH4cTwcJAta6H8LObUb+MmlwTVJNnxgyTP9w4AqfMkvEAq7AY8i3/cgxY1KiIKmkw==
-X-Received: by 2002:a17:906:58c5:b0:974:5e8b:fc28 with SMTP id e5-20020a17090658c500b009745e8bfc28mr5052733ejs.9.1686415002366;
-        Sat, 10 Jun 2023 09:36:42 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id t16-20020a1709064f1000b0096f89fd4bf8sm2728669eju.122.2023.06.10.09.36.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Jun 2023 09:36:41 -0700 (PDT)
-Date: Sat, 10 Jun 2023 18:36:40 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Cc: kuba@kernel.org, vadfed@meta.com, jonathan.lemon@gmail.com,
-	pabeni@redhat.com, corbet@lwn.net, davem@davemloft.net,
-	edumazet@google.com, vadfed@fb.com, jesse.brandeburg@intel.com,
-	anthony.l.nguyen@intel.com, saeedm@nvidia.com, leon@kernel.org,
-	richardcochran@gmail.com, sj@kernel.org, javierm@redhat.com,
-	ricardo.canuelo@collabora.com, mst@redhat.com, tzimmermann@suse.de,
-	michal.michalik@intel.com, gregkh@linuxfoundation.org,
-	jacek.lawrynowicz@linux.intel.com, airlied@redhat.com,
-	ogabbay@kernel.org, arnd@arndb.de, nipun.gupta@amd.com,
-	axboe@kernel.dk, linux@zary.sk, masahiroy@kernel.org,
-	benjamin.tissoires@redhat.com, geert+renesas@glider.be,
-	milena.olech@intel.com, kuniyu@amazon.com, liuhangbin@gmail.com,
-	hkallweit1@gmail.com, andy.ren@getcruise.com, razor@blackwall.org,
-	idosch@nvidia.com, lucien.xin@gmail.com, nicolas.dichtel@6wind.com,
-	phil@nwl.cc, claudiajkang@gmail.com, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-	intel-wired-lan@lists.osuosl.org, linux-rdma@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, poros@redhat.com,
-	mschmidt@redhat.com, linux-clk@vger.kernel.org,
-	vadim.fedorenko@linux.dev
-Subject: Re: [RFC PATCH v8 08/10] ice: implement dpll interface to control cgu
-Message-ID: <ZISmmH0jqxZRB4VX@nanopsycho>
-References: <20230609121853.3607724-1-arkadiusz.kubalewski@intel.com>
- <20230609121853.3607724-9-arkadiusz.kubalewski@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A31D2904
+	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 17:10:54 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5062D7E;
+	Sat, 10 Jun 2023 10:10:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=6/ljHa1TetfsMxIoQmiJpKoOzClakUJOlS+VDPzR2rY=; b=srVZBakSpNNQn5PW8fikii/viR
+	cQvMUcdwiz8e0BBzSGPdHWzwnSkyfYlT3qGFSkBexJYzGzmnlqWH8ENxcfWyXEE9rWgI5CDxaOs23
+	4LY28r9gJENQWA+qUzzLrOrbs+mnkUXwc425rrZ4YGK5DcT0ZnEkwjWiABrxjt8jCK8Y=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1q826t-00FRzd-RI; Sat, 10 Jun 2023 19:10:43 +0200
+Date: Sat, 10 Jun 2023 19:10:43 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Jianhui Zhao <zhaojh329@gmail.com>
+Cc: hkallweit1@gmail.com, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: mdio: fix duplicate registrations for phy with c45
+ in __of_mdiobus_register()
+Message-ID: <b4d6eb7c-513a-4767-aedc-8d1b6ffd831f@lunn.ch>
+References: <20230610161308.3158-1-zhaojh329@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -90,30 +50,22 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230609121853.3607724-9-arkadiusz.kubalewski@intel.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230610161308.3158-1-zhaojh329@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Fri, Jun 09, 2023 at 02:18:51PM CEST, arkadiusz.kubalewski@intel.com wrote:
+On Sun, Jun 11, 2023 at 12:13:08AM +0800, Jianhui Zhao wrote:
+> Maybe mdiobus_scan_bus_c45() is called in __mdiobus_register().
+> Thus it should skip already registered PHYs later.
 
-[...]
+Please could you expand on your commit message. I don't see what is
+going wrong here. What does your device tree look like? Do you have a
+PHY which responds to both C22 and C45?
 
-
->+static int ice_dpll_mode_get(const struct dpll_device *dpll, void *priv,
->+			     enum dpll_mode *mode,
->+			     struct netlink_ext_ack *extack)
->+{
->+	*mode = DPLL_MODE_AUTOMATIC;
-
-I don't understand how the automatic mode could work with SyncE. The
-There is one pin exposed for one netdev. The SyncE daemon should select
-exacly one pin. How do you achieve that?
-Is is by setting DPLL_PIN_STATE_SELECTABLE on the pin-netdev you want to
-select and DPLL_PIN_STATE_DISCONNECTED on the rest?
-
-
-[...]
+Thanks
+	Andrew
 
