@@ -1,346 +1,862 @@
-Return-Path: <netdev+bounces-9779-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9780-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 908EC72A89B
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 05:02:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 386CB72A8C5
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 05:23:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BD07F281AA8
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 03:02:15 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7EE46281AC4
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 03:23:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BEC8F1FCA;
-	Sat, 10 Jun 2023 03:02:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E8415224;
+	Sat, 10 Jun 2023 03:22:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC1C31FA9
-	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 03:02:13 +0000 (UTC)
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A083AAC
-	for <netdev@vger.kernel.org>; Fri,  9 Jun 2023 20:02:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686366130; x=1717902130;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tWimKZqP6OqLgt04lsDsqq4aDGgvzCAjmOwBMwNqJIY=;
-  b=NGPxoBl20OnUa5TOz9TWf8s994arFQxj4IW8rdPRCOALmtBHMeX8Npn5
-   R5FLXqOWKGfHcq7bD2D04aTjOgIHQcnJNPM9xXnKV7wjB6EkKTpF4bofB
-   tXnIUBdN1T0yzZtvT14abgrJjH0Gs09wQmvG5HLhu4Jqa5gtz+bjYs7QI
-   cTKOf+Z9BfjbECK44FlZOAhqz1bz11gv9uW727FGVVK9L8yNp7PGFMwyR
-   XNsB9z++Bb9dFq7lvT9Bhy8Fo6R33mkEeMCNy4A/44h3gcquqmHEBGIh1
-   t6FbKMbMcAcZrOZccMay+MZM4KSlfzcaYbu4rGVbd6eSx7AxA+Ani7Hwd
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10736"; a="356617545"
-X-IronPort-AV: E=Sophos;i="6.00,231,1681196400"; 
-   d="scan'208";a="356617545"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2023 20:02:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10736"; a="957354834"
-X-IronPort-AV: E=Sophos;i="6.00,231,1681196400"; 
-   d="scan'208";a="957354834"
-Received: from lkp-server01.sh.intel.com (HELO 15ab08e44a81) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 09 Jun 2023 20:02:07 -0700
-Received: from kbuild by 15ab08e44a81 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1q7ore-0009dR-1e;
-	Sat, 10 Jun 2023 03:02:06 +0000
-Date: Sat, 10 Jun 2023 11:01:38 +0800
-From: kernel test robot <lkp@intel.com>
-To: Simon Horman <horms@kernel.org>, Ariel Elior <aelior@marvell.com>,
-	Sudarsana Kalluru <skalluru@marvell.com>,
-	Manish Chopra <manishc@marvell.com>
-Cc: oe-kbuild-all@lists.linux.dev, Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] bnx2x: Make dmae_reg_go_c static
-Message-ID: <202306101031.iF29XzEV-lkp@intel.com>
-References: <20230609-bnx2x-static-v1-1-6c1a6888d227@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3710B1878
+	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 03:22:57 +0000 (UTC)
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C423C00;
+	Fri,  9 Jun 2023 20:22:54 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id d2e1a72fcca58-651ffcc1d3dso2028649b3a.3;
+        Fri, 09 Jun 2023 20:22:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686367373; x=1688959373;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fe/O9XaMFUdFvBUtTqgAvCCtN3uvLjJISjqVF47ghc8=;
+        b=GI+zGZBTCRyjYyqeCRVP3oIy3XZRLDBdgM1uSlSSUkj61h5nG0dw+39ScpAx/McL1C
+         d1qjAOjO+VQMf32EnP1fGS8CMtsjsCfZBDu8M+Nn0VClxEBN3tlClw/owehIqsFHRriV
+         vYJmu+oFGyIZDYfq/GZpR/AviEuVc8atkvyMhlVuWrl6/FMqLuTorTkhSl/WQ0ab5j+g
+         q+sEtXsOwk4RS/9mQ+sW+P5IuBmHFaiij+lnzfvJuj3HFLGTei5Xip6yTUjcMytu2sCK
+         5W7jVYJHD4q/IIpUcTaTPVW78alBWRAs/euFEGJLlVprpfR161h6jlJxU6WaTeiD3YXJ
+         p1Pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686367373; x=1688959373;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fe/O9XaMFUdFvBUtTqgAvCCtN3uvLjJISjqVF47ghc8=;
+        b=TkdfhZaImkrF4tsHcMVdxAjBIrMQwm8aPQ816eI34g8e5fJQRrLExaQgW5ohFBhjpo
+         fLPUibkPnROeB6BdUKh9niLRCUqZKoy+Coec9jJJbCSFkPr8jOeyFJrCYxO2iD0K5XJa
+         Wj25DVLw5l+hQAcUqezgJM3d5l18zl29fxKEyPxjSCsR0ceA74V0oITd+O73EuVbeRzb
+         EEcrbZInq9jij96XPzTpGZUSoiZIV8DTaX8Q91lXmXEIH97eRlkils0n+v86QNMGl2S8
+         hwgwAAXZ/F83pzTk4WT9nBjOzoCTr0dc2cXhcJFaCxDnfsMww/Vtx2c6ZPhGEgX71dla
+         4b1g==
+X-Gm-Message-State: AC+VfDyYobrsb1AZr6DSHxuhYVmrEJRqPKiJEhbV/8c3t5Bbs0K3dBAP
+	eK+JHJWAUp1UXKO4M0+L3a8Zb01IOWM=
+X-Google-Smtp-Source: ACHHUZ45db5+AR+BCcPM3YJgfEFw2dJzAKIL7Djin4LYsfz92pO3/v8p4Ug8Du6VFAbpS+Fz4DyPgA==
+X-Received: by 2002:a17:902:b214:b0:1b0:6480:1788 with SMTP id t20-20020a170902b21400b001b064801788mr645885plr.61.1686367372781;
+        Fri, 09 Jun 2023 20:22:52 -0700 (PDT)
+Received: from debian.me (subs32-116-206-28-58.three.co.id. [116.206.28.58])
+        by smtp.gmail.com with ESMTPSA id t7-20020a1709027fc700b001a63ba28052sm4017764plb.69.2023.06.09.20.22.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Jun 2023 20:22:52 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+	id 6F296106A0B; Sat, 10 Jun 2023 10:22:48 +0700 (WIB)
+Date: Sat, 10 Jun 2023 10:22:48 +0700
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+To: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>, kuba@kernel.org,
+	jiri@resnulli.us, vadfed@meta.com, jonathan.lemon@gmail.com,
+	pabeni@redhat.com
+Cc: corbet@lwn.net, davem@davemloft.net, edumazet@google.com, vadfed@fb.com,
+	jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+	saeedm@nvidia.com, leon@kernel.org, richardcochran@gmail.com,
+	sj@kernel.org, javierm@redhat.com, ricardo.canuelo@collabora.com,
+	mst@redhat.com, tzimmermann@suse.de, michal.michalik@intel.com,
+	gregkh@linuxfoundation.org, jacek.lawrynowicz@linux.intel.com,
+	airlied@redhat.com, ogabbay@kernel.org, arnd@arndb.de,
+	nipun.gupta@amd.com, axboe@kernel.dk, linux@zary.sk,
+	masahiroy@kernel.org, benjamin.tissoires@redhat.com,
+	geert+renesas@glider.be, milena.olech@intel.com, kuniyu@amazon.com,
+	liuhangbin@gmail.com, hkallweit1@gmail.com, andy.ren@getcruise.com,
+	razor@blackwall.org, idosch@nvidia.com, lucien.xin@gmail.com,
+	nicolas.dichtel@6wind.com, phil@nwl.cc, claudiajkang@gmail.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+	linux-rdma@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	poros@redhat.com, mschmidt@redhat.com, linux-clk@vger.kernel.org,
+	vadim.fedorenko@linux.dev
+Subject: Re: [RFC PATCH v8 01/10] dpll: documentation on DPLL subsystem
+ interface
+Message-ID: <ZIPsiNrWm0hDIZUV@debian.me>
+References: <20230609121853.3607724-1-arkadiusz.kubalewski@intel.com>
+ <20230609121853.3607724-2-arkadiusz.kubalewski@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="hkgrD8VFvSTSqR82"
 Content-Disposition: inline
-In-Reply-To: <20230609-bnx2x-static-v1-1-6c1a6888d227@kernel.org>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230609121853.3607724-2-arkadiusz.kubalewski@intel.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Simon,
 
-kernel test robot noticed the following build errors:
+--hkgrD8VFvSTSqR82
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[auto build test ERROR on net-next/main]
+On Fri, Jun 09, 2023 at 02:18:44PM +0200, Arkadiusz Kubalewski wrote:
+> diff --git a/Documentation/driver-api/dpll.rst b/Documentation/driver-api=
+/dpll.rst
+> new file mode 100644
+> index 000000000000..8caa4af022ad
+> --- /dev/null
+> +++ b/Documentation/driver-api/dpll.rst
+> @@ -0,0 +1,458 @@
+> +.. SPDX-License-Identifier: GPL-2.0
+> +
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D
+> +The Linux kernel dpll subsystem
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D
+> +
+> +The main purpose of dpll subsystem is to provide general interface
+> +to configure devices that use any kind of Digital PLL and could use
+> +different sources of signal to synchronize to as well as different
+> +types of outputs.
+> +The main interface is NETLINK_GENERIC based protocol with an event
+> +monitoring multicast group defined.
+> +
+> +Device object
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +Single dpll device object means single Digital PLL circuit and bunch of
+> +connected pins.
+> +It reports the supported modes of operation and current status to the
+> +user in response to the `do` request of netlink command
+> +``DPLL_CMD_DEVICE_GET`` and list of dplls registered in the subsystem
+> +with `dump` netlink request of the same command.
+> +Changing the configuration of dpll device is done with `do` request of
+> +netlink ``DPLL_CMD_DEVICE_SET`` command.
+> +A device handle is ``DPLL_A_ID``, it shall be provided to get or set
+> +configuration of particular device in the system. It can be obtained
+> +with a ``DPLL_CMD_DEVICE_GET`` `dump` request or
+> +a ``DPLL_CMD_DEVICE_ID_GET`` `do` request, where the one must provide
+> +attributes that result in single device match.
+> +
+> +Pin object
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +A pin is amorphic object which represents either input or output, it
+> +could be internal component of the device, as well as externally
+> +connected.
+> +The number of pins per dpll vary, but usually multiple pins shall be
+> +provided for a single dpll device.
+> +Pin's properties, capabilities and status is provided to the user in
+> +response to `do` request of netlink ``DPLL_CMD_PIN_GET`` command.
+> +It is also possible to list all the pins that were registered in the
+> +system with `dump` request of ``DPLL_CMD_PIN_GET`` command.
+> +Configuration of a pin can be changed by `do` request of netlink
+> +``DPLL_CMD_PIN_SET`` command.
+> +Pin handle is a ``DPLL_A_PIN_ID``, it shall be provided to get or set
+> +configuration of particular pin in the system. It can be obtained with
+> +``DPLL_CMD_PIN_GET`` `dump` request or ``DPLL_CMD_PIN_ID_GET`` `do`
+> +request, where user provides attributes that result in single pin match.
+> +
+> +Pin selection
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +In general, selected pin (the one which signal is driving the dpll
+> +device) can be obtained from ``DPLL_A_PIN_STATE`` attribute, and only
+> +one pin shall be in ``DPLL_PIN_STATE_CONNECTED`` state for any dpll
+> +device.
+> +
+> +Pin selection can be done either manually or automatically, depending
+> +on hardware capabilities and active dpll device work mode
+> +(``DPLL_A_MODE`` attribute). The consequence is that there are
+> +differences for each mode in terms of available pin states, as well as
+> +for the states the user can request for a dpll device.
+> +
+> +In manual mode (``DPLL_MODE_MANUAL``) the user can request or receive
+> +one of following pin states:
+> +- ``DPLL_PIN_STATE_CONNECTED`` - the pin is used to drive dpll device
+> +- ``DPLL_PIN_STATE_DISCONNECTED`` - the pin is not used to drive dpll
+> +  device
+> +
+> +In automatic mode (``DPLL_MODE_AUTOMATIC``) the user can request or
+> +receive one of following pin states:
+> +- ``DPLL_PIN_STATE_SELECTABLE`` - the pin shall be considered as valid
+> +  input for automatic selection algorithm
+> +- ``DPLL_PIN_STATE_DISCONNECTED`` - the pin shall be not considered as
+> +  a valid input for automatic selection algorithm
+> +In automatic mode (``DPLL_MODE_AUTOMATIC``) the user can only receive
+> +pin state ``DPLL_PIN_STATE_CONNECTED`` once automatic selection
+> +algorithm locks a dpll device with one of the inputs.
+> +
+> +For other dpll device operating modes there is no pin selection
+> +mechanics.
+> +
+> +Shared pins
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +A single pin object can be attached to multiple dpll devices.
+> +Then there are two groups of configuration knobs:
+> +1) Set on a pin - the configuration affects all dpll devices pin is
+> +   registered to (i.e. ``DPLL_A_PIN_FREQUENCY``),
+> +2) Set on a pin-dpll tuple - the configuration affects only selected
+> +   dpll device (i.e. ``DPLL_A_PIN_PRIO``, ``DPLL_A_PIN_STATE``,
+> +   ``DPLL_A_PIN_DIRECTION``).
+> +
+> +MUX-type pins
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +A pin can be MUX-type, it aggregates child pins and serves as a pin
+> +multiplexer. One or more pins are registered with MUX-type instead of
+> +being directly registered to a dpll device.
+> +Pins registered with a MUX-type provide user with additional nested
+> +attribute ``DPLL_A_PIN_PARENT`` for each parent they were registered
+> +with.
+> +If a pin was registered with multiple parent pins, they behave like a
+> +multiple output multiplexer. In this case output of a
+> +``DPLL_CMD_PIN_GET`` would contain multiple pin-parent nested
+> +attributes with current state related to each parent, like:
+> +
+> +``'pin': [{
+> + {'clock-id': 282574471561216,
+> +  'module-name': 'ice',
+> +  'pin-dpll-caps': 4,
+> +  'pin-id': 13,
+> +  'pin-parent': [{'pin-id': 2, 'pin-state': 'connected'},
+> +                 {'pin-id': 3, 'pin-state': 'disconnected'},
+> +                 {'id': 0, 'pin-direction': 'input'},
+> +                 {'id': 1, 'pin-direction': 'input'}],
+> +  'pin-type': 'synce-eth-port'}
+> +}]``
+> +
+> +Only one child pin can provide its signal to the parent MUX-type pin at
+> +a time, the selection is done by requesting change of a child pin state
+> +on desired parent, with the use of ``DPLL_A_PIN_PARENT`` nested
+> +attribute. Example of netlink `set state on parent pin` message format:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``DPLL_A_PIN_ID``      child pin id
+> +  ``DPLL_A_PIN_PARENT``  nested attribute for requesting configuration
+> +                         related to parent pin
+> +    ``DPLL_A_PIN_ID``    parent pin id
+> +    ``DPLL_A_PIN_STATE`` requested pin state on parent
+> +
+> +Pin priority
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +Some devices might offer a capability of automatic pin selection mode
+> +(enum value ``DPLL_MODE_AUTOMATIC`` of ``DPLL_A_MODE`` attribute).
+> +Usually, automatic selection is performed on the hardware level, which
+> +means only pins directly connected to the dpll can be used for automatic
+> +input pin selection.
+> +In automatic selection mode, the user cannot manually select a input
+> +pin for the device, instead the user shall provide all directly
+> +connected pins with a priority ``DPLL_A_PIN_PRIO``, the device would
+> +pick a highest priority valid signal and use it to control the DPLL
+> +device. Example of netlink `set priority on parent pin` message format:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``DPLL_A_PIN_ID``      child pin id
+> +  ``DPLL_A_PIN_PARENT``  nested attribute for requesting configuration
+> +                         related to parent pin
+> +    ``DPLL_A_ID``        parent dpll id
+> +    ``DPLL_A_PIN_PRIO``  requested pin prio on parent dpll
+> +
+> +Child pin of MUX-type is not capable of automatic input pin selection,
+> +in order to configure a input of a MUX-type pin, the user needs to
+> +request desired pin state of the child pin on the parent pin,
+> +as described in the ``MUX-type pins`` chapter.
+> +
+> +Configuration commands group
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+> +
+> +Configuration commands are used to get information about registered
+> +dpll devices (and pins), as well as set configuration of device or pins.
+> +As dpll devices must be abstracted and reflect real hardware,
+> +there is no way to add new dpll device via netlink from user space and
+> +each device should be registered by its driver.
+> +
+> +All netlink commands require ``GENL_ADMIN_PERM``. This is to prevent
+> +any spamming/DoS from unauthorized userspace applications.
+> +
+> +List of netlink commands with possible attributes
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +All constants identifying command types use a ``DPLL_CMD_`` prefix and
+> +suffix according to command purpose. All attributes use a ``DPLL_A_``
+> +prefix and suffix according to attribute purpose:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``DPLL_CMD_DEVICE_ID_GET``           command to get device ID
+> +    ``DPLL_A_MODULE_NAME``             attr module name of registerer
+> +    ``DPLL_A_CLOCK_ID``                attr Unique Clock Identifier
+> +                                       (EUI-64), as defined by the
+> +                                       IEEE 1588 standard
+> +    ``DPLL_A_TYPE``                    attr type of dpll device
+> +  ``DPLL_CMD_DEVICE_GET``              command to get device info or
+> +                                       dump list of available devices
+> +    ``DPLL_A_ID``                      attr unique dpll device ID
+> +    ``DPLL_A_MODULE_NAME``             attr module name of registerer
+> +    ``DPLL_A_CLOCK_ID``                attr Unique Clock Identifier
+> +                                       (EUI-64), as defined by the
+> +                                       IEEE 1588 standard
+> +    ``DPLL_A_MODE``                    attr selection mode
+> +    ``DPLL_A_MODE_SUPPORTED``          attr available selection modes
+> +    ``DPLL_A_LOCK_STATUS``             attr dpll device lock status
+> +    ``DPLL_A_TEMP``                    attr device temperature info
+> +    ``DPLL_A_TYPE``                    attr type of dpll device
+> +  ``DPLL_CMD_DEVICE_SET``              command to set dpll device config
+> +    ``DPLL_A_ID``                      attr internal dpll device index
+> +    ``DPLL_A_MODE``                    attr selection mode to configure
+> +  ``DPLL_CMD_PIN_GET``                 command to get pin ID
+> +    ``DPLL_A_MODULE_NAME``             attr module name of registerer
+> +    ``DPLL_A_CLOCK_ID``                attr Unique Clock Identifier
+> +                                       (EUI-64), as defined by the
+> +                                       IEEE 1588 standard
+> +    ``DPLL_A_PIN_BOARD_LABEL``         attr pin board label provided
+> +                                       by registerer
+> +    ``DPLL_A_PIN_PANEL_LABEL``         attr pin panel label provided
+> +                                       by registerer
+> +    ``DPLL_A_PIN_PACKAGE_LABEL``       attr pin package label provided
+> +                                       by registerer
+> +    ``DPLL_A_PIN_TYPE``                attr type of a pin
+> +  ``DPLL_CMD_PIN_GET``                 command to get pin info or dump
+> +                                       list of available pins
+> +    ``DPLL_A_PIN_ID``                  attr unique a pin ID
+> +    ``DPLL_A_MODULE_NAME``             attr module name of registerer
+> +    ``DPLL_A_CLOCK_ID``                attr Unique Clock Identifier
+> +                                       (EUI-64), as defined by the
+> +                                       IEEE 1588 standard
+> +    ``DPLL_A_PIN_BOARD_LABEL``         attr pin board label provided
+> +                                       by registerer
+> +    ``DPLL_A_PIN_PANEL_LABEL``         attr pin panel label provided
+> +                                       by registerer
+> +    ``DPLL_A_PIN_PACKAGE_LABEL``       attr pin package label provided
+> +                                       by registerer
+> +    ``DPLL_A_PIN_TYPE``                attr type of a pin
+> +    ``DPLL_A_PIN_DIRECTION``           attr direction of a pin
+> +    ``DPLL_A_PIN_FREQUENCY``           attr current frequency of a pin
+> +    ``DPLL_A_PIN_FREQUENCY_SUPPORTED`` nested attr provides supported
+> +                                       frequencies
+> +      ``DPLL_A_PIN_ANY_FREQUENCY_MIN`` attr minimum value of frequency
+> +      ``DPLL_A_PIN_ANY_FREQUENCY_MAX`` attr maximum value of frequency
+> +    ``DPLL_A_PIN_PARENT``              nested attr for each parent the
+> +                                       pin is connected with
+> +      ``DPLL_A_ID``                    attr provided if parent is dpll
+> +                                       device
+> +      ``DPLL_A_PIN_ID``                attr provided if parent is a pin
+> +      ``DPLL_A_PIN_PRIO``              attr priority of pin on the
+> +                                       dpll device
+> +      ``DPLL_A_PIN_STATE``             attr state of pin on the dpll
+> +                                       device or on the parent pin
+> +    ``DPLL_A_PIN_DPLL_CAPS``           attr bitmask of pin-dpll
+> +                                       capabilities
+> +  ``DPLL_CMD_PIN_SET``                 command to set pins configuration
+> +    ``DPLL_A_PIN_ID``                  attr unique a pin ID
+> +    ``DPLL_A_PIN_DIRECTION``           attr requested direction of a pin
+> +    ``DPLL_A_PIN_FREQUENCY``           attr requested frequency of a pin
+> +    ``DPLL_A_PIN_PARENT``              nested attr for each parent
+> +                                       related configuration of a pin
+> +                                       requested
+> +      ``DPLL_A_ID``                    attr provided if parent is dpll
+> +                                       device
+> +      ``DPLL_A_PIN_ID``                attr provided if parent is a pin
+> +      ``DPLL_A_PIN_PRIO``              attr requested priority of pin on
+> +                                       the dpll device
+> +      ``DPLL_A_PIN_STATE``             attr requested state of pin on
+> +                                       the dpll device or on the parent
+> +                                       pin
+> +
+> +Netlink dump requests
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +The ``DPLL_CMD_DEVICE_GET`` and ``DPLL_CMD_PIN_GET`` commands are
+> +capable of dump type netlink requests, in which case the response is in
+> +the same format as for their ``do`` request, but every device or pin
+> +registered in the system is returned.
+> +
+> +SET commands format
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +``DPLL_CMD_DEVICE_SET`` - to target a dpll device, the user provides
+> +``DPLL_A_ID``, which is unique identifier of dpll device in the system,
+> +as well as parameter being configured (``DPLL_A_MODE``).
+> +
+> +``DPLL_CMD_PIN_SET`` - to target a pin user has to provide a
+> +``DPLL_A_PIN_ID``, which is unique identifier of a pin in the system.
+> +Also configured pin parameters must be added.
+> +If ``DPLL_A_PIN_DIRECTION`` or ``DPLL_A_PIN_FREQUENCY`` are configured,
+> +this affects all the dpll device they are connected, that is why those
+> +attributes shall not be enclosed in ``DPLL_A_PIN_PARENT``.
+> +Other attributes:
+> +``DPLL_A_PIN_PRIO`` or ``DPLL_A_PIN_STATE`` must be enclosed in
+> +``DPLL_A_PIN_PARENT`` as their configuration relates to only one
+> +parent dpll or parent pin.
+> +Nested attribute of either ``DPLL_A_ID`` or ``DPLL_A_PIN_ID`` determines
+> +if configuration was requested on a dpll device or on a pin
+> +respectively.
+> +In general, it is possible to configure multiple parameters at once, but
+> +internally each parameter change will be invoked separately, where order
+> +of configuration is not guaranteed by any means.
+> +
+> +Device level configuration pre-defined enums
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +Values for ``DPLL_A_LOCK_STATUS`` attribute:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``DPLL_LOCK_STATUS_UNLOCKED``      dpll device is in freerun, not
+> +                                     locked to any input pin
+> +  ``DPLL_LOCK_STATUS_LOCKED``        dpll device is locked to the input
+> +                                     but no holdover capability yet
+> +                                     acquired
+> +  ``DPLL_LOCK_STATUS_LOCKED_HO_ACQ`` dpll device is locked to the input
+> +                                     pin with holdover capability
+> +                                     acquired
+> +  ``DPLL_LOCK_STATUS_HOLDOVER``      dpll device lost a lock, using its
+> +                                     frequency holdover capabilities
+> +
+> +Values for ``DPLL_A_MODE`` attribute:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``DPLL_MODE_MANUAL``    input pin is manually selected by setting pin
+> +                          state to ``DPLL_PIN_STATE_CONNECTED`` on a
+> +                          dpll device
+> +  ``DPLL_MODE_AUTOMATIC`` input pin is auto selected according to
+> +                          configured pin priorities and input signal
+> +                          validity
+> +  ``DPLL_MODE_HOLDOVER``  force holdover mode of dpll
+> +  ``DPLL_MODE_FREERUN``   dpll device is driven by supplied system clock
+> +                          without holdover capabilities
+> +
+> +Values for ``DPLL_A_TYPE`` attribute:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``DPLL_TYPE_PPS`` dpll device used to provide pulse-per-second output
+> +  ``DPLL_TYPE_EEC`` dpll device used to drive ethernet equipment clock
+> +
+> +Pin level configuration pre-defined enums
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +Values for ``DPLL_A_PIN_STATE`` attribute:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``DPLL_PIN_STATE_CONNECTED``    Pin used as active input for a dpll
+> +                                  device or for a parent pin
+> +  ``DPLL_PIN_STATE_DISCONNECTED`` Pin disconnected from a dpll device or
+> +                                  from a parent pin
+> +  ``DPLL_PIN_STATE_SELECTABLE``   Pin enabled for automatic selection
+> +
+> +Values for ``DPLL_A_PIN_DIRECTION`` attribute:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``DPLL_PIN_DIRECTION_INPUT``  used to provide its signal to a dpll
+> +                                device
+> +  ``DPLL_PIN_DIRECTION_OUTPUT`` used to output the signal from a dpll
+> +                                device
+> +
+> +Values for ``DPLL_A_PIN_TYPE`` attributes:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``DPLL_PIN_TYPE_MUX``            MUX type pin, connected pins shall
+> +                                   have their own types
+> +  ``DPLL_PIN_TYPE_EXT``            External pin
+> +  ``DPLL_PIN_TYPE_SYNCE_ETH_PORT`` SyncE on Ethernet port
+> +  ``DPLL_PIN_TYPE_INT_OSCILLATOR`` Internal Oscillator (i.e. Holdover
+> +                                   with Atomic Clock as an input)
+> +  ``DPLL_PIN_TYPE_GNSS``           GNSS 1PPS input
+> +
+> +Values for ``DPLL_A_PIN_DPLL_CAPS`` attributes:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE`` Bit present if direction of
+> +                                         pin can change
+> +  ``DPLL_PIN_CAPS_PRIORITY_CAN_CHANGE``  Bit present if priority of pin
+> +                                         can change
+> +  ``DPLL_PIN_CAPS_STATE_CAN_CHANGE``     Bit present if state of pin can
+> +                                         change
+> +
+> +Notifications
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +dpll device can provide notifications regarding status changes of the
+> +device, i.e. lock status changes, input/output changes or other alarms.
+> +There is one multicast group that is used to notify user-space apps via
+> +netlink socket: ``DPLL_MCGRP_MONITOR``
+> +
+> +Notifications messages:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``DPLL_CMD_DEVICE_CREATE_NTF`` dpll device was created
+> +  ``DPLL_CMD_DEVICE_DELETE_NTF`` dpll device was deleted
+> +  ``DPLL_CMD_DEVICE_CHANGE_NTF`` dpll device has changed
+> +  ``DPLL_CMD_PIN_CREATE_NTF``    dpll pin was created
+> +  ``DPLL_CMD_PIN_DELETE_NTF``    dpll pin was deleted
+> +  ``DPLL_CMD_PIN_CHANGE_NTF``    dpll pin has changed
+> +
+> +Events format is the same as for the corresponding get command.
+> +Format of ``DPLL_CMD_DEVICE_`` events is the same as response of
+> +``DPLL_CMD_DEVICE_GET``.
+> +Format of ``DPLL_CMD_PIN_`` events is same as response of
+> +``DPLL_CMD_PIN_GET``.
+> +
+> +Device driver implementation
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+> +
+> +Device is allocated by dpll_device_get() call. Second call with the
+> +same arguments will not create new object but provides pointer to
+> +previously created device for given arguments, it also increases
+> +refcount of that object.
+> +Device is deallocated by dpll_device_put() call, which first
+> +decreases the refcount, once refcount is cleared the object is
+> +destroyed.
+> +
+> +Device should implement set of operations and register device via
+> +dpll_device_register() at which point it becomes available to the
+> +users. Multiple driver instances can obtain reference to it with
+> +dpll_device_get(), as well as register dpll device with their own
+> +ops and priv.
+> +
+> +The pins are allocated separately with dpll_pin_get(), it works
+> +similarly to dpll_device_get(). Function first creates object and then
+> +for each call with the same arguments only the object refcount
+> +increases. Also dpll_pin_put() works similarly to dpll_device_put().
+> +
+> +A pin can be registered with parent dpll device or parent pin, depending
+> +on hardware needs. Each registration requires registerer to provide set
+> +of pin callbacks, and private data pointer for calling them:
+> +- dpll_pin_register() - register pin with a dpll device,
+> +- dpll_pin_on_pin_register() - register pin with another MUX type pin.
+> +
+> +Notifications of adding or removing dpll devices are created within
+> +subsystem itself.
+> +Notifications about registering/deregistering pins are also invoked by
+> +the subsystem.
+> +Notifications about status changes either of dpll device or a pin are
+> +invoked in two ways:
+> +- after successful change was requested on dpll subsystem, the subsystem
+> +  calls corresponding notification,
+> +- requested by device driver with dpll_device_change_ntf() or
+> +  dpll_pin_change_ntf() when driver informs about the status change.
+> +
+> +The device driver using dpll interface is not required to implement all
+> +the callback operation. Neverthelessi, there are few required to be
+> +implemented.
+> +Required dpll device level callback operations:
+> +- ``.mode_get``,
+> +- ``.lock_status_get``.
+> +
+> +Required pin level callback operations:
+> +- ``.state_get`` (pins registered with dpll device),
+> +- ``.state_on_pin_get`` (pins registered with parent pin),
+> +- ``.direction_get``.
+> +
+> +Every other operation handler is checked for existence and
+> +``-ENOTSUPP`` is returned in case of absence of specific handler.
+> +
+> +SyncE enablement
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +For SyncE enablement it is required to allow control over dpll device
+> +for a software application which monitors and configures the inputs of
+> +dpll device in response to current state of a dpll device and its
+> +inputs.
+> +In such scenario, dpll device input signal shall be also configurable
+> +to drive dpll with signal recovered from the PHY netdevice.
+> +This is done by exposing a pin to the netdevice - attaching pin to the
+> +netdevice itself with:
+> +netdev_dpll_pin_set(struct net_device *dev, struct dpll_pin *dpll_pin);
+> +Exposed pin id handle ``DPLL_A_PIN_ID`` is then identifiable by the user
+> +as it is attached to rtnetlink respond to get ``RTM_NEWLINK`` command in
+> +nested attribute ``IFLA_DPLL_PIN``.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Simon-Horman/bnx2x-Make-dmae_reg_go_c-static/20230609-215242
-base:   net-next/main
-patch link:    https://lore.kernel.org/r/20230609-bnx2x-static-v1-1-6c1a6888d227%40kernel.org
-patch subject: [PATCH net-next] bnx2x: Make dmae_reg_go_c static
-config: x86_64-kexec (https://download.01.org/0day-ci/archive/20230610/202306101031.iF29XzEV-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build):
-        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-        git fetch net-next main
-        git checkout net-next/main
-        b4 shazam https://lore.kernel.org/r/20230609-bnx2x-static-v1-1-6c1a6888d227@kernel.org
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 olddefconfig
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+There are countless htmldocs warnings, so I have to fix them up:
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202306101031.iF29XzEV-lkp@intel.com/
+---- >8 ----
+diff --git a/Documentation/driver-api/dpll.rst b/Documentation/driver-api/d=
+pll.rst
+index 8caa4af022ad82..5b2d3e3b9f8893 100644
+--- a/Documentation/driver-api/dpll.rst
++++ b/Documentation/driver-api/dpll.rst
+@@ -63,16 +63,19 @@ for the states the user can request for a dpll device.
+=20
+ In manual mode (``DPLL_MODE_MANUAL``) the user can request or receive
+ one of following pin states:
++
+ - ``DPLL_PIN_STATE_CONNECTED`` - the pin is used to drive dpll device
+ - ``DPLL_PIN_STATE_DISCONNECTED`` - the pin is not used to drive dpll
+   device
+=20
+ In automatic mode (``DPLL_MODE_AUTOMATIC``) the user can request or
+ receive one of following pin states:
++
+ - ``DPLL_PIN_STATE_SELECTABLE`` - the pin shall be considered as valid
+   input for automatic selection algorithm
+ - ``DPLL_PIN_STATE_DISCONNECTED`` - the pin shall be not considered as
+   a valid input for automatic selection algorithm
++
+ In automatic mode (``DPLL_MODE_AUTOMATIC``) the user can only receive
+ pin state ``DPLL_PIN_STATE_CONNECTED`` once automatic selection
+ algorithm locks a dpll device with one of the inputs.
+@@ -85,6 +88,7 @@ Shared pins
+=20
+ A single pin object can be attached to multiple dpll devices.
+ Then there are two groups of configuration knobs:
++
+ 1) Set on a pin - the configuration affects all dpll devices pin is
+    registered to (i.e. ``DPLL_A_PIN_FREQUENCY``),
+ 2) Set on a pin-dpll tuple - the configuration affects only selected
+@@ -103,31 +107,32 @@ with.
+ If a pin was registered with multiple parent pins, they behave like a
+ multiple output multiplexer. In this case output of a
+ ``DPLL_CMD_PIN_GET`` would contain multiple pin-parent nested
+-attributes with current state related to each parent, like:
++attributes with current state related to each parent, like::
+=20
+-``'pin': [{
+- {'clock-id': 282574471561216,
+-  'module-name': 'ice',
+-  'pin-dpll-caps': 4,
+-  'pin-id': 13,
+-  'pin-parent': [{'pin-id': 2, 'pin-state': 'connected'},
+-                 {'pin-id': 3, 'pin-state': 'disconnected'},
+-                 {'id': 0, 'pin-direction': 'input'},
+-                 {'id': 1, 'pin-direction': 'input'}],
+-  'pin-type': 'synce-eth-port'}
+-}]``
++  'pin': [{
++   {'clock-id': 282574471561216,
++    'module-name': 'ice',
++    'pin-dpll-caps': 4,
++    'pin-id': 13,
++    'pin-parent': [{'pin-id': 2, 'pin-state': 'connected'},
++                   {'pin-id': 3, 'pin-state': 'disconnected'},
++                   {'id': 0, 'pin-direction': 'input'},
++                   {'id': 1, 'pin-direction': 'input'}],
++    'pin-type': 'synce-eth-port'}
++  }]
+=20
+ Only one child pin can provide its signal to the parent MUX-type pin at
+ a time, the selection is done by requesting change of a child pin state
+ on desired parent, with the use of ``DPLL_A_PIN_PARENT`` nested
+ attribute. Example of netlink `set state on parent pin` message format:
+=20
+-  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+   ``DPLL_A_PIN_ID``      child pin id
+   ``DPLL_A_PIN_PARENT``  nested attribute for requesting configuration
+                          related to parent pin
+     ``DPLL_A_PIN_ID``    parent pin id
+     ``DPLL_A_PIN_STATE`` requested pin state on parent
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+ Pin priority
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+@@ -149,6 +154,7 @@ device. Example of netlink `set priority on parent pin`=
+ message format:
+                          related to parent pin
+     ``DPLL_A_ID``        parent dpll id
+     ``DPLL_A_PIN_PRIO``  requested pin prio on parent dpll
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+ Child pin of MUX-type is not capable of automatic input pin selection,
+ in order to configure a input of a MUX-type pin, the user needs to
+@@ -254,6 +260,7 @@ prefix and suffix according to attribute purpose:
+       ``DPLL_A_PIN_STATE``             attr requested state of pin on
+                                        the dpll device or on the parent
+                                        pin
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+ Netlink dump requests
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+@@ -303,6 +310,7 @@ Values for ``DPLL_A_LOCK_STATUS`` attribute:
+                                      acquired
+   ``DPLL_LOCK_STATUS_HOLDOVER``      dpll device lost a lock, using its
+                                      frequency holdover capabilities
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+ Values for ``DPLL_A_MODE`` attribute:
+=20
+@@ -316,12 +324,14 @@ Values for ``DPLL_A_MODE`` attribute:
+   ``DPLL_MODE_HOLDOVER``  force holdover mode of dpll
+   ``DPLL_MODE_FREERUN``   dpll device is driven by supplied system clock
+                           without holdover capabilities
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+ Values for ``DPLL_A_TYPE`` attribute:
+=20
+   =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+   ``DPLL_TYPE_PPS`` dpll device used to provide pulse-per-second output
+   ``DPLL_TYPE_EEC`` dpll device used to drive ethernet equipment clock
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+ Pin level configuration pre-defined enums
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+@@ -334,6 +344,7 @@ Values for ``DPLL_A_PIN_STATE`` attribute:
+   ``DPLL_PIN_STATE_DISCONNECTED`` Pin disconnected from a dpll device or
+                                   from a parent pin
+   ``DPLL_PIN_STATE_SELECTABLE``   Pin enabled for automatic selection
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+ Values for ``DPLL_A_PIN_DIRECTION`` attribute:
+=20
+@@ -342,6 +353,7 @@ Values for ``DPLL_A_PIN_DIRECTION`` attribute:
+                                 device
+   ``DPLL_PIN_DIRECTION_OUTPUT`` used to output the signal from a dpll
+                                 device
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+ Values for ``DPLL_A_PIN_TYPE`` attributes:
+=20
+@@ -353,6 +365,7 @@ Values for ``DPLL_A_PIN_TYPE`` attributes:
+   ``DPLL_PIN_TYPE_INT_OSCILLATOR`` Internal Oscillator (i.e. Holdover
+                                    with Atomic Clock as an input)
+   ``DPLL_PIN_TYPE_GNSS``           GNSS 1PPS input
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+ Values for ``DPLL_A_PIN_DPLL_CAPS`` attributes:
+=20
+@@ -363,6 +376,7 @@ Values for ``DPLL_A_PIN_DPLL_CAPS`` attributes:
+                                          can change
+   ``DPLL_PIN_CAPS_STATE_CAN_CHANGE``     Bit present if state of pin can
+                                          change
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+ Notifications
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+@@ -381,6 +395,7 @@ Notifications messages:
+   ``DPLL_CMD_PIN_CREATE_NTF``    dpll pin was created
+   ``DPLL_CMD_PIN_DELETE_NTF``    dpll pin was deleted
+   ``DPLL_CMD_PIN_CHANGE_NTF``    dpll pin has changed
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+ Events format is the same as for the corresponding get command.
+ Format of ``DPLL_CMD_DEVICE_`` events is the same as response of
+@@ -413,6 +428,7 @@ increases. Also dpll_pin_put() works similarly to dpll_=
+device_put().
+ A pin can be registered with parent dpll device or parent pin, depending
+ on hardware needs. Each registration requires registerer to provide set
+ of pin callbacks, and private data pointer for calling them:
++
+ - dpll_pin_register() - register pin with a dpll device,
+ - dpll_pin_on_pin_register() - register pin with another MUX type pin.
+=20
+@@ -422,6 +438,7 @@ Notifications about registering/deregistering pins are =
+also invoked by
+ the subsystem.
+ Notifications about status changes either of dpll device or a pin are
+ invoked in two ways:
++
+ - after successful change was requested on dpll subsystem, the subsystem
+   calls corresponding notification,
+ - requested by device driver with dpll_device_change_ntf() or
+@@ -431,10 +448,11 @@ The device driver using dpll interface is not require=
+d to implement all
+ the callback operation. Neverthelessi, there are few required to be
+ implemented.
+ Required dpll device level callback operations:
++
+ - ``.mode_get``,
+ - ``.lock_status_get``.
+=20
+-Required pin level callback operations:
++oRequired pin level callback operations:
+ - ``.state_get`` (pins registered with dpll device),
+ - ``.state_on_pin_get`` (pins registered with parent pin),
+ - ``.direction_get``.
+@@ -451,8 +469,8 @@ inputs.
+ In such scenario, dpll device input signal shall be also configurable
+ to drive dpll with signal recovered from the PHY netdevice.
+ This is done by exposing a pin to the netdevice - attaching pin to the
+-netdevice itself with:
+-netdev_dpll_pin_set(struct net_device *dev, struct dpll_pin *dpll_pin);
++netdevice itself with
++``netdev_dpll_pin_set(struct net_device *dev, struct dpll_pin *dpll_pin)``.
+ Exposed pin id handle ``DPLL_A_PIN_ID`` is then identifiable by the user
+ as it is attached to rtnetlink respond to get ``RTM_NEWLINK`` command in
+ nested attribute ``IFLA_DPLL_PIN``.
 
-All errors (new ones prefixed by >>):
+(but because the fix diff above is quite large, Co-developed-by: from
+me may qualify).
 
-   ld: vmlinux.o: in function `bnx2x_port_stats_init':
->> drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c:297: undefined reference to `dmae_reg_go_c'
->> ld: drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c:311: undefined reference to `dmae_reg_go_c'
-   ld: drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c:333: undefined reference to `dmae_reg_go_c'
-   ld: drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c:422: undefined reference to `dmae_reg_go_c'
-   ld: drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c:453: undefined reference to `dmae_reg_go_c'
-   ld: vmlinux.o:drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c:1292: more undefined references to `dmae_reg_go_c' follow
+Thanks.
 
+--=20
+An old man doll... just what I always wanted! - Clara
 
-vim +297 drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c
+--hkgrD8VFvSTSqR82
+Content-Type: application/pgp-signature; name="signature.asc"
 
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  266  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  267  static void bnx2x_port_stats_init(struct bnx2x *bp)
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  268  {
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  269  	struct dmae_command *dmae;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  270  	int port = BP_PORT(bp);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  271  	u32 opcode;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  272  	int loader_idx = PMF_DMAE_C(bp);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  273  	u32 mac_addr;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  274  	u32 *stats_comp = bnx2x_sp(bp, stats_comp);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  275  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  276  	/* sanity */
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  277  	if (!bp->link_vars.link_up || !bp->port.pmf) {
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  278  		BNX2X_ERR("BUG!\n");
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  279  		return;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  280  	}
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  281  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  282  	bp->executer_idx = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  283  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  284  	/* MCP */
-f2e0899f0f275c drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-10-06  285  	opcode = bnx2x_dmae_opcode(bp, DMAE_SRC_PCI, DMAE_DST_GRC,
-f2e0899f0f275c drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-10-06  286  				    true, DMAE_COMP_GRC);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  287  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  288  	if (bp->port.port_stx) {
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  289  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  290  		dmae = bnx2x_sp(bp, dmae[bp->executer_idx++]);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  291  		dmae->opcode = opcode;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  292  		dmae->src_addr_lo = U64_LO(bnx2x_sp_mapping(bp, port_stats));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  293  		dmae->src_addr_hi = U64_HI(bnx2x_sp_mapping(bp, port_stats));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  294  		dmae->dst_addr_lo = bp->port.port_stx >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  295  		dmae->dst_addr_hi = 0;
-1d187b34daaecb drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c Barak Witkowski 2011-12-05  296  		dmae->len = bnx2x_get_port_stats_dma_len(bp);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27 @297  		dmae->comp_addr_lo = dmae_reg_go_c[loader_idx] >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  298  		dmae->comp_addr_hi = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  299  		dmae->comp_val = 1;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  300  	}
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  301  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  302  	if (bp->func_stx) {
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  303  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  304  		dmae = bnx2x_sp(bp, dmae[bp->executer_idx++]);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  305  		dmae->opcode = opcode;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  306  		dmae->src_addr_lo = U64_LO(bnx2x_sp_mapping(bp, func_stats));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  307  		dmae->src_addr_hi = U64_HI(bnx2x_sp_mapping(bp, func_stats));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  308  		dmae->dst_addr_lo = bp->func_stx >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  309  		dmae->dst_addr_hi = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  310  		dmae->len = sizeof(struct host_func_stats) >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27 @311  		dmae->comp_addr_lo = dmae_reg_go_c[loader_idx] >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  312  		dmae->comp_addr_hi = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  313  		dmae->comp_val = 1;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  314  	}
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  315  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  316  	/* MAC */
-f2e0899f0f275c drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-10-06  317  	opcode = bnx2x_dmae_opcode(bp, DMAE_SRC_GRC, DMAE_DST_PCI,
-f2e0899f0f275c drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-10-06  318  				   true, DMAE_COMP_GRC);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  319  
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  320  	/* EMAC is special */
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  321  	if (bp->link_vars.mac_type == MAC_TYPE_EMAC) {
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  322  		mac_addr = (port ? GRCBASE_EMAC1 : GRCBASE_EMAC0);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  323  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  324  		/* EMAC_REG_EMAC_RX_STAT_AC (EMAC_REG_EMAC_RX_STAT_AC_COUNT)*/
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  325  		dmae = bnx2x_sp(bp, dmae[bp->executer_idx++]);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  326  		dmae->opcode = opcode;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  327  		dmae->src_addr_lo = (mac_addr +
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  328  				     EMAC_REG_EMAC_RX_STAT_AC) >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  329  		dmae->src_addr_hi = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  330  		dmae->dst_addr_lo = U64_LO(bnx2x_sp_mapping(bp, mac_stats));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  331  		dmae->dst_addr_hi = U64_HI(bnx2x_sp_mapping(bp, mac_stats));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  332  		dmae->len = EMAC_REG_EMAC_RX_STAT_AC_COUNT;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  333  		dmae->comp_addr_lo = dmae_reg_go_c[loader_idx] >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  334  		dmae->comp_addr_hi = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  335  		dmae->comp_val = 1;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  336  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  337  		/* EMAC_REG_EMAC_RX_STAT_AC_28 */
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  338  		dmae = bnx2x_sp(bp, dmae[bp->executer_idx++]);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  339  		dmae->opcode = opcode;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  340  		dmae->src_addr_lo = (mac_addr +
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  341  				     EMAC_REG_EMAC_RX_STAT_AC_28) >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  342  		dmae->src_addr_hi = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  343  		dmae->dst_addr_lo = U64_LO(bnx2x_sp_mapping(bp, mac_stats) +
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  344  		     offsetof(struct emac_stats, rx_stat_falsecarriererrors));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  345  		dmae->dst_addr_hi = U64_HI(bnx2x_sp_mapping(bp, mac_stats) +
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  346  		     offsetof(struct emac_stats, rx_stat_falsecarriererrors));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  347  		dmae->len = 1;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  348  		dmae->comp_addr_lo = dmae_reg_go_c[loader_idx] >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  349  		dmae->comp_addr_hi = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  350  		dmae->comp_val = 1;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  351  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  352  		/* EMAC_REG_EMAC_TX_STAT_AC (EMAC_REG_EMAC_TX_STAT_AC_COUNT)*/
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  353  		dmae = bnx2x_sp(bp, dmae[bp->executer_idx++]);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  354  		dmae->opcode = opcode;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  355  		dmae->src_addr_lo = (mac_addr +
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  356  				     EMAC_REG_EMAC_TX_STAT_AC) >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  357  		dmae->src_addr_hi = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  358  		dmae->dst_addr_lo = U64_LO(bnx2x_sp_mapping(bp, mac_stats) +
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  359  			offsetof(struct emac_stats, tx_stat_ifhcoutoctets));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  360  		dmae->dst_addr_hi = U64_HI(bnx2x_sp_mapping(bp, mac_stats) +
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  361  			offsetof(struct emac_stats, tx_stat_ifhcoutoctets));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  362  		dmae->len = EMAC_REG_EMAC_TX_STAT_AC_COUNT;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  363  		dmae->comp_addr_lo = dmae_reg_go_c[loader_idx] >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  364  		dmae->comp_addr_hi = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  365  		dmae->comp_val = 1;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  366  	} else {
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  367  		u32 tx_src_addr_lo, rx_src_addr_lo;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  368  		u16 rx_len, tx_len;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  369  
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  370  		/* configure the params according to MAC type */
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  371  		switch (bp->link_vars.mac_type) {
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  372  		case MAC_TYPE_BMAC:
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  373  			mac_addr = (port ? NIG_REG_INGRESS_BMAC1_MEM :
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  374  					   NIG_REG_INGRESS_BMAC0_MEM);
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  375  
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  376  			/* BIGMAC_REGISTER_TX_STAT_GTPKT ..
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  377  			   BIGMAC_REGISTER_TX_STAT_GTBYT */
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  378  			if (CHIP_IS_E1x(bp)) {
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  379  				tx_src_addr_lo = (mac_addr +
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  380  					BIGMAC_REGISTER_TX_STAT_GTPKT) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  381  				tx_len = (8 + BIGMAC_REGISTER_TX_STAT_GTBYT -
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  382  					  BIGMAC_REGISTER_TX_STAT_GTPKT) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  383  				rx_src_addr_lo = (mac_addr +
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  384  					BIGMAC_REGISTER_RX_STAT_GR64) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  385  				rx_len = (8 + BIGMAC_REGISTER_RX_STAT_GRIPJ -
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  386  					  BIGMAC_REGISTER_RX_STAT_GR64) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  387  			} else {
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  388  				tx_src_addr_lo = (mac_addr +
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  389  					BIGMAC2_REGISTER_TX_STAT_GTPOK) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  390  				tx_len = (8 + BIGMAC2_REGISTER_TX_STAT_GTBYT -
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  391  					  BIGMAC2_REGISTER_TX_STAT_GTPOK) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  392  				rx_src_addr_lo = (mac_addr +
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  393  					BIGMAC2_REGISTER_RX_STAT_GR64) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  394  				rx_len = (8 + BIGMAC2_REGISTER_RX_STAT_GRIPJ -
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  395  					  BIGMAC2_REGISTER_RX_STAT_GR64) >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  396  			}
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  397  			break;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  398  
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  399  		case MAC_TYPE_UMAC: /* handled by MSTAT */
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  400  		case MAC_TYPE_XMAC: /* handled by MSTAT */
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  401  		default:
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  402  			mac_addr = port ? GRCBASE_MSTAT1 : GRCBASE_MSTAT0;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  403  			tx_src_addr_lo = (mac_addr +
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  404  					  MSTAT_REG_TX_STAT_GTXPOK_LO) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  405  			rx_src_addr_lo = (mac_addr +
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  406  					  MSTAT_REG_RX_STAT_GR64_LO) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  407  			tx_len = sizeof(bp->slowpath->
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  408  					mac_stats.mstat_stats.stats_tx) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  409  			rx_len = sizeof(bp->slowpath->
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  410  					mac_stats.mstat_stats.stats_rx) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  411  			break;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  412  		}
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  413  
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  414  		/* TX stats */
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  415  		dmae = bnx2x_sp(bp, dmae[bp->executer_idx++]);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  416  		dmae->opcode = opcode;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  417  		dmae->src_addr_lo = tx_src_addr_lo;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  418  		dmae->src_addr_hi = 0;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  419  		dmae->len = tx_len;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  420  		dmae->dst_addr_lo = U64_LO(bnx2x_sp_mapping(bp, mac_stats));
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  421  		dmae->dst_addr_hi = U64_HI(bnx2x_sp_mapping(bp, mac_stats));
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  422  		dmae->comp_addr_lo = dmae_reg_go_c[loader_idx] >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  423  		dmae->comp_addr_hi = 0;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  424  		dmae->comp_val = 1;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  425  
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  426  		/* RX stats */
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  427  		dmae = bnx2x_sp(bp, dmae[bp->executer_idx++]);
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  428  		dmae->opcode = opcode;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  429  		dmae->src_addr_hi = 0;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  430  		dmae->src_addr_lo = rx_src_addr_lo;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  431  		dmae->dst_addr_lo =
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  432  			U64_LO(bnx2x_sp_mapping(bp, mac_stats) + (tx_len << 2));
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  433  		dmae->dst_addr_hi =
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  434  			U64_HI(bnx2x_sp_mapping(bp, mac_stats) + (tx_len << 2));
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  435  		dmae->len = rx_len;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  436  		dmae->comp_addr_lo = dmae_reg_go_c[loader_idx] >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  437  		dmae->comp_addr_hi = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  438  		dmae->comp_val = 1;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  439  	}
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  440  
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  441  	/* NIG */
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  442  	if (!CHIP_IS_E3(bp)) {
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  443  		dmae = bnx2x_sp(bp, dmae[bp->executer_idx++]);
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  444  		dmae->opcode = opcode;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  445  		dmae->src_addr_lo = (port ? NIG_REG_STAT1_EGRESS_MAC_PKT0 :
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  446  					    NIG_REG_STAT0_EGRESS_MAC_PKT0) >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  447  		dmae->src_addr_hi = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  448  		dmae->dst_addr_lo = U64_LO(bnx2x_sp_mapping(bp, nig_stats) +
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  449  				offsetof(struct nig_stats, egress_mac_pkt0_lo));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  450  		dmae->dst_addr_hi = U64_HI(bnx2x_sp_mapping(bp, nig_stats) +
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  451  				offsetof(struct nig_stats, egress_mac_pkt0_lo));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  452  		dmae->len = (2*sizeof(u32)) >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  453  		dmae->comp_addr_lo = dmae_reg_go_c[loader_idx] >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  454  		dmae->comp_addr_hi = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  455  		dmae->comp_val = 1;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  456  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  457  		dmae = bnx2x_sp(bp, dmae[bp->executer_idx++]);
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  458  		dmae->opcode = opcode;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  459  		dmae->src_addr_lo = (port ? NIG_REG_STAT1_EGRESS_MAC_PKT1 :
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  460  					    NIG_REG_STAT0_EGRESS_MAC_PKT1) >> 2;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  461  		dmae->src_addr_hi = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  462  		dmae->dst_addr_lo = U64_LO(bnx2x_sp_mapping(bp, nig_stats) +
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  463  				offsetof(struct nig_stats, egress_mac_pkt1_lo));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  464  		dmae->dst_addr_hi = U64_HI(bnx2x_sp_mapping(bp, nig_stats) +
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  465  				offsetof(struct nig_stats, egress_mac_pkt1_lo));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  466  		dmae->len = (2*sizeof(u32)) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  467  		dmae->comp_addr_lo = dmae_reg_go_c[loader_idx] >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  468  		dmae->comp_addr_hi = 0;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  469  		dmae->comp_val = 1;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  470  	}
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  471  
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  472  	dmae = bnx2x_sp(bp, dmae[bp->executer_idx++]);
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  473  	dmae->opcode = bnx2x_dmae_opcode(bp, DMAE_SRC_GRC, DMAE_DST_PCI,
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  474  						 true, DMAE_COMP_PCI);
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  475  	dmae->src_addr_lo = (port ? NIG_REG_STAT1_BRB_DISCARD :
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  476  				    NIG_REG_STAT0_BRB_DISCARD) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  477  	dmae->src_addr_hi = 0;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  478  	dmae->dst_addr_lo = U64_LO(bnx2x_sp_mapping(bp, nig_stats));
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  479  	dmae->dst_addr_hi = U64_HI(bnx2x_sp_mapping(bp, nig_stats));
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  480  	dmae->len = (sizeof(struct nig_stats) - 4*sizeof(u32)) >> 2;
-619c5cb6885b93 drivers/net/bnx2x/bnx2x_stats.c                   Vlad Zolotarov  2011-06-14  481  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  482  	dmae->comp_addr_lo = U64_LO(bnx2x_sp_mapping(bp, stats_comp));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  483  	dmae->comp_addr_hi = U64_HI(bnx2x_sp_mapping(bp, stats_comp));
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  484  	dmae->comp_val = DMAE_COMP_VAL;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  485  
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  486  	*stats_comp = 0;
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  487  }
-6c719d00bd9911 drivers/net/bnx2x/bnx2x_stats.c                   Dmitry Kravkov  2010-07-27  488  
+-----BEGIN PGP SIGNATURE-----
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZIPsfQAKCRD2uYlJVVFO
+oxpFAQCrGppj99DKodnOp3dVnzzMHvTFSi9b+5NqT+85PS7hMAEA8DoYn8bQLZLC
+GC2UJb286at5SJe2ugT8Z1RKDOjiLwc=
+=YT64
+-----END PGP SIGNATURE-----
+
+--hkgrD8VFvSTSqR82--
 
