@@ -1,137 +1,107 @@
-Return-Path: <netdev+bounces-9781-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9782-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3F9AF72A8D5
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 05:37:56 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id C77D472A8DC
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 05:47:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E14D2281AC5
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 03:37:54 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7AF3C281ACA
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 03:47:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3727D5386;
-	Sat, 10 Jun 2023 03:37:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BBA071FCA;
+	Sat, 10 Jun 2023 03:47:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 244971847;
-	Sat, 10 Jun 2023 03:37:50 +0000 (UTC)
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61EADC4;
-	Fri,  9 Jun 2023 20:37:49 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id 38308e7fff4ca-2b1b66a8fd5so27040001fa.0;
-        Fri, 09 Jun 2023 20:37:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686368267; x=1688960267;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0x7R8VVA4vLkv9Rby6vo0luiqm3mpTBGzVgZHdxl4ws=;
-        b=jlvs4fz58SeqT+S2VakKT4dKuwnxl4G/Bmyk9BsdAMEb8Ekk4SEvNQXVlHFlC7g6ra
-         TUVD/DF5jkUDlylpqHfF+GRWJj6tdXuy2wZNKt9lVqRCz1JbSP8rREtZJun/4h31o6/g
-         k2Z67F44Uu0rQSvgvrXklwNRl9ZO0qzsTWHwVfsBPD6/LMeVzDsitzlfk/cVeSqETLNT
-         OboPKFTLNG2DHOKBs02tVKQmUOdG5/t24YSi/p3gGs9DfFuHN8nIRVaEKJPrf3wHjFyU
-         4bMFecFui/bp5fWXlRZDbH+N/4HMRrSnlWWCQ4OrcTKG1GkTyIJpNju9sJAR+4jJq54f
-         LhnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686368267; x=1688960267;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=0x7R8VVA4vLkv9Rby6vo0luiqm3mpTBGzVgZHdxl4ws=;
-        b=YUILN8fGxsD/YtEfbUVWe2S/1VAU1NojjG7Etqv5qFS1vgm9Q+B248jt9RnuB7NRPC
-         2pNDDM6dCRlskIPq2T4j8aft+FdrNCg++azUc3XsI/FL2zey0VawyP4YWxx5AJgiv/+P
-         Z1z1tlKcPZVhRktvRwTsvFMbAgFKwl4jFOZbr4gNbWS0emHvNO91Rlk7TQNR4GE48Iih
-         yMywllFnHoS7zSuocZ7OCJvaLyEb1W7cQCokRVPPxZinTK6cNw43RGbPLw5Bcq8TAIwI
-         /QqelysUnDemOmL+MJNVmfOArhOUMJye4jh72YG8mxt3hswX4xn8/UFm7fHbejIDpbCl
-         8zEQ==
-X-Gm-Message-State: AC+VfDzuAm7rjkX7Ts3sCJeNgu4g8GEdTvMUw0iLcw5Syzwhr/f0LVZW
-	Y1Brb6nognmTLgv1zH/HLrfTEo6ugdkAeJvB54LcdfrpS0s=
-X-Google-Smtp-Source: ACHHUZ548OlaFV+egNkLGD/DOYl5NZK1pOjq0Rj+PWBbnT2P50S5bXoW8K/FdNjMB99qwoaeFKTxbuounul4TIX1nyc=
-X-Received: by 2002:a2e:9ad1:0:b0:2a7:974d:a461 with SMTP id
- p17-20020a2e9ad1000000b002a7974da461mr254401ljj.34.1686368267204; Fri, 09 Jun
- 2023 20:37:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC7F217C1
+	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 03:47:37 +0000 (UTC)
+Received: from mail-m11875.qiye.163.com (mail-m11875.qiye.163.com [115.236.118.75])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A83272A;
+	Fri,  9 Jun 2023 20:47:34 -0700 (PDT)
+Received: from [IPV6:240e:3b7:3279:1440:9db:41ed:be98:62d0] (unknown [IPV6:240e:3b7:3279:1440:9db:41ed:be98:62d0])
+	by mail-m11875.qiye.163.com (Hmail) with ESMTPA id 9DE07280E6E;
+	Sat, 10 Jun 2023 11:47:27 +0800 (CST)
+Message-ID: <ffa3498a-4227-837c-b7b8-e00f4b327a80@sangfor.com.cn>
+Date: Sat, 10 Jun 2023 11:47:40 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CAADnVQKLZ77pU7EAWPWzL=sCbJgUtZ3u-=Ma-Gf3T3kryYnh_w@mail.gmail.com>
- <20230610022721.2950602-1-prankgup@fb.com>
-In-Reply-To: <20230610022721.2950602-1-prankgup@fb.com>
-From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date: Fri, 9 Jun 2023 20:37:35 -0700
-Message-ID: <CAADnVQJyQKbrZ+djWP-zgotYzzftv0TERFsi9VfuaDnmenyd3g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/7] bpf: Add generic attach/detach/query API
- for multi-progs
-To: Prankur gupta <prankgup@fb.com>
-Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>, Andrii Nakryiko <andrii@kernel.org>, 
-	Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>, 
-	Daniel Borkmann <daniel@iogearbox.net>, "David S. Miller" <davem@davemloft.net>, Daniel Xu <dxu@dxuuu.xyz>, 
-	Joe Stringer <joe@cilium.io>, John Fastabend <john.fastabend@gmail.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, 
-	Network Development <netdev@vger.kernel.org>, Nikolay Aleksandrov <razor@blackwall.org>, 
-	Stanislav Fomichev <sdf@google.com>, Timo Beckers <timo@incline.eu>, 
-	=?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>, 
-	prankur.07@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: [PATCH net-next] net: ethtool: Fix out-of-bounds copy to user
+To: Alexander Duyck <alexander.duyck@gmail.com>,
+ Jakub Kicinski <kuba@kernel.org>
+Cc: Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, edumazet@google.com,
+ pabeni@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ pengdonglin@sangfor.com.cn, huangcun@sangfor.com.cn
+References: <20230601112839.13799-1-dinghui@sangfor.com.cn>
+ <6110cf9f-c10e-4b9b-934d-8d202b7f5794@lunn.ch>
+ <f7e23fe6-4d30-ef1b-a431-3ef6ec6f77ba@sangfor.com.cn>
+ <6e28cea9-d615-449d-9c68-aa155efc8444@lunn.ch>
+ <CAKgT0UdyykQL-BidjaNpjX99FwJTxET51U29q4_CDqmABUuVbw@mail.gmail.com>
+ <ece228a3-5c31-4390-b6ba-ec3f2b6c5dcb@lunn.ch>
+ <CAKgT0Uf+XaKCFgBRTn-viVsKkNE7piAuDpht=efixsAV=3JdFQ@mail.gmail.com>
+ <44905acd-3ac4-cfe5-5e91-d182c1959407@sangfor.com.cn>
+ <20230602225519.66c2c987@kernel.org>
+ <5f0f2bab-ae36-8b13-2c6d-c69c6ff4a43f@sangfor.com.cn>
+ <20230604104718.4bf45faf@kernel.org>
+ <f6ad6281-df30-93cf-d057-5841b8c1e2e6@sangfor.com.cn>
+ <20230605113915.4258af7f@kernel.org>
+ <034f5393-e519-1e8d-af76-ae29677a1bf5@sangfor.com.cn>
+ <CAKgT0UdX7cc-LVFowFrY7mSZMvN0xc+w+oH16GNrduLY-AddSA@mail.gmail.com>
+ <9c1fecc1-7d17-c039-6bfa-c63be6fcf013@sangfor.com.cn>
+ <20230609101301.39fcb12b@kernel.org>
+ <CAKgT0UeePd_+UwpGTT_v7nacf=yLoravtEZ2-gN4dpeWC5AsBg@mail.gmail.com>
+From: Ding Hui <dinghui@sangfor.com.cn>
+In-Reply-To: <CAKgT0UeePd_+UwpGTT_v7nacf=yLoravtEZ2-gN4dpeWC5AsBg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkaSUxNVk0eTBhJQ0tKGk1CGFUTARMWGhIXJBQOD1
+	lXWRgSC1lBWUlPSx5BSBlMQUhJTEJBSk9PS0FCHxlBT0oeH0EZHkJDQU1JH0tZV1kWGg8SFR0UWU
+	FZT0tIVUpKS0hKTFVKS0tVS1kG
+X-HM-Tid: 0a88a36a888b2eb1kusn9de07280e6e
+X-HM-MType: 1
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nk06LAw5HT1DTSM3MC0rMUoe
+	EBUwCyJVSlVKTUNNSE1DQ09DT0tDVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
+	QVlJT0seQUgZTEFISUxCQUpPT0tBQh8ZQU9KHh9BGR5CQ0FNSR9LWVdZCAFZQU9IQ043Bg++
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 9, 2023 at 8:03=E2=80=AFPM Prankur gupta <prankgup@fb.com> wrot=
-e:
->
-> >>
-> >> Me, Daniel, Timo are arguing that there are real situations where you
-> >> have to be first or need to die.
-> >
-> > afaik out of all xdp and tc progs there is not a single prog in the fb =
-fleet
-> > that has to be first.
-> > fb's ddos and firewall don't have to be first.
-> > cilium and datadog progs don't have to be first either.
-> > The race between cilium and datadog was not the race to the first posit=
-ion,
-> > but the conflict due to the same prio.
-> > In all cases, I'm aware, prog owners care a lot about ordering,
-> > but never about strict first.
->
-> One usecase which we actively use in Meta(fb) fleet is avoiding double wr=
-iter for
-> cgroup/sockops bpf programs. For ex: we can have multiple BPF programs se=
-tting
-> skops->reply field resulting in stepping on each other for ex: for ECN ca=
-llback
-> one program can set it 1 and other can set it to 0.
-> We do that by creating a pre-func and post-func before
-> executing sockops BPF program in our custom built chainer.
->
-> We want these functions to be executed first and last respectively which =
-actually
-> makes the above functionality useful for us.
->
-> Hypothetical usecase for cgroup/sockops - Middle BPF programs will not se=
-t skops->reply
-> and the final BPF program based on results from each of the middle
-> BPF program can set the appropriate reply to skops->reply, thus making su=
-re all the middle
-> programs executed and the final reply is correct.
+On 2023/6/10 1:59, Alexander Duyck wrote:
+> On Fri, Jun 9, 2023 at 10:13 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>>
+>> On Fri, 9 Jun 2023 23:25:34 +0800 Ding Hui wrote:
+>>> drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c: .get_sset_count         = nfp_net_get_sset_count,
+>>> drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c: .get_sset_count         = nfp_port_get_sset_count,
+>>
+>> Not sure if your research is accurate, NFP does not change the number
+>> of stats. The number depends on the device and the FW loaded, but those
+>> are constant during a lifetime of a netdevice.
 
-cgroup progs are more complicated than a simple list of progs in tc/xdp.
-It is not really possible for the kernel to guarantee absolute last and fir=
-st
-in a hierarchy of cgroups. In theory that's possible within a cgroup,
-but not when children and parents are involved and progs can be
-attached anywhere in the hierarchy and we need to keep
-uapi of BPF_F_ALLOW_OVERRIDE, BPF_F_ALLOW_MULTI intact.
-The absolute first/last is not the answer for this skops issue.
-A different solution is necessary.
+Sorry, my research is rough indeed.
+
+> 
+> Yeah, the value doesn't need to be a constant, it just need to be constant.
+> 
+> So for example in the ixgbe driver I believe we were using the upper
+> limits on the Tx and Rx queues which last I recall are stored in the
+> netdev itself.
+> 
+Thanks to point that, the examples NFP and ixgbe do help me.
+            
+-- 
+Thanks,
+-dinghui
+
 
