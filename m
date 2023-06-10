@@ -1,150 +1,95 @@
-Return-Path: <netdev+bounces-9812-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9813-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8B5CD72ABA4
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 15:13:49 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D305772AC7D
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 17:08:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 54F2A1C20AC3
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 13:13:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 19FBC281397
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 15:07:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2736A16421;
-	Sat, 10 Jun 2023 13:13:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F3845171A4;
+	Sat, 10 Jun 2023 15:07:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A14ABA4E
-	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 13:13:45 +0000 (UTC)
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F04426B1;
-	Sat, 10 Jun 2023 06:13:44 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id d9443c01a7336-1b3b5a5134dso596415ad.2;
-        Sat, 10 Jun 2023 06:13:44 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E77E2C15C
+	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 15:07:48 +0000 (UTC)
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35E83AAA
+	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 08:07:45 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id d2e1a72fcca58-653f9c7b3e4so2247940b3a.2
+        for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 08:07:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686402823; x=1688994823;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xsZHpFFEg1aiG9pWfwZJZiPP97oTmn5dJUzpJC9EWqY=;
-        b=Lhx3+goHLzT60FeyKoZ6DHIuzTkj3UxiIdQ1KMPp0aBK2bxWJ1sRcCob+LT9u1rEsf
-         p4+oQUxXGRoxTYqRAtP15/E2nN+/XqSjcVfEsM/5LXCw/GhkLiqcxiQVTGkxkp7TFZjs
-         21rlXwkHxFNgBxyOmBweFkidGSYPbmd17ftthCB9FdSow+LmbmObHW17eAvEvtPngdUF
-         7LYY6kvbXQMyEHZr92k58N+4pSafCiCkYZMnKrhGjvieZYsImTNFn+bfpYmaGWE+4WJd
-         AKvLXrEDtyti/IjjoKKq7yphIKGtR4uzAZxDT5gtcfi1ZKSfzbSBg7cGBFggMYL6lDy4
-         R63Q==
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1686409665; x=1689001665;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=N+OwDas9lj8b/o3V8lkOk9a6MOfWBvvSjFJASd1oAkw=;
+        b=OOATwZuJz1XpIayU6qEWJsTjt3CY+4SMX0O0hFz4qhukDiqKsW+2HfODMVSjDY0PS8
+         dM86VQyjvRTSnncMd8NEQ1Y3ajqSyztqwK1L4AHsdyCggJCjMPhoHDYKqNNW/QTmsvkl
+         My6SqZzBK775E7qllyKf/D3HPM+CU0UogJlokXdyYcF3DIiOmW498DR8UJaYMOxa4taL
+         sO3cymRYwckFon9LanxHS8e9U/hC5GpwfPqq9UwNBxRTStvS4jMi3j+bn53NCB2HcAzM
+         zZwpBqsJYUp+qDWJUUO7vVRWb6hTATh/04CW99B7zboxr6WE5Dc4EPBPdzzm3JjPAp3M
+         PTTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686402823; x=1688994823;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xsZHpFFEg1aiG9pWfwZJZiPP97oTmn5dJUzpJC9EWqY=;
-        b=UNB7TrcDF+oucUTktGlArbZoZ7zpytqefwAJBxT2CasgPWgcOJtVpP3bKQvD1PLNwL
-         6PruJfuAbxEr4tl3q+zVZmGnUDphnQHv4LCpbHDfCXj13JVym195pOVmfljKJc6MudrH
-         1k7Sp5Ju9JMBT7KkiaP3aqRrl6mjuiFamLB2kY5aeJT4n16NLB0Hl9JzClEMj9x1NTK9
-         21Bvl0enPCH+paykFjceyGqi/1yNctTxjdqFxSur65lzobz4yLzKQE+aCrx2NBMYdPUv
-         /hmfvots/wbEGCQaodqRq3qhxzVOQYyHab0jHyvoSUXt1kmdOruAyMdtxK0u7LZFQ9qx
-         /dQQ==
-X-Gm-Message-State: AC+VfDxXkV8PzOw6u1aNlmOBeRLLzX/mBn1o8iyo3dRjpJOdE3mFQ1Ft
-	VnBDUGM1gOdKyvxbH020EgxcWBKDJ9EG0FBnwx4=
-X-Google-Smtp-Source: ACHHUZ5HXZMOmfbEv2/eWLiHRpM3NQeADEJCnzd539jzBqe8sDyS60Wc8qanH4oltZdQRMjKrxNtBg==
-X-Received: by 2002:a17:902:c411:b0:1af:b7cd:5961 with SMTP id k17-20020a170902c41100b001afb7cd5961mr2655583plk.1.1686402823481;
-        Sat, 10 Jun 2023 06:13:43 -0700 (PDT)
-Received: from ?IPv6:2409:8a55:301b:e120:20b4:84e8:2690:6d80? ([2409:8a55:301b:e120:20b4:84e8:2690:6d80])
-        by smtp.gmail.com with ESMTPSA id jj19-20020a170903049300b001aae64e9b36sm5001073plb.114.2023.06.10.06.13.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 10 Jun 2023 06:13:42 -0700 (PDT)
-Subject: Re: [PATCH net-next v3 1/4] page_pool: frag API support for 32-bit
- arch with 64-bit DMA
-To: Jesper Dangaard Brouer <jbrouer@redhat.com>,
- Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net, kuba@kernel.org,
- pabeni@redhat.com
-Cc: brouer@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- Lorenzo Bianconi <lorenzo@kernel.org>,
- Alexander Duyck <alexander.duyck@gmail.com>,
- Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>,
- Eric Dumazet <edumazet@google.com>, Jesper Dangaard Brouer
- <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- linux-rdma@vger.kernel.org
-References: <20230609131740.7496-1-linyunsheng@huawei.com>
- <20230609131740.7496-2-linyunsheng@huawei.com>
- <4f1a0b7d-973f-80f5-cc39-74f09622ccef@redhat.com>
-From: Yunsheng Lin <yunshenglin0825@gmail.com>
-Message-ID: <1bbf2afa-91b2-a3d0-60e0-81cd386eb68d@gmail.com>
-Date: Sat, 10 Jun 2023 21:13:21 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.2
+        d=1e100.net; s=20221208; t=1686409665; x=1689001665;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=N+OwDas9lj8b/o3V8lkOk9a6MOfWBvvSjFJASd1oAkw=;
+        b=c74JWSJu2Z9fPYKjIpSrTrlZcKtrmbl3Yoq/drHH81TWcZ/RaHQVnZ8o+3IW7BNUA3
+         uo54iVrfFf/6Hds6pa9NJXTHXTylHEiKsRyX+t/Rh5xEC4d/h2sZFfmo8h3YXmy2pNTL
+         v/MpAwKu9UhF+6XBQgzCvNDAA4WeUeRuzGX4D2OmXCZJRd/FOSH5qZ2xutVENO3jTCiT
+         fUSE9NkB/83MnLFrXjvb6mXRuCOFOdeGtEf78xdl7d6XmLMDkFhS2P9VPb6GfnVP21Du
+         AIjVLfRmDD7ri58y6obEvqyT15McxGxiM9DQUPegD0B6j6LU4twsJ/oKRb41/B+Cc5/Z
+         yKUA==
+X-Gm-Message-State: AC+VfDw0mRhlSi7pKImcayetjLoNFAydu8EOc2EWu55oWNHbTY1CK5vz
+	zzKAgvdeXDZrBdp3/ILjAG3PZw==
+X-Google-Smtp-Source: ACHHUZ4r4eCGoy6iuu0IW9XAISMqoeXHH/Fv2bhIfewU3fQ3CD19OKfSes9kinrORhYOGStJ4RF3lw==
+X-Received: by 2002:a05:6a00:22c4:b0:646:b165:1b29 with SMTP id f4-20020a056a0022c400b00646b1651b29mr5033723pfj.23.1686409665296;
+        Sat, 10 Jun 2023 08:07:45 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id 5-20020aa79145000000b0064cb6206463sm4231318pfi.85.2023.06.10.08.07.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 10 Jun 2023 08:07:45 -0700 (PDT)
+Date: Sat, 10 Jun 2023 08:07:42 -0700
+From: Stephen Hemminger <stephen@networkplumber.org>
+To: Yi He <clangllvm@126.com>
+Cc: ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+ song@kernel.org, yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+ sdf@google.com, haoluo@google.com, jolsa@kernel.org, rostedt@goodmis.org,
+ mhiramat@kernel.org, davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+ linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+ netdev@vger.kernel.org, bpf@vger.kernel.org,
+ linux-security-module@vger.kernel.org
+Subject: Re: [PATCH] Add a sysctl option to disable bpf offensive helpers.
+Message-ID: <20230610080742.5b51a721@hermes.local>
+In-Reply-To: <20230610110518.123183-1-clangllvm@126.com>
+References: <20230610110518.123183-1-clangllvm@126.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <4f1a0b7d-973f-80f5-cc39-74f09622ccef@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 2023/6/9 23:02, Jesper Dangaard Brouer wrote:
-...
+On Sat, 10 Jun 2023 11:05:18 +0000
+Yi He <clangllvm@126.com> wrote:
 
->>                    PP_FLAG_DMA_SYNC_DEV |\
->>                    PP_FLAG_PAGE_FRAG)
->>   +#define PAGE_POOL_DMA_USE_PP_FRAG_COUNT    \
->> +        (sizeof(dma_addr_t) > sizeof(unsigned long))
->> +
-> 
-> I have a problem with the name PAGE_POOL_DMA_USE_PP_FRAG_COUNT
-> because it is confusing to read in an if-statement.
+> Signed-off-by: fripSide <clangllvm@126.com>
 
-Actually, it is already in an if-statement before this patch:)
-Maybe starting to use it in the driver is confusing to you?
-If not, maybe we can keep it that for now, and change it when
-we come up with a better name.
-
-> 
-> Proposals rename to:  DMA_OVERLAP_PP_FRAG_COUNT
->  Or:  MM_DMA_OVERLAP_PP_FRAG_COUNT
->  Or:  DMA_ADDR_OVERLAP_PP_FRAG_COUNT
-
-It seems DMA_ADDR_OVERLAP_PP_FRAG_COUNT is better,
-and DMA_ADDR_UPPER_OVERLAP_PP_FRAG_COUNT seems more accurate if a
-longer macro name is not an issue here.
-
-> 
-> Notice how I also removed the prefix PAGE_POOL_ because this is a MM-layer constraint and not a property of page_pool.
-
-I am not sure if it is a MM-layer constraint yet.
-Do you mean 'MM-layer constraint' as 'struct page' not having
-enough space for page pool with 32-bit arch with 64-bit DMA?
-If that is the case, we may need a more generic name for that
-constraint instead of 'DMA_ADDR_OVERLAP_PP_FRAG_COUNT'?
-
-And a more generic name seems confusing for page pool too, as
-it doesn't tell that we only have that problem for 32-bit arch
-with 64-bit DMA.
-
-So if the above makes sense, it seems we may need to keep the
-PAGE_POOL_ prefix, which would be
-'PAGE_POOL_DMA_ADDR_UPPER_OVERLAP_PP_FRAG_COUNT' if the long
-name is not issue here.
-
-Anyway, naming is hard, we may need a seperate patch to explain
-it, which is not really related to this patchset IHMO, so I'd
-rather keep it as before if we can not come up with a name which
-is not confusing to most people.
-
-> 
-> 
-> --Jesper
-> 
-> 
+You need to use your legal name not a hacker alias
+in DCO since DCO is intended to be a legally binding assertion.
 
