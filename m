@@ -1,111 +1,74 @@
-Return-Path: <netdev+bounces-9783-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9784-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id EFE9872A8F8
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 06:01:04 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6AF8172A94F
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 08:18:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1C5DE1C211BC
-	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 04:01:01 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B2C5E281AAC
+	for <lists+netdev@lfdr.de>; Sat, 10 Jun 2023 06:18:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C5B3C5398;
-	Sat, 10 Jun 2023 04:01:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D1C756FAC;
+	Sat, 10 Jun 2023 06:18:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B86611878
-	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 04:01:01 +0000 (UTC)
-Received: from mail-m11875.qiye.163.com (mail-m11875.qiye.163.com [115.236.118.75])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E566319BB;
-	Fri,  9 Jun 2023 21:00:58 -0700 (PDT)
-Received: from [IPV6:240e:3b7:3279:1440:9db:41ed:be98:62d0] (unknown [IPV6:240e:3b7:3279:1440:9db:41ed:be98:62d0])
-	by mail-m11875.qiye.163.com (Hmail) with ESMTPA id 8BC2C280E48;
-	Sat, 10 Jun 2023 12:00:53 +0800 (CST)
-Message-ID: <6a1a873a-e2d9-dce0-8fcb-9415b6124550@sangfor.com.cn>
-Date: Sat, 10 Jun 2023 12:01:06 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B76546FA7
+	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 06:18:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 629E2C433EF;
+	Sat, 10 Jun 2023 06:18:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686377925;
+	bh=KPgD/9Glz7+iZJGMHKYZ1mmYqCqGiq+K6N4Gb83nmU4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=WfQA/qiwN1uY78SbVfP0pXYOw5bXZvDwqwyzVfboSQZbiZl0tmk8E/y8FT5EmvVMs
+	 F9laZGCQo2iY3O1qTj+IoL/woQBGKebAO2I3ZrX+r/pbvax59Us1GFfb8iMUxE5sNB
+	 L1SlxWyszSzsPrKaE+Zs3NxL9o01Cg0L9OoRoFAufQYowtk+fclGqD8zPXJVSds3Hr
+	 ayV+4d3cOmKBrxNlu1Aug5zApooRSDmAVd1tDEHj9YrEh7OG9onz6N+HT3tc658Eh/
+	 ivqV9atz7ykJKM5D0f/886+1PddRHsJzU+ev2NjjSzwXdn7GSHcgx3aZ5n6NPFXiH6
+	 oXdvy72MdEqoQ==
+Date: Fri, 9 Jun 2023 23:18:43 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Justin Chen <justin.chen@broadcom.com>
+Cc: netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+ florian.fainelli@broadcom.com, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Andrew
+ Lunn <andrew@lunn.ch>, Daniil Tatianin <d-tatianin@yandex-team.ru>, Ido
+ Schimmel <idosch@nvidia.com>, Marco Bonelli <marco@mebeim.net>, Wolfram
+ Sang <wsa+renesas@sang-engineering.com>, Jiri Pirko <jiri@resnulli.us>, Gal
+ Pressman <gal@nvidia.com>, Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+ Kuniyuki Iwashima <kuniyu@amazon.com>, open list
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next] ethtool: ioctl: improve error checking for
+ set_wol
+Message-ID: <20230609231843.6e5a18db@kernel.org>
+In-Reply-To: <c512a8ee-cfc7-d0c8-6cf2-442da8dc1f1b@broadcom.com>
+References: <1686179653-29750-1-git-send-email-justin.chen@broadcom.com>
+	<c512a8ee-cfc7-d0c8-6cf2-442da8dc1f1b@broadcom.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.2
-Subject: Re: [PATCH net-next] net: ethtool: Fix out-of-bounds copy to user
-From: Ding Hui <dinghui@sangfor.com.cn>
-To: Alexander Duyck <alexander.duyck@gmail.com>,
- Jakub Kicinski <kuba@kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, edumazet@google.com,
- pabeni@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- pengdonglin@sangfor.com.cn, huangcun@sangfor.com.cn, jacob.e.keller@intel.com
-References: <20230601112839.13799-1-dinghui@sangfor.com.cn>
- <f7e23fe6-4d30-ef1b-a431-3ef6ec6f77ba@sangfor.com.cn>
- <6e28cea9-d615-449d-9c68-aa155efc8444@lunn.ch>
- <CAKgT0UdyykQL-BidjaNpjX99FwJTxET51U29q4_CDqmABUuVbw@mail.gmail.com>
- <ece228a3-5c31-4390-b6ba-ec3f2b6c5dcb@lunn.ch>
- <CAKgT0Uf+XaKCFgBRTn-viVsKkNE7piAuDpht=efixsAV=3JdFQ@mail.gmail.com>
- <44905acd-3ac4-cfe5-5e91-d182c1959407@sangfor.com.cn>
- <20230602225519.66c2c987@kernel.org>
- <5f0f2bab-ae36-8b13-2c6d-c69c6ff4a43f@sangfor.com.cn>
- <20230604104718.4bf45faf@kernel.org>
- <f6ad6281-df30-93cf-d057-5841b8c1e2e6@sangfor.com.cn>
- <20230605113915.4258af7f@kernel.org>
- <034f5393-e519-1e8d-af76-ae29677a1bf5@sangfor.com.cn>
- <CAKgT0UdX7cc-LVFowFrY7mSZMvN0xc+w+oH16GNrduLY-AddSA@mail.gmail.com>
- <9c1fecc1-7d17-c039-6bfa-c63be6fcf013@sangfor.com.cn>
- <20230609101301.39fcb12b@kernel.org>
- <CAKgT0UeePd_+UwpGTT_v7nacf=yLoravtEZ2-gN4dpeWC5AsBg@mail.gmail.com>
- <ffa3498a-4227-837c-b7b8-e00f4b327a80@sangfor.com.cn>
-In-Reply-To: <ffa3498a-4227-837c-b7b8-e00f4b327a80@sangfor.com.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkZHh0eVkkZQhhPGh5DTklOQ1UTARMWGhIXJBQOD1
-	lXWRgSC1lBWUlPSx5BSBlMQUhJTEJBSk9PS0FCHxlBT0oeH0EZHkJDQU1JH0tZV1kWGg8SFR0UWU
-	FZT0tIVUpKS0hKTFVKS0tVS1kG
-X-HM-Tid: 0a88a376d49d2eb1kusn8bc2c280e48
-X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Pi46CDo4Vj1WLiMdGhwLAzIU
-	ETQwCSNVSlVKTUNNSE1CTU5PSUJPVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
-	QVlJT0seQUgZTEFISUxCQUpPT0tBQh8ZQU9KHh9BGR5CQ0FNSR9LWVdZCAFZQU9OQkk3Bg++
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 2023/6/10 11:47, Ding Hui wrote:
-> On 2023/6/10 1:59, Alexander Duyck wrote:
->> On Fri, Jun 9, 2023 at 10:13 AM Jakub Kicinski <kuba@kernel.org> wrote:
->>>
->>> On Fri, 9 Jun 2023 23:25:34 +0800 Ding Hui wrote:
->>>> drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c: .get_sset_count         = nfp_net_get_sset_count,
->>>> drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c: .get_sset_count         = nfp_port_get_sset_count,
->>>
->>> Not sure if your research is accurate, NFP does not change the number
->>> of stats. The number depends on the device and the FW loaded, but those
->>> are constant during a lifetime of a netdevice.
+On Fri, 9 Jun 2023 13:47:22 -0700 Justin Chen wrote:
+> Was thinking more about this patch. I realized we don't account for the 
+> different sopass case.
+> # ethtool -s eth0 wol s sopass 11:22:33:44:55:66
+> # ethtool -s eth0 wol s sopass 22:44:55:66:77:88
 > 
-> Sorry, my research is rough indeed.
-> 
->>
->> Yeah, the value doesn't need to be a constant, it just need to be constant.
->>
->> So for example in the ixgbe driver I believe we were using the upper
->> limits on the Tx and Rx queues which last I recall are stored in the
->> netdev itself.
->>
-> Thanks to point that, the examples NFP and ixgbe do help me.
+> For this case, the second sopass values won't be stored.
+>
+> Can you drop this patch? I will submit another version.
 
-The commit f8ba7db85035 ("ice: Report stats for allocated queues via ethtool stats")
-also helps a lot.
-
--- 
-Thanks,
--dinghui
-
+We can't drop patches, it'd mess up commit IDs and basing
+trees on top of net-next would be a major PITA for people.
+Please send a fix on top (with a Fixes tag making it clear
+that the problem has not reached any -rc kernel).
 
