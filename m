@@ -1,32 +1,32 @@
-Return-Path: <netdev+bounces-9924-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9925-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3164172B2FD
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 19:19:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 52F3372B309
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 19:19:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1C9A31C209B0
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 17:19:30 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 973091C209DC
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 17:19:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 900D4D304;
-	Sun, 11 Jun 2023 17:19:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 06E8EDDCE;
+	Sun, 11 Jun 2023 17:19:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84421DDCE
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F07ABE556
 	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 17:19:21 +0000 (UTC)
 Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72CBBE5F;
-	Sun, 11 Jun 2023 10:19:18 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 57FD6E68;
+	Sun, 11 Jun 2023 10:19:20 -0700 (PDT)
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 0EA1A9200B4; Sun, 11 Jun 2023 19:19:15 +0200 (CEST)
+	id B62CE9200BC; Sun, 11 Jun 2023 19:19:19 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 0B5499200B3;
-	Sun, 11 Jun 2023 18:19:15 +0100 (BST)
-Date: Sun, 11 Jun 2023 18:19:14 +0100 (BST)
+	by angie.orcam.me.uk (Postfix) with ESMTP id AEEC09200B3;
+	Sun, 11 Jun 2023 18:19:19 +0100 (BST)
+Date: Sun, 11 Jun 2023 18:19:19 +0100 (BST)
 From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 To: Bjorn Helgaas <bhelgaas@google.com>, 
     Mahesh J Salgaonkar <mahesh@linux.ibm.com>, 
@@ -45,9 +45,9 @@ cc: Alex Williamson <alex.williamson@redhat.com>,
     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>, linux-pci@vger.kernel.org, 
     linuxppc-dev@lists.ozlabs.org, linux-rdma@vger.kernel.org, 
     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v9 01/14] PCI: pciehp: Rely on `link_active_reporting'
+Subject: [PATCH v9 02/14] PCI: Export PCIe link retrain timeout
 In-Reply-To: <alpine.DEB.2.21.2305310024400.59226@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2305310028150.59226@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2305310030280.59226@angie.orcam.me.uk>
 References: <alpine.DEB.2.21.2305310024400.59226@angie.orcam.me.uk>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
@@ -58,66 +58,89 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
 	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Use `link_active_reporting' to determine whether Data Link Layer Link 
-Active Reporting is available rather than re-retrieving the capability.
+Convert LINK_RETRAIN_TIMEOUT from jiffies to milliseconds, accordingly 
+rename to PCIE_LINK_RETRAIN_TIMEOUT_MS, and make available via "pci.h" 
+for PCI drivers to use.  Use in `pcie_wait_for_link_delay'.
 
 Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Reviewed-by: Lukas Wunner <lukas@wunner.de>
 ---
-NB this has been compile-tested only with PPC64LE and x86-64
-configurations.
+Changes from v8:
 
-No change from v8.
+- Convert LINK_RETRAIN_TIMEOUT from jiffies to milliseconds, rename it to
+  PCIE_LINK_RETRAIN_TIMEOUT_MS rather than PCIE_LINK_RETRAIN_TIMEOUT, and 
+  adjust its use accordingly.
+
+- Also replace hardcoded 1000 in `pcie_wait_for_link_delay'.
+
+- Correct the change heading, s/PCI/PCIe/ for the link reference.
 
 Changes from v7:
 
-- Add Reviewed-by: tag by Lukas Wunner.
-
-- Reorder from 6/7.
+- Reorder from 1/7.
 
 No change from v6.
 
-New change in v6.
----
- drivers/pci/hotplug/pciehp_hpc.c |    7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+No change from v5.
 
-linux-pcie-link-active-reporting-hpc.diff
-Index: linux-macro/drivers/pci/hotplug/pciehp_hpc.c
+New change in v5.
+---
+ drivers/pci/pci.c       |    2 +-
+ drivers/pci/pci.h       |    2 ++
+ drivers/pci/pcie/aspm.c |    4 +---
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+linux-pcie-link-retrain-timeout.diff
+Index: linux-macro/drivers/pci/pci.c
 ===================================================================
---- linux-macro.orig/drivers/pci/hotplug/pciehp_hpc.c
-+++ linux-macro/drivers/pci/hotplug/pciehp_hpc.c
-@@ -984,7 +984,7 @@ static inline int pcie_hotplug_depth(str
- struct controller *pcie_init(struct pcie_device *dev)
+--- linux-macro.orig/drivers/pci/pci.c
++++ linux-macro/drivers/pci/pci.c
+@@ -4860,7 +4860,7 @@ static int pci_pm_reset(struct pci_dev *
+ static bool pcie_wait_for_link_delay(struct pci_dev *pdev, bool active,
+ 				     int delay)
  {
- 	struct controller *ctrl;
--	u32 slot_cap, slot_cap2, link_cap;
-+	u32 slot_cap, slot_cap2;
- 	u8 poweron;
- 	struct pci_dev *pdev = dev->port;
- 	struct pci_bus *subordinate = pdev->subordinate;
-@@ -1030,9 +1030,6 @@ struct controller *pcie_init(struct pcie
- 	if (dmi_first_match(inband_presence_disabled_dmi_table))
- 		ctrl->inband_presence_disabled = 1;
+-	int timeout = 1000;
++	int timeout = PCIE_LINK_RETRAIN_TIMEOUT_MS;
+ 	bool ret;
+ 	u16 lnk_status;
  
--	/* Check if Data Link Layer Link Active Reporting is implemented */
--	pcie_capability_read_dword(pdev, PCI_EXP_LNKCAP, &link_cap);
+Index: linux-macro/drivers/pci/pci.h
+===================================================================
+--- linux-macro.orig/drivers/pci/pci.h
++++ linux-macro/drivers/pci/pci.h
+@@ -11,6 +11,8 @@
+ 
+ #define PCI_VSEC_ID_INTEL_TBT	0x1234	/* Thunderbolt */
+ 
++#define PCIE_LINK_RETRAIN_TIMEOUT_MS	1000
++
+ extern const unsigned char pcie_link_speed[];
+ extern bool pci_early_dump;
+ 
+Index: linux-macro/drivers/pci/pcie/aspm.c
+===================================================================
+--- linux-macro.orig/drivers/pci/pcie/aspm.c
++++ linux-macro/drivers/pci/pcie/aspm.c
+@@ -90,8 +90,6 @@ static const char *policy_str[] = {
+ 	[POLICY_POWER_SUPERSAVE] = "powersupersave"
+ };
+ 
+-#define LINK_RETRAIN_TIMEOUT HZ
 -
- 	/* Clear all remaining event bits in Slot Status register. */
- 	pcie_capability_write_word(pdev, PCI_EXP_SLTSTA,
- 		PCI_EXP_SLTSTA_ABP | PCI_EXP_SLTSTA_PFD |
-@@ -1051,7 +1048,7 @@ struct controller *pcie_init(struct pcie
- 		FLAG(slot_cap, PCI_EXP_SLTCAP_EIP),
- 		FLAG(slot_cap, PCI_EXP_SLTCAP_NCCS),
- 		FLAG(slot_cap2, PCI_EXP_SLTCAP2_IBPD),
--		FLAG(link_cap, PCI_EXP_LNKCAP_DLLLARC),
-+		FLAG(pdev->link_active_reporting, true),
- 		pdev->broken_cmd_compl ? " (with Cmd Compl erratum)" : "");
+ /*
+  * The L1 PM substate capability is only implemented in function 0 in a
+  * multi function device.
+@@ -213,7 +211,7 @@ static bool pcie_retrain_link(struct pci
+ 	}
  
- 	/*
+ 	/* Wait for link training end. Break out after waiting for timeout */
+-	end_jiffies = jiffies + LINK_RETRAIN_TIMEOUT;
++	end_jiffies = jiffies + msecs_to_jiffies(PCIE_LINK_RETRAIN_TIMEOUT_MS);
+ 	do {
+ 		pcie_capability_read_word(parent, PCI_EXP_LNKSTA, &reg16);
+ 		if (!(reg16 & PCI_EXP_LNKSTA_LT))
 
