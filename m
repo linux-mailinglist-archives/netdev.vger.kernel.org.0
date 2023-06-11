@@ -1,305 +1,242 @@
-Return-Path: <netdev+bounces-9937-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9938-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A947872B33E
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 19:23:37 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2C04672B34B
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 19:35:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EDD041C20A6C
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 17:23:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AA453280EBA
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 17:35:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3843A168C9;
-	Sun, 11 Jun 2023 17:21:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C17EBE54B;
+	Sun, 11 Jun 2023 17:35:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27528168C2
-	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 17:21:21 +0000 (UTC)
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 458D7E75;
-	Sun, 11 Jun 2023 10:20:55 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 974869200CC; Sun, 11 Jun 2023 19:20:10 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 91D4E9200CA;
-	Sun, 11 Jun 2023 18:20:10 +0100 (BST)
-Date: Sun, 11 Jun 2023 18:20:10 +0100 (BST)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Bjorn Helgaas <bhelgaas@google.com>, 
-    Mahesh J Salgaonkar <mahesh@linux.ibm.com>, 
-    Oliver O'Halloran <oohall@gmail.com>, 
-    Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-    Christophe Leroy <christophe.leroy@csgroup.eu>, 
-    Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>, 
-    "David S. Miller" <davem@davemloft.net>, 
-    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
-    Paolo Abeni <pabeni@redhat.com>
-cc: Alex Williamson <alex.williamson@redhat.com>, 
-    Lukas Wunner <lukas@wunner.de>, 
-    Mika Westerberg <mika.westerberg@linux.intel.com>, 
-    Stefan Roese <sr@denx.de>, Jim Wilson <wilson@tuliptree.org>, 
-    David Abdurachmanov <david.abdurachmanov@gmail.com>, 
-    =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>, linux-pci@vger.kernel.org, 
-    linuxppc-dev@lists.ozlabs.org, linux-rdma@vger.kernel.org, 
-    netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v9 14/14] PCI: Work around PCIe link training failures
-In-Reply-To: <alpine.DEB.2.21.2305310024400.59226@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2305310038540.59226@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2305310024400.59226@angie.orcam.me.uk>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4CE0523E
+	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 17:35:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52106C433D2;
+	Sun, 11 Jun 2023 17:35:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686504908;
+	bh=AhAg6PO6vYKl/A49pu/XOmPaUepT665ZeDUknSI0Kvk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=apj3eaKYuQPkyb5KQ55Lz4lAe5P/hnWV2mRH4/Q1g4d0BmoA1nI0NRBS80Pmn8Fx7
+	 2ryVfpIjur9QXU7qeQzce1t4qdoh473tkXH1kS0s2CwVtSW11Kza8rVeXjReaWoKGi
+	 91vw3gZbJzRgOk16fJBXRyWjDNXtHZWLNT4KMZ92qq1hhp7c+pPRLh8sxbzi0VatRQ
+	 sZZgEM7hz8yMbX4IRD36eX7SLx3EmCiWEfU57mvGEO91OKBo3pZbFGdWmCC2tSOLlR
+	 kwe+gxHForrwA3U1tzERvZsXXY9QjDa6EPaChQq1y+5plSwU9pGoZDW/aK7+b60RDV
+	 EiBuarOZZ8SCA==
+Date: Sun, 11 Jun 2023 20:35:03 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Dan Carpenter <dan.carpenter@linaro.org>,
+	Saeed Mahameed <saeedm@nvidia.com>
+Cc: paulb@nvidia.com, linux-rdma@vger.kernel.org,
+	linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [bug report] net/mlx5e: TC, Set CT miss to the specific ct
+ action instance
+Message-ID: <20230611173503.GF12152@unreal>
+References: <497f5a7a-9f14-478e-b551-1fa74720b6f8@moroto.mountain>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <497f5a7a-9f14-478e-b551-1fa74720b6f8@moroto.mountain>
 
-Attempt to handle cases such as with a downstream port of the ASMedia 
-ASM2824 PCIe switch where link training never completes and the link 
-continues switching between speeds indefinitely with the data link layer 
-never reaching the active state.
++ netdev
 
-It has been observed with a downstream port of the ASMedia ASM2824 Gen 3 
-switch wired to the upstream port of the Pericom PI7C9X2G304 Gen 2 
-switch, using a Delock Riser Card PCI Express x1 > 2 x PCIe x1 device, 
-P/N 41433, wired to a SiFive HiFive Unmatched board.  In this setup the 
-switches are supposed to negotiate the link speed of preferably 5.0GT/s, 
-falling back to 2.5GT/s.
-
-Instead the link continues oscillating between the two speeds, at the 
-rate of 34-35 times per second, with link training reported repeatedly 
-active ~84% of the time.  Forcibly limiting the target link speed to 
-2.5GT/s with the upstream ASM2824 device however makes the two switches 
-communicate correctly.  Removing the speed restriction afterwards makes 
-the two devices switch to 5.0GT/s then.
-
-Make use of these observations then and detect the inability to train 
-the link, by checking for the Data Link Layer Link Active status bit 
-being off while the Link Bandwidth Management Status indicating that 
-hardware has changed the link speed or width in an attempt to correct 
-unreliable link operation.
-
-Restrict the speed to 2.5GT/s then with the Target Link Speed field, 
-request a retrain and wait 200ms for the data link to go up.  If this 
-turns out successful, then lift the restriction, letting the devices 
-negotiate a higher speed.
-
-Also check for a 2.5GT/s speed restriction the firmware may have already 
-arranged and lift it too with ports of devices known to continue working 
-afterwards, currently the ASM2824 only, that already report their data 
-link being up.
-
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2203022037020.56670@angie.orcam.me.uk/
-Link: https://source.denx.de/u-boot/u-boot/-/commit/a398a51ccc68
----
-Changes from v8:
-
-- Rename `pcie_downstream_link_retrain' to `pcie_failed_link_retrain', add 
-  a prototype in "pci.h", moving the stub implementation under !PCI_QUIRKS 
-  umbrella.
-
-- Move back to quirks.c, though as an internal API call rather than a 
-  regular quirk.
-
-- Adjust for PCIE_LINK_RETRAIN_TIMEOUT_MS expressed in milliseconds rather 
-  than jiffies.
-
-- Use a `pcie_retrain_link' call rather than retraining inline, and also 
-  use it in the restriction lift path, making it another possible failure 
-  point.
-
-No changes from v7.
-
-Changes from v6:
-
-- Regenerate against 6.3-rc5.
-
-- Shorten the lore.kernel.org archive link in the change description.
-
-Changes from v5:
-
-- Move from a quirk into PCI core and call at device probing, hot-plug,
-  reset and resume.  Keep the ASMedia part under CONFIG_PCI_QUIRKS.
-
-- Rely on `dev->link_active_reporting' rather than re-retrieving the 
-  capability.
-
-Changes from v4:
-
-- Remove <linux/bug.h> inclusion no longer needed.
-
-- Make the quirk generic based on probing device features rather than 
-  specific to the ASM2824 part only; take the Retrain Link bit erratum 
-  into account.
-
-- Still lift the 2.5GT/s speed restriction with the ASM2824 only.
-
-- Increase retrain timeout from 200ms to 1s (PCIE_LINK_RETRAIN_TIMEOUT).
-
-- Remove retrain success notification.
-
-- Use PCIe helpers rather than generic PCI functions throughout.
-
-- Trim down and update the wording of the change description for the 
-  switch from an ASM2824-specific to a generic fixup.
-
-Changes from v3:
-
-- Remove the <linux/pci_ids.h> entry for the ASM2824.
-
-Changes from v2:
-
-- Regenerate for 5.17-rc2 for a merge conflict.
-
-- Replace BUG_ON for a missing PCI Express capability with WARN_ON and an
-  early return.
-
-Changes from v1:
-
-- Regenerate for a merge conflict.
----
- drivers/pci/pci.h    |    3 +
- drivers/pci/quirks.c |   93 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 95 insertions(+), 1 deletion(-)
-
-linux-pcie-asm2824-manual-retrain.diff
-Index: linux-macro/drivers/pci/pci.h
-===================================================================
---- linux-macro.orig/drivers/pci/pci.h
-+++ linux-macro/drivers/pci/pci.h
-@@ -539,6 +539,7 @@ void pci_acs_init(struct pci_dev *dev);
- int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
- int pci_dev_specific_enable_acs(struct pci_dev *dev);
- int pci_dev_specific_disable_acs_redir(struct pci_dev *dev);
-+bool pcie_failed_link_retrain(struct pci_dev *dev);
- #else
- static inline int pci_dev_specific_acs_enabled(struct pci_dev *dev,
- 					       u16 acs_flags)
-@@ -553,11 +554,11 @@ static inline int pci_dev_specific_disab
- {
- 	return -ENOTTY;
- }
--#endif
- static inline bool pcie_failed_link_retrain(struct pci_dev *dev)
- {
- 	return false;
- }
-+#endif
- 
- /* PCI error reporting and recovery */
- pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
-Index: linux-macro/drivers/pci/quirks.c
-===================================================================
---- linux-macro.orig/drivers/pci/quirks.c
-+++ linux-macro/drivers/pci/quirks.c
-@@ -33,6 +33,99 @@
- #include <linux/switchtec.h>
- #include "pci.h"
- 
-+/*
-+ * Retrain the link of a downstream PCIe port by hand if necessary.
-+ *
-+ * This is needed at least where a downstream port of the ASMedia ASM2824
-+ * Gen 3 switch is wired to the upstream port of the Pericom PI7C9X2G304
-+ * Gen 2 switch, and observed with the Delock Riser Card PCI Express x1 >
-+ * 2 x PCIe x1 device, P/N 41433, plugged into the SiFive HiFive Unmatched
-+ * board.
-+ *
-+ * In such a configuration the switches are supposed to negotiate the link
-+ * speed of preferably 5.0GT/s, falling back to 2.5GT/s.  However the link
-+ * continues switching between the two speeds indefinitely and the data
-+ * link layer never reaches the active state, with link training reported
-+ * repeatedly active ~84% of the time.  Forcing the target link speed to
-+ * 2.5GT/s with the upstream ASM2824 device makes the two switches talk to
-+ * each other correctly however.  And more interestingly retraining with a
-+ * higher target link speed afterwards lets the two successfully negotiate
-+ * 5.0GT/s.
-+ *
-+ * With the ASM2824 we can rely on the otherwise optional Data Link Layer
-+ * Link Active status bit and in the failed link training scenario it will
-+ * be off along with the Link Bandwidth Management Status indicating that
-+ * hardware has changed the link speed or width in an attempt to correct
-+ * unreliable link operation.  For a port that has been left unconnected
-+ * both bits will be clear.  So use this information to detect the problem
-+ * rather than polling the Link Training bit and watching out for flips or
-+ * at least the active status.
-+ *
-+ * Since the exact nature of the problem isn't known and in principle this
-+ * could trigger where an ASM2824 device is downstream rather upstream,
-+ * apply this erratum workaround to any downstream ports as long as they
-+ * support Link Active reporting and have the Link Control 2 register.
-+ * Restrict the speed to 2.5GT/s then with the Target Link Speed field,
-+ * request a retrain and wait 200ms for the data link to go up.
-+ *
-+ * If this turns out successful and we know by the Vendor:Device ID it is
-+ * safe to do so, then lift the restriction, letting the devices negotiate
-+ * a higher speed.  Also check for a similar 2.5GT/s speed restriction the
-+ * firmware may have already arranged and lift it with ports that already
-+ * report their data link being up.
-+ *
-+ * Return TRUE if the link has been successfully retrained, otherwise FALSE.
-+ */
-+bool pcie_failed_link_retrain(struct pci_dev *dev)
-+{
-+	static const struct pci_device_id ids[] = {
-+		{ PCI_VDEVICE(ASMEDIA, 0x2824) }, /* ASMedia ASM2824 */
-+		{}
-+	};
-+	u16 lnksta, lnkctl2;
-+
-+	if (!pci_is_pcie(dev) || !pcie_downstream_port(dev) ||
-+	    !pcie_cap_has_lnkctl2(dev) || !dev->link_active_reporting)
-+		return false;
-+
-+	pcie_capability_read_word(dev, PCI_EXP_LNKCTL2, &lnkctl2);
-+	pcie_capability_read_word(dev, PCI_EXP_LNKSTA, &lnksta);
-+	if ((lnksta & (PCI_EXP_LNKSTA_LBMS | PCI_EXP_LNKSTA_DLLLA)) ==
-+	    PCI_EXP_LNKSTA_LBMS) {
-+		pci_info(dev, "broken device, retraining non-functional downstream link at 2.5GT/s\n");
-+
-+		lnkctl2 &= ~PCI_EXP_LNKCTL2_TLS;
-+		lnkctl2 |= PCI_EXP_LNKCTL2_TLS_2_5GT;
-+		pcie_capability_write_word(dev, PCI_EXP_LNKCTL2, lnkctl2);
-+
-+		if (!pcie_retrain_link(dev, false)) {
-+			pci_info(dev, "retraining failed\n");
-+			return false;
-+		}
-+
-+		pcie_capability_read_word(dev, PCI_EXP_LNKSTA, &lnksta);
-+	}
-+
-+	if ((lnksta & PCI_EXP_LNKSTA_DLLLA) &&
-+	    (lnkctl2 & PCI_EXP_LNKCTL2_TLS) == PCI_EXP_LNKCTL2_TLS_2_5GT &&
-+	    pci_match_id(ids, dev)) {
-+		u32 lnkcap;
-+
-+		pci_info(dev, "removing 2.5GT/s downstream link speed restriction\n");
-+		pcie_capability_read_dword(dev, PCI_EXP_LNKCAP, &lnkcap);
-+		lnkctl2 &= ~PCI_EXP_LNKCTL2_TLS;
-+		lnkctl2 |= lnkcap & PCI_EXP_LNKCAP_SLS;
-+		pcie_capability_write_word(dev, PCI_EXP_LNKCTL2, lnkctl2);
-+
-+		if (!pcie_retrain_link(dev, false)) {
-+			pci_info(dev, "retraining failed\n");
-+			return false;
-+		}
-+	}
-+
-+	return true;
-+}
-+
- static ktime_t fixup_debug_start(struct pci_dev *dev,
- 				 void (*fn)(struct pci_dev *dev))
- {
+On Wed, Jun 07, 2023 at 10:09:57AM +0300, Dan Carpenter wrote:
+> Hello Paul Blakey,
+> 
+> The patch 6702782845a5: "net/mlx5e: TC, Set CT miss to the specific
+> ct action instance" from Feb 18, 2023, leads to the following Smatch
+> static checker warning:
+> 
+> drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:5648 mlx5e_tc_action_miss_mapping_get() warn: missing error code 'err'
+> 
+> Let's include some older unpublished Smatch stuff as well.
+> 
+> drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:1683 mlx5e_tc_query_route_vport() info: return a literal instead of 'err'
+> drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:4786 mlx5e_stats_flower() warn: missing error code 'err'
+> 
+> drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+>   1665  int mlx5e_tc_query_route_vport(struct net_device *out_dev, struct net_device *route_dev, u16 *vport)
+>   1666  {
+>   1667          struct mlx5e_priv *out_priv, *route_priv;
+>   1668          struct mlx5_core_dev *route_mdev;
+>   1669          struct mlx5_devcom *devcom;
+>   1670          struct mlx5_eswitch *esw;
+>   1671          u16 vhca_id;
+>   1672          int err;
+>   1673          int i;
+>   1674  
+>   1675          out_priv = netdev_priv(out_dev);
+>   1676          esw = out_priv->mdev->priv.eswitch;
+>   1677          route_priv = netdev_priv(route_dev);
+>   1678          route_mdev = route_priv->mdev;
+>   1679  
+>   1680          vhca_id = MLX5_CAP_GEN(route_mdev, vhca_id);
+>   1681          err = mlx5_eswitch_vhca_id_to_vport(esw, vhca_id, vport);
+>   1682          if (!err)
+>   1683                  return err;
+> 
+> This seems intentional but it look more intentional as "return 0;"
+> 
+>   1684  
+>   1685          if (!mlx5_lag_is_active(out_priv->mdev))
+>   1686                  return err;
+> 
+> return -ENOENT; here?
+> 
+>   1687  
+>   1688          rcu_read_lock();
+>   1689          devcom = out_priv->mdev->priv.devcom;
+>   1690          err = -ENODEV;
+>   1691          mlx5_devcom_for_each_peer_entry_rcu(devcom, MLX5_DEVCOM_ESW_OFFLOADS,
+>   1692                                              esw, i) {
+>   1693                  err = mlx5_eswitch_vhca_id_to_vport(esw, vhca_id, vport);
+>   1694                  if (!err)
+>   1695                          break;
+>   1696          }
+>   1697          rcu_read_unlock();
+>   1698  
+>   1699          return err;
+>   1700  }
+> 
+> [ snip ]
+> 
+>   4727  int mlx5e_stats_flower(struct net_device *dev, struct mlx5e_priv *priv,
+>   4728                         struct flow_cls_offload *f, unsigned long flags)
+>   4729  {
+>   4730          struct mlx5_devcom *devcom = priv->mdev->priv.devcom;
+>   4731          struct rhashtable *tc_ht = get_tc_ht(priv, flags);
+>   4732          struct mlx5e_tc_flow *flow;
+>   4733          struct mlx5_fc *counter;
+>   4734          u64 lastuse = 0;
+>   4735          u64 packets = 0;
+>   4736          u64 bytes = 0;
+>   4737          int err = 0;
+>   4738  
+>   4739          rcu_read_lock();
+>   4740          flow = mlx5e_flow_get(rhashtable_lookup(tc_ht, &f->cookie,
+>   4741                                                  tc_ht_params));
+>   4742          rcu_read_unlock();
+>   4743          if (IS_ERR(flow))
+>   4744                  return PTR_ERR(flow);
+>   4745  
+>   4746          if (!same_flow_direction(flow, flags)) {
+>   4747                  err = -EINVAL;
+>   4748                  goto errout;
+>   4749          }
+>   4750  
+>   4751          if (mlx5e_is_offloaded_flow(flow)) {
+>   4752                  if (flow_flag_test(flow, USE_ACT_STATS)) {
+>   4753                          f->use_act_stats = true;
+>   4754                  } else {
+>   4755                          counter = mlx5e_tc_get_counter(flow);
+>   4756                          if (!counter)
+>   4757                                  goto errout;
+> 
+> No error code.  In this function it's hard to say if these should be
+> error paths or not.
+> 
+>   4758  
+>   4759                          mlx5_fc_query_cached(counter, &bytes, &packets, &lastuse);
+>   4760                  }
+>   4761          }
+>   4762  
+>   4763          /* Under multipath it's possible for one rule to be currently
+>   4764           * un-offloaded while the other rule is offloaded.
+>   4765           */
+>   4766          if (!mlx5_devcom_for_each_peer_begin(devcom, MLX5_DEVCOM_ESW_OFFLOADS))
+>   4767                  goto out;
+> 
+> No error code
+> 
+>   4768  
+>   4769          if (flow_flag_test(flow, DUP)) {
+>   4770                  struct mlx5e_tc_flow *peer_flow;
+>   4771  
+>   4772                  list_for_each_entry(peer_flow, &flow->peer_flows, peer_flows) {
+>   4773                          u64 packets2;
+>   4774                          u64 lastuse2;
+>   4775                          u64 bytes2;
+>   4776  
+>   4777                          if (!flow_flag_test(peer_flow, OFFLOADED))
+>   4778                                  continue;
+>   4779                          if (flow_flag_test(flow, USE_ACT_STATS)) {
+>   4780                                  f->use_act_stats = true;
+>   4781                                  break;
+>   4782                          }
+>   4783  
+>   4784                          counter = mlx5e_tc_get_counter(peer_flow);
+>   4785                          if (!counter)
+>   4786                                  goto no_peer_counter;
+> 
+> No error code
+> 
+>   4787                          mlx5_fc_query_cached(counter, &bytes2, &packets2,
+>   4788                                               &lastuse2);
+>   4789  
+>   4790                          bytes += bytes2;
+>   4791                          packets += packets2;
+>   4792                          lastuse = max_t(u64, lastuse, lastuse2);
+>   4793                  }
+>   4794          }
+>   4795  
+>   4796  no_peer_counter:
+>   4797          mlx5_devcom_for_each_peer_end(devcom, MLX5_DEVCOM_ESW_OFFLOADS);
+>   4798  out:
+>   4799          flow_stats_update(&f->stats, bytes, packets, 0, lastuse,
+>   4800                            FLOW_ACTION_HW_STATS_DELAYED);
+>   4801          trace_mlx5e_stats_flower(f);
+>   4802  errout:
+>   4803          mlx5e_flow_put(priv, flow);
+>   4804          return err;
+>   4805  }
+> 
+> [ snip ]
+> 
+>   5627  int mlx5e_tc_action_miss_mapping_get(struct mlx5e_priv *priv, struct mlx5_flow_attr *attr,
+>   5628                                       u64 act_miss_cookie, u32 *act_miss_mapping)
+>   5629  {
+>   5630          struct mlx5_mapped_obj mapped_obj = {};
+>   5631          struct mlx5_eswitch *esw;
+>   5632          struct mapping_ctx *ctx;
+>   5633          int err;
+>   5634  
+>   5635          ctx = mlx5e_get_priv_obj_mapping(priv);
+>   5636          mapped_obj.type = MLX5_MAPPED_OBJ_ACT_MISS;
+>   5637          mapped_obj.act_miss_cookie = act_miss_cookie;
+>   5638          err = mapping_add(ctx, &mapped_obj, act_miss_mapping);
+>   5639          if (err)
+>   5640                  return err;
+>   5641  
+>   5642          if (!is_mdev_switchdev_mode(priv->mdev))
+>   5643                  return 0;
+>   5644  
+>   5645          esw = priv->mdev->priv.eswitch;
+>   5646          attr->act_id_restore_rule = esw_add_restore_rule(esw, *act_miss_mapping);
+>   5647          if (IS_ERR(attr->act_id_restore_rule))
+>   5648                  goto err_rule;
+> 
+> This one is definitely an error path.
+> 
+>   5649  
+>   5650          return 0;
+>   5651  
+>   5652  err_rule:
+>   5653          mapping_remove(ctx, *act_miss_mapping);
+>   5654          return err;
+>   5655  }
+> 
+> regards,
+> dan carpenter
 
