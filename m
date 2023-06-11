@@ -1,178 +1,343 @@
-Return-Path: <netdev+bounces-9875-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9876-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7E2BF72B056
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 07:11:48 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3125472B05C
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 07:24:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3BAC9281417
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 05:11:47 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 411051C20B0B
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 05:24:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C30B61848;
-	Sun, 11 Jun 2023 05:11:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EE47F1867;
+	Sun, 11 Jun 2023 05:24:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF6ED139B
-	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 05:11:45 +0000 (UTC)
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA19C30E3
-	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 22:11:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686460303; x=1717996303;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=6kdb26NhjRGM5mWBm8bwHYC03EpYYHJS/kOwNHRIIB4=;
-  b=UrlWEjq93JqDeL3SI/Mj4l9CyFFyxtmwmowCPwuyYYLSU/PYvtd+CTGz
-   u8viKSzuSHpFsEt6X1tp7Hse3EvkVoEN/OSaYl9sQ/TbQVfiMNrfxrkIH
-   FTwSVJDT/fVbWQgu2aCfwhwYUlhmpl3te4tHuV6QVislh/dJ+uxVf7oID
-   IiRsHI+qSVOl7ZNGvhMc/QcAMlc2212uY/E8xT2UpPL9HZQm3ILIFMxAS
-   qXMUc5+BrYSr75Xvs3gCTilrhWLGRW39SOmN62B7D+8I/wGPllPkAmxEB
-   QYh7XPOeOYypb58t573mpF2LJsOa6ZJErKNlVYCp30wVBiEkr382qNtlp
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10737"; a="342517460"
-X-IronPort-AV: E=Sophos;i="6.00,233,1681196400"; 
-   d="scan'208";a="342517460"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2023 22:11:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10737"; a="704984599"
-X-IronPort-AV: E=Sophos;i="6.00,233,1681196400"; 
-   d="scan'208";a="704984599"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga007.jf.intel.com with ESMTP; 10 Jun 2023 22:11:43 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Sat, 10 Jun 2023 22:11:42 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Sat, 10 Jun 2023 22:11:42 -0700
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.41) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Sat, 10 Jun 2023 22:11:42 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jFs3z5P0mEeBKQQ/bIEVwy4cPue9XdC6qI4ZgVA/KBRfJVL/FV6zrvCxDG964Tzii0/GazhSaEC4KNgb+i+7GrGVH6QjrRF74k1L6GRsGH04CzJbF54Zq+C9nFTEhyNJSQw7+M9KuKHozqXR2YHUBDzI/NK2vBvBjbsdMLHFMx62UE8elQ9PrZvh3Q8RKo8qriJv36xum/qmMkp1h6tolBlRy42cJnuKfoM6EFZkt16dL7mfVqd3EYjQfCHW+v1pY3tT/+lJxbDX2v6IFGMU3l7vE6X+csdv4s0kXisaKa3OdYs/bgVrIpvfcDdKy5IPKiLP9TiaRdoaKQkKqd4cAg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=brJempsLQGV57LudIa/cJqzctTrzFHbFgoEvVQf+l7s=;
- b=JPhUL8lFVYosKOZXXSfhnr66rFf7/xpenI/d0L/A8yRFAHS8qFTDaPSDgoKDcXoUk6XGwSkJ65drnKyp1HVv+EEECGzhOi1jqfuV/+1sD27ax6q9BHwqdYh4DrNhFeXXTkdDMkoMjQLDNlGXOZ9XY3BcNnQbNDn0Vxf2rtebaGIk3sVc341MM/DlprQ4+lBGvfzdNP1yjsDP6MuNjrtzsqPL7WtWvS8gqJPRB73MJJfHrXcv1m8A+oUvpknfQE8YQgap1OAMsTuttSJgKJEPA74qu1gL/eLwRFo02KVjpu2XPRAY15/NGNg7nKCPMrQUhRi9Co8QBmO9VNUlerDbdg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB4886.namprd11.prod.outlook.com (2603:10b6:510:33::22)
- by MN0PR11MB6057.namprd11.prod.outlook.com (2603:10b6:208:375::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Sun, 11 Jun
- 2023 05:11:40 +0000
-Received: from PH0PR11MB4886.namprd11.prod.outlook.com
- ([fe80::b3c7:ebf8:7ddc:c5a4]) by PH0PR11MB4886.namprd11.prod.outlook.com
- ([fe80::b3c7:ebf8:7ddc:c5a4%6]) with mapi id 15.20.6477.028; Sun, 11 Jun 2023
- 05:11:40 +0000
-Message-ID: <17b1328d-f94f-b0ad-d1be-3a3cb78e7e64@intel.com>
-Date: Sat, 10 Jun 2023 22:11:38 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH] amd-xgbe: extend 10Mbps support to MAC version 21H
-Content-Language: en-US
-To: Raju Rangoju <Raju.Rangoju@amd.com>, <netdev@vger.kernel.org>
-CC: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-	<pabeni@redhat.com>, <Thomas.Lendacky@amd.com>, <Shyam-sundar.S-k@amd.com>
-References: <20230611025637.1211722-1-Raju.Rangoju@amd.com>
-From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-In-Reply-To: <20230611025637.1211722-1-Raju.Rangoju@amd.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR17CA0027.namprd17.prod.outlook.com
- (2603:10b6:a03:1b8::40) To PH0PR11MB4886.namprd11.prod.outlook.com
- (2603:10b6:510:33::22)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEC4C15CA
+	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 05:24:17 +0000 (UTC)
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8494C30E6
+	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 22:24:15 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id 3f1490d57ef6-bacbc7a2998so3316239276.3
+        for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 22:24:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google; t=1686461054; x=1689053054;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=QptKRoFqNyZu4A/EdHWpJjdjfxjDVz5oMYIfkvT7x84=;
+        b=xO4rWVzb06Ql5OGHhS9OBzbfxbCcqO62VSxNXRlArzqJKwD29YDMO4U8l+el8usbtU
+         fHEyfR4LvDL1gnLnIaYaPeV6IWZRyCJZlEwrh/qEHqolasK3hV3hstAo2AuwpgKLGBJW
+         np+GGHUWNtZkK3Sl62vt7T7tZM0RNOrLibCYA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686461054; x=1689053054;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QptKRoFqNyZu4A/EdHWpJjdjfxjDVz5oMYIfkvT7x84=;
+        b=BhlN5nU6NqCvNV/+C30Ho8lKpFjAy1nkFcyRY7cIPwqiwfaNON29VVQjTKHkjS2q9m
+         f76MIJXe9+rhitUw7qsZ9zyvBNl9gZ17fuI1wQTfRiAzoI4RaclqI/Gn/t1dlpFFqw74
+         0mZwqppyJepLMvpWWKONHiYgh1th0xjxA++ua0I97OTDS2KTPXUZWgE+31qK22q+u+zW
+         eW/O1fI1ZKjC1rG+AcO4D8luk5EWWIel5PhBQLJNSaHd0mA4OsZ2e2jj7X6VzYPzeFgA
+         bHQG2dCCGivZgSHcmUhEfZSMNF40S54qddcZn0TfxFALu+sif4GuzphjsuQFDIBzJCTd
+         OwPg==
+X-Gm-Message-State: AC+VfDyljDiaHrlFqQUoo+5Gghez3ruUgiCnNzqFusLOIIOCIo/mfeO5
+	Zjy7pAOtm0c1mRI5GVns4fPYhvPF9BbEnd9zu8S7vQ==
+X-Google-Smtp-Source: ACHHUZ4ZW7xhi7mJsHTPm0M3Dh/HykVEwAYMh3yCVKFCHbY77HwkHnNHWOtD403wllNjpTeP6mav6Q==
+X-Received: by 2002:a81:49ca:0:b0:56d:74a:d0d8 with SMTP id w193-20020a8149ca000000b0056d074ad0d8mr1930218ywa.43.1686461054189;
+        Sat, 10 Jun 2023 22:24:14 -0700 (PDT)
+Received: from mfreemon-cf-laptop.. ([169.197.147.212])
+        by smtp.gmail.com with ESMTPSA id m193-20020a0dcaca000000b0054fb931adefsm1733463ywd.4.2023.06.10.22.24.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 10 Jun 2023 22:24:13 -0700 (PDT)
+From: Mike Freemon <mfreemon@cloudflare.com>
+To: netdev@vger.kernel.org
+Cc: kernel-team@cloudflare.com,
+	edumazet@google.com,
+	ncardwell@google.com,
+	mfreemon@cloudflare.com
+Subject: [PATCH net-next v4] tcp: enforce receive buffer memory limits by allowing the tcp window to shrink
+Date: Sun, 11 Jun 2023 00:23:54 -0500
+Message-Id: <20230611052354.2116564-1-mfreemon@cloudflare.com>
+X-Mailer: git-send-email 2.40.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB4886:EE_|MN0PR11MB6057:EE_
-X-MS-Office365-Filtering-Correlation-Id: a8386008-bd41-4f12-0616-08db6a3a56da
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MX0RVLyoPM0+d8aOO+wSf/javSlVQtdcTyxuThqZbGUiNWPH5fhBOe/lH3pndHJiFdaYVDa9JuDkt4Kz1D3IfwwRXZ4sEM0X32X3K7m2Y3t+MY9LnnAcCRMvJ+bcaqbPXVZ+kZMhal+LLrtwpXRHLuzeHrBnfzK12ZslTyVy0bzvFg02N/lTLPBf+90gPF2oe5NP/MzswOEqv/Out5/nXlcTsRZMu50ApwesGN/Bej7h9fM67498B9r8eWCVQDrX+9AurUWivardsz3ejxAEVcUWXEHbQJiW6ZA9zTG5Hfc0FN5T9zOff9pgyuDMQDwFILdO6zegTvWMsAfkMDBXHtxvLsHTmAbFD8n8ILBHp7w7bNI8Fm2s4tgu7sIlP/WOlBmS3XexqptMbGbLUA+MNTD7ZvrHa5GxDom5dNNDIBEUlJGC6Ela7sYPd7IOK037teX/xLhmw2JNzrELWMYf8cPrsdyVBnF36nS2TuG9IhdilRR60JCY5EvrV0+1ZsIG/j3JCMomF0pzTKE2kIR/QspAr7q9WT3zsf3JWnuIzpXrNL+FJAeo/3az2gF9K8TGJ4ehp4KOll6Y31TP+JHIc0s1gELdSA4n3s97s1lcZ1ADRB25h7kCeUZS8Np6PnxDTdKCfN4VhZ9CXlvRz53pEQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4886.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(346002)(376002)(366004)(136003)(39860400002)(451199021)(2616005)(6506007)(26005)(6512007)(41300700001)(53546011)(38100700002)(31686004)(6486002)(186003)(478600001)(66556008)(66946007)(82960400001)(66476007)(316002)(4326008)(8936002)(5660300002)(4744005)(2906002)(86362001)(31696002)(36756003)(8676002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WlR0ekU4NzQwd1NhTm9HdTY0a3ZHeVVzaDNqSFJnd1NWUFpadGFHY2g5L1ht?=
- =?utf-8?B?OFNKc3BKM204R2ZUS29BNWNYUzZ0Ni9NYjY4OUk4Yk5ieS81QTlxNVNnWTVI?=
- =?utf-8?B?ektXMFlCc2FYQ05DV2JZeGdPdllueEJPdWRMSVcwV2Z3SkdCVmgxb1BXYjhM?=
- =?utf-8?B?eDdHT1lITmw0YzNyejZYaHNQbmtvVWZNYm9IMERyYU8raUIvdHBiNVRDUkJy?=
- =?utf-8?B?RjluN2JoK3NNZ1JHQjcxNktvcGNDa0VUOE1rSng2bFRJZENvRmJTM3pEVHFC?=
- =?utf-8?B?eUY0bVlMNWliZ2pDd3lPOHZuaThjYXdGa0xFRnRsazJsUXpKR01US2pFTGtw?=
- =?utf-8?B?dTB4UUw0TTBOUFJ2UERpMGNNV1dQTFR2c0VBZUlBL21ackx3VnhMMDRXWm5V?=
- =?utf-8?B?KzIzaEhQM2RhOWpjTnBhSS9BTnJVZDJ2VUVtRFBsT09pMXVaWnVONnFseFZw?=
- =?utf-8?B?VmNIVDBzM3hsY2Z0TFlMZklhY3k4VG5tajRmaWVGaGVDbS9mNnJrTjJJVXpy?=
- =?utf-8?B?aEwwMFNwTVNYRVVoS0N6blgraDhWNHpORk1JNnlZNHVpMVl2SUg5VTlvMlJI?=
- =?utf-8?B?RDRoTEFXa3VJa1FlMHBjMy9YclM1bkcrRUlFa1dyTkUvbHpvZUI2WFhMY3pj?=
- =?utf-8?B?R2lJWUxKV3M2SEYzRDZ2anJjWnBGQVJ0amhIVGxBTFhwQ3E4YVp5YVUvekhL?=
- =?utf-8?B?dGRrWFpxdXdxSWhPUG9YcXhvMVdpUTJqR0tWL2tncXZ4K2VEckZKb2R5R2ls?=
- =?utf-8?B?dGR5aTc2VmRkNldkYlErNVlSTjduc1VCKzdnREZVWThNZTBhL1RXS3piRXBs?=
- =?utf-8?B?OXBvUGt1NUJoVU5OUHlOdkNOb2xxNzBkMVlkek1uREVxTTErZ0ZwM0M2Qkdp?=
- =?utf-8?B?Q09HNFJOZ3JuOVV1Y2JxMXUyK1NveGxRTlhrZzRpQ0M5bW9WaXVYZCsyb0Vs?=
- =?utf-8?B?Uy9CRUNMTEdZUVQvTXhIWWZCNDhZaytTNWp0VGN0V0FBNXJRMGxhQlJNcHFl?=
- =?utf-8?B?bmlIcUlLUnlVZG9mWG9HYXdYSWJaL1Qrcms0UzRMdzJDVlVWU1paOWJpQVZU?=
- =?utf-8?B?ajlPNzNZd2RQUkVnaG1mMXZZWEQwdjJ1cVBXS2VDUEFUSDdLU1czMVhwVllU?=
- =?utf-8?B?UDkwOWdhN1NmR0d0aVZxOFVjVHc0VGNBVnp6L3hJSkdkNS9aaWpUZ0xoVDJY?=
- =?utf-8?B?L0JlRHg3OHNtdzBOVkpsUDhlUjZlUVEvOHkzNHNrN2g1SGVWV0ZaMTJyOTk0?=
- =?utf-8?B?UkgxTXlGMUZYeTRVaHdIRmtNdXZFamkzNDd2RGRKQjdVTjVUQ2F2cTc4Si83?=
- =?utf-8?B?S0pXL0hXVW41VmFWVWRDWE9ybkFPNkxpK083S1UwM1cxUklEcUl1TmhrdEN3?=
- =?utf-8?B?aHFMeC9Mb3kvQ0g5dlJRMUp3cVZDRk12ZCtkL1p5ZDFHbTNKUjRrTjZBTm9N?=
- =?utf-8?B?N3ZDbzJvV3RoSVdCMUsrZW8zaFFZTEE4TW5YeUtUNDRMM2pPeXNyUWw1aHFs?=
- =?utf-8?B?YzZNMEh2djlTVkJhSWFZSitRS3JDblpnZkRQb2pYTkJIQ1NZNGVITVprMVVJ?=
- =?utf-8?B?eDBiU0JYaUExQS9nclhiSi9JODFDdldLREFzem9xSTIxbGVTK3NNMzdDYmFw?=
- =?utf-8?B?MytOYkFSb2RRV2M0YU95UzhDM2ZZL1JIRjFvOHlpclNLT2xOSkdRcnBEYS8z?=
- =?utf-8?B?QW5NRjgxbVBvUmNIdmdZWFUzVERodk8xb25CRSt3L0xRR3J1VGV0RHhWeVcv?=
- =?utf-8?B?blJzYlVTZVk0Qnh5U0JEN0JSckQzN01Ha0tTMVdWMEc5UUxRemFBZWVqVFdt?=
- =?utf-8?B?VWdhcmVoZDRUUEEzQnJtNi9wT2thSkdGWG1HS1Q3cDdpeGhMUkM0Y1JWVjFx?=
- =?utf-8?B?ajFTcU9MUSs0a3dsbFdzK1d2N1RkZHo0MXc4ZnBuSkRENFVuaGdiV2hMaUV0?=
- =?utf-8?B?NzJKM3U5cmQzS1RWL0NnRjJYUEVBeWp0b3VhQmh2ZE5najVEei9vTUhyZVA4?=
- =?utf-8?B?UXlHTXBsRUxzVkRCTDRYM0Ewem5aWjdEbThyMDFRR1NQbWw4ZlhuWVBRSEVa?=
- =?utf-8?B?SjJmdUNQcUlJZHVpeUpoQjRYanphUmxrOFJpVkFsTThBSjAvQzRpdE9sUW5R?=
- =?utf-8?B?RGZIRUJFVmlUN2VPb2c0d25yd2hmTm0rM3dxMC9CYlFIREdqYWwwelFoVG5r?=
- =?utf-8?B?NEE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: a8386008-bd41-4f12-0616-08db6a3a56da
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4886.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jun 2023 05:11:40.4059
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: aMefSG/RZcIGvU5buKyEpZP5FsmUIUXKnIKdbiCUtuDhctmAfw0eHwbS/clsp321zbF+FE7KHO/KnfxpkzkED8+xZktKyUBu5nITVdC1pZE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR11MB6057
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+From: "mfreemon@cloudflare.com" <mfreemon@cloudflare.com>
 
+Under certain circumstances, the tcp receive buffer memory limit
+set by autotuning (sk_rcvbuf) is increased due to incoming data
+packets as a result of the window not closing when it should be.
+This can result in the receive buffer growing all the way up to
+tcp_rmem[2], even for tcp sessions with a low BDP.
 
-On 6/10/2023 7:56 PM, Raju Rangoju wrote:
-> MAC version 21H supports the 10Mbps speed. So, extend support to
-> platforms that support it.
-> 
-> Acked-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-> Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
+To reproduce:  Connect a TCP session with the receiver doing
+nothing and the sender sending small packets (an infinite loop
+of socket send() with 4 bytes of payload with a sleep of 1 ms
+in between each send()).  This will cause the tcp receive buffer
+to grow all the way up to tcp_rmem[2].
 
-Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+As a result, a host can have individual tcp sessions with receive
+buffers of size tcp_rmem[2], and the host itself can reach tcp_mem
+limits, causing the host to go into tcp memory pressure mode.
+
+The fundamental issue is the relationship between the granularity
+of the window scaling factor and the number of byte ACKed back
+to the sender.  This problem has previously been identified in
+RFC 7323, appendix F [1].
+
+The Linux kernel currently adheres to never shrinking the window.
+
+In addition to the overallocation of memory mentioned above, the
+current behavior is functionally incorrect, because once tcp_rmem[2]
+is reached when no remediations remain (i.e. tcp collapse fails to
+free up any more memory and there are no packets to prune from the
+out-of-order queue), the receiver will drop in-window packets
+resulting in retransmissions and an eventual timeout of the tcp
+session.  A receive buffer full condition should instead result
+in a zero window and an indefinite wait.
+
+In practice, this problem is largely hidden for most flows.  It
+is not applicable to mice flows.  Elephant flows can send data
+fast enough to "overrun" the sk_rcvbuf limit (in a single ACK),
+triggering a zero window.
+
+But this problem does show up for other types of flows.  Examples
+are websockets and other type of flows that send small amounts of
+data spaced apart slightly in time.  In these cases, we directly
+encounter the problem described in [1].
+
+RFC 7323, section 2.4 [2], says there are instances when a retracted
+window can be offered, and that TCP implementations MUST ensure
+that they handle a shrinking window, as specified in RFC 1122,
+section 4.2.2.16 [3].  All prior RFCs on the topic of tcp window
+management have made clear that sender must accept a shrunk window
+from the receiver, including RFC 793 [4] and RFC 1323 [5].
+
+This patch implements the functionality to shrink the tcp window
+when necessary to keep the right edge within the memory limit by
+autotuning (sk_rcvbuf).  This new functionality is enabled with
+the new sysctl: net.ipv4.tcp_shrink_window
+
+Additional information can be found at:
+https://blog.cloudflare.com/unbounded-memory-usage-by-tcp-for-receive-buffers-and-how-we-fixed-it/
+
+[1] https://www.rfc-editor.org/rfc/rfc7323#appendix-F
+[2] https://www.rfc-editor.org/rfc/rfc7323#section-2.4
+[3] https://www.rfc-editor.org/rfc/rfc1122#page-91
+[4] https://www.rfc-editor.org/rfc/rfc793
+[5] https://www.rfc-editor.org/rfc/rfc1323
+
+Signed-off-by: Mike Freemon <mfreemon@cloudflare.com>
+---
+ Documentation/networking/ip-sysctl.rst | 15 +++++++
+ include/net/netns/ipv4.h               |  1 +
+ net/ipv4/sysctl_net_ipv4.c             |  9 ++++
+ net/ipv4/tcp_ipv4.c                    |  2 +
+ net/ipv4/tcp_output.c                  | 60 ++++++++++++++++++++++----
+ 5 files changed, 78 insertions(+), 9 deletions(-)
+
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 366e2a5097d9..4a010a7cde7f 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -981,6 +981,21 @@ tcp_tw_reuse - INTEGER
+ tcp_window_scaling - BOOLEAN
+ 	Enable window scaling as defined in RFC1323.
+ 
++tcp_shrink_window - BOOLEAN
++	This changes how the TCP receive window is calculated.
++
++	RFC 7323, section 2.4, says there are instances when a retracted
++	window can be offered, and that TCP implementations MUST ensure
++	that they handle a shrinking window, as specified in RFC 1122.
++
++	- 0 - Disabled.	The window is never shrunk.
++	- 1 - Enabled.	The window is shrunk when necessary to remain within
++			the memory limit set by autotuning (sk_rcvbuf).
++			This only occurs if a non-zero receive window
++			scaling factor is also in effect.
++
++	Default: 0
++
+ tcp_wmem - vector of 3 INTEGERs: min, default, max
+ 	min: Amount of memory reserved for send buffers for TCP sockets.
+ 	Each TCP socket has rights to use it due to fact of its birth.
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index a4efb7a2796c..f00374718159 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -65,6 +65,7 @@ struct netns_ipv4 {
+ #endif
+ 	bool			fib_has_custom_local_routes;
+ 	bool			fib_offload_disabled;
++	u8			sysctl_tcp_shrink_window;
+ #ifdef CONFIG_IP_ROUTE_CLASSID
+ 	atomic_t		fib_num_tclassid_users;
+ #endif
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 356afe54951c..2afb0870648b 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -1480,6 +1480,15 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.extra1		= SYSCTL_ZERO,
+ 		.extra2		= &tcp_syn_linear_timeouts_max,
+ 	},
++	{
++		.procname	= "tcp_shrink_window",
++		.data		= &init_net.ipv4.sysctl_tcp_shrink_window,
++		.maxlen		= sizeof(u8),
++		.mode		= 0644,
++		.proc_handler	= proc_dou8vec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
+ 	{ }
+ };
+ 
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 84a5d557dc1a..9213804b034f 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -3281,6 +3281,8 @@ static int __net_init tcp_sk_init(struct net *net)
+ 		net->ipv4.tcp_congestion_control = &tcp_reno;
+ 
+ 	net->ipv4.sysctl_tcp_syn_linear_timeouts = 4;
++	net->ipv4.sysctl_tcp_shrink_window = 0;
++
+ 	return 0;
+ }
+ 
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index f8ce77ce7c3e..1511752a0c7f 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -260,8 +260,8 @@ static u16 tcp_select_window(struct sock *sk)
+ 	u32 old_win = tp->rcv_wnd;
+ 	u32 cur_win = tcp_receive_window(tp);
+ 	u32 new_win = __tcp_select_window(sk);
++	struct net *net = sock_net(sk);
+ 
+-	/* Never shrink the offered window */
+ 	if (new_win < cur_win) {
+ 		/* Danger Will Robinson!
+ 		 * Don't update rcv_wup/rcv_wnd here or else
+@@ -270,11 +270,14 @@ static u16 tcp_select_window(struct sock *sk)
+ 		 *
+ 		 * Relax Will Robinson.
+ 		 */
+-		if (new_win == 0)
+-			NET_INC_STATS(sock_net(sk),
+-				      LINUX_MIB_TCPWANTZEROWINDOWADV);
+-		new_win = ALIGN(cur_win, 1 << tp->rx_opt.rcv_wscale);
++		if (!READ_ONCE(net->ipv4.sysctl_tcp_shrink_window)) {
++			/* Never shrink the offered window */
++			if (new_win == 0)
++				NET_INC_STATS(net, LINUX_MIB_TCPWANTZEROWINDOWADV);
++			new_win = ALIGN(cur_win, 1 << tp->rx_opt.rcv_wscale);
++		}
+ 	}
++
+ 	tp->rcv_wnd = new_win;
+ 	tp->rcv_wup = tp->rcv_nxt;
+ 
+@@ -282,7 +285,7 @@ static u16 tcp_select_window(struct sock *sk)
+ 	 * scaled window.
+ 	 */
+ 	if (!tp->rx_opt.rcv_wscale &&
+-	    READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_workaround_signed_windows))
++	    READ_ONCE(net->ipv4.sysctl_tcp_workaround_signed_windows))
+ 		new_win = min(new_win, MAX_TCP_WINDOW);
+ 	else
+ 		new_win = min(new_win, (65535U << tp->rx_opt.rcv_wscale));
+@@ -294,10 +297,9 @@ static u16 tcp_select_window(struct sock *sk)
+ 	if (new_win == 0) {
+ 		tp->pred_flags = 0;
+ 		if (old_win)
+-			NET_INC_STATS(sock_net(sk),
+-				      LINUX_MIB_TCPTOZEROWINDOWADV);
++			NET_INC_STATS(net, LINUX_MIB_TCPTOZEROWINDOWADV);
+ 	} else if (old_win == 0) {
+-		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPFROMZEROWINDOWADV);
++		NET_INC_STATS(net, LINUX_MIB_TCPFROMZEROWINDOWADV);
+ 	}
+ 
+ 	return new_win;
+@@ -3003,6 +3005,7 @@ u32 __tcp_select_window(struct sock *sk)
+ {
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+ 	struct tcp_sock *tp = tcp_sk(sk);
++	struct net *net = sock_net(sk);
+ 	/* MSS for the peer's data.  Previous versions used mss_clamp
+ 	 * here.  I don't know if the value based on our guesses
+ 	 * of peer's MSS is better for the performance.  It's more correct
+@@ -3024,6 +3027,15 @@ u32 __tcp_select_window(struct sock *sk)
+ 		if (mss <= 0)
+ 			return 0;
+ 	}
++
++	/* Only allow window shrink if the sysctl is enabled and we have
++	 * a non-zero scaling factor in effect.
++	 */
++	if (READ_ONCE(net->ipv4.sysctl_tcp_shrink_window) && tp->rx_opt.rcv_wscale)
++		goto shrink_window_allowed;
++
++	/* do not allow window to shrink */
++
+ 	if (free_space < (full_space >> 1)) {
+ 		icsk->icsk_ack.quick = 0;
+ 
+@@ -3078,6 +3090,36 @@ u32 __tcp_select_window(struct sock *sk)
+ 	}
+ 
+ 	return window;
++
++shrink_window_allowed:
++	/* new window should always be an exact multiple of scaling factor */
++	free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
++
++	if (free_space < (full_space >> 1)) {
++		icsk->icsk_ack.quick = 0;
++
++		if (tcp_under_memory_pressure(sk))
++			tcp_adjust_rcv_ssthresh(sk);
++
++		/* if free space is too low, return a zero window */
++		if (free_space < (allowed_space >> 4) || free_space < mss ||
++			free_space < (1 << tp->rx_opt.rcv_wscale))
++			return 0;
++	}
++
++	if (free_space > tp->rcv_ssthresh) {
++		free_space = tp->rcv_ssthresh;
++		/* new window should always be an exact multiple of scaling factor
++		 *
++		 * For this case, we ALIGN "up" (increase free_space) because
++		 * we know free_space is not zero here, it has been reduced from
++		 * the memory-based limit, and rcv_ssthresh is not a hard limit
++		 * (unlike sk_rcvbuf).
++		 */
++		free_space = ALIGN(free_space, (1 << tp->rx_opt.rcv_wscale));
++	}
++
++	return free_space;
+ }
+ 
+ void tcp_skb_collapse_tstamp(struct sk_buff *skb,
+-- 
+2.40.0
+
 
