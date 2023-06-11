@@ -1,242 +1,148 @@
-Return-Path: <netdev+bounces-9938-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9939-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2C04672B34B
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 19:35:14 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C6B0272B34C
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 19:42:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AA453280EBA
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 17:35:12 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2BB28281105
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 17:42:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C17EBE54B;
-	Sun, 11 Jun 2023 17:35:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4DABAE556;
+	Sun, 11 Jun 2023 17:42:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4CE0523E
-	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 17:35:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52106C433D2;
-	Sun, 11 Jun 2023 17:35:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686504908;
-	bh=AhAg6PO6vYKl/A49pu/XOmPaUepT665ZeDUknSI0Kvk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=apj3eaKYuQPkyb5KQ55Lz4lAe5P/hnWV2mRH4/Q1g4d0BmoA1nI0NRBS80Pmn8Fx7
-	 2ryVfpIjur9QXU7qeQzce1t4qdoh473tkXH1kS0s2CwVtSW11Kza8rVeXjReaWoKGi
-	 91vw3gZbJzRgOk16fJBXRyWjDNXtHZWLNT4KMZ92qq1hhp7c+pPRLh8sxbzi0VatRQ
-	 sZZgEM7hz8yMbX4IRD36eX7SLx3EmCiWEfU57mvGEO91OKBo3pZbFGdWmCC2tSOLlR
-	 kwe+gxHForrwA3U1tzERvZsXXY9QjDa6EPaChQq1y+5plSwU9pGoZDW/aK7+b60RDV
-	 EiBuarOZZ8SCA==
-Date: Sun, 11 Jun 2023 20:35:03 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Dan Carpenter <dan.carpenter@linaro.org>,
-	Saeed Mahameed <saeedm@nvidia.com>
-Cc: paulb@nvidia.com, linux-rdma@vger.kernel.org,
-	linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [bug report] net/mlx5e: TC, Set CT miss to the specific ct
- action instance
-Message-ID: <20230611173503.GF12152@unreal>
-References: <497f5a7a-9f14-478e-b551-1fa74720b6f8@moroto.mountain>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 432A68498
+	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 17:42:03 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5691B7
+	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 10:42:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1686505321; x=1718041321;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=GrxuPrukoPU0phCfmXQzQLYc5IAADVbwsS/X+iSrVVE=;
+  b=aTxX4GBYX7vBMKxmDIvMXlSHK5KbYPmzvYe+k0WSTaaBSNs7GiKWbY+F
+   jiYSUGxIZoZFZWAlCW0YGAcfUyRRc29wie1q1KmdhNyGCFR3T2wZUXMLD
+   5pqtclVQD5nVxkb/DJ8xJImLW9euvmAGZ3NNvFT6NuPLgMP6o0T5Gq1Qp
+   QocGWkzUvoWWEM5omQG6J83De3jtR4LtT4nIp+l1klFVIkDTZZYsOSDNQ
+   IS+meHxVMzhDyECONKM0bgwxStHetDbOkvdQJDj77SFvgYVwXEifwtV5M
+   CTUXlER/Nw2l5LxWnPP+Y0kTepZHM9jupV/Kcw71SopSFLYalae5z57Ie
+   A==;
+X-IronPort-AV: E=Sophos;i="6.00,234,1681196400"; 
+   d="scan'208";a="156487325"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Jun 2023 10:42:00 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Sun, 11 Jun 2023 10:41:53 -0700
+Received: from DEN-LT-70577 (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Sun, 11 Jun 2023 10:41:51 -0700
+Date: Sun, 11 Jun 2023 17:41:51 +0000
+From: Daniel Machon <daniel.machon@microchip.com>
+To: Dave Ertman <david.m.ertman@intel.com>
+CC: <intel-wired-lan@lists.osuosl.org>, <simon.horman@corigine.com>,
+	<netdev@vger.kernel.org>
+Subject: Re: [PATCH iwl-next v4 00/10] Implement support for SRIOV + LAG
+Message-ID: <20230611174151.j4is455hv542igqf@DEN-LT-70577>
+References: <20230609211626.621968-1-david.m.ertman@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <497f5a7a-9f14-478e-b551-1fa74720b6f8@moroto.mountain>
+In-Reply-To: <20230609211626.621968-1-david.m.ertman@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-+ netdev
+Hmm. v4 series does not apply. Seems like patch #3 is causing some
+trouble.
 
-On Wed, Jun 07, 2023 at 10:09:57AM +0300, Dan Carpenter wrote:
-> Hello Paul Blakey,
+> Implement support for SRIOV VF's on interfaces that are in an
+> aggregate interface.
 > 
-> The patch 6702782845a5: "net/mlx5e: TC, Set CT miss to the specific
-> ct action instance" from Feb 18, 2023, leads to the following Smatch
-> static checker warning:
+> The first interface added into the aggregate will be flagged as
+> the primary interface, and this primary interface will be
+> responsible for managing the VF's resources.  VF's created on the
+> primary are the only VFs that will be supported on the aggregate.
+> Only Active-Backup mode will be supported and only aggregates whose
+> primary interface is in switchdev mode will be supported.
 > 
-> drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:5648 mlx5e_tc_action_miss_mapping_get() warn: missing error code 'err'
+> Additional restrictions on what interfaces can be added to the aggregate
+> and still support SRIOV VFs are:
+> - interfaces have to all be on the same physical NIC
+> - all interfaces have to have the same QoS settings
+> - interfaces have to have the FW LLDP agent disabled
+> - only the primary interface is to be put into switchdev mode
+> - no more than two interfaces in the aggregate
 > 
-> Let's include some older unpublished Smatch stuff as well.
+> Changes since v1:
+> Fix typo in commit message
+> Fix typos in warning messages
+> Fix typo in function header
+> Use correct bitwise operator instead of boolean
 > 
-> drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:1683 mlx5e_tc_query_route_vport() info: return a literal instead of 'err'
-> drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:4786 mlx5e_stats_flower() warn: missing error code 'err'
+> Changes since v2:
+> Rebase on current next-queue
+> Fix typos in commits
+> Fix typos in function headers
+> use %u for unsigned values in debug message
+> Refactor common code in node moves to subfunction
 > 
-> drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
->   1665  int mlx5e_tc_query_route_vport(struct net_device *out_dev, struct net_device *route_dev, u16 *vport)
->   1666  {
->   1667          struct mlx5e_priv *out_priv, *route_priv;
->   1668          struct mlx5_core_dev *route_mdev;
->   1669          struct mlx5_devcom *devcom;
->   1670          struct mlx5_eswitch *esw;
->   1671          u16 vhca_id;
->   1672          int err;
->   1673          int i;
->   1674  
->   1675          out_priv = netdev_priv(out_dev);
->   1676          esw = out_priv->mdev->priv.eswitch;
->   1677          route_priv = netdev_priv(route_dev);
->   1678          route_mdev = route_priv->mdev;
->   1679  
->   1680          vhca_id = MLX5_CAP_GEN(route_mdev, vhca_id);
->   1681          err = mlx5_eswitch_vhca_id_to_vport(esw, vhca_id, vport);
->   1682          if (!err)
->   1683                  return err;
+> Changes since v3:
+> Fix typos in warning messages
+> move refactor of common code to earlier patch
+> expand use of refactored code
+> move prototype and func call into patch that defines func
 > 
-> This seems intentional but it look more intentional as "return 0;"
+> Dave Ertman (9):
+>   ice: Add driver support for firmware changes for LAG
+>   ice: changes to the interface with the HW and FW for SRIOV_VF+LAG
+>   ice: implement lag netdev event handler
+>   ice: process events created by lag netdev event handler
+>   ice: Flesh out implementation of support for SRIOV on bonded interface
+>   ice: support non-standard teardown of bond interface
+>   ice: enforce interface eligibility and add messaging for SRIOV LAG
+>   ice: enforce no DCB config changing when in bond
+>   ice: update reset path for SRIOV LAG support
 > 
->   1684  
->   1685          if (!mlx5_lag_is_active(out_priv->mdev))
->   1686                  return err;
+> Jacob Keller (1):
+>   ice: Correctly initialize queue context values
 > 
-> return -ENOENT; here?
+>  drivers/net/ethernet/intel/ice/ice.h          |    5 +
+>  .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   53 +-
+>  drivers/net/ethernet/intel/ice/ice_common.c   |   56 +
+>  drivers/net/ethernet/intel/ice/ice_common.h   |    4 +
+>  drivers/net/ethernet/intel/ice/ice_dcb_nl.c   |   50 +
+>  drivers/net/ethernet/intel/ice/ice_lag.c      | 1812 ++++++++++++++++-
+>  drivers/net/ethernet/intel/ice/ice_lag.h      |   34 +-
+>  drivers/net/ethernet/intel/ice/ice_lib.c      |    2 +-
+>  drivers/net/ethernet/intel/ice/ice_lib.h      |    1 +
+>  drivers/net/ethernet/intel/ice/ice_main.c     |   26 +-
+>  drivers/net/ethernet/intel/ice/ice_sched.c    |   37 +-
+>  drivers/net/ethernet/intel/ice/ice_sched.h    |   21 +
+>  drivers/net/ethernet/intel/ice/ice_switch.c   |   88 +-
+>  drivers/net/ethernet/intel/ice/ice_switch.h   |   29 +
+>  drivers/net/ethernet/intel/ice/ice_type.h     |    2 +
+>  drivers/net/ethernet/intel/ice/ice_virtchnl.c |    2 +
+>  16 files changed, 2092 insertions(+), 130 deletions(-)
 > 
->   1687  
->   1688          rcu_read_lock();
->   1689          devcom = out_priv->mdev->priv.devcom;
->   1690          err = -ENODEV;
->   1691          mlx5_devcom_for_each_peer_entry_rcu(devcom, MLX5_DEVCOM_ESW_OFFLOADS,
->   1692                                              esw, i) {
->   1693                  err = mlx5_eswitch_vhca_id_to_vport(esw, vhca_id, vport);
->   1694                  if (!err)
->   1695                          break;
->   1696          }
->   1697          rcu_read_unlock();
->   1698  
->   1699          return err;
->   1700  }
-> 
-> [ snip ]
-> 
->   4727  int mlx5e_stats_flower(struct net_device *dev, struct mlx5e_priv *priv,
->   4728                         struct flow_cls_offload *f, unsigned long flags)
->   4729  {
->   4730          struct mlx5_devcom *devcom = priv->mdev->priv.devcom;
->   4731          struct rhashtable *tc_ht = get_tc_ht(priv, flags);
->   4732          struct mlx5e_tc_flow *flow;
->   4733          struct mlx5_fc *counter;
->   4734          u64 lastuse = 0;
->   4735          u64 packets = 0;
->   4736          u64 bytes = 0;
->   4737          int err = 0;
->   4738  
->   4739          rcu_read_lock();
->   4740          flow = mlx5e_flow_get(rhashtable_lookup(tc_ht, &f->cookie,
->   4741                                                  tc_ht_params));
->   4742          rcu_read_unlock();
->   4743          if (IS_ERR(flow))
->   4744                  return PTR_ERR(flow);
->   4745  
->   4746          if (!same_flow_direction(flow, flags)) {
->   4747                  err = -EINVAL;
->   4748                  goto errout;
->   4749          }
->   4750  
->   4751          if (mlx5e_is_offloaded_flow(flow)) {
->   4752                  if (flow_flag_test(flow, USE_ACT_STATS)) {
->   4753                          f->use_act_stats = true;
->   4754                  } else {
->   4755                          counter = mlx5e_tc_get_counter(flow);
->   4756                          if (!counter)
->   4757                                  goto errout;
-> 
-> No error code.  In this function it's hard to say if these should be
-> error paths or not.
-> 
->   4758  
->   4759                          mlx5_fc_query_cached(counter, &bytes, &packets, &lastuse);
->   4760                  }
->   4761          }
->   4762  
->   4763          /* Under multipath it's possible for one rule to be currently
->   4764           * un-offloaded while the other rule is offloaded.
->   4765           */
->   4766          if (!mlx5_devcom_for_each_peer_begin(devcom, MLX5_DEVCOM_ESW_OFFLOADS))
->   4767                  goto out;
-> 
-> No error code
-> 
->   4768  
->   4769          if (flow_flag_test(flow, DUP)) {
->   4770                  struct mlx5e_tc_flow *peer_flow;
->   4771  
->   4772                  list_for_each_entry(peer_flow, &flow->peer_flows, peer_flows) {
->   4773                          u64 packets2;
->   4774                          u64 lastuse2;
->   4775                          u64 bytes2;
->   4776  
->   4777                          if (!flow_flag_test(peer_flow, OFFLOADED))
->   4778                                  continue;
->   4779                          if (flow_flag_test(flow, USE_ACT_STATS)) {
->   4780                                  f->use_act_stats = true;
->   4781                                  break;
->   4782                          }
->   4783  
->   4784                          counter = mlx5e_tc_get_counter(peer_flow);
->   4785                          if (!counter)
->   4786                                  goto no_peer_counter;
-> 
-> No error code
-> 
->   4787                          mlx5_fc_query_cached(counter, &bytes2, &packets2,
->   4788                                               &lastuse2);
->   4789  
->   4790                          bytes += bytes2;
->   4791                          packets += packets2;
->   4792                          lastuse = max_t(u64, lastuse, lastuse2);
->   4793                  }
->   4794          }
->   4795  
->   4796  no_peer_counter:
->   4797          mlx5_devcom_for_each_peer_end(devcom, MLX5_DEVCOM_ESW_OFFLOADS);
->   4798  out:
->   4799          flow_stats_update(&f->stats, bytes, packets, 0, lastuse,
->   4800                            FLOW_ACTION_HW_STATS_DELAYED);
->   4801          trace_mlx5e_stats_flower(f);
->   4802  errout:
->   4803          mlx5e_flow_put(priv, flow);
->   4804          return err;
->   4805  }
-> 
-> [ snip ]
-> 
->   5627  int mlx5e_tc_action_miss_mapping_get(struct mlx5e_priv *priv, struct mlx5_flow_attr *attr,
->   5628                                       u64 act_miss_cookie, u32 *act_miss_mapping)
->   5629  {
->   5630          struct mlx5_mapped_obj mapped_obj = {};
->   5631          struct mlx5_eswitch *esw;
->   5632          struct mapping_ctx *ctx;
->   5633          int err;
->   5634  
->   5635          ctx = mlx5e_get_priv_obj_mapping(priv);
->   5636          mapped_obj.type = MLX5_MAPPED_OBJ_ACT_MISS;
->   5637          mapped_obj.act_miss_cookie = act_miss_cookie;
->   5638          err = mapping_add(ctx, &mapped_obj, act_miss_mapping);
->   5639          if (err)
->   5640                  return err;
->   5641  
->   5642          if (!is_mdev_switchdev_mode(priv->mdev))
->   5643                  return 0;
->   5644  
->   5645          esw = priv->mdev->priv.eswitch;
->   5646          attr->act_id_restore_rule = esw_add_restore_rule(esw, *act_miss_mapping);
->   5647          if (IS_ERR(attr->act_id_restore_rule))
->   5648                  goto err_rule;
-> 
-> This one is definitely an error path.
-> 
->   5649  
->   5650          return 0;
->   5651  
->   5652  err_rule:
->   5653          mapping_remove(ctx, *act_miss_mapping);
->   5654          return err;
->   5655  }
-> 
-> regards,
-> dan carpenter
+> --
+> 2.40.1
+>
 
