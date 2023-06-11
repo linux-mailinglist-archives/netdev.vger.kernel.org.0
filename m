@@ -1,62 +1,57 @@
-Return-Path: <netdev+bounces-9940-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9941-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 274AF72B356
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 19:51:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4F29A72B359
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 19:54:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C821028114D
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 17:51:17 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F2FDC281175
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 17:54:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A5780F510;
-	Sun, 11 Jun 2023 17:51:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 05C2EFBFA;
+	Sun, 11 Jun 2023 17:54:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97803F509
-	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 17:51:15 +0000 (UTC)
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E453E187
-	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 10:51:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686505873; x=1718041873;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xYKAcdrJ39rdgCYXNRMarqKIDpIvzW5PC63ZEqfAMHQ=;
-  b=TCcGPKbwSGIZN6Erqox58rUza92ydFuUd2O2SmL1JpTKEAxOwaab+bRp
-   zGRqSsUyp7/mGsx5OOdEgoMuPugf3GR+1dQUVE8GLitW0sVkvoUUiD6kx
-   fUTPHAXdZKENnLPHBFS/gCNFfOa+tUospsB4QajtrcS6QNWvvjxGG2DV6
-   Dps7xBAVu8MZj4kF3C0SICLFFcV77gWiuKg8mlL0DE5V7F+lXu8IX5n2c
-   lBHZbNb332eU2X+oxozUTmVIlatRRT9jLAF9p/3mAbeUD/ShQZCL8pp8G
-   m/iOlMfGZddp95mRcTADRUyQmsUpoyh4vgtGZzbCVNzCt6w22cyIdDRZV
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10738"; a="357881636"
-X-IronPort-AV: E=Sophos;i="6.00,234,1681196400"; 
-   d="scan'208";a="357881636"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2023 10:51:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10738"; a="800773183"
-X-IronPort-AV: E=Sophos;i="6.00,234,1681196400"; 
-   d="scan'208";a="800773183"
-Received: from lkp-server01.sh.intel.com (HELO 15ab08e44a81) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 11 Jun 2023 10:51:12 -0700
-Received: from kbuild by 15ab08e44a81 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1q8PDb-000B1p-1E;
-	Sun, 11 Jun 2023 17:51:11 +0000
-Date: Mon, 12 Jun 2023 01:50:33 +0800
-From: kernel test robot <lkp@intel.com>
-To: Sabrina Dubroca <sd@queasysnail.net>, netdev@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, Sabrina Dubroca <sd@queasysnail.net>,
-	kuba@kernel.org
-Subject: Re: [PATCH net-next] netdevsim: add dummy macsec offload
-Message-ID: <202306120146.8tukbUAq-lkp@intel.com>
-References: <0b87a0b7f9faf82de05c5689fbe8b8b4a83aa25d.1686494112.git.sd@queasysnail.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7A85523E
+	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 17:54:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D7E4C433D2;
+	Sun, 11 Jun 2023 17:54:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686506073;
+	bh=FIK+5wsUU9t3BFkKsm/5vZ/HOghaKtyHKTjK0WuleKk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=skCsgF7vKz/EFpanb7Kdrf58lstCDyFr7VNrPVSa+XdUhYnOiOGfL4S9LviFtkFH+
+	 ZDxxJSWEYbLwpRPKo+yKk8wWoKDdiq5dUV+YsA2B4sJqQG1O7c2OHzvQUOUNwxaJOo
+	 Nw8jJfv5fqwO27mWiHCqJ4WPy46vTQCNc/I+9qquUx/T4j4wa8TQZkMuJP/E7YEi4n
+	 kWDkgjufYe9bAKRjD2fY7pD7d8EPrt/DQzBWU+W9jhZRiRqxXeWGyEwRV3uS90GWKp
+	 Wu4xsP3m/gjLG19Y/D/2Sw6Ip7ld3JcTvsKK0iMJU4TxTykYSr+yJIshIJLKaCyonv
+	 vABiuN7TEqsvg==
+Date: Sun, 11 Jun 2023 20:54:29 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>,
+	Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+	kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+	netdev@vger.kernel.org, Phani Burra <phani.r.burra@intel.com>,
+	pavan.kumar.linga@intel.com, emil.s.tantilov@intel.com,
+	sridhar.samudrala@intel.com, shiraz.saleem@intel.com,
+	sindhu.devale@intel.com, willemb@google.com, decot@google.com,
+	andrew@lunn.ch, simon.horman@corigine.com, shannon.nelson@amd.com,
+	stephen@networkplumber.org, Alan Brady <alan.brady@intel.com>,
+	Madhu Chittim <madhu.chittim@intel.com>,
+	Shailendra Bhatnagar <shailendra.bhatnagar@intel.com>,
+	Krishneil Singh <krishneil.k.singh@intel.com>
+Subject: Re: [PATCH net-next 02/15] idpf: add module register and probe
+ functionality
+Message-ID: <20230611175429.GH12152@unreal>
+References: <20230530234501.2680230-1-anthony.l.nguyen@intel.com>
+ <20230530234501.2680230-3-anthony.l.nguyen@intel.com>
+ <20230531015711-mutt-send-email-mst@kernel.org>
+ <95b50b5a-4c76-ac02-37ae-afa176b4ea62@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -65,82 +60,51 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0b87a0b7f9faf82de05c5689fbe8b8b4a83aa25d.1686494112.git.sd@queasysnail.net>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+In-Reply-To: <95b50b5a-4c76-ac02-37ae-afa176b4ea62@intel.com>
 
-Hi Sabrina,
+On Wed, May 31, 2023 at 11:34:23AM -0700, Jesse Brandeburg wrote:
+> On 5/30/2023 11:05 PM, Michael S. Tsirkin wrote:
+> > On Tue, May 30, 2023 at 04:44:48PM -0700, Tony Nguyen wrote:
+> >> From: Phani Burra <phani.r.burra@intel.com>
+> ...
+> 
+> >> diff --git a/drivers/net/ethernet/intel/idpf/idpf_main.c b/drivers/net/ethernet/intel/idpf/idpf_main.c
+> >> new file mode 100644
+> >> index 000000000000..e290f560ce14
+> >> --- /dev/null
+> >> +++ b/drivers/net/ethernet/intel/idpf/idpf_main.c
+> >> @@ -0,0 +1,136 @@
+> >> +// SPDX-License-Identifier: GPL-2.0-only
+> >> +/* Copyright (C) 2023 Intel Corporation */
+> >> +
+> >> +#include "idpf.h"
+> >> +#include "idpf_devids.h"
+> >> +
+> >> +#define DRV_SUMMARY	"Infrastructure Data Path Function Linux Driver"
+> > 
+> > Do you want to stick Intel(R) here as well?
+> 
+> That would be ok with me, we'll discuss internally.
+> 
+> > And did you say you wanted to add a version?
+> 
+> In-kernel drivers use the kernel version for the MODULE_VERSION field.
+> 
+> > The point being making it possible to distinguish
+> > between this one and the one we'll hopefully have down
+> > the road binding to the IDPF class/prog ifc.
+> > 
+> >> +
+> >> +MODULE_DESCRIPTION(DRV_SUMMARY);
+> >> +MODULE_LICENSE("GPL");
+> Just noticed that we appear to have missed the MODULE_AUTHOR("Intel
+> Corporation")
 
-kernel test robot noticed the following build warnings:
+I'm not a lawyer, but company can't be author. It holds copyright to the work.
 
-[auto build test WARNING on net-next/main]
+Thanks
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Sabrina-Dubroca/netdevsim-add-dummy-macsec-offload/20230611-234644
-base:   net-next/main
-patch link:    https://lore.kernel.org/r/0b87a0b7f9faf82de05c5689fbe8b8b4a83aa25d.1686494112.git.sd%40queasysnail.net
-patch subject: [PATCH net-next] netdevsim: add dummy macsec offload
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20230612/202306120146.8tukbUAq-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build):
-        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-        git fetch net-next main
-        git checkout net-next/main
-        b4 shazam https://lore.kernel.org/r/0b87a0b7f9faf82de05c5689fbe8b8b4a83aa25d.1686494112.git.sd@queasysnail.net
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 olddefconfig
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/netdevsim/
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202306120146.8tukbUAq-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
-   drivers/net/netdevsim/macsec.c: In function 'nsim_macsec_add_txsa':
->> drivers/net/netdevsim/macsec.c:274:27: warning: variable 'secy' set but not used [-Wunused-but-set-variable]
-     274 |         struct nsim_secy *secy;
-         |                           ^~~~
-   drivers/net/netdevsim/macsec.c: In function 'nsim_macsec_upd_txsa':
-   drivers/net/netdevsim/macsec.c:294:27: warning: variable 'secy' set but not used [-Wunused-but-set-variable]
-     294 |         struct nsim_secy *secy;
-         |                           ^~~~
-   drivers/net/netdevsim/macsec.c: In function 'nsim_macsec_del_txsa':
-   drivers/net/netdevsim/macsec.c:314:27: warning: variable 'secy' set but not used [-Wunused-but-set-variable]
-     314 |         struct nsim_secy *secy;
-         |                           ^~~~
-
-
-vim +/secy +274 drivers/net/netdevsim/macsec.c
-
-   270	
-   271	static int nsim_macsec_add_txsa(struct macsec_context *ctx)
-   272	{
-   273		struct netdevsim *ns = netdev_priv(ctx->netdev);
- > 274		struct nsim_secy *secy;
-   275		int idx;
-   276	
-   277		idx = nsim_macsec_find_secy(ns, ctx->secy->sci);
-   278		if (idx < 0) {
-   279			netdev_err(ctx->netdev, "%s: sci %08llx not found in secy table\n",
-   280				   __func__, be64_to_cpu(ctx->secy->sci));
-   281			return -ENOENT;
-   282		}
-   283		secy = &ns->macsec.nsim_secy[idx];
-   284	
-   285		netdev_dbg(ctx->netdev, "%s: SECY with sci %08llx, AN %u\n",
-   286			   __func__, be64_to_cpu(ctx->secy->sci), ctx->sa.assoc_num);
-   287	
-   288		return 0;
-   289	}
-   290	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> 
+> 
+> 
 
