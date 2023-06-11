@@ -1,117 +1,98 @@
-Return-Path: <netdev+bounces-9952-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9953-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8DAD772B495
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 00:25:33 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2035972B497
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 00:25:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B25BD281106
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 22:25:31 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4136F1C20A31
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 22:25:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F1DC156CF;
-	Sun, 11 Jun 2023 22:25:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7FF63156D3;
+	Sun, 11 Jun 2023 22:25:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 932BD107B4
-	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 22:25:29 +0000 (UTC)
-X-Greylist: delayed 220 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 11 Jun 2023 15:25:26 PDT
-Received: from pb-smtp21.pobox.com (pb-smtp21.pobox.com [173.228.157.53])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E84139;
-	Sun, 11 Jun 2023 15:25:26 -0700 (PDT)
-Received: from pb-smtp21.pobox.com (unknown [127.0.0.1])
-	by pb-smtp21.pobox.com (Postfix) with ESMTP id EB5072C298;
-	Sun, 11 Jun 2023 18:21:44 -0400 (EDT)
-	(envelope-from tdavies@darkphysics.net)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=pobox.com; h=date:from
-	:to:cc:subject:message-id:mime-version:content-type; s=sasl; bh=
-	z+Ge1TsISNeopxsJaxZvRckLuWJjsX/bscizidOYUHY=; b=heK9KiFHa98/9xb4
-	Syl79BqHipP7Lfncug0ygiCXtGxjxFZzs/LbKGIRTItHGW6Vdst280cqrA2Y8QcF
-	o2xIp1zTreYsYEsmccLEZGou1O+35Kw+cyAxfTaqke52jsj1CSD6UH2i4WYwGc5I
-	dH+3B/SUiLhBYcS15Xtb1X3BkPc=
-Received: from pb-smtp21.sea.icgroup.com (unknown [127.0.0.1])
-	by pb-smtp21.pobox.com (Postfix) with ESMTP id E2BB22C297;
-	Sun, 11 Jun 2023 18:21:44 -0400 (EDT)
-	(envelope-from tdavies@darkphysics.net)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=darkphysics.net;
- h=date:from:to:cc:subject:message-id:mime-version:content-type;
- s=2019-09.pbsmtp; bh=z+Ge1TsISNeopxsJaxZvRckLuWJjsX/bscizidOYUHY=;
- b=PwEIP3kNnqBbKve2G14PXwGOp/iZ8K1Iqj4naiQfNCPFmd9UlHLZFnen7JiGog0ylJYgKQLw04J06/i8b5g60IBYwDnwIPLVWBlXvmOlArRKXX+J3cum56pklDaPkHCrkGmTAuJgQjLIXoEIfxD3lrjROKHKvXx4XpLy4hqCFMg=
-Received: from oatmeal.darkphysics (unknown [76.146.178.2])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by pb-smtp21.pobox.com (Postfix) with ESMTPSA id C31E22C295;
-	Sun, 11 Jun 2023 18:21:41 -0400 (EDT)
-	(envelope-from tdavies@darkphysics.net)
-Date: Sun, 11 Jun 2023 15:21:36 -0700
-From: Tree Davies <tdavies@darkphysics.net>
-To: anthony.l.nguyen@intel.com, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com
-Cc: tdavies@darkphysics.net, intel-wired-lan@lists.osuosl.org,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net/e1000: Fix single statement blocks warning
-Message-ID: <ZIZI5czU2Qv5KrPA@oatmeal.darkphysics>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75AC82CAB
+	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 22:25:46 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06BDE186
+	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 15:25:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=VqC1URXfd5E1M5g8oVegqetGlc7csztAbEsgCAaeIF4=; b=qz+QJrC1dWsYweaot7gGXYVpFQ
+	HNQ20J1HiVjYSbj3XU3Wil4SoFFGtVUbF2bZT8SgMlqFC83TAO4/7orIH+d/QYt14Qw+g58ao907O
+	KbckMTjvy5eYNl4bV85/ZL2+iAldvujhAqAK6F2rjy5n9kx79ZXGxoUXJP8V1+jvJDgM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1q8TV3-00FWxh-T4; Mon, 12 Jun 2023 00:25:29 +0200
+Date: Mon, 12 Jun 2023 00:25:29 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Marcin Wojtas <mw@semihalf.com>,
+	netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH RFC net-next 2/4] net: phylink: add EEE management
+Message-ID: <50a42dc7-02df-4052-abeb-7d7b9cd7225e@lunn.ch>
+References: <ZILsqV0gkSMMdinU@shell.armlinux.org.uk>
+ <E1q7Y9R-00DI8g-GF@rmk-PC.armlinux.org.uk>
+ <bca7e7ec-3997-4d97-9803-16bfaf05d1f5@lunn.ch>
+ <ZIY+szvNDxFCn94b@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="luNyGatCr/pDLYsq"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Pobox-Relay-ID:
- 57659C30-08A6-11EE-AE76-B31D44D1D7AA-45285927!pb-smtp21.pobox.com
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,NO_DNS_FOR_FROM,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
+In-Reply-To: <ZIY+szvNDxFCn94b@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Sun, Jun 11, 2023 at 10:37:55PM +0100, Russell King (Oracle) wrote:
+> On Sun, Jun 11, 2023 at 11:28:32PM +0200, Andrew Lunn wrote:
+> > On Fri, Jun 09, 2023 at 10:11:21AM +0100, Russell King (Oracle) wrote:
+> > > Add EEE management to phylink.
+> > 
+> > Hi Russell
+> > 
+> > I've been working on my EEE patches. I have all pure phylib drivers
+> > converted. I've incorporated these four patches as well, and make use
+> > of the first patch in phylib.
+> > 
+> > Looking at this patch, i don't see a way for the MAC to indicate it
+> > actually does support EEE. Am i missing it?
+> 
+> If a MAC doesn't support EEE, it won't have the necessary calls to
+> phylink_*_eee() in its ethtool ops. As can be seen from the mvpp2
+> patch, mvpp2_ethtool_get_eee() and mvpp2_ethtool_set_eee() are
+> needed to call the phylink methods.
 
---luNyGatCr/pDLYsq
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This is a bit messy for stmmac. Some versions of stmmac have EEE
+support, some don't. Same is true for r8169, but that is a phylib
+driver. I expect there are other examples.
 
+We also have the same problem with DSA. There is currently one
+phylink_mac_ops structure which has generic methods for all the
+callbacks which then call into the switch driver if the switch driver
+implements the call. And at least with the mv88e6xxx driver, when we
+get around to adding EEE support, some switches will support it, some
+won't, so will we need two different switch op structures?
 
---luNyGatCr/pDLYsq
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment;
-	filename="0001-net-e1000-Fix-single-statement-blocks-warning.patch"
+Adding to the mac_capabilities just seems easier.
 
-From e92897ab5e93b8827d1654a0171bc53ab478ce49 Mon Sep 17 00:00:00 2001
-From: Tree Davies <tdavies@darkphysics.net>
-Date: Sun, 11 Jun 2023 14:41:31 -0700
-Subject: [PATCH] net/e1000: Fix single statement blocks warning
-
-This patch fixes checkpatch.pl warning of type:
-WARNING: braces {} are not necessary for single statement blocks
-
-Signed-off-by: Tree Davies <tdavies@darkphysics.net>
----
- drivers/net/ethernet/intel/e1000/e1000_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
-index da6e303ad99b..accc2bd7c35c 100644
---- a/drivers/net/ethernet/intel/e1000/e1000_main.c
-+++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
-@@ -259,9 +259,8 @@ static int e1000_request_irq(struct e1000_adapter *adapter)
- 
- 	err = request_irq(adapter->pdev->irq, handler, irq_flags, netdev->name,
- 			  netdev);
--	if (err) {
-+	if (err)
- 		e_err(probe, "Unable to allocate interrupt Error: %d\n", err);
--	}
- 
- 	return err;
- }
--- 
-2.30.2
-
-
---luNyGatCr/pDLYsq--
+       Andrew
 
