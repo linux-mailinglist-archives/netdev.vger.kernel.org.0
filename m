@@ -1,515 +1,209 @@
-Return-Path: <netdev+bounces-9906-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9907-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7D2A872B1EE
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 15:02:30 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8985872B242
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 16:09:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 33825281302
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 13:02:29 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CDC332812EB
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 14:09:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E390479DF;
-	Sun, 11 Jun 2023 13:02:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D12A3AD56;
+	Sun, 11 Jun 2023 14:09:32 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8FEA33F1;
-	Sun, 11 Jun 2023 13:02:24 +0000 (UTC)
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470A0BB;
-	Sun, 11 Jun 2023 06:02:22 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id 38308e7fff4ca-2b1fe3a1a73so37063691fa.1;
-        Sun, 11 Jun 2023 06:02:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686488540; x=1689080540;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RBBrW5e2QtMVykFYqcWXhI/R9wVX4PFf+M1Y3B94BEQ=;
-        b=eqe1ata29VcfFAl5TUCVwhMQX5JqXV+n9HdwK9SgDCWUdbeIUHeGCD5JvIMHv81tWv
-         6YWiRpfbE0GfGzyAAyvDRzLuzKKLjyMW0PJo5ubmtjTH6XSa5Sh5Uvfy4lyvPuW+pQDe
-         7cLD49VpU7SjGl3NJAE7cXvtDdXfHW0UGy1po+uvm4KNLVR7o8Er+8CKYoeC5i00MC8H
-         YXnM5Ye4f8WS2D69bsV57KMcEAthVW9rGnsq+M9xls88eIjQlp2PaATRGku1bDFUJG6Q
-         Z2LWQk+F46CyWbdRy/hxuKWi9MjFhfn7OfbDgtwMTTlQn/5cE8rHQK/Zni7HphtXuHWc
-         n+cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686488540; x=1689080540;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RBBrW5e2QtMVykFYqcWXhI/R9wVX4PFf+M1Y3B94BEQ=;
-        b=fPxWqzpkWUahF8RhvB6ewq6CazoYBWdpMBoCl7y026pTWw7LgllLNVMvcZVOVZLEu+
-         8UOS2nhbDlk1EAX4cF2HPB+zoify4elf1zkBbdPFRF4QZfAbFMcGkE4i8gdH9Ai3idAh
-         n8QmNKwG9x+X+CMakanxxbwT3kddi0lpmVDndia+kAwYY73rAdjHrHn2aSjxpefummkX
-         /3JvaNlkp3UsQAWLnARQNpeIpcXn1XHMzumEoQe26AmFiCWQbqhA9uqvZEMpnVUMqtiM
-         JXjU8xxX4EDbV2WtiHwvkB7+V5IQI0u3JiEvQqXD8Je733K00pHnlx62R+EGCPx3ADIj
-         7uhA==
-X-Gm-Message-State: AC+VfDz1ppTRxq1oSv0NIzeGz40P1DSbDsiLtFZmd3N/LwwcNycj+rXa
-	gD0E/wT/ou4LLDHlaoWRt//x7mEaQ88gRTuBmiQ=
-X-Google-Smtp-Source: ACHHUZ4bA3Nn3O0kmEvA+LhZgXowuKE2CQ8uqNRCuH9POvNLHOSa3nsEJkL/OXag1RIcawLjabNNBg0lkvf/D5R9Y5I=
-X-Received: by 2002:a2e:6e18:0:b0:2b1:c751:e570 with SMTP id
- j24-20020a2e6e18000000b002b1c751e570mr1206976ljc.16.1686488539619; Sun, 11
- Jun 2023 06:02:19 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4B4610E6
+	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 14:09:32 +0000 (UTC)
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2060.outbound.protection.outlook.com [40.107.93.60])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5885310D3
+	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 07:09:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Kg/uVeq9vf8cr30wN8/7ejqsZLKnO6YPejNTbYkx4ApHYrNhVHI8VH1T+6iDj5DfHqM6pftlPYOLrCHv86djmH59/ktI1mu+gp72CNHJ3HbUwocaosxTkiZ29kFWnIwKY8BQ8uTfh9LEwX7oZJ7TREQzi6iwUGcemPWzdqyKlwo3Z+5YPyCucbCeSqzSjQgF1eB4VSxX5GoH2E5QDahKxX567VXWDjWyDezRqRedlSp2ApfWhHg8QE7aF8fVrqjeZjI/idVv6Bj21pl88easc/Wet1soF48dbzfEw4wwCyQf+PXIXtwm6QFjNmJCXvqv7YwY2etR0a/KGQTqz55nGw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9Z2eyy7mFUcEGoRqmH4mo2DzH436ChJxlfnJhsiX81s=;
+ b=lQIEMuIKyThTjWT6BxHC6xg6Xk0AfdVhPHNWpQXHgQD+vK+haQ55bhC/YTrc3GlM4GtugXbSWBAzazk5X/MZznmvhtagbrMgl6s7JElbvJJM7gkq9HNhirnNN2OtRifnIaIHpvSs6TZtEUCXpTXJZtSBacza1QL4/mph8mXNYiDZUJ2rMOtox99F0vvu27MFYaj2S5ymjDSptNNUpRglraUxKAtZjtDjvvv0PLsi8wAm8XntTpg7DRVMCJeoZpaoITQfx0mH7VawbEYwMm8nJkj9aJr2hqqDSXEs/CYljc/6qv28BmW6dyLlj6C8swtGKSDlQ1mHWizCaUDmb0YJIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=broadcom.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9Z2eyy7mFUcEGoRqmH4mo2DzH436ChJxlfnJhsiX81s=;
+ b=nPyyUk/Kf44DeckdfMg6B13pJgCDEifNGTKjr4UkM9bZx6dgf98+ZZRaA/Ad4gm0ChzcDhKS/8q4v9nZo2Mk32OtoqxfUG7amNmJpVi6MlgRqYJmftqktqetatPk4ixtXu8FintPd8xwRUfB+5SMfukVIw02RDupsEVInG7u6xRuOT7o8kqTSVyVyHwfnrvGkrgGhnWiCcVTl9S7Yy1MtrNi/YLHgia1I7GWd84DhqFBoNJGDx7KxlrSRrI6PUMvMOjeQijj/a9B2oBviYYZbcYLjuMVsiRTT0Uu94JC2evLR3lo88oHnufNX+jM4LES95nlr3O2Vqb7Xq9Z3Z727w==
+Received: from MW4P220CA0010.NAMP220.PROD.OUTLOOK.COM (2603:10b6:303:115::15)
+ by CH2PR12MB4891.namprd12.prod.outlook.com (2603:10b6:610:36::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.29; Sun, 11 Jun
+ 2023 14:08:25 +0000
+Received: from MWH0EPF000971E4.namprd02.prod.outlook.com
+ (2603:10b6:303:115:cafe::4d) by MW4P220CA0010.outlook.office365.com
+ (2603:10b6:303:115::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.33 via Frontend
+ Transport; Sun, 11 Jun 2023 14:08:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ MWH0EPF000971E4.mail.protection.outlook.com (10.167.243.72) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6500.21 via Frontend Transport; Sun, 11 Jun 2023 14:08:24 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Sun, 11 Jun 2023
+ 07:08:10 -0700
+Received: from sw-mtx-036.mtx.labs.mlnx (10.126.231.35) by
+ rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Sun, 11 Jun 2023 07:08:09 -0700
+From: Parav Pandit <parav@nvidia.com>
+To: <michael.chan@broadcom.com>, <aelior@marvell.com>, <skalluru@marvell.com>,
+	<manishc@marvell.com>, <netdev@vger.kernel.org>
+CC: <edumazet@google.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+	<pabeni@redhat.com>, <dsahern@kernel.org>, Parav Pandit <parav@nvidia.com>
+Subject: [PATCH net-next] tcp: Make GRO completion function inline
+Date: Sun, 11 Jun 2023 17:07:56 +0300
+Message-ID: <20230611140756.1203607-1-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230516111823.2103536-1-starmiku1207184332@gmail.com>
- <e37c0a65-a3f6-e2e6-c2ad-367db20253a0@meta.com> <CALyQVax8X63qekZVhvRTmZFFs+ucPKRkBB7UnRZk6Hu3ggi7Og@mail.gmail.com>
- <57dc6a0e-6ba9-e77c-80ac-6bb0a6e2650a@meta.com> <CALyQVazb=D1ejapiFdTnan6JbjFJA2q9ifhSsmF4OC9MDz3oAw@mail.gmail.com>
- <d027cb6b-e32c-36ad-3aba-9a7b1177f89f@meta.com> <CALyQVayW7e4FPbaMNNuOmYGYt5pcd47zsx2xVkrekEDaVm7H2g@mail.gmail.com>
- <113dc8c1-0840-9ee3-2840-28246731604c@meta.com>
-In-Reply-To: <113dc8c1-0840-9ee3-2840-28246731604c@meta.com>
-From: Teng Qi <starmiku1207184332@gmail.com>
-Date: Sun, 11 Jun 2023 21:02:07 +0800
-Message-ID: <CALyQVaxFKisZ_4DjofVE9PH+nFcOKSMJG4XDkn1znsqU+EnYHw@mail.gmail.com>
-Subject: Re: [bug] kernel: bpf: syscall: a possible sleep-in-atomic bug in __bpf_prog_put()
-To: Yonghong Song <yhs@meta.com>
-Cc: ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com, 
-	andrii@kernel.org, martin.lau@linux.dev, song@kernel.org, yhs@fb.com, 
-	kpsingh@kernel.org, sdf@google.com, haoluo@google.com, jolsa@kernel.org, 
-	davem@davemloft.net, kuba@kernel.org, hawk@kernel.org, bpf@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000971E4:EE_|CH2PR12MB4891:EE_
+X-MS-Office365-Filtering-Correlation-Id: 98420e48-4600-48d6-0111-08db6a85522a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	F3A7RCjC9gTiza9DD/NJitnBmDBNokfNfMQ89R3yKNpNFgUWcyNLfXTmhc0FGUFALhT3ZeitJss5slZ0Tmh19pwsxkTxvkhkvtqxdMD/tz4MwjewAZ+VB2Bi4hi5aTqnniT742IKYpBueCOa9efD+a5jXGhRskFYcasi2oPATWBD5cfAMX9OE0hfoKmgmERPVxqa7TmnkVuAWmF3qf43/QFS2Dp70OxgFaAUw2P0yTuF9oE5rGEc2XzhEukD0f0Sval99fvX3bFP1km6oQpc7+ktEC2FREn7yxHHh3ITcydKxsz+DZKBuw6K+mLYgW0BVidOVkT2vPGAKGGfg2GDdNKsdGfx4yAien/SNHu15qSupMxHpjX+LHGo2UwyFOoKmWVvIdipt7P0yTg/Du0VOWKqkgbVX9pYOoAlJlANb1eykQT2/Y62GKa5cKNhywGffMMRiu1JwerIN42kRcjLCCzshh5ZWQBamhBRWrZqsW5GlyPRk97huHnZGk+6E4D3CFwn9BsOLTi4ZcgDi/kK6cJcngLYdzMFapvPdmFQS+8KXsyjfmygmwJb7Mt2JvCFDcFB6rwcNlzmawmAQsyuxmxC8Aqi0NgA89EEAY0PRmeh/ir7aWKs47sk887aR0zEbHaBXj7CsPVzRcvfInU7jjTXMzS5CvQDJnBQjJ5sGJ/oy67hvwUsTl1rDSdsbETTvZRX+x8akiR23hNn8mGpEa4verKO5jv2JqJB/829YAQ=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(346002)(376002)(39850400004)(451199021)(40470700004)(46966006)(36840700001)(36756003)(86362001)(54906003)(110136005)(478600001)(4326008)(70586007)(70206006)(316002)(6666004)(107886003)(40480700001)(8676002)(8936002)(41300700001)(5660300002)(2906002)(7416002)(82310400005)(7636003)(356005)(82740400003)(2616005)(426003)(336012)(1076003)(26005)(16526019)(186003)(83380400001)(36860700001)(47076005)(40460700003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jun 2023 14:08:24.3329
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 98420e48-4600-48d6-0111-08db6a85522a
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000971E4.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4891
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello!
-> BTW, please do create a test case, e.g, sockmap test case which
-> can show the problem with existing code base.
+At 100G link speed, with 1500 MTU, at 8.2 mpps, if device does GRO for
+64K message size, currently it results in ~190k calls to
+tcp_gro_complete() in data path.
 
-I add a printk in bpf_prog_put_deferred():
-static void bpf_prog_put_deferred(struct work_struct *work)
-{
-        // . . .
-        int inIrq =3D in_irq();
-        int irqsDisabled =3D irqs_disabled();
-        int preemptBits =3D preempt_count();
-        int inAtomic =3D in_atomic();
-        int rcuHeld =3D rcu_read_lock_held();
-        printk("bpf_prog_put: in_irq() %d, irqs_disabled() %d, preempt_coun=
-t()
-         %d, in_atomic() %d, rcu_read_lock_held() %d",
-        inIrq, irqsDisabled, preemptBits, inAtomic, rcuHeld);
-        // . . .
-}
+Inline this small routine to avoid above number of function calls.
 
-When running the selftest, I see the following output:
-[255340.388339] bpf_prog_put: in_irq() 0, irqs_disabled() 0,
-        preempt_count() 256, in_atomic() 1, rcu_read_lock_held() 1
-[255393.237632] bpf_prog_put: in_irq() 0, irqs_disabled() 0,
-        preempt_count() 0, in_atomic() 0, rcu_read_lock_held() 1
+Suggested-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Parav Pandit <parav@nvidia.com>
 
-Based on this output, I believe it is sufficient to construct a self-test c=
-ase
-for bpf_prog_put_deferred() called under preempt disabled or rcu read lock
-region. However, I'm a bit confused about what I should do to build the
-self-test case. Are we looking to create a checker that verifies the
-context of bpf_prog_put_deferred() is valid? Or do we need a test case that
-can trigger this bug?
+---
+This patch is untested as I do not have the any of the 3 hw devices
+calling this routine.
 
-Could you show me more ideas to construct a self test case? I am not famili=
-ar
-with it and have no idea.
+qede, bnxt and bnx2x maintainers,
 
--- Teng Qi
+Can you please verify it with your devices if it reduces cpu
+utilization marginally or it stays same or has some side effects?
 
-On Thu, May 25, 2023 at 3:34=E2=80=AFAM Yonghong Song <yhs@meta.com> wrote:
->
->
->
-> On 5/24/23 5:42 AM, Teng Qi wrote:
-> > Thank you.
-> >
-> >> We cannot use rcu_read_lock_held() in the 'if' statement. The return
-> >> value rcu_read_lock_held() could be 1 for some configurations regardle=
-ss
-> >> whether rcu_read_lock() is really held or not. In most cases,
-> >> rcu_read_lock_held() is used in issuing potential warnings.
-> >> Maybe there are other ways to record whether rcu_read_lock() is held o=
-r not?
-> >
-> > Sorry. I was not aware of the dependency of configurations of
-> > rcu_read_lock_held().
-> >
-> >> If we cannot resolve rcu_read_lock() presence issue, maybe the conditi=
-on
-> >> can be !in_interrupt(), so any process-context will go to a workqueue.
-> >
-> > I agree that using !in_interrupt() as a condition is an acceptable solu=
-tion.
->
-> This should work although it could be conservative.
->
-> >
-> >> Alternatively, we could have another solution. We could add another
-> >> function e.g., bpf_prog_put_rcu(), which indicates that bpf_prog_put()
-> >> will be done in rcu context.
-> >
-> > Implementing a new function like bpf_prog_put_rcu() is a solution that =
-involves
-> > more significant changes.
->
-> Maybe we can change signature of bpf_prog_put instead? Like
->     void bpf_prog_put(struct bpf_prog *prog, bool in_rcu)
-> and inside bpf_prog_put we can add
->     WARN_ON_ONCE(in_rcu && !bpf_rcu_lock_held());
->
-> >
-> >> So if in_interrupt(), do kvfree, otherwise,
-> >> put into a workqueue.
-> >
-> > Shall we proceed with submitting a patch following this approach?
->
-> You could choose either of the above although I think with newer
-> bpf_prog_put() is better.
->
-> BTW, please do create a test case, e.g, sockmap test case which
-> can show the problem with existing code base.
->
-> >
-> > I would like to mention something unrelated to the possible bug. At thi=
-s
-> > moment, things seem to be more puzzling. vfree() is safe under in_inter=
-rupt()
-> > but not safe under other atomic contexts.
-> > This disorder challenges our conventional belief, a monotonic increment=
-ation
-> > of limitations of the hierarchical atomic contexts, that programer need=
-s
-> > to be more and more careful to write code under rcu read lock, spin loc=
-k,
-> > bh disable, interrupt...
-> > This disorder can lead to unexpected consequences, such as code being s=
-afe
-> > under interrupts but not safe under spin locks.
-> > The disorder makes kernel programming more complex and may result in mo=
-re bugs.
-> > Even though we find a way to resolve the possible bug about the bpf_pro=
-g_put(),
-> > I feel sad for undermining of kernel`s maintainability and disorder of
-> > hierarchy of atomic contexts.
-> >
-> > -- Teng Qi
-> >
-> > On Tue, May 23, 2023 at 12:33=E2=80=AFPM Yonghong Song <yhs@meta.com> w=
-rote:
-> >>
-> >>
-> >>
-> >> On 5/21/23 6:39 AM, Teng Qi wrote:
-> >>> Thank you.
-> >>>
-> >>>   > Your above analysis makes sense if indeed that kvfree cannot appe=
-ar
-> >>>   > inside a spin lock region or RCU read lock region. But is it true=
-?
-> >>>   > I checked a few code paths in kvfree/kfree. It is either guarded
-> >>>   > with local_irq_save/restore or by
-> >>>   > spin_lock_irqsave/spin_unlock_
-> >>>   > irqrestore, etc. Did I miss
-> >>>   > anything? Are you talking about RT kernel here?
-> >>>
-> >>> To see the sleepable possibility of kvfree, it is important to analyz=
-e the
-> >>> following calling stack:
-> >>> mm/util.c: 645 kvfree()
-> >>> mm/vmalloc.c: 2763 vfree()
-> >>>
-> >>> In kvfree(), to call vfree, if the pointer addr points to memory
-> >>> allocated by
-> >>> vmalloc(), it calls vfree().
-> >>> void kvfree(const void *addr)
-> >>> {
-> >>>           if (is_vmalloc_addr(addr))
-> >>>                   vfree(addr);
-> >>>           else
-> >>>                   kfree(addr);
-> >>> }
-> >>>
-> >>> In vfree(), in_interrupt() and might_sleep() need to be considered.
-> >>> void vfree(const void *addr)
-> >>> {
-> >>>           // ...
-> >>>           if (unlikely(in_interrupt()))
-> >>>           {
-> >>>                   vfree_atomic(addr);
-> >>>                   return;
-> >>>           }
-> >>>           // ...
-> >>>           might_sleep();
-> >>>           // ...
-> >>> }
-> >>
-> >> Sorry. I didn't check vfree path. So it does look like that
-> >> we need to pay special attention to non interrupt part.
-> >>
-> >>>
-> >>> The vfree() may sleep if in_interrupt() =3D=3D false. The RCU read lo=
-ck region
-> >>> could have in_interrupt() =3D=3D false and spin lock region which onl=
-y disables
-> >>> preemption also has in_interrupt() =3D=3D false. So the kvfree() cann=
-ot appear
-> >>> inside a spin lock region or RCU read lock region if the pointer addr=
- points
-> >>> to memory allocated by vmalloc().
-> >>>
-> >>>   > > Therefore, we propose modifying the condition to include
-> >>>   > > in_atomic(). Could we
-> >>>   > > update the condition as follows: "in_irq() || irqs_disabled() |=
-|
-> >>>   > > in_atomic()"?
-> >>>   > Thank you! We look forward to your feedback.
-> >>>
-> >>> We now think that =E2=80=98irqs_disabled() || in_atomic() ||
-> >>> rcu_read_lock_held()=E2=80=99 is
-> >>> more proper. irqs_disabled() is for irq flag reg, in_atomic() is for
-> >>> preempt count and rcu_read_lock_held() is for RCU read lock region.
-> >>
-> >> We cannot use rcu_read_lock_held() in the 'if' statement. The return
-> >> value rcu_read_lock_held() could be 1 for some configuraitons regardle=
-ss
-> >> whether rcu_read_lock() is really held or not. In most cases,
-> >> rcu_read_lock_held() is used in issuing potential warnings.
-> >> Maybe there are other ways to record whether rcu_read_lock() is held o=
-r not?
-> >>
-> >> I agree with your that 'irqs_disabled() || in_atomic()' makes sense
-> >> since it covers process context local_irq_save() and spin_lock() cases=
-.
-> >>
-> >> If we cannot resolve rcu_read_lock() presence issue, maybe the conditi=
-on
-> >> can be !in_interrupt(), so any process-context will go to a workqueue.
-> >>
-> >> Alternatively, we could have another solution. We could add another
-> >> function e.g., bpf_prog_put_rcu(), which indicates that bpf_prog_put()
-> >> will be done in rcu context. So if in_interrupt(), do kvfree, otherwis=
-e,
-> >> put into a workqueue.
-> >>
-> >>
-> >>>
-> >>> -- Teng Qi
-> >>>
-> >>> On Sun, May 21, 2023 at 11:45=E2=80=AFAM Yonghong Song <yhs@meta.com
-> >>> <mailto:yhs@meta.com>> wrote:
-> >>>
-> >>>
-> >>>
-> >>>      On 5/19/23 7:18 AM, Teng Qi wrote:
-> >>>       > Thank you for your response.
-> >>>       >  > Looks like you only have suspicion here. Could you find a =
-real
-> >>>      violation
-> >>>       >  > here where __bpf_prog_put() is called with !in_irq() &&
-> >>>       >  > !irqs_disabled(), but inside spin_lock or rcu read lock? I
-> >>>      have not seen
-> >>>       >  > things like that.
-> >>>       >
-> >>>       > For the complex conditions to call bpf_prog_put() with 1 refc=
-nt,
-> >>>      we have
-> >>>       > been
-> >>>       > unable to really trigger this atomic violation after trying t=
-o
-> >>>      construct
-> >>>       > test cases manually. But we found that it is possible to show
-> >>>      cases with
-> >>>       > !in_irq() && !irqs_disabled(), but inside spin_lock or rcu re=
-ad lock.
-> >>>       > For example, even a failed case, one of selftest cases of bpf=
-,
-> >>>      netns_cookie,
-> >>>       > calls bpf_sock_map_update() and may indirectly call bpf_prog_=
-put()
-> >>>       > only inside rcu read lock: The possible call stack is:
-> >>>       > net/core/sock_map.c: 615 bpf_sock_map_update()
-> >>>       > net/core/sock_map.c: 468 sock_map_update_common()
-> >>>       > net/core/sock_map.c:  217 sock_map_link()
-> >>>       > kernel/bpf/syscall.c: 2111 bpf_prog_put()
-> >>>       >
-> >>>       > The files about netns_cookie include
-> >>>       > tools/testing/selftests/bpf/progs/netns_cookie_prog.c and
-> >>>       > tools/testing/selftests/bpf/prog_tests/netns_cookie.c. We
-> >>>      inserted the
-> >>>       > following code in
-> >>>       > =E2=80=98net/core/sock_map.c: 468 sock_map_update_common()=E2=
-=80=99:
-> >>>       > static int sock_map_update_common(..)
-> >>>       > {
-> >>>       >          int inIrq =3D in_irq();
-> >>>       >          int irqsDisabled =3D irqs_disabled();
-> >>>       >          int preemptBits =3D preempt_count();
-> >>>       >          int inAtomic =3D in_atomic();
-> >>>       >          int rcuHeld =3D rcu_read_lock_held();
-> >>>       >          printk("in_irq() %d, irqs_disabled() %d, preempt_cou=
-nt() %d,
-> >>>       >            in_atomic() %d, rcu_read_lock_held() %d", inIrq,
-> >>>      irqsDisabled,
-> >>>       >            preemptBits, inAtomic, rcuHeld);
-> >>>       > }
-> >>>       >
-> >>>       > The output message is as follows:
-> >>>       > root@(none):/root/bpf# ./test_progs -t netns_cookie
-> >>>       > [  137.639188] in_irq() 0, irqs_disabled() 0, preempt_count()=
- 0,
-> >>>       > in_atomic() 0,
-> >>>       >          rcu_read_lock_held() 1
-> >>>       > #113     netns_cookie:OK
-> >>>       > Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
-> >>>       >
-> >>>       > We notice that there are numerous callers in kernel/, net/ an=
-d
-> >>>      drivers/,
-> >>>       > so we
-> >>>       > highly suggest modifying __bpf_prog_put() to address this gap=
-.
-> >>>      The gap
-> >>>       > exists
-> >>>       > because __bpf_prog_put() is only safe under in_irq() ||
-> >>>      irqs_disabled()
-> >>>       > but not in_atomic() || rcu_read_lock_held(). The following co=
-de
-> >>>      snippet may
-> >>>       > mislead developers into thinking that bpf_prog_put() is safe =
-in all
-> >>>       > contexts.
-> >>>       > if (in_irq() || irqs_disabled()) {
-> >>>       >          INIT_WORK(&aux->work, bpf_prog_put_deferred);
-> >>>       >          schedule_work(&aux->work);
-> >>>       > } else {
-> >>>       >          bpf_prog_put_deferred(&aux->work);
-> >>>       > }
-> >>>       >
-> >>>       > Implicit dependency may lead to issues.
-> >>>       >
-> >>>       >  > Any problem here?
-> >>>       > We mentioned it to demonstrate the possibility of kvfree() be=
-ing
-> >>>       > called by __bpf_prog_put_noref().
-> >>>       >
-> >>>       > Thanks.
-> >>>       > -- Teng Qi
-> >>>       >
-> >>>       > On Wed, May 17, 2023 at 1:08=E2=80=AFAM Yonghong Song <yhs@me=
-ta.com
-> >>>      <mailto:yhs@meta.com>
-> >>>       > <mailto:yhs@meta.com <mailto:yhs@meta.com>>> wrote:
-> >>>       >
-> >>>       >
-> >>>       >
-> >>>       >     On 5/16/23 4:18 AM, starmiku1207184332@gmail.com
-> >>>      <mailto:starmiku1207184332@gmail.com>
-> >>>       >     <mailto:starmiku1207184332@gmail.com
-> >>>      <mailto:starmiku1207184332@gmail.com>> wrote:
-> >>>       >      > From: Teng Qi <starmiku1207184332@gmail.com
-> >>>      <mailto:starmiku1207184332@gmail.com>
-> >>>       >     <mailto:starmiku1207184332@gmail.com
-> >>>      <mailto:starmiku1207184332@gmail.com>>>
-> >>>       >      >
-> >>>       >      > Hi, bpf developers,
-> >>>       >      >
-> >>>       >      > We are developing a static tool to check the matching =
-between
-> >>>       >     helpers and the
-> >>>       >      > context of hooks. During our analysis, we have discove=
-red some
-> >>>       >     important
-> >>>       >      > findings that we would like to report.
-> >>>       >      >
-> >>>       >      > =E2=80=98kernel/bpf/syscall.c: 2097 __bpf_prog_put()=
-=E2=80=99 shows that
-> >>>      function
-> >>>       >      > bpf_prog_put_deferred() won`t be called in the conditi=
-on of
-> >>>       >      > =E2=80=98in_irq() || irqs_disabled()=E2=80=99.
-> >>>       >      > if (in_irq() || irqs_disabled()) {
-> >>>       >      >      INIT_WORK(&aux->work, bpf_prog_put_deferred);
-> >>>       >      >      schedule_work(&aux->work);
-> >>>       >      > } else {
-> >>>       >      >
-> >>>       >      >      bpf_prog_put_deferred(&aux->work);
-> >>>       >      > }
-> >>>       >      >
-> >>>       >      > We suspect this condition exists because there might b=
-e
-> >>>      sleepable
-> >>>       >     operations
-> >>>       >      > in the callees of the bpf_prog_put_deferred() function=
-:
-> >>>       >      > kernel/bpf/syscall.c: 2097 __bpf_prog_put()
-> >>>       >      > kernel/bpf/syscall.c: 2084 bpf_prog_put_deferred()
-> >>>       >      > kernel/bpf/syscall.c: 2063 __bpf_prog_put_noref()
-> >>>       >      > kvfree(prog->aux->jited_linfo);
-> >>>       >      > kvfree(prog->aux->linfo);
-> >>>       >
-> >>>       >     Looks like you only have suspicion here. Could you find a=
- real
-> >>>       >     violation
-> >>>       >     here where __bpf_prog_put() is called with !in_irq() &&
-> >>>       >     !irqs_disabled(), but inside spin_lock or rcu read lock? =
-I
-> >>>      have not seen
-> >>>       >     things like that.
-> >>>       >
-> >>>       >      >
-> >>>       >      > Additionally, we found that array prog->aux->jited_lin=
-fo is
-> >>>       >     initialized in
-> >>>       >      > =E2=80=98kernel/bpf/core.c: 157 bpf_prog_alloc_jited_l=
-info()=E2=80=99:
-> >>>       >      > prog->aux->jited_linfo =3D kvcalloc(prog->aux->nr_linf=
-o,
-> >>>       >      >    sizeof(*prog->aux->jited_linfo),
-> >>>      bpf_memcg_flags(GFP_KERNEL |
-> >>>       >     __GFP_NOWARN));
-> >>>       >
-> >>>       >     Any problem here?
-> >>>       >
-> >>>       >      >
-> >>>       >      > Our question is whether the condition 'in_irq() ||
-> >>>       >     irqs_disabled() =3D=3D false' is
-> >>>       >      > sufficient for calling 'kvfree'. We are aware that cal=
-ling
-> >>>       >     'kvfree' within the
-> >>>       >      > context of a spin lock or an RCU lock is unsafe.
-> >>>
-> >>>      Your above analysis makes sense if indeed that kvfree cannot app=
-ear
-> >>>      inside a spin lock region or RCU read lock region. But is it tru=
-e?
-> >>>      I checked a few code paths in kvfree/kfree. It is either guarded
-> >>>      with local_irq_save/restore or by
-> >>>      spin_lock_irqsave/spin_unlock_irqrestore, etc. Did I miss
-> >>>      anything? Are you talking about RT kernel here?
-> >>>
-> >>>
-> >>>       >      >
-> >>>       >      > Therefore, we propose modifying the condition to inclu=
-de
-> >>>       >     in_atomic(). Could we
-> >>>       >      > update the condition as follows: "in_irq() ||
-> >>>      irqs_disabled() ||
-> >>>       >     in_atomic()"?
-> >>>       >      >
-> >>>       >      > Thank you! We look forward to your feedback.
-> >>>       >      >
-> >>>       >      > Signed-off-by: Teng Qi <starmiku1207184332@gmail.com
-> >>>      <mailto:starmiku1207184332@gmail.com>
-> >>>       >     <mailto:starmiku1207184332@gmail.com
-> >>>      <mailto:starmiku1207184332@gmail.com>>>
-> >>>       >
-> >>>
+---
+ include/net/tcp.h      | 19 ++++++++++++++++++-
+ net/ipv4/tcp_offload.c | 18 ------------------
+ 2 files changed, 18 insertions(+), 19 deletions(-)
+
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 49611af31bb7..e6e0a7125618 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -40,6 +40,7 @@
+ #include <net/inet_ecn.h>
+ #include <net/dst.h>
+ #include <net/mptcp.h>
++#include <net/gro.h>
+ 
+ #include <linux/seq_file.h>
+ #include <linux/memcontrol.h>
+@@ -2043,7 +2044,23 @@ INDIRECT_CALLABLE_DECLARE(int tcp4_gro_complete(struct sk_buff *skb, int thoff))
+ INDIRECT_CALLABLE_DECLARE(struct sk_buff *tcp4_gro_receive(struct list_head *head, struct sk_buff *skb));
+ INDIRECT_CALLABLE_DECLARE(int tcp6_gro_complete(struct sk_buff *skb, int thoff));
+ INDIRECT_CALLABLE_DECLARE(struct sk_buff *tcp6_gro_receive(struct list_head *head, struct sk_buff *skb));
+-void tcp_gro_complete(struct sk_buff *skb);
++
++static inline void tcp_gro_complete(struct sk_buff *skb)
++{
++	struct tcphdr *th = tcp_hdr(skb);
++
++	skb->csum_start = (unsigned char *)th - skb->head;
++	skb->csum_offset = offsetof(struct tcphdr, check);
++	skb->ip_summed = CHECKSUM_PARTIAL;
++
++	skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
++
++	if (th->cwr)
++		skb_shinfo(skb)->gso_type |= SKB_GSO_TCP_ECN;
++
++	if (skb->encapsulation)
++		skb->inner_transport_header = skb->transport_header;
++}
+ 
+ void __tcp_v4_send_check(struct sk_buff *skb, __be32 saddr, __be32 daddr);
+ 
+diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c
+index 8311c38267b5..5628d6007d43 100644
+--- a/net/ipv4/tcp_offload.c
++++ b/net/ipv4/tcp_offload.c
+@@ -296,24 +296,6 @@ struct sk_buff *tcp_gro_receive(struct list_head *head, struct sk_buff *skb)
+ 	return pp;
+ }
+ 
+-void tcp_gro_complete(struct sk_buff *skb)
+-{
+-	struct tcphdr *th = tcp_hdr(skb);
+-
+-	skb->csum_start = (unsigned char *)th - skb->head;
+-	skb->csum_offset = offsetof(struct tcphdr, check);
+-	skb->ip_summed = CHECKSUM_PARTIAL;
+-
+-	skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
+-
+-	if (th->cwr)
+-		skb_shinfo(skb)->gso_type |= SKB_GSO_TCP_ECN;
+-
+-	if (skb->encapsulation)
+-		skb->inner_transport_header = skb->transport_header;
+-}
+-EXPORT_SYMBOL(tcp_gro_complete);
+-
+ INDIRECT_CALLABLE_SCOPE
+ struct sk_buff *tcp4_gro_receive(struct list_head *head, struct sk_buff *skb)
+ {
+-- 
+2.26.2
+
 
