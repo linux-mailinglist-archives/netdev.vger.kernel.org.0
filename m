@@ -1,332 +1,201 @@
-Return-Path: <netdev+bounces-9872-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9873-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 506F972B02F
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 06:10:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 36E3C72B032
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 06:16:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D70D32813B8
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 04:10:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 965DD2813CB
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 04:16:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9798115D4;
-	Sun, 11 Jun 2023 04:10:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8BF9517E5;
+	Sun, 11 Jun 2023 04:16:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78D9815BC
-	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 04:10:26 +0000 (UTC)
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B7D2134
-	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 21:10:23 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-56d1ca11031so260027b3.2
-        for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 21:10:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google; t=1686456622; x=1689048622;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=sMB3adJq91lmz26k9tK4aZk1aiyVEZDuMjLj/Cm6kzg=;
-        b=NE9vGfxUIOWLRVFEpJEHyGye9Jk4Ntx23JDuZMDrOZtfMReZmZ8ktidlssVRyO3ZoN
-         i2EbPP4+Nie+csRMtqC04kbkJJcpmmNhhQOJPzgcLYuiZPNLUGQzTjxzPIARq2MnW2Dh
-         qC/RQ2mNk5pmXUP1bEiWETxJHwgAP8c6yShGk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686456622; x=1689048622;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sMB3adJq91lmz26k9tK4aZk1aiyVEZDuMjLj/Cm6kzg=;
-        b=Ng1UPpQnm74WtcXITCq0PtAXsf3auqv2l021IuIUupEvTsxH1XmXYPVUO3aW4xB0te
-         nXWZ1MLiYKunow6d/aLmW1mL9r3N79OaN/W1aCUZlcPyTH2cuKNO73ii+VZH65LuAGRb
-         M1zv+KNgcjLl7/PV0Q4Rbrh28pscAK3GPUZpL6CZAJLvi0dAprh59K99/+AmHHZ9MyiI
-         mEqWLUvE6b3oWlsgNLF+Vb+rUs6WOfa7xBKVh13aa2O2abCuq1NWgVzm2KUcgXhwZFkm
-         fsl6WTUnQUK/c8aOKH9lR0yfwpm8aX09I1B5Aerpn7AEAIX2pUTo5mxeXZGSr7vI8bh0
-         4Pgg==
-X-Gm-Message-State: AC+VfDy2TfBA/f/sOMZLG0nCxW1S6pe3Uel7L/Y3yj9mXlkjyHUOXdX5
-	ckvmcSyNljDZTfSpwtr9GBDSMg==
-X-Google-Smtp-Source: ACHHUZ4u8ReVHTZZkfNuebRDlz/O7ySxjC41qdL3VvFEtj6Fovv1EcOZ9pFaWwiO88Puwsau1HLpRw==
-X-Received: by 2002:a81:6d4d:0:b0:561:a422:f3cd with SMTP id i74-20020a816d4d000000b00561a422f3cdmr5950774ywc.30.1686456622296;
-        Sat, 10 Jun 2023 21:10:22 -0700 (PDT)
-Received: from [192.168.2.144] ([169.197.147.212])
-        by smtp.gmail.com with ESMTPSA id y206-20020a817dd7000000b0055a881abfc3sm1668867ywc.135.2023.06.10.21.10.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 10 Jun 2023 21:10:21 -0700 (PDT)
-Message-ID: <adf56f38-55ba-a878-f48d-31e2b8a59b7b@cloudflare.com>
-Date: Sat, 10 Jun 2023 23:10:20 -0500
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 748FB139B
+	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 04:16:03 +0000 (UTC)
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2057.outbound.protection.outlook.com [40.107.244.57])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758C8134
+	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 21:16:01 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=j+BIvrPwhbDC3cOkZIovsP/ZO6JiYgkZC3CiVXr3tbE2Vz32X2smdYhD2hIUD6YcVNwEEftGWNngrerHS423jWD4kuHbYnclKEBhZNiSQG/RpMnn3NdVi9Zx/wWf9qxJJp8fycLXLqzGX21IXm76DWYggcDEPXVYQlHR4Bp0WBnnDMQXCs1/gb90BREw4bMmqfYsZeODipoZyBve+6KFuXcklsPIprVKH5iNOiHFFaRuDvHcW5YBigzCVBkhzsGIdSIaxhmmTMhKgRJRQjqOMhN+lRktF0CEsuOgjVnukN7QR8xb847BEHotX3+ZH0gj7mj1yqCsmoqjL2vDAdi2Pg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9oMGGi7VTVyL2bxx7VfKdEPRopqfKc9CkZxRq4R4hjs=;
+ b=Kel352vmPT71DJhbuR77587Dzp1L3+/5HkiHHSOi6dnKbcAG6wnT/wWErfQ0YgZJ0PZ4gndGdGTE9BVZhQmTMj5dhKn+mXzjhTi9MkSJy/F4XydgBGfOmvBEPx+7s22tf0q7z381oT8/7u6YAZwajK9y26iAnKkreWwZLbPv9n7HszHRiWQ1xcHgKJa7Btu+b8eMwRXh34L3evY8yEmVwqZDGt5SGyfaiblMVJzIToljMoBeiozDP7kfu705UXGiMLTNDmktEenEJuU6YPT/CU1geWEi2uCVDOKM61APWCnH0IuBA7BzxqtnEf1rOXdYkyg6L/76ozSJ7MkoUCikdw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9oMGGi7VTVyL2bxx7VfKdEPRopqfKc9CkZxRq4R4hjs=;
+ b=mw/1aJ/jcvR0y86Uc9eAUPm4Q224sX2VuhzrZYeFGATDBGF9qEqRT/qAxFuH4YDmbyL+5fOU3i7cTAW8UFlpQlSr5P11o+w+/fQQfSbllujryJ0a+NC/J9kW4slC3b/GVtx1xedmNlvZBPXHuAjNPsrmUh1q1eqsvJqiyvtSeeChYnp7ANFnI4fasGoEr1N9SNASepkfYFQLjogn2+KchaVIOzaUQkLzG/SAnsKKSdELkBFtWDZacsUGe0Fjkd8reEBfTarQRWlQ58+2sMSya/QdHpKbV7ZDOOWIpemieRQj0fBTpr1PmAc4nMIHOslthOUqz5eprf9L8PGAM2OX9w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM5PR12MB1340.namprd12.prod.outlook.com (2603:10b6:3:76::15) by
+ CY8PR12MB8314.namprd12.prod.outlook.com (2603:10b6:930:7b::6) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6477.29; Sun, 11 Jun 2023 04:15:59 +0000
+Received: from DM5PR12MB1340.namprd12.prod.outlook.com
+ ([fe80::6e9f:b7db:74b:b379]) by DM5PR12MB1340.namprd12.prod.outlook.com
+ ([fe80::6e9f:b7db:74b:b379%7]) with mapi id 15.20.6477.028; Sun, 11 Jun 2023
+ 04:15:59 +0000
+Date: Sat, 10 Jun 2023 21:15:57 -0700
+From: Saeed Mahameed <saeedm@nvidia.com>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Saeed Mahameed <saeed@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>,
+	netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+	Shay Drory <shayd@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>
+Subject: Re: [net-next 14/15] net/mlx5: Light probe local SFs
+Message-ID: <ZIVKfT97Ua0Xo93M@x130>
+References: <20230610014254.343576-1-saeed@kernel.org>
+ <20230610014254.343576-15-saeed@kernel.org>
+ <20230610000123.04c3a32f@kernel.org>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20230610000123.04c3a32f@kernel.org>
+X-ClientProxiedBy: BY5PR13CA0034.namprd13.prod.outlook.com
+ (2603:10b6:a03:180::47) To DM5PR12MB1340.namprd12.prod.outlook.com
+ (2603:10b6:3:76::15)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net-next v3] tcp: enforce receive buffer memory limits by
- allowing the tcp window to shrink
-Content-Language: en-US
-To: Eric Dumazet <edumazet@google.com>, Neal Cardwell <ncardwell@google.com>
-Cc: netdev@vger.kernel.org, kernel-team@cloudflare.com
-References: <20230609204706.2044591-1-mfreemon@cloudflare.com>
- <CANn89iK+Zged71Hc74Rwk31XdTNiakUnf+yqHDrx1pYKgrnaRw@mail.gmail.com>
-From: Mike Freemon <mfreemon@cloudflare.com>
-In-Reply-To: <CANn89iK+Zged71Hc74Rwk31XdTNiakUnf+yqHDrx1pYKgrnaRw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1340:EE_|CY8PR12MB8314:EE_
+X-MS-Office365-Filtering-Correlation-Id: 343e8442-0b77-44ef-3f53-08db6a328f95
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	PKCLb2H4rL4UIsmGENb5HIzSS0JAgYZqhlwTME+cD+IuRk23LYBksyP6YGPggfLuUtCg8E/hJn1dYj4CXBhKh/6J4/aKbSckALfwo0u38IS5Tl0vnVp9TON//0Qtk7ExROmXh/sdtW0+SjG/tWTpK3Uyhot89gdn2PE9WyzPJiE1+KsYdW/SZmKHqigJXcxj9W7GZT/fvh5m131/nkHD84jqe9DDunrvHVyejguxMxFNw8HNjQK1rmljOh53M9xo0ey1PUPXS+56Zug6a+kSyHpQXWlmGwyuc8RT+bNhWac4ErQALcbmgJPAXIhJXjkQBvKHCTvlDm/OXHES3+tmCCGFlK1nGC/46gu6qERFWjluEuS7EdEDcI0LERuGRh5DMGQ7+lyx+H8YasTHt6gda0rgyzvt1FI2MYJQG+NtQ2TxkVyzJVRjfm+cbQ7vzTo7y6wmWw8C3Sks0BIAhOMSGoGX+l2QhyGjKjgj5Cq+wiOOAJDIyPpwJdXzPI5iUdKSyBHSJgJ3vjrX9v8uFq7EFbuFqekLofbrRlgDIkzrJ0Vf/8nwEikW8RfxdweVKuNs
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1340.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(7916004)(396003)(366004)(136003)(346002)(376002)(39860400002)(451199021)(107886003)(6486002)(83380400001)(38100700002)(86362001)(33716001)(9686003)(6506007)(6512007)(26005)(186003)(2906002)(5660300002)(54906003)(8676002)(8936002)(316002)(41300700001)(6916009)(4326008)(66946007)(66556008)(66476007)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?yw6gSWwnkkW1LPPELf6aTDCB7qF9VL/Q/VK0KUk+LWi1amS2htQ51IlcbunA?=
+ =?us-ascii?Q?D2Fg4Vniv0AaeNh9k8SUqv6PG+fO0Hmj1y6LklPKUyfUORQD6h9rfZINy3L2?=
+ =?us-ascii?Q?HLBLTCCIYl9Hodof0XmyldY2IsEHeBIA3/4rXU69maU54JjEYSrSq2R11A1Q?=
+ =?us-ascii?Q?uYg0imzzhhj8A+VFoTYOPPLunR0Fty5Bl5h3lODYxy40gOkjP7uxwEplqKIm?=
+ =?us-ascii?Q?652HaH/FymJO+ivoAH8Tkia6Qn71tk2gH2AG1/qulInKN059iVu4IR6rY2jY?=
+ =?us-ascii?Q?g0FWVVbp2CMEND1ijAMggLQk5JzGbiuQe5zK4Cl9lsFW4NjCLTV+HEb1DeNk?=
+ =?us-ascii?Q?JXYMQCWsR/yxJzoRedt06F2pcmCPdlDhS/BlbQrHI2Fzhd6jl/fwzSFCphLh?=
+ =?us-ascii?Q?HJyCRuGM4hCoaCEIyTtDxEzhzrOtajK1QwpQue3pa1pEqJlInE/QLEpsv2Jg?=
+ =?us-ascii?Q?tfNsnUnMleFWc7SMtLzHiFnZMl47HpK8hhYXUTaWdpn/iham6fj2QJ6N69vJ?=
+ =?us-ascii?Q?Cas319E2HM+hVuyz/cvLty1kARNCHTJuMbTX2HwzxFmsOG3nwCw2dNuPREpy?=
+ =?us-ascii?Q?3R9G5ctTCOKaJhw55Kk0Ntee0EZLBF5Q71KnLNbezhtCvSZCZ5Ff/RQ9SBrF?=
+ =?us-ascii?Q?LVTTw483U029Vii7+Qmjo1dEj37x/O7bJjfXmgpe2rfd1W9kWK+WukmvLySW?=
+ =?us-ascii?Q?UHh/bW+eQu3loxwxgLrpTd8dPS8y1jQvT9lvgHfEW/Gw/yN/V0FAVDDSnpiQ?=
+ =?us-ascii?Q?REbLDVtxK7SHe2ccXPsRQSmOPX/7aG8YcXOPTC9mNbn6wzW6W5Wxn972fhJ/?=
+ =?us-ascii?Q?YDVRyOeN7eDTA/uLrAAZnnS29X+QLYI5vIyxhrCC00F+cALhI7sDiBnCe2kz?=
+ =?us-ascii?Q?WRfQh1kmD+u4ZrRrc1kWcVBllzm0Gvu0jxNdBaXLGNBr01Oo/GbTKkHZMjbn?=
+ =?us-ascii?Q?iV6lue8hiI6GP2kfCF+RUJaizZLoDjBmEVp41axbDXe0fXp9wfDZatgOeANm?=
+ =?us-ascii?Q?cZ/eIi4h2RTiKvPGf1MSTkvwHwJKqx86+XLiA957qPKSXH9E8fwZoWJ0wt0F?=
+ =?us-ascii?Q?HhePzyvgxNqkTbll41xdtdgRAsRt9HIfBvxC7BFqIQqmO/eNMvKLWn5VXoyK?=
+ =?us-ascii?Q?t2YTbz77u4Nln1oeNxeua0dp2syH9BceCYPn7eGaC6o7U/MUU0mQdK6hrceu?=
+ =?us-ascii?Q?1iFNCuhG8aJDTOpEP+iqboiWswfisxHjIgK4aBNgcIq+/vIeZ8ObQHnxnKb7?=
+ =?us-ascii?Q?qAFs08cHogPM05F5hsZ75wK0NQt2uCISMYfez/9tr3Ls0fHZPBZ+G/n33yWL?=
+ =?us-ascii?Q?xCdzZ46SQp1KKYg6s83Kz2hk4mDkNfn+z4QOm76+4a0PF3ZfGiNYPAAcT/s7?=
+ =?us-ascii?Q?6eEWx28sPYoVnJt5RvMvuAgwSiFsFU9JgJr4oQRzyHOpyFTHGidsrOZu7umW?=
+ =?us-ascii?Q?kbljBkGYqd6crXRlxieZWswI80vmCYM9MizNiSl/57gdKU1g68+7LKTzifxZ?=
+ =?us-ascii?Q?ArWNBaKed8FzVamPfoT9vUz2DZMxSFkBDe2yUnEm6/YlEhtGGi8DPDV6hAm5?=
+ =?us-ascii?Q?uSDwCaeHaReR/4qdJz7h3vkz/5fYyUwRwbSYsh/G?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 343e8442-0b77-44ef-3f53-08db6a328f95
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1340.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jun 2023 04:15:59.4856
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VfChaHhcu3RVDEhECXRqTZ14Dc/z52VEc646tLCkz660JPJSJJjvRaQZ7JkHIYgCVDIaPVkmX/DihecXK4rCCA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8314
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On 10 Jun 00:01, Jakub Kicinski wrote:
+>On Fri,  9 Jun 2023 18:42:53 -0700 Saeed Mahameed wrote:
+>> In case user wants to configure the SFs, for example: to use only vdpa
+>> functionality, he needs to fully probe a SF, configure what he wants,
+>> and afterward reload the SF.
+>>
+>> In order to save the time of the reload, local SFs will probe without
+>> any auxiliary sub-device, so that the SFs can be configured prior to
+>> its full probe.
+>
+>I feel like we talked about this at least twice already, and I keep
+>saying that the features should be specified when the device is
+>spawned. Am I misremembering?
+>
 
+I think we did talk about this, but after internal research we prefer to
+avoid adding additional knobs, unless you insist :) .. 
+I think we already did a research and we feel that all of our users are
+going to re-configure the SF anyway, so why not make all SFs start with
+"blank state" ?
 
-On 6/9/23 20:43, Eric Dumazet wrote:
-> On Fri, Jun 9, 2023 at 10:47 PM Mike Freemon <mfreemon@cloudflare.com> wrote:
->>
->> From: "mfreemon@cloudflare.com" <mfreemon@cloudflare.com>
->>
->> Under certain circumstances, the tcp receive buffer memory limit
->> set by autotuning (sk_rcvbuf) is increased due to incoming data
->> packets as a result of the window not closing when it should be.
->> This can result in the receive buffer growing all the way up to
->> tcp_rmem[2], even for tcp sessions with a low BDP.
->>
->> To reproduce:  Connect a TCP session with the receiver doing
->> nothing and the sender sending small packets (an infinite loop
->> of socket send() with 4 bytes of payload with a sleep of 1 ms
->> in between each send()).  This will cause the tcp receive buffer
->> to grow all the way up to tcp_rmem[2].
->>
->> As a result, a host can have individual tcp sessions with receive
->> buffers of size tcp_rmem[2], and the host itself can reach tcp_mem
->> limits, causing the host to go into tcp memory pressure mode.
->>
->> The fundamental issue is the relationship between the granularity
->> of the window scaling factor and the number of byte ACKed back
->> to the sender.  This problem has previously been identified in
->> RFC 7323, appendix F [1].
->>
->> The Linux kernel currently adheres to never shrinking the window.
->>
->> In addition to the overallocation of memory mentioned above, the
->> current behavior is functionally incorrect, because once tcp_rmem[2]
->> is reached when no remediations remain (i.e. tcp collapse fails to
->> free up any more memory and there are no packets to prune from the
->> out-of-order queue), the receiver will drop in-window packets
->> resulting in retransmissions and an eventual timeout of the tcp
->> session.  A receive buffer full condition should instead result
->> in a zero window and an indefinite wait.
->>
->> In practice, this problem is largely hidden for most flows.  It
->> is not applicable to mice flows.  Elephant flows can send data
->> fast enough to "overrun" the sk_rcvbuf limit (in a single ACK),
->> triggering a zero window.
->>
->> But this problem does show up for other types of flows.  Examples
->> are websockets and other type of flows that send small amounts of
->> data spaced apart slightly in time.  In these cases, we directly
->> encounter the problem described in [1].
->>
->> RFC 7323, section 2.4 [2], says there are instances when a retracted
->> window can be offered, and that TCP implementations MUST ensure
->> that they handle a shrinking window, as specified in RFC 1122,
->> section 4.2.2.16 [3].  All prior RFCs on the topic of tcp window
->> management have made clear that sender must accept a shrunk window
->> from the receiver, including RFC 793 [4] and RFC 1323 [5].
->>
->> This patch implements the functionality to shrink the tcp window
->> when necessary to keep the right edge within the memory limit by
->> autotuning (sk_rcvbuf).  This new functionality is enabled with
->> the new sysctl: net.ipv4.tcp_shrink_window
->>
->> Additional information can be found at:
->> https://blog.cloudflare.com/unbounded-memory-usage-by-tcp-for-receive-buffers-and-how-we-fixed-it/
->>
->> [1] https://www.rfc-editor.org/rfc/rfc7323#appendix-F
->> [2] https://www.rfc-editor.org/rfc/rfc7323#section-2.4
->> [3] https://www.rfc-editor.org/rfc/rfc1122#page-91
->> [4] https://www.rfc-editor.org/rfc/rfc793
->> [5] https://www.rfc-editor.org/rfc/rfc1323
->>
->> Signed-off-by: Mike Freemon <mfreemon@cloudflare.com>
->> ---
->>  Documentation/networking/ip-sysctl.rst | 13 +++++
->>  include/net/netns/ipv4.h               |  1 +
->>  net/ipv4/sysctl_net_ipv4.c             |  9 ++++
->>  net/ipv4/tcp_ipv4.c                    |  2 +
->>  net/ipv4/tcp_output.c                  | 73 ++++++++++++++++++++++++--
->>  5 files changed, 93 insertions(+), 5 deletions(-)
->>
->> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
->> index 366e2a5097d9..ddb895e8af56 100644
->> --- a/Documentation/networking/ip-sysctl.rst
->> +++ b/Documentation/networking/ip-sysctl.rst
->> @@ -981,6 +981,19 @@ tcp_tw_reuse - INTEGER
->>  tcp_window_scaling - BOOLEAN
->>         Enable window scaling as defined in RFC1323.
->>
->> +tcp_shrink_window - BOOLEAN
->> +       This changes how the TCP receive window is calculated.
->> +
->> +       RFC 7323, section 2.4, says there are instances when a retracted
->> +       window can be offered, and that TCP implementations MUST ensure
->> +       that they handle a shrinking window, as specified in RFC 1122.
->> +
->> +       - 0 - Disabled. The window is never shrunk.
->> +       - 1 - Enabled.  The window is shrunk when necessary to remain within
->> +                       the memory limit set by autotuning (sk_rcvbuf).
->> +
->> +       Default: 0
->> +
->>  tcp_wmem - vector of 3 INTEGERs: min, default, max
->>         min: Amount of memory reserved for send buffers for TCP sockets.
->>         Each TCP socket has rights to use it due to fact of its birth.
->> diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
->> index a4efb7a2796c..f00374718159 100644
->> --- a/include/net/netns/ipv4.h
->> +++ b/include/net/netns/ipv4.h
->> @@ -65,6 +65,7 @@ struct netns_ipv4 {
->>  #endif
->>         bool                    fib_has_custom_local_routes;
->>         bool                    fib_offload_disabled;
->> +       u8                      sysctl_tcp_shrink_window;
->>  #ifdef CONFIG_IP_ROUTE_CLASSID
->>         atomic_t                fib_num_tclassid_users;
->>  #endif
->> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
->> index 356afe54951c..2afb0870648b 100644
->> --- a/net/ipv4/sysctl_net_ipv4.c
->> +++ b/net/ipv4/sysctl_net_ipv4.c
->> @@ -1480,6 +1480,15 @@ static struct ctl_table ipv4_net_table[] = {
->>                 .extra1         = SYSCTL_ZERO,
->>                 .extra2         = &tcp_syn_linear_timeouts_max,
->>         },
->> +       {
->> +               .procname       = "tcp_shrink_window",
->> +               .data           = &init_net.ipv4.sysctl_tcp_shrink_window,
->> +               .maxlen         = sizeof(u8),
->> +               .mode           = 0644,
->> +               .proc_handler   = proc_dou8vec_minmax,
->> +               .extra1         = SYSCTL_ZERO,
->> +               .extra2         = SYSCTL_ONE,
->> +       },
->>         { }
->>  };
->>
->> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
->> index 84a5d557dc1a..9213804b034f 100644
->> --- a/net/ipv4/tcp_ipv4.c
->> +++ b/net/ipv4/tcp_ipv4.c
->> @@ -3281,6 +3281,8 @@ static int __net_init tcp_sk_init(struct net *net)
->>                 net->ipv4.tcp_congestion_control = &tcp_reno;
->>
->>         net->ipv4.sysctl_tcp_syn_linear_timeouts = 4;
->> +       net->ipv4.sysctl_tcp_shrink_window = 0;
->> +
->>         return 0;
->>  }
->>
->> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
->> index f8ce77ce7c3e..5c86873e2193 100644
->> --- a/net/ipv4/tcp_output.c
->> +++ b/net/ipv4/tcp_output.c
->> @@ -260,8 +260,8 @@ static u16 tcp_select_window(struct sock *sk)
->>         u32 old_win = tp->rcv_wnd;
->>         u32 cur_win = tcp_receive_window(tp);
->>         u32 new_win = __tcp_select_window(sk);
->> +       struct net *net = sock_net(sk);
-> 
-> Here you cache sock_net() in @net variable.
-> 
->>
->> -       /* Never shrink the offered window */
->>         if (new_win < cur_win) {
->>                 /* Danger Will Robinson!
->>                  * Don't update rcv_wup/rcv_wnd here or else
->> @@ -270,11 +270,15 @@ static u16 tcp_select_window(struct sock *sk)
->>                  *
->>                  * Relax Will Robinson.
->>                  */
->> -               if (new_win == 0)
->> -                       NET_INC_STATS(sock_net(sk),
->> -                                     LINUX_MIB_TCPWANTZEROWINDOWADV);
->> -               new_win = ALIGN(cur_win, 1 << tp->rx_opt.rcv_wscale);
->> +               if (!READ_ONCE(net->ipv4.sysctl_tcp_shrink_window)) {
->> +                       /* Never shrink the offered window */
->> +                       if (new_win == 0)
->> +                               NET_INC_STATS(sock_net(sk),
-> 
-> You then can replace sock_net(sk) by @net here.
-> 
->> +                                             LINUX_MIB_TCPWANTZEROWINDOWADV);
->> +                       new_win = ALIGN(cur_win, 1 << tp->rx_opt.rcv_wscale);
->> +               }
->>         }
->> +
->>         tp->rcv_wnd = new_win;
->>         tp->rcv_wup = tp->rcv_nxt;
->>
->> @@ -3003,6 +3007,7 @@ u32 __tcp_select_window(struct sock *sk)
->>  {
->>         struct inet_connection_sock *icsk = inet_csk(sk);
->>         struct tcp_sock *tp = tcp_sk(sk);
->> +       struct net *net = sock_net(sk);
->>         /* MSS for the peer's data.  Previous versions used mss_clamp
->>          * here.  I don't know if the value based on our guesses
->>          * of peer's MSS is better for the performance.  It's more correct
->> @@ -3024,6 +3029,12 @@ u32 __tcp_select_window(struct sock *sk)
->>                 if (mss <= 0)
->>                         return 0;
->>         }
->> +
->> +       if (READ_ONCE(net->ipv4.sysctl_tcp_shrink_window))
->> +               goto shrink_window_allowed;
->> +
->> +       /* do not allow window to shrink */
->> +
->>         if (free_space < (full_space >> 1)) {
->>                 icsk->icsk_ack.quick = 0;
->>
->> @@ -3077,6 +3088,58 @@ u32 __tcp_select_window(struct sock *sk)
->>                         window = free_space;
->>         }
->>
->> +       return window;
->> +
->> +shrink_window_allowed:
->> +       /* new window should always be an exact multiple of scaling factor */
->> +       free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
->> +
->> +       if (free_space < (full_space >> 1)) {
->> +               icsk->icsk_ack.quick = 0;
->> +
->> +               if (tcp_under_memory_pressure(sk))
->> +                       tcp_adjust_rcv_ssthresh(sk);
->> +
->> +               /* if free space is too low, return a zero window */
->> +               if (free_space < (allowed_space >> 4) || free_space < mss ||
->> +                       free_space < (1 << tp->rx_opt.rcv_wscale))
->> +                       return 0;
-> 
-> Are you sure this block can not be shared with the existing one ?
-> 
-> Existing one has this added part:
-> 
-> free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
-> 
-> Not sure why this would break the tcp_shrink_window == 1 case.
+>Will this patch not surprise existing users? You're changing the
 
-The main issue is the additional conditional on the if that returns 0:
-    
-    free_space < (1 << tp->rx_opt.rcv_wscale))
+I think we already checked, the feature is still not widely known.
+Let me double check.
 
-This is an important difference that I think needs to continue to be
-different in the two cases.
+>defaults. Does "local" mean on the IPU? Also "lightweight" feels
+>uncomfortably close to marketing language.
+>
 
-I'll post a "v4" of the patch with the cleaned up code from the other 
-comments so we can have a clean look at it.
+That wasn't out intention, poor choice of words, will reword to "blank SF"
+
+>> The defaults of the enable_* devlink params of these SFs are set to
+>> false.
+>>
+>> Usage example:
+>
+>Is this a real example? Because we have..
+>
+>> Create SF:
+>> $ devlink port add pci/0000:08:00.0 flavour pcisf pfnum 0 sfnum 11
+>
+>sfnum 11 here
+>
+
+This an arbitrary user index.
+
+>> $ devlink port function set pci/0000:08:00.0/32768 \
+>
+>then port is 32768
+>
+
+This is the actual HW port index, our SFs indexing start with an offset.
+
+>>                hw_addr 00:00:00:00:00:11 state active
+>>
+>> Enable ETH auxiliary device:
+>> $ devlink dev param set auxiliary/mlx5_core.sf.1 \
+>
+>and instance is sf.1
+>
+
+This was the first SF aux dev to be created on the system. :/
+
+It's a mess ha...
+  
+Maybe we need to set the SF aux device index the same as the user index.
+But the HW/port index will always be different, otherwise we will need a map
+inside the driver.
 
 
