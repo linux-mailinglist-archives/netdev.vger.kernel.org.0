@@ -1,277 +1,165 @@
-Return-Path: <netdev+bounces-9862-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9863-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4834272AFDF
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 02:52:29 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id A6DF872B006
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 04:57:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 700462813E0
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 00:52:27 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id ED8E21C20A96
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 02:57:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4F8D210EA;
-	Sun, 11 Jun 2023 00:52:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 794CF1365;
+	Sun, 11 Jun 2023 02:57:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41E857F0
-	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 00:52:25 +0000 (UTC)
-Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC2535A2;
-	Sat, 10 Jun 2023 17:52:22 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-	by domac.alu.hr (Postfix) with ESMTP id 9DA0E60174;
-	Sun, 11 Jun 2023 02:52:19 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-	t=1686444739; bh=26Hm1PrArtUgy8pf0FP31DOBGDnaAJMLCARSj3m5GnU=;
-	h=Date:From:Subject:To:Cc:From;
-	b=eA3RNwgxY3JETPg3VtPHGcBNLOm9sKSW/3nL6E1IMv3SxYt1CyiW7nKeO6LpT98lF
-	 mZJZpZAgfzQFycGbzPNwm4cECU2ArBvOS+c+Xf2qUHIFrwyT54aD0cBS/rsrGQonvS
-	 ABEt7aZPDKaUfc8RZmQEhJgQ7VfKSOFIMzPWDobqokO4PrLJWN0WdPXbohooNBrewX
-	 Nmqpz3RbAPeVh8ZsbIG633tkRC+rNFWDtThjlOJygyWot/vvGWS7g3rCV2mtTThPQx
-	 s2644q7B64CgxydL4YX6OeNcI5JzXsQ3uYcl5LMPZpklIxy34NnGZ1mPvrMmsPtCKt
-	 LsKvgKgOd4iYw==
-X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
-Received: from domac.alu.hr ([127.0.0.1])
-	by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Gt7pTgwHqnsk; Sun, 11 Jun 2023 02:52:16 +0200 (CEST)
-Received: from [192.168.1.6] (unknown [77.237.113.62])
-	by domac.alu.hr (Postfix) with ESMTPSA id A7D9A60173;
-	Sun, 11 Jun 2023 02:52:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-	t=1686444736; bh=26Hm1PrArtUgy8pf0FP31DOBGDnaAJMLCARSj3m5GnU=;
-	h=Date:From:Subject:To:Cc:From;
-	b=EO0I25M2EQQY3sO/IM/bbOa9nbkwKgTI67r0cZMbPs0PGUwTJ1vNMWIPrIWX+cE8q
-	 m7lnXOZq0ujAn/VErltUCIuaPDSiu+Aqa7hkXiADHc460OKExUsb6A3fwqKwnbxswq
-	 3SO34/LQjE/T3Km2YqG2cUlzVJFzGXuYZMONG+eGWBW1VZN+A63VQ+lc9kaXiMY/m7
-	 NaQzVE9F/VMwNzlVKdMxvnecezv8n1UTx3Yoz2DqJ+A1psbPJOK0Wo2QafDPqHkZ0J
-	 lMQo7ZyZDh2npsbxD62MprkkW1BmlqW8AofXRSHRxrEOWq9v5f6FF72vsNvvcb6uyC
-	 fwVw9byw3uIUQ==
-Message-ID: <6a368db5-2206-f94a-14b3-6bdf11927dc1@alu.unizg.hr>
-Date: Sun, 11 Jun 2023 02:52:16 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 685E510F5
+	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 02:57:13 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2051.outbound.protection.outlook.com [40.107.220.51])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768BF134
+	for <netdev@vger.kernel.org>; Sat, 10 Jun 2023 19:57:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=a8phS9TgwOCz/bUe8u27Wx3KmWp8VafxMGkTlIDwNeN+I5RI8r3TlcOfT5FwBEHv39O81dXLOAtIpVbOmZWs8E2NPNLWHvmKbi+XJpfMPv0IS0BeTLI/h+3pzjO/rmlAiivkNx0PgMkcChxYIYrOvTEuWBKrZFbbRNxivESgG6C36KpKFXUc6Kog2ui6B9ysQ2CDYTWW/OCbyF3ybjn1cZqrtfqjMtFuKV4Qk8lOqw7v+wUdKWqJxeWgQwxzXQLcA2xBNf42bmDpa2uILW5tzHsOLXK/+FtwQdfAjszCL2tsOt07mWaCBZWnd2Hn732T+QK6nHrK0IOk71kdlpXOnw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RxLV7HLG4OsEeqsjljDofMUS6s7VxOcgNumuz33aE98=;
+ b=XbPnjiiO8rO4q4sf5giMb7G92Dv3jUQta2mhPIaJyHvgMCbGwL7ZbXUGmApj3w6XTZPpVZ7VLo3RW9tEMpzIqwIe+2foPdy7MtXVXSCAb8YpMOt2EdsESPQXTrNfbi/3ZG6uTIdFfnSSfyCAbLXS/qgxz4XW4RG+/LRNRi3MFGSDcwIMVx3QWWJwg1IT2cvnHZs+kn97AfBMBABlQKllLMFPvY2RNew6+SP+VKAz2oFVWs1hxxU4bSf14HOxffvSU2svZTiPqWLWUHHdmFKWxT9N3AWLmiej5o8pNU6ETmzUJe1+6OGtoS4zXctxfXbqMRnt7/dYbM4oAiOBZwgrZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RxLV7HLG4OsEeqsjljDofMUS6s7VxOcgNumuz33aE98=;
+ b=2c2D5nGudHXuiWKj3byZ01L1JcgzwXtFsp9HGO+DGd9XLsvxgmAQKya1XJ7Qz+87cre+aYbqYR/TYB0PH+mLJKVEFdMx/Er2ntnqWJnWY14zzyWkIHaDRd4jaxFXmk5XWY1M+N9+vNyT6fXt+HiqpRS2pcFMFeADx0RjBROeTPM=
+Received: from MW4PR04CA0292.namprd04.prod.outlook.com (2603:10b6:303:89::27)
+ by PH7PR12MB8596.namprd12.prod.outlook.com (2603:10b6:510:1b7::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.44; Sun, 11 Jun
+ 2023 02:57:08 +0000
+Received: from CO1NAM11FT025.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:89:cafe::17) by MW4PR04CA0292.outlook.office365.com
+ (2603:10b6:303:89::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.31 via Frontend
+ Transport; Sun, 11 Jun 2023 02:57:08 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT025.mail.protection.outlook.com (10.13.175.232) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6477.31 via Frontend Transport; Sun, 11 Jun 2023 02:57:07 +0000
+Received: from jatayu.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Sat, 10 Jun
+ 2023 21:57:01 -0500
+From: Raju Rangoju <Raju.Rangoju@amd.com>
+To: <netdev@vger.kernel.org>
+CC: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+	<pabeni@redhat.com>, <Thomas.Lendacky@amd.com>, <Shyam-sundar.S-k@amd.com>,
+	Raju Rangoju <Raju.Rangoju@amd.com>
+Subject: [PATCH] amd-xgbe: extend 10Mbps support to MAC version 21H
+Date: Sun, 11 Jun 2023 08:26:37 +0530
+Message-ID: <20230611025637.1211722-1-Raju.Rangoju@amd.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Content-Language: en-US
-From: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
-Subject: [BUG] selftests: drivers/net/bonding:
- bond-arp-interval-causes-panic.sh: Cannot find device "link1_1"
-To: netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>, Andy Gospodarek
- <andy@greyhouse.net>, Shuah Khan <shuah@kernel.org>,
- linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT025:EE_|PH7PR12MB8596:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6701e7fd-65e9-49f7-da82-08db6a278b81
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	xXI1fqRnGFyhR4Jjv/ru0JRYxjygNfYdGyxxTI9SiM53h6tPjYX5MQS88SZ/q47C9zooNB8BZDlx3HAf+aOdDsYdkce32nwjjkskdw6rs0LqmRpq3fQV94Ku8maR8LXuhJ+Jq//psaxRZZ4LvSpqU1XqrCY8V2KwwdkILBF9J8F7rchv/J2h48s0+Vf2OSvhYqu+MPbhf40yy6x01ggySThw9jWyV+u+VmdFEu0mVjJ9gMtx82zcY9wky8N01ajvgCEtIvZFrrqG0DsOKFH0xAe4EzW96OBF7NZHCpx1FVbpKP7j+0GmOVFfNabkz8CFBpeIQu4Yegv0O+H5emyisw3iELcKpr3Zt/Q8ejzyq7xSvulnrMcEZ7W9vQccFR2OXetHK3A2VMAN5DpCS108fp2ZQhIa09QkrxyiJmtVWcMwl/MI5lj5PFQDV+yZi1VDpPg7oP8KJvpUu27uvdi2aI7bK8beGlJtOFeg/uOn+exADMtTcrGpzxbjGFww4uoiOAt6Ll9IhkoZpH9HN5d0MwAhQP6J/Bbxdfs5q6wwaVbfEOUdnGKhCD2JejpjTYgUrurH/crJUjjqA5IBIIk/pKMNLZ/TIUl9/eqA0Xj6vWCkorqYRt4+tFShxrCi1Q1O7NDZL6PX3BFNb35DKcoOzLzxthWixWndwH06pUBD4aLPyxD0Aq5a9wUDCIvYTxzCDdMfAThdlVo3a7gv38O25l9akuQq0jEsVeFii6E5Fw/Aji4kRaSyJeuffM/0pzpbJ7Kwv3xIg5i5nM5kLx9KaQ==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(396003)(376002)(136003)(451199021)(36840700001)(40470700004)(46966006)(47076005)(83380400001)(26005)(1076003)(2616005)(41300700001)(316002)(36860700001)(16526019)(186003)(426003)(336012)(7696005)(6666004)(82310400005)(86362001)(40460700003)(54906003)(36756003)(2906002)(5660300002)(8676002)(8936002)(40480700001)(82740400003)(81166007)(70206006)(356005)(6916009)(4326008)(70586007)(478600001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jun 2023 02:57:07.8462
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6701e7fd-65e9-49f7-da82-08db6a278b81
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT025.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8596
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi,
+MAC version 21H supports the 10Mbps speed. So, extend support to
+platforms that support it.
 
-The test failed with the latest torvalds tree kernel 6.4-rc5-00305-g022ce8862dff
-on AMD Ryzen 9 and Ubuntu 22.04 Jammy.
+Acked-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
+---
+ drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-The config is a merge of Ubuntu generic config and selftest config files.
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+index 16e7fb2c0dae..6a716337f48b 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+@@ -2782,9 +2782,9 @@ static bool xgbe_phy_valid_speed_baset_mode(struct xgbe_prv_data *pdata,
+ 
+ 	switch (speed) {
+ 	case SPEED_10:
+-		/* Supported in ver >= 30H */
++		/* Supported in ver 21H and ver >= 30H */
+ 		ver = XGMAC_GET_BITS(pdata->hw_feat.version, MAC_VR, SNPSVER);
+-		return (ver >= 0x30) ? true : false;
++		return (ver == 0x21 || ver >= 0x30);
+ 	case SPEED_100:
+ 	case SPEED_1000:
+ 		return true;
+@@ -2806,9 +2806,10 @@ static bool xgbe_phy_valid_speed_sfp_mode(struct xgbe_prv_data *pdata,
+ 
+ 	switch (speed) {
+ 	case SPEED_10:
+-		/* Supported in ver >= 30H */
++		/* Supported in ver 21H and ver >= 30H */
+ 		ver = XGMAC_GET_BITS(pdata->hw_feat.version, MAC_VR, SNPSVER);
+-		return (ver >= 0x30) && (phy_data->sfp_speed == XGBE_SFP_SPEED_100_1000);
++		return ((ver == 0x21 || ver >= 0x30) &&
++			(phy_data->sfp_speed == XGBE_SFP_SPEED_100_1000));
+ 	case SPEED_100:
+ 		return (phy_data->sfp_speed == XGBE_SFP_SPEED_100_1000);
+ 	case SPEED_1000:
+@@ -3158,9 +3159,9 @@ static bool xgbe_phy_port_mode_mismatch(struct xgbe_prv_data *pdata)
+ 	struct xgbe_phy_data *phy_data = pdata->phy_data;
+ 	unsigned int ver;
+ 
+-	/* 10 Mbps speed is not supported in ver < 30H */
++	/* 10 Mbps speed is supported in ver 21H and ver >= 30H */
+ 	ver = XGMAC_GET_BITS(pdata->hw_feat.version, MAC_VR, SNPSVER);
+-	if (ver < 0x30 && (phy_data->port_speeds & XGBE_PHY_PORT_SPEED_10))
++	if ((ver < 0x30 && ver != 0x21) && (phy_data->port_speeds & XGBE_PHY_PORT_SPEED_10))
+ 		return true;
+ 
+ 	switch (phy_data->port_mode) {
+-- 
+2.25.1
 
-Debug output with `set -x` is [edited]:
-
-root@host:selftests/drivers/net/bonding# ./bond-arp-interval-causes-panic.sh
-Cannot find device "link1_1"
-root@defiant:/home/marvin/linux/kernel/linux_torvalds/tools/testing/selftests/drivers/net/bonding# vi !$
-vi ./bond-arp-interval-causes-panic.sh
-root@host:selftests/drivers/net/bonding# ./bond-arp-interval-causes-panic.sh
-+ test 0 -ne 0
-+ trap finish EXIT
-+ client_ip4=192.168.1.198
-+ server_ip4=192.168.1.254
-+ echo 180
-+ ip link add dev link1_1 type veth peer name link1_2
-+ ip netns add server
-+ ip link set dev link1_2 netns server up name eth0
-+ ip netns exec server ip addr add 192.168.1.254/24 dev eth0
-+ ip netns add client
-+ ip link set dev link1_1 netns client down name eth0
-+ ip netns exec client ip link add dev bond0 down type bond mode 1 miimon 100 all_slaves_active 1
-+ ip netns exec client ip link set dev eth0 down master bond0
-+ ip netns exec client ip link set dev bond0 up
-+ ip netns exec client ip addr add 192.168.1.198/24 dev bond0
-+ ip netns exec client ping -c 5 192.168.1.254
-+ finish
-+ ip netns delete server
-+ ip netns delete client
-+ ip link del link1_1
-Cannot find device "link1_1"
-+ true
-root@host:testing/selftests/drivers/net/bonding# uname -rms
-Linux 6.4.0-rc5-kmlk-netdbg-iwlwifi-00305-g022ce8862dff x86_64
-root@host:testing/selftests/drivers/net/bonding#
-
-Some debugging:
-
-I have added some "ip link show" commands in the finish() function:
-
-finish()
-{
-         ip link show
-         ip netns delete server || true
-         ip netns delete client || true
-         ip link show
-         ip link del link1_1 || true
-}
-
-Now the debug output is like this:
-
-root@host:selftests/drivers/net/bonding# ./bond-arp-interval-causes-panic.sh
-+ test 0 -ne 0
-+ trap finish EXIT
-+ client_ip4=192.168.1.198
-+ server_ip4=192.168.1.254
-+ echo 180
-+ ip link add dev link1_1 type veth peer name link1_2
-+ ip netns add server
-+ ip link set dev link1_2 netns server up name eth0
-+ ip netns exec server ip addr add 192.168.1.254/24 dev eth0
-+ ip netns add client
-+ ip link set dev link1_1 netns client down name eth0
-+ ip netns exec client ip link add dev bond0 down type bond mode 1 miimon 100 all_slaves_active 1
-+ ip netns exec client ip link set dev eth0 down master bond0
-+ ip netns exec client ip link set dev bond0 up
-+ ip netns exec client ip addr add 192.168.1.198/24 dev bond0
-+ ip netns exec client ping -c 5 192.168.1.254
-+ finish
-+ ip link show
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
-     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ether 02:fc:ca:49:e2:d4 brd ff:ff:ff:ff:ff:ff
-3: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ipip 0.0.0.0 brd 0.0.0.0
-4: gre0@NONE: <NOARP> mtu 1476 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/gre 0.0.0.0 brd 0.0.0.0
-5: gretap0@NONE: <BROADCAST,MULTICAST> mtu 1462 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
-6: erspan0@NONE: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
-7: ip_vti0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ipip 0.0.0.0 brd 0.0.0.0
-8: ip6_vti0@NONE: <NOARP> mtu 1332 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/tunnel6 :: brd :: permaddr 325b:a7df:c8db::
-9: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/sit 0.0.0.0 brd 0.0.0.0
-10: ip6tnl0@NONE: <NOARP> mtu 1452 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/tunnel6 :: brd :: permaddr 76d3:be76:4187::
-11: ip6gre0@NONE: <NOARP> mtu 1448 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/gre6 :: brd :: permaddr 569b:65fd:b94b::
-12: enp16s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
-     link/ether 9c:6b:00:01:fb:80 brd ff:ff:ff:ff:ff:ff
-+ ip netns delete server
-+ ip netns delete client
-+ ip link show
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
-     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ether 02:fc:ca:49:e2:d4 brd ff:ff:ff:ff:ff:ff
-3: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ipip 0.0.0.0 brd 0.0.0.0
-4: gre0@NONE: <NOARP> mtu 1476 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/gre 0.0.0.0 brd 0.0.0.0
-5: gretap0@NONE: <BROADCAST,MULTICAST> mtu 1462 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
-6: erspan0@NONE: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
-7: ip_vti0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ipip 0.0.0.0 brd 0.0.0.0
-8: ip6_vti0@NONE: <NOARP> mtu 1332 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/tunnel6 :: brd :: permaddr 325b:a7df:c8db::
-9: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/sit 0.0.0.0 brd 0.0.0.0
-10: ip6tnl0@NONE: <NOARP> mtu 1452 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/tunnel6 :: brd :: permaddr 76d3:be76:4187::
-11: ip6gre0@NONE: <NOARP> mtu 1448 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/gre6 :: brd :: permaddr 569b:65fd:b94b::
-12: enp16s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
-     link/ether 9c:6b:00:01:fb:80 brd ff:ff:ff:ff:ff:ff
-+ ip link del link1_1
-Cannot find device "link1_1"
-+ true
-root@host:selftests/drivers/net/bonding#
-
-Adding more `ip link show` before and after operations with link_1
-had shown that `ip link set dev link1_1 netns client down name eth0` command
-shuts down the link, so the `ip link del link1_1` doesn't succeed, as seen
-here:
-
-+ ip netns exec server ip addr add 192.168.1.254/24 dev eth0
-+ ip netns add client
-+ ip link show
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
-     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ether 02:fc:ca:49:e2:d4 brd ff:ff:ff:ff:ff:ff
-3: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ipip 0.0.0.0 brd 0.0.0.0
-4: gre0@NONE: <NOARP> mtu 1476 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/gre 0.0.0.0 brd 0.0.0.0
-5: gretap0@NONE: <BROADCAST,MULTICAST> mtu 1462 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
-6: erspan0@NONE: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
-7: ip_vti0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ipip 0.0.0.0 brd 0.0.0.0
-8: ip6_vti0@NONE: <NOARP> mtu 1332 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/tunnel6 :: brd :: permaddr 325b:a7df:c8db::
-9: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/sit 0.0.0.0 brd 0.0.0.0
-10: ip6tnl0@NONE: <NOARP> mtu 1452 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/tunnel6 :: brd :: permaddr 76d3:be76:4187::
-11: ip6gre0@NONE: <NOARP> mtu 1448 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/gre6 :: brd :: permaddr 569b:65fd:b94b::
-12: enp16s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
-     link/ether 9c:6b:00:01:fb:80 brd ff:ff:ff:ff:ff:ff
-64: link1_1@if63: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ether 32:d6:de:9f:5d:e2 brd ff:ff:ff:ff:ff:ff link-netns server
-+ ip link set dev link1_1 netns client down name eth0
-+ ip link show
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
-     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ether 02:fc:ca:49:e2:d4 brd ff:ff:ff:ff:ff:ff
-3: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ipip 0.0.0.0 brd 0.0.0.0
-4: gre0@NONE: <NOARP> mtu 1476 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/gre 0.0.0.0 brd 0.0.0.0
-5: gretap0@NONE: <BROADCAST,MULTICAST> mtu 1462 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
-6: erspan0@NONE: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
-7: ip_vti0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/ipip 0.0.0.0 brd 0.0.0.0
-8: ip6_vti0@NONE: <NOARP> mtu 1332 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/tunnel6 :: brd :: permaddr 325b:a7df:c8db::
-9: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/sit 0.0.0.0 brd 0.0.0.0
-10: ip6tnl0@NONE: <NOARP> mtu 1452 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/tunnel6 :: brd :: permaddr 76d3:be76:4187::
-11: ip6gre0@NONE: <NOARP> mtu 1448 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-     link/gre6 :: brd :: permaddr 569b:65fd:b94b::
-12: enp16s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
-     link/ether 9c:6b:00:01:fb:80 brd ff:ff:ff:ff:ff:ff
-+ ip netns exec client ip link add dev bond0 down type bond mode 1 miimon 100 all_slaves_active 1
-
-Hope this helps.
-
-I am not sure what is the right thing to do with this test, and whether it is
-the expected behaviour of the kernel.
-
-Best regards,
-Mirsad
 
