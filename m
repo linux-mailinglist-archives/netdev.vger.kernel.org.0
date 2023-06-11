@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-9889-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9890-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0A4E072B0D5
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 10:39:44 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4F5CC72B0D8
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 10:40:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5216C1C20BAE
-	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 08:39:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8965A1C20B05
+	for <lists+netdev@lfdr.de>; Sun, 11 Jun 2023 08:39:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AE5CE53A0;
-	Sun, 11 Jun 2023 08:39:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 96D585399;
+	Sun, 11 Jun 2023 08:39:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A32425399
-	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 08:39:25 +0000 (UTC)
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E53322136;
-	Sun, 11 Jun 2023 01:39:23 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-3f7a8089709so34164225e9.1;
-        Sun, 11 Jun 2023 01:39:23 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B0E67468
+	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 08:39:28 +0000 (UTC)
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0F92136;
+	Sun, 11 Jun 2023 01:39:26 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-3f7f6341b99so23920955e9.2;
+        Sun, 11 Jun 2023 01:39:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686472762; x=1689064762;
+        d=gmail.com; s=20221208; t=1686472765; x=1689064765;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=k1e4tGkukcyDrQYJ1Gdd+cU0gHkR8U539GgwMkLQ8qI=;
-        b=TO+ptTxLXbQOW/+w9oFbOJT0CtSp9LPu8vr2L/Tb+av0GfbKXiWNVC5EN4rXwgxe/q
-         grIL7DOfXO+/rfG9kYzDSPpQYS8m5rIfVFPsIpYg7lc5q2THQHi+3lH/yH91w+le2fcV
-         YI4Mk4gllmd2PmtYGJ0HUcQOfeVmdFruzz26CKKaO0zdPr6BVezk85MiJ5Uj/I5sryGY
-         E6V/qOzhphoBRtJjejDdqIiu85BADCcuydiDU1Y4kW/nEHZnS3+xOStJGspoduszuCWh
-         oC+ne17gLbTCn1hUynqJxDjzgJ+9Tf8Fdkm6CeUK+wFhaOtKYk/qf4+IhAFcow52BWyF
-         IwdA==
+        bh=aGjSubHB5nyBi9j8FAFQdMcIlI87DT0LBIyRr04BO1s=;
+        b=PNU5zVDx2CelSpV0Ev7A+zsdWWBzu9WqPi5au1pRJoFaqgzwAzPFOKRmki5m2JAfta
+         EurquF9ue3YFhSmqmHgNHjg9OVWfuBvn80zg5K97MDCKqLeE2PtE1ElTwUOIGdKslVWm
+         sDXA+9Gzcik7aY/s6X1Yx9eiMYq3XA36u728Kr/ZVIn0kLYpQMWMhspQqjYzfImdulyd
+         MLGXR/IiGJgf1OuN7PPZo8X0dZ7LKGBwVOd2A2SJjiqYnRfuLXFXi/LIltVo7Fv84pNx
+         iX5IspBCFXQakEeonH3w5dcDMJjzZ54GItWx14PGMiZVjdJO1u8+70c/D9OHsdMR1rc1
+         cHJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686472762; x=1689064762;
+        d=1e100.net; s=20221208; t=1686472765; x=1689064765;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=k1e4tGkukcyDrQYJ1Gdd+cU0gHkR8U539GgwMkLQ8qI=;
-        b=QSgv98OLzeqMQvGRP4W6czWDisynO80qJNqQjh9OQv4yyZEzH0DAtdToHPM9inQbIA
-         x+du77zt8cA5uF9MUlM6QXr9lR9D+BA2Dz/t6hvkU8PLLqICvqdocV//Hb6Pfirisc1w
-         Y/Xb9ZA4nQdcmUE+qiGV6jv3yng1d+6sUKtyzH0WwTwEP9o2Hcp0eUiIqVmtvQ0JPijW
-         KgPJ6KYYniNBv5MHv8soVTwDyVpW4VKqPZxNCRSAblB3nmb+fjZ1uTg4B17gPJ6aCHfj
-         toCZYgCokhyyiftnn5vFqYAg7EmXes1y8YLGiNhy7vQsTjlxxLgyz2p6vb50gWC8tmkd
-         O/lQ==
-X-Gm-Message-State: AC+VfDxx0cEB565gYd5+BgKmCy/72nl1t+kCW1L1Gqp/l4y45hpK8NKm
-	wYbusDgVDAUTasq0vtkvLp4=
-X-Google-Smtp-Source: ACHHUZ5MiGDFC+03ngMSuD3uQW51ZH0YyfheT70boghO5pdwy1i89WB/82bRr4fjwYFuZ26XwABLxA==
-X-Received: by 2002:a05:600c:cb:b0:3f7:6bd9:2819 with SMTP id u11-20020a05600c00cb00b003f76bd92819mr4680844wmm.29.1686472762218;
-        Sun, 11 Jun 2023 01:39:22 -0700 (PDT)
+        bh=aGjSubHB5nyBi9j8FAFQdMcIlI87DT0LBIyRr04BO1s=;
+        b=SetRpR8ggUW2C4GmOfdEVFcsUR4h7KCJjT/523+oO2Qz/H8fWwn/Ba+eJr4LSme4/G
+         qN6hvh6BXYr+nBNXZa5E71GlplfuihHRcCMRnzNGYfbuRjG5AdHk/WNisnb94dVAgECK
+         RAOOzliyH1fAx2g7gBfjEJE9SGcwDXDP1wCaWH4l7uHLlnmIJ+l5KBqj5Cx04j74B7Jo
+         ZEjwGldPfjgxD7iYc16aFADHwEXhZBWvoKgDuPSqfnpZosHuTQsFF5Fh2d1yPbiQ/cRQ
+         ONiot0+fsk+phu3wNIJ35UNGIcsZ1x7aHAZa76Z6oTl4sl6PV5D90xbFDLWOti79XChU
+         h0Qw==
+X-Gm-Message-State: AC+VfDw/WcGydMK+oC761GQqzqMbM5dl9G4Mx3jRbkp3/UulSMKaiR6U
+	MN1EibFfyqKpsoY2tkA7Kw8=
+X-Google-Smtp-Source: ACHHUZ47Yo4aCctQJTM6/sgph7/C53Vo6Ns/4gbAaKuHVHeqrz74CbHq7XcgsterxVaPmL3Oq1SFMw==
+X-Received: by 2002:a05:600c:2291:b0:3f6:1a3:4cee with SMTP id 17-20020a05600c229100b003f601a34ceemr4653033wmf.14.1686472765218;
+        Sun, 11 Jun 2023 01:39:25 -0700 (PDT)
 Received: from arinc9-Xeront.lan (178-147-169-233.haap.dm.cosmote.net. [178.147.169.233])
-        by smtp.gmail.com with ESMTPSA id 17-20020a05600c22d100b003f8044b3436sm7394629wmg.23.2023.06.11.01.39.19
+        by smtp.gmail.com with ESMTPSA id 17-20020a05600c22d100b003f8044b3436sm7394629wmg.23.2023.06.11.01.39.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Jun 2023 01:39:21 -0700 (PDT)
+        Sun, 11 Jun 2023 01:39:24 -0700 (PDT)
 From: arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To: =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
@@ -82,9 +82,9 @@ Cc: Landen Chao <landen.chao@mediatek.com>,
 	netdev@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-mediatek@lists.infradead.org
-Subject: [PATCH net v3 1/7] net: dsa: mt7530: fix trapping frames with multiple CPU ports on MT7531
-Date: Sun, 11 Jun 2023 11:39:08 +0300
-Message-Id: <20230611083914.28603-2-arinc.unal@arinc9.com>
+Subject: [PATCH net v3 2/7] net: dsa: mt7530: fix trapping frames with multiple CPU ports on MT7530
+Date: Sun, 11 Jun 2023 11:39:09 +0300
+Message-Id: <20230611083914.28603-3-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230611083914.28603-1-arinc.unal@arinc9.com>
 References: <20230611083914.28603-1-arinc.unal@arinc9.com>
@@ -105,85 +105,121 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-Every bit of the CPU port bitmap for MT7531 and the switch on the MT7988
-SoC represents a CPU port to trap frames to. These switches trap frames to
-the CPU port the user port, which the frames are received from, is affine
-to.
+The CPU_PORT bits represent the CPU port to trap frames to for the MT7530
+switch. This switch traps frames to the CPU port set on the CPU_PORT bits,
+regardless of the affinity of the user port which the frames are received
+from.
 
-Currently, only the bit that corresponds to the first found CPU port is set
-on the bitmap. When multiple CPU ports are being used, frames from the user
-ports affine to the other CPU port which are set to be trapped will be
-dropped as the affine CPU port is not set on the bitmap. Only the MT7531
-switch is affected as there's only one port to be used as a CPU port on the
-switch on the MT7988 SoC.
+When multiple CPU ports are being used, the trapped frames won't be
+received when the DSA conduit interface, which the frames are supposed to
+be trapped to, is down because it's not affine to any user port. This
+requires the DSA conduit interface to be manually set up for the trapped
+frames to be received.
 
-To fix this, introduce the MT7531_CPU_PMAP macro to individually set the
-bits of the CPU port bitmap. Set the CPU port bitmap for MT7531 and the
-switch on the MT7988 SoC on mt753x_cpu_port_enable() which runs on a loop
-for each CPU port.
+To fix this, implement ds->ops->master_state_change() on this subdriver and
+set the CPU_PORT bits to the CPU port which the DSA conduit interface its
+affine to is up. Introduce the active_cpu_ports field to store the
+information of the active CPU ports. Correct the macros, CPU_PORT is bits 4
+through 6 of the register.
 
-Add comments to explain frame trapping for these switches.
+Add comments to explain frame trapping for this switch.
 
-According to the document MT7531 Reference Manual for Development Board
-v1.0, the MT7531_CPU_PMAP bits are unset after reset so no need to clear it
-beforehand. Since there's currently no public document for the switch on
-the MT7988 SoC, I assume this is also the case for this switch.
-
-Fixes: c288575f7810 ("net: dsa: mt7530: Add the support of MT7531 switch")
+Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
+Suggested-by: Vladimir Oltean <olteanv@gmail.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.c | 16 +++++++++-------
- drivers/net/dsa/mt7530.h |  1 +
- 2 files changed, 10 insertions(+), 7 deletions(-)
+ drivers/net/dsa/mt7530.c | 32 ++++++++++++++++++++++++++++----
+ drivers/net/dsa/mt7530.h |  6 ++++--
+ 2 files changed, 32 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 9bc54e1348cb..8ab4718abb06 100644
+index 8ab4718abb06..da75f9b312bc 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -1010,6 +1010,14 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
- 	if (priv->id == ID_MT7621)
- 		mt7530_rmw(priv, MT7530_MFC, CPU_MASK, CPU_EN | CPU_PORT(port));
+@@ -1006,10 +1006,6 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
+ 	mt7530_set(priv, MT7530_MFC, BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) |
+ 		   UNU_FFP(BIT(port)));
  
-+	/* Add the CPU port to the CPU port bitmap for MT7531 and the switch on
-+	 * the MT7988 SoC. Any frames set for trapping to CPU port will be
-+	 * trapped to the CPU port the user port, which the frames are received
-+	 * from, is affine to.
-+	 */
-+	if (priv->id == ID_MT7531 || priv->id == ID_MT7988)
-+		mt7530_set(priv, MT7531_CFC, MT7531_CPU_PMAP(BIT(port)));
+-	/* Set CPU port number */
+-	if (priv->id == ID_MT7621)
+-		mt7530_rmw(priv, MT7530_MFC, CPU_MASK, CPU_EN | CPU_PORT(port));
+-
+ 	/* Add the CPU port to the CPU port bitmap for MT7531 and the switch on
+ 	 * the MT7988 SoC. Any frames set for trapping to CPU port will be
+ 	 * trapped to the CPU port the user port, which the frames are received
+@@ -3063,6 +3059,33 @@ static int mt753x_set_mac_eee(struct dsa_switch *ds, int port,
+ 	return 0;
+ }
+ 
++static void
++mt753x_master_state_change(struct dsa_switch *ds,
++			   const struct net_device *master,
++			   bool operational)
++{
++	struct mt7530_priv *priv = ds->priv;
++	struct dsa_port *cpu_dp = master->dsa_ptr;
 +
- 	/* CPU port gets connected to all user ports of
- 	 * the switch.
- 	 */
-@@ -2352,15 +2360,9 @@ static int
- mt7531_setup_common(struct dsa_switch *ds)
++	/* Set the CPU port to trap frames to for MT7530. There can be only one
++	 * CPU port due to CPU_PORT having only 3 bits. Any frames received from
++	 * a user port which are set for trapping to CPU port will be trapped to
++	 * the numerically smallest CPU port which is affine to the DSA conduit
++	 * interface that is up.
++	 */
++	if (priv->id != ID_MT7621)
++		return;
++
++	if (operational)
++		priv->active_cpu_ports |= BIT(cpu_dp->index);
++	else
++		priv->active_cpu_ports &= ~BIT(cpu_dp->index);
++
++	if (priv->active_cpu_ports)
++		mt7530_rmw(priv, MT7530_MFC, CPU_EN | CPU_PORT_MASK, CPU_EN |
++			   CPU_PORT(__ffs(priv->active_cpu_ports)));
++}
++
+ static int mt7988_pad_setup(struct dsa_switch *ds, phy_interface_t interface)
  {
- 	struct mt7530_priv *priv = ds->priv;
--	struct dsa_port *cpu_dp;
- 	int ret, i;
- 
--	/* BPDU to CPU port */
--	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
--		mt7530_rmw(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK,
--			   BIT(cpu_dp->index));
--		break;
--	}
-+	/* Trap BPDUs to the CPU port(s) */
- 	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
- 		   MT753X_BPDU_CPU_ONLY);
+ 	return 0;
+@@ -3117,6 +3140,7 @@ const struct dsa_switch_ops mt7530_switch_ops = {
+ 	.phylink_mac_link_up	= mt753x_phylink_mac_link_up,
+ 	.get_mac_eee		= mt753x_get_mac_eee,
+ 	.set_mac_eee		= mt753x_set_mac_eee,
++	.master_state_change	= mt753x_master_state_change,
+ };
+ EXPORT_SYMBOL_GPL(mt7530_switch_ops);
  
 diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 5084f48a8869..e590cf43f3ae 100644
+index e590cf43f3ae..28dbd131a535 100644
 --- a/drivers/net/dsa/mt7530.h
 +++ b/drivers/net/dsa/mt7530.h
-@@ -54,6 +54,7 @@ enum mt753x_id {
- #define  MT7531_MIRROR_PORT_GET(x)	(((x) >> 16) & MIRROR_MASK)
- #define  MT7531_MIRROR_PORT_SET(x)	(((x) & MIRROR_MASK) << 16)
- #define  MT7531_CPU_PMAP_MASK		GENMASK(7, 0)
-+#define  MT7531_CPU_PMAP(x)		FIELD_PREP(MT7531_CPU_PMAP_MASK, x)
+@@ -41,8 +41,8 @@ enum mt753x_id {
+ #define  UNU_FFP(x)			(((x) & 0xff) << 8)
+ #define  UNU_FFP_MASK			UNU_FFP(~0)
+ #define  CPU_EN				BIT(7)
+-#define  CPU_PORT(x)			((x) << 4)
+-#define  CPU_MASK			(0xf << 4)
++#define  CPU_PORT_MASK			GENMASK(6, 4)
++#define  CPU_PORT(x)			FIELD_PREP(CPU_PORT_MASK, x)
+ #define  MIRROR_EN			BIT(3)
+ #define  MIRROR_PORT(x)			((x) & 0x7)
+ #define  MIRROR_MASK			0x7
+@@ -753,6 +753,7 @@ struct mt753x_info {
+  * @irq_domain:		IRQ domain of the switch irq_chip
+  * @irq_enable:		IRQ enable bits, synced to SYS_INT_EN
+  * @create_sgmii:	Pointer to function creating SGMII PCS instance(s)
++ * @active_cpu_ports:	Holding the active CPU ports
+  */
+ struct mt7530_priv {
+ 	struct device		*dev;
+@@ -779,6 +780,7 @@ struct mt7530_priv {
+ 	struct irq_domain *irq_domain;
+ 	u32 irq_enable;
+ 	int (*create_sgmii)(struct mt7530_priv *priv, bool dual_sgmii);
++	unsigned long active_cpu_ports;
+ };
  
- #define MT753X_MIRROR_REG(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ?	\
- 					 MT7531_CFC : MT7530_MFC)
+ struct mt7530_hw_vlan_entry {
 -- 
 2.39.2
 
