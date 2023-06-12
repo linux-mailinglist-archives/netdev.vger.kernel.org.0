@@ -1,91 +1,94 @@
-Return-Path: <netdev+bounces-10204-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10205-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 91C2A72CDAE
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 20:16:45 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 612DE72CDD2
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 20:23:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4B62C2810FE
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 18:16:44 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 84F4D1C20B36
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 18:23:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 95B0621CF8;
-	Mon, 12 Jun 2023 18:16:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 52B7522610;
+	Mon, 12 Jun 2023 18:23:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A7E321CF2
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 18:16:42 +0000 (UTC)
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DB5E77
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 11:16:40 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id d75a77b69052e-3f9e1ebbf31so1423311cf.2
-        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 11:16:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1686593799; x=1689185799;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=CSNNtD+uLuYv9nmzTpbeMCfqzOJ+jjSwaoJb9/60IFY=;
-        b=kMjXibD0dT1WnxLDRNzvxtdFWK18G0ro8YnUhV4611pocZCZnQHVROJEvrtMZWiwuB
-         KT7ki2dAQo432XryBydHa9238V3WXuw85jF1aS8kXUvOnkP1/9Apcf4/AVe7TyiEdDfb
-         vt+w189CJpY79/WVWRDv4xOv3OOjGNZxmcAMCaO6aEMlmHitWoLkbI6WmeWcK+0j77jj
-         aZ5kBoGgN8ZSH6vWYcxrHtpTZo9lT/cDq2okXqGL3UdJBXgF2rEeUSZ0jaFaXO43z8ct
-         R0hRJ8gkZLKAJTbi5Dpn1rlVnFECchaGeJ66MGSh/Q05HklJmAg8YW4xhg0RdqZrPvGF
-         Ih1w==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4567321CE1
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 18:23:06 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA014E77
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 11:23:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686594182;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=WuZqmtvd4WjoknFOrkLRYxUsHp5/t5pNlhuMb2dd9d8=;
+	b=Ptgnm/zcPxh2qyvS8qltOjVRhNbDAAvI7EAtTH2NJb1Ha/K2xYBYiyD/YrumENKo1HBem3
+	gj4fMo5afQ4d4ESDS6UJutNcjBWPi3onKqQoSd+olWlMqzlkCIZNbO2NCSXCJMp5IRYPlx
+	tr/Kzf+m3cz+BSKhYKzD2MtmbK/2tr8=
+Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com
+ [209.85.160.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-110-pUfwOncYNQaUuUGBlqOmtQ-1; Mon, 12 Jun 2023 14:23:00 -0400
+X-MC-Unique: pUfwOncYNQaUuUGBlqOmtQ-1
+Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-1a696e8eca8so1050733fac.2
+        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 11:23:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686593799; x=1689185799;
+        d=1e100.net; s=20221208; t=1686594180; x=1689186180;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=CSNNtD+uLuYv9nmzTpbeMCfqzOJ+jjSwaoJb9/60IFY=;
-        b=i6qUGUs1EMXT3YyVtEDNC53g2Ey7zD5gWwnwJ2bQxXd+yjeAlV2j0YVyrIxni9nT6Z
-         jTZGEqAEZyQ+q7u8NtVl/ISlYSaudi6MhSdG3NFdWqSDCq9Q/zxJNUkLMi4kO/lfMz+v
-         uKyRdC3eknEYQL66C2AagHv8M8PJeIBcOHhqWK9z0J9u3rFD38EOT7IH7iCZptiqIBAe
-         ZohkjGJhVewMznIymmPdFyCaBnHf7QajlyRCbzf0Rmq/HdXYpLpvSLhh7K2Y0C8LBXJB
-         /JzbqEWgu5Fn9shd1xgtE2+AcSp9bfZ0gZJ+JqQa7u63t0o4S7xYnYX3BU4XVJYKp3JT
-         KGzg==
-X-Gm-Message-State: AC+VfDzDAmDS0e47r4wa4kUTX+Hq0KFfaPqX+WaiaUlSTSrClg6QR3Ne
-	tIJ2PNQjX32cbznrtZl5wIqSvQ==
-X-Google-Smtp-Source: ACHHUZ56PLfbA1IsbtQ4tzlNdBNTVPqZZyyRiNfrvp+Ra3DOcBiDzJJB/sLUzltmV2qMRWikkyD4ag==
-X-Received: by 2002:a05:622a:1301:b0:3f9:a73b:57a2 with SMTP id v1-20020a05622a130100b003f9a73b57a2mr9983956qtk.26.1686593799273;
-        Mon, 12 Jun 2023 11:16:39 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id a22-20020ac844b6000000b003f6c9f8f0a8sm3559539qto.68.2023.06.12.11.16.38
+        bh=WuZqmtvd4WjoknFOrkLRYxUsHp5/t5pNlhuMb2dd9d8=;
+        b=Qm9rtOq/1sIJB5TyRHTD8iIzcTkAkyMl3Wbw819sqoM0CZIcVJ9XBCcHO0MOiyctGl
+         VOfs0MqTO1ajdUvbpsdgq/92zh8vrTDnaS1RVSXq0ZTIzVJ/ofMG76Mjdtt7OLbTf/ns
+         kUd9DJbY3nlDySKqtas7JJjfI8u8u6cRARRjCzFez2lUjY+GHRQ/LXx/4UhtUUJOvOFz
+         b0zmT+bmR2pgT/5bt7mSs0AXipZEQ0GKZ0fjiDFJMnK1e5RsJX55aeCoX+O3s2mWTj2m
+         MmwzTZpbqOhRbQl1ZK2rZOE5X2vhiwQcl7ookX+e5k/15W3QCT8vFmGBKrN5O6DLArXg
+         fd1g==
+X-Gm-Message-State: AC+VfDxa1j6UMv70FLYQpMB5ZtUR05bSrTZO2D1FuNxDQz+772JY3ici
+	di0FRrEj/OjPSFORodmFqyK8wAqCzXS3EF5H2/0+MQG3aJlAp/ffNCNjik+ALWRnOtd/FkcC9JL
+	C90MV4d8InLxdvDUf
+X-Received: by 2002:a05:6870:3403:b0:1a6:a28b:6e4 with SMTP id g3-20020a056870340300b001a6a28b06e4mr1424764oah.37.1686594180231;
+        Mon, 12 Jun 2023 11:23:00 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4ojOAZsqcF6bnSAgTcknWHmKu5ibIbDyN5vE0vwVE23kVcIn47oSmy77InfhxOlx0UQ4BxKw==
+X-Received: by 2002:a05:6870:3403:b0:1a6:a28b:6e4 with SMTP id g3-20020a056870340300b001a6a28b06e4mr1424739oah.37.1686594179927;
+        Mon, 12 Jun 2023 11:22:59 -0700 (PDT)
+Received: from halaney-x13s ([2600:1700:1ff0:d0e0::45])
+        by smtp.gmail.com with ESMTPSA id r34-20020a05687108a200b001a68feb9440sm1579964oaq.9.2023.06.12.11.22.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Jun 2023 11:16:38 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1q8m5m-004idI-5Q;
-	Mon, 12 Jun 2023 15:16:38 -0300
-Date: Mon, 12 Jun 2023 15:16:38 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Leon Romanovsky <leon@kernel.org>, Wei Hu <weh@microsoft.com>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-	Long Li <longli@microsoft.com>,
-	Ajay Sharma <sharmaajay@microsoft.com>,
-	KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"vkuznets@redhat.com" <vkuznets@redhat.com>,
-	"ssengar@linux.microsoft.com" <ssengar@linux.microsoft.com>,
-	"shradhagupta@linux.microsoft.com" <shradhagupta@linux.microsoft.com>
-Subject: Re: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to mana ib
- driver.
-Message-ID: <ZIdhBtz/++OoyhyR@ziepe.ca>
-References: <20230606151747.1649305-1-weh@microsoft.com>
- <20230607213903.470f71ae@kernel.org>
- <SI2P153MB0441DAC4E756A1991A03520FBB54A@SI2P153MB0441.APCP153.PROD.OUTLOOK.COM>
- <20230612061349.GM12152@unreal>
- <20230612102221.2ca726fd@kernel.org>
+        Mon, 12 Jun 2023 11:22:59 -0700 (PDT)
+Date: Mon, 12 Jun 2023 13:22:56 -0500
+From: Andrew Halaney <ahalaney@redhat.com>
+To: Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: Vinod Koul <vkoul@kernel.org>,
+	Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+	Andy Gross <agross@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Kishon Vijay Abraham I <kishon@kernel.org>,
+	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: Re: [PATCH 05/26] net: stmmac: dwmac-qcom-ethqos: shrink clock code
+ with devres
+Message-ID: <20230612182256.7cc3goqwid32fdn6@halaney-x13s>
+References: <20230612092355.87937-1-brgl@bgdev.pl>
+ <20230612092355.87937-6-brgl@bgdev.pl>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -94,38 +97,99 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230612102221.2ca726fd@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+In-Reply-To: <20230612092355.87937-6-brgl@bgdev.pl>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 12, 2023 at 10:22:21AM -0700, Jakub Kicinski wrote:
-> On Mon, 12 Jun 2023 09:13:49 +0300 Leon Romanovsky wrote:
-> > > Thanks for you comment. I am  new to the process. I have a few
-> > > questions regarding to this and hope you can help. First of all,
-> > > the patch is mostly for IB. Is it possible for the patch to just go
-> > > through the RDMA branch, since most of the changes are in RDMA?   
-> > 
-> > Yes, it can, we (RDMA) will handle it.
+On Mon, Jun 12, 2023 at 11:23:34AM +0200, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > 
-> Probably, although it's better to teach them some process sooner
-> rather than later?
+> We can use a devm action to completely drop the remove callback and use
+> stmmac_pltfr_remove() directly for remove. We can also drop one of the
+> goto labels.
+> 
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-I've been of the opinion the shared branch process is difficult - we
-took a long time to fine tune the process. If you don't fully
-understand how to do this with git you can make a real mess of it.
+I think using the remove callback seems more direct to a reader, but
+that's pretty opinionated. The change itself looks good so:
 
-So I would say MS is welcome to use it if they can do it right, but I
-wouldn't push them to do so or expect they must to be
-successful. Really only Mellanox and Intel seem to have enough churn
-to justify it right now.
+Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
 
-If they don't use shared branches then they must be responsible to
-avoid conflicts, even if that means they have to delay sending patches
-for a cycle.
+> ---
+>  .../stmicro/stmmac/dwmac-qcom-ethqos.c        | 24 +++++++++----------
+>  1 file changed, 11 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+> index c801838fae2a..2da0738eed24 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+> @@ -586,6 +586,11 @@ static int ethqos_clks_config(void *priv, bool enabled)
+>  	return ret;
+>  }
+>  
+> +static void ethqos_clks_disable(void *data)
+> +{
+> +	ethqos_clks_config(data, false);
+> +}
+> +
+>  static int qcom_ethqos_probe(struct platform_device *pdev)
+>  {
+>  	struct device_node *np = pdev->dev.of_node;
+> @@ -636,6 +641,10 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		goto err_mem;
+>  
+> +	ret = devm_add_action_or_reset(&pdev->dev, ethqos_clks_disable, ethqos);
+> +	if (ret)
+> +		goto err_mem;
+> +
+>  	ethqos->speed = SPEED_1000;
+>  	ethqos_update_rgmii_clk(ethqos, SPEED_1000);
+>  	ethqos_set_func_clk_en(ethqos);
+> @@ -653,27 +662,16 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
+>  
+>  	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+>  	if (ret)
+> -		goto err_clk;
+> +		goto err_mem;
+>  
+>  	return ret;
+>  
+> -err_clk:
+> -	ethqos_clks_config(ethqos, false);
+> -
+>  err_mem:
+>  	stmmac_remove_config_dt(pdev, plat_dat);
+>  
+>  	return ret;
+>  }
+>  
+> -static void qcom_ethqos_remove(struct platform_device *pdev)
+> -{
+> -	struct qcom_ethqos *ethqos = get_stmmac_bsp_priv(&pdev->dev);
+> -
+> -	stmmac_pltfr_remove(pdev);
+> -	ethqos_clks_config(ethqos, false);
+> -}
+> -
+>  static const struct of_device_id qcom_ethqos_match[] = {
+>  	{ .compatible = "qcom,qcs404-ethqos", .data = &emac_v2_3_0_data},
+>  	{ .compatible = "qcom,sc8280xp-ethqos", .data = &emac_v3_0_0_data},
+> @@ -684,7 +682,7 @@ MODULE_DEVICE_TABLE(of, qcom_ethqos_match);
+>  
+>  static struct platform_driver qcom_ethqos_driver = {
+>  	.probe  = qcom_ethqos_probe,
+> -	.remove_new = qcom_ethqos_remove,
+> +	.remove_new = stmmac_pltfr_remove,
+>  	.driver = {
+>  		.name           = "qcom-ethqos",
+>  		.pm		= &stmmac_pltfr_pm_ops,
+> -- 
+> 2.39.2
+> 
 
-Jason
 
