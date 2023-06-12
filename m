@@ -1,161 +1,258 @@
-Return-Path: <netdev+bounces-10153-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10156-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 38D2872C8DF
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 16:44:45 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 80AE872C949
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 17:05:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E8D07281179
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 14:44:43 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B0D0D1C20B61
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 15:05:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 59EAD19BA9;
-	Mon, 12 Jun 2023 14:44:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6196C1C750;
+	Mon, 12 Jun 2023 15:05:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C30E19903
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 14:44:42 +0000 (UTC)
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2071d.outbound.protection.outlook.com [IPv6:2a01:111:f400:feab::71d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB2493;
-	Mon, 12 Jun 2023 07:44:40 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AB79AD38
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 15:05:22 +0000 (UTC)
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2050.outbound.protection.outlook.com [40.107.100.50])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7A598;
+	Mon, 12 Jun 2023 08:05:15 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OfvrtfvdgD85rqbmbuqlAYMRefXs1odV/GCRhYeZYhMpqPGHGVwR7zm34SfYxWsvBIufObqVs2kIijLVo2nS8SUnLB5GmavOiYXgjal1oNKvQ7IPepqkjRD59B608RvxQ1ZC69Z321F87EUBwCfT15mQKZF5HUMeekb+1CjY2tVXXmleOWZgU2bkbWJfULycYVlI25xOtnY9RlUW4iuSYy7fBulwxzYVBIU6lSi4oYLvO6lfbXUYCnTj+o9QlgYJp5ueXX3eVTL5gFC0mNl9659u4QCjDlLO/B+iol4jNVgXHiQQEQ0ze9QPEh0vJRSf9RdOFKg0JwrfsmCSkZ0FBA==
+ b=JFTEaO0YS6Erp5fYLfpjnw1oQLvfK5cSwXQIBy1Wtmm3YybESsWODid4zLfMgAWnetbh6+NrcMX9FIFMZdKP8UIPpMwGbBW7pCTuUOp7YZW30h+Hg/IRkglDD3wOo7fieNmDXMqDzOwyx3RHM7qpJ5WLGvQ2QLQLEmhohfyojlnoMKYsV5UqWdz0BtMxiSjvvwJdqL4QDe5uxr0suJL4uEe7rOtvXXBAo7wwq4RGgeBfwD4AlK0lc0Y6KgPEMRuZH7pj9slS0JvauAee0i0UpikmbuUQ1X06N6yXtfIVAP1URpMGIsFx0VOPxmaeiLIFqbRqhBidk07Ooi9b4KFBlA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=z+3lUFWKopzi1eL14CGUb1EQdG4zbouTP+jHyGexqsc=;
- b=LHIkq1J3eUJfBGwCrajznLBIFMHnD62CLehgUBo9touI2TuxqSoEwJ4cWcdDV6UP28+JHWfZghXBK+cKmZPXwJR/oI5SotX2TEwPw3PelWuINoBdXMmOH25HsuaRTx9BXUqYZtRwjD9M3OoQDqlOC8sszIlzONSIRA5SfKcHX741F/SzuvWLtbsoMevgN+uPJYoJvEBBF5fvijqlQIEAaXeSRhyonosu501Ns+yKebpOam6TFk0TJOdHdYFA61USKMLVFyx0OA8pX7cxjEppRZWVQ7Z7ibFhDZVp4N/giNs4wwokzCj2GAmh8fkUsg3S2nw3zAUZHXO3UEvsmgGjSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ bh=XJVgIjsfk6QL1fevoqZoS1T5Kqdrc4w27azi/gnr/Fk=;
+ b=HtkPCf7NkQYskWp7G9n2gUJNGLKS4QuCBaDdQQk4iwaK2Qhum+sIp30DpLOeV73ECYIscCWbP4JY8mVOgOQzrbwCF+MTGMQwIfgTt7Ym5/B7+PkCRrAHpVpDcWhRF0MtHVcHSuAr1rf6/cybey7mfbkTQgYkvyuT1MZRQ9fwZbyqtRvOR1PE3Q+7aA2ksAG8QK+I9GhPHr4qCIXmXE58JlDrPjH4n3cCoY5w1IzLJ+hEEKNpfVYY37m8kZLoETvlCeRll4A4gncoJxVw1SfbkicsjxHZ5eFD6l08qVSdkloBasdWpVS/+XSkqgx/D5EPU6RmZkCAy79Dlio7kKy/VQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z+3lUFWKopzi1eL14CGUb1EQdG4zbouTP+jHyGexqsc=;
- b=Jt1I8qgAGVFcontxA4gUiDVlTzMvzVFZdPlG805A8DkllE9wfQw8kI2HjuExV2QQjmK0iqsnMM6BhlkCsP139/QQB0/onXP8Ny+iQqaSMiciRSE5X/Q1hpX+YtZN9za/XSVHOTiCtv2rZc6VORMOkybcqYcEjX2ZbmGOoWdczxE=
-Received: from SI2P153MB0441.APCP153.PROD.OUTLOOK.COM (2603:1096:4:fc::7) by
- SEZP153MB0789.APCP153.PROD.OUTLOOK.COM (2603:1096:101:a4::5) with Microsoft
+ bh=XJVgIjsfk6QL1fevoqZoS1T5Kqdrc4w27azi/gnr/Fk=;
+ b=SIvmQ6dqlaLBdtpv/ujirDyB1pX/JzP3p1dxvA7e9xC4CN0SkyDZMnzJPGaLMt5TOW0FphN9V/+24lJyHzbhex8rwOtVJ3JxvrCaLWIiDNiduvcT9SMztdFive8LLse4SUFeHNtbXEMrCzoQ4pX+n1hemEmj3+Tm94vNaE91gYb1j8+vZWQ6lsmrxEuzLo9rsDGqvt64N2ttz21giyugWm5Mhx9HCU+d6mlnIe3kbBod2b3HfHjAmOGxmUHMsHzDe0pnGFVEIJ5dsVc6g3RelrTQWufwUgt1H2jYo14X58WxH/ZkQTTxCKKFRA65Qycmdx67vwqot18cszTkXD306w==
+Received: from CY5PR15CA0189.namprd15.prod.outlook.com (2603:10b6:930:82::7)
+ by DS7PR12MB5912.namprd12.prod.outlook.com (2603:10b6:8:7d::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Mon, 12 Jun
+ 2023 15:05:13 +0000
+Received: from CY4PEPF0000E9D0.namprd03.prod.outlook.com
+ (2603:10b6:930:82:cafe::b) by CY5PR15CA0189.outlook.office365.com
+ (2603:10b6:930:82::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.34 via Frontend
+ Transport; Mon, 12 Jun 2023 15:05:12 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CY4PEPF0000E9D0.mail.protection.outlook.com (10.167.241.143) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6521.0; Mon, 12 Jun 2023 14:44:33 +0000
-Received: from SI2P153MB0441.APCP153.PROD.OUTLOOK.COM
- ([fe80::7d79:7433:e57b:55b5]) by SI2P153MB0441.APCP153.PROD.OUTLOOK.COM
- ([fe80::7d79:7433:e57b:55b5%4]) with mapi id 15.20.6521.002; Mon, 12 Jun 2023
- 14:44:33 +0000
-From: Wei Hu <weh@microsoft.com>
-To: Leon Romanovsky <leon@kernel.org>
-CC: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>, Long Li
-	<longli@microsoft.com>, Ajay Sharma <sharmaajay@microsoft.com>,
-	"jgg@ziepe.ca" <jgg@ziepe.ca>, KY Srinivasan <kys@microsoft.com>, Haiyang
- Zhang <haiyangz@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>, "davem@davemloft.net"
-	<davem@davemloft.net>, "edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com" <pabeni@redhat.com>,
-	"vkuznets@redhat.com" <vkuznets@redhat.com>, "ssengar@linux.microsoft.com"
-	<ssengar@linux.microsoft.com>, "shradhagupta@linux.microsoft.com"
-	<shradhagupta@linux.microsoft.com>
-Subject: RE: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to mana ib
- driver.
-Thread-Topic: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to mana ib
- driver.
-Thread-Index: AQHZmIoyK0/pJvWPX0+gdBo6594smK+F8UuAgAFVmQA=
-Date: Mon, 12 Jun 2023 14:44:32 +0000
-Message-ID:
- <SI2P153MB04417877A20ADE1B1AEE1DABBB54A@SI2P153MB0441.APCP153.PROD.OUTLOOK.COM>
-References: <20230606151747.1649305-1-weh@microsoft.com>
- <20230611181857.GK12152@unreal>
-In-Reply-To: <20230611181857.GK12152@unreal>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=5b880b88-b598-4ea6-8161-006080eb9296;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-06-12T14:41:34Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SI2P153MB0441:EE_|SEZP153MB0789:EE_
-x-ms-office365-filtering-correlation-id: f759156b-e1f1-41b8-ebe2-08db6b5388ec
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 6ZGJVWGGQL0RkQ/bhw80Z6t9XDZbBb0/vFW7MOiNipZFjEEwBa8SWbdNGogmq9yHU662+U8V1XhXvufpyfInQehOs/brhmkMy3N+APu7IgAieU7eVZqVt0zPyV1H8GD94L/QxaQ+FIt12I/R0C1dN7ziP5cRh6zplZm6fm9svJ32yrbLIXjgp7xyzT0UZWPE86X5E/SUs1rbSJjH2uyRZlaRKSQuimr54W+mgZdOaTUZhZQOmDeJTYqis8OAglqA85/0rBFhLUs/sgDWrRM0k64R9bL5OroILm9a8pFbwslOVELcVssOx+mKGbXKbh8vWawvYfipWSgTCq1K56hyfgeA2BCQEDl5fD2R4n/pQEop3Xte7fTWKGtkAC2NIC81lHvivyLnVrrwPbk859VYuUAFrkB4QJVSBCU18killq1Bq6hQE3tEW2TQn8e4ikJQGgPIIdbC61RFCAcW/7QoQSWidHTuN/GSd4G8x3eN+coI/p6FvBdB7ILWPTtJR40r2n8qvtB/9iXR61cKNFUGxYAU9gaoTTMG9rCVjz+fmc4IK4Qb47/OPLe+3J0QwucyUucaHuRSxZh+ruFAfb3uBbYjuAd9X3JIwsZi3iOfWSyAiYxMYJYhS7EDWTywNgwZgWhjGJzbGulZAayIxDT6XUeC6uCKEmUs9FBDlEm+llg=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SI2P153MB0441.APCP153.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(366004)(39860400002)(136003)(376002)(451199021)(10290500003)(41300700001)(316002)(7696005)(5660300002)(52536014)(4326008)(66446008)(66476007)(66556008)(64756008)(76116006)(66946007)(71200400001)(6916009)(478600001)(54906003)(8936002)(8676002)(7416002)(38070700005)(86362001)(107886003)(9686003)(186003)(38100700002)(6506007)(26005)(33656002)(82950400001)(82960400001)(122000001)(8990500004)(2906002)(4744005)(83380400001)(55016003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?1AtSPlLvrC4fst75FvZ+7jBvR1vDzbSobTmA+9fVnhEaikJB4MK+62PN8x2D?=
- =?us-ascii?Q?/aTjj6Ff4Gl60r28ntGJnL48LSjGFDpMeSu1u03MwAPpEw7sZdrd/DdkswE1?=
- =?us-ascii?Q?wH1+pi7djTAIUm+sHh0IvmiTnQ3T/Nh3GxS0YcJNHHNG0A4t8HBhE6vYqyEA?=
- =?us-ascii?Q?wycqPjWoA4lZoZ4/OvbT8ZJwqtOK+v96q1MSOECFx4HOELLe+igThVn3Xsne?=
- =?us-ascii?Q?lCiPJMtYL9j9BwTUvYcHR1BmP70EXUU2bVG1MnTst0Ujjq0o8ll7eDM+MFSf?=
- =?us-ascii?Q?/CQHD4VhqZ3iEu00gLjG8dUnDtH8WGhVWUuov9EMgwF1bIYba1T6MDTa7+Ov?=
- =?us-ascii?Q?g34LFaTPNfTxIGS7LOTeVeO1j81cWMXSgGfmXrGDN8QbpTogu1sbdeX50apX?=
- =?us-ascii?Q?HFNBvvK4ITP4wQgr4DOypRkATzpXdZOguuaYkUsSaNWd8uMlYXTyjSmDTs47?=
- =?us-ascii?Q?f9q/l+FGWgNYlh5nqU6RQJnUZ1ewO4ot2v8i02/i7K1iowRPu3YdAfR9C255?=
- =?us-ascii?Q?m5vYGWENJxyWwIX9zS8J07YU9HZDJFM1Sf6Bm8PR13YRCzvYCyHmClZ2jVEn?=
- =?us-ascii?Q?Ra3hzGfDhio28YL/L9uuArRGetDA03X4iJk2I4HygSs4ENyVFcXpo8XgscQI?=
- =?us-ascii?Q?DRZUtFPYcQnWIose/Z5nqKamkeu56RAvD5gU/NaZr2y3Pmyp53lxFKbEFTRQ?=
- =?us-ascii?Q?XX84iHfN7iI+eM0vP83Oli3VoYO3/gYqRfAEyelrorCGSkSVZgE6RzLFR8LV?=
- =?us-ascii?Q?XGnmU4+0QS4zc8X1nYPyjMwBWV/a5d6fSS7vc2sUucJPoMwDoxg3Ln4HG9B9?=
- =?us-ascii?Q?Gzz+guE6yHbCeqDwp5rsG4Ue5NwwpkTEY/2JxVGO4Ga2vcYPi7KK/DMKM2XM?=
- =?us-ascii?Q?alwlpVY/pRLhLTYZ/UvuB7Yk1CYbMrho6lJCefjuGifIXcvQFPhfW/EvMibO?=
- =?us-ascii?Q?MmvNCFnR31Hh4x1ZpSNnmugD9TOXSbplos85wn+HeXGHHWsW2r9GMMSvc9zl?=
- =?us-ascii?Q?0nEDf7ByPFWVDKU8g+svgkJXg4V791dMqTBTxG/jQjaNAV1QJoIbuDEXvCKi?=
- =?us-ascii?Q?CBDeDgZTFVOkX78l0ea45nsVct6g3sSpQjMIwLjst7yzk6q8NUEkDvvL7tgc?=
- =?us-ascii?Q?xQBV5XsdGAf/9xEvcvKWL5J5FST1TvUGZdxIPI+1wXMYEB/2u2OKHG7INLwl?=
- =?us-ascii?Q?ehTwcjmnVwcD1AFGx88gQbkwU6ohcI8cJpO2i5+oGdG6YpvWk84Nphw1QumV?=
- =?us-ascii?Q?ZPhVrk2OhhAZwRmuAy5MxARJ7+iur5vMmHkLhpmFWBIHETxN/kI3HlHeadKT?=
- =?us-ascii?Q?4pBYJ0rWYUlnK0w/05JhnXd70n/jgS1pt50aXiZuhAIrSXAHwq/16+pGQBKN?=
- =?us-ascii?Q?RDSnPAK73wtkw6CvgjEvTRF+nM+zKAUb/4oNXzVP1jZhC5XG928j2WS++/5C?=
- =?us-ascii?Q?YCAcDZbbX90FCkvDgMha6QaBxekjSdc5TqLhv6Ch/U99yH3eV2fCs/XPYNSe?=
- =?us-ascii?Q?IPUEJ+5I0T8U9xudVOQQ7YvMgYMcJBucAeRg5KQmjPg7rWCFYFRqqIvIC08O?=
- =?us-ascii?Q?TmeT27PYgdpHG9r5CrE=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ 15.20.6500.22 via Frontend Transport; Mon, 12 Jun 2023 15:05:10 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 12 Jun 2023
+ 08:04:52 -0700
+Received: from fedora.nvidia.com (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 12 Jun
+ 2023 08:04:48 -0700
+References: <87legswvi3.fsf@nvidia.com>
+ <20230612142914.2404237-1-renmingshuai@huawei.com>
+User-agent: mu4e 1.8.11; emacs 28.2
+From: Vlad Buslov <vladbu@nvidia.com>
+To: renmingshuai <renmingshuai@huawei.com>
+CC: <caowangbao@huawei.com>, <davem@davemloft.net>, <edumazet@google.com>,
+	<jhs@mojatatu.com>, <jiri@resnulli.us>, <kuba@kernel.org>,
+	<liaichun@huawei.com>, <linux-kernel@vger.kernel.org>, <liubo335@huawei.com>,
+	<netdev@vger.kernel.org>, <pabeni@redhat.com>, <xiyou.wangcong@gmail.com>,
+	<yanan@huawei.com>
+Subject: Re: [PATCH v2] net/sched: Set the flushing flags to false to
+ prevent an infinite loop and add one test to tdc
+Date: Mon, 12 Jun 2023 17:48:29 +0300
+In-Reply-To: <20230612142914.2404237-1-renmingshuai@huawei.com>
+Message-ID: <874jncwwkx.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SI2P153MB0441.APCP153.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: f759156b-e1f1-41b8-ebe2-08db6b5388ec
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jun 2023 14:44:32.6257
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D0:EE_|DS7PR12MB5912:EE_
+X-MS-Office365-Filtering-Correlation-Id: f93e2667-167d-41c7-9887-08db6b566af5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	jmbZ5lRXATyca8qm2oBpMaP+ntNkJ6gywacSB9K+MJENib+sfnB9lzKiiKD5QL3Ort0LxpR+xkLwCXhATEQjsNAozhSlCVmmLCsm4CiCjtciy9LgCX4HMhlPmbJs+49dEg21L7X2L0V31+2rgQ6C8WoewYSU8YFhpLs8COZxuorqFrJxMidwgi4S6dFRemWiOcDCA1NTrJkulNhYj+5ApIx6N/LxOF9fJiX8DWKhlFFI+r3ejI2kQNQnziDdmb9w2J2KJD52loC6k19rBQRNqTfAe1knUZqeAhXYi7O3+A362WfDUrC88OWwE/m0PPHMwUS+hXz+jKCBJBwNiFEE9GkBS6W9DPE5rUBNQz9KxPbUVLvfquNHGKCw+852oBMBeb/o5Jh0k95P/dtacu9IJcd1gh8Rp3T1nEmkk+TrNxD5LAO4Yv7ynMtVVb48jdmNHdbDojV2MBo3OmXJrwXime9J8wxsVP8t4+LjDQSS8qnJJcBbJtWQAJLE+Mb8KFAVNLb5rulDUS/HoIRD/sJ92uqq412X8QVzPCvvbotoEcwKnr0r1bTH7xzFSVbdN0jpKrJACY/UQD264rv4OwcYd6PqLapwg6muCf+QuSucwTgF4LM3Es/fgOwFfUWwI1wveKe/D3NN46SoayiVwuZYT6NGG8IyJKO93YEGSOCY5V7ReSTCe8WyIzl6oazrVZnQaq0+lURn96QpxA9aWGEk8btQJiW/iAz1r36NTBzavIEBsyPHBHNAOljaBT3M2/5Z
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(136003)(376002)(39860400002)(451199021)(46966006)(36840700001)(40470700004)(70206006)(70586007)(8936002)(8676002)(36756003)(5660300002)(4326008)(6666004)(6916009)(54906003)(478600001)(40460700003)(41300700001)(316002)(7696005)(356005)(40480700001)(82740400003)(7636003)(336012)(426003)(2616005)(16526019)(26005)(186003)(7416002)(82310400005)(47076005)(83380400001)(86362001)(36860700001)(2906002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jun 2023 15:05:10.7490
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: S695oSh5HqIb0b4bktkHQByPE9Imp/mUt/MHEgUTAhel+D9Y06w/r4K/wOinGf34T0dClokE5pGeUqNFEQVkeg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEZP153MB0789
+X-MS-Exchange-CrossTenant-Network-Message-Id: f93e2667-167d-41c7-9887-08db6b566af5
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000E9D0.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5912
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
-	autolearn_force=no version=3.4.6
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-> -----Original Message-----
-> From: Leon Romanovsky <leon@kernel.org>
-> Sent: Monday, June 12, 2023 2:19 AM
->=20
-> > +
-> > +void mana_ib_cq_handler(void *ctx, struct gdma_queue *gdma_cq) {
-> > +	struct mana_ib_cq *cq =3D ctx;
-> > +	struct ib_device *ibdev =3D cq->ibcq.device;
-> > +
-> > +	ibdev_dbg(ibdev, "Enter %s %d\n", __func__, __LINE__);
->=20
-> This patch has two many debug prints, most if not all should go.
->=20
-Thanks. I will remove the debug prints in the normal path.=20
 
-Wei
+On Mon 12 Jun 2023 at 22:29, renmingshuai <renmingshuai@huawei.com> wrote:
+>>On Fri 09 Jun 2023 at 17:46, renmingshuai <renmingshuai@huawei.com> wrote:
+>>> When a new chain is added by using tc, one soft lockup alarm will be
+>>>  generated after delete the prio 0 filter of the chain. To reproduce
+>>>  the problem, perform the following steps:
+>>> (1) tc qdisc add dev eth0 root handle 1: htb default 1
+>>> (2) tc chain add dev eth0
+>>> (3) tc filter del dev eth0 chain 0 parent 1: prio 0
+>>> (4) tc filter add dev eth0 chain 0 parent 1:
+>>>
+>>>
+>>> The refcnt of the chain added by step 2 is equal to 1. After step 3,
+>>>  the flushing flag of the chain is set to true in the tcf_chain_flush()
+>>>  called by tc_del_tfilter() because the prio is 0. In this case, if
+>>>  we add a new filter to this chain, it will never succeed and try again
+>>>  and again because the refresh flash is always true and refcnt is 1.
+>>>  A soft lock alarm is generated 20 seconds later.
+>>
+>>Hi Mingshuai,
+>>
+>>Thanks for investigating and reporting this!
+>>
+>>> The stack is show as below:
+>>>
+>>> Kernel panic - not syncing: softlockup: hung tasks
+>>> CPU: 2 PID: 3321861 Comm: tc Kdump: loaded Tainted: G
+>>> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+>>> Call Trace:
+>>>  <IRQ>
+>>>  dump_stack+0x57/0x6e
+>>>  panic+0x196/0x3ec
+>>>  watchdog_timer_fn.cold+0x16/0x5c
+>>>  __run_hrtimer+0x5e/0x190
+>>>  __hrtimer_run_queues+0x8a/0xe0
+>>>  hrtimer_interrupt+0x110/0x2c0
+>>>  ? irqtime_account_irq+0x49/0xf0
+>>>  __sysvec_apic_timer_interrupt+0x5f/0xe0
+>>>  asm_call_irq_on_stack+0x12/0x20
+>>>  </IRQ>
+>>>  sysvec_apic_timer_interrupt+0x72/0x80
+>>>  asm_sysvec_apic_timer_interrupt+0x12/0x20
+>>> RIP: 0010:mutex_lock+0x24/0x70
+>>> RSP: 0018:ffffa836004ab9a8 EFLAGS: 00000246
+>>> RAX: 0000000000000000 RBX: ffff95bb02d76700 RCX: 0000000000000000
+>>> RDX: ffff95bb27462100 RSI: 0000000000000000 RDI: ffff95ba5b527000
+>>> RBP: ffff95ba5b527000 R08: 0000000000000001 R09: ffffa836004abbb8
+>>> R10: 000000000000000f R11: 0000000000000000 R12: 0000000000000000
+>>> R13: ffff95ba5b527000 R14: ffffa836004abbb8 R15: 0000000000000001
+>>>  __tcf_chain_put+0x27/0x200
+>>>  tc_new_tfilter+0x5e8/0x810
+>>>  ? tc_setup_cb_add+0x210/0x210
+>>>  rtnetlink_rcv_msg+0x2e3/0x380
+>>>  ? rtnl_calcit.isra.0+0x120/0x120
+>>>  netlink_rcv_skb+0x50/0x100
+>>>  netlink_unicast+0x12d/0x1d0
+>>>  netlink_sendmsg+0x286/0x490
+>>>  sock_sendmsg+0x62/0x70
+>>>  ____sys_sendmsg+0x24c/0x2c0
+>>>  ? import_iovec+0x17/0x20
+>>>  ? sendmsg_copy_msghdr+0x80/0xa0
+>>>  ___sys_sendmsg+0x75/0xc0
+>>>  ? do_fault_around+0x118/0x160
+>>>  ? do_read_fault+0x68/0xf0
+>>>  ? __handle_mm_fault+0x3f9/0x6f0
+>>>  __sys_sendmsg+0x59/0xa0
+>>>  do_syscall_64+0x33/0x40
+>>>  entry_SYSCALL_64_after_hwframe+0x61/0xc6
+>>> RIP: 0033:0x7f96705b8247
+>>> RSP: 002b:00007ffe552e9dc8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+>>> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f96705b8247
+>>> RDX: 0000000000000000 RSI: 00007ffe552e9e40 RDI: 0000000000000003
+>>> RBP: 0000000000000001 R08: 0000000000000001 R09: 0000558113f678b0
+>>> R10: 00007f967069ab00 R11: 0000000000000246 R12: 00000000647ea089
+>>> R13: 00007ffe552e9f30 R14: 0000000000000001 R15: 0000558113175f00
+>>>
+>>> To avoid this case, set chain->flushing to be false if the chain->refcnt
+>>>  is 2 after flushing the chain when prio is 0. I also add one test to tdc.
+>>>
+>>> Fixes: 726d061286ce ("net: sched: prevent insertion of new classifiers during chain flush")
+>>> Signed-off-by: Mingshuai Ren <renmingshuai@huawei.com>
+>>> Reviewed-by: Aichun Li <Liaichun@huawei.com>
+>>> ---
+>>> V1 -> V2:
+>>>   * Correct the judgment on the value chain->refcnt and add one test to tdc
+>>> ---
+>>>  net/sched/cls_api.c                           |  7 ++++++
+>>>  .../tc-testing/tc-tests/infra/filter.json     | 25 +++++++++++++++++++
+>>>  2 files changed, 32 insertions(+)
+>>>  create mode 100644 tools/testing/selftests/tc-testing/tc-tests/infra/filter.json
+>>>
+>>> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+>>> index 2621550bfddc..3ea054e03fbf 100644
+>>> --- a/net/sched/cls_api.c
+>>> +++ b/net/sched/cls_api.c
+>>> @@ -2442,6 +2442,13 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+>>>  		tfilter_notify_chain(net, skb, block, q, parent, n,
+>>>  				     chain, RTM_DELTFILTER, extack);
+>>>  		tcf_chain_flush(chain, rtnl_held);
+>>> +		/* Set the flushing flags to false to prevent an infinite loop
+>>> +		 * when a new filter is added.
+>>> +		 */
+>>> +		mutex_lock(&chain->filter_chain_lock);
+>>> +		if (chain->refcnt == 2)
+>>> +			chain->flushing = false;
+>>> +		mutex_unlock(&chain->filter_chain_lock);
+>>
+>>I don't think this check is enough since there can be concurrent filter
+>>ops holding the reference to the chain. This just makes the issue harder
+>>to reproduce.
+>>
+>>I'll try to formulate a fix that takes any potential concurrent users
+>>into account and verify it with your test.
+>
+> Thanks for your reply.
+> I didn't find any concurrent scenarios that would "escape" this check.
+> That's my understanding.
+> During the flush operation, after filter_chain_lock is obtained, no new chain reference
+>  could be added. After unlock, chain->flushing is set to true. The chain->refcnt and
+>  chain->action_refcnt are always different. Therefore, chain->flushing will be never set to false.
+
+I agree with your analysis.
+
+>  Then there seems to be no concurrency problem until flushing is set to true.
+> would you mind tell me the concurrent scenario you're talking about?
+
+What if, for example, chain->refcnt==3 after flush because there is
+another task inserting filters to the same chain concurrently? In such
+case for chains explicitly created with chains API, chain->flushing flag
+will never be reset afterwards and user will get the same lockup when
+trying to install any following filters. Also, refcnt==2 only means that
+there is no concurrent users when flushing explicitly created chains
+(because chains API holds a "passive" reference to such chains). For
+regular chains implicitly created by filters API refcnt==2 here means
+that there are active concurrent users.
+
 
