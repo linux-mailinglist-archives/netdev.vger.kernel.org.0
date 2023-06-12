@@ -1,58 +1,58 @@
-Return-Path: <netdev+bounces-10196-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10197-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9478772CC60
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 19:24:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 2D1DB72CC62
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 19:25:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 264991C20B97
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 17:24:37 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6B4331C20B50
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 17:25:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EB4EC21CD8;
-	Mon, 12 Jun 2023 17:23:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 976452260D;
+	Mon, 12 Jun 2023 17:23:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA49C21CD7
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 17:23:15 +0000 (UTC)
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13561B2
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 10:23:14 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id 41be03b00d2f7-53f6e194e7bso3347536a12.1
-        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 10:23:14 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85C1821CFB
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 17:23:17 +0000 (UTC)
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B849B2
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 10:23:16 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id d2e1a72fcca58-651e298be0aso2596452b3a.2
+        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 10:23:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1686590593; x=1689182593;
+        d=google.com; s=20221208; t=1686590595; x=1689182595;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=FP8q+5eUSu4wPpJtNuCq9IaYUWNjGUb+IDjkhrKxnb4=;
-        b=HMBStsomonxgE+Takijk8DdwhNkorBPxQrJsyO28txFdFFl+ezHVRkSrnprgMs331L
-         PLKmPqg7sX3wXQ0EzcwrteWtrgqItBv1Tthf01cK7qhDbGTyH8Cz0Vf9zH4Yf5u3rYQ7
-         sh0bumzHOTfdE1BAMSMJPx9fZtstlaKsFoMgRON8Ew8+5gx6n1bYLoKNsL/71glKeriQ
-         dRidk/x3tC18Y+nGJa1ZinHJ4io4FnLUW7Z0CtQbsZXCv2EvP+vx8Th+Ltg3YG4oyU78
-         QREfWfEBU/VhI5yfRYsu7b/oGGEAPBL3A7KZG2Y8feYPH+3wU+D6jlw5wt7Bm4NgC2Uv
-         XpFA==
+        bh=PIJi+YaipsBqXx9Jn519PmEfcm6UsBy0hXGpFTQSxa0=;
+        b=Q9gQPtZnpP4Lg8G/Hfh00v+xgId8RFOBZEXFS9J93Xo2PWq2Zamz/qyXckGdQp0T91
+         gzisalXdK2EqtU865ZpLTAPZnQeAdrnzNSjqPSMwTX2gWd1CISUffMMCksHe5D1A9YU6
+         B0Dt7aIIBU7eFDqcXxNk6OpbeCAyu0VohmXMKmqrsJvJggYTykORnZzX11+bEhnazrhZ
+         w5baAROukc7pEV63XRoruQrsk9+e+KLmTZK0uednJonBHoTahirMrRY3fwd3qDIEsJt2
+         MdBesAIm20GZgrCgHtzC7MQLw8ymZ0eYL6Cx50Xt9ufJRnNfQEHoWYLjV97RF1cz52gh
+         U/jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686590593; x=1689182593;
+        d=1e100.net; s=20221208; t=1686590595; x=1689182595;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FP8q+5eUSu4wPpJtNuCq9IaYUWNjGUb+IDjkhrKxnb4=;
-        b=J7IThEauIzsNVJyD3xXOnwWmENJiR+cpPGlW3QLmbBC6pI6TI9szV3Nh1odMipB6ml
-         MNFf+h6GbiY3TiZgvl5ZSEjFHArtyF7+8EI522g5bVKmYmPcvVptjpiqw3+UIKG8YyQr
-         O4GPdo8MWgGUbEtwjiPJ8SPIFy3d6mzSEWk0njFffIqTvOEQfP77HAurTI4aKHA8d8iA
-         r5MrJjFrZNlwEu/lbkQoxl0sUHkkDR/aAxgdglcJv0PVyIUac47tzx+QoVXNqYRqT/+9
-         O+aAFlok4UWETI+t/8PZxWCpOYE+/j59gWL9ZBOYx0UfwkKP07nsI52yFvQuMpwH+ty2
-         XnJQ==
-X-Gm-Message-State: AC+VfDxR3ndIonCvA4RUi8Audt/ZiTM+o+jVp6laINmcE8hKC++QaS43
-	ndjcFKre27xly1zExS1WECzk8nM=
-X-Google-Smtp-Source: ACHHUZ46VZr3yPfTmWOnupyzuND0woV05E5Xrcx0bKmzQ12URiZIUXnrXE+LyUc+3yeErt6sV3E6Nzk=
+        bh=PIJi+YaipsBqXx9Jn519PmEfcm6UsBy0hXGpFTQSxa0=;
+        b=iKfxOPA+EK1CsC1LHHAFBegkV84hrkakS+3Zbq/4qhXnTes2TP8TGt4aLVUXWQOlEv
+         Yig/ZjOY8WrMabGfbPjsTf6Bj8NQz2StpSMZm8GBHmboWEziz1iUMZaRmWabkEpCgHj7
+         SElU85aTBUpLGnm17mpB4GsIv5eK2tRNNAonkTFiC6YICGy6SCTehF7637MTSEA8ZwA1
+         w+f3DiKIAyx10Yw9bnSlANl90Rb8fNfKjpX6hVnas83P76DLmgssA8TPRaXixAD/0I+t
+         naZ7EoAWzh31jwMUbP6FmlKKVdeViiWIKVYp7zMzbgDTPt9ggjdsLUoRL5+kUBYlh+qn
+         qWpg==
+X-Gm-Message-State: AC+VfDz6OaqeCDnSqQaQ12BCiIwhVJ8WoC6FIP1ILXzavOroaDyyhpFt
+	82iRQTzYfPhApHIOjaIuDtVfWwg=
+X-Google-Smtp-Source: ACHHUZ5OvXDyWAez+dzRc+UAzo44mIDfjoWrK4ycPztDNKvr+BddKBvufx4U9eLykvv4HGyjeajcvQU=
 X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a17:90a:d356:b0:256:335f:d59a with SMTP id
- i22-20020a17090ad35600b00256335fd59amr1633332pjx.3.1686590593535; Mon, 12 Jun
- 2023 10:23:13 -0700 (PDT)
-Date: Mon, 12 Jun 2023 10:23:03 -0700
+ (user=sdf job=sendgmr) by 2002:a05:6a00:18a1:b0:654:8eb9:4607 with SMTP id
+ x33-20020a056a0018a100b006548eb94607mr3157117pfh.4.1686590595480; Mon, 12 Jun
+ 2023 10:23:15 -0700 (PDT)
+Date: Mon, 12 Jun 2023 10:23:04 -0700
 In-Reply-To: <20230612172307.3923165-1-sdf@google.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -62,8 +62,8 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0
 References: <20230612172307.3923165-1-sdf@google.com>
 X-Mailer: git-send-email 2.41.0.162.gfafddb0af9-goog
-Message-ID: <20230612172307.3923165-4-sdf@google.com>
-Subject: [RFC bpf-next 3/7] bpf: implement devtx hook points
+Message-ID: <20230612172307.3923165-5-sdf@google.com>
+Subject: [RFC bpf-next 4/7] bpf: implement devtx timestamp kfunc
 From: Stanislav Fomichev <sdf@google.com>
 To: bpf@vger.kernel.org
 Cc: ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org, 
@@ -78,428 +78,181 @@ X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-devtx is a lightweight set of hooks before and after packet transmission.
-The hook is supposed to work for both skb and xdp paths by exposing
-a light-weight packet wrapper via devtx_frame (header portion + frags).
+Two kfuncs, one per hook point:
 
-devtx is implemented as a tracing program which has access to the
-XDP-metadata-like kfuncs. The initial set of kfuncs is implemented
-in the next patch, but the idea is similar to XDP metadata:
-the kfuncs have netdev-specific implementation, but common
-interface. Upon loading, the kfuncs are resolved to direct
-calls against per-netdev implementation. This can be achieved
-by marking devtx-tracing programs as dev-bound (largely
-reusing xdp-dev-bound program infrastructure).
+1. at submit time - bpf_devtx_sb_request_timestamp - to request HW
+   to put TX timestamp into TX completion descriptors
 
-Attachment and detachment is implemented via syscall BPF program
-by calling bpf_devtx_sb_attach (attach to tx-submission)
-or bpf_devtx_cp_attach (attach to tx completion). Right now,
-the attachment does not return a link and doesn't support
-multiple programs. I plan to switch to Daniel's bpf_mprog infra
-once it's available.
+2. at completion time - bpf_devtx_cp_timestamp - to read out
+   TX timestamp
 
 Cc: netdev@vger.kernel.org
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- MAINTAINERS               |   2 +
- include/linux/netdevice.h |   2 +
- include/net/devtx.h       |  76 ++++++++++++++
- kernel/bpf/offload.c      |   6 ++
- net/core/Makefile         |   1 +
- net/core/dev.c            |   2 +
- net/core/devtx.c          | 208 ++++++++++++++++++++++++++++++++++++++
- 7 files changed, 297 insertions(+)
- create mode 100644 include/net/devtx.h
- create mode 100644 net/core/devtx.c
+ include/linux/netdevice.h |  4 +++
+ include/net/offload.h     | 10 +++++++
+ kernel/bpf/offload.c      |  8 ++++++
+ net/core/devtx.c          | 58 +++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 80 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index c904dba1733b..516529b42e66 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -22976,11 +22976,13 @@ L:	bpf@vger.kernel.org
- S:	Supported
- F:	drivers/net/ethernet/*/*/*/*/*xdp*
- F:	drivers/net/ethernet/*/*/*xdp*
-+F:	include/net/devtx.h
- F:	include/net/xdp.h
- F:	include/net/xdp_priv.h
- F:	include/trace/events/xdp.h
- F:	kernel/bpf/cpumap.c
- F:	kernel/bpf/devmap.c
-+F:	net/core/devtx.c
- F:	net/core/xdp.c
- F:	samples/bpf/xdp*
- F:	tools/testing/selftests/bpf/*/*xdp*
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 08fbd4622ccf..e08e3fd39dfc 100644
+index e08e3fd39dfc..6e42e62fd1bc 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -2238,6 +2238,8 @@ struct net_device {
- 	unsigned int		real_num_rx_queues;
+@@ -1651,10 +1651,14 @@ struct net_device_ops {
+ 						  bool cycles);
+ };
  
- 	struct bpf_prog __rcu	*xdp_prog;
-+	struct bpf_prog	__rcu	*devtx_sb;
-+	struct bpf_prog	__rcu	*devtx_cp;
- 	unsigned long		gro_flush_timeout;
- 	int			napi_defer_hard_irqs;
- #define GRO_LEGACY_MAX_SIZE	65536u
-diff --git a/include/net/devtx.h b/include/net/devtx.h
-new file mode 100644
-index 000000000000..7eab66d0ce80
---- /dev/null
-+++ b/include/net/devtx.h
-@@ -0,0 +1,76 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+#ifndef __LINUX_NET_DEVTX_H__
-+#define __LINUX_NET_DEVTX_H__
++struct devtx_frame;
 +
-+#include <linux/jump_label.h>
-+#include <linux/skbuff.h>
-+#include <linux/netdevice.h>
-+#include <net/xdp.h>
+ struct xdp_metadata_ops {
+ 	int	(*xmo_rx_timestamp)(const struct xdp_md *ctx, u64 *timestamp);
+ 	int	(*xmo_rx_hash)(const struct xdp_md *ctx, u32 *hash,
+ 			       enum xdp_rss_hash_type *rss_type);
++	int	(*xmo_sb_request_timestamp)(const struct devtx_frame *ctx);
++	int	(*xmo_cp_timestamp)(const struct devtx_frame *ctx, u64 *timestamp);
+ };
+ 
+ /**
+diff --git a/include/net/offload.h b/include/net/offload.h
+index 264a35881473..36899b64f4c8 100644
+--- a/include/net/offload.h
++++ b/include/net/offload.h
+@@ -10,9 +10,19 @@
+ 	NETDEV_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_HASH, \
+ 			      bpf_xdp_metadata_rx_hash)
+ 
++#define DEVTX_SB_KFUNC_xxx	\
++	NETDEV_METADATA_KFUNC(DEVTX_SB_KFUNC_REQUEST_TIMESTAMP, \
++			      bpf_devtx_sb_request_timestamp)
 +
-+struct devtx_frame {
-+	void *data;
-+	u16 len;
-+	struct skb_shared_info *sinfo; /* for frags */
-+};
++#define DEVTX_CP_KFUNC_xxx	\
++	NETDEV_METADATA_KFUNC(DEVTX_CP_KFUNC_TIMESTAMP, \
++			      bpf_devtx_cp_timestamp)
 +
-+#ifdef CONFIG_NET
-+void devtx_submit(struct net_device *netdev, struct devtx_frame *ctx);
-+void devtx_complete(struct net_device *netdev, struct devtx_frame *ctx);
-+bool is_devtx_kfunc(u32 kfunc_id);
-+void devtx_shutdown(struct net_device *netdev);
-+
-+static inline void devtx_frame_from_skb(struct devtx_frame *ctx, struct sk_buff *skb)
-+{
-+	ctx->data = skb->data;
-+	ctx->len = skb_headlen(skb);
-+	ctx->sinfo = skb_shinfo(skb);
-+}
-+
-+static inline void devtx_frame_from_xdp(struct devtx_frame *ctx, struct xdp_frame *xdpf)
-+{
-+	ctx->data = xdpf->data;
-+	ctx->len = xdpf->len;
-+	ctx->sinfo = xdp_frame_has_frags(xdpf) ? xdp_get_shared_info_from_frame(xdpf) : NULL;
-+}
-+
-+DECLARE_STATIC_KEY_FALSE(devtx_enabled);
-+
-+static inline bool devtx_submit_enabled(struct net_device *netdev)
-+{
-+	return static_branch_unlikely(&devtx_enabled) &&
-+	       rcu_access_pointer(netdev->devtx_sb);
-+}
-+
-+static inline bool devtx_complete_enabled(struct net_device *netdev)
-+{
-+	return static_branch_unlikely(&devtx_enabled) &&
-+	       rcu_access_pointer(netdev->devtx_cp);
-+}
-+#else
-+static inline void devtx_submit(struct net_device *netdev, struct devtx_frame *ctx)
-+{
-+}
-+
-+static inline void devtx_complete(struct net_device *netdev, struct devtx_frame *ctx)
-+{
-+}
-+
-+static inline bool is_devtx_kfunc(u32 kfunc_id)
-+{
-+	return false;
-+}
-+
-+static inline void devtx_shutdown(struct net_device *netdev)
-+{
-+}
-+
-+static inline void devtx_frame_from_skb(struct devtx_frame *ctx, struct sk_buff *skb)
-+{
-+}
-+
-+static inline void devtx_frame_from_xdp(struct devtx_frame *ctx, struct xdp_frame *xdpf)
-+{
-+}
-+#endif
-+
-+#endif /* __LINUX_NET_DEVTX_H__ */
+ enum {
+ #define NETDEV_METADATA_KFUNC(name, _) name,
+ XDP_METADATA_KFUNC_xxx
++DEVTX_SB_KFUNC_xxx
++DEVTX_CP_KFUNC_xxx
+ #undef NETDEV_METADATA_KFUNC
+ MAX_NETDEV_METADATA_KFUNC,
+ };
 diff --git a/kernel/bpf/offload.c b/kernel/bpf/offload.c
-index 235d81f7e0ed..9cfe96422c80 100644
+index 9cfe96422c80..91dc7b7e3684 100644
 --- a/kernel/bpf/offload.c
 +++ b/kernel/bpf/offload.c
-@@ -25,6 +25,7 @@
- #include <linux/rhashtable.h>
- #include <linux/rtnetlink.h>
- #include <linux/rwsem.h>
-+#include <net/devtx.h>
+@@ -854,6 +854,10 @@ void *bpf_dev_bound_resolve_kfunc(struct bpf_prog *prog, u32 func_id)
+ 		p = ops->xmo_rx_timestamp;
+ 	else if (func_id == bpf_dev_bound_kfunc_id(XDP_METADATA_KFUNC_RX_HASH))
+ 		p = ops->xmo_rx_hash;
++	else if (func_id == bpf_dev_bound_kfunc_id(DEVTX_SB_KFUNC_REQUEST_TIMESTAMP))
++		p = ops->xmo_sb_request_timestamp;
++	else if (func_id == bpf_dev_bound_kfunc_id(DEVTX_CP_KFUNC_TIMESTAMP))
++		p = ops->xmo_cp_timestamp;
+ out:
+ 	up_read(&bpf_devs_lock);
  
- /* Protects offdevs, members of bpf_offload_netdev and offload members
-  * of all progs.
-@@ -228,6 +229,7 @@ int bpf_prog_dev_bound_init(struct bpf_prog *prog, union bpf_attr *attr)
- 	int err;
+@@ -863,12 +867,16 @@ void *bpf_dev_bound_resolve_kfunc(struct bpf_prog *prog, u32 func_id)
+ BTF_SET_START(dev_bound_kfunc_ids)
+ #define NETDEV_METADATA_KFUNC(name, str) BTF_ID(func, str)
+ XDP_METADATA_KFUNC_xxx
++DEVTX_SB_KFUNC_xxx
++DEVTX_CP_KFUNC_xxx
+ #undef NETDEV_METADATA_KFUNC
+ BTF_SET_END(dev_bound_kfunc_ids)
  
- 	if (attr->prog_type != BPF_PROG_TYPE_SCHED_CLS &&
-+	    attr->prog_type != BPF_PROG_TYPE_TRACING &&
- 	    attr->prog_type != BPF_PROG_TYPE_XDP)
- 		return -EINVAL;
+ BTF_ID_LIST(dev_bound_kfunc_ids_unsorted)
+ #define NETDEV_METADATA_KFUNC(name, str) BTF_ID(func, str)
+ XDP_METADATA_KFUNC_xxx
++DEVTX_SB_KFUNC_xxx
++DEVTX_CP_KFUNC_xxx
+ #undef NETDEV_METADATA_KFUNC
  
-@@ -238,6 +240,10 @@ int bpf_prog_dev_bound_init(struct bpf_prog *prog, union bpf_attr *attr)
- 	    attr->prog_flags & BPF_F_XDP_DEV_BOUND_ONLY)
- 		return -EINVAL;
- 
-+	if (attr->prog_type == BPF_PROG_TYPE_TRACING &&
-+	    !is_devtx_kfunc(prog->aux->attach_btf_id))
-+		return -EINVAL;
-+
- 	netdev = dev_get_by_index(current->nsproxy->net_ns, attr->prog_ifindex);
- 	if (!netdev)
- 		return -EINVAL;
-diff --git a/net/core/Makefile b/net/core/Makefile
-index 8f367813bc68..c1db05ccfac7 100644
---- a/net/core/Makefile
-+++ b/net/core/Makefile
-@@ -39,4 +39,5 @@ obj-$(CONFIG_FAILOVER) += failover.o
- obj-$(CONFIG_NET_SOCK_MSG) += skmsg.o
- obj-$(CONFIG_BPF_SYSCALL) += sock_map.o
- obj-$(CONFIG_BPF_SYSCALL) += bpf_sk_storage.o
-+obj-$(CONFIG_BPF_SYSCALL) += devtx.o
- obj-$(CONFIG_OF)	+= of_net.o
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 3393c2f3dbe8..ef0e65e68024 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -150,6 +150,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/prandom.h>
- #include <linux/once_lite.h>
-+#include <net/devtx.h>
- 
- #include "dev.h"
- #include "net-sysfs.h"
-@@ -10875,6 +10876,7 @@ void unregister_netdevice_many_notify(struct list_head *head,
- 		dev_shutdown(dev);
- 
- 		dev_xdp_uninstall(dev);
-+		devtx_shutdown(dev);
- 		bpf_dev_bound_netdev_unregister(dev);
- 
- 		netdev_offload_xstats_disable_all(dev);
+ u32 bpf_dev_bound_kfunc_id(int id)
 diff --git a/net/core/devtx.c b/net/core/devtx.c
-new file mode 100644
-index 000000000000..b7cbc26d1c01
---- /dev/null
+index b7cbc26d1c01..2b37c31f0912 100644
+--- a/net/core/devtx.c
 +++ b/net/core/devtx.c
-@@ -0,0 +1,208 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <net/devtx.h>
-+#include <linux/filter.h>
-+
-+DEFINE_STATIC_KEY_FALSE(devtx_enabled);
-+EXPORT_SYMBOL_GPL(devtx_enabled);
-+
-+static void devtx_run(struct net_device *netdev, struct devtx_frame *ctx, struct bpf_prog **pprog)
-+{
-+	struct bpf_prog *prog;
-+	void *real_ctx[1] = {ctx};
-+
-+	prog = rcu_dereference(*pprog);
-+	if (likely(prog))
-+		bpf_prog_run(prog, real_ctx);
-+}
-+
-+void devtx_submit(struct net_device *netdev, struct devtx_frame *ctx)
-+{
-+	rcu_read_lock();
-+	devtx_run(netdev, ctx, &netdev->devtx_sb);
-+	rcu_read_unlock();
-+}
-+EXPORT_SYMBOL_GPL(devtx_submit);
-+
-+void devtx_complete(struct net_device *netdev, struct devtx_frame *ctx)
-+{
-+	rcu_read_lock();
-+	devtx_run(netdev, ctx, &netdev->devtx_cp);
-+	rcu_read_unlock();
-+}
-+EXPORT_SYMBOL_GPL(devtx_complete);
-+
+@@ -162,6 +162,30 @@ __bpf_kfunc int bpf_devtx_cp_attach(int ifindex, int prog_fd)
+ 	return ret;
+ }
+ 
 +/**
-+ * devtx_sb - Called for every egress netdev packet
++ * bpf_devtx_sb_request_timestamp - Request TX timestamp on the packet.
++ * Callable only from the devtx-submit hook.
++ * @ctx: devtx context pointer.
 + *
-+ * Note: this function is never actually called by the kernel and declared
-+ * only to allow loading an attaching appropriate tracepoints.
++ * Returns 0 on success or ``-errno`` on error.
 + */
-+__weak noinline void devtx_sb(struct devtx_frame *ctx)
++__bpf_kfunc int bpf_devtx_sb_request_timestamp(const struct devtx_frame *ctx)
 +{
++	return -EOPNOTSUPP;
 +}
 +
 +/**
-+ * devtx_cp - Called upon egress netdev packet completion
++ * bpf_devtx_cp_timestamp - Read TX timestamp of the packet. Callable
++ * only from the devtx-complete hook.
++ * @ctx: devtx context pointer.
 + *
-+ * Note: this function is never actually called by the kernel and declared
-+ * only to allow loading an attaching appropriate tracepoints.
++ * Returns 0 on success or ``-errno`` on error.
 + */
-+__weak noinline void devtx_cp(struct devtx_frame *ctx)
++__bpf_kfunc int bpf_devtx_cp_timestamp(const struct devtx_frame *ctx, __u64 *timestamp)
 +{
++	return -EOPNOTSUPP;
 +}
 +
-+BTF_SET8_START(bpf_devtx_hook_ids)
-+BTF_ID_FLAGS(func, devtx_sb)
-+BTF_ID_FLAGS(func, devtx_cp)
-+BTF_SET8_END(bpf_devtx_hook_ids)
+ __diag_pop();
+ 
+ bool is_devtx_kfunc(u32 kfunc_id)
+@@ -187,6 +211,28 @@ static const struct btf_kfunc_id_set bpf_devtx_syscall_kfunc_set = {
+ 	.set   = &bpf_devtx_syscall_kfunc_ids,
+ };
+ 
++BTF_SET8_START(devtx_sb_kfunc_ids)
++#define NETDEV_METADATA_KFUNC(_, name) BTF_ID_FLAGS(func, name, 0)
++DEVTX_SB_KFUNC_xxx
++#undef NETDEV_METADATA_KFUNC
++BTF_SET8_END(devtx_sb_kfunc_ids)
 +
-+static const struct btf_kfunc_id_set bpf_devtx_hook_set = {
++static const struct btf_kfunc_id_set devtx_sb_kfunc_set = {
 +	.owner = THIS_MODULE,
-+	.set   = &bpf_devtx_hook_ids,
++	.set   = &devtx_sb_kfunc_ids,
 +};
 +
-+static DEFINE_MUTEX(devtx_attach_lock);
++BTF_SET8_START(devtx_cp_kfunc_ids)
++#define NETDEV_METADATA_KFUNC(_, name) BTF_ID_FLAGS(func, name, 0)
++DEVTX_CP_KFUNC_xxx
++#undef NETDEV_METADATA_KFUNC
++BTF_SET8_END(devtx_cp_kfunc_ids)
 +
-+static int __bpf_devtx_detach(struct net_device *netdev, struct bpf_prog **pprog)
-+{
-+	if (!*pprog)
-+		return -EINVAL;
-+	bpf_prog_put(*pprog);
-+	*pprog = NULL;
-+
-+	static_branch_dec(&devtx_enabled);
-+	return 0;
-+}
-+
-+static int __bpf_devtx_attach(struct net_device *netdev, int prog_fd,
-+			      const char *attach_func_name, struct bpf_prog **pprog)
-+{
-+	struct bpf_prog *prog;
-+	int ret = 0;
-+
-+	if (prog_fd < 0)
-+		return __bpf_devtx_detach(netdev, pprog);
-+
-+	if (*pprog)
-+		return -EBUSY;
-+
-+	prog = bpf_prog_get(prog_fd);
-+	if (IS_ERR(prog))
-+		return PTR_ERR(prog);
-+
-+	if (prog->type != BPF_PROG_TYPE_TRACING ||
-+	    prog->expected_attach_type != BPF_TRACE_FENTRY ||
-+	    !bpf_prog_is_dev_bound(prog->aux) ||
-+	    !bpf_offload_dev_match(prog, netdev) ||
-+	    strcmp(prog->aux->attach_func_name, attach_func_name)) {
-+		bpf_prog_put(prog);
-+		return -EINVAL;
-+	}
-+
-+	*pprog = prog;
-+	static_branch_inc(&devtx_enabled);
-+
-+	return ret;
-+}
-+
-+__diag_push();
-+__diag_ignore_all("-Wmissing-prototypes",
-+		  "Global functions as their definitions will be in vmlinux BTF");
-+
-+/**
-+ * bpf_devtx_sb_attach - Attach devtx 'packet submit' program
-+ * @ifindex: netdev interface index.
-+ * @prog_fd: BPF program file descriptor.
-+ *
-+ * Return:
-+ * * Returns 0 on success or ``-errno`` on error.
-+ */
-+__bpf_kfunc int bpf_devtx_sb_attach(int ifindex, int prog_fd)
-+{
-+	struct net_device *netdev;
-+	int ret;
-+
-+	netdev = dev_get_by_index(current->nsproxy->net_ns, ifindex);
-+	if (!netdev)
-+		return -EINVAL;
-+
-+	mutex_lock(&devtx_attach_lock);
-+	ret = __bpf_devtx_attach(netdev, prog_fd, "devtx_sb", &netdev->devtx_sb);
-+	mutex_unlock(&devtx_attach_lock);
-+
-+	dev_put(netdev);
-+
-+	return ret;
-+}
-+
-+/**
-+ * bpf_devtx_cp_attach - Attach devtx 'packet complete' program
-+ * @ifindex: netdev interface index.
-+ * @prog_fd: BPF program file descriptor.
-+ *
-+ * Return:
-+ * * Returns 0 on success or ``-errno`` on error.
-+ */
-+__bpf_kfunc int bpf_devtx_cp_attach(int ifindex, int prog_fd)
-+{
-+	struct net_device *netdev;
-+	int ret;
-+
-+	netdev = dev_get_by_index(current->nsproxy->net_ns, ifindex);
-+	if (!netdev)
-+		return -EINVAL;
-+
-+	mutex_lock(&devtx_attach_lock);
-+	ret = __bpf_devtx_attach(netdev, prog_fd, "devtx_cp", &netdev->devtx_cp);
-+	mutex_unlock(&devtx_attach_lock);
-+
-+	dev_put(netdev);
-+
-+	return ret;
-+}
-+
-+__diag_pop();
-+
-+bool is_devtx_kfunc(u32 kfunc_id)
-+{
-+	return !!btf_id_set8_contains(&bpf_devtx_hook_ids, kfunc_id);
-+}
-+
-+void devtx_shutdown(struct net_device *netdev)
-+{
-+	mutex_lock(&devtx_attach_lock);
-+	__bpf_devtx_detach(netdev, &netdev->devtx_sb);
-+	__bpf_devtx_detach(netdev, &netdev->devtx_cp);
-+	mutex_unlock(&devtx_attach_lock);
-+}
-+
-+BTF_SET8_START(bpf_devtx_syscall_kfunc_ids)
-+BTF_ID_FLAGS(func, bpf_devtx_sb_attach)
-+BTF_ID_FLAGS(func, bpf_devtx_cp_attach)
-+BTF_SET8_END(bpf_devtx_syscall_kfunc_ids)
-+
-+static const struct btf_kfunc_id_set bpf_devtx_syscall_kfunc_set = {
++static const struct btf_kfunc_id_set devtx_cp_kfunc_set = {
 +	.owner = THIS_MODULE,
-+	.set   = &bpf_devtx_syscall_kfunc_ids,
++	.set   = &devtx_cp_kfunc_ids,
 +};
 +
-+static int __init devtx_init(void)
-+{
-+	int ret;
-+
-+	ret = register_btf_fmodret_id_set(&bpf_devtx_hook_set);
+ static int __init devtx_init(void)
+ {
+ 	int ret;
+@@ -197,6 +243,18 @@ static int __init devtx_init(void)
+ 		return ret;
+ 	}
+ 
++	ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &devtx_sb_kfunc_set);
 +	if (ret) {
-+		pr_warn("failed to register devtx hooks: %d", ret);
++		pr_warn("failed to register devtx_sb kfuncs: %d", ret);
 +		return ret;
 +	}
 +
-+	ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_SYSCALL, &bpf_devtx_syscall_kfunc_set);
++	ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &devtx_cp_kfunc_set);
 +	if (ret) {
-+		pr_warn("failed to register syscall kfuncs: %d", ret);
++		pr_warn("failed to register devtx_cp completion kfuncs: %d", ret);
 +		return ret;
 +	}
 +
-+	return 0;
-+}
-+late_initcall(devtx_init);
+ 	ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_SYSCALL, &bpf_devtx_syscall_kfunc_set);
+ 	if (ret) {
+ 		pr_warn("failed to register syscall kfuncs: %d", ret);
 -- 
 2.41.0.162.gfafddb0af9-goog
 
