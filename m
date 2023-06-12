@@ -1,54 +1,54 @@
-Return-Path: <netdev+bounces-9979-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9985-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6D09F72B8AA
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 09:34:50 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8E1C072B95E
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 09:57:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 90AFE1C20AF3
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 07:34:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 52B4D281099
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 07:57:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 752C5D2F5;
-	Mon, 12 Jun 2023 07:34:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 90B93DDB0;
+	Mon, 12 Jun 2023 07:57:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68670D50E
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 07:34:47 +0000 (UTC)
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482F710D9
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 00:29:46 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id 2adb3069b0e04-4f640e48bc3so4513243e87.2
-        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 00:29:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 848C0C8D8
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 07:57:47 +0000 (UTC)
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B28210E
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 00:57:22 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-3f7f6341bf9so40216245e9.1
+        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 00:57:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1686554684; x=1689146684;
+        d=linaro.org; s=google; t=1686556634; x=1689148634;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
         bh=ntRYvz0tRb6HbKymHFNjRh0d14+I2NVOI7EThtiN4Yc=;
-        b=exC6JDgIZcs71JZTfbGe8FbVFtVvq+ND8hCHRMIVYZdCzwmzcdmv9z8tSVKQBLoskl
-         jJfToWX3LrORQdtFQKHrdsGR0blZOzuUROlSvBmDzWBmXfKuBnbb51KyeUmcUhcAW3Rn
-         TibUQhkxDc8W5tNInES9Ih3RCKN4WQJVvQvstUUk5lpflSi9bqakPE7esueqN9UssGwH
-         Xf2MOH5shcSeu1ajU5LjyggWJyAA10Pka9/g2k4jXi2H7kAyuclLpxxGwNMW44YY/+HH
-         MUgHZ5jbpm6kMBLO+hXRPtgAzfU+Pjy4JXso0tZcHZNg85pWCP54uzJ4PH6vORzA1fDy
-         BwUw==
+        b=hYCX6PlERwfVWhQnpZIDQMkHG5m70BpXcb9Si+EgU/TSHXpqpOm/2DQ4bj4py6H4s+
+         xRB/2qXBCQDpuikUQRAag5EMMJJ9jv5RkudNegt3foV5f2LHqtJd6S1cWCEaJDdY+YRa
+         x84HbCG3snT+Nuln4+j3MUm3GWofMRWZHtDD7CKdQ/8Mqnz572+WY07DylJZqYzgFyBW
+         3jtYyVOgT7RXifB72Saxh9I+gA/+IKSC0/obH/E8TZU5i2/ynuzxxk5ICfUPCyNUa8qA
+         sjbHF90OmqSbRKnATd4B02cZDP23xDULnXqMR3zd4JAmSf0R1zaFWmJ/mB8FDbXvOcET
+         Z0+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686554684; x=1689146684;
+        d=1e100.net; s=20221208; t=1686556634; x=1689148634;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
         bh=ntRYvz0tRb6HbKymHFNjRh0d14+I2NVOI7EThtiN4Yc=;
-        b=KM4ihc6U6HSzhtFzA0bEIwnxnRyasO+RNSNqQwsp/d8bx6nkoXxjyEBcjAbVmlS9bf
-         X3X0j4DYOgid7xIoSZgLeisse5vwME8ZXE8U2GFSpd1qCdVR2VX6k2DjnuRyfLH7QND6
-         lV0mB0I9yVQUPxx6HIT8SAdPSvDA9CtKxDKpx11NfE5lXiUJ/sHVe+gZymg7Nw2+vtAC
-         fMaEJmqpvuy3NtbMAmNT+R1Lk802MPN4mPZqLyzOAKTJ/eqI/h6DP6880qlEyRZS7zs3
-         3xKtEVGzR8nYCxY2cJPOg646SIQPldgjvMiEETemyZDmw5CK4It2AuhemSt2TaEDJ8iH
-         taeg==
-X-Gm-Message-State: AC+VfDy6uK5T0b5ZMoTJjkxe56VS2oxeKqVoFK1I/cOLwLx1e2IZpVbd
-	n4l6Su1FO3mmhulNzwAhxtpU6W6oVgkMPxI4uuk=
+        b=Af2FNFh+wotkxJL8Lq1rW+hMlsYw3KhDnkx8NNbOn4WwL5mGNIs7Jvx1O6WHlOYV0o
+         3X9a3O2jKWIWxN02nAj09dB9p4gn3/cPKyC2/kPBHsg0dD+rhUnXf0iuPPagSy887iUt
+         GzUqoHl1MkyeD4itw2C/9XwXj2RzIvBQkwOfNc2Yuo6c0pxZ+rJra5rTxlb1w63E3B5/
+         C5i9cTJe2UHi9376W+WJWvoQyoQYD0akiBr3naVG4EUp1prUinVcQonlJ5SwwdcbfDzB
+         jZQPQbukW7ocbEfYLE3oQL3doN209+nKGwG/hUBfpEGFxRm7XGWlPasX4AjuIoxrU6au
+         u2zA==
+X-Gm-Message-State: AC+VfDwsgWZT2OjuQR7KSwoSckhwB4UXsA9T4ZlCYn1Ftf7+QlWpnIRQ
+	8VqqKBaI+sKCx7IX7ybA1zyCNeK4+95fOk/kSO0=
 X-Google-Smtp-Source: ACHHUZ7CNdlZ+cV8ahgX1g2P375Kp+4cIx9AN8l9KjZ490gLm+dmUsMvU9DvqOjd5o4cQC6f4IH9Dw==
 X-Received: by 2002:a17:907:728d:b0:96f:afe9:25c4 with SMTP id dt13-20020a170907728d00b0096fafe925c4mr7636877ejc.50.1686554146850;
         Mon, 12 Jun 2023 00:15:46 -0700 (PDT)
@@ -81,6 +81,12 @@ From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 In-Reply-To: <20230611181707.1227de20@T590-Marco>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
 On 11/06/2023 18:25, Marco Giorgi wrote:
 > Hi Krzysztof,
