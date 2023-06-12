@@ -1,96 +1,121 @@
-Return-Path: <netdev+bounces-10145-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10146-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1EB3A72C8B1
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 16:36:09 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E6A0372C8BB
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 16:38:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CE34B281186
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 14:36:07 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7B27C2811D6
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 14:38:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BFFE917FFE;
-	Mon, 12 Jun 2023 14:35:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F4BE18C20;
+	Mon, 12 Jun 2023 14:38:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE6F818C17
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 14:35:58 +0000 (UTC)
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C7410DC;
-	Mon, 12 Jun 2023 07:35:54 -0700 (PDT)
-Received: from dggpemm500011.china.huawei.com (unknown [172.30.72.55])
-	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4QfvHj6xGMz18M7Y;
-	Mon, 12 Jun 2023 22:30:57 +0800 (CST)
-Received: from localhost.huawei.com (10.137.16.203) by
- dggpemm500011.china.huawei.com (7.185.36.110) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 12 Jun 2023 22:35:51 +0800
-From: renmingshuai <renmingshuai@huawei.com>
-To: <vladbu@nvidia.com>
-CC: <caowangbao@huawei.com>, <davem@davemloft.net>, <edumazet@google.com>,
-	<jhs@mojatatu.com>, <jiri@resnulli.us>, <kuba@kernel.org>,
-	<liaichun@huawei.com>, <linux-kernel@vger.kernel.org>, <liubo335@huawei.com>,
-	<netdev@vger.kernel.org>, <pabeni@redhat.com>, <renmingshuai@huawei.com>,
-	<xiyou.wangcong@gmail.com>, <yanan@huawei.com>
-Subject: Re: [PATCH net] net/sched: cls_api: Fix lockup on flushing explicitly created chain
-Date: Mon, 12 Jun 2023 22:35:23 +0800
-Message-ID: <20230612143523.2408056-1-renmingshuai@huawei.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <87cz20wywo.fsf@nvidia.com>
-References: <87cz20wywo.fsf@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85887525E;
+	Mon, 12 Jun 2023 14:38:17 +0000 (UTC)
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301D8CD;
+	Mon, 12 Jun 2023 07:38:16 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+	by mailout.nyi.internal (Postfix) with ESMTP id 8A2DC5C0116;
+	Mon, 12 Jun 2023 10:38:15 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Mon, 12 Jun 2023 10:38:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm1; t=1686580695; x=1686667095; bh=ZL
+	tbf+vkYKNwbdqr4ijTHLZjINUGdnp8fp3QuAY9ODo=; b=k4ZWeOyVjN5AfscYB9
+	Yz1mj4b49D9gMZwziq6qpkFlWVWLR+EKhBmAUIS0WzgvxGANmi+CCyxsJf6nmyyA
+	cnCHsOg/fDvRNYnF9zwp7E7HDk7dDcOZrheQHwYjq1sb7zVc225lLTC604U3Jr2F
+	mdpFZfyh4Bbe5gtlDcWa4dDQXhe80hwG3be4coPD2XHgbg9nqDWoMO5pR8KIKQ0f
+	HnCVV8HD2NHb2DKPUQlHSdAc8uek6NQsvMWF470Z2EQngZmk5+3xUsydcr4LwWoD
+	J6yj7TntqrfqXcza7U2redn4vyPX8RpCq8dyyFu0TVorP2Jrk0mUqcF0RqQxEK7x
+	LM+g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm2; t=1686580695; x=1686667095; bh=ZLtbf+vkYKNwb
+	dqr4ijTHLZjINUGdnp8fp3QuAY9ODo=; b=g8BdJH2bXvlnCZYt6VW4QrbIsuFQ9
+	og0difewC1j1os/5sq0KVExEbXrOVKizJ15akK4c0rdc8bMamhTR1pz7hDjuSTPX
+	G175lQBA8P70pM8gQWNadhNGs526wB4nboj89+vUW5jc2xEOicqcbNGGq68hXJQV
+	3nnaeBD42fGsgNJASmBj5udAbqnd2RyDsk3JfnCxvGypTAJGOD3drVjuICdtXtd3
+	B1qXFDbTlvV+EBi0qTsX40Jkl6h2YiICJg5/PQNK9kJ0ymlVN9eRREWjZ1lOFeXq
+	tjeKjSZy3EzS6wdQW6WpNXW0qDDjUwJF+SrKybnZiuIlOX9UC+cRbqRdg==
+X-ME-Sender: <xms:1y2HZDWDAhBG8gTDDPxuNiSpvbyAxLRPAL-2cEA3Ls33Z2Nnr0kvdg>
+    <xme:1y2HZLmXxUUmSP2MiJG2bI2w__QLkh5ESyCKjq0ivtUjmYNjrdS8nX7cUk6SukreC
+    g_senb_pqrbqP_KmyA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgeduhedgjeejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:1y2HZPYnXn8RBJ9NZarTzXwvFx9gTIHXE17Eo0bog66PczrwbWNR7w>
+    <xmx:1y2HZOVzqUJJWPRLhgB57v08nAP0ZIfyy3ezMlQc_7YWpQTHm6chPg>
+    <xmx:1y2HZNnapUm6j95AJOVobbGi-dDuWUWVYlw-3dWqL-U7Q8s3G304Cg>
+    <xmx:1y2HZNEtrrhUUZLhzYvpo4MnM-i0sEieG0Ns2ajPXdJx2SQzqHIZbw>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 224EBB60086; Mon, 12 Jun 2023 10:38:15 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-492-g08e3be04ba-fm-20230607.003-g08e3be04
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Message-Id: <3b5bc8f7-6d6d-48a1-9536-4a50110fabe6@app.fastmail.com>
+In-Reply-To: <f0329c00-8d5a-ba89-c793-608f85cf70b3@kernel.org>
+References: <20230612124024.520720-1-arnd@kernel.org>
+ <20230612124024.520720-3-arnd@kernel.org>
+ <f0329c00-8d5a-ba89-c793-608f85cf70b3@kernel.org>
+Date: Mon, 12 Jun 2023 16:37:54 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Roger Quadros" <rogerq@kernel.org>, "Arnd Bergmann" <arnd@kernel.org>,
+ "David S . Miller" <davem@davemloft.net>,
+ "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>,
+ "Paolo Abeni" <pabeni@redhat.com>
+Cc: "Grygorii Strashko" <grygorii.strashko@ti.com>,
+ Linux-OMAP <linux-omap@vger.kernel.org>,
+ "Vignesh Raghavendra" <vigneshr@ti.com>, "Nishanth Menon" <nm@ti.com>,
+ "Tero Kristo" <kristo@kernel.org>, "Randy Dunlap" <rdunlap@infradead.org>,
+ "Mao Wenan" <maowenan@huawei.com>, "Andrew Lunn" <andrew@lunn.ch>,
+ Netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+ "Alexei Starovoitov" <ast@kernel.org>,
+ "Daniel Borkmann" <daniel@iogearbox.net>,
+ "Jesper Dangaard Brouer" <hawk@kernel.org>,
+ "John Fastabend" <john.fastabend@gmail.com>,
+ "Simon Horman" <simon.horman@corigine.com>,
+ "Vladimir Oltean" <vladimir.oltean@nxp.com>, bpf@vger.kernel.org
+Subject: Re: [PATCH 3/3] net: ethernet: ti-cpsw: fix linking built-in code to modules
 Content-Type: text/plain
-X-Originating-IP: [10.137.16.203]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500011.china.huawei.com (7.185.36.110)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
->On Mon 12 Jun 2023 at 10:59, Pedro Tammela <pctammela@mojatatu.com> wrote:
->> On 12/06/2023 06:34, Vlad Buslov wrote:
->>> Mingshuai Ren reports:
->>> When a new chain is added by using tc, one soft lockup alarm will be
->>>   generated after delete the prio 0 filter of the chain. To reproduce
->>>   the problem, perform the following steps:
->>> (1) tc qdisc add dev eth0 root handle 1: htb default 1
->>> (2) tc chain add dev eth0
->>> (3) tc filter del dev eth0 chain 0 parent 1: prio 0
->>> (4) tc filter add dev eth0 chain 0 parent 1:
->>> Fix the issue by accounting for additional reference to chains that are
->>> explicitly created by RTM_NEWCHAIN message as opposed to implicitly by
->>> RTM_NEWTFILTER message.
->>> Fixes: 726d061286ce ("net: sched: prevent insertion of new classifiers during
->>> chain flush")
->>> Reported-by: Mingshuai Ren <renmingshuai@huawei.com>
->>> Closes: https://lore.kernel.org/lkml/87legswvi3.fsf@nvidia.com/T/
->>> Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
->>> ---
->>>   net/sched/cls_api.c | 12 +++++++-----
->>>   1 file changed, 7 insertions(+), 5 deletions(-)
->>
->>
->> Hi Vlad,
->>
->> Thanks for taking a look.
->> Could you also carry over the tdc test or ask Ren to post in a separate patch?
->
->Sure. I was planning to ask Mingshuai Ren to submit the new test as
->standalone patch after my fix has been accepted since including his code
->with my fix would require explicit approval of the whole patch and his
->Signed-off-by clause AFAIK.
+On Mon, Jun 12, 2023, at 16:27, Roger Quadros wrote:
+> On 12/06/2023 15:40, Arnd Bergmann wrote:
 
-OK. I will submit the new test as standalone patch after your fix is been accepted.
+> cpsw_priv.o and cpsw_ethtool.o (included in ti-cpsw-priv.o) are not 
+> required by ti-am65-cpsw-nuss.
+> It only needs cpsw_sl.o
+
+Ok, I see. I'll split that out into yet another module then, and
+give it another day of randconfig tests.
+
+     Arnd
 
