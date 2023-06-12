@@ -1,41 +1,41 @@
-Return-Path: <netdev+bounces-10242-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10244-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7EA4872D31B
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 23:18:00 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6D38F72D31D
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 23:18:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 24E2128107D
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 21:17:59 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AB3D81C20A10
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 21:18:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B37CC22D69;
-	Mon, 12 Jun 2023 21:17:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A43CD22D54;
+	Mon, 12 Jun 2023 21:17:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1647C8C1
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 21:17:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FD31C8C1
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 21:17:50 +0000 (UTC)
 Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2079.outbound.protection.outlook.com [40.107.244.79])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5417B5273
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 14:16:46 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BA9423C
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 14:17:16 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iCmzkFizh6uaU+lCYo5fjvegni2bt2W2GaAc65qbntauM70wK+rNL5NwiH7eOkGUZztOEsr1KSt2EaGieduMxVu+JdlJM6SC4WJ77QvLeAG/ruoaN8i7smb8ed1QvwXPPQcpnIbHvJ8hAuNZzaOhEzhJ6wmVEhCbX5ND5IWRExzI2n+R5yxVAjlqUFlDjOcZzeBRswbkvz1CChLGOmbl09e2YYgP5OsH7VHBU49K25A8IniHjoPPzW9OHqna0xgiaoQz1n/K0cBJbMAvRKabJhJtPmOqpVY3/lRylX+rOM+PZvg5rF7mV/maaXhxWqI4uzN0QDPL1yKAvAy+QwLKUg==
+ b=B3i+bBMiigjjOw78WiajfTqYMuUwmFITXcPF7pufwftaHylGkaJPQf17z72DDmOuTKD1eYUn5+FGmz/KwvOqNGaNpchIew0Wb83XebOB9BBBVNZWuN/Gw5JF1KO0pn3W4sdDVRpbRiFhU/CeHpmjT/jZ36/0UqFkvJ1vwS0Q6jjTEKmYb/4zXmC3zCfL3G5tqvEQVsCfxqpnH0sE0oOz9lmCpnShRJT4Fsfgtd684igsyUsGvrFBBLrHAos54WJ75yTWRRxVwa1sNBYGrMWPP2ocBFtdLcajjnZYHDLmohP6YfsNz83Yuo5X+sBIgIN+J/ijrXjcGRkJHcGwqBNL1A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=35R5oB+HaDMvV5rRIv/nnXEuLvp8BO3QXdvwtOZf8GA=;
- b=U9Z4jZNqEtjrhEktKKCgPhtwYnaytn35lzfVj+mlEpLLAg/o4v3drgsJmzDEEySZlk8QMv6gscqsVZVyg4SE4mRiOhbyxtbSg5ScoB0llenFAukP53X+tt70dc19H44K3pdcfRFk7hanFLG0nTqca5ps8JEgZG7vd5Qhnj8J3bv90HQk+STz9oPXTXxq4q66SSI0i+E8Vo7C1IMh4Jpmsk2RuPnI7PFiEZYgD+F863j/Zg70gQDJIm6HSaOywY2/UKHhsluf88WrEgZhZjjfCsOFy5RZ/uRgn4tANNaV9GjLggOmf7Vo+Sil5+yqlmZKG+CMTshxstpsO1OZohtoMw==
+ bh=boXwxr35ZnW42dvcysS/GCarnpxMcc8wKvTFXRvnoHk=;
+ b=R+6fXEaNcThtaG+ORxW+aSOvY1zkiP6tYot+4OZ2gX0dJ4PmIOMb6NHunCgPNVZgOekanwHc5SkGlh5Sz6BkIFu2RLlmTjIKbKm5QqyruGBNFeJK8e6rWscp8CbkHrUQofe8/rLls3SWqJoUYbY8kl8tzT7cTd1qH8TXwufy6zDAQeNJghqbrbGgeAkIC3epOmVhzEMUfdXV6zAwgZp488xBoYTwqpHsGXFTZuG/pe1uAjYOUrqmOW8QaFgHaq9r8vt01RYZhEkJfjDlAVX9DvKxkdKtD/XAe+bDQoCJTQcmnwzXp32Qr15qM+NWiUJxQGJfYowV+rQFDlCHs8L6/Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=35R5oB+HaDMvV5rRIv/nnXEuLvp8BO3QXdvwtOZf8GA=;
- b=pqp085Goo4MIkxpKiS2+mN4Yq6T5SogIqQCuBZpJoohUlMGr/gmDVLdbBJNxYJc5S33bp0RCVVzHsPS+iu5gX5LBy8RewRGTBoNIKJWhgY0zKpTacWKK7QSDopJi43QfUD8EGv3dh5AK1ytMXnXgv/rX7BCYofkiPryiBu4vRupMwa32wgY3e58IB/3uZimmQFI5I8LDZUybLYNOKroCaJk3SD7snaFLfXESMGGg4EU1N4vXzidYQ4RiO1wMWd891hlLYdBJx08sJolNvDjjGchOgG8ZqiuFfHgJV2gNVKntoBGhf/i5j1DulQjpC8eAB3k4rH44eEm0Iqd2MFNPzA==
+ bh=boXwxr35ZnW42dvcysS/GCarnpxMcc8wKvTFXRvnoHk=;
+ b=uBYGYzmrIxIqZ5022k1/kEoY0S/RA0F2FHvJ4YQ8PtzN1NGIYj3oyGe4B7kq8lkdJLbQzhxCrcj1ja0xAjS0dKn7xyWQhp1XaVO7w/Y7SNOiw3GtrFCiRglQvqEIbO/2CtAyVsTzDp0lZ8hSL+ey4uGrjNt8hySXmilPlue3PC/bOdfJ02OaGZtWS+I1raW/tsQRCHLh+Szueu74OHOaWRX9BtATab0ef7XqhroXcM4bzVaUuS01SuANijJwJIDpmptvq0JwpLgblGnJrkGAF4NS+ggo/wjtWXyRgaUaZ25LXYojvH2OkJRF3LqZs96SAtN6auf/jZ8DAn+SpIQfIA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from BYAPR12MB2743.namprd12.prod.outlook.com (2603:10b6:a03:61::28)
@@ -46,7 +46,7 @@ Received: from BYAPR12MB2743.namprd12.prod.outlook.com (2603:10b6:a03:61::28)
 Received: from BYAPR12MB2743.namprd12.prod.outlook.com
  ([fe80::ecb0:2f8e:c4bf:b471]) by BYAPR12MB2743.namprd12.prod.outlook.com
  ([fe80::ecb0:2f8e:c4bf:b471%6]) with mapi id 15.20.6455.030; Mon, 12 Jun 2023
- 21:15:59 +0000
+ 21:16:00 +0000
 From: Rahul Rameshbabu <rrameshbabu@nvidia.com>
 To: netdev@vger.kernel.org
 Cc: Gal Pressman <gal@nvidia.com>,
@@ -60,16 +60,16 @@ Cc: Gal Pressman <gal@nvidia.com>,
 	Rahul Rameshbabu <rrameshbabu@nvidia.com>,
 	Shuah Khan <shuah@kernel.org>,
 	Maciek Machnikowski <maciek@machnikowski.net>
-Subject: [PATCH v3 3/9] testptp: Remove magic numbers related to nanosecond to second conversion
-Date: Mon, 12 Jun 2023 14:14:54 -0700
-Message-Id: <20230612211500.309075-4-rrameshbabu@nvidia.com>
+Subject: [PATCH v3 4/9] testptp: Add support for testing ptp_clock_info .adjphase callback
+Date: Mon, 12 Jun 2023 14:14:55 -0700
+Message-Id: <20230612211500.309075-5-rrameshbabu@nvidia.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230612211500.309075-1-rrameshbabu@nvidia.com>
 References: <20230612211500.309075-1-rrameshbabu@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: SJ2PR07CA0017.namprd07.prod.outlook.com
- (2603:10b6:a03:505::17) To BYAPR12MB2743.namprd12.prod.outlook.com
+X-ClientProxiedBy: BYAPR04CA0035.namprd04.prod.outlook.com
+ (2603:10b6:a03:40::48) To BYAPR12MB2743.namprd12.prod.outlook.com
  (2603:10b6:a03:61::28)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -79,54 +79,54 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: BYAPR12MB2743:EE_|MW6PR12MB8733:EE_
-X-MS-Office365-Filtering-Correlation-Id: d6740059-b27b-4df8-87fe-08db6b8a3054
+X-MS-Office365-Filtering-Correlation-Id: 67375a42-cc10-4989-58c3-08db6b8a3466
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	H/OGN9Wm88xeRXqRH0qgZpvOEO4S8ROVqLQwRB+oOgIu120kdpXHdXxSzRnFbgxHPFVn/QQsbN4Sr9zdEjaTb+YqZn5p0Z9CYYzqCAhJRqxwNZ8b4KQGVYZZmlnbpd8TXC42pholoDmIZQJURExccj6PJuyVKgVrQWymUB1ukM4GJbBDahBYB93mzb042QOYr+PhGvnBAC+XoN+NOoes/NaeVy9GrbGjDAfVSEXWeP//Lngc39DNfSqH/obVYRgK77v8O9cwfVUmHcyEpdOJqknVygOrplXRKezFSQ9YrGrun1Y/6T8oEU0D7fVbX+u5lIH0VMeY3W1hsSTyR8lJ0HoNPL0dNtkSYiSwuIXhzbg4KCfu9KVL3+M6TZEB40yem1W4iEKmhPKsaUXn7ZulMZoVRg2v4UF5AJRRTTvbusHTVxaXjOx2JF3pk4kCCY0fWyevLp9XXyl89ukOT2IjxktZ1Azy9tmmksFR/nTPxSClUP7DU/NtI606nl+tliUS4lQEpFlfwsk2P9dmWiSB6zLP+zE6vFg4A5GP0tsrVzQ9PwuKKGQwu5TIrhEJLOrw
+	6Kcqp/4PC3vx+CdPADnizwme90RfrIDy7ni9p7BradOg73srcgTXRzEERBSaqnMlfKGUZY9jO4MTVt6epaY2+XFhsSQ50x6AHj4Zj4mSah3jAY92vvRRHlxss9FIQhWAhfkOqpfvLb8THV9W0VEu2U6H8+rFyZof1Dgicpt860tHaQ0jsf4qhCrK48uOWJyHdtCiHNCNcZ+Z0Qyv6tZOsPNDIFwxH62sXvVWVY3K5PDyzHl4PqGynVHl9jpNxp9tAp37FPMxAWC5ar8luRTu1gs6YviuyM9wd13gVg09Qae6YA3g2iFVwlJGDNraV2edgIua7pDJ+btBCEkBJSNo7cpMFCyafF+oZhX72xAfjDiAHPEl6cJNaUjxhyfRQi5Va1PXt04lzlw/eMJ5FAPBIv++31lplCUgAjClycShoj3GOBb4+ESAG90O8IIhbpCFqXj+4UsqO1E7a9R4AvpHZW2YP3qkwuu+KJ/FEVOfXJRwduCQAeSZoU03PAluCAjlyPWXxq4x6cgjg4b8v4OuaTfmx+sMn3qso6P9b72r0xI0wA/HgYeqiZ8yQKAiaWMk5S9A9egAM/+c6+bZJc8W98i0fkRIVtcwyQpiHg8kK30=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2743.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(396003)(346002)(136003)(376002)(451199021)(6916009)(4326008)(66946007)(66476007)(66556008)(36756003)(186003)(478600001)(54906003)(2616005)(2906002)(8676002)(316002)(41300700001)(86362001)(6486002)(6666004)(6506007)(1076003)(8936002)(83380400001)(5660300002)(26005)(38100700002)(6512007);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2743.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(396003)(346002)(136003)(376002)(451199021)(6916009)(4326008)(66946007)(66476007)(66556008)(36756003)(186003)(478600001)(54906003)(2616005)(2906002)(8676002)(316002)(41300700001)(86362001)(6486002)(6666004)(6506007)(1076003)(8936002)(83380400001)(5660300002)(26005)(38100700002)(6512007)(142923001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?RY4a/eSXzJmIgMPp4vkJ0zMn8JWiRlVscHHtiztPnovAqcWYO3snrVa2dfc5?=
- =?us-ascii?Q?KPE1/meE4q6J7IiFWoJzzV0Ve8wm7DyHhSLURYDNPt8PVNdLg1bizfQYU7g5?=
- =?us-ascii?Q?YlZjWnTeRd5kKDSc/iayuIbt6/ccDBj0MIjaoxk/go4XFJn0J3yTnaWDj6rO?=
- =?us-ascii?Q?NzTPCp7G4neq9JQ+pNhE6yPyMktrRS8Ch59RehQBtNrtAubQNkXSkSv4W+4R?=
- =?us-ascii?Q?03uZHK2l5py9x11XrHdECKefhJu0DbGOQXzLmcmybBvTdJkgsWoroV5xJKsN?=
- =?us-ascii?Q?0K+odav+v86UAz10XJGwno4nko2kJfZRAWSAKGWY6yw/B46R9oZjGmo4vdli?=
- =?us-ascii?Q?mICUdaLNFReJb0fSZapUm9e50ptPFTN321gGWrXa/38xzSnBJs8+a2eP5R+K?=
- =?us-ascii?Q?ULEyqdSAJlZLOznoCvKBxaJXOxKKRJetfBTIzwF+RdMeNJtGucLvoBPmcqd6?=
- =?us-ascii?Q?17b0lJayIee57AZV718ruOZo2/tO0RwsVr/HRSa9/ilOCssPcpWNLk4VIiLR?=
- =?us-ascii?Q?wC1iskVTrOHy2LiSUk8+ka8OfHaSwlZWgTXGpakmn0Q0dxTp3DCPaoeOSLJm?=
- =?us-ascii?Q?kRazEJmmF7paiZzw897L1ljZXaNbr87iiKLuNhsbfzsemKSztxtED5E4wEqh?=
- =?us-ascii?Q?nzw9sGN9D/3P/SiHpwcwZ7VKBr8al9WtGqj6inTCY8TQKpImdK6MZH7qC//N?=
- =?us-ascii?Q?3CuNESkQ6dTrkCA41YMNo4/vK0rS+OU3WuDffbNZ0zjNxj3sWTTsbOIV8Xfi?=
- =?us-ascii?Q?6bF5OVMC0LsRDEvS7ryhq8ZLEf8LY/g2SgKAcctFKl12b1WcsH1/Ta2W6AFb?=
- =?us-ascii?Q?qNtJwC1ewZEx98C8yQgusAW0NvUSdVujYK64LD9iyQWxMVGWVNS5n3bP++kf?=
- =?us-ascii?Q?X5EmTeR6CEkSF9wBLrnyqFTCMJ6E0urhTIhK+jIYX5WrWLGrrX/GqKKK8wzx?=
- =?us-ascii?Q?yMnkiO10r6t/IrnJQj2utZgjyXnaSTJu+2C5Vhq7SwnnY2OBgla7rHLHzCIY?=
- =?us-ascii?Q?Z3VPK6Rb5OjU5pZ3MOGSVN2Q8cbUtAIwG0CtdGOYbF2aIpFnyGjAqyM9cqrK?=
- =?us-ascii?Q?UMb65g2K34UUDAdY1ljBv1ckNdhIKSDC1oH1O6CgQ4STjJbYlwiwMteRSeu8?=
- =?us-ascii?Q?CIK2/fPsCb7BkN4dKhOYnQDCGi6/4o274GNTdqjVgiypwkOuxY+Y09hkVmW2?=
- =?us-ascii?Q?Axva4JzzcQfrqLOYSEW1hQ5uXo7EREzAgfOZAcpccVWb65oQPYVnucUVeh9/?=
- =?us-ascii?Q?+fAYtOGs4sJX9HPsmt7cnvF4dj+1Zx4TQFUZSN8y3UvCOuRB4ekmrpoGWB6m?=
- =?us-ascii?Q?W87NdzQ3VDjQY18As4rKOQtUTwPZOKo8nLQCPaMPWuWVVqylRYWPNiWbeEDI?=
- =?us-ascii?Q?xzNTXkk4uTgJWliV0YulWGpTlpmPlsy3wEYJl4pD0JNRfrCRGZXqsuH2iyut?=
- =?us-ascii?Q?s8rB+EubY+dahlUQqD18j2h8KWPnDroakNp1cYSysC6A1ZatMnjGdjcCDNeg?=
- =?us-ascii?Q?yNt/PVb9FDvaY9YBHGA+/s71SMVqtM5vZF6/teL9NaQFatjyLjs/bq5ooKc+?=
- =?us-ascii?Q?KGVUHYJGa9hEhRnK24lWCJlErbtDSgSqrLVzVXEEn/ua6F2p2BtAQPGJYMMc?=
- =?us-ascii?Q?/Q=3D=3D?=
+	=?us-ascii?Q?4HJwMmtd3gk4oAyGVnz1SxT5mxgnFXLBWv2kNBqoqlbQpnhWV0QVpmm5rbc8?=
+ =?us-ascii?Q?0xOStPQ6AMIzqEqDIW/LJ/vy7lWzBNEVD+hsmuksqq7UmZff+uKsBlulXtmF?=
+ =?us-ascii?Q?rtVExXJF46KxhrMGGPamnCZVHBD3a+EYPRn6vl7d4tLriSSvjijdV8vFirTV?=
+ =?us-ascii?Q?Qo8TWysICECTt7kuFEB7K1rJZz5VZWrKDGahlzerW3P0sxnXuj6Zhtquy4tM?=
+ =?us-ascii?Q?nUVDaNWguGZKh0X1PLRgPLRhRJKPlQLmKDQ3G4PVUSPZkzMf3/XfsitZNCse?=
+ =?us-ascii?Q?CxJowFqJsEuCh1f8rSjym5NT+loQRp3enyMtq+ksq1e890GQHhz8hFSK+Y5n?=
+ =?us-ascii?Q?ZlIASBgMHc9ZC1W4n+91/qs0rHttHhacfVYDXRmRBIRwvx6SBbi747mXLr9h?=
+ =?us-ascii?Q?OSyNsCkL4F2bxJhq1a/bC6BosUViS6E5Uo7ojP3KZAn4Qx5FsiDCV96LYP6Z?=
+ =?us-ascii?Q?hw51q+bwdSTmvQWhOhkZrBW58FARXFF31tyK60B4x4mDyX79SRyHiaE9IWkM?=
+ =?us-ascii?Q?1FoWeKorDzTHrSQ09VxxcmyiZ88k/odXMxmAtmToNwWN2tw8SNonUZ+W+ut0?=
+ =?us-ascii?Q?fknE8/dEn1UyYklRNzT3K+RVugCDTc8AMXS+Kes9JvUKNvkavbmYO2APo2AV?=
+ =?us-ascii?Q?dMbH1ru9iExGiBNq12uxlrtw6GAB7Z4E74nj9GVqdHl1KKgaf6zpS+l6MJJ0?=
+ =?us-ascii?Q?Ibd2LhXH/grnYwyT3qkvcgf2Ik6rdIVt6Gbm1jzzrRgY0g/jcz7q4XSdeeyS?=
+ =?us-ascii?Q?w8QXUowRsb+fpCsvF+476JdMHofcxp3CkOLYXb9uF6KclCILIo4HqlNIFF99?=
+ =?us-ascii?Q?BdHQoxlr/WN+JsBb44SO1FC27wkPV2lNR0HMIhLVk8xhRvsWkRRdGpR7QEA4?=
+ =?us-ascii?Q?0n/PDEdiYFr4DKx4QLwlPWlUofyvibnyNe1o8im+UZFh9ZA4JHt0w7hZaEWr?=
+ =?us-ascii?Q?GbAyaENZ73XLEWs8O0K0xnPfqdf4fdg3r+bv0GyXYg+pLvFyRmaPfgF7Y4Yo?=
+ =?us-ascii?Q?aPLEiM3vzDXgfwkFL4Wz/QGvKAuExSce53t3weVMrUyShs0OUnNH/W7W8jZT?=
+ =?us-ascii?Q?830ciTnQmFsdsk9WEL7j+kvXPpt4n/5lRVX0+kcup4XFuLbRCJEJ4JiUHKcY?=
+ =?us-ascii?Q?8t7TGSI0XRJYvsyPGz3F9vnUPiu7/e33Gzmprn77Ka8aMHGxutZ9FbzSBv5P?=
+ =?us-ascii?Q?m7cnpnyAuQahcGnPlj/U31Soo69q/S8vkDFWYKTFkVajKbH4wEgSmSu7ifcR?=
+ =?us-ascii?Q?FkzGzwndeyWPEZR+uVDBbK8OSU2KR0rWao1tnaEWPUHY1dVE6WsgqFPbTMD5?=
+ =?us-ascii?Q?l7xjnsaqPnZytwKjca2Uwd3ntUKpsd8whH2nOLjs9y3aBfCvJc793RWBYe1z?=
+ =?us-ascii?Q?WirFHkT85YypxrPxwpG45a0Nr2Ge6Vr43MYZyQAUP2KmxxHNao6DrJxJEOzs?=
+ =?us-ascii?Q?9TwJu+jewJwzupoRi6CVSLpr0xJADtXNxN7zJm5ZmUAso1a4PKYkG471FZOA?=
+ =?us-ascii?Q?DoXkmKq6L+UHlHQ3ajYeR1LhfEuqVmhreW8J9XU9dkkgzOSnBwJVN5jeC0lS?=
+ =?us-ascii?Q?rr2x0O6h6dkAGU1Uw92HmK1w66bHjjkDBBcMxbcYupCK+Uq3DOdV87YsIIeT?=
+ =?us-ascii?Q?tw=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d6740059-b27b-4df8-87fe-08db6b8a3054
+X-MS-Exchange-CrossTenant-Network-Message-Id: 67375a42-cc10-4989-58c3-08db6b8a3466
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2743.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jun 2023 21:15:46.4782
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jun 2023 21:15:53.3197
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: INk3Yqdjwe8TeBIrbHpHVOh1Em+0zcJbuD2xgRQrgVFYJOsE7sqzgFHjEp3f0sEACcB9+AMrcVPn8B+Mp9aYZQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: fQW7kAdQ9LsH1aAyip9oTFexAtJde1w6xCwRD9BlPJfNV6ELiX3u+0KNoM5XAQpkvvuL1ToMaZa+Ice6QW3/GA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8733
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -135,7 +135,9 @@ X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Use existing NSEC_PER_SEC declaration in place of hardcoded magic numbers.
+Invoke clock_adjtime syscall with tx.modes set with ADJ_OFFSET when testptp
+is invoked with a phase adjustment offset value. Support seconds and
+nanoseconds for the offset value.
 
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: Shuah Khan <shuah@kernel.org>
@@ -144,31 +146,67 @@ Cc: Maciek Machnikowski <maciek@machnikowski.net>
 Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
 Acked-by: Richard Cochran <richardcochran@gmail.com>
 ---
- tools/testing/selftests/ptp/testptp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/ptp/testptp.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/tools/testing/selftests/ptp/testptp.c b/tools/testing/selftests/ptp/testptp.c
-index 198ad5f32187..ca2b03d57aef 100644
+index ca2b03d57aef..ae23ef51f198 100644
 --- a/tools/testing/selftests/ptp/testptp.c
 +++ b/tools/testing/selftests/ptp/testptp.c
-@@ -110,7 +110,7 @@ static long ppb_to_scaled_ppm(int ppb)
+@@ -134,6 +134,7 @@ static void usage(char *progname)
+ 		"            1 - external time stamp\n"
+ 		"            2 - periodic output\n"
+ 		" -n val     shift the ptp clock time by 'val' nanoseconds\n"
++		" -o val     phase offset (in nanoseconds) to be provided to the PHC servo\n"
+ 		" -p val     enable output with a period of 'val' nanoseconds\n"
+ 		" -H val     set output phase to 'val' nanoseconds (requires -p)\n"
+ 		" -w val     set output pulse width to 'val' nanoseconds (requires -p)\n"
+@@ -167,6 +168,7 @@ int main(int argc, char *argv[])
+ 	int adjfreq = 0x7fffffff;
+ 	int adjtime = 0;
+ 	int adjns = 0;
++	int adjphase = 0;
+ 	int capabilities = 0;
+ 	int extts = 0;
+ 	int flagtest = 0;
+@@ -188,7 +190,7 @@ int main(int argc, char *argv[])
  
- static int64_t pctns(struct ptp_clock_time *t)
- {
--	return t->sec * 1000000000LL + t->nsec;
-+	return t->sec * NSEC_PER_SEC + t->nsec;
- }
- 
- static void usage(char *progname)
-@@ -317,7 +317,7 @@ int main(int argc, char *argv[])
- 		tx.time.tv_usec = adjns;
- 		while (tx.time.tv_usec < 0) {
- 			tx.time.tv_sec  -= 1;
--			tx.time.tv_usec += 1000000000;
-+			tx.time.tv_usec += NSEC_PER_SEC;
+ 	progname = strrchr(argv[0], '/');
+ 	progname = progname ? 1+progname : argv[0];
+-	while (EOF != (c = getopt(argc, argv, "cd:e:f:ghH:i:k:lL:n:p:P:sSt:T:w:z"))) {
++	while (EOF != (c = getopt(argc, argv, "cd:e:f:ghH:i:k:lL:n:o:p:P:sSt:T:w:z"))) {
+ 		switch (c) {
+ 		case 'c':
+ 			capabilities = 1;
+@@ -228,6 +230,9 @@ int main(int argc, char *argv[])
+ 		case 'n':
+ 			adjns = atoi(optarg);
+ 			break;
++		case 'o':
++			adjphase = atoi(optarg);
++			break;
+ 		case 'p':
+ 			perout = atoll(optarg);
+ 			break;
+@@ -327,6 +332,18 @@ int main(int argc, char *argv[])
  		}
+ 	}
  
- 		if (clock_adjtime(clkid, &tx) < 0) {
++	if (adjphase) {
++		memset(&tx, 0, sizeof(tx));
++		tx.modes = ADJ_OFFSET | ADJ_NANO;
++		tx.offset = adjphase;
++
++		if (clock_adjtime(clkid, &tx) < 0) {
++			perror("clock_adjtime");
++		} else {
++			puts("phase adjustment okay");
++		}
++	}
++
+ 	if (gettime) {
+ 		if (clock_gettime(clkid, &ts)) {
+ 			perror("clock_gettime");
 -- 
 2.40.1
 
