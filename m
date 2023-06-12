@@ -1,37 +1,37 @@
-Return-Path: <netdev+bounces-10020-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10018-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 620B672BB30
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 10:51:22 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4252372BB2A
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 10:50:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A2E841C20A86
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 08:51:18 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 838791C20A81
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 08:50:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF73B134BA;
-	Mon, 12 Jun 2023 08:50:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E89511CB4;
+	Mon, 12 Jun 2023 08:50:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1595B111A1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 159301FB7
 	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 08:50:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 83F7BC4339B;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A420DC4339E;
 	Mon, 12 Jun 2023 08:50:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1686559840;
-	bh=NmEEcRXm/Mlu+/E+rKftskNVCFyCyTVQii2TPDG184A=;
+	bh=3wEU2eWpI2dfYMagdnkzdlLhdwadAxg23iFRWigAAO8=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=o/zrfgPHjl6NjzaDMqJZ/4XHEgSaib4SU2Bpg5q3jKdffFWGMUP2nYVQyOItQWlbi
-	 FjECoyfiz2O2/DnT9xdiM/4eICS91drsxOCBCPw0ORGANvGxTguADJcC/UXwWbr8LI
-	 mtv95Ea/8cNDB3mh2V8LJ7RO3I3XY+KpxNjaokZWCBp1zDdU3bvnxFf4IblvIVkhYw
-	 SuKR1kiHX+vYPEBUfG62I2hG08SriW//voVJ+bs3XrqTV/2cScyUGj2zIZmfyzkuNE
-	 ZM+G4EZM3pmsMzALcLYARLWwW9mIZw/pZlKNpxJLZc1QULs8aueI8XGjp0kP2xkLSK
-	 pQ7gbBDQ5+LyQ==
+	b=kCvrQW4MSxDg78li13w0I6JMFG0vYo318lLmqRFEn+u2Rm10ihdc2rGzHkRwqSyGM
+	 VjG6KfjeFNwKpEm/JI69Dwvq3h5XdruyzKYQZIqZC+DvZjVflo3lHpmEbDeSApWBMs
+	 m1WJLNQbC4wT6pdH+A5YbdtaaBHjyu1d12HnOrEGqxerAk/zYSa8TeFLbyeksreswX
+	 fMw1w2hfi+F4O5jQjrz2z6FoGdCibjTckDdITgOCcrwpVTTMveOG9xNuRKzjkQM2ki
+	 +riw/A256Aj4x7U/c8/utQSkX4IiO6EBGfwqAeLACiMr//oMtqoMzYgyOExR7cA505
+	 190XV3WHRNqwg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6B39CE21EC0;
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8660DE1CF31;
 	Mon, 12 Jun 2023 08:50:40 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
@@ -41,39 +41,40 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] nfc: nxp-nci: store __be16 value in __be16
- variable
+Subject: Re: [PATCH net-next] net: openvswitch: add support for l4 symmetric
+ hashing
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168655984043.8602.16440207310260960824.git-patchwork-notify@kernel.org>
+ <168655984053.8602.1349154560216964511.git-patchwork-notify@kernel.org>
 Date: Mon, 12 Jun 2023 08:50:40 +0000
-References: <20230608-nxp-nci-be16-v2-1-cd9fa22a41fd@kernel.org>
-In-Reply-To: <20230608-nxp-nci-be16-v2-1-cd9fa22a41fd@kernel.org>
-To: Simon Horman <horms@kernel.org>
-Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, krzysztof.kozlowski@linaro.org, luca.ceresoli@bootlin.com,
- michael@walle.cc, u.kleine-koenig@pengutronix.de,
- sridhar.samudrala@intel.com, kalesh-anakkur.purayil@broadcom.com,
- netdev@vger.kernel.org
+References: <20230609135955.3024931-1-aconole@redhat.com>
+In-Reply-To: <20230609135955.3024931-1-aconole@redhat.com>
+To: Aaron Conole <aconole@redhat.com>
+Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, dev@openvswitch.org,
+ pshelar@ovn.org, davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, echaudro@redhat.com, dceara@redhat.com, i.maximets@ovn.org
 
 Hello:
 
 This patch was applied to netdev/net-next.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 09 Jun 2023 15:31:57 +0200 you wrote:
-> Use a __be16 variable to store the big endian value of header in
-> nxp_nci_i2c_fw_read().
+On Fri,  9 Jun 2023 09:59:55 -0400 you wrote:
+> Since its introduction, the ovs module execute_hash action allowed
+> hash algorithms other than the skb->l4_hash to be used.  However,
+> additional hash algorithms were not implemented.  This means flows
+> requiring different hash distributions weren't able to use the
+> kernel datapath.
 > 
-> Flagged by Sparse as:
-> 
->  .../i2c.c:113:22: warning: cast to restricted __be16
+> Now, introduce support for symmetric hashing algorithm as an
+> alternative hash supported by the ovs module using the flow
+> dissector.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2] nfc: nxp-nci: store __be16 value in __be16 variable
-    https://git.kernel.org/netdev/net-next/c/f2ea0c3582ab
+  - [net-next] net: openvswitch: add support for l4 symmetric hashing
+    https://git.kernel.org/netdev/net-next/c/e069ba07e6c7
 
 You are awesome, thank you!
 -- 
