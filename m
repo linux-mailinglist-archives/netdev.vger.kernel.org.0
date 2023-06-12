@@ -1,103 +1,191 @@
-Return-Path: <netdev+bounces-10235-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10236-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 292F772D2FB
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 23:14:39 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 36E4672D308
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 23:16:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D89F12810D1
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 21:14:37 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D09FA2810B4
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 21:16:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3919F22D40;
-	Mon, 12 Jun 2023 21:14:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 582E822D46;
+	Mon, 12 Jun 2023 21:16:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B026C8C1
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 21:14:36 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5321BF1;
-	Mon, 12 Jun 2023 14:14:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-	Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=xwwebQPgbNOKpFrm5K41615nrmEyOJejBS23JzW+wa4=; b=P9gF7R78DXM9CvUbX2txIGJInw
-	f/GSSTc9Zc+TCjTFpsVCR9o0N7QafjmgU88Zb/MoCLk+RI0zbWWZ6F09YaPbvuBsMcBYzw1mOmZ9e
-	9jBXXYG7+oJjYBsHPzmw/RQh9zeS9k+MYyOBe3GNkx/MX68Hus+lIYaqCbtWCbl4HLnV7j4OmJKJO
-	Ua7b0draa/WshwtQHsqbP/vvSOCevxos0ct46UF7/Af7jWWB18gZva4setkjZUw1OIAMHqj4S42Ge
-	C5Eo1IU5D1LInVm/2MVeY5jtkilwzuDCSpyydyU0MO8zCGOZdsZFFv0THIB1J11IE91g081djlcNY
-	UlV5dR9w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41672)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q8ora-0006Pm-S5; Mon, 12 Jun 2023 22:14:10 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q8orZ-0005KR-PL; Mon, 12 Jun 2023 22:14:09 +0100
-Date: Mon, 12 Jun 2023 22:14:09 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: arinc9.unal@gmail.com
-Cc: =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-	Daniel Golle <daniel@makrotopia.org>,
-	Landen Chao <Landen.Chao@mediatek.com>,
-	DENG Qingfang <dqfext@gmail.com>,
-	Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42B73C8C1
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 21:16:00 +0000 (UTC)
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2079.outbound.protection.outlook.com [40.107.244.79])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6013C33
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 14:15:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UyHGV3Tj1WVBmWA0gHx8/juy2eas3lWRfQxy/LmKjZhVVeHTV3lNqQ2J1k4ZTfFZXcNA7fZWC71PeGE9D5A/96t2H84l7/8nELIUvJyGf5Fgpp45yYUOR3I2xz/xzdiifrZrHjFlQMcJoNB+MCFH/SyjGz1dRPPE0CtfRCRQAC3UnUKXC9iekikGjONFUVDhK189DE9ihsvLngH9M33KSoGlYgdKgaiTY+j2fFgjHW6bo+Si1h7WJyQG1V/bTrcZA9xMtdMWGxGS5Sqbh85RJeaeGjvO0M7doeSHKjc5fPgEi4t/91LWDyHWfQp1G8zqrfLm+d25xUc0LGh+iVmeLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9U51ONhcIgQDsTWU/nQiSAI98OKrW9noMphLOTh7fHI=;
+ b=fRHAbkEIwoNnh9HWlOSYyq5PQVrPgejvctwfPIUwtEFZL/aF2QqA7J3LjvWqVN+8IEDrh9PDUtvXM+gkS+c/0y5lekICuYdI4f4DR1374yJ/HkoG3JHBy/L3AMc+aey5SKp63+UTjXGc/0WZuC7hJqd9A70kf3tgUwB+NWPgGDezDOZowvt+5rLX3sdKfXLMU05+HFUXP+kIghATHmpxhSpmymehCFYLLwBrv5Z+M6qUgoeHwqD0aigFOqPcRXfDHuUWnJU7KeaK7//MIyeYYJI4v6lcXrOZxDaL0UatMPeC4yDsubkBs0jbMEtRHkjxKydeqQ130hL1H3o4RKQMkw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9U51ONhcIgQDsTWU/nQiSAI98OKrW9noMphLOTh7fHI=;
+ b=EQBGiSgg8ZCS2qIWICfOZrgFT1ps6lr66DsmI5XBcDsUlSujesG/i9NlskfIp6JQnMkNZf+mbCdoCiGsHwrwFaw6W3ju2txPYCvzyd6Mea2YrCxPtshRy93O/OvLfHqLbywnugr+BjgvgVJu6YaXQsX4QHvS1PrXwdlyTwSHnVSvsUj485G69WewzGTy0HhC3MOaQRvJ3fuaUK/c045Wr/AElAMjCw1QdOCyPnUJWjbjtnwsbOH0zEOqpJhxSajFDLzjQMbAuVndAZKrt14kHE+J4erxejOuO/3CDL1QZsRlO+YrnCnYnn8xutau4dg6CkBUOGh6WtGKw94ffBh09w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BYAPR12MB2743.namprd12.prod.outlook.com (2603:10b6:a03:61::28)
+ by MW6PR12MB8733.namprd12.prod.outlook.com (2603:10b6:303:24c::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.29; Mon, 12 Jun
+ 2023 21:15:07 +0000
+Received: from BYAPR12MB2743.namprd12.prod.outlook.com
+ ([fe80::ecb0:2f8e:c4bf:b471]) by BYAPR12MB2743.namprd12.prod.outlook.com
+ ([fe80::ecb0:2f8e:c4bf:b471%6]) with mapi id 15.20.6455.030; Mon, 12 Jun 2023
+ 21:15:07 +0000
+From: Rahul Rameshbabu <rrameshbabu@nvidia.com>
+To: netdev@vger.kernel.org
+Cc: Gal Pressman <gal@nvidia.com>,
+	Saeed Mahameed <saeed@kernel.org>,
+	Tariq Toukan <tariqt@nvidia.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Richard Cochran <richardcochran@gmail.com>,
+	Jacob Keller <jacob.e.keller@intel.com>,
+	Paolo Abeni <pabeni@redhat.com>,
 	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Frank Wunderlich <frank-w@public-files.de>,
-	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
-	mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net v4 3/7] net: dsa: mt7530: fix trapping frames on
- non-MT7621 SoC MT7530 switch
-Message-ID: <ZIeKoVklLus8uzDp@shell.armlinux.org.uk>
-References: <20230612075945.16330-1-arinc.unal@arinc9.com>
- <20230612075945.16330-4-arinc.unal@arinc9.com>
+	Rahul Rameshbabu <rrameshbabu@nvidia.com>
+Subject: [PATCH v3 0/9] ptp .adjphase cleanups
+Date: Mon, 12 Jun 2023 14:14:51 -0700
+Message-Id: <20230612211500.309075-1-rrameshbabu@nvidia.com>
+X-Mailer: git-send-email 2.40.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SJ0PR05CA0079.namprd05.prod.outlook.com
+ (2603:10b6:a03:332::24) To BYAPR12MB2743.namprd12.prod.outlook.com
+ (2603:10b6:a03:61::28)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230612075945.16330-4-arinc.unal@arinc9.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2743:EE_|MW6PR12MB8733:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2bf8c9e9-3b1b-46bb-3163-08db6b8a18df
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	fVPvcTKqceLlfnL4ffDpPi6eC3lB2eZVkcoyJBWkUPbaklpb9BW18cnq6howzi25+U2zB6VH+6GNS4mB7FTF/BtRDas6qHhuWLCdEKPxDJKvITYZObmhim0JWD7zm5vOUFha7J5oQui0LkzjpKA7VhvLb3qLLMMWv11BJ5eHiiMVgxeMRK3D33ozw7ZEwgMd2JEQlJbI8JxMn41unyAApdV9alZzZENRVhjrZbaOyiaKkWayd8WbX0RCLZXtG4niybQs5zNpW3sgVz40c2GsvsMuqS4O9rh1Sb4UCwXy63cCDK6VF2Q5AdvfWAihPJVmXNSSU/LtDw9xsWmr2V4TbyRiR72ocsZ2hzHaqztI03QOyyNu0WVr0Lz6q9707l+KGrWgmzVUMFuUO13wIJ1REjD1+x9OoAJTlm3MlRDC/UHIeydmewyibV92zb8ZKUIyse20HjW36beT33KxI0qEUW2QKtgt+wHP9nigjyn3GLwg7jKI8dkjAu5lYbpTy8hTZs6zGnlDD0dMNbWl/FNLBVIdZyEhIk4qz2RTwi2pJxxMoXDVEdGhGULZe/0O9H4vYIVcU2IxBPOaAEhT4kz0y+z3AmroqvrWIyY+AEFHlWUwoEe/LUS1NkCD1SC+rwUOgLEAOle8rIF+FwCA9xCcPyMD91/5GLN7edkhCSXDGYJD/nmXitzr3tZQ6E+ufj3l
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2743.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(396003)(346002)(136003)(376002)(451199021)(6916009)(4326008)(66946007)(66476007)(66556008)(36756003)(186003)(478600001)(54906003)(2616005)(2906002)(8676002)(316002)(966005)(41300700001)(107886003)(86362001)(6486002)(6666004)(6506007)(1076003)(8936002)(83380400001)(5660300002)(26005)(38100700002)(6512007)(142923001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?5R0LmQiOmmmRpAs9TjA55XcBIbufpGEqdanf747TEifjLKNgRXQzkeQqS0Rk?=
+ =?us-ascii?Q?wXTCBOMG3YM+g/8LLD/JITOnS3pr4j9DS0lBwGlb16AcxLO6HeGAAhUMvNxD?=
+ =?us-ascii?Q?MLTVc9cHD4mhz4aETKg6n+1URuvhn6vvzL68ejwoz8oENKEbir+RKm+jdn0M?=
+ =?us-ascii?Q?Kfgh2yCjqAlRA5BsFBSga3iyP3uclYFtNWsiGRtCP3foVNylLsYTsDqexqLV?=
+ =?us-ascii?Q?0AW7g+jC2PIeCiMsQpl/cd2iRXPfOiUbtq1cFvICyXiEG5AkzPQnPGQh2YuW?=
+ =?us-ascii?Q?zah5XFDyIERzmmM6prR+H4GOJtOaVDkAxRTNxUou+nx6UXh29PisktBFr+O6?=
+ =?us-ascii?Q?Vl8R5usbsP7wiLP9+hWHW9OaCq4sjyh3QMhHX+dUbvaG/5cOj+uO7m7BSSeZ?=
+ =?us-ascii?Q?7rAbKdYcB/hhRKdYedoYRywKdZGyQVWcVAqBpUwvAOcy5KoFM4vqu1JslgH9?=
+ =?us-ascii?Q?ECj1BKfB1FdoEcb5TmDGVVeLA1QVHvs4Ckjx2cKoqAecJpo2LU+gpxUCJnSc?=
+ =?us-ascii?Q?ZhdvERkqdK3VTixvvjZNV4TFwYvb7BGEfkKtv1a2Eog9+yYcae38aO6CfpOf?=
+ =?us-ascii?Q?sv1q03HIX3OzBwnx7A6xYEXab7XNdD+ihctij68RA/bZ9OX0M18HxCocdKv1?=
+ =?us-ascii?Q?yMyWKqKBZprwPRpsCBu+3qfstBb9Vv82sSVOTNlok2fnnCE69N97VzN77jyz?=
+ =?us-ascii?Q?BFnZabrWZktxThxxfhxduwCuFVSluESGoeGGCpJQaI25eWs8D13OnLio+pXu?=
+ =?us-ascii?Q?mCpbb/blHbVh+rAstFdMJ4ZpKCjrWwKzoI82d3RK8faj4t5UuCMWDbHrPvjs?=
+ =?us-ascii?Q?rZG1IBNlmEzIBgf1dPfRue/SiYQzaczt1rqace1TUgvcxURovKHQx9y6TNbH?=
+ =?us-ascii?Q?o9u/bfk4lSUlTSd+c1LWn/V03+kgr9FKnpQAlyehf2V71fhGxPIE7iOiioYr?=
+ =?us-ascii?Q?diFGWq6XIt+ul2OF4uIo5wAC70nKdnynmMNhubEfxKQ9IJ41aEBiC95uDKZ9?=
+ =?us-ascii?Q?tIXjqLah5g11Hbhz3dhIF8Fw7xnwUMnfeIQzZutWs7xCHp4QnWd8r+8Kf/WX?=
+ =?us-ascii?Q?cKEqqflvBk7A6XaPbWH5VuO6Jzj8QSCGZDd00RbmuE011V7iyzHG8v54NCsM?=
+ =?us-ascii?Q?4+M1BWbPddALQa/7otss4UDYklxVSX/5NbTXDp55I88/XMwkIDrxR4a5uuVE?=
+ =?us-ascii?Q?09f87zJcFbT0vLS+YgzW5AlmmXa7l2nYBU7mvlL4LkZtzqm1wVchpuF6u5rY?=
+ =?us-ascii?Q?Ov6qFktKoIOQ0a56U1cu6l3ORKlb8k9pTy/CVr06O8gO8AzQ+VKg2qlXmD1g?=
+ =?us-ascii?Q?ckZEP5VhILEjpvM5eV+dDeI1vStS9UGt/g4YAGbfw72HsPxCQV+UV7vKWiuM?=
+ =?us-ascii?Q?Faw9Yp0YEHaVrC1/NXeRhKk9W8x2niWhO3yBNVUj4wAuL1vSXuVdULIZ4f68?=
+ =?us-ascii?Q?7/J22FM9SLGEFMXswkYZilbUY6nn+jDqtBgEceCj5AL6qxjohVzQH2bHUghQ?=
+ =?us-ascii?Q?2t5mXM2B5IuUl1ElX3axHmbeaNo9E7XOXUX3QsCi/s6BvICVp9mr4Pw4zb41?=
+ =?us-ascii?Q?lu328A5Llanv1U1f+kA+9oc4m3zZFQVdq7mD+ej9VV/OS+VVeqMZPAt8X83E?=
+ =?us-ascii?Q?Rw=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2bf8c9e9-3b1b-46bb-3163-08db6b8a18df
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2743.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jun 2023 21:15:07.1725
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: B065Df/fFhzsPeYgSTzTmZik0Gs+k8erZWhoYdfNYFkDgFU3A+8QSMlGzwonS6eNyFRajljLYKq8yXloVwQ3Gg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8733
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 12, 2023 at 10:59:41AM +0300, arinc9.unal@gmail.com wrote:
-> From: Arınç ÜNAL <arinc.unal@arinc9.com>
-> 
-> The check for setting the CPU_PORT bits must include the non-MT7621 SoC
-> MT7530 switch variants to trap frames. Expand the check to include them.
+The goal of this patch series is to improve documentation of .adjphase, add
+a new callback .getmaxphase to enable advertising the max phase offset a
+device PHC can support, and support invoking .adjphase from the testptp
+kselftest.
 
-... and now you add support for this to the MT7530, which is what
-alerted me to what seems to be a mistake in the previous patch.
+Changes:
+  v3->v2:
+    * Add information about returning -ERANGE instead of clamping
+      out-of-range offsets for driver implementations of .adjphase that
+      previously clamped out-of-range offsets.
 
-"The setup of CPU_PORT() needs to be done for the MT7530 switch variants
-as well as the MT7621."
+      Link: https://lore.kernel.org/netdev/13b7315446390d3a78d8f508937354f12778b68e.camel@redhat.com/
+  v2->v1:
+    * Removes arbitrary rule that the PHC servo must restore the frequency
+      to the value used in the last .adjfine call if any other PHC
+      operation is used after a .adjphase operation.
+    * Removes a macro introduced in v1 for adding PTP sysfs device
+      attribute nodes using a callback for populating the data.
+
+Link: https://lore.kernel.org/netdev/20230523205440.326934-1-rrameshbabu@nvidia.com/ 
+Link: https://lore.kernel.org/netdev/20230510205306.136766-1-rrameshbabu@nvidia.com/
+Link: https://lore.kernel.org/netdev/20230120160609.19160723@kernel.org/
+
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Richard Cochran <richardcochran@gmail.com>
+
+Rahul Rameshbabu (9):
+  ptp: Clarify ptp_clock_info .adjphase expects an internal servo to be
+    used
+  docs: ptp.rst: Add information about NVIDIA Mellanox devices
+  testptp: Remove magic numbers related to nanosecond to second
+    conversion
+  testptp: Add support for testing ptp_clock_info .adjphase callback
+  ptp: Add .getmaxphase callback to ptp_clock_info
+  net/mlx5: Add .getmaxphase ptp_clock_info callback
+  ptp: ptp_clockmatrix: Add .getmaxphase ptp_clock_info callback
+  ptp: idt82p33: Add .getmaxphase ptp_clock_info callback
+  ptp: ocp: Add .getmaxphase ptp_clock_info callback
+
+ Documentation/driver-api/ptp.rst              | 29 +++++++++++++++
+ .../ethernet/mellanox/mlx5/core/lib/clock.c   | 31 ++++++++--------
+ drivers/ptp/ptp_chardev.c                     |  5 ++-
+ drivers/ptp/ptp_clock.c                       |  4 +++
+ drivers/ptp/ptp_clockmatrix.c                 | 36 +++++++++----------
+ drivers/ptp/ptp_clockmatrix.h                 |  2 +-
+ drivers/ptp/ptp_idt82p33.c                    | 18 +++++-----
+ drivers/ptp/ptp_idt82p33.h                    |  4 +--
+ drivers/ptp/ptp_ocp.c                         |  7 ++++
+ drivers/ptp/ptp_sysfs.c                       | 12 +++++++
+ include/linux/ptp_clock_kernel.h              | 11 ++++--
+ include/uapi/linux/ptp_clock.h                |  3 +-
+ tools/testing/selftests/ptp/testptp.c         | 29 ++++++++++++---
+ 13 files changed, 135 insertions(+), 56 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+2.40.1
+
 
