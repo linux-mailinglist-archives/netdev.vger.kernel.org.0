@@ -1,120 +1,504 @@
-Return-Path: <netdev+bounces-10098-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10099-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id E34A372C392
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 13:59:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 1DE7172C3C4
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 14:15:21 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BB1A1281106
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 11:59:34 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BFC58280ED1
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 12:15:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 12E1D1951F;
-	Mon, 12 Jun 2023 11:59:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1EC619531;
+	Mon, 12 Jun 2023 12:15:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4A281800C
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 11:59:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88B8FC433EF;
-	Mon, 12 Jun 2023 11:59:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686571170;
-	bh=atLifTP2lK9VuBIheql7H5v4d+OXte16V4t0sCxgkbQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Qp1fvjYgbGSuo6dyAUxe2WtKwKmNNeYCFPlQcYI0qeV+Oxns1lNkM/1VRPYyfWftO
-	 FEIWIuboEAA8jZtUgGp5OVAGGxr7fQWao4sDpigS4WNKk6pvmXtwthMb/OBviMSKzb
-	 s7Pj024yjikssT1UFZ6QWHeJWzxnjNVqjDiOi7oVyiQy9G0DVbenaWjXqtKLuYNLdE
-	 /bd14x+GziZQRxJwuEuxweL+w8dOBUPTH+7WU4nNiNba99VZMZOdOqVAgSKGWnhVQz
-	 9Ua/NouiX+yNS8MIAM1dZwYIUxi7/d4sPJYl3YW6dEwfUrO1COkzu09cnbvZKJvEX1
-	 75EPvITf9jSPA==
-Date: Mon, 12 Jun 2023 14:59:25 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc: Asmaa Mnebhi <asmaa@nvidia.com>, davem@davemloft.net,
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-	netdev@vger.kernel.org, cai.huoqing@linux.dev, brgl@bgdev.pl,
-	chenhao288@hisilicon.com, huangguangbin2@huawei.com,
-	David Thompson <davthompson@nvidia.com>
-Subject: Re: [PATCH net v2 1/1] mlxbf_gige: Fix kernel panic at shutdown
-Message-ID: <20230612115925.GR12152@unreal>
-References: <20230607140335.1512-1-asmaa@nvidia.com>
- <20230611181125.GJ12152@unreal>
- <ZIcC2Y+HHHR+7QYq@boxer>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9524618C27
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 12:15:17 +0000 (UTC)
+Received: from smtp-fw-9105.amazon.com (smtp-fw-9105.amazon.com [207.171.188.204])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 016C18F
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 05:15:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1686572116; x=1718108116;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=8PUcQqbsQoS/35DrbZxJ/KT9yhlo49w2x5LOCsrSNDc=;
+  b=UiXfrvqJHffS0kek4B6fAOjGJ5eIiFP+nyaGAQ/iXnAWzWA9vVJHTQ8j
+   oN57wrcK+u69fQq69OuNQN1So9za7Nurz9TjuvsYgo3tOMSlmPFh+0x9N
+   b4gkT7HfoYlhpJhEvo4FuCty00E3i8MUj9BZWkakAV0j+cH2g1140gKE8
+   k=;
+X-IronPort-AV: E=Sophos;i="6.00,236,1681171200"; 
+   d="scan'208";a="654348946"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-b538c141.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9105.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2023 12:15:10 +0000
+Received: from EX19MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+	by email-inbound-relay-iad-1e-m6i4x-b538c141.us-east-1.amazon.com (Postfix) with ESMTPS id B6DB1A48BA;
+	Mon, 12 Jun 2023 12:15:08 +0000 (UTC)
+Received: from EX19D010UWB002.ant.amazon.com (10.13.138.71) by
+ EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Mon, 12 Jun 2023 12:15:08 +0000
+Received: from EX19MTAUWB001.ant.amazon.com (10.250.64.248) by
+ EX19D010UWB002.ant.amazon.com (10.13.138.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Mon, 12 Jun 2023 12:15:07 +0000
+Received: from dev-dsk-darinzon-1c-05962a8d.eu-west-1.amazon.com
+ (172.19.80.187) by mail-relay.amazon.com (10.250.64.254) with Microsoft SMTP
+ Server id 15.2.1118.26 via Frontend Transport; Mon, 12 Jun 2023 12:15:05
+ +0000
+From: <darinzon@amazon.com>
+To: David Miller <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+	<netdev@vger.kernel.org>
+CC: David Arinzon <darinzon@amazon.com>, "Woodhouse, David" <dwmw@amazon.com>,
+	"Machulsky, Zorik" <zorik@amazon.com>, "Matushevsky, Alexander"
+	<matua@amazon.com>, Saeed Bshara <saeedb@amazon.com>, "Wilson, Matt"
+	<msw@amazon.com>, "Liguori, Anthony" <aliguori@amazon.com>, "Bshara, Nafea"
+	<nafea@amazon.com>, "Saidi, Ali" <alisaidi@amazon.com>, "Herrenschmidt,
+ Benjamin" <benh@amazon.com>, "Kiyanovski, Arthur" <akiyano@amazon.com>,
+	"Dagan, Noam" <ndagan@amazon.com>, "Agroskin, Shay" <shayagr@amazon.com>,
+	"Itzko, Shahar" <itzko@amazon.com>, "Abboud, Osama" <osamaabb@amazon.com>,
+	"Bernstein, Amit" <amitbern@amazon.com>
+Subject: [PATCH v1 net-next] net: ena: Add dynamic recycling mechanism for rx buffers
+Date: Mon, 12 Jun 2023 12:14:48 +0000
+Message-ID: <20230612121448.28829-1-darinzon@amazon.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZIcC2Y+HHHR+7QYq@boxer>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+Precedence: Bulk
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Mon, Jun 12, 2023 at 01:34:49PM +0200, Maciej Fijalkowski wrote:
-> On Sun, Jun 11, 2023 at 09:11:25PM +0300, Leon Romanovsky wrote:
-> > On Wed, Jun 07, 2023 at 10:03:35AM -0400, Asmaa Mnebhi wrote:
-> > > There is a race condition happening during shutdown due to pending napi transactions.
-> > > Since mlxbf_gige_poll is still running, it tries to access a NULL pointer and as a
-> > > result causes a kernel panic.
-> > > To fix this during shutdown, invoke mlxbf_gige_remove to disable and dequeue napi.
-> > > 
-> > > Fixes: f92e1869d74e ("Add Mellanox BlueField Gigabit Ethernet driver")
-> > > Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
-> > > ---
-> > >  .../net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c    | 8 ++++----
-> > >  1 file changed, 4 insertions(+), 4 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-> > > index 694de9513b9f..609d038b034e 100644
-> > > --- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-> > > +++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-> > > @@ -475,6 +475,9 @@ static int mlxbf_gige_remove(struct platform_device *pdev)
-> > >  {
-> > >  	struct mlxbf_gige *priv = platform_get_drvdata(pdev);
-> > >  
-> > > +	if (!priv)
-> > > +		return 0;
-> > > +
-> > 
-> > How can this check be correct? You are removing mlxbf_gige driver, priv
-> > should be always exist here.
-> 
-> Asmaa please include v1->v2 diff next time.
-> 
-> Leon, look at v1 discussion:
-> https://lore.kernel.org/netdev/CH2PR12MB3895172507E1D42BBD5D4AB9D753A@CH2PR12MB3895.namprd12.prod.outlook.com/
+From: David Arinzon <darinzon@amazon.com>
 
-Thanks for the link.
+The current implementation allocates page-sized rx buffers.
+As traffic may consist of different types and sizes of packets,
+in various cases, buffers are not fully used.
 
-As far as I can tell, the calls to .shutdown() and .remove() are
-mutually exclusive. It is impossible to go twice and reach scenario
-which Paolo mentioned - double call to unregister_netdevice().
+This change (Dynamic RX Buffers - DRB) uses part of the allocated rx
+page needed for the incoming packet, and returns the rest of the
+unused page to be used again as an rx buffer for future packets.
+A threshold of 2K for unused space has been set in order to declare
+whether the remainder of the page can be reused again as an rx buffer.
 
-Thanks
+As a page may be reused, dma_sync_single_for_cpu() is added in order
+to sync the memory to the CPU side after it was owned by the HW.
+In addition, when the rx page can no longer be reused, it is being
+unmapped using dma_page_unmap(), which implicitly syncs and then
+unmaps the entire page. In case the kernel still handles the skbs
+pointing to the previous buffers from that rx page, it may access
+garbage pointers, caused by the implicit sync overwriting them.
+The implicit dma sync is removed by replacing dma_page_unmap() with
+dma_unmap_page_attrs() with DMA_ATTR_SKIP_CPU_SYNC flag.
 
-> 
-> > 
-> > >  	unregister_netdev(priv->netdev);
-> > >  	phy_disconnect(priv->netdev->phydev);
-> > >  	mlxbf_gige_mdio_remove(priv);
-> > > @@ -485,10 +488,7 @@ static int mlxbf_gige_remove(struct platform_device *pdev)
-> > >  
-> > >  static void mlxbf_gige_shutdown(struct platform_device *pdev)
-> > >  {
-> > > -	struct mlxbf_gige *priv = platform_get_drvdata(pdev);
-> > > -
-> > > -	writeq(0, priv->base + MLXBF_GIGE_INT_EN);
-> > > -	mlxbf_gige_clean_port(priv);
-> > > +	mlxbf_gige_remove(pdev);
-> > >  }
-> > >  
-> > >  static const struct acpi_device_id __maybe_unused mlxbf_gige_acpi_match[] = {
-> > > -- 
-> > > 2.30.1
-> > > 
-> > > 
-> > 
+The functionality is disabled for XDP traffic to avoid handling
+several descriptors per packet.
+
+Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+Signed-off-by: Shay Agroskin <shayagr@amazon.com>
+Signed-off-by: David Arinzon <darinzon@amazon.com>
+---
+ .../device_drivers/ethernet/amazon/ena.rst    |  32 +++++
+ .../net/ethernet/amazon/ena/ena_admin_defs.h  |   6 +-
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 136 ++++++++++++------
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  |   4 +
+ 4 files changed, 136 insertions(+), 42 deletions(-)
+
+diff --git a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+index 8bcb173e0353..491492677632 100644
+--- a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
++++ b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+@@ -205,6 +205,7 @@ Adaptive coalescing can be switched on/off through `ethtool(8)`'s
+ More information about Adaptive Interrupt Moderation (DIM) can be found in
+ Documentation/networking/net_dim.rst
+ 
++.. _`RX copybreak`:
+ RX copybreak
+ ============
+ The rx_copybreak is initialized by default to ENA_DEFAULT_RX_COPYBREAK
+@@ -315,3 +316,34 @@ Rx
+ - The new SKB is updated with the necessary information (protocol,
+   checksum hw verify result, etc), and then passed to the network
+   stack, using the NAPI interface function :code:`napi_gro_receive()`.
++
++Dynamic RX Buffers (DRB)
++------------------------
++
++Each RX descriptor in the RX ring is a single memory page (which is either 4KB
++or 16KB long depending on system's configurations).
++To reduce the memory allocations required when dealing with a high rate of small
++packets, the driver tries to reuse the remaining RX descriptor's space if more
++than 2KB of this page remain unused.
++
++A simple example of this mechanism is the following sequence of events:
++
++::
++
++        1. Driver allocates page-sized RX buffer and passes it to hardware
++                +----------------------+
++                |4KB RX Buffer         |
++                +----------------------+
++
++        2. A 300Bytes packet is received on this buffer
++
++        3. The driver increases the ref count on this page and returns it back to
++           HW as an RX buffer of size 4KB - 300Bytes = 3796 Bytes
++               +----+--------------------+
++               |****|3796 Bytes RX Buffer|
++               +----+--------------------+
++
++This mechanism isn't used when an XDP program is loaded, or when the
++RX packet is less than rx_copybreak bytes (in which case the packet is
++copied out of the RX buffer into the linear part of a new skb allocated
++for it and the RX buffer remains the same size, see `RX copybreak`_).
+diff --git a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
+index 466ad9470d1f..6de0d590be34 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
++++ b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
+@@ -869,7 +869,9 @@ struct ena_admin_host_info {
+ 	 * 2 : interrupt_moderation
+ 	 * 3 : rx_buf_mirroring
+ 	 * 4 : rss_configurable_function_key
+-	 * 31:5 : reserved
++	 * 5 : reserved
++	 * 6 : rx_page_reuse
++	 * 31:7 : reserved
+ 	 */
+ 	u32 driver_supported_features;
+ };
+@@ -1184,6 +1186,8 @@ struct ena_admin_ena_mmio_req_read_less_resp {
+ #define ENA_ADMIN_HOST_INFO_RX_BUF_MIRRORING_MASK           BIT(3)
+ #define ENA_ADMIN_HOST_INFO_RSS_CONFIGURABLE_FUNCTION_KEY_SHIFT 4
+ #define ENA_ADMIN_HOST_INFO_RSS_CONFIGURABLE_FUNCTION_KEY_MASK BIT(4)
++#define ENA_ADMIN_HOST_INFO_RX_PAGE_REUSE_SHIFT             6
++#define ENA_ADMIN_HOST_INFO_RX_PAGE_REUSE_MASK              BIT(6)
+ 
+ /* aenq_common_desc */
+ #define ENA_ADMIN_AENQ_COMMON_DESC_PHASE_MASK               BIT(0)
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index e6a6efaeb87c..d19593fae226 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -1023,7 +1023,7 @@ static int ena_alloc_rx_buffer(struct ena_ring *rx_ring,
+ 	int tailroom;
+ 
+ 	/* restore page offset value in case it has been changed by device */
+-	rx_info->page_offset = headroom;
++	rx_info->buf_offset = headroom;
+ 
+ 	/* if previous allocated page is not used */
+ 	if (unlikely(rx_info->page))
+@@ -1040,6 +1040,8 @@ static int ena_alloc_rx_buffer(struct ena_ring *rx_ring,
+ 	tailroom = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+ 
+ 	rx_info->page = page;
++	rx_info->dma_addr = dma;
++	rx_info->page_offset = 0;
+ 	ena_buf = &rx_info->ena_buf;
+ 	ena_buf->paddr = dma + headroom;
+ 	ena_buf->len = ENA_PAGE_SIZE - headroom - tailroom;
+@@ -1047,14 +1049,12 @@ static int ena_alloc_rx_buffer(struct ena_ring *rx_ring,
+ 	return 0;
+ }
+ 
+-static void ena_unmap_rx_buff(struct ena_ring *rx_ring,
+-			      struct ena_rx_buffer *rx_info)
++static void ena_unmap_rx_buff_attrs(struct ena_ring *rx_ring,
++				    struct ena_rx_buffer *rx_info,
++				    unsigned long attrs)
+ {
+-	struct ena_com_buf *ena_buf = &rx_info->ena_buf;
+-
+-	dma_unmap_page(rx_ring->dev, ena_buf->paddr - rx_ring->rx_headroom,
+-		       ENA_PAGE_SIZE,
+-		       DMA_BIDIRECTIONAL);
++	dma_unmap_page_attrs(rx_ring->dev, rx_info->dma_addr, ENA_PAGE_SIZE,
++			     DMA_BIDIRECTIONAL, attrs);
+ }
+ 
+ static void ena_free_rx_page(struct ena_ring *rx_ring,
+@@ -1068,7 +1068,7 @@ static void ena_free_rx_page(struct ena_ring *rx_ring,
+ 		return;
+ 	}
+ 
+-	ena_unmap_rx_buff(rx_ring, rx_info);
++	ena_unmap_rx_buff_attrs(rx_ring, rx_info, 0);
+ 
+ 	__free_page(page);
+ 	rx_info->page = NULL;
+@@ -1406,14 +1406,14 @@ static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
+ 	return tx_pkts;
+ }
+ 
+-static struct sk_buff *ena_alloc_skb(struct ena_ring *rx_ring, void *first_frag)
++static struct sk_buff *ena_alloc_skb(struct ena_ring *rx_ring, void *first_frag, u16 len)
+ {
+ 	struct sk_buff *skb;
+ 
+ 	if (!first_frag)
+-		skb = napi_alloc_skb(rx_ring->napi, rx_ring->rx_copybreak);
++		skb = napi_alloc_skb(rx_ring->napi, len);
+ 	else
+-		skb = napi_build_skb(first_frag, ENA_PAGE_SIZE);
++		skb = napi_build_skb(first_frag, len);
+ 
+ 	if (unlikely(!skb)) {
+ 		ena_increase_stat(&rx_ring->rx_stats.skb_alloc_fail, 1,
+@@ -1422,24 +1422,47 @@ static struct sk_buff *ena_alloc_skb(struct ena_ring *rx_ring, void *first_frag)
+ 		netif_dbg(rx_ring->adapter, rx_err, rx_ring->netdev,
+ 			  "Failed to allocate skb. first_frag %s\n",
+ 			  first_frag ? "provided" : "not provided");
+-		return NULL;
+ 	}
+ 
+ 	return skb;
+ }
+ 
++static bool ena_try_rx_buf_page_reuse(struct ena_rx_buffer *rx_info, u16 buf_len,
++				      u16 len, int pkt_offset)
++{
++	struct ena_com_buf *ena_buf = &rx_info->ena_buf;
++
++	/* More than ENA_MIN_RX_BUF_SIZE left in the reused buffer
++	 * for data + headroom + tailroom.
++	 */
++	if (SKB_DATA_ALIGN(len + pkt_offset) + ENA_MIN_RX_BUF_SIZE <= ena_buf->len) {
++		page_ref_inc(rx_info->page);
++		rx_info->page_offset += buf_len;
++		ena_buf->paddr += buf_len;
++		ena_buf->len -= buf_len;
++		return true;
++	}
++
++	return false;
++}
++
+ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
+ 				  struct ena_com_rx_buf_info *ena_bufs,
+ 				  u32 descs,
+ 				  u16 *next_to_clean)
+ {
++	int tailroom = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
++	bool is_xdp_loaded = ena_xdp_present_ring(rx_ring);
+ 	struct ena_rx_buffer *rx_info;
+ 	struct ena_adapter *adapter;
++	int page_offset, pkt_offset;
++	dma_addr_t pre_reuse_paddr;
+ 	u16 len, req_id, buf = 0;
++	bool reuse_rx_buf_page;
+ 	struct sk_buff *skb;
+-	void *page_addr;
+-	u32 page_offset;
+-	void *data_addr;
++	void *buf_addr;
++	int buf_offset;
++	u16 buf_len;
+ 
+ 	len = ena_bufs[buf].len;
+ 	req_id = ena_bufs[buf].req_id;
+@@ -1459,34 +1482,30 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
+ 		  "rx_info %p page %p\n",
+ 		  rx_info, rx_info->page);
+ 
+-	/* save virt address of first buffer */
+-	page_addr = page_address(rx_info->page);
++	buf_offset = rx_info->buf_offset;
++	pkt_offset = buf_offset - rx_ring->rx_headroom;
+ 	page_offset = rx_info->page_offset;
+-	data_addr = page_addr + page_offset;
+-
+-	prefetch(data_addr);
++	buf_addr = page_address(rx_info->page) + page_offset;
+ 
+ 	if (len <= rx_ring->rx_copybreak) {
+-		skb = ena_alloc_skb(rx_ring, NULL);
++		skb = ena_alloc_skb(rx_ring, NULL, len);
+ 		if (unlikely(!skb))
+ 			return NULL;
+ 
+-		netif_dbg(rx_ring->adapter, rx_status, rx_ring->netdev,
+-			  "RX allocated small packet. len %d. data_len %d\n",
+-			  skb->len, skb->data_len);
+-
+ 		/* sync this buffer for CPU use */
+ 		dma_sync_single_for_cpu(rx_ring->dev,
+-					dma_unmap_addr(&rx_info->ena_buf, paddr),
++					dma_unmap_addr(&rx_info->ena_buf, paddr) + pkt_offset,
+ 					len,
+ 					DMA_FROM_DEVICE);
+-		skb_copy_to_linear_data(skb, data_addr, len);
++		skb_copy_to_linear_data(skb, buf_addr + buf_offset, len);
+ 		dma_sync_single_for_device(rx_ring->dev,
+-					   dma_unmap_addr(&rx_info->ena_buf, paddr),
++					   dma_unmap_addr(&rx_info->ena_buf, paddr) + pkt_offset,
+ 					   len,
+ 					   DMA_FROM_DEVICE);
+ 
+ 		skb_put(skb, len);
++		netif_dbg(rx_ring->adapter, rx_status, rx_ring->netdev,
++			  "RX allocated small packet. len %d.\n", skb->len);
+ 		skb->protocol = eth_type_trans(skb, rx_ring->netdev);
+ 		rx_ring->free_ids[*next_to_clean] = req_id;
+ 		*next_to_clean = ENA_RX_RING_IDX_ADD(*next_to_clean, descs,
+@@ -1494,14 +1513,28 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
+ 		return skb;
+ 	}
+ 
+-	ena_unmap_rx_buff(rx_ring, rx_info);
++	buf_len = SKB_DATA_ALIGN(len + buf_offset + tailroom);
++
++	pre_reuse_paddr = dma_unmap_addr(&rx_info->ena_buf, paddr);
++
++	/* If XDP isn't loaded try to reuse part of the RX buffer */
++	reuse_rx_buf_page = !is_xdp_loaded &&
++			    ena_try_rx_buf_page_reuse(rx_info, buf_len, len, pkt_offset);
+ 
+-	skb = ena_alloc_skb(rx_ring, page_addr);
++	dma_sync_single_for_cpu(rx_ring->dev,
++				pre_reuse_paddr + pkt_offset,
++				len,
++				DMA_FROM_DEVICE);
++
++	if (!reuse_rx_buf_page)
++		ena_unmap_rx_buff_attrs(rx_ring, rx_info, DMA_ATTR_SKIP_CPU_SYNC);
++
++	skb = ena_alloc_skb(rx_ring, buf_addr, buf_len);
+ 	if (unlikely(!skb))
+ 		return NULL;
+ 
+ 	/* Populate skb's linear part */
+-	skb_reserve(skb, page_offset);
++	skb_reserve(skb, buf_offset);
+ 	skb_put(skb, len);
+ 	skb->protocol = eth_type_trans(skb, rx_ring->netdev);
+ 
+@@ -1510,7 +1543,8 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
+ 			  "RX skb updated. len %d. data_len %d\n",
+ 			  skb->len, skb->data_len);
+ 
+-		rx_info->page = NULL;
++		if (!reuse_rx_buf_page)
++			rx_info->page = NULL;
+ 
+ 		rx_ring->free_ids[*next_to_clean] = req_id;
+ 		*next_to_clean =
+@@ -1525,10 +1559,28 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
+ 
+ 		rx_info = &rx_ring->rx_buffer_info[req_id];
+ 
+-		ena_unmap_rx_buff(rx_ring, rx_info);
++		/* rx_info->buf_offset includes rx_ring->rx_headroom */
++		buf_offset = rx_info->buf_offset;
++		pkt_offset = buf_offset - rx_ring->rx_headroom;
++		buf_len = SKB_DATA_ALIGN(len + buf_offset + tailroom);
++		page_offset = rx_info->page_offset;
++
++		pre_reuse_paddr = dma_unmap_addr(&rx_info->ena_buf, paddr);
++
++		reuse_rx_buf_page = !is_xdp_loaded &&
++				    ena_try_rx_buf_page_reuse(rx_info, buf_len, len, pkt_offset);
++
++		dma_sync_single_for_cpu(rx_ring->dev,
++					pre_reuse_paddr + pkt_offset,
++					len,
++					DMA_FROM_DEVICE);
++
++		if (!reuse_rx_buf_page)
++			ena_unmap_rx_buff_attrs(rx_ring, rx_info,
++						DMA_ATTR_SKIP_CPU_SYNC);
+ 
+ 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, rx_info->page,
+-				rx_info->page_offset, len, ENA_PAGE_SIZE);
++				page_offset + buf_offset, len, buf_len);
+ 
+ 	} while (1);
+ 
+@@ -1626,7 +1678,7 @@ static int ena_xdp_handle_buff(struct ena_ring *rx_ring, struct xdp_buff *xdp)
+ 
+ 	rx_info = &rx_ring->rx_buffer_info[rx_ring->ena_bufs[0].req_id];
+ 	xdp_prepare_buff(xdp, page_address(rx_info->page),
+-			 rx_info->page_offset,
++			 rx_info->buf_offset,
+ 			 rx_ring->ena_bufs[0].len, false);
+ 	/* If for some reason we received a bigger packet than
+ 	 * we expect, then we simply drop it
+@@ -1638,7 +1690,7 @@ static int ena_xdp_handle_buff(struct ena_ring *rx_ring, struct xdp_buff *xdp)
+ 
+ 	/* The xdp program might expand the headers */
+ 	if (ret == ENA_XDP_PASS) {
+-		rx_info->page_offset = xdp->data - xdp->data_hard_start;
++		rx_info->buf_offset = xdp->data - xdp->data_hard_start;
+ 		rx_ring->ena_bufs[0].len = xdp->data_end - xdp->data;
+ 	}
+ 
+@@ -1693,7 +1745,7 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
+ 
+ 		/* First descriptor might have an offset set by the device */
+ 		rx_info = &rx_ring->rx_buffer_info[rx_ring->ena_bufs[0].req_id];
+-		rx_info->page_offset += ena_rx_ctx.pkt_offset;
++		rx_info->buf_offset += ena_rx_ctx.pkt_offset;
+ 
+ 		netif_dbg(rx_ring->adapter, rx_status, rx_ring->netdev,
+ 			  "rx_poll: q %d got packet from ena. descs #: %d l3 proto %d l4 proto %d hash: %x\n",
+@@ -1723,8 +1775,9 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
+ 				 * from RX side.
+ 				 */
+ 				if (xdp_verdict & ENA_XDP_FORWARDED) {
+-					ena_unmap_rx_buff(rx_ring,
+-							  &rx_ring->rx_buffer_info[req_id]);
++					ena_unmap_rx_buff_attrs(rx_ring,
++								&rx_ring->rx_buffer_info[req_id],
++								0);
+ 					rx_ring->rx_buffer_info[req_id].page = NULL;
+ 				}
+ 			}
+@@ -3233,7 +3286,8 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev, struct pci_dev *pd
+ 		ENA_ADMIN_HOST_INFO_RX_OFFSET_MASK |
+ 		ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_MASK |
+ 		ENA_ADMIN_HOST_INFO_RX_BUF_MIRRORING_MASK |
+-		ENA_ADMIN_HOST_INFO_RSS_CONFIGURABLE_FUNCTION_KEY_MASK;
++		ENA_ADMIN_HOST_INFO_RSS_CONFIGURABLE_FUNCTION_KEY_MASK |
++		ENA_ADMIN_HOST_INFO_RX_PAGE_REUSE_MASK;
+ 
+ 	rc = ena_com_set_host_attributes(ena_dev);
+ 	if (rc) {
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+index 5a0d4ee76172..248b715b4d68 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+@@ -51,6 +51,8 @@
+ #define ENA_DEFAULT_RING_SIZE	(1024)
+ #define ENA_MIN_RING_SIZE	(256)
+ 
++#define ENA_MIN_RX_BUF_SIZE (2048)
++
+ #define ENA_MIN_NUM_IO_QUEUES	(1)
+ 
+ #define ENA_TX_WAKEUP_THRESH		(MAX_SKB_FRAGS + 2)
+@@ -175,7 +177,9 @@ struct ena_tx_buffer {
+ struct ena_rx_buffer {
+ 	struct sk_buff *skb;
+ 	struct page *page;
++	dma_addr_t dma_addr;
+ 	u32 page_offset;
++	u32 buf_offset;
+ 	struct ena_com_buf ena_buf;
+ } ____cacheline_aligned;
+ 
+-- 
+2.40.1
+
 
