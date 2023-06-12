@@ -1,37 +1,37 @@
-Return-Path: <netdev+bounces-10015-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10014-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 973A872BAF9
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 10:41:56 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id F229672BAF7
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 10:41:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 916C31C209BB
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 08:41:52 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C474D281008
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 08:41:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 84EF0168C0;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 72868156FC;
 	Mon, 12 Jun 2023 08:40:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D62A11CA1
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 08:40:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 83FB7C433A0;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EA7F11CB4;
+	Mon, 12 Jun 2023 08:40:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B9344C433AF;
 	Mon, 12 Jun 2023 08:40:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1686559222;
-	bh=/XMXjqWs79M5mFOv6TougyM/ZSmiKItM7dBl6O17l6s=;
+	bh=XIyenNciiiJDChhRpT8N9ii7Sgal6DCbgkC2n7EXesM=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=Odnn/yuQBBvjfz1SYTsLLAYJXPcgL71ySsgMWjGIXEzpdf4mmoECRJlB4QBPpjCWV
-	 RXpSd1xsDVaa37h6vOnOiRYGpXlsi7Sh8taQwep9MLg8iEc7UsdhfD0vEiYXi6NSBK
-	 u/S3xo75nokNz92M+8xUl5lPQx9unj8mnvrvXLANkRZzBX1jG0JK/B/ZZdG6A5xSY7
-	 vZexcavHXu0c+NiPKQqw2i9SjHJkdi6yvTkycu5TjK6UWaXAresy4xfMByI91gJrwO
-	 GEICI2rhtvcnddZQV42N78zF4rtmGBVV0aSCpNp0JvblGz7xjiXYilzpkFmxi6QPAv
-	 Y0VPXTVMPD6OQ==
+	b=So3aY0ySSEkL2cF8EngCzh937wqi3oDmCxAuZXKPamR5jZLSRwqZnjDjbWiNbQzRn
+	 Jzra92kJXJKpHIQqBjYV3Yw1UYE/JR87jHGT7ztJ78qKnVbSM9RD20IfDaReyPtVFd
+	 8j0gxUliYbxvvMThiuand+cAzCFGXJPCqVODgjSlptvB6S0JoswKPdVsNGd+xyKpml
+	 jAkv7yAC1vzJBURRMO5YwszfV/yS+fKsyu7Qzb8EnGZWrcT1XiaU+KrJDVuYMmW634
+	 4a22hzp1XhNRnCH9GRfQrlg/ZL6yPg3RwUfLy1Sp8J0VcTLM16dplCEKgJwcahfwX2
+	 LsRwk3ekPplsg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6CEC6C395EC;
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8F233E4F128;
 	Mon, 12 Jun 2023 08:40:22 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
@@ -41,45 +41,42 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5][pull request] ice: Improve miscellaneous
- interrupt code
+Subject: Re: [PATCH net-next,V2] net: mana: Add support for vlan tagging
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168655922244.2912.10217934419364747900.git-patchwork-notify@kernel.org>
+ <168655922258.2912.1350478112565336594.git-patchwork-notify@kernel.org>
 Date: Mon, 12 Jun 2023 08:40:22 +0000
-References: <20230608202115.453965-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20230608202115.453965-1-anthony.l.nguyen@intel.com>
-To: Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
- edumazet@google.com, netdev@vger.kernel.org, jacob.e.keller@intel.com,
- richardcochran@gmail.com
+References: <1686314837-14042-1-git-send-email-haiyangz@microsoft.com>
+In-Reply-To: <1686314837-14042-1-git-send-email-haiyangz@microsoft.com>
+To: Haiyang Zhang <haiyangz@microsoft.com>
+Cc: linux-hyperv@vger.kernel.org, netdev@vger.kernel.org, decui@microsoft.com,
+ kys@microsoft.com, paulros@microsoft.com, olaf@aepfle.de,
+ vkuznets@redhat.com, davem@davemloft.net, wei.liu@kernel.org,
+ edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, leon@kernel.org,
+ longli@microsoft.com, ssengar@linux.microsoft.com,
+ linux-rdma@vger.kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
+ bpf@vger.kernel.org, ast@kernel.org, sharmaajay@microsoft.com,
+ hawk@kernel.org, tglx@linutronix.de, shradhagupta@linux.microsoft.com,
+ linux-kernel@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (main)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+This patch was applied to netdev/net-next.git (main)
+by David S. Miller <davem@davemloft.net>:
 
-On Thu,  8 Jun 2023 13:21:10 -0700 you wrote:
-> Jacob Keller says:
+On Fri,  9 Jun 2023 05:47:17 -0700 you wrote:
+> To support vlan, use MANA_LONG_PKT_FMT if vlan tag is present in TX
+> skb. Then extract the vlan tag from the skb struct, and save it to
+> tx_oob for the NIC to transmit. For vlan tags on the payload, they
+> are accepted by the NIC too.
 > 
-> This series improves the driver's use of the threaded IRQ and the
-> communication between ice_misc_intr() and the ice_misc_intr_thread_fn()
-> which was previously introduced by commit 1229b33973c7 ("ice: Add low
-> latency Tx timestamp read").
+> For RX, extract the vlan tag from CQE and put it into skb.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/5] ice: handle extts in the miscellaneous interrupt thread
-    https://git.kernel.org/netdev/net-next/c/6e8b2c88fc8c
-  - [net-next,2/5] ice: always return IRQ_WAKE_THREAD in ice_misc_intr()
-    https://git.kernel.org/netdev/net-next/c/d578e618f192
-  - [net-next,3/5] ice: introduce ICE_TX_TSTAMP_WORK enumeration
-    https://git.kernel.org/netdev/net-next/c/ae39eb42dd06
-  - [net-next,4/5] ice: trigger PFINT_OICR_TSYN_TX interrupt instead of polling
-    https://git.kernel.org/netdev/net-next/c/9a8648cce8d8
-  - [net-next,5/5] ice: do not re-enable miscellaneous interrupt until thread_fn completes
-    https://git.kernel.org/netdev/net-next/c/0ec38df36ea1
+  - [net-next,V2] net: mana: Add support for vlan tagging
+    https://git.kernel.org/netdev/net-next/c/b803d1fded40
 
 You are awesome, thank you!
 -- 
