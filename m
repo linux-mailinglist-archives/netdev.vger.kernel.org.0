@@ -1,95 +1,93 @@
-Return-Path: <netdev+bounces-10259-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10260-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2812672D460
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 00:29:23 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id C1E4172D465
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 00:30:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5A4D01C20BF3
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 22:29:19 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 71C80281103
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 22:30:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5059B23C62;
-	Mon, 12 Jun 2023 22:29:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E70F9816;
+	Mon, 12 Jun 2023 22:30:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4410823423
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 22:29:19 +0000 (UTC)
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6BB170C;
-	Mon, 12 Jun 2023 15:29:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=y+r3yDX0gpvop5JCvib9GEMK945+knWKoOtG6I/6PDo=; b=EjoOvBxawoJYWkc/fcKgriyiNV
-	cIYEPdPC6Oxeq07YiRJx540EwIRgNHsCkUx76lklmGjvNHIO/4p06ZSiM4X8EXAgCJzmoEYj2DozZ
-	mNGu7ih/QFL7HzaeMiZeX6P/DCi7+tCm2NPZ/0myxI8jJrhOJwB2uhh7Q2nPGystn5kM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1q8q1r-00FePO-QT; Tue, 13 Jun 2023 00:28:51 +0200
-Date: Tue, 13 Jun 2023 00:28:51 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Justin Chen <justin.chen@broadcom.com>
-Cc: netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Daniil Tatianin <d-tatianin@yandex-team.ru>,
-	Marco Bonelli <marco@mebeim.net>,
-	Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-	Maxim Korotkov <korotkov.maxim.s@gmail.com>,
-	Gal Pressman <gal@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
-	Kuniyuki Iwashima <kuniyu@amazon.com>,
-	Simon Horman <simon.horman@corigine.com>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] ethtool: ioctl: account for sopass diff in
- set_wol
-Message-ID: <9ec8eac3-6b2f-4455-89ef-2d5768b4cee9@lunn.ch>
-References: <1686605822-34544-1-git-send-email-justin.chen@broadcom.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B48323D45
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 22:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67924C433EF;
+	Mon, 12 Jun 2023 22:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686609012;
+	bh=HQnlbzZUfjB/XyMKV/Pff7qFeZo/3cJ/CnEb78gnOaI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=XdqxVWlWiOFaY6qpOuYHwuuvlHM7zcg9rPKu6KiAAbevMNUUwAkWzrcwoYHW+SFkv
+	 0RdDRP3wO61kOe0UW2J+/BrtdqG4g2fOeKhNHfBEz/+TCNiefXbP6Zx9j6DYf+zrMr
+	 dGcLnonh+gR+8dxCzB1uy9tuV1HwRV9fmHWw6/igiKha4+8Aott1Py/0SKOID4euYM
+	 r+Eg2k9yWFcNhD/dCzWY/qRAFvTnFayS2eiewgFXsACrsgqzEKQ2ar2qs0UT6a+CMr
+	 VW1KtJupKoofTY0S32gugPFWpcjvMeaRCVZHIVB5BpgsZ/LYbjF2lGBjJSeG+YnXep
+	 AhXnBtLNjesdQ==
+Date: Mon, 12 Jun 2023 15:30:09 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Jiri Pirko <jiri@resnulli.us>
+Cc: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>, vadfed@meta.com,
+ jonathan.lemon@gmail.com, pabeni@redhat.com, corbet@lwn.net,
+ davem@davemloft.net, edumazet@google.com, vadfed@fb.com,
+ jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com, saeedm@nvidia.com,
+ leon@kernel.org, richardcochran@gmail.com, sj@kernel.org,
+ javierm@redhat.com, ricardo.canuelo@collabora.com, mst@redhat.com,
+ tzimmermann@suse.de, michal.michalik@intel.com, gregkh@linuxfoundation.org,
+ jacek.lawrynowicz@linux.intel.com, airlied@redhat.com, ogabbay@kernel.org,
+ arnd@arndb.de, nipun.gupta@amd.com, axboe@kernel.dk, linux@zary.sk,
+ masahiroy@kernel.org, benjamin.tissoires@redhat.com,
+ geert+renesas@glider.be, milena.olech@intel.com, kuniyu@amazon.com,
+ liuhangbin@gmail.com, hkallweit1@gmail.com, andy.ren@getcruise.com,
+ razor@blackwall.org, idosch@nvidia.com, lucien.xin@gmail.com,
+ nicolas.dichtel@6wind.com, phil@nwl.cc, claudiajkang@gmail.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+ linux-rdma@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ poros@redhat.com, mschmidt@redhat.com, linux-clk@vger.kernel.org,
+ vadim.fedorenko@linux.dev
+Subject: Re: [RFC PATCH v8 01/10] dpll: documentation on DPLL subsystem
+ interface
+Message-ID: <20230612153009.5f0e1b4a@kernel.org>
+In-Reply-To: <ZISkvTWw5k74RO5s@nanopsycho>
+References: <20230609121853.3607724-1-arkadiusz.kubalewski@intel.com>
+	<20230609121853.3607724-2-arkadiusz.kubalewski@intel.com>
+	<ZISkvTWw5k74RO5s@nanopsycho>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1686605822-34544-1-git-send-email-justin.chen@broadcom.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jun 12, 2023 at 02:37:00PM -0700, Justin Chen wrote:
-> sopass won't be set if wolopt doesn't change. This means the following
-> will fail to set the correct sopass.
-> ethtool -s eth0 wol s sopass 11:22:33:44:55:66
-> ethtool -s eth0 wol s sopass 22:44:55:66:77:88
+On Sat, 10 Jun 2023 18:28:45 +0200 Jiri Pirko wrote:
+> Fri, Jun 09, 2023 at 02:18:44PM CEST, arkadiusz.kubalewski@intel.com wrote:
+> >From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+> >
+> >Add documentation explaining common netlink interface to configure DPLL
+> >devices and monitoring events. Common way to implement DPLL device in
+> >a driver is also covered.
+> >
+> >Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+> >Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+> >---
+> > Documentation/driver-api/dpll.rst  | 458 +++++++++++++++++++++++++++++
+> > Documentation/driver-api/index.rst |   1 +
+> > 2 files changed, 459 insertions(+)
+> > create mode 100644 Documentation/driver-api/dpll.rst  
 > 
-> Make sure we call into the driver layer set_wol if sopass is different.
-> 
-> Fixes: 55b24334c0f2 ("ethtool: ioctl: improve error checking for set_wol")
-> Signed-off-by: Justin Chen <justin.chen@broadcom.com>
-> ---
-> 
-> Note: Tagged "Fixes" patch has not hit rc yet.
-> 
->  net/ethtool/ioctl.c | 3 ++-
+> Looks fine to me. I just wonder if the info redundancy of this file and
+> the netlink yaml could be somehow reduce. IDK.
 
-Hi Justin
-
-Does the netlink version get this correct?
-
-And just for my own curiosity, why are you so interested in the ioctl
-version, which is deprecated and not used by modern versions of
-ethtool?
-
-	Andrew
+Certainly possible, I even talked to Peter of the pyroute2 fame about
+this. Should be fairly easy to generate a .rst file, and/or Sphinx
+plugin to go directly from the YAML. Is it on my TODO list? Nope :)
 
