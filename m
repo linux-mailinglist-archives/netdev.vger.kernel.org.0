@@ -1,130 +1,98 @@
-Return-Path: <netdev+bounces-9985-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9982-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8E1C072B95E
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 09:57:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 70E8672B8D5
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 09:41:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 52B4D281099
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 07:57:49 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3A6162810F7
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 07:41:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 90B93DDB0;
-	Mon, 12 Jun 2023 07:57:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A1AACD302;
+	Mon, 12 Jun 2023 07:41:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 848C0C8D8
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 07:57:47 +0000 (UTC)
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B28210E
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 00:57:22 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-3f7f6341bf9so40216245e9.1
-        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 00:57:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1686556634; x=1689148634;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ntRYvz0tRb6HbKymHFNjRh0d14+I2NVOI7EThtiN4Yc=;
-        b=hYCX6PlERwfVWhQnpZIDQMkHG5m70BpXcb9Si+EgU/TSHXpqpOm/2DQ4bj4py6H4s+
-         xRB/2qXBCQDpuikUQRAag5EMMJJ9jv5RkudNegt3foV5f2LHqtJd6S1cWCEaJDdY+YRa
-         x84HbCG3snT+Nuln4+j3MUm3GWofMRWZHtDD7CKdQ/8Mqnz572+WY07DylJZqYzgFyBW
-         3jtYyVOgT7RXifB72Saxh9I+gA/+IKSC0/obH/E8TZU5i2/ynuzxxk5ICfUPCyNUa8qA
-         sjbHF90OmqSbRKnATd4B02cZDP23xDULnXqMR3zd4JAmSf0R1zaFWmJ/mB8FDbXvOcET
-         Z0+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686556634; x=1689148634;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ntRYvz0tRb6HbKymHFNjRh0d14+I2NVOI7EThtiN4Yc=;
-        b=Af2FNFh+wotkxJL8Lq1rW+hMlsYw3KhDnkx8NNbOn4WwL5mGNIs7Jvx1O6WHlOYV0o
-         3X9a3O2jKWIWxN02nAj09dB9p4gn3/cPKyC2/kPBHsg0dD+rhUnXf0iuPPagSy887iUt
-         GzUqoHl1MkyeD4itw2C/9XwXj2RzIvBQkwOfNc2Yuo6c0pxZ+rJra5rTxlb1w63E3B5/
-         C5i9cTJe2UHi9376W+WJWvoQyoQYD0akiBr3naVG4EUp1prUinVcQonlJ5SwwdcbfDzB
-         jZQPQbukW7ocbEfYLE3oQL3doN209+nKGwG/hUBfpEGFxRm7XGWlPasX4AjuIoxrU6au
-         u2zA==
-X-Gm-Message-State: AC+VfDwsgWZT2OjuQR7KSwoSckhwB4UXsA9T4ZlCYn1Ftf7+QlWpnIRQ
-	8VqqKBaI+sKCx7IX7ybA1zyCNeK4+95fOk/kSO0=
-X-Google-Smtp-Source: ACHHUZ7CNdlZ+cV8ahgX1g2P375Kp+4cIx9AN8l9KjZ490gLm+dmUsMvU9DvqOjd5o4cQC6f4IH9Dw==
-X-Received: by 2002:a17:907:728d:b0:96f:afe9:25c4 with SMTP id dt13-20020a170907728d00b0096fafe925c4mr7636877ejc.50.1686554146850;
-        Mon, 12 Jun 2023 00:15:46 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id x10-20020a1709060eea00b009745edfb7cbsm4772634eji.45.2023.06.12.00.15.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Jun 2023 00:15:46 -0700 (PDT)
-Message-ID: <416a90ee-7501-1014-051d-e6a3eb03a0ff@linaro.org>
-Date: Mon, 12 Jun 2023 09:15:45 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9711946BB
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 07:41:27 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A836110F7
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 00:40:38 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1q8bnF-000173-Gy; Mon, 12 Jun 2023 09:16:49 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1q8bn9-006pgR-T0; Mon, 12 Jun 2023 09:16:43 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1q8bn8-00DQbL-S2; Mon, 12 Jun 2023 09:16:42 +0200
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Jeremy Kerr <jk@codeconstruct.com.au>,
+	Matt Johnston <matt@codeconstruct.com.au>
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org,
+	kernel@pengutronix.de
+Subject: [PATCH net-next] mctp i2c: Switch back to use struct i2c_driver's .probe()
+Date: Mon, 12 Jun 2023 09:16:41 +0200
+Message-Id: <20230612071641.836976-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.2
-Subject: Re: [PATCH RFC net 1/2] nfc: nxp-nci: Fix i2c read on ThinkPad
- hardware
-To: Marco Giorgi <giorgi.marco.96@disroot.org>
-Cc: netdev@vger.kernel.org, u.kleine-koenig@pengutronix.de,
- davem@davemloft.net, michael@walle.cc, kuba@kernel.org,
- linux-kernel@vger.kernel.org
-References: <20230607170009.9458-1-giorgi.marco.96@disroot.org>
- <20230607170009.9458-2-giorgi.marco.96@disroot.org>
- <07b33c1e-895e-d7d7-a108-0ee5f2812ffa@linaro.org>
- <20230611181707.1227de20@T590-Marco>
-Content-Language: en-US
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230611181707.1227de20@T590-Marco>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1003; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=F5Y9dLDUPh9mSKaD0otwFVUyJ0hU/iTCJkDpyLj9WaM=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkhsZYT1WNBgJx+XyC9bXYf1JzttoUP7R4+55H5 5XLQTT8jEGJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZIbGWAAKCRCPgPtYfRL+ TlqUB/9FT64tMwwnS9lorQxAreAZYBPgD0LgXdWlQEcj2NSKeXDBBEAJ4F+X0DxXqcvlMclBWoZ XJJYIK//0E+/mMqYEoQJtfAjUzjQ3xWN57Fqvx/v7RcayGRbf/o3/gZARJYc3SzFwTehOD9nxE8 gPFheMx93TT2MOfZk06hkbyU8UuI5Ejde3ROeyK/2KC9gyf+5AGuWnRV4719zPNJeoPrG51CahT 6QK4vorQWo+cdp7gAKyFa7yPGOfMR3e21ziRk4mMM9/lvEW+Hv7mnx6zuBfEWEAPP5mvFRBNDHW wxnlB8LC5haa8akc4g4VfuyC142dQK/ZfQHI5R7bd2rD6+6q
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 11/06/2023 18:25, Marco Giorgi wrote:
-> Hi Krzysztof,
-> 
-> On Wed, 7 Jun 2023 19:45:25 +0200
-> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
-> 
->> On 07/06/2023 19:00, Marco Giorgi wrote:
->>> Add the IRQ GPIO configuration.  
->>
->> Why? Please include reasons in commit msg. What you are doing is quite
->> easy to see.
-> 
-> This is my fault, I only put the patch reason in patch [0/2].
-> 
-> Basically, I found out that the mainline driver is not working on my
-> machine (Lenovo ThinkPad T590).
-> 
-> I suspect that the I2C read IRQ is somehow misconfigured, and it
-> triggers even when the NFC chip is not ready to be read, resulting in
-> an error.
+After commit b8a1a4cd5a98 ("i2c: Provide a temporary .probe_new()
+call-back type"), all drivers being converted to .probe_new() and then
+commit 03c835f498b5 ("i2c: Switch .probe() to not take an id parameter")
+convert back to (the new) .probe() to be able to eventually drop
+.probe_new() from struct i2c_driver.
 
-Isn't this then a problem of your I2C controller?
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/net/mctp/mctp-i2c.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> In this patch [1/2], I'm adding the "IRQ" GPIO to the driver so its
-> value can be directly read from the IRQ thread.
+diff --git a/drivers/net/mctp/mctp-i2c.c b/drivers/net/mctp/mctp-i2c.c
+index 1d67a3ca1fd1..b37a9e4bade4 100644
+--- a/drivers/net/mctp/mctp-i2c.c
++++ b/drivers/net/mctp/mctp-i2c.c
+@@ -1058,7 +1058,7 @@ static struct i2c_driver mctp_i2c_driver = {
+ 		.name = "mctp-i2c-interface",
+ 		.of_match_table = mctp_i2c_of_match,
+ 	},
+-	.probe_new = mctp_i2c_probe,
++	.probe = mctp_i2c_probe,
+ 	.remove = mctp_i2c_remove,
+ 	.id_table = mctp_i2c_id,
+ };
 
-What is IRQ GPIO? If this is interrupt line, you are not handling it
-correctly. This is quite surprising code.
-
-> 
-> In patch [2/2], I'm safely returning from the IRQ thread when the IRQ
-> GPIO is not active.
-> 
-
-
-Best regards,
-Krzysztof
+base-commit: ac9a78681b921877518763ba0e89202254349d1b
+-- 
+2.39.2
 
 
