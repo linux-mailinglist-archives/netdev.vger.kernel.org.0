@@ -1,52 +1,52 @@
-Return-Path: <netdev+bounces-10236-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10237-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 36E4672D308
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 23:16:03 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 09A2672D30A
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 23:16:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D09FA2810B4
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 21:16:01 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DF0811C20B97
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 21:16:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 582E822D46;
-	Mon, 12 Jun 2023 21:16:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7FBAE22D47;
+	Mon, 12 Jun 2023 21:16:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42B73C8C1
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 21:16:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C9F8C8C1
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 21:16:17 +0000 (UTC)
 Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2079.outbound.protection.outlook.com [40.107.244.79])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6013C33
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 14:15:33 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA1E14C23
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 14:15:59 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UyHGV3Tj1WVBmWA0gHx8/juy2eas3lWRfQxy/LmKjZhVVeHTV3lNqQ2J1k4ZTfFZXcNA7fZWC71PeGE9D5A/96t2H84l7/8nELIUvJyGf5Fgpp45yYUOR3I2xz/xzdiifrZrHjFlQMcJoNB+MCFH/SyjGz1dRPPE0CtfRCRQAC3UnUKXC9iekikGjONFUVDhK189DE9ihsvLngH9M33KSoGlYgdKgaiTY+j2fFgjHW6bo+Si1h7WJyQG1V/bTrcZA9xMtdMWGxGS5Sqbh85RJeaeGjvO0M7doeSHKjc5fPgEi4t/91LWDyHWfQp1G8zqrfLm+d25xUc0LGh+iVmeLw==
+ b=LslPnE8O7CIryg5nE5Ypm5qGCCZNsGKNDZaXvOlIBVGZVBMZXZvln5T8iwM4qQwFQf/86xO9oy28pSKnXlreSZ4bpyEXKIyISlQMVNWRIR6BPZ53eVuEk9s9X3qgTneVO2dBt62BaJoRDVnN5Olrk20LblI/DMigU4xwc1G2p0aZm13wRm7A6QT743Lt6FvUZfyXwHr4Prf69JfN0ofoG1futpxNoXTATBzFDkjL6QnwabApgzxh7NlW3Oz4/EUR9uk4HQgvXdgPwYDagLUQDUX9qUUE60hqEw1FaymwyPTj3VSxchqydWN+Yt+OHAA+wst61iWgTr14yptY+5pfVw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9U51ONhcIgQDsTWU/nQiSAI98OKrW9noMphLOTh7fHI=;
- b=fRHAbkEIwoNnh9HWlOSYyq5PQVrPgejvctwfPIUwtEFZL/aF2QqA7J3LjvWqVN+8IEDrh9PDUtvXM+gkS+c/0y5lekICuYdI4f4DR1374yJ/HkoG3JHBy/L3AMc+aey5SKp63+UTjXGc/0WZuC7hJqd9A70kf3tgUwB+NWPgGDezDOZowvt+5rLX3sdKfXLMU05+HFUXP+kIghATHmpxhSpmymehCFYLLwBrv5Z+M6qUgoeHwqD0aigFOqPcRXfDHuUWnJU7KeaK7//MIyeYYJI4v6lcXrOZxDaL0UatMPeC4yDsubkBs0jbMEtRHkjxKydeqQ130hL1H3o4RKQMkw==
+ bh=5PvU/sNtMyzXBqHY/rlAIRO2jNajjUo6PrekA5cpv6U=;
+ b=VifSC4uAtshJX3vq42kWDElXAmoYDK+SmPc9tTpvsFTNEsjuJiL423l1gXHiGPk5ji2u4cFr1ILkuwaG3wSPqsnbwCejm45uRzwnvsHpV9iX3bRhg9emy4RtrXRUrsRJndZhAkKlFMnk/nHTFGWG8azRP9YAXavPpYRxi/3y23j2bQkSZR3OqV0XUH6qAmkP+XeoY9H/TZnm6vDJwgIEI100ZTd5aP1ms4V+7OUTTXj4KAkBbqfPch2fD6U/ONdH5g+NTmcdu/Bn1r5z18uI0pwp5F4SKIUm/J5ub538KKxIGijwpAoprbm7MaY8iQ0s7xfYV2JZVJzJj3JfZV13QA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9U51ONhcIgQDsTWU/nQiSAI98OKrW9noMphLOTh7fHI=;
- b=EQBGiSgg8ZCS2qIWICfOZrgFT1ps6lr66DsmI5XBcDsUlSujesG/i9NlskfIp6JQnMkNZf+mbCdoCiGsHwrwFaw6W3ju2txPYCvzyd6Mea2YrCxPtshRy93O/OvLfHqLbywnugr+BjgvgVJu6YaXQsX4QHvS1PrXwdlyTwSHnVSvsUj485G69WewzGTy0HhC3MOaQRvJ3fuaUK/c045Wr/AElAMjCw1QdOCyPnUJWjbjtnwsbOH0zEOqpJhxSajFDLzjQMbAuVndAZKrt14kHE+J4erxejOuO/3CDL1QZsRlO+YrnCnYnn8xutau4dg6CkBUOGh6WtGKw94ffBh09w==
+ bh=5PvU/sNtMyzXBqHY/rlAIRO2jNajjUo6PrekA5cpv6U=;
+ b=lcbVyXkQ2gT0Td8vi4JDR109Qwy7aW8bcTQJTLhVUAqNoAddyAzokDhFamN+elRVUppCIA32/ggTFnoZMabkqE5hORpoguKudzL5F4mU+MHQPWz+HC3x7GsrpiuUMvfkSqqksinW+W1nsf9JvrT/Z4K5XgghFP1BacT4uyFtLd8Evf7ELFvMEGcdgjR9Q1jgFe+V0uqQEymIX1wMY6oMttU+fvjJhrUwt+2YseNq56DTbEJYTaGnwiJR+wXFaHw0ZqRJlz1wh+PcJZbMTlvGBUIIOb5vpLTSfDTzAzQlJ+Qom8PsZWwE+KJhONdHar0Ay9dypFHzYOcBCa6TnZFkWw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from BYAPR12MB2743.namprd12.prod.outlook.com (2603:10b6:a03:61::28)
  by MW6PR12MB8733.namprd12.prod.outlook.com (2603:10b6:303:24c::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.29; Mon, 12 Jun
- 2023 21:15:07 +0000
+ 2023 21:15:27 +0000
 Received: from BYAPR12MB2743.namprd12.prod.outlook.com
  ([fe80::ecb0:2f8e:c4bf:b471]) by BYAPR12MB2743.namprd12.prod.outlook.com
  ([fe80::ecb0:2f8e:c4bf:b471%6]) with mapi id 15.20.6455.030; Mon, 12 Jun 2023
- 21:15:07 +0000
+ 21:15:27 +0000
 From: Rahul Rameshbabu <rrameshbabu@nvidia.com>
 To: netdev@vger.kernel.org
 Cc: Gal Pressman <gal@nvidia.com>,
@@ -58,15 +58,16 @@ Cc: Gal Pressman <gal@nvidia.com>,
 	Paolo Abeni <pabeni@redhat.com>,
 	"David S. Miller" <davem@davemloft.net>,
 	Rahul Rameshbabu <rrameshbabu@nvidia.com>
-Subject: [PATCH v3 0/9] ptp .adjphase cleanups
-Date: Mon, 12 Jun 2023 14:14:51 -0700
-Message-Id: <20230612211500.309075-1-rrameshbabu@nvidia.com>
+Subject: [PATCH v3 1/9] ptp: Clarify ptp_clock_info .adjphase expects an internal servo to be used
+Date: Mon, 12 Jun 2023 14:14:52 -0700
+Message-Id: <20230612211500.309075-2-rrameshbabu@nvidia.com>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230612211500.309075-1-rrameshbabu@nvidia.com>
+References: <20230612211500.309075-1-rrameshbabu@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR05CA0079.namprd05.prod.outlook.com
- (2603:10b6:a03:332::24) To BYAPR12MB2743.namprd12.prod.outlook.com
- (2603:10b6:a03:61::28)
+X-ClientProxiedBy: BYAPR01CA0004.prod.exchangelabs.com (2603:10b6:a02:80::17)
+ To BYAPR12MB2743.namprd12.prod.outlook.com (2603:10b6:a03:61::28)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -75,54 +76,54 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: BYAPR12MB2743:EE_|MW6PR12MB8733:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2bf8c9e9-3b1b-46bb-3163-08db6b8a18df
+X-MS-Office365-Filtering-Correlation-Id: ed3a1de6-0886-4fa5-a18f-08db6b8a2533
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	fVPvcTKqceLlfnL4ffDpPi6eC3lB2eZVkcoyJBWkUPbaklpb9BW18cnq6howzi25+U2zB6VH+6GNS4mB7FTF/BtRDas6qHhuWLCdEKPxDJKvITYZObmhim0JWD7zm5vOUFha7J5oQui0LkzjpKA7VhvLb3qLLMMWv11BJ5eHiiMVgxeMRK3D33ozw7ZEwgMd2JEQlJbI8JxMn41unyAApdV9alZzZENRVhjrZbaOyiaKkWayd8WbX0RCLZXtG4niybQs5zNpW3sgVz40c2GsvsMuqS4O9rh1Sb4UCwXy63cCDK6VF2Q5AdvfWAihPJVmXNSSU/LtDw9xsWmr2V4TbyRiR72ocsZ2hzHaqztI03QOyyNu0WVr0Lz6q9707l+KGrWgmzVUMFuUO13wIJ1REjD1+x9OoAJTlm3MlRDC/UHIeydmewyibV92zb8ZKUIyse20HjW36beT33KxI0qEUW2QKtgt+wHP9nigjyn3GLwg7jKI8dkjAu5lYbpTy8hTZs6zGnlDD0dMNbWl/FNLBVIdZyEhIk4qz2RTwi2pJxxMoXDVEdGhGULZe/0O9H4vYIVcU2IxBPOaAEhT4kz0y+z3AmroqvrWIyY+AEFHlWUwoEe/LUS1NkCD1SC+rwUOgLEAOle8rIF+FwCA9xCcPyMD91/5GLN7edkhCSXDGYJD/nmXitzr3tZQ6E+ufj3l
+	mQi7d9WynrUBSXrOTwQsxtdsCmOMXKyrT0XQJIUH0/jg7gNs29T8NEhhZv9Ys1O9j01GoHbEAjt/HZWo7kxjzMqyQrRFVZ8Of3e9qyct3NrmrOE5ceYA9pt/h+7BzK0AT75lEA3IEo0w67A5gtwRB3E9iI1r59KwAL++uIiW2FcoL7hzNzN090qIxVpbRaWSW5ko4n0vsGnaOb4nPFIY9812AA1JqoFss+qADjPOQ962Najw5NMMkweim6JRHwWC3XOi5RZwBkrhOghk7B+BfZAKOLXS02/RnXWwMLXvfJrFwqFyaVp+aRdFq3VKVy4ZsHP5SGAQvMMumzCFdeQwYq0WV5ul6YMLXCupN/YUDxaFaVwLcJtINqsS9hj3xbA0VR69UQ4twSVIsaw03QA9l6eFQxoy8VI3Nuyqoixbt41ZEeflRFnO0dz8oY3cz9NepA6XlUY5RjVPnrum1/qh2HUCrIbytWWgb8M9ZE75Y+aforc9hT/702uwSu1fnqQlMtndrnSoW3cHp2M8xH3OCbdYxO5AFm1Wx3HxeEKnXsxzApHLu6hae5kJ5wdjakqv7Yx3cuby1QZc5pFyMAl32hYpxtUDrCA9OiCw+CUUEzvZrV+ipKy/Oc/E0FvShNPD
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2743.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(396003)(346002)(136003)(376002)(451199021)(6916009)(4326008)(66946007)(66476007)(66556008)(36756003)(186003)(478600001)(54906003)(2616005)(2906002)(8676002)(316002)(966005)(41300700001)(107886003)(86362001)(6486002)(6666004)(6506007)(1076003)(8936002)(83380400001)(5660300002)(26005)(38100700002)(6512007)(142923001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2743.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(396003)(346002)(136003)(376002)(451199021)(6916009)(4326008)(66946007)(66476007)(66556008)(36756003)(186003)(478600001)(54906003)(2616005)(2906002)(8676002)(316002)(41300700001)(107886003)(86362001)(6486002)(6666004)(6506007)(1076003)(8936002)(83380400001)(5660300002)(26005)(38100700002)(6512007)(142923001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?5R0LmQiOmmmRpAs9TjA55XcBIbufpGEqdanf747TEifjLKNgRXQzkeQqS0Rk?=
- =?us-ascii?Q?wXTCBOMG3YM+g/8LLD/JITOnS3pr4j9DS0lBwGlb16AcxLO6HeGAAhUMvNxD?=
- =?us-ascii?Q?MLTVc9cHD4mhz4aETKg6n+1URuvhn6vvzL68ejwoz8oENKEbir+RKm+jdn0M?=
- =?us-ascii?Q?Kfgh2yCjqAlRA5BsFBSga3iyP3uclYFtNWsiGRtCP3foVNylLsYTsDqexqLV?=
- =?us-ascii?Q?0AW7g+jC2PIeCiMsQpl/cd2iRXPfOiUbtq1cFvICyXiEG5AkzPQnPGQh2YuW?=
- =?us-ascii?Q?zah5XFDyIERzmmM6prR+H4GOJtOaVDkAxRTNxUou+nx6UXh29PisktBFr+O6?=
- =?us-ascii?Q?Vl8R5usbsP7wiLP9+hWHW9OaCq4sjyh3QMhHX+dUbvaG/5cOj+uO7m7BSSeZ?=
- =?us-ascii?Q?7rAbKdYcB/hhRKdYedoYRywKdZGyQVWcVAqBpUwvAOcy5KoFM4vqu1JslgH9?=
- =?us-ascii?Q?ECj1BKfB1FdoEcb5TmDGVVeLA1QVHvs4Ckjx2cKoqAecJpo2LU+gpxUCJnSc?=
- =?us-ascii?Q?ZhdvERkqdK3VTixvvjZNV4TFwYvb7BGEfkKtv1a2Eog9+yYcae38aO6CfpOf?=
- =?us-ascii?Q?sv1q03HIX3OzBwnx7A6xYEXab7XNdD+ihctij68RA/bZ9OX0M18HxCocdKv1?=
- =?us-ascii?Q?yMyWKqKBZprwPRpsCBu+3qfstBb9Vv82sSVOTNlok2fnnCE69N97VzN77jyz?=
- =?us-ascii?Q?BFnZabrWZktxThxxfhxduwCuFVSluESGoeGGCpJQaI25eWs8D13OnLio+pXu?=
- =?us-ascii?Q?mCpbb/blHbVh+rAstFdMJ4ZpKCjrWwKzoI82d3RK8faj4t5UuCMWDbHrPvjs?=
- =?us-ascii?Q?rZG1IBNlmEzIBgf1dPfRue/SiYQzaczt1rqace1TUgvcxURovKHQx9y6TNbH?=
- =?us-ascii?Q?o9u/bfk4lSUlTSd+c1LWn/V03+kgr9FKnpQAlyehf2V71fhGxPIE7iOiioYr?=
- =?us-ascii?Q?diFGWq6XIt+ul2OF4uIo5wAC70nKdnynmMNhubEfxKQ9IJ41aEBiC95uDKZ9?=
- =?us-ascii?Q?tIXjqLah5g11Hbhz3dhIF8Fw7xnwUMnfeIQzZutWs7xCHp4QnWd8r+8Kf/WX?=
- =?us-ascii?Q?cKEqqflvBk7A6XaPbWH5VuO6Jzj8QSCGZDd00RbmuE011V7iyzHG8v54NCsM?=
- =?us-ascii?Q?4+M1BWbPddALQa/7otss4UDYklxVSX/5NbTXDp55I88/XMwkIDrxR4a5uuVE?=
- =?us-ascii?Q?09f87zJcFbT0vLS+YgzW5AlmmXa7l2nYBU7mvlL4LkZtzqm1wVchpuF6u5rY?=
- =?us-ascii?Q?Ov6qFktKoIOQ0a56U1cu6l3ORKlb8k9pTy/CVr06O8gO8AzQ+VKg2qlXmD1g?=
- =?us-ascii?Q?ckZEP5VhILEjpvM5eV+dDeI1vStS9UGt/g4YAGbfw72HsPxCQV+UV7vKWiuM?=
- =?us-ascii?Q?Faw9Yp0YEHaVrC1/NXeRhKk9W8x2niWhO3yBNVUj4wAuL1vSXuVdULIZ4f68?=
- =?us-ascii?Q?7/J22FM9SLGEFMXswkYZilbUY6nn+jDqtBgEceCj5AL6qxjohVzQH2bHUghQ?=
- =?us-ascii?Q?2t5mXM2B5IuUl1ElX3axHmbeaNo9E7XOXUX3QsCi/s6BvICVp9mr4Pw4zb41?=
- =?us-ascii?Q?lu328A5Llanv1U1f+kA+9oc4m3zZFQVdq7mD+ej9VV/OS+VVeqMZPAt8X83E?=
- =?us-ascii?Q?Rw=3D=3D?=
+	=?us-ascii?Q?zMd2p2QEUhVA8VL8gfv/GX0Tr8wdmonJbK/GZkvAuP/HKu7AC10HgThGnhWn?=
+ =?us-ascii?Q?AOeWlWgKTEx2C1J+OmHhgEVIO/HBX0T2iU8J3ZTlJ+cgagVns/9JXIfk+LLY?=
+ =?us-ascii?Q?ibzSIXajZi1Hyfg4hzNnW7rLJhSWUyiJSwEelEVgjHWhCuRguaOsPPHUzDK7?=
+ =?us-ascii?Q?WOB5OONujAmJ8GXP8Qrn325jZuU3o/2VOk25ymUU4E7sheAo3KSLRkEDUrkW?=
+ =?us-ascii?Q?iJ3zlCTPxjBEPu8R+SV0muhWRl7T6Q6yMiNEfi5QYWhHlbcULX212wjnM215?=
+ =?us-ascii?Q?/e0OSIagVYwTsRblNTsWWk4MVvuh9a5D8o2cJQakKrK0ATGdxMWiHY6SJ0I0?=
+ =?us-ascii?Q?vdvysk/CsIKtwJfB9CuLPsLgXWP7Wosrt48GU21jfX6O2ikL7in8IfrfC0Jq?=
+ =?us-ascii?Q?cQZIqYCnJ60IbGviwUcJbZRfcQjuE6I/O3rOG8SIwv9YlWwJcc8iL7qogcox?=
+ =?us-ascii?Q?1LsLM3QkmooTDz3DO4lRboWpsGWpEsHoWo+6W8l0kTTUcwEZVx7BwoX7r9BN?=
+ =?us-ascii?Q?ZbEvsQKxV60b24pRc1F3AgRPqu/OoysPDc8IIklTxh1nAGSvxFA+vDLxDTh4?=
+ =?us-ascii?Q?JBsZeBpKapcN3VZRBKQFX7B5Q00aXo6AIY3mgzmpHvLPFwOElSpGjoMkBZtx?=
+ =?us-ascii?Q?Mo73GK4MS54qxDoCQ09sjn4Wefg3RnvaMYlvl+qKEmLTw69MM6OdeP7UikuV?=
+ =?us-ascii?Q?gWguoC32v0XmjAY+BkOJNjqeemTl1HFgTvYmbwxSbQ1PFkR2P9uwOaZ+On5x?=
+ =?us-ascii?Q?GWdTWaFB/LHZ7k0xUJjfBdTOeaT77XTN8SrQ/Wg3QwPh/Ufn8perqrdGzi0G?=
+ =?us-ascii?Q?RWgNrluMdHiBFbZKcGhCfkq51OgvLXu8nkRBpU+l+pQ2NMjU2imA7VzUdmBS?=
+ =?us-ascii?Q?tnsNF3tZPFBbjhas/BcWdqP0J7SW/srB6nFIrj7of0beiyHqoTt3ZB89SgYd?=
+ =?us-ascii?Q?Rzc/oWmu6e7bbHEA6I4iEhbWOadpsMYdzaV/Ekl8+V/Fu2awDBm9xXwh66W/?=
+ =?us-ascii?Q?ygEVj79QOpGyVdd1+GIeWljv7NDL8otPjkStdkv2X1NOWkY5szjHl79sb51M?=
+ =?us-ascii?Q?l6iMshP6CrHXzyMV146RRIaU2K8G9JVypnjKOfUz/O8WtAMr3SWYhd8HcBzr?=
+ =?us-ascii?Q?5TRGmmudzFN4qPNbh54/GbddaU1U1Ie1WUknKrUF9gfenmNObSZhHw6AkmOR?=
+ =?us-ascii?Q?W2bHoEDXKlLKvxnHCGQKc3jIfTKTywLP4XnlHlgH30zgaq8Dv8TNyKX8Yl3v?=
+ =?us-ascii?Q?9Ri9/i6DlJrk2Ckddc4MpFTanGNxRQFRN9t9pmdgonz3/S2zxJR/uxtKMy7M?=
+ =?us-ascii?Q?QVvDloUELkNkdVUIJdl4sk8uRfZiHDPJ0e1Gmp8pkjyOSw2FmvoSMlZg6T+t?=
+ =?us-ascii?Q?ymOt/r0IiWfTq47UBCv/5/pGTgwD2E+7vRjnbSF+p861FBBQn9xiDHfsDxMu?=
+ =?us-ascii?Q?5NRi2bDmANJr9+kHpnf/lvIOGorMOfhzAC+6Cc7pmclNx1Eifm9bJqI8i3to?=
+ =?us-ascii?Q?qsvva6FuWLsCRaHZ+XN+uMWNbenxpcO2WxshZCedJvB+kNDEpgwiVaz9fAMJ?=
+ =?us-ascii?Q?Mml616NdEVb2nVILRkwBZdvTktpxyGZbJQzdwiUAqu13zN2oeSIsP3y/aM05?=
+ =?us-ascii?Q?UQ=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2bf8c9e9-3b1b-46bb-3163-08db6b8a18df
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed3a1de6-0886-4fa5-a18f-08db6b8a2533
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2743.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jun 2023 21:15:07.1725
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jun 2023 21:15:27.8160
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: B065Df/fFhzsPeYgSTzTmZik0Gs+k8erZWhoYdfNYFkDgFU3A+8QSMlGzwonS6eNyFRajljLYKq8yXloVwQ3Gg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5KZ67IQCW5pvH0Cd6ork2v5kfq612fJ7rCRLPLjzxj8m4Eb5dq+BVrA6xzuWIuCQ2Tt3KWFq7BbTwz8u7k/4fw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8733
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -131,60 +132,72 @@ X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The goal of this patch series is to improve documentation of .adjphase, add
-a new callback .getmaxphase to enable advertising the max phase offset a
-device PHC can support, and support invoking .adjphase from the testptp
-kselftest.
-
-Changes:
-  v3->v2:
-    * Add information about returning -ERANGE instead of clamping
-      out-of-range offsets for driver implementations of .adjphase that
-      previously clamped out-of-range offsets.
-
-      Link: https://lore.kernel.org/netdev/13b7315446390d3a78d8f508937354f12778b68e.camel@redhat.com/
-  v2->v1:
-    * Removes arbitrary rule that the PHC servo must restore the frequency
-      to the value used in the last .adjfine call if any other PHC
-      operation is used after a .adjphase operation.
-    * Removes a macro introduced in v1 for adding PTP sysfs device
-      attribute nodes using a callback for populating the data.
-
-Link: https://lore.kernel.org/netdev/20230523205440.326934-1-rrameshbabu@nvidia.com/ 
-Link: https://lore.kernel.org/netdev/20230510205306.136766-1-rrameshbabu@nvidia.com/
-Link: https://lore.kernel.org/netdev/20230120160609.19160723@kernel.org/
+.adjphase expects a PHC to use an internal servo algorithm to correct the
+provided phase offset target in the callback. Implementation of the
+internal servo algorithm are defined by the individual devices.
 
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+---
 
-Rahul Rameshbabu (9):
-  ptp: Clarify ptp_clock_info .adjphase expects an internal servo to be
-    used
-  docs: ptp.rst: Add information about NVIDIA Mellanox devices
-  testptp: Remove magic numbers related to nanosecond to second
-    conversion
-  testptp: Add support for testing ptp_clock_info .adjphase callback
-  ptp: Add .getmaxphase callback to ptp_clock_info
-  net/mlx5: Add .getmaxphase ptp_clock_info callback
-  ptp: ptp_clockmatrix: Add .getmaxphase ptp_clock_info callback
-  ptp: idt82p33: Add .getmaxphase ptp_clock_info callback
-  ptp: ocp: Add .getmaxphase ptp_clock_info callback
+Notes:
+    Changes:
+    
+      v2->v1:
+        * Removes arbitrary rule that the PHC servo must restore the frequency
+          to the value used in the last .adjfine call if any other PHC operation
+          is used after a .adjphase operation.
 
- Documentation/driver-api/ptp.rst              | 29 +++++++++++++++
- .../ethernet/mellanox/mlx5/core/lib/clock.c   | 31 ++++++++--------
- drivers/ptp/ptp_chardev.c                     |  5 ++-
- drivers/ptp/ptp_clock.c                       |  4 +++
- drivers/ptp/ptp_clockmatrix.c                 | 36 +++++++++----------
- drivers/ptp/ptp_clockmatrix.h                 |  2 +-
- drivers/ptp/ptp_idt82p33.c                    | 18 +++++-----
- drivers/ptp/ptp_idt82p33.h                    |  4 +--
- drivers/ptp/ptp_ocp.c                         |  7 ++++
- drivers/ptp/ptp_sysfs.c                       | 12 +++++++
- include/linux/ptp_clock_kernel.h              | 11 ++++--
- include/uapi/linux/ptp_clock.h                |  3 +-
- tools/testing/selftests/ptp/testptp.c         | 29 ++++++++++++---
- 13 files changed, 135 insertions(+), 56 deletions(-)
+ Documentation/driver-api/ptp.rst | 16 ++++++++++++++++
+ include/linux/ptp_clock_kernel.h |  6 ++++--
+ 2 files changed, 20 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/driver-api/ptp.rst b/Documentation/driver-api/ptp.rst
+index 664838ae7776..4552a1f20488 100644
+--- a/Documentation/driver-api/ptp.rst
++++ b/Documentation/driver-api/ptp.rst
+@@ -73,6 +73,22 @@ Writing clock drivers
+    class driver, since the lock may also be needed by the clock
+    driver's interrupt service routine.
+ 
++PTP hardware clock requirements for '.adjphase'
++-----------------------------------------------
++
++   The 'struct ptp_clock_info' interface has a '.adjphase' function.
++   This function has a set of requirements from the PHC in order to be
++   implemented.
++
++     * The PHC implements a servo algorithm internally that is used to
++       correct the offset passed in the '.adjphase' call.
++     * When other PTP adjustment functions are called, the PHC servo
++       algorithm is disabled.
++
++   **NOTE:** '.adjphase' is not a simple time adjustment functionality
++   that 'jumps' the PHC clock time based on the provided offset. It
++   should correct the offset provided using an internal algorithm.
++
+ Supported hardware
+ ==================
+ 
+diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
+index fdffa6a98d79..f8e8443a8b35 100644
+--- a/include/linux/ptp_clock_kernel.h
++++ b/include/linux/ptp_clock_kernel.h
+@@ -77,8 +77,10 @@ struct ptp_system_timestamp {
+  *            nominal frequency in parts per million, but with a
+  *            16 bit binary fractional field.
+  *
+- * @adjphase:  Adjusts the phase offset of the hardware clock.
+- *             parameter delta: Desired change in nanoseconds.
++ * @adjphase:  Indicates that the PHC should use an internal servo
++ *             algorithm to correct the provided phase offset.
++ *             parameter delta: PHC servo phase adjustment target
++ *                              in nanoseconds.
+  *
+  * @adjtime:  Shifts the time of the hardware clock.
+  *            parameter delta: Desired change in nanoseconds.
 -- 
 2.40.1
 
