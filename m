@@ -1,67 +1,67 @@
-Return-Path: <netdev+bounces-10218-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10219-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 26A0872D025
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 22:07:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id E9F3B72D02C
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 22:07:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6566B1C20B8F
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 20:07:03 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 342CF1C20B07
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 20:07:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E753BA38;
-	Mon, 12 Jun 2023 20:07:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 116EFC128;
+	Mon, 12 Jun 2023 20:07:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5278DAD5C
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 20:07:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0566E8833
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 20:07:43 +0000 (UTC)
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A885918C
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 13:07:02 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E20D13D
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 13:07:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686600421;
+	s=mimecast20190719; t=1686600461;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=X+0noFHcj2yLtNYh9uCwW0uaG8SfjbhqsP5is69vjY8=;
-	b=Nmq5ShtWfiH5S3rXoXpJaLp6mSEgV2TNAh2iPKimY7+ZUHZKBM3zJnYBJZIw01ePcomypf
-	Zp0Z+9/wEuX76JFoPckgIgvrpESXiC8LcKDyC4fZxasPOZ8/9Hnd2sQtd/4Oux21hgoBon
-	MU8OEc/8fFopiX8p4JiOMHvoIU7UlkQ=
-Received: from mail-yw1-f198.google.com (mail-yw1-f198.google.com
- [209.85.128.198]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=IuHNa6WZpYveQJr9GnIkLeDKCuARWHsJdm0re5kGQrg=;
+	b=TzTO0sCEsV2qx3hSGadnanDjhOBMaApUwVmHuSFp2RxZO5HPAJYJnYAHqbQKdnuM/nizHf
+	AzBiQFzxEGz/8P9SimJAgxF7sP56ncFLUaAhHh+JiohB+ieb/Bj02ZyUapc7IbccA6t047
+	+0Wwit0LhH1c4rmP/xTvGuZX62DAIHY=
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
+ [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-418-9twpdlEVOh6ocyxHOngXzQ-1; Mon, 12 Jun 2023 16:07:00 -0400
-X-MC-Unique: 9twpdlEVOh6ocyxHOngXzQ-1
-Received: by mail-yw1-f198.google.com with SMTP id 00721157ae682-56ce36fca90so46293217b3.0
-        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 13:07:00 -0700 (PDT)
+ us-mta-44-ixvnGTJBO_SsSbypa1KABA-1; Mon, 12 Jun 2023 16:07:37 -0400
+X-MC-Unique: ixvnGTJBO_SsSbypa1KABA-1
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-55b2dda8657so3900135eaf.1
+        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 13:07:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686600420; x=1689192420;
+        d=1e100.net; s=20221208; t=1686600457; x=1689192457;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=X+0noFHcj2yLtNYh9uCwW0uaG8SfjbhqsP5is69vjY8=;
-        b=cE7odwtnQTNco0BXp/Us2LbnHhHaVCKGbLQDVY9PhoBKRy0uvEaxeBdDyCVY+MKUn3
-         rlbZ+9oKWPjAbpyVsDjWoSB/1iadSD0Zt38wyWyqqpD7R0XMVziYj6d9XzRc50ksCNuq
-         S/Em2neU7sDAsL/P/gHFjW3OHvvovbe3QmZD5YQZ+jEvYPg86bnZh+X0QWW73uC+as8u
-         J7NReErceFKG2XenHYMJZirVgqyUH5QmoBLA6pFJ3K/TJPW8UpKB1o1VJcAkE28fRCNe
-         0Esn2TLsJkrVVJpEB5/ycV6wMtEjwfiXowBDV+n6nro6s/9zvsYtaENCYCYfClpS8/7H
-         QYvQ==
-X-Gm-Message-State: AC+VfDyjP0dGK4l/sfMo9GAS/S1PNQS4AYLey17rkUZ1i+ARlEEuFggY
-	yqlBfOOZGqBcuy+FL7SYzFvxc4opren7TgRAeC6epBqk5gdjgOUHyGV/0NSiBtMaV0FjV7ZpDRo
-	CTp3vkeUPrhIlQTin
-X-Received: by 2002:a0d:d142:0:b0:569:feee:3950 with SMTP id t63-20020a0dd142000000b00569feee3950mr12226012ywd.2.1686600419880;
-        Mon, 12 Jun 2023 13:06:59 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7PzolWatF3tOgmfa9XBAGwXjOlATUx5vSje4PclwYgketu3avPNRnBzek6n0LaOUY30qXC9g==
-X-Received: by 2002:a0d:d142:0:b0:569:feee:3950 with SMTP id t63-20020a0dd142000000b00569feee3950mr12225997ywd.2.1686600419621;
-        Mon, 12 Jun 2023 13:06:59 -0700 (PDT)
+        bh=IuHNa6WZpYveQJr9GnIkLeDKCuARWHsJdm0re5kGQrg=;
+        b=RuMbmnfTZVuEU8HIxMuHVvSzAC8w35d7q6GkQudKBTudD52rAUmNqs4eVpJKXdQ60g
+         jaXT8TLXpu84zSS2Jtkor5ro9emC+Ap2RQcnU5J2vkfZMAcu2K7WCQuLAdxxlkyFQf1O
+         vaUH/LwlUBtnaddRs5+j1v/oBdeXaZm5Dw7LNehmRiWor0pT6rnxApMwbKZwUf3O77rG
+         xSrqjpPooUDqoJnWzfRIYf60epnvIOORtEisOBlUKjjMjm+1cs9Tzss0w9Z9tCI0MksR
+         OpZuzqc9Yym4RKTA+tOxgZXdZNvy0F/WjRvdaU5tjl29Sa9S/4fn/2EX2Uo6qaX0syv8
+         geag==
+X-Gm-Message-State: AC+VfDxaOKsB7MSd/Ussp39G1o2XQLrGiILrD78bhxxMQtyFzYbId22T
+	Ymw6VHAlfe0DCcUqPhskEEbku9qfXeuQROQKQp0CRpYySP0BBU1V/fTlWqDNDYG0QjHESmcMJxj
+	XvSiOVb4bc+uVYAC/
+X-Received: by 2002:a4a:bd92:0:b0:556:c580:eba6 with SMTP id k18-20020a4abd92000000b00556c580eba6mr5832097oop.4.1686600457017;
+        Mon, 12 Jun 2023 13:07:37 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4Sjt0Fg2Ll+XfHA2BponpBIQ9aDoC0AyoTvbdiarG2SXbdj01ZqgXciHHSmeIvp1v/ALCRsQ==
+X-Received: by 2002:a4a:bd92:0:b0:556:c580:eba6 with SMTP id k18-20020a4abd92000000b00556c580eba6mr5832088oop.4.1686600456761;
+        Mon, 12 Jun 2023 13:07:36 -0700 (PDT)
 Received: from halaney-x13s ([2600:1700:1ff0:d0e0::45])
-        by smtp.gmail.com with ESMTPSA id m14-20020a819e0e000000b00568e7e21db7sm2713928ywj.96.2023.06.12.13.06.58
+        by smtp.gmail.com with ESMTPSA id t14-20020a4ad0ae000000b0054fd0b7af2bsm3509727oor.31.2023.06.12.13.07.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Jun 2023 13:06:59 -0700 (PDT)
-Date: Mon, 12 Jun 2023 15:06:56 -0500
+        Mon, 12 Jun 2023 13:07:36 -0700 (PDT)
+Date: Mon, 12 Jun 2023 15:07:33 -0500
 From: Andrew Halaney <ahalaney@redhat.com>
 To: Bartosz Golaszewski <brgl@bgdev.pl>
 Cc: Vinod Koul <vkoul@kernel.org>,
@@ -84,11 +84,10 @@ Cc: Vinod Koul <vkoul@kernel.org>,
 	linux-arm-kernel@lists.infradead.org,
 	linux-stm32@st-md-mailman.stormreply.com,
 	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: Re: [PATCH 10/26] net: stmmac: dwmac-qcom-ethqos: add a newline
- between headers
-Message-ID: <20230612200656.ndt5pwhi3gqj42a5@halaney-x13s>
+Subject: Re: [PATCH 11/26] net: stmmac: dwmac-qcom-ethqos: remove stray space
+Message-ID: <20230612200733.h3323ktcggbeil3q@halaney-x13s>
 References: <20230612092355.87937-1-brgl@bgdev.pl>
- <20230612092355.87937-11-brgl@bgdev.pl>
+ <20230612092355.87937-12-brgl@bgdev.pl>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -97,7 +96,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230612092355.87937-11-brgl@bgdev.pl>
+In-Reply-To: <20230612092355.87937-12-brgl@bgdev.pl>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
@@ -106,32 +105,32 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 12, 2023 at 11:23:39AM +0200, Bartosz Golaszewski wrote:
+On Mon, Jun 12, 2023 at 11:23:40AM +0200, Bartosz Golaszewski wrote:
 > From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > 
-> Typically we use a newline between global and local headers so add it
-> here as well.
+> There's an unnecessary space in the rgmii_updatel() function, remove it.
 > 
 > Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
 Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
 
 > ---
->  drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
 > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-> index ecb94e5388c7..5b56abacbf6b 100644
+> index 5b56abacbf6b..8ed05f29fe8b 100644
 > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
 > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-> @@ -7,6 +7,7 @@
->  #include <linux/platform_device.h>
->  #include <linux/phy.h>
->  #include <linux/property.h>
-> +
->  #include "stmmac.h"
->  #include "stmmac_platform.h"
+> @@ -117,7 +117,7 @@ static void rgmii_updatel(struct qcom_ethqos *ethqos,
+>  {
+>  	unsigned int temp;
 >  
+> -	temp =  rgmii_readl(ethqos, offset);
+> +	temp = rgmii_readl(ethqos, offset);
+>  	temp = (temp & ~(mask)) | val;
+>  	rgmii_writel(ethqos, temp, offset);
+>  }
 > -- 
 > 2.39.2
 > 
