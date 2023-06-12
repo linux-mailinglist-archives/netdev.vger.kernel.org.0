@@ -1,85 +1,155 @@
-Return-Path: <netdev+bounces-10018-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10021-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4252372BB2A
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 10:50:45 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8502F72BB5A
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 10:54:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 838791C20A81
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 08:50:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5802E28105C
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 08:54:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E89511CB4;
-	Mon, 12 Jun 2023 08:50:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 95CF3125AD;
+	Mon, 12 Jun 2023 08:54:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 159301FB7
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 08:50:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A420DC4339E;
-	Mon, 12 Jun 2023 08:50:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686559840;
-	bh=3wEU2eWpI2dfYMagdnkzdlLhdwadAxg23iFRWigAAO8=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=kCvrQW4MSxDg78li13w0I6JMFG0vYo318lLmqRFEn+u2Rm10ihdc2rGzHkRwqSyGM
-	 VjG6KfjeFNwKpEm/JI69Dwvq3h5XdruyzKYQZIqZC+DvZjVflo3lHpmEbDeSApWBMs
-	 m1WJLNQbC4wT6pdH+A5YbdtaaBHjyu1d12HnOrEGqxerAk/zYSa8TeFLbyeksreswX
-	 fMw1w2hfi+F4O5jQjrz2z6FoGdCibjTckDdITgOCcrwpVTTMveOG9xNuRKzjkQM2ki
-	 +riw/A256Aj4x7U/c8/utQSkX4IiO6EBGfwqAeLACiMr//oMtqoMzYgyOExR7cA505
-	 190XV3WHRNqwg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8660DE1CF31;
-	Mon, 12 Jun 2023 08:50:40 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A0A01FB7
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 08:54:43 +0000 (UTC)
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BEC335BE;
+	Mon, 12 Jun 2023 01:54:13 -0700 (PDT)
+X-GND-Sasl: alexis.lothore@bootlin.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1686560046;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=cajy4YCfvWDa+DGbifIsIf3ZaH6ZbGCujPLhQZZUKzE=;
+	b=FNLmJEa5LvsFfK7gTOSXm+mpoSv2shNKq0Rg0H1XSGrfz3fVb77PYL6AWwAkyALJgGqFZM
+	T1jVSkSu8nExLM6NLH/j0ElJBMHjMctTseez0fPHbi61JWltbmvx7z1/PS8LRob/MLL0Mf
+	gynKShTksyl5wy5GsfvA15yiTDb3+jg2ygh1qP6Ia75loCDR6ELAN0SIeKZvFjNQvJJq1v
+	oJo26DnnIxIncax4mrj12Q+eXcYCpqi0YFb9NU8bNLUWvt5u34PgP/2e9RilbMrkOLFOpd
+	6Njq3cUZMN9ejg4rX2bUSDRXF1Xv9T55HUAdVyt/4dwAZGPoXRgl2ADzl0efYg==
+X-GND-Sasl: alexis.lothore@bootlin.com
+X-GND-Sasl: alexis.lothore@bootlin.com
+X-GND-Sasl: alexis.lothore@bootlin.com
+X-GND-Sasl: alexis.lothore@bootlin.com
+X-GND-Sasl: alexis.lothore@bootlin.com
+X-GND-Sasl: alexis.lothore@bootlin.com
+X-GND-Sasl: alexis.lothore@bootlin.com
+X-GND-Sasl: alexis.lothore@bootlin.com
+X-GND-Sasl: alexis.lothore@bootlin.com
+X-GND-Sasl: alexis.lothore@bootlin.com
+X-GND-Sasl: alexis.lothore@bootlin.com
+X-GND-Sasl: alexis.lothore@bootlin.com
+Received: by mail.gandi.net (Postfix) with ESMTPSA id A11EA20009;
+	Mon, 12 Jun 2023 08:54:04 +0000 (UTC)
+Message-ID: <e650d15a-3fa6-5c76-8eee-ba21df3230f2@bootlin.com>
+Date: Mon, 12 Jun 2023 10:54:29 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: [PATCH net-next 2/2] net: dsa: mv88e6xxx: implement egress tbf
+ qdisc for 6393x family
+Content-Language: en-US
+To: Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Cc: Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
+ Vladimir Oltean <olteanv@gmail.com>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+ Thomas Petazzoni <thomas.petazzoni@bootlin.com>, paul.arola@telus.com,
+ scott.roberts@telus.com
+References: <20230609141812.297521-1-alexis.lothore@bootlin.com>
+ <20230609141812.297521-3-alexis.lothore@bootlin.com>
+ <d196f8c7-19f7-4a7c-9024-e97001c21b90@lunn.ch>
+ <dbec77de-ee34-e281-3dd4-2332116a0910@bootlin.com>
+ <176f073a-b5ab-4d8a-8850-fcd8eff65aa7@lunn.ch>
+ <bb799b06-8ca8-8a29-3873-af09c859ae88@bootlin.com>
+ <CA+sq2CcG4pQDLcw+fTkcEfTZv6zPY3pcGCKeOy8owiaRF2HELA@mail.gmail.com>
+From: =?UTF-8?Q?Alexis_Lothor=c3=a9?= <alexis.lothore@bootlin.com>
+In-Reply-To: <CA+sq2CcG4pQDLcw+fTkcEfTZv6zPY3pcGCKeOy8owiaRF2HELA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: openvswitch: add support for l4 symmetric
- hashing
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168655984053.8602.1349154560216964511.git-patchwork-notify@kernel.org>
-Date: Mon, 12 Jun 2023 08:50:40 +0000
-References: <20230609135955.3024931-1-aconole@redhat.com>
-In-Reply-To: <20230609135955.3024931-1-aconole@redhat.com>
-To: Aaron Conole <aconole@redhat.com>
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, dev@openvswitch.org,
- pshelar@ovn.org, davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, echaudro@redhat.com, dceara@redhat.com, i.maximets@ovn.org
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
+Hi Sunil,
 
-This patch was applied to netdev/net-next.git (main)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri,  9 Jun 2023 09:59:55 -0400 you wrote:
-> Since its introduction, the ovs module execute_hash action allowed
-> hash algorithms other than the skb->l4_hash to be used.  However,
-> additional hash algorithms were not implemented.  This means flows
-> requiring different hash distributions weren't able to use the
-> kernel datapath.
+On 6/12/23 08:34, Sunil Kovvuri wrote:
 > 
-> Now, introduce support for symmetric hashing algorithm as an
-> alternative hash supported by the ovs module using the flow
-> dissector.
 > 
-> [...]
+> On Fri, Jun 9, 2023 at 11:08 PM Alexis Lothoré <alexis.lothore@bootlin.com
+> <mailto:alexis.lothore@bootlin.com>> wrote:
+> 
+>     On 6/9/23 19:16, Andrew Lunn wrote:
+>     >> Yes, I can do that (or maybe -EINVAL to match Vladimir's comment ?). I think
+>     >> it's worth mentioning that I encountered an issue regarding those values
+>     during
+>     >> tests: I use tc program to set the tbf, and I observed that tc does not even
+>     >> reach kernel to set the qdisc if we pass no burst/latency value OR if we
+>     set it
+>     >> to 0. So tc enforces right on userspace side non-zero value for those
+>     >> parameters, and I have passed random values and ignored them on kernel side.
+>     >
+>     > That is not good. Please take a look around and see if any other
+>     > driver offloads TBF, and what they do with burst.
+>     >
+>     >> Checking available doc about tc-tbf makes me feel like that indeed a TBF
+>     qdisc
+>     >> command without burst or latency value makes no sense, except my use case can
+>     >> not have such values. That's what I struggled a bit to find a proper qdisc to
+>     >> match hardware cap. I may fallback to a custom netlink program to improve
+>     testing.
+>     >
+>     > We don't really want a custom application, since we want users to use
+>     > TC to set this up.
+>     >
+>     > Looking at the 6390 datasheet, Queue Counter Registers, mode 8 gives
+>     > the number of egress buffers for a port. You could validate that the
+>     > switch has at least the requested number of buffers assigned to the
+>     > port? There is quite a bit you can configure, so maybe there is a way
+>     > to influence the number of buffers, so you can actually implement the
+>     > burst parameter?
+> 
+>     Thanks for the pointers. I will check the egress buffers configuration and see
+>     if I can come up with something better
+> 
+> 
+> For setting up simple per-port ratelimit, instead of TBF isn't "egress matchall"
+> suitable here ?
 
-Here is the summary with links:
-  - [net-next] net: openvswitch: add support for l4 symmetric hashing
-    https://git.kernel.org/netdev/net-next/c/e069ba07e6c7
+I guess you are suggesting matchall + policer ? At first glance, I see no
+obvious elements showing if one or another is more relevant. From user point of
+view, controls are pretty much the same (rate + burst at least), but it looks
+like policer is more of a pass/drop action, contrary to TBF which has some delay
+notions, so it would solve the latency/limit absence of control. I am not sure
+how it would look like on kernel side and how it would behave (how is managed
+the filter, how can the policer be offloaded). I see some port_policer_add/del
+callbacks in DSA, I will take a look at that as well and check differences with
+TBF. Thanks for the suggestion.
 
-You are awesome, thank you!
+Alexis
+> 
+> Thanks,
+> Sunil. 
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Alexis Lothoré, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
 
 
