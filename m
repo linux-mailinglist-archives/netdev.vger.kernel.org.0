@@ -1,192 +1,134 @@
-Return-Path: <netdev+bounces-10188-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10189-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D301F72CC41
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 19:19:50 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6B68972CC44
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 19:20:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F3EBC1C20A2C
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 17:19:46 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6086F1C20B61
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 17:20:47 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DB21A1B8EB;
-	Mon, 12 Jun 2023 17:19:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 24A4E1B91E;
+	Mon, 12 Jun 2023 17:20:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB13A17AB7
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 17:19:47 +0000 (UTC)
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231A1B2
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 10:19:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686590386; x=1718126386;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=6r9PGHnc0kz807jA6eUOUlX8b6SJLPf8rp9rwHDjMmc=;
-  b=I77Z/Rsq9a9GFAxdHZf5I5E/3OUKTjU61idj2PZFWvC6RmjMTXAjCvWp
-   bDAvfFy0pqbcrGQBQ28s0f9GTNWsWZBLfgsBsvR0PGEzZeOncv31cfmoH
-   bBRCBVXLCTDcPSgKFl1ZybiweqvS1gB2jZRtZ3HF/dvBM/N1pndi9gUjX
-   lGgbH7+DOT09cz3lcptktQHukyM+ZDtwg7jjY/oXYGcUDbhoraSByx8IA
-   4yIsPyT0Uv/t373wO4qSH2QIZ9OPxjwLrkAGUGWKoI3vOCPpREzktvtVW
-   Gf8XjbeUh7P5Ya0BJudIANye8GOBWuZd2yLo+i/q4a0ECHMArnrehOK41
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10739"; a="356994487"
-X-IronPort-AV: E=Sophos;i="6.00,236,1681196400"; 
-   d="scan'208";a="356994487"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2023 10:19:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10739"; a="705479537"
-X-IronPort-AV: E=Sophos;i="6.00,236,1681196400"; 
-   d="scan'208";a="705479537"
-Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by orsmga007.jf.intel.com with ESMTP; 12 Jun 2023 10:18:59 -0700
-From: Tony Nguyen <anthony.l.nguyen@intel.com>
-To: davem@davemloft.net,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	edumazet@google.com,
-	netdev@vger.kernel.org
-Cc: Jakub Buchocki <jakubx.buchocki@intel.com>,
-	anthony.l.nguyen@intel.com,
-	michal.swiatkowski@linux.intel.com,
-	jiri@resnulli.us,
-	Przemek Kitszel <przemyslaw.kitszel@intel.com>,
-	Pucha Himasekhar Reddy <himasekharx.reddy.pucha@intel.com>
-Subject: [PATCH net v2] ice: Fix ice module unload
-Date: Mon, 12 Jun 2023 10:14:21 -0700
-Message-Id: <20230612171421.21570-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.38.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 173817474
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 17:20:47 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68B74FB
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 10:20:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686590442;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7qlKft7mE4b2kNS3x9A8djvNWYAtiYtMSSZe9V4o7Ek=;
+	b=fdEYm5ePBJz8/sLLgUVBm+R801+8LnD8NjUGHFbjdaf27oyWXenG6Z3ZUtVNGn5uvySK78
+	B+Osf9UhBiADVQH0iH08VioSP5Jl7ZV/lF6l1B9+FAMENolBKIZoRjRAKHGcmqluj2us/r
+	IAZNz1smwBpSZ6pB4EzfEgUQEJJRgDs=
+Received: from mail-yw1-f199.google.com (mail-yw1-f199.google.com
+ [209.85.128.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-639-UvczcCf-P0Wh4SKVbbHL-g-1; Mon, 12 Jun 2023 13:20:41 -0400
+X-MC-Unique: UvczcCf-P0Wh4SKVbbHL-g-1
+Received: by mail-yw1-f199.google.com with SMTP id 00721157ae682-56cf9a86277so33058567b3.3
+        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 10:20:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686590440; x=1689182440;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7qlKft7mE4b2kNS3x9A8djvNWYAtiYtMSSZe9V4o7Ek=;
+        b=huUHq5yFpmo16ltoQfkba3ih7Uw0Bx/G4i8iWZRfnTv/ON6+FwgS6f6f40qV1pvoyA
+         hKG9k9ljVZuh4Q7oT9b0/+ZFvep7bjIA050LdWpLWt5h9eqKR7MBdigeMiM6Jmx49uSz
+         5TvjZi84JUylwsvBxcyMNaDZ96UKUZWYH3ldGXAStqgPymPP3KlZ5ww4qiGqZGP6PQDg
+         VfpENQA+XdLOXX5RK/gS99xOX4XAJa+uHzX6qkil20gqhkwodTe6X2r71mJ507/IuxCl
+         X/59hIGPCHRIw4XTrC3gAO+QR53zyrmMTHET9POql5g/+gRSPO/JwW7DbrBpeZOAZtYE
+         nRvw==
+X-Gm-Message-State: AC+VfDzICXDciSz4JG5IF7me2IiJr9tBpgJW5IUf+XP7bnlXj3ohofYd
+	efaDU0abgYsJj2rQj9k5p2cOcMbB1k/hE+ZBfbGdssqdu5kWGYpFHTT6jwzQUKAY8RI0NUZxl2b
+	cIUn7BclftZN1YzRy
+X-Received: by 2002:a81:8047:0:b0:565:c888:1d09 with SMTP id q68-20020a818047000000b00565c8881d09mr11436050ywf.30.1686590440569;
+        Mon, 12 Jun 2023 10:20:40 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6pK0EspHiEwXLJwZSnTgF0PmnWrSSsx5/e6T7JNdTcNpiEDXWG/J7snMtSub/jvW4XBEs/gg==
+X-Received: by 2002:a81:8047:0:b0:565:c888:1d09 with SMTP id q68-20020a818047000000b00565c8881d09mr11436028ywf.30.1686590440315;
+        Mon, 12 Jun 2023 10:20:40 -0700 (PDT)
+Received: from halaney-x13s ([2600:1700:1ff0:d0e0::45])
+        by smtp.gmail.com with ESMTPSA id t7-20020a815f07000000b0054f9e7fed7asm2622065ywb.137.2023.06.12.10.20.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Jun 2023 10:20:39 -0700 (PDT)
+Date: Mon, 12 Jun 2023 12:20:36 -0500
+From: Andrew Halaney <ahalaney@redhat.com>
+To: Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: Vinod Koul <vkoul@kernel.org>,
+	Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+	Andy Gross <agross@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Kishon Vijay Abraham I <kishon@kernel.org>,
+	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: Re: [PATCH 01/26] phy: qualcomm: fix indentation in Makefile
+Message-ID: <20230612172036.ztvjdzblh6bvmxp2@halaney-x13s>
+References: <20230612092355.87937-1-brgl@bgdev.pl>
+ <20230612092355.87937-2-brgl@bgdev.pl>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230612092355.87937-2-brgl@bgdev.pl>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Jakub Buchocki <jakubx.buchocki@intel.com>
+On Mon, Jun 12, 2023 at 11:23:30AM +0200, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> 
+> Align all entries in Makefile.
+> 
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-Clearing the interrupt scheme before PFR reset,
-during the removal routine, could cause the hardware
-errors and possibly lead to system reboot, as the PF
-reset can cause the interrupt to be generated.
+Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
 
-Place the call for PFR reset inside ice_deinit_dev(),
-wait until reset and all pending transactions are done,
-then call ice_clear_interrupt_scheme().
-
-This introduces a PFR reset to multiple error paths.
-
-Additionally, remove the call for the reset from
-ice_load() - it will be a part of ice_unload() now.
-
-Error example:
-[   75.229328] ice 0000:ca:00.1: Failed to read Tx Scheduler Tree - User Selection data from flash
-[   77.571315] {1}[Hardware Error]: Hardware error from APEI Generic Hardware Error Source: 1
-[   77.571418] {1}[Hardware Error]: event severity: recoverable
-[   77.571459] {1}[Hardware Error]:  Error 0, type: recoverable
-[   77.571500] {1}[Hardware Error]:   section_type: PCIe error
-[   77.571540] {1}[Hardware Error]:   port_type: 4, root port
-[   77.571580] {1}[Hardware Error]:   version: 3.0
-[   77.571615] {1}[Hardware Error]:   command: 0x0547, status: 0x4010
-[   77.571661] {1}[Hardware Error]:   device_id: 0000:c9:02.0
-[   77.571703] {1}[Hardware Error]:   slot: 25
-[   77.571736] {1}[Hardware Error]:   secondary_bus: 0xca
-[   77.571773] {1}[Hardware Error]:   vendor_id: 0x8086, device_id: 0x347a
-[   77.571821] {1}[Hardware Error]:   class_code: 060400
-[   77.571858] {1}[Hardware Error]:   bridge: secondary_status: 0x2800, control: 0x0013
-[   77.572490] pcieport 0000:c9:02.0: AER: aer_status: 0x00200000, aer_mask: 0x00100020
-[   77.572870] pcieport 0000:c9:02.0:    [21] ACSViol                (First)
-[   77.573222] pcieport 0000:c9:02.0: AER: aer_layer=Transaction Layer, aer_agent=Receiver ID
-[   77.573554] pcieport 0000:c9:02.0: AER: aer_uncor_severity: 0x00463010
-[   77.691273] {2}[Hardware Error]: Hardware error from APEI Generic Hardware Error Source: 1
-[   77.691738] {2}[Hardware Error]: event severity: recoverable
-[   77.691971] {2}[Hardware Error]:  Error 0, type: recoverable
-[   77.692192] {2}[Hardware Error]:   section_type: PCIe error
-[   77.692403] {2}[Hardware Error]:   port_type: 4, root port
-[   77.692616] {2}[Hardware Error]:   version: 3.0
-[   77.692825] {2}[Hardware Error]:   command: 0x0547, status: 0x4010
-[   77.693032] {2}[Hardware Error]:   device_id: 0000:c9:02.0
-[   77.693238] {2}[Hardware Error]:   slot: 25
-[   77.693440] {2}[Hardware Error]:   secondary_bus: 0xca
-[   77.693641] {2}[Hardware Error]:   vendor_id: 0x8086, device_id: 0x347a
-[   77.693853] {2}[Hardware Error]:   class_code: 060400
-[   77.694054] {2}[Hardware Error]:   bridge: secondary_status: 0x0800, control: 0x0013
-[   77.719115] pci 0000:ca:00.1: AER: can't recover (no error_detected callback)
-[   77.719140] pcieport 0000:c9:02.0: AER: device recovery failed
-[   77.719216] pcieport 0000:c9:02.0: AER: aer_status: 0x00200000, aer_mask: 0x00100020
-[   77.719390] pcieport 0000:c9:02.0:    [21] ACSViol                (First)
-[   77.719557] pcieport 0000:c9:02.0: AER: aer_layer=Transaction Layer, aer_agent=Receiver ID
-[   77.719723] pcieport 0000:c9:02.0: AER: aer_uncor_severity: 0x00463010
-
-Fixes: 5b246e533d01 ("ice: split probe into smaller functions")
-Signed-off-by: Jakub Buchocki <jakubx.buchocki@intel.com>
-Reviewed-by: Przemek Kitszel <przemyslaw.kitszel@intel.com>
-Tested-by: Pucha Himasekhar Reddy <himasekharx.reddy.pucha@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
-v2: Changed to avoid multiple, individual calls to ice_clear_interrupt_scheme().
-
-v1: https://lore.kernel.org/netdev/20230523173033.3577110-1-anthony.l.nguyen@intel.com/
-
- drivers/net/ethernet/intel/ice/ice_main.c | 16 +++++-----------
- 1 file changed, 5 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 03513d4871ab..42c318ceff61 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -4802,9 +4802,13 @@ static int ice_init_dev(struct ice_pf *pf)
- static void ice_deinit_dev(struct ice_pf *pf)
- {
- 	ice_free_irq_msix_misc(pf);
--	ice_clear_interrupt_scheme(pf);
- 	ice_deinit_pf(pf);
- 	ice_deinit_hw(&pf->hw);
-+
-+	/* Service task is already stopped, so call reset directly. */
-+	ice_reset(&pf->hw, ICE_RESET_PFR);
-+	pci_wait_for_pending_transaction(pf->pdev);
-+	ice_clear_interrupt_scheme(pf);
- }
- 
- static void ice_init_features(struct ice_pf *pf)
-@@ -5094,10 +5098,6 @@ int ice_load(struct ice_pf *pf)
- 	struct ice_vsi *vsi;
- 	int err;
- 
--	err = ice_reset(&pf->hw, ICE_RESET_PFR);
--	if (err)
--		return err;
--
- 	err = ice_init_dev(pf);
- 	if (err)
- 		return err;
-@@ -5354,12 +5354,6 @@ static void ice_remove(struct pci_dev *pdev)
- 	ice_setup_mc_magic_wake(pf);
- 	ice_set_wake(pf);
- 
--	/* Issue a PFR as part of the prescribed driver unload flow.  Do not
--	 * do it via ice_schedule_reset() since there is no need to rebuild
--	 * and the service task is already stopped.
--	 */
--	ice_reset(&pf->hw, ICE_RESET_PFR);
--	pci_wait_for_pending_transaction(pdev);
- 	pci_disable_device(pdev);
- }
- 
--- 
-2.38.1
+> ---
+>  drivers/phy/qualcomm/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/phy/qualcomm/Makefile b/drivers/phy/qualcomm/Makefile
+> index de3dc9ccf067..5fb33628566b 100644
+> --- a/drivers/phy/qualcomm/Makefile
+> +++ b/drivers/phy/qualcomm/Makefile
+> @@ -20,4 +20,4 @@ obj-$(CONFIG_PHY_QCOM_USB_HSIC) 	+= phy-qcom-usb-hsic.o
+>  obj-$(CONFIG_PHY_QCOM_USB_HS_28NM)	+= phy-qcom-usb-hs-28nm.o
+>  obj-$(CONFIG_PHY_QCOM_USB_SS)		+= phy-qcom-usb-ss.o
+>  obj-$(CONFIG_PHY_QCOM_USB_SNPS_FEMTO_V2)+= phy-qcom-snps-femto-v2.o
+> -obj-$(CONFIG_PHY_QCOM_IPQ806X_USB)		+= phy-qcom-ipq806x-usb.o
+> +obj-$(CONFIG_PHY_QCOM_IPQ806X_USB)	+= phy-qcom-ipq806x-usb.o
+> -- 
+> 2.39.2
+> 
 
 
