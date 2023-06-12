@@ -1,64 +1,62 @@
-Return-Path: <netdev+bounces-10229-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10230-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5791372D136
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 22:58:26 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4CC7C72D138
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 22:58:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 85F711C208F5
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 20:58:22 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 06F9D280E51
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 20:58:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2ED6FD2F7;
-	Mon, 12 Jun 2023 20:58:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1C64F19E4B;
+	Mon, 12 Jun 2023 20:58:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21E0719E4B
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 20:58:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1200915493
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 20:58:06 +0000 (UTC)
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9E746B4
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 13:57:42 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C110E49CA
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 13:57:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686603462; x=1718139462;
+  t=1686603465; x=1718139465;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=olpNJQK0PpXcqiOa1N2oZUMrB9cVFlr8UO1NVFAXt5A=;
-  b=hOdsekQFZzG2yMqC49nSlN2xLSaTM+Xl0smuqlqvgLvio9jVoqFpGSqO
-   JssMCB0dm1w+8RxxrLXztw5J7JGV2fbDzJeeErVUkE3NUEm8aR/Bi5Zc2
-   Dt6fO/WaVm155nstsjc8VJkLKlOG/qtYnOivtAlUIzJBpebUZJv0bqx9l
-   dNGoIItUceAdPAXzytNYEGKhlkISUmKwdvcHpzuRq7SdOct0GDpY4HBF5
-   XqfZxHbroZpc9muhsRPORIa7qUAndiraTLgwzshltwUECRn9p+YKyc2tp
-   ocyqRZRgdPCOQ6/rMsPsOvsZaFEAe69ZSKrc5Ua49fmTpxuXfjdKycebs
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10739"; a="386548211"
+  bh=/h2+CPsWTXxToiP47qCqfP8kaA4QSjM5C0Bm7Fp6Wb4=;
+  b=PA6vFgoZE9qzGVada31CWcaF8UEd48EABAMzUhoHx+Z4gK9cyHuqAOLv
+   W4jYmVQbtaE+MD0Xs22pNqqLjEJGW5w1FbMOlMyBmpHlY3NbtPvkyZrKl
+   evWZe4d+GgRFNi203wiVQM08jaiGURHIB82rgZ7xnsz0SRBI/O1zLPiKQ
+   idNQojrT+Qw2LsJ59WWhDAcmTAQ1jusKKy0kR2cxr2gdgvIXBSSp1oLJB
+   YlLTBiGjjpLdO77LuRJEtXAYEUYCTT5/UfL6U/l5wZQCK3fJ2LCqa6goX
+   /bisWNkyQ09Va8Rq2V7SAMs+D4cQ+LTDB9qAVP8goIBFMJMIE2t2oW7jq
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10739"; a="386548224"
 X-IronPort-AV: E=Sophos;i="6.00,236,1681196400"; 
-   d="scan'208";a="386548211"
+   d="scan'208";a="386548224"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2023 13:56:50 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2023 13:56:52 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10739"; a="885586121"
+X-IronPort-AV: E=McAfee;i="6600,9927,10739"; a="885586130"
 X-IronPort-AV: E=Sophos;i="6.00,236,1681196400"; 
-   d="scan'208";a="885586121"
+   d="scan'208";a="885586130"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by orsmga005.jf.intel.com with ESMTP; 12 Jun 2023 13:56:50 -0700
+  by orsmga005.jf.intel.com with ESMTP; 12 Jun 2023 13:56:52 -0700
 From: Tony Nguyen <anthony.l.nguyen@intel.com>
 To: davem@davemloft.net,
 	kuba@kernel.org,
 	pabeni@redhat.com,
 	edumazet@google.com,
 	netdev@vger.kernel.org
-Cc: Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+Cc: Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
 	anthony.l.nguyen@intel.com,
-	sasha.neftin@intel.com,
-	Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>,
-	Naama Meir <naamax.meir@linux.intel.com>
-Subject: [PATCH net v3 2/3] igc: Fix possible system crash when loading module
-Date: Mon, 12 Jun 2023 13:52:07 -0700
-Message-Id: <20230612205208.115292-3-anthony.l.nguyen@intel.com>
+	maciej.fijalkowski@intel.com
+Subject: [PATCH net v3 3/3] igb: fix nvm.ops.read() error handling
+Date: Mon, 12 Jun 2023 13:52:08 -0700
+Message-Id: <20230612205208.115292-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230612205208.115292-1-anthony.l.nguyen@intel.com>
 References: <20230612205208.115292-1-anthony.l.nguyen@intel.com>
@@ -76,43 +74,39 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+From: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
 
-Guarantee that when probe() is run again, PTM and PCI busmaster will be
-in the same state as it was if the driver was never loaded.
+Add error handling into igb_set_eeprom() function, in case
+nvm.ops.read() fails just quit with error code asap.
 
-Avoid an i225/i226 hardware issue that PTM requests can be made even
-though PCI bus mastering is not enabled. These unexpected PTM requests
-can crash some systems.
-
-So, "force" disable PTM and busmastering before removing the driver,
-so they can be re-enabled in the right order during probe(). This is
-more like a workaround and should be applicable for i225 and i226, in
-any platform.
-
-Fixes: 1b5d73fb8624 ("igc: Enable PCIe PTM")
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Reviewed-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+Fixes: 9d5c824399de ("igb: PCI-Express 82575 Gigabit Ethernet driver")
+Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 3 +++
+ drivers/net/ethernet/intel/igb/igb_ethtool.c | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index f986e88be5c1..fa764190f270 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -6730,6 +6730,9 @@ static void igc_remove(struct pci_dev *pdev)
+diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+index 7d60da1b7bf4..319ed601eaa1 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
++++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+@@ -822,6 +822,8 @@ static int igb_set_eeprom(struct net_device *netdev,
+ 		 */
+ 		ret_val = hw->nvm.ops.read(hw, last_word, 1,
+ 				   &eeprom_buff[last_word - first_word]);
++		if (ret_val)
++			goto out;
+ 	}
  
- 	igc_ptp_stop(adapter);
+ 	/* Device's eeprom is always little-endian, word addressable */
+@@ -841,6 +843,7 @@ static int igb_set_eeprom(struct net_device *netdev,
+ 		hw->nvm.ops.update(hw);
  
-+	pci_disable_ptm(pdev);
-+	pci_clear_master(pdev);
-+
- 	set_bit(__IGC_DOWN, &adapter->state);
- 
- 	del_timer_sync(&adapter->watchdog_timer);
+ 	igb_set_fw_version(adapter);
++out:
+ 	kfree(eeprom_buff);
+ 	return ret_val;
+ }
 -- 
 2.38.1
 
