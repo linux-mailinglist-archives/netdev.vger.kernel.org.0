@@ -1,60 +1,60 @@
-Return-Path: <netdev+bounces-10059-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10060-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7A23972BCDE
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 11:41:18 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1338172BCE0
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 11:41:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5200828101E
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 09:41:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 53D3E1C20A31
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 09:41:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C520E182DD;
-	Mon, 12 Jun 2023 09:40:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A977F182C6;
+	Mon, 12 Jun 2023 09:40:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B49CD182C5
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 09:40:55 +0000 (UTC)
-Received: from mail-io1-f77.google.com (mail-io1-f77.google.com [209.85.166.77])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04EBE1734
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 02:40:53 -0700 (PDT)
-Received: by mail-io1-f77.google.com with SMTP id ca18e2360f4ac-76c5c78bc24so528024039f.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E49C18B01
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 09:40:56 +0000 (UTC)
+Received: from mail-io1-f80.google.com (mail-io1-f80.google.com [209.85.166.80])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCB61730
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 02:40:52 -0700 (PDT)
+Received: by mail-io1-f80.google.com with SMTP id ca18e2360f4ac-777ab76f328so360767339f.1
         for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 02:40:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20221208; t=1686562852; x=1689154852;
         h=to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=GeDlNqlqujyIZPYPMyB8rAGwsdFvFmX14tVYLhI79Ew=;
-        b=jxFYlHWfhfU/LC7l81kdFcX3V6tuZF2LGAmY3qNLp4zAzvNk219X/MEfNpSGmjvKYG
-         fFLUeEuv1AZYQQKVW23rqndJNQQFOsr3KXvwASJOHuiJJfz+gb29D9UTHmyGV5q2JfO1
-         Zial7ZEZGtXI/qMvPQNfOSw8KrJfAFvi8VxLdFM6oSyPL0eBuE2aEUhfbSPGbpdmIwEV
-         SDp8W26mgtbsH1igpdij7vgbyOGvH3DG4k+T/ZcWVJXGjJLuaOa6hq12lnpHF8hJRpcd
-         /GtTf9IAtWpedSzTT5x6j7rWVumzP9LCbrCAhEGEOHCAvbM6GwA4u4j27AJm1xKiRiDC
-         Ub4g==
-X-Gm-Message-State: AC+VfDxM/O9Qx9qIS8p91I0RkwOLpQicct92diO1kKWfRD2if2N5Vojy
-	77OewvtGIQ0e51SBwcLeTKz3fFE98kZlyVfiBWjYB+xeI7/b
-X-Google-Smtp-Source: ACHHUZ5wOKfbH2v0C1wBmVKZfkRjEmJ4VBrUIwZS1RnykohbboUyLC7lPr2hYqhhFeeJx4MDRg81OHJN6ls4oI6ON2i0Zwz8YCg+
+        bh=kfYqGXcZCJG3QZnCnhuyj9cVlmftF9FOW17Z0xBS6XU=;
+        b=LPonZhjA094dWE+yrlNJ961b0hfLrzzeRJL/WCKyTxAQBGGTbZTluY8mz9p8so/t/d
+         tsLycuEEZGnPdKyWjLDNmQ+xc21Z3J6k1wo6OYbYNh7VQZDgruqfRFRBAuXPZJpsyEuY
+         RB2fobwPOSxZCxssvypXQMiMEzUeLX5QDwdGDz0mThC5uM4luECgG1W5szqn50QWSIIw
+         0L1xfNnVxnuN5H6dbZvaoIhq5jAxTmp15nQ70KJZMrfWFqUIyDwllbP3FzqaPIjdc+3f
+         WV7juMu/w8VTEgfCUCI3xV9/BGbx0tgA/U2fEaq2ozWcwOcLKe4W55LCrhvOHW1xms1w
+         Ir7A==
+X-Gm-Message-State: AC+VfDyFPNweZjcJINqVXxWI93kFFWed5c5RUT15O8kgza9/yVciXbu1
+	UpxBonHi/ekoaHkDWxJwZEi5FX0v7Att65hjEpF/Dcb/NRYy
+X-Google-Smtp-Source: ACHHUZ4c0nOVnqZMoMWM/bLdD3IBiTtYor/ZM78/8EBD8eAUxbtBI8T0b1ttjP8fuarSqOaoO5u5Ld7pv0vkUUAIl8hmFGMiGb24
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:5b13:0:b0:770:16ed:c4e5 with SMTP id
- v19-20020a6b5b13000000b0077016edc4e5mr3571910ioh.3.1686562852393; Mon, 12 Jun
+X-Received: by 2002:a05:6602:2b15:b0:774:8680:b95b with SMTP id
+ p21-20020a0566022b1500b007748680b95bmr6980256iov.1.1686562852195; Mon, 12 Jun
  2023 02:40:52 -0700 (PDT)
 Date: Mon, 12 Jun 2023 02:40:52 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b55d8805fdeb8385@google.com>
-Subject: [syzbot] [crypto?] general protection fault in shash_async_export
-From: syzbot <syzbot+472626bb5e7c59fb768f@syzkaller.appspotmail.com>
+Message-ID: <000000000000b2585a05fdeb8379@google.com>
+Subject: [syzbot] [crypto?] KASAN: slab-out-of-bounds Read in extract_iter_to_sg
+From: syzbot <syzbot+6efc50cc1f8d718d6cb7@syzkaller.appspotmail.com>
 To: davem@davemloft.net, dhowells@redhat.com, herbert@gondor.apana.org.au, 
-	linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	netdev@vger.kernel.org, pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+	kuba@kernel.org, linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
 	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
@@ -67,114 +67,180 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    37ff78e977f1 mlxsw: spectrum_nve_vxlan: Fix unsupported fl..
+HEAD commit:    e7c5433c5aaa tools: ynl: Remove duplicated include in hand..
 git tree:       net-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=15a22943280000
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=112cc875280000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=526f919910d4a671
-dashboard link: https://syzkaller.appspot.com/bug?extid=472626bb5e7c59fb768f
+dashboard link: https://syzkaller.appspot.com/bug?extid=6efc50cc1f8d718d6cb7
 compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=133e0463280000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1543e995280000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=104f3fa5280000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=176d012d280000
 
 Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/41e829152d3c/disk-37ff78e9.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/a594b97acb02/vmlinux-37ff78e9.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/b41140b53372/bzImage-37ff78e9.xz
+disk image: https://storage.googleapis.com/syzbot-assets/13c08af1fd21/disk-e7c5433c.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/35820511752b/vmlinux-e7c5433c.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/6a8cbec0d40f/bzImage-e7c5433c.xz
 
 The issue was bisected to:
 
-commit c662b043cdca89bf0f03fc37251000ac69a3a548
+commit 2dc334f1a63a8839b88483a3e73c0f27c9c1791c
 Author: David Howells <dhowells@redhat.com>
-Date:   Tue Jun 6 13:08:56 2023 +0000
+Date:   Wed Jun 7 18:19:09 2023 +0000
 
-    crypto: af_alg/hash: Support MSG_SPLICE_PAGES
+    splice, net: Use sendmsg(MSG_SPLICE_PAGES) rather than ->sendpage()
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15c78453280000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=17c78453280000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13c78453280000
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12c10c75280000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=11c10c75280000
+console output: https://syzkaller.appspot.com/x/log.txt?x=16c10c75280000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+472626bb5e7c59fb768f@syzkaller.appspotmail.com
-Fixes: c662b043cdca ("crypto: af_alg/hash: Support MSG_SPLICE_PAGES")
+Reported-by: syzbot+6efc50cc1f8d718d6cb7@syzkaller.appspotmail.com
+Fixes: 2dc334f1a63a ("splice, net: Use sendmsg(MSG_SPLICE_PAGES) rather than ->sendpage()")
 
-general protection fault, probably for non-canonical address 0xdffffc0000000004: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
-CPU: 1 PID: 5002 Comm: syz-executor421 Not tainted 6.4.0-rc5-syzkaller-00859-g37ff78e977f1 #0
+==================================================================
+BUG: KASAN: slab-out-of-bounds in sg_assign_page include/linux/scatterlist.h:109 [inline]
+BUG: KASAN: slab-out-of-bounds in sg_set_page include/linux/scatterlist.h:139 [inline]
+BUG: KASAN: slab-out-of-bounds in extract_bvec_to_sg lib/scatterlist.c:1183 [inline]
+BUG: KASAN: slab-out-of-bounds in extract_iter_to_sg lib/scatterlist.c:1352 [inline]
+BUG: KASAN: slab-out-of-bounds in extract_iter_to_sg+0x17a6/0x1960 lib/scatterlist.c:1339
+Read of size 8 at addr ffff88807e016ff8 by task syz-executor415/5028
+
+CPU: 1 PID: 5028 Comm: syz-executor415 Not tainted 6.4.0-rc5-syzkaller-00915-ge7c5433c5aaa #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/25/2023
-RIP: 0010:crypto_shash_alg include/crypto/hash.h:827 [inline]
-RIP: 0010:crypto_shash_export include/crypto/hash.h:956 [inline]
-RIP: 0010:shash_async_export+0x47/0xa0 crypto/shash.c:389
-Code: 00 fc ff df 4c 89 e2 48 c1 ea 03 80 3c 02 00 75 4e 48 b8 00 00 00 00 00 fc ff df 48 8b 5b 50 48 8d 7b 20 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 40 48 b8 00 00 00 00 00 fc ff df 48 8b 5b 20 48 8d
-RSP: 0018:ffffc900038afd20 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000004 RSI: ffffffff83df0723 RDI: 0000000000000020
-RBP: 0000000000000010 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000001 R11: 000000000000064d R12: ffff8880766612f8
-R13: 0000000000000001 R14: ffff888077e0aa00 R15: ffff88802927ea48
-FS:  00005555557db300(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f069bf4bfd8 CR3: 00000000773e6000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
  <TASK>
- crypto_ahash_export include/crypto/hash.h:523 [inline]
- hash_accept+0x229/0x670 crypto/algif_hash.c:286
- hash_accept_nokey+0x67/0x90 crypto/algif_hash.c:416
- do_accept+0x380/0x510 net/socket.c:1883
- __sys_accept4_file net/socket.c:1924 [inline]
- __sys_accept4+0x9a/0x120 net/socket.c:1954
- __do_sys_accept net/socket.c:1971 [inline]
- __se_sys_accept net/socket.c:1968 [inline]
- __x64_sys_accept+0x75/0xb0 net/socket.c:1968
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
+ print_address_description.constprop.0+0x2c/0x3c0 mm/kasan/report.c:351
+ print_report mm/kasan/report.c:462 [inline]
+ kasan_report+0x11c/0x130 mm/kasan/report.c:572
+ sg_assign_page include/linux/scatterlist.h:109 [inline]
+ sg_set_page include/linux/scatterlist.h:139 [inline]
+ extract_bvec_to_sg lib/scatterlist.c:1183 [inline]
+ extract_iter_to_sg lib/scatterlist.c:1352 [inline]
+ extract_iter_to_sg+0x17a6/0x1960 lib/scatterlist.c:1339
+ af_alg_sendmsg+0x1917/0x2990 crypto/af_alg.c:1045
+ sock_sendmsg_nosec net/socket.c:724 [inline]
+ sock_sendmsg+0xde/0x190 net/socket.c:747
+ splice_to_socket+0x954/0xe30 fs/splice.c:917
+ do_splice_from fs/splice.c:969 [inline]
+ direct_splice_actor+0x114/0x180 fs/splice.c:1157
+ splice_direct_to_actor+0x34a/0x9c0 fs/splice.c:1103
+ do_splice_direct+0x1ad/0x280 fs/splice.c:1209
+ do_sendfile+0xb19/0x12c0 fs/read_write.c:1254
+ __do_sys_sendfile64 fs/read_write.c:1316 [inline]
+ __se_sys_sendfile64 fs/read_write.c:1308 [inline]
+ __x64_sys_sendfile64+0x14d/0x210 fs/read_write.c:1308
  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f069bf04c39
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc03b39588 EFLAGS: 00000246 ORIG_RAX: 000000000000002b
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f069bf04c39
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000004
-RBP: 00007f069bec8de0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f069bec8e70
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+RIP: 0033:0x7f8d65191a89
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f8d65101308 EFLAGS: 00000246 ORIG_RAX: 0000000000000028
+RAX: ffffffffffffffda RBX: 00007f8d65219428 RCX: 00007f8d65191a89
+RDX: 0000000020000180 RSI: 0000000000000003 RDI: 0000000000000005
+RBP: 00007f8d65219420 R08: 00007f8d65101700 R09: 0000000000000000
+R10: 00000000ffffffff R11: 0000000000000246 R12: 00007f8d6521942c
+R13: 00007f8d651e7064 R14: 7265687069636b73 R15: 0000000000022000
  </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:crypto_shash_alg include/crypto/hash.h:827 [inline]
-RIP: 0010:crypto_shash_export include/crypto/hash.h:956 [inline]
-RIP: 0010:shash_async_export+0x47/0xa0 crypto/shash.c:389
-Code: 00 fc ff df 4c 89 e2 48 c1 ea 03 80 3c 02 00 75 4e 48 b8 00 00 00 00 00 fc ff df 48 8b 5b 50 48 8d 7b 20 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 40 48 b8 00 00 00 00 00 fc ff df 48 8b 5b 20 48 8d
-RSP: 0018:ffffc900038afd20 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000004 RSI: ffffffff83df0723 RDI: 0000000000000020
-RBP: 0000000000000010 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000001 R11: 000000000000064d R12: ffff8880766612f8
-R13: 0000000000000001 R14: ffff888077e0aa00 R15: ffff88802927ea48
-FS:  00005555557db300(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000558cc7d83000 CR3: 00000000773e6000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess), 3 bytes skipped:
-   0:	df 4c 89 e2          	fisttps -0x1e(%rcx,%rcx,4)
-   4:	48 c1 ea 03          	shr    $0x3,%rdx
-   8:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
-   c:	75 4e                	jne    0x5c
-   e:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  15:	fc ff df
-  18:	48 8b 5b 50          	mov    0x50(%rbx),%rbx
-  1c:	48 8d 7b 20          	lea    0x20(%rbx),%rdi
-  20:	48 89 fa             	mov    %rdi,%rdx
-  23:	48 c1 ea 03          	shr    $0x3,%rdx
-* 27:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
-  2b:	75 40                	jne    0x6d
-  2d:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  34:	fc ff df
-  37:	48 8b 5b 20          	mov    0x20(%rbx),%rbx
-  3b:	48                   	rex.W
-  3c:	8d                   	.byte 0x8d
+
+Allocated by task 5028:
+ kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+ kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+ ____kasan_kmalloc mm/kasan/common.c:374 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:333 [inline]
+ __kasan_kmalloc+0xa2/0xb0 mm/kasan/common.c:383
+ kasan_kmalloc include/linux/kasan.h:196 [inline]
+ __do_kmalloc_node mm/slab_common.c:966 [inline]
+ __kmalloc+0x5e/0x190 mm/slab_common.c:979
+ kmalloc include/linux/slab.h:563 [inline]
+ sock_kmalloc+0xb2/0x100 net/core/sock.c:2630
+ af_alg_alloc_tsgl crypto/af_alg.c:614 [inline]
+ af_alg_sendmsg+0x17a4/0x2990 crypto/af_alg.c:1028
+ sock_sendmsg_nosec net/socket.c:724 [inline]
+ sock_sendmsg+0xde/0x190 net/socket.c:747
+ splice_to_socket+0x954/0xe30 fs/splice.c:917
+ do_splice_from fs/splice.c:969 [inline]
+ direct_splice_actor+0x114/0x180 fs/splice.c:1157
+ splice_direct_to_actor+0x34a/0x9c0 fs/splice.c:1103
+ do_splice_direct+0x1ad/0x280 fs/splice.c:1209
+ do_sendfile+0xb19/0x12c0 fs/read_write.c:1254
+ __do_sys_sendfile64 fs/read_write.c:1316 [inline]
+ __se_sys_sendfile64 fs/read_write.c:1308 [inline]
+ __x64_sys_sendfile64+0x14d/0x210 fs/read_write.c:1308
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+The buggy address belongs to the object at ffff88807e016000
+ which belongs to the cache kmalloc-4k of size 4096
+The buggy address is located 0 bytes to the right of
+ allocated 4088-byte region [ffff88807e016000, ffff88807e016ff8)
+
+The buggy address belongs to the physical page:
+page:ffffea0001f80400 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x7e010
+head:ffffea0001f80400 order:3 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+page_type: 0xffffffff()
+raw: 00fff00000010200 ffff888012442140 dead000000000122 0000000000000000
+raw: 0000000000000000 0000000080040004 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd2040(__GFP_IO|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5019, tgid 5019 (modprobe), ts 80491362379, free_ts 80455993447
+ set_page_owner include/linux/page_owner.h:31 [inline]
+ post_alloc_hook+0x2db/0x350 mm/page_alloc.c:1731
+ prep_new_page mm/page_alloc.c:1738 [inline]
+ get_page_from_freelist+0xf41/0x2c00 mm/page_alloc.c:3502
+ __alloc_pages+0x1cb/0x4a0 mm/page_alloc.c:4768
+ alloc_pages+0x1aa/0x270 mm/mempolicy.c:2279
+ alloc_slab_page mm/slub.c:1851 [inline]
+ allocate_slab+0x25f/0x390 mm/slub.c:1998
+ new_slab mm/slub.c:2051 [inline]
+ ___slab_alloc+0xa91/0x1400 mm/slub.c:3192
+ __slab_alloc.constprop.0+0x56/0xa0 mm/slub.c:3291
+ __slab_alloc_node mm/slub.c:3344 [inline]
+ slab_alloc_node mm/slub.c:3441 [inline]
+ __kmem_cache_alloc_node+0x136/0x320 mm/slub.c:3490
+ __do_kmalloc_node mm/slab_common.c:965 [inline]
+ __kmalloc+0x4e/0x190 mm/slab_common.c:979
+ kmalloc include/linux/slab.h:563 [inline]
+ tomoyo_realpath_from_path+0xc3/0x600 security/tomoyo/realpath.c:251
+ tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
+ tomoyo_path_perm+0x230/0x430 security/tomoyo/file.c:822
+ security_inode_getattr+0xd3/0x140 security/security.c:2114
+ vfs_getattr fs/stat.c:167 [inline]
+ vfs_statx+0x16e/0x430 fs/stat.c:242
+ vfs_fstatat+0x90/0xb0 fs/stat.c:276
+ __do_sys_newfstatat+0x8a/0x110 fs/stat.c:446
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1302 [inline]
+ free_unref_page_prepare+0x62e/0xcb0 mm/page_alloc.c:2564
+ free_unref_page+0x33/0x370 mm/page_alloc.c:2659
+ __folio_put_large mm/swap.c:119 [inline]
+ __folio_put+0x109/0x140 mm/swap.c:127
+ folio_put include/linux/mm.h:1430 [inline]
+ put_page+0x21b/0x280 include/linux/mm.h:1499
+ page_to_skb+0x810/0xa10 drivers/net/virtio_net.c:560
+ receive_mergeable drivers/net/virtio_net.c:1469 [inline]
+ receive_buf+0x1128/0x5020 drivers/net/virtio_net.c:1590
+ virtnet_receive drivers/net/virtio_net.c:1888 [inline]
+ virtnet_poll+0x742/0x14b0 drivers/net/virtio_net.c:1960
+ __napi_poll+0xb7/0x6f0 net/core/dev.c:6501
+ napi_poll net/core/dev.c:6568 [inline]
+ net_rx_action+0x8a9/0xcb0 net/core/dev.c:6701
+ __do_softirq+0x1d4/0x905 kernel/softirq.c:571
+
+Memory state around the buggy address:
+ ffff88807e016e80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88807e016f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff88807e016f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 fc
+                                                                ^
+ ffff88807e017000: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88807e017080: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
 
 
 ---
