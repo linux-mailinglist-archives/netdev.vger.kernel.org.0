@@ -1,217 +1,209 @@
-Return-Path: <netdev+bounces-9959-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9960-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 15DFA72B6B1
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 06:44:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4A14572B6D7
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 06:48:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 077A81C20A5C
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 04:44:53 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 428E71C20A86
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 04:48:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0592B17E1;
-	Mon, 12 Jun 2023 04:44:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 18BB717E1;
+	Mon, 12 Jun 2023 04:48:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED9E715B7
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 04:44:53 +0000 (UTC)
-Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2098.outbound.protection.outlook.com [40.107.117.98])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E33E1171F;
-	Sun, 11 Jun 2023 21:44:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ao1zz4RP1rkuzIiMvzC/Dfl7eEm5hCNZrZnDtqZihYXsNn5tSj8ihv74O8gn3W5LSlHd9imXpSQVaNfLDedg8sk6V6ilA87lQwgeGDhWcJjHQ6Qrf2H38LE682Gf3RP2gV6DAN81m5Jgt/7xJDb9+pX0VO04WUg8+ffKgtNLmWB123jPE/pXpoyTRkxhhjr5RwU2P3ln84l5oHItYSYKN4g9kRj6GRDbOhVvjOILAfX1uyTEzDaFxAuWCl8tvzp1ciP4qFpuMxwHO6HkHWhTB9tyarPwDgojVFKwNkv7Uzzzh0LJmuAVUKXXb5zE0e0CegoWGO3/4Jylwf5Lv148FQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YHjwTgLFcNJj0wyrZHVMKfHWyCiJPiJ2euEEU90+NB0=;
- b=IJMnexhSeZ/BneZKW0mfny+0ibb2QWYQQ5+ZBw8jb8HeuF5ekloDyw5q1Jc+B1NvA94OzOAW6vwaVUF1r80hIS+gJ3+a0TrkHn5GXoOIpu1T9hI8Xo6++wMLcmru+aMCHABm4rCmojXc7o+mBZnXin7WS7XCRfYlGqhvmiT9pw+7hYKpMlbM8sMWnPLCQxl0xmyqFHhzo+Wml1gPSs920LJgePvR2jJogLxASmjLKor+hIzOHKjY5/QCE7FuECj5/E4hfaiT/XXssTcvnsmkHpucaQrdDVUzDg/3jC4F3DgxH4MycknU3k0Zno9gAA/F9c7MtjNCpSiEwYCbBvHa1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YHjwTgLFcNJj0wyrZHVMKfHWyCiJPiJ2euEEU90+NB0=;
- b=fFbBQo2NcYGzrcUKLwDb0kPYYQ1WzZqZ8AHxSRLM04qCo8O6LvNsPBLZRffBXfdlUPWlOABXKNrl9vAuzXJtdIe0lp1ALR09js/Oq2Y0liQ1WvXMaSPwFKiLJ0LHJjJRqSZVCZqRi0Q3lN6vRWEDRBQKuxdQaE043cGLMHG2z6c=
-Received: from SI2P153MB0441.APCP153.PROD.OUTLOOK.COM (2603:1096:4:fc::7) by
- TYZP153MB0628.APCP153.PROD.OUTLOOK.COM (2603:1096:400:25e::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6521.3; Mon, 12 Jun 2023 04:44:44 +0000
-Received: from SI2P153MB0441.APCP153.PROD.OUTLOOK.COM
- ([fe80::7d79:7433:e57b:55b5]) by SI2P153MB0441.APCP153.PROD.OUTLOOK.COM
- ([fe80::7d79:7433:e57b:55b5%4]) with mapi id 15.20.6521.002; Mon, 12 Jun 2023
- 04:44:44 +0000
-From: Wei Hu <weh@microsoft.com>
-To: Jakub Kicinski <kuba@kernel.org>
-CC: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>, Long Li
-	<longli@microsoft.com>, Ajay Sharma <sharmaajay@microsoft.com>,
-	"jgg@ziepe.ca" <jgg@ziepe.ca>, "leon@kernel.org" <leon@kernel.org>, KY
- Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
-	<edumazet@google.com>, "pabeni@redhat.com" <pabeni@redhat.com>,
-	"vkuznets@redhat.com" <vkuznets@redhat.com>, "ssengar@linux.microsoft.com"
-	<ssengar@linux.microsoft.com>, "shradhagupta@linux.microsoft.com"
-	<shradhagupta@linux.microsoft.com>
-Subject: RE: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to mana ib
- driver.
-Thread-Topic: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to mana ib
- driver.
-Thread-Index: AQHZmIoyK0/pJvWPX0+gdBo6594smK+AVTiAgAZKrxA=
-Date: Mon, 12 Jun 2023 04:44:44 +0000
-Message-ID:
- <SI2P153MB0441DAC4E756A1991A03520FBB54A@SI2P153MB0441.APCP153.PROD.OUTLOOK.COM>
-References: <20230606151747.1649305-1-weh@microsoft.com>
- <20230607213903.470f71ae@kernel.org>
-In-Reply-To: <20230607213903.470f71ae@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=286edcf7-c4c8-4100-bc0e-54eb0eca02c6;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-06-12T04:43:54Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SI2P153MB0441:EE_|TYZP153MB0628:EE_
-x-ms-office365-filtering-correlation-id: ad805535-b1ef-4aa9-f41e-08db6affbe21
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- hmZWzL7I0dTSui7wNVmU2pf8DeDGfP+R/x2FTk0Z7tCeQ0GmvlopBle41y8AuC0r+tRMvKfe/4dGlU7jPVlFipCu8+t5mPNVfU556yiXs0vs/wownV1ltM9FQulm+BGhcKwNnvIP2okpKH5VfdFAHIob5pLEyUUY7zQFfJrgw3W/CFjJEU/eG5Bcg2tkMUVa0dU+XP9xnLd+lXMMUhMfC+r8thmTieJ2RsCY9WcFGfmtFJvRyxSeSULH3ehFBddp8TYPyAvGKk61RH5uw0BQLs8szPw55O6fekMRXYc0bQHDyNMDwVLShEEcUum3AwUD/dcvwjRim0Na2rIFVztSTwvqKWY4s+1K7TwM9rYa7A53gfpWEAdk+g956PSsq+tI5qsf7lAM6360Upi+jioVRIe469wGnVEtyeDUcxf32O5+cvS+LqEn8ibYdy6dy8COW2yfzCABDwHg7v6lSJd1QoDnynztinaGtp8fAKvG9HNCm8xVaS9CmpXcE/QBHbiyRN5ac/TIdEe25CObklFYRY+yVxL0pTMCTL6zrJ3Xd70sS7HFPo8CGBlYUJ7gj9iI6LPzlITRSweO+qewvvQ1Terr6prIAwdT2vAZlqxUOD7+3bk8Idhm+rRfqQ8mgyjU65Uc4iSKkbf1mCcDH0klPQ==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SI2P153MB0441.APCP153.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(136003)(396003)(346002)(376002)(366004)(451199021)(966005)(7696005)(316002)(41300700001)(83380400001)(86362001)(8990500004)(38070700005)(9686003)(6506007)(53546011)(186003)(26005)(107886003)(7416002)(2906002)(33656002)(122000001)(82950400001)(82960400001)(38100700002)(55016003)(52536014)(5660300002)(8936002)(8676002)(10290500003)(66946007)(66446008)(64756008)(66476007)(66556008)(54906003)(76116006)(4326008)(478600001)(71200400001)(6916009);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?HMxftERMGmJnb8/eTZ2/2CwfcHp8hs+tfpTT/TlBYvhBTMxZBgaAOpCdiuFZ?=
- =?us-ascii?Q?7ozqFyX33sXekSx33JL96g6jaRNgpPe7ghA+KojP936rhzaZD5DdApsjquUN?=
- =?us-ascii?Q?NibwA1VjwQJPWMXietk3P0MQvtVjFvtzSAf+QQyO8Yzo6z3EVOnpJI6pU53v?=
- =?us-ascii?Q?YlAi98hQZMRcER0XG8CquHZ2uHpYpIcG2sSBkZ+FJ6YbTQMTotxhJJxXvET2?=
- =?us-ascii?Q?/wO8Qt2pX20vSVY8JVUCoMxGkqdTjGEQFNfGAYdgWaX7kbo/J+g7wnMX5j9G?=
- =?us-ascii?Q?E8WObYnratrS/bd4g2HmmkKbD/T6DkmN2w8qOKWk7HJyNdLY7i5tPSi+RjGe?=
- =?us-ascii?Q?hIY6DSLJitfcqeTGuCRvBBvbiBYEnewOngbXHaY3v9aR0A0MF9Crm8H8Ha2w?=
- =?us-ascii?Q?mAZ78hr7n3d9VgdCxu3dEZKf/3EWoV+Ugg9JHbAiFR+1lEMTVikmS8lLGa8v?=
- =?us-ascii?Q?nRpnuNGmHY0xxAEWLFzbUkP46Uy106rqgFXeUuZ5gBqcyez3LvjWZVGS3JRc?=
- =?us-ascii?Q?sFqo/qExcffsmcGzwHoFM/hEPlrsEWuE12t55mu2Lpp2HrqCrDXqmae7P72Y?=
- =?us-ascii?Q?g0bsfwtREHvAPXquIbKOLeVg+kr5teEz6Stb6AQk4xw5eE5Wl/avxknFqIjK?=
- =?us-ascii?Q?Dr3bA0f5766iaLTEhA/7EJ1wPcC2UvAiT06LUpP8Y96IGURBxxRxsAS8TRch?=
- =?us-ascii?Q?ln15PMuRBsygJetIKV215dg3MOq4MZrzDNa5VinYT9lzv44eLawKFz+aHnDB?=
- =?us-ascii?Q?DqzV41fy6sk52JB6vISzvSMjz41YL+smJGLmdKO0ZQ+U+3aqwAn8RzajFENN?=
- =?us-ascii?Q?VqoirlQuuRPxMp01ReZTvWNmcoi6EngQGFY3uhwrnLz8+2LjxAvZ6yE8CJx2?=
- =?us-ascii?Q?ser5ZK7/OrBDmdRHaLd3+UbBmLjPne5N5id6c665G/g8V6ACLEh6NhM3Icr0?=
- =?us-ascii?Q?QS4RXB7oWjGOWL7eSzdj0TqDuaTWiMOdDDQUZ+9NjWANZu+owhbGDtwvAbDs?=
- =?us-ascii?Q?p+w3Of2sEds9doSKFfBxXS1l+ScjurQ5WtbnDfBTMI0DZho3kHJrE6srj8Wj?=
- =?us-ascii?Q?IwEh2ba1GnpXMtmbdNILZgQwNb4jzk3Zs8mZ28OcP63QLmfkLMLTCX9QJ8RG?=
- =?us-ascii?Q?lrSafm6dzUIpCPw5iGG0cXs0GXNnbcti1sfEeyiuGhePKJdMCUC5BZPOGjFq?=
- =?us-ascii?Q?asqvmctenZODz3Nzm1z1WTKcEHv7nz74vAo1PNRIDjOTgm63ghMKmFceXYcj?=
- =?us-ascii?Q?wHxkbQG/bIPp/38X63HMf4n6y2pHd8dOfXNREEQb6nj5Y0omr9HlXTpbU1PP?=
- =?us-ascii?Q?FEUtlqEFuefV4Evr/IuilaM70xqC4Frh+uamZ/sIQHgK2NsqEtlI7gE5dKq6?=
- =?us-ascii?Q?ng/I786/Bss90ydlaztZ7aNwU9wyPZ6jUnW7uTMdAG/VwEwI0urgK96/2ju6?=
- =?us-ascii?Q?pWIzBqWvgYDLcNgA/W30eNEsXkAQoMUVA9U+YOprHxuLeh0xgKd3qjFPpvyj?=
- =?us-ascii?Q?zQTApyM+BiJ1gA/oPq6nzAx9lZ9Qs/jvhHe7ocqrg1+/XRfEzFsUl4y292H+?=
- =?us-ascii?Q?nIg9epbrRbhCZkyQgpg=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 049B915B7
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 04:48:18 +0000 (UTC)
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED78171A
+	for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 21:47:47 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id 46e09a7af769-6b2a4cb5776so2261383a34.0
+        for <netdev@vger.kernel.org>; Sun, 11 Jun 2023 21:47:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google; t=1686545252; x=1689137252;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=kIt1K9BZMi5HxoB/9JAsQxlDrylKU/ghos43CnNh4J0=;
+        b=MqvqnOCgRpeGBPOeyep26tf1FBtHny5Ct7Ba+rsqAGuoOknZSXJAbSaejrS+YXKbKj
+         SHU4qFS20PG2j6aKlChGBsQ2I+cVP7p3uNpclm4O7C2YF8lhrUp5k7qmnbV0incB8q/s
+         6P+nHKWJ7kjXQ6jY97vKWKJ1vmFpGifBKJ7Io=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686545252; x=1689137252;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kIt1K9BZMi5HxoB/9JAsQxlDrylKU/ghos43CnNh4J0=;
+        b=fM8cWIggYqAYEfmyjngHzVRylDxbvoGv4Nml63AG94LYy55RKlUoI2yzd6pspauNwi
+         DsryMj3gfOTxwSeESHSveneJ4xpzPh7crMbU7J3o2uecD25R1jBHb+WNH0Vzem9M0b5m
+         VV+ZXiKgA7AE5bkvo1DAoOA0Z1RTX/2N42dtXfbUUxgmLHbBMjuxPOgSpOocquk2HeOP
+         ZjBtDPh118vry9t9TBc/02/51MW1M6qD5AwJGVP4pSiq4a82Si5dFVSKKhm/f1fxDMVo
+         vXZwCLavhcjXogJhhH4RaHVv9HqF7KtdcNQD0mOHA71ZyBa+QFSxd24PFN0jMz3/Hr3r
+         /3uA==
+X-Gm-Message-State: AC+VfDyp/bdZznDheQdKuUiLNQrdzaBv6zzpFP8aE31vGnWdm8tZxeG6
+	3zpvzI40T3i9nPJ8KMM5iNMD/fpxeP7l1VJjgFMPEA==
+X-Google-Smtp-Source: ACHHUZ6ZD99KeONlemlwFLAbixYBegrqNncfCYkDbHIh3aapyHrJf8k/R21zbJKemgnoYSTYBq1Rdoq+Z4CK9KZZ/js=
+X-Received: by 2002:a05:6808:f90:b0:398:f37:49d6 with SMTP id
+ o16-20020a0568080f9000b003980f3749d6mr3260670oiw.49.1686545252551; Sun, 11
+ Jun 2023 21:47:32 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SI2P153MB0441.APCP153.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: ad805535-b1ef-4aa9-f41e-08db6affbe21
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jun 2023 04:44:44.1905
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VmTsVxCoKPlN4QnIFTBSPuGC8W7dyMtHac7luPB13kGFEXb4tfDH+SSY3m46mI1dJY2df+EtgC4GkO8ybcAhgg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZP153MB0628
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+References: <e86a1ab7b450462a1e92264dccb5a5855546e384.1686516193.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <e86a1ab7b450462a1e92264dccb5a5855546e384.1686516193.git.christophe.jaillet@wanadoo.fr>
+From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Date: Mon, 12 Jun 2023 10:17:20 +0530
+Message-ID: <CALs4sv2KYY5pg58QY-tuRtw8XNOHqLXvg9AZx+MPjePWcZ4-+A@mail.gmail.com>
+Subject: Re: [PATCH net-next] ice: Remove managed memory usage in ice_get_fw_log_cfg()
+To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>, Tony Nguyen <anthony.l.nguyen@intel.com>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org, 
+	kernel-janitors@vger.kernel.org, intel-wired-lan@lists.osuosl.org, 
+	netdev@vger.kernel.org
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+	boundary="000000000000b351fe05fde76a6c"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Jakub,
+--000000000000b351fe05fde76a6c
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Thursday, June 8, 2023 12:39 PM
-> To: Wei Hu <weh@microsoft.com>
-> Cc: netdev@vger.kernel.org; linux-hyperv@vger.kernel.org; linux-
-> rdma@vger.kernel.org; Long Li <longli@microsoft.com>; Ajay Sharma
-> <sharmaajay@microsoft.com>; jgg@ziepe.ca; leon@kernel.org; KY
-> Srinivasan <kys@microsoft.com>; Haiyang Zhang <haiyangz@microsoft.com>;
-> wei.liu@kernel.org; Dexuan Cui <decui@microsoft.com>;
-> davem@davemloft.net; edumazet@google.com; pabeni@redhat.com;
-> vkuznets@redhat.com; ssengar@linux.microsoft.com;
-> shradhagupta@linux.microsoft.com
-> Subject: Re: [PATCH v2 1/1] RDMA/mana_ib: Add EQ interrupt support to
-> mana ib driver.
->=20
-> On Tue,  6 Jun 2023 15:17:47 +0000 Wei Hu wrote:
-> >  drivers/infiniband/hw/mana/cq.c               |  32 ++++-
-> >  drivers/infiniband/hw/mana/main.c             |  87 ++++++++++++
-> >  drivers/infiniband/hw/mana/mana_ib.h          |   4 +
-> >  drivers/infiniband/hw/mana/qp.c               |  90 +++++++++++-
-> >  .../net/ethernet/microsoft/mana/gdma_main.c   | 131 ++++++++++--------
-> >  drivers/net/ethernet/microsoft/mana/mana_en.c |   1 +
-> >  include/net/mana/gdma.h                       |   9 +-
->=20
-> IB and netdev are different subsystem, can you put it on a branch and sen=
-d a
-> PR as the cover letter so that both subsystems can pull?
->=20
-> Examples:
-> https://nam06.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Flore.
-> kernel.org%2Fall%2F20230607210410.88209-1-
-> saeed%40kernel.org%2F&data=3D05%7C01%7Cweh%40microsoft.com%7Cb672
-> 4a9f672f47d433ef08db67da4ada%7C72f988bf86f141af91ab2d7cd011db47%7C
-> 1%7C0%7C638217959538674174%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiM
-> C4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000
-> %7C%7C%7C&sdata=3DamO0W8QsR2I5INNNzCNOKEjrsYbzuZ92KXhNdfwSCHA
-> %3D&reserved=3D0
-> https://nam06.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Flore.
-> kernel.org%2Fall%2F20230602171302.745492-1-
-> anthony.l.nguyen%40intel.com%2F&data=3D05%7C01%7Cweh%40microsoft.co
-> m%7Cb6724a9f672f47d433ef08db67da4ada%7C72f988bf86f141af91ab2d7cd0
-> 11db47%7C1%7C0%7C638217959538674174%7CUnknown%7CTWFpbGZsb3d8
-> eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3
-> D%7C3000%7C%7C%7C&sdata=3DA%2BjjtSx%2FvY2T%2BNIEPGuftk%2BCr%2Fv
-> Yt2Xc1q8B6h2tb6g%3D&reserved=3D0
+On Mon, Jun 12, 2023 at 2:14=E2=80=AFAM Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+>
+> There is no need to use managed memory allocation here. The memory is
+> released at the end of the function.
+>
+> You kzalloc()/kfree() to simplify the code.
+>
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_common.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks for you comment. I am  new to the process. I have a few questions re=
-garding to this and hope you can help. First of all, the patch is mostly fo=
-r IB. Is it possible for the patch to just go through the RDMA branch, sinc=
-e most of the changes are in RDMA?=20
+Looks good to me.
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-If the patch also needs to go through the NETDEV branch, does it mean two s=
-ubsystems will pull its own part? A few follow-up questions about generatin=
-g a PR, since I have never done such before.
+>
+> diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/et=
+hernet/intel/ice/ice_common.c
+> index eb2dc0983776..4b799a5d378a 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_common.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_common.c
+> @@ -834,7 +834,7 @@ static int ice_get_fw_log_cfg(struct ice_hw *hw)
+>         u16 size;
+>
+>         size =3D sizeof(*config) * ICE_AQC_FW_LOG_ID_MAX;
+> -       config =3D devm_kzalloc(ice_hw_to_dev(hw), size, GFP_KERNEL);
+> +       config =3D kzalloc(size, GFP_KERNEL);
+>         if (!config)
+>                 return -ENOMEM;
+>
+> @@ -857,7 +857,7 @@ static int ice_get_fw_log_cfg(struct ice_hw *hw)
+>                 }
+>         }
+>
+> -       devm_kfree(ice_hw_to_dev(hw), config);
+> +       kfree(config);
+>
+>         return status;
+>  }
+> --
+> 2.34.1
+>
+>
 
-1. Which repo should I clone and create the branch from?
+--000000000000b351fe05fde76a6c
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-2. From the example you provided, I see these people has their own branches=
- on kernel.org, for example something like:
-git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-upd=
-ates-2023-06-06.=20
-I am not Linux maintainer. I just have repo on Github. How do I create or f=
-ork on kernel.org? Do I need an account to do so? Or I can use my own repo =
-on Github?
-
-3.  How to create PR in this case? Should I follow this link: https://docs.=
-kernel.org/maintainer/pull-requests.html?
-
-Thanks,
-Wei
+MIIQbQYJKoZIhvcNAQcCoIIQXjCCEFoCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3EMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
+MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
+rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
+aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
+e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
+cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
+MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
+KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
+TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
+YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
+b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
+c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
+CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
+BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
+jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
+9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
+/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
+jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
+AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
+dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
+MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
+IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
+XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
+J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
+nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBUwwggQ0oAMCAQICDBX9eQgKNWxyfhI1kzANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAwODE3NDZaFw0yNTA5MTAwODE3NDZaMIGO
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xFTATBgNVBAMTDFBhdmFuIENoZWJiaTEoMCYGCSqGSIb3DQEJ
+ARYZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+ggEBAK3X+BRR67FR5+Spki/E25HnHoYhm/cC6VA6qHwC3QqBNhCT13zsi1FLLERdKXPRrtVBM6d0
+mfg/0rQJJ8Ez4C3CcKiO1XHcmESeW6lBKxOo83ZwWhVhyhNbGSwcrytDCKUVYBwwxR3PAyXtIlWn
+kDqifgqn3R9r2vJM7ckge8dtVPS0j9t3CNfDBjGw1DhK91fnoH1s7tLdj3vx9ZnKTmSl7F1psK2P
+OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
+dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
+fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
+9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
+pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
+25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
+Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINcBtO1JgTp2i89lzQLIOJNnNKYVwDWd
+qtms6D+KUx0dMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYx
+MjA0NDczMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQCadtNfeo7c0EZkm5p70NkK147fE+LKdo5Aw4H7lZxFZgs/V19u
+FPm0yucWsY69C03AFwTxHrwhU3FemJaVewm4SCwNhpsOnKYikzfB5WB6yAF/91MJlXHmEnmuyJ/a
+ekKnLMeSeWxlcqpij+92DC0/IHoove0ecWp9qokSbWj9emxyVc5tJERdI7Dd77aIj0pqBzJETyOM
+tFFIroTJAOyVM+ulQPvTEKbzkQfUgvbcmvRftMigG/Tn3YNJ1X6j262aEVeGaTuQGL3irCCDye92
+BknnYCR/+9jgyxFGR6VkTZkXWe3hGUb3DLPe2GrDlifcGAcsUlmNvHlvVcvq83qj
+--000000000000b351fe05fde76a6c--
 
