@@ -1,52 +1,52 @@
-Return-Path: <netdev+bounces-9981-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-9977-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2D27F72B8C2
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 09:39:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id E066972B8A0
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 09:29:46 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 636161C20ADE
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 07:39:25 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 229F01C20B0A
+	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 07:29:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C788D300;
-	Mon, 12 Jun 2023 07:39:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 238CED302;
+	Mon, 12 Jun 2023 07:29:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51686D2FD
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 07:39:26 +0000 (UTC)
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7AD3CE
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 00:38:43 -0700 (PDT)
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-516a008e495so8252611a12.1
-        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 00:38:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 153FFD2EE
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 07:29:29 +0000 (UTC)
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CCDF198D
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 00:24:29 -0700 (PDT)
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-3f7ff69824dso24568615e9.1
+        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 00:24:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1686555273; x=1689147273;
+        d=linaro.org; s=google; t=1686554460; x=1689146460;
         h=content-disposition:mime-version:message-id:subject:cc:to:from:date
          :from:to:cc:subject:date:message-id:reply-to;
         bh=w+Qi8JTAYiLDVqnRPgJbhci7OK6Vh1X6mg5NofF+Ffg=;
-        b=rFJQZhz3idBJGb/x5JeqWq8f4yLrmoThyOJEaVKgKnFgPRTT15k+B5I0ibbjBVFFNi
-         R+XCZs+0KREVa+68y2TtizG5h36f8wy0mx7bhL6GH/0QiIjN+FiiMJ8Ox9rj004M5XmI
-         rQCQ4b+N4jQn3fdHhTd/ly0UWOSTse4QunCRoJCn171FdTfmpZ5ZT8f7cnTIa+WbLQMq
-         D09vIbljaXkjsJE3Uz9WUUNjM8bnkbuenwSbZ1ycKhSxRXwBOLtb++ckbNpFqeFI95N4
-         E2fIf6ww4o8vbR4vMAriYdjpf/2SvqEGtw0PclTJx+cgRqYB5C0nV3O8B4OPUupZxrLa
-         Pm9Q==
+        b=Ln86Lgv65apUtlFy+wfManekSW80FSeJ0LU9sC1t0nGuwAWuIOAefgavBkbVyIW5d9
+         uyxlxMPOsTatPczS5fs6TE8YABYzgVmuY1ztDdPO1CScB1/jU6gpWZ+BgQ1fJ8ixQux/
+         R3e8FsZy1uTV3Xfia/6h1bCBUZvrTclIG255WYR6MWbtyX3WN1oJImdv54lwbFii/BgK
+         3kvJLKsWBapBoALUKMCXbfKIglfT+klr5+fxpujXW3AUI7+69hTDhuE8slzdfCEB+l/H
+         frBeHQvjf6wcksyrHsCNOA98YvP7w4fwMgjcaeDnWEhLRv0SWRWVoA96ymlJ4mHWI48f
+         Wxeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686555273; x=1689147273;
+        d=1e100.net; s=20221208; t=1686554460; x=1689146460;
         h=content-disposition:mime-version:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
         bh=w+Qi8JTAYiLDVqnRPgJbhci7OK6Vh1X6mg5NofF+Ffg=;
-        b=ezB1fGSLBa8NicZ6dQs93zFtrYJ6YKI96vOWPlfbO8KpSyuzdkm6/xKribhB46FooQ
-         iEzCTcSuVWN6BOf4NxW07NKUOZIeme2djPoQ6HzZCxqf9NzTEESzYravK8d6h0B0Xor9
-         q9WbPELoTOMFyMVp/99p6LEcqP8GX87QD4C2PmhWf5sDHatrGFB/DCFksq4ErPNIXX9g
-         gBe67Xb6EnEaq0Zkb3702iFIk9+m7yk7nZjypACSLixyMag0mGkk671ldx/QqilPod7s
-         kXLqbbkN3qlNwZ1/RLd6BgCdpoGd46hLMRLE9Fzt/65CV2p7rnzK7dDHbMm9ufdasxRz
-         TkAw==
-X-Gm-Message-State: AC+VfDzsjMgu/ming08nrPhQXnQrODf5YZnTz2tl6Gv6EZPJ5qHYlPKo
-	wR68raSz/e6LbShmsCYRBNvZ8w1sWQYJN+TSpOY=
+        b=d/1COmg0lWMmU+qpvXMeHSRdyMu76mCrxLuzq0oZH+NcAVNK32dcTUDzX++Y6FuiNT
+         CZHqD4iGX4zZHZKRNSekxpNeO2h4qxASwGrR7hupEKY16Sb46fxgVGycxQOqbMQxwEuA
+         cfRQYVaqP8UxfRohqL3k8z4PiBEX6WAw/7JDU1oRdiv+R7j75cqkgn2fZ8qOfjnx1a/l
+         iAa70Si9SAXQiTknSGCDTO1gX2fIbO+9M3yCzpKUd2J+a9BKwDMk97+/r/W+8+IEMw8m
+         BuaUr1hU9UwfCo/u2efDT5vaPbynz/uSYW2FrdlG7n93mGU8AyW//L5DXC6LzJipMgVd
+         SPKw==
+X-Gm-Message-State: AC+VfDxVCc6mnm5yHsUM5TQKvgFlIlescST871xGg+o1HO3vWrQkjADi
+	hvfGJjKDyFMl7XtPtmYCCSU8lQ==
 X-Google-Smtp-Source: ACHHUZ7o8sqiMBOcVwAWkcIW5b3yD5lxoIbzeQr0yV6BoqSehrk0Rwwz+R5qoAip8C55vGsL/exYZw==
 X-Received: by 2002:a7b:c7da:0:b0:3f7:a20a:561d with SMTP id z26-20020a7bc7da000000b003f7a20a561dmr7027654wmk.8.1686554460503;
         Mon, 12 Jun 2023 00:21:00 -0700 (PDT)
@@ -76,12 +76,6 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 X-Mailer: git-send-email haha only kidding
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
 The caller, netdev_trig_activate(), passes an uninitialized value for
 *rules.  This function sets bits to one but it doesn't zero out any
