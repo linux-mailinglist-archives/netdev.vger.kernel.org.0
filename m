@@ -1,144 +1,138 @@
-Return-Path: <netdev+bounces-10525-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10526-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3FB4372ED95
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 23:05:18 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9573172ED9A
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 23:05:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6091F280FFF
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 21:05:16 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 598AF280F9C
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 21:05:50 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7893638CD1;
-	Tue, 13 Jun 2023 21:05:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 68ABB3C086;
+	Tue, 13 Jun 2023 21:05:48 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6162D174FA
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 21:05:14 +0000 (UTC)
-Received: from sender3-op-o19.zoho.com (sender3-op-o19.zoho.com [136.143.184.19])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A02219A7;
-	Tue, 13 Jun 2023 14:05:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1686690262; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=h5XT1YKtblE2EbdkfNwDxnv6JsYamFwH2kFnrl/YUs5MFcMAOG3UfjSKcPSJsH4DFrpjFm/+qUTBYfXINdnvbK0ESC6JbhjNateuAUeAYzsmmxXypLV46d+oqWEl89Oo4kaDJiWwQIzKZshxuwfyRSEMSrouJodEvJSHVDp5a+A=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1686690262; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-	bh=mNrSoA9RNanVJ842F7+wKKUHtKKldQV+kaGjsFPdlIw=; 
-	b=ktzgPAYxOg3Yocw5UfX11w1BH/qcey9+pTuIdgQNvqMRQbtaxj0j/fgIJtn9lUtFWRIIkCNrSt07xTnsxE+ualoKOM5+VkxlRIy9HHCx7A8m14rcEaGm0Ra3p9GDU6SY3jcKe1nKPz7Ud8h4WYue8pYe6vJnCKxgGcKqSUB5JN0=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=arinc9.com;
-	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-	dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1686690262;
-	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=mNrSoA9RNanVJ842F7+wKKUHtKKldQV+kaGjsFPdlIw=;
-	b=ANWo1ieZAPI87KHbnBruHf4fRzOgNTl0e9FL0mtBMttmA+JEZI/9nEah39HzcmfJ
-	9HF+LTHMZNM1hgcqOz/FzfHCYLHiZYifgZzRiO7hXmR8hDOgqVUa+GLYWUc7LA84w8a
-	oahMOKD2Mc92TbRWXwBgoCAsQkqik1dlXCqcGhBQ=
-Received: from [192.168.1.248] (178-147-169-233.haap.dm.cosmote.net [178.147.169.233]) by mx.zohomail.com
-	with SMTPS id 1686690259958616.2203158377357; Tue, 13 Jun 2023 14:04:19 -0700 (PDT)
-Message-ID: <dd0d716e-8fdc-b6dc-3870-e7e524e8bf49@arinc9.com>
-Date: Wed, 14 Jun 2023 00:04:10 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D563174FA
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 21:05:48 +0000 (UTC)
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A8A19A8
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 14:05:46 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id e9e14a558f8ab-33bf12b5fb5so11285ab.1
+        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 14:05:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1686690346; x=1689282346;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=T9bwhLWaPErvlXQuP18ogPD4bTWrdunjPBBykpXpY3E=;
+        b=QNkbSddv+IUCMwfZtVWexUViZ+d4Gy5tbnjLHSDWcUE59ZHfoPpBbKHZ9CA46uftey
+         Nxzm+kJWVEeRhLI5/LdethGupQDwtYRLoF5MOM7hYNjfbEaVPdr7RzM6S/VZwDPBjsQ+
+         weJD5FKgOrqEWLUFOdKZT8dOizK9NgUB1Lv38YmliQ6nXDiK/YCNGXPnZPMvw8BZJBah
+         4tx3NwjrDqlpAuYiHX3gM4H3DLaywXKDH1IsFwAy93sBcYbCS0KujTZKL/2rHdHvvVdu
+         bHYq276uMzoEjdRMcjKHTWK78NGUxuCa9E7Ot52w2Nq0e7LtfOlXNcr20wErscM/9tGs
+         Joag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686690346; x=1689282346;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=T9bwhLWaPErvlXQuP18ogPD4bTWrdunjPBBykpXpY3E=;
+        b=VbcBHlC8rW1nG+qP7YuZ9pdQNQaKVbfz8tBjAZj8b7ouMyWY5TYzNJmpSTqPtgXE59
+         UJuAWMqO4gNlNkiHcUhxzGZU+icBNLfaTRGLxZN6nCu4HhiqnjP7yfdb7woyKhkn5neo
+         fYCwYZfbh1wG4mWQez8k2B2gGzVi1HKdScbnco1IWE+Q4BOJe5ZZmfqEGeseOIG6ffBT
+         yGNohi2GqlAKSSONi6l5ocfOt1D4rcj8r88IHqVGBinrlLRjGqETUsvdW93S1NpstSBm
+         hAz3datHG2RwtLKWs6bEr4n2q2tqpNcbsFZmmnteGxxsnoKW/Nw3Jp6C0a1H8o89RZka
+         YhAQ==
+X-Gm-Message-State: AC+VfDzY3z5c9QM7J/zDKgyFL4ChZaNHhtPsjwwgHAIANgbDwLWupzZ0
+	cC8E/ZpEQ4xHrnNOP6c79iokxafk+fyo0dm257GbylBw0nd4YOUDx0hKyw==
+X-Google-Smtp-Source: ACHHUZ5Ia+cJYzqMmgtBPlJTMaXmnasp3VxfFZsEVs7dgGVbObotDgGAo4tVJozvELubF+oWn6/RUlw0W3ZYxfjprIs=
+X-Received: by 2002:a05:6e02:1a62:b0:33e:2907:c62d with SMTP id
+ w2-20020a056e021a6200b0033e2907c62dmr57164ilv.6.1686690346030; Tue, 13 Jun
+ 2023 14:05:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net v2 2/7] net: dsa: mt7530: fix trapping frames with
- multiple CPU ports on MT7530
-Content-Language: en-US
-To: Vladimir Oltean <olteanv@gmail.com>
-Cc: Daniel Golle <daniel@makrotopia.org>,
- Landen Chao <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
- Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
- Florian Fainelli <f.fainelli@gmail.com>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Russell King <linux@armlinux.org.uk>,
- Frank Wunderlich <frank-w@public-files.de>,
- Bartel Eerdekens <bartel.eerdekens@constell8.be>, mithat.guner@xeront.com,
- erkin.bozoglu@xeront.com, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org
-References: <20230611081547.26747-2-arinc.unal@arinc9.com>
- <20230613150815.67uoz3cvvwgmhdp2@skbuf>
- <a91e88a8-c528-0392-1237-fc8417931170@arinc9.com>
- <20230613171858.ybhtlwxqwp7gyrfs@skbuf>
- <20230613172402.grdpgago6in4jogq@skbuf>
- <ca78b2f9-bf98-af26-0267-60d2638f7f00@arinc9.com>
- <20230613173908.iuofbuvkanwyr7as@skbuf>
- <edcbe326-c456-06ef-373b-313e780209de@arinc9.com>
- <20230613201850.5g4u3wf2kllmlk27@skbuf>
- <4a2fb3ac-ccad-f56e-4951-e5a5cb80dd1b@arinc9.com>
- <20230613205915.rmpuqq7ahmd7taeq@skbuf>
-From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20230613205915.rmpuqq7ahmd7taeq@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+References: <20230613165654.3e75eda8@espresso.lan.box> <CANn89i+5DoHFh-2MvLy740ikLdV-sE8pEEM+R=i0i77Pyc1ADQ@mail.gmail.com>
+In-Reply-To: <CANn89i+5DoHFh-2MvLy740ikLdV-sE8pEEM+R=i0i77Pyc1ADQ@mail.gmail.com>
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 13 Jun 2023 23:05:34 +0200
+Message-ID: <CANn89iKzZsyT-C-Ge6nPzC9Oo0f+gf5HZXbmXnePvSi+v4vuUg@mail.gmail.com>
+Subject: Re: panic in udp_init() when using FORCE_NR_CPUS
+To: Ricardo Nabinger Sanchez <rnsanchez@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>, Willem de Bruijn <willemdebruijn.kernel@gmail.com>, 
+	netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 13.06.2023 23:59, Vladimir Oltean wrote:
-> On Tue, Jun 13, 2023 at 11:35:08PM +0300, Arınç ÜNAL wrote:
->> On 13.06.2023 23:18, Vladimir Oltean wrote:
->>> On Tue, Jun 13, 2023 at 08:58:33PM +0300, Arınç ÜNAL wrote:
->>>> On 13.06.2023 20:39, Vladimir Oltean wrote:
->>>>> Got it. Then this is really not a problem, and the commit message frames
->>>>> it incorrectly.
->>>>
->>>> Actually this patch fixes the issue it describes. At the state of this
->>>> patch, when multiple CPU ports are defined, port 5 is the active CPU port,
->>>> CPU_PORT bits are set to port 6.
->>>>
->>>> Once "the patch that prefers port 6, I could easily find the exact name but
->>>> your mail snipping makes it hard" is applied, this issue becomes redundant.
->>>
->>> Ok. Well, you don't get bonus points for fixing a problem in 2 different
->>> ways, once is enough :)
->>
->> This is not the case here though.
->>
->> This patch fixes an issue that can be stumbled upon in two ways. This is for
->> when multiple CPU ports are defined on the devicetree.
->>
->> As I explained to Russell, the first is the CPU_PORT field not matching the
->> active CPU port.
->>
->> The second is when port 5 becomes the only active CPU port. This can only
->> happen with the changing the DSA conduit support.
->>
->> The "prefer port 6" patch only prevents the first way from happening. The
->> latter still can happen. But this feature doesn't exist yet. Hence why I
->> think we should apply this series as-is (after some patch log changes) and
->> backport it without this patch on kernels older than 5.18.
->>
->> Arınç
-> 
-> I was following you until the last phrase. Why should we apply this series
-> as-is [ to net.git ], if this patch fixes a problem (the *only* problem in
-> lack of .port_change_master() support, aka for stable kernels) that is
-> already masked by a different patch targeted to net.git?
+On Tue, Jun 13, 2023 at 10:19=E2=80=AFPM Eric Dumazet <edumazet@google.com>=
+ wrote:
+>
+> On Tue, Jun 13, 2023 at 9:56=E2=80=AFPM Ricardo Nabinger Sanchez
+> <rnsanchez@gmail.com> wrote:
+> >
+> > Hello,
+> >
+> > I have hit again an old panic that, in the past, I could not check in
+> > more depth.  But today I was able to pinpoint to a single config knob:
+> >
+> > $ diff -u /mnt/tmp/Kernel/linux-6.4-rc6/.config{.old,}
+> > --- /mnt/tmp/Kernel/linux-6.4-rc6/.config.old   2023-06-13
+> > 10:34:11.881004307 -0300 +++
+> > /mnt/tmp/Kernel/linux-6.4-rc6/.config   2023-06-13
+> > 13:42:46.396967635 -0300 @@ -4996,7 +4996,7 @@ CONFIG_SGL_ALLOC=3Dy
+> >  CONFIG_CHECK_SIGNATURE=3Dy
+> >  CONFIG_CPUMASK_OFFSTACK=3Dy
+> > -CONFIG_FORCE_NR_CPUS=3Dy
+> > +# CONFIG_FORCE_NR_CPUS is not set
+> >  CONFIG_CPU_RMAP=3Dy
+> >  CONFIG_DQL=3Dy
+> >  CONFIG_GLOB=3Dy
+> >
+>
+> Sure, but you did not give NR_CPUS value ?
 
-Because I don't see the latter patch as a fix. It treats the symptom, 
-not the cause.
+I suspect you run with LOCKDEP enabled (CONFIG_PROVE_LOCKING=3Dy)
+and a very big NR_CPUS ?
 
-Anyway, I'm fine with taking this patch from this series and put it on 
-my series for net-next instead.
+LOCKDEP makes spinlock_t 16 times bigger :/
 
-Arınç
+If so, please try the following fix.
+
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 9482def1f310379efde1a1a8c86999b4b826cf17..ad19a37a49e78715c813b17a109=
+7226dd1450671
+100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -3481,8 +3481,13 @@ void __init udp_init(void)
+
+        /* 16 spinlocks per cpu */
+        udp_busylocks_log =3D ilog2(nr_cpu_ids) + 4;
+-       udp_busylocks =3D kmalloc(sizeof(spinlock_t) << udp_busylocks_log,
+-                               GFP_KERNEL);
++       while (udp_busylocks_log >=3D 4) {
++               udp_busylocks =3D kmalloc(sizeof(spinlock_t) << udp_busyloc=
+ks_log,
++                                       GFP_KERNEL | __GFP_NOWARN);
++               if (udp_busylocks)
++                       break;
++               udp_busylocks_log--;
++       }
+        if (!udp_busylocks)
+                panic("UDP: failed to alloc udp_busylocks\n");
+        for (i =3D 0; i < (1U << udp_busylocks_log); i++)
 
