@@ -1,70 +1,70 @@
-Return-Path: <netdev+bounces-10284-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10282-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id A46E472D8D2
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 06:54:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 50C2772D8D0
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 06:54:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D303F1C20C0A
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 04:54:45 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8B9DB1C20C0F
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 04:54:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0632F3C00;
-	Tue, 13 Jun 2023 04:53:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5FA0B23CD;
+	Tue, 13 Jun 2023 04:53:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE94D258D
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 04:53:41 +0000 (UTC)
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8211C10DE;
-	Mon, 12 Jun 2023 21:53:35 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id d9443c01a7336-1b3ecb17721so385155ad.0;
-        Mon, 12 Jun 2023 21:53:35 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B7A323C4
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 04:53:38 +0000 (UTC)
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A1210DF;
+	Mon, 12 Jun 2023 21:53:36 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id d9443c01a7336-1b3ecb17721so385215ad.0;
+        Mon, 12 Jun 2023 21:53:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686632015; x=1689224015;
+        d=gmail.com; s=20221208; t=1686632016; x=1689224016;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fkVW9LtF2PjCtcJMURPcG//ByYcBQf1FiDlTUjHWK6c=;
-        b=FBPRzDvS9tl999BNyD/swxNYJuI6DOYCBf0XCA8OoUzjMrPBMnAcjmX2O27ds/h4Vk
-         pDQ4FQS9IPFotX9WGw2CmvmDbfZ0P18Xmla79VKmC5MsVDsHbxiKBCacC7q9dMXZXYci
-         YvTksjAjdSBj8Iqkgc8MNHnU4y35mmqMMENeRgHJpbm4pWjxHrhc9fEXhQGefHA5mUnG
-         IxWgUrRqTbAmoEXQZCreZFv+Dcq18qB3LvFMOjbv6dOtISozxZuR1dgOhwcvBOqyHvMg
-         xA6dgDvY9DWpaqXt0Zn0TNzm9auFfQwiP9pstWu8uz9fFUoSEy2om6SmuV48EzxYT6YD
-         JRig==
+        bh=7D7KD+4/hvSzq7CFXPABTFsWyQuluvzVlksOwlgt0j4=;
+        b=lBt7XkrWoWv4WtbnZEMyO+/Ha6V5eGYfdnP3Kzg2oJj0twC7C6ccryxk9+LyDemmPj
+         JOS3LdIiVUSdcl9LKXAuCvb79EjI/NbjqSpo6YoFZgCwBWxl6u1qT7Y/sT1SS+a7dO62
+         qQGkjvP+rtq3AMxWSEcfjbK5sRX0S5dgI9h8T9rQiOqQKUErPP52p4/ODLxz9p6wVUiy
+         9BOt2qp/F3F7ho3ecmxxZJbp965EtG0HIvR/zQ9s26bg+UCM45EMrDNJ5KBg33ObDA+3
+         mzpi4hwf/DNXWQlFWpwcE96dd2Y7LtYyFbILBul+sXmGNnXT9ixxFk/EmW2XS8Uq01Qk
+         Zufg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686632015; x=1689224015;
+        d=1e100.net; s=20221208; t=1686632016; x=1689224016;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=fkVW9LtF2PjCtcJMURPcG//ByYcBQf1FiDlTUjHWK6c=;
-        b=eQeAgVkhtJebxJTV0D4FhDoBjy7jlTWCC3KrxMyATE2l0ROu37aMFhXiFzBegahgEx
-         P6A07TnK+uNoUBz18PqMx3G0BIV4/weKd6eZEN9pYvZqkWxEIUTQU2JTlyhhwluMi5dH
-         gp8KWpADUCGMiPX73l81kYkM9x1t2M3KyLDAeIg4b3CXqCDTljP13X2QPFFwRdKmbgUm
-         cdpZqvNmxVTVFyd5yPTNkuYOReDGBYvLdk4jK5zbQztQFPimEKJpTkCLkEm7qjFSP2Jx
-         /uIxk5b/wK/6QZvF4MwMpx6bJ1oY7SZ1ABh+abDK/O7V0QGqLhco6i3n1TpJHt2Z+7MR
-         MpUw==
-X-Gm-Message-State: AC+VfDz4rdZ3i99kujxeg3tA/UzKapzm3jmYniVrmVl2Gvwkzw3PGGly
-	uYGDidbeaCca2W7KWAf32ZVsvSBAdXd53ST5
-X-Google-Smtp-Source: ACHHUZ5LH/IBNCKWc6KVd+wF7iSB8lPGochbodtfmgaGK9VQ92FsrM0IR8mdgO8PH8tXRVzXsSM4wg==
-X-Received: by 2002:a17:902:da8b:b0:1b0:3d54:358f with SMTP id j11-20020a170902da8b00b001b03d54358fmr12528187plx.0.1686632014514;
-        Mon, 12 Jun 2023 21:53:34 -0700 (PDT)
+        bh=7D7KD+4/hvSzq7CFXPABTFsWyQuluvzVlksOwlgt0j4=;
+        b=CqjZi3UcjNpDXEgH7pNdcN+w1Btn7fvtJJug3opMGaMxHz7f8GTFBU7WbjHng1GY6S
+         aekJqCnFxn4k7MtvUCN3aQblmYnTvCJ8kEc5tlvCze3eyTfb2LeiGSlHYFZ6BG+9sW3s
+         5sr5L3pbYDs18MFYwVqp7lbszsAxKsevFKsaJoq01SbvOAWH/kW6N7X3oj+d2QhbG4s0
+         +5kSjYTE+P2Mq2HEFPNEEbh9/Z35fo9oyhJtPJG3Gcy6gv1NhMj5oIKIo4nvWICcmUa2
+         ynKwW1PQa6rdtoPHHubJhCIjiZxnu1Bz+WuXizwbqPi85gG33YUJdg+EV8hPMcxcm5g2
+         rN1g==
+X-Gm-Message-State: AC+VfDz8c3J+OXUtIZVl5rS70NL52iziQjB3o4Z7tEpP2DR7lxLOpSIy
+	h4MjWl0Yqhbjhbo1iJLVbXcyTt37NDO+bMZA
+X-Google-Smtp-Source: ACHHUZ44OEkRfiOJ41O+zs4PNyrhQqZG9RkIftnA1tvpJkvTqJBrVSk69FN0hR8Bu+rTPCzNesUPbg==
+X-Received: by 2002:a17:902:e844:b0:1b3:ebda:654e with SMTP id t4-20020a170902e84400b001b3ebda654emr1013355plg.5.1686632015580;
+        Mon, 12 Jun 2023 21:53:35 -0700 (PDT)
 Received: from ip-172-30-47-114.us-west-2.compute.internal (ec2-54-68-170-188.us-west-2.compute.amazonaws.com. [54.68.170.188])
-        by smtp.gmail.com with ESMTPSA id c5-20020a170902c1c500b001b027221393sm9095249plc.43.2023.06.12.21.53.33
+        by smtp.gmail.com with ESMTPSA id c5-20020a170902c1c500b001b027221393sm9095249plc.43.2023.06.12.21.53.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Jun 2023 21:53:33 -0700 (PDT)
+        Mon, 12 Jun 2023 21:53:34 -0700 (PDT)
 From: FUJITA Tomonori <fujita.tomonori@gmail.com>
 To: netdev@vger.kernel.org
 Cc: rust-for-linux@vger.kernel.org,
 	aliceryhl@google.com,
 	andrew@lunn.ch,
 	miguel.ojeda.sandonis@gmail.com
-Subject: [PATCH 4/5] rust: add methods for configure net_device
-Date: Tue, 13 Jun 2023 13:53:25 +0900
-Message-Id: <20230613045326.3938283-5-fujita.tomonori@gmail.com>
+Subject: [PATCH 5/5] samples: rust: add dummy network driver
+Date: Tue, 13 Jun 2023 13:53:26 +0900
+Message-Id: <20230613045326.3938283-6-fujita.tomonori@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230613045326.3938283-1-fujita.tomonori@gmail.com>
 References: <20230613045326.3938283-1-fujita.tomonori@gmail.com>
@@ -82,245 +82,155 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-adds methods to net::Device for the basic configurations of
-net_device.
+This is a simpler version of drivers/net/dummy.c.
+
+This demonstrates the usage of abstractions for network device drivers.
+
+Allows allocator_api feature for Box::try_new();
 
 Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
 ---
- rust/helpers.c         |   7 ++
- rust/kernel/net/dev.rs | 183 +++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 190 insertions(+)
+ samples/rust/Kconfig           | 12 +++++
+ samples/rust/Makefile          |  1 +
+ samples/rust/rust_net_dummy.rs | 81 ++++++++++++++++++++++++++++++++++
+ scripts/Makefile.build         |  2 +-
+ 4 files changed, 95 insertions(+), 1 deletion(-)
+ create mode 100644 samples/rust/rust_net_dummy.rs
 
-diff --git a/rust/helpers.c b/rust/helpers.c
-index 70d50767ff4e..6c51deb18dc1 100644
---- a/rust/helpers.c
-+++ b/rust/helpers.c
-@@ -22,6 +22,7 @@
- #include <linux/build_bug.h>
- #include <linux/err.h>
- #include <linux/errname.h>
-+#include <linux/etherdevice.h>
- #include <linux/refcount.h>
- #include <linux/mutex.h>
- #include <linux/netdevice.h>
-@@ -31,6 +32,12 @@
- #include <linux/wait.h>
+diff --git a/samples/rust/Kconfig b/samples/rust/Kconfig
+index b0f74a81c8f9..8b52ba620ae3 100644
+--- a/samples/rust/Kconfig
++++ b/samples/rust/Kconfig
+@@ -30,6 +30,18 @@ config SAMPLE_RUST_PRINT
  
- #ifdef CONFIG_NET
-+void rust_helper_eth_hw_addr_random(struct net_device *dev)
-+{
-+	eth_hw_addr_random(dev);
-+}
-+EXPORT_SYMBOL_GPL(rust_helper_eth_hw_addr_random);
-+
- void *rust_helper_netdev_priv(const struct net_device *dev)
- {
- 	return netdev_priv(dev);
-diff --git a/rust/kernel/net/dev.rs b/rust/kernel/net/dev.rs
-index 452944cf9fb8..4767f331973e 100644
---- a/rust/kernel/net/dev.rs
-+++ b/rust/kernel/net/dev.rs
-@@ -12,10 +12,118 @@
-     bindings,
-     error::*,
-     prelude::vtable,
-+    str::CStr,
-     types::{ForeignOwnable, Opaque},
- };
- use {core::ffi::c_void, core::marker::PhantomData};
+ 	  If unsure, say N.
  
-+/// Flags associated with a [`Device`].
-+pub mod flags {
-+    /// Interface is up.
-+    pub const IFF_UP: u32 = bindings::net_device_flags_IFF_UP;
-+    /// Broadcast address valid.
-+    pub const IFF_BROADCAST: u32 = bindings::net_device_flags_IFF_BROADCAST;
-+    /// Device on debugging.
-+    pub const IFF_DEBUG: u32 = bindings::net_device_flags_IFF_DEBUG;
-+    /// Loopback device.
-+    pub const IFF_LOOPBACK: u32 = bindings::net_device_flags_IFF_LOOPBACK;
-+    /// Has p-p link.
-+    pub const IFF_POINTOPOINT: u32 = bindings::net_device_flags_IFF_POINTOPOINT;
-+    /// Avoids use of trailers.
-+    pub const IFF_NOTRAILERS: u32 = bindings::net_device_flags_IFF_NOTRAILERS;
-+    /// Interface RFC2863 OPER_UP.
-+    pub const IFF_RUNNING: u32 = bindings::net_device_flags_IFF_RUNNING;
-+    /// No ARP protocol.
-+    pub const IFF_NOARP: u32 = bindings::net_device_flags_IFF_NOARP;
-+    /// Receives all packets.
-+    pub const IFF_PROMISC: u32 = bindings::net_device_flags_IFF_PROMISC;
-+    /// Receive all multicast packets.
-+    pub const IFF_ALLMULTI: u32 = bindings::net_device_flags_IFF_ALLMULTI;
-+    /// Master of a load balancer.
-+    pub const IFF_MASTER: u32 = bindings::net_device_flags_IFF_MASTER;
-+    /// Slave of a load balancer.
-+    pub const IFF_SLAVE: u32 = bindings::net_device_flags_IFF_SLAVE;
-+    /// Supports multicast.
-+    pub const IFF_MULTICAST: u32 = bindings::net_device_flags_IFF_MULTICAST;
-+    /// Capable of setting media type.
-+    pub const IFF_PORTSEL: u32 = bindings::net_device_flags_IFF_PORTSEL;
-+    /// Auto media select active.
-+    pub const IFF_AUTOMEDIA: u32 = bindings::net_device_flags_IFF_AUTOMEDIA;
-+    /// Dialup device with changing addresses.
-+    pub const IFF_DYNAMIC: u32 = bindings::net_device_flags_IFF_DYNAMIC;
++config SAMPLE_RUST_NET_DUMMY
++	tristate "Dummy network driver"
++	depends on NET
++	help
++	  This is the simpler version of drivers/net/dummy.c. No intention to replace it.
++	  This provides educational information for Rust abstractions for network drivers.
++
++	  To compile this as a module, choose M here:
++	  the module will be called rust_minimal.
++
++	  If unsure, say N.
++
+ config SAMPLE_RUST_HOSTPROGS
+ 	bool "Host programs"
+ 	help
+diff --git a/samples/rust/Makefile b/samples/rust/Makefile
+index 03086dabbea4..440dee2971ba 100644
+--- a/samples/rust/Makefile
++++ b/samples/rust/Makefile
+@@ -2,5 +2,6 @@
+ 
+ obj-$(CONFIG_SAMPLE_RUST_MINIMAL)		+= rust_minimal.o
+ obj-$(CONFIG_SAMPLE_RUST_PRINT)			+= rust_print.o
++obj-$(CONFIG_SAMPLE_RUST_NET_DUMMY)		+= rust_net_dummy.o
+ 
+ subdir-$(CONFIG_SAMPLE_RUST_HOSTPROGS)		+= hostprogs
+diff --git a/samples/rust/rust_net_dummy.rs b/samples/rust/rust_net_dummy.rs
+new file mode 100644
+index 000000000000..6c49a7ba7ba2
+--- /dev/null
++++ b/samples/rust/rust_net_dummy.rs
+@@ -0,0 +1,81 @@
++// SPDX-License-Identifier: GPL-2.0
++//
++//! Rust dummy netdev.
++
++use kernel::{
++    c_str,
++    net::dev::{
++        ethtool_op_get_ts_info, flags, priv_flags, Device, DeviceOperations, DriverData,
++        EtherOperations, EthtoolTsInfo, Registration, RtnlLinkStats64, SkBuff, TxCode,
++    },
++    prelude::*,
++};
++
++module! {
++    type: DummyNetdev,
++    name: "rust_net_dummy",
++    author: "Rust for Linux Contributors",
++    description: "Rust dummy netdev",
++    license: "GPL v2",
 +}
 +
-+/// Private flags associated with a [`Device`].
-+pub mod priv_flags {
-+    /// 802.1Q VLAN device.
-+    pub const IFF_802_1Q_VLAN: u64 = bindings::netdev_priv_flags_IFF_802_1Q_VLAN;
-+    /// Ethernet bridging device.
-+    pub const IFF_EBRIDGE: u64 = bindings::netdev_priv_flags_IFF_EBRIDGE;
-+    /// Bonding master or slave device.
-+    pub const IFF_BONDING: u64 = bindings::netdev_priv_flags_IFF_BONDING;
-+    /// ISATAP interface (RFC4214).
-+    pub const IFF_ISATAP: u64 = bindings::netdev_priv_flags_IFF_ISATAP;
-+    /// WAN HDLC device.
-+    pub const IFF_WAN_HDLC: u64 = bindings::netdev_priv_flags_IFF_WAN_HDLC;
-+    /// dev_hard_start_xmit() is allowed to release skb->dst.
-+    pub const IFF_XMIT_DST_RELEASE: u64 = bindings::netdev_priv_flags_IFF_XMIT_DST_RELEASE;
-+    /// Disallows bridging this ether device.
-+    pub const IFF_DONT_BRIDGE: u64 = bindings::netdev_priv_flags_IFF_DONT_BRIDGE;
-+    /// Disables netpoll at run-time.
-+    pub const IFF_DISABLE_NETPOLL: u64 = bindings::netdev_priv_flags_IFF_DISABLE_NETPOLL;
-+    /// Device used as macvlan port.
-+    pub const IFF_MACVLAN_PORT: u64 = bindings::netdev_priv_flags_IFF_MACVLAN_PORT;
-+    /// Device used as bridge port.
-+    pub const IFF_BRIDGE_PORT: u64 = bindings::netdev_priv_flags_IFF_BRIDGE_PORT;
-+    /// Device used as Open vSwitch datapath port.
-+    pub const IFF_OVS_DATAPATH: u64 = bindings::netdev_priv_flags_IFF_OVS_DATAPATH;
-+    /// The interface supports sharing skbs on transmit.
-+    pub const IFF_TX_SKB_SHARING: u64 = bindings::netdev_priv_flags_IFF_TX_SKB_SHARING;
-+    /// Supports unicast filtering.
-+    pub const IFF_UNICAST_FLT: u64 = bindings::netdev_priv_flags_IFF_UNICAST_FLT;
-+    /// Device used as team port.
-+    pub const IFF_TEAM_PORT: u64 = bindings::netdev_priv_flags_IFF_TEAM_PORT;
-+    /// Device supports sending custom FCS.
-+    pub const IFF_SUPP_NOFCS: u64 = bindings::netdev_priv_flags_IFF_SUPP_NOFCS;
-+    /// Device supports hardware address change when it's running.
-+    pub const IFF_LIVE_ADDR_CHANGE: u64 = bindings::netdev_priv_flags_IFF_LIVE_ADDR_CHANGE;
-+    /// Macvlan device.
-+    pub const IFF_MACVLAN: u64 = bindings::netdev_priv_flags_IFF_MACVLAN;
-+    /// IFF_XMIT_DST_RELEASE not taking into account underlying stacked devices.
-+    pub const IFF_XMIT_DST_RELEASE_PERM: u64 =
-+        bindings::netdev_priv_flags_IFF_XMIT_DST_RELEASE_PERM;
-+    /// L3 master device.
-+    pub const IFF_L3MDEV_MASTER: u64 = bindings::netdev_priv_flags_IFF_L3MDEV_MASTER;
-+    /// Device can run without qdisc attached.
-+    pub const IFF_NO_QUEUE: u64 = bindings::netdev_priv_flags_IFF_NO_QUEUE;
-+    /// Device is a Open vSwitch master.
-+    pub const IFF_OPENVSWITCH: u64 = bindings::netdev_priv_flags_IFF_OPENVSWITCH;
-+    /// Device is enslaved to an L3 master.
-+    pub const IFF_L3MDEV_SLAVE: u64 = bindings::netdev_priv_flags_IFF_L3MDEV_SLAVE;
-+    /// Team device.
-+    pub const IFF_TEAM: u64 = bindings::netdev_priv_flags_IFF_TEAM;
-+    /// Device has had Rx Flow indirection table configured.
-+    pub const IFF_RXFH_CONFIGURED: u64 = bindings::netdev_priv_flags_IFF_RXFH_CONFIGURED;
-+    /// The headroom value is controlled by an external entity.
-+    pub const IFF_PHONY_HEADROOM: u64 = bindings::netdev_priv_flags_IFF_PHONY_HEADROOM;
-+    /// MACsec device.
-+    pub const IFF_MACSEC: u64 = bindings::netdev_priv_flags_IFF_MACSEC;
-+    /// Device doesn't support the rx_handler hook.
-+    pub const IFF_NO_RX_HANDLER: u64 = bindings::netdev_priv_flags_IFF_NO_RX_HANDLER;
-+    /// Failover master device.
-+    pub const IFF_FAILOVER: u64 = bindings::netdev_priv_flags_IFF_FAILOVER;
-+    /// Lower device of a failover master device.
-+    pub const IFF_FAILOVER_SLAVE: u64 = bindings::netdev_priv_flags_IFF_FAILOVER_SLAVE;
-+    /// Only invokes the rx handler of L3 master device.
-+    pub const IFF_L3MDEV_RX_HANDLER: u64 = bindings::netdev_priv_flags_IFF_L3MDEV_RX_HANDLER;
-+    /// Prevents ipv6 addrconf.
-+    pub const IFF_NO_ADDRCONF: u64 = bindings::netdev_priv_flags_IFF_NO_ADDRCONF;
-+    /// Capable of xmitting frames with skb_headlen(skb) == 0.
-+    pub const IFF_TX_SKB_NO_LINEAR: u64 = bindings::netdev_priv_flags_IFF_TX_SKB_NO_LINEAR;
-+    /// Supports setting carrier via IFLA_PROTO_DOWN.
-+    pub const IFF_CHANGE_PROTO_DOWN: u64 = bindings::netdev_priv_flags_IFF_CHANGE_PROTO_DOWN;
-+}
++struct DevOps {}
 +
- /// Corresponds to the kernel's `struct net_device`.
- ///
- /// # Invariants
-@@ -42,6 +150,81 @@ fn priv_data_ptr(&self) -> *const c_void {
-         // So it's safe to read an address from the returned address from `netdev_priv()`.
-         unsafe { core::ptr::read(bindings::netdev_priv(self.0) as *const *const c_void) }
-     }
-+
-+    /// Sets the name of a device.
-+    pub fn set_name(&mut self, name: &CStr) -> Result {
-+        // SAFETY: The safety requirement ensures that the pointer is valid.
-+        unsafe {
-+            if name.len() > (*self.0).name.len() {
-+                return Err(code::EINVAL);
-+            }
-+            for i in 0..name.len() {
-+                (*self.0).name[i] = name[i] as i8;
-+            }
-+        }
++#[vtable]
++impl<D: DriverData<Data = Box<Stats>>> DeviceOperations<D> for DevOps {
++    fn init(_dev: &mut Device, _data: &Stats) -> Result {
 +        Ok(())
 +    }
 +
-+    /// Sets carrier.
-+    pub fn netif_carrier_on(&mut self) {
-+        // SAFETY: The safety requirement ensures that the pointer is valid.
-+        unsafe { bindings::netif_carrier_on(self.0) }
++    fn start_xmit(_dev: &mut Device, _data: &Stats, mut skb: SkBuff) -> TxCode {
++        skb.tx_timestamp();
++        TxCode::Ok
 +    }
 +
-+    /// Clears carrier.
-+    pub fn netif_carrier_off(&mut self) {
-+        // SAFETY: The safety requirement ensures that the pointer is valid.
-+        unsafe { bindings::netif_carrier_off(self.0) }
-+    }
++    fn get_stats64(_dev: &mut Device, _data: &Stats, _stats: &mut RtnlLinkStats64) {}
++}
 +
-+    /// Sets the max mtu of the device.
-+    pub fn set_max_mtu(&mut self, max_mtu: u32) {
-+        // SAFETY: The safety requirement ensures that the pointer is valid.
-+        unsafe {
-+            (*self.0).max_mtu = max_mtu;
-+        }
-+    }
++/// For device driver specific information.
++struct Stats {}
 +
-+    /// Sets the minimum mtu of the device.
-+    pub fn set_min_mtu(&mut self, min_mtu: u32) {
-+        // SAFETY: The safety requirement ensures that the pointer is valid.
-+        unsafe {
-+            (*self.0).min_mtu = min_mtu;
-+        }
-+    }
++impl DriverData for Stats {
++    type Data = Box<Stats>;
++}
 +
-+    /// Returns the flags of the device.
-+    pub fn get_flags(&self) -> u32 {
-+        // SAFETY: The safety requirement ensures that the pointer is valid.
-+        unsafe { (*self.0).flags }
-+    }
++struct DummyNetdev {
++    _r: Registration<DevOps, Stats>,
++}
 +
-+    /// Sets the flags of the device.
-+    pub fn set_flags(&mut self, flags: u32) {
-+        // SAFETY: The safety requirement ensures that the pointer is valid.
-+        unsafe {
-+            (*self.0).flags = flags;
-+        }
-+    }
++struct EtherOps {}
 +
-+    /// Returns the priv_flags of the device.
-+    pub fn get_priv_flags(&self) -> u64 {
-+        // SAFETY: The safety requirement ensures that the pointer is valid.
-+        unsafe { (*self.0).priv_flags }
++#[vtable]
++impl<D: DriverData<Data = Box<Stats>>> EtherOperations<D> for EtherOps {
++    fn get_ts_info(dev: &mut Device, _data: &Stats, info: &mut EthtoolTsInfo) -> Result {
++        ethtool_op_get_ts_info(dev, info)
 +    }
++}
 +
-+    /// Sets the priv_flags of the device.
-+    pub fn set_priv_flags(&mut self, flags: u64) {
-+        // SAFETY: The safety requirement ensures that the pointer is valid.
-+        unsafe { (*self.0).priv_flags = flags }
-+    }
++impl kernel::Module for DummyNetdev {
++    fn init(_module: &'static ThisModule) -> Result<Self> {
++        let data = Box::try_new(Stats {})?;
++        let mut r = Registration::<DevOps, Stats>::try_new_ether(1, 1, data)?;
++        r.set_ether_operations::<EtherOps>()?;
 +
-+    /// Generate a random Ethernet address (MAC) to be used by a net device
-+    /// and set addr_assign_type.
-+    pub fn set_random_eth_hw_addr(&mut self) {
-+        // SAFETY: The safety requirement ensures that the pointer is valid.
-+        unsafe { bindings::eth_hw_addr_random(self.0) }
++        let netdev = r.dev_get();
++        netdev.set_name(c_str!("dummy%d"))?;
++
++        netdev.set_flags(netdev.get_flags() | flags::IFF_NOARP & !flags::IFF_MULTICAST);
++        netdev.set_priv_flags(
++            netdev.get_priv_flags() | priv_flags::IFF_LIVE_ADDR_CHANGE | priv_flags::IFF_NO_QUEUE,
++        );
++        netdev.set_random_eth_hw_addr();
++        netdev.set_min_mtu(0);
++        netdev.set_max_mtu(0);
++
++        r.register()?;
++
++        // TODO: Replaces pr_info with the wrapper of netdev_info().
++        pr_info!("Hello Rust dummy netdev!");
++        Ok(DummyNetdev { _r: r })
 +    }
- }
++}
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 78175231c969..1404967e908e 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -277,7 +277,7 @@ $(obj)/%.lst: $(src)/%.c FORCE
+ # Compile Rust sources (.rs)
+ # ---------------------------------------------------------------------------
  
- // SAFETY: `Device` is just a wrapper for the kernel`s `struct net_device`, which can be used
+-rust_allowed_features := new_uninit
++rust_allowed_features := allocator_api,new_uninit
+ 
+ rust_common_cmd = \
+ 	RUST_MODFILE=$(modfile) $(RUSTC_OR_CLIPPY) $(rust_flags) \
 -- 
 2.34.1
 
