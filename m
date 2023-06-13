@@ -1,144 +1,204 @@
-Return-Path: <netdev+bounces-10461-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10463-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id CE90B72E9A7
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 19:29:28 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9C5CD72E9CD
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 19:30:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CE1911C208BE
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 17:29:27 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 46B9428125E
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 17:30:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C465B37B89;
-	Tue, 13 Jun 2023 17:29:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DAC5B3C0BE;
+	Tue, 13 Jun 2023 17:29:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC6E123C74;
-	Tue, 13 Jun 2023 17:29:23 +0000 (UTC)
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C34173C;
-	Tue, 13 Jun 2023 10:28:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686677334; x=1718213334;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SlHj7S5jOOv05K4dEGQA+cB2WN4KQBOtvdjDfWv8PXg=;
-  b=Smfb44NorWLELeCCs+PbsDBnJtYiS4HZssecQw8CamAXLcBsJ6y9HNow
-   niBz/3dmTAgr4E08cbTZ+EvoWthc/EpNPGRUUtuI/Z6YHDycYoAieTrJM
-   Gi1b4ncZ0/IVYL6TUCxnOXtrGAZmg4H6BpwM5yUuiJzLKe5Lco4r2BxAz
-   yHL3AvWSTAaMMQYEr1Ef//BGCJQqA4dSBrhfICNpw2v6HXP8HyjZR/m5M
-   nOedioBMaUz8iXbmFCCVFye+x2HaQYFLbahIPr/hWLjWfk67YIMZjSnAF
-   SKP+9NdJkV8DzMHUbk8i/KxIzuCJRcZQ3uoL5MoFx9nmwpf3PT394sudJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="361774277"
-X-IronPort-AV: E=Sophos;i="6.00,240,1681196400"; 
-   d="scan'208";a="361774277"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2023 10:27:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="885923880"
-X-IronPort-AV: E=Sophos;i="6.00,240,1681196400"; 
-   d="scan'208";a="885923880"
-Received: from lkp-server01.sh.intel.com (HELO 211f47bdb1cb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 13 Jun 2023 10:27:12 -0700
-Received: from kbuild by 211f47bdb1cb with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1q97nT-0001bK-2i;
-	Tue, 13 Jun 2023 17:27:11 +0000
-Date: Wed, 14 Jun 2023 01:26:22 +0800
-From: kernel test robot <lkp@intel.com>
-To: Lorenz Bauer <lmb@isovalent.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	David Ahern <dsahern@kernel.org>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Andrii Nakryiko <andrii@kernel.org>,
-	Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>,
-	Yonghong Song <yhs@fb.com>,
-	John Fastabend <john.fastabend@gmail.com>,
-	KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>,
-	Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-	Joe Stringer <joe@wand.net.nz>, Mykola Lysenko <mykolal@fb.com>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	netdev@vger.kernel.org, Hemanth Malla <hemanthmalla@gmail.com>,
-	linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, Lorenz Bauer <lmb@isovalent.com>
-Subject: Re: [PATCH bpf-next v2 5/6] bpf, net: Support SO_REUSEPORT sockets
- with bpf_sk_assign
-Message-ID: <202306140012.hLncDFR5-lkp@intel.com>
-References: <20230613-so-reuseport-v2-5-b7c69a342613@isovalent.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE4C63924F
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 17:29:41 +0000 (UTC)
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD3961727
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 10:29:15 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-402-KpDEogI_MdOgJJfRYSAt4w-1; Tue, 13 Jun 2023 13:28:22 -0400
+X-MC-Unique: KpDEogI_MdOgJJfRYSAt4w-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DF64F85A5BA;
+	Tue, 13 Jun 2023 17:28:20 +0000 (UTC)
+Received: from hog (unknown [10.45.224.17])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 37988C1604C;
+	Tue, 13 Jun 2023 17:28:19 +0000 (UTC)
+Date: Tue, 13 Jun 2023 19:28:15 +0200
+From: Sabrina Dubroca <sd@queasysnail.net>
+To: Simon Horman <simon.horman@corigine.com>
+Cc: netdev@vger.kernel.org, kuba@kernel.org
+Subject: Re: [PATCH net-next] netdevsim: add dummy macsec offload
+Message-ID: <ZIinLxhts7GdknY1@hog>
+References: <0b87a0b7f9faf82de05c5689fbe8b8b4a83aa25d.1686494112.git.sd@queasysnail.net>
+ <ZIcRxM/xvozZ+H9c@corigine.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <ZIcRxM/xvozZ+H9c@corigine.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
 Content-Disposition: inline
-In-Reply-To: <20230613-so-reuseport-v2-5-b7c69a342613@isovalent.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Lorenz,
+2023-06-12, 14:38:28 +0200, Simon Horman wrote:
+> On Sun, Jun 11, 2023 at 05:45:33PM +0200, Sabrina Dubroca wrote:
+>=20
+> ...
+>=20
+> > diff --git a/drivers/net/netdevsim/macsec.c b/drivers/net/netdevsim/mac=
+sec.c
+> > new file mode 100644
+> > index 000000000000..355ba2f313df
+> > --- /dev/null
+>=20
+> ...
+>=20
+> > +static int nsim_macsec_add_secy(struct macsec_context *ctx)
+> > +{
+> > +=09struct netdevsim *ns =3D netdev_priv(ctx->netdev);
+> > +=09int idx;
+> > +
+> > +=09if (ns->macsec.nsim_secy_count =3D=3D NSIM_MACSEC_MAX_SECY_COUNT)
+> > +=09=09return -ENOSPC;
+> > +
+> > +=09for (idx =3D 0; idx < NSIM_MACSEC_MAX_SECY_COUNT; idx++) {
+> > +=09=09if (!ns->macsec.nsim_secy[idx].used)
+> > +=09=09=09break;
+> > +=09}
+> > +
+> > +=09if (idx =3D=3D NSIM_MACSEC_MAX_SECY_COUNT)
+> > +=09=09netdev_err(ctx->netdev, "%s: nsim_secy_count not full but all Se=
+cYs used\n",
+> > +=09=09=09   __func__);
+>=20
+> Hi Sabrina,
+>=20
+> It seems that if this condition is met, then ns->macsec.nsim_secy will
+> overflow below.
 
-kernel test robot noticed the following build errors:
+Right, thanks. It should never happen but I'll change that to return
+-ENOSPC as well.
 
-[auto build test ERROR on 25085b4e9251c77758964a8e8651338972353642]
+> > +
+> > +=09netdev_dbg(ctx->netdev, "%s: adding new secy with sci %08llx at ind=
+ex %d\n",
+> > +=09=09   __func__, be64_to_cpu(ctx->secy->sci), idx);
+> > +=09ns->macsec.nsim_secy[idx].used =3D true;
+> > +=09ns->macsec.nsim_secy[idx].nsim_rxsc_count =3D 0;
+> > +=09ns->macsec.nsim_secy[idx].sci =3D ctx->secy->sci;
+> > +=09ns->macsec.nsim_secy_count++;
+> > +
+> > +=09return 0;
+> > +}
+>=20
+> ...
+>=20
+> > +static int nsim_macsec_add_txsa(struct macsec_context *ctx)
+> > +{
+> > +=09struct netdevsim *ns =3D netdev_priv(ctx->netdev);
+> > +=09struct nsim_secy *secy;
+> > +=09int idx;
+> > +
+> > +=09idx =3D nsim_macsec_find_secy(ns, ctx->secy->sci);
+> > +=09if (idx < 0) {
+> > +=09=09netdev_err(ctx->netdev, "%s: sci %08llx not found in secy table\=
+n",
+> > +=09=09=09   __func__, be64_to_cpu(ctx->secy->sci));
+>=20
+> Sparse seems pretty unhappy about the type of the argement to be64_to_cpu=
+()
+> here and elsewhere. I'm unsure what is the best option but one that
+> sprang to mind would be conversion helpers, that cast appropriately.
+> f.e. sci_to_cpu()
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Lorenz-Bauer/net-export-inet_lookup_reuseport-and-inet6_lookup_reuseport/20230613-181619
-base:   25085b4e9251c77758964a8e8651338972353642
-patch link:    https://lore.kernel.org/r/20230613-so-reuseport-v2-5-b7c69a342613%40isovalent.com
-patch subject: [PATCH bpf-next v2 5/6] bpf, net: Support SO_REUSEPORT sockets with bpf_sk_assign
-config: arm-randconfig-r016-20230612 (https://download.01.org/0day-ci/archive/20230614/202306140012.hLncDFR5-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project.git 4a5ac14ee968ff0ad5d2cc1ffa0299048db4c88a)
-reproduce (this is a W=1 build):
-        mkdir -p ~/bin
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        git checkout 25085b4e9251c77758964a8e8651338972353642
-        b4 shazam https://lore.kernel.org/r/20230613-so-reuseport-v2-5-b7c69a342613@isovalent.com
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang ~/bin/make.cross W=1 O=build_dir ARCH=arm olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang ~/bin/make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+Ok. Since we've never needed that conversion in drivers/net/macsec.c,
+I'll drop the helper in here, unless someone objects to that.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202306140012.hLncDFR5-lkp@intel.com/
+> > +=09=09return -ENOENT;
+> > +=09}
+> > +=09secy =3D &ns->macsec.nsim_secy[idx];
+>=20
+> As also reported by the kernel test robot, a W=3D1 build complains that s=
+ecy
+> is set but unused here and in to other places below.
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+Yes [facepalm]
 
-WARNING: modpost: lib/test_user_copy.o: section mismatch in reference: (unknown) (section: .text.fixup) -> .Ltmp1 (section: .init.text)
-WARNING: modpost: lib/test_user_copy.o: section mismatch in reference: (unknown) (section: .text.fixup) -> .Ltmp4 (section: .init.text)
-WARNING: modpost: lib/test_user_copy.o: section mismatch in reference: (unknown) (section: .text.fixup) -> .Ltmp7 (section: .init.text)
-WARNING: modpost: lib/test_user_copy.o: section mismatch in reference: (unknown) (section: .text.fixup) -> .Ltmp10 (section: .init.text)
-WARNING: modpost: lib/test_user_copy.o: section mismatch in reference: (unknown) (section: .text.fixup) -> .Ltmp13 (section: .init.text)
-WARNING: modpost: lib/test_user_copy.o: section mismatch in reference: (unknown) (section: .text.fixup) -> .Ltmp16 (section: .init.text)
-WARNING: modpost: lib/test_user_copy.o: section mismatch in reference: (unknown) (section: .text.fixup) -> .Ltmp19 (section: .init.text)
-WARNING: modpost: lib/test_user_copy.o: section mismatch in reference: (unknown) (section: .text.fixup) -> .Ltmp22 (section: .init.text)
-WARNING: modpost: lib/test_user_copy.o: section mismatch in reference: (unknown) (section: .text.fixup) -> .Ltmp25 (section: .init.text)
-WARNING: modpost: lib/test_user_copy.o: section mismatch in reference: (unknown) (section: .text.fixup) -> .Ltmp28 (section: .init.text)
-WARNING: modpost: lib/test_user_copy.o: section mismatch in reference: (unknown) (section: .text.fixup) -> .Ltmp31 (section: .init.text)
-WARNING: modpost: lib/test_user_copy.o: section mismatch in reference: (unknown) (section: .text.fixup) -> .Ltmp34 (section: .init.text)
->> ERROR: modpost: "inet_ehashfn" [net/dccp/dccp_ipv4.ko] undefined!
+Thanks for the review.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> > +
+> > +=09netdev_dbg(ctx->netdev, "%s: SECY with sci %08llx, AN %u\n",
+> > +=09=09   __func__, be64_to_cpu(ctx->secy->sci), ctx->sa.assoc_num);
+> > +
+> > +=09return 0;
+> > +}
+> > +
+> > +static int nsim_macsec_upd_txsa(struct macsec_context *ctx)
+> > +{
+> > +=09struct netdevsim *ns =3D netdev_priv(ctx->netdev);
+> > +=09struct nsim_secy *secy;
+> > +=09int idx;
+> > +
+> > +=09idx =3D nsim_macsec_find_secy(ns, ctx->secy->sci);
+> > +=09if (idx < 0) {
+> > +=09=09netdev_err(ctx->netdev, "%s: sci %08llx not found in secy table\=
+n",
+> > +=09=09=09   __func__, be64_to_cpu(ctx->secy->sci));
+> > +=09=09return -ENOENT;
+> > +=09}
+> > +=09secy =3D &ns->macsec.nsim_secy[idx];
+> > +
+> > +=09netdev_dbg(ctx->netdev, "%s: SECY with sci %08llx, AN %u\n",
+> > +=09=09   __func__, be64_to_cpu(ctx->secy->sci), ctx->sa.assoc_num);
+> > +
+> > +=09return 0;
+> > +}
+> > +
+> > +static int nsim_macsec_del_txsa(struct macsec_context *ctx)
+> > +{
+> > +=09struct netdevsim *ns =3D netdev_priv(ctx->netdev);
+> > +=09struct nsim_secy *secy;
+> > +=09int idx;
+> > +
+> > +=09idx =3D nsim_macsec_find_secy(ns, ctx->secy->sci);
+> > +=09if (idx < 0) {
+> > +=09=09netdev_err(ctx->netdev, "%s: sci %08llx not found in secy table\=
+n",
+> > +=09=09=09   __func__, be64_to_cpu(ctx->secy->sci));
+> > +=09=09return -ENOENT;
+> > +=09}
+> > +=09secy =3D &ns->macsec.nsim_secy[idx];
+> > +
+> > +=09netdev_dbg(ctx->netdev, "%s: SECY with sci %08llx, AN %u\n",
+> > +=09=09   __func__, be64_to_cpu(ctx->secy->sci), ctx->sa.assoc_num);
+> > +
+> > +=09return 0;
+> > +}
+>=20
+> ...
+
+--=20
+Sabrina
+
 
