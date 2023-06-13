@@ -1,265 +1,200 @@
-Return-Path: <netdev+bounces-10519-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10520-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7346572ED23
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 22:38:16 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3638972ED47
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 22:47:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1F3E31C20945
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:38:15 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 912C4280F5B
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:47:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B168022E21;
-	Tue, 13 Jun 2023 20:38:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0084422E5A;
+	Tue, 13 Jun 2023 20:47:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5581136A
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 20:38:12 +0000 (UTC)
-Received: from smtp-bc0a.mail.infomaniak.ch (smtp-bc0a.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc0a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC0DA135
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 13:38:09 -0700 (PDT)
-Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-	by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4QggNt2js4zMq7Hy;
-	Tue, 13 Jun 2023 20:38:06 +0000 (UTC)
-Received: from unknown by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4QggNs3nTwzMrqy1;
-	Tue, 13 Jun 2023 22:38:05 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-	s=20191114; t=1686688686;
-	bh=MDXbqQMrGmj7AFcbDOpwLAhhsUlLbijiq4qmklUysz4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=kYXPXZGO6BWTbhpwVZCU23irT06yY03ejfp5y5rIw4Jenk0+bNySTVBg7SWzZaBJ9
-	 9zJXO0mnq+i3KhVoYzhd+acmaBkbx5e76SxuZaoSE9NZobTxPR6OvoCIg7gfmnL6T7
-	 SfHgYMuT2kG0eR+bWp3c2OerBh5tH1jMPaB0i8xQ=
-Message-ID: <8c09fc5a-e3a5-4792-65a8-b84c6044128a@digikod.net>
-Date: Tue, 13 Jun 2023 22:38:04 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8849174FA
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 20:47:02 +0000 (UTC)
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E968810E6;
+	Tue, 13 Jun 2023 13:47:00 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id 4fb4d7f45d1cf-5187ae34127so998816a12.2;
+        Tue, 13 Jun 2023 13:47:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686689219; x=1689281219;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fSNOwltAQrxAVV68XPYGPjq5L/bIYHyNYEji3sovMB8=;
+        b=Ls9NCRlivmPC49auVyJHDRF+h04dMXwMGmh110SKXer2GYxSqLJ9P1EGp0FjvkdV5Y
+         ZT59hga7BfF3nhKADgA++VIjISbHOXjbarrE22ZfAE111jgQ3jK7jtShuQEjePBTdLis
+         yciak/fmFmqGLf0kPVtaE83SgyEUNf4EYJ8t+BcD70N9SeDplDhhnv21ndbgohUjIo3Q
+         qoIFrDRIjD3zlcF+yzNquVLT03HQips/sNO/bgOKLbcYVEkAQUc21wT7i4P3CHKfFH3E
+         JBqhJVUG2DsUf/DTTO0WW993S6gOxx5pmwiBMHSV5JbAOZ/Gt2Ydgt6O9rNJJ0aBuvZC
+         X8tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686689219; x=1689281219;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fSNOwltAQrxAVV68XPYGPjq5L/bIYHyNYEji3sovMB8=;
+        b=MffYQCu4czD09SAUosdYpiNxpsxYXR3J+9M9YE6C1B+ksGn5tQMyzruG1aML0Zzc/j
+         4hdEEl4KNXHfASprcRdrLE8I4CQ+bLsQvp87NHBzIaIrVEnY8FCmuG3dumGw1WuW4NMt
+         hUKgXpjT1OuUiWNi7S3GfaoED3pwtTHvZIRKmGqKRXX8GEQcSJNPNeTJGxP3rvu2TAKm
+         qfJaksbdK0NnAsuwdmvsLdVzmemsnh4YGZJUJP2CWoFbE7O5h3ivrT9FUFp0Sz466oGg
+         iCZNYufsgegeT+EIcG9M+ukxpjLFfKdk8ClX+0nhg0JYQXLGwK+jLoeCjCv/yfMh5dqB
+         JHww==
+X-Gm-Message-State: AC+VfDxdrQxW9NsNUrc2+cR9g++J54Epp/yzfBjqvGnBbiAaCYIqrG0D
+	KyOIlAeXNW3L2/dphYRF6f4=
+X-Google-Smtp-Source: ACHHUZ5x08A9ldgu+vaqcgdfWvL3xxuzZM1dqATv5NQNkKaCgRk/Z49H2tvIClpjTgNoxcUIajTGMw==
+X-Received: by 2002:a05:6402:2055:b0:514:9df0:e3f3 with SMTP id bc21-20020a056402205500b005149df0e3f3mr9203260edb.0.1686689219118;
+        Tue, 13 Jun 2023 13:46:59 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id b14-20020aa7c6ce000000b00506987c5c71sm6802283eds.70.2023.06.13.13.46.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Jun 2023 13:46:58 -0700 (PDT)
+Date: Tue, 13 Jun 2023 23:46:55 +0300
+From: Vladimir Oltean <olteanv@gmail.com>
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+	Daniel Golle <daniel@makrotopia.org>,
+	Landen Chao <Landen.Chao@mediatek.com>,
+	DENG Qingfang <dqfext@gmail.com>,
+	Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Frank Wunderlich <frank-w@public-files.de>,
+	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
+	mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net v2 2/7] net: dsa: mt7530: fix trapping frames with
+ multiple CPU ports on MT7530
+Message-ID: <20230613204655.7dk5f5pbcyrquva5@skbuf>
+References: <20230611081547.26747-1-arinc.unal@arinc9.com>
+ <20230611081547.26747-2-arinc.unal@arinc9.com>
+ <20230613150815.67uoz3cvvwgmhdp2@skbuf>
+ <a91e88a8-c528-0392-1237-fc8417931170@arinc9.com>
+ <20230613171858.ybhtlwxqwp7gyrfs@skbuf>
+ <20230613172402.grdpgago6in4jogq@skbuf>
+ <ca78b2f9-bf98-af26-0267-60d2638f7f00@arinc9.com>
+ <20230613173908.iuofbuvkanwyr7as@skbuf>
+ <edcbe326-c456-06ef-373b-313e780209de@arinc9.com>
+ <ZIi1fixnNqj9Gfcg@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent:
-Subject: Re: [PATCH v11 11/12] samples/landlock: Add network demo
-Content-Language: en-US
-To: "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>,
- =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack@google.com>
-Cc: willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
- linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
- netfilter-devel@vger.kernel.org, yusongping@huawei.com,
- artem.kuzin@huawei.com
-References: <20230515161339.631577-1-konstantin.meskhidze@huawei.com>
- <20230515161339.631577-12-konstantin.meskhidze@huawei.com>
- <ZH9OFyWZ1njI7VG9@google.com>
- <d9f07165-f589-13d4-6484-1272704f1de0@huawei.com>
-From: =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <d9f07165-f589-13d4-6484-1272704f1de0@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Infomaniak-Routing: alpha
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZIi1fixnNqj9Gfcg@shell.armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-
-On 13/06/2023 12:54, Konstantin Meskhidze (A) wrote:
+On Tue, Jun 13, 2023 at 07:29:18PM +0100, Russell King (Oracle) wrote:
+> Maybe it's just me being dumb, but I keep finding things difficult to
+> understand, such as the above paragraph.
 > 
+> It sounds like you're saying that _before_ this patch, port 5 is the
+> active CPU port, but the CPU_PORT *FIELD* NOT BITS are set such that
+> port 6 is the active CPU port. Therefore, things are broken, and this
+> patch fixes it.
 > 
-> 6/6/2023 6:17 PM, Günther Noack пишет:
->> Hi Konstantin!
->>
->> Apologies if some of this was discussed before, in this case,
->> Mickaël's review overrules my opinions from the sidelines ;)
->>
->> On Tue, May 16, 2023 at 12:13:38AM +0800, Konstantin Meskhidze wrote:
->>> This commit adds network demo. It's possible to allow a sandboxer to
->>> bind/connect to a list of particular ports restricting network
->>> actions to the rest of ports.
->>>
->>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->>
->>
->>> diff --git a/samples/landlock/sandboxer.c b/samples/landlock/sandboxer.c
->>> index e2056c8b902c..b0250edb6ccb 100644
->>> --- a/samples/landlock/sandboxer.c
->>> +++ b/samples/landlock/sandboxer.c
->>
->> ...
->>
->>> +static int populate_ruleset_net(const char *const env_var, const int ruleset_fd,
->>> +				const __u64 allowed_access)
->>> +{
->>> +	int num_ports, i, ret = 1;
->>
->> I thought the convention was normally to set ret = 0 initially and to
->> override it in case of error, rather than the other way around?
+> Or are you saying that after this patch is applied, port 5 is the
+> active CPU port, but the CPU_PORT *FIELD* is set to port 6. If that's
+> true, then I've no idea what the hell is going on here because it
+> seems to be senseless.
 
-Which convention? In this case, by default the return code is an error.
+There are 2 distinct patches at play. I'll be showing some tables below.
+Their legend is that patch (1) affects only the second column and patch
+(2) affects only the third column.
 
+Patch (1): net: dsa: mt7530: fix trapping frames with multiple CPU ports on MT7530
+----------------------------------------------------------------------------------
 
->>
->     Well, I just followed Mickaёl's way of logic here. >
-> 
->>> +	char *env_port_name;
->>> +	struct landlock_net_service_attr net_service = {
->>> +		.allowed_access = allowed_access,
->>> +		.port = 0,
->>> +	};
->>> +
->>> +	env_port_name = getenv(env_var);
->>> +	if (!env_port_name)
->>> +		return 0;
->>> +	env_port_name = strdup(env_port_name);
->>> +	unsetenv(env_var);
->>> +	num_ports = parse_port_num(env_port_name);
->>> +
->>> +	if (num_ports == 1 && (strtok(env_port_name, ENV_PATH_TOKEN) == NULL)) {
->>> +		ret = 0;
->>> +		goto out_free_name;
->>> +	}
->>
->> I don't understand why parse_port_num and strtok are necessary in this
->> program. The man-page for strsep(3) describes it as a replacement to
->> strtok(3) (in the HISTORY section), and it has a very short example
->> for how it is used.
->>
->> Wouldn't it work like this as well?
->>
->> while ((strport = strsep(&env_port_name, ":"))) {
->>     net_service.port = atoi(strport);
->>     /* etc */
->> }
-> 
->     Thanks for a tip. I think it's a better solution here. Now this
-> commit is in Mickaёl's -next branch. I could send a one-commit patch later.
-> Mickaёl, what do you think?
+What you need to know looking at the current code in net-next is that
+mt753x_cpu_port_enable() always overwrites the CPU_MASK field of MT7530_MFC,
+because that contains a single port. So when operating on a device tree
+with multiple CPU ports defined, only the last CPU port will be recorded
+in that register, and this will affect the destination port for
+trapped-to-CPU frames.
 
-I removed this series from -next because there is some issues (see the 
-bot's emails), but anyway, this doesn't mean these patches don't need to 
-be changed, they do. The goal of -next is to test more widely a patch 
-series and get more feedbacks, especially from bots. When this series 
-will be fully ready (and fuzzed with syzkaller), I'll push it to Linus 
-Torvalds.
+However, DSA, when operating on a DT with multiple CPU ports, makes the
+dp->cpu_dp pointer of all user ports equal to the first CPU port. That
+affects which DSA master is automatically brought up when user ports are
+brought up. Minor issue, TBH, because it is sufficient for the user to
+manually bring up the DSA master corresponding to the second CPU port,
+and then trapped frames would be processed just fine. Prior to ~2021/v5.12,
+that facility wasn't even a thing - the user always had to bring that
+interface up manually.
 
-I'll review the remaining tests and sample code this week, but you can 
-still take into account the documentation review.
+That means that without patch (1) we have:
+
+CPU ports in the    Trapping CPU port        Default CPU port
+device tree         (MT7530_MFC:CPU_MASK)    (all dp->cpu_dp point to it)
+-------------------------------------------------------------------------
+5                   5                        5
+6                   6                        6
+5 and 6             6                        5
+
+The semi-problem is that the DSA master of the trapping port (6) is not
+automatically brought up by the dsa_slave_open() logic, because no slave
+has port 6 (the trapping port) as a master.
+
+All that this patch is doing is that it moves around the trapping CPU
+port towards one of the DSA masters that is up, so that the user doesn't
+really need to care. The table becomes:
+
+CPU ports in the    Trapping CPU port        Default CPU port
+device tree         (MT7530_MFC:CPU_MASK)    (all dp->cpu_dp point to it)
+--------------------------------------------------------------------------
+5                   5                        5
+6                   6                        6
+5 and 6             5                        5
 
 
-> 
->>
->>> +
->>> +	for (i = 0; i < num_ports; i++) {
->>> +		net_service.port = atoi(strsep(&env_port_name, ENV_PATH_TOKEN));
->>
->> Naming of ENV_PATH_TOKEN:
->> This usage is not related to paths, maybe rename the variable?
->> It's also technically not the token, but the delimiter.
->>
->    What do you think of ENV_PORT_TOKEN or ENV_PORT_DELIMITER???
+Patch (2) net: dsa: introduce preferred_default_local_cpu_port and use on MT7530
+--------------------------------------------------------------------------------
 
-You can rename ENV_PATH_TOKEN to ENV_DELIMITER for the FS and network parts.
+This patch influences the choice that DSA makes when it comes to the
+dp->cpu_dp assignments of user ports, when fed a device tree with
+multiple CPU ports.
 
+The preference of the mt7530 driver is: if port 6 is defined in the DT
+as a CPU port, choose that. Otherwise don't care (which implicitly means:
+let DSA pick the first CPU port that is defined there, be it 5 or 6).
+
+The effect of this patch taken in isolation is (showing only "after",
+because "before" is the same as the "before" of patch 1):
+
+CPU ports in the    Trapping CPU port        Default CPU port
+device tree         (MT7530_MFC:CPU_MASK)    (all dp->cpu_dp point to it)
+-------------------------------------------------------------------------
+5                   5                        5
+6                   6                        6
+5 and 6             6                        6
+
+As you can see, patch (2) resolves the same semi-problem even in
+isolation because it makes the trapping port coincide with the default
+CPU port in a different way.
 
 > 
->>> +		if (landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
->>> +				      &net_service, 0)) {
->>> +			fprintf(stderr,
->>> +				"Failed to update the ruleset with port \"%lld\": %s\n",
->>> +				net_service.port, strerror(errno));
->>> +			goto out_free_name;
->>> +		}
->>> +	}
->>> +	ret = 0;
->>> +
->>> +out_free_name:
->>> +	free(env_port_name);
->>> +	return ret;
->>> +}
->>
->>
->>>   		fprintf(stderr,
->>>   			"Launch a command in a restricted environment.\n\n");
->>> -		fprintf(stderr, "Environment variables containing paths, "
->>> -				"each separated by a colon:\n");
->>> +		fprintf(stderr,
->>> +			"Environment variables containing paths and ports "
->>> +			"each separated by a colon:\n");
->>>   		fprintf(stderr,
->>>   			"* %s: list of paths allowed to be used in a read-only way.\n",
->>>   			ENV_FS_RO_NAME);
->>>   		fprintf(stderr,
->>> -			"* %s: list of paths allowed to be used in a read-write way.\n",
->>> +			"* %s: list of paths allowed to be used in a read-write way.\n\n",
->>>   			ENV_FS_RW_NAME);
->>> +		fprintf(stderr,
->>> +			"Environment variables containing ports are optional "
->>> +			"and could be skipped.\n");
->>
->> As it is, I believe the program does something different when I'm
->> setting these to the empty string (ENV_TCP_BIND_NAME=""), compared to
->> when I'm unsetting them?
->>
->> I think the case where we want to forbid all handle-able networking is
->> a legit and very common use case - it could be clearer in the
->> documentation how this is done with the tool. (And maybe the interface
->> could be something more explicit than setting the environment variable
->> to empty?)
+> I think at this point I just give up trying to understand what the
+> hell these patches are trying to do - in my opinion, the commit
+> messages are worded attrociously and incomprehensively.
 
-I'd like to keep it simple, and it should be seen as an example code, 
-not a full-feature sandboxer, but still a consistent and useful one. 
-What would you suggest?
-
-This sandboxer tool relies on environment variables for its 
-configuration. This is definitely not a good fit for all use cases, but 
-I think it is simple and flexible enough. One use case might be to 
-export a set of environment variables and simply call this tool. I'd 
-prefer to not deal with argument parsing, but maybe that was too 
-simplistic? We might want to revisit this approach but probably not with 
-this series.
-
-
->>
->>
->>> +	/* Removes bind access attribute if not supported by a user. */
->>> +	env_port_name = getenv(ENV_TCP_BIND_NAME);
->>> +	if (!env_port_name) {
->>> +		ruleset_attr.handled_access_net &=
->>> +			~LANDLOCK_ACCESS_NET_BIND_TCP;
->>> +	}
->>> +	/* Removes connect access attribute if not supported by a user. */
->>> +	env_port_name = getenv(ENV_TCP_CONNECT_NAME);
->>> +	if (!env_port_name) {
->>> +		ruleset_attr.handled_access_net &=
->>> +			~LANDLOCK_ACCESS_NET_CONNECT_TCP;
->>> +	}
->>
->> This is the code where the program does not restrict network usage,
->> if the corresponding environment variable is not set.
-> 
->     Yep. Right.
->>
->> It's slightly inconsistent with what this tool does for filesystem
->> paths. - If you don't specify any file paths, it will still restrict
->> file operations there, independent of whether that env variable was
->> set or not.  (Apologies if it was discussed before.)
-> 
->    Mickaёl wanted to make network ports optional here.
->    Please check:
->   
-> https://lore.kernel.org/linux-security-module/179ac2ee-37ff-92da-c381-c2c716725045@digikod.net/
-
-Right, the rationale is for compatibility with the previous version of 
-this tool. We should not break compatibility when possible. A comment 
-should explain the rationale though.
-
-> 
-> https://lore.kernel.org/linux-security-module/fe3bc928-14f8-5e2b-359e-9a87d6cf5b01@digikod.net/
->>
->> —Günther
->>
++1, could have been better..
 
