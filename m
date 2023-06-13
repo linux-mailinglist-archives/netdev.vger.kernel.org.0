@@ -1,167 +1,143 @@
-Return-Path: <netdev+bounces-10295-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10294-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DC30B72DA16
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 08:47:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 09D9672DA13
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 08:46:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 240FE1C20C25
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 06:47:04 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4FDA01C20C2D
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 06:46:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 351801844;
-	Tue, 13 Jun 2023 06:46:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1871423B8;
+	Tue, 13 Jun 2023 06:46:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A45B3C27
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 06:46:48 +0000 (UTC)
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404BE10D5
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 23:46:46 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id 46e09a7af769-6b160f3f384so3047344a34.3
-        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 23:46:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1686638805; x=1689230805;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=NHNXSDSAPdGJpNANCbsAPKFp2yaEgGD+KFXl6OMicdU=;
-        b=N3xIpdGJflW3eOUqyzlLAk5abO21PLtlV9Mx6Umc9Y1/aUS6ZbK6xRXRwrBlCl8Hpt
-         c4VFcfT/4bTwUNGcVg175+fbr1PAChggD6uVFx3lHagvhox0mUPosWozHs3j411OtiIg
-         q1Z9LwzcFS02JAqJpGtU1gtlg9MoyXwZnR3qtAhSBZqlvB3neANc61YpQBDp8CqDL8LB
-         zEmXHHS2jlaLBD/YUj1zWpzLM2mP/B13pd8pD5UXNt67O89fC37Inmaq9CEiTcuxvhdX
-         fHhNFtYe96lllaquqJtuXVScNXSyTJXbWF6oVsGptmNDOdfS0LS+Pg89wOXHPW1dV3a+
-         flmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686638805; x=1689230805;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NHNXSDSAPdGJpNANCbsAPKFp2yaEgGD+KFXl6OMicdU=;
-        b=DRI4378tXofuPRVXeBLH/WoWXVVjxc5IlsaZ2sDBsq/Lo5jXuu1EqVcCx8v4beRNfZ
-         V2LA+hghQQL7islxLEPzMp4pNxNsu2hE54FhKUYlHmfdIPI594Jry+Gy0b/Rt4CFnGj+
-         jyqBCholHTMs0BL4m+C5NaO/Cf9RGQbaoO/wzRnbZjJWyAk4kKCvLpb5RZg4fXmHzM4c
-         LeAvA/AeF7nw3E6tzKNSJMYuKEPF8QaE1AEV/owj/X2XrJbp+vV7ft6YPwfORj/vtKva
-         xnUol1/65w19I1JvDnbgIl9gQQ3nskJJiwsQSFZ1EWRmswdjkQgxeKnjhf8CQ6kx7M61
-         ybOQ==
-X-Gm-Message-State: AC+VfDygsPe5zmybDqNNMerFtdarSggyHzPJNqRnlah0olU9/roKWlos
-	Na0D5x7lCndVdDM++MDyxIZWJg==
-X-Google-Smtp-Source: ACHHUZ5yWwpRuqEtXXDwbA/oYjDxwnLkcpw00/aVzdZTCGVeM5RWwjUvOUXKhz+EyFWvMpgm+Xdikw==
-X-Received: by 2002:a05:6358:f1e:b0:129:94e6:7069 with SMTP id b30-20020a0563580f1e00b0012994e67069mr5181771rwj.0.1686638805446;
-        Mon, 12 Jun 2023 23:46:45 -0700 (PDT)
-Received: from [10.254.80.225] ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id 17-20020a630011000000b00542d7720a6fsm8736801pga.88.2023.06.12.23.46.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Jun 2023 23:46:44 -0700 (PDT)
-Message-ID: <b879d810-132b-38ab-c13d-30fabdc8954a@bytedance.com>
-Date: Tue, 13 Jun 2023 14:46:32 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D3EC1844
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 06:46:45 +0000 (UTC)
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E21310D5;
+	Mon, 12 Jun 2023 23:46:43 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.ozlabs.org (Postfix) with ESMTPSA id 4QgJxX6GNQz4x42;
+	Tue, 13 Jun 2023 16:46:40 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+	s=201702; t=1686638801;
+	bh=8+PuIQDjHvRIypCywmblAWQTn4D9Of06vgaNnepsJJA=;
+	h=Date:From:To:Cc:Subject:From;
+	b=sR1JwL08YgKFOrkD3jJJ+tlhf1w+z/Yu1nADYNVlQa3fQFf/X2O/n8QOOHd1p3vdE
+	 P27zymrcGVmuyu76O3ajiAGPogKr1c8Ug60pxyiqSRlsSaOgQBVKiz2vA965VhsL7Z
+	 xF4D5B47cI2Mx9dBiidOu/xCh2APQTZeCPcto+yiLalZyl0ZJqgMyiJzbZqZTDphHL
+	 bWV4dMOls7DMxWwPMK3d3rOlWoS/ZE3kFkQlzUw/4v8j9vqIljOO5rZ0XOC36/y/RS
+	 a5VoAyR1URMIpuXlrZH7GX6zkDNpyzJeEdDFFue9Nzas355hz2FAbHgaN8Tt+qZFmj
+	 lAjqUdkXgtIZQ==
+Date: Tue, 13 Jun 2023 16:46:39 +1000
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+To: David Miller <davem@davemloft.net>, Networking <netdev@vger.kernel.org>
+Cc: Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux Next
+ Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20230613164639.164b2991@canb.auug.org.au>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.11.2
-Subject: Re: Re: [RFC PATCH net-next] sock: Propose socket.urgent for sockmem
- isolation
-Content-Language: en-US
-To: Eric Dumazet <edumazet@google.com>
-Cc: Tejun Heo <tj@kernel.org>, Christian Warloe <cwarloe@google.com>,
- Wei Wang <weiwan@google.com>, "David S. Miller" <davem@davemloft.net>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>,
- Roman Gushchin <roman.gushchin@linux.dev>, Shakeel Butt
- <shakeelb@google.com>, Muchun Song <muchun.song@linux.dev>,
- Andrew Morton <akpm@linux-foundation.org>, David Ahern <dsahern@kernel.org>,
- Yosry Ahmed <yosryahmed@google.com>,
- "Matthew Wilcox (Oracle)" <willy@infradead.org>, Yu Zhao
- <yuzhao@google.com>, Vasily Averin <vasily.averin@linux.dev>,
- Kuniyuki Iwashima <kuniyu@amazon.com>,
- Martin KaFai Lau <martin.lau@kernel.org>, Xin Long <lucien.xin@gmail.com>,
- Jason Xing <kernelxing@tencent.com>, Michal Hocko <mhocko@suse.com>,
- Alexei Starovoitov <ast@kernel.org>, open list
- <linux-kernel@vger.kernel.org>,
- "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
- "open list:CONTROL GROUP - MEMORY RESOURCE CONTROLLER (MEMCG)"
- <cgroups@vger.kernel.org>,
- "open list:CONTROL GROUP - MEMORY RESOURCE CONTROLLER (MEMCG)"
- <linux-mm@kvack.org>
-References: <20230609082712.34889-1-wuyun.abel@bytedance.com>
- <CANn89i+Qqq5nV0oRLh_KEHRV6VmSbS5PsSvayVHBi52FbB=sKA@mail.gmail.com>
-From: Abel Wu <wuyun.abel@bytedance.com>
-In-Reply-To: <CANn89i+Qqq5nV0oRLh_KEHRV6VmSbS5PsSvayVHBi52FbB=sKA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/Tw_E9OZMaCE5DbSiGMgrfQ=";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 6/9/23 5:07 PM, Eric Dumazet wrote:
-> On Fri, Jun 9, 2023 at 10:28 AM Abel Wu <wuyun.abel@bytedance.com> wrote:
->>
->> This is just a PoC patch intended to resume the discussion about
->> tcpmem isolation opened by Google in LPC'22 [1].
->>
->> We are facing the same problem that the global shared threshold can
->> cause isolation issues. Low priority jobs can hog TCP memory and
->> adversely impact higher priority jobs. What's worse is that these
->> low priority jobs usually have smaller cpu weights leading to poor
->> ability to consume rx data.
->>
->> To tackle this problem, an interface for non-root cgroup memory
->> controller named 'socket.urgent' is proposed. It determines whether
->> the sockets of this cgroup and its descendants can escape from the
->> constrains or not under global socket memory pressure.
->>
->> The 'urgent' semantics will not take effect under memcg pressure in
->> order to protect against worse memstalls, thus will be the same as
->> before without this patch.
->>
->> This proposal doesn't remove protocal's threshold as we found it
->> useful in restraining memory defragment. As aforementioned the low
->> priority jobs can hog lots of memory, which is unreclaimable and
->> unmovable, for some time due to small cpu weight.
->>
->> So in practice we allow high priority jobs with net-memcg accounting
->> enabled to escape the global constrains if the net-memcg itselt is
->> not under pressure. While for lower priority jobs, the budget will
->> be tightened as the memory usage of 'urgent' jobs increases. In this
->> way we can finally achieve:
->>
->>    - Important jobs won't be priority inversed by the background
->>      jobs in terms of socket memory pressure/limit.
->>
->>    - Global constrains are still effective, but only on non-urgent
->>      jobs, useful for admins on policy decision on defrag.
->>
->> Comments/Ideas are welcomed, thanks!
->>
-> 
-> This seems to go in a complete opposite direction than memcg promises.
-> 
-> Can we fix memcg, so that :
-> 
-> Each group can use the memory it was provisioned (this includes TCP buffers)
+--Sig_/Tw_E9OZMaCE5DbSiGMgrfQ=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Yes, but might not be easy once memory gets over-committed (which is
-common in modern data-centers). So as a tradeoff, we intend to put
-harder constraint on memory allocation for low priority jobs. Or else
-if every job can use its provisioned memory, than there will be more
-memstalls blocking random jobs which could be the important ones.
-Either way hurts performance, but the difference is whose performance
-gets hurt.
+Hi all,
 
-Memory protection (memory.{min,low}) helps the important jobs less
-affected by memstalls. But once low priority jobs use lots of kernel
-memory like sockmem, the protection might become much less efficient.
+After merging the net-next tree, today's linux-next build (sparc64
+defconfig) failed like this:
 
-> 
-> Global tcp_memory can disappear (set tcp_mem to infinity)
+drivers/net/ethernet/sun/sunvnet_common.c: In function 'vnet_handle_offload=
+s':
+drivers/net/ethernet/sun/sunvnet_common.c:1277:16: error: implicit declarat=
+ion of function 'skb_gso_segment'; did you mean 'skb_gso_reset'? [-Werror=
+=3Dimplicit-function-declaration]
+ 1277 |         segs =3D skb_gso_segment(skb, dev->features & ~NETIF_F_TSO);
+      |                ^~~~~~~~~~~~~~~
+      |                skb_gso_reset
+drivers/net/ethernet/sun/sunvnet_common.c:1277:14: warning: assignment to '=
+struct sk_buff *' from 'int' makes pointer from integer without a cast [-Wi=
+nt-conversion]
+ 1277 |         segs =3D skb_gso_segment(skb, dev->features & ~NETIF_F_TSO);
+      |              ^
+
+Caused by commit
+
+  d457a0e329b0 ("net: move gso declarations and functions to their own file=
+s")
+
+I have applied the following patch for today.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Tue, 13 Jun 2023 16:38:10 +1000
+Subject: [PATCH] Fix a sparc64 use of the gso functions
+
+This was missed when they were moved.
+
+Fixes: d457a0e329b0 ("net: move gso declarations and functions to their own=
+ files")
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ drivers/net/ethernet/sun/sunvnet_common.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/sun/sunvnet_common.c b/drivers/net/ethern=
+et/sun/sunvnet_common.c
+index a6211b95ed17..3525d5c0d694 100644
+--- a/drivers/net/ethernet/sun/sunvnet_common.c
++++ b/drivers/net/ethernet/sun/sunvnet_common.c
+@@ -25,6 +25,7 @@
+ #endif
+=20
+ #include <net/ip.h>
++#include <net/gso.h>
+ #include <net/icmp.h>
+ #include <net/route.h>
+=20
+--=20
+2.39.2
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/Tw_E9OZMaCE5DbSiGMgrfQ=
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmSIEM8ACgkQAVBC80lX
+0Gw5VQf7BoFtLqlYCcZ1EcmSB6rSgKpa+rwDE0zWUy0pmlqre9HG5FjOpqlRzPqV
+wcM+ljVgC3cbAYnk/Bf7rkTmmGj888ur/de3Gig7Fu1Onp8iMu0ZJ7uAe7RdLvbb
+ai1E2PfD90TAEIYQtrmc6ep3QZRejQMO2J2DfKlOuc4OY4PRdFJxyBXXhnZKl7b5
+8YizNNcYANGOSjZqTJZL9bimOSHg5Pfb/QTrVTt+Z3A6Rb/tBSfAVOqcfd6xDYOQ
+G+SnMqhK2AomOv6MW/UbSiVQ9dHkTG2jUkDCWvqWUpbdpX+8UCUxMcycNRUlwSsQ
+J5MDRriuuXjOEQAWtv1B7V+SopvYVg==
+=xo73
+-----END PGP SIGNATURE-----
+
+--Sig_/Tw_E9OZMaCE5DbSiGMgrfQ=--
 
