@@ -1,75 +1,86 @@
-Return-Path: <netdev+bounces-10267-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10268-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 74AC772D52C
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 01:49:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id E2A5272D54A
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 02:00:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A7737281002
-	for <lists+netdev@lfdr.de>; Mon, 12 Jun 2023 23:49:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 24B592810F2
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 00:00:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B0FFC10780;
-	Mon, 12 Jun 2023 23:49:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1562F4404;
+	Tue, 13 Jun 2023 00:00:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 588C0C8DE
-	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 23:49:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFBE1C433EF;
-	Mon, 12 Jun 2023 23:49:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F6F34401
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 00:00:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 24E87C433D2;
+	Tue, 13 Jun 2023 00:00:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686613745;
-	bh=yIRi0WXE4Net4p4k+Jwnbq1wiuvuUouDv0057sNyh8E=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=pATI2xnVISuzMZb0xj8Z0Dh8wi/xUu264Dagb7GZ18oJGWd0UDTfUnpFyrkKxTn49
-	 KnH5MJO1+0YIs8eeunryQEtM3/Lr/oI7DWX8tWHda1pmlG2nOr8St15FcWk/p4OZ4t
-	 HCt5lsQYkPCIZjdFOD8Fhgt8+2qGu13uXTiB663Ti3QiHFr3VPcNcdfC16dOQHt783
-	 E1EjRnwQzQ5ZwrEVGKXkTK5RSe9V/3IE3SDMqCoedd4mXEM+IxjIOzw7mrg27+s+/i
-	 qrBeNUPnL1ved78C/i8rKikra3VLoUpLIthzyRVEDsEIX0OkHLGwtXev5H3gk+yB16
-	 mJ86IHEFRAgDg==
-Date: Mon, 12 Jun 2023 16:49:02 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Cc: jiri@resnulli.us, vadfed@meta.com, jonathan.lemon@gmail.com,
- pabeni@redhat.com, corbet@lwn.net, davem@davemloft.net,
- edumazet@google.com, vadfed@fb.com, jesse.brandeburg@intel.com,
- anthony.l.nguyen@intel.com, saeedm@nvidia.com, leon@kernel.org,
- richardcochran@gmail.com, sj@kernel.org, javierm@redhat.com,
- ricardo.canuelo@collabora.com, mst@redhat.com, tzimmermann@suse.de,
- michal.michalik@intel.com, gregkh@linuxfoundation.org,
- jacek.lawrynowicz@linux.intel.com, airlied@redhat.com, ogabbay@kernel.org,
- arnd@arndb.de, nipun.gupta@amd.com, axboe@kernel.dk, linux@zary.sk,
- masahiroy@kernel.org, benjamin.tissoires@redhat.com,
- geert+renesas@glider.be, milena.olech@intel.com, kuniyu@amazon.com,
- liuhangbin@gmail.com, hkallweit1@gmail.com, andy.ren@getcruise.com,
- razor@blackwall.org, idosch@nvidia.com, lucien.xin@gmail.com,
- nicolas.dichtel@6wind.com, phil@nwl.cc, claudiajkang@gmail.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
- linux-rdma@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- poros@redhat.com, mschmidt@redhat.com, linux-clk@vger.kernel.org,
- vadim.fedorenko@linux.dev
-Subject: Re: [RFC PATCH v8 01/10] dpll: documentation on DPLL subsystem
- interface
-Message-ID: <20230612164902.073544e2@kernel.org>
-In-Reply-To: <20230609121853.3607724-2-arkadiusz.kubalewski@intel.com>
-References: <20230609121853.3607724-1-arkadiusz.kubalewski@intel.com>
-	<20230609121853.3607724-2-arkadiusz.kubalewski@intel.com>
+	s=k20201202; t=1686614424;
+	bh=kliTCodd6wYpHfGlKYtf/FCCXeowUCACVsZ/qFZvUmM=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=LT7JGewdeY18HwKhJom7lXUFLTWQxxqwW87Ev4oAnyxqhaYnx9TYTC1tK6KIG+esQ
+	 nRMp4Tg/N2R19V7SS5UHWQ9xrayEgl2PUJrBuD83HX6s1YDYddhsFCxnwfUrzjmezN
+	 JE0RjjwjuNBcsl0a7IODy0M+9AAWVPKky5bVxB8pb4e0GWaCWQLCLjowBX9ju7knGl
+	 uW44kSnjfImSneXD14HpMaZXs3URq60ihBgDy5eRwF38GSntvD637RPKO4fP0DhSY2
+	 0hQd6kkRMqGbfe0zwr/cy1D6Vu/VjbDfEVBj5aEXNltzJh/53AXSW5oOj8wE2b9qdU
+	 RbrlIFQoL/k3Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0103EE29F37;
+	Tue, 13 Jun 2023 00:00:24 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2 0/2] fixes for Q-USGMII speeds and autoneg
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168661442399.10094.15517056785323276063.git-patchwork-notify@kernel.org>
+Date: Tue, 13 Jun 2023 00:00:23 +0000
+References: <20230609080305.546028-1-maxime.chevallier@bootlin.com>
+In-Reply-To: <20230609080305.546028-1-maxime.chevallier@bootlin.com>
+To: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc: davem@davemloft.net, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ thomas.petazzoni@bootlin.com, andrew@lunn.ch, f.fainelli@gmail.com,
+ hkallweit1@gmail.com, linux@armlinux.org.uk,
+ linux-arm-kernel@lists.infradead.org, Horatiu.Vultur@microchip.com,
+ Allan.Nielsen@microchip.com, UNGLinuxDriver@microchip.com,
+ vladimir.oltean@nxp.com, simon.horman@corigine.com
 
-On Fri,  9 Jun 2023 14:18:44 +0200 Arkadiusz Kubalewski wrote:
-> +Every other operation handler is checked for existence and
-> +``-ENOTSUPP`` is returned in case of absence of specific handler.
+Hello:
 
-EOPNOTSUPP
+This series was applied to netdev/net.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Fri,  9 Jun 2023 10:03:03 +0200 you wrote:
+> This is the second version of a small changeset for QUSGMII support,
+> fixing inconsistencies in reported max speed and control word parsing.
+> 
+> As reported here [1], there are some inconsistencies for the Q-USGMII
+> mode speeds and configuration. The first patch in this fixup series
+> makes so that we correctly report the max speed of 1Gbps for this mode.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2,1/2] net: phylink: report correct max speed for QUSGMII
+    https://git.kernel.org/netdev/net/c/b9dc1046edfe
+  - [net,v2,2/2] net: phylink: use a dedicated helper to parse usgmii control word
+    https://git.kernel.org/netdev/net/c/923454c0368b
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
 
