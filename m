@@ -1,58 +1,58 @@
-Return-Path: <netdev+bounces-10501-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10502-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C7B4F72EBE1
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 21:24:55 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 286E372EBE2
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 21:25:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 81B60280F13
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 19:24:54 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5116E1C208A8
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 19:25:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE6503B8D4;
-	Tue, 13 Jun 2023 19:24:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5A4633C090;
+	Tue, 13 Jun 2023 19:25:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2D6F17FE6
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 19:24:52 +0000 (UTC)
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913D71FF0
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 12:24:46 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id d2e1a72fcca58-652a6cf1918so4573143b3a.1
-        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 12:24:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DA5917FE6
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 19:25:14 +0000 (UTC)
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2CDF199
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 12:25:12 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id 98e67ed59e1d1-25bf4b269e0so1735869a91.0
+        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 12:25:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1686684286; x=1689276286;
+        d=chromium.org; s=google; t=1686684312; x=1689276312;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=hW07/KxIwpPsYdFA9lPkBZ4Xt/G7PhfjivAGs4nndnM=;
-        b=QklL5AG1tnpVT2frkelZwrvdvjq6NFTrjc5Tvszw/aY/f3B3LALEwyX5gYg+7k89GF
-         3cHjdzapmDZJt99ue2P72ax0cIVA9VO9+o5PHgSe42jmMAUnIiY+ghg7elKePQGvMEZ+
-         oSz1rroYJAyibfzgpXQPviHZwRvqIKvQ1tbW8=
+        bh=pF2h1PhbUZCakO9HzT4Rd+vAXkEtKn6aAJnn/Olzk7Y=;
+        b=ZU3MjfCE6Bh7fjFg1BjEDJSesHastV05YBYNgqy41DzneH7oHeJm0hjPHEGpA+EXOf
+         SG0w/KdxLi/052dMX5jl+FhfITGRS8mugUn3zKE3/eLMipX8oltrWHNWBmc0cN1ljQZj
+         mHbEmFHWq7dz7xcNdDtR8r5WSwa8L+3oVanTE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686684286; x=1689276286;
+        d=1e100.net; s=20221208; t=1686684312; x=1689276312;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=hW07/KxIwpPsYdFA9lPkBZ4Xt/G7PhfjivAGs4nndnM=;
-        b=cXRmNfadgvt/hV28JYzserqdp/KuKXwSYeXcNbGcs/1fB+/bl+stIey0IT9m6WKbN/
-         FCwnVF55WEPTUbuOlk1x8pZO4yVRZ051k9lGoub006m0ld8xQZZlUOPM0T97E0NFcKmw
-         1rUztVk7jUoypj1gxuf+lxHjiUhSBl/rhDyVJYMttzgP+p0LE8THijFVZBYHzvIePDqU
-         OFe6S6dniR22Ooeknq55kbvTGkh1a9OsZbtNU/W9Qd6DSZX2KMzAXBRB/8xY2Iu1oNcA
-         MRDrt5yp4AzZ5GgUfVnZpjPuFZk/4maLiA/o0knIPwNzr8g6f5NSMHbBwFsM0Y9bp1lz
-         5tCA==
-X-Gm-Message-State: AC+VfDwjjySmF8NXDk/+opfs85v/X91/oJbkn40QKeIEoyq/NyR1OuUE
-	5EZZPSQN5lo7DQCdL5Zo15lbYQ==
-X-Google-Smtp-Source: ACHHUZ5nGaJQrazHitO9RBRakIkNp+QjgEC3mKbozW40uweFVPJxBHm2vmipYf4h5+/k8wqt0EJcMQ==
-X-Received: by 2002:a05:6a00:1826:b0:63b:854e:8459 with SMTP id y38-20020a056a00182600b0063b854e8459mr17087049pfa.31.1686684285923;
-        Tue, 13 Jun 2023 12:24:45 -0700 (PDT)
+        bh=pF2h1PhbUZCakO9HzT4Rd+vAXkEtKn6aAJnn/Olzk7Y=;
+        b=OJIRxVrB/eOZr+O8MX53JlWWzsKlwPr+EfsCUjoNImBybv28JGOmxq3PR8CC3m3w1R
+         1fHLhc3Y8DRWHTDojLXtLj1vsiuThAbgCgiF0oEQIQP8DZVk2tqhTm9JM52M2tcbulDZ
+         Q1kUUm5nCSBoypGBNQZ16L2CACPb2yudWlYV30Q5TvcrMLly8sppJ4+LEngdmY7TtLcG
+         I14ttFmBNhu8Ss65eGcWg/vhD9QB4TsUZ+VGLgIKVWpea5JF4vi1Cdxxdq2jQgMQb0Ry
+         ZQHWR4NyoXEtBW0zevgGnYYIRejTUee+dNoGdvTv3EYL5s+ZFfQBTnkihKw3Q38DHC8K
+         vzOw==
+X-Gm-Message-State: AC+VfDwzryE5S4I3I7294CTuGCjTdZwfRqwVqTfync0IPAhBcJ7kfBT2
+	C1w4rhD2JTvLi8lW9PrYPWrDO9Q4y/xzgItLaok=
+X-Google-Smtp-Source: ACHHUZ5PcTot62BlDuw88kgBfTRj1f+G5oPoENpd58CdgZFu8Kh7kup0ho97mveBi1GFUbg3BuXnpA==
+X-Received: by 2002:a17:90a:d252:b0:25c:2a59:fb2d with SMTP id o18-20020a17090ad25200b0025c2a59fb2dmr1703066pjw.8.1686684312104;
+        Tue, 13 Jun 2023 12:25:12 -0700 (PDT)
 Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id a16-20020a62bd10000000b0065ecdefa57fsm8952203pff.0.2023.06.13.12.24.45
+        by smtp.gmail.com with ESMTPSA id 3-20020a17090a194300b00253305f36c4sm12184899pjh.18.2023.06.13.12.25.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jun 2023 12:24:45 -0700 (PDT)
-Date: Tue, 13 Jun 2023 12:24:45 -0700
+        Tue, 13 Jun 2023 12:25:11 -0700 (PDT)
+Date: Tue, 13 Jun 2023 12:25:11 -0700
 From: Kees Cook <keescook@chromium.org>
 To: Azeem Shaikh <azeemshaikh38@gmail.com>
 Cc: Johannes Berg <johannes@sipsolutions.net>,
@@ -62,9 +62,9 @@ Cc: Johannes Berg <johannes@sipsolutions.net>,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
 	netdev@vger.kernel.org
-Subject: Re: [PATCH] cfg80211: cfg80211: strlcpy withreturn
-Message-ID: <202306131224.338EAD654@keescook>
-References: <20230612232301.2572316-1-azeemshaikh38@gmail.com>
+Subject: Re: [PATCH] mac80211: Replace strlcpy with strscpy
+Message-ID: <202306131225.1480125B66@keescook>
+References: <20230613003404.3538524-1-azeemshaikh38@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -73,7 +73,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230612232301.2572316-1-azeemshaikh38@gmail.com>
+In-Reply-To: <20230613003404.3538524-1-azeemshaikh38@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
@@ -81,7 +81,7 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 12, 2023 at 11:23:01PM +0000, Azeem Shaikh wrote:
+On Tue, Jun 13, 2023 at 12:34:04AM +0000, Azeem Shaikh wrote:
 > strlcpy() reads the entire source buffer first.
 > This read may exceed the destination size limit.
 > This is both inefficient and can lead to linear read
@@ -89,7 +89,7 @@ On Mon, Jun 12, 2023 at 11:23:01PM +0000, Azeem Shaikh wrote:
 > In an effort to remove strlcpy() completely [2], replace
 > strlcpy() here with strscpy().
 > 
-> Direct replacement is safe here since WIPHY_ASSIGN is only used by
+> Direct replacement is safe here since LOCAL_ASSIGN is only used by
 > TRACE macros and the return values are ignored.
 > 
 > [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#strlcpy
