@@ -1,96 +1,101 @@
-Return-Path: <netdev+bounces-10511-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10513-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7C44E72EC6C
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 22:00:43 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 68CCC72EC80
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 22:10:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C59582810B3
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:00:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 979521C20932
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:10:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F25153D3A0;
-	Tue, 13 Jun 2023 20:00:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7CB213D3A9;
+	Tue, 13 Jun 2023 20:10:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4C48136A
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 20:00:39 +0000 (UTC)
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D14173C;
-	Tue, 13 Jun 2023 13:00:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-	Resent-Cc:Resent-Message-ID; bh=ctNb/7yUvrT2D51cOWDJeRoN3fAPETOIpuMJ8jKqL9k=;
-	t=1686686438; x=1687896038; b=tkXibWwoOL8XFJTc963eEBeP3bKAiUTeTq+awI651jSzTRC
-	V1gH14pGgzpQddQHi7kNhJ8NCwlz8MuBUtW0Rq1yV4Smi/4L25aoTUxpCXA8hEQcR5vZNUmsd9fZa
-	rJ2c9gRnTeKT127GfCD3SJyIRtpMgGGNhfh4hfCcu5I1c3n2rYx5mdjd0H6iaEKrUA2bnzkxD+HpC
-	O5RRFHfRtmzdii4RYXGXo4d8+G3iWf3sbjQ4TVUhtw1VNYpBhP94Wp2PZ61aM+iTEH3GF81SVEsCJ
-	xlM5F9z/pWAbvCcnUUxiEsdAT3ptb/LfEIpE+EbFuLq0+pPR970LtdgDqqKWwlBA==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim 4.96)
-	(envelope-from <johannes@sipsolutions.net>)
-	id 1q9ABw-005CKc-2j;
-	Tue, 13 Jun 2023 22:00:36 +0200
-Message-ID: <ba933d6e3d360298e400196371e37735aef3b1eb.camel@sipsolutions.net>
-Subject: Re: Closing down the wireless trees for a summer break?
-From: Johannes Berg <johannes@sipsolutions.net>
-To: Jakub Kicinski <kuba@kernel.org>, Toke
-	=?ISO-8859-1?Q?H=F8iland-J=F8rgensen?=
-	 <toke@kernel.org>
-Cc: Kalle Valo <kvalo@kernel.org>, linux-wireless@vger.kernel.org, 
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	regressions@lists.linux.dev
-Date: Tue, 13 Jun 2023 22:00:35 +0200
-In-Reply-To: <20230613112834.7df36e95@kernel.org>
-References: <87y1kncuh4.fsf@kernel.org> <871qifxm9b.fsf@toke.dk>
-	 <20230613112834.7df36e95@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.3 (3.48.3-1.fc38) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B6DF136A
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 20:10:00 +0000 (UTC)
+Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A3B1BE5;
+	Tue, 13 Jun 2023 13:09:56 -0700 (PDT)
+Received: by mail-io1-f49.google.com with SMTP id ca18e2360f4ac-77ac59135ebso213273939f.3;
+        Tue, 13 Jun 2023 13:09:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686686996; x=1689278996;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Gjpk6M00PyKdezSkYwKG0YakVAZSBP58+XeaS+tOstY=;
+        b=b1JV/lgdGp9ozFaZHd9pUNfKkq4IAYQHqy+FDJK2i059wE33dNG+b+GfjILuEaIMbl
+         svwsXyC79DH6148eslIQUfYnSR1WVdn8U9EEpnR3YyyaqCCCfJfh8bWhdsL56tL9zJbw
+         m/LN81O8RFp5DOCKjRPBJux8DwbF7Hh/r07OqX/0hEWwknDZqWXMKzD2hydvFWYPMYLe
+         c+PQhV4uz2RYrBB4G8WsFwgo4VFKUyOwLamJtWIjX56SaC5rnp4f2VSsnu23IJlLCl2Z
+         c47naN6dS2xX2Uha8rQUYXA2OJOR5ADTvL1UXILjSa142K5S3XQ83F4oS+HTq7JpA4T2
+         nbrA==
+X-Gm-Message-State: AC+VfDymi8p4255fuAOP3q8fYHbMwSUvZ7eF0WGUu1nynjcgNWSteaTV
+	EPoDjCL1jPUQvL1UP3v2wGSM+mhCCQ==
+X-Google-Smtp-Source: ACHHUZ7pD/oHFNZgCq+eRIVMNAKGU5vIehooTsAFl+mLTv6j93ybrKAnQLA3JXDCNHHCw1kjvMbRtg==
+X-Received: by 2002:a6b:4418:0:b0:76c:8877:861f with SMTP id r24-20020a6b4418000000b0076c8877861fmr9829960ioa.1.1686686996069;
+        Tue, 13 Jun 2023 13:09:56 -0700 (PDT)
+Received: from robh_at_kernel.org ([64.188.179.250])
+        by smtp.gmail.com with ESMTPSA id f5-20020a056638118500b0041eb1fb695csm3652269jas.105.2023.06.13.13.09.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Jun 2023 13:09:55 -0700 (PDT)
+Received: (nullmailer pid 2822666 invoked by uid 1000);
+	Tue, 13 Jun 2023 20:09:53 -0000
+From: Rob Herring <robh@kernel.org>
+To: Amitkumar Karwar <amitkumar.karwar@nxp.com>, Neeraj Kale <neeraj.sanjaykale@nxp.com>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>
+Cc: netdev@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: net: bluetooth: nxp: Add missing type for "fw-init-baudrate"
+Date: Tue, 13 Jun 2023 14:09:29 -0600
+Message-Id: <20230613200929.2822137-1-robh@kernel.org>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+	FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, 2023-06-13 at 11:28 -0700, Jakub Kicinski wrote:
-> On Tue, 13 Jun 2023 20:14:40 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wrote=
-:
-> > I think this sounds reasonable, and I applaud the effort to take some
-> > time off during the summer :)
-> >=20
-> > One question that comes to mind is how would this work for patchwork?
-> > Would we keep using the wireless patchwork instance for the patches
-> > going to -net in that period, or will there be some other process for
-> > this? I realise the setup we have for ath9k is a bit special in this
-> > regard with the ack-on-list+delegation, so I'm obviously mostly
-> > interested in what to do about that... :)
->=20
-> Whatever's easiest :) It's probably a good idea for Kalle to write
-> down all the local rules and customs and share those with us.
->=20
+"fw-init-baudrate" is missing a type, add it. While we're here, define the
+default value with a schema rather than freeform text.
 
-While that's probably a good idea regardless, I'd think that patchwork
-doesn't really matter that much - we'll have some catching up to do
-anyway after the vacations, so looking through patchwork etc. would be
-perfectly acceptable. Worst case we'd notice when a patch doesn't apply,
-right? :)
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/net/bluetooth/nxp,88w8987-bt.yaml    | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Wrt. ath9k patches I guess "delegate in patchwork" won't work anymore,
-but "resend to netdev" or something perhaps?
+diff --git a/Documentation/devicetree/bindings/net/bluetooth/nxp,88w8987-bt.yaml b/Documentation/devicetree/bindings/net/bluetooth/nxp,88w8987-bt.yaml
+index 57e4c87cb00b..f01a3988538c 100644
+--- a/Documentation/devicetree/bindings/net/bluetooth/nxp,88w8987-bt.yaml
++++ b/Documentation/devicetree/bindings/net/bluetooth/nxp,88w8987-bt.yaml
+@@ -24,11 +24,12 @@ properties:
+       - nxp,88w8997-bt
+ 
+   fw-init-baudrate:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    default: 115200
+     description:
+       Chip baudrate after FW is downloaded and initialized.
+       This property depends on the module vendor's
+-      configuration. If this property is not specified,
+-      115200 is set as default.
++      configuration.
+ 
+ required:
+   - compatible
+-- 
+2.39.2
 
-johannes
 
