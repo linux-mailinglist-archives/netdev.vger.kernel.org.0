@@ -1,105 +1,131 @@
-Return-Path: <netdev+bounces-10459-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10460-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 12BF772E947
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 19:21:49 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6CB0472E97D
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 19:26:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BF5432811CC
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 17:21:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2097428106A
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 17:26:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 05B0130B8B;
-	Tue, 13 Jun 2023 17:21:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D23B30B8C;
+	Tue, 13 Jun 2023 17:26:00 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE63823C6A
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 17:21:45 +0000 (UTC)
-Received: from sender3-op-o17.zoho.com (sender3-op-o17.zoho.com [136.143.184.17])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C871721;
-	Tue, 13 Jun 2023 10:21:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1686676865; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=mUSutJ4v91LRQhTNQ2N8KPrx9BmEGGldCXHyxcahlDwzevtw6fzxQyyXONweq3353zkauZtua3D0shybbjVenQ+zGBYqmQh7Ozl1dfglcbDKPsE9fs+NjLcInOtj4Ycdd3wPRnhflgyh5JJlpkH0jHhdIO5t0ak3CFoxVhRLJKA=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1686676865; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-	bh=YmlHAc0oA+Gd6qbZ+MYa616u3dHbORdC6jb4K9GdGwM=; 
-	b=CReqfNMQLpGsTEVB1q1q79cdA9+cVV1GtaEamLL5Xhs+CSf9G3S9dvcwqILzNyOnMK3DEfDNsSqjArw6TCpG9MxqJ5quhpwT3TO/igw7JT446pjnE2n+oNIhhFicU0qpxiS0IkjwLKzjnW1qehvnecHY4WLVPy6Xh7vd7sDaWIA=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=arinc9.com;
-	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-	dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1686676865;
-	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=YmlHAc0oA+Gd6qbZ+MYa616u3dHbORdC6jb4K9GdGwM=;
-	b=baQLGno+CdvN4L7LkqY2lVK2b44oEj3+1/mN6K58irFUL3QE8vuoWAzKzQovWgCp
-	I5t4K5Col/eHZNweivrGwIwgxb9SDwGrEf5u8XA15xwkTx7IxW8/dlY7EAgB4Ig5bIx
-	FxeWXPDVig8UcpyRxmuM5KNH7AtU4/HJIogv5uM4=
-Received: from [192.168.1.248] (178-147-169-233.haap.dm.cosmote.net [178.147.169.233]) by mx.zohomail.com
-	with SMTPS id 1686676863664276.1065429103859; Tue, 13 Jun 2023 10:21:03 -0700 (PDT)
-Message-ID: <826d89f5-1451-218c-a100-0913c98b931b@arinc9.com>
-Date: Tue, 13 Jun 2023 20:20:54 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 502FB23C6A
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 17:26:00 +0000 (UTC)
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B499E212F;
+	Tue, 13 Jun 2023 10:25:30 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id 2adb3069b0e04-4f62cf9755eso7160450e87.1;
+        Tue, 13 Jun 2023 10:25:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686677046; x=1689269046;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=ODAKB6kMlEX4PRQW3AKishpUPeUFtuBOriTsESRpwjE=;
+        b=pLcwynQ+oas3Kb8/0F2Hz+m1VyNqeFVV/YvMS3XyBpbDFLR9FXZUR6LeBm7+9BXefh
+         wLOkX1dHxIrIqJEOlqpZKVWZEhQ6AyDg+0q04bVX/KIt8AWuHx8OeocQHM8a9c/VE9X7
+         25cjyEZNsk5E5nqTacfHBbh9IzcKjq2g5ij39zdum0KJ80EO5bucu2dsGlb0DyTlvIWe
+         HUkun7St2gyaZEJw+AXCTo2MJx8inmwAcnyqVjvRowRrewcQ7Z+qJF1QEfRY3uxBFq9S
+         XwwapRDwqoqzVWG1L/7OIOb4cH3MIdS2twG/T+dfZ41jDSPJugwYd7t7hf9MKaRDQXLX
+         jIFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686677046; x=1689269046;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ODAKB6kMlEX4PRQW3AKishpUPeUFtuBOriTsESRpwjE=;
+        b=NtE05oPC8iABwHHEUlB9IMAVYpZMxtr8LHEQRBlrtrq33kke0vvJ6IlI0PS7rUl6Eg
+         w9b1o+d7gdfW290o2cdoVEWNo+rSn5dmmpG26IEb70JFPofB/OSDsDk8B7cYRh+Cp5Kr
+         EbIZRUI/50sK9Ny+PvafJRK0+az0eIV0squlhCFdJoiqFhy81/lDFHeqps06tfw7xQpA
+         bwTROj/fFHBMSM9v0xw0j/ov1Ug+8jCmXALmmUIA3kAXTkQRleTFCwGDFiRCNBbln2l/
+         e/gnKBYLPCi+t+wQdvUw0emsO7Du18M/3G+cvRsuYVPtMO8sYi89ieQ3A0yjC5TmB6H4
+         k03A==
+X-Gm-Message-State: AC+VfDwy/JzuwLDhoRob8utD1UY6UzKQQuScvLE5MblJaaPOTA2lJQOi
+	sJIqzvY8NGDH+zOq2nT4u5E=
+X-Google-Smtp-Source: ACHHUZ5FED+iaQ0AU4j8ePw/sCKudiJLTltePzDr7wRRsMmxp2Y8olQvUpTIE5i+5HP7X96hf1qLwg==
+X-Received: by 2002:a05:6512:3284:b0:4f3:b49b:e246 with SMTP id p4-20020a056512328400b004f3b49be246mr7076497lfe.5.1686677045828;
+        Tue, 13 Jun 2023 10:24:05 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id e3-20020a50fb83000000b0051879590e06sm982088edq.24.2023.06.13.10.24.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Jun 2023 10:24:05 -0700 (PDT)
+Date: Tue, 13 Jun 2023 20:24:02 +0300
+From: Vladimir Oltean <olteanv@gmail.com>
+To: =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc: Daniel Golle <daniel@makrotopia.org>,
+	Landen Chao <Landen.Chao@mediatek.com>,
+	DENG Qingfang <dqfext@gmail.com>,
+	Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Frank Wunderlich <frank-w@public-files.de>,
+	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
+	mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net v2 2/7] net: dsa: mt7530: fix trapping frames with
+ multiple CPU ports on MT7530
+Message-ID: <20230613172402.grdpgago6in4jogq@skbuf>
+References: <20230611081547.26747-1-arinc.unal@arinc9.com>
+ <20230611081547.26747-2-arinc.unal@arinc9.com>
+ <20230613150815.67uoz3cvvwgmhdp2@skbuf>
+ <a91e88a8-c528-0392-1237-fc8417931170@arinc9.com>
+ <20230613171858.ybhtlwxqwp7gyrfs@skbuf>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net v4 3/7] net: dsa: mt7530: fix trapping frames on
- non-MT7621 SoC MT7530 switch
-Content-Language: en-US
-To: "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc: Daniel Golle <daniel@makrotopia.org>,
- Landen Chao <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
- Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
- Florian Fainelli <f.fainelli@gmail.com>, Vladimir Oltean
- <olteanv@gmail.com>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Frank Wunderlich <frank-w@public-files.de>,
- Bartel Eerdekens <bartel.eerdekens@constell8.be>, mithat.guner@xeront.com,
- erkin.bozoglu@xeront.com, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org
-References: <20230612075945.16330-1-arinc.unal@arinc9.com>
- <20230612075945.16330-4-arinc.unal@arinc9.com>
- <ZIeKoVklLus8uzDp@shell.armlinux.org.uk>
-From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <ZIeKoVklLus8uzDp@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+In-Reply-To: <20230613171858.ybhtlwxqwp7gyrfs@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 13.06.2023 00:14, Russell King (Oracle) wrote:
-> On Mon, Jun 12, 2023 at 10:59:41AM +0300, arinc9.unal@gmail.com wrote:
->> From: Arınç ÜNAL <arinc.unal@arinc9.com>
->>
->> The check for setting the CPU_PORT bits must include the non-MT7621 SoC
->> MT7530 switch variants to trap frames. Expand the check to include them.
+On Tue, Jun 13, 2023 at 08:18:58PM +0300, Vladimir Oltean wrote:
+> On Tue, Jun 13, 2023 at 08:14:35PM +0300, Arınç ÜNAL wrote:
+> > Actually, having only "net: dsa: introduce preferred_default_local_cpu_port
+> > and use on MT7530" backported is an enough solution for the current stable
+> > kernels.
+> > 
+> > When multiple CPU ports are defined on the devicetree, the CPU_PORT bits
+> > will be set to port 6. The active CPU port will also be port 6.
+> > 
+> > This would only become an issue with the changing the DSA conduit support.
+> > But that's never going to happen as this patch will always be on the kernels
+> > that support changing the DSA conduit.
 > 
-> ... and now you add support for this to the MT7530, which is what
-> alerted me to what seems to be a mistake in the previous patch.
-> 
-> "The setup of CPU_PORT() needs to be done for the MT7530 switch variants
-> as well as the MT7621."
+> Aha, ok. I thought that device trees with CPU port 5 exclusively defined
+> also exist in the wild. If not, and this patch fixes a theoretical only
+> issue, then it is net-next material.
 
-No. ID_MT7621 represents the multi-chip module MT7530 switch in certain 
-MT7621 SoCs. So saying "the MT7530 switch variants" already covers the 
-switch on the MT7621 SoCs.
+On second thought, compatibility with future device trees is the reason
+for this patch set, so that should equally be a reason for keeping this
+patch in a "net" series.
 
-Arınç
+If I understand you correctly, port 5 should have worked since commit
+c8b8a3c601f2 ("net: dsa: mt7530: permit port 5 to work without port 6 on
+MT7621 SoC"), and it did, except for trapping, right?
+
+So how about settling on that as a more modest Fixes: tag, and
+explaining clearly in the commit message what's affected?
 
