@@ -1,128 +1,265 @@
-Return-Path: <netdev+bounces-10518-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10519-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B01BA72ED16
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 22:36:10 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7346572ED23
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 22:38:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E772B281287
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:36:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1F3E31C20945
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:38:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 03D76174FA;
-	Tue, 13 Jun 2023 20:36:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B168022E21;
+	Tue, 13 Jun 2023 20:38:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7701136A
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 20:36:06 +0000 (UTC)
-Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59261DC;
-	Tue, 13 Jun 2023 13:36:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1686688520; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=gDbI8JSeMB3XvfUEcW+rYmjoiLoAZEb32v+S12IxsTgbsgWXTxBIDDZaZCFF5Fe3hjimVj2sSQecbaCVO/zn7mHdvO7Ua5n/PBjbI+e9fO1zgXgMTBy79oUvKzuNw/aQ2Y0K1oWzVxVj+pHbJDh3L37BT+SxX694jFL6Nm1G4vI=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1686688520; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-	bh=NJkettsSxBuNQxUsWm06yE58sGMZHkSWM+zZvdZ8dHk=; 
-	b=k5VLqZG5MBviUDoBb7IWZFoADYxnUjTI9HCx5FtvSavmYo9wYYgrv7em1GvkmmInpWxeZmOnjgv9/scf5RKpbNKbKHgBF9e5X1HvLHlEwgVARZqP1v/vOatnlkqEe/POof+oQ7mTdAqG4RtNv55dVMpIoZkHXIUP0IgUNZdo/fI=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=arinc9.com;
-	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-	dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1686688520;
-	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=NJkettsSxBuNQxUsWm06yE58sGMZHkSWM+zZvdZ8dHk=;
-	b=fuo48VYkqz+6Ex2pjx6EzU+s0d0muvUkrkpFXJ67v1nbotl67aJcacWZx/v2JlvZ
-	OtfN7ypp0Wwkyb3jUQfc1v16f5fwRsRNJkIZ/loQea2M0t8/QzNFoFNftAYj60/RjJK
-	2b+7ZS3e3qRzL8Eu2hMBoA3MPm3b0DXOx6YWKA+w=
-Received: from [192.168.1.248] (178-147-169-233.haap.dm.cosmote.net [178.147.169.233]) by mx.zohomail.com
-	with SMTPS id 168668851895067.87878257025943; Tue, 13 Jun 2023 13:35:18 -0700 (PDT)
-Message-ID: <4a2fb3ac-ccad-f56e-4951-e5a5cb80dd1b@arinc9.com>
-Date: Tue, 13 Jun 2023 23:35:08 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5581136A
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 20:38:12 +0000 (UTC)
+Received: from smtp-bc0a.mail.infomaniak.ch (smtp-bc0a.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc0a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC0DA135
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 13:38:09 -0700 (PDT)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+	by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4QggNt2js4zMq7Hy;
+	Tue, 13 Jun 2023 20:38:06 +0000 (UTC)
+Received: from unknown by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4QggNs3nTwzMrqy1;
+	Tue, 13 Jun 2023 22:38:05 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+	s=20191114; t=1686688686;
+	bh=MDXbqQMrGmj7AFcbDOpwLAhhsUlLbijiq4qmklUysz4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=kYXPXZGO6BWTbhpwVZCU23irT06yY03ejfp5y5rIw4Jenk0+bNySTVBg7SWzZaBJ9
+	 9zJXO0mnq+i3KhVoYzhd+acmaBkbx5e76SxuZaoSE9NZobTxPR6OvoCIg7gfmnL6T7
+	 SfHgYMuT2kG0eR+bWp3c2OerBh5tH1jMPaB0i8xQ=
+Message-ID: <8c09fc5a-e3a5-4792-65a8-b84c6044128a@digikod.net>
+Date: Tue, 13 Jun 2023 22:38:04 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net v2 2/7] net: dsa: mt7530: fix trapping frames with
- multiple CPU ports on MT7530
-To: Vladimir Oltean <olteanv@gmail.com>
-Cc: Daniel Golle <daniel@makrotopia.org>,
- Landen Chao <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
- Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
- Florian Fainelli <f.fainelli@gmail.com>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Russell King <linux@armlinux.org.uk>,
- Frank Wunderlich <frank-w@public-files.de>,
- Bartel Eerdekens <bartel.eerdekens@constell8.be>, mithat.guner@xeront.com,
- erkin.bozoglu@xeront.com, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org
-References: <20230611081547.26747-1-arinc.unal@arinc9.com>
- <20230611081547.26747-2-arinc.unal@arinc9.com>
- <20230613150815.67uoz3cvvwgmhdp2@skbuf>
- <a91e88a8-c528-0392-1237-fc8417931170@arinc9.com>
- <20230613171858.ybhtlwxqwp7gyrfs@skbuf>
- <20230613172402.grdpgago6in4jogq@skbuf>
- <ca78b2f9-bf98-af26-0267-60d2638f7f00@arinc9.com>
- <20230613173908.iuofbuvkanwyr7as@skbuf>
- <edcbe326-c456-06ef-373b-313e780209de@arinc9.com>
- <20230613201850.5g4u3wf2kllmlk27@skbuf>
+User-Agent:
+Subject: Re: [PATCH v11 11/12] samples/landlock: Add network demo
 Content-Language: en-US
-From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20230613201850.5g4u3wf2kllmlk27@skbuf>
+To: "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>,
+ =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack@google.com>
+Cc: willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
+ linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+ netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+ artem.kuzin@huawei.com
+References: <20230515161339.631577-1-konstantin.meskhidze@huawei.com>
+ <20230515161339.631577-12-konstantin.meskhidze@huawei.com>
+ <ZH9OFyWZ1njI7VG9@google.com>
+ <d9f07165-f589-13d4-6484-1272704f1de0@huawei.com>
+From: =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <d9f07165-f589-13d4-6484-1272704f1de0@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+X-Infomaniak-Routing: alpha
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 13.06.2023 23:18, Vladimir Oltean wrote:
-> On Tue, Jun 13, 2023 at 08:58:33PM +0300, Arınç ÜNAL wrote:
->> On 13.06.2023 20:39, Vladimir Oltean wrote:
->>> Got it. Then this is really not a problem, and the commit message frames
->>> it incorrectly.
->>
->> Actually this patch fixes the issue it describes. At the state of this
->> patch, when multiple CPU ports are defined, port 5 is the active CPU port,
->> CPU_PORT bits are set to port 6.
->>
->> Once "the patch that prefers port 6, I could easily find the exact name but
->> your mail snipping makes it hard" is applied, this issue becomes redundant.
+
+On 13/06/2023 12:54, Konstantin Meskhidze (A) wrote:
 > 
-> Ok. Well, you don't get bonus points for fixing a problem in 2 different
-> ways, once is enough :)
+> 
+> 6/6/2023 6:17 PM, Günther Noack пишет:
+>> Hi Konstantin!
+>>
+>> Apologies if some of this was discussed before, in this case,
+>> Mickaël's review overrules my opinions from the sidelines ;)
+>>
+>> On Tue, May 16, 2023 at 12:13:38AM +0800, Konstantin Meskhidze wrote:
+>>> This commit adds network demo. It's possible to allow a sandboxer to
+>>> bind/connect to a list of particular ports restricting network
+>>> actions to the rest of ports.
+>>>
+>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>
+>>
+>>> diff --git a/samples/landlock/sandboxer.c b/samples/landlock/sandboxer.c
+>>> index e2056c8b902c..b0250edb6ccb 100644
+>>> --- a/samples/landlock/sandboxer.c
+>>> +++ b/samples/landlock/sandboxer.c
+>>
+>> ...
+>>
+>>> +static int populate_ruleset_net(const char *const env_var, const int ruleset_fd,
+>>> +				const __u64 allowed_access)
+>>> +{
+>>> +	int num_ports, i, ret = 1;
+>>
+>> I thought the convention was normally to set ret = 0 initially and to
+>> override it in case of error, rather than the other way around?
 
-This is not the case here though.
+Which convention? In this case, by default the return code is an error.
 
-This patch fixes an issue that can be stumbled upon in two ways. This is 
-for when multiple CPU ports are defined on the devicetree.
 
-As I explained to Russell, the first is the CPU_PORT field not matching 
-the active CPU port.
+>>
+>     Well, I just followed Mickaёl's way of logic here. >
+> 
+>>> +	char *env_port_name;
+>>> +	struct landlock_net_service_attr net_service = {
+>>> +		.allowed_access = allowed_access,
+>>> +		.port = 0,
+>>> +	};
+>>> +
+>>> +	env_port_name = getenv(env_var);
+>>> +	if (!env_port_name)
+>>> +		return 0;
+>>> +	env_port_name = strdup(env_port_name);
+>>> +	unsetenv(env_var);
+>>> +	num_ports = parse_port_num(env_port_name);
+>>> +
+>>> +	if (num_ports == 1 && (strtok(env_port_name, ENV_PATH_TOKEN) == NULL)) {
+>>> +		ret = 0;
+>>> +		goto out_free_name;
+>>> +	}
+>>
+>> I don't understand why parse_port_num and strtok are necessary in this
+>> program. The man-page for strsep(3) describes it as a replacement to
+>> strtok(3) (in the HISTORY section), and it has a very short example
+>> for how it is used.
+>>
+>> Wouldn't it work like this as well?
+>>
+>> while ((strport = strsep(&env_port_name, ":"))) {
+>>     net_service.port = atoi(strport);
+>>     /* etc */
+>> }
+> 
+>     Thanks for a tip. I think it's a better solution here. Now this
+> commit is in Mickaёl's -next branch. I could send a one-commit patch later.
+> Mickaёl, what do you think?
 
-The second is when port 5 becomes the only active CPU port. This can 
-only happen with the changing the DSA conduit support.
+I removed this series from -next because there is some issues (see the 
+bot's emails), but anyway, this doesn't mean these patches don't need to 
+be changed, they do. The goal of -next is to test more widely a patch 
+series and get more feedbacks, especially from bots. When this series 
+will be fully ready (and fuzzed with syzkaller), I'll push it to Linus 
+Torvalds.
 
-The "prefer port 6" patch only prevents the first way from happening. 
-The latter still can happen. But this feature doesn't exist yet. Hence 
-why I think we should apply this series as-is (after some patch log 
-changes) and backport it without this patch on kernels older than 5.18.
+I'll review the remaining tests and sample code this week, but you can 
+still take into account the documentation review.
 
-Arınç
+
+> 
+>>
+>>> +
+>>> +	for (i = 0; i < num_ports; i++) {
+>>> +		net_service.port = atoi(strsep(&env_port_name, ENV_PATH_TOKEN));
+>>
+>> Naming of ENV_PATH_TOKEN:
+>> This usage is not related to paths, maybe rename the variable?
+>> It's also technically not the token, but the delimiter.
+>>
+>    What do you think of ENV_PORT_TOKEN or ENV_PORT_DELIMITER???
+
+You can rename ENV_PATH_TOKEN to ENV_DELIMITER for the FS and network parts.
+
+
+> 
+>>> +		if (landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
+>>> +				      &net_service, 0)) {
+>>> +			fprintf(stderr,
+>>> +				"Failed to update the ruleset with port \"%lld\": %s\n",
+>>> +				net_service.port, strerror(errno));
+>>> +			goto out_free_name;
+>>> +		}
+>>> +	}
+>>> +	ret = 0;
+>>> +
+>>> +out_free_name:
+>>> +	free(env_port_name);
+>>> +	return ret;
+>>> +}
+>>
+>>
+>>>   		fprintf(stderr,
+>>>   			"Launch a command in a restricted environment.\n\n");
+>>> -		fprintf(stderr, "Environment variables containing paths, "
+>>> -				"each separated by a colon:\n");
+>>> +		fprintf(stderr,
+>>> +			"Environment variables containing paths and ports "
+>>> +			"each separated by a colon:\n");
+>>>   		fprintf(stderr,
+>>>   			"* %s: list of paths allowed to be used in a read-only way.\n",
+>>>   			ENV_FS_RO_NAME);
+>>>   		fprintf(stderr,
+>>> -			"* %s: list of paths allowed to be used in a read-write way.\n",
+>>> +			"* %s: list of paths allowed to be used in a read-write way.\n\n",
+>>>   			ENV_FS_RW_NAME);
+>>> +		fprintf(stderr,
+>>> +			"Environment variables containing ports are optional "
+>>> +			"and could be skipped.\n");
+>>
+>> As it is, I believe the program does something different when I'm
+>> setting these to the empty string (ENV_TCP_BIND_NAME=""), compared to
+>> when I'm unsetting them?
+>>
+>> I think the case where we want to forbid all handle-able networking is
+>> a legit and very common use case - it could be clearer in the
+>> documentation how this is done with the tool. (And maybe the interface
+>> could be something more explicit than setting the environment variable
+>> to empty?)
+
+I'd like to keep it simple, and it should be seen as an example code, 
+not a full-feature sandboxer, but still a consistent and useful one. 
+What would you suggest?
+
+This sandboxer tool relies on environment variables for its 
+configuration. This is definitely not a good fit for all use cases, but 
+I think it is simple and flexible enough. One use case might be to 
+export a set of environment variables and simply call this tool. I'd 
+prefer to not deal with argument parsing, but maybe that was too 
+simplistic? We might want to revisit this approach but probably not with 
+this series.
+
+
+>>
+>>
+>>> +	/* Removes bind access attribute if not supported by a user. */
+>>> +	env_port_name = getenv(ENV_TCP_BIND_NAME);
+>>> +	if (!env_port_name) {
+>>> +		ruleset_attr.handled_access_net &=
+>>> +			~LANDLOCK_ACCESS_NET_BIND_TCP;
+>>> +	}
+>>> +	/* Removes connect access attribute if not supported by a user. */
+>>> +	env_port_name = getenv(ENV_TCP_CONNECT_NAME);
+>>> +	if (!env_port_name) {
+>>> +		ruleset_attr.handled_access_net &=
+>>> +			~LANDLOCK_ACCESS_NET_CONNECT_TCP;
+>>> +	}
+>>
+>> This is the code where the program does not restrict network usage,
+>> if the corresponding environment variable is not set.
+> 
+>     Yep. Right.
+>>
+>> It's slightly inconsistent with what this tool does for filesystem
+>> paths. - If you don't specify any file paths, it will still restrict
+>> file operations there, independent of whether that env variable was
+>> set or not.  (Apologies if it was discussed before.)
+> 
+>    Mickaёl wanted to make network ports optional here.
+>    Please check:
+>   
+> https://lore.kernel.org/linux-security-module/179ac2ee-37ff-92da-c381-c2c716725045@digikod.net/
+
+Right, the rationale is for compatibility with the previous version of 
+this tool. We should not break compatibility when possible. A comment 
+should explain the rationale though.
+
+> 
+> https://lore.kernel.org/linux-security-module/fe3bc928-14f8-5e2b-359e-9a87d6cf5b01@digikod.net/
+>>
+>> —Günther
+>>
 
