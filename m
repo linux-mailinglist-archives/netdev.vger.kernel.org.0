@@ -1,237 +1,188 @@
-Return-Path: <netdev+bounces-10529-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10530-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 51F5272EDC8
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 23:17:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id C59AE72EDCF
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 23:22:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0DF6728102A
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 21:17:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 80C84281116
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 21:22:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 542183D3A4;
-	Tue, 13 Jun 2023 21:17:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F10323D3A7;
+	Tue, 13 Jun 2023 21:22:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45A4C1ED43
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 21:17:44 +0000 (UTC)
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87FC410FE
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 14:17:42 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id 5614622812f47-39ca0c2970aso3386213b6e.3
-        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 14:17:42 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0532174FA
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 21:22:23 +0000 (UTC)
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C81F19B7
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 14:22:21 -0700 (PDT)
+Received: by mail-ot1-x332.google.com with SMTP id 46e09a7af769-6b28fc460bcso3759282a34.1
+        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 14:22:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1686691062; x=1689283062;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1686691340; x=1689283340;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Cwnfp5ZPpNmyFHOZC3eITBVEtscSEjfh+tASyswlz/g=;
-        b=lG4jqWXy9mJIljJa9IMN8pGlHvinNFSz0f3Xx39KkZdEX9YnQLaOSTQTwADseaKiXW
-         6anH82QvZMgoXKYOq5THZLHzpk+djQB/PJdtxY1UHO1/3AbojmRLFnAz3luLqoxOS4Ez
-         jpOoepau8EYxOLK447RJHZMDKl9Isco+fcps6VrJPlnXEQdWLknLbOg7YhJnYUyOzt0O
-         a7qQgzc5YK0Fx3mMg+3SHOEQdcvKC0mSIB9tLaWFxQzw/gYpSwOW5mxeW0nwP+Yi7G6K
-         RxyJHfiOjgTE3eN4dKfD8+YuO74WfqAPBwU3O6hHudnP8oun2m7cPaMkPjA8Q5oSqNgn
-         tMUQ==
+        bh=QcSq5gtVpF5kw0BUKhHtrVL/EwbWS56HCbSCa8xkX00=;
+        b=EHX/NtXcQPx8/QYJVqpgVi8GLzLuaJ83IBLeWonAzQZY+MMYFgoyaha/k51ETXmxn7
+         vR1quSXQ/k3H5bc+A2WAV84o4ZxxfSz2mssAlUzfeiZXlS2vxLXiz37u44oMzni1sTn5
+         j7Ms5Wmx9INf4H+yFiyZTTYDgnOmaXFLGjiY7Byxpy7/sE7bRPMOTyXx4jB/KdTsSzL8
+         BZIQEBnpfKtFldB9cyRhlaGXBD8rYwauqZ1omR16E8URteo0ES14G9JEt/VL4HQZCh/c
+         8uO1t8TCtEFWK7VaWzdGriqAvBndx3hM3pWa8ijlPOylSFrGlN+74MxO97+tSCv7jV4r
+         BFyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686691062; x=1689283062;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1686691340; x=1689283340;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Cwnfp5ZPpNmyFHOZC3eITBVEtscSEjfh+tASyswlz/g=;
-        b=eCmi4B9afTOAexUsdpdasaohPecoTGmFyOBtET8ww2vAlr5i+ogMg96LZrA+XXQd/K
-         IUXxguOIrBEuXUGXG5gbdxW35DV+WLjvi/CH5pWNj9FBZuxxdxdwyQ+ajLj7fLhOmgZP
-         Coj7lGPbIW3zg8Xt4ysT4PKJHowyE6qqCFL9kVrvAXNg2qLXVOgSRN1qf2BJpInHKMv2
-         HAAHdun6MLrsnhpHygA4Rfsj72j/cIoVy40J/DZtjCm2id+2tu4PAn3evrddoIRqJrpo
-         zxtnjF+6ckbo1OfHWvwUrQ/eCJq7fSg/tx8Ol3AT/m7k8c3KrNkPmy24FjI5WI+wGXCR
-         3oxQ==
-X-Gm-Message-State: AC+VfDyAIChOgZg9vW9A0x4Z20HY0Qz1jl/80AQIAI/hFWOm3RiD7oCQ
-	IRuF7aJjhgsVt6/vNnvUlFliIT0naVntwns1uo9JVQ==
-X-Google-Smtp-Source: ACHHUZ4/WBPVxwO2QpvIurSTng7sFf4b38jR/VeKOXl476AglJ0NFXkdqrU/hBJ5YfuT4A6VGOqiVeUCd7AON6dqudc=
-X-Received: by 2002:a05:6808:2211:b0:39c:7e0a:6401 with SMTP id
- bd17-20020a056808221100b0039c7e0a6401mr10661514oib.19.1686691061733; Tue, 13
- Jun 2023 14:17:41 -0700 (PDT)
+        bh=QcSq5gtVpF5kw0BUKhHtrVL/EwbWS56HCbSCa8xkX00=;
+        b=aD9aTyZo1+8Tm+PW3CK/Ty4VWn2mFQdPNYEn8/8jcExEerQaprYdyWXKhLSgnmpbow
+         ZtyD3nlQOQKm+vQ83NfKGGXvj2fPJncxdPVUnSJp9yRrrsBVGHR7wCPOShSoofWGRIaz
+         MWlVK94wT7BGwK2rUtuXTc5AH4sL+GOfXAq8e8nY6RvtYoPrUCdaE8ERVMbh/o4cOcrH
+         6F22E9ToYMht20g9hta7clLt4uaJ/JggAW4whmdTqy3ps3RHfu7pnplrkS/uC31AFf2w
+         /jKt+K6x0q4EvF/tzr+V4LFPi3Pp8lIMN4fQtJR6ikrPjb6qhTxQFNKppy4fydEpv4Rj
+         20Cg==
+X-Gm-Message-State: AC+VfDwhf6vcm33VrjIvU34aEjVfijbh9DJ9GCtyPO+7Y3NaalkeaqmL
+	ly2Vu4uzpnStAy6h9OUAfok=
+X-Google-Smtp-Source: ACHHUZ7Drij4CfuhRjdnVPye9AeWsJxoj2cLJuL9B2/lE/dO++cPy+MKxP+pUuWlxZeQhC0rhrE4zA==
+X-Received: by 2002:a05:6830:104d:b0:6b1:604f:3f22 with SMTP id b13-20020a056830104d00b006b1604f3f22mr11606706otp.2.1686691340476;
+        Tue, 13 Jun 2023 14:22:20 -0700 (PDT)
+Received: from espresso.lan.box ([179.219.237.97])
+        by smtp.gmail.com with ESMTPSA id o1-20020a9d7641000000b006a3f4c6f138sm5204699otl.36.2023.06.13.14.22.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Jun 2023 14:22:19 -0700 (PDT)
+Date: Tue, 13 Jun 2023 18:22:15 -0300
+From: Ricardo Nabinger Sanchez <rnsanchez@gmail.com>
+To: Eric Dumazet <edumazet@google.com>
+Cc: "David S. Miller" <davem@davemloft.net>, Willem de Bruijn
+ <willemdebruijn.kernel@gmail.com>, netdev@vger.kernel.org
+Subject: Re: panic in udp_init() when using FORCE_NR_CPUS
+Message-ID: <20230613182215.33bfc5ef@espresso.lan.box>
+In-Reply-To: <CANn89i+5DoHFh-2MvLy740ikLdV-sE8pEEM+R=i0i77Pyc1ADQ@mail.gmail.com>
+References: <20230613165654.3e75eda8@espresso.lan.box>
+ <CANn89i+5DoHFh-2MvLy740ikLdV-sE8pEEM+R=i0i77Pyc1ADQ@mail.gmail.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-slackware-linux-gnu)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230612172307.3923165-1-sdf@google.com> <87cz20xunt.fsf@toke.dk>
- <ZIiaHXr9M0LGQ0Ht@google.com> <877cs7xovi.fsf@toke.dk> <CAKH8qBt5tQ69Zs9kYGc7j-_3Yx9D6+pmS4KCN5G0s9UkX545Mg@mail.gmail.com>
- <87v8frw546.fsf@toke.dk>
-In-Reply-To: <87v8frw546.fsf@toke.dk>
-From: Stanislav Fomichev <sdf@google.com>
-Date: Tue, 13 Jun 2023 14:17:29 -0700
-Message-ID: <CAKH8qBtsvsWvO3Avsqb2PbvZgh5GDMxe2fok-jS4DrJM=x2Row@mail.gmail.com>
-Subject: Re: [RFC bpf-next 0/7] bpf: netdev TX metadata
-To: =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
-Cc: bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net, 
-	andrii@kernel.org, martin.lau@linux.dev, song@kernel.org, yhs@fb.com, 
-	john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com, 
-	jolsa@kernel.org, willemb@google.com, dsahern@kernel.org, 
-	magnus.karlsson@intel.com, bjorn@kernel.org, maciej.fijalkowski@intel.com, 
-	netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 13, 2023 at 12:10=E2=80=AFPM Toke H=C3=B8iland-J=C3=B8rgensen <=
-toke@kernel.org> wrote:
->
-> Stanislav Fomichev <sdf@google.com> writes:
->
-> > On Tue, Jun 13, 2023 at 10:18=E2=80=AFAM Toke H=C3=B8iland-J=C3=B8rgens=
-en <toke@kernel.org> wrote:
-> >>
-> >> Stanislav Fomichev <sdf@google.com> writes:
-> >>
-> >> > On 06/12, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> >> >> Some immediate thoughts after glancing through this:
-> >> >>
-> >> >> > --- Use cases ---
-> >> >> >
-> >> >> > The goal of this series is to add two new standard-ish places
-> >> >> > in the transmit path:
-> >> >> >
-> >> >> > 1. Right before the packet is transmitted (with access to TX
-> >> >> >    descriptors)
-> >> >> > 2. Right after the packet is actually transmitted and we've recei=
-ved the
-> >> >> >    completion (again, with access to TX completion descriptors)
-> >> >> >
-> >> >> > Accessing TX descriptors unlocks the following use-cases:
-> >> >> >
-> >> >> > - Setting device hints at TX: XDP/AF_XDP might use these new hook=
-s to
-> >> >> > use device offloads. The existing case implements TX timestamp.
-> >> >> > - Observability: global per-netdev hooks can be used for tracing
-> >> >> > the packets and exploring completion descriptors for all sorts of
-> >> >> > device errors.
-> >> >> >
-> >> >> > Accessing TX descriptors also means that the hooks have to be cal=
-led
-> >> >> > from the drivers.
-> >> >> >
-> >> >> > The hooks are a light-weight alternative to XDP at egress and cur=
-rently
-> >> >> > don't provide any packet modification abilities. However, eventua=
-lly,
-> >> >> > can expose new kfuncs to operate on the packet (or, rather, the a=
-ctual
-> >> >> > descriptors; for performance sake).
-> >> >>
-> >> >> dynptr?
-> >> >
-> >> > Haven't considered, let me explore, but not sure what it buys us
-> >> > here?
-> >>
-> >> API consistency, certainly. Possibly also performance, if using the
-> >> slice thing that gets you a direct pointer to the pkt data? Not sure
-> >> about that, though, haven't done extensive benchmarking of dynptr yet.=
-..
-> >
-> > Same. Let's keep it on the table, I'll try to explore. I was just
-> > thinking that having less abstraction here might be better
-> > performance-wise.
->
-> Sure, let's evaluate this once we have performance numbers.
->
-> >> >> > --- UAPI ---
-> >> >> >
-> >> >> > The hooks are implemented in a HID-BPF style. Meaning they don't
-> >> >> > expose any UAPI and are implemented as tracing programs that call
-> >> >> > a bunch of kfuncs. The attach/detach operation happen via BPF sys=
-call
-> >> >> > programs. The series expands device-bound infrastructure to traci=
-ng
-> >> >> > programs.
-> >> >>
-> >> >> Not a fan of the "attach from BPF syscall program" thing. These are=
- part
-> >> >> of the XDP data path API, and I think we should expose them as prop=
-er
-> >> >> bpf_link attachments from userspace with introspection etc. But I g=
-uess
-> >> >> the bpf_mprog thing will give us that?
-> >> >
-> >> > bpf_mprog will just make those attach kfuncs return the link fd. The
-> >> > syscall program will still stay :-(
-> >>
-> >> Why does the attachment have to be done this way, exactly? Couldn't we
-> >> just use the regular bpf_link attachment from userspace? AFAICT it's n=
-ot
-> >> really piggy-backing on the function override thing anyway when the
-> >> attachment is per-dev? Or am I misunderstanding how all this works?
-> >
-> > It's UAPI vs non-UAPI. I'm assuming kfunc makes it non-UAPI and gives
-> > us an opportunity to fix things.
-> > We can do it via a regular syscall path if there is a consensus.
->
-> Yeah, the API exposed to the BPF program is kfunc-based in any case. If
-> we were to at some point conclude that this whole thing was not useful
-> at all and deprecate it, it doesn't seem to me that it makes much
-> difference whether that means "you can no longer create a link
-> attachment of this type via BPF_LINK_CREATE" or "you can no longer
-> create a link attachment of this type via BPF_PROG_RUN of a syscall type
-> program" doesn't really seem like a significant detail to me...
+Hi Eric,
 
-In this case, why do you prefer it to go via regular syscall? Seems
-like we can avoid a bunch of boileplate syscall work with a kfunc that
-does the attachment?
-We might as well abstract it at, say, libbpf layer which would
-generate/load this small bpf program to call a kfunc.
+On Tue, 13 Jun 2023 22:19:33 +0200
+Eric Dumazet <edumazet@google.com> wrote:
 
-> >> >> > --- skb vs xdp ---
-> >> >> >
-> >> >> > The hooks operate on a new light-weight devtx_frame which contain=
-s:
-> >> >> > - data
-> >> >> > - len
-> >> >> > - sinfo
-> >> >> >
-> >> >> > This should allow us to have a unified (from BPF POW) place at TX
-> >> >> > and not be super-taxing (we need to copy 2 pointers + len to the =
-stack
-> >> >> > for each invocation).
-> >> >>
-> >> >> Not sure what I think about this one. At the very least I think we
-> >> >> should expose xdp->data_meta as well. I'm not sure what the use cas=
-e for
-> >> >> accessing skbs is? If that *is* indeed useful, probably there will =
-also
-> >> >> end up being a use case for accessing the full skb?
-> >> >
-> >> > skb_shared_info has meta_len, buf afaik, xdp doesn't use it. Maybe I
-> >> > a good opportunity to unify? Or probably won't work because if
-> >> > xdf_frame doesn't have frags, it won't have sinfo?
-> >>
-> >> No, it won't. But why do we need this unification between the skb and
-> >> xdp paths in the first place? Doesn't the skb path already have suppor=
-t
-> >> for these things? Seems like we could just stick to making this xdp-on=
-ly
-> >> and keeping xdp_frame as the ctx argument?
-> >
-> > For skb path, I'm assuming we can read sinfo->meta_len; it feels nice
-> > to make it work for both cases?
-> > We can always export metadata len via some kfunc, sure.
->
-> I wasn't referring to the metadata field specifically when talking about
-> the skb path. I'm wondering why we need these hooks to work for the skb
-> path at all? :)
+> Sure, but you did not give NR_CPUS value ?
+>=20
+> Also posting the stack trace might be useful.
 
-Aaah. I think John wanted them to trigger for skb path, so I'm trying
-to explore whether having both makes sense.
-But also, if we go purely xdp_frame, what about af_xdp in copy mode?
-That's still skb-driven, right?
-Not sure this skb vs xdp is a clear cut :-/
+That's puzzling.  From menuconfig (which I always use), it is a bool:
+
+[*] Set number of CPUs at compile time=20
+
+CONFIG_FORCE_NR_CPUS:
+
+Say Yes if you have NR_CPUS set to an actual number of possible
+CPUs in your system, not to a default value. This forces the core
+code to rely on compile-time value and optimize kernel routines
+better.
+
+Symbol: FORCE_NR_CPUS [=3Dy]
+Type  : bool
+Defined at lib/Kconfig:540
+  Prompt: Set number of CPUs at compile time
+  Depends on: SMP [=3Dy] && EXPERT [=3Dy] && !COMPILE_TEST [=3Dn]
+  Location:
+    -> Library routines
+      -> Set number of CPUs at compile time (FORCE_NR_CPUS [=3Dy])
+
+
+
+So I took another look into how I was setting these, and since I had
+not realized I would need to disable MAXSMP and only then be able to
+set NR_CPUS.  I must have misunderstood the help sections; the wording
+suggests me that one of those knobs would trigger some automatic
+enumeration.
+
+Here is the diff on my resulting .config:
+
+--- .config.old	2023-06-13 17:33:41.152720907 -0300
++++ .config	2023-06-13 17:46:48.515676191 -0300
+@@ -388,11 +388,11 @@
+ CONFIG_HPET_EMULATE_RTC=3Dy
+ CONFIG_DMI=3Dy
+ CONFIG_BOOT_VESA_SUPPORT=3Dy
+-CONFIG_MAXSMP=3Dy
+-CONFIG_NR_CPUS_RANGE_BEGIN=3D8192
+-CONFIG_NR_CPUS_RANGE_END=3D8192
+-CONFIG_NR_CPUS_DEFAULT=3D8192
+-CONFIG_NR_CPUS=3D8192
++# CONFIG_MAXSMP is not set
++CONFIG_NR_CPUS_RANGE_BEGIN=3D2
++CONFIG_NR_CPUS_RANGE_END=3D512
++CONFIG_NR_CPUS_DEFAULT=3D64
++CONFIG_NR_CPUS=3D12
+ CONFIG_SCHED_CLUSTER=3Dy
+ CONFIG_SCHED_SMT=3Dy
+ CONFIG_SCHED_MC=3Dy
+@@ -430,7 +430,7 @@
+ # CONFIG_AMD_NUMA is not set
+ CONFIG_X86_64_ACPI_NUMA=3Dy
+ # CONFIG_NUMA_EMU is not set
+-CONFIG_NODES_SHIFT=3D10
++CONFIG_NODES_SHIFT=3D6
+ CONFIG_ARCH_SPARSEMEM_ENABLE=3Dy
+ CONFIG_ARCH_SPARSEMEM_DEFAULT=3Dy
+ CONFIG_ARCH_PROC_KCORE_TEXT=3Dy
+@@ -4995,8 +4995,7 @@
+ # CONFIG_DMA_MAP_BENCHMARK is not set
+ CONFIG_SGL_ALLOC=3Dy
+ CONFIG_CHECK_SIGNATURE=3Dy
+-CONFIG_CPUMASK_OFFSTACK=3Dy
+-# CONFIG_FORCE_NR_CPUS is not set
++CONFIG_FORCE_NR_CPUS=3Dy
+ CONFIG_CPU_RMAP=3Dy
+ CONFIG_DQL=3Dy
+ CONFIG_GLOB=3Dy
+@@ -5150,6 +5149,8 @@
+ # CONFIG_DEBUG_VIRTUAL is not set
+ CONFIG_DEBUG_MEMORY_INIT=3Dy
+ # CONFIG_DEBUG_PER_CPU_MAPS is not set
++CONFIG_ARCH_SUPPORTS_KMAP_LOCAL_FORCE_MAP=3Dy
++# CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP is not set
+ CONFIG_HAVE_ARCH_KASAN=3Dy
+ CONFIG_HAVE_ARCH_KASAN_VMALLOC=3Dy
+ CONFIG_CC_HAS_KASAN_GENERIC=3Dy
+
+
+And I'm reporting from a freshly-rebuilt kernel, which succeeded in
+booting.  So this was totally on me, I did not know about these
+conflicts in my configuration.
+
+Apologies on making noise about this panic.
+
+Best regards,
+
+--=20
+Ricardo Nabinger Sanchez
+
+    Dedique-se a melhorar seus esfor=E7os.
+    Todas as suas conquistas evolutivas n=E3o foram resultado dos
+    deuses, das outras consci=EAncias, ou do acaso, mas unicamente
+    da sua transpira=E7=E3o. ---Waldo Vieira, L=E9xico de Ortopensatas
 
