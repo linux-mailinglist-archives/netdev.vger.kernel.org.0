@@ -1,204 +1,133 @@
-Return-Path: <netdev+bounces-10463-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10464-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9C5CD72E9CD
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 19:30:23 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5341E72E9D3
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 19:32:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 46B9428125E
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 17:30:22 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 924B8281055
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 17:32:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DAC5B3C0BE;
-	Tue, 13 Jun 2023 17:29:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E223738CA4;
+	Tue, 13 Jun 2023 17:32:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE4C63924F
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 17:29:41 +0000 (UTC)
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD3961727
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 10:29:15 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-402-KpDEogI_MdOgJJfRYSAt4w-1; Tue, 13 Jun 2023 13:28:22 -0400
-X-MC-Unique: KpDEogI_MdOgJJfRYSAt4w-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DF64F85A5BA;
-	Tue, 13 Jun 2023 17:28:20 +0000 (UTC)
-Received: from hog (unknown [10.45.224.17])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 37988C1604C;
-	Tue, 13 Jun 2023 17:28:19 +0000 (UTC)
-Date: Tue, 13 Jun 2023 19:28:15 +0200
-From: Sabrina Dubroca <sd@queasysnail.net>
-To: Simon Horman <simon.horman@corigine.com>
-Cc: netdev@vger.kernel.org, kuba@kernel.org
-Subject: Re: [PATCH net-next] netdevsim: add dummy macsec offload
-Message-ID: <ZIinLxhts7GdknY1@hog>
-References: <0b87a0b7f9faf82de05c5689fbe8b8b4a83aa25d.1686494112.git.sd@queasysnail.net>
- <ZIcRxM/xvozZ+H9c@corigine.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5C8A33E3
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 17:32:03 +0000 (UTC)
+Received: from sender3-op-o18.zoho.com (sender3-op-o18.zoho.com [136.143.184.18])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B494A1BDB;
+	Tue, 13 Jun 2023 10:31:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1686677440; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=Y+EMAxMpiRCH413IBVJiA3UKJzsUnn7PworlHspTD0WWb+6QzFPGdlyPkgQgZ2/QsvKoVsawU9O7gDaAvFbxcLGcCFM1Y9XwwN+4MhMN4UtJWgjUB0K88Wk8CkYuNatDUOcuLQFiTRFS8k8p4eGQusMniXxikr4OTzI+GfQEGGY=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1686677440; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+	bh=+I8g8xI0PLvgMDTAKTzT+byqeeeAJ48wgO3/LkZkDfc=; 
+	b=Xe6lZ/wxp5SieLpuCdeLtUP37vqfHWb+wJU7rXiu06r99QPKr1lqplNldBBO60XDwJeHJ2vWY8E37cL3geFXgpIO/oPb/kMOEvn6xPSMnVFZP1FyQb4Yf86y27OJ1oz8bpaSWAfN2CQRwFPdW99W70xZ1hksEUWOoe59+kR2XdE=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=arinc9.com;
+	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+	dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1686677440;
+	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=+I8g8xI0PLvgMDTAKTzT+byqeeeAJ48wgO3/LkZkDfc=;
+	b=aKZ1lY0f/90ohhn38wGIkGs00vNns+YU5emG6cCDfzzYMEYMBzDzlNSGijityrNs
+	vRfFZ9mk1VtT3NFGIW2fCBu9cPeGJ4pJJA6m1C6Ku3NkeYz8hHkZVxeITplORwGd1Xj
+	9k+GYgSFN50Yji3uCeTMClVthkGXCJmjLOpM0gKE=
+Received: from [192.168.1.248] (178-147-169-233.haap.dm.cosmote.net [178.147.169.233]) by mx.zohomail.com
+	with SMTPS id 1686677438530410.51951240935364; Tue, 13 Jun 2023 10:30:38 -0700 (PDT)
+Message-ID: <ca78b2f9-bf98-af26-0267-60d2638f7f00@arinc9.com>
+Date: Tue, 13 Jun 2023 20:30:28 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <ZIcRxM/xvozZ+H9c@corigine.com>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH net v2 2/7] net: dsa: mt7530: fix trapping frames with
+ multiple CPU ports on MT7530
+Content-Language: en-US
+To: Vladimir Oltean <olteanv@gmail.com>
+Cc: Daniel Golle <daniel@makrotopia.org>,
+ Landen Chao <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
+ Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
+ Florian Fainelli <f.fainelli@gmail.com>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Russell King <linux@armlinux.org.uk>,
+ Frank Wunderlich <frank-w@public-files.de>,
+ Bartel Eerdekens <bartel.eerdekens@constell8.be>, mithat.guner@xeront.com,
+ erkin.bozoglu@xeront.com, linux-kernel@vger.kernel.org,
+ netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org
+References: <20230611081547.26747-1-arinc.unal@arinc9.com>
+ <20230611081547.26747-2-arinc.unal@arinc9.com>
+ <20230613150815.67uoz3cvvwgmhdp2@skbuf>
+ <a91e88a8-c528-0392-1237-fc8417931170@arinc9.com>
+ <20230613171858.ybhtlwxqwp7gyrfs@skbuf>
+ <20230613172402.grdpgago6in4jogq@skbuf>
+From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20230613172402.grdpgago6in4jogq@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-2023-06-12, 14:38:28 +0200, Simon Horman wrote:
-> On Sun, Jun 11, 2023 at 05:45:33PM +0200, Sabrina Dubroca wrote:
->=20
-> ...
->=20
-> > diff --git a/drivers/net/netdevsim/macsec.c b/drivers/net/netdevsim/mac=
-sec.c
-> > new file mode 100644
-> > index 000000000000..355ba2f313df
-> > --- /dev/null
->=20
-> ...
->=20
-> > +static int nsim_macsec_add_secy(struct macsec_context *ctx)
-> > +{
-> > +=09struct netdevsim *ns =3D netdev_priv(ctx->netdev);
-> > +=09int idx;
-> > +
-> > +=09if (ns->macsec.nsim_secy_count =3D=3D NSIM_MACSEC_MAX_SECY_COUNT)
-> > +=09=09return -ENOSPC;
-> > +
-> > +=09for (idx =3D 0; idx < NSIM_MACSEC_MAX_SECY_COUNT; idx++) {
-> > +=09=09if (!ns->macsec.nsim_secy[idx].used)
-> > +=09=09=09break;
-> > +=09}
-> > +
-> > +=09if (idx =3D=3D NSIM_MACSEC_MAX_SECY_COUNT)
-> > +=09=09netdev_err(ctx->netdev, "%s: nsim_secy_count not full but all Se=
-cYs used\n",
-> > +=09=09=09   __func__);
->=20
-> Hi Sabrina,
->=20
-> It seems that if this condition is met, then ns->macsec.nsim_secy will
-> overflow below.
+On 13.06.2023 20:24, Vladimir Oltean wrote:
+> On Tue, Jun 13, 2023 at 08:18:58PM +0300, Vladimir Oltean wrote:
+>> On Tue, Jun 13, 2023 at 08:14:35PM +0300, Arınç ÜNAL wrote:
+>>> Actually, having only "net: dsa: introduce preferred_default_local_cpu_port
+>>> and use on MT7530" backported is an enough solution for the current stable
+>>> kernels.
+>>>
+>>> When multiple CPU ports are defined on the devicetree, the CPU_PORT bits
+>>> will be set to port 6. The active CPU port will also be port 6.
+>>>
+>>> This would only become an issue with the changing the DSA conduit support.
+>>> But that's never going to happen as this patch will always be on the kernels
+>>> that support changing the DSA conduit.
+>>
+>> Aha, ok. I thought that device trees with CPU port 5 exclusively defined
+>> also exist in the wild. If not, and this patch fixes a theoretical only
+>> issue, then it is net-next material.
+> 
+> On second thought, compatibility with future device trees is the reason
+> for this patch set, so that should equally be a reason for keeping this
+> patch in a "net" series.
+> 
+> If I understand you correctly, port 5 should have worked since commit
+> c8b8a3c601f2 ("net: dsa: mt7530: permit port 5 to work without port 6 on
+> MT7621 SoC"), and it did, except for trapping, right?
 
-Right, thanks. It should never happen but I'll change that to return
--ENOSPC as well.
+That fixes port 5 on certain variants of the MT7530 switch, as it was 
+already working on the other variants, which, in conclusion, fixes port 
+5 on all MT7530 variants.
 
-> > +
-> > +=09netdev_dbg(ctx->netdev, "%s: adding new secy with sci %08llx at ind=
-ex %d\n",
-> > +=09=09   __func__, be64_to_cpu(ctx->secy->sci), idx);
-> > +=09ns->macsec.nsim_secy[idx].used =3D true;
-> > +=09ns->macsec.nsim_secy[idx].nsim_rxsc_count =3D 0;
-> > +=09ns->macsec.nsim_secy[idx].sci =3D ctx->secy->sci;
-> > +=09ns->macsec.nsim_secy_count++;
-> > +
-> > +=09return 0;
-> > +}
->=20
-> ...
->=20
-> > +static int nsim_macsec_add_txsa(struct macsec_context *ctx)
-> > +{
-> > +=09struct netdevsim *ns =3D netdev_priv(ctx->netdev);
-> > +=09struct nsim_secy *secy;
-> > +=09int idx;
-> > +
-> > +=09idx =3D nsim_macsec_find_secy(ns, ctx->secy->sci);
-> > +=09if (idx < 0) {
-> > +=09=09netdev_err(ctx->netdev, "%s: sci %08llx not found in secy table\=
-n",
-> > +=09=09=09   __func__, be64_to_cpu(ctx->secy->sci));
->=20
-> Sparse seems pretty unhappy about the type of the argement to be64_to_cpu=
-()
-> here and elsewhere. I'm unsure what is the best option but one that
-> sprang to mind would be conversion helpers, that cast appropriately.
-> f.e. sci_to_cpu()
+And no, trapping works. Having only CPU port 5 defined on the devicetree 
+will cause the CPU_PORT bits to be set to port 5. There's only a problem 
+when multiple CPU ports are defined.
 
-Ok. Since we've never needed that conversion in drivers/net/macsec.c,
-I'll drop the helper in here, unless someone objects to that.
+> 
+> So how about settling on that as a more modest Fixes: tag, and
+> explaining clearly in the commit message what's affected?
 
-> > +=09=09return -ENOENT;
-> > +=09}
-> > +=09secy =3D &ns->macsec.nsim_secy[idx];
->=20
-> As also reported by the kernel test robot, a W=3D1 build complains that s=
-ecy
-> is set but unused here and in to other places below.
+I don't see anything to change in the patch log except addressing 
+Russell's comments.
 
-Yes [facepalm]
-
-Thanks for the review.
-
-> > +
-> > +=09netdev_dbg(ctx->netdev, "%s: SECY with sci %08llx, AN %u\n",
-> > +=09=09   __func__, be64_to_cpu(ctx->secy->sci), ctx->sa.assoc_num);
-> > +
-> > +=09return 0;
-> > +}
-> > +
-> > +static int nsim_macsec_upd_txsa(struct macsec_context *ctx)
-> > +{
-> > +=09struct netdevsim *ns =3D netdev_priv(ctx->netdev);
-> > +=09struct nsim_secy *secy;
-> > +=09int idx;
-> > +
-> > +=09idx =3D nsim_macsec_find_secy(ns, ctx->secy->sci);
-> > +=09if (idx < 0) {
-> > +=09=09netdev_err(ctx->netdev, "%s: sci %08llx not found in secy table\=
-n",
-> > +=09=09=09   __func__, be64_to_cpu(ctx->secy->sci));
-> > +=09=09return -ENOENT;
-> > +=09}
-> > +=09secy =3D &ns->macsec.nsim_secy[idx];
-> > +
-> > +=09netdev_dbg(ctx->netdev, "%s: SECY with sci %08llx, AN %u\n",
-> > +=09=09   __func__, be64_to_cpu(ctx->secy->sci), ctx->sa.assoc_num);
-> > +
-> > +=09return 0;
-> > +}
-> > +
-> > +static int nsim_macsec_del_txsa(struct macsec_context *ctx)
-> > +{
-> > +=09struct netdevsim *ns =3D netdev_priv(ctx->netdev);
-> > +=09struct nsim_secy *secy;
-> > +=09int idx;
-> > +
-> > +=09idx =3D nsim_macsec_find_secy(ns, ctx->secy->sci);
-> > +=09if (idx < 0) {
-> > +=09=09netdev_err(ctx->netdev, "%s: sci %08llx not found in secy table\=
-n",
-> > +=09=09=09   __func__, be64_to_cpu(ctx->secy->sci));
-> > +=09=09return -ENOENT;
-> > +=09}
-> > +=09secy =3D &ns->macsec.nsim_secy[idx];
-> > +
-> > +=09netdev_dbg(ctx->netdev, "%s: SECY with sci %08llx, AN %u\n",
-> > +=09=09   __func__, be64_to_cpu(ctx->secy->sci), ctx->sa.assoc_num);
-> > +
-> > +=09return 0;
-> > +}
->=20
-> ...
-
---=20
-Sabrina
-
+Arınç
 
