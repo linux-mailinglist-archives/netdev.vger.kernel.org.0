@@ -1,88 +1,90 @@
-Return-Path: <netdev+bounces-10473-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10474-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id AAE0372EA97
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:12:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4D6AF72EA9A
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:14:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9378D1C20889
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 18:12:24 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7A1C91C208A8
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 18:14:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 92B4C3C0BC;
-	Tue, 13 Jun 2023 18:12:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B06923C0BE;
+	Tue, 13 Jun 2023 18:14:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B24038CA4
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 18:12:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A82C3C433D9;
-	Tue, 13 Jun 2023 18:12:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 780C738CA4;
+	Tue, 13 Jun 2023 18:14:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC10CC433D9;
+	Tue, 13 Jun 2023 18:14:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686679940;
-	bh=ki+xIq/Dtd9uylVNt8VBujumNOAojzQwiYYysPBIzcs=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=hBhEDrl4b8DDCLZU8lDdDOYrB0LSlfpGhPq1VZj+bHO12jCDh3U+pK/tzcaq1z8lV
-	 JtCGVSdsyZDbMN4gHGtaow3ty0MNeGKIwp1KxZnb2XcDVs8mDxWSDW/ah48vkJOBzP
-	 TCITMHrsqHCnZxeTdojdkzXP8siv3Bzcb8HWrUI59/C6xhTb3ghvXvOMyCuFWszrds
-	 mb9yb2LtSZam88vyxKBwb+zYPpk6KMHWBFS5G4xcIbZvPqEOlBbUat0ePSe/uMdyJ8
-	 cTqtnF0ag1mr9lVl+z2xwunbrQzwAyETLw5kqSrdtWDlBoGcVn32WaNZ/DoQG61KLp
-	 ZcP74nuDe0zuA==
-Date: Tue, 13 Jun 2023 11:12:18 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc: Vladimir Oltean <olteanv@gmail.com>, Daniel Golle
- <daniel@makrotopia.org>, Landen Chao <Landen.Chao@mediatek.com>, DENG
- Qingfang <dqfext@gmail.com>, Sean Wang <sean.wang@mediatek.com>, Andrew
- Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S.
- Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Paolo
- Abeni <pabeni@redhat.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Russell King <linux@armlinux.org.uk>, Frank Wunderlich
- <frank-w@public-files.de>, Bartel Eerdekens
- <bartel.eerdekens@constell8.be>, mithat.guner@xeront.com,
- erkin.bozoglu@xeront.com, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net v2 2/7] net: dsa: mt7530: fix trapping frames with
- multiple CPU ports on MT7530
-Message-ID: <20230613111218.0e1b3e9f@kernel.org>
-In-Reply-To: <edcbe326-c456-06ef-373b-313e780209de@arinc9.com>
-References: <20230611081547.26747-1-arinc.unal@arinc9.com>
-	<20230611081547.26747-2-arinc.unal@arinc9.com>
-	<20230613150815.67uoz3cvvwgmhdp2@skbuf>
-	<a91e88a8-c528-0392-1237-fc8417931170@arinc9.com>
-	<20230613171858.ybhtlwxqwp7gyrfs@skbuf>
-	<20230613172402.grdpgago6in4jogq@skbuf>
-	<ca78b2f9-bf98-af26-0267-60d2638f7f00@arinc9.com>
-	<20230613173908.iuofbuvkanwyr7as@skbuf>
-	<edcbe326-c456-06ef-373b-313e780209de@arinc9.com>
+	s=k20201202; t=1686680083;
+	bh=fjT4gpdjI8bzfc0kSPvWLMcKfBFEaXgHEzlFBmmWqkQ=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=YPBwCeRUs39kxlaLzdOB3U/bmTyHUsAgwUCs8NioF14TZY5ElTAYwBY3aLoc8t+wS
+	 e7bjbenC0hl1zrZBBwEJynjtkv3y8YHI3Y0EL41PdFbkLqqmFNzGbNGIRl/VZnFsYI
+	 CEwTLDbyKWuoN9nk3I/ejgmZ+2WowJN20sz99hVWF4I8TU1yLWxTHyDtznWvx7r7qp
+	 Vri8t/fEYXoWjE2p8JoArbh5O2YE0NPTL2eCwWxwE7P/vGrX8992LrfTUUX5KaU5v4
+	 52tJPG2/TK+wz8hZw12VOptpVSyRZhteeSItM9u2L0OhNiloXN3I+k9XVhutsfKh78
+	 0Uq9DJwQX5BaA==
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+	id 64961BBEAD1; Tue, 13 Jun 2023 20:14:40 +0200 (CEST)
+From: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
+To: Kalle Valo <kvalo@kernel.org>, linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ regressions@lists.linux.dev, Johannes Berg <johannes@sipsolutions.net>,
+ Jakub Kicinski <kuba@kernel.org>
+Subject: Re: Closing down the wireless trees for a summer break?
+In-Reply-To: <87y1kncuh4.fsf@kernel.org>
+References: <87y1kncuh4.fsf@kernel.org>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date: Tue, 13 Jun 2023 20:14:40 +0200
+Message-ID: <871qifxm9b.fsf@toke.dk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 
-On Tue, 13 Jun 2023 20:58:33 +0300 Ar=C4=B1n=C3=A7 =C3=9CNAL wrote:
-> > Ok. I see Russell has commented on v4, though I don't see that he parti=
-cularly
-> > pointed out that this fixes a problem which isn't yet a problem. I got =
-lost in
-> > all the versions. v2 and v3 are out of my inbox now :) =20
->=20
-> All good, I had to quickly roll v3 as v2 had wrong author information=20
-> and I couldn't risk getting v2 applied.
+Kalle Valo <kvalo@kernel.org> writes:
 
-FWIW you can reply with pw-bot: changes-requested to your own patches
-and the bot should discard them from patchwork.
+> Me and Johannes are planning to take a longer break from upstream this
+> summer. To keep things simple my suggestion is that we would official
+> close wireless and wireless-next trees from June 23rd to August 14th
+> (approximately).
+>
+> During that time urgent fixes would need go directly to the net tree.
+> Patches can keep flowing to the wireless list but the the net
+> maintainers will follow the list and they'll just apply them to the
+> net tree directly.
+>
+> The plan here is that -next patches would have to wait for
+> wireless-next to open. Luckily the merge window for v6.6 most likely
+> opens beginning of September[1] so after our break we would have few
+> weeks to get -next patches ready for v6.6.
+>
+> And the v6.5 -next patches should be ready by Monday June 19th so that we
+> have enough time to get them into the tree before we close the trees.
+>
+> What do people think, would this work? This is the first time we are
+> doing this so we would like to hear any comments about this, both
+> negative and positive. You can also reply to me and Johannes privately,
+> if that's easier.
 
-https://www.kernel.org/doc/html/next/process/maintainer-netdev.html#updatin=
-g-patch-status
+I think this sounds reasonable, and I applaud the effort to take some
+time off during the summer :)
 
-It's a new capability that nobody has used, yet, so YMMV :)
+One question that comes to mind is how would this work for patchwork?
+Would we keep using the wireless patchwork instance for the patches
+going to -net in that period, or will there be some other process for
+this? I realise the setup we have for ath9k is a bit special in this
+regard with the ack-on-list+delegation, so I'm obviously mostly
+interested in what to do about that... :)
+
+-Toke
 
