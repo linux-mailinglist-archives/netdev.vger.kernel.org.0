@@ -1,46 +1,46 @@
-Return-Path: <netdev+bounces-10420-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10421-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 69FA072E600
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 16:41:54 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id A27EC72E604
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 16:42:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A3E541C208F1
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 14:41:50 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 57963280FCD
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 14:42:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C4AB31EE7;
-	Tue, 13 Jun 2023 14:38:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F168537B8B;
+	Tue, 13 Jun 2023 14:38:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50E382911B
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 14:38:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E62F8DDD7
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 14:38:53 +0000 (UTC)
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5602E54
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 07:38:46 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D1421732
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 07:38:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
 	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
 	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=9J/en89BNiDN/VLD4ALvh4m6EdXoX9oLSq/ICFr6TF8=; b=Z+ddN/FE0yGZ7875ZD3YG8OBLQ
-	ZdMoOcWTU8EaCxAGxE6ZH047F1sB4Fr+U5yH3vbeZjtQjuIuoQ6siWKY18eaNSW8yM0B9Tb7Dpqh8
-	w8zF/nnxUL87yV5HIYfyDfXzrZnhijOcdTNM0jVjgnC6q8JblAz5sajlQP4nzBVxChfvv8lq/olwE
-	zHnfNGTogSTDci1Rx0FXMOcaIOgD/Z3o1xiUO5IrovVKlhKZnRp9Oukrzp8Bp5goiaNfwQ52ltN7W
-	2UjAxaU9C+4MmU0iasZchYFOxqz87xFzxSsLs1SbNCWZVI0yZkZftqG6HCXHx2adD3T2a556XKgiq
-	Z2kTFePQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:46232 helo=rmk-PC.armlinux.org.uk)
+	bh=LzKuWPIHIFWQ7Pmxtja49pKdHL7KHTSAKy+Ppu+V92E=; b=QSjsIFRqUzbEtQCjXUOCDyBPrD
+	i2lYatiTG9LWINjNELGZIodkkbFcFFUXhL77hcXlNchkM4RCvT7fQYqpeVrTI1knfNnmmS90+4mqk
+	b7OwbZZgEKX29YEMwrFiT53Y40ZUnQDAderm/K8xBrBnqI46nh1QkDR6oz0LIcFfuF2l74gBHnqC/
+	PvgNrXHnAKHDQ7iEmUH+Ua9QczBe2eciFuEWKoTyTYLfWrLGi0rMe+VSA0M4JvwjWYTQH48ZeJWaf
+	roorkThQBTYoUNGrlqCj7xj/u6Nfo/pnZEEyps695JEavAUOX6plJWPyoBaEgdSMRwvG9sAEU6Qwt
+	SNgxybsw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:41094 helo=rmk-PC.armlinux.org.uk)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <rmk@armlinux.org.uk>)
-	id 1q95AJ-0007YD-2f; Tue, 13 Jun 2023 15:38:35 +0100
+	id 1q95AO-0007a7-6c; Tue, 13 Jun 2023 15:38:40 +0100
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
 	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-	id 1q95AI-00EBwv-DG; Tue, 13 Jun 2023 15:38:34 +0100
+	id 1q95AN-00EBx3-Gu; Tue, 13 Jun 2023 15:38:39 +0100
 In-Reply-To: <ZIh/CLQ3z89g0Ua0@shell.armlinux.org.uk>
 References: <ZIh/CLQ3z89g0Ua0@shell.armlinux.org.uk>
 From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -76,7 +76,7 @@ Cc: Alexander Couzens <lynxis@fe80.eu>,
 	Taras Chornyi <taras.chornyi@plvision.eu>,
 	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
 	UNGLinuxDriver@microchip.com, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH RFC net-next 13/15] net: dsa: b53: update PCS driver to use
+Subject: [PATCH RFC net-next 14/15] net: dsa: mt7530: update PCS driver to use
  neg_mode
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -87,9 +87,9 @@ MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1q95AI-00EBwv-DG@rmk-PC.armlinux.org.uk>
+Message-Id: <E1q95AN-00EBx3-Gu@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date: Tue, 13 Jun 2023 15:38:34 +0100
+Date: Tue, 13 Jun 2023 15:38:39 +0100
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
 	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
@@ -97,36 +97,36 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Update B53's embedded PCS driver to use neg_mode, even though it makes
-no use of it or the "mode" argument. This makes the driver consistent
-with converted drivers.
+Update mt7530's embedded PCS driver to use neg_mode, even though it
+makes no use of it or the "mode" argument. This makes the driver
+consistent with converted drivers.
 
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/dsa/b53/b53_serdes.c | 3 ++-
+ drivers/net/dsa/mt7530.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/b53/b53_serdes.c b/drivers/net/dsa/b53/b53_serdes.c
-index 0690210770ff..b0ccebcd3ffa 100644
---- a/drivers/net/dsa/b53/b53_serdes.c
-+++ b/drivers/net/dsa/b53/b53_serdes.c
-@@ -65,7 +65,7 @@ static u16 b53_serdes_read(struct b53_device *dev, u8 lane,
- 	return b53_serdes_read_blk(dev, offset, block);
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 9bc54e1348cb..cf95ccbba654 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2978,7 +2978,7 @@ static void mt7530_pcs_get_state(struct phylink_pcs *pcs,
+ 		state->pause |= MLO_PAUSE_TX;
  }
  
--static int b53_serdes_config(struct phylink_pcs *pcs, unsigned int mode,
-+static int b53_serdes_config(struct phylink_pcs *pcs, unsigned int neg_mode,
+-static int mt753x_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
++static int mt753x_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
  			     phy_interface_t interface,
  			     const unsigned long *advertising,
  			     bool permit_pause_to_mac)
-@@ -239,6 +239,7 @@ int b53_serdes_init(struct b53_device *dev, int port)
- 	pcs->dev = dev;
- 	pcs->lane = lane;
- 	pcs->pcs.ops = &b53_pcs_ops;
-+	pcs->pcs.neg_mode = true;
- 
- 	return 0;
- }
+@@ -3006,6 +3006,7 @@ mt753x_setup(struct dsa_switch *ds)
+ 	/* Initialise the PCS devices */
+ 	for (i = 0; i < priv->ds->num_ports; i++) {
+ 		priv->pcs[i].pcs.ops = priv->info->pcs_ops;
++		priv->pcs[i].pcs.neg_mode = true;
+ 		priv->pcs[i].priv = priv;
+ 		priv->pcs[i].port = i;
+ 	}
 -- 
 2.30.2
 
