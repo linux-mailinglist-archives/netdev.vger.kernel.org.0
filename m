@@ -1,118 +1,146 @@
-Return-Path: <netdev+bounces-10381-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10382-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 558AB72E333
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 14:39:42 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4467672E35F
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 14:53:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1F8861C20C07
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 12:39:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BED95280EC0
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 12:53:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D33E7134B4;
-	Tue, 13 Jun 2023 12:39:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 079A315AD2;
+	Tue, 13 Jun 2023 12:52:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6699F6129
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 12:39:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74D89C4339C;
-	Tue, 13 Jun 2023 12:39:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686659977;
-	bh=azRXIxzoQcvDlB1Hx4tfpo3s2cNDdzMmtu0iY95TNVA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=AXcI+lrW2qI7Oe7JHhYf3CE3rpEaeB8STV+KzqQKZOMnmVrpj/ynOjx2KTyuk3YSX
-	 TXf70bUlQwboATWGf5P4BGrBLg9QnKCCyjR91VYCleMvIKSDptA9J1j5e8nQaZjBrY
-	 zbmPrmY81v82AWExy+XvquF1f1Sm8clZC5vr3qcZaYZ80f6KaByUMKti4XuzO+j+vD
-	 E3QF9n2B5a2tC6m/5LYw1qVKLWW2daU4EK/zOCxAOQ+4XPiQvZc5YIN59Fhz1d2Njn
-	 nbQrRc3uF2CVTdt7qqtl9cGvWHWmVAMvkqvOXNjDiQ7+ukixc1+YqFt3JL7+omHZb1
-	 WVrrGjlKjruPA==
-Date: Tue, 13 Jun 2023 15:39:32 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: David Miller <davem@davemloft.net>, Doug Ledford <dledford@redhat.com>,
-	Jason Gunthorpe <jgg@mellanox.com>,
-	Networking <netdev@vger.kernel.org>,
-	Daniel Jurgens <danielj@nvidia.com>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Linux Next Mailing List <linux-next@vger.kernel.org>,
-	Mark Bloch <mbloch@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: linux-next: manual merge of the net-next tree with the
- rdma-fixes tree
-Message-ID: <20230613123932.GA12152@unreal>
-References: <20230613114359.59cadc05@canb.auug.org.au>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0E48522B
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 12:52:58 +0000 (UTC)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354AF10D9;
+	Tue, 13 Jun 2023 05:52:57 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.53])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4QgT3V5DLQzTl6g;
+	Tue, 13 Jun 2023 20:52:22 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Tue, 13 Jun
+ 2023 20:52:52 +0800
+Subject: Re: [PATCH]
+ drivers/thunder:improve-warning-message-in-device_for_each_child_node()
+To: Wang Ming <machel@vivo.com>, Sunil Goutham <sgoutham@marvell.com>, "David
+ S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub
+ Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	<linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>
+CC: <opensource.kernel@vivo.com>
+References: <20230613123826.558-1-machel@vivo.com>
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <4aa86edd-5526-929d-8576-9d2b6f828eb0@huawei.com>
+Date: Tue, 13 Jun 2023 20:52:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230613114359.59cadc05@canb.auug.org.au>
+In-Reply-To: <20230613123826.558-1-machel@vivo.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Tue, Jun 13, 2023 at 11:43:59AM +1000, Stephen Rothwell wrote:
-> Hi all,
+On 2023/6/13 20:38, Wang Ming wrote:
+> In device_for_each_child_node(), it should have fwnode_handle_put()
+> before break to prevent stale device node references from being
+> left behind.
 > 
-> Today's linux-next merge of the net-next tree got a conflict in:
-> 
->   include/linux/mlx5/driver.h
-> 
-> between commit:
-> 
->   617f5db1a626 ("RDMA/mlx5: Fix affinity assignment")
-> 
-> from the rdma-fixes tree and commit:
-> 
->   dc13180824b7 ("net/mlx5: Enable devlink port for embedded cpu VF vports")
-> 
-> from the net-next tree.
-> 
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
-> 
-> -- 
-> Cheers,
-> Stephen Rothwell
-> 
-> diff --cc include/linux/mlx5/driver.h
-> index e0156b54d0b3,18a608a1f567..000000000000
-> --- a/include/linux/mlx5/driver.h
-> +++ b/include/linux/mlx5/driver.h
-> @@@ -1228,18 -1246,11 +1236,23 @@@ static inline u16 mlx5_core_max_vfs(con
->   	return dev->priv.sriov.max_vfs;
->   }
->   
->  +static inline int mlx5_lag_is_lacp_owner(struct mlx5_core_dev *dev)
->  +{
->  +	/* LACP owner conditions:
->  +	 * 1) Function is physical.
->  +	 * 2) LAG is supported by FW.
->  +	 * 3) LAG is managed by driver (currently the only option).
->  +	 */
->  +	return  MLX5_CAP_GEN(dev, vport_group_manager) &&
->  +		   (MLX5_CAP_GEN(dev, num_lag_ports) > 1) &&
->  +		    MLX5_CAP_GEN(dev, lag_master);
->  +}
->  +
-> + static inline u16 mlx5_core_max_ec_vfs(const struct mlx5_core_dev *dev)
-> + {
-> + 	return dev->priv.sriov.max_ec_vfs;
-> + }
-> + 
+> Signed-off-by: Wang Ming <machel@vivo.com>
 
-Thanks for the resolution. Looks good.
+A Fixes tag seems necessary according to the commit log, and should
+target the net branch using:
 
->   static inline int mlx5_get_gid_table_len(u16 param)
->   {
->   	if (param > 4) {
+[PATCH net] drivers/thunder: improve-warning-message-in-device_for_each_child_node()
 
+Also it seems confusing the 'improve' in the title suggest that it is not
+a fix.
 
+> ---
+>  .../net/ethernet/cavium/thunder/thunder_bgx.c | 37 ++++++++++---------
+>  1 file changed, 20 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/cavium/thunder/thunder_bgx.c b/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
+> index a317feb8d..d37ee2872 100644
+> --- a/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
+> +++ b/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
+> @@ -90,7 +90,7 @@ static const struct pci_device_id bgx_id_table[] = {
+> 
+>  MODULE_AUTHOR("Cavium Inc");
+>  MODULE_DESCRIPTION("Cavium Thunder BGX/MAC Driver");
+> -MODULE_LICENSE("GPL v2");
+> +MODULE_LICENSE("GPL");
+
+Is there any reason you changing the license here?
+
+>  MODULE_VERSION(DRV_VERSION);
+>  MODULE_DEVICE_TABLE(pci, bgx_id_table);
+> 
+> @@ -174,10 +174,10 @@ static struct bgx *get_bgx(int node, int bgx_idx)
+>  }
+> 
+>  /* Return number of BGX present in HW */
+> -unsigned bgx_get_map(int node)
+> +unsigned int bgx_get_map(int node)
+
+It seems to be unrelated change here, is the changing related to the
+problem you are fixing?
+
+>  {
+>         int i;
+> -       unsigned map = 0;
+> +       unsigned int map = 0;
+
+Same here.
+
+> 
+>         for (i = 0; i < max_bgx_per_node; i++) {
+>                 if (bgx_vnic[(node * max_bgx_per_node) + i])
+> @@ -600,9 +600,9 @@ static void bgx_lmac_handler(struct net_device *netdev)
+>                 link_changed = -1;
+> 
+>         if (phydev->link &&
+> -           (lmac->last_duplex != phydev->duplex ||
+> -            lmac->last_link != phydev->link ||
+> -            lmac->last_speed != phydev->speed)) {
+> +               (lmac->last_duplex != phydev->duplex ||
+> +               lmac->last_link != phydev->link ||
+> +               lmac->last_speed != phydev->speed)) {
+
+Same here.
+
+>                         link_changed = 1;
+>         }
+> 
+> @@ -783,7 +783,7 @@ static int bgx_lmac_xaui_init(struct bgx *bgx, struct lmac *lmac)
+>                 bgx_reg_write(bgx, lmacid, BGX_SPUX_BR_PMD_LD_REP, 0x00);
+>                 /* training enable */
+>                 bgx_reg_modify(bgx, lmacid,
+> -                              BGX_SPUX_BR_PMD_CRTL, SPU_PMD_CRTL_TRAIN_EN);
+> +                                        BGX_SPUX_BR_PMD_CRTL, SPU_PMD_CRTL_TRAIN_EN);
+
+Same here.
+Please make sure it only contain change related to fixing the
+problem.
 
