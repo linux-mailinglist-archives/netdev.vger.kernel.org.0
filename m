@@ -1,143 +1,115 @@
-Return-Path: <netdev+bounces-10294-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10296-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 09D9672DA13
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 08:46:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 8655B72DA1C
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 08:47:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4FDA01C20C2D
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 06:46:45 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B97CE1C20C3A
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 06:47:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1871423B8;
-	Tue, 13 Jun 2023 06:46:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8137B1844;
+	Tue, 13 Jun 2023 06:47:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D3EC1844
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 06:46:45 +0000 (UTC)
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E21310D5;
-	Mon, 12 Jun 2023 23:46:43 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 4QgJxX6GNQz4x42;
-	Tue, 13 Jun 2023 16:46:40 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-	s=201702; t=1686638801;
-	bh=8+PuIQDjHvRIypCywmblAWQTn4D9Of06vgaNnepsJJA=;
-	h=Date:From:To:Cc:Subject:From;
-	b=sR1JwL08YgKFOrkD3jJJ+tlhf1w+z/Yu1nADYNVlQa3fQFf/X2O/n8QOOHd1p3vdE
-	 P27zymrcGVmuyu76O3ajiAGPogKr1c8Ug60pxyiqSRlsSaOgQBVKiz2vA965VhsL7Z
-	 xF4D5B47cI2Mx9dBiidOu/xCh2APQTZeCPcto+yiLalZyl0ZJqgMyiJzbZqZTDphHL
-	 bWV4dMOls7DMxWwPMK3d3rOlWoS/ZE3kFkQlzUw/4v8j9vqIljOO5rZ0XOC36/y/RS
-	 a5VoAyR1URMIpuXlrZH7GX6zkDNpyzJeEdDFFue9Nzas355hz2FAbHgaN8Tt+qZFmj
-	 lAjqUdkXgtIZQ==
-Date: Tue, 13 Jun 2023 16:46:39 +1000
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-To: David Miller <davem@davemloft.net>, Networking <netdev@vger.kernel.org>
-Cc: Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux Next
- Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the net-next tree
-Message-ID: <20230613164639.164b2991@canb.auug.org.au>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75CC73FF5
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 06:47:12 +0000 (UTC)
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE941BC9
+	for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 23:47:01 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id 5b1f17b1804b1-3f735259fa0so52682665e9.1
+        for <netdev@vger.kernel.org>; Mon, 12 Jun 2023 23:47:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1686638819; x=1689230819;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=02cZUxsOqGfZ8lXmchHjzAFGxYbEcf/VDvBL7ckHl/M=;
+        b=hKm0C1CuMJaIu2eNk6rIDpUz1RWQ/iGh9mP7XAV/Qht00URUaHpXipQXWiXvxvxQ10
+         jc1Hm2Ewm9nsGigWSZ4P7mjQNRH606pxCpTGwkHFQ9+1tCEge7+8nUmnl5Sd9Ra7r7xq
+         YpVPe/OPAIkKEfcWGUR4VPYS5D4pf6kB5g0Bwtgz831JXhToLyyfY6fDsQUPzaZTY0Pm
+         PDYGSEk/qV3XPF97oPZUD3EDOmpUbIYpjU0dnXiIhtTPpOZeMiNqgUnSVoddTRAhk+rM
+         bBEuW4yf1lm/ZMz0yb4IfOLXRCQUzhdt1aYcM0aEMVDEkFIyZ+rYrFk+E93zjGRehG+3
+         sr+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686638819; x=1689230819;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=02cZUxsOqGfZ8lXmchHjzAFGxYbEcf/VDvBL7ckHl/M=;
+        b=fPrIhTcDnXcVUNQ3lwkg+Ae9ncK7BMrf2fXjp2XyWiqxomcYBWB+mvjekZFeOAx+87
+         3Y7LTPdAWEKROSn1ZrOyj3/JmpVfAshnyHePIbUdGxk1XZZ9vrmDkXBDlSRYl4G9ppYS
+         iFyzqN1ed7cth3AsffoYg8ulUY8tLHbzYDj5q8oR2wgmDhhNeMPF08RP6MbdhU4sCqcq
+         fc4OLVIm2AWoIrgSZbQB1FV2U18CsrLPftbd9uKP3Wb0dnvdtJQCN6Y3+F5kBE8bdKXf
+         pCVR82o4e9D7Bujtzc+OJhusgUOR8R3dy1BQyNiUp8qxjjPwacTkvq3S0EnPuln70ePc
+         uOsQ==
+X-Gm-Message-State: AC+VfDxgwgSrFCERQmr1LVMtTGjov8e3dsYOANwJWIspd45d3K3NiVcr
+	xxEa3somvVShFmrndPHkgvUb1A==
+X-Google-Smtp-Source: ACHHUZ7jLXGNINNFmi15PwujwvIU2N90t+1cq56bMQ/WiVjOp1HKtrySJyLsof5kHSHuUy2YkGQ3YA==
+X-Received: by 2002:a7b:c349:0:b0:3f7:408e:b89b with SMTP id l9-20020a7bc349000000b003f7408eb89bmr9070856wmj.33.1686638819250;
+        Mon, 12 Jun 2023 23:46:59 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id 11-20020a05600c228b00b003f7361ca753sm13326057wmf.24.2023.06.12.23.46.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Jun 2023 23:46:57 -0700 (PDT)
+Date: Tue, 13 Jun 2023 09:46:53 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: Christian Marangi <ansuelsmth@gmail.com>
+Cc: Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+	Andrew Lunn <andrew@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>, linux-leds@vger.kernel.org,
+	kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v2 led] leds: trigger: netdev: uninitialized variable in
+ netdev_trig_activate()
+Message-ID: <6fbb3819-a348-4cc3-a1d0-951ca1c380d6@moroto.mountain>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Tw_E9OZMaCE5DbSiGMgrfQ=";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
---Sig_/Tw_E9OZMaCE5DbSiGMgrfQ=
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The qca8k_cled_hw_control_get() function which implements ->hw_control_get
+sets the appropriate bits but does not clear them.  This leads to an
+uninitialized variable bug.  Fix this by setting mode to zero at the
+start.
 
-Hi all,
-
-After merging the net-next tree, today's linux-next build (sparc64
-defconfig) failed like this:
-
-drivers/net/ethernet/sun/sunvnet_common.c: In function 'vnet_handle_offload=
-s':
-drivers/net/ethernet/sun/sunvnet_common.c:1277:16: error: implicit declarat=
-ion of function 'skb_gso_segment'; did you mean 'skb_gso_reset'? [-Werror=
-=3Dimplicit-function-declaration]
- 1277 |         segs =3D skb_gso_segment(skb, dev->features & ~NETIF_F_TSO);
-      |                ^~~~~~~~~~~~~~~
-      |                skb_gso_reset
-drivers/net/ethernet/sun/sunvnet_common.c:1277:14: warning: assignment to '=
-struct sk_buff *' from 'int' makes pointer from integer without a cast [-Wi=
-nt-conversion]
- 1277 |         segs =3D skb_gso_segment(skb, dev->features & ~NETIF_F_TSO);
-      |              ^
-
-Caused by commit
-
-  d457a0e329b0 ("net: move gso declarations and functions to their own file=
-s")
-
-I have applied the following patch for today.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 13 Jun 2023 16:38:10 +1000
-Subject: [PATCH] Fix a sparc64 use of the gso functions
-
-This was missed when they were moved.
-
-Fixes: d457a0e329b0 ("net: move gso declarations and functions to their own=
- files")
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Fixes: e0256648c831 ("net: dsa: qca8k: implement hw_control ops")
+Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
 ---
- drivers/net/ethernet/sun/sunvnet_common.c | 1 +
- 1 file changed, 1 insertion(+)
+v2: In the original patch I fixed qca8k_cled_hw_control_get() instead
+so that patch went to netdev instead of to the led subsystem.
+https://lore.kernel.org/all/5dff3719-f827-45b6-a0d3-a00efed1099b@moroto.mountain/
+Fixing it here is a more reliable way to do it.
 
-diff --git a/drivers/net/ethernet/sun/sunvnet_common.c b/drivers/net/ethern=
-et/sun/sunvnet_common.c
-index a6211b95ed17..3525d5c0d694 100644
---- a/drivers/net/ethernet/sun/sunvnet_common.c
-+++ b/drivers/net/ethernet/sun/sunvnet_common.c
-@@ -25,6 +25,7 @@
- #endif
-=20
- #include <net/ip.h>
-+#include <net/gso.h>
- #include <net/icmp.h>
- #include <net/route.h>
-=20
---=20
+ drivers/leds/trigger/ledtrig-netdev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
+index b0a6f2749552..2311dae7f070 100644
+--- a/drivers/leds/trigger/ledtrig-netdev.c
++++ b/drivers/leds/trigger/ledtrig-netdev.c
+@@ -445,7 +445,7 @@ static void netdev_trig_work(struct work_struct *work)
+ static int netdev_trig_activate(struct led_classdev *led_cdev)
+ {
+ 	struct led_netdev_data *trigger_data;
+-	unsigned long mode;
++	unsigned long mode = 0;
+ 	struct device *dev;
+ 	int rc;
+ 
+-- 
 2.39.2
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/Tw_E9OZMaCE5DbSiGMgrfQ=
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmSIEM8ACgkQAVBC80lX
-0Gw5VQf7BoFtLqlYCcZ1EcmSB6rSgKpa+rwDE0zWUy0pmlqre9HG5FjOpqlRzPqV
-wcM+ljVgC3cbAYnk/Bf7rkTmmGj888ur/de3Gig7Fu1Onp8iMu0ZJ7uAe7RdLvbb
-ai1E2PfD90TAEIYQtrmc6ep3QZRejQMO2J2DfKlOuc4OY4PRdFJxyBXXhnZKl7b5
-8YizNNcYANGOSjZqTJZL9bimOSHg5Pfb/QTrVTt+Z3A6Rb/tBSfAVOqcfd6xDYOQ
-G+SnMqhK2AomOv6MW/UbSiVQ9dHkTG2jUkDCWvqWUpbdpX+8UCUxMcycNRUlwSsQ
-J5MDRriuuXjOEQAWtv1B7V+SopvYVg==
-=xo73
------END PGP SIGNATURE-----
-
---Sig_/Tw_E9OZMaCE5DbSiGMgrfQ=--
 
