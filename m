@@ -1,46 +1,46 @@
-Return-Path: <netdev+bounces-10411-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10412-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8A6FD72E5F1
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 16:39:03 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id CE74B72E5F2
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 16:39:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6DA581C20CDD
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 14:38:59 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 81FE7281009
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 14:39:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 835D538CDA;
-	Tue, 13 Jun 2023 14:38:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D06B82A715;
+	Tue, 13 Jun 2023 14:38:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78C2138CCC
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 14:38:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C27432A6F4
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 14:38:09 +0000 (UTC)
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DB01E56
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 07:38:02 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74468E54
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 07:38:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
 	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
 	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=NtI/xlg2JkySFlJdtFDtJuE0yQO9r62xLvg5DGpcsbU=; b=RUyduLbmqCqgqpYFV9Ssrbk1mX
-	SRe3CKlKtwSODnyqBIPqZUuwoie64iSq6mvtIdP6yy4OvvbrZ9/IRcEccfAeloBUNjtBly6CFkxga
-	ZF5akdzUc+woGqGO1JM9mtqGItjFbTO3nj4r2yMjaQyui5YebsNUXUhelLSZXcaCvYclH2JYye+be
-	HyEL8hKc3NhrKvC2Rq96fheRL8srsN4xh7t09DdxjoTXwUQnCnYMaUP92QjPX+doiAcqdtqQ9fnYt
-	IomQhq5X8hUl+2k+dWz9GzW7HEAMeoNrf2yRXJsq+wnGwLh8Wj7FISZMHGgQMEEN2ox4MbXHEEAJU
-	Qh8IAHzg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:59942 helo=rmk-PC.armlinux.org.uk)
+	bh=MHixeibMQ3MyRA31rtGo+GfEunYI7FZP5KJiewFCVP4=; b=nMUhm60hRmFbBd7nywSyukmlbj
+	/K3gD0kB72ZTnj/wopgCOFLFpympTFE21k181HUzxERg3tLSKBGGpQ1O/aY0B9mjCeqaPnozM2LHD
+	Witub1+qgUni/Ww//6B1U/9qH7QZx32BZn2D/rfGzsi0zKXtiXXATu5eMlt04qa5vRkNBIepx1huk
+	7Hb/HiLySelSb+ESEPIbKoeEW5Hn/wYodPQmvcs1XCVwuhklGcArev8NMdraXZq6Skn9aZZasNLfn
+	0HddB6hJ3+QPWuVxArSsEpJDnLfOEm8qBR/xOjQoVTgJg8/2uG0PS4lXs/+SXQ3crXjBsvi5DxJdO
+	C/GsHlcQ==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:59944 helo=rmk-PC.armlinux.org.uk)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <rmk@armlinux.org.uk>)
-	id 1q959Y-0007R6-RN; Tue, 13 Jun 2023 15:37:48 +0100
+	id 1q959e-0007RR-0o; Tue, 13 Jun 2023 15:37:54 +0100
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
 	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-	id 1q959Y-00EBvq-50; Tue, 13 Jun 2023 15:37:48 +0100
+	id 1q959d-00EBvw-9T; Tue, 13 Jun 2023 15:37:53 +0100
 In-Reply-To: <ZIh/CLQ3z89g0Ua0@shell.armlinux.org.uk>
 References: <ZIh/CLQ3z89g0Ua0@shell.armlinux.org.uk>
 From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -76,7 +76,7 @@ Cc: Alexander Couzens <lynxis@fe80.eu>,
 	Taras Chornyi <taras.chornyi@plvision.eu>,
 	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
 	UNGLinuxDriver@microchip.com, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH RFC net-next 04/15] net: pcs: xpcs: update PCS driver to use
+Subject: [PATCH RFC net-next 05/15] net: pcs: lynxi: update PCS driver to use
  neg_mode
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -87,9 +87,9 @@ MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1q959Y-00EBvq-50@rmk-PC.armlinux.org.uk>
+Message-Id: <E1q959d-00EBvw-9T@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date: Tue, 13 Jun 2023 15:37:48 +0100
+Date: Tue, 13 Jun 2023 15:37:53 +0100
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
 	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
@@ -97,247 +97,102 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Update xpcs to use neg_mode to configure whether inband negotiation
-should be used. We need to update sja1105 as well as that directly
-calls into the XPCS driver's config function.
+Update the Lynxi PCS driver to use neg_mode rather than the mode
+argument. This ensures that the link_up() method will always program
+the speed and duplex when negotiation is disabled.
 
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 14 ++++-----
- drivers/net/pcs/pcs-xpcs.c             | 43 ++++++++++++++------------
- include/linux/pcs/pcs-xpcs.h           |  4 +--
- 3 files changed, 31 insertions(+), 30 deletions(-)
+ drivers/net/pcs/pcs-mtk-lynxi.c | 39 ++++++++++++++-------------------
+ 1 file changed, 16 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index b70dcf32a26d..a55a6436fc05 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -2314,7 +2314,7 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
- 
- 	for (i = 0; i < ds->num_ports; i++) {
- 		struct dw_xpcs *xpcs = priv->xpcs[i];
--		unsigned int mode;
-+		unsigned int neg_mode;
- 
- 		rc = sja1105_adjust_port_config(priv, i, speed_mbps[i]);
- 		if (rc < 0)
-@@ -2324,17 +2324,15 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
- 			continue;
- 
- 		if (bmcr[i] & BMCR_ANENABLE)
--			mode = MLO_AN_INBAND;
--		else if (priv->fixed_link[i])
--			mode = MLO_AN_FIXED;
-+			neg_mode = PHYLINK_PCS_NEG_INBAND_ENABLED;
- 		else
--			mode = MLO_AN_PHY;
-+			neg_mode = PHYLINK_PCS_NEG_OUTBAND;
- 
--		rc = xpcs_do_config(xpcs, priv->phy_mode[i], mode, NULL);
-+		rc = xpcs_do_config(xpcs, priv->phy_mode[i], NULL, neg_mode);
- 		if (rc < 0)
- 			goto out;
- 
--		if (!phylink_autoneg_inband(mode)) {
-+		if (neg_mode == PHYLINK_PCS_NEG_OUTBAND) {
- 			int speed = SPEED_UNKNOWN;
- 
- 			if (priv->phy_mode[i] == PHY_INTERFACE_MODE_2500BASEX)
-@@ -2346,7 +2344,7 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
- 			else
- 				speed = SPEED_10;
- 
--			xpcs_link_up(&xpcs->pcs, mode, priv->phy_mode[i],
-+			xpcs_link_up(&xpcs->pcs, neg_mode, priv->phy_mode[i],
- 				     speed, DUPLEX_FULL);
- 		}
- 	}
-diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index e4e59aa9faf7..44b037646865 100644
---- a/drivers/net/pcs/pcs-xpcs.c
-+++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -657,7 +657,8 @@ int xpcs_config_eee(struct dw_xpcs *xpcs, int mult_fact_100ns, int enable)
- }
- EXPORT_SYMBOL_GPL(xpcs_config_eee);
- 
--static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
-+static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs,
-+				      unsigned int neg_mode)
- {
- 	int ret, mdio_ctrl;
- 
-@@ -707,7 +708,7 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
- 	if (ret < 0)
- 		return ret;
- 
--	if (phylink_autoneg_inband(mode))
-+	if (neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED)
- 		ret |= DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
- 	else
- 		ret &= ~DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
-@@ -716,14 +717,15 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
- 	if (ret < 0)
- 		return ret;
- 
--	if (phylink_autoneg_inband(mode))
-+	if (neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED)
- 		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
- 				 mdio_ctrl | AN_CL37_EN);
- 
- 	return ret;
+diff --git a/drivers/net/pcs/pcs-mtk-lynxi.c b/drivers/net/pcs/pcs-mtk-lynxi.c
+index 888452325edc..b0f3ede945d9 100644
+--- a/drivers/net/pcs/pcs-mtk-lynxi.c
++++ b/drivers/net/pcs/pcs-mtk-lynxi.c
+@@ -102,13 +102,13 @@ static void mtk_pcs_lynxi_get_state(struct phylink_pcs *pcs,
+ 					 FIELD_GET(SGMII_LPA, adv));
  }
  
--static int xpcs_config_aneg_c37_1000basex(struct dw_xpcs *xpcs, unsigned int mode,
-+static int xpcs_config_aneg_c37_1000basex(struct dw_xpcs *xpcs,
-+					  unsigned int neg_mode,
- 					  const unsigned long *advertising)
+-static int mtk_pcs_lynxi_config(struct phylink_pcs *pcs, unsigned int mode,
++static int mtk_pcs_lynxi_config(struct phylink_pcs *pcs, unsigned int neg_mode,
+ 				phy_interface_t interface,
+ 				const unsigned long *advertising,
+ 				bool permit_pause_to_mac)
  {
- 	phy_interface_t interface = PHY_INTERFACE_MODE_1000BASEX;
-@@ -774,8 +776,7 @@ static int xpcs_config_aneg_c37_1000basex(struct dw_xpcs *xpcs, unsigned int mod
- 	if (ret < 0)
- 		return ret;
+ 	struct mtk_pcs_lynxi *mpcs = pcs_to_mtk_pcs_lynxi(pcs);
+-	bool mode_changed = false, changed, use_an;
++	bool mode_changed = false, changed;
+ 	unsigned int rgc3, sgm_mode, bmcr;
+ 	int advertise, link_timer;
  
--	if (phylink_autoneg_inband(mode) &&
--	    linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, advertising)) {
+@@ -121,30 +121,21 @@ static int mtk_pcs_lynxi_config(struct phylink_pcs *pcs, unsigned int mode,
+ 	 * we assume that fixes it's speed at bitrate = line rate (in
+ 	 * other words, 1000Mbps or 2500Mbps).
+ 	 */
+-	if (interface == PHY_INTERFACE_MODE_SGMII) {
++	if (interface == PHY_INTERFACE_MODE_SGMII)
+ 		sgm_mode = SGMII_IF_MODE_SGMII;
+-		if (phylink_autoneg_inband(mode)) {
+-			sgm_mode |= SGMII_REMOTE_FAULT_DIS |
+-				    SGMII_SPEED_DUPLEX_AN;
+-			use_an = true;
+-		} else {
+-			use_an = false;
+-		}
+-	} else if (phylink_autoneg_inband(mode)) {
+-		/* 1000base-X or 2500base-X autoneg */
+-		sgm_mode = SGMII_REMOTE_FAULT_DIS;
+-		use_an = linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+-					   advertising);
+-	} else {
+-		/* 1000base-X or 2500base-X without autoneg */
++	else
+ 		sgm_mode = 0;
+-		use_an = false;
+-	}
+ 
+-	if (use_an)
++	if (neg_mode & PHYLINK_PCS_NEG_INBAND)
++		sgm_mode |= SGMII_REMOTE_FAULT_DIS;
++
 +	if (neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED) {
- 		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
- 				 mdio_ctrl | AN_CL37_EN);
- 		if (ret < 0)
-@@ -808,7 +809,7 @@ static int xpcs_config_2500basex(struct dw_xpcs *xpcs)
++		if (interface == PHY_INTERFACE_MODE_SGMII)
++			sgm_mode |= SGMII_SPEED_DUPLEX_AN;
+ 		bmcr = BMCR_ANENABLE;
+-	else
++	} else {
+ 		bmcr = 0;
++	}
+ 
+ 	if (mpcs->interface != interface) {
+ 		link_timer = phylink_get_link_timer_ns(interface);
+@@ -216,14 +207,15 @@ static void mtk_pcs_lynxi_restart_an(struct phylink_pcs *pcs)
+ 	regmap_set_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1, BMCR_ANRESTART);
  }
  
- int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
--		   unsigned int mode, const unsigned long *advertising)
-+		   const unsigned long *advertising, unsigned int neg_mode)
+-static void mtk_pcs_lynxi_link_up(struct phylink_pcs *pcs, unsigned int mode,
++static void mtk_pcs_lynxi_link_up(struct phylink_pcs *pcs,
++				  unsigned int neg_mode,
+ 				  phy_interface_t interface, int speed,
+ 				  int duplex)
  {
- 	const struct xpcs_compat *compat;
- 	int ret;
-@@ -821,19 +822,19 @@ int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
- 	case DW_10GBASER:
- 		break;
- 	case DW_AN_C73:
--		if (test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, advertising)) {
-+		if (neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED) {
- 			ret = xpcs_config_aneg_c73(xpcs, compat);
- 			if (ret)
- 				return ret;
- 		}
- 		break;
- 	case DW_AN_C37_SGMII:
--		ret = xpcs_config_aneg_c37_sgmii(xpcs, mode);
-+		ret = xpcs_config_aneg_c37_sgmii(xpcs, neg_mode);
- 		if (ret)
- 			return ret;
- 		break;
- 	case DW_AN_C37_1000BASEX:
--		ret = xpcs_config_aneg_c37_1000basex(xpcs, mode,
-+		ret = xpcs_config_aneg_c37_1000basex(xpcs, neg_mode,
- 						     advertising);
- 		if (ret)
- 			return ret;
-@@ -857,14 +858,14 @@ int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
- }
- EXPORT_SYMBOL_GPL(xpcs_do_config);
+ 	struct mtk_pcs_lynxi *mpcs = pcs_to_mtk_pcs_lynxi(pcs);
+ 	unsigned int sgm_mode;
  
--static int xpcs_config(struct phylink_pcs *pcs, unsigned int mode,
-+static int xpcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
- 		       phy_interface_t interface,
- 		       const unsigned long *advertising,
- 		       bool permit_pause_to_mac)
- {
- 	struct dw_xpcs *xpcs = phylink_pcs_to_xpcs(pcs);
+-	if (!phylink_autoneg_inband(mode)) {
++	if (neg_mode != PHYLINK_PCS_NEG_INBAND_ENABLED) {
+ 		/* Force the speed and duplex setting */
+ 		if (speed == SPEED_10)
+ 			sgm_mode = SGMII_SPEED_10;
+@@ -286,6 +278,7 @@ struct phylink_pcs *mtk_pcs_lynxi_create(struct device *dev,
+ 	mpcs->regmap = regmap;
+ 	mpcs->flags = flags;
+ 	mpcs->pcs.ops = &mtk_pcs_lynxi_ops;
++	mpcs->pcs.neg_mode = true;
+ 	mpcs->pcs.poll = true;
+ 	mpcs->interface = PHY_INTERFACE_MODE_NA;
  
--	return xpcs_do_config(xpcs, interface, mode, advertising);
-+	return xpcs_do_config(xpcs, interface, advertising, neg_mode);
- }
- 
- static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
-@@ -898,7 +899,8 @@ static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
- 
- 		state->link = 0;
- 
--		return xpcs_do_config(xpcs, state->interface, MLO_AN_INBAND, NULL);
-+		return xpcs_do_config(xpcs, state->interface, NULL,
-+				      PHYLINK_PCS_NEG_INBAND_ENABLED);
- 	}
- 
- 	/* There is no point doing anything else if the link is down. */
-@@ -1046,12 +1048,12 @@ static void xpcs_get_state(struct phylink_pcs *pcs,
- 	}
- }
- 
--static void xpcs_link_up_sgmii(struct dw_xpcs *xpcs, unsigned int mode,
-+static void xpcs_link_up_sgmii(struct dw_xpcs *xpcs, unsigned int neg_mode,
- 			       int speed, int duplex)
- {
- 	int val, ret;
- 
--	if (phylink_autoneg_inband(mode))
-+	if (neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED)
- 		return;
- 
- 	val = mii_bmcr_encode_fixed(speed, duplex);
-@@ -1060,12 +1062,12 @@ static void xpcs_link_up_sgmii(struct dw_xpcs *xpcs, unsigned int mode,
- 		pr_err("%s: xpcs_write returned %pe\n", __func__, ERR_PTR(ret));
- }
- 
--static void xpcs_link_up_1000basex(struct dw_xpcs *xpcs, unsigned int mode,
-+static void xpcs_link_up_1000basex(struct dw_xpcs *xpcs, unsigned int neg_mode,
- 				   int speed, int duplex)
- {
- 	int val, ret;
- 
--	if (phylink_autoneg_inband(mode))
-+	if (neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED)
- 		return;
- 
- 	switch (speed) {
-@@ -1089,7 +1091,7 @@ static void xpcs_link_up_1000basex(struct dw_xpcs *xpcs, unsigned int mode,
- 		pr_err("%s: xpcs_write returned %pe\n", __func__, ERR_PTR(ret));
- }
- 
--void xpcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
-+void xpcs_link_up(struct phylink_pcs *pcs, unsigned int neg_mode,
- 		  phy_interface_t interface, int speed, int duplex)
- {
- 	struct dw_xpcs *xpcs = phylink_pcs_to_xpcs(pcs);
-@@ -1097,9 +1099,9 @@ void xpcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
- 	if (interface == PHY_INTERFACE_MODE_USXGMII)
- 		return xpcs_config_usxgmii(xpcs, speed);
- 	if (interface == PHY_INTERFACE_MODE_SGMII)
--		return xpcs_link_up_sgmii(xpcs, mode, speed, duplex);
-+		return xpcs_link_up_sgmii(xpcs, neg_mode, speed, duplex);
- 	if (interface == PHY_INTERFACE_MODE_1000BASEX)
--		return xpcs_link_up_1000basex(xpcs, mode, speed, duplex);
-+		return xpcs_link_up_1000basex(xpcs, neg_mode, speed, duplex);
- }
- EXPORT_SYMBOL_GPL(xpcs_link_up);
- 
-@@ -1283,6 +1285,7 @@ static struct dw_xpcs *xpcs_create(struct mdio_device *mdiodev,
- 		}
- 
- 		xpcs->pcs.ops = &xpcs_phylink_ops;
-+		xpcs->pcs.neg_mode = true;
- 		if (compat->an_mode == DW_10GBASER)
- 			return xpcs;
- 
-diff --git a/include/linux/pcs/pcs-xpcs.h b/include/linux/pcs/pcs-xpcs.h
-index ec8175b847cc..ff99cf7a5d0d 100644
---- a/include/linux/pcs/pcs-xpcs.h
-+++ b/include/linux/pcs/pcs-xpcs.h
-@@ -29,10 +29,10 @@ struct dw_xpcs {
- };
- 
- int xpcs_get_an_mode(struct dw_xpcs *xpcs, phy_interface_t interface);
--void xpcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
-+void xpcs_link_up(struct phylink_pcs *pcs, unsigned int neg_mode,
- 		  phy_interface_t interface, int speed, int duplex);
- int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
--		   unsigned int mode, const unsigned long *advertising);
-+		   const unsigned long *advertising, unsigned int neg_mode);
- void xpcs_get_interfaces(struct dw_xpcs *xpcs, unsigned long *interfaces);
- int xpcs_config_eee(struct dw_xpcs *xpcs, int mult_fact_100ns,
- 		    int enable);
 -- 
 2.30.2
 
