@@ -1,65 +1,65 @@
-Return-Path: <netdev+bounces-10351-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10352-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3146172DF34
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 12:22:06 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0BAE372DF38
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 12:22:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DB3612815F8
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 10:22:04 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 37A131C20C40
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 10:22:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 48F363D3B7;
-	Tue, 13 Jun 2023 10:15:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 78D9A3ED87;
+	Tue, 13 Jun 2023 10:15:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 371C23D3B4
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 10:15:09 +0000 (UTC)
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C39F19A
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 03:15:06 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id ffacd0b85a97d-30e412a852dso3572926f8f.0
-        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 03:15:06 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66CD03ED83
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 10:15:10 +0000 (UTC)
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E6DB19B
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 03:15:07 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id ffacd0b85a97d-30c4775d05bso3724480f8f.2
+        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 03:15:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent.com; s=google; t=1686651304; x=1689243304;
+        d=isovalent.com; s=google; t=1686651306; x=1689243306;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=rHwA68FEDYeOk8tUAO5Jk0KSGY++DaKS34uczmd9os4=;
-        b=TNJg/bGcJ1sLA2Qufy7t9ZzUZMyC0Bub5mPNwPylxTrrM8GSgD8nNVvWwJldPtURRp
-         2m1n1DcTfz+aM3+hm9kWHQymF4McTaIcETHulWpVlGr3gFeXF7eahafGyfZULqiK/FOO
-         vQo23OjmxFfQQOosaMpurTz+6xkExqn4z4L1yyrAZ+XoptkrmKU2Lyvc6Zf+AM1LFLly
-         U8xc7TUNx6bnxKn72SW/9yIq6CSESa8JaKgwHRzDyOKku61Miz8SkTB0u+TZDgUF+sIP
-         n8Es7EY6FeFBqZGuHdiJeGCkIHrRhQZ65dC64MK7K1HtU87A1c8ZIH296asfstgMm74M
-         4PHQ==
+        bh=Rrd+oVQwBiLqnLnpd+kxgQqY6NXFWO5dlCZVFiDqXJs=;
+        b=dON+bTrbeu4YdnaPb/0E4JBD/k66UBlAuGkGgEM1IT4EBxyQgknhhh9qWXJFqGKRng
+         iFcdbQRxNyZMN1tQ2IcfrV/PsxLrlIaEJIrVMMf48yVUKpC42+NOLlZSEmhhixGxfXwI
+         CtNwVYiZarmA353WCs5heKR1GTec1S1Ki+HWhZp4OFrEjjJn2JNapjMuc5+UZ7VYewiA
+         Wud9nvis58lr75DYbN/5v8sH5x2/DFiDusIW3coumC3DbR0USwALX3qaBX/Y9mnQUh4v
+         tqNOl2/qQ+Oz2DHotIRdZ20HD6k4lXVsT3CTA4DTaqmVJdirpieNSR0Hn1EljbemKC+S
+         i0KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686651304; x=1689243304;
+        d=1e100.net; s=20221208; t=1686651306; x=1689243306;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=rHwA68FEDYeOk8tUAO5Jk0KSGY++DaKS34uczmd9os4=;
-        b=Z1IZhpg7flx2C/hWlXx1Md73t0l9mBvPms5f+AQoEP0JLb95yRZV3tm+6M6mugD0G5
-         HppMuFYerMiWixnWQ3phWP5oErXfKrJQuTvkVo5pDu7vmiekPa0XenWfqvwySkTazAbg
-         WDei+6OVv0HBUa9JIbF6qoI/WztRvJzSo/TbmnlXbxjd1Z636oQswur/wmWNrw43Qsqc
-         MCsx7tgXs0NPg9YLAjtnBsM4icYz9ixVcpoCNLcn1Qg4KonmtmeCBXSRw/yuhuBpOulR
-         rHQCzYRn2GBg0dVUO7m1Xhh/SAbsBSiqpj8y9gcSUv0obKkviBXJS2zTEnV0ucunPWQ0
-         4kEw==
-X-Gm-Message-State: AC+VfDy3G5XVDQPh7bEKtQM036LTGCMPzRJ8aNmB987P8L+eWzNMm7FK
-	oiYSGqyCq+HbW2dxenBCHQkeYg==
-X-Google-Smtp-Source: ACHHUZ7Mm1wWhOgmioSxN7n+Us0O52P06pEkHAORe5bdXS2x96V7flM7KLE7stp4migy6x5pLM5ZDA==
-X-Received: by 2002:adf:f642:0:b0:2f0:2dfe:e903 with SMTP id x2-20020adff642000000b002f02dfee903mr5099880wrp.69.1686651304646;
-        Tue, 13 Jun 2023 03:15:04 -0700 (PDT)
+        bh=Rrd+oVQwBiLqnLnpd+kxgQqY6NXFWO5dlCZVFiDqXJs=;
+        b=dUJlBMROa/K+rEpIqrPbUhwAOa0lIknNsAL0M2kaWfJCaSSgd/4faKVHVQzg+NWAsT
+         QMVLlwho6AD/JVHQTBkiTYbERyIo58cS9YDR2irfUKdxBKGwbQPOQrcYqKNtP+1HNppL
+         q8J7qVmMuBR/motjK6hK965cuozTFrlf3KA329SwbZ8wHiKBBNTSoSsNpU7tpM/TYc4a
+         GG+H7WuQUaoEyoMXJshyNevNUFbB+xJ6UXS6qGfwWsJ4RVglf3xgR5+WhvBWvG5Xy6yq
+         Om+Ag/mcJNGAuUUQH4Ysgg1asMstWg382eAgkZQxM3wb8p9lhDf4RFjLLl5cqho0Gh/F
+         4RtA==
+X-Gm-Message-State: AC+VfDzU8Sa2iHM00cw6ljBICMnYa1sYdLZ3eeKqG6jDDFM4BclXbMby
+	GKemYP2DIoA6sY9WEZsUKWQ2NQ==
+X-Google-Smtp-Source: ACHHUZ5GQ7sIG+N/DYtNauCCoD5it7RXk8FH3aWkE29SOtDbV2w/tlexjvz4Ac9XivlhyLXPHYycTw==
+X-Received: by 2002:a5d:55cf:0:b0:2f9:ee8c:a2fa with SMTP id i15-20020a5d55cf000000b002f9ee8ca2famr6402072wrw.64.1686651305914;
+        Tue, 13 Jun 2023 03:15:05 -0700 (PDT)
 Received: from [192.168.133.193] ([5.148.46.226])
-        by smtp.gmail.com with ESMTPSA id k15-20020a5d6e8f000000b0030e6096afb6sm15075020wrz.12.2023.06.13.03.15.03
+        by smtp.gmail.com with ESMTPSA id k15-20020a5d6e8f000000b0030e6096afb6sm15075020wrz.12.2023.06.13.03.15.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jun 2023 03:15:04 -0700 (PDT)
+        Tue, 13 Jun 2023 03:15:05 -0700 (PDT)
 From: Lorenz Bauer <lmb@isovalent.com>
-Date: Tue, 13 Jun 2023 11:15:00 +0100
-Subject: [PATCH bpf-next v2 5/6] bpf, net: Support SO_REUSEPORT sockets
- with bpf_sk_assign
+Date: Tue, 13 Jun 2023 11:15:01 +0100
+Subject: [PATCH bpf-next v2 6/6] selftests/bpf: Test that SO_REUSEPORT can
+ be used with sk_assign helper
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -68,7 +68,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230613-so-reuseport-v2-5-b7c69a342613@isovalent.com>
+Message-Id: <20230613-so-reuseport-v2-6-b7c69a342613@isovalent.com>
 References: <20230613-so-reuseport-v2-0-b7c69a342613@isovalent.com>
 In-Reply-To: <20230613-so-reuseport-v2-0-b7c69a342613@isovalent.com>
 To: "David S. Miller" <davem@davemloft.net>, 
@@ -91,343 +91,403 @@ X-Mailer: b4 0.12.2
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Currently the bpf_sk_assign helper in tc BPF context refuses SO_REUSEPORT
-sockets. This means we can't use the helper to steer traffic to Envoy,
-which configures SO_REUSEPORT on its sockets. In turn, we're blocked
-from removing TPROXY from our setup.
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-The reason that bpf_sk_assign refuses such sockets is that the
-bpf_sk_lookup helpers don't execute SK_REUSEPORT programs. Instead,
-one of the reuseport sockets is selected by hash. This could cause
-dispatch to the "wrong" socket:
+We use two programs to check that the new reuseport logic is executed
+appropriately.
 
-    sk = bpf_sk_lookup_tcp(...) // select SO_REUSEPORT by hash
-    bpf_sk_assign(skb, sk) // SK_REUSEPORT wasn't executed
+The first is a TC clsact program which bpf_sk_assigns
+the skb to a UDP or TCP socket created by user space. Since the test
+communicates via lo we see both directions of packets in the eBPF.
+Traffic ingressing to the reuseport socket is identified by looking
+at the destination port. For TCP, we additionally need to make sure
+that we only assign the initial SYN packets towards our listening
+socket. The network stack then creates a request socket which
+transitions to ESTABLISHED after the 3WHS.
 
-Fixing this isn't as simple as invoking SK_REUSEPORT from the lookup
-helpers unfortunately. In the tc context, L2 headers are at the start
-of the skb, while SK_REUSEPORT expects L3 headers instead.
+The second is a reuseport program which shares the fact that
+it has been executed with user space. This tells us that the delayed
+lookup mechanism is working.
 
-Instead, we execute the SK_REUSEPORT program when the assigned socket
-is pulled out of the skb, further up the stack. This creates some
-trickiness with regards to refcounting as bpf_sk_assign will put both
-refcounted and RCU freed sockets in skb->sk. reuseport sockets are RCU
-freed. We can infer that the sk_assigned socket is RCU freed if the
-reuseport lookup succeeds, but convincing yourself of this fact isn't
-straight forward. Therefore we defensively check refcounting on the
-sk_assign sock even though it's probably not required in practice.
-
-Fixes: 8e368dc72e86 ("bpf: Fix use of sk->sk_reuseport from sk_assign")
-Fixes: cf7fbe660f2d ("bpf: Add socket assign support")
-Co-developed-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Co-developed-by: Lorenz Bauer <lmb@isovalent.com>
 Signed-off-by: Lorenz Bauer <lmb@isovalent.com>
 Cc: Joe Stringer <joe@cilium.io>
-Link: https://lore.kernel.org/bpf/CACAyw98+qycmpQzKupquhkxbvWK4OFyDuuLMBNROnfWMZxUWeA@mail.gmail.com/
 ---
- include/net/inet6_hashtables.h | 59 ++++++++++++++++++++++++++++++++++++++----
- include/net/inet_hashtables.h  | 52 +++++++++++++++++++++++++++++++++++--
- include/net/sock.h             |  7 +++--
- include/uapi/linux/bpf.h       |  3 ---
- net/core/filter.c              |  2 --
- net/ipv4/udp.c                 |  8 ++++--
- net/ipv6/udp.c                 | 10 ++++---
- tools/include/uapi/linux/bpf.h |  3 ---
- 8 files changed, 122 insertions(+), 22 deletions(-)
+ tools/testing/selftests/bpf/network_helpers.c      |   3 +
+ .../selftests/bpf/prog_tests/assign_reuse.c        | 197 +++++++++++++++++++++
+ .../selftests/bpf/progs/test_assign_reuse.c        | 142 +++++++++++++++
+ 3 files changed, 342 insertions(+)
 
-diff --git a/include/net/inet6_hashtables.h b/include/net/inet6_hashtables.h
-index 4d2a1a3c0be7..4d300af6ccb6 100644
---- a/include/net/inet6_hashtables.h
-+++ b/include/net/inet6_hashtables.h
-@@ -103,6 +103,49 @@ static inline struct sock *__inet6_lookup(struct net *net,
- 				     daddr, hnum, dif, sdif);
- }
+diff --git a/tools/testing/selftests/bpf/network_helpers.c b/tools/testing/selftests/bpf/network_helpers.c
+index a105c0cd008a..8a33bcea97de 100644
+--- a/tools/testing/selftests/bpf/network_helpers.c
++++ b/tools/testing/selftests/bpf/network_helpers.c
+@@ -423,6 +423,9 @@ struct nstoken *open_netns(const char *name)
  
-+static inline
-+struct sock *inet6_steal_sock(struct net *net, struct sk_buff *skb, int doff,
-+			      const struct in6_addr *saddr, const __be16 sport,
-+			      const struct in6_addr *daddr, const __be16 dport,
-+			      bool *refcounted, inet6_ehashfn_t ehashfn)
+ void close_netns(struct nstoken *token)
+ {
++	if (!token)
++		return;
++
+ 	ASSERT_OK(setns(token->orig_netns_fd, CLONE_NEWNET), "setns");
+ 	close(token->orig_netns_fd);
+ 	free(token);
+diff --git a/tools/testing/selftests/bpf/prog_tests/assign_reuse.c b/tools/testing/selftests/bpf/prog_tests/assign_reuse.c
+new file mode 100644
+index 000000000000..622f123410f4
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/assign_reuse.c
+@@ -0,0 +1,197 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2023 Isovalent */
++#include <uapi/linux/if_link.h>
++#include <test_progs.h>
++
++#include <netinet/tcp.h>
++#include <netinet/udp.h>
++
++#include "network_helpers.h"
++#include "test_assign_reuse.skel.h"
++
++#define NS_TEST "assign_reuse"
++#define LOOPBACK 1
++#define PORT 4443
++
++static int attach_reuseport(int sock_fd, int prog_fd)
 +{
-+	struct sock *sk, *reuse_sk;
-+	bool prefetched;
-+
-+	sk = skb_steal_sock(skb, refcounted, &prefetched);
-+	if (!sk)
-+		return NULL;
-+
-+	if (!prefetched)
-+		return sk;
-+
-+	if (sk->sk_protocol == IPPROTO_TCP) {
-+		if (sk->sk_state != TCP_LISTEN)
-+			return sk;
-+	} else if (sk->sk_protocol == IPPROTO_UDP) {
-+		if (sk->sk_state != TCP_CLOSE)
-+			return sk;
-+	} else {
-+		return sk;
-+	}
-+
-+	reuse_sk = inet6_lookup_reuseport(net, sk, skb, doff,
-+					  saddr, sport, daddr, ntohs(dport),
-+					  ehashfn);
-+	if (!reuse_sk || reuse_sk == sk)
-+		return sk;
-+
-+	/* We've chosen a new reuseport sock which is never refcounted.
-+	 * sk might be refcounted however, drop the reference if necessary.
-+	 */
-+	if (*refcounted) {
-+		sock_put(sk);
-+		*refcounted = false;
-+	}
-+
-+	return reuse_sk;
++	return setsockopt(sock_fd, SOL_SOCKET, SO_ATTACH_REUSEPORT_EBPF,
++			  &prog_fd, sizeof(prog_fd));
 +}
 +
- static inline struct sock *__inet6_lookup_skb(struct inet_hashinfo *hashinfo,
- 					      struct sk_buff *skb, int doff,
- 					      const __be16 sport,
-@@ -110,14 +153,20 @@ static inline struct sock *__inet6_lookup_skb(struct inet_hashinfo *hashinfo,
- 					      int iif, int sdif,
- 					      bool *refcounted)
- {
--	struct sock *sk = skb_steal_sock(skb, refcounted);
--
-+	struct net *net = dev_net(skb_dst(skb)->dev);
-+	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
-+	struct sock *sk;
-+
-+	sk = inet6_steal_sock(net, skb, doff, &ip6h->saddr, sport, &ip6h->daddr, dport,
-+			      refcounted, inet6_ehashfn);
-+	if (IS_ERR(sk))
-+		return NULL;
- 	if (sk)
- 		return sk;
- 
--	return __inet6_lookup(dev_net(skb_dst(skb)->dev), hashinfo, skb,
--			      doff, &ipv6_hdr(skb)->saddr, sport,
--			      &ipv6_hdr(skb)->daddr, ntohs(dport),
-+	return __inet6_lookup(net, hashinfo, skb,
-+			      doff, &ip6h->saddr, sport,
-+			      &ip6h->daddr, ntohs(dport),
- 			      iif, sdif, refcounted);
- }
- 
-diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index aa02f1db1f86..2c405d9df300 100644
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -449,6 +449,49 @@ static inline struct sock *inet_lookup(struct net *net,
- 	return sk;
- }
- 
-+static inline
-+struct sock *inet_steal_sock(struct net *net, struct sk_buff *skb, int doff,
-+			     const __be32 saddr, const __be16 sport,
-+			     const __be32 daddr, const __be16 dport,
-+			     bool *refcounted, inet_ehashfn_t ehashfn)
++static __u64 cookie(int fd)
 +{
-+	struct sock *sk, *reuse_sk;
-+	bool prefetched;
++	__u64 cookie = 0;
++	socklen_t cookie_len = sizeof(cookie);
++	int ret;
 +
-+	sk = skb_steal_sock(skb, refcounted, &prefetched);
-+	if (!sk)
-+		return NULL;
++	ret = getsockopt(fd, SOL_SOCKET, SO_COOKIE, &cookie, &cookie_len);
++	ASSERT_OK(ret, "cookie");
++	ASSERT_GT(cookie, 0, "cookie_invalid");
 +
-+	if (!prefetched)
-+		return sk;
-+
-+	if (sk->sk_protocol == IPPROTO_TCP) {
-+		if (sk->sk_state != TCP_LISTEN)
-+			return sk;
-+	} else if (sk->sk_protocol == IPPROTO_UDP) {
-+		if (sk->sk_state != TCP_CLOSE)
-+			return sk;
-+	} else {
-+		return sk;
-+	}
-+
-+	reuse_sk = inet_lookup_reuseport(net, sk, skb, doff,
-+					 saddr, sport, daddr, ntohs(dport),
-+					 ehashfn);
-+	if (!reuse_sk || reuse_sk == sk)
-+		return sk;
-+
-+	/* We've chosen a new reuseport sock which is never refcounted.
-+	 * sk might be refcounted however, drop the reference if necessary.
-+	 */
-+	if (*refcounted) {
-+		sock_put(sk);
-+		*refcounted = false;
-+	}
-+
-+	return reuse_sk;
++	return cookie;
 +}
 +
- static inline struct sock *__inet_lookup_skb(struct inet_hashinfo *hashinfo,
- 					     struct sk_buff *skb,
- 					     int doff,
-@@ -457,13 +500,18 @@ static inline struct sock *__inet_lookup_skb(struct inet_hashinfo *hashinfo,
- 					     const int sdif,
- 					     bool *refcounted)
- {
--	struct sock *sk = skb_steal_sock(skb, refcounted);
-+	struct net *net = dev_net(skb_dst(skb)->dev);
- 	const struct iphdr *iph = ip_hdr(skb);
-+	struct sock *sk;
- 
-+	sk = inet_steal_sock(net, skb, doff, iph->saddr, sport, iph->daddr, dport,
-+			     refcounted, inet_ehashfn);
-+	if (IS_ERR(sk))
-+		return NULL;
- 	if (sk)
- 		return sk;
- 
--	return __inet_lookup(dev_net(skb_dst(skb)->dev), hashinfo, skb,
-+	return __inet_lookup(net, hashinfo, skb,
- 			     doff, iph->saddr, sport,
- 			     iph->daddr, dport, inet_iif(skb), sdif,
- 			     refcounted);
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 656ea89f60ff..5645570c2a64 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2806,20 +2806,23 @@ sk_is_refcounted(struct sock *sk)
-  * skb_steal_sock - steal a socket from an sk_buff
-  * @skb: sk_buff to steal the socket from
-  * @refcounted: is set to true if the socket is reference-counted
-+ * @prefetched: is set to true if the socket was assigned from bpf
-  */
- static inline struct sock *
--skb_steal_sock(struct sk_buff *skb, bool *refcounted)
-+skb_steal_sock(struct sk_buff *skb, bool *refcounted, bool *prefetched)
- {
- 	if (skb->sk) {
- 		struct sock *sk = skb->sk;
- 
- 		*refcounted = true;
--		if (skb_sk_is_prefetched(skb))
-+		*prefetched = skb_sk_is_prefetched(skb);
-+		if (*prefetched)
- 			*refcounted = sk_is_refcounted(sk);
- 		skb->destructor = NULL;
- 		skb->sk = NULL;
- 		return sk;
- 	}
-+	*prefetched = false;
- 	*refcounted = false;
- 	return NULL;
- }
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index a7b5e91dd768..d6fb6f43b0f3 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -4158,9 +4158,6 @@ union bpf_attr {
-  *		**-EOPNOTSUPP** if the operation is not supported, for example
-  *		a call from outside of TC ingress.
-  *
-- *		**-ESOCKTNOSUPPORT** if the socket type is not supported
-- *		(reuseport).
-- *
-  * long bpf_sk_assign(struct bpf_sk_lookup *ctx, struct bpf_sock *sk, u64 flags)
-  *	Description
-  *		Helper is overloaded depending on BPF program type. This
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 428df050d021..d4be0a1d754c 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7278,8 +7278,6 @@ BPF_CALL_3(bpf_sk_assign, struct sk_buff *, skb, struct sock *, sk, u64, flags)
- 		return -EOPNOTSUPP;
- 	if (unlikely(dev_net(skb->dev) != sock_net(sk)))
- 		return -ENETUNREACH;
--	if (unlikely(sk_fullsock(sk) && sk->sk_reuseport))
--		return -ESOCKTNOSUPPORT;
- 	if (sk_is_refcounted(sk) &&
- 	    unlikely(!refcount_inc_not_zero(&sk->sk_refcnt)))
- 		return -ENOENT;
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 2500e92050a0..a3fa781432b9 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2373,7 +2373,11 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	if (udp4_csum_init(skb, uh, proto))
- 		goto csum_error;
- 
--	sk = skb_steal_sock(skb, &refcounted);
-+	sk = inet_steal_sock(net, skb, sizeof(struct udphdr), saddr, uh->source, daddr, uh->dest,
-+			     &refcounted, udp_ehashfn);
-+	if (IS_ERR(sk))
-+		goto no_sk;
++static int echo_test_udp(int fd_sv)
++{
++	struct sockaddr_storage addr = {};
++	socklen_t len = sizeof(addr);
++	char buff[1] = {};
++	int fd_cl = -1, ret;
 +
- 	if (sk) {
- 		struct dst_entry *dst = skb_dst(skb);
- 		int ret;
-@@ -2394,7 +2398,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	sk = __udp4_lib_lookup_skb(skb, uh->source, uh->dest, udptable);
- 	if (sk)
- 		return udp_unicast_rcv_skb(sk, skb, uh);
--
-+no_sk:
- 	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb))
- 		goto drop;
- 	nf_reset_ct(skb);
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 961b7e61f02c..0a90f34696ad 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -910,9 +910,9 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 	const struct in6_addr *saddr, *daddr;
- 	struct net *net = dev_net(skb->dev);
-+	bool refcounted;
- 	struct udphdr *uh;
- 	struct sock *sk;
--	bool refcounted;
- 	u32 ulen = 0;
- 
- 	if (!pskb_may_pull(skb, sizeof(struct udphdr)))
-@@ -949,7 +949,11 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 		goto csum_error;
- 
- 	/* Check if the socket is already available, e.g. due to early demux */
--	sk = skb_steal_sock(skb, &refcounted);
-+	sk = inet6_steal_sock(net, skb, sizeof(struct udphdr), saddr, uh->source, daddr, uh->dest,
-+			      &refcounted, udp6_ehashfn);
-+	if (IS_ERR(sk))
-+		goto no_sk;
++	fd_cl = connect_to_fd(fd_sv, 100);
++	ASSERT_GT(fd_cl, 0, "create_client");
++	ASSERT_EQ(getsockname(fd_cl, (void *)&addr, &len), 0, "getsockname");
 +
- 	if (sk) {
- 		struct dst_entry *dst = skb_dst(skb);
- 		int ret;
-@@ -983,7 +987,7 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 			goto report_csum_error;
- 		return udp6_unicast_rcv_skb(sk, skb, uh);
- 	}
--
-+no_sk:
- 	reason = SKB_DROP_REASON_NO_SOCKET;
- 
- 	if (!uh->check)
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index a7b5e91dd768..d6fb6f43b0f3 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -4158,9 +4158,6 @@ union bpf_attr {
-  *		**-EOPNOTSUPP** if the operation is not supported, for example
-  *		a call from outside of TC ingress.
-  *
-- *		**-ESOCKTNOSUPPORT** if the socket type is not supported
-- *		(reuseport).
-- *
-  * long bpf_sk_assign(struct bpf_sk_lookup *ctx, struct bpf_sock *sk, u64 flags)
-  *	Description
-  *		Helper is overloaded depending on BPF program type. This
++	ASSERT_EQ(send(fd_cl, buff, sizeof(buff), 0), 1, "send_client");
++
++	ret = recv(fd_sv, buff, sizeof(buff), 0);
++	if (ret < 0)
++		return errno;
++
++	ASSERT_EQ(ret, 1, "recv_server");
++	ASSERT_EQ(sendto(fd_sv, buff, sizeof(buff), 0, (void *)&addr, len), 1, "send_server");
++	ASSERT_EQ(recv(fd_cl, buff, sizeof(buff), 0), 1, "recv_client");
++	close(fd_cl);
++	return 0;
++}
++
++static int echo_test_tcp(int fd_sv)
++{
++	char buff[1] = {};
++	int fd_cl = -1, fd_sv_cl = -1;
++
++	fd_cl = connect_to_fd(fd_sv, 100);
++	if (fd_cl < 0)
++		return errno;
++
++	fd_sv_cl = accept(fd_sv, NULL, NULL);
++	ASSERT_GE(fd_sv_cl, 0, "accept_fd");
++
++	ASSERT_EQ(send(fd_cl, buff, sizeof(buff), 0), 1, "send_client");
++	ASSERT_EQ(recv(fd_sv_cl, buff, sizeof(buff), 0), 1, "recv_server");
++	ASSERT_EQ(send(fd_sv_cl, buff, sizeof(buff), 0), 1, "send_server");
++	ASSERT_EQ(recv(fd_cl, buff, sizeof(buff), 0), 1, "recv_client");
++	close(fd_sv_cl);
++	close(fd_cl);
++	return 0;
++}
++
++void run_assign_reuse(int family, int sotype, const char *ip, __u16 port)
++{
++	DECLARE_LIBBPF_OPTS(bpf_tc_hook, tc_hook,
++		.ifindex = LOOPBACK,
++		.attach_point = BPF_TC_INGRESS,
++	);
++	DECLARE_LIBBPF_OPTS(bpf_tc_opts, tc_opts,
++		.handle = 1,
++		.priority = 1,
++	);
++	bool hook_created = false, tc_attached = false;
++	int ret, fd_tc, fd_accept, fd_drop, fd_map;
++	int *fd_sv = NULL;
++	__u64 fd_val;
++	struct test_assign_reuse *skel;
++	const int zero = 0;
++
++	skel = test_assign_reuse__open();
++	if (!ASSERT_OK_PTR(skel, "skel_open"))
++		goto cleanup;
++
++	skel->rodata->dest_port = port;
++
++	ret = test_assign_reuse__load(skel);
++	if (!ASSERT_OK(ret, "skel_load"))
++		goto cleanup;
++
++	ASSERT_EQ(skel->bss->sk_cookie_seen, 0, "cookie_init");
++
++	fd_tc = bpf_program__fd(skel->progs.tc_main);
++	fd_accept = bpf_program__fd(skel->progs.reuse_accept);
++	fd_drop = bpf_program__fd(skel->progs.reuse_drop);
++	fd_map = bpf_map__fd(skel->maps.sk_map);
++
++	fd_sv = start_reuseport_server(family, sotype, ip, port, 100, 1);
++	if (!ASSERT_NEQ(fd_sv, NULL, "start_reuseport_server"))
++		goto cleanup;
++
++	ret = attach_reuseport(*fd_sv, fd_drop);
++	if (!ASSERT_OK(ret, "attach_reuseport"))
++		goto cleanup;
++
++	fd_val = *fd_sv;
++	ret = bpf_map_update_elem(fd_map, &zero, &fd_val, BPF_NOEXIST);
++	if (!ASSERT_OK(ret, "bpf_sk_map"))
++		goto cleanup;
++
++	ret = bpf_tc_hook_create(&tc_hook);
++	if (ret == 0)
++		hook_created = true;
++	ret = ret == -EEXIST ? 0 : ret;
++	if (!ASSERT_OK(ret, "bpf_tc_hook_create"))
++		goto cleanup;
++
++	tc_opts.prog_fd = fd_tc;
++	ret = bpf_tc_attach(&tc_hook, &tc_opts);
++	if (!ASSERT_OK(ret, "bpf_tc_attach"))
++		goto cleanup;
++	tc_attached = true;
++
++	if (sotype == SOCK_STREAM)
++		ASSERT_EQ(echo_test_tcp(*fd_sv), ECONNREFUSED, "drop_tcp");
++	else
++		ASSERT_EQ(echo_test_udp(*fd_sv), EAGAIN, "drop_udp");
++	ASSERT_EQ(skel->bss->reuseport_executed, 1, "program executed once");
++
++	skel->bss->sk_cookie_seen = 0;
++	skel->bss->reuseport_executed = 0;
++	ASSERT_OK(attach_reuseport(*fd_sv, fd_accept), "attach_reuseport(accept)");
++
++	if (sotype == SOCK_STREAM)
++		ASSERT_EQ(echo_test_tcp(*fd_sv), 0, "echo_tcp");
++	else
++		ASSERT_EQ(echo_test_udp(*fd_sv), 0, "echo_udp");
++
++	ASSERT_EQ(skel->bss->sk_cookie_seen, cookie(*fd_sv),
++		  "cookie_mismatch");
++	ASSERT_EQ(skel->bss->reuseport_executed, 1, "program executed once");
++cleanup:
++	if (tc_attached) {
++		tc_opts.flags = tc_opts.prog_fd = tc_opts.prog_id = 0;
++		ret = bpf_tc_detach(&tc_hook, &tc_opts);
++		ASSERT_OK(ret, "bpf_tc_detach");
++	}
++	if (hook_created) {
++		tc_hook.attach_point = BPF_TC_INGRESS | BPF_TC_EGRESS;
++		bpf_tc_hook_destroy(&tc_hook);
++	}
++	test_assign_reuse__destroy(skel);
++	free_fds(fd_sv, 1);
++}
++
++void test_assign_reuse(void)
++{
++	struct nstoken *tok = NULL;
++
++	SYS(out, "ip netns add %s", NS_TEST);
++	SYS(cleanup, "ip -net %s link set dev lo up", NS_TEST);
++
++	tok = open_netns(NS_TEST);
++	if (!ASSERT_OK_PTR(tok, "netns token"))
++		return;
++
++	if (test__start_subtest("tcpv4"))
++		run_assign_reuse(AF_INET, SOCK_STREAM, "127.0.0.1", PORT);
++	if (test__start_subtest("tcpv6"))
++		run_assign_reuse(AF_INET6, SOCK_STREAM, "::1", PORT);
++	if (test__start_subtest("udpv4"))
++		run_assign_reuse(AF_INET, SOCK_DGRAM, "127.0.0.1", PORT);
++	if (test__start_subtest("udpv6"))
++		run_assign_reuse(AF_INET6, SOCK_DGRAM, "::1", PORT);
++
++cleanup:
++	close_netns(tok);
++	SYS_NOFAIL("ip netns delete %s", NS_TEST);
++out:
++	return;
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_assign_reuse.c b/tools/testing/selftests/bpf/progs/test_assign_reuse.c
+new file mode 100644
+index 000000000000..4f2e2321ea06
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_assign_reuse.c
+@@ -0,0 +1,142 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2023 Isovalent */
++#include <stdbool.h>
++#include <linux/bpf.h>
++#include <linux/if_ether.h>
++#include <linux/in.h>
++#include <linux/ip.h>
++#include <linux/ipv6.h>
++#include <linux/tcp.h>
++#include <linux/udp.h>
++#include <bpf/bpf_endian.h>
++#include <bpf/bpf_helpers.h>
++#include <linux/pkt_cls.h>
++
++char LICENSE[] SEC("license") = "GPL";
++
++__u64 sk_cookie_seen;
++__u64 reuseport_executed;
++union {
++	struct tcphdr tcp;
++	struct udphdr udp;
++} headers;
++
++const volatile __u16 dest_port;
++
++struct {
++	__uint(type, BPF_MAP_TYPE_SOCKMAP);
++	__uint(max_entries, 1);
++	__type(key, __u32);
++	__type(value, __u64);
++} sk_map SEC(".maps");
++
++SEC("sk_reuseport")
++int reuse_accept(struct sk_reuseport_md *ctx)
++{
++	reuseport_executed++;
++
++	if (ctx->ip_protocol == IPPROTO_TCP) {
++		if (ctx->data + sizeof(headers.tcp) > ctx->data_end)
++			return SK_DROP;
++
++		if (__builtin_memcmp(&headers.tcp, ctx->data, sizeof(headers.tcp)) != 0)
++			return SK_DROP;
++	} else if (ctx->ip_protocol == IPPROTO_UDP) {
++		if (ctx->data + sizeof(headers.udp) > ctx->data_end)
++			return SK_DROP;
++
++		if (__builtin_memcmp(&headers.udp, ctx->data, sizeof(headers.udp)) != 0)
++			return SK_DROP;
++	} else {
++		return SK_DROP;
++	}
++
++	sk_cookie_seen = bpf_get_socket_cookie(ctx->sk);
++	return SK_PASS;
++}
++
++SEC("sk_reuseport")
++int reuse_drop(struct sk_reuseport_md *ctx)
++{
++	reuseport_executed++;
++	sk_cookie_seen = 0;
++	return SK_DROP;
++}
++
++static int
++assign_sk(struct __sk_buff *skb)
++{
++	int zero = 0, ret = 0;
++	struct bpf_sock *sk;
++
++	sk = bpf_map_lookup_elem(&sk_map, &zero);
++	if (!sk)
++		return TC_ACT_SHOT;
++	ret = bpf_sk_assign(skb, sk, 0);
++	bpf_sk_release(sk);
++	return ret ? TC_ACT_SHOT : TC_ACT_OK;
++}
++
++static bool
++maybe_assign_tcp(struct __sk_buff *skb, struct tcphdr *th)
++{
++	if (th + 1 > (void *)(long)(skb->data_end))
++		return TC_ACT_SHOT;
++
++	if (!th->syn || th->ack || th->dest != bpf_htons(dest_port))
++		return TC_ACT_OK;
++
++	__builtin_memcpy(&headers.tcp, th, sizeof(headers.tcp));
++	return assign_sk(skb);
++}
++
++static bool
++maybe_assign_udp(struct __sk_buff *skb, struct udphdr *uh)
++{
++	if (uh + 1 > (void *)(long)(skb->data_end))
++		return TC_ACT_SHOT;
++
++	if (uh->dest != bpf_htons(dest_port))
++		return TC_ACT_OK;
++
++	__builtin_memcpy(&headers.udp, uh, sizeof(headers.udp));
++	return assign_sk(skb);
++}
++
++SEC("tc")
++int tc_main(struct __sk_buff *skb)
++{
++	void *data_end = (void *)(long)skb->data_end;
++	void *data = (void *)(long)skb->data;
++	struct ethhdr *eth;
++
++	eth = (struct ethhdr *)(data);
++	if (eth + 1 > data_end)
++		return TC_ACT_SHOT;
++
++	if (eth->h_proto == bpf_htons(ETH_P_IP)) {
++		struct iphdr *iph = (struct iphdr *)(data + sizeof(*eth));
++
++		if (iph + 1 > data_end)
++			return TC_ACT_SHOT;
++
++		if (iph->protocol == IPPROTO_TCP)
++			return maybe_assign_tcp(skb, (struct tcphdr *)(iph + 1));
++		else if (iph->protocol == IPPROTO_UDP)
++			return maybe_assign_udp(skb, (struct udphdr *)(iph + 1));
++		else
++			return TC_ACT_SHOT;
++	} else {
++		struct ipv6hdr *ip6h = (struct ipv6hdr *)(data + sizeof(*eth));
++
++		if (ip6h + 1 > data_end)
++			return TC_ACT_SHOT;
++
++		if (ip6h->nexthdr == IPPROTO_TCP)
++			return maybe_assign_tcp(skb, (struct tcphdr *)(ip6h + 1));
++		else if (ip6h->nexthdr == IPPROTO_UDP)
++			return maybe_assign_udp(skb, (struct udphdr *)(ip6h + 1));
++		else
++			return TC_ACT_SHOT;
++	}
++}
 
 -- 
 2.40.1
