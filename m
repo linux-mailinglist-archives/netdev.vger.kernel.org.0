@@ -1,73 +1,94 @@
-Return-Path: <netdev+bounces-10527-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10528-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DDC0672EDA9
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 23:09:48 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 69C8472EDB8
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 23:14:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 96EF6280FEE
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 21:09:47 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 945881C2087E
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 21:14:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0D9553D393;
-	Tue, 13 Jun 2023 21:09:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9AC813D388;
+	Tue, 13 Jun 2023 21:14:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59490174FA;
-	Tue, 13 Jun 2023 21:09:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1CA2C433C0;
-	Tue, 13 Jun 2023 21:09:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686690580;
-	bh=CnDPIeLogwBWCfXwDFCGYSnn6freMhcPiMKmnauZmK8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZwHrH/UtQy5gtJuV6CZdRxLuHzTaAkiUGIx/JgEU65AMLsBIKZ0sWdlw1vTEQYgdy
-	 gSLYt19YIoeRBe5zYzLlgTuRTMMo3kgRmlRYZUwN9+y0DX2gj67q8Dp8pJtQUo0gHp
-	 Oy60KuQPQMSSexOGqUQrMmT3Fgb1GBewXzaMMxDEmcoyUN9bNnKzEk/bEsVagentbs
-	 IrjokONRoY0TE+yzqvQqq0avTQyKOfbb7gZycLtP7znx6sVR7tnvKBFHLqFKSVwEs2
-	 kIA6GPsL9JTaWmKMWc1Wdyo1oerK/huG9zsVu6RfIYfLEAg8ULTJ9IL3DRtm5ddTXF
-	 JrMlJp241w1cA==
-Date: Wed, 14 Jun 2023 00:09:00 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Song Liu <song@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-	linux-kernel@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E6A91ED43
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 21:14:39 +0000 (UTC)
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E0010FE;
+	Tue, 13 Jun 2023 14:14:38 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id 4fb4d7f45d1cf-5187aa14e3bso1087083a12.3;
+        Tue, 13 Jun 2023 14:14:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686690876; x=1689282876;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=wCuc+FlADiTMcvu0ZKdgfUJS8/hlu9Jz0EWmI6QBs/w=;
+        b=fTHPU208W9abwrG+qKSEMf7zmA/STf4r4Chc+TNY2R9fpzmKKiuT6RiBOUh30sRtnD
+         hABgXXFbpIl+cUHi/WliVd2nF2u6Hg/a4DGs0jZG9wQagdZa5/2c6py6QrrVRJr7Jh6R
+         lBTfdQXMMjzuZ9nVvw28sRUd6E1qYeXvXL6/X89ymfbRLXcuar6y+rkS63J9NYO02Awd
+         v07khBXGtqLSB5f/nKNNrdymP+pjcwoZFEfGWDnolpeWNItMXMHyt8wJS1g+QTMcnufd
+         tK0oWotaQm4nLYr6TwK/eh3Qj52joSQ1CHY80eOrDUqjwnXyY95lX5SE6DF3wtbYqahg
+         tYUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686690876; x=1689282876;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wCuc+FlADiTMcvu0ZKdgfUJS8/hlu9Jz0EWmI6QBs/w=;
+        b=Brhgq6CkDy6OhW7SvPsE3G5D4lS1cynzOQbatIE1IzpmgGvFU2nxIwsvYLoptgmsuv
+         46E0hklP1MaVcEGfX0Yol2jGxyB6MKJBrQKZtuGCZ9X8yyc6wg8xPu+9F5U0RqDdxJHU
+         +m0rSN3VJ9JSkqVv2y1c3ltYeiLONpNkp9gV8KAAZEU4DTeV0sbgkzw4vUACbGndRKQ/
+         5iTOrYsIUYDu9jVY8/cI07frdxmZn6HRyvwS2nsaT2nyLNySTp2+204d/VvOTAFBNqHL
+         vZWPEl2jB5RHNaRPG8pmA3bhubKjhbV1wn/QbEa4eHlX0qP/GHrd6TCuHRbIYOldS622
+         YPAg==
+X-Gm-Message-State: AC+VfDz1qM3rkZRaX6ul7oNpIVf+YxJagUpDH3gOEiZsHXnVQek3IzrH
+	vrmKHcIUcpWbCF+0uIOpURI=
+X-Google-Smtp-Source: ACHHUZ7qgio6yxDds7lzF4gz6IIwexPIk056MxOhIa6BWDjQGY1a6VOdreOm3IyplH/vCjIz4uC16g==
+X-Received: by 2002:a05:6402:1819:b0:514:9d3f:7a60 with SMTP id g25-20020a056402181900b005149d3f7a60mr7980046edy.14.1686690876293;
+        Tue, 13 Jun 2023 14:14:36 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id v26-20020aa7dbda000000b0050cc4461fc5sm6839752edt.92.2023.06.13.14.14.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Jun 2023 14:14:35 -0700 (PDT)
+Date: Wed, 14 Jun 2023 00:14:32 +0300
+From: Vladimir Oltean <olteanv@gmail.com>
+To: =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc: Daniel Golle <daniel@makrotopia.org>,
+	Landen Chao <Landen.Chao@mediatek.com>,
+	DENG Qingfang <dqfext@gmail.com>,
+	Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
 	"David S. Miller" <davem@davemloft.net>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
 	Russell King <linux@armlinux.org.uk>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
-	bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-mips@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, linux-parisc@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	loongarch@lists.linux.dev, netdev@vger.kernel.org,
-	sparclinux@vger.kernel.org, x86@kernel.org
-Subject: Re: [PATCH 00/13] mm: jit/text allocator
-Message-ID: <20230613210900.GV52412@kernel.org>
-References: <20230601101257.530867-1-rppt@kernel.org>
- <ZHjDU/mxE+cugpLj@FVFF77S0Q05N.cambridge.arm.com>
- <ZHjgIH3aX9dCvVZc@moria.home.lan>
- <ZHm3zUUbwqlsZBBF@FVFF77S0Q05N>
- <20230605092040.GB3460@kernel.org>
- <ZH20XkD74prrdN4u@FVFF77S0Q05N>
- <CAPhsuW7ntn_HpVWdGK_hYVd3zsPEFToBNfmtt0m6K8SwfxJ66Q@mail.gmail.com>
- <20230608184116.GJ52412@kernel.org>
- <ZIi7zmey0w61EG25@moria.home.lan>
+	Frank Wunderlich <frank-w@public-files.de>,
+	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
+	mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net v2 2/7] net: dsa: mt7530: fix trapping frames with
+ multiple CPU ports on MT7530
+Message-ID: <20230613211432.dc66py7nh34ehiv4@skbuf>
+References: <a91e88a8-c528-0392-1237-fc8417931170@arinc9.com>
+ <20230613171858.ybhtlwxqwp7gyrfs@skbuf>
+ <20230613172402.grdpgago6in4jogq@skbuf>
+ <ca78b2f9-bf98-af26-0267-60d2638f7f00@arinc9.com>
+ <20230613173908.iuofbuvkanwyr7as@skbuf>
+ <edcbe326-c456-06ef-373b-313e780209de@arinc9.com>
+ <20230613201850.5g4u3wf2kllmlk27@skbuf>
+ <4a2fb3ac-ccad-f56e-4951-e5a5cb80dd1b@arinc9.com>
+ <20230613205915.rmpuqq7ahmd7taeq@skbuf>
+ <dd0d716e-8fdc-b6dc-3870-e7e524e8bf49@arinc9.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -77,58 +98,29 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZIi7zmey0w61EG25@moria.home.lan>
+In-Reply-To: <dd0d716e-8fdc-b6dc-3870-e7e524e8bf49@arinc9.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Tue, Jun 13, 2023 at 02:56:14PM -0400, Kent Overstreet wrote:
-> On Thu, Jun 08, 2023 at 09:41:16PM +0300, Mike Rapoport wrote:
-> > On Tue, Jun 06, 2023 at 11:21:59AM -0700, Song Liu wrote:
-> > > On Mon, Jun 5, 2023 at 3:09 AM Mark Rutland <mark.rutland@arm.com> wrote:
-> > > 
-> > > [...]
-> > > 
-> > > > > > > Can you give more detail on what parameters you need? If the only extra
-> > > > > > > parameter is just "does this allocation need to live close to kernel
-> > > > > > > text", that's not that big of a deal.
-> > > > > >
-> > > > > > My thinking was that we at least need the start + end for each caller. That
-> > > > > > might be it, tbh.
-> > > > >
-> > > > > Do you mean that modules will have something like
-> > > > >
-> > > > >       jit_text_alloc(size, MODULES_START, MODULES_END);
-> > > > >
-> > > > > and kprobes will have
-> > > > >
-> > > > >       jit_text_alloc(size, KPROBES_START, KPROBES_END);
-> > > > > ?
-> > > >
-> > > > Yes.
-> > > 
-> > > How about we start with two APIs:
-> > >      jit_text_alloc(size);
-> > >      jit_text_alloc_range(size, start, end);
-> > > 
-> > > AFAICT, arm64 is the only arch that requires the latter API. And TBH, I am
-> > > not quite convinced it is needed.
-> >  
-> > Right now arm64 and riscv override bpf and kprobes allocations to use the
-> > entire vmalloc address space, but having the ability to allocate generated
-> > code outside of modules area may be useful for other architectures.
-> > 
-> > Still the start + end for the callers feels backwards to me because the
-> > callers do not define the ranges, but rather the architectures, so we still
-> > need a way for architectures to define how they want allocate memory for
-> > the generated code.
+On Wed, Jun 14, 2023 at 12:04:10AM +0300, Arınç ÜNAL wrote:
+> Because I don't see the latter patch as a fix. It treats the symptom, not
+> the cause.
 > 
-> So, the start + end just comes from the need to keep relative pointers
-> under a certain size. I think this could be just a flag, I see no reason
-> to expose actual addresses here.
+> Anyway, I'm fine with taking this patch from this series and put it on my
+> series for net-next instead.
 
-It's the other way around. The start + end comes from the need to restrict
-allocation to certain range because of the relative addressing. I don't see
-how a flag can help here.
+Right, but what seems to have been the case during the net.git
+(and linux-stable.git) triage so far is that user impact matters.
+A configuration that works by coincidence and not by intention, but
+otherwise works reliably, still works, at the end of the day.
 
--- 
-Sincerely yours,
-Mike.
+If you read the weekly net.git pull requests sent to Linus Torvalds,
+you'll see that maintainers try to make a summary of what had to be
+changed and why. There isn't really a strong reason why this patch *has*
+to be in those pull requests. That's kind of the mindset of what makes
+"stable" "stable".
 
