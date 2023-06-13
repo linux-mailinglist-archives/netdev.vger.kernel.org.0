@@ -1,206 +1,207 @@
-Return-Path: <netdev+bounces-10452-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10453-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6AF1172E8E8
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 19:00:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id BEF0B72E903
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 19:08:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DC200281116
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 17:00:05 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E4C6F28114C
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 17:08:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE69A2DBCE;
-	Tue, 13 Jun 2023 16:59:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F16732DBD8;
+	Tue, 13 Jun 2023 17:08:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C245133E3
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 16:59:51 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B26123
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 09:59:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686675589;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=j04GnjVnV6VhU15tbBAUt5ncRnXCPvNX2dvFYsA/gBk=;
-	b=XSbZAdkwyM+AlyeJLB2ZpNP7umc1NTwCjHptKoRT8birC5ym/7gclnWisrJFFy8I9fRDSI
-	LQWrcGoxpg+7pjubqOYRTORJOF08LxhC0tgpL1spcaVOF6t6L3tdTbXRK6Z3nIuSPkN5Xi
-	IiSEnmYkn9aO/Io2w9sjSu4XDcmAxSA=
-Received: from mail-yw1-f199.google.com (mail-yw1-f199.google.com
- [209.85.128.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-12-J0NcNTPgPf-dmu9nTljfBQ-1; Tue, 13 Jun 2023 12:59:48 -0400
-X-MC-Unique: J0NcNTPgPf-dmu9nTljfBQ-1
-Received: by mail-yw1-f199.google.com with SMTP id 00721157ae682-5651d8acfe2so93809267b3.2
-        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 09:59:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686675587; x=1689267587;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=j04GnjVnV6VhU15tbBAUt5ncRnXCPvNX2dvFYsA/gBk=;
-        b=Xfj9mkoy3kUE9dv3HfTR/Qty2johmmMlShdzNZ2BFqzC1Ubg+15sZcfFme1tjf6klb
-         Ubt+8frjmyDhn9RBbaOqjBwjHKyIHX1gcFv/B/5iQUx85+GRci2MjC1yFXC95MJQMsRo
-         sKu0AzrJIjpiKqnD2kxcjTblCyfs0WT0+Tq4UBHowQ6bY+MK7Z5iWY5F2WOFnfSVhhYs
-         S4gNWo0RmvZaop2tXRBSgzOVH0PhA+dcvtSH6O27pAhPcY43XoEQ/zC+FdHb0Cce3zNB
-         4YEeuRr6K7y8/Yq2L8b4nSEIwz+fD+EXzReexY1DoahvHT6rbV2K4ofX4xXGuOCJeK8Z
-         6r7g==
-X-Gm-Message-State: AC+VfDyp3soRVa+lFySvSWs9nVpub+sYvFVkFyzDEjRDpEI4n9SHzPUL
-	I5dl+k1nhFHSWZNlBuKZP9uJtV0+Alviski3of8d1LXLe+FxBzBPURRAoDo6hAX+TLKpN79V7X7
-	tsQNYbTxME4ireY5y
-X-Received: by 2002:a81:738b:0:b0:565:e48d:32cf with SMTP id o133-20020a81738b000000b00565e48d32cfmr2533627ywc.7.1686675587351;
-        Tue, 13 Jun 2023 09:59:47 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7O9u46bkmq9uCzDtwjiCxY77/JvONfFU/2txtnkFyT64oc8V6fa+eQ8cwyObh374VppqoV4w==
-X-Received: by 2002:a81:738b:0:b0:565:e48d:32cf with SMTP id o133-20020a81738b000000b00565e48d32cfmr2533610ywc.7.1686675587072;
-        Tue, 13 Jun 2023 09:59:47 -0700 (PDT)
-Received: from halaney-x13s ([2600:1700:1ff0:d0e0::45])
-        by smtp.gmail.com with ESMTPSA id s7-20020a0de907000000b005688f7596ccsm1699074ywe.78.2023.06.13.09.59.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jun 2023 09:59:46 -0700 (PDT)
-Date: Tue, 13 Jun 2023 11:59:43 -0500
-From: Andrew Halaney <ahalaney@redhat.com>
-To: Bartosz Golaszewski <brgl@bgdev.pl>
-Cc: Vinod Koul <vkoul@kernel.org>,
-	Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-	Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Kishon Vijay Abraham I <kishon@kernel.org>,
-	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: Re: [PATCH 16/26] net: stmmac: dwmac-qcom-ethqos: prepare the driver
- for more PHY modes
-Message-ID: <20230613165943.zjr4b4p44jhl2dtx@halaney-x13s>
-References: <20230612092355.87937-1-brgl@bgdev.pl>
- <20230612092355.87937-17-brgl@bgdev.pl>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD2A033E3
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 17:08:54 +0000 (UTC)
+Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CBE1BCD;
+	Tue, 13 Jun 2023 10:08:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1686676090; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=ePQ8T8JP2PNFjJ5BwhC8rVkwMI84+f2z/Zg2i1rwTA1eZ1J3vuAZLrD/NRZS/Y2gk/M+HJpV7ABw0/wyKMKPAokA8e2kmpZ0ZI9b2S2cYBF0yO8wKNh6j3vL4VzLoxh6q8MBRkp8qKks5vYCAdc4vIXYJBhZ+c1AeaWMMTaNzwc=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1686676090; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+	bh=rs4XusAan9L2M35MEuiSnW7ruND0UoH2sge7OhY5PEg=; 
+	b=CWX0/lQBXyCBOuZDqg6mw/97xqpB6hNZqQXcJyoakqUGesqA71DIgL3A5xLe4Z98MGOAZZlyMpUudjRqnjahnL57nU/o8djYU1Q5VXEsbCrFZJqFf/b78QA+r7XEmLQInfmZfPVAXRwkdl6sMwSQqsUyoTGxCEEhlsbzxaVmRoA=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=arinc9.com;
+	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+	dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1686676090;
+	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=rs4XusAan9L2M35MEuiSnW7ruND0UoH2sge7OhY5PEg=;
+	b=JWJeZw27NRwZgBoVZXXjufBh/J9ZVZogf9Op5CDmjk+/vXcZY2GYJQVhB5kBMzvU
+	2xpHv09IFs8xQnYK8aDA5DEjeUrUO1uph/kjA50Et2qoMyeJbZvtMiNaVfoxsUOWQtc
+	kCGzCVu0LX34KwjE7T/up38/lagnJGhj4VL+Cn38=
+Received: from [192.168.1.248] (178-147-169-233.haap.dm.cosmote.net [178.147.169.233]) by mx.zohomail.com
+	with SMTPS id 168667608891134.02011713856268; Tue, 13 Jun 2023 10:08:08 -0700 (PDT)
+Message-ID: <4acff981-c6a9-ac10-d6e5-888386b418ed@arinc9.com>
+Date: Tue, 13 Jun 2023 20:07:59 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230612092355.87937-17-brgl@bgdev.pl>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH net v2 1/7] net: dsa: mt7530: fix trapping frames with
+ multiple CPU ports on MT7531
+Content-Language: en-US
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: Daniel Golle <daniel@makrotopia.org>,
+ Landen Chao <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
+ Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
+ Florian Fainelli <f.fainelli@gmail.com>, Vladimir Oltean
+ <olteanv@gmail.com>, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Frank Wunderlich <frank-w@public-files.de>,
+ Bartel Eerdekens <bartel.eerdekens@constell8.be>, mithat.guner@xeront.com,
+ erkin.bozoglu@xeront.com, linux-kernel@vger.kernel.org,
+ netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org
+References: <20230611081547.26747-1-arinc.unal@arinc9.com>
+ <ZIXwc0V5Ye6xrpmn@shell.armlinux.org.uk>
+ <9d571682-7271-2a5e-8079-900d14a5d7cd@arinc9.com>
+ <ZIbuxohDqHA0S7QP@shell.armlinux.org.uk>
+From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <ZIbuxohDqHA0S7QP@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 12, 2023 at 11:23:45AM +0200, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+On 12.06.2023 13:09, Russell King (Oracle) wrote:
+> On Mon, Jun 12, 2023 at 09:40:45AM +0300, Arınç ÜNAL wrote:
+>> On 11.06.2023 19:04, Russell King (Oracle) wrote:
+>>> On Sun, Jun 11, 2023 at 11:15:41AM +0300, Arınç ÜNAL wrote:
+>>>> Every bit of the CPU port bitmap for MT7531 and the switch on the MT7988
+>>>> SoC represents a CPU port to trap frames to. These switches trap frames to
+>>>> the CPU port the user port, which the frames are received from, is affine
+>>>> to.
+>>>
+>>> I think you need to reword that, because at least I went "err what" -
+>>> especially the second sentence!
+>>
+>> Sure, how does this sound:
+>>
+>> These switches trap frames to the CPU port that is affine to the user port
+>> from which the frames are received.
 > 
-> In preparation for supporting SGMII, let's make the code a bit more
-> generic. Add a new callback for MAC configuration so that we can assign
-> a different variant of it in the future.
-> 
-> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> "... to the inbound user port." I think that's a better way to describe
+> "user port from which the frames are received."
 
-Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
+Sounds good to me.
 
-> ---
->  .../stmicro/stmmac/dwmac-qcom-ethqos.c        | 31 ++++++++++++++++---
->  1 file changed, 26 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-> index 21f329d2f7eb..2f96f2c11278 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-> @@ -92,12 +92,14 @@ struct ethqos_emac_driver_data {
->  struct qcom_ethqos {
->  	struct platform_device *pdev;
->  	void __iomem *rgmii_base;
-> +	int (*configure_func)(struct qcom_ethqos *ethqos);
->  
->  	unsigned int rgmii_clk_rate;
->  	struct clk *rgmii_clk;
->  	struct clk *phyaux_clk;
->  	struct phy *serdes_phy;
->  	unsigned int speed;
-> +	int phy_mode;
->  
->  	const struct ethqos_emac_por *por;
->  	unsigned int num_por;
-> @@ -332,13 +334,11 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
->  {
->  	struct device *dev = &ethqos->pdev->dev;
->  	int phase_shift;
-> -	int phy_mode;
->  	int loopback;
->  
->  	/* Determine if the PHY adds a 2 ns TX delay or the MAC handles it */
-> -	phy_mode = device_get_phy_mode(dev);
-> -	if (phy_mode == PHY_INTERFACE_MODE_RGMII_ID ||
-> -	    phy_mode == PHY_INTERFACE_MODE_RGMII_TXID)
-> +	if (ethqos->phy_mode == PHY_INTERFACE_MODE_RGMII_ID ||
-> +	    ethqos->phy_mode == PHY_INTERFACE_MODE_RGMII_TXID)
->  		phase_shift = 0;
->  	else
->  		phase_shift = RGMII_CONFIG2_TX_CLK_PHASE_SHIFT_EN;
-> @@ -485,7 +485,7 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
->  	return 0;
->  }
->  
-> -static int ethqos_configure(struct qcom_ethqos *ethqos)
-> +static int ethqos_configure_rgmii(struct qcom_ethqos *ethqos)
->  {
->  	struct device *dev = &ethqos->pdev->dev;
->  	volatile unsigned int dll_lock;
-> @@ -561,6 +561,11 @@ static int ethqos_configure(struct qcom_ethqos *ethqos)
->  	return 0;
->  }
->  
-> +static int ethqos_configure(struct qcom_ethqos *ethqos)
-> +{
-> +	return ethqos->configure_func(ethqos);
-> +}
-> +
->  static void ethqos_fix_mac_speed(void *priv, unsigned int speed)
->  {
->  	struct qcom_ethqos *ethqos = priv;
-> @@ -660,6 +665,22 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
->  		goto out_config_dt;
->  	}
->  
-> +	ethqos->phy_mode = device_get_phy_mode(dev);
-> +	switch (ethqos->phy_mode) {
-> +	case PHY_INTERFACE_MODE_RGMII:
-> +	case PHY_INTERFACE_MODE_RGMII_ID:
-> +	case PHY_INTERFACE_MODE_RGMII_RXID:
-> +	case PHY_INTERFACE_MODE_RGMII_TXID:
-> +		ethqos->configure_func = ethqos_configure_rgmii;
-> +		break;
-> +	case -ENODEV:
-> +		ret = -ENODEV;
-> +		goto out_config_dt;
-> +	default:
-> +		ret = -EINVAL;
-> +		goto out_config_dt;
-> +	}
-> +
->  	ethqos->pdev = pdev;
->  	ethqos->rgmii_base = devm_platform_ioremap_resource_byname(pdev, "rgmii");
->  	if (IS_ERR(ethqos->rgmii_base)) {
-> -- 
-> 2.39.2
+> However, I'm still struggling to understand what the overall message for
+> this entire commit log actually is.
 > 
+> The actual affinity of the user ports seems to be not relevant, but this
+> commit is more about telling the switch which of its ports are CPU
+> ports.
 
+Yes, I also add a comment to explain how frame trapping works. The user 
+port - CPU port affinity is only relevant there.
+
+> 
+> So, if the problem is that we only end up with a single port set as a
+> CPU port when there are multiple, isn't it going to be better to say
+> something like:
+> 
+> "For MT7531 and the switch on MT7988, we are not correctly indicating
+> which ports are CPU ports when we have more than one CPU port. In order
+> to solve this, we need to set multiple bits in the XYZ register so the
+> switch will trap frames to the appropriate CPU port for frames received
+> on the inbound user port.
+
+Yes, I'll replace this with the second paragraph.
+
+> 
+>>>> Currently, only the bit that corresponds to the first found CPU port is set
+>>>> on the bitmap.
+>>>
+>>> Ok.
+>>>
+>>>> When multiple CPU ports are being used, frames from the user
+>>>> ports affine to the other CPU port which are set to be trapped will be
+>>>> dropped as the affine CPU port is not set on the bitmap.
+>>>
+>>> Hmm. I think this is trying to say:
+>>>
+>>> "When multiple CPU ports are being used, trapped frames from user ports
+>>> not affine to the first CPU port will be dropped we do not set these
+>>> ports as being affine to the second CPU port."
+>>
+>> Yes but it's not the affinity we set here. It's to enable the CPU port for
+>> trapping.
+> 
+> In light of that, is the problem that we only enable one CPU port to
+> receive trapped frames from their affine user ports?
+
+Yes.
+
+> 
+>>>> Only the MT7531
+>>>> switch is affected as there's only one port to be used as a CPU port on the
+>>>> switch on the MT7988 SoC.
+>>>
+>>> Erm, hang on. The previous bit indicated there was a problem when there
+>>> are multiple CPU ports, but here you're saying that only one switch is
+>>> affected - and that switch has only one CPU port. This at the very least
+>>> raises eyebrows, because it's just contradicted the first part
+>>> explaining when there's a problem.
+>>
+>> I meant to say, since I already explained at the start of the patch log that
+>> this patch changes the bits of the CPU port bitmap for MT7531 and the switch
+>> on the MT7988 SoC, only MT7531 is affected as there's only a single CPU port
+>> on the switch on the MT7988 SoC. So the switch on the MT7988 SoC cannot be
+>> affected.
+> 
+> 
+> 
+>>
+>>>
+>>>> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+>>>> index 9bc54e1348cb..8ab4718abb06 100644
+>>>> --- a/drivers/net/dsa/mt7530.c
+>>>> +++ b/drivers/net/dsa/mt7530.c
+>>>> @@ -1010,6 +1010,14 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
+>>>>    	if (priv->id == ID_MT7621)
+>>>>    		mt7530_rmw(priv, MT7530_MFC, CPU_MASK, CPU_EN | CPU_PORT(port));
+>>>> +	/* Add the CPU port to the CPU port bitmap for MT7531 and the switch on
+>>>> +	 * the MT7988 SoC. Any frames set for trapping to CPU port will be
+>>>> +	 * trapped to the CPU port the user port, which the frames are received
+>>>> +	 * from, is affine to.
+>>>
+>>> Please reword the second sentence.
+>>
+>> Any frames set for trapping to CPU port will be trapped to the CPU port that
+>> is affine to the user port from which the frames are received.
+> 
+> Too many "port"s. Would:
+> 
+> "Add this port to the CPU port bitmap for the MT7531 and switch on the
+> MT7988. Trapped frames will be sent to the CPU port that is affine to
+> the inbound user port."
+> 
+> explain it better?
+
+Sounds good.
+
+Arınç
 
