@@ -1,73 +1,48 @@
-Return-Path: <netdev+bounces-10282-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10286-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 50C2772D8D0
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 06:54:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D271772D8F1
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 07:05:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8B9DB1C20C0F
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 04:54:13 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1A10B1C20BF3
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 05:05:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5FA0B23CD;
-	Tue, 13 Jun 2023 04:53:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 168B717F2;
+	Tue, 13 Jun 2023 05:05:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B7A323C4
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 04:53:38 +0000 (UTC)
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A1210DF;
-	Mon, 12 Jun 2023 21:53:36 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id d9443c01a7336-1b3ecb17721so385215ad.0;
-        Mon, 12 Jun 2023 21:53:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686632016; x=1689224016;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7D7KD+4/hvSzq7CFXPABTFsWyQuluvzVlksOwlgt0j4=;
-        b=lBt7XkrWoWv4WtbnZEMyO+/Ha6V5eGYfdnP3Kzg2oJj0twC7C6ccryxk9+LyDemmPj
-         JOS3LdIiVUSdcl9LKXAuCvb79EjI/NbjqSpo6YoFZgCwBWxl6u1qT7Y/sT1SS+a7dO62
-         qQGkjvP+rtq3AMxWSEcfjbK5sRX0S5dgI9h8T9rQiOqQKUErPP52p4/ODLxz9p6wVUiy
-         9BOt2qp/F3F7ho3ecmxxZJbp965EtG0HIvR/zQ9s26bg+UCM45EMrDNJ5KBg33ObDA+3
-         mzpi4hwf/DNXWQlFWpwcE96dd2Y7LtYyFbILBul+sXmGNnXT9ixxFk/EmW2XS8Uq01Qk
-         Zufg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686632016; x=1689224016;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=7D7KD+4/hvSzq7CFXPABTFsWyQuluvzVlksOwlgt0j4=;
-        b=CqjZi3UcjNpDXEgH7pNdcN+w1Btn7fvtJJug3opMGaMxHz7f8GTFBU7WbjHng1GY6S
-         aekJqCnFxn4k7MtvUCN3aQblmYnTvCJ8kEc5tlvCze3eyTfb2LeiGSlHYFZ6BG+9sW3s
-         5sr5L3pbYDs18MFYwVqp7lbszsAxKsevFKsaJoq01SbvOAWH/kW6N7X3oj+d2QhbG4s0
-         +5kSjYTE+P2Mq2HEFPNEEbh9/Z35fo9oyhJtPJG3Gcy6gv1NhMj5oIKIo4nvWICcmUa2
-         ynKwW1PQa6rdtoPHHubJhCIjiZxnu1Bz+WuXizwbqPi85gG33YUJdg+EV8hPMcxcm5g2
-         rN1g==
-X-Gm-Message-State: AC+VfDz8c3J+OXUtIZVl5rS70NL52iziQjB3o4Z7tEpP2DR7lxLOpSIy
-	h4MjWl0Yqhbjhbo1iJLVbXcyTt37NDO+bMZA
-X-Google-Smtp-Source: ACHHUZ44OEkRfiOJ41O+zs4PNyrhQqZG9RkIftnA1tvpJkvTqJBrVSk69FN0hR8Bu+rTPCzNesUPbg==
-X-Received: by 2002:a17:902:e844:b0:1b3:ebda:654e with SMTP id t4-20020a170902e84400b001b3ebda654emr1013355plg.5.1686632015580;
-        Mon, 12 Jun 2023 21:53:35 -0700 (PDT)
-Received: from ip-172-30-47-114.us-west-2.compute.internal (ec2-54-68-170-188.us-west-2.compute.amazonaws.com. [54.68.170.188])
-        by smtp.gmail.com with ESMTPSA id c5-20020a170902c1c500b001b027221393sm9095249plc.43.2023.06.12.21.53.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Jun 2023 21:53:34 -0700 (PDT)
-From: FUJITA Tomonori <fujita.tomonori@gmail.com>
-To: netdev@vger.kernel.org
-Cc: rust-for-linux@vger.kernel.org,
-	aliceryhl@google.com,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9EAC361
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 05:05:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D51F9C433EF;
+	Tue, 13 Jun 2023 05:05:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686632714;
+	bh=G1AcsXYOaK/B1iouG4Dkguc1hTkwYhq/CDgIDuw5eYU=;
+	h=From:To:Cc:Subject:Date:From;
+	b=nuQQB4/4qrUDWKoJmQ6STIAVN2kSDTZvolInWb7ymrtH5IOxeq2G7KLKWXiPgmCEv
+	 9I/cdgp7iYlBuDplc6yo3k2ZNButQB6MMWh12qVQP2QkERYNusNzGb2D3A6O7z5kYe
+	 hgjFql/y4JFCOgywxsnITFMeDsWIDxIwcJcWfbbwMTKtAulNIjGc6e0pq40N9j3yvp
+	 +P3y9gGT57rjUF+YWOeBwTj0ON81Wv5DN534e8ijdUnMPbYNg30UNQ5IhG/MPMGFN3
+	 I4aq7v7SloZhwAZ2Rt1KgBGRw6W8cRVe6yI4Oy6S00uZwCoRT5bqWM/3R4rYNre/8A
+	 Hx9hTt+LlgiXw==
+From: Jakub Kicinski <kuba@kernel.org>
+To: mkubecek@suse.cz,
+	idosch@nvidia.com
+Cc: danieller@nvidia.com,
+	netdev@vger.kernel.org,
+	vladyslavt@nvidia.com,
+	linux@armlinux.org.uk,
 	andrew@lunn.ch,
-	miguel.ojeda.sandonis@gmail.com
-Subject: [PATCH 5/5] samples: rust: add dummy network driver
-Date: Tue, 13 Jun 2023 13:53:26 +0900
-Message-Id: <20230613045326.3938283-6-fujita.tomonori@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230613045326.3938283-1-fujita.tomonori@gmail.com>
-References: <20230613045326.3938283-1-fujita.tomonori@gmail.com>
+	Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH ethtool-next v2 1/2] sff-8636: report LOL / LOS / Tx Fault
+Date: Mon, 12 Jun 2023 22:05:06 -0700
+Message-Id: <20230613050507.1899596-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -75,163 +50,141 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-This is a simpler version of drivers/net/dummy.c.
+Report whether Loss of Lock, of Signal and Tx Faults were detected.
+Print "None" in case no lane has the problem, and per-lane "Yes" /
+"No" if at least one of the lanes reports true.
 
-This demonstrates the usage of abstractions for network device drivers.
-
-Allows allocator_api feature for Box::try_new();
-
-Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- samples/rust/Kconfig           | 12 +++++
- samples/rust/Makefile          |  1 +
- samples/rust/rust_net_dummy.rs | 81 ++++++++++++++++++++++++++++++++++
- scripts/Makefile.build         |  2 +-
- 4 files changed, 95 insertions(+), 1 deletion(-)
- create mode 100644 samples/rust/rust_net_dummy.rs
+v2: fix Rx / Tx for the "implemented" bit
+v1: https://lore.kernel.org/all/20230609004400.1276734-1-kuba@kernel.org/
+---
+ qsfp.c       | 30 ++++++++++++++++++++++++++++++
+ qsfp.h       |  8 ++++++++
+ sff-common.c | 17 +++++++++++++++++
+ sff-common.h |  2 ++
+ 4 files changed, 57 insertions(+)
 
-diff --git a/samples/rust/Kconfig b/samples/rust/Kconfig
-index b0f74a81c8f9..8b52ba620ae3 100644
---- a/samples/rust/Kconfig
-+++ b/samples/rust/Kconfig
-@@ -30,6 +30,18 @@ config SAMPLE_RUST_PRINT
+diff --git a/qsfp.c b/qsfp.c
+index 1fe5de1a863f..5a535c5c092b 100644
+--- a/qsfp.c
++++ b/qsfp.c
+@@ -872,6 +872,35 @@ static void sff8636_show_dom(const struct sff8636_memory_map *map)
+ 	}
+ }
  
- 	  If unsure, say N.
- 
-+config SAMPLE_RUST_NET_DUMMY
-+	tristate "Dummy network driver"
-+	depends on NET
-+	help
-+	  This is the simpler version of drivers/net/dummy.c. No intention to replace it.
-+	  This provides educational information for Rust abstractions for network drivers.
++static void sff8636_show_signals(const struct sff8636_memory_map *map)
++{
++	unsigned int v;
 +
-+	  To compile this as a module, choose M here:
-+	  the module will be called rust_minimal.
++	/* There appears to be no Rx LOS support bit, use Tx for both */
++	if (map->page_00h[SFF8636_OPTION_4_OFFSET] & SFF8636_O4_TX_LOS) {
++		v = map->lower_memory[SFF8636_LOS_AW_OFFSET] & 0xf;
++		sff_show_lane_status("Rx loss of signal", 4, "Yes", "No", v);
++		v = map->lower_memory[SFF8636_LOS_AW_OFFSET] >> 4;
++		sff_show_lane_status("Tx loss of signal", 4, "Yes", "No", v);
++	}
 +
-+	  If unsure, say N.
++	v = map->lower_memory[SFF8636_LOL_AW_OFFSET] & 0xf;
++	if (map->page_00h[SFF8636_OPTION_3_OFFSET] & SFF8636_O3_RX_LOL)
++		sff_show_lane_status("Rx loss of lock", 4, "Yes", "No", v);
 +
- config SAMPLE_RUST_HOSTPROGS
- 	bool "Host programs"
- 	help
-diff --git a/samples/rust/Makefile b/samples/rust/Makefile
-index 03086dabbea4..440dee2971ba 100644
---- a/samples/rust/Makefile
-+++ b/samples/rust/Makefile
-@@ -2,5 +2,6 @@
- 
- obj-$(CONFIG_SAMPLE_RUST_MINIMAL)		+= rust_minimal.o
- obj-$(CONFIG_SAMPLE_RUST_PRINT)			+= rust_print.o
-+obj-$(CONFIG_SAMPLE_RUST_NET_DUMMY)		+= rust_net_dummy.o
- 
- subdir-$(CONFIG_SAMPLE_RUST_HOSTPROGS)		+= hostprogs
-diff --git a/samples/rust/rust_net_dummy.rs b/samples/rust/rust_net_dummy.rs
-new file mode 100644
-index 000000000000..6c49a7ba7ba2
---- /dev/null
-+++ b/samples/rust/rust_net_dummy.rs
-@@ -0,0 +1,81 @@
-+// SPDX-License-Identifier: GPL-2.0
-+//
-+//! Rust dummy netdev.
++	v = map->lower_memory[SFF8636_LOL_AW_OFFSET] >> 4;
++	if (map->page_00h[SFF8636_OPTION_3_OFFSET] & SFF8636_O3_TX_LOL)
++		sff_show_lane_status("Tx loss of lock", 4, "Yes", "No", v);
 +
-+use kernel::{
-+    c_str,
-+    net::dev::{
-+        ethtool_op_get_ts_info, flags, priv_flags, Device, DeviceOperations, DriverData,
-+        EtherOperations, EthtoolTsInfo, Registration, RtnlLinkStats64, SkBuff, TxCode,
-+    },
-+    prelude::*,
-+};
++	v = map->lower_memory[SFF8636_FAULT_AW_OFFSET] & 0xf;
++	if (map->page_00h[SFF8636_OPTION_4_OFFSET] & SFF8636_O4_TX_FAULT)
++		sff_show_lane_status("Tx fault", 4, "Yes", "No", v);
 +
-+module! {
-+    type: DummyNetdev,
-+    name: "rust_net_dummy",
-+    author: "Rust for Linux Contributors",
-+    description: "Rust dummy netdev",
-+    license: "GPL v2",
++	v = map->lower_memory[SFF8636_FAULT_AW_OFFSET] >> 4;
++	if (map->page_00h[SFF8636_OPTION_2_OFFSET] & SFF8636_O2_TX_EQ_AUTO)
++		sff_show_lane_status("Tx adaptive eq fault", 4, "Yes", "No", v);
 +}
 +
-+struct DevOps {}
-+
-+#[vtable]
-+impl<D: DriverData<Data = Box<Stats>>> DeviceOperations<D> for DevOps {
-+    fn init(_dev: &mut Device, _data: &Stats) -> Result {
-+        Ok(())
-+    }
-+
-+    fn start_xmit(_dev: &mut Device, _data: &Stats, mut skb: SkBuff) -> TxCode {
-+        skb.tx_timestamp();
-+        TxCode::Ok
-+    }
-+
-+    fn get_stats64(_dev: &mut Device, _data: &Stats, _stats: &mut RtnlLinkStats64) {}
-+}
-+
-+/// For device driver specific information.
-+struct Stats {}
-+
-+impl DriverData for Stats {
-+    type Data = Box<Stats>;
-+}
-+
-+struct DummyNetdev {
-+    _r: Registration<DevOps, Stats>,
-+}
-+
-+struct EtherOps {}
-+
-+#[vtable]
-+impl<D: DriverData<Data = Box<Stats>>> EtherOperations<D> for EtherOps {
-+    fn get_ts_info(dev: &mut Device, _data: &Stats, info: &mut EthtoolTsInfo) -> Result {
-+        ethtool_op_get_ts_info(dev, info)
-+    }
-+}
-+
-+impl kernel::Module for DummyNetdev {
-+    fn init(_module: &'static ThisModule) -> Result<Self> {
-+        let data = Box::try_new(Stats {})?;
-+        let mut r = Registration::<DevOps, Stats>::try_new_ether(1, 1, data)?;
-+        r.set_ether_operations::<EtherOps>()?;
-+
-+        let netdev = r.dev_get();
-+        netdev.set_name(c_str!("dummy%d"))?;
-+
-+        netdev.set_flags(netdev.get_flags() | flags::IFF_NOARP & !flags::IFF_MULTICAST);
-+        netdev.set_priv_flags(
-+            netdev.get_priv_flags() | priv_flags::IFF_LIVE_ADDR_CHANGE | priv_flags::IFF_NO_QUEUE,
-+        );
-+        netdev.set_random_eth_hw_addr();
-+        netdev.set_min_mtu(0);
-+        netdev.set_max_mtu(0);
-+
-+        r.register()?;
-+
-+        // TODO: Replaces pr_info with the wrapper of netdev_info().
-+        pr_info!("Hello Rust dummy netdev!");
-+        Ok(DummyNetdev { _r: r })
-+    }
-+}
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 78175231c969..1404967e908e 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -277,7 +277,7 @@ $(obj)/%.lst: $(src)/%.c FORCE
- # Compile Rust sources (.rs)
- # ---------------------------------------------------------------------------
+ static void sff8636_show_page_zero(const struct sff8636_memory_map *map)
+ {
+ 	sff8636_show_ext_identifier(map);
+@@ -905,6 +934,7 @@ static void sff8636_show_page_zero(const struct sff8636_memory_map *map)
+ 		       SFF8636_DATE_VENDOR_LOT_OFFSET + 1, "Date code");
+ 	sff_show_revision_compliance(map->lower_memory,
+ 				     SFF8636_REV_COMPLIANCE_OFFSET);
++	sff8636_show_signals(map);
+ }
  
--rust_allowed_features := new_uninit
-+rust_allowed_features := allocator_api,new_uninit
+ static void sff8636_show_all_common(const struct sff8636_memory_map *map)
+diff --git a/qsfp.h b/qsfp.h
+index aabf09fdc623..9f0cb0f7d55d 100644
+--- a/qsfp.h
++++ b/qsfp.h
+@@ -55,6 +55,8 @@
+ #define	 SFF8636_TX2_FAULT_AW	(1 << 1)
+ #define	 SFF8636_TX1_FAULT_AW	(1 << 0)
  
- rust_common_cmd = \
- 	RUST_MODFILE=$(modfile) $(RUSTC_OR_CLIPPY) $(rust_flags) \
++#define	SFF8636_LOL_AW_OFFSET	0x05
++
+ /* Module Monitor Interrupt Flags - 6-8 */
+ #define	SFF8636_TEMP_AW_OFFSET	0x06
+ #define	 SFF8636_TEMP_HALARM_STATUS		(1 << 7)
+@@ -525,9 +527,15 @@
+ /*  56h-5Fh reserved */
+ 
+ #define	 SFF8636_OPTION_2_OFFSET	0xC1
++/* Tx input equalizers auto-adaptive */
++#define	  SFF8636_O2_TX_EQ_AUTO		(1 << 3)
+ /* Rx output amplitude */
+ #define	  SFF8636_O2_RX_OUTPUT_AMP	(1 << 0)
+ #define	 SFF8636_OPTION_3_OFFSET	0xC2
++/* Tx CDR Loss of Lock */
++#define	  SFF8636_O3_TX_LOL		(1 << 5)
++/* Rx CDR Loss of Lock */
++#define	  SFF8636_O3_RX_LOL		(1 << 4)
+ /* Rx Squelch Disable */
+ #define	  SFF8636_O3_RX_SQL_DSBL	(1 << 3)
+ /* Rx Output Disable capable */
+diff --git a/sff-common.c b/sff-common.c
+index e951cf15c1d6..a5c1510302a6 100644
+--- a/sff-common.c
++++ b/sff-common.c
+@@ -53,6 +53,23 @@ void sff_show_ascii(const __u8 *id, unsigned int first_reg,
+ 	printf("\n");
+ }
+ 
++void sff_show_lane_status(const char *name, unsigned int lane_cnt,
++			  const char *yes, const char *no, unsigned int value)
++{
++	printf("\t%-41s : ", name);
++	if (!value) {
++		printf("None\n");
++		return;
++	}
++
++	printf("[");
++	while (lane_cnt--) {
++		printf(" %s%c", value & 1 ? yes : no, lane_cnt ? ',': ' ');
++		value >>= 1;
++	}
++	printf("]\n");
++}
++
+ void sff8024_show_oui(const __u8 *id, int id_offset)
+ {
+ 	printf("\t%-41s : %02x:%02x:%02x\n", "Vendor OUI",
+diff --git a/sff-common.h b/sff-common.h
+index dd12dda7bbce..57bcc4a415fe 100644
+--- a/sff-common.h
++++ b/sff-common.h
+@@ -198,6 +198,8 @@ void sff_show_value_with_unit(const __u8 *id, unsigned int reg,
+ 			      const char *unit);
+ void sff_show_ascii(const __u8 *id, unsigned int first_reg,
+ 		    unsigned int last_reg, const char *name);
++void sff_show_lane_status(const char *name, unsigned int lane_cnt,
++			  const char *yes, const char *no, unsigned int value);
+ void sff_show_thresholds(struct sff_diags sd);
+ 
+ void sff8024_show_oui(const __u8 *id, int id_offset);
 -- 
-2.34.1
+2.40.1
 
 
