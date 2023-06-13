@@ -1,101 +1,274 @@
-Return-Path: <netdev+bounces-10309-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10310-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 93E0A72DC7A
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 10:30:17 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id D662F72DC8B
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 10:35:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B1A0E281103
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 08:30:15 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E0C071C20C1D
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 08:35:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DD6021C2B;
-	Tue, 13 Jun 2023 08:30:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 90DD4210D;
+	Tue, 13 Jun 2023 08:35:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF58C22D4C
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 08:30:09 +0000 (UTC)
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E7DBD2
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 01:30:07 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id a640c23a62f3a-97460240863so848977866b.0
-        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 01:30:07 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8418C1C2B
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 08:35:30 +0000 (UTC)
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDA613A
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 01:35:28 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id 4fb4d7f45d1cf-51480d3e161so7784761a12.3
+        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 01:35:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686645006; x=1689237006;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=BEOvgjmcH3FesNY8tbRvETC8Tib/95dr/lQjlUtMIZA=;
-        b=nD+l/ant7kwFbFnVfDNKFCAndsNRvJAsL/rdSrTAMTPTGk9QPpgnVDKB1h2iSOkl5L
-         yUUfYCj0jdLM7SAqH3uY3RdA54A1mUpL7JGiAH8vx/L42aHZ0dLD+k9dT4cUs0RhJ/NS
-         Jd8RWy0y1sATxE2k34CYyiMGq3VhpaQBcaiNSWJvIXm7s1q1TTj1cnnpwuNSwQme7CAG
-         AtPM2+hPGaMjIlLbcNsF4QFALmQPVg9hQGWGgPH39vXwopE6/HNGV6CWm+IXdrAcO5aO
-         XmG+9asppRnIF3UYPdKmWsC9aTK2gZ5QTT+nKahFGeRXuZz1/KhsB6S1aDzv9fbeR2Px
-         Or5g==
+        d=linaro.org; s=google; t=1686645327; x=1689237327;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Udk48S5fbv1dSJicz4zumka+B8gpUCv6JR8oUWwytFE=;
+        b=o9dC8ORhi2FyvFaJyDB1gLfg7fp6jE04zMI9PMsiS1Lau844sKcyC+XT/WNcQrQJy7
+         L2cFqSg2VKLxI7pk+NQbhTna72JESVzQooQZqeZ4qdwFGsGCJ6ZL37y2zwkg3vc5rx11
+         5XVLU8RBmI34mQ4gU5ZNaBqen96fE9mv+3wT/kbc91A+ZTFYM9zmhB2S/z6BS83QO0tV
+         MktH6lJxd+hcHvlaPZ6ccAO0tXdLxRiFlLLctYN1JU2aN63Rnu04ZkqaNJX30K9KwEO8
+         OFuKVt9Bp9MtZN3V9RyV8lP6iX+8AlDS10LniseldOE/LFKOq1p8tmOZeMfNkuS+JznP
+         0f6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686645006; x=1689237006;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BEOvgjmcH3FesNY8tbRvETC8Tib/95dr/lQjlUtMIZA=;
-        b=S5fhkmFNu1UPhGLR3RPPVasrWBGiTs4RkQjViG+qOd2oFKhf3WvfjIkrpOxWW13qXb
-         o4ne8GuSSM642QWgkwX1v9wZ0NZYfIN/I/Bxz9RTRsFYFRGe4uoYurVGQ19bIalXckji
-         ElGejIxzUTIUZg87Vu0T+B95C/hIZhg/cKo5osTnuEZvR0AdxlwHIBPkmdSUnjP+JbcX
-         R62F3/INlsgy3bt1KmGXDmvEvi2o6d5Hly473ClS5qU7j+bzFtWbeqdm4062Nr2Buk3/
-         Ni+X/Yk1q6XnprvB3VgvWyNe3EI1Tkxyg4QQmdZJVVoU/YOcK8efFYfss66d9LGYBVDJ
-         a+Ig==
-X-Gm-Message-State: AC+VfDw9CJ/uMgUBOQQMeYh5lPo3w66d/yA5O4b0pux1lr1B70orffLq
-	iGk3hbPcJahN2Dx+V10NgA4=
-X-Google-Smtp-Source: ACHHUZ6njLXaeoEWNOCsFfk/4QBMk1BUYENi/6kbRVv77AzipIucpEKyX5OdGW4Zw3MH1WDcRoVOzA==
-X-Received: by 2002:a17:907:741:b0:958:801b:9945 with SMTP id xc1-20020a170907074100b00958801b9945mr11693045ejb.31.1686645005430;
-        Tue, 13 Jun 2023 01:30:05 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id bi9-20020a170906a24900b009745417ca38sm6296609ejb.21.2023.06.13.01.30.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jun 2023 01:30:04 -0700 (PDT)
-Date: Tue, 13 Jun 2023 11:30:02 +0300
-From: Vladimir Oltean <olteanv@gmail.com>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-	Asmaa Mnebhi <asmaa@nvidia.com>, davem@davemloft.net,
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-	netdev@vger.kernel.org, cai.huoqing@linux.dev, brgl@bgdev.pl,
-	chenhao288@hisilicon.com, huangguangbin2@huawei.com,
-	David Thompson <davthompson@nvidia.com>
-Subject: Re: [PATCH net v2 1/1] mlxbf_gige: Fix kernel panic at shutdown
-Message-ID: <20230613083002.pjzsno2tzbewej7o@skbuf>
-References: <20230607140335.1512-1-asmaa@nvidia.com>
- <20230611181125.GJ12152@unreal>
- <ZIcC2Y+HHHR+7QYq@boxer>
- <20230612115925.GR12152@unreal>
- <20230612123718.u6cfggybbtx4owbq@skbuf>
- <20230612131707.GS12152@unreal>
- <20230612132841.xcrlmfhzhu5qazgk@skbuf>
- <20230612133853.GT12152@unreal>
- <20230612140521.tzhgliaok5u3q67o@skbuf>
- <20230613071959.GU12152@unreal>
+        d=1e100.net; s=20221208; t=1686645327; x=1689237327;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Udk48S5fbv1dSJicz4zumka+B8gpUCv6JR8oUWwytFE=;
+        b=FjZ1UaxTXesi1G3kTAy+7vfO4+x5NYKxO1HmYNwLk7bFFAnn9l10k6wEuKy8SMsZiH
+         yakUmhTRXaNU/b02kVOmlzrgQYD0gA916MIPEVgLJemsGFY4LKLCvZpkU9e/VS4r0BbC
+         CAoOIiDSdJVfKlluBGQDW+7O5YfMk1YpWyJR7t3o8ek++L+6QkCal5YcCYs65plTtGyE
+         7Ul/qOwTiNylZUcbmsZlJSS+93a6BqYFBhVb9bJMUaYDIFzUnxmE13mUnLys7/qxG0u5
+         YOM6ZeDyqkAqXipHK9a6+FEAjw+ANnMd4831DuW2L+rf+zNnj0EpCA4POgn0KixdExy4
+         xjYA==
+X-Gm-Message-State: AC+VfDw6dHJQBmVZZMT2luliBUf0ikv0nDEj6aDMCvwOSmzve1fyhlB6
+	KJEZVPY2fKqQChWEd3kmI5C8olTcetgxSvx9mmI=
+X-Google-Smtp-Source: ACHHUZ5D4gB3CQuOc/H+EBL9HRkHsEZcW5QTsbj6vgPuq8XY2+MuBCT0xx60P2+MpyexNwcAvjYTKg==
+X-Received: by 2002:a05:6402:88e:b0:516:81d3:2627 with SMTP id e14-20020a056402088e00b0051681d32627mr7756069edy.0.1686645327009;
+        Tue, 13 Jun 2023 01:35:27 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.219.26])
+        by smtp.gmail.com with ESMTPSA id f11-20020aa7d84b000000b00514ad0e3167sm6093578eds.71.2023.06.13.01.35.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Jun 2023 01:35:26 -0700 (PDT)
+Message-ID: <e13aace9-daf4-8052-4ef3-19033a71ca7a@linaro.org>
+Date: Tue, 13 Jun 2023 10:35:23 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230613071959.GU12152@unreal>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH net-next 1/8] dt-bindings: net: mediatek,net: add
+ mt7988-eth binding
+Content-Language: en-US
+To: Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ Russell King <linux@armlinux.org.uk>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Lorenzo Bianconi <lorenzo@kernel.org>, Mark Lee <Mark-MC.Lee@mediatek.com>,
+ Sean Wang <sean.wang@mediatek.com>, John Crispin <john@phrozen.org>,
+ Felix Fietkau <nbd@nbd.name>, Conor Dooley <conor+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Rob Herring <robh+dt@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Jakub Kicinski <kuba@kernel.org>, Eric Dumazet <edumazet@google.com>,
+ "David S. Miller" <davem@davemloft.net>, Sam Shih <Sam.Shih@mediatek.com>
+References: <ZIUWGxUV8mxYns_l@makrotopia.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <ZIUWGxUV8mxYns_l@makrotopia.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 13, 2023 at 10:19:59AM +0300, Leon Romanovsky wrote:
-> But once child finishes device_shutdown(), it will be removed from devices_kset
-> list and dev->driver should be NULL at that point for the child.
+On 11/06/2023 02:32, Daniel Golle wrote:
+> Introduce DT bindings for the MT7988 SoC to mediatek,net.yaml.
+> The MT7988 SoC got 3 Ethernet MACs operating at a maximum of
+> 10 Gigabit/sec supported by 2 packet processor engines for
+> offloading tasks.
+> The first MAC is hard-wired to a built-in switch which exposes
+> four 1000Base-T PHYs as user ports.
+> It also comes with built-in 2500Base-T PHY which can be used
+> with the 2nd GMAC.
+> The 2nd and 3rd GMAC can be connected to external PHYs or provide
+> SFP(+) cages attached via SGMII, 1000Base-X, 2500Base-X, USXGMII,
+> 5GBase-KR or 10GBase-KR.
+> 
+> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+> ---
+>  .../devicetree/bindings/net/mediatek,net.yaml | 111 ++++++++++++++++++
+>  1 file changed, 111 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/mediatek,net.yaml b/Documentation/devicetree/bindings/net/mediatek,net.yaml
+> index acb2b2ac4fe1e..f08151a60084b 100644
+> --- a/Documentation/devicetree/bindings/net/mediatek,net.yaml
+> +++ b/Documentation/devicetree/bindings/net/mediatek,net.yaml
+> @@ -23,6 +23,7 @@ properties:
+>        - mediatek,mt7629-eth
+>        - mediatek,mt7981-eth
+>        - mediatek,mt7986-eth
+> +      - mediatek,mt7988-eth
+>        - ralink,rt5350-eth
+>  
+>    reg:
+> @@ -70,6 +71,22 @@ properties:
+>        A list of phandle to the syscon node that handles the SGMII setup which is required for
+>        those SoCs equipped with SGMII.
+>  
+> +  mediatek,toprgu:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description:
+> +      Phandle to the mediatek toprgu controller used to provide various clocks
+> +      and reset to the system.
+> +
+> +  mediatek,usxgmiisys:
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +    minItems: 2
+> +    maxItems: 2
+> +    items:
+> +      maxItems: 1
+> +    description:
+> +      A list of phandle to the syscon node that handles the USXGMII setup which is required for
+> +      those SoCs equipped with USXGMII.
 
-What piece of code would make dev->driver be NULL for devices that have
-been shut down by device_shutdown()?
+Why do you need two phandles for the same node?
+
+> +
+>    mediatek,wed:
+>      $ref: /schemas/types.yaml#/definitions/phandle-array
+>      minItems: 2
+> @@ -84,6 +101,21 @@ properties:
+>      description:
+>        Phandle to the mediatek wed-pcie controller.
+>  
+> +  mediatek,xfi_pextp:
+
+Underscores are not allowed in property names.
+
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +    minItems: 2
+> +    maxItems: 2
+> +    items:
+> +      maxItems: 1
+> +    description:
+> +      A list of phandle to the syscon node that handles the XFI setup which is required for
+> +      those SoCs equipped with XFI.
+> +
+> +  mediatek,xfi_pll:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description:
+> +      Phandle to the XFI PLL unit.
+
+This looks like a clock.
+
+> +
+>    dma-coherent: true
+>  
+>    mdio-bus:
+> @@ -290,6 +322,85 @@ allOf:
+>            minItems: 2
+>            maxItems: 2
+>  
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: mediatek,mt7988-eth
+> +    then:
+> +      properties:
+> +        interrupts:
+> +          minItems: 4
+> +
+> +        clocks:
+> +          minItems: 34
+> +          maxItems: 34
+> +
+> +        clock-names:
+> +          items:
+> +            - const: crypto
+> +            - const: fe
+> +            - const: gp2
+> +            - const: gp1
+> +            - const: gp3
+> +            - const: ethwarp_wocpu2
+> +            - const: ethwarp_wocpu1
+> +            - const: ethwarp_wocpu0
+> +            - const: esw
+> +            - const: netsys0
+> +            - const: netsys1
+> +            - const: sgmii_tx250m
+> +            - const: sgmii_rx250m
+> +            - const: sgmii2_tx250m
+> +            - const: sgmii2_rx250m
+> +            - const: top_usxgmii0_sel
+> +            - const: top_usxgmii1_sel
+> +            - const: top_sgm0_sel
+> +            - const: top_sgm1_sel
+> +            - const: top_xfi_phy0_xtal_sel
+> +            - const: top_xfi_phy1_xtal_sel
+> +            - const: top_eth_gmii_sel
+> +            - const: top_eth_refck_50m_sel
+> +            - const: top_eth_sys_200m_sel
+> +            - const: top_eth_sys_sel
+> +            - const: top_eth_xgmii_sel
+> +            - const: top_eth_mii_sel
+> +            - const: top_netsys_sel
+> +            - const: top_netsys_500m_sel
+> +            - const: top_netsys_pao_2x_sel
+> +            - const: top_netsys_sync_250m_sel
+> +            - const: top_netsys_ppefb_250m_sel
+> +            - const: top_netsys_warp_sel
+> +            - const: wocpu1
+> +            - const: wocpu0
+> +            - const: xgp1
+> +            - const: xgp2
+> +            - const: xgp3
+> +
+> +        mediatek,sgmiisys:
+> +          minItems: 2
+> +          maxItems: 2
+> +
+> +        mediatek,usxgmiisys:
+> +          minItems: 2
+> +          maxItems: 2
+
+Why do you need this here?
+
+> +
+> +        mediatek,xfi_pextp:
+> +          minItems: 2
+> +          maxItems: 2
+> +
+> +        mediatek,xfi_pll:
+> +          minItems: 1
+> +          maxItems: 1
+> +
+> +        mediatek,infracfg:
+> +          minItems: 1
+> +          maxItems: 1
+> +
+> +        mediatek,toprgu:
+> +          minItems: 1
+> +          maxItems: 1
+
+All this looks redundant.
+
+
+
+Best regards,
+Krzysztof
+
 
