@@ -1,53 +1,53 @@
-Return-Path: <netdev+bounces-10400-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10401-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id F3FF472E559
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 16:16:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 76DFD72E575
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 16:16:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2AAE01C20CB7
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 14:16:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B09FA1C20CB7
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 14:16:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 65D9538CD2;
-	Tue, 13 Jun 2023 14:15:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6D7B139240;
+	Tue, 13 Jun 2023 14:15:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 558C0522B
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 14:15:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63303522B
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 14:15:43 +0000 (UTC)
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45F1D1
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 07:15:38 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8CCEED
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 07:15:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686665738; x=1718201738;
+  t=1686665741; x=1718201741;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/AsdHWXHIV44bj+/sh2cZP3+Y7g33GwoX0+PiUBSW1w=;
-  b=iKChgvfJTXq8r9M2LaNiIHn+e3e3oaBxigIwZmnwmYEnWU9xKyVOostL
-   lVgYx6tWnQRq51vEBPfGYMHFhIqM6EGumfJwzT+yqr4nYPN1Kq+s0qQcZ
-   26cw86q54+2e8gzuVyWgNQHcYKOr0d4dIaVhyXKN2VPYQHob4NNCGad5V
-   1ucDXDh9YCIJwkibKbs2sn10PMDcy8K5Ix/vCSz7HyLKRPvIvzQpVwGJw
-   tgiiAqoOUn6Zq5oVtrRDksRugNbs4HoQYmDYEUBo3CqhpvAZ47xG8SaOP
-   nvkhrbMvk42sLKJ9+9JTLxEQPV2MJ0r5WwvVQa4NsqQqzUM8c+lUfOVZT
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="337981462"
+  bh=fXbqSxpn9AGXpGn4aK8oz7MZ9LkP4yXAnvA+ZTILu5U=;
+  b=Wdr4yRv6nOCb6rINqRAcF5rLIqF+p5oAjlZpA44F8kK9uUx44575jBv3
+   xrWPTzNupWtGFFaJc4ctYrdtU02lZCaxlAtASTmU93kUIjkGH9jN86Lj7
+   atd68mPVzWQVfGS1lTBcRSot9g9N6Ig/k2MPCsFJvET7HeXzG3K7ivY/I
+   tZvutiXmHTt52X2mLNBlhGeKfJ1rqksJhsglM8hy235Z72+sm3ce3yIWK
+   CijUVZ7TmhTPrx7BKNqwy1DqJ05mm8HnkmAwlbogOdn1z2eda4gLEDsD7
+   tCzEC3ljuSNnTC3OmLNZoCvrifa7J0pszVmq9zTvDi4B49upNrevVvEWy
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="337981477"
 X-IronPort-AV: E=Sophos;i="6.00,239,1681196400"; 
-   d="scan'208";a="337981462"
+   d="scan'208";a="337981477"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2023 07:15:38 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2023 07:15:41 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="856105019"
+X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="856105033"
 X-IronPort-AV: E=Sophos;i="6.00,239,1681196400"; 
-   d="scan'208";a="856105019"
+   d="scan'208";a="856105033"
 Received: from irvmail002.ir.intel.com ([10.43.11.120])
-  by fmsmga001.fm.intel.com with ESMTP; 13 Jun 2023 07:15:36 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 13 Jun 2023 07:15:39 -0700
 Received: from pelor.igk.intel.com (pelor.igk.intel.com [10.123.220.13])
-	by irvmail002.ir.intel.com (Postfix) with ESMTP id A081B35429;
-	Tue, 13 Jun 2023 15:15:35 +0100 (IST)
+	by irvmail002.ir.intel.com (Postfix) with ESMTP id E332C35429;
+	Tue, 13 Jun 2023 15:15:38 +0100 (IST)
 From: Przemek Kitszel <przemyslaw.kitszel@intel.com>
 To: intel-wired-lan@lists.osuosl.org
 Cc: netdev@vger.kernel.org,
@@ -55,9 +55,9 @@ Cc: netdev@vger.kernel.org,
 	Ahmed Zaki <ahmed.zaki@intel.com>,
 	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
 	Przemek Kitszel <przemyslaw.kitszel@intel.com>
-Subject: [PATCH iwl-next 1/2] iavf: remove some unused functions and pointless wrappers
-Date: Tue, 13 Jun 2023 10:12:52 -0400
-Message-Id: <20230613141253.57811-2-przemyslaw.kitszel@intel.com>
+Subject: [PATCH iwl-next 2/2] iavf: make functions static where possible
+Date: Tue, 13 Jun 2023 10:12:53 -0400
+Message-Id: <20230613141253.57811-3-przemyslaw.kitszel@intel.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230613141253.57811-1-przemyslaw.kitszel@intel.com>
 References: <20230613141253.57811-1-przemyslaw.kitszel@intel.com>
@@ -75,220 +75,215 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Remove iavf_aq_get_rss_lut(), iavf_aq_get_rss_key(), iavf_vf_reset().
+Make static all the possible funnctions.
 
-Remove some "OS specific memory free for shared code" wrappers ;)
+Move iavf_force_wb() up to avoid forward declaration.
 
+Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 Signed-off-by: Przemek Kitszel <przemyslaw.kitszel@intel.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf_alloc.h  |  3 +-
- drivers/net/ethernet/intel/iavf/iavf_common.c | 45 -------------------
- drivers/net/ethernet/intel/iavf/iavf_main.c   | 20 +++------
- drivers/net/ethernet/intel/iavf/iavf_osdep.h  |  9 ----
- .../net/ethernet/intel/iavf/iavf_prototype.h  |  5 ---
- 5 files changed, 7 insertions(+), 75 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf.h      | 10 -----
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 14 +++----
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c | 43 ++++++++++-----------
+ drivers/net/ethernet/intel/iavf/iavf_txrx.h |  4 --
+ 4 files changed, 28 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_alloc.h b/drivers/net/ethernet/intel/iavf/iavf_alloc.h
-index 2711573c14ec..162ea70685a6 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_alloc.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf_alloc.h
-@@ -28,7 +28,6 @@ enum iavf_status iavf_free_dma_mem(struct iavf_hw *hw,
- 				   struct iavf_dma_mem *mem);
- enum iavf_status iavf_allocate_virt_mem(struct iavf_hw *hw,
- 					struct iavf_virt_mem *mem, u32 size);
--enum iavf_status iavf_free_virt_mem(struct iavf_hw *hw,
--				    struct iavf_virt_mem *mem);
-+void iavf_free_virt_mem(struct iavf_hw *hw, struct iavf_virt_mem *mem);
+diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
+index 8f29af80de8c..8cbdebc5b698 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf.h
++++ b/drivers/net/ethernet/intel/iavf/iavf.h
+@@ -526,9 +526,6 @@ void iavf_schedule_finish_config(struct iavf_adapter *adapter);
+ void iavf_reset(struct iavf_adapter *adapter);
+ void iavf_set_ethtool_ops(struct net_device *netdev);
+ void iavf_update_stats(struct iavf_adapter *adapter);
+-void iavf_reset_interrupt_capability(struct iavf_adapter *adapter);
+-int iavf_init_interrupt_scheme(struct iavf_adapter *adapter);
+-void iavf_irq_enable_queues(struct iavf_adapter *adapter);
+ void iavf_free_all_tx_resources(struct iavf_adapter *adapter);
+ void iavf_free_all_rx_resources(struct iavf_adapter *adapter);
  
- #endif /* _IAVF_ALLOC_H_ */
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_common.c b/drivers/net/ethernet/intel/iavf/iavf_common.c
-index dd11dbbd5551..1afd761d8052 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_common.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_common.c
-@@ -35,7 +35,6 @@ enum iavf_status iavf_set_mac_type(struct iavf_hw *hw)
- 		status = IAVF_ERR_DEVICE_NOT_SUPPORTED;
- 	}
- 
--	hw_dbg(hw, "found mac: %d, returns: %d\n", hw->mac.type, status);
- 	return status;
- }
- 
-@@ -397,23 +396,6 @@ static enum iavf_status iavf_aq_get_set_rss_lut(struct iavf_hw *hw,
- 	return status;
- }
- 
--/**
-- * iavf_aq_get_rss_lut
-- * @hw: pointer to the hardware structure
-- * @vsi_id: vsi fw index
-- * @pf_lut: for PF table set true, for VSI table set false
-- * @lut: pointer to the lut buffer provided by the caller
-- * @lut_size: size of the lut buffer
-- *
-- * get the RSS lookup table, PF or VSI type
-- **/
--enum iavf_status iavf_aq_get_rss_lut(struct iavf_hw *hw, u16 vsi_id,
--				     bool pf_lut, u8 *lut, u16 lut_size)
--{
--	return iavf_aq_get_set_rss_lut(hw, vsi_id, pf_lut, lut, lut_size,
--				       false);
--}
--
- /**
-  * iavf_aq_set_rss_lut
-  * @hw: pointer to the hardware structure
-@@ -472,19 +454,6 @@ iavf_status iavf_aq_get_set_rss_key(struct iavf_hw *hw, u16 vsi_id,
- 	return status;
- }
- 
--/**
-- * iavf_aq_get_rss_key
-- * @hw: pointer to the hw struct
-- * @vsi_id: vsi fw index
-- * @key: pointer to key info struct
-- *
-- **/
--enum iavf_status iavf_aq_get_rss_key(struct iavf_hw *hw, u16 vsi_id,
--				     struct iavf_aqc_get_set_rss_key_data *key)
--{
--	return iavf_aq_get_set_rss_key(hw, vsi_id, key, false);
--}
--
- /**
-  * iavf_aq_set_rss_key
-  * @hw: pointer to the hw struct
-@@ -828,17 +797,3 @@ void iavf_vf_parse_hw_config(struct iavf_hw *hw,
- 		vsi_res++;
- 	}
- }
--
--/**
-- * iavf_vf_reset
-- * @hw: pointer to the hardware structure
-- *
-- * Send a VF_RESET message to the PF. Does not wait for response from PF
-- * as none will be forthcoming. Immediately after calling this function,
-- * the admin queue should be shut down and (optionally) reinitialized.
-- **/
--enum iavf_status iavf_vf_reset(struct iavf_hw *hw)
--{
--	return iavf_aq_send_msg_to_pf(hw, VIRTCHNL_OP_RESET_VF,
--				      0, NULL, 0, NULL);
--}
+@@ -582,12 +579,6 @@ void iavf_enable_vlan_stripping_v2(struct iavf_adapter *adapter, u16 tpid);
+ void iavf_disable_vlan_stripping_v2(struct iavf_adapter *adapter, u16 tpid);
+ void iavf_enable_vlan_insertion_v2(struct iavf_adapter *adapter, u16 tpid);
+ void iavf_disable_vlan_insertion_v2(struct iavf_adapter *adapter, u16 tpid);
+-int iavf_replace_primary_mac(struct iavf_adapter *adapter,
+-			     const u8 *new_mac);
+-void
+-iavf_set_vlan_offload_features(struct iavf_adapter *adapter,
+-			       netdev_features_t prev_features,
+-			       netdev_features_t features);
+ void iavf_add_fdir_filter(struct iavf_adapter *adapter);
+ void iavf_del_fdir_filter(struct iavf_adapter *adapter);
+ void iavf_add_adv_rss_cfg(struct iavf_adapter *adapter);
+@@ -595,5 +586,4 @@ void iavf_del_adv_rss_cfg(struct iavf_adapter *adapter);
+ struct iavf_mac_filter *iavf_add_filter(struct iavf_adapter *adapter,
+ 					const u8 *macaddr);
+ int iavf_wait_for_reset(struct iavf_adapter *adapter);
+-int iavf_lock_timeout(struct mutex *lock, unsigned int msecs);
+ #endif /* _IAVF_H_ */
 diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index cf43e71e9c4f..adb9d3fe1a28 100644
+index adb9d3fe1a28..a61d1692c91d 100644
 --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
 +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -231,12 +231,11 @@ enum iavf_status iavf_allocate_dma_mem_d(struct iavf_hw *hw,
- }
- 
- /**
-- * iavf_free_dma_mem_d - OS specific memory free for shared code
-+ * iavf_free_dma_mem - wrapper for DMA memory freeing
-  * @hw:   pointer to the HW structure
-  * @mem:  ptr to mem struct to free
+@@ -284,7 +284,7 @@ void iavf_free_virt_mem(struct iavf_hw *hw, struct iavf_virt_mem *mem)
+  *
+  * Returns 0 on success, negative on failure
   **/
--enum iavf_status iavf_free_dma_mem_d(struct iavf_hw *hw,
--				     struct iavf_dma_mem *mem)
-+enum iavf_status iavf_free_dma_mem(struct iavf_hw *hw, struct iavf_dma_mem *mem)
+-int iavf_lock_timeout(struct mutex *lock, unsigned int msecs)
++static int iavf_lock_timeout(struct mutex *lock, unsigned int msecs)
  {
- 	struct iavf_adapter *adapter = (struct iavf_adapter *)hw->back;
+ 	unsigned int wait, delay = 10;
  
-@@ -248,12 +247,12 @@ enum iavf_status iavf_free_dma_mem_d(struct iavf_hw *hw,
- }
- 
- /**
-- * iavf_allocate_virt_mem_d - OS specific memory alloc for shared code
-+ * iavf_allocate_virt_mem - virt memory alloc wrapper
-  * @hw:   pointer to the HW structure
-  * @mem:  ptr to mem struct to fill out
-  * @size: size of memory requested
+@@ -395,7 +395,7 @@ static void iavf_irq_disable(struct iavf_adapter *adapter)
+  * iavf_irq_enable_queues - Enable interrupt for all queues
+  * @adapter: board private structure
   **/
--enum iavf_status iavf_allocate_virt_mem_d(struct iavf_hw *hw,
-+enum iavf_status iavf_allocate_virt_mem(struct iavf_hw *hw,
- 					  struct iavf_virt_mem *mem, u32 size)
+-void iavf_irq_enable_queues(struct iavf_adapter *adapter)
++static void iavf_irq_enable_queues(struct iavf_adapter *adapter)
  {
- 	if (!mem)
-@@ -269,20 +268,13 @@ enum iavf_status iavf_allocate_virt_mem_d(struct iavf_hw *hw,
- }
- 
- /**
-- * iavf_free_virt_mem_d - OS specific memory free for shared code
-+ * iavf_free_virt_mem - virt memory free wrapper
-  * @hw:   pointer to the HW structure
-  * @mem:  ptr to mem struct to free
+ 	struct iavf_hw *hw = &adapter->hw;
+ 	int i;
+@@ -1036,8 +1036,8 @@ struct iavf_mac_filter *iavf_add_filter(struct iavf_adapter *adapter,
+  *
+  * Do not call this with mac_vlan_list_lock!
   **/
--enum iavf_status iavf_free_virt_mem_d(struct iavf_hw *hw,
--				      struct iavf_virt_mem *mem)
-+void iavf_free_virt_mem(struct iavf_hw *hw, struct iavf_virt_mem *mem)
+-int iavf_replace_primary_mac(struct iavf_adapter *adapter,
+-			     const u8 *new_mac)
++static int iavf_replace_primary_mac(struct iavf_adapter *adapter,
++				    const u8 *new_mac)
  {
--	if (!mem)
--		return IAVF_ERR_PARAM;
--
--	/* it's ok to kfree a NULL pointer */
- 	kfree(mem->va);
--
--	return 0;
+ 	struct iavf_hw *hw = &adapter->hw;
+ 	struct iavf_mac_filter *new_f;
+@@ -1888,7 +1888,7 @@ static void iavf_free_q_vectors(struct iavf_adapter *adapter)
+  * @adapter: board private structure
+  *
+  **/
+-void iavf_reset_interrupt_capability(struct iavf_adapter *adapter)
++static void iavf_reset_interrupt_capability(struct iavf_adapter *adapter)
+ {
+ 	if (!adapter->msix_entries)
+ 		return;
+@@ -1903,7 +1903,7 @@ void iavf_reset_interrupt_capability(struct iavf_adapter *adapter)
+  * @adapter: board private structure to initialize
+  *
+  **/
+-int iavf_init_interrupt_scheme(struct iavf_adapter *adapter)
++static int iavf_init_interrupt_scheme(struct iavf_adapter *adapter)
+ {
+ 	int err;
+ 
+@@ -2272,7 +2272,7 @@ static int iavf_process_aq_command(struct iavf_adapter *adapter)
+  * the watchdog if any changes are requested to expedite the request via
+  * virtchnl.
+  **/
+-void
++static void
+ iavf_set_vlan_offload_features(struct iavf_adapter *adapter,
+ 			       netdev_features_t prev_features,
+ 			       netdev_features_t features)
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_txrx.c b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
+index e989feda133c..8c5f6096b002 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_txrx.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
+@@ -54,7 +54,7 @@ static void iavf_unmap_and_free_tx_resource(struct iavf_ring *ring,
+  * iavf_clean_tx_ring - Free any empty Tx buffers
+  * @tx_ring: ring to be cleaned
+  **/
+-void iavf_clean_tx_ring(struct iavf_ring *tx_ring)
++static void iavf_clean_tx_ring(struct iavf_ring *tx_ring)
+ {
+ 	unsigned long bi_size;
+ 	u16 i;
+@@ -110,7 +110,7 @@ void iavf_free_tx_resources(struct iavf_ring *tx_ring)
+  * Since there is no access to the ring head register
+  * in XL710, we need to use our local copies
+  **/
+-u32 iavf_get_tx_pending(struct iavf_ring *ring, bool in_sw)
++static u32 iavf_get_tx_pending(struct iavf_ring *ring, bool in_sw)
+ {
+ 	u32 head, tail;
+ 
+@@ -127,6 +127,24 @@ u32 iavf_get_tx_pending(struct iavf_ring *ring, bool in_sw)
+ 	return 0;
  }
  
++/**
++ * iavf_force_wb - Issue SW Interrupt so HW does a wb
++ * @vsi: the VSI we care about
++ * @q_vector: the vector on which to force writeback
++ **/
++static void iavf_force_wb(struct iavf_vsi *vsi, struct iavf_q_vector *q_vector)
++{
++	u32 val = IAVF_VFINT_DYN_CTLN1_INTENA_MASK |
++		  IAVF_VFINT_DYN_CTLN1_ITR_INDX_MASK | /* set noitr */
++		  IAVF_VFINT_DYN_CTLN1_SWINT_TRIG_MASK |
++		  IAVF_VFINT_DYN_CTLN1_SW_ITR_INDX_ENA_MASK
++		  /* allow 00 to be written to the index */;
++
++	wr32(&vsi->back->hw,
++	     IAVF_VFINT_DYN_CTLN1(q_vector->reg_idx),
++	     val);
++}
++
  /**
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_osdep.h b/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-index a452ce90679a..77d33deaabb5 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-@@ -13,12 +13,6 @@
- /* get readq/writeq support for 32 bit kernels, use the low-first version */
- #include <linux/io-64-nonatomic-lo-hi.h>
+  * iavf_detect_recover_hung - Function to detect and recover hung_queues
+  * @vsi:  pointer to vsi struct with tx queues
+@@ -352,25 +370,6 @@ static void iavf_enable_wb_on_itr(struct iavf_vsi *vsi,
+ 	q_vector->arm_wb_state = true;
+ }
  
--/* File to be the magic between shared code and
-- * actual OS primitives
-- */
+-/**
+- * iavf_force_wb - Issue SW Interrupt so HW does a wb
+- * @vsi: the VSI we care about
+- * @q_vector: the vector  on which to force writeback
+- *
+- **/
+-void iavf_force_wb(struct iavf_vsi *vsi, struct iavf_q_vector *q_vector)
+-{
+-	u32 val = IAVF_VFINT_DYN_CTLN1_INTENA_MASK |
+-		  IAVF_VFINT_DYN_CTLN1_ITR_INDX_MASK | /* set noitr */
+-		  IAVF_VFINT_DYN_CTLN1_SWINT_TRIG_MASK |
+-		  IAVF_VFINT_DYN_CTLN1_SW_ITR_INDX_ENA_MASK
+-		  /* allow 00 to be written to the index */;
 -
--#define hw_dbg(hw, S, A...)	do {} while (0)
+-	wr32(&vsi->back->hw,
+-	     IAVF_VFINT_DYN_CTLN1(q_vector->reg_idx),
+-	     val);
+-}
 -
- #define wr32(a, reg, value)	writel((value), ((a)->hw_addr + (reg)))
- #define rd32(a, reg)		readl((a)->hw_addr + (reg))
+ static inline bool iavf_container_is_rx(struct iavf_q_vector *q_vector,
+ 					struct iavf_ring_container *rc)
+ {
+@@ -687,7 +686,7 @@ int iavf_setup_tx_descriptors(struct iavf_ring *tx_ring)
+  * iavf_clean_rx_ring - Free Rx buffers
+  * @rx_ring: ring to be cleaned
+  **/
+-void iavf_clean_rx_ring(struct iavf_ring *rx_ring)
++static void iavf_clean_rx_ring(struct iavf_ring *rx_ring)
+ {
+ 	unsigned long bi_size;
+ 	u16 i;
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_txrx.h b/drivers/net/ethernet/intel/iavf/iavf_txrx.h
+index 2624bf6d009e..7e6ee32d19b6 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_txrx.h
++++ b/drivers/net/ethernet/intel/iavf/iavf_txrx.h
+@@ -442,15 +442,11 @@ static inline unsigned int iavf_rx_pg_order(struct iavf_ring *ring)
  
-@@ -35,14 +29,11 @@ struct iavf_dma_mem {
- 
- #define iavf_allocate_dma_mem(h, m, unused, s, a) \
- 	iavf_allocate_dma_mem_d(h, m, s, a)
--#define iavf_free_dma_mem(h, m) iavf_free_dma_mem_d(h, m)
- 
- struct iavf_virt_mem {
- 	void *va;
- 	u32 size;
- };
--#define iavf_allocate_virt_mem(h, m, s) iavf_allocate_virt_mem_d(h, m, s)
--#define iavf_free_virt_mem(h, m) iavf_free_virt_mem_d(h, m)
- 
- #define iavf_debug(h, m, s, ...)				\
- do {								\
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_prototype.h b/drivers/net/ethernet/intel/iavf/iavf_prototype.h
-index edebfbbcffdc..940cb4203fbe 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_prototype.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf_prototype.h
-@@ -40,12 +40,8 @@ enum iavf_status iavf_aq_queue_shutdown(struct iavf_hw *hw, bool unloading);
- const char *iavf_aq_str(struct iavf_hw *hw, enum iavf_admin_queue_err aq_err);
- const char *iavf_stat_str(struct iavf_hw *hw, enum iavf_status stat_err);
- 
--enum iavf_status iavf_aq_get_rss_lut(struct iavf_hw *hw, u16 seid,
--				     bool pf_lut, u8 *lut, u16 lut_size);
- enum iavf_status iavf_aq_set_rss_lut(struct iavf_hw *hw, u16 seid,
- 				     bool pf_lut, u8 *lut, u16 lut_size);
--enum iavf_status iavf_aq_get_rss_key(struct iavf_hw *hw, u16 seid,
--				     struct iavf_aqc_get_set_rss_key_data *key);
- enum iavf_status iavf_aq_set_rss_key(struct iavf_hw *hw, u16 seid,
- 				     struct iavf_aqc_get_set_rss_key_data *key);
- 
-@@ -60,7 +56,6 @@ static inline struct iavf_rx_ptype_decoded decode_rx_desc_ptype(u8 ptype)
- 
- void iavf_vf_parse_hw_config(struct iavf_hw *hw,
- 			     struct virtchnl_vf_resource *msg);
--enum iavf_status iavf_vf_reset(struct iavf_hw *hw);
- enum iavf_status iavf_aq_send_msg_to_pf(struct iavf_hw *hw,
- 					enum virtchnl_ops v_opcode,
- 					enum iavf_status v_retval,
+ bool iavf_alloc_rx_buffers(struct iavf_ring *rxr, u16 cleaned_count);
+ netdev_tx_t iavf_xmit_frame(struct sk_buff *skb, struct net_device *netdev);
+-void iavf_clean_tx_ring(struct iavf_ring *tx_ring);
+-void iavf_clean_rx_ring(struct iavf_ring *rx_ring);
+ int iavf_setup_tx_descriptors(struct iavf_ring *tx_ring);
+ int iavf_setup_rx_descriptors(struct iavf_ring *rx_ring);
+ void iavf_free_tx_resources(struct iavf_ring *tx_ring);
+ void iavf_free_rx_resources(struct iavf_ring *rx_ring);
+ int iavf_napi_poll(struct napi_struct *napi, int budget);
+-void iavf_force_wb(struct iavf_vsi *vsi, struct iavf_q_vector *q_vector);
+-u32 iavf_get_tx_pending(struct iavf_ring *ring, bool in_sw);
+ void iavf_detect_recover_hung(struct iavf_vsi *vsi);
+ int __iavf_maybe_stop_tx(struct iavf_ring *tx_ring, int size);
+ bool __iavf_chk_linearize(struct sk_buff *skb);
 -- 
 2.40.1
 
