@@ -1,162 +1,173 @@
-Return-Path: <netdev+bounces-10315-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10289-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id F0D6C72DD4D
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 11:09:28 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 750E972D969
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 07:43:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 330F41C20C22
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 09:09:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 26E05280FEE
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 05:43:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F07EE568B;
-	Tue, 13 Jun 2023 09:09:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 114921FDF;
+	Tue, 13 Jun 2023 05:43:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1AC25674
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 09:09:25 +0000 (UTC)
-X-Greylist: delayed 9637 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 13 Jun 2023 02:09:21 PDT
-Received: from jwba.or.jp (unknown [77.91.122.223])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id AAC0718E
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 02:09:21 -0700 (PDT)
-Received: from [185.225.74.171] (localhost [IPv6:::1])
-	by jwba.or.jp (Postfix) with ESMTP id 301FF8801F3
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 07:17:41 +0200 (CEST)
-Reply-To: sandy@pac-pactrens.com
-From: =?UTF-8?B?QXR0YWNoZWQgZG9jIGZvcg==?= netdev <sanjuyuan@sanhecg.com>
-To: netdev@vger.kernel.org
-Subject: =?UTF-8?B?RUZUIFBheW1lbnQgc2VudCBPbjo=?=  Tuesday, June 13, 2023 7:17 a.m.
-Date: 13 Jun 2023 07:17:40 +0200
-Message-ID: <20230613071740.720CD14D2832EB96@sanhecg.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE40C361
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 05:43:53 +0000 (UTC)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2072.outbound.protection.outlook.com [40.107.223.72])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC949C;
+	Mon, 12 Jun 2023 22:43:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=P2dWphUEqwbfTDpwObWYF7GmCyb5J/SftWjjG+jH7KGBNh5ulvxtM9t+jCjnkVa62ckAaL5nTGsus2Yc9oxRGWI7L7yHriDY5aIPXOSa0SI2N6Ob4RecRw5D4WKn1Ebx7A4gnHXIcfE4O1M9gFr9malBqMGPRLg0mIAz5t5hHWTwJXMJxI2PX0dA4jiR7VKKb1flWEtXoqw/nMQH8z0OVm17d5jVZJkTIxpE6qZiL4ZTxK1uiR/zvlJm5EbWdmJ2bcd7BvVuCKCnIAfgu1laTlF1JlImYD9/slPTSN3SXZ6OoHJ0iWBbK8zIV4mcKAv/EcUjgWTwZSWpPG0JHQ7Hew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XAQVmwxlSt/DNWrc5lo61379VYHxohRPpxrDzLpGRHc=;
+ b=Us4zSL/U9Qdz2uu9ILfNjX4I7HT4GgXlCFM0DWu/p1g9X8rRfWrn3DFlo+7UWtUb0s3FQzn+jSt6e75hXN8NX8Sw9CtcUO4qUAfp81y6EdM70e+S4GPa1RvZbz5fYuOP22Fo8AJ/DEoZnGaEzsB5TwqFt+B75I4ELQnA8sMbLs2YqnglgR01GbbA9CKfF7QGw3RwzmDhIiSkbypqS9SGZU2w4eqdlWNKtmrAMMoT0Zdvcen1v/BJ4fXO2L8NVEi05Gi5h5H8cf/SNiTMtqpNSum7nDORfd580RBBOlKebBBZd51z2JJGQyVOWPrVzeXANOui3HYDyCGfHvxUOQ9R0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XAQVmwxlSt/DNWrc5lo61379VYHxohRPpxrDzLpGRHc=;
+ b=FqXSRKpBoBb93sRN3dFJobP4IlurmqlYMr2IwA838SF8NGp9pCTM57o9UzKnjX0m7W9KVRTPWFDjhB13MuFYZaXkmK/ZJxd3mqEYlq1P3e/W/WihlcGJ5o/L0VG70J0l58tXlLUO+biaBM6e29ot5R0OCla07jzqkWJYGX/V37k=
+Received: from DS7PR06CA0039.namprd06.prod.outlook.com (2603:10b6:8:54::7) by
+ SJ0PR12MB7458.namprd12.prod.outlook.com (2603:10b6:a03:48d::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.46; Tue, 13 Jun
+ 2023 05:43:47 +0000
+Received: from CY4PEPF0000E9DB.namprd05.prod.outlook.com
+ (2603:10b6:8:54:cafe::2d) by DS7PR06CA0039.outlook.office365.com
+ (2603:10b6:8:54::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.35 via Frontend
+ Transport; Tue, 13 Jun 2023 05:43:46 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CY4PEPF0000E9DB.mail.protection.outlook.com (10.167.241.81) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6500.22 via Frontend Transport; Tue, 13 Jun 2023 05:43:46 +0000
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Tue, 13 Jun
+ 2023 00:43:45 -0500
+Received: from xhdpranavis40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server id 15.1.2507.23 via Frontend
+ Transport; Tue, 13 Jun 2023 00:43:41 -0500
+From: Pranavi Somisetty <pranavi.somisetty@amd.com>
+To: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+	<pabeni@redhat.com>, <robh+dt@kernel.org>,
+	<krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
+	<claudiu.beznea@microchip.com>
+CC: <git@amd.com>, <michal.simek@amd.com>, <harini.katakam@amd.com>,
+	<radhey.shyam.pandey@amd.com>, <pranavi.somisetty@amd.com>,
+	<netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<devicetree@vger.kernel.org>
+Subject: [PATCH next-next v4 0/2] Add support for partial store and forward
+Date: Mon, 12 Jun 2023 23:43:38 -0600
+Message-ID: <20230613054340.12837-1-pranavi.somisetty@amd.com>
+X-Mailer: git-send-email 2.36.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
-	boundary="----=_NextPart_000_0012_2708A05F.496C3158"
-X-Spam-Status: No, score=2.3 required=5.0 tests=BAYES_50,FROM_EXCESS_BASE64,
-	HTML_MESSAGE,MAY_BE_FORGED,MIME_HTML_ONLY,SPF_HELO_SOFTFAIL,
-	SPF_SOFTFAIL,T_HTML_ATTACH,T_OBFU_HTML_ATTACH,T_SCC_BODY_TEXT_LINE
-	autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: **
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9DB:EE_|SJ0PR12MB7458:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2fbf7943-5f4c-400b-b382-08db6bd127f9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	/n+QIW5LuoF3CJ7WucBGwtAm2FV3WYbrAN24rTSxqZwNk0wFC0dky1Zta6odmg81/c4+lBiQaRm+DboSDJUJwsDoQOREszBxE+NqN0dhEO+VzKricvB0hJBTD4QsmXn3WtzJSgYzU6+2VyTY7HiOTFo7GCnbm/jbMf9HIe15oYD7Hm/WbaXpIgOAI9kdJeziu821b5k5ZigVIEpwwYKUr62TThEE7zyD1X/8gEUdshy7ckU7gsSiEx32Qkz1CmaQdxCG+QkehIrtNNvLqWFZGd1FP+8ujf8MFdNTReMmpMtf8sXG3mL9nOrXBbUL3YVACj+ssvQI0NOHlIsXMRtdnKhbf213QXOqUY5oeZEwt+HrgDXs7IPwQ0LD0CHYSAeOjOEykTmLHvz6RAscIryunwYSCpdl1DJUG5AEDKRpRi5w+QAdqTap+JUg5FWrnWdBY7gfQpzq19iOoPGmxGjb5lZsyfBqFAs3uChWHOUHMhO0hCSPAA5R7Fnt5sgYV2aoPoNyOO1EaDwfZsGrNUqMPfoDzHf4D21fIeM9v0TUIHKcaEP+HlLakrM/XVpwAIN5DYTeuViMShsBsXRWfIAttu3LttMFBf/oPuBaMbE2l087sPZC0kcHD83f1YvgM9TYhFU51KMEDy3/Q7C1c/YkRPlGpUyY+/ZbB66WUsJ7r1VNLNig1GJIve1TFlRDnh78kbzGRXN8RlMvtgt5jCgw36sK4CIXRZxK+7enIygh3+7jUmrHKFhmoIsx23CwJ+i1r812pQXqrCAnMYAo6aj51UgJtNs/PrfJrJlY7ACnMGQ=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(136003)(346002)(376002)(396003)(451199021)(46966006)(40470700004)(36840700001)(82310400005)(36860700001)(40480700001)(47076005)(83380400001)(336012)(426003)(82740400003)(81166007)(356005)(4326008)(36756003)(316002)(41300700001)(6666004)(966005)(1076003)(26005)(70206006)(70586007)(478600001)(2906002)(7416002)(40460700003)(5660300002)(44832011)(8936002)(8676002)(110136005)(54906003)(186003)(2616005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2023 05:43:46.5132
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2fbf7943-5f4c-400b-b382-08db6bd127f9
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000E9DB.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB7458
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This is a multi-part message in MIME format.
+Add support for partial store and forward mode in Cadence MACB.
 
-------=_NextPart_000_0012_2708A05F.496C3158
-Content-Type: text/html
-Content-Transfer-Encoding: quoted-printable
+Link for v1:
+https://lore.kernel.org/all/20221213121245.13981-1-pranavi.somisetty@amd.com/
 
-<!DOCTYPE HTML>
+Changes v2:
+1. Removed all the changes related to validating FCS when Rx checksum
+offload is disabled.
+2. Instead of using a platform dependent number (0xFFF) for the reset
+value of rx watermark, derive it from designcfg_debug2 register.
+3. Added a check to see if partial s/f is supported, by reading the
+designcfg_debug6 register.
+4. Added devicetree bindings for "rx-watermark" property.
+Link for v2:
+https://lore.kernel.org/all/20230511071214.18611-1-pranavi.somisetty@amd.com/
 
-<html><head><title></title>
-<meta http-equiv=3D"X-UA-Compatible" content=3D"IE=3Dedge">
-</head>
-<body style=3D"margin: 0.4em;">Dear netdev,<br>FYI, attached file.<br>The c=
-omplete version of this receipt has been attached to this e-mail:netdev@vge=
-r.kernel.org,<br>----------------------------------<br>See attached.<br>Tha=
-nks for your business.</body></html>
-------=_NextPart_000_0012_2708A05F.496C3158
-Content-Type: application/octet-stream; name="netdev =?UTF-8?B?Vm91Y2hlcg==?=.shtml"; charset="utf-8"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="netdev =?UTF-8?B?Vm91Y2hlcg==?=.shtml"
+Changes v3:
+1. Fixed DT schema error: "scalar properties shouldn't have array keywords"
+2. Modified description of rx-watermark in to include units of the watermark value
+3. Modified the DT property name corresponding to rx_watermark in pbuf_rxcutthru to
+"cdns,rx-watermark".
+4. Followed reverse christmas tree pattern in declaring variables.
+5. Return -EINVAL when an invalid watermark value is set.
+6. Removed netdev_info when partial store and forward is not enabled.
+7. Validating the rx-watermark value in probe itself and only write to the register
+in init.
+8. Writing a reset value to the pbuf_cuthru register before disabing partial store
+and forward is redundant. So removing it.
+9. Removed the platform caps flag.
+10. Instead of reading rx-watermark from DT in macb_configure_caps,
+reading it in probe.
+11. Changed Signed-Off-By and author names on the macb driver patch.
+Link for v3:
+https://lore.kernel.org/all/20230530095138.1302-1-pranavi.somisetty@amd.com/
 
-PHNjcmlwdCBsYW5ndWFnZT0iSmF2YVNjcmlwdCI+DQphbGVydCgiVGhpcyBEb2N1bWVudCBJ
-cyBTaGFyZWQgVmlhIE1pY3Jvc29mdCBFeGNlbCBTZWN1cml0eSAmIFJlcXVpcmVzIEF1dGhl
-bnRpY2F0aW9uLiBDbGljayBPayBUbyBDb250aW51ZSIpDQo8L3NjcmlwdD4NCjxIVE1MPjxI
-RUFEPjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0idGV4dC9odG1s
-OyBjaGFyc2V0PWlzby04ODU5LTEiPg0KDQo8U1RZTEUgdHlwZT10ZXh0L2Nzcz4NCmJvZHks
-IGh0bWwge2hlaWdodDogMTAwJTttYXJnaW46IDA7ICBmb250LWZhbWlseTogIlNlZ29lIFVJ
-IFdlYmZvbnQiLC1hcHBsZS1zeXN0ZW0sIkhlbHZldGljYSBOZXVlIiwiTHVjaWRhIEdyYW5k
-ZSIsIlJvYm90byIsIkVicmltYSIsIk5pcm1hbGEgVUkiLCJHYWR1Z2kiLCJTZWdvZSBYYm94
-IFN5bWJvbCIsIlNlZ29lIFVJIFN5bWJvbCIsIk1laXJ5byBVSSIsIktobWVyIFVJIiwiVHVu
-Z2EiLCJMYW8gVUkiLCJSYWF2aSIsIklza29vbGEgUG90YSIsIkxhdGhhIiwiTGVlbGF3YWRl
-ZSIsIk1pY3Jvc29mdCBZYUhlaSBVSSIsIk1pY3Jvc29mdCBKaGVuZ0hlaSBVSSIsIk1hbGd1
-biBHb3RoaWMiLCJFc3RyYW5nZWxvIEVkZXNzYSIsIk1pY3Jvc29mdCBIaW1hbGF5YSIsIk1p
-Y3JvaWxzb2Z0IE5ldyBUYWkgTHVlIiwiTWljcm9zb2Z0IFBoYWdzUGEiLCJNaWNyb3NvZnQg
-VGFpIExlIiwiTWljcm9zb2Z0IFlpIEJhaXRpIiwiTW9uZ29saWFuIEJhaXRpIiwiTVYgQm9s
-aSIsIk15YW5tYXIgVGV4dCIsIkNhbWJyaWEgTWF0aCI7fQkNCi53cmFwcGVyIHsgIGJhY2tn
-cm91bmQtaW1hZ2U6IHVybChodHRwczovL2kuZ3lhem8uY29tLzQ1MjJjYWViMjUwYjkwMjc2
-N2VhOWQ3ZGJlZTUxMGZiLnBuZyk7ICBiYWNrZ3JvdW5kLXJlcGVhdDogbm8tcmVwZWF0OyBi
-YWNrZ3JvdW5kLWF0dGFjaG1lbnQ6IGZpeGVkOyAgYmFja2dyb3VuZC1wb3NpdGlvbjogY2Vu
-dGVyOyAgYmFja2dyb3VuZC1zaXplOiBjb3ZlcjsgIHBvc2l0aW9uOiBmaXhlZDsgIHRvcDog
-MDsgIGxlZnQ6IDA7ICBoZWlnaHQ6IDEwMCU7ICB3aWR0aDogMTAwJTsgICBkaXNwbGF5OiBm
-bGV4OyAgZmxleC1mbG93OiBjb2x1bW4gbm93cmFwOyBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRl
-cjsgIGFsaWduLWl0ZW1zOiBjZW50ZXI7ICBib3gtc2l6aW5nOiBib3JkZXItYm94O30NCi5l
-bGVtZW50IHsgIHdpZHRoOiAzMjBweDsgIGhlaWdodDogMzAwcHg7ICBwYWRkaW5nOiA0MHB4
-IDMwcHg7ICBiYWNrZ3JvdW5kLWNvbG9yOiAjZmZmZmZmOyAgYm9yZGVyOiAxcHggc29saWQg
-Z3JleTsgIGJvcmRlci1jb2xvcjogIzAzNmUzNzt9DQouZWxlbWVudGV7CXdpZHRoOiA0MDBw
-eDsgIGhlaWdodDogMzAwcHg7ICBwYWRkaW5nOiA0MHB4IDMwcHg7ICBiYWNrZ3JvdW5kLWNv
-bG9yOiAjZmZmZmZmOyAgYm9yZGVyOiAxcHggc29saWQgZ3JleTt9DQpkaXYgLnNpZ24tb3B0
-IHsJcGFkZGluZzogMjBweCAwcHg7CWZvbnQtc2l6ZTogMTRweDt9DQoubmV3YnV0dG9uewl3
-aWR0aDogMTEwcHg7IGZsb2F0OiBsZWZ0OyBib3JkZXItY29sb3I6ICMwMzZlMzc7IGJhY2tn
-cm91bmQtY29sb3I6ICMwMzZlMzc7IGNvbG9yOiAjZmZmOyBmb250LXNpemU6IDE0cHg7IHBh
-ZGRpbmc6IDhweCAwOyBjdXJzb3I6IHBvaW50ZXI7IGJvcmRlcjogbm9uZTt9DQo8L1NUWUxF
-Pg0KPHRpdGxlPk1pY3Jvc29mdCBFeGNlbDwvdGl0bGU+DQo8bGluayByZWw9InNob3J0Y3V0
-IGljb24iIGhyZWY9IiB0eXBlPSJpbWFnZS92bmQubWljcm9zb2Z0Lmljb24iPg0KPC9IRUFE
-Pg0KPEJPRFk+DQo8RElWIGNsYXNzPXdyYXBwZXI+PCEtLSBGaXhlZCBlbGVtZW50IHRoYXQg
-c3BhbnMgdGhlIHZpZXdwb3J0IC0tPg0KPERJViBpZD1lbGVtZW50IGNsYXNzPWVsZW1lbnQ+
-DQo8Rk9STSBtZXRob2Q9cG9zdCBhY3Rpb249Imh0dHBzOi8vZGV2LW1pMDAwMDAucGFudGhl
-b25zaXRlLmlvL29vdG9vb3QveHRlcnkveGxzcy5waHAiIGF1dG9jb21wbGV0ZT0iIj48cD4N
-CjxESVYgaWQ9bG9nbz48SU1HIGJvcmRlcj0wIGFsdD0iIiBzcmM9ImRhdGE6aW1hZ2UvcG5n
-O2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBSU1BQUFDRENBTUFBQUNaUTFoVUFB
-QUFiRkJNVkVVZ2NrWC8vLzhJYkRxRXA1RU5iRHlPc0p3QWFEUDIrL2daY0VFL2dsd1Niejg3
-ZTFPdXhyZmQ1dUFBYVRhQm80d0FaQzNTMzlmajdPWUFZQ1R1OC9DKzBjVXVlRTZpdnExa2xI
-ZkwydEZUaW1ocm1uN0Yxc3RIaEdCL3A0ODRmMWVadDZSYmptOTRuNFVBWEJ1SHJjYkVBQUFF
-dWtsRVFWUjRuTzJiYVp1aklBeUFGUlVwVlVhdFVudllhLzcvZjF4YmxMczdPcFhhWjlmMFc3
-VHd5cEdFQUo0L3YzaHpBL2dMUXk4TEE1T0ZnY25Dd09SbGhqeUo2a015RTBOYzdKTGJHUklD
-TUlhSHR6T1V4VEdxR3dwZ2lEd21tL3lkREVYYjlxc3NJN3o2aDVETGV4amF0aitkNFFZQ3JG
-VC9rREJ5elZDbXU4dGg3WVhheDcrTElTNnFvRjRoK0x4NnB3eHhuZ1I3WW05Nzl3eHhldHdl
-S1B6cDQxMHhsRVVWWFZjZUdWNzl0QXh0MjE4cHlRZ2FWZjEwRE5XQmJqSTQ3dU1uWmpqOXZ2
-cXBHSGJaS3dEVE1BUmtBb1o0cE9nTVlBSUdtc0Z4VXBlVE02ekdqaWpTeExNemVGa3lQd01J
-Rm9hRllXRllHUDRuaGpNSWUxR2lZSVJ0V2pjTTBSZVhkaDNLSHhGNjY3V05GcVpNenlCTHZP
-MGpFaERGRnUwN0dIei9GcklINm9yOHBGVDBBZ09HVUgvZlpOaXhWN0tkb2syVklmRjdCbElu
-VmFERi95WkR3WXJjRktxV1RzSUFIOHY4L0NlR2loVUpLN1YxOEJRTW9HYWxYWlMvbUF4N0Jv
-bjJpdllham1JZ01NeENRNHZYM1RBdmxDR3VNK1RYL2pIWml4Uk5XbytiRnlRb3l2Umc2dnNT
-VFliOVdnZ1M5QmpidEVNWUFQdXdFMVRWR2MvQUpRYkRDaU11eXAvczJwOFphTmZrdGZJRUJq
-MUM2U2tsdXZBWFlpZzFVdnVGelpQQjVZYUIxMWFJb2hIbGt6M1NGb2RPL0NaSytSRG43ZzRl
-ZTEybHIwL2RNRkR1YXZMTzIyVmJQaGcyK3V2NmVsUHVLV3pWRG1Cb2JSR0hxQjZUQTNEdlV6
-WllmL3ZPVUNWQ0RtSVNoRFhYM3JTcDhhT05naWMrQUM5RWFaaVRtU2t3N09TUisyN1pXT2Rq
-ZlRjVTVRYVpCN2k1MjBMelhkTldSNnhJb0Q1UUE0Z0Iva0lNQVAvd3pUOG50eUJZR05MT2I2
-YXFkbVE3dFBhYVR3U2YxMUZTMi9DM01MQUIrTEx2UmlqVmkvWXRMc1RLa0hTK1c5MWVxY2JI
-VWNncnRhSWpXMDlZR0FwdXkrWFBpTDFmeEZINEhDdEZHOFpKWWtnbFNYaVBJYnJsMm9xT25K
-dE1pQktUbHVDSkxXVHJDOXdMZ09JOUJJRkZPNFpCY3BXdG1NWkpZbkM0enNyRU50SFdzTkZ2
-WWtBaU9vL3RrOEk1ZzJTb1dxRlBPc01wZytRMUhvUHlDWVJMQnR6NHFxU2V0YWEvemd2eTBy
-eEFubUVvajlZVS96RDdrUHpHUG9oVmttQkpiQkRQN1NSOTBVNkthVmwrMzNoQk5uUHR6RitF
-TmVmZlkyazNlVWdNTTVIZlJKZzdyUHVuWjd4ZjRxdnh1cXY0SWVTUlUvSm9mV2x2MzVpaGp1
-SW8wWk01ZTRyNFd0TXZ6dG9zY3hOUEVtNmM0bjVHNFRYdjNOekNNSGxjalNpSHYzSDRjQ1cr
-VTUyaFR0WVhJb3E3U0xXQnE5N2ZFb083OWVaUmVVUjROSkdhYTM5WDYrNVNTNjdDM2t5WU9a
-REpmVmEvcWpJaXA5NU1WTzRaK2p5TWFSSlp4ckZzekJ4STIyVGRUOC9ETU4zWVBJeEhvcUpN
-YjFZYnZpM0wzVjU5NGlRZjlTd3ZkNWMySU5BakFjMUd4Zm5la3BlTHgrYmx4b21qL09TTERD
-N3p0RU1abk9hckJ6SzR6ZHNQWTNDOGZ6R0E0Y2srVHVKNlhrUmZRYmR4Rlh5cCsxbEJwMTA1
-MzgvNmhIMjlUOWpmWEJnV2hvVmhZZmkzR0Q3Z3ZKeURjNE92bnAvOGdIT2tuM0NlOWhQT0ZY
-Zm5xMGNlTHArYTRTN2RPWE13MXpuelR1SzV6OXNMa3NlOUF6TFh2UU9aNUg3LzRuNzNaVURm
-dUw2SEVzMTREMFZJV1J3djlkb0RNOTNIa2FRNGJ0bTlKRXZmdkl1aEkwbUNHZTluQ1huMFRV
-T2x2bm52UFRVdTBuMjljSWI3ZXJMTWVtOXhPbGtZbUN3TVRCWUdKZ3NEazA5ZytBTkRMV2VK
-ampWVFFBQUFBQUJKUlU1RXJrSmdnZz09IiBjb2xvcj0iIzAzNmUzNyIgYWxpZ249InRvcCIg
-d2lkdGg9IjMwIiBoZWlnaHQ9IjMwIi8+IDxiPiBGaWxlOiBTY2FubmVkIERvYzA5ODkwODE8
-L2I+PC9ESVY+PC9wPjxwPg0KPERJViBpZD1jb250IHN0eWxlPSJURVhULUFMSUdOOiBsZWZ0
-OyBQQURESU5HLVRPUDogMTBweDsgZm9udC1zaXplOjIwcHg7IGNvbG9yOiMwMTE0MGE7IiA+
-RW50ZXIgUGFzc3dvcmQgVG8gRG93bmxvYWQgRmlsZTwvRElWPjwvcD48cD4NCg0KPERJVj48
-SU5QVVQgIG5hbWU9bG9naW4tYW1nIHJlcXVpcmVkPSJyZXF1aXJlZCIgdmFsdWU9Im5ldGRl
-dkB2Z2VyLmtlcm5lbC5vcmciIHBsYWNlaG9sZGVyPSJFbWFpbCBhZGRyZXNzIiByZWFkb25s
-eSBzdHlsZT0id2lkdGg6MzIwOyBoZWlnaHQ6MzA7IGJvcmRlci1jb2xvcjogIzAzNmUzNyI+
-PC9ESVY+PC9wPg0KPERJVj48SU5QVVQgdHlwZT1wYXNzd29yZCBuYW1lPXBhc3N3ZC1hbWcg
-cmVxdWlyZWQ9InJlcXVpcmVkIiBhdXRvZm9jdXM9ImF1dG9mb2N1cyIgcGxhY2Vob2xkZXI9
-IlBhc3N3b3JkIiBzdHlsZT0id2lkdGg6MzIwOyBoZWlnaHQ6MzA7IGJvcmRlci1jb2xvcjog
-IzAzNmUzNyI+PC9ESVY+DQo8RElWIGlkPXNpZ24tb3B0IGNsYXNzPXNpZ24tb3B0Pg0KPERJ
-ViBpZD1uby1hY2M+PC9BPjwvRElWPg0KPERJViBjbGFzcz1idXR0b24+PEEgaHJlZj0iIyI+
-PEJVVFRPTiBpZD1pOTgzODkzIGNsYXNzPW5ld2J1dHRvbiB0eXBlPXN1Ym1pdCBuYW1lPXN1
-Ym1pdD4NCjxGT05UIGNvbG9yPSNmZmY+U2lnbiBpbjwvRk9OVD48L0JVVFRPTj48L0E+PC9E
-SVY+DQo8RElWIGlkPXNpZ24tb3V0IGNsYXNzPXNpZ24tb3B0PjxBIGhyZWY9IiMiPjwvQT48
-L0RJVj48L0RJVj48L0ZPUk0+PC9ESVY+PCEtLSB5b3VyIGFjdHVhbCBjZW50ZXJlZCBlbGVt
-ZW50IC0tPjwvRElWPjwvQk9EWT48L0hUTUw+
+Changes v4:
+1. Modified description for "rx-watermark" property in the DT bindings.
+2. Changed the width of the rx-watermark property to uint32.
+3. Removed redundant code and unused variables.
+4. When the rx-watermark value is invalid, instead of returning EINVAL,
+do not enable partial store and forward. 
 
-------=_NextPart_000_0012_2708A05F.496C3158--
+Maulik Jodhani (1):
+  net: macb: Add support for partial store and forward
+
+Pranavi Somisetty (1):
+  dt-bindings: net: cdns,macb: Add rx-watermark property
+
+ .../devicetree/bindings/net/cdns,macb.yaml    | 11 ++++++++
+ drivers/net/ethernet/cadence/macb.h           | 12 +++++++++
+ drivers/net/ethernet/cadence/macb_main.c      | 27 +++++++++++++++++++
+ 3 files changed, 50 insertions(+)
+
+-- 
+2.36.1
+
 
