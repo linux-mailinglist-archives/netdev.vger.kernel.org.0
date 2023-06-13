@@ -1,274 +1,212 @@
-Return-Path: <netdev+bounces-10310-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10311-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D662F72DC8B
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 10:35:33 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 51E0972DCC6
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 10:39:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E0C071C20C1D
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 08:35:29 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5FBDB281218
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 08:39:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 90DD4210D;
-	Tue, 13 Jun 2023 08:35:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A063D210D;
+	Tue, 13 Jun 2023 08:39:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8418C1C2B
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 08:35:30 +0000 (UTC)
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDA613A
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 01:35:28 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id 4fb4d7f45d1cf-51480d3e161so7784761a12.3
-        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 01:35:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1686645327; x=1689237327;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Udk48S5fbv1dSJicz4zumka+B8gpUCv6JR8oUWwytFE=;
-        b=o9dC8ORhi2FyvFaJyDB1gLfg7fp6jE04zMI9PMsiS1Lau844sKcyC+XT/WNcQrQJy7
-         L2cFqSg2VKLxI7pk+NQbhTna72JESVzQooQZqeZ4qdwFGsGCJ6ZL37y2zwkg3vc5rx11
-         5XVLU8RBmI34mQ4gU5ZNaBqen96fE9mv+3wT/kbc91A+ZTFYM9zmhB2S/z6BS83QO0tV
-         MktH6lJxd+hcHvlaPZ6ccAO0tXdLxRiFlLLctYN1JU2aN63Rnu04ZkqaNJX30K9KwEO8
-         OFuKVt9Bp9MtZN3V9RyV8lP6iX+8AlDS10LniseldOE/LFKOq1p8tmOZeMfNkuS+JznP
-         0f6Q==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93A863D76
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 08:39:44 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BD0173C
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 01:39:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686645580;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=vrGYNaIheG5cW9vw0WAFpAIgS9tsi2HOTi0exhZ2A/c=;
+	b=Avk7s660PC5B/iJUn3KiKtCadQwKMcGTFFpqx1JTamUdDo1LWZy1wC66f0elYWQOxe6Ev0
+	WUQwhAP+8kmJDS7uatnSSe3LrXVuEqEpdxqoRTphTST1sjPQAgXmF6AUYUoPnOuj4hh976
+	sED7yWZPnhZLj+q/hQJ7hGGH55ZuSOc=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-608-st1e-jw8OkmPj_IORDmJwQ-1; Tue, 13 Jun 2023 04:39:39 -0400
+X-MC-Unique: st1e-jw8OkmPj_IORDmJwQ-1
+Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-62849c5e9f0so6815956d6.1
+        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 01:39:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686645327; x=1689237327;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Udk48S5fbv1dSJicz4zumka+B8gpUCv6JR8oUWwytFE=;
-        b=FjZ1UaxTXesi1G3kTAy+7vfO4+x5NYKxO1HmYNwLk7bFFAnn9l10k6wEuKy8SMsZiH
-         yakUmhTRXaNU/b02kVOmlzrgQYD0gA916MIPEVgLJemsGFY4LKLCvZpkU9e/VS4r0BbC
-         CAoOIiDSdJVfKlluBGQDW+7O5YfMk1YpWyJR7t3o8ek++L+6QkCal5YcCYs65plTtGyE
-         7Ul/qOwTiNylZUcbmsZlJSS+93a6BqYFBhVb9bJMUaYDIFzUnxmE13mUnLys7/qxG0u5
-         YOM6ZeDyqkAqXipHK9a6+FEAjw+ANnMd4831DuW2L+rf+zNnj0EpCA4POgn0KixdExy4
-         xjYA==
-X-Gm-Message-State: AC+VfDw6dHJQBmVZZMT2luliBUf0ikv0nDEj6aDMCvwOSmzve1fyhlB6
-	KJEZVPY2fKqQChWEd3kmI5C8olTcetgxSvx9mmI=
-X-Google-Smtp-Source: ACHHUZ5D4gB3CQuOc/H+EBL9HRkHsEZcW5QTsbj6vgPuq8XY2+MuBCT0xx60P2+MpyexNwcAvjYTKg==
-X-Received: by 2002:a05:6402:88e:b0:516:81d3:2627 with SMTP id e14-20020a056402088e00b0051681d32627mr7756069edy.0.1686645327009;
-        Tue, 13 Jun 2023 01:35:27 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id f11-20020aa7d84b000000b00514ad0e3167sm6093578eds.71.2023.06.13.01.35.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 Jun 2023 01:35:26 -0700 (PDT)
-Message-ID: <e13aace9-daf4-8052-4ef3-19033a71ca7a@linaro.org>
-Date: Tue, 13 Jun 2023 10:35:23 +0200
+        d=1e100.net; s=20221208; t=1686645579; x=1689237579;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vrGYNaIheG5cW9vw0WAFpAIgS9tsi2HOTi0exhZ2A/c=;
+        b=P0FLfjugGS4pLEcnY8+mvH1FmCmEswNebxbWoTWS9lmcVzAG1oho7s0qmT+vHjdwb7
+         5Apl/2pW9GSm6cQ4d73IDUWB+ElVKjBUk7YAWIa1iuR0HMdG+IqTMKtGPsS02RYeCP8A
+         kGBrr33y+Efcgtu7xuAFOzEf/pMrLLVQvxfneU9WzzIN6MaSnv+6Z94VFKjdIfM1DUz9
+         EYsxZ8Uos25AzGTa9/c/C5vxeJ2VeLF86e6eyKVKqoUytoeyEEyAhQmVfu78+y/1ntvZ
+         ld23FlmmNo2LBFXcSJ7/lvjVXUB27FWR/W2/jpX5hvn9FjDwNoE+K5yavx69+u4sQDQa
+         05Ew==
+X-Gm-Message-State: AC+VfDwSQ45KwSFDNgzm9x5SvYR4vARdbJTsSE0/RZu38L2EwVIII6Lx
+	j2kw0sLHz+1omr93n5KPQsyYbleuxVuGOLxXdQTHoYhPxz8zLigWBddtmQAAVui0tVdMg7AEGRy
+	Ecdklm8CIuiF8FtZq
+X-Received: by 2002:a05:6214:763:b0:62d:eceb:f7ce with SMTP id f3-20020a056214076300b0062decebf7cemr5372265qvz.1.1686645578858;
+        Tue, 13 Jun 2023 01:39:38 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6ArpYF88Ugrz7kYTH6At9wENyZlMxfLOFwsntoCoR4u161C9Q+M0HyVxOHw+cLbQW2p3OGig==
+X-Received: by 2002:a05:6214:763:b0:62d:eceb:f7ce with SMTP id f3-20020a056214076300b0062decebf7cemr5372260qvz.1.1686645578567;
+        Tue, 13 Jun 2023 01:39:38 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-245-147.dyn.eolo.it. [146.241.245.147])
+        by smtp.gmail.com with ESMTPSA id e21-20020a0caa55000000b00626330a39ecsm3835317qvb.9.2023.06.13.01.39.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Jun 2023 01:39:38 -0700 (PDT)
+Message-ID: <7f773c114001cbcd0c6ff21da9976eb0ba533421.camel@redhat.com>
+Subject: Re: [PATCH net 2/2] net/sched: qdisc_destroy() old ingress and
+ clsact Qdiscs before grafting
+From: Paolo Abeni <pabeni@redhat.com>
+To: Peilin Ye <yepeilin.cs@gmail.com>, Jamal Hadi Salim <jhs@mojatatu.com>, 
+ Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>, "David
+ S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub
+ Kicinski <kuba@kernel.org>
+Cc: Peilin Ye <peilin.ye@bytedance.com>, Vlad Buslov <vladbu@mellanox.com>, 
+ Pedro Tammela <pctammela@mojatatu.com>, John Fastabend
+ <john.fastabend@gmail.com>, Daniel Borkmann <daniel@iogearbox.net>, Hillf
+ Danton <hdanton@sina.com>, Zhengchao Shao <shaozhengchao@huawei.com>,
+ netdev@vger.kernel.org,  linux-kernel@vger.kernel.org, Cong Wang
+ <cong.wang@bytedance.com>
+Date: Tue, 13 Jun 2023 10:39:33 +0200
+In-Reply-To: <c1f67078dc8a3fd7b3c8ed65896c726d1e9b261e.1686355297.git.peilin.ye@bytedance.com>
+References: <cover.1686355297.git.peilin.ye@bytedance.com>
+	 <c1f67078dc8a3fd7b3c8ed65896c726d1e9b261e.1686355297.git.peilin.ye@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH net-next 1/8] dt-bindings: net: mediatek,net: add
- mt7988-eth binding
-Content-Language: en-US
-To: Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
- Russell King <linux@armlinux.org.uk>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Lorenzo Bianconi <lorenzo@kernel.org>, Mark Lee <Mark-MC.Lee@mediatek.com>,
- Sean Wang <sean.wang@mediatek.com>, John Crispin <john@phrozen.org>,
- Felix Fietkau <nbd@nbd.name>, Conor Dooley <conor+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Rob Herring <robh+dt@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Jakub Kicinski <kuba@kernel.org>, Eric Dumazet <edumazet@google.com>,
- "David S. Miller" <davem@davemloft.net>, Sam Shih <Sam.Shih@mediatek.com>
-References: <ZIUWGxUV8mxYns_l@makrotopia.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <ZIUWGxUV8mxYns_l@makrotopia.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 11/06/2023 02:32, Daniel Golle wrote:
-> Introduce DT bindings for the MT7988 SoC to mediatek,net.yaml.
-> The MT7988 SoC got 3 Ethernet MACs operating at a maximum of
-> 10 Gigabit/sec supported by 2 packet processor engines for
-> offloading tasks.
-> The first MAC is hard-wired to a built-in switch which exposes
-> four 1000Base-T PHYs as user ports.
-> It also comes with built-in 2500Base-T PHY which can be used
-> with the 2nd GMAC.
-> The 2nd and 3rd GMAC can be connected to external PHYs or provide
-> SFP(+) cages attached via SGMII, 1000Base-X, 2500Base-X, USXGMII,
-> 5GBase-KR or 10GBase-KR.
-> 
-> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-> ---
->  .../devicetree/bindings/net/mediatek,net.yaml | 111 ++++++++++++++++++
->  1 file changed, 111 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/mediatek,net.yaml b/Documentation/devicetree/bindings/net/mediatek,net.yaml
-> index acb2b2ac4fe1e..f08151a60084b 100644
-> --- a/Documentation/devicetree/bindings/net/mediatek,net.yaml
-> +++ b/Documentation/devicetree/bindings/net/mediatek,net.yaml
-> @@ -23,6 +23,7 @@ properties:
->        - mediatek,mt7629-eth
->        - mediatek,mt7981-eth
->        - mediatek,mt7986-eth
-> +      - mediatek,mt7988-eth
->        - ralink,rt5350-eth
->  
->    reg:
-> @@ -70,6 +71,22 @@ properties:
->        A list of phandle to the syscon node that handles the SGMII setup which is required for
->        those SoCs equipped with SGMII.
->  
-> +  mediatek,toprgu:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description:
-> +      Phandle to the mediatek toprgu controller used to provide various clocks
-> +      and reset to the system.
-> +
-> +  mediatek,usxgmiisys:
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    minItems: 2
-> +    maxItems: 2
-> +    items:
-> +      maxItems: 1
-> +    description:
-> +      A list of phandle to the syscon node that handles the USXGMII setup which is required for
-> +      those SoCs equipped with USXGMII.
+Hi,
 
-Why do you need two phandles for the same node?
+On Sat, 2023-06-10 at 20:30 -0700, Peilin Ye wrote:
+> From: Peilin Ye <peilin.ye@bytedance.com>
+>=20
+> mini_Qdisc_pair::p_miniq is a double pointer to mini_Qdisc, initialized
+> in ingress_init() to point to net_device::miniq_ingress.  ingress Qdiscs
+> access this per-net_device pointer in mini_qdisc_pair_swap().  Similar
+> for clsact Qdiscs and miniq_egress.
+>=20
+> Unfortunately, after introducing RTNL-unlocked RTM_{NEW,DEL,GET}TFILTER
+> requests (thanks Hillf Danton for the hint), when replacing ingress or
+> clsact Qdiscs, for example, the old Qdisc ("@old") could access the same
+> miniq_{in,e}gress pointer(s) concurrently with the new Qdisc ("@new"),
+> causing race conditions [1] including a use-after-free bug in
+> mini_qdisc_pair_swap() reported by syzbot:
+>=20
+>  BUG: KASAN: slab-use-after-free in mini_qdisc_pair_swap+0x1c2/0x1f0 net/=
+sched/sch_generic.c:1573
+>  Write of size 8 at addr ffff888045b31308 by task syz-executor690/14901
+> ...
+>  Call Trace:
+>   <TASK>
+>   __dump_stack lib/dump_stack.c:88 [inline]
+>   dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
+>   print_address_description.constprop.0+0x2c/0x3c0 mm/kasan/report.c:319
+>   print_report mm/kasan/report.c:430 [inline]
+>   kasan_report+0x11c/0x130 mm/kasan/report.c:536
+>   mini_qdisc_pair_swap+0x1c2/0x1f0 net/sched/sch_generic.c:1573
+>   tcf_chain_head_change_item net/sched/cls_api.c:495 [inline]
+>   tcf_chain0_head_change.isra.0+0xb9/0x120 net/sched/cls_api.c:509
+>   tcf_chain_tp_insert net/sched/cls_api.c:1826 [inline]
+>   tcf_chain_tp_insert_unique net/sched/cls_api.c:1875 [inline]
+>   tc_new_tfilter+0x1de6/0x2290 net/sched/cls_api.c:2266
+> ...
+>=20
+> @old and @new should not affect each other.  In other words, @old should
+> never modify miniq_{in,e}gress after @new, and @new should not update
+> @old's RCU state.
+>=20
+> Fixing without changing sch_api.c turned out to be difficult (please
+> refer to Closes: for discussions).  Instead, make sure @new's first call
+> always happen after @old's last call (in {ingress,clsact}_destroy()) has
+> finished:
+>=20
+> In qdisc_graft(), return -EBUSY if @old has any ongoing filter requests,
+> and call qdisc_destroy() for @old before grafting @new.
+>=20
+> Introduce qdisc_refcount_dec_if_one() as the counterpart of
+> qdisc_refcount_inc_nz() used for filter requests.  Introduce a
+> non-static version of qdisc_destroy() that does a TCQ_F_BUILTIN check,
+> just like qdisc_put() etc.
+>=20
+> Depends on patch "net/sched: Refactor qdisc_graft() for ingress and
+> clsact Qdiscs".
+>=20
+> [1] To illustrate, the syzkaller reproducer adds ingress Qdiscs under
+> TC_H_ROOT (no longer possible after commit c7cfbd115001 ("net/sched:
+> sch_ingress: Only create under TC_H_INGRESS")) on eth0 that has 8
+> transmission queues:
+>=20
+>   Thread 1 creates ingress Qdisc A (containing mini Qdisc a1 and a2),
+>   then adds a flower filter X to A.
+>=20
+>   Thread 2 creates another ingress Qdisc B (containing mini Qdisc b1 and
+>   b2) to replace A, then adds a flower filter Y to B.
+>=20
+>  Thread 1               A's refcnt   Thread 2
+>   RTM_NEWQDISC (A, RTNL-locked)
+>    qdisc_create(A)               1
+>    qdisc_graft(A)                9
+>=20
+>   RTM_NEWTFILTER (X, RTNL-unlocked)
+>    __tcf_qdisc_find(A)          10
+>    tcf_chain0_head_change(A)
+>    mini_qdisc_pair_swap(A) (1st)
+>             |
+>             |                         RTM_NEWQDISC (B, RTNL-locked)
+>          RCU sync                2     qdisc_graft(B)
+>             |                    1     notify_and_destroy(A)
+>             |
+>    tcf_block_release(A)          0    RTM_NEWTFILTER (Y, RTNL-unlocked)
+>    qdisc_destroy(A)                    tcf_chain0_head_change(B)
+>    tcf_chain0_head_change_cb_del(A)    mini_qdisc_pair_swap(B) (2nd)
+>    mini_qdisc_pair_swap(A) (3rd)                |
+>            ...                                 ...
+>=20
+> Here, B calls mini_qdisc_pair_swap(), pointing eth0->miniq_ingress to
+> its mini Qdisc, b1.  Then, A calls mini_qdisc_pair_swap() again during
+> ingress_destroy(), setting eth0->miniq_ingress to NULL, so ingress
+> packets on eth0 will not find filter Y in sch_handle_ingress().
+>=20
+> This is just one of the possible consequences of concurrently accessing
+> miniq_{in,e}gress pointers.
+>=20
+> Fixes: 7a096d579e8e ("net: sched: ingress: set 'unlocked' flag for Qdisc =
+ops")
+> Fixes: 87f373921c4e ("net: sched: ingress: set 'unlocked' flag for clsact=
+ Qdisc ops")
+> Reported-by: syzbot+b53a9c0d1ea4ad62da8b@syzkaller.appspotmail.com
+> Closes: https://lore.kernel.org/r/0000000000006cf87705f79acf1a@google.com=
+/
+> Cc: Hillf Danton <hdanton@sina.com>
+> Cc: Vlad Buslov <vladbu@mellanox.com>
+> Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
 
-> +
->    mediatek,wed:
->      $ref: /schemas/types.yaml#/definitions/phandle-array
->      minItems: 2
-> @@ -84,6 +101,21 @@ properties:
->      description:
->        Phandle to the mediatek wed-pcie controller.
->  
-> +  mediatek,xfi_pextp:
+The fixes LGTM, but I guess this could deserve an explicit ack from
+Jakub, as he raised to point for the full retry implementation.
 
-Underscores are not allowed in property names.
+Cheers,
 
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    minItems: 2
-> +    maxItems: 2
-> +    items:
-> +      maxItems: 1
-> +    description:
-> +      A list of phandle to the syscon node that handles the XFI setup which is required for
-> +      those SoCs equipped with XFI.
-> +
-> +  mediatek,xfi_pll:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description:
-> +      Phandle to the XFI PLL unit.
-
-This looks like a clock.
-
-> +
->    dma-coherent: true
->  
->    mdio-bus:
-> @@ -290,6 +322,85 @@ allOf:
->            minItems: 2
->            maxItems: 2
->  
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: mediatek,mt7988-eth
-> +    then:
-> +      properties:
-> +        interrupts:
-> +          minItems: 4
-> +
-> +        clocks:
-> +          minItems: 34
-> +          maxItems: 34
-> +
-> +        clock-names:
-> +          items:
-> +            - const: crypto
-> +            - const: fe
-> +            - const: gp2
-> +            - const: gp1
-> +            - const: gp3
-> +            - const: ethwarp_wocpu2
-> +            - const: ethwarp_wocpu1
-> +            - const: ethwarp_wocpu0
-> +            - const: esw
-> +            - const: netsys0
-> +            - const: netsys1
-> +            - const: sgmii_tx250m
-> +            - const: sgmii_rx250m
-> +            - const: sgmii2_tx250m
-> +            - const: sgmii2_rx250m
-> +            - const: top_usxgmii0_sel
-> +            - const: top_usxgmii1_sel
-> +            - const: top_sgm0_sel
-> +            - const: top_sgm1_sel
-> +            - const: top_xfi_phy0_xtal_sel
-> +            - const: top_xfi_phy1_xtal_sel
-> +            - const: top_eth_gmii_sel
-> +            - const: top_eth_refck_50m_sel
-> +            - const: top_eth_sys_200m_sel
-> +            - const: top_eth_sys_sel
-> +            - const: top_eth_xgmii_sel
-> +            - const: top_eth_mii_sel
-> +            - const: top_netsys_sel
-> +            - const: top_netsys_500m_sel
-> +            - const: top_netsys_pao_2x_sel
-> +            - const: top_netsys_sync_250m_sel
-> +            - const: top_netsys_ppefb_250m_sel
-> +            - const: top_netsys_warp_sel
-> +            - const: wocpu1
-> +            - const: wocpu0
-> +            - const: xgp1
-> +            - const: xgp2
-> +            - const: xgp3
-> +
-> +        mediatek,sgmiisys:
-> +          minItems: 2
-> +          maxItems: 2
-> +
-> +        mediatek,usxgmiisys:
-> +          minItems: 2
-> +          maxItems: 2
-
-Why do you need this here?
-
-> +
-> +        mediatek,xfi_pextp:
-> +          minItems: 2
-> +          maxItems: 2
-> +
-> +        mediatek,xfi_pll:
-> +          minItems: 1
-> +          maxItems: 1
-> +
-> +        mediatek,infracfg:
-> +          minItems: 1
-> +          maxItems: 1
-> +
-> +        mediatek,toprgu:
-> +          minItems: 1
-> +          maxItems: 1
-
-All this looks redundant.
-
-
-
-Best regards,
-Krzysztof
+Paolo
 
 
