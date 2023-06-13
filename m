@@ -1,118 +1,126 @@
-Return-Path: <netdev+bounces-10548-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10549-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2D79372EFB6
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 00:55:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 107FC72EFD8
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 01:15:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 88159280EDF
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 22:55:20 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6801728113F
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 23:15:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D59F2A9C4;
-	Tue, 13 Jun 2023 22:55:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 58CF12DBA3;
+	Tue, 13 Jun 2023 23:15:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CD6F1361
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 22:55:18 +0000 (UTC)
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7393698;
-	Tue, 13 Jun 2023 15:55:16 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id a640c23a62f3a-977c89c47bdso13597966b.2;
-        Tue, 13 Jun 2023 15:55:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686696915; x=1689288915;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ANEXcWjrRTe+RbBc7gwOrDGNXmOQrXArQ6Sp/mtywzs=;
-        b=YL3YERGon/SIzeeTtOmvAE/PrjlURwrDL8eGxn/wCB+JCYZclaPqTNDMw0n0U4QJ6/
-         qjgKwRewC2bbg0VnMYvbCS9St2U29LArgw582NXTskNv2wdcOTPYW4X0TwpgGb6NO9BY
-         vewxZwr6Y1GgRNmFG1OBcRMimQJAFsimI4IADBZN1GDttt7RIqCvvWwAcYOB1DVHR29C
-         OLTUM9AkM9zCMReF4i+CMU7BKJo5dYl4va4neQ0+NDz08GWe3lQYpRAL2Ri9C79wapzd
-         cdzZpdrGZWSV15GB+ZuidX/2B/6hy/ZpURqxyDV5FJF8jQKwClAz4vk2TjxMk0iemqsx
-         7dmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686696915; x=1689288915;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ANEXcWjrRTe+RbBc7gwOrDGNXmOQrXArQ6Sp/mtywzs=;
-        b=hKhcREfDLsXoMt7ZSuA4jcGWcd5/e8mCHr6mCxtmFw9m5ANJkZhGFLm4ZeoJZfYzj5
-         sHUBLKf3ofkK4ZM8DiiWByMW9M9fsdZnxdjqebYW6YaRuVaZOD22x+vl9vG54mAuFSmX
-         q41ywB7J+4gxTv2v2JlIy/6G2ktLZ9L5y6coKVVcitg+SgPuf0Zx6uzRoKG/6y08dv2R
-         Eje7DMmRjnogemRxex9WDDhOs4ChlzLaYu46HMFcNXgbODSfTj3v1WCkro+35rjGi9eY
-         pHxLaQFu2LYambU9PHgNrwH8oYK2Xfj+phBGD2qkEJM1MrKWsZF0f563jvUANdwOkK+z
-         0YuA==
-X-Gm-Message-State: AC+VfDw1ZW7aTSPJshI0Rt60TlQoEsQTXBOpBmGuMAls4agPY3c9ZNr6
-	Sc83/5UVKEPRTMQNliEO1MeR8RLLI3B7+oMX6Z0IlzAHJ/NrwQ==
-X-Google-Smtp-Source: ACHHUZ6lR5K/a5/7fvggUfZbZYvhUOfZqArLMLrVsSDH6rsX80Ja7nKdSfdlQfLbfopavfm8gHcFgETbVdKqWeUO2ho=
-X-Received: by 2002:a17:907:7202:b0:96f:cb13:8715 with SMTP id
- dr2-20020a170907720200b0096fcb138715mr13782006ejc.69.1686696914632; Tue, 13
- Jun 2023 15:55:14 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BC031361
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 23:15:36 +0000 (UTC)
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9EE7199E
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 16:15:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686698134; x=1718234134;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=mYYNP4k9twgj8XoiNUIUeugOakpKuUCeGbaX+iQExnE=;
+  b=f4I2vl5IStCnoQ7mf7yrtYZ2JYer0D/LsO9OO3o4Ntmm0Ig6LR/GWA3P
+   cddAKS0o4Mqp+lu4TOvzGzlkqC1LiJNrRFbbsPTKCzdwnIoHLka5PYBeZ
+   JRtY0T4FlIz5YqMhK1HyD+izQAuCFWCWrxhAGnw/mqUfmc+4qc5MP5/Nh
+   3W08n0K8OFZNAoh9sQ62aUrSvf7bGH2ZxPFd93CpfjczfNHWQDX24uXzz
+   uGVD/jPi/FvdB2fVrOzjil+78EtGUkWALLkMNOpL+PlE8xaTVg6H6oZUu
+   tKaAHNy7JzsUbDo8vjaAwDDryLuxpcX1TIV2hFxrm/rdp09zfiCv6C+Zk
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="357351999"
+X-IronPort-AV: E=Sophos;i="6.00,241,1681196400"; 
+   d="scan'208";a="357351999"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2023 16:15:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="714973982"
+X-IronPort-AV: E=Sophos;i="6.00,241,1681196400"; 
+   d="scan'208";a="714973982"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by fmsmga007.fm.intel.com with ESMTP; 13 Jun 2023 16:15:31 -0700
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To: intel-wired-lan@lists.osuosl.org
+Cc: netdev@vger.kernel.org,
+	anthony.l.nguyen@intel.com,
+	magnus.karlsson@intel.com,
+	fred@cloudflare.com,
+	Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH v2 iwl-next] ice: allow hot-swapping XDP programs
+Date: Wed, 14 Jun 2023 01:15:23 +0200
+Message-Id: <20230613231523.339413-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.35.3
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230613004054.3539554-1-azeemshaikh38@gmail.com>
- <01E2FCED-7EB6-4D06-8BB0-FB0D141B546E@oracle.com> <202306131238.92CBED5@keescook>
- <B3AC0B67-1629-44AC-8015-B28F020B018C@oracle.com>
-In-Reply-To: <B3AC0B67-1629-44AC-8015-B28F020B018C@oracle.com>
-From: Azeem Shaikh <azeemshaikh38@gmail.com>
-Date: Tue, 13 Jun 2023 18:55:03 -0400
-Message-ID: <CADmuW3VF6HhptF5p7PLJpcNNMCTfwRP=Rm=be=MaaFF_i2rr9g@mail.gmail.com>
-Subject: Re: [PATCH] SUNRPC: Replace strlcpy with strscpy
-To: Chuck Lever III <chuck.lever@oracle.com>
-Cc: Kees Cook <keescook@chromium.org>, Jeff Layton <jlayton@kernel.org>, 
-	"linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>, Neil Brown <neilb@suse.de>, 
-	Olga Kornievskaia <kolga@netapp.com>, Dai Ngo <dai.ngo@oracle.com>, Tom Talpey <tom@talpey.com>, 
-	Linux NFS Mailing List <linux-nfs@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, 
-	Trond Myklebust <trond.myklebust@hammerspace.com>, Anna Schumaker <anna@kernel.org>, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 13, 2023 at 3:43=E2=80=AFPM Chuck Lever III <chuck.lever@oracle=
-.com> wrote:
->
-> > On Jun 13, 2023, at 3:42 PM, Kees Cook <keescook@chromium.org> wrote:
-> >
-> > On Tue, Jun 13, 2023 at 02:18:06PM +0000, Chuck Lever III wrote:
-> >>
-> >>
-> >>> On Jun 12, 2023, at 8:40 PM, Azeem Shaikh <azeemshaikh38@gmail.com> w=
-rote:
-> >>>
-> >>> strlcpy() reads the entire source buffer first.
-> >>> This read may exceed the destination size limit.
-> >>> This is both inefficient and can lead to linear read
-> >>> overflows if a source string is not NUL-terminated [1].
-> >>> In an effort to remove strlcpy() completely [2], replace
-> >>> strlcpy() here with strscpy().
-> >>
-> >> Using sprintf() seems cleaner to me: it would get rid of
-> >> the undocumented naked integer. Would that work for you?
-> >
-> > This is changing the "get" routine for reporting module parameters out
-> > of /sys. I think the right choice here is sysfs_emit(), as it performs
-> > the size tracking correctly. (Even the "default" sprintf() call should
-> > be replaced too, IMO.)
->
-> Agreed, that's even better.
->
+Currently ice driver's .ndo_bpf callback brings interface down and up
+independently of XDP resources' presence. This is only needed when
+either these resources have to be configured or removed. It means that
+if one is switching XDP programs on-the-fly with running traffic,
+packets will be dropped.
 
-Thanks folks. Will send over a v2 which replaces strlcpy with sysfs_emit.
+To avoid this, compare early on ice_xdp_setup_prog() state of incoming
+bpf_prog pointer vs the bpf_prog pointer that is already assigned to
+VSI. Do the swap in case VSI has bpf_prog and incoming one are non-NULL.
+
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+---
+
+v1->v2:
+- fix missing brace (sigh)
+
+ drivers/net/ethernet/intel/ice/ice_main.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index a1f7c8edc22f..dba1f7709e8b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -2924,6 +2924,12 @@ ice_xdp_setup_prog(struct ice_vsi *vsi, struct bpf_prog *prog,
+ 		}
+ 	}
+ 
++	/* hot swap progs and avoid toggling link */
++	if (ice_is_xdp_ena_vsi(vsi) == !!prog) {
++		ice_vsi_assign_bpf_prog(vsi, prog);
++		return 0;
++	}
++
+ 	/* need to stop netdev while setting up the program for Rx rings */
+ 	if (if_running && !test_and_set_bit(ICE_VSI_DOWN, vsi->state)) {
+ 		ret = ice_down(vsi);
+@@ -2956,13 +2962,6 @@ ice_xdp_setup_prog(struct ice_vsi *vsi, struct bpf_prog *prog,
+ 		xdp_ring_err = ice_realloc_zc_buf(vsi, false);
+ 		if (xdp_ring_err)
+ 			NL_SET_ERR_MSG_MOD(extack, "Freeing XDP Rx resources failed");
+-	} else {
+-		/* safe to call even when prog == vsi->xdp_prog as
+-		 * dev_xdp_install in net/core/dev.c incremented prog's
+-		 * refcount so corresponding bpf_prog_put won't cause
+-		 * underflow
+-		 */
+-		ice_vsi_assign_bpf_prog(vsi, prog);
+ 	}
+ 
+ 	if (if_running)
+-- 
+2.34.1
+
 
