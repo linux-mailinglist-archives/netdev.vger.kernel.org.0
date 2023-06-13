@@ -1,150 +1,147 @@
-Return-Path: <netdev+bounces-10553-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10554-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id A2F0272EFE6
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 01:19:54 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9D4D372F001
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 01:32:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5CF102812C8
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 23:19:53 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 58845280EBB
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 23:32:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8A73537335;
-	Tue, 13 Jun 2023 23:19:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91B9537335;
+	Tue, 13 Jun 2023 23:32:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F3A11ED52
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 23:19:26 +0000 (UTC)
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D959C19A5;
-	Tue, 13 Jun 2023 16:19:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686698364; x=1718234364;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4YUc8eMzQy16ISjWd8qD4X/ti5WdyqeoNpQ/wqfutZE=;
-  b=L/fZXcD1yg7S3FINJgyb/X14YTm9EQtvTYEDwXN2dk8eHa+yhE8FwIR/
-   UIXzxtXK/UJ8QOgJVP/7yu1auWCFjaLPflQUqKGz1F/YBQA9CnQN0Sr5Y
-   dLJvuDGwspA8h1stIomGmvKvdK5gifLId7t+ILXFZujAxCyyIZDt2Y+eS
-   yBhLapflFjP+sOqJY1CmLw0Vc4kKGenQcWhaQw1eTxBTIVy+K3nFl6p4c
-   poB+VATu7Gd29My2/Pp3eDqyLWto0fXjIQjqAyc9YD1WaFH6SxfySUXsx
-   xfjLXHyAGTnDBTqznWnPx5OSYDSfuYn69uvhIDuuz9qivKpTUD0hU8hOK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="357352750"
-X-IronPort-AV: E=Sophos;i="6.00,241,1681196400"; 
-   d="scan'208";a="357352750"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2023 16:19:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="777011273"
-X-IronPort-AV: E=Sophos;i="6.00,241,1681196400"; 
-   d="scan'208";a="777011273"
-Received: from amlin-018-114.igk.intel.com ([10.102.18.114])
-  by fmsmga008.fm.intel.com with ESMTP; 13 Jun 2023 16:19:22 -0700
-From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-To: netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	kuba@kernel.org,
-	davem@davemloft.net,
-	pabeni@redhat.com,
-	edumazet@google.com,
-	chuck.lever@oracle.com
-Cc: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Subject: [PATCH net-next] tools: ynl-gen: generate docs for <name>_max/_mask enums
-Date: Wed, 14 Jun 2023 01:17:09 +0200
-Message-Id: <20230613231709.150622-3-arkadiusz.kubalewski@intel.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20230613231709.150622-1-arkadiusz.kubalewski@intel.com>
-References: <20230613231709.150622-1-arkadiusz.kubalewski@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E625F1361
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 23:32:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70015C433C8;
+	Tue, 13 Jun 2023 23:32:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686699128;
+	bh=yFCEOt8ma7hJwTmwSPWt9wtzjc8Qkj535XE0K6rLXGw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=FK1vphGkUbBr+TuMdwutaeqFkpolDPKyA51nmjsbWBPWoitaDW6gn9Z7ME8tMrwEQ
+	 Xp31VUHXo1hM8c44cSHn0FqggDK13u88G41uCsbMJTjiLBjekk3W+9JX0Ll+O9Tu9P
+	 7KrREWLEO8REEU6Z+R/qXZZIN/Pqd2HmfwqgyCHpba1n+PqkzqZ9yzkdJemnm4Tc16
+	 vjBi52mkZATrxmKrYvDKt8Sg2p9AYv/+I6tZwm8uc7XtaHBF9T7bgueSGrQ0EjcfE/
+	 eniPTS/O9kGApOb45l0tSIsOWcbKgkpds1px9LBw2030wc2dKv8ykC0Oo6aFZeXRXa
+	 AXLtawv4lVziw==
+Date: Tue, 13 Jun 2023 16:32:07 -0700
+From: Saeed Mahameed <saeed@kernel.org>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Saeed Mahameed <saeedm@nvidia.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>,
+	netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+	Shay Drory <shayd@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>
+Subject: Re: [net-next 14/15] net/mlx5: Light probe local SFs
+Message-ID: <ZIj8d8UhsZI2BPpR@x130>
+References: <20230610014254.343576-1-saeed@kernel.org>
+ <20230610014254.343576-15-saeed@kernel.org>
+ <20230610000123.04c3a32f@kernel.org>
+ <ZIVKfT97Ua0Xo93M@x130>
+ <20230612105124.44c95b7c@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20230612105124.44c95b7c@kernel.org>
 
-Including ynl generated uapi header files into source kerneldocs
-(rst files in Documentation/) produces warnings during documentation
-builds (i.e. make htmldocs)
+On 12 Jun 10:51, Jakub Kicinski wrote:
+>On Sat, 10 Jun 2023 21:15:57 -0700 Saeed Mahameed wrote:
+>> On 10 Jun 00:01, Jakub Kicinski wrote:
+>> >On Fri,  9 Jun 2023 18:42:53 -0700 Saeed Mahameed wrote:
+>> >> In case user wants to configure the SFs, for example: to use only vdpa
+>> >> functionality, he needs to fully probe a SF, configure what he wants,
+>> >> and afterward reload the SF.
+>> >>
+>> >> In order to save the time of the reload, local SFs will probe without
+>> >> any auxiliary sub-device, so that the SFs can be configured prior to
+>> >> its full probe.
+>> >
+>> >I feel like we talked about this at least twice already, and I keep
+>> >saying that the features should be specified when the device is
+>> >spawned. Am I misremembering?
+>>
+>> I think we did talk about this, but after internal research we prefer to
+>> avoid adding additional knobs, unless you insist :) ..
+>> I think we already did a research and we feel that all of our users are
+>> going to re-configure the SF anyway, so why not make all SFs start with
+>> "blank state" ?
+>
+>In the container world, at least, I would have thought that the
+>management daemon gets a full spec of the container its starting
+>upfront. So going thru this spawn / config / futz / reset cycle
+>is pure boilerplate pain.
+>
 
-Prevent warnings by generating also description for enums where rander_max
-was selected.
+That's the point of the series. create / config / spawn.
 
-Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
----
- include/uapi/linux/netdev.h       |  1 +
- tools/include/uapi/linux/netdev.h |  1 +
- tools/net/ynl/ynl-gen-c.py        | 11 ++++++++++-
- 3 files changed, 12 insertions(+), 1 deletion(-)
+personally I like that the SF object is created blank, with dev handles
+(devlink/aux) to configure it, and spawn it when ready.
+I don't see a point of having an extra "blank state" devlink param.
 
-diff --git a/include/uapi/linux/netdev.h b/include/uapi/linux/netdev.h
-index 639524b59930..d78f7ae95092 100644
---- a/include/uapi/linux/netdev.h
-+++ b/include/uapi/linux/netdev.h
-@@ -24,6 +24,7 @@
-  *   XDP buffer support in the driver napi callback.
-  * @NETDEV_XDP_ACT_NDO_XMIT_SG: This feature informs if netdev implements
-  *   non-linear XDP buffer support in ndo_xdp_xmit callback.
-+ * @NETDEV_XDP_ACT_MASK: valid values mask
-  */
- enum netdev_xdp_act {
- 	NETDEV_XDP_ACT_BASIC = 1,
-diff --git a/tools/include/uapi/linux/netdev.h b/tools/include/uapi/linux/netdev.h
-index 639524b59930..d78f7ae95092 100644
---- a/tools/include/uapi/linux/netdev.h
-+++ b/tools/include/uapi/linux/netdev.h
-@@ -24,6 +24,7 @@
-  *   XDP buffer support in the driver napi callback.
-  * @NETDEV_XDP_ACT_NDO_XMIT_SG: This feature informs if netdev implements
-  *   non-linear XDP buffer support in ndo_xdp_xmit callback.
-+ * @NETDEV_XDP_ACT_MASK: valid values mask
-  */
- enum netdev_xdp_act {
- 	NETDEV_XDP_ACT_BASIC = 1,
-diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
-index 0b5e0802a9a7..0d396bf98c27 100755
---- a/tools/net/ynl/ynl-gen-c.py
-+++ b/tools/net/ynl/ynl-gen-c.py
-@@ -2011,6 +2011,7 @@ def render_uapi(family, cw):
-         # Write kdoc for enum and flags (one day maybe also structs)
-         if const['type'] == 'enum' or const['type'] == 'flags':
-             enum = family.consts[const['name']]
-+            name_pfx = const.get('name-prefix', f"{family.name}-{const['name']}-")
- 
-             if enum.has_doc():
-                 cw.p('/**')
-@@ -2022,10 +2023,18 @@ def render_uapi(family, cw):
-                     if entry.has_doc():
-                         doc = '@' + entry.c_name + ': ' + entry['doc']
-                         cw.write_doc_line(doc)
-+                if const.get('render-max', False):
-+                    if const['type'] == 'flags':
-+                        doc = '@' + c_upper(name_pfx + 'mask') + ': valid values mask'
-+                        cw.write_doc_line(doc)
-+                    else:
-+                        doc = '@' + c_upper(name_pfx + 'max') + ': max valid value'
-+                        cw.write_doc_line(doc)
-+                        doc = '@__' + c_upper(name_pfx + 'max') + ': do not use'
-+                        cw.write_doc_line(doc)
-                 cw.p(' */')
- 
-             uapi_enum_start(family, cw, const, 'name')
--            name_pfx = const.get('name-prefix', f"{family.name}-{const['name']}-")
-             for entry in enum.entries.values():
-                 suffix = ','
-                 if entry.value_change:
--- 
-2.37.3
+>What use cases are you considering? More VM-oriented?
+>
+
+Mostly container oriented, and selecting the ULP stacks, e.g RDMA, VDPA,
+virtio, netdev, etc .. 
+
+
+>> >> The defaults of the enable_* devlink params of these SFs are set to
+>> >> false.
+>> >>
+>> >> Usage example:
+>> >
+>> >Is this a real example? Because we have..
+>> >
+>> >> Create SF:
+>> >> $ devlink port add pci/0000:08:00.0 flavour pcisf pfnum 0 sfnum 11
+>> >
+>> >sfnum 11 here
+>>
+>> This an arbitrary user index.
+>>
+>> >> $ devlink port function set pci/0000:08:00.0/32768 \
+>> >
+>> >then port is 32768
+>>
+>> This is the actual HW port index, our SFs indexing start with an offset.
+>>
+>> >>                hw_addr 00:00:00:00:00:11 state active
+>> >>
+>> >> Enable ETH auxiliary device:
+>> >> $ devlink dev param set auxiliary/mlx5_core.sf.1 \
+>> >
+>> >and instance is sf.1
+>>
+>> This was the first SF aux dev to be created on the system. :/
+>>
+>> It's a mess ha...
+>>
+>> Maybe we need to set the SF aux device index the same as the user index.
+>> But the HW/port index will always be different, otherwise we will need a map
+>> inside the driver.
+>
+>It'd be best to synchronously return to the user what the ID of the
+>allocated entity is. It should be possible with some core changes to
+>rig up devlink to return the sfnum and port ID. But IDK about the new
+>devlink instance :(
+
+I think that's possible, let me ask the team to take a shot at this.. 
+
+I am not sure I understand what you mean by "new devlink instance".
+
+SF creation will result in spawning two devlink handles, the SF function port of
+on the eswitch and the SF device devlink instance..
+
 
 
