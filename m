@@ -1,120 +1,88 @@
-Return-Path: <netdev+bounces-10522-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10523-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C4E9D72ED50
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 22:51:12 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 44B8D72ED6C
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 22:57:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0B2121C2088E
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:51:12 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 733F01C20404
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:57:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1200023D56;
-	Tue, 13 Jun 2023 20:51:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C49427217;
+	Tue, 13 Jun 2023 20:57:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 903BB136A
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 20:51:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BCA2C433C8;
-	Tue, 13 Jun 2023 20:51:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91F16174FA
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 20:57:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C154C433C0;
+	Tue, 13 Jun 2023 20:57:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686689467;
-	bh=u2W/j/Wm08jr9OVh1h4FO/pfdXuO010GZuUSpXxY6c0=;
-	h=From:To:Cc:Subject:Date:From;
-	b=krjR0p8nVdjnDYE6WVcxM29drBekPOOSu23iX2F/uL8z6H4IW8ssyviWKDbu/g9eg
-	 CQMv30ghD/Y5V2pJEL76S0H2+6zDh/N47iyHZBY/Y1mBGOFc9qfsDfeuXdxOpn22eh
-	 A1jifK0oUMRBeIl7G0O8qZhrCgmhO9oBONxu5tTmnbz++mi4mfys62/VA3mCVKIxyU
-	 MPZ/zqvovUircyBu9Ob9qr+fKXt7dyiJLhHSoFTOHRTxfSerx2x1e9M8JK44CCKsPw
-	 qRcpy6951InbpUaZWR+l+LgIT1NT9h7ARgro6LUbSoAP7sKqbAJsGTqb+GCZDYXSXe
-	 FblOKDTX8r9/w==
-From: Jakub Kicinski <kuba@kernel.org>
-To: davem@davemloft.net
-Cc: netdev@vger.kernel.org,
-	edumazet@google.com,
-	pabeni@redhat.com,
-	Jakub Kicinski <kuba@kernel.org>,
-	richardbgobert@gmail.com
-Subject: [PATCH net-next] gro: move the tc_ext comparison to a helper
-Date: Tue, 13 Jun 2023 13:51:05 -0700
-Message-Id: <20230613205105.1996166-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.40.1
+	s=k20201202; t=1686689867;
+	bh=16rG3Y0vOlpHVgnmwY42ppaSUcT2KRuT590yu9eCc0I=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=EQUWBXsi0EP8QFDoW1PhOPTaNCzUaa2ygBgSHBdDJakb+67u6JKik08mC/OIv4IkZ
+	 fM/D2m710nuqtuEOeGtfpDDUT2E11TRRGLqeO/VaEmnXnq8kpr0FLePxmFcF+tcD7N
+	 ZSqj8Ke0Om6QowL4BxL/qmLt1SPlRymOoCvkLBO425Yn7g70EqAoDRGmfzfqNKPfZN
+	 uwv3P/7H+q2GyuoGt8jhrP0TRp1qks825yCdM8PDD7fn4FN2ljl+nwyBLhJamx00KY
+	 pEz7y4aP8iGZsQ/iaVsiiQbYHlVn4tfUXSDAUb+8c6qxv9EJF0A6ttxoNYDVuu5Qja
+	 q/Z+8pz1DQXhg==
+Date: Tue, 13 Jun 2023 21:57:42 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+	Neeraj Kale <neeraj.sanjaykale@nxp.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>, netdev@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: net: bluetooth: nxp: Add missing type for
+ "fw-init-baudrate"
+Message-ID: <20230613-underfed-divinity-6b0736a99845@spud>
+References: <20230613200929.2822137-1-robh@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="gTLLYxVJbP1O93MX"
+Content-Disposition: inline
+In-Reply-To: <20230613200929.2822137-1-robh@kernel.org>
 
-The double ifdefs are quite aesthetically displeasing.
-Use a helper function to make the code more compact.
-The resulting machine code looks the same (with minor
-movement of some basic blocks).
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: richardbgobert@gmail.com
----
- net/core/gro.c | 31 ++++++++++++++++++-------------
- 1 file changed, 18 insertions(+), 13 deletions(-)
+--gTLLYxVJbP1O93MX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/net/core/gro.c b/net/core/gro.c
-index ab9a447dfba7..90889e1f3f9a 100644
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@ -305,6 +305,23 @@ void napi_gro_flush(struct napi_struct *napi, bool flush_old)
- }
- EXPORT_SYMBOL(napi_gro_flush);
- 
-+static void gro_list_prepare_tc_ext(const struct sk_buff *skb,
-+				    const struct sk_buff *p,
-+				    unsigned long *diffs)
-+{
-+#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-+	struct tc_skb_ext *skb_ext;
-+	struct tc_skb_ext *p_ext;
-+
-+	skb_ext = skb_ext_find(skb, TC_SKB_EXT);
-+	p_ext = skb_ext_find(p, TC_SKB_EXT);
-+
-+	*diffs |= (!!p_ext) ^ (!!skb_ext);
-+	if (!*diffs && unlikely(skb_ext))
-+		*diffs |= p_ext->chain ^ skb_ext->chain;
-+#endif
-+}
-+
- static void gro_list_prepare(const struct list_head *head,
- 			     const struct sk_buff *skb)
- {
-@@ -339,23 +356,11 @@ static void gro_list_prepare(const struct list_head *head,
- 		 * avoid trying too hard to skip each of them individually
- 		 */
- 		if (!diffs && unlikely(skb->slow_gro | p->slow_gro)) {
--#if IS_ENABLED(CONFIG_SKB_EXTENSIONS) && IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
--			struct tc_skb_ext *skb_ext;
--			struct tc_skb_ext *p_ext;
--#endif
--
- 			diffs |= p->sk != skb->sk;
- 			diffs |= skb_metadata_dst_cmp(p, skb);
- 			diffs |= skb_get_nfct(p) ^ skb_get_nfct(skb);
- 
--#if IS_ENABLED(CONFIG_SKB_EXTENSIONS) && IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
--			skb_ext = skb_ext_find(skb, TC_SKB_EXT);
--			p_ext = skb_ext_find(p, TC_SKB_EXT);
--
--			diffs |= (!!p_ext) ^ (!!skb_ext);
--			if (!diffs && unlikely(skb_ext))
--				diffs |= p_ext->chain ^ skb_ext->chain;
--#endif
-+			gro_list_prepare_tc_ext(skb, p, &diffs);
- 		}
- 
- 		NAPI_GRO_CB(p)->same_flow = !diffs;
--- 
-2.40.1
+On Tue, Jun 13, 2023 at 02:09:29PM -0600, Rob Herring wrote:
+> "fw-init-baudrate" is missing a type, add it. While we're here, define the
+> default value with a schema rather than freeform text.
+>=20
+> Signed-off-by: Rob Herring <robh@kernel.org>
 
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+
+Cheers,
+Conor.
+
+--gTLLYxVJbP1O93MX
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZIjYRgAKCRB4tDGHoIJi
+0irFAQCaXswTCJpW35F1LAkKLWwzD5HgwW1DCUp81fSoIGrZogEA6eyHcuhFLmsy
+j5XMZ+mgGcqayNc3lJcyVY47JCgfPgI=
+=RTuu
+-----END PGP SIGNATURE-----
+
+--gTLLYxVJbP1O93MX--
 
