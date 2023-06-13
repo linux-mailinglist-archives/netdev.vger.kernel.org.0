@@ -1,134 +1,236 @@
-Return-Path: <netdev+bounces-10479-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10480-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2A3C272EAFB
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:29:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 6E7E072EB1F
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:39:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4B3791C203B2
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 18:29:43 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A9A0A1C2040E
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 18:39:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1CD163D38E;
-	Tue, 13 Jun 2023 18:29:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CAF4C1ED35;
+	Tue, 13 Jun 2023 18:39:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F9DC38CA4
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 18:29:40 +0000 (UTC)
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C2710CC;
-	Tue, 13 Jun 2023 11:29:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-	Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=DXfkpTd4BgNrWMUgFq3EjpQXH5nUJQkyJKKnkCOa5Zk=; b=O19PVe2L/0aXNxgPLyhPb8w6Sp
-	nKuVjsn1qMFhWQsMddhnsavhxJox9cdxWE13H2FW74HQKEn+TFPm1hi2CPvQHIEw9uOsJrzyu5Y5k
-	ONqAWhYz/mbbqXtDYrWrivVe3x/1BZAERDePJZ9ZLyTAsVybcj0vb+4H3ZAL2iMHPaP085RNGaJBy
-	+OMPtcJKrZpMULnW1vHejvvo9/kRP3j0Ui2daorSwKMLccOabS9tbFd9DH8ARZCacQUVeYK8zvmZN
-	zi1DSc0tcof9oVe2GuBWu4SZtL35rRYwXyxYKKWz7ucdpdWxW7XR1Qiz2a0qj7kRRH+oA3QQuEN5r
-	SqhNpZGw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43678)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1q98lf-0000Z9-GS; Tue, 13 Jun 2023 19:29:23 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1q98la-0006Fs-DQ; Tue, 13 Jun 2023 19:29:18 +0100
-Date: Tue, 13 Jun 2023 19:29:18 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc: Vladimir Oltean <olteanv@gmail.com>,
-	Daniel Golle <daniel@makrotopia.org>,
-	Landen Chao <Landen.Chao@mediatek.com>,
-	DENG Qingfang <dqfext@gmail.com>,
-	Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Frank Wunderlich <frank-w@public-files.de>,
-	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
-	mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net v2 2/7] net: dsa: mt7530: fix trapping frames with
- multiple CPU ports on MT7530
-Message-ID: <ZIi1fixnNqj9Gfcg@shell.armlinux.org.uk>
-References: <20230611081547.26747-1-arinc.unal@arinc9.com>
- <20230611081547.26747-2-arinc.unal@arinc9.com>
- <20230613150815.67uoz3cvvwgmhdp2@skbuf>
- <a91e88a8-c528-0392-1237-fc8417931170@arinc9.com>
- <20230613171858.ybhtlwxqwp7gyrfs@skbuf>
- <20230613172402.grdpgago6in4jogq@skbuf>
- <ca78b2f9-bf98-af26-0267-60d2638f7f00@arinc9.com>
- <20230613173908.iuofbuvkanwyr7as@skbuf>
- <edcbe326-c456-06ef-373b-313e780209de@arinc9.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC0C41ED29
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 18:39:16 +0000 (UTC)
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E4C1BF0
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 11:39:14 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id 98e67ed59e1d1-25bbcf3c0acso1969740a91.2
+        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 11:39:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1686681554; x=1689273554;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QT+fQzSbsB3hqlxQq4ezOUZ9kAZ8c91ieAT3ZrWtoFA=;
+        b=fGJFBgzP7m78qyQUQLVEwT1ooky9W43a0imOgCl47ZWm1NoRo5i18nC+6tisau2W6W
+         b7dsM70tAYWw9NnIl3Q0XlFdISCnBWnW2UCvRXGVb0wdfOMuYcBFU9uj29S9KDXyRLTA
+         LCI+oogJ76epuvoPj196jnEnDyjvXrZhAm2aJ+ebjYQ2xnRO8SXpOA0+eAXJN/93M5KI
+         nJdMTmjT3KjutvOU1QsY4LHnsXhK+jjwHg2WMFeA5MNoGpINuzIJ8Xn1acUbHx0aysbz
+         Wo5pcLkKCLOiwwUeLhTULT7OatG22R3bQwgsSEevY5EM4FJ7G6nl3I7K07qAj1mlzyMa
+         SElg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686681554; x=1689273554;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QT+fQzSbsB3hqlxQq4ezOUZ9kAZ8c91ieAT3ZrWtoFA=;
+        b=icMlCHe7PDbKegE/a7wrjit/6IEw47c0Mjlofl2BCj4x0//WYQNFL3JMsjMdew/+1n
+         w6WSOVkpUMzO1V5Z+sCd7xTBYfy06+Qh7eO+4mebU9xNSa3c1+mKeBRPuO3JoTaIsliD
+         h0rJzVpQTC7PjHjt8Lo26iDiaG1HK1JqDsSLWCNCSK/67VbQReoCq40Au4DeVWtsxths
+         DKiuYaK6btaJu5Tv5k5yUT8G+FU512SMT4gLtbzope9d2o8KNEJJZ/69qDrbyg8xN793
+         82McQKhps48V6n9ZM9p0ESL5t6V+bhHixZ7bud6BX9crzM4ucv3Jbk6DiNM+UprTrbWK
+         cGGw==
+X-Gm-Message-State: AC+VfDw/xmZ6VdNtyCsxjmAufequy8t6MdP/w3ZOz12iQgI3l517zsZp
+	VgEpAXdFK8Ts0BZF47esJuRHEXEw4JjaiMQEr5Yp4A==
+X-Google-Smtp-Source: ACHHUZ6UzjLxyWPiRJjnbgASTJNqy2M+mr/+5MHLW4EvJchmkA3n8OlyNncmExxmrOJE9ZRcG6sHIhK+zROeBbHCGWI=
+X-Received: by 2002:a17:90a:1909:b0:253:37a9:178 with SMTP id
+ 9-20020a17090a190900b0025337a90178mr10681963pjg.45.1686681553846; Tue, 13 Jun
+ 2023 11:39:13 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <edcbe326-c456-06ef-373b-313e780209de@arinc9.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <20230612172307.3923165-1-sdf@google.com> <87cz20xunt.fsf@toke.dk>
+ <ZIiaHXr9M0LGQ0Ht@google.com> <877cs7xovi.fsf@toke.dk>
+In-Reply-To: <877cs7xovi.fsf@toke.dk>
+From: Stanislav Fomichev <sdf@google.com>
+Date: Tue, 13 Jun 2023 11:39:02 -0700
+Message-ID: <CAKH8qBt5tQ69Zs9kYGc7j-_3Yx9D6+pmS4KCN5G0s9UkX545Mg@mail.gmail.com>
+Subject: Re: [RFC bpf-next 0/7] bpf: netdev TX metadata
+To: =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
+Cc: bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net, 
+	andrii@kernel.org, martin.lau@linux.dev, song@kernel.org, yhs@fb.com, 
+	john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com, 
+	jolsa@kernel.org, willemb@google.com, dsahern@kernel.org, 
+	magnus.karlsson@intel.com, bjorn@kernel.org, maciej.fijalkowski@intel.com, 
+	netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 13, 2023 at 08:58:33PM +0300, Arınç ÜNAL wrote:
-> On 13.06.2023 20:39, Vladimir Oltean wrote:
-> > On Tue, Jun 13, 2023 at 08:30:28PM +0300, Arınç ÜNAL wrote:
-> > > That fixes port 5 on certain variants of the MT7530 switch, as it was
-> > > already working on the other variants, which, in conclusion, fixes port 5 on
-> > > all MT7530 variants.
-> > 
-> > Ok. I didn't pay enough attention to the commit message.
-> > 
-> > > And no, trapping works. Having only CPU port 5 defined on the devicetree
-> > > will cause the CPU_PORT bits to be set to port 5. There's only a problem
-> > > when multiple CPU ports are defined.
-> > 
-> > Got it. Then this is really not a problem, and the commit message frames
-> > it incorrectly.
-> 
-> Actually this patch fixes the issue it describes. At the state of this
-> patch, when multiple CPU ports are defined, port 5 is the active CPU port,
-> CPU_PORT bits are set to port 6.
+On Tue, Jun 13, 2023 at 10:18=E2=80=AFAM Toke H=C3=B8iland-J=C3=B8rgensen <=
+toke@kernel.org> wrote:
+>
+> Stanislav Fomichev <sdf@google.com> writes:
+>
+> > On 06/12, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> >> Some immediate thoughts after glancing through this:
+> >>
+> >> > --- Use cases ---
+> >> >
+> >> > The goal of this series is to add two new standard-ish places
+> >> > in the transmit path:
+> >> >
+> >> > 1. Right before the packet is transmitted (with access to TX
+> >> >    descriptors)
+> >> > 2. Right after the packet is actually transmitted and we've received=
+ the
+> >> >    completion (again, with access to TX completion descriptors)
+> >> >
+> >> > Accessing TX descriptors unlocks the following use-cases:
+> >> >
+> >> > - Setting device hints at TX: XDP/AF_XDP might use these new hooks t=
+o
+> >> > use device offloads. The existing case implements TX timestamp.
+> >> > - Observability: global per-netdev hooks can be used for tracing
+> >> > the packets and exploring completion descriptors for all sorts of
+> >> > device errors.
+> >> >
+> >> > Accessing TX descriptors also means that the hooks have to be called
+> >> > from the drivers.
+> >> >
+> >> > The hooks are a light-weight alternative to XDP at egress and curren=
+tly
+> >> > don't provide any packet modification abilities. However, eventually=
+,
+> >> > can expose new kfuncs to operate on the packet (or, rather, the actu=
+al
+> >> > descriptors; for performance sake).
+> >>
+> >> dynptr?
+> >
+> > Haven't considered, let me explore, but not sure what it buys us
+> > here?
+>
+> API consistency, certainly. Possibly also performance, if using the
+> slice thing that gets you a direct pointer to the pkt data? Not sure
+> about that, though, haven't done extensive benchmarking of dynptr yet...
 
-Maybe it's just me being dumb, but I keep finding things difficult to
-understand, such as the above paragraph.
+Same. Let's keep it on the table, I'll try to explore. I was just
+thinking that having less abstraction here might be better
+performance-wise.
 
-It sounds like you're saying that _before_ this patch, port 5 is the
-active CPU port, but the CPU_PORT *FIELD* NOT BITS are set such that
-port 6 is the active CPU port. Therefore, things are broken, and this
-patch fixes it.
+> >> > --- UAPI ---
+> >> >
+> >> > The hooks are implemented in a HID-BPF style. Meaning they don't
+> >> > expose any UAPI and are implemented as tracing programs that call
+> >> > a bunch of kfuncs. The attach/detach operation happen via BPF syscal=
+l
+> >> > programs. The series expands device-bound infrastructure to tracing
+> >> > programs.
+> >>
+> >> Not a fan of the "attach from BPF syscall program" thing. These are pa=
+rt
+> >> of the XDP data path API, and I think we should expose them as proper
+> >> bpf_link attachments from userspace with introspection etc. But I gues=
+s
+> >> the bpf_mprog thing will give us that?
+> >
+> > bpf_mprog will just make those attach kfuncs return the link fd. The
+> > syscall program will still stay :-(
+>
+> Why does the attachment have to be done this way, exactly? Couldn't we
+> just use the regular bpf_link attachment from userspace? AFAICT it's not
+> really piggy-backing on the function override thing anyway when the
+> attachment is per-dev? Or am I misunderstanding how all this works?
 
-Or are you saying that after this patch is applied, port 5 is the
-active CPU port, but the CPU_PORT *FIELD* is set to port 6. If that's
-true, then I've no idea what the hell is going on here because it
-seems to be senseless.
+It's UAPI vs non-UAPI. I'm assuming kfunc makes it non-UAPI and gives
+us an opportunity to fix things.
+We can do it via a regular syscall path if there is a consensus.
 
-I think at this point I just give up trying to understand what the
-hell these patches are trying to do - in my opinion, the commit
-messages are worded attrociously and incomprehensively.
+> >> > --- skb vs xdp ---
+> >> >
+> >> > The hooks operate on a new light-weight devtx_frame which contains:
+> >> > - data
+> >> > - len
+> >> > - sinfo
+> >> >
+> >> > This should allow us to have a unified (from BPF POW) place at TX
+> >> > and not be super-taxing (we need to copy 2 pointers + len to the sta=
+ck
+> >> > for each invocation).
+> >>
+> >> Not sure what I think about this one. At the very least I think we
+> >> should expose xdp->data_meta as well. I'm not sure what the use case f=
+or
+> >> accessing skbs is? If that *is* indeed useful, probably there will als=
+o
+> >> end up being a use case for accessing the full skb?
+> >
+> > skb_shared_info has meta_len, buf afaik, xdp doesn't use it. Maybe I
+> > a good opportunity to unify? Or probably won't work because if
+> > xdf_frame doesn't have frags, it won't have sinfo?
+>
+> No, it won't. But why do we need this unification between the skb and
+> xdp paths in the first place? Doesn't the skb path already have support
+> for these things? Seems like we could just stick to making this xdp-only
+> and keeping xdp_frame as the ctx argument?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+For skb path, I'm assuming we can read sinfo->meta_len; it feels nice
+to make it work for both cases?
+We can always export metadata len via some kfunc, sure.
+
+> >> > --- Multiprog attachment ---
+> >> >
+> >> > Currently, attach/detach don't expose links and don't support multip=
+le
+> >> > programs. I'm planning to use Daniel's bpf_mprog once it lands.
+> >> >
+> >> > --- TODO ---
+> >> >
+> >> > Things that I'm planning to do for the non-RFC series:
+> >> > - have some real device support to verify xdp_hw_metadata works
+> >>
+> >> Would be good to see some performance numbers as well :)
+> >
+> > +1 :-)
+> >
+> >> > - freplace
+> >> > - Documentation/networking/xdp-rx-metadata.rst - like documentation
+> >> >
+> >> > --- CC ---
+> >> >
+> >> > CC'ing people only on the cover letter. Hopefully can find the rest =
+via
+> >> > lore.
+> >>
+> >> Well, I found it there, even though I was apparently left off the Cc
+> >> list :(
+> >>
+> >> -Toke
+> >
+> > Sure, I'll CC you explicitly next time! But I know you diligently follo=
+w bpf
+> > list, so decided to explicitly cc mostly netdev folks that might miss
+> > it otherwise.
+>
+> Haha, fair point! And no big deal, I did obviously see it. I was just
+> feeling a bit left out, that's all ;)
+>
+> -Toke
 
