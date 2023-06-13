@@ -1,130 +1,135 @@
-Return-Path: <netdev+bounces-10468-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10469-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D6F4D72EA14
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 19:42:28 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A1DA972EA42
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 19:53:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 98C4D2810AF
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 17:42:27 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 90D1F2810A0
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 17:53:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 186A83B8D5;
-	Tue, 13 Jun 2023 17:42:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ACA833C0AB;
+	Tue, 13 Jun 2023 17:53:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D01833E3
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 17:42:25 +0000 (UTC)
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BECA6;
-	Tue, 13 Jun 2023 10:42:24 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-	by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 35DHfu9W084100;
-	Tue, 13 Jun 2023 12:41:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1686678116;
-	bh=igyZvlOfVcSf4nGPg6BKktZlYY6keooO5jqV4M4Sjf8=;
-	h=Date:Subject:From:To:CC:References:In-Reply-To;
-	b=GxpXVusBEQWpKJk8EBWTP2BMfzh9WPp8AV+k33AdMWxN4P+v8hMs6zUxuJDgxnwbH
-	 0Q+oKfWMpNgZBmev9FwdcO+h35SbYXjFwi/be+J+7xOCvrnwn3msEPUShT7FPrvgAm
-	 oYLb8mIxa09TV4psU4JfK4DwyfphqOMFfSi4fG+o=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-	by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 35DHfuOi122876
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 13 Jun 2023 12:41:56 -0500
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Tue, 13
- Jun 2023 12:41:55 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Tue, 13 Jun 2023 12:41:55 -0500
-Received: from [128.247.81.105] (ileaxei01-snat.itg.ti.com [10.180.69.5])
-	by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 35DHftFR010861;
-	Tue, 13 Jun 2023 12:41:55 -0500
-Message-ID: <9905aefb-0d27-a4d6-b72d-5b852dc04465@ti.com>
-Date: Tue, 13 Jun 2023 12:41:55 -0500
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A00F733E3
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 17:53:05 +0000 (UTC)
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE78E10F6;
+	Tue, 13 Jun 2023 10:52:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
+ s=s31663417; t=1686678740; x=1687283540; i=frank-w@public-files.de;
+ bh=ZigiYZJoMQ30F2MLp+pxKoTlTEC81zQmh89oTDunKXc=;
+ h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+ b=cM9pl0hWQFpHOw4HEi/vmjQuZ3YTZmMNSwZe9Vuk9JOxB3CUZbBUoEevqoRylla9ZOkyoMO
+ bOmLa93yddI9tiFt+Jk9b2PH31VWxes2M907imvo9ELNoOWKnY/5dV6u7IBsGdUySTufhbv5F
+ FLyTPN6DXAuDsKHQxvWMcLeVxHKF/RLT6WtuXWYIgvXNdu3seKei91vV6D+jsDN8Rgqc5ZFC2
+ 4GL6BwD7sYj9cJ+5R48OTMS6rSd/+0TIcQL4Kz9vkJnst4KvJZWNDWLtAbU3DRdMME6p1/6ml
+ EArd1yhjWPQRoUul9mZ0J/PknuYs3ILtbLVHZzBOZQBcJuRZt9xg==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [217.61.149.4] ([217.61.149.4]) by web-mail.gmx.net
+ (3c-app-gmx-bap45.server.lan [172.19.172.115]) (via HTTP); Tue, 13 Jun 2023
+ 19:52:20 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH v8 0/2] Enable multiple MCAN on AM62x
-Content-Language: en-US
-From: Judith Mendez <jm@ti.com>
-To: <linux-can@vger.kernel.org>, Marc Kleine-Budde <mkl@pengutronix.de>
-CC: Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller"
-	<davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, Jakub Kicinski
-	<kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Schuyler Patton <spatton@ti.com>,
-        Tero Kristo
-	<kristo@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>,
-        <devicetree@vger.kernel.org>,
-        Oliver
- Hartkopp <socketcan@hartkopp.net>,
-        Simon Horman <simon.horman@corigine.com>,
-        Conor Dooley <conor+dt@linaro.org>, Tony Lindgren <tony@atomide.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>
-References: <20230530224820.303619-1-jm@ti.com>
-In-Reply-To: <20230530224820.303619-1-jm@ti.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Message-ID: <trinity-c8924d31-5582-4174-b017-553e64864079-1686678740313@3c-app-gmx-bap45>
+From: Frank Wunderlich <frank-w@public-files.de>
+To: Vladimir Oltean <olteanv@gmail.com>
+Cc: =?UTF-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>, Daniel
+ Golle <daniel@makrotopia.org>, Landen Chao <Landen.Chao@mediatek.com>, DENG
+ Qingfang <dqfext@gmail.com>, Sean Wang <sean.wang@mediatek.com>, Andrew
+ Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S.
+ Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub
+ Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Matthias
+ Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>, Russell King
+ <linux@armlinux.org.uk>, Bartel Eerdekens <bartel.eerdekens@constell8.be>,
+ mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
+ linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
+Subject: Aw: Re: [PATCH net v2 2/7] net: dsa: mt7530: fix trapping frames
+ with multiple CPU ports on MT7530
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 13 Jun 2023 19:52:20 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <20230613171858.ybhtlwxqwp7gyrfs@skbuf>
+References: <20230611081547.26747-1-arinc.unal@arinc9.com>
+ <20230611081547.26747-2-arinc.unal@arinc9.com>
+ <20230613150815.67uoz3cvvwgmhdp2@skbuf>
+ <a91e88a8-c528-0392-1237-fc8417931170@arinc9.com>
+ <20230613171858.ybhtlwxqwp7gyrfs@skbuf>
+Content-Transfer-Encoding: quoted-printable
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:jggrxmZjmJDSj7Yc4T0jkrjBt3MAF/uwXCMxy3haSJShvuHfS6IGYN48RD8rHQ7jUK1BI
+ oHgPQLituXgFRd8am6bM9tTROWD6veOT9NhPw+VdMCEcDX8auybulmct/op8qY5EI73nU1HYd76N
+ yGIduMdQXcV/eF5FJa0+FI22jwFa6Vs4RrVgN7tZInntDlJeor/NCK9qlD8RYwmvEg8yvPO/hnkb
+ 5slOVcuwhIihioOjPD3DoBQIKR/hiDRLM6Z7eF0dgKeWwy7Q7sEJwXmrOsTBG5yzhKeJd2iDMBa6
+ vw=
+UI-OutboundReport: notjunk:1;M01:P0:b5XNck1g0f8=;+CjfVvZ8bFxtq7g+dnwJjCQCpNR
+ qmAF7ktbxXk1A5l2U3wHOcrUnqYhcvM9tOmkiSVS2LmdIU5mExQjLBY6rkkfvajPL0aEYsemd
+ m1XhiHL4jTrMI1JYDM3GoXlgFcEqk8piyZonWrkS0v+LWcmeI0OKDnSaWSx2hcRr5bAJmLoh/
+ ASm9Iqw8/uspEmZfh+VJxaNjw4QA3wy6UE690XpbNbzzTb7J0BoRKYxTyhzyDQI3F7EJ9r3eY
+ 5dfaByvPNjhSsG6DQTU4xmN6JVbgi/JA8zvaoKZQ+STO8JO+AdjFAZXx1AaitcQcQ6dsHpwY/
+ ekEpnSwxaGWJhWob8+j/DmdLvkDQBMPsmKO94ezij00IB3W9hBVWBVy7ZsQm+kBT+5u6yoOaL
+ 1i5c9HES6c949540FRyJ1gmgvrzpXGL1LP6ZdYTPWiSlDbBHVOj9gfYDpXwd+k6ichTBwpx13
+ aVMhZQipB5jVgxH9Pahy1dV3apI1j8ikPHdBcdzNrryN4VUx6qiDrak+QVLseyHyU3h/hECIz
+ 19r08MIKuL8SuDoQ/h3Bm+utkZ1k45jo3vAUPSQVRXagV8viv0o1r8QodL1o3Zr3W/1yx2PtL
+ snlCP0ZNqZdL/46KMcQ+xBGoLwSW1kKmw+VBbXOhcj+xN55GF6oS202L8QhELphsk7rcnrPgG
+ +jEOOgi8ueidRonwzbrNDIfKl48JOCeRdSdspuUUL/JscPmUcjyVf3YGeg0iNmONg64Yzrvk9
+ KWGXJ3FybKKMZ+wyGzUTLqFHGcaqxf5XdBk6uQyn7c4jztX7btv0c0OT50dUe4Fm8dFbzF5ts
+ IkZGvp/TCV7x9zmEnFKIMcjA==
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi all,
+Hi
 
-On 5/30/23 5:48 PM, Judith Mendez wrote:
-> On AM62x there are two MCANs in MCU domain. The MCANs in MCU domain
-> were not enabled since there is no hardware interrupt routed to A53
-> GIC interrupt controller. Therefore A53 Linux cannot be interrupted
-> by MCU MCANs.
-> 
-> This solution instantiates a hrtimer with 1 ms polling interval
-> for MCAN device when there is no hardware interrupt property in
-> DTB MCAN node. The hrtimer generates a recurring software interrupt
-> which allows to call the isr. The isr will check if there is pending
-> transaction by reading a register and proceed normally if there is.
-> MCANs with hardware interrupt routed to A53 Linux will continue to
-> use the hardware interrupt as expected.
-> 
-> Timer polling method was tested on both classic CAN and CAN-FD
-> at 125 KBPS, 250 KBPS, 1 MBPS and 2.5 MBPS with 4 MBPS bitrate
-> switching.
-> 
-> Letency and CPU load benchmarks were tested on 3x MCAN on AM62x.
-> 1 MBPS timer polling interval is the better timer polling interval
-> since it has comparable latency to hardware interrupt with the worse
-> case being 1ms + CAN frame propagation time and CPU load is not
-> substantial. Latency can be improved further with less than 1 ms
-> polling intervals, howerver it is at the cost of CPU usage since CPU
-> load increases at 0.5 ms.
-> 
-> Note that in terms of power, enabling MCU MCANs with timer-polling
-> implementation might have negative impact since we will have to wake
-> up every 1 ms whether there are CAN packets pending in the RX FIFO or
-> not. This might prevent the CPU from entering into deeper idle states
-> for extended periods of time.
+> Gesendet: Dienstag, 13=2E Juni 2023 um 19:18 Uhr
+> Von: "Vladimir Oltean" <olteanv@gmail=2Ecom>
 
-Was wondering if I am still pending some updates for this patch series? 
-Or if any other issues please let me know. (: Thanks all
+> On Tue, Jun 13, 2023 at 08:14:35PM +0300, Ar=C4=B1n=C3=A7 =C3=9CNAL wrot=
+e:
+> > Actually, having only "net: dsa: introduce preferred_default_local_cpu=
+_port
+> > and use on MT7530" backported is an enough solution for the current st=
+able
+> > kernels=2E
+> >=20
+> > When multiple CPU ports are defined on the devicetree, the CPU_PORT bi=
+ts
+> > will be set to port 6=2E The active CPU port will also be port 6=2E
+> >=20
+> > This would only become an issue with the changing the DSA conduit supp=
+ort=2E
+> > But that's never going to happen as this patch will always be on the k=
+ernels
+> > that support changing the DSA conduit=2E
+>=20
+> Aha, ok=2E I thought that device trees with CPU port 5 exclusively defin=
+ed
+> also exist in the wild=2E If not, and this patch fixes a theoretical onl=
+y
+> issue, then it is net-next material=2E
 
-~ Judith
+BananaPi R2Pro (Rockchip rk3568 arm64) has currently port5 only=2E And the=
+re only port5
+is connected to the SoC (so port6 is not added there)=2E
+
+Most boards using port6 at the moment=2E
+
+regards Frank
 
