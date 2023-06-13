@@ -1,156 +1,178 @@
-Return-Path: <netdev+bounces-10326-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10327-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D0C5E72DE51
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 11:55:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 8A9C472DEB0
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 12:04:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0D5E9280E9F
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 09:55:20 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 96D87281168
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 10:03:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 377AC28C17;
-	Tue, 13 Jun 2023 09:55:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8FE2728C2E;
+	Tue, 13 Jun 2023 10:03:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29AFD2915
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 09:55:17 +0000 (UTC)
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D094C90
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 02:55:15 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-307d20548adso3711128f8f.0
-        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 02:55:15 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AD662915
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 10:03:56 +0000 (UTC)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2136.outbound.protection.outlook.com [40.107.223.136])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813E3A0
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 03:03:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MDoaejRngIFGltjggbXjQQ0tVTpghtbKdpLIUDTGJ9wMGAqQ4FaruQIYh1orzfKr0aXZ5a1VXP59fW0q9vEvCLyW1M04pm3GQH3zB8H+LF4RbFh/Wdf/vsmbl8M57yHs97w52TShdycZg/0XHNNE4FE+B99Qd20IaIsO82TD9xcNY1JK8RiAPTmyT52ZGSir/p+PQ0nhiaNvznW7QyMBjUYVKXmEs/LUUr0iSRgRKR8CspVMNR7UUFM90SUKxZjj8bhW12aWNSVS64Zu75nWn/u+SzWJdJV59j7oPreN2qosIlJrONZLu8yre7W/2A20AOZkNCpAlGA7WZkjLdKmlA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=inypQOCEhagztOhVuRBxTXMMWBuaO/XknyNnJ02VLcI=;
+ b=F3qIC0MuHkZyPlts5LyWLP2R6UDEIY43i7QQDIPM93J+qVjQcxp6uasA9qu/dy18lfNemi2eWcZNdmNOWigsUa85lgIA87ttagEalluPDT3OFqi6GVldcxMlS40OQV0Ny6XMHlzz0xJf0yW67ACGjcJKb4djmMQCpxj7AzeloYWKm+63WsRt+t5qkuxEF562aJRsFBOhzeTgqhCtnBEsi4FxLNOkE9C5sUGOVM9q0nM2h9f8vkY+SKwAAI3pycnBvVu9X1VDNSTp2efPuERevlPSXbgty36pa7DUeD4ig05+FLvdP9i4a1aMqHhENl098HJvZnVn32JmQjfSAI/Gzw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1686650114; x=1689242114;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RqNvggRPyNB9Hehd7xfWxJNAOn1bnmQJXJE17DkVdBU=;
-        b=g/gQ2/z9jaLvDVlTUHmih1Mf6W7SQX7wJSQ+I8XBYvpmmlpFWCMKBmAtIqbdA9HJWB
-         iWJ8265l0uWUBs0Kg2xf88IK1ASsgY7HBMkicdvyoLSF2ZFw96kmx8hlZ4inRvc6mfw6
-         usW+eWfcjxc7P7c5wlWofL6a/6amUVvrMqWmVbcEPl/2nvlor4GEZMJYDGvrBQ2ES0Kz
-         MIm+Gt3o5Al8+xgJHIvN+k83T0tslOCriSPQAfvlsubkAEA+EPvZDMa6sTwznVHhsGT7
-         9tQ5f+N1kjiEiCDElzEW318WS8K22rXW/SvG9B0QnKg+Y4mmXmNqLX7TKuwjrx3J05kI
-         izbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686650114; x=1689242114;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RqNvggRPyNB9Hehd7xfWxJNAOn1bnmQJXJE17DkVdBU=;
-        b=F5gZn+3reRllLz1+OIDhAiYR4SGjJYD08NWJEcrr+dTxXChcDNkAc0MyWSpdUjSiZg
-         Y69+J1B/79ix4tyKyD0FlzWociAd8IiBVrFoJJkypX5F/6YNuWzc8ikfTUNNZGikbRSV
-         Yw/fk88DVOT//j3GBia7MGwRBUfnHtuMd/E4iqtuaiM8481h1lgY6t9nsvzVHo85dMRC
-         0o2Do31YZ2w1wH6RK9KWGFpQfyTyuNgfaBex3679ty6KN9WSIAunTK1xOFRANLhwRdGB
-         X9UejO+N2JWOeQyNB92hQHJYQKIjq/1Ej3xqgVtGS/vZQN0Clb/m7g9czucHSQRvHw69
-         LNXw==
-X-Gm-Message-State: AC+VfDz0t46h3OcnYq1k4PEuwdsvZt9aiImG2WmxlX63K7K8aDtVMo/k
-	ySVho37koCO77l9K26vRUpBq8g==
-X-Google-Smtp-Source: ACHHUZ5ZrdfyYh5y1tk49fFKsi3ApIfFMGD+jwFkSrpureaIeIWoGT4Ghm/fdObK/np4YyjXHk7Jyg==
-X-Received: by 2002:adf:e252:0:b0:307:7f38:37f with SMTP id bl18-20020adfe252000000b003077f38037fmr6934139wrb.66.1686650114217;
-        Tue, 13 Jun 2023 02:55:14 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id e4-20020adfdbc4000000b0030ada01ca78sm14844845wrj.10.2023.06.13.02.55.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jun 2023 02:55:13 -0700 (PDT)
-Date: Tue, 13 Jun 2023 11:55:11 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>, vadfed@meta.com,
-	jonathan.lemon@gmail.com, pabeni@redhat.com, corbet@lwn.net,
-	davem@davemloft.net, edumazet@google.com, vadfed@fb.com,
-	jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-	saeedm@nvidia.com, leon@kernel.org, richardcochran@gmail.com,
-	sj@kernel.org, javierm@redhat.com, ricardo.canuelo@collabora.com,
-	mst@redhat.com, tzimmermann@suse.de, michal.michalik@intel.com,
-	gregkh@linuxfoundation.org, jacek.lawrynowicz@linux.intel.com,
-	airlied@redhat.com, ogabbay@kernel.org, arnd@arndb.de,
-	nipun.gupta@amd.com, axboe@kernel.dk, linux@zary.sk,
-	masahiroy@kernel.org, benjamin.tissoires@redhat.com,
-	geert+renesas@glider.be, milena.olech@intel.com, kuniyu@amazon.com,
-	liuhangbin@gmail.com, hkallweit1@gmail.com, andy.ren@getcruise.com,
-	razor@blackwall.org, idosch@nvidia.com, lucien.xin@gmail.com,
-	nicolas.dichtel@6wind.com, phil@nwl.cc, claudiajkang@gmail.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-	linux-rdma@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	poros@redhat.com, mschmidt@redhat.com, linux-clk@vger.kernel.org,
-	vadim.fedorenko@linux.dev
-Subject: Re: [RFC PATCH v8 01/10] dpll: documentation on DPLL subsystem
- interface
-Message-ID: <ZIg8/0UJB9Lbyx2D@nanopsycho>
-References: <20230609121853.3607724-1-arkadiusz.kubalewski@intel.com>
- <20230609121853.3607724-2-arkadiusz.kubalewski@intel.com>
- <20230612154329.7bd2d52f@kernel.org>
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=inypQOCEhagztOhVuRBxTXMMWBuaO/XknyNnJ02VLcI=;
+ b=YPU/WnyATaHx24Wl48yl/CEZVUfSDphlRuLr2gmYTBi48jYa6k/wcoA00DcdF6UBNNW/Ua45XWMQDTX5H5Jx+GTwO7YQCWB5O1StJK0TNpiFBdlWLWHweSG7SWu4GdfduYfsEHxpfe5iVgBC5jsryaw46hOZs+bhK/EPlc3Rllk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH7PR13MB6341.namprd13.prod.outlook.com (2603:10b6:510:2f4::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.21; Tue, 13 Jun
+ 2023 10:03:47 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6477.028; Tue, 13 Jun 2023
+ 10:03:47 +0000
+Date: Tue, 13 Jun 2023 12:03:40 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Hao Lan <lanhao@huawei.com>
+Cc: netdev@vger.kernel.org, yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, richardcochran@gmail.com,
+	wangpeiyang1@huawei.com, shenjian15@huawei.com,
+	chenhao418@huawei.com, wangjie125@huawei.com, yuanjilin@cdjrlc.com,
+	cai.huoqing@linux.dev, xiujianfeng@huawei.com
+Subject: Re: [PATCH net-next v2 1/4] net: hns3: refine the tcam key convert
+ handle
+Message-ID: <ZIg+/KqNgDPx5GKo@corigine.com>
+References: <20230612122358.10586-1-lanhao@huawei.com>
+ <20230612122358.10586-2-lanhao@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230612122358.10586-2-lanhao@huawei.com>
+X-ClientProxiedBy: AS4P195CA0008.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5e2::13) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230612154329.7bd2d52f@kernel.org>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB6341:EE_
+X-MS-Office365-Filtering-Correlation-Id: aa41bd5d-3e7f-4ab6-8aa0-08db6bf57a74
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	sNe0x/91mJF9tjfKjIH1plLywX6Hfap/h+KlJ4H82HGvlwsMEvrLOcGRP7AX2KIMKEXFJ7tWo9bI4/TL0h5OUYksITwgFLRFfPXsa4dn5bapG9oT8K6tDRzw2YcDxwGpyjIF/EYEFCtrueCG87w/aE1AexDtMPS+STWPND38v/32HbGcmGHAyfTMNnexsErwXoCvbiRKfbyDynRBTfnkERCqTp5mv3QoH8kI9lpkdIxZvANtpcNZ8/2VPTubVo0zTp2f9wuafEdOg2gt/zsEU56Mkqmi7e3JjxRlLFs0W5RZjdTUbGeZaToU6NlfzARMm+6qdHHTfO5zrLIm5RvBCJuX4B996iGrF3Qd4YUeTrij3wrdis71gfVEtzz02f+Tf2cAM2cDI3v9etdAYY2fN7rDJAuiCspE1mp60G9DOdzsKrvmTiIuo6/vcv51mTbNZEeKNIfsgpGCTr6F9AZk0UtBzKfHmDJGINOFvEjaT1n6f52pbcXj6jxJeq67Wrv76aUdHIia3mC7Oik7ouffh+ZXvIyM10z4qIYozPqpZpOywx5+bsvOivqD3KoHnv3J+CxltoiQktRSOfLYvHkEPtQMdFvCdzAdIb+dzGkb+bQ=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(396003)(136003)(366004)(39840400004)(451199021)(316002)(6486002)(41300700001)(86362001)(2616005)(186003)(7416002)(2906002)(4744005)(44832011)(6512007)(6506007)(38100700002)(8676002)(36756003)(5660300002)(8936002)(66946007)(6916009)(66556008)(66476007)(6666004)(478600001)(4326008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?WkNkQzI4aGJKZzFjbHNpakFaWXNSZFB4dXl3MVBTRTYyaWtEeTR4MTFaN29k?=
+ =?utf-8?B?NzAxRHo2d3k3ZG96bzRibjhKSklTTk9LUXhQSllMekQxV2tTWks0TDVWUFln?=
+ =?utf-8?B?eGNTb1pwVjRDYzR1OHY0Yng4OUJSTkg4YzA5RGFtNnNlUDVOTU9NSnhmS2NN?=
+ =?utf-8?B?dkw0dW8yTThHTzRTNjZQVWZNT3dOSi9XV2tMNG1Xb29ZdDZtQmZBUVBNTzZ4?=
+ =?utf-8?B?RG1CQTl4cG5KaVk2dzJJc04rN0paZ0F6Uy9KODljVVlBR0JJV3NOamxwSVpC?=
+ =?utf-8?B?U0VEbjJLa2JoZk1qQ1hPbk10UmtlRnhHMTJiUExSelZZWDRHczBadzd0TEdB?=
+ =?utf-8?B?YWNGRkloRWxYZDIvd2FWV1FLWGxqMzVtT050cnIxeDFOUjMwcDV1RVFOQy9X?=
+ =?utf-8?B?WUdDYzNmdzlHK1VEclAyS2tlZGtGckU5bFlJREl2TlpUL1FZbnorWUllZWpM?=
+ =?utf-8?B?ZTBrTGkwc2ZQWjdubHlHWXVMTW96b093bWMwcEJqVVpRWVpsRitJb2ZWdktp?=
+ =?utf-8?B?cEdVMGM5UmVjYUtiSHVUMTcwZkkyTXlmOGRqM3RxMU1uRUFpZC9ROWZyNCtX?=
+ =?utf-8?B?Q1Q3Z2lDR01abU04T3p1ZDh0cStjRXpsNDM3anZESVVYc29GajJ4cWF6Wktz?=
+ =?utf-8?B?ZXhYWlB5MDNCVmFaQ2xuQjl5R3NQNnh6VkMwVW95QUhTWW9aT2l4ck5zaFdN?=
+ =?utf-8?B?MU96MC9SM1VHVi96WlhUell4YnhIeE9Hb29vVFBRVm5wZHE4ZjV2S05IZmxL?=
+ =?utf-8?B?WStHTUErRUxFN29zd2ZGSndKT2F3RzFUU29KdG1QZGZVb1U2dTJyMjRYQ2pY?=
+ =?utf-8?B?aGduaGdHWXdKZWRMeXpvRU0yZExkWjRoSHluZjEwTzVnUGNrdHg0ditFeElw?=
+ =?utf-8?B?WWgxaHdDYmNTVFJTNFlWREdRYWdLQzNLWFJrNytXQTI5YklpazJXSU1tWkZP?=
+ =?utf-8?B?K1dYc25qb2ZZSW1DdTNDZUVUS00vRm5EZTlseUhVNjlzVWpvYUN5Tkk0VVNz?=
+ =?utf-8?B?elVrYnFHMEpBNWluNHhIOGJHK0FGcjZwWFRydmdhamNLV0h5V0pSY2tYcEt4?=
+ =?utf-8?B?V09LSjBJVlZpTkRNNVd4d1NYQW1XeTlXOXRLL25mbXQ5Q2dkWVh3WGIrTFhh?=
+ =?utf-8?B?REdSc3cvd0tFTGJjZGhGWml0K2JmOTlud01vVjRaTTVVS0ozbUpNN3doUVlH?=
+ =?utf-8?B?REhVT2tnUDFHdUlHVnVJKzZSSUhyemE4ekRJQ3hCRTFNRHQyZ0l4R0Vua2ls?=
+ =?utf-8?B?NjZVTUVteTN5WDB2U3ZBbGdKa2traW5yRXRuTFhSNk1XY3F2dHV0eHRnOVpK?=
+ =?utf-8?B?YktDYWVJRVBpNWNyRE04QzUrbkI0bTZaWUNkRDFEbE1UTUMyWm1TKzE1dDBB?=
+ =?utf-8?B?OTNjakVLcmJyaXFnSkYzcGllc1pnU0NlcHAyd2VGNXRQSGNWZm1jTmlWSUNF?=
+ =?utf-8?B?MTRQQUVSU1pQZDFidkVhL3JEZ3NkVmN1MU03SnNaNXQ1MFBhdGh6UmhxR0Fq?=
+ =?utf-8?B?Skk1aEphV3VycSswaGlTa2dRTEJUMk0yZnd0K3RzSk8rc0draDBITVF0bzdq?=
+ =?utf-8?B?NllhMjNrenlhaHd0S1ZLQUM1UjRmcTNxWmN2VGRDOFlBTmp5WGxKR3JXSVRJ?=
+ =?utf-8?B?cGpLRHpuVDlBNWZSMzl1T1RJNkcxY0FxVGN4S2U0RDIveEVkeXRnS0hEOVR2?=
+ =?utf-8?B?RmRnVU5xU2d6SXdvQ1pBS2Qxa3Nxb1pnY0RMR3ZtZ3pxVitnV3dreVN6TWZG?=
+ =?utf-8?B?L3BzajAyWUd4WVo0VEpRVGk3OTJ6Rk1BZGVlY3BGUWtza3IrRTA3cktCczFI?=
+ =?utf-8?B?ajNmWXZoTVhCTko0MlltTXdvYWhMREk1clZvMWN4NDFUbU4vdXJvSGVjV2g0?=
+ =?utf-8?B?TWlqTC96TGVkOHZ5c0JrMklPbWdya1lTejc0aExESi9aSy9Ebm1na3l2U1lt?=
+ =?utf-8?B?OUNENzNFUWt0cDg1a0dwK0hmcWJhWmQ1Mkhhb1JQTDJHZUpkV1hTYnF1OEFD?=
+ =?utf-8?B?K2dCczlOQXRCUGZCeWxDYkp3b2Y2NHZESnhQcmMvVldRV1ZzbWdJY2x6ZU92?=
+ =?utf-8?B?dTgwRUpTRWRGWnA5WVgraVRxQ3FpTmkyUlBXK0IyK0V4dlRCT0J3TzRMS2RW?=
+ =?utf-8?B?ckx5OWdmM2dxQ3RKbDNBbHlwQlBwS0xZMTl4L1ZxcUNBbDBXeVBRMEFicWxh?=
+ =?utf-8?B?NXZXaW9kaXlYY0VmNlRVdWdKckdZYVVieDRieEh6RUtjanV0UnlRSHQrMDlR?=
+ =?utf-8?B?QzBPRGhXUnhTc3BLRnJPT0dFM1BRPT0=?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa41bd5d-3e7f-4ab6-8aa0-08db6bf57a74
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2023 10:03:47.0410
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ECg+suVxbLHXvXzsrho8GX5/QWj3hrrVy9cAKCCQzaGuXWhg9rmojcB8LgMuQcO21y83F/2lPddHKg/x+Sls7JdGadf6YifsHDpKdlezvGQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB6341
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Tue, Jun 13, 2023 at 12:43:29AM CEST, kuba@kernel.org wrote:
->On Fri,  9 Jun 2023 14:18:44 +0200 Arkadiusz Kubalewski wrote:
->> From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
->> 
->> Add documentation explaining common netlink interface to configure DPLL
->> devices and monitoring events. Common way to implement DPLL device in
->> a driver is also covered.
->
->> +``'pin': [{
->> + {'clock-id': 282574471561216,
->> +  'module-name': 'ice',
->> +  'pin-dpll-caps': 4,
->> +  'pin-id': 13,
->> +  'pin-parent': [{'pin-id': 2, 'pin-state': 'connected'},
->> +                 {'pin-id': 3, 'pin-state': 'disconnected'},
->> +                 {'id': 0, 'pin-direction': 'input'},
->> +                 {'id': 1, 'pin-direction': 'input'}],
->> +  'pin-type': 'synce-eth-port'}
->> +}]``
->
->It seems like pin-parent is overloaded, can we split it into two
->different nests?
+On Mon, Jun 12, 2023 at 08:23:55PM +0800, Hao Lan wrote:
+> From: Jian Shen <shenjian15@huawei.com>
+> 
+> The result of expression '(k ^ ~v)  & k' is exactly
+> the same with  'k & v', so simplify it.
+> (k ^ ~v) & k == k & v
+> The truth table (in non table form):
+> k == 0, v == 0:
+>   (k ^ ~v) & k == (0 ^ ~0) & 0 == (0 ^ 1) & 0 == 1 & 0 == 0
+>   k & v == 0 & 0 == 0
+> 
+> k == 0, v == 1:
+>   (k ^ ~v) & k == (0 ^ ~1) & 0 == (0 ^ 0) & 0 == 1 & 0 == 0
+>   k & v == 0 & 1 == 0
+> 
+> k == 1, v == 0:
+>   (k ^ ~v) & k == (1 ^ ~0) & 1 == (1 ^ 1) & 1 == 0 & 1 == 0
+>   k & v == 1 & 0 == 0
+> 
+> k == 1, v == 1:
+>   (k ^ ~v) & k == (1 ^ ~1) & 1 == (1 ^ 0) & 1 == 1 & 1 == 1
+>   k & v == 1 & 1 == 1
+> 
+> ChangeLog:
+> v1->v2:
+> Fixed the comment description error and added
+> the truth table in the comment.
+> suggested by Simon Horman.
+> 
+> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+> Signed-off-by: Hao Lan <lanhao@huawei.com>
 
-Yeah, we had it as two and converged to this one. The thing is, the rest
-of the attrs are the same for both parent pin and parent device. I link
-it this way a bit better. No strong feeling.
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-
->
->> +SET commands format
->> +===================
->> +
->> +``DPLL_CMD_DEVICE_SET`` - to target a dpll device, the user provides
->> +``DPLL_A_ID``, which is unique identifier of dpll device in the system,
->> +as well as parameter being configured (``DPLL_A_MODE``).
->> +
->> +``DPLL_CMD_PIN_SET`` - to target a pin user has to provide a
->> +``DPLL_A_PIN_ID``, which is unique identifier of a pin in the system.
->> +Also configured pin parameters must be added.
->> +If ``DPLL_A_PIN_DIRECTION`` or ``DPLL_A_PIN_FREQUENCY`` are configured,
->> +this affects all the dpll device they are connected, that is why those
->> +attributes shall not be enclosed in ``DPLL_A_PIN_PARENT``.
->> +Other attributes:
->> +``DPLL_A_PIN_PRIO`` or ``DPLL_A_PIN_STATE`` must be enclosed in
->> +``DPLL_A_PIN_PARENT`` as their configuration relates to only one
->> +parent dpll or parent pin.
->
->Also sounds like setting pin attrs and pin-parent attrs should be
->different commands.
-
-Could be, but what't the benefit? Also, you are not configuring
-pin-parent. You are configuring pin:pin-parent tuple. Basically the pin
-configuration as a child. So this is mainly config of the pin itsest
-Therefore does not really make sense to me to split to two comments.
 
