@@ -1,86 +1,83 @@
-Return-Path: <netdev+bounces-10375-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10376-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7262972E30F
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 14:32:42 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2C81772E315
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 14:33:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 623091C20CAD
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 12:32:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DB56F281296
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 12:32:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2AEE915A5;
-	Tue, 13 Jun 2023 12:32:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 005B4522B;
+	Tue, 13 Jun 2023 12:32:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F8B35689
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 12:32:35 +0000 (UTC)
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6BF10F9
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 05:32:34 -0700 (PDT)
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E90B1134B4
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 12:32:38 +0000 (UTC)
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42403198D
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 05:32:37 -0700 (PDT)
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 61C0A3F26C
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 12:32:32 +0000 (UTC)
+	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 903E73F26F
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 12:32:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20210705; t=1686659552;
-	bh=4Cl9VWUxsTMXwPPmsKYIpp+y5A1Gig+mMIFIzxHEGrw=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-	b=DiRrVMZqPHGJXH1bHgtis6pTlqscWUI01amTpq5v1Y+lHW7avH7dDnQmgNPr6BSfG
-	 q5tQPFWtsm9hkl2zSLZ2JLve/lZoXf56+RowEc3ukeWesjLtUfcUd2d/REffcfC6ar
-	 NE07SuFt5myPEatfpwJ2X9AGbguleY278aqBCIpNcLT3f1tPbkIjXH0xhtCiPYmcR1
-	 KP8m5d7/txmmIjE9G4GebvGCKJXTIdk7va3mOiQhxC1ucfTlhCEv3FH1x2pp4mCbve
-	 GyToEmjnl7JkIiN36hjRTTp0Imh1cDGjF0bLS0C1gBt6QXxQTugI+S9ui3Etc04kRc
-	 TAalJ74ZoWzTQ==
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-39ceb9a76b1so1282972b6e.3
-        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 05:32:32 -0700 (PDT)
+	s=20210705; t=1686659555;
+	bh=dOdvEfMQ7tMAD4TKPEtU/Y162rlS8uUUjrZkK5fcMV4=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version;
+	b=AlGxmm3NPeRCL5xhakNWS82xNmSaR14dUKKQPuBkVuWCid7HqvkVrKEYdO7q5FlON
+	 O99Ke98ApBgpYzKu1fAb4PHmrE0jEDnYTWVrIBwT8+Swk+HQp9Gaa4a8j7r/h9rT6l
+	 wyhrPpi+QXUHE/Zea1oo2bEyrQHN0/40ajcjGT0NLXz/83T+9ToeAP7qQBVJ8YsQIO
+	 bfCUtLfBEkeP7pKeMW0zZJFiPFBtOvZEAYjapKPVCemzb92UsqGVTPNya3vscmvaHd
+	 D27emKBX868QMqKmzKVFpkNVR8XsIihvJ1DcfK2Vl9LzaxINv0CXCO8UXpcoR//Kfi
+	 uBVGWVHzqx8Uw==
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-3941c5de005so3834653b6e.2
+        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 05:32:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686659551; x=1689251551;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4Cl9VWUxsTMXwPPmsKYIpp+y5A1Gig+mMIFIzxHEGrw=;
-        b=H49qa+hqotu0p1T1AbqDaotSaEcUQuBONTDoXUFF/ozUvM1+FrUccKfqn38X6LpShS
-         /UyXKO+2le+Y9HPQhTlR4mU4CEBQGtcpIYgeHVzIoYquj80s6/ON7bAokIpMv3fR0kpR
-         qswUfzT8/r69Mbl2Z+B0V6Na0PapwlCwDn+uNQi83q0tnanEyJDgmiQastgHWhDNSM7+
-         hCCpl3DI92/bjxGwPPqtn7JRJ02q20Fz9YWkOKKfkRBEIGNyrjXu1vVUc5OgcrBc7YS5
-         r5vYSDybsmo1AgU8YaHUq2KPp9+R+u7LkxrErgSuZzixUB4MsWm6XlQmjO6vNAAvRfra
-         Nupw==
-X-Gm-Message-State: AC+VfDy/RCs3aM4R+frs/BY4MaI8e9ODQZGmQx6ZJcldCUotz8VRZDSN
-	r1bIhk8vIQy2F6QPVJtaKrIgBAtIp+cmqi78g9YaUox88rAQ/AlnTzfMCx3jR4SAT1X9Mp6/W+P
-	erXHfBDC1joQVRFUSQNqfYr6GG2Iqp0U5CA==
-X-Received: by 2002:a05:6808:1b06:b0:39a:be57:964b with SMTP id bx6-20020a0568081b0600b0039abe57964bmr8825628oib.13.1686659550788;
-        Tue, 13 Jun 2023 05:32:30 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4JQJTAQ2NTad3LIh15eMndn6uBTwp05kyoejhWNzvWLQ3pSHSq3WyIrued9k1ZJLfgR4nV1A==
-X-Received: by 2002:a05:6808:1b06:b0:39a:be57:964b with SMTP id bx6-20020a0568081b0600b0039abe57964bmr8825601oib.13.1686659550505;
-        Tue, 13 Jun 2023 05:32:30 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1686659554; x=1689251554;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dOdvEfMQ7tMAD4TKPEtU/Y162rlS8uUUjrZkK5fcMV4=;
+        b=Kvij3irsLs3cJLgZ55o+ICCMFU14OyiVp24UvPaA+g7XeWaqNHiM0msSfQicjtypMJ
+         xjiHcrfD7/E4IlSR7yFUgaIDw2teuviaepsJXaTuRo5Qqd0GvmkFWft2jCeh295WCNB+
+         jE5j2aIA/sa1DtNEWqH4DbV5jZc5bZyPjM3XBz461DCZ8TH8yNYZKoPF/muERkXyc5ER
+         xHV57vuOWsY8m1eCdHeMR98jMUzxf2Y01E0UrO7AT2Ir92lMSpR/vxTbOwbNi6VFFj+t
+         C5VrT1PS08wUU+8YpE+xTCOgU0iT54LxH/zD9nmhdx0HcMyNMLaDt3AI5DKXZMxQRhb0
+         Tp9w==
+X-Gm-Message-State: AC+VfDw04X5mt9D+xtt6/ZgOnwaGVlwTzAk4R5hhE1dgjcZprGQBDOPY
+	tMjsfZaHUbep0ytuS+b1zoPEK01H0Xb4ftgB9dwqb2iS5VAsdUbYR1GP43yuHl8vCgkmYde01CS
+	tm3eqbf0Li5lRasGTE55DlCUMkFKs50H+SQ==
+X-Received: by 2002:a05:6808:2221:b0:39a:7830:f250 with SMTP id bd33-20020a056808222100b0039a7830f250mr9033206oib.1.1686659553988;
+        Tue, 13 Jun 2023 05:32:33 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7RoHcGYWIZgUHJeY1UXV78LS1K1+OSDeyiYBqiHZ01bS5tDwNvQAEjex3yls8V+mcmzqTp4w==
+X-Received: by 2002:a05:6808:2221:b0:39a:7830:f250 with SMTP id bd33-20020a056808222100b0039a7830f250mr9033195oib.1.1686659553771;
+        Tue, 13 Jun 2023 05:32:33 -0700 (PDT)
 Received: from magali.. ([2804:14c:bbe3:4606:ac1a:e505:990c:70e9])
-        by smtp.gmail.com with ESMTPSA id z26-20020a056808049a00b0039c532c9ae1sm4838116oid.55.2023.06.13.05.32.25
+        by smtp.gmail.com with ESMTPSA id z26-20020a056808049a00b0039c532c9ae1sm4838116oid.55.2023.06.13.05.32.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jun 2023 05:32:30 -0700 (PDT)
+        Tue, 13 Jun 2023 05:32:33 -0700 (PDT)
 From: Magali Lemes <magali.lemes@canonical.com>
-To: davem@davemloft.net,
-	dsahern@gmail.com,
-	edumazet@google.com,
-	keescook@chromium.org,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	shuah@kernel.org,
-	tianjia.zhang@linux.alibaba.com,
-	vfedorenko@novek.ru
+To: keescook@chromium.org,
+	shuah@kernel.org
 Cc: andrei.gherzan@canonical.com,
 	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org
-Subject: [PATCH v4 0/4] Check if FIPS mode is enabled when running selftests
-Date: Tue, 13 Jun 2023 09:32:18 -0300
-Message-Id: <20230613123222.631897-1-magali.lemes@canonical.com>
+	Jakub Kicinski <kuba@kernel.org>,
+	linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v4 1/4] selftests/harness: allow tests to be skipped during setup
+Date: Tue, 13 Jun 2023 09:32:19 -0300
+Message-Id: <20230613123222.631897-2-magali.lemes@canonical.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230613123222.631897-1-magali.lemes@canonical.com>
+References: <20230613123222.631897-1-magali.lemes@canonical.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -90,56 +87,59 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Some test cases from net/tls, net/fcnal-test and net/vrf-xfrm-tests
-that rely on cryptographic functions to work and use non-compliant FIPS
-algorithms fail in FIPS mode.
+Before executing each test from a fixture, FIXTURE_SETUP is run once.
+When SKIP is used in FIXTURE_SETUP, the setup function returns early
+but the test still proceeds to run, unless another SKIP macro is used
+within the test definition, leading to some code repetition. Therefore,
+allow tests to be skipped directly from the setup function.
 
-In order to allow these tests to pass in a wider set of kernels,
- - for net/tls, skip the test variants that use the ChaCha20-Poly1305
-and SM4 algorithms, when FIPS mode is enabled;
- - for net/fcnal-test, skip the MD5 tests, when FIPS mode is enabled;
- - for net/vrf-xfrm-tests, replace the algorithms that are not
-FIPS-compliant with compliant ones.
-
-Changes in v4:
- - Remove extra newline.
- - Add R-b tag.
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Magali Lemes <magali.lemes@canonical.com>
+---
+No change in v4.
 
 Changes in v3:
- - Add new commit to allow skipping test directly from test setup.
- - No need to initialize static variable to zero.
- - Skip tests during test setup only.
- - Use the constructor attribute to set fips_enabled before entering
- main().
+ - Add this patch.
 
-Changes in v2:
- - Add R-b tags.
- - Put fips_non_compliant into the variants.
- - Turn fips_enabled into a static global variable.
- - Read /proc/sys/crypto/fips_enabled only once at main().
+ tools/testing/selftests/kselftest_harness.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-v1: https://lore.kernel.org/netdev/20230607174302.19542-1-magali.lemes@canonical.com/
-v2: https://lore.kernel.org/netdev/20230609164324.497813-1-magali.lemes@canonical.com/
-v3: https://lore.kernel.org/netdev/20230612125107.73795-1-magali.lemes@canonical.com/
-
-Magali Lemes (4):
-  selftests/harness: allow tests to be skipped during setup
-  selftests: net: tls: check if FIPS mode is enabled
-  selftests: net: vrf-xfrm-tests: change authentication and encryption
-    algos
-  selftests: net: fcnal-test: check if FIPS mode is enabled
-
- tools/testing/selftests/kselftest_harness.h   |  6 ++--
- tools/testing/selftests/net/fcnal-test.sh     | 27 +++++++++++-----
- tools/testing/selftests/net/tls.c             | 24 +++++++++++++-
- tools/testing/selftests/net/vrf-xfrm-tests.sh | 32 +++++++++----------
- 4 files changed, 61 insertions(+), 28 deletions(-)
-
+diff --git a/tools/testing/selftests/kselftest_harness.h b/tools/testing/selftests/kselftest_harness.h
+index d8bff2005dfc..5fd49ad0c696 100644
+--- a/tools/testing/selftests/kselftest_harness.h
++++ b/tools/testing/selftests/kselftest_harness.h
+@@ -249,7 +249,7 @@
+ 
+ /**
+  * FIXTURE_SETUP() - Prepares the setup function for the fixture.
+- * *_metadata* is included so that EXPECT_* and ASSERT_* work correctly.
++ * *_metadata* is included so that EXPECT_*, ASSERT_* etc. work correctly.
+  *
+  * @fixture_name: fixture name
+  *
+@@ -275,7 +275,7 @@
+ 
+ /**
+  * FIXTURE_TEARDOWN()
+- * *_metadata* is included so that EXPECT_* and ASSERT_* work correctly.
++ * *_metadata* is included so that EXPECT_*, ASSERT_* etc. work correctly.
+  *
+  * @fixture_name: fixture name
+  *
+@@ -388,7 +388,7 @@
+ 		if (setjmp(_metadata->env) == 0) { \
+ 			fixture_name##_setup(_metadata, &self, variant->data); \
+ 			/* Let setup failure terminate early. */ \
+-			if (!_metadata->passed) \
++                       if (!_metadata->passed || _metadata->skip) \
+ 				return; \
+ 			_metadata->setup_completed = true; \
+ 			fixture_name##_##test_name(_metadata, &self, variant->data); \
 -- 
 2.34.1
 
