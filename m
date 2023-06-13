@@ -1,200 +1,324 @@
-Return-Path: <netdev+bounces-10520-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10521-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3638972ED47
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 22:47:06 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B2BCD72ED4C
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 22:50:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 912C4280F5B
-	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:47:04 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E8254280FA8
+	for <lists+netdev@lfdr.de>; Tue, 13 Jun 2023 20:50:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0084422E5A;
-	Tue, 13 Jun 2023 20:47:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0AEB623D54;
+	Tue, 13 Jun 2023 20:50:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8849174FA
-	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 20:47:02 +0000 (UTC)
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E968810E6;
-	Tue, 13 Jun 2023 13:47:00 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id 4fb4d7f45d1cf-5187ae34127so998816a12.2;
-        Tue, 13 Jun 2023 13:47:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686689219; x=1689281219;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fSNOwltAQrxAVV68XPYGPjq5L/bIYHyNYEji3sovMB8=;
-        b=Ls9NCRlivmPC49auVyJHDRF+h04dMXwMGmh110SKXer2GYxSqLJ9P1EGp0FjvkdV5Y
-         ZT59hga7BfF3nhKADgA++VIjISbHOXjbarrE22ZfAE111jgQ3jK7jtShuQEjePBTdLis
-         yciak/fmFmqGLf0kPVtaE83SgyEUNf4EYJ8t+BcD70N9SeDplDhhnv21ndbgohUjIo3Q
-         qoIFrDRIjD3zlcF+yzNquVLT03HQips/sNO/bgOKLbcYVEkAQUc21wT7i4P3CHKfFH3E
-         JBqhJVUG2DsUf/DTTO0WW993S6gOxx5pmwiBMHSV5JbAOZ/Gt2Ydgt6O9rNJJ0aBuvZC
-         X8tQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686689219; x=1689281219;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fSNOwltAQrxAVV68XPYGPjq5L/bIYHyNYEji3sovMB8=;
-        b=MffYQCu4czD09SAUosdYpiNxpsxYXR3J+9M9YE6C1B+ksGn5tQMyzruG1aML0Zzc/j
-         4hdEEl4KNXHfASprcRdrLE8I4CQ+bLsQvp87NHBzIaIrVEnY8FCmuG3dumGw1WuW4NMt
-         hUKgXpjT1OuUiWNi7S3GfaoED3pwtTHvZIRKmGqKRXX8GEQcSJNPNeTJGxP3rvu2TAKm
-         qfJaksbdK0NnAsuwdmvsLdVzmemsnh4YGZJUJP2CWoFbE7O5h3ivrT9FUFp0Sz466oGg
-         iCZNYufsgegeT+EIcG9M+ukxpjLFfKdk8ClX+0nhg0JYQXLGwK+jLoeCjCv/yfMh5dqB
-         JHww==
-X-Gm-Message-State: AC+VfDxdrQxW9NsNUrc2+cR9g++J54Epp/yzfBjqvGnBbiAaCYIqrG0D
-	KyOIlAeXNW3L2/dphYRF6f4=
-X-Google-Smtp-Source: ACHHUZ5x08A9ldgu+vaqcgdfWvL3xxuzZM1dqATv5NQNkKaCgRk/Z49H2tvIClpjTgNoxcUIajTGMw==
-X-Received: by 2002:a05:6402:2055:b0:514:9df0:e3f3 with SMTP id bc21-20020a056402205500b005149df0e3f3mr9203260edb.0.1686689219118;
-        Tue, 13 Jun 2023 13:46:59 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id b14-20020aa7c6ce000000b00506987c5c71sm6802283eds.70.2023.06.13.13.46.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jun 2023 13:46:58 -0700 (PDT)
-Date: Tue, 13 Jun 2023 23:46:55 +0300
-From: Vladimir Oltean <olteanv@gmail.com>
-To: "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc: =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-	Daniel Golle <daniel@makrotopia.org>,
-	Landen Chao <Landen.Chao@mediatek.com>,
-	DENG Qingfang <dqfext@gmail.com>,
-	Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Frank Wunderlich <frank-w@public-files.de>,
-	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
-	mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net v2 2/7] net: dsa: mt7530: fix trapping frames with
- multiple CPU ports on MT7530
-Message-ID: <20230613204655.7dk5f5pbcyrquva5@skbuf>
-References: <20230611081547.26747-1-arinc.unal@arinc9.com>
- <20230611081547.26747-2-arinc.unal@arinc9.com>
- <20230613150815.67uoz3cvvwgmhdp2@skbuf>
- <a91e88a8-c528-0392-1237-fc8417931170@arinc9.com>
- <20230613171858.ybhtlwxqwp7gyrfs@skbuf>
- <20230613172402.grdpgago6in4jogq@skbuf>
- <ca78b2f9-bf98-af26-0267-60d2638f7f00@arinc9.com>
- <20230613173908.iuofbuvkanwyr7as@skbuf>
- <edcbe326-c456-06ef-373b-313e780209de@arinc9.com>
- <ZIi1fixnNqj9Gfcg@shell.armlinux.org.uk>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 158E5136A
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 20:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5DDEC433C0;
+	Tue, 13 Jun 2023 20:50:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686689411;
+	bh=xhD3KsDenC2acGYDfepb2r9sH74k5NXsBZ5Y5v+InHw=;
+	h=From:To:Cc:Subject:Date:From;
+	b=H2jLraoJ1XAlVcFkdHMOHsjldusi7Zd8q81A3PQLTZsirNIxTahgUfTAgk5ZfvNtT
+	 bSOEyfDwp3uFn4pfsmkcygsrsOCTM2zJKo7ob0RBjMrnOMGZT9Q731HCJUgxAtNZm1
+	 JaO4TI81Pbzc9u5KsFonpDch7/VDxu35PWt6JxMUVuHaa3Y5PeXSefeDo+6wGmSh2d
+	 9bRRu/xOTsNOngT0yl/w8Phib5V6wuh+RH7JXM12ING58uPu34/ZaZggzGzwrJm0hc
+	 vQyDpJK9B9glvi+YDlHbMjZMlgIPdhWIbhh+xWLqP6PU0Bp1w0+CsgFsM/P6B9UPkG
+	 GwkqjfAU7GBkw==
+From: Jakub Kicinski <kuba@kernel.org>
+To: davem@davemloft.net
+Cc: netdev@vger.kernel.org,
+	edumazet@google.com,
+	pabeni@redhat.com,
+	Jakub Kicinski <kuba@kernel.org>,
+	j.vosburgh@gmail.com,
+	andy@greyhouse.net,
+	rajur@chelsio.com,
+	ayush.sawal@chelsio.com,
+	dmichail@fungible.com,
+	borisp@nvidia.com,
+	saeedm@nvidia.com,
+	leon@kernel.org,
+	simon.horman@corigine.com,
+	john.fastabend@gmail.com,
+	anirudh.venkataramanan@intel.com,
+	maxtram95@gmail.com,
+	tariqt@nvidia.com,
+	gal@nvidia.com,
+	raeds@nvidia.com,
+	liorna@nvidia.com,
+	louis.peens@corigine.com,
+	yinjun.zhang@corigine.com,
+	na.wang@corigine.com,
+	linux-rdma@vger.kernel.org,
+	oss-drivers@corigine.com
+Subject: [PATCH net-next] net: tls: make the offload check helper take skb not socket
+Date: Tue, 13 Jun 2023 13:50:06 -0700
+Message-Id: <20230613205006.1995873-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZIi1fixnNqj9Gfcg@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jun 13, 2023 at 07:29:18PM +0100, Russell King (Oracle) wrote:
-> Maybe it's just me being dumb, but I keep finding things difficult to
-> understand, such as the above paragraph.
-> 
-> It sounds like you're saying that _before_ this patch, port 5 is the
-> active CPU port, but the CPU_PORT *FIELD* NOT BITS are set such that
-> port 6 is the active CPU port. Therefore, things are broken, and this
-> patch fixes it.
-> 
-> Or are you saying that after this patch is applied, port 5 is the
-> active CPU port, but the CPU_PORT *FIELD* is set to port 6. If that's
-> true, then I've no idea what the hell is going on here because it
-> seems to be senseless.
+All callers of tls_is_sk_tx_device_offloaded() currently do
+an equivalent of:
 
-There are 2 distinct patches at play. I'll be showing some tables below.
-Their legend is that patch (1) affects only the second column and patch
-(2) affects only the third column.
+ if (skb->sk && tls_is_skb_tx_device_offloaded(skb->sk))
 
-Patch (1): net: dsa: mt7530: fix trapping frames with multiple CPU ports on MT7530
-----------------------------------------------------------------------------------
+Have the helper accept skb and do the skb->sk check locally.
+Two drivers have local static inlines with similar wrappers
+already.
 
-What you need to know looking at the current code in net-next is that
-mt753x_cpu_port_enable() always overwrites the CPU_MASK field of MT7530_MFC,
-because that contains a single port. So when operating on a device tree
-with multiple CPU ports defined, only the last CPU port will be recorded
-in that register, and this will affect the destination port for
-trapped-to-CPU frames.
+While at it change the ifdef condition to TLS_DEVICE.
+Only TLS_DEVICE selects SOCK_VALIDATE_XMIT, so the two are
+equivalent. This makes removing the duplicated IS_ENABLED()
+check in funeth more obviously correct.
 
-However, DSA, when operating on a DT with multiple CPU ports, makes the
-dp->cpu_dp pointer of all user ports equal to the first CPU port. That
-affects which DSA master is automatically brought up when user ports are
-brought up. Minor issue, TBH, because it is sufficient for the user to
-manually bring up the DSA master corresponding to the second CPU port,
-and then trapped frames would be processed just fine. Prior to ~2021/v5.12,
-that facility wasn't even a thing - the user always had to bring that
-interface up manually.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: j.vosburgh@gmail.com
+CC: andy@greyhouse.net
+CC: rajur@chelsio.com
+CC: ayush.sawal@chelsio.com
+CC: dmichail@fungible.com
+CC: borisp@nvidia.com
+CC: saeedm@nvidia.com
+CC: leon@kernel.org
+CC: simon.horman@corigine.com
+CC: john.fastabend@gmail.com
+CC: anirudh.venkataramanan@intel.com
+CC: maxtram95@gmail.com
+CC: tariqt@nvidia.com
+CC: gal@nvidia.com
+CC: raeds@nvidia.com
+CC: liorna@nvidia.com
+CC: louis.peens@corigine.com
+CC: yinjun.zhang@corigine.com
+CC: na.wang@corigine.com
+CC: linux-rdma@vger.kernel.org
+CC: oss-drivers@corigine.com
+---
+ drivers/net/bonding/bond_main.c                           | 4 ++--
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c           | 2 +-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h            | 5 -----
+ drivers/net/ethernet/chelsio/cxgb4/sge.c                  | 2 +-
+ .../ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c    | 2 +-
+ drivers/net/ethernet/fungible/funeth/funeth_tx.c          | 3 +--
+ .../net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h   | 2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c    | 2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_accel/ktls_txrx.h  | 5 -----
+ drivers/net/ethernet/netronome/nfp/nfp_net_common.c       | 4 ++--
+ include/net/tls.h                                         | 8 +++++---
+ net/tls/tls_device.c                                      | 4 ++--
+ 12 files changed, 17 insertions(+), 26 deletions(-)
 
-That means that without patch (1) we have:
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 007cec23a92f..16405b84dc2f 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -5442,7 +5442,7 @@ static netdev_tx_t bond_tls_device_xmit(struct bonding *bond, struct sk_buff *sk
+ {
+ 	struct net_device *tls_netdev = rcu_dereference(tls_get_ctx(skb->sk)->netdev);
+ 
+-	/* tls_netdev might become NULL, even if tls_is_sk_tx_device_offloaded
++	/* tls_netdev might become NULL, even if tls_is_skb_tx_device_offloaded
+ 	 * was true, if tls_device_down is running in parallel, but it's OK,
+ 	 * because bond_get_slave_by_dev has a NULL check.
+ 	 */
+@@ -5461,7 +5461,7 @@ static netdev_tx_t __bond_start_xmit(struct sk_buff *skb, struct net_device *dev
+ 		return NETDEV_TX_OK;
+ 
+ #if IS_ENABLED(CONFIG_TLS_DEVICE)
+-	if (skb->sk && tls_is_sk_tx_device_offloaded(skb->sk))
++	if (tls_is_skb_tx_device_offloaded(skb))
+ 		return bond_tls_device_xmit(bond, skb, dev);
+ #endif
+ 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index f0bc7396ce2b..2eb33a727bba 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -1175,7 +1175,7 @@ static u16 cxgb_select_queue(struct net_device *dev, struct sk_buff *skb,
+ 		txq = netdev_pick_tx(dev, skb, sb_dev);
+ 		if (xfrm_offload(skb) || is_ptp_enabled(skb, dev) ||
+ 		    skb->encapsulation ||
+-		    cxgb4_is_ktls_skb(skb) ||
++		    tls_is_skb_tx_device_offloaded(skb) ||
+ 		    (proto != IPPROTO_TCP && proto != IPPROTO_UDP))
+ 			txq = txq % pi->nqsets;
+ 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
+index 34546f5312ee..a9599ba26975 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
+@@ -497,11 +497,6 @@ struct cxgb4_uld_info {
+ #endif
+ };
+ 
+-static inline bool cxgb4_is_ktls_skb(struct sk_buff *skb)
+-{
+-	return skb->sk && tls_is_sk_tx_device_offloaded(skb->sk);
+-}
+-
+ void cxgb4_uld_enable(struct adapter *adap);
+ void cxgb4_register_uld(enum cxgb4_uld type, const struct cxgb4_uld_info *p);
+ int cxgb4_unregister_uld(enum cxgb4_uld type);
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+index 46809e2d94ee..98dd78551d89 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+@@ -1530,7 +1530,7 @@ static netdev_tx_t cxgb4_eth_xmit(struct sk_buff *skb, struct net_device *dev)
+ #endif /* CHELSIO_IPSEC_INLINE */
+ 
+ #if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
+-	if (cxgb4_is_ktls_skb(skb) &&
++	if (tls_is_skb_tx_device_offloaded(skb) &&
+ 	    (skb->len - skb_tcp_all_headers(skb)))
+ 		return adap->uld[CXGB4_ULD_KTLS].tx_handler(skb, dev);
+ #endif /* CHELSIO_TLS_DEVICE */
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
+index 1a5fdd755e9e..bcdc7fc2f427 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
+@@ -1946,7 +1946,7 @@ static int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	tls_ctx = tls_get_ctx(skb->sk);
+ 	tls_netdev = rcu_dereference_bh(tls_ctx->netdev);
+ 	/* Don't quit on NULL: if tls_device_down is running in parallel,
+-	 * netdev might become NULL, even if tls_is_sk_tx_device_offloaded was
++	 * netdev might become NULL, even if tls_is_skb_tx_device_offloaded was
+ 	 * true. Rather continue processing this packet.
+ 	 */
+ 	if (unlikely(tls_netdev && tls_netdev != dev))
+diff --git a/drivers/net/ethernet/fungible/funeth/funeth_tx.c b/drivers/net/ethernet/fungible/funeth/funeth_tx.c
+index 706d81e39a54..8ddefd3ec15b 100644
+--- a/drivers/net/ethernet/fungible/funeth/funeth_tx.c
++++ b/drivers/net/ethernet/fungible/funeth/funeth_tx.c
+@@ -348,8 +348,7 @@ netdev_tx_t fun_start_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	unsigned int tls_len = 0;
+ 	unsigned int ndesc;
+ 
+-	if (IS_ENABLED(CONFIG_TLS_DEVICE) && skb->sk &&
+-	    tls_is_sk_tx_device_offloaded(skb->sk)) {
++	if (tls_is_skb_tx_device_offloaded(skb)) {
+ 		skb = fun_tls_tx(skb, q, &tls_len);
+ 		if (unlikely(!skb))
+ 			goto dropped;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
+index c964644ee866..bac4717548c6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
+@@ -125,7 +125,7 @@ static inline bool mlx5e_accel_tx_begin(struct net_device *dev,
+ 
+ #ifdef CONFIG_MLX5_EN_TLS
+ 	/* May send WQEs. */
+-	if (mlx5e_ktls_skb_offloaded(skb))
++	if (tls_is_skb_tx_device_offloaded(skb))
+ 		if (unlikely(!mlx5e_ktls_handle_tx_skb(dev, sq, skb,
+ 						       &state->tls)))
+ 			return false;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+index 0e4c0a093293..efb2cf74ad6a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+@@ -846,7 +846,7 @@ bool mlx5e_ktls_handle_tx_skb(struct net_device *netdev, struct mlx5e_txqsq *sq,
+ 	tls_ctx = tls_get_ctx(skb->sk);
+ 	tls_netdev = rcu_dereference_bh(tls_ctx->netdev);
+ 	/* Don't WARN on NULL: if tls_device_down is running in parallel,
+-	 * netdev might become NULL, even if tls_is_sk_tx_device_offloaded was
++	 * netdev might become NULL, even if tls_is_skb_tx_device_offloaded was
+ 	 * true. Rather continue processing this packet.
+ 	 */
+ 	if (WARN_ON_ONCE(tls_netdev && tls_netdev != netdev))
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_txrx.h
+index 2dd78dd4ad65..f87b65c560ea 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_txrx.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_txrx.h
+@@ -49,11 +49,6 @@ mlx5e_ktls_rx_pending_resync_list(struct mlx5e_channel *c, int budget)
+ 	return budget && test_bit(MLX5E_SQ_STATE_PENDING_TLS_RX_RESYNC, &c->async_icosq.state);
+ }
+ 
+-static inline bool mlx5e_ktls_skb_offloaded(struct sk_buff *skb)
+-{
+-	return skb->sk && tls_is_sk_tx_device_offloaded(skb->sk);
+-}
+-
+ static inline void
+ mlx5e_ktls_handle_tx_wqe(struct mlx5_wqe_ctrl_seg *cseg,
+ 			 struct mlx5e_accel_tx_tls_state *state)
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+index b7cce746b5c0..49f2f081ebb5 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+@@ -598,7 +598,7 @@ nfp_net_tls_tx(struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
+ 
+ 	if (likely(!dp->ktls_tx))
+ 		return skb;
+-	if (!skb->sk || !tls_is_sk_tx_device_offloaded(skb->sk))
++	if (!tls_is_skb_tx_device_offloaded(skb))
+ 		return skb;
+ 
+ 	datalen = skb->len - skb_tcp_all_headers(skb);
+@@ -666,7 +666,7 @@ void nfp_net_tls_tx_undo(struct sk_buff *skb, u64 tls_handle)
+ 
+ 	if (!tls_handle)
+ 		return;
+-	if (WARN_ON_ONCE(!skb->sk || !tls_is_sk_tx_device_offloaded(skb->sk)))
++	if (WARN_ON_ONCE(!tls_is_skb_tx_device_offloaded(skb)))
+ 		return;
+ 
+ 	datalen = skb->len - skb_tcp_all_headers(skb);
+diff --git a/include/net/tls.h b/include/net/tls.h
+index b7d0f1e3058b..5e71dd3df8ca 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -370,10 +370,12 @@ struct sk_buff *
+ tls_validate_xmit_skb_sw(struct sock *sk, struct net_device *dev,
+ 			 struct sk_buff *skb);
+ 
+-static inline bool tls_is_sk_tx_device_offloaded(struct sock *sk)
++static inline bool tls_is_skb_tx_device_offloaded(const struct sk_buff *skb)
+ {
+-#ifdef CONFIG_SOCK_VALIDATE_XMIT
+-	return sk_fullsock(sk) &&
++#ifdef CONFIG_TLS_DEVICE
++	struct sock *sk = skb->sk;
++
++	return sk && sk_fullsock(sk) &&
+ 	       (smp_load_acquire(&sk->sk_validate_xmit_skb) ==
+ 	       &tls_validate_xmit_skb);
+ #else
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index b4864d55900f..b82770f68807 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -1219,7 +1219,7 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
+ 	tls_device_attach(ctx, sk, netdev);
+ 	up_read(&device_offload_lock);
+ 
+-	/* following this assignment tls_is_sk_tx_device_offloaded
++	/* following this assignment tls_is_skb_tx_device_offloaded
+ 	 * will return true and the context might be accessed
+ 	 * by the netdev's xmit function.
+ 	 */
+@@ -1372,7 +1372,7 @@ static int tls_device_down(struct net_device *netdev)
+ 
+ 	list_for_each_entry_safe(ctx, tmp, &list, list)	{
+ 		/* Stop offloaded TX and switch to the fallback.
+-		 * tls_is_sk_tx_device_offloaded will return false.
++		 * tls_is_skb_tx_device_offloaded will return false.
+ 		 */
+ 		WRITE_ONCE(ctx->sk->sk_validate_xmit_skb, tls_validate_xmit_skb_sw);
+ 
+-- 
+2.40.1
 
-CPU ports in the    Trapping CPU port        Default CPU port
-device tree         (MT7530_MFC:CPU_MASK)    (all dp->cpu_dp point to it)
--------------------------------------------------------------------------
-5                   5                        5
-6                   6                        6
-5 and 6             6                        5
-
-The semi-problem is that the DSA master of the trapping port (6) is not
-automatically brought up by the dsa_slave_open() logic, because no slave
-has port 6 (the trapping port) as a master.
-
-All that this patch is doing is that it moves around the trapping CPU
-port towards one of the DSA masters that is up, so that the user doesn't
-really need to care. The table becomes:
-
-CPU ports in the    Trapping CPU port        Default CPU port
-device tree         (MT7530_MFC:CPU_MASK)    (all dp->cpu_dp point to it)
---------------------------------------------------------------------------
-5                   5                        5
-6                   6                        6
-5 and 6             5                        5
-
-
-Patch (2) net: dsa: introduce preferred_default_local_cpu_port and use on MT7530
---------------------------------------------------------------------------------
-
-This patch influences the choice that DSA makes when it comes to the
-dp->cpu_dp assignments of user ports, when fed a device tree with
-multiple CPU ports.
-
-The preference of the mt7530 driver is: if port 6 is defined in the DT
-as a CPU port, choose that. Otherwise don't care (which implicitly means:
-let DSA pick the first CPU port that is defined there, be it 5 or 6).
-
-The effect of this patch taken in isolation is (showing only "after",
-because "before" is the same as the "before" of patch 1):
-
-CPU ports in the    Trapping CPU port        Default CPU port
-device tree         (MT7530_MFC:CPU_MASK)    (all dp->cpu_dp point to it)
--------------------------------------------------------------------------
-5                   5                        5
-6                   6                        6
-5 and 6             6                        6
-
-As you can see, patch (2) resolves the same semi-problem even in
-isolation because it makes the trapping port coincide with the default
-CPU port in a different way.
-
-> 
-> I think at this point I just give up trying to understand what the
-> hell these patches are trying to do - in my opinion, the commit
-> messages are worded attrociously and incomprehensively.
-
-+1, could have been better..
 
