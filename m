@@ -1,248 +1,438 @@
-Return-Path: <netdev+bounces-10886-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10887-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 313D2730A70
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 00:11:48 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8BAA8730A7B
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 00:17:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6103F1C20DB3
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 22:11:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3F2152813EE
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 22:17:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2ACBC134D5;
-	Wed, 14 Jun 2023 22:11:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 39B56134D8;
+	Wed, 14 Jun 2023 22:17:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12562134A7
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 22:11:44 +0000 (UTC)
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C49A6;
-	Wed, 14 Jun 2023 15:11:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25622134A7
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 22:17:01 +0000 (UTC)
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C601FE8;
+	Wed, 14 Jun 2023 15:16:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686780703; x=1718316703;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=2/x/fGxVvPuT0zbA0XVeB+wisbpLZqBZUVieyd/MnbQ=;
-  b=PrSiSPTBKm3CdIJOi6A3GdfAVQ5yjJgR6LCBf4aFhO8ufGguWKxMtcSh
-   yg/cp7g/N2J5UBonUo5h9hKJxKFG4+Ng6OO3c76i4vgxjUi86XqUndAF0
-   0rk3lqw8sy/2wI0EJ29aD5BcAwBSCSYcsGPwTFMdsq+tzL6g6sc9ctMjr
-   KKmiBdeC847hlX8MLUKKfTNbap7uZhLvlq2AZaSb17Ne4r370r/2Qim0z
-   fbSKfOD1PhOvSFnVmwgie37dC3zVH7w1yUWxnCchHEshETktAdNNPp5rn
-   SWSInedpt2FP/y59GguYLtcUN61RJOQuNLPTwlwLT+yUHG7GRy1lhGlky
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10741"; a="387160575"
+  t=1686781019; x=1718317019;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=71XOEFVoYYfCOvsQxiZyX2FI+NKqd8f4Yj5ogkZkfLU=;
+  b=ZeG8yEe7lt3f15LknHkMyov97kVHv3mEUx6pqDdv8W+PSje7unH4fHa2
+   jsvrh534mZ6i7PtsWeHGbOsu4nWNzlZiwEcpp3Oymli+mPgSg1jyZpIbH
+   UmCRu9UGP532CyMAKFnUqI5H4OKdu4SHm2YSAvzxBS4Zei/iEdI5cUbx3
+   v6UMBVT4ewNCu6J6OKgLpQiKiW/pO1VE4UTYqUJ4UrlpeSk6+gEx3HaHl
+   /q/w6ab1kYZbBq+EhPsY1GEHK2k92EZyIggqbAZygOOAbSjUhCjFhAKGh
+   DlLbvWMhPLhNODQWiFgxP/gpLCt+62FM03Jy2b4EdXrnWjpfDcTILUV/L
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10741"; a="356239805"
 X-IronPort-AV: E=Sophos;i="6.00,243,1681196400"; 
-   d="scan'208";a="387160575"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2023 15:11:43 -0700
+   d="scan'208";a="356239805"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2023 15:16:58 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10741"; a="689546503"
+X-IronPort-AV: E=McAfee;i="6600,9927,10741"; a="777441927"
 X-IronPort-AV: E=Sophos;i="6.00,243,1681196400"; 
-   d="scan'208";a="689546503"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga006.jf.intel.com with ESMTP; 14 Jun 2023 15:11:42 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 14 Jun 2023 15:11:40 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Wed, 14 Jun 2023 15:11:40 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.171)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Wed, 14 Jun 2023 15:11:40 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mdlQs+TdLORVULmiWgJRkXzsPbKPIYVzwOCQZwaVCGD1rBw5wJ7YgH5IL77Nqud8nZjKknzY6ckQmuOZ07IVrdNFTOOQtf87cibLoDCd9+ezKb53F6HaAzy5xy9Og1qPG0VEYeoboh/90GcfFEDdr+sfQB5AduXiBjp3wwS3kV1HnLVdx1dWrqmtW0sbma7qMLieQBAf6KIPyKuW6y0SkZTRZiw/9vLYTWfPCRBv/xWsAQA9NJ/1C2nuGbuXPVEbX23pF3MhzFnhEMuuWfO4kAo5b92ZOh7dRzM08A9aqPu3NAuyg2rv2QQ85C0mdNFQXbf+qx/eryPgMDe11vAhaA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZNVSPACubiQWi3+PQOkgJ6GqwKuirn2b4FwTcBcuWps=;
- b=ms+IEfLUfO5Az/7xVRj0M6kZFb410vOokt/2m8Y45VCfPe0ezlJyxFibhDzO2PB8sZobEePLE87HC4lsEjOsHqT/3xkhLu4sOuegGm1Vq58XdJxlA0skh/LuiorgMERm5mbY90b9xd2t3nQGH3h80R5fmd0GSqqIP6pEBhl0VzR0L94TdWYA23oaJ4aF2ghfok+cV6LC0ApcyB3BppCm9pAdaNbaT9LeS18sui/gJJXO0CSkqwi/5cJqCzpPHucEa2VPxm7uzCoqTfbDbjNJvGUpT/jfbPVn1qDHRM1dOjDjlQ8R3uz8dFWxJDtcrta8i+wWExSqAs7b0uWF+weG2Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
- SN7PR11MB7140.namprd11.prod.outlook.com (2603:10b6:806:2a3::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.37; Wed, 14 Jun
- 2023 22:11:39 +0000
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::24bd:974b:5c01:83d6]) by DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::24bd:974b:5c01:83d6%3]) with mapi id 15.20.6455.045; Wed, 14 Jun 2023
- 22:11:39 +0000
-From: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
-To: Jakub Kicinski <kuba@kernel.org>
-CC: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"davem@davemloft.net" <davem@davemloft.net>, "pabeni@redhat.com"
-	<pabeni@redhat.com>, "edumazet@google.com" <edumazet@google.com>,
-	"chuck.lever@oracle.com" <chuck.lever@oracle.com>
-Subject: RE: [PATCH net-next] tools: ynl-gen: generate docs for
- <name>_max/_mask enums
-Thread-Topic: [PATCH net-next] tools: ynl-gen: generate docs for
- <name>_max/_mask enums
-Thread-Index: AQHZnk2DP+viVSY2G0+N2yPHRycjpq+JelUAgADC5aCAAFRWAIAAQ+mA
-Date: Wed, 14 Jun 2023 22:11:38 +0000
-Message-ID: <DM6PR11MB4657A5F161476B05C5F8B7569B5AA@DM6PR11MB4657.namprd11.prod.outlook.com>
-References: <20230613231709.150622-1-arkadiusz.kubalewski@intel.com>
-	<20230613231709.150622-3-arkadiusz.kubalewski@intel.com>
-	<20230613175928.4ea56833@kernel.org>
-	<DM6PR11MB46570AEF7E10089E70CC1D019B5AA@DM6PR11MB4657.namprd11.prod.outlook.com>
- <20230614103852.3eb7fd02@kernel.org>
-In-Reply-To: <20230614103852.3eb7fd02@kernel.org>
-Accept-Language: pl-PL, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|SN7PR11MB7140:EE_
-x-ms-office365-filtering-correlation-id: 86f19c00-56c7-46a4-e137-08db6d24536a
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 3mNwOgVUAfpKSkJhSNQDA2saO0kqPl1VTB66b6fIt56C0Viw+1dVZBi2zrYEBktx4JzSnGBn4GCJD9384JJhPPjkb/OWwyRnh9npD3p0v4LRvToyUZuGevPEwLMdy/A5xWaSOKUCJqNPnX+Z18xunnArh96a0svMQB3HZsesrvyqRzK74nIyS5f8zTvePBX4anUwvVMnzKzY2ku0u3IBiiDVc6cg4TRkURmzHaDC9PzsMI9vHiOD6YhRehB5fqcMdpzbQzl9Ofjm3iSUPfnO2X48ghyJkPZoaAniyq3jTarb0wfpRZ5A/IKDkkbFYAiDf8Ir0tcys5QRvnBnPk8b+MvSmRhrOuXFMo1LO4/satiX0cECI38PD4EOuilFEtLsrZoSRAy4Wsd/4W7ET5+jnSwSLzBdj6eLuGR4aECCFrysG/EE5GRObjFBSmms/ljBDHhU9MOTL58YhfN3OSU0BhDzqL81V++w2YvpQ6781pQW9szLkJPFA1/hnvazt0X3Mo24gBcYoHyG9kfjn06vhNj3mC/pED2/BtCWwMp3rzxivpbH6Arj/MH/apODbSub8gEm3ztc12SeKrsoV+UGW3QJxxa+FPpa6nr/Q8rrHzw=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(366004)(396003)(39860400002)(376002)(346002)(451199021)(83380400001)(5660300002)(52536014)(186003)(55016003)(6506007)(2906002)(41300700001)(8936002)(9686003)(7696005)(26005)(8676002)(316002)(122000001)(54906003)(38070700005)(33656002)(82960400001)(478600001)(38100700002)(4326008)(76116006)(66556008)(66476007)(86362001)(66946007)(6916009)(66446008)(64756008)(71200400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?gzctWfywOWVrvKDCsN1J11hTq+8rCvBqJzw0ZP+Xw+cR1AXSSCjJ+LT90HYb?=
- =?us-ascii?Q?YxgtjVJ/07rHw7ueumhh6gwSpQ/7HEqqHqxXa6r1nW9EhmgcyJKSEUNryxEP?=
- =?us-ascii?Q?M6SYKGkWam2AOFXNpfQosIl/JWPBGioAS/d6XdIDBKdjeUEutMC8JzyDlr6z?=
- =?us-ascii?Q?L2g0Ub/IxSipFTqyhO0oBpQo5s9CuT5fdQmRnlzF2iHnvwgLCFmfQSsz/utm?=
- =?us-ascii?Q?MSABI9MIEORb4n3etzBV+9wOCPEqMuz7OqV51aTJ8fiWZ+xca/KUPAlDcIaP?=
- =?us-ascii?Q?+pFqwFiN3sEgSajF8QiByghOqf6JOK69bnoFKQl7voDks/Y9MUniZqtWokQt?=
- =?us-ascii?Q?/SYq51r8Hx82kC4WDqxbuUGbinMPEiPTM36sEONa5rKyBN7RTCu9fnYT3X0U?=
- =?us-ascii?Q?ud4fhgO98s6tpPC+ZwdYoKwzSiV2tx3j9tlCtBEU6TvWzd2/1i6N5AqVhDnO?=
- =?us-ascii?Q?TdrXPpm8jd4pX81jPPlrhXN6jJKy8Hqe8LnjSBqBc+TWOrn+lQig1ByghV/1?=
- =?us-ascii?Q?LzZnyP96WgJobU7JIl4cFdqWPII2du8IbcfnFKh/JJnfMvVyRWPTDAj0ri7Y?=
- =?us-ascii?Q?hr7Ix6DXjZc4nQyASKqdSDDaFRHLyVvsXRKQlD9V7RaMGMPmXEuBu9qIspY9?=
- =?us-ascii?Q?WgYxognvxMce/VwAIVetdxEf5FkLBf+7qAjqmeIzsBTDVQZEaeABHlngAw1k?=
- =?us-ascii?Q?x5oBVBxqLW08jsEUWkIZwP3tz9PqxjjYrpwW58FgNIAtImig/ZxEyCB1t/LQ?=
- =?us-ascii?Q?r8wNS+zS6VGft5HgR2OT4o0wJ3ClQka4zF6KdVtMURom9LjFj8Jp6z+T7Nd2?=
- =?us-ascii?Q?kGLh/6b0qtgXjp5nTJ1SC0aThe+a4hfwPAFBALaAn1Bvgb56FHtWRoC6yD+l?=
- =?us-ascii?Q?QVakygaG63jCb7/JZwRI8qYVGCJOLf7NsLqTZMblHio2Oqc6QOTKNL/PdhwX?=
- =?us-ascii?Q?bpbvD6yNi1PaAgDnH8lA19J8KkwgzsxZxsuw02i4c6msi+S/c0BRzi8cS71d?=
- =?us-ascii?Q?Or/qobZtLOKXnVFZhQZm0YC+vgR6kYv47FofNVcny7W+/nAVMTx03ePjb4Kn?=
- =?us-ascii?Q?fdH78Foeagq+8KYQL/7XVUxGIeQxT4TqV0Kh6DvUGb/IywXeGgVTIP4pFErp?=
- =?us-ascii?Q?cXYYGQdCHgQX90hAJlTsL5k2lRKzDa35fgpw+zqPJtAM68Z/dZoN35bNug1A?=
- =?us-ascii?Q?fs1Fih68bxipJd0kNvyXXM1Vn0LcTZj8+M1SxYjx+OFV2tRFXwU1sf5uX6IT?=
- =?us-ascii?Q?yJzXoBb/lJcUzKzOhb6k8BnSKhvfVllAjvbk/A3Uc3TxMLl5sB81hfNZUfK+?=
- =?us-ascii?Q?Ed/x+S9Wgw8t4E4IPo5ZP9lbkkoYFX9E0N1WUwASvh7XThDo49rKwFCVMqbV?=
- =?us-ascii?Q?66AZWSTVw6cJpguTWAGjZA3xn6v8t1aD0IAZcCNJOUa434akfV8f1lRDeTdz?=
- =?us-ascii?Q?A8uGagZ3U221ygCnYkfc2Q8zPEGsa2WAVdRyvtmITPXb0d1pLd0VLoAQnCGE?=
- =?us-ascii?Q?e5f3+ykc+A61DgXWUsk5NjgdXXAXxAw802UR56abjFvkHDLz919NvAuh3azj?=
- =?us-ascii?Q?enA/CZR/S0/czl4J2GO5yk0QOnoZ5I5CJ/gPkHYQOAtSchxHPJmEp6zRtcDG?=
- =?us-ascii?Q?OQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+   d="scan'208";a="777441927"
+Received: from lkp-server02.sh.intel.com (HELO d59cacf64e9e) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 14 Jun 2023 15:16:54 -0700
+Received: from kbuild by d59cacf64e9e with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1q9YnN-00017f-13;
+	Wed, 14 Jun 2023 22:16:53 +0000
+Date: Thu, 15 Jun 2023 06:16:07 +0800
+From: kernel test robot <lkp@intel.com>
+To: Jisheng Zhang <jszhang@kernel.org>,
+	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jose Abreu <joabreu@synopsys.com>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH 3/3] net: stmmac: use pcpu statistics where necessary
+Message-ID: <202306150658.XLO1cHJU-lkp@intel.com>
+References: <20230614161847.4071-4-jszhang@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86f19c00-56c7-46a4-e137-08db6d24536a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jun 2023 22:11:38.8784
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IqGmeFNK93cEzJFuV2eRGwzTFlgY2navbT1qpUZ+pddzD7veDtQi84Z7LYa0kOABtc/ZW23isGBAAtTgu8HemVECq5Ng4KyhcjXAi3cimOY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7140
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230614161847.4071-4-jszhang@kernel.org>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
->From: Jakub Kicinski <kuba@kernel.org>
->Sent: Wednesday, June 14, 2023 7:39 PM
->
->On Wed, 14 Jun 2023 12:48:14 +0000 Kubalewski, Arkadiusz wrote:
->> >From: Jakub Kicinski <kuba@kernel.org>
->> >Sent: Wednesday, June 14, 2023 2:59 AM
->> >
->> >On Wed, 14 Jun 2023 01:17:09 +0200 Arkadiusz Kubalewski wrote:
->> >> Including ynl generated uapi header files into source kerneldocs
->> >> (rst files in Documentation/) produces warnings during documentation
->> >> builds (i.e. make htmldocs)
->> >>
->> >> Prevent warnings by generating also description for enums where
->> >> rander_max was selected.
->> >
->> >Do you reckon that documenting the meta-values makes sense, or should
->> >we throw a:
->> >
->> >/* private: */
->> >
->>
->> Most probably it doesn't..
->> Tried this:
->> /*
->>  [ other values description ]
->>  * private:
->>  * @__<NAME>_MAX
->>  */
->> and this:
->> /*
->>  [ other values description ]
->>  * private: @__<NAME>_MAX
->>  */
->>
->> Both are not working as we would expect.
->>
->> Do you mean to have double comments for enums? like:
->> /*
->>  [ other values description ]
->>  */
->> /*
->>  * private:
->>  * @__<NAME>_MAX
->>  */
->>
->> >comment in front of them so that kdoc ignores them? Does user space
->> >have any use for those? If we want to document them...
->>
->> Hmm, do you recall where I can find proper format of such ignore enum
->comment
->> for kdoc generation?
->> Or maybe we need to also submit patch to some kdoc build process to
->actually
->> change the current behavior?
->
->It's explained in the kdoc documentation :(
->https://docs.kernel.org/doc-guide/kernel-doc.html#members
+Hi Jisheng,
+
+kernel test robot noticed the following build errors:
+
+[auto build test ERROR on sunxi/sunxi/for-next]
+[also build test ERROR on linus/master v6.4-rc6]
+[cannot apply to next-20230614]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Jisheng-Zhang/net-stmmac-don-t-clear-network-statistics-in-ndo_open/20230615-003137
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/sunxi/linux.git sunxi/for-next
+patch link:    https://lore.kernel.org/r/20230614161847.4071-4-jszhang%40kernel.org
+patch subject: [PATCH 3/3] net: stmmac: use pcpu statistics where necessary
+config: riscv-randconfig-r006-20230612 (https://download.01.org/0day-ci/archive/20230615/202306150658.XLO1cHJU-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project.git 4a5ac14ee968ff0ad5d2cc1ffa0299048db4c88a)
+reproduce (this is a W=1 build):
+        mkdir -p ~/bin
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        git remote add sunxi https://git.kernel.org/pub/scm/linux/kernel/git/sunxi/linux.git
+        git fetch sunxi sunxi/for-next
+        git checkout sunxi/sunxi/for-next
+        b4 shazam https://lore.kernel.org/r/20230614161847.4071-4-jszhang@kernel.org
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang ~/bin/make.cross W=1 O=build_dir ARCH=riscv olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang ~/bin/make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/net/ethernet/stmicro/stmmac/
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202306150658.XLO1cHJU-lkp@intel.com/
+
+All error/warnings (new ones prefixed by >>):
+
+>> drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c:564:49: warning: variable 'start' is uninitialized when used here [-Wuninitialized]
+     564 |                 } while (u64_stats_fetch_retry(&stats->syncp, start));
+         |                                                               ^~~~~
+   drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c:551:20: note: initialize the variable 'start' to silence this warning
+     551 |         unsigned int start;
+         |                           ^
+         |                            = 0
+   1 warning generated.
+--
+>> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:7243:13: error: no member named 'xstas' in 'struct stmmac_priv'; did you mean 'xstats'?
+    7243 |         if (!priv->xstas.pstats)
+         |                    ^~~~~
+         |                    xstats
+   drivers/net/ethernet/stmicro/stmmac/stmmac.h:247:28: note: 'xstats' declared here
+     247 |         struct stmmac_extra_stats xstats ____cacheline_aligned_in_smp;
+         |                                   ^
+   1 error generated.
 
 
-Thanks for pointing this, but it doesn't work :/
+vim +7243 drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 
-I tried described format but still ./scripts/kernel-doc warns about it.
-Same as 'make htmldocs' does, as it uses ./scripts/kernel-doc
+  7211	
+  7212	/**
+  7213	 * stmmac_dvr_probe
+  7214	 * @device: device pointer
+  7215	 * @plat_dat: platform data pointer
+  7216	 * @res: stmmac resource pointer
+  7217	 * Description: this is the main probe function used to
+  7218	 * call the alloc_etherdev, allocate the priv structure.
+  7219	 * Return:
+  7220	 * returns 0 on success, otherwise errno.
+  7221	 */
+  7222	int stmmac_dvr_probe(struct device *device,
+  7223			     struct plat_stmmacenet_data *plat_dat,
+  7224			     struct stmmac_resources *res)
+  7225	{
+  7226		struct net_device *ndev = NULL;
+  7227		struct stmmac_priv *priv;
+  7228		u32 rxq;
+  7229		int i, ret = 0;
+  7230	
+  7231		ndev = devm_alloc_etherdev_mqs(device, sizeof(struct stmmac_priv),
+  7232					       MTL_MAX_TX_QUEUES, MTL_MAX_RX_QUEUES);
+  7233		if (!ndev)
+  7234			return -ENOMEM;
+  7235	
+  7236		SET_NETDEV_DEV(ndev, device);
+  7237	
+  7238		priv = netdev_priv(ndev);
+  7239		priv->device = device;
+  7240		priv->dev = ndev;
+  7241	
+  7242		priv->xstats.pstats = devm_netdev_alloc_pcpu_stats(device, struct stmmac_pcpu_stats);
+> 7243		if (!priv->xstas.pstats)
+  7244			return -ENOMEM;
+  7245	
+  7246		stmmac_set_ethtool_ops(ndev);
+  7247		priv->pause = pause;
+  7248		priv->plat = plat_dat;
+  7249		priv->ioaddr = res->addr;
+  7250		priv->dev->base_addr = (unsigned long)res->addr;
+  7251		priv->plat->dma_cfg->multi_msi_en = priv->plat->multi_msi_en;
+  7252	
+  7253		priv->dev->irq = res->irq;
+  7254		priv->wol_irq = res->wol_irq;
+  7255		priv->lpi_irq = res->lpi_irq;
+  7256		priv->sfty_ce_irq = res->sfty_ce_irq;
+  7257		priv->sfty_ue_irq = res->sfty_ue_irq;
+  7258		for (i = 0; i < MTL_MAX_RX_QUEUES; i++)
+  7259			priv->rx_irq[i] = res->rx_irq[i];
+  7260		for (i = 0; i < MTL_MAX_TX_QUEUES; i++)
+  7261			priv->tx_irq[i] = res->tx_irq[i];
+  7262	
+  7263		if (!is_zero_ether_addr(res->mac))
+  7264			eth_hw_addr_set(priv->dev, res->mac);
+  7265	
+  7266		dev_set_drvdata(device, priv->dev);
+  7267	
+  7268		/* Verify driver arguments */
+  7269		stmmac_verify_args();
+  7270	
+  7271		priv->af_xdp_zc_qps = bitmap_zalloc(MTL_MAX_TX_QUEUES, GFP_KERNEL);
+  7272		if (!priv->af_xdp_zc_qps)
+  7273			return -ENOMEM;
+  7274	
+  7275		/* Allocate workqueue */
+  7276		priv->wq = create_singlethread_workqueue("stmmac_wq");
+  7277		if (!priv->wq) {
+  7278			dev_err(priv->device, "failed to create workqueue\n");
+  7279			ret = -ENOMEM;
+  7280			goto error_wq_init;
+  7281		}
+  7282	
+  7283		INIT_WORK(&priv->service_task, stmmac_service_task);
+  7284	
+  7285		/* Initialize Link Partner FPE workqueue */
+  7286		INIT_WORK(&priv->fpe_task, stmmac_fpe_lp_task);
+  7287	
+  7288		/* Override with kernel parameters if supplied XXX CRS XXX
+  7289		 * this needs to have multiple instances
+  7290		 */
+  7291		if ((phyaddr >= 0) && (phyaddr <= 31))
+  7292			priv->plat->phy_addr = phyaddr;
+  7293	
+  7294		if (priv->plat->stmmac_rst) {
+  7295			ret = reset_control_assert(priv->plat->stmmac_rst);
+  7296			reset_control_deassert(priv->plat->stmmac_rst);
+  7297			/* Some reset controllers have only reset callback instead of
+  7298			 * assert + deassert callbacks pair.
+  7299			 */
+  7300			if (ret == -ENOTSUPP)
+  7301				reset_control_reset(priv->plat->stmmac_rst);
+  7302		}
+  7303	
+  7304		ret = reset_control_deassert(priv->plat->stmmac_ahb_rst);
+  7305		if (ret == -ENOTSUPP)
+  7306			dev_err(priv->device, "unable to bring out of ahb reset: %pe\n",
+  7307				ERR_PTR(ret));
+  7308	
+  7309		/* Init MAC and get the capabilities */
+  7310		ret = stmmac_hw_init(priv);
+  7311		if (ret)
+  7312			goto error_hw_init;
+  7313	
+  7314		/* Only DWMAC core version 5.20 onwards supports HW descriptor prefetch.
+  7315		 */
+  7316		if (priv->synopsys_id < DWMAC_CORE_5_20)
+  7317			priv->plat->dma_cfg->dche = false;
+  7318	
+  7319		stmmac_check_ether_addr(priv);
+  7320	
+  7321		ndev->netdev_ops = &stmmac_netdev_ops;
+  7322	
+  7323		ndev->xdp_metadata_ops = &stmmac_xdp_metadata_ops;
+  7324	
+  7325		ndev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+  7326				    NETIF_F_RXCSUM;
+  7327		ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+  7328				     NETDEV_XDP_ACT_XSK_ZEROCOPY |
+  7329				     NETDEV_XDP_ACT_NDO_XMIT;
+  7330	
+  7331		ret = stmmac_tc_init(priv, priv);
+  7332		if (!ret) {
+  7333			ndev->hw_features |= NETIF_F_HW_TC;
+  7334		}
+  7335	
+  7336		if ((priv->plat->tso_en) && (priv->dma_cap.tsoen)) {
+  7337			ndev->hw_features |= NETIF_F_TSO | NETIF_F_TSO6;
+  7338			if (priv->plat->has_gmac4)
+  7339				ndev->hw_features |= NETIF_F_GSO_UDP_L4;
+  7340			priv->tso = true;
+  7341			dev_info(priv->device, "TSO feature enabled\n");
+  7342		}
+  7343	
+  7344		if (priv->dma_cap.sphen && !priv->plat->sph_disable) {
+  7345			ndev->hw_features |= NETIF_F_GRO;
+  7346			priv->sph_cap = true;
+  7347			priv->sph = priv->sph_cap;
+  7348			dev_info(priv->device, "SPH feature enabled\n");
+  7349		}
+  7350	
+  7351		/* Ideally our host DMA address width is the same as for the
+  7352		 * device. However, it may differ and then we have to use our
+  7353		 * host DMA width for allocation and the device DMA width for
+  7354		 * register handling.
+  7355		 */
+  7356		if (priv->plat->host_dma_width)
+  7357			priv->dma_cap.host_dma_width = priv->plat->host_dma_width;
+  7358		else
+  7359			priv->dma_cap.host_dma_width = priv->dma_cap.addr64;
+  7360	
+  7361		if (priv->dma_cap.host_dma_width) {
+  7362			ret = dma_set_mask_and_coherent(device,
+  7363					DMA_BIT_MASK(priv->dma_cap.host_dma_width));
+  7364			if (!ret) {
+  7365				dev_info(priv->device, "Using %d/%d bits DMA host/device width\n",
+  7366					 priv->dma_cap.host_dma_width, priv->dma_cap.addr64);
+  7367	
+  7368				/*
+  7369				 * If more than 32 bits can be addressed, make sure to
+  7370				 * enable enhanced addressing mode.
+  7371				 */
+  7372				if (IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT))
+  7373					priv->plat->dma_cfg->eame = true;
+  7374			} else {
+  7375				ret = dma_set_mask_and_coherent(device, DMA_BIT_MASK(32));
+  7376				if (ret) {
+  7377					dev_err(priv->device, "Failed to set DMA Mask\n");
+  7378					goto error_hw_init;
+  7379				}
+  7380	
+  7381				priv->dma_cap.host_dma_width = 32;
+  7382			}
+  7383		}
+  7384	
+  7385		ndev->features |= ndev->hw_features | NETIF_F_HIGHDMA;
+  7386		ndev->watchdog_timeo = msecs_to_jiffies(watchdog);
+  7387	#ifdef STMMAC_VLAN_TAG_USED
+  7388		/* Both mac100 and gmac support receive VLAN tag detection */
+  7389		ndev->features |= NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HW_VLAN_STAG_RX;
+  7390		if (priv->dma_cap.vlhash) {
+  7391			ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
+  7392			ndev->features |= NETIF_F_HW_VLAN_STAG_FILTER;
+  7393		}
+  7394		if (priv->dma_cap.vlins) {
+  7395			ndev->features |= NETIF_F_HW_VLAN_CTAG_TX;
+  7396			if (priv->dma_cap.dvlan)
+  7397				ndev->features |= NETIF_F_HW_VLAN_STAG_TX;
+  7398		}
+  7399	#endif
+  7400		priv->msg_enable = netif_msg_init(debug, default_msg_level);
+  7401	
+  7402		priv->xstats.threshold = tc;
+  7403	
+  7404		/* Initialize RSS */
+  7405		rxq = priv->plat->rx_queues_to_use;
+  7406		netdev_rss_key_fill(priv->rss.key, sizeof(priv->rss.key));
+  7407		for (i = 0; i < ARRAY_SIZE(priv->rss.table); i++)
+  7408			priv->rss.table[i] = ethtool_rxfh_indir_default(i, rxq);
+  7409	
+  7410		if (priv->dma_cap.rssen && priv->plat->rss_en)
+  7411			ndev->features |= NETIF_F_RXHASH;
+  7412	
+  7413		ndev->vlan_features |= ndev->features;
+  7414		/* TSO doesn't work on VLANs yet */
+  7415		ndev->vlan_features &= ~NETIF_F_TSO;
+  7416	
+  7417		/* MTU range: 46 - hw-specific max */
+  7418		ndev->min_mtu = ETH_ZLEN - ETH_HLEN;
+  7419		if (priv->plat->has_xgmac)
+  7420			ndev->max_mtu = XGMAC_JUMBO_LEN;
+  7421		else if ((priv->plat->enh_desc) || (priv->synopsys_id >= DWMAC_CORE_4_00))
+  7422			ndev->max_mtu = JUMBO_LEN;
+  7423		else
+  7424			ndev->max_mtu = SKB_MAX_HEAD(NET_SKB_PAD + NET_IP_ALIGN);
+  7425		/* Will not overwrite ndev->max_mtu if plat->maxmtu > ndev->max_mtu
+  7426		 * as well as plat->maxmtu < ndev->min_mtu which is a invalid range.
+  7427		 */
+  7428		if ((priv->plat->maxmtu < ndev->max_mtu) &&
+  7429		    (priv->plat->maxmtu >= ndev->min_mtu))
+  7430			ndev->max_mtu = priv->plat->maxmtu;
+  7431		else if (priv->plat->maxmtu < ndev->min_mtu)
+  7432			dev_warn(priv->device,
+  7433				 "%s: warning: maxmtu having invalid value (%d)\n",
+  7434				 __func__, priv->plat->maxmtu);
+  7435	
+  7436		if (flow_ctrl)
+  7437			priv->flow_ctrl = FLOW_AUTO;	/* RX/TX pause on */
+  7438	
+  7439		ndev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
+  7440	
+  7441		/* Setup channels NAPI */
+  7442		stmmac_napi_add(ndev);
+  7443	
+  7444		mutex_init(&priv->lock);
+  7445	
+  7446		/* If a specific clk_csr value is passed from the platform
+  7447		 * this means that the CSR Clock Range selection cannot be
+  7448		 * changed at run-time and it is fixed. Viceversa the driver'll try to
+  7449		 * set the MDC clock dynamically according to the csr actual
+  7450		 * clock input.
+  7451		 */
+  7452		if (priv->plat->clk_csr >= 0)
+  7453			priv->clk_csr = priv->plat->clk_csr;
+  7454		else
+  7455			stmmac_clk_csr_set(priv);
+  7456	
+  7457		stmmac_check_pcs_mode(priv);
+  7458	
+  7459		pm_runtime_get_noresume(device);
+  7460		pm_runtime_set_active(device);
+  7461		if (!pm_runtime_enabled(device))
+  7462			pm_runtime_enable(device);
+  7463	
+  7464		if (priv->hw->pcs != STMMAC_PCS_TBI &&
+  7465		    priv->hw->pcs != STMMAC_PCS_RTBI) {
+  7466			/* MDIO bus Registration */
+  7467			ret = stmmac_mdio_register(ndev);
+  7468			if (ret < 0) {
+  7469				dev_err_probe(priv->device, ret,
+  7470					      "%s: MDIO bus (id: %d) registration failed\n",
+  7471					      __func__, priv->plat->bus_id);
+  7472				goto error_mdio_register;
+  7473			}
+  7474		}
+  7475	
+  7476		if (priv->plat->speed_mode_2500)
+  7477			priv->plat->speed_mode_2500(ndev, priv->plat->bsp_priv);
+  7478	
+  7479		if (priv->plat->mdio_bus_data && priv->plat->mdio_bus_data->has_xpcs) {
+  7480			ret = stmmac_xpcs_setup(priv->mii);
+  7481			if (ret)
+  7482				goto error_xpcs_setup;
+  7483		}
+  7484	
+  7485		ret = stmmac_phy_setup(priv);
+  7486		if (ret) {
+  7487			netdev_err(ndev, "failed to setup phy (%d)\n", ret);
+  7488			goto error_phy_setup;
+  7489		}
+  7490	
+  7491		ret = register_netdev(ndev);
+  7492		if (ret) {
+  7493			dev_err(priv->device, "%s: ERROR %i registering the device\n",
+  7494				__func__, ret);
+  7495			goto error_netdev_register;
+  7496		}
+  7497	
 
-Also, if the enum is not described in the header, the docs produced by
-the 'make htmldocs' would list the enum with the comment "undescribed".
-
-It seems we need fixing:
-- prevent warning from ./scripts/kernel-doc, so enums marked as "private:"
-  would not warn
-- generate __<ENUM_NAME>_MAX while marking them as "/* private: */"
-- add some kind of "pattern exclude" directive/mechanics for generating
-  docs with sphinx
-
-Does it make sense?
-TBH, not yet sure if all above are possible..
-
-Thank you!
-Arkadiusz
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
