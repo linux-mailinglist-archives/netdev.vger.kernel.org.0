@@ -1,69 +1,69 @@
-Return-Path: <netdev+bounces-10877-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10878-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 41F977309CC
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 23:24:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 7541A7309CD
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 23:25:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 70EF21C20DE7
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 21:24:48 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8A9B71C20DAC
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 21:25:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9D659134B6;
-	Wed, 14 Jun 2023 21:24:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 33241134AD;
+	Wed, 14 Jun 2023 21:24:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A939134A8
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 21:24:30 +0000 (UTC)
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2059.outbound.protection.outlook.com [40.107.244.59])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB35A1FFA
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 14:24:28 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F7CF125AC
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 21:24:39 +0000 (UTC)
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2073.outbound.protection.outlook.com [40.107.101.73])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1F41FFA
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 14:24:37 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LUpZ8lkfmRgqfi3N20O/ccImg+Thh438UF/0Zx8BLmVIdBBvDg14QqhoEFcLjgcI0Hnd56bC3rZCaKvvY29+Z+8GyJfPet9sZlEAQd2A+Si7LSgflM2FJMGsHHTmWENVbvDtJChPU4vdS/EgjwaIgqg4hjQFIcnibkeH7LxxOPDq546kUJUGKWEmPockbFB3g+dU8yNcldxQNFRAlbqpzJIYuT2WF2IcVEznAXvaL78TXVq2oaE5j2haNj3hFPZjaYb+kJK7aJ2/rEvpZncCZRHNSMo7GP5SBjRwwpU4unMZBHj4yccbZWGHCV3RZPx/SEuIoTp0uZxWm/XJW43XvA==
+ b=ipXvKdtJfx8UA38ATzFR6OqaAOvH46l2CplHTwo6NzP/aNtkf5/ZTZAsnDjQSK87TumHg4Qcahoz6r2kf4R2Ovo7vxrgncr+Gdp4ehkkjYau1q2NcF3QJ2yrr1QAQHxtklIpXscRAAEfOOsz/MZU0dizDf0iU3gMMw6hOi7h7m5+7W+EveC4PETfik4zSr7ZX4PBueWIqz2J4HaUxduJMUVxyzNZx0tSqYAemvugP8LEJlUe9GDDUGSjkhy7f7lMlvCRdOjriaQ3OB4JTq5F72BvhVW7XMqrwuahgPCQfHCXzvj86cKKH7EMyDncQvj0FDkOw7AbbhkBjArkGLYnjg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5KzyPtgaWau5roy746i7VekCutFmNCIHm/nZOhUZlkI=;
- b=ZchBTjZXIDbRpcx4QTNOmm4EbFUDfzSabsAZ+Z9HBBG+M4wxLcU8gNA4UAvk7BCJ6QlUz9pywgEDNn22oEE0wUHTPtn4YghyK/DNkdIfBKL23rw8rg6MiJ+q7DTbtmxVVpvi1inNKOopem9bEcZIIS2kk7hM5G4U6WZEXK8D3oyTE9nDRiqW/s8V3kUDtbOvnYYL4aPR8ZkytarQ0aeiAIGNisE0zBzG10hYW1gx0l56i5YoyAhSuLH1+3yqrk08tDGA84Ym65Wmi0Xg05bH5pTPnvQ9wmDCGMHVXQKfslyIKfoLhTM0F8kOfz6gTEhvCR4p+CTRARnV1aHWcRgi3w==
+ bh=wifz5mBqB9sx/jC+JgKxlPEXSReueaVgcLUWNZ02jO4=;
+ b=d4TtoTDCplJjCcWDTM7ckj5XBHuiSHd73S0Id+SL7mAsbGyZ9fb2ijZ7J5viFBupbNts3PLtyEG+TRoDI9naRsLky2JWKsTQTBuKEN00kQCBiz4uL0A81gyDiV4BpwNICvUji4+hRm2/zPl1hUvXv8JC3DN9bChvSqeMM4I0WrutqYkKpKhaGd4IBEaIp1ZoAZx6dPNLsdupC552VOp9Xru1Gmg5aISZ5nqF0vyMefgdFPLq7Ibtf7ywiWhbq8QPT9+pKK0GqEj43RcfrOTqsuAHDdR6ptiX174hMdOqgBJ2lvD3huYtUroZZmkQ+URXq5weuqRHyjE4YoMBuc4NFw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5KzyPtgaWau5roy746i7VekCutFmNCIHm/nZOhUZlkI=;
- b=xYBtmA8Ufyj9l/AZXoGHlNzR2yIeiv+KbVpao86b1D/ZILwh4EJ0NXRJBf5/POmOBJAv/ouatc1qofLHi52J0d/F5NSq/xHcWiyDr7TOPd8Fz+gE/UbAM/iLMWnTm05z2DyA/uyFZUG02KAWVFzdqBdTsfkeH+3Zkvv1LYZ1VSE=
+ bh=wifz5mBqB9sx/jC+JgKxlPEXSReueaVgcLUWNZ02jO4=;
+ b=a1udcHRUk1nP9HoiZBt4/+RjX00M23nnk4oL5IYLf36vrtozjWiDCFSfg2uTz36QGDkjvR9Do6tIlEUIUXsLE/yt8AoTfMh9FVZhcL/rUJvNagcBjTuW8xxtNquxWuqHxCryj3ka3ENwkl2sO0/DmEjmTiGTjYR3QzOwqTWcNeY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from PH0PR12MB7982.namprd12.prod.outlook.com (2603:10b6:510:28d::5)
- by PH7PR12MB7163.namprd12.prod.outlook.com (2603:10b6:510:202::14) with
+ by MN2PR12MB4062.namprd12.prod.outlook.com (2603:10b6:208:1d0::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.29; Wed, 14 Jun
- 2023 21:24:26 +0000
+ 2023 21:24:34 +0000
 Received: from PH0PR12MB7982.namprd12.prod.outlook.com
  ([fe80::d065:bf1f:880e:543e]) by PH0PR12MB7982.namprd12.prod.outlook.com
  ([fe80::d065:bf1f:880e:543e%3]) with mapi id 15.20.6477.037; Wed, 14 Jun 2023
- 21:24:26 +0000
-Message-ID: <887cbcd2-d01c-2736-d0de-660de80ef4d6@amd.com>
-Date: Wed, 14 Jun 2023 14:24:23 -0700
+ 21:24:34 +0000
+Message-ID: <fb5e5541-3875-5310-8380-f5b1d3888e6e@amd.com>
+Date: Wed, 14 Jun 2023 14:24:32 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.2
-Subject: Re: [PATCH iwl-next v4 05/10] ice: process events created by lag
- netdev event handler
+Subject: Re: [PATCH iwl-next v4 06/10] ice: Flesh out implementation of
+ support for SRIOV on bonded interface
 Content-Language: en-US
 To: Dave Ertman <david.m.ertman@intel.com>, intel-wired-lan@lists.osuosl.org
 Cc: daniel.machon@microchip.com, simon.horman@corigine.com,
  netdev@vger.kernel.org
 References: <20230609211626.621968-1-david.m.ertman@intel.com>
- <20230609211626.621968-6-david.m.ertman@intel.com>
+ <20230609211626.621968-7-david.m.ertman@intel.com>
 From: Brett Creeley <bcreeley@amd.com>
-In-Reply-To: <20230609211626.621968-6-david.m.ertman@intel.com>
+In-Reply-To: <20230609211626.621968-7-david.m.ertman@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR03CA0017.namprd03.prod.outlook.com
- (2603:10b6:a03:33a::22) To PH0PR12MB7982.namprd12.prod.outlook.com
+X-ClientProxiedBy: BYAPR11CA0070.namprd11.prod.outlook.com
+ (2603:10b6:a03:80::47) To PH0PR12MB7982.namprd12.prod.outlook.com
  (2603:10b6:510:28d::5)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -72,64 +72,64 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR12MB7982:EE_|PH7PR12MB7163:EE_
-X-MS-Office365-Filtering-Correlation-Id: a488d0de-d45d-4d46-aa2a-08db6d1dbad1
+X-MS-TrafficTypeDiagnostic: PH0PR12MB7982:EE_|MN2PR12MB4062:EE_
+X-MS-Office365-Filtering-Correlation-Id: b8749185-cf37-430a-3803-08db6d1dbfa9
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	D0SAUKuUB8hqNpXQsm0AvpQFLR1uXya7MOoBzGzX39uUn5GL5cTVPMqQS2+3VclBecYuUkxhESm9rjCR9m/imumesR6t5CubfAvfQMaN9gZwYkEWL/q2YqCZhJ2vUthYyh7jYKf1+uFOC1oL6K4WcjZqg+kOlK/j+NbkoUrVFG75eLb6tOMdae+P772UbKsUxgF3zaH+/gZMFwqgJcIWx+EbvOHRlSjBW6LcijqYkeW9yU3ieQrPM+5kDLMEjvHVkgPbYtLpoVdOhpp47taN/MHNSI+MB1r/6Avk9e1DKM+DxFS4XZp48wAQ0OjTcWovrWoFEQpU/QUSqYf/wd/9b2GUvh89H4vpLCu9y3npPpdPue6ZsXefk06q3v6T0rjxM2oE3p0F8DchbtXSN3AmkPEaFBL9F72BtIKvIxMnkWnZ4PVKj2nYy0TlU6Zv6YhmJYxDoLU7yUpKhrKn9XX5/oO0GhPrMHTLSew/x3ffv65GAVsmbn3IwNXlNuYkDkUuYzHp2+9ZdPTcCyR1kMdLnAP7U1asAhF1Xg6Vg+LiBbEmVmy9vBQvpsbkAhrqAirfRuYz2MIPyPlkYrHjeGEiP5KQAEuHq1fydatEnqE4YvG7s8OSBBiTQfuKVZhhYziHur7wWYchq5B3xxidB/D4Zw==
+	HD8y0sX/Myfxx8bzpUyGPmIwJSaNc7jNG6+XOeUZMN63aeBicC5OZ3vs+kxboxTZ4iVdPWqdsE01EZf028ToOIu3PDwSJU1a5Py2XedPjbNeyGqXjhn/NfoSPvtEUPO2x+MeVGoxmxq1oN1+OHRpRhZuxuH7LPQJyTUKvOtDX+LPbtjl8MC91hqRNOIDxbemfJdieRSxgEKV23LXJeprFLcbznM9I+uzAVrnKq8ez8EpqENDzswmr32xg9hda+G6fG+fnxjtSyNkSNvvA2p6LUAfiPSW3gxR/LXRSxCFRs+MwkWVv7j+nYilWXMVsEPH2EsAOQc9Rm4vum4BCitpQsgMOwLLuOSIty11AbB1x0pffG0iFoF64XF9Oxi1xAwJuRhmlUwcSMiSvOPPfIZ6Kee3f43EYKbN2xSnPMAAxNJaJ30YKqSsA/oFu6OB2+e9iRGB2Xfr+5Bdc487EMmG5j2wtq3FtWkdUt3+V20PUDZm8aXaENMb1XkHQzBzraNWwn4vVgW2Q8U7BbF0GGD6o5NWwa9Tw+bwx92DJbNtWZVjNar/fDRvLSrZteq3Z/UaJ0P8EszU1/+3bcAnyfpd7/K+prpcpddIEEnd8ktEzql/HHAOQqv21C/cfj9Gq6OXsRux2/iQ7Bpez9EzAbq3Aw==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB7982.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(396003)(136003)(376002)(366004)(451199021)(66476007)(66946007)(66556008)(4326008)(8936002)(8676002)(5660300002)(36756003)(6666004)(478600001)(31686004)(41300700001)(316002)(6486002)(38100700002)(6506007)(186003)(53546011)(26005)(6512007)(2616005)(83380400001)(31696002)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB7982.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(376002)(346002)(396003)(136003)(451199021)(2616005)(83380400001)(36756003)(31696002)(38100700002)(478600001)(8936002)(6486002)(8676002)(2906002)(4326008)(5660300002)(66476007)(66946007)(66556008)(31686004)(316002)(186003)(53546011)(41300700001)(6512007)(26005)(6506007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WUdPVTlvUzBNY1pIcjRQMWVMSEhEeFhGbGZ6ck1DREZmVTAxY1Z5TnM1SUdT?=
- =?utf-8?B?aEJGVGR3UkVlcUhnKzhWTXdzVGlUM0ZCK3RuV0JtQUxUeDg0QmlCNTlYWSty?=
- =?utf-8?B?NzBRZHdKQzFiaGRqQnA2YzJaalQ1WC9DY1VUM2J5NlZwR0ZqbHphYThRWHdi?=
- =?utf-8?B?c09zWGNOc3ByY1ZXaGx4dDRLS3owZjJBaDRNUnZMaW5VbzhXRS9FczFUU0lG?=
- =?utf-8?B?V05HYW9MTkRveGUvQmpQTXdVdytLdVJXcXpWR2tHL1RuZ1RtNlpLM1NtdW1m?=
- =?utf-8?B?L1Y4ZWRhMjQyL0VVaWFoZVUrUENyS2hCU1B5aDE0b2prcVIwZmxkaEhYSUFy?=
- =?utf-8?B?S2xyQWp4ZFRNSDE1UitDZ2U0cGFGNWYrWnVHMnNKVEluNndCTW05Y3hHZXNj?=
- =?utf-8?B?VjlaWnk4U3UwcUtHbWJvKy80V3d6SXhybkFZQXZ5UHlNWk91ckdpQzJwVUxa?=
- =?utf-8?B?NkxmZTZKelZMRndwZHlOUk9oZ095Z09mWW00eDE1UXI3aTBBTHBmYTVsRzIx?=
- =?utf-8?B?cVQrSVV3WnFpK2J2OUczNlBTaUJZemJTV3RsaTMxUHdvbisvNjNBelVXVnVj?=
- =?utf-8?B?S0Q1NlRQN0d5QXRuM0hIU05qK3NocmFkOHJqY21KUFN0ait5cWpZWWE2U3Ba?=
- =?utf-8?B?OXBJbTU1UXZjMXF1M3ptWTRWQUpuaUNIWnRuMWRudFBxaXdJRXBWSjBjaUd5?=
- =?utf-8?B?cDRyUm5WV2o2V085MmFpNmZFVG1LYXJGL3p6TmU0K2VTbDMrM2ljQnRsb3Vz?=
- =?utf-8?B?ZW9rTHBaSUFzMVhTUmlBRzlTY25HaW9uWTQveHRvWVAzOFNpV1RlVWxJYUFq?=
- =?utf-8?B?TmsydEFGdWFHZkRJOTRWR3pGbkM1YUs1b2h3THBqMFhCT1djUVFRMGUrNXBQ?=
- =?utf-8?B?OHFjZFBicW96K20zSDcrdnl6TDB0MUk0aHJtZVRTb1RtdDBCRXhzdTJ6L2FD?=
- =?utf-8?B?ZjkvNmhoV2l1dGlNNVE4eFUrcGE3WjREQkJvdVFJb0w4MnIvQkh3T0d0TDcw?=
- =?utf-8?B?N3g3Z0Y1WmlyMzJreHh0dExqM3lOalNOamxkeHJVVktkZ01ZczVoanhEazNE?=
- =?utf-8?B?amRBVEUvdXlnc1poZmdLNG40TlNNL3BKdjhMQzE2UVJBREo3dXdweFJHVWNQ?=
- =?utf-8?B?bDl2emhXZXdkb0JrV21TZXhVdFlQcmZWc01hNjJUR0tLNVpDekxINjhJbHVm?=
- =?utf-8?B?dkRyUXQ5QTNFOGsrbVFGcXcxMmQ2Q2g2cmtQc3gyZDRhbW5aUXRDazBKSTd0?=
- =?utf-8?B?YUJybmNwRDJPeTlONFZtSHV4bTZ1QTdwUEhvY3VQbGNNSkRXYm5FL3o5Q2Yx?=
- =?utf-8?B?cDU1YWdieVlxem1ZbHljNmxiTjV0UmIwRlpFTVRudjQycUdjZEh3WTg2c1BU?=
- =?utf-8?B?T1NZbFcyTVJ4MEN0cSt0SzRxbkQydTZNa3l1NXNnMWpyOCtwWlYzdDhPV2V0?=
- =?utf-8?B?YnIzcHZXc1NRRDhQTng5OXREOGM0NDNCM2RDOVY2dmlDUTFGbWV5cjgzU3dx?=
- =?utf-8?B?TEJHOTZGU3UrelZiYmJMNTZVeEFVMjBEL2FaOUpJTTcvY0RiTnYwbEQ4S0dH?=
- =?utf-8?B?L3BUMlpZaXdMT2RicmNQNjd1RWZJWHhJSWxOYUNTNHhDbkttT0d2MDFETFA4?=
- =?utf-8?B?N3NTRHBRNmp6aVduWWUyZDBYc1FtbGhSeWhubStqcGF6Z0I5cFMva0pIbHJU?=
- =?utf-8?B?UGs1eDUzRUk2bmxHRktpS0YxRVovUnBlb21KbnRCc09TZnpoY3RHL3RRU1Mv?=
- =?utf-8?B?dXpvQWtnbU5sdDM5THJnbHhYM1hGV1k3SHdUMmtjVVNiMGtyS1A4L0ZLK3FM?=
- =?utf-8?B?alJiM1ZKbGlOczFOVFYwUmFKd2hWd0d4Q0p4TEkxREUxRUpoV0ViaUVHRWRq?=
- =?utf-8?B?OVFMM2pOSXkrSWx1MGV0MEsvdEhXbUFFZHRQNk9UU3V2YnBBcGZHTTl6V0Rv?=
- =?utf-8?B?Qkp5ZGJVN3RqRFBLQjFCK1cyQjJHcURicnd0dkRpVzM0KzlMSmZwaU1RdG1u?=
- =?utf-8?B?K0V1TENEVFJZaUxDT2YzNXFZVytlNCtsb0cwb29YckJwNFB0MS81QURTNTcx?=
- =?utf-8?B?dUZLZWh3ZVJRaE1xVmlTZWoyREw1UlhGU1N6aDBIc01Ta1QzUjUvVGlqekI0?=
- =?utf-8?Q?+tM6nZ4xBhHpNl0XlAfaLMaTc?=
+	=?utf-8?B?cHA5bTlZcmoyUXBpOGJ3VEVCV1pUa3p6TVpCY2Zoak56Qm9mU1gwSGJucFRX?=
+ =?utf-8?B?RlZoN0NRTzkrT0k0cVpzeDRiMmdJQ0t0N0lKVmM3SDV1WG40SzNEemYxVG5l?=
+ =?utf-8?B?elZNcmJITXRXdWdUSU4vbFdPeWd3YzVuSkNYc2ltOVZ0bHFJU1VjNGZSZERH?=
+ =?utf-8?B?dmFFVnpJYll2bCtXNWQ2OVFqZFJIUnJ3anEyaGRTUERYZDRzYjlnbVR5Z2RX?=
+ =?utf-8?B?UmMwdm80TEM5OXRNMXNrN1p2T3hQVGxrNjJvK0ZZdjhUcGpnSmlWK3NZR3BT?=
+ =?utf-8?B?a3ZsUStXdHhaemthUDkzdE04R3FSUmFMd2ZKOEFhUm9mdDNJbyt3Z3VjbkI1?=
+ =?utf-8?B?d2VJRWJEWk1KU2k2STcrdDB6MHNUeTRiS2lJVG8zNUZudnFzOTVob25jMENi?=
+ =?utf-8?B?Zi9PeWJjcWxIV3UxWDdKRnF1VnkrQmNUeENia0tRVGtvTFBKSGtSQ053MDBZ?=
+ =?utf-8?B?d05USDJvall1OXlWQ2s2eDluWUw1U0Mva0t5Zm80ZURDNnM2eXRDeFE1SkZq?=
+ =?utf-8?B?QVVkaStVaXVicEVpS20vUkpFeVlqVkpYbGJLcFhMam82eVRFK3VaZlpQRVF4?=
+ =?utf-8?B?STdLbE1zb0g0WmNTSm5WamV3a0ttdWZqdDE3d1ZRaFl1ckxmbXV1cTVGdHJQ?=
+ =?utf-8?B?SkJwYngxdE80Tlk0VjdJcUhKNEQ3ZThqZG1raGNJK2VEOTM2NXF3NmJnODNU?=
+ =?utf-8?B?WG1HV1NEWFJ6VkdQUHI3emlyWWtEc3ZHSHNqWmtBenFGNnRkbFpUdGc5N3Fm?=
+ =?utf-8?B?ZlU0RDZ4aTZoS1lieUZXNzNMN1gzeTZVNXVPbExkN2RURHorOEdWN0toR1lK?=
+ =?utf-8?B?ZlBWbGdTSDdIVTByK3ppczJDQU5TNDJKSzNkdktIQ1JBSWMrYWpmZUVXeHZr?=
+ =?utf-8?B?NzYxWmhOUDJ2MlowcElRcFJ1S0wzSmpTMkI4Y2Mva3JVZ1FBR1NVK1VnM0VM?=
+ =?utf-8?B?VHhoSzBBTkp4L3NWYkU2SlJ0T2JnT1JzeHdITmkraU15Z0VWaDlSdlV1WWtr?=
+ =?utf-8?B?SSt2Zkpsd0hXTE1QZFVYeGFFbzJ0b1dGcllqTWRiVklLLzFvZEZyck9pbFNo?=
+ =?utf-8?B?dlVQbkRLUC9NZDlmbEVzVXFQTnlSR0xjVVhBbzVWSUVJdXE1RGs4Y2k1cDFl?=
+ =?utf-8?B?cjdrdDAwN3RwaS9kNWVCZlh3R1p6OWs1cGxZdDBuTjNMM2t4THRZZ2QxdHUy?=
+ =?utf-8?B?cS9kbTc3blY0Qll5ZGxhdzZNK0ZIbDBEVkNhQXh0V25DNjBaZVhhZ1ByYmFv?=
+ =?utf-8?B?ejVNM1daNm1ybWk3SDJab3NleXYvU2ZIOWRjRnVYcDhsVFhUV3BLeVNHaERR?=
+ =?utf-8?B?T2FpNjRUVyt5Mm14ZHRjQm91TzNjOWFRWUpnbWFSek9idFVYTjl0RjU2NHRk?=
+ =?utf-8?B?c2N2WENSZFJNY0IwdU8xdGRjN0xDdkRHbk5yL2oxUXQ2alVzeFc2Rnc2UC9o?=
+ =?utf-8?B?QVpsSnRFTlZRamhlZ2NaZDY4alpHMHllRmR1Tm5DdzIrSlJ5MTBWZHhsTjVq?=
+ =?utf-8?B?bEZvYjRmb3lVSEJsU1EyS3UwbWZhWEFjT3VHYitWTG84Rk1UWFEwblBWTlJw?=
+ =?utf-8?B?K1lMQnhNYUJhbWZ5bllkV2kzUkp0SzBXZ0lPRDIzNTNmRFpOY1FuVlhsUVZh?=
+ =?utf-8?B?cjFTQ3dyc3Y4VmpzRnN2dGNPWEtmUEZGZlp3TTlKSElSdUlyaExySm9NV1o0?=
+ =?utf-8?B?Kys0MFp6NENSR1JzRElWdS8yQXN3QnoySm1ScFAzSUo3WFhaL0h4ZEFuYkU1?=
+ =?utf-8?B?dWFuSzNjTGFPRVVLbU9sZmNnV1Z5cUxPZGtvNENFQjk3WHhTWDZCOFA0MlVk?=
+ =?utf-8?B?cm9SMUZOd1pQY0pUcjVyQldCK3Fua3lrTGVkK2hHd21RZC9XMTNVZGxBWmVZ?=
+ =?utf-8?B?RmFnQXBUQnd3MTZZQ3o3Wk5NdGdUWExDcVdXRXZHQU1qTXp0RWFLNk5acEoz?=
+ =?utf-8?B?cFlzSmZvSVVlMHlDRkpMODVGR3VSZU9xcVZseU1TK1VqQ1VxU3J1YXRISXpB?=
+ =?utf-8?B?cVJ4YmhDOFVlK0dWSkxyVnlUNUZFUnQ0UE01ZzRlWmowT2R2NkFLdk9tendW?=
+ =?utf-8?B?blFJT211TEhnWFJ1eUl5b2ZCUGpIK0lVelpSQU1vclY3YWNUZkVSWFQvQTNR?=
+ =?utf-8?Q?rDHO8rCVy1wFcCE7UQvOJGpvu?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a488d0de-d45d-4d46-aa2a-08db6d1dbad1
+X-MS-Exchange-CrossTenant-Network-Message-Id: b8749185-cf37-430a-3803-08db6d1dbfa9
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB7982.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2023 21:24:25.9774
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2023 21:24:34.1018
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Xy3yYTCQj/+sEokK4v/q1hIfq1y4p+a5sOwa/izhVCSjuWTD7nFupqeCPfsrY3x77P5WRQJvEkfJOpuH3Ng4hQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7163
+X-MS-Exchange-CrossTenant-UserPrincipalName: 98Dt4IFTBesmmomhpmEhYqa6AI1Nfm8edfmqpBJQJgm0TJ1XHAFQaLsYigGU/Rl/gF5mN/cxfizMqvU/0fmnUg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4062
 X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
 	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -142,51 +142,219 @@ On 6/9/2023 2:16 PM, Dave Ertman wrote:
 > Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
 > 
 > 
-> Add in the function framework for the processing of LAG events.  Also add
-> in helper function to perform common tasks.
+> Add in the functions that will allow a VF created on the primary interface
+> of a bond to "fail-over" to another PF interface in the bond and continue
+> to Tx and Rx.
 > 
-> Add the basis of the process of linking a lower netdev to an upper netdev.
+> Add in an ordered take-down path for the bonded interface.
 > 
 > Reviewed-by: Daniel Machon <daniel.machon@microchip.com>
 > Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
 > ---
->   drivers/net/ethernet/intel/ice/ice_lag.c      | 535 +++++++++++++++---
->   drivers/net/ethernet/intel/ice/ice_lag.h      |   1 +
->   drivers/net/ethernet/intel/ice/ice_switch.c   |  10 +-
->   drivers/net/ethernet/intel/ice/ice_switch.h   |   3 +
->   drivers/net/ethernet/intel/ice/ice_virtchnl.c |   2 +
->   5 files changed, 478 insertions(+), 73 deletions(-)
+>   drivers/net/ethernet/intel/ice/ice_lag.c | 821 ++++++++++++++++++++++-
+>   1 file changed, 811 insertions(+), 10 deletions(-)
 > 
 
 [...]
 
 > +/**
-> + * ice_lag_reclaim_vf_nodes - When interface leaving bond primary reclaims nodes
-> + * @lag: primary interface lag struct
-> + * @src_hw: HW struct for current node location
+> + * ice_lag_qbuf_recfg - generate a buffer of queues for a reconfigure command
+> + * @hw: HW struct that contains the queue contexts
+> + * @qbuf: pointer to buffer to populate
+> + * @vsi_num: index of the VSI in PF space
+> + * @numq: number of queues to search for
+> + * @tc: traffic class that contains the queues
+> + *
+> + * function returns the number of valid queues in buffer
 > + */
-> +static void
-> +ice_lag_reclaim_vf_nodes(struct ice_lag *lag, struct ice_hw *src_hw)
+> +static u16
+> +ice_lag_qbuf_recfg(struct ice_hw *hw, struct ice_aqc_cfg_txqs_buf *qbuf,
+> +                  u16 vsi_num, u16 numq, u8 tc)
 > +{
+> +       struct ice_q_ctx *q_ctx;
+> +       u16 qid, count = 0;
 > +       struct ice_pf *pf;
-> +       int i, tc;
+> +       int i;
 > +
-> +       if (!lag->primary || !src_hw)
-> +               return;
+> +       pf = hw->back;
+> +       for (i = 0; i < numq; i++) {
+> +               q_ctx = ice_get_lan_q_ctx(hw, vsi_num, tc, i);
+> +               if (!q_ctx || q_ctx->q_handle == ICE_INVAL_Q_HANDLE) {
+
+Should q_ctx->q_teid be checked against ICE_INVAL_TEID as well? If so, 
+the dev_dbg() should also be updated.
+
+> +                       dev_dbg(ice_hw_to_dev(hw), "%s queue %d %s\n", __func__,
+> +                               i, q_ctx ? "INVAL Q HANDLE" : "NO Q CONTEXT");
+> +                       continue;
+> +               }
 > +
-> +       pf = lag->pf;
-> +       ice_for_each_vsi(pf, i)
-> +               if (pf->vsi[i] && (pf->vsi[i]->type == ICE_VSI_VF ||
-> +                                  pf->vsi[i]->type == ICE_VSI_SWITCHDEV_CTRL))
-> +                       ice_for_each_traffic_class(tc)
-> +                               ice_lag_reclaim_vf_tc(lag, src_hw, i, tc);
+> +               qid = pf->vsi[vsi_num]->txq_map[q_ctx->q_handle];
+> +               qbuf->queue_info[count].q_handle = cpu_to_le16(qid);
+> +               qbuf->queue_info[count].tc = tc;
+> +               qbuf->queue_info[count].q_teid = cpu_to_le32(q_ctx->q_teid);
+> +               count++;
+> +       }
+> +
+> +       return count;
+> +}
+> +
+> +/**
+> + * ice_lag_get_sched_parent - locate or create a sched node parent
+> + * @hw: HW struct for getting parent in
+> + * @tc: traffic class on parent/node
+> + */
+> +static struct ice_sched_node *
+> +ice_lag_get_sched_parent(struct ice_hw *hw, u8 tc)
+> +{
+> +       struct ice_sched_node *tc_node, *aggnode, *parent = NULL;
+> +       u16 num_nodes[ICE_AQC_TOPO_MAX_LEVEL_NUM] = { 0 };
+> +       struct ice_port_info *pi = hw->port_info;
+> +       struct device *dev;
+> +       u8 aggl, vsil;
+> +       int n;
+> +
+> +       dev = ice_hw_to_dev(hw);
+> +
+> +       tc_node = ice_sched_get_tc_node(pi, tc);
+> +       if (!tc_node) {
+> +               dev_warn(dev, "Failure to find TC node in for LAG move\n");
 
-Seems like indentation got messed up here for ice_lag_reclaim_vf_tc()? 
-Is this supposed to be under the if block?
+Nit, but seems like there's a stray "in" in the log message?
 
+> +               return parent;
+> +       }
+> +
+> +       aggnode = ice_sched_get_agg_node(pi, tc_node, ICE_DFLT_AGG_ID);
+> +       if (!aggnode) {
+> +               dev_warn(dev, "Failure to find aggregate node for LAG move\n");
+> +               return parent;
+> +       }
+> +
+> +       aggl = ice_sched_get_agg_layer(hw);
+> +       vsil = ice_sched_get_vsi_layer(hw);
+> +
+> +       for (n = aggl + 1; n < vsil; n++)
+> +               num_nodes[n] = 1;
+> +
+> +       for (n = 0; n < aggnode->num_children; n++) {
+> +               parent = ice_sched_get_free_vsi_parent(hw, aggnode->children[n],
+> +                                                      num_nodes);
+> +               if (parent)
+> +                       return parent;
+> +       }
+> +
+> +       /* if free parent not found - add one */
+> +       parent = aggnode;
+> +       for (n = aggl + 1; n < vsil; n++) {
+> +               u16 num_nodes_added;
+> +               u32 first_teid;
+> +               int err;
+> +
+> +               err = ice_sched_add_nodes_to_layer(pi, tc_node, parent, n,
+> +                                                  num_nodes[n], &first_teid,
+> +                                                  &num_nodes_added);
+> +               if (err || num_nodes[n] != num_nodes_added)
+> +                       return NULL;
+> +
+> +               if (num_nodes_added)
+> +                       parent = ice_sched_find_node_by_teid(tc_node,
+> +                                                            first_teid);
+> +               else
+> +                       parent = parent->children[0];
+> +               if (!parent) {
+> +                       dev_warn(dev, "Failure to add new parent for LAG move\n");
+> +                       return parent;
+> +               }
+> +       }
+> +
+> +       return parent;
 > +}
 > +
 
+[...]
+
+>   /**
+> @@ -625,6 +1321,73 @@ static void ice_lag_monitor_active(struct ice_lag *lag, void *ptr)
+>   static bool
+>   ice_lag_chk_comp(struct ice_lag *lag, void *ptr)
+>   {
+> +       struct net_device *event_netdev, *event_upper;
+> +       struct netdev_notifier_bonding_info *info;
+> +       struct netdev_bonding_info *bonding_info;
+> +       struct list_head *tmp;
+> +       int count = 0;
+> +
+> +       if (!lag->primary)
+> +               return true;
+> +
+> +       event_netdev = netdev_notifier_info_to_dev(ptr);
+> +       rcu_read_lock();
+> +       event_upper = netdev_master_upper_dev_get_rcu(event_netdev);
+> +       rcu_read_unlock();
+> +       if (event_upper != lag->upper_netdev)
+> +               return true;
+> +
+> +       info = (struct netdev_notifier_bonding_info *)ptr;
+> +       bonding_info = &info->bonding_info;
+> +       lag->bond_mode = bonding_info->master.bond_mode;
+> +       if (lag->bond_mode != BOND_MODE_ACTIVEBACKUP) {
+> +               netdev_info(lag->netdev, "Bond Mode not ACTIVE-BACKUP\n");
+> +               return false;
+> +       }
+> +
+> +       list_for_each(tmp, lag->netdev_head) {
+> +#if !defined(NO_DCB_SUPPORT) || defined(ADQ_SUPPORT)
+> +               struct ice_dcbx_cfg *dcb_cfg, *peer_dcb_cfg;
+> +#endif /* !NO_DCB_SUPPORT || ADQ_SUPPORT */
+
+These #ifdefs don't belong here.
+
+> +               struct ice_lag_netdev_list *entry;
+> +               struct ice_netdev_priv *peer_np;
+> +               struct net_device *peer_netdev;
+> +               struct ice_vsi *vsi, *peer_vsi;
+> +
+> +               entry = list_entry(tmp, struct ice_lag_netdev_list, node);
+> +               peer_netdev = entry->netdev;
+> +               if (!netif_is_ice(peer_netdev)) {
+> +                       netdev_info(lag->netdev, "Found non-ice netdev in LAG\n");
+> +                       return false;
+> +               }
+> +
+> +               count++;
+> +               if (count > 2) {
+> +                       netdev_info(lag->netdev, "Found more than two netdevs in LAG\n");
+> +                       return false;
+> +               }
+> +
+> +               peer_np = netdev_priv(peer_netdev);
+> +               vsi = ice_get_main_vsi(lag->pf);
+> +               peer_vsi = peer_np->vsi;
+> +               if (lag->pf->pdev->bus != peer_vsi->back->pdev->bus ||
+> +                   lag->pf->pdev->slot != peer_vsi->back->pdev->slot) {
+> +                       netdev_info(lag->netdev, "Found netdev on different device in LAG\n");
+> +                       return false;
+> +               }
+> +
+> +#if !defined(NO_DCB_SUPPORT) || defined(ADQ_SUPPORT)
+> +               dcb_cfg = &vsi->port_info->qos_cfg.local_dcbx_cfg;
+> +               peer_dcb_cfg = &peer_vsi->port_info->qos_cfg.local_dcbx_cfg;
+> +               if (memcmp(dcb_cfg, peer_dcb_cfg,
+> +                          sizeof(struct ice_dcbx_cfg))) {
+> +                       netdev_info(lag->netdev, "Found netdev with different DCB config in LAG\n");
+> +                       return false;
+> +               }
+> +
+> +#endif /* !NO_DCB_SUPPORT || ADQ_SUPPORT */
+
+Ditto on the #ifdefs
+
+> +       }
+> +
+>          return true;
+>   }
+> 
 
 [...]
 
