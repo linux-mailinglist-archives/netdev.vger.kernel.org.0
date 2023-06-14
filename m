@@ -1,62 +1,62 @@
-Return-Path: <netdev+bounces-10873-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10874-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id EBA487309A7
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 23:17:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 6583C7309B4
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 23:19:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A725D281143
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 21:17:05 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 24D94281511
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 21:19:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7771125D6;
-	Wed, 14 Jun 2023 21:17:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 39902134A1;
+	Wed, 14 Jun 2023 21:19:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8D2611CB1
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 21:17:03 +0000 (UTC)
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 709DFE6C;
-	Wed, 14 Jun 2023 14:17:02 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-97454836448so160131466b.2;
-        Wed, 14 Jun 2023 14:17:02 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CB4B125D5
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 21:19:52 +0000 (UTC)
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697C4E6C;
+	Wed, 14 Jun 2023 14:19:51 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id 38308e7fff4ca-2b1badb8f9bso17292631fa.1;
+        Wed, 14 Jun 2023 14:19:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686777421; x=1689369421;
+        d=gmail.com; s=20221208; t=1686777589; x=1689369589;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=xt834FEuuau+dhXyiK6Us9w6s+LXDl9lf/qHhQT3U1M=;
-        b=m/3jIuP25nI+K1ul4UlfpZ9MWiYVvcJK2XUhm5e495M9I8PhvamySyxbPEXd+vaADG
-         yu6yffQBZ+RFlOiEXnGK7hhMvXC5uzfTxC9EaLgSQUvTFyvOYa5TZCZ1gVKTie+G5Mcu
-         9y0+3B4ravEta/76EjZlL2qahQKDN0IRGz+dmzonLj/HC4Jg89zuGIB9DQdSOHBHm9Uw
-         sHoidWvEbo8Ij3fOtO0q3YtEnoxgNWyIgMaShWG+2BkiTi9CJIZxawNvv5bCHhezJts5
-         FOY9HSyuruynbBZkznitjZx3c/tmGFH/lj+QE6GQnuBbkZjMQUJhBG3VyhSyCugHA8x1
-         8hAw==
+        bh=Nemu++hPj2kZikPl1h1oFSjdDD6MXcNHrSfYyeHRBSA=;
+        b=K/lcj/WhaymrAJKwK3wCNX/IP+Uj2hQlyTWOYtbrDnna+Zn/1U/aPLNhDUFJje8ftf
+         +f4A9UMYaFallKxzRLKEjK+81Po3+R0r7WurrHsupMIiIIq7IoR7+49e2ALM6E4rKX7M
+         +Fhe1yncce3qwqj5wzdKa15Puvnt+IatDOjf4iRqxZewf0BY896aumsTH+F448y9FUwG
+         QeX+iQVCVKsgEq9ZfTEp8PQfnL9Mrj8Xp7O1Hvny5iYJER0aQXx0hG4VFB/+ug5Z9RNg
+         SUn7eWKFU7C3ZL1muAqYaoenkb4PVvRP7Wb8sPwgmgQdb+hiWdug7kBEKwfr3XjVNg2W
+         CDvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686777421; x=1689369421;
+        d=1e100.net; s=20221208; t=1686777589; x=1689369589;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xt834FEuuau+dhXyiK6Us9w6s+LXDl9lf/qHhQT3U1M=;
-        b=R1aInpnUurVKb8Cvon0mt0d/Oi+r7Zmyt/b+5V1cQCgwc7kz0xhsm/K52HvXN70Kvw
-         nZHkD3NVsK1XX8rsh08sUBYm9ItxRFN/Yh0qS2h5R4a1HQ8o8Iq+Ay+btjw1VljJXL1R
-         AfMajDMUIblwrbk+HobPruOyehhVY/aFd4u54tipYJw8xUvzZ+B5cqOR3/Y9kJ7E2f6u
-         /aIPydE0p3QIK9mcWYSbaxwt8At/OOCpm99goh/bnJ9A8TEJpi4yR1qE3PEBz76owtmi
-         lePvNq+Z4oh1fCqwX7kFKN4xwM8reZdCQbCxSUY0J12uerdJARPT2W6UkVM2GZtTnjeB
-         B6rw==
-X-Gm-Message-State: AC+VfDwKTUmLkIskuwcM5LApyj7WZ031Wr7RTHueXSrkbV7ZvewdZP+K
-	M1z2FLOhSKJCTwPApdknyRU=
-X-Google-Smtp-Source: ACHHUZ7h1ThvmhUVEqyCTIVWjGGdlqAe2bIZezMhJtsZz5zUUWOUL9Qqe1oJ6+Y8W8kcPkpT/DUWqg==
-X-Received: by 2002:a17:907:c15:b0:94e:1764:b09b with SMTP id ga21-20020a1709070c1500b0094e1764b09bmr14263413ejc.45.1686777420734;
-        Wed, 14 Jun 2023 14:17:00 -0700 (PDT)
+        bh=Nemu++hPj2kZikPl1h1oFSjdDD6MXcNHrSfYyeHRBSA=;
+        b=YqWqFSyzMhDcGH/Bh79oze2kgjqKrYZOr/tNwE/1h4aczEi4j9X2SmiAHrnrrwRLch
+         g2WCBGSRCbDM9RlNrDRS3Pk2weLt02dFAX9jb/czWm9dCkJA7ffWedMhzmEbNvFwtetu
+         XEhaZ2/4ivArTG9Bs19gOdvYuK8nUyfl2LXLshpkowEtrOFlUKMRwKgWdDGa2fmyiL4B
+         kM8F84rF0fT4hu6E+oRMnLTZfHrsmuifcGjIvtoQ9dvjeE9kxPvritfS9iZPZh9UeWYk
+         YD//6KfCoEdh2xfsz5qn/5Uy3N5DRheybI+wLASgqzpu9SbZjfqZI8fby43WgiTTnvYE
+         jrCg==
+X-Gm-Message-State: AC+VfDyM6XJ5I9EoWVglWHlpBDsrrx83CTTC6bRoUJHg31QUBi4BRHl1
+	qk1ljh05fgxPHGujnhYsL0Q=
+X-Google-Smtp-Source: ACHHUZ45TXehjwCg06WrJDg32kyOgof1iYjc9nhggwSBO8ctiPoSkAmPEpPRJy958E5G0j8EY+3Ykg==
+X-Received: by 2002:ac2:5a0c:0:b0:4f6:2846:b1fb with SMTP id q12-20020ac25a0c000000b004f62846b1fbmr9411995lfn.18.1686777589293;
+        Wed, 14 Jun 2023 14:19:49 -0700 (PDT)
 Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id u16-20020a1709064ad000b009828e26e519sm496960ejt.122.2023.06.14.14.16.59
+        by smtp.gmail.com with ESMTPSA id f13-20020a170906390d00b009584c5bcbc7sm8408004eje.49.2023.06.14.14.19.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jun 2023 14:17:00 -0700 (PDT)
-Date: Thu, 15 Jun 2023 00:16:57 +0300
+        Wed, 14 Jun 2023 14:19:48 -0700 (PDT)
+Date: Thu, 15 Jun 2023 00:19:45 +0300
 From: Vladimir Oltean <olteanv@gmail.com>
 To: =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
 Cc: Daniel Golle <daniel@makrotopia.org>,
@@ -76,13 +76,13 @@ Cc: Daniel Golle <daniel@makrotopia.org>,
 	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net v4 4/7] net: dsa: mt7530: fix handling of BPDUs on
- MT7530 switch
-Message-ID: <20230614211657.2c3ljwnlng7vxamz@skbuf>
+Subject: Re: [PATCH net v4 3/7] net: dsa: mt7530: fix trapping frames on
+ non-MT7621 SoC MT7530 switch
+Message-ID: <20230614211945.frpzl56uasb3qnwp@skbuf>
 References: <20230612075945.16330-1-arinc.unal@arinc9.com>
- <20230612075945.16330-5-arinc.unal@arinc9.com>
- <20230614205008.czro45ogsc4c6sb5@skbuf>
- <e8a0f46b-f133-c155-f0de-9046a53e6069@arinc9.com>
+ <20230612075945.16330-4-arinc.unal@arinc9.com>
+ <20230614201336.lf5hqrp5nw7han4r@skbuf>
+ <581f410d-e94f-e980-f54b-b870017ba73c@arinc9.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -92,7 +92,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <e8a0f46b-f133-c155-f0de-9046a53e6069@arinc9.com>
+In-Reply-To: <581f410d-e94f-e980-f54b-b870017ba73c@arinc9.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
 	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -100,25 +100,40 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 15, 2023 at 12:05:44AM +0300, Arınç ÜNAL wrote:
-> On 14.06.2023 23:50, Vladimir Oltean wrote:
-> > Where have you seen the BPC register in the memory map of MT7530 or MT7621?
+On Wed, Jun 14, 2023 at 11:59:33PM +0300, Arınç ÜNAL wrote:
+> On 14.06.2023 23:13, Vladimir Oltean wrote:
+> > On Mon, Jun 12, 2023 at 10:59:41AM +0300, arinc9.unal@gmail.com wrote:
+> > > From: Arınç ÜNAL <arinc.unal@arinc9.com>
+> > > 
+> > > The check for setting the CPU_PORT bits must include the non-MT7621 SoC
+> > > MT7530 switch variants to trap frames. Expand the check to include them.
+> > > 
+> > > Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
+> > > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> > > ---
+> > >   drivers/net/dsa/mt7530.c | 2 +-
+> > >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> > > index ef8879087932..2bde2fdb5fba 100644
+> > > --- a/drivers/net/dsa/mt7530.c
+> > > +++ b/drivers/net/dsa/mt7530.c
+> > > @@ -3073,7 +3073,7 @@ mt753x_master_state_change(struct dsa_switch *ds,
+> > >   	 * the numerically smallest CPU port which is affine to the DSA conduit
+> > >   	 * interface that is up.
+> > >   	 */
+> > > -	if (priv->id != ID_MT7621)
+> > > +	if (priv->id != ID_MT7530 && priv->id != ID_MT7621)
+> > >   		return;
+> > 
+> > This patch and 2/7 should probably be reversed, since 2/7 is not going to net.
 > 
-> I did not somehow dump the memory map of the switch hardware and confirm the
-> BPC register is there, if that's what you're asking.
+> This patch is still necessary. It'll just modify the other location instead
+> of here.
+> 
+> https://github.com/arinc9/linux/commit/4c8b983f7a95ba637799ccd1b700ee054b030729
+> 
+> Arınç
 
-I mean to say that I looked at
-
-MT7530 Giga Switch programming guide.pdf
-MT7621 Giga Switch Programming Guide.pdf
-MT7621_ProgrammingGuide_GSW_v01.pdf
-
-and I did not find this register.
-
-> However, I can confirm the register is there and identical across all MT7530
-> variants. I have tested the function of the register on the MCM MT7530 on
-> the MT7621 SoC and the standalone MT7530. The register is also described on
-> the document MT7620 Programming Guide v1.0, page 262.
-
-Interesting. I did not have that one. Hard to keep up.
+That's basically what I said, sorry if I wasn't clear.
 
