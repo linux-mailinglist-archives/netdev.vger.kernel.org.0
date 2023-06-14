@@ -1,87 +1,88 @@
-Return-Path: <netdev+bounces-10585-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10586-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D17DB72F345
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 05:54:34 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id EEA7D72F34C
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 05:55:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8354E281024
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 03:54:33 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 27D1B1C20A9D
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 03:55:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 85C1B64C;
-	Wed, 14 Jun 2023 03:54:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C9B264C;
+	Wed, 14 Jun 2023 03:55:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34BAF363;
-	Wed, 14 Jun 2023 03:54:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E056C433C0;
-	Wed, 14 Jun 2023 03:54:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18697363
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 03:55:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAFFBC433C0;
+	Wed, 14 Jun 2023 03:55:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686714869;
-	bh=xLlzm8L28ec7BJtXsq88qOGFRIhR7cLKStyGTGlmIuw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=O3X8HdQQLsbIeh14iAdGGYTGEShLfViN5QK9uCLZv+50ZIAvgb8kR8HQwssVql3u0
-	 3rQc04LMVU9ovnrugVfQqM6u5Mb91tdkSk68LxjhhpRdDJvi/be4yIlFeREOwcvQ+K
-	 6l8PDTGizGWt56jBNHRiwzDzpLRwAgtWnuUPX0Xl7jQ/Yw86TObgqoVg+c/5M25O5O
-	 kY9HBHzLYuuC03NPAJo6W/7s5tOuu/jCzVcT7swivC2fJGQDoBKRjkoZr/cGT4MqQR
-	 RSv00lBq6djOxGzlYthLob7CcsPObCoqNYkgroE+Qwq6oanFeR1nDXd73zt07+MxH9
-	 cytYIHn9hJUKw==
-Message-ID: <70d0f31b-3358-d615-a00c-7e664f5f789f@kernel.org>
-Date: Tue, 13 Jun 2023 20:54:26 -0700
+	s=k20201202; t=1686714919;
+	bh=PAwp8P6P+bo9ED/GohZphvO5u0BbH5QkU+e6HYEe9V8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=h1pkU99e7ldbnbGhCLIzgn4hvR9OkW0h9xABQQwEqSkKgKDwkimLQz01NWRBFGQKg
+	 CA0mSiOEPJ1x0s2NsRL+Jd2Y4xcyGeHEKrYIohTwVUjz40zuUasrd5HFbuh/tdRV8H
+	 kYn9lTKWs0kOY6g2+Pr6aoxdGlR8+gRQUnqwpCXzitqvn0yM6yI9DEyQs2ejFHYUYY
+	 M35Alj7TaVuQkYuscsiGwDlcIxwchQfGyyFRAIchghxfvk53VztjwBs/qHPCUpWdtw
+	 t9ZLh17rOtCPF4HN8qFevTf/D8KWmcgbO7DOqH0KvsghbfXpLWC2C7FGRMH1//Gyu6
+	 Ja8A+5PiUJUTw==
+Date: Tue, 13 Jun 2023 20:55:18 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: Alexander Lobakin <aleksander.lobakin@intel.com>, <davem@davemloft.net>,
+ <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, Lorenzo Bianconi <lorenzo@kernel.org>,
+ Alexander Duyck <alexander.duyck@gmail.com>, Saeed Mahameed
+ <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>, Eric Dumazet
+ <edumazet@google.com>, Jesper Dangaard Brouer <hawk@kernel.org>, Ilias
+ Apalodimas <ilias.apalodimas@linaro.org>, <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH net-next v4 1/5] page_pool: frag API support for 32-bit
+ arch with 64-bit DMA
+Message-ID: <20230613205518.56c61170@kernel.org>
+In-Reply-To: <6db097ba-c3fe-6e45-3c39-c21b4d9e16ef@huawei.com>
+References: <20230612130256.4572-1-linyunsheng@huawei.com>
+	<20230612130256.4572-2-linyunsheng@huawei.com>
+	<483d7a70-3377-a241-4554-212662ee3930@intel.com>
+	<6db097ba-c3fe-6e45-3c39-c21b4d9e16ef@huawei.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.11.2
-Subject: Re: [RFC bpf-next 0/7] bpf: netdev TX metadata
-Content-Language: en-US
-To: Jakub Kicinski <kuba@kernel.org>, Stanislav Fomichev <sdf@google.com>
-Cc: bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
- andrii@kernel.org, martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
- john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com,
- jolsa@kernel.org, willemb@google.com, magnus.karlsson@intel.com,
- bjorn@kernel.org, maciej.fijalkowski@intel.com, netdev@vger.kernel.org
-References: <20230612172307.3923165-1-sdf@google.com>
- <20230613203125.7c7916bc@kernel.org>
-From: David Ahern <dsahern@kernel.org>
-In-Reply-To: <20230613203125.7c7916bc@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 6/13/23 9:31 PM, Jakub Kicinski wrote:
-> On Mon, 12 Jun 2023 10:23:00 -0700 Stanislav Fomichev wrote:
->> The goal of this series is to add two new standard-ish places
->> in the transmit path:
->>
->> 1. Right before the packet is transmitted (with access to TX
->>    descriptors)
-
-If a device requires multiple Tx descriptors per skb or multibuf frame,
-how would that be handled within the XDP API?
-
+On Wed, 14 Jun 2023 11:36:28 +0800 Yunsheng Lin wrote:
+> > As Jakub previously mentioned, this involves including dma-mapping.h,
+> > which is relatively heavy, to each source file which includes skbuff.h,
+> > i.e. almost the whole kernel :D  
 > 
-> I'm not sure that the Tx descriptors can be populated piecemeal.
+> I am not sure I understand the part about 'includes skbuff.h' yet, it seems
+> 'skbuff.h' does not have anything related to this patch?
 
-If it is host memory before the pidx move, why would that matter? Do you
-have a specific example in mind?
+$ git grep net/page_pool.h -- include/linux/skbuff.h
+include/linux/skbuff.h:#include <net/page_pool.h>
 
-> If we were ever to support more standard offload features, which
-> require packet geometry (hdr offsets etc.) to be described "call
-> per feature" will end up duplicating arguments, and there will be
-> a lot of args..
+> > I addressed this in my series, which I hope will land soon after yours
+> > (sending new revision in 24-48 hours), so you can leave it as it is. Or
+> > otherwise you can pick my solution (or come up with your own :D).  
 > 
-> And if there is an SKB path in the future combining the normal SKB
-> offloads with the half-rendered descriptors may be a pain.
+> Do you mean by removing "#include <linux/dma-direction.h>" as dma-mapping.h
+> has included dma-direction.h?
+> But I am not sure if there is any hard rule about not explicitly including
+> a .h which is implicitly included. What if the dma-mapping.h is changed to not
+> include dma-direction.h anymore?
+> 
+> Anyway, it seems it is unlikely to not include dma-direction.h in dma-mapping.h,
+> Will remove the "#include <linux/dma-direction.h>" if there is another version
+> needed for this patchset:)
 
-Once the descriptor(s) is (are) populated, the skb is irrelevant is it
-not? Only complication that comes to mind is wanting to add or remove
-headers (e.g., tunnels) which will be much more complicated at this
-point, but might still be possible on a per NIC (and maybe version) basis.
+The point is that we don't want commonly included headers to pull
+in huge dependencies. Please run the preprocessor on
+linux/dma-direction.h, you'll see how enormous it is.
 
