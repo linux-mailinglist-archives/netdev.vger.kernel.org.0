@@ -1,49 +1,49 @@
-Return-Path: <netdev+bounces-10681-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10680-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4FFC672FC0E
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:11:08 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0569A72FC0C
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:11:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 097D828142F
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:11:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 376081C20C89
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:11:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 095B4847D;
-	Wed, 14 Jun 2023 11:10:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EAE6F79D9;
+	Wed, 14 Jun 2023 11:10:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2E3279E1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9BAE6FD3
 	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 11:10:29 +0000 (UTC)
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC50199B;
-	Wed, 14 Jun 2023 04:10:25 -0700 (PDT)
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-4f63ab1ac4aso8268012e87.0;
-        Wed, 14 Jun 2023 04:10:25 -0700 (PDT)
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9571BEF;
+	Wed, 14 Jun 2023 04:10:27 -0700 (PDT)
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-3f7378a75c0so5164855e9.3;
+        Wed, 14 Jun 2023 04:10:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686741023; x=1689333023;
+        d=1e100.net; s=20221208; t=1686741025; x=1689333025;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=bVmEOXEjwmudHUkRx4Y0SQYham7m2mb1hbXq7ueWQ90=;
-        b=GuXyeq/ZCE9MhXJwHaWCuWsgLkXG93L9d6GXawE2FHYdiTmBtfvve6d7JWIx2DrM8I
-         PGQrlhc+5xG4hf4qO5+A4nubZ+kAXstzRfvmhFE5nPLRNih9FAsO7xEM6MFgsePAYsV1
-         psUuEDfk8AQPkFRZKEr0rYtn1jrpAx3o6WbwqhiiiTBqqmGbk46hEuMMlywNvBUNAvrS
-         caYboT6I5CbygCrSZVn99ovMJF9r0OSIOGiZzZiBy4tN6S9uSt9wjTtF0wcCEO4U3IyU
-         TB8ENfsrJsQVmejMrfSyffBlZ8br2/NJtC7JJOgaWeKqK9Y1BsabvtQog2jJtlKS4dNa
-         d+iQ==
-X-Gm-Message-State: AC+VfDyKZ2/LUoz2w+Eh4x1stE+/oBqO1mV3iXcSkCjPqW2xuvhy0qmu
-	OA2ld4sPc+HnDYWCGrsJKUguLOnpu2ZyMQ==
-X-Google-Smtp-Source: ACHHUZ4rnVKCvf3QnEMYouypeeGamJpIVkfUH1vY/5ugedGI4ZicXO0wiXf7mvAOD9N1/VgQ2IedLQ==
-X-Received: by 2002:a19:ab02:0:b0:4f6:3000:94a0 with SMTP id u2-20020a19ab02000000b004f6300094a0mr6630041lfe.61.1686741023155;
-        Wed, 14 Jun 2023 04:10:23 -0700 (PDT)
-Received: from localhost (fwdproxy-cln-013.fbsv.net. [2a03:2880:31ff:d::face:b00c])
-        by smtp.gmail.com with ESMTPSA id 8-20020a05600c230800b003f7ed9dae70sm17145918wmo.0.2023.06.14.04.10.22
+        bh=qkkE+Ruzq/uQr05Vb/IRsuaLy9Kdl2xaoXLCVAa73nU=;
+        b=Ffc4zVjQGabstE656Dxw0WpMkANGe8mEcT19O3jvRkXKlR4LqCMlKULos/vTYO2k1W
+         LVNuXA/CRAiCJTVdT+/u1svxPClaufVfy4yIHkE4LS5ewGvkzGSx6BB1oXZQmDCMyXzb
+         oP71xl9DrWgeMoVUkvMCTe97Iznhbr1pL+LI2Z1n6szktiUZESF68nTnX+Dl68yDIKFE
+         4B3499Cf6/EGasxC1yuV/gZm3X9cg3keybMSpcb9MeHjHVXOkLT1NsQpl5bqbVMjKB13
+         Socir+0rgR2rIt1JuK395xz97niG0KOP3qd9BZetg7TYXA7zvvsrJoonmOZWw0bf68OP
+         GWtA==
+X-Gm-Message-State: AC+VfDwjTOSqyT7tRdGSpURmlg3csShEXw/SsV92v/zCV6Vj0X7luCBH
+	v2q3i+JSu/t5v/O40RVwaS4boWrmcZIjEA==
+X-Google-Smtp-Source: ACHHUZ4tnqlcsgs2dm8xr5gaCbxJU2IHbMPITeAK4rJDPfZMO4ktWYBZ+c7BfSSONtzeKSKABMbUgw==
+X-Received: by 2002:a05:600c:228d:b0:3f7:8fbf:a21d with SMTP id 13-20020a05600c228d00b003f78fbfa21dmr10460822wmf.32.1686741025197;
+        Wed, 14 Jun 2023 04:10:25 -0700 (PDT)
+Received: from localhost (fwdproxy-cln-016.fbsv.net. [2a03:2880:31ff:10::face:b00c])
+        by smtp.gmail.com with ESMTPSA id z10-20020a05600c114a00b003f7e60622f0sm17180504wmz.6.2023.06.14.04.10.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jun 2023 04:10:22 -0700 (PDT)
+        Wed, 14 Jun 2023 04:10:24 -0700 (PDT)
 From: Breno Leitao <leitao@debian.org>
 To: io-uring@vger.kernel.org,
 	axboe@kernel.dk,
@@ -51,7 +51,6 @@ To: io-uring@vger.kernel.org,
 	edumazet@google.com,
 	kuba@kernel.org,
 	pabeni@redhat.com,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
 	David Ahern <dsahern@kernel.org>
 Cc: leit@fb.com,
 	asml.silence@gmail.com,
@@ -67,9 +66,9 @@ Cc: leit@fb.com,
 	ast@kernel.org,
 	kuniyu@amazon.com,
 	martin.lau@kernel.org
-Subject: [RFC PATCH v2 2/4] net: add uring_cmd callback to UDP
-Date: Wed, 14 Jun 2023 04:07:55 -0700
-Message-Id: <20230614110757.3689731-3-leitao@debian.org>
+Subject: [RFC PATCH v2 3/4] net: add uring_cmd callback to TCP
+Date: Wed, 14 Jun 2023 04:07:56 -0700
+Message-Id: <20230614110757.3689731-4-leitao@debian.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230614110757.3689731-1-leitao@debian.org>
 References: <20230614110757.3689731-1-leitao@debian.org>
@@ -87,94 +86,85 @@ X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This is the implementation of uring_cmd for the UDP protocol. It
+This is the implementation of uring_cmd for the TCP protocol. It
 basically encompasses SOCKET_URING_OP_SIOCOUTQ and
-SOCKET_URING_OP_SIOCINQ, which is the io_uring representation for
-SIOCOUTQ and SIOCINQ.
+SOCKET_URING_OP_SIOCINQ, which calls tcp_ioctl().
 
-SIOCINQ and SIOCOUTQ are the only two CMDs handled by udp_ioctl().
+tcp_ioctl() has other CMDs, such as SIOCATMARK and SIOCOUTQNSD, but they
+are not implemented, because they are TCP specific, and not available on
+UDP and RAW sockets.
 
 Signed-off-by: Breno Leitao <leitao@debian.org>
 ---
- include/net/udp.h        |  2 ++
- include/uapi/linux/net.h |  5 +++++
- net/ipv4/udp.c           | 22 ++++++++++++++++++++++
- 3 files changed, 29 insertions(+)
+ include/net/tcp.h   |  2 ++
+ net/ipv4/tcp.c      | 21 +++++++++++++++++++++
+ net/ipv4/tcp_ipv4.c |  1 +
+ 3 files changed, 24 insertions(+)
 
-diff --git a/include/net/udp.h b/include/net/udp.h
-index 10d94a42117b..046ca7231d27 100644
---- a/include/net/udp.h
-+++ b/include/net/udp.h
-@@ -285,6 +285,8 @@ int udp_cmsg_send(struct sock *sk, struct msghdr *msg, u16 *gso_size);
- void udp4_hwcsum(struct sk_buff *skb, __be32 src, __be32 dst);
- int udp_rcv(struct sk_buff *skb);
- int udp_ioctl(struct sock *sk, int cmd, int *karg);
-+int udp_uring_cmd(struct sock *sk, struct io_uring_cmd *cmd,
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 2a7289916d42..1100b0c9df98 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -340,6 +340,8 @@ void tcp_wfree(struct sk_buff *skb);
+ void tcp_write_timer_handler(struct sock *sk);
+ void tcp_delack_timer_handler(struct sock *sk);
+ int tcp_ioctl(struct sock *sk, int cmd, int *karg);
++int tcp_uring_cmd(struct sock *sk, struct io_uring_cmd *cmd,
 +		  unsigned int issue_flags);
- int udp_init_sock(struct sock *sk);
- int udp_pre_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len);
- int __udp_disconnect(struct sock *sk, int flags);
-diff --git a/include/uapi/linux/net.h b/include/uapi/linux/net.h
-index 4dabec6bd957..dd8e7ced7d24 100644
---- a/include/uapi/linux/net.h
-+++ b/include/uapi/linux/net.h
-@@ -55,4 +55,9 @@ typedef enum {
- 
- #define __SO_ACCEPTCON	(1 << 16)	/* performed a listen		*/
- 
-+enum {
-+	SOCKET_URING_OP_SIOCINQ		= 0,
-+	SOCKET_URING_OP_SIOCOUTQ,
-+};
-+
- #endif /* _UAPI_LINUX_NET_H */
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 6a09757f287b..5e06b6de1c08 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -113,6 +113,7 @@
- #include <net/sock_reuseport.h>
- #include <net/addrconf.h>
- #include <net/udp_tunnel.h>
+ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb);
+ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb);
+ void tcp_rcv_space_adjust(struct sock *sk);
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 2cb01880755a..8bf9a41d2a67 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -279,6 +279,7 @@
+ #include <linux/uaccess.h>
+ #include <asm/ioctls.h>
+ #include <net/busy_poll.h>
 +#include <linux/io_uring.h>
- #if IS_ENABLED(CONFIG_IPV6)
- #include <net/ipv6_stubs.h>
- #endif
-@@ -1687,6 +1688,26 @@ static int first_packet_length(struct sock *sk)
- 	return res;
- }
  
-+int udp_uring_cmd(struct sock *sk, struct io_uring_cmd *cmd,
+ /* Track pending CMSGs. */
+ enum {
+@@ -599,6 +600,26 @@ __poll_t tcp_poll(struct file *file, struct socket *sock, poll_table *wait)
+ }
+ EXPORT_SYMBOL(tcp_poll);
+ 
++int tcp_uring_cmd(struct sock *sk, struct io_uring_cmd *cmd,
 +		  unsigned int issue_flags)
 +{
 +	int ret;
 +
 +	switch (cmd->sqe->cmd_op) {
 +	case SOCKET_URING_OP_SIOCINQ:
-+		if (udp_ioctl(sk, SIOCINQ, &ret))
++		if (tcp_ioctl(sk, SIOCINQ, &ret))
 +			return -EFAULT;
 +		return ret;
 +	case SOCKET_URING_OP_SIOCOUTQ:
-+		if (udp_ioctl(sk, SIOCOUTQ, &ret))
++		if (tcp_ioctl(sk, SIOCOUTQ, &ret))
 +			return -EFAULT;
 +		return ret;
 +	default:
 +		return -ENOIOCTLCMD;
 +	}
 +}
-+EXPORT_SYMBOL_GPL(udp_uring_cmd);
++EXPORT_SYMBOL_GPL(tcp_uring_cmd);
 +
- /*
-  *	IOCTL requests applicable to the UDP protocol
-  */
-@@ -2925,6 +2946,7 @@ struct proto udp_prot = {
- 	.connect		= ip4_datagram_connect,
- 	.disconnect		= udp_disconnect,
- 	.ioctl			= udp_ioctl,
-+	.uring_cmd		= udp_uring_cmd,
- 	.init			= udp_init_sock,
- 	.destroy		= udp_destroy_sock,
- 	.setsockopt		= udp_setsockopt,
+ int tcp_ioctl(struct sock *sk, int cmd, int *karg)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 84a5d557dc1a..dd93a862d195 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -3107,6 +3107,7 @@ struct proto tcp_prot = {
+ 	.disconnect		= tcp_disconnect,
+ 	.accept			= inet_csk_accept,
+ 	.ioctl			= tcp_ioctl,
++	.uring_cmd		= tcp_uring_cmd,
+ 	.init			= tcp_v4_init_sock,
+ 	.destroy		= tcp_v4_destroy_sock,
+ 	.shutdown		= tcp_shutdown,
 -- 
 2.34.1
 
