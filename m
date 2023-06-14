@@ -1,117 +1,131 @@
-Return-Path: <netdev+bounces-10768-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10769-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id BBF06730341
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 17:15:39 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id E3D3373035E
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 17:17:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C61501C2096A
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 15:15:38 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 44218281420
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 15:17:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 336E1101C3;
-	Wed, 14 Jun 2023 15:15:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63FBB101D8;
+	Wed, 14 Jun 2023 15:17:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D06D62C9C
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 15:15:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37623C433C9;
-	Wed, 14 Jun 2023 15:15:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686755735;
-	bh=IYlo4kFJO2TVbRcxmRqgX52nQUD+JoUM4Xtdb77hYmo=;
-	h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-	b=L8/y2njeA9dvpmBLDS9b9VOFgU7bn/6Axd3gCwGdy5yLR9y2TYpTtK5sQOQ8kSSRS
-	 3H+GT2aah72MhN7h0rby9iSLNoJa+QoW5WquxOJBh3bDbqieaEQFyVWttfVypNXAoD
-	 E4yHAzZnziz/TpDvEUQdU22jT6S3EBYJ1Dhj5qhI1kq+I0pwIsf39kOnOrMygtN9Jv
-	 pwSdfpNe43i8pavv/T5Ol0odDnE6xBW0s6vX/mMy6sbAOkrA9iocie8/zty1E5JlfF
-	 XYEHdBWtm3z4qKiolcKU/fEMYGs9F/mi74EM079kBrQJtYIYfR+dTBMr2KQ559SGXu
-	 rRGOJuArVX5yw==
-From: Kalle Valo <kvalo@kernel.org>
-To: Azeem Shaikh <azeemshaikh38@gmail.com>
-Cc: linux-hardening@vger.kernel.org,  linux-wireless@vger.kernel.org,  linux-kernel@vger.kernel.org,  "David S. Miller" <davem@davemloft.net>,  Eric Dumazet <edumazet@google.com>,  Jakub Kicinski <kuba@kernel.org>,  Paolo Abeni <pabeni@redhat.com>,  netdev@vger.kernel.org,  Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [PATCH v3] wifi: cfg80211: replace strlcpy() with strscpy()
-References: <20230614134956.2109252-1-azeemshaikh38@gmail.com>
-	<874jnaf7fv.fsf@kernel.org>
-	<CADmuW3WEUgnpGXg=ajpRvwON6mFLQD9cPKnhsg35CcNqwcywxA@mail.gmail.com>
-Date: Wed, 14 Jun 2023 18:15:31 +0300
-In-Reply-To: <CADmuW3WEUgnpGXg=ajpRvwON6mFLQD9cPKnhsg35CcNqwcywxA@mail.gmail.com>
-	(Azeem Shaikh's message of "Wed, 14 Jun 2023 10:55:13 -0400")
-Message-ID: <875y7qcbxo.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56D008460
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 15:17:53 +0000 (UTC)
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938371BFF
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 08:17:50 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id d9443c01a7336-1b3be39e666so29498575ad.0
+        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 08:17:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686755870; x=1689347870;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=2FRakTwUO3HarAUoL8+C4HrsHI0Kc5B91QS0tw7ZEwU=;
+        b=gCAAZkeo2KgvjuFPoE2j4s/jh0nZTZTRXI1WHsoaeHehCcFZfl/cN+TrXNxauVGtzP
+         jwVV1odiqym59JhclFb9F/sKebxThwAvjWy7SXrJjNCkxMuDR1RU6CW68BrWlo3KZPbA
+         JpKlb7JGal3/LgQeEgCzsqlvDrjWu0PUmYdM5uQiRQJqP3rGfx2gIdEJYh8zdl7nzbh3
+         iQ2/ut9PJI8UKO1NBBXvILBhd9AHL/WUvSthMceLssRYK/utXMJc7n+Jmzp5dTu0+s7y
+         9qjCmdizmot7xHoS4lTLNpILDZ3SdC3u1jjZBztKVp7Cr9I95NjGoZ0CNnZfNdka3GjE
+         aZRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686755870; x=1689347870;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=2FRakTwUO3HarAUoL8+C4HrsHI0Kc5B91QS0tw7ZEwU=;
+        b=TIuh4p2J3XQDl9y3nN+MbfYLGTvH/F4qvzm0CQiZi0dvXGX9lUKQavmx4ijSEhq4Dc
+         1klzzbdMVASpwedtS3R4vbkvzBX3yB0vad5n/PDveCdFzNg04Wc4Fcoyp7/Nk+lfPlYG
+         pvdmz7SzgRPTGTQQycQ+3UWtzzgIU2gEKWdlhnzkL+ctX6COxEkUiRchplHHGLmjO71b
+         n69RiN25tuZZ1INkt1gc0qCKGK9pl1H50b6eK9cFiAFB3HgZJfUNFrCnzdV9DmmveRgP
+         meiZbCLd/cNLQZ+EgCJIZ8NTs5u3Xsz5GVFbW9OupK7TotlFyNFq8Htt0+d2tL8zCoya
+         /Mgg==
+X-Gm-Message-State: AC+VfDzDRcyrAkIYhPZKE/OJjdONZuKSFte+qEMrF0z+PZh5200zwjBs
+	sJB+M9FOc836Z7QL75Ne+Ps=
+X-Google-Smtp-Source: ACHHUZ59p9kMIWSc8WcF7d41D3CjLz45p7DVBgHmU8imwlR9nyvmf2WeoW3hCxiXysCTPaKce2hf3Q==
+X-Received: by 2002:a17:902:d4d2:b0:1ae:9105:10a5 with SMTP id o18-20020a170902d4d200b001ae910510a5mr2361444plg.2.1686755869891;
+        Wed, 14 Jun 2023 08:17:49 -0700 (PDT)
+Received: from [172.16.103.191] ([216.110.217.114])
+        by smtp.googlemail.com with ESMTPSA id f18-20020a635552000000b0054f81b2aedbsm6101160pgm.51.2023.06.14.08.17.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Jun 2023 08:17:49 -0700 (PDT)
+Message-ID: <15de5df0-9a29-d592-0ac8-e2c470b17c83@gmail.com>
+Date: Wed, 14 Jun 2023 08:17:44 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.11.2
+Subject: Re: [PATCH net-next] rtnetlink: extend RTEXT_FILTER_SKIP_STATS to
+ IFLA_VF_INFO
+Content-Language: en-US
+To: Paolo Abeni <pabeni@redhat.com>,
+ "Keller, Jacob E" <jacob.e.keller@intel.com>, Gal Pressman <gal@nvidia.com>,
+ Stephen Hemminger <stephen@networkplumber.org>
+Cc: "David S. Miller" <davem@davemloft.net>, Jakub Kicinski
+ <kuba@kernel.org>, Michal Kubecek <mkubecek@suse.cz>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ Edwin Peer <edwin.peer@broadcom.com>, Edwin Peer <espeer@gmail.com>
+References: <20230611105108.122586-1-gal@nvidia.com>
+ <20230611080655.35702d7a@hermes.local>
+ <9b59a933-0457-b9f2-a0da-9b764223c250@nvidia.com>
+ <CO1PR11MB50899E098BB3FFE0DE322222D654A@CO1PR11MB5089.namprd11.prod.outlook.com>
+ <a9d5cf824500c3a4d86f26bd18ec29b6dfd2daf8.camel@redhat.com>
+From: David Ahern <dsahern@gmail.com>
+In-Reply-To: <a9d5cf824500c3a4d86f26bd18ec29b6dfd2daf8.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Azeem Shaikh <azeemshaikh38@gmail.com> writes:
-
-> On Wed, Jun 14, 2023 at 10:24=E2=80=AFAM Kalle Valo <kvalo@kernel.org> wr=
-ote:
->
+On 6/14/23 3:03 AM, Paolo Abeni wrote:
+> On Mon, 2023-06-12 at 05:34 +0000, Keller, Jacob E wrote:
+>>> -----Original Message-----
+>>> From: Gal Pressman <gal@nvidia.com>
+>>> Sent: Sunday, June 11, 2023 10:59 AM
+>>> To: Stephen Hemminger <stephen@networkplumber.org>
+>>> Cc: David S. Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>;
+>>> David Ahern <dsahern@gmail.com>; Michal Kubecek <mkubecek@suse.cz>;
+>>> netdev@vger.kernel.org; Edwin Peer <edwin.peer@broadcom.com>; Edwin Peer
+>>> <espeer@gmail.com>
+>>> Subject: Re: [PATCH net-next] rtnetlink: extend RTEXT_FILTER_SKIP_STATS to
+>>> IFLA_VF_INFO
+>>>
+>>> On 11/06/2023 18:06, Stephen Hemminger wrote:
+>>>
+>>>> Better but it is still possible to create too many VF's that the response
+>>>> won't fit.
+>>>
+>>> Correct, no argues here.
+>>> It allowed me to see around ~200 VFs instead of ~70, a step in the right
+>>> direction.
 >>
->> Azeem Shaikh <azeemshaikh38@gmail.com> writes:
+>> I remember investigating this a few years ago and we hit limits of ~200 that were essentially unfixable without creating a new API that can separate the reply over more than one message. The VF info data was not designed in the current op to allow processing over multiple messages. It also (unfortunately) doesn't report errors so it ends up just truncating instead of producing an error.
 >>
->> > strlcpy() reads the entire source buffer first.
->> > This read may exceed the destination size limit.
->> > This is both inefficient and can lead to linear read
->> > overflows if a source string is not NUL-terminated [1].
->> > In an effort to remove strlcpy() completely [2], replace
->> > strlcpy() here with strscpy().
->> >
->> > Direct replacement is safe here since WIPHY_ASSIGN is only used by
->> > TRACE macros and the return values are ignored.
->> >
->> > [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#str=
-lcpy
->> > [2] https://github.com/KSPP/linux/issues/89
->> >
->> > Signed-off-by: Azeem Shaikh <azeemshaikh38@gmail.com>
->> > ---
->> > v1: https://lore.kernel.org/all/20230612232301.2572316-1-azeemshaikh38=
-@gmail.com/
->> > v2: https://lore.kernel.org/all/20230614134552.2108471-1-azeemshaikh38=
-@gmail.com/
->>
->> In the change log (after the "---" line) you should also describe what
->> changes you made, more info in the wiki below. In this case it's clear
->> as the patch is simple but please keep this in mind for future patches.
->>
->> No need to resend because of this.
->>
->
-> Thanks Kalle. I did have the below line in my changelog. For future
-> patches, do you mean that changelog descriptions need to be more
-> specific than this? For example - updated title from "x" -> "y"?
->
->> Changes from v1 and v2 - updated patch title.
+>> Fixing this completely is non-trivial.
+> 
+> As it looks like the is substantial agreement on this approach being a
+> step in the right direction and I can't think of anything better, I
+> suggest to merge this as is, unless someone voices concerns very soon,
+> very loudly.
+> 
 
-Ah, I missed that because the format was not what we usually use. I
-recommend something like this:
+My only concern is that this "hot potato" stays in the air longer. This
+problem has been around for years, and someone needs to step up and
+propose an API.
 
-v3:
-
-* add bar
-
-v2:
-
-* https://
-* fix foo
-
-v1:
-
-* https://
-
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
 
