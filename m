@@ -1,112 +1,84 @@
-Return-Path: <netdev+bounces-10781-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10782-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4AB3D73049B
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 18:10:17 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8672D7304A6
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 18:13:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 052ED281324
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 16:10:16 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B88D71C20D42
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 16:13:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 251A91097C;
-	Wed, 14 Jun 2023 16:10:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 943B71118D;
+	Wed, 14 Jun 2023 16:13:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 170EB101D8
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 16:10:13 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937BF1BF9
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 09:10:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686759011;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=rl6mgiOo+Ag+ttIGbzoAy2FCy5AX0T0I/OwvxTFasvA=;
-	b=JbclCWLGvgReZhTq2E3LwA+lKwffDJ+QPAzBCXivTkSgXfYyyc2ARQJx1dPwO4QBb8Jx4R
-	V9fEEYQxxXaQFyxCuklHHiMkZnk2VmNLSnDBBHAaEspPJdPeN876mYe+u4UnE9nq5QUWJh
-	9xCVYgwwGq737G1EKs0fVzAK8hBfg4w=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-85-hf3k22h9MguxekwrDDaUNQ-1; Wed, 14 Jun 2023 12:10:08 -0400
-X-MC-Unique: hf3k22h9MguxekwrDDaUNQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9FD6980879D;
-	Wed, 14 Jun 2023 16:10:07 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.67])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 39902C1603B;
-	Wed, 14 Jun 2023 16:10:04 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <000000000000a61ffe05fe0c3d08@google.com>
-References: <000000000000a61ffe05fe0c3d08@google.com>
-To: syzbot <syzbot+dd1339599f1840e4cc65@syzkaller.appspotmail.com>
-Cc: dhowells@redhat.com, bpf@vger.kernel.org, davem@davemloft.net,
-    edumazet@google.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-    netdev@vger.kernel.org, pabeni@redhat.com,
-    syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] [net?] WARNING in unreserve_psock
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 885B910965
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 16:13:26 +0000 (UTC)
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79CEC1FFA
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 09:13:24 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id ca18e2360f4ac-770222340cfso836014139f.3
+        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 09:13:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686759204; x=1689351204;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=zeyhKQmQJgmGwX9czunjxyhPF6/Uyh0HJoA+1LIdqE8=;
+        b=J01ndPRaev0pvUARuTMselNQfvGgP1tw2BssG1654UtYF86RoSNt50A2dw6kF7FWnS
+         82bUCUPZ/5uhC0xDmlbSwBsAqqENG8YJQngupu8T1xysmL/K+gxtcpAtTtcxewkm5PEr
+         zR7vLqemmEnP30Y2tQDKBQFsBRSozVZPKtw0i6MkOpR9TTr5Qe5RbR2Sz8w1g+AipOEe
+         odyU+t54x51W1ERimerSqwIUyyfwgr/h70UdliQRl5DPw/A0xIoPWl7r1SRXcuzStdsd
+         c4U16X+Je8uq/cXFF07wMkZ0gUzlHvFlr2wgHLU6boplDftMjDTFoTaOmz0+Ij6R32ny
+         ARqQ==
+X-Gm-Message-State: AC+VfDzpws21ixgJaY6+miPbpkRFEHFSUrFScMb4G4UOoPbk7j9YwbwL
+	joPqBCyoynqUJ2MWR+glEFHMiP0sI+bS4DKkdF5GBdaGp+c6
+X-Google-Smtp-Source: ACHHUZ4r58bUvl9LoPAOXo+B6/ljIZcwyo9JK7UM90Yqibs/UTgX1tiUUXTcfd0jBjqB48XmrgyKXZl5c+T2EAc/pq3qX0C1IjMx
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1661017.1686759001.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 14 Jun 2023 17:10:01 +0100
-Message-ID: <1661018.1686759001@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a5e:da05:0:b0:775:4f90:a4ce with SMTP id
+ x5-20020a5eda05000000b007754f90a4cemr6194252ioj.0.1686759203788; Wed, 14 Jun
+ 2023 09:13:23 -0700 (PDT)
+Date: Wed, 14 Jun 2023 09:13:23 -0700
+In-Reply-To: <1604533.1686754299@warthog.procyon.org.uk>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000029dd9c05fe193bf3@google.com>
+Subject: Re: [syzbot] [crypto?] general protection fault in crypto_shash_final
+From: syzbot <syzbot+14234ccf6d0ef629ec1a@syzkaller.appspotmail.com>
+To: davem@davemloft.net, dhowells@redhat.com, herbert@gondor.apana.org.au, 
+	linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	netdev@vger.kernel.org, pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+	SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Here's a reduced testcase.
+Hello,
 
-David
----
-// https://syzkaller.appspot.com/bug?id=3D6ffe7d1ebf1efaddb7ddd04784b9b22a=
-8562b8d0
-// autogenerated by syzkaller (https://github.com/google/syzkaller)
-#define _GNU_SOURCE
-#include <endian.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <linux/kcm.h>
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-#define OSERROR(R, S) do { if ((long)(R) =3D=3D -1L) { perror((S)); exit(1=
-); } } while(0)
+Reported-and-tested-by: syzbot+14234ccf6d0ef629ec1a@syzkaller.appspotmail.com
 
-int main(void)
-{
-	struct msghdr msg;
-	int kcmfd, res;
+Tested on:
 
-	kcmfd =3D socket(AF_KCM, SOCK_DGRAM, KCMPROTO_CONNECTED);
-	OSERROR(kcmfd, "socket");
+commit:         fa0e21fa rtnetlink: extend RTEXT_FILTER_SKIP_STATS to ..
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git main
+console output: https://syzkaller.appspot.com/x/log.txt?x=13b86427280000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=526f919910d4a671
+dashboard link: https://syzkaller.appspot.com/bug?extid=14234ccf6d0ef629ec1a
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=15bf213b280000
 
-	memset(&msg, 0, sizeof(msg));
-	res =3D sendmsg(kcmfd, &msg, 0);
-	OSERROR(res, "sendmsg");
-	return 0;
-}
-
+Note: testing is done by a robot and is best-effort only.
 
