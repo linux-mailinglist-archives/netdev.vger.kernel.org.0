@@ -1,145 +1,101 @@
-Return-Path: <netdev+bounces-10688-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10689-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D57B372FC73
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:30:15 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A7BAB72FC75
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:30:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 135C51C20C1F
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:30:15 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 68688281302
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:30:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC26E79D5;
-	Wed, 14 Jun 2023 11:30:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA49979D5;
+	Wed, 14 Jun 2023 11:30:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF1FB6AA3
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 11:30:12 +0000 (UTC)
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD8A9199B
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 04:30:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1686742210; x=1718278210;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=iekMNmVk2zF+d+7HGggopWYAOuzQY2WawO/n8J2vNwM=;
-  b=wr4fBQ9p+R+O853nYhpYJsYsrFZsOYlLfpbmC7PS0oSCCq4otru634/0
-   WQbPS7+fi+c0vZBAOGNLXDkcquNAYsLJC0Bm/wBXulm4lRbeTT1b5BSVO
-   rSeukLEnpjSMz+2XUsG9a8CnpyCUu3YS08Bag1QWbyhij9fHMb7Kw+bnN
-   /ZV9t8UL8id7hjzfwhM6s2ZReCsrQ8VltiyR/TSgOoWxZ9bhsjA7BTPtK
-   BPNI323d2cVK8dpgU1L/rwyx2txa693JZPl5YyOHWQycSuY+IXaqA2mub
-   rEWQnEsXH6WMySjLDCxxOtTe8nbWflrZVMJpOjm8fzmU6IqY/fUBlrcZA
-   w==;
-X-IronPort-AV: E=Sophos;i="6.00,242,1681196400"; 
-   d="scan'208";a="220241287"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jun 2023 04:30:09 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Wed, 14 Jun 2023 04:29:55 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Wed, 14 Jun 2023 04:29:53 -0700
-Message-ID: <700342a6747c9fdf5a80ec37070576ba9da1d9eb.camel@microchip.com>
-Subject: Re: Fwd: [PATCH] net: microchip: sparx5: Remove unneeded variable
-From: Steen Hegelund <steen.hegelund@microchip.com>
-To: <baomingtong001@208suo.com>, <davem@davemloft.net>, <edumazet@google.com>,
-	<kuba@kernel.org>, <pabeni@redhat.com>, <lars.povlsen@microchip.com>,
-	<daniel.machon@microchip.com>, <UNGLinuxDriver@microchip.com>,
-	<horatiu.vultur@microchip.com>
-CC: <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
-Date: Wed, 14 Jun 2023 13:29:52 +0200
-In-Reply-To: <d70ab6d10972330290c4c810d61df193@208suo.com>
-References: <20230613094921.19836-1-luojianhong@cdjrlc.com>
-	 <d70ab6d10972330290c4c810d61df193@208suo.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.1 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73A0B8463
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 11:30:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EF61AC433C9;
+	Wed, 14 Jun 2023 11:30:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686742223;
+	bh=rW9RjcKDiFRKHUziP2VDCMl746XBXrkMotKpHtxqTnM=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=tXBOce/Zkhxyyv4hqxDqjZ+0faudqdNIEIAswXw1K/EOzow0MQY1REfmbvMlBC95P
+	 O8kAu4bTMUmLqCWpAmEEsW9AzbkStKNkzQNQJYyZJ7OJtvpkqdIIZO+MESSyYfnP8X
+	 W86XQM0Oj+ZIRW8Ej+uu5IwGcfmiDT0hTifFtiiL6hyyNskifTN8kLgihtPWZE+oDf
+	 v/ixCB7wFepqR/M6zs3/lUJSudtH7qrTQlX9p15Id225+qx7vRyLzU4lX/DVaIqxJm
+	 IUzc6b+YUX3SYuQUib/faJ5aBlBTM7fm48v7nm55+pmYXwzBYHqiBEgMWBkxjw7PDG
+	 6yBUCLM2GKMOg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CC8DAC3274B;
+	Wed, 14 Jun 2023 11:30:22 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 00/10] mlxsw: Preparations for
+ out-of-order-operations patches
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168674222282.23990.8151831714077509932.git-patchwork-notify@kernel.org>
+Date: Wed, 14 Jun 2023 11:30:22 +0000
+References: <cover.1686581444.git.petrm@nvidia.com>
+In-Reply-To: <cover.1686581444.git.petrm@nvidia.com>
+To: Petr Machata <petrm@nvidia.com>
+Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, netdev@vger.kernel.org, idosch@nvidia.com,
+ amcohen@nvidia.com, mlxsw@nvidia.com
 
-Hi Bao,
+Hello:
 
-I could not apply your patch as there seems to be no message id in the mail
-headers.  I also could not find it on patchwork, so it seems like it has be=
-en
-ignored there.
+This series was applied to netdev/net-next.git (main)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Could you please resend this with the proper details - otherwise the change
-looks good to me.
+On Mon, 12 Jun 2023 17:30:59 +0200 you wrote:
+> The mlxsw driver currently makes the assumption that the user applies
+> configuration in a bottom-up manner. Thus netdevices need to be added to
+> the bridge before IP addresses are configured on that bridge or SVI added
+> on top of it. Enslaving a netdevice to another netdevice that already has
+> uppers is in fact forbidden by mlxsw for this reason. Despite this safety,
+> it is rather easy to get into situations where the offloaded configuration
+> is just plain wrong.
+> 
+> [...]
 
-BR
-Steen
+Here is the summary with links:
+  - [net-next,01/10] mlxsw: spectrum_router: Extract a helper from mlxsw_sp_port_vlan_router_join()
+    https://git.kernel.org/netdev/net-next/c/e0db883b6949
+  - [net-next,02/10] mlxsw: spectrum_router: Add a helper specifically for joining a LAG
+    https://git.kernel.org/netdev/net-next/c/76962b802efe
+  - [net-next,03/10] mlxsw: spectrum_router: Access rif->dev through a helper
+    https://git.kernel.org/netdev/net-next/c/fb6ac45e8666
+  - [net-next,04/10] mlxsw: spectrum_router: Access rif->dev from params in mlxsw_sp_rif_create()
+    https://git.kernel.org/netdev/net-next/c/2019b5eeae2a
+  - [net-next,05/10] mlxsw: spectrum_router: Access nh->rif->dev through a helper
+    https://git.kernel.org/netdev/net-next/c/69f4ba177d6b
+  - [net-next,06/10] mlxsw: spectrum_router: Access nhgi->rif through a helper
+    https://git.kernel.org/netdev/net-next/c/532b6e2bbc19
+  - [net-next,07/10] mlxsw: spectrum_router: Extract a helper to free a RIF
+    https://git.kernel.org/netdev/net-next/c/571c56911b45
+  - [net-next,08/10] mlxsw: spectrum_router: Add a helper to check if netdev has addresses
+    (no matching commit)
+  - [net-next,09/10] mlxsw: spectrum_router: Extract a helper for RIF migration
+    https://git.kernel.org/netdev/net-next/c/440273e763f5
+  - [net-next,10/10] mlxsw: spectrum_router: Move IPIP init up
+    https://git.kernel.org/netdev/net-next/c/d4a37bf0943d
 
-On Tue, 2023-06-13 at 17:53 +0800, baomingtong001@208suo.com wrote:
->=20
-> =C2=A0You don't often get email from baomingtong001@208suo.com. Learn why=
- this is
-> important
->=20
->=20
->=20
->=20
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
-e
-> content is safe
->=20
->=20
-> Fix the following coccicheck warning:
->=20
-> drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c:1435:5-8: Unneed=
-ed
-> variable: "err".
->=20
-> Signed-off-by: Mingtong Bao <baomingtong001@208suo.com>
-> ---
-> =C2=A0drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c | 3 +--
-> =C2=A01 file changed, 1 insertion(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-> b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-> index 3f87a5285a6d..03a9b226c9c5 100644
-> --- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-> @@ -1432,7 +1432,6 @@ static int sparx5_tc_flower_template_destroy(struct
-> net_device *ndev,
-> =C2=A0{
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct sparx5_port *port =3D netdev_priv(nd=
-ev);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct sparx5_tc_flower_template *ftp, *tmp=
-;
-> - =C2=A0=C2=A0=C2=A0int err =3D -ENOENT;
-> =C2=A0
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* Rules using the template are removed by =
-the tc framework */
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0list_for_each_entry_safe(ftp, tmp, &port->t=
-c_templates, list) {
-> @@ -1447,7 +1446,7 @@ static int sparx5_tc_flower_template_destroy(struct
-> net_device *ndev,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0kfree(ftp);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0break;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0}
-> - =C2=A0=C2=A0=C2=A0return err;
-> + =C2=A0=C2=A0=C2=A0return -ENOENT;
-> =C2=A0}
-> =C2=A0
-> =C2=A0int sparx5_tc_flower(struct net_device *ndev, struct flow_cls_offlo=
-ad *fco,
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
 
