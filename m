@@ -1,52 +1,88 @@
-Return-Path: <netdev+bounces-10842-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10843-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9656373080F
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 21:22:00 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 09A3973081D
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 21:23:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7298A1C20D37
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 19:21:59 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 63FCF281516
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 19:23:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D1A9C11C85;
-	Wed, 14 Jun 2023 19:21:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B86B211C91;
+	Wed, 14 Jun 2023 19:23:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84AEE2EC16;
-	Wed, 14 Jun 2023 19:21:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A389DC433C0;
-	Wed, 14 Jun 2023 19:21:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 684992EC11
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 19:23:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEFEEC433C0;
+	Wed, 14 Jun 2023 19:23:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686770515;
-	bh=pWxo7CHRl3J5qYPfbEQrjT3qEyGFaT8teEK3o66lcUg=;
+	s=k20201202; t=1686770631;
+	bh=0BOdsM4cLRHTOlnYaLUt75A1t22AHk/Y2NVxpib67Lk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=dK0Dd7N/nvm9sa9sQ6YFqPCE0djK6abYGeOfqLaAE7OvmGz472hivmfCUPjdts4TH
-	 lWlT7vbAcHHsUMba1vj+8aUrfOxPIj68Q1yX2s7UvyUY5mCfQP7WS3UtfxCqlW8fVp
-	 C8v2z7HoXukO577ZJcuHlEaFxVfrq+Mo4O2xL5s+pHCFhnK0eWnPV3RWQnRF6kZon3
-	 viVaPiKK9VKLFz5Y5pyaArOm/Lqmy0MkToDVJeYvh4xAEImO9OHI3Sdz7LvsD0djg6
-	 ScEJyEIMlSNvmOehWIE4H3La7znDRQ1o9Vucgt7AyMCnEO1RGlOr9htW/N7lK6Q7D/
-	 EG2L3x/IxylAw==
-Date: Wed, 14 Jun 2023 12:21:53 -0700
+	b=LzH04GlRF5zrYvxDTyooZehMnYtrAU8HDRBp7XI5z/Qeq+XvIo6isbmB/o2mdj3cn
+	 NOZmbRUew3oY12cf3A2CbLChr1QB0EyKUwYE2jDdLhooiznKfJ7najj73QBEOUR6GK
+	 EwRPvCT2gzouEFA9yJRyR+A4UvvCJ7RfoYr13yiXPNYP/IipZrJeEa1vvXLUoViu5g
+	 d12ifIFaK8ZduX56cHNxvKhRjlpRo0Si4FScRYvU78L4X1qKmQdXlu/ujBvgj+Xxhl
+	 JvQZhoDYA3x2vpl2BBkenu/HICpXzVZarXK17+kFqF3nNOBrV2EJSTO1c0x1hyOdHm
+	 UGCEiVIaTAy2A==
+Date: Wed, 14 Jun 2023 12:23:48 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: Kalle Valo <kvalo@kernel.org>
-Cc: Johannes Berg <johannes@sipsolutions.net>, Toke =?UTF-8?B?SMO4aWxhbmQt?=
- =?UTF-8?B?SsO4cmdlbnNlbg==?= <toke@kernel.org>,
- linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, regressions@lists.linux.dev
-Subject: Re: Closing down the wireless trees for a summer break?
-Message-ID: <20230614122153.640292b9@kernel.org>
-In-Reply-To: <87a5x2ccao.fsf@kernel.org>
-References: <87y1kncuh4.fsf@kernel.org>
-	<871qifxm9b.fsf@toke.dk>
-	<20230613112834.7df36e95@kernel.org>
-	<ba933d6e3d360298e400196371e37735aef3b1eb.camel@sipsolutions.net>
-	<20230613195136.6815df9b@kernel.org>
-	<c7c9418bcd5ac1035a007d336004eff48994dde7.camel@sipsolutions.net>
-	<87a5x2ccao.fsf@kernel.org>
+To: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+Cc: Jiri Pirko <jiri@resnulli.us>, "vadfed@meta.com" <vadfed@meta.com>,
+ "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>, "pabeni@redhat.com"
+ <pabeni@redhat.com>, "corbet@lwn.net" <corbet@lwn.net>,
+ "davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
+ <edumazet@google.com>, "vadfed@fb.com" <vadfed@fb.com>, "Brandeburg, Jesse"
+ <jesse.brandeburg@intel.com>, "Nguyen, Anthony L"
+ <anthony.l.nguyen@intel.com>, "M, Saeed" <saeedm@nvidia.com>,
+ "leon@kernel.org" <leon@kernel.org>, "richardcochran@gmail.com"
+ <richardcochran@gmail.com>, "sj@kernel.org" <sj@kernel.org>,
+ "javierm@redhat.com" <javierm@redhat.com>, "ricardo.canuelo@collabora.com"
+ <ricardo.canuelo@collabora.com>, "mst@redhat.com" <mst@redhat.com>,
+ "tzimmermann@suse.de" <tzimmermann@suse.de>, "Michalik, Michal"
+ <michal.michalik@intel.com>, "gregkh@linuxfoundation.org"
+ <gregkh@linuxfoundation.org>, "jacek.lawrynowicz@linux.intel.com"
+ <jacek.lawrynowicz@linux.intel.com>, "airlied@redhat.com"
+ <airlied@redhat.com>, "ogabbay@kernel.org" <ogabbay@kernel.org>,
+ "arnd@arndb.de" <arnd@arndb.de>, "nipun.gupta@amd.com"
+ <nipun.gupta@amd.com>, "axboe@kernel.dk" <axboe@kernel.dk>, "linux@zary.sk"
+ <linux@zary.sk>, "masahiroy@kernel.org" <masahiroy@kernel.org>,
+ "benjamin.tissoires@redhat.com" <benjamin.tissoires@redhat.com>,
+ "geert+renesas@glider.be" <geert+renesas@glider.be>, "Olech, Milena"
+ <milena.olech@intel.com>, "kuniyu@amazon.com" <kuniyu@amazon.com>,
+ "liuhangbin@gmail.com" <liuhangbin@gmail.com>, "hkallweit1@gmail.com"
+ <hkallweit1@gmail.com>, "andy.ren@getcruise.com" <andy.ren@getcruise.com>,
+ "razor@blackwall.org" <razor@blackwall.org>, "idosch@nvidia.com"
+ <idosch@nvidia.com>, "lucien.xin@gmail.com" <lucien.xin@gmail.com>,
+ "nicolas.dichtel@6wind.com" <nicolas.dichtel@6wind.com>, "phil@nwl.cc"
+ <phil@nwl.cc>, "claudiajkang@gmail.com" <claudiajkang@gmail.com>,
+ "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+ "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>, poros <poros@redhat.com>, mschmidt
+ <mschmidt@redhat.com>, "linux-clk@vger.kernel.org"
+ <linux-clk@vger.kernel.org>, "vadim.fedorenko@linux.dev"
+ <vadim.fedorenko@linux.dev>
+Subject: Re: [RFC PATCH v8 01/10] dpll: documentation on DPLL subsystem
+ interface
+Message-ID: <20230614122348.3e9b7e42@kernel.org>
+In-Reply-To: <20230614121514.0d038aa3@kernel.org>
+References: <20230609121853.3607724-1-arkadiusz.kubalewski@intel.com>
+	<20230609121853.3607724-2-arkadiusz.kubalewski@intel.com>
+	<20230612154329.7bd2d52f@kernel.org>
+	<ZIg8/0UJB9Lbyx2D@nanopsycho>
+	<20230613093801.735cd341@kernel.org>
+	<ZImH/6GzGdydC3U3@nanopsycho>
+	<DM6PR11MB465799A5A9BB0B8E73A073449B5AA@DM6PR11MB4657.namprd11.prod.outlook.com>
+	<20230614121514.0d038aa3@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -56,16 +92,12 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 14 Jun 2023 18:07:43 +0300 Kalle Valo wrote:
-> But do note that above is _only_ for -next patches. For patches going to
-> -rc releases we apply the patches directly to wireless, no other trees
-> are involved. My proposal was that net maintainers would take only fixes
-> for -rc releases, my guess from history is that it would be maximum of
-> 10-15 patches. And once me and Johannes are back we would sort out -next
-> patches before the merge window. But of course you guys can do whatever
-> you think is best :)
-
-Ah, good note, I would have guessed that fixes go via special trees,
-too. In that case it should indeed be easy. We'll just look out for
-maintainer acks on the list and ping people if in doubt.
+On Wed, 14 Jun 2023 12:15:14 -0700 Jakub Kicinski wrote:
+> On Wed, 14 Jun 2023 12:21:29 +0000 Kubalewski, Arkadiusz wrote:
+> > Surely, we can skip this discussion and split the nest attr into something like:
+> > - PIN_A_PIN_PARENT_DEVICE,
+> > - PIN_A_PIN_PARENT_PIN.  
+> 
+> Yup, exactly. Should a fairly change code wise, if I'm looking right.
+                               ^ small
 
