@@ -1,119 +1,181 @@
-Return-Path: <netdev+bounces-10647-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10644-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id B9A4572F895
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:02:11 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E1B8372F888
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:00:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EAC841C20C23
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 09:02:10 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 082821C20C12
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 09:00:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 896E9525F;
-	Wed, 14 Jun 2023 09:01:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E8E185247;
+	Wed, 14 Jun 2023 09:00:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C5265681;
-	Wed, 14 Jun 2023 09:01:18 +0000 (UTC)
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75571BE3;
-	Wed, 14 Jun 2023 02:01:16 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id 38308e7fff4ca-2b1acd41ad2so5275021fa.3;
-        Wed, 14 Jun 2023 02:01:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686733275; x=1689325275;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hdbmDAjyIdavit0Ud8BynopPjAykxFuTm+oqG8KfGUU=;
-        b=H4OL3sFwX4A1zeSBAwsfuTy5oyOVFcxQRoIbJ8VQ/lCA6CXdRNGJ0yFCkUN42MZlCG
-         cOLayfWvLGmFoAtbJvU2lXEwEo+VVTkwAMJ/YUqADnFGVi61BskB5qOEYkrKDW+M4AZX
-         65v6Gl1nBrAeCxIeXyRFPLyDU4DtBLvX09Zjf2IpK9vo18b+DRoC6Tts34XUzd+YKXNg
-         pS4E7uJW9G/FEsJUwwpEOCmJId2r2js7RXnPzN42WLgsuCvibbx4TnDEx4+8anEQ3MJ/
-         Y6LNp7w5URrHI2oIn1MBTGmvCb44gu8HIW9hGfPcxMEqLsKJ8uUNMyy5OwCdGRhnG5Xd
-         TUzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686733275; x=1689325275;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hdbmDAjyIdavit0Ud8BynopPjAykxFuTm+oqG8KfGUU=;
-        b=JAsV/9IomP1/NhZOUzh/zRecXzAHKE2JRTpJbmC2rUf2JiwuH8e1hPHyeX8r15s6Cb
-         qh/QVDJA8kMFVQYuqUiPu111RLJjrtTugv6bqQXgecYR6M5JJ+OLq8pkzoN66ujRhudn
-         hzsLkqD0w4a9rsAoDSvYbJm6GL26HfqS/mE1zFIlquXlPs1NHfBYU/UBTfOJ8rS9rht8
-         S4RRuLwIWmM4MZ8Hgq+UX4u0wyInetDDpQIQc7P0pv3GSGhEKwiIstP/qMdWhWUnYqd5
-         Lhj+nUyPfdXXWndPxYupQoNmIeDG52Q8ykJhrQmyXn8ycJIdrat/L9URdj562mED9OqR
-         zSNA==
-X-Gm-Message-State: AC+VfDyUv8AEM9UMgT3cAnLjTXxTmBZt3J18+sXgs/OZu+KAzs5CSCgI
-	6q0xtVGnFobuhGsWXqUMtq8HjG9NC/T9XabN
-X-Google-Smtp-Source: ACHHUZ7nFUaCkEnxV03Os0dohxWzIRD8T8/u80nOHmsoEmbQoU9pzV/B3lNx2SzsrKuBNRtkvJTUHQ==
-X-Received: by 2002:a2e:990d:0:b0:2af:bf0d:e1c8 with SMTP id v13-20020a2e990d000000b002afbf0de1c8mr6447306lji.12.1686733274582;
-        Wed, 14 Jun 2023 02:01:14 -0700 (PDT)
-Received: from localhost (tor-project-exit5.dotsrc.org. [185.129.61.5])
-        by smtp.gmail.com with ESMTPSA id j15-20020a2e850f000000b002ab3ea4e566sm2483799lji.58.2023.06.14.02.01.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jun 2023 02:01:14 -0700 (PDT)
-From: Maxim Mikityanskiy <maxtram95@gmail.com>
-To: netdev@vger.kernel.org,
-	Saeed Mahameed <saeedm@nvidia.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Gal Pressman <gal@nvidia.com>,
-	Tariq Toukan <tariqt@nvidia.com>,
-	bpf@vger.kernel.org,
-	Maxim Mikityanskiy <maxtram95@gmail.com>
-Subject: [PATCH net-next v4 2/2] net/mlx5e: xsk: Set napi_id to support busy polling on XSK RQ
-Date: Wed, 14 Jun 2023 12:00:06 +0300
-Message-ID: <20230614090006.594909-3-maxtram95@gmail.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230614090006.594909-1-maxtram95@gmail.com>
-References: <20230614090006.594909-1-maxtram95@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA9B67FC
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 09:00:52 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E941BD4
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 02:00:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686733250;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=l4sh/emgrXW2GPutta+QOSkzrAD5eaw/WkmUJz4ERH8=;
+	b=Hjp7+EnKHLf0ZR8Mg7sbITFGoWytv698agebbJ6LdN31FJgqOfa86x/gpemOevsLI7hu4e
+	L51J5DIr4nmIW2Hryd5CpvJJ+wverQ01HGMuH+zrw7v3pex9ke+FfnI20oDW4RXbQzvcSw
+	oegKBhlKnqMBK8BVOgy6ksZvlTf5w18=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-206-lxvdGTXmNbK4vkz0lZm75w-1; Wed, 14 Jun 2023 05:00:49 -0400
+X-MC-Unique: lxvdGTXmNbK4vkz0lZm75w-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 455F2101A531;
+	Wed, 14 Jun 2023 09:00:48 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.67])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 26114C1603B;
+	Wed, 14 Jun 2023 09:00:39 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <0000000000000900e905fdeb8e39@google.com>
+References: <0000000000000900e905fdeb8e39@google.com>
+To: syzbot <syzbot+f9e28a23426ac3b24f20@syzkaller.appspotmail.com>
+Cc: dhowells@redhat.com, brauner@kernel.org, kuba@kernel.org,
+    linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+    netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+    viro@zeniv.linux.org.uk
+Subject: Re: [syzbot] [fs?] general protection fault in splice_to_socket
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-	version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1423847.1686733230.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 14 Jun 2023 10:00:30 +0100
+Message-ID: <1423848.1686733230@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The cited commit missed setting napi_id on XSK RQs, it only affected
-regular RQs. Add the missing part to support socket busy polling on XSK
-RQs.
+#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.g=
+it main
 
-Fixes: a2740f529da2 ("net/mlx5e: xsk: Set napi_id to support busy polling")
-Signed-off-by: Maxim Mikityanskiy <maxtram95@gmail.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+commit d302bc9baf84c549891bedee57ee917d9e0485d7
+Author: David Howells <dhowells@redhat.com>
+Date:   Wed Jun 14 09:14:50 2023 +0100
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-index ed279f450976..36826b582484 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-@@ -86,7 +86,7 @@ static int mlx5e_init_xsk_rq(struct mlx5e_channel *c,
- 	if (err)
- 		return err;
- 
--	return  xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq_xdp_ix, 0);
-+	return xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq_xdp_ix, c->napi.napi_id);
- }
- 
- static int mlx5e_open_xsk_rq(struct mlx5e_channel *c, struct mlx5e_params *params,
--- 
-2.41.0
+    splice: Fix splice_to_socket() to handle pipe bufs larger than a page
+    =
+
+    splice_to_socket() assumes that a pipe_buffer won't hold more than a s=
+ingle
+    page of data - but it seems that this assumption can be violated when
+    splicing from a socket into a pipe.
+    =
+
+    The problem is that splice_to_socket() doesn't advance the pipe_buffer
+    length and offset when transcribing from the pipe buf into a bio_vec, =
+so if
+    the buf is >PAGE_SIZE, it keeps repeating the same initial chunk and
+    doesn't advance the tail index.  It then subtracts this from "remain" =
+and
+    overcounts the amount of data to be sent.
+    =
+
+    The cleanup phase then tries to overclean the pipe, hits an unused pip=
+e buf
+    and a NULL-pointer dereference occurs.
+    =
+
+    Fix this by not restricting the bio_vec size to PAGE_SIZE and instead
+    transcribing the entirety of each pipe_buffer into a single bio_vec an=
+d
+    advancing the tail index if remain hasn't hit zero yet.
+    =
+
+    Large bio_vecs will then be split up iterator functions such as
+    iov_iter_extract_pages().
+    =
+
+    This resulted in a KASAN report looking like:
+    =
+
+    general protection fault, probably for non-canonical address 0xdffffc0=
+000000001: 0000 [#1] PREEMPT SMP KASAN
+    KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+    ...
+    RIP: 0010:pipe_buf_release include/linux/pipe_fs_i.h:203 [inline]
+    RIP: 0010:splice_to_socket+0xa91/0xe30 fs/splice.c:933
+    =
+
+    Reported-by: syzbot+f9e28a23426ac3b24f20@syzkaller.appspotmail.com
+    Fixes: 2dc334f1a63a ("splice, net: Use sendmsg(MSG_SPLICE_PAGES) rathe=
+r than ->sendpage()")
+    =
+
+    Signed-off-by: David Howells <dhowells@redhat.com>
+    cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+    cc: David Ahern <dsahern@kernel.org>
+    cc: "David S. Miller" <davem@davemloft.net>
+    cc: Eric Dumazet <edumazet@google.com>
+    cc: Jakub Kicinski <kuba@kernel.org>
+    cc: Paolo Abeni <pabeni@redhat.com>
+    cc: Jens Axboe <axboe@kernel.dk>
+    cc: Matthew Wilcox <willy@infradead.org>
+    cc: Christian Brauner <brauner@kernel.org>
+    cc: Alexander Viro <viro@zeniv.linux.org.uk>
+    cc: netdev@vger.kernel.org
+    cc: linux-fsdevel@vger.kernel.org
+
+diff --git a/fs/splice.c b/fs/splice.c
+index e337630aed64..567a1f03ea1e 100644
+--- a/fs/splice.c
++++ b/fs/splice.c
+@@ -886,7 +886,6 @@ ssize_t splice_to_socket(struct pipe_inode_info *pipe,=
+ struct file *out,
+ 			}
+ =
+
+ 			seg =3D min_t(size_t, remain, buf->len);
+-			seg =3D min_t(size_t, seg, PAGE_SIZE);
+ =
+
+ 			ret =3D pipe_buf_confirm(pipe, buf);
+ 			if (unlikely(ret)) {
+@@ -897,10 +896,9 @@ ssize_t splice_to_socket(struct pipe_inode_info *pipe=
+, struct file *out,
+ =
+
+ 			bvec_set_page(&bvec[bc++], buf->page, seg, buf->offset);
+ 			remain -=3D seg;
+-			if (seg >=3D buf->len)
+-				tail++;
+-			if (bc >=3D ARRAY_SIZE(bvec))
++			if (remain =3D=3D 0 || bc >=3D ARRAY_SIZE(bvec))
+ 				break;
++			tail++;
+ 		}
+ =
+
+ 		if (!bc)
 
 
