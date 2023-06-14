@@ -1,345 +1,152 @@
-Return-Path: <netdev+bounces-10628-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10629-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4AD0F72F740
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 10:03:21 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 351C672F745
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 10:04:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C00E5281352
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 08:03:19 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 57AED1C20754
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 08:04:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 98B0A442E;
-	Wed, 14 Jun 2023 08:03:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 77E41A41;
+	Wed, 14 Jun 2023 08:04:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81E107F
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 08:03:12 +0000 (UTC)
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06ABE1FE1
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 01:03:10 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-518b69d5b5dso352137a12.1
-        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 01:03:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686729788; x=1689321788;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:mail-followup-to:message-id:subject:cc:to
-         :from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Sxh0YTKILJdL142lyH4zRjMlVAU6H9jh+S3h5wLhEdk=;
-        b=mYJGhQLVw9lqTyKk5Y9Xl1a2FqdHDmQ7g7NUBa4WBydcLzlR/uQq0bTJTCbxux09Ed
-         GjGDw4z9kFcZ/9GRciF2DMO7NPFm4DJRrMblVo+Vy47nQd7E3qNHdsqlevBG631EiF74
-         iK1XHkgwcjLoE8HcBWYa4qz/k481Q4X5BmCLa79iwil02tfdpt9OsfYvCQEyqh+aIrIE
-         yh4+IYw4SI89o6WPp0afySUX/aCi2y7jqOhMB1rqbL2TmmsDiTP4ItQcQXw2afZ2iHSj
-         S1ylLYRybLwJtTTmq4+Blkjg/+NkOQqGty1QXbkRYXSIe1KNLBrXV0ZSXlftagAc09lh
-         sAKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686729788; x=1689321788;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:mail-followup-to:message-id:subject:cc:to
-         :from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Sxh0YTKILJdL142lyH4zRjMlVAU6H9jh+S3h5wLhEdk=;
-        b=EmcyTyFozuVLxuS1btFq8V7MtMDy+Jsd//3IlPj6ZQQ50s/daQmkklOnyGmKNKm9Sx
-         RHDayCvpKC5JS1kZwnwJNZbKsoiVcPRxUTc7bn36Z8Ap1fTVgxzH+P9hBiGOh3exb1Pv
-         s0NYxm/oe5jeUO8AQ2O+GvhWqrx7r4oC6dmxSi8bqaB33zO24zUQSDIXvlS8wd87IdTu
-         Dje/OWJ9/xM0kyYmFI98oR9AtIWrgoYypyvvwx1KDT91RkGCxG+txCln4UtMkysmq+Wp
-         GvMx5vCMJLUuWnYjZpQRGx3q0wSTmf7J9LyMrpv0860mX9GArUv3VTMHSG0k1R1T60Kr
-         iduw==
-X-Gm-Message-State: AC+VfDzXsjNtSZpyQfjNFKUsPClEJteOYgJ6UGTDRbx76IIF5fPhpqzg
-	/DM9ozNU7DVnKQu/hxeq4GQ=
-X-Google-Smtp-Source: ACHHUZ5ANPOQ/VdVMY8pNuTsbfx4u82dAtuhZPZJFvELvgIZr5P5IpUep0t/c2puGNpSHH+xtFHDFw==
-X-Received: by 2002:a05:6402:1358:b0:518:927f:f22e with SMTP id y24-20020a056402135800b00518927ff22emr759320edw.38.1686729788147;
-        Wed, 14 Jun 2023 01:03:08 -0700 (PDT)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id t18-20020aa7d4d2000000b0051873c201a0sm1868428edr.26.2023.06.14.01.03.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jun 2023 01:03:07 -0700 (PDT)
-Date: Wed, 14 Jun 2023 09:03:05 +0100
-From: Martin Habets <habetsm.xilinx@gmail.com>
-To: =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>
-Cc: ecree.xilinx@gmail.com, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-	linux-net-drivers@amd.com, Fei Liu <feliu@redhat.com>
-Subject: Re: [PATCH net] sfc: use budget for TX completions
-Message-ID: <ZIl0OYvze+iTehWX@gmail.com>
-Mail-Followup-To: =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
-	ecree.xilinx@gmail.com, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-	linux-net-drivers@amd.com, Fei Liu <feliu@redhat.com>
-References: <20230612144254.21039-1-ihuguet@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 660B97F
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 08:04:25 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE53B1FD6
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 01:04:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686729862;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=AdExDkio2IavDiEBIZ3Za2q9aIwRCw4IZu4sfOZDrT0=;
+	b=HniLBpEyLSSXF/i+m0bP+d+/WOWMVXeiGZahQh7oTggjX4e/vLTrYMLceR8WcF9xpNINI4
+	GKDl7q94GMnIW/ESmrGBEqGxtygrU0YoirU8KVSnJr3QL6f1rMKUouZdB2hGpVAajuMsUT
+	+eXOQiiE31ob3nT/LeDXMONe5JshV14=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-111-ikdS9KTKNjSb28DFQ4X47Q-1; Wed, 14 Jun 2023 04:04:19 -0400
+X-MC-Unique: ikdS9KTKNjSb28DFQ4X47Q-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B5793810BB3;
+	Wed, 14 Jun 2023 08:04:18 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.67])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 080E740C6F5C;
+	Wed, 14 Jun 2023 08:04:16 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+To: netdev@vger.kernel.org
+cc: dhowells@redhat.com,
+    syzbot+d8486855ef44506fd675@syzkaller.appspotmail.com,
+    Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+    David Ahern <dsahern@kernel.org>,
+    "David S. Miller" <davem@davemloft.net>,
+    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+    Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+    Matthew Wilcox <willy@infradead.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] ip, ip6: Fix splice to raw and ping sockets
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230612144254.21039-1-ihuguet@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FSL_HELO_FAKE,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1410155.1686729856.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 14 Jun 2023 09:04:16 +0100
+Message-ID: <1410156.1686729856@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 12, 2023 at 04:42:54PM +0200, Íñigo Huguet wrote:
-> When running workloads heavy unbalanced towards TX (high TX, low RX
-> traffic), sfc driver can retain the CPU during too long times. Although
-> in many cases this is not enough to be visible, it can affect
-> performance and system responsiveness.
-> 
-> A way to reproduce it is to use a debug kernel and run some parallel
-> netperf TX tests. In some systems, this will lead to this message being
-> logged:
->   kernel:watchdog: BUG: soft lockup - CPU#12 stuck for 22s!
-> 
-> The reason is that sfc driver doesn't account any NAPI budget for the TX
-> completion events work. With high-TX/low-RX traffic, this makes that the
-> CPU is held for long time for NAPI poll.
-> 
-> Documentations says "drivers can process completions for any number of Tx
-> packets but should only process up to budget number of Rx packets".
-> However, many drivers do limit the amount of TX completions that they
-> process in a single NAPI poll.
+    =
 
-I think your work and what other drivers do shows that the documentation is
-no longer correct. I haven't checked when that was written, but maybe it
-was years ago when link speeds were lower.
-Clearly for drivers that support higher link speeds this is an issue, so we
-should update the documentation. Not sure what constitutes a high link speed,
-with current CPUs for me it's anything >= 50G.
+Splicing to SOCK_RAW sockets may set MSG_SPLICE_PAGES, but in such a case,
+__ip_append_data() will call skb_splice_from_iter() to access the 'from'
+data, assuming it to point to a msghdr struct with an iter, instead of
+using the provided getfrag function to access it.
 
-> In the same way, this patch adds a limit for the TX work in sfc. With
-> the patch applied, the watchdog warning never appears.
-> 
-> Tested with netperf in different combinations: single process / parallel
-> processes, TCP / UDP and different sizes of UDP messages. Repeated the
-> tests before and after the patch, without any noticeable difference in
-> network or CPU performance.
-> 
-> Test hardware:
-> Intel(R) Xeon(R) CPU E5-1620 v4 @ 3.50GHz (4 cores, 2 threads/core)
-> Solarflare Communications XtremeScale X2522-25G Network Adapter
-> 
-> Reported-by: Fei Liu <feliu@redhat.com>
-> Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
-> ---
->  drivers/net/ethernet/sfc/ef10.c      | 25 ++++++++++++++++++-------
->  drivers/net/ethernet/sfc/ef100_nic.c |  7 ++++++-
->  drivers/net/ethernet/sfc/ef100_tx.c  |  4 ++--
->  drivers/net/ethernet/sfc/ef100_tx.h  |  2 +-
->  drivers/net/ethernet/sfc/tx_common.c |  4 +++-
->  drivers/net/ethernet/sfc/tx_common.h |  2 +-
->  6 files changed, 31 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-> index d30459dbfe8f..b63e47af6365 100644
-> --- a/drivers/net/ethernet/sfc/ef10.c
-> +++ b/drivers/net/ethernet/sfc/ef10.c
-> @@ -2950,7 +2950,7 @@ static u32 efx_ef10_extract_event_ts(efx_qword_t *event)
->  	return tstamp;
->  }
->  
-> -static void
-> +static int
->  efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
->  {
->  	struct efx_nic *efx = channel->efx;
-> @@ -2958,13 +2958,14 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
->  	unsigned int tx_ev_desc_ptr;
->  	unsigned int tx_ev_q_label;
->  	unsigned int tx_ev_type;
-> +	int work_done;
->  	u64 ts_part;
->  
->  	if (unlikely(READ_ONCE(efx->reset_pending)))
-> -		return;
-> +		return 0;
->  
->  	if (unlikely(EFX_QWORD_FIELD(*event, ESF_DZ_TX_DROP_EVENT)))
-> -		return;
-> +		return 0;
->  
->  	/* Get the transmit queue */
->  	tx_ev_q_label = EFX_QWORD_FIELD(*event, ESF_DZ_TX_QLABEL);
-> @@ -2973,8 +2974,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
->  	if (!tx_queue->timestamping) {
->  		/* Transmit completion */
->  		tx_ev_desc_ptr = EFX_QWORD_FIELD(*event, ESF_DZ_TX_DESCR_INDX);
-> -		efx_xmit_done(tx_queue, tx_ev_desc_ptr & tx_queue->ptr_mask);
-> -		return;
-> +		return efx_xmit_done(tx_queue, tx_ev_desc_ptr & tx_queue->ptr_mask);
->  	}
->  
->  	/* Transmit timestamps are only available for 8XXX series. They result
-> @@ -3000,6 +3000,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
->  	 * fields in the event.
->  	 */
->  	tx_ev_type = EFX_QWORD_FIELD(*event, ESF_EZ_TX_SOFT1);
-> +	work_done = 0;
->  
->  	switch (tx_ev_type) {
->  	case TX_TIMESTAMP_EVENT_TX_EV_COMPLETION:
-> @@ -3016,6 +3017,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
->  		tx_queue->completed_timestamp_major = ts_part;
->  
->  		efx_xmit_done_single(tx_queue);
-> +		work_done = 1;
->  		break;
->  
->  	default:
-> @@ -3026,6 +3028,8 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
->  			  EFX_QWORD_VAL(*event));
->  		break;
->  	}
-> +
-> +	return work_done;
->  }
->  
->  static void
-> @@ -3081,13 +3085,16 @@ static void efx_ef10_handle_driver_generated_event(struct efx_channel *channel,
->  	}
->  }
->  
-> +#define EFX_NAPI_MAX_TX 512
+In the case of raw_sendmsg(), however, this is not the case and 'from' wil=
+l
+point to a raw_frag_vec struct and raw_getfrag() will be the frag-getting
+function.  A similar issue may occur with rawv6_sendmsg().
 
-How did you determine this value? Is it what other driver use?
+Fix this by ignoring MSG_SPLICE_PAGES if getfrag !=3D ip_generic_getfrag a=
+s
+ip_generic_getfrag() expects "from" to be a msghdr*, but the other getfrag=
+s
+don't.  Note that this will prevent MSG_SPLICE_PAGES from being effective
+for udplite.
 
-Martin
+This likely affects ping sockets too.  udplite looks like it should be oka=
+y
+as it expects "from" to be a msghdr.
 
-> +
->  static int efx_ef10_ev_process(struct efx_channel *channel, int quota)
->  {
->  	struct efx_nic *efx = channel->efx;
->  	efx_qword_t event, *p_event;
->  	unsigned int read_ptr;
-> -	int ev_code;
-> +	int spent_tx = 0;
->  	int spent = 0;
-> +	int ev_code;
->  
->  	if (quota <= 0)
->  		return spent;
-> @@ -3126,7 +3133,11 @@ static int efx_ef10_ev_process(struct efx_channel *channel, int quota)
->  			}
->  			break;
->  		case ESE_DZ_EV_CODE_TX_EV:
-> -			efx_ef10_handle_tx_event(channel, &event);
-> +			spent_tx += efx_ef10_handle_tx_event(channel, &event);
-> +			if (spent_tx >= EFX_NAPI_MAX_TX) {
-> +				spent = quota;
-> +				goto out;
-> +			}
->  			break;
->  		case ESE_DZ_EV_CODE_DRIVER_EV:
->  			efx_ef10_handle_driver_event(channel, &event);
-> diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-> index 4dc643b0d2db..7adde9639c8a 100644
-> --- a/drivers/net/ethernet/sfc/ef100_nic.c
-> +++ b/drivers/net/ethernet/sfc/ef100_nic.c
-> @@ -253,6 +253,8 @@ static void ef100_ev_read_ack(struct efx_channel *channel)
->  		   efx_reg(channel->efx, ER_GZ_EVQ_INT_PRIME));
->  }
->  
-> +#define EFX_NAPI_MAX_TX 512
-> +
->  static int ef100_ev_process(struct efx_channel *channel, int quota)
->  {
->  	struct efx_nic *efx = channel->efx;
-> @@ -260,6 +262,7 @@ static int ef100_ev_process(struct efx_channel *channel, int quota)
->  	bool evq_phase, old_evq_phase;
->  	unsigned int read_ptr;
->  	efx_qword_t *p_event;
-> +	int spent_tx = 0;
->  	int spent = 0;
->  	bool ev_phase;
->  	int ev_type;
-> @@ -295,7 +298,9 @@ static int ef100_ev_process(struct efx_channel *channel, int quota)
->  			efx_mcdi_process_event(channel, p_event);
->  			break;
->  		case ESE_GZ_EF100_EV_TX_COMPLETION:
-> -			ef100_ev_tx(channel, p_event);
-> +			spent_tx += ef100_ev_tx(channel, p_event);
-> +			if (spent_tx >= EFX_NAPI_MAX_TX)
-> +				spent = quota;
->  			break;
->  		case ESE_GZ_EF100_EV_DRIVER:
->  			netif_info(efx, drv, efx->net_dev,
-> diff --git a/drivers/net/ethernet/sfc/ef100_tx.c b/drivers/net/ethernet/sfc/ef100_tx.c
-> index 29ffaf35559d..849e5555bd12 100644
-> --- a/drivers/net/ethernet/sfc/ef100_tx.c
-> +++ b/drivers/net/ethernet/sfc/ef100_tx.c
-> @@ -346,7 +346,7 @@ void ef100_tx_write(struct efx_tx_queue *tx_queue)
->  	ef100_tx_push_buffers(tx_queue);
->  }
->  
-> -void ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event)
-> +int ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event)
->  {
->  	unsigned int tx_done =
->  		EFX_QWORD_FIELD(*p_event, ESF_GZ_EV_TXCMPL_NUM_DESC);
-> @@ -357,7 +357,7 @@ void ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event)
->  	unsigned int tx_index = (tx_queue->read_count + tx_done - 1) &
->  				tx_queue->ptr_mask;
->  
-> -	efx_xmit_done(tx_queue, tx_index);
-> +	return efx_xmit_done(tx_queue, tx_index);
->  }
->  
->  /* Add a socket buffer to a TX queue
-> diff --git a/drivers/net/ethernet/sfc/ef100_tx.h b/drivers/net/ethernet/sfc/ef100_tx.h
-> index e9e11540fcde..d9a0819c5a72 100644
-> --- a/drivers/net/ethernet/sfc/ef100_tx.h
-> +++ b/drivers/net/ethernet/sfc/ef100_tx.h
-> @@ -20,7 +20,7 @@ void ef100_tx_init(struct efx_tx_queue *tx_queue);
->  void ef100_tx_write(struct efx_tx_queue *tx_queue);
->  unsigned int ef100_tx_max_skb_descs(struct efx_nic *efx);
->  
-> -void ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event);
-> +int ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event);
->  
->  netdev_tx_t ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
->  int __ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
-> diff --git a/drivers/net/ethernet/sfc/tx_common.c b/drivers/net/ethernet/sfc/tx_common.c
-> index 67e789b96c43..755aa92bf823 100644
-> --- a/drivers/net/ethernet/sfc/tx_common.c
-> +++ b/drivers/net/ethernet/sfc/tx_common.c
-> @@ -249,7 +249,7 @@ void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue)
->  	}
->  }
->  
-> -void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
-> +int efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
->  {
->  	unsigned int fill_level, pkts_compl = 0, bytes_compl = 0;
->  	unsigned int efv_pkts_compl = 0;
-> @@ -279,6 +279,8 @@ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
->  	}
->  
->  	efx_xmit_done_check_empty(tx_queue);
-> +
-> +	return pkts_compl + efv_pkts_compl;
->  }
->  
->  /* Remove buffers put into a tx_queue for the current packet.
-> diff --git a/drivers/net/ethernet/sfc/tx_common.h b/drivers/net/ethernet/sfc/tx_common.h
-> index d87aecbc7bf1..1e9f42938aac 100644
-> --- a/drivers/net/ethernet/sfc/tx_common.h
-> +++ b/drivers/net/ethernet/sfc/tx_common.h
-> @@ -28,7 +28,7 @@ static inline bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)
->  }
->  
->  void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue);
-> -void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
-> +int efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
->  
->  void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
->  			unsigned int insert_count);
-> -- 
-> 2.40.1
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reported-by: syzbot+d8486855ef44506fd675@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/000000000000ae4cbf05fdeb8349@google.com/
+Fixes: 2dc334f1a63a ("splice, net: Use sendmsg(MSG_SPLICE_PAGES) rather th=
+an ->sendpage()")
+Tested-by: syzbot+d8486855ef44506fd675@syzkaller.appspotmail.com
+cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+cc: David Ahern <dsahern@kernel.org>
+cc: "David S. Miller" <davem@davemloft.net>
+cc: Eric Dumazet <edumazet@google.com>
+cc: Jakub Kicinski <kuba@kernel.org>
+cc: Paolo Abeni <pabeni@redhat.com>
+cc: Jens Axboe <axboe@kernel.dk>
+cc: Matthew Wilcox <willy@infradead.org>
+cc: netdev@vger.kernel.org
+---
+ net/ipv4/ip_output.c  |    3 ++-
+ net/ipv6/ip6_output.c |    3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 244fb9365d87..4b39ea99f00b 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1040,7 +1040,8 @@ static int __ip_append_data(struct sock *sk,
+ 	} else if ((flags & MSG_SPLICE_PAGES) && length) {
+ 		if (inet->hdrincl)
+ 			return -EPERM;
+-		if (rt->dst.dev->features & NETIF_F_SG)
++		if (rt->dst.dev->features & NETIF_F_SG &&
++		    getfrag =3D=3D ip_generic_getfrag)
+ 			/* We need an empty buffer to attach stuff to */
+ 			paged =3D true;
+ 		else
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index c722cb881b2d..dd845139882c 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1592,7 +1592,8 @@ static int __ip6_append_data(struct sock *sk,
+ 	} else if ((flags & MSG_SPLICE_PAGES) && length) {
+ 		if (inet_sk(sk)->hdrincl)
+ 			return -EPERM;
+-		if (rt->dst.dev->features & NETIF_F_SG)
++		if (rt->dst.dev->features & NETIF_F_SG &&
++		    getfrag =3D=3D ip_generic_getfrag)
+ 			/* We need an empty buffer to attach stuff to */
+ 			paged =3D true;
+ 		else
+
 
