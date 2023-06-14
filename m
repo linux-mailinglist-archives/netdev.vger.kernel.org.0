@@ -1,138 +1,122 @@
-Return-Path: <netdev+bounces-10730-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10731-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 47FE673003F
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 15:38:25 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0B07973004C
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 15:45:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6EC3E28145E
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:38:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3A6F81C20CD8
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:45:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AD6ADBE48;
-	Wed, 14 Jun 2023 13:38:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3D007BE49;
+	Wed, 14 Jun 2023 13:45:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A19BE6121
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 13:38:21 +0000 (UTC)
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C034A1FF9;
-	Wed, 14 Jun 2023 06:38:18 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id ca18e2360f4ac-77acb944bdfso375550239f.0;
-        Wed, 14 Jun 2023 06:38:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686749898; x=1689341898;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=OcMpIHdjKp1THv65PvIPUr0YhjndAMsASg3ywF4WkSk=;
-        b=TMs/pAzNollaH2DS13pnVn8it1HkV9hqXZyhXw7W3eBeMLtTMJMbuXrJ0gWPRn2DvW
-         V4YJEDbsGmXp7SjtsJ3WxoYBSpAgI48j4zg+QgWHj9auVIYSwdir26qBBIVARp6qtyfx
-         Utn+1PjVx+qGNxU6jIlpFQ5DJnqprMaBlb+7ESS8tYiCcoxTa2Ak/OgqtdeuXnrKfogf
-         zccffifvA6uVfoE7EGloY10axykms28UXt/1drp4bJo7qSDkyHycQwqvD5LFVLqLhh/Y
-         1XjLv/ZmiRvVJ5XZFGMiK3biQZRmHP9hvouKsZpL0mMg9PeRWUIO5pXsIudkIOqUTp20
-         lRvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686749898; x=1689341898;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=OcMpIHdjKp1THv65PvIPUr0YhjndAMsASg3ywF4WkSk=;
-        b=MhYUp728oiPK51HEDRIdt99Ym1c/XCNR62yQF0WAeRaSkjE6H+Eavzp7z4DSCu8S0k
-         A/WKFd5htLYhgnF5UiDLi45LRF9gRI15LPeHdn+13G3LrmONHVNSVLccJ5v9VrikFaRS
-         e2yr8nWukDzJy8J3T6Lh5VdOcKnFlq4MaX7Mwi8TmcnQE+uXl9eROxhtGv4HNztVJsG6
-         t8bRm9OjvP51LZMH9XJrc0rhcB0wWkAcJNzFBDix3vsP5PX4uVfdD7PDrQN9EyJ27xUy
-         86QqBQvjss7cc7zKTPjGpgCzBTAYtmBAc7MtjMnaWg4eG9kY6hyHhBc/qt4msH/VCdkm
-         X58Q==
-X-Gm-Message-State: AC+VfDwQDmUqhvwOp/C+fOWOR2Fhow91C6qOZ2s19n2cD88hRqDQksLw
-	ATWzRS4Dygc20iZygmqXa7U=
-X-Google-Smtp-Source: ACHHUZ7FFYwn9TAuhIaV3IPsryiva/NLrrg5aB2dNwsbpVo1p4MaX1lDfyst9q3lQTlhQBPPaWTY5A==
-X-Received: by 2002:a05:6602:2747:b0:774:8786:1b59 with SMTP id b7-20020a056602274700b0077487861b59mr14607161ioe.11.1686749897893;
-        Wed, 14 Jun 2023 06:38:17 -0700 (PDT)
-Received: from azeems-kspp.c.googlers.com.com (54.70.188.35.bc.googleusercontent.com. [35.188.70.54])
-        by smtp.gmail.com with ESMTPSA id z23-20020a02ceb7000000b00420d6fd5c06sm5022647jaq.80.2023.06.14.06.38.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jun 2023 06:38:17 -0700 (PDT)
-From: Azeem Shaikh <azeemshaikh38@gmail.com>
-To: Chuck Lever <chuck.lever@oracle.com>,
-	Jeff Layton <jlayton@kernel.org>,
-	Kees Cook <keescook@chromium.org>
-Cc: linux-hardening@vger.kernel.org,
-	Azeem Shaikh <azeemshaikh38@gmail.com>,
-	Neil Brown <neilb@suse.de>,
-	Olga Kornievskaia <kolga@netapp.com>,
-	Dai Ngo <Dai.Ngo@oracle.com>,
-	Tom Talpey <tom@talpey.com>,
-	linux-nfs@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Trond Myklebust <trond.myklebust@hammerspace.com>,
-	Anna Schumaker <anna@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org
-Subject: [PATCH v3] SUNRPC: Use sysfs_emit in place of strlcpy/sprintf
-Date: Wed, 14 Jun 2023 13:37:57 +0000
-Message-ID: <20230614133757.2106902-1-azeemshaikh38@gmail.com>
-X-Mailer: git-send-email 2.41.0.162.gfafddb0af9-goog
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D53357FC
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 13:45:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12A07C433C8;
+	Wed, 14 Jun 2023 13:45:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686750305;
+	bh=xSFFVMHAsN7TXbEJj6G0rLspoDICTsX+VxgYjqegLgI=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=tgQEjky3m9agkRBia5HsmccdZKEmAhQT3vL3Cg3osKdGwn6SpXd/lyBHnefYE+FnJ
+	 mZa2i73InoRT3fgi2csrN+nt7VqKEDb1jH2zgGlyTPMZw+loseeFQKOxBVkY1bGKc1
+	 WlLtRWzQtJ2XoyK3qkkG5XjWxyPFic2BA1c07ajoJwa1c8mSwneqBvTVimu4iMsPLi
+	 3XxEyPqncde2VBy3/z1K5VKb8H6hXW+au0bgBdrMxU17eb5MbHwKq/AaBRkfN2ckji
+	 NM0Sop9mtlqnNxpu0wwWP/10xisuTblMZV3S/YGSBkgY8nQa+kaxuQN2fpID329I8X
+	 P4gFsZrRTczpQ==
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+	id 12083BBEBB7; Wed, 14 Jun 2023 15:42:29 +0200 (CEST)
+From: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
+To: Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Alexander Lobakin
+ <aleksander.lobakin@intel.com>
+Cc: netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+ intel-wired-lan@lists.osuosl.org, magnus.karlsson@intel.com,
+ fred@cloudflare.com
+Subject: Re: [Intel-wired-lan] [PATCH iwl-next] ice: allow hot-swapping XDP
+ programs
+In-Reply-To: <ZIm3lHaa3Rjl2xRe@boxer>
+References: <20230613151005.337462-1-maciej.fijalkowski@intel.com>
+ <9eee635f-0898-f9d3-f3ba-f6da662c90cc@intel.com> <ZIiJOVMs4qK+PDsp@boxer>
+ <874jnbxmye.fsf@toke.dk> <16f10691-3339-0a18-402a-dc54df5a2e21@intel.com>
+ <ZIm3lHaa3Rjl2xRe@boxer>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date: Wed, 14 Jun 2023 15:42:29 +0200
+Message-ID: <87v8fqjh2y.fsf@toke.dk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Part of an effort to remove strlcpy() tree-wide [1].
+Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
 
-Direct replacement is safe here since the getter in kernel_params_ops
-handles -errno return [2].
+> On Wed, Jun 14, 2023 at 02:40:07PM +0200, Alexander Lobakin wrote:
+>> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@kernel.org>
+>> Date: Tue, 13 Jun 2023 19:59:37 +0200
+>>=20
+>> > Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
+>> >=20
+>> >> On Tue, Jun 13, 2023 at 05:15:15PM +0200, Alexander Lobakin wrote:
+>> >>> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+>> >>> Date: Tue, 13 Jun 2023 17:10:05 +0200
+>>=20
+>> [...]
+>>=20
+>> >> Since we removed rcu sections from driver sides and given an assumpti=
+on
+>> >> that local_bh_{dis,en}able() pair serves this purpose now i believe t=
+his
+>> >> is safe. Are you aware of:
+>> >>
+>> >> https://lore.kernel.org/bpf/20210624160609.292325-1-toke@redhat.com/
+>>=20
+>> Why [0] then? Added in [1] precisely for the sake of safe XDP prog
+>> access and wasn't removed :s I was relying on that one in my suggestions
+>> and code :D
+>>=20
+>> >=20
+>> > As the author of that series, I agree that it's not necessary to add
+>> > additional RCU protection. ice_vsi_assign_bpf_prog() already uses xchg=
+()
+>> > and WRITE_ONCE() which should protect against tearing, and the xdp_prog
+>> > pointer being passed to ice_run_xdp() is a copy residing on the stack,
+>> > so it will only be read once per NAPI cycle anyway (which is in line
+>> > with how most other drivers do it).
+>>=20
+>> What if a NAPI polling cycle is being run on one core while at the very
+>> same moment I'm replacing the XDP prog on another core? Not in terms of
+>> pointer tearing, I see now that this is handled correctly, but in terms
+>> of refcounts? Can't bpf_prog_put() free it while the polling is still
+>> active?
+>
+> Hmm you mean we should do bpf_prog_put() *after* we update bpf_prog on
+> ice_rx_ring? I think this is a fair point as we don't bump the refcount
+> per each Rx ring that holds the ptr to bpf_prog, we just rely on the main
+> one from VSI.
 
-[1] https://github.com/KSPP/linux/issues/89
-[2] https://elixir.bootlin.com/linux/v6.4-rc6/source/include/linux/moduleparam.h#L52
+Yes, that's true, the duplication of the pointer in all the ring
+structures can lead to problems there (why is that done in the first
+place?). I agree that swapping the order of the pointer assignments
+should be enough to fix this.
 
-Signed-off-by: Azeem Shaikh <azeemshaikh38@gmail.com>
----
- net/sunrpc/svc.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+>> > It *would* be nice to add an __rcu annotation to ice_vsi->xdp_prog and
+>> > ice_rx_ring->xdp_prog (and move to using rcu_dereference(),
+>> > rcu_assign_pointer() etc), but this is more a documentation/static
+>> > checker thing than it's a "correctness of the generated code" thing :)
+>
+> Agree but I would rather address the rest of Intel drivers in the
+> series.
 
-diff --git a/net/sunrpc/svc.c b/net/sunrpc/svc.c
-index e6d4cec61e47..b011c318fef1 100644
---- a/net/sunrpc/svc.c
-+++ b/net/sunrpc/svc.c
-@@ -109,15 +109,15 @@ param_get_pool_mode(char *buf, const struct kernel_param *kp)
- 	switch (*ip)
- 	{
- 	case SVC_POOL_AUTO:
--		return strlcpy(buf, "auto\n", 20);
-+		return sysfs_emit(buf, "auto\n");
- 	case SVC_POOL_GLOBAL:
--		return strlcpy(buf, "global\n", 20);
-+		return sysfs_emit(buf, "global\n");
- 	case SVC_POOL_PERCPU:
--		return strlcpy(buf, "percpu\n", 20);
-+		return sysfs_emit(buf, "percpu\n");
- 	case SVC_POOL_PERNODE:
--		return strlcpy(buf, "pernode\n", 20);
-+		return sysfs_emit(buf, "pernode\n");
- 	default:
--		return sprintf(buf, "%d\n", *ip);
-+		return sysfs_emit(buf, "%d\n", *ip);
- 	}
- }
- 
--- 
-2.41.0.162.gfafddb0af9-goog
+That's fair :)
 
-
+-Toke
 
