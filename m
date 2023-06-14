@@ -1,58 +1,58 @@
-Return-Path: <netdev+bounces-10896-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10897-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 903E2730AC4
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 00:33:20 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0D9DF730AC9
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 00:33:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 501C8280FCD
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 22:33:19 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 313131C20DCB
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 22:33:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE77E11CB2;
-	Wed, 14 Jun 2023 22:31:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8BBBE13ADE;
+	Wed, 14 Jun 2023 22:31:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC26B24155
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 22:31:01 +0000 (UTC)
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2653B26AA
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 15:30:47 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id d75a77b69052e-3f9e33a3d3fso24400891cf.1
-        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 15:30:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 790C4261DA
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 22:31:06 +0000 (UTC)
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF19294A
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 15:30:50 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id d75a77b69052e-3f9c7665317so24260771cf.3
+        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 15:30:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1686781846; x=1689373846;
+        d=broadcom.com; s=google; t=1686781849; x=1689373849;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=CT2RqFbac26jkZqUQfbiamJ/LujrCis+BxpJnYDo1Zk=;
-        b=TA80jfmtG70kvUx564H7SK9IBRKstMMed1+kLcf1RqcfsILRg1F+WF4SLIqwnxO5Dv
-         yvx+OLwa2vjyeFWFoGXRziePtGv8CX1P9hCen5XiFS6L+dQaDIcnaicPAJdsRqWseMBm
-         zdPZ56nxuI/szKywI6mqtsIdYVyc/14y1eM7E=
+        bh=dKd1XFIVGPOZA4qvGS585JsImLUJNE7z0dQLfRUwg58=;
+        b=gnXHD4nQzB0QIOwIvJEgWKLBuBINVAGVg5dL/IEAe6LVkF3BOKwDSk7agG2uH4aiEz
+         f4VX2xA8wIrgwCDsRP970bn7/Q12NwzZ7fPhEaf0eSHZaBN6NzXLLXLn8cKWWKHBiwte
+         iIXG/6w+F9ktgMnVraUHnucrShZ/o8Rt69Xno=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686781846; x=1689373846;
+        d=1e100.net; s=20221208; t=1686781849; x=1689373849;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CT2RqFbac26jkZqUQfbiamJ/LujrCis+BxpJnYDo1Zk=;
-        b=hOXAa6JNcfBkL+agLXM/gZA0jndd7UEqK4ekhjVvU9FK4b2+h4wYIbJBd/5aDmamN2
-         rNgIs/sNDzl2n/gbnQJMN8iTXia9wwNOxJcpJgnSgkA5rYNQULg+inLX33+1cgglClvP
-         wfeNqZVLjvBd2dYly7rHmR9Uq3OIlVAKkAYIhfATIGAmP5qk/HADJWGtPC7z1fzw8GWq
-         w9KfuTVtalAME1p8ycZ9OMe/fnm5Niu1UcweRVVtUdhCpZFUfN/CCCCI+G10+BeM2HRU
-         V61Ib/KbSSiEeazuiABrMHN59kn+NQ95nUunXvBKynaSHCIrMN1Fbx87vdZZ5ggzA3k2
-         2H6Q==
-X-Gm-Message-State: AC+VfDyFqrRDZCplE7IX62epFAH0BQIfuLtqOWRgjgeL9xCPuD4dYkMF
-	dMPNblu6Urf+VhJjT2MZWDa+pJFrhDS3j+rhLliE6+Xi/2iyiHoN1NEc+GRnN7Q21m3Yp8lgxcx
-	fRwjv7S2ZG89tHSrKZZ+iqkNuJGVsFhOZ5ccrIJ1GjnTIYitmfE2u6u0DAGuSpL6Pjf6RkxuSeZ
-	es3BVn3w==
-X-Google-Smtp-Source: ACHHUZ6sHEmCPeDGmaMMLsxVNAtumV0la2BZpd26m3iGByrORCEZQfLUGkpF6zsQyulPU1cD32CEJQ==
-X-Received: by 2002:a05:622a:1a8a:b0:3f5:2faf:7917 with SMTP id s10-20020a05622a1a8a00b003f52faf7917mr4220057qtc.9.1686781846338;
-        Wed, 14 Jun 2023 15:30:46 -0700 (PDT)
+        bh=dKd1XFIVGPOZA4qvGS585JsImLUJNE7z0dQLfRUwg58=;
+        b=Qv/HQMazrIw9lQbtb8+b5dngiultTG/qYnLskyGhIvJAr50eT62ReCi8R/6bRg37Jm
+         /c+UMBfdlpralGuh8h5JPvyafH5Ty3pDi/9jqJAkgMV6bgDeLfvkKYZZFPM7XgwaUFTC
+         v8a5og4MMq8UuNhwwZzpep8diVBicoIYIVUjJWgum9oWpmFz2WiXcUJ9E8GR5LuCMoT5
+         nE+1nsar1sBkI/oxQb/yCCXKvpW4qMb1wKJr/hi1AVfNP+lPaGtM+cALRz/kqry3Hi3r
+         EA7u7h9xc1F6cKw8n+BBUreTakf8P3es0Xca0gh9NKj4k6sy4QhQDdSmRfR+jYHsxIe4
+         Zmpg==
+X-Gm-Message-State: AC+VfDxbB9+J2Kk0pwpqKPH+qPuH2J6dsiAB4C0pT2uiERLI6ZlLtuQg
+	vpR+Cp6pgtkQtKSdAJrYKJzdnHG11FysoYkPeG0ZwnQUwfXSz3Pk9b0s0JVTd0G4dZAGCsZk89A
+	DpIlVC6Fh+DLB/jaJfkkkgdV+Ywjb8AlYDZ8tVtjWZfnY4ss+QfTlsdYzPZZwKjA6JV++TGCjWg
+	pmUYMhKw==
+X-Google-Smtp-Source: ACHHUZ6LURpDmVJ8FJM6IG7K7k1O09Ixn5RpQ3KjUe6fLCkah961KOcWHS5vZjq6BQ3BAfudyDzcSg==
+X-Received: by 2002:ac8:5cce:0:b0:3f9:d266:7be7 with SMTP id s14-20020ac85cce000000b003f9d2667be7mr3417722qta.42.1686781849159;
+        Wed, 14 Jun 2023 15:30:49 -0700 (PDT)
 Received: from stbirv-lnx-2.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d3-20020ac85443000000b003ef2db16e72sm5419360qtq.94.2023.06.14.15.30.43
+        by smtp.gmail.com with ESMTPSA id d3-20020ac85443000000b003ef2db16e72sm5419360qtq.94.2023.06.14.15.30.46
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Jun 2023 15:30:46 -0700 (PDT)
+        Wed, 14 Jun 2023 15:30:48 -0700 (PDT)
 From: Justin Chen <justin.chen@broadcom.com>
 To: netdev@vger.kernel.org,
 	devicetree@vger.kernel.org,
@@ -76,14 +76,14 @@ Cc: florian.fainelli@broadcom.com,
 	christian.koenig@amd.com,
 	simon.horman@corigine.com,
 	Justin Chen <justin.chen@broadcom.com>
-Subject: [PATCH net-next v7 07/11] net: bcmasp: Add support for ethtool standard stats
-Date: Wed, 14 Jun 2023 15:30:16 -0700
-Message-Id: <1686781820-832-8-git-send-email-justin.chen@broadcom.com>
+Subject: [PATCH net-next v7 08/11] net: bcmasp: Add support for ethtool driver stats
+Date: Wed, 14 Jun 2023 15:30:17 -0700
+Message-Id: <1686781820-832-9-git-send-email-justin.chen@broadcom.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1686781820-832-1-git-send-email-justin.chen@broadcom.com>
 References: <1686781820-832-1-git-send-email-justin.chen@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="000000000000caf21805fe1e8076"
+	boundary="000000000000f6203105fe1e8047"
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
 	MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -97,188 +97,321 @@ List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 
---000000000000caf21805fe1e8076
+--000000000000f6203105fe1e8047
 
-Add support for eth_mac_stats, rmon_stats, and eth_ctrl_stats.
+Add support for ethernet driver specific stats.
 
 Signed-off-by: Justin Chen <justin.chen@broadcom.com>
 ---
- .../net/ethernet/broadcom/asp2/bcmasp_ethtool.c    | 77 ++++++++++++++++++++++
- .../net/ethernet/broadcom/asp2/bcmasp_intf_defs.h  | 63 +++++++++++++++++-
- 2 files changed, 139 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/asp2/bcmasp.c        |   1 +
+ drivers/net/ethernet/broadcom/asp2/bcmasp.h        |  21 +++
+ .../net/ethernet/broadcom/asp2/bcmasp_ethtool.c    | 158 +++++++++++++++++++++
+ drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c   |   8 ++
+ 4 files changed, 188 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c b/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
-index 1e96a69043f3..59d853c2293c 100644
---- a/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
-@@ -250,6 +250,80 @@ static int bcmasp_set_eee(struct net_device *dev, struct ethtool_eee *e)
- 	return phy_ethtool_set_eee(dev->phydev, e);
- }
+diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp.c b/drivers/net/ethernet/broadcom/asp2/bcmasp.c
+index ba9842c760d5..a8905fef4f8a 100644
+--- a/drivers/net/ethernet/broadcom/asp2/bcmasp.c
++++ b/drivers/net/ethernet/broadcom/asp2/bcmasp.c
+@@ -891,6 +891,7 @@ int bcmasp_set_en_mda_filter(struct bcmasp_intf *intf, unsigned char *addr,
+ 		/* Attempt to combine filters */
+ 		ret = bcmasp_combine_set_filter(intf, addr, mask, i);
+ 		if (!ret) {
++			intf->mib.filters_combine_cnt++;
+ 			return 0;
+ 		}
+ 	}
+diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp.h b/drivers/net/ethernet/broadcom/asp2/bcmasp.h
+index 7dc597658ed7..1485c2c3712d 100644
+--- a/drivers/net/ethernet/broadcom/asp2/bcmasp.h
++++ b/drivers/net/ethernet/broadcom/asp2/bcmasp.h
+@@ -245,6 +245,26 @@ struct bcmasp_intf_stats64{
+ 	struct u64_stats_sync		syncp;
+ };
  
-+static void bcmasp_get_eth_mac_stats(struct net_device *dev,
-+				     struct ethtool_eth_mac_stats *mac_stats)
-+{
-+	struct bcmasp_intf *intf = netdev_priv(dev);
-+
-+	mac_stats->FramesTransmittedOK = umac_rl(intf, UMC_GTPOK);
-+	mac_stats->SingleCollisionFrames = umac_rl(intf, UMC_GTSCL);
-+	mac_stats->MultipleCollisionFrames = umac_rl(intf, UMC_GTMCL);
-+	mac_stats->FramesReceivedOK = umac_rl(intf, UMC_GRPOK);
-+	mac_stats->FrameCheckSequenceErrors = umac_rl(intf, UMC_GRFCS);
-+	mac_stats->AlignmentErrors = umac_rl(intf, UMC_GRALN);
-+	mac_stats->OctetsTransmittedOK = umac_rl(intf, UMC_GTBYT);
-+	mac_stats->FramesWithDeferredXmissions = umac_rl(intf, UMC_GTDRF);
-+	mac_stats->LateCollisions = umac_rl(intf, UMC_GTLCL);
-+	mac_stats->FramesAbortedDueToXSColls = umac_rl(intf, UMC_GTXCL);
-+	mac_stats->OctetsReceivedOK = umac_rl(intf, UMC_GRBYT);
-+	mac_stats->MulticastFramesXmittedOK = umac_rl(intf, UMC_GTMCA);
-+	mac_stats->BroadcastFramesXmittedOK = umac_rl(intf, UMC_GTBCA);
-+	mac_stats->FramesWithExcessiveDeferral = umac_rl(intf, UMC_GTEDF);
-+	mac_stats->MulticastFramesReceivedOK = umac_rl(intf, UMC_GRMCA);
-+	mac_stats->BroadcastFramesReceivedOK = umac_rl(intf, UMC_GRBCA);
-+}
-+
-+static const struct ethtool_rmon_hist_range bcmasp_rmon_ranges[] = {
-+	{    0,   64},
-+	{   65,  127},
-+	{  128,  255},
-+	{  256,  511},
-+	{  512, 1023},
-+	{ 1024, 1518},
-+	{ 1519, 1522},
-+	{}
++struct bcmasp_mib_counters {
++	u32	edpkt_ts;
++	u32	edpkt_rx_pkt_cnt;
++	u32	edpkt_hdr_ext_cnt;
++	u32	edpkt_hdr_out_cnt;
++	u32	umac_frm_cnt;
++	u32	fb_frm_cnt;
++	u32	fb_rx_fifo_depth;
++	u32	fb_out_frm_cnt;
++	u32	fb_filt_out_frm_cnt;
++	u32	alloc_rx_skb_failed;
++	u32	tx_dma_failed;
++	u32	mc_filters_full_cnt;
++	u32	uc_filters_full_cnt;
++	u32	filters_combine_cnt;
++	u32	promisc_filters_cnt;
++	u32	tx_realloc_offload_failed;
++	u32	tx_realloc_offload;
 +};
 +
-+static void bcmasp_get_rmon_stats(struct net_device *dev,
-+				  struct ethtool_rmon_stats *rmon_stats,
-+				  const struct ethtool_rmon_hist_range **ranges)
-+{
-+	struct bcmasp_intf *intf = netdev_priv(dev);
+ struct bcmasp_intf_ops {
+ 	unsigned long (*rx_desc_read)(struct bcmasp_intf *intf);
+ 	void (*rx_buffer_write)(struct bcmasp_intf *intf, dma_addr_t addr);
+@@ -307,6 +327,7 @@ struct bcmasp_intf {
+ 
+ 	/* Statistics */
+ 	struct bcmasp_intf_stats64	stats64;
++	struct bcmasp_mib_counters	mib;
+ 
+ 	u32			wolopts;
+ 	u8			sopass[SOPASS_MAX];
+diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c b/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
+index 59d853c2293c..fc47e27b148d 100644
+--- a/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
++++ b/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #define pr_fmt(fmt)				"bcmasp_ethtool: " fmt
+ 
++#include <asm-generic/unaligned.h>
+ #include <linux/ethtool.h>
+ #include <linux/netdevice.h>
+ #include <linux/platform_device.h>
+@@ -8,6 +9,160 @@
+ #include "bcmasp.h"
+ #include "bcmasp_intf_defs.h"
+ 
++enum bcmasp_stat_type {
++	BCMASP_STAT_RX_EDPKT,
++	BCMASP_STAT_RX_CTRL,
++	BCMASP_STAT_RX_CTRL_PER_INTF,
++	BCMASP_STAT_SOFT,
++};
 +
-+	*ranges = bcmasp_rmon_ranges;
++struct bcmasp_stats {
++	char stat_string[ETH_GSTRING_LEN];
++	enum bcmasp_stat_type type;
++	u32 reg_offset;
++};
 +
-+	rmon_stats->undersize_pkts = umac_rl(intf, UMC_RRUND);
-+	rmon_stats->oversize_pkts = umac_rl(intf, UMC_GROVR);
-+	rmon_stats->fragments = umac_rl(intf, UMC_RRFRG);
-+	rmon_stats->jabbers = umac_rl(intf, UMC_GRJBR);
-+
-+	rmon_stats->hist[0] = umac_rl(intf, UMC_GR64);
-+	rmon_stats->hist[1] = umac_rl(intf, UMC_GR127);
-+	rmon_stats->hist[2] = umac_rl(intf, UMC_GR255);
-+	rmon_stats->hist[3] = umac_rl(intf, UMC_GR511);
-+	rmon_stats->hist[4] = umac_rl(intf, UMC_GR1023);
-+	rmon_stats->hist[5] = umac_rl(intf, UMC_GR1518);
-+	rmon_stats->hist[6] = umac_rl(intf, UMC_GRMGV);
-+
-+	rmon_stats->hist_tx[0] = umac_rl(intf, UMC_TR64);
-+	rmon_stats->hist_tx[1] = umac_rl(intf, UMC_TR127);
-+	rmon_stats->hist_tx[2] = umac_rl(intf, UMC_TR255);
-+	rmon_stats->hist_tx[3] = umac_rl(intf, UMC_TR511);
-+	rmon_stats->hist_tx[4] = umac_rl(intf, UMC_TR1023);
-+	rmon_stats->hist_tx[5] = umac_rl(intf, UMC_TR1518);
-+	rmon_stats->hist_tx[6] = umac_rl(intf, UMC_TRMGV);
++#define STAT_BCMASP_SOFT_MIB(str) { \
++	.stat_string = str, \
++	.type = BCMASP_STAT_SOFT, \
 +}
 +
-+static void bcmasp_get_eth_ctrl_stats(struct net_device *dev,
-+				      struct ethtool_eth_ctrl_stats *ctrl_stats)
-+{
-+	struct bcmasp_intf *intf = netdev_priv(dev);
-+
-+	ctrl_stats->MACControlFramesTransmitted = umac_rl(intf, UMC_GTXCF);
-+	ctrl_stats->MACControlFramesReceived = umac_rl(intf, UMC_GRXCF);
-+	ctrl_stats->UnsupportedOpcodesReceived = umac_rl(intf, UMC_GRXUO);
++#define STAT_BCMASP_OFFSET(str, _type, offset) { \
++	.stat_string = str, \
++	.type = _type, \
++	.reg_offset = offset, \
 +}
 +
- const struct ethtool_ops bcmasp_ethtool_ops = {
- 	.get_drvinfo		= bcmasp_get_drvinfo,
- 	.get_link		= ethtool_op_get_link,
-@@ -263,4 +337,7 @@ const struct ethtool_ops bcmasp_ethtool_ops = {
- 	.set_rxnfc		= bcmasp_set_rxnfc,
- 	.set_eee		= bcmasp_set_eee,
- 	.get_eee		= bcmasp_get_eee,
-+	.get_eth_mac_stats	= bcmasp_get_eth_mac_stats,
-+	.get_rmon_stats		= bcmasp_get_rmon_stats,
-+	.get_eth_ctrl_stats	= bcmasp_get_eth_ctrl_stats,
++#define STAT_BCMASP_RX_EDPKT(str, offset) \
++	STAT_BCMASP_OFFSET(str, BCMASP_STAT_RX_EDPKT, offset)
++#define STAT_BCMASP_RX_CTRL(str, offset) \
++	STAT_BCMASP_OFFSET(str, BCMASP_STAT_RX_CTRL, offset)
++#define STAT_BCMASP_RX_CTRL_PER_INTF(str, offset) \
++	STAT_BCMASP_OFFSET(str, BCMASP_STAT_RX_CTRL_PER_INTF, offset)
++
++/* Must match the order of struct bcmasp_mib_counters */
++static const struct bcmasp_stats bcmasp_gstrings_stats[] = {
++	/* EDPKT counters */
++	STAT_BCMASP_RX_EDPKT("RX Time Stamp", ASP_EDPKT_RX_TS_COUNTER),
++	STAT_BCMASP_RX_EDPKT("RX PKT Count", ASP_EDPKT_RX_PKT_CNT),
++	STAT_BCMASP_RX_EDPKT("RX PKT Buffered", ASP_EDPKT_HDR_EXTR_CNT),
++	STAT_BCMASP_RX_EDPKT("RX PKT Pushed to DRAM", ASP_EDPKT_HDR_OUT_CNT),
++	/* ASP RX control */
++	STAT_BCMASP_RX_CTRL_PER_INTF("Frames From Unimac",
++				     ASP_RX_CTRL_UMAC_0_FRAME_COUNT),
++	STAT_BCMASP_RX_CTRL_PER_INTF("Frames From Port",
++				     ASP_RX_CTRL_FB_0_FRAME_COUNT),
++	STAT_BCMASP_RX_CTRL_PER_INTF("RX Buffer FIFO Depth",
++				     ASP_RX_CTRL_FB_RX_FIFO_DEPTH),
++	STAT_BCMASP_RX_CTRL("Frames Out(Buffer)",
++			    ASP_RX_CTRL_FB_OUT_FRAME_COUNT),
++	STAT_BCMASP_RX_CTRL("Frames Out(Filters)",
++			    ASP_RX_CTRL_FB_FILT_OUT_FRAME_COUNT),
++	/* Software maintained statistics */
++	STAT_BCMASP_SOFT_MIB("RX SKB Alloc Failed"),
++	STAT_BCMASP_SOFT_MIB("TX DMA Failed"),
++	STAT_BCMASP_SOFT_MIB("Multicast Filters Full"),
++	STAT_BCMASP_SOFT_MIB("Unicast Filters Full"),
++	STAT_BCMASP_SOFT_MIB("MDA Filters Combined"),
++	STAT_BCMASP_SOFT_MIB("Promisc Filter Set"),
++	STAT_BCMASP_SOFT_MIB("TX Realloc For Offload Failed"),
++	STAT_BCMASP_SOFT_MIB("Tx Realloc For Offload"),
++};
++
++#define BCMASP_STATS_LEN	ARRAY_SIZE(bcmasp_gstrings_stats)
++
++static u16 bcmasp_stat_fixup_offset(struct bcmasp_intf *intf,
++				    const struct bcmasp_stats *s)
++{
++	struct bcmasp_priv *priv = intf->parent;
++
++	if (!strcmp("Frames Out(Buffer)", s->stat_string))
++		return priv->hw_info->rx_ctrl_fb_out_frame_count;
++
++	if (!strcmp("Frames Out(Filters)", s->stat_string))
++		return priv->hw_info->rx_ctrl_fb_filt_out_frame_count;
++
++	if (!strcmp("RX Buffer FIFO Depth", s->stat_string))
++		return priv->hw_info->rx_ctrl_fb_rx_fifo_depth;
++
++	return s->reg_offset;
++}
++
++static int bcmasp_get_sset_count(struct net_device *dev, int string_set)
++{
++	switch (string_set) {
++	case ETH_SS_STATS:
++		return BCMASP_STATS_LEN;
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static void bcmasp_get_strings(struct net_device *dev, u32 stringset,
++			       u8 *data)
++{
++	int i;
++
++	switch (stringset) {
++	case ETH_SS_STATS:
++		for (i = 0; i < BCMASP_STATS_LEN; i++) {
++			memcpy(data + i * ETH_GSTRING_LEN,
++			       bcmasp_gstrings_stats[i].stat_string,
++			       ETH_GSTRING_LEN);
++		}
++		break;
++	default:
++		return;
++	}
++}
++
++static void bcmasp_update_mib_counters(struct bcmasp_intf *intf)
++{
++	int i;
++
++	for (i = 0; i < BCMASP_STATS_LEN; i++) {
++		const struct bcmasp_stats *s;
++		u32 offset, val;
++		char *p;
++
++		s = &bcmasp_gstrings_stats[i];
++		offset = bcmasp_stat_fixup_offset(intf, s);
++		switch (s->type) {
++		case BCMASP_STAT_SOFT:
++			continue;
++		case BCMASP_STAT_RX_EDPKT:
++			val = rx_edpkt_core_rl(intf->parent, offset);
++			break;
++		case BCMASP_STAT_RX_CTRL:
++			val = rx_ctrl_core_rl(intf->parent, offset);
++			break;
++		case BCMASP_STAT_RX_CTRL_PER_INTF:
++			offset += sizeof(u32) * intf->port;
++			val = rx_ctrl_core_rl(intf->parent, offset);
++			break;
++		}
++		p = (char *)(&intf->mib) + (i * sizeof(u32));
++		put_unaligned(val, (u32 *)p);
++	}
++}
++
++static void bcmasp_get_ethtool_stats(struct net_device *dev,
++				     struct ethtool_stats *stats,
++				     u64 *data)
++{
++	struct bcmasp_intf *intf = netdev_priv(dev);
++	char *p;
++	int i;
++
++	if (netif_running(dev))
++		bcmasp_update_mib_counters(intf);
++
++	for (i = 0; i < BCMASP_STATS_LEN; i++) {
++		p = (char *)(&intf->mib) + (i * sizeof(u32));
++		data[i] = *(u32 *)p;
++	}
++}
++
+ static void bcmasp_get_drvinfo(struct net_device *dev,
+ 			       struct ethtool_drvinfo *info)
+ {
+@@ -340,4 +495,7 @@ const struct ethtool_ops bcmasp_ethtool_ops = {
+ 	.get_eth_mac_stats	= bcmasp_get_eth_mac_stats,
+ 	.get_rmon_stats		= bcmasp_get_rmon_stats,
+ 	.get_eth_ctrl_stats	= bcmasp_get_eth_ctrl_stats,
++	.get_strings		= bcmasp_get_strings,
++	.get_ethtool_stats	= bcmasp_get_ethtool_stats,
++	.get_sset_count		= bcmasp_get_sset_count,
  };
-diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp_intf_defs.h b/drivers/net/ethernet/broadcom/asp2/bcmasp_intf_defs.h
-index b259a475207f..ad742612895f 100644
---- a/drivers/net/ethernet/broadcom/asp2/bcmasp_intf_defs.h
-+++ b/drivers/net/ethernet/broadcom/asp2/bcmasp_intf_defs.h
-@@ -45,7 +45,68 @@
- #define  UMC_EEE_LPI_TIMER		0x68
- #define  UMC_PAUSE_CNTRL		0x330
- #define  UMC_TX_FLUSH			0x334
--#define  UMC_MIB_START			0x400
-+#define  UMC_GR64			0x400
-+#define  UMC_GR127			0x404
-+#define  UMC_GR255			0x408
-+#define  UMC_GR511			0x40c
-+#define  UMC_GR1023			0x410
-+#define  UMC_GR1518			0x414
-+#define  UMC_GRMGV			0x418
-+#define  UMC_GR2047			0x41c
-+#define  UMC_GR4095			0x420
-+#define  UMC_GR9216			0x424
-+#define  UMC_GRPKT			0x428
-+#define  UMC_GRBYT			0x42c
-+#define  UMC_GRMCA			0x430
-+#define  UMC_GRBCA			0x434
-+#define  UMC_GRFCS			0x438
-+#define  UMC_GRXCF			0x43c
-+#define  UMC_GRXPF			0x440
-+#define  UMC_GRXUO			0x444
-+#define  UMC_GRALN			0x448
-+#define  UMC_GRFLR			0x44c
-+#define  UMC_GRCDE			0x450
-+#define  UMC_GRFCR			0x454
-+#define  UMC_GROVR			0x458
-+#define  UMC_GRJBR			0x45c
-+#define  UMC_GRMTUE			0x460
-+#define  UMC_GRPOK			0x464
-+#define  UMC_GRUC			0x468
-+#define  UMC_GRPPP			0x46c
-+#define  UMC_GRMCRC			0x470
-+#define  UMC_TR64			0x480
-+#define  UMC_TR127			0x484
-+#define  UMC_TR255			0x488
-+#define  UMC_TR511			0x48c
-+#define  UMC_TR1023			0x490
-+#define  UMC_TR1518			0x494
-+#define  UMC_TRMGV			0x498
-+#define  UMC_TR2047			0x49c
-+#define  UMC_TR4095			0x4a0
-+#define  UMC_TR9216			0x4a4
-+#define  UMC_GTPKT			0x4a8
-+#define  UMC_GTMCA			0x4ac
-+#define  UMC_GTBCA			0x4b0
-+#define  UMC_GTXPF			0x4b4
-+#define  UMC_GTXCF			0x4b8
-+#define  UMC_GTFCS			0x4bc
-+#define  UMC_GTOVR			0x4c0
-+#define  UMC_GTDRF			0x4c4
-+#define  UMC_GTEDF			0x4c8
-+#define  UMC_GTSCL			0x4cc
-+#define  UMC_GTMCL			0x4d0
-+#define  UMC_GTLCL			0x4d4
-+#define  UMC_GTXCL			0x4d8
-+#define  UMC_GTFRG			0x4dc
-+#define  UMC_GTNCL			0x4e0
-+#define  UMC_GTJBR			0x4e4
-+#define  UMC_GTBYT			0x4e8
-+#define  UMC_GTPOK			0x4ec
-+#define  UMC_GTUC			0x4f0
-+#define  UMC_RRPKT			0x500
-+#define  UMC_RRUND			0x504
-+#define  UMC_RRFRG			0x508
-+#define  UMC_RRBYT			0x50c
- #define  UMC_MIB_CNTRL			0x580
- #define   UMC_MIB_CNTRL_RX_CNT_RST	BIT(0)
- #define   UMC_MIB_CNTRL_RUNT_CNT_RST	BIT(1)
+diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c b/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c
+index 899cb06a3fde..e67e725633b4 100644
+--- a/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c
++++ b/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c
+@@ -105,6 +105,7 @@ static void bcmasp_set_rx_mode(struct net_device *dev)
+ 		netdev_for_each_mc_addr(ha, dev) {
+ 			ret = bcmasp_set_en_mda_filter(intf, ha->addr, mask);
+ 			if (ret) {
++				intf->mib.mc_filters_full_cnt++;
+ 				goto set_promisc;
+ 			}
+ 		}
+@@ -113,6 +114,7 @@ static void bcmasp_set_rx_mode(struct net_device *dev)
+ 	netdev_for_each_uc_addr(ha, dev) {
+ 		ret = bcmasp_set_en_mda_filter(intf, ha->addr, mask);
+ 		if (ret) {
++			intf->mib.uc_filters_full_cnt++;
+ 			goto set_promisc;
+ 		}
+ 	}
+@@ -122,6 +124,7 @@ static void bcmasp_set_rx_mode(struct net_device *dev)
+ 
+ set_promisc:
+ 	bcmasp_set_promisc(intf, 1);
++	intf->mib.promisc_filters_cnt++;
+ 
+ 	/* disable all filters used by this port */
+ 	bcmasp_disable_all_filters(intf);
+@@ -157,6 +160,7 @@ static struct sk_buff *bcmasp_csum_offload(struct net_device *dev,
+ 					   struct sk_buff *skb,
+ 					   bool *csum_hw)
+ {
++	struct bcmasp_intf *intf = netdev_priv(dev);
+ 	u32 header = 0, header2 = 0, epkt = 0;
+ 	struct bcmasp_pkt_offload *offload;
+ 	unsigned int header_cnt = 0;
+@@ -169,11 +173,13 @@ static struct sk_buff *bcmasp_csum_offload(struct net_device *dev,
+ 	if (unlikely(skb_headroom(skb) < sizeof(*offload))) {
+ 		new_skb = skb_realloc_headroom(skb, sizeof(*offload));
+ 		if (!new_skb) {
++			intf->mib.tx_realloc_offload_failed++;
+ 			goto help;
+ 		}
+ 
+ 		dev_consume_skb_any(skb);
+ 		skb = new_skb;
++		intf->mib.tx_realloc_offload++;
+ 	}
+ 
+ 	switch (skb->protocol) {
+@@ -312,6 +318,7 @@ static netdev_tx_t bcmasp_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		}
+ 
+ 		if (dma_mapping_error(kdev, mapping)) {
++			intf->mib.tx_dma_failed++;
+ 			spb_index = intf->tx_spb_index;
+ 			for (j = 0; j < i; j++) {
+ 				bcmasp_clean_txcb(intf, spb_index);
+@@ -549,6 +556,7 @@ static int bcmasp_rx_poll(struct napi_struct *napi, int budget)
+ 			u64_stats_inc(&stats->rx_errors);
+ 			u64_stats_update_end(&stats->syncp);
+ 
++			intf->mib.alloc_rx_skb_failed++;
+ 			netif_warn(intf, rx_err, intf->ndev,
+ 				   "SKB alloc failed\n");
+ 			goto next;
 -- 
 2.7.4
 
 
---000000000000caf21805fe1e8076
+--000000000000f6203105fe1e8047
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -349,14 +482,14 @@ sDL+OV16G+F9CkNMN3txsym8Nnx5WAYZb6+rBUIhMGz70V05xsHQfzvo2s7f0J1tJ5BoRlPPhL0h
 VOnWA3h71u9TfSsv+PXVm3P21TfOS2uc1hbzEqyENCP4i5XQ0rv0TmPW42GZ0o4xggJtMIICaQIB
 ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
 bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwj8BKLXNpALfemdRAwDQYJ
-YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINSUuHPPaigdLLx8iez5lfL73yOaVZ0KloQq
-0owaEGCuMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYxNDIy
-MzA0NlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIOLjZZUn9WSUWgYRcmGghoWZCTUbQcH767HS
+BcLaPY78MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYxNDIy
+MzA0OVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
 AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
-BgkqhkiG9w0BAQEFAASCAQCaNeOiEiOyFmHfzYsx2vw8cCukXO+45sEGiNymIp6gzzBt6ymFUZYt
-3CKWBqeD1SYIk/zJZWcL0+3JJWNEBfplrMP2l2Pv+NbHxHjoQPIObVSQ9VC7NvYRwxLUS4/JXIvv
-OPgMT0BvIph0I/1D4lhRUMZ2fYPYf8BSKUQ8bnQjPykO1CxNbrcJbt0TfMERLq1NKJ74KUhID9TP
-7P758/ur6+ZJsT4zSyAMh6hKVOsAlTSw1/KVvEBcCr78il6f+JebfbZ8/ncD/OkMHmVGkloaboHg
-SkElmHY4qdvITcZQcjgyQL40+YxWtbYmI6XdJKHjzTQbEZWC6oScVsDJWlY+
---000000000000caf21805fe1e8076--
+BgkqhkiG9w0BAQEFAASCAQAELH2xejg/BkaNy2SbYmJfWpgv6wDyDQ3hV+wZIiW5wOgif2X6dvf6
+QPMlLflrIjFqIc6biu1371gFZEQ5XGqT2KZGatOo1QLeAX6g7UAZ4jlRzd12gQnLFvb4byU3OsX8
+Rr94Jxwtfco9bFqvtS0KBy84R6okSJo1gDJSdWyiHO9XfVP077qO6UNQz0oL+GSYf3pdT8McW2uL
+lkVv5AQwmswHndQI+61oXE+uuERevGgfI2vPEJvVx8EGPVhlRYLJl8Y5doGP8mzdILPPGNcNvWDx
+QBFPM34+rHylPibx2iKo/it/cCz59Fa28PjlAIASRTgk/1KXCOMFuX9MpiAx
+--000000000000f6203105fe1e8047--
 
