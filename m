@@ -1,137 +1,115 @@
-Return-Path: <netdev+bounces-10564-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10565-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4223E72F136
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 02:59:35 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 910B372F14A
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 03:04:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 674521C2096A
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 00:59:34 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 55FFA2812A5
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 01:04:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D604537C;
-	Wed, 14 Jun 2023 00:59:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6D6A37C;
+	Wed, 14 Jun 2023 01:04:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 859487F
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 00:59:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB1EEC433C0;
-	Wed, 14 Jun 2023 00:59:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB0827F
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 01:04:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4403DC433C8;
+	Wed, 14 Jun 2023 01:04:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686704370;
-	bh=zB9UYvCUrHct3KozJ6bR9E0Mk/Fg5bLPg/OkjHummI4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Qykmu0vn9edP7NBNd7yu54l+aXbTi13MJ5NiV5Lk0HQ3NHIxNlyQFFIzTY0U8bwjY
-	 mknVyKxNYNdQuQk62Kx4kTgJB8/lC+9bhLJCwRz8c9amewBngXrpnbGBVoMe0Nvqpo
-	 qy3DimYwxu+OGpyCUGYUJAa+bTWbMRDLk3+B1AZd14OmUZt2EbLDHWQWGZPcpK0u3l
-	 1Ahmum00mYvW1hdrBXXMHz5UtJLn9aT+d9svXGyGKCOh1Acethz10YBpsDOW0FdS8Z
-	 yz+jkgU7TzF8zfXkWLNkfZvZ3VlhoOYOeZiFrZuxDg0C+CP2phoLAhJc1fHR8/CHXr
-	 Y5nh8+2yrbXmw==
-Date: Tue, 13 Jun 2023 17:59:28 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
- chuck.lever@oracle.com
-Subject: Re: [PATCH net-next] tools: ynl-gen: generate docs for
- <name>_max/_mask enums
-Message-ID: <20230613175928.4ea56833@kernel.org>
-In-Reply-To: <20230613231709.150622-3-arkadiusz.kubalewski@intel.com>
-References: <20230613231709.150622-1-arkadiusz.kubalewski@intel.com>
-	<20230613231709.150622-3-arkadiusz.kubalewski@intel.com>
+	s=k20201202; t=1686704662;
+	bh=lsO1eVWZBM6MvyPnhWRML3twvD4cN5i1hHFtDXs+nXk=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
+	b=Hbko6dySTiq2eWSTr8BZvN7WscQfkrDv5setRSvi3YYEiu7/BfkJhp9wG/uU7FGuP
+	 gB/hmiwi0obdbTIcJIkVwKLxmDKLOiCnIxsnNQQlqWJ2sswwIac5eEUI0q4u/1Rx7x
+	 U15NrKi6VlrGUp012c5Ws+LWbqdXsSkeg6p9AU48AFe2NXy0qyusDn1MzoHvJzvKs6
+	 NPX90LpZpBLIAuo6TDfcSs9xpk3dqy3lN01MCMa00YP2RYDJ/xk7v35oPoPQuVR4Hp
+	 K4QI2Qr76jQAu9zbkostHoGtmeqsXRjG5fz/IIflOne34zYzroMMifoQSo/5LEX5zS
+	 f+Lz3r4YU1Jtw==
+Date: Tue, 13 Jun 2023 18:04:19 -0700
+From: Kees Cook <kees@kernel.org>
+To: Azeem Shaikh <azeemshaikh38@gmail.com>, Chuck Lever <chuck.lever@oracle.com>,
+ Jeff Layton <jlayton@kernel.org>, Kees Cook <keescook@chromium.org>
+CC: linux-hardening@vger.kernel.org, Neil Brown <neilb@suse.de>,
+ Olga Kornievskaia <kolga@netapp.com>, Dai Ngo <Dai.Ngo@oracle.com>,
+ Tom Talpey <tom@talpey.com>, linux-nfs@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ Trond Myklebust <trond.myklebust@hammerspace.com>,
+ Anna Schumaker <anna@kernel.org>, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v2] SUNRPC: Remove strlcpy
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20230614001246.538643-1-azeemshaikh38@gmail.com>
+References: <20230614001246.538643-1-azeemshaikh38@gmail.com>
+Message-ID: <7E4A66A6-0B58-43AF-B9E0-62087F2EA11C@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 14 Jun 2023 01:17:09 +0200 Arkadiusz Kubalewski wrote:
-> Including ynl generated uapi header files into source kerneldocs
-> (rst files in Documentation/) produces warnings during documentation
-> builds (i.e. make htmldocs)
-> 
-> Prevent warnings by generating also description for enums where rander_max
-> was selected.
+On June 13, 2023 5:12:46 PM PDT, Azeem Shaikh <azeemshaikh38@gmail=2Ecom> w=
+rote:
+>strlcpy() reads the entire source buffer first=2E
+>This read may exceed the destination size limit=2E
+>This is both inefficient and can lead to linear read
+>overflows if a source string is not NUL-terminated [1]=2E
+>In an effort to remove strlcpy() completely [2], replace
+>strlcpy() here with sysfs_emit()=2E
+>
+>Direct replacement is safe here since the getter in kernel_params_ops
+>handles -errno return [3]=2E
+>
+>[1] https://www=2Ekernel=2Eorg/doc/html/latest/process/deprecated=2Ehtml#=
+strlcpy
+>[2] https://github=2Ecom/KSPP/linux/issues/89
+>[3] https://elixir=2Ebootlin=2Ecom/linux/v6=2E4-rc6/source/include/linux/=
+moduleparam=2Eh#L52
+>
+>Signed-off-by: Azeem Shaikh <azeemshaikh38@gmail=2Ecom>
+>---
+> net/sunrpc/svc=2Ec |    8 ++++----
+> 1 file changed, 4 insertions(+), 4 deletions(-)
+>
+>diff --git a/net/sunrpc/svc=2Ec b/net/sunrpc/svc=2Ec
+>index e6d4cec61e47=2E=2E77326f163801 100644
+>--- a/net/sunrpc/svc=2Ec
+>+++ b/net/sunrpc/svc=2Ec
+>@@ -109,13 +109,13 @@ param_get_pool_mode(char *buf, const struct kernel_=
+param *kp)
+> 	switch (*ip)
+> 	{
+> 	case SVC_POOL_AUTO:
+>-		return strlcpy(buf, "auto\n", 20);
+>+		return sysfs_emit(buf, "auto\n");
+> 	case SVC_POOL_GLOBAL:
+>-		return strlcpy(buf, "global\n", 20);
+>+		return sysfs_emit(buf, "global\n");
+> 	case SVC_POOL_PERCPU:
+>-		return strlcpy(buf, "percpu\n", 20);
+>+		return sysfs_emit(buf, "percpu\n");
+> 	case SVC_POOL_PERNODE:
+>-		return strlcpy(buf, "pernode\n", 20);
+>+		return sysfs_emit(buf, "pernode\n");
+> 	default:
+> 		return sprintf(buf, "%d\n", *ip);
 
-Do you reckon that documenting the meta-values makes sense, or should
-we throw a:
+Please replace the sprintf too (and then the Subject could be "use sysfs_e=
+mit" or so)=2E
 
-/* private: */
+-Kees
 
-comment in front of them so that kdoc ignores them? Does user space
-have any use for those? If we want to document them...
 
-> diff --git a/include/uapi/linux/netdev.h b/include/uapi/linux/netdev.h
-> index 639524b59930..d78f7ae95092 100644
-> --- a/include/uapi/linux/netdev.h
-> +++ b/include/uapi/linux/netdev.h
-> @@ -24,6 +24,7 @@
->   *   XDP buffer support in the driver napi callback.
->   * @NETDEV_XDP_ACT_NDO_XMIT_SG: This feature informs if netdev implements
->   *   non-linear XDP buffer support in ndo_xdp_xmit callback.
-> + * @NETDEV_XDP_ACT_MASK: valid values mask
 
-... I think we need to include some sort of indication that the value
-will change as the uAPI is extended. Unlike the other values which are
-set in stone, so to speak. "mask of currently defines values" ? Dunno.
-
->   */
->  enum netdev_xdp_act {
->  	NETDEV_XDP_ACT_BASIC = 1,
-> diff --git a/tools/include/uapi/linux/netdev.h b/tools/include/uapi/linux/netdev.h
-> index 639524b59930..d78f7ae95092 100644
-> --- a/tools/include/uapi/linux/netdev.h
-> +++ b/tools/include/uapi/linux/netdev.h
-> @@ -24,6 +24,7 @@
->   *   XDP buffer support in the driver napi callback.
->   * @NETDEV_XDP_ACT_NDO_XMIT_SG: This feature informs if netdev implements
->   *   non-linear XDP buffer support in ndo_xdp_xmit callback.
-> + * @NETDEV_XDP_ACT_MASK: valid values mask
->   */
->  enum netdev_xdp_act {
->  	NETDEV_XDP_ACT_BASIC = 1,
-> diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
-> index 0b5e0802a9a7..0d396bf98c27 100755
-> --- a/tools/net/ynl/ynl-gen-c.py
-> +++ b/tools/net/ynl/ynl-gen-c.py
-> @@ -2011,6 +2011,7 @@ def render_uapi(family, cw):
->          # Write kdoc for enum and flags (one day maybe also structs)
->          if const['type'] == 'enum' or const['type'] == 'flags':
->              enum = family.consts[const['name']]
-> +            name_pfx = const.get('name-prefix', f"{family.name}-{const['name']}-")
->  
->              if enum.has_doc():
->                  cw.p('/**')
-> @@ -2022,10 +2023,18 @@ def render_uapi(family, cw):
->                      if entry.has_doc():
->                          doc = '@' + entry.c_name + ': ' + entry['doc']
->                          cw.write_doc_line(doc)
-> +                if const.get('render-max', False):
-> +                    if const['type'] == 'flags':
-> +                        doc = '@' + c_upper(name_pfx + 'mask') + ': valid values mask'
-> +                        cw.write_doc_line(doc)
-> +                    else:
-> +                        doc = '@' + c_upper(name_pfx + 'max') + ': max valid value'
-> +                        cw.write_doc_line(doc)
-> +                        doc = '@__' + c_upper(name_pfx + 'max') + ': do not use'
-
-This one is definitely a candidate for /* private: */
-
-> +                        cw.write_doc_line(doc)
->                  cw.p(' */')
->  
->              uapi_enum_start(family, cw, const, 'name')
-> -            name_pfx = const.get('name-prefix', f"{family.name}-{const['name']}-")
->              for entry in enum.entries.values():
->                  suffix = ','
->                  if entry.value_change:
-
--- 
-pw-bot: cr
+--=20
+Kees Cook
 
