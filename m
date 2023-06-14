@@ -1,110 +1,123 @@
-Return-Path: <netdev+bounces-10784-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10790-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id B06FA7304DF
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 18:28:07 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B69CD730506
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 18:36:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BAA541C20D33
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 16:28:06 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D223F1C20CFF
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 16:36:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ADAC1111B2;
-	Wed, 14 Jun 2023 16:28:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C7DD92EC07;
+	Wed, 14 Jun 2023 16:35:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 997A91095C;
-	Wed, 14 Jun 2023 16:28:02 +0000 (UTC)
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00ED2211F;
-	Wed, 14 Jun 2023 09:28:00 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id 4fb4d7f45d1cf-5169f614977so11659904a12.3;
-        Wed, 14 Jun 2023 09:28:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686760079; x=1689352079;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7z5ClOpmYGeSB+jF+gmA2VEIzPNCp15J3pxp/TfhBNU=;
-        b=RD0aj9ql3Z4vG8A/EeYpgGfLabHYhEzSjLEBvohzqu9CAUbPwMRG+6Ormde0hYFI5J
-         lK66cvCJZId6gmHr83AiEmBhLdXbcP1La4sD/g3Mh11UPeQLNjQLN6cawr/E62i2JRQC
-         0AKFfFMp+3yKEG2wvUkWFFJYK8qM1extAYGoxmhD54YqXOA88NOiNnqJHKF/TJSN6XzH
-         yoKuqw0kIBmXpOK8oQyWNNMBzQiQisfx2sVv8Wcqz6vNw5OX43Og7ybG+dDcnr2ue72D
-         yeauXOcvq3S4Wb2FL7WXMPhaMSYOKnhiVT8FcvKNz32Wur5PDEFvNpuY99Nb+2xAjoot
-         hA2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686760079; x=1689352079;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=7z5ClOpmYGeSB+jF+gmA2VEIzPNCp15J3pxp/TfhBNU=;
-        b=CASv63FXWnVdGLRj73K2xbW5B7oOQy8XCj2qIVbsYCg5nBeW5sIdOslS/K4sAEVCr1
-         P1dJqOLONv6P00KcrSXm/qTqylVPv7KFD9S5m+LCZBjrM3Qve0Csam1QTL5jYgVpx8CD
-         R0prV7WmOXHm32gShBmzxUSPt2fWyB2bW32X6zYedh/nVfvsXQMPyeaMcJ6gCyMXkXro
-         QgUH8jeBKm6e6cUfWg6khFsENmqYBXJIDBdmJramIdVMMyL1QzmwyK25MBIU8TFqsrAG
-         gl+mzq4OuE8Vc0kgMg133d10Ap9tyZj+t0UQ401hWmzUp/sutizsb2A0eL8nJ6p7rxfn
-         RLOw==
-X-Gm-Message-State: AC+VfDxKZZ0f0w2quiy+WNObqHFk9+XrgtbSzExqwzOQ/pKBCWJeT9Nk
-	FCSjQe9cTKlMm3ZApI72F88chvI3EpirzYFVxuQ=
-X-Google-Smtp-Source: ACHHUZ43Tbhi3lUORo6ThPJOyZDmVAiNE1w3G/BuyEp5qSSSVHcR0cIgDsAll9cKajDQ/tvOijtEElEs+cKvgnROJE4=
-X-Received: by 2002:aa7:c50e:0:b0:50b:c89f:f381 with SMTP id
- o14-20020aa7c50e000000b0050bc89ff381mr10387978edq.29.1686760079101; Wed, 14
- Jun 2023 09:27:59 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB6592EC00
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 16:35:58 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB20212D;
+	Wed, 14 Jun 2023 09:35:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=zoOW0ZiNmDtu4Zp3WTG84bXR18T6RnQ3c3NcObSn0t8=; b=Bb3i7EXg2Y5DTbLx+ObL7QLd/D
+	jgRwevR8K93fkQzVkpKNWJeuU1DV0SQJyrjUzV0paDYYP4O+no2MUy7XO/bN5wCyeIphi3BxRh+6S
+	up0KL9lrh/D405RcUMuTNH6yuU6BLYwY7GbK4L+40EMEikPibJFTVYwnSRuwQFxqMRl1ZoAx9Q+Sg
+	W+O9ol0pR8b93ga77s72wLAwkOGU8vdaaLco2KWyGet7IGTIPzFwGJD4/IHT26B4nKvDtAHffUkOM
+	jr2D8zvvqd/5T2YRLQKutIEak/K5remDMD3C7Zh2g2mcWUGi/rYxD/T8RCW8Jm1Ghilc093L3aBWy
+	48uP04Hg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41334)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1q9TT7-0001za-L5; Wed, 14 Jun 2023 17:35:37 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1q9TT0-0000ZE-28; Wed, 14 Jun 2023 17:35:30 +0100
+Date: Wed, 14 Jun 2023 17:35:30 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: arinc9.unal@gmail.com
+Cc: =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+	Daniel Golle <daniel@makrotopia.org>,
+	Landen Chao <Landen.Chao@mediatek.com>,
+	DENG Qingfang <dqfext@gmail.com>,
+	Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Frank Wunderlich <frank-w@public-files.de>,
+	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
+	mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net v4 5/7] net: dsa: mt7530: fix handling of LLDP frames
+Message-ID: <ZInsUm5M47p4ReF3@shell.armlinux.org.uk>
+References: <20230612075945.16330-1-arinc.unal@arinc9.com>
+ <20230612075945.16330-6-arinc.unal@arinc9.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230612172307.3923165-1-sdf@google.com> <87cz20xunt.fsf@toke.dk>
- <ZIiaHXr9M0LGQ0Ht@google.com> <877cs7xovi.fsf@toke.dk> <CAKH8qBt5tQ69Zs9kYGc7j-_3Yx9D6+pmS4KCN5G0s9UkX545Mg@mail.gmail.com>
- <87v8frw546.fsf@toke.dk> <CAKH8qBtsvsWvO3Avsqb2PbvZgh5GDMxe2fok-jS4DrJM=x2Row@mail.gmail.com>
- <CAADnVQKFmXAQDYVZxjvH8qbxk+3M2COGbfmtd=w8Nxvf9=DaeA@mail.gmail.com>
- <CAKH8qBvAMKtfrZ1jdwVS2pF161UdeXPSpY4HSzKYGTYNTupmTg@mail.gmail.com>
- <CAADnVQ+CCOw9_LbCAaFz0593eydKNb7RxnGr6_FatUOKmvPmBg@mail.gmail.com> <877cs6l0ea.fsf@toke.dk>
-In-Reply-To: <877cs6l0ea.fsf@toke.dk>
-From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date: Wed, 14 Jun 2023 09:27:47 -0700
-Message-ID: <CAADnVQJM6ttxLjj2FGCO1DKOwHdj9eqcz75dFpsfwJ_4b3iqDw@mail.gmail.com>
-Subject: Re: [RFC bpf-next 0/7] bpf: netdev TX metadata
-To: =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
-Cc: Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>, 
-	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
-	Andrii Nakryiko <andrii@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>, 
-	Yonghong Song <yhs@fb.com>, John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, 
-	Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>, 
-	Willem de Bruijn <willemb@google.com>, David Ahern <dsahern@kernel.org>, 
-	"Karlsson, Magnus" <magnus.karlsson@intel.com>, =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>, 
-	"Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>, Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230612075945.16330-6-arinc.unal@arinc9.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, Jun 14, 2023 at 5:00=E2=80=AFAM Toke H=C3=B8iland-J=C3=B8rgensen <t=
-oke@kernel.org> wrote:
->
-> >>
-> >> It's probably going to work if each driver has a separate set of tx
-> >> fentry points, something like:
-> >>   {veth,mlx5,etc}_devtx_submit()
-> >>   {veth,mlx5,etc}_devtx_complete()
->
-> I really don't get the opposition to exposing proper APIs; as a
-> dataplane developer I want to attach a program to an interface. The
-> kernel's role is to provide a consistent interface for this, not to
-> require users to become driver developers just to get at the required
-> details.
+On Mon, Jun 12, 2023 at 10:59:43AM +0300, arinc9.unal@gmail.com wrote:
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index e4c169843f2e..8388b058fbe4 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -2261,7 +2261,11 @@ mt7530_setup(struct dsa_switch *ds)
+>  
+>  	/* Trap BPDUs to the CPU port */
+>  	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
+> -		   MT753X_BPDU_CPU_ONLY);
+> +		   MT753X_PORT_FW_CPU_ONLY);
+> +
+> +	/* Trap LLDP frames with :0E MAC DA to the CPU port */
+> +	mt7530_rmw(priv, MT753X_RGAC2, MT753X_R0E_PORT_FW_MASK,
+> +		   MT753X_R0E_PORT_FW(MT753X_PORT_FW_CPU_ONLY));
+>  
+>  	/* Enable and reset MIB counters */
+>  	mt7530_mib_reset(ds);
+> @@ -2364,7 +2368,11 @@ mt7531_setup_common(struct dsa_switch *ds)
+>  
+>  	/* Trap BPDUs to the CPU port(s) */
+>  	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
+> -		   MT753X_BPDU_CPU_ONLY);
+> +		   MT753X_PORT_FW_CPU_ONLY);
+> +
+> +	/* Trap LLDP frames with :0E MAC DA to the CPU port(s) */
+> +	mt7530_rmw(priv, MT753X_RGAC2, MT753X_R0E_PORT_FW_MASK,
+> +		   MT753X_R0E_PORT_FW(MT753X_PORT_FW_CPU_ONLY));
 
-Consistent interface can appear only when there is a consistency
-across nic manufacturers.
-I'm suggesting to experiment in the most unstable way and
-if/when the consistency is discovered then generalize.
+Looking at the above two hunks, they look 100% identical. Given that
+they are both setting up trapping to the CPU port, maybe they should
+be moved into their own common function called from both setup()
+functions?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
