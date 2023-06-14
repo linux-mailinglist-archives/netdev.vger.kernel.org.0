@@ -1,75 +1,76 @@
-Return-Path: <netdev+bounces-10732-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10733-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id BB483730052
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 15:45:42 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9D5AE730056
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 15:46:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 02C2E1C20CE1
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:45:42 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 848D71C20CC3
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:46:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13855BE52;
-	Wed, 14 Jun 2023 13:45:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 46FE6BE59;
+	Wed, 14 Jun 2023 13:46:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0700AAD4F
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 13:45:39 +0000 (UTC)
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7521FF7;
-	Wed, 14 Jun 2023 06:45:38 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id d2e1a72fcca58-6665f5aa6e6so422017b3a.0;
-        Wed, 14 Jun 2023 06:45:38 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AEA77FC
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 13:46:28 +0000 (UTC)
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5545D2118;
+	Wed, 14 Jun 2023 06:46:08 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id ca18e2360f4ac-777a78739ccso374236139f.3;
+        Wed, 14 Jun 2023 06:46:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686750337; x=1689342337;
+        d=gmail.com; s=20221208; t=1686750367; x=1689342367;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=h9Ew96oWB+C1XdKon0hGd4nuYfEMyvm5iWp1llgF27E=;
-        b=g/sDIcKmy0ywZyJz9RQ1v4Nkp7vxxQEfzAQvDLHUAIi5LOLYtPx9WPNK3GqOvDWWPM
-         loSk+RdqfCA/E0NzTBByLdODUthsKfEAIVEjpMH4SoRdtlGOEHn7EM3J3F7//H9tiP8a
-         o5I0s1jTaeYhNd6Cs5nSiO2QScZXbxXBbrJfARy0QyFWzlqjwy7M+Kd35CxodwL3i2v7
-         FN9CLado3sIO8EXZkcu1tfBtfknCWWtRLsdGMClrw+HlOXqJ03D+mfcV1XvNUESjfSMl
-         FNUBViqXqzf0EW6SbFe4SS/BqvjQa0qYAySIaRi5j1aeSzR4eUN4B0NkS1wujPbjZA6m
-         ngyQ==
+        bh=zQY5/Z9V92asgUBqQZpuZOlLV7pXFKrCuP0E34yfs0w=;
+        b=V4ahN5BL99HDOMgXDQGo0/tyx6nm9sWOfshsWhVthyRTSNZrfjK4M658jtS2RiHGus
+         pIZSdvbKF8hDIHAI2cKQYbUM/Fav7dOixRf6F65xHPWd9B/egU92Qve8NHblaGLxlgLN
+         7RxtK3F9/R2+uvf66wGBHpfzUTTESC3mj0Yhm5stSPgYhoiMSxm0NTEwruyezQ56xjWV
+         EThigOax2hhtA8OzSNU3F/oZ0kcj1n+7IbNsqo+yTz2zC3kxO3jHegCSSI6T1fVF9U4M
+         5bwzbHJI+45CBp+cNesnSPfEjWwKoFuhIY1S2CMD3SF45btXTAkAgwPkH5rQcMDHRQd0
+         Y4rQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686750337; x=1689342337;
+        d=1e100.net; s=20221208; t=1686750367; x=1689342367;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=h9Ew96oWB+C1XdKon0hGd4nuYfEMyvm5iWp1llgF27E=;
-        b=cKyfV+fyUeOHPdrHOAh7vbzw614FC5QUt+kHFvrshWFhjdkbDFrPlxSS+Zr2zcGiPz
-         YhekQ2D8rnZFLP2wTzNM1iDD5Yp2Zmsz93BizAUPPr9SMjiJlr7b2jgem5LKGUO2RwDs
-         9iY261kKEihzmePOkujPhi0DmBHZFNFCYaZOyZ+PWWJfyxzk/uHvtXt9ZUge+SBC+hEy
-         RqSx1HImvRI6e6BgqRDo1BQmI19jRIR2hWFPMcRb9Pn4yzWn5nY3QHT/3aKIzFRebU1n
-         eeOLW9VXUp4Xpw+/feGYwXDJlL1jmFivt2EfsXJU/GzzJDkCWFofaetJcditoEdMmjZA
-         ubSg==
-X-Gm-Message-State: AC+VfDytt6hhQMkbYARUXrENIDn9zkOYiwIwmCUPbAEkmDUTGzSnG+IR
-	GZIDzIpZEGGLFn4bAlX2mFENvXKGToaOyDut
-X-Google-Smtp-Source: ACHHUZ5RHmjxOPskYOp5inqED+PW2X4o2+sJjCotWuXCSyikuugWkwZFJZt75VN2tloNhjGtted3Pw==
-X-Received: by 2002:a05:6a20:8f27:b0:103:883b:10c1 with SMTP id b39-20020a056a208f2700b00103883b10c1mr1604331pzk.41.1686750337201;
-        Wed, 14 Jun 2023 06:45:37 -0700 (PDT)
-Received: from localhost.localdomain ([103.116.245.58])
-        by smtp.gmail.com with ESMTPSA id c2-20020a170902d48200b001aaecc0b6ffsm12223053plg.160.2023.06.14.06.45.34
+        bh=zQY5/Z9V92asgUBqQZpuZOlLV7pXFKrCuP0E34yfs0w=;
+        b=hclyDKQE4yKXQH4SgOpZUMegqhY/r4WfKd+hCevgUfAulp3SwKAxSwW63rcCXdv3E2
+         9GhpSgiRsjSwRtgujv+RUmLNEq0fzj6xNE20Z9xKDIO6EnMOk9LnvRGg8eC2ezzacAA+
+         ks2PRFsIOfpjsGEEisFw97uzk6NKfVu8SdPJi8mc+8w6ZPqAf3pbQsoG3xoOmnNeAnup
+         NXmZQ6bmsVQ4BbkzfFF5PJgvr4cdPLyWhM9dLAIRzmAX7tAJZiO1iW4YiGABeF8D5UDN
+         Z3X4u1mqmKy/D3LuYc5mIH893jH6Ov6o84gs+Zm4Frnp61sgzvvtl4lpwMG0A0ZPkZWD
+         kSYg==
+X-Gm-Message-State: AC+VfDxsXJhZXutqtqeCEwIcnDh8MxhmYY1rtQaC5uNcGCe6Gm/x7nH6
+	WsCPOA7KgLn8HPhMIfMbQf8=
+X-Google-Smtp-Source: ACHHUZ6jTKwwclu9yoql3y/RRuy36VHdIgQDbVqS33PxEzmA14MKgVLgpgLm9ZC+sGbXkm4sxDv11w==
+X-Received: by 2002:a05:6e02:108:b0:33f:a995:31ab with SMTP id t8-20020a056e02010800b0033fa99531abmr13648127ilm.11.1686750366930;
+        Wed, 14 Jun 2023 06:46:06 -0700 (PDT)
+Received: from azeems-kspp.c.googlers.com.com (54.70.188.35.bc.googleusercontent.com. [35.188.70.54])
+        by smtp.gmail.com with ESMTPSA id cu13-20020a05663848cd00b0040bb600eb81sm5021586jab.149.2023.06.14.06.46.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jun 2023 06:45:36 -0700 (PDT)
-From: Jianhui Zhao <zhaojh329@gmail.com>
-To: andrew@lunn.ch,
-	hkallweit1@gmail.com,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com
-Cc: linux@armlinux.org.uk,
-	netdev@vger.kernel.org,
+        Wed, 14 Jun 2023 06:46:06 -0700 (PDT)
+From: Azeem Shaikh <azeemshaikh38@gmail.com>
+To: Kalle Valo <kvalo@kernel.org>
+Cc: linux-hardening@vger.kernel.org,
+	Azeem Shaikh <azeemshaikh38@gmail.com>,
+	linux-wireless@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Jianhui Zhao <zhaojh329@gmail.com>
-Subject: [PATCH V3] net: phy: Add sysfs attribute for PHY c45 identifiers.
-Date: Wed, 14 Jun 2023 21:45:22 +0800
-Message-Id: <20230614134522.11169-1-zhaojh329@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org,
+	Johannes Berg <johannes@sipsolutions.net>
+Subject: [PATCH v2] wifi: cfg80211: replace strlcpy() with strlscpy()
+Date: Wed, 14 Jun 2023 13:45:52 +0000
+Message-ID: <20230614134552.2108471-1-azeemshaikh38@gmail.com>
+X-Mailer: git-send-email 2.41.0.162.gfafddb0af9-goog
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -84,174 +85,43 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-If a phydevice use c45, its phy_id property is always 0, so
-this adds a c45_ids sysfs attribute group contains from mmd0
-to mmd31 to MDIO devices.
-This attribute group can be useful when debugging problems
-related to phy drivers.
+strlcpy() reads the entire source buffer first.
+This read may exceed the destination size limit.
+This is both inefficient and can lead to linear read
+overflows if a source string is not NUL-terminated [1].
+In an effort to remove strlcpy() completely [2], replace
+strlcpy() here with strscpy().
 
-Likes this:
-/sys/bus/mdio_bus/devices/mdio-bus:05/c45_ids/mmd0
-/sys/bus/mdio_bus/devices/mdio-bus:05/c45_ids/mmd1
-...
-/sys/bus/mdio_bus/devices/mdio-bus:05/c45_ids/mmd31
+Direct replacement is safe here since WIPHY_ASSIGN is only used by
+TRACE macros and the return values are ignored.
 
-Signed-off-by: Jianhui Zhao <zhaojh329@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Russell King <linux@armlinux.org.uk>
+[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#strlcpy
+[2] https://github.com/KSPP/linux/issues/89
+
+Signed-off-by: Azeem Shaikh <azeemshaikh38@gmail.com>
 ---
-V2 -> V3: Use the most efficient implementation.
-V1 -> V2: putting all 32 values in a subdirectory, one file per MMD
+v1: https://lore.kernel.org/all/20230612232301.2572316-1-azeemshaikh38@gmail.com/
 
- .../ABI/testing/sysfs-class-net-phydev        |  10 ++
- drivers/net/phy/phy_device.c                  | 115 +++++++++++++++++-
- 2 files changed, 124 insertions(+), 1 deletion(-)
+Changes from v1 - updated patch title.
 
-diff --git a/Documentation/ABI/testing/sysfs-class-net-phydev b/Documentation/ABI/testing/sysfs-class-net-phydev
-index ac722dd5e694..aefddd911b04 100644
---- a/Documentation/ABI/testing/sysfs-class-net-phydev
-+++ b/Documentation/ABI/testing/sysfs-class-net-phydev
-@@ -63,3 +63,13 @@ Description:
- 		only used internally by the kernel and their placement are
- 		not meant to be stable across kernel versions. This is intended
- 		for facilitating the debugging of PHY drivers.
-+
-+What:		/sys/class/mdio_bus/<bus>/<device>/c45_ids/mmd<n>
-+Date:		November 2023
-+KernelVersion:	6.4
-+Contact:	netdev@vger.kernel.org
-+Description:
-+		This attribute group c45_ids contains 32 mmd id attribute from mmd0 to mmd31
-+		as reported by the device during bus enumeration, encoded in hexadecimal.
-+		This ID is used to match the device with the appropriate
-+		driver.
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 17d0d0555a79..b1bbbb42f020 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -602,7 +602,120 @@ static struct attribute *phy_dev_attrs[] = {
- 	&dev_attr_phy_dev_flags.attr,
- 	NULL,
- };
--ATTRIBUTE_GROUPS(phy_dev);
-+
-+static const struct attribute_group phy_dev_group = {
-+	.attrs = phy_dev_attrs
-+};
-+
-+struct phy_c45_devid_attribute {
-+	struct device_attribute attr;
-+	int index;
-+};
-+
-+#define to_phy_c45_devid_attr(ptr) \
-+	container_of(ptr, struct phy_c45_devid_attribute, attr)
-+
-+static ssize_t phy_c45_id_show(struct device *dev,
-+			       struct device_attribute *attr, char *buf)
-+{
-+	struct phy_c45_devid_attribute *devattr = to_phy_c45_devid_attr(attr);
-+	struct phy_device *phydev = to_phy_device(dev);
-+
-+	if (!phydev->is_c45)
-+		return 0;
-+
-+	return sprintf(buf, "0x%.8lx\n",
-+		(unsigned long)phydev->c45_ids.device_ids[devattr->index]);
-+}
-+
-+#define DEVICE_ATTR_C45_ID(i) \
-+static struct phy_c45_devid_attribute dev_attr_phy_c45_id##i = { \
-+	.attr = { \
-+		.attr = { .name = __stringify(mmd##i), .mode = 0444 }, \
-+		.show = phy_c45_id_show \
-+	}, \
-+	.index = i, \
-+}
-+
-+DEVICE_ATTR_C45_ID(0);
-+DEVICE_ATTR_C45_ID(1);
-+DEVICE_ATTR_C45_ID(2);
-+DEVICE_ATTR_C45_ID(3);
-+DEVICE_ATTR_C45_ID(4);
-+DEVICE_ATTR_C45_ID(5);
-+DEVICE_ATTR_C45_ID(6);
-+DEVICE_ATTR_C45_ID(7);
-+DEVICE_ATTR_C45_ID(8);
-+DEVICE_ATTR_C45_ID(9);
-+DEVICE_ATTR_C45_ID(10);
-+DEVICE_ATTR_C45_ID(11);
-+DEVICE_ATTR_C45_ID(12);
-+DEVICE_ATTR_C45_ID(13);
-+DEVICE_ATTR_C45_ID(14);
-+DEVICE_ATTR_C45_ID(15);
-+DEVICE_ATTR_C45_ID(16);
-+DEVICE_ATTR_C45_ID(17);
-+DEVICE_ATTR_C45_ID(18);
-+DEVICE_ATTR_C45_ID(19);
-+DEVICE_ATTR_C45_ID(20);
-+DEVICE_ATTR_C45_ID(21);
-+DEVICE_ATTR_C45_ID(22);
-+DEVICE_ATTR_C45_ID(23);
-+DEVICE_ATTR_C45_ID(24);
-+DEVICE_ATTR_C45_ID(25);
-+DEVICE_ATTR_C45_ID(26);
-+DEVICE_ATTR_C45_ID(27);
-+DEVICE_ATTR_C45_ID(28);
-+DEVICE_ATTR_C45_ID(29);
-+DEVICE_ATTR_C45_ID(30);
-+DEVICE_ATTR_C45_ID(31);
-+
-+static struct attribute *phy_c45_id_attrs[] = {
-+	&dev_attr_phy_c45_id0.attr.attr,
-+	&dev_attr_phy_c45_id1.attr.attr,
-+	&dev_attr_phy_c45_id2.attr.attr,
-+	&dev_attr_phy_c45_id3.attr.attr,
-+	&dev_attr_phy_c45_id4.attr.attr,
-+	&dev_attr_phy_c45_id5.attr.attr,
-+	&dev_attr_phy_c45_id6.attr.attr,
-+	&dev_attr_phy_c45_id7.attr.attr,
-+	&dev_attr_phy_c45_id8.attr.attr,
-+	&dev_attr_phy_c45_id9.attr.attr,
-+	&dev_attr_phy_c45_id10.attr.attr,
-+	&dev_attr_phy_c45_id11.attr.attr,
-+	&dev_attr_phy_c45_id12.attr.attr,
-+	&dev_attr_phy_c45_id13.attr.attr,
-+	&dev_attr_phy_c45_id14.attr.attr,
-+	&dev_attr_phy_c45_id15.attr.attr,
-+	&dev_attr_phy_c45_id16.attr.attr,
-+	&dev_attr_phy_c45_id17.attr.attr,
-+	&dev_attr_phy_c45_id18.attr.attr,
-+	&dev_attr_phy_c45_id19.attr.attr,
-+	&dev_attr_phy_c45_id20.attr.attr,
-+	&dev_attr_phy_c45_id21.attr.attr,
-+	&dev_attr_phy_c45_id22.attr.attr,
-+	&dev_attr_phy_c45_id23.attr.attr,
-+	&dev_attr_phy_c45_id24.attr.attr,
-+	&dev_attr_phy_c45_id25.attr.attr,
-+	&dev_attr_phy_c45_id26.attr.attr,
-+	&dev_attr_phy_c45_id27.attr.attr,
-+	&dev_attr_phy_c45_id28.attr.attr,
-+	&dev_attr_phy_c45_id29.attr.attr,
-+	&dev_attr_phy_c45_id30.attr.attr,
-+	&dev_attr_phy_c45_id31.attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group phy_dev_c45_ids_group = {
-+	.name = "c45_ids",
-+	.attrs = phy_c45_id_attrs
-+};
-+
-+static const struct attribute_group *phy_dev_groups[] = {
-+	&phy_dev_group,
-+	&phy_dev_c45_ids_group,
-+	NULL,
-+};
+ net/wireless/trace.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/wireless/trace.h b/net/wireless/trace.h
+index 716a1fa70069..a00da3ebfed5 100644
+--- a/net/wireless/trace.h
++++ b/net/wireless/trace.h
+@@ -22,7 +22,7 @@
  
- static const struct device_type mdio_bus_phy_type = {
- 	.name = "PHY",
+ #define MAXNAME		32
+ #define WIPHY_ENTRY	__array(char, wiphy_name, 32)
+-#define WIPHY_ASSIGN	strlcpy(__entry->wiphy_name, wiphy_name(wiphy), MAXNAME)
++#define WIPHY_ASSIGN	strscpy(__entry->wiphy_name, wiphy_name(wiphy), MAXNAME)
+ #define WIPHY_PR_FMT	"%s"
+ #define WIPHY_PR_ARG	__entry->wiphy_name
+ 
 -- 
-2.34.1
+2.41.0.162.gfafddb0af9-goog
+
 
 
