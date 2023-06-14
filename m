@@ -1,154 +1,158 @@
-Return-Path: <netdev+bounces-10690-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10691-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2E47F72FD2E
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:42:49 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 328A772FD5A
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:47:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 69ADF1C20C5D
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:42:48 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5B48E2813AF
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:47:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 72A2D847B;
-	Wed, 14 Jun 2023 11:42:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AB62D847E;
+	Wed, 14 Jun 2023 11:47:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6778A79E1
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 11:42:46 +0000 (UTC)
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7951BEF;
-	Wed, 14 Jun 2023 04:42:32 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.54])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Qh3PY2cclztQnW;
-	Wed, 14 Jun 2023 19:40:01 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Wed, 14 Jun
- 2023 19:42:30 +0800
-Subject: Re: [PATCH net-next v4 1/5] page_pool: frag API support for 32-bit
- arch with 64-bit DMA
-To: Jakub Kicinski <kuba@kernel.org>
-CC: <davem@davemloft.net>, <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, Lorenzo Bianconi <lorenzo@kernel.org>,
-	Alexander Duyck <alexander.duyck@gmail.com>, Saeed Mahameed
-	<saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>, Eric Dumazet
-	<edumazet@google.com>, Jesper Dangaard Brouer <hawk@kernel.org>, Ilias
- Apalodimas <ilias.apalodimas@linaro.org>, <linux-rdma@vger.kernel.org>
-References: <20230612130256.4572-1-linyunsheng@huawei.com>
- <20230612130256.4572-2-linyunsheng@huawei.com>
- <20230613210906.42ea393e@kernel.org>
-From: Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <99233a68-882f-51cd-bf7c-c2b83652ae09@huawei.com>
-Date: Wed, 14 Jun 2023 19:42:29 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A08D37476
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 11:47:33 +0000 (UTC)
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A769510D8;
+	Wed, 14 Jun 2023 04:47:26 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+	by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 35EBlE1E109706;
+	Wed, 14 Jun 2023 06:47:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1686743234;
+	bh=sA/wHQWGukp8xdptR9h0VboCMWUkFR4POYrWrCGHCeE=;
+	h=From:To:CC:Subject:Date;
+	b=aiOCextLJUKAYz8Ee3M6kzNTrmzmiNHam9Dn6cIopUZoWQot4zqGloswc3fGqZaX+
+	 LbQSLiJO1EC0FYN3KX3uUrOzl+a5CzeOYhoP+Ym/hKPFgD178Ax/L/vqlLue456MUI
+	 +i1ZFjEHWbVimurcW1nUH0U5adayfHdxWUZ0nRIo=
+Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
+	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 35EBlEvP110320
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Wed, 14 Jun 2023 06:47:14 -0500
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Wed, 14
+ Jun 2023 06:47:14 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Wed, 14 Jun 2023 06:47:14 -0500
+Received: from uda0500640.dal.design.ti.com (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+	by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 35EBlA24044618;
+	Wed, 14 Jun 2023 06:47:11 -0500
+From: Ravi Gunasekaran <r-gunasekaran@ti.com>
+To: <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <bigeasy@linutronix.de>,
+        <simon.horman@corigine.com>
+CC: <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <rogerq@kernel.org>, <r-gunasekaran@ti.com>
+Subject: [PATCH v2 net-next] net: hsr: Disable promiscuous mode in offload mode
+Date: Wed, 14 Jun 2023 17:17:10 +0530
+Message-ID: <20230614114710.31400-1-r-gunasekaran@ti.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20230613210906.42ea393e@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 2023/6/14 12:09, Jakub Kicinski wrote:
-> On Mon, 12 Jun 2023 21:02:52 +0800 Yunsheng Lin wrote:
->> Currently page_pool_alloc_frag() is not supported in 32-bit
->> arch with 64-bit DMA, which seems to be quite common, see
->> [1], which means driver may need to handle it when using
->> page_pool_alloc_frag() API.
->>
->> In order to simplify the driver's work for supporting page
->> frag, this patch allows page_pool_alloc_frag() to call
->> page_pool_alloc_pages() to return a big page frag without
-> 
-> it returns an entire (potentially compound) page, not a frag.
-> AFAICT
+When port-to-port forwarding for interfaces in HSR node is enabled,
+disable promiscuous mode since L2 frame forward happens at the
+offloaded hardware.
 
-As driver calls page_pool_alloc_frag(), and page_pool_alloc_frag()
-calls page_pool_alloc_pages(), page_pool_alloc_pages() is hidden
-inside page_pool_alloc_frag(), so it is a big page frag from driver's
-point of view:)
+Signed-off-by: Ravi Gunasekaran <r-gunasekaran@ti.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+---
+Changes from v1:
+===============
+* Changed the data type of "fwd_offloaded" from "unsigned int" to "bool"
+  and moved it below "net_id" struct member as per Paolo's comment.
+* Collected Reviewed-by tag from v1 patch.
 
-> 
->> page splitting because of overlap issue between pp_frag_count
->> and dma_addr_upper in 'struct page' for those arches.
-> 
-> These two lines seem to belong in the first paragraph,
-> 
->> As page_pool_create() with PP_FLAG_PAGE_FRAG is supported in
-> 
-> "is" -> "will now be"
-> 
->> 32-bit arch with 64-bit DMA now, mlx5 calls page_pool_create()
->> with PP_FLAG_PAGE_FRAG and manipulate the page->pp_frag_count
->> directly using the page_pool_defrag_page(), so add a checking
->> for it to aoivd writing to page->pp_frag_count that may not
->> exist in some arch.
-> 
-> This paragraph needs some proof reading :(
+v1: https://lore.kernel.org/all/20230612093933.13267-1-r-gunasekaran@ti.com/
 
-Perhaps something like below?
-mlx5 calls page_pool_create() with PP_FLAG_PAGE_FRAG and is
-not using the frag API, as PP_FLAG_PAGE_FRAG checking for arch
-with PAGE_POOL_DMA_USE_PP_FRAG_COUNT being true will now be
-removed in this patch, so add back the checking of
-PAGE_POOL_DMA_USE_PP_FRAG_COUNT for mlx5 driver to retain the
-old behavior, which is to avoid mlx5e_page_release_fragmented()
-calling page_pool_defrag_page() to write to page->pp_frag_count.
+ net/hsr/hsr_device.c |  5 +++++
+ net/hsr/hsr_main.h   |  1 +
+ net/hsr/hsr_slave.c  | 15 +++++++++++----
+ 3 files changed, 17 insertions(+), 4 deletions(-)
 
-> 
->> Note that it may aggravate truesize underestimate problem for
->> skb as there is no page splitting for those pages, if driver
->> need a accuate truesize, it may calculate that according to
-> 
-> accurate
-> 
->> frag size, page order and PAGE_POOL_DMA_USE_PP_FRAG_COUNT
->> being true or not. And we may provide a helper for that if it
->> turns out to be helpful.
->>
->> 1. https://lore.kernel.org/all/20211117075652.58299-1-linyunsheng@huawei.com/
-> 
->> +		/* Return error here to avoid writing to page->pp_frag_count in
->> +		 * mlx5e_page_release_fragmented() for page->pp_frag_count is
-> 
-> I don't see any direct access to pp_frag_count anywhere outside of
-> page_pool.h in net-next. PAGE_POOL_DMA_USE_PP_FRAG_COUNT sounds like 
-> an internal flag, drivers shouldn't be looking at it, IMO.
+diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
+index 5a236aae2366..306f942c3b28 100644
+--- a/net/hsr/hsr_device.c
++++ b/net/hsr/hsr_device.c
+@@ -531,6 +531,11 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],
+ 	if (res)
+ 		goto err_add_master;
+ 
++	/* HSR forwarding offload supported in lower device? */
++	if ((slave[0]->features & NETIF_F_HW_HSR_FWD) &&
++	    (slave[1]->features & NETIF_F_HW_HSR_FWD))
++		hsr->fwd_offloaded = true;
++
+ 	res = register_netdevice(hsr_dev);
+ 	if (res)
+ 		goto err_unregister;
+diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
+index 5584c80a5c79..6851e33df7d1 100644
+--- a/net/hsr/hsr_main.h
++++ b/net/hsr/hsr_main.h
+@@ -208,6 +208,7 @@ struct hsr_priv {
+ 	u8 net_id;		/* for PRP, it occupies most significant 3 bits
+ 				 * of lan_id
+ 				 */
++	bool fwd_offloaded;	/* Forwarding offloaded to HW */
+ 	unsigned char		sup_multicast_addr[ETH_ALEN] __aligned(sizeof(u16));
+ 				/* Align to u16 boundary to avoid unaligned access
+ 				 * in ether_addr_equal
+diff --git a/net/hsr/hsr_slave.c b/net/hsr/hsr_slave.c
+index b70e6bbf6021..e5742f2a2d52 100644
+--- a/net/hsr/hsr_slave.c
++++ b/net/hsr/hsr_slave.c
+@@ -131,9 +131,14 @@ static int hsr_portdev_setup(struct hsr_priv *hsr, struct net_device *dev,
+ 	struct hsr_port *master;
+ 	int res;
+ 
+-	res = dev_set_promiscuity(dev, 1);
+-	if (res)
+-		return res;
++	/* Don't use promiscuous mode for offload since L2 frame forward
++	 * happens at the offloaded hardware.
++	 */
++	if (!port->hsr->fwd_offloaded) {
++		res = dev_set_promiscuity(dev, 1);
++		if (res)
++			return res;
++	}
+ 
+ 	master = hsr_port_get_hsr(hsr, HSR_PT_MASTER);
+ 	hsr_dev = master->dev;
+@@ -152,7 +157,9 @@ static int hsr_portdev_setup(struct hsr_priv *hsr, struct net_device *dev,
+ fail_rx_handler:
+ 	netdev_upper_dev_unlink(dev, hsr_dev);
+ fail_upper_dev_link:
+-	dev_set_promiscuity(dev, -1);
++	if (!port->hsr->fwd_offloaded)
++		dev_set_promiscuity(dev, -1);
++
+ 	return res;
+ }
+ 
+-- 
+2.17.1
 
-mlx5e_page_release_fragmented() calls page_pool_defrag_page(), maybe
-below is more correct:
-
-/* Return error here to avoid mlx5e_page_release_fragmented() calling
- * page_pool_defrag_page() to write to page->pp_frag_count which is
- * not usable for arch with PAGE_POOL_DMA_USE_PP_FRAG_COUNT being true.
-*/
-
-I am agree with you about that drivers shouldn't be looking at it. But
-adding PAGE_POOL_DMA_USE_PP_FRAG_COUNT checking back to mlx5 seems to be
-the simplest way I can think of because of the reason mentioned above.
-
-And it seems that it is hard to change mlx5 to use frag API according to
-the below disscusion with Alexander:
-
-https://lore.kernel.org/all/CAKgT0UeD=sboWNUsP33_UsKEKyqTBfeOqNO5NCdFaxh9KXEG3w@mail.gmail.com/
-
-> 
-> .
-> 
 
