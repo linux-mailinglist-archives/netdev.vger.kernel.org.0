@@ -1,120 +1,166 @@
-Return-Path: <netdev+bounces-10762-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10765-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 758A4730279
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 16:55:31 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E85BE7302E5
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 17:07:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A78DE1C20CF4
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 14:55:30 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D10EA1C20D66
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 15:07:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D54F38BFB;
-	Wed, 14 Jun 2023 14:55:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B2A2CDF52;
+	Wed, 14 Jun 2023 15:07:49 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C78CF2C9C
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 14:55:28 +0000 (UTC)
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1762D1BF9;
-	Wed, 14 Jun 2023 07:55:27 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id 5b1f17b1804b1-3f8cc042ea9so6885355e9.2;
-        Wed, 14 Jun 2023 07:55:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686754525; x=1689346525;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T4N1c6zVQK/GqEbZwTQjJCqHfXHnX5xa7l1nDf0Hm1o=;
-        b=XUhpmQmpGLIkkPyyztg9FS6mkJm/S+i1/rxI0FinKgy5fImau9FTl8c5yHMWMGCrRP
-         Oa5Gq46hVL+JosJ6mBsQQiKy6sKfvVYNwkj3xDmO2hmqY0a3zQYT907/Qdf7aJKpZqnS
-         M+ur12nvDU9IGaTsYSvAYKVzerQtm9Co/cW7f6uwqevQIdukkrv63+3rkIWKx79ZVQD5
-         C96FAFTWVc+Dkcl+yl2k5Wo43luOAV/uMTfuBRcjAUNw3uU4gEhvRnuVeMZh/BJYnx1K
-         s0Tg5YsK/R2VJPnYtId87WqPHj/MV5oiw0oXFhMFjlJ3ApVgbDKmQPx3F2N2uT4gZORQ
-         llvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686754525; x=1689346525;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=T4N1c6zVQK/GqEbZwTQjJCqHfXHnX5xa7l1nDf0Hm1o=;
-        b=K0Oa8Ax+X3Y7vA98GE2Nwotph6JbBAzPtFnsp/wD9yg9Kyf81//o8vWExZUw7sY3me
-         9cXzS7qokKs2dhssOLk19Z/xpfsgqnlAS2PwmC4h1j4V4G32g9Obqtnr+hPyDZ5soO7H
-         Put/2sId0II82kKIt5AMPJmzCh0/IuATC4GNjlL6Vr2LnicuO64gJVMvQlMM65TcO640
-         PxrSV3BrtjsC4yVKEM2FupTFNwXqh6s8gxUwX+nftuOlXdHSun+pt5HR9xPqYcuvy13i
-         aCpdLsZNDeYlQJbWCPE+Jw0TRduZeL7o+f84mnJXlyDcNVzX0AkvuNkECaqmScrY8QP/
-         CRsQ==
-X-Gm-Message-State: AC+VfDwC5zEeasi/KLb1nlOdWS5Rj/CvT4bqngvkPH2mq1D/4htGYH8t
-	cYRSlhESj/kfoVLCphX0BhWuBCiLGBHI70auHmI=
-X-Google-Smtp-Source: ACHHUZ4msgwE+q6HFYQwwH4Mk0z8/+q5/cKdOb2qnWR4s+MB1DC7r49BI4Ozw43XZkMTuGJsmBD2YFfwWrfuLaKzu8U=
-X-Received: by 2002:a5d:6949:0:b0:311:101f:6c17 with SMTP id
- r9-20020a5d6949000000b00311101f6c17mr690308wrw.2.1686754525211; Wed, 14 Jun
- 2023 07:55:25 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 595EA8460;
+	Wed, 14 Jun 2023 15:07:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DEF3C433C8;
+	Wed, 14 Jun 2023 15:07:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686755267;
+	bh=DZVt3kjkY559qmGtC1/RX3/D7SfDAvHLLqPhyTY1QmA=;
+	h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+	b=S0DbZIZOBOXRCc06oyYCeQYpKD+DnXYWEuQdGdASou6YlbntDI8b4Z1opHgZqzZqD
+	 mEV9TTwkfySp1umPpHu9zAFjujdqQHDJyifbB1veIiy+WnSNS+ZrQY7hkHVkNVT5Xy
+	 kXENE9vNc4BM4gmvbT83CVxXTbUyZcFcSfZXz82Mu9DzdPNf/frQvKquur3qejhzJV
+	 bvKqx+bb8/cOoYeqKGe6r4TvmBJ/mNYV8thqm7KGDxit1f2gqe7Nj5SEPmXOyPHYv7
+	 9vjQKA2MrhRNAhivyt5zDsn09DRJw1vSM3CeiwEz0tmgti8KvGVtgGxLrO6zgRx6SZ
+	 S65HJI0fN39MQ==
+From: Kalle Valo <kvalo@kernel.org>
+To: Johannes Berg <johannes@sipsolutions.net>
+Cc: Jakub Kicinski <kuba@kernel.org>,  Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8?=
+ =?utf-8?Q?rgensen?= <toke@kernel.org>,  linux-wireless@vger.kernel.org,
+  netdev@vger.kernel.org,  linux-kernel@vger.kernel.org,
+  regressions@lists.linux.dev
+Subject: Re: Closing down the wireless trees for a summer break?
+References: <87y1kncuh4.fsf@kernel.org> <871qifxm9b.fsf@toke.dk>
+	<20230613112834.7df36e95@kernel.org>
+	<ba933d6e3d360298e400196371e37735aef3b1eb.camel@sipsolutions.net>
+	<20230613195136.6815df9b@kernel.org>
+	<c7c9418bcd5ac1035a007d336004eff48994dde7.camel@sipsolutions.net>
+Date: Wed, 14 Jun 2023 18:07:43 +0300
+In-Reply-To: <c7c9418bcd5ac1035a007d336004eff48994dde7.camel@sipsolutions.net>
+	(Johannes Berg's message of "Wed, 14 Jun 2023 11:56:16 +0200")
+Message-ID: <87a5x2ccao.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230614134956.2109252-1-azeemshaikh38@gmail.com> <874jnaf7fv.fsf@kernel.org>
-In-Reply-To: <874jnaf7fv.fsf@kernel.org>
-From: Azeem Shaikh <azeemshaikh38@gmail.com>
-Date: Wed, 14 Jun 2023 10:55:13 -0400
-Message-ID: <CADmuW3WEUgnpGXg=ajpRvwON6mFLQD9cPKnhsg35CcNqwcywxA@mail.gmail.com>
-Subject: Re: [PATCH v3] wifi: cfg80211: replace strlcpy() with strscpy()
-To: Kalle Valo <kvalo@kernel.org>
-Cc: linux-hardening@vger.kernel.org, linux-wireless@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	netdev@vger.kernel.org, Johannes Berg <johannes@sipsolutions.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-On Wed, Jun 14, 2023 at 10:24=E2=80=AFAM Kalle Valo <kvalo@kernel.org> wrot=
-e:
->
-> Azeem Shaikh <azeemshaikh38@gmail.com> writes:
->
-> > strlcpy() reads the entire source buffer first.
-> > This read may exceed the destination size limit.
-> > This is both inefficient and can lead to linear read
-> > overflows if a source string is not NUL-terminated [1].
-> > In an effort to remove strlcpy() completely [2], replace
-> > strlcpy() here with strscpy().
-> >
-> > Direct replacement is safe here since WIPHY_ASSIGN is only used by
-> > TRACE macros and the return values are ignored.
-> >
-> > [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#strl=
-cpy
-> > [2] https://github.com/KSPP/linux/issues/89
-> >
-> > Signed-off-by: Azeem Shaikh <azeemshaikh38@gmail.com>
-> > ---
-> > v1: https://lore.kernel.org/all/20230612232301.2572316-1-azeemshaikh38@=
-gmail.com/
-> > v2: https://lore.kernel.org/all/20230614134552.2108471-1-azeemshaikh38@=
-gmail.com/
->
-> In the change log (after the "---" line) you should also describe what
-> changes you made, more info in the wiki below. In this case it's clear
-> as the patch is simple but please keep this in mind for future patches.
->
-> No need to resend because of this.
->
+Johannes Berg <johannes@sipsolutions.net> writes:
 
-Thanks Kalle. I did have the below line in my changelog. For future
-patches, do you mean that changelog descriptions need to be more
-specific than this? For example - updated title from "x" -> "y"?
+> On Tue, 2023-06-13 at 19:51 -0700, Jakub Kicinski wrote:
+>
+>> On Tue, 13 Jun 2023 22:00:35 +0200 Johannes Berg wrote:
+>> > On Tue, 2023-06-13 at 11:28 -0700, Jakub Kicinski wrote:
+>> > > On Tue, 13 Jun 2023 20:14:40 +0200 Toke H=C3=B8iland-J=C3=B8rgensen =
+wrote:=20=20
+>> > > > I think this sounds reasonable, and I applaud the effort to take s=
+ome
+>> > > > time off during the summer :)
+>> > > >=20
+>> > > > One question that comes to mind is how would this work for patchwo=
+rk?
+>> > > > Would we keep using the wireless patchwork instance for the patches
+>> > > > going to -net in that period, or will there be some other process =
+for
+>> > > > this? I realise the setup we have for ath9k is a bit special in th=
+is
+>> > > > regard with the ack-on-list+delegation, so I'm obviously mostly
+>> > > > interested in what to do about that... :)=20=20
+>> > >=20
+>> > > Whatever's easiest :) It's probably a good idea for Kalle to write
+>> > > down all the local rules and customs and share those with us.
+>> >=20
+>> > While that's probably a good idea regardless, I'd think that patchwork
+>> > doesn't really matter that much - we'll have some catching up to do
+>> > anyway after the vacations, so looking through patchwork etc. would be
+>> > perfectly acceptable. Worst case we'd notice when a patch doesn't appl=
+y,
+>> > right? :)
+>>=20
+>> Right, I meant it more in terms of patch flow. Is looking at which
+>> drivers have a tree specified in MAINTAINERS enough to know what
+>> should be applied directly?
+>
+> Oh, right. Not really sure how well that all is reflected in
+> MAINTAINERS.
 
-> Changes from v1 and v2 - updated patch title.
+Now that I sent some updates, the separate driver specific trees should
+be pretty well documented in MAINTAINERS:
+
+https://patchwork.kernel.org/project/linux-wireless/list/?series=3D757173
+
+But do let me know if I missed something.
+
+> So Gregory usually handles patches for iwlwifi, but he'll _also_ be on
+> vacation around a similar time frame.
+>
+> Toke usually reviews patches for ath9k but then asks Kalle (via
+> assigning in patchwork) to apply them.
+>
+> Felix usually picks up patches for mediatek drivers (unless specifically
+> asking Kalle for individual ones) and then sends a pull request.
+>
+> For the stack (all the bits we have under net/) that's just on me,
+> normally.
+>
+> I think that's it? But I guess Kalle will have more comments.
+
+And for drivers/net/wireless/ath/ I have my ath.git tree for which I
+take all patches for drivers under that directory. (BTW I might be
+updating my ath.git tree some time during summer, but no promises. I
+will be mostly offline and not even checking email.)
+
+But do note that above is _only_ for -next patches. For patches going to
+-rc releases we apply the patches directly to wireless, no other trees
+are involved. My proposal was that net maintainers would take only fixes
+for -rc releases, my guess from history is that it would be maximum of
+10-15 patches. And once me and Johannes are back we would sort out -next
+patches before the merge window. But of course you guys can do whatever
+you think is best :)
+
+>> > Wrt. ath9k patches I guess "delegate in patchwork" won't work anymore,
+>> > but "resend to netdev" or something perhaps?
+>>=20
+>> We can watch PW state and apply from linux-wireless, I reckon.
+>> That said I don't know how you use delegation :)
+>
+> We have auto-delegation set up for this, except iwlwifi is on me right
+> now for the upstream, and I just delegate other incoming patches to
+> Gregory.
+
+Auto-delegation is awesome, it helps our workflow quite a lot. Though it's =
+not
+perfect and some of the patches will not get delegated automatically. So
+I periodically check this link if there are patches needing for manual
+delegation:
+
+https://patchwork.kernel.org/project/linux-wireless/list/?series=3D&submitt=
+er=3D&state=3D&q=3D&archive=3D&delegate=3DNobody
+
+As an example, right now I see one pull request and one patch:
+
+https://patchwork.kernel.org/project/linux-wireless/patch/20230614075502.11=
+765-1-johannes@sipsolutions.net/
+https://patchwork.kernel.org/project/linux-wireless/patch/20230612130256.45=
+72-5-linyunsheng@huawei.com/
+
+It's a minor nuisance so I haven't bothered to even report it to
+patchwork project.
+
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
 
