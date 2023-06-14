@@ -1,37 +1,37 @@
-Return-Path: <netdev+bounces-10637-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10636-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B410472F80D
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 10:40:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 91E4572F807
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 10:40:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6F32E281343
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 08:40:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 18C18281350
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 08:40:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 768EF3D6C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4065417D9;
 	Wed, 14 Jun 2023 08:40:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEDC07FC
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC168369
 	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 08:40:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6463EC433AD;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5DF20C433C0;
 	Wed, 14 Jun 2023 08:40:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1686732023;
-	bh=w7r/Vy2RBgUGguVLqB/vtm9DdBD26hBrdfNnOcrlkOE=;
+	bh=ohGafOhz/k8lrTqI3s/xf/QqRX8/sFC70GYv3S6BuX0=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=sTVizSWFb/tzgy5+wTBvprejqGJcc4Ww/FCrXSMdhUC+0j7FGaWBicvTiHvgwzTlX
-	 tMQvF6uLXVhh9x8SGKUmd2LHBO5/FRNn30wzr6OXbfmLV3amJbPAJ82oV2LhIpo/1n
-	 xourXznT9H9cli0svwAOkSPODn8ZcxeiiqVEiXLJhuK0ZtpE9Jr5vB4LTvlIJ+DKm2
-	 hPi7VhJjCiYq4WaEJnZRxKDNU7wyBP4TgHHY5AX6NKSxcWKRj5kvrBfDQN+5CtAw/P
-	 lqgEr9laYn27OOCKEM+p6r0zevQjnqc8eBpt+mK2TvIoXvWQiNzH9rFsplNgORfGjs
-	 b0NQMnmfL4RVw==
+	b=J9rGV7RgGTnL12eyPFOohWllg4U+WPCeM9+Qep9SDvV1nKw71S4MmlIUJ2BczOMp2
+	 25po0xRBldzcRhaGGl8ZK1NQhv2CZa85QCCykPsu2f2Dv6FgsDC7v9DrQJ4pavAMzL
+	 CexgBw6k7XTbFfl7kvvt0oSXW3Xlo9D1AgIK1Lph0esZPEZVYv2LKM8/V6xDKQItLI
+	 X3OCz0L5Qx0Ah79jRwcyfk6Pg/TdGrPi/yvwVyz99voCA4Q+ce07+0s3E0VKlZUcV+
+	 OPc0UjsXeWm0AHc3xRI0z7r5p1LHTQAO71PQQnN1LzpAfpbetbC17OlJGZn2aJV4Ky
+	 OItO/F80LfUVA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 449DDE2A048;
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 382A8C3274B;
 	Wed, 14 Jun 2023 08:40:23 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
@@ -41,43 +41,44 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/1] net/sched: act_ct: Fix promotion of offloaded
- unreplied tuple
+Subject: Re: [PATCH net 0/2] net/sched: Fix race conditions in
+ mini_qdisc_pair_swap()
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168673202327.7814.1952400928675625882.git-patchwork-notify@kernel.org>
+ <168673202322.7814.14751124253693940183.git-patchwork-notify@kernel.org>
 Date: Wed, 14 Jun 2023 08:40:23 +0000
-References: <1686313379-117663-1-git-send-email-paulb@nvidia.com>
-In-Reply-To: <1686313379-117663-1-git-send-email-paulb@nvidia.com>
-To: Paul Blakey <paulb@nvidia.com>
-Cc: vladbu@nvidia.com, netfilter-devel@vger.kernel.org,
- coreteam@netfilter.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- ozsh@nvidia.com, roid@nvidia.com, saeedm@nvidia.com, pablo@netfilter.org,
- kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net, edumazet@google.com,
- kuba@kernel.org, pabeni@redhat.com, jhs@mojatatu.com,
- xiyou.wangcong@gmail.com, jiri@resnulli.us
+References: <cover.1686355297.git.peilin.ye@bytedance.com>
+In-Reply-To: <cover.1686355297.git.peilin.ye@bytedance.com>
+To: Peilin Ye <yepeilin.cs@gmail.com>
+Cc: jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ peilin.ye@bytedance.com, vladbu@mellanox.com, pctammela@mojatatu.com,
+ john.fastabend@gmail.com, daniel@iogearbox.net, hdanton@sina.com,
+ shaozhengchao@huawei.com, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, cong.wang@bytedance.com
 
 Hello:
 
-This patch was applied to netdev/net.git (main)
+This series was applied to netdev/net.git (main)
 by Paolo Abeni <pabeni@redhat.com>:
 
-On Fri, 9 Jun 2023 15:22:59 +0300 you wrote:
-> Currently UNREPLIED and UNASSURED connections are added to the nf flow
-> table. This causes the following connection packets to be processed
-> by the flow table which then skips conntrack_in(), and thus such the
-> connections will remain UNREPLIED and UNASSURED even if reply traffic
-> is then seen. Even still, the unoffloaded reply packets are the ones
-> triggering hardware update from new to established state, and if
-> there aren't any to triger an update and/or previous update was
-> missed, hardware can get out of sync with sw and still mark
-> packets as new.
+On Sat, 10 Jun 2023 20:29:41 -0700 you wrote:
+> Hi all,
+> 
+> These 2 patches fix race conditions for ingress and clsact Qdiscs as
+> reported [1] by syzbot, split out from another [2] series (last 2 patches
+> of it).  Per-patch changelog omitted.
+> 
+> Patch 1 hasn't been touched since last version; I just included
+> everybody's tag.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/1] net/sched: act_ct: Fix promotion of offloaded unreplied tuple
-    https://git.kernel.org/netdev/net/c/41f2c7c342d3
+  - [net,1/2] net/sched: Refactor qdisc_graft() for ingress and clsact Qdiscs
+    https://git.kernel.org/netdev/net/c/2d5f6a8d7aef
+  - [net,2/2] net/sched: qdisc_destroy() old ingress and clsact Qdiscs before grafting
+    https://git.kernel.org/netdev/net/c/84ad0af0bccd
 
 You are awesome, thank you!
 -- 
