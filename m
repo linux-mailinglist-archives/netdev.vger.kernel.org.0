@@ -1,197 +1,161 @@
-Return-Path: <netdev+bounces-10748-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10751-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 35A62730149
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 16:09:26 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8F641730187
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 16:19:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9B9C9281465
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 14:09:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4BA2528145E
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 14:19:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3A7B6DDAF;
-	Wed, 14 Jun 2023 14:07:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E313DDC5;
+	Wed, 14 Jun 2023 14:19:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F900101C1
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 14:07:42 +0000 (UTC)
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D25C1FE5;
-	Wed, 14 Jun 2023 07:07:40 -0700 (PDT)
-From: Florian Kauer <florian.kauer@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1686751659;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Q1hYNE6dCTQuk9WVmYS4k1xlOgvvBhb4CT2be2LL7DM=;
-	b=ZZvYV1zwPCWYO/QJxWCTeJyNCkmnzf432jgNJvSDhZlVIMN27BnuXbf0i31BtLI3gV/+YA
-	FVz6Ic0Y69dCCdRV1A/qfWvkosFGNADeBdWJueyQ1q3kIwsdmNGLKXQrEEVrNum87qnrOn
-	dlzBLjNaRmPCAGL1pGEZzrY+4EOtDVdBv7o/B3ClKaJHiRwtEGivNNdv2jm7scRPu9adob
-	R9JMzXwSYTxW5qjG+SRx8WWYw8SE0vDm5LtwWT0pkObGsW9ckb6ml+3m5JKtV+Xb6WNue5
-	37sEu1gU/uwYLRcNEAG7C72Xb+kpOeavkDFTgRJ3XiMMugOt2xi1+LKVQztVwQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1686751659;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Q1hYNE6dCTQuk9WVmYS4k1xlOgvvBhb4CT2be2LL7DM=;
-	b=yHOFDzNtJEKU4s4MeGdhgcrNo8WlP4GxqaRe2tJ06SItoPxdsOzaIf8OR6Ie4RfzqKCNtO
-	T8JTtGrn54Bj37CA==
-To: Jesse Brandeburg <jesse.brandeburg@intel.com>,
-	Tony Nguyen <anthony.l.nguyen@intel.com>,
-	Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Tan Tee Min <tee.min.tan@linux.intel.com>,
-	Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>,
-	Aravindhan Gunasekaran <aravindhan.gunasekaran@intel.com>,
-	Malli C <mallikarjuna.chilakala@intel.com>
-Cc: intel-wired-lan@lists.osuosl.org,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	kurt@linutronix.de,
-	florian.kauer@linutronix.de
-Subject: [PATCH net-next 6/6] igc: Fix inserting of empty frame for launchtime
-Date: Wed, 14 Jun 2023 16:07:14 +0200
-Message-Id: <20230614140714.14443-7-florian.kauer@linutronix.de>
-In-Reply-To: <20230614140714.14443-1-florian.kauer@linutronix.de>
-References: <20230614140714.14443-1-florian.kauer@linutronix.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82E1DC2FF
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 14:19:10 +0000 (UTC)
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B10AE10D8;
+	Wed, 14 Jun 2023 07:19:08 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id 98e67ed59e1d1-25e247414d9so340644a91.1;
+        Wed, 14 Jun 2023 07:19:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686752348; x=1689344348;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=j45S64yVRtWNmXi9+AQpAX/jaYs8Bbc2x/KQu3uuygo=;
+        b=lGNA8g/XUZhtMjdIGr5d3t83lKAAlZkr5+qkiFZuJ1870yee6pz6Ea/XZpsaogva4h
+         Ie4KxBWdz2y02qLCLW4QTnS35H0IxGzNaR7Z7CZZf7ypBiMIkRyIlI/BjqFWvqYucfiY
+         VBVsFuwHWRgxyL5m5ewLJZTN8xtU4bnccg0j3RSLnrS0qYrpYz5P+SuZvtfz5kNl1Ez8
+         j6kr7dXOXrn3PibKwXTJNtZ7DsEuPPwxnxLjLoZ0GZD2MlwLZ7DV8qfT9EySXmjKTxP/
+         pz0FGVN0MzfAQ4HlWrbCSnWvetd4/+0eGik/vTY5zezVtO+K7gEZczhkeY2ha2iWq7km
+         OAbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686752348; x=1689344348;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=j45S64yVRtWNmXi9+AQpAX/jaYs8Bbc2x/KQu3uuygo=;
+        b=K7muAopsdrXsIGj4x3ZJdrMPN35Nt9zNVxzVM/1hl6fYqhMkvutCvzQNZOx1Bel2hb
+         pCRlalS+X6Tnndlf9EHbUWedxj3LX0CKBJuFiU3NTTDalj9mXdCWW7gcfHOPibH7FN34
+         +c2Fc19pA7pTWzWfuuMHNZ7qp7Pi7dld6c+qM/TeL9a4Xm6+swHOK0YI9WLReyGCK09/
+         fEwhFPd2evSH1nA2KdGpt5PnSyL8dGc+qymhFmSmNerUyRb2WxgwfBSlkcRyFH8dkK8R
+         0t9+oHvypthxKIuorg8eWD+EknumIPdDZDtJvUDbFGvkWoPfcWpfexQF8DEKvrvuG9Ao
+         lW5Q==
+X-Gm-Message-State: AC+VfDwNqMn+nRESL6CLoh98S0X7XjCww4gJI8NTvqUJJwLa6A0YCFIE
+	lo9QpL4v7zNcK1fgmVyYcZebZnKaIV+UVfJmnfQ=
+X-Google-Smtp-Source: ACHHUZ4roEXXepcOtSNdTNs0VwxnLll6tA0/2fTae80GaMgdp4nAlRuQJ/EuKIebK1XhccvRUJJiqy/YsYFns3wYIx8=
+X-Received: by 2002:a17:90b:214:b0:259:17bc:1a3c with SMTP id
+ fy20-20020a17090b021400b0025917bc1a3cmr1385035pjb.7.1686752347917; Wed, 14
+ Jun 2023 07:19:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.6
+References: <20230609131740.7496-1-linyunsheng@huawei.com> <20230609131740.7496-4-linyunsheng@huawei.com>
+ <CAKgT0UfVwQ=ri7ZDNnsATH2RQpEz+zDBBb6YprvniMEWGdw+dQ@mail.gmail.com> <36366741-8df2-1137-0dd9-d498d0f770e4@huawei.com>
+In-Reply-To: <36366741-8df2-1137-0dd9-d498d0f770e4@huawei.com>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Wed, 14 Jun 2023 07:18:31 -0700
+Message-ID: <CAKgT0UdXTSv1fDHBX4UC6Ok9NXKMJ_9F88CEv5TK+mpzy0N21g@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 3/4] page_pool: introduce page_pool_alloc() API
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com, 
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Lorenzo Bianconi <lorenzo@kernel.org>, Jesper Dangaard Brouer <hawk@kernel.org>, 
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The insertion of an empty frame was introduced with
-commit db0b124f02ba ("igc: Enhance Qbv scheduling by using first flag bit")
-in order to ensure that the current cycle has at least one packet if
-there is some packet to be scheduled for the next cycle.
+On Tue, Jun 13, 2023 at 8:51=E2=80=AFPM Yunsheng Lin <linyunsheng@huawei.co=
+m> wrote:
+>
+> On 2023/6/13 22:36, Alexander Duyck wrote:
+> > On Fri, Jun 9, 2023 at 6:20=E2=80=AFAM Yunsheng Lin <linyunsheng@huawei=
+.com> wrote:
+>
+> ...
+>
+> >>
+> >> +static inline struct page *page_pool_alloc(struct page_pool *pool,
+> >> +                                          unsigned int *offset,
+> >> +                                          unsigned int *size, gfp_t g=
+fp)
+> >> +{
+> >> +       unsigned int max_size =3D PAGE_SIZE << pool->p.order;
+> >> +       struct page *page;
+> >> +
+> >> +       *size =3D ALIGN(*size, dma_get_cache_alignment());
+> >> +
+> >> +       if (WARN_ON(*size > max_size))
+> >> +               return NULL;
+> >> +
+> >> +       if ((*size << 1) > max_size || PAGE_POOL_DMA_USE_PP_FRAG_COUNT=
+) {
+> >> +               *size =3D max_size;
+> >> +               *offset =3D 0;
+> >> +               return page_pool_alloc_pages(pool, gfp);
+> >> +       }
+> >> +
+> >> +       page =3D __page_pool_alloc_frag(pool, offset, *size, gfp);
+> >> +       if (unlikely(!page))
+> >> +               return NULL;
+> >> +
+> >> +       /* There is very likely not enough space for another frag, so =
+append the
+> >> +        * remaining size to the current frag to avoid truesize undere=
+stimate
+> >> +        * problem.
+> >> +        */
+> >> +       if (pool->frag_offset + *size > max_size) {
+> >> +               *size =3D max_size - *offset;
+> >> +               pool->frag_offset =3D max_size;
+> >> +       }
+> >> +
+> >
+> > Rather than preventing a truesize underestimation this will cause one.
+> > You are adding memory to the size of the page reserved and not
+> > accounting for it anywhere as this isn't reported up to the network
+> > stack. I would suggest dropping this from your patch.
+>
+> I was thinking about the driver author reporting it up to the network
+> stack using the new API as something like below:
+>
+> int truesize =3D size;
+> struct page *page;
+> int offset;
+>
+> page =3D page_pool_dev_alloc(pool, &offset, &truesize);
+> if (unlikely(!page))
+>         goto err;
+>
+> skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page,
+>                 offset, size, truesize);
+>
+> and similiar handling for *_build_skb() case too.
+>
+> Does it make senses for that? or did I miss something obvious here?
 
-However, the current implementation does not properly check if
-a packet is already scheduled for the current cycle. Currently,
-an empty packet is always inserted if and only if
-txtime >= end_of_cycle && txtime > last_tx_cycle
-but since last_tx_cycle is always either the end of the current
-cycle (end_of_cycle) or the end of a previous cycle, the
-second part (txtime > last_tx_cycle) is always true unless
-txtime == last_tx_cycle.
+It is more the fact that you are creating a solution in search of a
+problem. As I said before most of the drivers will deal with these
+sorts of issues by just doing the fragmentation themselves or
+allocating fixed size frags and knowing how it will be divided into
+the page.
 
-What actually needs to be checked here is if the last_tx_cycle
-was already written within the current cycle, so an empty frame
-should only be inserted if and only if
-txtime >= end_of_cycle && end_of_cycle > last_tx_cycle.
-
-This patch does not only avoid an unnecessary insertion, but it
-can actually be harmful to insert an empty packet if packets
-are already scheduled in the current cycle, because it can lead
-to a situation where the empty packet is actually processed
-as the first packet in the upcoming cycle shifting the packet
-with the first_flag even one cycle into the future, finally leading
-to a TX hang.
-
-The TX hang can be reproduced on a i225 with:
-
-    sudo tc qdisc replace dev enp1s0 parent root handle 100 taprio \
-	    num_tc 1 \
-	    map 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \
-	    queues 1@0 \
-	    base-time 0 \
-	    sched-entry S 01 300000 \
-	    flags 0x1 \
-	    txtime-delay 500000 \
-	    clockid CLOCK_TAI
-    sudo tc qdisc replace dev enp1s0 parent 100:1 etf \
-	    clockid CLOCK_TAI \
-	    delta 500000 \
-	    offload \
-	    skip_sock_check
-
-and traffic generator
-
-    sudo trafgen -i traffic.cfg -o enp1s0 --cpp -n0 -q -t1400ns
-
-with traffic.cfg
-
-    #define ETH_P_IP        0x0800
-
-    {
-      /* Ethernet Header */
-      0x30, 0x1f, 0x9a, 0xd0, 0xf0, 0x0e,  # MAC Dest - adapt as needed
-      0x24, 0x5e, 0xbe, 0x57, 0x2e, 0x36,  # MAC Src  - adapt as needed
-      const16(ETH_P_IP),
-
-      /* IPv4 Header */
-      0b01000101, 0,   # IPv4 version, IHL, TOS
-      const16(1028),   # IPv4 total length (UDP length + 20 bytes (IP header))
-      const16(2),      # IPv4 ident
-      0b01000000, 0,   # IPv4 flags, fragmentation off
-      64,              # IPv4 TTL
-      17,              # Protocol UDP
-      csumip(14, 33),  # IPv4 checksum
-
-      /* UDP Header */
-      10,  0, 48, 1,   # IP Src - adapt as needed
-      10,  0, 48, 10,  # IP Dest - adapt as needed
-      const16(5555),   # UDP Src Port
-      const16(6666),   # UDP Dest Port
-      const16(1008),   # UDP length (UDP header 8 bytes + payload length)
-      csumudp(14, 34), # UDP checksum
-
-      /* Payload */
-      fill('W', 1000),
-    }
-
-and the observed message with that is for example
-
- igc 0000:01:00.0 enp1s0: Detected Tx Unit Hang
-   Tx Queue             <0>
-   TDH                  <32>
-   TDT                  <3c>
-   next_to_use          <3c>
-   next_to_clean        <32>
- buffer_info[next_to_clean]
-   time_stamp           <ffff26a8>
-   next_to_watch        <00000000632a1828>
-   jiffies              <ffff27f8>
-   desc.status          <1048000>
-
-Fixes: db0b124f02ba ("igc: Enhance Qbv scheduling by using first flag bit")
-Signed-off-by: Florian Kauer <florian.kauer@linutronix.de>
-Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
----
- drivers/net/ethernet/intel/igc/igc_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index ec8649751d19..1556beaefbc3 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -1023,7 +1023,7 @@ static __le32 igc_tx_launchtime(struct igc_ring *ring, ktime_t txtime,
- 			*first_flag = true;
- 			ring->last_ff_cycle = baset_est;
- 
--			if (ktime_compare(txtime, ring->last_tx_cycle) > 0)
-+			if (ktime_compare(end_of_cycle, ring->last_tx_cycle) > 0)
- 				*insert_empty = true;
- 		}
- 	}
--- 
-2.39.2
-
+If you are going to go down this path then you should have a consumer
+for the API and fully implement it instead of taking half measures and
+making truesize underreporting worse by evicting pages earlier.
 
