@@ -1,176 +1,111 @@
-Return-Path: <netdev+bounces-10652-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10572-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id F16D272F8F6
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:24:28 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 15D8272F28A
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 04:20:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2F4571C20C55
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 09:24:28 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 399B51C20A61
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 02:20:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0A4655680;
-	Wed, 14 Jun 2023 09:24:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1402A38E;
+	Wed, 14 Jun 2023 02:20:01 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F19357FC
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 09:24:25 +0000 (UTC)
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121EA10E6;
-	Wed, 14 Jun 2023 02:24:24 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-3094910b150so6436184f8f.0;
-        Wed, 14 Jun 2023 02:24:23 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFF577F
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 02:20:00 +0000 (UTC)
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF2019BC
+	for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 19:19:59 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id 5614622812f47-39c873a5127so3548465b6e.1
+        for <netdev@vger.kernel.org>; Tue, 13 Jun 2023 19:19:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686734662; x=1689326662;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=7vhykEG+gmq52oSNnSPExwEhKf++8eJ31Faf/uybBvo=;
-        b=MZ/7VuHlf5M9nJ6GXXGSP1shZRtsCCaJ2g1j1OJitRZdfzuJO4bcP/WrJK9xlZx0Oo
-         hpw/s/lLqJdUEWkv2tTQCMhlLKqD+wY5oNP7anb9MBqGoYJs964f2fdBDojrxtRFaTGp
-         pJwciX0i1lH9vnHrK/eRFArcpXq/aW9x5BJicwhqtCTndYKjjgwsXAgVAh+b3Wz46Y3i
-         rO3TqSCN9HsfV0/sHavO/kdnTDIFagXodFR5Qg+JWuF7odcqYGYdOgnqbfwXGe3nCVGj
-         jCndsch5YUCIWn23HGTU8YtfqebJ1Y0dCpAqcbRK9NW5x6D/XmN4K6h8XDnSPloszexE
-         fgeA==
+        d=gmail.com; s=20221208; t=1686709199; x=1689301199;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=u552eQOgWUy1rtQH1DAKDFXYRjma9gSVdbRNm6si5vc=;
+        b=PFhbgqHQA1xNr78bs+qPG/1YPQrHXQ73+cZFMBn72NzFMP8jHSJk9QTyUyY5JlGJjn
+         dxziwHXbvmgDEcBABsEiz9eor7tGklHrfoadAsSwmAVdB6W2Zw4LzQnr35b8i47izDeC
+         ppHDcUs643eKqf0eMunASZ4h5E+t/m8z3zjMqBGvoNgPooUHH1iAeKEr73EMhzZNeVZu
+         r96LPLF+9Knr7X+KiGv/sv3DE9eqkqYEFw6ToL4GhnNpac42WJTvhqtHAniX4oqEoUJ2
+         Pitc9uR4vv8Fc49yqo7o0GkreOXmEiEq0x6EHBTrr63gTmV7hwyQqIeYDs1TNhBXlnUw
+         yg1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686734662; x=1689326662;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7vhykEG+gmq52oSNnSPExwEhKf++8eJ31Faf/uybBvo=;
-        b=emueV7jOFT34iW/HcegVx/asotRLuK7qHPEGxuloWDjSsS62TOHsVCs09lAbFVU2Mi
-         p/9b2katYR2zEMyYFDgQAh25HfXuUvPFwgxuupiHsdYmeUTnMjziRRRCaxHK3rHr/8fh
-         XqSawgh/T9iI6QQ4kwT0bz2E+Y/Yuwl/D/r50t4Q2yn3+CHs95OripSdrHUVr7+FYuU1
-         upVAkY9PfhCTVYhvf7bmfZF1snuCzTTCSiO1fc0x4Oc3hetx4g7josHTErVFEzRTnwpP
-         xPeUpkkF42YGFUsa3RfeULJrOOvDQFNL9h3CihRKBj/CVLZGe3CPouXL+dQ/ikj9a8ms
-         L6AQ==
-X-Gm-Message-State: AC+VfDxTWDGHb0xZVR39Pak98Nz7HFCnerJJ7APjuM5ya2gozASst7pj
-	EehBzq/E7unOMBmvLdfwySY=
-X-Google-Smtp-Source: ACHHUZ5EYjmX3Te3NRl5NRfUn4gvi77Sf9p4U7ex2tQl76NC2IloI4S7UAWui12wcDHsMggxAlCHCA==
-X-Received: by 2002:adf:fcc1:0:b0:30a:e369:5acb with SMTP id f1-20020adffcc1000000b0030ae3695acbmr10329954wrs.68.1686734662140;
-        Wed, 14 Jun 2023 02:24:22 -0700 (PDT)
-Received: from Ansuel-xps. (93-34-93-173.ip49.fastwebnet.it. [93.34.93.173])
-        by smtp.gmail.com with ESMTPSA id d17-20020a5d6dd1000000b003095bd71159sm17777371wrz.7.2023.06.14.02.24.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jun 2023 02:24:21 -0700 (PDT)
-Message-ID: <64898745.5d0a0220.546a.a6f1@mx.google.com>
-X-Google-Original-Message-ID: <ZIki6HMOBlgvBURh@Ansuel-xps.>
-Date: Wed, 14 Jun 2023 04:16:08 +0200
-From: Christian Marangi <ansuelsmth@gmail.com>
-To: Jose Abreu <Jose.Abreu@synopsys.com>
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-stm32@st-md-mailman.stormreply.com" <linux-stm32@st-md-mailman.stormreply.com>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [net-next PATCH v5 4/5] net: ethernet: stmicro: stmmac: generate
- stmmac dma conf before open
-References: <20220723142933.16030-1-ansuelsmth@gmail.com>
- <20220723142933.16030-5-ansuelsmth@gmail.com>
- <DM4PR12MB508882D5BE351BD756A7A9A4D35AA@DM4PR12MB5088.namprd12.prod.outlook.com>
+        d=1e100.net; s=20221208; t=1686709199; x=1689301199;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=u552eQOgWUy1rtQH1DAKDFXYRjma9gSVdbRNm6si5vc=;
+        b=XjJ0oIciKkLPuaacH8OoWV0N/Mt+Klj8TMLFAGF3IY/uEKSiyVpo8MgnnM4vxsc2KQ
+         HWlACc3bYLMdZ9hI/+FEx7aF9KcvCTxLg0NYHa0+nGDF1cTL+hk/7RYvyp771i9MbHDu
+         ihmRPxV2LGVviqFFZBSc4qVlT/kvPq+fePI2S+TW7hRV87Zh4+g1E3oFmNGFsjo+exdz
+         YmP3YaJikBoQx7ngoDio+6I7vLEHZ/g/O9roLVqyiwHTIQWuZmXLXtizyQzBHvwsRA7z
+         OLmCuUybgBsGeLGscK90GWYBAjSp8xBI5JPpQ0tIR6pmlfUvZ+oK+YvAYb7pv5jmhyPn
+         6n8g==
+X-Gm-Message-State: AC+VfDxwm0jFjjHnsSX+kfnsH7BQrBbjpj9jiX6WTA9R+QUWGgciJWib
+	xP35Tzm4qnXJOwfAoAAoIO8=
+X-Google-Smtp-Source: ACHHUZ4osrhhRlFdK2dZoFcEF9c8SgV6UHsJICDJdFsDuqI1MDi+EyBia5CLc+CsFykqZjrDkl/DZQ==
+X-Received: by 2002:a05:6808:14d2:b0:398:182f:2ba1 with SMTP id f18-20020a05680814d200b00398182f2ba1mr11282985oiw.25.1686709198652;
+        Tue, 13 Jun 2023 19:19:58 -0700 (PDT)
+Received: from [192.168.100.124] (63-157-183-34.dia.static.qwest.net. [63.157.183.34])
+        by smtp.googlemail.com with ESMTPSA id u16-20020a17090adb5000b0025df695a02asm224709pjx.17.2023.06.13.19.19.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Jun 2023 19:19:57 -0700 (PDT)
+Message-ID: <40616c85-fc60-61fa-c3b5-fcda82a4a46d@gmail.com>
+Date: Tue, 13 Jun 2023 19:19:56 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM4PR12MB508882D5BE351BD756A7A9A4D35AA@DM4PR12MB5088.namprd12.prod.outlook.com>
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DATE_IN_PAST_06_12,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.11.2
+Subject: Re: [PATCH net-next v2 1/2] net: create device lookup API with
+ reference tracking
+Content-Language: en-US
+To: Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc: netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com
+References: <20230612214944.1837648-1-kuba@kernel.org>
+ <20230612214944.1837648-2-kuba@kernel.org>
+From: David Ahern <dsahern@gmail.com>
+In-Reply-To: <20230612214944.1837648-2-kuba@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
 	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=no autolearn_force=no version=3.4.6
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, Jun 14, 2023 at 07:15:03AM +0000, Jose Abreu wrote:
-> Hi Christian,
+On 6/12/23 3:49 PM, Jakub Kicinski wrote:
+> New users of dev_get_by_index() and dev_get_by_name() keep
+> getting added and it would be nice to steer them towards
+> the APIs with reference tracking.
 > 
-> From: Christian Marangi <ansuelsmth@gmail.com>
-> Date: Sat, Jul 23, 2022 at 15:29:32
+> Add variants of those calls which allocate the reference
+> tracker and use them in a couple of places.
 > 
-> > +static int __stmmac_open(struct net_device *dev,
-> > +			 struct stmmac_dma_conf *dma_conf)
-> >  {
-> >  	struct stmmac_priv *priv = netdev_priv(dev);
-> >  	int mode = priv->plat->phy_interface;
-> > -	int bfsize = 0;
-> >  	u32 chan;
-> >  	int ret;
-> >  
-> > @@ -3657,45 +3794,10 @@ static int stmmac_open(struct net_device *dev)
-> >  	memset(&priv->xstats, 0, sizeof(struct stmmac_extra_stats));
-> >  	priv->xstats.threshold = tc;
-> >  
-> > -	bfsize = stmmac_set_16kib_bfsize(priv, dev->mtu);
-> > -	if (bfsize < 0)
-> > -		bfsize = 0;
-> > -
-> > -	if (bfsize < BUF_SIZE_16KiB)
-> > -		bfsize = stmmac_set_bfsize(dev->mtu, priv->dma_conf.dma_buf_sz);
-> > -
-> > -	priv->dma_conf.dma_buf_sz = bfsize;
-> > -	buf_sz = bfsize;
-> > -
-> >  	priv->rx_copybreak = STMMAC_RX_COPYBREAK;
-> >  
-> > -	if (!priv->dma_conf.dma_tx_size)
-> > -		priv->dma_conf.dma_tx_size = DMA_DEFAULT_TX_SIZE;
-> > -	if (!priv->dma_conf.dma_rx_size)
-> > -		priv->dma_conf.dma_rx_size = DMA_DEFAULT_RX_SIZE;
-> > -
-> > -	/* Earlier check for TBS */
-> > -	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++) {
-> > -		struct stmmac_tx_queue *tx_q = &priv->dma_conf.tx_queue[chan];
-> > -		int tbs_en = priv->plat->tx_queues_cfg[chan].tbs_en;
-> > -
-> > -		/* Setup per-TXQ tbs flag before TX descriptor alloc */
-> > -		tx_q->tbs |= tbs_en ? STMMAC_TBS_AVAIL : 0;
-> > -	}
-> > -
-> > -	ret = alloc_dma_desc_resources(priv);
-> > -	if (ret < 0) {
-> > -		netdev_err(priv->dev, "%s: DMA descriptors allocation failed\n",
-> > -			   __func__);
-> > -		goto dma_desc_error;
-> > -	}
-> > -
-> > -	ret = init_dma_desc_rings(dev, GFP_KERNEL);
-> > -	if (ret < 0) {
-> > -		netdev_err(priv->dev, "%s: DMA descriptors initialization failed\n",
-> > -			   __func__);
-> > -		goto init_error;
-> > -	}
-> > +	buf_sz = dma_conf->dma_buf_sz;
-> > +	memcpy(&priv->dma_conf, dma_conf, sizeof(*dma_conf));
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> v2:
+>  - convert intermediate dev_put() -> netdev_put() in ethtool
+> v1: https://lore.kernel.org/all/20230609183207.1466075-1-kuba@kernel.org/
+> ---
+>  include/linux/netdevice.h |  4 +++
+>  net/core/dev.c            | 75 ++++++++++++++++++++++++++-------------
+>  net/ethtool/netlink.c     | 10 +++---
+>  net/ipv6/route.c          | 12 +++----
+>  4 files changed, 66 insertions(+), 35 deletions(-)
 > 
-> This memcpy() needs to be the first thing to be done on __stmmac_open(), otherwise
-> you'll leak the dma_conf when stmmac_init_phy() fails.
->
 
-I'm not following the meaning of leak here. If it's intended as a memory
-leak then dma_conf is correctly freed in the 2 user of __stmmac_open.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-stmmac_init_phy also doesn't seems to use dma_conf. Am I missing
-something here?
 
-> Can you please send follow-up patch?
-
-Happy to push a follow-up patch with these concern cleared!
-
-> 
-> Thanks,
-> Jose
-
--- 
-	Ansuel
 
