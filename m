@@ -1,180 +1,140 @@
-Return-Path: <netdev+bounces-10656-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10657-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6F77E72F96D
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:40:39 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id BBDDE72F989
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:43:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2B3BA281239
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 09:40:38 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A56001C20C77
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 09:43:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E705569D;
-	Wed, 14 Jun 2023 09:40:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 920806110;
+	Wed, 14 Jun 2023 09:43:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 712386101
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 09:40:36 +0000 (UTC)
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605C12D75
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 02:40:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686735601; x=1718271601;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=dLy4O6Uul/cbqW0rTEAUKNks1q6NbuP6jzScLCB4tas=;
-  b=Jsx1ETyopDlLPWbtcskJKDHCI6Hbd0kN17eNdDhmTY/2U2krpyTs6TPO
-   u6wl2aw3+bIk5DAQozUfASy/fi1W5mQi7wgLfoaWtmD+Bez6O4OjzR1hL
-   gx5bx+hsSMxPK1nKacZhdObrs6spe/aF+Stqm+3FmLHjKusMB8Y729tQg
-   g1UhsOotyHH/jbiFzKvJUgCqE+oHXOoFOPxp/8HMPjOVG0Ukt+M7kA4gJ
-   UsqzVHMaFgt6bsvJMTIvdLtObUNjiYO8IipkQpQiK51lcppu+eBz2bE3/
-   0FajlcjBRHj9JWqaf/U8j4nIgiSSTzV9kgW30qKZjGAvXVnsiME8WSIOB
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="422170681"
-X-IronPort-AV: E=Sophos;i="6.00,242,1681196400"; 
-   d="scan'208";a="422170681"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2023 02:40:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="741772509"
-X-IronPort-AV: E=Sophos;i="6.00,242,1681196400"; 
-   d="scan'208";a="741772509"
-Received: from mszycik-mobl1.ger.corp.intel.com (HELO [10.249.137.22]) ([10.249.137.22])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2023 02:39:57 -0700
-Message-ID: <7ff20252-4672-fdcf-6c64-f7bbbd469cc7@linux.intel.com>
-Date: Wed, 14 Jun 2023 11:39:49 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81D046101
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 09:43:37 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84B6D296E
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 02:43:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686735768;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=qN+1diYhERNkjXIoa2/XDpR5RGrQlC1FGasx3olZwEM=;
+	b=TuPIZsZmnjjhsAmrD3evvT9FP4NM4t/kgruFaOKFJU/PYFQvF7itrQktD4Qj/9DVfIXtQF
+	Y3iLO7+3K4bNb3h0Ox6GyF7SKfoMjxsdP6YfumBdGvMqjmBAn7eWhn8DY0uUOHBevoy4ih
+	sJIMZ2FPEVWBlqQ3TZFFYKt7/af0NqU=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-303-zsB2rG_lPHWKVrcn7xLkBA-1; Wed, 14 Jun 2023 05:42:46 -0400
+X-MC-Unique: zsB2rG_lPHWKVrcn7xLkBA-1
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-3f7ba550b12so13963265e9.0
+        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 02:42:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686735765; x=1689327765;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=qN+1diYhERNkjXIoa2/XDpR5RGrQlC1FGasx3olZwEM=;
+        b=HFOjxTfu+ZJFfpyp5hA+pkP5lE+6GXZdvTjwqalu9ARF1y6kur8DGlStDXaS7a04Eo
+         vMuZ02kQN8lKRrgxze88gJFXjegSd0N/mDNRQFW4jJ6DrOzgWhj9hXZwrY56r91vlfL4
+         qCLlldGMYaWoXSUw185vncl2BcmWcZS5olUloY4z3Ia1k+y6N/0wF4b9f8YI2JlJSmmv
+         AgrvlKawfGP1paIwFSKZblvuODduH7rHa57+W9vsnJePaqUEaa7usJUWt3ZhBy2zMDK5
+         pgjlXTuMQ7A9PIciaa0+GRR+8Dh2nliDo1CURpWdedGCjIAt3Ti+sFJKHx957wymPqZp
+         A9Kw==
+X-Gm-Message-State: AC+VfDxUHGkFiIsEnVoln3QmxSgxWPiVbDIOwCX5NMcEXtEQDfWFz/Xm
+	iTgqIwslragBy2cDwyAjS+fN5j8fbwhLXsyVDygC50Kt7rg30xyN9op3Av1p0FXhBGBxep9V3Z/
+	Oehxebvf8y4OQInys
+X-Received: by 2002:adf:f642:0:b0:30c:4191:b247 with SMTP id x2-20020adff642000000b0030c4191b247mr10353544wrp.5.1686735765420;
+        Wed, 14 Jun 2023 02:42:45 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ66KndozB3mH6VvltJu6YxrA+IR8sESkB/CE2sAaPLInx38QXIMj0yTlAeCaYNi/KUJG6h8UQ==
+X-Received: by 2002:adf:f642:0:b0:30c:4191:b247 with SMTP id x2-20020adff642000000b0030c4191b247mr10353530wrp.5.1686735765049;
+        Wed, 14 Jun 2023 02:42:45 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-244-67.dyn.eolo.it. [146.241.244.67])
+        by smtp.gmail.com with ESMTPSA id i1-20020adfefc1000000b0030647449730sm17895849wrp.74.2023.06.14.02.42.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Jun 2023 02:42:44 -0700 (PDT)
+Message-ID: <dffbf0474b1352f1eac63125a973c8f8cd7b3e8d.camel@redhat.com>
+Subject: Re: [PATCH] net: hsr: Disable promiscuous mode in offload mode
+From: Paolo Abeni <pabeni@redhat.com>
+To: Ravi Gunasekaran <r-gunasekaran@ti.com>, davem@davemloft.net, 
+	edumazet@google.com, kuba@kernel.org, bigeasy@linutronix.de
+Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, rogerq@kernel.org
+Date: Wed, 14 Jun 2023 11:42:43 +0200
+In-Reply-To: <20230612093933.13267-1-r-gunasekaran@ti.com>
+References: <20230612093933.13267-1-r-gunasekaran@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH iwl-next v2 0/6] ice: Add PFCP filter support
-Content-Language: en-US
-To: intel-wired-lan@lists.osuosl.org
-Cc: netdev@vger.kernel.org, wojciech.drewek@intel.com,
- michal.swiatkowski@linux.intel.com, aleksander.lobakin@intel.com,
- davem@davemloft.net, kuba@kernel.org, jiri@resnulli.us, pabeni@redhat.com,
- jesse.brandeburg@intel.com, simon.horman@corigine.com, idosch@nvidia.com
-References: <20230607112606.15899-1-marcin.szycik@linux.intel.com>
-From: Marcin Szycik <marcin.szycik@linux.intel.com>
-In-Reply-To: <20230607112606.15899-1-marcin.szycik@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 07.06.2023 13:26, Marcin Szycik wrote:
-> Add support for creating PFCP filters in switchdev mode. Add pfcp module
-> that allows to create a PFCP-type netdev. The netdev then can be passed to
-> tc when creating a filter to indicate that PFCP filter should be created.
-> 
-> To add a PFCP filter, a special netdev must be created and passed to tc
-> command:
-> 
-> ip link add pfcp0 type pfcp
-> tc filter add dev eth0 ingress prio 1 flower pfcp_opts \
-> 1:123/ff:fffffffffffffff0 skip_hw action mirred egress redirect dev pfcp0
-> 
-> Changes in iproute2 are required to be able to add the pfcp netdev and use
-> pfcp_opts in tc (patchset will be submitted later).
+On Mon, 2023-06-12 at 15:09 +0530, Ravi Gunasekaran wrote:
+> When port-to-port forwarding for interfaces in HSR node is enabled,
+> disable promiscuous mode since L2 frame forward happens at the
+> offloaded hardware.
+>=20
+> Signed-off-by: Ravi Gunasekaran <r-gunasekaran@ti.com>
+> ---
+>  net/hsr/hsr_device.c |  5 +++++
+>  net/hsr/hsr_main.h   |  1 +
+>  net/hsr/hsr_slave.c  | 15 +++++++++++----
+>  3 files changed, 17 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
+> index 5a236aae2366..306f942c3b28 100644
+> --- a/net/hsr/hsr_device.c
+> +++ b/net/hsr/hsr_device.c
+> @@ -531,6 +531,11 @@ int hsr_dev_finalize(struct net_device *hsr_dev, str=
+uct net_device *slave[2],
+>  	if (res)
+>  		goto err_add_master;
+> =20
+> +	/* HSR forwarding offload supported in lower device? */
+> +	if ((slave[0]->features & NETIF_F_HW_HSR_FWD) &&
+> +	    (slave[1]->features & NETIF_F_HW_HSR_FWD))
+> +		hsr->fwd_offloaded =3D true;
+> +
+>  	res =3D register_netdevice(hsr_dev);
+>  	if (res)
+>  		goto err_unregister;
+> diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
+> index 5584c80a5c79..0225fabbe6d1 100644
+> --- a/net/hsr/hsr_main.h
+> +++ b/net/hsr/hsr_main.h
+> @@ -195,6 +195,7 @@ struct hsr_priv {
+>  	struct hsr_self_node	__rcu *self_node;	/* MACs of slaves */
+>  	struct timer_list	announce_timer;	/* Supervision frame dispatch */
+>  	struct timer_list	prune_timer;
+> +	unsigned int            fwd_offloaded : 1; /* Forwarding offloaded to H=
+W */
 
-iproute2 patch posted to netdev [1]. A little clarification: no changes are
-required to create pfcp type netdev - it can be created if pfcp module is
-loaded. Changes in iproute2 are only needed to use the newly introduced
-pfcp_opts.
+Please use plain 'bool' instead.
 
-[1] https://lore.kernel.org/netdev/20230614091758.11180-1-marcin.szycik@linux.intel.com
+Also there is an hole in 'struct hsr_priv' just after 'net_id', you
+could consider moving this new field there.
 
-> 
-> ICE COMMS package is required as it contains PFCP profiles.
-> 
-> Part of this patchset modifies IP_TUNNEL_*_OPTs, which were previously
-> stored in a __be16. All possible values have already been used, making it
-> impossible to add new ones.
-> 
-> Alexander Lobakin (2):
->   ip_tunnel: use a separate struct to store tunnel params in the kernel
->   ip_tunnel: convert __be16 tunnel flags to bitmaps
-> 
-> Marcin Szycik (2):
->   ice: refactor ICE_TC_FLWR_FIELD_ENC_OPTS
->   ice: Add support for PFCP hardware offload in switchdev
-> 
-> Michal Swiatkowski (1):
->   pfcp: always set pfcp metadata
-> 
-> Wojciech Drewek (1):
->   pfcp: add PFCP module
-> 
->  drivers/net/Kconfig                           |  13 +
->  drivers/net/Makefile                          |   1 +
->  drivers/net/bareudp.c                         |  19 +-
->  drivers/net/ethernet/intel/ice/ice_ddp.c      |   9 +
->  .../net/ethernet/intel/ice/ice_flex_type.h    |   4 +-
->  .../ethernet/intel/ice/ice_protocol_type.h    |  12 +
->  drivers/net/ethernet/intel/ice/ice_switch.c   |  85 +++++
->  drivers/net/ethernet/intel/ice/ice_switch.h   |   2 +
->  drivers/net/ethernet/intel/ice/ice_tc_lib.c   |  68 +++-
->  drivers/net/ethernet/intel/ice/ice_tc_lib.h   |   7 +-
->  .../ethernet/mellanox/mlx5/core/en/tc_tun.h   |   2 +-
->  .../mellanox/mlx5/core/en/tc_tun_encap.c      |   6 +-
->  .../mellanox/mlx5/core/en/tc_tun_geneve.c     |  12 +-
->  .../mellanox/mlx5/core/en/tc_tun_gre.c        |   9 +-
->  .../mellanox/mlx5/core/en/tc_tun_vxlan.c      |   9 +-
->  .../net/ethernet/mellanox/mlx5/core/en_tc.c   |  15 +-
->  .../ethernet/mellanox/mlxsw/spectrum_ipip.c   |  62 ++--
->  .../ethernet/mellanox/mlxsw/spectrum_ipip.h   |   2 +-
->  .../ethernet/mellanox/mlxsw/spectrum_span.c   |  10 +-
->  .../ethernet/netronome/nfp/flower/action.c    |  12 +-
->  drivers/net/geneve.c                          |  46 ++-
->  drivers/net/pfcp.c                            | 303 ++++++++++++++++++
->  drivers/net/vxlan/vxlan_core.c                |  14 +-
->  include/linux/netdevice.h                     |   7 +-
->  include/net/dst_metadata.h                    |  10 +-
->  include/net/flow_dissector.h                  |   2 +-
->  include/net/gre.h                             |  59 ++--
->  include/net/ip6_tunnel.h                      |   4 +-
->  include/net/ip_tunnels.h                      | 106 +++++-
->  include/net/pfcp.h                            |  83 +++++
->  include/net/udp_tunnel.h                      |   4 +-
->  include/uapi/linux/if_tunnel.h                |  36 +++
->  include/uapi/linux/pkt_cls.h                  |  14 +
->  net/bridge/br_vlan_tunnel.c                   |   5 +-
->  net/core/filter.c                             |  20 +-
->  net/core/flow_dissector.c                     |  12 +-
->  net/ipv4/fou_bpf.c                            |   2 +-
->  net/ipv4/gre_demux.c                          |   2 +-
->  net/ipv4/ip_gre.c                             | 148 +++++----
->  net/ipv4/ip_tunnel.c                          |  92 ++++--
->  net/ipv4/ip_tunnel_core.c                     |  83 +++--
->  net/ipv4/ip_vti.c                             |  43 ++-
->  net/ipv4/ipip.c                               |  33 +-
->  net/ipv4/ipmr.c                               |   2 +-
->  net/ipv4/udp_tunnel_core.c                    |   5 +-
->  net/ipv6/addrconf.c                           |   3 +-
->  net/ipv6/ip6_gre.c                            |  87 ++---
->  net/ipv6/ip6_tunnel.c                         |  14 +-
->  net/ipv6/sit.c                                |  47 ++-
->  net/netfilter/ipvs/ip_vs_core.c               |   6 +-
->  net/netfilter/ipvs/ip_vs_xmit.c               |  20 +-
->  net/netfilter/nft_tunnel.c                    |  45 +--
->  net/openvswitch/flow_netlink.c                |  55 ++--
->  net/psample/psample.c                         |  26 +-
->  net/sched/act_tunnel_key.c                    |  39 +--
->  net/sched/cls_flower.c                        | 134 +++++++-
->  56 files changed, 1501 insertions(+), 469 deletions(-)
->  create mode 100644 drivers/net/pfcp.c
->  create mode 100644 include/net/pfcp.h
-> 
+
+Thanks!
+
+Paolo
+
 
