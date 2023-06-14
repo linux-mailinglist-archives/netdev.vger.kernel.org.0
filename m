@@ -1,150 +1,138 @@
-Return-Path: <netdev+bounces-10686-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10687-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 69E3272FC49
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:22:18 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0BDCD72FC50
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:25:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 65F5D1C20B1F
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:22:17 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AFD772813D3
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:25:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2155F7499;
-	Wed, 14 Jun 2023 11:22:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D63A4749A;
+	Wed, 14 Jun 2023 11:25:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1616A1FD3
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 11:22:14 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748C1E55
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 04:22:09 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C96CB6FD0
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 11:25:22 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140D8E55
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 04:25:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686741728;
+	s=mimecast20190719; t=1686741920;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=YOQy85RO7Cyq9aLHZ/uDXVS6+1lb+U5DF9ksH03CF8Q=;
-	b=QM2a6C0a+4dfF2CPfl5gDwCYap5fWgajpi9/VQteRIzgkj2iArm8cJvv5JXUfewBk6oZVR
-	3lT3/WB7JZLJuxp6d3LdCHIEWut71jJ24mS9pP3+i+FNjAGFCUa+TqOaZYzjZRjMGLUZOh
-	xQAWT556G7kSkhHIVholy09e1+K5zlw=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-475-xIs3YmApN5mQW0HQLevJNA-1; Wed, 14 Jun 2023 07:22:06 -0400
-X-MC-Unique: xIs3YmApN5mQW0HQLevJNA-1
-Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-3fb2e6ca6eeso3590011cf.1
-        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 04:22:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686741726; x=1689333726;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=YOQy85RO7Cyq9aLHZ/uDXVS6+1lb+U5DF9ksH03CF8Q=;
-        b=ltAzP5nPfTGxJ64q3D2xsIvUetEs2CU+SmOYmrdSmPMNRXtQVGr4a/Hpm1kKJG4Z36
-         mKtKtsvDnAHWaiBTmXQOXpyvnPU+YDuLNHNi23olfCVXl6VU2T+LcHF5X/hrOhvuNDGh
-         bWzh3lRvYhlNpYFYLB+sGN2hepBvTBzulmQfO7MTYq5bzqXDINdRtK9tLjqo9OpcGWh7
-         pAD0lC/TXv+45uuc+id1Xv/nP4mj1N1JtlDhdcw8nv83jn9PkkTLPfkXpggBwc+TV1Ou
-         mWpoedas0tXNm0na2eehRCSmL8f+EqwCqWC7PfM7X9w3lVRLRepqkk4HnmKSmS9zC7yL
-         AeCg==
-X-Gm-Message-State: AC+VfDzmrtq2AyDb1FMd0SaLRCaJVLsSO7fLJh4Yfwfznwb8YUWvB8kr
-	9kEh1GAJRUqXDbcjquVPEGhS3roeHc1XlPd3bmtasYctvnk6iJjkxVS6usXAiePXF4rfj/U1guB
-	RC8liQjlvnKegt7lL
-X-Received: by 2002:a05:622a:1887:b0:3f9:ab19:714b with SMTP id v7-20020a05622a188700b003f9ab19714bmr20006071qtc.3.1686741726447;
-        Wed, 14 Jun 2023 04:22:06 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5V/N6Pd0BDXabSLy6yB25prqhjDYwFEEsOCZOhLe8QIJ2wjnytdWT8za6rGzFd5QSbiLMWCg==
-X-Received: by 2002:a05:622a:1887:b0:3f9:ab19:714b with SMTP id v7-20020a05622a188700b003f9ab19714bmr20006050qtc.3.1686741726199;
-        Wed, 14 Jun 2023 04:22:06 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-244-67.dyn.eolo.it. [146.241.244.67])
-        by smtp.gmail.com with ESMTPSA id h27-20020ac8777b000000b003f6f83de87esm4910905qtu.92.2023.06.14.04.22.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jun 2023 04:22:05 -0700 (PDT)
-Message-ID: <4c056da27c19d95ffeaba5acf1427ecadfc3f94c.camel@redhat.com>
-Subject: Re: [PATCH net-next 04/10] mlxsw: spectrum_router: Access rif->dev
- from params in mlxsw_sp_rif_create()
-From: Paolo Abeni <pabeni@redhat.com>
-To: Petr Machata <petrm@nvidia.com>, "David S. Miller"
- <davem@davemloft.net>,  Eric Dumazet <edumazet@google.com>, Jakub Kicinski
- <kuba@kernel.org>, netdev@vger.kernel.org
-Cc: Ido Schimmel <idosch@nvidia.com>, Amit Cohen <amcohen@nvidia.com>, 
-	mlxsw@nvidia.com
-Date: Wed, 14 Jun 2023 13:22:02 +0200
-In-Reply-To: <7397c89078f4736857e9f8cbcf41f9b361960cf9.1686581444.git.petrm@nvidia.com>
-References: <cover.1686581444.git.petrm@nvidia.com>
-	 <7397c89078f4736857e9f8cbcf41f9b361960cf9.1686581444.git.petrm@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+	bh=XQW9t8cuqrwkY9pUeYFF63NpZzJyoEH492TVoQI3+po=;
+	b=OWeTGrxoWxcDGYnBe0MtUkTHBQZ+NhzvyEQhTgqKWaJysTji1pBuiflzyvgY8tO6remom8
+	SbRl0E/sHLfqrZ1QvVWSeonUftthljt/7qa/G1wmBEKNI4s/Hso06tt7g2n2CeUsBH48NN
+	cC4/VJTuioeasJvcsILP1Oe4XrLqqSo=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-18-DM96FWN-P7SlKHJzKITofw-1; Wed, 14 Jun 2023 07:25:19 -0400
+X-MC-Unique: DM96FWN-P7SlKHJzKITofw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A24FB85A58A;
+	Wed, 14 Jun 2023 11:25:18 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.67])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id A0F64492CA6;
+	Wed, 14 Jun 2023 11:25:15 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <000000000000b928f705fdeb873a@google.com>
+References: <000000000000b928f705fdeb873a@google.com>
+To: syzbot <syzbot+13a08c0bf4d212766c3c@syzkaller.appspotmail.com>
+Cc: dhowells@redhat.com, davem@davemloft.net,
+    herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
+    linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+    pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] [crypto?] general protection fault in shash_async_final
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1433014.1686741914.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 14 Jun 2023 12:25:14 +0100
+Message-ID: <1433015.1686741914@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, 2023-06-12 at 17:31 +0200, Petr Machata wrote:
-> The previous patch added a helper to access a netdevice given a RIF. Usin=
-g
-> this helper in mlxsw_sp_rif_create() is unreasonable: the netdevice was
-> given in RIF creation parameters. Just take it there.
->=20
-> Signed-off-by: Petr Machata <petrm@nvidia.com>
-> Reviewed-by: Amit Cohen <amcohen@nvidia.com>
-> ---
->  drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/driv=
-ers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-> index e9183c223575..da582ef8efda 100644
-> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-> @@ -8138,7 +8138,7 @@ mlxsw_sp_rif_create(struct mlxsw_sp *mlxsw_sp,
->  		err =3D -ENOMEM;
->  		goto err_rif_alloc;
->  	}
-> -	dev_hold(rif->dev);
-> +	dev_hold(params->dev);
->  	mlxsw_sp->router->rifs[rif_index] =3D rif;
->  	rif->mlxsw_sp =3D mlxsw_sp;
->  	rif->ops =3D ops;
-> @@ -8166,12 +8166,12 @@ mlxsw_sp_rif_create(struct mlxsw_sp *mlxsw_sp,
->  			goto err_mr_rif_add;
->  	}
-> =20
-> -	if (netdev_offload_xstats_enabled(rif->dev,
-> +	if (netdev_offload_xstats_enabled(params->dev,
->  					  NETDEV_OFFLOAD_XSTATS_TYPE_L3)) {
->  		err =3D mlxsw_sp_router_port_l3_stats_enable(rif);
->  		if (err)
->  			goto err_stats_enable;
-> -		mlxsw_sp_router_hwstats_notify_schedule(rif->dev);
-> +		mlxsw_sp_router_hwstats_notify_schedule(params->dev);
->  	} else {
->  		mlxsw_sp_rif_counters_alloc(rif);
->  	}
-> @@ -8189,7 +8189,7 @@ mlxsw_sp_rif_create(struct mlxsw_sp *mlxsw_sp,
->  		mlxsw_sp_fid_put(fid);
->  err_fid_get:
->  	mlxsw_sp->router->rifs[rif_index] =3D NULL;
-> -	dev_put(rif->dev);
-> +	dev_put(params->dev);
+Here's a reduced testcase for this.  The key seems to be passing MSG_MORE =
+to
+sendmsg() and then not following up with more data before calling recvmsg(=
+).
+Apart from not oopsing, I wonder what the behaviour should be here?  Shoul=
+d
+recvmsg() return an error (EAGAIN or ENODATA maybe) or should it close the
+existing operation?
 
-Side note: since you are touching this, and dev_{put,hold} are now
-deprecated in favour of the tracker-enabled variants netdev_{put,hold},
-what about a follow-up introducing the usage of the latter helpers?
+David
+---
+// https://syzkaller.appspot.com/bug?id=3Df5d9d503fe959e3b605abdaeedb39b07=
+2556281a
+// autogenerated by syzkaller (https://github.com/google/syzkaller)
+#define _GNU_SOURCE
+#include <endian.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <linux/if_alg.h>
 
-Thanks!
+#define OSERROR(R, S) do { if ((long)(R) =3D=3D -1L) { perror((S)); exit(1=
+); } } while(0)
 
-Paolo
+int main(void)
+{
+	struct sockaddr_alg salg;
+	struct msghdr msg;
+	int algfd, hashfd, res;
+
+	algfd =3D socket(AF_ALG, SOCK_SEQPACKET, 0);
+	OSERROR(algfd, "socket");
+
+	memset(&salg, 0, sizeof(salg));
+	salg.salg_family =3D AF_ALG;
+	strcpy(salg.salg_type, "hash");
+	strcpy(salg.salg_name, "digest_null-generic");
+	res =3D bind(algfd, (struct sockaddr *)&salg, sizeof(salg));
+	OSERROR(res, "bind/alg");
+
+	hashfd =3D accept4(algfd, NULL, 0, 0);
+	OSERROR(hashfd, "accept/alg");
+
+	res =3D setsockopt(3, SOL_ALG, ALG_SET_KEY, NULL, 0);
+	OSERROR(res, "setsockopt/ALG_SET_KEY");
+
+	memset(&msg, 0, sizeof(msg));
+	res =3D sendmsg(hashfd, &msg, MSG_MORE);
+	OSERROR(res, "sendmsg");
+
+	res =3D recvmsg(hashfd, &msg, 0);
+	OSERROR(res, "recvmsg");
+	return 0;
+}
 
 
