@@ -1,332 +1,561 @@
-Return-Path: <netdev+bounces-10858-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10859-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0A1EB73091D
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 22:20:49 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2A3BB730948
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 22:40:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DE0121C20D2E
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 20:20:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8CACE281574
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 20:40:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F3D6125AC;
-	Wed, 14 Jun 2023 20:20:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 869986110;
+	Wed, 14 Jun 2023 20:40:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7869D11CAD
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 20:20:45 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231D32101
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 13:20:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686774042;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Y1DBr2ONz+wXUhM4DC1kd13x5cdbKVHZ3vYKXElwfTc=;
-	b=K/GB/kZukq4RvpmEh7809c1t73En3PnAtZTZ3eInklJvk4Xsl9K5voe2dnHwGGmVDFAeSz
-	aASpTq5F576nBsPbqF7GFkhCTPkT+SZhpeekhwUf5iOABPxX0rV+YDdbDgJ5Qve/Hzcw8K
-	1AZuZC1NHyVldWS/twSv4RI65VgAeZ4=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-180-uOI2VXNyNjC0XLB-emlxuw-1; Wed, 14 Jun 2023 16:20:41 -0400
-X-MC-Unique: uOI2VXNyNjC0XLB-emlxuw-1
-Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-777a93b3277so739388539f.3
-        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 13:20:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686774040; x=1689366040;
-        h=content-transfer-encoding:mime-version:organization:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Y1DBr2ONz+wXUhM4DC1kd13x5cdbKVHZ3vYKXElwfTc=;
-        b=B/t+Ox/7yF6Zg21IHbQjlgE4p4o6ge0EBUnOjalp7FhR2JP2nq0ew/9B4La0HPtNZU
-         geu7uMZFcR7J3mlnDA7xBvzrAMKPDlST+o/RkYlmGc1/a61GUa46kjNGVSDAvc1Cq2is
-         JA6WbQlN7i+eddCSb/oMcFpyTEGfQAz6FUDLdquG/CyXBBtaTdSNMBd0GPCb3qstETJ2
-         Z0/Dsf7dyZ+OuroPP2kGTqwFjzDFnKqdnpgGr+S4N9JgM5HjJQ8SihtxO/m5VgNUjKdj
-         4AEMjDZRu2hdCrHV3IbTYKPQvThWtqTvlt1WCY8GAx0wLy3kAg5Fh1AKYEi5li73LzKE
-         aXfA==
-X-Gm-Message-State: AC+VfDwdhAQro7Uh6LxkGWPzoVcHgTST+ysBjhTt+srQcbcR/8Qr/2Rz
-	+hZQk7KUhpO5eq7NkUNSHdYAZHIpnOb68pJt0bE91grBMuABseGqnO8SZWrLxJfao5RJP6mC4h9
-	TYZfr+p2kH0sN53nn
-X-Received: by 2002:a6b:7b45:0:b0:77b:1c57:7e78 with SMTP id m5-20020a6b7b45000000b0077b1c577e78mr7673229iop.16.1686774040152;
-        Wed, 14 Jun 2023 13:20:40 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7Yt9dHj19FasAc/N5we0zsveyc5D79o8SG1C3GT3kxM87LJkoG0Yl3wOfn4WZ3qGqIvd+xMQ==
-X-Received: by 2002:a6b:7b45:0:b0:77b:1c57:7e78 with SMTP id m5-20020a6b7b45000000b0077b1c577e78mr7673219iop.16.1686774039822;
-        Wed, 14 Jun 2023 13:20:39 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id n28-20020a02cc1c000000b0040bbfad3e28sm5074702jap.96.2023.06.14.13.20.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jun 2023 13:20:39 -0700 (PDT)
-Date: Wed, 14 Jun 2023 14:20:36 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: <jgg@nvidia.com>, <yishaih@nvidia.com>,
- <shameerali.kolothum.thodi@huawei.com>, <kevin.tian@intel.com>
-Cc: Brett Creeley <brett.creeley@amd.com>, <kvm@vger.kernel.org>,
- <netdev@vger.kernel.org>, <shannon.nelson@amd.com>
-Subject: Re: [PATCH v10 vfio 0/7] pds_vfio driver
-Message-ID: <20230614142036.3632d16b.alex.williamson@redhat.com>
-In-Reply-To: <20230602220318.15323-1-brett.creeley@amd.com>
-References: <20230602220318.15323-1-brett.creeley@amd.com>
-Organization: Red Hat
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CC1629A1
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 20:40:34 +0000 (UTC)
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2041.outbound.protection.outlook.com [40.107.8.41])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF77268E;
+	Wed, 14 Jun 2023 13:40:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lc2nv0dVHqrPJeMHPOkAIifonJZrLB/GvYTDrT+UShMIbkVKjOp9/4lNy1DbW1kDHLwAoJy0vxdOj5ioqt4/vlmqXQNQcEwR5RR284TuB0I42c4CYzfXFg9paOxTNzkIuATYwzai+ziBbSo4RmByWxVOgwOyF2ur1taUaEunXPHFHjOPcPHtiyXcD326gvsGPzrZdXkzDJVDt2njwWt+UvQEMHUIQQSRQUor7HqXOdwvavihc3bzuOnkQCC5FT1FCfykcas+9rkdlup9N735P9hYNDTsm2JP3ZrGSZYwOAYqnqQOSjW4yWGrsMu/yKCZsvHpqRF0PaoikErZdQu/+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NxFAuTQI96ktjPvSl0YpBLLA1BR4br9/RdPNk1sn9eI=;
+ b=ggmlkKxBYoj7tPTibKtFuwsu6JkilN4g7zklL7hs+JDfCEKlP6rFt+eaiIYEZldKI5qcX48xcB+OiHSN9lRmnMC3neB1u3sVpOrXCZ3WSORMIvw1YVPrZPam3IkGpbVp0XobG9eJWFSw+yu0+oCJ9pszpetvqtD5VKKy3G9noj8yujd/IfpX+jRi8p1n2HKbHfln0jPdxK+H8qY1/NgvECaXEqIgyk/9VZ+mQ+BpnLyRnnWPkDZn8bTsTaTCGcd4QMDqjZHPDKsHKVdBjFedZOZuoOtoUeUQHYu0bwlJgWkdvPYDUjjpDe55jU/dCUZhb2jrNJ6pdtbMnBfuWS+WPg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=hms.se; dmarc=pass action=none header.from=hms.se; dkim=pass
+ header.d=hms.se; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hms.se; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NxFAuTQI96ktjPvSl0YpBLLA1BR4br9/RdPNk1sn9eI=;
+ b=dehq4AN6qgJ9EZPjSK8387pKvSE+rzQjzLsRAlLoBBKAGHn+bJf+BgK5e6R9ofFZl3JJiGr2Yle1aWZZKDY3fDTwoiZ3DW121J48od1auMv/dSm/GegTH20vBFvZBmWimpMQocc3+9ro+ni8qDNGTdt28ubhd8QIAqqFQhnvJ48=
+Received: from PAVPR10MB7209.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:311::14)
+ by AS2PR10MB7226.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:60a::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.37; Wed, 14 Jun
+ 2023 20:40:29 +0000
+Received: from PAVPR10MB7209.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7fb8:41fa:a2ba:6b25]) by PAVPR10MB7209.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7fb8:41fa:a2ba:6b25%4]) with mapi id 15.20.6455.045; Wed, 14 Jun 2023
+ 20:40:29 +0000
+From: HMS Incident Management <Incidentmanagement@hms.se>
+To: "mkl@pengutronix.de" <mkl@pengutronix.de>, "linux-can@vger.kernel.org"
+	<linux-can@vger.kernel.org>, "Thomas.Kopp@microchip.com"
+	<Thomas.Kopp@microchip.com>
+CC: "socketcan@hartkopp.net" <socketcan@hartkopp.net>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>, "marex@denx.de"
+	<marex@denx.de>, "simon.horman@corigine.com" <simon.horman@corigine.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"mailhol.vincent@wanadoo.fr" <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v5 3/3] can: length: refactor frame lengths definition to add
+ size in bits
+Thread-Topic: [PATCH v5 3/3] can: length: refactor frame lengths definition to
+ add size in bits
+Thread-Index: AQHZnwB0tJzSdRUtgES6oX/99kpc1A==
+Date: Wed, 14 Jun 2023 20:40:29 +0000
+Message-ID:
+ <PAVPR10MB720989527F83A44B6CEEE294B15AA@PAVPR10MB7209.EURPRD10.PROD.OUTLOOK.COM>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=hms.se;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PAVPR10MB7209:EE_|AS2PR10MB7226:EE_
+x-ms-office365-filtering-correlation-id: 3f384a5f-5b14-4534-5b81-08db6d17974d
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ W7bufFP5o76NZhvyne4wdvCEOQkDylUiwgvQe5WMuqDFWjaf7h4pA7Iid5slo6oh07SOtHKJ2wrodGSZNNjNltLc3eZ2U1rZCVaW8PCHJcRxbk4miio5NXEXI4CAiVcgjdm4O9lSULd6p89aIaeA4YrKrLHrbG6ZKeN93Wv1xs99LY5ZxrClbXOb9GyY6cHSQlHN3/hpWGTzlRBU7W/MCN5+Vl07t7t5Z4wcVJ2hW1hPB2qMGAUzGSJIxrAyI387KjlEYgzAmxbWGNbzL7vgwenQEQNDz/egP54oDOVZTFfxpzh72NjM7CAd7Rers3W9SPHFhnoFzkD2HvkJC4IQPVBg/JZk3rPYh+Tbc0Jsmh5lCLCeF99zgE7racqvv3j/d39UN4kzmuZYaVyqDW33Y5qDb8dWvmezi74pVm72ddXumg9LBPcX/zPfJezBOiuYM1VRkGL96EIWOTOH076XTrhnrYrMQ6PWIQO0bqcWCpLRfKwsMttyjcqnURbqPJERc5csa3pt0q++x62zJpg3JEF4YzDvlQ1P6KUvsi7N0qyUecncwDuSZYYGIeNHfpGFpP2vBEGf1aSTMzDeCJ16s9oP3iyoTFZmJMp5f6d7aeIeh6Af1IY2iqDFhZlx7V4L
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAVPR10MB7209.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39850400004)(376002)(396003)(366004)(346002)(136003)(451199021)(7696005)(71200400001)(55016003)(186003)(6506007)(26005)(9686003)(66946007)(66556008)(4326008)(64756008)(66476007)(66446008)(41300700001)(8676002)(8936002)(122000001)(38070700005)(2906002)(38100700002)(316002)(5660300002)(52536014)(30864003)(76116006)(83380400001)(54906003)(86362001)(110136005)(33656002)(478600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?RsK/gKFxrP9fW4Mx55KyMcTvxXmGaT+ApBBj1Hk2ckxSPSFB2ERsR13XI1pR?=
+ =?us-ascii?Q?WjDVNt29m2CPFdtV0juV5gZ7IgHJMyN3iUocnmAgNRAI7pjLJb30QABl5LdQ?=
+ =?us-ascii?Q?U50nDTpaQ6rmqsYLzgz7tmnj1aMxUt4CRPqHVEcgNioV0m6ddFAPR/khAjKZ?=
+ =?us-ascii?Q?ElN4PvNN4eHwrP7AhBzLfNl9qobvoUVhP7su6AhWmtyOKcoBdsDU49b4wJAU?=
+ =?us-ascii?Q?nzxehOxyy69cULeOO3ypX/JlA0yIKR3vWDvyQNYKeDCI/Y0t0OVN7oWwvYOw?=
+ =?us-ascii?Q?R0r/TFd4DNvqlEnU2cQ8Bfd+3Vgdw+gT8jKSlnHXgxw6i/KftV2m8BQdlAIN?=
+ =?us-ascii?Q?oMqQtonPTXhOQAPwuiHRfugsDQg+mW+sUMlZhpVN57KsoYD6GfZxTjJONFJO?=
+ =?us-ascii?Q?oAOqAm/reK6F3yxMDDhXQ+P5Gf8bmwTigmcdoNWTslE7Ccb/13Zkn/Q8bP2B?=
+ =?us-ascii?Q?nX0/2IdUSZF8unOXdeLIZ7GWDZ8yxv8wz+AargL7EGRPJr6zE9MVJ9+RBUX/?=
+ =?us-ascii?Q?A46rbrrJnTZwjUz0Rweji76HfXVdreIItB5Ag3aE3SvPJeyjDeT5k/AwdOW3?=
+ =?us-ascii?Q?AIo3ScxKZf+exRgRRx8yZvGJ4eR/rABt3Fww+/FvqVIwzCaxtEwKt5SFAJgC?=
+ =?us-ascii?Q?velT2HYdIauD9ruriJfuEL2KeCpNL5b4ys3DQF9i22/pFogB9jNGESUuNqfj?=
+ =?us-ascii?Q?DLFoDBY8zJ2l9jWEK9WD8o9qrHkJK81EbXoeOMPoK9W8c1o8ZqrHEUfxFe2C?=
+ =?us-ascii?Q?p+hAZ0SVgVoU9gAa28/K/LO16f6aPrB5otQLCXeJUcKSWcMj4pEV8UitQQYj?=
+ =?us-ascii?Q?90vm3BTmlS4X8vmcEmCx/Mf3lN2pM3BQFJ9TZ5Ngh5KI0OSExl4PDbc+U4lC?=
+ =?us-ascii?Q?zDJLycKyBtJZV3mbLFwgeHGeYwKVHV4KVhD0wjbkblFat8YqZobZXv7WN87X?=
+ =?us-ascii?Q?ocMQzViJxzM61l3CHvcFFzqDjnatKVb6BuLWUrWWNND1NnYNnQ7Vjz6iLCuO?=
+ =?us-ascii?Q?7+qRBuc2mWjMi+xFOgpR2Ul+x+9XdSKlCDowJN0c1MjZGZ9liaVxAGmQh/X8?=
+ =?us-ascii?Q?50qOQTGPYVqvxzNjc72zcJeh0iPbrMS9kmb9CPOI0AFRndq10+uX7DOByJgD?=
+ =?us-ascii?Q?8voP9e30oqkdlPYRsxrVzFge5wR3AYHaUwN/NEcgeSjMHowr/ZDM99h/aWDx?=
+ =?us-ascii?Q?ogWLjCufZ706uivwf0kkfH9nBN00dvBBH9ypNnA/8A+Inv6XNMolusmSK984?=
+ =?us-ascii?Q?fDk1LRHNLsfsdNz8cdEwwAaTWdoO98g44qbqRAtK8NNVlCDmaKRaTOUd1isa?=
+ =?us-ascii?Q?IF6tKETb5bYfjsFaF4bSG1YPEXnEvpkAAlD8SeoLoKOfnM3rA+QsWxPA37Xa?=
+ =?us-ascii?Q?jdp1I3aug+em3D7EfQjV2NQ0rTmcNQMnG09EbKOydsXElC7c51CXitrKIS+r?=
+ =?us-ascii?Q?0xE25J0l8FHUqtdyL6TU846ZptBjxxrRjCRNS7c9/zWN8GqjvZxVQsdTcZrh?=
+ =?us-ascii?Q?S3NgKxU2Xpw/P9p+LA38PiPUFXIL5W5kYzIrTB8lcMJrvTiPG9q9E58dqdVi?=
+ =?us-ascii?Q?0TkjeSv49c8m3gvlCl0MQTXFN/TFZj/N0r7hjkWr8ZxMPl15u8E04P/AiMWu?=
+ =?us-ascii?Q?0IqMMtzbL/jtigdjqo1zrSIPXF5BUUpQJwUjIhTTcL32?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: hms.se
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PAVPR10MB7209.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3f384a5f-5b14-4534-5b81-08db6d17974d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jun 2023 20:40:29.2574
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5c7c1590-4488-4e42-bc9c-15218f8ac994
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: MUEzWYC/aucXVv1JwtQmCEsALgch0IdxbMAYGPvtX5J2IDXbbsnYAjXAmu2er71N5hThAYRUPc+PnevETIU5TpHaJ9JYivwCRaC6uVbQvS4wtgjrjFpxA5hLBwcVSV4bU64DOY8R6XZuaCFoL7z3YQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS2PR10MB7226
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-[sorry, not-sorry for the top post]
+**We apologize for the delay in delivering this email, which was caused by =
+a mail incident that occurred over the weekend on June 10th. This email was=
+ originally sent from vincent.mailhol@gmail.com on 06/11/2023 02:58:17=20
 
-Thanks Jason and Shameer for prior review comments, I hope you both can
-find time to check v10 as well.
+Introduce a method to calculate the exact size in bits of a CAN(-FD)
+frame with or without dynamic bitstuffing.
 
-Others that previously stepped up to be reviewers for new vfio-pci
-variant drivers, please jump in.  Thanks,
+These are all the possible combinations taken into account:
 
-Alex
+  - Classical CAN or CAN-FD
+  - Standard or Extended frame format
+  - CAN-FD CRC17 or CRC21
+  - Include or not intermission
 
-On Fri, 2 Jun 2023 15:03:11 -0700
-Brett Creeley <brett.creeley@amd.com> wrote:
+Instead of doing several individual macro definitions, declare the
+can_frame_bits() function-like macro. To this extent, do a full
+refactoring of the length definitions.
 
-> This is a patchset for a new vendor specific VFIO driver
-> (pds_vfio) for use with the AMD/Pensando Distributed Services Card
-> (DSC). This driver makes use of the pds_core driver.
-> 
-> This driver will use the pds_core device's adminq as the VFIO
-> control path to the DSC. In order to make adminq calls, the VFIO
-> instance makes use of functions exported by the pds_core driver.
-> 
-> In order to receive events from pds_core, the pds_vfio driver
-> registers to a private notifier. This is needed for various events
-> that come from the device.
-> 
-> An ASCII diagram of a VFIO instance looks something like this and can
-> be used with the VFIO subsystem to provide the VF device VFIO and live
-> migration support.
-> 
->                                .------.  .-----------------------.
->                                | QEMU |--|  VM  .-------------.  |
->                                '......'  |      |   Eth VF    |  |
->                                   |      |      .-------------.  |
->                                   |      |      |  SR-IOV VF  |  |
->                                   |      |      '-------------'  |
->                                   |      '------------||---------'
->                                .--------------.       ||
->                                |/dev/<vfio_fd>|       ||
->                                '--------------'       ||
-> Host Userspace                         |              ||
-> ===================================================   ||
-> Host Kernel                            |              ||
->                                   .--------.          ||
->                                   |vfio-pci|          ||
->                                   '--------'          ||
->        .------------------.           ||              ||
->        |   | exported API |<----+     ||              ||
->        |   '--------------|     |     ||              ||
->        |                  |    .-------------.        ||
->        |     pds_core     |--->|   pds_vfio  |        ||
->        '------------------' |  '-------------'        ||
->                ||           |         ||              ||
->              09:00.0     notifier    09:00.1          ||
-> == PCI ===============================================||=====
->                ||                     ||              ||
->           .----------.          .----------.          ||
->     ,-----|    PF    |----------|    VF    |-------------------,
->     |     '----------'          '----------'  |       VF       |
->     |                     DSC                 |  data/control  |
->     |                                         |      path      |
->     -----------------------------------------------------------
-> 
-> 
-> The pds_vfio driver is targeted to reside in drivers/vfio/pci/pds.
-> It makes use of and introduces new files in the common include/linux/pds
-> include directory.
-> 
-> Changes:
-> 
-> v10:
-> - Various fixes/suggestions by Jason Gunthorpe
-> 	- Simplify pds_vfio_get_lm_file() based on fpga_mgr_buf_load()
-> 	- Clean-ups/fixes based on clang-format
-> 	- Remove any double goto labels
-> 	- Name goto labels baesed on what needs to be cleaned/freed
-> 	  instead of a "call from" scheme
-> 	- Fix any goto unwind ordering issues
-> 	- Make sure call dma_map_single() after data is written to
-> 	  memory in pds_vfio_dma_map_lm_file()
-> 	- Don't use bitmap_zalloc() for the dirty bitmaps
-> - Use vzalloc() for dirty bitmaps and refactor how the bitmaps are DMA'd
->   to and from the device in pds_vfio_dirty_seq_ack()
-> - Remove unnecessary goto in pds_vfio_dirty_disable()
-> 
-> v9:
-> https://lore.kernel.org/netdev/20230422010642.60720-1-brett.creeley@amd.com/
-> - Various fixes/suggestions by Alex Williamson
-> 	- Fix how ID is generated in client registration
-> 	- Add helper functions to get the VF's struct device and struct
-> 	  pci_dev pointers instead of caching the struct pci dev
-> 	- Remove redundant pds_vfio_lm_state() function and remove any
-> 	  places this was being called
-> 	- Fix multi-line comments to follow standard convention
-> 	- Remove confusing comments in
-> 	  pds_vfio_step_device_state_locked() since the driver's
-> 	  migration states align with the VFIO documentation
-> 	- Validate pdsc returned from pdsc_get_pf_struct()
-> - Various fixes/suggestions by Jason Gunthorpe
-> 	- Use struct pdsc instead of void *
-> 	- Use {} instead of {0} for structure initialization
-> 	- Use unions on the stack instead of casting to the union when
-> 	  sending AQ commands, which required including pds_lm.h in
-> 	  pds_adminq.h
-> 	- Replace use of dma_alloc_coherent() when creating the sgl DMA
-> 	  entries for the LM file
-> 	- Remove cached struct device *coredev and instead use
-> 	  pci_physfn() to get the pds_core's struct device pointer
-> 	- Drop the recovery work item and call pds_vfio_recovery()
-> 	  directly from the notifier callback
-> 	- Remove unnecessary #define for "pds_vfio_lm" and just use the
-> 	  string inline to the anon_inode_getfile() argument
-> - Fix LM file reference counting
-> - Move initialization of some struct members to when the struct is being
->   initialized for AQ commands
-> - Make use of GFP_KERNEL_ACCOUNT where it makes sense
-> - Replace PDS_VFIO_DRV_NAME with KBUILD_MODNAME
-> - Update to latest pds_core exported functions
-> - Remove duplicated prototypes for
->   pds_vfio_dma_logging_[start|stop|report] from lm.h
-> - Hold pds_vfio->state_mutex while starting, stopping, and reporting
->   dirty page tracking in pds_vfio_dma_logging_[start|stop|report]
-> - Remove duplicate PDS_DEV_TYPE_LM_STR define from pds_lm.h that's
->   already included in pds_common.h
-> - Replace use of dma_alloc_coherent() when creating the sgl DMA
->   entries for the dirty bitmaps
-> 
-> v8:
-> https://lore.kernel.org/netdev/20230404190141.57762-1-brett.creeley@amd.com/
-> - provide default iommufd callbacks for bind_iommufd, unbind_iommufd, and
->   attach_ioas for the VFIO device as suggested by Shameerali Kolothum
->   Thodi
-> 
-> v7:
-> https://lore.kernel.org/netdev/20230331003612.17569-1-brett.creeley@amd.com/
-> - Disable and clean up dirty page tracking when the VFIO device is closed
-> - Various improvements suggested by Simon Horman:
-> 	- Fix RCT in vfio_combine_iova_ranges()
-> 	- Simplify function exit paths by removing unnecessary goto
-> 	  labels
-> 	- Cleanup pds_vifo_print_guest_region_info() by adding a goto
-> 	  label for freeing memory, which allowed for reduced
-> 	  indentation on a for loop
-> 	- Where possible use C99 style for loops
-> 
-> v6:
-> https://lore.kernel.org/netdev/20230327200553.13951-1-brett.creeley@amd.com/
-> - As suggested by Alex Williamson, use pci_domain_nr() macro to make sure
->   the pds_vfio client's devname is unique
-> - Remove unnecessary forward declaration and include
-> - Fix copyright comment to use correct company name
-> - Remove "." from struct documentation for consistency
-> 
-> v5:
-> https://lore.kernel.org/netdev/20230322203442.56169-1-brett.creeley@amd.com/
-> - Fix SPDX comments in .h files
-> - Remove adminqcq argument from pdsc_post_adminq() uses
-> - Unregister client on vfio_pci_core_register_device() failure
-> - Other minor checkpatch issues
-> 
-> v4:
-> https://lore.kernel.org/netdev/20230308052450.13421-1-brett.creeley@amd.com/
-> - Update cover letter ASCII diagram to reflect new driver architecture
-> - Remove auxiliary driver implementation
-> - Use pds_core's exported functions to communicate with the device
-> - Implement and register notifier for events from the device/pds_core
-> - Use module_pci_driver() macro since auxiliary driver configuration is
->   no longer needed in __init/__exit
-> 
-> v3:
-> https://lore.kernel.org/netdev/20230219083908.40013-1-brett.creeley@amd.com/
-> - Update copyright year to 2023 and use "Advanced Micro Devices, Inc."
->   for the company name
-> - Clarify the fact that AMD/Pensando's VFIO solution is device type
->   agnostic, which aligns with other current VFIO solutions
-> - Add line in drivers/vfio/pci/Makefile to build pds_vfio
-> - Move documentation to amd sub-directory
-> - Remove some dead code due to the pds_core implementation of
->   listening to BIND/UNBIND events
-> - Move a dev_dbg() to a previous patch in the series
-> - Add implementation for vfio_migration_ops.migration_get_data_size to
->   return the maximum possible device state size
-> 
-> RFC to v2:
-> https://lore.kernel.org/all/20221214232136.64220-1-brett.creeley@amd.com/
-> - Implement state transitions for VFIO_MIGRATION_P2P flag
-> - Improve auxiliary driver probe by returning EPROBE_DEFER
->   when the PCI driver is not set up correctly
-> - Add pointer to docs in
->   Documentation/networking/device_drivers/ethernet/index.rst
-> 
-> RFC:
-> https://lore.kernel.org/all/20221207010705.35128-1-brett.creeley@amd.com/
-> 
-> 
-> Brett Creeley (7):
->   vfio: Commonize combine_ranges for use in other VFIO drivers
->   vfio/pds: Initial support for pds_vfio VFIO driver
->   vfio/pds: register with the pds_core PF
->   vfio/pds: Add VFIO live migration support
->   vfio/pds: Add support for dirty page tracking
->   vfio/pds: Add support for firmware recovery
->   vfio/pds: Add Kconfig and documentation
-> 
->  .../device_drivers/ethernet/amd/pds_vfio.rst  |  79 +++
->  .../device_drivers/ethernet/index.rst         |   1 +
->  MAINTAINERS                                   |   7 +
->  drivers/vfio/pci/Kconfig                      |   2 +
->  drivers/vfio/pci/Makefile                     |   2 +
->  drivers/vfio/pci/mlx5/cmd.c                   |  48 +-
->  drivers/vfio/pci/pds/Kconfig                  |  20 +
->  drivers/vfio/pci/pds/Makefile                 |  11 +
->  drivers/vfio/pci/pds/cmds.c                   | 487 +++++++++++++++
->  drivers/vfio/pci/pds/cmds.h                   |  25 +
->  drivers/vfio/pci/pds/dirty.c                  | 577 ++++++++++++++++++
->  drivers/vfio/pci/pds/dirty.h                  |  38 ++
->  drivers/vfio/pci/pds/lm.c                     | 421 +++++++++++++
->  drivers/vfio/pci/pds/lm.h                     |  41 ++
->  drivers/vfio/pci/pds/pci_drv.c                | 206 +++++++
->  drivers/vfio/pci/pds/pci_drv.h                |   9 +
->  drivers/vfio/pci/pds/vfio_dev.c               | 234 +++++++
->  drivers/vfio/pci/pds/vfio_dev.h               |  45 ++
->  drivers/vfio/vfio_main.c                      |  47 ++
->  include/linux/pds/pds_adminq.h                | 395 ++++++++++++
->  include/linux/pds/pds_common.h                |   2 +
->  include/linux/vfio.h                          |   3 +
->  22 files changed, 2653 insertions(+), 47 deletions(-)
->  create mode 100644 Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst
->  create mode 100644 drivers/vfio/pci/pds/Kconfig
->  create mode 100644 drivers/vfio/pci/pds/Makefile
->  create mode 100644 drivers/vfio/pci/pds/cmds.c
->  create mode 100644 drivers/vfio/pci/pds/cmds.h
->  create mode 100644 drivers/vfio/pci/pds/dirty.c
->  create mode 100644 drivers/vfio/pci/pds/dirty.h
->  create mode 100644 drivers/vfio/pci/pds/lm.c
->  create mode 100644 drivers/vfio/pci/pds/lm.h
->  create mode 100644 drivers/vfio/pci/pds/pci_drv.c
->  create mode 100644 drivers/vfio/pci/pds/pci_drv.h
->  create mode 100644 drivers/vfio/pci/pds/vfio_dev.c
->  create mode 100644 drivers/vfio/pci/pds/vfio_dev.h
-> 
+In addition add the can_frame_bytes(). This function-like macro
+replaces the existing macro:
 
+  - CAN_FRAME_OVERHEAD_SFF: can_frame_bytes(false, false, 0)
+  - CAN_FRAME_OVERHEAD_EFF: can_frame_bytes(false, true, 0)
+  - CANFD_FRAME_OVERHEAD_SFF: can_frame_bytes(true, false, 0)
+  - CANFD_FRAME_OVERHEAD_EFF: can_frame_bytes(true, true, 0)
+
+Function-like macros were chosen over inline functions because they
+can be used to initialize const struct fields.
+
+The different maximum frame lengths (maximum data length, including
+intermission) are as follow:
+
+   Frame type				bits	bytes
+  -------------------------------------------------------
+   Classic CAN SFF no bitstuffing	111	14
+   Classic CAN EFF no bitstuffing	131	17
+   Classic CAN SFF bitstuffing		135	17
+   Classic CAN EFF bitstuffing		160	20
+   CAN-FD SFF no bitstuffing		579	73
+   CAN-FD EFF no bitstuffing		598	75
+   CAN-FD SFF bitstuffing		712	89
+   CAN-FD EFF bitstuffing		736	92
+
+The macro CAN_FRAME_LEN_MAX and CANFD_FRAME_LEN_MAX are kept as an
+alias to, respectively, can_frame_bytes(false, true, CAN_MAX_DLEN) and
+can_frame_bytes(true, true, CANFD_MAX_DLEN).
+
+In addition to the above:
+
+ - Use ISO 11898-1:2015 definitions for the names of the CAN frame
+   fields.
+ - Include linux/bits.h for use of BITS_PER_BYTE.
+ - Include linux/math.h for use of mult_frac() and
+   DIV_ROUND_UP(). N.B: the use of DIV_ROUND_UP() is not new to this
+   patch, but the include was previously omitted.
+ - Add copyright 2023 for myself.
+
+Suggested-by: Thomas Kopp=20
+Signed-off-by: Vincent Mailhol=20
+Reviewed-by: Thomas Kopp=20
+---
+ drivers/net/can/dev/length.c |  15 +-
+ include/linux/can/length.h   | 302 +++++++++++++++++++++++++----------
+ 2 files changed, 216 insertions(+), 101 deletions(-)
+
+diff --git a/drivers/net/can/dev/length.c b/drivers/net/can/dev/length.c
+index b48140b1102e..b7f4d76dd444 100644
+--- a/drivers/net/can/dev/length.c
++++ b/drivers/net/can/dev/length.c
+@@ -78,18 +78,7 @@ unsigned int can_skb_get_frame_len(const struct sk_buff =
+*skb)
+ 	else
+ 		len =3D cf->len;
+=20
+-	if (can_is_canfd_skb(skb)) {
+-		if (cf->can_id & CAN_EFF_FLAG)
+-			len +=3D CANFD_FRAME_OVERHEAD_EFF;
+-		else
+-			len +=3D CANFD_FRAME_OVERHEAD_SFF;
+-	} else {
+-		if (cf->can_id & CAN_EFF_FLAG)
+-			len +=3D CAN_FRAME_OVERHEAD_EFF;
+-		else
+-			len +=3D CAN_FRAME_OVERHEAD_SFF;
+-	}
+-
+-	return len;
++	return can_frame_bytes(can_is_canfd_skb(skb), cf->can_id & CAN_EFF_FLAG,
++			       false, len);
+ }
+ EXPORT_SYMBOL_GPL(can_skb_get_frame_len);
+diff --git a/include/linux/can/length.h b/include/linux/can/length.h
+index 521fdbce2d69..abc978b38f79 100644
+--- a/include/linux/can/length.h
++++ b/include/linux/can/length.h
+@@ -1,132 +1,258 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ /* Copyright (C) 2020 Oliver Hartkopp=20
+  * Copyright (C) 2020 Marc Kleine-Budde=20
+- * Copyright (C) 2020 Vincent Mailhol=20
++ * Copyright (C) 2020, 2023 Vincent Mailhol=20
+  */
+=20
+ #ifndef _CAN_LENGTH_H
+ #define _CAN_LENGTH_H
+=20
++#include=20
+ #include=20
+ #include=20
++#include=20
+=20
+ /*
+- * Size of a Classical CAN Standard Frame
++ * Size of a Classical CAN Standard Frame header in bits
+  *
+- * Name of Field			Bits
++ * Name of Field				Bits
+  * ---------------------------------------------------------
+- * Start-of-frame			1
+- * Identifier				11
+- * Remote transmission request (RTR)	1
+- * Identifier extension bit (IDE)	1
+- * Reserved bit (r0)			1
+- * Data length code (DLC)		4
+- * Data field				0...64
+- * CRC					15
+- * CRC delimiter			1
+- * ACK slot				1
+- * ACK delimiter			1
+- * End-of-frame (EOF)			7
+- * Inter frame spacing			3
++ * Start Of Frame (SOF)				1
++ * Arbitration field:
++ *	base ID					11
++ *	Remote Transmission Request (RTR)	1
++ * Control field:
++ *	IDentifier Extension bit (IDE)		1
++ *	FD Format indicator (FDF)		1
++ *	Data Length Code (DLC)			4
++ *
++ * including all fields preceding the data field, ignoring bitstuffing
++ */
++#define CAN_FRAME_HEADER_SFF_BITS 19
++
++/*
++ * Size of a Classical CAN Extended Frame header in bits
+  *
+- * rounded up and ignoring bitstuffing
++ * Name of Field				Bits
++ * ---------------------------------------------------------
++ * Start Of Frame (SOF)				1
++ * Arbitration field:
++ *	base ID					11
++ *	Substitute Remote Request (SRR)		1
++ *	IDentifier Extension bit (IDE)		1
++ *	ID extension				18
++ *	Remote Transmission Request (RTR)	1
++ * Control field:
++ *	FD Format indicator (FDF)		1
++ *	Reserved bit (r0)			1
++ *	Data length code (DLC)			4
++ *
++ * including all fields preceding the data field, ignoring bitstuffing
+  */
+-#define CAN_FRAME_OVERHEAD_SFF DIV_ROUND_UP(47, 8)
++#define CAN_FRAME_HEADER_EFF_BITS 39
+=20
+ /*
+- * Size of a Classical CAN Extended Frame
++ * Size of a CAN-FD Standard Frame in bits
++ *
++ * Name of Field				Bits
++ * ---------------------------------------------------------
++ * Start Of Frame (SOF)				1
++ * Arbitration field:
++ *	base ID					11
++ *	Remote Request Substitution (RRS)	1
++ * Control field:
++ *	IDentifier Extension bit (IDE)		1
++ *	FD Format indicator (FDF)		1
++ *	Reserved bit (res)			1
++ *	Bit Rate Switch (BRS)			1
++ *	Error Status Indicator (ESI)		1
++ *	Data length code (DLC)			4
++ *
++ * including all fields preceding the data field, ignoring bitstuffing
++ */
++#define CANFD_FRAME_HEADER_SFF_BITS 22
++
++/*
++ * Size of a CAN-FD Extended Frame in bits
++ *
++ * Name of Field				Bits
++ * ---------------------------------------------------------
++ * Start Of Frame (SOF)				1
++ * Arbitration field:
++ *	base ID					11
++ *	Substitute Remote Request (SRR)		1
++ *	IDentifier Extension bit (IDE)		1
++ *	ID extension				18
++ *	Remote Request Substitution (RRS)	1
++ * Control field:
++ *	FD Format indicator (FDF)		1
++ *	Reserved bit (res)			1
++ *	Bit Rate Switch (BRS)			1
++ *	Error Status Indicator (ESI)		1
++ *	Data length code (DLC)			4
++ *
++ * including all fields preceding the data field, ignoring bitstuffing
++ */
++#define CANFD_FRAME_HEADER_EFF_BITS 41
++
++/*
++ * Size of a CAN CRC Field in bits
+  *
+  * Name of Field			Bits
+  * ---------------------------------------------------------
+- * Start-of-frame			1
+- * Identifier A				11
+- * Substitute remote request (SRR)	1
+- * Identifier extension bit (IDE)	1
+- * Identifier B				18
+- * Remote transmission request (RTR)	1
+- * Reserved bits (r1, r0)		2
+- * Data length code (DLC)		4
+- * Data field				0...64
+- * CRC					15
+- * CRC delimiter			1
+- * ACK slot				1
+- * ACK delimiter			1
+- * End-of-frame (EOF)			7
+- * Inter frame spacing			3
++ * CRC sequence (CRC15)			15
++ * CRC Delimiter			1
++ *
++ * ignoring bitstuffing
++ */
++#define CAN_FRAME_CRC_FIELD_BITS 16
++
++/*
++ * Size of a CAN-FD CRC17 Field in bits (length: 0..16)
+  *
+- * rounded up and ignoring bitstuffing
++ * Name of Field			Bits
++ * ---------------------------------------------------------
++ * Stuff Count				4
++ * CRC Sequence (CRC17)			17
++ * CRC Delimiter			1
++ * Fixed stuff bits			6
+  */
+-#define CAN_FRAME_OVERHEAD_EFF DIV_ROUND_UP(67, 8)
++#define CANFD_FRAME_CRC17_FIELD_BITS 28
+=20
+ /*
+- * Size of a CAN-FD Standard Frame
++ * Size of a CAN-FD CRC21 Field in bits (length: 20..64)
+  *
+  * Name of Field			Bits
+  * ---------------------------------------------------------
+- * Start-of-frame			1
+- * Identifier				11
+- * Remote Request Substitution (RRS)	1
+- * Identifier extension bit (IDE)	1
+- * Flexible data rate format (FDF)	1
+- * Reserved bit (r0)			1
+- * Bit Rate Switch (BRS)		1
+- * Error Status Indicator (ESI)		1
+- * Data length code (DLC)		4
+- * Data field				0...512
+- * Stuff Bit Count (SBC)		4
+- * CRC					0...16: 17 20...64:21
+- * CRC delimiter (CD)			1
+- * Fixed Stuff bits (FSB)		0...16: 6 20...64:7
+- * ACK slot (AS)			1
+- * ACK delimiter (AD)			1
+- * End-of-frame (EOF)			7
+- * Inter frame spacing			3
+- *
+- * assuming CRC21, rounded up and ignoring dynamic bitstuffing
+- */
+-#define CANFD_FRAME_OVERHEAD_SFF DIV_ROUND_UP(67, 8)
++ * Stuff Count				4
++ * CRC sequence (CRC21)			21
++ * CRC Delimiter			1
++ * Fixed stuff bits			7
++ */
++#define CANFD_FRAME_CRC21_FIELD_BITS 33
+=20
+ /*
+- * Size of a CAN-FD Extended Frame
++ * Size of a CAN(-FD) Frame footer in bits
+  *
+  * Name of Field			Bits
+  * ---------------------------------------------------------
+- * Start-of-frame			1
+- * Identifier A				11
+- * Substitute remote request (SRR)	1
+- * Identifier extension bit (IDE)	1
+- * Identifier B				18
+- * Remote Request Substitution (RRS)	1
+- * Flexible data rate format (FDF)	1
+- * Reserved bit (r0)			1
+- * Bit Rate Switch (BRS)		1
+- * Error Status Indicator (ESI)		1
+- * Data length code (DLC)		4
+- * Data field				0...512
+- * Stuff Bit Count (SBC)		4
+- * CRC					0...16: 17 20...64:21
+- * CRC delimiter (CD)			1
+- * Fixed Stuff bits (FSB)		0...16: 6 20...64:7
+- * ACK slot (AS)			1
+- * ACK delimiter (AD)			1
+- * End-of-frame (EOF)			7
+- * Inter frame spacing			3
+- *
+- * assuming CRC21, rounded up and ignoring dynamic bitstuffing
+- */
+-#define CANFD_FRAME_OVERHEAD_EFF DIV_ROUND_UP(86, 8)
++ * ACK slot				1
++ * ACK delimiter			1
++ * End Of Frame (EOF)			7
++ *
++ * including all fields following the CRC field
++ */
++#define CAN_FRAME_FOOTER_BITS 9
++
++/*
++ * First part of the Inter Frame Space
++ * (a.k.a. IMF - intermission field)
++ */
++#define CAN_INTERMISSION_BITS 3
++
++/**
++ * can_bitstuffing_len() - Calculate the maximum length with bitstuffing
++ * @destuffed_len: length of a destuffed bit stream
++ *
++ * The worst bit stuffing case is a sequence in which dominant and
++ * recessive bits alternate every four bits:
++ *
++ *   Destuffed: 1 1111  0000  1111  0000  1111
++ *   Stuffed:   1 1111o 0000i 1111o 0000i 1111o
++ *
++ * Nomenclature
++ *
++ *  - "0": dominant bit
++ *  - "o": dominant stuff bit
++ *  - "1": recessive bit
++ *  - "i": recessive stuff bit
++ *
++ * Aside from the first bit, one stuff bit is added every four bits.
++ *
++ * Return: length of the stuffed bit stream in the worst case scenario.
++ */
++#define can_bitstuffing_len(destuffed_len)			\
++	(destuffed_len + (destuffed_len - 1) / 4)
++
++#define __can_bitstuffing_len(bitstuffing, destuffed_len)	\
++	(bitstuffing ? can_bitstuffing_len(destuffed_len) :	\
++		       destuffed_len)
++
++#define __can_cc_frame_bits(is_eff, bitstuffing,		\
++			    intermission, data_len)		\
++(								\
++	__can_bitstuffing_len(bitstuffing,			\
++		(is_eff ? CAN_FRAME_HEADER_EFF_BITS :		\
++			  CAN_FRAME_HEADER_SFF_BITS) +		\
++		(data_len) * BITS_PER_BYTE +			\
++		CAN_FRAME_CRC_FIELD_BITS) +			\
++	CAN_FRAME_FOOTER_BITS +					\
++	(intermission ? CAN_INTERMISSION_BITS : 0)		\
++)
++
++#define __can_fd_frame_bits(is_eff, bitstuffing,		\
++			    intermission, data_len)		\
++(								\
++	__can_bitstuffing_len(bitstuffing,			\
++		(is_eff ? CANFD_FRAME_HEADER_EFF_BITS :		\
++			  CANFD_FRAME_HEADER_SFF_BITS) +	\
++		(data_len) * BITS_PER_BYTE) +			\
++	((data_len) len. Should be zero for remote frames. No
++ *	sanitization is done on @data_len and it shall have no side
++ *	effects.
++ *
++ * Return: the numbers of bits on the wire of a CAN frame.
++ */
++#define can_frame_bits(is_fd, is_eff, bitstuffing,		\
++		       intermission, data_len)			\
++(								\
++	is_fd ? __can_fd_frame_bits(is_eff, bitstuffing,	\
++				    intermission, data_len) :	\
++		__can_cc_frame_bits(is_eff, bitstuffing,	\
++				    intermission, data_len)	\
++)
++
++/*
++ * Number of bytes in a CAN frame
++ * (rounded up, including intermission)
++ */
++#define can_frame_bytes(is_fd, is_eff, bitstuffing, data_len)	\
++	DIV_ROUND_UP(can_frame_bits(is_fd, is_eff, bitstuffing,	\
++				    true, data_len),		\
++		     BITS_PER_BYTE)
+=20
+ /*
+  * Maximum size of a Classical CAN frame
+- * (rounded up and ignoring bitstuffing)
++ * (rounded up, ignoring bitstuffing but including intermission)
+  */
+-#define CAN_FRAME_LEN_MAX (CAN_FRAME_OVERHEAD_EFF + CAN_MAX_DLEN)
++#define CAN_FRAME_LEN_MAX can_frame_bytes(false, true, false, CAN_MAX_DLEN=
+)
+=20
+ /*
+  * Maximum size of a CAN-FD frame
+- * (rounded up and ignoring bitstuffing)
++ * (rounded up, ignoring dynamic bitstuffing but including intermission)
+  */
+-#define CANFD_FRAME_LEN_MAX (CANFD_FRAME_OVERHEAD_EFF + CANFD_MAX_DLEN)
++#define CANFD_FRAME_LEN_MAX can_frame_bytes(true, true, false, CANFD_MAX_D=
+LEN)
+=20
+ /*
+  * can_cc_dlc2len(value) - convert a given data length code (dlc) of a
+--=20
+2.39.3=
 
