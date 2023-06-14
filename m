@@ -1,181 +1,97 @@
-Return-Path: <netdev+bounces-10696-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10698-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id D4C9672FDB7
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 14:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id BDBF472FDD7
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 14:05:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BBB6D1C20CF4
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 12:00:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E9EB81C20CE7
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 12:05:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AEBFF8C12;
-	Wed, 14 Jun 2023 12:00:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6B57E8C1B;
+	Wed, 14 Jun 2023 12:04:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA40E8BF0;
-	Wed, 14 Jun 2023 12:00:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2D01C433C8;
-	Wed, 14 Jun 2023 12:00:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686744001;
-	bh=LoiUr0uaRsxJzM8cKaoy60Y9Kl407w7j8YRTKBB3PNw=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=IcEwk0Majrvg8ASspBOSZfyC24I+nob4cEzYOBg/PguNe+5K+BrsOrREZLD7xBOxU
-	 DpuumrODe6NSQp7RiVCZ0RWbCBjPbDvTxio3G+GHS7CfnWssCSotHiVv4TFIVq8F4L
-	 qHt8i1KpagVvQIT8wv6bqadH+iOL4BYKrsKEmrwzTy/knznhknEEVdez6PLrpFI7/O
-	 wCvKVpNL5Tl/FNHbNMyZCBQYFcUBmfennFsddQrgwTNH6x03xKdscsSFBWwFb/c7CJ
-	 iXW7wzGo1wea0pGkw5Y2Bq/LWdI/u6PSKRtjkQle+W6LySsYLDzZ/Se9wk/FlZyEx+
-	 rE9wcNyL14zAg==
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-	id 82638BBEB5E; Wed, 14 Jun 2023 13:59:57 +0200 (CEST)
-From: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
-To: Alexei Starovoitov <alexei.starovoitov@gmail.com>, Stanislav Fomichev
- <sdf@google.com>
-Cc: bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>, Daniel
- Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>,
- Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>,
- Yonghong Song <yhs@fb.com>, John Fastabend <john.fastabend@gmail.com>, KP
- Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>, Jiri Olsa
- <jolsa@kernel.org>, Willem de Bruijn <willemb@google.com>, David Ahern
- <dsahern@kernel.org>, "Karlsson, Magnus" <magnus.karlsson@intel.com>,
- =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>, "Fijalkowski, Maciej"
- <maciej.fijalkowski@intel.com>, Network Development
- <netdev@vger.kernel.org>
-Subject: Re: [RFC bpf-next 0/7] bpf: netdev TX metadata
-In-Reply-To: <CAADnVQ+CCOw9_LbCAaFz0593eydKNb7RxnGr6_FatUOKmvPmBg@mail.gmail.com>
-References: <20230612172307.3923165-1-sdf@google.com>
- <87cz20xunt.fsf@toke.dk> <ZIiaHXr9M0LGQ0Ht@google.com>
- <877cs7xovi.fsf@toke.dk>
- <CAKH8qBt5tQ69Zs9kYGc7j-_3Yx9D6+pmS4KCN5G0s9UkX545Mg@mail.gmail.com>
- <87v8frw546.fsf@toke.dk>
- <CAKH8qBtsvsWvO3Avsqb2PbvZgh5GDMxe2fok-jS4DrJM=x2Row@mail.gmail.com>
- <CAADnVQKFmXAQDYVZxjvH8qbxk+3M2COGbfmtd=w8Nxvf9=DaeA@mail.gmail.com>
- <CAKH8qBvAMKtfrZ1jdwVS2pF161UdeXPSpY4HSzKYGTYNTupmTg@mail.gmail.com>
- <CAADnVQ+CCOw9_LbCAaFz0593eydKNb7RxnGr6_FatUOKmvPmBg@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date: Wed, 14 Jun 2023 13:59:57 +0200
-Message-ID: <877cs6l0ea.fsf@toke.dk>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ECA58463
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 12:04:54 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F291FD2
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 05:04:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686744292;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=wOPn16B3XWpxkytpYHR3Z5EM60rOR3dmARKpzGwWozo=;
+	b=CQuZSv48VoYlS5Gut2KEBMAWU/Hq8RE2m06eTbpxZS3PS6qn1bmnsFoCD8OKYhOVJ2DlQc
+	yf0gvyjBWypLeqVf/CQRYGUpc7UUGs1iJVApAB02zLhp98wdnV2qh39QqvQMxoCr33TPiT
+	f8oq32WEYnqvxeLRKW9rG0an+9oiX68=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-407-oSw5vEMcNhWtY8PAEacv1A-1; Wed, 14 Jun 2023 08:04:47 -0400
+X-MC-Unique: oSw5vEMcNhWtY8PAEacv1A-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 710041C0E3D4;
+	Wed, 14 Jun 2023 12:04:42 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.67])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 5B3BF492CA6;
+	Wed, 14 Jun 2023 12:04:40 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <ZIhD53a/6Svmn1aS@gondor.apana.org.au>
+References: <ZIhD53a/6Svmn1aS@gondor.apana.org.au> <0000000000000cb2c305fdeb8e30@google.com>
+To: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: dhowells@redhat.com,
+    syzbot <syzbot+e79818f5c12416aba9de@syzkaller.appspotmail.com>,
+    davem@davemloft.net, linux-crypto@vger.kernel.org,
+    linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+    pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] [crypto?] general protection fault in cryptd_hash_export
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1521346.1686744278.1@warthog.procyon.org.uk>
+Date: Wed, 14 Jun 2023 13:04:38 +0100
+Message-ID: <1521347.1686744278@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+Herbert Xu <herbert@gondor.apana.org.au> wrote:
 
-> On Tue, Jun 13, 2023 at 4:16=E2=80=AFPM Stanislav Fomichev <sdf@google.co=
-m> wrote:
->>
->> On Tue, Jun 13, 2023 at 3:32=E2=80=AFPM Alexei Starovoitov
->> <alexei.starovoitov@gmail.com> wrote:
->> >
->> > On Tue, Jun 13, 2023 at 2:17=E2=80=AFPM Stanislav Fomichev <sdf@google=
-.com> wrote:
->> > >
->> > > > >> >> > --- UAPI ---
->> > > > >> >> >
->> > > > >> >> > The hooks are implemented in a HID-BPF style. Meaning they=
- don't
->> > > > >> >> > expose any UAPI and are implemented as tracing programs th=
-at call
->> > > > >> >> > a bunch of kfuncs. The attach/detach operation happen via =
-BPF syscall
->> > > > >> >> > programs. The series expands device-bound infrastructure t=
-o tracing
->> > > > >> >> > programs.
->> > > > >> >>
->> > > > >> >> Not a fan of the "attach from BPF syscall program" thing. Th=
-ese are part
->> > > > >> >> of the XDP data path API, and I think we should expose them =
-as proper
->> > > > >> >> bpf_link attachments from userspace with introspection etc. =
-But I guess
->> > > > >> >> the bpf_mprog thing will give us that?
->> > > > >> >
->> > > > >> > bpf_mprog will just make those attach kfuncs return the link =
-fd. The
->> > > > >> > syscall program will still stay :-(
->> > > > >>
->> > > > >> Why does the attachment have to be done this way, exactly? Coul=
-dn't we
->> > > > >> just use the regular bpf_link attachment from userspace? AFAICT=
- it's not
->> > > > >> really piggy-backing on the function override thing anyway when=
- the
->> > > > >> attachment is per-dev? Or am I misunderstanding how all this wo=
-rks?
->> > > > >
->> > > > > It's UAPI vs non-UAPI. I'm assuming kfunc makes it non-UAPI and =
-gives
->> > > > > us an opportunity to fix things.
->> > > > > We can do it via a regular syscall path if there is a consensus.
->> > > >
->> > > > Yeah, the API exposed to the BPF program is kfunc-based in any cas=
-e. If
->> > > > we were to at some point conclude that this whole thing was not us=
-eful
->> > > > at all and deprecate it, it doesn't seem to me that it makes much
->> > > > difference whether that means "you can no longer create a link
->> > > > attachment of this type via BPF_LINK_CREATE" or "you can no longer
->> > > > create a link attachment of this type via BPF_PROG_RUN of a syscal=
-l type
->> > > > program" doesn't really seem like a significant detail to me...
->> > >
->> > > In this case, why do you prefer it to go via regular syscall? Seems
->> > > like we can avoid a bunch of boileplate syscall work with a kfunc th=
-at
->> > > does the attachment?
->> > > We might as well abstract it at, say, libbpf layer which would
->> > > generate/load this small bpf program to call a kfunc.
->> >
->> > I'm not sure we're on the same page here.
->> > imo using syscall bpf prog that calls kfunc to do a per-device attach
->> > is an overkill here.
->> > It's an experimental feature, but you're already worried about
->> > multiple netdevs?
->> >
->> > Can you add an empty nop function and attach to it tracing style
->> > with fentry ?
->> > It won't be per-netdev, but do you have to do per-device demux
->> > by the kernel? Can your tracing bpf prog do that instead?
->> > It's just an ifindex compare.
->> > This way than non-uapi bits will be even smaller and no need
->> > to change struct netdevice.
->>
->> It's probably going to work if each driver has a separate set of tx
->> fentry points, something like:
->>   {veth,mlx5,etc}_devtx_submit()
->>   {veth,mlx5,etc}_devtx_complete()
+> David, the logic for calling hash_alloc_result looks quite different
+> from that on whether you do the hash finalisation.  I'd suggest that
+> you change them to use the same check, and also set use NULL instead
+> of ctx->result if you didn't call hash_alloc_result.
 
-I really don't get the opposition to exposing proper APIs; as a
-dataplane developer I want to attach a program to an interface. The
-kernel's role is to provide a consistent interface for this, not to
-require users to become driver developers just to get at the required
-details.
+I don't fully understand what the upstream hash_sendmsg() is doing.  Take this
+bit for example:
 
-> Right. And per-driver descriptors.
-> The 'generic' xdptx metadata is unlikely to be practical.
-> Marshaling in and out of it is going to be too perf sensitive.
-> I'd just add an attach point in the driver with enough
-> args for bpf progs to make sense of the context and extend
-> the verifier to make few safe fields writeable.
+	if (!ctx->more) {
+		if ((msg->msg_flags & MSG_MORE))
+			hash_free_result(sk, ctx);
 
-This is a rehashing of the argument we had on the RX side: just exposing
-descriptors is a bad API because it forces BPF programs to deal with
-hardware errata - which is exactly the kind of thing that belongs in a
-driver. Exposing kfuncs allows drivers to deal with hardware quirks
-while exposing a consistent API to (BPF) users.
+Why is it freeing the old result only if MSG_MORE is now set, but wasn't set
+on the last sendmsg()?
 
-> kfuncs to read/request timestamp are probably too slow.
+David
 
-Which is why we should be inlining them :)
-
--Toke
 
