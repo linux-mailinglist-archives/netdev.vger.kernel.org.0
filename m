@@ -1,89 +1,88 @@
-Return-Path: <netdev+bounces-10764-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10777-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7ABE373028E
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 16:58:49 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3DF1373043B
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 17:53:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id ACE151C2096A
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 14:58:48 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6E6BB281403
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 15:53:24 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69A6EDDB6;
-	Wed, 14 Jun 2023 14:58:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 040771095C;
+	Wed, 14 Jun 2023 15:53:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5429AAD23
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 14:58:46 +0000 (UTC)
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CBA1FC2;
-	Wed, 14 Jun 2023 07:58:44 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id 5b1f17b1804b1-3f8d258f203so6443375e9.1;
-        Wed, 14 Jun 2023 07:58:44 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E91F4101DD
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 15:53:22 +0000 (UTC)
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEDB0210B;
+	Wed, 14 Jun 2023 08:53:17 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id ffacd0b85a97d-310e6e6a8d4so811227f8f.2;
+        Wed, 14 Jun 2023 08:53:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686754723; x=1689346723;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=cwHOEAiF9KfcpBV2FsuQGv04SjS1N5o4UGAs/GJkRIM=;
-        b=HrgN3iTZqEJnZ+cWUam2y0hNTwU7zJQIh+PO2OOD1V0dKK6Day4ODu61szESSCbcVg
-         8nECpsSl57fgDUiNVhyWExWfwOKMrDojt4Mw2EyAgDm4RLWeRScrIYMlERBFgZySiuMy
-         VDg6BE6FvUSGBzdoOT0k7Wqa+gHrrXVM8hMTARr4fL7mY9IDKASQrP+ub1K5Z2OBGKtp
-         4k4F3SzICfcZg1djHXBtey23xFNDUyAmIaTa9P/ssQe7DlCGSz8nsJl1mUnGYyIyBJ+N
-         /yFNP9kWASak6rO6lZ/d5e+a7Js7yLeG685kqdZnQpSz3zMP7SPknRbe426IrgA9UEPa
-         cZMA==
+        d=gmail.com; s=20221208; t=1686757996; x=1689349996;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Bhq/y0fc8NtbiDoPoE9MBpAtCqUXLlZMCwX6567Us4w=;
+        b=rplArsRTqX0QzO+acxEngNYJNMVt6u5lBMTiEmCMCN9MqpTtL0AOdInFSf3QEQLis6
+         K5KkbNP4lva6SBLQxaan7MYME6CwT+/F/2PjeGakSkgz/g6LjoMls6tNrT93DmmuqUYp
+         eM7vKCdL9B9IniqP7BNSdJ2M3pJGOhnw1kLHPVw0U3w8EiIf3SjvjswZAapm1gZkRGfB
+         T1wShgwmoRF8B3ByF/Asxs2lnS1aXAzaJAm2Vi7W6UzoeBlnrUf5KQH7+EivQN0p4lpA
+         6MF436FcsaG8uPOLPAmwDLyVZQlcRj4rpfJ61dbRO1SPl8NmSDSP3QDYR7JRmEdaASX4
+         N3sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686754723; x=1689346723;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cwHOEAiF9KfcpBV2FsuQGv04SjS1N5o4UGAs/GJkRIM=;
-        b=lBeh4DM6ydGyxlaol739nMQtQFEGXyoP9toWo3g6Kuy2LjDSK4H69RHhbAfA4NRfdD
-         NVCp3S96qgb9zKrFqHmrbqeo6noq95qs14S+OburfM4gMQ+rGu/pBOoHOOWDnN5aFKQe
-         W0E//gFJSJ7k6JrJydS5kB/vUMlXqSR6BtCQyZaJKT7O3Lir7G1gvLhA87P7Edgjagc8
-         fsfO7tYSbDQdK6diY+px26K6Mjk12IXr11UrbUA+gxMSu37EISeoYP8fsxoXiomJZ1XI
-         kIB4/pCP/W8K+ppzLIKh1rrjdIhvmiap55I3bWbUWVZq129iY6yZ8rN4GtvpD6Iy5Ubw
-         ywxQ==
-X-Gm-Message-State: AC+VfDxzVDMV62aTwsy1LlIxiTXk9OxPlUcO3X9Owu7N6yHz9V+fcwSO
-	5tqN7iIq2grDiWhJ/vbGenE=
-X-Google-Smtp-Source: ACHHUZ42J+w43AeCv+jIRznzv9mpK6x3YnnHigR05cUDdfxwPzyO8LQJ2mQRRGGDh7MzUrt4gXUKKQ==
-X-Received: by 2002:a1c:6a18:0:b0:3f6:a966:ee8d with SMTP id f24-20020a1c6a18000000b003f6a966ee8dmr9847496wmc.26.1686754722830;
-        Wed, 14 Jun 2023 07:58:42 -0700 (PDT)
-Received: from Ansuel-xps. (93-34-93-173.ip49.fastwebnet.it. [93.34.93.173])
-        by smtp.gmail.com with ESMTPSA id p11-20020a1c740b000000b003f733c1129fsm17703302wmc.33.2023.06.14.07.58.41
+        d=1e100.net; s=20221208; t=1686757996; x=1689349996;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Bhq/y0fc8NtbiDoPoE9MBpAtCqUXLlZMCwX6567Us4w=;
+        b=YDnt+/I6+RnwSrZvOwcZ1c/hzZwA1azLdZCUlbtISdDRMsHrnj5I6vjujtnlN5bb+t
+         H2IEKEEr/0uR3Cpb3fYH1MsoOKQmr+iYbPdSRAfQAstyUkXwWeKfB1ccFyUQmRNrlA7q
+         9kv8Fk6xVTYGKI7PDDUT9GytPA+RbKHO2qt4y6NEUNiYw96Z3uKPVPfcx8u77u8GkKDG
+         GUPw3Phy2hjzZWVfK7GULL8jE++bqkNTGlIeDZq3OtPH326ZXJg3cJ+0bzfyZLT3B47u
+         HYmg6eu1w2nEjJMSc0t4pb+nhCd8zIPBgk44VmrY+McpbBRyN2td577mO2BKW0uAq4ue
+         qglQ==
+X-Gm-Message-State: AC+VfDzxRLYB2iqJHL6ebXF4pz91VmF//8jwkBg9lfW37Lim+pL5MRE3
+	evmNB3N1Js45yomOIAJOyEc=
+X-Google-Smtp-Source: ACHHUZ4bgrLvAW+bLWRMhNWCLyEUy8rjxDhrz/ugqbtaLYWSlkDAiCpdxMZXxKqgVabsYT+IRO3eww==
+X-Received: by 2002:adf:f5d2:0:b0:30f:d0e7:ef31 with SMTP id k18-20020adff5d2000000b0030fd0e7ef31mr3459559wrp.44.1686757996142;
+        Wed, 14 Jun 2023 08:53:16 -0700 (PDT)
+Received: from localhost.localdomain (93-34-93-173.ip49.fastwebnet.it. [93.34.93.173])
+        by smtp.googlemail.com with ESMTPSA id m6-20020a5d6246000000b0030e52d4c1bcsm18752199wrv.71.2023.06.14.08.53.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jun 2023 07:58:42 -0700 (PDT)
-Message-ID: <6489d5a2.1c0a0220.c53b2.acb0@mx.google.com>
-X-Google-Original-Message-ID: <ZIl3zACHBZmrk/8o@Ansuel-xps.>
-Date: Wed, 14 Jun 2023 10:18:20 +0200
+        Wed, 14 Jun 2023 08:53:15 -0700 (PDT)
 From: Christian Marangi <ansuelsmth@gmail.com>
-To: Simon Horman <simon.horman@corigine.com>
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+To: Giuseppe Cavallaro <peppe.cavallaro@st.com>,
 	Alexandre Torgue <alexandre.torgue@foss.st.com>,
 	Jose Abreu <joabreu@synopsys.com>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
 	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+	Russell King <linux@armlinux.org.uk>,
+	Christian Marangi <ansuelsmth@gmail.com>,
+	netdev@vger.kernel.org,
 	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	Jose Abreu <Jose.Abreu@synopsys.com>, stable@vger.kernel.org
-Subject: Re: [net PATCH] net: ethernet: stmicro: stmmac: fix possible memory
- leak in __stmmac_open
-References: <20230614073241.6382-1-ansuelsmth@gmail.com>
- <ZInUzhOZ/3TGSQl9@corigine.com>
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Cc: Jose Abreu <Jose.Abreu@synopsys.com>,
+	stable@vger.kernel.org
+Subject: [net PATCH v2] net: ethernet: stmicro: stmmac: fix possible memory leak in __stmmac_open
+Date: Wed, 14 Jun 2023 11:17:14 +0200
+Message-Id: <20230614091714.15912-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZInUzhOZ/3TGSQl9@corigine.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DATE_IN_PAST_06_12,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
 	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -91,57 +90,65 @@ X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DATE_IN_PAST_06_12,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, Jun 14, 2023 at 04:55:10PM +0200, Simon Horman wrote:
-> On Wed, Jun 14, 2023 at 09:32:41AM +0200, Christian Marangi wrote:
-> > Fix a possible memory leak in __stmmac_open when stmmac_init_phy fails.
-> > It's also needed to free everything allocated by stmmac_setup_dma_desc
-> > and not just the dma_conf struct.
-> > 
-> > Correctly call free_dma_desc_resources on the new dma_conf passed to
-> > __stmmac_open on error.
-> > 
-> > Reported-by: Jose Abreu <Jose.Abreu@synopsys.com>
-> > Fixes: ba39b344e924 ("net: ethernet: stmicro: stmmac: generate stmmac dma conf before open")
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > Cc: stable@vger.kernel.org
-> > ---
-> >  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > index fa07b0d50b46..0966ab86fde2 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > @@ -3877,10 +3877,10 @@ static int __stmmac_open(struct net_device *dev,
-> >  
-> >  	stmmac_hw_teardown(dev);
-> >  init_error:
-> > -	free_dma_desc_resources(priv, &priv->dma_conf);
-> >  	phylink_disconnect_phy(priv->phylink);
-> >  init_phy_error:
-> >  	pm_runtime_put(priv->device);
-> > +	free_dma_desc_resources(priv, dma_conf);
-> 
-> Hi Christian,
-> 
-> Are these resources allocated by the caller?
-> If so, perhaps it would be clearer if a symmetric approach
-> was taken and the caller handled freeing them on error.
->
+Fix a possible memory leak in __stmmac_open when stmmac_init_phy fails.
+It's also needed to free everything allocated by stmmac_setup_dma_desc
+and not just the dma_conf struct.
 
-Yes, they are. Handling in the caller would require some additional
-delta to this and some duplicated code but if preferred I can implement
-it. I can provide a v2 shortly if it's ok and you prefer this
-implementation.
+Drop free_dma_desc_resources from __stmmac_open and correctly call
+free_dma_desc_resources on each user of __stmmac_open on error.
 
-> >  	return ret;
-> >  }
-> >  
-> > -- 
-> > 2.40.1
-> > 
-> > 
+Reported-by: Jose Abreu <Jose.Abreu@synopsys.com>
+Fixes: ba39b344e924 ("net: ethernet: stmicro: stmmac: generate stmmac dma conf before open")
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+Cc: stable@vger.kernel.org
+---
 
+Changes v2:
+- Move free_dma_desc_resources to each user of __stmmac_open
+
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index fa07b0d50b46..5c645b6d5660 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -3877,7 +3877,6 @@ static int __stmmac_open(struct net_device *dev,
+ 
+ 	stmmac_hw_teardown(dev);
+ init_error:
+-	free_dma_desc_resources(priv, &priv->dma_conf);
+ 	phylink_disconnect_phy(priv->phylink);
+ init_phy_error:
+ 	pm_runtime_put(priv->device);
+@@ -3895,6 +3894,9 @@ static int stmmac_open(struct net_device *dev)
+ 		return PTR_ERR(dma_conf);
+ 
+ 	ret = __stmmac_open(dev, dma_conf);
++	if (ret)
++		free_dma_desc_resources(priv, dma_conf);
++
+ 	kfree(dma_conf);
+ 	return ret;
+ }
+@@ -5637,12 +5639,15 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
+ 		stmmac_release(dev);
+ 
+ 		ret = __stmmac_open(dev, dma_conf);
+-		kfree(dma_conf);
+ 		if (ret) {
++			free_dma_desc_resources(priv, dma_conf);
++			kfree(dma_conf);
+ 			netdev_err(priv->dev, "failed reopening the interface after MTU change\n");
+ 			return ret;
+ 		}
+ 
++		kfree(dma_conf);
++
+ 		stmmac_set_rx_mode(dev);
+ 	}
+ 
 -- 
-	Ansuel
+2.40.1
+
 
