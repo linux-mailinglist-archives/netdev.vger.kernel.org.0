@@ -1,75 +1,112 @@
-Return-Path: <netdev+bounces-10780-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10781-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B3EB8730475
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 18:01:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4AB3D73049B
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 18:10:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5B68528145E
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 16:01:32 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 052ED281324
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 16:10:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 77FCA10966;
-	Wed, 14 Jun 2023 16:01:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 251A91097C;
+	Wed, 14 Jun 2023 16:10:14 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 294B4101ED
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 16:01:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09CCAC433C0;
-	Wed, 14 Jun 2023 16:01:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686758488;
-	bh=c/w30hWZPq7B/xF67XMBljxlZ1LiFXkgssX8UYL4sVU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=oSYDBXh/T+vZ89y12Y2Ui0TIGUC+XmnpqzCftxHWAsrc1igZbdGpK2Cmfkfsd3SOm
-	 04sXTBbwJwKI8TWMpjEp2+93uGQ+STTU7g9riaCKjA+lyQKcLwn8LcEsidVhBKG+0v
-	 hGGVf3q/HVZZE6w9EO3G3qij2XSNRJon6zNcm0NuycxURdV65WtJldVZms9AvW/RGg
-	 iRqh+23gxW5LdD8y80nUJe9hW8VG1kkU1UyPzPHgGXIsC4Er0jWD1LKqMMKai7jE9e
-	 5hzR8h11oofrPEwINz3t5QuAsuRHnY6w/dZ0fotIw2YT93OmaTC3NFrLqVMLhWGtZB
-	 ITfJdFhpBXyYg==
-Date: Wed, 14 Jun 2023 09:01:26 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Sabrina Dubroca <sd@queasysnail.net>
-Cc: Fedor Pchelkin <pchelkin@ispras.ru>, "David S. Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Paolo Abeni
- <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>, Lior Nahmanson
- <liorna@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>, Hannes Frederic
- Sowa <hannes@stressinduktion.org>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
- lvc-project@linuxtesting.org
-Subject: Re: [PATCH] net: macsec: fix double free of percpu stats
-Message-ID: <20230614090126.149049b1@kernel.org>
-In-Reply-To: <ZImx5pp98OSNnv4I@hog>
-References: <20230613192220.159407-1-pchelkin@ispras.ru>
-	<20230613200150.361bc462@kernel.org>
-	<ZImx5pp98OSNnv4I@hog>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 170EB101D8
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 16:10:13 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937BF1BF9
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 09:10:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686759011;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=rl6mgiOo+Ag+ttIGbzoAy2FCy5AX0T0I/OwvxTFasvA=;
+	b=JbclCWLGvgReZhTq2E3LwA+lKwffDJ+QPAzBCXivTkSgXfYyyc2ARQJx1dPwO4QBb8Jx4R
+	V9fEEYQxxXaQFyxCuklHHiMkZnk2VmNLSnDBBHAaEspPJdPeN876mYe+u4UnE9nq5QUWJh
+	9xCVYgwwGq737G1EKs0fVzAK8hBfg4w=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-85-hf3k22h9MguxekwrDDaUNQ-1; Wed, 14 Jun 2023 12:10:08 -0400
+X-MC-Unique: hf3k22h9MguxekwrDDaUNQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9FD6980879D;
+	Wed, 14 Jun 2023 16:10:07 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.67])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 39902C1603B;
+	Wed, 14 Jun 2023 16:10:04 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <000000000000a61ffe05fe0c3d08@google.com>
+References: <000000000000a61ffe05fe0c3d08@google.com>
+To: syzbot <syzbot+dd1339599f1840e4cc65@syzkaller.appspotmail.com>
+Cc: dhowells@redhat.com, bpf@vger.kernel.org, davem@davemloft.net,
+    edumazet@google.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+    netdev@vger.kernel.org, pabeni@redhat.com,
+    syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] [net?] WARNING in unreserve_psock
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1661017.1686759001.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 14 Jun 2023 17:10:01 +0100
+Message-ID: <1661018.1686759001@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Wed, 14 Jun 2023 14:26:14 +0200 Sabrina Dubroca wrote:
-> > What prevents the device from being opened and used before
-> > macsec_add_dev() has finished? I think we need a fix which 
-> > would move this code before register_netdev(), instead :(  
-> 
-> Can the device be opened in parallel? We're under rtnl here.
-> 
-> If we want to move that code, then we'll also have to move the
-> eth_hw_addr_inherit call that's currently in macsec's ndo_init: in
-> case the user didn't give an SCI, we have to make it up based on the
-> device's mac address (dev_to_sci(dev, ...)), whether it's set by the
-> user or inherited. I can't remember if I had a good reason to put the
-> inherit in ndo_init.
+Here's a reduced testcase.
 
-Ah, you're right, this is a link creation path.
--- 
-pw-bot: ur
+David
+---
+// https://syzkaller.appspot.com/bug?id=3D6ffe7d1ebf1efaddb7ddd04784b9b22a=
+8562b8d0
+// autogenerated by syzkaller (https://github.com/google/syzkaller)
+#define _GNU_SOURCE
+#include <endian.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <linux/kcm.h>
+
+#define OSERROR(R, S) do { if ((long)(R) =3D=3D -1L) { perror((S)); exit(1=
+); } } while(0)
+
+int main(void)
+{
+	struct msghdr msg;
+	int kcmfd, res;
+
+	kcmfd =3D socket(AF_KCM, SOCK_DGRAM, KCMPROTO_CONNECTED);
+	OSERROR(kcmfd, "socket");
+
+	memset(&msg, 0, sizeof(msg));
+	res =3D sendmsg(kcmfd, &msg, 0);
+	OSERROR(res, "sendmsg");
+	return 0;
+}
+
 
