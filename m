@@ -1,379 +1,145 @@
-Return-Path: <netdev+bounces-10632-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10633-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 10C0172F773
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 10:11:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id C5E4B72F7C6
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 10:26:20 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3D0081C20B1F
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 08:11:06 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E61291C20510
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 08:26:19 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1C19E4696;
-	Wed, 14 Jun 2023 08:11:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0976A524F;
+	Wed, 14 Jun 2023 08:26:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A6517F
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 08:11:03 +0000 (UTC)
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E091BD4
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 01:11:00 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id a640c23a62f3a-97460240863so73960966b.0
-        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 01:11:00 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E88BF7F
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 08:26:17 +0000 (UTC)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2104.outbound.protection.outlook.com [40.107.223.104])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60161CA;
+	Wed, 14 Jun 2023 01:26:16 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XaEyTblWoACzU1BRs4nhiVY/G7LFWbnyQqAcDsG9s1uagYvdM6gXEeypvr8BU9Hc0QQHRFGYIYMn/rxuFhfAvm02LA7tU7Iz70Ma55S/gvJkue5xoZUEmRDVkhmE3qXRulFXn/W18UxQtsyjjd9I3U4pTpodRjmxYHztxoU05c/0Hgc+KAxzF83n3Kc7q5Rry2WRcXPTwwFBf3IFe+FZ6vnxE6n+/u80jAgFbf0rwuJOdj3W8QX80orGy/CrMhwEDIM3OQw1VF8uNsI2ttPoe3i018YUT5q4HD9s9hhyjpc+3cBQYc9S4EIGCO8GrwLfKKTL+Fl4KIk4QeZiqSmZYw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=C3dHXr/LjfI+mpPMG+bFbxDo7mFAc0MjKzAVyIqvcZs=;
+ b=Y7WVPnDA/w3mBHmggnRSVIQ6DCfBrKtrKRyrUF2m4hP8C3qCCJ5w4rJTrst1e9IYtAc4Rf6pKe/wsi8zyI5rcoph9IQm7mUn2DmERmps4vkrNHI9CX3fDYyFBKNhKSjzfqDud5EwoSK+iGmC1k69qNF4pyW52Ilq5elLfQH9v4he4UTIukm1dxBdNHCdzvXN6aXD6y3My44TfyZRm2lzFRBej1FZsGCj7hXKHgecQte9V8w6E0LLcpsMG1eN4BA1YSjy3sV+3VmR1e3bEtvsCSvx6YLYQEciaWizKwSTQmi/T2AhNlqmKoGLzKoK2Rp4d6aPXq5iodL1mhZkgq5okA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686730258; x=1689322258;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:mail-followup-to:message-id:subject:cc:to
-         :from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+8ruHIDAglH4QoGtludLTKXm2VgL+SnZIxMBze5VGH4=;
-        b=isMOPcB6uYfgFgwAWzngp7JrFRD8tgWShotZ++Qm6b+nvrvUnWO29DSI2oCQ1eeoPW
-         MUfO4lYdcfv4UAAMUFAy/ofUiHuSCQMgAQ1NpzA4m3qczNTFy+NpsB+XfybJRJ+B7tTN
-         WCw5kyiQLd+RU5qEAShW2F0A8HggB0Eb9QOfYxh/s0CwS8PlERgaZfFfT/v4El4gV31h
-         9RE0QE6DS8NT/H+2TBT/Nd6c3+qwd075rVnofFN9ogozKJJEh5izR2HNsfMO6W0meaja
-         rQCZgkH9Rgy1aWp0qoEisDqXBzIn4IJquxQMGHWjsWs8mtj2oQkVMAyi/dVGK4PTiqqx
-         ihfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686730258; x=1689322258;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:mail-followup-to:message-id:subject:cc:to
-         :from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+8ruHIDAglH4QoGtludLTKXm2VgL+SnZIxMBze5VGH4=;
-        b=BoWmLG1pAVtis8gIvKscxwmudipBd21l8LxB2PGhJ2nV5jCUxZofD/99nwLRbwsXKl
-         YTSQgoxw3nVhDs8u8WWsLDjFg0XuDzGMYT7hpBLiaejcduJBAIzxpZBsQ5Pro5WnoKjI
-         Uhd7UeVCcdKwDRYFtNU2l85UU61se3Lvgas5wI8UK5tRQjL/3Uef8M+RYEpMGBEf1Hej
-         GMDgjjaGXpJMhr3wSj2t/OrapbkC4V6QLtPELaBBuP7IJ2ValIoLRr0zTNLqdnWp1dfm
-         3W1bVN2M0irf78p2960XbqHvjIT0Cludt8U5dwWdyT/exth0iGc3N+NioAZJPzajNZUw
-         nJkA==
-X-Gm-Message-State: AC+VfDzn8YvXZVzqGcSK6yolE7VSImC37+OhN4o9RrriWCifV8fIGkq+
-	1/J14KmLFRH88GI+Z5/6nhc=
-X-Google-Smtp-Source: ACHHUZ7viVkDU0J/i+Zcv8nmbOSV2C56qSVyEU7Zd/BHiC5H7+ZYOwujjHwxpfU7BfEPegXE45gLyg==
-X-Received: by 2002:a17:907:168f:b0:94f:449e:75db with SMTP id hc15-20020a170907168f00b0094f449e75dbmr15557097ejc.52.1686730258437;
-        Wed, 14 Jun 2023 01:10:58 -0700 (PDT)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id sa1-20020a170906eda100b009745a6d1b37sm7624506ejb.202.2023.06.14.01.10.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jun 2023 01:10:57 -0700 (PDT)
-Date: Wed, 14 Jun 2023 09:10:55 +0100
-From: Martin Habets <habetsm.xilinx@gmail.com>
-To: =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>
-Cc: Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-	ecree.xilinx@gmail.com, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-	linux-net-drivers@amd.com, Fei Liu <feliu@redhat.com>
-Subject: Re: [PATCH net] sfc: use budget for TX completions
-Message-ID: <ZIl2Dw9Ve0b30WmV@gmail.com>
-Mail-Followup-To: =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
-	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-	ecree.xilinx@gmail.com, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-	linux-net-drivers@amd.com, Fei Liu <feliu@redhat.com>
-References: <20230612144254.21039-1-ihuguet@redhat.com>
- <ZIdCFbjr0nEiS6+m@boxer>
- <CACT4oucSRrddFYaNDBsuvK_4imDZUvy9r2pvHp8Ji_E=oP6ecg@mail.gmail.com>
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C3dHXr/LjfI+mpPMG+bFbxDo7mFAc0MjKzAVyIqvcZs=;
+ b=MBwn1ulAZ/cdflF9QqGtdFKI83iCA29tMHxaqJ+DwzVJAt4N5sHXNV+lvrvNNcBmmY5Wl7ZM6csn3hGyTcRgyeYg3SHB6QXC4y0Px40GePFvZHfKFudDcL0nNUPIY4p86sNmIY4wtePzQWXRwwH4wzbnHEyVM/GqhTNozwEOf4I=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by LV8PR13MB6350.namprd13.prod.outlook.com (2603:10b6:408:188::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.25; Wed, 14 Jun
+ 2023 08:26:12 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6477.028; Wed, 14 Jun 2023
+ 08:26:12 +0000
+Date: Wed, 14 Jun 2023 10:26:04 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Ivan Vecera <ivecera@redhat.com>
+Cc: netdev@vger.kernel.org, Ma Yuying <yuma@redhat.com>,
+	Jesse Brandeburg <jesse.brandeburg@intel.com>,
+	Tony Nguyen <anthony.l.nguyen@intel.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	"moderated list:INTEL ETHERNET DRIVERS" <intel-wired-lan@lists.osuosl.org>,
+	open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/2] i40e: Add helper for VF inited state check
+ with timeout
+Message-ID: <ZIl5nM7sl1lJn0F5@corigine.com>
+References: <20230613121610.137654-1-ivecera@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230613121610.137654-1-ivecera@redhat.com>
+X-ClientProxiedBy: AM0PR02CA0178.eurprd02.prod.outlook.com
+ (2603:10a6:20b:28e::15) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACT4oucSRrddFYaNDBsuvK_4imDZUvy9r2pvHp8Ji_E=oP6ecg@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FSL_HELO_FAKE,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|LV8PR13MB6350:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9ad038ca-94db-4e3a-8f15-08db6cb10313
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	DspFS65rBV7ZCAvCT5pK7qgswVBXXkB7WRI44MtPrhpgsEwjRB6Sb/wraSpNHmZobXA93anbRQ9AycZvo/r08xRyl0vKOqsxgaogI3qX1ZXLG6MPgWaHTID18efF0L0D0w3svW4gMt29/xyoACriZk2nJaow2iCvJpwAaJYw0nh9/YRP+lMzsIkz8/S+knsqUAKRVNndHonJSWI5zl0dyGRMIhgQZog4paJZx3uA9i3D+laPVsyPnTaovK0E5hTu6tBT3PAEKYVfx4G9bc76YQlHlN7MISXVejEk8jbNELZowo3e3hyYb7gisHkLUInwbH/HhEz1r9UjTJzxZbDwB6Ph5aDG5ZrDgSQtSRF9jZ0j3SxGW4sY7pD09ynQOFtSCVwYOndBBwUmyNtZj1LHLXWbMr/M5ukEe+wRgPn6EPl4UKb92gEA3JU1s7vZyqvt43FlW7iedMIcxXzZozQ+j46aQHpYduX/wTpua/XFWWlY+FS1VFW5wO6KRYRAnNm+r2AIdrv39fHqUzr0jjFPCpHwmcbRotuiMHwAa/sL4Icemy+H43fH6+7DkhA11cSgaz5kbyC6vrvf5aAhz1D+LYrl/JI5aaf3l9eP9V/T0A8=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(39840400004)(366004)(346002)(136003)(451199021)(36756003)(4744005)(2906002)(86362001)(44832011)(7416002)(6666004)(6486002)(186003)(6512007)(6506007)(5660300002)(478600001)(54906003)(66946007)(6916009)(66556008)(66476007)(4326008)(2616005)(316002)(38100700002)(8936002)(8676002)(41300700001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?/06SDTXfYzlggYahXwYb+tX1/rBO0cn9uWCbEaUUqeGtwiXoWeRgVIJCkas7?=
+ =?us-ascii?Q?Zc624Jh8uU8XJjSjO1q8+8JH6/AsNF0LOOc9/vQhiM3X3VkTrcWWcgYY0OEJ?=
+ =?us-ascii?Q?TEFE6F/S6dTcPumMHMol8w4KDdEk3mFKliz70YBShArZZu9CnXSIi0lynq7D?=
+ =?us-ascii?Q?ljnsqm7LP0VdYXwW3XyzwFYAqDVNk735wj1zFGEcxcR3QC6QK2gB6K6RHHXZ?=
+ =?us-ascii?Q?6R5vYdiAQ8b6f7Zhmpq+FJ8txAcgf1lNyNJ7DeHtTea9f3/vjUTqkefU43kY?=
+ =?us-ascii?Q?fBYPWX4NotahL72Tdp/oKV313xUgk5qg4tsMLgYTEZd9G1hRae0mGKKM89i8?=
+ =?us-ascii?Q?QMyzjvUghCeTB5YMK6x1PrH1V8MOTh4gc1JQLv++ZFGiuDQPqYd6U0IXgCjf?=
+ =?us-ascii?Q?Jvcsk0PJO9hM+wSOZGjiJOlKMFKTcV0aioxEjqAbYVaH7VdK6rgUrxLqHGe2?=
+ =?us-ascii?Q?fnjObccMEWWRCzI3Ey2YsmGkyZRhAtKvZSKGLxfFzfybsoG5xAb/nVoPyVmV?=
+ =?us-ascii?Q?CQrgkvSQ5arsusSvUWmXbGmEvY4aWocQBciOuLtjFT1KgUegzbcqNXHJBQnO?=
+ =?us-ascii?Q?O4VfoD4bE8pvSw0qhWlO/Krse37H63p3s6TEplBtihNF80+ARJIB8k5O1TGs?=
+ =?us-ascii?Q?T+wZRle1kXE12VMm6CL6J6lxRtRhcDIePnL1PkCYWOO+vAUuDmra3L63MO8B?=
+ =?us-ascii?Q?08DDlYdOSS9A5Xx+2Ypf+46ReOjSc6pqwekQRXKR+WAV1dWZk22aHcp19Geu?=
+ =?us-ascii?Q?uX25oYoMVO0jmY//tz+29mFTha3rimrw4URXUPj8cfZ7qtMhwHk9RFrWUlIM?=
+ =?us-ascii?Q?IRj391ZvRU5GjWsqmOcZvpzmczHpUsXfbpOc1hTuxBwQIqwiVAyijBuy+dah?=
+ =?us-ascii?Q?MfamJpIGb407RfjCeZd/WSMPvzmjSB9ntFnc0hMC/v+j9seNyICrqbZ8/rw2?=
+ =?us-ascii?Q?9hjZIsmzApSzIBL/t4WjZ4sd3w39Zu4GUNU4widxWNDq7hxlMvpBh0GOMWsQ?=
+ =?us-ascii?Q?YaguAD2x3h9rE59j0gCIuL5jhrbd5aZLb/qf5cDoZUt9XGC4GEDM6Gwk/uJw?=
+ =?us-ascii?Q?gCLgvrcA9XRK3Zt1uIdCU1d3uwL+aef//si3rnFWfTS5uhiMMOsnEoo98Fh2?=
+ =?us-ascii?Q?kyVIhbuKm7HL53FzzVfDvgJ5Lv451NOx3419oLfW7Hmj6V6YPTV30WxJ1F7X?=
+ =?us-ascii?Q?lGaDWExq38EIxF2++R5jSGs32wuDeAlQAXBn5tOrrK5i+YoOAYJJ8N6hYZQR?=
+ =?us-ascii?Q?ncmBOUOjAP0YF+FslpEWkWZtWEQtnCIR0YQdVgsdVRf5APWdt2yjY1164fCg?=
+ =?us-ascii?Q?gFfJr2jpJddu/EuORbQj8/W9oi279Tyj0S2F0KH2p/tmMtPsHLQD1oPqijRT?=
+ =?us-ascii?Q?FtAafIszlJDCE6I2OgsaF6RtS/1me1ouIJjZrFkFW9Hzg+wglkZYcNfnrFqL?=
+ =?us-ascii?Q?0O8jCv/fgC7gK+VqqGBjjMHD5yQJu82SwXxP9INxQvuwBLrUz4osGeXor8Ec?=
+ =?us-ascii?Q?GgRDyNkbemwwn38VkUfr5fPvbu9918RofHBfrJrDt2ANLJ8hTLdmh+TK3/mm?=
+ =?us-ascii?Q?JGiuh7ath6KQ3Ev0Bd4/E8hoqYn4x2ce0Fp5AyPwLWBDjOuvk2DlgY20rr9j?=
+ =?us-ascii?Q?LsYbcFYAYpJ7u6u3H8Gy4Zog9w4o6tdHYRT6Ra8t2/wkVrGBeQa0We/5skBe?=
+ =?us-ascii?Q?B1ttSA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ad038ca-94db-4e3a-8f15-08db6cb10313
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2023 08:26:12.5131
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: i2Q/uNj7jYvfFg4RSuIoOC4i8pqtTWBXcvYbvB1pc7Ba0chcMBufYrFrGejjq3sV9e70nxRqGdjYHycQLnZjo+FZ4uJV7hJIrfgOV6U5b9s=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR13MB6350
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 13, 2023 at 04:42:25PM +0200, Íñigo Huguet wrote:
-> On Mon, Jun 12, 2023 at 6:05 PM Maciej Fijalkowski
-> <maciej.fijalkowski@intel.com> wrote:
-> >
-> > On Mon, Jun 12, 2023 at 04:42:54PM +0200, Íñigo Huguet wrote:
-> >
-> > Hey Inigo, some trivial things below.
-> >
-> > > When running workloads heavy unbalanced towards TX (high TX, low RX
-> > > traffic), sfc driver can retain the CPU during too long times. Although
-> > > in many cases this is not enough to be visible, it can affect
-> > > performance and system responsiveness.
-> > >
-> > > A way to reproduce it is to use a debug kernel and run some parallel
-> > > netperf TX tests. In some systems, this will lead to this message being
-> > > logged:
-> > >   kernel:watchdog: BUG: soft lockup - CPU#12 stuck for 22s!
-> > >
-> > > The reason is that sfc driver doesn't account any NAPI budget for the TX
-> > > completion events work. With high-TX/low-RX traffic, this makes that the
-> > > CPU is held for long time for NAPI poll.
-> > >
-> > > Documentations says "drivers can process completions for any number of Tx
-> > > packets but should only process up to budget number of Rx packets".
-> > > However, many drivers do limit the amount of TX completions that they
-> > > process in a single NAPI poll.
-> > >
-> > > In the same way, this patch adds a limit for the TX work in sfc. With
-> > > the patch applied, the watchdog warning never appears.
-> > >
-> > > Tested with netperf in different combinations: single process / parallel
-> > > processes, TCP / UDP and different sizes of UDP messages. Repeated the
-> > > tests before and after the patch, without any noticeable difference in
-> > > network or CPU performance.
-> > >
-> > > Test hardware:
-> > > Intel(R) Xeon(R) CPU E5-1620 v4 @ 3.50GHz (4 cores, 2 threads/core)
-> > > Solarflare Communications XtremeScale X2522-25G Network Adapter
-> > >
-> > > Reported-by: Fei Liu <feliu@redhat.com>
-> > > Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
-> >
-> > You're missing Fixes: tag.
+On Tue, Jun 13, 2023 at 02:16:09PM +0200, Ivan Vecera wrote:
+> Move the check for VF inited state (with optional up-to 300ms
+> timeout to separate helper i40e_check_vf_init_timeout() that
+> will be used in the following commit.
 > 
-> Thanks for the reminder!
-> 
-> >
-> > > ---
-> > >  drivers/net/ethernet/sfc/ef10.c      | 25 ++++++++++++++++++-------
-> > >  drivers/net/ethernet/sfc/ef100_nic.c |  7 ++++++-
-> > >  drivers/net/ethernet/sfc/ef100_tx.c  |  4 ++--
-> > >  drivers/net/ethernet/sfc/ef100_tx.h  |  2 +-
-> > >  drivers/net/ethernet/sfc/tx_common.c |  4 +++-
-> > >  drivers/net/ethernet/sfc/tx_common.h |  2 +-
-> > >  6 files changed, 31 insertions(+), 13 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-> > > index d30459dbfe8f..b63e47af6365 100644
-> > > --- a/drivers/net/ethernet/sfc/ef10.c
-> > > +++ b/drivers/net/ethernet/sfc/ef10.c
-> > > @@ -2950,7 +2950,7 @@ static u32 efx_ef10_extract_event_ts(efx_qword_t *event)
-> > >       return tstamp;
-> > >  }
-> > >
-> > > -static void
-> > > +static int
-> > >  efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
-> > >  {
-> > >       struct efx_nic *efx = channel->efx;
-> > > @@ -2958,13 +2958,14 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
-> > >       unsigned int tx_ev_desc_ptr;
-> > >       unsigned int tx_ev_q_label;
-> > >       unsigned int tx_ev_type;
-> > > +     int work_done;
-> > >       u64 ts_part;
-> > >
-> > >       if (unlikely(READ_ONCE(efx->reset_pending)))
-> > > -             return;
-> > > +             return 0;
-> > >
-> > >       if (unlikely(EFX_QWORD_FIELD(*event, ESF_DZ_TX_DROP_EVENT)))
-> > > -             return;
-> > > +             return 0;
-> > >
-> > >       /* Get the transmit queue */
-> > >       tx_ev_q_label = EFX_QWORD_FIELD(*event, ESF_DZ_TX_QLABEL);
-> > > @@ -2973,8 +2974,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
-> > >       if (!tx_queue->timestamping) {
-> > >               /* Transmit completion */
-> > >               tx_ev_desc_ptr = EFX_QWORD_FIELD(*event, ESF_DZ_TX_DESCR_INDX);
-> > > -             efx_xmit_done(tx_queue, tx_ev_desc_ptr & tx_queue->ptr_mask);
-> > > -             return;
-> > > +             return efx_xmit_done(tx_queue, tx_ev_desc_ptr & tx_queue->ptr_mask);
-> > >       }
-> > >
-> > >       /* Transmit timestamps are only available for 8XXX series. They result
-> > > @@ -3000,6 +3000,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
-> > >        * fields in the event.
-> > >        */
-> > >       tx_ev_type = EFX_QWORD_FIELD(*event, ESF_EZ_TX_SOFT1);
-> > > +     work_done = 0;
-> > >
-> > >       switch (tx_ev_type) {
-> > >       case TX_TIMESTAMP_EVENT_TX_EV_COMPLETION:
-> > > @@ -3016,6 +3017,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
-> > >               tx_queue->completed_timestamp_major = ts_part;
-> > >
-> > >               efx_xmit_done_single(tx_queue);
-> > > +             work_done = 1;
-> > >               break;
-> > >
-> > >       default:
-> > > @@ -3026,6 +3028,8 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
-> > >                         EFX_QWORD_VAL(*event));
-> > >               break;
-> > >       }
-> > > +
-> > > +     return work_done;
-> > >  }
-> > >
-> > >  static void
-> > > @@ -3081,13 +3085,16 @@ static void efx_ef10_handle_driver_generated_event(struct efx_channel *channel,
-> > >       }
-> > >  }
-> > >
-> > > +#define EFX_NAPI_MAX_TX 512
-> > > +
-> > >  static int efx_ef10_ev_process(struct efx_channel *channel, int quota)
-> > >  {
-> > >       struct efx_nic *efx = channel->efx;
-> > >       efx_qword_t event, *p_event;
-> > >       unsigned int read_ptr;
-> > > -     int ev_code;
-> > > +     int spent_tx = 0;
-> > >       int spent = 0;
-> > > +     int ev_code;
-> > >
-> > >       if (quota <= 0)
-> > >               return spent;
-> > > @@ -3126,7 +3133,11 @@ static int efx_ef10_ev_process(struct efx_channel *channel, int quota)
-> > >                       }
-> > >                       break;
-> > >               case ESE_DZ_EV_CODE_TX_EV:
-> > > -                     efx_ef10_handle_tx_event(channel, &event);
-> > > +                     spent_tx += efx_ef10_handle_tx_event(channel, &event);
-> > > +                     if (spent_tx >= EFX_NAPI_MAX_TX) {
-> > > +                             spent = quota;
-> > > +                             goto out;
-> > > +                     }
-> > >                       break;
-> > >               case ESE_DZ_EV_CODE_DRIVER_EV:
-> > >                       efx_ef10_handle_driver_event(channel, &event);
-> > > diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-> > > index 4dc643b0d2db..7adde9639c8a 100644
-> > > --- a/drivers/net/ethernet/sfc/ef100_nic.c
-> > > +++ b/drivers/net/ethernet/sfc/ef100_nic.c
-> > > @@ -253,6 +253,8 @@ static void ef100_ev_read_ack(struct efx_channel *channel)
-> > >                  efx_reg(channel->efx, ER_GZ_EVQ_INT_PRIME));
-> > >  }
-> > >
-> > > +#define EFX_NAPI_MAX_TX 512
-> >
-> > couldn't this go to tx_common.h ? you're defining this two times.
-> 
-> Not sure about this. I didn't like any place to put it, so I ended up
-> putting it here. As it is an implementation detail, I didn't like the
-> idea of putting it in a header file that contains the driver's API.
-> 
-> I would better like to hear the opinion from the sfc maintainers, but
-> I don't mind changing it because I'm neither happy with the chosen
-> location.
+> Tested-by: Ma Yuying <yuma@redhat.com>
+> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
 
-I think we should add it in include/linux/netdevice.h, close to
-NAPI_POLL_WEIGHT. That way all drivers can use it.
-Do we need to add this TX poll weight to struct napi_struct and
-extend netif_napi_add_weight()?
-That way all drivers could use the value from napi_struct in stead of using
-a hard-coded define. And at some point we can adjust it.
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-Martin
-
-> 
-> >
-> > > +
-> > >  static int ef100_ev_process(struct efx_channel *channel, int quota)
-> > >  {
-> > >       struct efx_nic *efx = channel->efx;
-> > > @@ -260,6 +262,7 @@ static int ef100_ev_process(struct efx_channel *channel, int quota)
-> > >       bool evq_phase, old_evq_phase;
-> > >       unsigned int read_ptr;
-> > >       efx_qword_t *p_event;
-> > > +     int spent_tx = 0;
-> > >       int spent = 0;
-> > >       bool ev_phase;
-> > >       int ev_type;
-> > > @@ -295,7 +298,9 @@ static int ef100_ev_process(struct efx_channel *channel, int quota)
-> > >                       efx_mcdi_process_event(channel, p_event);
-> > >                       break;
-> > >               case ESE_GZ_EF100_EV_TX_COMPLETION:
-> > > -                     ef100_ev_tx(channel, p_event);
-> > > +                     spent_tx += ef100_ev_tx(channel, p_event);
-> > > +                     if (spent_tx >= EFX_NAPI_MAX_TX)
-> > > +                             spent = quota;
-> > >                       break;
-> > >               case ESE_GZ_EF100_EV_DRIVER:
-> > >                       netif_info(efx, drv, efx->net_dev,
-> > > diff --git a/drivers/net/ethernet/sfc/ef100_tx.c b/drivers/net/ethernet/sfc/ef100_tx.c
-> > > index 29ffaf35559d..849e5555bd12 100644
-> > > --- a/drivers/net/ethernet/sfc/ef100_tx.c
-> > > +++ b/drivers/net/ethernet/sfc/ef100_tx.c
-> > > @@ -346,7 +346,7 @@ void ef100_tx_write(struct efx_tx_queue *tx_queue)
-> > >       ef100_tx_push_buffers(tx_queue);
-> > >  }
-> > >
-> > > -void ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event)
-> > > +int ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event)
-> > >  {
-> > >       unsigned int tx_done =
-> > >               EFX_QWORD_FIELD(*p_event, ESF_GZ_EV_TXCMPL_NUM_DESC);
-> > > @@ -357,7 +357,7 @@ void ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event)
-> > >       unsigned int tx_index = (tx_queue->read_count + tx_done - 1) &
-> > >                               tx_queue->ptr_mask;
-> > >
-> > > -     efx_xmit_done(tx_queue, tx_index);
-> > > +     return efx_xmit_done(tx_queue, tx_index);
-> > >  }
-> > >
-> > >  /* Add a socket buffer to a TX queue
-> > > diff --git a/drivers/net/ethernet/sfc/ef100_tx.h b/drivers/net/ethernet/sfc/ef100_tx.h
-> > > index e9e11540fcde..d9a0819c5a72 100644
-> > > --- a/drivers/net/ethernet/sfc/ef100_tx.h
-> > > +++ b/drivers/net/ethernet/sfc/ef100_tx.h
-> > > @@ -20,7 +20,7 @@ void ef100_tx_init(struct efx_tx_queue *tx_queue);
-> > >  void ef100_tx_write(struct efx_tx_queue *tx_queue);
-> > >  unsigned int ef100_tx_max_skb_descs(struct efx_nic *efx);
-> > >
-> > > -void ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event);
-> > > +int ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event);
-> > >
-> > >  netdev_tx_t ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
-> > >  int __ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
-> > > diff --git a/drivers/net/ethernet/sfc/tx_common.c b/drivers/net/ethernet/sfc/tx_common.c
-> > > index 67e789b96c43..755aa92bf823 100644
-> > > --- a/drivers/net/ethernet/sfc/tx_common.c
-> > > +++ b/drivers/net/ethernet/sfc/tx_common.c
-> > > @@ -249,7 +249,7 @@ void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue)
-> > >       }
-> > >  }
-> > >
-> > > -void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
-> > > +int efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
-> > >  {
-> > >       unsigned int fill_level, pkts_compl = 0, bytes_compl = 0;
-> > >       unsigned int efv_pkts_compl = 0;
-> > > @@ -279,6 +279,8 @@ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
-> > >       }
-> > >
-> > >       efx_xmit_done_check_empty(tx_queue);
-> > > +
-> > > +     return pkts_compl + efv_pkts_compl;
-> > >  }
-> > >
-> > >  /* Remove buffers put into a tx_queue for the current packet.
-> > > diff --git a/drivers/net/ethernet/sfc/tx_common.h b/drivers/net/ethernet/sfc/tx_common.h
-> > > index d87aecbc7bf1..1e9f42938aac 100644
-> > > --- a/drivers/net/ethernet/sfc/tx_common.h
-> > > +++ b/drivers/net/ethernet/sfc/tx_common.h
-> > > @@ -28,7 +28,7 @@ static inline bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)
-> > >  }
-> > >
-> > >  void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue);
-> > > -void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
-> > > +int efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
-> > >
-> > >  void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
-> > >                       unsigned int insert_count);
-> > > --
-> > > 2.40.1
-> > >
-> > >
-> >
-> 
-> 
-> -- 
-> Íñigo Huguet
 
