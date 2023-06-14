@@ -1,122 +1,87 @@
-Return-Path: <netdev+bounces-10806-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10809-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 836E87305DF
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 19:18:28 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4BADE7305F5
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 19:20:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B46381C20CEB
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 17:18:27 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 07082281475
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 17:20:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E4D232EC2D;
-	Wed, 14 Jun 2023 17:18:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BD1532EC3A;
+	Wed, 14 Jun 2023 17:19:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D511C7F
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 17:18:24 +0000 (UTC)
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B795A1BE8
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 10:18:18 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id d2e1a72fcca58-66673b0e352so340742b3a.2
-        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 10:18:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1686763098; x=1689355098;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3wlx0kEJ/mSQEuKmaejBykCyqHV4BJ4CghHqcM48HmA=;
-        b=IRz3cQJG37+66kUbR4t24zr5dMFla3ieFtNh08DQpuMMOKoeDMOHQIITZu7HvUra7O
-         tNTlAMlEMedsKtcZrSLlkblGGNbPPLdQKCcAJX7vXtgAfZKIAOFaRaeLHNlkot9JxXwC
-         SPgkMBvOGOWGq8g+2f1eXEL1hjUfBPS+rXrpt3KQ61m5I4J3QkSVjBrjA59GcUlhcn7c
-         m5Llv7oTKnuwRvINw0u6tMyxHdjwsjfaEFwFTTKV0qesmcbgKUBL4o1RzTJwjOtmUPbp
-         x9327IBwCdb3VMIRnnlkA90HgDykRWc/77N8uWsC/aqF/cAx+HAeGkpqF5HhJOyVpSlV
-         i0zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686763098; x=1689355098;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=3wlx0kEJ/mSQEuKmaejBykCyqHV4BJ4CghHqcM48HmA=;
-        b=d2JZuH9Fewr9NpEmqx9VG3JzOY7Wmgy1OTnWrAqSqW7GRVrcOpV0gvGQprkxjf95ed
-         z19Jqr8CT380Da2pPGdbglx/kx9CK8TBjC7C6Z9bYrnH4RjCHgJQ1j5a2a6Np9/j0ZrK
-         cMfa+oW39+J8ViujAtar66lutEgGPoAZ5d2S+E8A3zO5vAjM+ToCa6+x5YT9a8R72PhG
-         yDEe+6IzFuqElkEfy/mj0lX3PkIk5nsRB1rAEcnVB6toSBh5Vvrzuxfp6Z20ZSqVpV16
-         Sox2ikxNB3cK4F01fwiQ2czOGyAqFsanNo5LohSJLA1xxDZGLGw/bZ5pGtpCFYUa53Lz
-         mEGw==
-X-Gm-Message-State: AC+VfDzz8c9T9hlEUCDajI0J8E26AZ1aA3qpQ6NGFQQptkXfQpKLyuS+
-	dxMZkrWlDGEUHpI8ftm0z169KVg=
-X-Google-Smtp-Source: ACHHUZ5kluFSkPsXMVcgMrZeGXgY5E13fDgHHklQdQz0xmczAreGoUAXJw0Bdm9lSms4v/1as3hhkiY=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a05:6a00:1147:b0:666:6386:6e2 with SMTP id
- b7-20020a056a00114700b00666638606e2mr534573pfm.2.1686763098184; Wed, 14 Jun
- 2023 10:18:18 -0700 (PDT)
-Date: Wed, 14 Jun 2023 10:18:16 -0700
-In-Reply-To: <ZIlmAB4OYUvfqQTr@corigine.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 925BF7F
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 17:19:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C177C433C8;
+	Wed, 14 Jun 2023 17:19:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686763196;
+	bh=FBPLlXJTl5oVPIOPzrt5kTOhHK/0WZZMZVMLcsH1ZH8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=bqiLkMyQonScWxAcXtXXhd1qcoUafJ6eL0nHPu3TUwujOOG4LpGv2rjcQ/FMv593s
+	 EsSCAoScxOeGSMMHD3r0PDfR9+anVV1dNoxh9twPpXpF11DtXyva8n7FLHbbnkpJy5
+	 QObKzf/hPoHPr+rEdTZVFyCcilZhx5BniQehCirpuKcBm5kjgQ/aBk1vh18vJ01Z0G
+	 gfXyH8HKchL6NXt/5SJLcdaSpj6YHufR1kHDx6K1F/34lxFLKfcPksvz46/UEELH4z
+	 DWZGAVdOk7aWP3+lyo/0d/5ENzEBG5/ig3VIIIGIQZk1XPUsZ+RN+er8ucNVV2HRM2
+	 xBlvXCCDubMZA==
+Date: Wed, 14 Jun 2023 10:19:54 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: <davem@davemloft.net>, <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, Lorenzo Bianconi <lorenzo@kernel.org>,
+ Alexander Duyck <alexander.duyck@gmail.com>, Yisen Zhuang
+ <yisen.zhuang@huawei.com>, Salil Mehta <salil.mehta@huawei.com>, Eric
+ Dumazet <edumazet@google.com>, Sunil Goutham <sgoutham@marvell.com>, Geetha
+ sowjanya <gakula@marvell.com>, Subbaraya Sundeep <sbhatta@marvell.com>,
+ hariprasad <hkelam@marvell.com>, Saeed Mahameed <saeedm@nvidia.com>, Leon
+ Romanovsky <leon@kernel.org>, Felix Fietkau <nbd@nbd.name>, Ryder Lee
+ <ryder.lee@mediatek.com>, Shayne Chen <shayne.chen@mediatek.com>, Sean Wang
+ <sean.wang@mediatek.com>, Kalle Valo <kvalo@kernel.org>, Matthias Brugger
+ <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>, Jesper Dangaard Brouer
+ <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+ <linux-rdma@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
+ <linux-arm-kernel@lists.infradead.org>,
+ <linux-mediatek@lists.infradead.org>
+Subject: Re: [PATCH net-next v4 4/5] page_pool: remove PP_FLAG_PAGE_FRAG
+ flag
+Message-ID: <20230614101954.30112d6e@kernel.org>
+In-Reply-To: <20230612130256.4572-5-linyunsheng@huawei.com>
+References: <20230612130256.4572-1-linyunsheng@huawei.com>
+	<20230612130256.4572-5-linyunsheng@huawei.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <20230612172307.3923165-1-sdf@google.com> <20230612172307.3923165-4-sdf@google.com>
- <ZIiGVrHLKQRzMzGg@corigine.com> <CAKH8qBvfp7Do1tSD4YiiNVojG2gB9+mrNNLiVFz+ts4gU+pJrA@mail.gmail.com>
- <ZIlmAB4OYUvfqQTr@corigine.com>
-Message-ID: <ZIn2WLenejMFik+O@google.com>
-Subject: Re: [RFC bpf-next 3/7] bpf: implement devtx hook points
-From: Stanislav Fomichev <sdf@google.com>
-To: Simon Horman <simon.horman@corigine.com>
-Cc: bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net, 
-	andrii@kernel.org, martin.lau@linux.dev, song@kernel.org, yhs@fb.com, 
-	john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com, 
-	jolsa@kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-	autolearn=unavailable autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 06/14, Simon Horman wrote:
-> On Tue, Jun 13, 2023 at 12:00:25PM -0700, Stanislav Fomichev wrote:
-> > On Tue, Jun 13, 2023 at 8:08=E2=80=AFAM Simon Horman <simon.horman@cori=
-gine.com> wrote:
-> > > On Mon, Jun 12, 2023 at 10:23:03AM -0700, Stanislav Fomichev wrote:
->=20
-> ...
->=20
-> > > > +void devtx_complete(struct net_device *netdev, struct devtx_frame =
-*ctx)
-> > > > +{
-> > > > +     rcu_read_lock();
-> > > > +     devtx_run(netdev, ctx, &netdev->devtx_cp);
-> > > > +     rcu_read_unlock();
-> > > > +}
-> > > > +EXPORT_SYMBOL_GPL(devtx_complete);
-> > > > +
-> > > > +/**
-> > > > + * devtx_sb - Called for every egress netdev packet
-> > >
-> > > As this is a kernel doc, it would be good to document the ctx paramet=
-er here.
-> >=20
-> > I didn't really find a convincing way to add a comment, I've had the
-> > following which I've removed prio to submission:
-> > @ctx devtx_frame context
-> >=20
-> > But it doesn't seem like it brings anything useful? Or ok to keep it th=
-at way?
->=20
-> Thanks Stan,
->=20
-> I see what you are saying wrt it not bringing much value.
-> But I'm more thinking that something is better than nothing.
-> Anyway, I'll drop this topic if you prefer.
+On Mon, 12 Jun 2023 21:02:55 +0800 Yunsheng Lin wrote:
+>  	struct page_pool_params pp_params = {
+> -		.flags = PP_FLAG_DMA_MAP | PP_FLAG_PAGE_FRAG |
+> -				PP_FLAG_DMA_SYNC_DEV,
+> +		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
+>  		.order = hns3_page_order(ring),
 
-Ack, thanks, I'll put it in for the consistency sake!
+Does hns3_page_order() set a good example for the users?
+
+static inline unsigned int hns3_page_order(struct hns3_enet_ring *ring)
+{
+#if (PAGE_SIZE < 8192)
+	if (ring->buf_size > (PAGE_SIZE / 2))
+		return 1;
+#endif
+	return 0;
+}
+
+Why allocate order 1 pages for buffers which would fit in a single page?
+I feel like this soft of heuristic should be built into the API itself.
 
