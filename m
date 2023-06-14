@@ -1,124 +1,110 @@
-Return-Path: <netdev+bounces-10789-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10784-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7BF4C7304F9
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 18:32:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id B06FA7304DF
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 18:28:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 380112812F3
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 16:32:25 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BAA541C20D33
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 16:28:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AA2AAAD29;
-	Wed, 14 Jun 2023 16:31:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ADAC1111B2;
+	Wed, 14 Jun 2023 16:28:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CF2E24EBF
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 16:31:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 660DFC433C8;
-	Wed, 14 Jun 2023 16:31:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686760316;
-	bh=hIHHNwTZHZjjtMc5rO2ao0LGxA0PhO418XlFX+Ps8ZU=;
-	h=From:To:Cc:Subject:Date:From;
-	b=r1sBkNJhdzdt7GWyC+CoQpqUywo22wcglFqJu3zv+UHvvmM1YaLPY810WNxZp/KEC
-	 3bryukBOUxZiXqqxLc4qP8VXuTXtLvfcA7hj+XWzaKLojkpb79FPsngFvTN15hqO9h
-	 6J8Zma2VcwY3oMRHrtsnMHB5cl15a2KXHEMx7nEAFz4n6B4TSUw7sZ6gfPgNWAkAdA
-	 4uIU7Zg/P/0BfEHS3bbdPf6INXzEufxhyspiiRljsLB2ZE/6WZRoJIVIM3Vhnb8U8R
-	 nc3/a7W9rDdUS0F3zIZkllFYnuQz5idkzp0AZmelzR1nX7FIrRRxZlK6ChRjqAAER7
-	 +9UpK3kSbMWJg==
-From: Jisheng Zhang <jszhang@kernel.org>
-To: "David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Karol Gugala <kgugala@antmicro.com>,
-	Mateusz Holenko <mholenko@antmicro.com>,
-	Gabriel Somlo <gsomlo@gmail.com>,
-	Joel Stanley <joel@jms.id.au>
-Cc: netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ethernet: litex: add support for 64 bit stats
-Date: Thu, 15 Jun 2023 00:20:35 +0800
-Message-Id: <20230614162035.300-1-jszhang@kernel.org>
-X-Mailer: git-send-email 2.40.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 997A91095C;
+	Wed, 14 Jun 2023 16:28:02 +0000 (UTC)
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00ED2211F;
+	Wed, 14 Jun 2023 09:28:00 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id 4fb4d7f45d1cf-5169f614977so11659904a12.3;
+        Wed, 14 Jun 2023 09:28:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686760079; x=1689352079;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7z5ClOpmYGeSB+jF+gmA2VEIzPNCp15J3pxp/TfhBNU=;
+        b=RD0aj9ql3Z4vG8A/EeYpgGfLabHYhEzSjLEBvohzqu9CAUbPwMRG+6Ormde0hYFI5J
+         lK66cvCJZId6gmHr83AiEmBhLdXbcP1La4sD/g3Mh11UPeQLNjQLN6cawr/E62i2JRQC
+         0AKFfFMp+3yKEG2wvUkWFFJYK8qM1extAYGoxmhD54YqXOA88NOiNnqJHKF/TJSN6XzH
+         yoKuqw0kIBmXpOK8oQyWNNMBzQiQisfx2sVv8Wcqz6vNw5OX43Og7ybG+dDcnr2ue72D
+         yeauXOcvq3S4Wb2FL7WXMPhaMSYOKnhiVT8FcvKNz32Wur5PDEFvNpuY99Nb+2xAjoot
+         hA2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686760079; x=1689352079;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7z5ClOpmYGeSB+jF+gmA2VEIzPNCp15J3pxp/TfhBNU=;
+        b=CASv63FXWnVdGLRj73K2xbW5B7oOQy8XCj2qIVbsYCg5nBeW5sIdOslS/K4sAEVCr1
+         P1dJqOLONv6P00KcrSXm/qTqylVPv7KFD9S5m+LCZBjrM3Qve0Csam1QTL5jYgVpx8CD
+         R0prV7WmOXHm32gShBmzxUSPt2fWyB2bW32X6zYedh/nVfvsXQMPyeaMcJ6gCyMXkXro
+         QgUH8jeBKm6e6cUfWg6khFsENmqYBXJIDBdmJramIdVMMyL1QzmwyK25MBIU8TFqsrAG
+         gl+mzq4OuE8Vc0kgMg133d10Ap9tyZj+t0UQ401hWmzUp/sutizsb2A0eL8nJ6p7rxfn
+         RLOw==
+X-Gm-Message-State: AC+VfDxKZZ0f0w2quiy+WNObqHFk9+XrgtbSzExqwzOQ/pKBCWJeT9Nk
+	FCSjQe9cTKlMm3ZApI72F88chvI3EpirzYFVxuQ=
+X-Google-Smtp-Source: ACHHUZ43Tbhi3lUORo6ThPJOyZDmVAiNE1w3G/BuyEp5qSSSVHcR0cIgDsAll9cKajDQ/tvOijtEElEs+cKvgnROJE4=
+X-Received: by 2002:aa7:c50e:0:b0:50b:c89f:f381 with SMTP id
+ o14-20020aa7c50e000000b0050bc89ff381mr10387978edq.29.1686760079101; Wed, 14
+ Jun 2023 09:27:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20230612172307.3923165-1-sdf@google.com> <87cz20xunt.fsf@toke.dk>
+ <ZIiaHXr9M0LGQ0Ht@google.com> <877cs7xovi.fsf@toke.dk> <CAKH8qBt5tQ69Zs9kYGc7j-_3Yx9D6+pmS4KCN5G0s9UkX545Mg@mail.gmail.com>
+ <87v8frw546.fsf@toke.dk> <CAKH8qBtsvsWvO3Avsqb2PbvZgh5GDMxe2fok-jS4DrJM=x2Row@mail.gmail.com>
+ <CAADnVQKFmXAQDYVZxjvH8qbxk+3M2COGbfmtd=w8Nxvf9=DaeA@mail.gmail.com>
+ <CAKH8qBvAMKtfrZ1jdwVS2pF161UdeXPSpY4HSzKYGTYNTupmTg@mail.gmail.com>
+ <CAADnVQ+CCOw9_LbCAaFz0593eydKNb7RxnGr6_FatUOKmvPmBg@mail.gmail.com> <877cs6l0ea.fsf@toke.dk>
+In-Reply-To: <877cs6l0ea.fsf@toke.dk>
+From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date: Wed, 14 Jun 2023 09:27:47 -0700
+Message-ID: <CAADnVQJM6ttxLjj2FGCO1DKOwHdj9eqcz75dFpsfwJ_4b3iqDw@mail.gmail.com>
+Subject: Re: [RFC bpf-next 0/7] bpf: netdev TX metadata
+To: =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
+Cc: Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>, 
+	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
+	Andrii Nakryiko <andrii@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>, 
+	Yonghong Song <yhs@fb.com>, John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, 
+	Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>, 
+	Willem de Bruijn <willemb@google.com>, David Ahern <dsahern@kernel.org>, 
+	"Karlsson, Magnus" <magnus.karlsson@intel.com>, =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>, 
+	"Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>, Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Implement 64 bit per cpu stats to fix the overflow of netdev->stats
-on 32 bit platforms. To simplify the code, we use net core
-pcpu_sw_netstats infrastructure. One small drawback is some memory
-overhead because litex uses just one queue, but we allocate the
-counters per cpu.
+On Wed, Jun 14, 2023 at 5:00=E2=80=AFAM Toke H=C3=B8iland-J=C3=B8rgensen <t=
+oke@kernel.org> wrote:
+>
+> >>
+> >> It's probably going to work if each driver has a separate set of tx
+> >> fentry points, something like:
+> >>   {veth,mlx5,etc}_devtx_submit()
+> >>   {veth,mlx5,etc}_devtx_complete()
+>
+> I really don't get the opposition to exposing proper APIs; as a
+> dataplane developer I want to attach a program to an interface. The
+> kernel's role is to provide a consistent interface for this, not to
+> require users to become driver developers just to get at the required
+> details.
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
----
- drivers/net/ethernet/litex/litex_liteeth.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/litex/litex_liteeth.c b/drivers/net/ethernet/litex/litex_liteeth.c
-index 35f24e0f0934..ffa96059079c 100644
---- a/drivers/net/ethernet/litex/litex_liteeth.c
-+++ b/drivers/net/ethernet/litex/litex_liteeth.c
-@@ -78,8 +78,7 @@ static int liteeth_rx(struct net_device *netdev)
- 	memcpy_fromio(data, priv->rx_base + rx_slot * priv->slot_size, len);
- 	skb->protocol = eth_type_trans(skb, netdev);
- 
--	netdev->stats.rx_packets++;
--	netdev->stats.rx_bytes += len;
-+	dev_sw_netstats_rx_add(netdev, len);
- 
- 	return netif_rx(skb);
- 
-@@ -185,8 +184,7 @@ static netdev_tx_t liteeth_start_xmit(struct sk_buff *skb,
- 	litex_write16(priv->base + LITEETH_READER_LENGTH, skb->len);
- 	litex_write8(priv->base + LITEETH_READER_START, 1);
- 
--	netdev->stats.tx_bytes += skb->len;
--	netdev->stats.tx_packets++;
-+	dev_sw_netstats_tx_add(netdev, 1, skb->len);
- 
- 	priv->tx_slot = (priv->tx_slot + 1) % priv->num_tx_slots;
- 	dev_kfree_skb_any(skb);
-@@ -194,9 +192,17 @@ static netdev_tx_t liteeth_start_xmit(struct sk_buff *skb,
- 	return NETDEV_TX_OK;
- }
- 
-+static void
-+liteeth_get_stats64(struct net_device *netdev, struct rtnl_link_stats64 *stats)
-+{
-+	netdev_stats_to_stats64(stats, &netdev->stats);
-+	dev_fetch_sw_netstats(stats, netdev->tstats);
-+}
-+
- static const struct net_device_ops liteeth_netdev_ops = {
- 	.ndo_open		= liteeth_open,
- 	.ndo_stop		= liteeth_stop,
-+	.ndo_get_stats64	= liteeth_get_stats64,
- 	.ndo_start_xmit         = liteeth_start_xmit,
- };
- 
-@@ -242,6 +248,11 @@ static int liteeth_probe(struct platform_device *pdev)
- 	priv->netdev = netdev;
- 	priv->dev = &pdev->dev;
- 
-+	netdev->tstats = devm_netdev_alloc_pcpu_stats(&pdev->dev,
-+						      struct pcpu_sw_netstats);
-+	if (!netdev->tstats)
-+		return -ENOMEM;
-+
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0)
- 		return irq;
--- 
-2.40.1
-
+Consistent interface can appear only when there is a consistency
+across nic manufacturers.
+I'm suggesting to experiment in the most unstable way and
+if/when the consistency is discovered then generalize.
 
