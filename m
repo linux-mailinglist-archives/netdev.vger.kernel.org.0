@@ -1,97 +1,128 @@
-Return-Path: <netdev+bounces-10623-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10624-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id BA90872F6F5
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 09:53:16 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5DD9172F708
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 09:55:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A7D591C20A84
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 07:53:15 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 92DBD281325
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 07:55:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A9C8B3D9E;
-	Wed, 14 Jun 2023 07:53:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D192117D7;
+	Wed, 14 Jun 2023 07:55:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97E0A7F
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 07:53:13 +0000 (UTC)
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD821FEE;
-	Wed, 14 Jun 2023 00:52:54 -0700 (PDT)
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=17;SR=0;TI=SMTPD_---0Vl5j8IK_1686729132;
-Received: from 30.221.151.14(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0Vl5j8IK_1686729132)
-          by smtp.aliyun-inc.com;
-          Wed, 14 Jun 2023 15:52:17 +0800
-Message-ID: <0bea9ac1-dd44-353b-63dd-a3dd45b588e1@linux.alibaba.com>
-Date: Wed, 14 Jun 2023 15:52:10 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C36AD7F
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 07:55:08 +0000 (UTC)
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B441FDE;
+	Wed, 14 Jun 2023 00:55:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+	Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
+	Resent-Message-ID:In-Reply-To:References;
+	bh=+93bg2u37IZ2abu7281QFEmzxqZpvE70pwxwTdayMyk=; t=1686729307; x=1687938907; 
+	b=rzSyzkws6/lV/RfiQMY+uLpKp/2kwhud2eCcdY78+QI+tlZYZlMSEam8PX1Qf3MAL/zWJmXL6M5
+	WOTk5Ww/p4se1JfAal8OWgHB9PWuWbx8xqUeu2m/HTZLPj4def9mZMkBwqaoftQ/Vz6M0DOx3aHEX
+	SLlJ7OK4m5LhCrKwH4PFXt9CqSiNI5NUsLTZ/Zhi9YRZLUL0Vt3dv+xZhwSsjh3ZwViXS9MyR+wFD
+	xO3InTMZV8x8gvGpKAyHMzXTkyEyfCk22Mq8xcr1b3Bc8kW2J6U8g2503+uvD++eaZ/4x+R3X776k
+	7AiSwN1sH5TLOZro3Na/KGHjHwG5vGP0XNFQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.96)
+	(envelope-from <johannes@sipsolutions.net>)
+	id 1q9LLN-005zVC-2l;
+	Wed, 14 Jun 2023 09:55:05 +0200
+From: Johannes Berg <johannes@sipsolutions.net>
+To: netdev@vger.kernel.org
+Cc: linux-wireless@vger.kernel.org
+Subject: pull-request: wireless-2023-06-14
+Date: Wed, 14 Jun 2023 09:55:01 +0200
+Message-Id: <20230614075502.11765-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.11.0
-Subject: Re: [PATCH] MAINTAINERS: add reviewers for SMC Sockets
-Content-Language: en-US
-To: Jan Karcher <jaka@linux.ibm.com>, David Miller <davem@davemloft.net>,
- Jakub Kicinski <kuba@kernel.org>, Eric Dumazet <edumazet@google.com>,
- Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org, linux-s390@vger.kernel.org,
- Heiko Carstens <hca@linux.ibm.com>, Alexandra Winter
- <wintera@linux.ibm.com>, Wenjia Zhang <wenjia@linux.ibm.com>,
- Thorsten Winkler <twinkler@linux.ibm.com>, Stefan Raspl
- <raspl@linux.ibm.com>, Karsten Graul <kgraul@linux.ibm.com>,
- Nils Hoppmann <niho@linux.ibm.com>, Halil Pasic <pasic@linux.ibm.com>,
- Tony Lu <tonylu@linux.alibaba.com>, Wen Gu <guwen@linux.alibaba.com>
-References: <20230614065456.2724-1-jaka@linux.ibm.com>
-From: "D. Wythe" <alibuda@linux.alibaba.com>
-In-Reply-To: <20230614065456.2724-1-jaka@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-10.0 required=5.0 tests=BAYES_00,
-	ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+Hi,
 
-On 6/14/23 2:54 PM, Jan Karcher wrote:
-> adding three people from Alibaba as reviewers for SMC.
-> They are currently working on improving SMC on other architectures than
-> s390 and help with reviewing patches on top.
->
-> Thank you D. Wythe, Tony Lu and Wen Gu for your contributions and
-> collaboration and welcome on board as reviewers!
+I know it's getting late in the game, but there were still
+a number of locking related fixes and some other things
+coming in recently, so here they are.
 
-Thanks for inviting me. I'm happy to become a reviewer for SMC .
-I will do my best to provide the best help and support. 😁
+Please pull and let me know if there's any problem.
 
-Acked-by: D. Wythe <alibuda@linux.alibaba.com>
+Thanks,
+johannes
 
-> Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
-> Signed-off-by: Jan Karcher <jaka@linux.ibm.com>
-> ---
->   MAINTAINERS | 3 +++
->   1 file changed, 3 insertions(+)
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index f794002a192e..6992b7cc7095 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -19140,6 +19140,9 @@ SHARED MEMORY COMMUNICATIONS (SMC) SOCKETS
->   M:	Karsten Graul <kgraul@linux.ibm.com>
->   M:	Wenjia Zhang <wenjia@linux.ibm.com>
->   M:	Jan Karcher <jaka@linux.ibm.com>
-> +R:	D. Wythe <alibuda@linux.alibaba.com>
-> +R:	Tony Lu <tonylu@linux.alibaba.com>
-> +R:	Wen Gu <guwen@linux.alibaba.com>
->   L:	linux-s390@vger.kernel.org
->   S:	Supported
->   F:	net/smc/
+
+
+The following changes since commit f7e60032c6618dfd643c7210d5cba2789e2de2e2:
+
+  wifi: cfg80211: fix locking in regulatory disconnect (2023-06-06 14:51:32 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git tags/wireless-2023-06-14
+
+for you to fetch changes up to f1a0898b5d6a77d332d036da03bad6fa9770de5b:
+
+  wifi: iwlwifi: mvm: spin_lock_bh() to fix lockdep regression (2023-06-14 09:05:51 +0200)
+
+----------------------------------------------------------------
+A couple of straggler fixes, mostly in the stack:
+ * fix fragmentation for multi-link related elements
+ * fix callback copy/paste error
+ * fix multi-link locking
+ * remove double-locking of wiphy mutex
+ * transmit only on active links, not all
+ * activate links in the correct order
+ * don't remove links that weren't added
+ * disable soft-IRQs for LQ lock in iwlwifi
+
+----------------------------------------------------------------
+Benjamin Berg (3):
+      wifi: cfg80211: fix link del callback to call correct handler
+      wifi: mac80211: take lock before setting vif links
+      wifi: mac80211: fragment per STA profile correctly
+
+Dan Carpenter (1):
+      wifi: cfg80211: fix double lock bug in reg_wdev_chan_valid()
+
+Hugh Dickins (1):
+      wifi: iwlwifi: mvm: spin_lock_bh() to fix lockdep regression
+
+Ilan Peer (1):
+      wifi: mac80211: Use active_links instead of valid_links in Tx
+
+Johannes Berg (2):
+      wifi: mac80211: fix link activation settings order
+      wifi: cfg80211: remove links only on AP
+
+ drivers/net/wireless/intel/iwlwifi/mvm/rs.c | 12 ++++++------
+ net/mac80211/cfg.c                          |  9 ++++++++-
+ net/mac80211/ieee80211_i.h                  |  2 +-
+ net/mac80211/link.c                         |  4 ++--
+ net/mac80211/mlme.c                         |  5 +++--
+ net/mac80211/tx.c                           |  6 +++---
+ net/mac80211/util.c                         |  4 ++--
+ net/wireless/rdev-ops.h                     |  6 +++---
+ net/wireless/reg.c                          |  3 ---
+ net/wireless/util.c                         |  9 ++++++++-
+ 10 files changed, 36 insertions(+), 24 deletions(-)
 
 
