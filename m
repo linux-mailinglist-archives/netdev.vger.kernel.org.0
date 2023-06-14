@@ -1,164 +1,105 @@
-Return-Path: <netdev+bounces-10699-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10700-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9C33C72FDDB
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 14:05:34 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0642F72FDE1
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 14:06:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CD27D1C20BE3
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 12:05:33 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1C32E1C20C9C
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 12:06:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C0F8D8C1B;
-	Wed, 14 Jun 2023 12:05:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 231518F44;
+	Wed, 14 Jun 2023 12:06:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADB9A7476
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 12:05:27 +0000 (UTC)
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2127.outbound.protection.outlook.com [40.107.243.127])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 346BB19A7;
-	Wed, 14 Jun 2023 05:05:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bP91zbEfEVU6ExxHs4HFPFAQv5jErNfB4oFHZu1AhienoTcNukuE7Kbh9UsrH2Buf97wWvxWkYHFAGPYXHN/tzWUsE391R8IBSlPwFeohLaFlbqkcueLb9itixmkQ95h0IGVzqgWer3w8+U585hJvqAttzp91Zw/IK/t+Fe/PYW7XYbFK1GSm1cgqBDG3+cg0WbPqE+PvhC/mk1f7h7TAoYJr0g/F4BZIVDhxCwC3vtjmp+TvkoYSZhClikKN36HiZ2AC/hhgQRUrYnWO0q1o/loq+NMbqK17BG2j/H0q8WoJI3ceJswZORYIvnYMpmHLnedA1Wowjsx+4UYL4YdRg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nvCd7EA2J+5UnWdxM+dfYavJ1XqdnpKONVHMuz/62tE=;
- b=fTKKG3veLwr0kWjj1Jj2gPUFK1fJar00Y0agMvbCTgluXL8QnoberpqZ4KeApLJgvHvyYHQmDQhgAf/hQ+mpHxjZtwrSBVlKGpj+faQ2njyh2HG0Tx8ws6UTM9UU3b7GuixwbVSrVYUAyQIpXlRGqNSstJU0cGHcNIfjhyOPhkOstTdT3N0JOvJiO/ZCfG0XAwqsL/zmmpwlNXAxj20wGBsVw8mj+H++8lWqqItRlx1S6fUQT1FWssu8rtQRloAhpmY1OB5mkyvO1Zm/YlnsgK5TVn3+nFA+L6VQc4Ur8GoDmaWGDFqnDgL+hhRPE4bVqDsLTNsHYO4KOBHhsVImUw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nvCd7EA2J+5UnWdxM+dfYavJ1XqdnpKONVHMuz/62tE=;
- b=lWMSEF5K83wvsCsiCaqW2iPZYM0dygn9zbLgnMaqy6I4WICllUUbTlkIi0jjGWvT1H0pwIJeid4w0/+UGyl2DsU5AVTHqiZ42OMiCe2AzfC+n88TG3RyPEaRh2HOwOtaiRFfiClqFpWpurhhaSaEKKo6UQQUQsqabHEp2mOpNnA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BL3PR13MB5164.namprd13.prod.outlook.com (2603:10b6:208:33b::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.37; Wed, 14 Jun
- 2023 12:05:22 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e%4]) with mapi id 15.20.6477.028; Wed, 14 Jun 2023
- 12:05:22 +0000
-Date: Wed, 14 Jun 2023 14:05:15 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc: netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Claudiu Manoil <claudiu.manoil@nxp.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	UNGLinuxDriver@microchip.com,
-	Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: dsa: felix: fix taprio guard band overflow at
- 10Mbps with jumbo frames
-Message-ID: <ZIms+0/KDpU9dd3y@corigine.com>
-References: <20230613170907.2413559-1-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230613170907.2413559-1-vladimir.oltean@nxp.com>
-X-ClientProxiedBy: AS4PR10CA0002.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:5dc::19) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17BFC8BF0
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 12:06:25 +0000 (UTC)
+X-Greylist: delayed 14743 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 14 Jun 2023 05:06:23 PDT
+Received: from zg8tmtu5ljg5lje1ms4xmtka.icoremail.net (zg8tmtu5ljg5lje1ms4xmtka.icoremail.net [159.89.151.119])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC6891996
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 05:06:23 -0700 (PDT)
+Received: from localhost.localdomain (unknown [125.119.249.156])
+	by mail-app4 (Coremail) with SMTP id cS_KCgCnrBQwrYlkJ7xnBg--.21295S4;
+	Wed, 14 Jun 2023 20:06:09 +0800 (CST)
+From: Lin Ma <linma@zju.edu.cn>
+To: davem@davemloft.net,
+	netdev@vger.kernel.org,
+	tipc-discussion@lists.sourceforge.net,
+	tung.q.nguyen@dektech.com.au
+Cc: Lin Ma <linma@zju.edu.cn>
+Subject: [PATCH v2] net: tipc: resize nlattr array to correct size
+Date: Wed, 14 Jun 2023 20:06:04 +0800
+Message-Id: <20230614120604.1196377-1-linma@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID:cS_KCgCnrBQwrYlkJ7xnBg--.21295S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7ur15Jr13ZFWftryfXF1DZFb_yoW8Grykpa
+	sYg3W7AFWUGr1UWF1jga97Ka4Sga1kArnFkwnxCa1Syrs8try5WFy8Wa45AF4YyFW8u39x
+	Ar1a9342vF1UCw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUyl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+	1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+	JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+	CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+	2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+	W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vI
+	r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
+	xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0
+	cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
+	AvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E
+	14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUoOJ5UUUUU
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BL3PR13MB5164:EE_
-X-MS-Office365-Filtering-Correlation-Id: edfcd88f-a503-43ad-01c0-08db6ccfa154
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	IYOYco1gjzZDywIVUE75SMVm8FiPz7X7u5O/r5g1t1829/Qq+nOHc/uJy4rUkBIJp2lnjdr6ycjoVkN3MN1Hgo5H64lukQX6/OSgpCREjC7AZ9YXCMbNStNBisrP+jCzt6JA0CgPG1yoYDOwSLtZ9r5T/154I3OQ2OwMzxAQCz5OpGyQMWCvMc6Kub4QuuABqJs9R4p7aoJ4INLjq0g3VocvOUuSHZ53i+rOD8mXycIuwv/YyQnuvWmHd0w1bvrRgV9BuRSoD3Nu5eamgW4Qw6A3KKSdDbwqYEz+zWdeKTCbYn8fdqpnSCObXHIfdBWayXU9/zWaNYh4LWwk9a+UQ57iQjQK8cgCAjOiNpIYdbGCt5EdzjPS4UNFx0DycKvN9BdVsSuICQ0NbgCZHJ0ydXbHE8x9vBpw+GwLYyLNJeKMn+NUjb9kcfDiNzfNhBsMsEitN9s5a2tqZqOEmr7IsUUU3XwdwvlS2ebItaH6mMKvEqax7orHU/96OQ/sDPgxF6Cub8ZFipVAsNxWnZn4Cb6TGErAeJ+Gpmt67kREKTsG6j84yNvi2avtM2B/yD+HVRIU6/pyPeilbLafic9kEnVP1/MWnTQ0iRlDfbIEoNY=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(396003)(136003)(376002)(39840400004)(451199021)(83380400001)(5660300002)(186003)(6506007)(44832011)(2906002)(2616005)(7416002)(41300700001)(6512007)(8936002)(8676002)(6486002)(316002)(54906003)(6666004)(36756003)(478600001)(38100700002)(86362001)(4326008)(66476007)(66556008)(66946007)(6916009);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?K46lUTkJCKmx1g1UmB2YoLISIEWJjl4vgPVXyLpWil4HY0WIPijy72iHH7Ox?=
- =?us-ascii?Q?RS+dpYh3AM/PpkIw728ou3LURsndLFJTHCeTUqxgSxR8FoqN7DdIxcc+T8Jz?=
- =?us-ascii?Q?irPxvjNYvp+Ql0az1M7OXlENW1V3uLWferGd1G7Zu8nnA9NwLPcDlmI5P1Oh?=
- =?us-ascii?Q?QjvdgRQI/Q+sUbFK8XVjOvwflUnduyklyiyL1NgU/M5s4iUxB16XAkH9OBBS?=
- =?us-ascii?Q?bj2ivLYJJiIGyziHln8RRW3dccY+B4WDwTL1D9kUjnn47EIqFr6EPpsjVFKy?=
- =?us-ascii?Q?HvKql9fMdaAdepWXzY/SQ+Cc/cD6eYvGeiq5wRrlII638TskmVONnQCGXGd6?=
- =?us-ascii?Q?o03ZN0gvBzNEfqvfe3pVB3l/1qU5ZWoMA3H/R/+xkTh3ilIIxQNC/mlqNl+Y?=
- =?us-ascii?Q?sDH+4qwGWcpa8DJChb13vshk1bvl6aCLm0eJUkJ14ei0mEfHtuoG+7zmMaWq?=
- =?us-ascii?Q?GMtkUzSBvyQ+lsnbGMGR5OGXFReJ9PMMUxA+sA5Hq8XWFq6qvVQzKpScYXnI?=
- =?us-ascii?Q?M21mdm+rl6SBzdFiN9AvF/OayS3W7v6wHX+cbyuS9LxJm/zJwzQ7LQdTKU8m?=
- =?us-ascii?Q?bNixdiunvcTnxk9/D5JOiMYVsz5RNOhxuAThv+GLwBxaO+LeKEBDQvzrf8Ke?=
- =?us-ascii?Q?cO9rE6LlSh/Ft4KzplhOCLTv4R3eq5d+iHnWGrOmREXr8F8bx6f46GNWUPKY?=
- =?us-ascii?Q?Uf+32T3Aj5gnH3YnNcf9RcyRYnsc0zxHv46MfGdcEdnpU0QTOJUuhbETeGK3?=
- =?us-ascii?Q?h3asK4V4q+D+iLIkacxBekHeZHt6MP+dqnLQxDNEzgzqeNrwlxZfM+f8bd/f?=
- =?us-ascii?Q?odKFUgP871AADFCNDkU/zQ8G1X+o8kO6EMaxtkAfwHUjK+0KWVEXFrJ2cFXh?=
- =?us-ascii?Q?tAFGb+oie0f7iv4zVuk9vjR1y/qJyrE84uPnGR3Bypxe+c9ljAMGUxhAYkZ6?=
- =?us-ascii?Q?SgbwfRyAk3BMd1w9nCOsGtIeMYBFzcvt4rxIv6NZ63Pj00/953bhyBusUfvO?=
- =?us-ascii?Q?7qNv6y9TPt73GzL6QLrjH0yq1bWaYwgyUihUD7+jbsUuAQfDxtyKUNyOmGfP?=
- =?us-ascii?Q?cKAZu85Bw7JC2OaWmtJHNiOSbSdBoMz+1EfkEbBUdp8TRXmeBapfk5WOgvHv?=
- =?us-ascii?Q?U5SNZjy/4Ncwy1X9MmFYtmRnqLXqmI4P0v4FbprTzJhqO9FcxuJBpIcAaoZP?=
- =?us-ascii?Q?VA28I2kLT4zUGOmwYKvP7jGW70LKS9SZ8e0BMW19YRRADdM2MaXVBEtkCdHb?=
- =?us-ascii?Q?x9ugxMD4hrEfUHOPe5pEv5nVcGRD0vaXtCDTPmEhT3B4lIbV8fU/tXzTwiXI?=
- =?us-ascii?Q?BpHMURWria/P2o3/yEJAGY80MyjQFNN0ZcITHfbs+fYT5gyLBxCVpYtQGqFt?=
- =?us-ascii?Q?IgLJar2aykvlD6CYle8oVAH/L8dxdVpNMIDw27QZCXng3J+ZchgAAAVceYOV?=
- =?us-ascii?Q?VWDODmcTT8TgtCRZ0OOqRGOoZidfHDfGjU+vEnezO438QL0wA91wdt0dXc0o?=
- =?us-ascii?Q?ag5UlV4EQ9m137dZcQHhu7Qo7Wo5/vKaS1Sm2n7D5Fp6CO1kjjdIQACDCXVj?=
- =?us-ascii?Q?JihEzgGioYy7GYW3Mf1FusCg5cBi3j4zATYh8inCpM6XcGpUD6VRa1tUEest?=
- =?us-ascii?Q?5cHIPPNm0z80CG5UAaZA50sD/Bauv9V+PglP7o/4JQX/AYgD2OTk/1isWY8D?=
- =?us-ascii?Q?pyj0Bw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: edfcd88f-a503-43ad-01c0-08db6ccfa154
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2023 12:05:22.5309
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: htt/KK9gpD0cbfKD9XdNiXFStPlz4ir2Lbl8hywciyb/CERjqkmArWL5oRMv2WFKNQloeuhqQZIiiEXI7gL70TNThUc6FHCN/jZ9EqS1eD8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR13MB5164
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-On Tue, Jun 13, 2023 at 08:09:07PM +0300, Vladimir Oltean wrote:
-> The DEV_MAC_MAXLEN_CFG register contains a 16-bit value - up to 65535.
-> Plus 2 * VLAN_HLEN (4), that is up to 65543.
-> 
-> The picos_per_byte variable is the largest when "speed" is lowest -
-> SPEED_10 = 10. In that case it is (1000000L * 8) / 10 = 800000.
-> 
-> Their product - 52434400000 - exceeds 32 bits, which is a problem,
-> because apparently, a multiplication between two 32-bit factors is
-> evaluated as 32-bit before being assigned to a 64-bit variable.
-> In fact it's a problem for any MTU value larger than 5368.
-> 
-> Cast one of the factors of the multiplication to u64 to force the
-> multiplication to take place on 64 bits.
-> 
-> Issue found by Coverity.
-> 
-> Fixes: 55a515b1f5a9 ("net: dsa: felix: drop oversized frames with tc-taprio instead of hanging the port")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+According to nla_parse_nested_deprecated(), the tb[] is supposed to the
+destination array with maxtype+1 elements. In current
+tipc_nl_media_get() and __tipc_nl_media_set(), a larger array is used
+which is unnecessary. This patch resize them to a proper size.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Fixes: 1e55417d8fc6 ("tipc: add media set to new netlink api")
+Fixes: 46f15c6794fb ("tipc: add media get/dump to new netlink api")
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+---
+V1 -> V2: add net in title, also add Fixes tag
 
-In a similar vein, you may want to consider the following suggestion from
-Coccinelle.
+ net/tipc/bearer.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-  .../felix_vsc9959.c:1382:2-8: WARNING: do_div() does a 64-by-32 division, please consider using div64_u64 instead.
+diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+index 53881406e200..cdcd2731860b 100644
+--- a/net/tipc/bearer.c
++++ b/net/tipc/bearer.c
+@@ -1258,7 +1258,7 @@ int tipc_nl_media_get(struct sk_buff *skb, struct genl_info *info)
+ 	struct tipc_nl_msg msg;
+ 	struct tipc_media *media;
+ 	struct sk_buff *rep;
+-	struct nlattr *attrs[TIPC_NLA_BEARER_MAX + 1];
++	struct nlattr *attrs[TIPC_NLA_MEDIA_MAX + 1];
+ 
+ 	if (!info->attrs[TIPC_NLA_MEDIA])
+ 		return -EINVAL;
+@@ -1307,7 +1307,7 @@ int __tipc_nl_media_set(struct sk_buff *skb, struct genl_info *info)
+ 	int err;
+ 	char *name;
+ 	struct tipc_media *m;
+-	struct nlattr *attrs[TIPC_NLA_BEARER_MAX + 1];
++	struct nlattr *attrs[TIPC_NLA_MEDIA_MAX + 1];
+ 
+ 	if (!info->attrs[TIPC_NLA_MEDIA])
+ 		return -EINVAL;
+-- 
+2.17.1
 
 
