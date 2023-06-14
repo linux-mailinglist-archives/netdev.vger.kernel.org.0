@@ -1,85 +1,137 @@
-Return-Path: <netdev+bounces-10664-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10665-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4A56C72F9F9
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 12:03:02 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id D46E772FA0C
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 12:05:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7BC661C20C55
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 10:03:01 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5A94D2813BE
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 10:05:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4870C6138;
-	Wed, 14 Jun 2023 10:02:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8107E6138;
+	Wed, 14 Jun 2023 10:05:39 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 370E56AA6
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 10:02:50 +0000 (UTC)
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F8A1B2
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 03:02:46 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-77a55f64dbaso685222739f.2
-        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 03:02:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686736965; x=1689328965;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Tbry3CeL1KYS7HLNoeY59keftn8OoKLWsLCuyU0Tezc=;
-        b=GN5GMe5XzVxAm1aITxmBflibq99AAFm3dPdJI4KcU9/H7JH4PYXHVHfYV/M2oYClJC
-         e3yRHKO+spHLcciqBKLcgmkMewA+N8929uBhylZ27w1zel0hcKspPHvf6v9kqlaC4RiE
-         sHt2etD97fyssFcdxfqTWNwFMx92BGX4nQPR93rlLIv+yhsPhCg5fCGPddq0PN6XUgbD
-         waIkUURYkJlyfO6E0tMyMRIb6lmIgmfpZ8bR/vskDYHTffCGtRfV3TTeO6TySQO5UMOW
-         zAKzOirgoxDmcljdNyVojtArAtGcRf9ilmWqcwtlMfXajjJAfyf7Dsu0qKeDP2ZMMxwb
-         54VA==
-X-Gm-Message-State: AC+VfDyK5j6ttgJjnPgIeOSakk0szfNeTLyAa7Ie0KgUR6EtE7C6R/tS
-	a2qJnlmbpIgcwWHhKTq4OlqfBjJJ6jXHX1GuqF9TOzKeXO/s
-X-Google-Smtp-Source: ACHHUZ5Cw2CSNno0VjcZXjl9srSP0mRFQ395P6uRj7Vr62OPy1ip/51NqUWt88NtV6lhr1nJJCp3EN/Z1xAkIeeMORU86TioNMQK
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 759AC539F
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 10:05:39 +0000 (UTC)
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F05461BC3;
+	Wed, 14 Jun 2023 03:05:24 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+	by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 35EA5Dur087996;
+	Wed, 14 Jun 2023 05:05:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1686737113;
+	bh=MF410LMBMeG59JXPDBqpizLFwoAlbffh/y3ciO6yGFI=;
+	h=Date:Subject:To:CC:References:From:In-Reply-To;
+	b=jVD8IXmbC5LCmlPw4ETT54FKZj3brrIfK7NCraM+yK5kHMF+rk3SqCkH8DIXvAbUR
+	 1EFU0Q1cwiH2MVEFeQEvydntgCkj9fRteLQAW+IACI0ilRPr8KsO7tlUkJ0ikf2bv4
+	 H5CD5mhagYqaOKzFq2Vri7aWQXG5bFXQ9iqJrTgQ=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+	by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 35EA5DrI115110
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Wed, 14 Jun 2023 05:05:13 -0500
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Wed, 14
+ Jun 2023 05:05:13 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Wed, 14 Jun 2023 05:05:13 -0500
+Received: from [10.24.69.79] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+	by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 35EA5AF9084782;
+	Wed, 14 Jun 2023 05:05:11 -0500
+Message-ID: <3a9fa101-a3f0-1982-b24d-d09a8b8d8a0e@ti.com>
+Date: Wed, 14 Jun 2023 15:35:09 +0530
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:a18:0:b0:77a:e8e3:2c02 with SMTP id
- z24-20020a6b0a18000000b0077ae8e32c02mr5113965ioi.2.1686736965646; Wed, 14 Jun
- 2023 03:02:45 -0700 (PDT)
-Date: Wed, 14 Jun 2023 03:02:45 -0700
-In-Reply-To: <1423848.1686733230@warthog.procyon.org.uk>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000aac23605fe140d6b@google.com>
-Subject: Re: [syzbot] [fs?] general protection fault in splice_to_socket
-From: syzbot <syzbot+f9e28a23426ac3b24f20@syzkaller.appspotmail.com>
-To: brauner@kernel.org, dhowells@redhat.com, kuba@kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com, 
-	viro@zeniv.linux.org.uk
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH] net: hsr: Disable promiscuous mode in offload mode
+Content-Language: en-US
+To: Paolo Abeni <pabeni@redhat.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <bigeasy@linutronix.de>
+CC: <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <rogerq@kernel.org>
+References: <20230612093933.13267-1-r-gunasekaran@ti.com>
+ <dffbf0474b1352f1eac63125a973c8f8cd7b3e8d.camel@redhat.com>
+From: Ravi Gunasekaran <r-gunasekaran@ti.com>
+In-Reply-To: <dffbf0474b1352f1eac63125a973c8f8cd7b3e8d.camel@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-	SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hello,
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Reported-and-tested-by: syzbot+f9e28a23426ac3b24f20@syzkaller.appspotmail.com
+On 6/14/23 3:12 PM, Paolo Abeni wrote:
+> On Mon, 2023-06-12 at 15:09 +0530, Ravi Gunasekaran wrote:
+>> When port-to-port forwarding for interfaces in HSR node is enabled,
+>> disable promiscuous mode since L2 frame forward happens at the
+>> offloaded hardware.
+>>
+>> Signed-off-by: Ravi Gunasekaran <r-gunasekaran@ti.com>
+>> ---
+>>  net/hsr/hsr_device.c |  5 +++++
+>>  net/hsr/hsr_main.h   |  1 +
+>>  net/hsr/hsr_slave.c  | 15 +++++++++++----
+>>  3 files changed, 17 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
+>> index 5a236aae2366..306f942c3b28 100644
+>> --- a/net/hsr/hsr_device.c
+>> +++ b/net/hsr/hsr_device.c
+>> @@ -531,6 +531,11 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],
+>>  	if (res)
+>>  		goto err_add_master;
+>>  
+>> +	/* HSR forwarding offload supported in lower device? */
+>> +	if ((slave[0]->features & NETIF_F_HW_HSR_FWD) &&
+>> +	    (slave[1]->features & NETIF_F_HW_HSR_FWD))
+>> +		hsr->fwd_offloaded = true;
+>> +
+>>  	res = register_netdevice(hsr_dev);
+>>  	if (res)
+>>  		goto err_unregister;
+>> diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
+>> index 5584c80a5c79..0225fabbe6d1 100644
+>> --- a/net/hsr/hsr_main.h
+>> +++ b/net/hsr/hsr_main.h
+>> @@ -195,6 +195,7 @@ struct hsr_priv {
+>>  	struct hsr_self_node	__rcu *self_node;	/* MACs of slaves */
+>>  	struct timer_list	announce_timer;	/* Supervision frame dispatch */
+>>  	struct timer_list	prune_timer;
+>> +	unsigned int            fwd_offloaded : 1; /* Forwarding offloaded to HW */
+> 
+> Please use plain 'bool' instead.
+> 
+> Also there is an hole in 'struct hsr_priv' just after 'net_id', you
+> could consider moving this new field there.
+> 
 
-Tested on:
+Sure. I will use "bool" and insert it after "net_id" and send out v2
 
-commit:         2bddad9e ethtool: ioctl: account for sopass diff in se..
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git main
-console output: https://syzkaller.appspot.com/x/log.txt?x=12d9c93b280000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=526f919910d4a671
-dashboard link: https://syzkaller.appspot.com/bug?extid=f9e28a23426ac3b24f20
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=12c4f0d9280000
+> 
+> Thanks!
+> 
+> Paolo
+> 
 
-Note: testing is done by a robot and is best-effort only.
+-- 
+Regards,
+Ravi
 
