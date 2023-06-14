@@ -1,141 +1,171 @@
-Return-Path: <netdev+bounces-10666-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10667-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id A836372FA10
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 12:06:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 5EDE972FA26
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 12:10:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 62EA7281399
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 10:06:26 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 08E002813BA
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 10:09:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 780EA6138;
-	Wed, 14 Jun 2023 10:06:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3C7A46AD7;
+	Wed, 14 Jun 2023 10:09:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B6D56AA6
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 10:06:24 +0000 (UTC)
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD5D18C;
-	Wed, 14 Jun 2023 03:06:23 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 35EA63fU127468;
-	Wed, 14 Jun 2023 05:06:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1686737163;
-	bh=iFsvYPvQkajYLTBSl+GGXtHGsI9rPc41gAMCUtzgEHM=;
-	h=Date:Subject:To:CC:References:From:In-Reply-To;
-	b=nTQcRXDu5YPj1KsBQnn2WQb2YHsKHQLRXwKOYwVpECkVYYVrzWEoIDKZoeKf71ztK
-	 h31c9iUTerCplmwMWnUWKR7FxYPLXlU3Dpp1QPOgXgkg1P6ONfGiePo0nWB7bi8R7T
-	 KVYM7xTVHv+GOGie5XqKqbmWRXlgI1BLFI02P6RY=
-Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
-	by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 35EA62tu067285
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 14 Jun 2023 05:06:03 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Wed, 14
- Jun 2023 05:06:02 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Wed, 14 Jun 2023 05:06:02 -0500
-Received: from [10.24.69.79] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-	by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 35EA5xFf015594;
-	Wed, 14 Jun 2023 05:06:00 -0500
-Message-ID: <527454c6-7516-c226-dae6-636eea698353@ti.com>
-Date: Wed, 14 Jun 2023 15:35:59 +0530
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 305DB612E
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 10:09:57 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528BDE53
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 03:09:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686737394;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=MBrjoJbmEWc/Tn6Mkt7SpycUJkuHckypR5ks5lDPTJ8=;
+	b=ETX4s1huZ3SOZStBIxcffweddGqeQ/kk6uTozwi4W1AOU4r/Fqg6ho+v7akOx46jUd/zPl
+	+Tp8obL6ulxxSOD8QW+X5baSirU2DSij0K0y/vIwuKvFocLOkySLvZEz5CcdJRZn2iRi+d
+	tknKD9Sa+FssEnZoZ29EQtVy+C/mKSA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-567-DPX2FsP-PxqlW4E_Wy1R1w-1; Wed, 14 Jun 2023 06:09:53 -0400
+X-MC-Unique: DPX2FsP-PxqlW4E_Wy1R1w-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 55518830EFD;
+	Wed, 14 Jun 2023 10:09:52 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.67])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id AEA7740C6F5D;
+	Wed, 14 Jun 2023 10:09:49 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+To: netdev@vger.kernel.org
+cc: dhowells@redhat.com,
+    syzbot+f9e28a23426ac3b24f20@syzkaller.appspotmail.com,
+    Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+    David Ahern <dsahern@kernel.org>,
+    "David S. Miller" <davem@davemloft.net>,
+    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+    Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+    Matthew Wilcox <willy@infradead.org>,
+    Christian Brauner <brauner@kernel.org>,
+    Alexander Viro <viro@zeniv.linux.org.uk>,
+    linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] splice, net: Fix splice_to_socket() to handle pipe bufs larger than a page
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH] net: hsr: Disable promiscuous mode in offload mode
-Content-Language: en-US
-To: Paolo Abeni <pabeni@redhat.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <bigeasy@linutronix.de>
-CC: <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <rogerq@kernel.org>
-References: <20230612093933.13267-1-r-gunasekaran@ti.com>
- <dffbf0474b1352f1eac63125a973c8f8cd7b3e8d.camel@redhat.com>
- <f50ad11eb5ca3cb777e7150ad6a8347e575f1667.camel@redhat.com>
-From: Ravi Gunasekaran <r-gunasekaran@ti.com>
-In-Reply-To: <f50ad11eb5ca3cb777e7150ad6a8347e575f1667.camel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1428984.1686737388.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 14 Jun 2023 11:09:48 +0100
+Message-ID: <1428985.1686737388@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+    =
 
+splice_to_socket() assumes that a pipe_buffer won't hold more than a singl=
+e
+page of data - but this assumption can be violated by skb_splice_bits()
+when it splices from a socket into a pipe.
 
-On 6/14/23 3:14 PM, Paolo Abeni wrote:
-> On Wed, 2023-06-14 at 11:42 +0200, Paolo Abeni wrote:
->> On Mon, 2023-06-12 at 15:09 +0530, Ravi Gunasekaran wrote:
->>> When port-to-port forwarding for interfaces in HSR node is enabled,
->>> disable promiscuous mode since L2 frame forward happens at the
->>> offloaded hardware.
->>>
->>> Signed-off-by: Ravi Gunasekaran <r-gunasekaran@ti.com>
->>> ---
->>>  net/hsr/hsr_device.c |  5 +++++
->>>  net/hsr/hsr_main.h   |  1 +
->>>  net/hsr/hsr_slave.c  | 15 +++++++++++----
->>>  3 files changed, 17 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
->>> index 5a236aae2366..306f942c3b28 100644
->>> --- a/net/hsr/hsr_device.c
->>> +++ b/net/hsr/hsr_device.c
->>> @@ -531,6 +531,11 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],
->>>  	if (res)
->>>  		goto err_add_master;
->>>  
->>> +	/* HSR forwarding offload supported in lower device? */
->>> +	if ((slave[0]->features & NETIF_F_HW_HSR_FWD) &&
->>> +	    (slave[1]->features & NETIF_F_HW_HSR_FWD))
->>> +		hsr->fwd_offloaded = true;
->>> +
->>>  	res = register_netdevice(hsr_dev);
->>>  	if (res)
->>>  		goto err_unregister;
->>> diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
->>> index 5584c80a5c79..0225fabbe6d1 100644
->>> --- a/net/hsr/hsr_main.h
->>> +++ b/net/hsr/hsr_main.h
->>> @@ -195,6 +195,7 @@ struct hsr_priv {
->>>  	struct hsr_self_node	__rcu *self_node;	/* MACs of slaves */
->>>  	struct timer_list	announce_timer;	/* Supervision frame dispatch */
->>>  	struct timer_list	prune_timer;
->>> +	unsigned int            fwd_offloaded : 1; /* Forwarding offloaded to HW */
->>
->> Please use plain 'bool' instead.
->>
->> Also there is an hole in 'struct hsr_priv' just after 'net_id', you
->> could consider moving this new field there.
-> 
-> Oops, I almost forgot! Please include the target tree (net-next in this
-> case) in the subj prefix on your next submission.
-> 
+The problem is that splice_to_socket() doesn't advance the pipe_buffer
+length and offset when transcribing from the pipe buf into a bio_vec, so i=
+f
+the buf is >PAGE_SIZE, it keeps repeating the same initial chunk and
+doesn't advance the tail index.  It then subtracts this from "remain" and
+overcounts the amount of data to be sent.
 
-I will take care of this from next submission onwards.
+The cleanup phase then tries to overclean the pipe, hits an unused pipe bu=
+f
+and a NULL-pointer dereference occurs.
 
-> Thanks,
-> 
-> Paolo
-> 
+Fix this by not restricting the bio_vec size to PAGE_SIZE and instead
+transcribing the entirety of each pipe_buffer into a single bio_vec and
+advancing the tail index if remain hasn't hit zero yet.
 
--- 
-Regards,
-Ravi
+Large bio_vecs will then be split up by iterator functions such as
+iov_iter_extract_pages().
+
+This resulted in a KASAN report looking like:
+
+general protection fault, probably for non-canonical address 0xdffffc00000=
+00001: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+...
+RIP: 0010:pipe_buf_release include/linux/pipe_fs_i.h:203 [inline]
+RIP: 0010:splice_to_socket+0xa91/0xe30 fs/splice.c:933
+
+Fixes: 2dc334f1a63a ("splice, net: Use sendmsg(MSG_SPLICE_PAGES) rather th=
+an ->sendpage()")
+Reported-by: syzbot+f9e28a23426ac3b24f20@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/0000000000000900e905fdeb8e39@google.com/
+Tested-by: syzbot+f9e28a23426ac3b24f20@syzkaller.appspotmail.com
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+cc: David Ahern <dsahern@kernel.org>
+cc: "David S. Miller" <davem@davemloft.net>
+cc: Eric Dumazet <edumazet@google.com>
+cc: Jakub Kicinski <kuba@kernel.org>
+cc: Paolo Abeni <pabeni@redhat.com>
+cc: Jens Axboe <axboe@kernel.dk>
+cc: Matthew Wilcox <willy@infradead.org>
+cc: Christian Brauner <brauner@kernel.org>
+cc: Alexander Viro <viro@zeniv.linux.org.uk>
+cc: netdev@vger.kernel.org
+cc: linux-fsdevel@vger.kernel.org
+---
+ fs/splice.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/fs/splice.c b/fs/splice.c
+index e337630aed64..567a1f03ea1e 100644
+--- a/fs/splice.c
++++ b/fs/splice.c
+@@ -886,7 +886,6 @@ ssize_t splice_to_socket(struct pipe_inode_info *pipe,=
+ struct file *out,
+ 			}
+ =
+
+ 			seg =3D min_t(size_t, remain, buf->len);
+-			seg =3D min_t(size_t, seg, PAGE_SIZE);
+ =
+
+ 			ret =3D pipe_buf_confirm(pipe, buf);
+ 			if (unlikely(ret)) {
+@@ -897,10 +896,9 @@ ssize_t splice_to_socket(struct pipe_inode_info *pipe=
+, struct file *out,
+ =
+
+ 			bvec_set_page(&bvec[bc++], buf->page, seg, buf->offset);
+ 			remain -=3D seg;
+-			if (seg >=3D buf->len)
+-				tail++;
+-			if (bc >=3D ARRAY_SIZE(bvec))
++			if (remain =3D=3D 0 || bc >=3D ARRAY_SIZE(bvec))
+ 				break;
++			tail++;
+ 		}
+ =
+
+ 		if (!bc)
+
 
