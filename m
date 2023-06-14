@@ -1,107 +1,96 @@
-Return-Path: <netdev+bounces-10591-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10592-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4BB3E72F3C0
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 06:49:51 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 557F472F3ED
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 07:05:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DE9DF281316
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 04:49:49 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 33FE41C20C0B
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 05:05:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 24D88389;
-	Wed, 14 Jun 2023 04:49:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 697D0642;
+	Wed, 14 Jun 2023 05:05:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18DAA361
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 04:49:48 +0000 (UTC)
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128CE1BDA;
-	Tue, 13 Jun 2023 21:49:47 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id d2e1a72fcca58-6666b89ffaeso7006b3a.1;
-        Tue, 13 Jun 2023 21:49:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686718186; x=1689310186;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=c2bOk4R1NepPNFBwDvNUahQEGtGsBtFkPcwg9R+k3TQ=;
-        b=JNl9OPt2dRoQrG2iUdxlAZawfZUMpP/ZsEla+fPkDihi+DWW2zVZYiEFqYnYcAR0L7
-         vhSjaBsNZbKUVgFGhKg2sFbM0e2Xn1F2kS+r7AzQPftCPBMKt1nYWxXrkvUkAP4IDsxO
-         EEnhjiETEyiNSO/IqD3X41HA0rwAjh8EayIzMr8Pcd6E1jAufReRfWbnP4O9MDmjkhpb
-         OHGTuQzapAXFFq+Wa1dQhL+0sV40j/Wzo5vkv+CtUE+BGRmjmhfZpe5GrmGg5WjODr5f
-         F9QoLbTWnfeVy4+fifJtTAO7hhxSus3yg/N4CrjSs/ulIluqBEY9FJ7c+5H/Oe6rdQNw
-         1gfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686718186; x=1689310186;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=c2bOk4R1NepPNFBwDvNUahQEGtGsBtFkPcwg9R+k3TQ=;
-        b=l3jVWPXBtRTOjXqvuXooFXhnusRulmhqA8NXIe7FPQZ5wvFm0/GfjbbTtTJu/JOqR8
-         gu7qoDqabcU4tQ+oeHeU0dOcjsERVtFT2eL5k3AI2UYQj1qOuEJ+MGOj9qazXMCQ21lL
-         FBVv6wNMe3yodq/gL4p/7jbPn7fwmEU+Kanpi0GEjf++ByQpFYjr1GEBLn1XnoVsDtFR
-         sIKPur0MdkBqeKDzWjvcdVxN7HohgRNwgYQecW8RSY2jkQ/eb3P4QWnM+Z3ePn8AqGkV
-         VX1W1FxMJBZd7M2Acf1/CvXD25ZA6r24wuGKQKKEX16IwEnds7vxPcXgj6A7RYQ6H2xs
-         mMYA==
-X-Gm-Message-State: AC+VfDyN5NVlBWxWRnlS6Vt0l/6+BhEkXIiObf9mxYgxCqj4arI9Bl2b
-	E7eG/jtlsxqtqYdVLYwHefg=
-X-Google-Smtp-Source: ACHHUZ6R0k9M0NnQwTsbdDJv7NzcZtrEeKsxx/WftQzVqV36MPH9Xhk6d3AZwD9BLP9W+Pn2aO5hDA==
-X-Received: by 2002:a17:903:41c2:b0:1b3:d8ac:8db3 with SMTP id u2-20020a17090341c200b001b3d8ac8db3mr7206982ple.6.1686718186520;
-        Tue, 13 Jun 2023 21:49:46 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:e:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id l2-20020a170902f68200b001b3be6c08adsm5848333plg.282.2023.06.13.21.49.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jun 2023 21:49:45 -0700 (PDT)
-Date: Tue, 13 Jun 2023 21:49:38 -0700
-From: Richard Cochran <richardcochran@gmail.com>
-To: Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, andrew@lunn.ch,
-	hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Subject: Re: [PATCH net-next v2 2/2] net: micrel: Schedule work to read
- seconds for lan8841
-Message-ID: <ZIlG4otXfQ7uhMsc@hoboy.vegasvil.org>
-References: <20230613094526.69532-1-horatiu.vultur@microchip.com>
- <20230613094526.69532-3-horatiu.vultur@microchip.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C0A9361;
+	Wed, 14 Jun 2023 05:05:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BE6CC433C0;
+	Wed, 14 Jun 2023 05:05:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686719109;
+	bh=lqfQbJAQZd06+abR9A08Hw+k3lRkhhEnD9V9drW6m5g=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=rTraGRTAkAvqzwoBAy2iuH7DjLZ8AxNKRNeJI0ogBhNqJdAKKxonXB23bZ/G5oOpm
+	 I5QxN590wl4efECf71hDGvHZtjoecHeJONQdrKB1qRrEmelqw8fXGyXX7q0p4QnwAK
+	 f+YB8xvsNjuffNIwSrk2Y4keeladVNmmaXJ8jdz006Hh6xpbGsp8fxtBuQU1m0drw7
+	 6z7S5q8Vpc4fGAgF1J7yG85Td8f6Wqo5qdMTr/TPGVgbTET0vRSt+brB+jOUqIYm+T
+	 UuenL/17dM+KX5gHCjemufIVSdbCilGZ0Gff6CnHJyvYqCc7H+m9TBuyEOe85g216D
+	 a2GwCFetvWqyw==
+Date: Tue, 13 Jun 2023 22:05:07 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: David Ahern <dsahern@kernel.org>
+Cc: Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org,
+ ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+ martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+ john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com,
+ jolsa@kernel.org, willemb@google.com, magnus.karlsson@intel.com,
+ bjorn@kernel.org, maciej.fijalkowski@intel.com, netdev@vger.kernel.org
+Subject: Re: [RFC bpf-next 0/7] bpf: netdev TX metadata
+Message-ID: <20230613220507.0678bd02@kernel.org>
+In-Reply-To: <70d0f31b-3358-d615-a00c-7e664f5f789f@kernel.org>
+References: <20230612172307.3923165-1-sdf@google.com>
+	<20230613203125.7c7916bc@kernel.org>
+	<70d0f31b-3358-d615-a00c-7e664f5f789f@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230613094526.69532-3-horatiu.vultur@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jun 13, 2023 at 11:45:26AM +0200, Horatiu Vultur wrote:
-> @@ -3840,6 +3847,12 @@ static void lan8841_ptp_enable_processing(struct kszphy_ptp_priv *ptp_priv,
->  			       LAN8841_PTP_INSERT_TS_32BIT,
->  			       LAN8841_PTP_INSERT_TS_EN |
->  			       LAN8841_PTP_INSERT_TS_32BIT);
-> +
-> +		/* Schedule the work to read the seconds, which will be used in
-> +		 * the received timestamp
-> +		 */
-> +		schedule_delayed_work(&ptp_priv->seconds_work,
-> +				      nsecs_to_jiffies(LAN8841_GET_SEC_LTC_DELAY));
+On Tue, 13 Jun 2023 20:54:26 -0700 David Ahern wrote:
+> On 6/13/23 9:31 PM, Jakub Kicinski wrote:
+> > On Mon, 12 Jun 2023 10:23:00 -0700 Stanislav Fomichev wrote:  
+> >> The goal of this series is to add two new standard-ish places
+> >> in the transmit path:
+> >>
+> >> 1. Right before the packet is transmitted (with access to TX
+> >>    descriptors)  
+> 
+> If a device requires multiple Tx descriptors per skb or multibuf frame,
+> how would that be handled within the XDP API?
+> 
+> > I'm not sure that the Tx descriptors can be populated piecemeal.  
+> 
+> If it is host memory before the pidx move, why would that matter? Do you
+> have a specific example in mind?
 
-Why not do this in the PTP kworker thread?
+I don't mean it's impossible implement, but it's may get cumbersome.
+TSO/CSO/crypto may all need to know where L4 header starts, f.e.
+Some ECN marking in the NIC may also want to know where L3 is.
+So the offsets will get duplicated in each API.
 
-The thread's scheduling can be easily tuned with chrt to give it
-appropriate priority, but work can't.
+> > If we were ever to support more standard offload features, which
+> > require packet geometry (hdr offsets etc.) to be described "call
+> > per feature" will end up duplicating arguments, and there will be
+> > a lot of args..
+> > 
+> > And if there is an SKB path in the future combining the normal SKB
+> > offloads with the half-rendered descriptors may be a pain.  
+> 
+> Once the descriptor(s) is (are) populated, the skb is irrelevant is it
+> not? Only complication that comes to mind is wanting to add or remove
+> headers (e.g., tunnels) which will be much more complicated at this
+> point, but might still be possible on a per NIC (and maybe version) basis.
 
-Also, If you have seconds thread, then you don't have to defer the
-received frames.
-
-Thanks,
-Richard
+I guess one can write the skb descriptors first, then modify them from
+the BPF. Either way I feel like the helper approach for Tx will result
+in drivers saving the info into some local struct and then rendering
+the descriptors after. We'll see.
 
