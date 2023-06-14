@@ -1,142 +1,152 @@
-Return-Path: <netdev+bounces-10668-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10669-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 79B4972FA33
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 12:13:11 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 97C1A72FA34
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 12:13:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 968B51C20C23
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 10:13:10 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C54BC1C20C22
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 10:13:29 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 547C86AD8;
-	Wed, 14 Jun 2023 10:13:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 574206D18;
+	Wed, 14 Jun 2023 10:13:28 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 402E86110
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 10:13:08 +0000 (UTC)
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2046.outbound.protection.outlook.com [40.107.6.46])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98798195
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 03:13:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=erbURBUJMI1hL2l0ltLQcAfKs2qW8bNoDk32BjuvIoXG6hAFD9tUHSXswCajWV2noPa2jGph8C1cs/IxDU2WoaG9kOH28VZdZdnVI3ihOVbvSZ5rWWshZUpjxDe2deQIL4t+i9LBEElQhq8dx330VbwgN+/ATP5Oy9EpYctvH5JwgOENmIc9zAYu0e8HMBGwjPl+T9aOv3PXoC9bTtYuMnbAtMtdbEwB5MzlFiPYRX1FAEUnzagdZnpm0pbqKLQKuij4JB7IGsspunx1EIFG08Ss7Zr2LyoL4DON8jIE2tA9qiZbR7uDLdF20LZmnRKbsvUoCpATcWTYyrtqIZu1iQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1R0bBaiOCd5q+v3OGVwFIeE2LvGuYKgzVpgTZ7+tl2Y=;
- b=PBIbsmCdYI0tOWg7xnMwdixZVrb0bypdw2AsBLjgre9smivrsTifh44JMWVxkrHxXZDycWhhTcDC2d381x9LFmNEJ3meqG9BkApQ8FAnWA2N0178N8++abTkLHSaxX817w1T8Ye8sFYFHqKaJyKVl7QOBSAca7VzDSvO7HwpX6W56hOJwLTvXvcMygpfqUka24MBAle5+alc3Jycyud9bSuahstsyCEQt1z21LFoDyDDY242GMEBa2ciHwDki/gXOJoMl7xpG/tcIvJ9jRHufYCJ/m0vLMEV7AlLX1qYmGgOWPmS3znejMJDOKqoW8sDv/WPTcgjWL2msRIY+T3BVg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1R0bBaiOCd5q+v3OGVwFIeE2LvGuYKgzVpgTZ7+tl2Y=;
- b=VLCdb/71B2gX0ZC/wjcD/IP1jVVQ+OJ7sYyP0ulSiNxwV7+4zQC0OFwvqP1Y73vqjvVohn37A7EZzp2aD8xPAfJ87+FxAuBHgz0kc+/77YaL1c5IumfQDLmwx5/IKdyLTxOh5lU0eRgcuzJ9MD9CtD+5ioSnaQkimFS4PpOyQC0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by VI1PR04MB7088.eurprd04.prod.outlook.com (2603:10a6:800:11d::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.29; Wed, 14 Jun
- 2023 10:13:02 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::c40e:d76:fd88:f460]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::c40e:d76:fd88:f460%4]) with mapi id 15.20.6455.045; Wed, 14 Jun 2023
- 10:13:02 +0000
-Date: Wed, 14 Jun 2023 13:12:58 +0300
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-To: shaozhengchao <shaozhengchao@huawei.com>
-Cc: Vinicius Costa Gomes <vinicius.gomes@intel.com>, netdev@vger.kernel.org,
-	jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, weiyongjun1@huawei.com, yuehaibing@huawei.com
-Subject: Re: [PATCH net,v2] net/sched: taprio: fix slab-out-of-bounds Read in
- taprio_dequeue_from_txq
-Message-ID: <20230614101258.hezbrkw42fls622x@skbuf>
-References: <20230608062756.3626573-1-shaozhengchao@huawei.com>
- <87zg59sbzb.fsf@intel.com>
- <e01c0675-da18-b1a9-64b1-4eaa1627fcb8@huawei.com>
- <20230609094542.y3doavs6t4qk2jlo@skbuf>
- <a6b677b2-b2bf-c91d-a6ae-d043081f9026@huawei.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a6b677b2-b2bf-c91d-a6ae-d043081f9026@huawei.com>
-X-ClientProxiedBy: VI1PR07CA0129.eurprd07.prod.outlook.com
- (2603:10a6:802:16::16) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CDB2612E
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 10:13:28 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0C9711B
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 03:13:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686737606;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Jr0Ra4FJke4ZvkZCg3+qjwMQfo/JJ81HlhDGgW4oA68=;
+	b=gBAQLU+2EPJpF7MbYz188uHR1kk6kvx9J1kREWkldRAvhMSyh0A4DVSovwI4cudeGODxbN
+	LKnl2XiZsCuqyzqJIKrY6klupS2of973ofYNb8xi5CEr6+QPQpicVSm35P5pFlOqtRPW2A
+	A4isdJxr7xDRu+3/fvLo3O7gP/LYze8=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-26-YbWjhaDFOUe0lvj58v1dXw-1; Wed, 14 Jun 2023 06:13:24 -0400
+X-MC-Unique: YbWjhaDFOUe0lvj58v1dXw-1
+Received: by mail-lf1-f70.google.com with SMTP id 2adb3069b0e04-4f256ddef3aso4702730e87.2
+        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 03:13:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686737603; x=1689329603;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Jr0Ra4FJke4ZvkZCg3+qjwMQfo/JJ81HlhDGgW4oA68=;
+        b=TZualVWlpMmjFfALIz9hpJerQitA6IoikQhp47LaOZAtj7+tvqzuCBz4vGwMJyGYZP
+         NzXWAlnBhyI/ICbnIfPGWxpGHRuhl+V65h5qEL+u/RqNDuD+tA/aiBEoJ7oh6G22IBL4
+         zZqfZabYwRopEz6em2TowB1ahe4EeVvGXcUexVc4lBzqZ0yBz4xUz/vvXQYAClxYazmI
+         azNBdn7QmHx5FqWGC5QzhFNV7orNF+wcqPuo+2bWjatV7jt3bKSdx/Lpvvkv/KzPKpWk
+         vpv/+cYDactBMlTbfaS8/CkC3GSt7H1IPWdiV+z/fY9bkgUxEFWHl7KYTEPbeW3ag3ym
+         lrTQ==
+X-Gm-Message-State: AC+VfDynQfIJDAW+Efg3/4WLSH/nZBEtBvaXh8WCLYpuPhLmi5EFaY7J
+	IjKEl9B55stYgcMpT4IrhMTvDszZ1lG5t/3K+Moe/XXlTN5CCJLxI4C3GUeKuxZ5LRLihdLlgDV
+	ry6UOyEhzGOh6X1LI/ogZOAoRk5ZQUQvq
+X-Received: by 2002:a05:6512:329c:b0:4f1:3ca4:926f with SMTP id p28-20020a056512329c00b004f13ca4926fmr7642087lfe.21.1686737603387;
+        Wed, 14 Jun 2023 03:13:23 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5YYuD2oA6AU2kQHVxScXc4b0yMM387nluPj2ySdlo6eoXkxU+aWj9WUmaUOS95pb54/8Ytw/ccXS0FE0w9hFo=
+X-Received: by 2002:a05:6512:329c:b0:4f1:3ca4:926f with SMTP id
+ p28-20020a056512329c00b004f13ca4926fmr7642072lfe.21.1686737602961; Wed, 14
+ Jun 2023 03:13:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|VI1PR04MB7088:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6991392a-4bea-4fc1-0189-08db6cbfefe4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	fiM8SBqdgHFLCSqwJdvITrjquBdKui/3N7I1rgXlwR4EDKmUc8AnqdPbBFGG6S4ADZ1DtFy6Bl/CQguhrseiLHebF30xxw3rjITBAqGZnKcAQMp+tzcKG7bNoyIWISg68gAaaMiUJFWYlYuDjI1TZ4g8uRo4AimCk44q0Xd53n+4BSV20YCrDawa7Cr6otJ5jUZM3nROToYGXv6Pzjldtk0DkImm0jtWEFn2ta6Cf/KLmwnvWH44kS8QwG7yupmWVxqPyxYru2iOqFJOQD+RYDHBtpNqzGspsWxO+SvzoG+FOY2KJL6Y0wiXtHZ43vcpxq7/9MFMnnvbXfSFliOyvufeWGp8E7dGFgLdYfnwkg9McSOebzx+wgm4M4OOEZTfFBBoQnwK11Lbtp4AFonH+LZbcg2VcjcGLplxfkKcIS+4mZ11GnZLT1TTbRO9zAJx8ZK2WFjiq+fD+4Rhv7grlt8N65lcHxVZTOwPt9X+hq/CQqVvEUjC2Lei0WQao/9MtmNDQ5PkTLeiWtfooJkGYA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(366004)(39860400002)(136003)(346002)(396003)(376002)(451199021)(86362001)(38100700002)(33716001)(478600001)(44832011)(8936002)(6486002)(6666004)(966005)(8676002)(2906002)(4744005)(4326008)(5660300002)(7416002)(66476007)(66946007)(66556008)(316002)(186003)(41300700001)(6916009)(6512007)(26005)(1076003)(9686003)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?a42dqiafS1Rc3w7eIXyZwWSuuPoqXELau/JTUiRVN8Qna7+3LHXVT94D6kxk?=
- =?us-ascii?Q?0QTVPY6gUKGei5pnoN78t15qAwea8unZjuFQQH6vukwWXjVa+yl6ODdr/f6L?=
- =?us-ascii?Q?OzlT1raAHrMgSOib8emQ6PAfdoaGof4R+Y+5wy4ZeXTjsKESrlufCWHs8Lm8?=
- =?us-ascii?Q?ucHqQ0gctsRw7DFxBPt6hDjFzGsxiNMBt1ooKDADvMBVgEth6rW2nyzytpU4?=
- =?us-ascii?Q?JXI+AsGCoLVggfCswY7ER4zHyTFb2r1mi+l+ZEUfc9CDgLwbZgTyQdwNiqtb?=
- =?us-ascii?Q?vELq+4zKuTdiYJVYhMnLN0WEQmefZgfUNyYu2QYtn0Fjf2r/M3PpYu9nEFr1?=
- =?us-ascii?Q?9zFKc9NaubhHFXqmWP+KWuCbhIkse3gLDp6xe5gARo+heqqRRAMO/fvJNLVJ?=
- =?us-ascii?Q?7C22ux+UlsFmhVUGGhJ1KfsoNMQix+cU7Rh3KQFXDDS++2FMgnc8ODY5pTGw?=
- =?us-ascii?Q?BNmsp2QRcKTM8yDuAbvJqa8Ss8kekUJVwJzr7mB47NZ+p8eteUHsx1azH54v?=
- =?us-ascii?Q?hanK2wn+DynZcOcr3R68YPrVuIT748vEC9naHIB/2EH3HQJQq5XyhY3jg2QJ?=
- =?us-ascii?Q?k1rTbvc7hvjyQXK6jQM0OPwpAVhnszi1A7vZdufDC4GGAEi4bSYV3V+Xo2y3?=
- =?us-ascii?Q?dVj1obWb7G/JyWv+MQEqHHvzqbdInz2WV26btckDcg7gasU1zX926cqPIrPq?=
- =?us-ascii?Q?Q1PwCJhy/KQRo4cmKHgvLU0kdilUSvps3tQJfjrwaWcb7AgnW2BMUKe7NH1o?=
- =?us-ascii?Q?PMojv3XJj4auBk+R0ShNpAAHa+c4hfL7hXGUvVtRG4X2jd2QBlhE1aslb/Zo?=
- =?us-ascii?Q?BwBfhM7lidEa7BxFVKmINNgWJNUgqLH0ghqrCHKbi6P3hR3uRMCpk/s8GJ9K?=
- =?us-ascii?Q?dFgVYPhjhtIoMhnzPShnExKu5fundAx4etV/XvoB3gV+rDQeJgSYZFuHTe74?=
- =?us-ascii?Q?CXbyqhNtBepLs+Pkrcapor0maw2uoYCgSVoA6aONMA8QFSI/rGFAvlsGa07a?=
- =?us-ascii?Q?u3/IEfv/KzoCTkiRZFFudB4lN2Z2KInH3voWZEf7N0eDSWHisE+bX9/202gQ?=
- =?us-ascii?Q?stOezmZePHBdiBu3gW/Ue3P5wFF4VH7oQhm/mallTs345isbMI7go3ZKSPFF?=
- =?us-ascii?Q?gHfIDASdS49E+SpIvZSJlY7jcm5jGbMjbQw/0U5R5qJNVH2IL3bvBWxFqwn3?=
- =?us-ascii?Q?CYmReM7oNNMKa3aIKPAuaUVJVqn7AsiRJAPGilDI94v4TGgwcOsUxD4Fdbe9?=
- =?us-ascii?Q?hk5IBRt5hKW1xZh3O74+Qjxjk2E3Pa1OP2euwdXlafDax6K0QKV/Lef0K7G8?=
- =?us-ascii?Q?ALv1x4/I3VKEjBgmFjS3zb5zlYqnpN5EeKIu/2eyxMSw90FUEOiC6n0+d8w/?=
- =?us-ascii?Q?wotsWqfFkHgbZiDTybQBMBRj6TOROMD3G9WsJSFe/DRcUVCCytX+zYm3DS2J?=
- =?us-ascii?Q?KR800mxswy3DvtW5Keh3o2gbpVLEd0RkABth+9X6F8i0PQ5gz7MOq/WyFrJn?=
- =?us-ascii?Q?wMlM3ULKC3VjshebLWJBBxaV7amsdeo6MB2gZ58szwB0TPpJbOPtcCwwu2xC?=
- =?us-ascii?Q?jGarq+dw1c9cbStQ0KSx8tWBSKIg3G2/iWz66oFRmCfgytzsZA3jxZR1fjPV?=
- =?us-ascii?Q?8Q=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6991392a-4bea-4fc1-0189-08db6cbfefe4
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2023 10:13:02.3867
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zMoPQIjTT2We++NWXtLbTdu3ymU5Maa2xNoKKqne4EM16uNDa/rvJfvs4P+omkuWQqsyJTzwRmdgFikVXVM3KQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7088
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+References: <20230612144254.21039-1-ihuguet@redhat.com> <ZIdCFbjr0nEiS6+m@boxer>
+ <CACT4oucSRrddFYaNDBsuvK_4imDZUvy9r2pvHp8Ji_E=oP6ecg@mail.gmail.com> <ZIl2Dw9Ve0b30WmV@gmail.com>
+In-Reply-To: <ZIl2Dw9Ve0b30WmV@gmail.com>
+From: =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date: Wed, 14 Jun 2023 12:13:11 +0200
+Message-ID: <CACT4oufPV6FbQ7xOU8uPOS2SsA6R-F+D5H80SnrH3BEOe+WoMA@mail.gmail.com>
+Subject: Re: [PATCH net] sfc: use budget for TX completions
+To: =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>, 
+	Maciej Fijalkowski <maciej.fijalkowski@intel.com>, ecree.xilinx@gmail.com, davem@davemloft.net, 
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
+	netdev@vger.kernel.org, linux-net-drivers@amd.com, Fei Liu <feliu@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 12, 2023 at 08:49:53AM +0800, shaozhengchao wrote:
-> > Is there a reproducer for the bug?
-> Only the syz reproduction program.
-> https://groups.google.com/g/syzkaller-bugs/c/_lYOKgkBVMg
-> Thank you.
+On Wed, Jun 14, 2023 at 10:03=E2=80=AFAM Martin Habets <habetsm.xilinx@gmai=
+l.com> wrote:
+>
+> On Mon, Jun 12, 2023 at 04:42:54PM +0200, =C3=8D=C3=B1igo Huguet wrote:
+> > Documentations says "drivers can process completions for any number of =
+Tx
+> > packets but should only process up to budget number of Rx packets".
+> > However, many drivers do limit the amount of TX completions that they
+> > process in a single NAPI poll.
+>
+> I think your work and what other drivers do shows that the documentation =
+is
+> no longer correct. I haven't checked when that was written, but maybe it
+> was years ago when link speeds were lower.
+> Clearly for drivers that support higher link speeds this is an issue, so =
+we
+> should update the documentation. Not sure what constitutes a high link sp=
+eed,
+> with current CPUs for me it's anything >=3D 50G.
 
-Sorry, I don't really have time to become familiar with the syzbot right
-now. Can someone help me translate that syz repro into a C program?
+I reproduced with a 10G link (with debug kernel, though)
+
+> > +#define EFX_NAPI_MAX_TX 512
+>
+> How did you determine this value? Is it what other driver use?
+
+A bit of trial and error. I wanted to find a value high enough to not
+decrease performance but low enough to solve the issue.
+
+Other drivers use lower values too, from 128. However, I decided to go
+to the high values in sfc because otherwise it can affect too much to
+RX. The most common case I saw in other drivers was: First process TX
+completions up to the established limit, then process RX completions
+up to the NAPI budget. But sfc processes TX and RX events serially,
+intermixed. We need to put a limit to TX events, but if it was too
+low, very few RX events would be processed with high TX traffic.
+
+> > I would better like to hear the opinion from the sfc maintainers, but
+> > I don't mind changing it because I'm neither happy with the chosen
+> > location.
+>
+> I think we should add it in include/linux/netdevice.h, close to
+> NAPI_POLL_WEIGHT. That way all drivers can use it.
+> Do we need to add this TX poll weight to struct napi_struct and
+> extend netif_napi_add_weight()?
+> That way all drivers could use the value from napi_struct instead of usin=
+g
+> a hard-coded define. And at some point we can adjust it.
+
+That's what I thought too, but then we'd need to determine what's the
+exact meaning for that TX budget (as you see, it doesn't mean exactly
+the same for sfc than for other drivers, and between the other drivers
+there were small differences too).
+
+We would also need to decide what the default value for the TX budget
+is, so it is used in netif_napi_add. Right now, each driver is using
+different values.
+
+If something is done in that direction, it can take some time. May I
+suggest including this fix until then?
+
+--
+=C3=8D=C3=B1igo Huguet
+
 
