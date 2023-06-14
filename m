@@ -1,185 +1,127 @@
-Return-Path: <netdev+bounces-10642-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10645-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id C5D4A72F877
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 10:57:46 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5804272F88A
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:01:16 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0AEC11C20C81
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 08:57:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1344F28136E
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 09:01:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D4A0F3FE6;
-	Wed, 14 Jun 2023 08:57:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 36BB0525D;
+	Wed, 14 Jun 2023 09:01:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C921B7FC
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 08:57:43 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86EDD1BDA
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 01:57:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686733060;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=XLKEe5F6xXngYE09X9rD2VCOd+wftGw7A/Tkdmq7wYw=;
-	b=aXMWwXw8bSoJXuhhw/sgmE6MmPCGp8kp1a4mf7QwhTat9ag9lh04H11asfmpp/0glFusf6
-	+NrZ5CHBSfefX94t0Fi979tDuWBBsSo2AWdLDlzyP/yNJ7W4LFbVunqF3ATLYaEAvXj2TR
-	g+z2h+1P8h4mKRC5XhwIElxoWaQpNkY=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-643-8qWeZPviMAS61fOjx3qWcA-1; Wed, 14 Jun 2023 04:57:37 -0400
-X-MC-Unique: 8qWeZPviMAS61fOjx3qWcA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4086A80067D;
-	Wed, 14 Jun 2023 08:57:36 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.67])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 4784140C20F4;
-	Wed, 14 Jun 2023 08:57:32 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <0000000000000900e905fdeb8e39@google.com>
-References: <0000000000000900e905fdeb8e39@google.com>
-To: syzbot <syzbot+f9e28a23426ac3b24f20@syzkaller.appspotmail.com>
-Cc: dhowells@redhat.com, brauner@kernel.org, kuba@kernel.org,
-    linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-    netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-    viro@zeniv.linux.org.uk
-Subject: Re: [syzbot] [fs?] general protection fault in splice_to_socket
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26C0917E3;
+	Wed, 14 Jun 2023 09:01:10 +0000 (UTC)
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6B51BDB;
+	Wed, 14 Jun 2023 02:01:08 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id 2adb3069b0e04-4f6255ad8aeso8230267e87.2;
+        Wed, 14 Jun 2023 02:01:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686733267; x=1689325267;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Fi7jYiyIuxrBpP64V4qKjFbM9+nUEfmzh6+nGoNO0Ms=;
+        b=BToOLcfQM9i29CjpqtpOTXIlr9sz2LOsrGxPCM9xQ5aP9eIazRLilcBkQKBh//qknJ
+         qQrC3QQYVzPcb1lVAfvv2BaAzpNFxB3caOpvfvmx4Sp2zcS7+AxCeL7a8iyxxLvrGu3C
+         5ref+cbf2XIvQFHEDydQFpPy/l8TLWNiXIR4d/jwva8/6IbraeJfWxJG0668VK7UqjP1
+         BCoVva9JsURVZH8aNdmW2I216iS5718HVmuffPCzXrowEBIZZj6Q5DmCUJaaCHSJmfxv
+         GNFFe1Bzs9a6MlGvLiEL6z099J6lp12klOmEtWRQlI1wtN4ljrIVBAUP80ozIQXYRa5v
+         MINA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686733267; x=1689325267;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Fi7jYiyIuxrBpP64V4qKjFbM9+nUEfmzh6+nGoNO0Ms=;
+        b=kQCduT21JeDEx6prvSgzir6LtNYaAeCNNHubvDphc5bjKAKCgWgVElYwxAmXddr8xJ
+         aRU/UuI5dlnF/1zONphtI6ZXUSGlT39aTI+y1k4IFrd3edpptl/cgB0cora8bZtKarVd
+         mJXWZV9V5FQMIvq5zPTy5zKX8XpWsK4HQNKz/QzluzNUP/x1QqADe8KEJCXSeSMloQn4
+         uoo2UmUAm/F8e2nOI6Yp7uK3yOaFBEegnczqgU/LWkJ9FbRn8R7G4vIVUcMV/y/EqMBN
+         L6usotVBAOx5Uxb9o6XaN+W69LEq6/sUZM52CNDgBcbYi6sLfqqBIhnUmHzll1omKaQi
+         XffA==
+X-Gm-Message-State: AC+VfDxXJkh2vWLCQV8gdzRDci6fcmNqUele9fT/JW0jQv9tR3hyObKr
+	pOjoKAsAZKrIoYJQLz5Ir5saYn0Lfbi6A/st
+X-Google-Smtp-Source: ACHHUZ6GZE/uirClxrxvCsgzLgdqzCFRJV1+T7XpnYZ4KsUWBCBpnDn8eH0Q8EBJwvuY9IxtFjv35g==
+X-Received: by 2002:a19:6407:0:b0:4ec:9ef9:e3d with SMTP id y7-20020a196407000000b004ec9ef90e3dmr6738274lfb.26.1686733266430;
+        Wed, 14 Jun 2023 02:01:06 -0700 (PDT)
+Received: from localhost (tor-project-exit5.dotsrc.org. [185.129.61.5])
+        by smtp.gmail.com with ESMTPSA id x12-20020a19f60c000000b004efe8991806sm2034457lfe.6.2023.06.14.02.01.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Jun 2023 02:01:06 -0700 (PDT)
+From: Maxim Mikityanskiy <maxtram95@gmail.com>
+To: netdev@vger.kernel.org,
+	Saeed Mahameed <saeedm@nvidia.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Gal Pressman <gal@nvidia.com>,
+	Tariq Toukan <tariqt@nvidia.com>,
+	bpf@vger.kernel.org,
+	Maxim Mikityanskiy <maxtram95@gmail.com>
+Subject: [PATCH net-next v4 0/2] xdp_rxq_info_reg fixes for mlx5e
+Date: Wed, 14 Jun 2023 12:00:04 +0300
+Message-ID: <20230614090006.594909-1-maxtram95@gmail.com>
+X-Mailer: git-send-email 2.41.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1423374.1686733050.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 14 Jun 2023 09:57:30 +0100
-Message-ID: <1423375.1686733050@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+	version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Here's a much reduced test program.  The key is to splice more than a page
-from the pipe into the second socket (AF_ALG in this case) and more than t=
-hat
-into the pipe.
+Resending the patches, as I'm afraid they were lost eventually:
 
-David
----
-// https://syzkaller.appspot.com/bug?id=3D613f5060400df25674e1b213295ef45a=
-8422b077
-// autogenerated by syzkaller (https://github.com/google/syzkaller)
-#define _GNU_SOURCE
-#include <endian.h>
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/syscall.h>
-#include <sys/socket.h>
-#include <sys/mman.h>
-#include <sys/wait.h>
-#include <netinet/in.h>
-#include <linux/if_alg.h>
+https://lore.kernel.org/all/ZDFPCxBz0u6ClXnQ@mail.gmail.com/
 
-#define OSERROR(R, S) do { if ((long)(R) =3D=3D -1L) { perror((S)); exit(1=
-); } } while(0)
+Marked for net-next, as I'm not sure what the consensus was, but they
+can be applied cleanly to net as well.
 
-static const unsigned char data[1024 * 1024] =3D {
-	"\x44\xf9\xb1\x08\xb1\xcd\xc8\x85\xc9\xc5\x33\xd2\x1f\x47\x4b\xec\x8b"
-	"\xfe\xf1\xdf\x1e\x2d\xa7\x1e\x57\x8d\xc6\xb9\x1d\x09\xf7\xab\x15\x37"
-	"\x85\x71\xd8\xe2\x75\x46\x09\x00\x00\x00\x6e\x75\x43\x69\x14\xab\x71"
-	"\x75\x28\xee\x4b\x7a\x9b\xea\xf9\x08\xd1\x11\x37\xc1\x19\x03\x06\x4e"
-	"\x83\xb4\x95\x1f\x4d\x43\x3a\x54\x04\x97\x0c\x85\xd9\x2d\x70\x83\xfd"
-	"\x38\x84\x4c\xbb\x0c\x6c\x5e\xb5\x08\xdd\xc2\xdc\x7a\x59\x0a\xa7\x94"
-	"\x1b\x1e\x9e\xeb\x5a\x68\x81\x38\xde\xa0\x9b\x77\x6c\xbf\xa7\x84\xcb"
-	"\xf5\x50\xbf\x30\x74\xfb\x0d\x77\x5d\xa4\xdf\x5a\x3f\x48\xbb\xdf\x45"
-	"\x2e\xeb\x6b\x92\x3d\xa9\xd0\xe2\x5b\x80\xf7\x6a\x87\x36\x64\xb5\x75"
-	"\x34\x44\xfe\x05\xf3\x3e\x5f\x91\x04\x55\x40\x83\x6c\x3c\xd6\xaf\x10"
-	"\xf0\xcd\x01\x8f\x0c\x6f\x57\xf9\x26\xac\x95\x9a\x56\x28\xc4\x50\x88"
-	"\xfb\xe0\xc8\x7f\xbe\x6c\xbc\xda\x46\x62\xd2\xa1\x2f\x6d\x00\x00\x00"
-	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-};
+--
 
-int main(int argc, char *argv[])
-{
-	struct sockaddr_in6 sin6;
-	struct sockaddr_alg salg;
-	int pipefd[2], ipv6fd, algfd, hashfd, res, wt;
+Two small fixes that add parameters to xdp_rxq_info_reg missed in older
+commits.
 
-	res =3D pipe(pipefd);
-	OSERROR(res, "pipe");
+v2 changes:
 
-	ipv6fd =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
-	OSERROR(ipv6fd, "socket/inet6");
+Let en/params.c decide the right size for xdp_frag_size, rather than
+make en_main.c aware of the implementation details.
 
-	memset(&sin6, 0, sizeof(sin6));
-	sin6.sin6_family =3D AF_INET6;
-	sin6.sin6_port   =3D htons(2);
+v3 changes:
 
-	res =3D bind(ipv6fd, (struct sockaddr *)&sin6, sizeof(sin6));
-	OSERROR(res, "bind/inet6");
+Set xdp_frag_size in all successful flows of mlx5e_build_rq_frags_info.
 
-	memset(&sin6, 0, sizeof(sin6));
-	sin6.sin6_family =3D AF_INET6;
-	sin6.sin6_port   =3D htons(2);
-	sin6.sin6_addr.s6_addr[15] =3D 1;
-	res =3D sendto(ipv6fd, NULL, 0, MSG_OOB|MSG_NOSIGNAL|MSG_FASTOPEN|0x20000=
-00,
-		     (struct sockaddr *)&sin6, sizeof(sin6));
-	OSERROR(res, "sendto_1");
+v4 changes:
 
-	res =3D send(ipv6fd, data, 0xd0d0c2ac /* massive overrun */, MSG_OOB);
-	OSERROR(res, "sendto_2");
+No changes, rebased over the latest net-next.
 
-	algfd =3D socket(AF_ALG, SOCK_SEQPACKET, 0);
-	OSERROR(algfd, "socket/alg");
+Maxim Mikityanskiy (2):
+  net/mlx5e: XDP, Allow growing tail for XDP multi buffer
+  net/mlx5e: xsk: Set napi_id to support busy polling on XSK RQ
 
-	memset(&salg, 0, sizeof(salg));
-	salg.salg_family =3D AF_ALG;
-	strcpy(salg.salg_type, "hash");
-	strcpy(salg.salg_name, "sha3-512");
-	res =3D bind(algfd, (struct sockaddr *)&salg, sizeof(salg));
-	OSERROR(res, "bind/alg");
+ drivers/net/ethernet/mellanox/mlx5/core/en/params.c    | 8 ++++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en/params.h    | 1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c      | 7 ++++---
+ 4 files changed, 12 insertions(+), 6 deletions(-)
 
-	hashfd =3D accept4(algfd, NULL, 0, 0);
-	OSERROR(hashfd, "accept/alg");
-
-	switch (fork()) {
-	case -1:
-		OSERROR(-1, "fork");
-	case 0:
-		res =3D splice(pipefd[0], 0, hashfd, 0, 65536, 0);
-		OSERROR(res, "splice/p->h");
-		return 0;
-	default:
-		sleep(1);
-		break;
-	}
-
-	res =3D splice(ipv6fd, 0, pipefd[1], 0, 32767, 0);
-	OSERROR(res, "splice/i->p");
-	wait(&wt);
-	return 0;
-}
+-- 
+2.41.0
 
 
