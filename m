@@ -1,138 +1,145 @@
-Return-Path: <netdev+bounces-10687-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10688-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0BDCD72FC50
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:25:26 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id D57B372FC73
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 13:30:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AFD772813D3
-	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:25:24 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 135C51C20C1F
+	for <lists+netdev@lfdr.de>; Wed, 14 Jun 2023 11:30:15 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D63A4749A;
-	Wed, 14 Jun 2023 11:25:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC26E79D5;
+	Wed, 14 Jun 2023 11:30:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C96CB6FD0
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 11:25:22 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140D8E55
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 04:25:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686741920;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=XQW9t8cuqrwkY9pUeYFF63NpZzJyoEH492TVoQI3+po=;
-	b=OWeTGrxoWxcDGYnBe0MtUkTHBQZ+NhzvyEQhTgqKWaJysTji1pBuiflzyvgY8tO6remom8
-	SbRl0E/sHLfqrZ1QvVWSeonUftthljt/7qa/G1wmBEKNI4s/Hso06tt7g2n2CeUsBH48NN
-	cC4/VJTuioeasJvcsILP1Oe4XrLqqSo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-18-DM96FWN-P7SlKHJzKITofw-1; Wed, 14 Jun 2023 07:25:19 -0400
-X-MC-Unique: DM96FWN-P7SlKHJzKITofw-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A24FB85A58A;
-	Wed, 14 Jun 2023 11:25:18 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.67])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id A0F64492CA6;
-	Wed, 14 Jun 2023 11:25:15 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <000000000000b928f705fdeb873a@google.com>
-References: <000000000000b928f705fdeb873a@google.com>
-To: syzbot <syzbot+13a08c0bf4d212766c3c@syzkaller.appspotmail.com>
-Cc: dhowells@redhat.com, davem@davemloft.net,
-    herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
-    linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-    pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] [crypto?] general protection fault in shash_async_final
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF1FB6AA3
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 11:30:12 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD8A9199B
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 04:30:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1686742210; x=1718278210;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=iekMNmVk2zF+d+7HGggopWYAOuzQY2WawO/n8J2vNwM=;
+  b=wr4fBQ9p+R+O853nYhpYJsYsrFZsOYlLfpbmC7PS0oSCCq4otru634/0
+   WQbPS7+fi+c0vZBAOGNLXDkcquNAYsLJC0Bm/wBXulm4lRbeTT1b5BSVO
+   rSeukLEnpjSMz+2XUsG9a8CnpyCUu3YS08Bag1QWbyhij9fHMb7Kw+bnN
+   /ZV9t8UL8id7hjzfwhM6s2ZReCsrQ8VltiyR/TSgOoWxZ9bhsjA7BTPtK
+   BPNI323d2cVK8dpgU1L/rwyx2txa693JZPl5YyOHWQycSuY+IXaqA2mub
+   rEWQnEsXH6WMySjLDCxxOtTe8nbWflrZVMJpOjm8fzmU6IqY/fUBlrcZA
+   w==;
+X-IronPort-AV: E=Sophos;i="6.00,242,1681196400"; 
+   d="scan'208";a="220241287"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jun 2023 04:30:09 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 14 Jun 2023 04:29:55 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.21 via Frontend Transport; Wed, 14 Jun 2023 04:29:53 -0700
+Message-ID: <700342a6747c9fdf5a80ec37070576ba9da1d9eb.camel@microchip.com>
+Subject: Re: Fwd: [PATCH] net: microchip: sparx5: Remove unneeded variable
+From: Steen Hegelund <steen.hegelund@microchip.com>
+To: <baomingtong001@208suo.com>, <davem@davemloft.net>, <edumazet@google.com>,
+	<kuba@kernel.org>, <pabeni@redhat.com>, <lars.povlsen@microchip.com>,
+	<daniel.machon@microchip.com>, <UNGLinuxDriver@microchip.com>,
+	<horatiu.vultur@microchip.com>
+CC: <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
+Date: Wed, 14 Jun 2023 13:29:52 +0200
+In-Reply-To: <d70ab6d10972330290c4c810d61df193@208suo.com>
+References: <20230613094921.19836-1-luojianhong@cdjrlc.com>
+	 <d70ab6d10972330290c4c810d61df193@208suo.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.1 
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1433014.1686741914.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 14 Jun 2023 12:25:14 +0100
-Message-ID: <1433015.1686741914@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Here's a reduced testcase for this.  The key seems to be passing MSG_MORE =
-to
-sendmsg() and then not following up with more data before calling recvmsg(=
-).
-Apart from not oopsing, I wonder what the behaviour should be here?  Shoul=
-d
-recvmsg() return an error (EAGAIN or ENODATA maybe) or should it close the
-existing operation?
+Hi Bao,
 
-David
----
-// https://syzkaller.appspot.com/bug?id=3Df5d9d503fe959e3b605abdaeedb39b07=
-2556281a
-// autogenerated by syzkaller (https://github.com/google/syzkaller)
-#define _GNU_SOURCE
-#include <endian.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <linux/if_alg.h>
+I could not apply your patch as there seems to be no message id in the mail
+headers.  I also could not find it on patchwork, so it seems like it has be=
+en
+ignored there.
 
-#define OSERROR(R, S) do { if ((long)(R) =3D=3D -1L) { perror((S)); exit(1=
-); } } while(0)
+Could you please resend this with the proper details - otherwise the change
+looks good to me.
 
-int main(void)
-{
-	struct sockaddr_alg salg;
-	struct msghdr msg;
-	int algfd, hashfd, res;
+BR
+Steen
 
-	algfd =3D socket(AF_ALG, SOCK_SEQPACKET, 0);
-	OSERROR(algfd, "socket");
-
-	memset(&salg, 0, sizeof(salg));
-	salg.salg_family =3D AF_ALG;
-	strcpy(salg.salg_type, "hash");
-	strcpy(salg.salg_name, "digest_null-generic");
-	res =3D bind(algfd, (struct sockaddr *)&salg, sizeof(salg));
-	OSERROR(res, "bind/alg");
-
-	hashfd =3D accept4(algfd, NULL, 0, 0);
-	OSERROR(hashfd, "accept/alg");
-
-	res =3D setsockopt(3, SOL_ALG, ALG_SET_KEY, NULL, 0);
-	OSERROR(res, "setsockopt/ALG_SET_KEY");
-
-	memset(&msg, 0, sizeof(msg));
-	res =3D sendmsg(hashfd, &msg, MSG_MORE);
-	OSERROR(res, "sendmsg");
-
-	res =3D recvmsg(hashfd, &msg, 0);
-	OSERROR(res, "recvmsg");
-	return 0;
-}
+On Tue, 2023-06-13 at 17:53 +0800, baomingtong001@208suo.com wrote:
+>=20
+> =C2=A0You don't often get email from baomingtong001@208suo.com. Learn why=
+ this is
+> important
+>=20
+>=20
+>=20
+>=20
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
+e
+> content is safe
+>=20
+>=20
+> Fix the following coccicheck warning:
+>=20
+> drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c:1435:5-8: Unneed=
+ed
+> variable: "err".
+>=20
+> Signed-off-by: Mingtong Bao <baomingtong001@208suo.com>
+> ---
+> =C2=A0drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c | 3 +--
+> =C2=A01 file changed, 1 insertion(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
+> b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
+> index 3f87a5285a6d..03a9b226c9c5 100644
+> --- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
+> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
+> @@ -1432,7 +1432,6 @@ static int sparx5_tc_flower_template_destroy(struct
+> net_device *ndev,
+> =C2=A0{
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct sparx5_port *port =3D netdev_priv(nd=
+ev);
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct sparx5_tc_flower_template *ftp, *tmp=
+;
+> - =C2=A0=C2=A0=C2=A0int err =3D -ENOENT;
+> =C2=A0
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* Rules using the template are removed by =
+the tc framework */
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0list_for_each_entry_safe(ftp, tmp, &port->t=
+c_templates, list) {
+> @@ -1447,7 +1446,7 @@ static int sparx5_tc_flower_template_destroy(struct
+> net_device *ndev,
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0kfree(ftp);
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0break;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0}
+> - =C2=A0=C2=A0=C2=A0return err;
+> + =C2=A0=C2=A0=C2=A0return -ENOENT;
+> =C2=A0}
+> =C2=A0
+> =C2=A0int sparx5_tc_flower(struct net_device *ndev, struct flow_cls_offlo=
+ad *fco,
 
 
