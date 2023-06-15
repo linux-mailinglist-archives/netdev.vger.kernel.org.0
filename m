@@ -1,194 +1,604 @@
-Return-Path: <netdev+bounces-11129-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11130-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 78B94731A35
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 15:40:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id CBD94731A4D
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 15:42:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4058A1C20E7C
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 13:40:26 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9428F1C20EA9
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 13:42:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B42015AF9;
-	Thu, 15 Jun 2023 13:40:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6BEC015AFA;
+	Thu, 15 Jun 2023 13:42:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18DA6156DA
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 13:40:23 +0000 (UTC)
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2108.outbound.protection.outlook.com [40.107.223.108])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92AC72954;
-	Thu, 15 Jun 2023 06:40:22 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 561F415AE9
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 13:42:15 +0000 (UTC)
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B4330D6;
+	Thu, 15 Jun 2023 06:42:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686836532; x=1718372532;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=wCsXpDLnrIIjeXVTbgwmAPZVxPjNB9j2ZOUcOVxLBpg=;
+  b=UtCfnHSJVGLCVG470cCnyygg4Zm5q6fHA8TQlWtq0/+G//elugr8QzK+
+   fNqF6sQRUagug1x42485Kt6McQGyHka9TxckgXpaUkr0R5OcudoytbnKI
+   c7Hn+tZrBR+j+5Nn3NEZtKrgoyrvFE37VWJev5REzMpmkKxQUGU0kCBYt
+   w7UYDa1Uh+hSHg5/Ni1jBfwhBlctrqlkrsWv6GHFd1AIJHhbSOAduEPjB
+   Zfl9aE+vB0jt2NjfuLiNiv723XAJJRybi9xPKHzquQt2eytyT3BzDhEfy
+   NoLgJRDgl9IoZyKF7faP+QMyxAnXNwUj0/Z2A/jE6U3pSfxLljFQaODMs
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="356408540"
+X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
+   d="scan'208";a="356408540"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2023 06:42:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="782522481"
+X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
+   d="scan'208";a="782522481"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga004.fm.intel.com with ESMTP; 15 Jun 2023 06:42:10 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 15 Jun 2023 06:42:09 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 15 Jun 2023 06:42:09 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Thu, 15 Jun 2023 06:42:09 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.102)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Thu, 15 Jun 2023 06:42:07 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZyiR1/tdHbh3DJ1r1DtSGIA48Sw79Q60WUsaUXwgedguPsozZA7/Y0haUC7FbRc1j8Q/xxT+A0OvdGH+mtQ5bzFeDMggX+3Dbp5lFpeMuKOyL62CHiK0VfuB7Za+WV8hAn2eBF9TDKNT5Kzhf5fPTWu2pxLLbit+NUVMo2nS/M67m6UpjDcWuadXV8AzsFpMpznXrSgmnT30yRyzFJNKUB1Xp/Y00uMaWBH8SqJVvD/fUjzUgjzq/ASzGuWmMdpAhSxdsQFldk50Rm0E3AYRsNbv/Lk5z7RoV+rDTYwCpxRbkjbGeS/p3KLo+m6qti+I9GUZRh4aOe1NtFIN9XhMcg==
+ b=Vj4s7hijdnQNoqq+FWReqxIWv4a7G0OgeHfSjs1wUnibfoAaG3GABxXcgNm0L9bD4pdTGDg44BT6AYYXnyYI7+fMhuthec3PRwPlKBG/HfryjX1vIpm9lUkM23NnUzN8IDUIaxZql2iim32FzNV/t+mkZ6xZ5yrsqUI6JSV1zd2qMTL70wPyId/PO/5IRxkofJtIattuY09Z9vbSRfXSDMzGNRkb5CAfQiNURDdn+kZLeAMbY//pXARfLotSovZwzQ0IoV+CxRhNaYAtnmsSVqtQ7xHirGvnYeXaKQWjb0lvYnToySEGcmvBG2PcuwXiU2rQgMI4yofDUvmhhX7AoQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VfxIArYinMjtkMUMvXqndtaWULriwqfrY390ftMlokw=;
- b=lul8HodIHIosn/97pjMDQ1Hp+Av0Nrn5QLR4J9L6TyKL0OWv1f3N0Ah4S81iVIEq+exic9zm6ips62Fi3fEmCJIj5ErwVFx0Gn9YYNO/DMF9k4s7f3O0xytun6p/yEEckeMMCUM9xliBOl8lA9fZL7P6RlGpCqwUPFpmHHSFsucH5QIumPS9vNIPXNVL2Qg+9BBziBtbtDMUNc6ae7oY4AYgqi87gr7x9u2wgidKsMPsIP2e7Lpn+RSwSU3ykQ7u4yGrDRMvvEzOKmrz64BPXHw3OOCkwvloJntLWhV80PrI+YbsUwCTwKZzaCnAmUO+31OMWx8hUqIXC3NQ+1c6zA==
+ bh=DeRrVA8z8DHzZsUPOCRSijPr54Z4whodI8kdH8N6y+4=;
+ b=DqZfWaOaAUY7uSx3Cr4ODrA7Nsh+2Oix306yFY0mXQR8JZxD+LR6ZaS3uoC/hv/7nvbXZY7o7Mo3lWFGQbfXtmoD+0Wmf10BhRnCLv4tnJaIgxltv49eX5aHBz9MfIqG4o9kETOJWR6d+c0CUZKYmm4qj7NBka9PM/BoY49UfDE3TUUW3aW8GL/usnV6YXkoX4sdlkF0vG74HqN1HV63NrfPMGtbd4qyALC5uB6KVfPbj0Clki11mxuOEX48wzPGYjnqYIWQwmJlckKgDPo13Ck3t7RdB0uVdde/DKf0uUM4x/q5cJM7/MGoBBmbBdLidn3eZO01LezcDtOKycsiRw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VfxIArYinMjtkMUMvXqndtaWULriwqfrY390ftMlokw=;
- b=nhC/zvtw9hBbqy3I86d2ICThUVB/cZOZ+YkPWNnYo0JaPFBpgYItbfrPi67BqXJzbtdVHERAHArpiK8BlrsH/uBGVJzxoxgtLuhH+mkamvVsdKswjcNd5rEhPY43Atx84MEb0ZfegylcPwPFS7hb7kZrHjLHY8+usoudPxRcWG0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CO6PR13MB6030.namprd13.prod.outlook.com (2603:10b6:303:14a::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.27; Thu, 15 Jun
- 2023 13:40:18 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e%5]) with mapi id 15.20.6500.025; Thu, 15 Jun 2023
- 13:40:18 +0000
-Date: Thu, 15 Jun 2023 15:40:11 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Wang Ming <machel@vivo.com>
-Cc: Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-	linux-kernel@vger.kernel.org, opensource.kernel@vivo.com
-Subject: Re: [PATCH v1] drivers:net:ethernet:Remove unneeded code
-Message-ID: <ZIsUu4pUVyGRacHe@corigine.com>
-References: <20230615084110.7225-1-machel@vivo.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230615084110.7225-1-machel@vivo.com>
-X-ClientProxiedBy: AM3PR07CA0055.eurprd07.prod.outlook.com
- (2603:10a6:207:4::13) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
+ PH7PR11MB7097.namprd11.prod.outlook.com (2603:10b6:510:20c::6) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6455.44; Thu, 15 Jun 2023 13:42:03 +0000
+Received: from DM6PR11MB4657.namprd11.prod.outlook.com
+ ([fe80::24bd:974b:5c01:83d6]) by DM6PR11MB4657.namprd11.prod.outlook.com
+ ([fe80::24bd:974b:5c01:83d6%3]) with mapi id 15.20.6500.025; Thu, 15 Jun 2023
+ 13:42:03 +0000
+From: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+To: Jiri Pirko <jiri@resnulli.us>
+CC: "kuba@kernel.org" <kuba@kernel.org>, "vadfed@meta.com" <vadfed@meta.com>,
+	"jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>, "pabeni@redhat.com"
+	<pabeni@redhat.com>, "corbet@lwn.net" <corbet@lwn.net>, "davem@davemloft.net"
+	<davem@davemloft.net>, "edumazet@google.com" <edumazet@google.com>,
+	"vadfed@fb.com" <vadfed@fb.com>, "Brandeburg, Jesse"
+	<jesse.brandeburg@intel.com>, "Nguyen, Anthony L"
+	<anthony.l.nguyen@intel.com>, "M, Saeed" <saeedm@nvidia.com>,
+	"leon@kernel.org" <leon@kernel.org>, "richardcochran@gmail.com"
+	<richardcochran@gmail.com>, "sj@kernel.org" <sj@kernel.org>,
+	"javierm@redhat.com" <javierm@redhat.com>, "ricardo.canuelo@collabora.com"
+	<ricardo.canuelo@collabora.com>, "mst@redhat.com" <mst@redhat.com>,
+	"tzimmermann@suse.de" <tzimmermann@suse.de>, "Michalik, Michal"
+	<michal.michalik@intel.com>, "gregkh@linuxfoundation.org"
+	<gregkh@linuxfoundation.org>, "jacek.lawrynowicz@linux.intel.com"
+	<jacek.lawrynowicz@linux.intel.com>, "airlied@redhat.com"
+	<airlied@redhat.com>, "ogabbay@kernel.org" <ogabbay@kernel.org>,
+	"arnd@arndb.de" <arnd@arndb.de>, "nipun.gupta@amd.com" <nipun.gupta@amd.com>,
+	"axboe@kernel.dk" <axboe@kernel.dk>, "linux@zary.sk" <linux@zary.sk>,
+	"masahiroy@kernel.org" <masahiroy@kernel.org>,
+	"benjamin.tissoires@redhat.com" <benjamin.tissoires@redhat.com>,
+	"geert+renesas@glider.be" <geert+renesas@glider.be>, "Olech, Milena"
+	<milena.olech@intel.com>, "kuniyu@amazon.com" <kuniyu@amazon.com>,
+	"liuhangbin@gmail.com" <liuhangbin@gmail.com>, "hkallweit1@gmail.com"
+	<hkallweit1@gmail.com>, "andy.ren@getcruise.com" <andy.ren@getcruise.com>,
+	"razor@blackwall.org" <razor@blackwall.org>, "idosch@nvidia.com"
+	<idosch@nvidia.com>, "lucien.xin@gmail.com" <lucien.xin@gmail.com>,
+	"nicolas.dichtel@6wind.com" <nicolas.dichtel@6wind.com>, "phil@nwl.cc"
+	<phil@nwl.cc>, "claudiajkang@gmail.com" <claudiajkang@gmail.com>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+	"linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, poros <poros@redhat.com>, mschmidt
+	<mschmidt@redhat.com>, "linux-clk@vger.kernel.org"
+	<linux-clk@vger.kernel.org>, "vadim.fedorenko@linux.dev"
+	<vadim.fedorenko@linux.dev>
+Subject: RE: [RFC PATCH v8 02/10] dpll: spec: Add Netlink spec in YAML
+Thread-Topic: [RFC PATCH v8 02/10] dpll: spec: Add Netlink spec in YAML
+Thread-Index: AQHZmszr2BJDDEOJ60yRPuK1IWG2S6+EOc6AgAeqEYA=
+Date: Thu, 15 Jun 2023 13:42:02 +0000
+Message-ID: <DM6PR11MB4657F2003E744E0462FD5E7D9B5BA@DM6PR11MB4657.namprd11.prod.outlook.com>
+References: <20230609121853.3607724-1-arkadiusz.kubalewski@intel.com>
+ <20230609121853.3607724-3-arkadiusz.kubalewski@intel.com>
+ <ZISjMUcpmUTBXIOA@nanopsycho>
+In-Reply-To: <ZISjMUcpmUTBXIOA@nanopsycho>
+Accept-Language: pl-PL, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|PH7PR11MB7097:EE_
+x-ms-office365-filtering-correlation-id: 7ab41417-6874-43e1-9bc7-08db6da64d1d
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tQw4xzIaDIZk9PJabZjLyjhQtB+ib9NwFGrnQhkE7S0hJ2a6EzLOGVLk22HkN6U//lDLeMTXeqv4oS+sQZLXyW23eajawYiPBvQT0Qwpm2y+eL9qJ5sM7yainIisjmG1ROTjHVU9L+hYN9UQeV6UmDCtQ/agtRYboLkZ+oq+MEPleyvdP13PP/CdhNwXSMZWKfPIC5IoIWdwkopCh3uUyJOYBYm074ZxAgXp8fkm7irhf1QB3V7Tb4jjDNVUpeLjZO9kJffyKIN85+bYI7r8XrmY+gJNQ9pdz8x1kR62VUJkRcIg9vCFgsWP3q7SzrlqGh9WP1ZBziS7XjsFarM+fq1zV9+QVwLBbIQD5x0OX8PAyI/zL8FFzrl6ZiHe6FVC/AKNW+bHjZ4rYzg0t5sou9ikqhfpMNnd/JB3x1opaDhO2uE0IvR51chE68IDFbPszrKmQB33AuykPVpP1tktXLjUESq7WA+W858v1Xi886GFWZ66XXzAvUZOvne6FwMXfbVs5RFV79wSXGlsegCzCzgvIsExv9dgx0nqJPCCui1fsYraui3qoN0mmtrSqpyoO6wYnZMMB6CpdD5FgX640S6QU7+FLj2+NUvsegLXtVuVwpVOSui6WJYbyP4AjCjT
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(396003)(346002)(136003)(376002)(39860400002)(451199021)(38070700005)(52536014)(33656002)(86362001)(7416002)(2906002)(7406005)(71200400001)(55016003)(5660300002)(7696005)(186003)(83380400001)(9686003)(6506007)(26005)(82960400001)(122000001)(54906003)(66476007)(66446008)(4326008)(76116006)(66946007)(66556008)(64756008)(478600001)(316002)(38100700002)(8676002)(8936002)(6916009)(41300700001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?0OwbbEj4vV9cvcAocJw2RMKX+RPVyG9oAJ71OUjfOkey2zUPHbkPLf7jnPzi?=
+ =?us-ascii?Q?ZRpNS7cL5PEZ8DMGhiNJTSnTRqNQBIAS8yRGg0JPSyHudxqGcfNx2iMHk4oB?=
+ =?us-ascii?Q?pcZGLSNAJOBkE0wv1sU+56RlUfOeph8AGMX0TvspFxLqBxtbEEzcRQXYn2EC?=
+ =?us-ascii?Q?mT+REKReO2jLD6YWBxgtJ5XbZBnaGfL7qyWv3lBTQrR7Iq2B90GKYXvJr8nH?=
+ =?us-ascii?Q?i8SSbMGbk1fGv7mWr6CaMSIh4nlJ0+VHc9Vdw/gI3qE0fbSCYjvh2zbmM4D7?=
+ =?us-ascii?Q?/GDRH3S1Rw/WFAb5rJ+fndY2afAKN8tApfOxeXbpXAsbDM7Abe/vz1eBAxBS?=
+ =?us-ascii?Q?w1ACLRihjWgE1uOOyLb83KwP5+UZ3CP14bjGgpF1rf1sn/kQW0fqAFWXVhPe?=
+ =?us-ascii?Q?jpv2iMMjh1dS4x4DvgEHoxhKL04NO+3L1bbjLv0nHnIJrdEazfap4qO/fNav?=
+ =?us-ascii?Q?4OuVe//YqQQSxPLCeOB9gKocbLZmRR+xuXQwY0aEj+DhGLz9mAM+iU+H9OTl?=
+ =?us-ascii?Q?Yj9X+zYY4p+VBmeXetn6S9J9vVG8yDTcszHh2qxwzc0qiBK4teFqhuuNzE3J?=
+ =?us-ascii?Q?unWWWpnacOR7WuuqDwN1/bb57iUDo6dG8Je0jmGVcWkM0ugSdkrx6VYQvR2g?=
+ =?us-ascii?Q?gWlYivtfkGd7x4RQg5fpprYKbqt1YlgoqNmYc/GA2eJaqptFjfx+T/o1Ux5d?=
+ =?us-ascii?Q?7qzcHbQvawYawKj7prflhYEK8+kIWzHtI1AArzGZw+9IbFJsZhu5W3ZvByFO?=
+ =?us-ascii?Q?QctFwp2UuAqjXNQ+l0ljMSloU/x/EBNV00BdhT//u9FGZjTZeHijtSpP79Yv?=
+ =?us-ascii?Q?JLODWdz00j3DKASPs09paNh+qKhk56LZdh9nkcQczxws2842KGnmq64LQGF+?=
+ =?us-ascii?Q?mJa+ZLg6xjKTOSZedYJHbSKRghe6u7DY3A5VVOKVRt0pMbwITOdaYf6+1I8c?=
+ =?us-ascii?Q?N6BqOcbsmZEpnLiSCM7t/iW/X9WelJ7nzEfHjV7cssX+YMb4xMr50K0qjqCO?=
+ =?us-ascii?Q?aKCGkWUq2mAtN+qOdcdmF9GKtfkExTARnu4D2cDVHLNqt3BT4Vc3yiDO4Me+?=
+ =?us-ascii?Q?8jNZNPxIILfsQ8VpGVHIpgx+mPiPPACRQFCEkLYGH4huRaEpRUonKEITDbSx?=
+ =?us-ascii?Q?pBGOH6YRsWEPtYSKKteMMXqvIIMqhdYWc98VFxinQl7aI/vrhUYPM5vYMOWz?=
+ =?us-ascii?Q?Rl3ZpdhSQIJKJIwWcebLN/8xyjctwybxzIy2O1+DfPyYaeHC5ESHzRtDndIv?=
+ =?us-ascii?Q?1XzBDK/igKoHoM0+xEvlU6oFgWeBZsTx6rdZB9E+nfTJDDkNA9Tt6gZ6QM1w?=
+ =?us-ascii?Q?ILD2xVdQFyiFPRyTwLzmV5YrduGlmJn/X3M8+RdAOserhbdNJBIOo1oyRGey?=
+ =?us-ascii?Q?Lkgo0sT9XSw5DjEEFOBrEy1AgFfMLEXhDlJYntcxPDqblp3Xh+mHQRYGKwSv?=
+ =?us-ascii?Q?OvRTEDLoaJO2zDizyDFGJX1HAeMGj/TpFraH+u8DRIOkBvoVDkxYVusp1x4m?=
+ =?us-ascii?Q?cXLFUC65qbMxFsVR2aXdMEZqFkL9m2QDADspDYbejSjYobfs/TGtYNFs/c4I?=
+ =?us-ascii?Q?fbYqWRppByQ/yC/jIb9SZH0cW76kwufc03ZPq4m+fQK4S0BD8IyJjE2btSqN?=
+ =?us-ascii?Q?Yg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO6PR13MB6030:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3b6e0493-58c7-4f3e-b666-08db6da60ebb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	df3R5xCrLqrYF9txViR34D7TOoe2T6P5wXCpl13NJi7BBwYzkAfsO6SC0q+wSdiU6/YVp8DOR6UUkP9+cqhMvhVqCmvhpujJvmX98ApBCHnzLIZ1bppxB9S0me46K7vBFzQGwpA78u6oGglHEAblf+zFKK7MZH4+eRtv+tro7yAIC/nlOygvfulVby8vjbiCfDh31Xum/M8vTAFsUA4kYcC+Mw88+T9MC3+17l+StiUZNZxrW5Mn/WjWgzVls8BJh74RcYYun7KRWzOV1XlgDOmZPNGBfG5tUWGG45i8yC5LORHc5mMQpf/XBC43hgpsx4b29gcBUfkiFSG4WPmpc+F0lBv4sJ8wCOcSZnFnat5ggCQrUEGnDCz8mm1txx6kkrumu5eEJDGqgNHvmei6qYzFuppURieqsxv+tQVSg5DmqvdtdBY5qtxZzj/kaIS0Cpof5i4uAkYw10AFqHAbGh9g9TYFW98r8d7R8Kd3VWFf8479PeMEPqMwoP6BJIokJcFyIlkHD3/8QH7s1OGDfgdcmuDWVlcZ2fnlwcq3SCBvVlnuzujr03GxbyZxmnZVxZZdMKkbI1OZ2eukES/55ViWQ8cPQ6gHJirXNCLRmpg=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(376002)(136003)(396003)(346002)(39840400004)(451199021)(2906002)(6512007)(186003)(83380400001)(2616005)(6916009)(66946007)(66476007)(66556008)(4326008)(41300700001)(8936002)(8676002)(6486002)(316002)(6666004)(54906003)(86362001)(36756003)(38100700002)(478600001)(44832011)(7416002)(6506007)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?XIrrQwUm3EespvKblzwYfNoKIg+ajRKWuUEbjEuFSPfQS70Ts0GDuOqLQEZu?=
- =?us-ascii?Q?eDopZd2g64wypG4zLBrXXlQlxcig+wj6m+Iu08zsDEx0Om8A3Uf6gx5XhRlo?=
- =?us-ascii?Q?SWmSxpkI/j8ceCQTM39jt3THEFuPbu0o3fihonNEnH0tz7Ve3Gu3CczGlnWU?=
- =?us-ascii?Q?XWyfu9o7LG3vV2B37W34qHjOp2k2GRxo6lF1U4BpbAv0I8mH+BWoFVnVLhXL?=
- =?us-ascii?Q?Bqw4e5oGzMg8NYBk7ftX814/aiKWk18P6W8YWqtf8IW6ma9Tc4SuPEqrrn/D?=
- =?us-ascii?Q?cvxt51sqFHPBF6zBoh/lOuJxz7Ds+YeCEnO9O7U+/VOMbUkgeiEeFfTFShAI?=
- =?us-ascii?Q?I7h2KnXxJgEgpZFBpeVLHsV91pUr7uvFIKbUFR7ypOQ2X4xG+faFFT2u2uQW?=
- =?us-ascii?Q?mhVaJ1y9tU9dCQaqVh9VqosOeScDvGJ6SsmLLQ/7y/MrIl1zD0XkUN7SjDR1?=
- =?us-ascii?Q?r98kdWOvJfZIwn/pxmMKkRuDYsHwU6+cSnpfCKtJkV3LHlLlHYG11MNyaayf?=
- =?us-ascii?Q?kWoxDi1Az3KFaR8nxL7Gqm8LL6+v1i2oD+ZVRWvljEfqX2aRmaBL/L1tnZoo?=
- =?us-ascii?Q?nw/y6eIefpwa9L0oFIVEYfvU9ljnhy0EBx2b4tFlCt4+xX5cY2yFVv/Ma/iE?=
- =?us-ascii?Q?6QQPaFLzQfuuIWaNPq+4hJHh8zvLQbKEdkI9ybKA/EJek3HGQNq/BpyEv8n/?=
- =?us-ascii?Q?d6CtCEXIWDEKpZIbHmRV1BfH3/6bokLlEi/J/L8T/xb2fiXZchXHNN3pHQBB?=
- =?us-ascii?Q?sda5/IrHkdFAOKgZtd/1MkXbXyOrKvkkihaNxVHsBtC/ZQWLeO27vq4A6X+1?=
- =?us-ascii?Q?czRQ3m9zovh70KO23mZk/XptJEr7/Zwyks3ddWTNwx59+LkpkIcA8yRGhD41?=
- =?us-ascii?Q?BbpjnwIqzMogtPZrQSXF3DQaRuxJ70krSRGsladMujw8g2xR2EIERl9wJgj3?=
- =?us-ascii?Q?p1pRiWTqI/bxada/IDwRIFnf5wWyrs1IbLj3QIns91bwHpoHAl0D2CK6g1a5?=
- =?us-ascii?Q?UkSSVWYJCLQIezuARo0OMl6Ra+Sv7ypOZofpfUnQ8R2YzFM8uUyZ0avhsSBH?=
- =?us-ascii?Q?nPmUllLtvOeOkzntx3b5lzqSE/dr8YlOm1d1xezrdQHhTA0HNwY9QRjvhv5S?=
- =?us-ascii?Q?9HheydutZumBKh81919skO7Zk9nUKV8EMDhqdIsUvAbdsjBjkoQ+cenWFgcr?=
- =?us-ascii?Q?nOkCH2ywnDML09SnipgsmHSmX8nDOrJMb40TIwZg04gi/sHx9eLEjqVtwE/S?=
- =?us-ascii?Q?O0AalbQ4i1Ef492vS5qOB9LHD6oI9saKSqEnqkXnZ5Ry52Peb+ztZbEyqJGR?=
- =?us-ascii?Q?I4aWeaVy7jb5SZfXl0giM+ZWwGECLavr+nQVr5C7MWY12V+6+pecyRl6lFga?=
- =?us-ascii?Q?kUZykGBL+Yrkosj2/inQqMpCe3SVH6ui9NqR3FsSv5y7Wgkb/9ALy/hMt2nA?=
- =?us-ascii?Q?GDDJdGkPeKFwJVDcuzNVCFos181rQEgrBnCVCF5bwXnxXB8dwvKOOrw/FxHm?=
- =?us-ascii?Q?B+NdMAfNI7FiNovq4xIYtm/WagZ5FmPMoC9fGfCYN28C2tRbgvxHIGGKOGVa?=
- =?us-ascii?Q?g3xhnpn0N7vqOaW+3z6OeyhFsNZ3vs1P0X2G069nvnQMQPlEX9se3SuC6IW6?=
- =?us-ascii?Q?Ex96b6ZPQ68wcL8pHr61K0ngY0R8Xvk1OYJ48sv5m5G4ijYSq3reMa6wxI4F?=
- =?us-ascii?Q?aZGJkg=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b6e0493-58c7-4f3e-b666-08db6da60ebb
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2023 13:40:18.5073
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ab41417-6874-43e1-9bc7-08db6da64d1d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2023 13:42:02.8498
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VNHt8FGWWldH65Uh7DsQyJJ/vaiFPHi+QGYlcV/Vk1tWUrQAxwPJyCuAQ4lVFru7YWnDtR876H1+WgzQtq9PCNFg4iNiGQo0zLSI6EKUP5A=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR13MB6030
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OTUmTs0G4LKmLr/YoMKT1PKYRt8T9iKNKRni/Jjboc8rPPfxohmTj7AaJ1Kxbt94aTewX/4yZoFf6R5Esd8kb0p+P6HUhE9OqjZ9cEeWUNI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB7097
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 15, 2023 at 04:40:56PM +0800, Wang Ming wrote:
-> Remove unused helper code.
-> Fix the following coccicheck warning:
-> 
-> drivers/net/ethernet/mellanox/mlx5/core/eswitch.c:808:34-35:
-> WARNING: unneeded memset.
-> 
-> Signed-off-by: Wang Ming <machel@vivo.com>
+>From: Jiri Pirko <jiri@resnulli.us>
+>Sent: Saturday, June 10, 2023 6:22 PM
+>
+>Fri, Jun 09, 2023 at 02:18:45PM CEST, arkadiusz.kubalewski@intel.com wrote=
+:
+>>Add a protocol spec for DPLL.
+>>Add code generated from the spec.
+>>
+>>Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+>>Signed-off-by: Michal Michalik <michal.michalik@intel.com>
+>>Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+>>Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+>>---
+>> Documentation/netlink/specs/dpll.yaml | 466 ++++++++++++++++++++++++++
+>> drivers/dpll/dpll_nl.c                | 161 +++++++++
+>> drivers/dpll/dpll_nl.h                |  50 +++
+>> include/uapi/linux/dpll.h             | 184 ++++++++++
+>> 4 files changed, 861 insertions(+)
+>> create mode 100644 Documentation/netlink/specs/dpll.yaml
+>> create mode 100644 drivers/dpll/dpll_nl.c
+>> create mode 100644 drivers/dpll/dpll_nl.h
+>> create mode 100644 include/uapi/linux/dpll.h
+>>
+>>diff --git a/Documentation/netlink/specs/dpll.yaml
+>>b/Documentation/netlink/specs/dpll.yaml
+>>new file mode 100644
+>>index 000000000000..f7317003d312
+>>--- /dev/null
+>>+++ b/Documentation/netlink/specs/dpll.yaml
+>>@@ -0,0 +1,466 @@
+>>+# SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-
+>>Clause)
+>>+
+>>+name: dpll
+>>+
+>>+doc: DPLL subsystem.
+>>+
+>>+definitions:
+>>+  -
+>>+    type: enum
+>>+    name: mode
+>>+    doc: |
+>>+      working-modes a dpll can support, differentiate if and how dpll
+>>selects
+>
+>s/working-modes/working modes/
+>s/differentiate/differentiates/
+>?
 
-Hi Wang Ming,
+Fixed.
 
-unfortunately your patch has been whitespace mangled - tabs have been
-converted into 8 spaces. Possibly this was done by your mail client
-or mail server. In any case the result is that the patch doesn't apply.
-And unfortunately that breaks our processes.
+>
+>
+>>+      one of its inputs to syntonize with it, valid values for DPLL_A_MO=
+DE
+>>+      attribute
+>>+    entries:
+>>+      -
+>>+        name: manual
+>>+        doc: input can be only selected by sending a request to dpll
+>>+        value: 1
+>>+      -
+>>+        name: automatic
+>>+        doc: highest prio, valid input, auto selected by dpll
+>
+>s/valid input, auto selected by dpll/input pin auto selected by dpll/
+>?
 
-Also, assuming that as this patch is a not a bug fix, it is targeted at the
-"net-next", as opposed to "net", tree. This should be noted in the subject.
+Fixed.
 
-        Subject: [PATCH net-next v2] ...
+>
+>
+>>+      -
+>>+        name: holdover
+>>+        doc: dpll forced into holdover mode
+>>+      -
+>>+        name: freerun
+>>+        doc: dpll driven on system clk
+>
+>Thinking about modes "holdover" and "freerun".
+>1) You don't use them anywhere in this patchset, please remove them
+>   until they are needed. ptp_ocp and ice uses automatic, mlx5 uses
+>   manual. Btw, are there any other unused parts of UAPI? If yes, could
+>   you please remove them too?
+>
+>2) I don't think it is correct to have them.
+>   a) to achieve holdover:
+>      if state is LOCKED_HO_ACQ you just disconnect all input pins.
+>   b) to achieve freerun:
+>      if state LOCKED you just disconnect all input pins.
+>   So don't mangle the mode with status.
+>
 
-Looking at the git history of eswitch.c, I think that
-a better prefix for the patch is "mlx5/core: E-Switch, "
+Well this is not entierly true, the mode is not a state.
+Technically in those modes the user would not be able to set any states
+on the pins.
+The modes are supported on the synchronizer chips we are using, altough
+the ice driver does not have this support enabled yet.
+So I am removing those for now, if they would be needed, we will submit the
+patches for it.
 
-        Subject: [PATCH net-next v2] mlx5/core: E-Switch, ...
+>
+>>+    render-max: true
+>>+  -
+>>+    type: enum
+>>+    name: lock-status
+>>+    doc: |
+>>+      provides information of dpll device lock status, valid values for
+>>+      DPLL_A_LOCK_STATUS attribute
+>>+    entries:
+>>+      -
+>>+        name: unlocked
+>>+        doc: |
+>>+          dpll was not yet locked to any valid input (or is in mode:
+>>+            DPLL_MODE_FREERUN)
+>
+>Don't forget to remove the mention of mode freerun from here.
+>
 
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/eswitch.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-> index 31956cd9d..ae0939488 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-> @@ -805,7 +805,6 @@ static int mlx5_esw_vport_caps_get(struct mlx5_eswitch *esw, struct mlx5_vport *
->         hca_caps = MLX5_ADDR_OF(query_hca_cap_out, query_ctx, capability);
->         vport->info.roce_enabled = MLX5_GET(cmd_hca_cap, hca_caps, roce);
-> 
-> -       memset(query_ctx, 0, query_out_sz);
+Fixed.
 
-I'm not saying this change is wrong.
-But I am saying that it's not immediately obvious to me why
-it is correct. And in any case, I think the patch description
-needs to describe why it is correct.
+>
+>>+        value: 1
+>>+      -
+>>+        name: locked
+>>+        doc: |
+>>+          dpll is locked to a valid signal, but no holdover available
+>>+      -
+>>+        name: locked-ho-acq
+>>+        doc: |
+>>+          dpll is locked and holdover acquired
+>>+      -
+>>+        name: holdover
+>>+        doc: |
+>>+          dpll is in holdover state - lost a valid lock or was forced
+>>+          by selecting DPLL_MODE_HOLDOVER mode (latter possible only
+>>+          when dpll lock-state was already DPLL_LOCK_STATUS_LOCKED,
+>>+          if dpll lock-state was not DPLL_LOCK_STATUS_LOCKED, the
+>>+          dpll's lock-state shall remain DPLL_LOCK_STATUS_UNLOCKED
+>>+          even if DPLL_MODE_HOLDOVER was requested)
+>
+>Don't forget to remove the mention of mode holdover from here.
+>
 
-Likewise, "Remove unneeded code" seems rather terse.
+Fixed.
 
-Also, FWIIW, I don't see this when using coccicheck.
-But perhaps that's just me. I'm using:
+>
+>>+    render-max: true
+>>+  -
+>>+    type: const
+>>+    name: temp-divider
+>>+    value: 1000
+>>+    doc: |
+>>+      temperature divider allowing userspace to calculate the
+>>+      temperature as float with three digit decimal precision.
+>>+      Value of (DPLL_A_TEMP / DPLL_TEMP_DIVIDER) is integer part of
+>>+      temperature value.
+>>+      Value of (DPLL_A_TEMP % DPLL_TEMP_DIVIDER) is fractional part of
+>>+      temperature value.
+>>+  -
+>>+    type: enum
+>>+    name: type
+>>+    doc: type of dpll, valid values for DPLL_A_TYPE attribute
+>>+    entries:
+>>+      -
+>>+        name: pps
+>>+        doc: dpll produces Pulse-Per-Second signal
+>>+        value: 1
+>>+      -
+>>+        name: eec
+>>+        doc: dpll drives the Ethernet Equipment Clock
+>>+    render-max: true
+>>+  -
+>>+    type: enum
+>>+    name: pin-type
+>>+    doc: |
+>>+      defines possible types of a pin, valid values for DPLL_A_PIN_TYPE
+>>+      attribute
+>>+    entries:
+>>+      -
+>>+        name: mux
+>>+        doc: aggregates another layer of selectable pins
+>>+        value: 1
+>>+      -
+>>+        name: ext
+>>+        doc: external input
+>>+      -
+>>+        name: synce-eth-port
+>>+        doc: ethernet port PHY's recovered clock
+>>+      -
+>>+        name: int-oscillator
+>>+        doc: device internal oscillator
+>>+      -
+>>+        name: gnss
+>>+        doc: GNSS recovered clock
+>>+    render-max: true
+>>+  -
+>>+    type: enum
+>>+    name: pin-direction
+>>+    doc: |
+>>+      defines possible direction of a pin, valid values for
+>>+      DPLL_A_PIN_DIRECTION attribute
+>>+    entries:
+>>+      -
+>>+        name: input
+>>+        doc: pin used as a input of a signal
+>
+>I don't think I have any objections against "input", but out of
+>curiosity, why you changed that from "source"?
+>
 
- make C=2 CHECK=scripts/coccicheck drivers/net/ethernet/mellanox/mlx5/core/eswitch.o
+Agreed to previous version review comment from Jakub,
+to use either: input/output or source/sink naming scheme.
 
->         err = mlx5_vport_get_other_func_cap(esw->dev, vport->vport, query_ctx,
->                                             MLX5_CAP_GENERAL_2);
->         if (err)
+>
+>>+        value: 1
+>>+      -
+>>+        name: output
+>>+        doc: pin used to output the signal
+>>+    render-max: true
+>>+  -
+>>+    type: const
+>>+    name: pin-frequency-1-hz
+>>+    value: 1
+>>+  -
+>>+    type: const
+>>+    name: pin-frequency-10-khz
+>>+    value: 10000
+>>+  -
+>>+    type: const
+>>+    name: pin-frequency-77_5-khz
+>>+    value: 77500
+>>+  -
+>>+    type: const
+>>+    name: pin-frequency-10-mhz
+>>+    value: 10000000
+>>+  -
+>>+    type: enum
+>>+    name: pin-state
+>>+    doc: |
+>>+      defines possible states of a pin, valid values for
+>>+      DPLL_A_PIN_STATE attribute
+>>+    entries:
+>>+      -
+>>+        name: connected
+>>+        doc: pin connected, active input of phase locked loop
+>>+        value: 1
+>>+      -
+>>+        name: disconnected
+>>+        doc: pin disconnected, not considered as a valid input
+>>+      -
+>>+        name: selectable
+>>+        doc: pin enabled for automatic input selection
+>>+    render-max: true
+>>+  -
+>>+    type: flags
+>>+    name: pin-caps
+>>+    doc: |
+>>+      defines possible capabilities of a pin, valid flags on
+>>+      DPLL_A_PIN_CAPS attribute
+>>+    entries:
+>>+      -
+>>+        name: direction-can-change
+>>+      -
+>>+        name: priority-can-change
+>>+      -
+>>+        name: state-can-change
+>>+
+>>+attribute-sets:
+>>+  -
+>>+    name: dpll
+>>+    enum-name: dpll_a
+>>+    attributes:
+>>+      -
+>>+        name: id
+>>+        type: u32
+>>+        value: 1
+>>+      -
+>>+        name: module-name
+>>+        type: string
+>>+      -
+>>+        name: clock-id
+>>+        type: u64
+>>+      -
+>>+        name: mode
+>>+        type: u8
+>>+        enum: mode
+>>+      -
+>>+        name: mode-supported
+>>+        type: u8
+>>+        enum: mode
+>>+        multi-attr: true
+>>+      -
+>>+        name: lock-status
+>>+        type: u8
+>>+        enum: lock-status
+>>+      -
+>>+        name: temp
+>>+        type: s32
+>>+      -
+>>+        name: type
+>>+        type: u8
+>>+        enum: type
+>>+      -
+>>+        name: pin-id
+>>+        type: u32
+>>+      -
+>>+        name: pin-board-label
+>>+        type: string
+>>+      -
+>>+        name: pin-panel-label
+>>+        type: string
+>>+      -
+>>+        name: pin-package-label
+>>+        type: string
+>
+>Wouldn't it make sense to add some small documentation blocks to the
+>attrs? IDK.
+>
 
-Please consider waiting for further review, and as appropriate,
-addressing the problems above and reposting your patch.
+Actually already tried that, but after all they did not generate any docs
+for attr enums. So this need also fix in ynl-gen-c.py
 
--- 
-pw-bot: cr
+I think this would be useful, but only if we could use them in the dpll.rst=
+.
+Right now it is not case, but we already try to incorporate other enums
+description there, for now it is broken, but will try to fix this in the ne=
+ar
+future.
 
+Thank you!
+Arkadiusz
+
+>
+>>+      -
+>>+        name: pin-type
+>>+        type: u8
+>>+        enum: pin-type
+>>+      -
+>>+        name: pin-direction
+>>+        type: u8
+>>+        enum: pin-direction
+>>+      -
+>>+        name: pin-frequency
+>>+        type: u64
+>>+      -
+>>+        name: pin-frequency-supported
+>>+        type: nest
+>>+        multi-attr: true
+>>+        nested-attributes: pin-frequency-range
+>>+      -
+>>+        name: pin-frequency-min
+>>+        type: u64
+>>+      -
+>>+        name: pin-frequency-max
+>>+        type: u64
+>>+      -
+>>+        name: pin-prio
+>>+        type: u32
+>>+      -
+>>+        name: pin-state
+>>+        type: u8
+>>+        enum: pin-state
+>>+      -
+>>+        name: pin-dpll-caps
+>>+        type: u32
+>>+      -
+>>+        name: pin-parent
+>>+        type: nest
+>>+        multi-attr: true
+>>+        nested-attributes: pin-parent
+>>+  -
+>>+    name: pin-parent
+>>+    subset-of: dpll
+>>+    attributes:
+>>+      -
+>>+        name: id
+>>+        type: u32
+>>+      -
+>>+        name: pin-direction
+>>+        type: u8
+>>+      -
+>>+        name: pin-prio
+>>+        type: u32
+>>+      -
+>>+        name: pin-state
+>>+        type: u8
+>>+      -
+>>+        name: pin-id
+>>+        type: u32
+>>+
+>>+  -
+>>+    name: pin-frequency-range
+>>+    subset-of: dpll
+>>+    attributes:
+>>+      -
+>>+        name: pin-frequency-min
+>>+        type: u64
+>>+      -
+>>+        name: pin-frequency-max
+>>+        type: u64
+>
+>[...]
 
