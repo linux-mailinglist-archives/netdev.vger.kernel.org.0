@@ -1,168 +1,115 @@
-Return-Path: <netdev+bounces-11217-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11218-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C17EA731FED
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 20:27:28 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 46644732023
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 20:38:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 81EB32813D6
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 18:27:27 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 012332814DC
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 18:38:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 975292E0F6;
-	Thu, 15 Jun 2023 18:27:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 143362E0F5;
+	Thu, 15 Jun 2023 18:37:58 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8348F2E0D8
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 18:27:25 +0000 (UTC)
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CDA710F7;
-	Thu, 15 Jun 2023 11:27:21 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id 98e67ed59e1d1-25ea33087aaso447547a91.3;
-        Thu, 15 Jun 2023 11:27:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686853641; x=1689445641;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WL0vbTcVwidL9IJpT5c9YMdj81KxvnL+DV21KunorIQ=;
-        b=pBF6z9g3n47UdBw717OPav7WsEL/+ISkgHV7FaBke5m/SJwmaxVd0Bdu3+FUOEiBHL
-         8imrfw5ybVT9p8ew4VlPRczrTz1fQfwBuMpwpYdTEAQ3SBo0ImZ9E+TOSEe0FLprT5aZ
-         XovTUQgYW/BYJ3CgChp9UN+d1oVf+BDMTfSa1G0g9/GXTww2tH/+dJMm+Vi51kSAXuAg
-         ZR3d+r2mncc7yp58MqrC1wXLpQKieYxt5wWRly+tTLVlkgKj4zgwkgzdPQAlOCyfirx4
-         +tHrK7qgk0wK0bm8E6eCeWDLNzCqBuBGuUNIiPMP8o8k0HIz1X87pQIRVx1hasK9r1Ar
-         OPcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686853641; x=1689445641;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WL0vbTcVwidL9IJpT5c9YMdj81KxvnL+DV21KunorIQ=;
-        b=M+Kq5bSWa7yJXrTErGDUnLg14yoh9kcjndIFxcptoW4R6TVcKZn2H0K6OqM7R2DZwH
-         SLuXs4ioNWL+KmQfItBaUpxzP1Ybn3KKqxmIT89G1k7XaGQK+/3e9WdO8iAq8kate0vT
-         3RGQXa7+R2W31uWc8k286BX1HnOA+eGZ2NmIDdhwOWZEWd2tVo8o4ZI8M3M50wuhwzAr
-         U8nLMGXZBFr3hoUgeX6O7yxxvqxOViQxqf9KJOuQN8BPclHU1t7YHRENrogsX9fYvaWS
-         Gl70CR2CoPEl2TvEVylXfFUCn82sBIStGNr6wP/D0E0/0ru9vf9ViIM9EQ/dh/WAitJw
-         JmZQ==
-X-Gm-Message-State: AC+VfDwAxbdzIqKxqBcxz3A6llwk1FfIJinu5Vq0zq53uRRe8dgWPAE0
-	nFrLK23VYM5hXqvbd8oAqi+5dSb4AZ20ARw95YQ=
-X-Google-Smtp-Source: ACHHUZ7W/fay7a5zhoaquRDXMXuhr/x2Z1DcfHV31Rrp9dYAWBYrZb7M3EGp7RzaB/+ml0JAorgPkb0OwUfa8kds+vg=
-X-Received: by 2002:a17:90a:ab12:b0:24d:f59a:d331 with SMTP id
- m18-20020a17090aab1200b0024df59ad331mr5114572pjq.26.1686853640525; Thu, 15
- Jun 2023 11:27:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4E3D374
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 18:37:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB540C433C0;
+	Thu, 15 Jun 2023 18:37:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686854276;
+	bh=GrZU4Bzfm1Xqzo5EgU4CnnNwyScGSBZsQwfpSFcUTy4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=BODNwPZatG3b2JqhSWG5D/9wG7DxCwcU0n+OVYJJsEK8PJtcktivpxxL/Ml2BRlgr
+	 AsmVfkubwqS1mWQi6oj5pwJFFfffaG2LN8l4gjYmn8D3F6/64Vz2nmwAfm/xpcWrKz
+	 AI+zE2z1Ze9jLJ8o1OkjbkXOCTr7nu4ALkWKZBTRBuxvU2XmCxtJtSdU3CYXREzKcr
+	 usrwH7iDCLZiPtl7TnZKHoKfA7qMDvSSyhqA6EjiV1ayFEvty4vb2Amh7S/WzbZ+vD
+	 UJBUnhU2ZYt1DFC1JnGNmAdFb8cNNG9wr+5Tin6sZhpKNdwR3ocy9vj/ANs6CxYGL+
+	 BeCL+54TSTW9Q==
+Date: Thu, 15 Jun 2023 13:37:54 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Eric Dumazet <edumazet@google.com>,
+	Oliver O'Halloran <oohall@gmail.com>, Stefan Roese <sr@denx.de>,
+	Leon Romanovsky <leon@kernel.org>, linux-rdma@vger.kernel.org,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Jim Wilson <wilson@tuliptree.org>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Mika Westerberg <mika.westerberg@linux.intel.com>,
+	David Abdurachmanov <david.abdurachmanov@gmail.com>,
+	linuxppc-dev@lists.ozlabs.org,
+	Mahesh J Salgaonkar <mahesh@linux.ibm.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Lukas Wunner <lukas@wunner.de>, netdev@vger.kernel.org,
+	Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+	Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH v9 00/14] pci: Work around ASMedia ASM2824 PCIe link
+ training failures
+Message-ID: <20230615183754.GA1483387@bhelgaas>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230612130256.4572-1-linyunsheng@huawei.com> <20230612130256.4572-5-linyunsheng@huawei.com>
- <20230614101954.30112d6e@kernel.org> <8c544cd9-00a3-2f17-bd04-13ca99136750@huawei.com>
- <20230615095100.35c5eb10@kernel.org>
-In-Reply-To: <20230615095100.35c5eb10@kernel.org>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Thu, 15 Jun 2023 11:26:44 -0700
-Message-ID: <CAKgT0Uc6Xoyh3Edgt+83b+HTM5j4JDr3fuxcyL9qDk+Wwt9APg@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 4/5] page_pool: remove PP_FLAG_PAGE_FRAG flag
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net, pabeni@redhat.com, 
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Lorenzo Bianconi <lorenzo@kernel.org>, Yisen Zhuang <yisen.zhuang@huawei.com>, 
-	Salil Mehta <salil.mehta@huawei.com>, Eric Dumazet <edumazet@google.com>, 
-	Sunil Goutham <sgoutham@marvell.com>, Geetha sowjanya <gakula@marvell.com>, 
-	Subbaraya Sundeep <sbhatta@marvell.com>, hariprasad <hkelam@marvell.com>, 
-	Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>, Felix Fietkau <nbd@nbd.name>, 
-	Ryder Lee <ryder.lee@mediatek.com>, Shayne Chen <shayne.chen@mediatek.com>, 
-	Sean Wang <sean.wang@mediatek.com>, Kalle Valo <kvalo@kernel.org>, 
-	Matthias Brugger <matthias.bgg@gmail.com>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
-	Jesper Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, 
-	linux-rdma@vger.kernel.org, linux-wireless@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.2306150124010.64925@angie.orcam.me.uk>
 
-On Thu, Jun 15, 2023 at 9:51=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
->
-> On Thu, 15 Jun 2023 15:17:39 +0800 Yunsheng Lin wrote:
-> > > Does hns3_page_order() set a good example for the users?
-> > >
-> > > static inline unsigned int hns3_page_order(struct hns3_enet_ring *rin=
-g)
-> > > {
-> > > #if (PAGE_SIZE < 8192)
-> > >     if (ring->buf_size > (PAGE_SIZE / 2))
-> > >             return 1;
-> > > #endif
-> > >     return 0;
-> > > }
-> > >
-> > > Why allocate order 1 pages for buffers which would fit in a single pa=
-ge?
-> > > I feel like this soft of heuristic should be built into the API itsel=
-f.
-> >
-> > hns3 only support fixed buf size per desc by 512 byte, 1024 bytes, 2048=
- bytes
-> > 4096 bytes, see hns3_buf_size2type(), I think the order 1 pages is for =
-buf size
-> > with 4096 bytes and system page size with 4K, as hns3 driver still supp=
-ort the
-> > per-desc ping-pong way of page splitting when page_pool_enabled is fals=
-e.
-> >
-> > With page pool enabled, you are right that order 0 pages is enough, and=
- I am not
-> > sure about the exact reason we use the some order as the ping-pong way =
-of page
-> > splitting now.
-> > As 2048 bytes buf size seems to be the default one, and I has not heard=
- any one
-> > changing it. Also, it caculates the pool_size using something as below,=
- so the
-> > memory usage is almost the same for order 0 and order 1:
-> >
-> > .pool_size =3D ring->desc_num * hns3_buf_size(ring) /
-> >               (PAGE_SIZE << hns3_page_order(ring)),
-> >
-> > I am not sure it worth changing it, maybe just change it to set good ex=
-ample for
-> > the users:) anyway I need to discuss this with other colleague internal=
-ly and do
-> > some testing before doing the change.
->
-> Right, I think this may be a leftover from the page flipping mode of
-> operation. But AFAIU we should leave the recycling fully to the page
-> pool now. If we make any improvements try to make them at the page pool
-> level.
->
-> I like your patches as they isolate the drivers from having to make the
-> fragmentation decisions based on the system page size (4k vs 64k but
-> we're hearing more and more about ARM w/ 16k pages). For that use case
-> this is great.
->
-> What we don't want is drivers to start requesting larger page sizes
-> because it looks good in iperf on a freshly booted, idle system :(
+On Thu, Jun 15, 2023 at 01:41:10AM +0100, Maciej W. Rozycki wrote:
+> On Wed, 14 Jun 2023, Bjorn Helgaas wrote:
+> 
+> > >  This is v9 of the change to work around a PCIe link training phenomenon 
+> > > where a pair of devices both capable of operating at a link speed above 
+> > > 2.5GT/s seems unable to negotiate the link speed and continues training 
+> > > indefinitely with the Link Training bit switching on and off repeatedly 
+> > > and the data link layer never reaching the active state.
+> > > 
+> > >  With several requests addressed and a few extra issues spotted this
+> > > version has now grown to 14 patches.  It has been verified for device 
+> > > enumeration with and without PCI_QUIRKS enabled, using the same piece of 
+> > > RISC-V hardware as previously.  Hot plug or reset events have not been 
+> > > verified, as this is difficult if at all feasible with hardware in 
+> > > question.
 
-Actually that would be a really good direction for this patch set to
-look at going into. Rather than having us always allocate a "page" it
-would make sense for most drivers to allocate a 4K fragment or the
-like in the case that the base page size is larger than 4K. That might
-be a good use case to justify doing away with the standard page pool
-page and look at making them all fragmented.
+> >  static int pci_dev_wait(struct pci_dev *dev, char *reset_type, int timeout)
+> >  {
+> > -	bool retrain = true;
+> >  	int delay = 1;
+> > +	bool retrain = false;
+> > +	struct pci_dev *bridge;
+> > +
+> > +	if (pci_is_pcie(dev)) {
+> > +		retrain = true;
+> > +		bridge = pci_upstream_bridge(dev);
+> > +	}
+> 
+>  If doing it this way, which I actually like, I think it would be a little 
+> bit better performance- and style-wise if this was written as:
+> 
+> 	if (pci_is_pcie(dev)) {
+> 		bridge = pci_upstream_bridge(dev);
+> 		retrain = !!bridge;
+> 	}
+> 
+> (or "retrain = bridge != NULL" if you prefer this style), and then we 
+> don't have to repeatedly check two variables iff (pcie && !bridge) in the 
+> loop below:
 
-In the case of the standard page size being 4K a standard page would
-just have to take on the CPU overhead of the atomic_set and
-atomic_read for pp_ref_count (new name) which should be minimal as on
-most sane systems those just end up being a memory write and read.
+Done, thanks, I do like that better.  I did:
+
+  bridge = pci_upstream_bridge(dev);
+  if (bridge)
+    retrain = true;
+
+because it seems like it flows more naturally when reading.
+
+Bjorn
 
