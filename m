@@ -1,219 +1,125 @@
-Return-Path: <netdev+bounces-11166-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11167-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id CC6A9731D45
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 18:02:09 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id F3C36731D78
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 18:10:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A8CD81C20EE3
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 16:02:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 22A4B1C20ECE
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 16:10:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 70DBB17FF5;
-	Thu, 15 Jun 2023 16:02:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1BF2A182AC;
+	Thu, 15 Jun 2023 16:10:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61CF917FEE
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 16:02:06 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C01E2952
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 09:02:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686844922;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=E6zeZ2Y3tf2OPH/rRcIX6GxS4cB2PEK5LsG9Q9HL7Ww=;
-	b=IHEHe75ulGtE0sCLpgdGJHkMfzAHyrMm1nBSI20/+/Wcw7DgeUltur8oC7PhdBkMCHaDAm
-	gopWwRnvpep+afRl2ZbkuZgYgNrBgDRiQnqEdTny5shTaZivRPmYQ7Zivd6BuLC2mCFN32
-	kK7XahlxJxThxqMjie8V9+j6p4gr/dg=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-322-I4ftdIS-MyauR0oETNCk3w-1; Thu, 15 Jun 2023 12:01:59 -0400
-X-MC-Unique: I4ftdIS-MyauR0oETNCk3w-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2882D857D10;
-	Thu, 15 Jun 2023 16:01:36 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.51])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id E7496C1603B;
-	Thu, 15 Jun 2023 16:01:34 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <000000000000b2585a05fdeb8379@google.com>
-References: <000000000000b2585a05fdeb8379@google.com>
-To: syzbot <syzbot+6efc50cc1f8d718d6cb7@syzkaller.appspotmail.com>
-Cc: dhowells@redhat.com, davem@davemloft.net,
-    herbert@gondor.apana.org.au, kuba@kernel.org,
-    linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-    netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] [crypto?] KASAN: slab-out-of-bounds Read in extract_iter_to_sg
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 068B5156C0;
+	Thu, 15 Jun 2023 16:10:50 +0000 (UTC)
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091B41BC3;
+	Thu, 15 Jun 2023 09:10:47 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-518ff822360so2565074a12.1;
+        Thu, 15 Jun 2023 09:10:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686845445; x=1689437445;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=m6oF4O/3EA5olKSB626xfLYiUy/lhqpKUwualmtgXOY=;
+        b=Kyxb9xM4MSdy/GID1WQVmnBVf3YUuKcg0xA4nWHLITgRtumn1ZMSyzYipDy0bLKODN
+         1BDCoy5yDX8dlM18Fr8NQB2ckzBf7ItdfyuVIkCpNtNlEokPYIFSJmHJWgkxlbK9OGxq
+         Y1kng/t8OjlhueScat3JXziUaCfIWI+4XKYiQQNobTsQ6cfuuD3ggKydD0sFsezHkiGb
+         lY63S+OdfwXFTOgUY50beXrdBPIZfrQsOb5tOvLG3tnhAhH25Q/Uz3TEn0CqoCYOuTw3
+         zIeOybr1zPsbT7iKZ58KwRIA5Gcznya3PnttZT2Q68bvA4Dde5Sl8Qm4mrvcyctrTWcY
+         ZmHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686845445; x=1689437445;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=m6oF4O/3EA5olKSB626xfLYiUy/lhqpKUwualmtgXOY=;
+        b=jzxI1DkcVgya3fHKKz06hprXCyr2KhRdDXEsFiA0q/CtrKTfp3dWUph89+5p5tGQKZ
+         8kcKnNs0d38AHBrd5YwVfcbwz6iHoqLrwisnP+Cqp9Z/IKHpZTQ7+Cr/YVK5qJmZJmRX
+         0aWbTsNPmZV9TRqBJya+qmOEJd5DH1jNlSgjUdIyM/z+D/cSVgR68MDAAX6lYG/rgdtZ
+         c6mPReV2AYbMcKADNcLdnLyduCh8L5QY4ENWvAUn6T83dJTKolGiqa4OhpFly1cEAiGm
+         +WnPMpRE9oj6LeAkJJ3ZSwrN8C3+fN3DjORA00zPzi8SZtvpJsyySaNmsGDHjeZmjvdy
+         4lrw==
+X-Gm-Message-State: AC+VfDztQkMffraNcxMX96U1Ylp8/fRwaGu8WHphWKd0bL7rQ+pI+/Yj
+	3wRnD98KsMf0ctE18ltpkjYSv2WxwB+euUOR82s=
+X-Google-Smtp-Source: ACHHUZ5ZtlHaXnpS0WI4lKB88rLfn+k/K19HMqxayec1Q8iRulYaJOxI2C9+2tbRY6AVabfJ2wh7/i9IwN7V9t8YQiI=
+X-Received: by 2002:a05:6402:5172:b0:518:7bc3:4cec with SMTP id
+ d18-20020a056402517200b005187bc34cecmr4233691ede.22.1686845445155; Thu, 15
+ Jun 2023 09:10:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <256754.1686844894.1@warthog.procyon.org.uk>
+References: <20230612172307.3923165-1-sdf@google.com> <87cz20xunt.fsf@toke.dk>
+ <ZIiaHXr9M0LGQ0Ht@google.com> <877cs7xovi.fsf@toke.dk> <CAKH8qBt5tQ69Zs9kYGc7j-_3Yx9D6+pmS4KCN5G0s9UkX545Mg@mail.gmail.com>
+ <87v8frw546.fsf@toke.dk> <CAKH8qBtsvsWvO3Avsqb2PbvZgh5GDMxe2fok-jS4DrJM=x2Row@mail.gmail.com>
+ <CAADnVQKFmXAQDYVZxjvH8qbxk+3M2COGbfmtd=w8Nxvf9=DaeA@mail.gmail.com>
+ <CAKH8qBvAMKtfrZ1jdwVS2pF161UdeXPSpY4HSzKYGTYNTupmTg@mail.gmail.com>
+ <CAADnVQ+CCOw9_LbCAaFz0593eydKNb7RxnGr6_FatUOKmvPmBg@mail.gmail.com>
+ <877cs6l0ea.fsf@toke.dk> <CAADnVQJM6ttxLjj2FGCO1DKOwHdj9eqcz75dFpsfwJ_4b3iqDw@mail.gmail.com>
+ <87pm5wgaws.fsf@toke.dk>
+In-Reply-To: <87pm5wgaws.fsf@toke.dk>
+From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date: Thu, 15 Jun 2023 09:10:33 -0700
+Message-ID: <CAADnVQKvn-6xio0DyO8EDJktHKtWykfEQc3VosO7oji+Fk1oMA@mail.gmail.com>
+Subject: Re: [RFC bpf-next 0/7] bpf: netdev TX metadata
+To: =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
+Cc: Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>, 
+	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
+	Andrii Nakryiko <andrii@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>, 
+	Yonghong Song <yhs@fb.com>, John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, 
+	Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>, 
+	Willem de Bruijn <willemb@google.com>, David Ahern <dsahern@kernel.org>, 
+	"Karlsson, Magnus" <magnus.karlsson@intel.com>, =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>, 
+	"Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>, Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 15 Jun 2023 17:01:34 +0100
-Message-ID: <256755.1686844894@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.g=
-it main
+On Thu, Jun 15, 2023 at 5:36=E2=80=AFAM Toke H=C3=B8iland-J=C3=B8rgensen <t=
+oke@kernel.org> wrote:
+>
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>
+> > On Wed, Jun 14, 2023 at 5:00=E2=80=AFAM Toke H=C3=B8iland-J=C3=B8rgense=
+n <toke@kernel.org> wrote:
+> >>
+> >> >>
+> >> >> It's probably going to work if each driver has a separate set of tx
+> >> >> fentry points, something like:
+> >> >>   {veth,mlx5,etc}_devtx_submit()
+> >> >>   {veth,mlx5,etc}_devtx_complete()
+> >>
+> >> I really don't get the opposition to exposing proper APIs; as a
+> >> dataplane developer I want to attach a program to an interface. The
+> >> kernel's role is to provide a consistent interface for this, not to
+> >> require users to become driver developers just to get at the required
+> >> details.
+> >
+> > Consistent interface can appear only when there is a consistency
+> > across nic manufacturers.
+> > I'm suggesting to experiment in the most unstable way and
+> > if/when the consistency is discovered then generalize.
+>
+> That would be fine for new experimental HW features, but we're talking
+> about timestamps here: a feature that is already supported by multiple
+> drivers and for which the stack has a working abstraction. There's no
+> reason why we can't have that for the XDP path as well.
 
-
-diff --git a/fs/smb/client/smb2ops.c b/fs/smb/client/smb2ops.c
-index 38d2265c77fd..e97abe6055a1 100644
---- a/fs/smb/client/smb2ops.c
-+++ b/fs/smb/client/smb2ops.c
-@@ -4333,8 +4333,7 @@ static void *smb2_get_aead_req(struct crypto_aead *t=
-fm, struct smb_rqst *rqst,
- 		}
- 		sgtable.orig_nents =3D sgtable.nents;
- =
-
--		rc =3D extract_iter_to_sg(iter, count, &sgtable,
--					num_sgs - sgtable.nents, 0);
-+		rc =3D extract_iter_to_sg(iter, count, &sgtable, num_sgs, 0);
- 		iov_iter_revert(iter, rc);
- 		sgtable.orig_nents =3D sgtable.nents;
- 	}
-diff --git a/lib/scatterlist.c b/lib/scatterlist.c
-index e97d7060329e..6fd20bfc01a4 100644
---- a/lib/scatterlist.c
-+++ b/lib/scatterlist.c
-@@ -1120,7 +1120,8 @@ static ssize_t extract_user_to_sg(struct iov_iter *i=
-ter,
- 	pages -=3D sg_max;
- =
-
- 	do {
--		res =3D iov_iter_extract_pages(iter, &pages, maxsize, sg_max,
-+		res =3D iov_iter_extract_pages(iter, &pages, maxsize,
-+					     sg_max - sgtable->nents,
- 					     extraction_flags, &off);
- 		if (res < 0)
- 			goto failed;
-@@ -1129,7 +1130,6 @@ static ssize_t extract_user_to_sg(struct iov_iter *i=
-ter,
- 		maxsize -=3D len;
- 		ret +=3D len;
- 		npages =3D DIV_ROUND_UP(off + len, PAGE_SIZE);
--		sg_max -=3D npages;
- =
-
- 		for (; npages > 0; npages--) {
- 			struct page *page =3D *pages;
-@@ -1142,7 +1142,7 @@ static ssize_t extract_user_to_sg(struct iov_iter *i=
-ter,
- 			len -=3D seg;
- 			off =3D 0;
- 		}
--	} while (maxsize > 0 && sg_max > 0);
-+	} while (maxsize > 0 && sgtable->nents < sg_max);
- =
-
- 	return ret;
- =
-
-@@ -1183,11 +1183,10 @@ static ssize_t extract_bvec_to_sg(struct iov_iter =
-*iter,
- 		sg_set_page(sg, bv[i].bv_page, len, off);
- 		sgtable->nents++;
- 		sg++;
--		sg_max--;
- =
-
- 		ret +=3D len;
- 		maxsize -=3D len;
--		if (maxsize <=3D 0 || sg_max =3D=3D 0)
-+		if (maxsize <=3D 0 || sgtable->nents >=3D sg_max)
- 			break;
- 		start =3D 0;
- 	}
-@@ -1242,14 +1241,13 @@ static ssize_t extract_kvec_to_sg(struct iov_iter =
-*iter,
- 			sg_set_page(sg, page, len, off);
- 			sgtable->nents++;
- 			sg++;
--			sg_max--;
- =
-
- 			len -=3D seg;
- 			kaddr +=3D PAGE_SIZE;
- 			off =3D 0;
--		} while (len > 0 && sg_max > 0);
-+		} while (len > 0 && sgtable->nents < sg_max);
- =
-
--		if (maxsize <=3D 0 || sg_max =3D=3D 0)
-+		if (maxsize <=3D 0 || sgtable->nents >=3D sg_max)
- 			break;
- 		start =3D 0;
- 	}
-@@ -1294,11 +1292,10 @@ static ssize_t extract_xarray_to_sg(struct iov_ite=
-r *iter,
- 		sg_set_page(sg, folio_page(folio, 0), len, offset);
- 		sgtable->nents++;
- 		sg++;
--		sg_max--;
- =
-
- 		maxsize -=3D len;
- 		ret +=3D len;
--		if (maxsize <=3D 0 || sg_max =3D=3D 0)
-+		if (maxsize <=3D 0 || sgtable->nents >=3D sg_max)
- 			break;
- 	}
- =
-
-@@ -1318,7 +1315,8 @@ static ssize_t extract_xarray_to_sg(struct iov_iter =
-*iter,
-  *
-  * Extract the page fragments from the given amount of the source iterato=
-r and
-  * add them to a scatterlist that refers to all of those bits, to a maxim=
-um
-- * addition of @sg_max elements.
-+ * addition of @sg_max elements.  @sgtable->nents indicates how many of t=
-he
-+ * elements are already used.
-  *
-  * The pages referred to by UBUF- and IOVEC-type iterators are extracted =
-and
-  * pinned; BVEC-, KVEC- and XARRAY-type are extracted but aren't pinned; =
-PIPE-
-@@ -1343,6 +1341,11 @@ ssize_t extract_iter_to_sg(struct iov_iter *iter, s=
-ize_t maxsize,
- 	if (maxsize =3D=3D 0)
- 		return 0;
- =
-
-+	if (WARN_ON_ONCE(sg_max =3D=3D 0))
-+		return -EIO;
-+	if (WARN_ON_ONCE(sgtable->nents >=3D sg_max))
-+		return -EIO;
-+
- 	switch (iov_iter_type(iter)) {
- 	case ITER_UBUF:
- 	case ITER_IOVEC:
-
+... has an abstraction to receive, but has no mechanism to set it
+selectively per packet and read it on completion.
 
