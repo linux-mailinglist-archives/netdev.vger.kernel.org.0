@@ -1,50 +1,50 @@
-Return-Path: <netdev+bounces-11204-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11205-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2C135731F21
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 19:33:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3BFF7731F27
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 19:33:51 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CC50328154F
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 17:33:17 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EBED3280D13
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 17:33:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9C27E1ACCF;
-	Thu, 15 Jun 2023 17:27:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8A51B1D2A6;
+	Thu, 15 Jun 2023 17:27:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D9881ACA0;
-	Thu, 15 Jun 2023 17:27:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7728A1D2A4;
+	Thu, 15 Jun 2023 17:27:11 +0000 (UTC)
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F282965;
-	Thu, 15 Jun 2023 10:27:03 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34322977;
+	Thu, 15 Jun 2023 10:27:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686850023; x=1718386023;
+  t=1686850025; x=1718386025;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cMs7alcoAHlGcLpPM/BnqNmkMDx5YG8zgVL3fyvUwao=;
-  b=YFHOISU5Sb43Yv2Qq8SNVTb/pe70QZ7dxSpwIInyOgZ23UE3VGrq9Vtu
-   XU9aHv2EsILKa1ezkyLh0uGufb2/Oj4dUM5SuvesrViqZqV0l3i9I14Px
-   aFnLRvdwSYBEmuk+T9+9/H2ZIechWsc3P5LwcOx1oKDJv1CrfPzE2uQ3D
-   X+dRbnvaIFVbBs2RFh1CFGr0Q+TCRloRws6AiK0tzym2AU3clrqz1/H+G
-   LnhKJRCvf/urYgNhip/ftYdB05F1XlC22XnJlKzORaGUsn7FQwQ1d8TUB
-   Lcg2T83FZPzggZgv+sAR+shcHFWrdinRtaEk4GvL38fItX8/JIi7KF29D
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="358983601"
+  bh=tT8hmhkOiFG3f1duf7LxcmWuMCRIr+puRR6b9PUIl30=;
+  b=GW8mNg+b5TW0MtwSemuazsJ/rqBB8V422B9i2022FY+ts+9KTf5V4Yho
+   VTVvyj4DHXxquaqqPkCuVtlFUGce6a8ne3BDvU+yAgYVavd+fOCODOTE+
+   KLJPPwRL/zc/gGiOzFvQroav3jBJA0wdXC1/NW3PmwG+ikn9QBf7D9ItJ
+   e4/BLP+8P/moWV6eR9NwoFGEISqUSSBtp1CHKoRmRLFPVJL/xGRI0Z7Hb
+   jWGiLjghEOE+zk6zDDIaGxOxW7UbuLsnw5NKZl4PGGMo1qtxyDYcVjK7x
+   Mk2FMBwLd1v8XNaD7iWDSO6FXw1JJYxdDFejpdtgqeiuVxebBxrF3Jarv
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="358983620"
 X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
-   d="scan'208";a="358983601"
+   d="scan'208";a="358983620"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2023 10:26:56 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2023 10:26:59 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="689858787"
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="689858818"
 X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
-   d="scan'208";a="689858787"
+   d="scan'208";a="689858818"
 Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga006.jf.intel.com with ESMTP; 15 Jun 2023 10:26:53 -0700
+  by orsmga006.jf.intel.com with ESMTP; 15 Jun 2023 10:26:56 -0700
 From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To: bpf@vger.kernel.org,
 	ast@kernel.org,
@@ -57,9 +57,9 @@ Cc: netdev@vger.kernel.org,
 	maciej.fijalkowski@intel.com,
 	simon.horman@corigine.com,
 	toke@kernel.org
-Subject: [PATCH v4 bpf-next 14/22] ice: xsk: Tx multi-buffer support
-Date: Thu, 15 Jun 2023 19:25:58 +0200
-Message-Id: <20230615172606.349557-15-maciej.fijalkowski@intel.com>
+Subject: [PATCH v4 bpf-next 15/22] xsk: add multi-buffer documentation
+Date: Thu, 15 Jun 2023 19:25:59 +0200
+Message-Id: <20230615172606.349557-16-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230615172606.349557-1-maciej.fijalkowski@intel.com>
 References: <20230615172606.349557-1-maciej.fijalkowski@intel.com>
@@ -77,176 +77,211 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Most of this patch is about actually supporting XDP_TX action. Pure Tx
-ZC support is only about looking at XDP_PKT_CONTD presence at options
-field and based on that generating EOP bit on Tx HW descriptor. This is
-that simple due to the implementation on
-xsk_tx_peek_release_desc_batch() where we are making sure that last
-produced descriptor is an EOP one.
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Report via xdp_features that this driver is now capable of consuming
-multi-buffer packets on both Rx and Tx sides.
+Add AF_XDP multi-buffer support documentation including two
+pseudo-code samples.
 
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c |  2 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c  | 83 ++++++++++++++++-------
- 2 files changed, 61 insertions(+), 24 deletions(-)
+ Documentation/networking/af_xdp.rst | 177 ++++++++++++++++++++++++++++
+ 1 file changed, 177 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 62e91512aeab..cd562856f23a 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3377,7 +3377,7 @@ static void ice_set_ops(struct ice_vsi *vsi)
+diff --git a/Documentation/networking/af_xdp.rst b/Documentation/networking/af_xdp.rst
+index 247c6c4127e9..2b583f58967b 100644
+--- a/Documentation/networking/af_xdp.rst
++++ b/Documentation/networking/af_xdp.rst
+@@ -453,6 +453,93 @@ XDP_OPTIONS getsockopt
+ Gets options from an XDP socket. The only one supported so far is
+ XDP_OPTIONS_ZEROCOPY which tells you if zero-copy is on or not.
  
- 	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
- 			       NETDEV_XDP_ACT_XSK_ZEROCOPY |
--			       NETDEV_XDP_ACT_RX_SG;
-+			       NETDEV_XDP_ACT_RX_SG | NETDEV_XDP_ACT_ZC_SG;
- }
- 
- /**
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 91cdd5e4790d..2a3f0834e139 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -613,7 +613,7 @@ ice_construct_skb_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp)
-  * ice_clean_xdp_irq_zc - produce AF_XDP descriptors to CQ
-  * @xdp_ring: XDP Tx ring
-  */
--static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
-+static u32 ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
- {
- 	u16 ntc = xdp_ring->next_to_clean;
- 	struct ice_tx_desc *tx_desc;
-@@ -635,7 +635,7 @@ static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
- 	}
- 
- 	if (!completed_frames)
--		return;
-+		return 0;
- 
- 	if (likely(!xdp_ring->xdp_tx_active)) {
- 		xsk_frames = completed_frames;
-@@ -665,6 +665,8 @@ static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
- 		xdp_ring->next_to_clean -= cnt;
- 	if (xsk_frames)
- 		xsk_tx_completed(xdp_ring->xsk_pool, xsk_frames);
++Multi-Buffer Support
++--------------------
 +
-+	return completed_frames;
- }
- 
- /**
-@@ -682,37 +684,72 @@ static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
- static int ice_xmit_xdp_tx_zc(struct xdp_buff *xdp,
- 			      struct ice_tx_ring *xdp_ring)
- {
-+	struct skb_shared_info *sinfo = NULL;
- 	u32 size = xdp->data_end - xdp->data;
- 	u32 ntu = xdp_ring->next_to_use;
- 	struct ice_tx_desc *tx_desc;
- 	struct ice_tx_buf *tx_buf;
--	dma_addr_t dma;
-+	struct xdp_buff *head;
-+	u32 nr_frags = 0;
-+	u32 free_space;
-+	u32 frag = 0;
- 
--	if (ICE_DESC_UNUSED(xdp_ring) < ICE_RING_QUARTER(xdp_ring)) {
--		ice_clean_xdp_irq_zc(xdp_ring);
--		if (!ICE_DESC_UNUSED(xdp_ring)) {
--			xdp_ring->ring_stats->tx_stats.tx_busy++;
--			return ICE_XDP_CONSUMED;
--		}
--	}
-+	free_space = ICE_DESC_UNUSED(xdp_ring);
-+	if (free_space < ICE_RING_QUARTER(xdp_ring))
-+		free_space += ice_clean_xdp_irq_zc(xdp_ring);
- 
--	dma = xsk_buff_xdp_get_dma(xdp);
--	xsk_buff_raw_dma_sync_for_device(xdp_ring->xsk_pool, dma, size);
-+	if (unlikely(!free_space))
-+		goto busy;
++With multi-buffer support, programs using AF_XDP sockets can receive
++and transmit packets consisting of multiple buffers both in copy and
++zero-copy mode. For example, a packet can consist of two
++frames/buffers, one with the header and the other one with the data,
++or a 9K Ethernet jumbo frame can be constructed by chaining together
++three 4K frames.
 +
-+	if (unlikely(xdp_buff_has_frags(xdp))) {
-+		sinfo = xdp_get_shared_info_from_buff(xdp);
-+		nr_frags = sinfo->nr_frags;
-+		if (free_space < nr_frags + 1)
-+			goto busy;
-+	}
++Some definitions:
++
++* A packet consists of one or more frames
++
++* A descriptor in one of the AF_XDP rings always refers to a single
++  frame. In the case the packet consists of a single frame, the
++  descriptor refers to the whole packet.
++
++To enable multi-buffer support for an AF_XDP socket, use the new bind
++flag XDP_USE_SG. If this is not provided, all multi-buffer packets
++will be dropped just as before. Note that the XDP program loaded also
++needs to be in multi-buffer mode. This can be accomplished by using
++"xdp.frags" as the section name of the XDP program used.
++
++To represent a packet consisting of multiple frames, a new flag called
++XDP_PKT_CONTD is introduced in the options field of the Rx and Tx
++descriptors. If it is true (1) the packet continues with the next
++descriptor and if it is false (0) it means this is the last descriptor
++of the packet. Why the reverse logic of end-of-packet (eop) flag found
++in many NICs? Just to preserve compatibility with non-multi-buffer
++applications that have this bit set to false for all packets on Rx,
++and the apps set the options field to zero for Tx, as anything else
++will be treated as an invalid descriptor.
++
++These are the semantics for producing packets onto AF_XDP Tx ring
++consisting of multiple frames:
++
++* When an invalid descriptor is found, all the other
++  descriptors/frames of this packet are marked as invalid and not
++  completed. The next descriptor is treated as the start of a new
++  packet, even if this was not the intent (because we cannot guess
++  the intent). As before, if your program is producing invalid
++  descriptors you have a bug that must be fixed.
++
++* Zero length descriptors are treated as invalid descriptors.
++
++* For copy mode, the maximum supported number of frames in a packet is
++  equal to CONFIG_MAX_SKB_FRAGS + 1. If it is exceeded, all
++  descriptors accumulated so far are dropped and treated as
++  invalid. To produce an application that will work on any system
++  regardless of this config setting, limit the number of frags to 18,
++  as the minimum value of the config is 17.
++
++* For zero-copy mode, the limit is up to what the NIC HW
++  supports. Usually at least five on the NICs we have checked. We
++  consciously chose to not enforce a rigid limit (such as
++  CONFIG_MAX_SKB_FRAGS + 1) for zero-copy mode, as it would have
++  resulted in copy actions under the hood to fit into what limit
++  the NIC supports. Kind of defeats the purpose of zero-copy mode.
++
++* The ZC batch API guarantees that it will provide a batch of Tx
++  descriptors that ends with full packet at the end. If not, ZC
++  drivers would have to gather the full packet on their side. The
++  approach we picked makes ZC drivers' life much easier (at least on
++  Tx side).
++
++On the Rx path in copy-mode, the xsk core copies the XDP data into
++multiple descriptors, if needed, and sets the XDP_PKT_CONTD flag as
++detailed before. Zero-copy mode works the same, though the data is not
++copied. When the application gets a descriptor with the XDP_PKT_CONTD
++flag set to one, it means that the packet consists of multiple buffers
++and it continues with the next buffer in the following
++descriptor. When a descriptor with XDP_PKT_CONTD == 0 is received, it
++means that this is the last buffer of the packet. AF_XDP guarantees
++that only a complete packet (all frames in the packet) is sent to the
++application.
++
++If application reads a batch of descriptors, using for example the libxdp
++interfaces, it is not guaranteed that the batch will end with a full
++packet. It might end in the middle of a packet and the rest of the
++buffers of that packet will arrive at the beginning of the next batch,
++since the libxdp interface does not read the whole ring (unless you
++have an enormous batch size or a very small ring size).
++
++An example program each for Rx and Tx multi-buffer support can be found
++later in this document.
++
+ Usage
+ =====
  
--	tx_buf = &xdp_ring->tx_buf[ntu];
--	tx_buf->xdp = xdp;
--	tx_buf->type = ICE_TX_BUF_XSK_TX;
- 	tx_desc = ICE_TX_DESC(xdp_ring, ntu);
--	tx_desc->buf_addr = cpu_to_le64(dma);
--	tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TX_DESC_CMD_EOP,
--						      0, size, 0);
--	xdp_ring->xdp_tx_active++;
-+	tx_buf = &xdp_ring->tx_buf[ntu];
-+	head = xdp;
-+
-+	for (;;) {
-+		dma_addr_t dma;
-+
-+		dma = xsk_buff_xdp_get_dma(xdp);
-+		xsk_buff_raw_dma_sync_for_device(xdp_ring->xsk_pool, dma, size);
-+
-+		tx_buf->xdp = xdp;
-+		tx_buf->type = ICE_TX_BUF_XSK_TX;
-+		tx_desc->buf_addr = cpu_to_le64(dma);
-+		tx_desc->cmd_type_offset_bsz = ice_build_ctob(0, 0, size, 0);
-+		/* account for each xdp_buff from xsk_buff_pool */
-+		xdp_ring->xdp_tx_active++;
-+
-+		if (++ntu == xdp_ring->count)
-+			ntu = 0;
-+
-+		if (frag == nr_frags)
-+			break;
-+
-+		tx_desc = ICE_TX_DESC(xdp_ring, ntu);
-+		tx_buf = &xdp_ring->tx_buf[ntu];
-+
-+		xdp = xsk_buff_get_frag(head);
-+		size = skb_frag_size(&sinfo->frags[frag]);
-+		frag++;
-+	}
+@@ -532,6 +619,96 @@ like this:
+ But please use the libbpf functions as they are optimized and ready to
+ use. Will make your life easier.
  
--	if (++ntu == xdp_ring->count)
--		ntu = 0;
- 	xdp_ring->next_to_use = ntu;
-+	/* update last descriptor from a frame with EOP */
-+	tx_desc->cmd_type_offset_bsz |=
-+		cpu_to_le64(ICE_TX_DESC_CMD_EOP << ICE_TXD_QW1_CMD_S);
- 
- 	return ICE_XDP_TX;
++Usage Multi-Buffer Rx
++=====================
 +
-+busy:
-+	xdp_ring->ring_stats->tx_stats.tx_busy++;
++Here is a simple Rx path pseudo-code example (using libxdp interfaces
++for simplicity). Error paths have been excluded to keep it short:
 +
-+	return ICE_XDP_CONSUMED;
- }
++.. code-block:: c
++
++    void rx_packets(struct xsk_socket_info *xsk)
++    {
++        static bool new_packet = true;
++        u32 idx_rx = 0, idx_fq = 0;
++        static char *pkt;
++
++        int rcvd = xsk_ring_cons__peek(&xsk->rx, opt_batch_size, &idx_rx);
++
++        xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
++
++        for (int i = 0; i < rcvd; i++) {
++            struct xdp_desc *desc = xsk_ring_cons__rx_desc(&xsk->rx, idx_rx++);
++            char *frag = xsk_umem__get_data(xsk->umem->buffer, desc->addr);
++            bool eop = !(desc->options & XDP_PKT_CONTD);
++
++        if (new_packet)
++            pkt = frag;
++        else
++            add_frag_to_pkt(pkt, frag);
++
++        if (eop)
++            process_pkt(pkt);
++
++        new_packet = eop;
++
++        *xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) = desc->addr;
++        }
++
++        xsk_ring_prod__submit(&xsk->umem->fq, rcvd);
++        xsk_ring_cons__release(&xsk->rx, rcvd);
++    }
++
++Usage Multi-Buffer Tx
++=====================
++
++Here is an example Tx path pseudo-code (using libxdp interfaces for
++simplicity) ignoring that the umem is finite in size, and that we
++eventually will run out of packets to send. Also assumes pkts.addr
++points to a valid location in the umem.
++
++.. code-block:: c
++
++    void tx_packets(struct xsk_socket_info *xsk, struct pkt *pkts,
++                    int batch_size)
++    {
++        u32 idx, i, pkt_nb = 0;
++
++        xsk_ring_prod__reserve(&xsk->tx, batch_size, &idx);
++
++        for (i = 0; i < batch_size;) {
++            u64 addr = pkts[pkt_nb].addr;
++            u32 len = pkts[pkt_nb].size;
++
++            do {
++                struct xdp_desc *tx_desc;
++
++                tx_desc = xsk_ring_prod__tx_desc(&xsk->tx, idx + i++);
++                tx_desc->addr = addr;
++
++                if (len > xsk_frame_size) {
++                    tx_desc->len = xsk_frame_size;
++                    tx_desc->options = XDP_PKT_CONTD;
++                } else {
++                    tx_desc->len = len;
++                    tx_desc->options = 0;
++                    pkt_nb++;
++                }
++                len -= tx_desc->len;
++                addr += xsk_frame_size;
++
++                if (i == batch_size) {
++                    /* Remember len, addr, pkt_nb for next iteration.
++                     * Skipped for simplicity.
++                     */
++                    break;
++                }
++            } while (len);
++        }
++
++        xsk_ring_prod__submit(&xsk->tx, i);
++    }
++
+ Sample application
+ ==================
  
- /**
-@@ -960,7 +997,7 @@ static void ice_xmit_pkt(struct ice_tx_ring *xdp_ring, struct xdp_desc *desc,
- 
- 	tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_to_use++);
- 	tx_desc->buf_addr = cpu_to_le64(dma);
--	tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TX_DESC_CMD_EOP,
-+	tx_desc->cmd_type_offset_bsz = ice_build_ctob(xsk_is_eop_desc(desc),
- 						      0, desc->len, 0);
- 
- 	*total_bytes += desc->len;
-@@ -987,7 +1024,7 @@ static void ice_xmit_pkt_batch(struct ice_tx_ring *xdp_ring, struct xdp_desc *de
- 
- 		tx_desc = ICE_TX_DESC(xdp_ring, ntu++);
- 		tx_desc->buf_addr = cpu_to_le64(dma);
--		tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TX_DESC_CMD_EOP,
-+		tx_desc->cmd_type_offset_bsz = ice_build_ctob(xsk_is_eop_desc(&descs[i]),
- 							      0, descs[i].len, 0);
- 
- 		*total_bytes += descs[i].len;
 -- 
 2.34.1
 
