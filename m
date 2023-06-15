@@ -1,146 +1,152 @@
-Return-Path: <netdev+bounces-11229-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11230-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B68AE7320E3
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 22:24:57 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 786FE7320F4
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 22:36:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6F5F82814A3
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 20:24:56 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 60F371C20EDB
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 20:36:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A4BF9125DF;
-	Thu, 15 Jun 2023 20:24:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 35F667E3;
+	Thu, 15 Jun 2023 20:36:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96B5A156C0
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 20:24:54 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A8092101
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 13:24:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686860692;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:to:
-	 cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=MrpsuXVoVGE8iGkAh6o3j2l9HUCJ39oCK3xuHOwIHY0=;
-	b=E/05qhEWq+TBrrXVHPO61F9tApmSWlbrSz9MhZCF3Ur7PhkJvmandUnrxj/HCFAah/N/jL
-	1G05uCIGbReU9S+Iy0EsTdLNpPD185sVEPn+No7Q+GZ65irfAZCH1oou/I89d3qyHx2GD7
-	vqPLBtpYQVuDBEVBNqGzQCsUhmRp/9Y=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-656-nAZj1wX0NOmifXfyQVRigA-1; Thu, 15 Jun 2023 16:24:48 -0400
-X-MC-Unique: nAZj1wX0NOmifXfyQVRigA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2B985805C10;
-	Thu, 15 Jun 2023 20:24:48 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.51])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id D9EBE2166B26;
-	Thu, 15 Jun 2023 20:24:46 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <1657853.1686757902@warthog.procyon.org.uk>
-References: <1657853.1686757902@warthog.procyon.org.uk> <000000000000b2585a05fdeb8379@google.com>
-Cc: dhowells@redhat.com,
-    syzbot <syzbot+6efc50cc1f8d718d6cb7@syzkaller.appspotmail.com>,
-    davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
-    linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-    netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] [crypto?] KASAN: slab-out-of-bounds Read in extract_iter_to_sg
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 298AF2E0D4
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 20:36:55 +0000 (UTC)
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867BFDF;
+	Thu, 15 Jun 2023 13:36:54 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-9828a7a39d1so239317366b.0;
+        Thu, 15 Jun 2023 13:36:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686861413; x=1689453413;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=NIlLjmpeTXD7muPq78fDDjTK7R0iuY0NQ7klt7QevyE=;
+        b=svC2+czAPQw0JJaaeyX18v0M77T5jLqxpdGZiELyrOr36OeF39seF6G8xChaR4LQkt
+         EuhHsWI+ijwMx7e8w9e3twuFgSAsnOWIfPPrfb5ou5T6c0IzK1Lr5K8ufhPNMMt5SoEw
+         ogW+7B9SntyqbpWlv8W8AjezAxrxDWq1BB+pugH9MENC4zAqJfRV43WH5WjrlD5+5Nwx
+         /5Vc+xe35iSLWT6WPqm044DLSMrTgQxLyulyv28+Bw8qNZsF0TSzS/T1sYXozW+g/yBW
+         etqSP1QNjSrihZ9N2NOOfspAXWMRbN3xfF3x0wiXkJ+veQ12KTfUZ9VuNX5NOd45gMtC
+         oB/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686861413; x=1689453413;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NIlLjmpeTXD7muPq78fDDjTK7R0iuY0NQ7klt7QevyE=;
+        b=RlgWJaOZsjowFMrggpfPTGGNL25uE168RjiWhBMFKG8baH9hzemSYdy6EYRG2XhG5b
+         U87knYqnssjbGs3yONuPm16IZA5/vHmDNgtnTDwVQ0s10qKlptHBaHdni4AYCQZfnEtW
+         LdgCF3AvvOJasExU3BCxojysFdMSRa7jTewufSS3JBFvCvizQ+sE3JufCCz3pQJHuott
+         dnzXuyef/IYzu+QdvH7Yytl1xdFyisHG6xAaGi5f9fNBh2vQNZVNhx/iDRQneFB2xRX9
+         JhlvZzzNcXwYoJ34HvyUrfJegXbE3xeo0OHoGelrKY3Add1MAx1xQ+QqEHtt13ZoiSdh
+         itDA==
+X-Gm-Message-State: AC+VfDw8fFCSc1Vc8DXzgswy07drpEyMTElmM7EdOB+tKmgGaiSxqEeW
+	cK5HPez+o/rwK8AL/WtfKe0=
+X-Google-Smtp-Source: ACHHUZ5zo0Bp5rWItQGj98AvS8hsBTVEf8FixZF83ZFIVGz+ZZ8Rai2ZsaZ7MHhNfKf4dtLbHMYxsQ==
+X-Received: by 2002:a17:906:ef0b:b0:967:21:5887 with SMTP id f11-20020a170906ef0b00b0096700215887mr145397ejs.40.1686861412620;
+        Thu, 15 Jun 2023 13:36:52 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id oq19-20020a170906cc9300b00977e0bcff1esm9917887ejb.10.2023.06.15.13.36.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Jun 2023 13:36:51 -0700 (PDT)
+Date: Thu, 15 Jun 2023 23:36:49 +0300
+From: Vladimir Oltean <olteanv@gmail.com>
+To: Simon Horman <simon.horman@corigine.com>
+Cc: Wang Ming <machel@vivo.com>, Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Stephen Rothwell <sfr@canb.auug.org.au>, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, opensource.kernel@vivo.com
+Subject: Re: [PATCH v1] drivers:net:dsa:Fix resource leaks in
+ fwnode_for_each_child_node() loops
+Message-ID: <20230615203649.amziv2aqzi3vishu@skbuf>
+References: <20230615070512.6634-1-machel@vivo.com>
+ <ZIsME1gwEWEyyN1o@corigine.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <262281.1686860686.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 15 Jun 2023 21:24:46 +0100
-Message-ID: <262282.1686860686@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MISSING_HEADERS,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-	version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZIsME1gwEWEyyN1o@corigine.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.g=
-it main
+Hi Simon,
 
-    crypto: Fix af_alg_sendmsg(MSG_SPLICE_PAGES) sglist limit
-    =
+On Thu, Jun 15, 2023 at 03:03:15PM +0200, Simon Horman wrote:
+> On Thu, Jun 15, 2023 at 03:04:58PM +0800, Wang Ming wrote:
+> >  The fwnode_for_each_child_node loop in qca8k_setup_led_ctrl should
+> >  have fwnode_handle_put() before return which could avoid resource leaks.
+> >  This patch could fix this bug.
+> > 
+> > Signed-off-by: Wang Ming <machel@vivo.com>
+> 
+> Hi Wang Ming,
+> 
+> unfortunately your patch has been whitespace mangled - tabs have been
+> converted into 8 spaces. Possibly this was done by your mail client
+> or mail server. In any case the result is that the patch doesn't apply.
+> And unfortunately that breaks our processes.
+> 
+> Also, I'm assuming that as this patch is a fix, it is targeted at the
+> "net", as opposed to "net-next", tree. This should be noted in the subject.
+> 
+> 	Subject: [PATCH net v2] ...
+> 
+> Lastly, looking at the git history of qca8k-leds.c, I think that
+> a better prefix for the patch is "net: dsa: qca8k: ".
+> 
+> 	Subject: [PATCH net v2] net: dsa: qca8k: ...
+> 
+> Please consider addressing the problems and reposting your patch.
+> 
+> -- 
+> pw-bot: changes-requested
 
-    When af_alg_sendmsg() calls extract_iter_to_sg(), it passes MAX_SGL_EN=
-TS as
-    the maximum number of elements that may be written to, but some of the
-    elements may already have been used (as recorded in sgl->cur), so
-    extract_iter_to_sg() may end up overrunning the scatterlist.
-    =
+I think that according to the disclaimer text, you as a subscriber to
+the mailing list should have deleted this message instead of commenting
+on it :)
 
-    Fix this to limit the number of elements to "MAX_SGL_ENTS - sgl->cur".
-    =
+| The contents of this message and any attachments may contain confidential
+| and/or privileged information and are intended exclusively for the
+| addressee(s). If you are not the intended recipient of this message or
+| their agent, please note that any use, dissemination, copying, or storage
+| of this message or its attachments is not allowed.
+| If you receive this message in error, please notify the sender by reply
+| the message or phone and delete this message, any attachments and any
+| copies immediately.
 
-    Note: It probably makes sense in future to alter the behaviour of
-    extract_iter_to_sg() to stop if "sgtable->nents >=3D sg_max" instead, =
-but
-    this is a smaller fix for now.
-    =
+Seriously now, that has to go when posting to a mailing list whose archives
+can be seen on the world wide web.
+https://lore.kernel.org/netdev/20230615070512.6634-1-machel@vivo.com/
 
-    The bug causes errors looking something like:
-    =
+2 comments from my side on the actual patch.
 
-    BUG: KASAN: slab-out-of-bounds in sg_assign_page include/linux/scatter=
-list.h:109 [inline]
-    BUG: KASAN: slab-out-of-bounds in sg_set_page include/linux/scatterlis=
-t.h:139 [inline]
-    BUG: KASAN: slab-out-of-bounds in extract_bvec_to_sg lib/scatterlist.c=
-:1183 [inline]
-    BUG: KASAN: slab-out-of-bounds in extract_iter_to_sg lib/scatterlist.c=
-:1352 [inline]
-    BUG: KASAN: slab-out-of-bounds in extract_iter_to_sg+0x17a6/0x1960 lib=
-/scatterlist.c:1339
-    =
+1. There is an indentation of 1 space in the commit message which
+   doesn't belong there.
 
-    Fixes: bf63e250c4b1 ("crypto: af_alg: Support MSG_SPLICE_PAGES")
-    Reported-by: syzbot+6efc50cc1f8d718d6cb7@syzkaller.appspotmail.com
-    Signed-off-by: David Howells <dhowells@redhat.com>
-    cc: Herbert Xu <herbert@gondor.apana.org.au>
-    cc: "David S. Miller" <davem@davemloft.net>
-    cc: Eric Dumazet <edumazet@google.com>
-    cc: Jakub Kicinski <kuba@kernel.org>
-    cc: Paolo Abeni <pabeni@redhat.com>
-    cc: Jens Axboe <axboe@kernel.dk>
-    cc: Matthew Wilcox <willy@infradead.org>
-    cc: linux-crypto@vger.kernel.org
-    cc: netdev@vger.kernel.org
+2. I believe that the "ports" fwnode_handle is also leaked, both in the
+   error as well as in the success case.
 
-diff --git a/crypto/af_alg.c b/crypto/af_alg.c
-index 7d4b6016b83d..cdb1dcc5dd1a 100644
---- a/crypto/af_alg.c
-+++ b/crypto/af_alg.c
-@@ -1043,7 +1043,7 @@ int af_alg_sendmsg(struct socket *sock, struct msghd=
-r *msg, size_t size,
- 			};
- =
+And one more process-related observation. You must find the commit which
+introduced the problem and add:
 
- 			plen =3D extract_iter_to_sg(&msg->msg_iter, len, &sgtable,
--						  MAX_SGL_ENTS, 0);
-+						  MAX_SGL_ENTS - sgl->cur, 0);
- 			if (plen < 0) {
- 				err =3D plen;
- 				goto unlock;
+Fixes: 1e264f9d2918 ("net: dsa: qca8k: add LEDs basic support")
 
+and also CC the author of that patch.
 
