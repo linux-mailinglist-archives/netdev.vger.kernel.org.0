@@ -1,111 +1,160 @@
-Return-Path: <netdev+bounces-10953-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10954-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id DF31C730C40
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 02:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 9E5F0730C4E
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 02:41:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CD1F21C20E28
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 00:36:24 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C9AC91C20E15
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 00:41:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CC61136E;
-	Thu, 15 Jun 2023 00:36:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9BC2B18F;
+	Thu, 15 Jun 2023 00:41:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0E1318F
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 00:36:22 +0000 (UTC)
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D123269A
-	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 17:36:21 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id ffacd0b85a97d-30fa23e106bso4468463f8f.3
-        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 17:36:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686789379; x=1689381379;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zHkXaOd7qRKf037qagBHI0+WXbHOgwyJxZL5RlVdXyA=;
-        b=nwKdBkTDeGw3t6tVoNLO0Ta/nOVLlYIYz0B91FE7Qp25EfPXE81EKy5xGlQ6GxRCQ5
-         zVdcic1tjsDQG2UsBExKIkPUjewb07Q35A+wN04HUsEy6KBXkQE8C5i32tZhm5wDjFSR
-         Vq+rO7IJs3E4N9Fkq8BxVMBbiq4I3j2UEiXucgblucTykJDAEJOxpnnn8Fa1e0c2Gu1i
-         GlDrYlRrLmI9g/pUoyszwHxe4r7TSAOWmLsEnZSohR0+gfdqFjoFNhYqpXSu6GEj+Mrf
-         qYnYslHAnQnGNaMSjFW6NjLD65d4/EnDNBgyLAadgkQer/fFxnXT4aD8SDLAI6jIVrWy
-         ndrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686789379; x=1689381379;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zHkXaOd7qRKf037qagBHI0+WXbHOgwyJxZL5RlVdXyA=;
-        b=DAqNvjo4FqqaS/PPLxIL2ytufGhkRSxDCQSlkr/U7cd5lJXDMnmmy/smhu1ahcBnNp
-         WnQ0GE4uZzjN5L6LycR0TnG78ZzEj+ANp6GhzXqOYo2bCf76hoLwQTnR4OZbgFjrNjNy
-         i+6/EYMMXPJvpO2x+LRqLPKf/fy/Ab/C90oCCNfQEu4KWbyWS0eQ7B3dxBunER/1Wie0
-         v53GnMG09z9G2m3+QodFmxeRkElX5FToGexgxpeVEJN6vTbCOHv6jDob+qFLFhQ4wx/K
-         qNsbnhdaolM93CzWnkMVfGOVSYq3lD1hllufIkn/orI1WoHmpfFZoByquOws+qJLzdHv
-         Y0rg==
-X-Gm-Message-State: AC+VfDxHIf/NXBHGHDVBUcifKlVLf61tMXxeXnskpPmiBCegvzEmWlRW
-	DFxN7Hv630LfbDp/EaxE0EdM5GYWrWc=
-X-Google-Smtp-Source: ACHHUZ5+Hn9I0W9SWFBtrgxmgnLUP25oY6spET1+RGnm6FuO3kOOwwnIJPXaBZ/rmcZKorOJUPUEjQ==
-X-Received: by 2002:a5d:6e11:0:b0:30f:b045:8b60 with SMTP id h17-20020a5d6e11000000b0030fb0458b60mr7302118wrz.69.1686789379349;
-        Wed, 14 Jun 2023 17:36:19 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id 10-20020a05600c24ca00b003f7e4d143cfsm18639428wmu.15.2023.06.14.17.36.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Jun 2023 17:36:18 -0700 (PDT)
-Subject: Re: [PATCH net] sfc: use budget for TX completions
-To: Jakub Kicinski <kuba@kernel.org>, Martin Habets <habetsm.xilinx@gmail.com>
-Cc: =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
- davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
- netdev@vger.kernel.org, linux-net-drivers@amd.com, Fei Liu <feliu@redhat.com>
-References: <20230612144254.21039-1-ihuguet@redhat.com>
- <ZIl0OYvze+iTehWX@gmail.com> <20230614102744.71c91f20@kernel.org>
-From: Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <a4e26da4-cb09-7537-60ff-fd00ec4c49d6@gmail.com>
-Date: Thu, 15 Jun 2023 01:36:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B91C378
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 00:41:14 +0000 (UTC)
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5EBEB26A1;
+	Wed, 14 Jun 2023 17:41:13 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id 1222292009D; Thu, 15 Jun 2023 02:41:11 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id 0AE5092009C;
+	Thu, 15 Jun 2023 01:41:11 +0100 (BST)
+Date: Thu, 15 Jun 2023 01:41:10 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Bjorn Helgaas <helgaas@kernel.org>
+cc: Bjorn Helgaas <bhelgaas@google.com>, 
+    Mahesh J Salgaonkar <mahesh@linux.ibm.com>, 
+    Oliver O'Halloran <oohall@gmail.com>, 
+    Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+    Christophe Leroy <christophe.leroy@csgroup.eu>, 
+    Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>, 
+    "David S. Miller" <davem@davemloft.net>, 
+    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
+    Paolo Abeni <pabeni@redhat.com>, 
+    =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>, 
+    David Abdurachmanov <david.abdurachmanov@gmail.com>, 
+    linux-rdma@vger.kernel.org, 
+    Mika Westerberg <mika.westerberg@linux.intel.com>, 
+    linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, 
+    Alex Williamson <alex.williamson@redhat.com>, 
+    Lukas Wunner <lukas@wunner.de>, linux-pci@vger.kernel.org, 
+    Stefan Roese <sr@denx.de>, Jim Wilson <wilson@tuliptree.org>, 
+    netdev@vger.kernel.org
+Subject: Re: [PATCH v9 00/14] pci: Work around ASMedia ASM2824 PCIe link
+ training failures
+In-Reply-To: <20230614231203.GA1451606@bhelgaas>
+Message-ID: <alpine.DEB.2.21.2306150124010.64925@angie.orcam.me.uk>
+References: <20230614231203.GA1451606@bhelgaas>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20230614102744.71c91f20@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 14/06/2023 18:27, Jakub Kicinski wrote:
-> The documentation is pretty recent. I haven't seen this lockup once 
-> in production or testing. Do multiple queues complete on the same CPU
-> for SFC or something weird like that?
+On Wed, 14 Jun 2023, Bjorn Helgaas wrote:
 
-I think the key question here is can one CPU be using a TXQ to send
- while another CPU is in a NAPI poll on the same channel and thus
- trying to clean the EVQ that the TXQ is using.  If so the NAPI poll
- could last forever; if not then it shouldn't ever have more than 8k
- (or whatever the TX ring size is set to) events to process.
-And even ignoring affinity of the core TXQs, at the very least XDP
- TXQs can serve different CPUs to the one on which their EVQ (and
- hence NAPI poll) lives, which means they can keep filling the EVQ
- as fast as the NAPI poll empties it, and thus keep ev_process
- looping forever.
-In principle this can also happen with other kinds of events, e.g.
- if the MC goes crazy and generates infinite MCDI-event spam then
- NAPI poll will spin on that CPU forever eating the events.  So
- maybe this limit needs to be broader than just TX events?  A hard
- cap on the number of events (regardless of type) that can be
- consumed in a single efx_ef10_ev_process() invocation, perhaps?
+> >  This is v9 of the change to work around a PCIe link training phenomenon 
+> > where a pair of devices both capable of operating at a link speed above 
+> > 2.5GT/s seems unable to negotiate the link speed and continues training 
+> > indefinitely with the Link Training bit switching on and off repeatedly 
+> > and the data link layer never reaching the active state.
+> > 
+> >  With several requests addressed and a few extra issues spotted this
+> > version has now grown to 14 patches.  It has been verified for device 
+> > enumeration with and without PCI_QUIRKS enabled, using the same piece of 
+> > RISC-V hardware as previously.  Hot plug or reset events have not been 
+> > verified, as this is difficult if at all feasible with hardware in 
+> > question.
+> > 
+> >  Last iteration: 
+> > <https://lore.kernel.org/r/alpine.DEB.2.21.2304060100160.13659@angie.orcam.me.uk/>, 
+> > and my input to it:
+> > <https://lore.kernel.org/r/alpine.DEB.2.21.2306080224280.36323@angie.orcam.me.uk/>.
+> 
+> Thanks, I applied these to pci/enumeration for v6.5.
 
--ed
+ Great, thanks!
+
+> I tweaked a few things, so double-check to be sure I didn't break
+> something:
+> 
+>   - Moved dev->link_active_reporting init to set_pcie_port_type()
+>     because it does other PCIe-related stuff.
+> 
+>   - Reordered to keep all the link_active_reporting things together.
+> 
+>   - Reordered to clean up & factor pcie_retrain_link() before exposing
+>     it to the rest of the PCI core.
+> 
+>   - Moved pcie_retrain_link() a little earlier to keep it next to
+>     pcie_wait_for_link_status().
+> 
+>   - Squashed the stubs into the actual quirk so we don't have the
+>     intermediate state where we call the stubs but they never do
+>     anything (let me know if there's a reason we need your order).
+> 
+>   - Inline pcie_parent_link_retrain(), which seemed like it didn't add
+>     enough to be worthwhile.
+
+ Ack, I'll double-check and report back.  A minor nit I've spotted below:
+
+>  static int pci_dev_wait(struct pci_dev *dev, char *reset_type, int timeout)
+>  {
+> -	bool retrain = true;
+>  	int delay = 1;
+> +	bool retrain = false;
+> +	struct pci_dev *bridge;
+> +
+> +	if (pci_is_pcie(dev)) {
+> +		retrain = true;
+> +		bridge = pci_upstream_bridge(dev);
+> +	}
+
+ If doing it this way, which I actually like, I think it would be a little 
+bit better performance- and style-wise if this was written as:
+
+	if (pci_is_pcie(dev)) {
+		bridge = pci_upstream_bridge(dev);
+		retrain = !!bridge;
+	}
+
+(or "retrain = bridge != NULL" if you prefer this style), and then we 
+don't have to repeatedly check two variables iff (pcie && !bridge) in the 
+loop below:
+
+> @@ -1201,9 +1190,9 @@ static int pci_dev_wait(struct pci_dev *dev, char *reset_type, int timeout)
+>  		}
+>  
+>  		if (delay > PCI_RESET_WAIT) {
+> -			if (retrain) {
+> +			if (retrain && bridge) {
+
+-- i.e. code can stay then as:
+
+			if (retrain) {
+
+here.  I hope you find this observation rather obvious, so will you amend 
+your tree, or shall I send an incremental update?
+
+ Otherwise I don't find anything suspicious with the interdiff itself 
+(thanks for posting it, that's really useful indeed!), but as I say I'll 
+yet double-check how things look and work with your tree.  Hopefully 
+tomorrow (Thu), as I have other stuff yet to complete tonight.
+
+  Maciej
 
