@@ -1,421 +1,118 @@
-Return-Path: <netdev+bounces-10970-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10971-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4DA88730DEE
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 06:08:48 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B9073730DFB
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 06:17:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5F235281635
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 04:08:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EF0D328165F
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 04:17:20 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 15E7F655;
-	Thu, 15 Jun 2023 04:08:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2374F644;
+	Thu, 15 Jun 2023 04:17:19 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0502A625
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 04:08:43 +0000 (UTC)
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6034B1715;
-	Wed, 14 Jun 2023 21:08:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686802121; x=1718338121;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ubSwrvmj6TjTSKBerA+PXsJdtf+4q1F7Yg6RmhvQYfU=;
-  b=b+ohFY411oXPW+CRVeAqwgJD/vtrGqO4ovpZTllZAxFlw1Hm6x9AzmgB
-   fknsD7hV3Q8SM1xtx8VQk/fNVw3tuFHOZupoFz33au3KdnsbTlIlt/gb4
-   e6/m/EOI86Bpr4SIoDe5kXhE0E7wGdf61cITKq4LAf+hnUISm2wplHmvH
-   ob2V4exmjciEVbwXGQa/OEOrufOcjfOmPIFrXFw/ke50GlPveUKVFy+C2
-   M8+bIXVGW94U1GXy0gY7uVkss0fcsFmBKfadL2q94oNkInIybbzjkG9MS
-   1jlI50KOFrBs7G7KSMj3dORHFKZCD5OrJtBcR+TISjGaNW8POd4ivYPc9
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10741"; a="362186301"
-X-IronPort-AV: E=Sophos;i="6.00,243,1681196400"; 
-   d="scan'208";a="362186301"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2023 21:08:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10741"; a="706482070"
-X-IronPort-AV: E=Sophos;i="6.00,243,1681196400"; 
-   d="scan'208";a="706482070"
-Received: from lkp-server02.sh.intel.com (HELO d59cacf64e9e) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 14 Jun 2023 21:08:34 -0700
-Received: from kbuild by d59cacf64e9e with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1q9eHi-0001Ph-2t;
-	Thu, 15 Jun 2023 04:08:34 +0000
-Date: Thu, 15 Jun 2023 12:07:44 +0800
-From: kernel test robot <lkp@intel.com>
-To: Jisheng Zhang <jszhang@kernel.org>,
-	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Jose Abreu <joabreu@synopsys.com>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>
-Cc: oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH 3/3] net: stmmac: use pcpu statistics where necessary
-Message-ID: <202306151110.z8I0lY3U-lkp@intel.com>
-References: <20230614161847.4071-4-jszhang@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7E96625
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 04:17:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF432C433C0;
+	Thu, 15 Jun 2023 04:17:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686802637;
+	bh=Wf7Wd81kwURj9/QONfqCGAHz6JBdBCub1nSOGMdDMA4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=VcZufbfQCdXJzbcHg9NKloFUyJfXTJBoos26D/HEYloKrBGr7N5O9FuhPL2ET4HhM
+	 E1oCxT4LMBe00RplzvezqEHpXG39/ki0nUsMO+zGFuMJPAVXilKM64QoZfjya/uq8k
+	 s0fTInSgOpQHrwtLj9nAl2dFCHD8YptM9mTi7v1rIr87LCgIsAJ6jsX44zYF+1+Hmy
+	 uCf77Z1ze7nz6xzI7dK8j/L3niRaLjR4r0C/0pdVlKf79F0wVig25eGvI23tzRdqqE
+	 uIF3fXywF8zlOVy6YJte6po3PJcI2B/QW/bGe7jbPXoG8W4C/KjWQr/+CfKIBrDeF+
+	 kzwXTElbSH/ow==
+Date: Wed, 14 Jun 2023 21:17:15 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>, Jonathan
+ Corbet <corbet@lwn.net>
+Cc: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "davem@davemloft.net" <davem@davemloft.net>, "pabeni@redhat.com"
+ <pabeni@redhat.com>, "edumazet@google.com" <edumazet@google.com>,
+ "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
+ linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next] tools: ynl-gen: generate docs for
+ <name>_max/_mask enums
+Message-ID: <20230614211715.01940bbd@kernel.org>
+In-Reply-To: <DM6PR11MB4657A5F161476B05C5F8B7569B5AA@DM6PR11MB4657.namprd11.prod.outlook.com>
+References: <20230613231709.150622-1-arkadiusz.kubalewski@intel.com>
+	<20230613231709.150622-3-arkadiusz.kubalewski@intel.com>
+	<20230613175928.4ea56833@kernel.org>
+	<DM6PR11MB46570AEF7E10089E70CC1D019B5AA@DM6PR11MB4657.namprd11.prod.outlook.com>
+	<20230614103852.3eb7fd02@kernel.org>
+	<DM6PR11MB4657A5F161476B05C5F8B7569B5AA@DM6PR11MB4657.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230614161847.4071-4-jszhang@kernel.org>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Jisheng,
+On Wed, 14 Jun 2023 22:11:38 +0000 Kubalewski, Arkadiusz wrote:
+> Thanks for pointing this, but it doesn't work :/
+> 
+> I tried described format but still ./scripts/kernel-doc warns about it.
+> Same as 'make htmldocs' does, as it uses ./scripts/kernel-doc
+> 
+> Also, if the enum is not described in the header, the docs produced by
+> the 'make htmldocs' would list the enum with the comment "undescribed".
 
-kernel test robot noticed the following build errors:
+Oh, you're right :S Looks like private: does not work for enums.
 
-[auto build test ERROR on sunxi/sunxi/for-next]
-[also build test ERROR on linus/master v6.4-rc6]
-[cannot apply to next-20230614]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> It seems we need fixing:
+> - prevent warning from ./scripts/kernel-doc, so enums marked as "private:"
+>   would not warn
+> - generate __<ENUM_NAME>_MAX while marking them as "/* private: */"
+> - add some kind of "pattern exclude" directive/mechanics for generating
+>   docs with sphinx
+> 
+> Does it make sense?
+> TBH, not yet sure if all above are possible..
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jisheng-Zhang/net-stmmac-don-t-clear-network-statistics-in-ndo_open/20230615-003137
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/sunxi/linux.git sunxi/for-next
-patch link:    https://lore.kernel.org/r/20230614161847.4071-4-jszhang%40kernel.org
-patch subject: [PATCH 3/3] net: stmmac: use pcpu statistics where necessary
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20230615/202306151110.z8I0lY3U-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build):
-        git remote add sunxi https://git.kernel.org/pub/scm/linux/kernel/git/sunxi/linux.git
-        git fetch sunxi sunxi/for-next
-        git checkout sunxi/sunxi/for-next
-        b4 shazam https://lore.kernel.org/r/20230614161847.4071-4-jszhang@kernel.org
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 olddefconfig
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Let's ask Jon, and wait for him to chime in, I don't think these
+warnings should be a blocker for new families.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202306151110.z8I0lY3U-lkp@intel.com/
+Jon, we have some "meta" entries in the uAPI enums in netlink 
+to mark the number of attributes, eg:
 
-All errors (new ones prefixed by >>):
+enum {
+	NETDEV_A_DEV_IFINDEX = 1,
+	NETDEV_A_DEV_PAD,
+	NETDEV_A_DEV_XDP_FEATURES,
+/* private: */
+	__NETDEV_A_DEV_MAX, // this
+	NETDEV_A_DEV_MAX = (__NETDEV_A_DEV_MAX - 1) // and this
+};
 
-   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c: In function 'stmmac_dvr_probe':
->> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:7243:20: error: 'struct stmmac_priv' has no member named 'xstas'; did you mean 'xstats'?
-    7243 |         if (!priv->xstas.pstats)
-         |                    ^~~~~
-         |                    xstats
+Also masks of all flags like:
 
+enum netdev_xdp_act {
+	NETDEV_XDP_ACT_BASIC = 1,
+	NETDEV_XDP_ACT_REDIRECT = 2,
+	NETDEV_XDP_ACT_NDO_XMIT = 4,
+	NETDEV_XDP_ACT_XSK_ZEROCOPY = 8,
+	NETDEV_XDP_ACT_HW_OFFLOAD = 16,
+	NETDEV_XDP_ACT_RX_SG = 32,
+	NETDEV_XDP_ACT_NDO_XMIT_SG = 64,
+/* private: */
+	NETDEV_XDP_ACT_MASK = 127, // this
+};
 
-vim +7243 drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+which user space should not care about.
 
-  7211	
-  7212	/**
-  7213	 * stmmac_dvr_probe
-  7214	 * @device: device pointer
-  7215	 * @plat_dat: platform data pointer
-  7216	 * @res: stmmac resource pointer
-  7217	 * Description: this is the main probe function used to
-  7218	 * call the alloc_etherdev, allocate the priv structure.
-  7219	 * Return:
-  7220	 * returns 0 on success, otherwise errno.
-  7221	 */
-  7222	int stmmac_dvr_probe(struct device *device,
-  7223			     struct plat_stmmacenet_data *plat_dat,
-  7224			     struct stmmac_resources *res)
-  7225	{
-  7226		struct net_device *ndev = NULL;
-  7227		struct stmmac_priv *priv;
-  7228		u32 rxq;
-  7229		int i, ret = 0;
-  7230	
-  7231		ndev = devm_alloc_etherdev_mqs(device, sizeof(struct stmmac_priv),
-  7232					       MTL_MAX_TX_QUEUES, MTL_MAX_RX_QUEUES);
-  7233		if (!ndev)
-  7234			return -ENOMEM;
-  7235	
-  7236		SET_NETDEV_DEV(ndev, device);
-  7237	
-  7238		priv = netdev_priv(ndev);
-  7239		priv->device = device;
-  7240		priv->dev = ndev;
-  7241	
-  7242		priv->xstats.pstats = devm_netdev_alloc_pcpu_stats(device, struct stmmac_pcpu_stats);
-> 7243		if (!priv->xstas.pstats)
-  7244			return -ENOMEM;
-  7245	
-  7246		stmmac_set_ethtool_ops(ndev);
-  7247		priv->pause = pause;
-  7248		priv->plat = plat_dat;
-  7249		priv->ioaddr = res->addr;
-  7250		priv->dev->base_addr = (unsigned long)res->addr;
-  7251		priv->plat->dma_cfg->multi_msi_en = priv->plat->multi_msi_en;
-  7252	
-  7253		priv->dev->irq = res->irq;
-  7254		priv->wol_irq = res->wol_irq;
-  7255		priv->lpi_irq = res->lpi_irq;
-  7256		priv->sfty_ce_irq = res->sfty_ce_irq;
-  7257		priv->sfty_ue_irq = res->sfty_ue_irq;
-  7258		for (i = 0; i < MTL_MAX_RX_QUEUES; i++)
-  7259			priv->rx_irq[i] = res->rx_irq[i];
-  7260		for (i = 0; i < MTL_MAX_TX_QUEUES; i++)
-  7261			priv->tx_irq[i] = res->tx_irq[i];
-  7262	
-  7263		if (!is_zero_ether_addr(res->mac))
-  7264			eth_hw_addr_set(priv->dev, res->mac);
-  7265	
-  7266		dev_set_drvdata(device, priv->dev);
-  7267	
-  7268		/* Verify driver arguments */
-  7269		stmmac_verify_args();
-  7270	
-  7271		priv->af_xdp_zc_qps = bitmap_zalloc(MTL_MAX_TX_QUEUES, GFP_KERNEL);
-  7272		if (!priv->af_xdp_zc_qps)
-  7273			return -ENOMEM;
-  7274	
-  7275		/* Allocate workqueue */
-  7276		priv->wq = create_singlethread_workqueue("stmmac_wq");
-  7277		if (!priv->wq) {
-  7278			dev_err(priv->device, "failed to create workqueue\n");
-  7279			ret = -ENOMEM;
-  7280			goto error_wq_init;
-  7281		}
-  7282	
-  7283		INIT_WORK(&priv->service_task, stmmac_service_task);
-  7284	
-  7285		/* Initialize Link Partner FPE workqueue */
-  7286		INIT_WORK(&priv->fpe_task, stmmac_fpe_lp_task);
-  7287	
-  7288		/* Override with kernel parameters if supplied XXX CRS XXX
-  7289		 * this needs to have multiple instances
-  7290		 */
-  7291		if ((phyaddr >= 0) && (phyaddr <= 31))
-  7292			priv->plat->phy_addr = phyaddr;
-  7293	
-  7294		if (priv->plat->stmmac_rst) {
-  7295			ret = reset_control_assert(priv->plat->stmmac_rst);
-  7296			reset_control_deassert(priv->plat->stmmac_rst);
-  7297			/* Some reset controllers have only reset callback instead of
-  7298			 * assert + deassert callbacks pair.
-  7299			 */
-  7300			if (ret == -ENOTSUPP)
-  7301				reset_control_reset(priv->plat->stmmac_rst);
-  7302		}
-  7303	
-  7304		ret = reset_control_deassert(priv->plat->stmmac_ahb_rst);
-  7305		if (ret == -ENOTSUPP)
-  7306			dev_err(priv->device, "unable to bring out of ahb reset: %pe\n",
-  7307				ERR_PTR(ret));
-  7308	
-  7309		/* Init MAC and get the capabilities */
-  7310		ret = stmmac_hw_init(priv);
-  7311		if (ret)
-  7312			goto error_hw_init;
-  7313	
-  7314		/* Only DWMAC core version 5.20 onwards supports HW descriptor prefetch.
-  7315		 */
-  7316		if (priv->synopsys_id < DWMAC_CORE_5_20)
-  7317			priv->plat->dma_cfg->dche = false;
-  7318	
-  7319		stmmac_check_ether_addr(priv);
-  7320	
-  7321		ndev->netdev_ops = &stmmac_netdev_ops;
-  7322	
-  7323		ndev->xdp_metadata_ops = &stmmac_xdp_metadata_ops;
-  7324	
-  7325		ndev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
-  7326				    NETIF_F_RXCSUM;
-  7327		ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-  7328				     NETDEV_XDP_ACT_XSK_ZEROCOPY |
-  7329				     NETDEV_XDP_ACT_NDO_XMIT;
-  7330	
-  7331		ret = stmmac_tc_init(priv, priv);
-  7332		if (!ret) {
-  7333			ndev->hw_features |= NETIF_F_HW_TC;
-  7334		}
-  7335	
-  7336		if ((priv->plat->tso_en) && (priv->dma_cap.tsoen)) {
-  7337			ndev->hw_features |= NETIF_F_TSO | NETIF_F_TSO6;
-  7338			if (priv->plat->has_gmac4)
-  7339				ndev->hw_features |= NETIF_F_GSO_UDP_L4;
-  7340			priv->tso = true;
-  7341			dev_info(priv->device, "TSO feature enabled\n");
-  7342		}
-  7343	
-  7344		if (priv->dma_cap.sphen && !priv->plat->sph_disable) {
-  7345			ndev->hw_features |= NETIF_F_GRO;
-  7346			priv->sph_cap = true;
-  7347			priv->sph = priv->sph_cap;
-  7348			dev_info(priv->device, "SPH feature enabled\n");
-  7349		}
-  7350	
-  7351		/* Ideally our host DMA address width is the same as for the
-  7352		 * device. However, it may differ and then we have to use our
-  7353		 * host DMA width for allocation and the device DMA width for
-  7354		 * register handling.
-  7355		 */
-  7356		if (priv->plat->host_dma_width)
-  7357			priv->dma_cap.host_dma_width = priv->plat->host_dma_width;
-  7358		else
-  7359			priv->dma_cap.host_dma_width = priv->dma_cap.addr64;
-  7360	
-  7361		if (priv->dma_cap.host_dma_width) {
-  7362			ret = dma_set_mask_and_coherent(device,
-  7363					DMA_BIT_MASK(priv->dma_cap.host_dma_width));
-  7364			if (!ret) {
-  7365				dev_info(priv->device, "Using %d/%d bits DMA host/device width\n",
-  7366					 priv->dma_cap.host_dma_width, priv->dma_cap.addr64);
-  7367	
-  7368				/*
-  7369				 * If more than 32 bits can be addressed, make sure to
-  7370				 * enable enhanced addressing mode.
-  7371				 */
-  7372				if (IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT))
-  7373					priv->plat->dma_cfg->eame = true;
-  7374			} else {
-  7375				ret = dma_set_mask_and_coherent(device, DMA_BIT_MASK(32));
-  7376				if (ret) {
-  7377					dev_err(priv->device, "Failed to set DMA Mask\n");
-  7378					goto error_hw_init;
-  7379				}
-  7380	
-  7381				priv->dma_cap.host_dma_width = 32;
-  7382			}
-  7383		}
-  7384	
-  7385		ndev->features |= ndev->hw_features | NETIF_F_HIGHDMA;
-  7386		ndev->watchdog_timeo = msecs_to_jiffies(watchdog);
-  7387	#ifdef STMMAC_VLAN_TAG_USED
-  7388		/* Both mac100 and gmac support receive VLAN tag detection */
-  7389		ndev->features |= NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HW_VLAN_STAG_RX;
-  7390		if (priv->dma_cap.vlhash) {
-  7391			ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
-  7392			ndev->features |= NETIF_F_HW_VLAN_STAG_FILTER;
-  7393		}
-  7394		if (priv->dma_cap.vlins) {
-  7395			ndev->features |= NETIF_F_HW_VLAN_CTAG_TX;
-  7396			if (priv->dma_cap.dvlan)
-  7397				ndev->features |= NETIF_F_HW_VLAN_STAG_TX;
-  7398		}
-  7399	#endif
-  7400		priv->msg_enable = netif_msg_init(debug, default_msg_level);
-  7401	
-  7402		priv->xstats.threshold = tc;
-  7403	
-  7404		/* Initialize RSS */
-  7405		rxq = priv->plat->rx_queues_to_use;
-  7406		netdev_rss_key_fill(priv->rss.key, sizeof(priv->rss.key));
-  7407		for (i = 0; i < ARRAY_SIZE(priv->rss.table); i++)
-  7408			priv->rss.table[i] = ethtool_rxfh_indir_default(i, rxq);
-  7409	
-  7410		if (priv->dma_cap.rssen && priv->plat->rss_en)
-  7411			ndev->features |= NETIF_F_RXHASH;
-  7412	
-  7413		ndev->vlan_features |= ndev->features;
-  7414		/* TSO doesn't work on VLANs yet */
-  7415		ndev->vlan_features &= ~NETIF_F_TSO;
-  7416	
-  7417		/* MTU range: 46 - hw-specific max */
-  7418		ndev->min_mtu = ETH_ZLEN - ETH_HLEN;
-  7419		if (priv->plat->has_xgmac)
-  7420			ndev->max_mtu = XGMAC_JUMBO_LEN;
-  7421		else if ((priv->plat->enh_desc) || (priv->synopsys_id >= DWMAC_CORE_4_00))
-  7422			ndev->max_mtu = JUMBO_LEN;
-  7423		else
-  7424			ndev->max_mtu = SKB_MAX_HEAD(NET_SKB_PAD + NET_IP_ALIGN);
-  7425		/* Will not overwrite ndev->max_mtu if plat->maxmtu > ndev->max_mtu
-  7426		 * as well as plat->maxmtu < ndev->min_mtu which is a invalid range.
-  7427		 */
-  7428		if ((priv->plat->maxmtu < ndev->max_mtu) &&
-  7429		    (priv->plat->maxmtu >= ndev->min_mtu))
-  7430			ndev->max_mtu = priv->plat->maxmtu;
-  7431		else if (priv->plat->maxmtu < ndev->min_mtu)
-  7432			dev_warn(priv->device,
-  7433				 "%s: warning: maxmtu having invalid value (%d)\n",
-  7434				 __func__, priv->plat->maxmtu);
-  7435	
-  7436		if (flow_ctrl)
-  7437			priv->flow_ctrl = FLOW_AUTO;	/* RX/TX pause on */
-  7438	
-  7439		ndev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
-  7440	
-  7441		/* Setup channels NAPI */
-  7442		stmmac_napi_add(ndev);
-  7443	
-  7444		mutex_init(&priv->lock);
-  7445	
-  7446		/* If a specific clk_csr value is passed from the platform
-  7447		 * this means that the CSR Clock Range selection cannot be
-  7448		 * changed at run-time and it is fixed. Viceversa the driver'll try to
-  7449		 * set the MDC clock dynamically according to the csr actual
-  7450		 * clock input.
-  7451		 */
-  7452		if (priv->plat->clk_csr >= 0)
-  7453			priv->clk_csr = priv->plat->clk_csr;
-  7454		else
-  7455			stmmac_clk_csr_set(priv);
-  7456	
-  7457		stmmac_check_pcs_mode(priv);
-  7458	
-  7459		pm_runtime_get_noresume(device);
-  7460		pm_runtime_set_active(device);
-  7461		if (!pm_runtime_enabled(device))
-  7462			pm_runtime_enable(device);
-  7463	
-  7464		if (priv->hw->pcs != STMMAC_PCS_TBI &&
-  7465		    priv->hw->pcs != STMMAC_PCS_RTBI) {
-  7466			/* MDIO bus Registration */
-  7467			ret = stmmac_mdio_register(ndev);
-  7468			if (ret < 0) {
-  7469				dev_err_probe(priv->device, ret,
-  7470					      "%s: MDIO bus (id: %d) registration failed\n",
-  7471					      __func__, priv->plat->bus_id);
-  7472				goto error_mdio_register;
-  7473			}
-  7474		}
-  7475	
-  7476		if (priv->plat->speed_mode_2500)
-  7477			priv->plat->speed_mode_2500(ndev, priv->plat->bsp_priv);
-  7478	
-  7479		if (priv->plat->mdio_bus_data && priv->plat->mdio_bus_data->has_xpcs) {
-  7480			ret = stmmac_xpcs_setup(priv->mii);
-  7481			if (ret)
-  7482				goto error_xpcs_setup;
-  7483		}
-  7484	
-  7485		ret = stmmac_phy_setup(priv);
-  7486		if (ret) {
-  7487			netdev_err(ndev, "failed to setup phy (%d)\n", ret);
-  7488			goto error_phy_setup;
-  7489		}
-  7490	
-  7491		ret = register_netdev(ndev);
-  7492		if (ret) {
-  7493			dev_err(priv->device, "%s: ERROR %i registering the device\n",
-  7494				__func__, ret);
-  7495			goto error_netdev_register;
-  7496		}
-  7497	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+I was hoping we can mark them as /* private: */ but that doesn't
+work, when we add kdocs without documenting those - there's a warning.
+Is this a known problem? Is it worth fixing?
+Do we need to fix both kernel-doc and sphinx or just the former?
 
