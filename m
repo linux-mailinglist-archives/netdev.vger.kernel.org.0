@@ -1,256 +1,322 @@
-Return-Path: <netdev+bounces-11029-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11030-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id C593D731299
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 10:47:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8514C7312A4
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 10:49:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2607A281707
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 08:47:26 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B7CF01C20381
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 08:49:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 45C473D75;
-	Thu, 15 Jun 2023 08:47:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7723A525B;
+	Thu, 15 Jun 2023 08:49:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 391E7EDF
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 08:47:24 +0000 (UTC)
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 100CD3C1E;
-	Thu, 15 Jun 2023 01:47:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1686818835; x=1718354835;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=QTzovRalX3ETeY4VZEKtHx2GIcZ+aGw7PXrcvk6ii2c=;
-  b=dcvIlLIOxqA/NyB8OIJZdIWNm+JDM/HXaIVOLDFAHQS7MIYzW96CNS2e
-   KQlgRlYT7wm3GsulKbWhwMoHXe4pgFLLHwkBmkvjGfBHCjfsDI1vbMdzH
-   SkxvD6HYQk/TH9SGyoKtOmC7/BCrjT0rcFXdLVmgxG9sIt3/YCeJXLCbY
-   imuiRKa8f7/N3mHjhT/VW1hJwCNptp04XeVjaXb5mxO+7mxKEIt6idomC
-   N3oCBSjblSPyP6Qufj4ztCMFeo0J7yXCvJrYmgRMVbt40D2pXnQQt4YV2
-   f66WYosf4NzRMUxHLlryZTsi8A5FIdAYiAyejRdH/vyVD/18JqL3XxVll
-   Q==;
-X-IronPort-AV: E=Sophos;i="6.00,244,1681196400"; 
-   d="scan'208";a="218618754"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jun 2023 01:47:14 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 15 Jun 2023 01:47:12 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Thu, 15 Jun 2023 01:47:09 -0700
-Message-ID: <c03077f4-93de-d1c4-0f5d-19292553e6c8@microchip.com>
-Date: Thu, 15 Jun 2023 10:46:57 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B544659
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 08:49:52 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6652962
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 01:49:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686818988;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=uz/1ciLho8QTCpue5J/iy/sXFLvKT6VoFFGDoF9WXLk=;
+	b=Ml+7AoOIB7GZR9dNDlfC+e4Tg3RklPlLGLadxv5V8/k0A0qYXTWemdexcm2LaS9CKK6JDz
+	a6X3O14emLSCSU6jvtp7ihZulzUa+mwmllSV8/aEl/x3abVqv2wE5Xe9tGAXXRrIgwocJK
+	N3xiZFv6nXwqBg3Kf5CJr62OnK4DjPI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-508-cI8C2lIrPCKO5oVqooafiA-1; Thu, 15 Jun 2023 04:49:39 -0400
+X-MC-Unique: cI8C2lIrPCKO5oVqooafiA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CCE8C2802E30;
+	Thu, 15 Jun 2023 08:49:38 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.39.193.6])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id DC687140E952;
+	Thu, 15 Jun 2023 08:49:36 +0000 (UTC)
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+To: ecree.xilinx@gmail.com,
+	habetsm.xilinx@gmail.com
+Cc: davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	netdev@vger.kernel.org,
+	linux-net-drivers@amd.com,
+	bkenward@solarflare.com,
+	=?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+	Fei Liu <feliu@redhat.com>
+Subject: [PATCH v2 net] sfc: use budget for TX completions
+Date: Thu, 15 Jun 2023 10:49:29 +0200
+Message-Id: <20230615084929.10506-1-ihuguet@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net-next v4 2/2] net: macb: Add support for partial store
- and forward
-Content-Language: en-US
-To: Pranavi Somisetty <pranavi.somisetty@amd.com>, <davem@davemloft.net>,
-	<edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-	<robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-	<claudiu.beznea@microchip.com>
-CC: <git@amd.com>, <michal.simek@amd.com>, <harini.katakam@amd.com>,
-	<radhey.shyam.pandey@amd.com>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-References: <20230613054340.12837-1-pranavi.somisetty@amd.com>
- <20230613054340.12837-3-pranavi.somisetty@amd.com>
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20230613054340.12837-3-pranavi.somisetty@amd.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 13/06/2023 at 07:43, Pranavi Somisetty wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> From: Maulik Jodhani <maulik.jodhani@xilinx.com>
-> 
-> When the receive partial store and forward mode is activated, the
-> receiver will only begin to forward the packet to the external AHB
-> or AXI slave when enough packet data is stored in the packet buffer.
-> The amount of packet data required to activate the forwarding process
-> is programmable via watermark registers which are located at the same
-> address as the partial store and forward enable bits. Adding support to
-> read this rx-watermark value from device-tree, to program the watermark
-> registers and enable partial store and forwarding.
-> 
-> Signed-off-by: Maulik Jodhani <maulik.jodhani@xilinx.com>
-> Signed-off-by: Pranavi Somisetty <pranavi.somisetty@amd.com>
+When running workloads heavy unbalanced towards TX (high TX, low RX
+traffic), sfc driver can retain the CPU during too long times. Although
+in many cases this is not enough to be visible, it can affect
+performance and system responsiveness.
 
-Looks good to me:
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+A way to reproduce it is to use a debug kernel and run some parallel
+netperf TX tests. In some systems, this will lead to this message being
+logged:
+  kernel:watchdog: BUG: soft lockup - CPU#12 stuck for 22s!
 
-Thanks for your patch and effort to address comments Pranavi.
+The reason is that sfc driver doesn't account any NAPI budget for the TX
+completion events work. With high-TX/low-RX traffic, this makes that the
+CPU is held for long time for NAPI poll.
 
-Best regards,
-   Nicolas
+Documentations says "drivers can process completions for any number of Tx
+packets but should only process up to budget number of Rx packets".
+However, many drivers do limit the amount of TX completions that they
+process in a single NAPI poll.
 
-> ---
-> Changes v2:
-> 1. Removed all the changes related to validating FCS when Rx checksum offload is disabled.
-> 2. Instead of using a platform dependent number (0xFFF) for the reset value of rx watermark,
-> derive it from designcfg_debug2 register.
-> 3. Added a check to see if partial s/f is supported, by reading the
-> designcfg_debug6 register.
-> 
-> Changes v3:
-> 1. Followed reverse christmas tree pattern in declaring variables.
-> 2. Return -EINVAL when an invalid watermark value is set.
-> 3. Removed netdev_info when partial store and forward is not enabled.
-> 4. Validating the rx-watermark value in probe itself and only write to the register
-> in init.
-> 5. Writing a reset value to the pbuf_cuthru register before disabing partial store
-> and forward is redundant. So removing it.
-> 6. Removed the platform caps flag.
-> 7. Instead of reading rx-watermark from DT in macb_configure_caps,
-> reading it in probe.
-> 8. Changed Signed-Off-By and author names on this patch.
-> 
-> Changes v4:
-> 1. Removed redundant code and unused variables.
-> 2. When the rx-watermark value is invalid, instead of returning EINVAL,
-> do not enable partial store and forward.
-> 3. Change rx-watermark variable's size to u32 instead of u16.
-> ---
->   drivers/net/ethernet/cadence/macb.h      | 12 +++++++++++
->   drivers/net/ethernet/cadence/macb_main.c | 27 ++++++++++++++++++++++++
->   2 files changed, 39 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-> index 14dfec4db8f9..39d53117a8ce 100644
-> --- a/drivers/net/ethernet/cadence/macb.h
-> +++ b/drivers/net/ethernet/cadence/macb.h
-> @@ -82,6 +82,7 @@
->   #define GEM_NCFGR              0x0004 /* Network Config */
->   #define GEM_USRIO              0x000c /* User IO */
->   #define GEM_DMACFG             0x0010 /* DMA Configuration */
-> +#define GEM_PBUFRXCUT          0x0044 /* RX Partial Store and Forward */
->   #define GEM_JML                        0x0048 /* Jumbo Max Length */
->   #define GEM_HS_MAC_CONFIG      0x0050 /* GEM high speed config */
->   #define GEM_HRB                        0x0080 /* Hash Bottom */
-> @@ -343,6 +344,10 @@
->   #define GEM_ADDR64_SIZE                1
-> 
-> 
-> +/* Bitfields in PBUFRXCUT */
-> +#define GEM_ENCUTTHRU_OFFSET   31 /* Enable RX partial store and forward */
-> +#define GEM_ENCUTTHRU_SIZE     1
-> +
->   /* Bitfields in NSR */
->   #define MACB_NSR_LINK_OFFSET   0 /* pcs_link_state */
->   #define MACB_NSR_LINK_SIZE     1
-> @@ -509,6 +514,8 @@
->   #define GEM_TX_PKT_BUFF_OFFSET                 21
->   #define GEM_TX_PKT_BUFF_SIZE                   1
-> 
-> +#define GEM_RX_PBUF_ADDR_OFFSET                        22
-> +#define GEM_RX_PBUF_ADDR_SIZE                  4
-> 
->   /* Bitfields in DCFG5. */
->   #define GEM_TSU_OFFSET                         8
-> @@ -517,6 +524,8 @@
->   /* Bitfields in DCFG6. */
->   #define GEM_PBUF_LSO_OFFSET                    27
->   #define GEM_PBUF_LSO_SIZE                      1
-> +#define GEM_PBUF_CUTTHRU_OFFSET                        25
-> +#define GEM_PBUF_CUTTHRU_SIZE                  1
->   #define GEM_DAW64_OFFSET                       23
->   #define GEM_DAW64_SIZE                         1
-> 
-> @@ -1283,6 +1292,9 @@ struct macb {
-> 
->          u32                     wol;
-> 
-> +       /* holds value of rx watermark value for pbuf_rxcutthru register */
-> +       u32                     rx_watermark;
-> +
->          struct macb_ptp_info    *ptp_info;      /* macb-ptp interface */
-> 
->          struct phy              *sgmii_phy;     /* for ZynqMP SGMII mode */
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index 41964fd02452..7d023b92b169 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -2617,6 +2617,9 @@ static void macb_reset_hw(struct macb *bp)
->          macb_writel(bp, TSR, -1);
->          macb_writel(bp, RSR, -1);
-> 
-> +       /* Disable RX partial store and forward and reset watermark value */
-> +       gem_writel(bp, PBUFRXCUT, 0);
-> +
->          /* Disable all interrupts */
->          for (q = 0, queue = bp->queues; q < bp->num_queues; ++q, ++queue) {
->                  queue_writel(queue, IDR, -1);
-> @@ -2770,6 +2773,10 @@ static void macb_init_hw(struct macb *bp)
->                  bp->rx_frm_len_mask = MACB_RX_JFRMLEN_MASK;
-> 
->          macb_configure_dma(bp);
-> +
-> +       /* Enable RX partial store and forward and set watermark */
-> +       if (bp->rx_watermark)
-> +               gem_writel(bp, PBUFRXCUT, (bp->rx_watermark | GEM_BIT(ENCUTTHRU)));
->   }
-> 
->   /* The hash address register is 64 bits long and takes up two
-> @@ -4923,6 +4930,7 @@ static int macb_probe(struct platform_device *pdev)
->          phy_interface_t interface;
->          struct net_device *dev;
->          struct resource *regs;
-> +       u32 wtrmrk_rst_val;
->          void __iomem *mem;
->          struct macb *bp;
->          int err, val;
-> @@ -4995,6 +5003,25 @@ static int macb_probe(struct platform_device *pdev)
-> 
->          bp->usrio = macb_config->usrio;
-> 
-> +       /* By default we set to partial store and forward mode for zynqmp.
-> +        * Disable if not set in devicetree.
-> +        */
-> +       if (GEM_BFEXT(PBUF_CUTTHRU, gem_readl(bp, DCFG6))) {
-> +               err = of_property_read_u32(bp->pdev->dev.of_node,
-> +                                          "cdns,rx-watermark",
-> +                                          &bp->rx_watermark);
-> +
-> +               if (!err) {
-> +                       /* Disable partial store and forward in case of error or
-> +                        * invalid watermark value
-> +                        */
-> +                       wtrmrk_rst_val = (1 << (GEM_BFEXT(RX_PBUF_ADDR, gem_readl(bp, DCFG2)))) - 1;
-> +                       if (bp->rx_watermark > wtrmrk_rst_val || !bp->rx_watermark) {
-> +                               dev_info(&bp->pdev->dev, "Invalid watermark value\n");
-> +                               bp->rx_watermark = 0;
-> +                       }
-> +               }
-> +       }
->          spin_lock_init(&bp->lock);
-> 
->          /* setup capabilities */
-> --
-> 2.36.1
-> 
+In the same way, this patch adds a limit for the TX work in sfc. With
+the patch applied, the watchdog warning never appears.
 
+Tested with netperf in different combinations: single process / parallel
+processes, TCP / UDP and different sizes of UDP messages. Repeated the
+tests before and after the patch, without any noticeable difference in
+network or CPU performance.
+
+Test hardware:
+Intel(R) Xeon(R) CPU E5-1620 v4 @ 3.50GHz (4 cores, 2 threads/core)
+Solarflare Communications XtremeScale X2522-25G Network Adapter
+
+Fixes: 5227ecccea2d ("sfc: remove tx and MCDI handling from NAPI budget consideration")
+Fixes: d19a53721863 ("sfc_ef100: TX path for EF100 NICs")
+Reported-by: Fei Liu <feliu@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/ethernet/sfc/ef10.c      | 25 ++++++++++++++++++-------
+ drivers/net/ethernet/sfc/ef100_nic.c |  7 ++++++-
+ drivers/net/ethernet/sfc/ef100_tx.c  |  4 ++--
+ drivers/net/ethernet/sfc/ef100_tx.h  |  2 +-
+ drivers/net/ethernet/sfc/tx_common.c |  4 +++-
+ drivers/net/ethernet/sfc/tx_common.h |  2 +-
+ 6 files changed, 31 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index d30459dbfe8f..b63e47af6365 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -2950,7 +2950,7 @@ static u32 efx_ef10_extract_event_ts(efx_qword_t *event)
+ 	return tstamp;
+ }
+ 
+-static void
++static int
+ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
+ {
+ 	struct efx_nic *efx = channel->efx;
+@@ -2958,13 +2958,14 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
+ 	unsigned int tx_ev_desc_ptr;
+ 	unsigned int tx_ev_q_label;
+ 	unsigned int tx_ev_type;
++	int work_done;
+ 	u64 ts_part;
+ 
+ 	if (unlikely(READ_ONCE(efx->reset_pending)))
+-		return;
++		return 0;
+ 
+ 	if (unlikely(EFX_QWORD_FIELD(*event, ESF_DZ_TX_DROP_EVENT)))
+-		return;
++		return 0;
+ 
+ 	/* Get the transmit queue */
+ 	tx_ev_q_label = EFX_QWORD_FIELD(*event, ESF_DZ_TX_QLABEL);
+@@ -2973,8 +2974,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
+ 	if (!tx_queue->timestamping) {
+ 		/* Transmit completion */
+ 		tx_ev_desc_ptr = EFX_QWORD_FIELD(*event, ESF_DZ_TX_DESCR_INDX);
+-		efx_xmit_done(tx_queue, tx_ev_desc_ptr & tx_queue->ptr_mask);
+-		return;
++		return efx_xmit_done(tx_queue, tx_ev_desc_ptr & tx_queue->ptr_mask);
+ 	}
+ 
+ 	/* Transmit timestamps are only available for 8XXX series. They result
+@@ -3000,6 +3000,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
+ 	 * fields in the event.
+ 	 */
+ 	tx_ev_type = EFX_QWORD_FIELD(*event, ESF_EZ_TX_SOFT1);
++	work_done = 0;
+ 
+ 	switch (tx_ev_type) {
+ 	case TX_TIMESTAMP_EVENT_TX_EV_COMPLETION:
+@@ -3016,6 +3017,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
+ 		tx_queue->completed_timestamp_major = ts_part;
+ 
+ 		efx_xmit_done_single(tx_queue);
++		work_done = 1;
+ 		break;
+ 
+ 	default:
+@@ -3026,6 +3028,8 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
+ 			  EFX_QWORD_VAL(*event));
+ 		break;
+ 	}
++
++	return work_done;
+ }
+ 
+ static void
+@@ -3081,13 +3085,16 @@ static void efx_ef10_handle_driver_generated_event(struct efx_channel *channel,
+ 	}
+ }
+ 
++#define EFX_NAPI_MAX_TX 512
++
+ static int efx_ef10_ev_process(struct efx_channel *channel, int quota)
+ {
+ 	struct efx_nic *efx = channel->efx;
+ 	efx_qword_t event, *p_event;
+ 	unsigned int read_ptr;
+-	int ev_code;
++	int spent_tx = 0;
+ 	int spent = 0;
++	int ev_code;
+ 
+ 	if (quota <= 0)
+ 		return spent;
+@@ -3126,7 +3133,11 @@ static int efx_ef10_ev_process(struct efx_channel *channel, int quota)
+ 			}
+ 			break;
+ 		case ESE_DZ_EV_CODE_TX_EV:
+-			efx_ef10_handle_tx_event(channel, &event);
++			spent_tx += efx_ef10_handle_tx_event(channel, &event);
++			if (spent_tx >= EFX_NAPI_MAX_TX) {
++				spent = quota;
++				goto out;
++			}
+ 			break;
+ 		case ESE_DZ_EV_CODE_DRIVER_EV:
+ 			efx_ef10_handle_driver_event(channel, &event);
+diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+index 4dc643b0d2db..7adde9639c8a 100644
+--- a/drivers/net/ethernet/sfc/ef100_nic.c
++++ b/drivers/net/ethernet/sfc/ef100_nic.c
+@@ -253,6 +253,8 @@ static void ef100_ev_read_ack(struct efx_channel *channel)
+ 		   efx_reg(channel->efx, ER_GZ_EVQ_INT_PRIME));
+ }
+ 
++#define EFX_NAPI_MAX_TX 512
++
+ static int ef100_ev_process(struct efx_channel *channel, int quota)
+ {
+ 	struct efx_nic *efx = channel->efx;
+@@ -260,6 +262,7 @@ static int ef100_ev_process(struct efx_channel *channel, int quota)
+ 	bool evq_phase, old_evq_phase;
+ 	unsigned int read_ptr;
+ 	efx_qword_t *p_event;
++	int spent_tx = 0;
+ 	int spent = 0;
+ 	bool ev_phase;
+ 	int ev_type;
+@@ -295,7 +298,9 @@ static int ef100_ev_process(struct efx_channel *channel, int quota)
+ 			efx_mcdi_process_event(channel, p_event);
+ 			break;
+ 		case ESE_GZ_EF100_EV_TX_COMPLETION:
+-			ef100_ev_tx(channel, p_event);
++			spent_tx += ef100_ev_tx(channel, p_event);
++			if (spent_tx >= EFX_NAPI_MAX_TX)
++				spent = quota;
+ 			break;
+ 		case ESE_GZ_EF100_EV_DRIVER:
+ 			netif_info(efx, drv, efx->net_dev,
+diff --git a/drivers/net/ethernet/sfc/ef100_tx.c b/drivers/net/ethernet/sfc/ef100_tx.c
+index 29ffaf35559d..849e5555bd12 100644
+--- a/drivers/net/ethernet/sfc/ef100_tx.c
++++ b/drivers/net/ethernet/sfc/ef100_tx.c
+@@ -346,7 +346,7 @@ void ef100_tx_write(struct efx_tx_queue *tx_queue)
+ 	ef100_tx_push_buffers(tx_queue);
+ }
+ 
+-void ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event)
++int ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event)
+ {
+ 	unsigned int tx_done =
+ 		EFX_QWORD_FIELD(*p_event, ESF_GZ_EV_TXCMPL_NUM_DESC);
+@@ -357,7 +357,7 @@ void ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event)
+ 	unsigned int tx_index = (tx_queue->read_count + tx_done - 1) &
+ 				tx_queue->ptr_mask;
+ 
+-	efx_xmit_done(tx_queue, tx_index);
++	return efx_xmit_done(tx_queue, tx_index);
+ }
+ 
+ /* Add a socket buffer to a TX queue
+diff --git a/drivers/net/ethernet/sfc/ef100_tx.h b/drivers/net/ethernet/sfc/ef100_tx.h
+index e9e11540fcde..d9a0819c5a72 100644
+--- a/drivers/net/ethernet/sfc/ef100_tx.h
++++ b/drivers/net/ethernet/sfc/ef100_tx.h
+@@ -20,7 +20,7 @@ void ef100_tx_init(struct efx_tx_queue *tx_queue);
+ void ef100_tx_write(struct efx_tx_queue *tx_queue);
+ unsigned int ef100_tx_max_skb_descs(struct efx_nic *efx);
+ 
+-void ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event);
++int ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event);
+ 
+ netdev_tx_t ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
+ int __ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+diff --git a/drivers/net/ethernet/sfc/tx_common.c b/drivers/net/ethernet/sfc/tx_common.c
+index 67e789b96c43..755aa92bf823 100644
+--- a/drivers/net/ethernet/sfc/tx_common.c
++++ b/drivers/net/ethernet/sfc/tx_common.c
+@@ -249,7 +249,7 @@ void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue)
+ 	}
+ }
+ 
+-void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
++int efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
+ {
+ 	unsigned int fill_level, pkts_compl = 0, bytes_compl = 0;
+ 	unsigned int efv_pkts_compl = 0;
+@@ -279,6 +279,8 @@ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
+ 	}
+ 
+ 	efx_xmit_done_check_empty(tx_queue);
++
++	return pkts_compl + efv_pkts_compl;
+ }
+ 
+ /* Remove buffers put into a tx_queue for the current packet.
+diff --git a/drivers/net/ethernet/sfc/tx_common.h b/drivers/net/ethernet/sfc/tx_common.h
+index d87aecbc7bf1..1e9f42938aac 100644
+--- a/drivers/net/ethernet/sfc/tx_common.h
++++ b/drivers/net/ethernet/sfc/tx_common.h
+@@ -28,7 +28,7 @@ static inline bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)
+ }
+ 
+ void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue);
+-void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
++int efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
+ 
+ void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
+ 			unsigned int insert_count);
 -- 
-Nicolas Ferre
+2.40.1
 
 
