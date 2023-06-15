@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-11102-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11103-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 80ADB7318D2
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 14:20:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 42EF67318D3
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 14:20:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B19CE1C20ECF
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 12:20:31 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 74D221C20E7C
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 12:20:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 64C0719512;
-	Thu, 15 Jun 2023 12:15:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 019E315ACC;
+	Thu, 15 Jun 2023 12:15:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5964819916
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 12:15:11 +0000 (UTC)
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30381199D
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 05:14:56 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id ffacd0b85a97d-310b631c644so1960429f8f.0
-        for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 05:14:56 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E32C219BAB
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 12:15:16 +0000 (UTC)
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022C02683
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 05:14:57 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id ffacd0b85a97d-30fc50d843aso3357283f8f.3
+        for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 05:14:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20221208.gappssmtp.com; s=20221208; t=1686831294; x=1689423294;
+        d=bgdev-pl.20221208.gappssmtp.com; s=20221208; t=1686831296; x=1689423296;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=shVe7iXJ1awuGuKmYEwLb77YVMpGOLIOU4Dax+RDeEA=;
-        b=dlDrDMLMnb7Fqq0jlcStDO6lq+BgV1BfRZwnKtZFFdb4XCdj/yS1mzXym+jFMCCAFW
-         e7gmAgV+RXQSXrLTUFhmgTfDuga7xUrMOkEZucx+NwOVw2xhebk+U/OcZCJ1mX8ljybX
-         n9K6gSI2fpxqPuQjXTfUX0EdBVZ8P9KiVOGqSNDqM1rg/Y3N6CJZcxz2gvWpmRzxduVN
-         /JxdvSpLleT1D8Tnvkvw33d/dz8cC2YVWHwLtxy9s0j7+Jb9zNDSq/9VB2mXZ2g3EDdK
-         BpXjShwkImCDkpDNrzFR3lQOvZsHH+V23Zb7CiSVLKAzYHIWPyxPmFDfc4uFbK2HY8Yh
-         wmvA==
+        bh=JIUq/KnB1aQBhfWdwO+hMtLBQidCfb77pkBdwoOfDrM=;
+        b=XOrvB+DkaJ2BmTSr0lSZshMWKEw4mtpIGHKuQkQLKmbbQZ2V0UGWLokoeyBMI9OsUA
+         Li6Z0+afyrwXPQ6GMG/x+8VZHd4S94XrVpbU3KmL7xG+49aIg+dTSQ+AqkxeIldSxo2f
+         ArZEzfD6Wq+JU+1zQR0mKJDQi/RwnuM2w+p9n/3ZATGN0YPctre1++IjhzfneT8a20Xc
+         SXWpm8ojguW7SgcXqrppvk7dgzvvA+Q3I/CBuKMd5r4gO3xu1A2gNtL9Z5gTGnm5i/Pe
+         CAkLlSlhp1B31VtLf7NBMsM1PT4/310Yl68zkeuIhFFoHUhezQ9O5rbU0Avw8JjyNHcI
+         xCNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686831294; x=1689423294;
+        d=1e100.net; s=20221208; t=1686831296; x=1689423296;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=shVe7iXJ1awuGuKmYEwLb77YVMpGOLIOU4Dax+RDeEA=;
-        b=A7L9nsSr2v1Vt6VygXQA0z7eFsvkkIxPIpBVlNVmT6SngfIvI3jv+q5P29bBYRSwd7
-         weTSXGN/TVKuUZvyZAEwB/kacSX9dsoPxMhbTq9c9bCoxnSqPD7eCQlWp3VRtFbr2nC3
-         SBuYYGW/8YM3PokmUrSYwNZcG1eDYZEgdbdFKQj8kMjVMKGv7dj4AsJFtmLI+j3erXe6
-         ij3Nu7ys4ja+X8Ea48DjQkr4lzx4N/d1ZlZYdYsCrUkmvHTIkCj+RfhwaF5dlAQjvCKj
-         eZQSPvR5VL/DMbHb5ALLYA1a5sFWQ2vygPnO5Yc6swAzyZfTxO2OG7Aw+I6gsZS9C3Jb
-         5mIw==
-X-Gm-Message-State: AC+VfDzcV8TlS4U8WeanUBf28c6wr2W9SIAa+Wq4lJHL1CvxlYBwlPaY
-	t+mb7EyuZqXvu/68gf1LZQkCMg==
-X-Google-Smtp-Source: ACHHUZ4BkD4qzQRvEGU7o6thVVlbRBFaFM9VgeCVSPJzBcEEoIH1q6H2OVvNrwnKfIKircfJZPizMA==
-X-Received: by 2002:adf:f8d0:0:b0:311:14ab:5621 with SMTP id f16-20020adff8d0000000b0031114ab5621mr1145607wrq.30.1686831294636;
-        Thu, 15 Jun 2023 05:14:54 -0700 (PDT)
+        bh=JIUq/KnB1aQBhfWdwO+hMtLBQidCfb77pkBdwoOfDrM=;
+        b=SkP19QvRtvwvbLkJCm3M7AgUmO5yw1z3Tvrvv6g7DF6AQ7NBQzCZB/s6TgA/gmmhXi
+         ZhtU6G3Vsns15mg56U3Aj1U5lclNe/OjexME5STV/i68ZJkDKAYFykFN0anqIirKtPJC
+         XKtMe1fIFYKbegMTk+A7TRXWlADTIjViuVRtR9PdsH83sbCk35k7rOQpyI0hZ/gqqyKQ
+         m9ILXF4Zn8Pje70MSb5AUh75wakM11lstXwX0xBXzt7L1LMDHe5mwXak550x0V7EIT21
+         lZmP12CFKKgV5mc7SFOlEnvODq8x6J4q4s4Bm6ZAr6XfmDAt9+OA2l3YoE0aWSIyg0s7
+         YWbQ==
+X-Gm-Message-State: AC+VfDyTtlgqDmsty++OHUxNawgpz2EDYRCNVPpGPT6T5Jmoz1Lt7WMH
+	yzeDt+QqeQ5p4UIwLE+N8nZIOQ==
+X-Google-Smtp-Source: ACHHUZ7cz1Lnuv+ZrNRPmXV/iE7QsI36JSR2liUOV4G8cw9WyScWMOZo4GGx6TjHbludU78fUMbGoA==
+X-Received: by 2002:a05:6000:1ccf:b0:306:3731:f73b with SMTP id bf15-20020a0560001ccf00b003063731f73bmr9828545wrb.43.1686831295908;
+        Thu, 15 Jun 2023 05:14:55 -0700 (PDT)
 Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:2ad4:65a7:d9f3:a64e])
-        by smtp.gmail.com with ESMTPSA id k17-20020a5d4291000000b003047ea78b42sm20918012wrq.43.2023.06.15.05.14.53
+        by smtp.gmail.com with ESMTPSA id k17-20020a5d4291000000b003047ea78b42sm20918012wrq.43.2023.06.15.05.14.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jun 2023 05:14:54 -0700 (PDT)
+        Thu, 15 Jun 2023 05:14:55 -0700 (PDT)
 From: Bartosz Golaszewski <brgl@bgdev.pl>
 To: Vinod Koul <vkoul@kernel.org>,
 	Bhupesh Sharma <bhupesh.sharma@linaro.org>,
@@ -80,11 +80,10 @@ Cc: netdev@vger.kernel.org,
 	linux-phy@lists.infradead.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-stm32@st-md-mailman.stormreply.com,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-	Jose Abreu <Jose.Abreu@synopsys.com>
-Subject: [PATCH v2 16/23] net: stmmac: add new switch to struct plat_stmmacenet_data
-Date: Thu, 15 Jun 2023 14:14:12 +0200
-Message-Id: <20230615121419.175862-17-brgl@bgdev.pl>
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: [PATCH v2 17/23] dt-bindings: net: qcom,ethqos: add description for sa8775p
+Date: Thu, 15 Jun 2023 14:14:13 +0200
+Message-Id: <20230615121419.175862-18-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230615121419.175862-1-brgl@bgdev.pl>
 References: <20230615121419.175862-1-brgl@bgdev.pl>
@@ -97,47 +96,99 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-On some platforms, the PCS can be integrated in the MAC so the driver
-will not see any PCS link activity. Add a switch that allows the platform
-drivers to let the core code know.
+Add the compatible for the MAC controller on sa8775p platforms. This MAC
+works with a single interrupt so add minItems to the interrupts property.
+The fourth clock's name is different here so change it. Enable relevant
+PHY properties. Add the relevant compatibles to the binding document for
+snps,dwmac as well.
 
 Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Reviewed-by: Jose Abreu <Jose.Abreu@synopsys.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
- include/linux/stmmac.h                            | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/net/qcom,ethqos.yaml         | 12 +++++++++++-
+ .../devicetree/bindings/net/snps,dwmac.yaml          |  3 +++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index fa07b0d50b46..fdcf1684487c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5793,7 +5793,7 @@ static void stmmac_common_interrupt(struct stmmac_priv *priv)
- 		}
+diff --git a/Documentation/devicetree/bindings/net/qcom,ethqos.yaml b/Documentation/devicetree/bindings/net/qcom,ethqos.yaml
+index 60a38044fb19..7bdb412a0185 100644
+--- a/Documentation/devicetree/bindings/net/qcom,ethqos.yaml
++++ b/Documentation/devicetree/bindings/net/qcom,ethqos.yaml
+@@ -20,6 +20,7 @@ properties:
+   compatible:
+     enum:
+       - qcom,qcs404-ethqos
++      - qcom,sa8775p-ethqos
+       - qcom,sc8280xp-ethqos
+       - qcom,sm8150-ethqos
  
- 		/* PCS link status */
--		if (priv->hw->pcs) {
-+		if (priv->hw->pcs && !priv->plat->has_integrated_pcs) {
- 			if (priv->xstats.pcs_link)
- 				netif_carrier_on(priv->dev);
- 			else
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index 225751a8fd8e..06090538fe2d 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -293,5 +293,6 @@ struct plat_stmmacenet_data {
- 	bool sph_disable;
- 	bool serdes_up_after_phy_linkup;
- 	const struct dwmac4_addrs *dwmac4_addrs;
-+	bool has_integrated_pcs;
- };
- #endif
+@@ -32,11 +33,13 @@ properties:
+       - const: rgmii
+ 
+   interrupts:
++    minItems: 1
+     items:
+       - description: Combined signal for various interrupt events
+       - description: The interrupt that occurs when Rx exits the LPI state
+ 
+   interrupt-names:
++    minItems: 1
+     items:
+       - const: macirq
+       - const: eth_lpi
+@@ -49,11 +52,18 @@ properties:
+       - const: stmmaceth
+       - const: pclk
+       - const: ptp_ref
+-      - const: rgmii
++      - enum:
++          - rgmii
++          - phyaux
+ 
+   iommus:
+     maxItems: 1
+ 
++  phys: true
++
++  phy-names:
++    const: serdes
++
+ required:
+   - compatible
+   - clocks
+diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+index 363b3e3ea3a6..ddf9522a5dc2 100644
+--- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+@@ -67,6 +67,7 @@ properties:
+         - loongson,ls2k-dwmac
+         - loongson,ls7a-dwmac
+         - qcom,qcs404-ethqos
++        - qcom,sa8775p-ethqos
+         - qcom,sc8280xp-ethqos
+         - qcom,sm8150-ethqos
+         - renesas,r9a06g032-gmac
+@@ -582,6 +583,7 @@ allOf:
+               - ingenic,x1600-mac
+               - ingenic,x1830-mac
+               - ingenic,x2000-mac
++              - qcom,sa8775p-ethqos
+               - qcom,sc8280xp-ethqos
+               - snps,dwmac-3.50a
+               - snps,dwmac-4.10a
+@@ -638,6 +640,7 @@ allOf:
+               - ingenic,x1830-mac
+               - ingenic,x2000-mac
+               - qcom,qcs404-ethqos
++              - qcom,sa8775p-ethqos
+               - qcom,sc8280xp-ethqos
+               - qcom,sm8150-ethqos
+               - snps,dwmac-4.00
 -- 
 2.39.2
 
