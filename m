@@ -1,163 +1,189 @@
-Return-Path: <netdev+bounces-10998-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10996-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id A965D731029
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 09:08:27 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7317C73101F
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 09:06:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 12844280FDD
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 07:08:26 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 666952816AC
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 07:06:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 47A3110FC;
-	Thu, 15 Jun 2023 07:08:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 93C81375;
+	Thu, 15 Jun 2023 07:06:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35996A5B
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 07:08:24 +0000 (UTC)
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A422954
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 00:08:06 -0700 (PDT)
-Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
-	by mailout1.samsung.com (KnoxPortal) with ESMTP id 20230615070804epoutp01224ed3f84caaf681161ba5c190803410~ow2GXefCr0811608116epoutp01k
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 07:08:04 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20230615070804epoutp01224ed3f84caaf681161ba5c190803410~ow2GXefCr0811608116epoutp01k
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1686812884;
-	bh=EGcDW2JUgCyU9XRlFhBjJMiX44JWtj7BLhhL20mI6/0=;
-	h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-	b=AS2oT8R+F9B5iBBIUn8v1qb3owWdgNjirpu3OAG9knp6GTTCzFgoKdHLbpDi7lfGl
-	 w3ZgQ1Od6gwoTzhW9OVUiZ1s+1Td7MuX6UtN75LDvXBVE65ONFufVJq/fBEPvPIWRw
-	 WnoRAzHdpm3IDkUGXT/O3ne6q+x9ABxcT7IC77xc=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-	epcas5p3.samsung.com (KnoxPortal) with ESMTP id
-	20230615070803epcas5p36465025387f9e56699ad4291dbb183da~ow2FznXib2015820158epcas5p3b;
-	Thu, 15 Jun 2023 07:08:03 +0000 (GMT)
-Received: from epsmges5p2new.samsung.com (unknown [182.195.38.181]) by
-	epsnrtp3.localdomain (Postfix) with ESMTP id 4QhYKD6mGvz4x9Pp; Thu, 15 Jun
-	2023 07:08:00 +0000 (GMT)
-Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
-	epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-	54.73.44881.0D8BA846; Thu, 15 Jun 2023 16:08:00 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-	epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
-	20230615065406epcas5p361076a0d683d59a8bc82ac30b5ee48e7~owp6bvCW90557505575epcas5p39;
-	Thu, 15 Jun 2023 06:54:06 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-	epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-	20230615065406epsmtrp16bb639768ac3e50b4acd97640f0c6563~owp6atjZz2692326923epsmtrp1R;
-	Thu, 15 Jun 2023 06:54:06 +0000 (GMT)
-X-AuditID: b6c32a4a-c47ff7000001af51-19-648ab8d01d50
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-	epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-	F8.DC.28392.E85BA846; Thu, 15 Jun 2023 15:54:06 +0900 (KST)
-Received: from FDSFTE343 (unknown [107.122.81.111]) by epsmtip2.samsung.com
-	(KnoxPortal) with ESMTPA id
-	20230615065404epsmtip26e78c3c12bef2561775b262eb8833001~owp3xiMFH0988109881epsmtip2-;
-	Thu, 15 Jun 2023 06:54:03 +0000 (GMT)
-From: "Chandrasekar R" <rcsekar@samsung.com>
-To: =?UTF-8?Q?'Leonard_G=C3=B6hrs'?= <l.goehrs@pengutronix.de>, "'Conor
- Dooley'" <conor@kernel.org>, "'Rob Herring'" <robh@kernel.org>, "'Alexandre
- TORGUE'" <alexandre.torgue@foss.st.com>, "'Krzysztof Kozlowski'"
-	<krzysztof.kozlowski@linaro.org>, "'Wolfgang Grandegger'"
-	<wg@grandegger.com>, "'Marc	Kleine-Budde'" <mkl@pengutronix.de>, "'David S.
- Miller'" <davem@davemloft.net>, "'Eric Dumazet'" <edumazet@google.com>,
-	"'Jakub Kicinski'" <kuba@kernel.org>, "'Paolo	Abeni'" <pabeni@redhat.com>
-Cc: <kernel@pengutronix.de>, "'Rob Herring'" <robh+dt@kernel.org>,
-	"'Krzysztof	Kozlowski'" <krzysztof.kozlowski+dt@linaro.org>, "'Conor
-	Dooley'" <conor+dt@kernel.org>, <linux-can@vger.kernel.org>,
- <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>
-In-Reply-To: <20230614123222.4167460-5-l.goehrs@pengutronix.de>
-Subject: RE: [PATCH v2 4/8] dt-bindings: can: m_can: change from additional-
- to unevaluatedProperties
-Date: Thu, 15 Jun 2023 12:24:02 +0530
-Message-ID: <11a001d99f56$2d94a360$88bdea20$@samsung.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 848B4A45
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 07:06:33 +0000 (UTC)
+Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2134.outbound.protection.outlook.com [40.107.117.134])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280BA1BE8;
+	Thu, 15 Jun 2023 00:06:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NuIhEneyUk+IX/PQ8apr6lHBxl1GC2xqv7Pk2ERB89NOM7gdbj5v3rsSbJCzVFHiUFtpPRqdA16yR0dPyBJdXslCoqUypg76Brmiv2sETDw1uwA6o4KlArMWQoHxDPR3gmlkdFdxTY/8Ma2zxcSBBcobbE00UWP8fM/socAWtgxozrMLnoqw+CXkG3kWjM4sJs+mLipNbAo4KWGE2kbbHVKniLcmOAsKd6eoe3VnGx9wTJddvatoBak5zFPNm+YGZg7vqktMrHi9/sYyHbevupIvDkpQFfJ1z9gUfzlviXTM60BgEA+r9x8h6nowi7cCGfkNUNmlRwJjgSaIfGlqhQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=S6wQ6J84mff12Z5tx49mM7GeFhrIDY7X75exnXDz5qg=;
+ b=Om6b/gLwXWTmMDDloZ1YjqBDBsVQUIfl91zzpK5j8jWuajJwUk77YII3tVn4Rq0rSXhAzci4Z7Z4FDtXhZAXKc9u6dIGsoJM4aqJjlKfCmvjhEfzv3Pb6/zP7OjDRxEMGNRJztZ8A3tg1dE6UVIfHYfR3T9P1Po8kJG9QaMXuj1E/moR6abSOw81MPif8dgY9zz0j+f2A6K5tgnnxTd7RoE7ElosJLXFO/0Uw+aTmuL9ql3mXfNDiQFL8V1SFzv3rdVSwyZzR74bQ6u/dcpj+rKWyShY8l+Mb/ZHOyOFrGOEVeDs0VG/8JfObFHTCoZ1u2BATJdgssHOzvtDQ/Jg9g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S6wQ6J84mff12Z5tx49mM7GeFhrIDY7X75exnXDz5qg=;
+ b=W8xfaJBUsV03wr9pE4k5io5rSJZ/a+Dx6C1s3+G+MUar7TEozGUG6I4S3xpWKE2vffs6cf7NzwCen7bl73aWaRi2MzZeG5zGuohu/QgOINQNgCTt5hvg8bS6J9pHgnzspgZ/E7tb+KP9yRkSRybunQS1r6QeudPO6qNwiDBw75qgeNfohY5Te6fjd8/L8EPo7iRknPsS7JOIc+FJRiJRvf1YzNQ3DPLGKO5QfvTzQJCFQF4RvGMjjHT97NzmADAm3M2fYyZvdqjE855WOZ+c+MeBIAsQ6UzrNRoCV7/mmkUA7q/ufF5IQARoX2QVvStpOjFFXQJ5kNJrNReeVueXNA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB3743.apcprd06.prod.outlook.com (2603:1096:4:d0::18) by
+ KL1PR0601MB4100.apcprd06.prod.outlook.com (2603:1096:820:24::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.37; Thu, 15 Jun
+ 2023 07:06:25 +0000
+Received: from SG2PR06MB3743.apcprd06.prod.outlook.com
+ ([fe80::7dfd:a3ed:33ca:9cc8]) by SG2PR06MB3743.apcprd06.prod.outlook.com
+ ([fe80::7dfd:a3ed:33ca:9cc8%6]) with mapi id 15.20.6477.037; Thu, 15 Jun 2023
+ 07:06:25 +0000
+From: Wang Ming <machel@vivo.com>
+To: Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Wang Ming <machel@vivo.com>,
+	Stephen Rothwell <sfr@canb.auug.org.au>,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: opensource.kernel@vivo.com
+Subject: [PATCH v1] drivers:net:dsa:Fix resource leaks in fwnode_for_each_child_node() loops 
+Date: Thu, 15 Jun 2023 15:04:58 +0800
+Message-Id: <20230615070512.6634-1-machel@vivo.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+X-ClientProxiedBy: TYWPR01CA0029.jpnprd01.prod.outlook.com
+ (2603:1096:400:aa::16) To SG2PR06MB3743.apcprd06.prod.outlook.com
+ (2603:1096:4:d0::18)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQJBfgczi9zBCP0v/3p/15qYfXGLHQLr7mzDAWe+ZPGumRKpwA==
-Content-Language: en-in
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrJJsWRmVeSWpSXmKPExsWy7bCmhu6FHV0pBpP2m1r8fDmN0WLN3nNM
-	FiunrmKzmHO+hcVi/pFzrBZPjz1it1g1dSeLRd+Lh8wWe19vZbe4sK2P1eLRhwZmi1XfpzJb
-	XN41h81i/aIpLBbHFohZfDv9htGide8Rdov/e3awWyy9t5PVQdhjy8qbTB5P+7eyeyzYVOrx
-	8dJtRo9NqzrZPO5c28Pm0f/XwOP9vqtsHp83yQVwRmXbZKQmpqQWKaTmJeenZOal2yp5B8c7
-	x5uaGRjqGlpamCsp5CXmptoqufgE6Lpl5gD9pKRQlphTChQKSCwuVtK3synKLy1JVcjILy6x
-	VUotSMkpMCnQK07MLS7NS9fLSy2xMjQwMDIFKkzIzmg5/5K94CBXxfxZF9kaGP9ydjFyckgI
-	mEh0vXnD1sXIxSEksJtRonf9BCYI5xOjxNXT76Ccz4wSf36cYoZpubdkKgtEYhejRP/cPVD9
-	Lxglri98xghSxSagI/G+7xtYQkTgB7PE0gOnWUEcZoHFTBITvm9nAqniFLCXuN3/C6iKg0NY
-	IF1i6wshkDCLgKrEk6sHwEp4BSwlmmedY4GwBSVOznwCZjMLaEssW/ga6iQFiZ9Pl7GC2CIC
-	ThIbryxhh6gRlzj6s4cZZK+EQDOnxMQNl6EaXCQW9H9mhbCFJV4d38IOYUtJvOxvg7KLJV59
-	n8wGYddI7Nu8GqrXXuLAlTksIDczC2hKrN+lDxGWlZh6ah0TxF4+id7fT5gg4rwSO+bB2IoS
-	07bOBGuVALrtyLyQCYxKs5B8NgvJZ7OQfDALYdkCRpZVjJKpBcW56anFpgVGeanl8BhPzs/d
-	xAhO81peOxgfPvigd4iRiYPxEKMEB7OSCO9TjfYUId6UxMqq1KL8+KLSnNTiQ4ymwOCeyCwl
-	mpwPzDR5JfGGJpYGJmZmZiaWxmaGSuK86rYnk4UE0hNLUrNTUwtSi2D6mDg4pRqYuD/oXsu8
-	Vt312orVn++7lDm/h9PHTFNbNtvQ/fHcJ3KWxK/0+DXfd9Wc0xeu/W34EWnLbeeouWqG39Uu
-	n8/9OdffFRarrzi1Za33MZV193fu37VBapvQBLFjvyYfeTl/CZNDz9PiXS8i997sEJVkmexd
-	HjbHQFgm4+8Pdq/7XdvMIjQYtSsCTeymFXw5faLog09cTKPBuifKHgyc7t3LpHfVRjk8CLxS
-	pl5dwOcop+sQa3VQ44Udz4HIj586Dc99TdKXuLWPr66oOj7PorHKO8ORa3OhaLlw2qUptgHv
-	OSfKfdWcn1cyaQ5flNOEm+68x7389P8JvTyV8+Z22iezqvK1i98mLJGQ3XlM558SS3FGoqEW
-	c1FxIgC0YitjfAQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA02RfUhTURiHO7t3d3fT5XWTPBp9MCjCyo8IOZI4i6BriQlGhkY2281W25RN
-	K6NgZBZazgpXOYZapG3LVWrWLC3T0iwzMw1jlixcU6y0pNmMNLYV+N8Dz/k9vHBITNCLh5Iy
-	ZS6jUkrkIoKH32sXLVurbSyWRp5+HI7cY5cAqm3pYSGTzkwgw+tTOKp82sNGjo5PHGTWNeFI
-	O2rHUMt4Iwf13tOy0adJDYbM0zoMvX1gINDta2U46qhahFwvvwBU2PKUg+aarRxU/bGJHS+k
-	75res2hHaSOHrqrPo7/32QBdby4i6KF3zQRd+ieSnng0QNBT9UuTuWm8WCkjlx1mVBFxe3kH
-	XA2nWDlXyaP2sUgNKOAUAy4JqfXw43UdXgx4pICyAvirp4nwiWBomez/x0JomnV6BwLqM4Al
-	w9DDBLUGTmhdhGccRGlwWKgrwD0Co0wsOGLl+artAH6bm/AKLiWGttIZb1VIMbCrtt1bxakV
-	cGSgleVhPhUDC/Q9uI8DYVf5yL/oalhiLwT/uebqOOa7bjl0O2rYHg6iNsG6/usc35tg+Mx9
-	DjsPhPp5Kf28lH5eSj9vUgVwMwhhctSKLIU6KmedkjkSrpYo1HnKrPB92Yp64P30sDAraDZP
-	hrcBFgnaACQxURDfseqMVMCXSvKPMarsDFWenFG3gcUkLgrm9xZ3ZQioLEkuc4hhchjVf8si
-	uaEaVmLKwQi3vCCg8bdYJRYN+Q3OXp5anNmdG1cTk/6ITtvT3ne5O8JdkZi63dhmOtHaer88
-	Vte641LC4JvehGSLSPnavzDe9iH1Ree3bZvqjNOibbErZ6J3f4U3Nw6Pyg1kacg+i0LrfOhI
-	LeL6B/R3hsRPJ/0wfo36dUcR/7ycPVSttlsq8l1GNBp3cs64Bf4uo/auvRJq+Nlp72jeMJZ/
-	IabEKRTzLZEXNj+Uy/ynqTjnUanjyXm3Nan/7M+tTWkuP9uMrFqWqXFmLiEVsdSr2qRobsqu
-	i+P7sePiupTA2cpb51oCzWK3bMENqiu9zNXQnbDzyUDiwqIvocO2zhARrj4giQrDVGrJXwBG
-	R7JjAwAA
-X-CMS-MailID: 20230615065406epcas5p361076a0d683d59a8bc82ac30b5ee48e7
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20230614123256epcas5p4d6f139c203e63e7d2749c256806916ce
-References: <20230614123222.4167460-1-l.goehrs@pengutronix.de>
-	<CGME20230614123256epcas5p4d6f139c203e63e7d2749c256806916ce@epcas5p4.samsung.com>
-	<20230614123222.4167460-5-l.goehrs@pengutronix.de>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SG2PR06MB3743:EE_|KL1PR0601MB4100:EE_
+X-MS-Office365-Filtering-Correlation-Id: e2ed9da8-acda-400a-77f4-08db6d6f0879
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	TXWSd0w8c1tsjsmLvwTe7fYYh+zHNsi28dP/143A4qeZeM8mDRaFzbvptb74n+JpXgKKYCvJZ0Ofd3SSZ+sqLeaSmCi1jrRkPXq0JLn65XdzARwRvstrBOH8rbJHXy1J3Y8jDmjTg/bvqVDB5t/iZ8N6zRqu6LMOj1DD2THiGv5/qEJZ39khOU9A9p0jJee5XtEsHGgPf6YFyVYdtBN2Pit2N+kB3X/wPZoirD4Q2cmyboJhuw2N1TQm0PzdL7lYRvPUZXovlE9jD6lZsrmqWPsi7tkS8f8x+gLeBJbUtNrDUKzuPgDZUr3BGIL/VZDOgMHz0xsf3EeZ+ViqZ1Vazji6/tScYqXy7Aoi/qZupnmYKW5nSxRYR8OFqa0OkP4RPinGS0PpwXiuEl68WpKLZ8Lbz2ign511FSdaFiqEGr4276jJ8t8TEKMxbkmyIb6pLGt18AUavpqOBjOFdH8N/lkAp/B74x8lbsTyc2Gf2eX8PehUK2F9z9Ir6vfl54/e/t1qdC+SpSduNXee1/gxynakhC7YgsIxPQbAig+anXlPdw33dss69GH2jbb3jfwTTbaRE589ku/4/7A7pXClkc4PdO+d1/9jKyB2i3D1MMctS3jJYD+x/5ihf1ShzQnBjWeTy2uPnLYQlmRJ1rHOiw==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3743.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(136003)(346002)(366004)(39860400002)(451199021)(41300700001)(5660300002)(7416002)(8676002)(8936002)(2906002)(36756003)(478600001)(86362001)(26005)(6512007)(6506007)(1076003)(2616005)(83380400001)(52116002)(6486002)(107886003)(6666004)(921005)(38100700002)(38350700002)(4326008)(66946007)(66556008)(66476007)(316002)(186003)(4743002)(110136005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Ans2JvnZ7IESSDNaceCa75h8Jdd1lDQBLzqhBMHGmY0hjR3eVJHDGtEusqD7?=
+ =?us-ascii?Q?tIcfJg1kJ2TPA2uwzoPMHsnVnR3AuIWGJjFc06h/LVY5V6/aTFrNYWf2MQRr?=
+ =?us-ascii?Q?AARet0LfSFp0wm3Tkf7X1xtSVC8jySb02gCewQ+8Wf/71bfm7nlQlMWt8wH2?=
+ =?us-ascii?Q?qrefwlt31yiOco++swCbWfsESQAYWvHGpQ9ZVEXJ2HFHXkspuQoYbZq03Veg?=
+ =?us-ascii?Q?mE55Pl2qUYCwuf7iuelVey2HqwccvuK/VYxt8e3EeodaG/SB111Pv8j2lFUF?=
+ =?us-ascii?Q?pMleOrS6SnuTbexhQ9sSnQGgzfr7AXJJNRLP8XJ5q8sONqTbda6/w3HQP2O7?=
+ =?us-ascii?Q?XbTeHxkCDWmnnfrpni+7BNIvWavwYQyrx49B34S73gUXPm1LYztUZL3uodpL?=
+ =?us-ascii?Q?T2RYl2eqgsk5cMXiHtVJMyyMDqXGyIm+EtVUOeONQ5Rkk3gkuoKVw52w6pl6?=
+ =?us-ascii?Q?73vamztNC7SxL53W18SUA4d3NYi0af9qkIqndx2be4GUdzDrybd6I1QvJGlk?=
+ =?us-ascii?Q?dgBT96oeEu/mmJ/MyslH2uJ0uiJlqZmOdbRUWAAXYlaJypSiUT8MWTjY4CSD?=
+ =?us-ascii?Q?CK5dvDkZib4wkhpje6l+Z1m02l9Neb25PKesL1Pf8kODPnTVCfYedX+ieUny?=
+ =?us-ascii?Q?QgdAyWg7bhZjjQ3BVNFISTZtggX8ofVLJfuOLoT5rq6t8D5pzjZEW9hIoiPt?=
+ =?us-ascii?Q?fLZTMRAZTwTsNDdttm3+iHehTYzXMKW8ZhvU/RdlUMq0klzbmIXYrI4OSt2W?=
+ =?us-ascii?Q?papvepIdZWB4+T0d54oZU7/QRaRkqhFewN5Fb8yN3NUamOcRrkizYdtB++9l?=
+ =?us-ascii?Q?EQ5Etgiy5tArcwZO27zgMw26bpIYJa/POQGDywgXHYg5UyMhT9o+xjj43Wn0?=
+ =?us-ascii?Q?cpnO0+tpTQro/yT7sEmDJ6FrijjIa9BW+i1yiqHWRVKaxVG7OHIQAdOozX+9?=
+ =?us-ascii?Q?uD4RmaOyiUHljd6JttjUyVakJJ41L18HMwUi9H5f7d/NmNDR70q/+EZyBE6G?=
+ =?us-ascii?Q?AOa7SzUVx35UbyEmAyivT7oAXVLDrC+5tQuhofJfIvIvQ2U0T0gHaIEqhXJg?=
+ =?us-ascii?Q?2G8W/8CUVCPjPN35jq1j+Ee5IOnlkNPD1gURpczGLkUuZEhr8cTRcSviLZsq?=
+ =?us-ascii?Q?/Gl+ZlXeY7noCv7T3IAIM5yckDABSTmK2QI25iPWF28wP5yPel5r4FTOT2YB?=
+ =?us-ascii?Q?zlQmmBJggslctEr5oAjyAn9qI/HTgp9S5p1KId+trsRkQDXLXBuBjp0j5bae?=
+ =?us-ascii?Q?69HsubNSryeHgR1PwESm2MLHPZB1CK4Ov3qTGN+q/Dep7SuxnrTXatnNMTds?=
+ =?us-ascii?Q?O+YZZwEzE75oC64/NTzQl1SBjgxDDC0CjnxGH1W/eyc32U42ryFDuxjf/O51?=
+ =?us-ascii?Q?zkFPPQtePNeElhfIbgjtyZGhW/1Ee3g0LKRkVdA6PkLrtuMBKa+5Df4TcFe3?=
+ =?us-ascii?Q?TjkUkE1SrUHSvs4KBXlIEG4Ghn7PLbWXM6tm37chKcG0HTaCoVWhQc4QamKk?=
+ =?us-ascii?Q?EHDOUqadYEk/GgtuEPNr8ndyGYGfgtNIGP8T1bKSUmfehlm1rI4snmb0zPpv?=
+ =?us-ascii?Q?OfvLYjajUmIC7Xcpf0jHbNjetHIm4Hnm6VxlaxXw?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e2ed9da8-acda-400a-77f4-08db6d6f0879
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3743.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2023 07:06:25.6330
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dTg6AXjO40ONLc1aZIzDIQvvhf7F8/wXNtsfin/vZ7t8wbU73m0qR0/Q/g4XiRG8liThTuZ2sabja5n1QE8Sxw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR0601MB4100
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
- > This allows the usage of properties like termination-gpios and terminati=
-on-
-> ohms, which are specified in can-controller.yaml but were previously not
-> usable due to additionalProperties: false.
->=20
-> Signed-off-by: Leonard G=C3=B6hrs=20<l.goehrs=40pengutronix.de>=0D=0A>=20=
-Suggested-by:=20Rob=20Herring=20<robh=40kernel.org>=0D=0ALooks=20good=20to=
-=20me,=0D=0AReviewed-by:=20Chandrasekar=20Ramakrishnan=20<rcsekar=40samsung=
-.com>=0D=0A>=20---=0D=0A>=20=20Documentation/devicetree/bindings/net/can/bo=
-sch,m_can.yaml=20=7C=202=20+-=0D=0A>=20=201=20file=20changed,=201=20inserti=
-on(+),=201=20deletion(-)=0D=0A>=20=0D=0A>=20diff=20--git=20a/Documentation/=
-devicetree/bindings/net/can/bosch,m_can.yaml=0D=0A>=20b/Documentation/devic=
-etree/bindings/net/can/bosch,m_can.yaml=0D=0A>=20index=2067879aab623b5..76c=
-5024b6423e=20100644=0D=0A>=20---=20a/Documentation/devicetree/bindings/net/=
-can/bosch,m_can.yaml=0D=0A>=20+++=20b/Documentation/devicetree/bindings/net=
-/can/bosch,m_can.yaml=0D=0A>=20=40=40=20-128,7=20+128,7=20=40=40=20required=
-:=0D=0A>=20=20=20=20-=20clock-names=0D=0A>=20=20=20=20-=20bosch,mram-cfg=0D=
-=0A>=20=0D=0A>=20-additionalProperties:=20false=0D=0A>=20+unevaluatedProper=
-ties:=20false=0D=0A>=20=0D=0A>=20=20examples:=0D=0A>=20=20=20=20-=20=7C=0D=
-=0A>=20--=0D=0A>=202.39.2=0D=0A=0D=0A=0D=0A
+ The fwnode_for_each_child_node loop in qca8k_setup_led_ctrl should
+ have fwnode_handle_put() before return which could avoid resource leaks.
+ This patch could fix this bug.
+
+Signed-off-by: Wang Ming <machel@vivo.com>
+---
+ drivers/net/dsa/qca/qca8k-leds.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/dsa/qca/qca8k-leds.c b/drivers/net/dsa/qca/qca8k-l=
+eds.c
+index 6f02029b4..d24ee5df9 100644
+--- a/drivers/net/dsa/qca/qca8k-leds.c
++++ b/drivers/net/dsa/qca/qca8k-leds.c
+@@ -450,8 +450,10 @@ qca8k_setup_led_ctrl(struct qca8k_priv *priv)
+                 * the correct port for LED setup.
+                 */
+                ret =3D qca8k_parse_port_leds(priv, port, qca8k_port_to_phy=
+(port_num));
+-               if (ret)
++               if (ret) {
++                       fwnode_handle_put(port);
+                        return ret;
++               }
+        }
+
+        return 0;
+--
+2.25.1
+
+
+________________________________
+=E6=9C=AC=E9=82=AE=E4=BB=B6=E5=8F=8A=E5=85=B6=E9=99=84=E4=BB=B6=E5=86=85=E5=
+=AE=B9=E5=8F=AF=E8=83=BD=E5=90=AB=E6=9C=89=E6=9C=BA=E5=AF=86=E5=92=8C/=E6=
+=88=96=E9=9A=90=E7=A7=81=E4=BF=A1=E6=81=AF=EF=BC=8C=E4=BB=85=E4=BE=9B=E6=8C=
+=87=E5=AE=9A=E4=B8=AA=E4=BA=BA=E6=88=96=E6=9C=BA=E6=9E=84=E4=BD=BF=E7=94=A8=
+=E3=80=82=E8=8B=A5=E6=82=A8=E9=9D=9E=E5=8F=91=E4=BB=B6=E4=BA=BA=E6=8C=87=E5=
+=AE=9A=E6=94=B6=E4=BB=B6=E4=BA=BA=E6=88=96=E5=85=B6=E4=BB=A3=E7=90=86=E4=BA=
+=BA=EF=BC=8C=E8=AF=B7=E5=8B=BF=E4=BD=BF=E7=94=A8=E3=80=81=E4=BC=A0=E6=92=AD=
+=E3=80=81=E5=A4=8D=E5=88=B6=E6=88=96=E5=AD=98=E5=82=A8=E6=AD=A4=E9=82=AE=E4=
+=BB=B6=E4=B9=8B=E4=BB=BB=E4=BD=95=E5=86=85=E5=AE=B9=E6=88=96=E5=85=B6=E9=99=
+=84=E4=BB=B6=E3=80=82=E5=A6=82=E6=82=A8=E8=AF=AF=E6=94=B6=E6=9C=AC=E9=82=AE=
+=E4=BB=B6=EF=BC=8C=E8=AF=B7=E5=8D=B3=E4=BB=A5=E5=9B=9E=E5=A4=8D=E6=88=96=E7=
+=94=B5=E8=AF=9D=E6=96=B9=E5=BC=8F=E9=80=9A=E7=9F=A5=E5=8F=91=E4=BB=B6=E4=BA=
+=BA=EF=BC=8C=E5=B9=B6=E5=B0=86=E5=8E=9F=E5=A7=8B=E9=82=AE=E4=BB=B6=E3=80=81=
+=E9=99=84=E4=BB=B6=E5=8F=8A=E5=85=B6=E6=89=80=E6=9C=89=E5=A4=8D=E6=9C=AC=E5=
+=88=A0=E9=99=A4=E3=80=82=E8=B0=A2=E8=B0=A2=E3=80=82
+The contents of this message and any attachments may contain confidential a=
+nd/or privileged information and are intended exclusively for the addressee=
+(s). If you are not the intended recipient of this message or their agent, =
+please note that any use, dissemination, copying, or storage of this messag=
+e or its attachments is not allowed. If you receive this message in error, =
+please notify the sender by reply the message or phone and delete this mess=
+age, any attachments and any copies immediately.
+Thank you
 
