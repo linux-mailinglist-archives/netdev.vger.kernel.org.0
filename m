@@ -1,160 +1,115 @@
-Return-Path: <netdev+bounces-10954-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10955-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9E5F0730C4E
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 02:41:18 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5878E730C82
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 03:07:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C9AC91C20E15
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 00:41:17 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B90F6281605
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 01:07:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9BC2B18F;
-	Thu, 15 Jun 2023 00:41:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2DA4437B;
+	Thu, 15 Jun 2023 01:07:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B91C378
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 00:41:14 +0000 (UTC)
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5EBEB26A1;
-	Wed, 14 Jun 2023 17:41:13 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 1222292009D; Thu, 15 Jun 2023 02:41:11 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 0AE5092009C;
-	Thu, 15 Jun 2023 01:41:11 +0100 (BST)
-Date: Thu, 15 Jun 2023 01:41:10 +0100 (BST)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Bjorn Helgaas <helgaas@kernel.org>
-cc: Bjorn Helgaas <bhelgaas@google.com>, 
-    Mahesh J Salgaonkar <mahesh@linux.ibm.com>, 
-    Oliver O'Halloran <oohall@gmail.com>, 
-    Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-    Christophe Leroy <christophe.leroy@csgroup.eu>, 
-    Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>, 
-    "David S. Miller" <davem@davemloft.net>, 
-    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
-    Paolo Abeni <pabeni@redhat.com>, 
-    =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>, 
-    David Abdurachmanov <david.abdurachmanov@gmail.com>, 
-    linux-rdma@vger.kernel.org, 
-    Mika Westerberg <mika.westerberg@linux.intel.com>, 
-    linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, 
-    Alex Williamson <alex.williamson@redhat.com>, 
-    Lukas Wunner <lukas@wunner.de>, linux-pci@vger.kernel.org, 
-    Stefan Roese <sr@denx.de>, Jim Wilson <wilson@tuliptree.org>, 
-    netdev@vger.kernel.org
-Subject: Re: [PATCH v9 00/14] pci: Work around ASMedia ASM2824 PCIe link
- training failures
-In-Reply-To: <20230614231203.GA1451606@bhelgaas>
-Message-ID: <alpine.DEB.2.21.2306150124010.64925@angie.orcam.me.uk>
-References: <20230614231203.GA1451606@bhelgaas>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 173D1379
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 01:07:06 +0000 (UTC)
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A61E26A6
+	for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 18:07:05 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-3110ab7110aso1192115f8f.3
+        for <netdev@vger.kernel.org>; Wed, 14 Jun 2023 18:07:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686791223; x=1689383223;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Vgs6l8BhYBzeTOgjfO75FvzjRIt1j8TF5yGTTe0cGl8=;
+        b=c9uvQ22a2OQ347plDW0ED7BCMa2v3Et3DmY/m4F10p4vrN/RX/rTYYCgF6cI9eg3dW
+         /nGWzMyXUGoEfyUVjA18OOnKgqFZZ7LM6UgbwgNauhDMBKL+sShq+QgwV9j6L0wkXSdv
+         CF71ogHkAduZtAPT0xk9HKGmv4Zrg2Q2RSl6Fcg663MP+1HmiFDkrsDHLEC1dosqLJQX
+         ERSrfwEQ+R4+7FNM6f5+PZd5wU3afklIZDtW/B7jUAJHmdg3AGT1tuv1kGFduW1tpvW7
+         bAAIXm+qisMZyoNAm1Z2NMRWpZGZ3c6HVluxipbm0Hqccr1+I1gX9V+SZmVaUhYtXrtS
+         kj0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686791223; x=1689383223;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Vgs6l8BhYBzeTOgjfO75FvzjRIt1j8TF5yGTTe0cGl8=;
+        b=IHZna+439tMMyKtVl2KbPQecs+i2xSU+X6/LDpySVXKLwitWL1jR7pdEKfccCmmfQO
+         MbYcrK4v08cPa0ngQ7DH2t9EiWndlXXFdDkgODUT5Ec44+K17w2gILVDxVt0gbwuoXD1
+         QC2K3WQbUHQoX8bt5Of3bJyuFH4ak0UU2poAxs6e2p8t93aOdXxVLGpu6qrDkWMzuHif
+         ZSVb34MIYwzubXpmUHn9V6bI/z3UHeFXgsUiAurd4JeH9d/vIhOYfVFs9grMpfn5WCyT
+         m8LXkPOuHHBlFT8x/4ylFrYGzSPiEllCCRHCmZkNKAnpfHk3wY/j5n2EoEvIX7S8Fh72
+         1iDQ==
+X-Gm-Message-State: AC+VfDwJmiKcIcDrqjIV4cDb+NI39OABe4nmuhdLeqMVfFUfAOE37Bo/
+	FrooeuAJqpNDdzg4Tm9xdCmedTQAdAWtgA==
+X-Google-Smtp-Source: ACHHUZ6DXn8G/6rTh7J60hGCq8QJc0Z3x/Es+qpdMsrkkWmw1ek3RIIMGIh/gDypXYT1nE8+NtqmfA==
+X-Received: by 2002:adf:f68c:0:b0:2f6:bf04:c8cc with SMTP id v12-20020adff68c000000b002f6bf04c8ccmr10767971wrp.55.1686791223418;
+        Wed, 14 Jun 2023 18:07:03 -0700 (PDT)
+Received: from localhost ([2a01:4b00:d307:1000:f1d3:eb5e:11f4:a7d9])
+        by smtp.gmail.com with ESMTPSA id v16-20020adfe4d0000000b00307a83ea722sm19606273wrm.58.2023.06.14.18.07.02
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Jun 2023 18:07:02 -0700 (PDT)
+From: luca.boccassi@gmail.com
+To: netdev@vger.kernel.org
+Subject: [PATCH iproute2] man: fix typos found by Lintian
+Date: Thu, 15 Jun 2023 02:06:59 +0100
+Message-Id: <20230615010659.1435955-1-luca.boccassi@gmail.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, 14 Jun 2023, Bjorn Helgaas wrote:
+From: Luca Boccassi <bluca@debian.org>
 
-> >  This is v9 of the change to work around a PCIe link training phenomenon 
-> > where a pair of devices both capable of operating at a link speed above 
-> > 2.5GT/s seems unable to negotiate the link speed and continues training 
-> > indefinitely with the Link Training bit switching on and off repeatedly 
-> > and the data link layer never reaching the active state.
-> > 
-> >  With several requests addressed and a few extra issues spotted this
-> > version has now grown to 14 patches.  It has been verified for device 
-> > enumeration with and without PCI_QUIRKS enabled, using the same piece of 
-> > RISC-V hardware as previously.  Hot plug or reset events have not been 
-> > verified, as this is difficult if at all feasible with hardware in 
-> > question.
-> > 
-> >  Last iteration: 
-> > <https://lore.kernel.org/r/alpine.DEB.2.21.2304060100160.13659@angie.orcam.me.uk/>, 
-> > and my input to it:
-> > <https://lore.kernel.org/r/alpine.DEB.2.21.2306080224280.36323@angie.orcam.me.uk/>.
-> 
-> Thanks, I applied these to pci/enumeration for v6.5.
+Signed-off-by: Luca Boccassi <bluca@debian.org>
+---
+ man/man8/dcb-apptrust.8 | 2 +-
+ man/man8/tc-netem.8     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
- Great, thanks!
+diff --git a/man/man8/dcb-apptrust.8 b/man/man8/dcb-apptrust.8
+index c9948403..d43e97ba 100644
+--- a/man/man8/dcb-apptrust.8
++++ b/man/man8/dcb-apptrust.8
+@@ -40,7 +40,7 @@ for details on how to configure app table entries.
+ 
+ Selector trust can be used by the
+ software stack, or drivers (most likely the latter), when querying the APP
+-table, to determine if an APP entry should take effect, or not. Additionaly, the
++table, to determine if an APP entry should take effect, or not. Additionally, the
+ order of the trusted selectors will dictate which selector should take
+ precedence, in the case of multiple different APP table selectors being present.
+ 
+diff --git a/man/man8/tc-netem.8 b/man/man8/tc-netem.8
+index 51cf081e..bc7947da 100644
+--- a/man/man8/tc-netem.8
++++ b/man/man8/tc-netem.8
+@@ -366,7 +366,7 @@ It is possible to selectively apply impairment using traffic classification.
+    match ip dst 65.172.181.4/32 flowid 1:3
+ .EE
+ .RS 4
+-This eample uses a priority queueing discipline;
++This example uses a priority queueing discipline;
+ a TBF is added to do rate control; and a simple netem delay.
+ A filter classifies all packets going to 65.172.181.4 as being priority 3.
+ .PP
+-- 
+2.39.2
 
-> I tweaked a few things, so double-check to be sure I didn't break
-> something:
-> 
->   - Moved dev->link_active_reporting init to set_pcie_port_type()
->     because it does other PCIe-related stuff.
-> 
->   - Reordered to keep all the link_active_reporting things together.
-> 
->   - Reordered to clean up & factor pcie_retrain_link() before exposing
->     it to the rest of the PCI core.
-> 
->   - Moved pcie_retrain_link() a little earlier to keep it next to
->     pcie_wait_for_link_status().
-> 
->   - Squashed the stubs into the actual quirk so we don't have the
->     intermediate state where we call the stubs but they never do
->     anything (let me know if there's a reason we need your order).
-> 
->   - Inline pcie_parent_link_retrain(), which seemed like it didn't add
->     enough to be worthwhile.
-
- Ack, I'll double-check and report back.  A minor nit I've spotted below:
-
->  static int pci_dev_wait(struct pci_dev *dev, char *reset_type, int timeout)
->  {
-> -	bool retrain = true;
->  	int delay = 1;
-> +	bool retrain = false;
-> +	struct pci_dev *bridge;
-> +
-> +	if (pci_is_pcie(dev)) {
-> +		retrain = true;
-> +		bridge = pci_upstream_bridge(dev);
-> +	}
-
- If doing it this way, which I actually like, I think it would be a little 
-bit better performance- and style-wise if this was written as:
-
-	if (pci_is_pcie(dev)) {
-		bridge = pci_upstream_bridge(dev);
-		retrain = !!bridge;
-	}
-
-(or "retrain = bridge != NULL" if you prefer this style), and then we 
-don't have to repeatedly check two variables iff (pcie && !bridge) in the 
-loop below:
-
-> @@ -1201,9 +1190,9 @@ static int pci_dev_wait(struct pci_dev *dev, char *reset_type, int timeout)
->  		}
->  
->  		if (delay > PCI_RESET_WAIT) {
-> -			if (retrain) {
-> +			if (retrain && bridge) {
-
--- i.e. code can stay then as:
-
-			if (retrain) {
-
-here.  I hope you find this observation rather obvious, so will you amend 
-your tree, or shall I send an incremental update?
-
- Otherwise I don't find anything suspicious with the interdiff itself 
-(thanks for posting it, that's really useful indeed!), but as I say I'll 
-yet double-check how things look and work with your tree.  Hopefully 
-tomorrow (Thu), as I have other stuff yet to complete tonight.
-
-  Maciej
 
