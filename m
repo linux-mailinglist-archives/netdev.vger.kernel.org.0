@@ -1,233 +1,120 @@
-Return-Path: <netdev+bounces-11127-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11128-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3E67E731992
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 15:08:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 41184731A31
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 15:38:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6C3372817A2
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 13:08:55 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7AA182817C3
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 13:38:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7B69D15AEA;
-	Thu, 15 Jun 2023 13:08:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A0E4715AF4;
+	Thu, 15 Jun 2023 13:38:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ADEC156DA
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 13:08:53 +0000 (UTC)
-Received: from mail-40134.protonmail.ch (mail-40134.protonmail.ch [185.70.40.134])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97AFB123
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 06:08:48 -0700 (PDT)
-Date: Thu, 15 Jun 2023 13:08:39 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
-	s=protonmail; t=1686834526; x=1687093726;
-	bh=xbMn6q9nCJQyfoG9776y5ZRaNN+IfpLZKugBF/NN2S8=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=FSwwA3U4t+xstRvTsrWzDWFJN3sClMrBtnscqo0/MbPbYd3Rfp/CfQARt+BH6/tNO
-	 CsuT3wvs0AZwqTDM8AdKcdknSLZP9etFEtFfnUOG9epLggXOarJqEx+eW0FLDm9UzP
-	 YgbhVcUvmKM+Y1W/ZDTNj7G5UgMH3/VOfDa3lLiMm/Nm0r/teNUpJnDfxx67DTWMPu
-	 Ti7YAMll9+bYYymfZTMaKSZvVlkfNuo0EeiJ3RACoaWNvWrwe9WuLETOlyIxFkw0ii
-	 N+RxIK/DlQGplmYno1zbY5IgKCbGX6bDd8aINjj2Z9Tbzehx0AALSR47lXOfb4RBnI
-	 y7OEjq+aCVMjA==
-To: FUJITA Tomonori <fujita.tomonori@gmail.com>
-From: Benno Lossin <benno.lossin@proton.me>
-Cc: netdev@vger.kernel.org, rust-for-linux@vger.kernel.org, aliceryhl@google.com, andrew@lunn.ch, miguel.ojeda.sandonis@gmail.com
-Subject: Re: [PATCH 5/5] samples: rust: add dummy network driver
-Message-ID: <ZqzvqDuQL9fAxnW0HxgDhqabk6lZsM9OGjV0ejb3dk52fhgAyMH-eIUnRCfPxRgnGYTOVavnKlsrABIWQk_Mwu5K0_lc8W-gA_0xE3No-PI=@proton.me>
-In-Reply-To: <20230613045326.3938283-6-fujita.tomonori@gmail.com>
-References: <20230613045326.3938283-1-fujita.tomonori@gmail.com> <20230613045326.3938283-6-fujita.tomonori@gmail.com>
-Feedback-ID: 71780778:user:proton
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F1498495
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 13:38:40 +0000 (UTC)
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6658B3C12
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 06:38:11 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-977cf86aae5so267431766b.0
+        for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 06:38:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1686836253; x=1689428253;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mYo4mo9LxJ5Bb1u21M6AxJhHfaaBpi4Yfj8oS2RZGik=;
+        b=gwnpCAL+9XD9YTcrhW22JHHze+0ln59G79fG0PbzPCPkUume7cpPMe9N1MpVazB8T0
+         1VNcvHhrMsDbjcPaCwwELzdmSj2CInEWwxUmLYNOwRUXECqbkD21NOCA6zL0LkId1xTe
+         Jmz5KNhEGQlTF8AQJe7uUwDQ4+pi/99NutlpmFMGKD3/SppKORWaGtI+PmV14ZbcTUXg
+         SQ/xFGrRUrJug8frUn3FxCFoHdEvGjOv0zxfZtED6wTv76W+YYbrOe0XjczsTNc6FnX6
+         BTbrSi6sWw9Hr8PLExxfqiIVT6LsvR3Q/5vN6OlV0JnK2Yv0FbMnNpMYEzZJu4bCBpMD
+         RaPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686836253; x=1689428253;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mYo4mo9LxJ5Bb1u21M6AxJhHfaaBpi4Yfj8oS2RZGik=;
+        b=NaWd1waDz1hNgz2iIm8nvgDKIQIE7ecLoKXrdWiRxEnNP54sEXbbgyuZgvjqJFTM5F
+         GNDnb1DROVHbVnkh9YNvfxQD9r/w4r96n3Uu5TMzjCNPBWXrO3A2RuQjBDlwvAKYbIO6
+         EM6PYnJbOGgXRgbS4wfBA6jo5WFZbEeuBzdE2WuJBY2JoPz0njWrnZ5+A9r83NEk+w36
+         jjLjyYHjhb5Q+ZjajXKQmx9CeHZTzXQkN9rO/RKlcbUShi/4je+T7UlK+YBhLcF8Bu2w
+         zcslJcdzHS2yQg/XuOU8ppMjA4dvk/SstsF+w38S5OnFMtUhhtnZ0aufI/IbxO1wOG0W
+         iB2A==
+X-Gm-Message-State: AC+VfDxovQFffoyDwjZXlh6QOs6XXnqJ0zb3UhNsrmSlfv65dkTmT/LW
+	TtlPwQxUgj/ZzaN7JN2TCX3AVw==
+X-Google-Smtp-Source: ACHHUZ4+n13L4jhgYrrrc4ptTI3RmwMq1dwvCZV4MDbjtdu4sLMN7fnVBOOcDFGxP2/w6+shDoBlfg==
+X-Received: by 2002:a17:906:6a07:b0:982:a376:1d3f with SMTP id qw7-20020a1709066a0700b00982a3761d3fmr1542823ejc.41.1686836253221;
+        Thu, 15 Jun 2023 06:37:33 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.219.26])
+        by smtp.gmail.com with ESMTPSA id d23-20020a17090648d700b00982c84e5dadsm196414ejt.170.2023.06.15.06.37.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Jun 2023 06:37:32 -0700 (PDT)
+Message-ID: <b326151c-24ed-e603-d1c7-3ebe8dbaa6c4@linaro.org>
+Date: Thu, 15 Jun 2023 15:37:30 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH v2 17/23] dt-bindings: net: qcom,ethqos: add description
+ for sa8775p
+Content-Language: en-US
+To: Bartosz Golaszewski <brgl@bgdev.pl>, Vinod Koul <vkoul@kernel.org>,
+ Bhupesh Sharma <bhupesh.sharma@linaro.org>, Andy Gross <agross@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>,
+ "David S . Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Kishon Vijay Abraham I <kishon@kernel.org>,
+ Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Jose Abreu <joabreu@synopsys.com>
+Cc: netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-phy@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ linux-stm32@st-md-mailman.stormreply.com,
+ Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+References: <20230615121419.175862-1-brgl@bgdev.pl>
+ <20230615121419.175862-18-brgl@bgdev.pl>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230615121419.175862-18-brgl@bgdev.pl>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 6/13/23 06:53, FUJITA Tomonori wrote:
-> This is a simpler version of drivers/net/dummy.c.
->=20
-> This demonstrates the usage of abstractions for network device drivers.
->=20
-> Allows allocator_api feature for Box::try_new();
->=20
-> Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
-> ---
->  samples/rust/Kconfig           | 12 +++++
->  samples/rust/Makefile          |  1 +
->  samples/rust/rust_net_dummy.rs | 81 ++++++++++++++++++++++++++++++++++
->  scripts/Makefile.build         |  2 +-
->  4 files changed, 95 insertions(+), 1 deletion(-)
->  create mode 100644 samples/rust/rust_net_dummy.rs
->=20
-> diff --git a/samples/rust/Kconfig b/samples/rust/Kconfig
-> index b0f74a81c8f9..8b52ba620ae3 100644
-> --- a/samples/rust/Kconfig
-> +++ b/samples/rust/Kconfig
-> @@ -30,6 +30,18 @@ config SAMPLE_RUST_PRINT
->=20
->  =09 If unsure, say N.
->=20
-> +config SAMPLE_RUST_NET_DUMMY
-> +=09tristate "Dummy network driver"
-> +=09depends on NET
-> +=09help
-> +=09 This is the simpler version of drivers/net/dummy.c. No intention to =
-replace it.
-> +=09 This provides educational information for Rust abstractions for netw=
-ork drivers.
-> +
-> +=09 To compile this as a module, choose M here:
-> +=09 the module will be called rust_minimal.
-
-The module is not called `rust_minimal` :)
-
---
-Cheers,
-Benno
-
-> +
-> +=09 If unsure, say N.
-> +
->  config SAMPLE_RUST_HOSTPROGS
->  =09bool "Host programs"
->  =09help
-> diff --git a/samples/rust/Makefile b/samples/rust/Makefile
-> index 03086dabbea4..440dee2971ba 100644
-> --- a/samples/rust/Makefile
-> +++ b/samples/rust/Makefile
-> @@ -2,5 +2,6 @@
->=20
->  obj-$(CONFIG_SAMPLE_RUST_MINIMAL)=09=09+=3D rust_minimal.o
->  obj-$(CONFIG_SAMPLE_RUST_PRINT)=09=09=09+=3D rust_print.o
-> +obj-$(CONFIG_SAMPLE_RUST_NET_DUMMY)=09=09+=3D rust_net_dummy.o
->=20
->  subdir-$(CONFIG_SAMPLE_RUST_HOSTPROGS)=09=09+=3D hostprogs
-> diff --git a/samples/rust/rust_net_dummy.rs b/samples/rust/rust_net_dummy=
-.rs
-> new file mode 100644
-> index 000000000000..6c49a7ba7ba2
-> --- /dev/null
-> +++ b/samples/rust/rust_net_dummy.rs
-> @@ -0,0 +1,81 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +//
-> +//! Rust dummy netdev.
-> +
-> +use kernel::{
-> +    c_str,
-> +    net::dev::{
-> +        ethtool_op_get_ts_info, flags, priv_flags, Device, DeviceOperati=
-ons, DriverData,
-> +        EtherOperations, EthtoolTsInfo, Registration, RtnlLinkStats64, S=
-kBuff, TxCode,
-> +    },
-> +    prelude::*,
-> +};
-> +
-> +module! {
-> +    type: DummyNetdev,
-> +    name: "rust_net_dummy",
-> +    author: "Rust for Linux Contributors",
-> +    description: "Rust dummy netdev",
-> +    license: "GPL v2",
-> +}
-> +
-> +struct DevOps {}
-> +
-> +#[vtable]
-> +impl<D: DriverData<Data =3D Box<Stats>>> DeviceOperations<D> for DevOps =
-{
-> +    fn init(_dev: &mut Device, _data: &Stats) -> Result {
-> +        Ok(())
-> +    }
-> +
-> +    fn start_xmit(_dev: &mut Device, _data: &Stats, mut skb: SkBuff) -> =
-TxCode {
-> +        skb.tx_timestamp();
-> +        TxCode::Ok
-> +    }
-> +
-> +    fn get_stats64(_dev: &mut Device, _data: &Stats, _stats: &mut RtnlLi=
-nkStats64) {}
-> +}
-> +
-> +/// For device driver specific information.
-> +struct Stats {}
-> +
-> +impl DriverData for Stats {
-> +    type Data =3D Box<Stats>;
-> +}
-> +
-> +struct DummyNetdev {
-> +    _r: Registration<DevOps, Stats>,
-> +}
-> +
-> +struct EtherOps {}
-> +
-> +#[vtable]
-> +impl<D: DriverData<Data =3D Box<Stats>>> EtherOperations<D> for EtherOps=
- {
-> +    fn get_ts_info(dev: &mut Device, _data: &Stats, info: &mut EthtoolTs=
-Info) -> Result {
-> +        ethtool_op_get_ts_info(dev, info)
-> +    }
-> +}
-> +
-> +impl kernel::Module for DummyNetdev {
-> +    fn init(_module: &'static ThisModule) -> Result<Self> {
-> +        let data =3D Box::try_new(Stats {})?;
-> +        let mut r =3D Registration::<DevOps, Stats>::try_new_ether(1, 1,=
- data)?;
-> +        r.set_ether_operations::<EtherOps>()?;
-> +
-> +        let netdev =3D r.dev_get();
-> +        netdev.set_name(c_str!("dummy%d"))?;
-> +
-> +        netdev.set_flags(netdev.get_flags() | flags::IFF_NOARP & !flags:=
-:IFF_MULTICAST);
-> +        netdev.set_priv_flags(
-> +            netdev.get_priv_flags() | priv_flags::IFF_LIVE_ADDR_CHANGE |=
- priv_flags::IFF_NO_QUEUE,
-> +        );
-> +        netdev.set_random_eth_hw_addr();
-> +        netdev.set_min_mtu(0);
-> +        netdev.set_max_mtu(0);
-> +
-> +        r.register()?;
-> +
-> +        // TODO: Replaces pr_info with the wrapper of netdev_info().
-> +        pr_info!("Hello Rust dummy netdev!");
-> +        Ok(DummyNetdev { _r: r })
-> +    }
-> +}
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index 78175231c969..1404967e908e 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -277,7 +277,7 @@ $(obj)/%.lst: $(src)/%.c FORCE
->  # Compile Rust sources (.rs)
->  # ----------------------------------------------------------------------=
------
->=20
-> -rust_allowed_features :=3D new_uninit
-> +rust_allowed_features :=3D allocator_api,new_uninit
->=20
->  rust_common_cmd =3D \
->  =09RUST_MODFILE=3D$(modfile) $(RUSTC_OR_CLIPPY) $(rust_flags) \
-> --
-> 2.34.1
+On 15/06/2023 14:14, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > 
+> Add the compatible for the MAC controller on sa8775p platforms. This MAC
+> works with a single interrupt so add minItems to the interrupts property.
+> The fourth clock's name is different here so change it. Enable relevant
+> PHY properties. Add the relevant compatibles to the binding document for
+> snps,dwmac as well.
+> 
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
+
 
