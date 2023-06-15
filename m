@@ -1,282 +1,227 @@
-Return-Path: <netdev+bounces-11150-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11151-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9F8A5731BFD
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 16:58:56 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id EB372731C29
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 17:06:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6C56C1C20EB4
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 14:58:55 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F01A2281431
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 15:06:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3139412B94;
-	Thu, 15 Jun 2023 14:58:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2753312B9C;
+	Thu, 15 Jun 2023 15:06:32 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A438BA3A
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 14:58:52 +0000 (UTC)
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2066.outbound.protection.outlook.com [40.107.6.66])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB2D2977;
-	Thu, 15 Jun 2023 07:58:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dtKWb/OqE9Gaihh0QxYW6Pm55UHa0GK2nSO5HiDnZ8kwVaaST62jGq4vtlCKYf9c2YDjn4G/c+7zrgbqHfgJ917c7gWKnlB1/Dqw5XFl3rHPJa4cXcJrhgI5GhT6RmqQadLUYUf2+7aZO5oSZylIpPxVGBF7bGWjzGH5cUivaagbBd2voVZNCTtQvCMJIUsCZro9efwLarwkYXP9VNMenyku2BknkH20CZaXV1KOBrfaMDUAFyV9wyRLYnMaPzGwdBIGwK2SjyiDbQwx5BXjafze8O0lTrdjXCI2sRl3nJIYwWXEYdT45fs35bvWdkgX3JcFihgfOvTjoRA5Cy7jSQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QDgjbThfJBMSxAyfE/CSE3PGNboLiqu7wycWewt2L7M=;
- b=hYGseZ49YL8jZeLwparnxE4b0bAHVzXKKaW+hYau3DXhSlkdabL5Kgz/tPlvKWB9bYnXnnBas+gU94vbE2NreGKGk/NOeolSADGA6V1PCNn5Q/gYqLN1S1FRWc1BO2Ggud54t+fMSqpCs+CiRRU5Gp3h9k60iJY4HNqFEXt7arCgDyJ0dtKBkjw/nPmwL8x5LKagptXyyFoCS56EbVNCw2KIj1YsriCmu1+EkVP8ZBGb1cbK5kxOXXpTCRE+9Z1v8LGiJ3xm6tcmsfxodMDiR3H1dfoXbH1O3PM/TQBjjerMrQOA9IbFcCJfhntQhaiEjbe/bXZ3RWD3ml9RHYfmwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=technica-engineering.de; dmarc=pass action=none
- header.from=technica-engineering.de; dkim=pass
- header.d=technica-engineering.de; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=technica-engineering.de; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QDgjbThfJBMSxAyfE/CSE3PGNboLiqu7wycWewt2L7M=;
- b=nlpXGd10VUMLytE4+JGNQVe0ETwUp2qcUydSP8vxBrfjNH4qp/Lf68fuEg6tJz0cYiWLikEC1PCuzSj1Af7GyUUtq9edHiRw5pJJ0b2Ws8yAyyrMGM973OJKxmwP/CY7IY76Phv9rk3K2KJRdoiwVlC6NGqY34sMbNxXvKTTTs8=
-Received: from AM9PR08MB6788.eurprd08.prod.outlook.com (2603:10a6:20b:30d::24)
- by PR3PR08MB5673.eurprd08.prod.outlook.com (2603:10a6:102:86::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.25; Thu, 15 Jun
- 2023 14:58:43 +0000
-Received: from AM9PR08MB6788.eurprd08.prod.outlook.com
- ([fe80::33c5:57a:c902:b183]) by AM9PR08MB6788.eurprd08.prod.outlook.com
- ([fe80::33c5:57a:c902:b183%4]) with mapi id 15.20.6500.025; Thu, 15 Jun 2023
- 14:58:43 +0000
-From: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
-To: Simon Horman <simon.horman@corigine.com>
-CC: "davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
-	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>, "netdev@vger.kernel.org"
-	<netdev@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: macsec SCI assignment for ES = 0
-Thread-Topic: [PATCH] net: macsec SCI assignment for ES = 0
-Thread-Index: AQHZn3pkm6H56ZX+ME2107dtXGZZoq+L6xOAgAAJngY=
-Date: Thu, 15 Jun 2023 14:58:43 +0000
-Message-ID:
- <AM9PR08MB6788838DBB214D50AF7F7F5CDB5BA@AM9PR08MB6788.eurprd08.prod.outlook.com>
-References: <20230615111315.6072-1-carlos.fernandez@technica-engineering.de>
- <ZIse+5VepvY5dXN0@corigine.com>
-In-Reply-To: <ZIse+5VepvY5dXN0@corigine.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=technica-engineering.de;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AM9PR08MB6788:EE_|PR3PR08MB5673:EE_
-x-ms-office365-filtering-correlation-id: 0a58857c-8a68-4e77-35c9-08db6db10337
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- ZOsf0J8SDSq4zoRQBnV40rXtX12+HrXlGQ9mQc2KnKndMQfUkl6KRyXe/iCVkiiLxUgVGo3eeqrJKhwVtMrPTiaY1cosoxlH1iHc9JI+nXRmZadYBoh/uz/Fyv8/0nBerROZWV9wCQtS7M6FS/3Jjs+Do2UKrUGsc1CUfsSWost+k7DvwyWTSH9FKGCWhlB0IMdHrz/YMaEKKFzQyr2qO35p2IqZm4ZO/ogsPInNoIaO6vwuMftt/rt/D2PPgOb91beUFi76BKmT0hn3/bVnolutrNzsKujlFa0Uat5beTk8jU5FuJI+hN2x/vCqdLBhP9lBdXR5llbgg1mwRyA2IdkYEAqimPRWlIZT3KgVCQN/ZcyTsHLTIoz0HcC/PPM83BL38hxCoJqquyeyyh96s1uFsQWb+UPSxg4UJ+f6s+19NUfKfOs4R3KpELodG7ixXcQvPJ9ozVpZ8M4PvfjTQiAJMrsXEus1dDlQuxMv6luOy/2d73kIMUmCAhNJVsHI53OW6pHCUVE+O2w9ZeoZE/S1rRYGCBPRvLeLgONwtJ9Lj8iKyFK0WDVqkIZr9uFq4v6XRjRpaWtuhhfB+oNElAt6iXYCGlGoDTffULm2I/KI5BpoLU/WhYyd/I+Eifet
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR08MB6788.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(376002)(136003)(39850400004)(396003)(366004)(346002)(451199021)(9686003)(6506007)(478600001)(26005)(53546011)(186003)(71200400001)(55016003)(7696005)(2906002)(8936002)(316002)(33656002)(41300700001)(8676002)(44832011)(38070700005)(86362001)(122000001)(52536014)(5660300002)(38100700002)(54906003)(83380400001)(4326008)(64756008)(66946007)(66446008)(6916009)(66556008)(66476007)(76116006)(91956017);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?GyPFEceCRBbIV0lP/0xAuLjzeXYV0SGbeinKGhYmVEP2mchKy8o8WFvhSBHl?=
- =?us-ascii?Q?Sy7PEE6zy9kYYaQicfCs6GKCyDOnriw5a9pBtL5Fo6sX8/9+bh8fLX7MBLzw?=
- =?us-ascii?Q?wBWa/qDqG4zfD1zr0mZxeINTnOkzHxSANSsr8R0gTZGbERKkBd2Dyv9Zw6Rq?=
- =?us-ascii?Q?oB5BDLooKEm4Fh5cxfTTe8E/7CiqcMM/piDJEyY4zpH3gvVUAKYOrfUA3/iH?=
- =?us-ascii?Q?/HFZI19QBkFhYTbxJwLo7AozCPYkGKYu4usIvVnjC622XTuLETO4gwCq7oJi?=
- =?us-ascii?Q?J5mpvgn4Bf0NC+T+OgAnTsZ8MOKINSsxCYjdWBIk9laBJVvNLzmeviBX4Tqw?=
- =?us-ascii?Q?qcNE5vYQYXEY9359E0bgNzQrd80Ze4YrxDIFL23QDTS1cf99MQB+KQI8+9Nh?=
- =?us-ascii?Q?CDHb6in4hyi/qHQKw8HnZCu3lqFi3eSdWnfCEFGksvKhGW63hhUOgJmjQprN?=
- =?us-ascii?Q?mLw+wjv78bLQfT+RRjeJjPz5G472ydc2J61PZerh2nXiW/xyySUvMuMYACYa?=
- =?us-ascii?Q?epPDYhM2m9L/VKawy9gC0DzAjeeJD5S21pvvBkQSmvNXcZsbieW98KnscYRf?=
- =?us-ascii?Q?IWg2VhfZNaRWt6QXu+ns439m+E8T43FRtRPTl4AOfjV3Vglud0G5S2RgTTtw?=
- =?us-ascii?Q?K0PFkZVRVzlMlec3dD38x1gPA3WIIdeI4jyJCGIBC4WHFdiucPVDvSUyZQoP?=
- =?us-ascii?Q?Ohd4wjiALos2xGBxLZFMcDP4NpQlAo8A2u2TSEYqj1q76WBKuhGkMYD3d4tA?=
- =?us-ascii?Q?BPREdXa894J4Vxeh505n6yGB+D3IEVs8DVps0piRPRtWZeF0bi57R0Oitbtj?=
- =?us-ascii?Q?IMjMunc4r6iDOj5u0/57TCwxuniAALcS5HnzMKFI6wI0mpRQ803rlbzxtqvq?=
- =?us-ascii?Q?aFyYU+7FWgxBNAIy1RXHHHuAK52WWPkzVqlnePpxvr7I1FlSq09PZhCN4fKJ?=
- =?us-ascii?Q?yVn18/FVyJ0BgBu4yY+FD5vsv+CQzXq44yYmhW5BIW3MlHJn4xg1A0tx9Bd7?=
- =?us-ascii?Q?ys73AiN+faGazohCjZBLag0Rql1Tj4Ym3PquRAIoR1cXaDq0jUJWDXfFou8O?=
- =?us-ascii?Q?cwG1BVdoZBE+Sf9FLxcRHvB20o+bCUlABo5X6OKEhSfQsx+p7tNL/KhGa0i3?=
- =?us-ascii?Q?4dR0B2l7SkuJFASSgXgzHYC7QskMujwfbQ1fK/DlAiamuV6rTTA3Qxx4jxrj?=
- =?us-ascii?Q?clJfSrazfi4hDlKkmD1DcM2FqrUlaeCK7QQd7d2R4JauuK+XN5amzgY66j4y?=
- =?us-ascii?Q?lOQ516/WwuB5++rO1+7b4NUu/BbIDWQhyGI08ou4eBIdy/4lTlorBQZcpY6o?=
- =?us-ascii?Q?dUK4mf0kxBt0y62PJVDejjofiPERt+GpNiMx+HUkGFyx2gL1Elb9xBSWYmLp?=
- =?us-ascii?Q?c6gRhJPf9YzJLMeC1iCgW9Bse+rmQz7sdt1etd2usOYJr6uMQqJP/EX033t3?=
- =?us-ascii?Q?65CsAmZU+P/9WxeOekR/vqL/WDAxCSTg3T60peVhPdIoXzmfWMsjDxupJkC+?=
- =?us-ascii?Q?ktUY+5QXvjYPGInj7ZjPCGaqGqNkEviXueYLBQaqSp4NyndugqQQwugGOiz2?=
- =?us-ascii?Q?6lsb29UT/84ShF3WEBhI07veoEbLnu8ecbtLpyN1opKherfr4rlAwit61gS1?=
- =?us-ascii?Q?vcR3UFl5jHrLGFmyGQOOzVg=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1043EBA3A
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 15:06:31 +0000 (UTC)
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ECA42947
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 08:06:29 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-7778eb7966eso853950739f.1
+        for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 08:06:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686841588; x=1689433588;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jbAvnQlKSnFDELvEQTU/itBH23RgAeQ5EJ/SGFPEZv8=;
+        b=RSsKEy+ESYKRSlxhO0sQJqfkhLgPbu269xzNFwXZWaoM3cXNzMctK0TsdCX2ZAZPIc
+         Ip61T+siY83A3fljF1uP4XNWIBwS83/7SDR96AOhrm8mer6xuldGgzpEIIcbd6ZUZ/bU
+         Nq47/QmBzX8OCqJbvb9rSVZJbKN5kwSW8fM5PW1d3yA/XbTVi0MVSom7sB6th3/ImFtp
+         CQymPZ/K1KKXL4KmKW+Kw5lY8c1k6Qoosa9af5HPjF9sbn8fDln5xxACBNVrG7gFOdOc
+         rhNrS37DaveVkwc3xCVhIV4F644sp7FmBWCYeZ2+ljapHYSejL+XN5GDop9MaTx6horE
+         dyAg==
+X-Gm-Message-State: AC+VfDwoyWmjgdRk3ncCJdFtXQ4+U+E2v7dSOjr9Wc2hdB4w62nVV+/B
+	6e1WgVNsJ9qLrhvQRb33mStNtfNf18mzyjaka5csjZyGtlaQ
+X-Google-Smtp-Source: ACHHUZ4B1oDulCwNnFJj5FW/hLBUwoVbc3vtpMk2I5Iazh8TltbwMdoz1irid8xRzwElELT0NQM6H8amJQ1Sk8Rlbqqcc8N3Sp3C
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: technica-engineering.de
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR08MB6788.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0a58857c-8a68-4e77-35c9-08db6db10337
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2023 14:58:43.3307
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 1f04372a-6892-44e3-8f58-03845e1a70c1
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: aQKe4Dq1ZD9C9KR9hJzQCmDD/TtoNbKiHAEWP1iR/njCuEcSNAQKE4pwtXeSFbrC1AFDLkCcoI6r4nPUYniesOjLKdZ9F5DJku7BA5EXo8Xs0r+paYXjAMubYlebtFqHVS8/CgnlUpr5vqTDSdaXCA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR08MB5673
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a02:84e6:0:b0:423:13e1:8092 with SMTP id
+ f93-20020a0284e6000000b0042313e18092mr806046jai.5.1686841588671; Thu, 15 Jun
+ 2023 08:06:28 -0700 (PDT)
+Date: Thu, 15 Jun 2023 08:06:28 -0700
+In-Reply-To: <89571.1686830867@warthog.procyon.org.uk>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000af6fa405fe2c690f@google.com>
+Subject: Re: [syzbot] [crypto?] KASAN: slab-out-of-bounds Read in extract_iter_to_sg
+From: syzbot <syzbot+6efc50cc1f8d718d6cb7@syzkaller.appspotmail.com>
+To: davem@davemloft.net, dhowells@redhat.com, herbert@gondor.apana.org.au, 
+	kuba@kernel.org, linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+	SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Simon,
+Hello,
 
-Sure, I'll send the patch again as version 2. Thanks.
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+KASAN: slab-out-of-bounds Read in extract_iter_to_sg
 
-________________________________________
-From: Simon Horman <simon.horman@corigine.com>
-Sent: Thursday, June 15, 2023 4:23 PM
-To: Carlos Fernandez
-Cc: davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redha=
-t.com; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: macsec SCI assignment for ES =3D 0
+==================================================================
+BUG: KASAN: slab-out-of-bounds in sg_assign_page include/linux/scatterlist.h:109 [inline]
+BUG: KASAN: slab-out-of-bounds in sg_set_page include/linux/scatterlist.h:139 [inline]
+BUG: KASAN: slab-out-of-bounds in extract_bvec_to_sg lib/scatterlist.c:1183 [inline]
+BUG: KASAN: slab-out-of-bounds in extract_iter_to_sg lib/scatterlist.c:1352 [inline]
+BUG: KASAN: slab-out-of-bounds in extract_iter_to_sg+0x17a6/0x1960 lib/scatterlist.c:1339
+Read of size 8 at addr ffff888070558ff8 by task syz-executor.0/5573
 
-CAUTION: This email originated from outside of the organization. Do not cli=
-ck links or open attachments unless you recognize the sender and know the c=
-ontent is safe.
+CPU: 0 PID: 5573 Comm: syz-executor.0 Not tainted 6.4.0-rc5-syzkaller-01229-g97c5209b3d37-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/27/2023
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
+ print_address_description.constprop.0+0x2c/0x3c0 mm/kasan/report.c:351
+ print_report mm/kasan/report.c:462 [inline]
+ kasan_report+0x11c/0x130 mm/kasan/report.c:572
+ sg_assign_page include/linux/scatterlist.h:109 [inline]
+ sg_set_page include/linux/scatterlist.h:139 [inline]
+ extract_bvec_to_sg lib/scatterlist.c:1183 [inline]
+ extract_iter_to_sg lib/scatterlist.c:1352 [inline]
+ extract_iter_to_sg+0x17a6/0x1960 lib/scatterlist.c:1339
+ af_alg_sendmsg+0x1917/0x2990 crypto/af_alg.c:1045
+ sock_sendmsg_nosec net/socket.c:724 [inline]
+ sock_sendmsg+0xde/0x190 net/socket.c:747
+ splice_to_socket+0x964/0xee0 fs/splice.c:915
+ do_splice_from fs/splice.c:967 [inline]
+ direct_splice_actor+0x114/0x180 fs/splice.c:1155
+ splice_direct_to_actor+0x34a/0x9c0 fs/splice.c:1101
+ do_splice_direct+0x1ad/0x280 fs/splice.c:1207
+ do_sendfile+0xb19/0x12c0 fs/read_write.c:1254
+ __do_sys_sendfile64 fs/read_write.c:1316 [inline]
+ __se_sys_sendfile64 fs/read_write.c:1308 [inline]
+ __x64_sys_sendfile64+0x14d/0x210 fs/read_write.c:1308
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7ff232a8c169
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ff2337f5168 EFLAGS: 00000246 ORIG_RAX: 0000000000000028
+RAX: ffffffffffffffda RBX: 00007ff232bac120 RCX: 00007ff232a8c169
+RDX: 0000000020000180 RSI: 0000000000000003 RDI: 0000000000000005
+RBP: 00007ff232ae7ca1 R08: 0000000000000000 R09: 0000000000000000
+R10: 00000000ffffffff R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fffec66777f R14: 00007ff2337f5300 R15: 0000000000022000
+ </TASK>
 
-On Thu, Jun 15, 2023 at 01:13:15PM +0200, carlos.fernandez@technica-enginee=
-ring.de wrote:
-> From: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
->
-> According to 802.1AE standard, when ES and SC flags in TCI are zero, used
-> SCI should be the current active SC_RX. Current kernel does not implement
-> it and uses the header MAC address.
->
-> Without this patch, when ES =3D 0 (using a bridge or switch), header MAC
-> will not fit the SCI and MACSec frames will be discarted.
->
-> Signed-off-by: Carlos Fernandez <carlos.fernandez@technica-engineering.de=
->
+Allocated by task 5573:
+ kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+ kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+ ____kasan_kmalloc mm/kasan/common.c:374 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:333 [inline]
+ __kasan_kmalloc+0xa2/0xb0 mm/kasan/common.c:383
+ kasan_kmalloc include/linux/kasan.h:196 [inline]
+ __do_kmalloc_node mm/slab_common.c:966 [inline]
+ __kmalloc+0x5e/0x190 mm/slab_common.c:979
+ kmalloc include/linux/slab.h:563 [inline]
+ sock_kmalloc+0xb2/0x100 net/core/sock.c:2674
+ af_alg_alloc_tsgl crypto/af_alg.c:614 [inline]
+ af_alg_sendmsg+0x17a4/0x2990 crypto/af_alg.c:1028
+ sock_sendmsg_nosec net/socket.c:724 [inline]
+ sock_sendmsg+0xde/0x190 net/socket.c:747
+ splice_to_socket+0x964/0xee0 fs/splice.c:915
+ do_splice_from fs/splice.c:967 [inline]
+ direct_splice_actor+0x114/0x180 fs/splice.c:1155
+ splice_direct_to_actor+0x34a/0x9c0 fs/splice.c:1101
+ do_splice_direct+0x1ad/0x280 fs/splice.c:1207
+ do_sendfile+0xb19/0x12c0 fs/read_write.c:1254
+ __do_sys_sendfile64 fs/read_write.c:1316 [inline]
+ __se_sys_sendfile64 fs/read_write.c:1308 [inline]
+ __x64_sys_sendfile64+0x14d/0x210 fs/read_write.c:1308
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-Hi Carlos,
+The buggy address belongs to the object at ffff888070558000
+ which belongs to the cache kmalloc-4k of size 4096
+The buggy address is located 0 bytes to the right of
+ allocated 4088-byte region [ffff888070558000, ffff888070558ff8)
 
-some feedback from my side.
+The buggy address belongs to the physical page:
+page:ffffea0001c15600 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x70558
+head:ffffea0001c15600 order:3 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+page_type: 0xffffffff()
+raw: 00fff00000010200 ffff888012442140 dead000000000122 0000000000000000
+raw: 0000000000000000 0000000000040004 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0x1d20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC|__GFP_HARDWALL), pid 5573, tgid 5567 (syz-executor.0), ts 94731634455, free_ts 69153490166
+ set_page_owner include/linux/page_owner.h:31 [inline]
+ post_alloc_hook+0x2db/0x350 mm/page_alloc.c:1731
+ prep_new_page mm/page_alloc.c:1738 [inline]
+ get_page_from_freelist+0xf41/0x2c00 mm/page_alloc.c:3502
+ __alloc_pages+0x1cb/0x4a0 mm/page_alloc.c:4768
+ alloc_pages+0x1aa/0x270 mm/mempolicy.c:2279
+ alloc_slab_page mm/slub.c:1851 [inline]
+ allocate_slab+0x25f/0x390 mm/slub.c:1998
+ new_slab mm/slub.c:2051 [inline]
+ ___slab_alloc+0xa91/0x1400 mm/slub.c:3192
+ __slab_alloc.constprop.0+0x56/0xa0 mm/slub.c:3291
+ __slab_alloc_node mm/slub.c:3344 [inline]
+ slab_alloc_node mm/slub.c:3441 [inline]
+ __kmem_cache_alloc_node+0x136/0x320 mm/slub.c:3490
+ __do_kmalloc_node mm/slab_common.c:965 [inline]
+ __kmalloc+0x4e/0x190 mm/slab_common.c:979
+ kmalloc include/linux/slab.h:563 [inline]
+ sock_kmalloc+0xb2/0x100 net/core/sock.c:2674
+ af_alg_alloc_tsgl crypto/af_alg.c:614 [inline]
+ af_alg_sendmsg+0x17a4/0x2990 crypto/af_alg.c:1028
+ sock_sendmsg_nosec net/socket.c:724 [inline]
+ sock_sendmsg+0xde/0x190 net/socket.c:747
+ splice_to_socket+0x964/0xee0 fs/splice.c:915
+ do_splice_from fs/splice.c:967 [inline]
+ direct_splice_actor+0x114/0x180 fs/splice.c:1155
+ splice_direct_to_actor+0x34a/0x9c0 fs/splice.c:1101
+ do_splice_direct+0x1ad/0x280 fs/splice.c:1207
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1302 [inline]
+ __free_pages_ok+0x77f/0x1060 mm/page_alloc.c:1441
+ kvfree+0x46/0x50 mm/util.c:650
+ fq_reset include/net/fq_impl.h:386 [inline]
+ ieee80211_txq_teardown_flows+0x165/0x270 net/mac80211/tx.c:1638
+ ieee80211_remove_interfaces+0x13d/0x690 net/mac80211/iface.c:2280
+ ieee80211_unregister_hw+0x4b/0x240 net/mac80211/main.c:1483
+ mac80211_hwsim_del_radio drivers/net/wireless/virtual/mac80211_hwsim.c:5408 [inline]
+ hwsim_exit_net+0x412/0x840 drivers/net/wireless/virtual/mac80211_hwsim.c:6284
+ ops_exit_list+0xb0/0x170 net/core/net_namespace.c:170
+ cleanup_net+0x4ee/0xb10 net/core/net_namespace.c:614
+ process_one_work+0x99a/0x15e0 kernel/workqueue.c:2405
+ worker_thread+0x67d/0x10c0 kernel/workqueue.c:2552
+ kthread+0x344/0x440 kernel/kthread.c:379
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
 
-> ---
->  drivers/net/macsec.c | 28 ++++++++++++++++++++++------
->  1 file changed, 22 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-> index 3427993f94f7..ea9b15d555f4 100644
-> --- a/drivers/net/macsec.c
-> +++ b/drivers/net/macsec.c
-> @@ -256,16 +256,32 @@ static sci_t make_sci(const u8 *addr, __be16 port)
->       return sci;
->  }
->
-> -static sci_t macsec_frame_sci(struct macsec_eth_header *hdr, bool sci_pr=
-esent)
-> +static sci_t macsec_frame_sci(struct macsec_eth_header *hdr, bool sci_pr=
-esent,
-> +             struct macsec_rxh_data *rxd)
+Memory state around the buggy address:
+ ffff888070558e80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff888070558f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff888070558f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 fc
+                                                                ^
+ ffff888070559000: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff888070559080: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
 
-The indentation of the line above should be such that it aligns with the
-inside of the parentheses on the previous line.
 
-static sci_t macsec_frame_sci(struct macsec_eth_header *hdr, bool sci_prese=
-nt,
-                              struct macsec_rxh_data *rxd)
+Tested on:
 
->  {
-> +     struct macsec_dev *macsec_device;
->       sci_t sci;
-> -
-> +     /* SC =3D 1*/
->       if (sci_present)
->               memcpy(&sci, hdr->secure_channel_id,
-> -                    sizeof(hdr->secure_channel_id));
-> -     else
-> +                             sizeof(hdr->secure_channel_id));
-> +     /* SC =3D 0; ES =3D 0*/
-> +     else if (0 =3D=3D (hdr->tci_an & (MACSEC_TCI_ES | MACSEC_TCI_SC))) =
-{
-> +             list_for_each_entry_rcu(macsec_device, &rxd->secys, secys) =
-{
-> +                     struct macsec_rx_sc *rx_sc;
-> +                     struct macsec_secy *secy =3D &macsec_device->secy;
+commit:         97c5209b leds: trigger: netdev: uninitialized variable..
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git main
+console output: https://syzkaller.appspot.com/x/log.txt?x=158fa0e3280000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=526f919910d4a671
+dashboard link: https://syzkaller.appspot.com/bug?extid=6efc50cc1f8d718d6cb7
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=17ff78cf280000
 
-For new networking code, please use reverse xmas tree order - longest line
-to shortest - for local variable declarations.
-
-                        struct macsec_secy *secy =3D &macsec_device->secy;
-                        struct macsec_rx_sc *rx_sc;
-
-> +
-> +                     for_each_rxsc(secy, rx_sc) {
-> +                             rx_sc =3D rx_sc ? macsec_rxsc_get(rx_sc) : =
-NULL;
-> +                             if (rx_sc && rx_sc->active) {
-> +                                     sci =3D rx_sc->sci;
-> +                                     return sci;
-> +                             }
-
-I wonder if this can be more succinctly written as:
-
-                                if (rx_sc && rx_sc->active)
-                                        return rx_sc->sci;
-
-> +                     }
-> +             }
-> +     } else {
->               sci =3D make_sci(hdr->eth.h_source, MACSEC_PORT_ES);
-> -
-> +     }
->       return sci;
->  }
-
-clang-16 complains, as I understand things, that if
-the else if condition is met above, but sci is not returned from
-within it, then sci is uninitialised here.
-
-Perhaps that cannot happen.
-But perhaps it would be better guard against it somehow?
-
- drivers/net/macsec.c:270:3: warning: variable 'sci' is used uninitialized =
-whenever 'for' loop exits because its condition is false [-Wsometimes-unini=
-tialized]
-                 list_for_each_entry_rcu(macsec_device, &rxd->secys, secys)=
- {
-                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ./include/linux/rculist.h:392:3: note: expanded from macro 'list_for_each_=
-entry_rcu'
-                 &pos->member !=3D (head);                                 =
-\
-                 ^~~~~~~~~~~~~~~~~~~~~~
- drivers/net/macsec.c:285:9: note: uninitialized use occurs here
-         return sci;
-                ^~~
- drivers/net/macsec.c:270:3: note: remove the condition if it is always tru=
-e
-                 list_for_each_entry_rcu(macsec_device, &rxd->secys, secys)=
- {
-                 ^
- ./include/linux/rculist.h:392:3: note: expanded from macro 'list_for_each_=
-entry_rcu'
-                 &pos->member !=3D (head);                                 =
-\
-                 ^
- drivers/net/macsec.c:263:11: note: initialize the variable 'sci' to silenc=
-e this warning
-         sci_t sci;
-                  ^
-                   =3D 0
-
-...
 
