@@ -1,436 +1,343 @@
-Return-Path: <netdev+bounces-11237-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11238-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id F3FC97321B6
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 23:30:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 78AE07321C2
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 23:35:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 26DDA1C20E8C
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 21:30:52 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9B35C1C20EE6
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 21:35:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D2E4E1641E;
-	Thu, 15 Jun 2023 21:30:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0849A16434;
+	Thu, 15 Jun 2023 21:35:16 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCE072E0FC
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 21:30:49 +0000 (UTC)
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2067.outbound.protection.outlook.com [40.107.244.67])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFB6E69;
-	Thu, 15 Jun 2023 14:30:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4321156C0
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 21:35:15 +0000 (UTC)
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE652962;
+	Thu, 15 Jun 2023 14:35:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686864914; x=1718400914;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=LDMdqsbQSAUOmCUx9X7g1GGjQhoGNB9t5ceN5k3cPJk=;
+  b=OPCGhPnf+2SndKOvfwTywQRTr1oGeQPhSIVYnqxOECVtcBhy6E4WbrAj
+   RqVpEQ5fdVaUtoRPUz5S5d+xdEXR1dYz1hA3b15pbBuL4IFS0FnWdRwes
+   EXP4IHHi5TIf9lAsX9E53kWZS1RPg/MmMRYoj9ArC/exMp6EX/qEKXww1
+   Fj3dJOByn4gU0BBbfNzpN6PRL490qA7PFJT914cK0Ady88kcnVSyMgJqD
+   Stj8ksNQathdjiBOgct0X8W6xYOXtTn61cc71XX8zfXvYAe/vnUVdeJ8X
+   nOCRhjx427+N9Wt1e8XRBIm1r6p7LbkeD3MXOFxc2oI8xbWAm8OJoYrhu
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="387643608"
+X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
+   d="scan'208";a="387643608"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2023 14:35:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="777896350"
+X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
+   d="scan'208";a="777896350"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga008.fm.intel.com with ESMTP; 15 Jun 2023 14:35:13 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 15 Jun 2023 14:35:12 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 15 Jun 2023 14:35:12 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Thu, 15 Jun 2023 14:35:12 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.108)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Thu, 15 Jun 2023 14:35:11 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SqlaKtYca68WrmDmQbr5zOi8/NlCW3t4h3HibyMIiMjqm9t4NxuUkUNxuPgGNBg5sdv2e39Rl9vdypiieoG2jeKIDejDm30c8R5ZSha2FvMdYUPKuRGqft7qR+tLiksuFrre7M1I+4gV9ZEeFF64wH7bNI3O54tiR1Ni4gQE6bddKf3iBebhJsw5BRiqAuWjQFh2qc5ztcw4O3fKUfq2g/Yxo5/Fk//I6PKYsHAu9etfRC+06mYrrl1uqPP9c5/rVNHUZfVwY4InbIQkd1zy50fnWGThlPQ04jgs+Xxr+TLkhINjE5ZTmcbViGQhsc/6kzMwVAblMmnWjDlFPWTNLQ==
+ b=FRZljQzPzO4lQhAgRdRE5KDipEGi7ggvm8mkdXwMheVOmvibHmCT4xwIe6MLXHps6VMs1tO6vRdexkqFsnXWjTlEXBDDJGOpxcSJL+OikNhvhw8m4sdQ4UX8mnDabctrbeHt3zWaqT4Gt4JpuocKPgo/XA5m7Jjb1AMr52//pGPRTPvS+EolcNq49dIwcBSaoxQgw+7PnRpZRE1lkawXWh1Ccbjbr+p8rXSK6LFAk5KocdZkA9YoVgxwBAkOwqrhqp6CREOs/bVTmReo+SD/ddQofm6KYOICSi83JUOC9G6RaFidvm5y5ijukb8Er8ifXPw4pfnT5rw/NN329WfYQg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Z6adDS+x5JiFi6VqG/l0hm8JhSbVevNbTGMYUf7stK8=;
- b=HM2mpsMHqUCEmOqYrWbsaNlhEGbEQOpm6XsMkR0+8CYwODNIbsINkbpJIe3A0Rx+E7QWnvlVCADP09V3P9ZeckSMB9DdBmRq9Z5HLB0T6sBefeQkdMtdajQk163dgEulRjnlicM0Q5XAUzhq+E5aXJ7MnJ9T59/dWKe+oLpXDXS5UOLNmEzqRVszb2w6A1uhZNLkcrWwALQkaakUxA9NSEsHiBiPHHoCCLEDdVn0EgZ7h5uSlCgHt2KPS8Y6cvIBhd9LIcE+N8j7jveWX0khdcbYm+OmujtcFjCjJ7A8gQwSFE0rjrYHf65/VMwFjml6X5A9lzndxaZ8ajcwhHqPuA==
+ bh=Vztlr3wsSgrmNakUd7UgKECfC1Z/4wbf1j+KjKOWIMo=;
+ b=ic+qJ+tE4pTcPvd3fj8w92wssVvnwpFAFfsklmwPEK+YX5n2aTE2jCp3pjg27kpZuyUBazduP4hVwLnqL3M1a6yKWCrywVoUPtaxN40DZ6eboX3Ms/TCynnmOTo3DpeNMkec8JPLUAMKwTJnnZfTCBukLPimpS6QsUNNmbYWhRZ0ldIKcotO9vMOK1a6NDCFExx3F6BhX5Tjy04bA2waJ16qJT0MmUX493lMUEkP5vcKRPdrVs/wpnzwM47vEW1sFRh6n+Rq1/giaqf7PdYdCWsp9533dQNP+c3A0aAOLz3Uqgh1ebuyX1SnUBXalCk0b2eGW1BETCen6VnqYnkQuQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z6adDS+x5JiFi6VqG/l0hm8JhSbVevNbTGMYUf7stK8=;
- b=iMEY/KBnPiRmlSfCGyKgxKtxYKqkakTRXPbTqdBufJhipy6lXDjOtlL2+gJvi1TD+i10AMbDO2ViR6vLqvkvD30+2RDJ9uuFrjEGkLzsGa1PPWanlWuV/NtD7mG8Hi3rTXeCygA+UZDI7TyLq9Tcb0ecXAzlwzmgd/2SjUBjm2A=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH0PR12MB7982.namprd12.prod.outlook.com (2603:10b6:510:28d::5)
- by IA0PR12MB8279.namprd12.prod.outlook.com (2603:10b6:208:40c::16) with
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
+ BL1PR11MB5414.namprd11.prod.outlook.com (2603:10b6:208:31e::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.38; Thu, 15 Jun
- 2023 21:30:44 +0000
-Received: from PH0PR12MB7982.namprd12.prod.outlook.com
- ([fe80::d065:bf1f:880e:543e]) by PH0PR12MB7982.namprd12.prod.outlook.com
- ([fe80::d065:bf1f:880e:543e%3]) with mapi id 15.20.6477.037; Thu, 15 Jun 2023
- 21:30:44 +0000
-Message-ID: <f34ee622-d47e-d753-48cb-ac8879968ff4@amd.com>
-Date: Thu, 15 Jun 2023 14:30:42 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.2
-Subject: Re: [PATCH v10 vfio 3/7] vfio/pds: register with the pds_core PF
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.25; Thu, 15 Jun
+ 2023 21:35:09 +0000
+Received: from DM6PR11MB4657.namprd11.prod.outlook.com
+ ([fe80::24bd:974b:5c01:83d6]) by DM6PR11MB4657.namprd11.prod.outlook.com
+ ([fe80::24bd:974b:5c01:83d6%3]) with mapi id 15.20.6500.025; Thu, 15 Jun 2023
+ 21:35:08 +0000
+From: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+To: Jiri Pirko <jiri@resnulli.us>
+CC: "kuba@kernel.org" <kuba@kernel.org>, "vadfed@meta.com" <vadfed@meta.com>,
+	"jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>, "pabeni@redhat.com"
+	<pabeni@redhat.com>, "corbet@lwn.net" <corbet@lwn.net>, "davem@davemloft.net"
+	<davem@davemloft.net>, "edumazet@google.com" <edumazet@google.com>,
+	"vadfed@fb.com" <vadfed@fb.com>, "Brandeburg, Jesse"
+	<jesse.brandeburg@intel.com>, "Nguyen, Anthony L"
+	<anthony.l.nguyen@intel.com>, "M, Saeed" <saeedm@nvidia.com>,
+	"leon@kernel.org" <leon@kernel.org>, "richardcochran@gmail.com"
+	<richardcochran@gmail.com>, "sj@kernel.org" <sj@kernel.org>,
+	"javierm@redhat.com" <javierm@redhat.com>, "ricardo.canuelo@collabora.com"
+	<ricardo.canuelo@collabora.com>, "mst@redhat.com" <mst@redhat.com>,
+	"tzimmermann@suse.de" <tzimmermann@suse.de>, "Michalik, Michal"
+	<michal.michalik@intel.com>, "gregkh@linuxfoundation.org"
+	<gregkh@linuxfoundation.org>, "jacek.lawrynowicz@linux.intel.com"
+	<jacek.lawrynowicz@linux.intel.com>, "airlied@redhat.com"
+	<airlied@redhat.com>, "ogabbay@kernel.org" <ogabbay@kernel.org>,
+	"arnd@arndb.de" <arnd@arndb.de>, "nipun.gupta@amd.com" <nipun.gupta@amd.com>,
+	"axboe@kernel.dk" <axboe@kernel.dk>, "linux@zary.sk" <linux@zary.sk>,
+	"masahiroy@kernel.org" <masahiroy@kernel.org>,
+	"benjamin.tissoires@redhat.com" <benjamin.tissoires@redhat.com>,
+	"geert+renesas@glider.be" <geert+renesas@glider.be>, "Olech, Milena"
+	<milena.olech@intel.com>, "kuniyu@amazon.com" <kuniyu@amazon.com>,
+	"liuhangbin@gmail.com" <liuhangbin@gmail.com>, "hkallweit1@gmail.com"
+	<hkallweit1@gmail.com>, "andy.ren@getcruise.com" <andy.ren@getcruise.com>,
+	"razor@blackwall.org" <razor@blackwall.org>, "idosch@nvidia.com"
+	<idosch@nvidia.com>, "lucien.xin@gmail.com" <lucien.xin@gmail.com>,
+	"nicolas.dichtel@6wind.com" <nicolas.dichtel@6wind.com>, "phil@nwl.cc"
+	<phil@nwl.cc>, "claudiajkang@gmail.com" <claudiajkang@gmail.com>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+	"linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, poros <poros@redhat.com>, mschmidt
+	<mschmidt@redhat.com>, "linux-clk@vger.kernel.org"
+	<linux-clk@vger.kernel.org>, "vadim.fedorenko@linux.dev"
+	<vadim.fedorenko@linux.dev>
+Subject: RE: [RFC PATCH v8 07/10] ice: add admin commands to access cgu
+ configuration
+Thread-Topic: [RFC PATCH v8 07/10] ice: add admin commands to access cgu
+ configuration
+Thread-Index: AQHZms0P/wrvusf1802RxCsMWYxb1q+DungAgAixyxA=
+Date: Thu, 15 Jun 2023 21:35:08 +0000
+Message-ID: <DM6PR11MB46576DF96B9A44AB42241E469B5BA@DM6PR11MB4657.namprd11.prod.outlook.com>
+References: <20230609121853.3607724-1-arkadiusz.kubalewski@intel.com>
+ <20230609121853.3607724-8-arkadiusz.kubalewski@intel.com>
+ <ZIQ4YCX+1FbZHpRQ@nanopsycho>
+In-Reply-To: <ZIQ4YCX+1FbZHpRQ@nanopsycho>
+Accept-Language: pl-PL, en-US
 Content-Language: en-US
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Brett Creeley <brett.creeley@amd.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "jgg@nvidia.com" <jgg@nvidia.com>, "yishaih@nvidia.com"
- <yishaih@nvidia.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>
-Cc: "shannon.nelson@amd.com" <shannon.nelson@amd.com>
-References: <20230602220318.15323-1-brett.creeley@amd.com>
- <20230602220318.15323-4-brett.creeley@amd.com>
- <67192b9598d041568ece62ea282367d0@huawei.com>
-From: Brett Creeley <bcreeley@amd.com>
-In-Reply-To: <67192b9598d041568ece62ea282367d0@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR05CA0056.namprd05.prod.outlook.com
- (2603:10b6:a03:74::33) To PH0PR12MB7982.namprd12.prod.outlook.com
- (2603:10b6:510:28d::5)
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|BL1PR11MB5414:EE_
+x-ms-office365-filtering-correlation-id: 97c5ab15-1404-422c-a401-08db6de8646e
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Qci6k0fFZvhFkMgg2PBdi14A7ggtX9L8g1YQVpWxO44EMHcn9hC0K3nHUc6Ge2Hl5io57fplcgJLZmptER+FqoS5uSFsMTpDUFJB04qgKXYfxXZ+RhflelAO+VlZqMO3N0XWsjxeZh8aQmZXPD45flbEqhjPY1Ezr1ozN+6RMD1NOIpXp0mYcjINUqD8IEXEaGUCOz4Xh9XPyO9DM/ijtfVMEhJ2x1JnKHRw34JQBD3gl2riqlsYI8dbtuhuUtCuEyZq5s55bbnhp4ui5n3u/CogyL9GBfvVhasYR1T/1A5JYUxgS2rvUfwlGLcL7//1Vrii6VItr6O4ugQf3UZvKRNxv7Zqp97E7cmnsvfXi0WvPOfG5UTnDT0f/oYse3T5qPGOJXhhjpSgE6cFxrvH+Xye7+8WLulxPCEdeNhT6MnEOJTEA/8UsaG2j2cdL1AV8IaavjOgWcUCTRaZW0AzShruthPqYMi5Wpd9YQc4hCdZVxsYwUE2tTaZE+UkK/S/DDzZB9Cej4iAY1cfympKRdMqSXu9/iAx8gwPwDPTh9xG6sr0HqRgubh3yJJl+LZ8+68YG09IrkKa6Rg8bvWhdgA4IjraM2wJO3Mb4AxwHV5IhabMoGQoq1+PL5f+p81F
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(376002)(396003)(346002)(136003)(366004)(451199021)(33656002)(86362001)(38100700002)(122000001)(478600001)(38070700005)(7696005)(41300700001)(8676002)(8936002)(82960400001)(4326008)(54906003)(316002)(52536014)(5660300002)(7406005)(7416002)(6506007)(186003)(9686003)(26005)(2906002)(55016003)(66476007)(64756008)(76116006)(66946007)(71200400001)(66446008)(66556008)(6916009)(83380400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Aad2QGW7o5f7loFsfXGsa8abQT8BD3P887vZXdGQski88954nPCjS2cyIXr/?=
+ =?us-ascii?Q?8s5bjmPHSP0tRMXWo8F4hk/GIixYVMCzoVU0AQ4D6bWuO9zrLyw4tXUf70WT?=
+ =?us-ascii?Q?0JxNO5UAw3WG7OHZ0dMCo1m89l3S93gWNLxKQz5x1JDauJ0NYDzlZgHkBq/7?=
+ =?us-ascii?Q?g/xwDvLK3/8QocoWJA7gTkLoespgJINOdZOwEB8vfT0uq9MDRGcorYJsnlON?=
+ =?us-ascii?Q?9dr031Lx87qgI8CY42dXbxPde9ucjlsF8HS1U7mbFCzVPlIDAg3DcntqEgHp?=
+ =?us-ascii?Q?WoYxwZhj24CJp/oXCiTaFr4Wq3dsNk33sUAftJ+rRdHRU4H7j8+aUL/FZzfc?=
+ =?us-ascii?Q?QX13ag4y+PWEUNjmKrjvqS6B8e2/FqjibIw1I96bT1zoyr0b/W+fiGgmPnVv?=
+ =?us-ascii?Q?PTDQ8GcAWljjmSphNqsa3gG7bfLmCXcPmlY6PoohtJ5r4mAUydtWg8hznDMw?=
+ =?us-ascii?Q?BPQKx8qrIC4i7iLDtcUVxKYD3PjKMlFNAMqX2OpeM9S4UNxYJKjHyV0SdgC9?=
+ =?us-ascii?Q?/79DpP/7PMVHEERH9NjGMArGBiV/f8VT2Q+1tASOrrDCWWDIwD0S5Zag76Sq?=
+ =?us-ascii?Q?9y87q+z5ceJEwDREI/K/VNaHx8NRK+38Y/3Jyk/MaPfmcp80G5IVJ2mGpp/5?=
+ =?us-ascii?Q?xJHFSBIUBfqoN3xgsWG7yqXE59J0THSknRgCfu+HxaYQ6KKR/YtzrSVOpPR1?=
+ =?us-ascii?Q?27NUyxSXR3ZetIqMR92PxiKu4Afd94N/INRN+v0v4sXwg99kMiq/b42Y11K4?=
+ =?us-ascii?Q?tbuuA7r7jxXtJv8LZSkEjzNIKNqJDIDtH2ubC4IJZrWC439V61E0qpzWggh3?=
+ =?us-ascii?Q?CbHhBfYv+x/zQXF8kJmYABhwWySlyP0bJUYKlVYVu9lhcOaW+R21stqdNG5P?=
+ =?us-ascii?Q?RVn1Redw/BUr87bPMdqg2wTXEkQVfIMEN7F7mowYTVKsQ5sSQxPqvU/rjGsO?=
+ =?us-ascii?Q?NC/vDe5XHwU9UlCa+HKeF2IfD/KfAJoQ6ZLzTYdre/y4ag/w0S+wWAYuf4Uf?=
+ =?us-ascii?Q?YbNK8x9bGDDKAjRsQeooHHX5OGgK9DMbwcSEcu9OyQLYotHwPRQwGjICjlEi?=
+ =?us-ascii?Q?pvNlav5s0xt/9JWQQ8to/BwzcJ/6Fz8Uoe7WWveVysAyeNrjv6Z8kqH6NNEM?=
+ =?us-ascii?Q?nz/ytICI4haMNeKVc6fiU/6287gPOOZhtsypR6yIFL2AjZgZCbEgupa17hst?=
+ =?us-ascii?Q?Do8t/YKL4XRJ+OSHoD31SnpVNaFaPGUVDPiiv5QkcBOKwRcMKAP63XGmAykI?=
+ =?us-ascii?Q?9SAAPKSOhAkXHlzLCqLA+UaOLdTLZQY1kfK5yHlk4Jj8qotKbaSgI+TUJ5QN?=
+ =?us-ascii?Q?pxXfIf8KldpZycmIkIbCiJPRYZS8gClHueLPI8rjEHGWXuBFx4xQTvXEdSi7?=
+ =?us-ascii?Q?XnWbOIlGuOZCuAMcmAhZhkAjHMyXaxJRr2TDqBAAcm+FbliXWZLSgbvAa4e4?=
+ =?us-ascii?Q?89Wxs3Ak5KlFYVY7h+UalJ1NsDgsNauVcAHDIo0lg+FqCBk/DVJDDncMmjBa?=
+ =?us-ascii?Q?fYFv6ndFrW2vMMjJxxmqrWNpyyMBcU/7ZQZTRzGnf6/PEMSor3bdcauv+oSy?=
+ =?us-ascii?Q?r6g60qvjU9Fw/4pA926jyjU3gUnxCOXRqinqVrEw0VOzvMob1T3QNOPqKIkP?=
+ =?us-ascii?Q?tQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR12MB7982:EE_|IA0PR12MB8279:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8377976a-6914-4a0b-cc7f-08db6de7c6a4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ru/mEGw7vISY3Q3pv1ryJsTCNGzMi8Aug2kA9rEqeJILn4qHAGh1ewB7FqDlh7dSQxAjLJ1OhlgC7OU5d0tIAgf8j1nR+Sx9zsz4w4cn5Yi+wDCChmzT8FvfjgIBb1eOzz9YcgYcbafvRBzeMDvmalkErh2ZNIVBUvkha6NLBsFAuKYGkFa322T0mWqLipLYneAjN/CkM/fNV74IxDsp+z40OgvlQSQH0D9KzMxWQlUSz0EYHurYyvRYHhbWJ4S/lRMNHXjdZIbdetINKFQVNFV0gb52frBjRiUYzPNLk8ImVEv8S/Il/yh7nMvJF8BhSaxg/z2Z9bzDbmGMGwA5EBWHcKmVktFAWhxPR50S4BLVBnTvAQMaK1oK4HdhL/d4+poe30PHP8Q4dQEM3sWpylO3QU8L0Iq8rXEHGJEZdWhj6WIB+b5OiPhKbORUrmdIQsNOSU8JnEEA8JvhBBtSyaUG2fDc7q4T1n6m4ShcxvvTpjqmFVakqilTvYtzmYa1LNNEMxxAV79hriB2aAAxEdc0PlgVWiwQJyzsHfmuk6Oyi+/h6dP2crSs5NZ2R+4dOr/rPdZwRdq4BmL7e3Kicc1iZhwti6P58OC71GhzoIzyRZ+ITmpNEQM8I13/EmVkMV+MFQUYTAMmMSvIKXueGw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB7982.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(136003)(376002)(346002)(396003)(451199021)(478600001)(4326008)(66476007)(66946007)(66556008)(36756003)(110136005)(5660300002)(8936002)(31696002)(8676002)(2906002)(316002)(41300700001)(83380400001)(38100700002)(2616005)(6486002)(26005)(6506007)(53546011)(31686004)(186003)(6512007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?eWNqK0R1WVgwZWpndEcxZFZHV2lFbFFaNmJpTXNPNFVUV1M3Y3lEMk5XNHov?=
- =?utf-8?B?dm4vV0gwL0F3REthUmIrTjZ0MDV2ZWRuelBrcnVndCtKMWdqSjQvRnZ2dWlW?=
- =?utf-8?B?ZkZGMlZrczkxc01zdEVtSTRZRERZWTVsTkY5N2c2QkFiMnVXM3UzQzc2SUls?=
- =?utf-8?B?YjhqT1FScXV6N2JGNVgxckJ3a3F3Z3RhT2NKMEIwYWs5Q0FCREJIZG5tUWpa?=
- =?utf-8?B?SzN4ZmJtalY5MkpWSWpnTVRBL1ZnWi9XV2FCaEU0Wkt6ZSt1OXRFYWMxUVhR?=
- =?utf-8?B?bS9CY1N6QzltSmtJRXk0Y2xOWXMxMGJUbWVxTXNxTkxhVkpqVWY4MUlDa1Jj?=
- =?utf-8?B?Q2lQZ2xmckJVYS9SekFhTE9oaHA1OFpqRVFTcXVPbk8yZnluVEFCOWR5U1Zi?=
- =?utf-8?B?c1N4eTJjbmN1NXZ6M3lRekllczhXSEV4am4zWjFPUUJHU2J3Z1FobTFTM01a?=
- =?utf-8?B?UUlsdGNtMjBSdFFiT0FzV1NhTEVxL2Jlc2lWemVXZG1aRCtkRGFVM2xNT2lu?=
- =?utf-8?B?UGUvUXRKRk91WG0yeDVFNzQxczQ3aHFkeExqUlNJK3E2Qk5Da25STGIwSDBk?=
- =?utf-8?B?OWJ3SWhwTkpQTE9VK1BabEpRLzJ3cjI4c0wxRXZjUVRjQUs1QnB2aWVXd0pE?=
- =?utf-8?B?L0gzc3JTMHBzNDlGenVIVmZscHlwcFloN3RhN2RiM3NzY0k2Y0dId3NyOC9C?=
- =?utf-8?B?NDg2YWVkTHhiNU1ZK0hWMzFGNUd2Q1hNNzI2bWJUQ2toUXV5M2FYbG1IODl2?=
- =?utf-8?B?bW1NdVdRTjJpQW5oRGlFN3ZQQlFOUHA5S1plbUlrWEdyTE82UmVPT2M2dzAy?=
- =?utf-8?B?UU5RMVY3MG00d1BBTGtxUmVIcWhoZDZrQUtGVERZL3FFL1ZCcmQvU2x4TFM1?=
- =?utf-8?B?TTFKbjlnamI5Q0xlazVmMk10Y3ZVZXhjYVZRc0loOXNCem4vQThIWDByQmxG?=
- =?utf-8?B?RDZoNUxvR3RGL09wNG94S0xPOU4yNFhrUFZPM2pFcUhDdnNhNUZac2V6dXlG?=
- =?utf-8?B?Qi84aUVHTTkwY1RRdXhWOGM2QkdlYmtBWHNicjErMFZXVWFDa3N3WHpGNVFQ?=
- =?utf-8?B?d3U1dlFLMVhxbERrYjFKY3N2UWcxWEFrK2xSSU05by9OeCtuYUFKaGNLYWRZ?=
- =?utf-8?B?aXZyWWlQTXljMFB0amtWQlZpVjlQNFRQRld2V2hSaUhXR0Q5YjFFSjlBRG0z?=
- =?utf-8?B?N2F5OHVGM3NsMkd2VUZETVA2eTdkMUNXQ3h2ZE1BaEdaOGlyK0JnL0doVEQ5?=
- =?utf-8?B?WXBkWERzZXdNZUJBUE9URHM4SDNyNnRleGorNElnSGJmQ3FVOWV2dC8wbzN2?=
- =?utf-8?B?MDI1TnMxVW1pRS8zKzhDTGdCZ0VxdUUwejlNblRmcDFMR2Y2ejNVQ0Y0eEdH?=
- =?utf-8?B?eGZNQTAyRWFNSGpoYmlmR1BVaEFiRnh6OWQwRjFwTnJvVFZvaHRjZ2Y4SUVn?=
- =?utf-8?B?NWExa0JlbHpMNjFnMG5PUUQ0ZWlDUWRSZ1ZUM291TmVTcVk1TGdFS1VlblZE?=
- =?utf-8?B?S2owOFlZdTNHaW9rdUFoQTJXMjZpN2Q5RmcvSnBOeDNWMVFYanBKY2Z2OUtp?=
- =?utf-8?B?L1VJWnNFRHhLQmM5Uy9uRHA3RjVyVXpsTnpDR1oyKzZVM0Q3K1k5YTVEWC9Q?=
- =?utf-8?B?STd3MFFWOWNSdE80OUR3TE5vM00rY2FZV1p4YXJET3RLTkx0MVhDblBNK1RX?=
- =?utf-8?B?c1BHamNaQytVazRzUS9BbmhiMkJZSmVhZE9NSkZ4QzBxSzJPVGtPS0o4azlK?=
- =?utf-8?B?RkY1K0w2OHdYM0VnN1Fqd0VXVHlZc2t0Mi9IOFF1MlEwa0ZFTEJuRW5KNkNt?=
- =?utf-8?B?SDd2eUJCSjl6QjBKWXJwTjA3RE9FSS9Jc1o1b01XdmxjUXZLdTRON2I0d21v?=
- =?utf-8?B?OVdZMmVRWmxCcTgvdTBzY2hmS3k3eEpBVjVWc1VHZWZKaEFXRTAwOU9nZnhP?=
- =?utf-8?B?TEZpZnpGTGVzZFRpNGZpcmdvakJXejNNc3NWemI3LzZIYnRQM2t1RUVZUEQv?=
- =?utf-8?B?TXpJMzhaSHBldkJCdjhTbXdjVnNjTElVSjN6RmptY3BkMFVUQTNWV2h6eGlF?=
- =?utf-8?B?SW1mSHg5VXdkUmFZRDRyZTg0cDhxdHhVc215NkJJV09xY0xtTkFvVktjaW9l?=
- =?utf-8?Q?KgGnjsUo3nAlSqeeecHRb8J9i?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8377976a-6914-4a0b-cc7f-08db6de7c6a4
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB7982.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2023 21:30:44.2267
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 97c5ab15-1404-422c-a401-08db6de8646e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2023 21:35:08.7285
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oLoIvV2tIlY5g2OShnvsEJAv58gRLxJI0c0eydGwfmF+xr3TM46UL418K9n9U9VjdI+s17093R0leoTgDhACrQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8279
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 6FCUBWnVONXXw71dSj5EKjbalcIH+BubQ1nrBBRjxVzKII/qJobKlKC5n2jx9UUhwlbiLaDqC0cPOZRP5IGZfP+BLvNYMRdh0wajsvnwGjA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5414
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 6/15/2023 2:05 PM, Shameerali Kolothum Thodi wrote:
-> Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
-> 
-> 
->> -----Original Message-----
->> From: Brett Creeley [mailto:brett.creeley@amd.com]
->> Sent: 02 June 2023 23:03
->> To: kvm@vger.kernel.org; netdev@vger.kernel.org;
->> alex.williamson@redhat.com; jgg@nvidia.com; yishaih@nvidia.com;
->> Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
->> kevin.tian@intel.com
->> Cc: brett.creeley@amd.com; shannon.nelson@amd.com
->> Subject: [PATCH v10 vfio 3/7] vfio/pds: register with the pds_core PF
->>
->> The pds_core driver will supply adminq services, so find the PF
->> and register with the DSC services.
->>
->> Use the following commands to enable a VF:
->> echo 1 > /sys/bus/pci/drivers/pds_core/$PF_BDF/sriov_numvfs
->>
->> Signed-off-by: Brett Creeley <brett.creeley@amd.com>
->> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
->> ---
->>   drivers/vfio/pci/pds/Makefile   |  1 +
->>   drivers/vfio/pci/pds/cmds.c     | 43
->> +++++++++++++++++++++++++++++++++
->>   drivers/vfio/pci/pds/cmds.h     | 10 ++++++++
->>   drivers/vfio/pci/pds/pci_drv.c  | 19 +++++++++++++++
->>   drivers/vfio/pci/pds/pci_drv.h  |  9 +++++++
->>   drivers/vfio/pci/pds/vfio_dev.c | 11 +++++++++
->>   drivers/vfio/pci/pds/vfio_dev.h |  6 +++++
->>   include/linux/pds/pds_common.h  |  2 ++
->>   8 files changed, 101 insertions(+)
->>   create mode 100644 drivers/vfio/pci/pds/cmds.c
->>   create mode 100644 drivers/vfio/pci/pds/cmds.h
->>   create mode 100644 drivers/vfio/pci/pds/pci_drv.h
->>
->> diff --git a/drivers/vfio/pci/pds/Makefile b/drivers/vfio/pci/pds/Makefile
->> index e1a55ae0f079..87581111fa17 100644
->> --- a/drivers/vfio/pci/pds/Makefile
->> +++ b/drivers/vfio/pci/pds/Makefile
->> @@ -4,5 +4,6 @@
->>   obj-$(CONFIG_PDS_VFIO_PCI) += pds_vfio.o
->>
->>   pds_vfio-y := \
->> +     cmds.o          \
->>        pci_drv.o       \
->>        vfio_dev.o
->> diff --git a/drivers/vfio/pci/pds/cmds.c b/drivers/vfio/pci/pds/cmds.c
->> new file mode 100644
->> index 000000000000..ae01f5df2f5c
->> --- /dev/null
->> +++ b/drivers/vfio/pci/pds/cmds.c
->> @@ -0,0 +1,43 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
->> +
->> +#include <linux/io.h>
->> +#include <linux/types.h>
->> +
->> +#include <linux/pds/pds_common.h>
->> +#include <linux/pds/pds_core_if.h>
->> +#include <linux/pds/pds_adminq.h>
->> +
->> +#include "vfio_dev.h"
->> +#include "cmds.h"
->> +
->> +int pds_vfio_register_client_cmd(struct pds_vfio_pci_device *pds_vfio)
->> +{
->> +     struct pci_dev *pdev = pds_vfio_to_pci_dev(pds_vfio);
->> +     char devname[PDS_DEVNAME_LEN];
->> +     int ci;
->> +
->> +     snprintf(devname, sizeof(devname), "%s.%d-%u", PDS_LM_DEV_NAME,
->> +              pci_domain_nr(pdev->bus), pds_vfio->pci_id);
->> +
->> +     ci = pds_client_register(pci_physfn(pdev), devname);
->> +     if (ci <= 0)
->> +             return ci;
-> 
-> So 0 is not a valid id I guess but we return 0 here. But below where
-> pds_vfio_register_client_cmd() is called, 0 return is treated as success.
-> 
-> Note: Also in drivers..../auxbus.c the comment says the function returns 0
-> on success!.
-> 
-> Please check.
-> 
-> Thanks,
-> Shameer
+>From: Jiri Pirko <jiri@resnulli.us>
+>Sent: Saturday, June 10, 2023 10:46 AM
+>
+>Fri, Jun 09, 2023 at 02:18:50PM CEST, arkadiusz.kubalewski@intel.com wrote=
+:
+>>Add firmware admin command to access clock generation unit
+>>configuration, it is required to enable Extended PTP and SyncE features
+>>in the driver.
+>
+>Empty line here perhaps?
+>
 
-Hey Shameer,
+Sure, will do.
 
-Thanks for catching these issues. It looks like there are a couple 
-things that need to be fixed.
+>
+>>Add definitions of possible hardware variations of input and output pins
+>>related to clock generation unit and functions to access the data.
+>>
+>>Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+>
+>I just skimmed over this, not really give it much of a time. Couple of
+>nits:
+>
+>
+>>+
+>>+#define MAX_NETLIST_SIZE	10
+>
+>Prefix perhaps?
+>
 
-[1] pds_vfio_register_client_cmd() needs to always return negative on 
-error, which includes ci == 0. I don't think we would ever hit this case 
-because drivers..../auxbus.c returns -EIO when ci == 0, but best to fix 
-it in case that ever changes.
+Fixed.
 
-[2] Documentation for pds_client_register in drivers..../auxbus.c needs 
-to be updated to say something like the following:
+>[...]
+>
+>
+>>+/**
+>>+ * convert_s48_to_s64 - convert 48 bit value to 64 bit value
+>>+ * @signed_48: signed 64 bit variable storing signed 48 bit value
+>>+ *
+>>+ * Convert signed 48 bit value to its 64 bit representation.
+>>+ *
+>>+ * Return: signed 64 bit representation of signed 48 bit value.
+>>+ */
+>>+static inline
+>
+>Never use "inline" in a c file.
+>
+>
+>>+s64 convert_s48_to_s64(s64 signed_48)
+>>+{
+>>+	const s64 MASK_SIGN_BITS =3D GENMASK_ULL(63, 48);
+>
+>variable with capital letters? Not nice. Define? You have that multiple
+>times in the patch.
+>
+>
+>>+	const s64 SIGN_BIT_47 =3D BIT_ULL(47);
+>>+
+>>+	return ((signed_48 & SIGN_BIT_47) ? (s64)(MASK_SIGN_BITS | signed_48)
+>
+>Pointless cast, isn't it?
+>
+>You don't need () around "signed_48 & SIGN_BIT_47"
+>
+>
+>>+		: signed_48);
+>
+>Return is not a function. Drop the outer "()"s.
+>
+>
+>The whole fuction can look like:
+>static s64 convert_s48_to_s64(s64 signed_48)
+>{
+>	return signed_48 & BIT_ULL(47) ? signed_48 | GENMASK_ULL(63, 48) :
+>					 signed_48;
+>}
+>
+>Nicer?
+>
 
-Return: Client ID on succes, or negative for error
+Sure, fixed.
 
-I will fix [1] in the next rev of this series. For [2] we will submit a 
-separate follow on patch to clean up the wording.
+>
+>[...]
+>
+>
+>
+>>+int ice_get_pf_c827_idx(struct ice_hw *hw, u8 *idx)
+>>+{
+>>+	struct ice_aqc_get_link_topo cmd;
+>>+	u8 node_part_number;
+>>+	u16 node_handle;
+>>+	int status;
+>>+	u8 ctx;
+>>+
+>>+	if (hw->mac_type !=3D ICE_MAC_E810)
+>>+		return -ENODEV;
+>>+
+>>+	if (hw->device_id !=3D ICE_DEV_ID_E810C_QSFP) {
+>>+		*idx =3D C827_0;
+>>+		return 0;
+>>+	}
+>>+
+>>+	memset(&cmd, 0, sizeof(cmd));
+>>+
+>>+	ctx =3D ICE_AQC_LINK_TOPO_NODE_TYPE_PHY <<
+>ICE_AQC_LINK_TOPO_NODE_TYPE_S;
+>>+	ctx |=3D ICE_AQC_LINK_TOPO_NODE_CTX_PORT <<
+>>ICE_AQC_LINK_TOPO_NODE_CTX_S;
+>>+	cmd.addr.topo_params.node_type_ctx =3D ctx;
+>>+	cmd.addr.topo_params.index =3D 0;
+>
+>You zeroed the struct 4 lines above...
+>
 
-Thanks for the review,
+Fixed.
 
-Brett
->> +
->> +     pds_vfio->client_id = ci;
->> +
->> +     return 0;
->> +}
->> +
->> +void pds_vfio_unregister_client_cmd(struct pds_vfio_pci_device *pds_vfio)
->> +{
->> +     struct pci_dev *pdev = pds_vfio_to_pci_dev(pds_vfio);
->> +     int err;
->> +
->> +     err = pds_client_unregister(pci_physfn(pdev), pds_vfio->client_id);
->> +     if (err)
->> +             dev_err(&pdev->dev, "unregister from DSC failed: %pe\n",
->> +                     ERR_PTR(err));
->> +
->> +     pds_vfio->client_id = 0;
->> +}
->> diff --git a/drivers/vfio/pci/pds/cmds.h b/drivers/vfio/pci/pds/cmds.h
->> new file mode 100644
->> index 000000000000..4c592afccf89
->> --- /dev/null
->> +++ b/drivers/vfio/pci/pds/cmds.h
->> @@ -0,0 +1,10 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
->> +
->> +#ifndef _CMDS_H_
->> +#define _CMDS_H_
->> +
->> +int pds_vfio_register_client_cmd(struct pds_vfio_pci_device *pds_vfio);
->> +void pds_vfio_unregister_client_cmd(struct pds_vfio_pci_device *pds_vfio);
->> +
->> +#endif /* _CMDS_H_ */
->> diff --git a/drivers/vfio/pci/pds/pci_drv.c b/drivers/vfio/pci/pds/pci_drv.c
->> index 0e84249069d4..a49420aa9736 100644
->> --- a/drivers/vfio/pci/pds/pci_drv.c
->> +++ b/drivers/vfio/pci/pds/pci_drv.c
->> @@ -8,9 +8,13 @@
->>   #include <linux/types.h>
->>   #include <linux/vfio.h>
->>
->> +#include <linux/pds/pds_common.h>
->>   #include <linux/pds/pds_core_if.h>
->> +#include <linux/pds/pds_adminq.h>
->>
->>   #include "vfio_dev.h"
->> +#include "pci_drv.h"
->> +#include "cmds.h"
->>
->>   #define PDS_VFIO_DRV_DESCRIPTION     "AMD/Pensando VFIO Device
->> Driver"
->>   #define PCI_VENDOR_ID_PENSANDO               0x1dd8
->> @@ -27,13 +31,27 @@ static int pds_vfio_pci_probe(struct pci_dev *pdev,
->>                return PTR_ERR(pds_vfio);
->>
->>        dev_set_drvdata(&pdev->dev, &pds_vfio->vfio_coredev);
->> +     pds_vfio->pdsc = pdsc_get_pf_struct(pdev);
->> +     if (IS_ERR_OR_NULL(pds_vfio->pdsc)) {
->> +             err = PTR_ERR(pds_vfio->pdsc) ?: -ENODEV;
->> +             goto out_put_vdev;
->> +     }
->>
->>        err = vfio_pci_core_register_device(&pds_vfio->vfio_coredev);
->>        if (err)
->>                goto out_put_vdev;
->>
->> +     err = pds_vfio_register_client_cmd(pds_vfio);
->> +     if (err) {
->> +             dev_err(&pdev->dev, "failed to register as client: %pe\n",
->> +                     ERR_PTR(err));
->> +             goto out_unregister_coredev;
->> +     }
->> +
->>        return 0;
->>
->> +out_unregister_coredev:
->> +     vfio_pci_core_unregister_device(&pds_vfio->vfio_coredev);
->>   out_put_vdev:
->>        vfio_put_device(&pds_vfio->vfio_coredev.vdev);
->>        return err;
->> @@ -43,6 +61,7 @@ static void pds_vfio_pci_remove(struct pci_dev *pdev)
->>   {
->>        struct pds_vfio_pci_device *pds_vfio = pds_vfio_pci_drvdata(pdev);
->>
->> +     pds_vfio_unregister_client_cmd(pds_vfio);
->>        vfio_pci_core_unregister_device(&pds_vfio->vfio_coredev);
->>        vfio_put_device(&pds_vfio->vfio_coredev.vdev);
->>   }
->> diff --git a/drivers/vfio/pci/pds/pci_drv.h b/drivers/vfio/pci/pds/pci_drv.h
->> new file mode 100644
->> index 000000000000..e79bed12ed14
->> --- /dev/null
->> +++ b/drivers/vfio/pci/pds/pci_drv.h
->> @@ -0,0 +1,9 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
->> +
->> +#ifndef _PCI_DRV_H
->> +#define _PCI_DRV_H
->> +
->> +#include <linux/pci.h>
->> +
->> +#endif /* _PCI_DRV_H */
->> diff --git a/drivers/vfio/pci/pds/vfio_dev.c b/drivers/vfio/pci/pds/vfio_dev.c
->> index 4038dac90a97..39771265b78f 100644
->> --- a/drivers/vfio/pci/pds/vfio_dev.c
->> +++ b/drivers/vfio/pci/pds/vfio_dev.c
->> @@ -6,6 +6,11 @@
->>
->>   #include "vfio_dev.h"
->>
->> +struct pci_dev *pds_vfio_to_pci_dev(struct pds_vfio_pci_device *pds_vfio)
->> +{
->> +     return pds_vfio->vfio_coredev.pdev;
->> +}
->> +
->>   struct pds_vfio_pci_device *pds_vfio_pci_drvdata(struct pci_dev *pdev)
->>   {
->>        struct vfio_pci_core_device *core_device =
->> dev_get_drvdata(&pdev->dev);
->> @@ -29,6 +34,12 @@ static int pds_vfio_init_device(struct vfio_device
->> *vdev)
->>        pds_vfio->vf_id = pci_iov_vf_id(pdev);
->>        pds_vfio->pci_id = PCI_DEVID(pdev->bus->number, pdev->devfn);
->>
->> +     dev_dbg(&pdev->dev,
->> +             "%s: PF %#04x VF %#04x (%d) vf_id %d domain %d
->> pds_vfio %p\n",
->> +             __func__, pci_dev_id(pdev->physfn), pds_vfio->pci_id,
->> +             pds_vfio->pci_id, pds_vfio->vf_id, pci_domain_nr(pdev->bus),
->> +             pds_vfio);
->> +
->>        return 0;
->>   }
->>
->> diff --git a/drivers/vfio/pci/pds/vfio_dev.h b/drivers/vfio/pci/pds/vfio_dev.h
->> index 66cfcab5b5bf..92e8ff241ca8 100644
->> --- a/drivers/vfio/pci/pds/vfio_dev.h
->> +++ b/drivers/vfio/pci/pds/vfio_dev.h
->> @@ -7,14 +7,20 @@
->>   #include <linux/pci.h>
->>   #include <linux/vfio_pci_core.h>
->>
->> +struct pdsc;
->> +
->>   struct pds_vfio_pci_device {
->>        struct vfio_pci_core_device vfio_coredev;
->> +     struct pdsc *pdsc;
->>
->>        int vf_id;
->>        int pci_id;
->> +     u16 client_id;
->>   };
->>
->>   const struct vfio_device_ops *pds_vfio_ops_info(void);
->>   struct pds_vfio_pci_device *pds_vfio_pci_drvdata(struct pci_dev *pdev);
->>
->> +struct pci_dev *pds_vfio_to_pci_dev(struct pds_vfio_pci_device *pds_vfio);
->> +
->>   #endif /* _VFIO_DEV_H_ */
->> diff --git a/include/linux/pds/pds_common.h
->> b/include/linux/pds/pds_common.h
->> index 060331486d50..721453bdf975 100644
->> --- a/include/linux/pds/pds_common.h
->> +++ b/include/linux/pds/pds_common.h
->> @@ -39,6 +39,8 @@ enum pds_core_vif_types {
->>   #define PDS_DEV_TYPE_RDMA_STR        "RDMA"
->>   #define PDS_DEV_TYPE_LM_STR  "LM"
->>
->> +#define PDS_LM_DEV_NAME              PDS_CORE_DRV_NAME "."
->> PDS_DEV_TYPE_LM_STR
->> +
->>   #define PDS_CORE_IFNAMSIZ            16
->>
->>   /**
->> --
->> 2.17.1
-> 
+Thank you!
+Arkadiusz
+
+>
+>>+
+>>+	status =3D ice_aq_get_netlist_node(hw, &cmd, &node_part_number,
+>>+					 &node_handle);
+>>+	if (status || node_part_number !=3D ICE_ACQ_GET_LINK_TOPO_NODE_NR_C827)
+>>+		return -ENOENT;
+>>+
+>>+	if (node_handle =3D=3D E810C_QSFP_C827_0_HANDLE)
+>>+		*idx =3D C827_0;
+>>+	else if (node_handle =3D=3D E810C_QSFP_C827_1_HANDLE)
+>>+		*idx =3D C827_1;
+>>+	else
+>>+		return -EIO;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>
+>[...]
 
