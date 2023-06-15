@@ -1,136 +1,91 @@
-Return-Path: <netdev+bounces-11139-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11140-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6518D731AF7
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 16:14:28 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id C4AF3731B2A
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 16:21:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 937111C20B3C
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 14:14:27 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A78D01C20EC1
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 14:21:44 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 97947171BC;
-	Thu, 15 Jun 2023 14:14:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81BC2171BE;
+	Thu, 15 Jun 2023 14:21:42 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A480171A5;
-	Thu, 15 Jun 2023 14:14:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 415DFC433C8;
-	Thu, 15 Jun 2023 14:14:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686838461;
-	bh=8rQHH3i3Wo5LBZJWaXmkXUPZ8PkbfaTGdpx89FRgdlc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=eVcq7D+at5yU0wLc1QcYhsVui8Qh4sjzCQOmfZTW/SkJguIl18b8rCQ87bK+4S6ce
-	 GTgYQ7a3ULd9Q9jbw0aKUE53rEzMtCacbOkv2PyXg2zyT5m6znaljpCNOFAOeSouF4
-	 H9sDSyYWUXO0HIyFl8MP44EHK6fW3R9G82sHpJwCPTP8rJ20OLktaLOdKRt7ncF2TO
-	 Hg2BAqej9rLPAXu76YWTd+9Kr7n5uYZQrVHTFGh67kRibKGkHGy/r1HNfcqNKWBkpz
-	 b6YIDKE3+0OPG98Hw+JduIooHL2+58pZtetJmmJUlxR3+NpGUpGj8Drl9dkgrccw66
-	 wSJUxdl44hiXA==
-Date: Thu, 15 Jun 2023 16:14:15 +0200
-From: Simon Horman <horms@kernel.org>
-To: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>,
-	Tony Nguyen <anthony.l.nguyen@intel.com>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Andre Guedes <andre.guedes@intel.com>,
-	Dan Carpenter <dan.carpenter@linaro.org>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Florian Kauer <florian.kauer@linutronix.de>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	Jithu Joseph <jithu.joseph@intel.com>,
-	John Fastabend <john.fastabend@gmail.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Vedang Patel <vedang.patel@intel.com>,
-	intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-	bpf@vger.kernel.org
-Subject: Re: [PATCH RFC net] igc: Avoid dereference of ptr_err in
- igc_clean_rx_irq()
-Message-ID: <ZIsct/J9NeY874b9@kernel.org>
-References: <20230615-igc-err-ptr-v1-1-a17145eb8d62@kernel.org>
- <ZIrgEVVQfvJwneLx@boxer>
- <ZIr1s6KHVGh/ZuEj@kernel.org>
- <ZIr/iX7qNbUpXocP@boxer>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 757C0134CE
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 14:21:42 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C81392D41
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 07:21:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686838900;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=WNUJrv1eNB4SMwqhnEsBfDZoOO86Im2l2qkR71QzBpA=;
+	b=Jr5pZkvVdO/BBrqf1zgDfM7+LQ83y0hHUBokzCD38eG7VHUdedO3RQTnEfrT29cwgCKYJD
+	h0bnUeXbK5FGPendWnC4sGKZAut3n92XxBifeZDLZRCsNTu8f0WCGB1Ggt72zT6839eWCW
+	dShE4UEBdmu8HEoGGeHcSFdS7nsH8zY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-175-D2E1aklHMlapWqMh_9I3vw-1; Thu, 15 Jun 2023 10:21:35 -0400
+X-MC-Unique: D2E1aklHMlapWqMh_9I3vw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 03702806000;
+	Thu, 15 Jun 2023 14:21:35 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.51])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 9A8352166B25;
+	Thu, 15 Jun 2023 14:21:33 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <1657853.1686757902@warthog.procyon.org.uk>
+References: <1657853.1686757902@warthog.procyon.org.uk> <000000000000b2585a05fdeb8379@google.com>
+To: herbert@gondor.apana.org.au
+Cc: dhowells@redhat.com,
+    syzbot <syzbot+6efc50cc1f8d718d6cb7@syzkaller.appspotmail.com>,
+    davem@davemloft.net, kuba@kernel.org, linux-crypto@vger.kernel.org,
+    linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+    syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] [crypto?] KASAN: slab-out-of-bounds Read in extract_iter_to_sg
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZIr/iX7qNbUpXocP@boxer>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <189807.1686838892.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 15 Jun 2023 15:21:32 +0100
+Message-ID: <189808.1686838892@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Thu, Jun 15, 2023 at 02:09:45PM +0200, Maciej Fijalkowski wrote:
-> On Thu, Jun 15, 2023 at 01:27:47PM +0200, Simon Horman wrote:
-> > On Thu, Jun 15, 2023 at 11:55:29AM +0200, Maciej Fijalkowski wrote:
-> > > On Thu, Jun 15, 2023 at 11:45:36AM +0200, Simon Horman wrote:
-> > 
-> > Hi Marciej,
-> > 
-> > > Hi Simon,
-> > > 
-> > > > In igc_clean_rx_irq() the result of a call to igc_xdp_run_prog() is assigned
-> > > > to the skb local variable. This may be an ERR_PTR.
-> > > > 
-> > > > A little later the following is executed, which seems to be a
-> > > > possible dereference of an ERR_PTR.
-> > > > 
-> > > > 	total_bytes += skb->len;
-> > > > 
-> > > > Avoid this problem by continuing the loop in which all of the
-> > > > above occurs once the handling of the NULL case completes.
-> > > > 
-> > > > This proposed fix is speculative - I do not have deep knowledge of this
-> > > > driver.  And I am concerned about the effect of skipping the following
-> > > > logic:
-> > > > 
-> > > >   igc_put_rx_buffer(rx_ring, rx_buffer, rx_buffer_pgcnt);
-> > > >   cleaned_count++;
-> > > 
-> > > this will break - you have to recycle the buffer to have it going.
-> > 
-> > Thanks. As I said I wasn't sure about the fix: it was a strawman.
-> > 
-> > > > Flagged by Smatch as:
-> > > > 
-> > > >   .../igc_main.c:2467 igc_xdp_run_prog() warn: passing zero to 'ERR_PTR'
-> > > 
-> > > how about PTR_ERR_OR_ZERO() ? this would silence smatch and is not an
-> > > intrusive change. another way is to get rid of ERR_PTR() around skb/xdp
-> > > run result but i think the former would be just fine.
-> > 
-> > Sorry, there were two warnings. And I accidently trimmed the one
-> > that is more relevant instead of the one that is less relevant.
-> > I do agree the one above does not appear to be a bug.
-> > 
-> > But I am concerned abut this one:
-> > 
-> >   .../igc_main.c:2618 igc_clean_rx_irq() error: 'skb' dereferencing possible ERR_PTR()
-> > 
-> > If skb is an error pointer, e.g. ERR_PTR(-IGC_XDP_PASS), and
-> > it is dereferenced, that would be a problem, right?
-> 
-> IGC_XDP_PASS is 0. -0 is still 0 right?
+David Howells <dhowells@redhat.com> wrote:
 
-Yes, I missed that point.
-Though I could have chosen a different value which is not zero.
+> @@ -83,26 +83,14 @@ static int hash_sendmsg(struct socket *sock, struct =
+msghdr *msg,
 
-> this means skb is NULL and igc_{build,construct}_skb() will init it. For
-> ERR_PTR, igc_cleanup_headers() does IS_ERR() against it and continues. So
-> you will get to line 2618 only for valid skb, it just happens that logic
-> is written in a way that skb is supposed to carry XDP return code. We
-> removed this in ice for example but i40e works like that for many years
-> without issues, AFAICT...
+Actually, this patch definitely won't fix this bug since the test is using=
+ an
+skcipher not a hash.
 
-Thanks. I now see that the key point I was missing is the IS_ERR()
-check in igc_cleanup_headers().
+David
 
-I agree this is not a bug.
 
