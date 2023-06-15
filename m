@@ -1,98 +1,109 @@
-Return-Path: <netdev+bounces-11157-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11154-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 524B6731CA3
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 17:28:54 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B5185731C5D
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 17:23:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 82B4C1C20EBB
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 15:28:53 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E68741C20EBB
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 15:23:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 19067171DF;
-	Thu, 15 Jun 2023 15:28:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 03F9C15AE3;
+	Thu, 15 Jun 2023 15:22:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDEC020F5;
-	Thu, 15 Jun 2023 15:28:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7075C433C8;
-	Thu, 15 Jun 2023 15:28:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686842929;
-	bh=3rUJKAAkVI4LiG4fM0PQkGZktYejaRvzK+AL0LZ3Y74=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=WMK8BkG+KJoxgGBdTk9yp8ZAuScSukNpIc1QMKIcgns2cazl704jin1fe/1UXio5n
-	 HJ9ZR7Pg0SF0WXvQBw+oAsOPRmVV/A5Q+xoE7yj0YM3/KYiY9tCWmdiJsryU+UHBB3
-	 ri0LFyoZ9tF4c9V7ir8xb1Fp8oTMuVGnt/AEkCji6IqiCA/bnQAoiCreP9UwAU8ChQ
-	 aruy8AOj9e28HAeajwzSGG7a/3ST4fNv9DKiRlMHsZCe+bQLP01+ASsp6LatoHiScd
-	 2pBlbYs0eu0naQmy+3XJsJ93n6/5vsZIrrNY1mZG9mdyEKm3M9U7y8kY/NYBp5Ar3r
-	 TlMEq1Y/2+kpg==
-Date: Thu, 15 Jun 2023 23:17:26 +0800
-From: Jisheng Zhang <jszhang@kernel.org>
-To: Simon Horman <simon.horman@corigine.com>
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Jose Abreu <joabreu@synopsys.com>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>, netdev@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH 0/3] net: stmmac: fix & improve driver statistics
-Message-ID: <ZIsrhuxRrx2AwI7F@xhacker>
-References: <20230614161847.4071-1-jszhang@kernel.org>
- <ZIoXZQXLTWKF8nCZ@corigine.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA28C20F5
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 15:22:58 +0000 (UTC)
+X-Greylist: delayed 98194 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 15 Jun 2023 08:22:56 PDT
+Received: from zg8tmtyylji0my4xnjqunzqa.icoremail.net (zg8tmtyylji0my4xnjqunzqa.icoremail.net [162.243.164.74])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E5FE2121
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 08:22:56 -0700 (PDT)
+Received: from localhost.localdomain (unknown [125.119.255.155])
+	by mail-app4 (Coremail) with SMTP id cS_KCgD3_AnCLItkTPWABg--.33463S4;
+	Thu, 15 Jun 2023 23:22:42 +0800 (CST)
+From: Lin Ma <linma@zju.edu.cn>
+To: jk@codeconstruct.com.au,
+	matt@codeconstruct.com.au,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	netdev@vger.kernel.org
+Cc: Lin Ma <linma@zju.edu.cn>
+Subject: [PATCH v1] net: mctp: remove redundant RTN_UNICAST check
+Date: Thu, 15 Jun 2023 23:22:40 +0800
+Message-Id: <20230615152240.1749428-1-linma@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID:cS_KCgD3_AnCLItkTPWABg--.33463S4
+X-Coremail-Antispam: 1UD129KBjvdXoWrtr17Jw4ftFyDAF4ruw4rXwb_yoWDWwc_Xr
+	WDXry5G390ga48X397CayS9348Ww48Zw1kGFyFkFyDCw15Ww1rZrs7GrWrGr1xurWI9as0
+	vFykZF90yF18CjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJTRUUUb2AFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+	A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+	6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+	Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+	I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_XrWl
+	42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
+	WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAK
+	I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
+	4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY
+	6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JU3Ma8UUUUU=
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <ZIoXZQXLTWKF8nCZ@corigine.com>
 
-On Wed, Jun 14, 2023 at 09:39:17PM +0200, Simon Horman wrote:
-> On Thu, Jun 15, 2023 at 12:18:44AM +0800, Jisheng Zhang wrote:
-> > patch1 and patch2 fix two issues in net driver statistics:
-> > 1. network driver statistics are cleared in .ndo_close() and
-> > .ndo_open() cycle
-> > 2. some network driver statistics overflow on 32 bit platforms
-> 
-> I would encourage you to describe these as enhancements or similar,
-> but not fixes. Because fix implies a bug, such as a crash. And
-> bugs for fixes are handled by a slightly different process which
-> often includes backporting.
+Current mctp_newroute() contains two exactly same check against
+rtm->rtm_type
 
-So it seems I need to fold patch2 and patch3 into one patch. Previously
-I thought the counters overflow on 32 bit platforms was a bug, thus
-I split the 64bit stats patch into patch2 and patch3 so that patch2
-can be backported to stable tree.
+static int mctp_newroute(...)
+{
+...
+    if (rtm->rtm_type != RTN_UNICAST) { // (1)
+        NL_SET_ERR_MSG(extack, "rtm_type must be RTN_UNICAST");
+        return -EINVAL;
+    }
+...
+    if (rtm->rtm_type != RTN_UNICAST) // (2)
+        return -EINVAL;
+...
+}
 
-I will fold patch2 and patch3 into one patch in v2.
+This commits removes the (2) check as it is redundant.
 
-Thanks for your review.
-> 
-> > patch3 use pcpu statistics where necessary to remove frequent
-> > cacheline ping pongs.
-> 
-> Assuming these are three enhancements, then they should be
-> targeted at the net-next tree. And that should be noted in the subject:
-> 
-> 	Subject: [PATCH net-next v2] ...
-> 
-> Unfortunately the series does not seem to apply to net-next
-> in its current form. So it probably needs to be rebased and reposted.
-> 
-> If you do post an updated series, please observe a 24h grace
-> period between postings, to give reviewers time to do their thing.
-> 
-> Link: https://docs.kernel.org/process/maintainer-netdev.html
+Fixes: 83f0a0b7285b ("mctp: Specify route types, require rtm_type in RTM_*ROUTE messages")
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+---
+ net/mctp/route.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/net/mctp/route.c b/net/mctp/route.c
+index f51a05ec7162..ab62fe447038 100644
+--- a/net/mctp/route.c
++++ b/net/mctp/route.c
+@@ -1249,9 +1249,6 @@ static int mctp_newroute(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			mtu = nla_get_u32(tbx[RTAX_MTU]);
+ 	}
+ 
+-	if (rtm->rtm_type != RTN_UNICAST)
+-		return -EINVAL;
+-
+ 	rc = mctp_route_add(mdev, daddr_start, rtm->rtm_dst_len, mtu,
+ 			    rtm->rtm_type);
+ 	return rc;
+-- 
+2.17.1
+
 
