@@ -1,46 +1,47 @@
-Return-Path: <netdev+bounces-10972-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10973-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1035E730E02
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 06:20:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id E11D8730E0B
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 06:23:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ABF7B281635
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 04:20:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 729FA281667
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 04:23:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E763D644;
-	Thu, 15 Jun 2023 04:20:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9C0DF644;
+	Thu, 15 Jun 2023 04:23:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A310E625
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 04:20:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA7FAC433C8;
-	Thu, 15 Jun 2023 04:20:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CB63625
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 04:23:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DCC2C433C8;
+	Thu, 15 Jun 2023 04:23:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686802833;
-	bh=r3ZuN3Io1bp4/Cx8s+S52ckgv49Kj7xPRrS9LZj78qw=;
+	s=k20201202; t=1686802980;
+	bh=5N8o/o183j5+lfPlQ9NzHLSv4tXsodrtqqQYeYdS7gE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=IfbgiUVc7uLqqHRL8KUASPv6Z16ClS1aiRs7oGyJKkm/vhvLNrYXGPrQvYT/obKXm
-	 c9h3k8mpXRhCvKEL54FL1UlN0zFVlOpJLoyB1BlcRBMF1FWv62TmYAmyu5XYhzdcxz
-	 5gnZMnTvnLuEmvFRn93YX9HF/IqxuKZEt22OrrO4sP+8TVqYOr2ywPFWM47ny5A//L
-	 NG32aWIHLBVnkJBVj3QaELhB9/74dKIcqoo8IzrYq7n1kormZsFT82JdnD8EfbKlBG
-	 93YF/4eKN2QjvfSpTMjnYaHm6bVAqATiV9rg8aloSxoXYyjxJoVprc3uwH8HawQPih
-	 +wIdq5NQ88LTQ==
-Date: Wed, 14 Jun 2023 21:20:31 -0700
+	b=PTLVkEDsiteFJLDXoFGOgt+0xzq7y8tzKRTOmXVRjARB8agqVlRCu/pvfnV2qmz5T
+	 7hb9CpjBWpKBzpJXfXCuU0GJRlte2Q+t23mJWB47FORChvCGRTaeHoBFqeODWY4MA8
+	 d5OpZIh7nApaCk2eUHsnokS1reIcw4+Z9VlV/2osFI9Bh0t7EiV4/vWfiFl2V5O8ZW
+	 PbLUbqeYXmqcg6oRp2y4RhSrJGXaOSr1swt9PjTCAmuraOT53Wfu539PCwLBQsf5rX
+	 rQQMGigKfhCdZ9nwsy7KpJXfNyXXiQJqWBWxXdXXAfzPjOLCSStDdqQ3WjIqPqs1cE
+	 hmoZf3L4sC7kg==
+Date: Wed, 14 Jun 2023 21:22:59 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: Liang Chen <liangchen.linux@gmail.com>
-Cc: hawk@kernel.org, ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
- pabeni@redhat.com
-Subject: Re: [PATCH net-next] page pool: not return page to alloc cache
- during pool destruction
-Message-ID: <20230614212031.7e1b6893@kernel.org>
-In-Reply-To: <20230615013645.7297-1-liangchen.linux@gmail.com>
-References: <20230615013645.7297-1-liangchen.linux@gmail.com>
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+ pabeni@redhat.com, pantelis.antoniou@gmail.com,
+ linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH net-next] eth: fs_enet: fix print format for resource
+ size
+Message-ID: <20230614212259.1e19900c@kernel.org>
+In-Reply-To: <4ebd2741-1788-dc05-2d04-448f3fea17ab@infradead.org>
+References: <20230615035231.2184880-1-kuba@kernel.org>
+	<4ebd2741-1788-dc05-2d04-448f3fea17ab@infradead.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -50,19 +51,47 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 15 Jun 2023 09:36:45 +0800 Liang Chen wrote:
-> When destroying a page pool, the alloc cache and recycle ring are emptied.
-> If there are inflight pages, the retry process will periodically check the
-> recycle ring for recently returned pages, but not the alloc cache (alloc
-> cache is only emptied once). As a result, any pages returned to the alloc
-> cache after the page pool destruction will be stuck there and cause the
-> retry process to continuously look for inflight pages and report warnings.
+On Wed, 14 Jun 2023 21:02:33 -0700 Randy Dunlap wrote:
+> On 6/14/23 20:52, Jakub Kicinski wrote:
+> > Randy forwarded report from Stephen that on PowerPC:  
 > 
-> To safeguard against this situation, any pages returning to the alloc cache
-> after pool destruction should be prevented.
+> Stephen forwarded report from Randy?
+> 
+> netdev & pantelis were cc-ed...
 
-Let's hear from the page pool maintainers but I think the driver 
-is supposed to prevent allocations while pool is getting destroyed.
-Perhaps we can add DEBUG_NET_WARN_ON_ONCE() for this condition to
-prevent wasting cycles in production builds?
+Ah, I misread, you were reporting to Stephen the status for the latest
+linux-next!
+
+https://lore.kernel.org/all/8f9f8d38-d9c7-9f1b-feb0-103d76902d14@infradead.org/
+
+Seems obvious in hindsight, sorry. I'll reword when applying.
+
+> > drivers/net/ethernet/freescale/fs_enet/mii-fec.c: In function 'fs_enet_mdio_probe':
+> > drivers/net/ethernet/freescale/fs_enet/mii-fec.c:130:50: warning: format '%x' expects argument of type 'unsigned int', but argument 4 has type 'resource_size_t' {aka 'long long unsigned int'} [-Wformat=]
+> >   130 |         snprintf(new_bus->id, MII_BUS_ID_SIZE, "%x", res.start);
+> >       |                                                 ~^   ~~~~~~~~~
+> >       |                                                  |      |
+> >       |                                                  |      resource_size_t {aka long long unsigned int}
+> >       |                                                  unsigned int
+> >       |                                                 %llx
+> > 
+> > Use the right print format.
+> > 
+> > Untested, I can't repro this warning myself. With or without
+> > the patch mpc512x_defconfig builds just fine.
+> > 
+> > Link: https://lore.kernel.org/all/8f9f8d38-d9c7-9f1b-feb0-103d76902d14@infradead.org/
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > ---
+> > CC: Randy Dunlap <rdunlap@infradead.org>
+> > CC: pantelis.antoniou@gmail.com
+> > CC: linuxppc-dev@lists.ozlabs.org  
+> 
+> I'm using gcc-12.2.0.
+> 
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Acked-by: Randy Dunlap <rdunlap@infradead.org>
+> Tested-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
+
+Thank you! GCC 11.1 here, FWIW.
 
