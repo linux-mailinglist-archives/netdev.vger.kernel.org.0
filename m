@@ -1,167 +1,351 @@
-Return-Path: <netdev+bounces-11188-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11190-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E1692731ED2
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 19:19:27 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7140E731EE7
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 19:26:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C78DE1C20DFA
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 17:19:26 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A35F1281401
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 17:26:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A1DF2E0D3;
-	Thu, 15 Jun 2023 17:19:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B6D62E0D6;
+	Thu, 15 Jun 2023 17:26:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 876F32E0C6
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 17:19:24 +0000 (UTC)
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2124.outbound.protection.outlook.com [40.107.94.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B307C270B
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 10:19:22 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=epEoebpKGGfxU0MGx6HYxRlVuGXbt+lfUmRyOjwNKrsvowepSwmXr0tAQK8EoABzNmcFCWNzIBhsQ6zCJ8QD1YoI5IMnZ5k3dKU8X0uUB/6izdMk8QY1PYM6vfiqkhaHkgh4rST9lHHny86+ki8DZ+jOh3CmAOFHfWl1OBBFxl+IWOMMygRqbmtpUHKCvjXFMhGDH1greWiy6ddeT2q7SYUs5wfbYOQ2k/0k1dSPDEpgTHgK5sIkb5TW3u8xEKVuIfMRSdSqfU8zqP/RvxupplL2/zE9AqbuCoEBLxhkkOUUlLuMtsI/6cQwj+aIQpgcKZrlJ9vMelZLQvDIwmc+cA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zN4ClXe8wjzoyYNLIs9u1HgfhYfBCZ6Qy8fSkb1/drQ=;
- b=RCnZUoSdfmph6Wk6hfJKzO7gujOgx3ss/Nx19CwO8ZAN9jsw7K52qCn3rHDiHeBtBxpEsvSPMgXBO8lTZI+xTR57QR4FXWLPoVSmX8Q+KYv//hHEuisTWDicCuZpaPsI93ZSW5AgRrRnUVcAPuSByBZ0ce3jQTy5K0CuqS/PrgpnKMQLrZuB+MZtsgZs1oX7HENQ4plQOTL5/00yYn0LQyr8NOrP/qpu2d/ZbF+J/qRCWtEN93+FjqaMb8XL83YUwg8puJlfVxoHMfqXaQGxDa8On7snRYLxXyNd4gZ86lfxKjxH2ZKBCp0BzkynXbOvrXX/O7yQigRg+mZlFNpO4A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zN4ClXe8wjzoyYNLIs9u1HgfhYfBCZ6Qy8fSkb1/drQ=;
- b=dQqFe4xrVAj6yXnZkFqIDMnIU5JHOEzJ6J7SrCn2q6J98YiVIh1N9kjcaWSHtWBErxNznMRiEPOZv7Ty79U5uu/zu0mLzunR8OpiYr1bNwbtHGwHcZW83aSqYmyRQR9VSW6s9oATtQFdT9AMlK2nMvdjP14rAmiIMQFlqRtpUIc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SA3PR13MB6420.namprd13.prod.outlook.com (2603:10b6:806:39b::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.10; Thu, 15 Jun
- 2023 17:19:19 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e%5]) with mapi id 15.20.6500.025; Thu, 15 Jun 2023
- 17:19:19 +0000
-Date: Thu, 15 Jun 2023 19:19:12 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Donald Hunter <donald.hunter@gmail.com>
-Cc: netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	donald.hunter@redhat.com
-Subject: Re: [RFC net-next v1] tools: ynl: Add an strace rendering mode to
- ynl-gen
-Message-ID: <ZItIEFg29QA3XdUD@corigine.com>
-References: <20230615151336.77589-1-donald.hunter@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230615151336.77589-1-donald.hunter@gmail.com>
-X-ClientProxiedBy: AM0PR01CA0142.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:168::47) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 705E9EAC5;
+	Thu, 15 Jun 2023 17:26:20 +0000 (UTC)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 940312944;
+	Thu, 15 Jun 2023 10:26:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686849977; x=1718385977;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Ecus7llwKUUqigrW6JPbuZqEm8/x6S7PAZO6TC6dqB4=;
+  b=FK91345E9HE+/yLmyQL5FFslT6gcSZljh2KjAsCKHndPrY2v38BDgp7R
+   HyN/oJPxqtvTQvIdOREsmebfhSxRqaJWXbuctXatihzPghe/65B6GImBH
+   ie3Mw0Ar7wrdcjKJ46J1mLN6r1zvNFJXQMsGGd68wMvVMYNpdAVUr/g97
+   0qfOFOOujQxfWmRPt3TKcw8PN+2DVeCy+b9FjvVadI013m9z9FETpz8Kb
+   doUpxco7hp+8AHfj5VmYeWZsxc6ihDdjM1lNbOfpQlkrOVIpx2oYEx5If
+   BE3hS89FhatMaEDVaGd8Q8ogzZZvszwS5cstsRxAjj9gY+GqQfArgYqha
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="358983434"
+X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
+   d="scan'208";a="358983434"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2023 10:26:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="689858288"
+X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
+   d="scan'208";a="689858288"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by orsmga006.jf.intel.com with ESMTP; 15 Jun 2023 10:26:14 -0700
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To: bpf@vger.kernel.org,
+	ast@kernel.org,
+	daniel@iogearbox.net,
+	andrii@kernel.org
+Cc: netdev@vger.kernel.org,
+	magnus.karlsson@intel.com,
+	bjorn@kernel.org,
+	tirthendu.sarkar@intel.com,
+	maciej.fijalkowski@intel.com,
+	simon.horman@corigine.com,
+	toke@kernel.org
+Subject: [PATCH v4 bpf-next 00/22] xsk: multi-buffer support
+Date: Thu, 15 Jun 2023 19:25:44 +0200
+Message-Id: <20230615172606.349557-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.35.3
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA3PR13MB6420:EE_
-X-MS-Office365-Filtering-Correlation-Id: f707610c-97c1-4149-7db4-08db6dc4a722
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	TqMDXrn9ZksqOKawHhh8+oGHG0y4SZ+DJ0cqyfvaqFD6PWfn1qK32nq74GdA+GRAnu2S61parpyMvqOd6V86eodyzna4a6Irs3JUf20F8gP9tnOF0+wtkpAfsH7/uMj33FJWC7P5kILceJLPteYP5JE67lNu1FnviHKCY7WEssoLraI65PLSnfUJrM9GKO7DGZuWE7VujuYx8IGkvQscYy7dgJwUIW8yUrvVHI1VUufGRg+ExHtuu0TPSadpR2c1g00DADmsBUZsO8Bmqc7k4EvOwvX1cmwX2soF2PoWs3rkmVt4bkVtySQ+mtHn5IDmoho8qEP6YX24iZeiiE3zcjAmf+SJEUdO1qOR050aVk/HDc2IPcB0LNOR+7wIcVudDpvnlZKWKDd7KHO/ylNN3Pk9X7yKSybF2q50/FZa85LVOc0+vEVdx8tbwGO89MSOaZ0LQ4RHTdHCyfm9MMXTH6DkImuVIjZqb3dTMcYrQwOssQMMa0axxUPYJJKK0RVUyKBb7tT4oequVAaV9sU+0I1lewzvuA0zNykKNadEsBc6LQD56Azmzb47sWgXoA2Y
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(136003)(346002)(376002)(39840400004)(451199021)(54906003)(8676002)(41300700001)(86362001)(8936002)(6486002)(6666004)(66556008)(6916009)(66946007)(66476007)(316002)(36756003)(4326008)(478600001)(6512007)(44832011)(5660300002)(966005)(83380400001)(6506007)(186003)(2906002)(38100700002)(2616005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?K/pbmw+b/lu2n12h+6FtU9dg4cW5AkjGW0YZIMOybLI2ONaCScDwlCCX3ou8?=
- =?us-ascii?Q?RtPdVXTQwQry80AospPUN+lAdNAmoiyhnkJVYDrCOODmZ6amduCNRP/ALASg?=
- =?us-ascii?Q?mGG+D/4releE4doQotFe7svakRmKAg5K7iM9Z7ZQwyNYsozwHrx1aTOz3hp/?=
- =?us-ascii?Q?kiqlwwGtng7D8lKJC/sx4UPqYoOAdHdbcn865crSslvpZcRvCf38vZA6jpD1?=
- =?us-ascii?Q?21CPJUOUXScf5y/LDV1b8WGu71KFNMHKlBQ2f70tOXuJXQlC9Mfz5rI56etM?=
- =?us-ascii?Q?NCG1oO1VbAjqgVZhHE+hZ6xDAtzZgc63WS1DwDq/PTMlNYMbk5FfZ1JL1Rc/?=
- =?us-ascii?Q?VD90FicZRwbZVoYJ4i9FViShFGnX2N/ujDUfDOQrtS3HFL1vx16C8LTJZiBH?=
- =?us-ascii?Q?6uV3ZfxJPEczZ2eq5mLEqyPzyV2TAeUaoivZRozY7qKMBgUyu3llK1rmzKBT?=
- =?us-ascii?Q?GCnezkdhsfpXxIy8/ygjQ+ubx63vX6ddc5tsjlJ0jT8Xua5wgiplc5OvKXoy?=
- =?us-ascii?Q?uZ7W0GEvORmkU0A0dSX2F0ZEKEPiOX/0XNsPmjZsen05mu9L2IpJtv+U1jOU?=
- =?us-ascii?Q?KFhcAXhr9fEIno9LOCe8az8OAKZB3ZVLiAvs3rgxnczL8qfPD5iEuKdU4to9?=
- =?us-ascii?Q?6GIV3+iaCHmXNeVOirFD7nF3ZrzSoLzYXNpw/EdZYHVPih9fZ1xHqV6aihez?=
- =?us-ascii?Q?KQP2OhTyhAY1OpAMx81kSyeGHl1uXULBIKn5rG46TxgcJhBWqttan50rjxu5?=
- =?us-ascii?Q?BsharQAd0La+S/Z04j8KHc3Bn/zealMUtnvgrTOoVVcmf0hCptKjZvIEUYFF?=
- =?us-ascii?Q?GIQZfit8rOzit1LOynNMx25pYsBO1j/S+FXRQc8CCC6oiWSKW2Mjc0a3BEM3?=
- =?us-ascii?Q?AtD5bRYdNme+HewhY1GrXTdQW3nzN1yTfZ2/Gfp8DgEq/UtulqhXj88ZyO3y?=
- =?us-ascii?Q?AEg+95/71k/nVZu6UKgYRhGxhjq3/3MRZVjPD9gJnqv0Mnh2tXIturxyKhk1?=
- =?us-ascii?Q?D9N1EYI7YJYqNo1jRv+AlO5VLPSWC+D21r0MjCQyYHBzxTD5AN3X6PyQS3X9?=
- =?us-ascii?Q?Jrf6reyiFXcew4iM0Pw0VQJWVj9x1XNEy5XzuAtar+LAJMQPzcksb2RUh8qD?=
- =?us-ascii?Q?GcOQolVoos90bLOcVGQYCGW9NYlH06TcnETU+Nhw0l5DUhjABvkMVzzvlnQc?=
- =?us-ascii?Q?v2u0vwh/HPjNsZ7jrxHx4xNtchIxW7HEN2lA4MJ465WNiPbaaE0X09tpCyQQ?=
- =?us-ascii?Q?YlwNCi6cmCtz0zI9ddbT/Da4K7UAqeeEqg4xtctGvd7R005aJrmU7CdrsjGY?=
- =?us-ascii?Q?fAOTps3CygFAjMdVV+derB4rQOCudV29OCpQ4YzKOI7soxtl7x/DjtnJKQMB?=
- =?us-ascii?Q?JGGh+0FddAc8IlkR6JG7SWSiGbTIm3irk7hUUWAClFZbiEj8t0NlOd4RpEhf?=
- =?us-ascii?Q?Po0KotRK2vT2d5L/e1KziBDsW8pu361BAXfCUoqznN9qT4TvEwGTu3K6R1KP?=
- =?us-ascii?Q?pA0JeMUUqjs8v4lLOzdVxIXmXNtNbvaNJ1aJdFBUL9wrYUYOIu8Sw1ZjhIA6?=
- =?us-ascii?Q?xZ3yv/2uzq8cD6mBTC3OJeabqnN3ICifMfyZhWBUrEyVV4gLWupYz1jwwPjT?=
- =?us-ascii?Q?UHE6UMEDztDxzbbU3HoKIlK9FPa99Rd4AkyBfQc93XgQ7184Oeuxb8MnK/fS?=
- =?us-ascii?Q?rVBp4A=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f707610c-97c1-4149-7db4-08db6dc4a722
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2023 17:19:19.1053
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SnzNPjJgIc8DBP/0e9OK4hoGSaILOcWDCJWnbCkIZbCUSOR1yEHoP7HWNYncSEG3uFShip/wIn8wF+QxZEn4ngRdWrRxhicFItxbWzq+cUI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR13MB6420
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 15, 2023 at 04:13:36PM +0100, Donald Hunter wrote:
-> Add --mode strace to ynl-gen-c.py to generate source files for strace
-> that teach it to understand how to decode genetlink messages defined
-> in the spec. I successfully used this to add openvswitch message
-> decoding to strace as I described in:
-> 
-> https://donaldh.wtf/2023/06/teaching-strace-new-tricks/
-> 
-> It successfully generated ovs_datapath and ovs_vport but ovs_flow
-> needed manual fixes to fix code ordering and forward declarations.
-> 
-> Limitations:
-> 
-> - Uses a crude mechanism to try and emit functions in the right order
->   which fails for ovs_flow
-> - Outputs all strace sources to stdout or a single file
-> - Does not use the right semantic strace decoders for e.g. IP or MAC
->   addresses because there is no schema information to say what the
->   domain type is.
-> 
-> This seems like a useful tool to have as part of the ynl suite since
-> it lowers the cost of getting good strace support for new netlink
-> families. But I realise that the generated format is dependent on an
-> out of tree project. If there is interest in having this in-tree then
-> I can clean it up and address some of the limitations before
-> submission.
-> 
-> Signed-off-by: Donald Hunter <donald.hunter@gmail.com>
+v3->v4:
+-rely on ynl for adding new xdp_features flag [Jakub]
+- move xskb_list to xsk_buff_pool
 
-...
+v2->v3:
+- Fix issue with the next valid packet getting dropped after an invalid
+  packet with MAX_SKB_FRAGS + 1 frags [Magnus]
+- query NETDEV_XDP_ACT_ZC_SG flag within xskxceiver and act on it
+- remove redundant include in xsk.c [kernel test robot]
+- s/NETDEV_XDP_ACT_NDO_ZC_SG/NETDEV_XDP_ACT_ZC_SG + kernel doc [Magnus,
+  Simon]
 
-> +    # C code for attibute set decoders
+v1->v2:
+- fix spelling issues in commit messages [Simon]
+- remove XSK_DESC_MAX_FRAGS, use MAX_SKB_FRAGS instead [Stan, Alexei]
+- add documentation patch
+- fix build error from kernel test robot on patch 10
 
-Hi Donald,
 
-a minor nit from my side: attibute -> attribute
+This series of patches add multi-buffer support for AF_XDP. XDP and
+various NIC drivers already have support for multi-buffer packets. With
+this patch set, programs using AF_XDP sockets can now also receive and
+transmit multi-buffer packets both in copy as well as zero-copy mode.
+ZC multi-buffer implementation is based on ice driver.
+
+Some definitions to put us all on the same page:
+
+* A packet consists of one or more frames
+
+* A descriptor in one of the AF_XDP rings always refers to a single
+  frame. In the case the packet consists of a single frame, the
+  descriptor refers to the whole packet.
+
+To represent a packet consisting of multiple frames, we introduce a
+new flag called XDP_PKT_CONTD in the options field of the Rx and Tx
+descriptors. If it is true (1) the packet continues with the next
+descriptor and if it is false (0) it means this is the last descriptor
+of the packet. Why the reverse logic of end-of-packet (eop) flag found
+in many NICs? Just to preserve compatibility with non-multi-buffer
+applications that have this bit set to false for all packets on Rx, and
+the apps set the options field to zero for Tx, as anything else will
+be treated as an invalid descriptor.
+
+These are the semantics for producing packets onto XSK Tx ring
+consisting of multiple frames:
+
+* When an invalid descriptor is found, all the other
+  descriptors/frames of this packet are marked as invalid and not
+  completed. The next descriptor is treated as the start of a new
+  packet, even if this was not the intent (because we cannot guess
+  the intent). As before, if your program is producing invalid
+  descriptors you have a bug that must be fixed.
+
+* Zero length descriptors are treated as invalid descriptors.
+
+* For copy mode, the maximum supported number of frames in a packet is
+  equal to CONFIG_MAX_SKB_FRAGS + 1. If it is exceeded, all
+  descriptors accumulated so far are dropped and treated as
+  invalid. To produce an application that will work on any system
+  regardless of this config setting, limit the number of frags to 18,
+  as the minimum value of the config is 17.
+
+* For zero-copy mode, the limit is up to what the NIC HW
+  supports. Usually at least five on the NICs we have checked. We
+  consciously chose to not enforce a rigid limit (such as
+  CONFIG_MAX_SKB_FRAGS + 1) for zero-copy mode, as it would have
+  resulted in copy actions under the hood to fit into what limit the
+  NIC supports. Kind of defeats the purpose of zero-copy mode.
+
+* ZC batch API guarantees that it will provide a batch of Tx descriptors
+  that ends with full packet at the end. If not, ZC drivers would have
+  to gather the full packet on their side. The approach we picked makes
+  ZC drivers life much easier (at least on Tx side).
+
+Here is an example Tx path pseudo-code (using libxdp interfaces for
+simplicity) ignoring that the umem is finite in size, and that we
+eventually will run out of packets to send. Also assumes pkts.addr
+points to a valid location in the umem.
+
+void tx_packets(struct xsk_socket_info *xsk, struct pkt *pkts,
+                int batch_size)
+{
+	u32 idx, i, pkt_nb = 0;
+
+	xsk_ring_prod__reserve(&xsk->tx, batch_size, &idx);
+
+	for (i = 0; i < batch_size;) {
+		u64 addr = pkts[pkt_nb].addr;
+		u32 len = pkts[pkt_nb].size;
+
+		do {
+			struct xdp_desc *tx_desc;
+
+			tx_desc = xsk_ring_prod__tx_desc(&xsk->tx, idx + i++);
+			tx_desc->addr = addr;
+
+			if (len > xsk_frame_size) {
+				tx_desc->len = xsk_frame_size;
+				tx_desc->options |= XDP_PKT_CONTD;
+			} else {
+				tx_desc->len = len;
+				tx_desc->options = 0;
+				pkt_nb++;
+			}
+			len -= tx_desc->len;
+			addr += xsk_frame_size;
+
+			if (i == batch_size) {
+				/* Remember len, addr, pkt_nb for next
+				 * iteration. Skipped for simplicity.
+				 */
+				break;
+			}
+		} while (len);
+	}
+
+	xsk_ring_prod__submit(&xsk->tx, i);
+}
+
+On the Rx path in copy mode, the xsk core copies the XDP data into
+multiple descriptors, if needed, and sets the XDP_PKT_CONTD flag as
+detailed before. Zero-copy mode in order to avoid the copies has to
+maintain a chain of xdp_buff_xsk structs that represent whole packet.
+This is because what actually is redirected is the xdp_buff and we
+currently have no equivalent mechanism that is used for copy mode
+(embedded skb_shared_info in xdp_buff) to carry the frags. This means
+xdp_buff_xsk grows in size but these members are at the end and should
+not be touched when data path is not dealing with fragmented packets.
+This solution kept us within assumed performance impact, hence we
+decided to proceed with it.
+
+When the application gets a descriptor with the
+XDP_PKT_CONTD flag set to one, it means that the packet consists of
+multiple buffers and it continues with the next buffer in the following
+descriptor. When a descriptor with XDP_PKT_CONTD == 0 is received, it
+means that this is the last buffer of the packet. AF_XDP guarantees that
+only a complete packet (all frames in the packet) is sent to the
+application.
+
+If application reads a batch of descriptors, using for example the libxdp
+interfaces, it is not guaranteed that the batch will end with a full
+packet. It might end in the middle of a packet and the rest of the
+buffers of that packet will arrive at the beginning of the next batch,
+since the libxdp interface does not read the whole ring (unless you
+have an enormous batch size or a very small ring size).
+
+Here is a simple Rx path pseudo-code example (using libxdp interfaces for
+simplicity). Error paths have been excluded for simplicity:
+
+void rx_packets(struct xsk_socket_info *xsk)
+{
+	static bool new_packet = true;
+	u32 idx_rx = 0, idx_fq = 0;
+	static char *pkt;
+
+	int rcvd = xsk_ring_cons__peek(&xsk->rx, opt_batch_size, &idx_rx);
+
+	xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
+
+	for (int i = 0; i < rcvd; i++) {
+		struct xdp_desc *desc = xsk_ring_cons__rx_desc(&xsk->rx, idx_rx++);
+		char *frag = xsk_umem__get_data(xsk->umem->buffer, desc->addr);
+		bool eop = !(desc->options & XDP_PKT_CONTD);
+
+		if (new_packet)
+			pkt = frag;
+		else
+			add_frag_to_pkt(pkt, frag);
+
+		if (eop)
+			process_pkt(pkt);
+
+		new_packet = eop;
+
+		*xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) = desc->addr;
+	}
+
+	xsk_ring_prod__submit(&xsk->umem->fq, rcvd);
+	xsk_ring_cons__release(&xsk->rx, rcvd);
+}
+
+Unfortunately, we had to introduce a new bind flag (XDP_USE_SG) on the
+AF_XDP level to enable multi-buffer support. It would be great if you
+have ideas on how to get rid of it. The reason we need to
+differentiate between non multi-buffer and multi-buffer is the
+behaviour when the kernel gets a packet that is larger than the frame
+size. Without multi-buffer, this packet is dropped and marked in the
+stats. With multi-buffer on, we want to split it up into multiple
+frames instead.
+
+At the start, we thought that riding on the .frags section name of
+the XDP program was a good idea. You do not have to introduce yet
+another flag and all AF_XDP users must load an XDP program anyway
+to get any traffic up to the socket, so why not just say that the XDP
+program decides if the AF_XDP socket should get multi-buffer packets
+or not? The problem is that we can create an AF_XDP socket that is Tx
+only and that works without having to load an XDP program at
+all. Another problem is that the XDP program might change during the
+execution, so we would have to check this for every single packet.
+
+Here is the observed throughput when compared without any multi-buffer
+changes and measured with xdpsock prog for 64B packets (+ is
+improvement) is about same with a small drop for rx_drop for copy mode,
+zero-copy mode is more sensitive and as shown below rxdrop gets around
+5% performance drop. Note that this drop combines from core + driver
+support, whereas copy mode had already driver support in place.
+
+Mode       rxdrop       l2fwd     txonly
+xdp-zc      -5%         -3%         -2%
+xdp-drv     -1.2%        0%         +2%
+xdp-skb     -0.6%       -1%         +2%
+
+Thank you,
+Tirthendu, Magnus and Maciej
+
+
+Maciej Fijalkowski (8):
+  xsk: prepare both copy and zero-copy modes to co-exist
+  xsk: allow core/drivers to test EOP bit
+  xsk: support mbuf on ZC RX
+  ice: xsk: add RX multi-buffer support
+  xsk: support ZC Tx multi-buffer in batch API
+  xsk: report zero-copy multi-buffer capability via xdp_features
+  ice: xsk: Tx multi-buffer support
+  selftests/xsk: reset NIC settings to default after running test suite
+
+Magnus Karlsson (7):
+  xsk: add multi-buffer documentation
+  selftests/xsk: transmit and receive multi-buffer packets
+  selftests/xsk: add basic multi-buffer test
+  selftests/xsk: add unaligned mode test for multi-buffer
+  selftests/xsk: add invalid descriptor test for multi-buffer
+  selftests/xsk: add metadata copy test for multi-buff
+  selftests/xsk: add test for too many frags
+
+Tirthendu Sarkar (7):
+  xsk: prepare 'options' in xdp_desc for multi-buffer use
+  xsk: introduce XSK_USE_SG bind flag for xsk socket
+  xsk: move xdp_buff's data length check to xsk_rcv_check
+  xsk: add support for AF_XDP multi-buffer on Rx path
+  xsk: introduce wrappers and helpers for supporting multi-buffer in Tx
+    path
+  xsk: add support for AF_XDP multi-buffer on Tx path
+  xsk: discard zero length descriptors in Tx path
+
+ Documentation/netlink/specs/netdev.yaml       |   5 +
+ Documentation/networking/af_xdp.rst           | 177 +++++++
+ drivers/net/ethernet/intel/ice/ice_base.c     |   9 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |   2 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c      | 221 ++++++---
+ include/net/xdp_sock.h                        |   7 +
+ include/net/xdp_sock_drv.h                    |  54 +++
+ include/net/xsk_buff_pool.h                   |   7 +
+ include/uapi/linux/if_xdp.h                   |  13 +
+ include/uapi/linux/netdev.h                   |   5 +-
+ net/core/filter.c                             |   7 +-
+ net/xdp/xsk.c                                 | 362 ++++++++++----
+ net/xdp/xsk_buff_pool.c                       |   8 +
+ net/xdp/xsk_queue.h                           |  91 ++--
+ tools/include/uapi/linux/if_xdp.h             |   9 +
+ tools/include/uapi/linux/netdev.h             |   5 +-
+ .../selftests/bpf/progs/xsk_xdp_progs.c       |   6 +-
+ tools/testing/selftests/bpf/test_xsk.sh       |   5 +
+ tools/testing/selftests/bpf/xsk.c             | 136 +++++-
+ tools/testing/selftests/bpf/xsk.h             |   2 +
+ tools/testing/selftests/bpf/xsk_prereqs.sh    |   7 +
+ tools/testing/selftests/bpf/xskxceiver.c      | 447 +++++++++++++++---
+ tools/testing/selftests/bpf/xskxceiver.h      |  20 +-
+ 23 files changed, 1352 insertions(+), 253 deletions(-)
+
+-- 
+2.34.1
+
 
