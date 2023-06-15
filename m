@@ -1,55 +1,46 @@
-Return-Path: <netdev+bounces-10971-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10972-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id B9073730DFB
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 06:17:22 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1035E730E02
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 06:20:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EF0D328165F
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 04:17:20 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ABF7B281635
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 04:20:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2374F644;
-	Thu, 15 Jun 2023 04:17:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E763D644;
+	Thu, 15 Jun 2023 04:20:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7E96625
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 04:17:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF432C433C0;
-	Thu, 15 Jun 2023 04:17:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A310E625
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 04:20:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA7FAC433C8;
+	Thu, 15 Jun 2023 04:20:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686802637;
-	bh=Wf7Wd81kwURj9/QONfqCGAHz6JBdBCub1nSOGMdDMA4=;
+	s=k20201202; t=1686802833;
+	bh=r3ZuN3Io1bp4/Cx8s+S52ckgv49Kj7xPRrS9LZj78qw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=VcZufbfQCdXJzbcHg9NKloFUyJfXTJBoos26D/HEYloKrBGr7N5O9FuhPL2ET4HhM
-	 E1oCxT4LMBe00RplzvezqEHpXG39/ki0nUsMO+zGFuMJPAVXilKM64QoZfjya/uq8k
-	 s0fTInSgOpQHrwtLj9nAl2dFCHD8YptM9mTi7v1rIr87LCgIsAJ6jsX44zYF+1+Hmy
-	 uCf77Z1ze7nz6xzI7dK8j/L3niRaLjR4r0C/0pdVlKf79F0wVig25eGvI23tzRdqqE
-	 uIF3fXywF8zlOVy6YJte6po3PJcI2B/QW/bGe7jbPXoG8W4C/KjWQr/+CfKIBrDeF+
-	 kzwXTElbSH/ow==
-Date: Wed, 14 Jun 2023 21:17:15 -0700
+	b=IfbgiUVc7uLqqHRL8KUASPv6Z16ClS1aiRs7oGyJKkm/vhvLNrYXGPrQvYT/obKXm
+	 c9h3k8mpXRhCvKEL54FL1UlN0zFVlOpJLoyB1BlcRBMF1FWv62TmYAmyu5XYhzdcxz
+	 5gnZMnTvnLuEmvFRn93YX9HF/IqxuKZEt22OrrO4sP+8TVqYOr2ywPFWM47ny5A//L
+	 NG32aWIHLBVnkJBVj3QaELhB9/74dKIcqoo8IzrYq7n1kormZsFT82JdnD8EfbKlBG
+	 93YF/4eKN2QjvfSpTMjnYaHm6bVAqATiV9rg8aloSxoXYyjxJoVprc3uwH8HawQPih
+	 +wIdq5NQ88LTQ==
+Date: Wed, 14 Jun 2023 21:20:31 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>, Jonathan
- Corbet <corbet@lwn.net>
-Cc: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "davem@davemloft.net" <davem@davemloft.net>, "pabeni@redhat.com"
- <pabeni@redhat.com>, "edumazet@google.com" <edumazet@google.com>,
- "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
- linux-doc@vger.kernel.org
-Subject: Re: [PATCH net-next] tools: ynl-gen: generate docs for
- <name>_max/_mask enums
-Message-ID: <20230614211715.01940bbd@kernel.org>
-In-Reply-To: <DM6PR11MB4657A5F161476B05C5F8B7569B5AA@DM6PR11MB4657.namprd11.prod.outlook.com>
-References: <20230613231709.150622-1-arkadiusz.kubalewski@intel.com>
-	<20230613231709.150622-3-arkadiusz.kubalewski@intel.com>
-	<20230613175928.4ea56833@kernel.org>
-	<DM6PR11MB46570AEF7E10089E70CC1D019B5AA@DM6PR11MB4657.namprd11.prod.outlook.com>
-	<20230614103852.3eb7fd02@kernel.org>
-	<DM6PR11MB4657A5F161476B05C5F8B7569B5AA@DM6PR11MB4657.namprd11.prod.outlook.com>
+To: Liang Chen <liangchen.linux@gmail.com>
+Cc: hawk@kernel.org, ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+ pabeni@redhat.com
+Subject: Re: [PATCH net-next] page pool: not return page to alloc cache
+ during pool destruction
+Message-ID: <20230614212031.7e1b6893@kernel.org>
+In-Reply-To: <20230615013645.7297-1-liangchen.linux@gmail.com>
+References: <20230615013645.7297-1-liangchen.linux@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -59,60 +50,19 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 14 Jun 2023 22:11:38 +0000 Kubalewski, Arkadiusz wrote:
-> Thanks for pointing this, but it doesn't work :/
+On Thu, 15 Jun 2023 09:36:45 +0800 Liang Chen wrote:
+> When destroying a page pool, the alloc cache and recycle ring are emptied.
+> If there are inflight pages, the retry process will periodically check the
+> recycle ring for recently returned pages, but not the alloc cache (alloc
+> cache is only emptied once). As a result, any pages returned to the alloc
+> cache after the page pool destruction will be stuck there and cause the
+> retry process to continuously look for inflight pages and report warnings.
 > 
-> I tried described format but still ./scripts/kernel-doc warns about it.
-> Same as 'make htmldocs' does, as it uses ./scripts/kernel-doc
-> 
-> Also, if the enum is not described in the header, the docs produced by
-> the 'make htmldocs' would list the enum with the comment "undescribed".
+> To safeguard against this situation, any pages returning to the alloc cache
+> after pool destruction should be prevented.
 
-Oh, you're right :S Looks like private: does not work for enums.
-
-> It seems we need fixing:
-> - prevent warning from ./scripts/kernel-doc, so enums marked as "private:"
->   would not warn
-> - generate __<ENUM_NAME>_MAX while marking them as "/* private: */"
-> - add some kind of "pattern exclude" directive/mechanics for generating
->   docs with sphinx
-> 
-> Does it make sense?
-> TBH, not yet sure if all above are possible..
-
-Let's ask Jon, and wait for him to chime in, I don't think these
-warnings should be a blocker for new families.
-
-Jon, we have some "meta" entries in the uAPI enums in netlink 
-to mark the number of attributes, eg:
-
-enum {
-	NETDEV_A_DEV_IFINDEX = 1,
-	NETDEV_A_DEV_PAD,
-	NETDEV_A_DEV_XDP_FEATURES,
-/* private: */
-	__NETDEV_A_DEV_MAX, // this
-	NETDEV_A_DEV_MAX = (__NETDEV_A_DEV_MAX - 1) // and this
-};
-
-Also masks of all flags like:
-
-enum netdev_xdp_act {
-	NETDEV_XDP_ACT_BASIC = 1,
-	NETDEV_XDP_ACT_REDIRECT = 2,
-	NETDEV_XDP_ACT_NDO_XMIT = 4,
-	NETDEV_XDP_ACT_XSK_ZEROCOPY = 8,
-	NETDEV_XDP_ACT_HW_OFFLOAD = 16,
-	NETDEV_XDP_ACT_RX_SG = 32,
-	NETDEV_XDP_ACT_NDO_XMIT_SG = 64,
-/* private: */
-	NETDEV_XDP_ACT_MASK = 127, // this
-};
-
-which user space should not care about.
-
-I was hoping we can mark them as /* private: */ but that doesn't
-work, when we add kdocs without documenting those - there's a warning.
-Is this a known problem? Is it worth fixing?
-Do we need to fix both kernel-doc and sphinx or just the former?
+Let's hear from the page pool maintainers but I think the driver 
+is supposed to prevent allocations while pool is getting destroyed.
+Perhaps we can add DEBUG_NET_WARN_ON_ONCE() for this condition to
+prevent wasting cycles in production builds?
 
