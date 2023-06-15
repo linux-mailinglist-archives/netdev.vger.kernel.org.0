@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-11107-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11108-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id CE94F7318DC
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 14:22:11 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 162077318DD
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 14:22:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 883FD281802
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 12:22:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 48CF02808F8
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 12:22:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DDF281ACD8;
-	Thu, 15 Jun 2023 12:15:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D5C91C774;
+	Thu, 15 Jun 2023 12:15:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1E0F1ACB2
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 12:15:23 +0000 (UTC)
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6862736
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 05:15:03 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-3f8cc04c287so17460455e9.0
-        for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 05:15:02 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7203C1ACB2
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 12:15:24 +0000 (UTC)
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 402AF273F
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 05:15:04 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id 2adb3069b0e04-4f60a27c4a2so9882777e87.2
+        for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 05:15:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20221208.gappssmtp.com; s=20221208; t=1686831301; x=1689423301;
+        d=bgdev-pl.20221208.gappssmtp.com; s=20221208; t=1686831302; x=1689423302;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=KVlJCvybdeYjvv8ryzmcQEkNwtr78sKz5e8xX8tuWYs=;
-        b=VtZQthxXkJ6Gl3Gr0Rxhxkj4r7xw8xSfqcyo9Ro9BTEa73QgC5ovx5U8VkkMLcJFIT
-         dOOekEovMOtoZ7L5ZHlpSTlLUk0AXaEd3ozCrfIK3bZ8wMuapEV4saO+zeZ2vz1MEjxl
-         nRTNWBc8b48QbHDddC/7qEExOcUIAe8i2thkfeIzzQwjXqroTLFDoGb1jpHWjTGQ3ytO
-         z1VEcPtNOi/O9Yi8JqETNIHYJ262elgduM1jcv0VLPk9QGlmYs48fY4aMnx5KyJ6lPWb
-         51Zs6aJ8EuAUBbzhlgigq7j57hfdcnfwCViI9jPL3AaeVeboRN0uGYzOmD/rrzwBsw7N
-         kASQ==
+        bh=u1Al/KG8NWTXmmsHWuavPIHFHpGDFDNwIi35fFm7FN0=;
+        b=q+jnV9dow2ysnpr+DgpUG8LSDiI1JSdSPsq2/CkxtBjah6EC0bynQ+fSdPMhtPBLc1
+         201dqrsSMkKHprpmzk5PGtWSvxsjQUgHcveZq7U/1eIc57ycP69rjz3fb2a5AQ8px/ku
+         ees+6WHgcOw8Sa+I+fHnzSKtNiVgBHfe/7fY3kC9TD36Dy87Fe3bXHvqbFqqYuCy7qRY
+         JmyMAmT8SeHzbzI/yniHLMNp9ufgDZnfeluX6YCzcRiBpnx/OuK8LNvD60stAt9CrDSm
+         r9GevzA5luS63q+SgfIMjXMcSq42ja5QRyU1kO/Kf4NJrs6XBQFu03lqIimOTIHKxIV8
+         SjHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686831301; x=1689423301;
+        d=1e100.net; s=20221208; t=1686831302; x=1689423302;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=KVlJCvybdeYjvv8ryzmcQEkNwtr78sKz5e8xX8tuWYs=;
-        b=ctrm5lKshUQ/CouxoyGZJPRSrds4JxzdltgaW6IFcqqaO7M1kzVBLsenoDycgLomii
-         VYA9wFaXmuBIgD/k3qXwamEL6Axquho8Yh9l5NVDNH60uKb4lnoZV0PLEr+IJ1+jcs6V
-         pWyI3EPRLE3vtSCz/phBJyswwf1/Ta/HOeASO6qz6/30fUTETTR9oos8qEbXYfIQA6zE
-         l2/P8DtdAUZC+HeQSl7M0ru23K8eHfhGaGHi8WaMXTWCfnGoJDKk5k989ADWCVxh5PAb
-         Y/yYjgdKAZmqSsaEtHE8CqbOwCEegnTh+kDkhDInvPCWGwq5JmUQ6I98QKxcBSSq1ZN7
-         bZHw==
-X-Gm-Message-State: AC+VfDwtb0ivTNNc1Mv8nYLffG4JK0CyWDut8U/NAmAKWsRsoT/qEo8k
-	aS43n3obNAo/G0e14CUxAGLfeA==
-X-Google-Smtp-Source: ACHHUZ5fGl2Bmi5j9EaSiuWzDcHUl/220qF10Rg89YYxqATkMANkXIIxOxpidvYKUgDJ7K0JFIeqiA==
-X-Received: by 2002:a1c:7213:0:b0:3f7:2638:9691 with SMTP id n19-20020a1c7213000000b003f726389691mr13309387wmc.41.1686831301121;
-        Thu, 15 Jun 2023 05:15:01 -0700 (PDT)
+        bh=u1Al/KG8NWTXmmsHWuavPIHFHpGDFDNwIi35fFm7FN0=;
+        b=OGezmONc0SNa/xWFtFJcqdZ7jXa+EcVVum5h1DR/0nzsIJHfEClUcxR9rtGDiFO1/1
+         ZTVoGH1n11icN4Y015l9ING6QQedWNHdK8rYjxqyhlBSZftGeiJytGJYxF10amYcW2WO
+         UOEp/1efrcJ+2iZART0DSQfbu0aHcYjxz1zxO6dnWiwsm8h2H4KkQO+fK7U6YXL+IDCS
+         E+sru/WsSLaTdERUEdgbkcKtHXpkFnHLAplpZ6QXPhUxIi9MAYLp0CPi8xaZ5ZK3psEa
+         tbwpeWkeiniknQV9YlhYGRbGPJ8cDX1knJ1tvdg/qeHYCDRe1/dMJ8z4W4GM9zzPsvCY
+         EhYg==
+X-Gm-Message-State: AC+VfDwzVh/sUSdJCLjxQPuQPSyNem97KBlPaKoHZk0EN43QsrBWP8mh
+	uoHYiwaX+Egrpt3sSnGWIPXBGA==
+X-Google-Smtp-Source: ACHHUZ71nGyqLCIDXraYAB2R46ktf8+TAA7NQUM7KV4hyoUCCpF5gPBeqp3nE5oi+hiK82hXndAHdA==
+X-Received: by 2002:a19:8c4b:0:b0:4db:3d51:6896 with SMTP id i11-20020a198c4b000000b004db3d516896mr9695706lfj.11.1686831302349;
+        Thu, 15 Jun 2023 05:15:02 -0700 (PDT)
 Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:2ad4:65a7:d9f3:a64e])
-        by smtp.gmail.com with ESMTPSA id k17-20020a5d4291000000b003047ea78b42sm20918012wrq.43.2023.06.15.05.15.00
+        by smtp.gmail.com with ESMTPSA id k17-20020a5d4291000000b003047ea78b42sm20918012wrq.43.2023.06.15.05.15.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jun 2023 05:15:00 -0700 (PDT)
+        Thu, 15 Jun 2023 05:15:01 -0700 (PDT)
 From: Bartosz Golaszewski <brgl@bgdev.pl>
 To: Vinod Koul <vkoul@kernel.org>,
 	Bhupesh Sharma <bhupesh.sharma@linaro.org>,
@@ -81,9 +81,9 @@ Cc: netdev@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-stm32@st-md-mailman.stormreply.com,
 	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: [PATCH v2 21/23] arm64: dts: qcom: sa8775p-ride: enable the SerDes PHY
-Date: Thu, 15 Jun 2023 14:14:17 +0200
-Message-Id: <20230615121419.175862-22-brgl@bgdev.pl>
+Subject: [PATCH v2 22/23] arm64: dts: qcom: sa8775p-ride: add pin functions for ethernet0
+Date: Thu, 15 Jun 2023 14:14:18 +0200
+Message-Id: <20230615121419.175862-23-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230615121419.175862-1-brgl@bgdev.pl>
 References: <20230615121419.175862-1-brgl@bgdev.pl>
@@ -103,30 +103,41 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-Enable the internal PHY on sa8775p-ride.
+Add the MDC and MDIO pin functions for ethernet0 on sa8775p-ride.
 
 Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sa8775p-ride.dts | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/arm64/boot/dts/qcom/sa8775p-ride.dts | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/qcom/sa8775p-ride.dts b/arch/arm64/boot/dts/qcom/sa8775p-ride.dts
-index ab767cfa51ff..9f39ab59c283 100644
+index 9f39ab59c283..bf90f825ff67 100644
 --- a/arch/arm64/boot/dts/qcom/sa8775p-ride.dts
 +++ b/arch/arm64/boot/dts/qcom/sa8775p-ride.dts
-@@ -355,6 +355,11 @@ &qupv3_id_2 {
- 	status = "okay";
+@@ -371,6 +371,22 @@ &spi16 {
  };
  
-+&serdes0 {
-+	phy-supply = <&vreg_l5a>;
-+	status = "okay";
-+};
+ &tlmm {
++	ethernet0_default: ethernet0-default-state {
++		ethernet0_mdc: ethernet0-mdc-pins {
++			pins = "gpio8";
++			function = "emac0_mdc";
++			drive-strength = <16>;
++			bias-pull-up;
++		};
 +
- &sleep_clk {
- 	clock-frequency = <32764>;
- };
++		ethernet0_mdio: ethernet0-mdio-pins {
++			pins = "gpio9";
++			function = "emac0_mdio";
++			drive-strength = <16>;
++			bias-pull-up;
++		};
++	};
++
+ 	qup_uart10_default: qup-uart10-state {
+ 		pins = "gpio46", "gpio47";
+ 		function = "qup1_se3";
 -- 
 2.39.2
 
