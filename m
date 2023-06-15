@@ -1,343 +1,1580 @@
-Return-Path: <netdev+bounces-11238-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11239-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 78AE07321C2
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 23:35:19 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id B350B7321CA
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 23:37:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9B35C1C20EE6
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 21:35:18 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EB8AF2814DC
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 21:37:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0849A16434;
-	Thu, 15 Jun 2023 21:35:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B76D4168C8;
+	Thu, 15 Jun 2023 21:37:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4321156C0
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 21:35:15 +0000 (UTC)
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE652962;
-	Thu, 15 Jun 2023 14:35:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686864914; x=1718400914;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=LDMdqsbQSAUOmCUx9X7g1GGjQhoGNB9t5ceN5k3cPJk=;
-  b=OPCGhPnf+2SndKOvfwTywQRTr1oGeQPhSIVYnqxOECVtcBhy6E4WbrAj
-   RqVpEQ5fdVaUtoRPUz5S5d+xdEXR1dYz1hA3b15pbBuL4IFS0FnWdRwes
-   EXP4IHHi5TIf9lAsX9E53kWZS1RPg/MmMRYoj9ArC/exMp6EX/qEKXww1
-   Fj3dJOByn4gU0BBbfNzpN6PRL490qA7PFJT914cK0Ady88kcnVSyMgJqD
-   Stj8ksNQathdjiBOgct0X8W6xYOXtTn61cc71XX8zfXvYAe/vnUVdeJ8X
-   nOCRhjx427+N9Wt1e8XRBIm1r6p7LbkeD3MXOFxc2oI8xbWAm8OJoYrhu
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="387643608"
-X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
-   d="scan'208";a="387643608"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2023 14:35:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="777896350"
-X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
-   d="scan'208";a="777896350"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga008.fm.intel.com with ESMTP; 15 Jun 2023 14:35:13 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 15 Jun 2023 14:35:12 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 15 Jun 2023 14:35:12 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Thu, 15 Jun 2023 14:35:12 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.108)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Thu, 15 Jun 2023 14:35:11 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B1902E0D4
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 21:37:09 +0000 (UTC)
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2074.outbound.protection.outlook.com [40.107.243.74])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE01C2964;
+	Thu, 15 Jun 2023 14:37:05 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FRZljQzPzO4lQhAgRdRE5KDipEGi7ggvm8mkdXwMheVOmvibHmCT4xwIe6MLXHps6VMs1tO6vRdexkqFsnXWjTlEXBDDJGOpxcSJL+OikNhvhw8m4sdQ4UX8mnDabctrbeHt3zWaqT4Gt4JpuocKPgo/XA5m7Jjb1AMr52//pGPRTPvS+EolcNq49dIwcBSaoxQgw+7PnRpZRE1lkawXWh1Ccbjbr+p8rXSK6LFAk5KocdZkA9YoVgxwBAkOwqrhqp6CREOs/bVTmReo+SD/ddQofm6KYOICSi83JUOC9G6RaFidvm5y5ijukb8Er8ifXPw4pfnT5rw/NN329WfYQg==
+ b=WY9RtgQ0ObbWHnfj/B/F5tC+WhkeURSLWiiAtCFgFgaFpvPF1rJ42Zrj1fa6dZKwb3wbTBlk2xzBsr8QGJFzN6rmx948nuZxXytljCLslE8QzBrJigspPyoYqS1HiRwGWn0PIZ5i1mxd/ofgaag5B6Fyhc3CBP1Uv324iLR2X7XFvI2YRIv9PdU3j/NBb0pMj6H1W0sKq2vjyE6Tt8kN0CYhyDRfbDiTvC8wz4fZQilOyfCQUByPw4UYs6XQrfhWAZgvguXFXgy8XkVlOA5onMPO4/+33Vaw81DTX7NcYSvblnev0pAK8q8fVRu8lPN/LmuJ1rHMr7FQSRxvuycYIA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Vztlr3wsSgrmNakUd7UgKECfC1Z/4wbf1j+KjKOWIMo=;
- b=ic+qJ+tE4pTcPvd3fj8w92wssVvnwpFAFfsklmwPEK+YX5n2aTE2jCp3pjg27kpZuyUBazduP4hVwLnqL3M1a6yKWCrywVoUPtaxN40DZ6eboX3Ms/TCynnmOTo3DpeNMkec8JPLUAMKwTJnnZfTCBukLPimpS6QsUNNmbYWhRZ0ldIKcotO9vMOK1a6NDCFExx3F6BhX5Tjy04bA2waJ16qJT0MmUX493lMUEkP5vcKRPdrVs/wpnzwM47vEW1sFRh6n+Rq1/giaqf7PdYdCWsp9533dQNP+c3A0aAOLz3Uqgh1ebuyX1SnUBXalCk0b2eGW1BETCen6VnqYnkQuQ==
+ bh=BJ28P1RD9kBKnVGVdE6+iV4/+cGXmBS/0c9BdMWEuPY=;
+ b=AEQJeZrJjKz83uw/twoWDQ6FWTfSLBQR1/nG7OhUxMzCVPAAAZYYLPVzJonNAuCyKzmqoKJ8oWeyjH0cFDXHKfM3p5J7d7T0FJiKBs6evK/FGMPIVQhJ5PD/4A5LSs8WLchenzAwQ6Cv+mBU6KWsGCenRxmN6IR7qOCGvE0F8f8HBkqc2lngZhzh4pBQyhSCIKfJVl/khUpt+t2Bjn0th8CWCMwEyKJmNOBR1jfyg+uKnwIYSI8iGy4jRLc9xZtaRvXUwYaYoxdAQvnOF1CindX+L3ftWCZiaRqc54+NMd0GNtOUvy7xq3zrSyKGxLG4nIMQPE9s8eEh8k/ZlH0LkQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
- BL1PR11MB5414.namprd11.prod.outlook.com (2603:10b6:208:31e::17) with
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BJ28P1RD9kBKnVGVdE6+iV4/+cGXmBS/0c9BdMWEuPY=;
+ b=Q8mcnxUwCfgBhox+yjnqSGz0IJFNs00SAl9uOqtX1xFjZxPh7hBwPI9dzyVYQE9xD/w+Y5rpUUBiExgEbERqsBD929yM+8DdhBuGr6XETfswEAo8zuJkXgmcPD1g5gkZbmlRQ+dPWLZsTn4nXDejpwBJBQDMf23T0fg3R1b8k1U=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH0PR12MB7982.namprd12.prod.outlook.com (2603:10b6:510:28d::5)
+ by CH3PR12MB9252.namprd12.prod.outlook.com (2603:10b6:610:1ba::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.25; Thu, 15 Jun
- 2023 21:35:09 +0000
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::24bd:974b:5c01:83d6]) by DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::24bd:974b:5c01:83d6%3]) with mapi id 15.20.6500.025; Thu, 15 Jun 2023
- 21:35:08 +0000
-From: "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
-To: Jiri Pirko <jiri@resnulli.us>
-CC: "kuba@kernel.org" <kuba@kernel.org>, "vadfed@meta.com" <vadfed@meta.com>,
-	"jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>, "pabeni@redhat.com"
-	<pabeni@redhat.com>, "corbet@lwn.net" <corbet@lwn.net>, "davem@davemloft.net"
-	<davem@davemloft.net>, "edumazet@google.com" <edumazet@google.com>,
-	"vadfed@fb.com" <vadfed@fb.com>, "Brandeburg, Jesse"
-	<jesse.brandeburg@intel.com>, "Nguyen, Anthony L"
-	<anthony.l.nguyen@intel.com>, "M, Saeed" <saeedm@nvidia.com>,
-	"leon@kernel.org" <leon@kernel.org>, "richardcochran@gmail.com"
-	<richardcochran@gmail.com>, "sj@kernel.org" <sj@kernel.org>,
-	"javierm@redhat.com" <javierm@redhat.com>, "ricardo.canuelo@collabora.com"
-	<ricardo.canuelo@collabora.com>, "mst@redhat.com" <mst@redhat.com>,
-	"tzimmermann@suse.de" <tzimmermann@suse.de>, "Michalik, Michal"
-	<michal.michalik@intel.com>, "gregkh@linuxfoundation.org"
-	<gregkh@linuxfoundation.org>, "jacek.lawrynowicz@linux.intel.com"
-	<jacek.lawrynowicz@linux.intel.com>, "airlied@redhat.com"
-	<airlied@redhat.com>, "ogabbay@kernel.org" <ogabbay@kernel.org>,
-	"arnd@arndb.de" <arnd@arndb.de>, "nipun.gupta@amd.com" <nipun.gupta@amd.com>,
-	"axboe@kernel.dk" <axboe@kernel.dk>, "linux@zary.sk" <linux@zary.sk>,
-	"masahiroy@kernel.org" <masahiroy@kernel.org>,
-	"benjamin.tissoires@redhat.com" <benjamin.tissoires@redhat.com>,
-	"geert+renesas@glider.be" <geert+renesas@glider.be>, "Olech, Milena"
-	<milena.olech@intel.com>, "kuniyu@amazon.com" <kuniyu@amazon.com>,
-	"liuhangbin@gmail.com" <liuhangbin@gmail.com>, "hkallweit1@gmail.com"
-	<hkallweit1@gmail.com>, "andy.ren@getcruise.com" <andy.ren@getcruise.com>,
-	"razor@blackwall.org" <razor@blackwall.org>, "idosch@nvidia.com"
-	<idosch@nvidia.com>, "lucien.xin@gmail.com" <lucien.xin@gmail.com>,
-	"nicolas.dichtel@6wind.com" <nicolas.dichtel@6wind.com>, "phil@nwl.cc"
-	<phil@nwl.cc>, "claudiajkang@gmail.com" <claudiajkang@gmail.com>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-	"linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, poros <poros@redhat.com>, mschmidt
-	<mschmidt@redhat.com>, "linux-clk@vger.kernel.org"
-	<linux-clk@vger.kernel.org>, "vadim.fedorenko@linux.dev"
-	<vadim.fedorenko@linux.dev>
-Subject: RE: [RFC PATCH v8 07/10] ice: add admin commands to access cgu
- configuration
-Thread-Topic: [RFC PATCH v8 07/10] ice: add admin commands to access cgu
- configuration
-Thread-Index: AQHZms0P/wrvusf1802RxCsMWYxb1q+DungAgAixyxA=
-Date: Thu, 15 Jun 2023 21:35:08 +0000
-Message-ID: <DM6PR11MB46576DF96B9A44AB42241E469B5BA@DM6PR11MB4657.namprd11.prod.outlook.com>
-References: <20230609121853.3607724-1-arkadiusz.kubalewski@intel.com>
- <20230609121853.3607724-8-arkadiusz.kubalewski@intel.com>
- <ZIQ4YCX+1FbZHpRQ@nanopsycho>
-In-Reply-To: <ZIQ4YCX+1FbZHpRQ@nanopsycho>
-Accept-Language: pl-PL, en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.29; Thu, 15 Jun
+ 2023 21:37:02 +0000
+Received: from PH0PR12MB7982.namprd12.prod.outlook.com
+ ([fe80::d065:bf1f:880e:543e]) by PH0PR12MB7982.namprd12.prod.outlook.com
+ ([fe80::d065:bf1f:880e:543e%3]) with mapi id 15.20.6477.037; Thu, 15 Jun 2023
+ 21:37:01 +0000
+Message-ID: <8fd5b0b7-abd0-88f3-3acb-b3ed9c8917c6@amd.com>
+Date: Thu, 15 Jun 2023 14:36:59 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: [PATCH v10 vfio 4/7] vfio/pds: Add VFIO live migration support
 Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|BL1PR11MB5414:EE_
-x-ms-office365-filtering-correlation-id: 97c5ab15-1404-422c-a401-08db6de8646e
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Qci6k0fFZvhFkMgg2PBdi14A7ggtX9L8g1YQVpWxO44EMHcn9hC0K3nHUc6Ge2Hl5io57fplcgJLZmptER+FqoS5uSFsMTpDUFJB04qgKXYfxXZ+RhflelAO+VlZqMO3N0XWsjxeZh8aQmZXPD45flbEqhjPY1Ezr1ozN+6RMD1NOIpXp0mYcjINUqD8IEXEaGUCOz4Xh9XPyO9DM/ijtfVMEhJ2x1JnKHRw34JQBD3gl2riqlsYI8dbtuhuUtCuEyZq5s55bbnhp4ui5n3u/CogyL9GBfvVhasYR1T/1A5JYUxgS2rvUfwlGLcL7//1Vrii6VItr6O4ugQf3UZvKRNxv7Zqp97E7cmnsvfXi0WvPOfG5UTnDT0f/oYse3T5qPGOJXhhjpSgE6cFxrvH+Xye7+8WLulxPCEdeNhT6MnEOJTEA/8UsaG2j2cdL1AV8IaavjOgWcUCTRaZW0AzShruthPqYMi5Wpd9YQc4hCdZVxsYwUE2tTaZE+UkK/S/DDzZB9Cej4iAY1cfympKRdMqSXu9/iAx8gwPwDPTh9xG6sr0HqRgubh3yJJl+LZ8+68YG09IrkKa6Rg8bvWhdgA4IjraM2wJO3Mb4AxwHV5IhabMoGQoq1+PL5f+p81F
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(376002)(396003)(346002)(136003)(366004)(451199021)(33656002)(86362001)(38100700002)(122000001)(478600001)(38070700005)(7696005)(41300700001)(8676002)(8936002)(82960400001)(4326008)(54906003)(316002)(52536014)(5660300002)(7406005)(7416002)(6506007)(186003)(9686003)(26005)(2906002)(55016003)(66476007)(64756008)(76116006)(66946007)(71200400001)(66446008)(66556008)(6916009)(83380400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Aad2QGW7o5f7loFsfXGsa8abQT8BD3P887vZXdGQski88954nPCjS2cyIXr/?=
- =?us-ascii?Q?8s5bjmPHSP0tRMXWo8F4hk/GIixYVMCzoVU0AQ4D6bWuO9zrLyw4tXUf70WT?=
- =?us-ascii?Q?0JxNO5UAw3WG7OHZ0dMCo1m89l3S93gWNLxKQz5x1JDauJ0NYDzlZgHkBq/7?=
- =?us-ascii?Q?g/xwDvLK3/8QocoWJA7gTkLoespgJINOdZOwEB8vfT0uq9MDRGcorYJsnlON?=
- =?us-ascii?Q?9dr031Lx87qgI8CY42dXbxPde9ucjlsF8HS1U7mbFCzVPlIDAg3DcntqEgHp?=
- =?us-ascii?Q?WoYxwZhj24CJp/oXCiTaFr4Wq3dsNk33sUAftJ+rRdHRU4H7j8+aUL/FZzfc?=
- =?us-ascii?Q?QX13ag4y+PWEUNjmKrjvqS6B8e2/FqjibIw1I96bT1zoyr0b/W+fiGgmPnVv?=
- =?us-ascii?Q?PTDQ8GcAWljjmSphNqsa3gG7bfLmCXcPmlY6PoohtJ5r4mAUydtWg8hznDMw?=
- =?us-ascii?Q?BPQKx8qrIC4i7iLDtcUVxKYD3PjKMlFNAMqX2OpeM9S4UNxYJKjHyV0SdgC9?=
- =?us-ascii?Q?/79DpP/7PMVHEERH9NjGMArGBiV/f8VT2Q+1tASOrrDCWWDIwD0S5Zag76Sq?=
- =?us-ascii?Q?9y87q+z5ceJEwDREI/K/VNaHx8NRK+38Y/3Jyk/MaPfmcp80G5IVJ2mGpp/5?=
- =?us-ascii?Q?xJHFSBIUBfqoN3xgsWG7yqXE59J0THSknRgCfu+HxaYQ6KKR/YtzrSVOpPR1?=
- =?us-ascii?Q?27NUyxSXR3ZetIqMR92PxiKu4Afd94N/INRN+v0v4sXwg99kMiq/b42Y11K4?=
- =?us-ascii?Q?tbuuA7r7jxXtJv8LZSkEjzNIKNqJDIDtH2ubC4IJZrWC439V61E0qpzWggh3?=
- =?us-ascii?Q?CbHhBfYv+x/zQXF8kJmYABhwWySlyP0bJUYKlVYVu9lhcOaW+R21stqdNG5P?=
- =?us-ascii?Q?RVn1Redw/BUr87bPMdqg2wTXEkQVfIMEN7F7mowYTVKsQ5sSQxPqvU/rjGsO?=
- =?us-ascii?Q?NC/vDe5XHwU9UlCa+HKeF2IfD/KfAJoQ6ZLzTYdre/y4ag/w0S+wWAYuf4Uf?=
- =?us-ascii?Q?YbNK8x9bGDDKAjRsQeooHHX5OGgK9DMbwcSEcu9OyQLYotHwPRQwGjICjlEi?=
- =?us-ascii?Q?pvNlav5s0xt/9JWQQ8to/BwzcJ/6Fz8Uoe7WWveVysAyeNrjv6Z8kqH6NNEM?=
- =?us-ascii?Q?nz/ytICI4haMNeKVc6fiU/6287gPOOZhtsypR6yIFL2AjZgZCbEgupa17hst?=
- =?us-ascii?Q?Do8t/YKL4XRJ+OSHoD31SnpVNaFaPGUVDPiiv5QkcBOKwRcMKAP63XGmAykI?=
- =?us-ascii?Q?9SAAPKSOhAkXHlzLCqLA+UaOLdTLZQY1kfK5yHlk4Jj8qotKbaSgI+TUJ5QN?=
- =?us-ascii?Q?pxXfIf8KldpZycmIkIbCiJPRYZS8gClHueLPI8rjEHGWXuBFx4xQTvXEdSi7?=
- =?us-ascii?Q?XnWbOIlGuOZCuAMcmAhZhkAjHMyXaxJRr2TDqBAAcm+FbliXWZLSgbvAa4e4?=
- =?us-ascii?Q?89Wxs3Ak5KlFYVY7h+UalJ1NsDgsNauVcAHDIo0lg+FqCBk/DVJDDncMmjBa?=
- =?us-ascii?Q?fYFv6ndFrW2vMMjJxxmqrWNpyyMBcU/7ZQZTRzGnf6/PEMSor3bdcauv+oSy?=
- =?us-ascii?Q?r6g60qvjU9Fw/4pA926jyjU3gUnxCOXRqinqVrEw0VOzvMob1T3QNOPqKIkP?=
- =?us-ascii?Q?tQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Brett Creeley <brett.creeley@amd.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "jgg@nvidia.com" <jgg@nvidia.com>, "yishaih@nvidia.com"
+ <yishaih@nvidia.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>
+Cc: "shannon.nelson@amd.com" <shannon.nelson@amd.com>
+References: <20230602220318.15323-1-brett.creeley@amd.com>
+ <20230602220318.15323-5-brett.creeley@amd.com>
+ <e2ed042a061a4de3827f60e1bd695cfc@huawei.com>
+From: Brett Creeley <bcreeley@amd.com>
+In-Reply-To: <e2ed042a061a4de3827f60e1bd695cfc@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR07CA0054.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::31) To PH0PR12MB7982.namprd12.prod.outlook.com
+ (2603:10b6:510:28d::5)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR12MB7982:EE_|CH3PR12MB9252:EE_
+X-MS-Office365-Filtering-Correlation-Id: fed84b1c-e82f-4b88-20e1-08db6de8a7b9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	FjuU6rqU93roLLdg+1GtoKQrWufORXm8OI8jygHhyCd0KXK/dYAGjBcwV7aekr99BA06JhZfLNG1OXZkawK6uCcwORv57g/yW/KEjae+/r8JsJOZhkK5quzG8U93WlorrDcZEb57LVvccajESTCGk8Qmr6p8PFzbEYneSIiDbkXjsggqfgPCCfghD502gpk+KH2jYSxrmf87zJ0S3VAFeetE0qenKZTkZShMuRrck9nY/PYbpd14ClurfVKLuQD8TlkcU8TMiLQ7bTyLy+FGg4EjMzQwWuhV7MVmM338ZQZpdfdAnkGKIEufpScEctzDlZOFis+RHEjZJwwyqYXoTFhZW8+ipI8KvKhFEjI8yHL6njYXESVgtb7Sr0CvPYAVNQ6dkKuFSE/Kdoj0/GhTcaw9Q3W1ycWwgpFQwtmNQoagpYtuXxiYEzcyjq11Ri3heiA+3REapPCPH0ICuk5ALb/q2ONo3vcRIYWSC+JVIUzxhsJChxtJJnyEJnereqaG3MoXdT30s/FQl+g7+bNrUuQoZxxH56jLgKYERJGPwKgRzOuV7i88CSQuuidzA4CsgRqn8RFGbwT6kD59SA+7grNBiPJa/Jd0RivC1R13u/xooIbxf0X/udmL7RvXkyhs3JGTYUtwuv7aTDfEkRrU7g==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB7982.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(376002)(346002)(136003)(39860400002)(451199021)(6486002)(316002)(41300700001)(2906002)(31696002)(6506007)(186003)(53546011)(30864003)(26005)(2616005)(6512007)(38100700002)(83380400001)(5660300002)(8936002)(36756003)(66946007)(8676002)(66476007)(478600001)(110136005)(31686004)(4326008)(66556008)(43740500002)(45980500001)(579004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?aVoyYlhlcE1vY0ZPWXBJOFkxTURPemZyL3Y2a1BsYVBiejlEMkEyeG5HdGJi?=
+ =?utf-8?B?aEtDVmE2MU9Ndnp3Y3FOR2JWUmE3clo1cjZqWE5zOVhISDVpaDhSRVdib1FM?=
+ =?utf-8?B?V2x0RlpwSmp0U2J6ZFkrNXExYzVuN3VBN1pyZUhTa282ZFpiS1RlZnhvNWxn?=
+ =?utf-8?B?ZWMrd3NyMzdVeW50NGFpc0QrZjA2RlNhTjBCdlJWV0pUQTBVUWNjc2lENDlj?=
+ =?utf-8?B?empENEtTSVY2cW0vbzRmWGQ1T2ZTOW50R2cxNmdBeUZLQjdqQ1RRM0NZZ0o2?=
+ =?utf-8?B?S2srMnRDY1IwT3hTbXZrMDluQ2JMdEtUK0Y3TmtNWVI2ZXpUTjBhNkIvZTRo?=
+ =?utf-8?B?eTNDdnNMbFh4allIb1ZMMlBxV203VUdDdzJPaG54NURlSGZvd1ZBd0NONmZK?=
+ =?utf-8?B?K25PTncyZHR0ZTk4WGIrOGxsSUhZR0tXa0hneDJkckVPcWlxNkt0cHVCM2p0?=
+ =?utf-8?B?M0dFalh6dkZnQkV6cGE2azdBMHM1L1crbUplbGQzTDNScmlBeHJkZE9BbUY4?=
+ =?utf-8?B?TnQ4aHBWK3BqdUh5TlpUd1duZlFiVmhQeUQwTHVGazZVdzg1M2x6QXpDRE1T?=
+ =?utf-8?B?Rk5CdWhZb0hSdkMyenF1QUdxN3h3Mk5QcE9JcVBiZ1hZMlp4Sldrc2dRZlcx?=
+ =?utf-8?B?N2c3Q0pCRTBCVzRJcGJOV2ZNeldpME9HcWJHYlExTk9rcnE4ZXRYYmdOSm9E?=
+ =?utf-8?B?ZHdEbGJ5YzMyNjFpNWM3dXYxZ0RVdUY4Nm8xZ3RUSUMveVU3SCt2aG1FbFJJ?=
+ =?utf-8?B?c0V6Q1I2M2RpZFVOcHZEdCs1YWlmZjNlYlBvY0VwbTlqaTNGYzM4M3g4UnQ5?=
+ =?utf-8?B?NWRrdzJmL3ZIYnRLU0kzaENOeGJCZ3Erdk43SCtQU0JMa0ZuZkx1MWRxZFQ1?=
+ =?utf-8?B?eFlkeHhJaHJ1bG9NWExoSllBaWtEWWwvdkRGS1FlV3FhMXhZNnh5STR4ZVl6?=
+ =?utf-8?B?VEFXb0p5NE5SU0JYOGJTdTlQV2Q1dFIvWmt1NW9ZcTFnbUVEejlXWFNnTkJq?=
+ =?utf-8?B?c1YxYUZDRm9MUUZXWDhhUjYxYTlEMjJDNkJwUlZoZ2hTWG1KeDVDR1VlK0Q0?=
+ =?utf-8?B?d3hIbUJMcDVKVTgwKzZaNFJkT3BIRTRZaE9UaGd5UmUrTVhIcGdBUGZrMXlN?=
+ =?utf-8?B?Yk5EYm5CMnVlODIwazRjRGQ1VHhEb2JQWGhVSlhFd3l0azFORWdwZ2JwVElT?=
+ =?utf-8?B?cmY3TG9QdmQ5ckRYYjJKam8vTk42eWRSVVVXQjVCa1dicWx6d3k0NlNEeXRB?=
+ =?utf-8?B?eXNOUVd2NVduNUxRV05id2hCd3J5Tnlqb0xranh1S2FQaEx0MERDb2t6a1BU?=
+ =?utf-8?B?WXpNeTRYWlQyRXdqTVBxK3VZQlN0aC9xS2dUdnlSTlNaUFkzTUI3ckpodEQ5?=
+ =?utf-8?B?UHJaQjNwaGlEc2kvejNIeUwwb3lhUEdLNC96UTZDZ21GUnV5Q0VqV1k4ajA1?=
+ =?utf-8?B?NzEySXAwU1JTUWE0NmJHNkRsR2pZbzYzNmdIU1pmWm4zanowRUl3Zm5IUDNY?=
+ =?utf-8?B?cG9FVXhQVHl1V0Rzdzl0dGpyQzBXMDNROEVoTWZhTzBlRStaK3Y2eFFzOWtH?=
+ =?utf-8?B?dytMc011bW9TRkdVTGZLYk9BMnBnOU5wUXFBRzJQMmlXenhmSklrWG9PU2F2?=
+ =?utf-8?B?Ums0KzV4eVMyWXhvNWxSdXZ5MVpEM1JVUUJySFRjNVhMMTJsTEp0L055L1VU?=
+ =?utf-8?B?WGFod3RwRXI2Rk9Gc0dxeTYwVzlhVXRNUFRZeHRIelF0VmF0eEJnU0FkelRE?=
+ =?utf-8?B?VU11eHZ5akJHelhZNXVHUHh5QThSN2NXd2lGOUdzS3BVMFNieFpFZXZ3L2dw?=
+ =?utf-8?B?bnlhVFZXTUhiQmF3ZXNocElWbzUwdGxSY3kzcWUrVldHWk9PZTJSSVdOU0wz?=
+ =?utf-8?B?RXovSG92a3g5c0FuRlpHWkFTTnIyMS9Ub2VHeDJEUEQxYUwvY05BRXVYNzMr?=
+ =?utf-8?B?ZTNkT1JZc2E4Q3JEbXBnYlFIUTdTWlhndkZLUkdIb0VmNzdDNWtFbmJEazZL?=
+ =?utf-8?B?NExlbTlHQTFFRzBSQkhYUW94dGQ1WVpZMzJpYWtpM0Y5ZmNLZXhCTDhhcnNl?=
+ =?utf-8?B?MzFqYitUMGdreWduK2dSVlpMczBkYWoxalE5ckZuaDhMZlM2TENpNVNyNTdi?=
+ =?utf-8?Q?ztmaM6jI42dhDpJIdNRVt6w3V?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fed84b1c-e82f-4b88-20e1-08db6de8a7b9
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB7982.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 97c5ab15-1404-422c-a401-08db6de8646e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2023 21:35:08.7285
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2023 21:37:01.8578
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 6FCUBWnVONXXw71dSj5EKjbalcIH+BubQ1nrBBRjxVzKII/qJobKlKC5n2jx9UUhwlbiLaDqC0cPOZRP5IGZfP+BLvNYMRdh0wajsvnwGjA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5414
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YU2aVBGcJZqq0b4A6o2r+ymw7NYszZMJSVPHXtsV91i5mHXIcvRJMmtRAnCfuHS8rMVI9QR43iHvrqwEesXKug==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9252
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
->From: Jiri Pirko <jiri@resnulli.us>
->Sent: Saturday, June 10, 2023 10:46 AM
->
->Fri, Jun 09, 2023 at 02:18:50PM CEST, arkadiusz.kubalewski@intel.com wrote=
-:
->>Add firmware admin command to access clock generation unit
->>configuration, it is required to enable Extended PTP and SyncE features
->>in the driver.
->
->Empty line here perhaps?
->
-
-Sure, will do.
-
->
->>Add definitions of possible hardware variations of input and output pins
->>related to clock generation unit and functions to access the data.
+On 6/15/2023 2:07 PM, Shameerali Kolothum Thodi wrote:
+> Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
+> 
+> 
+>> -----Original Message-----
+>> From: Brett Creeley [mailto:brett.creeley@amd.com]
+>> Sent: 02 June 2023 23:03
+>> To: kvm@vger.kernel.org; netdev@vger.kernel.org;
+>> alex.williamson@redhat.com; jgg@nvidia.com; yishaih@nvidia.com;
+>> Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
+>> kevin.tian@intel.com
+>> Cc: brett.creeley@amd.com; shannon.nelson@amd.com
+>> Subject: [PATCH v10 vfio 4/7] vfio/pds: Add VFIO live migration support
 >>
->>Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
->
->I just skimmed over this, not really give it much of a time. Couple of
->nits:
->
->
->>+
->>+#define MAX_NETLIST_SIZE	10
->
->Prefix perhaps?
->
+>> Add live migration support via the VFIO subsystem. The migration
+>> implementation aligns with the definition from uapi/vfio.h and uses
+>> the pds_core PF's adminq for device configuration.
+>>
+>> The ability to suspend, resume, and transfer VF device state data is
+>> included along with the required admin queue command structures and
+>> implementations.
+>>
+>> PDS_LM_CMD_SUSPEND and PDS_LM_CMD_SUSPEND_STATUS are added to
+>> support
+>> the VF device suspend operation.
+>>
+>> PDS_LM_CMD_RESUME is added to support the VF device resume operation.
+>>
+>> PDS_LM_CMD_STATUS is added to determine the exact size of the VF
+>> device state data.
+>>
+>> PDS_LM_CMD_SAVE is added to get the VF device state data.
+>>
+>> PDS_LM_CMD_RESTORE is added to restore the VF device with the
+>> previously saved data from PDS_LM_CMD_SAVE.
+>>
+>> PDS_LM_CMD_HOST_VF_STATUS is added to notify the device when
+>> a migration is in/not-in progress from the host's perspective.
+>>
+>> Signed-off-by: Brett Creeley <brett.creeley@amd.com>
+>> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+>> ---
+>>   drivers/vfio/pci/pds/Makefile   |   1 +
+>>   drivers/vfio/pci/pds/cmds.c     | 319 ++++++++++++++++++++++++
+>>   drivers/vfio/pci/pds/cmds.h     |   8 +-
+>>   drivers/vfio/pci/pds/lm.c       | 421
+>> ++++++++++++++++++++++++++++++++
+>>   drivers/vfio/pci/pds/lm.h       |  41 ++++
+>>   drivers/vfio/pci/pds/pci_drv.c  |  13 +
+>>   drivers/vfio/pci/pds/vfio_dev.c | 120 ++++++++-
+>>   drivers/vfio/pci/pds/vfio_dev.h |  11 +
+>>   include/linux/pds/pds_adminq.h  | 217 ++++++++++++++++
+>>   9 files changed, 1149 insertions(+), 2 deletions(-)
+>>   create mode 100644 drivers/vfio/pci/pds/lm.c
+>>   create mode 100644 drivers/vfio/pci/pds/lm.h
+>>
+>> diff --git a/drivers/vfio/pci/pds/Makefile b/drivers/vfio/pci/pds/Makefile
+>> index 87581111fa17..dbaf613d3794 100644
+>> --- a/drivers/vfio/pci/pds/Makefile
+>> +++ b/drivers/vfio/pci/pds/Makefile
+>> @@ -5,5 +5,6 @@ obj-$(CONFIG_PDS_VFIO_PCI) += pds_vfio.o
+>>
+>>   pds_vfio-y := \
+>>        cmds.o          \
+>> +     lm.o            \
+>>        pci_drv.o       \
+>>        vfio_dev.o
+>> diff --git a/drivers/vfio/pci/pds/cmds.c b/drivers/vfio/pci/pds/cmds.c
+>> index ae01f5df2f5c..256f458feb58 100644
+>> --- a/drivers/vfio/pci/pds/cmds.c
+>> +++ b/drivers/vfio/pci/pds/cmds.c
+>> @@ -3,6 +3,7 @@
+>>
+>>   #include <linux/io.h>
+>>   #include <linux/types.h>
+>> +#include <linux/delay.h>
+>>
+>>   #include <linux/pds/pds_common.h>
+>>   #include <linux/pds/pds_core_if.h>
+>> @@ -11,6 +12,34 @@
+>>   #include "vfio_dev.h"
+>>   #include "cmds.h"
+>>
+>> +#define SUSPEND_TIMEOUT_S            5
+>> +#define SUSPEND_CHECK_INTERVAL_MS    1
+>> +
+>> +static int pds_vfio_client_adminq_cmd(struct pds_vfio_pci_device
+>> *pds_vfio,
+>> +                                   union pds_core_adminq_cmd *req,
+>> +                                   size_t req_len,
+>> +                                   union pds_core_adminq_comp *resp,
+>> +                                   u64 flags)
+> 
+> Why u64? Do we expect more flags to follow? The core interface below
+> only takes a bool(fast_poll) though.
+> 
+> Thanks,
+> Shameer >
 
-Fixed.
+Shameer,
 
->[...]
->
->
->>+/**
->>+ * convert_s48_to_s64 - convert 48 bit value to 64 bit value
->>+ * @signed_48: signed 64 bit variable storing signed 48 bit value
->>+ *
->>+ * Convert signed 48 bit value to its 64 bit representation.
->>+ *
->>+ * Return: signed 64 bit representation of signed 48 bit value.
->>+ */
->>+static inline
->
->Never use "inline" in a c file.
->
->
->>+s64 convert_s48_to_s64(s64 signed_48)
->>+{
->>+	const s64 MASK_SIGN_BITS =3D GENMASK_ULL(63, 48);
->
->variable with capital letters? Not nice. Define? You have that multiple
->times in the patch.
->
->
->>+	const s64 SIGN_BIT_47 =3D BIT_ULL(47);
->>+
->>+	return ((signed_48 & SIGN_BIT_47) ? (s64)(MASK_SIGN_BITS | signed_48)
->
->Pointless cast, isn't it?
->
->You don't need () around "signed_48 & SIGN_BIT_47"
->
->
->>+		: signed_48);
->
->Return is not a function. Drop the outer "()"s.
->
->
->The whole fuction can look like:
->static s64 convert_s48_to_s64(s64 signed_48)
->{
->	return signed_48 & BIT_ULL(47) ? signed_48 | GENMASK_ULL(63, 48) :
->					 signed_48;
->}
->
->Nicer?
->
+Another good catch. This was leftover from the original set of patches, 
+but using flags is definitely unnecessary in 
+pds_vfio_client_adminq_cmd(). If we ever need more flags I can update 
+then. I will change this to a bool in the next revision.
 
-Sure, fixed.
+Thanks for the review,
 
->
->[...]
->
->
->
->>+int ice_get_pf_c827_idx(struct ice_hw *hw, u8 *idx)
->>+{
->>+	struct ice_aqc_get_link_topo cmd;
->>+	u8 node_part_number;
->>+	u16 node_handle;
->>+	int status;
->>+	u8 ctx;
->>+
->>+	if (hw->mac_type !=3D ICE_MAC_E810)
->>+		return -ENODEV;
->>+
->>+	if (hw->device_id !=3D ICE_DEV_ID_E810C_QSFP) {
->>+		*idx =3D C827_0;
->>+		return 0;
->>+	}
->>+
->>+	memset(&cmd, 0, sizeof(cmd));
->>+
->>+	ctx =3D ICE_AQC_LINK_TOPO_NODE_TYPE_PHY <<
->ICE_AQC_LINK_TOPO_NODE_TYPE_S;
->>+	ctx |=3D ICE_AQC_LINK_TOPO_NODE_CTX_PORT <<
->>ICE_AQC_LINK_TOPO_NODE_CTX_S;
->>+	cmd.addr.topo_params.node_type_ctx =3D ctx;
->>+	cmd.addr.topo_params.index =3D 0;
->
->You zeroed the struct 4 lines above...
->
+Brett
 
-Fixed.
-
-Thank you!
-Arkadiusz
-
->
->>+
->>+	status =3D ice_aq_get_netlist_node(hw, &cmd, &node_part_number,
->>+					 &node_handle);
->>+	if (status || node_part_number !=3D ICE_ACQ_GET_LINK_TOPO_NODE_NR_C827)
->>+		return -ENOENT;
->>+
->>+	if (node_handle =3D=3D E810C_QSFP_C827_0_HANDLE)
->>+		*idx =3D C827_0;
->>+	else if (node_handle =3D=3D E810C_QSFP_C827_1_HANDLE)
->>+		*idx =3D C827_1;
->>+	else
->>+		return -EIO;
->>+
->>+	return 0;
->>+}
->>+
->
->[...]
+>> +{
+>> +     union pds_core_adminq_cmd cmd = {};
+>> +     size_t cp_len;
+>> +     int err;
+>> +
+>> +     /* Wrap the client request */
+>> +     cmd.client_request.opcode = PDS_AQ_CMD_CLIENT_CMD;
+>> +     cmd.client_request.client_id = cpu_to_le16(pds_vfio->client_id);
+>> +     cp_len = min_t(size_t, req_len, sizeof(cmd.client_request.client_cmd));
+>> +     memcpy(cmd.client_request.client_cmd, req, cp_len);
+>> +
+>> +     err = pdsc_adminq_post(pds_vfio->pdsc, &cmd, resp,
+>> +                            !!(flags & PDS_AQ_FLAG_FASTPOLL));
+>> +     if (err && err != -EAGAIN)
+>> +             dev_info(pds_vfio_to_dev(pds_vfio),
+>> +                      "client admin cmd failed: %pe\n", ERR_PTR(err));
+>> +
+>> +     return err;
+>> +}
+>> +
+>>   int pds_vfio_register_client_cmd(struct pds_vfio_pci_device *pds_vfio)
+>>   {
+>>        struct pci_dev *pdev = pds_vfio_to_pci_dev(pds_vfio);
+>> @@ -41,3 +70,293 @@ void pds_vfio_unregister_client_cmd(struct
+>> pds_vfio_pci_device *pds_vfio)
+>>
+>>        pds_vfio->client_id = 0;
+>>   }
+>> +
+>> +static int
+>> +pds_vfio_suspend_wait_device_cmd(struct pds_vfio_pci_device *pds_vfio)
+>> +{
+>> +     union pds_core_adminq_cmd cmd = {
+>> +             .lm_suspend_status = {
+>> +                     .opcode = PDS_LM_CMD_SUSPEND_STATUS,
+>> +                     .vf_id = cpu_to_le16(pds_vfio->vf_id),
+>> +             },
+>> +     };
+>> +     struct device *dev = pds_vfio_to_dev(pds_vfio);
+>> +     union pds_core_adminq_comp comp = {};
+>> +     unsigned long time_limit;
+>> +     unsigned long time_start;
+>> +     unsigned long time_done;
+>> +     int err;
+>> +
+>> +     time_start = jiffies;
+>> +     time_limit = time_start + HZ * SUSPEND_TIMEOUT_S;
+>> +     do {
+>> +             err = pds_vfio_client_adminq_cmd(pds_vfio, &cmd, sizeof(cmd),
+>> +                                              &comp, PDS_AQ_FLAG_FASTPOLL);
+>> +             if (err != -EAGAIN)
+>> +                     break;
+>> +
+>> +             msleep(SUSPEND_CHECK_INTERVAL_MS);
+>> +     } while (time_before(jiffies, time_limit));
+>> +
+>> +     time_done = jiffies;
+>> +     dev_dbg(dev, "%s: vf%u: Suspend comp received in %d msecs\n",
+>> __func__,
+>> +             pds_vfio->vf_id, jiffies_to_msecs(time_done - time_start));
+>> +
+>> +     /* Check the results */
+>> +     if (time_after_eq(time_done, time_limit)) {
+>> +             dev_err(dev, "%s: vf%u: Suspend comp timeout\n", __func__,
+>> +                     pds_vfio->vf_id);
+>> +             err = -ETIMEDOUT;
+>> +     }
+>> +
+>> +     return err;
+>> +}
+>> +
+>> +int pds_vfio_suspend_device_cmd(struct pds_vfio_pci_device *pds_vfio)
+>> +{
+>> +     union pds_core_adminq_cmd cmd = {
+>> +             .lm_suspend = {
+>> +                     .opcode = PDS_LM_CMD_SUSPEND,
+>> +                     .vf_id = cpu_to_le16(pds_vfio->vf_id),
+>> +             },
+>> +     };
+>> +     struct device *dev = pds_vfio_to_dev(pds_vfio);
+>> +     union pds_core_adminq_comp comp = {};
+>> +     int err;
+>> +
+>> +     dev_dbg(dev, "vf%u: Suspend device\n", pds_vfio->vf_id);
+>> +
+>> +     err = pds_vfio_client_adminq_cmd(pds_vfio, &cmd, sizeof(cmd),
+>> &comp,
+>> +                                      PDS_AQ_FLAG_FASTPOLL);
+>> +     if (err) {
+>> +             dev_err(dev, "vf%u: Suspend failed: %pe\n", pds_vfio->vf_id,
+>> +                     ERR_PTR(err));
+>> +             return err;
+>> +     }
+>> +
+>> +     return pds_vfio_suspend_wait_device_cmd(pds_vfio);
+>> +}
+>> +
+>> +int pds_vfio_resume_device_cmd(struct pds_vfio_pci_device *pds_vfio)
+>> +{
+>> +     union pds_core_adminq_cmd cmd = {
+>> +             .lm_resume = {
+>> +                     .opcode = PDS_LM_CMD_RESUME,
+>> +                     .vf_id = cpu_to_le16(pds_vfio->vf_id),
+>> +             },
+>> +     };
+>> +     struct device *dev = pds_vfio_to_dev(pds_vfio);
+>> +     union pds_core_adminq_comp comp = {};
+>> +
+>> +     dev_dbg(dev, "vf%u: Resume device\n", pds_vfio->vf_id);
+>> +
+>> +     return pds_vfio_client_adminq_cmd(pds_vfio, &cmd, sizeof(cmd),
+>> &comp,
+>> +                                       0);
+>> +}
+>> +
+>> +int pds_vfio_get_lm_status_cmd(struct pds_vfio_pci_device *pds_vfio, u64
+>> *size)
+>> +{
+>> +     union pds_core_adminq_cmd cmd = {
+>> +             .lm_status = {
+>> +                     .opcode = PDS_LM_CMD_STATUS,
+>> +                     .vf_id = cpu_to_le16(pds_vfio->vf_id),
+>> +             },
+>> +     };
+>> +     struct device *dev = pds_vfio_to_dev(pds_vfio);
+>> +     union pds_core_adminq_comp comp = {};
+>> +     int err;
+>> +
+>> +     dev_dbg(dev, "vf%u: Get migration status\n", pds_vfio->vf_id);
+>> +
+>> +     err = pds_vfio_client_adminq_cmd(pds_vfio, &cmd, sizeof(cmd), &comp,
+>> 0);
+>> +     if (err)
+>> +             return err;
+>> +
+>> +     *size = le64_to_cpu(comp.lm_status.size);
+>> +     return 0;
+>> +}
+>> +
+>> +static int pds_vfio_dma_map_lm_file(struct device *dev,
+>> +                                 enum dma_data_direction dir,
+>> +                                 struct pds_vfio_lm_file *lm_file)
+>> +{
+>> +     struct pds_lm_sg_elem *sgl, *sge;
+>> +     struct scatterlist *sg;
+>> +     dma_addr_t sgl_addr;
+>> +     size_t sgl_size;
+>> +     int err;
+>> +     int i;
+>> +
+>> +     if (!lm_file)
+>> +             return -EINVAL;
+>> +
+>> +     /* dma map file pages */
+>> +     err = dma_map_sgtable(dev, &lm_file->sg_table, dir, 0);
+>> +     if (err)
+>> +             return err;
+>> +
+>> +     lm_file->num_sge = lm_file->sg_table.nents;
+>> +
+>> +     /* alloc sgl */
+>> +     sgl_size = lm_file->num_sge * sizeof(struct pds_lm_sg_elem);
+>> +     sgl = kzalloc(sgl_size, GFP_KERNEL);
+>> +     if (!sgl) {
+>> +             err = -ENOMEM;
+>> +             goto out_unmap_sgtable;
+>> +     }
+>> +
+>> +     /* fill sgl */
+>> +     sge = sgl;
+>> +     for_each_sgtable_dma_sg(&lm_file->sg_table, sg, i) {
+>> +             sge->addr = cpu_to_le64(sg_dma_address(sg));
+>> +             sge->len = cpu_to_le32(sg_dma_len(sg));
+>> +             dev_dbg(dev, "addr = %llx, len = %u\n", sge->addr, sge->len);
+>> +             sge++;
+>> +     }
+>> +
+>> +     sgl_addr = dma_map_single(dev, sgl, sgl_size, DMA_TO_DEVICE);
+>> +     if (dma_mapping_error(dev, sgl_addr)) {
+>> +             err = -EIO;
+>> +             goto out_free_sgl;
+>> +     }
+>> +
+>> +     lm_file->sgl = sgl;
+>> +     lm_file->sgl_addr = sgl_addr;
+>> +
+>> +     return 0;
+>> +
+>> +out_free_sgl:
+>> +     kfree(sgl);
+>> +out_unmap_sgtable:
+>> +     lm_file->num_sge = 0;
+>> +     dma_unmap_sgtable(dev, &lm_file->sg_table, dir, 0);
+>> +     return err;
+>> +}
+>> +
+>> +static void pds_vfio_dma_unmap_lm_file(struct device *dev,
+>> +                                    enum dma_data_direction dir,
+>> +                                    struct pds_vfio_lm_file *lm_file)
+>> +{
+>> +     if (!lm_file)
+>> +             return;
+>> +
+>> +     /* free sgl */
+>> +     if (lm_file->sgl) {
+>> +             dma_unmap_single(dev, lm_file->sgl_addr,
+>> +                              lm_file->num_sge * sizeof(*lm_file->sgl),
+>> +                              DMA_TO_DEVICE);
+>> +             kfree(lm_file->sgl);
+>> +             lm_file->sgl = NULL;
+>> +             lm_file->sgl_addr = DMA_MAPPING_ERROR;
+>> +             lm_file->num_sge = 0;
+>> +     }
+>> +
+>> +     /* dma unmap file pages */
+>> +     dma_unmap_sgtable(dev, &lm_file->sg_table, dir, 0);
+>> +}
+>> +
+>> +int pds_vfio_get_lm_state_cmd(struct pds_vfio_pci_device *pds_vfio)
+>> +{
+>> +     union pds_core_adminq_cmd cmd = {
+>> +             .lm_save = {
+>> +                     .opcode = PDS_LM_CMD_SAVE,
+>> +                     .vf_id = cpu_to_le16(pds_vfio->vf_id),
+>> +             },
+>> +     };
+>> +     struct pci_dev *pdev = pds_vfio_to_pci_dev(pds_vfio);
+>> +     struct device *pdsc_dev = &pci_physfn(pdev)->dev;
+>> +     union pds_core_adminq_comp comp = {};
+>> +     struct pds_vfio_lm_file *lm_file;
+>> +     int err;
+>> +
+>> +     dev_dbg(&pdev->dev, "vf%u: Get migration state\n", pds_vfio->vf_id);
+>> +
+>> +     lm_file = pds_vfio->save_file;
+>> +
+>> +     err = pds_vfio_dma_map_lm_file(pdsc_dev, DMA_FROM_DEVICE,
+>> lm_file);
+>> +     if (err) {
+>> +             dev_err(&pdev->dev, "failed to map save migration file: %pe\n",
+>> +                     ERR_PTR(err));
+>> +             return err;
+>> +     }
+>> +
+>> +     cmd.lm_save.sgl_addr = cpu_to_le64(lm_file->sgl_addr);
+>> +     cmd.lm_save.num_sge = cpu_to_le32(lm_file->num_sge);
+>> +
+>> +     err = pds_vfio_client_adminq_cmd(pds_vfio, &cmd, sizeof(cmd), &comp,
+>> 0);
+>> +     if (err)
+>> +             dev_err(&pdev->dev, "failed to get migration state: %pe\n",
+>> +                     ERR_PTR(err));
+>> +
+>> +     pds_vfio_dma_unmap_lm_file(pdsc_dev, DMA_FROM_DEVICE, lm_file);
+>> +
+>> +     return err;
+>> +}
+>> +
+>> +int pds_vfio_set_lm_state_cmd(struct pds_vfio_pci_device *pds_vfio)
+>> +{
+>> +     union pds_core_adminq_cmd cmd = {
+>> +             .lm_restore = {
+>> +                     .opcode = PDS_LM_CMD_RESTORE,
+>> +                     .vf_id = cpu_to_le16(pds_vfio->vf_id),
+>> +             },
+>> +     };
+>> +     struct pci_dev *pdev = pds_vfio_to_pci_dev(pds_vfio);
+>> +     struct device *pdsc_dev = &pci_physfn(pdev)->dev;
+>> +     union pds_core_adminq_comp comp = {};
+>> +     struct pds_vfio_lm_file *lm_file;
+>> +     int err;
+>> +
+>> +     dev_dbg(&pdev->dev, "vf%u: Set migration state\n", pds_vfio->vf_id);
+>> +
+>> +     lm_file = pds_vfio->restore_file;
+>> +
+>> +     err = pds_vfio_dma_map_lm_file(pdsc_dev, DMA_TO_DEVICE, lm_file);
+>> +     if (err) {
+>> +             dev_err(&pdev->dev,
+>> +                     "failed to map restore migration file: %pe\n",
+>> +                     ERR_PTR(err));
+>> +             return err;
+>> +     }
+>> +
+>> +     cmd.lm_restore.sgl_addr = cpu_to_le64(lm_file->sgl_addr);
+>> +     cmd.lm_restore.num_sge = cpu_to_le32(lm_file->num_sge);
+>> +
+>> +     err = pds_vfio_client_adminq_cmd(pds_vfio, &cmd, sizeof(cmd), &comp,
+>> 0);
+>> +     if (err)
+>> +             dev_err(&pdev->dev, "failed to set migration state: %pe\n",
+>> +                     ERR_PTR(err));
+>> +
+>> +     pds_vfio_dma_unmap_lm_file(pdsc_dev, DMA_TO_DEVICE, lm_file);
+>> +
+>> +     return err;
+>> +}
+>> +
+>> +void pds_vfio_send_host_vf_lm_status_cmd(struct pds_vfio_pci_device
+>> *pds_vfio,
+>> +                                      enum pds_lm_host_vf_status vf_status)
+>> +{
+>> +     union pds_core_adminq_cmd cmd = {
+>> +             .lm_host_vf_status = {
+>> +                     .opcode = PDS_LM_CMD_HOST_VF_STATUS,
+>> +                     .vf_id = cpu_to_le16(pds_vfio->vf_id),
+>> +                     .status = vf_status,
+>> +             },
+>> +     };
+>> +     struct device *dev = pds_vfio_to_dev(pds_vfio);
+>> +     union pds_core_adminq_comp comp = {};
+>> +     int err;
+>> +
+>> +     dev_dbg(dev, "vf%u: Set host VF LM status: %u", pds_vfio->vf_id,
+>> +             vf_status);
+>> +     if (vf_status != PDS_LM_STA_IN_PROGRESS &&
+>> +         vf_status != PDS_LM_STA_NONE) {
+>> +             dev_warn(dev, "Invalid host VF migration status, %d\n",
+>> +                      vf_status);
+>> +             return;
+>> +     }
+>> +
+>> +     err = pds_vfio_client_adminq_cmd(pds_vfio, &cmd, sizeof(cmd), &comp,
+>> 0);
+>> +     if (err)
+>> +             dev_warn(dev, "failed to send host VF migration status: %pe\n",
+>> +                      ERR_PTR(err));
+>> +}
+>> diff --git a/drivers/vfio/pci/pds/cmds.h b/drivers/vfio/pci/pds/cmds.h
+>> index 4c592afccf89..3d8a5508c733 100644
+>> --- a/drivers/vfio/pci/pds/cmds.h
+>> +++ b/drivers/vfio/pci/pds/cmds.h
+>> @@ -6,5 +6,11 @@
+>>
+>>   int pds_vfio_register_client_cmd(struct pds_vfio_pci_device *pds_vfio);
+>>   void pds_vfio_unregister_client_cmd(struct pds_vfio_pci_device *pds_vfio);
+>> -
+>> +int pds_vfio_suspend_device_cmd(struct pds_vfio_pci_device *pds_vfio);
+>> +int pds_vfio_resume_device_cmd(struct pds_vfio_pci_device *pds_vfio);
+>> +int pds_vfio_get_lm_status_cmd(struct pds_vfio_pci_device *pds_vfio, u64
+>> *size);
+>> +int pds_vfio_get_lm_state_cmd(struct pds_vfio_pci_device *pds_vfio);
+>> +int pds_vfio_set_lm_state_cmd(struct pds_vfio_pci_device *pds_vfio);
+>> +void pds_vfio_send_host_vf_lm_status_cmd(struct pds_vfio_pci_device
+>> *pds_vfio,
+>> +                                      enum pds_lm_host_vf_status vf_status);
+>>   #endif /* _CMDS_H_ */
+>> diff --git a/drivers/vfio/pci/pds/lm.c b/drivers/vfio/pci/pds/lm.c
+>> new file mode 100644
+>> index 000000000000..c507f39a2339
+>> --- /dev/null
+>> +++ b/drivers/vfio/pci/pds/lm.c
+>> @@ -0,0 +1,421 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
+>> +
+>> +#include <linux/anon_inodes.h>
+>> +#include <linux/file.h>
+>> +#include <linux/fs.h>
+>> +#include <linux/highmem.h>
+>> +#include <linux/vfio.h>
+>> +#include <linux/vfio_pci_core.h>
+>> +
+>> +#include "vfio_dev.h"
+>> +#include "cmds.h"
+>> +
+>> +static struct pds_vfio_lm_file *
+>> +pds_vfio_get_lm_file(const struct file_operations *fops, int flags, u64 size)
+>> +{
+>> +     struct pds_vfio_lm_file *lm_file = NULL;
+>> +     unsigned long long npages;
+>> +     struct page **pages;
+>> +     void *page_mem;
+>> +     const void *p;
+>> +
+>> +     if (!size)
+>> +             return NULL;
+>> +
+>> +     /* Alloc file structure */
+>> +     lm_file = kzalloc(sizeof(*lm_file), GFP_KERNEL);
+>> +     if (!lm_file)
+>> +             return NULL;
+>> +
+>> +     /* Create file */
+>> +     lm_file->filep =
+>> +             anon_inode_getfile("pds_vfio_lm", fops, lm_file, flags);
+>> +     if (!lm_file->filep)
+>> +             goto out_free_file;
+>> +
+>> +     stream_open(lm_file->filep->f_inode, lm_file->filep);
+>> +     mutex_init(&lm_file->lock);
+>> +
+>> +     /* prevent file from being released before we are done with it */
+>> +     get_file(lm_file->filep);
+>> +
+>> +     /* Allocate memory for file pages */
+>> +     npages = DIV_ROUND_UP_ULL(size, PAGE_SIZE);
+>> +     pages = kmalloc_array(npages, sizeof(*pages), GFP_KERNEL);
+>> +     if (!pages)
+>> +             goto out_put_file;
+>> +
+>> +     page_mem = kvzalloc(ALIGN(size, PAGE_SIZE), GFP_KERNEL);
+>> +     if (!page_mem)
+>> +             goto out_free_pages_array;
+>> +
+>> +     p = page_mem - offset_in_page(page_mem);
+>> +     for (unsigned long long i = 0; i < npages; i++) {
+>> +             if (is_vmalloc_addr(p))
+>> +                     pages[i] = vmalloc_to_page(p);
+>> +             else
+>> +                     pages[i] = kmap_to_page((void *)p);
+>> +             if (!pages[i])
+>> +                     goto out_free_page_mem;
+>> +
+>> +             p += PAGE_SIZE;
+>> +     }
+>> +
+>> +     /* Create scatterlist of file pages to use for DMA mapping later */
+>> +     if (sg_alloc_table_from_pages(&lm_file->sg_table, pages, npages, 0,
+>> +                                   size, GFP_KERNEL))
+>> +             goto out_free_page_mem;
+>> +
+>> +     lm_file->size = size;
+>> +     lm_file->pages = pages;
+>> +     lm_file->npages = npages;
+>> +     lm_file->page_mem = page_mem;
+>> +     lm_file->alloc_size = npages * PAGE_SIZE;
+>> +
+>> +     return lm_file;
+>> +
+>> +out_free_page_mem:
+>> +     kvfree(page_mem);
+>> +out_free_pages_array:
+>> +     kfree(pages);
+>> +out_put_file:
+>> +     fput(lm_file->filep);
+>> +     mutex_destroy(&lm_file->lock);
+>> +out_free_file:
+>> +     kfree(lm_file);
+>> +
+>> +     return NULL;
+>> +}
+>> +
+>> +static void pds_vfio_put_lm_file(struct pds_vfio_lm_file *lm_file)
+>> +{
+>> +     mutex_lock(&lm_file->lock);
+>> +
+>> +     lm_file->size = 0;
+>> +     lm_file->alloc_size = 0;
+>> +
+>> +     /* Free scatter list of file pages */
+>> +     sg_free_table(&lm_file->sg_table);
+>> +
+>> +     kvfree(lm_file->page_mem);
+>> +     lm_file->page_mem = NULL;
+>> +     kfree(lm_file->pages);
+>> +     lm_file->pages = NULL;
+>> +
+>> +     mutex_unlock(&lm_file->lock);
+>> +
+>> +     /* allow file to be released since we are done with it */
+>> +     fput(lm_file->filep);
+>> +}
+>> +
+>> +void pds_vfio_put_save_file(struct pds_vfio_pci_device *pds_vfio)
+>> +{
+>> +     if (!pds_vfio->save_file)
+>> +             return;
+>> +
+>> +     pds_vfio_put_lm_file(pds_vfio->save_file);
+>> +     pds_vfio->save_file = NULL;
+>> +}
+>> +
+>> +void pds_vfio_put_restore_file(struct pds_vfio_pci_device *pds_vfio)
+>> +{
+>> +     if (!pds_vfio->restore_file)
+>> +             return;
+>> +
+>> +     pds_vfio_put_lm_file(pds_vfio->restore_file);
+>> +     pds_vfio->restore_file = NULL;
+>> +}
+>> +
+>> +static struct page *pds_vfio_get_file_page(struct pds_vfio_lm_file *lm_file,
+>> +                                        unsigned long offset)
+>> +{
+>> +     unsigned long cur_offset = 0;
+>> +     struct scatterlist *sg;
+>> +     unsigned int i;
+>> +
+>> +     /* All accesses are sequential */
+>> +     if (offset < lm_file->last_offset || !lm_file->last_offset_sg) {
+>> +             lm_file->last_offset = 0;
+>> +             lm_file->last_offset_sg = lm_file->sg_table.sgl;
+>> +             lm_file->sg_last_entry = 0;
+>> +     }
+>> +
+>> +     cur_offset = lm_file->last_offset;
+>> +
+>> +     for_each_sg(lm_file->last_offset_sg, sg,
+>> +                 lm_file->sg_table.orig_nents - lm_file->sg_last_entry, i) {
+>> +             if (offset < sg->length + cur_offset) {
+>> +                     lm_file->last_offset_sg = sg;
+>> +                     lm_file->sg_last_entry += i;
+>> +                     lm_file->last_offset = cur_offset;
+>> +                     return nth_page(sg_page(sg),
+>> +                                     (offset - cur_offset) / PAGE_SIZE);
+>> +             }
+>> +             cur_offset += sg->length;
+>> +     }
+>> +
+>> +     return NULL;
+>> +}
+>> +
+>> +static int pds_vfio_release_file(struct inode *inode, struct file *filp)
+>> +{
+>> +     struct pds_vfio_lm_file *lm_file = filp->private_data;
+>> +
+>> +     mutex_lock(&lm_file->lock);
+>> +     lm_file->filep->f_pos = 0;
+>> +     lm_file->size = 0;
+>> +     mutex_unlock(&lm_file->lock);
+>> +     mutex_destroy(&lm_file->lock);
+>> +     kfree(lm_file);
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +static ssize_t pds_vfio_save_read(struct file *filp, char __user *buf,
+>> +                               size_t len, loff_t *pos)
+>> +{
+>> +     struct pds_vfio_lm_file *lm_file = filp->private_data;
+>> +     ssize_t done = 0;
+>> +
+>> +     if (pos)
+>> +             return -ESPIPE;
+>> +     pos = &filp->f_pos;
+>> +
+>> +     mutex_lock(&lm_file->lock);
+>> +     if (*pos > lm_file->size) {
+>> +             done = -EINVAL;
+>> +             goto out_unlock;
+>> +     }
+>> +
+>> +     len = min_t(size_t, lm_file->size - *pos, len);
+>> +     while (len) {
+>> +             size_t page_offset;
+>> +             struct page *page;
+>> +             size_t page_len;
+>> +             u8 *from_buff;
+>> +             int err;
+>> +
+>> +             page_offset = (*pos) % PAGE_SIZE;
+>> +             page = pds_vfio_get_file_page(lm_file, *pos - page_offset);
+>> +             if (!page) {
+>> +                     if (done == 0)
+>> +                             done = -EINVAL;
+>> +                     goto out_unlock;
+>> +             }
+>> +
+>> +             page_len = min_t(size_t, len, PAGE_SIZE - page_offset);
+>> +             from_buff = kmap_local_page(page);
+>> +             err = copy_to_user(buf, from_buff + page_offset, page_len);
+>> +             kunmap_local(from_buff);
+>> +             if (err) {
+>> +                     done = -EFAULT;
+>> +                     goto out_unlock;
+>> +             }
+>> +             *pos += page_len;
+>> +             len -= page_len;
+>> +             done += page_len;
+>> +             buf += page_len;
+>> +     }
+>> +
+>> +out_unlock:
+>> +     mutex_unlock(&lm_file->lock);
+>> +     return done;
+>> +}
+>> +
+>> +static const struct file_operations pds_vfio_save_fops = {
+>> +     .owner = THIS_MODULE,
+>> +     .read = pds_vfio_save_read,
+>> +     .release = pds_vfio_release_file,
+>> +     .llseek = no_llseek,
+>> +};
+>> +
+>> +static int pds_vfio_get_save_file(struct pds_vfio_pci_device *pds_vfio)
+>> +{
+>> +     struct device *dev = &pds_vfio->vfio_coredev.pdev->dev;
+>> +     struct pds_vfio_lm_file *lm_file;
+>> +     int err;
+>> +     u64 size;
+>> +
+>> +     /* Get live migration state size in this state */
+>> +     err = pds_vfio_get_lm_status_cmd(pds_vfio, &size);
+>> +     if (err) {
+>> +             dev_err(dev, "failed to get save status: %pe\n", ERR_PTR(err));
+>> +             return err;
+>> +     }
+>> +
+>> +     dev_dbg(dev, "save status, size = %lld\n", size);
+>> +
+>> +     if (!size) {
+>> +             dev_err(dev, "invalid state size\n");
+>> +             return -EIO;
+>> +     }
+>> +
+>> +     lm_file = pds_vfio_get_lm_file(&pds_vfio_save_fops, O_RDONLY, size);
+>> +     if (!lm_file) {
+>> +             dev_err(dev, "failed to create save file\n");
+>> +             return -ENOENT;
+>> +     }
+>> +
+>> +     dev_dbg(dev, "size = %lld, alloc_size = %lld, npages = %lld\n",
+>> +             lm_file->size, lm_file->alloc_size, lm_file->npages);
+>> +
+>> +     pds_vfio->save_file = lm_file;
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +static ssize_t pds_vfio_restore_write(struct file *filp, const char __user
+>> *buf,
+>> +                                   size_t len, loff_t *pos)
+>> +{
+>> +     struct pds_vfio_lm_file *lm_file = filp->private_data;
+>> +     loff_t requested_length;
+>> +     ssize_t done = 0;
+>> +
+>> +     if (pos)
+>> +             return -ESPIPE;
+>> +
+>> +     pos = &filp->f_pos;
+>> +
+>> +     if (*pos < 0 ||
+>> +         check_add_overflow((loff_t)len, *pos, &requested_length))
+>> +             return -EINVAL;
+>> +
+>> +     mutex_lock(&lm_file->lock);
+>> +
+>> +     while (len) {
+>> +             size_t page_offset;
+>> +             struct page *page;
+>> +             size_t page_len;
+>> +             u8 *to_buff;
+>> +             int err;
+>> +
+>> +             page_offset = (*pos) % PAGE_SIZE;
+>> +             page = pds_vfio_get_file_page(lm_file, *pos - page_offset);
+>> +             if (!page) {
+>> +                     if (done == 0)
+>> +                             done = -EINVAL;
+>> +                     goto out_unlock;
+>> +             }
+>> +
+>> +             page_len = min_t(size_t, len, PAGE_SIZE - page_offset);
+>> +             to_buff = kmap_local_page(page);
+>> +             err = copy_from_user(to_buff + page_offset, buf, page_len);
+>> +             kunmap_local(to_buff);
+>> +             if (err) {
+>> +                     done = -EFAULT;
+>> +                     goto out_unlock;
+>> +             }
+>> +             *pos += page_len;
+>> +             len -= page_len;
+>> +             done += page_len;
+>> +             buf += page_len;
+>> +             lm_file->size += page_len;
+>> +     }
+>> +out_unlock:
+>> +     mutex_unlock(&lm_file->lock);
+>> +     return done;
+>> +}
+>> +
+>> +static const struct file_operations pds_vfio_restore_fops = {
+>> +     .owner = THIS_MODULE,
+>> +     .write = pds_vfio_restore_write,
+>> +     .release = pds_vfio_release_file,
+>> +     .llseek = no_llseek,
+>> +};
+>> +
+>> +static int pds_vfio_get_restore_file(struct pds_vfio_pci_device *pds_vfio)
+>> +{
+>> +     struct device *dev = &pds_vfio->vfio_coredev.pdev->dev;
+>> +     struct pds_vfio_lm_file *lm_file;
+>> +     u64 size;
+>> +
+>> +     size = sizeof(union pds_lm_dev_state);
+>> +     dev_dbg(dev, "restore status, size = %lld\n", size);
+>> +
+>> +     if (!size) {
+>> +             dev_err(dev, "invalid state size");
+>> +             return -EIO;
+>> +     }
+>> +
+>> +     lm_file = pds_vfio_get_lm_file(&pds_vfio_restore_fops, O_WRONLY,
+>> size);
+>> +     if (!lm_file) {
+>> +             dev_err(dev, "failed to create restore file");
+>> +             return -ENOENT;
+>> +     }
+>> +     pds_vfio->restore_file = lm_file;
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +struct file *
+>> +pds_vfio_step_device_state_locked(struct pds_vfio_pci_device *pds_vfio,
+>> +                               enum vfio_device_mig_state next)
+>> +{
+>> +     enum vfio_device_mig_state cur = pds_vfio->state;
+>> +     int err;
+>> +
+>> +     if (cur == VFIO_DEVICE_STATE_STOP && next ==
+>> VFIO_DEVICE_STATE_STOP_COPY) {
+>> +             err = pds_vfio_get_save_file(pds_vfio);
+>> +             if (err)
+>> +                     return ERR_PTR(err);
+>> +
+>> +             err = pds_vfio_get_lm_state_cmd(pds_vfio);
+>> +             if (err) {
+>> +                     pds_vfio_put_save_file(pds_vfio);
+>> +                     return ERR_PTR(err);
+>> +             }
+>> +
+>> +             return pds_vfio->save_file->filep;
+>> +     }
+>> +
+>> +     if (cur == VFIO_DEVICE_STATE_STOP_COPY && next ==
+>> VFIO_DEVICE_STATE_STOP) {
+>> +             pds_vfio_put_save_file(pds_vfio);
+>> +             pds_vfio_send_host_vf_lm_status_cmd(pds_vfio,
+>> PDS_LM_STA_NONE);
+>> +             return NULL;
+>> +     }
+>> +
+>> +     if (cur == VFIO_DEVICE_STATE_STOP && next ==
+>> VFIO_DEVICE_STATE_RESUMING) {
+>> +             err = pds_vfio_get_restore_file(pds_vfio);
+>> +             if (err)
+>> +                     return ERR_PTR(err);
+>> +
+>> +             return pds_vfio->restore_file->filep;
+>> +     }
+>> +
+>> +     if (cur == VFIO_DEVICE_STATE_RESUMING && next ==
+>> VFIO_DEVICE_STATE_STOP) {
+>> +             err = pds_vfio_set_lm_state_cmd(pds_vfio);
+>> +             if (err)
+>> +                     return ERR_PTR(err);
+>> +
+>> +             pds_vfio_put_restore_file(pds_vfio);
+>> +             return NULL;
+>> +     }
+>> +
+>> +     if (cur == VFIO_DEVICE_STATE_RUNNING && next ==
+>> VFIO_DEVICE_STATE_RUNNING_P2P) {
+>> +             pds_vfio_send_host_vf_lm_status_cmd(pds_vfio,
+>> +                                                 PDS_LM_STA_IN_PROGRESS);
+>> +             err = pds_vfio_suspend_device_cmd(pds_vfio);
+>> +             if (err)
+>> +                     return ERR_PTR(err);
+>> +
+>> +             return NULL;
+>> +     }
+>> +
+>> +     if (cur == VFIO_DEVICE_STATE_RUNNING_P2P && next ==
+>> VFIO_DEVICE_STATE_RUNNING) {
+>> +             err = pds_vfio_resume_device_cmd(pds_vfio);
+>> +             if (err)
+>> +                     return ERR_PTR(err);
+>> +
+>> +             pds_vfio_send_host_vf_lm_status_cmd(pds_vfio,
+>> PDS_LM_STA_NONE);
+>> +             return NULL;
+>> +     }
+>> +
+>> +     if (cur == VFIO_DEVICE_STATE_STOP && next ==
+>> VFIO_DEVICE_STATE_RUNNING_P2P)
+>> +             return NULL;
+>> +
+>> +     if (cur == VFIO_DEVICE_STATE_RUNNING_P2P && next ==
+>> VFIO_DEVICE_STATE_STOP)
+>> +             return NULL;
+>> +
+>> +     return ERR_PTR(-EINVAL);
+>> +}
+>> diff --git a/drivers/vfio/pci/pds/lm.h b/drivers/vfio/pci/pds/lm.h
+>> new file mode 100644
+>> index 000000000000..13be893198b7
+>> --- /dev/null
+>> +++ b/drivers/vfio/pci/pds/lm.h
+>> @@ -0,0 +1,41 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
+>> +
+>> +#ifndef _LM_H_
+>> +#define _LM_H_
+>> +
+>> +#include <linux/fs.h>
+>> +#include <linux/mutex.h>
+>> +#include <linux/scatterlist.h>
+>> +#include <linux/types.h>
+>> +
+>> +#include <linux/pds/pds_common.h>
+>> +#include <linux/pds/pds_adminq.h>
+>> +
+>> +struct pds_vfio_lm_file {
+>> +     struct file *filep;
+>> +     struct mutex lock;      /* protect live migration data file */
+>> +     u64 size;               /* Size with valid data */
+>> +     u64 alloc_size;         /* Total allocated size. Always >= len */
+>> +     void *page_mem;         /* memory allocated for pages */
+>> +     struct page **pages;    /* Backing pages for file */
+>> +     unsigned long long npages;
+>> +     struct sg_table sg_table;       /* SG table for backing pages */
+>> +     struct pds_lm_sg_elem *sgl;     /* DMA mapping */
+>> +     dma_addr_t sgl_addr;
+>> +     u16 num_sge;
+>> +     struct scatterlist *last_offset_sg;     /* Iterator */
+>> +     unsigned int sg_last_entry;
+>> +     unsigned long last_offset;
+>> +};
+>> +
+>> +struct pds_vfio_pci_device;
+>> +
+>> +struct file *
+>> +pds_vfio_step_device_state_locked(struct pds_vfio_pci_device *pds_vfio,
+>> +                               enum vfio_device_mig_state next);
+>> +
+>> +void pds_vfio_put_save_file(struct pds_vfio_pci_device *pds_vfio);
+>> +void pds_vfio_put_restore_file(struct pds_vfio_pci_device *pds_vfio);
+>> +
+>> +#endif /* _LM_H_ */
+>> diff --git a/drivers/vfio/pci/pds/pci_drv.c b/drivers/vfio/pci/pds/pci_drv.c
+>> index a49420aa9736..ffd47fa8ede3 100644
+>> --- a/drivers/vfio/pci/pds/pci_drv.c
+>> +++ b/drivers/vfio/pci/pds/pci_drv.c
+>> @@ -73,11 +73,24 @@ pds_vfio_pci_table[] = {
+>>   };
+>>   MODULE_DEVICE_TABLE(pci, pds_vfio_pci_table);
+>>
+>> +static void pds_vfio_pci_aer_reset_done(struct pci_dev *pdev)
+>> +{
+>> +     struct pds_vfio_pci_device *pds_vfio = pds_vfio_pci_drvdata(pdev);
+>> +
+>> +     pds_vfio_reset(pds_vfio);
+>> +}
+>> +
+>> +static const struct pci_error_handlers pds_vfio_pci_err_handlers = {
+>> +     .reset_done = pds_vfio_pci_aer_reset_done,
+>> +     .error_detected = vfio_pci_core_aer_err_detected,
+>> +};
+>> +
+>>   static struct pci_driver pds_vfio_pci_driver = {
+>>        .name = KBUILD_MODNAME,
+>>        .id_table = pds_vfio_pci_table,
+>>        .probe = pds_vfio_pci_probe,
+>>        .remove = pds_vfio_pci_remove,
+>> +     .err_handler = &pds_vfio_pci_err_handlers,
+>>        .driver_managed_dma = true,
+>>   };
+>>
+>> diff --git a/drivers/vfio/pci/pds/vfio_dev.c b/drivers/vfio/pci/pds/vfio_dev.c
+>> index 39771265b78f..2435d8255366 100644
+>> --- a/drivers/vfio/pci/pds/vfio_dev.c
+>> +++ b/drivers/vfio/pci/pds/vfio_dev.c
+>> @@ -4,6 +4,7 @@
+>>   #include <linux/vfio.h>
+>>   #include <linux/vfio_pci_core.h>
+>>
+>> +#include "lm.h"
+>>   #include "vfio_dev.h"
+>>
+>>   struct pci_dev *pds_vfio_to_pci_dev(struct pds_vfio_pci_device *pds_vfio)
+>> @@ -11,6 +12,11 @@ struct pci_dev *pds_vfio_to_pci_dev(struct
+>> pds_vfio_pci_device *pds_vfio)
+>>        return pds_vfio->vfio_coredev.pdev;
+>>   }
+>>
+>> +struct device *pds_vfio_to_dev(struct pds_vfio_pci_device *pds_vfio)
+>> +{
+>> +     return &pds_vfio_to_pci_dev(pds_vfio)->dev;
+>> +}
+>> +
+>>   struct pds_vfio_pci_device *pds_vfio_pci_drvdata(struct pci_dev *pdev)
+>>   {
+>>        struct vfio_pci_core_device *core_device =
+>> dev_get_drvdata(&pdev->dev);
+>> @@ -19,6 +25,98 @@ struct pds_vfio_pci_device
+>> *pds_vfio_pci_drvdata(struct pci_dev *pdev)
+>>                            vfio_coredev);
+>>   }
+>>
+>> +static void pds_vfio_state_mutex_unlock(struct pds_vfio_pci_device
+>> *pds_vfio)
+>> +{
+>> +again:
+>> +     spin_lock(&pds_vfio->reset_lock);
+>> +     if (pds_vfio->deferred_reset) {
+>> +             pds_vfio->deferred_reset = false;
+>> +             if (pds_vfio->state == VFIO_DEVICE_STATE_ERROR) {
+>> +                     pds_vfio->state = VFIO_DEVICE_STATE_RUNNING;
+>> +                     pds_vfio_put_restore_file(pds_vfio);
+>> +                     pds_vfio_put_save_file(pds_vfio);
+>> +             }
+>> +             spin_unlock(&pds_vfio->reset_lock);
+>> +             goto again;
+>> +     }
+>> +     mutex_unlock(&pds_vfio->state_mutex);
+>> +     spin_unlock(&pds_vfio->reset_lock);
+>> +}
+>> +
+>> +void pds_vfio_reset(struct pds_vfio_pci_device *pds_vfio)
+>> +{
+>> +     spin_lock(&pds_vfio->reset_lock);
+>> +     pds_vfio->deferred_reset = true;
+>> +     if (!mutex_trylock(&pds_vfio->state_mutex)) {
+>> +             spin_unlock(&pds_vfio->reset_lock);
+>> +             return;
+>> +     }
+>> +     spin_unlock(&pds_vfio->reset_lock);
+>> +     pds_vfio_state_mutex_unlock(pds_vfio);
+>> +}
+>> +
+>> +static struct file *
+>> +pds_vfio_set_device_state(struct vfio_device *vdev,
+>> +                       enum vfio_device_mig_state new_state)
+>> +{
+>> +     struct pds_vfio_pci_device *pds_vfio =
+>> +             container_of(vdev, struct pds_vfio_pci_device,
+>> +                          vfio_coredev.vdev);
+>> +     struct file *res = NULL;
+>> +
+>> +     mutex_lock(&pds_vfio->state_mutex);
+>> +     while (new_state != pds_vfio->state) {
+>> +             enum vfio_device_mig_state next_state;
+>> +
+>> +             int err = vfio_mig_get_next_state(vdev, pds_vfio->state,
+>> +                                               new_state, &next_state);
+>> +             if (err) {
+>> +                     res = ERR_PTR(err);
+>> +                     break;
+>> +             }
+>> +
+>> +             res = pds_vfio_step_device_state_locked(pds_vfio, next_state);
+>> +             if (IS_ERR(res))
+>> +                     break;
+>> +
+>> +             pds_vfio->state = next_state;
+>> +
+>> +             if (WARN_ON(res && new_state != pds_vfio->state)) {
+>> +                     res = ERR_PTR(-EINVAL);
+>> +                     break;
+>> +             }
+>> +     }
+>> +     pds_vfio_state_mutex_unlock(pds_vfio);
+>> +
+>> +     return res;
+>> +}
+>> +
+>> +static int pds_vfio_get_device_state(struct vfio_device *vdev,
+>> +                                  enum vfio_device_mig_state *current_state)
+>> +{
+>> +     struct pds_vfio_pci_device *pds_vfio =
+>> +             container_of(vdev, struct pds_vfio_pci_device,
+>> +                          vfio_coredev.vdev);
+>> +
+>> +     mutex_lock(&pds_vfio->state_mutex);
+>> +     *current_state = pds_vfio->state;
+>> +     pds_vfio_state_mutex_unlock(pds_vfio);
+>> +     return 0;
+>> +}
+>> +
+>> +static int pds_vfio_get_device_state_size(struct vfio_device *vdev,
+>> +                                       unsigned long *stop_copy_length)
+>> +{
+>> +     *stop_copy_length = PDS_LM_DEVICE_STATE_LENGTH;
+>> +     return 0;
+>> +}
+>> +
+>> +static const struct vfio_migration_ops pds_vfio_lm_ops = {
+>> +     .migration_set_state = pds_vfio_set_device_state,
+>> +     .migration_get_state = pds_vfio_get_device_state,
+>> +     .migration_get_data_size = pds_vfio_get_device_state_size
+>> +};
+>> +
+>>   static int pds_vfio_init_device(struct vfio_device *vdev)
+>>   {
+>>        struct pds_vfio_pci_device *pds_vfio =
+>> @@ -34,6 +132,9 @@ static int pds_vfio_init_device(struct vfio_device
+>> *vdev)
+>>        pds_vfio->vf_id = pci_iov_vf_id(pdev);
+>>        pds_vfio->pci_id = PCI_DEVID(pdev->bus->number, pdev->devfn);
+>>
+>> +     vdev->migration_flags = VFIO_MIGRATION_STOP_COPY |
+>> VFIO_MIGRATION_P2P;
+>> +     vdev->mig_ops = &pds_vfio_lm_ops;
+>> +
+>>        dev_dbg(&pdev->dev,
+>>                "%s: PF %#04x VF %#04x (%d) vf_id %d domain %d
+>> pds_vfio %p\n",
+>>                __func__, pci_dev_id(pdev->physfn), pds_vfio->pci_id,
+>> @@ -54,17 +155,34 @@ static int pds_vfio_open_device(struct vfio_device
+>> *vdev)
+>>        if (err)
+>>                return err;
+>>
+>> +     mutex_init(&pds_vfio->state_mutex);
+>> +     pds_vfio->state = VFIO_DEVICE_STATE_RUNNING;
+>> +
+>>        vfio_pci_core_finish_enable(&pds_vfio->vfio_coredev);
+>>
+>>        return 0;
+>>   }
+>>
+>> +static void pds_vfio_close_device(struct vfio_device *vdev)
+>> +{
+>> +     struct pds_vfio_pci_device *pds_vfio =
+>> +             container_of(vdev, struct pds_vfio_pci_device,
+>> +                          vfio_coredev.vdev);
+>> +
+>> +     mutex_lock(&pds_vfio->state_mutex);
+>> +     pds_vfio_put_restore_file(pds_vfio);
+>> +     pds_vfio_put_save_file(pds_vfio);
+>> +     mutex_unlock(&pds_vfio->state_mutex);
+>> +     mutex_destroy(&pds_vfio->state_mutex);
+>> +     vfio_pci_core_close_device(vdev);
+>> +}
+>> +
+>>   static const struct vfio_device_ops pds_vfio_ops = {
+>>        .name = "pds-vfio",
+>>        .init = pds_vfio_init_device,
+>>        .release = vfio_pci_core_release_dev,
+>>        .open_device = pds_vfio_open_device,
+>> -     .close_device = vfio_pci_core_close_device,
+>> +     .close_device = pds_vfio_close_device,
+>>        .ioctl = vfio_pci_core_ioctl,
+>>        .device_feature = vfio_pci_core_ioctl_feature,
+>>        .read = vfio_pci_core_read,
+>> diff --git a/drivers/vfio/pci/pds/vfio_dev.h b/drivers/vfio/pci/pds/vfio_dev.h
+>> index 92e8ff241ca8..df6208a7140b 100644
+>> --- a/drivers/vfio/pci/pds/vfio_dev.h
+>> +++ b/drivers/vfio/pci/pds/vfio_dev.h
+>> @@ -7,12 +7,21 @@
+>>   #include <linux/pci.h>
+>>   #include <linux/vfio_pci_core.h>
+>>
+>> +#include "lm.h"
+>> +
+>>   struct pdsc;
+>>
+>>   struct pds_vfio_pci_device {
+>>        struct vfio_pci_core_device vfio_coredev;
+>>        struct pdsc *pdsc;
+>>
+>> +     struct pds_vfio_lm_file *save_file;
+>> +     struct pds_vfio_lm_file *restore_file;
+>> +     struct mutex state_mutex; /* protect migration state */
+>> +     enum vfio_device_mig_state state;
+>> +     spinlock_t reset_lock; /* protect reset_done flow */
+>> +     u8 deferred_reset;
+>> +
+>>        int vf_id;
+>>        int pci_id;
+>>        u16 client_id;
+>> @@ -20,7 +29,9 @@ struct pds_vfio_pci_device {
+>>
+>>   const struct vfio_device_ops *pds_vfio_ops_info(void);
+>>   struct pds_vfio_pci_device *pds_vfio_pci_drvdata(struct pci_dev *pdev);
+>> +void pds_vfio_reset(struct pds_vfio_pci_device *pds_vfio);
+>>
+>>   struct pci_dev *pds_vfio_to_pci_dev(struct pds_vfio_pci_device *pds_vfio);
+>> +struct device *pds_vfio_to_dev(struct pds_vfio_pci_device *pds_vfio);
+>>
+>>   #endif /* _VFIO_DEV_H_ */
+>> diff --git a/include/linux/pds/pds_adminq.h
+>> b/include/linux/pds/pds_adminq.h
+>> index 98a60ce87b92..db6de081f15f 100644
+>> --- a/include/linux/pds/pds_adminq.h
+>> +++ b/include/linux/pds/pds_adminq.h
+>> @@ -584,6 +584,213 @@ struct pds_core_q_init_comp {
+>>        u8     color;
+>>   };
+>>
+>> +#define PDS_LM_DEVICE_STATE_LENGTH           65536
+>> +#define PDS_LM_CHECK_DEVICE_STATE_LENGTH(X) \
+>> +                     PDS_CORE_SIZE_CHECK(union,
+>> PDS_LM_DEVICE_STATE_LENGTH, X)
+>> +
+>> +/*
+>> + * enum pds_lm_cmd_opcode - Live Migration Device commands
+>> + */
+>> +enum pds_lm_cmd_opcode {
+>> +     PDS_LM_CMD_HOST_VF_STATUS  = 1,
+>> +
+>> +     /* Device state commands */
+>> +     PDS_LM_CMD_STATUS          = 16,
+>> +     PDS_LM_CMD_SUSPEND         = 18,
+>> +     PDS_LM_CMD_SUSPEND_STATUS  = 19,
+>> +     PDS_LM_CMD_RESUME          = 20,
+>> +     PDS_LM_CMD_SAVE            = 21,
+>> +     PDS_LM_CMD_RESTORE         = 22,
+>> +};
+>> +
+>> +/**
+>> + * struct pds_lm_cmd - generic command
+>> + * @opcode:  Opcode
+>> + * @rsvd:    Word boundary padding
+>> + * @vf_id:   VF id
+>> + * @rsvd2:   Structure padding to 60 Bytes
+>> + */
+>> +struct pds_lm_cmd {
+>> +     u8     opcode;
+>> +     u8     rsvd;
+>> +     __le16 vf_id;
+>> +     u8     rsvd2[56];
+>> +};
+>> +
+>> +/**
+>> + * struct pds_lm_comp - generic command completion
+>> + * @status:  Status of the command (enum pds_core_status_code)
+>> + * @rsvd:    Structure padding to 16 Bytes
+>> + */
+>> +struct pds_lm_comp {
+>> +     u8 status;
+>> +     u8 rsvd[15];
+>> +};
+>> +
+>> +/**
+>> + * struct pds_lm_status_cmd - STATUS command
+>> + * @opcode:  Opcode
+>> + * @rsvd:    Word boundary padding
+>> + * @vf_id:   VF id
+>> + */
+>> +struct pds_lm_status_cmd {
+>> +     u8     opcode;
+>> +     u8     rsvd;
+>> +     __le16 vf_id;
+>> +};
+>> +
+>> +/**
+>> + * struct pds_lm_status_comp - STATUS command completion
+>> + * @status:          Status of the command (enum pds_core_status_code)
+>> + * @rsvd:            Word boundary padding
+>> + * @comp_index:              Index in the desc ring for which this is the
+>> completion
+>> + * @size:            Size of the device state
+>> + * @rsvd2:           Word boundary padding
+>> + * @color:           Color bit
+>> + */
+>> +struct pds_lm_status_comp {
+>> +     u8     status;
+>> +     u8     rsvd;
+>> +     __le16 comp_index;
+>> +     union {
+>> +             __le64 size;
+>> +             u8     rsvd2[11];
+>> +     } __packed;
+>> +     u8     color;
+>> +};
+>> +
+>> +/**
+>> + * struct pds_lm_suspend_cmd - SUSPEND command
+>> + * @opcode:  Opcode PDS_LM_CMD_SUSPEND
+>> + * @rsvd:    Word boundary padding
+>> + * @vf_id:   VF id
+>> + */
+>> +struct pds_lm_suspend_cmd {
+>> +     u8     opcode;
+>> +     u8     rsvd;
+>> +     __le16 vf_id;
+>> +};
+>> +
+>> +/**
+>> + * struct pds_lm_suspend_comp - SUSPEND command completion
+>> + * @status:          Status of the command (enum pds_core_status_code)
+>> + * @rsvd:            Word boundary padding
+>> + * @comp_index:              Index in the desc ring for which this is the
+>> completion
+>> + * @state_size:              Size of the device state computed post suspend
+>> + * @rsvd2:           Word boundary padding
+>> + * @color:           Color bit
+>> + */
+>> +struct pds_lm_suspend_comp {
+>> +     u8     status;
+>> +     u8     rsvd;
+>> +     __le16 comp_index;
+>> +     union {
+>> +             __le64 state_size;
+>> +             u8     rsvd2[11];
+>> +     } __packed;
+>> +     u8     color;
+>> +};
+>> +
+>> +/**
+>> + * struct pds_lm_suspend_status_cmd - SUSPEND status command
+>> + * @opcode:  Opcode PDS_AQ_CMD_LM_SUSPEND_STATUS
+>> + * @rsvd:    Word boundary padding
+>> + * @vf_id:   VF id
+>> + */
+>> +struct pds_lm_suspend_status_cmd {
+>> +     u8 opcode;
+>> +     u8 rsvd;
+>> +     __le16 vf_id;
+>> +};
+>> +
+>> +/**
+>> + * struct pds_lm_resume_cmd - RESUME command
+>> + * @opcode:  Opcode PDS_LM_CMD_RESUME
+>> + * @rsvd:    Word boundary padding
+>> + * @vf_id:   VF id
+>> + */
+>> +struct pds_lm_resume_cmd {
+>> +     u8     opcode;
+>> +     u8     rsvd;
+>> +     __le16 vf_id;
+>> +};
+>> +
+>> +/**
+>> + * struct pds_lm_sg_elem - Transmit scatter-gather (SG) descriptor element
+>> + * @addr:    DMA address of SG element data buffer
+>> + * @len:     Length of SG element data buffer, in bytes
+>> + * @rsvd:    Word boundary padding
+>> + */
+>> +struct pds_lm_sg_elem {
+>> +     __le64 addr;
+>> +     __le32 len;
+>> +     __le16 rsvd[2];
+>> +};
+>> +
+>> +/**
+>> + * struct pds_lm_save_cmd - SAVE command
+>> + * @opcode:  Opcode PDS_LM_CMD_SAVE
+>> + * @rsvd:    Word boundary padding
+>> + * @vf_id:   VF id
+>> + * @rsvd2:   Word boundary padding
+>> + * @sgl_addr:        IOVA address of the SGL to dma the device state
+>> + * @num_sge: Total number of SG elements
+>> + */
+>> +struct pds_lm_save_cmd {
+>> +     u8     opcode;
+>> +     u8     rsvd;
+>> +     __le16 vf_id;
+>> +     u8     rsvd2[4];
+>> +     __le64 sgl_addr;
+>> +     __le32 num_sge;
+>> +} __packed;
+>> +
+>> +/**
+>> + * struct pds_lm_restore_cmd - RESTORE command
+>> + * @opcode:  Opcode PDS_LM_CMD_RESTORE
+>> + * @rsvd:    Word boundary padding
+>> + * @vf_id:   VF id
+>> + * @rsvd2:   Word boundary padding
+>> + * @sgl_addr:        IOVA address of the SGL to dma the device state
+>> + * @num_sge: Total number of SG elements
+>> + */
+>> +struct pds_lm_restore_cmd {
+>> +     u8     opcode;
+>> +     u8     rsvd;
+>> +     __le16 vf_id;
+>> +     u8     rsvd2[4];
+>> +     __le64 sgl_addr;
+>> +     __le32 num_sge;
+>> +} __packed;
+>> +
+>> +/**
+>> + * union pds_lm_dev_state - device state information
+>> + * @words:   Device state words
+>> + */
+>> +union pds_lm_dev_state {
+>> +     __le32 words[PDS_LM_DEVICE_STATE_LENGTH / sizeof(__le32)];
+>> +};
+>> +
+>> +enum pds_lm_host_vf_status {
+>> +     PDS_LM_STA_NONE = 0,
+>> +     PDS_LM_STA_IN_PROGRESS,
+>> +     PDS_LM_STA_MAX,
+>> +};
+>> +
+>> +/**
+>> + * struct pds_lm_host_vf_status_cmd - HOST_VF_STATUS command
+>> + * @opcode:  Opcode PDS_LM_CMD_HOST_VF_STATUS
+>> + * @rsvd:    Word boundary padding
+>> + * @vf_id:   VF id
+>> + * @status:  Current LM status of host VF driver (enum
+>> pds_lm_host_status)
+>> + */
+>> +struct pds_lm_host_vf_status_cmd {
+>> +     u8     opcode;
+>> +     u8     rsvd;
+>> +     __le16 vf_id;
+>> +     u8     status;
+>> +};
+>> +
+>>   union pds_core_adminq_cmd {
+>>        u8     opcode;
+>>        u8     bytes[64];
+>> @@ -600,6 +807,14 @@ union pds_core_adminq_cmd {
+>>
+>>        struct pds_core_q_identify_cmd    q_ident;
+>>        struct pds_core_q_init_cmd        q_init;
+>> +
+>> +     struct pds_lm_suspend_cmd               lm_suspend;
+>> +     struct pds_lm_suspend_status_cmd        lm_suspend_status;
+>> +     struct pds_lm_resume_cmd                lm_resume;
+>> +     struct pds_lm_status_cmd                lm_status;
+>> +     struct pds_lm_save_cmd                  lm_save;
+>> +     struct pds_lm_restore_cmd               lm_restore;
+>> +     struct pds_lm_host_vf_status_cmd        lm_host_vf_status;
+>>   };
+>>
+>>   union pds_core_adminq_comp {
+>> @@ -621,6 +836,8 @@ union pds_core_adminq_comp {
+>>
+>>        struct pds_core_q_identify_comp   q_ident;
+>>        struct pds_core_q_init_comp       q_init;
+>> +
+>> +     struct pds_lm_status_comp               lm_status;
+>>   };
+>>
+>>   #ifndef __CHECKER__
+>> --
+>> 2.17.1
+> 
 
