@@ -1,101 +1,107 @@
-Return-Path: <netdev+bounces-11111-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11118-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5B19E731904
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 14:36:30 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id CF137731965
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 14:59:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3FF9B1C20E49
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 12:36:29 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8B764281799
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 12:59:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EE30E6106;
-	Thu, 15 Jun 2023 12:36:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B6CA156DA;
+	Thu, 15 Jun 2023 12:59:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40D271FDA;
-	Thu, 15 Jun 2023 12:36:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73C17C433C0;
-	Thu, 15 Jun 2023 12:36:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686832582;
-	bh=GkT9ZzUS0jxyoPU9+PHr+3Ug0LWT0zu1rrz4M6oSY8A=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=Q+kGfUAeKphnJdA63xi3HZo4FErUcmtmycIDnm0g8JvmsvBoRk24vZC1yUFdQnc1Y
-	 ThlmJUs13K720bqY1SU57awY10l/TPjgDSx5rPLa5qmdMvgU1QfcI3HXOn3fsxWwmw
-	 9xDIsylg36S5YNam25bdgzWzjd+rGOJawASLYpz/wDsSk+EJk3MiF+TRL4/g4jDsc/
-	 NxdppriMG99TMKNvr4GPim+2uVXXjUXHTFsXkgs4Zya/3MSNbTpuaxzif+1TpZ5InH
-	 AkTx8OMxLvtOXTYhCwsEBD8j/GooVVXZmlkKRSmZqE8Wrg4GGSnyHauqPT0OKDUOPf
-	 zzzPPmAFQVFcA==
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-	id 92CDEBBEC2F; Thu, 15 Jun 2023 14:36:19 +0200 (CEST)
-From: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
-To: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc: Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>, Alexei
- Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
- Andrii Nakryiko <andrii@kernel.org>, Martin KaFai Lau
- <martin.lau@linux.dev>, Song Liu <song@kernel.org>, Yonghong Song
- <yhs@fb.com>, John Fastabend <john.fastabend@gmail.com>, KP Singh
- <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>, Jiri Olsa
- <jolsa@kernel.org>, Willem de Bruijn <willemb@google.com>, David Ahern
- <dsahern@kernel.org>, "Karlsson, Magnus" <magnus.karlsson@intel.com>,
- =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>, "Fijalkowski, Maciej"
- <maciej.fijalkowski@intel.com>, Network Development
- <netdev@vger.kernel.org>
-Subject: Re: [RFC bpf-next 0/7] bpf: netdev TX metadata
-In-Reply-To: <CAADnVQJM6ttxLjj2FGCO1DKOwHdj9eqcz75dFpsfwJ_4b3iqDw@mail.gmail.com>
-References: <20230612172307.3923165-1-sdf@google.com>
- <87cz20xunt.fsf@toke.dk> <ZIiaHXr9M0LGQ0Ht@google.com>
- <877cs7xovi.fsf@toke.dk>
- <CAKH8qBt5tQ69Zs9kYGc7j-_3Yx9D6+pmS4KCN5G0s9UkX545Mg@mail.gmail.com>
- <87v8frw546.fsf@toke.dk>
- <CAKH8qBtsvsWvO3Avsqb2PbvZgh5GDMxe2fok-jS4DrJM=x2Row@mail.gmail.com>
- <CAADnVQKFmXAQDYVZxjvH8qbxk+3M2COGbfmtd=w8Nxvf9=DaeA@mail.gmail.com>
- <CAKH8qBvAMKtfrZ1jdwVS2pF161UdeXPSpY4HSzKYGTYNTupmTg@mail.gmail.com>
- <CAADnVQ+CCOw9_LbCAaFz0593eydKNb7RxnGr6_FatUOKmvPmBg@mail.gmail.com>
- <877cs6l0ea.fsf@toke.dk>
- <CAADnVQJM6ttxLjj2FGCO1DKOwHdj9eqcz75dFpsfwJ_4b3iqDw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date: Thu, 15 Jun 2023 14:36:19 +0200
-Message-ID: <87pm5wgaws.fsf@toke.dk>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F1AA1FDA
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 12:59:29 +0000 (UTC)
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C9382704
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 05:59:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686833965; x=1718369965;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=gcKU6ImbVvYc32brtTTMSGrZzt+11kXeKchcu8AjD5s=;
+  b=ZfpSv7OJz0LP9J7ZJ2WVB8E2cnWMc/yznPm2/sJYzbUUNx5qUvNPzxjX
+   AtxAT2etGMJ/lOkuH7/+qnDsYDg1mN2EJHhLgXABd6gZs0D/o+qTlM00j
+   35pe5jtHmrh2Qqmt8WpM2j7Hix7LTQ8LSC7MfJgLyAWQnbCdhSLEhRfm4
+   9itSiM21a7KA/RatiP7unmY2ld6TMHbbJ7a8gIdV5EVwQohg5hYtHiCXs
+   CczrnOiLHqcqRLeq6frWE2bPLDBusFPrAhFZD8pH2If9Sx28tZPXNCaAq
+   4cMZjnjXYhdqIR52AK4U7ifadM6a6XWWVw+Yv4vk7bC03/ebCGpx5UtF0
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="424794810"
+X-IronPort-AV: E=Sophos;i="6.00,244,1681196400"; 
+   d="scan'208";a="424794810"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2023 05:59:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="825259716"
+X-IronPort-AV: E=Sophos;i="6.00,244,1681196400"; 
+   d="scan'208";a="825259716"
+Received: from wasp.igk.intel.com ([10.102.20.192])
+  by fmsmga002.fm.intel.com with ESMTP; 15 Jun 2023 05:59:23 -0700
+From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To: intel-wired-lan@lists.osuosl.org
+Cc: netdev@vger.kernel.org,
+	jacob.e.keller@intel.com,
+	przemyslaw.kitszel@intel.com,
+	Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Subject: [PATCH iwl-next v1 0/4] change MSI-X vectors per VF
+Date: Thu, 15 Jun 2023 14:38:26 +0200
+Message-Id: <20230615123830.155927-1-michal.swiatkowski@linux.intel.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+Hi,
 
-> On Wed, Jun 14, 2023 at 5:00=E2=80=AFAM Toke H=C3=B8iland-J=C3=B8rgensen =
-<toke@kernel.org> wrote:
->>
->> >>
->> >> It's probably going to work if each driver has a separate set of tx
->> >> fentry points, something like:
->> >>   {veth,mlx5,etc}_devtx_submit()
->> >>   {veth,mlx5,etc}_devtx_complete()
->>
->> I really don't get the opposition to exposing proper APIs; as a
->> dataplane developer I want to attach a program to an interface. The
->> kernel's role is to provide a consistent interface for this, not to
->> require users to become driver developers just to get at the required
->> details.
->
-> Consistent interface can appear only when there is a consistency
-> across nic manufacturers.
-> I'm suggesting to experiment in the most unstable way and
-> if/when the consistency is discovered then generalize.
+This patchset is implementing sysfs API introduced here [1].
 
-That would be fine for new experimental HW features, but we're talking
-about timestamps here: a feature that is already supported by multiple
-drivers and for which the stack has a working abstraction. There's no
-reason why we can't have that for the XDP path as well.
+It will allow user to assign different amount of MSI-X vectors to VF.
+For example when there are VMs with different number of virtual cores.
 
--Toke
+Example:
+1. Turn off autoprobe
+echo 0 > /sys/bus/pci/devices/0000\:18\:00.0/sriov_drivers_autoprobe
+2. Create VFs
+echo 4 > /sys/bus/pci/devices/0000\:18\:00.0/sriov_numvfs
+3. Configure MSI-X
+echo 20 > /sys/class/pci_bus/0000\:18/device/0000\:18\:01.0/sriov_vf_msix_count
+
+[1] https://lore.kernel.org/netdev/20210314124256.70253-1-leon@kernel.org/
+
+Michal Swiatkowski (4):
+  ice: implement num_msix field per VF
+  ice: add bitmap to track VF MSI-X usage
+  ice: set MSI-X vector count on VF
+  ice: manage VFs MSI-X using resource tracking
+
+ drivers/net/ethernet/intel/ice/ice.h          |   2 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |   2 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |   2 +
+ drivers/net/ethernet/intel/ice/ice_sriov.c    | 257 ++++++++++++++++--
+ drivers/net/ethernet/intel/ice/ice_sriov.h    |  13 +
+ drivers/net/ethernet/intel/ice/ice_vf_lib.h   |   4 +-
+ drivers/net/ethernet/intel/ice/ice_virtchnl.c |   2 +-
+ 7 files changed, 258 insertions(+), 24 deletions(-)
+
+-- 
+2.40.1
+
 
