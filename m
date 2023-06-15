@@ -1,37 +1,37 @@
-Return-Path: <netdev+bounces-11010-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11011-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 449D1731158
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 09:50:43 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 775CB73115D
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 09:51:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F1C182816DF
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 07:50:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 14C372816FA
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 07:51:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41EE12117;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B2523FFF;
 	Thu, 15 Jun 2023 07:50:22 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 216A12109
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E12620E3
 	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 07:50:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D714BC433CB;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C3D3EC433C8;
 	Thu, 15 Jun 2023 07:50:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1686815420;
-	bh=7aieeTRa7tPR/AovRdkyWP6vwFoOiXMYrREul/dUktw=;
+	bh=zun/Pp2HfNTP0g+oW4guAz8PIZ3oIfm+vw18roGseO8=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=KaO4ivuTxOmMf7ybLoQx1bmXaLNiH/uTGWgnDEaqdX0QW+3GCGF8TtmMFVbPo8KGo
-	 9qHU9Ral6oLtc/WrJKrRnIleatBB2rz2BKiGxzt+TQzT8Pek2ecoVwA0mhF3ghiGYU
-	 l3VpJgjWAu+b1Ba1gxVjRlc6KuNapwbvYD9/9WXN2wFVR8/lXu0GrX+8VRwS6L14i4
-	 Vm67kE53O0E3fjQ83nADdy29o4OajwJ4mDiVjpDIP4JpgU2UQYOv/W4b69CJ+h0mM9
-	 5C+kwSxi0aO6CW9PZna5zMnc9cjS5T8bcZBi8kvMwEey1kS1mPVxP1Ae4pEIs25kwV
-	 G3SU/kb2mqf0w==
+	b=UgBEUPJ9KKTaDkr6fhn2t0DbW7xtLhXwKn/LtT811TPANzY+N5CiZpd2v5giowQSx
+	 q/mteKWSgBURD0vL+xlvlCeNGXZZhbdq+AZpMXXzREgwLrKSsY/VDAx+LXUOTHsYMC
+	 iVWbkmENptppcaxsrvxco0eZaxsmU6I3jvOU1qbLQOHtjljT7SQIE7WI6mRaPgWGQZ
+	 3BKdTupcY0XXi6wRAO99Q8JztQl8tjer3xP4KwXMFhoYBvoiBOFY3uCcmqVgrIhMds
+	 vC5cG/nOM3h+jqW8SS7cP5N2GhOD3BvjTGDDyXSfaOlCQ0ABurD6LChkoqOuGVymrm
+	 txhmoMFSDYw8Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B7D3EC395C7;
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AD071E21EEA;
 	Thu, 15 Jun 2023 07:50:20 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
@@ -41,41 +41,50 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/2] net: create device lookup API with reference
- tracking
+Subject: Re: [PATCH next-next v4 0/2] Add support for partial store and forward
 From: patchwork-bot+netdevbpf@kernel.org
 Message-Id: 
- <168681542074.22382.15571029013760079421.git-patchwork-notify@kernel.org>
+ <168681542070.22382.18369277791311849849.git-patchwork-notify@kernel.org>
 Date: Thu, 15 Jun 2023 07:50:20 +0000
-References: <20230612214944.1837648-1-kuba@kernel.org>
-In-Reply-To: <20230612214944.1837648-1-kuba@kernel.org>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
- pabeni@redhat.com, dsahern@gmail.com
+References: <20230613054340.12837-1-pranavi.somisetty@amd.com>
+In-Reply-To: <20230613054340.12837-1-pranavi.somisetty@amd.com>
+To: Pranavi Somisetty <pranavi.somisetty@amd.com>
+Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+ nicolas.ferre@microchip.com, claudiu.beznea@microchip.com, git@amd.com,
+ michal.simek@amd.com, harini.katakam@amd.com, radhey.shyam.pandey@amd.com,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org
 
 Hello:
 
 This series was applied to netdev/net-next.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Mon, 12 Jun 2023 14:49:42 -0700 you wrote:
-> We still see dev_hold() / dev_put() calls without reference tracker
-> getting added in new code. dev_get_by_name() / dev_get_by_index()
-> seem to be one of the sources of those. Provide appropriate helpers.
-> Allocating the tracker can obviously be done with an additional call
-> to netdev_tracker_alloc(), but a single API feels cleaner.
+On Mon, 12 Jun 2023 23:43:38 -0600 you wrote:
+> Add support for partial store and forward mode in Cadence MACB.
 > 
-> v2:
->  - fix a dev_put() in ethtool
-> v1: https://lore.kernel.org/all/20230609183207.1466075-1-kuba@kernel.org/
+> Link for v1:
+> https://lore.kernel.org/all/20221213121245.13981-1-pranavi.somisetty@amd.com/
+> 
+> Changes v2:
+> 1. Removed all the changes related to validating FCS when Rx checksum
+> offload is disabled.
+> 2. Instead of using a platform dependent number (0xFFF) for the reset
+> value of rx watermark, derive it from designcfg_debug2 register.
+> 3. Added a check to see if partial s/f is supported, by reading the
+> designcfg_debug6 register.
+> 4. Added devicetree bindings for "rx-watermark" property.
+> Link for v2:
+> https://lore.kernel.org/all/20230511071214.18611-1-pranavi.somisetty@amd.com/
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,1/2] net: create device lookup API with reference tracking
-    (no matching commit)
-  - [net-next,v2,2/2] netpoll: allocate netdev tracker right away
-    https://git.kernel.org/netdev/net-next/c/48eed027d310
+  - [net-next,v4,1/2] dt-bindings: net: cdns,macb: Add rx-watermark property
+    https://git.kernel.org/netdev/net-next/c/5b32c61a2dac
+  - [net-next,v4,2/2] net: macb: Add support for partial store and forward
+    https://git.kernel.org/netdev/net-next/c/cae4bc06b3e4
 
 You are awesome, thank you!
 -- 
