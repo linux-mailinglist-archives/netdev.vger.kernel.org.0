@@ -1,62 +1,47 @@
-Return-Path: <netdev+bounces-11185-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11186-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6B6E5731E37
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 18:51:07 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 83E37731E92
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 19:00:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5CB611C20A8C
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 16:51:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A9CDD2813C5
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 17:00:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3C3F02E0CB;
-	Thu, 15 Jun 2023 16:51:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23C882E0D0;
+	Thu, 15 Jun 2023 17:00:24 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D75872E0C3
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 16:51:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FC4EC433C0;
-	Thu, 15 Jun 2023 16:51:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2FF32E0C0
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 17:00:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A566C433C0;
+	Thu, 15 Jun 2023 17:00:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686847862;
-	bh=SA2pNBT9rXkOkMo0yrYksTMes4Qn7xpsHyRRGfSHrNs=;
+	s=k20201202; t=1686848422;
+	bh=o+U5MXh11uepYucZI48qpdFf5GfWBkEs2n/W2UWH/Uk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=jauPT1FygcEqkemg87cpPo2q0s6WnGOR/z9X8SQIeQ2UOZtal0IEaMOZ1U6qMFJxi
-	 8RvOBwTnfOM195A/XxTOVm9lg2OClPekxb+nwFewy0B/Eg1usS5/bI3sBpfoN4HP8d
-	 f4EG3W6qKy4APMHvImUGOTMOmjcJmi1YCnb4RxYumDCQSMcDK90u9h9T+xf6zujQHO
-	 jDe/5lsd5J7mhBtBaKtP0ugCcWTGi9pBLt4FwsDy5v5c015Y1TrbIMhz2fmFQ3B2ni
-	 0ztYO5fqWx+Fy+mZKHK9Aedf+gD8zYbw0+JLr1y2JbYMGih/FFiIjIcjXFEbtQxYU3
-	 jPlcCKwf/NIbQ==
-Date: Thu, 15 Jun 2023 09:51:00 -0700
+	b=WN9tfXddBBCsj9x+XyyfUW7KgP4T0UMfd2zvSDQBqpCl5kZYSXoyjbEKELUxxuh+o
+	 wrgwcBCz5E5DgTVUtAEegfcpR5t7Lf405AtKR3+Zfw0kpRLNzlbBKRnTobuOihL2BW
+	 FpOzrBYwit6LomvSpvwOJNx+/Z21m2elM1Don1qLPapbejlaAx1wFGkulZsEwi65Pz
+	 gUmuWAj5J8BOr3Zx9paRHGiWa7I7LN8MNYlMlM8m9PpGoVfJT51dbhUyyyg9VEuYqH
+	 Vw7U/CJsJnvVIoIKULGRTA+cNRegz7br0wntdHxUYqj1xOG1f6zNb+wXvOczXp0vtY
+	 m72WG8MozxdPA==
+Date: Thu, 15 Jun 2023 10:00:21 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: <davem@davemloft.net>, <pabeni@redhat.com>, <netdev@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, Lorenzo Bianconi <lorenzo@kernel.org>,
- Alexander Duyck <alexander.duyck@gmail.com>, Yisen Zhuang
- <yisen.zhuang@huawei.com>, Salil Mehta <salil.mehta@huawei.com>, Eric
- Dumazet <edumazet@google.com>, Sunil Goutham <sgoutham@marvell.com>, Geetha
- sowjanya <gakula@marvell.com>, Subbaraya Sundeep <sbhatta@marvell.com>,
- hariprasad <hkelam@marvell.com>, Saeed Mahameed <saeedm@nvidia.com>, Leon
- Romanovsky <leon@kernel.org>, Felix Fietkau <nbd@nbd.name>, Ryder Lee
- <ryder.lee@mediatek.com>, Shayne Chen <shayne.chen@mediatek.com>, Sean Wang
- <sean.wang@mediatek.com>, Kalle Valo <kvalo@kernel.org>, Matthias Brugger
- <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
- <angelogioacchino.delregno@collabora.com>, Jesper Dangaard Brouer
- <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- <linux-rdma@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>,
- <linux-mediatek@lists.infradead.org>
-Subject: Re: [PATCH net-next v4 4/5] page_pool: remove PP_FLAG_PAGE_FRAG
- flag
-Message-ID: <20230615095100.35c5eb10@kernel.org>
-In-Reply-To: <8c544cd9-00a3-2f17-bd04-13ca99136750@huawei.com>
-References: <20230612130256.4572-1-linyunsheng@huawei.com>
-	<20230612130256.4572-5-linyunsheng@huawei.com>
-	<20230614101954.30112d6e@kernel.org>
-	<8c544cd9-00a3-2f17-bd04-13ca99136750@huawei.com>
+To: Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+Cc: patchwork-bot+netdevbpf@kernel.org, davem@davemloft.net,
+ netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+ dsahern@gmail.com, "helpdesk@kernel.org" <helpdesk@kernel.org>
+Subject: Re: [PATCH net-next v2 0/2] net: create device lookup API with
+ reference tracking
+Message-ID: <20230615100021.43d2d041@kernel.org>
+In-Reply-To: <168681542074.22382.15571029013760079421.git-patchwork-notify@kernel.org>
+References: <20230612214944.1837648-1-kuba@kernel.org>
+	<168681542074.22382.15571029013760079421.git-patchwork-notify@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -66,50 +51,24 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 15 Jun 2023 15:17:39 +0800 Yunsheng Lin wrote:
-> > Does hns3_page_order() set a good example for the users?
-> > 
-> > static inline unsigned int hns3_page_order(struct hns3_enet_ring *ring)
-> > {
-> > #if (PAGE_SIZE < 8192)
-> > 	if (ring->buf_size > (PAGE_SIZE / 2))
-> > 		return 1;
-> > #endif
-> > 	return 0;
-> > }
-> > 
-> > Why allocate order 1 pages for buffers which would fit in a single page?
-> > I feel like this soft of heuristic should be built into the API itself.  
-> 
-> hns3 only support fixed buf size per desc by 512 byte, 1024 bytes, 2048 bytes
-> 4096 bytes, see hns3_buf_size2type(), I think the order 1 pages is for buf size
-> with 4096 bytes and system page size with 4K, as hns3 driver still support the
-> per-desc ping-pong way of page splitting when page_pool_enabled is false.
-> 
-> With page pool enabled, you are right that order 0 pages is enough, and I am not
-> sure about the exact reason we use the some order as the ping-pong way of page
-> splitting now.
-> As 2048 bytes buf size seems to be the default one, and I has not heard any one
-> changing it. Also, it caculates the pool_size using something as below, so the
-> memory usage is almost the same for order 0 and order 1:
-> 
-> .pool_size = ring->desc_num * hns3_buf_size(ring) /
-> 		(PAGE_SIZE << hns3_page_order(ring)),
-> 
-> I am not sure it worth changing it, maybe just change it to set good example for
-> the users:) anyway I need to discuss this with other colleague internally and do
-> some testing before doing the change.
+On Thu, 15 Jun 2023 07:50:20 +0000 patchwork-bot+netdevbpf@kernel.org
+wrote:
+> Here is the summary with links:
+>   - [net-next,v2,1/2] net: create device lookup API with reference tracking
+>     (no matching commit)
 
-Right, I think this may be a leftover from the page flipping mode of
-operation. But AFAIU we should leave the recycling fully to the page
-pool now. If we make any improvements try to make them at the page pool
-level.
+Hi Konstantin!
 
-I like your patches as they isolate the drivers from having to make the
-fragmentation decisions based on the system page size (4k vs 64k but
-we're hearing more and more about ARM w/ 16k pages). For that use case
-this is great. 
+Any recent changes to the pw-bot in commit matching?
+We don't do any editing when applying, AFAIK, and it's 3rd or 4th case
+within a week we get a no-match.
 
-What we don't want is drivers to start requesting larger page sizes
-because it looks good in iperf on a freshly booted, idle system :(
+Lore
+https://lore.kernel.org/all/20230612214944.1837648-2-kuba@kernel.org/
+
+commit
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=70f7457ad6d655e65f1b93cbba2a519e4b11c946
+
+patchwork
+https://patchwork.kernel.org/project/netdevbpf/patch/20230612214944.1837648-2-kuba@kernel.org/
 
