@@ -1,630 +1,162 @@
-Return-Path: <netdev+bounces-11123-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11124-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 63BDB73197E
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 15:02:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id DBBD4731980
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 15:03:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1B76828182C
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 13:02:19 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 976B4281822
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 13:03:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D7AEB156DA;
-	Thu, 15 Jun 2023 13:02:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0618915AE7;
+	Thu, 15 Jun 2023 13:03:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6FF912B6D
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 13:02:17 +0000 (UTC)
-Received: from mail-40134.protonmail.ch (mail-40134.protonmail.ch [185.70.40.134])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E16CE2729
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 06:02:08 -0700 (PDT)
-Date: Thu, 15 Jun 2023 13:01:50 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
-	s=kkcsyormfbalrkd5ne6rrgratq.protonmail; t=1686834125; x=1687093325;
-	bh=i1JEfQNu9/ZYmNqFINx1pJL+TXOnenXuA1N+5Om9zIE=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=cYC/fvaZSjv0z0E7TFmbWsYyzh0WlyEkyv4+MAFlOVYVl65v3fPNgjdPFD+35xb7v
-	 iuBoDhcE64TGcTIPvvO3ka6nlfTF9uSUD88+4nzYwZyWxmAtdLhKopBKISAputG+Zj
-	 pZGdEPR7lOXYaMAyJouEFZ3zFcOCHP7n8P2tD1I7IcyUL4rC+uOt3+HELZFCcW18IZ
-	 ugqg0/pQNqwiaihpkQnoHmhnvN21ZSMkeGfkzEQtcizx5c1K+i2J5Et12s9I2K6Ta2
-	 +lpWO8PrWpvLSTowcC7QiYiwA5Vs0BzrveZuR+hOTE1TX2u0BiY9qeb1EdmxA1K27y
-	 +3NOuHpzB4SQQ==
-To: FUJITA Tomonori <fujita.tomonori@gmail.com>
-From: Benno Lossin <benno.lossin@proton.me>
-Cc: netdev@vger.kernel.org, rust-for-linux@vger.kernel.org, aliceryhl@google.com, andrew@lunn.ch, miguel.ojeda.sandonis@gmail.com
-Subject: Re: [PATCH 1/5] rust: core abstractions for network device drivers
-Message-ID: <_kID50ojyLurmrpIpn_kNxCRqo5MAaqm9pE47mhFcLops8yDhSqmbkhJiUuHlAFSdgqX1dHdZGxUa95ZSHAPHesIKLci1J21cu6nmdQ3ZGg=@proton.me>
-In-Reply-To: <20230613045326.3938283-2-fujita.tomonori@gmail.com>
-References: <20230613045326.3938283-1-fujita.tomonori@gmail.com> <20230613045326.3938283-2-fujita.tomonori@gmail.com>
-Feedback-ID: 71780778:user:proton
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4B1B111AE
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 13:03:29 +0000 (UTC)
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2110.outbound.protection.outlook.com [40.107.102.110])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C23E196;
+	Thu, 15 Jun 2023 06:03:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AhxMumBfl+WozhvewpMKwFjkx515XRcToCWboRxxwYjKGoM7MdOcEHurT+GGdweJoZYu4HWks3qfloRwzHs86xr7DLsBzhdJ6fuvyP0YhiaRlpoBBnzXLtYz1cfdm2eUSP+3jPbk+MFUVqswljNio3qy6h6H3dtovUctyquJ82ezyLR0DCkiGacAESv6V/+UwXyhX3FPvijGTIp5Za17oqHTl/frYCe8RFmOC6pSyhOhk/1rVKBP8JutTa7hmc4nfz5biY4jBeE8Sy2wv00PybHela6sMDSoXtl0GIlEZAwT7RgYYz3xsLNSiYFRiOhxeU/eC6EWWRljp37uQ4k1vw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iEIqNAyUuAqS1FF6nqivzHYq/i3+fyAT2QviVPadQvQ=;
+ b=C3AU11nzaYfC2EIi6xaAnVLSc6nkwH31SscLEIzhT1xWScKcLHtf9iGKzfLbhOtfO7IaZXOGHXxCY6asrnXZcj+jwicNVcu2qJOwwv30qfcrP1/Am+hzyJrk6EyBBQNRmZ4z9jFYiMpoDqiwDjfqS+zgOq2UEGyUdIthhbs5UHKRQeX6NL/Eln7ffWxj5Rvip5XqxuTWJmt96n+IpoqzdHEb9rZla5zlj84E0L6l5SS8Wg3hEAGk09+iXVG3zEb8dXhUutcLdcJ2w/zNIS94T+yZ8VShx+vNn5LGBf73xjHMHOEnJmkIBSlSJIs+TEtGed0Lv9E9rfEU7pmbRpZI9Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iEIqNAyUuAqS1FF6nqivzHYq/i3+fyAT2QviVPadQvQ=;
+ b=VLh2IgpC4Iaw5k77pSO96vnl67/uUwFJirGoBTMJbr334Rjq+biKeWven8Tx33ZPUoK1yfqPdn4QJ6nJkmv7HXnQXDtK+sNKE5ps2ffDCZz21mKvaN9NVaYc1fOY3arG1X9MGB83MTlsmTXgOBZ1ZEL+ysmWQWV+dksJl1epCV4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CH0PR13MB4668.namprd13.prod.outlook.com (2603:10b6:610:ca::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.25; Thu, 15 Jun
+ 2023 13:03:24 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e%5]) with mapi id 15.20.6500.025; Thu, 15 Jun 2023
+ 13:03:24 +0000
+Date: Thu, 15 Jun 2023 15:03:15 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Wang Ming <machel@vivo.com>
+Cc: Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
+	Vladimir Oltean <olteanv@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Stephen Rothwell <sfr@canb.auug.org.au>, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, opensource.kernel@vivo.com
+Subject: Re: [PATCH v1] drivers:net:dsa:Fix resource leaks in
+ fwnode_for_each_child_node() loops
+Message-ID: <ZIsME1gwEWEyyN1o@corigine.com>
+References: <20230615070512.6634-1-machel@vivo.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230615070512.6634-1-machel@vivo.com>
+X-ClientProxiedBy: AM0PR07CA0006.eurprd07.prod.outlook.com
+ (2603:10a6:208:ac::19) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH0PR13MB4668:EE_
+X-MS-Office365-Filtering-Correlation-Id: 93a7784a-f065-4021-92e1-08db6da0e6be
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	QYA+RrofgZwclxSI9xmE0JMJNNisZvaa0J07Fy2jEwJDc+l5prlSilUhnuTLqz69l2Zn2wdLddComwDbgCvIbtM9YJGwQpgcJQcjsOOq49+GrKZzmoZPGbV2+4OWIT0ZlUXM6cEheqAJXqqHz+6ZCeifKBDjB+vjgrzAReb1gGjzlAie+hIGqJmocyiMvD24luXE4VUZwFdfamBSVwKct9EsHrKF2J+nagPJosDRNGtySw4b+M64snfsQpG2tbx6UyhJFT/8qwnyT8J96Bd+F3Pcen5v+fC0lvYwhreDwNsmpav6Dw6z86o+L48RG5kEzWgX2fJ7YMnRrnDgpe/lqLyzrIeeKgAykgTN4CUOFaEpVDl7am+CKg80hc1S7OYS6s9yuOd5GNuloOJJSoNoM42GzUL9b5D1IPSp6xed84mP88+tUgx5e9lhqhUTVLJK0GprcROwoI57vdxz7c9UIXm8D6AafllQWQ/mC0QYxPav/wGjjF6u2o3EjTmrJDQvTLYXZTHKeDlzGFpsjsUSaglx4uOgwWTrSj1qJTHMs38K2FqNvi0tABV3xWKIwnzdyJC5PVq321XEvl8d+Htrj+rjOlGhe+voOjKuMuXbPhM=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(366004)(396003)(39840400004)(346002)(451199021)(83380400001)(4744005)(2906002)(2616005)(36756003)(86362001)(38100700002)(54906003)(8936002)(8676002)(6486002)(316002)(41300700001)(5660300002)(478600001)(66946007)(66556008)(66476007)(6666004)(6916009)(4326008)(6512007)(6506007)(186003)(44832011)(7416002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ivh72LCfCf1YRPEvEujM0WjKPDYYqbwb9TACy3C4mgbSO4YWzm2EkHeDNfHR?=
+ =?us-ascii?Q?bD3yfrF0Ne2ciTqF/y1uYOTeK4+yUoaPlL546kFp+4f5Fb4iWqn/2XQOtpGs?=
+ =?us-ascii?Q?NVQui3HO6WbfVMiNPFlfqttKvM/BvNu3wyL5sCGdr6xrap7bBKH6j3y6qjmD?=
+ =?us-ascii?Q?GUCp6VkTMoIfxcz1bQRFB/k4QHF34rcw+0UAjgAdp1htFON5YbpH/tkN3CoM?=
+ =?us-ascii?Q?5ZbKfCKyVRwshbn6MVtj5QuJpTrz60Kl7sjIfvCx5Is95tDjQgiFGQZOA25n?=
+ =?us-ascii?Q?3zwnCgfGqmIatLFsCcQQ0ZokY5kPmQ96OlMxcGeEkWctEv+sr0UgjnCGvKiQ?=
+ =?us-ascii?Q?pFqfVuqkLiDuJod9vOK0HUsUzynjEqllxXXxS8g5P4TESYVV8IFhe/B/q12l?=
+ =?us-ascii?Q?uKeRaX7uvB5PoYMROl3kvlZo6uOeqD3c+nrAwnHNwBU/Ve6SXothFzXoNTdi?=
+ =?us-ascii?Q?GTGx5ED3e+YTGdL4BwpeMZrYxaICtHYceA5xIFMh151Wz3gglDqSqsPqBOH4?=
+ =?us-ascii?Q?1zvVa/jLzZ0V6TtLMPE1KA8jvV5wBX3gHiuk9BqNrjJkCFcY+lRwL57X73uX?=
+ =?us-ascii?Q?EWnb49IjTsi2yg9oFOm0BbpA71q5To07L542ygrT6v5XhniD3oummTWyUFHf?=
+ =?us-ascii?Q?rhA9XqBSL5pG9KmNOP3+rkEG+ikE6xuF0s4eAGzmDnlxB6lMH7/qVyUCXeJ4?=
+ =?us-ascii?Q?DKe9aqbjuQzt/aUaaOoZb7z62dDykGRv7WKHuHjetW+DzrR+MVekjFKZTKhv?=
+ =?us-ascii?Q?VHzpYkPcMXTJCxAiGvLecndLO1vFnfPxIsb4wYKRvmJGEVE4gV1gHIaWsCoO?=
+ =?us-ascii?Q?Lx6Op+CMVbn4YBYyJA//s68bY+YukCiNcFRZIszMu6jrsBSJNmnWEp/3IbYF?=
+ =?us-ascii?Q?6tjEFtcFaf5hdUFOOzzQc5J1VKbPvWyZsWlAHnoF1yLztBC9HIS/dvy3UHPd?=
+ =?us-ascii?Q?A+hTjdi9lYbCWivU7/QfgANhJTgfc/TmHZsAtbYWtjA+iFUxfEtZTu3r9mzS?=
+ =?us-ascii?Q?emPAE6WZg1MvXnkHtqnR5fjCRsZZmzoViANU+mUPmsToRGVdy1jK3zD9CyN8?=
+ =?us-ascii?Q?IXhUbYijHVLbPTVr/+4gzIPNSgIsHdlWsvyDzrmdZR+l2bkdLPOrwOroGj2j?=
+ =?us-ascii?Q?4zI+lKM6xEwI/AqayVRSVG2k73pltac8iiSD/Adkqyiq8T+9eOUaeokEMdAd?=
+ =?us-ascii?Q?sg0ejJGe3VjijeAqmFWZElFjoARylGUufhFmeQts3FZyRObFRHD2R9I3qkKI?=
+ =?us-ascii?Q?/PF38FcUWhjkQjC/0tu+g6CSAMJxniKea/kDQyf26jlPDEhI4ljcYhOegV1C?=
+ =?us-ascii?Q?Uf/dKpxZjL/rPwmjvNVDUcek43e0i7b1HEvY/7IAyhbLuen/YLLypPLMlLp1?=
+ =?us-ascii?Q?1BY5UrHspfIdxIa2OnuZWUUlJAeSG1MU2PiyiWnvpZ0yzeHqPPaLtvguW5lO?=
+ =?us-ascii?Q?XjN//8i4pnnbGmeEDndUh6HgDPzHDSSMCe80NQ+h9wL/eni7mUcbvYLVHiLl?=
+ =?us-ascii?Q?EHjQBmbaGgPTd+q+604mXEnl3qLTnJFlPTpKolG+RK6cZXXH8U+L7Gxote6N?=
+ =?us-ascii?Q?JPZimAX7g5xGC8iteyJnEty1ebLI08Ck9nO2un4h9nBaVF24ClD80pbo2ixG?=
+ =?us-ascii?Q?Kc1vrw6c7f/ZtTRHlZDH4F0c0htKXLofJWI/lz5FSLUhi0pZKFtYlPH/Cz5o?=
+ =?us-ascii?Q?pGcfrQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93a7784a-f065-4021-92e1-08db6da0e6be
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2023 13:03:24.0144
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1UeRvtf0GWAYKfx06CDTpXipY59sGF0wf/iqW8iZgvqA7rcOJN6hv+FY1l4UoHsAGW4BOQsYJVdo4D9IJPCchTFdUfVcVJ9q5ocTYd4YNq4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR13MB4668
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 6/13/23 06:53, FUJITA Tomonori wrote:
-> This patch adds very basic abstractions to implement network device
-> drivers, corresponds to the kernel's net_device and net_device_ops
-> structs with support for register_netdev/unregister_netdev functions.
->=20
-> allows the const_maybe_uninit_zeroed feature for
-> core::mem::MaybeUinit::<T>::zeroed() in const function.
->=20
-> Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
-> ---
->  rust/bindings/bindings_helper.h |   2 +
->  rust/helpers.c                  |  16 ++
->  rust/kernel/lib.rs              |   3 +
->  rust/kernel/net.rs              |   5 +
->  rust/kernel/net/dev.rs          | 344 ++++++++++++++++++++++++++++++++
->  5 files changed, 370 insertions(+)
->  create mode 100644 rust/kernel/net.rs
->  create mode 100644 rust/kernel/net/dev.rs
->=20
-> diff --git a/rust/bindings/bindings_helper.h b/rust/bindings/bindings_hel=
-per.h
-> index 3e601ce2548d..468bf606f174 100644
-> --- a/rust/bindings/bindings_helper.h
-> +++ b/rust/bindings/bindings_helper.h
-> @@ -7,6 +7,8 @@
->   */
->=20
->  #include <linux/errname.h>
-> +#include <linux/etherdevice.h>
-> +#include <linux/netdevice.h>
->  #include <linux/slab.h>
->  #include <linux/refcount.h>
->  #include <linux/wait.h>
-> diff --git a/rust/helpers.c b/rust/helpers.c
-> index bb594da56137..70d50767ff4e 100644
-> --- a/rust/helpers.c
-> +++ b/rust/helpers.c
-> @@ -24,10 +24,26 @@
->  #include <linux/errname.h>
->  #include <linux/refcount.h>
->  #include <linux/mutex.h>
-> +#include <linux/netdevice.h>
-> +#include <linux/skbuff.h>
->  #include <linux/spinlock.h>
->  #include <linux/sched/signal.h>
->  #include <linux/wait.h>
->=20
-> +#ifdef CONFIG_NET
-> +void *rust_helper_netdev_priv(const struct net_device *dev)
-> +{
-> +=09return netdev_priv(dev);
-> +}
-> +EXPORT_SYMBOL_GPL(rust_helper_netdev_priv);
-> +
-> +void rust_helper_skb_tx_timestamp(struct sk_buff *skb)
-> +{
-> +=09skb_tx_timestamp(skb);
-> +}
-> +EXPORT_SYMBOL_GPL(rust_helper_skb_tx_timestamp);
-> +#endif
-> +
->  __noreturn void rust_helper_BUG(void)
->  {
->  =09BUG();
-> diff --git a/rust/kernel/lib.rs b/rust/kernel/lib.rs
-> index 85b261209977..fc7d048d359d 100644
-> --- a/rust/kernel/lib.rs
-> +++ b/rust/kernel/lib.rs
-> @@ -13,6 +13,7 @@
->=20
->  #![no_std]
->  #![feature(allocator_api)]
-> +#![feature(const_maybe_uninit_zeroed)]
->  #![feature(coerce_unsized)]
->  #![feature(dispatch_from_dyn)]
->  #![feature(new_uninit)]
-> @@ -34,6 +35,8 @@
->  pub mod error;
->  pub mod init;
->  pub mod ioctl;
-> +#[cfg(CONFIG_NET)]
-> +pub mod net;
->  pub mod prelude;
->  pub mod print;
->  mod static_assert;
-> diff --git a/rust/kernel/net.rs b/rust/kernel/net.rs
-> new file mode 100644
-> index 000000000000..28fe8f398463
-> --- /dev/null
-> +++ b/rust/kernel/net.rs
-> @@ -0,0 +1,5 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +//! Networking core.
-> +
-> +pub mod dev;
-> diff --git a/rust/kernel/net/dev.rs b/rust/kernel/net/dev.rs
-> new file mode 100644
-> index 000000000000..d072c81f99ce
-> --- /dev/null
-> +++ b/rust/kernel/net/dev.rs
-> @@ -0,0 +1,344 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +//! Network device.
-> +//!
-> +//! C headers: [`include/linux/etherdevice.h`](../../../../include/linux=
-/etherdevice.h),
-> +//! [`include/linux/ethtool.h`](../../../../include/linux/ethtool.h),
-> +//! [`include/linux/netdevice.h`](../../../../include/linux/netdevice.h)=
-,
-> +//! [`include/linux/skbuff.h`](../../../../include/linux/skbuff.h),
-> +//! [`include/uapi/linux/if_link.h`](../../../../include/uapi/linux/if_l=
-ink.h).
-> +
-> +use crate::{bindings, error::*, prelude::vtable, types::ForeignOwnable};
-> +use {core::ffi::c_void, core::marker::PhantomData};
-> +
-> +/// Corresponds to the kernel's `struct net_device`.
-> +///
-> +/// # Invariants
-> +///
-> +/// The pointer is valid.
-> +pub struct Device(*mut bindings::net_device);
-> +
-> +impl Device {
-> +    /// Creates a new [`Device`] instance.
-> +    ///
-> +    /// # Safety
-> +    ///
-> +    /// Callers must ensure that `ptr` must be valid.
-> +    unsafe fn from_ptr(ptr: *mut bindings::net_device) -> Self {
-> +        // INVARIANT: The safety requirements ensure the invariant.
-> +        Self(ptr)
-> +    }
-> +
-> +    /// Gets a pointer to network device private data.
-> +    fn priv_data_ptr(&self) -> *const c_void {
-> +        // SAFETY: The type invariants guarantee that `self.0` is valid.
-> +        // During the initialization of `Registration` instance, the ker=
-nel allocates
-> +        // contiguous memory for `struct net_device` and a pointer to it=
-s private data.
-> +        // So it's safe to read an address from the returned address fro=
-m `netdev_priv()`.
-> +        unsafe { core::ptr::read(bindings::netdev_priv(self.0) as *const=
- *const c_void) }
-
-Why are at least `size_of::<*const c_void>` bytes allocated? Why is it a
-`*const c_void` pointer? This function does not give any guarantees about
-this pointer, is it valid?
-
-I know that you are allocating exactly this amount in `Registration`, but
-`Device` does not know about that. Should this be a type invariant?
-It might be a good idea to make `Driver` generic over `D`, the data that is
-stored behind this pointer. You could then return `D::Borrowed` instead.
-
-> +    }
-> +}
-> +
-> +// SAFETY: `Device` is just a wrapper for the kernel`s `struct net_devic=
-e`, which can be used
-> +// from any thread. `struct net_device` stores a pointer to `DriverData:=
-:Data`, which is `Sync`
-> +// so it's safe to sharing its pointer.
-> +unsafe impl Send for Device {}
-> +// SAFETY: `Device` is just a wrapper for the kernel`s `struct net_devic=
-e`, which can be used
-> +// from any thread. `struct net_device` stores a pointer to `DriverData:=
-:Data`, which is `Sync`,
-> +// can be used from any thread too.
-> +unsafe impl Sync for Device {}
-> +
-> +/// Trait for device driver specific information.
-> +///
-> +/// This data structure is passed to a driver with the operations for `s=
-truct net_device`
-> +/// like `struct net_device_ops`, `struct ethtool_ops`, `struct rtnl_lin=
-k_ops`, etc.
-> +pub trait DriverData {
-> +    /// The object are stored in C object, `struct net_device`.
-> +    type Data: ForeignOwnable + Send + Sync;
-
-Why is this an associated type? Could you not use
-`D: ForeignOwnable + Send + Sync` everywhere instead?
-I think this should be possible, since `DriverData` does not define
-anything else.
-
-> +}
-> +
-> +/// Registration structure for a network device driver.
-> +///
-> +/// This allocates and owns a `struct net_device` object.
-> +/// Once the `net_device` object is registered via `register_netdev` fun=
-ction,
-> +/// the kernel calls various functions such as `struct net_device_ops` o=
-perations with
-> +/// the `net_device` object.
-> +///
-> +/// A driver must implement `struct net_device_ops` so the trait for it =
-is tied.
-> +/// Other operations like `struct ethtool_ops` are optional.
-> +pub struct Registration<T: DeviceOperations<D>, D: DriverData> {
-> +    dev: Device,
-> +    is_registered: bool,
-> +    _p: PhantomData<(D, T)>,
-> +}
-> +
-> +impl<D: DriverData, T: DeviceOperations<D>> Drop for Registration<T, D> =
-{
-> +    fn drop(&mut self) {
-> +        // SAFETY: The type invariants guarantee that `self.dev.0` is va=
-lid.
-> +        unsafe {
-> +            let _ =3D D::Data::from_foreign(self.dev.priv_data_ptr());
-
-Why is `self.dev.priv_data_ptr()` a valid pointer?
-This `unsafe` block should be split to better explain the different safety
-requirements.
-
-> +            if self.is_registered {
-> +                bindings::unregister_netdev(self.dev.0);
-> +            }
-> +            bindings::free_netdev(self.dev.0);
-> +        }
-> +    }
-> +}
-> +
-> +impl<D: DriverData, T: DeviceOperations<D>> Registration<T, D> {
-> +    /// Creates a new [`Registration`] instance for ethernet device.
-> +    ///
-> +    /// A device driver can pass private data.
-> +    pub fn try_new_ether(tx_queue_size: u32, rx_queue_size: u32, data: D=
-::Data) -> Result<Self> {
-> +        // SAFETY: FFI call.
-
-If this FFI call has no safety requirements then say so.
-
-> +        let ptr =3D from_err_ptr(unsafe {
-> +            bindings::alloc_etherdev_mqs(
-> +                core::mem::size_of::<*const c_void>() as i32,
-> +                tx_queue_size,
-> +                rx_queue_size,
-> +            )
-> +        })?;
-> +
-> +        // SAFETY: `ptr` is valid and non-null since `alloc_etherdev_mqs=
-()`
-> +        // returned a valid pointer which was null-checked.
-> +        let dev =3D unsafe { Device::from_ptr(ptr) };
-> +        // SAFETY: It's safe to write an address to the returned pointer
-> +        // from `netdev_priv()` because `alloc_etherdev_mqs()` allocates
-> +        // contiguous memory for `struct net_device` and a pointer.
-> +        unsafe {
-> +            let priv_ptr =3D bindings::netdev_priv(ptr) as *mut *const c=
-_void;
-> +            core::ptr::write(priv_ptr, data.into_foreign());
-> +        }
-> +        Ok(Registration {
-> +            dev,
-> +            is_registered: false,
-> +            _p: PhantomData,
-> +        })
-> +    }
-> +
-> +    /// Returns a network device.
-> +    ///
-> +    /// A device driver normally configures the device before registrati=
-on.
-> +    pub fn dev_get(&mut self) -> &mut Device {
-> +        &mut self.dev
-> +    }
-> +
-> +    /// Registers a network device.
-> +    pub fn register(&mut self) -> Result {
-> +        if self.is_registered {
-> +            return Err(code::EINVAL);
-> +        }
-> +        // SAFETY: The type invariants guarantee that `self.dev.0` is va=
-lid.
-> +        let ret =3D unsafe {
-> +            (*self.dev.0).netdev_ops =3D Self::build_device_ops();
-> +            bindings::register_netdev(self.dev.0)
-> +        };
-> +        if ret !=3D 0 {
-> +            Err(Error::from_errno(ret))
-> +        } else {
-> +            self.is_registered =3D true;
-> +            Ok(())
-> +        }
-> +    }
-> +
-> +    const DEVICE_OPS: bindings::net_device_ops =3D bindings::net_device_=
-ops {
-> +        ndo_init: if <T>::HAS_INIT {
-> +            Some(Self::init_callback)
-> +        } else {
-> +            None
-> +        },
-> +        ndo_uninit: if <T>::HAS_UNINIT {
-> +            Some(Self::uninit_callback)
-> +        } else {
-> +            None
-> +        },
-> +        ndo_open: if <T>::HAS_OPEN {
-> +            Some(Self::open_callback)
-> +        } else {
-> +            None
-> +        },
-> +        ndo_stop: if <T>::HAS_STOP {
-> +            Some(Self::stop_callback)
-> +        } else {
-> +            None
-> +        },
-> +        ndo_start_xmit: if <T>::HAS_START_XMIT {
-> +            Some(Self::start_xmit_callback)
-> +        } else {
-> +            None
-> +        },
-> +        // SAFETY: The rest is zeroed out to initialize `struct net_devi=
-ce_ops`,
-> +        // set `Option<&F>` to be `None`.
-> +        ..unsafe { core::mem::MaybeUninit::<bindings::net_device_ops>::z=
-eroed().assume_init() }
-> +    };
-> +
-> +    const fn build_device_ops() -> &'static bindings::net_device_ops {
-> +        &Self::DEVICE_OPS
-> +    }
-
-Why does this function exist?
-
-> +
-> +    unsafe extern "C" fn init_callback(netdev: *mut bindings::net_device=
-) -> core::ffi::c_int {
-> +        from_result(|| {
-
-Since you are the first user of `from_result`, you can remove the
-`#[allow(dead_code)]` attribute.
-
-@Reviewers/Maintainers: Or would we prefer to make that change ourselves?
-
-> +            // SAFETY: The C API guarantees that `netdev` is valid while=
- this function is running.
-> +            let mut dev =3D unsafe { Device::from_ptr(netdev) };
-> +            // SAFETY: The returned pointer was initialized by `D::Data:=
-:into_foreign` when
-> +            // `Registration` object was created.
-> +            // `D::Data::from_foreign` is only called by the object was =
-released.
-> +            // So we know `data` is valid while this function is running=
-.
-
-This should be a type invariant of `Registration`.
-
-> +            let data =3D unsafe { D::Data::borrow(dev.priv_data_ptr()) }=
-;
-> +            T::init(&mut dev, data)?;
-> +            Ok(0)
-> +        })
-> +    }
-> +
-> +    unsafe extern "C" fn uninit_callback(netdev: *mut bindings::net_devi=
-ce) {
-> +        // SAFETY: The C API guarantees that `netdev` is valid while thi=
-s function is running.
-> +        let mut dev =3D unsafe { Device::from_ptr(netdev) };
-> +        // SAFETY: The returned pointer was initialized by `D::Data::int=
-o_foreign` when
-> +        // `Registration` object was created.
-> +        // `D::Data::from_foreign` is only called by the object was rele=
-ased.
-> +        // So we know `data` is valid while this function is running.
-> +        let data =3D unsafe { D::Data::borrow(dev.priv_data_ptr()) };
-> +        T::uninit(&mut dev, data);
-> +    }
-> +
-> +    unsafe extern "C" fn open_callback(netdev: *mut bindings::net_device=
-) -> core::ffi::c_int {
-> +        from_result(|| {
-> +            // SAFETY: The C API guarantees that `netdev` is valid while=
- this function is running.
-> +            let mut dev =3D unsafe { Device::from_ptr(netdev) };
-> +            // SAFETY: The returned pointer was initialized by `D::Data:=
-:into_foreign` when
-> +            // `Registration` object was created.
-> +            // `D::Data::from_foreign` is only called by the object was =
-released.
-> +            // So we know `data` is valid while this function is running=
-.
-> +            let data =3D unsafe { D::Data::borrow(dev.priv_data_ptr()) }=
-;
-> +            T::open(&mut dev, data)?;
-> +            Ok(0)
-> +        })
-> +    }
-> +
-> +    unsafe extern "C" fn stop_callback(netdev: *mut bindings::net_device=
-) -> core::ffi::c_int {
-> +        from_result(|| {
-> +            // SAFETY: The C API guarantees that `netdev` is valid while=
- this function is running.
-> +            let mut dev =3D unsafe { Device::from_ptr(netdev) };
-> +            // SAFETY: The returned pointer was initialized by `D::Data:=
-:into_foreign` when
-> +            // `Registration` object was created.
-> +            // `D::Data::from_foreign` is only called by the object was =
-released.
-> +            // So we know `data` is valid while this function is running=
-.
-> +            let data =3D unsafe { D::Data::borrow(dev.priv_data_ptr()) }=
-;
-> +            T::stop(&mut dev, data)?;
-> +            Ok(0)
-> +        })
-> +    }
-> +
-> +    unsafe extern "C" fn start_xmit_callback(
-> +        skb: *mut bindings::sk_buff,
-> +        netdev: *mut bindings::net_device,
-> +    ) -> bindings::netdev_tx_t {
-> +        // SAFETY: The C API guarantees that `netdev` is valid while thi=
-s function is running.
-> +        let mut dev =3D unsafe { Device::from_ptr(netdev) };
-> +        // SAFETY: The returned pointer was initialized by `D::Data::int=
-o_foreign` when
-> +        // `Registration` object was created.
-> +        // `D::Data::from_foreign` is only called by the object was rele=
-ased.
-> +        // So we know `data` is valid while this function is running.
-> +        let data =3D unsafe { D::Data::borrow(dev.priv_data_ptr()) };
-> +        // SAFETY: The C API guarantees that `skb` is valid while this f=
-unction is running.
-> +        let skb =3D unsafe { SkBuff::from_ptr(skb) };
-> +        T::start_xmit(&mut dev, data, skb) as bindings::netdev_tx_t
-> +    }
-> +}
-> +
-> +// SAFETY: `Registration` exposes only `Device` object which can be used=
- from
-> +// any thread.
-> +unsafe impl<D: DriverData, T: DeviceOperations<D>> Send for Registration=
-<T, D> {}
-> +// SAFETY: `Registration` exposes only `Device` object which can be used=
- from
-> +// any thread.
-> +unsafe impl<D: DriverData, T: DeviceOperations<D>> Sync for Registration=
-<T, D> {}
-> +
-> +/// Corresponds to the kernel's `enum netdev_tx`.
-> +#[repr(i32)]
-> +pub enum TxCode {
-> +    /// Driver took care of packet.
-> +    Ok =3D bindings::netdev_tx_NETDEV_TX_OK,
-> +    /// Driver tx path was busy.
-> +    Busy =3D bindings::netdev_tx_NETDEV_TX_BUSY,
-> +}
-> +
-> +/// Corresponds to the kernel's `struct net_device_ops`.
-> +///
-> +/// A device driver must implement this. Only very basic operations are =
-supported for now.
-> +#[vtable]
-> +pub trait DeviceOperations<D: DriverData> {
-
-Why is this trait generic over `D`? Why is this not `Self` or an associated
-type?
-
-> +    /// Corresponds to `ndo_init` in `struct net_device_ops`.
-> +    fn init(_dev: &mut Device, _data: <D::Data as ForeignOwnable>::Borro=
-wed<'_>) -> Result {
-
-Why do all of these functions take a `&mut Device`? `Device` already is a
-pointer, so why the double indirection?
-
-> +        Ok(())
-> +    }
-> +
-> +    /// Corresponds to `ndo_uninit` in `struct net_device_ops`.
-> +    fn uninit(_dev: &mut Device, _data: <D::Data as ForeignOwnable>::Bor=
-rowed<'_>) {}
-> +
-> +    /// Corresponds to `ndo_open` in `struct net_device_ops`.
-> +    fn open(_dev: &mut Device, _data: <D::Data as ForeignOwnable>::Borro=
-wed<'_>) -> Result {
-> +        Ok(())
-> +    }
-> +
-> +    /// Corresponds to `ndo_stop` in `struct net_device_ops`.
-> +    fn stop(_dev: &mut Device, _data: <D::Data as ForeignOwnable>::Borro=
-wed<'_>) -> Result {
-> +        Ok(())
-> +    }
-> +
-> +    /// Corresponds to `ndo_start_xmit` in `struct net_device_ops`.
-> +    fn start_xmit(
-> +        _dev: &mut Device,
-> +        _data: <D::Data as ForeignOwnable>::Borrowed<'_>,
-> +        _skb: SkBuff,
-> +    ) -> TxCode {
-> +        TxCode::Busy
-> +    }
-> +}
-> +
-> +/// Corresponds to the kernel's `struct sk_buff`.
-> +///
-> +/// A driver manages `struct sk_buff` in two ways. In both ways, the own=
-ership is transferred
-> +/// between C and Rust. The allocation and release are done asymmetrical=
-ly.
-> +///
-> +/// On the tx side (`ndo_start_xmit` operation in `struct net_device_ops=
-`), the kernel allocates
-> +/// a `sk_buff' object and passes it to the driver. The driver is respon=
-sible for the release
-> +/// after transmission.
-> +/// On the rx side, the driver allocates a `sk_buff` object then passes =
-it to the kernel
-> +/// after receiving data.
-> +///
-> +/// # Invariants
-> +///
-> +/// The pointer is valid.
-> +pub struct SkBuff(*mut bindings::sk_buff);
-> +
-> +impl SkBuff {
-> +    /// Creates a new [`SkBuff`] instance.
-> +    ///
-> +    /// # Safety
-> +    ///
-> +    /// Callers must ensure that `ptr` must be valid.
-> +    unsafe fn from_ptr(ptr: *mut bindings::sk_buff) -> Self {
-> +        // INVARIANT: The safety requirements ensure the invariant.
-> +        Self(ptr)
-> +    }
-> +
-> +    /// Provides a time stamp.
-> +    pub fn tx_timestamp(&mut self) {
-> +        // SAFETY: The type invariants guarantee that `self.0` is valid.
-> +        unsafe {
-> +            bindings::skb_tx_timestamp(self.0);
-> +        }
-> +    }
-> +}
-> +
-> +impl Drop for SkBuff {
-> +    fn drop(&mut self) {
-> +        // SAFETY: The type invariants guarantee that `self.0` is valid.
-> +        unsafe {
-> +            bindings::kfree_skb_reason(
-> +                self.0,
-> +                bindings::skb_drop_reason_SKB_DROP_REASON_NOT_SPECIFIED,
-> +            )
-
-AFAICT this function frees the `struct sk_buff`, why is this safe? This
-function also has as a requirement that all other pointers to this struct
-are never used again. How do you guarantee this?
-You mentioned above that there are two us cases for an SkBuff, in one case
-the kernel frees it and in another the driver. How do we know that we can
-free it here?
-
---
-Cheers,
-Benno
-
-> +        }
-> +    }
-> +}
-> --
-> 2.34.1
+On Thu, Jun 15, 2023 at 03:04:58PM +0800, Wang Ming wrote:
+>  The fwnode_for_each_child_node loop in qca8k_setup_led_ctrl should
+>  have fwnode_handle_put() before return which could avoid resource leaks.
+>  This patch could fix this bug.
 > 
+> Signed-off-by: Wang Ming <machel@vivo.com>
+
+Hi Wang Ming,
+
+unfortunately your patch has been whitespace mangled - tabs have been
+converted into 8 spaces. Possibly this was done by your mail client
+or mail server. In any case the result is that the patch doesn't apply.
+And unfortunately that breaks our processes.
+
+Also, I'm assuming that as this patch is a fix, it is targeted at the
+"net", as opposed to "net-next", tree. This should be noted in the subject.
+
+	Subject: [PATCH net v2] ...
+
+Lastly, looking at the git history of qca8k-leds.c, I think that
+a better prefix for the patch is "net: dsa: qca8k: ".
+
+	Subject: [PATCH net v2] net: dsa: qca8k: ...
+
+Please consider addressing the problems and reposting your patch.
+
+-- 
+pw-bot: changes-requested
 
