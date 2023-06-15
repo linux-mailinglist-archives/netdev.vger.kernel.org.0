@@ -1,215 +1,116 @@
-Return-Path: <netdev+bounces-11109-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11112-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7DACA7318E4
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 14:22:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 1A0BA731909
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 14:38:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AF9021C20EEA
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 12:22:50 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 195EE1C20F1E
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 12:38:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 244451D2AF;
-	Thu, 15 Jun 2023 12:15:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1DA1E63A5;
+	Thu, 15 Jun 2023 12:38:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 197751ACB2
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 12:15:25 +0000 (UTC)
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 677A72943
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 05:15:05 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id 2adb3069b0e04-4f841b7a697so1135131e87.3
-        for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 05:15:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20221208.gappssmtp.com; s=20221208; t=1686831303; x=1689423303;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ehfVzvQExF8A0HC8WC/ILIhv/WTmHbal1y8W4TeN1es=;
-        b=Wu7sz9no4+E8WobBYLCTxrRQ/ms5cwOJWlPzNtXwqHQMxzmBf5xhIkwHh6m0zZ747E
-         Xd8rdNa2gg+7ZwyKASQElj9GxfdetYldiyx+OqRdXH02wPTOy8aPbQW4+Uk80h2jUH4O
-         1+qye4b806eH5haBuO/GcTONTvg/RUyUfVowUuLIqaRUA4+z4YouDS4U4UAn8WrBlqxT
-         UhKIyOyvnt2b3hS2nx8L1ASe+qeIQGGv25SN/2Qstdr5ZNnoiRgaPs87RWveDl591nAT
-         PjCryBJlEXlDJmLud0L8AWDCywY0Mo3IsceqcK4BzuFY9zkl+TXGnaQFVggc4Gw+QotL
-         +vbA==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11FCD6106
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 12:38:02 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26F81FDB
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 05:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686832681;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=gTIAUs6tWTx1JxWTYhYUIaHzGBgz21d+mfQ6B/1Bob8=;
+	b=NQLN7iFng6hFlqLz1FJO5bY7JNngeDT72Y01bJtI3QTtrKLUAnFNV3K7PIqmjp3NxLejqB
+	3/m/2AsHVRJtcO26o9EFDDfMtH628zJawz6aBWWZan+RPcEueqPCSdfWD5EOwrV0D3VuTY
+	gyFFvdrPX2HjxTtUT0NDlmXiVRdu+vg=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-381-caIo-0gqOCqRqzkvrhflww-1; Thu, 15 Jun 2023 08:37:53 -0400
+X-MC-Unique: caIo-0gqOCqRqzkvrhflww-1
+Received: by mail-ej1-f71.google.com with SMTP id a640c23a62f3a-9829a080268so80996366b.3
+        for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 05:37:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686831303; x=1689423303;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1686832672; x=1689424672;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ehfVzvQExF8A0HC8WC/ILIhv/WTmHbal1y8W4TeN1es=;
-        b=Q/EMBNuV+HpvzzJ5QzGycVMf4i2z/SSum14MsSUh/03dEyFjDSVZ8ocwx+L8H6cA3U
-         9LuLCMcGcrvDDcOeHvd6pzRFFKXOG7EaelDko0yaui3DyO1qGvMYRIyHNNa1SRGqeEDn
-         JuBSp/JpNnwfAeByMPJer20BGwillcFhCQlfccZ2u/PLKiAnBSZFybF+DcdKpem7Ks24
-         irihMj5u5ejE3P9OTcJzDQA7EtEaXad+xbWj+cDSEVvwcAkcLzVHGKFtkzSMD2liEuIi
-         OX+5ky5FMwPzkxLxXw+/STzOpOtTEm/hYb3vwIt3pICgyBXdKZDf5zj++NfQZ7R8ABQ7
-         CPlQ==
-X-Gm-Message-State: AC+VfDzWjF7hViCHW90QfmKCeZaCfm183xOoP7ezH3EMy/7F+xxpBgnG
-	VAzCTBSKYChank6d8wCRx5KXwQ==
-X-Google-Smtp-Source: ACHHUZ501jOXOdbI2vCoh9Z+8k50wxBJblPlQxddMcmLJtJFW3AHRsWBrNj0ZJXAqwZBC0Y5jwcrWQ==
-X-Received: by 2002:a05:6512:44b:b0:4f2:6817:2379 with SMTP id y11-20020a056512044b00b004f268172379mr9064077lfk.23.1686831303698;
-        Thu, 15 Jun 2023 05:15:03 -0700 (PDT)
-Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:2ad4:65a7:d9f3:a64e])
-        by smtp.gmail.com with ESMTPSA id k17-20020a5d4291000000b003047ea78b42sm20918012wrq.43.2023.06.15.05.15.02
+        bh=gTIAUs6tWTx1JxWTYhYUIaHzGBgz21d+mfQ6B/1Bob8=;
+        b=Z2JxKjcpuBORc2idnL3HrmfAVdANeCkisTpQpdIhZdVqFq3NyW9mdrCLwfnIq8XcRH
+         EoHkGyxKM+KQwm6ZcI3VdTQ3Xr3YogQATNv/MYxGE478YARHPBZVmFiBdKvs954Y5G+7
+         hEnjDi/R5cmRTw/Iw96EvXm4SgERtppfexZAZQ+zZyb9nb0+JWdSc/uuyqSrgfL3g5bt
+         rZlDV8ZQP6iIZO13riWJPueoIZWAcfiFG/Bf///mSNlHdYWFVH16PvyiYSyb2cW4Pblx
+         aRrRDmMOJ2A1eiaAqNMb4WsaiBBkXKHU1DAJB7sa6FpPC30s53T40Bu0fX0cuDpbxlnZ
+         QCIw==
+X-Gm-Message-State: AC+VfDwo7Fgb1sE96npiKOqNOixPzzxmgptRLEx/sGaFP80+2HT+NJad
+	DuOs4XIX3mCKzjcY92J5E/tj5xk41xBRfOMP++JwXl0VuRdKreie88tCyAYQD/5kXfkuNKKgBBl
+	Ax1xg49dZZexPTDWP
+X-Received: by 2002:a17:906:58c8:b0:96f:e7cf:5015 with SMTP id e8-20020a17090658c800b0096fe7cf5015mr20449709ejs.17.1686832672180;
+        Thu, 15 Jun 2023 05:37:52 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4yLdrC3Ns33uRvMP1BQdUvRNhpaN9fVe272nbI+nzoGeNbjGmBXTp3+HDcp0B9u0AVYvhhYg==
+X-Received: by 2002:a17:906:58c8:b0:96f:e7cf:5015 with SMTP id e8-20020a17090658c800b0096fe7cf5015mr20449690ejs.17.1686832671834;
+        Thu, 15 Jun 2023 05:37:51 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id q15-20020a170906940f00b00977eb9957e9sm9378146ejx.128.2023.06.15.05.37.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jun 2023 05:15:03 -0700 (PDT)
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-To: Vinod Koul <vkoul@kernel.org>,
-	Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-	Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Kishon Vijay Abraham I <kishon@kernel.org>,
-	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Jose Abreu <joabreu@synopsys.com>
-Cc: netdev@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-phy@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: [PATCH v2 23/23] arm64: dts: qcom: sa8775p-ride: enable ethernet0
-Date: Thu, 15 Jun 2023 14:14:19 +0200
-Message-Id: <20230615121419.175862-24-brgl@bgdev.pl>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230615121419.175862-1-brgl@bgdev.pl>
-References: <20230615121419.175862-1-brgl@bgdev.pl>
+        Thu, 15 Jun 2023 05:37:51 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+	id 68D0ABBEC27; Thu, 15 Jun 2023 14:29:54 +0200 (CEST)
+From: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To: Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+ intel-wired-lan@lists.osuosl.org
+Cc: netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+ magnus.karlsson@intel.com, fred@cloudflare.com,
+ aleksander.lobakin@intel.com, Maciej Fijalkowski
+ <maciej.fijalkowski@intel.com>
+Subject: Re: [PATCH v3 iwl-next] ice: allow hot-swapping XDP programs
+In-Reply-To: <20230615113326.347770-1-maciej.fijalkowski@intel.com>
+References: <20230615113326.347770-1-maciej.fijalkowski@intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date: Thu, 15 Jun 2023 14:29:54 +0200
+Message-ID: <87v8fogb7h.fsf@toke.dk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
 
-Enable the first 1Gb ethernet port on sa8775p-ride development board.
+> Currently ice driver's .ndo_bpf callback brings interface down and up
+> independently of XDP resources' presence. This is only needed when
+> either these resources have to be configured or removed. It means that
+> if one is switching XDP programs on-the-fly with running traffic,
+> packets will be dropped.
+>
+> To avoid this, compare early on ice_xdp_setup_prog() state of incoming
+> bpf_prog pointer vs the bpf_prog pointer that is already assigned to
+> VSI. Do the swap in case VSI has bpf_prog and incoming one are non-NULL.
+>
+> Lastly, while at it, put old bpf_prog *after* the update of Rx ring's
+> bpf_prog pointer. In theory previous code could expose us to a state
+> where Rx ring's bpf_prog would still be referring to old_prog that got
+> released with earlier bpf_prog_put().
+>
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
----
- arch/arm64/boot/dts/qcom/sa8775p-ride.dts | 88 +++++++++++++++++++++++
- 1 file changed, 88 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sa8775p-ride.dts b/arch/arm64/boot/dts/qcom/sa8775p-ride.dts
-index bf90f825ff67..b2aa16037707 100644
---- a/arch/arm64/boot/dts/qcom/sa8775p-ride.dts
-+++ b/arch/arm64/boot/dts/qcom/sa8775p-ride.dts
-@@ -261,6 +261,94 @@ vreg_l8e: ldo8 {
- 	};
- };
- 
-+&ethernet0 {
-+	phy-mode = "sgmii";
-+	phy-handle = <&sgmii_phy>;
-+
-+	pinctrl-0 = <&ethernet0_default>;
-+	pinctrl-names = "default";
-+
-+	snps,mtl-rx-config = <&mtl_rx_setup>;
-+	snps,mtl-tx-config = <&mtl_tx_setup>;
-+	snps,ps-speed = <1000>;
-+
-+	status = "okay";
-+
-+	mdio {
-+		compatible = "snps,dwmac-mdio";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		reset-gpios = <&pmm8654au_2_gpios 8 GPIO_ACTIVE_LOW>;
-+		reset-delay-us = <11000>;
-+		reset-post-delay-us = <70000>;
-+
-+		sgmii_phy: phy@8 {
-+			reg = <0x8>;
-+			device_type = "ethernet-phy";
-+		};
-+	};
-+
-+	mtl_rx_setup: rx-queues-config {
-+		snps,rx-queues-to-use = <4>;
-+		snps,rx-sched-sp;
-+
-+		queue0 {
-+			snps,dcb-algorithm;
-+			snps,map-to-dma-channel = <0x0>;
-+			snps,route-up;
-+			snps,priority = <0x1>;
-+		};
-+
-+		queue1 {
-+			snps,dcb-algorithm;
-+			snps,map-to-dma-channel = <0x1>;
-+			snps,route-ptp;
-+		};
-+
-+		queue2 {
-+			snps,avb-algorithm;
-+			snps,map-to-dma-channel = <0x2>;
-+			snps,route-avcp;
-+		};
-+
-+		queue3 {
-+			snps,avb-algorithm;
-+			snps,map-to-dma-channel = <0x3>;
-+			snps,priority = <0xc>;
-+		};
-+	};
-+
-+	mtl_tx_setup: tx-queues-config {
-+		snps,tx-queues-to-use = <4>;
-+		snps,tx-sched-sp;
-+
-+		queue0 {
-+			snps,dcb-algorithm;
-+		};
-+
-+		queue1 {
-+			snps,dcb-algorithm;
-+		};
-+
-+		queue2 {
-+			snps,avb-algorithm;
-+			snps,send_slope = <0x1000>;
-+			snps,idle_slope = <0x1000>;
-+			snps,high_credit = <0x3e800>;
-+			snps,low_credit = <0xffc18000>;
-+		};
-+
-+		queue3 {
-+			snps,avb-algorithm;
-+			snps,send_slope = <0x1000>;
-+			snps,idle_slope = <0x1000>;
-+			snps,high_credit = <0x3e800>;
-+			snps,low_credit = <0xffc18000>;
-+		};
-+	};
-+};
-+
- &i2c11 {
- 	clock-frequency = <400000>;
- 	pinctrl-0 = <&qup_i2c11_default>;
--- 
-2.39.2
+Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
 
