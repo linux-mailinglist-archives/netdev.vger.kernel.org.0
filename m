@@ -1,50 +1,50 @@
-Return-Path: <netdev+bounces-11202-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11203-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 43CD2731F1A
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 19:32:24 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id CDA35731F1F
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 19:32:50 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id F38D3280CE6
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 17:32:22 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8800328155A
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 17:32:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 07C0D19BAA;
-	Thu, 15 Jun 2023 17:27:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B876F2E0E2;
+	Thu, 15 Jun 2023 17:27:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC6AF2E0E0;
-	Thu, 15 Jun 2023 17:27:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABD041ACA0;
+	Thu, 15 Jun 2023 17:27:08 +0000 (UTC)
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B23D2294C;
-	Thu, 15 Jun 2023 10:26:56 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83972964;
+	Thu, 15 Jun 2023 10:27:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686850016; x=1718386016;
+  t=1686850022; x=1718386022;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=tgDv88hQgZCzP3VrYKShZSuN3qxZaUyFZJ4hl9hdzEo=;
-  b=WZpUOfw/YDGJsXus8aBgK4eAjq6AnE9RDhOCaTAR2wUm0yAgVRZ1zj/8
-   /25UT7pAfs6+2yUxVUQxWV81+cmyetgtRoa+Xf2kx9dinYs1MOhytG3sQ
-   WMTAixLosyv45Vloj4TxBEB91J+mjesY6OcoTajM3ykTKk0CaMbMBZ3G+
-   RNl526JuGdkov5OyhcLD0PuHCcCNLAOvHit4/QZoAdO8I+c5pOCRK6usQ
-   JMySOmCeXmznEX52fLbJQlpTSpg7KWAawIYMSzCFap1n61a9xd2VRYGTG
-   ME3++jFDdY5AmZOGKfKRrYQvfvLUnSGB7emIPrD+4foonr0B3hp81DICH
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="358983574"
+  bh=e7qtKIU7qxpxshvWWEzij/oKOwc+QxhWYqmnBkTZl/M=;
+  b=PrUHD6G7PUmQvrWwe4wylWDEU6wS+csSV7hGapVBzDe6QQRCNoqme+Db
+   e52ydf2yFBglvtHWZAQYG7J7gAAR1JOeSSxBIwaWjsQKpmx/FGU9zmja2
+   f8bNLC+eoIB4KYwmDDyj/7dzFTVvL1BMood1Aqc+sdnAk7NbnyBIEoNhL
+   55/rpTROHWUtAjE+irVEOdQ1u/BcagMJxQAB6nYCS8RoYGvBUZC0y5TMc
+   i2Yd8+wYZKc+rd7WclP+Ez36dXswENJtUjQwBwagfnT9/sYqhXjF9K514
+   4QzouMSu3fee32R/gcNbVtBjwH/EP2sJ7skPIKpov1ZH1EVO6Kng3Yy/l
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="358983585"
 X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
-   d="scan'208";a="358983574"
+   d="scan'208";a="358983585"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2023 10:26:50 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2023 10:26:53 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="689858715"
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="689858756"
 X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
-   d="scan'208";a="689858715"
+   d="scan'208";a="689858756"
 Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga006.jf.intel.com with ESMTP; 15 Jun 2023 10:26:48 -0700
+  by orsmga006.jf.intel.com with ESMTP; 15 Jun 2023 10:26:50 -0700
 From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To: bpf@vger.kernel.org,
 	ast@kernel.org,
@@ -57,9 +57,9 @@ Cc: netdev@vger.kernel.org,
 	maciej.fijalkowski@intel.com,
 	simon.horman@corigine.com,
 	toke@kernel.org
-Subject: [PATCH v4 bpf-next 12/22] xsk: support ZC Tx multi-buffer in batch API
-Date: Thu, 15 Jun 2023 19:25:56 +0200
-Message-Id: <20230615172606.349557-13-maciej.fijalkowski@intel.com>
+Subject: [PATCH v4 bpf-next 13/22] xsk: report zero-copy multi-buffer capability via xdp_features
+Date: Thu, 15 Jun 2023 19:25:57 +0200
+Message-Id: <20230615172606.349557-14-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230615172606.349557-1-maciej.fijalkowski@intel.com>
 References: <20230615172606.349557-1-maciej.fijalkowski@intel.com>
@@ -77,96 +77,99 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Modify xskq_cons_read_desc_batch() in a way that each processed
-descriptor will be checked if it is an EOP one or not and act
-accordingly to that.
-
-Change the behavior of mentioned function to break the processing when
-stumbling upon invalid descriptor instead of skipping it. Furthermore,
-let us give only full packets down to ZC driver.
-With these two assumptions ZC drivers will not have to take care of an
-intermediate state of incomplete frames, which will simplify its
-implementations a lot.
+Introduce new xdp_feature NETDEV_XDP_ACT_ZC_SG that will be used to
+find out if user space that wants to do ZC multi-buffer will be able to
+do so against underlying ZC driver.
 
 Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
- net/xdp/xsk_queue.h | 41 ++++++++++++++++++++++++++++++++---------
- 1 file changed, 32 insertions(+), 9 deletions(-)
+ Documentation/netlink/specs/netdev.yaml | 5 +++++
+ include/uapi/linux/netdev.h             | 5 ++++-
+ net/xdp/xsk_buff_pool.c                 | 6 ++++++
+ tools/include/uapi/linux/netdev.h       | 5 ++++-
+ 4 files changed, 19 insertions(+), 2 deletions(-)
 
-diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-index ab0d13d6d90e..a8f11a41609a 100644
---- a/net/xdp/xsk_queue.h
-+++ b/net/xdp/xsk_queue.h
-@@ -48,6 +48,11 @@ struct xsk_queue {
- 	size_t ring_vmalloc_size;
+diff --git a/Documentation/netlink/specs/netdev.yaml b/Documentation/netlink/specs/netdev.yaml
+index b99e7ffef7a1..ba69c3196980 100644
+--- a/Documentation/netlink/specs/netdev.yaml
++++ b/Documentation/netlink/specs/netdev.yaml
+@@ -42,6 +42,11 @@ definitions:
+         doc:
+           This feature informs if netdev implements non-linear XDP buffer
+           support in ndo_xdp_xmit callback.
++      -
++        name: zc-sg
++        doc:
++          This feature informs if netdev implements non-linear XDP buffer
++          support in zero-copy mode.
+ 
+ attribute-sets:
+   -
+diff --git a/include/uapi/linux/netdev.h b/include/uapi/linux/netdev.h
+index 639524b59930..1f0bf76dade6 100644
+--- a/include/uapi/linux/netdev.h
++++ b/include/uapi/linux/netdev.h
+@@ -24,6 +24,8 @@
+  *   XDP buffer support in the driver napi callback.
+  * @NETDEV_XDP_ACT_NDO_XMIT_SG: This feature informs if netdev implements
+  *   non-linear XDP buffer support in ndo_xdp_xmit callback.
++ * @NETDEV_XDP_ACT_ZC_SG: This feature informs if netdev implements non-linear
++ *   XDP buffer support in zero-copy mode.
+  */
+ enum netdev_xdp_act {
+ 	NETDEV_XDP_ACT_BASIC = 1,
+@@ -33,8 +35,9 @@ enum netdev_xdp_act {
+ 	NETDEV_XDP_ACT_HW_OFFLOAD = 16,
+ 	NETDEV_XDP_ACT_RX_SG = 32,
+ 	NETDEV_XDP_ACT_NDO_XMIT_SG = 64,
++	NETDEV_XDP_ACT_ZC_SG = 128,
+ 
+-	NETDEV_XDP_ACT_MASK = 127,
++	NETDEV_XDP_ACT_MASK = 255,
  };
  
-+struct parsed_desc {
-+	u32 mb;
-+	u32 valid;
-+};
-+
- /* The structure of the shared state of the rings are a simple
-  * circular buffer, as outlined in
-  * Documentation/core-api/circular-buffers.rst. For the Rx and
-@@ -218,30 +223,48 @@ static inline void xskq_cons_release_n(struct xsk_queue *q, u32 cnt)
- 	q->cached_cons += cnt;
- }
- 
--static inline u32 xskq_cons_read_desc_batch(struct xsk_queue *q, struct xsk_buff_pool *pool,
--					    u32 max)
-+static inline void parse_desc(struct xsk_queue *q, struct xsk_buff_pool *pool,
-+			      struct xdp_desc *desc, struct parsed_desc *parsed)
-+{
-+	parsed->valid = xskq_cons_is_valid_desc(q, desc, pool);
-+	parsed->mb = xp_mb_desc(desc);
-+}
-+
-+static inline
-+u32 xskq_cons_read_desc_batch(struct xsk_queue *q, struct xsk_buff_pool *pool,
-+			      u32 max)
- {
- 	u32 cached_cons = q->cached_cons, nb_entries = 0;
- 	struct xdp_desc *descs = pool->tx_descs;
-+	u32 total_descs = 0, nr_frags = 0;
- 
-+	/* track first entry, if stumble upon *any* invalid descriptor, rewind
-+	 * current packet that consists of frags and stop the processing
-+	 */
- 	while (cached_cons != q->cached_prod && nb_entries < max) {
- 		struct xdp_rxtx_ring *ring = (struct xdp_rxtx_ring *)q->ring;
- 		u32 idx = cached_cons & q->ring_mask;
-+		struct parsed_desc parsed;
- 
- 		descs[nb_entries] = ring->desc[idx];
--		if (unlikely(!xskq_cons_is_valid_desc(q, &descs[nb_entries], pool))) {
--			/* Skip the entry */
--			cached_cons++;
--			continue;
--		}
-+		cached_cons++;
-+		parse_desc(q, pool, &descs[nb_entries], &parsed);
-+		if (unlikely(!parsed.valid))
-+			break;
- 
- 		nb_entries++;
--		cached_cons++;
-+		if (likely(!parsed.mb)) {
-+			total_descs += (nr_frags + 1);
-+			nr_frags = 0;
-+		} else {
-+			nr_frags++;
-+		}
+ enum {
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 6e2ed66fd430..f3102835803d 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -189,6 +189,12 @@ int xp_assign_dev(struct xsk_buff_pool *pool,
+ 		goto err_unreg_pool;
  	}
  
-+	cached_cons -= nr_frags;
- 	/* Release valid plus any invalid entries */
- 	xskq_cons_release_n(q, cached_cons - q->cached_cons);
--	return nb_entries;
-+	return total_descs;
- }
++	if (!(netdev->xdp_features & NETDEV_XDP_ACT_ZC_SG) &&
++	    flags & XDP_USE_SG) {
++		err = -EOPNOTSUPP;
++		goto err_unreg_pool;
++	}
++
+ 	bpf.command = XDP_SETUP_XSK_POOL;
+ 	bpf.xsk.pool = pool;
+ 	bpf.xsk.queue_id = queue_id;
+diff --git a/tools/include/uapi/linux/netdev.h b/tools/include/uapi/linux/netdev.h
+index 639524b59930..1f0bf76dade6 100644
+--- a/tools/include/uapi/linux/netdev.h
++++ b/tools/include/uapi/linux/netdev.h
+@@ -24,6 +24,8 @@
+  *   XDP buffer support in the driver napi callback.
+  * @NETDEV_XDP_ACT_NDO_XMIT_SG: This feature informs if netdev implements
+  *   non-linear XDP buffer support in ndo_xdp_xmit callback.
++ * @NETDEV_XDP_ACT_ZC_SG: This feature informs if netdev implements non-linear
++ *   XDP buffer support in zero-copy mode.
+  */
+ enum netdev_xdp_act {
+ 	NETDEV_XDP_ACT_BASIC = 1,
+@@ -33,8 +35,9 @@ enum netdev_xdp_act {
+ 	NETDEV_XDP_ACT_HW_OFFLOAD = 16,
+ 	NETDEV_XDP_ACT_RX_SG = 32,
+ 	NETDEV_XDP_ACT_NDO_XMIT_SG = 64,
++	NETDEV_XDP_ACT_ZC_SG = 128,
  
- /* Functions for consumers */
+-	NETDEV_XDP_ACT_MASK = 127,
++	NETDEV_XDP_ACT_MASK = 255,
+ };
+ 
+ enum {
 -- 
 2.34.1
 
