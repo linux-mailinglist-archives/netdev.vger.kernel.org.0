@@ -1,87 +1,253 @@
-Return-Path: <netdev+bounces-11189-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11204-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 5EF7F731EE0
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 19:26:10 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2C135731F21
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 19:33:19 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 90F7E1C20E51
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 17:26:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CC50328154F
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 17:33:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 851932E0D6;
-	Thu, 15 Jun 2023 17:26:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9C27E1ACCF;
+	Thu, 15 Jun 2023 17:27:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77F132E0C0
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 17:26:07 +0000 (UTC)
-Received: from mail-il1-f177.google.com (mail-il1-f177.google.com [209.85.166.177])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C00A2719;
-	Thu, 15 Jun 2023 10:26:02 -0700 (PDT)
-Received: by mail-il1-f177.google.com with SMTP id e9e14a558f8ab-33b3f2f7989so33644285ab.0;
-        Thu, 15 Jun 2023 10:26:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686849961; x=1689441961;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=exG2p6jfHrkVt3gD9cpzVxY9zfQ5o6txkxlgxOC4V5s=;
-        b=D+jxxCwXpAbQBBTy5p+KsDA/ixkNvO1I3crka9hMw9xVJnvVKLHW/rtjm9qp09eh1I
-         QJrsf8K17f52B5Xq6oTfuJNG3hM1I+DTkZElL25O/wWOwF7VpyBBrNtMUswQqS5G5I6L
-         8Nk/qtKAKbCU0Sc6KoVF5WuQByF7U05nX0Xvh7BYx4Ve0LHsJlsM5kB7izmS/BcKBaAJ
-         sCPCywjX79hoZmDqPzwxITfFYwZiDYVLmzi/2jTyxxdF7MFx4kkLGRU6J0SAZJHf2e7N
-         NJqXD8+f/F0eZ4ePiu9ZgUks2QUJK6G1JdveZd3gseEKBvMl3CoeeBcGt903P65O9D4A
-         m7Yw==
-X-Gm-Message-State: AC+VfDz171NRnztsVEF98MpZmPi6WQEd505bqh/fMGeE5RXyqcC9Ay6Z
-	wQ6991IpCc1hzSQ99Pqk6A==
-X-Google-Smtp-Source: ACHHUZ5OY/78Q9+EkXUtW7QfRE97v9U6izCvlVvD/gTXPhcjQEVg8gjTo1ksk34UZZ7sQlobY0qPWw==
-X-Received: by 2002:a92:d686:0:b0:341:d9e7:9d94 with SMTP id p6-20020a92d686000000b00341d9e79d94mr31146iln.25.1686849961169;
-        Thu, 15 Jun 2023 10:26:01 -0700 (PDT)
-Received: from robh_at_kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id v24-20020a02b918000000b0041a9022c3dasm5730248jan.118.2023.06.15.10.25.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jun 2023 10:26:00 -0700 (PDT)
-Received: (nullmailer pid 1229216 invoked by uid 1000);
-	Thu, 15 Jun 2023 17:25:58 -0000
-Date: Thu, 15 Jun 2023 11:25:58 -0600
-From: Rob Herring <robh@kernel.org>
-To: Rob Herring <robh@kernel.org>
-Cc: Amitkumar Karwar <amitkumar.karwar@nxp.com>, Neeraj Kale <neeraj.sanjaykale@nxp.com>, "David S. Miller" <davem@davemloft.net>, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>, devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Subject: Re: [PATCH] dt-bindings: net: bluetooth: nxp: Add missing type for
- "fw-init-baudrate"
-Message-ID: <168684995787.1229168.16425251556673819198.robh@kernel.org>
-References: <20230613200929.2822137-1-robh@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D9881ACA0;
+	Thu, 15 Jun 2023 17:27:09 +0000 (UTC)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F282965;
+	Thu, 15 Jun 2023 10:27:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686850023; x=1718386023;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=cMs7alcoAHlGcLpPM/BnqNmkMDx5YG8zgVL3fyvUwao=;
+  b=YFHOISU5Sb43Yv2Qq8SNVTb/pe70QZ7dxSpwIInyOgZ23UE3VGrq9Vtu
+   XU9aHv2EsILKa1ezkyLh0uGufb2/Oj4dUM5SuvesrViqZqV0l3i9I14Px
+   aFnLRvdwSYBEmuk+T9+9/H2ZIechWsc3P5LwcOx1oKDJv1CrfPzE2uQ3D
+   X+dRbnvaIFVbBs2RFh1CFGr0Q+TCRloRws6AiK0tzym2AU3clrqz1/H+G
+   LnhKJRCvf/urYgNhip/ftYdB05F1XlC22XnJlKzORaGUsn7FQwQ1d8TUB
+   Lcg2T83FZPzggZgv+sAR+shcHFWrdinRtaEk4GvL38fItX8/JIi7KF29D
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="358983601"
+X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
+   d="scan'208";a="358983601"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2023 10:26:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="689858787"
+X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
+   d="scan'208";a="689858787"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by orsmga006.jf.intel.com with ESMTP; 15 Jun 2023 10:26:53 -0700
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To: bpf@vger.kernel.org,
+	ast@kernel.org,
+	daniel@iogearbox.net,
+	andrii@kernel.org
+Cc: netdev@vger.kernel.org,
+	magnus.karlsson@intel.com,
+	bjorn@kernel.org,
+	tirthendu.sarkar@intel.com,
+	maciej.fijalkowski@intel.com,
+	simon.horman@corigine.com,
+	toke@kernel.org
+Subject: [PATCH v4 bpf-next 14/22] ice: xsk: Tx multi-buffer support
+Date: Thu, 15 Jun 2023 19:25:58 +0200
+Message-Id: <20230615172606.349557-15-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20230615172606.349557-1-maciej.fijalkowski@intel.com>
+References: <20230615172606.349557-1-maciej.fijalkowski@intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230613200929.2822137-1-robh@kernel.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-	FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+Most of this patch is about actually supporting XDP_TX action. Pure Tx
+ZC support is only about looking at XDP_PKT_CONTD presence at options
+field and based on that generating EOP bit on Tx HW descriptor. This is
+that simple due to the implementation on
+xsk_tx_peek_release_desc_batch() where we are making sure that last
+produced descriptor is an EOP one.
 
-On Tue, 13 Jun 2023 14:09:29 -0600, Rob Herring wrote:
-> "fw-init-baudrate" is missing a type, add it. While we're here, define the
-> default value with a schema rather than freeform text.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../devicetree/bindings/net/bluetooth/nxp,88w8987-bt.yaml    | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
+Report via xdp_features that this driver is now capable of consuming
+multi-buffer packets on both Rx and Tx sides.
 
-Applied, thanks!
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_main.c |  2 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c  | 83 ++++++++++++++++-------
+ 2 files changed, 61 insertions(+), 24 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 62e91512aeab..cd562856f23a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -3377,7 +3377,7 @@ static void ice_set_ops(struct ice_vsi *vsi)
+ 
+ 	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+ 			       NETDEV_XDP_ACT_XSK_ZEROCOPY |
+-			       NETDEV_XDP_ACT_RX_SG;
++			       NETDEV_XDP_ACT_RX_SG | NETDEV_XDP_ACT_ZC_SG;
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+index 91cdd5e4790d..2a3f0834e139 100644
+--- a/drivers/net/ethernet/intel/ice/ice_xsk.c
++++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+@@ -613,7 +613,7 @@ ice_construct_skb_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp)
+  * ice_clean_xdp_irq_zc - produce AF_XDP descriptors to CQ
+  * @xdp_ring: XDP Tx ring
+  */
+-static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
++static u32 ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
+ {
+ 	u16 ntc = xdp_ring->next_to_clean;
+ 	struct ice_tx_desc *tx_desc;
+@@ -635,7 +635,7 @@ static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
+ 	}
+ 
+ 	if (!completed_frames)
+-		return;
++		return 0;
+ 
+ 	if (likely(!xdp_ring->xdp_tx_active)) {
+ 		xsk_frames = completed_frames;
+@@ -665,6 +665,8 @@ static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
+ 		xdp_ring->next_to_clean -= cnt;
+ 	if (xsk_frames)
+ 		xsk_tx_completed(xdp_ring->xsk_pool, xsk_frames);
++
++	return completed_frames;
+ }
+ 
+ /**
+@@ -682,37 +684,72 @@ static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
+ static int ice_xmit_xdp_tx_zc(struct xdp_buff *xdp,
+ 			      struct ice_tx_ring *xdp_ring)
+ {
++	struct skb_shared_info *sinfo = NULL;
+ 	u32 size = xdp->data_end - xdp->data;
+ 	u32 ntu = xdp_ring->next_to_use;
+ 	struct ice_tx_desc *tx_desc;
+ 	struct ice_tx_buf *tx_buf;
+-	dma_addr_t dma;
++	struct xdp_buff *head;
++	u32 nr_frags = 0;
++	u32 free_space;
++	u32 frag = 0;
+ 
+-	if (ICE_DESC_UNUSED(xdp_ring) < ICE_RING_QUARTER(xdp_ring)) {
+-		ice_clean_xdp_irq_zc(xdp_ring);
+-		if (!ICE_DESC_UNUSED(xdp_ring)) {
+-			xdp_ring->ring_stats->tx_stats.tx_busy++;
+-			return ICE_XDP_CONSUMED;
+-		}
+-	}
++	free_space = ICE_DESC_UNUSED(xdp_ring);
++	if (free_space < ICE_RING_QUARTER(xdp_ring))
++		free_space += ice_clean_xdp_irq_zc(xdp_ring);
+ 
+-	dma = xsk_buff_xdp_get_dma(xdp);
+-	xsk_buff_raw_dma_sync_for_device(xdp_ring->xsk_pool, dma, size);
++	if (unlikely(!free_space))
++		goto busy;
++
++	if (unlikely(xdp_buff_has_frags(xdp))) {
++		sinfo = xdp_get_shared_info_from_buff(xdp);
++		nr_frags = sinfo->nr_frags;
++		if (free_space < nr_frags + 1)
++			goto busy;
++	}
+ 
+-	tx_buf = &xdp_ring->tx_buf[ntu];
+-	tx_buf->xdp = xdp;
+-	tx_buf->type = ICE_TX_BUF_XSK_TX;
+ 	tx_desc = ICE_TX_DESC(xdp_ring, ntu);
+-	tx_desc->buf_addr = cpu_to_le64(dma);
+-	tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TX_DESC_CMD_EOP,
+-						      0, size, 0);
+-	xdp_ring->xdp_tx_active++;
++	tx_buf = &xdp_ring->tx_buf[ntu];
++	head = xdp;
++
++	for (;;) {
++		dma_addr_t dma;
++
++		dma = xsk_buff_xdp_get_dma(xdp);
++		xsk_buff_raw_dma_sync_for_device(xdp_ring->xsk_pool, dma, size);
++
++		tx_buf->xdp = xdp;
++		tx_buf->type = ICE_TX_BUF_XSK_TX;
++		tx_desc->buf_addr = cpu_to_le64(dma);
++		tx_desc->cmd_type_offset_bsz = ice_build_ctob(0, 0, size, 0);
++		/* account for each xdp_buff from xsk_buff_pool */
++		xdp_ring->xdp_tx_active++;
++
++		if (++ntu == xdp_ring->count)
++			ntu = 0;
++
++		if (frag == nr_frags)
++			break;
++
++		tx_desc = ICE_TX_DESC(xdp_ring, ntu);
++		tx_buf = &xdp_ring->tx_buf[ntu];
++
++		xdp = xsk_buff_get_frag(head);
++		size = skb_frag_size(&sinfo->frags[frag]);
++		frag++;
++	}
+ 
+-	if (++ntu == xdp_ring->count)
+-		ntu = 0;
+ 	xdp_ring->next_to_use = ntu;
++	/* update last descriptor from a frame with EOP */
++	tx_desc->cmd_type_offset_bsz |=
++		cpu_to_le64(ICE_TX_DESC_CMD_EOP << ICE_TXD_QW1_CMD_S);
+ 
+ 	return ICE_XDP_TX;
++
++busy:
++	xdp_ring->ring_stats->tx_stats.tx_busy++;
++
++	return ICE_XDP_CONSUMED;
+ }
+ 
+ /**
+@@ -960,7 +997,7 @@ static void ice_xmit_pkt(struct ice_tx_ring *xdp_ring, struct xdp_desc *desc,
+ 
+ 	tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_to_use++);
+ 	tx_desc->buf_addr = cpu_to_le64(dma);
+-	tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TX_DESC_CMD_EOP,
++	tx_desc->cmd_type_offset_bsz = ice_build_ctob(xsk_is_eop_desc(desc),
+ 						      0, desc->len, 0);
+ 
+ 	*total_bytes += desc->len;
+@@ -987,7 +1024,7 @@ static void ice_xmit_pkt_batch(struct ice_tx_ring *xdp_ring, struct xdp_desc *de
+ 
+ 		tx_desc = ICE_TX_DESC(xdp_ring, ntu++);
+ 		tx_desc->buf_addr = cpu_to_le64(dma);
+-		tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TX_DESC_CMD_EOP,
++		tx_desc->cmd_type_offset_bsz = ice_build_ctob(xsk_is_eop_desc(&descs[i]),
+ 							      0, descs[i].len, 0);
+ 
+ 		*total_bytes += descs[i].len;
+-- 
+2.34.1
 
 
