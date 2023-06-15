@@ -1,88 +1,119 @@
-Return-Path: <netdev+bounces-10997-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-10999-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 325E8731027
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 09:07:36 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 51E6573105E
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 09:17:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EBE11280F29
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 07:07:34 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 306651C204D6
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 07:17:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E731A5B;
-	Thu, 15 Jun 2023 07:07:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EDE281371;
+	Thu, 15 Jun 2023 07:17:45 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5253CA45
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 07:07:33 +0000 (UTC)
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4CAE19B5
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 00:07:31 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-594-oWywjiogNEqfBUu3vDnHqA-1; Thu, 15 Jun 2023 03:07:27 -0400
-X-MC-Unique: oWywjiogNEqfBUu3vDnHqA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2ABC33849534;
-	Thu, 15 Jun 2023 07:07:22 +0000 (UTC)
-Received: from hog (unknown [10.45.224.17])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 11D322026D49;
-	Thu, 15 Jun 2023 07:07:19 +0000 (UTC)
-Date: Thu, 15 Jun 2023 09:07:18 +0200
-From: Sabrina Dubroca <sd@queasysnail.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF7BB635
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 07:17:45 +0000 (UTC)
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518112D58;
+	Thu, 15 Jun 2023 00:17:43 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.55])
+	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4QhYQf3z32z18LrV;
+	Thu, 15 Jun 2023 15:12:42 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Thu, 15 Jun
+ 2023 15:17:40 +0800
+Subject: Re: [PATCH net-next v4 4/5] page_pool: remove PP_FLAG_PAGE_FRAG flag
 To: Jakub Kicinski <kuba@kernel.org>
-Cc: Fedor Pchelkin <pchelkin@ispras.ru>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	Raed Salem <raeds@nvidia.com>, Lior Nahmanson <liorna@nvidia.com>,
-	Saeed Mahameed <saeedm@nvidia.com>,
-	Hannes Frederic Sowa <hannes@stressinduktion.org>,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Alexey Khoroshilov <khoroshilov@ispras.ru>,
-	lvc-project@linuxtesting.org
-Subject: Re: [PATCH] net: macsec: fix double free of percpu stats
-Message-ID: <ZIq4prrdiXN77Y9N@hog>
-References: <20230613192220.159407-1-pchelkin@ispras.ru>
- <20230613200150.361bc462@kernel.org>
- <ZImx5pp98OSNnv4I@hog>
- <20230614090126.149049b1@kernel.org>
- <20230614201714.lgwpk4wyojribbyj@fpc>
- <ZIot16xcgb7l8wer@hog>
- <20230614230239.02c388a8@kernel.org>
+CC: <davem@davemloft.net>, <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Lorenzo Bianconi <lorenzo@kernel.org>,
+	Alexander Duyck <alexander.duyck@gmail.com>, Yisen Zhuang
+	<yisen.zhuang@huawei.com>, Salil Mehta <salil.mehta@huawei.com>, Eric Dumazet
+	<edumazet@google.com>, Sunil Goutham <sgoutham@marvell.com>, Geetha sowjanya
+	<gakula@marvell.com>, Subbaraya Sundeep <sbhatta@marvell.com>, hariprasad
+	<hkelam@marvell.com>, Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky
+	<leon@kernel.org>, Felix Fietkau <nbd@nbd.name>, Ryder Lee
+	<ryder.lee@mediatek.com>, Shayne Chen <shayne.chen@mediatek.com>, Sean Wang
+	<sean.wang@mediatek.com>, Kalle Valo <kvalo@kernel.org>, Matthias Brugger
+	<matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>, Jesper Dangaard Brouer
+	<hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+	<linux-rdma@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>
+References: <20230612130256.4572-1-linyunsheng@huawei.com>
+ <20230612130256.4572-5-linyunsheng@huawei.com>
+ <20230614101954.30112d6e@kernel.org>
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <8c544cd9-00a3-2f17-bd04-13ca99136750@huawei.com>
+Date: Thu, 15 Jun 2023 15:17:39 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20230614230239.02c388a8@kernel.org>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+In-Reply-To: <20230614101954.30112d6e@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-2023-06-14, 23:02:39 -0700, Jakub Kicinski wrote:
-> On Wed, 14 Jun 2023 23:15:03 +0200 Sabrina Dubroca wrote:
-> > It's been 7 years... your guess is about as good as mine :/
-> > 
-> > I wouldn't bother reshuffling the device creation code just to make
-> > the handling of rare failures a bit nicer.
+On 2023/6/15 1:19, Jakub Kicinski wrote:
+> On Mon, 12 Jun 2023 21:02:55 +0800 Yunsheng Lin wrote:
+>>  	struct page_pool_params pp_params = {
+>> -		.flags = PP_FLAG_DMA_MAP | PP_FLAG_PAGE_FRAG |
+>> -				PP_FLAG_DMA_SYNC_DEV,
+>> +		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
+>>  		.order = hns3_page_order(ring),
 > 
-> Would you be willing to venture a review tag?
+> Does hns3_page_order() set a good example for the users?
+> 
+> static inline unsigned int hns3_page_order(struct hns3_enet_ring *ring)
+> {
+> #if (PAGE_SIZE < 8192)
+> 	if (ring->buf_size > (PAGE_SIZE / 2))
+> 		return 1;
+> #endif
+> 	return 0;
+> }
+> 
+> Why allocate order 1 pages for buffers which would fit in a single page?
+> I feel like this soft of heuristic should be built into the API itself.
 
-Reviewed-by: Sabrina Dubroca <sd@queasysnail.net>
+hns3 only support fixed buf size per desc by 512 byte, 1024 bytes, 2048 bytes
+4096 bytes, see hns3_buf_size2type(), I think the order 1 pages is for buf size
+with 4096 bytes and system page size with 4K, as hns3 driver still support the
+per-desc ping-pong way of page splitting when page_pool_enabled is false.
 
--- 
-Sabrina
+With page pool enabled, you are right that order 0 pages is enough, and I am not
+sure about the exact reason we use the some order as the ping-pong way of page
+splitting now.
+As 2048 bytes buf size seems to be the default one, and I has not heard any one
+changing it. Also, it caculates the pool_size using something as below, so the
+memory usage is almost the same for order 0 and order 1:
 
+.pool_size = ring->desc_num * hns3_buf_size(ring) /
+		(PAGE_SIZE << hns3_page_order(ring)),
+
+I am not sure it worth changing it, maybe just change it to set good example for
+the users:) anyway I need to discuss this with other colleague internally and do
+some testing before doing the change.
+
+> .
+> 
 
