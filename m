@@ -1,162 +1,250 @@
-Return-Path: <netdev+bounces-11124-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11125-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id DBBD4731980
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 15:03:32 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id DA74D731986
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 15:04:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 976B4281822
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 13:03:31 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 17B661C20E41
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 13:04:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0618915AE7;
-	Thu, 15 Jun 2023 13:03:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F3C9015AE8;
+	Thu, 15 Jun 2023 13:04:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4B1B111AE
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 13:03:29 +0000 (UTC)
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2110.outbound.protection.outlook.com [40.107.102.110])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C23E196;
-	Thu, 15 Jun 2023 06:03:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AhxMumBfl+WozhvewpMKwFjkx515XRcToCWboRxxwYjKGoM7MdOcEHurT+GGdweJoZYu4HWks3qfloRwzHs86xr7DLsBzhdJ6fuvyP0YhiaRlpoBBnzXLtYz1cfdm2eUSP+3jPbk+MFUVqswljNio3qy6h6H3dtovUctyquJ82ezyLR0DCkiGacAESv6V/+UwXyhX3FPvijGTIp5Za17oqHTl/frYCe8RFmOC6pSyhOhk/1rVKBP8JutTa7hmc4nfz5biY4jBeE8Sy2wv00PybHela6sMDSoXtl0GIlEZAwT7RgYYz3xsLNSiYFRiOhxeU/eC6EWWRljp37uQ4k1vw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iEIqNAyUuAqS1FF6nqivzHYq/i3+fyAT2QviVPadQvQ=;
- b=C3AU11nzaYfC2EIi6xaAnVLSc6nkwH31SscLEIzhT1xWScKcLHtf9iGKzfLbhOtfO7IaZXOGHXxCY6asrnXZcj+jwicNVcu2qJOwwv30qfcrP1/Am+hzyJrk6EyBBQNRmZ4z9jFYiMpoDqiwDjfqS+zgOq2UEGyUdIthhbs5UHKRQeX6NL/Eln7ffWxj5Rvip5XqxuTWJmt96n+IpoqzdHEb9rZla5zlj84E0L6l5SS8Wg3hEAGk09+iXVG3zEb8dXhUutcLdcJ2w/zNIS94T+yZ8VShx+vNn5LGBf73xjHMHOEnJmkIBSlSJIs+TEtGed0Lv9E9rfEU7pmbRpZI9Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iEIqNAyUuAqS1FF6nqivzHYq/i3+fyAT2QviVPadQvQ=;
- b=VLh2IgpC4Iaw5k77pSO96vnl67/uUwFJirGoBTMJbr334Rjq+biKeWven8Tx33ZPUoK1yfqPdn4QJ6nJkmv7HXnQXDtK+sNKE5ps2ffDCZz21mKvaN9NVaYc1fOY3arG1X9MGB83MTlsmTXgOBZ1ZEL+ysmWQWV+dksJl1epCV4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CH0PR13MB4668.namprd13.prod.outlook.com (2603:10b6:610:ca::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.25; Thu, 15 Jun
- 2023 13:03:24 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e%5]) with mapi id 15.20.6500.025; Thu, 15 Jun 2023
- 13:03:24 +0000
-Date: Thu, 15 Jun 2023 15:03:15 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Wang Ming <machel@vivo.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Stephen Rothwell <sfr@canb.auug.org.au>, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, opensource.kernel@vivo.com
-Subject: Re: [PATCH v1] drivers:net:dsa:Fix resource leaks in
- fwnode_for_each_child_node() loops
-Message-ID: <ZIsME1gwEWEyyN1o@corigine.com>
-References: <20230615070512.6634-1-machel@vivo.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230615070512.6634-1-machel@vivo.com>
-X-ClientProxiedBy: AM0PR07CA0006.eurprd07.prod.outlook.com
- (2603:10a6:208:ac::19) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E190D15AE7
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 13:04:08 +0000 (UTC)
+Received: from mail-4316.protonmail.ch (mail-4316.protonmail.ch [185.70.43.16])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9502695
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 06:04:04 -0700 (PDT)
+Date: Thu, 15 Jun 2023 13:03:49 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
+	s=protonmail; t=1686834239; x=1687093439;
+	bh=hOXgu1XtrQRnZjQh65xPZFRsRVG6C9WfZtNMBQlyD3o=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=AX6WG3a3zybZIwJq1TxsZ/UHqqEm3okkzoqknfcBlm3xAEaRXqK3QxA+yKUEOOQwt
+	 CBAx0PXbxgxquNgvH0HXz0lVs+QX0xzaPwg5jeAb1jHELQOtzOkY/T7c7uobc4FSmj
+	 b6B7VAjzx38al2thFxn4UZ2FoRccknpjXEwM7+xdfxIWSZmuginqnLuL/XY7jKUNpw
+	 oq0BUomueHBgtV7MU4PkRcZNRO9a6jjAos+ubuRpl7JG48TGmnY7wLSeoLtkfyf7wE
+	 O1Ixbtp2Ll9PZ73GXPNHGfG3T3wh/WTsvOoQG0M7GZniMLrvXQgB8gKkuVEyYapP9r
+	 6Rs5dQk7LXAog==
+To: FUJITA Tomonori <fujita.tomonori@gmail.com>
+From: Benno Lossin <benno.lossin@proton.me>
+Cc: netdev@vger.kernel.org, rust-for-linux@vger.kernel.org, aliceryhl@google.com, andrew@lunn.ch, miguel.ojeda.sandonis@gmail.com
+Subject: Re: [PATCH 2/5] rust: add support for ethernet operations
+Message-ID: <QOy6Y8ZgaRA5ibTXnKAqNpMqJhlV49Jc75QaG-cgmF-MN0brxDFgMbCTIPO8lgZNjxbr3QQZMjTC-Fdl7KMmb6ppcN4Gqs9wvULPHroXWL8=@proton.me>
+In-Reply-To: <20230613045326.3938283-3-fujita.tomonori@gmail.com>
+References: <20230613045326.3938283-1-fujita.tomonori@gmail.com> <20230613045326.3938283-3-fujita.tomonori@gmail.com>
+Feedback-ID: 71780778:user:proton
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH0PR13MB4668:EE_
-X-MS-Office365-Filtering-Correlation-Id: 93a7784a-f065-4021-92e1-08db6da0e6be
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	QYA+RrofgZwclxSI9xmE0JMJNNisZvaa0J07Fy2jEwJDc+l5prlSilUhnuTLqz69l2Zn2wdLddComwDbgCvIbtM9YJGwQpgcJQcjsOOq49+GrKZzmoZPGbV2+4OWIT0ZlUXM6cEheqAJXqqHz+6ZCeifKBDjB+vjgrzAReb1gGjzlAie+hIGqJmocyiMvD24luXE4VUZwFdfamBSVwKct9EsHrKF2J+nagPJosDRNGtySw4b+M64snfsQpG2tbx6UyhJFT/8qwnyT8J96Bd+F3Pcen5v+fC0lvYwhreDwNsmpav6Dw6z86o+L48RG5kEzWgX2fJ7YMnRrnDgpe/lqLyzrIeeKgAykgTN4CUOFaEpVDl7am+CKg80hc1S7OYS6s9yuOd5GNuloOJJSoNoM42GzUL9b5D1IPSp6xed84mP88+tUgx5e9lhqhUTVLJK0GprcROwoI57vdxz7c9UIXm8D6AafllQWQ/mC0QYxPav/wGjjF6u2o3EjTmrJDQvTLYXZTHKeDlzGFpsjsUSaglx4uOgwWTrSj1qJTHMs38K2FqNvi0tABV3xWKIwnzdyJC5PVq321XEvl8d+Htrj+rjOlGhe+voOjKuMuXbPhM=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(366004)(396003)(39840400004)(346002)(451199021)(83380400001)(4744005)(2906002)(2616005)(36756003)(86362001)(38100700002)(54906003)(8936002)(8676002)(6486002)(316002)(41300700001)(5660300002)(478600001)(66946007)(66556008)(66476007)(6666004)(6916009)(4326008)(6512007)(6506007)(186003)(44832011)(7416002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ivh72LCfCf1YRPEvEujM0WjKPDYYqbwb9TACy3C4mgbSO4YWzm2EkHeDNfHR?=
- =?us-ascii?Q?bD3yfrF0Ne2ciTqF/y1uYOTeK4+yUoaPlL546kFp+4f5Fb4iWqn/2XQOtpGs?=
- =?us-ascii?Q?NVQui3HO6WbfVMiNPFlfqttKvM/BvNu3wyL5sCGdr6xrap7bBKH6j3y6qjmD?=
- =?us-ascii?Q?GUCp6VkTMoIfxcz1bQRFB/k4QHF34rcw+0UAjgAdp1htFON5YbpH/tkN3CoM?=
- =?us-ascii?Q?5ZbKfCKyVRwshbn6MVtj5QuJpTrz60Kl7sjIfvCx5Is95tDjQgiFGQZOA25n?=
- =?us-ascii?Q?3zwnCgfGqmIatLFsCcQQ0ZokY5kPmQ96OlMxcGeEkWctEv+sr0UgjnCGvKiQ?=
- =?us-ascii?Q?pFqfVuqkLiDuJod9vOK0HUsUzynjEqllxXXxS8g5P4TESYVV8IFhe/B/q12l?=
- =?us-ascii?Q?uKeRaX7uvB5PoYMROl3kvlZo6uOeqD3c+nrAwnHNwBU/Ve6SXothFzXoNTdi?=
- =?us-ascii?Q?GTGx5ED3e+YTGdL4BwpeMZrYxaICtHYceA5xIFMh151Wz3gglDqSqsPqBOH4?=
- =?us-ascii?Q?1zvVa/jLzZ0V6TtLMPE1KA8jvV5wBX3gHiuk9BqNrjJkCFcY+lRwL57X73uX?=
- =?us-ascii?Q?EWnb49IjTsi2yg9oFOm0BbpA71q5To07L542ygrT6v5XhniD3oummTWyUFHf?=
- =?us-ascii?Q?rhA9XqBSL5pG9KmNOP3+rkEG+ikE6xuF0s4eAGzmDnlxB6lMH7/qVyUCXeJ4?=
- =?us-ascii?Q?DKe9aqbjuQzt/aUaaOoZb7z62dDykGRv7WKHuHjetW+DzrR+MVekjFKZTKhv?=
- =?us-ascii?Q?VHzpYkPcMXTJCxAiGvLecndLO1vFnfPxIsb4wYKRvmJGEVE4gV1gHIaWsCoO?=
- =?us-ascii?Q?Lx6Op+CMVbn4YBYyJA//s68bY+YukCiNcFRZIszMu6jrsBSJNmnWEp/3IbYF?=
- =?us-ascii?Q?6tjEFtcFaf5hdUFOOzzQc5J1VKbPvWyZsWlAHnoF1yLztBC9HIS/dvy3UHPd?=
- =?us-ascii?Q?A+hTjdi9lYbCWivU7/QfgANhJTgfc/TmHZsAtbYWtjA+iFUxfEtZTu3r9mzS?=
- =?us-ascii?Q?emPAE6WZg1MvXnkHtqnR5fjCRsZZmzoViANU+mUPmsToRGVdy1jK3zD9CyN8?=
- =?us-ascii?Q?IXhUbYijHVLbPTVr/+4gzIPNSgIsHdlWsvyDzrmdZR+l2bkdLPOrwOroGj2j?=
- =?us-ascii?Q?4zI+lKM6xEwI/AqayVRSVG2k73pltac8iiSD/Adkqyiq8T+9eOUaeokEMdAd?=
- =?us-ascii?Q?sg0ejJGe3VjijeAqmFWZElFjoARylGUufhFmeQts3FZyRObFRHD2R9I3qkKI?=
- =?us-ascii?Q?/PF38FcUWhjkQjC/0tu+g6CSAMJxniKea/kDQyf26jlPDEhI4ljcYhOegV1C?=
- =?us-ascii?Q?Uf/dKpxZjL/rPwmjvNVDUcek43e0i7b1HEvY/7IAyhbLuen/YLLypPLMlLp1?=
- =?us-ascii?Q?1BY5UrHspfIdxIa2OnuZWUUlJAeSG1MU2PiyiWnvpZ0yzeHqPPaLtvguW5lO?=
- =?us-ascii?Q?XjN//8i4pnnbGmeEDndUh6HgDPzHDSSMCe80NQ+h9wL/eni7mUcbvYLVHiLl?=
- =?us-ascii?Q?EHjQBmbaGgPTd+q+604mXEnl3qLTnJFlPTpKolG+RK6cZXXH8U+L7Gxote6N?=
- =?us-ascii?Q?JPZimAX7g5xGC8iteyJnEty1ebLI08Ck9nO2un4h9nBaVF24ClD80pbo2ixG?=
- =?us-ascii?Q?Kc1vrw6c7f/ZtTRHlZDH4F0c0htKXLofJWI/lz5FSLUhi0pZKFtYlPH/Cz5o?=
- =?us-ascii?Q?pGcfrQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 93a7784a-f065-4021-92e1-08db6da0e6be
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2023 13:03:24.0144
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1UeRvtf0GWAYKfx06CDTpXipY59sGF0wf/iqW8iZgvqA7rcOJN6hv+FY1l4UoHsAGW4BOQsYJVdo4D9IJPCchTFdUfVcVJ9q5ocTYd4YNq4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR13MB4668
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Thu, Jun 15, 2023 at 03:04:58PM +0800, Wang Ming wrote:
->  The fwnode_for_each_child_node loop in qca8k_setup_led_ctrl should
->  have fwnode_handle_put() before return which could avoid resource leaks.
->  This patch could fix this bug.
+On 6/13/23 06:53, FUJITA Tomonori wrote:
+> This improves abstractions for network device drivers to implement
+> struct ethtool_ops, the majority of ethernet device drivers need to
+> do.
+>=20
+> struct ethtool_ops also needs to access to device private data like
+> struct net_devicve_ops.
+>=20
+> Currently, only get_ts_info operation is supported. The following
+> patch adds the Rust version of the dummy network driver, which uses
+> the operation.
+>=20
+> Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
+> ---
+>  rust/bindings/bindings_helper.h |   1 +
+>  rust/kernel/net/dev.rs          | 108 ++++++++++++++++++++++++++++++++
+>  2 files changed, 109 insertions(+)
+>=20
+> diff --git a/rust/bindings/bindings_helper.h b/rust/bindings/bindings_hel=
+per.h
+> index 468bf606f174..6446ff764980 100644
+> --- a/rust/bindings/bindings_helper.h
+> +++ b/rust/bindings/bindings_helper.h
+> @@ -8,6 +8,7 @@
+>=20
+>  #include <linux/errname.h>
+>  #include <linux/etherdevice.h>
+> +#include <linux/ethtool.h>
+>  #include <linux/netdevice.h>
+>  #include <linux/slab.h>
+>  #include <linux/refcount.h>
+> diff --git a/rust/kernel/net/dev.rs b/rust/kernel/net/dev.rs
+> index d072c81f99ce..d6012b2eea33 100644
+> --- a/rust/kernel/net/dev.rs
+> +++ b/rust/kernel/net/dev.rs
+> @@ -141,6 +141,18 @@ pub fn register(&mut self) -> Result {
+>          }
+>      }
+>=20
+> +    /// Sets `ethtool_ops` of `net_device`.
+> +    pub fn set_ether_operations<U>(&mut self) -> Result
+> +    where
+> +        U: EtherOperations<D>,
+> +    {
+> +        if self.is_registered {
+> +            return Err(code::EINVAL);
+> +        }
+> +        EtherOperationsAdapter::<U, D>::new().set_ether_ops(&mut self.de=
+v);
+> +        Ok(())
+> +    }
+
+Is it really necessary for a device to be able to have multiple different
+`EtherOperations`? Couldnt you also just make `T` implement=20
+`EtherOperations<D>`?
+
+> +
+>      const DEVICE_OPS: bindings::net_device_ops =3D bindings::net_device_=
+ops {
+>          ndo_init: if <T>::HAS_INIT {
+>              Some(Self::init_callback)
+> @@ -342,3 +354,99 @@ fn drop(&mut self) {
+>          }
+>      }
+>  }
+> +
+> +/// Builds the kernel's `struct ethtool_ops`.
+> +struct EtherOperationsAdapter<D, T> {
+> +    _p: PhantomData<(D, T)>,
+> +}
+> +
+> +impl<D, T> EtherOperationsAdapter<T, D>
+
+I think it would be a good idea to add a comment here that explains why
+this is needed, i.e. why `ETHER_OPS` cannot be implemented via a constant
+in `set_ether_ops`.
+
+> +where
+> +    D: DriverData,
+> +    T: EtherOperations<D>,
+> +{
+> +    /// Creates a new instance.
+> +    fn new() -> Self {
+> +        EtherOperationsAdapter { _p: PhantomData }
+> +    }
+> +
+> +    unsafe extern "C" fn get_ts_info_callback(
+> +        netdev: *mut bindings::net_device,
+> +        info: *mut bindings::ethtool_ts_info,
+> +    ) -> core::ffi::c_int {
+> +        from_result(|| {
+> +            // SAFETY: The C API guarantees that `netdev` is valid while=
+ this function is running.
+> +            let mut dev =3D unsafe { Device::from_ptr(netdev) };
+> +            // SAFETY: The returned pointer was initialized by `D::Data:=
+:into_foreign` when
+> +            // `Registration` object was created.
+> +            // `D::Data::from_foreign` is only called by the object was =
+released.
+> +            // So we know `data` is valid while this function is running=
+.
+> +            let data =3D unsafe { D::Data::borrow(dev.priv_data_ptr()) }=
+;
+> +            // SAFETY: The C API guarantees that `info` is valid while t=
+his function is running.
+> +            let mut info =3D unsafe { EthtoolTsInfo::from_ptr(info) };
+> +            T::get_ts_info(&mut dev, data, &mut info)?;
+> +            Ok(0)
+> +        })
+> +    }
+> +
+> +    const ETHER_OPS: bindings::ethtool_ops =3D bindings::ethtool_ops {
+> +        get_ts_info: if <T>::HAS_GET_TS_INFO {
+> +            Some(Self::get_ts_info_callback)
+> +        } else {
+> +            None
+> +        },
+> +        ..unsafe { core::mem::MaybeUninit::<bindings::ethtool_ops>::zero=
+ed().assume_init() }
+> +    };
+> +
+> +    const fn build_ether_ops() -> &'static bindings::ethtool_ops {
+> +        &Self::ETHER_OPS
+> +    }
+
+Why is this a function?
+
+> +
+> +    fn set_ether_ops(&self, dev: &mut Device) {
+> +        // SAFETY: The type invariants guarantee that `dev.0` is valid.
+> +        unsafe {
+> +            (*dev.0).ethtool_ops =3D Self::build_ether_ops();
+> +        }
+> +    }
+> +}
+> +
+> +/// Corresponds to the kernel's `struct ethtool_ops`.
+> +#[vtable]
+> +pub trait EtherOperations<D: DriverData> {
+> +    /// Corresponds to `get_ts_info` in `struct ethtool_ops`.
+> +    fn get_ts_info(
+> +        _dev: &mut Device,
+> +        _data: <D::Data as ForeignOwnable>::Borrowed<'_>,
+> +        _info: &mut EthtoolTsInfo,
+
+`&mut EthtoolTsInfo` is again a double pointer.
+
+> +    ) -> Result {
+> +        Err(Error::from_errno(bindings::EOPNOTSUPP as i32))
+> +    }
+> +}
+> +
+> +/// Corresponds to the kernel's `struct ethtool_ts_info`.
+> +///
+> +/// # Invariants
+> +///
+> +/// The pointer is valid.
+> +pub struct EthtoolTsInfo(*mut bindings::ethtool_ts_info);
+> +
+> +impl EthtoolTsInfo {
+> +    /// Creates a new `EthtoolTsInfo' instance.
+> +    ///
+> +    /// # Safety
+> +    ///
+> +    /// Callers must ensure that `ptr` must be valid.
+> +    unsafe fn from_ptr(ptr: *mut bindings::ethtool_ts_info) -> Self {
+> +        // INVARIANT: The safety requirements ensure the invariant.
+> +        Self(ptr)
+> +    }
+> +}
+> +
+> +/// Sets up the info for software timestamping.
+> +pub fn ethtool_op_get_ts_info(dev: &mut Device, info: &mut EthtoolTsInfo=
+) -> Result {
+> +    // SAFETY: The type invariants guarantee that `dev.0` and `info.0` a=
+re valid.
+> +    unsafe {
+> +        bindings::ethtool_op_get_ts_info(dev.0, info.0);
+> +    }
+> +    Ok(())
+> +}
+
+Why isn't this an associated function on `EthtoolTsInfo`?
+
+--
+Cheers,
+Benno
+
+> --
+> 2.34.1
 > 
-> Signed-off-by: Wang Ming <machel@vivo.com>
-
-Hi Wang Ming,
-
-unfortunately your patch has been whitespace mangled - tabs have been
-converted into 8 spaces. Possibly this was done by your mail client
-or mail server. In any case the result is that the patch doesn't apply.
-And unfortunately that breaks our processes.
-
-Also, I'm assuming that as this patch is a fix, it is targeted at the
-"net", as opposed to "net-next", tree. This should be noted in the subject.
-
-	Subject: [PATCH net v2] ...
-
-Lastly, looking at the git history of qca8k-leds.c, I think that
-a better prefix for the patch is "net: dsa: qca8k: ".
-
-	Subject: [PATCH net v2] net: dsa: qca8k: ...
-
-Please consider addressing the problems and reposting your patch.
-
--- 
-pw-bot: changes-requested
 
