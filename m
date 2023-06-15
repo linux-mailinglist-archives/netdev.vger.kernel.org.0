@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-11074-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11075-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7BC2B731714
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 13:39:38 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id A15B3731716
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 13:39:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 321BB281560
-	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 11:39:37 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D22541C20E9B
+	for <lists+netdev@lfdr.de>; Thu, 15 Jun 2023 11:39:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FE56134AA;
-	Thu, 15 Jun 2023 11:39:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 61801134B3;
+	Thu, 15 Jun 2023 11:39:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC63F12B69
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 11:39:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BBC4C433CC;
-	Thu, 15 Jun 2023 11:39:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC1C4125D4
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 11:39:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9747C433C8;
+	Thu, 15 Jun 2023 11:39:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686829173;
+	s=k20201202; t=1686829192;
 	bh=gOlwZNLr8Saa3uQulc+67b8HfRPJx8sctzYSPSUTjig=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rEM+8DzkY30uIZSvnS7MeFvrkF1aUVK33Td1h83wi9y3OsHaQXck/e9GJ3jcIq7oC
-	 m1hGpkJMSVcEiA5B/ZeDYRdqyCY/zZI2U2tR5P9cvRm6mMAovuLdorHII0/rQgcPGR
-	 CyCBSZfN1Akhim+3SMLMg8e4zUjb3wVW2IB483e2VSe7z5V8/72obRxpOUb2tXYi+G
-	 qRaGhLL0QKU7UbQj9orefnqLlNLJn7nhGR1yrZfVC3UH7ApBW0f0si2h2HXBi+SOF+
-	 BLzcGO16YTQOG10XPBHdC1NIDiZxCDa1gVha0fNayTLdfXzjMRtoc3GaPsi0e6SoEh
-	 +f90R6gSlNP1Q==
+	b=IwUTE3d2wJZR/8avD1KlZF4QwEn3FrL+JhiwsbWCvi3agjnI3HG2bJvgPvzqjS4tz
+	 uzZSzy84O3MJ4Vjg5sEs2eTBE52sAuGtNrELCJD4fFCzmBKD0v26TF7EBgnJUVkC+9
+	 iq5oBi/YXp794Ng6cYG6awNyhQuJbAO3eVl7033bvv3+JHJIFNgLRzOyOwKDZhOQmI
+	 8gxWNhN1X1u8AJjx23JtjIs75uL3cEPQKwWHM4lSrs8HLO/QDmNFuBVSAN6gLQcOtK
+	 flI50Rtlzj+yFJ4qiDdqtfgUieguqo+5lC3RtstdUbjB+g038glhFFhFsi5T7owU1e
+	 cwGjrbs/oM4AA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -39,12 +39,12 @@ Cc: Osama Muhammad <osmtendev@gmail.com>,
 	Sasha Levin <sashal@kernel.org>,
 	krzysztof.kozlowski@linaro.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 7/9] nfcsim.c: Fix error checking for debugfs_create_dir
-Date: Thu, 15 Jun 2023 07:39:15 -0400
-Message-Id: <20230615113917.649505-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 7/8] nfcsim.c: Fix error checking for debugfs_create_dir
+Date: Thu, 15 Jun 2023 07:39:37 -0400
+Message-Id: <20230615113938.649627-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230615113917.649505-1-sashal@kernel.org>
-References: <20230615113917.649505-1-sashal@kernel.org>
+In-Reply-To: <20230615113938.649627-1-sashal@kernel.org>
+References: <20230615113938.649627-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -53,7 +53,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 5.10.184
+X-stable-base: Linux 5.4.247
 Content-Transfer-Encoding: 8bit
 
 From: Osama Muhammad <osmtendev@gmail.com>
