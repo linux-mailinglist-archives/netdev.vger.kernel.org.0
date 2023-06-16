@@ -1,135 +1,74 @@
-Return-Path: <netdev+bounces-11617-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11618-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 79B68733B29
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:49:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 5D7CF733B2A
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:50:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 35280281827
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:49:57 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 191BC28188B
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:50:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 88D0B6AA4;
-	Fri, 16 Jun 2023 20:49:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D5CBA6AB5;
+	Fri, 16 Jun 2023 20:49:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3976963CB
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:49:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32482C433C0;
-	Fri, 16 Jun 2023 20:49:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686948593;
-	bh=dRgWOFupJBvQFN5fWyyFou9rJxqL/N0jUqwKeAOC0bk=;
-	h=From:To:Cc:Subject:Date:From;
-	b=cMmLORLQbUdxWfEq0Do/jdYbrH879mM24EqlEmQgGNelp+JX4L37uaDzgWn1EJGTQ
-	 FeZkecfU+o/ZAgohCS26vMGSKgtF+Iu8iN7jEA4x7Juu35xidhJhunUraUyIovm6ow
-	 guZUHfJhv7/i71t9Gw880HX86wr2Zye4gKoRmUQbY6Hg80P3thvTu/EdCq5FOZLxqt
-	 7feIgP5N0jT+FElrdOeFANAhw5gvOAdxKmQBj1RLeJziI5TWKjSXgXKb9Hxx+zZLEA
-	 b1y9LPKEcxZalCjKR+gpu1l/qgj7HTb9RtJgAswo4vKUuQhj0EeFYrJI0bznk4RErr
-	 UClvi6joGmX+w==
-From: Jakub Kicinski <kuba@kernel.org>
-To: davem@davemloft.net
-Cc: netdev@vger.kernel.org,
-	edumazet@google.com,
-	pabeni@redhat.com,
-	linyunsheng@huawei.com,
-	Jakub Kicinski <kuba@kernel.org>,
-	Simon Horman <simon.horman@corigine.com>,
-	richardbgobert@gmail.com
-Subject: [PATCH net-next v2] gro: move the tc_ext comparison to a helper
-Date: Fri, 16 Jun 2023 13:49:39 -0700
-Message-Id: <20230616204939.2373785-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.40.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAEFA6AA4
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:49:59 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A18335B0;
+	Fri, 16 Jun 2023 13:49:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=nf8z9XousGG+fVE7OsptakvEUAwhGZgWUXM8tGBA97M=; b=jdEqE2Wn/cO1xvbzkNfLi+Atgo
+	jR6e5hb9TOYewjSGCf0W1Httwa9X92uNwLzho6/sTGvZH3jUNpHgHOjya1oB0y2kMwB62re10s1zD
+	MiydOAT7bkzDbqSpFuGWcBjS3q9Rql9zz53tgrdi0GO99joBx5vMwyjF9+pXq1A9tMM0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1qAGOE-00Gl5j-KY; Fri, 16 Jun 2023 22:49:50 +0200
+Date: Fri, 16 Jun 2023 22:49:50 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: "Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
+Cc: hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+	richardcochran@gmail.com, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, sebastian.tobuschat@nxp.com
+Subject: Re: [PATCH net-next v1 06/14] net: phy: add 1000baseT1 to
+ phy_basic_t1_features
+Message-ID: <a1d6e35c-3f70-4cb1-978a-7b0cf3f63ffa@lunn.ch>
+References: <20230616135323.98215-1-radu-nicolae.pirea@oss.nxp.com>
+ <20230616135323.98215-7-radu-nicolae.pirea@oss.nxp.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230616135323.98215-7-radu-nicolae.pirea@oss.nxp.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-The double ifdefs (one for the variable declaration and
-one around the code) are quite aesthetically displeasing.
-Factor this code out into a helper for easier wrapping.
+On Fri, Jun 16, 2023 at 04:53:15PM +0300, Radu Pirea (NXP OSS) wrote:
+> Add 1000baseT1 bit to phy_basic_t1_features.
 
-This will become even more ugly when another skb ext
-comparison is added in the future.
+Please add an explanation why this is safe. For example, why the
+RTL9000AA does not start saying it supports 1000BaseT1_Full.
 
-The resulting machine code looks the same, the compiler
-seems to try to use %rax more and some blocks more around
-but I haven't spotted minor differences.
+Has 1000BaseT1_Full been standardised? If there a feature bit in a
+register to indicate the hardware supports it? That would be the
+preferred method to determine what the hardware can do.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-v2:
- - reword commit message a little
- - return the value instead of in/out arg
-v1: https://lore.kernel.org/all/20230613205105.1996166-1-kuba@kernel.org/
-
-CC: richardbgobert@gmail.com
----
- net/core/gro.c | 32 +++++++++++++++++++-------------
- 1 file changed, 19 insertions(+), 13 deletions(-)
-
-diff --git a/net/core/gro.c b/net/core/gro.c
-index dca800068e41..0759277dc14e 100644
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@ -304,6 +304,24 @@ void napi_gro_flush(struct napi_struct *napi, bool flush_old)
- }
- EXPORT_SYMBOL(napi_gro_flush);
- 
-+static unsigned long gro_list_prepare_tc_ext(const struct sk_buff *skb,
-+					     const struct sk_buff *p,
-+					     unsigned long diffs)
-+{
-+#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-+	struct tc_skb_ext *skb_ext;
-+	struct tc_skb_ext *p_ext;
-+
-+	skb_ext = skb_ext_find(skb, TC_SKB_EXT);
-+	p_ext = skb_ext_find(p, TC_SKB_EXT);
-+
-+	diffs |= (!!p_ext) ^ (!!skb_ext);
-+	if (!diffs && unlikely(skb_ext))
-+		diffs |= p_ext->chain ^ skb_ext->chain;
-+#endif
-+	return diffs;
-+}
-+
- static void gro_list_prepare(const struct list_head *head,
- 			     const struct sk_buff *skb)
- {
-@@ -338,23 +356,11 @@ static void gro_list_prepare(const struct list_head *head,
- 		 * avoid trying too hard to skip each of them individually
- 		 */
- 		if (!diffs && unlikely(skb->slow_gro | p->slow_gro)) {
--#if IS_ENABLED(CONFIG_SKB_EXTENSIONS) && IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
--			struct tc_skb_ext *skb_ext;
--			struct tc_skb_ext *p_ext;
--#endif
--
- 			diffs |= p->sk != skb->sk;
- 			diffs |= skb_metadata_dst_cmp(p, skb);
- 			diffs |= skb_get_nfct(p) ^ skb_get_nfct(skb);
- 
--#if IS_ENABLED(CONFIG_SKB_EXTENSIONS) && IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
--			skb_ext = skb_ext_find(skb, TC_SKB_EXT);
--			p_ext = skb_ext_find(p, TC_SKB_EXT);
--
--			diffs |= (!!p_ext) ^ (!!skb_ext);
--			if (!diffs && unlikely(skb_ext))
--				diffs |= p_ext->chain ^ skb_ext->chain;
--#endif
-+			diffs |= gro_list_prepare_tc_ext(skb, p, diffs);
- 		}
- 
- 		NAPI_GRO_CB(p)->same_flow = !diffs;
--- 
-2.40.1
-
+	Andrew
 
