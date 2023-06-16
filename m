@@ -1,158 +1,127 @@
-Return-Path: <netdev+bounces-11560-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11561-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 611607339EB
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 21:33:24 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 696817339ED
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 21:33:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4AE1A1C203DE
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 19:33:23 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 23780281702
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 19:33:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2D1451E529;
-	Fri, 16 Jun 2023 19:33:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5148B1EA71;
+	Fri, 16 Jun 2023 19:33:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F0DA1ACDB
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 19:33:20 +0000 (UTC)
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8E6119
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 12:33:18 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id 5b1f17b1804b1-3f8f3786f1dso9537865e9.2
-        for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 12:33:18 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C4A21ACDB;
+	Fri, 16 Jun 2023 19:33:30 +0000 (UTC)
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA5412B;
+	Fri, 16 Jun 2023 12:33:28 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id a640c23a62f3a-982c996a193so146725966b.3;
+        Fri, 16 Jun 2023 12:33:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google; t=1686943997; x=1689535997;
-        h=in-reply-to:from:references:cc:to:content-language:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=n8YUPG0gHlr0qdifRw59HRCNCs5yl9INP4pgZg5LJP8=;
-        b=0etDsxmS6bHu9cBwPDMoYF2tm6ShbJOgfI7lb/XbGQ1ociWiIHHXk7mSVT9uC0VM5s
-         DOWlodVaMtZA6oH35v4+YCe0MxlVu94/Gi2AD8gl19AWTQM36i2gfjOvCZotAPfyLxp0
-         GgfnAkD/ZYC8l8aJei6xzWZ2jxlHgNsnodv2zK4oGnCWNjx+v25gy8foRJImxMKFzESn
-         l3KXN4AfqkhfUvmAMv+Jhgoi+eVl0f0kNqLmVttkWQJSL2Ucim8OICEZPiHKFrsgkVEH
-         1eWbatsTymvmsmCk3SukkOJEDup1k6BG8Rhmz8AUZcU8YWv9r0pve3Iqnvi6n5hYEz3u
-         qSHQ==
+        d=gmail.com; s=20221208; t=1686944007; x=1689536007;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rDE4DprDtVlj2OCsSAeXNU+w16ip/BTxY/Rxz/iqhVs=;
+        b=LytFrTDG5sr7JpHwHqn2rgW9P1VRg2NRAV0p8e7KDTz/KFaJJ031x5U0tqHLgQlRpe
+         lYPtJvuPsi9yx4NPwOQvvj6BXMZGVocNJdXJjCagFjXWqKI3OHijFmLSfs3I7V42FusP
+         FO6kvCNLD1nI7rjXWE8VkjAr+q83A8mGeK1vyeFPwLOJBDRgx9ew0uh2Ytsvzf113FnS
+         TpAr6I4jMUZI30ZqBrLTG7jBDS3UW6MOyvuReOEzJoyg4JXD0tB+vULxKdC/bGMoRZSp
+         gDQxBnYsxT/sJYFIhJg1Crv9fcQZXG4FV8cJ2mjvY3/E8OWfg+gD8xjhWAFNfPKJUQ4j
+         Vcnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686943997; x=1689535997;
-        h=in-reply-to:from:references:cc:to:content-language:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=n8YUPG0gHlr0qdifRw59HRCNCs5yl9INP4pgZg5LJP8=;
-        b=KJa1jNH3AuztPROE0+JG5nZMVvKioFKUlS4+nkbe7PePnvymH6Y6z1cpx+z1GuK4h6
-         5+ntAeQbNT2bEviIFt/m2K+uGbYY/hqEhHb9ri5lw/9Xz3B8v5nzoSLH/KWJdD9KQ30v
-         eL34DcccH0H+v1eDh2fYhxVGBgKPfR8hF00auQ1P3WYylCxOxSx6XCFdDDSkA3PVreRa
-         AH+RmS7yivXBWRJt/TS0QGKGOEzmsCYnZr2QnOrTQ50IUphCi9C1BN1hf6IBEjOFXX2P
-         acG2j/wUFDh3ui+wakeMX4yPfMKbmpi6XunsGH2MyIVOpvcoIuEWg/vhWq+XiPaoYHDT
-         OlIA==
-X-Gm-Message-State: AC+VfDxyoCpeggahsHPGZ38YTPp1wcO0SAsWR3Nr2x+VlJW1hDcImqCP
-	F/7XYbHo6ZO494bXgGjLO5W1Cw==
-X-Google-Smtp-Source: ACHHUZ5dNi9Ewclb64p0a4euQCMEBcl5BtvyJedzVUA28VjsHXzoCpgV3GUuFNA+c1ojB2X3S8b1gA==
-X-Received: by 2002:a05:600c:d8:b0:3f4:20ec:7601 with SMTP id u24-20020a05600c00d800b003f420ec7601mr2653977wmm.34.1686943996824;
-        Fri, 16 Jun 2023 12:33:16 -0700 (PDT)
-Received: from ?IPV6:2a02:578:8593:1200:a4fb:308c:d9af:9b31? ([2a02:578:8593:1200:a4fb:308c:d9af:9b31])
-        by smtp.gmail.com with ESMTPSA id 1-20020a05600c024100b003f60e143d38sm3012126wmj.11.2023.06.16.12.33.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 16 Jun 2023 12:33:16 -0700 (PDT)
-Content-Type: multipart/mixed; boundary="------------ZsTzgEaXjvQsTn7mKotqVps5"
-Message-ID: <5007b52c-dd16-dbf6-8d64-b9701bfa498b@tessares.net>
-Date: Fri, 16 Jun 2023 21:33:15 +0200
+        d=1e100.net; s=20221208; t=1686944007; x=1689536007;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rDE4DprDtVlj2OCsSAeXNU+w16ip/BTxY/Rxz/iqhVs=;
+        b=lxW3HlykGQB6bqv3xZjUXY5VTj7vDp0EPnYpYr59rZFKGnK1tI/klhGkR/etqvMgYb
+         h1lx8/XrUzTrYq4r9Vbt8BLaorryU/hoZH/6xWULyOO21bISJML+FZtT70XRPszm1K5h
+         3ypmolzZXUUli5fVeXQyUzNSjNTI+l5Jj2yEumhsVhuet/t43qrzlMeGrYRkzt09pEYq
+         lpLrTyq9HWggsCUkg4zE0SxEHm0vrP76TnEvbQBUCyNv6CZk6x4HdKhRnOjMu/jZBa9w
+         V8rNBmXTFZZADvWeW6ZzAjREgdCSHYRn6r6qOCOzn3nmhHLwArlYwQaYumuTuj1lAwap
+         t27Q==
+X-Gm-Message-State: AC+VfDxZRuVzSsdSDxqMQZYN2WHUxw9ZGfvHI9+fae772rkKBgKfJ64U
+	ZZZt1wJrQupIlVVnIAdmv2Oh4i6tes4AYMsm
+X-Google-Smtp-Source: ACHHUZ74jd+VauVXSGMTiUQNjK6BL8mJP/uzGaqQY28VmE6FSZkWr37btKSwZdDJK4Ya5Ouqv9OtQQ==
+X-Received: by 2002:a17:906:fe0e:b0:96f:f19b:887a with SMTP id wy14-20020a170906fe0e00b0096ff19b887amr2648185ejb.56.1686944006933;
+        Fri, 16 Jun 2023 12:33:26 -0700 (PDT)
+Received: from localhost (tor-exit-58.for-privacy.net. [185.220.101.58])
+        by smtp.gmail.com with ESMTPSA id lc18-20020a170906f91200b009828cf02e4esm3169556ejb.214.2023.06.16.12.33.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Jun 2023 12:33:26 -0700 (PDT)
+Date: Fri, 16 Jun 2023 22:33:25 +0300
+From: Maxim Mikityanskiy <maxtram95@gmail.com>
+To: Saeed Mahameed <saeed@kernel.org>
+Cc: Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+	Saeed Mahameed <saeedm@nvidia.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+	Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>,
+	bpf@vger.kernel.org
+Subject: Re: [PATCH net-next v4 0/2] xdp_rxq_info_reg fixes for mlx5e
+Message-ID: <ZIy49YoX3zcTRjpD@mail.gmail.com>
+References: <20230614090006.594909-1-maxtram95@gmail.com>
+ <20230615223250.422eb67a@kernel.org>
+ <ZIyv3b+Cn2m+/Oi9@x130>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH v4 4/4] selftests: net: fcnal-test: check if FIPS mode is
- enabled: manual merge
-Content-Language: en-GB
-To: Magali Lemes <magali.lemes@canonical.com>
-Cc: davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, shuah@kernel.org, dsahern@gmail.com,
- andrei.gherzan@canonical.com, netdev@vger.kernel.org,
- David Ahern <dsahern@kernel.org>, linux-kselftest@vger.kernel.org,
- linux-kernel@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
- Guillaume Nault <gnault@redhat.com>
-References: <20230613123222.631897-1-magali.lemes@canonical.com>
- <20230613123222.631897-5-magali.lemes@canonical.com>
-From: Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20230613123222.631897-5-magali.lemes@canonical.com>
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZIyv3b+Cn2m+/Oi9@x130>
+X-Spam-Status: No, score=1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+	version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This is a multi-part message in MIME format.
---------------ZsTzgEaXjvQsTn7mKotqVps5
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-
-Hi Magali,
-
-On 13/06/2023 14:32, Magali Lemes wrote:
-> There are some MD5 tests which fail when the kernel is in FIPS mode,
-> since MD5 is not FIPS compliant. Add a check and only run those tests
-> if FIPS mode is not enabled.
+On Fri, 16 Jun 2023 at 11:54:21 -0700, Saeed Mahameed wrote:
+> On 15 Jun 22:32, Jakub Kicinski wrote:
+> > On Wed, 14 Jun 2023 12:00:04 +0300 Maxim Mikityanskiy wrote:
+> > > Marked for net-next, as I'm not sure what the consensus was, but they
+> > > can be applied cleanly to net as well.
+> > 
+> > Sorry for lack of clarity, you should drop the fixes tags.
+> > If not implementing something was a bug most of the patches we merge
+> > would have a fixes tag. That devalues the Fixes tag completely.
+> > You can still ask Greg/Sasha to backport it later if you want.
+> > 
 > 
-> Fixes: f0bee1ebb5594 ("fcnal-test: Add TCP MD5 tests")
-> Fixes: 5cad8bce26e01 ("fcnal-test: Add TCP MD5 tests for VRF")
-> Reviewed-by: David Ahern <dsahern@kernel.org>
-> Signed-off-by: Magali Lemes <magali.lemes@canonical.com>
+> You don't think this should go to net ?
+> 
+> The first 3 version were targeting net branch .. I don't know why Maxim
+> decided to switch v4 to net-next, Maybe I missed an email ?
+> 
+> IMHO, I think these are net worthy since they are fixing issues with blabla,
+> for commits claiming to add support for blabla.
 
-Thank you for your patch!
+I agree it's worth applying them to net, and I think it's a valid use
+case for "Fixes" when the original commit says "implement X" but doesn't
+implement X.
 
-FYI, we got a small conflict when merging 'net' in 'net-next' in the
-MPTCP tree due to this patch applied in 'net':
+> I already applied those earlier to my net queue and was working on
+> submission today, let me know if you are ok for me to send those two
+> patches in my today's net PR.
 
-  d7a2fc1437f7 ("selftests: net: fcnal-test: check if FIPS mode is enabled")
+If you were going to send these via net, that would be the best, please
+go ahead and ignore my v4. I resent it solely because there was no
+activity since February, and no one replied my ping two months ago [1].
+Sorry for the noise.
 
-and this one from 'net-next':
+Thanks,
+Max
 
-  dd017c72dde6 ("selftests: fcnal: Test SO_DONTROUTE on TCP sockets.")
-
------ Generic Message -----
-The best is to avoid conflicts between 'net' and 'net-next' trees but if
-they cannot be avoided when preparing patches, a note about how to fix
-them is much appreciated.
-
-The conflict has been resolved on our side[1] and the resolution we
-suggest is attached to this email. Please report any issues linked to
-this conflict resolution as it might be used by others. If you worked on
-the mentioned patches, don't hesitate to ACK this conflict resolution.
----------------------------
-
-Regarding this conflict, I simply took the modifications from both sides.
-
-Cheers,
-Matt
-
-[1] https://github.com/multipath-tcp/mptcp_net-next/commit/502f061b9a02
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
---------------ZsTzgEaXjvQsTn7mKotqVps5
-Content-Type: text/x-patch; charset=UTF-8;
- name="502f061b9a02bc02a62d4e136e65514211dc63c5.patch"
-Content-Disposition: attachment;
- filename="502f061b9a02bc02a62d4e136e65514211dc63c5.patch"
-Content-Transfer-Encoding: base64
-
-ZGlmZiAtLWNjIHRvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL25ldC9mY25hbC10ZXN0LnNoCmlu
-ZGV4IDA1YjVjNGFmN2EwOCxlZTY4ODBhYzNlNWUuLmQzMmExNGJhMDY5YQotLS0gYS90b29s
-cy90ZXN0aW5nL3NlbGZ0ZXN0cy9uZXQvZmNuYWwtdGVzdC5zaAorKysgYi90b29scy90ZXN0
-aW5nL3NlbGZ0ZXN0cy9uZXQvZmNuYWwtdGVzdC5zaApAQEAgLTEyODMsMTAgLTEyMjMsNyAr
-MTI5MCwxMCBAQEAgaXB2NF90Y3Bfbm92cmYoCiAgCXJ1bl9jbWQgbmV0dGVzdCAtZCAke05T
-QV9ERVZ9IC1yICR7YX0KICAJbG9nX3Rlc3RfYWRkciAke2F9ICQ/IDEgIk5vIHNlcnZlciwg
-ZGV2aWNlIGNsaWVudCwgbG9jYWwgY29ubiIKICAKLSAJaXB2NF90Y3BfbWQ1X25vdnJmCisg
-CVsgIiRmaXBzX2VuYWJsZWQiID0gIjEiIF0gfHwgaXB2NF90Y3BfbWQ1X25vdnJmCiArCiAr
-CWlwdjRfdGNwX2RvbnRyb3V0ZSAwCiArCWlwdjRfdGNwX2RvbnRyb3V0ZSAyCiAgfQogIAog
-IGlwdjRfdGNwX3ZyZigpCg==
-
---------------ZsTzgEaXjvQsTn7mKotqVps5--
+[1]: https://lore.kernel.org/all/ZDFPCxBz0u6ClXnQ@mail.gmail.com/
 
