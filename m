@@ -1,72 +1,73 @@
-Return-Path: <netdev+bounces-11536-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11537-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 77207733814
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:26:42 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id E2149733829
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:31:52 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2BEB7280E4A
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 18:26:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9D0C0280D5A
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 18:31:51 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 505BF1DCBC;
-	Fri, 16 Jun 2023 18:26:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0471D111A2;
+	Fri, 16 Jun 2023 18:31:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3528A1C774
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 18:26:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CB3BC433C8;
-	Fri, 16 Jun 2023 18:26:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA37B1DDC9
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 18:31:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0272FC433C0;
+	Fri, 16 Jun 2023 18:31:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686939997;
-	bh=nPsZFlwn5qGnnVU4mxSlpErJ0FOZ69VUTXp5WTIuC7Y=;
+	s=k20201202; t=1686940308;
+	bh=npccMbFDUkD3Zx7BJ92pVUQqMFnp0n6o4An5GXsnjoc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=dBJa6Gf1pe3Eihsl4ZaN8VrLmScUFxZwGuV2ZDOmp6F9KJ3dYXVIRKfwbz9j1QhFZ
-	 IrE5UcDmZ9etV2Ddyvc7rNVdbbzq0aTdG1gi95N+bmZX3cG5YzFJ8ur7w6r01WWDiz
-	 Vow9rxVbGmYKumnttQ2cA/wjWvmSXocJY5q34gOPuO+CPEqXT9y1SsRJeRm5sRVzTV
-	 iXSRL2sR5Z58Z474j7ntuzx349ZnGOsDpCoc/ILeWzmdzKHs6Azye/S7pODZcFxQL3
-	 3tQvobbgT6Ff9M71w+no9xLAfcVoRzaSIggyqxHpSFQ9ETM2BCknLXFRnIGEXr20u0
-	 nwzIK2nodxCFg==
-Date: Fri, 16 Jun 2023 11:26:36 -0700
+	b=kcy6Oy4XTDfp17Wng718wKvbUVNgDXbl6LqF6Rqk1mhjf7GSlITumpp6ul5eUdxAD
+	 sxPj/ODUBCbaJW+2Je8eHe3EqyRDibEL6p7RuVHv6u1p28egVycOuiR/1/YvV/kHAU
+	 yaTCmjQOZB1JVl5P4dMSjG2HKfEuYc/461iOkJ88fB8N9WPZW//Cei+tSVeZrAqo3u
+	 mONzpkQssORiqIdMhfkspV81cYR5nvEgj0xE/5r4bQCLNU4qM2KVo4ye62n9IBHlII
+	 YsPGZRhYtaw8dhEyHymTAo66oFcGNuyrdYb53Uhwx+y03JW29j8zYyktE845wrZDgs
+	 O0kZz7U5Afo8Q==
+Date: Fri, 16 Jun 2023 11:31:47 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc: FUJITA Tomonori <fujita.tomonori@gmail.com>, netdev@vger.kernel.org,
- rust-for-linux@vger.kernel.org, aliceryhl@google.com, andrew@lunn.ch
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>, FUJITA Tomonori
+ <fujita.tomonori@gmail.com>, netdev@vger.kernel.org,
+ rust-for-linux@vger.kernel.org, aliceryhl@google.com
 Subject: Re: [PATCH 0/5] Rust abstractions for network device drivers
-Message-ID: <20230616112636.5b216a78@kernel.org>
-In-Reply-To: <CANiq72mAHv8ozBsZ9-ax9kY8OfESFAc462CxrKNv0gC3r0=Xmg@mail.gmail.com>
-References: <20230614230128.199724bd@kernel.org>
+Message-ID: <20230616113147.45fd9773@kernel.org>
+In-Reply-To: <67756b12-e533-4f76-bd3c-360536f2636b@lunn.ch>
+References: <20230613045326.3938283-1-fujita.tomonori@gmail.com>
+	<20230614230128.199724bd@kernel.org>
 	<CANiq72nLV-BiXerGhhs+c6yeKk478vO_mKxMa=Za83=HbqQk-w@mail.gmail.com>
 	<20230615191931.4e4751ac@kernel.org>
-	<20230616.211821.1815408081024606989.ubuntu@gmail.com>
-	<CANiq72mAHv8ozBsZ9-ax9kY8OfESFAc462CxrKNv0gC3r0=Xmg@mail.gmail.com>
+	<67756b12-e533-4f76-bd3c-360536f2636b@lunn.ch>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 16 Jun 2023 15:23:01 +0200 Miguel Ojeda wrote:
-> Not necessarily. It is true that, in general, the kernel does not
-> want/accept duplicate implementations.
-> 
-> However, this is a bit of a special situation, and there may be some
-> reasons to allow for it in a given subsystem. For instance:
-> 
->   - The need to experiment with Rust.
+On Fri, 16 Jun 2023 15:04:59 +0200 Andrew Lunn wrote:
+> > Actually Andrew is interested, and PHY drivers seem relatively simple..
+> > /me runs away =20
+>=20
+> :-)
+>=20
+> I think because they are so simple, there is not much to gain by
+> implementing them in rust.
 
-Duplicated driver in a new language means nobody has a real incentive
-to use it in production. That really mutes the signal we get out of the
-experiment. At the same time IIUC building the Rust code is not trivial,
-so IDK if we're ready to force people to use it. Ugh.
+I see many benefits :) Its a smallish and self-contained piece so it's
+achievable. Yet it interacts (to the extent the complexity of the PHY
+calls for it) with core netdev structures. Some PHYs even do
+timestamping which brings in interactions with skbs etc.
 
-Do you have any idea how long it will take until one can 
- dnf install $rust
-and have that be enough to be build a kernel (for the two major arches)?
+Major benefit number 2 is that Rust is currently missing any real life
+bus bindings (AFAIU) and PHYs and the bus they live on are maintained
+by the same person =F0=9F=98=81=EF=B8=8F
 
