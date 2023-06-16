@@ -1,41 +1,41 @@
-Return-Path: <netdev+bounces-11462-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11461-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 131027332AD
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 15:56:58 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id F413D7332AA
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 15:56:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BC35B2817AD
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 13:56:56 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AA7672817A4
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 13:56:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2885C19932;
-	Fri, 16 Jun 2023 13:54:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5F1061ACDC;
+	Fri, 16 Jun 2023 13:54:13 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 149A71C74A
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 13:54:14 +0000 (UTC)
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2065.outbound.protection.outlook.com [40.107.6.65])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005F93A9D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D81119930
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 13:54:13 +0000 (UTC)
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2080.outbound.protection.outlook.com [40.107.6.80])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5054A3A8F;
 	Fri, 16 Jun 2023 06:54:09 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fto04hu9QxKNymYdPMSS4EjXFuzYbkjDCS4lr4uRHSphMg4EU9hF3AAeRtyl+EhW8PLFQOnlIpbo0/K6hXoiYyo4guU0mBcbm8/DUsfawOqxXiMolyC/g65GHeyUtkETPeFnC46R14DXXuEL1aoPQJ0vIoQVzXiCK+0tZOcp/l80Xu/6DrPRzzfEEa6PjzH8Ap5Wet9eSpI60Y6NaXvAswTzwWFgFEJh+TCC/GE1W+xDdDyG/zj5JHpBziatR4yGxTZD855Snp7/A9mYtn+yZb2K3L7SGQ05jwlAcpIKTCkmg9gBvQKQcXkZyHJSQmXSMf3a8FWR7KaOncCJ57/Yrg==
+ b=Lpg1+Kru6o/IlPazaxJSK1xEooTFmjU37srCtYywkvrM8Xf/FgRav3bhxmPH9KEniyMEIXw+5WhlNlsRjsrxsxPYu31HjoLoNf41XySG/tQqCoXxnR7noUauZ4zSV4Scbwo4Hl1JObb4rVOpvHE4WMmRNmXlrrOVDDDZ5fvaZylHzx+BlE9QIN7auhqzMwipUxh9PiGsJN3EDiaXSUaD1DRAS9g4AqgyXOXkEOs+RgW258ouROKxPFANpIhzuKElt7FbN3ipat3EZYjWqcHtK0Di+Xg5UCtExPK96RPK0eD4lg3Z98R4DYfbC5bB+UGXz9KCSuq4ky2JAXL6WnOPdQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OXYS/4aXVouZmHPwbC3/vxcfCxkGg958N5TJtGaGBPQ=;
- b=V0Bc4cvG6cb+DPSRY94dV3dcUpmcNFwewwNojPYjj3eKOvxMoiXqE7fqO2vXC87l6yMcAI7ZnzA3OVeJUbuSlz6dWeGhlSKXmf2QpnnoGw2vMJ2b5AJHSEpIUqf+wpT1UdyLJxoav9Wyd3c+RG6zlSM8hztd/c6rVXADS4htNhrhWtDyAtPEn30GRTiNbknJQ0qIsFdyNuC6UJdU7dQ0mmvV4EcjUBRn+2eq8zKEJ4tgNQ/5wrG3w+hRjQFcRNwbWjd06bI+dFCMwJSKwWFdMr1RxrOgqcrRMUFcQr0JUb8FKJrtU1bHkDqee1FoRS3OT4dProp8MvAKfRsNj4h3CQ==
+ bh=cn4kSTJie0wzoYaMYXXL0biburs5QzNbKc/LOPHE0qk=;
+ b=dA1Ph5aR7sbYVzOpR328tkdTz57Q7iHwP/xIc4zBdQXlmMXKm4ZBSpjSViYv5zhZmyMzf2IXSrAasdmKsbb9YXZBIzXR/68V1XIkhArfq8rJIAb1V4ww5h9zl8NVBM1f2YlR9r/HSnihuv+sAqiTayp18gYAe+Dn5PBOIF0Jmmikv6KVuoZXrYDpncoqs7IYx04wvzDsgWtbPN+pSOoTLaSZ380Kh6N8QamrwuEywN3Mx+ry2Fq0E1rKrDkrykDdPlLI+0XPbNCMd4612TZor96KxzmGfx5e8qR7ifrsgzh48veMEdGq66ByhOvDRqWws9CQUyi6DCv6YA664dc94Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
  s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OXYS/4aXVouZmHPwbC3/vxcfCxkGg958N5TJtGaGBPQ=;
- b=T3ke5OKtAaYrggITNvNzQFKt+87qCMtbEjppHcMzGUmdnkWTVmo1/j9dQfQz4bY9WoDgdU2NOAJcdyjjiMROteuu0aSnOlLuZw433x6zz7xO2B3OufQKda0ZCfN4j/OqLUmWVLItLasE0uTTvpyLWFMyWHDLmYuVld/ul9Jxu00=
+ bh=cn4kSTJie0wzoYaMYXXL0biburs5QzNbKc/LOPHE0qk=;
+ b=Vz4YhE+13gnG/jlMQKpdsrigP4KBEX0gd9i4QWPwYnfphicA5gkzhmy1BERVjQ3U+jdLxUdB6tZ250t2/uFLssfOdaivJyuH1ccBsOtdDwVNnyN9wgKEyHnDaH2NN+k8hDn+5lBnIwY4t3AxSE69y1UZ8GbWCIq93rvC+bKZXyE=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=oss.nxp.com;
 Received: from AM9PR04MB8954.eurprd04.prod.outlook.com (2603:10a6:20b:409::7)
@@ -60,9 +60,9 @@ Cc: netdev@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	sebastian.tobuschat@nxp.com,
 	"Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
-Subject: [PATCH net-next v1 08/14] net: phy: nxp-c45-tja11xx: enable LTC sampling on both ext_ts edges
-Date: Fri, 16 Jun 2023 16:53:17 +0300
-Message-Id: <20230616135323.98215-9-radu-nicolae.pirea@oss.nxp.com>
+Subject: [PATCH net-next v1 09/14] net: phy: nxp-c45-tja11xx: read egress ts on TJA1120
+Date: Fri, 16 Jun 2023 16:53:18 +0300
+Message-Id: <20230616135323.98215-10-radu-nicolae.pirea@oss.nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230616135323.98215-1-radu-nicolae.pirea@oss.nxp.com>
 References: <20230616135323.98215-1-radu-nicolae.pirea@oss.nxp.com>
@@ -80,55 +80,55 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM9PR04MB8954:EE_|PA4PR04MB9318:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4d36e20f-b062-4871-b3d8-08db6e712408
+X-MS-Office365-Filtering-Correlation-Id: 8d23f4ca-aff6-47ab-f596-08db6e712492
 X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	9DYDCF/wG9QwK136HPRLodvu5Qo8jMjPfsXfWdzcrzNEUKs04I5KrOoFHZ3HK1HUErTB9V7WcHnh1BxOk4k3PnfOZG3Bk6KTbbuOUFtmP0SgkNsCubU1JPy1OT0u77OB54SCg8ov3TZkwNCOeb68sfeltQKgzGIAlZha75pH1pJ+/Ul//HqEwW1d2sfHCg038zomDtEJJ20/Po7kSCp68GYyGg3iDKMZItwLFafVGFj9jwax6GjG/orvgXGRieyVTtyb9/mlKJyCkVJirbzYDJtCsQvoIDDRA6nZTX2EyWR0vQtsdUQFcPVcq59jslRJKdh2expWQFiVeCU2BgrV5NQj7pUHNBLs4ISoX3U6Nn4C/93trOP+kEgeklAQ+GnZep7rcmTyAJa+ncnKwuK0yg6A9ralKy6M7PMLutxGIKmuVd1Ylj3Hb9k81v7dGzV8Vl14t6HCU/T+gS0PFSR2ZaPhzCr3nlbz0Ag0O/Njqx9ndog0M4yGTy+BD+F1iP/5H9Be4AUX1UTtDUqUAZR2ew/8cJeiMADktSAZ33+V8VdaytTd95wNP9rYmSTjRUPUwCBJD/6mEBeJP8fgP1i8S1JM+SnLZu9s9uwVTCLUF+4=
+	nr9L+bwT9VA08UUI7Qufz0G16pRSF+6Jjja+rAa5VXuQAigwM5XDqyhYiSIADME2weXws18yrPEcJfK+I1n8HL3oMgJGc++BJ30IUz+xkwCSYWInLmOwlKauQlcvOQVyC+AulmcIVcSNGHPc0mizFPoOXZeOfnYNKR5pWaF5WXBBQR4mm6FcZ29Jtog2R7Yb59oXSjpdWQ3tcUq0jS1rP3ulvG6ePOBwNoiNdMtXdlRBoJfU6DOkg6U+v4USTZURHALFCWlMSAL+JVEVbtIw7myYIi8lVAgfzOVPTSVbOd+pQi1Nm0c7XAf0ZNlhdGbU7Fabt5YZC2FKQC9vTzWLF4ZuHB5v/nrMQuMtjkUPnQ1BNxd0L+iz/Sc435hbBicZejMOGctycFTaR/e+IHaqOVUuKW1JP4Le6/SGxSYO533gVPe98K24+TpumKH4NPkWc2COnMWv2b4SE00nFr4THaQEhwlufgxXMvlmvDh1eBAmpdflqbuMyxbHWg4yaLVUnynpABZ6KWJvaGjoKheA9yQ4GMDv2pAdNQNU3Lmw8XTvzSJWLr4LLak2uEcAWFjBM62isG17RrZ0AjHnoM+eUgsjEa7cw0gUX6fsT/NX9rY=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8954.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(366004)(346002)(136003)(376002)(451199021)(41300700001)(52116002)(86362001)(66556008)(66946007)(316002)(6486002)(8676002)(8936002)(6666004)(66476007)(4326008)(478600001)(7416002)(6512007)(5660300002)(26005)(83380400001)(6506007)(1076003)(2906002)(186003)(66574015)(38350700002)(2616005)(38100700002);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8954.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(366004)(346002)(136003)(376002)(451199021)(41300700001)(52116002)(86362001)(66556008)(66946007)(316002)(6486002)(8676002)(8936002)(6666004)(66476007)(4326008)(478600001)(7416002)(6512007)(5660300002)(26005)(83380400001)(6506007)(1076003)(2906002)(186003)(38350700002)(2616005)(38100700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?irgD0be89quVjhHG1NTFXMrTnFv4iF2qSNPR7LpVX2YM007upwek/h4ZDR/O?=
- =?us-ascii?Q?Vf7IStSk/Gx6dfqo2UqU16gknWoTOye+j/XW739booStc+4glQJwbIJdLDQG?=
- =?us-ascii?Q?aPreD+XQTmWCf+3QLLyXCiozikqc0RO22juTTaFXq20A9D6iQjuaXXEeLlYD?=
- =?us-ascii?Q?HAga7R6aL5Vgu74woi5VdUq5cAJJ7OU1eiya1aWmWn3iemN5f8n1hrSK3V+D?=
- =?us-ascii?Q?9j5C07dcBQqWDUfDvCfuyjOahFTolOAsTdb0NM2zBfjko25JhsaFNOQRowvr?=
- =?us-ascii?Q?eVdhP50XK6x/tD/e7JHyIHa4lKP+wJcTlkWIk3KJ6xOap5WRVTaGWgLw12Rj?=
- =?us-ascii?Q?UHIKd0cXihZ0j7GyZPdrDc7Ov2UAg0wH0YkAWIqPfC7A/HDhfEuk9xP8cJUt?=
- =?us-ascii?Q?mOtIwSV5NxDDXfh4BYGBSAgo8jG+jTgBRPkNatPDrwU2CnFLW1sOQocupeiK?=
- =?us-ascii?Q?65/i3UdoIsDQfO9PVCq6F1DH5KNqHbMmwB1wwwFDWaREioMfLHwlq9+MkZQX?=
- =?us-ascii?Q?VoxEKUJVE5fSa1qFV2BCFmfCsXLM0LSbdXrF7DLS1JQcO0ryEWzc6mgXxizk?=
- =?us-ascii?Q?K8GkjQzNLlWFfqitFlXXUELHnzWBlQr4R6lCQDhOwPPemLClcPKmdBGh7VpU?=
- =?us-ascii?Q?lgkkN+ThN2xUgBzy7BFi6rQphWa2Aolu53rge4rn7qsxLfqplj743Arh2W0d?=
- =?us-ascii?Q?Lr9ju5yPTZkZ26fXf4Q6yl3zv0HW0gUI047Cu4zA8UIyImrdmELJ3oeUQdzI?=
- =?us-ascii?Q?78TO2wL1cFwcLcPlr89bfbw8mgpHjqdUmjGbEBmqPbv48z40ZF7+N6PnvsC/?=
- =?us-ascii?Q?8Y+qmighGt30gfGNlrSgtnP97PttPPG3/Ox8G9z2xNwR0bW0YPgBL2IJdRa4?=
- =?us-ascii?Q?Sk/VLQ4BCmEWr/nHH099BxJzdxa67m4+Z21vG9liqToLm+8JjILTTYpERXVv?=
- =?us-ascii?Q?sQq7Z6xoFkcjZozxNfhlxpetkEAW0Ax5YweztcW9yXhzWOwE2jBXUtA7FCSR?=
- =?us-ascii?Q?hA34BEiUZ2qtS6qNH58Jb9dfUV+gRep5yhfN/ptO3BbVPUSSmp5Vha3w6DJd?=
- =?us-ascii?Q?RraAKOp8bvyF4QmaKYQllRb6bdQl+C0iAdXelDGNTeqPks5Y1yQeEya5YSyW?=
- =?us-ascii?Q?bbdqaXf76VYUQ1IgLjfgXpvqP9vKxlvFmXyWYHdOqQsiyeVgFcCxK6LGBcCu?=
- =?us-ascii?Q?88DYzkaB384fzAmF/zq1JpNeGM5eCdfEIXaXujF5GT0uAOJzcECOAXsHWuTq?=
- =?us-ascii?Q?GCJK7wiNQO2r4nekugDdWrPZSoZWpX8YDP6pvKGIgFvwQvYI5K1ZoyDOBOr3?=
- =?us-ascii?Q?knra4Cd3UznmHg9Dxo+PP5Rw56uomAWUTArFVPrIuje3E6ECr1bLl6FUi0Zg?=
- =?us-ascii?Q?LNJG9z9pGPrz4TagIBS3zJv/IgB8iEPtqvm41FC80dfJQ5XNsBIJnIwJIdNH?=
- =?us-ascii?Q?rcOiOGyh2ie349iUdzQFbLufQRLeczTypj+JGAtr2/saAsEemScxeHPafRrH?=
- =?us-ascii?Q?EGJHWLlEhXQrW6ZbhBbe6INEKK2Mv+RVyHjeYhZ8ZA/9KAQmZ5l7n1h0S7JS?=
- =?us-ascii?Q?sYV3o9JCSfuUK6Em/ORHtlEvyphcw7LvE2oO/fEWThvYdwe2KqbEuDcEVn3R?=
- =?us-ascii?Q?2A=3D=3D?=
+	=?us-ascii?Q?QjZUnaFkjTVukmpwATw47l8LulwhN9kPwnBEsOf+rngXnER9bvzc5vAcP4kL?=
+ =?us-ascii?Q?b+YYyt+xKMIJhYRIrWlPf119w+lPFoWutxEIilFVKTSYsSuWSG/d4LPWWfDe?=
+ =?us-ascii?Q?hgxdHksQxUy7XlSqKl0LcOXP7Bamhls7qF9wWFTfEa4vroEvSqW0mdc8bMWJ?=
+ =?us-ascii?Q?SqrGRXJSkVn5Kr+6bKt9doGDz/YhfziY2TwG7rPQFcyGZWwgk6NDkIuUH4ZL?=
+ =?us-ascii?Q?XNi831YIFarWkMSkF10yjW87vnt9gVJKeb1C2lvN0pSzhYaK3gVhriWn5/u2?=
+ =?us-ascii?Q?KYv9fJI5NAItLyYOZCk2zng4sogR/kCUJmBKO8iu90wrout5cTnQ44JYrOlZ?=
+ =?us-ascii?Q?GAtF/HeXqIMQju+lCo78XW434Qb26/vyMKSMhptHik1jyh9LGxmvXCWfPG7s?=
+ =?us-ascii?Q?SKDTcJugrLahNBuph8PYZSMo9oHH0B5N8QAyhBwvVhpqTnDUr6YCXFTmDoWX?=
+ =?us-ascii?Q?bzHIRME5FTwWvGOczWpXq0dDjBezWEeVMl9Lm0qsm1c/8lTa+rdvyqyOvA8U?=
+ =?us-ascii?Q?lkZvB5cgPo22yjcTCTXNqs901iTgo5MNy5uZgIRfwu+3ZTALhPX4R333lslh?=
+ =?us-ascii?Q?jkksoCZoLamTKpoYSae9ShMiNodclq/i2JPSVcP7Ltzf3FfZZHpJTd0MxZ/H?=
+ =?us-ascii?Q?VkY5VXDfhVizE+PRsBy89S4W+PhqmJP0KTgAhMOw3eFUWsExNDGeif3twUpl?=
+ =?us-ascii?Q?YOWyIVIUZFs1dwZQk9/bjv4FC1uAT8OmTxcx2fSyDgnEM6vLYIcO1cDdjVN0?=
+ =?us-ascii?Q?YDpoaPmz5LmjAzeK9F/dfflgG1BFJTmijOdXO377yZPOt92/JLgF2/WVwjge?=
+ =?us-ascii?Q?ghL3JER5Tgg+xsaZrmNTJu43ePTDkn/1gZGpLnxGqqYDeK4In03lXHZQlvAb?=
+ =?us-ascii?Q?nMjYTTKDuQfaAX6WMISYgrK95+1jyOG4pPRJfUcM4AGg8BQ0/6vhoy3ikPIZ?=
+ =?us-ascii?Q?9wbmnyIWhCY830bowggq4AFIp5k3X2TXhaPsZeDtCa2bfzA4rDwuv7k469gm?=
+ =?us-ascii?Q?ZmVkWrJuK4Xaj/2aG4HIwAXw63mHom9w6LfgQNotVuCiZGFdLtXQkZ0eZDRS?=
+ =?us-ascii?Q?A1Wk8LPDcpq64VvmKdQcuqA9o70fQh8i3XRA1Hj5EyYM1eXzGCSkz0MLET7D?=
+ =?us-ascii?Q?2sFzF4l0mPZWGu0Jh3rYLvVSrN15ebAfnmg9PdSMixWwRtxM98ObFSJTePLK?=
+ =?us-ascii?Q?fQMRq4GrWlT7XLV5MLegtEgV/3txqJW/YTju+n70M3Vo9S9scHVWm5WM5UP9?=
+ =?us-ascii?Q?l9u5sE+yKSTEYriDS4GQ6umCMbsfjHW8RuUqhdOrVxxYGak/Dbi4BKhnFGb4?=
+ =?us-ascii?Q?+scJhk/HDWkXwTywlSf6Uqoq1hsDeye5gCDlc/bu3JNwEu0kckf+V2y6KbIW?=
+ =?us-ascii?Q?cX+uWUpeE1dd7SZ/Zs/FDlJjtzD+/8zBGhYE2XvV39fCGtqLDpOcGLx3Ft0M?=
+ =?us-ascii?Q?NuOcCegBw+jZHobvSgVyMw+R4NSlTBwK67he1GX4ZeEExBmy0OgvbpBfnkAq?=
+ =?us-ascii?Q?la23fZeowP3AafMPtAXvQqgXAavC6kKMS3APlKnXsOwgacTIBWhNX5BGIxnO?=
+ =?us-ascii?Q?ZUKtjiSAyujwLQnrvpMVYSC0fMDbB7+zzxm82bR+zq1znhM3FNHysaRD/l2y?=
+ =?us-ascii?Q?yw=3D=3D?=
 X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4d36e20f-b062-4871-b3d8-08db6e712408
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8d23f4ca-aff6-47ab-f596-08db6e712492
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8954.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2023 13:54:01.9367
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2023 13:54:02.8972
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LQ9tpus9boNLItpk4nmIrBLIa0cmH0RmKKPjuDX1rr/QjlKhWVHagleukNIGBy1vO9RSeufdn562cZVTw+rFGS0jxGsjQ6yOnsVrUkOiUUs=
+X-MS-Exchange-CrossTenant-UserPrincipalName: +Z3xS2/jSa5JnXQdDg6kUGDaWFht/SdIgTYbj9P5AYbj3hSqzExoBYdm6aM8pwb6E9cP1wEO3p0gZtP2TmSpoql4QiX5UDEu3Ap6HPZdVxs=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB9318
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
@@ -136,134 +136,206 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The external trigger configuration for TJA1120 has changed. The PHY
-supports sampling of the LTC on rising and on falling edge.
+The egress timestamp FIFO/circular buffer work different on TJA1120 than
+TJA1103.
+
+For TJA1103 the new timestamp should be manually moved from the FIFO to
+the hardware buffer before checking if the timestamp is valid.
+
+For TJA1120 the hardware will move automatically the new timestamp
+from the FIFO to the buffer and the user should check the valid bit, read
+the timestamp and unlock the buffer by writing any of the buffer
+registers(which are read only).
+
+Another change for the TJA1120 is the behaviour of the EGR TS IRQ bit.
+This bit was a self-clear bit for TJA1103, but now should be cleared
+before reading the timestamp.
 
 Signed-off-by: Radu Pirea (NXP OSS) <radu-nicolae.pirea@oss.nxp.com>
 ---
- drivers/net/phy/nxp-c45-tja11xx.c | 64 +++++++++++++++++++++++++++----
- 1 file changed, 56 insertions(+), 8 deletions(-)
+ drivers/net/phy/nxp-c45-tja11xx.c | 85 ++++++++++++++++++++++++-------
+ 1 file changed, 67 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/net/phy/nxp-c45-tja11xx.c b/drivers/net/phy/nxp-c45-tja11xx.c
-index 2160b9f8940c..6aa738396daf 100644
+index 6aa738396daf..838bd4a638bc 100644
 --- a/drivers/net/phy/nxp-c45-tja11xx.c
 +++ b/drivers/net/phy/nxp-c45-tja11xx.c
-@@ -104,6 +104,10 @@
- #define VEND1_PTP_CONFIG		0x1102
- #define EXT_TRG_EDGE			BIT(1)
+@@ -29,6 +29,11 @@
  
-+#define TJA1120_SYNC_TRIG_FILTER	0x1010
-+#define PTP_TRIG_RISE_TS		BIT(3)
-+#define PTP_TRIG_FALLING_TS		BIT(2)
+ #define TJA1120_VEND1_EXT_TS_MODE	0x1012
+ 
++#define TJA1120_EGRESS_TS_DATA_S	0x9060
++#define TJA1120_EGRESS_TS_END		0x9067
++#define TJA1120_TS_VALID		BIT(0)
++#define TJA1120_MORE_TS			BIT(15)
 +
- #define CLK_RATE_ADJ_LD			BIT(15)
- #define CLK_RATE_ADJ_DIR		BIT(14)
+ #define VEND1_PHY_IRQ_ACK		0x80A0
+ #define VEND1_PHY_IRQ_EN		0x80A1
+ #define VEND1_PHY_IRQ_STATUS		0x80A2
+@@ -62,6 +67,9 @@
+ #define VEND1_PORT_FUNC_IRQ_EN		0x807A
+ #define PTP_IRQS			BIT(3)
  
-@@ -240,6 +244,7 @@ struct nxp_c45_phy_data {
- 	const struct nxp_c45_phy_stats *stats;
++#define VEND1_PTP_IRQ_ACK		0x9008
++#define EGR_TS_IRQ			BIT(1)
++
+ #define VEND1_PORT_INFRA_CONTROL	0xAC00
+ #define PORT_INFRA_CONTROL_EN		BIT(14)
+ 
+@@ -160,6 +168,8 @@
+ 
+ #define NXP_C45_SKB_CB(skb)	((struct nxp_c45_skb_cb *)(skb)->cb)
+ 
++struct nxp_c45_phy;
++
+ struct nxp_c45_skb_cb {
+ 	struct ptp_header *header;
+ 	unsigned int type;
+@@ -245,7 +255,10 @@ struct nxp_c45_phy_data {
  	int n_stats;
  	u8 ptp_clk_period;
-+	bool ext_ts_both_edges;
+ 	bool ext_ts_both_edges;
++	bool ack_ptp_irq;
  	void (*counters_enable)(struct phy_device *phydev);
++	bool (*get_egressts)(struct nxp_c45_phy *priv,
++			     struct nxp_c45_hwts *hwts);
  	void (*ptp_init)(struct phy_device *phydev);
  	void (*ptp_enable)(struct phy_device *phydev, bool enable);
-@@ -682,9 +687,52 @@ static int nxp_c45_perout_enable(struct nxp_c45_phy *priv,
- 	return 0;
+ };
+@@ -497,21 +510,11 @@ static void nxp_c45_get_extts(struct nxp_c45_phy *priv,
+ 		      regmap->vend1_ext_trg_ctrl, RING_DONE);
  }
  
-+static void nxp_c45_set_rising_or_falling(struct phy_device *phydev,
-+					  struct ptp_extts_request *extts)
-+{
-+	/* Some enable request has only the PTP_ENABLE_FEATURE flag set and in
-+	 * this case external ts should be enabled on rising edge.
-+	 */
-+	if (extts->flags & PTP_RISING_EDGE ||
-+	    extts->flags == PTP_ENABLE_FEATURE)
-+		phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1,
-+				   VEND1_PTP_CONFIG, EXT_TRG_EDGE);
-+
-+	if (extts->flags & PTP_FALLING_EDGE)
-+		phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
-+				 VEND1_PTP_CONFIG, EXT_TRG_EDGE);
-+}
-+
-+static void nxp_c45_set_rising_and_falling(struct phy_device *phydev,
-+					   struct ptp_extts_request *extts)
-+{
-+	/* Some enable request has only the PTP_ENABLE_FEATURE flag set and in
-+	 * this case external ts should be enabled on rising edge.
-+	 */
-+	if (extts->flags & PTP_RISING_EDGE ||
-+	    extts->flags == PTP_ENABLE_FEATURE)
-+		phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
-+				 TJA1120_SYNC_TRIG_FILTER,
-+				 PTP_TRIG_RISE_TS);
-+	else
-+		phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1,
-+				   TJA1120_SYNC_TRIG_FILTER,
-+				   PTP_TRIG_RISE_TS);
-+
-+	if (extts->flags & PTP_FALLING_EDGE)
-+		phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
-+				 TJA1120_SYNC_TRIG_FILTER,
-+				 PTP_TRIG_FALLING_TS);
-+	else
-+		phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1,
-+				   TJA1120_SYNC_TRIG_FILTER,
-+				   PTP_TRIG_FALLING_TS);
-+}
-+
- static int nxp_c45_extts_enable(struct nxp_c45_phy *priv,
- 				struct ptp_extts_request *extts, int on)
+-static bool nxp_c45_get_hwtxts(struct nxp_c45_phy *priv,
+-			       struct nxp_c45_hwts *hwts)
++static void nxp_c45_read_egress_ts(struct nxp_c45_phy *priv,
++				   struct nxp_c45_hwts *hwts)
  {
-+	const struct nxp_c45_phy_data *data = nxp_c45_get_data(priv->phydev);
- 	int pin;
- 
- 	if (extts->flags & ~(PTP_ENABLE_FEATURE |
-@@ -695,7 +743,8 @@ static int nxp_c45_extts_enable(struct nxp_c45_phy *priv,
- 
- 	/* Sampling on both edges is not supported */
- 	if ((extts->flags & PTP_RISING_EDGE) &&
--	    (extts->flags & PTP_FALLING_EDGE))
-+	    (extts->flags & PTP_FALLING_EDGE) &&
-+	    !data->ext_ts_both_edges)
- 		return -EOPNOTSUPP;
- 
- 	pin = ptp_find_pin(priv->ptp_clock, PTP_PF_EXTTS, extts->index);
-@@ -709,13 +758,10 @@ static int nxp_c45_extts_enable(struct nxp_c45_phy *priv,
- 		return 0;
- 	}
- 
--	if (extts->flags & PTP_RISING_EDGE)
--		phy_clear_bits_mmd(priv->phydev, MDIO_MMD_VEND1,
--				   VEND1_PTP_CONFIG, EXT_TRG_EDGE);
+ 	const struct nxp_c45_regmap *regmap = nxp_c45_get_regmap(priv->phydev);
+ 	struct phy_device *phydev = priv->phydev;
+-	bool valid;
+-	u16 reg;
 -
--	if (extts->flags & PTP_FALLING_EDGE)
--		phy_set_bits_mmd(priv->phydev, MDIO_MMD_VEND1,
--				 VEND1_PTP_CONFIG, EXT_TRG_EDGE);
-+	if (data->ext_ts_both_edges)
-+		nxp_c45_set_rising_and_falling(priv->phydev, extts);
-+	else
-+		nxp_c45_set_rising_or_falling(priv->phydev, extts);
+-	mutex_lock(&priv->ptp_lock);
+-	phy_write_mmd(priv->phydev, MDIO_MMD_VEND1, VEND1_EGR_RING_CTRL,
+-		      RING_DONE);
+-	reg = phy_read_mmd(priv->phydev, MDIO_MMD_VEND1, VEND1_EGR_RING_DATA_0);
+-	valid = !!(reg & RING_DATA_0_TS_VALID);
+-	if (!valid)
+-		goto nxp_c45_get_hwtxts_out;
  
- 	nxp_c45_gpio_config(priv, pin, GPIO_EXTTS_OUT_CFG);
- 	priv->extts = true;
-@@ -1551,6 +1597,7 @@ static const struct nxp_c45_phy_data tja1103_phy_data = {
- 	.stats = tja1103_hw_stats,
+ 	hwts->domain_number =
+ 		nxp_c45_read_reg_field(phydev, &regmap->domain_number);
+@@ -525,12 +528,49 @@ static bool nxp_c45_get_hwtxts(struct nxp_c45_phy *priv,
+ 		nxp_c45_read_reg_field(phydev, &regmap->nsec_29_16) << 16;
+ 	hwts->sec = nxp_c45_read_reg_field(phydev, &regmap->sec_1_0);
+ 	hwts->sec |= nxp_c45_read_reg_field(phydev, &regmap->sec_4_2) << 2;
++}
++
++static bool nxp_c45_get_hwtxts(struct nxp_c45_phy *priv,
++			       struct nxp_c45_hwts *hwts)
++{
++	bool valid;
++	u16 reg;
+ 
++	mutex_lock(&priv->ptp_lock);
++	phy_write_mmd(priv->phydev, MDIO_MMD_VEND1, VEND1_EGR_RING_CTRL,
++		      RING_DONE);
++	reg = phy_read_mmd(priv->phydev, MDIO_MMD_VEND1, VEND1_EGR_RING_DATA_0);
++	valid = !!(reg & RING_DATA_0_TS_VALID);
++	if (!valid)
++		goto nxp_c45_get_hwtxts_out;
++
++	nxp_c45_read_egress_ts(priv, hwts);
+ nxp_c45_get_hwtxts_out:
+ 	mutex_unlock(&priv->ptp_lock);
+ 	return valid;
+ }
+ 
++static bool tja1120_get_hwtxts(struct nxp_c45_phy *priv,
++			       struct nxp_c45_hwts *hwts)
++{
++	struct phy_device *phydev = priv->phydev;
++	bool valid;
++	u16 reg;
++
++	mutex_lock(&priv->ptp_lock);
++	reg = phy_read_mmd(phydev, MDIO_MMD_VEND1, TJA1120_EGRESS_TS_DATA_S);
++	valid = !!(reg & TJA1120_TS_VALID);
++	if (!valid)
++		goto tja1120_get_hwtxts_out;
++
++	nxp_c45_read_egress_ts(priv, hwts);
++	phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1, TJA1120_EGRESS_TS_DATA_S,
++			   TJA1120_TS_VALID);
++tja1120_get_hwtxts_out:
++	mutex_unlock(&priv->ptp_lock);
++	return valid;
++}
++
+ static void nxp_c45_process_txts(struct nxp_c45_phy *priv,
+ 				 struct nxp_c45_hwts *txts)
+ {
+@@ -569,6 +609,7 @@ static void nxp_c45_process_txts(struct nxp_c45_phy *priv,
+ static long nxp_c45_do_aux_work(struct ptp_clock_info *ptp)
+ {
+ 	struct nxp_c45_phy *priv = container_of(ptp, struct nxp_c45_phy, caps);
++	const struct nxp_c45_phy_data *data = nxp_c45_get_data(priv->phydev);
+ 	bool poll_txts = nxp_c45_poll_txts(priv->phydev);
+ 	struct skb_shared_hwtstamps *shhwtstamps_rx;
+ 	struct ptp_clock_event event;
+@@ -580,7 +621,7 @@ static long nxp_c45_do_aux_work(struct ptp_clock_info *ptp)
+ 	u32 ts_raw;
+ 
+ 	while (!skb_queue_empty_lockless(&priv->tx_queue) && poll_txts) {
+-		txts_valid = nxp_c45_get_hwtxts(priv, &hwts);
++		txts_valid = data->get_egressts(priv, &hwts);
+ 		if (unlikely(!txts_valid)) {
+ 			/* Still more skbs in the queue */
+ 			reschedule = true;
+@@ -1127,13 +1168,17 @@ static irqreturn_t nxp_c45_handle_interrupt(struct phy_device *phydev)
+ 	if (!data)
+ 		return ret;
+ 
+-	/* There is no need for ACK.
+-	 * The irq signal will be asserted until the EGR TS FIFO will be
+-	 * emptied.
+-	 */
+ 	irq = nxp_c45_read_reg_field(phydev, &data->regmap->irq_egr_ts_status);
+ 	if (irq) {
+-		while (nxp_c45_get_hwtxts(priv, &hwts))
++		/* If ack_ptp_irq is false, the IRQ bit is self-clear and will
++		 * be cleared when the EGR TS FIFO is empty. Otherwise, the
++		 * IRQ bit should be cleared before reading the timestamp,
++		 */
++
++		if (data->ack_ptp_irq)
++			phy_write_mmd(phydev, MDIO_MMD_VEND1,
++				      VEND1_PTP_IRQ_ACK, EGR_TS_IRQ);
++		while (data->get_egressts(priv, &hwts))
+ 			nxp_c45_process_txts(priv, &hwts);
+ 
+ 		ret = IRQ_HANDLED;
+@@ -1598,7 +1643,9 @@ static const struct nxp_c45_phy_data tja1103_phy_data = {
  	.n_stats = ARRAY_SIZE(tja1103_hw_stats),
  	.ptp_clk_period = PTP_CLK_PERIOD_100BT1,
-+	.ext_ts_both_edges = false,
+ 	.ext_ts_both_edges = false,
++	.ack_ptp_irq = false,
  	.counters_enable = tja1103_counters_enable,
++	.get_egressts = nxp_c45_get_hwtxts,
  	.ptp_init = tja1103_ptp_init,
  	.ptp_enable = tja1103_ptp_enable,
-@@ -1646,6 +1693,7 @@ static const struct nxp_c45_phy_data tja1120_phy_data = {
- 	.stats = tja1120_hw_stats,
+ };
+@@ -1694,7 +1741,9 @@ static const struct nxp_c45_phy_data tja1120_phy_data = {
  	.n_stats = ARRAY_SIZE(tja1120_hw_stats),
  	.ptp_clk_period = PTP_CLK_PERIOD_1000BT1,
-+	.ext_ts_both_edges = true,
+ 	.ext_ts_both_edges = true,
++	.ack_ptp_irq = true,
  	.counters_enable = tja1120_counters_enable,
++	.get_egressts = tja1120_get_hwtxts,
  	.ptp_init = tja1120_ptp_init,
  	.ptp_enable = tja1120_ptp_enable,
+ };
 -- 
 2.34.1
 
