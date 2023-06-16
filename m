@@ -1,90 +1,109 @@
-Return-Path: <netdev+bounces-11301-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11302-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id BD160732795
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 08:29:00 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 60F807327B1
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 08:35:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 02B7C1C20E43
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 06:29:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3B5AB1C20F24
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 06:35:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2484A46A2;
-	Fri, 16 Jun 2023 06:28:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 078B4624;
+	Fri, 16 Jun 2023 06:35:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E1DE2105;
-	Fri, 16 Jun 2023 06:28:55 +0000 (UTC)
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1F3421C;
-	Thu, 15 Jun 2023 23:28:37 -0700 (PDT)
-Received: from canpemm500007.china.huawei.com (unknown [172.30.72.57])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Qj8HP4czyzqTRC;
-	Fri, 16 Jun 2023 14:23:29 +0800 (CST)
-Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
- (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Fri, 16 Jun
- 2023 14:28:29 +0800
-From: YueHaibing <yuehaibing@huawei.com>
-To: <bjorn@kernel.org>, <magnus.karlsson@intel.com>,
-	<maciej.fijalkowski@intel.com>, <jonathan.lemon@gmail.com>,
-	<davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-	<pabeni@redhat.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-	<hawk@kernel.org>, <john.fastabend@gmail.com>
-CC: <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <maxtram95@gmail.com>,
-	<simon.horman@corigine.com>, YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH v2 bpf-next] xsk: Remove unused inline function xsk_buff_discard()
-Date: Fri, 16 Jun 2023 14:28:00 +0800
-Message-ID: <20230616062800.30780-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E99C5620
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 06:35:02 +0000 (UTC)
+Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ACCE294D
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 23:34:56 -0700 (PDT)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R241e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VlEykub_1686897290;
+Received: from localhost(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0VlEykub_1686897290)
+          by smtp.aliyun-inc.com;
+          Fri, 16 Jun 2023 14:34:51 +0800
+From: Cambda Zhu <cambda@linux.alibaba.com>
+To: netdev@vger.kernel.org
+Cc: Eric Dumazet <edumazet@google.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	David Ahern <dsahern@kernel.org>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Lu Wei <luwei32@huawei.com>,
+	"t.feng" <fengtao40@huawei.com>,
+	Xin Long <lucien.xin@gmail.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Dust Li <dust.li@linux.alibaba.com>,
+	Tony Lu <tonylu@linux.alibaba.com>,
+	Cambda Zhu <cambda@linux.alibaba.com>
+Subject: [PATCH net v1] ipvlan: Fix return value of ipvlan_queue_xmit()
+Date: Fri, 16 Jun 2023 14:34:36 +0800
+Message-Id: <20230616063436.28760-1-cambda@linux.alibaba.com>
+X-Mailer: git-send-email 2.16.6
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500007.china.huawei.com (7.192.104.62)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-commit f2f167583601 ("xsk: Remove unused xsk_buff_discard")
-left behind this, remove it.
+The ipvlan_queue_xmit() should return NET_XMIT_XXX,
+but ipvlan_xmit_mode_l2/l3() returns rx_handler_result_t or NET_RX_XXX
+in some cases. The skb to forward could be treated as xmitted
+successfully.
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Fixes: 2ad7bf363841 ("ipvlan: Initial check-in of the IPVLAN driver.")
+Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
 ---
-v2: resend to bpf-next tree
+v1:
+- Add Fixes tag.
 ---
- include/net/xdp_sock_drv.h | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/net/ipvlan/ipvlan_core.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
-index 9c0d860609ba..c243f906ebed 100644
---- a/include/net/xdp_sock_drv.h
-+++ b/include/net/xdp_sock_drv.h
-@@ -255,10 +255,6 @@ static inline void xsk_buff_free(struct xdp_buff *xdp)
- {
- }
+diff --git a/drivers/net/ipvlan/ipvlan_core.c b/drivers/net/ipvlan/ipvlan_core.c
+index ab5133eb1d51..e45817caaee8 100644
+--- a/drivers/net/ipvlan/ipvlan_core.c
++++ b/drivers/net/ipvlan/ipvlan_core.c
+@@ -585,7 +585,8 @@ static int ipvlan_xmit_mode_l3(struct sk_buff *skb, struct net_device *dev)
+ 				consume_skb(skb);
+ 				return NET_XMIT_DROP;
+ 			}
+-			return ipvlan_rcv_frame(addr, &skb, true);
++			ipvlan_rcv_frame(addr, &skb, true);
++			return NET_XMIT_SUCCESS;
+ 		}
+ 	}
+ out:
+@@ -611,7 +612,8 @@ static int ipvlan_xmit_mode_l2(struct sk_buff *skb, struct net_device *dev)
+ 					consume_skb(skb);
+ 					return NET_XMIT_DROP;
+ 				}
+-				return ipvlan_rcv_frame(addr, &skb, true);
++				ipvlan_rcv_frame(addr, &skb, true);
++				return NET_XMIT_SUCCESS;
+ 			}
+ 		}
+ 		skb = skb_share_check(skb, GFP_ATOMIC);
+@@ -623,7 +625,8 @@ static int ipvlan_xmit_mode_l2(struct sk_buff *skb, struct net_device *dev)
+ 		 * the skb for the main-dev. At the RX side we just return
+ 		 * RX_PASS for it to be processed further on the stack.
+ 		 */
+-		return dev_forward_skb(ipvlan->phy_dev, skb);
++		dev_forward_skb(ipvlan->phy_dev, skb);
++		return NET_XMIT_SUCCESS;
  
--static inline void xsk_buff_discard(struct xdp_buff *xdp)
--{
--}
--
- static inline void xsk_buff_set_size(struct xdp_buff *xdp, u32 size)
- {
- }
+ 	} else if (is_multicast_ether_addr(eth->h_dest)) {
+ 		skb_reset_mac_header(skb);
 -- 
-2.34.1
+2.16.6
 
 
