@@ -1,119 +1,136 @@
-Return-Path: <netdev+bounces-11262-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11263-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7CFB1732513
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 04:12:38 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 8D406732524
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 04:19:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 30E212815A3
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 02:12:37 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2EA30281598
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 02:19:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3247B62D;
-	Fri, 16 Jun 2023 02:12:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7EE4762F;
+	Fri, 16 Jun 2023 02:19:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21C09627
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 02:12:34 +0000 (UTC)
-Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 923B62967;
-	Thu, 15 Jun 2023 19:12:32 -0700 (PDT)
-Received: from loongson.cn (unknown [10.20.42.116])
-	by gateway (Coremail) with SMTP id _____8Cxd+kPxYtkhMsFAA--.10389S3;
-	Fri, 16 Jun 2023 10:12:31 +0800 (CST)
-Received: from [10.20.42.116] (unknown [10.20.42.116])
-	by localhost.localdomain (Coremail) with SMTP id AQAAf8AxauUNxYtkj8AcAA--.16275S3;
-	Fri, 16 Jun 2023 10:12:30 +0800 (CST)
-Subject: Re: [PATCH pci] PCI: don't skip probing entire device if first fn OF
- node has status = "disabled"
-To: Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc: Liu Peibao <liupeibao@loongson.cn>, Bjorn Helgaas <helgaas@kernel.org>,
- linux-pci@vger.kernel.org, netdev@vger.kernel.org,
- Bjorn Helgaas <bhelgaas@google.com>, Rob Herring <robh@kernel.org>,
- Claudiu Manoil <claudiu.manoil@nxp.com>, Michael Walle <michael@walle.cc>,
- linux-kernel@vger.kernel.org, Binbin Zhou <zhoubinbin@loongson.cn>,
- Huacai Chen <chenhuacai@loongson.cn>
-References: <20230601163335.6zw4ojbqxz2ws6vx@skbuf>
- <ZHjaq+TDW/RFcoxW@bhelgaas> <20230601221532.2rfcda4sg5nl7pzp@skbuf>
- <dc430271-8511-e6e4-041b-ede197e7665d@loongson.cn>
- <7a7f78ae-7fd8-b68d-691c-609a38ab3161@loongson.cn>
- <20230602101628.jkgq3cmwccgsfb4c@skbuf>
- <87f2b231-2e16-e7b8-963b-fc86c407bc96@loongson.cn>
- <20230604085500.ioaos3ydehvqq24i@skbuf>
- <ad969019-e763-b06f-d557-be4e672c68db@loongson.cn>
- <20230605093459.gpwtsr5h73eonxt5@skbuf>
-From: Jianmin Lv <lvjianmin@loongson.cn>
-Message-ID: <ec5039c1-61d7-6958-ef92-bf5b8c8db64d@loongson.cn>
-Date: Fri, 16 Jun 2023 10:12:29 +0800
-User-Agent: Mozilla/5.0 (X11; Linux loongarch64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0F05627
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 02:19:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27A1DC433C8;
+	Fri, 16 Jun 2023 02:19:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686881972;
+	bh=C6BZkAdFImXa0obp4bUZcgWjLoHJ21TXKfNo+GFl8WA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=oTKCLIsnS2CCY4C+BfxmPEiDrPu2wnk3C3XrjP2PgTXg4/wTsFgzCTcOKnlLu4PbU
+	 xAISmpmNl5YDLaQdP/ZtPzXGEbrta7Vdqw2p3m1TmUBGut4cUFLSzxZJQYDCT88vhl
+	 Lqvh0aRJWor6cnl5R/BJM6ne7mqr/9obkcstkK/mpoQGghbdV0BrLKjuG+f2uqtphD
+	 cbIRerLYjreCeLq0lHruAdOmT6IOuh3hlAroKwp9nvgV0TK/BC/WcZ1cTXtyn+HPO+
+	 YCrjkhlTVmWtrVmrq1V9ikN4Li+bgRueuiRPQhOSbFsXmO5SuB0DCg2MCGUJ4iBkgG
+	 8F/KXSMN5ajPA==
+Date: Thu, 15 Jun 2023 19:19:31 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc: FUJITA Tomonori <fujita.tomonori@gmail.com>, netdev@vger.kernel.org,
+ rust-for-linux@vger.kernel.org, aliceryhl@google.com, andrew@lunn.ch
+Subject: Re: [PATCH 0/5] Rust abstractions for network device drivers
+Message-ID: <20230615191931.4e4751ac@kernel.org>
+In-Reply-To: <CANiq72nLV-BiXerGhhs+c6yeKk478vO_mKxMa=Za83=HbqQk-w@mail.gmail.com>
+References: <20230613045326.3938283-1-fujita.tomonori@gmail.com>
+	<20230614230128.199724bd@kernel.org>
+	<CANiq72nLV-BiXerGhhs+c6yeKk478vO_mKxMa=Za83=HbqQk-w@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20230605093459.gpwtsr5h73eonxt5@skbuf>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:AQAAf8AxauUNxYtkj8AcAA--.16275S3
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
-X-Coremail-Antispam: 1Uk129KBj93XoW7Ar1UWF43CF4DKw4kXFW3CFX_yoW8Ww15pF
-	43AF4SkFn8Gr4Sy34DZw4ruFyfua93Xw45Jr48J34v93y5WFySvrWYqa1Iqay7Gr18AF1a
-	vFWjqw1vk3WDWagCm3ZEXasCq-sJn29KB7ZKAUJUUUU5529EdanIXcx71UUUUU7KY7ZEXa
-	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
-	0xBIdaVrnRJUUUvYb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2
-	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1Y6r17M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
-	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
-	0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv6xkF7I0E14v2
-	6r4j6r4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc804VCY07AIYIkI8VC2zVCFFI0UMc
-	02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUXVWUAwAv7VC2z280aVAF
-	wI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JMxk0xIA0c2IEe2xFo4
-	CEbIxvr21l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG
-	67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MI
-	IYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E
-	14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJV
-	W8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07j1WlkU
-	UUUU=
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
+On Thu, 15 Jun 2023 10:58:50 +0200 Miguel Ojeda wrote:
+> On Thu, Jun 15, 2023 at 8:01=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> =
+wrote:
+> > I was hoping someone from the Rust side is going to review this.
+> > We try to review stuff within 48h at netdev, and there's no review :S =
+=20
+>=20
+> I think the version number got reset, but Tomonori had a couple
+> versions on the rust-for-linux@vger list [2][3].
+>=20
+> Andrew Lunn was taking a look, and there were some other comments going o=
+n, too.
+>=20
+> The email threading is broken in [2][3], though, so it may be easiest
+> to use a query like "f:lunn" [4] to find those.
+>=20
+> [2] https://lore.kernel.org/rust-for-linux/01010188843258ec-552cca54-4849=
+-4424-b671-7a5bf9b8651a-000000@us-west-2.amazonses.com/
+> [3] https://lore.kernel.org/rust-for-linux/01010188a42d5244-fffbd047-446b=
+-4cbf-8a62-9c036d177276-000000@us-west-2.amazonses.com/
+> [4] https://lore.kernel.org/rust-for-linux/?q=3Df%3Alunn
+>=20
+> > My immediate instinct is that I'd rather not merge toy implementations
+> > unless someone within the netdev community can vouch for the code. =20
+>=20
+> Yes, in general, the goal is that maintainers actually understand what
+> is getting merged, get involved, etc. So patch submitters of Rust
+> code, at this time, should be expected/ready to explain Rust if
+> needed. We can also help from the Rust subsystem side on that.
+>=20
+> But, yeah, knowledgeable people should review the code.
 
+All sounds pretty reasonable, thanks for the pointers.
 
-On 2023/6/5 下午5:34, Vladimir Oltean wrote:
-> On Mon, Jun 05, 2023 at 08:59:23AM +0800, Jianmin Lv wrote:
->> For a multi-function device, if func 0 is not allowed to be scanned, as I
->> said in way of 2, the other funcs of the device will be described as
->> platform devices instead of pci and be not scanned either, which is
->> acceptable for Loongson. The main goal by any way for us is to resolve the
->> problem that shared pins can not be used simultaneously by devices sharing
->> them. IMO, configure them in DT one by one may be reasonable, but adapting
->> each driver will be bothered.
-> 
-> Could you give an example of PCIe functions being described as platform
-> devices, and how does that work for Loongson? Are you saying that there
-> will be 2 drivers for the same hardware, one pci_driver and one platform_driver?
-> In the case of the platform_driver, who will do the PCI-specific stuff
-> required by the IP, like function level reset and enabling the memory space?
-> 
+TBH I was hoping that the code will be more like reading "modern C++"
+for a C developer. I can't understand much of what's going on.
 
-E.g. there are two functions , func0 is HDA controller and func1 is I2S 
-controller and they have shared pins.
-When HDA or I2S is used, both are disabled for PCI enumeration in BIOS 
-(e.g. by filling PCI header with 0xffffffff), and mem space has been 
-reserved from host bridge window for them in BIOS, of cause, reserved 
-space will not be seen by kernel because it has been removed in host 
-bridge mem range when passed to kernel in DT. Then the reserved mem base 
-is passed into kernel by DT, CPU will use remapped address of the mem 
-base, and these devices will not be enumerated in PCI bus. The way is 
-only used for PCI devices (share common pins and exist on bus 0) 
-integrated in Loongson CPU or chipset.
+Taking an example of what I have randomly on the screen as I'm writing
+this email:
 
++    /// Updates TX stats.
++    pub fn set_tx_stats(&mut self, packets: u64, bytes: u64, errors: u64, =
+dropped: u64) {
++        // SAFETY: We have exclusive access to the `rtnl_link_stats64`, so=
+ writing to it is okay.
++        unsafe {
++            let inner =3D Opaque::get(&self.0);
++            (*inner).tx_packets =3D packets;
++            (*inner).tx_bytes =3D bytes;
++            (*inner).tx_errors =3D errors;
++            (*inner).tx_dropped =3D dropped;
++        }
++    }
+
+What is this supposed to be doing? Who needs to _set_ unrelated
+statistics from a function call? Yet no reviewer is complaining
+which either means I don't understand, or people aren't really=20
+paying attention :(
+
+> > You seem to create a rust/net/ directory without adding anything
+> > to MAINTAINERS. Are we building a parallel directory structure?
+> > Are the maintainers also different? =20
+>=20
+> The plan is to split the `kernel` crate and move the files to their
+> proper subsystems if the experiment goes well.
+
+I see.
+
+> But, indeed, it is best if a `F:` entry is added wherever you think it
+> is best. Some subsystems may just add it to their entry (e.g. KUnit
+> wants to do that). Others may decide to split the Rust part into
+> another entry, so that maintainers may be a subset (or a different set
+> -- sometimes this could be done, for instance, if a new maintainer
+> shows up that wants to take care of the Rust abstractions).
+
+I think F: would work for us.
+
+Are there success stories in any subsystem for getting a driver for
+real HW supported? I think the best way to focus the effort would be=20
+to set a target on a relatively simple device.
+
+Actually Andrew is interested, and PHY drivers seem relatively simple..
+/me runs away
 
