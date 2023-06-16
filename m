@@ -1,58 +1,58 @@
-Return-Path: <netdev+bounces-11631-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11632-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4AE61733C53
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 00:16:27 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 73943733C55
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 00:16:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6E5511C2109C
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:16:26 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 979581C21057
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:16:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC0697489;
-	Fri, 16 Jun 2023 22:15:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3CF8D8F58;
+	Fri, 16 Jun 2023 22:15:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97BC08F58
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 22:15:01 +0000 (UTC)
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A0B3ABC
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 15:14:43 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id d9443c01a7336-1b50394a7f2so8738945ad.1
-        for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 15:14:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2ED96A92E
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 22:15:03 +0000 (UTC)
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 971B83C24
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 15:14:44 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id d9443c01a7336-1b3c578c602so8678575ad.2
+        for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 15:14:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1686953682; x=1689545682;
+        d=broadcom.com; s=google; t=1686953684; x=1689545684;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=LW3043xtTE54Cwbt8p2LfXHwl4Kj7tFrATxIED37Ohc=;
-        b=gt4+9gi6cq22qA0Z1eDphoj2pHbDYLQ7kPSlc7LkVvmCVS/Lm3FkRCCqA6VuynRGyt
-         wr/TzFTszefjyHgQX1iUqN2tW3UiZjemuC6BjBvpbXWrOprLP3VWD/OQc6yMcBduSRgO
-         T6nN1vZroSdncfz5Jk4YYMcFfAQGYGf4sVNlE=
+        bh=o6opz7T+TF2O+Nsifgv6YrAfGNpVoHmMZDj2Kc27vwc=;
+        b=YyhO0CGgXtwFFh8m9r78HjkTTf2MFW99v/LuFX4OjHULWR8IkuS1mu5jJ0ETCokAqD
+         8jHH7SfYF4RNj2aaSlFWemM0P13bHCAcxbYFFGG8bShasF0JDN1SsxeQsM8mZoAbY4re
+         oCaMk1JxLid/p86J/v6WojsXcPDWd16qyZVPQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686953682; x=1689545682;
+        d=1e100.net; s=20221208; t=1686953684; x=1689545684;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LW3043xtTE54Cwbt8p2LfXHwl4Kj7tFrATxIED37Ohc=;
-        b=OzHjaeiQ97xN+OB7bwvEJE9v8Mj+DNouTlKhLpY8OV9xGMY7BL0tc3NaGlfpdYbDpR
-         jBoObK0dPhzgIYemuc1x+QXWJznJ5vTEoFkZxs1g0UE7rydM937vsjzDQ6XQkoDSZd7s
-         Zq7N56X2boAMSd4N0md6tbolR20WzRPHpN/WZBlhP6KM7jLQvaWKKH+cP6uPRgtSJdNS
-         Yzhnx11aCFt0euwrNiRXly++9wNZ0AOkbRowSRG/2PRQsLmvum0P+KlEg/grtd4OGzJl
-         1kXpjRU7nVQNPqTfNTP9JCvpjN4yB3pNoCn1NLhYs+h5V8mttBjcQXzOAcAL20dZNe4I
-         C3Sg==
-X-Gm-Message-State: AC+VfDyoiMTCFmxqOHraHpW5zCiLMMds0i4PnL2Eze8mKYHFKtgeBzxV
-	UOSJsYNoKmUydrm6zYCnD2mpgoqEvNsaH7mc8DjesB1EvqgPFKVPn4sZpTDTLRt8IGmKYClbtVu
-	YM2kVOjiRXPJPDVIyTefanDYIuy5fBXvuFAc1mDoS+NUoGmDZc87JG1WpD/cNwEtYUmrhSHftlF
-	++mBhAzQ==
-X-Google-Smtp-Source: ACHHUZ6deOAJNk5WUWFeQIB4cNda6MtwgJrO48DTkcDVo7kJxQhQp/HlCfD2KY1C1jX2sKhvB3HWiw==
-X-Received: by 2002:a17:902:e74e:b0:1b3:8865:aaae with SMTP id p14-20020a170902e74e00b001b38865aaaemr3276961plf.53.1686953681718;
-        Fri, 16 Jun 2023 15:14:41 -0700 (PDT)
+        bh=o6opz7T+TF2O+Nsifgv6YrAfGNpVoHmMZDj2Kc27vwc=;
+        b=k+sueDEVpUzDOvLXtK36BqkBQissVQhjEAP2qIgv3RfWq/UDhFhq10e+edP5fE+HVI
+         Ni7iagWJgU/wWL8bKw0RjUi2IxM/N16eqU0i+yRRHJf5MYZxsbzVRg1BXZx4R1BqFSPk
+         JV8pY8zjDGu9iTDAPNupR9JcI+5A6Xn+bw1reazWsB4YE6scAa0Gvvtsb6cUMpMaiUbq
+         9dnjWqOrzpLqUTgLDgr0qkfxA6+rNnwMK2rIMXwE1dYJm3TtB9kBAZY/Zg11fF6KDLsQ
+         eL8ABntTWpiOdm1qrnhhskLS5d81XZH53fszJmbEKyW/FKRHjsVXuONfs2OZVh/grbLY
+         HkDQ==
+X-Gm-Message-State: AC+VfDyVGUgROOuD1JsPvej/zpfY2mVClDT0jRfJSATKSuv4/CeBKvWY
+	aBNHiG6O9dw2XrVbMNV2YPEPVojzqoJkzJII8Idj0LSzjFRw6n6BMmfn7FRyzEwIT72ppIf9kc0
+	/wf6f4zZ1g6Nz0vd7dqbNqSSesdnsesD/YWgdngOWwa/BGlKQDx15bVYGvGnpowXcJXHAZkKMtw
+	MYUKyznQ==
+X-Google-Smtp-Source: ACHHUZ77u5VHB0u0DFSQt7WK8dxMR9hEYcsd+r1L9BQUi8qb1YB1XF55uP1jscdppXTdIgavyfjk7g==
+X-Received: by 2002:a17:903:442:b0:1b1:d39e:28bb with SMTP id iw2-20020a170903044200b001b1d39e28bbmr2426746plb.34.1686953683626;
+        Fri, 16 Jun 2023 15:14:43 -0700 (PDT)
 Received: from stbirv-lnx-2.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f12-20020a170902ab8c00b001aaed524541sm16220860plr.227.2023.06.16.15.14.39
+        by smtp.gmail.com with ESMTPSA id f12-20020a170902ab8c00b001aaed524541sm16220860plr.227.2023.06.16.15.14.41
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 16 Jun 2023 15:14:41 -0700 (PDT)
+        Fri, 16 Jun 2023 15:14:43 -0700 (PDT)
 From: Justin Chen <justin.chen@broadcom.com>
 To: netdev@vger.kernel.org,
 	devicetree@vger.kernel.org,
@@ -76,14 +76,14 @@ Cc: florian.fainelli@broadcom.com,
 	christian.koenig@amd.com,
 	simon.horman@corigine.com,
 	Justin Chen <justin.chen@broadcom.com>
-Subject: [PATCH net-next v8 05/11] net: bcmasp: Add support for wake on net filters
-Date: Fri, 16 Jun 2023 15:14:18 -0700
-Message-Id: <1686953664-17498-6-git-send-email-justin.chen@broadcom.com>
+Subject: [PATCH net-next v8 06/11] net: bcmasp: Add support for eee mode
+Date: Fri, 16 Jun 2023 15:14:19 -0700
+Message-Id: <1686953664-17498-7-git-send-email-justin.chen@broadcom.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1686953664-17498-1-git-send-email-justin.chen@broadcom.com>
 References: <1686953664-17498-1-git-send-email-justin.chen@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="00000000000004c05d05fe468320"
+	boundary="00000000000016f48405fe46835d"
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
 	MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -97,881 +97,143 @@ List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 
---00000000000004c05d05fe468320
+--00000000000016f48405fe46835d
 
-Add support for wake on network filters. The max match is 256 bytes.
+Add support for eee mode.
 
 Signed-off-by: Justin Chen <justin.chen@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/asp2/bcmasp.c        | 595 +++++++++++++++++++++
- drivers/net/ethernet/broadcom/asp2/bcmasp.h        |  40 ++
- .../net/ethernet/broadcom/asp2/bcmasp_ethtool.c    | 131 ++++-
- drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c   |   3 +
- 4 files changed, 768 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/asp2/bcmasp.h        |  4 ++
+ .../net/ethernet/broadcom/asp2/bcmasp_ethtool.c    | 61 ++++++++++++++++++++++
+ drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c   |  6 +++
+ 3 files changed, 71 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp.c b/drivers/net/ethernet/broadcom/asp2/bcmasp.c
-index 40143bb566ef..51b7aa8365c8 100644
---- a/drivers/net/ethernet/broadcom/asp2/bcmasp.c
-+++ b/drivers/net/ethernet/broadcom/asp2/bcmasp.c
-@@ -130,6 +130,597 @@ void bcmasp_flush_rx_port(struct bcmasp_intf *intf)
- 	rx_ctrl_core_wl(priv, mask, priv->hw_info->rx_ctrl_flush);
- }
- 
-+static void bcmasp_netfilt_hw_en_wake(struct bcmasp_priv *priv,
-+				      struct bcmasp_net_filter *nfilt)
-+{
-+	rx_filter_core_wl(priv, ASP_RX_FILTER_NET_OFFSET_L3_1(64),
-+			  ASP_RX_FILTER_NET_OFFSET(nfilt->hw_index));
-+
-+	rx_filter_core_wl(priv, ASP_RX_FILTER_NET_OFFSET_L2(32) |
-+			  ASP_RX_FILTER_NET_OFFSET_L3_0(32) |
-+			  ASP_RX_FILTER_NET_OFFSET_L3_1(96) |
-+			  ASP_RX_FILTER_NET_OFFSET_L4(32),
-+			  ASP_RX_FILTER_NET_OFFSET(nfilt->hw_index + 1));
-+
-+	rx_filter_core_wl(priv, ASP_RX_FILTER_NET_CFG_CH(nfilt->port + 8) |
-+			  ASP_RX_FILTER_NET_CFG_EN |
-+			  ASP_RX_FILTER_NET_CFG_L2_EN |
-+			  ASP_RX_FILTER_NET_CFG_L3_EN |
-+			  ASP_RX_FILTER_NET_CFG_L4_EN |
-+			  ASP_RX_FILTER_NET_CFG_L3_FRM(2) |
-+			  ASP_RX_FILTER_NET_CFG_L4_FRM(2) |
-+			  ASP_RX_FILTER_NET_CFG_UMC(nfilt->port),
-+			  ASP_RX_FILTER_NET_CFG(nfilt->hw_index));
-+
-+	rx_filter_core_wl(priv, ASP_RX_FILTER_NET_CFG_CH(nfilt->port + 8) |
-+			  ASP_RX_FILTER_NET_CFG_EN |
-+			  ASP_RX_FILTER_NET_CFG_L2_EN |
-+			  ASP_RX_FILTER_NET_CFG_L3_EN |
-+			  ASP_RX_FILTER_NET_CFG_L4_EN |
-+			  ASP_RX_FILTER_NET_CFG_L3_FRM(2) |
-+			  ASP_RX_FILTER_NET_CFG_L4_FRM(2) |
-+			  ASP_RX_FILTER_NET_CFG_UMC(nfilt->port),
-+			  ASP_RX_FILTER_NET_CFG(nfilt->hw_index + 1));
-+}
-+
-+#define MAX_WAKE_FILTER_SIZE		256
-+enum asp_netfilt_reg_type {
-+	ASP_NETFILT_MATCH = 0,
-+	ASP_NETFILT_MASK,
-+	ASP_NETFILT_MAX
-+};
-+
-+static int bcmasp_netfilt_get_reg_offset(struct bcmasp_priv *priv,
-+					 struct bcmasp_net_filter *nfilt,
-+					 enum asp_netfilt_reg_type reg_type,
-+					 u32 offset)
-+{
-+	u32 block_index, filter_sel;
-+
-+	if (offset < 32) {
-+		block_index = ASP_RX_FILTER_NET_L2;
-+		filter_sel = nfilt->hw_index;
-+	} else if (offset < 64) {
-+		block_index = ASP_RX_FILTER_NET_L2;
-+		filter_sel = nfilt->hw_index + 1;
-+	} else if (offset < 96) {
-+		block_index = ASP_RX_FILTER_NET_L3_0;
-+		filter_sel = nfilt->hw_index;
-+	} else if (offset < 128) {
-+		block_index = ASP_RX_FILTER_NET_L3_0;
-+		filter_sel = nfilt->hw_index + 1;
-+	} else if (offset < 160) {
-+		block_index = ASP_RX_FILTER_NET_L3_1;
-+		filter_sel = nfilt->hw_index;
-+	} else if (offset < 192) {
-+		block_index = ASP_RX_FILTER_NET_L3_1;
-+		filter_sel = nfilt->hw_index + 1;
-+	} else if (offset < 224) {
-+		block_index = ASP_RX_FILTER_NET_L4;
-+		filter_sel = nfilt->hw_index;
-+	} else if (offset < 256) {
-+		block_index = ASP_RX_FILTER_NET_L4;
-+		filter_sel = nfilt->hw_index + 1;
-+	} else {
-+		return -EINVAL;
-+	}
-+
-+	switch (reg_type) {
-+	case ASP_NETFILT_MATCH:
-+		return ASP_RX_FILTER_NET_PAT(filter_sel, block_index,
-+					     (offset % 32));
-+	case ASP_NETFILT_MASK:
-+		return ASP_RX_FILTER_NET_MASK(filter_sel, block_index,
-+					      (offset % 32));
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static void bcmasp_netfilt_wr(struct bcmasp_priv *priv,
-+			      struct bcmasp_net_filter *nfilt,
-+			      enum asp_netfilt_reg_type reg_type,
-+			      u32 val, u32 offset)
-+{
-+	int reg_offset;
-+
-+	/* HW only accepts 4 byte aligned writes */
-+	if (!IS_ALIGNED(offset, 4) || offset > MAX_WAKE_FILTER_SIZE)
-+		return;
-+
-+	reg_offset = bcmasp_netfilt_get_reg_offset(priv, nfilt, reg_type,
-+						   offset);
-+
-+	rx_filter_core_wl(priv, val, reg_offset);
-+}
-+
-+static u32 bcmasp_netfilt_rd(struct bcmasp_priv *priv,
-+			     struct bcmasp_net_filter *nfilt,
-+			     enum asp_netfilt_reg_type reg_type,
-+			     u32 offset)
-+{
-+	int reg_offset;
-+
-+	/* HW only accepts 4 byte aligned writes */
-+	if (!IS_ALIGNED(offset, 4) || offset > MAX_WAKE_FILTER_SIZE)
-+		return 0;
-+
-+	reg_offset = bcmasp_netfilt_get_reg_offset(priv, nfilt, reg_type,
-+						   offset);
-+
-+	return rx_filter_core_rl(priv, reg_offset);
-+}
-+
-+static int bcmasp_netfilt_wr_m_wake(struct bcmasp_priv *priv,
-+				    struct bcmasp_net_filter *nfilt,
-+				    u32 offset, void *match, void *mask,
-+				    size_t size)
-+{
-+	u32 shift, mask_val = 0, match_val = 0;
-+	bool first_byte = true;
-+
-+	if ((offset + size) > MAX_WAKE_FILTER_SIZE)
-+		return -EINVAL;
-+
-+	while (size--) {
-+		/* The HW only accepts 4 byte aligned writes, so if we
-+		 * begin unaligned or if remaining bytes less than 4,
-+		 * we need to read then write to avoid losing current
-+		 * register state
-+		 */
-+		if (first_byte && (!IS_ALIGNED(offset, 4) || size < 3)) {
-+			match_val = bcmasp_netfilt_rd(priv, nfilt,
-+						      ASP_NETFILT_MATCH,
-+						      ALIGN_DOWN(offset, 4));
-+			mask_val = bcmasp_netfilt_rd(priv, nfilt,
-+						     ASP_NETFILT_MASK,
-+						     ALIGN_DOWN(offset, 4));
-+		}
-+
-+		shift = (3 - (offset % 4)) * 8;
-+		match_val &= ~GENMASK(shift + 7, shift);
-+		mask_val &= ~GENMASK(shift + 7, shift);
-+		match_val |= (u32)(*((u8 *)match) << shift);
-+		mask_val |= (u32)(*((u8 *)mask) << shift);
-+
-+		/* If last byte or last byte of word, write to reg */
-+		if (!size || ((offset % 4) == 3)) {
-+			bcmasp_netfilt_wr(priv, nfilt, ASP_NETFILT_MATCH,
-+					  match_val, ALIGN_DOWN(offset, 4));
-+			bcmasp_netfilt_wr(priv, nfilt, ASP_NETFILT_MASK,
-+					  mask_val, ALIGN_DOWN(offset, 4));
-+			first_byte = true;
-+		} else {
-+			first_byte = false;
-+		}
-+
-+		offset++;
-+		match++;
-+		mask++;
-+	}
-+
-+	return 0;
-+}
-+
-+static void bcmasp_netfilt_reset_hw(struct bcmasp_priv *priv,
-+				    struct bcmasp_net_filter *nfilt)
-+{
-+	int i;
-+
-+	for (i = 0; i < MAX_WAKE_FILTER_SIZE; i += 4) {
-+		bcmasp_netfilt_wr(priv, nfilt, ASP_NETFILT_MATCH, 0, i);
-+		bcmasp_netfilt_wr(priv, nfilt, ASP_NETFILT_MASK, 0, i);
-+	}
-+}
-+
-+static void bcmasp_netfilt_tcpip4_wr(struct bcmasp_priv *priv,
-+				     struct bcmasp_net_filter *nfilt,
-+				     struct ethtool_tcpip4_spec *match,
-+				     struct ethtool_tcpip4_spec *mask,
-+				     u32 offset)
-+{
-+	__be16 val_16, mask_16;
-+
-+	val_16 = htons(ETH_P_IP);
-+	mask_16 = htons(0xFFFF);
-+	bcmasp_netfilt_wr_m_wake(priv, nfilt, (ETH_ALEN * 2) + offset,
-+				 &val_16, &mask_16, sizeof(val_16));
-+	bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 1,
-+				 &match->tos, &mask->tos,
-+				 sizeof(match->tos));
-+	bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 12,
-+				 &match->ip4src, &mask->ip4src,
-+				 sizeof(match->ip4src));
-+	bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 16,
-+				 &match->ip4dst, &mask->ip4dst,
-+				 sizeof(match->ip4dst));
-+	bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 20,
-+				 &match->psrc, &mask->psrc,
-+				 sizeof(match->psrc));
-+	bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 22,
-+				 &match->pdst, &mask->pdst,
-+				 sizeof(match->pdst));
-+}
-+
-+static void bcmasp_netfilt_tcpip6_wr(struct bcmasp_priv *priv,
-+				     struct bcmasp_net_filter *nfilt,
-+				     struct ethtool_tcpip6_spec *match,
-+				     struct ethtool_tcpip6_spec *mask,
-+				     u32 offset)
-+{
-+	__be16 val_16, mask_16;
-+
-+	val_16 = htons(ETH_P_IPV6);
-+	mask_16 = htons(0xFFFF);
-+	bcmasp_netfilt_wr_m_wake(priv, nfilt, (ETH_ALEN * 2) + offset,
-+				 &val_16, &mask_16, sizeof(val_16));
-+	val_16 = htons(match->tclass << 4);
-+	mask_16 = htons(mask->tclass << 4);
-+	bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset,
-+				 &val_16, &mask_16, sizeof(val_16));
-+	bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 8,
-+				 &match->ip6src, &mask->ip6src,
-+				 sizeof(match->ip6src));
-+	bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 24,
-+				 &match->ip6dst, &mask->ip6dst,
-+				 sizeof(match->ip6dst));
-+	bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 40,
-+				 &match->psrc, &mask->psrc,
-+				 sizeof(match->psrc));
-+	bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 42,
-+				 &match->pdst, &mask->pdst,
-+				 sizeof(match->pdst));
-+}
-+
-+static int bcmasp_netfilt_wr_to_hw(struct bcmasp_priv *priv,
-+				   struct bcmasp_net_filter *nfilt)
-+{
-+	struct ethtool_rx_flow_spec *fs = &nfilt->fs;
-+	unsigned int offset = 0;
-+	__be16 val_16, mask_16;
-+	u8 val_8, mask_8;
-+
-+	/* Currently only supports wake filters */
-+	if (!nfilt->wake_filter)
-+		return -EINVAL;
-+
-+	bcmasp_netfilt_reset_hw(priv, nfilt);
-+
-+	if (fs->flow_type & FLOW_MAC_EXT) {
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, 0, &fs->h_ext.h_dest,
-+					 &fs->m_ext.h_dest,
-+					 sizeof(fs->h_ext.h_dest));
-+	}
-+
-+	if ((fs->flow_type & FLOW_EXT) &&
-+	    (fs->m_ext.vlan_etype || fs->m_ext.vlan_tci)) {
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, (ETH_ALEN * 2),
-+					 &fs->h_ext.vlan_etype,
-+					 &fs->m_ext.vlan_etype,
-+					 sizeof(fs->h_ext.vlan_etype));
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, ((ETH_ALEN * 2) + 2),
-+					 &fs->h_ext.vlan_tci,
-+					 &fs->m_ext.vlan_tci,
-+					 sizeof(fs->h_ext.vlan_tci));
-+		offset += VLAN_HLEN;
-+	}
-+
-+	switch (fs->flow_type & ~(FLOW_EXT | FLOW_MAC_EXT)) {
-+	case ETHER_FLOW:
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, 0,
-+					 &fs->h_u.ether_spec.h_dest,
-+					 &fs->m_u.ether_spec.h_dest,
-+					 sizeof(fs->h_u.ether_spec.h_dest));
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_ALEN,
-+					 &fs->h_u.ether_spec.h_source,
-+					 &fs->m_u.ether_spec.h_source,
-+					 sizeof(fs->h_u.ether_spec.h_source));
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, (ETH_ALEN * 2) + offset,
-+					 &fs->h_u.ether_spec.h_proto,
-+					 &fs->m_u.ether_spec.h_proto,
-+					 sizeof(fs->h_u.ether_spec.h_proto));
-+
-+		break;
-+	case IP_USER_FLOW:
-+		val_16 = htons(ETH_P_IP);
-+		mask_16 = htons(0xFFFF);
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, (ETH_ALEN * 2) + offset,
-+					 &val_16, &mask_16, sizeof(val_16));
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 1,
-+					 &fs->h_u.usr_ip4_spec.tos,
-+					 &fs->m_u.usr_ip4_spec.tos,
-+					 sizeof(fs->h_u.usr_ip4_spec.tos));
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 9,
-+					 &fs->h_u.usr_ip4_spec.proto,
-+					 &fs->m_u.usr_ip4_spec.proto,
-+					 sizeof(fs->h_u.usr_ip4_spec.proto));
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 12,
-+					 &fs->h_u.usr_ip4_spec.ip4src,
-+					 &fs->m_u.usr_ip4_spec.ip4src,
-+					 sizeof(fs->h_u.usr_ip4_spec.ip4src));
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 16,
-+					 &fs->h_u.usr_ip4_spec.ip4dst,
-+					 &fs->m_u.usr_ip4_spec.ip4dst,
-+					 sizeof(fs->h_u.usr_ip4_spec.ip4dst));
-+		if (!fs->m_u.usr_ip4_spec.l4_4_bytes)
-+			break;
-+
-+		/* Only supports 20 byte IPv4 header */
-+		val_8 = 0x45;
-+		mask_8 = 0xFF;
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset,
-+					 &val_8, &mask_8, sizeof(val_8));
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt,
-+					 ETH_HLEN + 20 + offset,
-+					 &fs->h_u.usr_ip4_spec.l4_4_bytes,
-+					 &fs->m_u.usr_ip4_spec.l4_4_bytes,
-+					 sizeof(fs->h_u.usr_ip4_spec.l4_4_bytes)
-+					 );
-+		break;
-+	case TCP_V4_FLOW:
-+		val_8 = IPPROTO_TCP;
-+		mask_8 = 0xFF;
-+		bcmasp_netfilt_tcpip4_wr(priv, nfilt, &fs->h_u.tcp_ip4_spec,
-+					 &fs->m_u.tcp_ip4_spec, offset);
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 9,
-+					 &val_8, &mask_8, sizeof(val_8));
-+		break;
-+	case UDP_V4_FLOW:
-+		val_8 = IPPROTO_UDP;
-+		mask_8 = 0xFF;
-+		bcmasp_netfilt_tcpip4_wr(priv, nfilt, &fs->h_u.udp_ip4_spec,
-+					 &fs->m_u.udp_ip4_spec, offset);
-+
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 9,
-+					 &val_8, &mask_8, sizeof(val_8));
-+		break;
-+	case TCP_V6_FLOW:
-+		val_8 = IPPROTO_TCP;
-+		mask_8 = 0xFF;
-+		bcmasp_netfilt_tcpip6_wr(priv, nfilt, &fs->h_u.tcp_ip6_spec,
-+					 &fs->m_u.tcp_ip6_spec, offset);
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 6,
-+					 &val_8, &mask_8, sizeof(val_8));
-+		break;
-+	case UDP_V6_FLOW:
-+		val_8 = IPPROTO_UDP;
-+		mask_8 = 0xFF;
-+		bcmasp_netfilt_tcpip6_wr(priv, nfilt, &fs->h_u.udp_ip6_spec,
-+					 &fs->m_u.udp_ip6_spec, offset);
-+		bcmasp_netfilt_wr_m_wake(priv, nfilt, ETH_HLEN + offset + 6,
-+					 &val_8, &mask_8, sizeof(val_8));
-+		break;
-+	}
-+
-+	bcmasp_netfilt_hw_en_wake(priv, nfilt);
-+
-+	return 0;
-+}
-+
-+void bcmasp_netfilt_suspend(struct bcmasp_intf *intf)
-+{
-+	struct bcmasp_priv *priv = intf->parent;
-+	bool write = false;
-+	int ret, i;
-+
-+	/* Write all filters to HW */
-+	for (i = 0; i < NUM_NET_FILTERS; i++) {
-+		/* If the filter does not match the port, skip programming. */
-+		if (!priv->net_filters[i].claimed ||
-+		    priv->net_filters[i].port != intf->port)
-+			continue;
-+
-+		if (i > 0 && (i % 2) &&
-+		    priv->net_filters[i].wake_filter &&
-+		    priv->net_filters[i - 1].wake_filter)
-+			continue;
-+
-+		ret = bcmasp_netfilt_wr_to_hw(priv, &priv->net_filters[i]);
-+		if (!ret)
-+			write = true;
-+	}
-+
-+	/* Successfully programmed at least one wake filter
-+	 * so enable top level wake config
-+	 */
-+	if (write)
-+		rx_filter_core_wl(priv, (ASP_RX_FILTER_OPUT_EN |
-+				  ASP_RX_FILTER_LNR_MD |
-+				  ASP_RX_FILTER_GEN_WK_EN |
-+				  ASP_RX_FILTER_NT_FLT_EN),
-+				  ASP_RX_FILTER_BLK_CTRL);
-+}
-+
-+void bcmasp_netfilt_get_all_active(struct bcmasp_intf *intf, u32 *rule_locs,
-+				   u32 *rule_cnt)
-+{
-+	struct bcmasp_priv *priv = intf->parent;
-+	int j = 0, i;
-+
-+	for (i = 0; i < NUM_NET_FILTERS; i++) {
-+		if (!priv->net_filters[i].claimed ||
-+		    priv->net_filters[i].port != intf->port)
-+			continue;
-+
-+		if (i > 0 && (i % 2) &&
-+		    priv->net_filters[i].wake_filter &&
-+		    priv->net_filters[i - 1].wake_filter)
-+			continue;
-+
-+		rule_locs[j++] = priv->net_filters[i].fs.location;
-+	}
-+
-+	*rule_cnt = j;
-+}
-+
-+int bcmasp_netfilt_get_active(struct bcmasp_intf *intf)
-+{
-+	struct bcmasp_priv *priv = intf->parent;
-+	int cnt = 0, i;
-+
-+	for (i = 0; i < NUM_NET_FILTERS; i++) {
-+		if (!priv->net_filters[i].claimed ||
-+		    priv->net_filters[i].port != intf->port)
-+			continue;
-+
-+		/* Skip over a wake filter pair */
-+		if (i > 0 && (i % 2) &&
-+		    priv->net_filters[i].wake_filter &&
-+		    priv->net_filters[i - 1].wake_filter)
-+			continue;
-+
-+		cnt++;
-+	}
-+
-+	return cnt;
-+}
-+
-+bool bcmasp_netfilt_check_dup(struct bcmasp_intf *intf,
-+			      struct ethtool_rx_flow_spec *fs)
-+{
-+	struct bcmasp_priv *priv = intf->parent;
-+	struct ethtool_rx_flow_spec *cur;
-+	size_t fs_size = 0;
-+	int i;
-+
-+	for (i = 0; i < NUM_NET_FILTERS; i++) {
-+		if (!priv->net_filters[i].claimed ||
-+		    priv->net_filters[i].port != intf->port)
-+			continue;
-+
-+		cur = &priv->net_filters[i].fs;
-+
-+		if (cur->flow_type != fs->flow_type ||
-+		    cur->ring_cookie != fs->ring_cookie)
-+			continue;
-+
-+		switch (fs->flow_type & ~(FLOW_EXT | FLOW_MAC_EXT)) {
-+		case ETHER_FLOW:
-+			fs_size = sizeof(struct ethhdr);
-+			break;
-+		case IP_USER_FLOW:
-+			fs_size = sizeof(struct ethtool_usrip4_spec);
-+			break;
-+		case TCP_V6_FLOW:
-+		case UDP_V6_FLOW:
-+			fs_size = sizeof(struct ethtool_tcpip6_spec);
-+			break;
-+		case TCP_V4_FLOW:
-+		case UDP_V4_FLOW:
-+			fs_size = sizeof(struct ethtool_tcpip4_spec);
-+			break;
-+		default:
-+			continue;
-+		}
-+
-+		if (memcmp(&cur->h_u, &fs->h_u, fs_size) ||
-+		    memcmp(&cur->m_u, &fs->m_u, fs_size))
-+			continue;
-+
-+		if (cur->flow_type & FLOW_EXT) {
-+			if (cur->h_ext.vlan_etype != fs->h_ext.vlan_etype ||
-+			    cur->m_ext.vlan_etype != fs->m_ext.vlan_etype ||
-+			    cur->h_ext.vlan_tci != fs->h_ext.vlan_tci ||
-+			    cur->m_ext.vlan_tci != fs->m_ext.vlan_tci ||
-+			    cur->h_ext.data[0] != fs->h_ext.data[0])
-+				continue;
-+		}
-+		if (cur->flow_type & FLOW_MAC_EXT) {
-+			if (memcmp(&cur->h_ext.h_dest,
-+				   &fs->h_ext.h_dest, ETH_ALEN) ||
-+			    memcmp(&cur->m_ext.h_dest,
-+				   &fs->m_ext.h_dest, ETH_ALEN))
-+				continue;
-+		}
-+
-+		return true;
-+	}
-+
-+	return false;
-+}
-+
-+/* If no network filter found, return open filter.
-+ * If no more open filters return NULL
-+ */
-+struct bcmasp_net_filter *bcmasp_netfilt_get_init(struct bcmasp_intf *intf,
-+						  int loc, bool wake_filter,
-+						  bool init)
-+{
-+	struct bcmasp_net_filter *nfilter = NULL;
-+	struct bcmasp_priv *priv = intf->parent;
-+	int i, open_index = -1;
-+
-+	/* Check whether we exceed the filter table capacity */
-+	if (loc != RX_CLS_LOC_ANY && loc >= NUM_NET_FILTERS)
-+		return ERR_PTR(-EINVAL);
-+
-+	/* If the filter location is busy (already claimed) and we are initializing
-+	 * the filter (insertion), return a busy error code.
-+	 */
-+	if (loc != RX_CLS_LOC_ANY && init && priv->net_filters[loc].claimed)
-+		return ERR_PTR(-EBUSY);
-+
-+	/* We need two filters for wake-up, so we cannot use an odd filter */
-+	if (wake_filter && loc != RX_CLS_LOC_ANY && (loc % 2))
-+		return ERR_PTR(-EINVAL);
-+
-+	/* Initialize the loop index based on the desired location or from 0 */
-+	i = loc == RX_CLS_LOC_ANY ? 0 : loc;
-+
-+	for ( ; i < NUM_NET_FILTERS; i++) {
-+		/* Found matching network filter */
-+		if (!init &&
-+		    priv->net_filters[i].claimed &&
-+		    priv->net_filters[i].hw_index == i &&
-+		    priv->net_filters[i].port == intf->port)
-+			return &priv->net_filters[i];
-+
-+		/* If we don't need a new filter or new filter already found */
-+		if (!init || open_index >= 0)
-+			continue;
-+
-+		/* Wake filter conslidates two filters to cover more bytes
-+		 * Wake filter is open if...
-+		 * 1. It is an even filter
-+		 * 2. The current and next filter is not claimed
-+		 */
-+		if (wake_filter && !(i % 2) && !priv->net_filters[i].claimed &&
-+		    !priv->net_filters[i + 1].claimed)
-+			open_index = i;
-+		else if (!priv->net_filters[i].claimed)
-+			open_index = i;
-+	}
-+
-+	if (open_index >= 0) {
-+		nfilter = &priv->net_filters[open_index];
-+		nfilter->claimed = true;
-+		nfilter->port = intf->port;
-+		nfilter->hw_index = open_index;
-+	}
-+
-+	if (wake_filter && open_index >= 0) {
-+		/* Claim next filter */
-+		priv->net_filters[open_index + 1].claimed = true;
-+		priv->net_filters[open_index + 1].wake_filter = true;
-+		nfilter->wake_filter = true;
-+	}
-+
-+	return nfilter ? nfilter : ERR_PTR(-EINVAL);
-+}
-+
-+void bcmasp_netfilt_release(struct bcmasp_intf *intf,
-+			    struct bcmasp_net_filter *nfilt)
-+{
-+	struct bcmasp_priv *priv = intf->parent;
-+
-+	if (nfilt->wake_filter) {
-+		memset(&priv->net_filters[nfilt->hw_index + 1], 0,
-+		       sizeof(struct bcmasp_net_filter));
-+	}
-+
-+	memset(nfilt, 0, sizeof(struct bcmasp_net_filter));
-+}
-+
- static void bcmasp_addr_to_uint(unsigned char *addr, u32 *high, u32 *low)
- {
- 	*high = (u32)(addr[0] << 8 | addr[1]);
-@@ -329,6 +920,9 @@ static void bcmasp_core_init_filters(struct bcmasp_priv *priv)
- 		priv->mda_filters[i].en = 0;
- 	}
- 
-+	for (i = 0; i < NUM_NET_FILTERS; i++)
-+		rx_filter_core_wl(priv, 0x0, ASP_RX_FILTER_NET_CFG(i));
-+
- 	/* Top level filter enable bit should be enabled at all times, set
- 	 * GEN_WAKE_CLEAR to clear the network filter wake-up which would
- 	 * otherwise be sticky
-@@ -654,6 +1248,7 @@ static int bcmasp_probe(struct platform_device *pdev)
- 	spin_lock_init(&priv->mda_lock);
- 	spin_lock_init(&priv->clk_lock);
- 	mutex_init(&priv->wol_lock);
-+	mutex_init(&priv->net_lock);
- 
- 	pdata = device_get_match_data(&pdev->dev);
- 	if (!pdata)
 diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp.h b/drivers/net/ethernet/broadcom/asp2/bcmasp.h
-index c8b66a6af584..e791b869006e 100644
+index e791b869006e..d6740077877a 100644
 --- a/drivers/net/ethernet/broadcom/asp2/bcmasp.h
 +++ b/drivers/net/ethernet/broadcom/asp2/bcmasp.h
-@@ -106,6 +106,14 @@
- #define   ASP_RX_FILTER_NET_OFFSET_L3_1(val)	((val) << 16)
- #define   ASP_RX_FILTER_NET_OFFSET_L4(val)	((val) << 24)
- 
-+enum asp_rx_net_filter_block {
-+	ASP_RX_FILTER_NET_L2 = 0,
-+	ASP_RX_FILTER_NET_L3_0,
-+	ASP_RX_FILTER_NET_L3_1,
-+	ASP_RX_FILTER_NET_L4,
-+	ASP_RX_FILTER_NET_BLOCK_MAX
-+};
-+
- #define ASP_EDPKT_OFFSET			0x9c000
- #define  ASP_EDPKT_ENABLE			0x4
- #define   ASP_EDPKT_ENABLE_EN			BIT(0)
-@@ -307,6 +315,17 @@ struct bcmasp_intf {
+@@ -313,6 +313,8 @@ struct bcmasp_intf {
+ 	/* Used if per intf wol irq */
+ 	int			wol_irq;
  	unsigned int		wol_irq_enabled:1;
++
++	struct ethtool_eee	eee;
  };
  
-+#define NUM_NET_FILTERS				32
-+struct bcmasp_net_filter {
-+	struct ethtool_rx_flow_spec	fs;
-+
-+	bool				claimed;
-+	bool				wake_filter;
-+
-+	int				port;
-+	unsigned int			hw_index;
-+};
-+
- #define NUM_MDA_FILTERS				32
- struct bcmasp_mda_filter {
- 	/* Current owner of this filter */
-@@ -362,6 +381,11 @@ struct bcmasp_priv {
+ #define NUM_NET_FILTERS				32
+@@ -559,4 +561,6 @@ void bcmasp_netfilt_get_all_active(struct bcmasp_intf *intf, u32 *rule_locs,
+ 				   u32 *rule_cnt);
  
- 	/* Protects accesses to ASP_CTRL_CLOCK_CTRL */
- 	spinlock_t			clk_lock;
+ void bcmasp_netfilt_suspend(struct bcmasp_intf *intf);
 +
-+	struct bcmasp_net_filter	net_filters[NUM_NET_FILTERS];
-+
-+	/* Network filter lock */
-+	struct mutex			net_lock;
- };
- 
- static inline unsigned long bcmasp_intf_rx_desc_read(struct bcmasp_intf *intf)
-@@ -519,4 +543,20 @@ void bcmasp_disable_all_filters(struct bcmasp_intf *intf);
- 
- void bcmasp_core_clock_set_intf(struct bcmasp_intf *intf, bool en);
- 
-+struct bcmasp_net_filter *bcmasp_netfilt_get_init(struct bcmasp_intf *intf,
-+						  int loc, bool wake_filter,
-+						  bool init);
-+
-+bool bcmasp_netfilt_check_dup(struct bcmasp_intf *intf,
-+			      struct ethtool_rx_flow_spec *fs);
-+
-+void bcmasp_netfilt_release(struct bcmasp_intf *intf,
-+			    struct bcmasp_net_filter *nfilt);
-+
-+int bcmasp_netfilt_get_active(struct bcmasp_intf *intf);
-+
-+void bcmasp_netfilt_get_all_active(struct bcmasp_intf *intf, u32 *rule_locs,
-+				   u32 *rule_cnt);
-+
-+void bcmasp_netfilt_suspend(struct bcmasp_intf *intf);
++void bcmasp_eee_enable_set(struct bcmasp_intf *intf, bool enable);
  #endif
 diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c b/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
-index ae24a1f74d49..eddd1c43f00e 100644
+index eddd1c43f00e..1e96a69043f3 100644
 --- a/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
-@@ -30,7 +30,7 @@ static void bcmasp_set_msglevel(struct net_device *dev, u32 level)
- 	intf->msg_enable = level;
+@@ -191,6 +191,65 @@ static int bcmasp_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd,
+ 	return err;
  }
  
--#define BCMASP_SUPPORTED_WAKE   (WAKE_MAGIC | WAKE_MAGICSECURE)
-+#define BCMASP_SUPPORTED_WAKE   (WAKE_MAGIC | WAKE_MAGICSECURE | WAKE_FILTER)
- static void bcmasp_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- {
- 	struct bcmasp_intf *intf = netdev_priv(dev);
-@@ -64,6 +64,133 @@ static int bcmasp_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- 	return 0;
- }
- 
-+static int bcmasp_flow_insert(struct net_device *dev, struct ethtool_rxnfc *cmd)
++void bcmasp_eee_enable_set(struct bcmasp_intf *intf, bool enable)
++{
++	u32 reg;
++
++	reg = umac_rl(intf, UMC_EEE_CTRL);
++	if (enable)
++		reg |= EEE_EN;
++	else
++		reg &= ~EEE_EN;
++	umac_wl(intf, reg, UMC_EEE_CTRL);
++
++	intf->eee.eee_enabled = enable;
++	intf->eee.eee_active = enable;
++}
++
++static int bcmasp_get_eee(struct net_device *dev, struct ethtool_eee *e)
 +{
 +	struct bcmasp_intf *intf = netdev_priv(dev);
-+	struct bcmasp_net_filter *nfilter;
-+	u32 loc = cmd->fs.location;
-+	bool wake = false;
++	struct ethtool_eee *p = &intf->eee;
 +
-+	if (cmd->fs.ring_cookie == RX_CLS_FLOW_WAKE)
-+		wake = true;
++	if (!dev->phydev)
++		return -ENODEV;
 +
-+	/* Currently only supports WAKE filters */
-+	if (!wake)
-+		return -EOPNOTSUPP;
++	e->eee_enabled = p->eee_enabled;
++	e->eee_active = p->eee_active;
++	e->tx_lpi_enabled = p->tx_lpi_enabled;
++	e->tx_lpi_timer = umac_rl(intf, UMC_EEE_LPI_TIMER);
 +
-+	switch (cmd->fs.flow_type & ~(FLOW_EXT | FLOW_MAC_EXT)) {
-+	case ETHER_FLOW:
-+	case IP_USER_FLOW:
-+	case TCP_V4_FLOW:
-+	case UDP_V4_FLOW:
-+	case TCP_V6_FLOW:
-+	case UDP_V6_FLOW:
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
++	return phy_ethtool_get_eee(dev->phydev, e);
++}
++
++static int bcmasp_set_eee(struct net_device *dev, struct ethtool_eee *e)
++{
++	struct bcmasp_intf *intf = netdev_priv(dev);
++	struct ethtool_eee *p = &intf->eee;
++	int ret;
++
++	if (!dev->phydev)
++		return -ENODEV;
++
++	if (!p->eee_enabled) {
++		bcmasp_eee_enable_set(intf, false);
++	} else {
++		ret = phy_init_eee(dev->phydev, 0);
++		if (ret) {
++			netif_err(intf, hw, dev,
++				  "EEE initialization failed: %d\n", ret);
++			return ret;
++		}
++
++		umac_wl(intf, e->tx_lpi_timer, UMC_EEE_LPI_TIMER);
++		intf->eee.eee_active = ret >= 0;
++		intf->eee.tx_lpi_enabled = e->tx_lpi_enabled;
++		bcmasp_eee_enable_set(intf, true);
 +	}
 +
-+	/* Check if filter already exists */
-+	if (bcmasp_netfilt_check_dup(intf, &cmd->fs))
-+		return -EINVAL;
-+
-+	nfilter = bcmasp_netfilt_get_init(intf, loc, wake, true);
-+	if (IS_ERR(nfilter))
-+		return PTR_ERR(nfilter);
-+
-+	/* Return the location where we did insert the filter */
-+	cmd->fs.location = nfilter->hw_index;
-+	memcpy(&nfilter->fs, &cmd->fs, sizeof(struct ethtool_rx_flow_spec));
-+
-+	/* Since we only support wake filters, defer register programming till
-+	 * suspend time.
-+	 */
-+	return 0;
-+}
-+
-+static int bcmasp_flow_delete(struct net_device *dev, struct ethtool_rxnfc *cmd)
-+{
-+	struct bcmasp_intf *intf = netdev_priv(dev);
-+	struct bcmasp_net_filter *nfilter;
-+
-+	nfilter = bcmasp_netfilt_get_init(intf, cmd->fs.location, false, false);
-+	if (IS_ERR(nfilter))
-+		return PTR_ERR(nfilter);
-+
-+	bcmasp_netfilt_release(intf, nfilter);
-+
-+	return 0;
-+}
-+
-+static int bcmasp_flow_get(struct bcmasp_intf *intf, struct ethtool_rxnfc *cmd)
-+{
-+	struct bcmasp_net_filter *nfilter;
-+
-+	nfilter = bcmasp_netfilt_get_init(intf, cmd->fs.location, false, false);
-+	if (IS_ERR(nfilter))
-+		return PTR_ERR(nfilter);
-+
-+	memcpy(&cmd->fs, &nfilter->fs, sizeof(nfilter->fs));
-+
-+	cmd->data = NUM_NET_FILTERS;
-+
-+	return 0;
-+}
-+
-+static int bcmasp_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
-+{
-+	struct bcmasp_intf *intf = netdev_priv(dev);
-+	int ret = -EOPNOTSUPP;
-+
-+	mutex_lock(&intf->parent->net_lock);
-+
-+	switch (cmd->cmd) {
-+	case ETHTOOL_SRXCLSRLINS:
-+		ret = bcmasp_flow_insert(dev, cmd);
-+		break;
-+	case ETHTOOL_SRXCLSRLDEL:
-+		ret = bcmasp_flow_delete(dev, cmd);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	mutex_unlock(&intf->parent->net_lock);
-+
-+	return ret;
-+}
-+
-+static int bcmasp_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd,
-+			    u32 *rule_locs)
-+{
-+	struct bcmasp_intf *intf = netdev_priv(dev);
-+	int err = 0;
-+
-+	mutex_lock(&intf->parent->net_lock);
-+
-+	switch (cmd->cmd) {
-+	case ETHTOOL_GRXCLSRLCNT:
-+		cmd->rule_cnt = bcmasp_netfilt_get_active(intf);
-+		/* We support specifying rule locations */
-+		cmd->data |= RX_CLS_LOC_SPECIAL;
-+		break;
-+	case ETHTOOL_GRXCLSRULE:
-+		err = bcmasp_flow_get(intf, cmd);
-+		break;
-+	case ETHTOOL_GRXCLSRLALL:
-+		bcmasp_netfilt_get_all_active(intf, rule_locs, &cmd->rule_cnt);
-+		cmd->data = NUM_NET_FILTERS;
-+		break;
-+	default:
-+		err = -EOPNOTSUPP;
-+		break;
-+	}
-+
-+	mutex_unlock(&intf->parent->net_lock);
-+
-+	return err;
++	return phy_ethtool_set_eee(dev->phydev, e);
 +}
 +
  const struct ethtool_ops bcmasp_ethtool_ops = {
  	.get_drvinfo		= bcmasp_get_drvinfo,
  	.get_link		= ethtool_op_get_link,
-@@ -73,4 +200,6 @@ const struct ethtool_ops bcmasp_ethtool_ops = {
- 	.set_msglevel		= bcmasp_set_msglevel,
- 	.get_wol		= bcmasp_get_wol,
+@@ -202,4 +261,6 @@ const struct ethtool_ops bcmasp_ethtool_ops = {
  	.set_wol		= bcmasp_set_wol,
-+	.get_rxnfc		= bcmasp_get_rxnfc,
-+	.set_rxnfc		= bcmasp_set_rxnfc,
+ 	.get_rxnfc		= bcmasp_get_rxnfc,
+ 	.set_rxnfc		= bcmasp_set_rxnfc,
++	.set_eee		= bcmasp_set_eee,
++	.get_eee		= bcmasp_get_eee,
  };
 diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c b/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c
-index 1f6f050f9059..e221f07bf743 100644
+index e221f07bf743..2c8a9d5711de 100644
 --- a/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c
 +++ b/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c
-@@ -1316,6 +1316,9 @@ static void bcmasp_suspend_to_wol(struct bcmasp_intf *intf)
- 	}
- 	umac_wl(intf, reg, UMC_MPD_CTRL);
- 
-+	if (intf->wolopts & WAKE_FILTER)
-+		bcmasp_netfilt_suspend(intf);
+@@ -653,6 +653,9 @@ static void bcmasp_adj_link(struct net_device *dev)
+ 			UMC_CMD_TX_PAUSE_IGNORE);
+ 		reg |= cmd_bits;
+ 		umac_wl(intf, reg, UMC_CMD);
 +
- 	/* UniMAC receive needs to be turned on */
- 	umac_enable_set(intf, UMC_CMD_RX_EN, 1);
++		intf->eee.eee_active = phy_init_eee(phydev, 0) >= 0;
++		bcmasp_eee_enable_set(intf, intf->eee.eee_active);
+ 	}
  
+ 	reg = rgmii_rl(intf, RGMII_OOB_CNTRL);
+@@ -1403,6 +1406,9 @@ int bcmasp_interface_resume(struct bcmasp_intf *intf)
+ 
+ 	bcmasp_resume_from_wol(intf);
+ 
++	if (intf->eee.eee_enabled)
++		bcmasp_eee_enable_set(intf, true);
++
+ 	netif_device_attach(dev);
+ 
+ 	return 0;
 -- 
 2.7.4
 
 
---00000000000004c05d05fe468320
+--00000000000016f48405fe46835d
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -1042,14 +304,14 @@ sDL+OV16G+F9CkNMN3txsym8Nnx5WAYZb6+rBUIhMGz70V05xsHQfzvo2s7f0J1tJ5BoRlPPhL0h
 VOnWA3h71u9TfSsv+PXVm3P21TfOS2uc1hbzEqyENCP4i5XQ0rv0TmPW42GZ0o4xggJtMIICaQIB
 ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
 bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwj8BKLXNpALfemdRAwDQYJ
-YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIO1+crPrs31/hglWw9dnzbSWqfd/Qyas2+0Z
-q2fRNjJbMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYxNjIy
-MTQ0MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIOi8JH/EUtf9LamFHvRPEWh/NQSXWF8NHRUc
+wUeL6GriMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYxNjIy
+MTQ0NFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
 AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
-BgkqhkiG9w0BAQEFAASCAQCTVmpA+QSWQag8WxfQN6DnnxgoehyauSE0K6DRfcnBMnZxtyJ6miSo
-5Lf+QOYqUACo+DnQRf0zeL2IlsuUo4EeEswSRU3X2EnpMtFozLoHmjOxRilsCuxc5Zkjm9SzVz88
-/ZSgnpRMI6Q4R4JMd7K7ImkrwOD/m24bd0Mq5MeeHGx4CDEWmy6LLxX6alCBPs+MAd+lnpSducoE
-jJ1bzt5TdsedOe1r5GJoX2KnQAa/JD+X5WhTp6UvbeAoEhh6k/5tFd3/rJgnpZChe5YdbwP8rZOd
-zUa75QhTiX3WVYsI4d9oPHFgqV3KycgTi80Q8jWpNGZOdFO9etwBlDNgiAX1
---00000000000004c05d05fe468320--
+BgkqhkiG9w0BAQEFAASCAQAkeETwjNeHUiDeH43qLqEofFjilZGn7wLWoUfyk5NnmfzdmCzlCX95
+dQqHFh9s9K8F34HRUs2ZMDwu8tXB6NO0+Iy1UXEkhAysr+oHEEB9HqJF8+sOGhwi9n8mYR6cU5Fz
+/Sbfc8ItDWBarNO/jly1YppomSdAVokog1DmhpHOQNayIkP+2NqGgQGxwEdzir1L5Dzt9W5r0u3g
+QkGDSs2+xBkQqzPt2MSy9x8dJv1LIIz3Zne3gbXiB7RdUOeW1Hc/i9yIqNxNdLKAR7nRPTDzHEQc
+wrXkekqcUnJIN8qX7At9Dxh7XQuCzgjjos5KZfREgFOEiHyswEoguQSE2TkC
+--00000000000016f48405fe46835d--
 
