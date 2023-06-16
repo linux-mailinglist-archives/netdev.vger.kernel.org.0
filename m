@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-11349-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11350-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 22448732B18
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 11:08:55 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id CAE74732B1B
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 11:09:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3BCB91C20F81
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 09:08:54 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8540A281239
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 09:09:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0DF14D520;
-	Fri, 16 Jun 2023 09:08:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E8BDD525;
+	Fri, 16 Jun 2023 09:09:06 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7C16F9F5
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 09:08:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17B15C433C0;
-	Fri, 16 Jun 2023 09:08:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 125C7F9F4
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 09:09:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A41EC433C0;
+	Fri, 16 Jun 2023 09:09:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686906530;
-	bh=6H2J61C/zhonIL9tyV87l0liBvz4B9aaRzMD1YpvQE4=;
-	h=From:To:Cc:Subject:Date:From;
-	b=XkA67CHY1l+/tBfiCQacrRszQ1FP6oXVHm5ALNsIXr8juvZASfoEOzpZltWLv1qVa
-	 MAgvEtQkesLYwgMy/4gDfqYvp/gcie/gDWHkSvfm1w+86ecyiiEpt/kFLplu1vTlv7
-	 5x4oie6b2M3sir6hIzR18fRZrFrJMOWJ7ZAK8/hlg+zE11g/JzOHOBQj3JrWzhMaVJ
-	 qFh2Jl7MHO7Sa8BUiK4mdKIIhBesmn890oA0PSesNnWPeQ68ncgqt2lAx+hPxEikZj
-	 q3e3hZzQhtfeW/ux3bsO5cYPL/5oLX5mcqHt1bt5V3hQY3h8zkkvcB8h1JgtMwR5Ol
-	 9CmN1N/q/O6+A==
+	s=k20201202; t=1686906544;
+	bh=iPWPXNvnYRe2+h21DBS9ZfvzMiWbCC13nR/zPknLFF8=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=sgxB3PPe7xDo5i1HoqL5Nkc8iI3Igjm7zkJRKSoXXGviq3rQZkC+DUKVcBcKTuX1l
+	 Y+v+WN/zaUD1H7JdvtbQq9E9sWKNvEpbaa1U4ahwYGjKTJ9yoPn6R3kfuJvJ8v/Qdb
+	 Y0E+he2nJLOvJusREIyfzy4yl7zqQ+mtsk8GtM6D8POPXd3rpY8A6sIqjDOLjw5be/
+	 T78yns/TYvPxei64/CIZgxtYSi9tCKIaEWbKx74gpSHxR5zcmUjXtR42Rk82XBITfG
+	 ZX0iAEUNCEUHkzWCgUwHqnKTmcL4OQveGOaiDzHXDQclQxW56DqQ/Eh6B2R3mjWJFR
+	 rnmjGGAv+AWLw==
 From: Arnd Bergmann <arnd@kernel.org>
 To: Edward Cree <ecree.xilinx@gmail.com>,
 	Martin Habets <habetsm.xilinx@gmail.com>,
@@ -38,15 +38,19 @@ Cc: Arnd Bergmann <arnd@arndb.de>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
 	Paolo Abeni <pabeni@redhat.com>,
-	Simon Horman <simon.horman@corigine.com>,
+	Alejandro Lucero <alejandro.lucero-palau@amd.com>,
+	Jiri Pirko <jiri@resnulli.us>,
 	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
+	Simon Horman <simon.horman@corigine.com>,
 	netdev@vger.kernel.org,
 	linux-net-drivers@amd.com,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] sfc: fix uninitialized variable use
-Date: Fri, 16 Jun 2023 11:08:18 +0200
-Message-Id: <20230616090844.2677815-1-arnd@kernel.org>
+Subject: [PATCH 2/2] sfc: add CONFIG_INET dependency for TC offload
+Date: Fri, 16 Jun 2023 11:08:19 +0200
+Message-Id: <20230616090844.2677815-2-arnd@kernel.org>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230616090844.2677815-1-arnd@kernel.org>
+References: <20230616090844.2677815-1-arnd@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -57,43 +61,43 @@ Content-Transfer-Encoding: 8bit
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The new efx_bind_neigh() function contains a broken code path when IPV6 is
-disabled:
+The driver now fails to link when CONFIG_INET is disabled, so
+add an explicit Kconfig dependency:
 
-drivers/net/ethernet/sfc/tc_encap_actions.c:144:7: error: variable 'n' is used uninitialized whenever 'if' condition is true [-Werror,-Wsometimes-uninitialized]
-                if (encap->type & EFX_ENCAP_FLAG_IPV6) {
-                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/sfc/tc_encap_actions.c:184:8: note: uninitialized use occurs here
-                if (!n) {
-                     ^
-drivers/net/ethernet/sfc/tc_encap_actions.c:144:3: note: remove the 'if' if its condition is always false
-                if (encap->type & EFX_ENCAP_FLAG_IPV6) {
-                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/sfc/tc_encap_actions.c:141:22: note: initialize the variable 'n' to silence this warning
-                struct neighbour *n;
-                                   ^
-                                    = NULL
+ld.lld: error: undefined symbol: ip_route_output_flow
+>>> referenced by tc_encap_actions.c
+>>>               drivers/net/ethernet/sfc/tc_encap_actions.o:(efx_tc_flower_create_encap_md) in archive vmlinux.a
 
-Change it to use the existing error handling path here.
+ld.lld: error: undefined symbol: ip_send_check
+>>> referenced by tc_encap_actions.c
+>>>               drivers/net/ethernet/sfc/tc_encap_actions.o:(efx_gen_encap_header) in archive vmlinux.a
+>>> referenced by tc_encap_actions.c
+>>>               drivers/net/ethernet/sfc/tc_encap_actions.o:(efx_gen_encap_header) in archive vmlinux.a
 
-Fixes: 7e5e7d800011a ("sfc: neighbour lookup for TC encap action offload")
+ld.lld: error: undefined symbol: arp_tbl
+>>> referenced by tc_encap_actions.c
+>>>               drivers/net/ethernet/sfc/tc_encap_actions.o:(efx_tc_netevent_event) in archive vmlinux.a
+>>> referenced by tc_encap_actions.c
+>>>               drivers/net/ethernet/sfc/tc_encap_actions.o:(efx_tc_netevent_event) in archive vmlinux.a
+
+Fixes: a1e82162af0b8 ("sfc: generate encap headers for TC offload")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/sfc/tc_encap_actions.c | 1 +
+ drivers/net/ethernet/sfc/Kconfig | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/sfc/tc_encap_actions.c b/drivers/net/ethernet/sfc/tc_encap_actions.c
-index aac259528e73e..cfd76d5bbdd48 100644
---- a/drivers/net/ethernet/sfc/tc_encap_actions.c
-+++ b/drivers/net/ethernet/sfc/tc_encap_actions.c
-@@ -163,6 +163,7 @@ static int efx_bind_neigh(struct efx_nic *efx,
- 			 * enabled how did someone create an IPv6 tunnel_key?
- 			 */
- 			rc = -EOPNOTSUPP;
-+			n = NULL;
- 			NL_SET_ERR_MSG_MOD(extack, "No IPv6 support (neigh bind)");
- #endif
- 		} else {
+diff --git a/drivers/net/ethernet/sfc/Kconfig b/drivers/net/ethernet/sfc/Kconfig
+index 4af36ba8906ba..3eb55dcfa8a61 100644
+--- a/drivers/net/ethernet/sfc/Kconfig
++++ b/drivers/net/ethernet/sfc/Kconfig
+@@ -50,6 +50,7 @@ config SFC_MCDI_MON
+ config SFC_SRIOV
+ 	bool "Solarflare SFC9100-family SR-IOV support"
+ 	depends on SFC && PCI_IOV
++	depends on INET
+ 	default y
+ 	help
+ 	  This enables support for the Single Root I/O Virtualization
 -- 
 2.39.2
 
