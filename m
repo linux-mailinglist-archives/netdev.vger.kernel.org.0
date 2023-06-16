@@ -1,46 +1,46 @@
-Return-Path: <netdev+bounces-11423-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11424-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 004FB7330D8
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 14:09:39 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id C13157330D9
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 14:09:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B2CF0281748
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 12:09:38 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F2CE91C20B79
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 12:09:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DCD4A19916;
-	Fri, 16 Jun 2023 12:07:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AD5221991E;
+	Fri, 16 Jun 2023 12:07:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9DC019512
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 12:07:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A14F018B0F
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 12:07:31 +0000 (UTC)
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FFDB30C5
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 05:07:22 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD64358E
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 05:07:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
 	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
 	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=Df526YwvzaRm2ShTOHccKVkFURtBcAMuu7bcoPYzOP4=; b=dB8Nw/xOX/M+T0cI7XmDl3Mg29
-	zZ+2MH3WD9Gbr9vWYmfXp0zEKdZBnyoKffhi+WWaPJss0di39SpbykemdJqGDqu1qIfoJnTk/Ox4X
-	nY0FVYnFmQqx1Cd+ER7mjvZuBbWmdRum9zgU5W1OVSbnyihNRagXvjD+M/zagmlLrInk4jPEyARxa
-	ST2e59AXYzYTFa3yzHECF+GuzT+pXUtskRX1z+FSTuzEn63P9t9JDukMqPze6TzbK2iHpx0XrR8Qb
-	V4jBclqbzQXEdgl2HqsTuy6zeE8NdQ7euv+QHfk4JOgsPTyNpaU9ndavm4CMhOCFtS68v+bkc4G+O
-	55CRtqQA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:46428 helo=rmk-PC.armlinux.org.uk)
+	bh=sohyzqjHoglhxJYapMiqtRsLL/cfxTOCOEf9P4U53WM=; b=nLc0sV+XOxPqBYArgjH/qLamoF
+	XQhXyUVrfayRULfjZlNl0aMbL4e+dHZPM8g0cvZsmc+1XNHF29fDmcuLeAkQ+cIG+HgGCFvqyxdUQ
+	A63xKYwpHL+RP0pHafxy9yjVGmGbr84kP9eHDhcCUOR2ObzhtqkAfyhZq7rAVT9FQv2ulkMp2SUNh
+	QVw864T75KxBjMJDX/8JSyLHWKElNHZtFIGTU16zR3k9oLdgb1KBxu585IIwlUWadfgzhLuoh/u6K
+	Ygm1QBNKZmbED7luWD4KgCuorXlCeyjFg8btlEFcARHpDw51hOD1BQc/XK4ZvzL4r8WnEGpnbp0ra
+	cTyMIA7A==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:46430 helo=rmk-PC.armlinux.org.uk)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <rmk@armlinux.org.uk>)
-	id 1qA8EP-00055q-Mx; Fri, 16 Jun 2023 13:07:09 +0100
+	id 1qA8EU-00056Q-Qh; Fri, 16 Jun 2023 13:07:14 +0100
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
 	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-	id 1qA8EO-00EaG3-TR; Fri, 16 Jun 2023 13:07:08 +0100
+	id 1qA8EU-00EaG9-1l; Fri, 16 Jun 2023 13:07:14 +0100
 In-Reply-To: <ZIxQIBfO9dH5xFlg@shell.armlinux.org.uk>
 References: <ZIxQIBfO9dH5xFlg@shell.armlinux.org.uk>
 From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -76,8 +76,7 @@ Cc: Alexander Couzens <lynxis@fe80.eu>,
 	Taras Chornyi <taras.chornyi@plvision.eu>,
 	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
 	UNGLinuxDriver@microchip.com, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 10/15] net: prestera: update PCS driver to use
- neg_mode
+Subject: [PATCH net-next 11/15] net: qca8k: update PCS driver to use neg_mode
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -87,9 +86,9 @@ MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1qA8EO-00EaG3-TR@rmk-PC.armlinux.org.uk>
+Message-Id: <E1qA8EU-00EaG9-1l@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date: Fri, 16 Jun 2023 13:07:08 +0100
+Date: Fri, 16 Jun 2023 13:07:14 +0100
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
 	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
@@ -97,70 +96,55 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Update prestera's embedded PCS driver to use neg_mode rather than the
+Update qca8k's embedded PCS driver to use neg_mode rather than the
 mode argument. As there is no pcs_link_up() method, this only affects
 the pcs_config() method.
 
-Acked-by: Elad Nachman <enachman@marvell.com>
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/ethernet/marvell/prestera/prestera_main.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/net/dsa/qca/qca8k-8xxx.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-index 9d504142e51a..4fb886c57cd7 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-@@ -300,8 +300,7 @@ static void prestera_pcs_get_state(struct phylink_pcs *pcs,
- 	}
+diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
+index dee7b6579916..f7d7cfb2fd86 100644
+--- a/drivers/net/dsa/qca/qca8k-8xxx.c
++++ b/drivers/net/dsa/qca/qca8k-8xxx.c
+@@ -1493,7 +1493,7 @@ static void qca8k_pcs_get_state(struct phylink_pcs *pcs,
+ 		state->pause |= MLO_PAUSE_TX;
  }
  
--static int prestera_pcs_config(struct phylink_pcs *pcs,
--			       unsigned int mode,
-+static int prestera_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
- 			       phy_interface_t interface,
- 			       const unsigned long *advertising,
- 			       bool permit_pause_to_mac)
-@@ -316,30 +315,25 @@ static int prestera_pcs_config(struct phylink_pcs *pcs,
- 
- 	cfg_mac.admin = true;
- 	cfg_mac.fec = PRESTERA_PORT_FEC_OFF;
-+	cfg_mac.inband = neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED;
- 
- 	switch (interface) {
- 	case PHY_INTERFACE_MODE_10GBASER:
- 		cfg_mac.speed = SPEED_10000;
--		cfg_mac.inband = 0;
- 		cfg_mac.mode = PRESTERA_MAC_MODE_SR_LR;
- 		break;
- 	case PHY_INTERFACE_MODE_2500BASEX:
- 		cfg_mac.speed = SPEED_2500;
- 		cfg_mac.duplex = DUPLEX_FULL;
--		cfg_mac.inband = test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
--					  advertising);
- 		cfg_mac.mode = PRESTERA_MAC_MODE_SGMII;
- 		break;
- 	case PHY_INTERFACE_MODE_SGMII:
--		cfg_mac.inband = 1;
- 		cfg_mac.mode = PRESTERA_MAC_MODE_SGMII;
- 		break;
- 	case PHY_INTERFACE_MODE_1000BASEX:
- 	default:
- 		cfg_mac.speed = SPEED_1000;
- 		cfg_mac.duplex = DUPLEX_FULL;
--		cfg_mac.inband = test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
--					  advertising);
- 		cfg_mac.mode = PRESTERA_MAC_MODE_1000BASE_X;
- 		break;
+-static int qca8k_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
++static int qca8k_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
+ 			    phy_interface_t interface,
+ 			    const unsigned long *advertising,
+ 			    bool permit_pause_to_mac)
+@@ -1520,14 +1520,12 @@ static int qca8k_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
  	}
-@@ -401,6 +395,7 @@ static int prestera_port_sfp_bind(struct prestera_port *port)
- 			continue;
  
- 		port->phylink_pcs.ops = &prestera_pcs_ops;
-+		port->phylink_pcs.neg_mode = true;
+ 	/* Enable/disable SerDes auto-negotiation as necessary */
+-	ret = qca8k_read(priv, QCA8K_REG_PWS, &val);
++	val = neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED ?
++		0 : QCA8K_PWS_SERDES_AEN_DIS;
++
++	ret = qca8k_rmw(priv, QCA8K_REG_PWS, QCA8K_PWS_SERDES_AEN_DIS, val);
+ 	if (ret)
+ 		return ret;
+-	if (phylink_autoneg_inband(mode))
+-		val &= ~QCA8K_PWS_SERDES_AEN_DIS;
+-	else
+-		val |= QCA8K_PWS_SERDES_AEN_DIS;
+-	qca8k_write(priv, QCA8K_REG_PWS, val);
  
- 		port->phy_config.dev = &port->dev->dev;
- 		port->phy_config.type = PHYLINK_NETDEV;
+ 	/* Configure the SGMII parameters */
+ 	ret = qca8k_read(priv, QCA8K_REG_SGMII_CTRL, &val);
+@@ -1598,6 +1596,7 @@ static void qca8k_setup_pcs(struct qca8k_priv *priv, struct qca8k_pcs *qpcs,
+ 			    int port)
+ {
+ 	qpcs->pcs.ops = &qca8k_pcs_ops;
++	qpcs->pcs.neg_mode = true;
+ 
+ 	/* We don't have interrupts for link changes, so we need to poll */
+ 	qpcs->pcs.poll = true;
 -- 
 2.30.2
 
