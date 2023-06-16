@@ -1,193 +1,225 @@
-Return-Path: <netdev+bounces-11479-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11480-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4BE30733416
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 17:01:07 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6B64B73341E
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 17:01:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BF2251C20E8E
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 15:01:05 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A28CB2817C9
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 15:01:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8C9971427C;
-	Fri, 16 Jun 2023 15:01:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 134E51773F;
+	Fri, 16 Jun 2023 15:01:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80CB13D62
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 15:01:03 +0000 (UTC)
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F171F30C5
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 08:01:00 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-9864d03e838so105265866b.2
-        for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 08:01:00 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02BA413AC9
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 15:01:54 +0000 (UTC)
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 223CC1FF9;
+	Fri, 16 Jun 2023 08:01:44 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id 98e67ed59e1d1-25bec2512f3so687515a91.0;
+        Fri, 16 Jun 2023 08:01:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686927659; x=1689519659;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=EiplLJBv4iqfSc+ZrhjbYoS87s9MPGVY4fSzkTGtwSU=;
-        b=DnzqQaO54DvSwXb1NGYn3VSTxF+H3ni1Kbidm6dY0PaQlhhtC1Hrh0KTtVRhe6lMRW
-         HbO9YFSp557m2licEHMm3MgQdD+a5TPBSkb6zA1Ln2R01Xb3ynXhpmmUhLc3KRr9bB4a
-         pqVyusXWLTQgs28/mttECgsE/7+4++CrzZ0GMx7OwrIrX9FUtsD65dzLL9hPa5uGt3G5
-         cU5tsj0cFXLLZiUVBjaskvUnNgogyJiOtOV1vsPH4lUDYVhvCqdMQG40niBLOQuEmSo3
-         j/0d/MIUhDRmO6wjMJBkt7kEBStEPbd4K3LiGkFpsrThSH4wO5KcFJR4o+Tf2jEUqlf/
-         Cr+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686927659; x=1689519659;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1686927703; x=1689519703;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EiplLJBv4iqfSc+ZrhjbYoS87s9MPGVY4fSzkTGtwSU=;
-        b=Z4kQxj4hVLZGqxU6C8NIZonPfrex/8ItEiLKksydkTogRJ2vpFeF1lDytp9rdyT4ee
-         EZOeubGvc3GrRtPHPSt//6I8+4FQTN8IKXWTddg7CRoNgw9tJDpU3rL/sNI0E0Pd1pyi
-         nz78YY+6tGQw+DGlVtAZNRcpErao28qahA8SEqsS0IOzcz5qToKlL5rnK0VBiNTVGBao
-         F6rm9zfnh1vNJRtyOw5sJKP4M7/XWt6mi+hwkynT4+RlWbP3zb0zjm0s/+plNy5DjLfJ
-         L+ME+T5QsHyJXNHfImyC7/NBcVcDmN+c38TXVWkJW/53Xq/JnXBiEoQ17qkAQBCjAFtm
-         Qs1A==
-X-Gm-Message-State: AC+VfDwzk6Mwf597GAG34jgog8Is2F8vdFQY4cOIxbbv6PIHrMgcYMQ+
-	X/yL1om4qzdPMZVlDRmZmcQ=
-X-Google-Smtp-Source: ACHHUZ48rZ8rIS75oGkcfaUIFGqF7j5KaPNb16bpKPAP6kzgGfv5NTZF84DNkjbIZIReJV9OHv7e/g==
-X-Received: by 2002:a17:907:808:b0:977:ceab:3996 with SMTP id wv8-20020a170907080800b00977ceab3996mr2006721ejb.76.1686927659093;
-        Fri, 16 Jun 2023 08:00:59 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id c19-20020a170906925300b0096f67b55b0csm10913465ejx.115.2023.06.16.08.00.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Jun 2023 08:00:58 -0700 (PDT)
-Date: Fri, 16 Jun 2023 18:00:55 +0300
-From: Vladimir Oltean <olteanv@gmail.com>
-To: "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc: Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Alexander Couzens <lynxis@fe80.eu>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Cc@web.codeaurora.org:Claudiu Beznea <claudiu.beznea@microchip.com>,
-	Daniel Golle <daniel@makrotopia.org>,
-	Daniel Machon <daniel.machon@microchip.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	DENG Qingfang <dqfext@gmail.com>, Eric Dumazet <edumazet@google.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Horatiu Vultur <horatiu.vultur@microchip.com>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Jose Abreu <Jose.Abreu@synopsys.com>,
-	Landen Chao <Landen.Chao@mediatek.com>,
-	Lars Povlsen <lars.povlsen@microchip.com>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org,
-	Madalin Bucur <madalin.bucur@nxp.com>,
-	Marcin Wojtas <mw@semihalf.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Michal Simek <michal.simek@amd.com>, netdev@vger.kernel.org,
-	Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-	Sean Anderson <sean.anderson@seco.com>,
-	Sean Wang <sean.wang@mediatek.com>,
-	Steen Hegelund <Steen.Hegelund@microchip.com>,
-	Taras Chornyi <taras.chornyi@plvision.eu>,
-	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-	UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next 0/15] Add and use helper for PCS negotiation
- modes
-Message-ID: <20230616150055.kb7dyuwqqvfkfuh7@skbuf>
-References: <ZIxQIBfO9dH5xFlg@shell.armlinux.org.uk>
+        bh=FwOiF1tuQY0sMSzPSitIXKF3uUPCmzP49g6125H5nno=;
+        b=iFSLtmOZxcYOYrhk8SjOyBfNSdHP6AxxWzy1ZOozDYnPcQghaoGALev11CBsXLS2oJ
+         W1TblpdgaZjZFhzAjUdJr7Gm50KRcc6rVYkEzZYfX1SokDSLSRnFQHqd5JalEqOM18Ts
+         84h3OHZV3xEWlkzCH27P0UJdHBP1r4S3d2pZLTm5yhCeO3WtQnOWAKzcipwkZAprXZ9t
+         g0LKmiM/GmvN9axhV8Vo7vXmG/+3s6dro6zqfVJneOimcIxrBYfIuoMI16rU5yNmrYrZ
+         E3O2Mplnv4X1vaPEQcTVZ6hJTbeVbFCYOw62zOSZITHBFAGXhVyzIY3yWAtnX/rVuXU3
+         xKqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686927703; x=1689519703;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=FwOiF1tuQY0sMSzPSitIXKF3uUPCmzP49g6125H5nno=;
+        b=TFC/j2N+/6CHfidwTOl+CDbkywzQpBGkrcM9fim4Co5Xhi/YzOzSNvSPWMb7Wkv0su
+         8A4td+5hQJKdfBkRLn9UdhNs54IqjTWpp9dH1jwL5ALNUHpM3CBRnlPHf6+QYCWKzlko
+         vxcnTlNSDmnZDk+bTDwxZnjOf7IDkH+irZzlAiNrTSzYrhBsuwGCy6V8Mbxc9wX0C7xk
+         bmvpDlgul57Dq6VRTQ9JRnXDVHGZl+hiuk17t2Rs6wkca3w+gDkUxwgLiuDnj/56f3Vo
+         yhXWaRFjTVKQSSBmZ6IQNAYey2DRoClNWJiiCGq0CR5GmYyLnnw6IvFlPkmuS5nbsLH2
+         3rdw==
+X-Gm-Message-State: AC+VfDxJeY2TLlDnbqrrKkQfpxqushITZJCD5rtEG+HtPmpcOr7iqL5Q
+	5rFns0S4YEgBMU0OCvrwPyFxsNE/dcthXhQv3A4=
+X-Google-Smtp-Source: ACHHUZ77zEMr391VkMkn9d2iAhClJSSjtNS9e51eYfXDvhlQE+zZedlzrQdlBGNPeFhzQ6xAip3Q4qDF+0aRqQmqwIE=
+X-Received: by 2002:a17:90a:7f05:b0:250:648b:781d with SMTP id
+ k5-20020a17090a7f0500b00250648b781dmr10488732pjl.23.1686927703194; Fri, 16
+ Jun 2023 08:01:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZIxQIBfO9dH5xFlg@shell.armlinux.org.uk>
+References: <20230612130256.4572-1-linyunsheng@huawei.com> <20230612130256.4572-5-linyunsheng@huawei.com>
+ <20230614101954.30112d6e@kernel.org> <8c544cd9-00a3-2f17-bd04-13ca99136750@huawei.com>
+ <20230615095100.35c5eb10@kernel.org> <CAKgT0Uc6Xoyh3Edgt+83b+HTM5j4JDr3fuxcyL9qDk+Wwt9APg@mail.gmail.com>
+ <908b8b17-f942-f909-61e6-276df52a5ad5@huawei.com>
+In-Reply-To: <908b8b17-f942-f909-61e6-276df52a5ad5@huawei.com>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Fri, 16 Jun 2023 08:01:06 -0700
+Message-ID: <CAKgT0UeZfbxDYaeUntrQpxHmwCh6zy0dEpjxghiCNxPxv=kdoQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 4/5] page_pool: remove PP_FLAG_PAGE_FRAG flag
+To: Yunsheng Lin <linyunsheng@huawei.com>
+Cc: Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net, pabeni@redhat.com, 
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Lorenzo Bianconi <lorenzo@kernel.org>, Yisen Zhuang <yisen.zhuang@huawei.com>, 
+	Salil Mehta <salil.mehta@huawei.com>, Eric Dumazet <edumazet@google.com>, 
+	Sunil Goutham <sgoutham@marvell.com>, Geetha sowjanya <gakula@marvell.com>, 
+	Subbaraya Sundeep <sbhatta@marvell.com>, hariprasad <hkelam@marvell.com>, 
+	Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>, Felix Fietkau <nbd@nbd.name>, 
+	Ryder Lee <ryder.lee@mediatek.com>, Shayne Chen <shayne.chen@mediatek.com>, 
+	Sean Wang <sean.wang@mediatek.com>, Kalle Valo <kvalo@kernel.org>, 
+	Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+	Jesper Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, 
+	linux-rdma@vger.kernel.org, linux-wireless@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 16, 2023 at 01:05:52PM +0100, Russell King (Oracle) wrote:
-> Hi,
-> 
-> Earlier this month, I proposed a helper for deciding whether a PCS
-> should use inband negotiation modes or not. There was some discussion
-> around this topic, and I believe there was no disagreement about
-> providing the helper.
-> 
-> The initial discussion can be found at:
-> 
-> https://lore.kernel.org/r/ZGIkGmyL8yL1q1zp@shell.armlinux.org.uk
-> 
-> Subsequently, I posted a RFC series back in May:
-> 
-> https://lore.kernel.org/r/ZGzhvePzPjJ0v2En@shell.armlinux.org.uk
-> 
-> that added a helper, phylink_pcs_neg_mode() which PCS drivers could use
-> to parse the state, and updated a bunch of drivers to use it. I got
-> a couple of bits of feedback to it, including some ACKs.
-> 
-> However, I've decided to take this slightly further and change the
-> "mode" parameter to both the pcs_config() and pcs_link_up() methods
-> when a PCS driver opts in to this (by setting "neg_mode" in the
-> phylink_pcs structure.) If this is not set, we default to the old
-> behaviour. That said, this series converts all the PCS implementations
-> I can find currently in net-next.
-> 
-> Doing this has the added benefit that the negotiation mode parameter
-> is also available to the pcs_link_up() function, which can now know
-> whether inband negotiation was in fact enabled or not at pcs_config()
-> time.
-> 
-> It has been posted as RFC at:
-> 
-> https://lore.kernel.org/r/ZIh/CLQ3z89g0Ua0@shell.armlinux.org.uk
-> 
-> and received one reply, thanks Elad, which is a similar amount of
-> interest to previous postings. Let's post it as non-RFC and see
-> whether we get more reaction.
+On Fri, Jun 16, 2023 at 5:21=E2=80=AFAM Yunsheng Lin <linyunsheng@huawei.co=
+m> wrote:
+>
+> On 2023/6/16 2:26, Alexander Duyck wrote:
+> > On Thu, Jun 15, 2023 at 9:51=E2=80=AFAM Jakub Kicinski <kuba@kernel.org=
+> wrote:
+> >>
+> >> On Thu, 15 Jun 2023 15:17:39 +0800 Yunsheng Lin wrote:
+> >>>> Does hns3_page_order() set a good example for the users?
+> >>>>
+> >>>> static inline unsigned int hns3_page_order(struct hns3_enet_ring *ri=
+ng)
+> >>>> {
+> >>>> #if (PAGE_SIZE < 8192)
+> >>>>     if (ring->buf_size > (PAGE_SIZE / 2))
+> >>>>             return 1;
+> >>>> #endif
+> >>>>     return 0;
+> >>>> }
+> >>>>
+> >>>> Why allocate order 1 pages for buffers which would fit in a single p=
+age?
+> >>>> I feel like this soft of heuristic should be built into the API itse=
+lf.
+> >>>
+> >>> hns3 only support fixed buf size per desc by 512 byte, 1024 bytes, 20=
+48 bytes
+> >>> 4096 bytes, see hns3_buf_size2type(), I think the order 1 pages is fo=
+r buf size
+> >>> with 4096 bytes and system page size with 4K, as hns3 driver still su=
+pport the
+> >>> per-desc ping-pong way of page splitting when page_pool_enabled is fa=
+lse.
+> >>>
+> >>> With page pool enabled, you are right that order 0 pages is enough, a=
+nd I am not
+> >>> sure about the exact reason we use the some order as the ping-pong wa=
+y of page
+> >>> splitting now.
+> >>> As 2048 bytes buf size seems to be the default one, and I has not hea=
+rd any one
+> >>> changing it. Also, it caculates the pool_size using something as belo=
+w, so the
+> >>> memory usage is almost the same for order 0 and order 1:
+> >>>
+> >>> .pool_size =3D ring->desc_num * hns3_buf_size(ring) /
+> >>>               (PAGE_SIZE << hns3_page_order(ring)),
+> >>>
+> >>> I am not sure it worth changing it, maybe just change it to set good =
+example for
+> >>> the users:) anyway I need to discuss this with other colleague intern=
+ally and do
+> >>> some testing before doing the change.
+> >>
+> >> Right, I think this may be a leftover from the page flipping mode of
+> >> operation. But AFAIU we should leave the recycling fully to the page
+> >> pool now. If we make any improvements try to make them at the page poo=
+l
+> >> level.
+>
+> I checked, the per-desc buf with 4096 bytes for hnse does not seem to
+> be used mainly because of the larger memory usage you mentioned below.
+>
+> >>
+> >> I like your patches as they isolate the drivers from having to make th=
+e
+> >> fragmentation decisions based on the system page size (4k vs 64k but
+> >> we're hearing more and more about ARM w/ 16k pages). For that use case
+> >> this is great.
+>
+> Yes, That is my point. For hw case, the page splitting in page pool is
+> mainly to enble multi-descs to use the same page as my understanding.
+>
+> >>
+> >> What we don't want is drivers to start requesting larger page sizes
+> >> because it looks good in iperf on a freshly booted, idle system :(
+> >
+> > Actually that would be a really good direction for this patch set to
+> > look at going into. Rather than having us always allocate a "page" it
+> > would make sense for most drivers to allocate a 4K fragment or the
+> > like in the case that the base page size is larger than 4K. That might
+> > be a good use case to justify doing away with the standard page pool
+> > page and look at making them all fragmented.
+>
+> I am not sure if I understand the above, isn't the frag API able to
+> support allocating a 4K fragment when base page size is larger than
+> 4K before or after this patch? what more do we need to do?
 
-Sorry, I was in the process of reviewing the RFC, but I'm not sure I
-know what to ask to make sure that I understand the motivation :-/
-Here's a question that might or might not result in a code change.
+I'm not talking about the frag API. I am talking about the
+non-fragmented case. Right now standard page_pool will allocate an
+order 0 page. So if a driver is using just pages expecting 4K pages
+that isn't true on these ARM or PowerPC systems where the page size is
+larger than 4K.
 
-In the single-patch RFC at:
-https://lore.kernel.org/all/ZGIkGmyL8yL1q1zp@shell.armlinux.org.uk/
-you bring sparx5 and lan966x as a motivation for introducing
-PHYLINK_PCS_NEG_OUTBAND as separate from PHYLINK_PCS_NEG_INBAND_DISABLED,
-with both meaning that in-band autoneg isn't used, but in the former
-case it's not enabled at all, while in the latter it's disabled through
-ethtool (if I get that right?).
+For a bit of historical reference on igb/ixgbe they had a known issue
+where they would potentially run a system out of memory when page size
+was larger than 4K. I had originally implemented things with just the
+refcounting hack and at the time it worked great on systems with 4K
+pages. However on a PowerPC it would trigger OOM errors because they
+could run with 64K pages. To fix that I started adding all the
+PAGE_SIZE checks in the driver and moved over to a striping model for
+those that would free the page when it reached the end in order to
+force it to free the page and make better use of the available memory.
 
-I've opened the Sparx5 documentation at:
-https://ww1.microchip.com/downloads/en/DeviceDoc/SparX-5_Family_L2L3_Enterprise_10G_Ethernet_Switches_Datasheet_00003822B.pdf
-and also cross-checked with the PCS1G documentation from VSC7514
-(Ocelot: https://ww1.microchip.com/downloads/en/DeviceDoc/VMDS-10491.pdf,
-there's another embedded PDF with registers at page 283), trying to find
-exactly what the PCS1G_MODE_CFG.SGMII_MODE_ENA field does (which is
-controlled in sparx5 and lan966x based on the presence or absence of the
-managed = "in-band-status" property).
+> >
+> > In the case of the standard page size being 4K a standard page would
+> > just have to take on the CPU overhead of the atomic_set and
+> > atomic_read for pp_ref_count (new name) which should be minimal as on
+> > most sane systems those just end up being a memory write and read.
+>
+> If I understand you correctly, I think what you are trying to do
+> may break some of Jesper' benchmarking:)
+>
+> [1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/l=
+ib/bench_page_pool_simple.c
 
-Do you know for sure what this bit does and whether it makes sense for
-drivers to even distinguish between OUTBAND and INBAND_DISABLED in the
-way that this series is proposing?
+So? If it breaks an out-of-tree benchmark the benchmark can always be
+fixed. The point is enabling a use case that can add value across the
+board instead of trying to force the community to support a niche use
+case.
 
-It's hard to know for sure, not having the hardware, but I believe that
-the bit selects between the SGMII and the 1000Base-X control word
-format (so, even though there's a dedicated and fully programmable
-PCS1G_ANEG_CFG.ADV_ABILITY register, the link partner ability is still
-decoded as per the programmed expected format). The documents talk about
-using the PCS in "SGMII mode" vs "1000BASE-X SERDES mode".
-
-If that's the case, then it is selecting between those 2 based on
-phylink_autoneg_inband(mode) and irrespective of the phy-mode, i.e.:
-
-- enabling the SGMII control word format for phy-mode = "1000base-x" and
-  no managed = "in-band-status", or
-- enabling the 1000Base-X control word format for phy-mode = "sgmii" and
-  managed = "in-band-status"
-
-...is that a model to follow?
+Ideally we should get away from using the pages directly for most
+cases in page pool. In my mind the page pool should start operating
+more like __get_free_pages where what you get is a virtual address
+instead of the actual page. That way we could start abstracting it
+away and eventually get to something more like a true page_pool api
+instead of what feels like a set of add-ons for the page allocator.
+Although at the end of the day this still feels more like we are just
+reimplementing slab so it is hard for me to say this is necessarily
+the best solution either.
 
