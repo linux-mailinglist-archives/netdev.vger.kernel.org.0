@@ -1,73 +1,100 @@
-Return-Path: <netdev+bounces-11313-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11314-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1A9E3732932
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 09:48:37 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9C788732938
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 09:49:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5148B1C20F2B
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 07:48:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4DD442816A4
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 07:49:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1E5FE63C5;
-	Fri, 16 Jun 2023 07:48:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 956928F7A;
+	Fri, 16 Jun 2023 07:49:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10D0A63C4
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 07:48:33 +0000 (UTC)
-Received: from mail.lokoho.com (mail.lokoho.com [217.61.105.98])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E91926B8
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 00:48:32 -0700 (PDT)
-Received: by mail.lokoho.com (Postfix, from userid 1001)
-	id 1BA928556E; Fri, 16 Jun 2023 08:47:26 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=lokoho.com; s=mail;
-	t=1686901679; bh=Z0N5VlX9/JlryGOL5I747Le9USomZJCRNNGRT3LbbKc=;
-	h=Date:From:To:Subject:From;
-	b=N8Q/ngOREE4dYxOZWDRzdlsU0C/ocxuO4+dpIfuPC9AGmPBfNzJKAAT48EVOl93zr
-	 ru6gVmITWTQRsFxq8S65xxWT06iZwb8qNWBtDCw1NfmIiDaKyh5DlwqSD/JcanqoXv
-	 jrGrr1wcac3Yb8tKs3eSo+xGjM63RYjbF0AKvMcFiLQqaa61TvqI3a1XkIjyAQqNfC
-	 8AXuRO4AnpTnaJJYKCIHwfZB2xwpXuWe6j28DvqsseW+Z4OM2izqpGgpILT1sWr7zw
-	 zbZk1fFAMd+EVc3/OXF2Jl1UE/KYqW0TWIhxg0vDbyZHdm3cF5w3WakiRZrkOJGiPW
-	 CpPMlBSjfGzBw==
-Received: by mail.lokoho.com for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 07:45:38 GMT
-Message-ID: <20230616074502-0.1.6o.2mtg7.0.ai3aurgp2e@lokoho.com>
-Date: Fri, 16 Jun 2023 07:45:38 GMT
-From: "Adam Charachuta" <adam.charachuta@lokoho.com>
-To: <netdev@vger.kernel.org>
-Subject: =?UTF-8?Q?S=C5=82owa_kluczowe_do_wypozycjonowania?=
-X-Mailer: mail.lokoho.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A44B8F63
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 07:49:54 +0000 (UTC)
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E9826B8;
+	Fri, 16 Jun 2023 00:49:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=QvCn4oK7hu8ELYXtMB27kadFWNtUi6i5Gfp2p1naLKo=; b=zhyDhY/5qrgAu00J4uoPFmi+xo
+	sGgiUcG46xlm/sCLPApPSOOKwR1GwVyl9a0k2nCYmHo/SeeDSmP055b/km5ZsrFPrR8Z9vReMzpE/
+	mcq1Dr+CGn/suzXYrOOXp26FHu4/8y3TEl/IfTi2SVLFfo6c7BWYbY26iAVX485lNmUlzO7/Z+orO
+	552fbdmnwYeZJPWhxtGQP80g9tu3XsmKsiIpOa5G5FCyvnZE3zt//+UZs2yu+GDVRN9cb+UykSNbH
+	ohtpB0UoOyvl3CFtqteecs+7bNKXtSAt6ukXFQGQbdscczLD4kAt+a28GcoCPymxp53wrFNQofmmM
+	GeE6VzVg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40480)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1qA4DI-0004VG-Mc; Fri, 16 Jun 2023 08:49:44 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1qA4DF-0002Kn-HS; Fri, 16 Jun 2023 08:49:41 +0100
+Date: Fri, 16 Jun 2023 08:49:41 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Jianhui Zhao <zhaojh329@gmail.com>
+Cc: andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V3] net: phy: Add sysfs attribute for PHY c45 identifiers.
+Message-ID: <ZIwUFXOCCKZYSUBi@shell.armlinux.org.uk>
+References: <20230614134522.11169-1-zhaojh329@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230614134522.11169-1-zhaojh329@gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Dzie=C5=84 dobry,
+On Wed, Jun 14, 2023 at 09:45:22PM +0800, Jianhui Zhao wrote:
+> +static const struct attribute_group phy_dev_c45_ids_group = {
+> +	.name = "c45_ids",
+> +	.attrs = phy_c45_id_attrs
+> +};
 
-zapozna=C5=82em si=C4=99 z Pa=C5=84stwa ofert=C4=85 i z przyjemno=C5=9Bci=
-=C4=85 przyznaj=C4=99, =C5=BCe przyci=C4=85ga uwag=C4=99 i zach=C4=99ca d=
-o dalszych rozm=C3=B3w.=20
+One last thing - is there any point to creating these attributes if
+the PHY isn't c45?
 
-Pomy=C5=9Bla=C5=82em, =C5=BCe mo=C5=BCe m=C3=B3g=C5=82bym mie=C4=87 sw=C3=
-=B3j wk=C5=82ad w Pa=C5=84stwa rozw=C3=B3j i pom=C3=B3c dotrze=C4=87 z t=C4=
-=85 ofert=C4=85 do wi=C4=99kszego grona odbiorc=C3=B3w. Pozycjonuj=C4=99 =
-strony www, dzi=C4=99ki czemu generuj=C4=85 =C5=9Bwietny ruch w sieci.
+We could add here:
 
-Mo=C5=BCemy porozmawia=C4=87 w najbli=C5=BCszym czasie?
+	.is_visible = phy_dev_c45_visible,
 
+with:
 
-Pozdrawiam
-Adam Charachuta
+static umode_t phy_dev_c45_visible(struct kobject *kobj,
+				   struct attribute *attr, int foo)
+{
+	struct phy_device *phydev = to_phy_device(kobj_to_dev(kobj));
+
+	return phydev->is_c45 ? attr->mode : 0;
+}
+
+which will only show the c45 attributes if the PHY is a c45 PHY.
+
+Andrew, any opinions?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
 
