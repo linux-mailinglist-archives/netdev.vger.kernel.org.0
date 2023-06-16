@@ -1,80 +1,147 @@
-Return-Path: <netdev+bounces-11557-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11559-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0F7D17339C2
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 21:23:33 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id CCC867339E3
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 21:30:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4795D281763
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 19:23:31 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5DDBA2817AB
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 19:30:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 818101E50B;
-	Fri, 16 Jun 2023 19:23:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8900B1E528;
+	Fri, 16 Jun 2023 19:30:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 423491B914;
-	Fri, 16 Jun 2023 19:23:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7179EC433C9;
-	Fri, 16 Jun 2023 19:23:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686943405;
-	bh=cnIqbuBX2ydMik110zH5Tr4xSps2iWYs5dGlM7iEC3c=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=dfcPsEtoNltFBIdLiIzd92IOTx9MkDLZr2M/KPNy9MDUeUHxxSBzG+ACApIAyLoH+
-	 n1PQEF/qlmFULl2i9Sil96YoHUEMePOHPWYeFTICx+Kw43nDOqliMMQcERtoskgHlz
-	 mgEMfs6phCtbYWGyKWFhTfnIRFwNnBihLbr+d7kSCOu+trVsZMwxdeveL9NDnN/11z
-	 MhEG5vDSNQmOWBjN8ocvT9ZhqCS2E/+HeJj7OAm/81f98aL3cWUrTTzRRNjhncvFvM
-	 8pvjx2dRLpfcufBgvcOsUw9mlOcQnRgRXz32Ysr4xWL4NSw4cD3oxcmQuePuZsGdf4
-	 yglAMf9sVzBug==
-Date: Fri, 16 Jun 2023 12:23:24 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Saeed Mahameed <saeed@kernel.org>
-Cc: Maxim Mikityanskiy <maxtram95@gmail.com>, netdev@vger.kernel.org, Saeed
- Mahameed <saeedm@nvidia.com>, "David S. Miller" <davem@davemloft.net>, Eric
- Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Gal
- Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>,
- bpf@vger.kernel.org
-Subject: Re: [PATCH net-next v4 0/2] xdp_rxq_info_reg fixes for mlx5e
-Message-ID: <20230616122324.3ddff8c3@kernel.org>
-In-Reply-To: <ZIyv3b+Cn2m+/Oi9@x130>
-References: <20230614090006.594909-1-maxtram95@gmail.com>
-	<20230615223250.422eb67a@kernel.org>
-	<ZIyv3b+Cn2m+/Oi9@x130>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 784531ACDB
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 19:30:56 +0000 (UTC)
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934C84205;
+	Fri, 16 Jun 2023 12:30:52 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+	by mailout.nyi.internal (Postfix) with ESMTP id E37585C0158;
+	Fri, 16 Jun 2023 15:22:46 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Fri, 16 Jun 2023 15:22:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ryhl.io; h=cc:cc
+	:content-transfer-encoding:content-type:content-type:date:date
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:sender:subject:subject:to:to; s=fm2; t=
+	1686943366; x=1687029766; bh=tC67s3TArG681IrT06ayhzAKnIwzDaM1R2x
+	lX6l2qEU=; b=kG9aj8zpcojl0S/OiVaoLG1+DEuCyq43YJjzkyjiUuC6ZNyWI7W
+	IvmF59432nURcamoGbh1IkmxNNpBOspIHxFgItq2zxV1B5hPpVb5oImZTEeMH9e3
+	kwR7s5jEyCXi9FevTUN4XgzR2kLwvwwxBgSl3ujEOQOXidqW3adjWbAV2WDpMmJC
+	Gr5lVbPix68MiUZX5MWe4ZgdhEaLOm2A2ocI2VeI9pEYttfTIrVRFgy3ArGQWQJp
+	J+rs9TkpqTD34zu0zW8NY2byZg+++CzAFAUAn2gYL/2ZUavA+RuTCWD4S6HArGX9
+	taO8hb/x0aFM2VwAw/MRPKs7NhVPcmrIU4Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:sender:subject:subject:to:to:x-me-proxy
+	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+	1686943366; x=1687029766; bh=tC67s3TArG681IrT06ayhzAKnIwzDaM1R2x
+	lX6l2qEU=; b=CDZwLcwPvHqC2Q421TI1Ci/KV/vV6/wxGJYt4nXOp5x4NHYGEq3
+	k0KdL+UHAiJVaXSbDoZbN18S0ik88xPLzpFzTRvnZJj2TvExLIVQ8QkVjQFGz2JM
+	s/DBOGUnIVT833T8Lx57pTCnDovg2neDW0dzluXOFrL1ESFr65szuj8hOwfAHEou
+	By/CUPc1GiNF+G3lNhjfuTbXoWyOmkraH+H7gulkkZCg3MrqTnkMVZEIoXopVzar
+	BKbVxu2ZF28CrpLARTeRelHB+e1jM/964GZHSz+yss25tqvVZSTAmDC6vFHA9kPi
+	ifMNLWZLJrYKKGTtbPCfr33McXyKYfLAcCg==
+X-ME-Sender: <xms:hraMZClAqRvpFf2IGX8Nyxy0ITyi2d2UjpJxO_XvATF2vl_EuxQwrg>
+    <xme:hraMZJ1Dd9KOaOfh5GPC6NGUqgIjJqz1WIZYwDwGIvE1BWzQ66xpPB33lL6ml-q8f
+    OIBgUehoBQjkd_kHQ>
+X-ME-Received: <xmr:hraMZAowozXW6EPovGa5eWKmZF2ipWxY0Kb4yZtUZVE3u6o4kRJ41BxtInCqU14hLqxEu-LeITIW2y3eVMhTwF4bFgaPzlWUaAzYkg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgedvgedgudefiecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefkffggfgfuvfevfhfhjggtgfesthejredttdefjeenucfhrhhomheptehl
+    ihgtvgcutfihhhhluceorghlihgtvgesrhihhhhlrdhioheqnecuggftrfgrthhtvghrnh
+    epheduuddvteekvdektdduledugfffhfdugeejgeeuvdevtdetveejheehiefffeegnecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghlihgtvg
+    esrhihhhhlrdhioh
+X-ME-Proxy: <xmx:hraMZGncv622zcEQKwGv474BV_scq76vBiikUm4eNcqTdcnUVhN97g>
+    <xmx:hraMZA3zxtUs_0QDYejlvdxsb_n23GreJhqRQFXPLAgBuXH3UA3XiQ>
+    <xmx:hraMZNvG9Zr8Qgq_n1TOjmejtyx3PEO7kSLW1RkDlLnNdrgeObksLw>
+    <xmx:hraMZE_xXU3bgbpbDh2jFlFDZN3lBy69GXfmdrHcudvt_V5kCxBV7Q>
+Feedback-ID: i56684263:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 16 Jun 2023 15:22:45 -0400 (EDT)
+Message-ID: <053cb4c3-aab1-23b3-56e3-4f1741e69404@ryhl.io>
+Date: Fri, 16 Jun 2023 21:23:28 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH 0/5] Rust abstractions for network device drivers
+Content-Language: en-US, da
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: FUJITA Tomonori <fujita.tomonori@gmail.com>, andrew@lunn.ch,
+ netdev@vger.kernel.org, rust-for-linux@vger.kernel.org,
+ aliceryhl@google.com, miguel.ojeda.sandonis@gmail.com
+References: <20230614230128.199724bd@kernel.org>
+ <8e9e2908-c0da-49ec-86ef-b20fb3bd71c3@lunn.ch>
+ <20230615190252.4e010230@kernel.org>
+ <20230616.220220.1985070935510060172.ubuntu@gmail.com>
+ <20230616114006.3a2a09e5@kernel.org>
+ <66dcc87e-e03f-1043-c91d-25d6fa7130a1@ryhl.io>
+ <20230616121041.4010f51b@kernel.org>
+From: Alice Ryhl <alice@ryhl.io>
+In-Reply-To: <20230616121041.4010f51b@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Fri, 16 Jun 2023 11:54:21 -0700 Saeed Mahameed wrote:
-> On 15 Jun 22:32, Jakub Kicinski wrote:
-> >On Wed, 14 Jun 2023 12:00:04 +0300 Maxim Mikityanskiy wrote:  
-> >> Marked for net-next, as I'm not sure what the consensus was, but they
-> >> can be applied cleanly to net as well.  
-> >
-> >Sorry for lack of clarity, you should drop the fixes tags.
-> >If not implementing something was a bug most of the patches we merge
-> >would have a fixes tag. That devalues the Fixes tag completely.
-> >You can still ask Greg/Sasha to backport it later if you want.
+On 6/16/23 21:10, Jakub Kicinski wrote:
+> On Fri, 16 Jun 2023 21:00:36 +0200 Alice Ryhl wrote:
+>> A Rust method can be defined to take the struct "by value", which
+>> consumes the struct and prevents you from using it again. This can let
+>> you provide many different cleanup methods that each clean it up in
+>> different ways.
+>>
+>> However, you cannot force the user to use one of those methods. They
+>> always have the option of letting the value go out of scope, which calls
+>> the destructor. And they can do this at any time.
+>>
+>> That said, the destructor of the value does not necessarily *have* to
+>> translate to immediately freeing the value. If the value if refcounted,
+>> the destructor could just drop the refcount. It would also be possible
+>> for a destructor to schedule the cleanup operation to a workqueue. Or
+>> you could do something more clever.
 > 
-> You don't think this should go to net ? 
-> 
-> The first 3 version were targeting net branch .. I don't know why Maxim
-> decided to switch v4 to net-next, Maybe I missed an email ? 
-> 
-> IMHO, I think these are net worthy since they are fixing 
-> issues with blabla, for commits claiming to add support for blabla.
-> 
-> I already applied those earlier to my net queue and was working on
-> submission today, let me know if you are ok for me to send those two
-> patches in my today's net PR.
+> Can we put a WARN_ON() in the destructor and expect object to never be
+> implicitly freed?  skbs represent packets (most of the time) and for
+> tracking which part of the stack is dropping packets we try to provide
+> a drop reason along the freed skb. It'd be great if for Rust we could
+> from the get-go direct everyone towards the APIs with an explicit reason
+> code.
 
-If you already have them queued up for net, that's fine.
+Yes, you can certainly put a WARN_ON in the destructor.
+
+Another possibility is to use a scope to clean up. I don't know anything 
+about these skb objects are used, but you could have the user define a 
+"process this socket" function that you pass a pointer to the skb, then 
+make the return value be something that explains what should be done 
+with the packet. Since you must return a value of the right type, this 
+forces you to choose.
+
+Of course, this requires that the processing of packets can be expressed 
+as a function call, where it only inspects the packet for the duration 
+of that function call. (Lifetimes can ensure that the skb pointer does 
+not escape the function.)
+
+Would something like that work?
+
+Alice
 
