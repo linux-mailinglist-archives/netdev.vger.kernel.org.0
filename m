@@ -1,213 +1,177 @@
-Return-Path: <netdev+bounces-11409-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11410-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 31BB5733054
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 13:47:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D8564733058
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 13:47:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E02902816B1
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 11:47:26 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 938132816E5
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 11:47:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E4AB14A8C;
-	Fri, 16 Jun 2023 11:47:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B9B714A8D;
+	Fri, 16 Jun 2023 11:47:54 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33087FC03
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 11:47:24 +0000 (UTC)
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA3B2D67;
-	Fri, 16 Jun 2023 04:47:19 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.55])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4QjHPQ4jc5zGpkt;
-	Fri, 16 Jun 2023 19:44:10 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Fri, 16 Jun
- 2023 19:47:16 +0800
-Subject: Re: [PATCH net-next v3 3/4] page_pool: introduce page_pool_alloc()
- API
-To: Alexander Duyck <alexander.duyck@gmail.com>
-CC: <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-	<netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Lorenzo Bianconi
-	<lorenzo@kernel.org>, Jesper Dangaard Brouer <hawk@kernel.org>, Ilias
- Apalodimas <ilias.apalodimas@linaro.org>, Eric Dumazet <edumazet@google.com>
-References: <20230609131740.7496-1-linyunsheng@huawei.com>
- <20230609131740.7496-4-linyunsheng@huawei.com>
- <CAKgT0UfVwQ=ri7ZDNnsATH2RQpEz+zDBBb6YprvniMEWGdw+dQ@mail.gmail.com>
- <36366741-8df2-1137-0dd9-d498d0f770e4@huawei.com>
- <CAKgT0UdXTSv1fDHBX4UC6Ok9NXKMJ_9F88CEv5TK+mpzy0N21g@mail.gmail.com>
- <c06f6f59-6c35-4944-8f7a-7f6f0e076649@huawei.com>
- <CAKgT0UccmDe+CE6=zDYQHi1=3vXf5MptzDo+BsPrKdmP5j9kgQ@mail.gmail.com>
-From: Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <0345b6c4-18da-66d8-71a0-02620f9abe9e@huawei.com>
-Date: Fri, 16 Jun 2023 19:47:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2FF01428F
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 11:47:53 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2121.outbound.protection.outlook.com [40.107.220.121])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877C2294C;
+	Fri, 16 Jun 2023 04:47:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MMiSP64pdeyWDNekkTqakLw/tgH25IDaUo+vIWmS8oTSPwpVApgN9vu3BOtLpFrfqFcP9L1NFyVtrRSDmUICwRM1SFXVu3rRTNg9rFoRQA3cFxtWKtwLkpYFshHjiCrx8F6i4tCkAEWf3810Zk4kVJ4XDqHOqhwyvLZzdgkQBFcAp6+J/T5YyQi5UiOovlncBGHvspCjSnwc/UDAA5idH3M8y0CiDNgFgyf2a/j+0CPc19jg/qRHGH1WAjMjkRX3JrqKW5DV+msvQyzfBwLUkd1MJoNdzun0I5Akz9VF96TgLDy2PsJ+KVatapBiV2c8vm55PvtnyaS16KvM4ZNWKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=brcZfK4cFuE8FHxY/O8yTFVyQ9t1og+0gPD8DFv0izs=;
+ b=Nyax3zi15Yp39iIlOqbvAfVzlEmlzL9Fo4vEMCmTr5hMwuwBZE+LP+ICW83eaNIbQpKsqz5a7geyInNkprEJFvKCDoTMuEysnXl/VHDcEYZUPS6KSM+uV2PKdBxSYr1Vzcv9tTxPSx5zkcqIw6WsTiSPjjqT52RAhNKE4MHm9zvuMLvGUgrPyeNXLFIm+4/wPQ0Sol02wyrJwp+hivI0mNfqdqGasj4eFJF6z8Sd6RmARYSXyIh4n2HuMX+GpfJy2RzSD7pdic4RVBaUDHb1B1UfX82EmmUf2Obj1tsikEaEJr3+0y4SpHRYWfwsbdUI2zCQ+WdG6x3ouS53D0Kitg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=brcZfK4cFuE8FHxY/O8yTFVyQ9t1og+0gPD8DFv0izs=;
+ b=Rt7ZStuFkesh+ImUj4l+aemB5Jt3GuPIuQMt0CGy9/VhGlna1U194YBSQQqKdeaxGUVcelyfbYl1LRJzRcUuM7Zz4aSr2MHgo5Nhk5xIXWJDYGr1eCh0nmTGUmr/DMnaJQYBe1yaqong8CN4rGxCR35P0vm4tGcWOF2Bhi2Hw30=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH0PR13MB5684.namprd13.prod.outlook.com (2603:10b6:510:113::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.36; Fri, 16 Jun
+ 2023 11:47:45 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e%5]) with mapi id 15.20.6500.025; Fri, 16 Jun 2023
+ 11:47:45 +0000
+Date: Fri, 16 Jun 2023 13:47:35 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
+	Arnd Bergmann <arnd@arndb.de>, Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	=?utf-8?B?UmFtw7Nu?= Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>,
+	Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>,
+	Frank Sae <Frank.Sae@motor-comm.com>,
+	Michael Walle <michael@walle.cc>,
+	Daniel Golle <daniel@makrotopia.org>,
+	Piergiorgio Beruto <piergiorgio.beruto@gmail.com>,
+	Vladimir Oltean <vladimir.oltean@nxp.com>,
+	Jonathan Lemon <jonathan.lemon@gmail.com>,
+	Randy Dunlap <rdunlap@infradead.org>, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] net: phy: mediatek: fix compile-test dependencies
+Message-ID: <ZIxL16HWci5dd7Ah@corigine.com>
+References: <20230616093009.3511692-1-arnd@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230616093009.3511692-1-arnd@kernel.org>
+X-ClientProxiedBy: AS4P192CA0021.EURP192.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5e1::15) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CAKgT0UccmDe+CE6=zDYQHi1=3vXf5MptzDo+BsPrKdmP5j9kgQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB5684:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6b4decf8-fc1c-46c2-49e1-08db6e5f7ffd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	zEzoVFq5opPdh0qzzCcvbjYdmUy40okL97WBQzYuQBhMmVUAHok2SbMlY3WW1Tf5pA2g7gIJmn3KnI0evi2oUeLrRzbk90F2CKXGJDHqqcHx5M1iPWOBlew+HJCWjPip6tmfs7PLrke2Qmf4ywCiCcBRtkEjRh1Kls5BCXV5BnDyW1K2tGp/9HnAQu28RAUPxTRnyccaS5VawQWhEJ6xg7xGM0jaQZPodDum6eCj8cEnep443HOJuxT7d12GaCgG17vD3AIwIrZExXmhZXVzUlnycCvT2bDMA31OYk+gXT3Wmwhx35PvmI0LOQUNDGufMiX8NFfOnWlBTAxqgDyu9ITXw5lIFNbB5PAge8KAeNuRvhjk6TNYIgfTRwXKSs8JtuaB6GeMIJA5Ieb/iNn0d5pDLFPVIUrJXeIQJ/Y1tl/qgMXWWSqzA+9VWGcgc9045XbkqppF+loPxQ5ta3vFVV8r/NfDBaZti3wOMp1TvaQr/ZF/3aYEZxTYCBaziNOrU5XQs7c/vziJYFYDEieC47MxNgtwuB4v0PWJ4w3uY7BluEkmpfj83AXYBV7E4Rzm
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(366004)(136003)(346002)(396003)(39840400004)(451199021)(316002)(6486002)(41300700001)(83380400001)(2616005)(186003)(44832011)(6506007)(6512007)(2906002)(86362001)(7416002)(38100700002)(5660300002)(36756003)(8936002)(8676002)(66946007)(478600001)(54906003)(66556008)(6916009)(6666004)(66476007)(4326008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?PCqoKms2CVFTCCdFTI1RbP/UFQ5gLflmVqkZjfJVG8IAhNq+/J1Ufz3A41ur?=
+ =?us-ascii?Q?cSBV0oo2zwn93CQ2ipB4oXY9MMkR9y2HTAAJnbOz/I+I8F103AnGmFhF+O0p?=
+ =?us-ascii?Q?88dmpGdUHszjufoA5widvl+KbVRZBowgKolw1rVwQuWuj5IY+tcMndVoDlq9?=
+ =?us-ascii?Q?R8F/bOVk9JhrJbTg8ksdYZq+2/xBWcUcNyrSUWFSgYlZLu9R+KYwOMCQmCug?=
+ =?us-ascii?Q?BGYjLEE/yOimd8KAs3dFeEC2aIN9VDI0cHkI+aayvw2nw4NG1TbMgXX14wdz?=
+ =?us-ascii?Q?DURqX6TFIvLzAbwPBMwyZI07uK9h7tYzu4FJbhWG2TAAxlz115eJtl4vWeCh?=
+ =?us-ascii?Q?Ffqsm8EC6C3RNHeMWQWUa32DvxF+ZkKY9kiDNEBbBJ41Jy/mgSpGmG4Y7SQD?=
+ =?us-ascii?Q?gStvWoFbpUid7+vUSuR6o0N+JVOfFrTIAYoBMVaWTKGgEb2kkHL6QHxUSLny?=
+ =?us-ascii?Q?cadAH8LC8MkCFK8oWvj+iZOob4JGvH/xLTjuihXFC+kJ81ZBHnglhOiR+T1t?=
+ =?us-ascii?Q?Ei9pe3DZ8DcaEgx3v2z/5JCO/495YRSJ8eBdg3cX8Bknhc9UPGK4mwYP9jNQ?=
+ =?us-ascii?Q?QalevnkPCXp+rYbyQljqqS3yyXX5JWosX13meoyo+wicMAZS0IL2f5rWnp6A?=
+ =?us-ascii?Q?0U2K9+vdrF5EhUasE5MVZuuKCsM/DdIHn0+jCT1Qrhu2Q6qK5FHVWtFdPjg5?=
+ =?us-ascii?Q?T1FR5fkplm8U5tbdRp/nS2iTlrRNo+XHMwEDZGCWBpqp4u5hPtN6ITMYpwAd?=
+ =?us-ascii?Q?Ovosc1OPFOGp/V/LzCWyEXGKsntTYOWzQ43EWC92hTnzQEkKUTngEJGWRMGT?=
+ =?us-ascii?Q?Td/PKciOmVueN6clYKHp/BuP1AooxEyisGMrVvIhY6zFH+gDxWNacFk8yCis?=
+ =?us-ascii?Q?WIXI0J9YksTuwontJa/FZwhhQLPqf2Shr5zVFyCAgIHOkKHKExxWHIWWmnYm?=
+ =?us-ascii?Q?sAFr8G3w5PEfVhLrwWWASG2bDt04plxL/OE6ykOBXX5HaQ0D58UaABrRC3VX?=
+ =?us-ascii?Q?IR5/g0XHgBvWJJ596vM09pnPfZPYQgJJu+GeWrbBGRUHNQJlUvs5WKhkx4dT?=
+ =?us-ascii?Q?9k2ODaWs4wLyZGoCLUHal7QBh8MczIVX+FhkoE/7AVIzD9WtI7UFsmOuXkPP?=
+ =?us-ascii?Q?2ccAOGjx2uUsjV1JjHfJ3+uFF+OFSOck+ZItMM7mVD2/jH71qdLB/WAnYAtv?=
+ =?us-ascii?Q?riq24QwlHCYsXZlrmX9M1bQeWeksje84lny/0YNlJp99uHjHh/97RDXtaoPc?=
+ =?us-ascii?Q?hZZo4rX+dtXIOdmIqL5Lc03nUVMT9MKceGK86wQ/9PYPvuSxnKGxXBVYMUjN?=
+ =?us-ascii?Q?TO7+AeyYVAVnj7+7OXgCPiMmkCuF62wKANSoxTZFXNKIXNwHn6bzC4cNXIIs?=
+ =?us-ascii?Q?Ygx5z6/xulNssm5uEnStS8youQeBjS3epsK2c9JLuMhXhAgAi6ryi5blxCnt?=
+ =?us-ascii?Q?BAaRlsXWDN5T993CnKnROcvzvv7Ti/cdaJb3oa5aGWrR+25Oe7FN9j4SwDPK?=
+ =?us-ascii?Q?RtudIqS3UnFAuZhevOd3hs5Bp9+ATe3yEknHmVmBONScRpIWjZ/ZGURZ+D2T?=
+ =?us-ascii?Q?mk5FSO9A/YdzgWbOh3uSl2OIgBaG8CK2Djnz0Z4whHC1HhzaxYGQmx6X6uTT?=
+ =?us-ascii?Q?5Fp7+6il5Xb47/IvG1bLy8NHTLpDkDI934DJ02ffXlCr9D1aDMMmwvQIPiyO?=
+ =?us-ascii?Q?UZ5N/w=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6b4decf8-fc1c-46c2-49e1-08db6e5f7ffd
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2023 11:47:45.3163
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /4v0fAIDmie2yOzCDCYiNVcuG9iwaJOiH/dKPaszZit1x+OPTWyZR6pa2dJiq+7wLThe2HCUJHLWyLAEa1xj3xOAA2blAYzwR74jpw7wB9I=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5684
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 2023/6/15 22:45, Alexander Duyck wrote:
->>
->> It seems that there are already some drivers which using the page pool
->> API with different frag size for almost every calling, the virtio_net
->> and veth are the obvious ones.
->>
->> When reviewing the page frag support for virtio_net, I found that it
->> was manipulating the page_pool->frag_offset directly to do something
->> as this patch does, see:
->>
->> https://lore.kernel.org/lkml/CAKhg4tL9PrUebqQHL+s7A6-xqNnju3erNQejMr7UFjwTaOduZw@mail.gmail.com/
->>
->> I am not sure we are both agreed that drivers should not be manipulating
->> the page_pool->frag_offset directly unless it is really necessary?
+On Fri, Jun 16, 2023 at 11:29:54AM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> Agreed, they are doing something similar to this. The difference is
-> though that they have chosen to do that. With your change you are
-> forcing driver writers into a setup that will likely not work for
-> most.
+> The new phy driver attempts to select a driver from another subsystem,
+> but that fails when the NVMEM subsystem is disabled:
 > 
->> For the specific case for virtio_net, it seems we have the below options:
->> 1. both the driver and page pool do not handle it.
->> 2. the driver handles it by manipulating the page_pool->frag_offset
->>    directly.
+> WARNING: unmet direct dependencies detected for NVMEM_MTK_EFUSE
+>   Depends on [n]: NVMEM [=n] && (ARCH_MEDIATEK [=n] || COMPILE_TEST [=y]) && HAS_IOMEM [=y]
+>   Selected by [y]:
+>   - MEDIATEK_GE_SOC_PHY [=y] && NETDEVICES [=y] && PHYLIB [=y] && (ARM64 && ARCH_MEDIATEK [=n] || COMPILE_TEST [=y])
 > 
-> I view 2 as being the only acceptable approach. Otherwise we are
-> forcing drivers into a solution that may not fit and forcing yet
-> another fork of allocation setups. There is a reason vendors have
+> I could not see an actual compile time dependency, so presumably this
+> is only needed for for working correctly but not technically a dependency
 
-I respectly disagree with driver manipulating the page_pool->frag_offset
-directly.
+nit: for for -> for
+     or
+     for for working correctly -> for correct operation
 
-It is a implemenation detail which should be hiden from the driver:
-For page_pool_alloc_frag() API, page_pool->frag_offset is not even
-useful for arch with PAGE_POOL_DMA_USE_PP_FRAG_COUNT being true,
-similar cases for page_pool_alloc() returning mono-frag if I understand
-'mono-frag ' correctly.
-
-IMHO, if the driver try to do the their own page spilting, it should
-use it's own offset, not messing with the offset the page pool is using.
-Yes, that may mean driver doing it's own page splitting and page pool
-doing it's own page splitting for the same page if we really like to
-make the best out of a page.
-
-That way I see the page splitting in page pool as a way to share a
-page between different desc, and page splitting in driver as way to
-reclaim some memory for small packet, something like ena driver is
-doing:
-https://lore.kernel.org/netdev/20230612121448.28829-1-darinzon@amazon.com/T/
-
-And hns3 driver has already done something similar for old per-desc
-page flipping with 64K page size:
-
-https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c#L3737
-
-As we have done the page splitting to share a page between different desc
-in the page pool, I really double that the benefit will justify the
-complexity of the page splitting in the driver.
-
-> already taken the approach of manipulating frag_offset directly. In
-> many cases trying to pre-allocate things just isn't going to work.
-
-As above, I think the driver trying to do it's own splitting should use
-it's own offset instead of page pool's frag_offset.
-
-If the mlx5 way of doing page splitting in the driver is proved to be
-useful, we should really provide some API to allow that to work in
-arch with PAGE_POOL_DMA_USE_PP_FRAG_COUNT being true and make the page
-splitting in the driver play along with the page splitting in the page
-pool.
-
-I am not sure if there is any other 'trying to pre-allocate things just
-isn't going to work' case that I missed, it will be very appreciatived
-if you can provide the complete cases here, so that we can discuss it
-throughly.
-
+> on that particular nvmem driver implementation, so it would likely
+> be safe to remove the select for compile testing.
 > 
->> 3. the page pool handles it as this patch does.
+> To keep the spirit of the original 'select', just replace this with a
+> 'depends on' that ensures that the driver will work but does not get in
+> the way of build testing.
 > 
-> The problem is the page pool isn't handling it. It is forcing the
-> allocations larger without reporting them as of this patch. It is
-> trying to forecast what the next request is going to be which is
-> problematic since it doesn't have enough info to necessarily be making
-> such assumptions.
+> Fixes: 98c485eaf509b ("net: phy: add driver for MediaTek SoC built-in GE PHYs")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-We are talking about rx for networking, right? I think the driver
-does not have that kind of enough info too, Or I am missing something
-here?
+I don't know the answer to the question of if this dependency is needed or
+not. But I do agree that it does what it says on the box.
 
-> 
->> Is there any other options I missed for the specific case for virtio_net?
->> What is your perfer option? And why?
-> 
-> My advice would be to leave it to the driver.
-> 
-> What concerns me is that you seem to be taking the page pool API in a
-> direction other than what it was really intended for. For any physical
-> device you aren't going to necessarily know what size fragment you are
-> working with until you have already allocated the page and DMA has
-> been performed. That is why drivers such as the Mellanox driver are
-> fragmenting in the driver instead of allocated pre-fragmented pages.
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-Why do you think using the page pool API to do the fragmenting in the
-driver is the direction that page pool was intended for?
-
-I thought page pool API was not intended for any fragmenting in the
-first place by the disscusion in the maillist, I think we should be
-more open about what direction the page pool API is heading to
-considering the emerging use case:)
-
-> 
->>>
->>> If you are going to go down this path then you should have a consumer
->>> for the API and fully implement it instead of taking half measures and
->>> making truesize underreporting worse by evicting pages earlier.
->>
->> I am not sure I understand what do you mean by "a consumer for the API",
->> Do you mean adding a new API something like page_pool_free() to do
->> something ligthweight, such as decrementing the frag user and adjusting
->> the frag_offset, which is corresponding to the page_pool_alloc() API
->> introduced in this patch?
-> 
-> What I was getting at is that if you are going to add an API you have
-> to have a consumer for the API. That is rule #1 for kernel API
-> development. You don't add API without a consumer for it. The changes
-> you are making are to support some future implementation, and I see it
-> breaking most of the existing implementation. That is my concern.
-
-The patch is extending a new api, the behavior of current api is preserved
-as much as possible, so I am not sure which implementation is broken by
-this patch? How and why?
-
-As for the '#1 for kernel API development', I think I had mention the
-usecase it is intended for in the coverletter, and if I recall correctly,
-the page_pool_fragment_page() API you added also do not come with a
-actual consumer, I was overloaded at that time, so just toke a glance
-and wonder why there was no user with a API added.
-
-Anyway, as jesper was offering to help out, will add veth as a consumer
-for the new api:)
-
-> .
-> 
 
