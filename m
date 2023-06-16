@@ -1,46 +1,46 @@
-Return-Path: <netdev+bounces-11420-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11421-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id C12B97330D3
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 14:08:43 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 411957330D5
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 14:09:02 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7CF47280DDA
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 12:08:42 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6F9D81C20FAD
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 12:09:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 36BD319915;
-	Fri, 16 Jun 2023 12:07:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4214E1ACA8;
+	Fri, 16 Jun 2023 12:07:15 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 258301952A
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 12:07:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36E0A18B1D
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 12:07:15 +0000 (UTC)
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514A530ED
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 05:07:07 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E114E30E0
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 05:07:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
 	Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
 	In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=NMJQtJnXce+GPELqM69UwwLn2Bzc23loRW1BYC3vvzA=; b=JWVbcNxipPN6ZdUfXPoiY9B4oK
-	dTfuh5YY+2G6YoQCocMyG7feoZ4lP5TanpA5VrcNVAsQpVw7Pin835CSK0G7GcKxrjQl5QjM7tGoD
-	b0K9gOoYkEVIV5U7JGO/i/KGnCcaCcKR3MyncF2oNY2bKct1j4xT9/qiugb5UEIvl/VMaNDWHsXbt
-	hqkYBTY4q5UuGVNTdZ/ue2JWc2Bq2zOmbztermDNxpjFzT0PFP+vlltDPVQkSJViwqeLr8oxY3Ivl
-	7wEeQt451x1CKOv7LAHzLiD0fkPAM5HffFUugb2Ab8liXVEJO6rXFqmh3Blky3+1NGkZXrqv58U1D
-	OmHemzXQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:43810 helo=rmk-PC.armlinux.org.uk)
+	bh=fzL6+Y0vNhBXA8sflIEtw0SjPY5l7wumFywop7cYerI=; b=x2bUm7GUcl1ok+2PzZJt+CUktP
+	kzrmqzoVz2lfYdKrI1sO0bFO7Hsfz+0f0ocYPj35OjFKoaHNyfQtJTH9k9PfPkh1t/SvSH86sotbY
+	cjd42uogTWpP4QkAY2RYGAgfMV0ZPmWGwFc5sO0CjKKoyiQ9OrAFlMQG23kDSpwQmFb5HgCFD8aq/
+	YIZ3rfdXaaJuJQErhApEFTIZFtB+I8Rk5LNd/cmrRSrdCbrzBMKYjfsr9DXVV5u24DyWpEM1nLu8l
+	NOtKchem0zvPXJU8HzOLPSIRy5JU9d7ST4Qz8lb3SbvoTpvFI+naqblgCKClgEYN4Vfx4s1sB5FEZ
+	RutD7FCA==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:58876 helo=rmk-PC.armlinux.org.uk)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <rmk@armlinux.org.uk>)
-	id 1qA8EA-000546-81; Fri, 16 Jun 2023 13:06:54 +0100
+	id 1qA8EF-00054n-C3; Fri, 16 Jun 2023 13:06:59 +0100
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
 	(envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-	id 1qA8E9-00EaFl-GN; Fri, 16 Jun 2023 13:06:53 +0100
+	id 1qA8EE-00EaFr-Kx; Fri, 16 Jun 2023 13:06:58 +0100
 In-Reply-To: <ZIxQIBfO9dH5xFlg@shell.armlinux.org.uk>
 References: <ZIxQIBfO9dH5xFlg@shell.armlinux.org.uk>
 From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -76,8 +76,7 @@ Cc: Alexander Couzens <lynxis@fe80.eu>,
 	Taras Chornyi <taras.chornyi@plvision.eu>,
 	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
 	UNGLinuxDriver@microchip.com, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 07/15] net: lan966x: update PCS driver to use
- neg_mode
+Subject: [PATCH net-next 08/15] net: mvneta: update PCS driver to use neg_mode
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -87,9 +86,9 @@ MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1qA8E9-00EaFl-GN@rmk-PC.armlinux.org.uk>
+Message-Id: <E1qA8EE-00EaFr-Kx@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date: Fri, 16 Jun 2023 13:06:53 +0100
+Date: Fri, 16 Jun 2023 13:06:58 +0100
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
 	SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
@@ -97,53 +96,47 @@ X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Update lan966x's embedded PCS driver to use neg_mode rather than the
+Update mvneta's embedded PCS driver to use neg_mode rather than the
 mode argument. As there is no pcs_link_up() method, this only affects
 the pcs_config() method.
 
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c    | 1 +
- drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c | 7 +++----
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/marvell/mvneta.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index f6931dfb3e68..fbb0bb4594cd 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -818,6 +818,7 @@ static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
- 	port->phylink_config.type = PHYLINK_NETDEV;
- 	port->phylink_pcs.poll = true;
- 	port->phylink_pcs.ops = &lan966x_phylink_pcs_ops;
-+	port->phylink_pcs.neg_mode = true;
- 
- 	port->phylink_config.mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
- 		MAC_10 | MAC_100 | MAC_1000FD | MAC_2500FD;
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
-index c5f9803e6e63..1d63903f9006 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
-@@ -95,8 +95,7 @@ static void lan966x_pcs_get_state(struct phylink_pcs *pcs,
- 	lan966x_port_status_get(port, state);
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index e2abc00d0472..ff5647bcdfca 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -4002,8 +4002,8 @@ static void mvneta_pcs_get_state(struct phylink_pcs *pcs,
+ 		state->pause |= MLO_PAUSE_TX;
  }
  
--static int lan966x_pcs_config(struct phylink_pcs *pcs,
--			      unsigned int mode,
-+static int lan966x_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
- 			      phy_interface_t interface,
- 			      const unsigned long *advertising,
- 			      bool permit_pause_to_mac)
-@@ -107,8 +106,8 @@ static int lan966x_pcs_config(struct phylink_pcs *pcs,
+-static int mvneta_pcs_config(struct phylink_pcs *pcs,
+-			     unsigned int mode, phy_interface_t interface,
++static int mvneta_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
++			     phy_interface_t interface,
+ 			     const unsigned long *advertising,
+ 			     bool permit_pause_to_mac)
+ {
+@@ -4016,7 +4016,7 @@ static int mvneta_pcs_config(struct phylink_pcs *pcs,
+ 	       MVNETA_GMAC_AN_FLOW_CTRL_EN |
+ 	       MVNETA_GMAC_AN_DUPLEX_EN;
  
- 	config = port->config;
- 	config.portmode = interface;
--	config.inband = phylink_autoneg_inband(mode);
--	config.autoneg = phylink_test(advertising, Autoneg);
-+	config.inband = neg_mode & PHYLINK_PCS_NEG_INBAND;
-+	config.autoneg = neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED;
- 	config.advertising = advertising;
+-	if (phylink_autoneg_inband(mode)) {
++	if (neg_mode == PHYLINK_PCS_NEG_INBAND_ENABLED) {
+ 		mask |= MVNETA_GMAC_CONFIG_MII_SPEED |
+ 			MVNETA_GMAC_CONFIG_GMII_SPEED |
+ 			MVNETA_GMAC_CONFIG_FULL_DUPLEX;
+@@ -5518,6 +5518,7 @@ static int mvneta_probe(struct platform_device *pdev)
+ 		clk_prepare_enable(pp->clk_bus);
  
- 	ret = lan966x_port_pcs_set(port, &config);
+ 	pp->phylink_pcs.ops = &mvneta_phylink_pcs_ops;
++	pp->phylink_pcs.neg_mode = true;
+ 
+ 	pp->phylink_config.dev = &dev->dev;
+ 	pp->phylink_config.type = PHYLINK_NETDEV;
 -- 
 2.30.2
 
