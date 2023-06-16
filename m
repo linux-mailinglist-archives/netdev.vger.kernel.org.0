@@ -1,147 +1,198 @@
-Return-Path: <netdev+bounces-11289-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11290-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 810F97326BE
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 07:45:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 94F137326C1
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 07:47:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AF1FC1C20F0C
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 05:45:24 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 76D3E1C20F64
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 05:47:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 45389EC0;
-	Fri, 16 Jun 2023 05:45:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63772EA4;
+	Fri, 16 Jun 2023 05:47:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3616C7C
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 05:45:21 +0000 (UTC)
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BFC1715;
-	Thu, 15 Jun 2023 22:45:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
- s=s31663417; t=1686894282; x=1687499082; i=frank-w@public-files.de;
- bh=5eg7RXmJMtMZxqGRw8WILxedxtZ1RDfpgHRg3ABH2FY=;
- h=X-UI-Sender-Class:Date:From:To:CC:Subject:Reply-to:In-Reply-To:Referenc
- es;
- b=a4VetjATUhtGrviquK6iBUjQVmw+Q8WPcuBvm72jxETBCVAt8fKwmwn9Ia7JtaLXpGWeDOv
- gtCJurPNc0lY2OJUpPRBIzQ2FawN/2XZlczYqIjOOYUOptQBQISXNMAVw5seuH0ZfgUliPwFO
- xLgICPEHQyzyRH9+nE/2r1v+8vyQdakDYsIPnAJLETfWUZ21eF5f+MHTNL6QLqGrPOhSrROut
- 69zB2n/dpCtO8GmHyGNPwwgXF0UhG49bRHJt2fU26gFMIy+AYDfARviTSv4PbO68kE/pv8vgd
- f20WQesbrPeActVgBYr//+Kpno4K2TbM+pfp04ngvTrtZX4HIvhQ==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [127.0.0.1] ([217.61.152.78]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mzyya-1px9iO1nL4-00x58L; Fri, 16
- Jun 2023 07:44:42 +0200
-Date: Fri, 16 Jun 2023 07:44:32 +0200
-From: Frank Wunderlich <frank-w@public-files.de>
-To: arinc9.unal@gmail.com,
- =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
- Daniel Golle <daniel@makrotopia.org>, Landen Chao <Landen.Chao@mediatek.com>,
- DENG Qingfang <dqfext@gmail.com>, Sean Wang <sean.wang@mediatek.com>,
- Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
- Vladimir Oltean <olteanv@gmail.com>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Russell King <linux@armlinux.org.uk>
-CC: Landen Chao <landen.chao@mediatek.com>,
- Bartel Eerdekens <bartel.eerdekens@constell8.be>, mithat.guner@xeront.com,
- erkin.bozoglu@xeront.com, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net v5 4/6] net: dsa: mt7530: fix handling of LLDP frames
-User-Agent: K-9 Mail for Android
-Reply-to: frank-w@public-files.de
-In-Reply-To: <20230616025327.12652-5-arinc.unal@arinc9.com>
-References: <20230616025327.12652-1-arinc.unal@arinc9.com> <20230616025327.12652-5-arinc.unal@arinc9.com>
-Message-ID: <CFD0E43B-1D0F-4BC3-8DB8-8CFA09F8AA94@public-files.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AFAC7C;
+	Fri, 16 Jun 2023 05:47:02 +0000 (UTC)
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732132702;
+	Thu, 15 Jun 2023 22:47:00 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-56d304e5f83so4177257b3.2;
+        Thu, 15 Jun 2023 22:47:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686894419; x=1689486419;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3t5xJL5naOb0QAJeCuO0jgaS0Ma9+Gw0t+NpBr7LyWI=;
+        b=L8nZ/926OypLC+a3K0MXbnUYNNcDpj1/aajUfQOUQ9vMGxWz/F8+Jx4k6O17zHpUSF
+         5fCEv+05rTXAcKE0ifDMg9qwyDiSX7J5liVSlGjDX5J3fL5E6zhgSWkvU34gVDzHcnF8
+         EC7KVuufmccRfDeAlScXnlk/6XlCpxilDA9xKoB2L04KSp0xKsqJseNA9PST9ylYj9tU
+         8wl/w6GRbZKpBXR9YfbLZfGiBWiFlY850jFjkbvPELw3+JTiqCLvvF/tEmObIfoc8K4b
+         XEDiebpfSwzyDKhB8JRfGvmnXQMYRgv1f2aMoVT5/4BIvLjigLLal7C35KvozbY5M+ei
+         Jy0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686894419; x=1689486419;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3t5xJL5naOb0QAJeCuO0jgaS0Ma9+Gw0t+NpBr7LyWI=;
+        b=CRORvRghBiBGXSySxTJVsKqarir3DGZv5JD0EX//uT3hgpw2qrMe3tApnIw0/bqNxh
+         0aG08zgeKpXDIhRRX70SoW09vTQ9ERAjwQVszJPvd67v/E2ym8KURp9AIoEk1pL/4B7y
+         Ham5SHLsHpb+aKAWkWcNRRI9z08oRFTcT/wrlOtrSMUYO/YjuN8jaf6vpO5rHwbeOnj5
+         +4j9wwUfa834XxelAOWDiD1r14Q1o1BNmwpfPF6GsfF9f4BJ/jIqKBrEAfQjpkQ2kqDe
+         e6IK4VJPLBseofY0+9+OCL7u7ZZRn0HjHB/JNXpjo5ZOUm0QaAFBxvlJNtNQIDeTfYg1
+         XvSA==
+X-Gm-Message-State: AC+VfDyhmA8+jRBh8zFMv0IPJmWgeD86k+RNsf0o3fast2/omFKteDbn
+	MPzHgQG5sO5n8A83gygyVRI=
+X-Google-Smtp-Source: ACHHUZ7zYzpk9FJo31U1GDMbhBVjQtQCSiX18EHj1Dj7U8V235a4E4y0zy5oDhw02aXtOpi1gDNnYA==
+X-Received: by 2002:a0d:e256:0:b0:56c:e70b:b741 with SMTP id l83-20020a0de256000000b0056ce70bb741mr836322ywe.20.1686894419613;
+        Thu, 15 Jun 2023 22:46:59 -0700 (PDT)
+Received: from ?IPV6:2600:1700:6cf8:1240:85ec:4914:169d:547? ([2600:1700:6cf8:1240:85ec:4914:169d:547])
+        by smtp.gmail.com with ESMTPSA id r126-20020a815d84000000b00565eb8af1fesm2405924ywb.132.2023.06.15.22.46.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Jun 2023 22:46:59 -0700 (PDT)
+Message-ID: <1fb38d17-619d-4cd9-30e4-624d2ee21a2b@gmail.com>
+Date: Thu, 15 Jun 2023 22:46:57 -0700
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:3lxl0MPex+u5xxfAzvrdcXVP4Drii4GQK9Qm1rbQCLkju9MzBb+
- bN5ner5fXtcDMmVpLVZB2/yGeNGdPyrMrJwqaNXL9CUN2tHfZPU/PqCn6p/hKkwYQBKakKX
- j3Ap68wuPAToJ6wEnzLUbeKt7xdcS8eB9DsZ92FGk8Is7Ic/JVbSsFweqa+7udI9t4qlQw4
- NST1bsMQSWjlAbbe4LR8Q==
-UI-OutboundReport: notjunk:1;M01:P0:drprUYgIsko=;lfwGdT9vdEHSO876eZlvpXiTruf
- bPKCupHUQU481noFTmxoTV+MAdHAdySN+LsY41W07L1W/ZwuyTr3HaZ4mBC0lTQY0RWfWS7DF
- jdoeKrWf+/BZ2VSWYIhDwiWOkq1oohhlxs7h1xwOqQR0j4hb6qopX4BJtuERvbY7eBdxwjkvI
- mrB1ou0/C7+iyqmYbXnbHFXwfzF4eF0dKaWaQbDQPFBHo8ju2vPZFBhvi+N6+hAt+T+vbRxQ9
- EOcaevb8UJ1w12/CvOEGZydfzbXNoUzstE+V8j2zSt6utty885YOLA1XWbAFskZ4nXFNbU+az
- yte4HmG2lZlskrCHk4plSMvAdqQeVHb8mdfG/L7HuVc1InlTCSTcJRLoz9qXf021Z2G+2qmwy
- y8oE4HfyzV9r3Jp3qIcJzny9i+w5Jmr8K/T2bmAB3R8Gpzpup8/1lWKGd1U+YSp7sY527tfgN
- FEM/m50nG7SJdcXQZURQKWyRo2UIhcygFfgOqZ9/AlBuQdsMZwShq5agFY/kxJrit9M0uOv/K
- f4JF53TYE8viqipgN7mg80n2tdpSR902jRiw4ZBmxFGXqsoCTncYsjVyPCVEN7y7qmSdAw70U
- +EN1kf8Pjx3mm8DDIKrKP7WqAH2dtEpr0wG/DtDKoSdqr9w+0HCXJ4ep9d4+iQ/bfbscOgqgA
- 4g0AYxdmQzXhNIJq0w0iYhQjwD9vKZX3IuImhfoo2ova1IgsWZAqR8fO8vWnxHoNeATjMSwYd
- GdLetfkFJ8zGshBpg0Mp0bpas6faP37TBZHKAcyE6HETF89/sJDSM/RSFL2tqshSSBt5//M8c
- /TgXyKZVY5oHgWjSeoFg8wjU2zfEceHkmuZAkJ4a2aMuWjVxRp4th50cPGNnSO2D2fe+rl8SO
- M2YkVLL/AcscZdnAipmVUI236Cy4IW3XMMSCXxrDZnNOS/ijV+qtTI+nwE/gGKwvhOBnK2bIZ
- zxOhs9A3On0k74n6U4jb8Bzd7X0=
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [RFC bpf-next 3/7] bpf: implement devtx hook points
+Content-Language: en-US
+To: Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org
+Cc: ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+ martin.lau@linux.dev, song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+ kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
+ netdev@vger.kernel.org
+References: <20230612172307.3923165-1-sdf@google.com>
+ <20230612172307.3923165-4-sdf@google.com>
+From: Kui-Feng Lee <sinquersw@gmail.com>
+In-Reply-To: <20230612172307.3923165-4-sdf@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Am 16=2E Juni 2023 04:53:25 MESZ schrieb arinc9=2Eunal@gmail=2Ecom:
->From: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc=2Eunal@arinc9=2Ecom>
->
->LLDP frames are link-local frames, therefore they must be trapped to the
->CPU port=2E Currently, the MT753X switches treat LLDP frames as regular
->multicast frames, therefore flooding them to user ports=2E To fix this, s=
-et
->LLDP frames to be trapped to the CPU port(s)=2E
->
->Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 =
-switch")
->Signed-off-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc=2Eunal@arinc9=2Ecom>
->---
-> drivers/net/dsa/mt7530=2Ec | 8 ++++++++
-> drivers/net/dsa/mt7530=2Eh | 5 +++++
-> 2 files changed, 13 insertions(+)
->
->diff --git a/drivers/net/dsa/mt7530=2Ec b/drivers/net/dsa/mt7530=2Ec
->index 7b72cf3a0e30=2E=2Ec85876fd9107 100644
->--- a/drivers/net/dsa/mt7530=2Ec
->+++ b/drivers/net/dsa/mt7530=2Ec
->@@ -2266,6 +2266,10 @@ mt7530_setup(struct dsa_switch *ds)
-> 	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
-> 		   MT753X_BPDU_CPU_ONLY);
->=20
->+	/* Trap LLDP frames with :0E MAC DA to the CPU port */
->+	mt7530_rmw(priv, MT753X_RGAC2, MT753X_R0E_PORT_FW_MASK,
->+		   MT753X_R0E_PORT_FW(MT753X_BPDU_CPU_ONLY));
->+
-> 	/* Enable and reset MIB counters */
-> 	mt7530_mib_reset(ds);
->=20
->@@ -2369,6 +2373,10 @@ mt7531_setup_common(struct dsa_switch *ds)
-> 	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
-> 		   MT753X_BPDU_CPU_ONLY);
->=20
->+	/* Trap LLDP frames with :0E MAC DA to the CPU port(s) */
->+	mt7530_rmw(priv, MT753X_RGAC2, MT753X_R0E_PORT_FW_MASK,
->+		   MT753X_R0E_PORT_FW(MT753X_BPDU_CPU_ONLY));
->+
-> 	/* Enable and reset MIB counters */
-> 	mt7530_mib_reset(ds);
->=20
 
 
-I though these 2 hunks should go into some common function as these are re=
-dundant or am i wrong?
+On 6/12/23 10:23, Stanislav Fomichev wrote:
+..... cut .....
+> +
+> +__diag_push();
+> +__diag_ignore_all("-Wmissing-prototypes",
+> +		  "Global functions as their definitions will be in vmlinux BTF");
+> +
+> +/**
+> + * bpf_devtx_sb_attach - Attach devtx 'packet submit' program
+> + * @ifindex: netdev interface index.
+> + * @prog_fd: BPF program file descriptor.
+> + *
+> + * Return:
+> + * * Returns 0 on success or ``-errno`` on error.
+> + */
+> +__bpf_kfunc int bpf_devtx_sb_attach(int ifindex, int prog_fd)
+> +{
+> +	struct net_device *netdev;
+> +	int ret;
+> +
+> +	netdev = dev_get_by_index(current->nsproxy->net_ns, ifindex);
+> +	if (!netdev)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&devtx_attach_lock);
+> +	ret = __bpf_devtx_attach(netdev, prog_fd, "devtx_sb", &netdev->devtx_sb);
+> +	mutex_unlock(&devtx_attach_lock);
+> +
+> +	dev_put(netdev);
+> +
+> +	return ret;
+> +}
 
-Btw=2Ethx for your work on this driver :)
+How about adding another detach kfunc instead of overloading
+this one? It is easier to understand.
 
-regards Frank
+> +
+> +/**
+> + * bpf_devtx_cp_attach - Attach devtx 'packet complete' program
+> + * @ifindex: netdev interface index.
+> + * @prog_fd: BPF program file descriptor.
+> + *
+> + * Return:
+> + * * Returns 0 on success or ``-errno`` on error.
+> + */
+> +__bpf_kfunc int bpf_devtx_cp_attach(int ifindex, int prog_fd)
+> +{
+> +	struct net_device *netdev;
+> +	int ret;
+> +
+> +	netdev = dev_get_by_index(current->nsproxy->net_ns, ifindex);
+> +	if (!netdev)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&devtx_attach_lock);
+> +	ret = __bpf_devtx_attach(netdev, prog_fd, "devtx_cp", &netdev->devtx_cp);
+> +	mutex_unlock(&devtx_attach_lock);
+> +
+> +	dev_put(netdev);
+> +
+> +	return ret;
+> +}
+> +
+> +__diag_pop();
+> +
+> +bool is_devtx_kfunc(u32 kfunc_id)
+> +{
+> +	return !!btf_id_set8_contains(&bpf_devtx_hook_ids, kfunc_id);
+> +}
+> +
+> +void devtx_shutdown(struct net_device *netdev)
+> +{
+> +	mutex_lock(&devtx_attach_lock);
+> +	__bpf_devtx_detach(netdev, &netdev->devtx_sb);
+> +	__bpf_devtx_detach(netdev, &netdev->devtx_cp);
+> +	mutex_unlock(&devtx_attach_lock);
+> +}
+> +
+> +BTF_SET8_START(bpf_devtx_syscall_kfunc_ids)
+> +BTF_ID_FLAGS(func, bpf_devtx_sb_attach)
+> +BTF_ID_FLAGS(func, bpf_devtx_cp_attach)
+> +BTF_SET8_END(bpf_devtx_syscall_kfunc_ids)
+> +
+> +static const struct btf_kfunc_id_set bpf_devtx_syscall_kfunc_set = {
+> +	.owner = THIS_MODULE,
+> +	.set   = &bpf_devtx_syscall_kfunc_ids,
+> +};
+> +
+> +static int __init devtx_init(void)
+> +{
+> +	int ret;
+> +
+> +	ret = register_btf_fmodret_id_set(&bpf_devtx_hook_set);
+> +	if (ret) {
+> +		pr_warn("failed to register devtx hooks: %d", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_SYSCALL, &bpf_devtx_syscall_kfunc_set);
+> +	if (ret) {
+> +		pr_warn("failed to register syscall kfuncs: %d", ret);
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +late_initcall(devtx_init);
 
