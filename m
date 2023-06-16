@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-11602-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11603-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 77D92733A9E
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:15:42 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id EE2AA733AA0
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:16:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A93DC1C210BE
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:15:41 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2B9C31C210B7
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:16:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2263F1F190;
-	Fri, 16 Jun 2023 20:11:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A13E722609;
+	Fri, 16 Jun 2023 20:11:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCAF422609
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:11:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86988C433BA;
-	Fri, 16 Jun 2023 20:11:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43FEF22617
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:11:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E812EC433C9;
+	Fri, 16 Jun 2023 20:11:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686946307;
-	bh=64CqY8kbcCM0EmlL6G/6EG505TtB7DUSNwlw7u5lBTU=;
+	s=k20201202; t=1686946309;
+	bh=yLcpryiCBJbr+GROLX2r8XANtgg+MINheHaV9cuj09c=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=OFpRQS2kYcg4fd6N7wIsUm6NiMeGXquiSzxCJGa5yglN1J0UxRNm+RGqP3hF5X18c
-	 qSZO7rIIzQz1Zy5lEUdr0kgvCsAVhMtewGxyssg4RAp7yOAYuU7S3xgL7ieJkXEov5
-	 5jNIcDX/OQ+9/OJxhAOjMgemyDXH+ZUgEfgb07Rn/w6SRk6kP6l5koprqWPHK5bnvd
-	 XKibMkVAZctVarpmEV9EbLAMDXi6XMfx4V5tVErJIHbZtbTv9Hw2uLJ46aD/5vE+8O
-	 C7m2W1r7Hkvob67kC/iTRRmcc4ldZHj3utBrsyllgZmJSa4hf23m0yYCU6mUsyngVD
-	 zgmbnVC6Db+yQ==
+	b=A0DjuQ7wAau3x7W9xeq09QkPgxH5D8jBSTm43CBOGONKzUlQIFOEKnAEQp0cbmrye
+	 SDOEOzyhS26KKCX0FtHg/p4uZKvv8UfJNGA/7K1GAyDyzMmipznzfBVTQJ82A+eD2p
+	 RpW4+g5t2b6JjvFRtOhEOhy8aRxRJIl9eKjf7dMGcXh854acXaFUMSGfC0wwSAc3xp
+	 HgSL/eIM4fxXc+emlA0cOmBj9RbS/ZJFLb/5DmT+uM/i1t2E/0/VfsCxezBfzX8AHN
+	 69I6IHNj1k6O/EaYz+vd6dXycJlCKZnM+ESL/9OuGSk2o5jB3nkvhJXKYLnBDb4kYd
+	 EOpvvIy9b5DEQ==
 From: Saeed Mahameed <saeed@kernel.org>
 To: "David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -38,10 +38,11 @@ To: "David S. Miller" <davem@davemloft.net>,
 Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	netdev@vger.kernel.org,
 	Tariq Toukan <tariqt@nvidia.com>,
-	Daniel Jurgens <danielj@nvidia.com>
-Subject: [net-next 13/15] net/mlx5: DR, update query of HCA caps for EC VFs
-Date: Fri, 16 Jun 2023 13:11:11 -0700
-Message-Id: <20230616201113.45510-14-saeed@kernel.org>
+	Juhee Kang <claudiajkang@gmail.com>,
+	Larysa Zaremba <larysa.zaremba@intel.com>
+Subject: [net-next 14/15] net/mlx5: Add header file for events
+Date: Fri, 16 Jun 2023 13:11:12 -0700
+Message-Id: <20230616201113.45510-15-saeed@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230616201113.45510-1-saeed@kernel.org>
 References: <20230616201113.45510-1-saeed@kernel.org>
@@ -53,78 +54,181 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Daniel Jurgens <danielj@nvidia.com>
+From: Juhee Kang <claudiajkang@gmail.com>
 
-This change is needed to use EC VFs with metadata based steering.
+Separate the event API defined in the generic mlx5.h header into
+a dedicated header. And remove the TODO comment in commit
+69c1280b1f3b ("net/mlx5: Device events, Use async events chain").
 
-There was an assumption that vport was equal to function ID. That's
-not the case for EC VF functions. Adjust to function ID and set the
-ec_vf_function bit accordingly.
-
-Fixes: 9ac0b128248e ("net/mlx5: Update vport caps query/set for EC VFs")
-Signed-off-by: Daniel Jurgens <danielj@nvidia.com>
+Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
+Reviewed-by: Larysa Zaremba <larysa.zaremba@intel.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h       | 7 +++++++
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c | 4 +++-
- drivers/net/ethernet/mellanox/mlx5/core/vport.c           | 6 ------
- 3 files changed, 10 insertions(+), 7 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en_stats.c    |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/events.c  |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/health.c  |  1 +
+ .../net/ethernet/mellanox/mlx5/core/lag/mp.c  |  2 +-
+ .../ethernet/mellanox/mlx5/core/lag/mpesw.c   |  2 +-
+ .../ethernet/mellanox/mlx5/core/lib/events.h  | 40 +++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/lib/mlx5.h    | 34 ----------------
+ 7 files changed, 45 insertions(+), 38 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/events.h
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-index 60673f98de2b..c4be257c043d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-@@ -358,4 +358,11 @@ static inline bool mlx5_core_is_ec_vf_vport(const struct mlx5_core_dev *dev, u16
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index 25a6c596300d..4d77055abd4b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -30,7 +30,7 @@
+  * SOFTWARE.
+  */
  
- 	return (vport_num >= base_vport && vport_num < max_vport);
- }
-+
-+static inline int mlx5_vport_to_func_id(const struct mlx5_core_dev *dev, u16 vport, bool ec_vf_func)
-+{
-+	return ec_vf_func ? vport - mlx5_core_ec_vf_vport_base(dev)
-+			  : vport;
-+}
-+
- #endif /* __MLX5_CORE_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-index 1aa525e509f1..7491911ebcb5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-@@ -34,6 +34,7 @@ int mlx5dr_cmd_query_esw_vport_context(struct mlx5_core_dev *mdev,
- int mlx5dr_cmd_query_gvmi(struct mlx5_core_dev *mdev, bool other_vport,
- 			  u16 vport_number, u16 *gvmi)
+-#include "lib/mlx5.h"
++#include "lib/events.h"
+ #include "en.h"
+ #include "en_accel/ktls.h"
+ #include "en_accel/en_accel.h"
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/events.c b/drivers/net/ethernet/mellanox/mlx5/core/events.c
+index 718cf09c28ce..3ec892d51f57 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/events.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/events.c
+@@ -5,7 +5,7 @@
+ 
+ #include "mlx5_core.h"
+ #include "lib/eq.h"
+-#include "lib/mlx5.h"
++#include "lib/events.h"
+ 
+ struct mlx5_event_nb {
+ 	struct mlx5_nb  nb;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+index 210100a4064a..187cb2c464f8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+@@ -39,6 +39,7 @@
+ #include "mlx5_core.h"
+ #include "lib/eq.h"
+ #include "lib/mlx5.h"
++#include "lib/events.h"
+ #include "lib/pci_vsc.h"
+ #include "lib/tout.h"
+ #include "diag/fw_tracer.h"
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
+index 976caa8e6922..b1aa494c76ba 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
+@@ -7,7 +7,7 @@
+ #include "lag/mp.h"
+ #include "mlx5_core.h"
+ #include "eswitch.h"
+-#include "lib/mlx5.h"
++#include "lib/events.h"
+ 
+ static bool __mlx5_lag_is_multipath(struct mlx5_lag *ldev)
  {
-+	bool ec_vf_func = other_vport ? mlx5_core_is_ec_vf_vport(mdev, vport_number) : false;
- 	u32 in[MLX5_ST_SZ_DW(query_hca_cap_in)] = {};
- 	int out_size;
- 	void *out;
-@@ -46,7 +47,8 @@ int mlx5dr_cmd_query_gvmi(struct mlx5_core_dev *mdev, bool other_vport,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c
+index 0e869a76dfe4..4bf15391525c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c
+@@ -6,7 +6,7 @@
+ #include "lag/lag.h"
+ #include "eswitch.h"
+ #include "esw/acl/ofld.h"
+-#include "lib/mlx5.h"
++#include "lib/events.h"
  
- 	MLX5_SET(query_hca_cap_in, in, opcode, MLX5_CMD_OP_QUERY_HCA_CAP);
- 	MLX5_SET(query_hca_cap_in, in, other_function, other_vport);
--	MLX5_SET(query_hca_cap_in, in, function_id, vport_number);
-+	MLX5_SET(query_hca_cap_in, in, function_id, mlx5_vport_to_func_id(mdev, vport_number, ec_vf_func));
-+	MLX5_SET(query_hca_cap_in, in, ec_vf_function, ec_vf_func);
- 	MLX5_SET(query_hca_cap_in, in, op_mod,
- 		 MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE << 1 |
- 		 HCA_CAP_OPMOD_GET_CUR);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/vport.c b/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-index 6d3984dd5b21..5a31fb47ffa5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-@@ -1161,12 +1161,6 @@ u64 mlx5_query_nic_system_image_guid(struct mlx5_core_dev *mdev)
- }
- EXPORT_SYMBOL_GPL(mlx5_query_nic_system_image_guid);
+ static void mlx5_mpesw_metadata_cleanup(struct mlx5_lag *ldev)
+ {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/events.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/events.h
+new file mode 100644
+index 000000000000..a0f7faea317b
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/events.h
+@@ -0,0 +1,40 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
++
++#ifndef __LIB_EVENTS_H__
++#define __LIB_EVENTS_H__
++
++#include "mlx5_core.h"
++
++#define PORT_MODULE_EVENT_MODULE_STATUS_MASK 0xF
++#define PORT_MODULE_EVENT_ERROR_TYPE_MASK    0xF
++
++enum port_module_event_status_type {
++	MLX5_MODULE_STATUS_PLUGGED   = 0x1,
++	MLX5_MODULE_STATUS_UNPLUGGED = 0x2,
++	MLX5_MODULE_STATUS_ERROR     = 0x3,
++	MLX5_MODULE_STATUS_DISABLED  = 0x4,
++	MLX5_MODULE_STATUS_NUM,
++};
++
++enum  port_module_event_error_type {
++	MLX5_MODULE_EVENT_ERROR_POWER_BUDGET_EXCEEDED    = 0x0,
++	MLX5_MODULE_EVENT_ERROR_LONG_RANGE_FOR_NON_MLNX  = 0x1,
++	MLX5_MODULE_EVENT_ERROR_BUS_STUCK                = 0x2,
++	MLX5_MODULE_EVENT_ERROR_NO_EEPROM_RETRY_TIMEOUT  = 0x3,
++	MLX5_MODULE_EVENT_ERROR_ENFORCE_PART_NUMBER_LIST = 0x4,
++	MLX5_MODULE_EVENT_ERROR_UNKNOWN_IDENTIFIER       = 0x5,
++	MLX5_MODULE_EVENT_ERROR_HIGH_TEMPERATURE         = 0x6,
++	MLX5_MODULE_EVENT_ERROR_BAD_CABLE                = 0x7,
++	MLX5_MODULE_EVENT_ERROR_PCIE_POWER_SLOT_EXCEEDED = 0xc,
++	MLX5_MODULE_EVENT_ERROR_NUM,
++};
++
++struct mlx5_pme_stats {
++	u64 status_counters[MLX5_MODULE_STATUS_NUM];
++	u64 error_counters[MLX5_MODULE_EVENT_ERROR_NUM];
++};
++
++void mlx5_get_pme_stats(struct mlx5_core_dev *dev, struct mlx5_pme_stats *stats);
++int mlx5_notifier_call_chain(struct mlx5_events *events, unsigned int event, void *data);
++#endif
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
+index ccf12f7db6f0..2b5826a785c4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
+@@ -45,40 +45,6 @@ int mlx5_crdump_enable(struct mlx5_core_dev *dev);
+ void mlx5_crdump_disable(struct mlx5_core_dev *dev);
+ int mlx5_crdump_collect(struct mlx5_core_dev *dev, u32 *cr_data);
  
--static int mlx5_vport_to_func_id(const struct mlx5_core_dev *dev, u16 vport, bool ec_vf_func)
--{
--	return ec_vf_func ? vport - mlx5_core_ec_vf_vport_base(dev)
--			  : vport;
--}
+-/* TODO move to lib/events.h */
 -
- int mlx5_vport_get_other_func_cap(struct mlx5_core_dev *dev, u16 vport, void *out,
- 				  u16 opmod)
+-#define PORT_MODULE_EVENT_MODULE_STATUS_MASK 0xF
+-#define PORT_MODULE_EVENT_ERROR_TYPE_MASK    0xF
+-
+-enum port_module_event_status_type {
+-	MLX5_MODULE_STATUS_PLUGGED   = 0x1,
+-	MLX5_MODULE_STATUS_UNPLUGGED = 0x2,
+-	MLX5_MODULE_STATUS_ERROR     = 0x3,
+-	MLX5_MODULE_STATUS_DISABLED  = 0x4,
+-	MLX5_MODULE_STATUS_NUM,
+-};
+-
+-enum  port_module_event_error_type {
+-	MLX5_MODULE_EVENT_ERROR_POWER_BUDGET_EXCEEDED    = 0x0,
+-	MLX5_MODULE_EVENT_ERROR_LONG_RANGE_FOR_NON_MLNX  = 0x1,
+-	MLX5_MODULE_EVENT_ERROR_BUS_STUCK                = 0x2,
+-	MLX5_MODULE_EVENT_ERROR_NO_EEPROM_RETRY_TIMEOUT  = 0x3,
+-	MLX5_MODULE_EVENT_ERROR_ENFORCE_PART_NUMBER_LIST = 0x4,
+-	MLX5_MODULE_EVENT_ERROR_UNKNOWN_IDENTIFIER       = 0x5,
+-	MLX5_MODULE_EVENT_ERROR_HIGH_TEMPERATURE         = 0x6,
+-	MLX5_MODULE_EVENT_ERROR_BAD_CABLE                = 0x7,
+-	MLX5_MODULE_EVENT_ERROR_PCIE_POWER_SLOT_EXCEEDED = 0xc,
+-	MLX5_MODULE_EVENT_ERROR_NUM,
+-};
+-
+-struct mlx5_pme_stats {
+-	u64 status_counters[MLX5_MODULE_STATUS_NUM];
+-	u64 error_counters[MLX5_MODULE_EVENT_ERROR_NUM];
+-};
+-
+-void mlx5_get_pme_stats(struct mlx5_core_dev *dev, struct mlx5_pme_stats *stats);
+-int mlx5_notifier_call_chain(struct mlx5_events *events, unsigned int event, void *data);
+-
+ static inline struct net *mlx5_core_net(struct mlx5_core_dev *dev)
  {
+ 	return devlink_net(priv_to_devlink(dev));
 -- 
 2.40.1
 
