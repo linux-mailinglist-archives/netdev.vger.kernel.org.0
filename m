@@ -1,198 +1,295 @@
-Return-Path: <netdev+bounces-11640-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11641-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7F5A3733C99
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 00:50:11 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 11517733CBE
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 01:10:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9BEDD1C20A57
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:50:10 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B70D02818CB
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 23:10:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 88B3F7480;
-	Fri, 16 Jun 2023 22:49:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C74F98BF3;
+	Fri, 16 Jun 2023 23:10:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BEA28C1A
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 22:49:57 +0000 (UTC)
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2086.outbound.protection.outlook.com [40.107.223.86])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6036A358C;
-	Fri, 16 Jun 2023 15:49:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AD3e5A7jQeRYx41wLkGsZIzvGPIEu3I64GnhW+7W7lOuo1elumXyYCyKPaE4XcxYMMUlotj60z2WhrD9rJPy1xLS5sU/7UA93XM0+MiNkVxxN55m1FS+/lLgKltfKThZffUsiWy0qzDC6Nq/AuxIVRfWBecE+5Cj1oBPNtET7hpFpjHsczMmMM0WkLybpWghRJvHNGbLv3IBCru0/WLRwV/61jAtbpHp4xU/r1o98R7F4PcTbnF01S60px36r0UH3eFZRe8KE1PBzc4krkWpuGXMH1R6RLIbgd2ZxJHFhs6NlGunZdhbKVSLgK4ND+alFHEUSF+uWwSRNAzCL9+46A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X8kC5IsxcdzTebW+gcgoHiserpY8qf4nEWO57q30iwo=;
- b=FsyJHNfVbgqroxE67zZSqWlq4udnQ24vpLlXU4OBdGW0y2NVJKUIS9+H/OHKJJDSw616dCNvzCHIn20eN7NC4NkWrASSlOn/f+sO8asTowLfnEZK343O/K+epuqgJHH32CJ25p2ABJpTZQYs6XC7qFnfKYfeZJ9WQH33CoXuZXizx6zHFIRIv7i9djsO626Ezsneb0sGxNWlsUXgjDNYcjl5nfX3LkOJZH/b52f2IUJXr8g72ZApdUZV4Ijds8hQh4605mTx/W7lb2j5N2a6/KzFmwKHOqcIZIysTJuC8YCk9hXTFnnGs/uvACfHFu0AIOOhK6g8A1Cj2rfHrKAgGA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=gmail.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X8kC5IsxcdzTebW+gcgoHiserpY8qf4nEWO57q30iwo=;
- b=azRAqm1mxqo0ekQgUZbhXEK8jCFcx/SgmY2MXg5LtZgRyBhfHPxQoHDSOA9TE29lCCKPCxtoHof0rdW4/rMGN/aIXpwWHPJ/TdgqjtOaVxdElHwl0IuOMHhws1VXo5MEM+koWz+mSy/pjr8jdkoyiiL/XyoN/CajGG2EVqNSDsA=
-Received: from BN0PR08CA0015.namprd08.prod.outlook.com (2603:10b6:408:142::31)
- by SN7PR12MB7853.namprd12.prod.outlook.com (2603:10b6:806:348::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.27; Fri, 16 Jun
- 2023 22:49:53 +0000
-Received: from BN8NAM11FT016.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:142:cafe::f3) by BN0PR08CA0015.outlook.office365.com
- (2603:10b6:408:142::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.29 via Frontend
- Transport; Fri, 16 Jun 2023 22:49:53 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- BN8NAM11FT016.mail.protection.outlook.com (10.13.176.97) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6500.25 via Frontend Transport; Fri, 16 Jun 2023 22:49:53 +0000
-Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Fri, 16 Jun
- 2023 17:49:52 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB05.amd.com
- (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Fri, 16 Jun
- 2023 17:49:52 -0500
-Received: from xcbamaftei43x.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23 via Frontend
- Transport; Fri, 16 Jun 2023 17:49:51 -0500
-From: Alex Maftei <alex.maftei@amd.com>
-To: <richardcochran@gmail.com>, <shuah@kernel.org>
-CC: Alex Maftei <alex.maftei@amd.com>, <linux-kselftest@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH net 2/2] selftests/ptp: Add -X option for testing PTP_SYS_OFFSET_PRECISE
-Date: Fri, 16 Jun 2023 23:48:45 +0100
-Message-ID: <e679110fb29bbf3d8bc7f27a60c48a25e1fa6600.1686955631.git.alex.maftei@amd.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <cover.1686955631.git.alex.maftei@amd.com>
-References: <cover.1686955631.git.alex.maftei@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9FB38BE7
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 23:10:33 +0000 (UTC)
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC93C3A8B
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 16:10:31 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id 41be03b00d2f7-53ff4f39c0fso737386a12.0
+        for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 16:10:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1686957031; x=1689549031;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=L/jamYwOplQeOYZLfYxKh+CGvMnRpEMMthN2j3MN6wE=;
+        b=s3Nt6pYcIcJRLksXEwa2HdEGY1hZHOhHP/BS1I/I47vlOWoi3n8Kb+XLRPjEE820z2
+         cNt4bm9+dyFui5zK+ch/edJaWLzGiPzadJzFLkbgz6Z6pw+yovxttY2AYkJplvZAVKBf
+         o7ssHHRTTyPWiN89UiBXTDcAFPEoQw7YBzv1UVarcWhtpoFSx9Oj0FpbM/K8dVSm4o/b
+         gTSadISDiaVgVwJ5zmsIcFicZNLWCTGjCCrZR4nQoFru2XoOUMWZrzskT5j4il/v/diz
+         xdXlo/JqRfGJVgCnGgKWrHUcvbQ8WrcXoRZCzpDDC2UMP58tEdUSx57QiQTt2kLdh73q
+         9wSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686957031; x=1689549031;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=L/jamYwOplQeOYZLfYxKh+CGvMnRpEMMthN2j3MN6wE=;
+        b=g1YWAeXW/RbMmoXHLpk7Bcamz3G361CKWKKnaHOjafEWsuLYRF9dknq7pX+aRViG1W
+         N8G2DVk72wo1CS98liphfvIztKHHZY7qipk4kSf1FkUtG54huqzsoxVvzIZ/qIS+yCyF
+         GwEN7+FgPUj9NRlyqjYRBSkNfFu6wOcxANXnGaZQc92ZzjOaMUYL+lUVym7WHpk7uxUG
+         Zlxaa71eJjymqgbs9tg7VLdax5y5bBDGm75HIMV4c7IfWzFg+MskPrGS1kFuPrEqzjQt
+         cfDfOKTja8G6sdsZmB4A9j5DGSqiUbE1JGYytgHIWdyucuOzokxMzz9a/XCm2tev+Meq
+         MsiA==
+X-Gm-Message-State: AC+VfDzP89uAyWPBBVlVr1UZ/tpFKC4KRjHAUhFBLOF4agWQQbyEL7Re
+	Khf4IR4et/F8wsUDSlsglsyx/8U=
+X-Google-Smtp-Source: ACHHUZ7sSQJVEfozBaQjfhb6SGaaUmbMlPDnGEnfi7PySMJR4WrhjWYj++ppPravXfWOf/pj9lHPOc0=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a17:903:1301:b0:1b1:8e8b:7f5e with SMTP id
+ iy1-20020a170903130100b001b18e8b7f5emr593939plb.5.1686957031062; Fri, 16 Jun
+ 2023 16:10:31 -0700 (PDT)
+Date: Fri, 16 Jun 2023 16:10:29 -0700
+In-Reply-To: <CAKH8qBscx=SWSCL_WTMPyNPu=63OzFJcenCySds2KoV1agWW9w@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT016:EE_|SN7PR12MB7853:EE_
-X-MS-Office365-Filtering-Correlation-Id: 246ec6a7-878b-4cdd-7404-08db6ebbffbd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	tTkhzkrdcs/rS/m4xfQsDYMZhAIREEI1v4sOC0DQiEjRA+qUtGCRTkb+dTRxVjP8KQ9nSGpJb1ylPhzh8lN5+/XJY/zMGzbADutbXDe6fb9LlFoT2rSCrs9TtPdjmT02rAPn6m9H7N3XuREYq9lSrDwTYXXS7sAo1gXoQ7kLeWr/0r9NAIxKQ/MCMR/0fqRq1SlGJUOTHpNjCeFeHu/skl7ryVOMStloesG8a73l+Zfqs/dp6YTMXHa3vfGnUDMbDX+bfQmwJFhzBMH4AMydLI/XDl9zaGTZUGNLPdR5MhYdLRsy/i5Dm/QrmTwrMlBHZGRng/RZzU7FXGWqzpI6OrWl/De1BUd6+gRYvvd9vw8MSjownjz53NKsU5Vp805Gi0ffFBdtNq7JlwVU2pVXRID/TTGhSYoWR9N/ohORrnChGgSJ6vh0kc1Pzd/vfPHGRnEfCNyx2POsP+rVHsoC/TjnodRTPw/HpPbrKRlkRDpHHT+BhJwYpSoOMh3rU86mq1bJ861otBiLsH9p24D8aWs4Av16Z8U+U8uE5UFqx/U3U9WUOpLO0oxi/ezIIlKcJe0rDaDRSr6RGMzoYYjvtPpzfK7FHsARSFSYswxUNzSOLnilE1+ia5v711B3bjJU/BfEh6qL/4g5//n77kaCIuQTdeAztemQFKAdxrLv6W+utCD5ZwE19CQuUXs5aDYtsOT958Ctv1Q362lVRBB3MeKpdZta0HLP+H9q5TpqH2JvmeRtP457+t0D5xzsHMVtSLxWcwzOPYcqAYczQjJU4g==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(136003)(346002)(376002)(396003)(451199021)(36840700001)(40470700004)(46966006)(26005)(83380400001)(82740400003)(5660300002)(81166007)(2616005)(336012)(426003)(2906002)(186003)(356005)(36860700001)(47076005)(44832011)(478600001)(40480700001)(40460700003)(70206006)(316002)(8936002)(6666004)(86362001)(41300700001)(82310400005)(8676002)(4326008)(36756003)(70586007)(110136005)(54906003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2023 22:49:53.1134
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 246ec6a7-878b-4cdd-7404-08db6ebbffbd
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT016.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7853
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.6
+Mime-Version: 1.0
+References: <20230612172307.3923165-1-sdf@google.com> <87cz20xunt.fsf@toke.dk>
+ <CAKH8qBuAUems8a7kKJPcFvarW2jy4qTf4sAM8oUC8UHj-gE=ug@mail.gmail.com>
+ <CAJ8uoz2Bx3cd7braAZjZFNYfqX0JjJzSvr4RBN=j8CiH8Ld5-w@mail.gmail.com> <CAKH8qBscx=SWSCL_WTMPyNPu=63OzFJcenCySds2KoV1agWW9w@mail.gmail.com>
+Message-ID: <ZIzr5ffeHsUqppaS@google.com>
+Subject: Re: [RFC bpf-next 0/7] bpf: netdev TX metadata
+From: Stanislav Fomichev <sdf@google.com>
+To: Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc: "Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?=" <toke@kernel.org>, bpf@vger.kernel.org, ast@kernel.org, 
+	daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev, 
+	song@kernel.org, yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org, 
+	haoluo@google.com, jolsa@kernel.org, willemb@google.com, dsahern@kernel.org, 
+	magnus.karlsson@intel.com, bjorn@kernel.org, maciej.fijalkowski@intel.com, 
+	netdev@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The -X option was chosen because X looks like a cross, and the underlying
-callback is 'get cross timestamp'.
+On 06/16, Stanislav Fomichev wrote:
+> On Fri, Jun 16, 2023 at 1:13=E2=80=AFAM Magnus Karlsson
+> <magnus.karlsson@gmail.com> wrote:
+> >
+> > On Fri, 16 Jun 2023 at 02:09, Stanislav Fomichev <sdf@google.com> wrote=
+:
+> > >
+> > > On Mon, Jun 12, 2023 at 2:01=E2=80=AFPM Toke H=C3=B8iland-J=C3=B8rgen=
+sen <toke@kernel.org> wrote:
+> > > >
+> > > > Some immediate thoughts after glancing through this:
+> > > >
+> > > > > --- Use cases ---
+> > > > >
+> > > > > The goal of this series is to add two new standard-ish places
+> > > > > in the transmit path:
+> > > > >
+> > > > > 1. Right before the packet is transmitted (with access to TX
+> > > > >    descriptors)
+> > > > > 2. Right after the packet is actually transmitted and we've recei=
+ved the
+> > > > >    completion (again, with access to TX completion descriptors)
+> > > > >
+> > > > > Accessing TX descriptors unlocks the following use-cases:
+> > > > >
+> > > > > - Setting device hints at TX: XDP/AF_XDP might use these new hook=
+s to
+> > > > > use device offloads. The existing case implements TX timestamp.
+> > > > > - Observability: global per-netdev hooks can be used for tracing
+> > > > > the packets and exploring completion descriptors for all sorts of
+> > > > > device errors.
+> > > > >
+> > > > > Accessing TX descriptors also means that the hooks have to be cal=
+led
+> > > > > from the drivers.
+> > > > >
+> > > > > The hooks are a light-weight alternative to XDP at egress and cur=
+rently
+> > > > > don't provide any packet modification abilities. However, eventua=
+lly,
+> > > > > can expose new kfuncs to operate on the packet (or, rather, the a=
+ctual
+> > > > > descriptors; for performance sake).
+> > > >
+> > > > dynptr?
+> > > >
+> > > > > --- UAPI ---
+> > > > >
+> > > > > The hooks are implemented in a HID-BPF style. Meaning they don't
+> > > > > expose any UAPI and are implemented as tracing programs that call
+> > > > > a bunch of kfuncs. The attach/detach operation happen via BPF sys=
+call
+> > > > > programs. The series expands device-bound infrastructure to traci=
+ng
+> > > > > programs.
+> > > >
+> > > > Not a fan of the "attach from BPF syscall program" thing. These are=
+ part
+> > > > of the XDP data path API, and I think we should expose them as prop=
+er
+> > > > bpf_link attachments from userspace with introspection etc. But I g=
+uess
+> > > > the bpf_mprog thing will give us that?
+> > > >
+> > > > > --- skb vs xdp ---
+> > > > >
+> > > > > The hooks operate on a new light-weight devtx_frame which contain=
+s:
+> > > > > - data
+> > > > > - len
+> > > > > - sinfo
+> > > > >
+> > > > > This should allow us to have a unified (from BPF POW) place at TX
+> > > > > and not be super-taxing (we need to copy 2 pointers + len to the =
+stack
+> > > > > for each invocation).
+> > > >
+> > > > Not sure what I think about this one. At the very least I think we
+> > > > should expose xdp->data_meta as well. I'm not sure what the use cas=
+e for
+> > > > accessing skbs is? If that *is* indeed useful, probably there will =
+also
+> > > > end up being a use case for accessing the full skb?
+> > >
+> > > I spent some time looking at data_meta story on AF_XDP TX and it
+> > > doesn't look like it's supported (at least in a general way).
+> > > You obviously get some data_meta when you do XDP_TX, but if you want
+> > > to pass something to the bpf prog when doing TX via the AF_XDP ring,
+> > > it gets complicated.
+> >
+> > When we designed this some 5 - 6 years ago, we thought that there
+> > would be an XDP for egress action in the "nearish" future that could
+> > be used to interpret the metadata field in front of the packet.
+> > Basically, the user would load an XDP egress program that would define
+> > the metadata layout by the operations it would perform on the metadata
+> > area. But since XDP on egress has not happened, you are right, there
+> > is definitely something missing to be able to use metadata on Tx. Or
+> > could your proposed hook points be used for something like this?
+>=20
+> Thanks for the context!
+> Yes, the proposal is to use these new tx hooks to read out af_xdp
+> metadata and apply it to the packet via a bunch of tbd kfuncs.
+> AF_XDP and BPF programs would have to have a contract about the
+> metadata layout (same as we have on rx).
+>=20
+> > > In zerocopy mode, we can probably use XDP_UMEM_UNALIGNED_CHUNK_FLAG
+> > > and pass something in the headroom.
+> >
+> > This feature is mainly used to allow for multiple packets on the same
+> > chunk (to save space) and also to be able to have packets spanning two
+> > chunks. Even in aligned mode, you can start a packet at an arbitrary
+> > address in the chunk as long as the whole packet fits into the chunk.
+> > So no problem having headroom in any of the modes.
+>=20
+> But if I put it into the headroom it will only be passed down to the
+> driver in zero-copy mode, right?
+> If I do tx_desc->addr =3D packet_start, no medata (that goes prior to
+> packet_start) gets copied into skb in the copy mode (it seems).
+> Or do you suggest that the interface should be tx_desc->addr =3D
+> metadata_start and the bpf program should call the equivalent of
+> bpf_xdp_adjust_head to consume this metadata?
 
-Signed-off-by: Alex Maftei <alex.maftei@amd.com>
----
- tools/testing/selftests/ptp/testptp.c | 29 +++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+For copy-mode, here is what I've prototyped. That seems to work.
+For zero-copy, I don't think we need anything extra (besides exposing
+xsk->tx_meta_len at the hook point, tbd). Does the patch below make
+sense?
 
-diff --git a/tools/testing/selftests/ptp/testptp.c b/tools/testing/selftests/ptp/testptp.c
-index 2a99973ffc1b..6ab5836b53ff 100644
---- a/tools/testing/selftests/ptp/testptp.c
-+++ b/tools/testing/selftests/ptp/testptp.c
-@@ -143,6 +143,7 @@ static void usage(char *progname)
- 		" -t val     shift the ptp clock time by 'val' seconds\n"
- 		" -T val     set the ptp clock time to 'val' seconds\n"
- 		" -x val     get an extended ptp clock time with the desired number of samples (up to %d)\n"
-+		" -X         get a ptp clock cross timestamp\n"
- 		" -z         test combinations of rising/falling external time stamp flags\n",
- 		progname, PTP_MAX_SAMPLES);
- }
-@@ -159,6 +160,7 @@ int main(int argc, char *argv[])
- 	struct ptp_clock_time *pct;
- 	struct ptp_sys_offset *sysoff;
- 	struct ptp_sys_offset_extended *soe;
-+	struct ptp_sys_offset_precise *xts;
- 
- 	char *progname;
- 	unsigned int i;
-@@ -177,6 +179,7 @@ int main(int argc, char *argv[])
- 	int list_pins = 0;
- 	int pct_offset = 0;
- 	int getextended = 0;
-+	int getcross = 0;
- 	int n_samples = 0;
- 	int pin_index = -1, pin_func;
- 	int pps = -1;
-@@ -260,6 +263,9 @@ int main(int argc, char *argv[])
- 				return -1;
- 			}
- 			break;
-+		case 'X':
-+			getcross = 1;
-+			break;
- 		case 'z':
- 			flagtest = 1;
- 			break;
-@@ -554,6 +560,29 @@ int main(int argc, char *argv[])
- 		free(soe);
+diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+index e96a1151ec75..30018b3b862d 100644
+--- a/include/net/xdp_sock.h
++++ b/include/net/xdp_sock.h
+@@ -51,6 +51,7 @@ struct xdp_sock {
+ 	struct list_head flush_node;
+ 	struct xsk_buff_pool *pool;
+ 	u16 queue_id;
++	u8 tx_metadata_len;
+ 	bool zc;
+ 	enum {
+ 		XSK_READY =3D 0,
+diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
+index a78a8096f4ce..2374eafff7db 100644
+--- a/include/uapi/linux/if_xdp.h
++++ b/include/uapi/linux/if_xdp.h
+@@ -63,6 +63,7 @@ struct xdp_mmap_offsets {
+ #define XDP_UMEM_COMPLETION_RING	6
+ #define XDP_STATISTICS			7
+ #define XDP_OPTIONS			8
++#define XDP_TX_METADATA_LEN		9
+=20
+ struct xdp_umem_reg {
+ 	__u64 addr; /* Start of packet data area */
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index cc1e7f15fa73..a95872712547 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -493,14 +493,21 @@ static struct sk_buff *xsk_build_skb(struct xdp_sock =
+*xs,
+ 			return ERR_PTR(err);
+=20
+ 		skb_reserve(skb, hr);
+-		skb_put(skb, len);
++		skb_put(skb, len + xs->tx_metadata_len);
+=20
+ 		buffer =3D xsk_buff_raw_get_data(xs->pool, desc->addr);
++		buffer -=3D xs->tx_metadata_len;
++
+ 		err =3D skb_store_bits(skb, 0, buffer, len);
+ 		if (unlikely(err)) {
+ 			kfree_skb(skb);
+ 			return ERR_PTR(err);
+ 		}
++
++		if (xs->tx_metadata_len) {
++			skb_metadata_set(skb, xs->tx_metadata_len);
++			__skb_pull(skb, xs->tx_metadata_len);
++		}
  	}
- 
-+	if (getcross) {
-+		xts = calloc(1, sizeof(*xts));
-+		if (!xts) {
-+			perror("calloc");
-+			return -1;
+=20
+ 	skb->dev =3D dev;
+@@ -1137,6 +1144,27 @@ static int xsk_setsockopt(struct socket *sock, int l=
+evel, int optname,
+ 		mutex_unlock(&xs->mutex);
+ 		return err;
+ 	}
++	case XDP_TX_METADATA_LEN:
++	{
++		int val;
++
++		if (optlen < sizeof(val))
++			return -EINVAL;
++		if (copy_from_sockptr(&val, optval, sizeof(val)))
++			return -EFAULT;
++
++		if (val >=3D 256)
++			return -EINVAL;
++
++		mutex_lock(&xs->mutex);
++		if (xs->state !=3D XSK_READY) {
++			mutex_unlock(&xs->mutex);
++			return -EBUSY;
 +		}
-+
-+		if (ioctl(fd, PTP_SYS_OFFSET_PRECISE, xts))
-+			perror("PTP_SYS_OFFSET_PRECISE");
-+		else {
-+			puts("system and phc crosstimestamping request okay");
-+
-+			printf("device time: %lld.%09u\n",
-+			       xts->device.sec, xts->device.nsec);
-+			printf("system time: %lld.%09u\n",
-+			       xts->sys_realtime.sec, xts->sys_realtime.nsec);
-+			printf("monoraw time: %lld.%09u\n",
-+			       xts->sys_monoraw.sec, xts->sys_monoraw.nsec);
-+		}
-+
-+		free(xts);
++		xs->tx_metadata_len =3D val;
++		mutex_unlock(&xs->mutex);
++		return err;
 +	}
-+
- 	close(fd);
- 	return 0;
- }
--- 
-2.28.0
-
+ 	default:
+ 		break;
+ 	}
 
