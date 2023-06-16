@@ -1,48 +1,48 @@
-Return-Path: <netdev+bounces-11384-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11385-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2B440732D9D
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 12:26:25 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9804C732DA7
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 12:26:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A8014281677
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 10:26:23 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C842F1C20FB8
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 10:26:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 00A2718B02;
-	Fri, 16 Jun 2023 10:26:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C393319500;
+	Fri, 16 Jun 2023 10:26:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B076918C1B
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 10:26:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD969C433CD;
-	Fri, 16 Jun 2023 10:26:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 687F018C1B
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 10:26:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3D8EC433C9;
+	Fri, 16 Jun 2023 10:26:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686911180;
-	bh=PFdVP3w56nb0swUwL53Xe87mE6lCu9SOZzlblVkMk7g=;
+	s=k20201202; t=1686911181;
+	bh=Q5zSiWJ0vmNNzB7g/rE4g9HguPrQrB5wuWCQRbLI8EM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=hT7Qfcds3Wr5cKyDDQ1DYdqpK9MxpfRcQhUmsEK0q6EEZtrHP96WDfYs4kJ5dpa7a
-	 KjML+zhKcdP6gD+XUFVy33w8nijZhAD4RBe4Y0z/4NwCGQ+52DFEjEPsAy8f8VpX/g
-	 V/f+Ahny6fx6Jh26jBBCgWPH/kyp28ECUNPi4agdZsVJlW1KKP36bHk9mAH6+Vg0YD
-	 +wxY7QMb9K+2tIJXqLHtmLsd28g98A6QTscpfPbFyZt9wsc0EXSKJHstMemjQzKAeq
-	 UW29PTUE0OFmMoxNbei12tjVukscBgyl6iTq6hsu0yiXHBm1xYDFrSKddPVf1OdySZ
-	 XT5fUmlkY8XVg==
+	b=aiFoZ3RIQ1qjpvcgcAkY6nSkIzpZQO3t/tDE4ero05qmMTnVeIXuvg/9F7xTMB5cA
+	 ++FB0m9/T/9h3Q1La0jKRYxQDttyha0VRvh0+GAaRvOTK/miKXnLXxbezlzzzfBmEM
+	 nGFwMeXtP59fTtl7LA+gTH1JSBqVrlwip/Hgqi9Kn2KXQNwQPhQZKFIXpbRbH0uErN
+	 UJ1cAdN5v/lGXItbhxPAdIobdNmyKo7lSJh+ER1JbvGLvz1eVPGLdx8wko23KXpJyk
+	 OyrmTm0GK+Vh2fCEm9/T5wLyITmManch9rPyt3HahNwDsoGIXnEeaRqw2WWE5wyxP7
+	 Yg6F8KYl7mNbw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Shannon Nelson <shannon.nelson@amd.com>,
-	Jason Wang <jasowang@redhat.com>,
+Cc: Andrey Smetanin <asmetanin@yandex-team.ru>,
 	"Michael S . Tsirkin" <mst@redhat.com>,
+	Jason Wang <jasowang@redhat.com>,
 	Sasha Levin <sashal@kernel.org>,
 	kvm@vger.kernel.org,
 	virtualization@lists.linux-foundation.org,
 	netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.3 29/30] vhost_vdpa: tell vqs about the negotiated
-Date: Fri, 16 Jun 2023 06:25:17 -0400
-Message-Id: <20230616102521.673087-29-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.3 30/30] vhost_net: revert upend_idx only on retriable error
+Date: Fri, 16 Jun 2023 06:25:18 -0400
+Message-Id: <20230616102521.673087-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230616102521.673087-1-sashal@kernel.org>
 References: <20230616102521.673087-1-sashal@kernel.org>
@@ -57,56 +57,58 @@ X-Patchwork-Hint: Ignore
 X-stable-base: Linux 6.3.8
 Content-Transfer-Encoding: 8bit
 
-From: Shannon Nelson <shannon.nelson@amd.com>
+From: Andrey Smetanin <asmetanin@yandex-team.ru>
 
-[ Upstream commit 376daf317753ccb6b1ecbdece66018f7f6313a7f ]
+[ Upstream commit 1f5d2e3bab16369d5d4b4020a25db4ab1f4f082c ]
 
-As is done in the net, iscsi, and vsock vhost support, let the vdpa vqs
-know about the features that have been negotiated.  This allows vhost
-to more safely make decisions based on the features, such as when using
-PACKED vs split queues.
+Fix possible virtqueue used buffers leak and corresponding stuck
+in case of temporary -EIO from sendmsg() which is produced by
+tun driver while backend device is not up.
 
-Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Message-Id: <20230424225031.18947-2-shannon.nelson@amd.com>
+In case of no-retriable error and zcopy do not revert upend_idx
+to pass packet data (that is update used_idx in corresponding
+vhost_zerocopy_signal_used()) as if packet data has been
+transferred successfully.
+
+v2: set vq->heads[ubuf->desc].len equal to VHOST_DMA_DONE_LEN
+in case of fake successful transmit.
+
+Signed-off-by: Andrey Smetanin <asmetanin@yandex-team.ru>
+Message-Id: <20230424204411.24888-1-asmetanin@yandex-team.ru>
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Andrey Smetanin <asmetanin@yandex-team.ru>
+Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/vdpa.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/vhost/net.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index 74c7d1f978b75..a5e4722cbeda1 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -385,7 +385,10 @@ static long vhost_vdpa_set_features(struct vhost_vdpa *v, u64 __user *featurep)
- {
- 	struct vdpa_device *vdpa = v->vdpa;
- 	const struct vdpa_config_ops *ops = vdpa->config;
-+	struct vhost_dev *d = &v->vdev;
-+	u64 actual_features;
- 	u64 features;
-+	int i;
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index 07181cd8d52e6..ae2273196b0c9 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -935,13 +935,18 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
  
- 	/*
- 	 * It's not allowed to change the features after they have
-@@ -400,6 +403,16 @@ static long vhost_vdpa_set_features(struct vhost_vdpa *v, u64 __user *featurep)
- 	if (vdpa_set_features(vdpa, features))
- 		return -EINVAL;
- 
-+	/* let the vqs know what has been configured */
-+	actual_features = ops->get_driver_features(vdpa);
-+	for (i = 0; i < d->nvqs; ++i) {
-+		struct vhost_virtqueue *vq = d->vqs[i];
+ 		err = sock->ops->sendmsg(sock, &msg, len);
+ 		if (unlikely(err < 0)) {
++			bool retry = err == -EAGAIN || err == -ENOMEM || err == -ENOBUFS;
 +
-+		mutex_lock(&vq->mutex);
-+		vq->acked_features = actual_features;
-+		mutex_unlock(&vq->mutex);
-+	}
-+
- 	return 0;
- }
- 
+ 			if (zcopy_used) {
+ 				if (vq->heads[ubuf->desc].len == VHOST_DMA_IN_PROGRESS)
+ 					vhost_net_ubuf_put(ubufs);
+-				nvq->upend_idx = ((unsigned)nvq->upend_idx - 1)
+-					% UIO_MAXIOV;
++				if (retry)
++					nvq->upend_idx = ((unsigned)nvq->upend_idx - 1)
++						% UIO_MAXIOV;
++				else
++					vq->heads[ubuf->desc].len = VHOST_DMA_DONE_LEN;
+ 			}
+-			if (err == -EAGAIN || err == -ENOMEM || err == -ENOBUFS) {
++			if (retry) {
+ 				vhost_discard_vq_desc(vq, 1);
+ 				vhost_net_enable_vq(net, vq);
+ 				break;
 -- 
 2.39.2
 
