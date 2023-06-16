@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-11570-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11571-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 145A0733A45
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:02:09 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6CF18733A4C
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:02:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C377728184F
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:02:07 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A40432810B6
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:02:32 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 588141F160;
-	Fri, 16 Jun 2023 20:01:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 79DF01F197;
+	Fri, 16 Jun 2023 20:01:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE05B1ED3E
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:01:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D363EC433CA;
-	Fri, 16 Jun 2023 20:01:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 396991ED5A
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:01:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5170C433C8;
+	Fri, 16 Jun 2023 20:01:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686945684;
-	bh=1HIIeTk+QM2niRS7zhIp/sSW9TaEXNKjVYVaAdCTICs=;
+	s=k20201202; t=1686945685;
+	bh=AssDIHTKz9iD16onYlaPx0BbU48o2snYy1YQs7jBKWE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=IIgJa7kbEGdDlADgYg4Cv6/MgH1P8Wsxu69uIgolqAioOsMOF6uAJ+cZk9n0NuZ6b
-	 GNUIqOTUGZ5MK1lLeBmiJw2d6IKlVMkdNx7cM+fAd1o+oap4yHyL7IkOAUkT2IZ3c5
-	 Mpgfravn7Jrgo1vBEczTQmh8BbaSlOsVaOOUk01MOVxG5kYIW48rBti+X7d6h0DDij
-	 ewHluK0qAF/+dAizcfb3ahXkAk7PoFqdMk6vb4TaXnqkFWE7tUttgu9e0L3O62jSDU
-	 lubQXeKZYjBOfCF2yHT/klsx3m9uK7UzHCQ6PVNEWxB8gaGAbg/+yA+N83L1+Mbdet
-	 l2u8Ov444lK2w==
+	b=mXGEZDy93itTqr18unVa8ADgakrNaJxGRwQ4leAs7zK7TlyDGDAwPz02QPDICva4a
+	 lrGrLa4KFESCA2WDcgrMtnomcEcxe4T+b+wgdoXHLWaRCSK4+hxR2BaJ1s8GlPOXfZ
+	 5MC+aPF6yeUwZTgSOtsBSy98DQOb5walSecvOt0AW7XyLklWYhN/4cXqLpSztXN0Qf
+	 /o72k7utL8MtAnJW3tM6HtGjeTn/Z/IOMauBxAzq2V+upz7eu5L2LIxWLPfsoAGSyw
+	 9fjP1XXekMfgl4F+5cPtN/cdApLkj/VKFGAEmDwKkxXr1XuPgAy+UOyCdgCSFIsoxd
+	 iQ8Mg4f3JK96Q==
 From: Saeed Mahameed <saeed@kernel.org>
 To: "David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -39,10 +39,11 @@ Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	netdev@vger.kernel.org,
 	Tariq Toukan <tariqt@nvidia.com>,
 	Leon Romanovsky <leonro@nvidia.com>,
-	Maxim Mikityanskiy <maxtram95@gmail.com>
-Subject: [net 01/12] net/mlx5e: XDP, Allow growing tail for XDP multi buffer
-Date: Fri, 16 Jun 2023 13:01:08 -0700
-Message-Id: <20230616200119.44163-2-saeed@kernel.org>
+	Eli Cohen <elic@nvidia.com>,
+	Shay Drory <shayd@nvidia.com>
+Subject: [net 03/12] net/mlx5: Fix driver load with single msix vector
+Date: Fri, 16 Jun 2023 13:01:10 -0700
+Message-Id: <20230616200119.44163-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230616200119.44163-1-saeed@kernel.org>
 References: <20230616200119.44163-1-saeed@kernel.org>
@@ -54,102 +55,49 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Maxim Mikityanskiy <maxtram95@gmail.com>
+From: Eli Cohen <elic@nvidia.com>
 
-The cited commits missed passing frag_size to __xdp_rxq_info_reg, which
-is required by bpf_xdp_adjust_tail to support growing the tail pointer
-in fragmented packets. Pass the missing parameter when the current RQ
-mode allows XDP multi buffer.
+When a PCI device has just one msix vector available, we want to share
+this vector between async and completion events. Current code fails to
+do that assuming it will always have at least one dedicated vector for
+completion events. Fix this by detecting when the pool contains just a
+single vector.
 
-Fixes: ea5d49bdae8b ("net/mlx5e: Add XDP multi buffer support to the non-linear legacy RQ")
-Fixes: 9cb9482ef10e ("net/mlx5e: Use fragments of the same size in non-linear legacy RQ with XDP")
-Signed-off-by: Maxim Mikityanskiy <maxtram95@gmail.com>
-Cc: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Fixes: 3354822cde5a ("net/mlx5: Use dynamic msix vectors allocation")
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+Reviewed-by: Shay Drory <shayd@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 8 ++++++--
- drivers/net/ethernet/mellanox/mlx5/core/en/params.h | 1 +
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c   | 7 ++++---
- 3 files changed, 11 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 9c94807097cb..5ce28ff7685f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -732,7 +732,8 @@ static void mlx5e_rx_compute_wqe_bulk_params(struct mlx5e_params *params,
- static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
- 				     struct mlx5e_params *params,
- 				     struct mlx5e_xsk_param *xsk,
--				     struct mlx5e_rq_frags_info *info)
-+				     struct mlx5e_rq_frags_info *info,
-+				     u32 *xdp_frag_size)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+index 843da89a9035..33b9359de53d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+@@ -565,15 +565,21 @@ void mlx5_irqs_release_vectors(struct mlx5_irq **irqs, int nirqs)
+ int mlx5_irqs_request_vectors(struct mlx5_core_dev *dev, u16 *cpus, int nirqs,
+ 			      struct mlx5_irq **irqs, struct cpu_rmap **rmap)
  {
- 	u32 byte_count = MLX5E_SW2HW_MTU(params, params->sw_mtu);
- 	int frag_size_max = DEFAULT_FRAG_SIZE;
-@@ -845,6 +846,8 @@ static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
++	struct mlx5_irq_table *table = mlx5_irq_table_get(dev);
++	struct mlx5_irq_pool *pool = table->pcif_pool;
+ 	struct irq_affinity_desc af_desc;
+ 	struct mlx5_irq *irq;
++	int offset = 1;
+ 	int i;
  
- 	info->log_num_frags = order_base_2(info->num_frags);
- 
-+	*xdp_frag_size = info->num_frags > 1 && params->xdp_prog ? PAGE_SIZE : 0;
++	if (!pool->xa_num_irqs.max)
++		offset = 0;
 +
- 	return 0;
- }
- 
-@@ -989,7 +992,8 @@ int mlx5e_build_rq_param(struct mlx5_core_dev *mdev,
- 	}
- 	default: /* MLX5_WQ_TYPE_CYCLIC */
- 		MLX5_SET(wq, wq, log_wq_sz, params->log_rq_mtu_frames);
--		err = mlx5e_build_rq_frags_info(mdev, params, xsk, &param->frags_info);
-+		err = mlx5e_build_rq_frags_info(mdev, params, xsk, &param->frags_info,
-+						&param->xdp_frag_size);
- 		if (err)
- 			return err;
- 		ndsegs = param->frags_info.num_frags;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-index a5d20f6d6d9c..6800949dafbc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-@@ -24,6 +24,7 @@ struct mlx5e_rq_param {
- 	u32                        rqc[MLX5_ST_SZ_DW(rqc)];
- 	struct mlx5_wq_param       wq;
- 	struct mlx5e_rq_frags_info frags_info;
-+	u32                        xdp_frag_size;
- };
- 
- struct mlx5e_sq_param {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index a7c526ee5024..a5bdf78955d7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -641,7 +641,7 @@ static void mlx5e_free_mpwqe_rq_drop_page(struct mlx5e_rq *rq)
- }
- 
- static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *params,
--			     struct mlx5e_rq *rq)
-+			     u32 xdp_frag_size, struct mlx5e_rq *rq)
- {
- 	struct mlx5_core_dev *mdev = c->mdev;
- 	int err;
-@@ -665,7 +665,8 @@ static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *param
- 	if (err)
- 		return err;
- 
--	return xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq->ix, c->napi.napi_id);
-+	return __xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq->ix, c->napi.napi_id,
-+				  xdp_frag_size);
- }
- 
- static int mlx5_rq_shampo_alloc(struct mlx5_core_dev *mdev,
-@@ -2240,7 +2241,7 @@ static int mlx5e_open_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *param
- {
- 	int err;
- 
--	err = mlx5e_init_rxq_rq(c, params, &c->rq);
-+	err = mlx5e_init_rxq_rq(c, params, rq_params->xdp_frag_size, &c->rq);
- 	if (err)
- 		return err;
- 
+ 	af_desc.is_managed = false;
+ 	for (i = 0; i < nirqs; i++) {
+ 		cpumask_clear(&af_desc.mask);
+ 		cpumask_set_cpu(cpus[i], &af_desc.mask);
+-		irq = mlx5_irq_request(dev, i + 1, &af_desc, rmap);
++		irq = mlx5_irq_request(dev, i + offset, &af_desc, rmap);
+ 		if (IS_ERR(irq))
+ 			break;
+ 		irqs[i] = irq;
 -- 
 2.40.1
 
