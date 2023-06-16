@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-11579-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11580-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 05087733A5A
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:05:07 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 53D15733A5C
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:05:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B44E32818A5
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:05:05 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 853931C21085
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:05:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E45B0209A7;
-	Fri, 16 Jun 2023 20:01:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69DAE209BF;
+	Fri, 16 Jun 2023 20:01:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A71DA1ED44
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:01:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F4BFC43391;
-	Fri, 16 Jun 2023 20:01:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C095209B6
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:01:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEC1EC43215;
+	Fri, 16 Jun 2023 20:01:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686945694;
-	bh=bWH6qEeOP26o4GZPnaxzqIx0cvBCH3rXxz8z3I9WcZ4=;
+	s=k20201202; t=1686945695;
+	bh=75AtcKkgZXWpMRyDvb85+ZL+zonSdTWx/okyXKNkmzY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=UfhhA+oy4bKBQfCBwSolm+DgbO9D9DajzDghPLW1e4O/D3YMQG4xWYMl+yipg4nE4
-	 IXTPm0hZvhM6VUdv657xlMm7toY31p5WEmYce5v99RWeM8/7iKHG30EtzQB2Ik3RoD
-	 hBB6q/9fGTGvSe+b6whhz0sVQFQd0Tf6iymeMlDbJOzHkrMSrYS2UZlMcNJz7MoJzU
-	 moFE4jZNDwHPYI1/SE8T9TMDED5OpU1xdmTBj+quQNxllnL6EV0PCSYpWaKGpinZtQ
-	 UBm68sjDdgwKWQrC2+VK9PpHmMj6M87+/lr9Dl+HlVPGvHUC1nqXc5A6ST4khfFD/o
-	 x58wXxrs4hcfw==
+	b=V9jlPLH2v/hozkzROU3LOPkrvzCJAXxcpFqI7b7D0wrSo81iJtUSavVyklhcvCPp0
+	 HPbwgWFoLVyaGh4tOF/Du/2hC/dRdb1CGta5L2hUQD2u44Jm+KfkjgieiUiy/PfoKs
+	 68ps940s+7yhvgK+daC5b7a2+9goTJBSgL0VfQ6rfHaUSvjjjfRtezgGvwtYiogAcd
+	 6K3iIfH5uTclH7E6sx572Cna+1z7PtWaNwOq202W2pm/+t3XncfMn2HwudYW/G4zWn
+	 RyRgomkM+uYzZmB68LRB7p8YPXJNbK1Z3JZ9wHu/5sQZ+SFCDQ+MP0/iECz6FrCArp
+	 LG+u6ITDYgdTQ==
 From: Saeed Mahameed <saeed@kernel.org>
 To: "David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -39,11 +39,10 @@ Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	netdev@vger.kernel.org,
 	Tariq Toukan <tariqt@nvidia.com>,
 	Leon Romanovsky <leonro@nvidia.com>,
-	Patrisious Haddad <phaddad@nvidia.com>,
 	Simon Horman <simon.horman@corigine.com>
-Subject: [net 10/12] net/mlx5e: Fix ESN update kernel panic
-Date: Fri, 16 Jun 2023 13:01:17 -0700
-Message-Id: <20230616200119.44163-11-saeed@kernel.org>
+Subject: [net 11/12] net/mlx5e: Drop XFRM state lock when modifying flow steering
+Date: Fri, 16 Jun 2023 13:01:18 -0700
+Message-Id: <20230616200119.44163-12-saeed@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230616200119.44163-1-saeed@kernel.org>
 References: <20230616200119.44163-1-saeed@kernel.org>
@@ -55,109 +54,51 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Patrisious Haddad <phaddad@nvidia.com>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Previously during mlx5e_ipsec_handle_event the driver tried to execute
-an operation that could sleep, while holding a spinlock, which caused
-the kernel panic mentioned below.
+XFRM state which is changed to be XFRM_STATE_EXPIRED doesn't really
+need to hold lock while modifying flow steering rules to drop traffic.
 
-Move the function call that can sleep outside of the spinlock context.
+That state can be deleted only and as such mlx5e_ipsec_handle_tx_limit()
+work will be canceled anyway and won't run in parallel.
 
- Call Trace:
- <TASK>
- dump_stack_lvl+0x49/0x6c
- __schedule_bug.cold+0x42/0x4e
- schedule_debug.constprop.0+0xe0/0x118
- __schedule+0x59/0x58a
- ? __mod_timer+0x2a1/0x3ef
- schedule+0x5e/0xd4
- schedule_timeout+0x99/0x164
- ? __pfx_process_timeout+0x10/0x10
- __wait_for_common+0x90/0x1da
- ? __pfx_schedule_timeout+0x10/0x10
- wait_func+0x34/0x142 [mlx5_core]
- mlx5_cmd_invoke+0x1f3/0x313 [mlx5_core]
- cmd_exec+0x1fe/0x325 [mlx5_core]
- mlx5_cmd_do+0x22/0x50 [mlx5_core]
- mlx5_cmd_exec+0x1c/0x40 [mlx5_core]
- mlx5_modify_ipsec_obj+0xb2/0x17f [mlx5_core]
- mlx5e_ipsec_update_esn_state+0x69/0xf0 [mlx5_core]
- ? wake_affine+0x62/0x1f8
- mlx5e_ipsec_handle_event+0xb1/0xc0 [mlx5_core]
- process_one_work+0x1e2/0x3e6
- ? __pfx_worker_thread+0x10/0x10
- worker_thread+0x54/0x3ad
- ? __pfx_worker_thread+0x10/0x10
- kthread+0xda/0x101
- ? __pfx_kthread+0x10/0x10
- ret_from_fork+0x29/0x37
- </TASK>
- BUG: workqueue leaked lock or atomic: kworker/u256:4/0x7fffffff/189754#012     last function: mlx5e_ipsec_handle_event [mlx5_core]
- CPU: 66 PID: 189754 Comm: kworker/u256:4 Kdump: loaded Tainted: G        W          6.2.0-2596.20230309201517_5.el8uek.rc1.x86_64 #2
- Hardware name: Oracle Corporation ORACLE SERVER X9-2/ASMMBX9-2, BIOS 61070300 08/17/2022
- Workqueue: mlx5e_ipsec: eth%d mlx5e_ipsec_handle_event [mlx5_core]
- Call Trace:
- <TASK>
- dump_stack_lvl+0x49/0x6c
- process_one_work.cold+0x2b/0x3c
- ? __pfx_worker_thread+0x10/0x10
- worker_thread+0x54/0x3ad
- ? __pfx_worker_thread+0x10/0x10
- kthread+0xda/0x101
- ? __pfx_kthread+0x10/0x10
- ret_from_fork+0x29/0x37
- </TASK>
- BUG: scheduling while atomic: kworker/u256:4/189754/0x00000000
-
-Fixes: cee137a63431 ("net/mlx5e: Handle ESN update events")
-Signed-off-by: Patrisious Haddad <phaddad@nvidia.com>
+Fixes: b2f7b01d36a9 ("net/mlx5e: Simulate missing IPsec TX limits hardware functionality")
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/ipsec_offload.c    | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en_accel/ipsec.c    | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-index df90e19066bc..ca16cb9807ea 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-@@ -305,7 +305,17 @@ static void mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry,
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+index d1c801723d35..891d39b4bfd4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+@@ -61,16 +61,19 @@ static void mlx5e_ipsec_handle_tx_limit(struct work_struct *_work)
+ 	struct mlx5e_ipsec_sa_entry *sa_entry = dwork->sa_entry;
+ 	struct xfrm_state *x = sa_entry->x;
  
- 	mlx5e_ipsec_build_accel_xfrm_attrs(sa_entry, &attrs);
+-	spin_lock(&x->lock);
++	if (sa_entry->attrs.drop)
++		return;
 +
-+	/* It is safe to execute the modify below unlocked since the only flows
-+	 * that could affect this HW object, are create, destroy and this work.
-+	 *
-+	 * Creation flow can't co-exist with this modify work, the destruction
-+	 * flow would cancel this work, and this work is a single entity that
-+	 * can't conflict with it self.
-+	 */
-+	spin_unlock_bh(&sa_entry->x->lock);
- 	mlx5_accel_esp_modify_xfrm(sa_entry, &attrs);
-+	spin_lock_bh(&sa_entry->x->lock);
++	spin_lock_bh(&x->lock);
+ 	xfrm_state_check_expire(x);
+ 	if (x->km.state == XFRM_STATE_EXPIRED) {
+ 		sa_entry->attrs.drop = true;
+-		mlx5e_accel_ipsec_fs_modify(sa_entry);
+-	}
+-	spin_unlock(&x->lock);
++		spin_unlock_bh(&x->lock);
  
- 	data.data_offset_condition_operand =
- 		MLX5_IPSEC_ASO_REMOVE_FLOW_PKT_CNT_OFFSET;
-@@ -431,7 +441,7 @@ static void mlx5e_ipsec_handle_event(struct work_struct *_work)
- 	aso = sa_entry->ipsec->aso;
- 	attrs = &sa_entry->attrs;
+-	if (sa_entry->attrs.drop)
++		mlx5e_accel_ipsec_fs_modify(sa_entry);
+ 		return;
++	}
++	spin_unlock_bh(&x->lock);
  
--	spin_lock(&sa_entry->x->lock);
-+	spin_lock_bh(&sa_entry->x->lock);
- 	ret = mlx5e_ipsec_aso_query(sa_entry, NULL);
- 	if (ret)
- 		goto unlock;
-@@ -447,7 +457,7 @@ static void mlx5e_ipsec_handle_event(struct work_struct *_work)
- 		mlx5e_ipsec_handle_limits(sa_entry);
- 
- unlock:
--	spin_unlock(&sa_entry->x->lock);
-+	spin_unlock_bh(&sa_entry->x->lock);
- 	kfree(work);
- }
- 
+ 	queue_delayed_work(sa_entry->ipsec->wq, &dwork->dwork,
+ 			   MLX5_IPSEC_RESCHED);
 -- 
 2.40.1
 
