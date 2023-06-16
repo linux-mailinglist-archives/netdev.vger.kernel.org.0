@@ -1,281 +1,161 @@
-Return-Path: <netdev+bounces-11373-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11374-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 86ACE732D11
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 12:08:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 44DA5732D12
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 12:08:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A9A791C20FC4
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 10:08:06 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 67A941C20319
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 10:08:26 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 066461990A;
-	Fri, 16 Jun 2023 10:05:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E33517FE2;
+	Fri, 16 Jun 2023 10:06:30 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF53D19BAB
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 10:05:43 +0000 (UTC)
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2C02D6A;
-	Fri, 16 Jun 2023 03:05:41 -0700 (PDT)
-X-GND-Sasl: alexis.lothore@bootlin.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1686909940;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=t2Z5u2pdOFyGeWrHTpiauz2Y6DQCmtBj67ZZlH6r9Yw=;
-	b=VlB+mmJ2KMVQ8xlzcP3HMRvb5AeWgOC78aVXaAdm09rhishVYbGo+PWKobqI3HDIUmYt2g
-	9H26shu1MISdr0Dia4H4wI2xmUuJX6x7PfTBr6o7bwSKeqNcq+SjtLTaIuzTSDGJiV2CTc
-	eMZtWGVB03cIOL/+zTHKONDW9IVPnQ2JXqMX7Sh8ngeoZVSBwebjDYE/5hFvPuQ9kypHdO
-	Gr0yiCKawtD8wSSvJjkdLmo0WZc6XL1ODdy2i94C7PBAt9Y19PpLySKigSUxM74dGF6eSn
-	XWBgVNi/8rf6CjbYOie1iT5GEko7xJWXEPVqJQsGNDkOdydVBmyZKLTNTdEXEg==
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-X-GND-Sasl: alexis.lothore@bootlin.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 70DAC20014;
-	Fri, 16 Jun 2023 10:05:39 +0000 (UTC)
-From: alexis.lothore@bootlin.com
-To: Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Jose Abreu <joabreu@synopsys.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B5E579D3
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 10:06:30 +0000 (UTC)
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2136.outbound.protection.outlook.com [40.107.237.136])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706D630D4;
+	Fri, 16 Jun 2023 03:06:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TeN4YTKTyGsjlRtNq7uQbSoc6Uti0Ft19I0xOTH/ODL/rPmO4l8eoD2+Za2R1UT1gKVHBYe//TV6Zd+sg+n1KUzeUv4ymlwRvB+pcVqMC62Oajn03MVm6NAhiWyghf2DYzTdtIEu+mV+seiDR5tFgJn7OfBEMG/n9cFEXgeRy8Z8Rb/pVY/s0dx/P2H5AgLUK8vDxOQdRKrD9gIbo7C/alMwYZQ8wvjYXzbrXst4rFEG+wYbuYDaUFUnLHjaw/0UI9f1titZH5B0RA23ltykl2Xe9nab314IJKtdHdeSjIKyLkkYm5MMbEVf2ic5nkwzmPltFr5fNasuMwxGzyWSkQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xrPESDAkmlSBr/DP4H12mIHO9tZhLUc+YryZWvPUvaA=;
+ b=UaWaQcDseNHuYzLz+V3Zga83QWbultngkfww4yEY80sbM3zpfMp8DYeMyi/L/SU3lYzh94oB2BTDWmXLELctFQ25OPdMBCIiaj7zXd8zpc93nowsUh+N9trgiAN/sObAmtBNvWfKzd7ESXaOXv1bpMCuMXwRbfOwxSRCNf6PlqsqrIM9gGlMmCJgLV2aeZPR0tPuFWhB9JvIymbCo7SxzjHFmcPqxJy2J4i6g5Tt5EVgDVjW8HB/DD8t9DYk6EB7HtJF2/h82LaYQHbpOFJ2XTXKJNluqSKDpQFdrQEDkbMlf4HIZJl6qW/4O5eDiwMHurpd3hUL76i/lgxZYh6xsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xrPESDAkmlSBr/DP4H12mIHO9tZhLUc+YryZWvPUvaA=;
+ b=YABimtzX9l+XQA+aYkJuVMapRDouOIGIz3t3u/zankqvxljDlT3xyX9ZivtGHG9uELn1iqshyoBmX0SG3VrL3ulZ9Wxwejdi+J/4nPbfBL27bkzyaAFibPNBlInVlVTKPj9ygysNG1q4xBd8pT+up8157Lz4tfqZgSj8UgpgGZY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by DM4PR13MB5860.namprd13.prod.outlook.com (2603:10b6:8:49::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.25; Fri, 16 Jun
+ 2023 10:06:09 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e%5]) with mapi id 15.20.6500.025; Fri, 16 Jun 2023
+ 10:06:09 +0000
+Date: Fri, 16 Jun 2023 12:06:00 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Edward Cree <ecree.xilinx@gmail.com>,
+	Martin Habets <habetsm.xilinx@gmail.com>,
+	Jakub Kicinski <kuba@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
 	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Richard Cochran <richardcochran@gmail.com>
-Cc: linux-kernel@vger.kernel.org,
-	netdev@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-	Nicolas Carrier <nicolas.carrier@nav-timing.safrangroup.com>
-Subject: [PATCH net-next 8/8] net: stmmac: enable timestamp external trigger for dwmac1000
-Date: Fri, 16 Jun 2023 12:04:09 +0200
-Message-ID: <20230616100409.164583-9-alexis.lothore@bootlin.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230616100409.164583-1-alexis.lothore@bootlin.com>
-References: <20230616100409.164583-1-alexis.lothore@bootlin.com>
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
+	netdev@vger.kernel.org, linux-net-drivers@amd.com,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] sfc: fix uninitialized variable use
+Message-ID: <ZIw0CHsQncwRb0Km@corigine.com>
+References: <20230616090844.2677815-1-arnd@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230616090844.2677815-1-arnd@kernel.org>
+X-ClientProxiedBy: AS4PR10CA0004.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5dc::8) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM4PR13MB5860:EE_
+X-MS-Office365-Filtering-Correlation-Id: b5821558-b8f4-410c-33d3-08db6e514e6e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	hZKzEGsZHJ4bvEAU6cYodjyR4KHfItBKSyDOKq6/eIHm+pI0QKDSg67GgBk+xNOHrtJaOOWMEqMzCyN/8CFfGSA3sQV3/jyPc2T8CTk9J9035YL0mYvM1RzZECghd71DoDKnoH8aswTSncGFkP+SmVWAYO0V+wFbcgz+LglBi9IfP3TeSGnpgZfpBUUKaQO/HSzF8Je62P3PsPOJRyM8OzhR4IePNkkRbFGkMnaJqb9Y2EPWyAoFkfy85htEkqqgcjRxoSlv8W8M1M1PV3BbRMccbTVZrLCGOOCDUf0c3+ekdwLAeQ9bac5cBO2KbjPhrZinqteZ0xaVqoTxSNWB9bAmDitNSLXx0WILYTQ2py7VPUg9CWKL05dS34IpeftfxqJRVTCMBXhZR/gptErirCmu4ax+2EQGtKWKO4mBe1p+hdOgODOMdvYjGsC8BdmyPvi9FR5w5bwHncuJh1wYPbRXpSiLbYtS6Hzz3B3dz1R0ecyeAYEIm+K+qFgI1uw/i9LJB5BFV4VwXPwuXjthMlEwPOhe/4iHRRf9RmFSiSepEChToeWKhhFmI2xo5ofirMemorhFSBdb3+/c1YyzCFUCtcaWB8RnSE6KraHVgZ4=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(136003)(376002)(366004)(396003)(346002)(451199021)(5660300002)(2616005)(38100700002)(83380400001)(186003)(2906002)(6506007)(6512007)(44832011)(7416002)(478600001)(6916009)(66476007)(6666004)(8936002)(316002)(6486002)(66556008)(66946007)(8676002)(41300700001)(86362001)(36756003)(4326008)(54906003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?8nzCsPXl9b9eDSUu0BUiDb06q1mhQVqEjZIuHBbJAPIYdQFdGG8PGDaz4dwn?=
+ =?us-ascii?Q?pR4en3eXMlCucLwrS2uaBn6MK3fS2Khwo3dtBejzv9nITvX5FYQQt3lc+9tZ?=
+ =?us-ascii?Q?jMNcYmDYE0Zmk56E8pVM/H2r5D1hMOAXHuUca82/QeWRF8P59vhK+zOG1MtN?=
+ =?us-ascii?Q?mEmXGLEmIlQ8C1GvVB6no7iVmgubPjYFX5J0DFs9bNKAabOwIoWuJ4SYL4sa?=
+ =?us-ascii?Q?KxrSL3gXLZ7SWpQ+ptq9unSnVqgILKF3EWCh6++2s7rS60kWllZr7YLdmDXj?=
+ =?us-ascii?Q?rIaq2YOqQv7aJGTwYcLWal+10B2JJbHofczF7McP5epR8OamKdv6YpmHO/lU?=
+ =?us-ascii?Q?besjIMhINYC+184jNqwBA5l4TiamSvJ+yABzWIbJvLDWUF7sidXX7VIN+6ph?=
+ =?us-ascii?Q?No52xJBfxHepLK/sJObkQVT0dBczlSYJK7Fn1uLhUOyiRjCCucOMwdtnvLjP?=
+ =?us-ascii?Q?CsHqR3YeQ87ycgmSBK66/5l1MVSnOHHJFSj8vPGdlt3qJ8z8LfjTIN3yYmDe?=
+ =?us-ascii?Q?dRHYIzNa0yz1EJypMqm9paNw0IGlpz9XLIaYZ2fHg8TQmePx+vKZyEpeNop1?=
+ =?us-ascii?Q?ortY60mo4f7M+qb4evIXRCCXnQXx8+ts/LsegLXFjkwpIiiNfk4taOgX5vj9?=
+ =?us-ascii?Q?XKn+0gDfQJT+BFtirCgB5HeCVxvw/5RVbOiMe8LehW8E18O4QmZBXrKlrG4T?=
+ =?us-ascii?Q?kPtF//OABjA81nz8L0kPbqLf9L5fvyWjUBdpZtJGFQMWkeLY3zRhqCLYazzB?=
+ =?us-ascii?Q?cDjy/oWn4DwzOb/p3X/+TvhfrxVSb8KBkaC/C8ny87CF4PM61UNhSEdS7uRU?=
+ =?us-ascii?Q?hM38KZVulCPPlruyhJuVubMxyyfKVIn1SbylJMoK4OMR/yiXqN7SM7AiSmTm?=
+ =?us-ascii?Q?q69m0LdTH6sQqwF8xFTv929fBLYIVA0rbSGRuMAb95pO74sDOahU19gRVqS6?=
+ =?us-ascii?Q?JfG4PqPSTkaJPpcUNwnjvlgmIhY5aiaAPJ+M7UJEtxNBW3t0C5sPMm5W55xS?=
+ =?us-ascii?Q?0xOdMbgZG317aKjb7VC71lDx7NQ9FG6ZaGTGt3WXkKTJpICe7sjT5EgbU7ow?=
+ =?us-ascii?Q?Q8Rb6iJ8kMF/6XXQBhupUb5GDjDWNMAW5+XztaLwdBdWSqZI5/f2+YwH4ucH?=
+ =?us-ascii?Q?cFzNDxTqob1WMeyi6Qz9CNyEgXiWN4+8rva2Mvpf97PYRFUUNLGJTRtjOPQB?=
+ =?us-ascii?Q?2EeK3FCFFr9LKsy2RadQnOnzfudf9FU8CaBYvKRhNbQPjkIN6Yx3pC+fnQ/G?=
+ =?us-ascii?Q?ou6H0FGJHDdNdxgGSa1HaUeuhsajP5rnsLTDsAtuIgJriQc565KSYlE2bn2o?=
+ =?us-ascii?Q?4aBGaDwF+pIy0X6uEvfiHzA+IWUnCfqMibQid/fKDjFbpatt314eT3gk5pYl?=
+ =?us-ascii?Q?UETKoztS4P4gUwd6cZxYnx8ZHAdHzo6b4YUhJbKSxhGut0N7YcEy8Jpb5Cv9?=
+ =?us-ascii?Q?fKV8QXwsUa+7ihI/2NYMmkHyVcFYPG7V8EEoPfQtgFyvcwdIgbj8KEutdqGh?=
+ =?us-ascii?Q?ke7MRfPL73Hkq8QHVD87HfpObgS5JtGpu05IHc2hz0pWwrH5UO3OpOImsQM0?=
+ =?us-ascii?Q?ugeUodSYnZxRjyhpS7blSvgYQR/UkB+MwevHIYRUty+N5gGt6BvmnF68rTTH?=
+ =?us-ascii?Q?Ylj3fxYB1jeMst2ygQYKbkOnxTZL0Ll8sJdcaBhlHLRDmXoCs4Qhqem2GITZ?=
+ =?us-ascii?Q?215mtA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b5821558-b8f4-410c-33d3-08db6e514e6e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2023 10:06:09.1547
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wVQBVAX87oHAjMoBT7fbTK8Yh3sPwTj7cvEinYdQ+vSXwkhKDuXKyf6NhndFKr3OdNO5UcWxHAZ5rit+wTKD/gwe7NZqLAxNE9OQiHX3l5w=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR13MB5860
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Alexis Lothoré <alexis.lothore@bootlin.com>
+On Fri, Jun 16, 2023 at 11:08:18AM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The new efx_bind_neigh() function contains a broken code path when IPV6 is
+> disabled:
+> 
+> drivers/net/ethernet/sfc/tc_encap_actions.c:144:7: error: variable 'n' is used uninitialized whenever 'if' condition is true [-Werror,-Wsometimes-uninitialized]
+>                 if (encap->type & EFX_ENCAP_FLAG_IPV6) {
+>                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/sfc/tc_encap_actions.c:184:8: note: uninitialized use occurs here
+>                 if (!n) {
+>                      ^
+> drivers/net/ethernet/sfc/tc_encap_actions.c:144:3: note: remove the 'if' if its condition is always false
+>                 if (encap->type & EFX_ENCAP_FLAG_IPV6) {
+>                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/sfc/tc_encap_actions.c:141:22: note: initialize the variable 'n' to silence this warning
+>                 struct neighbour *n;
+>                                    ^
+>                                     = NULL
+> 
+> Change it to use the existing error handling path here.
+> 
+> Fixes: 7e5e7d800011a ("sfc: neighbour lookup for TC encap action offload")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-The code is pretty similar to dwmac4 snapshot external trigger code. The
-difference is mostly about used registers addresses and/or bits offset in
-registers
-
-Signed-off-by: Alexis Lothoré <alexis.lothore@bootlin.com>
----
- .../ethernet/stmicro/stmmac/dwmac-socfpga.c   |  2 +
- .../net/ethernet/stmicro/stmmac/dwmac1000.h   | 12 ++-
- .../ethernet/stmicro/stmmac/dwmac1000_core.c  | 83 +++++++++++++++++++
- 3 files changed, 95 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-index 6267bcb60206..98f5413cefee 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-@@ -17,6 +17,7 @@
- 
- #include "stmmac.h"
- #include "stmmac_platform.h"
-+#include "dwmac1000.h"
- 
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII 0x0
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII 0x1
-@@ -428,6 +429,7 @@ static int socfpga_dwmac_probe(struct platform_device *pdev)
- 	dwmac->ops = ops;
- 	plat_dat->bsp_priv = dwmac;
- 	plat_dat->fix_mac_speed = socfpga_dwmac_fix_mac_speed;
-+	plat_dat->ext_snapshot_num = GMAC_TC_ATSEN0;
- 
- 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
- 	if (ret)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h b/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
-index 4296ddda8aaa..d17929ea63e0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
-@@ -41,8 +41,7 @@
- #define	GMAC_INT_DISABLE_PCS	(GMAC_INT_DISABLE_RGMII | \
- 				 GMAC_INT_DISABLE_PCSLINK | \
- 				 GMAC_INT_DISABLE_PCSAN)
--#define	GMAC_INT_DEFAULT_MASK	(GMAC_INT_DISABLE_TIMESTAMP | \
--				 GMAC_INT_DISABLE_PCS)
-+#define	GMAC_INT_DEFAULT_MASK	GMAC_INT_DISABLE_PCS
- 
- /* PMT Control and Status */
- #define GMAC_PMT		0x0000002c
-@@ -329,5 +328,14 @@ enum rtc_control {
- #define GMAC_MMC_RX_CSUM_OFFLOAD   0x208
- #define GMAC_EXTHASH_BASE  0x500
- 
-+/* Timestamping registers */
-+#define GMAC_TIMESTAMP_C0NTROL	0x00000700
-+#define GMAC_TC_ATSFC	BIT(24)
-+#define GMAC_TC_ATSEN0	BIT(25)
-+#define GMAC_TIMESTAMP_STATUS	0x00000728
-+#define GMAC_AT_NS	0x00000730
-+#define GMAC_AT_NS_MASK	0x7FFFFFFF
-+#define GMAC_AT_S	0x00000734
-+
- extern const struct stmmac_dma_ops dwmac1000_dma_ops;
- #endif /* __DWMAC1000_H__ */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-index 3927609abc44..97d94b009014 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-@@ -19,6 +19,7 @@
- #include "stmmac.h"
- #include "stmmac_pcs.h"
- #include "dwmac1000.h"
-+#include "stmmac_ptp.h"
- 
- static void dwmac1000_core_init(struct mac_device_info *hw,
- 				struct net_device *dev)
-@@ -294,9 +295,58 @@ static void dwmac1000_rgsmii(void __iomem *ioaddr, struct stmmac_extra_stats *x)
- 	}
- }
- 
-+static void get_ptptime(void __iomem *ioaddr, u64 *ptp_time)
-+{
-+	u64 ns;
-+
-+	ns = (readl(ioaddr + GMAC_AT_NS) & GMAC_AT_NS_MASK);
-+	*ptp_time = ns;
-+	ns = readl(ioaddr + GMAC_AT_S);
-+	*ptp_time += ns * NSEC_PER_SEC;
-+}
-+
-+static void dwmac1000_ptp_isr(struct stmmac_priv *priv)
-+{
-+	struct ptp_clock_event event;
-+	u32 status_reg, num_snapshot;
-+	unsigned long flags;
-+	u64 ptp_time;
-+	int i = 0;
-+
-+	if (priv->plat->int_snapshot_en) {
-+		wake_up(&priv->tstamp_busy_wait);
-+		return;
-+	}
-+
-+	/* Read timestamp status to clear interrupt from either external
-+	 * timestamp or start/end of PPS.
-+	 */
-+	status_reg = readl(priv->ioaddr + GMAC_TIMESTAMP_STATUS);
-+
-+	if (!priv->plat->ext_snapshot_en)
-+		return;
-+
-+	num_snapshot = (status_reg & GMAC_TIMESTAMP_ATSNS_MASK) >>
-+		       GMAC_TIMESTAMP_ATSNS_SHIFT;
-+	if (!num_snapshot)
-+		return;
-+
-+	for (i = 0; i < num_snapshot; i++) {
-+		read_lock_irqsave(&priv->ptp_lock, flags);
-+		get_ptptime(priv->ioaddr, &ptp_time);
-+		read_unlock_irqrestore(&priv->ptp_lock, flags);
-+		event.type = PTP_CLOCK_EXTTS;
-+		event.index = 0;
-+		event.timestamp = ptp_time;
-+		ptp_clock_event(priv->ptp_clock, &event);
-+	}
-+}
-+
- static int dwmac1000_irq_status(struct mac_device_info *hw,
- 				struct stmmac_extra_stats *x)
- {
-+	struct stmmac_priv *priv =
-+		container_of(x, struct stmmac_priv, xstats);
- 	void __iomem *ioaddr = hw->pcsr;
- 	u32 intr_status = readl(ioaddr + GMAC_INT_STATUS);
- 	u32 intr_mask = readl(ioaddr + GMAC_INT_MASK);
-@@ -318,6 +368,9 @@ static int dwmac1000_irq_status(struct mac_device_info *hw,
- 		x->irq_receive_pmt_irq_n++;
- 	}
- 
-+	if (intr_status & GMAC_INT_STATUS_TSTAMP)
-+		dwmac1000_ptp_isr(priv);
-+
- 	/* MAC tx/rx EEE LPI entry/exit interrupts */
- 	if (intr_status & GMAC_INT_STATUS_LPIIS) {
- 		/* Clean LPI interrupt by reading the Reg 12 */
-@@ -502,6 +555,34 @@ static void dwmac1000_set_mac_loopback(void __iomem *ioaddr, bool enable)
- 	writel(value, ioaddr + GMAC_CONTROL);
- }
- 
-+static void dwmac1000_extts_configure(void __iomem *ioaddr, int ext_snapshot_num,
-+				      bool on, struct net_device *dev)
-+{
-+	u32 acr_value;
-+
-+	/* Since DWMAC1000 has only one external trigger input,
-+	 * ext_snapshot_num is not used
-+	 */
-+	acr_value = readl(ioaddr + GMAC_TIMESTAMP_C0NTROL);
-+	acr_value &= ~GMAC_TC_ATSEN0;
-+	if (on) {
-+		acr_value |= GMAC_TC_ATSEN0;
-+		acr_value |= GMAC_TC_ATSFC;
-+		netdev_dbg(dev, "Auxiliary Snapshot 0 enabled.\n");
-+	} else {
-+		netdev_dbg(dev, "Auxiliary Snapshot 0 disabled.\n");
-+	}
-+	writel(acr_value, ioaddr + GMAC_TIMESTAMP_C0NTROL);
-+}
-+
-+static int dwmac1000_clear_snapshot_fifo(void __iomem *ioaddr)
-+{
-+	u32 acr_value;
-+
-+	return readl_poll_timeout(ioaddr + GMAC_TIMESTAMP_C0NTROL, acr_value,
-+				  !(acr_value & GMAC_TC_ATSFC), 10, 10000);
-+}
-+
- const struct stmmac_ops dwmac1000_ops = {
- 	.core_init = dwmac1000_core_init,
- 	.set_mac = stmmac_set_mac,
-@@ -522,6 +603,8 @@ const struct stmmac_ops dwmac1000_ops = {
- 	.pcs_rane = dwmac1000_rane,
- 	.pcs_get_adv_lp = dwmac1000_get_adv_lp,
- 	.set_mac_loopback = dwmac1000_set_mac_loopback,
-+	.extts_configure = dwmac1000_extts_configure,
-+	.clear_snapshot_fifo = dwmac1000_clear_snapshot_fifo
- };
- 
- int dwmac1000_setup(struct stmmac_priv *priv)
--- 
-2.41.0
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
 
