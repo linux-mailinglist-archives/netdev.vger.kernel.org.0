@@ -1,101 +1,102 @@
-Return-Path: <netdev+bounces-11277-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11278-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6C17A7325B5
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 05:13:01 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 184787325E3
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 05:34:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1C4A62815C9
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 03:13:00 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 52EBA1C20E84
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 03:34:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 761DF658;
-	Fri, 16 Jun 2023 03:12:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2831365F;
+	Fri, 16 Jun 2023 03:34:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 196D964D
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 03:12:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59976C433C0;
-	Fri, 16 Jun 2023 03:12:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686885176;
-	bh=Yh60SXBhgr7aEjrKg+EBAV+IIyJjLlVS8qH8nu661KQ=;
-	h=From:To:Cc:Subject:Date:From;
-	b=gA6QGeNyvJreziwmz8QJL/wsHXGUmDQGBXvK7Ik/x1N26asR1AcujhaXbME58l5iH
-	 DPJLJdLAzlN3jx1zBh5sMsq/h4jSsQTk7wEEQqv+BFLuPRHmEfeEZ/KX9iUtOFqLsM
-	 BKtBKFc07gEgmbYR9U68HIz7iUx3u6F0zYDPEoP8XMo/uVyl53jykeqsWw6qdzGkXr
-	 kNRHO7xEW4l0eRSeKTc7SUh51oqgNZLy0swXN0NAwMP5TQyFh7FUVrT1esdG4s9YIU
-	 GcJ0+ffRsSezO4nslTcioZa5Yto6WKRc5jlYc9/HYOm0Qs2oMN9fy+s8FBBiPsoxyN
-	 GvdFnqwfcRX6g==
-From: Jakub Kicinski <kuba@kernel.org>
-To: davem@davemloft.net
-Cc: netdev@vger.kernel.org,
-	edumazet@google.com,
-	pabeni@redhat.com,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18B0E653
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 03:34:50 +0000 (UTC)
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C7E1FE5
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 20:34:48 -0700 (PDT)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VlE9aw3_1686886484;
+Received: from localhost(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0VlE9aw3_1686886484)
+          by smtp.aliyun-inc.com;
+          Fri, 16 Jun 2023 11:34:45 +0800
+From: Cambda Zhu <cambda@linux.alibaba.com>
+To: netdev@vger.kernel.org
+Cc: Eric Dumazet <edumazet@google.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	David Ahern <dsahern@kernel.org>,
 	Jakub Kicinski <kuba@kernel.org>,
-	Przemek Kitszel <przemyslaw.kitszel@intel.com>
-Subject: [PATCH net-next] tools: ynl: change the comment about header guards
-Date: Thu, 15 Jun 2023 20:12:52 -0700
-Message-Id: <20230616031252.2306420-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.40.1
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Dust Li <dust.li@linux.alibaba.com>,
+	Tony Lu <tonylu@linux.alibaba.com>,
+	Cambda Zhu <cambda@linux.alibaba.com>
+Subject: [PATCH net] ipvlan: Fix return value of ipvlan_queue_xmit()
+Date: Fri, 16 Jun 2023 11:33:17 +0800
+Message-Id: <20230616033317.26635-1-cambda@linux.alibaba.com>
+X-Mailer: git-send-email 2.16.6
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-Przemek suggests that I shouldn't accuse GCC of witchcraft,
-there is a simpler explanation for why we need manual define.
+The ipvlan_queue_xmit() should return NET_XMIT_XXX,
+but ipvlan_xmit_mode_l2/l3() returns rx_handler_result_t or NET_RX_XXX
+in some cases. The skb to forward could be treated as xmitted
+successfully.
 
-scripts/headers_install.sh modifies the guard.
-
-This also solves the mystery of why I needed to include
-the header conditionally. I had the wrong guards for most
-cases but ethtool.
-
-Suggested-by: Przemek Kitszel <przemyslaw.kitszel@intel.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
 ---
- tools/net/ynl/Makefile.deps | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ drivers/net/ipvlan/ipvlan_core.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/tools/net/ynl/Makefile.deps b/tools/net/ynl/Makefile.deps
-index 524fc4bb586b..cbf4cdfc4fed 100644
---- a/tools/net/ynl/Makefile.deps
-+++ b/tools/net/ynl/Makefile.deps
-@@ -9,20 +9,16 @@
+diff --git a/drivers/net/ipvlan/ipvlan_core.c b/drivers/net/ipvlan/ipvlan_core.c
+index ab5133eb1d51..e45817caaee8 100644
+--- a/drivers/net/ipvlan/ipvlan_core.c
++++ b/drivers/net/ipvlan/ipvlan_core.c
+@@ -585,7 +585,8 @@ static int ipvlan_xmit_mode_l3(struct sk_buff *skb, struct net_device *dev)
+ 				consume_skb(skb);
+ 				return NET_XMIT_DROP;
+ 			}
+-			return ipvlan_rcv_frame(addr, &skb, true);
++			ipvlan_rcv_frame(addr, &skb, true);
++			return NET_XMIT_SUCCESS;
+ 		}
+ 	}
+ out:
+@@ -611,7 +612,8 @@ static int ipvlan_xmit_mode_l2(struct sk_buff *skb, struct net_device *dev)
+ 					consume_skb(skb);
+ 					return NET_XMIT_DROP;
+ 				}
+-				return ipvlan_rcv_frame(addr, &skb, true);
++				ipvlan_rcv_frame(addr, &skb, true);
++				return NET_XMIT_SUCCESS;
+ 			}
+ 		}
+ 		skb = skb_share_check(skb, GFP_ATOMIC);
+@@ -623,7 +625,8 @@ static int ipvlan_xmit_mode_l2(struct sk_buff *skb, struct net_device *dev)
+ 		 * the skb for the main-dev. At the RX side we just return
+ 		 * RX_PASS for it to be processed further on the stack.
+ 		 */
+-		return dev_forward_skb(ipvlan->phy_dev, skb);
++		dev_forward_skb(ipvlan->phy_dev, skb);
++		return NET_XMIT_SUCCESS;
  
- UAPI_PATH:=../../../../include/uapi/
- 
--# If the header does not exist at all in the system path - let the
--# compiler fall back to the kernel header via -Idirafter.
--# GCC seems to ignore header guard if the header is different, so we need
--# to specify the -D$(hdr_guard).
-+# scripts/headers_install.sh strips "_UAPI" from header guards so we
-+# need the explicit -D to avoid multiple definitions.
- # And we need to define HASH indirectly because GNU Make 4.2 wants it escaped
- # and Gnu Make 4.4 wants it without escaping.
- 
- HASH := \#
- 
--get_hdr_inc=$(if $(shell echo "$(HASH)include <linux/$(2)>" | \
--			 cpp >>/dev/null 2>/dev/null && echo yes),\
--		-D$(1) -include $(UAPI_PATH)/linux/$(2))
-+get_hdr_inc=-D$(1) -include $(UAPI_PATH)/linux/$(2)
- 
--CFLAGS_devlink:=$(call get_hdr_inc,_UAPI_LINUX_DEVLINK_H_,devlink.h)
-+CFLAGS_devlink:=$(call get_hdr_inc,_LINUX_DEVLINK_H_,devlink.h)
- CFLAGS_ethtool:=$(call get_hdr_inc,_LINUX_ETHTOOL_NETLINK_H_,ethtool_netlink.h)
--CFLAGS_handshake:=$(call get_hdr_inc,_UAPI_LINUX_HANDSHAKE_H,handshake.h)
--CFLAGS_netdev:=$(call get_hdr_inc,_UAPI_LINUX_NETDEV_H,netdev.h)
-+CFLAGS_handshake:=$(call get_hdr_inc,_LINUX_HANDSHAKE_H,handshake.h)
-+CFLAGS_netdev:=$(call get_hdr_inc,_LINUX_NETDEV_H,netdev.h)
+ 	} else if (is_multicast_ether_addr(eth->h_dest)) {
+ 		skb_reset_mac_header(skb);
 -- 
-2.40.1
+2.16.6
 
 
