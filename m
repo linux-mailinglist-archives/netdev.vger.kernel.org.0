@@ -1,61 +1,61 @@
-Return-Path: <netdev+bounces-11269-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11270-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D9E7A732572
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 04:54:15 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 5C92B732573
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 04:54:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9E5282815E9
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 02:54:14 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8D70A1C20F37
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 02:54:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F8D87E4;
-	Fri, 16 Jun 2023 02:53:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0644D63D;
+	Fri, 16 Jun 2023 02:53:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84B5063A
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 02:53:38 +0000 (UTC)
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C29B2954;
-	Thu, 15 Jun 2023 19:53:37 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id 2adb3069b0e04-4f004cc54f4so170115e87.3;
-        Thu, 15 Jun 2023 19:53:37 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFB63817
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 02:53:40 +0000 (UTC)
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71366297C;
+	Thu, 15 Jun 2023 19:53:39 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id 2adb3069b0e04-4f7677a94d1so175893e87.0;
+        Thu, 15 Jun 2023 19:53:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686884015; x=1689476015;
+        d=gmail.com; s=20221208; t=1686884018; x=1689476018;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=JH9rgnoje5CiNXWobY3ZLpf7/bXY7kCTB8+Con2/+OA=;
-        b=nbAUKxqkROBMD6br9cgrAZn8uavT1rxIO62rQiLnqdRERiQ41WRJ1ZoRrz+JwNhpWO
-         COQeiWJ17QHdyIBU+7Kl4Uy3mNsxqZ1+ySu1e05uA31KPc/5XLADq7OKx4c/IBD7dxxn
-         PINZKSsz14Hvfa0J+1MPAteXtXocCojlIAg12dKW6an3DInGDCeBcBNIum/rSrBaS0vt
-         +P67NDJ6avMMTxEtLw7VGE5IH+6Z8pGYAnVlB8ItIzZUVwclykbcQgJM/iZQ9awFRMt9
-         yBWMZSuf6pSQ30YQtqNusfmSSu8pA7HCpyoQx6IhyTuOuwQ7hLfX5l5xL1PD7xOF7+mo
-         lEjg==
+        bh=PeQcyVvQd35gvg0Q5bl83ripKoD4zdxyC5dpHXUCgQ8=;
+        b=edhIdPAtNhERnXnhjZiBeAyokijKoqw5wFSRniTKNbImMzwboh6sAlKJtp6krKiLqD
+         +Zq56xq+MUxNSCKY9olSWo4ITNXyaglKL5uAE/1orLonCMJ/RFboUZu9Lk/EwUUTQ45y
+         sfsPSu5hkUn/7/EEXol48gnALTuRaxRIwq74vfvwQfDOLf4Trrmds4WjqmGXXgPJ/Jry
+         2gCoV1U3y7o/7wRwOvapFJVwFuZs9DrYoPfQPrQhRumjEpaR7fqvnWm8R5Xh+oxQleJt
+         NXc6aLT10cyMrgG2G9AyOCxLqfQvxWWWrHOmTh5+EFbSxTTMJHhMS859SJRZWVRePNA8
+         OyFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686884015; x=1689476015;
+        d=1e100.net; s=20221208; t=1686884018; x=1689476018;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=JH9rgnoje5CiNXWobY3ZLpf7/bXY7kCTB8+Con2/+OA=;
-        b=Gw7YThxGSFFJ3koxMVPL+J3KUxC2Ob+5DBP4hzJrG9DmuQy29creyike0+IRIkhPxw
-         yKNiOiKzcK9eCtoaiJXeROp7S2pzdNoQxkL5rnKgOSsMWGze0j2V2kx4d1JwGbXfqq91
-         X/mECSx5tbyJPr7uygN/PK8wn8oA/quGU/SkPDiTNXsJdNjwvHiZhUr294l3qfCq6xCI
-         cFEidTH2KoVlPLrbrxhLxe9Fdh06BB7c90HlmOCulRvhuU8piWEIHYIdZ/Yur/Dquwnp
-         ad4ZMbIgHgAUJfkh/Bx3QqHRue+FZvrnVoBgUfve3qulIaHmCb7H6mB3Tgz0yhJJxnE+
-         BMPQ==
-X-Gm-Message-State: AC+VfDwGrMMAou8M1GCqRGyNHBr68CTyvXpRdbTiX3wnP+ICmNjXyc9r
-	M43N8K8Xx0c3FGTn92+yDuU=
-X-Google-Smtp-Source: ACHHUZ7vBZhrlqunY+9yGIC8576odQqD9NlYAC3uEM3FtxIRkY8j4u0HkMS7Zd9Ziv7asuFwukz1Hw==
-X-Received: by 2002:a19:8c4a:0:b0:4f3:8f3a:f98d with SMTP id i10-20020a198c4a000000b004f38f3af98dmr257461lfj.45.1686884015414;
-        Thu, 15 Jun 2023 19:53:35 -0700 (PDT)
+        bh=PeQcyVvQd35gvg0Q5bl83ripKoD4zdxyC5dpHXUCgQ8=;
+        b=gCVqeYlJ5sjXApucCCAH/CVYMRv/ZK7eqUwjHyWI1KhAXtIT+m7+vv/lg24mPbgtuo
+         zOE4r+cqnguxwfs2OLbAYNtcaNy1GGLzQUviOkyXd+rlArlz1LtEvzVps00p1Z1IFJtl
+         JbexuhTRQ139seUl3IBzK1ZDRR1MnRwt3uvM4V2OxRVzDYULZYid78Gr1VrVWE6fL1SD
+         Jn/LcykWwnbOEA9iFEqrjfnfLfeW6/SNUqszujRqxe1KRUaAHh01cu9ZfEBBGBlnq18/
+         KXC7e2FurjDlDVNjVIjBAFTo/0eG8EnGdnBZor8becfWYgtWd8NjI/RoveQeIYB5Laa3
+         1frA==
+X-Gm-Message-State: AC+VfDyOCFsvP8bg5rfQg+3waPpSaaLra7+aBYqePYm/n98fq9UmZV10
+	zWjWSeQ2u/ARjzqfQP57Rn0=
+X-Google-Smtp-Source: ACHHUZ67TVTk9qXe6h1Ou3Utuf+4Q6WQCIv/PcEdfrfjhSpFBZKtVFo4DFESiS/5EHeQtQMd4rRa5Q==
+X-Received: by 2002:a05:6512:3288:b0:4f0:1e7d:f897 with SMTP id p8-20020a056512328800b004f01e7df897mr347357lfe.17.1686884017644;
+        Thu, 15 Jun 2023 19:53:37 -0700 (PDT)
 Received: from arinc9-Xeront.. (athedsl-404045.home.otenet.gr. [79.131.130.75])
-        by smtp.gmail.com with ESMTPSA id v15-20020a1cf70f000000b003f8d770e935sm890328wmh.0.2023.06.15.19.53.33
+        by smtp.gmail.com with ESMTPSA id v15-20020a1cf70f000000b003f8d770e935sm890328wmh.0.2023.06.15.19.53.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jun 2023 19:53:35 -0700 (PDT)
+        Thu, 15 Jun 2023 19:53:37 -0700 (PDT)
 From: arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To: =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
@@ -82,9 +82,9 @@ Cc: Landen Chao <landen.chao@mediatek.com>,
 	netdev@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-mediatek@lists.infradead.org
-Subject: [PATCH net v5 2/6] net: dsa: mt7530: fix trapping frames on non-MT7621 SoC MT7530 switch
-Date: Fri, 16 Jun 2023 05:53:23 +0300
-Message-Id: <20230616025327.12652-3-arinc.unal@arinc9.com>
+Subject: [PATCH net v5 3/6] net: dsa: mt7530: fix handling of BPDUs on MT7530 switch
+Date: Fri, 16 Jun 2023 05:53:24 +0300
+Message-Id: <20230616025327.12652-4-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230616025327.12652-1-arinc.unal@arinc9.com>
 References: <20230616025327.12652-1-arinc.unal@arinc9.com>
@@ -105,28 +105,32 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-The check for setting the CPU_PORT bits must include the non-MT7621 SoC
-MT7530 switch variants to trap frames. Expand the check to include them.
+BPDUs are link-local frames, therefore they must be trapped to the CPU
+port. Currently, the MT7530 switch treats BPDUs as regular multicast
+frames, therefore flooding them to user ports. To fix this, set BPDUs to be
+trapped to the CPU port.
 
 Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/mt7530.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 0a5237793209..e9fbe7ae6c2c 100644
+index e9fbe7ae6c2c..7b72cf3a0e30 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -1007,7 +1007,7 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
- 		   UNU_FFP(BIT(port)));
+@@ -2262,6 +2262,10 @@ mt7530_setup(struct dsa_switch *ds)
  
- 	/* Set CPU port number */
--	if (priv->id == ID_MT7621)
-+	if (priv->id == ID_MT7530 || priv->id == ID_MT7621)
- 		mt7530_rmw(priv, MT7530_MFC, CPU_MASK, CPU_EN | CPU_PORT(port));
+ 	priv->p6_interface = PHY_INTERFACE_MODE_NA;
  
- 	/* Add the CPU port to the CPU port bitmap for MT7531 and the switch on
++	/* Trap BPDUs to the CPU port */
++	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
++		   MT753X_BPDU_CPU_ONLY);
++
+ 	/* Enable and reset MIB counters */
+ 	mt7530_mib_reset(ds);
+ 
 -- 
 2.39.2
 
