@@ -1,96 +1,104 @@
-Return-Path: <netdev+bounces-11471-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11472-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9B8F2733347
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 16:17:04 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 82AEF73334B
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 16:17:22 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C87901C20F8C
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 14:17:03 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B3A981C20E6D
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 14:17:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A355019E48;
-	Fri, 16 Jun 2023 14:17:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 609781ACA7;
+	Fri, 16 Jun 2023 14:17:05 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96AAC1113
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 14:17:01 +0000 (UTC)
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C81B30DE;
-	Fri, 16 Jun 2023 07:17:00 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id d9443c01a7336-1b5018cb4dcso5144895ad.2;
-        Fri, 16 Jun 2023 07:17:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686925020; x=1689517020;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=An/rdJavvmU9ACpPTpspbl193LS1F89T5MDqS1a0mPI=;
-        b=I0nKKEYaePfPrIOzDWEIPxJna7yuzGIhhZtoECMhxHLkJVW4J5H0GcGba46oAnUNya
-         9AZcF2iyTtHM6i4MYnyiHY1xJTqN8gPW1KPlEwpYnAq5tXM1PlHYi0EztTvuqB0ku0mx
-         0uDQEGxXqoD1yMpG6/baCGD4SfxreSLhc9mP7arpSezcLvhtFSFKlxqxC6/fI0bROYal
-         JOjqeZT6/FMkT6CeE4VUzgpAAIvJfe5nfsYI+Cd0uOkV7byTYhHiGkkPUbP6e/re3dwI
-         GeXdeaQwr93JIi2+F2v6KTjKmg/SF7oMnNq/lsWQOL6TOjyGrhZMltf4qVs7honVF6Ji
-         A5lA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686925020; x=1689517020;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=An/rdJavvmU9ACpPTpspbl193LS1F89T5MDqS1a0mPI=;
-        b=iwX9QLFCscXp98AuElm6ke5BfspmlOwC6+1I8nu8mszaCRkN2MOV0oUGF5mKFZdz5y
-         PP9f63F/iw45mPN2YvI0QoJzUcKjbZSvhpyTeIFkgs4h0ItYV7fbYmaeEa3zq0gY/B6c
-         1gTKd696qssp57UnmISH1tf3Gok8SPiyejI0Umw+YaNIVLcuV3h30oCmTYhXkldHrAVR
-         rL6N2FfQhTE3yPW+raP4Kf1/UyrFZ3wEn6q1d4Gzl0Cp02YR3F5O7HpC6VYeiCgPHJVu
-         IXQZpzT4KeOLFZmPLJOc+rbt32nj3AKK8p/GOLg+jJ7qbgYX2l2tllpyz0PE1868t4nP
-         y1EA==
-X-Gm-Message-State: AC+VfDxzMtfKDx+cHl1byPwn/GQK3KpU982THlgmIFfofesdyfKUYsEH
-	QvRHDWLBLukvPYbChCoK2xE=
-X-Google-Smtp-Source: ACHHUZ4+UBcOMwX39mJtoK9hol0pfAAe4DmQ2FpucAnocmfKreb6V7C761jTaQ1VBhWzKgw9YtC3Fw==
-X-Received: by 2002:a17:902:7fc8:b0:1b3:e6ba:3539 with SMTP id t8-20020a1709027fc800b001b3e6ba3539mr1371673plb.51.1686925019853;
-        Fri, 16 Jun 2023 07:16:59 -0700 (PDT)
-Received: from localhost.localdomain ([103.116.245.58])
-        by smtp.gmail.com with ESMTPSA id r21-20020a170902ea5500b001b03a1a3151sm15922859plg.70.2023.06.16.07.16.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Jun 2023 07:16:59 -0700 (PDT)
-From: Jianhui Zhao <zhaojh329@gmail.com>
-To: zhaojh329@gmail.com
-Cc: andrew@lunn.ch,
-	davem@davemloft.net,
-	edumazet@google.com,
-	hkallweit1@gmail.com,
-	kuba@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux@armlinux.org.uk,
-	netdev@vger.kernel.org,
-	pabeni@redhat.com
-Subject: [PATCH V4] net: phy: Add sysfs attribute for PHY c45 identifiers.
-Date: Fri, 16 Jun 2023 22:16:47 +0800
-Message-Id: <20230616141647.4248-1-zhaojh329@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230616135455.1985-1-zhaojh329@gmail.com>
-References: <20230616135455.1985-1-zhaojh329@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5544319E48
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 14:17:05 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A4530DE;
+	Fri, 16 Jun 2023 07:17:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=B/BeAODtPMJM5GYMY6qmn/c1+m2koEH73p+4kcHr2Ws=; b=0mXhPJ3d46GuL/LB90OVb5RNTq
+	PxMBFFYYl7Wwq+kWXcSPVWoj/v1tlO0XfHW31jExBL6DD7cTQFtYGmvERB0HtlPmMkxjV468Maagw
+	UXLN1OskCPQZYOYRT5KBcRRS3Qos8O3RXCwLIzAQzPdM+kxUrHvX0UGuqt7vwxCOPGlQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1qAAFt-00GjBb-9p; Fri, 16 Jun 2023 16:16:49 +0200
+Date: Fri, 16 Jun 2023 16:16:49 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: Jianhui Zhao <zhaojh329@gmail.com>, hkallweit1@gmail.com,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V3] net: phy: Add sysfs attribute for PHY c45 identifiers.
+Message-ID: <037cfb16-0d40-47bc-bafe-7a1b3964d6ec@lunn.ch>
+References: <20230614134522.11169-1-zhaojh329@gmail.com>
+ <ZIwUFXOCCKZYSUBi@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZIwUFXOCCKZYSUBi@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
->Doing it properly:
->
->        struct phy_c45_devid_attribute *devattr =
->                container_of(attr, struct phy_c45_devid_attribute, attr.attr);
+On Fri, Jun 16, 2023 at 08:49:41AM +0100, Russell King (Oracle) wrote:
+> On Wed, Jun 14, 2023 at 09:45:22PM +0800, Jianhui Zhao wrote:
+> > +static const struct attribute_group phy_dev_c45_ids_group = {
+> > +	.name = "c45_ids",
+> > +	.attrs = phy_c45_id_attrs
+> > +};
+> 
+> One last thing - is there any point to creating these attributes if
+> the PHY isn't c45?
+> 
+> We could add here:
+> 
+> 	.is_visible = phy_dev_c45_visible,
+> 
+> with:
+> 
+> static umode_t phy_dev_c45_visible(struct kobject *kobj,
+> 				   struct attribute *attr, int foo)
+> {
+> 	struct phy_device *phydev = to_phy_device(kobj_to_dev(kobj));
+> 
+> 	return phydev->is_c45 ? attr->mode : 0;
+> }
+> 
+> which will only show the c45 attributes if the PHY is a c45 PHY.
+> 
+> Andrew, any opinions?
 
-Thanks for the tip!
+There are PHYs which get detected via their C22 ID, but the driver
+then uses C45. So phydev->is_c45 could be false yet the device does
+have C45 IDs. But i don't see a good solution to this. If the point of
+these values is to aid debugging matching devices to drivers, this
+does not really matter. Its C22 ID is what will be used, and that
+sysfs file will be populated.
+
+So this .is_visible seems reasonable.
+
+I suppose there is the flip condition. Do we want the C22 sysfs file
+visible if there is no C22 ID? But that is probably ABI, we cannot
+change it now.
+
+   Andrew
 
