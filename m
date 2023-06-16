@@ -1,52 +1,52 @@
-Return-Path: <netdev+bounces-11465-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11466-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D9BBB7332B2
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 15:57:56 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id EBD4D7332B3
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 15:58:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1693A1C20FE2
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 13:57:56 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A698A2817BB
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 13:58:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9AE9E19BDF;
-	Fri, 16 Jun 2023 13:54:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 610621ACA1;
+	Fri, 16 Jun 2023 13:54:57 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8626019E40
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 13:54:54 +0000 (UTC)
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2080.outbound.protection.outlook.com [40.107.6.80])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DAE330E0;
-	Fri, 16 Jun 2023 06:54:23 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F19F19E40
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 13:54:57 +0000 (UTC)
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2065.outbound.protection.outlook.com [40.107.6.65])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1458F35BE;
+	Fri, 16 Jun 2023 06:54:26 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k3Pw828RR3Bhq4dNAk4wHNS1RKTXijffXaKq2MbVe6ZF715+QiLE5FkGxq9L4J7koKYJhJ8Dr++hk7d+1lRZzvZ3/WRgwE4e90iX8wLqyXjF4N94PCCumYQcP/aQ9Kv4OIaWmB7oBI4eTRR8nNE2Nzf6kw/hyIqtRDED987t8mDrBuR1LRrUHfZEIpOkL0FLcvqsMjWXUAyhdfXcvXy075XeIbzH6EJZ6//1yds94jvC3ptEZOLtevLmK00E8gXi8LX4Go+Tmi0peBg6VQlBeoDKRvcx0UDIdsg09HGfyu4uR9/keyB7vH8jnFsLBLIIH5Ga9RhT+iVX+9JtwQPrBw==
+ b=WreIKL52TDby+f70Oi2VIY+7YzaVa7vS868X+AzzHQUC8RDKdm80i2AOf8Vb6TQvjhyU33s6R/+f/p83i4bvg+PTO2v6sf9qOQ15ll2lvXE8kT9hX7rodbeXprmajCGEnlVCzW2ImtPs6u8LFKdfPamkRrNIp7vQftYsRl2bYhTLWcKADsi/LTP2t9F/TAfkJVMCaFr0XVk4QNe6pBHVUzMWaJqEKrb02JPOoAYyOQeEom3IBPklqeTmo5w4+fvhkAW2dQ+YN+uVkqtwzvZYO6tPEOxpmvL/m0T2qFSjEuLpK8zsnKKOf4RIvWcoz7Vhj9x8WLtjO/yDlb3g1KEWkQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WkZjJZsGorK0DyRGO1pqdg26usTUhJ5nrc4AjJOOIVE=;
- b=ZClrJoSZxUPJP/TStItpF4jBAhyRE5vDg/kVekbnKwbG8Nqe75g3gMDwNkcK6ujlSIxxOFDsrFqUM8RFkoV9vCAiFtqYvuA5AkskY4nsnsEFP2Vr9dpwUDQ55/vd8uv7Shs1awMY0sHkMmFQ1OUF+Lxo/Qe0Ox/PZMjYGfCV+my7dD9bWTbE6wzb0Y8R5MDfV9DvYFah553MYBiRTgFve3GJACyNNEj6xfv1R94NeMLY1O/SbFMFc1N3QEu/bpnJ+cBjSJGXpbR333ka3pieysNUwm8vOm0iyTJtNVhP9VTqLCoLxrwjpCfb32xpayMft+jfBFOoEI5n07vbt6A7/A==
+ bh=wcDcZg+fEnaFJECLgaYFdV3yzxB51wthQPGaJAi8V2g=;
+ b=mx7UFOrQSJz+PMs/blHQTbI/nVRwQtn4N4gdC9UMRuQ8nKquRY5RLTGiyMwBbW+lVw0rhbb7uLg9qa4yqHcs2M0LVPszcUmjyWOiG7Dy0jAlgRuoJkMDoU0BUS+/G7Hz5TUgRirUBrpqeF53kef1h9oIep3CE5l7yO/Mz2jScetquPz9Up5tiWHtfwIss6DzPapj8gWbZbJujINTMGdx+bKs2KcIoAYJkcPYQSv6w16iPHiNSNF8UgbY/dH7wU0RHPhPoquRzO2P1c/V3ABt0m2u7fZ+pYnuB7KJ57Pv7lb/ZcmtNSaXRW0NWdRKoeVizRiWEMqCV/Ju1TiiLvKIBA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
  s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WkZjJZsGorK0DyRGO1pqdg26usTUhJ5nrc4AjJOOIVE=;
- b=K2hTI1oTeKY9DrDBeEMSXUyiJlnSiZ0YGWu11xCN7Px95bbN8n2ArUWS2kx5sPpOscU+dn7Dn+za/Q1dR2bevHOZONFt8oSZuwRVcCWZnUrifMYJotb80B3PuP7MbUkR+PQSpN3uq9bY2YQTIve4noRirfrOQJJUFrp7yEfuQKY=
+ bh=wcDcZg+fEnaFJECLgaYFdV3yzxB51wthQPGaJAi8V2g=;
+ b=NII28wTjw/9eLga4+4fNn7NpVe2UCh1yQMY+Xogtkr30e9GpO1mIEXiq3KOAFBF24S5cKCfdfYoHzAD6X0wzm+4OQPM5E4R8dP+xho/Xn3VafBBQUlczLP81ZxPB62nXQx7crHxkvnj001PZxPx5R2tGCswUUoDWG05yszJtdQI=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=oss.nxp.com;
 Received: from AM9PR04MB8954.eurprd04.prod.outlook.com (2603:10a6:20b:409::7)
  by PA4PR04MB9318.eurprd04.prod.outlook.com (2603:10a6:102:2a5::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.25; Fri, 16 Jun
- 2023 13:54:05 +0000
+ 2023 13:54:06 +0000
 Received: from AM9PR04MB8954.eurprd04.prod.outlook.com
  ([fe80::5356:c79f:ef9f:dc29]) by AM9PR04MB8954.eurprd04.prod.outlook.com
  ([fe80::5356:c79f:ef9f:dc29%4]) with mapi id 15.20.6500.029; Fri, 16 Jun 2023
- 13:54:05 +0000
+ 13:54:06 +0000
 From: "Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
 To: andrew@lunn.ch,
 	hkallweit1@gmail.com,
@@ -60,9 +60,9 @@ Cc: netdev@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	sebastian.tobuschat@nxp.com,
 	"Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
-Subject: [PATCH net-next v1 12/14] net: phy: nxp-c45-tja11xx: read ext trig ts TJA1120
-Date: Fri, 16 Jun 2023 16:53:21 +0300
-Message-Id: <20230616135323.98215-13-radu-nicolae.pirea@oss.nxp.com>
+Subject: [PATCH net-next v1 13/14] net: phy: nxp-c45-tja11xx: reset PCS if the link goes down
+Date: Fri, 16 Jun 2023 16:53:22 +0300
+Message-Id: <20230616135323.98215-14-radu-nicolae.pirea@oss.nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230616135323.98215-1-radu-nicolae.pirea@oss.nxp.com>
 References: <20230616135323.98215-1-radu-nicolae.pirea@oss.nxp.com>
@@ -80,55 +80,55 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM9PR04MB8954:EE_|PA4PR04MB9318:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9c256250-ce72-4a70-1ded-08db6e712634
+X-MS-Office365-Filtering-Correlation-Id: da81a6a2-de93-4288-fdb1-08db6e7126bb
 X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	YSVfGDQNKOXMR6eNlp+NbtPMunL9FBu9pKZT2PhBdLqY5Znk2tNYLe7gioSjD2lOm5OtCA+kXMqwqZnQePMXoyr07wE9u1UK7JbEtT6+VuaqYHz60CpN6C0vw8ibvQS/OiPFOJIwZ9jXYklM+ytXZriYaxledDBvyytVZIm2MSHXJaCUf72Zh4IPQwz5To8l3ajrpBlWcseIxuBauKQJ4Hj8Y+dX3+e5cdKfhR615HJFN5NNAg6c5baaUeKjPK4p33w1FwtxYkUezgQG/vHBEmerTm6xil3qwvGfWEc5iEExohSf+cgpq4dGrNFdyjT4UR3+H38YaZNWZsljmK9+xeBBWRJLlUpM+ThFoQPxc8/OsDRfLLNuakBYD68iiZ3nr4CnQ5v6N9WyGpALCjOUsVDJLlRq60Wh7QQaGyLbl71svsqynDvSP5pEIs96Tz3ILHZ+g2/kst1tsE62aNVH6n7sBhrfL4MD3iHjdGK9Y6tONXk7V2wemb+mn9W5a1PZK7KPu/MGFiErQCvF5pxEIAcapr2otuPHbKjq49mBbIZD44BULMV/d1/avMlxDpVArKdcANYf/8onyQNNLPEAuQh54NCC9bsjQWDrmMZvXpOlVYoj6era851ABhEU+dU8
+	T7AFjoikDY9Kqu0W84CkXJqtaJu55eiM//PbrN/xvgoIJ4aQBpcM9FK7f2AdUUd88OcS+S3A4kH9Fdx+wosDisBuokcDO3Lv0NAcUUTPOS6DXRbY1ZpcslHB4IEh6A4c0tucTeJKoWrTt/oV0eV1rHK1SpPHyJoOehqBR9xHZL2zRjKTiYkqfx/pdCW/sjmJA4Y4t+Pf/GcZnbuNyzRZNPTTQLW2vK8OOB8ukuuIueLRKmbk58wsFRIgik4Fq0Zihr6leL59b1E668m8sg/yKfarBZcRLBfP0WdtjwsIHVjh4mfKwkuYd24sonDXnuQ7BJB++edQCey9YNIxJ9dPydD1O9AFwMdaRuijz23fbYplgun5PSW5x/ZVtXyOP5Rf/0zrfRtXaeg9simn3cxvMSv94XIXKe87bbaarjbcNC/zK3PTVHb9jp4HLXQ/v5kUxC0rKHCA+StSLviIfI5AQtVImPfhY76PsDTWCd2EqL24zFFGW2RKaWTORfRWdAv/xQnKi8B/63dUMGvuy9Jg91MW6LB/+6Ey+6wx5dmsR+S4Un8PmNGp/pQPo3aCuNp8u1D0FcejxuaKEEVilzvl0Dl97Wq3PZw1DL0/bhdpdDuWehS9dVryuF658KQ/wgaD
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8954.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(366004)(346002)(136003)(376002)(451199021)(41300700001)(52116002)(86362001)(66556008)(66946007)(316002)(6486002)(8676002)(8936002)(6666004)(66476007)(4326008)(478600001)(7416002)(6512007)(5660300002)(26005)(83380400001)(6506007)(1076003)(2906002)(186003)(38350700002)(2616005)(38100700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?0KyLpFV2V70rB/V371jIJbnH6wzjQ9e8+LebVHLyww2DYYbdn1x2EJcSFsDr?=
- =?us-ascii?Q?Qln4W1z0jGf2Mu1tfJt0MjlwgDv1X54l8hiRThPzR2Pj3pHjSptFNA9RO4FD?=
- =?us-ascii?Q?3bd7lc+i4Tt2kKCrt+itSGokcbeZiGoDzV66L1E518lE2T/OI2bs4NVc37in?=
- =?us-ascii?Q?Q2/gYVrQglzSGAMjLwSRF7b+SEvSkZ8NGKkZbkkdwnWSPioEZRgWp58/qjT/?=
- =?us-ascii?Q?eCyzqroabbXVeLOOsZHb/yffBNLYltJ95343oz5axIM6LDbVIMEO+N/KTyCd?=
- =?us-ascii?Q?Zur3lZ2ejxncQHQIfGtiuYdwevyZBAkjtN6Ri4AQIwnHBgKM0uj5voErzaFS?=
- =?us-ascii?Q?2uh8o83edq52tlJTqQkc+019W1sb4rkvGuv/rZ/Pp3vKh0LiYK1/UL3aS/tQ?=
- =?us-ascii?Q?arjG6KC2in2Zgvn21BQ3UW871C9ItNXFWhBCs9JWfXR1v3bAbyxYAkR/WZXO?=
- =?us-ascii?Q?0s4Ads6LlJZBqEChiuYwB3VQXrlHActTKUNPYrnYYMGeSzNpypHksiTL9LOf?=
- =?us-ascii?Q?3QPEMxu0F8jGjnPc4oR8K1436J0cvGFE1JR0nPD3dKNc/x8M7KqNMPtMf3gW?=
- =?us-ascii?Q?F/2dB0axn3mhcYfgPsjEZ63wUjRxvmxVsOGRep/MRs5q+0qMUfhUr6Pckctd?=
- =?us-ascii?Q?QyI9hgrmxiH02ZSApg1O8GsDr/WA7LnH+YsEU52WM0H0tCzAkfd/Qz42aW9h?=
- =?us-ascii?Q?5RFVxy6ZumgMx4PSiyPNo4THElS5sKyu7a5X5SQ/zKJEjF+93MQ9R3q845/8?=
- =?us-ascii?Q?SSwgyLeNOnTjFtE440l3TAS3l8zRoNTh2RUw0+H1DE40uh5T9RAQCD2dLQ3p?=
- =?us-ascii?Q?mdvhVT40x2sFdHps7ui5MdswsysYK63A/qUukD1Ku5pneGfV/qkKPFfmBr/4?=
- =?us-ascii?Q?GLIio19nku2tlx+rSdUH2TMu3Ezdzxw78L7CQ2LSTtR/6lCZptR6Bx+1vMCO?=
- =?us-ascii?Q?MSgvNVxGklulvxE/vbBM1BKGaEi3/jl0BDZIzFjpM9lyG8pgmQ2H6dbK0v9u?=
- =?us-ascii?Q?MksWSDg3tIRKgvZop/jY/4I/wZCZYVhAnwyWC8SvdZxTsuZCtZGQCVBRWkBC?=
- =?us-ascii?Q?Lz9gjcv0bid6O9wCbEiqwj5JWB1SR1nOuwbSuHNKjOZfPoharI4tEUZjIMYM?=
- =?us-ascii?Q?P66rjbSoU59+V26p/DRVHRiSH1NNCyIiI8EGgvVUhhT/WclvPXfAw4o+JxTF?=
- =?us-ascii?Q?uBvmN8ltnk9mJv/FUcGt9v0ytcdq8bYXtxac4Z16pTkIRLUJDLnI3YpIkgcK?=
- =?us-ascii?Q?Va3fpwMKL6fszUmHj4w6XIWSeS6EMe0QGqk4/4i6XgDButApfrxI7EcIW/cD?=
- =?us-ascii?Q?iSgTYIB52Mh3J/tSbcnTOI23k4T1PNjtrbrW/6ri83d/pMCd1sbRWADQLynd?=
- =?us-ascii?Q?DDJ2yhNQ4YatMTYj12QguTTnmCUQEBNbtQRjA3W0avXYFNQIes8LJWnF66pW?=
- =?us-ascii?Q?WPd5PwmU60glz7CiKJyCaeJe+svNZu2URB8uEHzVHbNHg4uCK9D+Q5uoKPH6?=
- =?us-ascii?Q?5clbbr8FMAWyRfoVrnSy5zWpA9wcJj0qW3ZjMZ83g+FHpMRZuBAZh43a0pGr?=
- =?us-ascii?Q?3JTBOHlazlZhlbicC8i++WTEu+lDysSYr+aNSdJe/wgbg8ALh6/bMN5hUDbr?=
- =?us-ascii?Q?5Q=3D=3D?=
+	=?us-ascii?Q?W03C2FwzhkY7fkHcRvnj/meFK71jAtM33uR9mbHdSb7FifNPEW7HWOrVjUTY?=
+ =?us-ascii?Q?Phq5KTwyUNGWeinAC4AcK7R4R0louOL8G/SWVRywDlKAZL7Bp+BDOqC34M1F?=
+ =?us-ascii?Q?2ayV14wUBs6PY6I6jLaFsJ+gPDTNkB4MnQdK9qRnn4sBtqWlvl2fMc4f0t4z?=
+ =?us-ascii?Q?qhUosImBu4IfSayUoEF3jr02iqP1Wq0K+mPtg7V3Av7Bw6mPB6IHqXXd7e2a?=
+ =?us-ascii?Q?paas3DlDtjAsr4dvR5W85qMIIIrOSeRP5Ahd3Ea/kToeAzbk/u9Vn+hoJEa9?=
+ =?us-ascii?Q?K8DGlqIOLFvZEWfUZPmKCehFkq3QCMl+jxeLoDFmyc7MuH3v8uB/UykbBZEQ?=
+ =?us-ascii?Q?GCIotTQGOWdqyyS5gkOjhejqJhvgiGRk0AHZYRybuqv9qhmtemHCzkEZ53c8?=
+ =?us-ascii?Q?97bWFLxHsaW0mfv7+poVwNkz65U4YMq4l5Htv0uqhx8/bU8svhMu8Aor/FdZ?=
+ =?us-ascii?Q?EQS3JmUY1MCBEm7xAHH3nR8uwEZQyLuRF96pqQYIcyYVjoRWwnNvh6b7f4Pw?=
+ =?us-ascii?Q?+O3IW4xba1oK5TM2aLVI8hYCmZNDqrc7ttTBrmO4YA0Pu8b55XeTy+IxW8Vb?=
+ =?us-ascii?Q?IXUWGzT6NJ/mj8/kBilUVUPiufq3ku4OK/Qs7naGlHZrbAmP+u16TNNMzLf/?=
+ =?us-ascii?Q?5UWl9zrxTJ+81DCFzgejRN0sKHTHUdx0pTGVM4ViW9P2nYv7V8N4YvhTB3Jf?=
+ =?us-ascii?Q?v4Kn/StKwhFsy0BqNqk9760sVZCoXZBcKa9ZGv01fJ+BDs021u1J7B6pbeus?=
+ =?us-ascii?Q?BkTK8qjG2PINJoqmGX6U9c+Bwt2vlkzHReJUrOUBnkRiBp7WBUioD7LYc543?=
+ =?us-ascii?Q?bPLsx+4tAbuTRdP63oxuEPGsNMqgEVQAsHD2KnTyIPGUxgrYeaQqC03X6QaS?=
+ =?us-ascii?Q?qeudbojuZdOMVp/gaaBYQMCeSvZNL5thZipbW+5C643cvuaiKQen4FKR2VfB?=
+ =?us-ascii?Q?Y/ug89ghPWiyP5I83lub4vIP5RVlAGOdCDeicRdCYAqU4CM9FXh7E99FDqMK?=
+ =?us-ascii?Q?sL/cmguRzMKO6E0ambh1R1r478o6kzp26WZGlJFUdf3GeZpE3MgYIbx6HIGN?=
+ =?us-ascii?Q?PBoNFAt5UPa632ls6y3OSluLWfiGtsquciPX1imz0ooQsUlr82lpxq4DwAJw?=
+ =?us-ascii?Q?50Gcaf4qurMZsZnnMMIfC/EGx0xuAM3k64e3JDOERmLeNBSRpRgLnzIBBKxk?=
+ =?us-ascii?Q?D33m7M53xON9AaU0bzvBRjTLGMYCzC6NviL0Bap2VPbPw8HK1kJ79bL74bVm?=
+ =?us-ascii?Q?mBIDV6ywm437ndaBCTNFZTZpk0xT1LNLlzXwd9s05t7MJ4tFJM8Eei5elLGf?=
+ =?us-ascii?Q?tfuFCipUic+VL5AQKOyuAhO6VxH9Ih/L+BZH+lAWpoUW4AJeROsFtueXn0zq?=
+ =?us-ascii?Q?70BUQ6vYERtXrvP7DV9GJRq+5U08KfPPalSi711RoY5fDTDI4XFJGqcOd+gi?=
+ =?us-ascii?Q?nPNHaH3ofva4si0gVy9PGiuGzMLrSYKE5tGRZmqvmYVvm17ZznAGMY8tyarc?=
+ =?us-ascii?Q?XdjS1O64bilQLfeNUnXnjMJWuMLA4tblXlh/v3PzydZ9/GgHNbLFcRIX+lRQ?=
+ =?us-ascii?Q?j9xGsfTw05JRTvbEJIu/kzWDQFVZljOLYuhohJOW2S/54tHHShly2UiQWltx?=
+ =?us-ascii?Q?yw=3D=3D?=
 X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c256250-ce72-4a70-1ded-08db6e712634
+X-MS-Exchange-CrossTenant-Network-Message-Id: da81a6a2-de93-4288-fdb1-08db6e7126bb
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8954.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2023 13:54:05.5996
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2023 13:54:06.4960
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fKRuxZgJML+ZpTMDVpjQLiwccmUVOscIHeHTWsEhLrZsM9OmbNwrhEBbqwauduXKBvG8DAeh+Vye1H1obzJct402NtFVWCx1tHKgtZX1C0k=
+X-MS-Exchange-CrossTenant-UserPrincipalName: MJM5GgcW71JJFBc3SppArUzLh3izLxw8rrJ5nRQXO36IPZVC9pYhUkIF4M5vMBXdTj9oL/3EakeGZ+6Hsb5aHH/2peFkNZKA/SJXTcm/m6M=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB9318
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
@@ -136,118 +136,71 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On TJA1120, the external trigger timestamp now has a VALID bit. This
-changes the logic and we can't use the TJA1103 procedure.
+During PTP testing on early TJA1120 engineering samples I observed that
+if the link is lost and recovered, the tx timestamps will be randomly
+lost. To avoid this HW issue, the PCS should be reseted.
 
-For TJA1103, we can always read a valid timestamp from the registers,
-compare the new timestamp with the old timestamp and, if they are not the
-same, an event occurred. This logic cannot be applied for TJA1120 because
-the timestamp is 0 if the VALID bit is not set.
+Resetting the PCS will break the link and we should reset the PCS on
+LINK UP -> LINK DOWN transition, otherwise we will trigger and infinite
+loop of LINK UP -> LINK DOWN events.
 
 Signed-off-by: Radu Pirea (NXP OSS) <radu-nicolae.pirea@oss.nxp.com>
 ---
- drivers/net/phy/nxp-c45-tja11xx.c | 36 +++++++++++++++++++++++++------
- 1 file changed, 29 insertions(+), 7 deletions(-)
+ drivers/net/phy/nxp-c45-tja11xx.c | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/phy/nxp-c45-tja11xx.c b/drivers/net/phy/nxp-c45-tja11xx.c
-index 4b40be45c955..0ed96d696bad 100644
+index 0ed96d696bad..0d22eb7534dc 100644
 --- a/drivers/net/phy/nxp-c45-tja11xx.c
 +++ b/drivers/net/phy/nxp-c45-tja11xx.c
-@@ -34,6 +34,8 @@
- #define TJA1120_GLOBAL_INFRA_IRQ_STATUS	0x2C0C
- #define TJA1120_DEV_BOOT_DONE		BIT(1)
+@@ -56,6 +56,9 @@
+ #define VEND1_PHY_CONFIG		0x8108
+ #define PHY_CONFIG_AUTO			BIT(0)
  
-+#define TJA1120_VEND1_PTP_TRIG_DATA_S	0x1070
++#define TJA1120_EPHY_RESETS		0x810A
++#define EPHY_PCS_RESET			BIT(3)
 +
- #define TJA1120_EGRESS_TS_DATA_S	0x9060
- #define TJA1120_EGRESS_TS_END		0x9067
- #define TJA1120_TS_VALID		BIT(0)
-@@ -268,6 +270,7 @@ struct nxp_c45_phy_data {
- 	void (*counters_enable)(struct phy_device *phydev);
- 	bool (*get_egressts)(struct nxp_c45_phy *priv,
- 			     struct nxp_c45_hwts *hwts);
-+	bool (*get_extts)(struct nxp_c45_phy *priv, struct timespec64 *extts);
- 	void (*ptp_init)(struct phy_device *phydev);
- 	void (*ptp_enable)(struct phy_device *phydev, bool enable);
- 	void (*nmi_handler)(struct phy_device *phydev,
-@@ -504,7 +507,7 @@ static bool nxp_c45_match_ts(struct ptp_header *header,
- 	       header->domain_number  == hwts->domain_number;
+ #define VEND1_SIGNAL_QUALITY		0x8320
+ #define SQI_VALID			BIT(14)
+ #define SQI_MASK			GENMASK(2, 0)
+@@ -1325,6 +1328,28 @@ static int nxp_c45_get_sqi(struct phy_device *phydev)
+ 	return reg;
  }
  
--static void nxp_c45_get_extts(struct nxp_c45_phy *priv,
-+static bool nxp_c45_get_extts(struct nxp_c45_phy *priv,
- 			      struct timespec64 *extts)
- {
- 	const struct nxp_c45_regmap *regmap = nxp_c45_get_regmap(priv->phydev);
-@@ -519,6 +522,23 @@ static void nxp_c45_get_extts(struct nxp_c45_phy *priv,
- 				      regmap->vend1_ext_trg_data_3) << 16;
- 	phy_write_mmd(priv->phydev, MDIO_MMD_VEND1,
- 		      regmap->vend1_ext_trg_ctrl, RING_DONE);
++static int tja1120_read_status(struct phy_device *phydev)
++{
++	unsigned int link = phydev->link;
++	int ret;
 +
-+	return true;
++	ret = genphy_c45_read_status(phydev);
++	if (ret)
++		return ret;
++
++	/* Bug workaround for TJA1120 enegineering samples: fix egress
++	 * timestamps lost after link recovery.
++	 */
++	if (link && !phydev->link) {
++		phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
++				 TJA1120_EPHY_RESETS, EPHY_PCS_RESET);
++		phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1,
++				   TJA1120_EPHY_RESETS, EPHY_PCS_RESET);
++	}
++
++	return ret;
 +}
 +
-+static bool tja1120_get_extts(struct nxp_c45_phy *priv,
-+			      struct timespec64 *extts)
-+{
-+	bool valid;
-+	u16 reg;
-+
-+	reg = phy_read_mmd(priv->phydev, MDIO_MMD_VEND1,
-+			   TJA1120_VEND1_PTP_TRIG_DATA_S);
-+	valid = !!(reg & TJA1120_TS_VALID);
-+	if (valid)
-+		return nxp_c45_get_extts(priv, extts);
-+
-+	return valid;
- }
- 
- static void nxp_c45_read_egress_ts(struct nxp_c45_phy *priv,
-@@ -628,12 +648,12 @@ static long nxp_c45_do_aux_work(struct ptp_clock_info *ptp)
- 	bool reschedule = false;
- 	struct timespec64 ts;
- 	struct sk_buff *skb;
--	bool txts_valid;
-+	bool ts_valid;
- 	u32 ts_raw;
- 
- 	while (!skb_queue_empty_lockless(&priv->tx_queue) && poll_txts) {
--		txts_valid = data->get_egressts(priv, &hwts);
--		if (unlikely(!txts_valid)) {
-+		ts_valid = data->get_egressts(priv, &hwts);
-+		if (unlikely(!ts_valid)) {
- 			/* Still more skbs in the queue */
- 			reschedule = true;
- 			break;
-@@ -654,9 +674,9 @@ static long nxp_c45_do_aux_work(struct ptp_clock_info *ptp)
- 		netif_rx(skb);
- 	}
- 
--	if (priv->extts) {
--		nxp_c45_get_extts(priv, &ts);
--		if (timespec64_compare(&ts, &priv->extts_ts) != 0) {
-+	if (priv->extts && data->get_extts) {
-+		ts_valid = data->get_extts(priv, &ts);
-+		if (ts_valid && timespec64_compare(&ts, &priv->extts_ts) != 0) {
- 			priv->extts_ts = ts;
- 			event.index = priv->extts_index;
- 			event.type = PTP_CLOCK_EXTTS;
-@@ -1702,6 +1722,7 @@ static const struct nxp_c45_phy_data tja1103_phy_data = {
- 	.ack_ptp_irq = false,
- 	.counters_enable = tja1103_counters_enable,
- 	.get_egressts = nxp_c45_get_hwtxts,
-+	.get_extts = nxp_c45_get_extts,
- 	.ptp_init = tja1103_ptp_init,
- 	.ptp_enable = tja1103_ptp_enable,
- 	.nmi_handler = tja1103_nmi_handler,
-@@ -1816,6 +1837,7 @@ static const struct nxp_c45_phy_data tja1120_phy_data = {
- 	.ack_ptp_irq = true,
- 	.counters_enable = tja1120_counters_enable,
- 	.get_egressts = tja1120_get_hwtxts,
-+	.get_extts = tja1120_get_extts,
- 	.ptp_init = tja1120_ptp_init,
- 	.ptp_enable = tja1120_ptp_enable,
- 	.nmi_handler = tja1120_nmi_handler,
+ static int nxp_c45_get_sqi_max(struct phy_device *phydev)
+ {
+ 	return MAX_SQI;
+@@ -1879,7 +1904,7 @@ static struct phy_driver nxp_c45_driver[] = {
+ 		.config_init		= nxp_c45_config_init,
+ 		.config_intr		= tja1120_config_intr,
+ 		.handle_interrupt	= nxp_c45_handle_interrupt,
+-		.read_status		= genphy_c45_read_status,
++		.read_status		= tja1120_read_status,
+ 		.suspend		= genphy_c45_pma_suspend,
+ 		.resume			= genphy_c45_pma_resume,
+ 		.get_sset_count		= nxp_c45_get_sset_count,
 -- 
 2.34.1
 
