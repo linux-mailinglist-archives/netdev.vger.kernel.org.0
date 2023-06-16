@@ -1,79 +1,110 @@
-Return-Path: <netdev+bounces-11555-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11565-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id BBF18733941
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 21:10:47 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 39D7E733A0F
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 21:39:29 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 076D1281845
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 19:10:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D227E28185B
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 19:39:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41E671DDC9;
-	Fri, 16 Jun 2023 19:10:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CC2B71ED22;
+	Fri, 16 Jun 2023 19:39:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F352D1B914
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 19:10:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90B1CC433C0;
-	Fri, 16 Jun 2023 19:10:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686942642;
-	bh=vQP8RpU0TBh50UzUbBTbdS49nrwA/MnxyXUEhhLwNbg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=AKQoc7AXdc/EFusTGnAlBCUfHAdkKR7enXuFMx6h6aQ+chzS4gQHK9Whg0vVWmZlK
-	 9wFshMjL8VnU/KzadHlpqWE0ETUSHWFxEdlwzbJZZbeORmEhjwEgHnt/nCGWeLLJJ2
-	 7pYg+0ccfRUYIW7QF1M5PyS7OVPrgh+9uwMlA9l2PYYHJfLD5hZKLbFHdoUcs6J4lF
-	 8++ZjJmdE1r/b+v6uqTNyZ6TZTrG1rNe4bOj+Fs1kpeazOWtQiIsr1Z3gQNsL8ab0n
-	 o5AiGcw/eX4/LaVtxOSYJ+SWhKnN/e4/VDv9ycqDGBBCRDeC3gFo6HKzKJby4XTiHz
-	 M/0NL+NyAO7Gg==
-Date: Fri, 16 Jun 2023 12:10:41 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Alice Ryhl <alice@ryhl.io>
-Cc: FUJITA Tomonori <fujita.tomonori@gmail.com>, andrew@lunn.ch,
- netdev@vger.kernel.org, rust-for-linux@vger.kernel.org,
- aliceryhl@google.com, miguel.ojeda.sandonis@gmail.com
-Subject: Re: [PATCH 0/5] Rust abstractions for network device drivers
-Message-ID: <20230616121041.4010f51b@kernel.org>
-In-Reply-To: <66dcc87e-e03f-1043-c91d-25d6fa7130a1@ryhl.io>
-References: <20230614230128.199724bd@kernel.org>
-	<8e9e2908-c0da-49ec-86ef-b20fb3bd71c3@lunn.ch>
-	<20230615190252.4e010230@kernel.org>
-	<20230616.220220.1985070935510060172.ubuntu@gmail.com>
-	<20230616114006.3a2a09e5@kernel.org>
-	<66dcc87e-e03f-1043-c91d-25d6fa7130a1@ryhl.io>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C12911B914
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 19:39:24 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84D8119
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 12:39:19 -0700 (PDT)
+Received: from dude02.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::28])
+	by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+	(envelope-from <l.stach@pengutronix.de>)
+	id 1qAExt-0000WQ-I6; Fri, 16 Jun 2023 21:18:33 +0200
+From: Lucas Stach <l.stach@pengutronix.de>
+To: "David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Wei Fang <wei.fang@nxp.com>,
+	Shenwei Wang <shenwei.wang@nxp.com>,
+	Clark Wang <xiaoning.wang@nxp.com>,
+	NXP Linux Team <linux-imx@nxp.com>
+Cc: Andrew Lunn <andrew@lunn.ch>,
+	netdev@vger.kernel.org,
+	kernel@pengutronix.de,
+	patchwork-lst@pengutronix.de
+Subject: [PATCH] net: fec: allow to build without PAGE_POOL_STATS
+Date: Fri, 16 Jun 2023 21:18:32 +0200
+Message-Id: <20230616191832.2944130-1-l.stach@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:1101:1d::28
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Fri, 16 Jun 2023 21:00:36 +0200 Alice Ryhl wrote:
-> A Rust method can be defined to take the struct "by value", which 
-> consumes the struct and prevents you from using it again. This can let 
-> you provide many different cleanup methods that each clean it up in 
-> different ways.
-> 
-> However, you cannot force the user to use one of those methods. They 
-> always have the option of letting the value go out of scope, which calls 
-> the destructor. And they can do this at any time.
-> 
-> That said, the destructor of the value does not necessarily *have* to 
-> translate to immediately freeing the value. If the value if refcounted, 
-> the destructor could just drop the refcount. It would also be possible 
-> for a destructor to schedule the cleanup operation to a workqueue. Or 
-> you could do something more clever.
+Commit 6970ef27ff7f ("net: fec: add xdp and page pool statistics") selected
+CONFIG_PAGE_POOL_STATS from the FEC driver symbol, making it impossible
+to build without the page pool statistics when this driver is enabled. The
+help text of those statistics mentions increased overhead. Allow the user
+to choose between usefulness of the statistics and the added overhead.
 
-Can we put a WARN_ON() in the destructor and expect object to never be
-implicitly freed?  skbs represent packets (most of the time) and for
-tracking which part of the stack is dropping packets we try to provide
-a drop reason along the freed skb. It'd be great if for Rust we could
-from the get-go direct everyone towards the APIs with an explicit reason
-code.
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+---
+ drivers/net/ethernet/freescale/Kconfig    | 2 +-
+ drivers/net/ethernet/freescale/fec_main.c | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/freescale/Kconfig b/drivers/net/ethernet/freescale/Kconfig
+index 1c78f66a89da..75401d2a5fb4 100644
+--- a/drivers/net/ethernet/freescale/Kconfig
++++ b/drivers/net/ethernet/freescale/Kconfig
+@@ -29,7 +29,7 @@ config FEC
+ 	select CRC32
+ 	select PHYLIB
+ 	select PAGE_POOL
+-	select PAGE_POOL_STATS
++	imply PAGE_POOL_STATS
+ 	imply NET_SELFTESTS
+ 	help
+ 	  Say Y here if you want to use the built-in 10/100 Fast ethernet
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 38e5b5abe067..be1308295b11 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -2810,6 +2810,7 @@ static void fec_enet_get_xdp_stats(struct fec_enet_private *fep, u64 *data)
+ 
+ static void fec_enet_page_pool_stats(struct fec_enet_private *fep, u64 *data)
+ {
++#ifdef CONFIG_PAGE_POOL_STATS
+ 	struct page_pool_stats stats = {};
+ 	struct fec_enet_priv_rx_q *rxq;
+ 	int i;
+@@ -2824,6 +2825,7 @@ static void fec_enet_page_pool_stats(struct fec_enet_private *fep, u64 *data)
+ 	}
+ 
+ 	page_pool_ethtool_stats_get(data, &stats);
++#endif
+ }
+ 
+ static void fec_enet_get_ethtool_stats(struct net_device *dev,
+-- 
+2.40.1
+
 
