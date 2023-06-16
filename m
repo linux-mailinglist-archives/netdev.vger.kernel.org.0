@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-11580-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11581-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 53D15733A5C
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:05:26 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0F6CE733A5D
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:05:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 853931C21085
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:05:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id BAE7A28186D
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:05:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69DAE209BF;
-	Fri, 16 Jun 2023 20:01:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 76F21209B6;
+	Fri, 16 Jun 2023 20:01:38 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C095209B6
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:01:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEC1EC43215;
-	Fri, 16 Jun 2023 20:01:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5542A1ED44
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:01:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03790C433AD;
+	Fri, 16 Jun 2023 20:01:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686945695;
-	bh=75AtcKkgZXWpMRyDvb85+ZL+zonSdTWx/okyXKNkmzY=;
+	s=k20201202; t=1686945697;
+	bh=tRyVt2i3Z8UO/jT+gk1qMPTLnbOxDDQNoI6BQ1TUluo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=V9jlPLH2v/hozkzROU3LOPkrvzCJAXxcpFqI7b7D0wrSo81iJtUSavVyklhcvCPp0
-	 HPbwgWFoLVyaGh4tOF/Du/2hC/dRdb1CGta5L2hUQD2u44Jm+KfkjgieiUiy/PfoKs
-	 68ps940s+7yhvgK+daC5b7a2+9goTJBSgL0VfQ6rfHaUSvjjjfRtezgGvwtYiogAcd
-	 6K3iIfH5uTclH7E6sx572Cna+1z7PtWaNwOq202W2pm/+t3XncfMn2HwudYW/G4zWn
-	 RyRgomkM+uYzZmB68LRB7p8YPXJNbK1Z3JZ9wHu/5sQZ+SFCDQ+MP0/iECz6FrCArp
-	 LG+u6ITDYgdTQ==
+	b=m7DNszpFVMJVTtZ+/+hcyCqJFFuy6n7k9zzAeCBOLTKvm3E0tRbjMI3KwBZoqB9mF
+	 RbnH4qZn2F62E3L1QoCDWWR8U2Bao5KsY2jbuNYoTMf0o8Q7MdKBgXrC37CuDr6Iz9
+	 BAQv8jsiTgoWs6/rWSlKEZObDi+t0ONzT0a9kQCCoAZF56o+LhWrjDcqyFJ38SVQyV
+	 H55a9b08WgIoeHJM/QjI5rAGRz5r3mdb4loUeYP8bBhfMqtc+iaK3KgW5wrEVPUBjW
+	 V5QP9925z3SzXl/Ii05G0CnMD5qrOR5tRLKTDk1wozfDRtDwq2Swfoy3mhYRLBiQqC
+	 m14wlitJMxCyQ==
 From: Saeed Mahameed <saeed@kernel.org>
 To: "David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -40,9 +40,9 @@ Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	Tariq Toukan <tariqt@nvidia.com>,
 	Leon Romanovsky <leonro@nvidia.com>,
 	Simon Horman <simon.horman@corigine.com>
-Subject: [net 11/12] net/mlx5e: Drop XFRM state lock when modifying flow steering
-Date: Fri, 16 Jun 2023 13:01:18 -0700
-Message-Id: <20230616200119.44163-12-saeed@kernel.org>
+Subject: [net 12/12] net/mlx5e: Fix scheduling of IPsec ASO query while in atomic
+Date: Fri, 16 Jun 2023 13:01:19 -0700
+Message-Id: <20230616200119.44163-13-saeed@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230616200119.44163-1-saeed@kernel.org>
 References: <20230616200119.44163-1-saeed@kernel.org>
@@ -56,49 +56,31 @@ Content-Transfer-Encoding: 8bit
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-XFRM state which is changed to be XFRM_STATE_EXPIRED doesn't really
-need to hold lock while modifying flow steering rules to drop traffic.
+ASO query can be scheduled in atomic context as such it can't use usleep.
+Use udelay as recommended in Documentation/timers/timers-howto.rst.
 
-That state can be deleted only and as such mlx5e_ipsec_handle_tx_limit()
-work will be canceled anyway and won't run in parallel.
-
-Fixes: b2f7b01d36a9 ("net/mlx5e: Simulate missing IPsec TX limits hardware functionality")
+Fixes: 76e463f6508b ("net/mlx5e: Overcome slow response for first IPsec ASO WQE")
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.c    | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c   | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index d1c801723d35..891d39b4bfd4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -61,16 +61,19 @@ static void mlx5e_ipsec_handle_tx_limit(struct work_struct *_work)
- 	struct mlx5e_ipsec_sa_entry *sa_entry = dwork->sa_entry;
- 	struct xfrm_state *x = sa_entry->x;
- 
--	spin_lock(&x->lock);
-+	if (sa_entry->attrs.drop)
-+		return;
-+
-+	spin_lock_bh(&x->lock);
- 	xfrm_state_check_expire(x);
- 	if (x->km.state == XFRM_STATE_EXPIRED) {
- 		sa_entry->attrs.drop = true;
--		mlx5e_accel_ipsec_fs_modify(sa_entry);
--	}
--	spin_unlock(&x->lock);
-+		spin_unlock_bh(&x->lock);
- 
--	if (sa_entry->attrs.drop)
-+		mlx5e_accel_ipsec_fs_modify(sa_entry);
- 		return;
-+	}
-+	spin_unlock_bh(&x->lock);
- 
- 	queue_delayed_work(sa_entry->ipsec->wq, &dwork->dwork,
- 			   MLX5_IPSEC_RESCHED);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
+index ca16cb9807ea..a3554bde3e07 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
+@@ -606,7 +606,8 @@ int mlx5e_ipsec_aso_query(struct mlx5e_ipsec_sa_entry *sa_entry,
+ 	do {
+ 		ret = mlx5_aso_poll_cq(aso->aso, false);
+ 		if (ret)
+-			usleep_range(2, 10);
++			/* We are in atomic context */
++			udelay(10);
+ 	} while (ret && time_is_after_jiffies(expires));
+ 	spin_unlock_bh(&aso->lock);
+ 	return ret;
 -- 
 2.40.1
 
