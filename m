@@ -1,90 +1,130 @@
-Return-Path: <netdev+bounces-11361-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11362-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 73AE6732C9B
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 11:59:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 465F8732CA2
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 12:01:40 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E621728162D
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 09:59:40 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 01CFF281499
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 10:01:39 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 46A83174CB;
-	Fri, 16 Jun 2023 09:59:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 17770174CB;
+	Fri, 16 Jun 2023 10:01:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3945815AC3
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 09:59:38 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89886194
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 02:59:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686909571;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=wfjaC6MUnoKN+p3hX3zNRvhT+UuQZxURXW0656kBJ/E=;
-	b=Yw4syrsIoS8C1t4Vr97STHeF19JKA8H1ZZb18agmpVeue+ZuGVM3GjJRC64sm4DCCz8Sb7
-	U4cu6NvONGxlorappkZR5iAYW6tmsUBIVGk5soTHPrWHwqULW8R7WQnEFDdHEJZyxb04tk
-	IAMMD13gerMDQCmim43szeUobzq9lRM=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-487-XEibdNdxP4CBxR5I7g7f6A-1; Fri, 16 Jun 2023 05:59:27 -0400
-X-MC-Unique: XEibdNdxP4CBxR5I7g7f6A-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A05231C0758D;
-	Fri, 16 Jun 2023 09:59:26 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.51])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 1E0DE2166B25;
-	Fri, 16 Jun 2023 09:59:23 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <CAF=yD-LLCoSTH1Jb+EFmpmTVO+Oo7Hjg6xcF4T2wR96QkjHZRw@mail.gmail.com>
-References: <CAF=yD-LLCoSTH1Jb+EFmpmTVO+Oo7Hjg6xcF4T2wR96QkjHZRw@mail.gmail.com> <1410156.1686729856@warthog.procyon.org.uk> <20230615222327.15e85c55@kernel.org>
-To: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: dhowells@redhat.com, Jakub Kicinski <kuba@kernel.org>,
-    netdev@vger.kernel.org,
-    syzbot+d8486855ef44506fd675@syzkaller.appspotmail.com,
-    David Ahern <dsahern@kernel.org>,
-    "David S. Miller" <davem@davemloft.net>,
-    Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-    Jens Axboe <axboe@kernel.dk>, Matthew Wilcox <willy@infradead.org>,
-    linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] ip, ip6: Fix splice to raw and ping sockets
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06E6817AA9
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 10:01:36 +0000 (UTC)
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E5F2D54;
+	Fri, 16 Jun 2023 03:01:35 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-982b1a18daeso75107766b.2;
+        Fri, 16 Jun 2023 03:01:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686909694; x=1689501694;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=CTD9FM9Vp+btRQLrVajymg/zAFnLC/qJq3qRO1vQtsE=;
+        b=p5uAOLuXx71MLpQNhpn4N0FFQkpI9/UNwpzCa9npQZiimQMI+dTK57ix5hFZ8pL0iT
+         eM/jU6DLqslcFv9S5cRKyJ9DyVWLOZDOsZAJjclG0miP0XzxBdljxz8Qs9DT0KVGuV4Y
+         hDovP96Nx4G7raTQV5C6TOMlOfhGf/8kfUdMhmnNfKxmL0Ztl3oKrW+hk5bGtznskvvt
+         p7HID9ouqKpIcGhsKqjiSn1ewQgqCUuvnmBj9paMo59IT5jrcCml2vXZ59EwDBgF8l+d
+         92iNKDZTIBfZENDuXm1n40jOV8d0uypVfXB1kp9BFqsdjwVJbTWwXGrjN46LD85/qiXN
+         6how==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686909694; x=1689501694;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=CTD9FM9Vp+btRQLrVajymg/zAFnLC/qJq3qRO1vQtsE=;
+        b=Hi0H+Z+b8dkZh5MIoM/s+8je4IpGWCOusalvjpF1Chog+u+yS5dnMi0faYQbmxxv39
+         RWNj/OoJAzmC8Ft5wk0/4c8vLO9W9O1vTrEZAa4EvESdaFTIe1N7Kvbr3hQDRMQN8zmO
+         IDRj5w6Ad1jCU0OQ/RY92+8ew0jsXD6G2BM3kPww5ODBcDzPFXeuSkXmTfxyKie4fQKe
+         GPby8Vp/UbENiu9QOK0gYBMo5ThBscoAkJuEHhy1vtxVIBrZT+J/uRFwNsHPSTOdPixm
+         zoiT+qyoIqFKRh2Bwg8Cbsl2kq0Mu7WJuL9Qk7CYB2ijlCW0nQ5FRnPtNu3xQUDo7d9g
+         hZHA==
+X-Gm-Message-State: AC+VfDw8op6Kpmqt5FjIHCD9uuMgMpB66NzgGxf5x0m/vnK6wZ3hKh0t
+	ufikRDZGpN9bwghgSvgXlq0=
+X-Google-Smtp-Source: ACHHUZ6AASGe9oOuSxFdSZcLgURQh/Q6I24jkt2GFQJgseqvnYOxE88CzRrIgflJ/3f+8NFpganRgg==
+X-Received: by 2002:a17:906:8688:b0:97a:bd0f:ac74 with SMTP id g8-20020a170906868800b0097abd0fac74mr1180635ejx.26.1686909693612;
+        Fri, 16 Jun 2023 03:01:33 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id h22-20020a170906111600b009828bb40444sm2647818eja.51.2023.06.16.03.01.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Jun 2023 03:01:33 -0700 (PDT)
+Date: Fri, 16 Jun 2023 13:01:30 +0300
+From: Vladimir Oltean <olteanv@gmail.com>
+To: arinc9.unal@gmail.com
+Cc: =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+	Daniel Golle <daniel@makrotopia.org>,
+	Landen Chao <Landen.Chao@mediatek.com>,
+	DENG Qingfang <dqfext@gmail.com>,
+	Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Frank Wunderlich <frank-w@public-files.de>,
+	Bartel Eerdekens <bartel.eerdekens@constell8.be>,
+	mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net v5 1/6] net: dsa: mt7530: set all CPU ports in
+ MT7531_CPU_PMAP
+Message-ID: <20230616100130.f7mjociopsgd6pe4@skbuf>
+References: <20230616025327.12652-1-arinc.unal@arinc9.com>
+ <20230616025327.12652-1-arinc.unal@arinc9.com>
+ <20230616025327.12652-2-arinc.unal@arinc9.com>
+ <20230616025327.12652-2-arinc.unal@arinc9.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <424201.1686909563.1@warthog.procyon.org.uk>
-Date: Fri, 16 Jun 2023 10:59:23 +0100
-Message-ID: <424202.1686909563@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230616025327.12652-2-arinc.unal@arinc9.com>
+ <20230616025327.12652-2-arinc.unal@arinc9.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+On Fri, Jun 16, 2023 at 05:53:22AM +0300, arinc9.unal@gmail.com wrote:
+> From: Arınç ÜNAL <arinc.unal@arinc9.com>
+> 
+> MT7531_CPU_PMAP represents the destination port mask for trapped-to-CPU
+> frames (further restricted by PCR_MATRIX).
+> 
+> Currently the driver sets the first CPU port as the single port in this bit
+> mask, which works fine regardless of whether the device tree defines port
+> 5, 6 or 5+6 as CPU ports. This is because the logic coincides with DSA's
+> logic of picking the first CPU port as the CPU port that all user ports are
+> affine to, by default.
+> 
+> An upcoming change would like to influence DSA's selection of the default
+> CPU port to no longer be the first one, and in that case, this logic needs
+> adaptation.
+> 
+> Since there is no observed leakage or duplication of frames if all CPU
+> ports are defined in this bit mask, simply include them all.
+> 
+> Suggested-by: Russell King (Oracle) <linux@armlinux.org.uk>
+> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> ---
 
-> Disabling splicing if not ip_generic_getfrag sounds great to me.
-
-I have a patch in the works that passes msghdr through getfrag that allows
-this to work if we definitely want to splice into raw and icmp sockets.
-
-David
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
