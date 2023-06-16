@@ -1,202 +1,266 @@
-Return-Path: <netdev+bounces-11438-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11439-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4EDD07331DF
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 15:10:22 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id A75BD7331F1
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 15:13:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D5E021C20CE9
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 13:10:20 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C51A01C20A8C
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 13:13:06 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0188E154B3;
-	Fri, 16 Jun 2023 13:10:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6ED49154B3;
+	Fri, 16 Jun 2023 13:13:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E83E4107A0
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 13:10:18 +0000 (UTC)
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2128.outbound.protection.outlook.com [40.107.244.128])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3682B12B;
-	Fri, 16 Jun 2023 06:10:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PVw0jlL5Ua49r7lClYyH4rxafgi1HrElakn/9xqP7ITOOOorEPTr9Ta3L/ab7ZhQ44cLbnq4HjPH/jI6OuQxlLhlELS/uV/mV7Sc/sxZsgTQPur6S7/mvufMiJT8fGCFYDYyOjf1RtB3TKWfFyma1EG6MFRqsMyWyemLhxfl5PAs3/09rizIRS4Co2ZGoztcNjP48absQ9a4azGWcOeUznU9GD3196EvoQpcrKitMB6q6wI80tOSX286LF0n3hHJLiWWLHvvCiuVcA3XYItYki4MsHGKwovO9n4FASsd2/xiCnwuBunMOv70s/f5HBXJm+Ap3N/OlIQ2T4Zau/a62Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9yGTCz9pNDub/SFTrWYEXC8z/fOcJwYslhcFoGEAVEI=;
- b=bipeA2ZgUdpk/Byw8oVG1b91FwBPBSdHYtYKcCEyFwZD0MedT6QPa8DloOnWl5eTmxuiNmbLn1FZ+xEvHIHHnQTftmGtFZ6BsSV4O7jRq4a39K7QOtr4zwOlE+fhuSpb1L1/rMFVYaCrfGSVfM5l6n+BxaYtFcgEG4wbWUTs81sf2e5/u2zsKC4u/FFHA5BZsz1f14kzLCZK0opzx5Dx6g62bRGNxmdLJTstIjkOIov+Fzd8YV2+vlUNgV4ISog/yihQanS+fRt+HvpFfG3NEBDBCijPd2q2wOxBaxKsA3nxGhTg0C9y1EtUzUDk4ISr/mxaiKSXHcuqMySfmNklaQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59A8CC156
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 13:13:04 +0000 (UTC)
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477A0273F;
+	Fri, 16 Jun 2023 06:13:02 -0700 (PDT)
+Received: by mail-il1-x129.google.com with SMTP id e9e14a558f8ab-33bb16ac2e9so2584125ab.3;
+        Fri, 16 Jun 2023 06:13:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9yGTCz9pNDub/SFTrWYEXC8z/fOcJwYslhcFoGEAVEI=;
- b=rNBp8APKcq6k4hSJDn0HqwBi3HW5RlQEZr8uo+J6sNilulDzjQ+qzwk5DvSPcyDhv8WvmdwxWqD7FwX0tn1k31sBKKrgNpn87X8psX6lhayZF1VDMJl4DqozMcfIy4DJ99cVB08LywFuHr5XFRkMGFBnIq+RNK522bz+wjusXm0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB5713.namprd13.prod.outlook.com (2603:10b6:510:114::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.36; Fri, 16 Jun
- 2023 13:10:11 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e%5]) with mapi id 15.20.6500.025; Fri, 16 Jun 2023
- 13:10:11 +0000
-Date: Fri, 16 Jun 2023 15:10:03 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Igor Russkikh <irusskikh@marvell.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH] net: atlantic: fix ring buffer alignment
-Message-ID: <ZIxfK1MVRL+1wDvq@corigine.com>
-References: <20230616092645.3384103-1-arnd@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230616092645.3384103-1-arnd@kernel.org>
-X-ClientProxiedBy: AM3PR03CA0055.eurprd03.prod.outlook.com
- (2603:10a6:207:5::13) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=gmail.com; s=20221208; t=1686921181; x=1689513181;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=9RiMNnpd/w/+D/nAp/Zp0YhQWvdFWXjWiVav8bt+1k8=;
+        b=S9EIFCQyQ51SjRvse0Ss7tt9quun4x50RxOvVxkN3uYmZtNNbSNFpXPbKtMrdIlfKA
+         +GXIdaNN8w70bCjlxDeg/8Rsjk0CITdbgPE5pN1xo4ppgH0fXB6cRKSFPOxrnrxzPlUR
+         tUUWkH+kqOXgUoUseVvFs3g2epI90ixS3jKLmQgFbMR4HIB2fz92HnqLbe87H+3LmPCO
+         sAVWBOSigBF2acFgrEarJX/pzixpEnQNeP16ABIwuceJ87klDwd4DbaOPkizgGOykw7s
+         Rw9TgDbVEV+GjNYfSaDkuOQPGXO+iKf4WYPicjHaW2/YYLLI7jZOZcSMu/yi62he1Hpd
+         Dqhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686921181; x=1689513181;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=9RiMNnpd/w/+D/nAp/Zp0YhQWvdFWXjWiVav8bt+1k8=;
+        b=eKWn5P+5S4uhE/+Mb6ObJL0lpon5s0mzbvGjVa+pTqKQRfQ8XHxNAYX/RvNMnZgymT
+         d+PH1d0Dvh3S6C1GFxNjSpIH7+vjQQ1dJR5lOnsF3hBdgzFwhM8zSl5IdDgFERjLDrkK
+         cSvRcu03V2opNo/k400btvbwOSilWF3W43kIoUZORWYXUWJPEJA/Dj3Q7EyYmk/0jSNA
+         aWOIW0pAdEZOoIfExP9xUOaU1zjqHWuLWXFCIyrAb02sdGsPkU3vFcIxP1up9V9aoW3x
+         RhK++A/W4/KBX9YjUblR7XiChTb5fHggp6GTbP01f9E8cKJvXmEErpaRUwEqd+jXvoJD
+         SDjA==
+X-Gm-Message-State: AC+VfDyrpm/M0Xn7fBvELKa0gsrjRxGQZCT+DLSTQPr8sW4HxFmmi1PL
+	JTgnJwEDaKxZMNx4JI1G4zA=
+X-Google-Smtp-Source: ACHHUZ7bXT1JJSP+D2snCzVxMN1SIpfYk6hhaB4oAvX7/dwYLvDqGAQcRUBZ4z4lIdtGUtrBz6vI2A==
+X-Received: by 2002:a92:c60a:0:b0:340:6c4f:d311 with SMTP id p10-20020a92c60a000000b003406c4fd311mr2082075ilm.28.1686921181167;
+        Fri, 16 Jun 2023 06:13:01 -0700 (PDT)
+Received: from localhost.localdomain ([103.116.245.58])
+        by smtp.gmail.com with ESMTPSA id a22-20020a63cd56000000b0054f9936accesm8203636pgj.55.2023.06.16.06.12.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Jun 2023 06:13:00 -0700 (PDT)
+From: Jianhui Zhao <zhaojh329@gmail.com>
+To: andrew@lunn.ch,
+	hkallweit1@gmail.com,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com
+Cc: linux@armlinux.org.uk,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Jianhui Zhao <zhaojh329@gmail.com>
+Subject: [PATCH V4] net: phy: Add sysfs attribute for PHY c45 identifiers.
+Date: Fri, 16 Jun 2023 21:12:46 +0800
+Message-Id: <20230616131246.41989-1-zhaojh329@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB5713:EE_
-X-MS-Office365-Filtering-Correlation-Id: f036685f-fa13-4bd8-d1a5-08db6e6b0421
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ZNWteHQ8SFDSX774SIAw/G3o6esbma3tbCo4vb7nkjsM4EQwg/LtVGLZujSjDKOIogjL1VQVDsTtXkwaXczvEyxVc55cST/GWadF9C00SnT3BAxFWgD4wNtVVfDiDlQc9pow3lGAIH0B6/WmXrOl3YsxZTnXF1/3Bw8wlk3wtTbBhsHDOjLvcayv26zK9s/0kYKCQyZX3deCFda9lbfo590BoYv/iSABi7BJiCWFAgZaIzQVLnX1gAHFVD5FFM+ABFNB3JFrKv3Tddxfm3khgrtPXTdxkupLBGeUrcTKQmX4mg8qpMujFqBxQQxryjzA/mHIxuwcBKevFMc+zsG7MhAfaEY8G6xq05V4ziMGMltLPw7zllaIlRQen0oP9G3LsEJS8TJdJRsn4ApNkdF7fibCTQAiOQe/91eBrc+NRjC0i3xTdGdbpi2ptGZWB5RIgWsfVOTBR/Rousmuo/sv1L0M0iEqEcJQbUqVQTLZNIxxjnJybsIXGtoULl4CJ6LKzw8WaqSsMSZtMOpB7eLj+1zGFlPrvWMh3Jn/TAQfeS5gwgaJOOERq8CdnL1z5HRbzSy8kJsPf668uMX0QBvkysKm3eCNGgCoX6TFlIj54bQ=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(366004)(376002)(136003)(396003)(346002)(451199021)(44832011)(6512007)(186003)(83380400001)(7416002)(6506007)(38100700002)(54906003)(2906002)(2616005)(5660300002)(478600001)(6486002)(36756003)(66556008)(66946007)(6666004)(8936002)(316002)(6916009)(86362001)(8676002)(41300700001)(66476007)(4326008)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?2iccjbmPr0Qyt78gFY6BmlfTUMQlkNXaGzfas93YPDFy+ByW64UyJDt6A5d1?=
- =?us-ascii?Q?3c3wNIB+5iIzosZyNVFiuPKNS90kc4ovRLa7dlnbskFQ6W9fIaTQEtgV0X6l?=
- =?us-ascii?Q?Pkz/3+XMaq/JbWT9JVzLTFSpoU9yeWPXln7cajfbHcjJtNOD3nkLwjI0ATDA?=
- =?us-ascii?Q?HR809sZk07JPGrf7PRx7NM1tUTnJdxm8Nust+jcaBkNuZSsBbP2BQ1/wefH0?=
- =?us-ascii?Q?LQWhGOZP+EiuCcTbImX/zPhnyq6tMwOUjFf38+DGZYyyztMroN8MlHCy00qN?=
- =?us-ascii?Q?utg6KH2Vsj2G4RSfeG18cTE6j2Q46tfYgMOto+L0J8+w7PEr0AqPNDC3MR7a?=
- =?us-ascii?Q?3NhmICyhI2kDqGpmFNeFHIftHirmw/eInRxe4ikCfpC+ZERr917e66z+z10x?=
- =?us-ascii?Q?juWszvwVOf//QQkooagnGPdR29AFtWsmr43gz8oXkluxfkQ26e1a+yLKThn2?=
- =?us-ascii?Q?vB3VUZmO453J19yYwUpEiP1fVn8E6HyjeZdIhxLmuSiy01EkYLwnmdAFs+J5?=
- =?us-ascii?Q?puORD+vgpxSGmCk7h7IxF5bMtPHxHezb3YurvooMBluwe4uHdw12WCYRffDA?=
- =?us-ascii?Q?euliyblvXnfJ3UNljO3vzEVtNALTbApCWPKO1k8JvS79MB5DDcD5qHVnUIvR?=
- =?us-ascii?Q?yIAA/9Hd3GDPMez2trKi4WAVaGMRu1aqwGw6rtFcVSV7nT01LlYDlrwwRC05?=
- =?us-ascii?Q?5Y8bsO3UqNVmxuleE7qtkEYkZ9EXt3TjkXatIvN3Rpey8Vjj9UYCZarnt2O4?=
- =?us-ascii?Q?xI8/dZ05dTwC9XFdYjl8b82DdgkMZQMCR/MTVdregaeZEEEKLvElNQSTZy+Y?=
- =?us-ascii?Q?wOglDX617n42NIsMzlCLfPYvttrIRxqGcRH7ARx0a/FGm9dchVclELecjVbq?=
- =?us-ascii?Q?/BoBPBoEQlaOty0tBai9TI5JzBqX9NVcKUyoobwa+bvInjhsHMVpoK2os7+b?=
- =?us-ascii?Q?WBVTZbW0XnlZXKqgyqelKP/I7SEsifuWr6zmj0Htq/7nTy/xnOzNesccrg77?=
- =?us-ascii?Q?8NprQGNHXOonRECk4FRtz0/Ewj7L/ikGktyEePUe12WD/BiRkjNZ/+Xopm3d?=
- =?us-ascii?Q?1SNXpxhSFigtCmpdVCxCwnjSsTiJjYOHUJJT3fcjCmlyzB4yIqO7r5dKoIWt?=
- =?us-ascii?Q?BiY7qJiY6t18kQ8TA1TbH63jFTyHJCMDweAsMIy1ito2KMuTvpt1Dj3ZF5lX?=
- =?us-ascii?Q?HrNpxlmVmFhOg6tFjbPYW5FscY+Fe5b0uUydV1+HEXjrLWpid0753v8tCSQd?=
- =?us-ascii?Q?rMOe0GtFhmjeejQRlkJlG5voDyfG16VSfuovzZTg6CVclYgyZit/IHYrhpII?=
- =?us-ascii?Q?EbchQWiimvOjkzIiJb3FfplD8H05PMaM4/F9oW18xz1SLueLca/IFuBqb4DB?=
- =?us-ascii?Q?IxiKz5QNYKZDNOa4620KGd0MqbOkki6S3V1JaUbv/8YEA4XI8uM1ZylAzqAj?=
- =?us-ascii?Q?QLTVvIiNIHxAU4EYy+R2bymk3eWew7ZtlXhVTsiHlp0nrWEQMHQI0/L1pfIk?=
- =?us-ascii?Q?zf7vG312fVcOmkwTQmKqot2O4JfjzG3O/tgVcoMqIpWE59yZbzZuEXIOxCK7?=
- =?us-ascii?Q?mKwtCqUzULCpxpmnhiUF8+NBn7vyzu/10qHr2TepS057NYLVtHPQyxtJa49y?=
- =?us-ascii?Q?5HZACQV9l94sCyak3tC7WzQrKcsfQCcMm0SHAxM+RXToBJIklx0UEvf0ZYOq?=
- =?us-ascii?Q?xdDK1w=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f036685f-fa13-4bd8-d1a5-08db6e6b0421
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2023 13:10:11.4430
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qoK6BZlI/pp6a4KkkXxhW8I9iTJ3/2xfrPUpGJdPcNYrLVzFH0PGdmZgYcYZ0D2FgsRrOR16dI/FAvt9J1Vw5ktnp2T6m0iGyqOGoxl+vcc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5713
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+	FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 16, 2023 at 11:26:32AM +0200, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> clang warns about conflicting packing annotations:
-> 
-> drivers/net/ethernet/aquantia/atlantic/aq_ring.h:72:2: error: field  within 'struct aq_ring_buff_s' is less aligned than 'union aq_ring_buff_s::(anonymous at drivers/net/ethernet/aquantia/atlantic/aq_ring.h:72:2)' and is usually due to 'struct aq_ring_buff_s' being packed, which can lead to unaligned accesses [-Werror,-Wunaligned-access]
+If a phydevice use c45, its phy_id property is always 0, so
+this adds a c45_ids sysfs attribute group contains mmd id
+attributes from mmd0 to mmd31 to MDIO devices. Note that only
+mmd with valid value will exist. This attribute group can be
+useful when debugging problems related to phy drivers.
 
-FWIIW, I was able to reproduce this (warning) with clang-16 on ARM (32bit).
-And I agree with the approach you have taken here.
+Likes this:
+/sys/bus/mdio_bus/devices/mdio-bus:05/c45_ids/mmd1
+/sys/bus/mdio_bus/devices/mdio-bus:05/c45_ids/mmd2
+...
+/sys/bus/mdio_bus/devices/mdio-bus:05/c45_ids/mmd31
 
-> This was originally intended to ensure the structure fits exactly into
-> 32 bytes on 64-bit architectures, but apparently never did, and instead
-> just produced misaligned pointers as well as forcing byte-wise access
-> on hardware without unaligned load/store instructions.
-> 
-> Update the comment to more closely reflect the layout and remove the
-> broken __packed annotation.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  .../net/ethernet/aquantia/atlantic/aq_ring.h  | 26 +++++++++++--------
->  1 file changed, 15 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
-> index 0a6c34438c1d0..a9cc5a1c4c479 100644
-> --- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
-> +++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
-> @@ -26,19 +26,23 @@ struct aq_rxpage {
->  	unsigned int pg_off;
->  };
->  
-> -/*           TxC       SOP        DX         EOP
-> - *         +----------+----------+----------+-----------
-> - *   8bytes|len l3,l4 | pa       | pa       | pa
-> - *         +----------+----------+----------+-----------
-> - * 4/8bytes|len pkt   |len pkt   |          | skb
-> - *         +----------+----------+----------+-----------
-> - * 4/8bytes|is_gso    |len,flags |len       |len,is_eop
-> - *         +----------+----------+----------+-----------
-> +/*           TxC       SOP        DX         EOP	RX
-> + *         +----------+----------+----------+----------+-------
-> + *   8bytes|len l3,l4 | pa       | pa       | pa       | hash
-> + *         +----------+----------+----------+----------+-------
-> + * 4/8bytes|len pkt   |len pkt   |          | skb      | page
-> + *         +----------+----------+----------+----------+-------
-> + * 4/8bytes|is_gso    |len,flags |len       |len,is_eop| daddr
-> + *         +----------+----------+----------+----------+-------
-> + * 4/8bytes|          |          |          |          | order,pgoff
-> + *         +----------+----------+----------+----------+-------
-> + * 2bytes  |          |          |          |          | vlan_rx_tag
-> + *         +----------+----------+----------+----------+-------
-> + * 8bytes  +                   flags
-> + *         +----------+----------+----------+----------+-------
+Signed-off-by: Jianhui Zhao <zhaojh329@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Russell King <linux@armlinux.org.uk>
+---
+V3 -> V4: Only mmd with valid value will exist.
+V2 -> V3: Use the most efficient implementation.
+V1 -> V2: putting all 32 values in a subdirectory, one file per MMD
 
-Perhaps it just me.  But I do have trouble reconciling the description
-above with the structure below. As such, my suggest would be to simply
-delete it.
+ .../ABI/testing/sysfs-class-net-phydev        |  10 ++
+ drivers/net/phy/phy_device.c                  | 123 +++++++++++++++++-
+ 2 files changed, 132 insertions(+), 1 deletion(-)
 
->   *
-> - *  This aq_ring_buff_s doesn't have endianness dependency.
-> - *  It is __packed for cache line optimizations.
->   */
-> -struct __packed aq_ring_buff_s {
-> +struct aq_ring_buff_s {
->  	union {
->  		/* RX/TX */
->  		dma_addr_t pa;
+diff --git a/Documentation/ABI/testing/sysfs-class-net-phydev b/Documentation/ABI/testing/sysfs-class-net-phydev
+index ac722dd5e694..58a0a150229d 100644
+--- a/Documentation/ABI/testing/sysfs-class-net-phydev
++++ b/Documentation/ABI/testing/sysfs-class-net-phydev
+@@ -63,3 +63,13 @@ Description:
+ 		only used internally by the kernel and their placement are
+ 		not meant to be stable across kernel versions. This is intended
+ 		for facilitating the debugging of PHY drivers.
++
++What:		/sys/class/mdio_bus/<bus>/<device>/c45_ids/mmd<n>
++Date:		November 2023
++KernelVersion:	6.4
++Contact:	netdev@vger.kernel.org
++Description:
++		This attribute group c45_ids contains mmd id attributes from mmd0 to mmd31
++		as reported by the device during bus enumeration, encoded in hexadecimal.
++		Note that only mmd with valid value will exist. This ID is used to match
++		the device with the appropriate driver.
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 17d0d0555a79..a05af6b75c83 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -602,7 +602,128 @@ static struct attribute *phy_dev_attrs[] = {
+ 	&dev_attr_phy_dev_flags.attr,
+ 	NULL,
+ };
+-ATTRIBUTE_GROUPS(phy_dev);
++
++static const struct attribute_group phy_dev_group = {
++	.attrs = phy_dev_attrs
++};
++
++struct phy_c45_devid_attribute {
++	struct device_attribute attr;
++	int index;
++};
++
++static ssize_t phy_c45_id_show(struct device *dev,
++			       struct device_attribute *attr, char *buf)
++{
++	struct phy_c45_devid_attribute *devattr =
++		container_of(attr, struct phy_c45_devid_attribute, attr);
++	struct phy_device *phydev = to_phy_device(dev);
++
++	return sprintf(buf, "0x%.8lx\n",
++		(unsigned long)phydev->c45_ids.device_ids[devattr->index]);
++}
++
++#define DEVICE_ATTR_C45_ID(i) \
++static struct phy_c45_devid_attribute dev_attr_phy_c45_id##i = { \
++	.attr = { \
++		.attr = { .name = __stringify(mmd##i), .mode = 0444 }, \
++		.show = phy_c45_id_show \
++	}, \
++	.index = i, \
++}
++
++DEVICE_ATTR_C45_ID(0);
++DEVICE_ATTR_C45_ID(1);
++DEVICE_ATTR_C45_ID(2);
++DEVICE_ATTR_C45_ID(3);
++DEVICE_ATTR_C45_ID(4);
++DEVICE_ATTR_C45_ID(5);
++DEVICE_ATTR_C45_ID(6);
++DEVICE_ATTR_C45_ID(7);
++DEVICE_ATTR_C45_ID(8);
++DEVICE_ATTR_C45_ID(9);
++DEVICE_ATTR_C45_ID(10);
++DEVICE_ATTR_C45_ID(11);
++DEVICE_ATTR_C45_ID(12);
++DEVICE_ATTR_C45_ID(13);
++DEVICE_ATTR_C45_ID(14);
++DEVICE_ATTR_C45_ID(15);
++DEVICE_ATTR_C45_ID(16);
++DEVICE_ATTR_C45_ID(17);
++DEVICE_ATTR_C45_ID(18);
++DEVICE_ATTR_C45_ID(19);
++DEVICE_ATTR_C45_ID(20);
++DEVICE_ATTR_C45_ID(21);
++DEVICE_ATTR_C45_ID(22);
++DEVICE_ATTR_C45_ID(23);
++DEVICE_ATTR_C45_ID(24);
++DEVICE_ATTR_C45_ID(25);
++DEVICE_ATTR_C45_ID(26);
++DEVICE_ATTR_C45_ID(27);
++DEVICE_ATTR_C45_ID(28);
++DEVICE_ATTR_C45_ID(29);
++DEVICE_ATTR_C45_ID(30);
++DEVICE_ATTR_C45_ID(31);
++
++static struct attribute *phy_c45_id_attrs[] = {
++	&dev_attr_phy_c45_id0.attr.attr,
++	&dev_attr_phy_c45_id1.attr.attr,
++	&dev_attr_phy_c45_id2.attr.attr,
++	&dev_attr_phy_c45_id3.attr.attr,
++	&dev_attr_phy_c45_id4.attr.attr,
++	&dev_attr_phy_c45_id5.attr.attr,
++	&dev_attr_phy_c45_id6.attr.attr,
++	&dev_attr_phy_c45_id7.attr.attr,
++	&dev_attr_phy_c45_id8.attr.attr,
++	&dev_attr_phy_c45_id9.attr.attr,
++	&dev_attr_phy_c45_id10.attr.attr,
++	&dev_attr_phy_c45_id11.attr.attr,
++	&dev_attr_phy_c45_id12.attr.attr,
++	&dev_attr_phy_c45_id13.attr.attr,
++	&dev_attr_phy_c45_id14.attr.attr,
++	&dev_attr_phy_c45_id15.attr.attr,
++	&dev_attr_phy_c45_id16.attr.attr,
++	&dev_attr_phy_c45_id17.attr.attr,
++	&dev_attr_phy_c45_id18.attr.attr,
++	&dev_attr_phy_c45_id19.attr.attr,
++	&dev_attr_phy_c45_id20.attr.attr,
++	&dev_attr_phy_c45_id21.attr.attr,
++	&dev_attr_phy_c45_id22.attr.attr,
++	&dev_attr_phy_c45_id23.attr.attr,
++	&dev_attr_phy_c45_id24.attr.attr,
++	&dev_attr_phy_c45_id25.attr.attr,
++	&dev_attr_phy_c45_id26.attr.attr,
++	&dev_attr_phy_c45_id27.attr.attr,
++	&dev_attr_phy_c45_id28.attr.attr,
++	&dev_attr_phy_c45_id29.attr.attr,
++	&dev_attr_phy_c45_id30.attr.attr,
++	&dev_attr_phy_c45_id31.attr.attr,
++	NULL,
++};
++
++static umode_t phy_dev_c45_visible(struct kobject *kobj, struct attribute *attr, int foo)
++{
++	struct phy_c45_devid_attribute *devattr =
++		(struct phy_c45_devid_attribute *)container_of(attr, struct device_attribute, attr);
++	struct phy_device *phydev = to_phy_device(kobj_to_dev(kobj));
++
++	if (!phydev->is_c45 || phydev->c45_ids.device_ids[devattr->index] == 0xffffffff)
++		return 0;
++
++	return attr->mode;
++}
++
++static const struct attribute_group phy_dev_c45_ids_group = {
++	.name = "c45_ids",
++	.attrs = phy_c45_id_attrs,
++	.is_visible = phy_dev_c45_visible
++};
++
++static const struct attribute_group *phy_dev_groups[] = {
++	&phy_dev_group,
++	&phy_dev_c45_ids_group,
++	NULL,
++};
+ 
+ static const struct device_type mdio_bus_phy_type = {
+ 	.name = "PHY",
+-- 
+2.34.1
+
 
