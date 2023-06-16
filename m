@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-11337-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11338-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id CE337732A94
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 10:54:40 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2AF7A732A96
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 10:55:10 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0362C1C20F97
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 08:54:40 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5AA571C20FD4
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 08:55:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 50AB3C8E5;
-	Fri, 16 Jun 2023 08:52:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8CDF315AE8;
+	Fri, 16 Jun 2023 08:52:18 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6C5014AAB;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56357A925;
+	Fri, 16 Jun 2023 08:52:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E3C5C433CD;
 	Fri, 16 Jun 2023 08:52:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 436DDC4339A;
-	Fri, 16 Jun 2023 08:51:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686905527;
-	bh=3ehPtg/wkIhd28ojF38ghyySOncCvbgritUgNc+jgzA=;
+	s=k20201202; t=1686905537;
+	bh=QpRLaiTQjkFAZbWC8PMbwO4haV/9se+uMBjn/xjk6Eg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=URGjKWosTv5rUBGWoAB8K22n+ckY0pEN8K+Bt4BqNRZ+SgzdpFKHreY43HU1dyMrc
-	 63qklWW1H6ICT8nAwvHWhUBFVD/O59OAxG9WnKC7G37cBbzQyL5wndhMi12b+NjTmA
-	 KzxWoXixUG1F/na3FTPbuDPpQSkcBRHUusl/huYZwNS0rNpCLSziH8G8sg9C2Gr5+V
-	 sMjxpInlVLQ2ozavBCagEh9Z3UDjWGN+DByqgzlPXrWZaDTPyD05GivzpznP9XZ9h4
-	 lQRd/685TGI6dpS6i6K691630F1e6FUmQK1hrJ/8UhpaIZwAh+GhrqsCum/sDilGPE
-	 b7T6Nk8NGUZ9A==
+	b=RXsNDUtYj249KQAhJs+wEQjCxqfjKx6/L1Un4qq+20KcffdZ1deQG8lIIT7DV+ZMq
+	 m0eHek+DKutrTD2bY61bqwx/MvyuFb7gWqbU+m6qEsiGCLCvTZ7S6qv0+x7akVCFuB
+	 hR9l1tbgw6B2t7wTqYFLvXI+KAAIhbgEWQDFcYOxbtABFlclmsFbdqgW4kmI9RoSdI
+	 zuYaQBPZBK8o2VXshwQtSE3bM0njGcW3mDpBRHQHK++MLDhg4oBdqwaVZ6MqkCYoov
+	 3oCj/KsihjERHBpOHzrJ3ShbDZ37kQWZGW77+ZrjAOqj6IbLfSqY9c93w/m7agDClK
+	 PWUowLo8PSiqQ==
 From: Mike Rapoport <rppt@kernel.org>
 To: linux-kernel@vger.kernel.org
 Cc: Andrew Morton <akpm@linux-foundation.org>,
@@ -70,9 +70,9 @@ Cc: Andrew Morton <akpm@linux-foundation.org>,
 	netdev@vger.kernel.org,
 	sparclinux@vger.kernel.org,
 	x86@kernel.org
-Subject: [PATCH v2 07/12] arm64, execmem: extend execmem_params for generated code definitions
-Date: Fri, 16 Jun 2023 11:50:33 +0300
-Message-Id: <20230616085038.4121892-8-rppt@kernel.org>
+Subject: [PATCH v2 08/12] riscv: extend execmem_params for kprobes allocations
+Date: Fri, 16 Jun 2023 11:50:34 +0300
+Message-Id: <20230616085038.4121892-9-rppt@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20230616085038.4121892-1-rppt@kernel.org>
 References: <20230616085038.4121892-1-rppt@kernel.org>
@@ -86,127 +86,80 @@ Content-Transfer-Encoding: 8bit
 
 From: "Mike Rapoport (IBM)" <rppt@kernel.org>
 
-The memory allocations for kprobes on arm64 can be placed anywhere in
-vmalloc address space and currently this is implemented with an override
-of alloc_insn_page() in arm64.
+RISC-V overrides kprobes::alloc_insn_range() to use the entire vmalloc area
+rather than limit the allocations to the modules area.
 
-Extend execmem_params with a range for generated code allocations and
-make kprobes on arm64 use this extension rather than override
-alloc_insn_page().
+Slightly reorder execmem_params initialization to support both 32 and 64
+bit variantsi and add definition of jit area to execmem_params to support
+generic kprobes::alloc_insn_page().
 
 Signed-off-by: Mike Rapoport (IBM) <rppt@kernel.org>
 ---
- arch/arm64/kernel/module.c         |  9 +++++++++
- arch/arm64/kernel/probes/kprobes.c |  7 -------
- include/linux/execmem.h            | 11 +++++++++++
- mm/execmem.c                       | 14 +++++++++++++-
- 4 files changed, 33 insertions(+), 8 deletions(-)
+ arch/riscv/kernel/module.c         | 16 +++++++++++++++-
+ arch/riscv/kernel/probes/kprobes.c | 10 ----------
+ 2 files changed, 15 insertions(+), 11 deletions(-)
 
-diff --git a/arch/arm64/kernel/module.c b/arch/arm64/kernel/module.c
-index c3d999f3a3dd..52b09626bc0f 100644
---- a/arch/arm64/kernel/module.c
-+++ b/arch/arm64/kernel/module.c
-@@ -30,6 +30,13 @@ static struct execmem_params execmem_params = {
- 			.alignment = MODULE_ALIGN,
+diff --git a/arch/riscv/kernel/module.c b/arch/riscv/kernel/module.c
+index ee5e04cd3f21..cca6ed4e9340 100644
+--- a/arch/riscv/kernel/module.c
++++ b/arch/riscv/kernel/module.c
+@@ -436,7 +436,7 @@ int apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
+ 	return 0;
+ }
+ 
+-#if defined(CONFIG_MMU) && defined(CONFIG_64BIT)
++#ifdef CONFIG_MMU
+ static struct execmem_params execmem_params = {
+ 	.modules = {
+ 		.text = {
+@@ -444,12 +444,26 @@ static struct execmem_params execmem_params = {
+ 			.alignment = 1,
  		},
  	},
 +	.jit = {
 +		.text = {
-+			.start = VMALLOC_START,
-+			.end = VMALLOC_END,
++			.pgprot = PAGE_KERNEL_READ_EXEC,
 +			.alignment = 1,
 +		},
 +	},
  };
  
  struct execmem_params __init *execmem_arch_params(void)
-@@ -40,6 +47,8 @@ struct execmem_params __init *execmem_arch_params(void)
- 	execmem_params.modules.text.start = module_alloc_base;
- 	execmem_params.modules.text.end = module_alloc_end;
- 
-+	execmem_params.jit.text.pgprot = PAGE_KERNEL_ROX;
+ {
++#ifdef CONFIG_64BIT
+ 	execmem_params.modules.text.start = MODULES_VADDR;
+ 	execmem_params.modules.text.end = MODULES_END;
++#else
++	execmem_params.modules.text.start = VMALLOC_START;
++	execmem_params.modules.text.end = VMALLOC_END;
++#endif
 +
- 	/*
- 	 * KASAN without KASAN_VMALLOC can only deal with module
- 	 * allocations being served from the reserved module region,
-diff --git a/arch/arm64/kernel/probes/kprobes.c b/arch/arm64/kernel/probes/kprobes.c
-index 70b91a8c6bb3..6fccedd02b2a 100644
---- a/arch/arm64/kernel/probes/kprobes.c
-+++ b/arch/arm64/kernel/probes/kprobes.c
-@@ -129,13 +129,6 @@ int __kprobes arch_prepare_kprobe(struct kprobe *p)
++	execmem_params.jit.text.start = VMALLOC_START;
++	execmem_params.jit.text.end = VMALLOC_END;
+ 
+ 	return &execmem_params;
+ }
+diff --git a/arch/riscv/kernel/probes/kprobes.c b/arch/riscv/kernel/probes/kprobes.c
+index 2f08c14a933d..e64f2f3064eb 100644
+--- a/arch/riscv/kernel/probes/kprobes.c
++++ b/arch/riscv/kernel/probes/kprobes.c
+@@ -104,16 +104,6 @@ int __kprobes arch_prepare_kprobe(struct kprobe *p)
  	return 0;
  }
  
+-#ifdef CONFIG_MMU
 -void *alloc_insn_page(void)
 -{
--	return __vmalloc_node_range(PAGE_SIZE, 1, VMALLOC_START, VMALLOC_END,
--			GFP_KERNEL, PAGE_KERNEL_ROX, VM_FLUSH_RESET_PERMS,
--			NUMA_NO_NODE, __builtin_return_address(0));
+-	return  __vmalloc_node_range(PAGE_SIZE, 1, VMALLOC_START, VMALLOC_END,
+-				     GFP_KERNEL, PAGE_KERNEL_READ_EXEC,
+-				     VM_FLUSH_RESET_PERMS, NUMA_NO_NODE,
+-				     __builtin_return_address(0));
 -}
+-#endif
 -
- /* arm kprobe: install breakpoint in text */
+ /* install breakpoint in text */
  void __kprobes arch_arm_kprobe(struct kprobe *p)
  {
-diff --git a/include/linux/execmem.h b/include/linux/execmem.h
-index 2e1221310d13..dc7c9a446111 100644
---- a/include/linux/execmem.h
-+++ b/include/linux/execmem.h
-@@ -52,12 +52,23 @@ struct execmem_modules_range {
- 	struct execmem_range data;
- };
- 
-+/**
-+ * struct execmem_jit_range - architecure parameters for address space
-+ *			      suitable for JIT code allocations
-+ * @text:	address range for text allocations
-+ */
-+struct execmem_jit_range {
-+	struct execmem_range text;
-+};
-+
- /**
-  * struct execmem_params -	architecure parameters for code allocations
-  * @modules:	parameters for modules address space
-+ * @jit:	parameters for jit memory address space
-  */
- struct execmem_params {
- 	struct execmem_modules_range	modules;
-+	struct execmem_jit_range	jit;
- };
- 
- /**
-diff --git a/mm/execmem.c b/mm/execmem.c
-index f7bf496ad4c3..9730ecef9a30 100644
---- a/mm/execmem.c
-+++ b/mm/execmem.c
-@@ -89,7 +89,12 @@ void execmem_free(void *ptr)
- 
- void *jit_text_alloc(size_t size)
- {
--	return execmem_text_alloc(size);
-+	unsigned long start = execmem_params.jit.text.start;
-+	unsigned long end = execmem_params.jit.text.end;
-+	pgprot_t pgprot = execmem_params.jit.text.pgprot;
-+	unsigned int align = execmem_params.jit.text.alignment;
-+
-+	return execmem_alloc(size, start, end, align, pgprot, 0, 0, false);
- }
- 
- void jit_free(void *ptr)
-@@ -135,6 +140,13 @@ static void execmem_init_missing(struct execmem_params *p)
- 		execmem_params.modules.data.fallback_start = m->text.fallback_start;
- 		execmem_params.modules.data.fallback_end = m->text.fallback_end;
- 	}
-+
-+	if (!execmem_params.jit.text.start) {
-+		execmem_params.jit.text.start = m->text.start;
-+		execmem_params.jit.text.end = m->text.end;
-+		execmem_params.jit.text.alignment = m->text.alignment;
-+		execmem_params.jit.text.pgprot = m->text.pgprot;
-+	}
- }
- 
- void __init execmem_init(void)
 -- 
 2.35.1
 
