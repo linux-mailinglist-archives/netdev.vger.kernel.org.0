@@ -1,81 +1,136 @@
-Return-Path: <netdev+bounces-11299-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11300-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 695D473272B
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 08:13:06 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3903473275B
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 08:23:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0CC1F1C20F5A
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 06:13:05 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1D4461C20F11
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 06:23:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A65F74437;
-	Fri, 16 Jun 2023 06:13:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC36A4697;
+	Fri, 16 Jun 2023 06:23:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 028983FEC;
-	Fri, 16 Jun 2023 06:13:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5238C433C0;
-	Fri, 16 Jun 2023 06:12:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686895980;
-	bh=pKKs+ikvQgBhv6OujYCF/JO0CWWZMx7/sLxq/+FmgdQ=;
-	h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-	b=vNRjrKr9yva3IsiQbnaBccQwUvpLA1Mgw8uGTj52RWGNiBcMHo5TPqwe/0GfYuVU7
-	 sODW+rKfd7imcYUfgnAmV7X5fokV9FGT4idRwxYuzezDCjETiZ8vsNjZD/2CNM7yIi
-	 XAp2tdoLzYlzESCvh81lxdN1g+UnXKZFD4JwZU8e7hKVrDE+7IUzcjhD7r1kp0wbJz
-	 C0IPCSJHRRzCg4znmH0DERGNv0MJyfbSoI8zMvtsVA6hgDTINYsPXtftO8MKe2fO5v
-	 zLRW8KfW067zj84LG93/RGiLAuEn/fVYKCjvjv/AdtJA3GE0UYAL36WIDNNRBWXIH1
-	 ZPNlsSGJGLJkA==
-From: Kalle Valo <kvalo@kernel.org>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Johannes Berg <johannes@sipsolutions.net>,  Toke =?utf-8?Q?H=C3=B8ilan?=
- =?utf-8?Q?d-J=C3=B8rgensen?= <toke@kernel.org>,
-  linux-wireless@vger.kernel.org,  netdev@vger.kernel.org,
-  linux-kernel@vger.kernel.org,  regressions@lists.linux.dev
-Subject: Re: Closing down the wireless trees for a summer break?
-References: <87y1kncuh4.fsf@kernel.org> <871qifxm9b.fsf@toke.dk>
-	<20230613112834.7df36e95@kernel.org>
-	<ba933d6e3d360298e400196371e37735aef3b1eb.camel@sipsolutions.net>
-	<20230613195136.6815df9b@kernel.org>
-	<c7c9418bcd5ac1035a007d336004eff48994dde7.camel@sipsolutions.net>
-	<87a5x2ccao.fsf@kernel.org> <20230614122153.640292b9@kernel.org>
-Date: Fri, 16 Jun 2023 09:12:55 +0300
-In-Reply-To: <20230614122153.640292b9@kernel.org> (Jakub Kicinski's message of
-	"Wed, 14 Jun 2023 12:21:53 -0700")
-Message-ID: <87h6r8aqag.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD82C1100
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 06:23:08 +0000 (UTC)
+Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9E63AB9;
+	Thu, 15 Jun 2023 23:22:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1686896515; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=B4i8Vvarf4RaM2aoLWARyAJ1Ue3pO03wwUFEoM5DZqwYynAkJ9i9WK15koGBaEFhmgepTZ7iRsHT1dMcJDgyr+cTpo+DWxkzlDCzik24WZIBfB4tAuhDHdvMcQYHHZnYpLcW70fGVoRISKR5IeHbVG6REUChLUAPO9JFUHNgFG4=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1686896515; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+	bh=JG1OOQAMtUxBQlamhzsDlI4XUK2tZtiqF6iq7b73yuw=; 
+	b=A344pEiw8ZK+OxMIj94/fgSN9/Xtv3BqCf+aZqiYiv8guV34qLPKLo504DYYhOUn0Td7w8Jr5xuaf6Zti3kSNUM+iQDER7EXUbh8jfC5cIM5OPit39aPQ/Dj6XqONGLRRpK3BaG/b1tNXYiMgijk7XTTYP8ZKG5LPVqAeFJwaRw=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=arinc9.com;
+	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+	dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1686896515;
+	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+	h=Date:Date:From:From:To:To:CC:Subject:Subject:In-Reply-To:References:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To:Cc;
+	bh=JG1OOQAMtUxBQlamhzsDlI4XUK2tZtiqF6iq7b73yuw=;
+	b=F/K3dXqpJ7cvWJ0z0/X/6baNIJaJn9t6+sN7CH4w3gBsst9t6HDm6lTZaDR6grk+
+	u1ElhmZQd+Y4/96OWqc+wv/DUcCrONLvu//z+VS3VJz/gvyiUwtWfPTGwlinhjTBX2z
+	lhNizfRHIAvhbJdyzhz8vQd7TqxdgX40dNPy3oro=
+Received: from [127.0.0.1] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+	with SMTPS id 1686896514281444.96802030067886; Thu, 15 Jun 2023 23:21:54 -0700 (PDT)
+Date: Fri, 16 Jun 2023 09:21:40 +0300
+From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+To: frank-w@public-files.de, Frank Wunderlich <frank-w@public-files.de>,
+ arinc9.unal@gmail.com, Daniel Golle <daniel@makrotopia.org>,
+ Landen Chao <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
+ Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
+ Florian Fainelli <f.fainelli@gmail.com>, Vladimir Oltean <olteanv@gmail.com>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Russell King <linux@armlinux.org.uk>
+CC: Landen Chao <landen.chao@mediatek.com>,
+ Bartel Eerdekens <bartel.eerdekens@constell8.be>, mithat.guner@xeront.com,
+ erkin.bozoglu@xeront.com, linux-kernel@vger.kernel.org,
+ netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net v5 4/6] net: dsa: mt7530: fix handling of LLDP frames
+User-Agent: K-9 Mail for Android
+In-Reply-To: <CFD0E43B-1D0F-4BC3-8DB8-8CFA09F8AA94@public-files.de>
+References: <20230616025327.12652-1-arinc.unal@arinc9.com> <20230616025327.12652-5-arinc.unal@arinc9.com> <CFD0E43B-1D0F-4BC3-8DB8-8CFA09F8AA94@public-files.de>
+Message-ID: <44531D5A-9219-44CC-9197-DD59E9506453@arinc9.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Jakub Kicinski <kuba@kernel.org> writes:
-
-> On Wed, 14 Jun 2023 18:07:43 +0300 Kalle Valo wrote:
->> But do note that above is _only_ for -next patches. For patches going to
->> -rc releases we apply the patches directly to wireless, no other trees
->> are involved. My proposal was that net maintainers would take only fixes
->> for -rc releases, my guess from history is that it would be maximum of
->> 10-15 patches. And once me and Johannes are back we would sort out -next
->> patches before the merge window. But of course you guys can do whatever
->> you think is best :)
+On 16 June 2023 08:44:32 GMT+03:00, Frank Wunderlich <frank-w@public-files=
+=2Ede> wrote:
+>Am 16=2E Juni 2023 04:53:25 MESZ schrieb arinc9=2Eunal@gmail=2Ecom:
+>>From: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc=2Eunal@arinc9=2Ecom>
+>>
+>>LLDP frames are link-local frames, therefore they must be trapped to the
+>>CPU port=2E Currently, the MT753X switches treat LLDP frames as regular
+>>multicast frames, therefore flooding them to user ports=2E To fix this, =
+set
+>>LLDP frames to be trapped to the CPU port(s)=2E
+>>
+>>Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530=
+ switch")
+>>Signed-off-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc=2Eunal@arinc9=2Ecom>
+>>---
+>> drivers/net/dsa/mt7530=2Ec | 8 ++++++++
+>> drivers/net/dsa/mt7530=2Eh | 5 +++++
+>> 2 files changed, 13 insertions(+)
+>>
+>>diff --git a/drivers/net/dsa/mt7530=2Ec b/drivers/net/dsa/mt7530=2Ec
+>>index 7b72cf3a0e30=2E=2Ec85876fd9107 100644
+>>--- a/drivers/net/dsa/mt7530=2Ec
+>>+++ b/drivers/net/dsa/mt7530=2Ec
+>>@@ -2266,6 +2266,10 @@ mt7530_setup(struct dsa_switch *ds)
+>> 	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
+>> 		   MT753X_BPDU_CPU_ONLY);
+>>=20
+>>+	/* Trap LLDP frames with :0E MAC DA to the CPU port */
+>>+	mt7530_rmw(priv, MT753X_RGAC2, MT753X_R0E_PORT_FW_MASK,
+>>+		   MT753X_R0E_PORT_FW(MT753X_BPDU_CPU_ONLY));
+>>+
+>> 	/* Enable and reset MIB counters */
+>> 	mt7530_mib_reset(ds);
+>>=20
+>>@@ -2369,6 +2373,10 @@ mt7531_setup_common(struct dsa_switch *ds)
+>> 	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
+>> 		   MT753X_BPDU_CPU_ONLY);
+>>=20
+>>+	/* Trap LLDP frames with :0E MAC DA to the CPU port(s) */
+>>+	mt7530_rmw(priv, MT753X_RGAC2, MT753X_R0E_PORT_FW_MASK,
+>>+		   MT753X_R0E_PORT_FW(MT753X_BPDU_CPU_ONLY));
+>>+
+>> 	/* Enable and reset MIB counters */
+>> 	mt7530_mib_reset(ds);
+>>=20
 >
-> Ah, good note, I would have guessed that fixes go via special trees,
-> too. In that case it should indeed be easy. We'll just look out for
-> maintainer acks on the list and ping people if in doubt.
+>
+>I though these 2 hunks should go into some common function
 
-Sounds good. And do note that not all drivers have active maintainers,
-so you might have to take some patches without acks.
+Like I said, I will do that on my net-next patch series=2E
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Ar=C4=B1n=C3=A7
 
