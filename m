@@ -1,49 +1,49 @@
-Return-Path: <netdev+bounces-11499-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11500-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id E433F7335A4
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 18:15:46 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 296637335AA
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 18:16:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9B76A28179F
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 16:15:45 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D804128185D
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 16:16:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB5731ACB2;
-	Fri, 16 Jun 2023 16:13:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 40EA91DCA8;
+	Fri, 16 Jun 2023 16:13:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1D5C18B1D
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 16:13:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3025E1DCA7
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 16:13:44 +0000 (UTC)
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6A63AA9
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 09:13:36 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2ACA3AAD
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 09:13:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686932015;
+	s=mimecast20190719; t=1686932016;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=fSQZQ6YboxRaXsiohOL5R9kf0uRRv2lhrE9A+pyCn4U=;
-	b=Ntgb/WIrvm4+0QH6DTEp/zEOknQCU3U6QzXH3rCCk4K763xRNjYkGSwfB6C0sd+Xz4eh++
-	KJ1xjD+ekjWSyaVm52CFzcNFGKEoIDqK1mwZvTY+M4GUr1Er+zdtCJWJSs1vIswyhKGQIW
-	Q3UHUELYEkbkdmKtXeEGac5Gaz3DvQQ=
+	bh=Fr8R9cUCocDj4LYXtGmeXkCgA5OgO4hqxYPqdNjfTX8=;
+	b=BtOL9WWIv7I4EkbNQtsc+VhJm8AdIdsSnO5nP8VNQRV2R+a4r1Zy8M1QW8QDz7nmMXKRp2
+	FrNrD6M7cpHTlqWbNHLCpj7fFpSqEp1qOtN9ZCNOQRBtMs+cfKEK1/pUZz1CQk6Z+Peg2F
+	OPjHGLWAgwc7h6NgaJVBbdvE/vBsbH4=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-589-6q7z6BCsPgKZv0muxF5mVQ-1; Fri, 16 Jun 2023 12:13:31 -0400
-X-MC-Unique: 6q7z6BCsPgKZv0muxF5mVQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+ us-mta-627-m0GIPd8iMeWBnIZd0MxhlQ-1; Fri, 16 Jun 2023 12:13:33 -0400
+X-MC-Unique: m0GIPd8iMeWBnIZd0MxhlQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 37C5B3C0E456;
-	Fri, 16 Jun 2023 16:13:30 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CDEC81C05ABF;
+	Fri, 16 Jun 2023 16:13:32 +0000 (UTC)
 Received: from warthog.procyon.org.com (unknown [10.42.28.51])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 14059C1604C;
-	Fri, 16 Jun 2023 16:13:27 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 054141121314;
+	Fri, 16 Jun 2023 16:13:30 +0000 (UTC)
 From: David Howells <dhowells@redhat.com>
 To: netdev@vger.kernel.org
 Cc: David Howells <dhowells@redhat.com>,
@@ -58,13 +58,12 @@ Cc: David Howells <dhowells@redhat.com>,
 	Jens Axboe <axboe@kernel.dk>,
 	linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org,
-	Ilya Dryomov <idryomov@gmail.com>,
-	Xiubo Li <xiubli@redhat.com>,
-	Jeff Layton <jlayton@kernel.org>,
-	ceph-devel@vger.kernel.org
-Subject: [PATCH net-next 07/17] ceph: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage()
-Date: Fri, 16 Jun 2023 17:12:50 +0100
-Message-ID: <20230616161301.622169-8-dhowells@redhat.com>
+	Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+	linux-rdma@vger.kernel.org,
+	rds-devel@oss.oracle.com
+Subject: [PATCH net-next 08/17] rds: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage
+Date: Fri, 16 Jun 2023 17:12:51 +0100
+Message-ID: <20230616161301.622169-9-dhowells@redhat.com>
 In-Reply-To: <20230616161301.622169-1-dhowells@redhat.com>
 References: <20230616161301.622169-1-dhowells@redhat.com>
 Precedence: bulk
@@ -74,150 +73,148 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Use sendmsg() and MSG_SPLICE_PAGES rather than sendpage in ceph when
-transmitting data.  For the moment, this can only transmit one page at a
-time because of the architecture of net/ceph/, but if
-write_partial_message_data() can be given a bvec[] at a time by the
-iteration code, this would allow pages to be sent in a batch.
+When transmitting data, call down into TCP using a single sendmsg with
+MSG_SPLICE_PAGES to indicate that content should be spliced rather than
+performing several sendmsg and sendpage calls to transmit header and data
+pages.
+
+To make this work, the data is assembled in a bio_vec array and attached to
+a BVEC-type iterator.  The header are copied into memory acquired from
+zcopy_alloc() which just breaks a page up into small pieces that can be
+freed with put_page().
 
 Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Ilya Dryomov <idryomov@gmail.com>
-cc: Xiubo Li <xiubli@redhat.com>
-cc: Jeff Layton <jlayton@kernel.org>
+cc: Santosh Shilimkar <santosh.shilimkar@oracle.com>
 cc: "David S. Miller" <davem@davemloft.net>
 cc: Eric Dumazet <edumazet@google.com>
 cc: Jakub Kicinski <kuba@kernel.org>
 cc: Paolo Abeni <pabeni@redhat.com>
 cc: Jens Axboe <axboe@kernel.dk>
 cc: Matthew Wilcox <willy@infradead.org>
-cc: ceph-devel@vger.kernel.org
+cc: linux-rdma@vger.kernel.org
+cc: rds-devel@oss.oracle.com
 cc: netdev@vger.kernel.org
 ---
- net/ceph/messenger_v2.c | 91 +++++++++--------------------------------
- 1 file changed, 19 insertions(+), 72 deletions(-)
+ net/rds/tcp_send.c | 74 +++++++++++++++++-----------------------------
+ 1 file changed, 27 insertions(+), 47 deletions(-)
 
-diff --git a/net/ceph/messenger_v2.c b/net/ceph/messenger_v2.c
-index 301a991dc6a6..87ac97073e75 100644
---- a/net/ceph/messenger_v2.c
-+++ b/net/ceph/messenger_v2.c
-@@ -117,91 +117,38 @@ static int ceph_tcp_recv(struct ceph_connection *con)
- 	return ret;
+diff --git a/net/rds/tcp_send.c b/net/rds/tcp_send.c
+index 8c4d1d6e9249..550390d5ff2b 100644
+--- a/net/rds/tcp_send.c
++++ b/net/rds/tcp_send.c
+@@ -52,29 +52,23 @@ void rds_tcp_xmit_path_complete(struct rds_conn_path *cp)
+ 	tcp_sock_set_cork(tc->t_sock->sk, false);
  }
  
--static int do_sendmsg(struct socket *sock, struct iov_iter *it)
+-/* the core send_sem serializes this with other xmit and shutdown */
+-static int rds_tcp_sendmsg(struct socket *sock, void *data, unsigned int len)
 -{
--	struct msghdr msg = { .msg_flags = CEPH_MSG_FLAGS };
--	int ret;
+-	struct kvec vec = {
+-		.iov_base = data,
+-		.iov_len = len,
+-	};
+-	struct msghdr msg = {
+-		.msg_flags = MSG_DONTWAIT | MSG_NOSIGNAL,
+-	};
 -
--	msg.msg_iter = *it;
--	while (iov_iter_count(it)) {
--		ret = sock_sendmsg(sock, &msg);
--		if (ret <= 0) {
--			if (ret == -EAGAIN)
--				ret = 0;
--			return ret;
--		}
--
--		iov_iter_advance(it, ret);
--	}
--
--	WARN_ON(msg_data_left(&msg));
--	return 1;
+-	return kernel_sendmsg(sock, &msg, &vec, 1, vec.iov_len);
 -}
 -
--static int do_try_sendpage(struct socket *sock, struct iov_iter *it)
--{
--	struct msghdr msg = { .msg_flags = CEPH_MSG_FLAGS };
--	struct bio_vec bv;
--	int ret;
--
--	if (WARN_ON(!iov_iter_is_bvec(it)))
--		return -EINVAL;
--
--	while (iov_iter_count(it)) {
--		/* iov_iter_iovec() for ITER_BVEC */
--		bvec_set_page(&bv, it->bvec->bv_page,
--			      min(iov_iter_count(it),
--				  it->bvec->bv_len - it->iov_offset),
--			      it->bvec->bv_offset + it->iov_offset);
--
--		/*
--		 * sendpage cannot properly handle pages with
--		 * page_count == 0, we need to fall back to sendmsg if
--		 * that's the case.
--		 *
--		 * Same goes for slab pages: skb_can_coalesce() allows
--		 * coalescing neighboring slab objects into a single frag
--		 * which triggers one of hardened usercopy checks.
--		 */
--		if (sendpage_ok(bv.bv_page)) {
--			ret = sock->ops->sendpage(sock, bv.bv_page,
--						  bv.bv_offset, bv.bv_len,
--						  CEPH_MSG_FLAGS);
--		} else {
--			iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bv, 1, bv.bv_len);
--			ret = sock_sendmsg(sock, &msg);
--		}
--		if (ret <= 0) {
--			if (ret == -EAGAIN)
--				ret = 0;
--			return ret;
--		}
--
--		iov_iter_advance(it, ret);
--	}
--
--	return 1;
--}
--
- /*
-  * Write as much as possible.  The socket is expected to be corked,
-- * so we don't bother with MSG_MORE/MSG_SENDPAGE_NOTLAST here.
-+ * so we don't bother with MSG_MORE here.
-  *
-  * Return:
-- *   1 - done, nothing (else) to write
-+ *  >0 - done, nothing (else) to write
-  *   0 - socket is full, need to wait
-  *  <0 - error
-  */
- static int ceph_tcp_send(struct ceph_connection *con)
+ /* the core send_sem serializes this with other xmit and shutdown */
+ int rds_tcp_xmit(struct rds_connection *conn, struct rds_message *rm,
+ 		 unsigned int hdr_off, unsigned int sg, unsigned int off)
  {
+ 	struct rds_conn_path *cp = rm->m_inc.i_conn_path;
+ 	struct rds_tcp_connection *tc = cp->cp_transport_data;
 +	struct msghdr msg = {
-+		.msg_iter	= con->v2.out_iter,
-+		.msg_flags	= CEPH_MSG_FLAGS,
++		.msg_flags = MSG_SPLICE_PAGES | MSG_DONTWAIT | MSG_NOSIGNAL,
 +	};
- 	int ret;
++	struct bio_vec *bvec;
++	unsigned int i, size = 0, ix = 0;
+ 	int done = 0;
+-	int ret = 0;
+-	int more;
++	int ret = -ENOMEM;
++
++	bvec = kmalloc_array(1 + sg, sizeof(struct bio_vec), GFP_KERNEL);
++	if (!bvec)
++		goto out;
  
-+	if (WARN_ON(!iov_iter_is_bvec(&con->v2.out_iter)))
-+		return -EINVAL;
+ 	if (hdr_off == 0) {
+ 		/*
+@@ -101,41 +95,26 @@ int rds_tcp_xmit(struct rds_connection *conn, struct rds_message *rm,
+ 		/* see rds_tcp_write_space() */
+ 		set_bit(SOCK_NOSPACE, &tc->t_sock->sk->sk_socket->flags);
+ 
+-		ret = rds_tcp_sendmsg(tc->t_sock,
+-				      (void *)&rm->m_inc.i_hdr + hdr_off,
+-				      sizeof(rm->m_inc.i_hdr) - hdr_off);
+-		if (ret < 0)
+-			goto out;
+-		done += ret;
+-		if (hdr_off + done != sizeof(struct rds_header))
+-			goto out;
++		bvec_set_virt(&bvec[ix], (void *)&rm->m_inc.i_hdr + hdr_off,
++			      sizeof(rm->m_inc.i_hdr) - hdr_off);
++		size += bvec[ix].bv_len;
++		ix++;
+ 	}
+ 
+-	more = rm->data.op_nents > 1 ? (MSG_MORE | MSG_SENDPAGE_NOTLAST) : 0;
+-	while (sg < rm->data.op_nents) {
+-		int flags = MSG_DONTWAIT | MSG_NOSIGNAL | more;
+-
+-		ret = tc->t_sock->ops->sendpage(tc->t_sock,
+-						sg_page(&rm->data.op_sg[sg]),
+-						rm->data.op_sg[sg].offset + off,
+-						rm->data.op_sg[sg].length - off,
+-						flags);
+-		rdsdebug("tcp sendpage %p:%u:%u ret %d\n", (void *)sg_page(&rm->data.op_sg[sg]),
+-			 rm->data.op_sg[sg].offset + off, rm->data.op_sg[sg].length - off,
+-			 ret);
+-		if (ret <= 0)
+-			break;
+-
+-		off += ret;
+-		done += ret;
+-		if (off == rm->data.op_sg[sg].length) {
+-			off = 0;
+-			sg++;
+-		}
+-		if (sg == rm->data.op_nents - 1)
+-			more = 0;
++	for (i = sg; i < rm->data.op_nents; i++) {
++		bvec_set_page(&bvec[ix],
++			      sg_page(&rm->data.op_sg[i]),
++			      rm->data.op_sg[i].length - off,
++			      rm->data.op_sg[i].offset + off);
++		off = 0;
++		size += bvec[ix].bv_len;
++		ix++;
+ 	}
+ 
++	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, bvec, ix, size);
++	ret = sock_sendmsg(tc->t_sock, &msg);
++	rdsdebug("tcp sendmsg-splice %u,%u ret %d\n", ix, size, ret);
 +
-+	if (con->v2.out_iter_sendpage)
-+		msg.msg_flags |= MSG_SPLICE_PAGES;
-+
- 	dout("%s con %p have %zu try_sendpage %d\n", __func__, con,
- 	     iov_iter_count(&con->v2.out_iter), con->v2.out_iter_sendpage);
--	if (con->v2.out_iter_sendpage)
--		ret = do_try_sendpage(con->sock, &con->v2.out_iter);
--	else
--		ret = do_sendmsg(con->sock, &con->v2.out_iter);
-+
-+	ret = sock_sendmsg(con->sock, &msg);
-+	if (ret > 0)
-+		iov_iter_advance(&con->v2.out_iter, ret);
-+	else if (ret == -EAGAIN)
-+		ret = 0;
-+
- 	dout("%s con %p ret %d left %zu\n", __func__, con, ret,
- 	     iov_iter_count(&con->v2.out_iter));
- 	return ret;
+ out:
+ 	if (ret <= 0) {
+ 		/* write_space will hit after EAGAIN, all else fatal */
+@@ -158,6 +137,7 @@ int rds_tcp_xmit(struct rds_connection *conn, struct rds_message *rm,
+ 	}
+ 	if (done == 0)
+ 		done = ret;
++	kfree(bvec);
+ 	return done;
+ }
+ 
 
 
