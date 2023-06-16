@@ -1,58 +1,58 @@
-Return-Path: <netdev+bounces-11632-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11633-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 73943733C55
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 00:16:47 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2A71F733C57
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 00:17:08 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 979581C21057
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:16:46 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4E8B91C2109C
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:17:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3CF8D8F58;
-	Fri, 16 Jun 2023 22:15:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0A69379DD;
+	Fri, 16 Jun 2023 22:15:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2ED96A92E
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 22:15:03 +0000 (UTC)
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 971B83C24
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 15:14:44 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id d9443c01a7336-1b3c578c602so8678575ad.2
-        for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 15:14:44 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC9F01775C
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 22:15:06 +0000 (UTC)
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABEA3C30
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 15:14:46 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id d9443c01a7336-1b51780bed0so10041575ad.3
+        for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 15:14:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1686953684; x=1689545684;
+        d=broadcom.com; s=google; t=1686953685; x=1689545685;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=o6opz7T+TF2O+Nsifgv6YrAfGNpVoHmMZDj2Kc27vwc=;
-        b=YyhO0CGgXtwFFh8m9r78HjkTTf2MFW99v/LuFX4OjHULWR8IkuS1mu5jJ0ETCokAqD
-         8jHH7SfYF4RNj2aaSlFWemM0P13bHCAcxbYFFGG8bShasF0JDN1SsxeQsM8mZoAbY4re
-         oCaMk1JxLid/p86J/v6WojsXcPDWd16qyZVPQ=
+        bh=RzMK4EyW/uxln/WCl1QpjvHdtAfW+A0W2TC/Apx1JJk=;
+        b=Z3CtYv82MJg7krU1YuNvgIpjxmIeb+EEPH/gOcPYTdXtjYptPnH3NKkRnNo+pFo2pB
+         DrzyvWjJQNVRf/1bhf1yyOVVCuxtlWPlPSc9Uz8GDkXQsQcHWlBDWY9rwsxBiIKMUeZ4
+         fRvv7sfyWjOosHfUoUvN6yzSP3W/3gTtN6tqg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686953684; x=1689545684;
+        d=1e100.net; s=20221208; t=1686953685; x=1689545685;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=o6opz7T+TF2O+Nsifgv6YrAfGNpVoHmMZDj2Kc27vwc=;
-        b=k+sueDEVpUzDOvLXtK36BqkBQissVQhjEAP2qIgv3RfWq/UDhFhq10e+edP5fE+HVI
-         Ni7iagWJgU/wWL8bKw0RjUi2IxM/N16eqU0i+yRRHJf5MYZxsbzVRg1BXZx4R1BqFSPk
-         JV8pY8zjDGu9iTDAPNupR9JcI+5A6Xn+bw1reazWsB4YE6scAa0Gvvtsb6cUMpMaiUbq
-         9dnjWqOrzpLqUTgLDgr0qkfxA6+rNnwMK2rIMXwE1dYJm3TtB9kBAZY/Zg11fF6KDLsQ
-         eL8ABntTWpiOdm1qrnhhskLS5d81XZH53fszJmbEKyW/FKRHjsVXuONfs2OZVh/grbLY
-         HkDQ==
-X-Gm-Message-State: AC+VfDyVGUgROOuD1JsPvej/zpfY2mVClDT0jRfJSATKSuv4/CeBKvWY
-	aBNHiG6O9dw2XrVbMNV2YPEPVojzqoJkzJII8Idj0LSzjFRw6n6BMmfn7FRyzEwIT72ppIf9kc0
-	/wf6f4zZ1g6Nz0vd7dqbNqSSesdnsesD/YWgdngOWwa/BGlKQDx15bVYGvGnpowXcJXHAZkKMtw
-	MYUKyznQ==
-X-Google-Smtp-Source: ACHHUZ77u5VHB0u0DFSQt7WK8dxMR9hEYcsd+r1L9BQUi8qb1YB1XF55uP1jscdppXTdIgavyfjk7g==
-X-Received: by 2002:a17:903:442:b0:1b1:d39e:28bb with SMTP id iw2-20020a170903044200b001b1d39e28bbmr2426746plb.34.1686953683626;
-        Fri, 16 Jun 2023 15:14:43 -0700 (PDT)
+        bh=RzMK4EyW/uxln/WCl1QpjvHdtAfW+A0W2TC/Apx1JJk=;
+        b=Kx3gHjBK/DmW026sRrvNIXxPNGog5flmFT57YrygqNxd0AaoEDsGovcsGf63vh0NvI
+         l1T3npwvHrtain0WowmD9DGy7eLLyQKuNuCZx9cePDGSOV+C3ghRiafrX6JO5VZ4Adsg
+         c+B10GnfrN/cZ43rSrDd8DjUDcUwHXBAdipcMKnwqw7UwW0wlgtUaNicvUK6cR0ulDdA
+         ZXpB0uALJpY0rrMTGDN3NrAA2cMQMxKS1BxzxXxuornRwEyDDgL2GS/sC4Uc642KoT+t
+         QXgwHS9I53T6sGN6Y/3C4gAFQ5Lh55JVuKjhh+LCqVy2vpoWfE7C2n3wiGWFW4FxGBGV
+         /fOw==
+X-Gm-Message-State: AC+VfDz549ui/lPXD7/BB5ALYEmbrh9aQJ0LFEDt+/6z0OVqSe9LmScY
+	CeOhkiQWbtkswYe8fsTEatnz5ntv2Bjnc10rlkbrsVNLox+H1lecu1s8nDyaJ9SaMqrrAcg6lpc
+	uPIq2c5p8C66mdOqbTLfxtf9Qw3ExWiHSF0OuwXhoL8yII/7+PvEytl0/S9y8med2HauhUtmSQh
+	iuJ5s3DQ==
+X-Google-Smtp-Source: ACHHUZ5XIYSIBq9rkgks+qnbMwTiWrZUa5cnP+lPvKV8P8/k52wZYMxNGj97vhqdiRlZxKsr5/E9Ew==
+X-Received: by 2002:a17:902:e810:b0:1ad:f407:37d2 with SMTP id u16-20020a170902e81000b001adf40737d2mr4077370plg.5.1686953685567;
+        Fri, 16 Jun 2023 15:14:45 -0700 (PDT)
 Received: from stbirv-lnx-2.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f12-20020a170902ab8c00b001aaed524541sm16220860plr.227.2023.06.16.15.14.41
+        by smtp.gmail.com with ESMTPSA id f12-20020a170902ab8c00b001aaed524541sm16220860plr.227.2023.06.16.15.14.43
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 16 Jun 2023 15:14:43 -0700 (PDT)
+        Fri, 16 Jun 2023 15:14:45 -0700 (PDT)
 From: Justin Chen <justin.chen@broadcom.com>
 To: netdev@vger.kernel.org,
 	devicetree@vger.kernel.org,
@@ -76,14 +76,14 @@ Cc: florian.fainelli@broadcom.com,
 	christian.koenig@amd.com,
 	simon.horman@corigine.com,
 	Justin Chen <justin.chen@broadcom.com>
-Subject: [PATCH net-next v8 06/11] net: bcmasp: Add support for eee mode
-Date: Fri, 16 Jun 2023 15:14:19 -0700
-Message-Id: <1686953664-17498-7-git-send-email-justin.chen@broadcom.com>
+Subject: [PATCH net-next v8 07/11] net: bcmasp: Add support for ethtool standard stats
+Date: Fri, 16 Jun 2023 15:14:20 -0700
+Message-Id: <1686953664-17498-8-git-send-email-justin.chen@broadcom.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1686953664-17498-1-git-send-email-justin.chen@broadcom.com>
 References: <1686953664-17498-1-git-send-email-justin.chen@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="00000000000016f48405fe46835d"
+	boundary="000000000000345db605fe46836d"
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
 	MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -97,143 +97,188 @@ List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 
---00000000000016f48405fe46835d
+--000000000000345db605fe46836d
 
-Add support for eee mode.
+Add support for eth_mac_stats, rmon_stats, and eth_ctrl_stats.
 
 Signed-off-by: Justin Chen <justin.chen@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/asp2/bcmasp.h        |  4 ++
- .../net/ethernet/broadcom/asp2/bcmasp_ethtool.c    | 61 ++++++++++++++++++++++
- drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c   |  6 +++
- 3 files changed, 71 insertions(+)
+ .../net/ethernet/broadcom/asp2/bcmasp_ethtool.c    | 77 ++++++++++++++++++++++
+ .../net/ethernet/broadcom/asp2/bcmasp_intf_defs.h  | 63 +++++++++++++++++-
+ 2 files changed, 139 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp.h b/drivers/net/ethernet/broadcom/asp2/bcmasp.h
-index e791b869006e..d6740077877a 100644
---- a/drivers/net/ethernet/broadcom/asp2/bcmasp.h
-+++ b/drivers/net/ethernet/broadcom/asp2/bcmasp.h
-@@ -313,6 +313,8 @@ struct bcmasp_intf {
- 	/* Used if per intf wol irq */
- 	int			wol_irq;
- 	unsigned int		wol_irq_enabled:1;
-+
-+	struct ethtool_eee	eee;
- };
- 
- #define NUM_NET_FILTERS				32
-@@ -559,4 +561,6 @@ void bcmasp_netfilt_get_all_active(struct bcmasp_intf *intf, u32 *rule_locs,
- 				   u32 *rule_cnt);
- 
- void bcmasp_netfilt_suspend(struct bcmasp_intf *intf);
-+
-+void bcmasp_eee_enable_set(struct bcmasp_intf *intf, bool enable);
- #endif
 diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c b/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
-index eddd1c43f00e..1e96a69043f3 100644
+index 1e96a69043f3..59d853c2293c 100644
 --- a/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
-@@ -191,6 +191,65 @@ static int bcmasp_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd,
- 	return err;
+@@ -250,6 +250,80 @@ static int bcmasp_set_eee(struct net_device *dev, struct ethtool_eee *e)
+ 	return phy_ethtool_set_eee(dev->phydev, e);
  }
  
-+void bcmasp_eee_enable_set(struct bcmasp_intf *intf, bool enable)
-+{
-+	u32 reg;
-+
-+	reg = umac_rl(intf, UMC_EEE_CTRL);
-+	if (enable)
-+		reg |= EEE_EN;
-+	else
-+		reg &= ~EEE_EN;
-+	umac_wl(intf, reg, UMC_EEE_CTRL);
-+
-+	intf->eee.eee_enabled = enable;
-+	intf->eee.eee_active = enable;
-+}
-+
-+static int bcmasp_get_eee(struct net_device *dev, struct ethtool_eee *e)
++static void bcmasp_get_eth_mac_stats(struct net_device *dev,
++				     struct ethtool_eth_mac_stats *mac_stats)
 +{
 +	struct bcmasp_intf *intf = netdev_priv(dev);
-+	struct ethtool_eee *p = &intf->eee;
 +
-+	if (!dev->phydev)
-+		return -ENODEV;
-+
-+	e->eee_enabled = p->eee_enabled;
-+	e->eee_active = p->eee_active;
-+	e->tx_lpi_enabled = p->tx_lpi_enabled;
-+	e->tx_lpi_timer = umac_rl(intf, UMC_EEE_LPI_TIMER);
-+
-+	return phy_ethtool_get_eee(dev->phydev, e);
++	mac_stats->FramesTransmittedOK = umac_rl(intf, UMC_GTPOK);
++	mac_stats->SingleCollisionFrames = umac_rl(intf, UMC_GTSCL);
++	mac_stats->MultipleCollisionFrames = umac_rl(intf, UMC_GTMCL);
++	mac_stats->FramesReceivedOK = umac_rl(intf, UMC_GRPOK);
++	mac_stats->FrameCheckSequenceErrors = umac_rl(intf, UMC_GRFCS);
++	mac_stats->AlignmentErrors = umac_rl(intf, UMC_GRALN);
++	mac_stats->OctetsTransmittedOK = umac_rl(intf, UMC_GTBYT);
++	mac_stats->FramesWithDeferredXmissions = umac_rl(intf, UMC_GTDRF);
++	mac_stats->LateCollisions = umac_rl(intf, UMC_GTLCL);
++	mac_stats->FramesAbortedDueToXSColls = umac_rl(intf, UMC_GTXCL);
++	mac_stats->OctetsReceivedOK = umac_rl(intf, UMC_GRBYT);
++	mac_stats->MulticastFramesXmittedOK = umac_rl(intf, UMC_GTMCA);
++	mac_stats->BroadcastFramesXmittedOK = umac_rl(intf, UMC_GTBCA);
++	mac_stats->FramesWithExcessiveDeferral = umac_rl(intf, UMC_GTEDF);
++	mac_stats->MulticastFramesReceivedOK = umac_rl(intf, UMC_GRMCA);
++	mac_stats->BroadcastFramesReceivedOK = umac_rl(intf, UMC_GRBCA);
 +}
 +
-+static int bcmasp_set_eee(struct net_device *dev, struct ethtool_eee *e)
++static const struct ethtool_rmon_hist_range bcmasp_rmon_ranges[] = {
++	{    0,   64},
++	{   65,  127},
++	{  128,  255},
++	{  256,  511},
++	{  512, 1023},
++	{ 1024, 1518},
++	{ 1519, 1522},
++	{}
++};
++
++static void bcmasp_get_rmon_stats(struct net_device *dev,
++				  struct ethtool_rmon_stats *rmon_stats,
++				  const struct ethtool_rmon_hist_range **ranges)
 +{
 +	struct bcmasp_intf *intf = netdev_priv(dev);
-+	struct ethtool_eee *p = &intf->eee;
-+	int ret;
 +
-+	if (!dev->phydev)
-+		return -ENODEV;
++	*ranges = bcmasp_rmon_ranges;
 +
-+	if (!p->eee_enabled) {
-+		bcmasp_eee_enable_set(intf, false);
-+	} else {
-+		ret = phy_init_eee(dev->phydev, 0);
-+		if (ret) {
-+			netif_err(intf, hw, dev,
-+				  "EEE initialization failed: %d\n", ret);
-+			return ret;
-+		}
++	rmon_stats->undersize_pkts = umac_rl(intf, UMC_RRUND);
++	rmon_stats->oversize_pkts = umac_rl(intf, UMC_GROVR);
++	rmon_stats->fragments = umac_rl(intf, UMC_RRFRG);
++	rmon_stats->jabbers = umac_rl(intf, UMC_GRJBR);
 +
-+		umac_wl(intf, e->tx_lpi_timer, UMC_EEE_LPI_TIMER);
-+		intf->eee.eee_active = ret >= 0;
-+		intf->eee.tx_lpi_enabled = e->tx_lpi_enabled;
-+		bcmasp_eee_enable_set(intf, true);
-+	}
++	rmon_stats->hist[0] = umac_rl(intf, UMC_GR64);
++	rmon_stats->hist[1] = umac_rl(intf, UMC_GR127);
++	rmon_stats->hist[2] = umac_rl(intf, UMC_GR255);
++	rmon_stats->hist[3] = umac_rl(intf, UMC_GR511);
++	rmon_stats->hist[4] = umac_rl(intf, UMC_GR1023);
++	rmon_stats->hist[5] = umac_rl(intf, UMC_GR1518);
++	rmon_stats->hist[6] = umac_rl(intf, UMC_GRMGV);
 +
-+	return phy_ethtool_set_eee(dev->phydev, e);
++	rmon_stats->hist_tx[0] = umac_rl(intf, UMC_TR64);
++	rmon_stats->hist_tx[1] = umac_rl(intf, UMC_TR127);
++	rmon_stats->hist_tx[2] = umac_rl(intf, UMC_TR255);
++	rmon_stats->hist_tx[3] = umac_rl(intf, UMC_TR511);
++	rmon_stats->hist_tx[4] = umac_rl(intf, UMC_TR1023);
++	rmon_stats->hist_tx[5] = umac_rl(intf, UMC_TR1518);
++	rmon_stats->hist_tx[6] = umac_rl(intf, UMC_TRMGV);
++}
++
++static void bcmasp_get_eth_ctrl_stats(struct net_device *dev,
++				      struct ethtool_eth_ctrl_stats *ctrl_stats)
++{
++	struct bcmasp_intf *intf = netdev_priv(dev);
++
++	ctrl_stats->MACControlFramesTransmitted = umac_rl(intf, UMC_GTXCF);
++	ctrl_stats->MACControlFramesReceived = umac_rl(intf, UMC_GRXCF);
++	ctrl_stats->UnsupportedOpcodesReceived = umac_rl(intf, UMC_GRXUO);
 +}
 +
  const struct ethtool_ops bcmasp_ethtool_ops = {
  	.get_drvinfo		= bcmasp_get_drvinfo,
  	.get_link		= ethtool_op_get_link,
-@@ -202,4 +261,6 @@ const struct ethtool_ops bcmasp_ethtool_ops = {
- 	.set_wol		= bcmasp_set_wol,
- 	.get_rxnfc		= bcmasp_get_rxnfc,
+@@ -263,4 +337,7 @@ const struct ethtool_ops bcmasp_ethtool_ops = {
  	.set_rxnfc		= bcmasp_set_rxnfc,
-+	.set_eee		= bcmasp_set_eee,
-+	.get_eee		= bcmasp_get_eee,
+ 	.set_eee		= bcmasp_set_eee,
+ 	.get_eee		= bcmasp_get_eee,
++	.get_eth_mac_stats	= bcmasp_get_eth_mac_stats,
++	.get_rmon_stats		= bcmasp_get_rmon_stats,
++	.get_eth_ctrl_stats	= bcmasp_get_eth_ctrl_stats,
  };
-diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c b/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c
-index e221f07bf743..2c8a9d5711de 100644
---- a/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c
-+++ b/drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c
-@@ -653,6 +653,9 @@ static void bcmasp_adj_link(struct net_device *dev)
- 			UMC_CMD_TX_PAUSE_IGNORE);
- 		reg |= cmd_bits;
- 		umac_wl(intf, reg, UMC_CMD);
-+
-+		intf->eee.eee_active = phy_init_eee(phydev, 0) >= 0;
-+		bcmasp_eee_enable_set(intf, intf->eee.eee_active);
- 	}
- 
- 	reg = rgmii_rl(intf, RGMII_OOB_CNTRL);
-@@ -1403,6 +1406,9 @@ int bcmasp_interface_resume(struct bcmasp_intf *intf)
- 
- 	bcmasp_resume_from_wol(intf);
- 
-+	if (intf->eee.eee_enabled)
-+		bcmasp_eee_enable_set(intf, true);
-+
- 	netif_device_attach(dev);
- 
- 	return 0;
+diff --git a/drivers/net/ethernet/broadcom/asp2/bcmasp_intf_defs.h b/drivers/net/ethernet/broadcom/asp2/bcmasp_intf_defs.h
+index b259a475207f..ad742612895f 100644
+--- a/drivers/net/ethernet/broadcom/asp2/bcmasp_intf_defs.h
++++ b/drivers/net/ethernet/broadcom/asp2/bcmasp_intf_defs.h
+@@ -45,7 +45,68 @@
+ #define  UMC_EEE_LPI_TIMER		0x68
+ #define  UMC_PAUSE_CNTRL		0x330
+ #define  UMC_TX_FLUSH			0x334
+-#define  UMC_MIB_START			0x400
++#define  UMC_GR64			0x400
++#define  UMC_GR127			0x404
++#define  UMC_GR255			0x408
++#define  UMC_GR511			0x40c
++#define  UMC_GR1023			0x410
++#define  UMC_GR1518			0x414
++#define  UMC_GRMGV			0x418
++#define  UMC_GR2047			0x41c
++#define  UMC_GR4095			0x420
++#define  UMC_GR9216			0x424
++#define  UMC_GRPKT			0x428
++#define  UMC_GRBYT			0x42c
++#define  UMC_GRMCA			0x430
++#define  UMC_GRBCA			0x434
++#define  UMC_GRFCS			0x438
++#define  UMC_GRXCF			0x43c
++#define  UMC_GRXPF			0x440
++#define  UMC_GRXUO			0x444
++#define  UMC_GRALN			0x448
++#define  UMC_GRFLR			0x44c
++#define  UMC_GRCDE			0x450
++#define  UMC_GRFCR			0x454
++#define  UMC_GROVR			0x458
++#define  UMC_GRJBR			0x45c
++#define  UMC_GRMTUE			0x460
++#define  UMC_GRPOK			0x464
++#define  UMC_GRUC			0x468
++#define  UMC_GRPPP			0x46c
++#define  UMC_GRMCRC			0x470
++#define  UMC_TR64			0x480
++#define  UMC_TR127			0x484
++#define  UMC_TR255			0x488
++#define  UMC_TR511			0x48c
++#define  UMC_TR1023			0x490
++#define  UMC_TR1518			0x494
++#define  UMC_TRMGV			0x498
++#define  UMC_TR2047			0x49c
++#define  UMC_TR4095			0x4a0
++#define  UMC_TR9216			0x4a4
++#define  UMC_GTPKT			0x4a8
++#define  UMC_GTMCA			0x4ac
++#define  UMC_GTBCA			0x4b0
++#define  UMC_GTXPF			0x4b4
++#define  UMC_GTXCF			0x4b8
++#define  UMC_GTFCS			0x4bc
++#define  UMC_GTOVR			0x4c0
++#define  UMC_GTDRF			0x4c4
++#define  UMC_GTEDF			0x4c8
++#define  UMC_GTSCL			0x4cc
++#define  UMC_GTMCL			0x4d0
++#define  UMC_GTLCL			0x4d4
++#define  UMC_GTXCL			0x4d8
++#define  UMC_GTFRG			0x4dc
++#define  UMC_GTNCL			0x4e0
++#define  UMC_GTJBR			0x4e4
++#define  UMC_GTBYT			0x4e8
++#define  UMC_GTPOK			0x4ec
++#define  UMC_GTUC			0x4f0
++#define  UMC_RRPKT			0x500
++#define  UMC_RRUND			0x504
++#define  UMC_RRFRG			0x508
++#define  UMC_RRBYT			0x50c
+ #define  UMC_MIB_CNTRL			0x580
+ #define   UMC_MIB_CNTRL_RX_CNT_RST	BIT(0)
+ #define   UMC_MIB_CNTRL_RUNT_CNT_RST	BIT(1)
 -- 
 2.7.4
 
 
---00000000000016f48405fe46835d
+--000000000000345db605fe46836d
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -304,14 +349,14 @@ sDL+OV16G+F9CkNMN3txsym8Nnx5WAYZb6+rBUIhMGz70V05xsHQfzvo2s7f0J1tJ5BoRlPPhL0h
 VOnWA3h71u9TfSsv+PXVm3P21TfOS2uc1hbzEqyENCP4i5XQ0rv0TmPW42GZ0o4xggJtMIICaQIB
 ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
 bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwj8BKLXNpALfemdRAwDQYJ
-YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIOi8JH/EUtf9LamFHvRPEWh/NQSXWF8NHRUc
-wUeL6GriMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYxNjIy
-MTQ0NFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINSUuHPPaigdLLx8iez5lfL73yOaVZ0KloQq
+0owaEGCuMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDYxNjIy
+MTQ0NVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
 AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
-BgkqhkiG9w0BAQEFAASCAQAkeETwjNeHUiDeH43qLqEofFjilZGn7wLWoUfyk5NnmfzdmCzlCX95
-dQqHFh9s9K8F34HRUs2ZMDwu8tXB6NO0+Iy1UXEkhAysr+oHEEB9HqJF8+sOGhwi9n8mYR6cU5Fz
-/Sbfc8ItDWBarNO/jly1YppomSdAVokog1DmhpHOQNayIkP+2NqGgQGxwEdzir1L5Dzt9W5r0u3g
-QkGDSs2+xBkQqzPt2MSy9x8dJv1LIIz3Zne3gbXiB7RdUOeW1Hc/i9yIqNxNdLKAR7nRPTDzHEQc
-wrXkekqcUnJIN8qX7At9Dxh7XQuCzgjjos5KZfREgFOEiHyswEoguQSE2TkC
---00000000000016f48405fe46835d--
+BgkqhkiG9w0BAQEFAASCAQCeMUxHy/IhYdyRmgrQaWifzsxhkWW8eaG80kUCdpTc1/FfRBavkzef
+BMkzN4sgRu83TDlYrppdFu5cIhBa1/t1YyD3ij1eYTSYiw9Uo+RRh71zyPrqm62K2SiwpDB4MMX8
+fIz9458yper/SjHEEvImJZwQgMafgUJk9CPvhdFp9gsydtjvN7dJg7mZ7LlNz/L6AHbo5pm0I+rT
+/HC6u992YXJc4h/kBNvFw1qDx6qqa4gTuCUg8sCfP7A4Xiu2sN4dV12In+C/Xw5t8A2fqtPnhAbT
+Pf6nNzMhS3jLUDSR71c1GkUAXlZn365k0OvENBluLrb14KZQ1VR9b7xCk8+x
+--000000000000345db605fe46836d--
 
