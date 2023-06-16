@@ -1,67 +1,49 @@
-Return-Path: <netdev+bounces-11556-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11557-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3869A7339B3
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 21:21:47 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0F7D17339C2
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 21:23:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5D3ED1C20ACA
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 19:21:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4795D281763
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 19:23:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0CAC01DDDB;
-	Fri, 16 Jun 2023 19:21:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 818101E50B;
+	Fri, 16 Jun 2023 19:23:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7FE11B914
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 19:21:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D73FC433C0;
-	Fri, 16 Jun 2023 19:21:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 423491B914;
+	Fri, 16 Jun 2023 19:23:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7179EC433C9;
+	Fri, 16 Jun 2023 19:23:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686943302;
-	bh=hUURytXlMcDfitAbduozrB5DyB72nWHC+HvK485KkJY=;
+	s=k20201202; t=1686943405;
+	bh=cnIqbuBX2ydMik110zH5Tr4xSps2iWYs5dGlM7iEC3c=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Ad6swJdWo1IwISr5c/t9icf18UMj2lCExyhlgLv+O+KgaYu/qZg8ZZ19ks7CRln5E
-	 th4SmFbPGuTwMIGWdBPmtnkEM1h2OX6Nib1afv4AR2f2DybEiJNrBhoHPj7vetKS+D
-	 RcEols5/yqQmNho1ySddtpAimBACwAUt7LSdNXjRvv3zf2+ztH5QxDP7FrFynityCd
-	 WEcYDgO2xfbntUyjU4vDS/KZxH/Y5WpDdFnzn7ZNIBTuOYk7HBxSz12lldH6KT9VV4
-	 FIMWxf5Rxd7oFaVbCxDughxs/4yROiz12DdTIU7tVLWKYHhXtEt8eESRjH8vAEURe4
-	 nw+TGWsF+9gZg==
-Date: Fri, 16 Jun 2023 12:21:40 -0700
+	b=dfcPsEtoNltFBIdLiIzd92IOTx9MkDLZr2M/KPNy9MDUeUHxxSBzG+ACApIAyLoH+
+	 n1PQEF/qlmFULl2i9Sil96YoHUEMePOHPWYeFTICx+Kw43nDOqliMMQcERtoskgHlz
+	 mgEMfs6phCtbYWGyKWFhTfnIRFwNnBihLbr+d7kSCOu+trVsZMwxdeveL9NDnN/11z
+	 MhEG5vDSNQmOWBjN8ocvT9ZhqCS2E/+HeJj7OAm/81f98aL3cWUrTTzRRNjhncvFvM
+	 8pvjx2dRLpfcufBgvcOsUw9mlOcQnRgRXz32Ysr4xWL4NSw4cD3oxcmQuePuZsGdf4
+	 yglAMf9sVzBug==
+Date: Fri, 16 Jun 2023 12:23:24 -0700
 From: Jakub Kicinski <kuba@kernel.org>
-To: Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc: Alexander Duyck <alexander.duyck@gmail.com>, Yunsheng Lin
- <linyunsheng@huawei.com>, brouer@redhat.com, davem@davemloft.net,
- pabeni@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- Lorenzo Bianconi <lorenzo@kernel.org>, Yisen Zhuang
- <yisen.zhuang@huawei.com>, Salil Mehta <salil.mehta@huawei.com>, Eric
- Dumazet <edumazet@google.com>, Sunil Goutham <sgoutham@marvell.com>, Geetha
- sowjanya <gakula@marvell.com>, Subbaraya Sundeep <sbhatta@marvell.com>,
- hariprasad <hkelam@marvell.com>, Saeed Mahameed <saeedm@nvidia.com>, Leon
- Romanovsky <leon@kernel.org>, Felix Fietkau <nbd@nbd.name>, Ryder Lee
- <ryder.lee@mediatek.com>, Shayne Chen <shayne.chen@mediatek.com>, Sean Wang
- <sean.wang@mediatek.com>, Kalle Valo <kvalo@kernel.org>, Matthias Brugger
- <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
- <angelogioacchino.delregno@collabora.com>, Jesper Dangaard Brouer
- <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- linux-rdma@vger.kernel.org, linux-wireless@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net-next v4 4/5] page_pool: remove PP_FLAG_PAGE_FRAG
- flag
-Message-ID: <20230616122140.6e889357@kernel.org>
-In-Reply-To: <72ccf224-7b45-76c5-5ca9-83e25112c9c6@redhat.com>
-References: <20230612130256.4572-1-linyunsheng@huawei.com>
-	<20230612130256.4572-5-linyunsheng@huawei.com>
-	<20230614101954.30112d6e@kernel.org>
-	<8c544cd9-00a3-2f17-bd04-13ca99136750@huawei.com>
-	<20230615095100.35c5eb10@kernel.org>
-	<CAKgT0Uc6Xoyh3Edgt+83b+HTM5j4JDr3fuxcyL9qDk+Wwt9APg@mail.gmail.com>
-	<908b8b17-f942-f909-61e6-276df52a5ad5@huawei.com>
-	<CAKgT0UeZfbxDYaeUntrQpxHmwCh6zy0dEpjxghiCNxPxv=kdoQ@mail.gmail.com>
-	<72ccf224-7b45-76c5-5ca9-83e25112c9c6@redhat.com>
+To: Saeed Mahameed <saeed@kernel.org>
+Cc: Maxim Mikityanskiy <maxtram95@gmail.com>, netdev@vger.kernel.org, Saeed
+ Mahameed <saeedm@nvidia.com>, "David S. Miller" <davem@davemloft.net>, Eric
+ Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Gal
+ Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>,
+ bpf@vger.kernel.org
+Subject: Re: [PATCH net-next v4 0/2] xdp_rxq_info_reg fixes for mlx5e
+Message-ID: <20230616122324.3ddff8c3@kernel.org>
+In-Reply-To: <ZIyv3b+Cn2m+/Oi9@x130>
+References: <20230614090006.594909-1-maxtram95@gmail.com>
+	<20230615223250.422eb67a@kernel.org>
+	<ZIyv3b+Cn2m+/Oi9@x130>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -71,22 +53,28 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 16 Jun 2023 20:59:12 +0200 Jesper Dangaard Brouer wrote:
-> +       if (mem_type == MEM_TYPE_PP_NETMEM)
-> +               pp_netmem_put_page(pp, page, allow_direct);
-> +       else
-> +               page_pool_put_full_page(pp, page, allow_direct);
+On Fri, 16 Jun 2023 11:54:21 -0700 Saeed Mahameed wrote:
+> On 15 Jun 22:32, Jakub Kicinski wrote:
+> >On Wed, 14 Jun 2023 12:00:04 +0300 Maxim Mikityanskiy wrote:  
+> >> Marked for net-next, as I'm not sure what the consensus was, but they
+> >> can be applied cleanly to net as well.  
+> >
+> >Sorry for lack of clarity, you should drop the fixes tags.
+> >If not implementing something was a bug most of the patches we merge
+> >would have a fixes tag. That devalues the Fixes tag completely.
+> >You can still ask Greg/Sasha to backport it later if you want.
+> 
+> You don't think this should go to net ? 
+> 
+> The first 3 version were targeting net branch .. I don't know why Maxim
+> decided to switch v4 to net-next, Maybe I missed an email ? 
+> 
+> IMHO, I think these are net worthy since they are fixing 
+> issues with blabla, for commits claiming to add support for blabla.
+> 
+> I already applied those earlier to my net queue and was working on
+> submission today, let me know if you are ok for me to send those two
+> patches in my today's net PR.
 
-Interesting, what is the netmem type? I was thinking about extending
-page pool for other mem providers and what came to mind was either
-optionally replacing the free / alloc with a function pointer:
-
-https://github.com/torvalds/linux/commit/578ebda5607781c0abb26c1feae7ec8b83840768
-
-or wrapping the PP calls with static inlines which can direct to 
-a different implementation completely (like zctap / io_uring zc).
-
-Former is better for huge pages, latter is better for IO mem
-(peer-to-peer DMA). I wonder if you have different use case which
-requires a different model :(
+If you already have them queued up for net, that's fine.
 
