@@ -1,145 +1,115 @@
-Return-Path: <netdev+bounces-11260-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11261-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B07F87324E7
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 03:54:31 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 38CAC732501
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 04:02:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4D40B2815C2
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 01:54:30 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1F29B1C20F28
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 02:02:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 852A662B;
-	Fri, 16 Jun 2023 01:54:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1790C62C;
+	Fri, 16 Jun 2023 02:02:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76E88627
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 01:54:28 +0000 (UTC)
-Received: from sender3-op-o17.zoho.com (sender3-op-o17.zoho.com [136.143.184.17])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97AA11AA;
-	Thu, 15 Jun 2023 18:54:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1686880419; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=m+nnBfugsNBznT7IutrdBGotmA+2gZJZusj3kV8dAdwgR58dJtKViavtiMrUaNhIN0g/4P+xi0/f3tx216Cr9LBhMrtUEtUXnutoLUWAqTPWf6SB9XIkOSleQUr6+hVCZfPEqyTxYsTgBQh9xt+CU3d3k6Et4vfNoCYXhfX7MCE=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1686880419; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-	bh=5iC11FXcCYPbKNk31aFC8ArpZJL4rMW3qp7yEOxRpQ8=; 
-	b=EpwBGrtHpG7E0eA/PSpEGMZ4bMtONx6/vJNDZ2ZCK/GQPfhZCqC0K7CbTvMC7m78sWzdalRWClsCBR9P6Ukt6YeClTbQKk9O1ArwNqHWKsIYNVwP5JLtw1dMQ2SeRNg1k1quDC50PA8iZcHlq3fiEEXEQyaK3G2RbRd7fahzM3s=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=arinc9.com;
-	spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-	dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1686880419;
-	s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=5iC11FXcCYPbKNk31aFC8ArpZJL4rMW3qp7yEOxRpQ8=;
-	b=HVK/JeR9CfAt2gOActnJdBtByysaM07nrkvskmhtqwC7oUnYgrtIoNd0D+jJBS7E
-	+wZrnbZrh6JoR85q494XWwpbYs+S9TAvdi7smlpwovB6FzDKYaSPpMeIDhZgEVhdy1h
-	3TMIHIJBWf7+SW+vCsQAVmNpQ7DvKBqyh9TjL47s=
-Received: from [192.168.68.166] (athedsl-404045.home.otenet.gr [79.131.130.75]) by mx.zohomail.com
-	with SMTPS id 1686880416484951.0122965686879; Thu, 15 Jun 2023 18:53:36 -0700 (PDT)
-Message-ID: <0d57c035-b6da-08be-8f47-0afb5ddfec58@arinc9.com>
-Date: Fri, 16 Jun 2023 04:53:29 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AD60627
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 02:02:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3E9BC433C8;
+	Fri, 16 Jun 2023 02:02:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686880974;
+	bh=lcf0TFVlPPOkQFWuWXCwI1kwRPZ8JdZc98xqsZTKaMg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=HMhlxCqNsLZHAzdy1HjUjzpMtYclLtOvWbHNzFxwMAoZZjpmcWoci71EWLwFscd6J
+	 d4/f5h6wSmNOOIKHhHp8X7GjetJm0sJdMrcNmMqevqmOwUpZEl5c7BAl30w2qSzoFO
+	 qpt+NMmFmJHWhB7r29qvwywOfI6NxadYLD2nqtIxO6EtG0SP1wlWBn7sVdADYJgfYu
+	 LcMKVv4r0iVDOBrRGwuWR+oHr+rqRbr0yjy3+VWUfUulEUVeW3lzxEMs8L5y5aDkba
+	 l9oDlenMkktNwe1yo8wR1yYPuWy3dxxnFD84iXRdsHSsjnnXW+sbnraeiMLOY2quK8
+	 v3DQNtCpSMfcg==
+Date: Thu, 15 Jun 2023 19:02:52 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: FUJITA Tomonori <fujita.tomonori@gmail.com>, netdev@vger.kernel.org,
+ rust-for-linux@vger.kernel.org, aliceryhl@google.com,
+ miguel.ojeda.sandonis@gmail.com
+Subject: Re: [PATCH 0/5] Rust abstractions for network device drivers
+Message-ID: <20230615190252.4e010230@kernel.org>
+In-Reply-To: <8e9e2908-c0da-49ec-86ef-b20fb3bd71c3@lunn.ch>
+References: <20230613045326.3938283-1-fujita.tomonori@gmail.com>
+	<20230614230128.199724bd@kernel.org>
+	<8e9e2908-c0da-49ec-86ef-b20fb3bd71c3@lunn.ch>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH net v4 5/7] net: dsa: mt7530: fix handling of LLDP frames
-To: Bartel Eerdekens <bartel.eerdekens@constell8.be>,
- "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc: Daniel Golle <daniel@makrotopia.org>,
- Landen Chao <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
- Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
- Florian Fainelli <f.fainelli@gmail.com>, Vladimir Oltean
- <olteanv@gmail.com>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Frank Wunderlich <frank-w@public-files.de>, mithat.guner@xeront.com,
- erkin.bozoglu@xeront.com, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org
-References: <20230612075945.16330-1-arinc.unal@arinc9.com>
- <20230612075945.16330-6-arinc.unal@arinc9.com>
- <ZInt8mmrZ6tCGy1N@shell.armlinux.org.uk>
- <CABRLg09hXm3=mca70TdZLuxA1d8YzOcWj31NvFG0ZWoStn_w9Q@mail.gmail.com>
-Content-Language: en-US
-From: =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <CABRLg09hXm3=mca70TdZLuxA1d8YzOcWj31NvFG0ZWoStn_w9Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 15.06.2023 15:45, Bartel Eerdekens wrote:
-> On Wed, Jun 14, 2023 at 6:42 PM Russell King (Oracle)
-> <linux@armlinux.org.uk> wrote:
->>
->> On Mon, Jun 12, 2023 at 10:59:43AM +0300, arinc9.unal@gmail.com wrote:
->>> From: Arınç ÜNAL <arinc.unal@arinc9.com>
->>>
->>> LLDP frames are link-local frames, therefore they must be trapped to the
->>> CPU port. Currently, the MT753X switches treat LLDP frames as regular
->>> multicast frames, therefore flooding them to user ports. To fix this, set
->>> LLDP frames to be trapped to the CPU port(s).
->>>
->>> The mt753x_bpdu_port_fw enum is universally used for trapping frames,
->>> therefore rename it and the values in it to mt753x_port_fw.
->>>
->>> For MT7530, LLDP frames received from a user port will be trapped to the
->>> numerically smallest CPU port which is affine to the DSA conduit interface
->>> that is up.
->>>
->>> For MT7531 and the switch on the MT7988 SoC, LLDP frames received from a
->>> user port will be trapped to the CPU port that is affine to the user port
->>> from which the frames are received.
->>>
->>> The bit for R0E_MANG_FR is 27. When set, the switch regards the frames with
->>> :0E MAC DA as management (LLDP) frames. This bit is set to 1 after reset on
->>> MT7530 and MT7531 according to the documents MT7620 Programming Guide v1.0
->>> and MT7531 Reference Manual for Development Board v1.0, so there's no need
->>> to deal with this bit. Since there's currently no public document for the
->>> switch on the MT7988 SoC, I assume this is also the case for this switch.
->>>
->>> Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
->>
->>
->> Patch 4 claims to be a fix for this commit, and introduces one of these
->> modifications to MT753X_BPC, which this patch then changes.
+On Thu, 15 Jun 2023 14:51:10 +0200 Andrew Lunn wrote:
+> On Wed, Jun 14, 2023 at 11:01:28PM -0700, Jakub Kicinski wrote:
+> > On Tue, 13 Jun 2023 13:53:21 +0900 FUJITA Tomonori wrote:  
+> > > This patchset adds minimum Rust abstractions for network device
+> > > drivers and an example of a Rust network device driver, a simpler
+> > > version of drivers/net/dummy.c.
+> > > 
+> > > The dummy network device driver doesn't attach any bus such as PCI so
+> > > the dependency is minimum. Hopefully, it would make reviewing easier.
+> > > 
+> > > Thanks a lot for reviewing on RFC patchset at rust-for-linux ml.
+> > > Hopefully, I've addressed all the issues.  
+> > 
+> > First things first, what are the current expectations for subsystems
+> > accepting rust code?
+> > 
+> > I was hoping someone from the Rust side is going to review this.
+> > We try to review stuff within 48h at netdev, and there's no review :S  
 > 
-> Let me chime in on this one, as mentioned by Arinç, I am one of the
-> requesters of having this patch (and patch 4).
-> Patch 4 enables the trapping of BPDU's to the CPU, being STP (Spanning
-> Tree) frames. Maybe that should be mentioned, to be clear.
+> As pointed out elsewhere, i've looked the code over. I cannot say
+> anything about the rust, but i don't see anything too obviously wrong
+> with the way it use a few netdev API calls.
 
-Sure, I can quote the first sentence on the wikipedia page "Bridge 
-protocol data unit".
+The skb freeing looks shady from functional perspective.
+I'm guessing some form of destructor frees the skb automatically
+in xmit handler(?), but (a) no reason support, (b) kfree_skb_reason()
+is most certainly not safe to call on all xmit paths...
 
+> > My immediate instinct is that I'd rather not merge toy implementations
+> > unless someone within the netdev community can vouch for the code.  
 > 
->>
->> On the face of it, it seems this patch is actually a fix to patch 4 as
->> well as the original patch, so does that mean that patch 4 only half
->> fixes a problem?
+> It is definitely toy. But you have to start somewhere.
 > 
-> This patch then also adds trapping for LLDP frames (Link Layer
-> Discovery Protocol) which is a completely different protocol.
-> But both rely on trapping frames, instead of forwarding them.
+> What might be useful is an idea of the roadmap. How does this go from
+> toy to something useful?
+> 
+> I see two different threads of work.
+> 
+> One is getting enough in place to find where rust is lacking. netdev
+> uses a lot of inline C functions, which don't seem to map too well to
+> Rust. And rust does not seem to have the concept of per CPU memory,
+> needed for statistics. So it would be good to be able to have some
+> code which can be profiled to see how bad this actually is, and then
+> provide a test bed for finding solutions for these problems.
+> 
+> The second is just wrapping more API calls to allow more capable
+> drivers to be written. Implementing the loopback driver seems like the
+> next obvious step. Then maybe a big jump to virtio_net?
 
-Flooding is a better term. "Trapped" frames are still forwarded, the 
-difference is they are forwarded only to the CPU port.
+I'd have thought that a simple SPI driver or some such would be 
+a better match.
 
-Arınç
+> Like dummy and loopback, it is something which everybody can have, no
+> physical hardware needed. It also has a lot of netdev features, NAPI,
+> RSS, statistics, BPF & XDP. So it is a good playground, both for
+> features and to profiling and performance optimisation.
+
+IMO we have too much useless playground stuff in C already, don't get me
+started. Let's get a real device prove that this thing can actually work
+:( We can waste years implementing imaginary device drivers that nobody
+ends up using.
 
