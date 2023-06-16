@@ -1,244 +1,126 @@
-Return-Path: <netdev+bounces-11255-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11256-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B2D6E732468
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 03:03:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id C38DF7324A4
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 03:26:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 71506280DA1
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 01:03:39 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7E22528141C
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 01:26:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 717DD373;
-	Fri, 16 Jun 2023 01:03:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EADA536D;
+	Fri, 16 Jun 2023 01:26:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E7AC36D
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 01:03:37 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19BA9296F
-	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 18:03:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686877414;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=kcEnbXGcWdas9JneXh0Lv5Rsvonbjggxw0qCFC163g8=;
-	b=ELyNMjV05NMOei3qp9wQLjMosL7cNVerTg0JUaMN0pmf8oqH/sTP0uSAbE0X8itAhIP2fU
-	sDVxyHH88831pDM5D2Q9hAXSXRgX093x/8BZCkW9mpvLV4NyObqrqsxFiw5jZn3a8ifzhh
-	WosFGx1lM+Yt/RvhhKmHJgnIft4/mv8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-209-5ATaZ5wBOeK4-I-YWKB-ew-1; Thu, 15 Jun 2023 21:03:30 -0400
-X-MC-Unique: 5ATaZ5wBOeK4-I-YWKB-ew-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1D04D85A58A;
-	Fri, 16 Jun 2023 01:03:30 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.51])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 03B47492C38;
-	Fri, 16 Jun 2023 01:03:28 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <ZIrWOe4pG7M3TJic@gondor.apana.org.au>
-References: <ZIrWOe4pG7M3TJic@gondor.apana.org.au> <000000000000b928f705fdeb873a@google.com> <1433015.1686741914@warthog.procyon.org.uk>
-To: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: dhowells@redhat.com,
-    syzbot <syzbot+13a08c0bf4d212766c3c@syzkaller.appspotmail.com>,
-    davem@davemloft.net, linux-crypto@vger.kernel.org,
-    linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-    pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] [crypto?] general protection fault in shash_async_final
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0974627
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 01:26:08 +0000 (UTC)
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1C42972
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 18:26:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686878766; x=1718414766;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cjlcGYZ8Xdgh5i43lgiUoq0m7XD27amjOqI8fH+x5j8=;
+  b=diWYFV8d12atYCW0H1OmhZ5vFiwbMBlLSWDbQwEcrTMQ3GD+sZ7KZVHh
+   2Jh1Q/wDq/xiBwQyhhnRJGphC3i6asAGlIcoY+4g3N8AtMl8bL79Iqyu2
+   bEufYaZBEAf6pybsBX4UuQOe+gT7KYULXxFGIqnCycS4B0z9XQO34LwET
+   qfyEwEb63QlHGD10RWMlJzCD7Kp18hfvPzWHjQmw7MEFNbqF+eZwbyqir
+   1eUfaS+SN7uIsS6JhvQiD5NZLHKzsGNQxm1UW32E3L57qZk/ncFxCMwi3
+   h+cSNN7N2o4EQ4Rl4qLHTT23yLLmWfAM8Csq3JpOFJBjoTN9amSj0TNCi
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="348794275"
+X-IronPort-AV: E=Sophos;i="6.00,246,1681196400"; 
+   d="scan'208";a="348794275"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2023 18:26:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="715823734"
+X-IronPort-AV: E=Sophos;i="6.00,246,1681196400"; 
+   d="scan'208";a="715823734"
+Received: from lkp-server01.sh.intel.com (HELO 783282924a45) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 15 Jun 2023 18:26:00 -0700
+Received: from kbuild by 783282924a45 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1q9yDv-0000cf-38;
+	Fri, 16 Jun 2023 01:25:59 +0000
+Date: Fri, 16 Jun 2023 09:25:18 +0800
+From: kernel test robot <lkp@intel.com>
+To: Arjun Roy <arjunroy.kdev@gmail.com>, netdev@vger.kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	arjunroy@google.com, edumazet@google.com, soheil@google.com
+Subject: Re: [net-next] tcp: Use per-vma locking for receive zerocopy
+Message-ID: <202306160941.CgtiNISL-lkp@intel.com>
+References: <20230615185516.3738855-2-arjunroy.kdev@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <415468.1686877408.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 16 Jun 2023 02:03:28 +0100
-Message-ID: <415469.1686877408@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230615185516.3738855-2-arjunroy.kdev@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Herbert,
+Hi Arjun,
 
-Here's a slightly more comprehensive test program for the hashing code to
-exercise some combinations of sendmsg, sendmsg+MSG_MORE and recvmsg.
+kernel test robot noticed the following build errors:
 
-David
----
-#define _GNU_SOURCE
-#include <endian.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <linux/if_alg.h>
+[auto build test ERROR on net-next/main]
 
-#define OSERROR(R, S) do { if ((long)(R) =3D=3D -1L) { perror((S)); exit(1=
-); } } while(0)
+url:    https://github.com/intel-lab-lkp/linux/commits/Arjun-Roy/tcp-Use-per-vma-locking-for-receive-zerocopy/20230616-025823
+base:   net-next/main
+patch link:    https://lore.kernel.org/r/20230615185516.3738855-2-arjunroy.kdev%40gmail.com
+patch subject: [net-next] tcp: Use per-vma locking for receive zerocopy
+config: s390-randconfig-r026-20230615 (https://download.01.org/0day-ci/archive/20230616/202306160941.CgtiNISL-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project.git 4a5ac14ee968ff0ad5d2cc1ffa0299048db4c88a)
+reproduce (this is a W=1 build):
+        mkdir -p ~/bin
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
+        git fetch net-next main
+        git checkout net-next/main
+        b4 shazam https://lore.kernel.org/r/20230615185516.3738855-2-arjunroy.kdev@gmail.com
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang ~/bin/make.cross W=1 O=build_dir ARCH=s390 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang ~/bin/make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
 
-static int hashfd;
-static unsigned char buf[1024], sbuf[1024];
-static const unsigned char no_zeros[2]  =3D { 0xe3, 0xb0 };
-static const unsigned char one_zero[2]  =3D { 0x6e, 0x34 };
-static const unsigned char two_zeros[2] =3D { 0x96, 0xa2 };
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202306160941.CgtiNISL-lkp@intel.com/
 
-static void do_send(unsigned int n, unsigned int flags)
-{
-	struct msghdr msg;
-	struct iovec iov[1];
-	int res;
+All errors (new ones prefixed by >>):
 
-	memset(&msg, 0, sizeof(msg));
-	iov[0].iov_base =3D sbuf;
-	iov[0].iov_len =3D n;
-	msg.msg_iov =3D iov;
-	msg.msg_iovlen =3D 1;
-	res =3D sendmsg(hashfd, &msg, flags);
-	OSERROR(res, "sendmsg");
-}
+   s390x-linux-ld: mm/memory.o: in function `lock_vma_under_rcu':
+>> memory.c:(.text+0x9784): undefined reference to `tcp_vm_ops'
+   s390x-linux-ld: drivers/dma/qcom/hidma.o: in function `hidma_probe':
+   hidma.c:(.text+0x3e): undefined reference to `devm_ioremap_resource'
+   s390x-linux-ld: hidma.c:(.text+0x96): undefined reference to `devm_ioremap_resource'
+   s390x-linux-ld: drivers/net/ethernet/altera/altera_tse_main.o: in function `altera_tse_probe':
+   altera_tse_main.c:(.text+0x12c): undefined reference to `devm_ioremap'
+   s390x-linux-ld: altera_tse_main.c:(.text+0x28a): undefined reference to `devm_ioremap'
+   s390x-linux-ld: altera_tse_main.c:(.text+0x316): undefined reference to `devm_ioremap'
+   s390x-linux-ld: drivers/net/ethernet/altera/altera_tse_main.o: in function `request_and_map':
+   altera_tse_main.c:(.text+0x688): undefined reference to `devm_ioremap'
 
-static void do_recv(unsigned int ix, const unsigned char r[2])
-{
-	struct msghdr msg;
-	struct iovec iov[1];
-	int res, i;
-
-	memset(&msg, 0, sizeof(msg));
-	iov[0].iov_base =3D buf;
-	iov[0].iov_len =3D sizeof(buf);
-	msg.msg_iov =3D iov;
-	msg.msg_iovlen =3D 1;
-	res =3D recvmsg(hashfd, &msg, 0);
-	OSERROR(res, "recvmsg");
-
-	printf("%3u: ", ix);
-	for (i =3D 0; i < res; i++)
-		 printf("%02x", buf[i]);
-	printf("\n");
-
-	if (buf[0] !=3D r[0] || buf[1] !=3D r[1])
-		 fprintf(stderr, "     ^ Bad result!\n");
-}
-
-int main(void)
-{
-	struct sockaddr_alg salg;
-	int algfd, res;
-
-	algfd =3D socket(AF_ALG, SOCK_SEQPACKET, 0);
-	OSERROR(algfd, "socket");
-
-	memset(&salg, 0, sizeof(salg));
-	salg.salg_family =3D AF_ALG;
-	strcpy(salg.salg_type, "hash");
-	strcpy(salg.salg_name, "sha256");
-	res =3D bind(algfd, (struct sockaddr *)&salg, sizeof(salg));
-	OSERROR(res, "bind/alg");
-
-	hashfd =3D accept4(algfd, NULL, 0, 0);
-	OSERROR(hashfd, "accept/alg");
-
-	//res =3D setsockopt(3, SOL_ALG, ALG_SET_KEY, NULL, 0);
-	//OSERROR(res, "setsockopt/ALG_SET_KEY");
-	=
-
-	/* Test no send */
-	do_recv(__LINE__, no_zeros);
-
-	/* Test single send of 0 */
-	do_send(0, 0);
-	do_recv(__LINE__, no_zeros);
-
-	do_send(0, MSG_MORE);
-	do_recv(__LINE__, no_zeros);
-
-	/* Test single send of 1 */
-	do_send(1, 0);
-	do_recv(__LINE__, one_zero);
-
-	do_send(1, MSG_MORE);
-	do_recv(__LINE__, one_zero);
-
-	/* Test single send of 2 */
-	do_send(2, 0);
-	do_recv(__LINE__, two_zeros);
-
-	do_send(2, MSG_MORE);
-	do_recv(__LINE__, two_zeros);
-
-	/* Test two sends of 1 */
-	do_send(1, 0);
-	do_send(1, 0);
-	do_recv(__LINE__, one_zero);
-
-	do_send(1, 0);
-	do_send(1, MSG_MORE);
-	do_recv(__LINE__, one_zero);
-
-	do_send(1, MSG_MORE);
-	do_send(1, 0);
-	do_recv(__LINE__, two_zeros);
-
-	do_send(1, MSG_MORE);
-	do_send(1, MSG_MORE);
-	do_recv(__LINE__, two_zeros);
-
-	/* Test send of 0 then send of 2 */
-	do_send(0, 0);
-	do_send(2, 0);
-	do_recv(__LINE__, two_zeros);
-
-	do_send(0, 0);
-	do_send(2, MSG_MORE);
-	do_recv(__LINE__, two_zeros);
-
-	do_send(0, MSG_MORE);
-	do_send(2, 0);
-	do_recv(__LINE__, two_zeros);
-
-	do_send(0, MSG_MORE);
-	do_send(2, MSG_MORE);
-	do_recv(__LINE__, two_zeros);
-
-	/* Test send of 2 then send of 0 */
-	do_send(2, 0);
-	do_send(0, 0);
-	do_recv(__LINE__, no_zeros);
-
-	do_send(2, 0);
-	do_send(0, MSG_MORE);
-	do_recv(__LINE__, no_zeros);
-
-	do_send(2, MSG_MORE);
-	do_send(0, 0);
-	do_recv(__LINE__, two_zeros);
-
-	do_send(2, MSG_MORE);
-	do_send(0, MSG_MORE);
-	do_recv(__LINE__, two_zeros);
-
-	return 0;
-}
-
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
