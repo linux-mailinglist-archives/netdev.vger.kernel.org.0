@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-11333-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11334-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 741E2732A5D
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 10:52:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id D52E0732A73
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 10:53:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 2A39D2816C9
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 08:52:34 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8B24E28165E
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 08:53:08 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 88BABC2F9;
-	Fri, 16 Jun 2023 08:51:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D343DF46;
+	Fri, 16 Jun 2023 08:51:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC7F6DF46;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B5F41FCB;
+	Fri, 16 Jun 2023 08:51:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8B96C433C0;
 	Fri, 16 Jun 2023 08:51:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC877C433CB;
-	Fri, 16 Jun 2023 08:51:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686905488;
-	bh=pb8Z4rxsM0yBpjwRPF1Qed87z579BhooyvNuy+PUQCk=;
+	s=k20201202; t=1686905498;
+	bh=5P3mMxIXyYNFf6ppZC87llJS/A2oA3e+rU9odOZ3rFo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=SB9uDtnNDYLKu1T9LikI8QGyk91Nzx06vgv8rwiPKboDZQZmMqOcn4UlzXtreruPk
-	 IFyNG1tHP4kqpcaojMY+WwqBpBgvZGKC2GFF4PAuO8fCCtOpIBo8PmzqHTi6KbgK73
-	 E8Zs5OUs9eJKG/mrr0WWwxV2H7qcoVS31HbeyRMeQ7JIBRFRq4sIfCxe6b+CJGqeeA
-	 +DtpOa5d/+cFTbC2ej+fiqSk/7GwiTNLf9BfBPjq+UV2jHQFYxRB/vqvw3HdLEoU+m
-	 G/NhfI9yw9teIhVrb5dhTW3mSsQkx23Z8EHPvRYbvDQWf45wIQgURVj/iTJfL126kd
-	 6MoFwW06K+J9Q==
+	b=GrSOa5NhtnOEdPO2emKldCxYq27NagFlOnpLOPRg/qCuHIHb8LO7S1KsNa7cBBIGu
+	 CFULz/Fso5mnFPxC3GoKTve3+GH4KOJC5ENs9MjgPe830iXGdUkhmDkBuiYS3js9hZ
+	 O2Gei2pZomobwEJ1RNRHUB/XhCGqlFQVqR6O2zwyETWqFgnQaf3J1VPH78T0wy/xey
+	 gE5JfYQAcoxcH1BlP+lcR2tXCj15xHKYZDhug7RerclAfJxxJRCcw3d33O/ei7NoF5
+	 Ctk1dieqBSWGe40Ie9dYqN4xtYT9kr+/6eGN0a2X8Ll7piImnto7TUIvOdE162+eR2
+	 lxUPLhTkaHJxQ==
 From: Mike Rapoport <rppt@kernel.org>
 To: linux-kernel@vger.kernel.org
 Cc: Andrew Morton <akpm@linux-foundation.org>,
@@ -70,9 +70,9 @@ Cc: Andrew Morton <akpm@linux-foundation.org>,
 	netdev@vger.kernel.org,
 	sparclinux@vger.kernel.org,
 	x86@kernel.org
-Subject: [PATCH v2 03/12] mm/execmem, arch: convert simple overrides of module_alloc to execmem
-Date: Fri, 16 Jun 2023 11:50:29 +0300
-Message-Id: <20230616085038.4121892-4-rppt@kernel.org>
+Subject: [PATCH v2 04/12] mm/execmem, arch: convert remaining overrides of module_alloc to execmem
+Date: Fri, 16 Jun 2023 11:50:30 +0300
+Message-Id: <20230616085038.4121892-5-rppt@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20230616085038.4121892-1-rppt@kernel.org>
 References: <20230616085038.4121892-1-rppt@kernel.org>
@@ -86,461 +86,465 @@ Content-Transfer-Encoding: 8bit
 
 From: "Mike Rapoport (IBM)" <rppt@kernel.org>
 
-Several architectures override module_alloc() only to define address
-range for code allocations different than VMALLOC address space.
+Extend execmem parameters to accommodate more complex overrides of
+module_alloc() by architectures.
 
-Provide a generic implementation in execmem that uses the parameters
-for address space ranges, required alignment and page protections
-provided by architectures.
+This includes specification of a fallback range required by arm, arm64
+and powerpc and support for allocation of KASAN shadow required by
+arm64, s390 and x86.
 
-The architecures must fill execmem_params structure and implement
-execmem_arch_params() that returns a pointer to that structure. This
-way the execmem initialization won't be called from every architecure,
-but rather from a central place, namely initialization of the core
-memory management.
-
-The execmem provides execmem_text_alloc() API that wraps
-__vmalloc_node_range() with the parameters defined by the architecures.
-If an architeture does not implement execmem_arch_params(),
-execmem_text_alloc() will fall back to module_alloc().
-
-The name execmem_text_alloc() emphasizes that the allocated memory is
-for executable code, the allocations of the associated data, like data
-sections of a module will use execmem_data_alloc() interface that will
-be added later.
+The core implementation of execmem_alloc() takes care of suppressing
+warnings when the initial allocation fails but there is a fallback range
+defined.
 
 Signed-off-by: Mike Rapoport (IBM) <rppt@kernel.org>
 ---
- arch/loongarch/kernel/module.c | 18 ++++++++++--
- arch/mips/kernel/module.c      | 18 +++++++++---
- arch/nios2/kernel/module.c     | 19 +++++++++----
- arch/parisc/kernel/module.c    | 23 +++++++++------
- arch/riscv/kernel/module.c     | 20 +++++++++----
- arch/sparc/kernel/module.c     | 44 +++++++++++++---------------
- include/linux/execmem.h        | 52 ++++++++++++++++++++++++++++++++++
- mm/execmem.c                   | 52 +++++++++++++++++++++++++++++++---
- mm/mm_init.c                   |  2 ++
- 9 files changed, 195 insertions(+), 53 deletions(-)
+ arch/arm/kernel/module.c     | 36 ++++++++++---------
+ arch/arm64/kernel/module.c   | 68 ++++++++++++++++--------------------
+ arch/powerpc/kernel/module.c | 52 +++++++++++++--------------
+ arch/s390/kernel/module.c    | 33 ++++++++---------
+ arch/x86/kernel/module.c     | 33 +++++++++--------
+ include/linux/execmem.h      | 14 ++++++++
+ mm/execmem.c                 | 50 ++++++++++++++++++++++----
+ 7 files changed, 168 insertions(+), 118 deletions(-)
 
-diff --git a/arch/loongarch/kernel/module.c b/arch/loongarch/kernel/module.c
-index b8b86088b2dd..32b167722c2b 100644
---- a/arch/loongarch/kernel/module.c
-+++ b/arch/loongarch/kernel/module.c
-@@ -18,6 +18,7 @@
- #include <linux/ftrace.h>
+diff --git a/arch/arm/kernel/module.c b/arch/arm/kernel/module.c
+index d59c36dc0494..f66d479c1c7d 100644
+--- a/arch/arm/kernel/module.c
++++ b/arch/arm/kernel/module.c
+@@ -16,6 +16,7 @@
+ #include <linux/fs.h>
  #include <linux/string.h>
- #include <linux/kernel.h>
+ #include <linux/gfp.h>
++#include <linux/execmem.h>
+ 
+ #include <asm/sections.h>
+ #include <asm/smp_plat.h>
+@@ -34,23 +35,26 @@
+ #endif
+ 
+ #ifdef CONFIG_MMU
+-void *module_alloc(unsigned long size)
++static struct execmem_params execmem_params = {
++	.modules = {
++		.text = {
++			.start = MODULES_VADDR,
++			.end = MODULES_END,
++			.alignment = 1,
++		},
++	},
++};
++
++struct execmem_params __init *execmem_arch_params(void)
+ {
+-	gfp_t gfp_mask = GFP_KERNEL;
+-	void *p;
+-
+-	/* Silence the initial allocation */
+-	if (IS_ENABLED(CONFIG_ARM_MODULE_PLTS))
+-		gfp_mask |= __GFP_NOWARN;
+-
+-	p = __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
+-				gfp_mask, PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
+-				__builtin_return_address(0));
+-	if (!IS_ENABLED(CONFIG_ARM_MODULE_PLTS) || p)
+-		return p;
+-	return __vmalloc_node_range(size, 1,  VMALLOC_START, VMALLOC_END,
+-				GFP_KERNEL, PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
+-				__builtin_return_address(0));
++	execmem_params.modules.text.pgprot = PAGE_KERNEL_EXEC;
++
++	if (IS_ENABLED(CONFIG_ARM_MODULE_PLTS)) {
++		execmem_params.modules.text.fallback_start = VMALLOC_START;
++		execmem_params.modules.text.fallback_end = VMALLOC_END;
++	}
++
++	return &execmem_params;
+ }
+ #endif
+ 
+diff --git a/arch/arm64/kernel/module.c b/arch/arm64/kernel/module.c
+index 5af4975caeb5..c3d999f3a3dd 100644
+--- a/arch/arm64/kernel/module.c
++++ b/arch/arm64/kernel/module.c
+@@ -17,56 +17,50 @@
+ #include <linux/moduleloader.h>
+ #include <linux/scs.h>
+ #include <linux/vmalloc.h>
 +#include <linux/execmem.h>
  #include <asm/alternative.h>
- #include <asm/inst.h>
+ #include <asm/insn.h>
+ #include <asm/scs.h>
+ #include <asm/sections.h>
  
-@@ -469,10 +470,21 @@ int apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
+-void *module_alloc(unsigned long size)
++static struct execmem_params execmem_params = {
++	.modules = {
++		.flags = EXECMEM_KASAN_SHADOW,
++		.text = {
++			.alignment = MODULE_ALIGN,
++		},
++	},
++};
++
++struct execmem_params __init *execmem_arch_params(void)
+ {
+ 	u64 module_alloc_end = module_alloc_base + MODULES_VSIZE;
+-	gfp_t gfp_mask = GFP_KERNEL;
+-	void *p;
+-
+-	/* Silence the initial allocation */
+-	if (IS_ENABLED(CONFIG_ARM64_MODULE_PLTS))
+-		gfp_mask |= __GFP_NOWARN;
+ 
+-	if (IS_ENABLED(CONFIG_KASAN_GENERIC) ||
+-	    IS_ENABLED(CONFIG_KASAN_SW_TAGS))
+-		/* don't exceed the static module region - see below */
+-		module_alloc_end = MODULES_END;
++	execmem_params.modules.text.pgprot = PAGE_KERNEL;
++	execmem_params.modules.text.start = module_alloc_base;
++	execmem_params.modules.text.end = module_alloc_end;
+ 
+-	p = __vmalloc_node_range(size, MODULE_ALIGN, module_alloc_base,
+-				module_alloc_end, gfp_mask, PAGE_KERNEL, VM_DEFER_KMEMLEAK,
+-				NUMA_NO_NODE, __builtin_return_address(0));
+-
+-	if (!p && IS_ENABLED(CONFIG_ARM64_MODULE_PLTS) &&
++	/*
++	 * KASAN without KASAN_VMALLOC can only deal with module
++	 * allocations being served from the reserved module region,
++	 * since the remainder of the vmalloc region is already
++	 * backed by zero shadow pages, and punching holes into it
++	 * is non-trivial. Since the module region is not randomized
++	 * when KASAN is enabled without KASAN_VMALLOC, it is even
++	 * less likely that the module region gets exhausted, so we
++	 * can simply omit this fallback in that case.
++	 */
++	if (IS_ENABLED(CONFIG_ARM64_MODULE_PLTS) &&
+ 	    (IS_ENABLED(CONFIG_KASAN_VMALLOC) ||
+ 	     (!IS_ENABLED(CONFIG_KASAN_GENERIC) &&
+-	      !IS_ENABLED(CONFIG_KASAN_SW_TAGS))))
+-		/*
+-		 * KASAN without KASAN_VMALLOC can only deal with module
+-		 * allocations being served from the reserved module region,
+-		 * since the remainder of the vmalloc region is already
+-		 * backed by zero shadow pages, and punching holes into it
+-		 * is non-trivial. Since the module region is not randomized
+-		 * when KASAN is enabled without KASAN_VMALLOC, it is even
+-		 * less likely that the module region gets exhausted, so we
+-		 * can simply omit this fallback in that case.
+-		 */
+-		p = __vmalloc_node_range(size, MODULE_ALIGN, module_alloc_base,
+-				module_alloc_base + SZ_2G, GFP_KERNEL,
+-				PAGE_KERNEL, 0, NUMA_NO_NODE,
+-				__builtin_return_address(0));
+-
+-	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
+-		vfree(p);
+-		return NULL;
++	      !IS_ENABLED(CONFIG_KASAN_SW_TAGS)))) {
++		unsigned long end = module_alloc_base + SZ_2G;
++
++		execmem_params.modules.text.fallback_start = module_alloc_base;
++		execmem_params.modules.text.fallback_end = end;
+ 	}
+ 
+-	/* Memory is intended to be executable, reset the pointer tag. */
+-	return kasan_reset_tag(p);
++	return &execmem_params;
+ }
+ 
+ enum aarch64_reloc_op {
+diff --git a/arch/powerpc/kernel/module.c b/arch/powerpc/kernel/module.c
+index f6d6ae0a1692..ba7abff77d98 100644
+--- a/arch/powerpc/kernel/module.c
++++ b/arch/powerpc/kernel/module.c
+@@ -10,6 +10,7 @@
+ #include <linux/vmalloc.h>
+ #include <linux/mm.h>
+ #include <linux/bug.h>
++#include <linux/execmem.h>
+ #include <asm/module.h>
+ #include <linux/uaccess.h>
+ #include <asm/firmware.h>
+@@ -89,39 +90,38 @@ int module_finalize(const Elf_Ehdr *hdr,
  	return 0;
  }
  
--void *module_alloc(unsigned long size)
+-static __always_inline void *
+-__module_alloc(unsigned long size, unsigned long start, unsigned long end, bool nowarn)
 +static struct execmem_params execmem_params = {
 +	.modules = {
 +		.text = {
-+			.pgprot = PAGE_KERNEL,
 +			.alignment = 1,
 +		},
 +	},
 +};
 +
-+struct execmem_params __init *execmem_arch_params(void)
- {
--	return __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
--			GFP_KERNEL, PAGE_KERNEL, 0, NUMA_NO_NODE, __builtin_return_address(0));
-+	execmem_params.modules.text.start = MODULES_VADDR;
-+	execmem_params.modules.text.end = MODULES_END;
-+
-+	return &execmem_params;
- }
- 
- static void module_init_ftrace_plt(const Elf_Ehdr *hdr,
-diff --git a/arch/mips/kernel/module.c b/arch/mips/kernel/module.c
-index 0c936cbf20c5..2d370de67383 100644
---- a/arch/mips/kernel/module.c
-+++ b/arch/mips/kernel/module.c
-@@ -20,6 +20,7 @@
- #include <linux/kernel.h>
- #include <linux/spinlock.h>
- #include <linux/jump_label.h>
-+#include <linux/execmem.h>
- 
- extern void jump_label_apply_nops(struct module *mod);
- 
-@@ -33,11 +34,20 @@ static LIST_HEAD(dbe_list);
- static DEFINE_SPINLOCK(dbe_lock);
- 
- #ifdef MODULE_START
--void *module_alloc(unsigned long size)
-+static struct execmem_params execmem_params = {
-+	.modules = {
-+		.text = {
-+			.start = MODULES_VADDR,
-+			.end = MODULES_END,
-+			.pgprot = PAGE_KERNEL,
-+			.alignment = 1,
-+		},
-+	},
-+};
 +
 +struct execmem_params __init *execmem_arch_params(void)
  {
--	return __vmalloc_node_range(size, 1, MODULE_START, MODULE_END,
--				GFP_KERNEL, PAGE_KERNEL, 0, NUMA_NO_NODE,
--				__builtin_return_address(0));
-+	return &execmem_params;
- }
- #endif
- 
-diff --git a/arch/nios2/kernel/module.c b/arch/nios2/kernel/module.c
-index 9c97b7513853..3cf5723e3c70 100644
---- a/arch/nios2/kernel/module.c
-+++ b/arch/nios2/kernel/module.c
-@@ -18,15 +18,24 @@
- #include <linux/fs.h>
- #include <linux/string.h>
- #include <linux/kernel.h>
-+#include <linux/execmem.h>
- 
- #include <asm/cacheflush.h>
+ 	pgprot_t prot = strict_module_rwx_enabled() ? PAGE_KERNEL : PAGE_KERNEL_EXEC;
+-	gfp_t gfp = GFP_KERNEL | (nowarn ? __GFP_NOWARN : 0);
+-
+-	/*
+-	 * Don't do huge page allocations for modules yet until more testing
+-	 * is done. STRICT_MODULE_RWX may require extra work to support this
+-	 * too.
+-	 */
+-	return __vmalloc_node_range(size, 1, start, end, gfp, prot,
+-				    VM_FLUSH_RESET_PERMS,
+-				    NUMA_NO_NODE, __builtin_return_address(0));
+-}
  
 -void *module_alloc(unsigned long size)
-+static struct execmem_params execmem_params = {
-+	.modules = {
-+		.text = {
-+			.start = MODULES_VADDR,
-+			.end = MODULES_END,
-+			.pgprot = PAGE_KERNEL_EXEC,
-+			.alignment = 1,
-+		},
-+	},
-+};
-+
-+struct execmem_params __init *execmem_arch_params(void)
- {
--	return __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
--				    GFP_KERNEL, PAGE_KERNEL_EXEC,
--				    VM_FLUSH_RESET_PERMS, NUMA_NO_NODE,
--				    __builtin_return_address(0));
-+	return &execmem_params;
- }
+-{
+ #ifdef MODULES_VADDR
+ 	unsigned long limit = (unsigned long)_etext - SZ_32M;
+-	void *ptr = NULL;
+-
+-	BUILD_BUG_ON(TASK_SIZE > MODULES_VADDR);
  
- int apply_relocate_add(Elf32_Shdr *sechdrs, const char *strtab,
-diff --git a/arch/parisc/kernel/module.c b/arch/parisc/kernel/module.c
-index f6e38c4d3904..569b8f52a24b 100644
---- a/arch/parisc/kernel/module.c
-+++ b/arch/parisc/kernel/module.c
-@@ -49,6 +49,7 @@
- #include <linux/bug.h>
- #include <linux/mm.h>
- #include <linux/slab.h>
-+#include <linux/execmem.h>
- 
- #include <asm/unwind.h>
- #include <asm/sections.h>
-@@ -173,15 +174,21 @@ static inline int reassemble_22(int as22)
- 		((as22 & 0x0003ff) << 3));
- }
- 
--void *module_alloc(unsigned long size)
-+static struct execmem_params execmem_params = {
-+	.modules = {
-+		.text = {
-+			.pgprot = PAGE_KERNEL_RWX,
-+			.alignment = 1,
-+		},
-+	},
-+};
-+
-+struct execmem_params __init *execmem_arch_params(void)
- {
--	/* using RWX means less protection for modules, but it's
--	 * easier than trying to map the text, data, init_text and
--	 * init_data correctly */
--	return __vmalloc_node_range(size, 1, VMALLOC_START, VMALLOC_END,
--				    GFP_KERNEL,
--				    PAGE_KERNEL_RWX, 0, NUMA_NO_NODE,
--				    __builtin_return_address(0));
+ 	/* First try within 32M limit from _etext to avoid branch trampolines */
+-	if (MODULES_VADDR < PAGE_OFFSET && MODULES_END > limit)
+-		ptr = __module_alloc(size, limit, MODULES_END, true);
+-
+-	if (!ptr)
+-		ptr = __module_alloc(size, MODULES_VADDR, MODULES_END, false);
+-
+-	return ptr;
++	if (MODULES_VADDR < PAGE_OFFSET && MODULES_END > limit) {
++		execmem_params.modules.text.start = limit;
++		execmem_params.modules.text.end = MODULES_END;
++		execmem_params.modules.text.fallback_start = MODULES_VADDR;
++		execmem_params.modules.text.fallback_end = MODULES_END;
++	} else {
++		execmem_params.modules.text.start = MODULES_VADDR;
++		execmem_params.modules.text.end = MODULES_END;
++	}
+ #else
+-	return __module_alloc(size, VMALLOC_START, VMALLOC_END, false);
 +	execmem_params.modules.text.start = VMALLOC_START;
 +	execmem_params.modules.text.end = VMALLOC_END;
+ #endif
++
++	execmem_params.modules.text.pgprot = prot;
 +
 +	return &execmem_params;
  }
- 
- #ifndef CONFIG_64BIT
-diff --git a/arch/riscv/kernel/module.c b/arch/riscv/kernel/module.c
-index 7c651d55fcbd..ee5e04cd3f21 100644
---- a/arch/riscv/kernel/module.c
-+++ b/arch/riscv/kernel/module.c
-@@ -11,6 +11,7 @@
- #include <linux/vmalloc.h>
- #include <linux/sizes.h>
- #include <linux/pgtable.h>
-+#include <linux/execmem.h>
- #include <asm/alternative.h>
- #include <asm/sections.h>
- 
-@@ -436,12 +437,21 @@ int apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
+diff --git a/arch/s390/kernel/module.c b/arch/s390/kernel/module.c
+index 4a844683dc76..7fff395d26ea 100644
+--- a/arch/s390/kernel/module.c
++++ b/arch/s390/kernel/module.c
+@@ -55,23 +55,24 @@ static unsigned long get_module_load_offset(void)
+ 	return module_load_offset;
  }
  
- #if defined(CONFIG_MMU) && defined(CONFIG_64BIT)
 -void *module_alloc(unsigned long size)
 +static struct execmem_params execmem_params = {
 +	.modules = {
++		.flags = EXECMEM_KASAN_SHADOW,
 +		.text = {
++			.alignment = MODULE_ALIGN,
 +			.pgprot = PAGE_KERNEL,
-+			.alignment = 1,
 +		},
 +	},
 +};
 +
 +struct execmem_params __init *execmem_arch_params(void)
  {
--	return __vmalloc_node_range(size, 1, MODULES_VADDR,
--				    MODULES_END, GFP_KERNEL,
--				    PAGE_KERNEL, 0, NUMA_NO_NODE,
--				    __builtin_return_address(0));
-+	execmem_params.modules.text.start = MODULES_VADDR;
+-	gfp_t gfp_mask = GFP_KERNEL;
+-	void *p;
+-
+-	if (PAGE_ALIGN(size) > MODULES_LEN)
+-		return NULL;
+-	p = __vmalloc_node_range(size, MODULE_ALIGN,
+-				 MODULES_VADDR + get_module_load_offset(),
+-				 MODULES_END, gfp_mask, PAGE_KERNEL,
+-				 VM_FLUSH_RESET_PERMS | VM_DEFER_KMEMLEAK,
+-				 NUMA_NO_NODE, __builtin_return_address(0));
+-	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
+-		vfree(p);
+-		return NULL;
+-	}
+-	return p;
++	unsigned long start = MODULES_VADDR + get_module_load_offset();
++
++	execmem_params.modules.text.start = start;
 +	execmem_params.modules.text.end = MODULES_END;
 +
 +	return &execmem_params;
  }
+ 
+ #ifdef CONFIG_FUNCTION_TRACER
+diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
+index b05f62ee2344..cf9a7d0a8b62 100644
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -19,6 +19,7 @@
+ #include <linux/jump_label.h>
+ #include <linux/random.h>
+ #include <linux/memory.h>
++#include <linux/execmem.h>
+ 
+ #include <asm/text-patching.h>
+ #include <asm/page.h>
+@@ -65,26 +66,24 @@ static unsigned long int get_module_load_offset(void)
+ }
  #endif
  
-diff --git a/arch/sparc/kernel/module.c b/arch/sparc/kernel/module.c
-index 66c45a2764bc..ab75e3e69834 100644
---- a/arch/sparc/kernel/module.c
-+++ b/arch/sparc/kernel/module.c
-@@ -14,6 +14,10 @@
- #include <linux/string.h>
- #include <linux/ctype.h>
- #include <linux/mm.h>
-+#include <linux/execmem.h>
-+#ifdef CONFIG_SPARC64
-+#include <linux/jump_label.h>
-+#endif
- 
- #include <asm/processor.h>
- #include <asm/spitfire.h>
-@@ -21,34 +25,26 @@
- 
- #include "entry.h"
- 
-+static struct execmem_params execmem_params = {
-+	.modules = {
-+		.text = {
- #ifdef CONFIG_SPARC64
--
--#include <linux/jump_label.h>
--
--static void *module_map(unsigned long size)
+-void *module_alloc(unsigned long size)
 -{
+-	gfp_t gfp_mask = GFP_KERNEL;
+-	void *p;
+-
 -	if (PAGE_ALIGN(size) > MODULES_LEN)
 -		return NULL;
--	return __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
--				GFP_KERNEL, PAGE_KERNEL, 0, NUMA_NO_NODE,
--				__builtin_return_address(0));
--}
-+			.start = MODULES_VADDR,
-+			.end = MODULES_END,
- #else
--static void *module_map(unsigned long size)
--{
--	return vmalloc(size);
--}
--#endif /* CONFIG_SPARC64 */
--
--void *module_alloc(unsigned long size)
-+			.start = VMALLOC_START,
-+			.end = VMALLOC_END,
-+#endif
-+			.alignment = 1,
++static struct execmem_params execmem_params = {
++	.modules = {
++		.flags = EXECMEM_KASAN_SHADOW,
++		.text = {
++			.alignment = MODULE_ALIGN,
 +		},
 +	},
 +};
-+
+ 
+-	p = __vmalloc_node_range(size, MODULE_ALIGN,
+-				 MODULES_VADDR + get_module_load_offset(),
+-				 MODULES_END, gfp_mask, PAGE_KERNEL,
+-				 VM_FLUSH_RESET_PERMS | VM_DEFER_KMEMLEAK,
+-				 NUMA_NO_NODE, __builtin_return_address(0));
 +struct execmem_params __init *execmem_arch_params(void)
- {
--	void *ret;
--
--	ret = module_map(size);
--	if (ret)
--		memset(ret, 0, size);
++{
++	unsigned long start = MODULES_VADDR + get_module_load_offset();
+ 
+-	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
+-		vfree(p);
+-		return NULL;
+-	}
++	execmem_params.modules.text.start = start;
++	execmem_params.modules.text.end = MODULES_END;
 +	execmem_params.modules.text.pgprot = PAGE_KERNEL;
  
--	return ret;
+-	return p;
 +	return &execmem_params;
  }
  
- /* Make generic code ignore STT_REGISTER dummy undefined symbols.  */
+ #ifdef CONFIG_X86_32
 diff --git a/include/linux/execmem.h b/include/linux/execmem.h
-index 0d4e5a6985f8..75946f23731e 100644
+index 75946f23731e..68b2bfc79993 100644
 --- a/include/linux/execmem.h
 +++ b/include/linux/execmem.h
-@@ -4,6 +4,52 @@
+@@ -9,22 +9,36 @@
+  *			  related data allocations
+  * @start:	address space start
+  * @end:	address space end (inclusive)
++ * @fallback_start:	start of the range for fallback allocations
++ * @fallback_end:	end of the range for fallback allocations (inclusive)
+  * @pgprot:	permisssions for memory in this address space
+  * @alignment:	alignment required for text allocations
+  */
+ struct execmem_range {
+ 	unsigned long   start;
+ 	unsigned long   end;
++	unsigned long   fallback_start;
++	unsigned long   fallback_end;
+ 	pgprot_t        pgprot;
+ 	unsigned int	alignment;
+ };
  
- #include <linux/types.h>
- 
 +/**
-+ * struct execmem_range - definition of a memory range suitable for code and
-+ *			  related data allocations
-+ * @start:	address space start
-+ * @end:	address space end (inclusive)
-+ * @pgprot:	permisssions for memory in this address space
-+ * @alignment:	alignment required for text allocations
++ * enum execmem_module_flags - options for executable memory allocations
++ * @EXECMEM_KASAN_SHADOW:	allocate kasan shadow
 + */
-+struct execmem_range {
-+	unsigned long   start;
-+	unsigned long   end;
-+	pgprot_t        pgprot;
-+	unsigned int	alignment;
++enum execmem_module_flags {
++	EXECMEM_KASAN_SHADOW	= (1 << 0),
 +};
-+
-+/**
-+ * struct execmem_modules_range - architecure parameters for modules address
-+ *				  space
-+ * @text:	address range for text allocations
-+ */
-+struct execmem_modules_range {
-+	struct execmem_range text;
-+};
-+
-+/**
-+ * struct execmem_params -	architecure parameters for code allocations
-+ * @modules:	parameters for modules address space
-+ */
-+struct execmem_params {
-+	struct execmem_modules_range	modules;
-+};
-+
-+/**
-+ * execmem_arch_params - supply parameters for allocations of executable memory
-+ *
-+ * A hook for architecures to define parameters for allocations of
-+ * executable memory described by struct execmem_params
-+ *
-+ * For architectures that do not implement this method a default set of
-+ * parameters will be used
-+ *
-+ * Return: a structure defining architecture parameters and restrictions
-+ * for allocations of executable memory
-+ */
-+struct execmem_params *execmem_arch_params(void);
 +
  /**
-  * execmem_text_alloc - allocate executable memory
-  * @size: how many bytes of memory are required
-@@ -49,4 +95,10 @@ void *jit_text_alloc(size_t size);
+  * struct execmem_modules_range - architecure parameters for modules address
+  *				  space
++ * @flags:	options for module memory allocations
+  * @text:	address range for text allocations
   */
- void jit_free(void *ptr);
+ struct execmem_modules_range {
++	enum execmem_module_flags flags;
+ 	struct execmem_range text;
+ };
  
-+#ifdef CONFIG_EXECMEM
-+void execmem_init(void);
-+#else
-+static inline void execmem_init(void) {}
-+#endif
-+
- #endif /* _LINUX_EXECMEM_ALLOC_H */
 diff --git a/mm/execmem.c b/mm/execmem.c
-index eac26234eb38..c92878cf4d1a 100644
+index c92878cf4d1a..2fe36dcc7bdf 100644
 --- a/mm/execmem.c
 +++ b/mm/execmem.c
-@@ -5,14 +5,27 @@
- #include <linux/execmem.h>
- #include <linux/moduleloader.h>
+@@ -7,12 +7,46 @@
  
--static void *execmem_alloc(size_t size)
-+struct execmem_params execmem_params;
-+
-+static void *execmem_alloc(size_t size, unsigned long start, unsigned long end,
-+			   unsigned int align, pgprot_t pgprot)
+ struct execmem_params execmem_params;
+ 
+-static void *execmem_alloc(size_t size, unsigned long start, unsigned long end,
+-			   unsigned int align, pgprot_t pgprot)
++static void *execmem_alloc(size_t len, unsigned long start, unsigned long end,
++			   unsigned int alignment, pgprot_t pgprot,
++			   unsigned long fallback_start,
++			   unsigned long fallback_end,
++			   bool kasan)
  {
--	return module_alloc(size);
-+	return __vmalloc_node_range(size, align, start, end,
-+				   GFP_KERNEL, pgprot, VM_FLUSH_RESET_PERMS,
-+				   NUMA_NO_NODE, __builtin_return_address(0));
+-	return __vmalloc_node_range(size, align, start, end,
+-				   GFP_KERNEL, pgprot, VM_FLUSH_RESET_PERMS,
+-				   NUMA_NO_NODE, __builtin_return_address(0));
++	unsigned long vm_flags  = VM_FLUSH_RESET_PERMS;
++	bool fallback  = !!fallback_start;
++	gfp_t gfp_flags = GFP_KERNEL;
++	void *p;
++
++	if (PAGE_ALIGN(len) > (end - start))
++		return NULL;
++
++	if (kasan)
++		vm_flags |= VM_DEFER_KMEMLEAK;
++
++	if (fallback)
++		gfp_flags |= __GFP_NOWARN;
++
++	p = __vmalloc_node_range(len, alignment, start, end, gfp_flags,
++				 pgprot, vm_flags, NUMA_NO_NODE,
++				 __builtin_return_address(0));
++
++	if (!p && fallback) {
++		start = fallback_start;
++		end = fallback_end;
++		gfp_flags = GFP_KERNEL;
++
++		p = __vmalloc_node_range(len, alignment, start, end, gfp_flags,
++					 pgprot, vm_flags, NUMA_NO_NODE,
++					 __builtin_return_address(0));
++	}
++
++	if (p && kasan && (kasan_alloc_module_shadow(p, len, GFP_KERNEL) < 0)) {
++		vfree(p);
++		return NULL;
++	}
++
++	return kasan_reset_tag(p);
  }
  
  void *execmem_text_alloc(size_t size)
- {
--	return execmem_alloc(size);
-+	unsigned long start = execmem_params.modules.text.start;
-+	unsigned long end = execmem_params.modules.text.end;
-+	pgprot_t pgprot = execmem_params.modules.text.pgprot;
-+	unsigned int align = execmem_params.modules.text.alignment;
-+
-+	if (!execmem_params.modules.text.start)
-+		return module_alloc(size);
-+
-+	return execmem_alloc(size, start, end, align, pgprot);
+@@ -21,11 +55,15 @@ void *execmem_text_alloc(size_t size)
+ 	unsigned long end = execmem_params.modules.text.end;
+ 	pgprot_t pgprot = execmem_params.modules.text.pgprot;
+ 	unsigned int align = execmem_params.modules.text.alignment;
++	unsigned long fallback_start = execmem_params.modules.text.fallback_start;
++	unsigned long fallback_end = execmem_params.modules.text.fallback_end;
++	bool kasan = execmem_params.modules.flags & EXECMEM_KASAN_SHADOW;
+ 
+ 	if (!execmem_params.modules.text.start)
+ 		return module_alloc(size);
+ 
+-	return execmem_alloc(size, start, end, align, pgprot);
++	return execmem_alloc(size, start, end, align, pgprot,
++			     fallback_start, fallback_end, kasan);
  }
  
  void execmem_free(void *ptr)
-@@ -27,10 +40,41 @@ void execmem_free(void *ptr)
- 
- void *jit_text_alloc(size_t size)
- {
--	return execmem_alloc(size);
-+	return execmem_text_alloc(size);
- }
- 
- void jit_free(void *ptr)
- {
- 	execmem_free(ptr);
- }
-+
-+struct execmem_params * __weak execmem_arch_params(void)
-+{
-+	return NULL;
-+}
-+
-+static bool execmem_validate_params(struct execmem_params *p)
-+{
-+	struct execmem_modules_range *m = &p->modules;
-+	struct execmem_range *t = &m->text;
-+
-+	if (!t->alignment || !t->start || !t->end || !pgprot_val(t->pgprot)) {
-+		pr_crit("Invalid parameters for execmem allocator, module loading will fail");
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+void __init execmem_init(void)
-+{
-+	struct execmem_params *p = execmem_arch_params();
-+
-+	if (!p)
-+		return;
-+
-+	if (!execmem_validate_params(p))
-+		return;
-+
-+	execmem_params = *p;
-+}
-diff --git a/mm/mm_init.c b/mm/mm_init.c
-index 7f7f9c677854..3b11450efe8a 100644
---- a/mm/mm_init.c
-+++ b/mm/mm_init.c
-@@ -26,6 +26,7 @@
- #include <linux/pgtable.h>
- #include <linux/swap.h>
- #include <linux/cma.h>
-+#include <linux/execmem.h>
- #include "internal.h"
- #include "slab.h"
- #include "shuffle.h"
-@@ -2747,4 +2748,5 @@ void __init mm_core_init(void)
- 	pti_init();
- 	kmsan_init_runtime();
- 	mm_cache_init();
-+	execmem_init();
- }
 -- 
 2.35.1
 
