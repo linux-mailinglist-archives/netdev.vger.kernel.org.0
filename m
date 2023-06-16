@@ -1,213 +1,404 @@
-Return-Path: <netdev+bounces-11309-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11310-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0D1C8732870
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 09:09:55 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id BC012732877
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 09:10:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3EBD51C20F34
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 07:09:54 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id DE60D1C20F5E
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 07:10:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 904EF568D;
-	Fri, 16 Jun 2023 07:09:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C4A716130;
+	Fri, 16 Jun 2023 07:10:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A9D1624
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 07:09:52 +0000 (UTC)
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCBEB35A3
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 00:09:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686899387; x=1718435387;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=IcnCYuTSQKg0uyl6tU73+Hfr/iTtgkkIx6xV+xjcSQM=;
-  b=cDnIF/STy9BKV/WZWUiLMJ4r++Lj8g6xVu+wp2vhMevg0T0BmvzdQ2z/
-   bzf2aSiI33n2ha3IbYZaZaahuBp5wIPc8w1/r8DCPPloofxyNdTLqvzYe
-   gGjHAfDnXd6q1vyw9JUCS84TGg4iqLitds0IB7N4bFLmZr/3YifHEzMnA
-   qzE1WvqdMWmrlcq9C/fn/+7LTDTE/aAXIlNUNDvrBBpLSaTepin+LK63z
-   ybBMLRsaRDp5cZONAWdUXcBZN/yDjQxudJEQ+K8ZDpsDh9UeSF5NcpElk
-   W7AEJhVg4vHL+WQ67w4Ja7VRskrIqhb3YLZjYqIUInHzbDO0UDyVP91TF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="425082284"
-X-IronPort-AV: E=Sophos;i="6.00,246,1681196400"; 
-   d="scan'208";a="425082284"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2023 00:09:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="836917083"
-X-IronPort-AV: E=Sophos;i="6.00,246,1681196400"; 
-   d="scan'208";a="836917083"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga004.jf.intel.com with ESMTP; 16 Jun 2023 00:09:47 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 16 Jun 2023 00:09:47 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 16 Jun 2023 00:09:46 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Fri, 16 Jun 2023 00:09:46 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.174)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Fri, 16 Jun 2023 00:09:46 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fq6OCQWLpZCP1r103E5t512qynY2bx+UmuIyjJi5ULtG+YL7KE7lyaxUe6OYzAMegt61hSrteD+jloUeVDDddmSBTmkk5Hss1UaxM12EY+WMELi2rZuk/xrUyC6/RZ40wGjTKAuRczkvNQVnGwvBvLtYtaLZQXisNk1jBBWZSkJClcOsdyQkTDzfkfZDd411DVrp7X7+POCx4PmMo/puydEZ3tsxcMtnlY4B1ep5ozhjsVnEekt+Lsqp+FQ/XkplVLwQSsKkvQLv43EENLPGp131VotVcaafZLnxac3wWQdB9gfrlfMgl4H5aRH03VyMT2opvAQr2qMMLmtn2GT12g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QwOkGV+wIh6sZIxjLjLTfFpauhnqkeonUOZYnYaBFNY=;
- b=O/qnEv0WGER+YiYcAwpShbgfxklb/Y7YqV6P7EXsy9xltr/4oj/47y6uR3dmRctitev3VhX41O7K6k2oqK5LwA+zU14fKBger1NY4rFmdTHetkq7BHJHoWOu6e1KV3yTvh7HrPZKbgn+JljsfDjXdHvng00zHXFgpjPlMbrN9/RCiAu77l6kSlApu/gCkxZZHqLPLvjkJ1yliqHc9bOYhAdoTU7tWQEeFx/75MbvOJmJGyx0yvBbLLdM6Xg+TC2asxe18LmZClLpuLQIpqaxP+cRh9NEf5FxCq0WhLRio3qTil1UmZPXQCerGIUaNo8KHLVsM5fhUOX098YlO/Glkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BYAPR11MB3672.namprd11.prod.outlook.com (2603:10b6:a03:fa::30)
- by MW4PR11MB7164.namprd11.prod.outlook.com (2603:10b6:303:212::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.27; Fri, 16 Jun
- 2023 07:09:44 +0000
-Received: from BYAPR11MB3672.namprd11.prod.outlook.com
- ([fe80::87ad:6b1:f9f4:9299]) by BYAPR11MB3672.namprd11.prod.outlook.com
- ([fe80::87ad:6b1:f9f4:9299%5]) with mapi id 15.20.6455.030; Fri, 16 Jun 2023
- 07:09:44 +0000
-Message-ID: <d5b2b152-4325-a32d-3daf-e4629ad4818d@intel.com>
-Date: Fri, 16 Jun 2023 09:09:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Subject: Re: [PATCH net-next 2/3] iavf: fix err handling for MAC replace
-Content-Language: en-US
-To: "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>, "Nguyen, Anthony L"
-	<anthony.l.nguyen@intel.com>
-CC: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>, "Romanowski,
- Rafal" <rafal.romanowski@intel.com>, "netdev@vger.kernel.org"
-	<netdev@vger.kernel.org>, "Gardocki, PiotrX" <piotrx.gardocki@intel.com>
-References: <20230602171302.745492-1-anthony.l.nguyen@intel.com>
- <20230602171302.745492-3-anthony.l.nguyen@intel.com> <ZH40yOEyy4DLkOYt@boxer>
- <29e3a779-2051-d4bd-08fc-2835b05de55c@intel.com>
- <e5f6407e-e19b-636a-a90b-3d1d6f7beca0@intel.com>
- <DM4PR11MB6117A7B1423198E6478E4FDA8253A@DM4PR11MB6117.namprd11.prod.outlook.com>
-From: Przemek Kitszel <przemyslaw.kitszel@intel.com>
-In-Reply-To: <DM4PR11MB6117A7B1423198E6478E4FDA8253A@DM4PR11MB6117.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO3P265CA0025.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:387::6) To BYAPR11MB3672.namprd11.prod.outlook.com
- (2603:10b6:a03:fa::30)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3281210A
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 07:10:53 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E5412D4C
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 00:10:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686899447;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=9EfZviK8y+xCennODDVFKmoj6RoIJIadxDImLRxBk50=;
+	b=B+A/LV9CdvWJSVZC5N5Ijs4TM/RtreIvbNWgGiyDsiHAZgEO9+xonAEqdQhXsxmTcNnVbt
+	6KqOBw1pjlHPY7jN6dColVFnwXllK7aoAyGoEn9w111zLaESfhwK1inw7kJU+FbLSPmkAM
+	wGhYXcfE+wUmRBk+ACEiQou1GeS+CYo=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-645-U1mYUbqdN0uqpkSYU1KQJQ-1; Fri, 16 Jun 2023 03:10:43 -0400
+X-MC-Unique: U1mYUbqdN0uqpkSYU1KQJQ-1
+Received: by mail-lf1-f71.google.com with SMTP id 2adb3069b0e04-4ec817fb123so237783e87.3
+        for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 00:10:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686899442; x=1689491442;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9EfZviK8y+xCennODDVFKmoj6RoIJIadxDImLRxBk50=;
+        b=L7gA1n4LgOiYakoDqEuCye+zYUzaYjNCmhNinGMFVbBDAsHTF4s2ptP5Uv66mxpVay
+         jck3gLQEJmpyAd1bxMLKXr+BwDkGFyCTIMoESvgBEp5sgRgdFcFBNosIPR9u33Ne2+SM
+         488LhDRyC5/ToE9kLjcnOAF5vn/aVPr5Zll/ACdn7H3gP8wayL3WEnKiXrNm1OuVNiup
+         VaynSwatYHJ4F5dm5/GohyKE2tp+V44/LDfTs4ixjGVslYGo70UUDpDZaAdqGcM4enF+
+         Ue74RIkVWc8g5vd5eTj1a80HOhwS/vu7bFl/NuPagxy1Hs/cF/RADiezdfbcdOamsUdJ
+         CD3A==
+X-Gm-Message-State: AC+VfDxneCIDscAAERJqoyJm0R6a+aO9sns+fo1d2FrohwmcnFh4qr1e
+	yTsKuzweKlkQ1lOoG9e1btOdMLMshyTF80pZK4nNtnRULgQJn/79jt6XIs2AhP111EdiVZIfoxT
+	8B+ZGHdYdmxkhXxtbY8TDSUkxo19Yc4tO
+X-Received: by 2002:a19:e005:0:b0:4db:1e4a:74a1 with SMTP id x5-20020a19e005000000b004db1e4a74a1mr553984lfg.0.1686899442240;
+        Fri, 16 Jun 2023 00:10:42 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ45EeE5jjrxXy/EfdgQ2Y4cR3tKY/Vgk0UmKs5015Ouy2WOw0VEq3BYGKwI/krjwXB2XvHdDTIOPUNknyH7TIM=
+X-Received: by 2002:a19:e005:0:b0:4db:1e4a:74a1 with SMTP id
+ x5-20020a19e005000000b004db1e4a74a1mr553963lfg.0.1686899441855; Fri, 16 Jun
+ 2023 00:10:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BYAPR11MB3672:EE_|MW4PR11MB7164:EE_
-X-MS-Office365-Filtering-Correlation-Id: fc73cc32-c114-48fd-f496-08db6e38a985
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 91xIMG/5BTv44Qx4TQ2K3x4FudKjwzJsCJhcbaSxURBx79tWchAzF7vCuRix0ZW+KMKh+hqC6XaYcB1ThyHSzaZSH/lYKbD4hKtdHaZhW02GK6fltU+fs/Aay5nGp04gPSvO304ANyG+rWeOhBTeKAo2n8b8zlLBWxwh1dt1L0jK/es6aNUYDU3XJwTbgKd78QTYyiCoPeGKlA/CAbK54ZXAjN8gFtB1Xx5tjSOey6MYxl2Btdc1lcRdU68N5PSzExtMXrxunl+t9+7x5/VZLjslFtWFxCHi5X9s7a6BjgL3ODUHuGYLYuz7UAc4ncwldxEmtPM4URRY2R98Bh62Xissr19Z5g87g5ll+UleqFfA2G4A+LyZ+UqVPxgQsINOJYIZzz71E9RWt9TcquMoe7CZBZpOrIN7o1B+QIT26F/W/Nyf/W+ZukYtNGuLDEdXTvmcM7LxDxC3BzC2Vfe1P+7y1NoQL6d/gKVK7+GkI+LM2E+GbSbwIsu73yc2pXQ4A0vmbXX7OxiZ/OLbvu7FRzVsa0CIeY9rMliQY99prXri1JJVox8ANV62BBs9tUbnQ7KlD30yeJx4wMOhUAaqiBQ1KuSUTgH/dqHXIHUSF+8v1J5eVYwFu3c6mRJSSlrsRQxdqpUanNyHI5nTP/XWhA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3672.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(376002)(136003)(39860400002)(366004)(396003)(451199021)(36756003)(38100700002)(86362001)(478600001)(8676002)(8936002)(41300700001)(6486002)(31686004)(82960400001)(6636002)(4326008)(31696002)(110136005)(54906003)(6666004)(316002)(966005)(5660300002)(53546011)(6506007)(6512007)(186003)(26005)(2906002)(2616005)(66476007)(66556008)(66946007)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NHdvMUJ0UW0vNTVadHhSL0IzQ0ROdm5tcEwwVXF1NGZvZ3VqOTdsV2NyRUJ5?=
- =?utf-8?B?dUdsKytZSUdKQTFLN0s0dzBSa3EzZWZjN3FJdXRDYWF0SnJ0eTVVb1VNa0tP?=
- =?utf-8?B?eGZHUG5rU3IwdVl6TExTeHNxWks4c1pQMi95b3RWQU1LZHhVcHQ2aWwvK0Vo?=
- =?utf-8?B?U202ZVlLM3dvZTBKN2hQdXVxT3Bjd1c3emxrV3lXbTNYK3ZtdFdZd1dpZGJx?=
- =?utf-8?B?YWhDMjJ4dzFhVk1INkNybEpJU1UyTE9QTHNKVTkwRUpRYmR1Vmk5Q2Z4djBX?=
- =?utf-8?B?a1VXTWtqeGlFbFh3VkQwaENuNVZKdmd6WnltRjVUbzVUWit3cXpaWHpWRWtz?=
- =?utf-8?B?aTZyK2paN3dsS1FQY2kweSt0TFV1WGNtOUtNb0c4eWVCQTRxSnhsUExheUp2?=
- =?utf-8?B?SXJFT09sZU9JUUZCWEtWcGg3TnF5NE1wblZRWUZ5YnJ0aFZpNlJvNWxVVlFG?=
- =?utf-8?B?c1JqSEtFejh1dVoyWmhHbEtUZmI2NFVMNFRlWlBNWW9iY0JPd04rTnZ4YmM4?=
- =?utf-8?B?T2g0bFVGTDBZSlhycUNhUXVwTkFqZ1VWR0lWRjlmd2V3UGZ4R1lpUFFHT3Fo?=
- =?utf-8?B?emkrZ2JHamxXL3lZZ2Jma2ZsNVkwY1U2VytwcGFsM1lsV3lkODRQOHVyZEth?=
- =?utf-8?B?NkRkMUN5a1NWYjUwcFExL2dWQnlnNEd4cXQrVVQwS1J6dklibXY3OWliMTd5?=
- =?utf-8?B?NW5oQkYvbzk1aG5NTmh4VmdiRVNIUUphd2xOSXNFM1hlcVRiQmVlTmhMTXU1?=
- =?utf-8?B?Sk1NNlN1YnRoTTNOWVEvU0pad2RJb0U1djQybUFqTVRlcmIyMzU1Q0FNM09h?=
- =?utf-8?B?bFlFeS9rMDMxT3Z6R0E3QjdCcSt3SEN2N0dPRjk2d2VWVHpVWDFBMDF2aS9N?=
- =?utf-8?B?QTByM3FBVjMycmttcGJmNStKQ2M5cnBRRjZIdlEzQzJlUkM5ZW1RaDJqSUla?=
- =?utf-8?B?aGY0M2pDVWV4T0VxVkVNbFlKa0ZrZGVuYm94WVRBUjZ1Z0JrOTBNYlhFcElk?=
- =?utf-8?B?Wk1KSFNBWWhJWmpOZTViUElzWlhaK1RObzZFaXlPaU1XRjBYdUZjN2l0REYy?=
- =?utf-8?B?ZlNrbXBBemY4aTNmaTZDNTJLbUMwbVM4Y1MxRXRqR3NYSStuNzFTdE9yTkRh?=
- =?utf-8?B?cFlydzdvekZrSFlUSEhOc2FpRHMxZ1dTcU1CZVlxZ2tkeFpHdGh3TmZrWTMy?=
- =?utf-8?B?QmI4dXZPKzkvb3UxNEpqdllyZXRGZ2xBbmo0MzdXanBGa2htanFhTVdsMUk0?=
- =?utf-8?B?d2E2aWVsaC9BdzNQT0FOeVNVZElCZWJxUERocDcrQUg1cnE4bmpwMTQvVjR3?=
- =?utf-8?B?VDlYYXpWaThRcjVnOWo3MmhveUFmYUVzYkdjeTV5czNXVEtON1JRdndqcG5R?=
- =?utf-8?B?UVMxT3M1TGNCVkNEUmlvTmVGRGFQWXhKTnZPbGc5bUdXbGNBaE1ZZk1BeFZk?=
- =?utf-8?B?RGs2b1RnZEFMSVBBaVhMSnNBS0pPZERJNEdYaUhHODdNWEJUajg0dTdXTkFw?=
- =?utf-8?B?MDRFMHFLRkZYa1dvVDllZmVHT0JoU2xuNGFNL2NJMUR2aDVkZU1nOW05Zjhl?=
- =?utf-8?B?RFBwREx6dC8wN1FhdWR3Ynk5ZXRGZDJUN3dWakMxdmYyaDNsdTdzeDRrSGdz?=
- =?utf-8?B?TEpJSld5N1pPckViUkVseHF0L0lFc1ZISWw1WkpISUVDR296cmRJNk5uendC?=
- =?utf-8?B?bjJUMDdOWFJpZ1FVeU9uUzRraFZYR2lwWlpWbWRqVWVWQXRpNGY5ZllVZFVi?=
- =?utf-8?B?Sjc4aUI4SHNTcGJ1L1FkZzhLN0x0V3Zsdkd2RW12L0lMUGRPZDJ2V1kxUllq?=
- =?utf-8?B?c3JOTlpHSTE2SHlZMmUyNEJCTUJuaXFVZ1NjUXNGLzZHeTZtRDlhQTF3UTZa?=
- =?utf-8?B?QlRabmdWTHdUOHJUbDZOOEtxMzRZMXQwMHQxRXo5OHd5bGxBQUNVMEMxMDFZ?=
- =?utf-8?B?d1JHUVg0QVkzV3ByUVNUM1dNeGoxUUxDMWVPNEx1dTM0Q2QwQzFrTjArSE1M?=
- =?utf-8?B?b3lDQk93TnZreW80Sjl5eEZEb2x5N1VGUktINUFEMkNrN2k2ZEwvb3F5MDdT?=
- =?utf-8?B?OElITDM0UHU4Tm1PTXUvVDFEdWROcDQ4cWF3R0xlNEpXQTNEZ1lNdVppYUh6?=
- =?utf-8?B?MzV0b3hrdTlLQ3QzdUlrSXZnOFVZcDNSMGMvNWdEWkhabHhnbnE3cWdsWDMw?=
- =?utf-8?B?bmc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: fc73cc32-c114-48fd-f496-08db6e38a985
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3672.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2023 07:09:44.7358
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 090d6EDUYhJgZYD9wmmPuzWcAO2oC479ucSeoZDbviFrASk16f93KH3Yyu6ZOZG8nVAY/GmdrpC81I7zo/fIGPxVFApiunYujpl4molvq6A=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB7164
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+References: <20230615084929.10506-1-ihuguet@redhat.com> <ZIroTOtyvknhzP2r@boxer>
+In-Reply-To: <ZIroTOtyvknhzP2r@boxer>
+From: =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date: Fri, 16 Jun 2023 09:10:30 +0200
+Message-ID: <CACT4oufpuQcV9Ma+3XwbiOGKev8Pq1Kk+f=QFX9KfURhjU-G=g@mail.gmail.com>
+Subject: Re: [PATCH v2 net] sfc: use budget for TX completions
+To: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc: ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com, davem@davemloft.net, 
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
+	netdev@vger.kernel.org, linux-net-drivers@amd.com, bkenward@solarflare.com, 
+	Fei Liu <feliu@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 6/7/23 21:08, Fijalkowski, Maciej wrote:
->>
->> On 6/6/23 12:14, Przemek Kitszel wrote:
->>> On 6/5/23 21:17, Maciej Fijalkowski wrote:
->>>> On Fri, Jun 02, 2023 at 10:13:01AM -0700, Tony Nguyen wrote:
->>>>> From: Przemek Kitszel <przemyslaw.kitszel@intel.com>
->>>>>
->>>>> Defer removal of current primary MAC until a replacement is
->>>>> successfully added.
->>>>> Previous implementation would left filter list with no primary MAC.
->>>>
->>
->> [...]
->>
->> Tony, without Piotr's patch for short-cutting new Mac == old Mac case,
->> supposedly my patch would not work (we have to either re-test via our
->> VAL or just wait for Piotr's next version).
-> 
-> Would be good to share a link to patch you refer to + short explanation
-> why this would not work (I know which patch you had on mind but not
-> every other reader would do so).
+On Thu, Jun 15, 2023 at 12:31=E2=80=AFPM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> On Thu, Jun 15, 2023 at 10:49:29AM +0200, =C3=8D=C3=B1igo Huguet wrote:
+> > When running workloads heavy unbalanced towards TX (high TX, low RX
+> > traffic), sfc driver can retain the CPU during too long times. Although
+> > in many cases this is not enough to be visible, it can affect
+> > performance and system responsiveness.
+>
+> What is a v1..v2 diff? Please include this in future.
 
-Right :)
+Oh, yes, sorry. I'm not inspired at all with this patch's
+"administrative" requirements.
 
-> 
->>
->> Przemek
+The only diff is the addition of the Fixes tags.
+
+>
+> >
+> > A way to reproduce it is to use a debug kernel and run some parallel
+> > netperf TX tests. In some systems, this will lead to this message being
+> > logged:
+> >   kernel:watchdog: BUG: soft lockup - CPU#12 stuck for 22s!
+>
+> Hmm debug kernel is pretty wide term to me. maybe you could drop few
+> config options specific to your setup?
+
+I used RHEL's kernel-debug package. It has many debug options enabled,
+but to name a few: kasan, lockdep, etc. In this case, I think that it
+was mostly relevant to artificially increase the CPU stress in kernel
+mode, nothing more.
+
+>
+> >
+> > The reason is that sfc driver doesn't account any NAPI budget for the T=
+X
+> > completion events work. With high-TX/low-RX traffic, this makes that th=
+e
+> > CPU is held for long time for NAPI poll.
+> >
+> > Documentations says "drivers can process completions for any number of =
+Tx
+> > packets but should only process up to budget number of Rx packets".
+> > However, many drivers do limit the amount of TX completions that they
+> > process in a single NAPI poll.
+> >
+> > In the same way, this patch adds a limit for the TX work in sfc. With
+> > the patch applied, the watchdog warning never appears.
+>
+> please use imperative mood.
+>
+> >
+> > Tested with netperf in different combinations: single process / paralle=
+l
+> > processes, TCP / UDP and different sizes of UDP messages. Repeated the
+> > tests before and after the patch, without any noticeable difference in
+> > network or CPU performance.
+> >
+> > Test hardware:
+> > Intel(R) Xeon(R) CPU E5-1620 v4 @ 3.50GHz (4 cores, 2 threads/core)
+> > Solarflare Communications XtremeScale X2522-25G Network Adapter
+> >
+> > Fixes: 5227ecccea2d ("sfc: remove tx and MCDI handling from NAPI budget=
+ consideration")
+> > Fixes: d19a53721863 ("sfc_ef100: TX path for EF100 NICs")
+> > Reported-by: Fei Liu <feliu@redhat.com>
+> > Signed-off-by: =C3=8D=C3=B1igo Huguet <ihuguet@redhat.com>
+> > ---
+> >  drivers/net/ethernet/sfc/ef10.c      | 25 ++++++++++++++++++-------
+> >  drivers/net/ethernet/sfc/ef100_nic.c |  7 ++++++-
+> >  drivers/net/ethernet/sfc/ef100_tx.c  |  4 ++--
+> >  drivers/net/ethernet/sfc/ef100_tx.h  |  2 +-
+> >  drivers/net/ethernet/sfc/tx_common.c |  4 +++-
+> >  drivers/net/ethernet/sfc/tx_common.h |  2 +-
+> >  6 files changed, 31 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc=
+/ef10.c
+> > index d30459dbfe8f..b63e47af6365 100644
+> > --- a/drivers/net/ethernet/sfc/ef10.c
+> > +++ b/drivers/net/ethernet/sfc/ef10.c
+> > @@ -2950,7 +2950,7 @@ static u32 efx_ef10_extract_event_ts(efx_qword_t =
+*event)
+> >       return tstamp;
+> >  }
+> >
+> > -static void
+> > +static int
+> >  efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *eve=
+nt)
+> >  {
+> >       struct efx_nic *efx =3D channel->efx;
+> > @@ -2958,13 +2958,14 @@ efx_ef10_handle_tx_event(struct efx_channel *ch=
+annel, efx_qword_t *event)
+> >       unsigned int tx_ev_desc_ptr;
+> >       unsigned int tx_ev_q_label;
+> >       unsigned int tx_ev_type;
+> > +     int work_done;
+> >       u64 ts_part;
+> >
+> >       if (unlikely(READ_ONCE(efx->reset_pending)))
+> > -             return;
+> > +             return 0;
+> >
+> >       if (unlikely(EFX_QWORD_FIELD(*event, ESF_DZ_TX_DROP_EVENT)))
+> > -             return;
+> > +             return 0;
+> >
+> >       /* Get the transmit queue */
+> >       tx_ev_q_label =3D EFX_QWORD_FIELD(*event, ESF_DZ_TX_QLABEL);
+> > @@ -2973,8 +2974,7 @@ efx_ef10_handle_tx_event(struct efx_channel *chan=
+nel, efx_qword_t *event)
+> >       if (!tx_queue->timestamping) {
+> >               /* Transmit completion */
+> >               tx_ev_desc_ptr =3D EFX_QWORD_FIELD(*event, ESF_DZ_TX_DESC=
+R_INDX);
+> > -             efx_xmit_done(tx_queue, tx_ev_desc_ptr & tx_queue->ptr_ma=
+sk);
+> > -             return;
+> > +             return efx_xmit_done(tx_queue, tx_ev_desc_ptr & tx_queue-=
+>ptr_mask);
+> >       }
+> >
+> >       /* Transmit timestamps are only available for 8XXX series. They r=
+esult
+> > @@ -3000,6 +3000,7 @@ efx_ef10_handle_tx_event(struct efx_channel *chan=
+nel, efx_qword_t *event)
+> >        * fields in the event.
+> >        */
+> >       tx_ev_type =3D EFX_QWORD_FIELD(*event, ESF_EZ_TX_SOFT1);
+> > +     work_done =3D 0;
+> >
+> >       switch (tx_ev_type) {
+> >       case TX_TIMESTAMP_EVENT_TX_EV_COMPLETION:
+> > @@ -3016,6 +3017,7 @@ efx_ef10_handle_tx_event(struct efx_channel *chan=
+nel, efx_qword_t *event)
+> >               tx_queue->completed_timestamp_major =3D ts_part;
+> >
+> >               efx_xmit_done_single(tx_queue);
+> > +             work_done =3D 1;
+> >               break;
+> >
+> >       default:
+> > @@ -3026,6 +3028,8 @@ efx_ef10_handle_tx_event(struct efx_channel *chan=
+nel, efx_qword_t *event)
+> >                         EFX_QWORD_VAL(*event));
+> >               break;
+> >       }
+> > +
+> > +     return work_done;
+> >  }
+> >
+> >  static void
+> > @@ -3081,13 +3085,16 @@ static void efx_ef10_handle_driver_generated_ev=
+ent(struct efx_channel *channel,
+> >       }
+> >  }
+> >
+> > +#define EFX_NAPI_MAX_TX 512
+> > +
+> >  static int efx_ef10_ev_process(struct efx_channel *channel, int quota)
+> >  {
+> >       struct efx_nic *efx =3D channel->efx;
+> >       efx_qword_t event, *p_event;
+> >       unsigned int read_ptr;
+> > -     int ev_code;
+> > +     int spent_tx =3D 0;
+> >       int spent =3D 0;
+> > +     int ev_code;
+> >
+> >       if (quota <=3D 0)
+> >               return spent;
+> > @@ -3126,7 +3133,11 @@ static int efx_ef10_ev_process(struct efx_channe=
+l *channel, int quota)
+> >                       }
+> >                       break;
+> >               case ESE_DZ_EV_CODE_TX_EV:
+> > -                     efx_ef10_handle_tx_event(channel, &event);
+> > +                     spent_tx +=3D efx_ef10_handle_tx_event(channel, &=
+event);
+> > +                     if (spent_tx >=3D EFX_NAPI_MAX_TX) {
+> > +                             spent =3D quota;
+> > +                             goto out;
+> > +                     }
+> >                       break;
+> >               case ESE_DZ_EV_CODE_DRIVER_EV:
+> >                       efx_ef10_handle_driver_event(channel, &event);
+> > diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/etherne=
+t/sfc/ef100_nic.c
+> > index 4dc643b0d2db..7adde9639c8a 100644
+> > --- a/drivers/net/ethernet/sfc/ef100_nic.c
+> > +++ b/drivers/net/ethernet/sfc/ef100_nic.c
+> > @@ -253,6 +253,8 @@ static void ef100_ev_read_ack(struct efx_channel *c=
+hannel)
+> >                  efx_reg(channel->efx, ER_GZ_EVQ_INT_PRIME));
+> >  }
+> >
+> > +#define EFX_NAPI_MAX_TX 512
+> > +
+> >  static int ef100_ev_process(struct efx_channel *channel, int quota)
+> >  {
+> >       struct efx_nic *efx =3D channel->efx;
+> > @@ -260,6 +262,7 @@ static int ef100_ev_process(struct efx_channel *cha=
+nnel, int quota)
+> >       bool evq_phase, old_evq_phase;
+> >       unsigned int read_ptr;
+> >       efx_qword_t *p_event;
+> > +     int spent_tx =3D 0;
+> >       int spent =3D 0;
+> >       bool ev_phase;
+> >       int ev_type;
+> > @@ -295,7 +298,9 @@ static int ef100_ev_process(struct efx_channel *cha=
+nnel, int quota)
+> >                       efx_mcdi_process_event(channel, p_event);
+> >                       break;
+> >               case ESE_GZ_EF100_EV_TX_COMPLETION:
+> > -                     ef100_ev_tx(channel, p_event);
+> > +                     spent_tx +=3D ef100_ev_tx(channel, p_event);
+> > +                     if (spent_tx >=3D EFX_NAPI_MAX_TX)
+> > +                             spent =3D quota;
+> >                       break;
+> >               case ESE_GZ_EF100_EV_DRIVER:
+> >                       netif_info(efx, drv, efx->net_dev,
+> > diff --git a/drivers/net/ethernet/sfc/ef100_tx.c b/drivers/net/ethernet=
+/sfc/ef100_tx.c
+> > index 29ffaf35559d..849e5555bd12 100644
+> > --- a/drivers/net/ethernet/sfc/ef100_tx.c
+> > +++ b/drivers/net/ethernet/sfc/ef100_tx.c
+> > @@ -346,7 +346,7 @@ void ef100_tx_write(struct efx_tx_queue *tx_queue)
+> >       ef100_tx_push_buffers(tx_queue);
+> >  }
+> >
+> > -void ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_eve=
+nt)
+> > +int ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_even=
+t)
+> >  {
+> >       unsigned int tx_done =3D
+> >               EFX_QWORD_FIELD(*p_event, ESF_GZ_EV_TXCMPL_NUM_DESC);
+> > @@ -357,7 +357,7 @@ void ef100_ev_tx(struct efx_channel *channel, const=
+ efx_qword_t *p_event)
+> >       unsigned int tx_index =3D (tx_queue->read_count + tx_done - 1) &
+> >                               tx_queue->ptr_mask;
+> >
+> > -     efx_xmit_done(tx_queue, tx_index);
+> > +     return efx_xmit_done(tx_queue, tx_index);
+> >  }
+> >
+> >  /* Add a socket buffer to a TX queue
+> > diff --git a/drivers/net/ethernet/sfc/ef100_tx.h b/drivers/net/ethernet=
+/sfc/ef100_tx.h
+> > index e9e11540fcde..d9a0819c5a72 100644
+> > --- a/drivers/net/ethernet/sfc/ef100_tx.h
+> > +++ b/drivers/net/ethernet/sfc/ef100_tx.h
+> > @@ -20,7 +20,7 @@ void ef100_tx_init(struct efx_tx_queue *tx_queue);
+> >  void ef100_tx_write(struct efx_tx_queue *tx_queue);
+> >  unsigned int ef100_tx_max_skb_descs(struct efx_nic *efx);
+> >
+> > -void ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_eve=
+nt);
+> > +int ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_even=
+t);
+> >
+> >  netdev_tx_t ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk=
+_buff *skb);
+> >  int __ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff =
+*skb,
+> > diff --git a/drivers/net/ethernet/sfc/tx_common.c b/drivers/net/etherne=
+t/sfc/tx_common.c
+> > index 67e789b96c43..755aa92bf823 100644
+> > --- a/drivers/net/ethernet/sfc/tx_common.c
+> > +++ b/drivers/net/ethernet/sfc/tx_common.c
+> > @@ -249,7 +249,7 @@ void efx_xmit_done_check_empty(struct efx_tx_queue =
+*tx_queue)
+> >       }
+> >  }
+> >
+> > -void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
+> > +int efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
+> >  {
+> >       unsigned int fill_level, pkts_compl =3D 0, bytes_compl =3D 0;
+> >       unsigned int efv_pkts_compl =3D 0;
+> > @@ -279,6 +279,8 @@ void efx_xmit_done(struct efx_tx_queue *tx_queue, u=
+nsigned int index)
+> >       }
+> >
+> >       efx_xmit_done_check_empty(tx_queue);
+> > +
+> > +     return pkts_compl + efv_pkts_compl;
+> >  }
+> >
+> >  /* Remove buffers put into a tx_queue for the current packet.
+> > diff --git a/drivers/net/ethernet/sfc/tx_common.h b/drivers/net/etherne=
+t/sfc/tx_common.h
+> > index d87aecbc7bf1..1e9f42938aac 100644
+> > --- a/drivers/net/ethernet/sfc/tx_common.h
+> > +++ b/drivers/net/ethernet/sfc/tx_common.h
+> > @@ -28,7 +28,7 @@ static inline bool efx_tx_buffer_in_use(struct efx_tx=
+_buffer *buffer)
+> >  }
+> >
+> >  void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue);
+> > -void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
+> > +int efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
+> >
+> >  void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
+> >                       unsigned int insert_count);
+> > --
+> > 2.40.1
+> >
+> >
+>
 
 
-Final version of Piotr's patch [1] has been merged into net-next,
-so @Tony, you could re-apply this patch (Subject line here) of mine to 
-your queue.
+--=20
+=C3=8D=C3=B1igo Huguet
 
-[1] 
-https://lore.kernel.org/netdev/20230614145302.902301-2-piotrx.gardocki@intel.com/
 
