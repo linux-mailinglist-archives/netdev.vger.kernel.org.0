@@ -1,108 +1,101 @@
-Return-Path: <netdev+bounces-11544-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11545-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D3038733854
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:49:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 0A0F373385D
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:52:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8EACC28169B
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 18:49:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B911A2816B0
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 18:52:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C25CA1ACBB;
-	Fri, 16 Jun 2023 18:49:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 062091ACC2;
+	Fri, 16 Jun 2023 18:52:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B636F1428F
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 18:49:23 +0000 (UTC)
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803A13A9D
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 11:49:22 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id d75a77b69052e-3f9b7de94e7so33521cf.0
-        for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 11:49:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1686941361; x=1689533361;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+cd2dUILKbDmptWcmfcBJgbORMPyWbfjCx/wkz5oUhM=;
-        b=ubz1+vPW9ofVNYKXSEmtpLtiWXK+tW1gexpEUi/jUO04UwuPSlQfd21hS/CC4sx7z0
-         Q4bGpwiPfYx0iIrtu3KgNTV5YO3n4TGQCenc5gRD58Zlhx1i3N8E3+hM5BettTW88avg
-         SFYCeygPyW11Cizr1uheRsjNhYoh/7B8MhEq5Wx8G6hP9zvRodLomqFdCx3F7/BzGiie
-         7AJdqucMaHW57Y9yRYBgFsdDjcM9dAMr5Nv2p73EP3Dri7ohits87vwdkac4bCMNj5Qy
-         KtDXrhB1NXCquJGhIEhX4eYzl0rM+3/QyQ+xvcmZl5ows42m8xDs24gIa4cvVcPQUNux
-         VBYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686941361; x=1689533361;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+cd2dUILKbDmptWcmfcBJgbORMPyWbfjCx/wkz5oUhM=;
-        b=lGwt8tFYQqaNESYFMm4IPaMdgGax7oVCjcOdDCJJD1vYwFR1FecLasHXRGV6TTk/T9
-         bmZxanIsa69KodlWefi2HesYW02UddAz1xhj13ghkHG66XtZuhDfpG7qDQlZDUwH/MeM
-         YcPF3dajOoBKLXSk1PWpp56wDt4UQmHVal9rQVf8dC5py0yrhchJ7feadKLgIQB1H1zk
-         EqwbR+/UuNzdG/DuOUUCuAPX9+A81La/IeLEHzkjP0l1FmEb7DTR0sLvFo8Xe+ujxc9T
-         wka9kkcdUQZE5VOCyBgYCr2K5sBxgawyVmr5/ebVlpcKIM5qdMTUuHakFok23AOPeZxQ
-         VKsg==
-X-Gm-Message-State: AC+VfDwOHhwZWesmabggj5qnfVNEEi8Qe5rMKI/rqAEO8W5qGExxnXxl
-	/PiiW1ppzwJEj04Vu+0b+4gPvzOurn+Eo7HpIMjnaA==
-X-Google-Smtp-Source: ACHHUZ7OudDf47jGsL3RDmPvLzetC3PwhYOPKzSlkGr+4HRgpdrbYsKnXDVbySeSZb1+MGpJ6Agq3FeuspcsR41mOEs=
-X-Received: by 2002:a05:622a:1212:b0:3fa:3c8f:3435 with SMTP id
- y18-20020a05622a121200b003fa3c8f3435mr529182qtx.27.1686941360977; Fri, 16 Jun
- 2023 11:49:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC7FB171DE
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 18:52:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81ACCC433C8;
+	Fri, 16 Jun 2023 18:52:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686941544;
+	bh=SnILc4tHzLQ9qrWedm4qlSPGM6MMXgUtHYq78NQdHfc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=iUqw7j+HeuoziYt9RbZCtqc64v+4G8v1edN3GQo4dVrs8cP0pYDBRLyr3g3RMkjL2
+	 oPprPOtTyghZTTdiSDa7G2/c3Dc/vDfBXIIr5C7a3Cap2ycoLvw/rpuwKN0vq1yjQr
+	 4B5WRMfgCFIsAo6ll4rl6MEz/eO4YMqlIcVETg58DdNwK0jvm4P++lNzCliGEOKeEf
+	 QMhuaPfMlWzxplJPj2Pj3O1JIfiIXMMEHMA+PZR2mpRWL+QuboRLHFkzDxBNNnDVOX
+	 l80E37UZxLBzpUsiZI6MOaQ+i+7FE8qrrRTe4XqojVDupcp2SR2Ud20w+8bYyELRGD
+	 KR8K0rWKiE0pg==
+Date: Fri, 16 Jun 2023 19:52:18 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jose Abreu <joabreu@synopsys.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [RFT PATCH 1/2] stmmac: dwmac-loongson: drop useless check for
+ compatible fallback
+Message-ID: <20230616-activity-shed-be3c13e5ac71@spud>
+References: <20230616103127.285608-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230612030524.60537-1-mfreemon@cloudflare.com>
-In-Reply-To: <20230612030524.60537-1-mfreemon@cloudflare.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Fri, 16 Jun 2023 20:49:09 +0200
-Message-ID: <CANn89iJE+RSnaWREoOJGEDj_kKyzq2ZFfW77=8n2gCbFMr+u_Q@mail.gmail.com>
-Subject: Re: [PATCH net-next v5] tcp: enforce receive buffer memory limits by
- allowing the tcp window to shrink
-To: Mike Freemon <mfreemon@cloudflare.com>
-Cc: netdev@vger.kernel.org, kernel-team@cloudflare.com, ncardwell@google.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="IZVYiw4TzhyBwr89"
+Content-Disposition: inline
+In-Reply-To: <20230616103127.285608-1-krzysztof.kozlowski@linaro.org>
+
+
+--IZVYiw4TzhyBwr89
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED,USER_IN_DEF_DKIM_WL,
-	USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
 
-On Mon, Jun 12, 2023 at 5:05=E2=80=AFAM Mike Freemon <mfreemon@cloudflare.c=
-om> wrote:
->
-> From: "mfreemon@cloudflare.com" <mfreemon@cloudflare.com>
->
-> Under certain circumstances, the tcp receive buffer memory limit
-> set by autotuning (sk_rcvbuf) is increased due to incoming data
-> packets as a result of the window not closing when it should be.
-> This can result in the receive buffer growing all the way up to
-> tcp_rmem[2], even for tcp sessions with a low BDP.
->
-> To reproduce:  Connect a TCP session with the receiver doing
-> nothing and the sender sending small packets (an infinite loop
-> of socket send() with 4 bytes of payload with a sleep of 1 ms
-> in between each send()).  This will cause the tcp receive buffer
-> to grow all the way up to tcp_rmem[2].
->
-> [1] https://www.rfc-editor.org/rfc/rfc7323#appendix-F
-> [2] https://www.rfc-editor.org/rfc/rfc7323#section-2.4
-> [3] https://www.rfc-editor.org/rfc/rfc1122#page-91
-> [4] https://www.rfc-editor.org/rfc/rfc793
-> [5] https://www.rfc-editor.org/rfc/rfc1323
->
-> Signed-off-by: Mike Freemon <mfreemon@cloudflare.com>
-> ---
+On Fri, Jun 16, 2023 at 12:31:26PM +0200, Krzysztof Kozlowski wrote:
+> Device binds to proper PCI ID (LOONGSON, 0x7a03), already listed in DTS,
+> so checking for some other compatible does not make sense.  It cannot be
+> bound to unsupported platform.
+>=20
+> Drop useless, incorrect (space in between) and undocumented compatible.
+>=20
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Might be worth noting that dropping it is required to allow the
+new loongarch dts stuff to be functional with a sane set of compatibles.
+
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+
+Cheers,
+Conor.
+
+--IZVYiw4TzhyBwr89
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZIyvYQAKCRB4tDGHoIJi
+0g+bAPwIqFpdSVFR1J6wtacOyxZPUWWrlEBqpTPyxDWe+xdBWwEA2ZuQq95BtjsK
+MOqgX/xyqqlAFwqAfioKQf/5rfup/gI=
+=hq3B
+-----END PGP SIGNATURE-----
+
+--IZVYiw4TzhyBwr89--
 
