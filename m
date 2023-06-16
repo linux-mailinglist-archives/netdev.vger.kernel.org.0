@@ -1,161 +1,161 @@
-Return-Path: <netdev+bounces-11588-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11589-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 93CE7733A82
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:10:05 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 26BC4733A86
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:11:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C5D3D1C20B1D
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:10:04 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D31BE280DB4
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:11:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C12A11F160;
-	Fri, 16 Jun 2023 20:10:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EB4F21F170;
+	Fri, 16 Jun 2023 20:11:32 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 716C21EA84;
-	Fri, 16 Jun 2023 20:09:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48066C433D9;
-	Fri, 16 Jun 2023 20:09:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 672621ED58
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:11:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA3A6C433C0;
+	Fri, 16 Jun 2023 20:11:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686946199;
-	bh=WUwJ/CcnS7KQMIGc+n1lO6t7DBapdJHs3PtzN2L5DOs=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=TK7lwF2dgyhLjZz3axawLmkbuign1yOCHmc3Tx1v0nJMLzHE4AMIBuiBwMBtxulD8
-	 Z3Vut6IBWtk2ssQ8ijhfs8vBi+Qy0HXySzPTA15IW8YrnEaB7IlHu2VlzDPnGeCZmI
-	 K6M5pS/g15siuIekZ5t1I3/fk6k5aKAJaEj6SrOz/PCsDCt5E2f7BsT9bm6PGwrWgg
-	 43Q6XfEEqBYd9YLn7kuhpOmt+nKESiRp8navYHM6l1x9CJMp/jkfUZ7Re+m79aLMHD
-	 kbDq8gJyNG5Gays0CHzsM1Js8nifxRWQM5ErJCnC9FUIgd0MSE3JJ4Wb0UcNmLCkft
-	 Ujy1yQtMOaDZQ==
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-4f762b3227dso1482607e87.1;
-        Fri, 16 Jun 2023 13:09:59 -0700 (PDT)
-X-Gm-Message-State: AC+VfDxnGmwARsmvlN+BebDLZcp92GaeS8oe6MzbebP6N92K1Svg8lL5
-	QIX8BTHOVcMGoqeGC6KLFpf3otMVMH3+9o+2Vew=
-X-Google-Smtp-Source: ACHHUZ7ituqSYIn1SCVORmrSh+1n8O6ydQ9eZHh9b53aIx4zqNf09sKQF/S2prJ95SKqvJfHTGetd9Upy9eJLOlNi04=
-X-Received: by 2002:a05:6512:3052:b0:4f7:47bb:2ce0 with SMTP id
- b18-20020a056512305200b004f747bb2ce0mr3066562lfb.4.1686946197316; Fri, 16 Jun
- 2023 13:09:57 -0700 (PDT)
+	s=k20201202; t=1686946290;
+	bh=1RaylbAB8SiqqJwDPHj7Q6/W6G+kRwIIlvA6Ry9ubsQ=;
+	h=From:To:Cc:Subject:Date:From;
+	b=cy/YSZ2QWYPt8sToIzvvL2sA48RJXmyfpmsU9FBMagWMj5/dkYIWHDG2md//RUzV4
+	 vyAHm2tNfgek6taZsdBcHCSe0mIsq/b9jbS/joiAS4+ZhK6agEF/XqBQ/SGvKVv+3H
+	 0P07rc/CksAtu9eoZLMOVmRQwPrFPbmxvkTQaUAG+b0h6enj77wrDYFhAXMSVs0AGb
+	 C4ZyeHsoKaMV4tBDQqXMSmUEITJi9+cpf4+YCaA/tWG2E7AWKW6JIVRvue5vhvpi/m
+	 pG3lgQgWo0jgpzyo8pZbzfnHhUmHj3xRIEVXESiab4z+GA6MCZK0XI30CXgMQZ075G
+	 p/G8b9YPmOwDA==
+From: Saeed Mahameed <saeed@kernel.org>
+To: "David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Eric Dumazet <edumazet@google.com>
+Cc: Saeed Mahameed <saeedm@nvidia.com>,
+	netdev@vger.kernel.org,
+	Tariq Toukan <tariqt@nvidia.com>
+Subject: [pull request][net-next 00/15] mlx5 updates 2023-06-16
+Date: Fri, 16 Jun 2023 13:10:58 -0700
+Message-Id: <20230616201113.45510-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230616085038.4121892-1-rppt@kernel.org> <20230616085038.4121892-10-rppt@kernel.org>
-In-Reply-To: <20230616085038.4121892-10-rppt@kernel.org>
-From: Song Liu <song@kernel.org>
-Date: Fri, 16 Jun 2023 13:09:45 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6TmwsBmP4NQroE5OEFsaHh+S9zweXa4Fs_ZeJURguqAg@mail.gmail.com>
-Message-ID: <CAPhsuW6TmwsBmP4NQroE5OEFsaHh+S9zweXa4Fs_ZeJURguqAg@mail.gmail.com>
-Subject: Re: [PATCH v2 09/12] powerpc: extend execmem_params for kprobes allocations
-To: Mike Rapoport <rppt@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
-	"David S. Miller" <davem@davemloft.net>, Dinh Nguyen <dinguyen@kernel.org>, 
-	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>, 
-	Kent Overstreet <kent.overstreet@linux.dev>, Luis Chamberlain <mcgrof@kernel.org>, 
-	Mark Rutland <mark.rutland@arm.com>, Michael Ellerman <mpe@ellerman.id.au>, 
-	Nadav Amit <nadav.amit@gmail.com>, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Puranjay Mohan <puranjay12@gmail.com>, 
-	Rick Edgecombe <rick.p.edgecombe@intel.com>, Russell King <linux@armlinux.org.uk>, 
-	Steven Rostedt <rostedt@goodmis.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>, bpf@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, 
-	linux-mm@kvack.org, linux-modules@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-s390@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev, 
-	netdev@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jun 16, 2023 at 1:52=E2=80=AFAM Mike Rapoport <rppt@kernel.org> wro=
-te:
->
-> From: "Mike Rapoport (IBM)" <rppt@kernel.org>
->
-> powerpc overrides kprobes::alloc_insn_page() to remove writable
-> permissions when STRICT_MODULE_RWX is on.
->
-> Add definition of jit area to execmem_params to allow using the generic
-> kprobes::alloc_insn_page() with the desired permissions.
->
-> As powerpc uses breakpoint instructions to inject kprobes, it does not
-> need to constrain kprobe allocations to the modules area and can use the
-> entire vmalloc address space.
->
-> Signed-off-by: Mike Rapoport (IBM) <rppt@kernel.org>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Acked-by: Song Liu <song@kernel.org>
+Hi Dave, Hi Jakub,
+
+This series adds misc updates to mlx5 driver.
+
+For more information please see tag log below.
+
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
 
 
-> ---
->  arch/powerpc/kernel/kprobes.c | 14 --------------
->  arch/powerpc/kernel/module.c  | 13 +++++++++++++
->  2 files changed, 13 insertions(+), 14 deletions(-)
->
-> diff --git a/arch/powerpc/kernel/kprobes.c b/arch/powerpc/kernel/kprobes.=
-c
-> index 5db8df5e3657..14c5ddec3056 100644
-> --- a/arch/powerpc/kernel/kprobes.c
-> +++ b/arch/powerpc/kernel/kprobes.c
-> @@ -126,20 +126,6 @@ kprobe_opcode_t *arch_adjust_kprobe_addr(unsigned lo=
-ng addr, unsigned long offse
->         return (kprobe_opcode_t *)(addr + offset);
->  }
->
-> -void *alloc_insn_page(void)
-> -{
-> -       void *page;
-> -
-> -       page =3D jit_text_alloc(PAGE_SIZE);
-> -       if (!page)
-> -               return NULL;
-> -
-> -       if (strict_module_rwx_enabled())
-> -               set_memory_rox((unsigned long)page, 1);
-> -
-> -       return page;
-> -}
-> -
->  int arch_prepare_kprobe(struct kprobe *p)
->  {
->         int ret =3D 0;
-> diff --git a/arch/powerpc/kernel/module.c b/arch/powerpc/kernel/module.c
-> index 4c6c15bf3947..8e5b379d6da1 100644
-> --- a/arch/powerpc/kernel/module.c
-> +++ b/arch/powerpc/kernel/module.c
-> @@ -96,6 +96,11 @@ static struct execmem_params execmem_params =3D {
->                         .alignment =3D 1,
->                 },
->         },
-> +       .jit =3D {
-> +               .text =3D {
-> +                       .alignment =3D 1,
-> +               },
-> +       },
->  };
->
->
-> @@ -131,5 +136,13 @@ struct execmem_params __init *execmem_arch_params(vo=
-id)
->
->         execmem_params.modules.text.pgprot =3D prot;
->
-> +       execmem_params.jit.text.start =3D VMALLOC_START;
-> +       execmem_params.jit.text.end =3D VMALLOC_END;
-> +
-> +       if (strict_module_rwx_enabled())
-> +               execmem_params.jit.text.pgprot =3D PAGE_KERNEL_ROX;
-> +       else
-> +               execmem_params.jit.text.pgprot =3D PAGE_KERNEL_EXEC;
-> +
->         return &execmem_params;
->  }
-> --
-> 2.35.1
->
+The following changes since commit 5a6f6873606e03a0a95afe40ba5e84bb6e28a26f:
+
+  ip, ip6: Fix splice to raw and ping sockets (2023-06-16 11:45:16 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2023-06-16
+
+for you to fetch changes up to 5f2cf757f9c56255470c23a2a4a5574a34edad4b:
+
+  net/mlx5: Remove unused ecpu field from struct mlx5_sf_table (2023-06-16 12:02:09 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2023-06-16
+
+1) Added a new event handler to firmware sync reset, which is used to
+   support firmware sync reset flow on smart NIC. Adding this new stage to
+   the flow enables the firmware to ensure host PFs unload before ECPFs
+   unload, to avoid race of PFs recovery.
+
+2) Debugfs for mlx5 eswitch bridge offloads
+
+3) Added two new counters for vport stats
+
+4) Minor Fixups and cleanups for net-next branch
+
+----------------------------------------------------------------
+Daniel Jurgens (2):
+      net/mlx5: Fix the macro for accessing EC VF vports
+      net/mlx5: DR, update query of HCA caps for EC VFs
+
+Gal Pressman (1):
+      net/mlx5e: Remove mlx5e_dbg() and msglvl support
+
+Jiri Pirko (1):
+      net/mlx5: Remove unused ecpu field from struct mlx5_sf_table
+
+Juhee Kang (1):
+      net/mlx5: Add header file for events
+
+Moshe Shemesh (4):
+      net/mlx5: Ack on sync_reset_request only if PF can do reset_now
+      net/mlx5: Expose timeout for sync reset unload stage
+      net/mlx5: Check DTOR entry value is not zero
+      net/mlx5: Handle sync reset unload event
+
+Or Har-Toov (2):
+      net/mlx5: Expose bits for local loopback counter
+      net/mlx5e: Add local loopback counter to vport stats
+
+Saeed Mahameed (1):
+      net/mlx5: E-Switch, remove redundant else statements
+
+Vlad Buslov (3):
+      net/mlx5: Create eswitch debugfs root directory
+      net/mlx5: Bridge, pass net device when linking vport to bridge
+      net/mlx5: Bridge, expose FDB state via debugfs
+
+ .../ethernet/mellanox/mlx5/counters.rst            |  10 ++
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  10 --
+ .../ethernet/mellanox/mlx5/core/en/port_buffer.c   |  44 +++---
+ .../ethernet/mellanox/mlx5/core/en/rep/bridge.c    |   9 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c  |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_dcbnl.c |  26 ++--
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  18 +--
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |   5 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c |  25 +++-
+ .../net/ethernet/mellanox/mlx5/core/esw/bridge.c   |  39 ++---
+ .../net/ethernet/mellanox/mlx5/core/esw/bridge.h   |  12 +-
+ .../mellanox/mlx5/core/esw/bridge_debugfs.c        |  89 ++++++++++++
+ .../ethernet/mellanox/mlx5/core/esw/bridge_priv.h  |   6 +
+ .../net/ethernet/mellanox/mlx5/core/esw/legacy.c   |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |   4 +
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   4 +
+ drivers/net/ethernet/mellanox/mlx5/core/events.c   |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c | 160 ++++++++++++++++++---
+ drivers/net/ethernet/mellanox/mlx5/core/health.c   |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c   |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/lag/mpesw.c    |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/events.h   |  40 ++++++
+ drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h |  34 -----
+ drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c |   7 +-
+ drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |   3 +
+ .../net/ethernet/mellanox/mlx5/core/mlx5_core.h    |   7 +
+ .../net/ethernet/mellanox/mlx5/core/sf/devlink.c   |   1 -
+ .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/vport.c    |   6 -
+ include/linux/mlx5/device.h                        |   1 +
+ include/linux/mlx5/mlx5_ifc.h                      |  13 +-
+ 33 files changed, 435 insertions(+), 167 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_debugfs.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/events.h
 
