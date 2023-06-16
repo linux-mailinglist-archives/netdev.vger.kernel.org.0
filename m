@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-11599-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11600-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id BF6DF733A96
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:14:46 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E4F6E733A97
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:15:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6A509280FDE
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:14:45 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 22BFA1C210A1
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:15:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B724C21094;
-	Fri, 16 Jun 2023 20:11:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9B47421CCC;
+	Fri, 16 Jun 2023 20:11:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AEFB1ED58
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:11:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B76D9C43391;
-	Fri, 16 Jun 2023 20:11:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5803C2108C
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:11:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFCADC4160E;
+	Fri, 16 Jun 2023 20:11:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686946303;
-	bh=JuZNFcnPdoXVS74ulj6g1WB49hzDZsU4venUd0KcTAE=;
+	s=k20201202; t=1686946305;
+	bh=wlU8xINgfDVQY+Ph7pJ7SYid0sXAGePWuq8znapg5aw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=X2TRydo456wiPVPVgp+1hf/NzyUESHI5WYoMT3qqMB9IWfELvr1Aod0mlHdypv42h
-	 206rP9FPKUJCh+1NSLBp3x5+3ny/CwE0ymRmfNsyfz7IRkaLXZKDM9mrt2LSaI9J0m
-	 CF8D19MlEqW1KYA5eKd0u235XLJZBxpVHY5nnH6Z0PiQ2pl8S4KpNa/6RIiVvx8a4X
-	 NrUF6kPRDMilXjfdy/yRBHutLD0A16xwd29truTGzgyeaxRFZm84rpppHCKHPCsCPo
-	 MAfUPKY7hHa4vfDA5Uu95722no0OZ6tpNZYvAy9lrHHv1tphqHU1/lduqjjYCvqECr
-	 DWE/EChlAp8vw==
+	b=Vkl8G5+NDmZ4Z1mYeRFch862Eak3O8dfN6n+UqsL/1ksePJADjf6alqAyZHaqAfrB
+	 WRNLuAHuDDlDkRgC2fU3oHhAM+Y2Fx82iIb3v9OojsRMgNAq3cPYtCfVGcJTjV78K/
+	 17Az2ll0Pc10ITn8pkrknpVFeIr5xJLd6fk2mOFQagWzC4ywpCjQTqKk7OgU2lDinx
+	 rPNMhFtnubBp7k1cFJpBiXHO2OCSx4vsd1G1Pu45tH6jmR9EN4sbhmoaO6RgbPnl2u
+	 nNh0spQRM05icFTMC+EVxaCtV/NeHoTJUMF04pFWoJeWSHD65xoYN/1LL6g41mCIJV
+	 QeQZkBdwsXNxw==
 From: Saeed Mahameed <saeed@kernel.org>
 To: "David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -41,9 +41,9 @@ Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	Or Har-Toov <ohartoov@nvidia.com>,
 	Avihai Horon <avihaih@nvidia.com>,
 	Leon Romanovsky <leonro@nvidia.com>
-Subject: [net-next 10/15] net/mlx5: Expose bits for local loopback counter
-Date: Fri, 16 Jun 2023 13:11:08 -0700
-Message-Id: <20230616201113.45510-11-saeed@kernel.org>
+Subject: [net-next 11/15] net/mlx5e: Add local loopback counter to vport stats
+Date: Fri, 16 Jun 2023 13:11:09 -0700
+Message-Id: <20230616201113.45510-12-saeed@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230616201113.45510-1-saeed@kernel.org>
 References: <20230616201113.45510-1-saeed@kernel.org>
@@ -57,41 +57,91 @@ Content-Transfer-Encoding: 8bit
 
 From: Or Har-Toov <ohartoov@nvidia.com>
 
-Add needed HW bits for querying local loopback counter and the
-HCA capability for it.
+Add counter for number of unicast, multicast and broadcast packets/
+octets that were loopback.
 
 Signed-off-by: Or Har-Toov <ohartoov@nvidia.com>
 Reviewed-by: Avihai Horon <avihaih@nvidia.com>
 Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- include/linux/mlx5/mlx5_ifc.h | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ .../ethernet/mellanox/mlx5/counters.rst       | 10 ++++++++
+ .../ethernet/mellanox/mlx5/core/en_stats.c    | 23 ++++++++++++++++++-
+ 2 files changed, 32 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index d61dcb5d7cd5..354c7e326eab 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1758,7 +1758,7 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         reserved_at_330[0x6];
- 	u8         pci_sync_for_fw_update_with_driver_unload[0x1];
- 	u8         vnic_env_cnt_steering_fail[0x1];
--	u8         reserved_at_338[0x1];
-+	u8         vport_counter_local_loopback[0x1];
- 	u8         q_counter_aggregation[0x1];
- 	u8         q_counter_other_vport[0x1];
- 	u8         log_max_xrcd[0x5];
-@@ -5190,7 +5190,9 @@ struct mlx5_ifc_query_vport_counter_out_bits {
+diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/counters.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/counters.rst
+index 6b2d1fe74ecf..a395df9c2751 100644
+--- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/counters.rst
++++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/counters.rst
+@@ -797,6 +797,16 @@ Counters on the NIC port that is connected to a eSwitch.
+        RoCE/UD/RC traffic) [#accel]_.
+      - Acceleration
  
- 	struct mlx5_ifc_traffic_counter_bits transmitted_eth_multicast;
- 
--	u8         reserved_at_680[0xa00];
-+	struct mlx5_ifc_traffic_counter_bits local_loopback;
++   * - `vport_loopback_packets`
++     - Unicast, multicast and broadcast packets that were loop-back (received
++       and transmitted), IB/Eth  [#accel]_.
++     - Acceleration
 +
-+	u8         reserved_at_700[0x980];
++   * - `vport_loopback_bytes`
++     - Unicast, multicast and broadcast bytes that were loop-back (received
++       and transmitted), IB/Eth  [#accel]_.
++     - Acceleration
++
+    * - `rx_steer_missed_packets`
+      - Number of packets that was received by the NIC, however was discarded
+        because it did not match any flow in the NIC flow table.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index f1d9596905c6..25a6c596300d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -748,11 +748,22 @@ static const struct counter_desc vport_stats_desc[] = {
+ 		VPORT_COUNTER_OFF(transmitted_ib_multicast.octets) },
  };
  
- enum {
++static const struct counter_desc vport_loopback_stats_desc[] = {
++	{ "vport_loopback_packets",
++		VPORT_COUNTER_OFF(local_loopback.packets) },
++	{ "vport_loopback_bytes",
++		VPORT_COUNTER_OFF(local_loopback.octets) },
++};
++
+ #define NUM_VPORT_COUNTERS		ARRAY_SIZE(vport_stats_desc)
++#define NUM_VPORT_LOOPBACK_COUNTERS(dev) \
++	(MLX5_CAP_GEN(dev, vport_counter_local_loopback) ? \
++	 ARRAY_SIZE(vport_loopback_stats_desc) : 0)
+ 
+ static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(vport)
+ {
+-	return NUM_VPORT_COUNTERS;
++	return NUM_VPORT_COUNTERS +
++		NUM_VPORT_LOOPBACK_COUNTERS(priv->mdev);
+ }
+ 
+ static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(vport)
+@@ -761,6 +772,11 @@ static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(vport)
+ 
+ 	for (i = 0; i < NUM_VPORT_COUNTERS; i++)
+ 		strcpy(data + (idx++) * ETH_GSTRING_LEN, vport_stats_desc[i].format);
++
++	for (i = 0; i < NUM_VPORT_LOOPBACK_COUNTERS(priv->mdev); i++)
++		strcpy(data + (idx++) * ETH_GSTRING_LEN,
++		       vport_loopback_stats_desc[i].format);
++
+ 	return idx;
+ }
+ 
+@@ -771,6 +787,11 @@ static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(vport)
+ 	for (i = 0; i < NUM_VPORT_COUNTERS; i++)
+ 		data[idx++] = MLX5E_READ_CTR64_BE(priv->stats.vport.query_vport_out,
+ 						  vport_stats_desc, i);
++
++	for (i = 0; i < NUM_VPORT_LOOPBACK_COUNTERS(priv->mdev); i++)
++		data[idx++] = MLX5E_READ_CTR64_BE(priv->stats.vport.query_vport_out,
++						  vport_loopback_stats_desc, i);
++
+ 	return idx;
+ }
+ 
 -- 
 2.40.1
 
