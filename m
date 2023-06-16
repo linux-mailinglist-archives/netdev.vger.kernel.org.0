@@ -1,158 +1,156 @@
-Return-Path: <netdev+bounces-11569-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11570-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id EC0C0733A42
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:01:48 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 145A0733A45
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:02:09 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 8A17A281816
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:01:47 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C377728184F
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:02:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 238C41ED50;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 588141F160;
 	Fri, 16 Jun 2023 20:01:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6014A1ED33;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE05B1ED3E
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:01:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D363EC433CA;
 	Fri, 16 Jun 2023 20:01:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E208FC433C0;
-	Fri, 16 Jun 2023 20:01:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686945682;
-	bh=NNR06pawYLcrluh/DT0ZjxTIOvEpuKGIsr6P52TLsXk=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=B2x9p0bw9e1c5FEiElfS0dqOB9kBN1XvLc3rdRIjWsCJR6DEA+8/fPzx0tD0XRds9
-	 xnUob2gqF2SwBz+B8m0N3hPtdbY9Zjp4OWtxr5mJ453zMkqDfQfhs3Bk0NKVLLnJ8T
-	 YRFinBI4ZyqxgEMzd4FvqZ96m1iAvyUW5PzZ9IkU7jzJf2O+Uh3mAZnkJkvCh4Irzi
-	 y8m2OdBztq5JFis9yBA+hEUTNF3tMD5RAOz5rdpO89Y54dunPa4NAr9k6faBzowxQk
-	 AVRlbo+pV0l2tH94RtPSD4Alk/lhusm0f9qKVWPhAsHRvmHc3DaWJj06DslGvi6t1A
-	 z4M//Xaki6glw==
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-4f766777605so1569607e87.1;
-        Fri, 16 Jun 2023 13:01:22 -0700 (PDT)
-X-Gm-Message-State: AC+VfDyVb1J0jxb7ByxdQPFCoN6rG5PynZqV/6xLihGaBnsDfgruhCon
-	IUH8GAu3x/TSlzsgzzJMcx1NcvAGKA32lec/Nr8=
-X-Google-Smtp-Source: ACHHUZ5JqRMNnpRMFCyZiMjc+UWPs6A2cx1mTw/2r3SQw3woyTfRJjaUEkhnoXK7xbHKeHI/ilSSCGbka/vlr73Fo7g=
-X-Received: by 2002:a05:6512:60a:b0:4f8:5635:2ccf with SMTP id
- b10-20020a056512060a00b004f856352ccfmr2048673lfe.8.1686945680955; Fri, 16 Jun
- 2023 13:01:20 -0700 (PDT)
+	s=k20201202; t=1686945684;
+	bh=1HIIeTk+QM2niRS7zhIp/sSW9TaEXNKjVYVaAdCTICs=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=IIgJa7kbEGdDlADgYg4Cv6/MgH1P8Wsxu69uIgolqAioOsMOF6uAJ+cZk9n0NuZ6b
+	 GNUIqOTUGZ5MK1lLeBmiJw2d6IKlVMkdNx7cM+fAd1o+oap4yHyL7IkOAUkT2IZ3c5
+	 Mpgfravn7Jrgo1vBEczTQmh8BbaSlOsVaOOUk01MOVxG5kYIW48rBti+X7d6h0DDij
+	 ewHluK0qAF/+dAizcfb3ahXkAk7PoFqdMk6vb4TaXnqkFWE7tUttgu9e0L3O62jSDU
+	 lubQXeKZYjBOfCF2yHT/klsx3m9uK7UzHCQ6PVNEWxB8gaGAbg/+yA+N83L1+Mbdet
+	 l2u8Ov444lK2w==
+From: Saeed Mahameed <saeed@kernel.org>
+To: "David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Eric Dumazet <edumazet@google.com>
+Cc: Saeed Mahameed <saeedm@nvidia.com>,
+	netdev@vger.kernel.org,
+	Tariq Toukan <tariqt@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>,
+	Maxim Mikityanskiy <maxtram95@gmail.com>
+Subject: [net 01/12] net/mlx5e: XDP, Allow growing tail for XDP multi buffer
+Date: Fri, 16 Jun 2023 13:01:08 -0700
+Message-Id: <20230616200119.44163-2-saeed@kernel.org>
+X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230616200119.44163-1-saeed@kernel.org>
+References: <20230616200119.44163-1-saeed@kernel.org>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230616085038.4121892-1-rppt@kernel.org> <20230616085038.4121892-7-rppt@kernel.org>
-In-Reply-To: <20230616085038.4121892-7-rppt@kernel.org>
-From: Song Liu <song@kernel.org>
-Date: Fri, 16 Jun 2023 13:01:08 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4J+rFvh9WJVWLZxFHtcYxahYk=NoKYdU9FMibZU8986w@mail.gmail.com>
-Message-ID: <CAPhsuW4J+rFvh9WJVWLZxFHtcYxahYk=NoKYdU9FMibZU8986w@mail.gmail.com>
-Subject: Re: [PATCH v2 06/12] mm/execmem: introduce execmem_data_alloc()
-To: Mike Rapoport <rppt@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
-	"David S. Miller" <davem@davemloft.net>, Dinh Nguyen <dinguyen@kernel.org>, 
-	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>, 
-	Kent Overstreet <kent.overstreet@linux.dev>, Luis Chamberlain <mcgrof@kernel.org>, 
-	Mark Rutland <mark.rutland@arm.com>, Michael Ellerman <mpe@ellerman.id.au>, 
-	Nadav Amit <nadav.amit@gmail.com>, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Puranjay Mohan <puranjay12@gmail.com>, 
-	Rick Edgecombe <rick.p.edgecombe@intel.com>, Russell King <linux@armlinux.org.uk>, 
-	Steven Rostedt <rostedt@goodmis.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>, bpf@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, 
-	linux-mm@kvack.org, linux-modules@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-s390@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev, 
-	netdev@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jun 16, 2023 at 1:51=E2=80=AFAM Mike Rapoport <rppt@kernel.org> wro=
-te:
->
-> From: "Mike Rapoport (IBM)" <rppt@kernel.org>
->
-> Data related to code allocations, such as module data section, need to
-> comply with architecture constraints for its placement and its
-> allocation right now was done using execmem_text_alloc().
->
-> Create a dedicated API for allocating data related to code allocations
-> and allow architectures to define address ranges for data allocations.
->
-> Since currently this is only relevant for powerpc variants that use the
-> VMALLOC address space for module data allocations, automatically reuse
-> address ranges defined for text unless address range for data is
-> explicitly defined by an architecture.
->
-> With separation of code and data allocations, data sections of the
-> modules are now mapped as PAGE_KERNEL rather than PAGE_KERNEL_EXEC which
-> was a default on many architectures.
->
-> Signed-off-by: Mike Rapoport (IBM) <rppt@kernel.org>
-[...]
->  static void free_mod_mem(struct module *mod)
-> diff --git a/mm/execmem.c b/mm/execmem.c
-> index a67acd75ffef..f7bf496ad4c3 100644
-> --- a/mm/execmem.c
-> +++ b/mm/execmem.c
-> @@ -63,6 +63,20 @@ void *execmem_text_alloc(size_t size)
->                              fallback_start, fallback_end, kasan);
->  }
->
-> +void *execmem_data_alloc(size_t size)
-> +{
-> +       unsigned long start =3D execmem_params.modules.data.start;
-> +       unsigned long end =3D execmem_params.modules.data.end;
-> +       pgprot_t pgprot =3D execmem_params.modules.data.pgprot;
-> +       unsigned int align =3D execmem_params.modules.data.alignment;
-> +       unsigned long fallback_start =3D execmem_params.modules.data.fall=
-back_start;
-> +       unsigned long fallback_end =3D execmem_params.modules.data.fallba=
-ck_end;
-> +       bool kasan =3D execmem_params.modules.flags & EXECMEM_KASAN_SHADO=
-W;
-> +
-> +       return execmem_alloc(size, start, end, align, pgprot,
-> +                            fallback_start, fallback_end, kasan);
-> +}
-> +
->  void execmem_free(void *ptr)
->  {
->         /*
-> @@ -101,6 +115,28 @@ static bool execmem_validate_params(struct execmem_p=
-arams *p)
->         return true;
->  }
->
-> +static void execmem_init_missing(struct execmem_params *p)
+From: Maxim Mikityanskiy <maxtram95@gmail.com>
 
-Shall we call this execmem_default_init_data?
+The cited commits missed passing frag_size to __xdp_rxq_info_reg, which
+is required by bpf_xdp_adjust_tail to support growing the tail pointer
+in fragmented packets. Pass the missing parameter when the current RQ
+mode allows XDP multi buffer.
 
-> +{
-> +       struct execmem_modules_range *m =3D &p->modules;
-> +
-> +       if (!pgprot_val(execmem_params.modules.data.pgprot))
-> +               execmem_params.modules.data.pgprot =3D PAGE_KERNEL;
+Fixes: ea5d49bdae8b ("net/mlx5e: Add XDP multi buffer support to the non-linear legacy RQ")
+Fixes: 9cb9482ef10e ("net/mlx5e: Use fragments of the same size in non-linear legacy RQ with XDP")
+Signed-off-by: Maxim Mikityanskiy <maxtram95@gmail.com>
+Cc: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 8 ++++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en/params.h | 1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c   | 7 ++++---
+ 3 files changed, 11 insertions(+), 5 deletions(-)
 
-Do we really need to check each of these? IOW, can we do:
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+index 9c94807097cb..5ce28ff7685f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+@@ -732,7 +732,8 @@ static void mlx5e_rx_compute_wqe_bulk_params(struct mlx5e_params *params,
+ static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
+ 				     struct mlx5e_params *params,
+ 				     struct mlx5e_xsk_param *xsk,
+-				     struct mlx5e_rq_frags_info *info)
++				     struct mlx5e_rq_frags_info *info,
++				     u32 *xdp_frag_size)
+ {
+ 	u32 byte_count = MLX5E_SW2HW_MTU(params, params->sw_mtu);
+ 	int frag_size_max = DEFAULT_FRAG_SIZE;
+@@ -845,6 +846,8 @@ static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
+ 
+ 	info->log_num_frags = order_base_2(info->num_frags);
+ 
++	*xdp_frag_size = info->num_frags > 1 && params->xdp_prog ? PAGE_SIZE : 0;
++
+ 	return 0;
+ }
+ 
+@@ -989,7 +992,8 @@ int mlx5e_build_rq_param(struct mlx5_core_dev *mdev,
+ 	}
+ 	default: /* MLX5_WQ_TYPE_CYCLIC */
+ 		MLX5_SET(wq, wq, log_wq_sz, params->log_rq_mtu_frames);
+-		err = mlx5e_build_rq_frags_info(mdev, params, xsk, &param->frags_info);
++		err = mlx5e_build_rq_frags_info(mdev, params, xsk, &param->frags_info,
++						&param->xdp_frag_size);
+ 		if (err)
+ 			return err;
+ 		ndsegs = param->frags_info.num_frags;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
+index a5d20f6d6d9c..6800949dafbc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
+@@ -24,6 +24,7 @@ struct mlx5e_rq_param {
+ 	u32                        rqc[MLX5_ST_SZ_DW(rqc)];
+ 	struct mlx5_wq_param       wq;
+ 	struct mlx5e_rq_frags_info frags_info;
++	u32                        xdp_frag_size;
+ };
+ 
+ struct mlx5e_sq_param {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index a7c526ee5024..a5bdf78955d7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -641,7 +641,7 @@ static void mlx5e_free_mpwqe_rq_drop_page(struct mlx5e_rq *rq)
+ }
+ 
+ static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *params,
+-			     struct mlx5e_rq *rq)
++			     u32 xdp_frag_size, struct mlx5e_rq *rq)
+ {
+ 	struct mlx5_core_dev *mdev = c->mdev;
+ 	int err;
+@@ -665,7 +665,8 @@ static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *param
+ 	if (err)
+ 		return err;
+ 
+-	return xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq->ix, c->napi.napi_id);
++	return __xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq->ix, c->napi.napi_id,
++				  xdp_frag_size);
+ }
+ 
+ static int mlx5_rq_shampo_alloc(struct mlx5_core_dev *mdev,
+@@ -2240,7 +2241,7 @@ static int mlx5e_open_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *param
+ {
+ 	int err;
+ 
+-	err = mlx5e_init_rxq_rq(c, params, &c->rq);
++	err = mlx5e_init_rxq_rq(c, params, rq_params->xdp_frag_size, &c->rq);
+ 	if (err)
+ 		return err;
+ 
+-- 
+2.40.1
 
-if (!pgprot_val(execmem_params.modules.data.pgprot)) {
-       execmem_params.modules.data.pgprot =3D PAGE_KERNEL;
-       execmem_params.modules.data.alignment =3D m->text.alignment;
-       execmem_params.modules.data.start =3D m->text.start;
-       execmem_params.modules.data.end =3D m->text.end;
-       execmem_params.modules.data.fallback_start =3D m->text.fallback_star=
-t;
-      execmem_params.modules.data.fallback_end =3D m->text.fallback_end;
-}
-
-Thanks,
-Song
-
-[...]
 
