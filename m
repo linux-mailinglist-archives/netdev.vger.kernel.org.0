@@ -1,98 +1,142 @@
-Return-Path: <netdev+bounces-11448-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11449-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 62B5B733269
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 15:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id DBD6F73326C
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 15:46:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9E1F81C20FBF
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 13:45:39 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 18D8A1C20FB9
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 13:46:01 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6546B17FEC;
-	Fri, 16 Jun 2023 13:45:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 603C218015;
+	Fri, 16 Jun 2023 13:45:59 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56C8B15484
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 13:45:37 +0000 (UTC)
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C63189;
-	Fri, 16 Jun 2023 06:45:35 -0700 (PDT)
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-	id 1qA9lY-0004cA-UG; Fri, 16 Jun 2023 15:45:28 +0200
-Message-ID: <bfe90a36-f7ef-7ea7-da4c-f04da2700fbd@leemhuis.info>
-Date: Fri, 16 Jun 2023 15:45:28 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55CCD156C1
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 13:45:59 +0000 (UTC)
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B312683;
+	Fri, 16 Jun 2023 06:45:56 -0700 (PDT)
+X-GND-Sasl: miquel.raynal@bootlin.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1686923155;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=iqNuk91ReidgvjGQ/uHdYSnJCuf4AbcP78tiAgRTYr4=;
+	b=Fcxde2Kb8PA/g6Jn3KysPKF0UEqV+mpnXTMjIJgs0J3FfmWbBKP47JcAjCEqagbRu9YbMm
+	5sU1ySqclwS+WcLumo1L0hM7DNbz4TMoqgOS5Uvr187qSZJZfay91G5rDlCouoj5FXsKoB
+	SEtEaJS2gPhLxmxArbts/J3b03/HwieOpO1MNT77EtIAKj93vqEkHQLSVFwejKQ6XypY+b
+	pGnAY3+XMKMgVDWeWAFm1qdyYOvGGm5zM/K4jsJJdy3Ymn/LhNT6RkS7qRenncRK+uU6gL
+	9hdJTv4tqluZS89Yyn+fHZAw82d+z2PFEPSfUKMImd3/P1/o/h4LDGY0Rg8qDQ==
+X-GND-Sasl: miquel.raynal@bootlin.com
+X-GND-Sasl: miquel.raynal@bootlin.com
+X-GND-Sasl: miquel.raynal@bootlin.com
+X-GND-Sasl: miquel.raynal@bootlin.com
+X-GND-Sasl: miquel.raynal@bootlin.com
+X-GND-Sasl: miquel.raynal@bootlin.com
+X-GND-Sasl: miquel.raynal@bootlin.com
+X-GND-Sasl: miquel.raynal@bootlin.com
+X-GND-Sasl: miquel.raynal@bootlin.com
+X-GND-Sasl: miquel.raynal@bootlin.com
+X-GND-Sasl: miquel.raynal@bootlin.com
+X-GND-Sasl: miquel.raynal@bootlin.com
+X-GND-Sasl: miquel.raynal@bootlin.com
+Received: by mail.gandi.net (Postfix) with ESMTPSA id AC07FC000C;
+	Fri, 16 Jun 2023 13:45:53 +0000 (UTC)
+From: Miquel Raynal <miquel.raynal@bootlin.com>
+To: Wolfgang Grandegger <wg@grandegger.com>,
+	Marc Kleine-Budde <mkl@pengutronix.de>,
+	linux-can@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Eric Dumazet <edumazet@google.com>,
+	netdev@vger.kernel.org,
+	Sylvain Girard <sylvain.girard@se.com>,
+	Pascal Eberhard <pascal.eberhard@se.com>,
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+	Herve Codina <herve.codina@bootlin.com>,
+	=?UTF-8?q?J=C3=A9r=C3=A9mie=20Dautheribes?= <jeremie.dautheribes@bootlin.com>,
+	Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH net-next 1/2] can: sja1000: Prepare the use of a threaded handler
+Date: Fri, 16 Jun 2023 15:45:52 +0200
+Message-Id: <20230616134553.2786391-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH 2/2] sfc: add CONFIG_INET dependency for TC offload
-Content-Language: en-US, de-DE
-To: Edward Cree <ecree.xilinx@gmail.com>, Arnd Bergmann <arnd@kernel.org>,
- Martin Habets <habetsm.xilinx@gmail.com>, Jakub Kicinski <kuba@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
- Alejandro Lucero <alejandro.lucero-palau@amd.com>,
- Jiri Pirko <jiri@resnulli.us>,
- Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
- Simon Horman <simon.horman@corigine.com>, netdev@vger.kernel.org,
- linux-net-drivers@amd.com, linux-kernel@vger.kernel.org
-References: <20230616090844.2677815-1-arnd@kernel.org>
- <20230616090844.2677815-2-arnd@kernel.org>
- <2fa7c4a5-79cb-b504-2381-08cb629d473d@gmail.com>
-From: Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <2fa7c4a5-79cb-b504-2381-08cb629d473d@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1686923135;602a25fd;
-X-HE-SMSGID: 1qA9lY-0004cA-UG
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 16.06.23 13:39, Edward Cree wrote:
-> On 16/06/2023 10:08, Arnd Bergmann wrote:
->>
->> Fixes: a1e82162af0b8 ("sfc: generate encap headers for TC offload")
->> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> 
-> Reviewed-by: Edward Cree <ecree.xilinx@gmail.com>
->  and I think you also need
-> Fixes: 7e5e7d800011 ("sfc: neighbour lookup for TC encap action offload")
->  since that added the references to ip_route_output_flow and arp_tbl (the
->  commit in your Fixes: added the ip_send_check reference on top of that).
-> 
-> You also might want to add the Closes: tag from [1], I don't know how
->  that works but I assume it'll make someone's regression-bot happy.
->
-> [1] https://lore.kernel.org/oe-kbuild-all/202306151656.yttECVTP-lkp@intel.com/
+In order to support a flavor of the sja1000 which sometimes freezes, it
+will be needed upon certain interrupts to perform a soft reset. The soft
+reset operation takes a bit of time, so better not do it within the hard
+interrupt handler but rather in a threaded handler. Let's prepare the
+possibility for sja1000_err() to request "interrupting" the current flow
+and request the threaded handler to be run while keeping the interrupt
+line low.
 
-FWIW, yes, regression tracking relies on them (for now Link: and the
-newly introduced Closes: work; the latter came up totally independent of
-regression tracking). And I have no problem with being the bad guy here. :-D
+There is no functional change.
 
-But for completeness, in case anyone cares:
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+---
+ drivers/net/can/sja1000/sja1000.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-It's Linus that for many years already wants these links. He a while ago
-mentioned that in a few posts I bookmarked:
+diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
+index aac5956e4a53..4719806e3a9f 100644
+--- a/drivers/net/can/sja1000/sja1000.c
++++ b/drivers/net/can/sja1000/sja1000.c
+@@ -501,7 +501,8 @@ irqreturn_t sja1000_interrupt(int irq, void *dev_id)
+ 	struct sja1000_priv *priv = netdev_priv(dev);
+ 	struct net_device_stats *stats = &dev->stats;
+ 	uint8_t isrc, status;
+-	int n = 0;
++	irqreturn_t ret = 0;
++	int n = 0, err;
+ 
+ 	if (priv->pre_irq)
+ 		priv->pre_irq(priv);
+@@ -546,19 +547,23 @@ irqreturn_t sja1000_interrupt(int irq, void *dev_id)
+ 		}
+ 		if (isrc & (IRQ_DOI | IRQ_EI | IRQ_BEI | IRQ_EPI | IRQ_ALI)) {
+ 			/* error interrupt */
+-			if (sja1000_err(dev, isrc, status))
++			err = sja1000_err(dev, isrc, status);
++			if (err)
+ 				break;
+ 		}
+ 		n++;
+ 	}
+ out:
++	if (!ret)
++		ret = (n) ? IRQ_HANDLED : IRQ_NONE;
++
+ 	if (priv->post_irq)
+ 		priv->post_irq(priv);
+ 
+ 	if (n >= SJA1000_MAX_IRQ)
+ 		netdev_dbg(dev, "%d messages handled in ISR", n);
+ 
+-	return (n) ? IRQ_HANDLED : IRQ_NONE;
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(sja1000_interrupt);
+ 
+-- 
+2.34.1
 
-https://lore.kernel.org/all/CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com/
-https://lore.kernel.org/all/CAHk-=wgs38ZrfPvy=nOwVkVzjpM3VFU1zobP37Fwd_h9iAD5JQ@mail.gmail.com/
-https://lore.kernel.org/all/CAHk-=wjxzafG-=J8oT30s7upn4RhBs6TX-uVFZ5rME+L5_DoJA@mail.gmail.com/
-
-But that's nothing new: Documentation/process/submitting-patches.rst
-explained this usage for many years already (I just made this more
-explicit a while a go).
-
-Ciao, Thorsten
 
