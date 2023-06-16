@@ -1,35 +1,35 @@
-Return-Path: <netdev+bounces-11577-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11578-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 40F13733A58
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:04:29 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 41520733A59
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 22:04:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7275F1C21039
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:04:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id EF4022809E4
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 20:04:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 785AD20696;
-	Fri, 16 Jun 2023 20:01:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BFFF1206BA;
+	Fri, 16 Jun 2023 20:01:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 319C1200D6
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:01:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5D1FC433AD;
-	Fri, 16 Jun 2023 20:01:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AF721ED3D
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 20:01:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23331C433B7;
+	Fri, 16 Jun 2023 20:01:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686945692;
-	bh=nKfOG4ApfZRdTnERFh80h2cs+vexmhhTsxLcQ6Lio18=;
+	s=k20201202; t=1686945693;
+	bh=EpoVNju57zEZI6NOLGN+9PE8D2ZaIL806y1BkFOkLNQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Kqz52GIM4kw/OC9Ibe0Sd76+SXgNh1TUr/LIRET/I0kQJQ8fx5E+TRd7iH52PAtdx
-	 XB2Tz8/hUDG9pptuUOKCSt3cS9rnDhFET9SAv1xopvvnQZ2XwejkpD4dGjBOTWAORE
-	 PLyyUumy/7qefpZr+ruK1+Sjef08qSxK14s/ovNtzw98XVnmAaVonMK285Gix1H0HZ
-	 GRbWVUDulAFUA9CyuUt9E8i73/8hHjHcAPISb7A7Q9r1ykHR3ulrI6fF14HhyHrdxB
-	 wsxkFR9tqVm2xRhdMiJ1ou0Sxl3gqzSNnicU/j4rcvC62//C2tOOeaHVbuIgUH/hDQ
-	 A/1eXUWeGsNKQ==
+	b=TmF428G+zfgQ3BiTV0AwNwvIHKyTJCsNcxS0A8wynnOWwWfwpGyp+eSsX5EW2E1iQ
+	 3akFVBkudZtTb3hzGzaasgb/ZEKun+rXd5484c2oJpuprvHqa9s/A7Q3JVHP3UI+ni
+	 MyMYYS5wZUqpe+IRT5mfKBVfvOhA/RzDJIzexrPsZIvHg19HYfBpkFbCTrEqDrE67x
+	 f34O86672sl8NqhRnKoG9nRmG+9I1W0HR4LryhPtUj8i23MP4qa4U92jzz129drfwR
+	 HnVkEbCmvurWW5575U60AP8RCXlzyQYyFZ119nIzOpcAhuFIIwXI7+E3ItRNhreFKt
+	 F8Q+mnsWEIDAA==
 From: Saeed Mahameed <saeed@kernel.org>
 To: "David S. Miller" <davem@davemloft.net>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -39,10 +39,10 @@ Cc: Saeed Mahameed <saeedm@nvidia.com>,
 	netdev@vger.kernel.org,
 	Tariq Toukan <tariqt@nvidia.com>,
 	Leon Romanovsky <leonro@nvidia.com>,
-	Shay Drory <shayd@nvidia.com>
-Subject: [net 08/12] net/mlx5: Free IRQ rmap and notifier on kernel shutdown
-Date: Fri, 16 Jun 2023 13:01:15 -0700
-Message-Id: <20230616200119.44163-9-saeed@kernel.org>
+	Simon Horman <simon.horman@corigine.com>
+Subject: [net 09/12] net/mlx5e: Don't delay release of hardware objects
+Date: Fri, 16 Jun 2023 13:01:16 -0700
+Message-Id: <20230616200119.44163-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230616200119.44163-1-saeed@kernel.org>
 References: <20230616200119.44163-1-saeed@kernel.org>
@@ -54,127 +54,102 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-The kernel IRQ system needs the irq affinity notifier to be clear
-before attempting to free the irq, see WARN_ON log below.
+XFRM core provides two callbacks to release resources, one is .xdo_dev_policy_delete()
+and another is .xdo_dev_policy_free(). This separation allows delayed release so
+"ip xfrm policy free" commands won't starve. Unfortunately, mlx5 command interface
+can't run in .xdo_dev_policy_free() callbacks as the latter runs in ATOMIC context.
 
-On a normal driver unload we don't have this issue since we do the
-complete cleanup of the irq resources.
+ BUG: scheduling while atomic: swapper/7/0/0x00000100
+ Modules linked in: act_mirred act_tunnel_key cls_flower sch_ingress vxlan mlx5_vdpa vringh vhost_iotlb vdpa rpcrdma rdma_ucm ib_iser libiscsi ib_umad scsi_transport_iscsi rdma_cm ib_ipoib iw_cm ib_cm mlx5_ib ib_uverbs ib_core xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat br_netfilter rpcsec_gss_krb5 auth_rpcgss oid_registry overlay mlx5_core zram zsmalloc fuse
+ CPU: 7 PID: 0 Comm: swapper/7 Not tainted 6.3.0+ #1
+ Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+ Call Trace:
+  <IRQ>
+  dump_stack_lvl+0x33/0x50
+  __schedule_bug+0x4e/0x60
+  __schedule+0x5d5/0x780
+  ? __mod_timer+0x286/0x3d0
+  schedule+0x50/0x90
+  schedule_timeout+0x7c/0xf0
+  ? __bpf_trace_tick_stop+0x10/0x10
+  __wait_for_common+0x88/0x190
+  ? usleep_range_state+0x90/0x90
+  cmd_exec+0x42e/0xb40 [mlx5_core]
+  mlx5_cmd_do+0x1e/0x40 [mlx5_core]
+  mlx5_cmd_exec+0x18/0x30 [mlx5_core]
+  mlx5_cmd_delete_fte+0xa8/0xd0 [mlx5_core]
+  del_hw_fte+0x60/0x120 [mlx5_core]
+  mlx5_del_flow_rules+0xec/0x270 [mlx5_core]
+  ? default_send_IPI_single_phys+0x26/0x30
+  mlx5e_accel_ipsec_fs_del_pol+0x1a/0x60 [mlx5_core]
+  mlx5e_xfrm_free_policy+0x15/0x20 [mlx5_core]
+  xfrm_policy_destroy+0x5a/0xb0
+  xfrm4_dst_destroy+0x7b/0x100
+  dst_destroy+0x37/0x120
+  rcu_core+0x2d6/0x540
+  __do_softirq+0xcd/0x273
+  irq_exit_rcu+0x82/0xb0
+  sysvec_apic_timer_interrupt+0x72/0x90
+  </IRQ>
+  <TASK>
+  asm_sysvec_apic_timer_interrupt+0x16/0x20
+ RIP: 0010:default_idle+0x13/0x20
+ Code: c0 08 00 00 00 4d 29 c8 4c 01 c7 4c 29 c2 e9 72 ff ff ff cc cc cc cc 8b 05 7a 4d ee 00 85 c0 7e 07 0f 00 2d 2f 98 2e 00 fb f4 <fa> c3 66 66 2e 0f 1f 84 00 00 00 00 00 65 48 8b 04 25 40 b4 02 00
+ RSP: 0018:ffff888100843ee0 EFLAGS: 00000242
+ RAX: 0000000000000001 RBX: ffff888100812b00 RCX: 4000000000000000
+ RDX: 0000000000000001 RSI: 0000000000000083 RDI: 000000000002d2ec
+ RBP: 0000000000000007 R08: 00000021daeded59 R09: 0000000000000001
+ R10: 0000000000000000 R11: 000000000000000f R12: 0000000000000000
+ R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+  default_idle_call+0x30/0xb0
+  do_idle+0x1c1/0x1d0
+  cpu_startup_entry+0x19/0x20
+  start_secondary+0xfe/0x120
+  secondary_startup_64_no_verify+0xf3/0xfb
+  </TASK>
+ bad: scheduling from the idle thread!
 
-To fix this, put the important resources cleanup in a helper function
-and use it in both normal driver unload and shutdown flows.
-
-[ 4497.498434] ------------[ cut here ]------------
-[ 4497.498726] WARNING: CPU: 0 PID: 9 at kernel/irq/manage.c:2034 free_irq+0x295/0x340
-[ 4497.499193] Modules linked in:
-[ 4497.499386] CPU: 0 PID: 9 Comm: kworker/0:1 Tainted: G        W          6.4.0-rc4+ #10
-[ 4497.499876] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-1.fc38 04/01/2014
-[ 4497.500518] Workqueue: events do_poweroff
-[ 4497.500849] RIP: 0010:free_irq+0x295/0x340
-[ 4497.501132] Code: 85 c0 0f 84 1d ff ff ff 48 89 ef ff d0 0f 1f 00 e9 10 ff ff ff 0f 0b e9 72 ff ff ff 49 8d 7f 28 ff d0 0f 1f 00 e9 df fd ff ff <0f> 0b 48 c7 80 c0 008
-[ 4497.502269] RSP: 0018:ffffc90000053da0 EFLAGS: 00010282
-[ 4497.502589] RAX: ffff888100949600 RBX: ffff88810330b948 RCX: 0000000000000000
-[ 4497.503035] RDX: ffff888100949600 RSI: ffff888100400490 RDI: 0000000000000023
-[ 4497.503472] RBP: ffff88810330c7e0 R08: ffff8881004005d0 R09: ffffffff8273a260
-[ 4497.503923] R10: 0000000000000000 R11: 0000000000000000 R12: ffff8881009ae000
-[ 4497.504359] R13: ffff8881009ae148 R14: 0000000000000000 R15: ffff888100949600
-[ 4497.504804] FS:  0000000000000000(0000) GS:ffff88813bc00000(0000) knlGS:0000000000000000
-[ 4497.505302] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 4497.505671] CR2: 00007fce98806298 CR3: 000000000262e005 CR4: 0000000000370ef0
-[ 4497.506104] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[ 4497.506540] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[ 4497.507002] Call Trace:
-[ 4497.507158]  <TASK>
-[ 4497.507299]  ? free_irq+0x295/0x340
-[ 4497.507522]  ? __warn+0x7c/0x130
-[ 4497.507740]  ? free_irq+0x295/0x340
-[ 4497.507963]  ? report_bug+0x171/0x1a0
-[ 4497.508197]  ? handle_bug+0x3c/0x70
-[ 4497.508417]  ? exc_invalid_op+0x17/0x70
-[ 4497.508662]  ? asm_exc_invalid_op+0x1a/0x20
-[ 4497.508926]  ? free_irq+0x295/0x340
-[ 4497.509146]  mlx5_irq_pool_free_irqs+0x48/0x90
-[ 4497.509421]  mlx5_irq_table_free_irqs+0x38/0x50
-[ 4497.509714]  mlx5_core_eq_free_irqs+0x27/0x40
-[ 4497.509984]  shutdown+0x7b/0x100
-[ 4497.510184]  pci_device_shutdown+0x30/0x60
-[ 4497.510440]  device_shutdown+0x14d/0x240
-[ 4497.510698]  kernel_power_off+0x30/0x70
-[ 4497.510938]  process_one_work+0x1e6/0x3e0
-[ 4497.511183]  worker_thread+0x49/0x3b0
-[ 4497.511407]  ? __pfx_worker_thread+0x10/0x10
-[ 4497.511679]  kthread+0xe0/0x110
-[ 4497.511879]  ? __pfx_kthread+0x10/0x10
-[ 4497.512114]  ret_from_fork+0x29/0x50
-[ 4497.512342]  </TASK>
-
-Fixes: 9c2d08010963 ("net/mlx5: Free irqs only on shutdown callback")
+Fixes: a5b8ca9471d3 ("net/mlx5e: Add XFRM policy offload logic")
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Reviewed-by: Shay Drory <shayd@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/pci_irq.c | 25 ++++++++++++++++---
- 1 file changed, 21 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-index 33b9359de53d..98412bd5a696 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-@@ -126,14 +126,22 @@ int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int function_id,
- 	return ret;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+index 55b38544422f..d1c801723d35 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+@@ -1040,11 +1040,17 @@ static int mlx5e_xfrm_add_policy(struct xfrm_policy *x,
+ 	return err;
  }
  
--static void irq_release(struct mlx5_irq *irq)
-+/* mlx5_system_free_irq - Free an IRQ
-+ * @irq: IRQ to free
-+ *
-+ * Free the IRQ and other resources such as rmap from the system.
-+ * BUT doesn't free or remove reference from mlx5.
-+ * This function is very important for the shutdown flow, where we need to
-+ * cleanup system resoruces but keep mlx5 objects alive,
-+ * see mlx5_irq_table_free_irqs().
-+ */
-+static void mlx5_system_free_irq(struct mlx5_irq *irq)
+-static void mlx5e_xfrm_free_policy(struct xfrm_policy *x)
++static void mlx5e_xfrm_del_policy(struct xfrm_policy *x)
  {
- 	struct mlx5_irq_pool *pool = irq->pool;
- #ifdef CONFIG_RFS_ACCEL
- 	struct cpu_rmap *rmap;
- #endif
+ 	struct mlx5e_ipsec_pol_entry *pol_entry = to_ipsec_pol_entry(x);
  
--	xa_erase(&pool->irqs, irq->pool_index);
- 	/* free_irq requires that affinity_hint and rmap will be cleared before
- 	 * calling it. To satisfy this requirement, we call
- 	 * irq_cpu_rmap_remove() to remove the notifier
-@@ -145,10 +153,18 @@ static void irq_release(struct mlx5_irq *irq)
- 		irq_cpu_rmap_remove(rmap, irq->map.virq);
- #endif
- 
--	free_cpumask_var(irq->mask);
- 	free_irq(irq->map.virq, &irq->nh);
- 	if (irq->map.index && pci_msix_can_alloc_dyn(pool->dev->pdev))
- 		pci_msix_free_irq(pool->dev->pdev, irq->map);
+ 	mlx5e_accel_ipsec_fs_del_pol(pol_entry);
 +}
 +
-+static void irq_release(struct mlx5_irq *irq)
++static void mlx5e_xfrm_free_policy(struct xfrm_policy *x)
 +{
-+	struct mlx5_irq_pool *pool = irq->pool;
++	struct mlx5e_ipsec_pol_entry *pol_entry = to_ipsec_pol_entry(x);
 +
-+	xa_erase(&pool->irqs, irq->pool_index);
-+	mlx5_system_free_irq(irq);
-+	free_cpumask_var(irq->mask);
- 	kfree(irq);
+ 	kfree(pol_entry);
  }
  
-@@ -705,7 +721,8 @@ static void mlx5_irq_pool_free_irqs(struct mlx5_irq_pool *pool)
- 	unsigned long index;
+@@ -1065,6 +1071,7 @@ static const struct xfrmdev_ops mlx5e_ipsec_packet_xfrmdev_ops = {
  
- 	xa_for_each(&pool->irqs, index, irq)
--		free_irq(irq->map.virq, &irq->nh);
-+		mlx5_system_free_irq(irq);
-+
- }
+ 	.xdo_dev_state_update_curlft = mlx5e_xfrm_update_curlft,
+ 	.xdo_dev_policy_add = mlx5e_xfrm_add_policy,
++	.xdo_dev_policy_delete = mlx5e_xfrm_del_policy,
+ 	.xdo_dev_policy_free = mlx5e_xfrm_free_policy,
+ };
  
- static void mlx5_irq_pools_free_irqs(struct mlx5_irq_table *table)
 -- 
 2.40.1
 
