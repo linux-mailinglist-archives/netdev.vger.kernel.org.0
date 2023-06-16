@@ -1,267 +1,191 @@
-Return-Path: <netdev+bounces-11342-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11343-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0E732732AAA
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 10:57:08 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id B7A18732AB1
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 10:57:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2F6F71C20F7F
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 08:57:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 921081C20F6A
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 08:57:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7C9B5F9F4;
-	Fri, 16 Jun 2023 08:52:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6256CC8C3;
+	Fri, 16 Jun 2023 08:57:56 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DFDDD519;
-	Fri, 16 Jun 2023 08:52:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56BDBC433B7;
-	Fri, 16 Jun 2023 08:52:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686905576;
-	bh=SlBOw3U7lsp9qLHlWO7lhIx8iQG/0zpTGMZK7G5/it8=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=hYgQUzoC3B593p/Dgn3+TPdeozzDLlm25AwOJLKar+VYJDrbbr1SdOshPlvaqnZ8s
-	 oK4MqcxpbnUG6MN7D2/qW05fsNi7mGmQ8dkORzT35xnDbj/W36F4FOLgzNY6M4PcNO
-	 R3dJCpZ2E2H3cOtS1aHqXGRpmTKYKqXX++q6sKyIgoNy1Dep39n7ShkhJ3lsnlw8th
-	 aR1/N9N5ytcJ2bDrtfUkFPDUA8Szf79x0wrzFCuYoJoIX5C0i1dhO9TiZnBW1OemBT
-	 RXhSF4tkazIA43z1geCwwCrTDTs/h4A7kL6naX8kmJ5EqzOEA8QYfISw3S41ve05F0
-	 LFf/ib3wO4hbg==
-From: Mike Rapoport <rppt@kernel.org>
-To: linux-kernel@vger.kernel.org
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	"David S. Miller" <davem@davemloft.net>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Helge Deller <deller@gmx.de>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	Kent Overstreet <kent.overstreet@linux.dev>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Mike Rapoport <rppt@kernel.org>,
-	Nadav Amit <nadav.amit@gmail.com>,
-	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Puranjay Mohan <puranjay12@gmail.com>,
-	Rick Edgecombe <rick.p.edgecombe@intel.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Song Liu <song@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Will Deacon <will@kernel.org>,
-	bpf@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mips@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-modules@vger.kernel.org,
-	linux-parisc@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	linux-s390@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	loongarch@lists.linux.dev,
-	netdev@vger.kernel.org,
-	sparclinux@vger.kernel.org,
-	x86@kernel.org
-Subject: [PATCH v2 12/12] kprobes: remove dependcy on CONFIG_MODULES
-Date: Fri, 16 Jun 2023 11:50:38 +0300
-Message-Id: <20230616085038.4121892-13-rppt@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20230616085038.4121892-1-rppt@kernel.org>
-References: <20230616085038.4121892-1-rppt@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5647533ED
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 08:57:56 +0000 (UTC)
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82BCDB3
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 01:57:54 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-56fffdea2d0so7654987b3.1
+        for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 01:57:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1686905873; x=1689497873;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=C6Gvy2z57I02Yc7Rb+mkOaLtZ+86uVuzyz0jZ4G5FIM=;
+        b=22M1Ug9zFupOlTupEo+RLMwFgEmQb5jiScUBB0bL3DH9KtKwQVtuR/qBSV0Xcz4r2n
+         H6ePaHloBQDBrn28xbe1ymzGl4bsxvxnNR/M5pjDFTpnmvcmrwdDlQnX4luO8J+JJ7qT
+         1cXGGyCZgZcE3W2IANAdAUhw9utCXQ35vj1GI4JpqHzPnLmZIbbvL4lxNp/ahYchnXha
+         /cuRdHTso1rkYwtR9V2QAHLd36ZBNqRneonEyCyvRKwCWKO8Ej18bcRDVpClyifjjWfr
+         tlWa0MCpyS2g4pXIF1Bs5wm4xMNQebtwpBoHsSHKLQRy69YRkT2QL4Qzh/eqxbDmxcGo
+         l3Hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686905873; x=1689497873;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=C6Gvy2z57I02Yc7Rb+mkOaLtZ+86uVuzyz0jZ4G5FIM=;
+        b=FMoWGM5CUKKDk5HgpptOTkHZtj1y24tlBwNVJ552bwmmX7wuRANWCbOo9A29kFvwGH
+         8WkHchET2E/uZfgTVekW9ca9sbBoOnihrCC9sujV25cPgL32MdTrF1wuyJ2MTbvZsBb6
+         KJ6q0S+QzqfWHFe844zMbGKyc9Bws5jmaNCSGkgdSzeFv/jrmglDZOfAjL+9v8yPUNVD
+         CHZJRfV3IWmniTpRCZEB+zJv3dzDOGuQybhiHNqb2ZrHg72PCs6Eoc0iyM8w/VoZWNR1
+         dP+G8CnIHJgbgG9wLPV+aH9MqzVrY5UvctazhC8nvpI0zyKPAJ6Al7qWm+F8Jvlczjh1
+         c/5A==
+X-Gm-Message-State: AC+VfDyTiSPjMOA5w1QHIi9uD8vfqJjqnc/FSg58/T0bwDKfvCwymIdI
+	A322VE7JOb6sdIvwW5wNFvnKCUWg2QDqNg==
+X-Google-Smtp-Source: ACHHUZ54mQgQbo2kee6aB3PYVnfzsp2G5eBUGx8TcX/1v7Irc6IpRVOjr7f/9f6SGRsRM+xpatg8zP+2F4io+Q==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a81:a701:0:b0:570:2879:833 with SMTP id
+ e1-20020a81a701000000b0057028790833mr507307ywh.7.1686905873781; Fri, 16 Jun
+ 2023 01:57:53 -0700 (PDT)
+Date: Fri, 16 Jun 2023 08:57:52 +0000
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.41.0.185.g7c58973941-goog
+Message-ID: <20230616085752.3348131-1-edumazet@google.com>
+Subject: [PATCH net-next] ipv6: also use netdev_hold() in ip6_route_check_nh()
+From: Eric Dumazet <edumazet@google.com>
+To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org, eric.dumazet@gmail.com, 
+	Eric Dumazet <edumazet@google.com>, syzbot <syzkaller@googlegroups.com>, 
+	David Ahern <dsahern@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-From: "Mike Rapoport (IBM)" <rppt@kernel.org>
+In blamed commit, we missed the fact that ip6_validate_gw()
+could change dev under us from ip6_route_check_nh()
 
-kprobes depended on CONFIG_MODULES because it has to allocate memory for
-code.
+In this fix, I use GFP_ATOMIC in order to not pass too many additional
+arguments to ip6_validate_gw() and ip6_route_check_nh() only
+for a rarely used debug feature.
 
-Since code allocations are now implemented with execmem, kprobes can be
-enabled in non-modular kernels.
+syzbot reported:
 
-Add #ifdef CONFIG_MODULE guards for the code dealing with kprobes inside
-modules, make CONFIG_KPROBES select CONFIG_EXECMEM and drop the
-dependency of CONFIG_KPROBES on CONFIG_MODULES.
+refcount_t: decrement hit 0; leaking memory.
+WARNING: CPU: 0 PID: 5006 at lib/refcount.c:31 refcount_warn_saturate+0x1d7/0x1f0 lib/refcount.c:31
+Modules linked in:
+CPU: 0 PID: 5006 Comm: syz-executor403 Not tainted 6.4.0-rc5-syzkaller-01229-g97c5209b3d37 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/27/2023
+RIP: 0010:refcount_warn_saturate+0x1d7/0x1f0 lib/refcount.c:31
+Code: 05 fb 8e 51 0a 01 e8 98 95 38 fd 0f 0b e9 d3 fe ff ff e8 ac d9 70 fd 48 c7 c7 00 d3 a6 8a c6 05 d8 8e 51 0a 01 e8 79 95 38 fd <0f> 0b e9 b4 fe ff ff 48 89 ef e8 1a d7 c3 fd e9 5c fe ff ff 0f 1f
+RSP: 0018:ffffc900039df6b8 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff888026d71dc0 RSI: ffffffff814c03b7 RDI: 0000000000000001
+RBP: ffff888146a505fc R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000001 R12: 1ffff9200073bedc
+R13: 00000000ffffffef R14: ffff888146a505fc R15: ffff8880284eb5a8
+FS: 0000555556c88300(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000004585c0 CR3: 000000002b1b1000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+<TASK>
+__refcount_dec include/linux/refcount.h:344 [inline]
+refcount_dec include/linux/refcount.h:359 [inline]
+ref_tracker_free+0x539/0x820 lib/ref_tracker.c:236
+netdev_tracker_free include/linux/netdevice.h:4097 [inline]
+netdev_put include/linux/netdevice.h:4114 [inline]
+netdev_put include/linux/netdevice.h:4110 [inline]
+fib6_nh_init+0xb96/0x1bd0 net/ipv6/route.c:3624
+ip6_route_info_create+0x10f3/0x1980 net/ipv6/route.c:3791
+ip6_route_add+0x28/0x150 net/ipv6/route.c:3835
+ipv6_route_ioctl+0x3fc/0x570 net/ipv6/route.c:4459
+inet6_ioctl+0x246/0x290 net/ipv6/af_inet6.c:569
+sock_do_ioctl+0xcc/0x230 net/socket.c:1189
+sock_ioctl+0x1f8/0x680 net/socket.c:1306
+vfs_ioctl fs/ioctl.c:51 [inline]
+__do_sys_ioctl fs/ioctl.c:870 [inline]
+__se_sys_ioctl fs/ioctl.c:856 [inline]
+__x64_sys_ioctl+0x197/0x210 fs/ioctl.c:856
+do_syscall_x64 arch/x86/entry/common.c:50 [inline]
 
-Signed-off-by: Mike Rapoport (IBM) <rppt@kernel.org>
+Fixes: 70f7457ad6d6 ("net: create device lookup API with reference tracking")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: David Ahern <dsahern@kernel.org>
 ---
- arch/Kconfig                |  2 +-
- kernel/kprobes.c            | 43 +++++++++++++++++++++----------------
- kernel/trace/trace_kprobe.c | 11 ++++++++++
- 3 files changed, 37 insertions(+), 19 deletions(-)
+ net/ipv6/route.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 205fd23e0cad..f2e9f82c7d0d 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -39,9 +39,9 @@ config GENERIC_ENTRY
- 
- config KPROBES
- 	bool "Kprobes"
--	depends on MODULES
- 	depends on HAVE_KPROBES
- 	select KALLSYMS
-+	select EXECMEM
- 	select TASKS_RCU if PREEMPTION
- 	help
- 	  Kprobes allows you to trap at almost any kernel address and
-diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-index 37c928d5deaf..2c2ba29d3f9a 100644
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -1568,6 +1568,7 @@ static int check_kprobe_address_safe(struct kprobe *p,
- 		goto out;
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index e510a4162ef8b8bd7209d8c571a6a1fc465244ab..64e873f5895f1907b813d675a9ea46f5db3f429c 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -3360,6 +3360,7 @@ static int ip6_route_check_nh_onlink(struct net *net,
+ static int ip6_route_check_nh(struct net *net,
+ 			      struct fib6_config *cfg,
+ 			      struct net_device **_dev,
++			      netdevice_tracker *dev_tracker,
+ 			      struct inet6_dev **idev)
+ {
+ 	const struct in6_addr *gw_addr = &cfg->fc_gateway;
+@@ -3404,7 +3405,7 @@ static int ip6_route_check_nh(struct net *net,
+ 			err = -EHOSTUNREACH;
+ 	} else {
+ 		*_dev = dev = res.nh->fib_nh_dev;
+-		dev_hold(dev);
++		netdev_hold(dev, dev_tracker, GFP_ATOMIC);
+ 		*idev = in6_dev_get(dev);
  	}
  
-+#ifdef CONFIG_MODULES
- 	/* Check if 'p' is probing a module. */
- 	*probed_mod = __module_text_address((unsigned long) p->addr);
- 	if (*probed_mod) {
-@@ -1591,6 +1592,8 @@ static int check_kprobe_address_safe(struct kprobe *p,
- 			ret = -ENOENT;
- 		}
+@@ -3412,7 +3413,9 @@ static int ip6_route_check_nh(struct net *net,
+ }
+ 
+ static int ip6_validate_gw(struct net *net, struct fib6_config *cfg,
+-			   struct net_device **_dev, struct inet6_dev **idev,
++			   struct net_device **_dev,
++			   netdevice_tracker *dev_tracker,
++			   struct inet6_dev **idev,
+ 			   struct netlink_ext_ack *extack)
+ {
+ 	const struct in6_addr *gw_addr = &cfg->fc_gateway;
+@@ -3453,7 +3456,8 @@ static int ip6_validate_gw(struct net *net, struct fib6_config *cfg,
+ 		if (cfg->fc_flags & RTNH_F_ONLINK)
+ 			err = ip6_route_check_nh_onlink(net, cfg, dev, extack);
+ 		else
+-			err = ip6_route_check_nh(net, cfg, _dev, idev);
++			err = ip6_route_check_nh(net, cfg, _dev, dev_tracker,
++						 idev);
+ 
+ 		rcu_read_unlock();
+ 
+@@ -3571,7 +3575,8 @@ int fib6_nh_init(struct net *net, struct fib6_nh *fib6_nh,
  	}
-+#endif
-+
- out:
- 	preempt_enable();
- 	jump_label_unlock();
-@@ -2484,24 +2487,6 @@ int kprobe_add_area_blacklist(unsigned long start, unsigned long end)
- 	return 0;
- }
  
--/* Remove all symbols in given area from kprobe blacklist */
--static void kprobe_remove_area_blacklist(unsigned long start, unsigned long end)
--{
--	struct kprobe_blacklist_entry *ent, *n;
--
--	list_for_each_entry_safe(ent, n, &kprobe_blacklist, list) {
--		if (ent->start_addr < start || ent->start_addr >= end)
--			continue;
--		list_del(&ent->list);
--		kfree(ent);
--	}
--}
--
--static void kprobe_remove_ksym_blacklist(unsigned long entry)
--{
--	kprobe_remove_area_blacklist(entry, entry + 1);
--}
--
- int __weak arch_kprobe_get_kallsym(unsigned int *symnum, unsigned long *value,
- 				   char *type, char *sym)
- {
-@@ -2566,6 +2551,25 @@ static int __init populate_kprobe_blacklist(unsigned long *start,
- 	return ret ? : arch_populate_kprobe_blacklist();
- }
+ 	if (cfg->fc_flags & RTF_GATEWAY) {
+-		err = ip6_validate_gw(net, cfg, &dev, &idev, extack);
++		err = ip6_validate_gw(net, cfg, &dev, dev_tracker,
++				      &idev, extack);
+ 		if (err)
+ 			goto out;
  
-+#ifdef CONFIG_MODULES
-+/* Remove all symbols in given area from kprobe blacklist */
-+static void kprobe_remove_area_blacklist(unsigned long start, unsigned long end)
-+{
-+	struct kprobe_blacklist_entry *ent, *n;
-+
-+	list_for_each_entry_safe(ent, n, &kprobe_blacklist, list) {
-+		if (ent->start_addr < start || ent->start_addr >= end)
-+			continue;
-+		list_del(&ent->list);
-+		kfree(ent);
-+	}
-+}
-+
-+static void kprobe_remove_ksym_blacklist(unsigned long entry)
-+{
-+	kprobe_remove_area_blacklist(entry, entry + 1);
-+}
-+
- static void add_module_kprobe_blacklist(struct module *mod)
- {
- 	unsigned long start, end;
-@@ -2667,6 +2671,7 @@ static struct notifier_block kprobe_module_nb = {
- 	.notifier_call = kprobes_module_callback,
- 	.priority = 0
- };
-+#endif
- 
- void kprobe_free_init_mem(void)
- {
-@@ -2726,8 +2731,10 @@ static int __init init_kprobes(void)
- 	err = arch_init_kprobes();
- 	if (!err)
- 		err = register_die_notifier(&kprobe_exceptions_nb);
-+#ifdef CONFIG_MODULES
- 	if (!err)
- 		err = register_module_notifier(&kprobe_module_nb);
-+#endif
- 
- 	kprobes_initialized = (err == 0);
- 	kprobe_sysctls_init();
-diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-index 59cda19a9033..cf804e372554 100644
---- a/kernel/trace/trace_kprobe.c
-+++ b/kernel/trace/trace_kprobe.c
-@@ -111,6 +111,7 @@ static nokprobe_inline bool trace_kprobe_within_module(struct trace_kprobe *tk,
- 	return strncmp(module_name(mod), name, len) == 0 && name[len] == ':';
- }
- 
-+#ifdef CONFIG_MODULES
- static nokprobe_inline bool trace_kprobe_module_exist(struct trace_kprobe *tk)
- {
- 	char *p;
-@@ -129,6 +130,12 @@ static nokprobe_inline bool trace_kprobe_module_exist(struct trace_kprobe *tk)
- 
- 	return ret;
- }
-+#else
-+static inline bool trace_kprobe_module_exist(struct trace_kprobe *tk)
-+{
-+	return false;
-+}
-+#endif
- 
- static bool trace_kprobe_is_busy(struct dyn_event *ev)
- {
-@@ -670,6 +677,7 @@ static int register_trace_kprobe(struct trace_kprobe *tk)
- 	return ret;
- }
- 
-+#ifdef CONFIG_MODULES
- /* Module notifier call back, checking event on the module */
- static int trace_kprobe_module_callback(struct notifier_block *nb,
- 				       unsigned long val, void *data)
-@@ -704,6 +712,7 @@ static struct notifier_block trace_kprobe_module_nb = {
- 	.notifier_call = trace_kprobe_module_callback,
- 	.priority = 1	/* Invoked after kprobe module callback */
- };
-+#endif
- 
- static int __trace_kprobe_create(int argc, const char *argv[])
- {
-@@ -1797,8 +1806,10 @@ static __init int init_kprobe_trace_early(void)
- 	if (ret)
- 		return ret;
- 
-+#ifdef CONFIG_MODULES
- 	if (register_module_notifier(&trace_kprobe_module_nb))
- 		return -EINVAL;
-+#endif
- 
- 	return 0;
- }
 -- 
-2.35.1
+2.41.0.185.g7c58973941-goog
 
 
