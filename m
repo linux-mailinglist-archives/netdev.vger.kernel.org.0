@@ -1,110 +1,92 @@
-Return-Path: <netdev+bounces-11565-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11556-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 39D7E733A0F
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 21:39:29 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3869A7339B3
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 21:21:47 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D227E28185B
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 19:39:27 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5D3ED1C20ACA
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 19:21:46 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CC2B71ED22;
-	Fri, 16 Jun 2023 19:39:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0CAC01DDDB;
+	Fri, 16 Jun 2023 19:21:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C12911B914
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 19:39:24 +0000 (UTC)
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84D8119
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 12:39:19 -0700 (PDT)
-Received: from dude02.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::28])
-	by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-	(envelope-from <l.stach@pengutronix.de>)
-	id 1qAExt-0000WQ-I6; Fri, 16 Jun 2023 21:18:33 +0200
-From: Lucas Stach <l.stach@pengutronix.de>
-To: "David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Wei Fang <wei.fang@nxp.com>,
-	Shenwei Wang <shenwei.wang@nxp.com>,
-	Clark Wang <xiaoning.wang@nxp.com>,
-	NXP Linux Team <linux-imx@nxp.com>
-Cc: Andrew Lunn <andrew@lunn.ch>,
-	netdev@vger.kernel.org,
-	kernel@pengutronix.de,
-	patchwork-lst@pengutronix.de
-Subject: [PATCH] net: fec: allow to build without PAGE_POOL_STATS
-Date: Fri, 16 Jun 2023 21:18:32 +0200
-Message-Id: <20230616191832.2944130-1-l.stach@pengutronix.de>
-X-Mailer: git-send-email 2.39.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7FE11B914
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 19:21:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D73FC433C0;
+	Fri, 16 Jun 2023 19:21:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686943302;
+	bh=hUURytXlMcDfitAbduozrB5DyB72nWHC+HvK485KkJY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Ad6swJdWo1IwISr5c/t9icf18UMj2lCExyhlgLv+O+KgaYu/qZg8ZZ19ks7CRln5E
+	 th4SmFbPGuTwMIGWdBPmtnkEM1h2OX6Nib1afv4AR2f2DybEiJNrBhoHPj7vetKS+D
+	 RcEols5/yqQmNho1ySddtpAimBACwAUt7LSdNXjRvv3zf2+ztH5QxDP7FrFynityCd
+	 WEcYDgO2xfbntUyjU4vDS/KZxH/Y5WpDdFnzn7ZNIBTuOYk7HBxSz12lldH6KT9VV4
+	 FIMWxf5Rxd7oFaVbCxDughxs/4yROiz12DdTIU7tVLWKYHhXtEt8eESRjH8vAEURe4
+	 nw+TGWsF+9gZg==
+Date: Fri, 16 Jun 2023 12:21:40 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>, Yunsheng Lin
+ <linyunsheng@huawei.com>, brouer@redhat.com, davem@davemloft.net,
+ pabeni@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Lorenzo Bianconi <lorenzo@kernel.org>, Yisen Zhuang
+ <yisen.zhuang@huawei.com>, Salil Mehta <salil.mehta@huawei.com>, Eric
+ Dumazet <edumazet@google.com>, Sunil Goutham <sgoutham@marvell.com>, Geetha
+ sowjanya <gakula@marvell.com>, Subbaraya Sundeep <sbhatta@marvell.com>,
+ hariprasad <hkelam@marvell.com>, Saeed Mahameed <saeedm@nvidia.com>, Leon
+ Romanovsky <leon@kernel.org>, Felix Fietkau <nbd@nbd.name>, Ryder Lee
+ <ryder.lee@mediatek.com>, Shayne Chen <shayne.chen@mediatek.com>, Sean Wang
+ <sean.wang@mediatek.com>, Kalle Valo <kvalo@kernel.org>, Matthias Brugger
+ <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>, Jesper Dangaard Brouer
+ <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+ linux-rdma@vger.kernel.org, linux-wireless@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net-next v4 4/5] page_pool: remove PP_FLAG_PAGE_FRAG
+ flag
+Message-ID: <20230616122140.6e889357@kernel.org>
+In-Reply-To: <72ccf224-7b45-76c5-5ca9-83e25112c9c6@redhat.com>
+References: <20230612130256.4572-1-linyunsheng@huawei.com>
+	<20230612130256.4572-5-linyunsheng@huawei.com>
+	<20230614101954.30112d6e@kernel.org>
+	<8c544cd9-00a3-2f17-bd04-13ca99136750@huawei.com>
+	<20230615095100.35c5eb10@kernel.org>
+	<CAKgT0Uc6Xoyh3Edgt+83b+HTM5j4JDr3fuxcyL9qDk+Wwt9APg@mail.gmail.com>
+	<908b8b17-f942-f909-61e6-276df52a5ad5@huawei.com>
+	<CAKgT0UeZfbxDYaeUntrQpxHmwCh6zy0dEpjxghiCNxPxv=kdoQ@mail.gmail.com>
+	<72ccf224-7b45-76c5-5ca9-83e25112c9c6@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:1101:1d::28
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Commit 6970ef27ff7f ("net: fec: add xdp and page pool statistics") selected
-CONFIG_PAGE_POOL_STATS from the FEC driver symbol, making it impossible
-to build without the page pool statistics when this driver is enabled. The
-help text of those statistics mentions increased overhead. Allow the user
-to choose between usefulness of the statistics and the added overhead.
+On Fri, 16 Jun 2023 20:59:12 +0200 Jesper Dangaard Brouer wrote:
+> +       if (mem_type == MEM_TYPE_PP_NETMEM)
+> +               pp_netmem_put_page(pp, page, allow_direct);
+> +       else
+> +               page_pool_put_full_page(pp, page, allow_direct);
 
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
----
- drivers/net/ethernet/freescale/Kconfig    | 2 +-
- drivers/net/ethernet/freescale/fec_main.c | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+Interesting, what is the netmem type? I was thinking about extending
+page pool for other mem providers and what came to mind was either
+optionally replacing the free / alloc with a function pointer:
 
-diff --git a/drivers/net/ethernet/freescale/Kconfig b/drivers/net/ethernet/freescale/Kconfig
-index 1c78f66a89da..75401d2a5fb4 100644
---- a/drivers/net/ethernet/freescale/Kconfig
-+++ b/drivers/net/ethernet/freescale/Kconfig
-@@ -29,7 +29,7 @@ config FEC
- 	select CRC32
- 	select PHYLIB
- 	select PAGE_POOL
--	select PAGE_POOL_STATS
-+	imply PAGE_POOL_STATS
- 	imply NET_SELFTESTS
- 	help
- 	  Say Y here if you want to use the built-in 10/100 Fast ethernet
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 38e5b5abe067..be1308295b11 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -2810,6 +2810,7 @@ static void fec_enet_get_xdp_stats(struct fec_enet_private *fep, u64 *data)
- 
- static void fec_enet_page_pool_stats(struct fec_enet_private *fep, u64 *data)
- {
-+#ifdef CONFIG_PAGE_POOL_STATS
- 	struct page_pool_stats stats = {};
- 	struct fec_enet_priv_rx_q *rxq;
- 	int i;
-@@ -2824,6 +2825,7 @@ static void fec_enet_page_pool_stats(struct fec_enet_private *fep, u64 *data)
- 	}
- 
- 	page_pool_ethtool_stats_get(data, &stats);
-+#endif
- }
- 
- static void fec_enet_get_ethtool_stats(struct net_device *dev,
--- 
-2.40.1
+https://github.com/torvalds/linux/commit/578ebda5607781c0abb26c1feae7ec8b83840768
 
+or wrapping the PP calls with static inlines which can direct to 
+a different implementation completely (like zctap / io_uring zc).
+
+Former is better for huge pages, latter is better for IO mem
+(peer-to-peer DMA). I wonder if you have different use case which
+requires a different model :(
 
