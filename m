@@ -1,48 +1,49 @@
-Return-Path: <netdev+bounces-11492-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11493-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 478F7733580
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 18:13:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id B327B733583
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 18:13:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 6BB101C20FFF
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 16:13:18 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 956661C21013
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 16:13:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EA5EC19E71;
-	Fri, 16 Jun 2023 16:13:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8C37F1ACB2;
+	Fri, 16 Jun 2023 16:13:17 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8B6FDF46
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 16:13:15 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF96C3599
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 09:13:11 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BAB41ACB1
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 16:13:17 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A156E2D5D
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 09:13:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686931991;
+	s=mimecast20190719; t=1686931994;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=Z2hiIJWWV5k6rUHCpMdQv306cbGjtBmeoz925pg2HOI=;
-	b=DhOaTgx2wF+/9lN7simVdfVLYB+zo77p06gu+3TAOl3O5gVjHjRK9AlFemTh6cs4N57TF2
-	5ABXgEQhXkEaDZB99whFTcmYQ5KzcsWFw1do4Ray81YmFFUeRVcxtm8lygktzP1oL7U4R3
-	9T/DcX5HiEUGn/4b2HbpY+O0dM6lRF4=
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=QLiOARcSP/G9NfcLRlp5hvrHkmLQeF8H+vWuq3j9CzM=;
+	b=XBMHL/bmK3JPbKUakPdgxOnH1nr1HOI6hw6L3O1Rdb20IwZNDb/2Xv2Ek2TWTiB7Sqvxxs
+	fq/6PTsZCYh9+a6Z0MRySNWpdH8pTlfHD1ALQyQFWl/Uo7cH3CvwE2gG0asadYqFepBdtn
+	84qIjY8tJnOuMi5s0cLYZOjwuZywDWU=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-320-lGcfS0rwM_uEY1BGCce18w-1; Fri, 16 Jun 2023 12:13:09 -0400
-X-MC-Unique: lGcfS0rwM_uEY1BGCce18w-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+ us-mta-463-UkTLdvphMoig0DrcTgcXEg-1; Fri, 16 Jun 2023 12:13:10 -0400
+X-MC-Unique: UkTLdvphMoig0DrcTgcXEg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 29C55101A52C;
-	Fri, 16 Jun 2023 16:13:07 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id ECA63185A78B;
+	Fri, 16 Jun 2023 16:13:09 +0000 (UTC)
 Received: from warthog.procyon.org.com (unknown [10.42.28.51])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id A51BB40CF8F6;
-	Fri, 16 Jun 2023 16:13:05 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id D38ED2026D49;
+	Fri, 16 Jun 2023 16:13:07 +0000 (UTC)
 From: David Howells <dhowells@redhat.com>
 To: netdev@vger.kernel.org
 Cc: David Howells <dhowells@redhat.com>,
@@ -56,185 +57,280 @@ Cc: David Howells <dhowells@redhat.com>,
 	Matthew Wilcox <willy@infradead.org>,
 	Jens Axboe <axboe@kernel.dk>,
 	linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 00/17] splice, net: Switch over users of sendpage() and remove it
-Date: Fri, 16 Jun 2023 17:12:43 +0100
-Message-ID: <20230616161301.622169-1-dhowells@redhat.com>
+	linux-kernel@vger.kernel.org,
+	Menglong Dong <imagedong@tencent.com>
+Subject: [PATCH net-next 01/17] net: Copy slab data for sendmsg(MSG_SPLICE_PAGES)
+Date: Fri, 16 Jun 2023 17:12:44 +0100
+Message-ID: <20230616161301.622169-2-dhowells@redhat.com>
+In-Reply-To: <20230616161301.622169-1-dhowells@redhat.com>
+References: <20230616161301.622169-1-dhowells@redhat.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Here's the final set of patches towards the removal of sendpage.  All the
-drivers that use sendpage() get switched over to using sendmsg() with
-MSG_SPLICE_PAGES.
+If sendmsg() is passed MSG_SPLICE_PAGES and is given a buffer that contains
+some data that's resident in the slab, copy it rather than returning EIO.
+This can be made use of by a number of drivers in the kernel, including:
+iwarp, ceph/rds, dlm, nvme, ocfs2, drdb.  It could also be used by iscsi,
+rxrpc, sunrpc, cifs and probably others.
 
-skb_splice_from_iter() is given the facility to copy slab data() into
-fragments - or to coalesce them (in future) with other unspliced buffers in
-the target skbuff.  This means that the caller can work the same way, no
-matter whether MSG_SPLICE_PAGES is supplied or not and no matter if the
-protocol just ignores it.  If MSG_SPLICE_PAGES is not supplied or if it is
-just ignored, the data will get copied as normal rather than being spliced.
+skb_splice_from_iter() is given it's own fragment allocator as
+page_frag_alloc_align() can't be used because it does no locking to prevent
+parallel callers from racing.  alloc_skb_frag() uses a separate folio for
+each cpu and locks to the cpu whilst allocating, reenabling cpu migration
+around folio allocation.
 
-For the moment, skb_splice_from_iter() is equipped with its own fragment
-allocator - one that has percpu pages to allocate from to deal with
-parallel callers but that can also drop the percpu lock around calling the
-page allocator.
+This could allocate a whole page instead for each fragment to be copied, as
+alloc_skb_with_frags() would do instead, but that would waste a lot of
+space (most of the fragments look like they're going to be small).
 
-The following changes are made:
+This allows an entire message that consists of, say, a protocol header or
+two, a number of pages of data and a protocol footer to be sent using a
+single call to sock_sendmsg().
 
- (1) Introduce an SMP-safe shared fragment allocator and make
-     skb_splice_from_iter() use it.  The allocator is exported so that
-     ocfs2 can use it.
+The callers could be made to copy the data into fragments before calling
+sendmsg(), but that then penalises them if MSG_SPLICE_PAGES gets ignored.
 
-     This now doesn't alter the existing page_frag_cache allocator.
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Alexander Duyck <alexander.duyck@gmail.com>
+cc: Eric Dumazet <edumazet@google.com>
+cc: "David S. Miller" <davem@davemloft.net>
+cc: David Ahern <dsahern@kernel.org>
+cc: Jakub Kicinski <kuba@kernel.org>
+cc: Paolo Abeni <pabeni@redhat.com>
+cc: Jens Axboe <axboe@kernel.dk>
+cc: Matthew Wilcox <willy@infradead.org>
+cc: Menglong Dong <imagedong@tencent.com>
+cc: netdev@vger.kernel.org
+---
+ include/linux/skbuff.h |   5 ++
+ net/core/skbuff.c      | 172 ++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 174 insertions(+), 3 deletions(-)
 
- (2) Expose information from the allocator in /proc/.  This is useful for
-     debugging it, but could be dropped.
-
- (3) Make the protocol drivers behave according to MSG_MORE, not
-     MSG_SENDPAGE_NOTLAST.  The latter is restricted to turning on MSG_MORE
-     in the sendpage() wrappers.
-
- (4) Make siw, ceph/rds, skb_send_sock, dlm, nvme, smc, ocfs2, drbd and
-     iscsi use sendmsg(), not sendpage and make them specify MSG_MORE
-     instead of MSG_SENDPAGE_NOTLAST.
-
-     ocfs2 now allocates fragments for a couple of cases where it would
-     otherwise pass in a pointer to shared data that doesn't seem to
-     sufficient locking.
-
- (5) Make drbd coalesce its entire message into a single sendmsg().
-
- (6) Kill off sendpage and clean up MSG_SENDPAGE_NOTLAST.
-
-I've pushed the patches here also:
-
-	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=sendpage-3-frag
-
-David
-
-Link: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=51c78a4d532efe9543a4df019ff405f05c6157f6 # part 1
-
-David Howells (17):
-  net: Copy slab data for sendmsg(MSG_SPLICE_PAGES)
-  net: Display info about MSG_SPLICE_PAGES memory handling in proc
-  tcp_bpf, smc, tls, espintcp: Reduce MSG_SENDPAGE_NOTLAST usage
-  siw: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage to transmit
-  ceph: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage
-  net: Use sendmsg(MSG_SPLICE_PAGES) not sendpage in skb_send_sock()
-  ceph: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage()
-  rds: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage
-  dlm: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage
-  nvme: Use sendmsg(MSG_SPLICE_PAGES) rather then sendpage
-  smc: Drop smc_sendpage() in favour of smc_sendmsg() + MSG_SPLICE_PAGES
-  ocfs2: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage()
-  drbd: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage()
-  drdb: Send an entire bio in a single sendmsg
-  iscsi: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage
-  sock: Remove ->sendpage*() in favour of sendmsg(MSG_SPLICE_PAGES)
-  net: Kill MSG_SENDPAGE_NOTLAST
-
- Documentation/bpf/map_sockmap.rst             |  10 +-
- Documentation/filesystems/locking.rst         |   2 -
- Documentation/filesystems/vfs.rst             |   1 -
- Documentation/networking/scaling.rst          |   4 +-
- crypto/af_alg.c                               |  28 --
- crypto/algif_aead.c                           |  22 +-
- crypto/algif_rng.c                            |   2 -
- crypto/algif_skcipher.c                       |  14 -
- drivers/block/drbd/drbd_main.c                |  86 ++----
- drivers/infiniband/sw/siw/siw_qp_tx.c         | 230 +++-------------
- .../chelsio/inline_crypto/chtls/chtls.h       |   2 -
- .../chelsio/inline_crypto/chtls/chtls_io.c    |  14 -
- .../chelsio/inline_crypto/chtls/chtls_main.c  |   1 -
- drivers/nvme/host/tcp.c                       |  44 +--
- drivers/nvme/target/tcp.c                     |  46 ++--
- drivers/scsi/iscsi_tcp.c                      |  26 +-
- drivers/scsi/iscsi_tcp.h                      |   2 +-
- drivers/target/iscsi/iscsi_target_util.c      |  14 +-
- fs/dlm/lowcomms.c                             |  10 +-
- fs/nfsd/vfs.c                                 |   2 +-
- fs/ocfs2/cluster/tcp.c                        | 107 ++++----
- include/crypto/if_alg.h                       |   2 -
- include/linux/net.h                           |   8 -
- include/linux/skbuff.h                        |   5 +
- include/linux/socket.h                        |   4 +-
- include/net/inet_common.h                     |   2 -
- include/net/sock.h                            |   6 -
- include/net/tcp.h                             |   4 -
- net/appletalk/ddp.c                           |   1 -
- net/atm/pvc.c                                 |   1 -
- net/atm/svc.c                                 |   1 -
- net/ax25/af_ax25.c                            |   1 -
- net/caif/caif_socket.c                        |   2 -
- net/can/bcm.c                                 |   1 -
- net/can/isotp.c                               |   1 -
- net/can/j1939/socket.c                        |   1 -
- net/can/raw.c                                 |   1 -
- net/ceph/messenger_v1.c                       |  58 ++--
- net/ceph/messenger_v2.c                       |  91 ++-----
- net/core/skbuff.c                             | 257 ++++++++++++++++--
- net/core/sock.c                               |  35 +--
- net/dccp/ipv4.c                               |   1 -
- net/dccp/ipv6.c                               |   1 -
- net/ieee802154/socket.c                       |   2 -
- net/ipv4/af_inet.c                            |  21 --
- net/ipv4/tcp.c                                |  43 +--
- net/ipv4/tcp_bpf.c                            |  30 +-
- net/ipv4/tcp_ipv4.c                           |   1 -
- net/ipv4/udp.c                                |  15 -
- net/ipv4/udp_impl.h                           |   2 -
- net/ipv4/udplite.c                            |   1 -
- net/ipv6/af_inet6.c                           |   3 -
- net/ipv6/raw.c                                |   1 -
- net/ipv6/tcp_ipv6.c                           |   1 -
- net/kcm/kcmsock.c                             |  20 --
- net/key/af_key.c                              |   1 -
- net/l2tp/l2tp_ip.c                            |   1 -
- net/l2tp/l2tp_ip6.c                           |   1 -
- net/llc/af_llc.c                              |   1 -
- net/mctp/af_mctp.c                            |   1 -
- net/mptcp/protocol.c                          |   2 -
- net/netlink/af_netlink.c                      |   1 -
- net/netrom/af_netrom.c                        |   1 -
- net/packet/af_packet.c                        |   2 -
- net/phonet/socket.c                           |   2 -
- net/qrtr/af_qrtr.c                            |   1 -
- net/rds/af_rds.c                              |   1 -
- net/rds/tcp_send.c                            |  74 ++---
- net/rose/af_rose.c                            |   1 -
- net/rxrpc/af_rxrpc.c                          |   1 -
- net/sctp/protocol.c                           |   1 -
- net/smc/af_smc.c                              |  29 --
- net/smc/smc_stats.c                           |   2 +-
- net/smc/smc_stats.h                           |   1 -
- net/smc/smc_tx.c                              |  20 +-
- net/smc/smc_tx.h                              |   2 -
- net/socket.c                                  |  48 ----
- net/tipc/socket.c                             |   3 -
- net/tls/tls.h                                 |   6 -
- net/tls/tls_device.c                          |  24 +-
- net/tls/tls_main.c                            |   9 +-
- net/tls/tls_sw.c                              |  37 +--
- net/unix/af_unix.c                            |  19 --
- net/vmw_vsock/af_vsock.c                      |   3 -
- net/x25/af_x25.c                              |   1 -
- net/xdp/xsk.c                                 |   1 -
- net/xfrm/espintcp.c                           |  10 +-
- .../perf/trace/beauty/include/linux/socket.h  |   1 -
- tools/perf/trace/beauty/msg_flags.c           |   3 -
- 89 files changed, 539 insertions(+), 1063 deletions(-)
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 91ed66952580..0ba776cd9be8 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -5037,6 +5037,11 @@ static inline void skb_mark_for_recycle(struct sk_buff *skb)
+ #endif
+ }
+ 
++void *alloc_skb_frag(size_t fragsz, gfp_t gfp);
++void *copy_skb_frag(const void *s, size_t len, gfp_t gfp);
++ssize_t skb_splice_from_iter(struct sk_buff *skb, struct iov_iter *iter,
++			     ssize_t maxsize, gfp_t gfp);
++
+ ssize_t skb_splice_from_iter(struct sk_buff *skb, struct iov_iter *iter,
+ 			     ssize_t maxsize, gfp_t gfp);
+ 
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index fee2b1c105fe..9bd8d6bf6c21 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -6755,6 +6755,146 @@ nodefer:	__kfree_skb(skb);
+ 		smp_call_function_single_async(cpu, &sd->defer_csd);
+ }
+ 
++struct skb_splice_frag_cache {
++	struct folio	*folio;
++	void		*virt;
++	unsigned int	offset;
++	/* we maintain a pagecount bias, so that we dont dirty cache line
++	 * containing page->_refcount every time we allocate a fragment.
++	 */
++	unsigned int	pagecnt_bias;
++	bool		pfmemalloc;
++};
++
++static DEFINE_PER_CPU(struct skb_splice_frag_cache, skb_splice_frag_cache);
++
++/**
++ * alloc_skb_frag - Allocate a page fragment for using in a socket
++ * @fragsz: The size of fragment required
++ * @gfp: Allocation flags
++ */
++void *alloc_skb_frag(size_t fragsz, gfp_t gfp)
++{
++	struct skb_splice_frag_cache *cache;
++	struct folio *folio, *spare = NULL;
++	size_t offset, fsize;
++	void *p;
++
++	if (WARN_ON_ONCE(fragsz == 0))
++		fragsz = 1;
++
++	cache = get_cpu_ptr(&skb_splice_frag_cache);
++reload:
++	folio = cache->folio;
++	offset = cache->offset;
++try_again:
++	if (fragsz > offset)
++		goto insufficient_space;
++
++	/* Make the allocation. */
++	cache->pagecnt_bias--;
++	offset = ALIGN_DOWN(offset - fragsz, SMP_CACHE_BYTES);
++	cache->offset = offset;
++	p = cache->virt + offset;
++	put_cpu_ptr(skb_splice_frag_cache);
++	if (spare)
++		folio_put(spare);
++	return p;
++
++insufficient_space:
++	/* See if we can refurbish the current folio. */
++	if (!folio || !folio_ref_sub_and_test(folio, cache->pagecnt_bias))
++		goto get_new_folio;
++	if (unlikely(cache->pfmemalloc)) {
++		__folio_put(folio);
++		goto get_new_folio;
++	}
++
++	fsize = folio_size(folio);
++	if (unlikely(fragsz > fsize))
++		goto frag_too_big;
++
++	/* OK, page count is 0, we can safely set it */
++	folio_set_count(folio, PAGE_FRAG_CACHE_MAX_SIZE + 1);
++
++	/* Reset page count bias and offset to start of new frag */
++	cache->pagecnt_bias = PAGE_FRAG_CACHE_MAX_SIZE + 1;
++	offset = fsize;
++	goto try_again;
++
++get_new_folio:
++	if (!spare) {
++		cache->folio = NULL;
++		put_cpu_ptr(&skb_splice_frag_cache);
++
++#if PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE
++		spare = folio_alloc(gfp | __GFP_NOWARN | __GFP_NORETRY |
++				    __GFP_NOMEMALLOC,
++				    PAGE_FRAG_CACHE_MAX_ORDER);
++		if (!spare)
++#endif
++			spare = folio_alloc(gfp, 0);
++		if (!spare)
++			return NULL;
++
++		cache = get_cpu_ptr(&skb_splice_frag_cache);
++		/* We may now be on a different cpu and/or someone else may
++		 * have refilled it
++		 */
++		cache->pfmemalloc = folio_is_pfmemalloc(spare);
++		if (cache->folio)
++			goto reload;
++	}
++
++	cache->folio = spare;
++	cache->virt  = folio_address(spare);
++	folio = spare;
++	spare = NULL;
++
++	/* Even if we own the page, we do not use atomic_set().  This would
++	 * break get_page_unless_zero() users.
++	 */
++	folio_ref_add(folio, PAGE_FRAG_CACHE_MAX_SIZE);
++
++	/* Reset page count bias and offset to start of new frag */
++	cache->pagecnt_bias = PAGE_FRAG_CACHE_MAX_SIZE + 1;
++	offset = folio_size(folio);
++	goto try_again;
++
++frag_too_big:
++	/*
++	 * The caller is trying to allocate a fragment with fragsz > PAGE_SIZE
++	 * but the cache isn't big enough to satisfy the request, this may
++	 * happen in low memory conditions.  We don't release the cache page
++	 * because it could make memory pressure worse so we simply return NULL
++	 * here.
++	 */
++	cache->offset = offset;
++	put_cpu_ptr(&skb_splice_frag_cache);
++	if (spare)
++		folio_put(spare);
++	return NULL;
++}
++EXPORT_SYMBOL(alloc_skb_frag);
++
++/**
++ * copy_skb_frag - Copy data into a page fragment.
++ * @s: The data to copy
++ * @len: The size of the data
++ * @gfp: Allocation flags
++ */
++void *copy_skb_frag(const void *s, size_t len, gfp_t gfp)
++{
++	void *p;
++
++	p = alloc_skb_frag(len, gfp);
++	if (!p)
++		return NULL;
++
++	return memcpy(p, s, len);
++}
++EXPORT_SYMBOL(copy_skb_frag);
++
+ static void skb_splice_csum_page(struct sk_buff *skb, struct page *page,
+ 				 size_t offset, size_t len)
+ {
+@@ -6808,17 +6948,43 @@ ssize_t skb_splice_from_iter(struct sk_buff *skb, struct iov_iter *iter,
+ 			break;
+ 		}
+ 
++		if (space == 0 &&
++		    !skb_can_coalesce(skb, skb_shinfo(skb)->nr_frags,
++				      pages[0], off)) {
++			iov_iter_revert(iter, len);
++			break;
++		}
++
+ 		i = 0;
+ 		do {
+ 			struct page *page = pages[i++];
+ 			size_t part = min_t(size_t, PAGE_SIZE - off, len);
+-
+-			ret = -EIO;
+-			if (WARN_ON_ONCE(!sendpage_ok(page)))
++			bool put = false;
++
++			if (PageSlab(page)) {
++				const void *p;
++				void *q;
++
++				p = kmap_local_page(page);
++				q = copy_skb_frag(p + off, part, gfp);
++				kunmap_local(p);
++				if (!q) {
++					iov_iter_revert(iter, len);
++					ret = -ENOMEM;
++					goto out;
++				}
++				page = virt_to_page(q);
++				off = offset_in_page(q);
++				put = true;
++			} else if (WARN_ON_ONCE(!sendpage_ok(page))) {
++				ret = -EIO;
+ 				goto out;
++			}
+ 
+ 			ret = skb_append_pagefrags(skb, page, off, part,
+ 						   frag_limit);
++			if (put)
++				put_page(page);
+ 			if (ret < 0) {
+ 				iov_iter_revert(iter, len);
+ 				goto out;
 
 
