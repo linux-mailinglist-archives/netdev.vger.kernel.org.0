@@ -1,91 +1,84 @@
-Return-Path: <netdev+bounces-11481-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11482-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2D71473345A
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 17:09:50 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0423B7334C9
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 17:29:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CA7CC2817A7
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 15:09:48 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 261072817DA
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 15:29:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A48AD1775C;
-	Fri, 16 Jun 2023 15:09:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63CF918B0F;
+	Fri, 16 Jun 2023 15:29:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98D9079E5
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 15:09:46 +0000 (UTC)
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5B93ABA
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 08:09:30 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-77a0fd9d2eeso65471939f.0
-        for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 08:09:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686928169; x=1689520169;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Imb23EaY07Gm7MJa4Np4kGVuIs1+xNQBFZQNfFls+gM=;
-        b=GofT4vwnF+t5Uw9pgN2cX2BjEbF8BV4FBoX1Bdj4cW6dLhWCtzpHAu2hQMKztB/eIG
-         eM+qAJvfM5gMCWzLHrUwPB6w+73vgDWYXn9y7VmKoMdTlFcWnAM0Tje/HMXcOBIGs4ON
-         9RUAhOO6oEsdeTdrUnaADdg+eNRS6S/5SH6lWgSxrio81Q32jeDmDXq9jAAvo99GALfV
-         smAuMm1SZEQQcJIk2oVSUb12Uu/RrPjmDp2FXn1YzQC2A/c7yJnTC4CkPVfa1DtTXyub
-         EB7l/iRLEcHFCY0CqtaO1uZX5AWF+mxj5Vt8sksLhRAwOhrVAAcYERilzGjhWmOI3hf2
-         jvtQ==
-X-Gm-Message-State: AC+VfDy5tuN3HJxVXA/Kfu4X9nEwwQwqGm/4Vrx44JGqRxGBRp7eRG4a
-	lHqNPXOKsGL5aTWn6PFUl7AR9x4RAATh4KBcpvVSp70FMqSx
-X-Google-Smtp-Source: ACHHUZ74+dXyvXDTGc+FFJWwCq4aB7E4QHdfr+P5b8tR/ce1Zt3HbjyX4nIZUMIKXW6jGatIamaZTBC88weu2rXjtpNJxD+nybqE
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24010A92E
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 15:29:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F062C433C8;
+	Fri, 16 Jun 2023 15:29:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686929372;
+	bh=uHw14CfDgFm3qF/lgfQPttPTHtaxTk+P7o41vYD1ukA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=k9qll1hWMhgOSBLmYNjwhB2Ub/qewRLy57iEOm4B9BkDJW8lyCnUgbkDQjBcnLd8s
+	 7SnRSRjpb3xw41XxL1c7Zdv0CPs4DxpMvMQlg/waSEJOLPxXvW+6zzSEH3k364hBbR
+	 9RdCdy3P7Od0pqFToZk64/v1PFVtSx5AWmoGG69wf9dGwMXcYY5Ek8qL+ljs9li4Hg
+	 hkEyTDGMW9Sd5dOUztdPPYv1UwtP/8YcklwrJELht7j5SqoJe3JLiOIlAeYq7uePov
+	 PgeZIdo26/4FtB9LiyKyV1KyI4ojyVaN4beLOivZajQJUwpVUEpvcL9zAAGxAq/tx3
+	 Vc2IuLXyo74Jg==
+Date: Fri, 16 Jun 2023 08:29:31 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
+Cc: "patchwork-bot+netdevbpf@kernel.org"
+ <patchwork-bot+netdevbpf@kernel.org>, "Gardocki, PiotrX"
+ <piotrx.gardocki@intel.com>, "netdev@vger.kernel.org"
+ <netdev@vger.kernel.org>, "intel-wired-lan@lists.osuosl.org"
+ <intel-wired-lan@lists.osuosl.org>, "Kitszel, Przemyslaw"
+ <przemyslaw.kitszel@intel.com>, "michal.swiatkowski@linux.intel.com"
+ <michal.swiatkowski@linux.intel.com>, "pmenzel@molgen.mpg.de"
+ <pmenzel@molgen.mpg.de>, "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+ "simon.horman@corigine.com" <simon.horman@corigine.com>, "Lobakin,
+ Aleksander" <aleksander.lobakin@intel.com>
+Subject: Re: [PATCH net-next v3 0/3] optimize procedure of changing MAC
+ address on interface
+Message-ID: <20230616082931.4d265f51@kernel.org>
+In-Reply-To: <DM4PR11MB6117E6A199A2CEF4694A6E0C8258A@DM4PR11MB6117.namprd11.prod.outlook.com>
+References: <20230614145302.902301-1-piotrx.gardocki@intel.com>
+	<168689522302.30897.3895006000334449942.git-patchwork-notify@kernel.org>
+	<DM4PR11MB6117E6A199A2CEF4694A6E0C8258A@DM4PR11MB6117.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a02:a119:0:b0:423:13e1:8092 with SMTP id
- f25-20020a02a119000000b0042313e18092mr696867jag.5.1686928169697; Fri, 16 Jun
- 2023 08:09:29 -0700 (PDT)
-Date: Fri, 16 Jun 2023 08:09:29 -0700
-In-Reply-To: <00000000000098289005dc17b71b@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000051087405fe4092cc@google.com>
-Subject: Re: [syzbot] [bluetooth?] possible deadlock in sco_conn_del
-From: syzbot <syzbot+b825d87fe2d043e3e652@syzkaller.appspotmail.com>
-To: davem@davemloft.net, edumazet@google.com, fgheet255t@gmail.com, 
-	hdanton@sina.com, johan.hedberg@gmail.com, josephsih@chromium.org, 
-	kuba@kernel.org, linux-bluetooth@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, lrh2000@pku.edu.cn, luiz.dentz@gmail.com, 
-	luiz.von.dentz@intel.com, marcel@holtmann.org, netdev@vger.kernel.org, 
-	pabeni@redhat.com, syzkaller-bugs@googlegroups.com, yinghsu@chromium.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-	HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-	SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-syzbot suspects this issue was fixed by commit:
+On Fri, 16 Jun 2023 10:02:12 +0000 Fijalkowski, Maciej wrote:
+> > Here is the summary with links:
+> >   - [net-next,v3,1/3] net: add check for current MAC address in dev_set=
+_mac_address
+> >     https://git.kernel.org/netdev/net-next/c/ad72c4a06acc
+> >   - [net-next,v3,2/3] i40e: remove unnecessary check for old MAC =3D=3D=
+ new MAC
+> >     https://git.kernel.org/netdev/net-next/c/c45a6d1a23c5
+> >   - [net-next,v3,3/3] ice: remove unnecessary check for old MAC =3D=3D =
+new MAC
+> >     https://git.kernel.org/netdev/net-next/c/96868cca7971 =20
+>=20
+> Ah, so next time I will respond to each revision with rev-by tags =F0=9F=
+=98=89
 
-commit a2ac591cb4d83e1f2d4b4adb3c14b2c79764650a
-Author: Ruihan Li <lrh2000@pku.edu.cn>
-Date:   Wed May 3 13:39:36 2023 +0000
-
-    Bluetooth: Fix UAF in hci_conn_hash_flush again
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13755717280000
-start commit:   e4cf7c25bae5 Merge tag 'kbuild-fixes-v6.2' of git://git.ke..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=555d27e379d75ff1
-dashboard link: https://syzkaller.appspot.com/bug?extid=b825d87fe2d043e3e652
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10052058480000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1190687c480000
-
-If the result looks correct, please mark the issue as fixed by replying with:
-
-#syz fix: Bluetooth: Fix UAF in hci_conn_hash_flush again
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+I may have done this slightly out of spite :P
+You tell the man that he didn't keep your R-b tag, why not throw it in
+again in one of your responses? It's bit of a PITA for me to add it
+manually. One tag in reply to the cover letter is enough FWIW (at least
+on netdev, I explained to BPF folks how to get the tag propagation
+from cover letter to work but I'm not 100% sure they set it up for
+themselves).
 
