@@ -1,150 +1,160 @@
-Return-Path: <netdev+bounces-11252-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11253-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 56113732406
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 02:03:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 8985E732418
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 02:09:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3F2A61C20EDD
-	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 00:03:07 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9E9631C20F27
+	for <lists+netdev@lfdr.de>; Fri, 16 Jun 2023 00:09:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E0995366;
-	Fri, 16 Jun 2023 00:03:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 686E0368;
+	Fri, 16 Jun 2023 00:09:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D061F7E
-	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 00:03:04 +0000 (UTC)
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F518CD;
-	Thu, 15 Jun 2023 17:03:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686873783; x=1718409783;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0lncjRivOzRs0P/v7LzH4bWBVMXhsYgp6N/aJVRQWqI=;
-  b=H4dub/I0hBXIQxeQj9C9ICSEuAMfAPc0LHMOi4zz+nLsR0QVulA3Ni7J
-   yfC4zhi+R1UbKJeSomv8evAXPKHOsnExcIOVL/LcLlxswEmn9G1rgHQ+s
-   BjxYsL4DdvjIpUnThmwgw6GF83ZNzGyi5TgOjwEgtNIUpsKT+HK0vIDMT
-   WiFvLrbUFs6O7SnveKmXFq2ZdnL8QxqSdc5OCkx8efE3aMM82TUN34AWT
-   a1PzDcJwoYrUXvTg7RxfhBe2tBVGW2TnkGcQ1WiVXqUYX//wumsR1Z88n
-   BreyktHx9e3a3unZGgDOuNnWFw2OanPs37OK+Bd4EVZd6BNztCVEI/GWk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="362489228"
-X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
-   d="scan'208";a="362489228"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2023 17:03:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="802607734"
-X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
-   d="scan'208";a="802607734"
-Received: from lkp-server01.sh.intel.com (HELO 783282924a45) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 15 Jun 2023 17:02:57 -0700
-Received: from kbuild by 783282924a45 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1q9wvY-0000XO-2H;
-	Fri, 16 Jun 2023 00:02:56 +0000
-Date: Fri, 16 Jun 2023 08:02:20 +0800
-From: kernel test robot <lkp@intel.com>
-To: Wei Hu <weh@microsoft.com>, netdev@vger.kernel.org,
-	linux-hyperv@vger.kernel.org, linux-rdma@vger.kernel.org,
-	longli@microsoft.com, sharmaajay@microsoft.com, jgg@ziepe.ca,
-	leon@kernel.org, kys@microsoft.com, haiyangz@microsoft.com,
-	wei.liu@kernel.org, decui@microsoft.com, davem@davemloft.net,
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-	vkuznets@redhat.com, ssengar@linux.microsoft.com,
-	shradhagupta@linux.microsoft.com
-Cc: oe-kbuild-all@lists.linux.dev
-Subject: Re: [PATCH v3 1/1] RDMA/mana_ib: Add EQ interrupt support to mana ib
- driver.
-Message-ID: <202306160702.qHOTsE7v-lkp@intel.com>
-References: <20230615111412.1687573-1-weh@microsoft.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A491366
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 00:09:31 +0000 (UTC)
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D914B2944
+	for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 17:09:29 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id 98e67ed59e1d1-25e92536fb6so173460a91.1
+        for <netdev@vger.kernel.org>; Thu, 15 Jun 2023 17:09:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1686874169; x=1689466169;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=92fQJzfB4RZzAA1tM9wgM08WjhNjZ7Gnu3A68q9wLec=;
+        b=vRQoB3UxR6R6UA/EAnuvcOoF6xxSsHAzHPpG7X7Mff88JACQHrqekCKe9W6hY7DUkv
+         Pr76NVwCPtKmiRMZhOI9yG0BH2lqb3irohAzmzrpo2/fWmTRA7jnAMO2X0Fs3Scwf0Pz
+         Nkl5hsAvbcztqi6+Bg6u5ygLuHKHoNjlv9Qf61OZ+sfWp9icpv26b3DVWwnkuFb9GPoO
+         HzlEBM9bEjAAL4UI6nCuPFwEBUSB0+7/bWwabQnMzELUU72OpN7V/UBT4KLGAekRHQ48
+         JNCMxstpuvdKIsv28VWvKkbiuDzu5/ep8h1Hc0/aMJ/8v38qlHqU8j6nNcbiVeaOS0fN
+         dNYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686874169; x=1689466169;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=92fQJzfB4RZzAA1tM9wgM08WjhNjZ7Gnu3A68q9wLec=;
+        b=QULVU79qxmy8R1V2O6NSoG9/Bd3Up/e0Guf9ddt8hKMdPyKSjUcUpZ9/sjG0TKb8Eo
+         8uwqZOJZd9LpofjdKJUtsFX0I2ES5E0dEqISEkV+liQJKxfKFZTVT2EYFTTDWbCsxvKu
+         PHXndTLcxcljmD5Tp+r48He+YFv0md4mxtvyHU36eSNioiZevuvDfS9qfm2+cpmGr6KP
+         +4qdHSET882mMRV2KgK1wz6JbqOlZZ2UXzVlaTLiBfhEFtXjibmYv/RQw8RKcPNS6FVB
+         YeEFThEENHI+eDC8RpV2BV4o4FH7gSfFNXZ/3uM6lGvAmGeLqZXX6VPPiXa5edVYVntZ
+         C/qw==
+X-Gm-Message-State: AC+VfDwT4ySN4fABWLAsa8292AdfDfaHoDwBs1Etw1l2OsLmgfGP2L+B
+	vHcRDsjRob4AjITehKU8/0dN+CxhjHY3jAbmH5Pl2yqlcqgdq2S2Op87Gg==
+X-Google-Smtp-Source: ACHHUZ5fQN13BA5/fwv12kbeIqTw2YcXYX4lelUNUpQiuD32pWxko6O34viDMt0BO2mDgkgD7msMPUskZ/PRrp9bh0Q=
+X-Received: by 2002:a17:90a:7bc4:b0:25b:f396:c3bc with SMTP id
+ d4-20020a17090a7bc400b0025bf396c3bcmr229965pjl.48.1686874169214; Thu, 15 Jun
+ 2023 17:09:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230615111412.1687573-1-weh@microsoft.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+References: <20230612172307.3923165-1-sdf@google.com> <87cz20xunt.fsf@toke.dk>
+In-Reply-To: <87cz20xunt.fsf@toke.dk>
+From: Stanislav Fomichev <sdf@google.com>
+Date: Thu, 15 Jun 2023 17:09:17 -0700
+Message-ID: <CAKH8qBuAUems8a7kKJPcFvarW2jy4qTf4sAM8oUC8UHj-gE=ug@mail.gmail.com>
+Subject: Re: [RFC bpf-next 0/7] bpf: netdev TX metadata
+To: =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
+Cc: bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net, 
+	andrii@kernel.org, martin.lau@linux.dev, song@kernel.org, yhs@fb.com, 
+	john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com, 
+	jolsa@kernel.org, willemb@google.com, dsahern@kernel.org, 
+	magnus.karlsson@intel.com, bjorn@kernel.org, maciej.fijalkowski@intel.com, 
+	netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Hi Wei,
+On Mon, Jun 12, 2023 at 2:01=E2=80=AFPM Toke H=C3=B8iland-J=C3=B8rgensen <t=
+oke@kernel.org> wrote:
+>
+> Some immediate thoughts after glancing through this:
+>
+> > --- Use cases ---
+> >
+> > The goal of this series is to add two new standard-ish places
+> > in the transmit path:
+> >
+> > 1. Right before the packet is transmitted (with access to TX
+> >    descriptors)
+> > 2. Right after the packet is actually transmitted and we've received th=
+e
+> >    completion (again, with access to TX completion descriptors)
+> >
+> > Accessing TX descriptors unlocks the following use-cases:
+> >
+> > - Setting device hints at TX: XDP/AF_XDP might use these new hooks to
+> > use device offloads. The existing case implements TX timestamp.
+> > - Observability: global per-netdev hooks can be used for tracing
+> > the packets and exploring completion descriptors for all sorts of
+> > device errors.
+> >
+> > Accessing TX descriptors also means that the hooks have to be called
+> > from the drivers.
+> >
+> > The hooks are a light-weight alternative to XDP at egress and currently
+> > don't provide any packet modification abilities. However, eventually,
+> > can expose new kfuncs to operate on the packet (or, rather, the actual
+> > descriptors; for performance sake).
+>
+> dynptr?
+>
+> > --- UAPI ---
+> >
+> > The hooks are implemented in a HID-BPF style. Meaning they don't
+> > expose any UAPI and are implemented as tracing programs that call
+> > a bunch of kfuncs. The attach/detach operation happen via BPF syscall
+> > programs. The series expands device-bound infrastructure to tracing
+> > programs.
+>
+> Not a fan of the "attach from BPF syscall program" thing. These are part
+> of the XDP data path API, and I think we should expose them as proper
+> bpf_link attachments from userspace with introspection etc. But I guess
+> the bpf_mprog thing will give us that?
+>
+> > --- skb vs xdp ---
+> >
+> > The hooks operate on a new light-weight devtx_frame which contains:
+> > - data
+> > - len
+> > - sinfo
+> >
+> > This should allow us to have a unified (from BPF POW) place at TX
+> > and not be super-taxing (we need to copy 2 pointers + len to the stack
+> > for each invocation).
+>
+> Not sure what I think about this one. At the very least I think we
+> should expose xdp->data_meta as well. I'm not sure what the use case for
+> accessing skbs is? If that *is* indeed useful, probably there will also
+> end up being a use case for accessing the full skb?
 
-kernel test robot noticed the following build warnings:
+I spent some time looking at data_meta story on AF_XDP TX and it
+doesn't look like it's supported (at least in a general way).
+You obviously get some data_meta when you do XDP_TX, but if you want
+to pass something to the bpf prog when doing TX via the AF_XDP ring,
+it gets complicated.
+In zerocopy mode, we can probably use XDP_UMEM_UNALIGNED_CHUNK_FLAG
+and pass something in the headroom.
+If copy-mode, there is no support to do skb_metadata_set.
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on horms-ipvs/master v6.4-rc6 next-20230615]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Wei-Hu/RDMA-mana_ib-Add-EQ-interrupt-support-to-mana-ib-driver/20230615-191709
-base:   linus/master
-patch link:    https://lore.kernel.org/r/20230615111412.1687573-1-weh%40microsoft.com
-patch subject: [PATCH v3 1/1] RDMA/mana_ib: Add EQ interrupt support to mana ib driver.
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20230616/202306160702.qHOTsE7v-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build):
-        git checkout linus/master
-        b4 shazam https://lore.kernel.org/r/20230615111412.1687573-1-weh@microsoft.com
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 olddefconfig
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/infiniband/hw/mana/
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202306160702.qHOTsE7v-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
-   drivers/infiniband/hw/mana/main.c: In function 'mana_ib_destroy_eq':
->> drivers/infiniband/hw/mana/main.c:150:27: warning: unused variable 'ibdev' [-Wunused-variable]
-     150 |         struct ib_device *ibdev = ucontext->ibucontext.device;
-         |                           ^~~~~
-
-
-vim +/ibdev +150 drivers/infiniband/hw/mana/main.c
-
-   145	
-   146	static void mana_ib_destroy_eq(struct mana_ib_ucontext *ucontext,
-   147				       struct mana_ib_dev *mdev)
-   148	{
-   149		struct gdma_context *gc = mdev->gdma_dev->gdma_context;
- > 150		struct ib_device *ibdev = ucontext->ibucontext.device;
-   151		struct gdma_queue *eq;
-   152		int i;
-   153	
-   154		if (!ucontext->eqs)
-   155			return;
-   156	
-   157		for (i = 0; i < gc->max_num_queues; i++) {
-   158			eq = ucontext->eqs[i].eq;
-   159			if (!eq)
-   160				continue;
-   161	
-   162			mana_gd_destroy_queue(gc, eq);
-   163		}
-   164	
-   165		kfree(ucontext->eqs);
-   166		ucontext->eqs = NULL;
-   167	}
-   168	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Probably makes sense to have something like tx_metalen on the xsk? And
+skb_metadata_set it in copy more and skip it in zerocopy mode?
+Or maybe I'm missing something?
 
