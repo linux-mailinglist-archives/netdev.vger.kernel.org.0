@@ -1,49 +1,49 @@
-Return-Path: <netdev+bounces-11715-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11717-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 101AA7340A1
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 14:12:46 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id EFF367340AF
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 14:13:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C88512816FB
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 12:12:43 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2D58F1C20A40
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 12:13:33 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EEA718C1F;
-	Sat, 17 Jun 2023 12:12:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2EBBB8F6C;
+	Sat, 17 Jun 2023 12:12:26 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E40BB8C1D
-	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 12:12:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 239C6946C
+	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 12:12:26 +0000 (UTC)
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9D719A6
-	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 05:12:22 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD1519A2
+	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 05:12:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1687003942;
+	s=mimecast20190719; t=1687003944;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ejBheymwORocF7PA51bmsdG6ZmxRm3UYoYQNGQf509Y=;
-	b=ChfFmZxT/RezW45zmZd9foMss3DIHJQmGAkQPZ1TT15UIuNYZtyjFBj9QEojFvzqakRbgn
-	Kwup++ATzcHb63wbbAi92XxlQHkcbx8w+qe5lBAg4hmSQs9BPjp08e7r0jueEqRRkChhwF
-	fTWGEUjPwyKZ6K88b/UpyfmvVn3/Nog=
+	bh=+u30ziD9KgNs/SO68HcOpUwCa+4S9m3KYto4qjbvl9U=;
+	b=eykWtD6E6OIU1C1iJ0sVwxX6DHj1MUh7/7qErr5nj4fFiLX2j254q16QOpiJ6qF4+C/dXV
+	dd4NjagI6pw2iKWQX9Khoi7l0q4aYCM90r9pcXZxbllAoqGnQSB0CI7JwByf1NYxigqiM4
+	zDtcnc3z7zVp0M5Fz5V0tuJGQgZPx3A=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-372-w6pbkuscPMuYgv1oelN8Vg-1; Sat, 17 Jun 2023 08:12:17 -0400
-X-MC-Unique: w6pbkuscPMuYgv1oelN8Vg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+ us-mta-638-OoK_dJyAPWWi4zKuB6nYXA-1; Sat, 17 Jun 2023 08:12:18 -0400
+X-MC-Unique: OoK_dJyAPWWi4zKuB6nYXA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1221E8352D1;
-	Sat, 17 Jun 2023 12:12:13 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3AC0A8030B4;
+	Sat, 17 Jun 2023 12:12:15 +0000 (UTC)
 Received: from warthog.procyon.org.com (unknown [10.42.28.51])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 40202422E2;
-	Sat, 17 Jun 2023 12:12:11 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id A932940C2077;
+	Sat, 17 Jun 2023 12:12:13 +0000 (UTC)
 From: David Howells <dhowells@redhat.com>
 To: netdev@vger.kernel.org
 Cc: David Howells <dhowells@redhat.com>,
@@ -59,9 +59,9 @@ Cc: David Howells <dhowells@redhat.com>,
 	linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org,
 	Menglong Dong <imagedong@tencent.com>
-Subject: [PATCH net-next v2 01/17] net: Copy slab data for sendmsg(MSG_SPLICE_PAGES)
-Date: Sat, 17 Jun 2023 13:11:30 +0100
-Message-ID: <20230617121146.716077-2-dhowells@redhat.com>
+Subject: [PATCH net-next v2 02/17] net: Display info about MSG_SPLICE_PAGES memory handling in proc
+Date: Sat, 17 Jun 2023 13:11:31 +0100
+Message-ID: <20230617121146.716077-3-dhowells@redhat.com>
 In-Reply-To: <20230617121146.716077-1-dhowells@redhat.com>
 References: <20230617121146.716077-1-dhowells@redhat.com>
 Precedence: bulk
@@ -71,7 +71,7 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
 	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
@@ -79,28 +79,14 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-If sendmsg() is passed MSG_SPLICE_PAGES and is given a buffer that contains
-some data that's resident in the slab, copy it rather than returning EIO.
-This can be made use of by a number of drivers in the kernel, including:
-iwarp, ceph/rds, dlm, nvme, ocfs2, drdb.  It could also be used by iscsi,
-rxrpc, sunrpc, cifs and probably others.
+Display information about the memory handling MSG_SPLICE_PAGES does to copy
+slabbed data into page fragments.
 
-skb_splice_from_iter() is given it's own fragment allocator as
-page_frag_alloc_align() can't be used because it does no locking to prevent
-parallel callers from racing.  alloc_skb_frag() uses a separate folio for
-each cpu and locks to the cpu whilst allocating, reenabling cpu migration
-around folio allocation.
+For each CPU that has a cached folio, it displays the folio pfn, the offset
+pointer within the folio and the size of the folio.
 
-This could allocate a whole page instead for each fragment to be copied, as
-alloc_skb_with_frags() would do instead, but that would waste a lot of
-space (most of the fragments look like they're going to be small).
-
-This allows an entire message that consists of, say, a protocol header or
-two, a number of pages of data and a protocol footer to be sent using a
-single call to sock_sendmsg().
-
-The callers could be made to copy the data into fragments before calling
-sendmsg(), but that then penalises them if MSG_SPLICE_PAGES gets ignored.
+It also displays the number of pages refurbished and the number of pages
+replaced.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Alexander Duyck <alexander.duyck@gmail.com>
@@ -114,227 +100,116 @@ cc: Matthew Wilcox <willy@infradead.org>
 cc: Menglong Dong <imagedong@tencent.com>
 cc: netdev@vger.kernel.org
 ---
+ net/core/skbuff.c | 42 +++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 39 insertions(+), 3 deletions(-)
 
-Notes:
-    ver #2)
-    - Fix parameter to put_cpu_ptr() to have an '&'.
-
- include/linux/skbuff.h |   5 ++
- net/core/skbuff.c      | 171 ++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 173 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 91ed66952580..0ba776cd9be8 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -5037,6 +5037,11 @@ static inline void skb_mark_for_recycle(struct sk_buff *skb)
- #endif
- }
- 
-+void *alloc_skb_frag(size_t fragsz, gfp_t gfp);
-+void *copy_skb_frag(const void *s, size_t len, gfp_t gfp);
-+ssize_t skb_splice_from_iter(struct sk_buff *skb, struct iov_iter *iter,
-+			     ssize_t maxsize, gfp_t gfp);
-+
- ssize_t skb_splice_from_iter(struct sk_buff *skb, struct iov_iter *iter,
- 			     ssize_t maxsize, gfp_t gfp);
- 
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index fee2b1c105fe..d962c93a429d 100644
+index d962c93a429d..36605510a76d 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -6755,6 +6755,145 @@ nodefer:	__kfree_skb(skb);
- 		smp_call_function_single_async(cpu, &sd->defer_csd);
+@@ -83,6 +83,7 @@
+ #include <linux/user_namespace.h>
+ #include <linux/indirect_call_wrapper.h>
+ #include <linux/textsearch.h>
++#include <linux/proc_fs.h>
+ 
+ #include "dev.h"
+ #include "sock_destructor.h"
+@@ -6758,6 +6759,7 @@ nodefer:	__kfree_skb(skb);
+ struct skb_splice_frag_cache {
+ 	struct folio	*folio;
+ 	void		*virt;
++	unsigned int	fsize;
+ 	unsigned int	offset;
+ 	/* we maintain a pagecount bias, so that we dont dirty cache line
+ 	 * containing page->_refcount every time we allocate a fragment.
+@@ -6767,6 +6769,26 @@ struct skb_splice_frag_cache {
+ };
+ 
+ static DEFINE_PER_CPU(struct skb_splice_frag_cache, skb_splice_frag_cache);
++static atomic_t skb_splice_frag_replaced, skb_splice_frag_refurbished;
++
++static int skb_splice_show(struct seq_file *m, void *data)
++{
++	int cpu;
++
++	seq_printf(m, "refurb=%u repl=%u\n",
++		   atomic_read(&skb_splice_frag_refurbished),
++		   atomic_read(&skb_splice_frag_replaced));
++
++	for_each_possible_cpu(cpu) {
++		const struct skb_splice_frag_cache *cache =
++			per_cpu_ptr(&skb_splice_frag_cache, cpu);
++
++		seq_printf(m, "[%u] %lx %u/%u\n",
++			   cpu, folio_pfn(cache->folio),
++			   cache->offset, cache->fsize);
++	}
++	return 0;
++}
+ 
+ /**
+  * alloc_skb_frag - Allocate a page fragment for using in a socket
+@@ -6803,17 +6825,21 @@ void *alloc_skb_frag(size_t fragsz, gfp_t gfp)
+ 
+ insufficient_space:
+ 	/* See if we can refurbish the current folio. */
+-	if (!folio || !folio_ref_sub_and_test(folio, cache->pagecnt_bias))
++	if (!folio)
+ 		goto get_new_folio;
++	if (!folio_ref_sub_and_test(folio, cache->pagecnt_bias))
++		goto replace_folio;
+ 	if (unlikely(cache->pfmemalloc)) {
+ 		__folio_put(folio);
+-		goto get_new_folio;
++		goto replace_folio;
+ 	}
+ 
+ 	fsize = folio_size(folio);
+ 	if (unlikely(fragsz > fsize))
+ 		goto frag_too_big;
+ 
++	atomic_inc(&skb_splice_frag_refurbished);
++
+ 	/* OK, page count is 0, we can safely set it */
+ 	folio_set_count(folio, PAGE_FRAG_CACHE_MAX_SIZE + 1);
+ 
+@@ -6822,6 +6848,8 @@ void *alloc_skb_frag(size_t fragsz, gfp_t gfp)
+ 	offset = fsize;
+ 	goto try_again;
+ 
++replace_folio:
++	atomic_inc(&skb_splice_frag_replaced);
+ get_new_folio:
+ 	if (!spare) {
+ 		cache->folio = NULL;
+@@ -6848,6 +6876,7 @@ void *alloc_skb_frag(size_t fragsz, gfp_t gfp)
+ 
+ 	cache->folio = spare;
+ 	cache->virt  = folio_address(spare);
++	cache->fsize = folio_size(spare);
+ 	folio = spare;
+ 	spare = NULL;
+ 
+@@ -6858,7 +6887,7 @@ void *alloc_skb_frag(size_t fragsz, gfp_t gfp)
+ 
+ 	/* Reset page count bias and offset to start of new frag */
+ 	cache->pagecnt_bias = PAGE_FRAG_CACHE_MAX_SIZE + 1;
+-	offset = folio_size(folio);
++	offset = cache->fsize;
+ 	goto try_again;
+ 
+ frag_too_big:
+@@ -7007,3 +7036,10 @@ ssize_t skb_splice_from_iter(struct sk_buff *skb, struct iov_iter *iter,
+ 	return spliced ?: ret;
  }
- 
-+struct skb_splice_frag_cache {
-+	struct folio	*folio;
-+	void		*virt;
-+	unsigned int	offset;
-+	/* we maintain a pagecount bias, so that we dont dirty cache line
-+	 * containing page->_refcount every time we allocate a fragment.
-+	 */
-+	unsigned int	pagecnt_bias;
-+	bool		pfmemalloc;
-+};
+ EXPORT_SYMBOL(skb_splice_from_iter);
 +
-+static DEFINE_PER_CPU(struct skb_splice_frag_cache, skb_splice_frag_cache);
-+
-+/**
-+ * alloc_skb_frag - Allocate a page fragment for using in a socket
-+ * @fragsz: The size of fragment required
-+ * @gfp: Allocation flags
-+ */
-+void *alloc_skb_frag(size_t fragsz, gfp_t gfp)
++static int skb_splice_init(void)
 +{
-+	struct skb_splice_frag_cache *cache;
-+	struct folio *folio, *spare = NULL;
-+	size_t offset, fsize;
-+	void *p;
-+
-+	if (WARN_ON_ONCE(fragsz == 0))
-+		fragsz = 1;
-+
-+	cache = get_cpu_ptr(&skb_splice_frag_cache);
-+reload:
-+	folio = cache->folio;
-+	offset = cache->offset;
-+try_again:
-+	if (fragsz > offset)
-+		goto insufficient_space;
-+
-+	/* Make the allocation. */
-+	cache->pagecnt_bias--;
-+	offset = ALIGN_DOWN(offset - fragsz, SMP_CACHE_BYTES);
-+	cache->offset = offset;
-+	p = cache->virt + offset;
-+	put_cpu_ptr(&skb_splice_frag_cache);
-+	if (spare)
-+		folio_put(spare);
-+	return p;
-+
-+insufficient_space:
-+	/* See if we can refurbish the current folio. */
-+	if (!folio || !folio_ref_sub_and_test(folio, cache->pagecnt_bias))
-+		goto get_new_folio;
-+	if (unlikely(cache->pfmemalloc)) {
-+		__folio_put(folio);
-+		goto get_new_folio;
-+	}
-+
-+	fsize = folio_size(folio);
-+	if (unlikely(fragsz > fsize))
-+		goto frag_too_big;
-+
-+	/* OK, page count is 0, we can safely set it */
-+	folio_set_count(folio, PAGE_FRAG_CACHE_MAX_SIZE + 1);
-+
-+	/* Reset page count bias and offset to start of new frag */
-+	cache->pagecnt_bias = PAGE_FRAG_CACHE_MAX_SIZE + 1;
-+	offset = fsize;
-+	goto try_again;
-+
-+get_new_folio:
-+	if (!spare) {
-+		cache->folio = NULL;
-+		put_cpu_ptr(&skb_splice_frag_cache);
-+
-+#if PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE
-+		spare = folio_alloc(gfp | __GFP_NOWARN | __GFP_NORETRY |
-+				    __GFP_NOMEMALLOC,
-+				    PAGE_FRAG_CACHE_MAX_ORDER);
-+		if (!spare)
-+#endif
-+			spare = folio_alloc(gfp, 0);
-+		if (!spare)
-+			return NULL;
-+
-+		cache = get_cpu_ptr(&skb_splice_frag_cache);
-+		/* We may now be on a different cpu and/or someone else may
-+		 * have refilled it
-+		 */
-+		cache->pfmemalloc = folio_is_pfmemalloc(spare);
-+		if (cache->folio)
-+			goto reload;
-+	}
-+
-+	cache->folio = spare;
-+	cache->virt  = folio_address(spare);
-+	folio = spare;
-+	spare = NULL;
-+
-+	/* Even if we own the page, we do not use atomic_set().  This would
-+	 * break get_page_unless_zero() users.
-+	 */
-+	folio_ref_add(folio, PAGE_FRAG_CACHE_MAX_SIZE);
-+
-+	/* Reset page count bias and offset to start of new frag */
-+	cache->pagecnt_bias = PAGE_FRAG_CACHE_MAX_SIZE + 1;
-+	offset = folio_size(folio);
-+	goto try_again;
-+
-+frag_too_big:
-+	/* The caller is trying to allocate a fragment with fragsz > PAGE_SIZE
-+	 * but the cache isn't big enough to satisfy the request, this may
-+	 * happen in low memory conditions.  We don't release the cache page
-+	 * because it could make memory pressure worse so we simply return NULL
-+	 * here.
-+	 */
-+	cache->offset = offset;
-+	put_cpu_ptr(&skb_splice_frag_cache);
-+	if (spare)
-+		folio_put(spare);
-+	return NULL;
++	proc_create_single("pagefrags", S_IFREG | 0444, NULL, &skb_splice_show);
++	return 0;
 +}
-+EXPORT_SYMBOL(alloc_skb_frag);
-+
-+/**
-+ * copy_skb_frag - Copy data into a page fragment.
-+ * @s: The data to copy
-+ * @len: The size of the data
-+ * @gfp: Allocation flags
-+ */
-+void *copy_skb_frag(const void *s, size_t len, gfp_t gfp)
-+{
-+	void *p;
-+
-+	p = alloc_skb_frag(len, gfp);
-+	if (!p)
-+		return NULL;
-+
-+	return memcpy(p, s, len);
-+}
-+EXPORT_SYMBOL(copy_skb_frag);
-+
- static void skb_splice_csum_page(struct sk_buff *skb, struct page *page,
- 				 size_t offset, size_t len)
- {
-@@ -6808,17 +6947,43 @@ ssize_t skb_splice_from_iter(struct sk_buff *skb, struct iov_iter *iter,
- 			break;
- 		}
- 
-+		if (space == 0 &&
-+		    !skb_can_coalesce(skb, skb_shinfo(skb)->nr_frags,
-+				      pages[0], off)) {
-+			iov_iter_revert(iter, len);
-+			break;
-+		}
-+
- 		i = 0;
- 		do {
- 			struct page *page = pages[i++];
- 			size_t part = min_t(size_t, PAGE_SIZE - off, len);
--
--			ret = -EIO;
--			if (WARN_ON_ONCE(!sendpage_ok(page)))
-+			bool put = false;
-+
-+			if (PageSlab(page)) {
-+				const void *p;
-+				void *q;
-+
-+				p = kmap_local_page(page);
-+				q = copy_skb_frag(p + off, part, gfp);
-+				kunmap_local(p);
-+				if (!q) {
-+					iov_iter_revert(iter, len);
-+					ret = -ENOMEM;
-+					goto out;
-+				}
-+				page = virt_to_page(q);
-+				off = offset_in_page(q);
-+				put = true;
-+			} else if (WARN_ON_ONCE(!sendpage_ok(page))) {
-+				ret = -EIO;
- 				goto out;
-+			}
- 
- 			ret = skb_append_pagefrags(skb, page, off, part,
- 						   frag_limit);
-+			if (put)
-+				put_page(page);
- 			if (ret < 0) {
- 				iov_iter_revert(iter, len);
- 				goto out;
++late_initcall(skb_splice_init);
 
 
