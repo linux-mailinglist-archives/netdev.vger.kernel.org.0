@@ -1,104 +1,170 @@
-Return-Path: <netdev+bounces-11707-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11708-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id BBA5E733FA4
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 10:29:23 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 66AEC734007
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 12:07:58 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4FEDA281858
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 08:29:22 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 794571C20A7D
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 10:07:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 814E3748B;
-	Sat, 17 Jun 2023 08:29:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4784A6FD9;
+	Sat, 17 Jun 2023 10:07:55 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75D6B1C33
-	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 08:29:20 +0000 (UTC)
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6221FF7
-	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 01:29:18 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id 98e67ed59e1d1-25edb50c3acso134719a91.1
-        for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 01:29:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686990558; x=1689582558;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T7zvLgMQNOS4thpxSt/o4jTmAbW5w4N+SoOGdd1Z5+E=;
-        b=Kzxtz/1qDN+woQNvk4cGrBYylJxttSzye0eofPxIovlfr9xRFv/6g0FBH2nIfN83F1
-         j+VNqIBbuCrq4YnSYk+NfKGo73BaQQfDYl5fNgdV5mEJ4BTUZnq0OW0omWni6kyiv0pn
-         qP6YNZ0V5WnoZ1lx0m1dq9vtk5BRmfEr6GnqZq98jWyN50QBc2buw/wWJozDihQag9se
-         CR0cvX56sE1vLWr5DhVYsMcF/GDnkMEwBYYyYOsPHV4epL6sjfOXzpKOodk3PcdKPqQ+
-         OJH6O4yW4aFq6tt6A15KBleQfYXGSNDV7PpeJlqj5reIw0GKWT6PQ0EoOj2nlfXTRJm3
-         E/fw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686990558; x=1689582558;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=T7zvLgMQNOS4thpxSt/o4jTmAbW5w4N+SoOGdd1Z5+E=;
-        b=ltvEYdWT79c0Pmow2q9jR0/JieZjlUdelDCdSu91n14AwZ2SUVTrjYsI5EgzFPUpck
-         4XDI9PFGbn7tK+pLlhLiCRVVqdI4uMuwM92SRZJZUrUfmx9glDtD3K/ytuizY/2tApxB
-         Z5VvvCK0Nx4D5oscyhSJGSB4f9vwQR7zGnyy42v5Aah+lliR2Z+hwe5oP2TcVNjbMV9J
-         swNiiyHvyTEuuKFK/30AVE3JlqQ8F+zw/lAUG3IuS+iv1OOqQcLvHzjIbK91TJmjxl5f
-         MWXsPSeO+OuiBcu0J5d5pJHTAOGfrO2On4OsodU/B5x8cX9QKgMMRjys+rQ75dKInM+W
-         ttrQ==
-X-Gm-Message-State: AC+VfDxD0/SfDeorJQnRxRf2v+B10Lnxo80V8N0Cz87PBjifW5EVIqeH
-	Apgmd4iSp/y8y3H8Xms/yIMfzZrlCcTvx/ZaPWJM+u3c/jQRNw==
-X-Google-Smtp-Source: ACHHUZ7lPdUSX4Fvgmp5GiZrMpLn0fsUc3H2cRCc/oz6F/2gcbsKfPxURltL0GOiCfIH7w58izSa4iuTlnvJ98C0zCQ=
-X-Received: by 2002:a17:90a:8a0b:b0:256:2cb7:406e with SMTP id
- w11-20020a17090a8a0b00b002562cb7406emr4311582pjn.45.1686990558318; Sat, 17
- Jun 2023 01:29:18 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 361666FAE
+	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 10:07:54 +0000 (UTC)
+Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE93115;
+	Sat, 17 Jun 2023 03:07:52 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+	by mailout.west.internal (Postfix) with ESMTP id 794F7320090D;
+	Sat, 17 Jun 2023 06:07:47 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Sat, 17 Jun 2023 06:07:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ryhl.io; h=cc:cc
+	:content-transfer-encoding:content-type:content-type:date:date
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:sender:subject:subject:to:to; s=fm2; t=
+	1686996467; x=1687082867; bh=fdy8Nxxcv9L88NlcC7koLpID+PVBjheubRG
+	k1mIhVzY=; b=V01hnXjrgd04zMLD4LNpCeRUjyc52LRH7GxqnPAKOggf5bSezyH
+	0c8Dea3wGx7qe7KCaaDoM0C2FZaA33gBRpk3CB2IXXEwfewoIlB1mgoC/2Pn+P9m
+	5CmRr4ek1J271ifosX5yDo2Zio0PQi856r61ojaLFX35SsZpqfvgbitZHyv952A8
+	xdGFRs3Z5XSp6sxSUc0YAOvJsuYPoVZAZe1w8J1pbFSU4Q2ihJ15g6dgoL2CDnGx
+	6ixXl2KtWU9KzT40hmV+6vNejY6NNQwuLe/rRP01BFoEUNtX8UU6lOxLQtC8mgJr
+	AXjyTls+txLWynd0DgavOrFK1czTEPEwz2g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:sender:subject:subject:to:to:x-me-proxy
+	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+	1686996467; x=1687082867; bh=fdy8Nxxcv9L88NlcC7koLpID+PVBjheubRG
+	k1mIhVzY=; b=qQc0zIfLW9diIyGid+kpBRXWblJ+0nMMO3ak256cRkuCu18Gl4x
+	7m1Fz6b5c1kE7FmYtLb5KNLLSyggkT6J5KGOe2+dm9SGp4uMcoLhSy01z/cnxBYP
+	gmD4NLti2e14YDmFKC+2Yjuv+CW6IfDI+Bfoh7x2gVyBw688UqLZ39cGbJ/5MKNr
+	aVEa8Q8xgw+vMJSl775XH7ROoaykgosBWh4E2I5+km9vjNDlksaUOXA7SGesQX/q
+	bJvRP+1Bv8KaK9Rob8hKbAe4O1mcZ94PHLrN747dXVDHBvRix/o5nrnhrzgIDZ0o
+	jh0+W5GruyZyX733RDSq2filcLPJqRxaamw==
+X-ME-Sender: <xms:8oWNZENgvmAkRo8xhBHdwbUkDOZxfI38vh6UlQzFCne7Xabe3yUzrw>
+    <xme:8oWNZK9KRVtpxW7YUAuXToaHsd_WKwdtZ_x82srH0kkgt2vBv-l8PWm6j4UbLwEOX
+    u-Ouw2n-6CELkNOOA>
+X-ME-Received: <xmr:8oWNZLReTrAty37bqNLG19JW3-Lu5V9DR8xziXo5zB0gtVCaVj8mAUoR9Gv9_kn7pnhPZLigtgqPDBXy9gceqmO-8qhJ2twajuvmpQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgedvjedgvdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepkfffgggfhffuvfevfhgjtgfgsehtjeertddtfeejnecuhfhrohhmpeetlhhi
+    tggvucfthihhlhcuoegrlhhitggvsehrhihhlhdrihhoqeenucggtffrrghtthgvrhhnpe
+    fhheeuieelveejfeektedvffevffduuefhgfetvdeugfeigfeivdejgedvjeeljeenucev
+    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrlhhitggvse
+    hrhihhlhdrihho
+X-ME-Proxy: <xmx:8oWNZMt2RyV78peCLlIRmdZdPTtOhIyGOb9asWV9O92JYmI-s8tFPg>
+    <xmx:8oWNZMe6j919nxeCZGg8-jy364MSvJX84ewmSsBeaLmE231eHKuXlw>
+    <xmx:8oWNZA3tW7qSymdnwx10aFZeIUZ66qfeFJ0n_yvuItQQwI3QSU1N4w>
+    <xmx:84WNZBEeMpF2-LXl-bCXx2_7WNvK9cY9DjVW3ivll0lxZ9UAOtpybQ>
+Feedback-ID: i56684263:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 17 Jun 2023 06:07:44 -0400 (EDT)
+Message-ID: <c1b23f21-d161-6241-26fb-7a2cbc4c059c@ryhl.io>
+Date: Sat, 17 Jun 2023 12:08:26 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <ZHmjlzbRi0nHUuTU@Laptop-X1> <ZIFOY02zi9FZ+aNh@Laptop-X1> <1816.1686966353@famine>
-In-Reply-To: <1816.1686966353@famine>
-From: Hangbin Liu <liuhangbin@gmail.com>
-Date: Sat, 17 Jun 2023 16:29:06 +0800
-Message-ID: <CAPwn2JRuU0+XEOnsETjrOpRi4YYXT+BemsaH1K5cAOnP4G-Wvw@mail.gmail.com>
-Subject: Re: [Discuss] IPv4 packets lost with macvlan over bond alb
-To: Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc: netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+From: Alice Ryhl <alice@ryhl.io>
+Subject: Re: [PATCH 0/5] Rust abstractions for network device drivers
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Jakub Kicinski <kuba@kernel.org>,
+ FUJITA Tomonori <fujita.tomonori@gmail.com>, netdev@vger.kernel.org,
+ rust-for-linux@vger.kernel.org, aliceryhl@google.com,
+ miguel.ojeda.sandonis@gmail.com
+References: <20230614230128.199724bd@kernel.org>
+ <8e9e2908-c0da-49ec-86ef-b20fb3bd71c3@lunn.ch>
+ <20230615190252.4e010230@kernel.org>
+ <20230616.220220.1985070935510060172.ubuntu@gmail.com>
+ <20230616114006.3a2a09e5@kernel.org>
+ <66dcc87e-e03f-1043-c91d-25d6fa7130a1@ryhl.io>
+ <20230616121041.4010f51b@kernel.org>
+ <053cb4c3-aab1-23b3-56e3-4f1741e69404@ryhl.io>
+ <7dbf3c85-02ca-4c9b-b40d-adcdb85305dd@lunn.ch>
+Content-Language: en-US, da
+In-Reply-To: <7dbf3c85-02ca-4c9b-b40d-adcdb85305dd@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Sat, Jun 17, 2023 at 9:45=E2=80=AFAM Jay Vosburgh <jay.vosburgh@canonica=
-l.com> wrote:
->
-> Hangbin Liu <liuhangbin@gmail.com> wrote:
->
-> >Hi Jay, any thoughts?
->
->         Just an update that I've done some poking with your reproducer;
-> as described, the ARP reply for the IP address associated with the
-> macvlan interface is coming back with the bond's MAC, not the MAC of the
-> macvlan.  If I manually create a neighbour entry on the client with the
-> corrent IP and MAC for the macvlan, then connectivity works as expected.
->
->         I'll have to look a bit further into the ARP MAC selection logic
-> here (i.e., where does that MAC come from when the ARP reply is
-> generated).  It also makes me wonder what's special about macvlan, e.g.,
-> why doesn't regular VLAN (or other stacked devices) fail in the same way
-> (or maybe it does and nobody has noticed).
+On 6/16/23 22:04, Andrew Lunn wrote:
+>> Yes, you can certainly put a WARN_ON in the destructor.
+>>
+>> Another possibility is to use a scope to clean up. I don't know anything
+>> about these skb objects are used, but you could have the user define a
+>> "process this socket" function that you pass a pointer to the skb, then make
+>> the return value be something that explains what should be done with the
+>> packet. Since you must return a value of the right type, this forces you to
+>> choose.
+>>
+>> Of course, this requires that the processing of packets can be expressed as
+>> a function call, where it only inspects the packet for the duration of that
+>> function call. (Lifetimes can ensure that the skb pointer does not escape
+>> the function.)
+>>
+>> Would something like that work?
+> 
+> I don't think so, at least not in the contest of an Rust Ethernet
+> driver.
+> 
+> There are two main flows.
+> 
+> A packet is received. An skb is allocated and the received packet is
+> placed into the skb. The Ethernet driver then hands the packet over to
+> the network stack. The network stack is free to do whatever it wants
+> with the packet. Things can go wrong within the driver, so at times it
+> needs to free the skb rather than pass it to the network stack, which
+> would be a drop.
+> 
+> The second flow is that the network stack has a packet it wants sent
+> out an Ethernet port, in the form of an skb. The skb gets passed to
+> the Ethernet driver. The driver will do whatever it needs to do to
+> pass the contents of the skb to the hardware. Once the hardware has
+> it, the driver frees the skb. Again, things can go wrong and it needs
+> to free the skb without sending it, which is a drop.
+> 
+> So the lifetime is not a simple function call.
+> 
+> The drop reason indicates why the packet was dropped. It should give
+> some indication of what problem occurred which caused the drop. So
+> ideally we don't want an anonymous drop. The C code does not enforce
+> that, but it would be nice if the rust wrapper to dispose of an skb
+> did enforce it.
 
-VLAN or other overlay devices use the same MAC address with Bonding.
-So they work with the alb mode. But MACVLAN uses different MAC
-addresses with Bonding.
+It sounds like a destructor with WARN_ON is the best approach right now.
 
-Thanks
-Hangbin
+Unfortunately, I don't think we can enforce that the destructor is not 
+used today. That said, in the future it may be possible to implement a 
+linter that detects it - I know that there have already been experiments 
+with other custom lints for the kernel (e.g., enforcing that you don't 
+sleep while holding a spinlock).
+
+> I would also say that this dummy driver and the C dummy driver is
+> actually wrong in 'dropping' the frame. Its whole purpose in life is to
+> be a black hole. It should only drop the packet if for some reason it
+> cannot throw the packet into the black hole.
+
+Ah, I suppose that we would also need a "by value" cleanup method for 
+that case.
+
+Alice
 
