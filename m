@@ -1,118 +1,125 @@
-Return-Path: <netdev+bounces-11746-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11748-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0A457734257
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 18:57:27 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6134B73434D
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 21:24:33 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D77E21C20A68
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 16:57:25 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7B8E228145E
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 19:24:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 94398BA4F;
-	Sat, 17 Jun 2023 16:57:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BE4BAC8F4;
+	Sat, 17 Jun 2023 19:24:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8861D79EC
-	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 16:57:23 +0000 (UTC)
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C85A1999
-	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 09:57:21 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-9829a5ae978so291844166b.2
-        for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 09:57:21 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B225EA945
+	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 19:24:29 +0000 (UTC)
+Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C486C1BC9
+	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 12:24:26 -0700 (PDT)
+Received: by mail-ua1-x931.google.com with SMTP id a1e0cc1a2514c-786e637f06dso669439241.2
+        for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 12:24:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1687021040; x=1689613040;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=SApWG7ViMWJvCzoOl336TbaVolfomzcROxDi+nk82RE=;
-        b=yBVR5wz9KmiqLKq0XWprugXY4kG8itegBn3oHUXWqQQT0AJhdFtAVJPJ+yc3vVgbp/
-         aneq6PsQlQhBvwrO7xTyAZk8QkrsTF4FWaVjtkKkIV/j71pUU7zS+x0kOa5VlFuuLqMR
-         Rf46r0cPfgh/97hIMcVajBtXWyIsLDvRk9wLwXo68WtLEHHSLRILunis/2rxerxFwdev
-         VUIYbAju5LQu2RRMFRpva/UwAFxoqukgvZ2y1ybcBoBd2YexK5XQvUId4tl9VbnUgVhX
-         zLeOPgXybkzT9vf6ucWwt1/1bDy0MlpgQRdvvRc5He+4V/zjx0uV8TYRFYw6vIvIl1Yx
-         2OCw==
+        d=bgdev-pl.20221208.gappssmtp.com; s=20221208; t=1687029866; x=1689621866;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CAVqTNFm1Ko/hSDeJVRLXQ4E4KG1rIEAdrc8bWfuH9M=;
+        b=lVG2S5Xx6tFg0dg4z6KHuNJpv5zw9bfbJORZYuLnU4hzhlKRIQMYa9+jW4VwKMjoaO
+         qVXcYgejWNww7bCA45NVLUicUCOag7vOWx4axAvC3r0pbruDxES/YNnjXI+QwZwW1mTv
+         SyH7G8xa0wD/g0OuGWAkTmKwifbZPSjh5IRffYshgeUS6lM7tjjCo3SAYf8O+aYKxVvL
+         VWyQ4j75TLZdCGdAUClkkdPqJkoHzx5InuSk/W/qrJa5VCwGhmGMI9uxpmnqryyjnbMr
+         +v2lv4iKCLbN3Y/76bFeU+uf6QlEzv4E0yMkRS1fPH3BRxvk/4aWxSrJrRQQHYBoHFmX
+         cQqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687021040; x=1689613040;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=SApWG7ViMWJvCzoOl336TbaVolfomzcROxDi+nk82RE=;
-        b=XORkLh087DUR09JUwDkLy+sGSrQ+H53CFZYS5aLDACs4BnXp5sezx1H2KlktloCxUl
-         YxZFFTwnMca1NxEBn6gRk91NB8WtSBIXfDys00YqR99gidILsIsp8um8ukDidLwDELP/
-         O2s7130dX+B8Kn78jnKZP5Nkzth95+cVoXUx5d23CKOZTvmN2zdsZuH1rx9ughkIFnpD
-         wxiUda3oKn22FBjnEPHEzVN9bTNbBjMLAb+r66mttFpd6Ml960B7icAfDZMMmleWjDcy
-         p6vHicFXaNQBbpGe/f53Fr+IJMmztXhJZY2OSR4pG+2kj4ZXIejZFlVwInG2yMn7tPKF
-         Ig2A==
-X-Gm-Message-State: AC+VfDxW4TCO0MdUWYbV/cmPHqODKJxoBOzaFX+bNdQCo+VEbUVAnOrs
-	IpVWXK6EDzKkfG0YN8o5iOc3TQ==
-X-Google-Smtp-Source: ACHHUZ57X2+ydR3mHcPYdCgEjBVpw+J0EnKnU7lZAnkZuvejj4C13bGLtiyW9IBmPRyhKS+pMZTD8g==
-X-Received: by 2002:a17:907:c10:b0:973:fe5d:ef71 with SMTP id ga16-20020a1709070c1000b00973fe5def71mr6173723ejc.14.1687021039975;
-        Sat, 17 Jun 2023 09:57:19 -0700 (PDT)
-Received: from krzk-bin.. ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id e10-20020a170906044a00b009845c187bdcsm2603430eja.137.2023.06.17.09.57.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Jun 2023 09:57:19 -0700 (PDT)
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Balakrishna Godavarthi <bgodavar@codeaurora.org>,
-	Rocky Liao <rjliao@codeaurora.org>,
-	netdev@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH net-next] dt-bindings: net: bluetooth: qualcomm: document VDD_CH1
-Date: Sat, 17 Jun 2023 18:57:16 +0200
-Message-Id: <20230617165716.279857-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        d=1e100.net; s=20221208; t=1687029866; x=1689621866;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=CAVqTNFm1Ko/hSDeJVRLXQ4E4KG1rIEAdrc8bWfuH9M=;
+        b=e/cbsuYLgrY29MTJLOy0aI4QeGJDp7qeN39hFJR4D9lFgnv8eBWXp1cx/06xSZUQeX
+         rKtW7vtuDAVgsTgk0muc15opWk2sACNx8AJUkHQ5pcHA/qqQnBouetqMOfBB/8ZRTBJB
+         8qmGjzUo8siuaR+zOnzd62R3LyPVjw8m1e8psF1DwhZ4xhZEKUPBL6N/um+cNDvXzvp9
+         X3tTQJHkiaC8jOe8TeADKZEjWIBnrkfSMfKSRqCOes5bfed/8AA3RofQvBjG+Kn89vbK
+         0zlSPJRHj+PTmI8UIaG4T1Xb04RM0mE3AQHJtBYnXVSXWmWAQPKcWJmgV1QtysbkRXpz
+         iuEQ==
+X-Gm-Message-State: AC+VfDybKUiYQCZXwtytX7uKh+HgY82CehFZ1Y8GbqYRjR2TOUHCkLSR
+	/yjPgpbg7zSZQ2gNwS+69ecbS/JhHMgGzWwOq/DAxw==
+X-Google-Smtp-Source: ACHHUZ6T2y5qSbWChreVWtXuHv0D3Y2Yra3f3svS/wTGHSpGOvnjNQZNnXYhK2mtJC9tcD4ulS5TUIribjNZnkuC8nQ=
+X-Received: by 2002:a67:fbd8:0:b0:43f:57c5:3eca with SMTP id
+ o24-20020a67fbd8000000b0043f57c53ecamr824940vsr.35.1687029865896; Sat, 17 Jun
+ 2023 12:24:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230615121419.175862-1-brgl@bgdev.pl> <20230617001644.4e093326@kernel.org>
+In-Reply-To: <20230617001644.4e093326@kernel.org>
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+Date: Sat, 17 Jun 2023 21:24:15 +0200
+Message-ID: <CAMRc=Mcr=40aoXVcu2NDzz9C+GTPF-3WkyS=GEd-sQJTA9RftA@mail.gmail.com>
+Subject: Re: [PATCH v2 00/23] arm64: qcom: sa8775p-ride: enable the first
+ ethernet port
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Vinod Koul <vkoul@kernel.org>, Bhupesh Sharma <bhupesh.sharma@linaro.org>, 
+	Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+	Konrad Dybcio <konrad.dybcio@linaro.org>, "David S . Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, 
+	Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Kishon Vijay Abraham I <kishon@kernel.org>, Giuseppe Cavallaro <peppe.cavallaro@st.com>, 
+	Alexandre Torgue <alexandre.torgue@foss.st.com>, Jose Abreu <joabreu@synopsys.com>, 
+	netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-phy@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
+	linux-stm32@st-md-mailman.stormreply.com, 
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-WCN3990 comes with two chains - CH0 and CH1 - where each takes VDD
-regulator.  It seems VDD_CH1 is optional (Linux driver does not care
-about it), so document it to fix dtbs_check warnings like:
+On Sat, Jun 17, 2023 at 9:16=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wr=
+ote:
+>
+> On Thu, 15 Jun 2023 14:13:56 +0200 Bartosz Golaszewski wrote:
+> > From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> >
+> > There are three ethernet ports on sa8775p-ride. This series contains ch=
+anges
+> > required to enable one of the two 1Gb ports (the third one is 10Gb). We=
+ need
+> > to add a new driver for the internal SerDes PHY, introduce several exte=
+nsions
+> > to the MAC driver (while at it: tweak coding style a bit etc.) and fina=
+lly
+> > add the relevant DT nodes.
+>
+> Did I already ask you how do you envision this getting merged?
+> You have patches here for at least 3 different trees it seems.
+> Can you post the stmmac driver changes + bindings as a separate series?
+>
 
-  sdm850-lenovo-yoga-c630.dtb: bluetooth: 'vddch1-supply' does not match any of the regexes: 'pinctrl-[0-9]+'
+Sure, now that bindings got reviewed, I will resend the patches
+separately. Them going through different trees won't break the build.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml  | 3 +++
- 1 file changed, 3 insertions(+)
+> >  drivers/phy/qualcomm/phy-qcom-sgmii-eth.c     | 451 ++++++++++++++++++
+>
+> Noob question - what's the distinction between drivers/phy and
+> drivers/net/phy (or actually perhaps drivers/net/pcs in this case)?
 
-diff --git a/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml b/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml
-index e3a51d66527c..2735c6a4f336 100644
---- a/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml
-+++ b/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml
-@@ -52,6 +52,9 @@ properties:
-   vddch0-supply:
-     description: VDD_CH0 supply regulator handle
- 
-+  vddch1-supply:
-+    description: VDD_CH1 supply regulator handle
-+
-   vddaon-supply:
-     description: VDD_AON supply regulator handle
- 
--- 
-2.34.1
+Not sure, but it seems that most drivers in the latter are MDIO while
+those in drivers/phy are all kinds of PHYs (USB, UFS, etc.).
 
+Bart
 
