@@ -1,120 +1,118 @@
-Return-Path: <netdev+bounces-11745-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11746-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 0C3B4734245
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 18:38:39 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0A457734257
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 18:57:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id EAE661C20A96
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 16:38:37 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D77E21C20A68
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 16:57:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A84FFBA29;
-	Sat, 17 Jun 2023 16:38:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 94398BA4F;
+	Sat, 17 Jun 2023 16:57:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36E2E8F78;
-	Sat, 17 Jun 2023 16:38:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 962CAC433CC;
-	Sat, 17 Jun 2023 16:38:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1687019911;
-	bh=wsV5PAOYMtSK534qTONYBGMJADMTf/thu6AVR5VKWFg=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=q5TvC7wXcesBdrAtVwBAqlybicfQ3l31tWhe47gCHoheDPlgSrgt59SLSMZIhYDmm
-	 jGSI/AbGdyvh5m2k3AnGCSYg1w5Ip7D6pqCyW2WpiRZOEAGiOwo2Hmd+1j6rAUprE/
-	 b4HC/Njwt5Mk8bqvMnWE6kMHhKXtbhBU8/LPHAhQqUf6bNYjoID11JcNvnbHR/Wty1
-	 Ci4aW7m3E0aYzqV5URi12B3tlQTJav9/V3UGVH6RUi6w1dQdJ06xsBzhXtuLm5kC4A
-	 9lTOU3FN61E41TP3c36eHFu7PswdRbNKM83MrM077JEeujQ0StC2gBK9V8FMll8Kgo
-	 IyVxt6UshhCrg==
-Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-4f841b7a697so2303490e87.3;
-        Sat, 17 Jun 2023 09:38:31 -0700 (PDT)
-X-Gm-Message-State: AC+VfDzAKM11ayayk1YGXRKJGqccm1KymiYuK6icL39q047Ur3K0n+i4
-	CvKqQ4Dlr2qxqdJHLsshBAmx/groT4nmUV5dJW4=
-X-Google-Smtp-Source: ACHHUZ7/x1kYUhYXMtUENPjhDtD48HKOo5oy2K5VqpfigImzwjTDz7CrLzlDpzPNd4SA2zOD7D4teoP7FVQzMuuaU40=
-X-Received: by 2002:ac2:5bd1:0:b0:4eb:42b7:8c18 with SMTP id
- u17-20020ac25bd1000000b004eb42b78c18mr3005243lfn.53.1687019909491; Sat, 17
- Jun 2023 09:38:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8861D79EC
+	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 16:57:23 +0000 (UTC)
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C85A1999
+	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 09:57:21 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-9829a5ae978so291844166b.2
+        for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 09:57:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1687021040; x=1689613040;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=SApWG7ViMWJvCzoOl336TbaVolfomzcROxDi+nk82RE=;
+        b=yBVR5wz9KmiqLKq0XWprugXY4kG8itegBn3oHUXWqQQT0AJhdFtAVJPJ+yc3vVgbp/
+         aneq6PsQlQhBvwrO7xTyAZk8QkrsTF4FWaVjtkKkIV/j71pUU7zS+x0kOa5VlFuuLqMR
+         Rf46r0cPfgh/97hIMcVajBtXWyIsLDvRk9wLwXo68WtLEHHSLRILunis/2rxerxFwdev
+         VUIYbAju5LQu2RRMFRpva/UwAFxoqukgvZ2y1ybcBoBd2YexK5XQvUId4tl9VbnUgVhX
+         zLeOPgXybkzT9vf6ucWwt1/1bDy0MlpgQRdvvRc5He+4V/zjx0uV8TYRFYw6vIvIl1Yx
+         2OCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687021040; x=1689613040;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SApWG7ViMWJvCzoOl336TbaVolfomzcROxDi+nk82RE=;
+        b=XORkLh087DUR09JUwDkLy+sGSrQ+H53CFZYS5aLDACs4BnXp5sezx1H2KlktloCxUl
+         YxZFFTwnMca1NxEBn6gRk91NB8WtSBIXfDys00YqR99gidILsIsp8um8ukDidLwDELP/
+         O2s7130dX+B8Kn78jnKZP5Nkzth95+cVoXUx5d23CKOZTvmN2zdsZuH1rx9ughkIFnpD
+         wxiUda3oKn22FBjnEPHEzVN9bTNbBjMLAb+r66mttFpd6Ml960B7icAfDZMMmleWjDcy
+         p6vHicFXaNQBbpGe/f53Fr+IJMmztXhJZY2OSR4pG+2kj4ZXIejZFlVwInG2yMn7tPKF
+         Ig2A==
+X-Gm-Message-State: AC+VfDxW4TCO0MdUWYbV/cmPHqODKJxoBOzaFX+bNdQCo+VEbUVAnOrs
+	IpVWXK6EDzKkfG0YN8o5iOc3TQ==
+X-Google-Smtp-Source: ACHHUZ57X2+ydR3mHcPYdCgEjBVpw+J0EnKnU7lZAnkZuvejj4C13bGLtiyW9IBmPRyhKS+pMZTD8g==
+X-Received: by 2002:a17:907:c10:b0:973:fe5d:ef71 with SMTP id ga16-20020a1709070c1000b00973fe5def71mr6173723ejc.14.1687021039975;
+        Sat, 17 Jun 2023 09:57:19 -0700 (PDT)
+Received: from krzk-bin.. ([178.197.219.26])
+        by smtp.gmail.com with ESMTPSA id e10-20020a170906044a00b009845c187bdcsm2603430eja.137.2023.06.17.09.57.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 17 Jun 2023 09:57:19 -0700 (PDT)
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Balakrishna Godavarthi <bgodavar@codeaurora.org>,
+	Rocky Liao <rjliao@codeaurora.org>,
+	netdev@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH net-next] dt-bindings: net: bluetooth: qualcomm: document VDD_CH1
+Date: Sat, 17 Jun 2023 18:57:16 +0200
+Message-Id: <20230617165716.279857-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230616085038.4121892-1-rppt@kernel.org> <20230616085038.4121892-8-rppt@kernel.org>
- <CAPhsuW6BG2oVrGDOpCKyOEvU9fBOboYYhducv96KUBe276Mvng@mail.gmail.com>
- <20230617065759.GT52412@kernel.org> <ZI3TGhJ2y5SBWmnA@moria.home.lan>
-In-Reply-To: <ZI3TGhJ2y5SBWmnA@moria.home.lan>
-From: Song Liu <song@kernel.org>
-Date: Sat, 17 Jun 2023 09:38:17 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4KDriCDfQ40MKKQ3AjyeRbEUJxjqoBLipe5AJMxY3U-w@mail.gmail.com>
-Message-ID: <CAPhsuW4KDriCDfQ40MKKQ3AjyeRbEUJxjqoBLipe5AJMxY3U-w@mail.gmail.com>
-Subject: Re: [PATCH v2 07/12] arm64, execmem: extend execmem_params for
- generated code definitions
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Mike Rapoport <rppt@kernel.org>, linux-kernel@vger.kernel.org, 
-	Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Christophe Leroy <christophe.leroy@csgroup.eu>, "David S. Miller" <davem@davemloft.net>, 
-	Dinh Nguyen <dinguyen@kernel.org>, Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>, 
-	Huacai Chen <chenhuacai@kernel.org>, Luis Chamberlain <mcgrof@kernel.org>, 
-	Mark Rutland <mark.rutland@arm.com>, Michael Ellerman <mpe@ellerman.id.au>, 
-	Nadav Amit <nadav.amit@gmail.com>, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Puranjay Mohan <puranjay12@gmail.com>, 
-	Rick Edgecombe <rick.p.edgecombe@intel.com>, Russell King <linux@armlinux.org.uk>, 
-	Steven Rostedt <rostedt@goodmis.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>, bpf@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, 
-	linux-mm@kvack.org, linux-modules@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-s390@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev, 
-	netdev@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Sat, Jun 17, 2023 at 8:37=E2=80=AFAM Kent Overstreet
-<kent.overstreet@linux.dev> wrote:
->
-> On Sat, Jun 17, 2023 at 09:57:59AM +0300, Mike Rapoport wrote:
-> > > This is growing fast. :) We have 3 now: text, data, jit. And it will =
-be
-> > > 5 when we split data into rw data, ro data, ro after init data. I won=
-der
-> > > whether we should still do some type enum here. But we can revisit
-> > > this topic later.
-> >
-> > I don't think we'd need 5. Four at most :)
-> >
-> > I don't know yet what would be the best way to differentiate RW and RO
-> > data, but ro_after_init surely won't need a new type. It either will be
-> > allocated as RW and then the caller will have to set it RO after
-> > initialization is done, or it will be allocated as RO and the caller wi=
-ll
-> > have to do something like text_poke to update it.
->
-> Perhaps ro_after_init could use the same allocation interface and share
-> pages with ro pages - if we just added a refcount for "this page
-> currently needs to be rw, module is still loading?"
+WCN3990 comes with two chains - CH0 and CH1 - where each takes VDD
+regulator.  It seems VDD_CH1 is optional (Linux driver does not care
+about it), so document it to fix dtbs_check warnings like:
 
-If we don't relax rules with read only, we will have to separate rw, ro,
-and ro_after_init. But we can still have page sharing:
+  sdm850-lenovo-yoga-c630.dtb: bluetooth: 'vddch1-supply' does not match any of the regexes: 'pinctrl-[0-9]+'
 
-Two modules can put rw data on the same page.
-With text poke (ro data poke to be accurate), two modules can put
-ro data on the same page.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml  | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> text_poke() approach wouldn't be workable, you'd have to audit and fix
-> all module init code in the entire kernel.
+diff --git a/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml b/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml
+index e3a51d66527c..2735c6a4f336 100644
+--- a/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml
++++ b/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml
+@@ -52,6 +52,9 @@ properties:
+   vddch0-supply:
+     description: VDD_CH0 supply regulator handle
+ 
++  vddch1-supply:
++    description: VDD_CH1 supply regulator handle
++
+   vddaon-supply:
+     description: VDD_AON supply regulator handle
+ 
+-- 
+2.34.1
 
-Agreed. For this reason, each module has to have its own page(s) for
-ro_after_init data.
-
-To eventually remove VM_FLUSH_RESET_PERMS, we want
-ro_after_init data to share the same allocation interface.
-
-Thanks,
-Song
 
