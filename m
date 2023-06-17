@@ -1,143 +1,100 @@
-Return-Path: <netdev+bounces-11685-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11686-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D7F48733EC6
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 08:42:24 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 50C09733EC7
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 08:43:30 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 103521C2107C
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 06:42:24 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id AD5C128191C
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 06:43:28 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1FAB46BD;
-	Sat, 17 Jun 2023 06:42:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0BBFB4C7F;
+	Sat, 17 Jun 2023 06:43:27 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79A2C46B1
-	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 06:42:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF812C433C0;
-	Sat, 17 Jun 2023 06:42:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686984140;
-	bh=FAR5g4heOhDUhqBDGst7pbs0jTO0En2U7jBOtmZHEr4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=hTEPVi4qJrmK6Kej9YNsAIDUI8SPBZQXMQ+/FW2aPX0Senti/XubfXZZH1tAzzrTY
-	 VBnP08L2cg//cFiuonTiXZWTnfbZGGeo01j/9cXej4hhtLrI/CkOKkhWykUbAglkwe
-	 9c+xBhjidzRwR2SpmiVVVOTAVt8jQeZVDEbh54kLa0XLDTMK9QUzg/BEFalMx/y+/e
-	 1Mj+h91+4KRGWVqETh50sh86qfdb5t+fcQmD9WALTxmOecLb1ywVNKax2An9xunlol
-	 M1KQA8u77jCdoDVXwXGul92Dc9BRz9P6VPIvauj1amPng81v/OUtsFkLXx2nS+c4iM
-	 ELIQYfiFnCbIA==
-Date: Fri, 16 Jun 2023 23:42:18 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc: davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
- netdev@vger.kernel.org, Joshua Hay <joshua.a.hay@intel.com>,
- pavan.kumar.linga@intel.com, emil.s.tantilov@intel.com,
- jesse.brandeburg@intel.com, sridhar.samudrala@intel.com,
- shiraz.saleem@intel.com, sindhu.devale@intel.com, willemb@google.com,
- decot@google.com, andrew@lunn.ch, leon@kernel.org, mst@redhat.com,
- simon.horman@corigine.com, shannon.nelson@amd.com,
- stephen@networkplumber.org, Alan Brady <alan.brady@intel.com>, Madhu
- Chittim <madhu.chittim@intel.com>, Phani Burra <phani.r.burra@intel.com>,
- Shailendra Bhatnagar <shailendra.bhatnagar@intel.com>
-Subject: Re: [PATCH net-next v2 03/15] idpf: add controlq init and reset
- checks
-Message-ID: <20230616234218.58760587@kernel.org>
-In-Reply-To: <20230614171428.1504179-4-anthony.l.nguyen@intel.com>
-References: <20230614171428.1504179-1-anthony.l.nguyen@intel.com>
-	<20230614171428.1504179-4-anthony.l.nguyen@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3D1A46BD
+	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 06:43:26 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A765297A
+	for <netdev@vger.kernel.org>; Fri, 16 Jun 2023 23:43:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686984204;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=KT3z5MBsLMZkLkeo6Bj0bSQulysSCuM486H4EH/KXBo=;
+	b=ajE6gF9RkiMqM/z4XUUS99hCMIwG5azliuEmiqHCm0h5OAMMRD0V0avFteUE8kStmYz20+
+	FDQB1BS+pI9P2jxqngkLuQp95TDt6IG5sRKgiqbm6Iukqdaup31An6yGPHQWGjR2M5OIoz
+	4IRHiT7gXLNc2Fg+CdYIN0KZQez9RUk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-114-ZW6hiUcWM0G5bKLmfNojwA-1; Sat, 17 Jun 2023 02:43:18 -0400
+X-MC-Unique: ZW6hiUcWM0G5bKLmfNojwA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EF5773C00086;
+	Sat, 17 Jun 2023 06:43:17 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.51])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 12E712166B25;
+	Sat, 17 Jun 2023 06:43:15 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <ZIy82RjpmQMTNafS@corigine.com>
+References: <ZIy82RjpmQMTNafS@corigine.com> <20230616161301.622169-1-dhowells@redhat.com> <20230616161301.622169-2-dhowells@redhat.com>
+To: Simon Horman <simon.horman@corigine.com>
+Cc: dhowells@redhat.com, netdev@vger.kernel.org,
+    Alexander Duyck <alexander.duyck@gmail.com>,
+    "David S. Miller" <davem@davemloft.net>,
+    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+    Paolo Abeni <pabeni@redhat.com>,
+    Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+    David Ahern <dsahern@kernel.org>,
+    Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>,
+    linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+    Menglong Dong <imagedong@tencent.com>
+Subject: Re: [PATCH net-next 01/17] net: Copy slab data for sendmsg(MSG_SPLICE_PAGES)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <708509.1686984195.1@warthog.procyon.org.uk>
+Date: Sat, 17 Jun 2023 07:43:15 +0100
+Message-ID: <708510.1686984195@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-On Wed, 14 Jun 2023 10:14:16 -0700 Tony Nguyen wrote:
-> +static void idpf_ctlq_init_rxq_bufs(struct idpf_ctlq_info *cq)
-> +{
-> +	int i = 0;
-> +
-> +	for (i = 0; i < cq->ring_size; i++) {
+Simon Horman <simon.horman@corigine.com> wrote:
 
-no need to init i twice
+> > +	cache = get_cpu_ptr(&skb_splice_frag_cache);
+...
+> > +	put_cpu_ptr(skb_splice_frag_cache);
+> 
+> Hi David,
+> 
+> I don't think it makes any difference at run-time.
+> But to keep Sparse happy, perhaps this ought to be put_cpu_var()
 
-> +	if (!qinfo->len || !qinfo->buf_size ||
-> +	    qinfo->len > IDPF_CTLQ_MAX_RING_SIZE ||
-> +	    qinfo->buf_size > IDPF_CTLQ_MAX_BUF_LEN)
-> +		return -EINVAL;
+Actually, the problem is a missing "&".  I think I should use put_cpu_ptr() to
+match get_cpu_ptr().  It doesn't crash because the argument is ignored.
 
-Looks like defensive programming, it's generally discouraged in 
-the kernel.
-
-> +init_free_q:
-> +	kfree(cq);
-> +	cq = NULL;
-
-no need to clear local variables
-
-> +	return err;
-> +}
-
-> +	int i = 0;
-> +
-> +	INIT_LIST_HEAD(&hw->cq_list_head);
-> +
-> +	for (i = 0; i < num_q; i++) {
-
-init, again, please fix throughout
-
-> +		struct idpf_ctlq_create_info *qinfo = q_info + i;
-> +
-> +		err = idpf_ctlq_add(hw, qinfo, &cq);
-> +		if (err)
-> +			goto init_destroy_qs;
-> +	}
-> +
-> +	return err;
-
-return 0 is more idiomatic, you can't reach it with an errno
-
-
-> +void idpf_ctlq_deinit(struct idpf_hw *hw)
-> +{
-> +	struct idpf_ctlq_info *cq = NULL, *tmp = NULL;
-
-You really like to init the stack :S
-
-> +	list_for_each_entry_safe(cq, tmp, &hw->cq_list_head, cq_list)
-> +		idpf_ctlq_remove(hw, cq);
-> +}
-
-> +	if (!cq || !cq->ring_size)
-> +		return -ENOBUFS;
-
-even worse defensive programming
-
-> +	mutex_lock(&cq->cq_lock);
-> +
-> +	/* Ensure there are enough descriptors to send all messages */
-> +	num_desc_avail = IDPF_CTLQ_DESC_UNUSED(cq);
-> +	if (num_desc_avail == 0 || num_desc_avail < num_q_msg) {
-> +		err = -ENOSPC;
-> +		goto sq_send_command_out;
-
-name labels after what they jump to, err_unlock
-
-> +void *idpf_alloc_dma_mem(struct idpf_hw *hw, struct idpf_dma_mem *mem, u64 size)
-> +{
-> +	struct idpf_adapter *adapter = hw->back;
-> +	size_t sz = ALIGN(size, 4096);
-> +
-> +	mem->va = dma_alloc_coherent(&adapter->pdev->dev, sz,
-> +				     &mem->pa, GFP_KERNEL | __GFP_ZERO);
-
-DMA API always zeros memory, I thought cocci warns about this
-Did you run cocci checks?
+David
 
 
