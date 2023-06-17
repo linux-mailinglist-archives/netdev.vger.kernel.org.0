@@ -1,114 +1,104 @@
-Return-Path: <netdev+bounces-11706-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11707-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id A1BB9733F58
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 10:01:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id BBA5E733FA4
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 10:29:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5D08D281945
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 08:01:36 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4FEDA281858
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 08:29:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C43FA746C;
-	Sat, 17 Jun 2023 08:01:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 814E3748B;
+	Sat, 17 Jun 2023 08:29:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7B511C33
-	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 08:01:33 +0000 (UTC)
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C2D2720;
-	Sat, 17 Jun 2023 01:01:32 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4QjpM53p5YztQTP;
-	Sat, 17 Jun 2023 15:58:57 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Sat, 17 Jun 2023 16:01:29 +0800
-Message-ID: <961f4d1a-6756-0a09-f578-5bf5791a1a64@huawei.com>
-Date: Sat, 17 Jun 2023 16:01:29 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75D6B1C33
+	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 08:29:20 +0000 (UTC)
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6221FF7
+	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 01:29:18 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id 98e67ed59e1d1-25edb50c3acso134719a91.1
+        for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 01:29:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686990558; x=1689582558;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=T7zvLgMQNOS4thpxSt/o4jTmAbW5w4N+SoOGdd1Z5+E=;
+        b=Kzxtz/1qDN+woQNvk4cGrBYylJxttSzye0eofPxIovlfr9xRFv/6g0FBH2nIfN83F1
+         j+VNqIBbuCrq4YnSYk+NfKGo73BaQQfDYl5fNgdV5mEJ4BTUZnq0OW0omWni6kyiv0pn
+         qP6YNZ0V5WnoZ1lx0m1dq9vtk5BRmfEr6GnqZq98jWyN50QBc2buw/wWJozDihQag9se
+         CR0cvX56sE1vLWr5DhVYsMcF/GDnkMEwBYYyYOsPHV4epL6sjfOXzpKOodk3PcdKPqQ+
+         OJH6O4yW4aFq6tt6A15KBleQfYXGSNDV7PpeJlqj5reIw0GKWT6PQ0EoOj2nlfXTRJm3
+         E/fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686990558; x=1689582558;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=T7zvLgMQNOS4thpxSt/o4jTmAbW5w4N+SoOGdd1Z5+E=;
+        b=ltvEYdWT79c0Pmow2q9jR0/JieZjlUdelDCdSu91n14AwZ2SUVTrjYsI5EgzFPUpck
+         4XDI9PFGbn7tK+pLlhLiCRVVqdI4uMuwM92SRZJZUrUfmx9glDtD3K/ytuizY/2tApxB
+         Z5VvvCK0Nx4D5oscyhSJGSB4f9vwQR7zGnyy42v5Aah+lliR2Z+hwe5oP2TcVNjbMV9J
+         swNiiyHvyTEuuKFK/30AVE3JlqQ8F+zw/lAUG3IuS+iv1OOqQcLvHzjIbK91TJmjxl5f
+         MWXsPSeO+OuiBcu0J5d5pJHTAOGfrO2On4OsodU/B5x8cX9QKgMMRjys+rQ75dKInM+W
+         ttrQ==
+X-Gm-Message-State: AC+VfDxD0/SfDeorJQnRxRf2v+B10Lnxo80V8N0Cz87PBjifW5EVIqeH
+	Apgmd4iSp/y8y3H8Xms/yIMfzZrlCcTvx/ZaPWJM+u3c/jQRNw==
+X-Google-Smtp-Source: ACHHUZ7lPdUSX4Fvgmp5GiZrMpLn0fsUc3H2cRCc/oz6F/2gcbsKfPxURltL0GOiCfIH7w58izSa4iuTlnvJ98C0zCQ=
+X-Received: by 2002:a17:90a:8a0b:b0:256:2cb7:406e with SMTP id
+ w11-20020a17090a8a0b00b002562cb7406emr4311582pjn.45.1686990558318; Sat, 17
+ Jun 2023 01:29:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH] selftests: tc-testing: add one test for flushing
- explicitly created chain
-To: renmingshuai <renmingshuai@huawei.com>, <pctammela@mojatatu.com>,
-	<vladbu@nvidia.com>, <netdev@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <jhs@mojatatu.com>,
-	<xiyou.wangcong@gmail.com>, <jiri@resnulli.us>, <davem@davemloft.net>,
-	<edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC: <liaichun@huawei.com>, <caowangbao@huawei.com>, <yanan@huawei.com>,
-	<liubo335@huawei.com>
-References: <20230617032033.892064-1-renmingshuai@huawei.com>
-From: shaozhengchao <shaozhengchao@huawei.com>
-In-Reply-To: <20230617032033.892064-1-renmingshuai@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <ZHmjlzbRi0nHUuTU@Laptop-X1> <ZIFOY02zi9FZ+aNh@Laptop-X1> <1816.1686966353@famine>
+In-Reply-To: <1816.1686966353@famine>
+From: Hangbin Liu <liuhangbin@gmail.com>
+Date: Sat, 17 Jun 2023 16:29:06 +0800
+Message-ID: <CAPwn2JRuU0+XEOnsETjrOpRi4YYXT+BemsaH1K5cAOnP4G-Wvw@mail.gmail.com>
+Subject: Re: [Discuss] IPv4 packets lost with macvlan over bond alb
+To: Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc: netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+On Sat, Jun 17, 2023 at 9:45=E2=80=AFAM Jay Vosburgh <jay.vosburgh@canonica=
+l.com> wrote:
+>
+> Hangbin Liu <liuhangbin@gmail.com> wrote:
+>
+> >Hi Jay, any thoughts?
+>
+>         Just an update that I've done some poking with your reproducer;
+> as described, the ARP reply for the IP address associated with the
+> macvlan interface is coming back with the bond's MAC, not the MAC of the
+> macvlan.  If I manually create a neighbour entry on the client with the
+> corrent IP and MAC for the macvlan, then connectivity works as expected.
+>
+>         I'll have to look a bit further into the ARP MAC selection logic
+> here (i.e., where does that MAC come from when the ARP reply is
+> generated).  It also makes me wonder what's special about macvlan, e.g.,
+> why doesn't regular VLAN (or other stacked devices) fail in the same way
+> (or maybe it does and nobody has noticed).
 
-Hi renmingshuai:
-On 2023/6/17 11:20, renmingshuai wrote:
-> Add the test for additional reference to chains that are explicitly created
->   by RTM_NEWCHAIN message
-> 
-> commit c9a82bec02c3 ("net/sched: cls_api: Fix lockup on flushing explicitly
->   created chain")
-> Signed-off-by: Mingshuai Ren <renmingshuai@huawei.com>
-> ---
->   .../tc-testing/tc-tests/infra/filter.json     | 25 +++++++++++++++++++
->   1 file changed, 25 insertions(+)
->   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/infra/filter.json
-> 
-> diff --git a/tools/testing/selftests/tc-testing/tc-tests/infra/filter.json b/tools/testing/selftests/tc-testing/tc-tests/infra/filter.json
-> new file mode 100644
-> index 000000000000..c4c778e83da2
-> --- /dev/null
-> +++ b/tools/testing/selftests/tc-testing/tc-tests/infra/filter.json
-> @@ -0,0 +1,25 @@
-> +[
-> +    {
-> +        "id": "c2b4",
-> +        "name": "soft lockup alarm will be not generated after delete the prio 0 filter of the chain",
-	 "Delete the prio 0 filter of chain" looks better. And adding
-  test result in comment also will be better.
+VLAN or other overlay devices use the same MAC address with Bonding.
+So they work with the alb mode. But MACVLAN uses different MAC
+addresses with Bonding.
 
-Zhengchao Shao
-> +        "category": [
-> +            "filter",
-> +            "chain"
-> +        ],
-> +        "setup": [
-> +            "$IP link add dev $DUMMY type dummy || /bin/true",
-> +            "$TC qdisc add dev $DUMMY root handle 1: htb default 1",
-> +            "$TC chain add dev $DUMMY",
-> +            "$TC filter del dev $DUMMY chain 0 parent 1: prio 0"
-> +        ],
-> +        "cmdUnderTest": "$TC filter add dev $DUMMY chain 0 parent 1:",
-> +        "expExitCode": "2",
-> +        "verifyCmd": "$TC chain ls dev $DUMMY",
-> +        "matchPattern": "chain parent 1: chain 0",
-> +        "matchCount": "1",
-> +        "teardown": [
-> +            "$TC qdisc del dev $DUMMY root handle 1: htb default 1",
-> +            "$IP link del dev $DUMMY type dummy"
-> +        ]
-> +    }
-> +]
+Thanks
+Hangbin
 
