@@ -1,49 +1,49 @@
-Return-Path: <netdev+bounces-11731-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11728-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 236A77340F0
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 14:18:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id B31597340E9
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 14:17:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CE9B12818AB
-	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 12:18:28 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6EA0A28164A
+	for <lists+netdev@lfdr.de>; Sat, 17 Jun 2023 12:17:04 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 20A8C8F78;
-	Sat, 17 Jun 2023 12:14:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F8848F65;
+	Sat, 17 Jun 2023 12:13:02 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FDDC79EC
-	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 12:14:29 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE5E19B0
-	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 05:14:01 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F32231C33
+	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 12:13:01 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5600D2700
+	for <netdev@vger.kernel.org>; Sat, 17 Jun 2023 05:13:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1687004041;
+	s=mimecast20190719; t=1687003979;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=XKse4vF5Frqs4bdWsYMKttBmqWRsH1PFiAHwvjH79qA=;
-	b=FEVN1XwrB7Uj4EDnY75i/fkzeGXkEFGqz39+JoTybH1XIcD0BEqD19jE4J4DubResIpWRH
-	JyTfZtECtDQ+0l5yuZgafm2Yx4vS1je24xaz5gh8fmIf3EQviRU+sy6iJXCPjw5O5jvCIM
-	cBPdrTBZjZuArqELTR2YW3BTKqj5ZOc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=bszGYXAPCfyFrCrKXBgf4DyEzlv1vS1+csO6wWtbX4c=;
+	b=BJNAUcr0v4t2NFr7tqw7hZKlTt3y/xT75UIPYcD/3MQbBVOSQUDjA4B6vjSTarmfuxaR5F
+	sbwjJ87gTZ6yRI1X8KeH4rZ3kRddsVlHp0cwASO7LPmr8UNAwI06FndrDcXPPXjUOz9RiA
+	sc+z9BxqMtA9cLN+kiue+itnmK9oLk8=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-2-7XIMq-mIPQOIc8pmfQb5Cg-1; Sat, 17 Jun 2023 08:12:51 -0400
-X-MC-Unique: 7XIMq-mIPQOIc8pmfQb5Cg-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+ us-mta-436-185vvMv5PdOOlfFYb8ORMQ-1; Sat, 17 Jun 2023 08:12:55 -0400
+X-MC-Unique: 185vvMv5PdOOlfFYb8ORMQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EC560101A56C;
-	Sat, 17 Jun 2023 12:12:50 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 192423C11C6A;
+	Sat, 17 Jun 2023 12:12:54 +0000 (UTC)
 Received: from warthog.procyon.org.com (unknown [10.42.28.51])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id E891B48FB01;
-	Sat, 17 Jun 2023 12:12:48 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 903F92026D49;
+	Sat, 17 Jun 2023 12:12:51 +0000 (UTC)
 From: David Howells <dhowells@redhat.com>
 To: netdev@vger.kernel.org
 Cc: David Howells <dhowells@redhat.com>,
@@ -58,14 +58,19 @@ Cc: David Howells <dhowells@redhat.com>,
 	Jens Axboe <axboe@kernel.dk>,
 	linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org,
-	Philipp Reisner <philipp.reisner@linbit.com>,
-	Lars Ellenberg <lars.ellenberg@linbit.com>,
-	=?UTF-8?q?Christoph=20B=C3=B6hmwalder?= <christoph.boehmwalder@linbit.com>,
-	drbd-dev@lists.linbit.com,
-	linux-block@vger.kernel.org
-Subject: [PATCH net-next v2 14/17] drdb: Send an entire bio in a single sendmsg
-Date: Sat, 17 Jun 2023 13:11:43 +0100
-Message-ID: <20230617121146.716077-15-dhowells@redhat.com>
+	Lee Duncan <lduncan@suse.com>,
+	Chris Leech <cleech@redhat.com>,
+	Mike Christie <michael.christie@oracle.com>,
+	Maurizio Lombardi <mlombard@redhat.com>,
+	"James E.J. Bottomley" <jejb@linux.ibm.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	Al Viro <viro@zeniv.linux.org.uk>,
+	open-iscsi@googlegroups.com,
+	linux-scsi@vger.kernel.org,
+	target-devel@vger.kernel.org
+Subject: [PATCH net-next v2 15/17] iscsi: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage
+Date: Sat, 17 Jun 2023 13:11:44 +0100
+Message-ID: <20230617121146.716077-16-dhowells@redhat.com>
 In-Reply-To: <20230617121146.716077-1-dhowells@redhat.com>
 References: <20230617121146.716077-1-dhowells@redhat.com>
 Precedence: bulk
@@ -74,161 +79,170 @@ List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Since _drdb_sendpage() is now using sendmsg to send the pages rather
-sendpage, pass the entire bio in one go using a bvec iterator instead of
-doing it piecemeal.
+Use sendmsg() with MSG_SPLICE_PAGES rather than sendpage.  This allows
+multiple pages and multipage folios to be passed through.
+
+TODO: iscsit_fe_sendpage_sg() should perhaps set up a bio_vec array for the
+entire set of pages it's going to transfer plus two for the header and
+trailer and page fragments to hold the header and trailer - and then call
+sendmsg once for the entire message.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Philipp Reisner <philipp.reisner@linbit.com>
-cc: Lars Ellenberg <lars.ellenberg@linbit.com>
-cc: "Christoph Böhmwalder" <christoph.boehmwalder@linbit.com>
-cc: Jens Axboe <axboe@kernel.dk>
+cc: Lee Duncan <lduncan@suse.com>
+cc: Chris Leech <cleech@redhat.com>
+cc: Mike Christie <michael.christie@oracle.com>
+cc: Maurizio Lombardi <mlombard@redhat.com>
+cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
+cc: "Martin K. Petersen" <martin.petersen@oracle.com>
 cc: "David S. Miller" <davem@davemloft.net>
 cc: Eric Dumazet <edumazet@google.com>
 cc: Jakub Kicinski <kuba@kernel.org>
 cc: Paolo Abeni <pabeni@redhat.com>
-cc: drbd-dev@lists.linbit.com
-cc: linux-block@vger.kernel.org
+cc: Jens Axboe <axboe@kernel.dk>
+cc: Matthew Wilcox <willy@infradead.org>
+cc: Al Viro <viro@zeniv.linux.org.uk>
+cc: open-iscsi@googlegroups.com
+cc: linux-scsi@vger.kernel.org
+cc: target-devel@vger.kernel.org
 cc: netdev@vger.kernel.org
 ---
 
 Notes:
     ver #2)
-     - Use "unsigned int" rather than "unsigned".
+     - Wrap lines at 80.
 
- drivers/block/drbd/drbd_main.c | 77 +++++++++++-----------------------
- 1 file changed, 25 insertions(+), 52 deletions(-)
+ drivers/scsi/iscsi_tcp.c                 | 26 +++++++++---------------
+ drivers/scsi/iscsi_tcp.h                 |  2 +-
+ drivers/target/iscsi/iscsi_target_util.c | 15 ++++++++------
+ 3 files changed, 20 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index 8a01a18a2550..beba74ae093b 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -1520,28 +1520,15 @@ static void drbd_update_congested(struct drbd_connection *connection)
-  * As a workaround, we disable sendpage on pages
-  * with page_count == 0 or PageSlab.
-  */
--static int _drbd_no_send_page(struct drbd_peer_device *peer_device, struct page *page,
--			      int offset, size_t size, unsigned msg_flags)
--{
--	struct socket *socket;
--	void *addr;
--	int err;
+diff --git a/drivers/scsi/iscsi_tcp.c b/drivers/scsi/iscsi_tcp.c
+index 9637d4bc2bc9..9ab8555180a3 100644
+--- a/drivers/scsi/iscsi_tcp.c
++++ b/drivers/scsi/iscsi_tcp.c
+@@ -301,35 +301,32 @@ static int iscsi_sw_tcp_xmit_segment(struct iscsi_tcp_conn *tcp_conn,
+ 
+ 	while (!iscsi_tcp_segment_done(tcp_conn, segment, 0, r)) {
+ 		struct scatterlist *sg;
++		struct msghdr msg = {};
++		struct bio_vec bv;
+ 		unsigned int offset, copy;
+-		int flags = 0;
+ 
+ 		r = 0;
+ 		offset = segment->copied;
+ 		copy = segment->size - offset;
+ 
+ 		if (segment->total_copied + segment->size < segment->total_size)
+-			flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
++			msg.msg_flags |= MSG_MORE;
+ 
+ 		if (tcp_sw_conn->queue_recv)
+-			flags |= MSG_DONTWAIT;
++			msg.msg_flags |= MSG_DONTWAIT;
+ 
+-		/* Use sendpage if we can; else fall back to sendmsg */
+ 		if (!segment->data) {
++			if (!tcp_conn->iscsi_conn->datadgst_en)
++				msg.msg_flags |= MSG_SPLICE_PAGES;
+ 			sg = segment->sg;
+ 			offset += segment->sg_offset + sg->offset;
+-			r = tcp_sw_conn->sendpage(sk, sg_page(sg), offset,
+-						  copy, flags);
++			bvec_set_page(&bv, sg_page(sg), copy, offset);
+ 		} else {
+-			struct msghdr msg = { .msg_flags = flags };
+-			struct kvec iov = {
+-				.iov_base = segment->data + offset,
+-				.iov_len = copy
+-			};
 -
--	socket = peer_device->connection->data.socket;
--	addr = kmap(page) + offset;
--	err = drbd_send_all(peer_device->connection, socket, addr, size, msg_flags);
--	kunmap(page);
--	if (!err)
--		peer_device->device->send_cnt += size >> 9;
--	return err;
--}
--
--static int _drbd_send_page(struct drbd_peer_device *peer_device, struct page *page,
--		    int offset, size_t size, unsigned msg_flags)
-+static int _drbd_send_pages(struct drbd_peer_device *peer_device,
-+			    struct iov_iter *iter, unsigned int msg_flags)
+-			r = kernel_sendmsg(sk, &msg, &iov, 1, copy);
++			bvec_set_virt(&bv, segment->data + offset, copy);
+ 		}
++		iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bv, 1, copy);
+ 
++		r = sock_sendmsg(sk, &msg);
+ 		if (r < 0) {
+ 			iscsi_tcp_segment_unmap(segment);
+ 			return r;
+@@ -746,7 +743,6 @@ iscsi_sw_tcp_conn_bind(struct iscsi_cls_session *cls_session,
+ 	sock_no_linger(sk);
+ 
+ 	iscsi_sw_tcp_conn_set_callbacks(conn);
+-	tcp_sw_conn->sendpage = tcp_sw_conn->sock->ops->sendpage;
+ 	/*
+ 	 * set receive state machine into initial state
+ 	 */
+@@ -777,8 +773,6 @@ static int iscsi_sw_tcp_conn_set_param(struct iscsi_cls_conn *cls_conn,
+ 			return -ENOTCONN;
+ 		}
+ 		iscsi_set_param(cls_conn, param, buf, buflen);
+-		tcp_sw_conn->sendpage = conn->datadgst_en ?
+-			sock_no_sendpage : tcp_sw_conn->sock->ops->sendpage;
+ 		mutex_unlock(&tcp_sw_conn->sock_lock);
+ 		break;
+ 	case ISCSI_PARAM_MAX_R2T:
+diff --git a/drivers/scsi/iscsi_tcp.h b/drivers/scsi/iscsi_tcp.h
+index 68e14a344904..d6ec08d7eb63 100644
+--- a/drivers/scsi/iscsi_tcp.h
++++ b/drivers/scsi/iscsi_tcp.h
+@@ -48,7 +48,7 @@ struct iscsi_sw_tcp_conn {
+ 	uint32_t		sendpage_failures_cnt;
+ 	uint32_t		discontiguous_hdr_cnt;
+ 
+-	ssize_t (*sendpage)(struct socket *, struct page *, int, size_t, int);
++	bool			can_splice_to_tcp;
+ };
+ 
+ struct iscsi_sw_tcp_host {
+diff --git a/drivers/target/iscsi/iscsi_target_util.c b/drivers/target/iscsi/iscsi_target_util.c
+index b14835fcb033..6231fa4ef5c6 100644
+--- a/drivers/target/iscsi/iscsi_target_util.c
++++ b/drivers/target/iscsi/iscsi_target_util.c
+@@ -1129,6 +1129,8 @@ int iscsit_fe_sendpage_sg(
+ 	struct iscsit_conn *conn)
  {
- 	struct socket *socket = peer_device->connection->data.socket;
--	struct bio_vec bvec;
--	struct msghdr msg = { .msg_flags = msg_flags, };
-+	struct msghdr msg = {
-+		.msg_flags	= msg_flags | MSG_NOSIGNAL,
-+		.msg_iter	= *iter,
-+	};
-+	size_t size = iov_iter_count(iter);
- 	int err = -EIO;
- 
- 	/* e.g. XFS meta- & log-data is in slab pages, which have a
-@@ -1550,11 +1537,8 @@ static int _drbd_send_page(struct drbd_peer_device *peer_device, struct page *pa
- 	 * put_page(); and would cause either a VM_BUG directly, or
- 	 * __page_cache_release a page that would actually still be referenced
- 	 * by someone, leading to some obscure delayed Oops somewhere else. */
--	if (!drbd_disable_sendpage && sendpage_ok(page))
--		msg.msg_flags |= MSG_NOSIGNAL | MSG_SPLICE_PAGES;
--
--	bvec_set_page(&bvec, page, offset, size);
--	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, size);
-+	if (drbd_disable_sendpage)
-+		msg.msg_flags &= ~(MSG_NOSIGNAL | MSG_SPLICE_PAGES);
- 
- 	drbd_update_congested(peer_device->connection);
- 	do {
-@@ -1587,39 +1571,22 @@ static int _drbd_send_page(struct drbd_peer_device *peer_device, struct page *pa
- 
- static int _drbd_send_bio(struct drbd_peer_device *peer_device, struct bio *bio)
- {
--	struct bio_vec bvec;
--	struct bvec_iter iter;
-+	struct iov_iter iter;
- 
--	/* hint all but last page with MSG_MORE */
--	bio_for_each_segment(bvec, bio, iter) {
--		int err;
-+	iov_iter_bvec(&iter, ITER_SOURCE, bio->bi_io_vec, bio->bi_vcnt,
-+		      bio->bi_iter.bi_size);
- 
--		err = _drbd_no_send_page(peer_device, bvec.bv_page,
--					 bvec.bv_offset, bvec.bv_len,
--					 bio_iter_last(bvec, iter)
--					 ? 0 : MSG_MORE);
--		if (err)
--			return err;
--	}
--	return 0;
-+	return _drbd_send_pages(peer_device, &iter, 0);
- }
- 
- static int _drbd_send_zc_bio(struct drbd_peer_device *peer_device, struct bio *bio)
- {
--	struct bio_vec bvec;
--	struct bvec_iter iter;
-+	struct iov_iter iter;
- 
--	/* hint all but last page with MSG_MORE */
--	bio_for_each_segment(bvec, bio, iter) {
--		int err;
-+	iov_iter_bvec(&iter, ITER_SOURCE, bio->bi_io_vec, bio->bi_vcnt,
-+		      bio->bi_iter.bi_size);
- 
--		err = _drbd_send_page(peer_device, bvec.bv_page,
--				      bvec.bv_offset, bvec.bv_len,
--				      bio_iter_last(bvec, iter) ? 0 : MSG_MORE);
--		if (err)
--			return err;
--	}
--	return 0;
-+	return _drbd_send_pages(peer_device, &iter, MSG_SPLICE_PAGES);
- }
- 
- static int _drbd_send_zc_ee(struct drbd_peer_device *peer_device,
-@@ -1631,10 +1598,16 @@ static int _drbd_send_zc_ee(struct drbd_peer_device *peer_device,
- 
- 	/* hint all but last page with MSG_MORE */
- 	page_chain_for_each(page) {
-+		struct iov_iter iter;
-+		struct bio_vec bvec;
- 		unsigned l = min_t(unsigned, len, PAGE_SIZE);
- 
--		err = _drbd_send_page(peer_device, page, 0, l,
--				      page_chain_next(page) ? MSG_MORE : 0);
-+		bvec_set_page(&bvec, page, 0, l);
-+		iov_iter_bvec(&iter, ITER_SOURCE, &bvec, 1, l);
+ 	struct scatterlist *sg = cmd->first_data_sg;
++	struct bio_vec bvec;
++	struct msghdr msghdr = { .msg_flags = MSG_SPLICE_PAGES,	};
+ 	struct kvec iov;
+ 	u32 tx_hdr_size, data_len;
+ 	u32 offset = cmd->first_data_sg_off;
+@@ -1172,17 +1174,18 @@ int iscsit_fe_sendpage_sg(
+ 		u32 space = (sg->length - offset);
+ 		u32 sub_len = min_t(u32, data_len, space);
+ send_pg:
+-		tx_sent = conn->sock->ops->sendpage(conn->sock,
+-					sg_page(sg), sg->offset + offset, sub_len, 0);
++		bvec_set_page(&bvec, sg_page(sg), sub_len, sg->offset + offset);
++		iov_iter_bvec(&msghdr.msg_iter, ITER_SOURCE, &bvec, 1, sub_len);
 +
-+		err = _drbd_send_pages(peer_device, &iter,
-+				       MSG_SPLICE_PAGES |
-+				       (page_chain_next(page) ? MSG_MORE : 0));
- 		if (err)
- 			return err;
- 		len -= l;
++		tx_sent = conn->sock->ops->sendmsg(conn->sock, &msghdr,
++						   sub_len);
+ 		if (tx_sent != sub_len) {
+ 			if (tx_sent == -EAGAIN) {
+-				pr_err("tcp_sendpage() returned"
+-						" -EAGAIN\n");
++				pr_err("sendmsg/splice returned -EAGAIN\n");
+ 				goto send_pg;
+ 			}
+ 
+-			pr_err("tcp_sendpage() failure: %d\n",
+-					tx_sent);
++			pr_err("sendmsg/splice failure: %d\n", tx_sent);
+ 			return -1;
+ 		}
+ 
 
 
