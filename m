@@ -1,81 +1,109 @@
-Return-Path: <netdev+bounces-11784-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11785-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7F29373472C
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 19:10:24 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 62381734735
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 19:29:12 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id A6DF41C20955
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 17:10:23 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 73D632810A4
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 17:29:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 85BF963C9;
-	Sun, 18 Jun 2023 17:10:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D56BE63D4;
+	Sun, 18 Jun 2023 17:29:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA9CB1386
-	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 17:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3CA15C433C9;
-	Sun, 18 Jun 2023 17:10:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1687108219;
-	bh=xuqAbC9/Y0WfDYipAEUmBP+MnJMUXUustqdX+mxovb4=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=RkqoyoMLhBYX65rWZU86g9Vrt6QHeoU3l2xLgzOKtaHDNLm2d0AQEyvIW7WMXuyfk
-	 cOTqA4mOBvng7nI3JjAIin/U8Y4QGqxmmjTIpPvxiq1UnJpJQa5BybOEr0OgTDs1/N
-	 txcJ6XVmrP5x2rckgxHloxTpDZUdx6yPC964KXIrZR8jAdHUMiwPdLD+udKLx1m6Zi
-	 Qo+9DPFwubo3qye+BTpEQHlybuRJUvzptNRtP3Eog/V/LTb/6IhIljtQWApFVS8b7s
-	 gk0S9bIa7Ck3Y1012q6vIIHOToN9i3x7NlfTeoSdfpm4px2OiclsIrYL3GTUnWyBhn
-	 DQimP9HJ+Ig7w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 22435C395C7;
-	Sun, 18 Jun 2023 17:10:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6B7A1FC4
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 17:29:08 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1188D10FF
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 10:28:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1687109328;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ccXraZTQ7XryyK5LpNAR74GJ0dtmJGkdhwIEf8RJTcI=;
+	b=Z0GbKvUTg9HYKhexFu9ohLnAnLShQ0tXKmctMwfWEFXH94TpdkhHSjDKr4HZYIuw+A0pBt
+	rQyIZ3zKhwsfFTI3a9RPUbLkF1j3VU3UoVP/wqm78KDWY4WeYe3B0Hd96yg3D+yjOosHV9
+	YpubQaZN5vzqy9f1d5s87ug7LqJNC8c=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-612-QbA_4gTuPJSb27gVyaPZjw-1; Sun, 18 Jun 2023 13:28:44 -0400
+X-MC-Unique: QbA_4gTuPJSb27gVyaPZjw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D77563804A4C;
+	Sun, 18 Jun 2023 17:28:43 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.4])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id AB45F40C20F5;
+	Sun, 18 Jun 2023 17:28:41 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+In-Reply-To: <648f353c55ce8_33cfbc29413@willemb.c.googlers.com.notmuch>
+References: <648f353c55ce8_33cfbc29413@willemb.c.googlers.com.notmuch> <20230617121146.716077-1-dhowells@redhat.com> <20230617121146.716077-11-dhowells@redhat.com>
+To: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc: dhowells@redhat.com, netdev@vger.kernel.org,
+    Alexander Duyck <alexander.duyck@gmail.com>,
+    "David S. Miller" <davem@davemloft.net>,
+    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+    Paolo Abeni <pabeni@redhat.com>, David Ahern <dsahern@kernel.org>,
+    Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>,
+    linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+    Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+    Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
+    Chaitanya Kulkarni <kch@nvidia.com>, linux-nvme@lists.infradead.org
+Subject: Re: [PATCH net-next v2 10/17] nvme: Use sendmsg(MSG_SPLICE_PAGES) rather then sendpage
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] gro: move the tc_ext comparison to a helper
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168710821913.20126.8388470376052359358.git-patchwork-notify@kernel.org>
-Date: Sun, 18 Jun 2023 17:10:19 +0000
-References: <20230616204939.2373785-1-kuba@kernel.org>
-In-Reply-To: <20230616204939.2373785-1-kuba@kernel.org>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
- pabeni@redhat.com, linyunsheng@huawei.com, simon.horman@corigine.com,
- richardbgobert@gmail.com
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <754954.1687109273.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+From: David Howells <dhowells@redhat.com>
+Date: Sun, 18 Jun 2023 18:28:41 +0100
+Message-ID: <755077.1687109321@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
+Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
 
-This patch was applied to netdev/net-next.git (main)
-by David S. Miller <davem@davemloft.net>:
+>     struct bio_vec bvec;
+>     struct msghdr msg =3D { .msg_flags =3D MSG_SPLICE_PAGES | ... };
+> =
 
-On Fri, 16 Jun 2023 13:49:39 -0700 you wrote:
-> The double ifdefs (one for the variable declaration and
-> one around the code) are quite aesthetically displeasing.
-> Factor this code out into a helper for easier wrapping.
-> 
-> This will become even more ugly when another skb ext
-> comparison is added in the future.
-> 
-> [...]
+>     ..
+> =
 
-Here is the summary with links:
-  - [net-next,v2] gro: move the tc_ext comparison to a helper
-    https://git.kernel.org/netdev/net-next/c/2dc6af8be002
+>     bvec_set_virt
+>     iov_iter_bvec
+>     sock_sendmsg
+> =
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> is a frequent pattern. Does it make sense to define a wrapper? Same for =
+bvec_set_page.
 
+I dunno.  I'm trying to move towards aggregating multiple pages in a bvec
+before calling sendmsg if possible rather than doing it one page at a time=
+,
+but it's easier and more obvious in some places than others.
+
+David
 
 
