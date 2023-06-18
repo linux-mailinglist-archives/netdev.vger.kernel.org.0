@@ -1,119 +1,131 @@
-Return-Path: <netdev+bounces-11755-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11756-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id EC7CE7344B8
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 05:06:19 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 1F2DA734511
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 08:30:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E4E4128120B
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 03:06:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 4FBA11C20A3A
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 06:30:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E5EADEA6;
-	Sun, 18 Jun 2023 03:06:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6C501EDD;
+	Sun, 18 Jun 2023 06:30:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D37E4EA1
-	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 03:06:15 +0000 (UTC)
-Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02616E4D;
-	Sat, 17 Jun 2023 20:06:14 -0700 (PDT)
-Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-666e6541c98so1664830b3a.2;
-        Sat, 17 Jun 2023 20:06:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687057573; x=1689649573;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TKr/7fFsDyuqeMVJXBiEJIZ7rSj0By3FJTWDssD98XA=;
-        b=lKstEJr0z+1iKP4xpUz8l7TJLScBf6OQ5cAk96VrCQSW2xrP/Wl/nmFMHfwxU1gXz8
-         VRlgx6CELNkQCSowXdKTi/PW+FB4YpmsmINrf0ePSNjqX8rnZ1vG2IdZzVTrc6rT3YZr
-         r3nVq8CwLRfk9eWBPJJrIhoE/UAXxnUPe08nQreVdfavjkWZMIDlN4osA125ECXeEJR4
-         oP/p435fCt6By/KA7ZMnGVYESTFOd1zrqhPtHSreDFLqOdHU9f3EiPXIMWASmmO78o3o
-         BpxxiRR12yn95prcEwlMyZnDn7YKOkUS0JF31+HozWbsUH7Y6cZJvxQZeQDfe31Nxeyq
-         ikAA==
-X-Gm-Message-State: AC+VfDzYuQLFHoCYGGyTksjsQjCwsERpTdjHMZQ1gaBmrx+S6jQga0Al
-	i0U+6VLAWmanjxaLIsqami8=
-X-Google-Smtp-Source: ACHHUZ74QrQ86X1lYZ850oqc82Io3H167wR3MfIR6qT0HuQK7NUlA3TCEIzguXToHF7OYlQIYKqjDg==
-X-Received: by 2002:a05:6a00:14d2:b0:64f:6c01:d580 with SMTP id w18-20020a056a0014d200b0064f6c01d580mr9104380pfu.14.1687057573305;
-        Sat, 17 Jun 2023 20:06:13 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([20.69.120.36])
-        by smtp.gmail.com with ESMTPSA id k16-20020aa792d0000000b00665a76a8cfasm9539488pfa.194.2023.06.17.20.06.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Jun 2023 20:06:12 -0700 (PDT)
-Date: Sun, 18 Jun 2023 03:06:11 +0000
-From: Wei Liu <wei.liu@kernel.org>
-To: Dexuan Cui <decui@microsoft.com>
-Cc: bhelgaas@google.com, davem@davemloft.net, edumazet@google.com,
-	haiyangz@microsoft.com, jakeo@microsoft.com, kuba@kernel.org,
-	kw@linux.com, kys@microsoft.com, leon@kernel.org,
-	linux-pci@vger.kernel.org, lpieralisi@kernel.org,
-	mikelley@microsoft.com, pabeni@redhat.com, robh@kernel.org,
-	saeedm@nvidia.com, wei.liu@kernel.org, longli@microsoft.com,
-	boqun.feng@gmail.com, ssengar@microsoft.com, helgaas@kernel.org,
-	linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-	josete@microsoft.com, simon.horman@corigine.com
-Subject: Re: [PATCH v4 0/5] pci-hyperv: Fix race condition bugs for fast
- device hotplug
-Message-ID: <ZI50o1XBQbRL5Hlk@liuwe-devbox-debian-v2>
-References: <20230615044451.5580-1-decui@microsoft.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6148AA21
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 06:30:11 +0000 (UTC)
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686971717;
+	Sat, 17 Jun 2023 23:30:06 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+	by mx.sberdevices.ru (Postfix) with ESMTP id 2E07E5FD23;
+	Sun, 18 Jun 2023 09:30:02 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+	s=mail; t=1687069802;
+	bh=u+fcFS3dqsuVQT3On0sBLY1S/hTyjxjZms+L7QfEFpw=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
+	b=Uu+85clokbFCTR26zd33Y/qeOKNu75KB2yyD5BrPDtojIwaGeN9ymBJbvS4838fRX
+	 CV/uN78NuTHd9wCFd7Q3SMgup88aVikKqXoV6kCqsFd5cwQ8My5O+UT0U8wk9axEER
+	 RRRah44iWGrPfz4JE1mokI/0Ahu5ZWi+bRkBNGQqmJpQIcnsg25mZkSDDXX3W0VP04
+	 3AdRSY2YJYj3YGXCXJsRaD2TpUN+TbQtiEHWYJTdGOdRLtif3vMlFFdVc2BIfXrCkF
+	 sn+8WpJP0mWzXM5Gg5575GJXkq1lAlsKbdD/umaCXQRmFGToLUghC0skd93Rlp7EzQ
+	 vnym1wVECNy8g==
+Received: from p-i-exch-sc-m01.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
+	by mx.sberdevices.ru (Postfix) with ESMTP;
+	Sun, 18 Jun 2023 09:29:56 +0300 (MSK)
+From: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To: Stefan Hajnoczi <stefanha@redhat.com>, Stefano Garzarella
+	<sgarzare@redhat.com>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+	<pabeni@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang
+	<jasowang@redhat.com>, Bobby Eshleman <bobby.eshleman@bytedance.com>
+CC: <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+	<netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<kernel@sberdevices.ru>, <oxffffaa@gmail.com>, <avkrasnov@sberdevices.ru>,
+	Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Subject: [RFC PATCH v1 0/4] virtio/vsock: some updates for MSG_PEEK flag
+Date: Sun, 18 Jun 2023 09:24:47 +0300
+Message-ID: <20230618062451.79980-1-AVKrasnov@sberdevices.ru>
+X-Mailer: git-send-email 2.35.0
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230615044451.5580-1-decui@microsoft.com>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ p-i-exch-sc-m01.sberdevices.ru (172.16.192.107)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/06/18 01:53:00 #21507494
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Wed, Jun 14, 2023 at 09:44:46PM -0700, Dexuan Cui wrote:
-> Before the guest finishes probing a device, the host may be already starting
-> to remove the device. Currently there are multiple race condition bugs in the
-> pci-hyperv driver, which can cause the guest to panic.  The patchset fixes
-> the crashes.
-> 
-> The patchset also does some cleanup work: patch 3 removes the useless
-> hv_pcichild_state, and patch 4 reverts an old patch which is not really
-> useful (without patch 4, it would be hard to make patch 5 clean).
-> 
-> Patch 6 in v3 is dropped for now since it's a feature rather than a fix.
-> Patch 6 will be split into two patches as suggested by Lorenzo and will be
-> posted after the 5 patches are accepted first.
-> 
-> The v4 addressed Lorenzo's comments and added Lorenzo' Acks to patch
-> 1, 3 and 5.
-> 
-> The v4 is based on v6.4-rc6, and can apply cleanly to the Hyper-V tree's
-> hyperv-fixes branch.
-> 
-> The patchset is also availsble in my github branch:
-> https://github.com/dcui/tdx/commits/decui/vpci/v6.4-rc6-vpci-v4
-> 
-> FYI, v3 can be found here:
-> https://lwn.net/ml/linux-kernel/20230420024037.5921-1-decui@microsoft.com/
-> 
-> Please review. Thanks!
-> 
-> 
-> Dexuan Cui (5):
->   PCI: hv: Fix a race condition bug in hv_pci_query_relations()
->   PCI: hv: Fix a race condition in hv_irq_unmask() that can cause panic
->   PCI: hv: Remove the useless hv_pcichild_state from struct hv_pci_dev
->   Revert "PCI: hv: Fix a timing issue which causes kdump to fail
->     occasionally"
->   PCI: hv: Add a per-bus mutex state_lock
+Hello,
 
-Applied to hyperv-fixes. Thanks.
+This patchset does several things around MSG_PEEK flag support. In
+general words it reworks MSG_PEEK test and adds support for this flag
+in SOCK_SEQPACKET logic. Here is per-patch description:
+
+1) This is cosmetic change for SOCK_STREAM implementation of MSG_PEEK:
+   1) I think there is no need of "safe" mode walk here as there is no
+      "unlink" of skbs inside loop (it is MSG_PEEK mode - we don't change
+      queue).
+   2) Nested while loop is removed: in case of MSG_PEEK we just walk
+      over skbs and copy data from each one. I guess this nested loop
+      even didn't behave as loop - it always executed just for single
+      iteration.
+
+2) This adds MSG_PEEK support for SOCK_SEQPACKET. It could be implemented
+   be reworking MSG_PEEK callback for SOCK_STREAM to support SOCK_SEQPACKET
+   also, but I think it will be more simple and clear from potential
+   bugs to implemented it as separate function thus not mixing logics
+   for both types of socket. So I've added it as dedicated function.
+
+3) This is reworked MSG_PEEK test for SOCK_STREAM. Previous version just
+   sent single byte, then tried to read it with MSG_PEEK flag, then read
+   it in normal way. New version is more complex: now sender uses buffer
+   instead of single byte and this buffer is initialized with random
+   values. Receiver tests several things:
+   1) Read empty socket with MSG_PEEK flag.
+   2) Read part of buffer with MSG_PEEK flag.
+   3) Read whole buffer with MSG_PEEK flag, then checks that it is same
+      as buffer from 2) (limited by size of buffer from 2) of course).
+   4) Read whole buffer without any flags, then checks that is is same
+      as buffer from 3).
+
+4) This is MSG_PEEK test for SOCK_SEQPACKET. It works in the same way
+   as for SOCK_STREAM, except it also checks combination of MSG_TRUNC
+   and MSG_PEEK.
+
+Head is:
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=d20dd0ea14072e8a90ff864b2c1603bd68920b4b
+
+Arseniy Krasnov (4):
+  virtio/vsock: rework MSG_PEEK for SOCK_STREAM
+  virtio/vsock: support MSG_PEEK for SOCK_SEQPACKET
+  vsock/test: rework MSG_PEEK test for SOCK_STREAM
+  vsock/test: MSG_PEEK test for SOCK_SEQPACKET
+
+ net/vmw_vsock/virtio_transport_common.c | 104 +++++++++++++++-----
+ tools/testing/vsock/vsock_test.c        | 124 ++++++++++++++++++++++--
+ 2 files changed, 196 insertions(+), 32 deletions(-)
+
+-- 
+2.25.1
+
 
