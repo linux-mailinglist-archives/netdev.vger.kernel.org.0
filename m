@@ -1,39 +1,46 @@
-Return-Path: <netdev+bounces-11791-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11792-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id E368673476B
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 20:00:27 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 796F673476C
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 20:01:44 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5CE641C20964
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 18:00:26 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 33CBC280EA3
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 18:01:43 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 237F37469;
-	Sun, 18 Jun 2023 18:00:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 990E07473;
+	Sun, 18 Jun 2023 18:01:41 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F9D563D3
-	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 18:00:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EE990C433C0;
-	Sun, 18 Jun 2023 18:00:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1687111222;
-	bh=T+Q4BZ9D0+iE45jS3B4txq2rb7DIPwo/veLaEF1QqrI=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=MtTht5MaulrRxfqUBgjRsSc+rJgLd7DNsvW34ZNinvzmU9PeY93rMT6lPZj6Zxan3
-	 bi8B9dxn8/7ouQbIhfF3T/yJgnZH08+TAasO+c0kBmp7rx3u45MhkMikrJONXX2KP0
-	 EP4AMZwmrp3jaYxa2F1WD2Tbv2p3CT5V77eMITruAMCcP8OHh0994sn4ALyfrjMOGM
-	 sHv9cxstYpEtAn2maP3Nk/Dx+8D5XqyhbbaI8EQnsYLQHSYuFgmp/qqi+PWDncldQT
-	 Aff9XqfMFHkpuPZd6VxLqh6Fv+Z9+4Ode0zo4LtHf0KmxOfY35fgnWZS9f6tY98t/K
-	 2Gt03O7o+kOvw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CF770C1614E;
-	Sun, 18 Jun 2023 18:00:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B7206FC9
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 18:01:41 +0000 (UTC)
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04399B0
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 11:01:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+	Cc:To:From:From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:
+	Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:
+	Content-Disposition:In-Reply-To:References;
+	bh=QJbA5YT9wJFB8bvt8JHkhTzfOFk7YOrJxWQBG2aggSc=; b=hbz0nMCUIgQpm7JPsQ8ANAJxgz
+	94Z5KnQM4Pg9tKce4vRKLNfj1QHI4sQBkteOiPkAwyNi1ZI/IJz6mGuMQCMNQnxFHABOUyafZv3V2
+	u9h+xyMueDPl4j4zjIrZ5NkoVmppJBWpucQGaAIvRuAqeErLS5kfDDzSimJ7lQpMEn8s=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1qAwiY-00GqxJ-2b; Sun, 18 Jun 2023 20:01:38 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: netdev <netdev@vger.kernel.org>
+Cc: Russell King <rmk+kernel@armlinux.org.uk>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next v0] net: phy-c45: Fix genphy_c45_ethtool_set_eee description
+Date: Sun, 18 Jun 2023 20:01:30 +0200
+Message-Id: <20230618180130.4016802-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.37.2
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -41,70 +48,49 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next 01/15] net/mlx5: Ack on sync_reset_request only if PF can
- do reset_now
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168711122184.9548.14235548196455222898.git-patchwork-notify@kernel.org>
-Date: Sun, 18 Jun 2023 18:00:21 +0000
-References: <20230616201113.45510-2-saeed@kernel.org>
-In-Reply-To: <20230616201113.45510-2-saeed@kernel.org>
-To: Saeed Mahameed <saeed@kernel.org>
-Cc: davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
- edumazet@google.com, saeedm@nvidia.com, netdev@vger.kernel.org,
- tariqt@nvidia.com, moshe@nvidia.com, shayd@nvidia.com
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+	lindbergh.monkeyblade.net
 
-Hello:
+The text has been cut/paste from  genphy_c45_ethtool_get_eee but not
+changed to reflect it performs set.
 
-This series was applied to netdev/net-next.git (main)
-by Saeed Mahameed <saeedm@nvidia.com>:
+Additionally, extend the comment. This function implements the logic
+that eee_enabled has global control over EEE. When eee_enabled is
+false, no link modes will be advertised, and as a result, the MAC
+should not transmit LPI.
 
-On Fri, 16 Jun 2023 13:10:59 -0700 you wrote:
-> From: Moshe Shemesh <moshe@nvidia.com>
-> 
-> Verify at reset_request stage that PF is capable to do reset_now. In
-> case PF is not capable, notify the firmware that the sync reset can not
-> happen and so firmware will abort the sync reset at early stage and will
-> not send reset_now event to any PF.
-> 
-> [...]
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+---
+ drivers/net/phy/phy-c45.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-Here is the summary with links:
-  - [net-next,01/15] net/mlx5: Ack on sync_reset_request only if PF can do reset_now
-    https://git.kernel.org/netdev/net-next/c/92501fa6e421
-  - [net-next,02/15] net/mlx5: Expose timeout for sync reset unload stage
-    https://git.kernel.org/netdev/net-next/c/8bb42ed4210e
-  - [net-next,03/15] net/mlx5: Check DTOR entry value is not zero
-    https://git.kernel.org/netdev/net-next/c/6f8551f8d9e4
-  - [net-next,04/15] net/mlx5: Handle sync reset unload event
-    https://git.kernel.org/netdev/net-next/c/7a9770f1bfea
-  - [net-next,05/15] net/mlx5: Create eswitch debugfs root directory
-    https://git.kernel.org/netdev/net-next/c/f405787a0aba
-  - [net-next,06/15] net/mlx5: Bridge, pass net device when linking vport to bridge
-    https://git.kernel.org/netdev/net-next/c/ade19f0d6a3a
-  - [net-next,07/15] net/mlx5: Bridge, expose FDB state via debugfs
-    https://git.kernel.org/netdev/net-next/c/791eb78285e8
-  - [net-next,08/15] net/mlx5: E-Switch, remove redundant else statements
-    https://git.kernel.org/netdev/net-next/c/8a955da230d3
-  - [net-next,09/15] net/mlx5e: Remove mlx5e_dbg() and msglvl support
-    https://git.kernel.org/netdev/net-next/c/559f4c32ebff
-  - [net-next,10/15] net/mlx5: Expose bits for local loopback counter
-    https://git.kernel.org/netdev/net-next/c/0bd2e6fc78fd
-  - [net-next,11/15] net/mlx5e: Add local loopback counter to vport stats
-    https://git.kernel.org/netdev/net-next/c/c8013a1f714f
-  - [net-next,12/15] net/mlx5: Fix the macro for accessing EC VF vports
-    https://git.kernel.org/netdev/net-next/c/b3bd68925ebb
-  - [net-next,13/15] net/mlx5: DR, update query of HCA caps for EC VFs
-    https://git.kernel.org/netdev/net-next/c/8bbe544e0380
-  - [net-next,14/15] net/mlx5: Add header file for events
-    https://git.kernel.org/netdev/net-next/c/2bd3b292955f
-  - [net-next,15/15] net/mlx5: Remove unused ecpu field from struct mlx5_sf_table
-    https://git.kernel.org/netdev/net-next/c/5f2cf757f9c5
-
-You are awesome, thank you!
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index fee514b96ab1..d1d7cf34ac0b 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -1425,12 +1425,15 @@ int genphy_c45_ethtool_get_eee(struct phy_device *phydev,
+ EXPORT_SYMBOL(genphy_c45_ethtool_get_eee);
+ 
+ /**
+- * genphy_c45_ethtool_set_eee - get EEE supported and status
++ * genphy_c45_ethtool_set_eee - set EEE supported and status
+  * @phydev: target phy_device struct
+  * @data: ethtool_eee data
+  *
+- * Description: it reportes the Supported/Advertisement/LP Advertisement
+- * capabilities.
++ * Description: it set the Supported/Advertisement/LP Advertisement
++ * capabilities. If eee_enabled is false, no links modes are
++ * advertised, but the previously advertised link modes are
++ * retained. This allows EEE to be enabled/disabled in a none
++ * destructive way.
+  */
+ int genphy_c45_ethtool_set_eee(struct phy_device *phydev,
+ 			       struct ethtool_eee *data)
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.40.1
 
 
