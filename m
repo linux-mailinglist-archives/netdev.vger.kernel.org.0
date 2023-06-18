@@ -1,58 +1,39 @@
-Return-Path: <netdev+bounces-11765-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11766-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3D25E7345C9
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 12:16:53 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3CEFC7345CD
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 12:20:24 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 478072811C2
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 10:16:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 68CB41C20992
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 10:20:23 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6EFDA15D4;
-	Sun, 18 Jun 2023 10:16:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 58537184C;
+	Sun, 18 Jun 2023 10:20:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6027B1386
-	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 10:16:49 +0000 (UTC)
-Received: from smtp.smtpout.orange.fr (smtp-29.smtpout.orange.fr [80.12.242.29])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2E9BC
-	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 03:16:47 -0700 (PDT)
-Received: from pop-os.home ([86.243.2.178])
-	by smtp.orange.fr with ESMTPA
-	id ApScqyYPQhQKVApScqcNqL; Sun, 18 Jun 2023 12:16:44 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
-	s=t20230301; t=1687083404;
-	bh=DSknnbdi6ETR4gXl9xkSuTonkqso7NbmO9NcHs49YUM=;
-	h=From:To:Cc:Subject:Date;
-	b=oUN9wnGrAcXdub/3VYK2AdRcF/0yznYc5OEJ/3kjtVQlGrOA/H1dqj7zFj7ehR5RK
-	 5bg6ZqB62JhYgTEVsuSv4iUSpSD3znp7a3L8BAFHhfZ/Gai78XX4LklQRZ15pBmYct
-	 XLupCOx4xWMyzxqosNKnPHmZ+bDtMtOt4+wqG3k109/31LmqYoioF+d+oRZBLULoMp
-	 jD3FbBVm6WuT6zL2Mn9B1/f7rAO6vt27wMSaVc8d39w9sw4REIyiB0zFnE9UrfB2ey
-	 Dx09kEEC4DeLn9MUTX2NX1gb5+o5JYLh8xo8814zzjl8qKlMJ/IFh2PUkuCjOcl2zc
-	 nhfjEZYWhhXFg==
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 18 Jun 2023 12:16:44 +0200
-X-ME-IP: 86.243.2.178
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To: Paul Moore <paul@paul-moore.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>
-Cc: linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	netdev@vger.kernel.org,
-	linux-security-module@vger.kernel.org
-Subject: [PATCH net-next] netlabel: Reorder fields in 'struct netlbl_domaddr6_map'
-Date: Sun, 18 Jun 2023 12:16:41 +0200
-Message-Id: <aa109847260e51e174c823b6d1441f75be370f01.1687083361.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBCCE1386
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 10:20:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 961D4C433D9;
+	Sun, 18 Jun 2023 10:20:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1687083619;
+	bh=PzTEnSq9qYk+OyGh4rp4xMPHDvA9Q/44FTRL5zNb+to=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=u9VZPYIUaUHcgnlJu+qEHM30rvpfHzO/7ih6JohjBorqvZieHTFsfSMBRfHqKxWrF
+	 Ym0SlHick/mbfg9kRRq0ITyyQpnPklLjfUcwRTRqYWLsrbN2nqcgai7wSsljqyyayB
+	 Ek2aBZNVcS8AavyiAJNClDxga5Bh+7tjI7lyUHKWBKF2DOjI9Iv8LiR1JOvWoZapqD
+	 c3RrWXUKR8x2UOfhq+lMzw8Srb2k3aye2akWgsSwjF4Y3Jxaj6Mic5qPLc2jkpPjYM
+	 FsCnx1tCikde57bwJRrNFilSPZP+AG/YnfqrLbpKIu5OioMMK3NxR+/B1RcveEf4E0
+	 i8vGyh3UnBVGA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 81B03E21EE5;
+	Sun, 18 Jun 2023 10:20:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -60,82 +41,46 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Subject: Re: [net-next,v2] tcp: Use per-vma locking for receive zerocopy
+From: patchwork-bot+netdevbpf@kernel.org
+Message-Id: 
+ <168708361952.30416.4165448356299935816.git-patchwork-notify@kernel.org>
+Date: Sun, 18 Jun 2023 10:20:19 +0000
+References: <20230616193427.3908429-1-arjunroy.kdev@gmail.com>
+In-Reply-To: <20230616193427.3908429-1-arjunroy.kdev@gmail.com>
+To: Arjun Roy <arjunroy.kdev@gmail.com>
+Cc: netdev@vger.kernel.org, arjunroy@google.com, edumazet@google.com,
+ soheil@google.com, kuba@kernel.org, akpm@linux-foundation.org,
+ dsahern@kernel.org, davem@davemloft.net, linux-mm@kvack.org,
+ pabeni@redhat.com
 
-Group some variables based on their sizes to reduce hole and avoid padding.
-On x86_64, this shrinks the size of 'struct netlbl_domaddr6_map'
-from 72 to 64 bytes.
+Hello:
 
-It saves a few bytes of memory and is more cache-line friendly.
+This patch was applied to netdev/net-next.git (main)
+by David S. Miller <davem@davemloft.net>:
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-Using pahole
+On Fri, 16 Jun 2023 12:34:27 -0700 you wrote:
+> From: Arjun Roy <arjunroy@google.com>
+> 
+> Per-VMA locking allows us to lock a struct vm_area_struct without
+> taking the process-wide mmap lock in read mode.
+> 
+> Consider a process workload where the mmap lock is taken constantly in
+> write mode. In this scenario, all zerocopy receives are periodically
+> blocked during that period of time - though in principle, the memory
+> ranges being used by TCP are not touched by the operations that need
+> the mmap write lock. This results in performance degradation.
+> 
+> [...]
 
-Before:
-======
-struct netlbl_dom_map {
-	char *                     domain;               /*     0     8 */
-	u16                        family;               /*     8     2 */
+Here is the summary with links:
+  - [net-next,v2] tcp: Use per-vma locking for receive zerocopy
+    https://git.kernel.org/netdev/net-next/c/7a7f09463534
 
-	/* XXX 6 bytes hole, try to pack */
-
-	struct netlbl_dommap_def   def;                  /*    16    16 */
-	u32                        valid;                /*    32     4 */
-
-	/* XXX 4 bytes hole, try to pack */
-
-	struct list_head           list;                 /*    40    16 */
-	struct callback_head       rcu __attribute__((__aligned__(8))); /*    56    16 */
-
-	/* size: 72, cachelines: 2, members: 6 */
-	/* sum members: 62, holes: 2, sum holes: 10 */
-	/* forced alignments: 1 */
-	/* last cacheline: 8 bytes */
-} __attribute__((__aligned__(8)));
-
-
-After:
-=====
-struct netlbl_dom_map {
-	char *                     domain;               /*     0     8 */
-	struct netlbl_dommap_def   def;                  /*     8    16 */
-	u16                        family;               /*    24     2 */
-
-	/* XXX 2 bytes hole, try to pack */
-
-	u32                        valid;                /*    28     4 */
-	struct list_head           list;                 /*    32    16 */
-	struct callback_head       rcu __attribute__((__aligned__(8))); /*    48    16 */
-
-	/* size: 64, cachelines: 1, members: 6 */
-	/* sum members: 62, holes: 1, sum holes: 2 */
-	/* forced alignments: 1 */
-} __attribute__((__aligned__(8)));
----
- net/netlabel/netlabel_domainhash.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/netlabel/netlabel_domainhash.h b/net/netlabel/netlabel_domainhash.h
-index 9f80972ae39b..7eaa35fdd9bd 100644
---- a/net/netlabel/netlabel_domainhash.h
-+++ b/net/netlabel/netlabel_domainhash.h
-@@ -57,8 +57,8 @@ struct netlbl_domaddr6_map {
- 
- struct netlbl_dom_map {
- 	char *domain;
--	u16 family;
- 	struct netlbl_dommap_def def;
-+	u16 family;
- 
- 	u32 valid;
- 	struct list_head list;
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
 
