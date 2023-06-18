@@ -1,46 +1,46 @@
-Return-Path: <netdev+bounces-11762-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11763-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 3483A7345B8
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 11:34:10 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 4824C7345BF
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 11:46:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 106AD2811D9
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 09:34:08 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 018131C20A3A
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 09:46:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23B1F15BB;
-	Sun, 18 Jun 2023 09:34:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D8E211386;
+	Sun, 18 Jun 2023 09:46:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1860C1386
-	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 09:34:06 +0000 (UTC)
-Received: from smtp.smtpout.orange.fr (smtp-22.smtpout.orange.fr [80.12.242.22])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9346C10F0
-	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 02:34:04 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C96B815C0
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 09:46:52 +0000 (UTC)
+Received: from smtp.smtpout.orange.fr (smtp-26.smtpout.orange.fr [80.12.242.26])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF899E76
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 02:46:50 -0700 (PDT)
 Received: from pop-os.home ([86.243.2.178])
 	by smtp.orange.fr with ESMTPA
-	id AonGq59X5yzHXAonGqVxjA; Sun, 18 Jun 2023 11:34:02 +0200
+	id AozfqabYVEYhqAozfqlrwt; Sun, 18 Jun 2023 11:46:49 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
-	s=t20230301; t=1687080842;
-	bh=aVg/k7ynCstaMz721k7lr6Az8vrDxOwyA02xIprHpec=;
+	s=t20230301; t=1687081609;
+	bh=McAeXz2J4UO1BECLY75Q24ChR053II0UqATm+dnPZxw=;
 	h=From:To:Cc:Subject:Date;
-	b=keWNbqPt6AoeSWh7bs0Pxc+aVdWPLZihbxi3uZ+XUbPzMsUNtqINXjqOgyJ8qdvuM
-	 pcK9hR088E5/XTA3d6vgBqU5slH+OcbJb8az1qqaXr3Lt5xpMn0ef9OdIypuGicH+F
-	 rlFL5ugkrNZFqMAesArycjeaquu1kN4m6GgaRagFZNsnaUnbvXPSFvlB6NU3p4/BL/
-	 00/Zu77MKIj3V4YBLlg3RZi/JFf9Gq8SVWHxP7cP0ruyC38+Nn8s+EfyAUTFSLBfJF
-	 Aj/ic/1BOodkREUsim9RHfshFBPD6RBfZElx8JX1hU9eCDVCJEIwFYPORCIZmnEI1X
-	 wyty99C5Ebpqw==
+	b=q67rMZnTDuv5OjLYdkOvp6ilJo6+ksdle57v4Zxzt272ZA4hRFtvynP0Ahhm2BKjp
+	 TRac47I8b6MwG85Lh25bHHwhWyECgazWwVDhqkilAFsspTUL3IfDCd9RNZQ4Fkt+6C
+	 OBVTMJnS3Vy4CGh+s7lbzC59py2LUrshOiGqL/VL50qmvQ6HuSLUaVOxwZ9kXfxr4A
+	 3rnm68FSGkOhi/xF263vENFM0Pc+ERxijNH0XPAgN9+vwF6EcYqMcyJD7987/B9LqY
+	 +aWlIWBlE5UUx8WZaxSD5H9A+qCE4NqpsA76hl3X/SQT3H9lFjDBkRuZiIleVWEtR5
+	 86mGZAHzlCuXQ==
 X-ME-Helo: pop-os.home
 X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 18 Jun 2023 11:34:02 +0200
+X-ME-Date: Sun, 18 Jun 2023 11:46:49 +0200
 X-ME-IP: 86.243.2.178
 From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To: Jeremy Kerr <jk@codeconstruct.com.au>,
-	Matt Johnston <matt@codeconstruct.com.au>,
+To: Matthieu Baerts <matthieu.baerts@tessares.net>,
+	Mat Martineau <martineau@kernel.org>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>,
@@ -48,10 +48,11 @@ To: Jeremy Kerr <jk@codeconstruct.com.au>,
 Cc: linux-kernel@vger.kernel.org,
 	kernel-janitors@vger.kernel.org,
 	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	netdev@vger.kernel.org
-Subject: [PATCH net-next] mctp: Reorder fields in 'struct mctp_route'
-Date: Sun, 18 Jun 2023 11:33:55 +0200
-Message-Id: <393ad1a5aef0aa28d839eeb3d7477da0e0eeb0b0.1687080803.git.christophe.jaillet@wanadoo.fr>
+	netdev@vger.kernel.org,
+	mptcp@lists.linux.dev
+Subject: [PATCH net-next] mptcp: Reorder fields in 'struct mptcp_pm_add_entry'
+Date: Sun, 18 Jun 2023 11:46:46 +0200
+Message-Id: <e47b71de54fd3e580544be56fc1bb2985c77b0f4.1687081558.git.christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -62,14 +63,15 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=unavailable autolearn_force=no version=3.4.6
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
 Group some variables based on their sizes to reduce hole and avoid padding.
-On x86_64, this shrinks the size of 'struct mctp_route'
-from 72 to 64 bytes.
+On x86_64, this shrinks the size of 'struct mptcp_pm_add_entry'
+from 136 to 128 bytes.
 
 It saves a few bytes of memory and is more cache-line friendly.
 
@@ -79,76 +81,60 @@ Using pahole
 
 Before:
 ======
-struct mctp_route {
-	mctp_eid_t                 min;                  /*     0     1 */
-	mctp_eid_t                 max;                  /*     1     1 */
-
-	/* XXX 6 bytes hole, try to pack */
-
-	struct mctp_dev *          dev;                  /*     8     8 */
-	unsigned int               mtu;                  /*    16     4 */
-	unsigned char              type;                 /*    20     1 */
-
-	/* XXX 3 bytes hole, try to pack */
-
-	int                        (*output)(struct mctp_route *, struct sk_buff *); /*    24     8 */
-	struct list_head           list;                 /*    32    16 */
-	refcount_t                 refs;                 /*    48     4 */
+struct mptcp_pm_add_entry {
+	struct list_head           list;                 /*     0    16 */
+	struct mptcp_addr_info     addr;                 /*    16    12 */
 
 	/* XXX 4 bytes hole, try to pack */
 
-	struct callback_head       rcu __attribute__((__aligned__(8))); /*    56    16 */
+	struct timer_list          add_timer;            /*    32    88 */
+	/* --- cacheline 1 boundary (64 bytes) was 56 bytes ago --- */
+	struct mptcp_sock *        sock;                 /*   120     8 */
+	/* --- cacheline 2 boundary (128 bytes) --- */
+	u8                         retrans_times;        /*   128     1 */
 
-	/* size: 72, cachelines: 2, members: 9 */
-	/* sum members: 59, holes: 3, sum holes: 13 */
-	/* forced alignments: 1, forced holes: 1, sum forced holes: 4 */
+	/* size: 136, cachelines: 3, members: 5 */
+	/* sum members: 125, holes: 1, sum holes: 4 */
+	/* padding: 7 */
 	/* last cacheline: 8 bytes */
-} __attribute__((__aligned__(8)));
+};
 
 
 After:
 =====
-struct mctp_route {
-	mctp_eid_t                 min;                  /*     0     1 */
-	mctp_eid_t                 max;                  /*     1     1 */
-	unsigned char              type;                 /*     2     1 */
+struct mptcp_pm_add_entry {
+	struct list_head           list;                 /*     0    16 */
+	struct mptcp_addr_info     addr;                 /*    16    12 */
+	u8                         retrans_times;        /*    28     1 */
 
-	/* XXX 1 byte hole, try to pack */
+	/* XXX 3 bytes hole, try to pack */
 
-	unsigned int               mtu;                  /*     4     4 */
-	struct mctp_dev *          dev;                  /*     8     8 */
-	int                        (*output)(struct mctp_route *, struct sk_buff *); /*    16     8 */
-	struct list_head           list;                 /*    24    16 */
-	refcount_t                 refs;                 /*    40     4 */
+	struct timer_list          add_timer;            /*    32    88 */
+	/* --- cacheline 1 boundary (64 bytes) was 56 bytes ago --- */
+	struct mptcp_sock *        sock;                 /*   120     8 */
 
-	/* XXX 4 bytes hole, try to pack */
-
-	struct callback_head       rcu __attribute__((__aligned__(8))); /*    48    16 */
-
-	/* size: 64, cachelines: 1, members: 9 */
-	/* sum members: 59, holes: 2, sum holes: 5 */
-	/* forced alignments: 1, forced holes: 1, sum forced holes: 4 */
-} __attribute__((__aligned__(8)));
+	/* size: 128, cachelines: 2, members: 5 */
+	/* sum members: 125, holes: 1, sum holes: 3 */
+};
 ---
- include/net/mctp.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/mptcp/pm_netlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/mctp.h b/include/net/mctp.h
-index 82800d521c3d..da86e106c91d 100644
---- a/include/net/mctp.h
-+++ b/include/net/mctp.h
-@@ -234,9 +234,9 @@ struct mctp_flow {
- struct mctp_route {
- 	mctp_eid_t		min, max;
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index a12a87b780f6..a56718ffdd02 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -25,9 +25,9 @@ static int pm_nl_pernet_id;
+ struct mptcp_pm_add_entry {
+ 	struct list_head	list;
+ 	struct mptcp_addr_info	addr;
++	u8			retrans_times;
+ 	struct timer_list	add_timer;
+ 	struct mptcp_sock	*sock;
+-	u8			retrans_times;
+ };
  
--	struct mctp_dev		*dev;
--	unsigned int		mtu;
- 	unsigned char		type;
-+	unsigned int		mtu;
-+	struct mctp_dev		*dev;
- 	int			(*output)(struct mctp_route *route,
- 					  struct sk_buff *skb);
- 
+ struct pm_nl_pernet {
 -- 
 2.34.1
 
