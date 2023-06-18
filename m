@@ -1,67 +1,70 @@
-Return-Path: <netdev+bounces-11819-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11820-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9D87B734931
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 00:52:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4DF27734944
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 01:14:59 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CE32A280F9D
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 22:52:41 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 05FE8280FED
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 23:14:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0EE8BBA4B;
-	Sun, 18 Jun 2023 22:52:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9163ABE55;
+	Sun, 18 Jun 2023 23:14:47 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03E678480
-	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 22:52:39 +0000 (UTC)
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4486C1BB
-	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 15:52:38 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-570808d8ddeso27149487b3.0
-        for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 15:52:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1687128757; x=1689720757;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=QIEG8GOA507fs9MNiQMm3/fimoMx14sqMBBQu0RmZs0=;
-        b=fFovYuJ2zVnO105E5MI3L+ZRAJEVNQuTAdl4sZoxwc2OAOQ/89vUg4uN2oZHhaDycs
-         ybTKPVgGEHxulB7/w2UEIReph8XISNDraYrsJXE3Y5PCRJN0A9mX5pN6f3G8aciuqMnH
-         oqYJ8msV4dqv1YH4MbgaqtprLOiw4myQpYWRHE3SLy1LcYQmSOA32Ib9EImQGyBru6ld
-         xS4XmlupQwEvVLDBDhElGIyn2NHMhbnKE1ZgV5ncpBiDLZQUSLv2dIUU91dWg3JlhtZO
-         o4cw/AsNZUzCRif7MxqR7Md8Z7GWoFiLeSseW5B6j1Ve5/uE3FwS0yjThOkIX5NWLVQZ
-         UYEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687128757; x=1689720757;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QIEG8GOA507fs9MNiQMm3/fimoMx14sqMBBQu0RmZs0=;
-        b=IGh+Lc9ZrrTrFkpFJ6tPyog3MtWm+WQZXMoKCKXJu/rhM4lkuVD5Ip2Cr9WEG5JAun
-         K0AXug7rsXljyrDy47lqbF1+Eui1eYnDxproQZRJhd/MmSwXVdpBtI/l1/lwCO3unFZD
-         4Thh+E4eMLKSYdFKASKdDZFedMz2huIrMfmNQlSGL6iFfK5Z0g0DujFUs3gJbux5DQMy
-         J5OKUhPECsZ4YZtPw7NTUli23FdyixKfjoM5PW2MvUDsCQJbAe6KavQ6yGrHJMNZo06z
-         cauvVQwfWqiTTcY6OEwuA5uotJGc83a9f9FX2XKLBR7gZsR8Fn14b/HAumksRGyQT35r
-         eRHw==
-X-Gm-Message-State: AC+VfDxSjVZZuQLP/tyeszWWCgqbInG2KcmTua1fiPzOPgQ5UP1rlSGa
-	o6ipZ5YyK6Z9Smgdk40x8MkYYLOoiHA=
-X-Google-Smtp-Source: ACHHUZ7RfzL7qMEJu6geNs1svFcvKOljc5E2l9JhKSykkdiMdui/Jtv0a3/46k9vfwb23NJ/cFY/KQ==
-X-Received: by 2002:a81:a0d3:0:b0:56c:ff9d:8cd9 with SMTP id x202-20020a81a0d3000000b0056cff9d8cd9mr9316785ywg.7.1687128757427;
-        Sun, 18 Jun 2023 15:52:37 -0700 (PDT)
-Received: from localhost ([2600:1700:65a0:ab60:b348:50b3:4f6e:fba9])
-        by smtp.gmail.com with ESMTPSA id d68-20020a814f47000000b00559f1cb8444sm2891464ywb.70.2023.06.18.15.52.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Jun 2023 15:52:36 -0700 (PDT)
-Date: Sun, 18 Jun 2023 15:52:35 -0700
-From: Cong Wang <xiyou.wangcong@gmail.com>
-To: Ignacy Gawedzki <ignacy.gawedzki@green-communications.fr>
-Cc: netdev@vger.kernel.org
-Subject: Re: Is EDT now expected to work with any qdisc?
-Message-ID: <ZI+Ks1imeX3VvuTv@pop-os.localdomain>
-References: <20230616173138.dcbdenbpvba7cf3k@zenon.in.qult.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8133CAD54
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 23:14:47 +0000 (UTC)
+Received: from out-2.mta0.migadu.com (out-2.mta0.migadu.com [IPv6:2001:41d0:1004:224b::2])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAEA4E50
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 16:14:43 -0700 (PDT)
+Date: Sun, 18 Jun 2023 19:14:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1687130080;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=KNV5zwl+hLzM43CrYb9nr/b3a6OyCWH6RWURaog0Xso=;
+	b=n8muyYIFu4NWn2jUrxuhNWtbUM5+mIauth+1Pc71A47mzFzPENac7CXSnCthrLOM9Mp8Vp
+	ZC85r5mgKM1Z6DbUVT6Cjqrw0askzvY2hRQW+Cy+BiYrMDlad4Bi9in+atwC+gux88leWU
+	Lsl3kE3f4XQNXRl/yeFL9WdFeIa4tAE=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Mike Rapoport <rppt@kernel.org>, linux-kernel@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	"David S. Miller" <davem@davemloft.net>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nadav Amit <nadav.amit@gmail.com>,
+	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Puranjay Mohan <puranjay12@gmail.com>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	Russell King <linux@armlinux.org.uk>, Song Liu <song@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Will Deacon <will@kernel.org>, bpf@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+	linux-mm@kvack.org, linux-modules@vger.kernel.org,
+	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
+	linux-s390@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev,
+	netdev@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org
+Subject: Re: [PATCH v2 06/12] mm/execmem: introduce execmem_data_alloc()
+Message-ID: <20230618231431.4aj3k5ujye22sqai@moria.home.lan>
+References: <20230616085038.4121892-1-rppt@kernel.org>
+ <20230616085038.4121892-7-rppt@kernel.org>
+ <87jzw0qu3s.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -70,48 +73,117 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230616173138.dcbdenbpvba7cf3k@zenon.in.qult.net>
+In-Reply-To: <87jzw0qu3s.ffs@tglx>
+X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Fri, Jun 16, 2023 at 07:31:38PM +0200, Ignacy Gawedzki wrote:
-> Hi,
+On Mon, Jun 19, 2023 at 12:32:55AM +0200, Thomas Gleixner wrote:
+> Mike!
 > 
-> I've been lately playing around with setting tstamp in BPF in clsact,
-> in order to pace some traffic, both locally generated and forwarded.
+> Sorry for being late on this ...
 > 
-> All the code examples I could find suggest that this mangling of tstamp
-> will only work if the fq qdisc is set on the network interface.  But
-> my experiments seem to indicate that regardless of the actual qdisc,
-> be it fq, fq_codel, pfifo_fast, or even noqueue, the delivery time set
-> in tstamp is always honored, both in sending (output) and forwarding,
-> with any actual network interface driver I tried.
-
-Scheduling packets in an order is the responsibility of Qdisc, it is
-generic, does not define any specific order. So whether ordering packets
-by tstamp is Qdisc-specific.
-
+> On Fri, Jun 16 2023 at 11:50, Mike Rapoport wrote:
+> >  
+> > +void *execmem_data_alloc(size_t size)
+> > +{
+> > +	unsigned long start = execmem_params.modules.data.start;
+> > +	unsigned long end = execmem_params.modules.data.end;
+> > +	pgprot_t pgprot = execmem_params.modules.data.pgprot;
+> > +	unsigned int align = execmem_params.modules.data.alignment;
+> > +	unsigned long fallback_start = execmem_params.modules.data.fallback_start;
+> > +	unsigned long fallback_end = execmem_params.modules.data.fallback_end;
+> > +	bool kasan = execmem_params.modules.flags & EXECMEM_KASAN_SHADOW;
 > 
-> I tried very hard to find a confirmation of my hypothesis in the
-> kernel sources, but after three days of continuous searching for
-> answers, I'm starting to feel I'm missing something here.
+> While I know for sure that you read up on the discussion I had with Song
+> about data structures, it seems you completely failed to understand it.
 > 
-> So is it so that this requested delivery time is honored before the
-> packet is handed over to the qdisc or the driver?  Or maybe nowadays
-> pretty much every driver (including veth) honors that delivery time
-> itself?
+> > +	return execmem_alloc(size, start, end, align, pgprot,
+> > +			     fallback_start, fallback_end, kasan);
+> 
+> Having _seven_ intermediate variables to fill _eight_ arguments of a
+> function instead of handing in @size and a proper struct pointer is
+> tasteless and disgusting at best.
+> 
+> Six out of those seven parameters are from:
+> 
+>     execmem_params.module.data
+> 
+> while the KASAN shadow part is retrieved from
+> 
+>     execmem_params.module.flags
+> 
+> So what prevents you from having a uniform data structure, which is
+> extensible and decribes _all_ types of allocations?
+> 
+> Absolutely nothing. The flags part can either be in the type dependend
+> part or you make the type configs an array as I had suggested originally
+> and then execmem_alloc() becomes:
+> 
+> void *execmem_alloc(type, size)
+> 
+> and
+> 
+> static inline void *execmem_data_alloc(size_t size)
+> {
+>         return execmem_alloc(EXECMEM_TYPE_DATA, size);
+> }
+> 
+> which gets the type independent parts from @execmem_param.
+> 
+> Just read through your own series and watch the evolution of
+> execmem_alloc():
+> 
+>   static void *execmem_alloc(size_t size)
+> 
+>   static void *execmem_alloc(size_t size, unsigned long start,
+>                              unsigned long end, unsigned int align,
+>                              pgprot_t pgprot)
+> 
+>   static void *execmem_alloc(size_t len, unsigned long start,
+>                              unsigned long end, unsigned int align,
+>                              pgprot_t pgprot,
+>                              unsigned long fallback_start,
+>                              unsigned long fallback_end,
+>                              bool kasan)
+> 
+> In a month from now this function will have _ten_ parameters and tons of
+> horrible wrappers which convert an already existing data structure into
+> individual function arguments.
+> 
+> Seriously?
+> 
+> If you want this function to be [ab]used outside of the exec_param
+> configuration space for whatever non-sensical reasons then this still
+> can be either:
+> 
+> void *execmem_alloc(params, type, size)
+> 
+> static inline void *execmem_data_alloc(size_t size)
+> {
+>         return execmem_alloc(&exec_param, EXECMEM_TYPE_DATA, size);
+> }
+> 
+> or
+> 
+> void *execmem_alloc(type_params, size);
+> 
+> static inline void *execmem_data_alloc(size_t size)
+> {
+>         return execmem_alloc(&exec_param.data, size);
+> }
+> 
+> which both allows you to provide alternative params, right?
+> 
+> Coming back to my conversation with Song:
+> 
+>    "Bad programmers worry about the code. Good programmers worry about
+>     data structures and their relationships."
 
-It depends. Some NIC (and its driver) can schedule packets based on
-tstamp too, otherwise we have to rely on the software layer (Qdisc
-layer) to do so.
-
-Different Qdisc's have different logics to schedule packets, not all
-of them use tstamp to order and schedule packets. This is why you have
-to pick a particular one, like fq, to get the logic you expect.
-
-Thanks.
+Thomas, you're confusing an internal interface with external, I made the
+same mistake reviewing Song's patchset...
 
