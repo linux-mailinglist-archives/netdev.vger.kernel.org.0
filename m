@@ -1,214 +1,117 @@
-Return-Path: <netdev+bounces-11818-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11819-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id B49B273492C
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 00:33:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 9D87B734931
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 00:52:43 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3F8BB280FD1
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 22:33:04 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id CE32A280F9D
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 22:52:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A858AD4C;
-	Sun, 18 Jun 2023 22:33:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0EE8BBA4B;
+	Sun, 18 Jun 2023 22:52:40 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0929A846A;
-	Sun, 18 Jun 2023 22:32:59 +0000 (UTC)
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F31AEC6;
-	Sun, 18 Jun 2023 15:32:57 -0700 (PDT)
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1687127575;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=5eocF6oVYznFl/DEwITHqQ7TMn26EFf0pZbwEDCTK84=;
-	b=bdpHhvr9Hn5s8M8pBt6h0RlUGOZ1Lo4/y28rwu0yVR7JZSlAq39/46BcKsilIUinfOPogU
-	qmKwez+jgzyMGsHhHmUjh9dF2vQKfcfzUpnC430yDZMMldnMWI1vYw06jpKeElXhmTcntG
-	yypvYR4iRqVpOziVhZdqJC7qgQJw5KA81XnRrk5f520jV+sacnO/fQhXBIQnrLmfO/2M+r
-	YFxwYhKBguqFcAkoCz4x6FEz5SiwhD5VV9/U1fv8TVeo3fA0XlwfdM8MGzqwB21MFiONgp
-	HFCCVB4X260bSKBTYLft5JXmqXu6l7oYYyLOqT0toHcgXAbIR5XTU+7H5xAo3g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1687127575;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=5eocF6oVYznFl/DEwITHqQ7TMn26EFf0pZbwEDCTK84=;
-	b=ZuJVVOhsCR9WDQQO84QX2oPc5VTYDEn0agA6nGmpVtt6s52bacZEJ4aPLDh/ary7zlNGrA
-	JmqYVkKOO6bt5CBA==
-To: Mike Rapoport <rppt@kernel.org>, linux-kernel@vger.kernel.org
-Cc: Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas
- <catalin.marinas@arm.com>, Christophe Leroy <christophe.leroy@csgroup.eu>,
- "David S. Miller" <davem@davemloft.net>, Dinh Nguyen
- <dinguyen@kernel.org>, Heiko Carstens <hca@linux.ibm.com>, Helge Deller
- <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>, Kent Overstreet
- <kent.overstreet@linux.dev>, Luis Chamberlain <mcgrof@kernel.org>, Mark
- Rutland <mark.rutland@arm.com>, Michael Ellerman <mpe@ellerman.id.au>,
- Mike Rapoport <rppt@kernel.org>, Nadav Amit <nadav.amit@gmail.com>,
- "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, Palmer Dabbelt
- <palmer@dabbelt.com>, Puranjay Mohan <puranjay12@gmail.com>, Rick
- Edgecombe <rick.p.edgecombe@intel.com>, Russell King
- <linux@armlinux.org.uk>, Song Liu <song@kernel.org>, Steven Rostedt
- <rostedt@goodmis.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Will Deacon <will@kernel.org>, bpf@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
- linux-mm@kvack.org, linux-modules@vger.kernel.org,
- linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
- linux-s390@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev,
- netdev@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org
-Subject: Re: [PATCH v2 06/12] mm/execmem: introduce execmem_data_alloc()
-In-Reply-To: <20230616085038.4121892-7-rppt@kernel.org>
-References: <20230616085038.4121892-1-rppt@kernel.org>
- <20230616085038.4121892-7-rppt@kernel.org>
-Date: Mon, 19 Jun 2023 00:32:55 +0200
-Message-ID: <87jzw0qu3s.ffs@tglx>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03E678480
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 22:52:39 +0000 (UTC)
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4486C1BB
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 15:52:38 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-570808d8ddeso27149487b3.0
+        for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 15:52:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1687128757; x=1689720757;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=QIEG8GOA507fs9MNiQMm3/fimoMx14sqMBBQu0RmZs0=;
+        b=fFovYuJ2zVnO105E5MI3L+ZRAJEVNQuTAdl4sZoxwc2OAOQ/89vUg4uN2oZHhaDycs
+         ybTKPVgGEHxulB7/w2UEIReph8XISNDraYrsJXE3Y5PCRJN0A9mX5pN6f3G8aciuqMnH
+         oqYJ8msV4dqv1YH4MbgaqtprLOiw4myQpYWRHE3SLy1LcYQmSOA32Ib9EImQGyBru6ld
+         xS4XmlupQwEvVLDBDhElGIyn2NHMhbnKE1ZgV5ncpBiDLZQUSLv2dIUU91dWg3JlhtZO
+         o4cw/AsNZUzCRif7MxqR7Md8Z7GWoFiLeSseW5B6j1Ve5/uE3FwS0yjThOkIX5NWLVQZ
+         UYEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687128757; x=1689720757;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QIEG8GOA507fs9MNiQMm3/fimoMx14sqMBBQu0RmZs0=;
+        b=IGh+Lc9ZrrTrFkpFJ6tPyog3MtWm+WQZXMoKCKXJu/rhM4lkuVD5Ip2Cr9WEG5JAun
+         K0AXug7rsXljyrDy47lqbF1+Eui1eYnDxproQZRJhd/MmSwXVdpBtI/l1/lwCO3unFZD
+         4Thh+E4eMLKSYdFKASKdDZFedMz2huIrMfmNQlSGL6iFfK5Z0g0DujFUs3gJbux5DQMy
+         J5OKUhPECsZ4YZtPw7NTUli23FdyixKfjoM5PW2MvUDsCQJbAe6KavQ6yGrHJMNZo06z
+         cauvVQwfWqiTTcY6OEwuA5uotJGc83a9f9FX2XKLBR7gZsR8Fn14b/HAumksRGyQT35r
+         eRHw==
+X-Gm-Message-State: AC+VfDxSjVZZuQLP/tyeszWWCgqbInG2KcmTua1fiPzOPgQ5UP1rlSGa
+	o6ipZ5YyK6Z9Smgdk40x8MkYYLOoiHA=
+X-Google-Smtp-Source: ACHHUZ7RfzL7qMEJu6geNs1svFcvKOljc5E2l9JhKSykkdiMdui/Jtv0a3/46k9vfwb23NJ/cFY/KQ==
+X-Received: by 2002:a81:a0d3:0:b0:56c:ff9d:8cd9 with SMTP id x202-20020a81a0d3000000b0056cff9d8cd9mr9316785ywg.7.1687128757427;
+        Sun, 18 Jun 2023 15:52:37 -0700 (PDT)
+Received: from localhost ([2600:1700:65a0:ab60:b348:50b3:4f6e:fba9])
+        by smtp.gmail.com with ESMTPSA id d68-20020a814f47000000b00559f1cb8444sm2891464ywb.70.2023.06.18.15.52.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 18 Jun 2023 15:52:36 -0700 (PDT)
+Date: Sun, 18 Jun 2023 15:52:35 -0700
+From: Cong Wang <xiyou.wangcong@gmail.com>
+To: Ignacy Gawedzki <ignacy.gawedzki@green-communications.fr>
+Cc: netdev@vger.kernel.org
+Subject: Re: Is EDT now expected to work with any qdisc?
+Message-ID: <ZI+Ks1imeX3VvuTv@pop-os.localdomain>
+References: <20230616173138.dcbdenbpvba7cf3k@zenon.in.qult.net>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230616173138.dcbdenbpvba7cf3k@zenon.in.qult.net>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Mike!
+On Fri, Jun 16, 2023 at 07:31:38PM +0200, Ignacy Gawedzki wrote:
+> Hi,
+> 
+> I've been lately playing around with setting tstamp in BPF in clsact,
+> in order to pace some traffic, both locally generated and forwarded.
+> 
+> All the code examples I could find suggest that this mangling of tstamp
+> will only work if the fq qdisc is set on the network interface.  But
+> my experiments seem to indicate that regardless of the actual qdisc,
+> be it fq, fq_codel, pfifo_fast, or even noqueue, the delivery time set
+> in tstamp is always honored, both in sending (output) and forwarding,
+> with any actual network interface driver I tried.
 
-Sorry for being late on this ...
+Scheduling packets in an order is the responsibility of Qdisc, it is
+generic, does not define any specific order. So whether ordering packets
+by tstamp is Qdisc-specific.
 
-On Fri, Jun 16 2023 at 11:50, Mike Rapoport wrote:
->  
-> +void *execmem_data_alloc(size_t size)
-> +{
-> +	unsigned long start = execmem_params.modules.data.start;
-> +	unsigned long end = execmem_params.modules.data.end;
-> +	pgprot_t pgprot = execmem_params.modules.data.pgprot;
-> +	unsigned int align = execmem_params.modules.data.alignment;
-> +	unsigned long fallback_start = execmem_params.modules.data.fallback_start;
-> +	unsigned long fallback_end = execmem_params.modules.data.fallback_end;
-> +	bool kasan = execmem_params.modules.flags & EXECMEM_KASAN_SHADOW;
+> 
+> I tried very hard to find a confirmation of my hypothesis in the
+> kernel sources, but after three days of continuous searching for
+> answers, I'm starting to feel I'm missing something here.
+> 
+> So is it so that this requested delivery time is honored before the
+> packet is handed over to the qdisc or the driver?  Or maybe nowadays
+> pretty much every driver (including veth) honors that delivery time
+> itself?
 
-While I know for sure that you read up on the discussion I had with Song
-about data structures, it seems you completely failed to understand it.
+It depends. Some NIC (and its driver) can schedule packets based on
+tstamp too, otherwise we have to rely on the software layer (Qdisc
+layer) to do so.
 
-> +	return execmem_alloc(size, start, end, align, pgprot,
-> +			     fallback_start, fallback_end, kasan);
+Different Qdisc's have different logics to schedule packets, not all
+of them use tstamp to order and schedule packets. This is why you have
+to pick a particular one, like fq, to get the logic you expect.
 
-Having _seven_ intermediate variables to fill _eight_ arguments of a
-function instead of handing in @size and a proper struct pointer is
-tasteless and disgusting at best.
-
-Six out of those seven parameters are from:
-
-    execmem_params.module.data
-
-while the KASAN shadow part is retrieved from
-
-    execmem_params.module.flags
-
-So what prevents you from having a uniform data structure, which is
-extensible and decribes _all_ types of allocations?
-
-Absolutely nothing. The flags part can either be in the type dependend
-part or you make the type configs an array as I had suggested originally
-and then execmem_alloc() becomes:
-
-void *execmem_alloc(type, size)
-
-and
-
-static inline void *execmem_data_alloc(size_t size)
-{
-        return execmem_alloc(EXECMEM_TYPE_DATA, size);
-}
-
-which gets the type independent parts from @execmem_param.
-
-Just read through your own series and watch the evolution of
-execmem_alloc():
-
-  static void *execmem_alloc(size_t size)
-
-  static void *execmem_alloc(size_t size, unsigned long start,
-                             unsigned long end, unsigned int align,
-                             pgprot_t pgprot)
-
-  static void *execmem_alloc(size_t len, unsigned long start,
-                             unsigned long end, unsigned int align,
-                             pgprot_t pgprot,
-                             unsigned long fallback_start,
-                             unsigned long fallback_end,
-                             bool kasan)
-
-In a month from now this function will have _ten_ parameters and tons of
-horrible wrappers which convert an already existing data structure into
-individual function arguments.
-
-Seriously?
-
-If you want this function to be [ab]used outside of the exec_param
-configuration space for whatever non-sensical reasons then this still
-can be either:
-
-void *execmem_alloc(params, type, size)
-
-static inline void *execmem_data_alloc(size_t size)
-{
-        return execmem_alloc(&exec_param, EXECMEM_TYPE_DATA, size);
-}
-
-or
-
-void *execmem_alloc(type_params, size);
-
-static inline void *execmem_data_alloc(size_t size)
-{
-        return execmem_alloc(&exec_param.data, size);
-}
-
-which both allows you to provide alternative params, right?
-
-Coming back to my conversation with Song:
-
-   "Bad programmers worry about the code. Good programmers worry about
-    data structures and their relationships."
-
-You might want to reread:
-
-    https://lore.kernel.org/r/87lenuukj0.ffs@tglx
-
-and the subsequent thread.
-
-The fact that my suggestions had a 'mod_' namespace prefix does not make
-any of my points moot.
-
-Song did an extremly good job in abstracting things out, but you decided
-to ditch his ground work instead of building on it and keeping the good
-parts. That's beyond sad.
-
-Worse, you went the full 'not invented here' path with an outcome which is
-even worse than the original hackery from Song which started the above
-referenced thread.
-
-I don't know what caused you to decide that ad hoc hackery is better
-than proper data structure based design patterns. I actually don't want
-to know.
-
-As much as my voice counts:
-
-  NAK-ed-by: Thomas Gleixner <tglx@linutronix.de>
-
-Thanks,
-
-        tglx
+Thanks.
 
