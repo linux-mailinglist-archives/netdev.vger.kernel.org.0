@@ -1,48 +1,45 @@
-Return-Path: <netdev+bounces-11788-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11789-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 4A2C3734750
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 19:41:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 0F71C734760
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 19:50:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 00A0D28109B
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 17:41:27 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3B6AB281095
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 17:50:09 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2663679D7;
-	Sun, 18 Jun 2023 17:41:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7786E6FC1;
+	Sun, 18 Jun 2023 17:50:07 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16A617498
-	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 17:41:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C2AB6FA2
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 17:50:07 +0000 (UTC)
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25971E5D
-	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 10:40:55 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E629E4C
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 10:50:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-	Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
-	Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
 	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=XtDYKdew3rEhjb+BLQYGrrzpb8oeokelun9vRymiprY=; b=6LcjbufqDPy8wJ+pVfVQgVtrDH
-	8Lh154e5DDn/uY1dZ+LXku4jUOyVrlX77EAOvTfwDcv01gVXnFiRuIjwHbthIVeovcA5iyeORNgcv
-	IQRkr7eTIXxmOFHJwOH8jxu7zBU9845OJVAXaE5laV2zePw+KeE/SimcqaehnBCh/o/M=;
+	bh=d4hyVLLxq8QtWiPzLkwShP7brvhOf2EpRO5V0W3stkI=; b=Iz4dft3hBYsVwG9gyUsmUwVhAj
+	72SIP/khPloWBS7vMGYGZTwQN7uOSw1bAPyp7Gh9gj2xo/01u5RaFYpvXql4kO2fzTHsDtaiKJrQC
+	NI1bK2RricXkUA//6R54r0yfRTM875OuIpabFUIsPJAVxfwiRtAzf3ZVEyU1YZqh3ZlI=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
 	(envelope-from <andrew@lunn.ch>)
-	id 1qAwOR-00Gqq2-In; Sun, 18 Jun 2023 19:40:51 +0200
+	id 1qAwXM-00GquP-8V; Sun, 18 Jun 2023 19:50:04 +0200
+Date: Sun, 18 Jun 2023 19:50:04 +0200
 From: Andrew Lunn <andrew@lunn.ch>
 To: netdev <netdev@vger.kernel.org>
-Cc: ansuelsmth@gmail.com,
-	Russell King <rmk+kernel@armlinux.org.uk>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v0 3/3] net: phy: marvell: Add support for offloading LED blinking
-Date: Sun, 18 Jun 2023 19:39:37 +0200
-Message-Id: <20230618173937.4016322-3-andrew@lunn.ch>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20230618173937.4016322-1-andrew@lunn.ch>
+Cc: ansuelsmth@gmail.com, Russell King <rmk+kernel@armlinux.org.uk>,
+	Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v0 1/3] led: trig: netdev: Fix requesting
+ offload device
+Message-ID: <5d17f2ac-bc50-40ab-ab30-9594fc99fa18@lunn.ch>
 References: <20230618173937.4016322-1-andrew@lunn.ch>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -50,314 +47,24 @@ List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230618173937.4016322-1-andrew@lunn.ch>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
 	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Add the code needed to indicate if a given blinking pattern can be
-offloaded, to offload a pattern and to try to return the current
-pattern. It is expected that ledtrig-netdev will gain support for
-other patterns, such as different link speeds etc. So the code is
-over-engineers to make adding such additional patterns easy.
+-EMORECOFFEE
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/phy/marvell.c | 243 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 243 insertions(+)
+Forget the cover note, which would be something like:
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 43b6cb725551..a443df3034f3 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -2893,6 +2893,234 @@ static int m88e1318_led_blink_set(struct phy_device *phydev, u8 index,
- 			       MII_88E1318S_PHY_LED_FUNC, reg);
- }
- 
-+struct marvell_led_rules {
-+	int mode;
-+	unsigned long rules;
-+};
-+
-+static const struct marvell_led_rules marvell_led0[] = {
-+	{
-+		.mode = 0,
-+		.rules = BIT(TRIGGER_NETDEV_LINK),
-+	},
-+	{
-+		.mode = 3,
-+		.rules = (BIT(TRIGGER_NETDEV_RX) |
-+			  BIT(TRIGGER_NETDEV_TX)),
-+	},
-+	{
-+		.mode = 4,
-+		.rules = (BIT(TRIGGER_NETDEV_RX) |
-+			  BIT(TRIGGER_NETDEV_TX)),
-+	},
-+	{
-+		.mode = 5,
-+		.rules = BIT(TRIGGER_NETDEV_TX),
-+	},
-+	{
-+		.mode = 8,
-+		.rules = 0,
-+	},
-+};
-+
-+static const struct marvell_led_rules marvell_led1[] = {
-+	{
-+		.mode = 1,
-+		.rules = (BIT(TRIGGER_NETDEV_LINK) |
-+			  BIT(TRIGGER_NETDEV_RX) |
-+			  BIT(TRIGGER_NETDEV_TX)),
-+	},
-+	{
-+		.mode = 2,
-+		.rules = (BIT(TRIGGER_NETDEV_LINK) |
-+			  BIT(TRIGGER_NETDEV_RX)),
-+	},
-+	{
-+		.mode = 3,
-+		.rules = (BIT(TRIGGER_NETDEV_RX) |
-+			  BIT(TRIGGER_NETDEV_TX)),
-+	},
-+	{
-+		.mode = 4,
-+		.rules = (BIT(TRIGGER_NETDEV_RX) |
-+			  BIT(TRIGGER_NETDEV_TX)),
-+	},
-+	{
-+		.mode = 8,
-+		.rules = 0,
-+	},
-+};
-+
-+static const struct marvell_led_rules marvell_led2[] = {
-+	{
-+		.mode = 0,
-+		.rules = BIT(TRIGGER_NETDEV_LINK),
-+	},
-+	{
-+		.mode = 1,
-+		.rules = (BIT(TRIGGER_NETDEV_LINK) |
-+			  BIT(TRIGGER_NETDEV_RX) |
-+			  BIT(TRIGGER_NETDEV_TX)),
-+	},
-+	{
-+		.mode = 3,
-+		.rules = (BIT(TRIGGER_NETDEV_RX) |
-+			  BIT(TRIGGER_NETDEV_TX)),
-+	},
-+	{
-+		.mode = 4,
-+		.rules = (BIT(TRIGGER_NETDEV_RX) |
-+			  BIT(TRIGGER_NETDEV_TX)),
-+	},
-+	{
-+		.mode = 5,
-+		.rules = BIT(TRIGGER_NETDEV_TX),
-+	},
-+	{
-+		.mode = 8,
-+		.rules = 0,
-+	},
-+};
-+
-+static int marvell_find_led_mode(unsigned long rules,
-+				 const struct marvell_led_rules *marvell_rules,
-+				 int count,
-+				 int *mode)
-+{
-+	int i;
-+
-+	for (i = 0; i < count; i++) {
-+		if (marvell_rules[i].rules == rules) {
-+			*mode = marvell_rules[i].mode;
-+			return 0;
-+		}
-+	}
-+	return -EOPNOTSUPP;
-+}
-+
-+static int marvell_get_led_mode(u8 index, unsigned long rules, int *mode)
-+{
-+	int ret;
-+
-+	switch (index) {
-+	case 0:
-+		ret = marvell_find_led_mode(rules, marvell_led0,
-+					    ARRAY_SIZE(marvell_led0), mode);
-+		break;
-+	case 1:
-+		ret = marvell_find_led_mode(rules, marvell_led1,
-+					    ARRAY_SIZE(marvell_led1), mode);
-+		break;
-+	case 2:
-+		ret = marvell_find_led_mode(rules, marvell_led2,
-+					    ARRAY_SIZE(marvell_led2), mode);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
-+static int marvell_find_led_rules(unsigned long *rules,
-+				  const struct marvell_led_rules *marvell_rules,
-+				  int count,
-+				  int mode)
-+{
-+	int i;
-+
-+	for (i = 0; i < count; i++) {
-+		if (marvell_rules[i].mode == mode) {
-+			*rules = marvell_rules[i].rules;
-+			return 0;
-+		}
-+	}
-+	return -EOPNOTSUPP;
-+}
-+
-+static int marvell_get_led_rules(u8 index, unsigned long *rules, int mode)
-+{
-+	int ret;
-+
-+	switch (index) {
-+	case 0:
-+		ret = marvell_find_led_rules(rules, marvell_led0,
-+					     ARRAY_SIZE(marvell_led0), mode);
-+		break;
-+	case 1:
-+		ret = marvell_find_led_rules(rules, marvell_led1,
-+					     ARRAY_SIZE(marvell_led1), mode);
-+		break;
-+	case 2:
-+		ret = marvell_find_led_rules(rules, marvell_led2,
-+					     ARRAY_SIZE(marvell_led2), mode);
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return ret;
-+}
-+
-+static int m88e1318_led_hw_is_supported(struct phy_device *phydev, u8 index,
-+					unsigned long rules)
-+{
-+	int mode, ret;
-+
-+	switch (index) {
-+	case 0:
-+	case 1:
-+	case 2:
-+		ret = marvell_get_led_mode(index, rules, &mode);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
-+static int m88e1318_led_hw_control_set(struct phy_device *phydev, u8 index,
-+				       unsigned long rules)
-+{
-+	int mode, ret, reg;
-+
-+	switch (index) {
-+	case 0:
-+	case 1:
-+	case 2:
-+		ret = marvell_get_led_mode(index, rules, &mode);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	reg = phy_read_paged(phydev, MII_MARVELL_LED_PAGE,
-+			     MII_88E1318S_PHY_LED_FUNC);
-+	reg &= ~(0xf << (4 * index));
-+	reg |= mode << (4 * index);
-+	return phy_write_paged(phydev, MII_MARVELL_LED_PAGE,
-+			       MII_88E1318S_PHY_LED_FUNC, reg);
-+}
-+
-+static int m88e1318_led_hw_control_get(struct phy_device *phydev, u8 index,
-+				       unsigned long *rules)
-+{
-+	int mode, reg;
-+
-+	if (index > 2)
-+		return -EINVAL;
-+
-+	reg = phy_read_paged(phydev, MII_MARVELL_LED_PAGE,
-+			     MII_88E1318S_PHY_LED_FUNC);
-+	mode = (reg >> (4 * index)) & 0xf;
-+
-+	return marvell_get_led_rules(index, rules, mode);
-+}
-+
- static int marvell_probe(struct phy_device *phydev)
- {
- 	struct marvell_priv *priv;
-@@ -3144,6 +3372,9 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_stats = marvell_get_stats,
- 		.led_brightness_set = m88e1318_led_brightness_set,
- 		.led_blink_set = m88e1318_led_blink_set,
-+		.led_hw_is_supported = m88e1318_led_hw_is_supported,
-+		.led_hw_control_set = m88e1318_led_hw_control_set,
-+		.led_hw_control_get = m88e1318_led_hw_control_get,
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1145,
-@@ -3252,6 +3483,9 @@ static struct phy_driver marvell_drivers[] = {
- 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
- 		.led_brightness_set = m88e1318_led_brightness_set,
- 		.led_blink_set = m88e1318_led_blink_set,
-+		.led_hw_is_supported = m88e1318_led_hw_is_supported,
-+		.led_hw_control_set = m88e1318_led_hw_control_set,
-+		.led_hw_control_get = m88e1318_led_hw_control_get,
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1540,
-@@ -3280,6 +3514,9 @@ static struct phy_driver marvell_drivers[] = {
- 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
- 		.led_brightness_set = m88e1318_led_brightness_set,
- 		.led_blink_set = m88e1318_led_blink_set,
-+		.led_hw_is_supported = m88e1318_led_hw_is_supported,
-+		.led_hw_control_set = m88e1318_led_hw_control_set,
-+		.led_hw_control_get = m88e1318_led_hw_control_get,
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1545,
-@@ -3308,6 +3545,9 @@ static struct phy_driver marvell_drivers[] = {
- 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
- 		.led_brightness_set = m88e1318_led_brightness_set,
- 		.led_blink_set = m88e1318_led_blink_set,
-+		.led_hw_is_supported = m88e1318_led_hw_is_supported,
-+		.led_hw_control_set = m88e1318_led_hw_control_set,
-+		.led_hw_control_get = m88e1318_led_hw_control_get,
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E3016,
-@@ -3451,6 +3691,9 @@ static struct phy_driver marvell_drivers[] = {
- 		.set_tunable = m88e1540_set_tunable,
- 		.led_brightness_set = m88e1318_led_brightness_set,
- 		.led_blink_set = m88e1318_led_blink_set,
-+		.led_hw_is_supported = m88e1318_led_hw_is_supported,
-+		.led_hw_control_set = m88e1318_led_hw_control_set,
-+		.led_hw_control_get = m88e1318_led_hw_control_get,
- 	},
- };
- 
--- 
-2.40.1
+Extend the PHY subsystem to allow PHY drivers to offload basic LED
+blinking. Provide the needed plumbing in phylib and extend the Marvell
+PHY driver to offload RX activity, TX activity and link.
 
+I will wait the usual 24 hours and then repost with a cover note.
+
+  Andrew
 
