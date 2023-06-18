@@ -1,151 +1,127 @@
-Return-Path: <netdev+bounces-11769-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11770-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9B47D7345D6
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 12:31:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 8ACCC734648
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 15:23:15 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5ED63280C6B
-	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 10:31:39 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 42B1E2810DF
+	for <lists+netdev@lfdr.de>; Sun, 18 Jun 2023 13:23:14 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AFB7415B0;
-	Sun, 18 Jun 2023 10:31:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8BF7B1C03;
+	Sun, 18 Jun 2023 13:23:12 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2C331102
-	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 10:31:37 +0000 (UTC)
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B5A3E5D
-	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 03:31:36 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id 3f1490d57ef6-bb2fae9b286so2740358276.3
-        for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 03:31:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1687084295; x=1689676295;
-        h=content-transfer-encoding:cc:to:from:subject:references
-         :mime-version:message-id:in-reply-to:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=N3xCmloStcox4DGiyVEmKPPYz/GhmfZcPboS7TQp61s=;
-        b=eE9NtI0H7khNMB7mtKWHQqK9MrBCftm6JTZkkzPggsH0UPbQbsBTM89Clf/lxW3Bos
-         uUdiDqvdwnTr46/toTNjPzxR7wWjiXgqRg2Ol/PePfxZkCk/2x/yCZcgNWZW0egTMqK0
-         QrEpwldBfZQEciuvCb1IcdWQCd4wH0JD38K0dR5h09JAGbtICl9c3BiCXStGK2T/l9cY
-         EGIRB8SZvMB3hHSteeo4uB0EYjwT+bu6WJ6cpcqGDNauqx7L0vmwbpi8cuspmnemG6Rt
-         mupQKORL17BCQcfJmOkbRnEUFCbd614pY0HcIxQ0UmyDQZtT6WK7p1P65UKoQg+eQtz9
-         b9mA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687084295; x=1689676295;
-        h=content-transfer-encoding:cc:to:from:subject:references
-         :mime-version:message-id:in-reply-to:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=N3xCmloStcox4DGiyVEmKPPYz/GhmfZcPboS7TQp61s=;
-        b=HKbKZz2AT8BeOzL1F41mWAjq56y99jTdl5KDZxOgePYQuior/56J5eb5BTC1Go35BW
-         t0AftEOlHx+i+mDMke8OlFjXG1xZ6gfrsfiReKdWfyxawEjLt81C3xflzDiCGA1HWaMY
-         uy/0HBpkMhtZoTjItebO2MfasZq6zoUB54gtJ9KgPhMYIJzZ1UvmmPq3bwy05k/X8Dcd
-         0WZ8YoCtXfxkMSqJz0iZGTIuR/0j7Dwy3BXZCuVYja5zCMEWoX/SpqksrH32n9B4HE7f
-         IivheOP556fJJ+YXhMJW2TYLwRzfD24TVha8Y/SZ3eMXGrEl4+52Bj/9hl8mpjrBZ6Vf
-         Q47g==
-X-Gm-Message-State: AC+VfDxl1ahQ1xMhf19SNRizw5NjUWTFZUwfw3CMAb57df3hcG6EjoZ7
-	gXMMcCQ3Gz1sygOFfoEnOR1gTr8G
-X-Google-Smtp-Source: ACHHUZ7nfGRJPoFfx5JtBgqwKDnx/JCTT3kAzp2nWxKhToLtlNazCP9nCYXd7RirbMm9exWHsP0QgDKN
-X-Received: from athina.mtv.corp.google.com ([2620:15c:211:200:7111:f876:ba0d:5495])
- (user=maze job=sendgmr) by 2002:a25:d3c8:0:b0:bac:adb8:a605 with SMTP id
- e191-20020a25d3c8000000b00bacadb8a605mr590813ybf.2.1687084295433; Sun, 18 Jun
- 2023 03:31:35 -0700 (PDT)
-Date: Sun, 18 Jun 2023 03:31:30 -0700
-In-Reply-To: <7915b31f96108bee8dd92a229df6823ebe9c55b0.camel@redhat.com>
-Message-Id: <20230618103130.51628-1-maze@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8067F184C
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 13:23:12 +0000 (UTC)
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F2BD12F;
+	Sun, 18 Jun 2023 06:23:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1687094588; x=1718630588;
+  h=from:to:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=FVlwepFy/UglT5MUNxy17NwDKspoxGIR9qfU/vyDNtI=;
+  b=GI7as7+xH50gOW8GpW0dmvfKQGVqPxveId98UYLOSX4iBmV86b3IPY7K
+   jF3lXRDcDuqpMfT0foXa9Ri5LIql4tulS0Zw+4DyYOMKsRfCJWjnHaAhE
+   Sk0slrRu69AxAK46/felmUvjhFeDA/X/asCjRk9ClUKVTfA63g/J5U936
+   Bvvt8Ux84ZEsWQbK8iEJWdTIgHJThWukbGFJj0B8M6V00C1KvpISWAACk
+   SJJY2t/YWgBZGemP9V5cvBirb+iej/JvUlh5XKCLr6A5iEPE/wr1J0s3a
+   ZAUy7+1Go2eJzfXzivfD1KPZCoXa1bGYNcmZPHBuTacT8HZi+8JR2aueq
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10745"; a="356967032"
+X-IronPort-AV: E=Sophos;i="6.00,252,1681196400"; 
+   d="scan'208";a="356967032"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2023 06:23:08 -0700
+X-IronPort-AV: E=McAfee;i="6600,9927,10745"; a="747146720"
+X-IronPort-AV: E=Sophos;i="6.00,252,1681196400"; 
+   d="scan'208";a="747146720"
+Received: from unknown (HELO localhost.localdomain) ([10.226.216.116])
+  by orsmga001.jf.intel.com with ESMTP; 18 Jun 2023 06:23:03 -0700
+From: niravkumar.l.rabara@intel.com
+To: Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Niravkumar L Rabara <niravkumar.l.rabara@intel.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Wen Ping <wen.ping.teh@intel.com>,
+	Richard Cochran <richardcochran@gmail.com>,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-clk@vger.kernel.org,
+	netdev@vger.kernel.org,
+	Adrian Ng Ho Yin <adrian.ho.yin.ng@intel.com>
+Subject: [PATCH 0/4] Add support for Agilex5 SoCFPGA platform
+Date: Sun, 18 Jun 2023 21:22:31 +0800
+Message-Id: <20230618132235.728641-1-niravkumar.l.rabara@intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <7915b31f96108bee8dd92a229df6823ebe9c55b0.camel@redhat.com>
-X-Mailer: git-send-email 2.41.0.162.gfafddb0af9-goog
-Subject: [PATCH net v2] revert "net: align SO_RCVMARK required privileges with SO_MARK"
-From: "=?UTF-8?q?Maciej=20=C5=BBenczykowski?=" <maze@google.com>
-To: "=?UTF-8?q?Maciej=20=C5=BBenczykowski?=" <zenczykowski@gmail.com>
-Cc: Linux Network Development Mailing List <netdev@vger.kernel.org>, 
-	"=?UTF-8?q?Maciej=20=C5=BBenczykowski?=" <maze@google.com>, Larysa Zaremba <larysa.zaremba@intel.com>, 
-	Simon Horman <simon.horman@corigine.com>, Paolo Abeni <pabeni@redhat.com>, 
-	Eyal Birger <eyal.birger@gmail.com>, Jakub Kicinski <kuba@kernel.org>, 
-	Eric Dumazet <edumazet@google.com>, Patrick Rohr <prohr@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-This reverts commit 1f86123b9749 ("net: align SO_RCVMARK required
-privileges with SO_MARK") because the reasoning in the commit message
-is not really correct:
-  SO_RCVMARK is used for 'reading' incoming skb mark (via cmsg), as such
-  it is more equivalent to 'getsockopt(SO_MARK)' which has no priv check
-  and retrieves the socket mark, rather than 'setsockopt(SO_MARK) which
-  sets the socket mark and does require privs.
+From: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
 
-  Additionally incoming skb->mark may already be visible if
-  sysctl_fwmark_reflect and/or sysctl_tcp_fwmark_accept are enabled.
+This patch set introduce the changes required for Agilx5 platform.
 
-  Furthermore, it is easier to block the getsockopt via bpf
-  (either cgroup setsockopt hook, or via syscall filters)
-  then to unblock it if it requires CAP_NET_RAW/ADMIN.
+patch [1/4] - Introduced compatible string for Agilex5 board
+patch [2/4] - Add reset and clock header and yaml file.
+patch [3/4] - Add clock driver for Agilex5 platform. This patch depends
+on patch 2.
+patch [4/4] - Add device tree files, socfpga_agilex5_socdk_swvp.dts is
+used for Virtual Platform (SIMICS) and socfpga_agilex5_socdk_nand.dts
+is used for NAND Flash based board. This patch depends on patch 3.
 
-On Android the socket mark is (among other things) used to store
-the network identifier a socket is bound to.  Setting it is privileged,
-but retrieving it is not.  We'd like unprivileged userspace to be able
-to read the network id of incoming packets (where mark is set via
-iptables [to be moved to bpf])...
+Niravkumar L Rabara (4):
+  dt-bindings: intel: Add Intel Agilex5 compatible
+  dt-bindings: clock: Add Intel Agilex5 clocks and resets
+  clk: socfpga: agilex5: Add clock driver for Agilex5 platform
+  arm64: dts: agilex5: Add initial support for Intel's Agilex5 SoCFPGA
 
-An alternative would be to add another sysctl to control whether
-setting SO_RCVMARK is privilged or not.
-(or even a MASK of which bits in the mark can be exposed)
-But this seems like over-engineering...
+ .../bindings/arm/intel,socfpga.yaml           |   1 +
+ .../bindings/clock/intel,agilex5.yaml         |  42 +
+ arch/arm64/boot/dts/intel/Makefile            |   3 +
+ .../arm64/boot/dts/intel/socfpga_agilex5.dtsi | 641 +++++++++++++
+ .../boot/dts/intel/socfpga_agilex5_socdk.dts  | 184 ++++
+ .../dts/intel/socfpga_agilex5_socdk_nand.dts  | 131 +++
+ .../dts/intel/socfpga_agilex5_socdk_swvp.dts  | 248 ++++++
+ drivers/clk/socfpga/Kconfig                   |   4 +-
+ drivers/clk/socfpga/Makefile                  |   2 +-
+ drivers/clk/socfpga/clk-agilex5.c             | 843 ++++++++++++++++++
+ drivers/clk/socfpga/clk-pll-s10.c             |  48 +
+ drivers/clk/socfpga/stratix10-clk.h           |   2 +
+ include/dt-bindings/clock/agilex5-clock.h     | 100 +++
+ .../dt-bindings/reset/altr,rst-mgr-agilex5.h  |  79 ++
+ 14 files changed, 2325 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/intel,agilex5.yaml
+ create mode 100644 arch/arm64/boot/dts/intel/socfpga_agilex5.dtsi
+ create mode 100644 arch/arm64/boot/dts/intel/socfpga_agilex5_socdk.dts
+ create mode 100644 arch/arm64/boot/dts/intel/socfpga_agilex5_socdk_nand.dts
+ create mode 100644 arch/arm64/boot/dts/intel/socfpga_agilex5_socdk_swvp.dts
+ create mode 100644 drivers/clk/socfpga/clk-agilex5.c
+ create mode 100644 include/dt-bindings/clock/agilex5-clock.h
+ create mode 100644 include/dt-bindings/reset/altr,rst-mgr-agilex5.h
 
-Note: This is a non-trivial revert, due to later merged commit e42c7beee71d
-("bpf: net: Consider has_current_bpf_ctx() when testing capable() in sk_set=
-sockopt()")
-which changed both 'ns_capable' into 'sockopt_ns_capable' calls.
-
-Fixes: 1f86123b9749 ("net: align SO_RCVMARK required privileges with SO_MAR=
-K")
-Cc: Larysa Zaremba <larysa.zaremba@intel.com>
-Cc: Simon Horman <simon.horman@corigine.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Eyal Birger <eyal.birger@gmail.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Patrick Rohr <prohr@google.com>
-Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
----
- net/core/sock.c | 6 ------
- 1 file changed, 6 deletions(-)
-
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 24f2761bdb1d..6e5662ca00fe 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1362,12 +1362,6 @@ int sk_setsockopt(struct sock *sk, int level, int op=
-tname,
- 		__sock_set_mark(sk, val);
- 		break;
- 	case SO_RCVMARK:
--		if (!sockopt_ns_capable(sock_net(sk)->user_ns, CAP_NET_RAW) &&
--		    !sockopt_ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN)) {
--			ret =3D -EPERM;
--			break;
--		}
--
- 		sock_valbool_flag(sk, SOCK_RCVMARK, valbool);
- 		break;
-=20
---=20
-2.41.0.162.gfafddb0af9-goog
+-- 
+2.25.1
 
 
