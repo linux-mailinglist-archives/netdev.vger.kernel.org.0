@@ -1,25 +1,25 @@
-Return-Path: <netdev+bounces-12003-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12005-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6C611735A94
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 17:01:23 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 61CCD735A96
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 17:02:00 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 27C8D280F49
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 15:01:22 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 926EA1C20B3A
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 15:01:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3B7E2134A5;
-	Mon, 19 Jun 2023 14:58:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D3C7A13AE3;
+	Mon, 19 Jun 2023 14:58:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31AFA13AE2
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 14:58:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C94AE14267
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 14:58:50 +0000 (UTC)
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7958910CF;
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id D7AE4E64;
 	Mon, 19 Jun 2023 07:58:47 -0700 (PDT)
 From: Pablo Neira Ayuso <pablo@netfilter.org>
 To: netfilter-devel@vger.kernel.org
@@ -28,9 +28,9 @@ Cc: davem@davemloft.net,
 	kuba@kernel.org,
 	pabeni@redhat.com,
 	edumazet@google.com
-Subject: [PATCH net 09/14] netfilter: nf_tables: reject unbound chain set before commit phase
-Date: Mon, 19 Jun 2023 16:58:00 +0200
-Message-Id: <20230619145805.303940-10-pablo@netfilter.org>
+Subject: [PATCH net 10/14] netfilter: nf_tables: disallow updates of anonymous sets
+Date: Mon, 19 Jun 2023 16:58:01 +0200
+Message-Id: <20230619145805.303940-11-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230619145805.303940-1-pablo@netfilter.org>
 References: <20230619145805.303940-1-pablo@netfilter.org>
@@ -47,49 +47,29 @@ X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Use binding list to track set transaction and to check for unbound
-chains before entering the commit phase.
+Disallow updates of set timeout and garbage collection parameters for
+anonymous sets.
 
-Bail out if chain binding remain unused before entering the commit
-step.
-
-Fixes: d0e2c7de92c7 ("netfilter: nf_tables: add NFT_CHAIN_BINDING")
+Fixes: 123b99619cca ("netfilter: nf_tables: honor set timeout and garbage collection updates")
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_tables_api.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ net/netfilter/nf_tables_api.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 66da44bff5e4..bab792434a8d 100644
+index bab792434a8d..16995b88da2f 100644
 --- a/net/netfilter/nf_tables_api.c
 +++ b/net/netfilter/nf_tables_api.c
-@@ -370,6 +370,11 @@ static void nft_trans_commit_list_add_tail(struct net *net, struct nft_trans *tr
- 		    nft_set_is_anonymous(nft_trans_set(trans)))
- 			list_add_tail(&trans->binding_list, &nft_net->binding_list);
- 		break;
-+	case NFT_MSG_NEWCHAIN:
-+		if (!nft_trans_chain_update(trans) &&
-+		    nft_chain_binding(nft_trans_chain(trans)))
-+			list_add_tail(&trans->binding_list, &nft_net->binding_list);
-+		break;
- 	}
+@@ -4963,6 +4963,9 @@ static int nf_tables_newset(struct sk_buff *skb, const struct nfnl_info *info,
+ 		if (info->nlh->nlmsg_flags & NLM_F_REPLACE)
+ 			return -EOPNOTSUPP;
  
- 	list_add_tail(&trans->list, &nft_net->commit_list);
-@@ -9501,6 +9506,14 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
- 				return -EINVAL;
- 			}
- 			break;
-+		case NFT_MSG_NEWCHAIN:
-+			if (!nft_trans_chain_update(trans) &&
-+			    nft_chain_binding(nft_trans_chain(trans)) &&
-+			    !nft_trans_chain_bound(trans)) {
-+				pr_warn_once("nftables ruleset with unbound chain\n");
-+				return -EINVAL;
-+			}
-+			break;
- 		}
- 	}
- 
++		if (nft_set_is_anonymous(set))
++			return -EOPNOTSUPP;
++
+ 		err = nft_set_expr_alloc(&ctx, set, nla, exprs, &num_exprs, flags);
+ 		if (err < 0)
+ 			return err;
 -- 
 2.30.2
 
