@@ -1,219 +1,164 @@
-Return-Path: <netdev+bounces-11961-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11962-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7C3DA73571C
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 14:44:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 9BA30735728
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 14:46:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DEAC82810E2
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 12:44:21 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 5747F280F74
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 12:46:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 014E5C8DC;
-	Mon, 19 Jun 2023 12:44:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A7257D2E6;
+	Mon, 19 Jun 2023 12:46:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2686AD3C
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 12:44:19 +0000 (UTC)
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E710810DC
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 05:43:51 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id 3f1490d57ef6-bd69bb4507eso3987712276.2
-        for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 05:43:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1687178618; x=1689770618;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=rLmi2Km+946xuyufzEe8kStvuacB84QLE8mQmfgTxuI=;
-        b=TaqTIJ3uYPVCwd2E2n4Rreem6z2GEFIMW/6CJwvMfU/JW9qIa7jCMeGOoCFtTMF4Li
-         /yoqhmm+fXLxqGt7PHM7bH2PZ+sYg7UKeidRT4ogQ+HPhO90jsd3RIEtgEhVC34HiMBC
-         /26E6MGsPX6pLSq9+0uTzPpFgG2LoOyDPayyhPyo61PV0ggDIR9EVO2RJn1RhRYUMiZI
-         3H55tmOtvPaxvFmcsOVWK+okWoVIuFDPznDwhmMKNgiDgB9binuGeJkjNnvfXcrF7ep8
-         lUCoIgokzyq3y9KGTczM34gh4BODxbrcD6NYx2WhqLWgUA32CCESQt8SsJ3C6fWNNcGN
-         MIrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687178618; x=1689770618;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=rLmi2Km+946xuyufzEe8kStvuacB84QLE8mQmfgTxuI=;
-        b=g2A8gwXj9JBBYJd6usWt3aao2JgBMpYGMsjXCtZh5ybIzDcyzlrK9NhW5SQJ8Yie90
-         /eK718B5bf22apmwPfd5U6ETuXMrwde8WpB7+wqjyTYuNJYrrjh5A8pw5o+J1Sngd0Eb
-         8QIfF2O8qabCAqcV5dWvZOqz3d+yhb3ih+FsQgzoMSrEvdncT8Ld5mn3SWyoC/rwx2gP
-         NQgnM4ANMhuZzfFQhNxFwfVSCdQCxAxy0CoRfgT7ew01NKOQqVDxM7L9MfIbxalmEjYo
-         oaG37kRJ950u+G74PxtA073SoRUb+FV8U3WA2eOpkOjiID7GS36ol59pmE1WxOx57znO
-         i79w==
-X-Gm-Message-State: AC+VfDzj/HzHmSVhMHPFjB8vnUMA/1l0EiLQczLUH97a2+qgLYB4CGzL
-	zFJFX3bXvzHudGS1M7XXHaJRYyCd+ivMVA==
-X-Google-Smtp-Source: ACHHUZ4h0THtkPLBldSAv3mvIpyS74A9bct+U/E4JLQBgTM8zog7e64zBplBRQLHr6TOI3npYji464mAOWCoew==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a25:ab11:0:b0:be5:3561:513d with SMTP id
- u17-20020a25ab11000000b00be53561513dmr840070ybi.11.1687178618112; Mon, 19 Jun
- 2023 05:43:38 -0700 (PDT)
-Date: Mon, 19 Jun 2023 12:43:35 +0000
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A93C8BE5
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 12:46:52 +0000 (UTC)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2068.outbound.protection.outlook.com [40.107.223.68])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB7D93;
+	Mon, 19 Jun 2023 05:46:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=h2OV78lhkN9mApnh3t5I1Gprc0Hh9g6JcJzkhYXyKlLvT+9WHdmR1Um7sG0MQRUMAOo1f0wtcZZqAefksg0FwLS856C8PlbhEQbZi8+yRrgn6aG84sLvTjQ95DQjyL1ul2TykVnEFAmYy3HtSV9mfw/P9o2DW9IVVb6O7iTfpdkda35g0nv7xJ8FfvdktoGy1WZK1l5JGf6hlMXjPIEsLpPOB2EBDxmI6nUEpolZYdqjTIezrFrvYhtCqc+7wYCrU6QgvNHsmR+yLjvI5Rn4rGiOvK17r3fmXAoeEe6tEaI9XsIxuADyOexQ4TLNDQC7FY9r3q2Y/4D3WtuP7BBk9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Xpgnp6H0C5Lo7lG2Vx1wIkjgN1u/5iiOPeFj52yn0tw=;
+ b=NWEhHoRKbDSh7GmN+bASzzZ4cwP15Gg+S/H0NYWj8dL7pqv6kaSIlMWY0iCmmTD+r8ogrb4zhhWRnjoX1bEHRb2VdJnsGr9ikDyjtqnM9syxfmVgjpwVXk2UP09fT+uYKHxdF4Q7Aq6CwYZmjSC9wXV/w7FqXGkJW0C+bMzZObuYU8Cfw5Y0xKcwXz95QALxuar4jbb/g6vMgak7u/3FcE5Va/PkfoSPN1AStN9cLawGYK1KczNO+rBZ6AlwViJDva+k+KmLvx+b/AcwzZNkek7md7dP5VGmJzueMYvStfYLhLeok68QEaDwoV7qpFByJYC6kwYWRm8LhVBzvjqhFg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Xpgnp6H0C5Lo7lG2Vx1wIkjgN1u/5iiOPeFj52yn0tw=;
+ b=lGlbOoIr9bv3WVhgMloL4d+wNDLc8yAUXUYwOoaDNI15UDYTJAsaHoyi7dTKBqPIv6yacK9jt2Ro6GskR9yyNXijCcRU6sot/C4T+2zmddsOkPHZvVDpDbUNLpbo6FRdzf5W7lr/BXkFtfRuFtrVlO7iwfn9k3HLAn4AGDAuPsxozfZ0YPL7x3PH6wIkueMciC4ORtzqUqsTjsV1Vtlct7n/XvcTtPUPpA3hNjOPqkQT2BpQMAaHBhRKClZqj66TXR12ZXu6J76qqTPoto5a/2SAJ2kBZqno0UU4Jgyrbw0+A1DL7X08quKMxXDneMIDCs1e0pBhlFMF/6ltBOlGDw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM6PR12MB4958.namprd12.prod.outlook.com (2603:10b6:5:20a::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.37; Mon, 19 Jun
+ 2023 12:46:47 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%7]) with mapi id 15.20.6500.031; Mon, 19 Jun 2023
+ 12:46:47 +0000
+Date: Mon, 19 Jun 2023 09:46:46 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Brett Creeley <brett.creeley@amd.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"yishaih@nvidia.com" <yishaih@nvidia.com>,
+	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
+	"shannon.nelson@amd.com" <shannon.nelson@amd.com>
+Subject: Re: [PATCH v10 vfio 4/7] vfio/pds: Add VFIO live migration support
+Message-ID: <ZJBONrx5LOgpTr1U@nvidia.com>
+References: <20230602220318.15323-1-brett.creeley@amd.com>
+ <20230602220318.15323-5-brett.creeley@amd.com>
+ <BN9PR11MB5276511543775B852AD1C5A88C58A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276511543775B852AD1C5A88C58A@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: YT4PR01CA0178.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:110::22) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.41.0.185.g7c58973941-goog
-Message-ID: <20230619124336.651528-1-edumazet@google.com>
-Subject: [PATCH net-next] net: remove sk_is_ipmr() and sk_is_icmpv6() helpers
-From: Eric Dumazet <edumazet@google.com>
-To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org, eric.dumazet@gmail.com, 
-	Eric Dumazet <edumazet@google.com>, syzbot <syzkaller@googlegroups.com>, 
-	Breno Leitao <leitao@debian.org>, Willem de Bruijn <willemb@google.com>, David Ahern <dsahern@kernel.org>, 
-	Kuniyuki Iwashima <kuniyu@amazon.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB4958:EE_
+X-MS-Office365-Filtering-Correlation-Id: dd61aae7-93c6-4eba-8e19-08db70c33ea2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	V0Wgm2nwefjGUTRRdy5/djovFm33xHi4GTFk57kMjX8cTa12f8DNvPHUWgzr7Hd2xeyO/n6YJ43IUNK4rrJv219dYybmV8//JsewFU4oMj5qdySCzPYyF2Gf135dda7QuGxLcjfSRZx1vBXJVfXyyGxrJRO3HhqrD7m0GGWEL+tIx2Q9oAVGBilBuo+N0S1nKiHpWaEGQYKFy1hSmVuP0jSN++w8b/4d7Vew2eVayXl4RD6/xhA2wFu5XTcDjdbiGhMKKDxVG7fLGp8pWjL71UJ9w5GDJ6XmGnozRnSOTGM56R728zcXcU4bx0Say5OgrzQYdTDeCKOEvZAWnJvhAFbna5Sks0fNEpujc9o1td1A1qC02YoJhYPLp5MBq74TGe7VgguT9OX08IgwlPF4UacYmVtYi6dKNx3IBER5pQksbKNJKTJ+vFONoopMgiO+uezhkMsIf/4y9cy0Ighviwd8wMQDDDLzdOkdfUzWRbuKVW4B+TNEkd8QicxlN6QI2m9NX5U11AApcgYfI2ur++X78/h7w2CEPqADLZt2tpWz6K8qxp7hSOTO/MGeyrIY
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(136003)(39860400002)(366004)(376002)(451199021)(2906002)(66899021)(41300700001)(5660300002)(8676002)(8936002)(36756003)(83380400001)(86362001)(478600001)(26005)(6506007)(6512007)(186003)(54906003)(6486002)(66946007)(66476007)(66556008)(6916009)(4326008)(316002)(38100700002)(2616005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ouQdCaeg/vC4WpXO3Q7m7Q+lzk4cVAkJ7GPtnprdm/jgDayEIBJzVsMmYRmg?=
+ =?us-ascii?Q?ewLK4+g6gK1Hq8tBSxYo7XD+aNeVVPIurmq4j2AbjQO6ZjUXtEuzBm9MH5pp?=
+ =?us-ascii?Q?bUEsTKsSsCezJ4yvgCnlHVgncBF0dC86wu8igDawoUfuXj245hHS9gMeBTXY?=
+ =?us-ascii?Q?a3XafiQOMcfNiDXIao3D1KMMRlbpPUXpEic4n/XUt6tzEoPxFs5h6j3Oc5Jr?=
+ =?us-ascii?Q?WROfP0v15vw3npRbxquxxNFTFy+TlBlOBC58d6AeFPtGk/Ysf27b6RdQqe/G?=
+ =?us-ascii?Q?61RakKxrMDCqV8t2ewHn6my17nDEoSmG5QUXSJEaZ8XHvF+kn0HDSWNNd2dF?=
+ =?us-ascii?Q?oktTSpbFNGZZVtWwv6hd+voaZx8IJuJzx5QumfcYaV0g+DDJ26lJDJ0WlYyx?=
+ =?us-ascii?Q?bQEyz6HimP/ecZ3mvq5YnXCEo5a/EmR44rdxQ7OmfR66+mxTtDku1l6WbQtn?=
+ =?us-ascii?Q?fO+aZfUGTSmwitlHMpizTAZcXtwksF5fVR++lGKmhlrRDKZeGoXZ4Ik2EEsr?=
+ =?us-ascii?Q?H+sKrE5wNUSUCfNwBNS9A95Wa63q6f/OPp8yvcAba88xw9g+RC94CBTO1SFd?=
+ =?us-ascii?Q?VPo8sX2Mh5qFiKItBcJIqpuUlqfG6EJEiRghcZxsmLbTpBquviBPUiRWvp8p?=
+ =?us-ascii?Q?Gz4iNAfRZDZjXGk/17ORo+5mgs7fXKau49m5NlGDu0Ny3T8QGPMWl8fjUzm6?=
+ =?us-ascii?Q?r63cI+6tiLHAieWt8yDAWsgPKrIf0fnTbZzlJ30BQAMW06+j03F6+GKsvGNy?=
+ =?us-ascii?Q?AKpdAACQ72ZP/96rL6bzi0dq/p+2GbqIIhmCPJNrA/Y1M71LP1YO37IwyeZr?=
+ =?us-ascii?Q?E8+isVxJT7h1zGlgSgkp5OvzOgRkH1d7/0rH3lynZRa9i+675Of7GzUztoDd?=
+ =?us-ascii?Q?LKh0LNKtonjT2wVrtj/Nzcodl+z0gUwFYtrhBrbOE4rL5azLZkUoRiOGjhv2?=
+ =?us-ascii?Q?TYUlr2l3VUGu7/5jyR9iVYo/h37r8MK2ZMYO4LCUwHOOXEprpD+pNLtQn+s9?=
+ =?us-ascii?Q?a8MJcr1gZ9f9Vo+DGgRIfvCAwkcZgd6NL7Dq5FLvlhqPxEwfy0kxejAg3FwD?=
+ =?us-ascii?Q?vJ+jbPsq55LqBpHXArqrscplRvP9Wkahi0qcyH8BEROE0x7RTLs8h1/UmfBM?=
+ =?us-ascii?Q?WbRNqgaNfYr0+yhR803c0ezI8z6Zv25wSvGZ2LkYo4PRSpW52wEZKzCI0nlX?=
+ =?us-ascii?Q?0nkOdJaFnA+9jNLZbLsGQSbPaqaERKjEPA9iQpPJ0I/xpcdMHjj4kblLXDSL?=
+ =?us-ascii?Q?9gjmFSvHLJ27FaaHEU7JZwSXGhzowTlMtahrZ9WK0hBentGSnwHK6JVVXQpK?=
+ =?us-ascii?Q?8Aobz8dR5WqxapL+77QPJ/sW7ElQk7H7a308kkAYVfi7Bx8jYLsfmT48BZh4?=
+ =?us-ascii?Q?4W9JMmURQRXj0NTj9eKTr8K1PjLjkEdUFUUnVzafyP5IEMRFsL3meYtQSTQY?=
+ =?us-ascii?Q?6OzLIhvjn1F9TvII3ARh4h7W/z5uO6hjTpn8XpbRio0Be9OKEpdb18c4LcxM?=
+ =?us-ascii?Q?A0mCaYy+szzYVBoia7CXUCI7MlIYxrVWpHc/R/BUfXdoX8uNt6QW7g/d+7i6?=
+ =?us-ascii?Q?K7G67g+sm10ifimGZiQ0PxjCS0cWXRm2DY5693p6?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd61aae7-93c6-4eba-8e19-08db70c33ea2
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2023 12:46:47.6066
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MdmIYU2/RWFpCHP4CxhXk2VG0fxP5v+FSOfosKVXBReDLcNx0NYi3Q8v/c8VLeMw
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4958
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Blamed commit added these helpers for sake of detecting RAW
-sockets specific ioctl.
+On Fri, Jun 16, 2023 at 08:06:21AM +0000, Tian, Kevin wrote:
 
-syzbot complained about it [1].
+> Ideally the VMM has an estimation how long a VM can be paused based on
+> SLA, to-be-migrated state size, available network bandwidth, etc. and that
+> hint should be passed to the kernel so any state transition which may violate
+> that expectation can fail quickly to break the migration process and put the
+> VM back to the running state.
+> 
+> Jason/Shameer, is there similar concern in mlx/hisilicon drivers? 
 
-Issue here is that RAW sockets could pretend there was no need
-to call ipmr_sk_ioctl()
+It is handled through the vfio_device_feature_mig_data_size mechanism..
 
-Regardless of inet_sk(sk)->inet_num, we must be prepared
-for ipmr_ioctl() being called later. This must happen
-from ipmr_sk_ioctl() context only.
+> > +	if (cur == VFIO_DEVICE_STATE_RUNNING_P2P && next ==
+> > VFIO_DEVICE_STATE_STOP)
+> > +		return NULL;
+> 
+> I'm not sure whether P2P is actually supported here. By definition
+> P2P means the device is stopped but still responds to p2p request
+> from other devices. If you look at mlx example it uses different
+> cmds between RUNNING->RUNNING_P2P and RUNNING_P2P->STOP.
+> 
+> But in your case seems you simply move what is required in STOP
+> into P2P. Probably you can just remove the support of P2P like
+> hisilicon does.
 
-We could add a safety check in ipmr_ioctl() at the risk of breaking
-applications.
+We want new devices to get their architecture right, they need to
+support P2P. Didn't we talk about this already and Brett was going to
+fix it?
 
-Instead, remove sk_is_ipmr() and sk_is_icmpv6() because their
-name would be misleading, once we change their implementation.
-
-[1]
-BUG: KASAN: stack-out-of-bounds in ipmr_ioctl+0xb12/0xbd0 net/ipv4/ipmr.c:1654
-Read of size 4 at addr ffffc90003aefae4 by task syz-executor105/5004
-
-CPU: 0 PID: 5004 Comm: syz-executor105 Not tainted 6.4.0-rc6-syzkaller-01304-gc08afcdcf952 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/27/2023
-Call Trace:
-<TASK>
-__dump_stack lib/dump_stack.c:88 [inline]
-dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
-print_address_description.constprop.0+0x2c/0x3c0 mm/kasan/report.c:351
-print_report mm/kasan/report.c:462 [inline]
-kasan_report+0x11c/0x130 mm/kasan/report.c:572
-ipmr_ioctl+0xb12/0xbd0 net/ipv4/ipmr.c:1654
-raw_ioctl+0x4e/0x1e0 net/ipv4/raw.c:881
-sock_ioctl_out net/core/sock.c:4186 [inline]
-sk_ioctl+0x151/0x440 net/core/sock.c:4214
-inet_ioctl+0x18c/0x380 net/ipv4/af_inet.c:1001
-sock_do_ioctl+0xcc/0x230 net/socket.c:1189
-sock_ioctl+0x1f8/0x680 net/socket.c:1306
-vfs_ioctl fs/ioctl.c:51 [inline]
-__do_sys_ioctl fs/ioctl.c:870 [inline]
-__se_sys_ioctl fs/ioctl.c:856 [inline]
-__x64_sys_ioctl+0x197/0x210 fs/ioctl.c:856
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f2944bf6ad9
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd8897a028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f2944bf6ad9
-RDX: 0000000000000000 RSI: 00000000000089e1 RDI: 0000000000000003
-RBP: 00007f2944bbac80 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f2944bbad10
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-</TASK>
-
-The buggy address belongs to stack of task syz-executor105/5004
-and is located at offset 36 in frame:
-sk_ioctl+0x0/0x440 net/core/sock.c:4172
-
-This frame has 2 objects:
-[32, 36) 'karg'
-[48, 88) 'buffer'
-
-Fixes: e1d001fa5b47 ("net: ioctl: Use kernel memory on protocol ioctl callbacks")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Breno Leitao <leitao@debian.org>
-Cc: Willem de Bruijn <willemb@google.com>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- include/linux/icmpv6.h |  6 ------
- include/linux/mroute.h | 11 -----------
- net/core/sock.c        |  4 ++--
- 3 files changed, 2 insertions(+), 19 deletions(-)
-
-diff --git a/include/linux/icmpv6.h b/include/linux/icmpv6.h
-index 1fe33e6741cca2685082da214afbc94c7974f4ce..db0f4fcfdaf4f138d75dc6c4073cb286364f2923 100644
---- a/include/linux/icmpv6.h
-+++ b/include/linux/icmpv6.h
-@@ -111,10 +111,4 @@ static inline bool icmpv6_is_err(int type)
- 	return false;
- }
- 
--static inline int sk_is_icmpv6(struct sock *sk)
--{
--	return sk->sk_family == AF_INET6 &&
--		inet_sk(sk)->inet_num == IPPROTO_ICMPV6;
--}
--
- #endif
-diff --git a/include/linux/mroute.h b/include/linux/mroute.h
-index 94c6e6f549f0a503f6707d1175f1c47a0f0cd887..4c5003afee6c51962bc13879978845bc7daf08fa 100644
---- a/include/linux/mroute.h
-+++ b/include/linux/mroute.h
-@@ -16,12 +16,6 @@ static inline int ip_mroute_opt(int opt)
- 	return opt >= MRT_BASE && opt <= MRT_MAX;
- }
- 
--static inline int sk_is_ipmr(struct sock *sk)
--{
--	return sk->sk_family == AF_INET &&
--		inet_sk(sk)->inet_num == IPPROTO_IGMP;
--}
--
- int ip_mroute_setsockopt(struct sock *, int, sockptr_t, unsigned int);
- int ip_mroute_getsockopt(struct sock *, int, sockptr_t, sockptr_t);
- int ipmr_ioctl(struct sock *sk, int cmd, void *arg);
-@@ -57,11 +51,6 @@ static inline int ip_mroute_opt(int opt)
- 	return 0;
- }
- 
--static inline int sk_is_ipmr(struct sock *sk)
--{
--	return 0;
--}
--
- static inline bool ipmr_rule_default(const struct fib_rule *rule)
- {
- 	return true;
-diff --git a/net/core/sock.c b/net/core/sock.c
-index cff3e82514d17513bc96300dc18014083a0d7ea7..8ec8f4c9911f2a6dd3dd946798d512394d62a861 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -4199,9 +4199,9 @@ int sk_ioctl(struct sock *sk, unsigned int cmd, void __user *arg)
- {
- 	int rc = 1;
- 
--	if (sk_is_ipmr(sk))
-+	if (sk->sk_type == SOCK_RAW && sk->sk_family == AF_INET)
- 		rc = ipmr_sk_ioctl(sk, cmd, arg);
--	else if (sk_is_icmpv6(sk))
-+	else if (sk->sk_type == SOCK_RAW && sk->sk_family == AF_INET6)
- 		rc = ip6mr_sk_ioctl(sk, cmd, arg);
- 	else if (sk_is_phonet(sk))
- 		rc = phonet_sk_ioctl(sk, cmd, arg);
--- 
-2.41.0.185.g7c58973941-goog
-
+Jason
 
