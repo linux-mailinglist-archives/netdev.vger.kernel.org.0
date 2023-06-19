@@ -1,189 +1,104 @@
-Return-Path: <netdev+bounces-12057-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12058-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D0B72735D74
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 20:23:33 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9BEA8735D77
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 20:28:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id B7F0F1C20B49
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 18:23:32 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id E763C28105B
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 18:28:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 95A6614283;
-	Mon, 19 Jun 2023 18:23:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D959E1428C;
+	Mon, 19 Jun 2023 18:28:52 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87B281FA9
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 18:23:30 +0000 (UTC)
-Received: from smtp-bc0e.mail.infomaniak.ch (smtp-bc0e.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc0e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B13F11D
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 11:23:26 -0700 (PDT)
-Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
-	by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4QlJ6j2pGHzMq40r;
-	Mon, 19 Jun 2023 18:23:25 +0000 (UTC)
-Received: from unknown by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4QlJ6h3dZLzMqD0G;
-	Mon, 19 Jun 2023 20:23:24 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-	s=20191114; t=1687199005;
-	bh=Qr8PhNeLD6qr1V7vT5Z8S3Ee6R5YJna11xamraRUXKc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=scvwM9ClHOVog9yZpkpmYj5PIxVH4ic2sAxGP12t61wnXeqRpPqKLubqZoc6g9Dgw
-	 y7OinZtDzZtS4KsCs9EEukis91TtuusCArBOoiHmO1znbFyshkbdGEQU0DxhwEhGns
-	 YyyLZx/NLMlOB8AVAJ501KuajYapC+KhMimG/pXQ=
-Message-ID: <de9fd04b-8da9-b03b-b278-5437c67b15eb@digikod.net>
-Date: Mon, 19 Jun 2023 20:23:23 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8019D1427B
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 18:28:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACE39C433C8;
+	Mon, 19 Jun 2023 18:28:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1687199331;
+	bh=E9u7K9JH+dqmz9UAQAfDkvOH6k1Kob+AEXDh4lGTknc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=q8E5iMqNlimEHdFM/5df9pJap90oEqlwZEp6jIkNp9JJHvSGCVnBZXuL0yNm9/pjq
+	 KnNkxaC6dDHAWhMZdpepXnnCgWGOrT9WxOWUNH1H27wSUrgRje2xL8C3aO+YQh8tKg
+	 6cqsBk6c6YpqQ1KOemQcYBPj3k6XuhbCU/P2cPyzUjD29wC5XXxrDmA6UjKww1rp0h
+	 nqoU7Ux5kVgQgrcOpegmOZTRr7iuVIpRC3THh2Df0ICwt4N/XUTP3cszSVlKXGyGiu
+	 f4IBg6nzLwxtX+h/b6GhWig488s3t5vkvP80ajvjo70dBgmDCVXXKmmyuOTcocL32I
+	 ZePAYQkaHEybg==
+Date: Mon, 19 Jun 2023 11:28:49 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Vlad Buslov <vladbu@nvidia.com>
+Cc: Saeed Mahameed <saeed@kernel.org>, "David S. Miller"
+ <davem@davemloft.net>, Paolo Abeni <pabeni@redhat.com>, Eric Dumazet
+ <edumazet@google.com>, Saeed Mahameed <saeedm@nvidia.com>,
+ <netdev@vger.kernel.org>, Tariq Toukan <tariqt@nvidia.com>, Gal Pressman
+ <gal@nvidia.com>
+Subject: Re: [net-next 07/15] net/mlx5: Bridge, expose FDB state via debugfs
+Message-ID: <20230619112849.06252444@kernel.org>
+In-Reply-To: <87v8fjvnhq.fsf@nvidia.com>
+References: <20230616201113.45510-1-saeed@kernel.org>
+	<20230616201113.45510-8-saeed@kernel.org>
+	<20230617004811.46a432a4@kernel.org>
+	<87v8fjvnhq.fsf@nvidia.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent:
-Subject: Re: [PATCH v11 00/12] Network support for Landlock
-Content-Language: en-US
-To: "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-Cc: willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
- linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
- netfilter-devel@vger.kernel.org, yusongping@huawei.com,
- artem.kuzin@huawei.com
-References: <20230515161339.631577-1-konstantin.meskhidze@huawei.com>
- <8f3d242a-c0ee-217e-8094-84093ce4e134@digikod.net>
- <ea810d57-93fe-1724-4aab-5cbc1a35062f@huawei.com>
- <96c88b9f-7625-7aae-83a5-a91586a9bc15@digikod.net>
- <a1995119-48d1-6e5b-c6c7-d5f7a973ca1f@huawei.com>
-From: =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <a1995119-48d1-6e5b-c6c7-d5f7a973ca1f@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Infomaniak-Routing: alpha
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-	version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-
-On 19/06/2023 16:28, Konstantin Meskhidze (A) wrote:
+On Mon, 19 Jun 2023 11:37:30 +0300 Vlad Buslov wrote:
+> On Sat 17 Jun 2023 at 00:48, Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Fri, 16 Jun 2023 13:11:05 -0700 Saeed Mahameed wrote:  
+> >> $ cat mlx5/0000\:08\:00.0/esw/bridge/bridge1/fdb
+> >> DEV              MAC               VLAN              PACKETS                BYTES              LASTUSE FLAGS
+> >> enp8s0f0_1       e4:0a:05:08:00:06    2                    2                  204           4295567112   0x0
+> >> enp8s0f0_0       e4:0a:05:08:00:03    2                    3                  278           4295567112   0x0  
+> >
+> > The flags here are the only thing that's mlx5 specific?  
 > 
+> Not exactly. This debugfs exposes the state of our bridge offload layer.
+> For example, when VF representors from different eswitches are added to
+> the same bridge every FDB entry on such bridge will have multiple
+> underlying offloaded steering rules (one per eswitch instance connected
+> to the bridge). User will observe the entries in all connected 'fdb'
+> debugfs' (all except the 'main' entry will have flag
+> MLX5_ESW_BRIDGE_FLAG_PEER set) and their corresponding counters will
+> increment only on the eswitch instance that is actually processing the
+> packets, which depends on the mode (when bonding device is added to the
+> bridge in single FDB LAG mode all traffic appears on eswitch 0, without
+> it the the traffic is on the eswitch of parent uplink of the VF). I
+> understand that this is rather convoluted but this is exactly why we are
+> going with debugfs.
 > 
-> 6/6/2023 12:40 PM, Mickaël Salaün пишет:
->>
->> On 06/06/2023 11:10, Konstantin Meskhidze (A) wrote:
->>>
->>>
->>> 6/5/2023 6:02 PM, Mickaël Salaün пишет:
->>>> Hi Konstantin,
->>>>
->>>> The kernel code looks good. I found some issues in tests and
->>>> documentation, and I'm still reviewing the whole patches. In the
->>>> meantime, I've pushed it in -next, we'll see how it goes.
->>>>
->>>> We need to have this new code covered by syzkaller. I'll work on that
->>>> unless you want to.
->>>>
->>>> Regards,
->>>>      Mickaël
->>>>
->>>      Hi, Mickaël!
->>>      I have never set up syzkaller. Do you have a syzkaller scenario for
->>> Landlock code? I need some hints. I will give it a shot.
->>
->> You can get a look at https://github.com/google/syzkaller/pull/3423 or
->> other Landlock-related PR.
->>
->> The setup might be a bit challenging though, but it will be a good
->> investment for future kernel changes.
+> > Why not add an API for dumping this kind of stats that other drivers
+> > can reuse?  
 > 
->     Thanks. I will handle it. Can you give me a hand with some tips if I
-> have issues with syzkaller setup?
+> As explained in previous paragraph we would like to expose internal mlx5
+> bridge layer for debug purposes, not to design generic bridge FDB
+> counter interface. Also, the debugging needs of our implementation may
+> not correspond to other drivers because we don't have a 'hardware
+> switch' on our NIC, so we do things like learning and ageing in
+> software, and have to deal with multiple possible mode of operations
+> (single FDB vs merged eswitch from previous example, etc.).
 
-Yes, you can Cc me and send emails to syzkaller@googlegroups.com: 
-https://groups.google.com/g/syzkaller
+Looks like my pw-bot shenanigans backfired / crashed, patches didn't
+get marked as Changes Requested and Dave applied the series :S
 
+I understand the motivation but the information is easy enough to
+understand to potentially tempt a user to start depending on it for
+production needs. Then another vendor may get asked to implement
+similar but not exactly the same set of stats etc. etc.
 
+Do you have customer who will need this?
 
-
->>
->>
->>>
->>>     Regards,
->>>        Konstantin.
->>>>
->>>> On 15/05/2023 18:13, Konstantin Meskhidze wrote:
->>>>> Hi,
->>>>> This is a new V11 patch related to Landlock LSM network confinement.
->>>>> It is based on the landlock's -next branch on top of v6.2-rc3+ kernel version:
->>>>> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=next
->>>>>
->>>>> It brings refactoring of previous patch version V10.
->>>>> Mostly there are fixes of logic and typos, refactoring some selftests.
->>>>>
->>>>> All test were run in QEMU evironment and compiled with
->>>>>     -static flag.
->>>>>     1. network_test: 36/36 tests passed.
->>>>>     2. base_test: 7/7 tests passed.
->>>>>     3. fs_test: 78/78 tests passed.
->>>>>     4. ptrace_test: 8/8 tests passed.
->>>>>
->>>>> Previous versions:
->>>>> v10: https://lore.kernel.org/linux-security-module/20230323085226.1432550-1-konstantin.meskhidze@huawei.com/
->>>>> v9: https://lore.kernel.org/linux-security-module/20230116085818.165539-1-konstantin.meskhidze@huawei.com/
->>>>> v8: https://lore.kernel.org/linux-security-module/20221021152644.155136-1-konstantin.meskhidze@huawei.com/
->>>>> v7: https://lore.kernel.org/linux-security-module/20220829170401.834298-1-konstantin.meskhidze@huawei.com/
->>>>> v6: https://lore.kernel.org/linux-security-module/20220621082313.3330667-1-konstantin.meskhidze@huawei.com/
->>>>> v5: https://lore.kernel.org/linux-security-module/20220516152038.39594-1-konstantin.meskhidze@huawei.com
->>>>> v4: https://lore.kernel.org/linux-security-module/20220309134459.6448-1-konstantin.meskhidze@huawei.com/
->>>>> v3: https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
->>>>> v2: https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
->>>>> v1: https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
->>>>>
->>>>> Konstantin Meskhidze (11):
->>>>>      landlock: Make ruleset's access masks more generic
->>>>>      landlock: Refactor landlock_find_rule/insert_rule
->>>>>      landlock: Refactor merge/inherit_ruleset functions
->>>>>      landlock: Move and rename layer helpers
->>>>>      landlock: Refactor layer helpers
->>>>>      landlock: Refactor landlock_add_rule() syscall
->>>>>      landlock: Add network rules and TCP hooks support
->>>>>      selftests/landlock: Share enforce_ruleset()
->>>>>      selftests/landlock: Add 11 new test suites dedicated to network
->>>>>      samples/landlock: Add network demo
->>>>>      landlock: Document Landlock's network support
->>>>>
->>>>> Mickaël Salaün (1):
->>>>>      landlock: Allow filesystem layout changes for domains without such
->>>>>        rule type
->>>>>
->>>>>     Documentation/userspace-api/landlock.rst     |   89 +-
->>>>>     include/uapi/linux/landlock.h                |   48 +
->>>>>     samples/landlock/sandboxer.c                 |  128 +-
->>>>>     security/landlock/Kconfig                    |    1 +
->>>>>     security/landlock/Makefile                   |    2 +
->>>>>     security/landlock/fs.c                       |  232 +--
->>>>>     security/landlock/limits.h                   |    7 +-
->>>>>     security/landlock/net.c                      |  174 +++
->>>>>     security/landlock/net.h                      |   26 +
->>>>>     security/landlock/ruleset.c                  |  405 +++++-
->>>>>     security/landlock/ruleset.h                  |  185 ++-
->>>>>     security/landlock/setup.c                    |    2 +
->>>>>     security/landlock/syscalls.c                 |  163 ++-
->>>>>     tools/testing/selftests/landlock/base_test.c |    2 +-
->>>>>     tools/testing/selftests/landlock/common.h    |   10 +
->>>>>     tools/testing/selftests/landlock/config      |    4 +
->>>>>     tools/testing/selftests/landlock/fs_test.c   |   74 +-
->>>>>     tools/testing/selftests/landlock/net_test.c  | 1317 ++++++++++++++++++
->>>>>     18 files changed, 2520 insertions(+), 349 deletions(-)
->>>>>     create mode 100644 security/landlock/net.c
->>>>>     create mode 100644 security/landlock/net.h
->>>>>     create mode 100644 tools/testing/selftests/landlock/net_test.c
->>>>>
->>>>> --
->>>>> 2.25.1
->>>>>
->>>> .
->> .
+At the very least please follow up to make the files readable to only
+root. Normal users should never look at debugfs IMO.
 
