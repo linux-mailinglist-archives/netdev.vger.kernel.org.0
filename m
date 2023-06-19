@@ -1,197 +1,130 @@
-Return-Path: <netdev+bounces-11918-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11919-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id ADBAA7351A4
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 12:11:12 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9CA797351A8
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 12:11:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 696CF2810EF
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 10:11:11 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CD1751C2095A
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 10:11:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BAD5107B0;
-	Mon, 19 Jun 2023 10:09:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 99557C8D4;
+	Mon, 19 Jun 2023 10:11:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 196F310799
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 10:09:26 +0000 (UTC)
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE60E4E;
-	Mon, 19 Jun 2023 03:09:18 -0700 (PDT)
-From: Florian Kauer <florian.kauer@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1687169349;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=zigf/+zmS1oU1E2PtoMDW6vnsHU2lp2rxIp8cr2SRo4=;
-	b=cb1bdw8Pqw3e4mqc57rF64Kr9cZcTadl4V/dTedmV9X1muKiKTXM3fvzAlZ60IZmrDnJ43
-	vyaQAX4I662p1LYot7v3o1smKv75psokIaT1s/8ppwWpZ3PYImleDTnCTMaB3vEUftB35W
-	fbk+VOSNe8pb5UbfzpQrf56DnNX8vvF0OPsk5qAJqpSuGb9IZYxsk2yeC1c3eSkEvivLIS
-	7umovWtN3Fh+6OAU7XjCr1g5oJb1DWFCuc4ykvAQGdFSbAEbg321/d6oML7suGpd31QY8T
-	vXr4z9JhHMOl2/tghtPEMQ51T+5s+kMJa2NTIhOjAaGhqcaOVvQtEwT4f29tFQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1687169349;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=zigf/+zmS1oU1E2PtoMDW6vnsHU2lp2rxIp8cr2SRo4=;
-	b=RcC2hO6oyrPI1w8im2FqsY6TtjiPZ5kiajmmPjhf+ahzkSSb36Gn/69ocfyESXK79PWVxA
-	BLgdLbHXdT33Q9CQ==
-To: Jesse Brandeburg <jesse.brandeburg@intel.com>,
-	Tony Nguyen <anthony.l.nguyen@intel.com>,
-	Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Tan Tee Min <tee.min.tan@linux.intel.com>,
-	Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>,
-	Aravindhan Gunasekaran <aravindhan.gunasekaran@intel.com>,
-	Malli C <mallikarjuna.chilakala@intel.com>
-Cc: intel-wired-lan@lists.osuosl.org,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	kurt@linutronix.de,
-	florian.kauer@linutronix.de
-Subject: [PATCH net v2 6/6] igc: Fix inserting of empty frame for launchtime
-Date: Mon, 19 Jun 2023 12:08:58 +0200
-Message-Id: <20230619100858.116286-7-florian.kauer@linutronix.de>
-In-Reply-To: <20230619100858.116286-1-florian.kauer@linutronix.de>
-References: <20230619100858.116286-1-florian.kauer@linutronix.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ED90C123
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 10:11:46 +0000 (UTC)
+Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4EF19A8
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 03:11:35 -0700 (PDT)
+X-QQ-mid:Yeas5t1687169448t432t23233
+Received: from 3DB253DBDE8942B29385B9DFB0B7E889 (jiawenwu@trustnetic.com [122.235.139.240])
+X-QQ-SSF:00400000000000F0FPF000000000000
+From: =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
+X-BIZMAIL-ID: 3586088856265510750
+To: "'Zhengchao Shao'" <shaozhengchao@huawei.com>,
+	<netdev@vger.kernel.org>,
+	<mengyuanlou@net-swift.com>,
+	<davem@davemloft.net>,
+	<edumazet@google.com>,
+	<kuba@kernel.org>,
+	<pabeni@redhat.com>
+Cc: <weiyongjun1@huawei.com>,
+	<yuehaibing@huawei.com>
+References: <20230619085709.104271-1-shaozhengchao@huawei.com>
+In-Reply-To: <20230619085709.104271-1-shaozhengchao@huawei.com>
+Subject: RE: [PATCH net-next] net: txgbe: remove unused buffer in txgbe_calc_eeprom_checksum
+Date: Mon, 19 Jun 2023 18:10:47 +0800
+Message-ID: <005c01d9a296$513915b0$f3ab4110$@trustnetic.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: zh-cn
+Thread-Index: AQHNIFtJ0StorG20AUS1DtyJNHbUcK+q60gQ
+X-QQ-SENDSIZE: 520
+Feedback-ID: Yeas:trustnetic.com:qybglogicsvrgz:qybglogicsvrgz5a-1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The insertion of an empty frame was introduced with
-commit db0b124f02ba ("igc: Enhance Qbv scheduling by using first flag bit")
-in order to ensure that the current cycle has at least one packet if
-there is some packet to be scheduled for the next cycle.
+On Monday, June 19, 2023 4:57 PM, Zhengchao Shao wrote:
+> Half a year passed since commit 049fe5365324c ("net: txgbe: Add operations
+> to interact with firmware") was submitted, the buffer in
+> txgbe_calc_eeprom_checksum was not used. So remove it and the related
+> branch codes.
+> 
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c | 31 +++++++------------
+>  1 file changed, 11 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
+> index ebc46f3be056..173437c7a55f 100644
+> --- a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
+> +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
+> @@ -161,33 +161,24 @@ static int txgbe_calc_eeprom_checksum(struct wx *wx, u16 *checksum)
+>  {
+>  	u16 *eeprom_ptrs = NULL;
+>  	u32 buffer_size = 0;
+> -	u16 *buffer = NULL;
+>  	u16 *local_buffer;
+>  	int status;
+>  	u16 i;
+> 
+>  	wx_init_eeprom_params(wx);
+> 
+> -	if (!buffer) {
+> -		eeprom_ptrs = kvmalloc_array(TXGBE_EEPROM_LAST_WORD, sizeof(u16),
+> -					     GFP_KERNEL);
+> -		if (!eeprom_ptrs)
+> -			return -ENOMEM;
+> -		/* Read pointer area */
+> -		status = wx_read_ee_hostif_buffer(wx, 0,
+> -						  TXGBE_EEPROM_LAST_WORD,
+> -						  eeprom_ptrs);
+> -		if (status != 0) {
+> -			wx_err(wx, "Failed to read EEPROM image\n");
+> -			kvfree(eeprom_ptrs);
+> -			return status;
+> -		}
+> -		local_buffer = eeprom_ptrs;
+> -	} else {
+> -		if (buffer_size < TXGBE_EEPROM_LAST_WORD)
+> -			return -EFAULT;
+> -		local_buffer = buffer;
+> +	eeprom_ptrs = kvmalloc_array(TXGBE_EEPROM_LAST_WORD, sizeof(u16),
+> +				     GFP_KERNEL);
+> +	if (!eeprom_ptrs)
+> +		return -ENOMEM;
+> +	/* Read pointer area */
+> +	status = wx_read_ee_hostif_buffer(wx, 0, TXGBE_EEPROM_LAST_WORD, eeprom_ptrs);
+> +	if (status != 0) {
+> +		wx_err(wx, "Failed to read EEPROM image\n");
+> +		kvfree(eeprom_ptrs);
+> +		return status;
+>  	}
+> +	local_buffer = eeprom_ptrs;
+> 
+>  	for (i = 0; i < TXGBE_EEPROM_LAST_WORD; i++)
+>  		if (i != wx->eeprom.sw_region_offset + TXGBE_EEPROM_CHECKSUM)
+> --
+> 2.34.1
+> 
 
-However, the current implementation does not properly check if
-a packet is already scheduled for the current cycle. Currently,
-an empty packet is always inserted if and only if
-txtime >= end_of_cycle && txtime > last_tx_cycle
-but since last_tx_cycle is always either the end of the current
-cycle (end_of_cycle) or the end of a previous cycle, the
-second part (txtime > last_tx_cycle) is always true unless
-txtime == last_tx_cycle.
-
-What actually needs to be checked here is if the last_tx_cycle
-was already written within the current cycle, so an empty frame
-should only be inserted if and only if
-txtime >= end_of_cycle && end_of_cycle > last_tx_cycle.
-
-This patch does not only avoid an unnecessary insertion, but it
-can actually be harmful to insert an empty packet if packets
-are already scheduled in the current cycle, because it can lead
-to a situation where the empty packet is actually processed
-as the first packet in the upcoming cycle shifting the packet
-with the first_flag even one cycle into the future, finally leading
-to a TX hang.
-
-The TX hang can be reproduced on a i225 with:
-
-    sudo tc qdisc replace dev enp1s0 parent root handle 100 taprio \
-	    num_tc 1 \
-	    map 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \
-	    queues 1@0 \
-	    base-time 0 \
-	    sched-entry S 01 300000 \
-	    flags 0x1 \
-	    txtime-delay 500000 \
-	    clockid CLOCK_TAI
-    sudo tc qdisc replace dev enp1s0 parent 100:1 etf \
-	    clockid CLOCK_TAI \
-	    delta 500000 \
-	    offload \
-	    skip_sock_check
-
-and traffic generator
-
-    sudo trafgen -i traffic.cfg -o enp1s0 --cpp -n0 -q -t1400ns
-
-with traffic.cfg
-
-    #define ETH_P_IP        0x0800
-
-    {
-      /* Ethernet Header */
-      0x30, 0x1f, 0x9a, 0xd0, 0xf0, 0x0e,  # MAC Dest - adapt as needed
-      0x24, 0x5e, 0xbe, 0x57, 0x2e, 0x36,  # MAC Src  - adapt as needed
-      const16(ETH_P_IP),
-
-      /* IPv4 Header */
-      0b01000101, 0,   # IPv4 version, IHL, TOS
-      const16(1028),   # IPv4 total length (UDP length + 20 bytes (IP header))
-      const16(2),      # IPv4 ident
-      0b01000000, 0,   # IPv4 flags, fragmentation off
-      64,              # IPv4 TTL
-      17,              # Protocol UDP
-      csumip(14, 33),  # IPv4 checksum
-
-      /* UDP Header */
-      10,  0, 48, 1,   # IP Src - adapt as needed
-      10,  0, 48, 10,  # IP Dest - adapt as needed
-      const16(5555),   # UDP Src Port
-      const16(6666),   # UDP Dest Port
-      const16(1008),   # UDP length (UDP header 8 bytes + payload length)
-      csumudp(14, 34), # UDP checksum
-
-      /* Payload */
-      fill('W', 1000),
-    }
-
-and the observed message with that is for example
-
- igc 0000:01:00.0 enp1s0: Detected Tx Unit Hang
-   Tx Queue             <0>
-   TDH                  <32>
-   TDT                  <3c>
-   next_to_use          <3c>
-   next_to_clean        <32>
- buffer_info[next_to_clean]
-   time_stamp           <ffff26a8>
-   next_to_watch        <00000000632a1828>
-   jiffies              <ffff27f8>
-   desc.status          <1048000>
-
-Fixes: db0b124f02ba ("igc: Enhance Qbv scheduling by using first flag bit")
-Signed-off-by: Florian Kauer <florian.kauer@linutronix.de>
-Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
----
- drivers/net/ethernet/intel/igc/igc_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 565c72bd737d..f847c9a408d6 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -1030,7 +1030,7 @@ static __le32 igc_tx_launchtime(struct igc_ring *ring, ktime_t txtime,
- 			*first_flag = true;
- 			ring->last_ff_cycle = baset_est;
- 
--			if (ktime_compare(txtime, ring->last_tx_cycle) > 0)
-+			if (ktime_compare(end_of_cycle, ring->last_tx_cycle) > 0)
- 				*insert_empty = true;
- 		}
- 	}
--- 
-2.39.2
+Reviewed-by: Jiawen Wu <jiawenwu@trustnetic.com>
 
 
