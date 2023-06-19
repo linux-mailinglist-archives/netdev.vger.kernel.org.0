@@ -1,60 +1,59 @@
-Return-Path: <netdev+bounces-11955-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11956-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6D51C7356E9
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 14:31:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3278B7356EB
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 14:32:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 8E5671C20ACF
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 12:31:36 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 63B2C1C20A1C
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 12:32:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E7FA1376;
-	Mon, 19 Jun 2023 12:31:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F02A41118B;
+	Mon, 19 Jun 2023 12:31:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 775E811182;
-	Mon, 19 Jun 2023 12:31:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E25DAD2E6;
+	Mon, 19 Jun 2023 12:31:35 +0000 (UTC)
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC29DC6;
-	Mon, 19 Jun 2023 05:31:32 -0700 (PDT)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC4FD7;
+	Mon, 19 Jun 2023 05:31:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687177892; x=1718713892;
+  t=1687177893; x=1718713893;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=S5Tbof1M3nkG5q1M0ChkWrKFAeuGsOQlkoha0trItmY=;
-  b=jxqXEJDf1fRsnWanX/3QN+e2fj4g9oaJn4wxfv6mcGn/fp11jDiRm4Yw
-   4KqcbdI8oExWRUelbFVzFlytSmCuULlNGpC16FSBdzI9JpPGU38fIJRgo
-   VSm/cWhkt6CwjHgYXYLtXk2IaHWkQWssKNbTCVkB9kD/RISM6aMwkW85r
-   g7BlAt22T09sUMM0Su9DW1gXIXIj8MXfeftla/iNPXzGjA2yD3c67sPkC
-   px/YyqH+X+jaTb75r2i7rQPfNxBloow9mFMM1K8C75Muvmv6xrqYVfgBM
-   /Ws7YbKOcl3h8RoQHV0un05bRteS4h450I6fIoJ/buweMnWFPe6TOG4OW
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="359622552"
+  bh=Tbg3eFS+f6I0oVHcXZwccCPf1cGcFiFeDVGtXn/q54c=;
+  b=B2rJdfykgUaviFVzoG/hriOfu1SdNv3JEn5ZaLmXjmEDxlK9SBgyaoVI
+   P/n6kvbqA7S2+DhutNVTsqgeih3a6kquXHrEiWfm6M9w/UaHDTvq/4ZAt
+   WpaBT15MaM8x0BHdHvw7ORm5V1aR1ytkqGvfZF73kku0Xtf61YRNaip66
+   pm1Ohgw4ohZfcql50NjpctbJbyrsXjjo+JSU897hdXsiGoqg7U6+B70aD
+   QuL0ja+po9cDNGGGA5wTzuEzlOy/DH2ZMH88Q3nuYB0wYd34OFC4l3hb7
+   7m4XxBxuwSEBYulCDrz46B8J9SYMKRqhMPCJRLDzuYxHiKtWnlrYYkblw
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="359622544"
 X-IronPort-AV: E=Sophos;i="6.00,254,1681196400"; 
-   d="scan'208";a="359622552"
+   d="scan'208";a="359622544"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2023 05:31:32 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="1043889029"
+X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="1043889030"
 X-IronPort-AV: E=Sophos;i="6.00,254,1681196400"; 
-   d="scan'208";a="1043889029"
+   d="scan'208";a="1043889030"
 Received: from lkp-server01.sh.intel.com (HELO 783282924a45) ([10.239.97.150])
   by fmsmga005.fm.intel.com with ESMTP; 19 Jun 2023 05:31:29 -0700
 Received: from kbuild by 783282924a45 with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1qBE2a-0004hw-19;
+	id 1qBE2a-0004hy-1L;
 	Mon, 19 Jun 2023 12:31:28 +0000
-Date: Mon, 19 Jun 2023 20:30:45 +0800
+Date: Mon, 19 Jun 2023 20:30:58 +0800
 From: kernel test robot <lkp@intel.com>
 To: Heng Qi <hengqi@linux.alibaba.com>, netdev@vger.kernel.org,
 	bpf@vger.kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	"Michael S. Tsirkin" <mst@redhat.com>,
+Cc: oe-kbuild-all@lists.linux.dev, "Michael S. Tsirkin" <mst@redhat.com>,
 	Jason Wang <jasowang@redhat.com>,
 	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
 	Eric Dumazet <edumazet@google.com>,
@@ -65,7 +64,7 @@ Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
 	John Fastabend <john.fastabend@gmail.com>
 Subject: Re: [PATCH net-next 1/4] virtio-net: a helper for probing the
  pseudo-header checksum
-Message-ID: <202306192049.8y7DR5F1-lkp@intel.com>
+Message-ID: <202306192049.l2eaZ7od-lkp@intel.com>
 References: <20230619105738.117733-2-hengqi@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
@@ -93,31 +92,30 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Heng-Qi/virtio-net-a-help
 base:   net-next/main
 patch link:    https://lore.kernel.org/r/20230619105738.117733-2-hengqi%40linux.alibaba.com
 patch subject: [PATCH net-next 1/4] virtio-net: a helper for probing the pseudo-header checksum
-config: x86_64-randconfig-r014-20230619 (https://download.01.org/0day-ci/archive/20230619/202306192049.8y7DR5F1-lkp@intel.com/config)
-compiler: clang version 15.0.7 (https://github.com/llvm/llvm-project.git 8dfdcc7b7bf66834a761bd8de445840ef68e4d1a)
-reproduce: (https://download.01.org/0day-ci/archive/20230619/202306192049.8y7DR5F1-lkp@intel.com/reproduce)
+config: m68k-randconfig-r021-20230619 (https://download.01.org/0day-ci/archive/20230619/202306192049.l2eaZ7od-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 12.3.0
+reproduce: (https://download.01.org/0day-ci/archive/20230619/202306192049.l2eaZ7od-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202306192049.8y7DR5F1-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202306192049.l2eaZ7od-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
->> drivers/net/virtio_net.c:1648:17: error: call to undeclared function 'csum_ipv6_magic'; ISO C99 and later do not support implicit function declarations [-Werror,-Wimplicit-function-declaration]
-                           uh->check = ~csum_ipv6_magic((const struct in6_addr *)&ip6h->saddr,
-                                        ^
-   drivers/net/virtio_net.c:1648:17: note: did you mean 'csum_tcpudp_magic'?
-   include/asm-generic/checksum.h:52:1: note: 'csum_tcpudp_magic' declared here
-   csum_tcpudp_magic(__be32 saddr, __be32 daddr, __u32 len,
-   ^
-   drivers/net/virtio_net.c:1657:17: error: call to undeclared function 'csum_ipv6_magic'; ISO C99 and later do not support implicit function declarations [-Werror,-Wimplicit-function-declaration]
-                           th->check = ~csum_ipv6_magic((const struct in6_addr *)&ip6h->saddr,
-                                        ^
-   2 errors generated.
+   drivers/net/virtio_net.c: In function 'virtnet_flow_dissect_udp_tcp':
+>> drivers/net/virtio_net.c:1648:38: error: implicit declaration of function 'csum_ipv6_magic'; did you mean 'csum_tcpudp_magic'? [-Werror=implicit-function-declaration]
+    1648 |                         uh->check = ~csum_ipv6_magic((const struct in6_addr *)&ip6h->saddr,
+         |                                      ^~~~~~~~~~~~~~~
+         |                                      csum_tcpudp_magic
+   drivers/net/virtio_net.c: At top level:
+   drivers/net/virtio_net.c:1573:12: warning: 'virtnet_flow_dissect_udp_tcp' defined but not used [-Wunused-function]
+    1573 | static int virtnet_flow_dissect_udp_tcp(struct virtnet_info *vi, struct sk_buff *skb)
+         |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
 
-vim +/csum_ipv6_magic +1648 drivers/net/virtio_net.c
+vim +1648 drivers/net/virtio_net.c
 
   1572	
   1573	static int virtnet_flow_dissect_udp_tcp(struct virtnet_info *vi, struct sk_buff *skb)
