@@ -1,298 +1,193 @@
-Return-Path: <netdev+bounces-11883-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11868-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 994B073500C
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 11:28:59 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 93235734FA5
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 11:24:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CA5D11C20848
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 09:28:58 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4805E28105D
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 09:24:16 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 21B6310960;
-	Mon, 19 Jun 2023 09:24:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F4184BE6E;
+	Mon, 19 Jun 2023 09:24:09 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1027010940
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 09:24:35 +0000 (UTC)
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4306E71
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 02:24:30 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id 5b1f17b1804b1-3f9b0f139feso10074925e9.3
-        for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 02:24:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20221208.gappssmtp.com; s=20221208; t=1687166669; x=1689758669;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=djSwdyLw8xp+3Hm8dkeIbLA/6vtbTk1lxohdgQnQb6c=;
-        b=bO9aSgZagrEBEIkG1MmJMrxVAwa3ITE67+vzozCxbo5GX2JvX6IfKatyAJc5WJTIvm
-         gxOMs82gAZNA9K/kxyH7hJ0VA6YfM2ZcesWir5TIPi/SZK0J0TVI9ojxjAVP37+mIOww
-         esqOSUtqQ3974YYJGBFNxj2Oy+mGr8sfCcEgJOlHJkJe/w5ntjLWJBao0H95atJpHDN9
-         XmtC25ManCI1DayUnp8V3MT+CiMzz3jAjofZoWchpuKpuZmtAWK370xvuOe8+AEc7pr3
-         LgrDipRfrSjXz5I75C18iGOW7ToIphj14Bt5hYJCYlwepgEAPJEp3v/Q6y1r3YVHTBJa
-         TZzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687166669; x=1689758669;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=djSwdyLw8xp+3Hm8dkeIbLA/6vtbTk1lxohdgQnQb6c=;
-        b=Qh0IRzey0C2j9ZlyDaPGR5Z0x9TkM7ykfsjTs5KPl20eZF5jzcbhHbQLj3T7dfxkRo
-         ohn6PaTNR9D5wu6AnXXjNNyIUPXpLrF7pFPwAv31Kxd058y87r93jZ54lOA0L6nKgFfZ
-         3rrSvIhvVUA8U3Dn70rBV4dxSumq0xCottMLuLUJ3RWKOvpklcrvW0l4m4du9C4RRYhC
-         JdqxxGgqTRyNXmvtEHpbhYq6YbvnnuB3Gsz2nmL1QEcuiO705c/Nd61Cdl2GOgoRPqpe
-         TKKXufSy7kKD4tzACloM6oXL/VWIYTxcB4S56/aa3ILyLnHiipl3+R3nlDH3QbmMbpjY
-         ogmw==
-X-Gm-Message-State: AC+VfDyWUFPYwXTFdtPjQXwuf0B8x0kDQbZNRwVhFjgTdr6ygoce9ArI
-	qcLQb1eZQiDDvwd5QZ7qtrwAJA==
-X-Google-Smtp-Source: ACHHUZ55yZarh34rxCXvP4nDHHz58CibAdCjSGMHZcCrATZRRuYKSxCHkofo7a1tu72C48EhXAMc9g==
-X-Received: by 2002:a05:600c:b4e:b0:3f7:fcca:5e32 with SMTP id k14-20020a05600c0b4e00b003f7fcca5e32mr8241646wmr.17.1687166668922;
-        Mon, 19 Jun 2023 02:24:28 -0700 (PDT)
-Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:d9e8:ddbf:7391:a0b0])
-        by smtp.gmail.com with ESMTPSA id q9-20020a7bce89000000b003f7cb42fa20sm10045229wmj.42.2023.06.19.02.24.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jun 2023 02:24:28 -0700 (PDT)
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-To: Vinod Koul <vkoul@kernel.org>,
-	Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-	Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Jose Abreu <joabreu@synopsys.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Andrew Halaney <ahalaney@redhat.com>
-Cc: netdev@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: [RESEND PATCH v2 14/14] net: stmmac: dwmac-qcom-ethqos: add support for emac4 on sa8775p platforms
-Date: Mon, 19 Jun 2023 11:24:02 +0200
-Message-Id: <20230619092402.195578-15-brgl@bgdev.pl>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230619092402.195578-1-brgl@bgdev.pl>
-References: <20230619092402.195578-1-brgl@bgdev.pl>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E08A8C123
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 09:24:09 +0000 (UTC)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C85A134
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 02:24:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1687166648; x=1718702648;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=W+DRvVZC+L1l6jzIFwiN66tj3FonbEP5VCxR+B6n0jo=;
+  b=VSZILLG5l4qYyb0p/aWCjTLo/9mrpYOrgH7NiaNy14yr30lQZf2JiQ3+
+   bGIKaJmrXvB8DNqZtNVrV6RP4Jn9ksAi4pSZXX/eGakh1UvtU1vTkShsh
+   4RAJce/JQZM6FdLvrFtUvDCGTya9sRw4xU2O/onHv2qKf2230Kg+0S14n
+   98OcBUBp4o5LC1piI0onAhYCR6GXQ7t13TvGgGclSgaS6YItf2qNYHjz4
+   wbhCq8DEg/4Q0DZz0F91QtzME83oPmwDiy+QfwZm/Yj/d1vhS6wCpR3UH
+   oiikH1mJXKQJk55wQDsDHwDSoFIUe+XeIqnkZ07l5Edt15HBxvvvqt2mO
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10745"; a="339924424"
+X-IronPort-AV: E=Sophos;i="6.00,254,1681196400"; 
+   d="scan'208";a="339924424"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2023 02:24:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10745"; a="803558244"
+X-IronPort-AV: E=Sophos;i="6.00,254,1681196400"; 
+   d="scan'208";a="803558244"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by FMSMGA003.fm.intel.com with ESMTP; 19 Jun 2023 02:24:07 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Mon, 19 Jun 2023 02:24:07 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Mon, 19 Jun 2023 02:24:07 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.174)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Mon, 19 Jun 2023 02:24:07 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c0c/nKWC6NBpD2kZPevVXiJmCLSr/GCHVVzilLtaLWOwxImlBWZTFaqPANf7WQEgmuVqO/P3+HZMHd88L2j7/Cpf6LL9p+VtKJ9yTr2eUSAy3Y8ZYLKH7SXD0Ahx63X7zG0HPnjWBtcTukCxp+0ZJH33vU+nHiUtAWd8N2kwETpVd/6UXjpA9+FbM+pQRLZRLZiIJ+4DvJ9MubBCHlAk8lHFu391guF+EVemPHkDSo4HcFKmn64AIhCeVfW5iyS/T74yFWhe30g4jhOjw4pmen2gOtgrY7upvN6ntPescRaYgDsNBDIVeUL3tmcY/yboKYp5HcuZSVn+DKXeLveRDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9KrfIib5Xe6f/Ko56ZEcbFFIJvQCcUTrNDFzS+FahlI=;
+ b=TpsWxSyBx4A1dDwmRm68Hkj7u8N0S05tjhr4LSIdEWzc9dmoKaZ8bIrlyZ7VYu5qDbIXIId3zhb5KnT7kKdOnYHiWcFqjcXM31fTPBPt7JzNetZZonyGIprauaRPLyZv36g1bwdKleSzbrmpplDQ3siZG73jB0Vn4DygV0DOeg8dvp40b98aHYRkFsBHco0eQnBa18T3NEkMxrPN7abC1ROdc59+u6AzBO54/yDt3rX/tK+igZ4Nd9McA6WSXzxx3au6s+HN+rPHvfPwx5iQHVg4P55P0cO5uuFiVU+f2gIWnhneeWQax2NpbWSmR6E9vMCFmIfhEoGknIPPMfgV+A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from PH0PR11MB5013.namprd11.prod.outlook.com (2603:10b6:510:30::21)
+ by PH7PR11MB7478.namprd11.prod.outlook.com (2603:10b6:510:269::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.37; Mon, 19 Jun
+ 2023 09:24:06 +0000
+Received: from PH0PR11MB5013.namprd11.prod.outlook.com
+ ([fe80::fcef:c262:ba36:c42f]) by PH0PR11MB5013.namprd11.prod.outlook.com
+ ([fe80::fcef:c262:ba36:c42f%4]) with mapi id 15.20.6500.036; Mon, 19 Jun 2023
+ 09:24:06 +0000
+From: "Buvaneswaran, Sujai" <sujai.buvaneswaran@intel.com>
+To: "Drewek, Wojciech" <wojciech.drewek@intel.com>,
+	"intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC: "pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, "simon.horman@corigine.com"
+	<simon.horman@corigine.com>, "dan.carpenter@linaro.org"
+	<dan.carpenter@linaro.org>
+Subject: RE: [Intel-wired-lan] [PATCH iwl-next v5 02/12] ice: Prohibit rx mode
+ change in switchdev mode
+Thread-Topic: [Intel-wired-lan] [PATCH iwl-next v5 02/12] ice: Prohibit rx
+ mode change in switchdev mode
+Thread-Index: AQHZnd//5Jkqvexra0CpYHIoOown6a+R48JA
+Date: Mon, 19 Jun 2023 09:24:05 +0000
+Message-ID: <PH0PR11MB5013BD436645E3319FDB58D6965FA@PH0PR11MB5013.namprd11.prod.outlook.com>
+References: <20230613101330.87734-1-wojciech.drewek@intel.com>
+ <20230613101330.87734-3-wojciech.drewek@intel.com>
+In-Reply-To: <20230613101330.87734-3-wojciech.drewek@intel.com>
+Accept-Language: en-IN, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR11MB5013:EE_|PH7PR11MB7478:EE_
+x-ms-office365-filtering-correlation-id: 3645637a-b0e1-4ab2-84f6-08db70a6edcc
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fdMax5LlR5ba2xJTLYguTKNfMxHntnURALI8wel9K+7C1V+WbZPskoqife1lTvYzuxY9Q90ei5+2MCU5BBsTGQUCNMPHHoiadbGW1cM+3aSVidYhOUEDdW4FUzFCiy0/yPgE8nUTkwkql5KDBhrbfCDUtILQS6YQrNx0Dz8s+DuTNmCy8m/2/+0yFkOelOyGr7L8KjwuE6iMe/LxlMEMKs09yU5HIfAZpJ86wwXsRwJLDdKZC/71auKWqiOnciDNs6R1xplIzv6xUyT/Xt66XIgR9DG2dY4k5TSyH8C8z5nL1v/2QK02BI16rEA+Vybx4fNEJ9dC2TobNIkFNt6ZgnJ2BxkwAXw9Zw42KOAgTmSYvmK7nBa00As6BWaTJ8umxMVEgxhEc6xABnRQcJqyrvimDpHUZitX6j/y7dGaGZQo2K8RrLXdLQs/T1u/vgsQ8wwWT/W/rMUOOlLpRPDHnT3W2yxeW2d64Q2efSXhCWn/HtY5S/08eIyZJ70vv20laiwHuCJ8AZzyC/5ZuexNAEVjpQeSgHckwKKAyyinhp1mGrZKgxhyCgp4izWeK5zOPjB1d35Gx/zLW/XXZRyBYRLvi6o8TmUewAS/CsJJIVU=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5013.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(346002)(366004)(136003)(376002)(396003)(451199021)(53546011)(66946007)(8936002)(8676002)(64756008)(66556008)(76116006)(66446008)(66476007)(38070700005)(26005)(186003)(9686003)(6506007)(82960400001)(83380400001)(41300700001)(38100700002)(5660300002)(4326008)(316002)(52536014)(54906003)(7696005)(55016003)(478600001)(2906002)(4744005)(33656002)(122000001)(71200400001)(86362001)(110136005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?aY1SPZ2PbQGqW9rJHgwPCXN4Fcv0UP+k9bJ93IhJcJCwH0o4yW/pJi5oc0Mt?=
+ =?us-ascii?Q?SjfqTrxNFFT8u970t45+fSCTZZ4KFl0vnU+J/MDtQV8d3m6MopgDp/bVQWCI?=
+ =?us-ascii?Q?d1HFz33czWZ+SrXle58I4DOtblvuyJa1DjfjBitM8HTUcE0j95DhqbCkNrtp?=
+ =?us-ascii?Q?4LfExHYeGG/KHpVUjmpYDfRrqFqOm2Wedr4lvNxeQbVHnbjYIA367IFpJPAw?=
+ =?us-ascii?Q?iz6U06oHkwHq2iGBCLl9aHO95ZQqjgq5qIUIyugZ06QmSLQu/dBDtFJD032O?=
+ =?us-ascii?Q?8HcdVjHziuEdwiCIbp78ij/Lt4iws59ERUBtFZ6CeIWKlmOXOnE0DjNi11Fe?=
+ =?us-ascii?Q?QJKOBbPrYxhO6SLC2ecgELdBta7zCI5tai2w504NBgvHeBgxjc39uckXzOW/?=
+ =?us-ascii?Q?YNc6HCIMLz2Ksj4+OtlRpLHRIw1qSJ7iy5FTBeEBrFeBOQEmAJKjq/ouY6ij?=
+ =?us-ascii?Q?LTsV1x0OKg4H87Soge//HbmbTVVSFmT7u5pV/Vm2BPF87zFP2N1cb/Z21Bf2?=
+ =?us-ascii?Q?QRRLOSsSSZCHIleAcDRA9ZXbh26TvtSMdf087A3V+hdakSZqX4YgCGNVgQRY?=
+ =?us-ascii?Q?yt1HwHfhN86asY+21qm5yt7vLToU2CU6Mz53mTjkQyHm52F2JB1C4PRFhVQw?=
+ =?us-ascii?Q?KtIrCwc4rYLJeitF90g9nL9FmKp1wXHgcXr95SAa/w35oeyHcRyYmNL2yCOG?=
+ =?us-ascii?Q?lMcu4jXm3DrJlpu0fJzuHDghyMtRM26OTPm40rUOKczJiA3LUHS9Nknv/WQ6?=
+ =?us-ascii?Q?wSp6ERrugV3sjWG/BoVg2rTTwbhNLUwXjB+Z/rdZd0QwClSQvnodlsy4yZ+D?=
+ =?us-ascii?Q?5851d52P7X7tNmaT63DqwCzWNHPXYG5eHM6WWXirx5QQVClFuMThih2kATjw?=
+ =?us-ascii?Q?q663svV2//kejwQUKJcpdby4srDwVAn4dn30wpHjqHbv1EgrkPUkmWGqHM/R?=
+ =?us-ascii?Q?0W4k8tqLlnf9LZ5dAwfqgx6n8/IHxJ7Uz031U0N3RlhzAunVN3CeKlvKQlOK?=
+ =?us-ascii?Q?TVyrxhb845NuNNYaEYLpRPpy2wAqR5nZ49eAvsR74+v/1mIPX3A0qi/BFVeL?=
+ =?us-ascii?Q?3PW0a0VuMDPa7nlO96sbndRBpyKuuxfZ1p+1dvzfMai30BVuMyTlv21bWXvB?=
+ =?us-ascii?Q?S26yne7cIJ3fFXbbP/vITSpVR0kkONrTpJhRuaLZLwYDPDDnsg9XNtbPCiKo?=
+ =?us-ascii?Q?QVlTGewZewWDmVz9niil6HfZ9zWixU/1nfwWn70piKUmt1TQCTYtziGWtqDV?=
+ =?us-ascii?Q?Q8LiOo2+IkCJ7fTH0rSQxMtkc7M8scLiPzjY5TsRMLu6KTB5GdvF7yYfufDf?=
+ =?us-ascii?Q?3kZZo/1p8pCKgU6jnGim9ODchXWJdmXYzCwwtPwD1dJTN+Nh/ZGyrDLflRaH?=
+ =?us-ascii?Q?Tgu216HLFSniwfJd3quKsIn/+YRaWeWW3w/VwviJHEBEjas0tMKtIP7f5UV3?=
+ =?us-ascii?Q?z5xr1ILFMt92A891iSARBClBQy2yOSKbshOKGIvI2U0XJo8ldpvwYssNfnIK?=
+ =?us-ascii?Q?oROnfDnBo3RwrSp2xZK9RK4ea6QpiyWbxpNU+kotgs/ixRc7HzGwtkXvAYg/?=
+ =?us-ascii?Q?mv4X1hC7jbf7ago3yaAq30DxeKja3nZeXDP0oZPtRWGWbnLwUCt2GA422Kp7?=
+ =?us-ascii?Q?Og=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-	version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5013.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3645637a-b0e1-4ab2-84f6-08db70a6edcc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jun 2023 09:24:05.9109
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NIWzr5FhALBOz9YZLbHlwk0mreRU+hTBlo2LEnVL+d62MoEo6v4rHd3JH1TaUytZJwb4kSQPIKorbrxPIWjfwI/vFgvMviUFNUBVjkGzEnQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB7478
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-
-sa8775p uses EMAC version 4, add the relevant defines, rename the
-has_emac3 switch to has_emac_ge_3 (has emac greater-or-equal than 3)
-and add the new compatible.
-
-Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
----
- .../stmicro/stmmac/dwmac-qcom-ethqos.c        | 65 +++++++++++++++----
- 1 file changed, 51 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-index bdf59a179f87..fa0fc53c56a3 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-@@ -88,8 +88,9 @@ struct ethqos_emac_driver_data {
- 	const struct ethqos_emac_por *por;
- 	unsigned int num_por;
- 	bool rgmii_config_loopback_en;
--	bool has_emac3;
-+	bool has_emac_ge_3;
- 	const char *link_clk_name;
-+	bool has_integrated_pcs;
- 	struct dwmac4_addrs dwmac4_addrs;
- };
- 
-@@ -108,7 +109,7 @@ struct qcom_ethqos {
- 	const struct ethqos_emac_por *por;
- 	unsigned int num_por;
- 	bool rgmii_config_loopback_en;
--	bool has_emac3;
-+	bool has_emac_ge_3;
- };
- 
- static int rgmii_readl(struct qcom_ethqos *ethqos, unsigned int offset)
-@@ -202,7 +203,7 @@ static const struct ethqos_emac_driver_data emac_v2_3_0_data = {
- 	.por = emac_v2_3_0_por,
- 	.num_por = ARRAY_SIZE(emac_v2_3_0_por),
- 	.rgmii_config_loopback_en = true,
--	.has_emac3 = false,
-+	.has_emac_ge_3 = false,
- };
- 
- static const struct ethqos_emac_por emac_v2_1_0_por[] = {
-@@ -218,7 +219,7 @@ static const struct ethqos_emac_driver_data emac_v2_1_0_data = {
- 	.por = emac_v2_1_0_por,
- 	.num_por = ARRAY_SIZE(emac_v2_1_0_por),
- 	.rgmii_config_loopback_en = false,
--	.has_emac3 = false,
-+	.has_emac_ge_3 = false,
- };
- 
- static const struct ethqos_emac_por emac_v3_0_0_por[] = {
-@@ -234,7 +235,41 @@ static const struct ethqos_emac_driver_data emac_v3_0_0_data = {
- 	.por = emac_v3_0_0_por,
- 	.num_por = ARRAY_SIZE(emac_v3_0_0_por),
- 	.rgmii_config_loopback_en = false,
--	.has_emac3 = true,
-+	.has_emac_ge_3 = true,
-+	.dwmac4_addrs = {
-+		.dma_chan = 0x00008100,
-+		.dma_chan_offset = 0x1000,
-+		.mtl_chan = 0x00008000,
-+		.mtl_chan_offset = 0x1000,
-+		.mtl_ets_ctrl = 0x00008010,
-+		.mtl_ets_ctrl_offset = 0x1000,
-+		.mtl_txq_weight = 0x00008018,
-+		.mtl_txq_weight_offset = 0x1000,
-+		.mtl_send_slp_cred = 0x0000801c,
-+		.mtl_send_slp_cred_offset = 0x1000,
-+		.mtl_high_cred = 0x00008020,
-+		.mtl_high_cred_offset = 0x1000,
-+		.mtl_low_cred = 0x00008024,
-+		.mtl_low_cred_offset = 0x1000,
-+	},
-+};
-+
-+static const struct ethqos_emac_por emac_v4_0_0_por[] = {
-+	{ .offset = RGMII_IO_MACRO_CONFIG,	.value = 0x40c01343 },
-+	{ .offset = SDCC_HC_REG_DLL_CONFIG,	.value = 0x2004642c },
-+	{ .offset = SDCC_HC_REG_DDR_CONFIG,	.value = 0x80040800 },
-+	{ .offset = SDCC_HC_REG_DLL_CONFIG2,	.value = 0x00200000 },
-+	{ .offset = SDCC_USR_CTL,		.value = 0x00010800 },
-+	{ .offset = RGMII_IO_MACRO_CONFIG2,	.value = 0x00002060 },
-+};
-+
-+static const struct ethqos_emac_driver_data emac_v4_0_0_data = {
-+	.por = emac_v4_0_0_por,
-+	.num_por = ARRAY_SIZE(emac_v3_0_0_por),
-+	.rgmii_config_loopback_en = false,
-+	.has_emac_ge_3 = true,
-+	.link_clk_name = "phyaux",
-+	.has_integrated_pcs = true,
- 	.dwmac4_addrs = {
- 		.dma_chan = 0x00008100,
- 		.dma_chan_offset = 0x1000,
-@@ -275,7 +310,7 @@ static int ethqos_dll_configure(struct qcom_ethqos *ethqos)
- 	rgmii_updatel(ethqos, SDCC_DLL_CONFIG_DLL_EN,
- 		      SDCC_DLL_CONFIG_DLL_EN, SDCC_HC_REG_DLL_CONFIG);
- 
--	if (!ethqos->has_emac3) {
-+	if (!ethqos->has_emac_ge_3) {
- 		rgmii_updatel(ethqos, SDCC_DLL_MCLK_GATING_EN,
- 			      0, SDCC_HC_REG_DLL_CONFIG);
- 
-@@ -316,7 +351,7 @@ static int ethqos_dll_configure(struct qcom_ethqos *ethqos)
- 	rgmii_updatel(ethqos, SDCC_DLL_CONFIG2_DDR_CAL_EN,
- 		      SDCC_DLL_CONFIG2_DDR_CAL_EN, SDCC_HC_REG_DLL_CONFIG2);
- 
--	if (!ethqos->has_emac3) {
-+	if (!ethqos->has_emac_ge_3) {
- 		rgmii_updatel(ethqos, SDCC_DLL_CONFIG2_DLL_CLOCK_DIS,
- 			      0, SDCC_HC_REG_DLL_CONFIG2);
- 
-@@ -386,7 +421,7 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
- 		/* PRG_RCLK_DLY = TCXO period * TCXO_CYCLES_CNT / 2 * RX delay ns,
- 		 * in practice this becomes PRG_RCLK_DLY = 52 * 4 / 2 * RX delay ns
- 		 */
--		if (ethqos->has_emac3) {
-+		if (ethqos->has_emac_ge_3) {
- 			/* 0.9 ns */
- 			rgmii_updatel(ethqos, SDCC_DDR_CONFIG_PRG_RCLK_DLY,
- 				      115, SDCC_HC_REG_DDR_CONFIG);
-@@ -421,7 +456,7 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
- 		rgmii_updatel(ethqos, RGMII_CONFIG2_RSVD_CONFIG15,
- 			      0, RGMII_IO_MACRO_CONFIG2);
- 
--		if (ethqos->has_emac3)
-+		if (ethqos->has_emac_ge_3)
- 			rgmii_updatel(ethqos, RGMII_CONFIG2_RX_PROG_SWAP,
- 				      RGMII_CONFIG2_RX_PROG_SWAP,
- 				      RGMII_IO_MACRO_CONFIG2);
-@@ -461,7 +496,7 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
- 			      RGMII_IO_MACRO_CONFIG);
- 		rgmii_updatel(ethqos, RGMII_CONFIG2_RSVD_CONFIG15,
- 			      0, RGMII_IO_MACRO_CONFIG2);
--		if (ethqos->has_emac3)
-+		if (ethqos->has_emac_ge_3)
- 			rgmii_updatel(ethqos, RGMII_CONFIG2_RX_PROG_SWAP,
- 				      RGMII_CONFIG2_RX_PROG_SWAP,
- 				      RGMII_IO_MACRO_CONFIG2);
-@@ -510,7 +545,7 @@ static int ethqos_configure_rgmii(struct qcom_ethqos *ethqos)
- 	rgmii_updatel(ethqos, SDCC_DLL_CONFIG_PDN,
- 		      SDCC_DLL_CONFIG_PDN, SDCC_HC_REG_DLL_CONFIG);
- 
--	if (ethqos->has_emac3) {
-+	if (ethqos->has_emac_ge_3) {
- 		if (ethqos->speed == SPEED_1000) {
- 			rgmii_writel(ethqos, 0x1800000, SDCC_TEST_CTL);
- 			rgmii_writel(ethqos, 0x2C010800, SDCC_USR_CTL);
-@@ -540,7 +575,7 @@ static int ethqos_configure_rgmii(struct qcom_ethqos *ethqos)
- 			      SDCC_HC_REG_DLL_CONFIG);
- 
- 		/* Set USR_CTL bit 26 with mask of 3 bits */
--		if (!ethqos->has_emac3)
-+		if (!ethqos->has_emac_ge_3)
- 			rgmii_updatel(ethqos, GENMASK(26, 24), BIT(26),
- 				      SDCC_USR_CTL);
- 
-@@ -719,7 +754,7 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
- 	ethqos->por = data->por;
- 	ethqos->num_por = data->num_por;
- 	ethqos->rgmii_config_loopback_en = data->rgmii_config_loopback_en;
--	ethqos->has_emac3 = data->has_emac3;
-+	ethqos->has_emac_ge_3 = data->has_emac_ge_3;
- 
- 	ethqos->link_clk = devm_clk_get(dev, data->link_clk_name ?: "rgmii");
- 	if (IS_ERR(ethqos->link_clk)) {
-@@ -749,12 +784,13 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
- 	plat_dat->fix_mac_speed = ethqos_fix_mac_speed;
- 	plat_dat->dump_debug_regs = rgmii_dump;
- 	plat_dat->has_gmac4 = 1;
--	if (ethqos->has_emac3)
-+	if (ethqos->has_emac_ge_3)
- 		plat_dat->dwmac4_addrs = &data->dwmac4_addrs;
- 	plat_dat->pmt = 1;
- 	plat_dat->tso_en = of_property_read_bool(np, "snps,tso");
- 	if (of_device_is_compatible(np, "qcom,qcs404-ethqos"))
- 		plat_dat->rx_clk_runs_in_lpi = 1;
-+	plat_dat->has_integrated_pcs = data->has_integrated_pcs;
- 
- 	if (ethqos->serdes_phy) {
- 		plat_dat->serdes_powerup = qcom_ethqos_serdes_powerup;
-@@ -775,6 +811,7 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
- 
- static const struct of_device_id qcom_ethqos_match[] = {
- 	{ .compatible = "qcom,qcs404-ethqos", .data = &emac_v2_3_0_data},
-+	{ .compatible = "qcom,sa8775p-ethqos", .data = &emac_v4_0_0_data},
- 	{ .compatible = "qcom,sc8280xp-ethqos", .data = &emac_v3_0_0_data},
- 	{ .compatible = "qcom,sm8150-ethqos", .data = &emac_v2_1_0_data},
- 	{ }
--- 
-2.39.2
-
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Wojciech Drewek
+> Sent: Tuesday, June 13, 2023 3:43 PM
+> To: intel-wired-lan@lists.osuosl.org
+> Cc: pmenzel@molgen.mpg.de; netdev@vger.kernel.org;
+> simon.horman@corigine.com; dan.carpenter@linaro.org
+> Subject: [Intel-wired-lan] [PATCH iwl-next v5 02/12] ice: Prohibit rx mod=
+e
+> change in switchdev mode
+>=20
+> Don't allow to change promisc mode in switchdev mode.
+> When switchdev is configured, PF netdev is set to be a default VSI. This =
+is
+> needed for the slow-path to work correctly.
+> All the unmatched packets will be directed to PF netdev.
+>=20
+> It is possible that this setting might be overwritten by ndo_set_rx_mode.
+> Prevent this by checking if switchdev is enabled in ice_set_rx_mode.
+>=20
+> Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+Tested-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>
 
