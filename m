@@ -1,37 +1,37 @@
-Return-Path: <netdev+bounces-12088-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12089-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 50786735F6F
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 23:58:01 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 96253735F70
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 23:58:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0B368280FE1
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 21:58:00 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4A609281095
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 21:58:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E604D154B9;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E65DA154BD;
 	Mon, 19 Jun 2023 21:57:21 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D631D154B1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D634F154B4
 	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 21:57:21 +0000 (UTC)
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAD2E65
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F86AE54
 	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 14:57:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
 	s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
 	Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
 	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=Wg8TWNl9b51dINPFHSaclHqvMxYBA2tTA9Oq3V0mKS0=; b=D0zkF8KPjH7mkZSZpd+YgRikg6
-	4okC+TNmBMpqZqDQh4JhmRfea1upQXrc7GH7A7gt1uHOALLFQxbYHPOvCzdFwNmaXfK+PSnz4XBln
-	4IjE0ubDJUJsA3me4qobGiCyuHX9vaDUM7mDbWCzNJsWQWKTEO6HJEuB8TZ3JhSesOpQ=;
+	bh=XtDYKdew3rEhjb+BLQYGrrzpb8oeokelun9vRymiprY=; b=M83YW7j8fXINqmjuGjWVdBo2ih
+	4yrWZzGk+zLsvKB0C5ii67+QZUokzR3g9xoKXnrhybYzIfJao8t3o+8OCw4YqaoHzc1UvBLoArHCy
+	2Klg2wdRwBBq8byOLFDUPELxGVFmV4hMe1MIpxAo8pup2SLV4rhCsR+wIqY246isYiUM=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
 	(envelope-from <andrew@lunn.ch>)
-	id 1qBMs9-00GwdJ-Ip; Mon, 19 Jun 2023 23:57:17 +0200
+	id 1qBMs9-00GwdN-Jq; Mon, 19 Jun 2023 23:57:17 +0200
 From: Andrew Lunn <andrew@lunn.ch>
 To: netdev <netdev@vger.kernel.org>
 Cc: Heiner Kallweit <hkallweit1@gmail.com>,
@@ -39,9 +39,9 @@ Cc: Heiner Kallweit <hkallweit1@gmail.com>,
 	Simon Horman <simon.horman@corigine.com>,
 	Christian Marangi <ansuelsmth@gmail.com>,
 	Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v1 2/3] net: phy: phy_device: Call into the PHY driver to set LED offload
-Date: Mon, 19 Jun 2023 23:57:02 +0200
-Message-Id: <20230619215703.4038619-3-andrew@lunn.ch>
+Subject: [PATCH net-next v1 3/3] net: phy: marvell: Add support for offloading LED blinking
+Date: Mon, 19 Jun 2023 23:57:03 +0200
+Message-Id: <20230619215703.4038619-4-andrew@lunn.ch>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230619215703.4038619-1-andrew@lunn.ch>
 References: <20230619215703.4038619-1-andrew@lunn.ch>
@@ -58,134 +58,306 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Linux LEDs can be requested to perform hardware accelerated blinking
-to indicate link, RX, TX etc. Pass the rules for blinking to the PHY
-driver, if it implements the ops needed to determine if a given
-pattern can be offloaded, to offload it, and what the current offload
-is. Additionally implement the op needed to get what device the LED is
-for.
+Add the code needed to indicate if a given blinking pattern can be
+offloaded, to offload a pattern and to try to return the current
+pattern. It is expected that ledtrig-netdev will gain support for
+other patterns, such as different link speeds etc. So the code is
+over-engineers to make adding such additional patterns easy.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/phy/phy_device.c | 68 ++++++++++++++++++++++++++++++++++++
- include/linux/phy.h          | 18 ++++++++++
- 2 files changed, 86 insertions(+)
+ drivers/net/phy/marvell.c | 243 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 243 insertions(+)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 2cad9cc3f6b8..5397bbe418d8 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -3020,6 +3020,61 @@ static int phy_led_blink_set(struct led_classdev *led_cdev,
- 	return err;
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 43b6cb725551..a443df3034f3 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -2893,6 +2893,234 @@ static int m88e1318_led_blink_set(struct phy_device *phydev, u8 index,
+ 			       MII_88E1318S_PHY_LED_FUNC, reg);
  }
  
-+static __maybe_unused struct device *
-+phy_led_hw_control_get_device(struct led_classdev *led_cdev)
-+{
-+	struct phy_led *phyled = to_phy_led(led_cdev);
-+	struct phy_device *phydev = phyled->phydev;
++struct marvell_led_rules {
++	int mode;
++	unsigned long rules;
++};
 +
-+	if (phydev->attached_dev)
-+		return &phydev->attached_dev->dev;
-+	return NULL;
++static const struct marvell_led_rules marvell_led0[] = {
++	{
++		.mode = 0,
++		.rules = BIT(TRIGGER_NETDEV_LINK),
++	},
++	{
++		.mode = 3,
++		.rules = (BIT(TRIGGER_NETDEV_RX) |
++			  BIT(TRIGGER_NETDEV_TX)),
++	},
++	{
++		.mode = 4,
++		.rules = (BIT(TRIGGER_NETDEV_RX) |
++			  BIT(TRIGGER_NETDEV_TX)),
++	},
++	{
++		.mode = 5,
++		.rules = BIT(TRIGGER_NETDEV_TX),
++	},
++	{
++		.mode = 8,
++		.rules = 0,
++	},
++};
++
++static const struct marvell_led_rules marvell_led1[] = {
++	{
++		.mode = 1,
++		.rules = (BIT(TRIGGER_NETDEV_LINK) |
++			  BIT(TRIGGER_NETDEV_RX) |
++			  BIT(TRIGGER_NETDEV_TX)),
++	},
++	{
++		.mode = 2,
++		.rules = (BIT(TRIGGER_NETDEV_LINK) |
++			  BIT(TRIGGER_NETDEV_RX)),
++	},
++	{
++		.mode = 3,
++		.rules = (BIT(TRIGGER_NETDEV_RX) |
++			  BIT(TRIGGER_NETDEV_TX)),
++	},
++	{
++		.mode = 4,
++		.rules = (BIT(TRIGGER_NETDEV_RX) |
++			  BIT(TRIGGER_NETDEV_TX)),
++	},
++	{
++		.mode = 8,
++		.rules = 0,
++	},
++};
++
++static const struct marvell_led_rules marvell_led2[] = {
++	{
++		.mode = 0,
++		.rules = BIT(TRIGGER_NETDEV_LINK),
++	},
++	{
++		.mode = 1,
++		.rules = (BIT(TRIGGER_NETDEV_LINK) |
++			  BIT(TRIGGER_NETDEV_RX) |
++			  BIT(TRIGGER_NETDEV_TX)),
++	},
++	{
++		.mode = 3,
++		.rules = (BIT(TRIGGER_NETDEV_RX) |
++			  BIT(TRIGGER_NETDEV_TX)),
++	},
++	{
++		.mode = 4,
++		.rules = (BIT(TRIGGER_NETDEV_RX) |
++			  BIT(TRIGGER_NETDEV_TX)),
++	},
++	{
++		.mode = 5,
++		.rules = BIT(TRIGGER_NETDEV_TX),
++	},
++	{
++		.mode = 8,
++		.rules = 0,
++	},
++};
++
++static int marvell_find_led_mode(unsigned long rules,
++				 const struct marvell_led_rules *marvell_rules,
++				 int count,
++				 int *mode)
++{
++	int i;
++
++	for (i = 0; i < count; i++) {
++		if (marvell_rules[i].rules == rules) {
++			*mode = marvell_rules[i].mode;
++			return 0;
++		}
++	}
++	return -EOPNOTSUPP;
 +}
 +
-+static int __maybe_unused
-+phy_led_hw_control_get(struct led_classdev *led_cdev,
-+		       unsigned long *rules)
++static int marvell_get_led_mode(u8 index, unsigned long rules, int *mode)
 +{
-+	struct phy_led *phyled = to_phy_led(led_cdev);
-+	struct phy_device *phydev = phyled->phydev;
-+	int err;
++	int ret;
 +
-+	mutex_lock(&phydev->lock);
-+	err = phydev->drv->led_hw_control_get(phydev, phyled->index, rules);
-+	mutex_unlock(&phydev->lock);
-+
-+	return err;
-+}
-+
-+static int __maybe_unused
-+phy_led_hw_control_set(struct led_classdev *led_cdev,
-+		       unsigned long rules)
-+{
-+	struct phy_led *phyled = to_phy_led(led_cdev);
-+	struct phy_device *phydev = phyled->phydev;
-+	int err;
-+
-+	mutex_lock(&phydev->lock);
-+	err = phydev->drv->led_hw_control_set(phydev, phyled->index, rules);
-+	mutex_unlock(&phydev->lock);
-+
-+	return err;
-+}
-+
-+static __maybe_unused int phy_led_hw_is_supported(struct led_classdev *led_cdev,
-+						  unsigned long rules)
-+{
-+	struct phy_led *phyled = to_phy_led(led_cdev);
-+	struct phy_device *phydev = phyled->phydev;
-+	int err;
-+
-+	mutex_lock(&phydev->lock);
-+	err = phydev->drv->led_hw_is_supported(phydev, phyled->index, rules);
-+	mutex_unlock(&phydev->lock);
-+
-+	return err;
-+}
-+
- static int of_phy_led(struct phy_device *phydev,
- 		      struct device_node *led)
- {
-@@ -3048,6 +3103,19 @@ static int of_phy_led(struct phy_device *phydev,
- 		cdev->brightness_set_blocking = phy_led_set_brightness;
- 	if (phydev->drv->led_blink_set)
- 		cdev->blink_set = phy_led_blink_set;
-+
-+#ifdef CONFIG_LEDS_TRIGGERS
-+	if (phydev->drv->led_hw_is_supported &&
-+	    phydev->drv->led_hw_control_set &&
-+	    phydev->drv->led_hw_control_get) {
-+		cdev->hw_control_is_supported = phy_led_hw_is_supported;
-+		cdev->hw_control_set = phy_led_hw_control_set;
-+		cdev->hw_control_get = phy_led_hw_control_get;
-+		cdev->hw_control_trigger = "netdev";
++	switch (index) {
++	case 0:
++		ret = marvell_find_led_mode(rules, marvell_led0,
++					    ARRAY_SIZE(marvell_led0), mode);
++		break;
++	case 1:
++		ret = marvell_find_led_mode(rules, marvell_led1,
++					    ARRAY_SIZE(marvell_led1), mode);
++		break;
++	case 2:
++		ret = marvell_find_led_mode(rules, marvell_led2,
++					    ARRAY_SIZE(marvell_led2), mode);
++		break;
++	default:
++		return -EINVAL;
 +	}
 +
-+	cdev->hw_control_get_device = phy_led_hw_control_get_device;
-+#endif
- 	cdev->max_brightness = 1;
- 	init_data.devicename = dev_name(&phydev->mdio.dev);
- 	init_data.fwnode = of_fwnode_handle(led);
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 11c1e91563d4..780ef2ca5ea7 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1104,6 +1104,24 @@ struct phy_driver {
- 	int (*led_blink_set)(struct phy_device *dev, u8 index,
- 			     unsigned long *delay_on,
- 			     unsigned long *delay_off);
-+	/**
-+	 * Can the HW support the given rules. Return 0 if yes,
-+	 * -EOPNOTSUPP if not, or an error code.
-+	 */
-+	int (*led_hw_is_supported)(struct phy_device *dev, u8 index,
-+				   unsigned long rules);
-+	/**
-+	 * Set the HW to control the LED as described by rules.
-+	 */
-+	int (*led_hw_control_set)(struct phy_device *dev, u8 index,
-+				  unsigned long rules);
-+	/**
-+	 * Get the rules used to describe how the HW is currently
-+	 * configure.
-+	 */
-+	int (*led_hw_control_get)(struct phy_device *dev, u8 index,
-+				  unsigned long *rules);
++	return ret;
++}
 +
++static int marvell_find_led_rules(unsigned long *rules,
++				  const struct marvell_led_rules *marvell_rules,
++				  int count,
++				  int mode)
++{
++	int i;
++
++	for (i = 0; i < count; i++) {
++		if (marvell_rules[i].mode == mode) {
++			*rules = marvell_rules[i].rules;
++			return 0;
++		}
++	}
++	return -EOPNOTSUPP;
++}
++
++static int marvell_get_led_rules(u8 index, unsigned long *rules, int mode)
++{
++	int ret;
++
++	switch (index) {
++	case 0:
++		ret = marvell_find_led_rules(rules, marvell_led0,
++					     ARRAY_SIZE(marvell_led0), mode);
++		break;
++	case 1:
++		ret = marvell_find_led_rules(rules, marvell_led1,
++					     ARRAY_SIZE(marvell_led1), mode);
++		break;
++	case 2:
++		ret = marvell_find_led_rules(rules, marvell_led2,
++					     ARRAY_SIZE(marvell_led2), mode);
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return ret;
++}
++
++static int m88e1318_led_hw_is_supported(struct phy_device *phydev, u8 index,
++					unsigned long rules)
++{
++	int mode, ret;
++
++	switch (index) {
++	case 0:
++	case 1:
++	case 2:
++		ret = marvell_get_led_mode(index, rules, &mode);
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++static int m88e1318_led_hw_control_set(struct phy_device *phydev, u8 index,
++				       unsigned long rules)
++{
++	int mode, ret, reg;
++
++	switch (index) {
++	case 0:
++	case 1:
++	case 2:
++		ret = marvell_get_led_mode(index, rules, &mode);
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++	if (ret < 0)
++		return ret;
++
++	reg = phy_read_paged(phydev, MII_MARVELL_LED_PAGE,
++			     MII_88E1318S_PHY_LED_FUNC);
++	reg &= ~(0xf << (4 * index));
++	reg |= mode << (4 * index);
++	return phy_write_paged(phydev, MII_MARVELL_LED_PAGE,
++			       MII_88E1318S_PHY_LED_FUNC, reg);
++}
++
++static int m88e1318_led_hw_control_get(struct phy_device *phydev, u8 index,
++				       unsigned long *rules)
++{
++	int mode, reg;
++
++	if (index > 2)
++		return -EINVAL;
++
++	reg = phy_read_paged(phydev, MII_MARVELL_LED_PAGE,
++			     MII_88E1318S_PHY_LED_FUNC);
++	mode = (reg >> (4 * index)) & 0xf;
++
++	return marvell_get_led_rules(index, rules, mode);
++}
++
+ static int marvell_probe(struct phy_device *phydev)
+ {
+ 	struct marvell_priv *priv;
+@@ -3144,6 +3372,9 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.led_brightness_set = m88e1318_led_brightness_set,
+ 		.led_blink_set = m88e1318_led_blink_set,
++		.led_hw_is_supported = m88e1318_led_hw_is_supported,
++		.led_hw_control_set = m88e1318_led_hw_control_set,
++		.led_hw_control_get = m88e1318_led_hw_control_get,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1145,
+@@ -3252,6 +3483,9 @@ static struct phy_driver marvell_drivers[] = {
+ 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
+ 		.led_brightness_set = m88e1318_led_brightness_set,
+ 		.led_blink_set = m88e1318_led_blink_set,
++		.led_hw_is_supported = m88e1318_led_hw_is_supported,
++		.led_hw_control_set = m88e1318_led_hw_control_set,
++		.led_hw_control_get = m88e1318_led_hw_control_get,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1540,
+@@ -3280,6 +3514,9 @@ static struct phy_driver marvell_drivers[] = {
+ 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
+ 		.led_brightness_set = m88e1318_led_brightness_set,
+ 		.led_blink_set = m88e1318_led_blink_set,
++		.led_hw_is_supported = m88e1318_led_hw_is_supported,
++		.led_hw_control_set = m88e1318_led_hw_control_set,
++		.led_hw_control_get = m88e1318_led_hw_control_get,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1545,
+@@ -3308,6 +3545,9 @@ static struct phy_driver marvell_drivers[] = {
+ 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
+ 		.led_brightness_set = m88e1318_led_brightness_set,
+ 		.led_blink_set = m88e1318_led_blink_set,
++		.led_hw_is_supported = m88e1318_led_hw_is_supported,
++		.led_hw_control_set = m88e1318_led_hw_control_set,
++		.led_hw_control_get = m88e1318_led_hw_control_get,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E3016,
+@@ -3451,6 +3691,9 @@ static struct phy_driver marvell_drivers[] = {
+ 		.set_tunable = m88e1540_set_tunable,
+ 		.led_brightness_set = m88e1318_led_brightness_set,
+ 		.led_blink_set = m88e1318_led_blink_set,
++		.led_hw_is_supported = m88e1318_led_hw_is_supported,
++		.led_hw_control_set = m88e1318_led_hw_control_set,
++		.led_hw_control_get = m88e1318_led_hw_control_get,
+ 	},
  };
- #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
- 				      struct phy_driver, mdiodrv)
+ 
 -- 
 2.40.1
 
