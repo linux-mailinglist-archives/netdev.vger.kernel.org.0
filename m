@@ -1,137 +1,111 @@
-Return-Path: <netdev+bounces-11830-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11831-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 8D6BB734B8A
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 08:07:04 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id ECE15734B90
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 08:10:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 628CA1C2091C
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 06:07:03 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 323B8280F72
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 06:10:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4A03823D9;
-	Mon, 19 Jun 2023 06:07:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC67D3C0C;
+	Mon, 19 Jun 2023 06:10:34 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38BBE23CA
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 06:07:00 +0000 (UTC)
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95559B1;
-	Sun, 18 Jun 2023 23:06:58 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-	by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35J5vnjt030474;
-	Sun, 18 Jun 2023 23:06:46 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=zOJ7wWMQldgXdwhlqtudOFETz8AB3AjI/touzpFQHCg=;
- b=Zdkk4zQj/ycBH00bOFuy+H4TFkeWpRdpoU1/remeGA/I2YVroajWgMQ32G25ZYJRwEyC
- mNsJTLy+7RBq6ZyZinCHQV2n5tHePHhBn1JVu43Hh/zr/727k83hmq8shT9zun0YiMPz
- sVyp5cbk/+tNXRrCvItir3on6wPA9QM1njORSy28vqsi9q+WyTz0A/ItFhTivIBfM160
- 2iJQc+EDpJ+Q8wkPKEwM8AwWZy6evoAZ6aKuqShIPPvmtZPjBUZ6h0BM8LKZOgXqysWX
- 6DbHnwww6NxbeL6Bw0z8s7boNYCGtncNDMzpOTq8jriXfCZoQ8GUaRZXSccvgVzszWjG Ig== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-	by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3r9cbkbsj1-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-	Sun, 18 Jun 2023 23:06:45 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Sun, 18 Jun
- 2023 23:06:43 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Sun, 18 Jun 2023 23:06:43 -0700
-Received: from marvell-OptiPlex-7090.marvell.com (unknown [10.28.36.165])
-	by maili.marvell.com (Postfix) with ESMTP id 595205C68EC;
-	Sun, 18 Jun 2023 23:06:40 -0700 (PDT)
-From: Ratheesh Kannoth <rkannoth@marvell.com>
-To: <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: <sgoutham@marvell.com>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <sbhatta@marvell.com>,
-        <gakula@marvell.com>, <schalla@marvell.com>, <hkelam@marvell.com>,
-        "Ratheesh
- Kannoth" <rkannoth@marvell.com>
-Subject: [PATCH net-next] octeontx2-pf: TC flower offload support for rxqueue mapping
-Date: Mon, 19 Jun 2023 11:36:38 +0530
-Message-ID: <20230619060638.1032304-1-rkannoth@marvell.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE49623D9
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 06:10:34 +0000 (UTC)
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A2AB1
+	for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 23:10:33 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id 2adb3069b0e04-4f85fa03cd9so3028e87.1
+        for <netdev@vger.kernel.org>; Sun, 18 Jun 2023 23:10:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1687155031; x=1689747031;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=+l56EVhv3DJvNU1IQjzDjseQEvnEEKyVbt3cN52claY=;
+        b=F/kNBWEEgaE+8lZUPTIARp5HRaAoZ3OJ/XgML6vdgc6EtwY5p58wPd7kV++KSKFm4b
+         OyFBJALpf5kDPATAbF5lTZpwdyu8JFxTuRi+4mcLd7Guw1jwIhL298AzYLOSzwyjpcFs
+         diNAyNdCsjpLeq6GebJUxF9gkklqRHhSUKMHppwtT677LSlbWJNIV/RdCVO8WNFa+K36
+         OgZIXUfm9t/cUUrLLTNJVyCLnRJeUoJ+PQMpUk/s6c2YsiD1uPs7ajY4/f44OtoctmS2
+         w1T49dUAe0bYDleIE21DH/ZQZYp4NMlzFH7d4LkOKrbpxy5b2bL//xP4GGVLpTB7e7dF
+         p7Lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687155031; x=1689747031;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+l56EVhv3DJvNU1IQjzDjseQEvnEEKyVbt3cN52claY=;
+        b=aiSHQyWzS9YNMAHxf70rtDAs6xlTrteBejgy3VRnM5OFzaaz7jh4GkZkkmg+ZI/YZ5
+         m4s+d1NGYSysA/EFanUhWfdTxaVuMWw9GA6b0Hef2b1Xezd/+CIzvI3HRE1DRo5UfBIh
+         i57uuqWKsumPrbmK2CJ/W+6TJlwyRSWUmKhTRCWK5WnroqyrxxDFGZJnyA9k016zBu2F
+         Nh9vVFo36LRupz/Tje3Jp/pqz8dTiaxItWoK2kcRnavyeSqo0e3rD6oediDP0x0bCow1
+         c3ZZGXqtFwD2nIvfkbkmythv9CNZKbu+5qtjnmf0a0iFlgK4bPQQqa1zkXe6awFg3WJB
+         6JLA==
+X-Gm-Message-State: AC+VfDyXVLpyRuancW3xBXea/+yMMk4Avi7/9JyA7Q4AGS+NkahIMIV2
+	9Jh+eK9au7nHlRLSwUbxBFg3BJveQL0Nkl1UqoamDg==
+X-Google-Smtp-Source: ACHHUZ5YZyM2139hV/S/LS2+fvOQj0z9kDkZezC1c+rH06UyGBkfRjikrsYcNhvom7a/Prxm0KpMhNj4eVR2w8dGe7o=
+X-Received: by 2002:ac2:5450:0:b0:4f2:7840:e534 with SMTP id
+ d16-20020ac25450000000b004f27840e534mr267987lfn.0.1687155031253; Sun, 18 Jun
+ 2023 23:10:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: C1X34JIlqrMUAO_t0i2PedUSpeSYFFs9
-X-Proofpoint-ORIG-GUID: C1X34JIlqrMUAO_t0i2PedUSpeSYFFs9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-06-19_04,2023-06-16_01,2023-05-22_02
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+References: <00000000000098289005dc17b71b@google.com> <00000000000051087405fe4092cc@google.com>
+In-Reply-To: <00000000000051087405fe4092cc@google.com>
+From: Dmitry Vyukov <dvyukov@google.com>
+Date: Mon, 19 Jun 2023 08:10:19 +0200
+Message-ID: <CACT4Y+ZEL5FKx+R7poFFE_v2Di=qFRfv7GNnEoa9f9Y4r6ZK=w@mail.gmail.com>
+Subject: Re: [syzbot] [bluetooth?] possible deadlock in sco_conn_del
+To: syzbot <syzbot+b825d87fe2d043e3e652@syzkaller.appspotmail.com>
+Cc: davem@davemloft.net, edumazet@google.com, fgheet255t@gmail.com, 
+	hdanton@sina.com, johan.hedberg@gmail.com, josephsih@chromium.org, 
+	kuba@kernel.org, linux-bluetooth@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, lrh2000@pku.edu.cn, luiz.dentz@gmail.com, 
+	luiz.von.dentz@intel.com, marcel@holtmann.org, netdev@vger.kernel.org, 
+	pabeni@redhat.com, syzkaller-bugs@googlegroups.com, yinghsu@chromium.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-15.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
- TC rule support to offload rx queue mapping rules.
+On Fri, 16 Jun 2023 at 17:09, syzbot
+<syzbot+b825d87fe2d043e3e652@syzkaller.appspotmail.com> wrote:
+>
+> syzbot suspects this issue was fixed by commit:
+>
+> commit a2ac591cb4d83e1f2d4b4adb3c14b2c79764650a
+> Author: Ruihan Li <lrh2000@pku.edu.cn>
+> Date:   Wed May 3 13:39:36 2023 +0000
+>
+>     Bluetooth: Fix UAF in hci_conn_hash_flush again
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13755717280000
+> start commit:   e4cf7c25bae5 Merge tag 'kbuild-fixes-v6.2' of git://git.ke..
+> git tree:       upstream
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=555d27e379d75ff1
+> dashboard link: https://syzkaller.appspot.com/bug?extid=b825d87fe2d043e3e652
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10052058480000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1190687c480000
+>
+> If the result looks correct, please mark the issue as fixed by replying with:
+>
+> #syz fix: Bluetooth: Fix UAF in hci_conn_hash_flush again
+>
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
-Eg:
-   tc filter add dev eth2 ingress protocol ip flower \
-      dst_ip 192.168.8.100  \
-      action skbedit queue_mapping 4 skip_sw
-      action mirred ingress redirect dev eth5
+Looks reasonable:
 
-Packets destined to 192.168.8.100 will be forwarded to rx
-queue 4 of eth5 interface.
-
-   tc filter add dev eth2 ingress protocol ip flower \
-      dst_ip 192.168.8.100  \
-      action skbedit queue_mapping 9 skip_sw
-
-Packets destined to 192.168.8.100 will be forwarded to rx
-queue 4 of eth2 interface.
-
-Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
----
- .../net/ethernet/marvell/octeontx2/nic/otx2_tc.c   | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-index 231c3f0efb60..8a13df592af6 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-@@ -396,8 +396,12 @@ static int otx2_tc_parse_actions(struct otx2_nic *nic,
- 				return -EOPNOTSUPP;
- 			}
- 			req->vf = priv->pcifunc & RVU_PFVF_FUNC_MASK;
--			req->op = NIX_RX_ACTION_DEFAULT;
--			return 0;
-+
-+			/* if op is already set; avoid overwriting the same */
-+			if (!req->op)
-+				req->op = NIX_RX_ACTION_DEFAULT;
-+			break;
-+
- 		case FLOW_ACTION_VLAN_POP:
- 			req->vtag0_valid = true;
- 			/* use RX_VTAG_TYPE7 which is initialized to strip vlan tag */
-@@ -433,6 +437,12 @@ static int otx2_tc_parse_actions(struct otx2_nic *nic,
- 		case FLOW_ACTION_MARK:
- 			mark = act->mark;
- 			break;
-+
-+		case FLOW_ACTION_RX_QUEUE_MAPPING:
-+			req->op = NIX_RX_ACTIONOP_UCAST;
-+			req->index = act->rx_queue;
-+			break;
-+
- 		default:
- 			return -EOPNOTSUPP;
- 		}
--- 
-2.25.1
-
+#syz fix: Bluetooth: Fix UAF in hci_conn_hash_flush again
 
