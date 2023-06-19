@@ -1,160 +1,162 @@
-Return-Path: <netdev+bounces-11849-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11848-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2A046734D65
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 10:17:37 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id DCE4C734D5C
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 10:16:53 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id BF6B21C20939
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 08:17:35 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0E6D71C2084E
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 08:16:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 63DEE6FCC;
-	Mon, 19 Jun 2023 08:17:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DFB9C6FCB;
+	Mon, 19 Jun 2023 08:16:50 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5872F6ADF
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 08:17:33 +0000 (UTC)
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2508100
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 01:17:30 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id 2adb3069b0e04-4f86e6e4038so1038597e87.0
-        for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 01:17:30 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3BB46ABD
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 08:16:50 +0000 (UTC)
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47966FE
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 01:16:49 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id 5b1f17b1804b1-3f9b1a117caso3728865e9.0
+        for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 01:16:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google; t=1687162649; x=1689754649;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=2Yv2rIjaXMDMpPLlwF9jwu6QeCtYranVnkffyN+HyQU=;
-        b=PwoutS+BntF9MCQalJkmoo5F0NDU9r5BLunwlMmivEzDmJCqE0xV3ZIlYjX5JDEi/p
-         T1imxKFaIUWUEf1c8DVAUeT0hwnmVlNhEgz8f3A1trJ8ZvDzPZUpL8GtWINkVb4XyxGN
-         lGsmTavgOCfyEFps6M/vTYd7rLHJU07DiLGNo=
+        d=linaro.org; s=google; t=1687162608; x=1689754608;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=isW3ro7VrnYReL/xeasva9RHi55m+3Ng9iiYsqlf/a8=;
+        b=KazX0yNwB3GD0qMpqNeT8B+fVx8dSsh+RVEMQxLTiOHuNIvFUyQeyxpRx3Yy0F/lDB
+         iTsNhLrLZuuHpQchOMW4OtFPnuo015E457SqxkYiKNazt5XDygOCKUBJMn3RlRvE08AE
+         kA2UXPdlcFOhNaYXt7qNJZFN+E+ABsXrUJq1nEGXadlWSDXOyIe57cVNyYRxn4lEV0UB
+         kW/+kLw6v+mxDXcSRmYaPm4ZMd67OhVXu0A5xZq37PSh+L45hlgsHesiQqJvCRs5im5a
+         j0k2wQq6y5oRty8BWTPO/UWFpybYgV0yBSc1R4Tvo/NdpcHmfEEeYRfom/LMRew+bTau
+         nvrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687162649; x=1689754649;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2Yv2rIjaXMDMpPLlwF9jwu6QeCtYranVnkffyN+HyQU=;
-        b=OlNYgk87ECnK3f9EAIBZmuVAVB0dyNmT04c1H0zPBosU4V4MVNkR/HvKLNRoSpn9UT
-         OkcJw3GBVuWCjd2loMmJcji8Q4Jy6eiIPvoPuXLcJMQN+R9EW46opSbFvgg3N6HQt5QJ
-         qDnFrF8UC+w7Emdu8LZ2pdmZzEO8nKRVcsPIXg5/gKvdPH44AwI55hbFXBhqCl0h+N2h
-         0oaZaPKRlm5ztHFAVxsG0p+xrxrTcmQfEqRMC6D0ocXy3xpBQrr76Ii0GCfVO11OqLNb
-         ETUNzJvmeE3I8Mh5hQsNZFE+jgmjRPSU//tuSED1CVDFhMbOVRYKtba65+CrWWW9TRfb
-         pIwA==
-X-Gm-Message-State: AC+VfDzLVmZy/CZwQe6CGsNgbqzrG9QD45swK41aCZ0ACinzUtBGV6Mp
-	OHyQ31A/JCacTEFJ+oCIG2tw0g==
-X-Google-Smtp-Source: ACHHUZ7qO6cBJkmxBk4du5cNmihY6RimwgxVhN5bfZR9+X6qndg8wPmimAT8wFwu0qd2uAI5R7zWEg==
-X-Received: by 2002:a05:6512:2ef:b0:4f4:ffae:7b93 with SMTP id m15-20020a05651202ef00b004f4ffae7b93mr2891866lfq.7.1687162648785;
-        Mon, 19 Jun 2023 01:17:28 -0700 (PDT)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id g23-20020a19ee17000000b004f4b3e9e0cesm4137924lfb.297.2023.06.19.01.17.28
+        d=1e100.net; s=20221208; t=1687162608; x=1689754608;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=isW3ro7VrnYReL/xeasva9RHi55m+3Ng9iiYsqlf/a8=;
+        b=NIUfnUVumcxzvv7KcXzgxuCWQR3TW3p+rzAsILx3HidlDS6nRkcHRBE0m8AMmKukQj
+         0MzKfJbDKXqGYpb1xsRormk0r5A2xBpKRtDNWMJxKyg50fK+Tn3DmxuWWMQEFGFmAnYs
+         m7BSv43fBRK3LKxv/xpnbyKrN4a1z5q68ETBmuDljyQhnzDA9X7JF2pFUyo4vWeWWVwT
+         2npOJp44lT/cTgAqwUFIyNYtpLxevSUw+DLEoRA3zRpw4OckBE+e7IR8CDPbGY0kiNHV
+         CN+BdMzPVPbKR3UgGxiaFsGt6A36bRkeDLJyXFHXInHqOVu7azVc/Cm5kUNnpLsab1OT
+         u3GQ==
+X-Gm-Message-State: AC+VfDwIXMm/FMlD9RAyH5Du6LB6MJyNpQRMKoiIh+DU/uM/Jyw8ruP9
+	MP74ET27AnRxFntWnWJX3UOICQ==
+X-Google-Smtp-Source: ACHHUZ7YdUPbrAC9vk9luum3Fiw2SRofBrawd9gnl7RQJA52PSeTUGT+mXUQecxLW0mDU/E7LRbnIA==
+X-Received: by 2002:a5d:63c5:0:b0:30a:efd2:c170 with SMTP id c5-20020a5d63c5000000b0030aefd2c170mr5312318wrw.37.1687162607724;
+        Mon, 19 Jun 2023 01:16:47 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id d6-20020adffd86000000b0030ae87bd3e3sm30749486wrr.18.2023.06.19.01.16.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jun 2023 01:17:28 -0700 (PDT)
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To: Woojung Huh <woojung.huh@microchip.com>,
-	UNGLinuxDriver@microchip.com,
-	Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Vladimir Oltean <olteanv@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Robert Hancock <hancock@sedsystems.ca>
-Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	stable@vger.kernel.org,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: dsa: microchip: ksz9477: follow errata sheet when applying fixups
-Date: Mon, 19 Jun 2023 10:16:32 +0200
-Message-Id: <20230619081633.589703-1-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.37.2
+        Mon, 19 Jun 2023 01:16:45 -0700 (PDT)
+Date: Mon, 19 Jun 2023 11:16:42 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: Simon Horman <simon.horman@corigine.com>
+Cc: Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>,
+	Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
+	linux-nvme@lists.infradead.org, Jakub Kicinski <kuba@kernel.org>,
+	netdev@vger.kernel.org, Boris Pismenny <boris.pismenny@gmail.com>
+Subject: Re: [PATCH 4/4] net/tls: implement ->read_sock()
+Message-ID: <635399d3-552f-460d-8bf3-19c039d03df2@kadam.mountain>
+References: <20230614062212.73288-1-hare@suse.de>
+ <20230614062212.73288-5-hare@suse.de>
+ <ZI2+SDzKwK7i8Nw6@corigine.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZI2+SDzKwK7i8Nw6@corigine.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
 	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The errata sheets for both ksz9477 and ksz9567 begin with
+On Sat, Jun 17, 2023 at 04:08:08PM +0200, Simon Horman wrote:
+> + Dan Carpenter
+> 
+> On Wed, Jun 14, 2023 at 08:22:12AM +0200, Hannes Reinecke wrote:
+> 
+> ...
+> 
+> > +
+> > +read_sock_end:
+> > +	return copied ? : err;
+> 
+> Hi Hannes,
+> 
+> I'm of two minds about raising this or not, but in any case here I am
+> doing so.
+> 
+> Both gcc-12 [-Wmaybe-uninitialized] and Smatch warn that err may be
+> used uninitialised on the line above.
+> 
+> My own analysis is that it cannot occur: I think it is always the case
+> that either copied is non-zero or err is initialised.
 
-  IMPORTANT NOTE
+Hm...  Yeah.  This is a bug in how Smatch handles:
 
-  Multiple errata workarounds in this document call for changing PHY
-  registers for each PHY port. PHY registers 0x0 to 0x1F are in the
-  address range 0xN100 to 0xN13F, while indirect (MMD) PHY registers
-  are accessed via the PHY MMD Setup Register and the PHY MMD Data
-  Register.
+	return copied ? : err;
 
-  Before configuring the PHY MMD registers, it is necessary to set the
-  PHY to 100 Mbps speed with auto-negotiation disabled by writing to
-  register 0xN100-0xN101. After writing the MMD registers, and after
-  all errata workarounds that involve PHY register settings, write
-  register 0xN100-0xN101 again to enable and restart auto-negotiation.
+Smatch wants every return to have a simple literal or variable.  So if
+the return is complicated it gets changed into:
 
-Without that explicit auto-neg restart, we do sometimes have problems
-establishing link.
+	fake_variable = copied ? : err;
+	return fake_variable;
 
-Rather than writing back the hardcoded 0x1340 value the errata sheet
-suggests (which likely just corresponds to the most common strap
-configuration), restore the original value, setting the
-PORT_AUTO_NEG_RESTART bit if PORT_AUTO_NEG_ENABLE is set.
+Smatch translates this to:
 
-Fixes: 1fc33199185d ("net: dsa: microchip: Add PHY errata workarounds")
-Cc: stable@vger.kernel.org
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
-While I do believe this is a fix, I don't think it's post-rc7
-material, hence targeting net-next with cc stable.
+	if (!(fake_variable = copied))
+		fake_variable = err;
 
- drivers/net/dsa/microchip/ksz9477.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+[ Here fake_variable doesn't have side effects but under other
+  circumstances this transformation could cause double evaluate side
+  effects bugs.  So that's another bug in Smatch. ]
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index bf13d47c26cf..9a712ea71ee7 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -902,6 +902,16 @@ static void ksz9477_port_mmd_write(struct ksz_device *dev, int port,
- 
- static void ksz9477_phy_errata_setup(struct ksz_device *dev, int port)
- {
-+	u16 cr;
-+
-+	/* Errata document says the PHY must be configured to 100Mbps
-+	 * with auto-neg disabled before configuring the PHY MMD
-+	 * registers.
-+	 */
-+	ksz_pread16(dev, port, REG_PORT_PHY_CTRL, &cr);
-+	ksz_pwrite16(dev, port, REG_PORT_PHY_CTRL,
-+		     PORT_SPEED_100MBIT | PORT_FULL_DUPLEX);
-+
- 	/* Apply PHY settings to address errata listed in
- 	 * KSZ9477, KSZ9897, KSZ9896, KSZ9567, KSZ8565
- 	 * Silicon Errata and Data Sheet Clarification documents:
-@@ -943,6 +953,13 @@ static void ksz9477_phy_errata_setup(struct ksz_device *dev, int port)
- 	ksz9477_port_mmd_write(dev, port, 0x1c, 0x1d, 0xe7ff);
- 	ksz9477_port_mmd_write(dev, port, 0x1c, 0x1e, 0xefff);
- 	ksz9477_port_mmd_write(dev, port, 0x1c, 0x20, 0xeeee);
-+
-+	/* Restore PHY CTRL register, restart auto-negotiation if
-+	 * enabled in the original value.
-+	 */
-+	if (cr & PORT_AUTO_NEG_ENABLE)
-+		cr |= PORT_AUTO_NEG_RESTART;
-+	ksz_pwrite16(dev, port, REG_PORT_PHY_CTRL, cr);
- }
- 
- void ksz9477_get_caps(struct ksz_device *dev, int port,
--- 
-2.37.2
+Then Smatch parses the fake_variable = copied condition as:
+
+	fake_variable = copied;
+	if (fake_variable) {
+
+The problem is that the type of fake_variable is based on the type of
+tls_sw_read_sock() so it is a 32bit while copied is a 64bit (of unknown
+value).  So Smatch says, "Just because copied is non-zero doesn't mean
+fake_variable is non-zero because the value might get truncated when
+we cast away the high 32 bits."
+
+This not a serious proposal but a just to demonstrate that this is
+what happens there are two ways to silence this warning.  Changing the
+type of tls_sw_read_sock() to long.  Or change the code to:
+
+	if (copied)
+		return copied;
+	return err;
+
+Probably the right thing is to create a second fake_copied variable
+based on typeof(copied).
+
+	fake_copied = copied;
+	if (fake_copied)
+		fake_return_variable = fake_copied;
+	else
+		fake_return_variable = err;
+
+It's a doable thing.  Plus now there are no double evaluate side effects
+bugs.  I have written this code and it silences the warning, but I'll
+test it out tonight to see what breaks.
+
+regards,
+dan carpenter
 
 
