@@ -1,150 +1,121 @@
-Return-Path: <netdev+bounces-11921-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11922-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 72A3373526C
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 12:35:08 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id AE2CF7352F6
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 12:40:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id AB5961C20AEB
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 10:35:07 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 50BF828114E
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 10:40:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9EA2B10952;
-	Mon, 19 Jun 2023 10:35:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AD59F5381;
+	Mon, 19 Jun 2023 10:40:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92FD21094D
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 10:35:05 +0000 (UTC)
-Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17FB310D0;
-	Mon, 19 Jun 2023 03:34:54 -0700 (PDT)
-Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
-	(No client certificate requested)
-	(Authenticated sender: pmenzel)
-	by mx.molgen.mpg.de (Postfix) with ESMTPSA id 79B7061E5FE04;
-	Mon, 19 Jun 2023 12:34:08 +0200 (CEST)
-Message-ID: <bc3e9167-cdea-1efb-6d5c-57df43564d37@molgen.mpg.de>
-Date: Mon, 19 Jun 2023 12:34:06 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 893183C23
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 10:40:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 899B0C433C9;
+	Mon, 19 Jun 2023 10:40:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1687171235;
+	bh=A32VZcKVct460PbyXiy0SEpYxkFlA+mChVgoKGC13xw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=VvE1YV7pbgTDCY3xO/1Vy4uSFVfwNSfxbjzoDv5tR5bIsVAkLbrCG5odDnpBe6Vwh
+	 f5dMtO61lxlnfhjksIrUy5HSyS3G8piHZ9sD+JcjP5xsNih0CvYJNPT9VkUvTrZ7UH
+	 OpoFkuuhuV+gRMumPY1YXTX54WpuRH00qUrKTyH/D0k81qHuefhf+XReLAEu13o9QN
+	 AAn/9lKPcgLaC5nROiynVUvvjBTJ9S+oJdSg1spNJGahdul6PvRSbLnUNnvicbmMiE
+	 H0rtAZegrL64yXltbK/Rg3AeILfFBKEfej/nz8uLw+u8ZrgtvhkQbOV1XFA4hKbmtZ
+	 Hcjg3fThT0dHw==
+Date: Mon, 19 Jun 2023 11:40:30 +0100
+From: Lee Jones <lee@kernel.org>
+To: Christian Marangi <ansuelsmth@gmail.com>
+Cc: Pavel Machek <pavel@ucw.cz>, Andrew Lunn <andrew@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Yang Li <yang.lee@linux.alibaba.com>, linux-leds@vger.kernel.org,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v4 0/3] leds: trigger: netdev: add additional
+ modes
+Message-ID: <20230619104030.GB1472962@google.com>
+References: <20230617115355.22868-1-ansuelsmth@gmail.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [Intel-wired-lan] [PATCH net] ice: ice_vsi_release cleanup
-Content-Language: en-US
-To: Petr Oros <poros@redhat.com>
-Cc: netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
- jesse.brandeburg@intel.com, linux-kernel@vger.kernel.org,
- edumazet@google.com, anthony.l.nguyen@intel.com, kuba@kernel.org,
- pabeni@redhat.com, davem@davemloft.net
-References: <20230619084948.360128-1-poros@redhat.com>
-From: Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20230619084948.360128-1-poros@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+In-Reply-To: <20230617115355.22868-1-ansuelsmth@gmail.com>
 
-Dear Petr,
+On Sat, 17 Jun 2023, Christian Marangi wrote:
 
-
-Thank you for your patch.
-
-Am 19.06.23 um 10:49 schrieb Petr Oros:
-> Since commit 6624e780a577fc ("ice: split ice_vsi_setup into smaller
-> functions") ice_vsi_release does things twice. There is unregister
-> netdev which is unregistered in ice_deinit_eth also.
+> This is a continue of [1]. It was decided to take a more gradual
+> approach to implement LEDs support for switch and phy starting with
+> basic support and then implementing the hw control part when we have all
+> the prereq done.
 > 
-> It also unregisters the devlink_port twice which is also unregistered
-> in ice_deinit_eth(). This double deregistration is hidden because
-> devl_port_unregister ignores the return value of xa_erase.
+> This should be the final part for the netdev trigger.
+> I added net-next tag and added netdev mailing list since I was informed
+> that this should be merged with netdev branch.
 > 
-> [   68.642167] Call Trace:
-> [   68.650385]  ice_devlink_destroy_pf_port+0xe/0x20 [ice]
-> [   68.655656]  ice_vsi_release+0x445/0x690 [ice]
-> [   68.660147]  ice_deinit+0x99/0x280 [ice]
-> [   68.664117]  ice_remove+0x1b6/0x5c0 [ice]
+> We collect some info around and we found a good set of modes that are
+> common in almost all the PHY and Switch.
 > 
-> [  171.103841] Call Trace:
-> [  171.109607]  ice_devlink_destroy_pf_port+0xf/0x20 [ice]
-> [  171.114841]  ice_remove+0x158/0x270 [ice]
-> [  171.118854]  pci_device_remove+0x3b/0xc0
-> [  171.122779]  device_release_driver_internal+0xc7/0x170
-> [  171.127912]  driver_detach+0x54/0x8c
-> [  171.131491]  bus_remove_driver+0x77/0xd1
-> [  171.135406]  pci_unregister_driver+0x2d/0xb0
-> [  171.139670]  ice_module_exit+0xc/0x55f [ice]
-
-It’d be more specific in the commit message summary/title, and use 
-imperative mood. Maybe:
-
-ice: Unregister netdev and devlink_port only once
-
-
-Kind regards,
-
-Paul
-
-
-> Fixes: 6624e780a577 ("ice: split ice_vsi_setup into smaller functions")
-> Signed-off-by: Petr Oros <poros@redhat.com>
-> ---
->   drivers/net/ethernet/intel/ice/ice_lib.c | 27 ------------------------
->   1 file changed, 27 deletions(-)
+> These modes are:
+> - Modes for dedicated link speed(10, 100, 1000 mbps). Additional mode
+>   can be added later following this example.
+> - Modes for half and full duplex.
 > 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-> index 11ae0e41f518a1..284a1f0bfdb545 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_lib.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-> @@ -3272,39 +3272,12 @@ int ice_vsi_release(struct ice_vsi *vsi)
->   		return -ENODEV;
->   	pf = vsi->back;
->   
-> -	/* do not unregister while driver is in the reset recovery pending
-> -	 * state. Since reset/rebuild happens through PF service task workqueue,
-> -	 * it's not a good idea to unregister netdev that is associated to the
-> -	 * PF that is running the work queue items currently. This is done to
-> -	 * avoid check_flush_dependency() warning on this wq
-> -	 */
-> -	if (vsi->netdev && !ice_is_reset_in_progress(pf->state) &&
-> -	    (test_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state))) {
-> -		unregister_netdev(vsi->netdev);
-> -		clear_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
-> -	}
-> -
-> -	if (vsi->type == ICE_VSI_PF)
-> -		ice_devlink_destroy_pf_port(pf);
-> -
->   	if (test_bit(ICE_FLAG_RSS_ENA, pf->flags))
->   		ice_rss_clean(vsi);
->   
->   	ice_vsi_close(vsi);
->   	ice_vsi_decfg(vsi);
->   
-> -	if (vsi->netdev) {
-> -		if (test_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state)) {
-> -			unregister_netdev(vsi->netdev);
-> -			clear_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
-> -		}
-> -		if (test_bit(ICE_VSI_NETDEV_ALLOCD, vsi->state)) {
-> -			free_netdev(vsi->netdev);
-> -			vsi->netdev = NULL;
-> -			clear_bit(ICE_VSI_NETDEV_ALLOCD, vsi->state);
-> -		}
-> -	}
-> -
->   	/* retain SW VSI data structure since it is needed to unregister and
->   	 * free VSI netdev when PF is not in reset recovery pending state,\
->   	 * for ex: during rmmod.
+> The original idea was to add hw control only modes.
+> While the concept makes sense in practice it would results in lots of 
+> additional code and extra check to make sure we are setting correct modes.
+> 
+> With the suggestion from Andrew it was pointed out that using the ethtool
+> APIs we can actually get the current link speed and duplex and this
+> effectively removed the problem of having hw control only modes since we
+> can fallback to software.
+> 
+> Since these modes are supported by software, we can skip providing an
+> user for this in the LED driver to support hw control for these new modes
+> (that will come right after this is merged) and prevent this to be another
+> multi subsystem series.
+> 
+> For link speed and duplex we use ethtool APIs.
+> 
+> To call ethtool APIs, rtnl lock is needed but this can be skipped on
+> handling netdev events as the lock is already held.
+> 
+> [1] https://lore.kernel.org/lkml/20230216013230.22978-1-ansuelsmth@gmail.com/
+> 
+> Changes v4:
+> - Add net-next tag
+> - Add additional patch to expose hw_control via sysfs
+> - CC netdev mailing list
+> Changes v3:
+> - Add Andrew review tag
+> - Use SPEED_UNKNOWN to init link_speed
+> - Fix using HALF_DUPLEX as duplex init and use DUPLEX_UNKNOWN instead
+> Changes v2:
+> - Drop ACTIVITY patch as it can be handled internally in the LED driver
+> - Reduce duplicate code and move the link state to a dedicated helper
+> 
+> Christian Marangi (3):
+>   leds: trigger: netdev: add additional specific link speed mode
+>   leds: trigger: netdev: add additional specific link duplex mode
+>   leds: trigger: netdev: expose hw_control status via sysfs
+> 
+>  drivers/leds/trigger/ledtrig-netdev.c | 114 +++++++++++++++++++++++---
+>  include/linux/leds.h                  |   5 ++
+>  2 files changed, 109 insertions(+), 10 deletions(-)
+
+Seeing as we're on -rc7 already, any reason why we shouldn't hold off
+and simply apply these against LEDs once v6.5 is released?
+
+-- 
+Lee Jones [李琼斯]
 
