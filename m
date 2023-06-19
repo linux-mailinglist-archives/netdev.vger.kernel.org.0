@@ -1,63 +1,63 @@
-Return-Path: <netdev+bounces-12030-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12031-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9BD12735BDB
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 18:03:31 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3EE59735BDF
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 18:04:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0038E281191
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 16:03:30 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ED4F0281134
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 16:04:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8065113AD4;
-	Mon, 19 Jun 2023 16:03:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 35540134C9;
+	Mon, 19 Jun 2023 16:04:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F05C13AC3
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 16:03:12 +0000 (UTC)
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2A71AB;
-	Mon, 19 Jun 2023 09:03:11 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id 5b1f17b1804b1-3f8fe9dc27aso23359895e9.3;
-        Mon, 19 Jun 2023 09:03:11 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2847B107A4
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 16:04:11 +0000 (UTC)
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5DB81AC;
+	Mon, 19 Jun 2023 09:04:09 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id 5b1f17b1804b1-3f90b8acefeso16707275e9.0;
+        Mon, 19 Jun 2023 09:04:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1687190589; x=1689782589;
+        d=gmail.com; s=20221208; t=1687190648; x=1689782648;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=0JT52z/QSGQQNpxiH41WXj61FqSaKcbLdlhQV31bTV0=;
-        b=dUJrR3LckPsF7iVBaxtvI9erHbfGaO7p41VJqcPAM0ZwOmjB+BYY5zucEa3FEBftyL
-         NXCKt4m8hqmV+AL3vhVTflcZxIYDqKNs8AaSIWIkACP3pL7TGBp6TsTGFU/3WoHQh5H7
-         0Wm2gGR78NFMM4PSRO+XaLURyfyKXX/tBJnMhOLxdRs3jmOxGn2s2lri6RVrbFCSzp07
-         LzDqm3Z8ZwTwmhfrOzwxHpMT9IJRe1lXrKChwAVRW9Ixn4AtPkrN7MA48wCE8jWrTD1x
-         +5o0KnfP8DgsFXzwxgs77bqGqwgVxy1TK2NgXWCmF8XVSgvAL3fKTQ7bQViYMB5ub9Aj
-         hZ8A==
+        bh=D9AtVjETMMA0uNeWNvxbxAkGopweBCJnF41QlXnhZiE=;
+        b=bmewmS++ipI9v33uzYlWX9qwQ0eIRZOn4GJ+uVkAj7+vKL1gdO+q4eRK9pGG67mXBk
+         aVcza5aBb49TK5e9F+8uv+QJW/nL0vavYTkTy77G8tkgL579xEVveAkCCgY+TR6pAEF5
+         J0aaOEKQVHJIJ5DlFkfhyI75i1M0ZXMSfJiFsA6UxDAmIXzl/LWFyEOL1BU1HMMbtPna
+         O/cZdB7kICixV0qrZT83J0usjilQIgPYLmA7sLqwRt0PEvBOT84Qeo2IFJiqQsnDT1Tq
+         WVGEm99E+zytkbzm5DB7/IEHoYtHT+4s1XMvrb7d4UjO99lcml7k7ab590aP/OCcxIFZ
+         /o9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687190589; x=1689782589;
+        d=1e100.net; s=20221208; t=1687190648; x=1689782648;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0JT52z/QSGQQNpxiH41WXj61FqSaKcbLdlhQV31bTV0=;
-        b=ld8WHK7Wy7RjLuZW6p8IQ/kxwlRn+w8iPbAO1sUIV/GKQP/cZq+Iw6xoz21CxjPW49
-         rP65J/YSvMxv4HRdBcdAzOUB1AGOxyjBE5ThdCn7aPVOG35cAjT4pI+l00n4OMhcyg48
-         /kKe1isvjf8tm3yZE72AtbBxdhy+Cjg7a0bHjdeuzUoFeBmIm2G9T6b2KZwpRNn0THVg
-         T7osWevq1tQjfu+qpxnnz6EttKBC3GLGnKHcSWi3CQT0rHW9JvW7UsyKEjVtKajJJYOU
-         dx8HX6ZcXkd9I7996pB1nadS+bARJWZPMtx8aCIJox9IKJPb4j6o2/i88DRdRy0UjrRX
-         IKag==
-X-Gm-Message-State: AC+VfDxVXZXfSXkEN4HP01MAmyst9bSD2qpAZx3+s8yl0hntcqthUsDT
-	zfNH6KuEjULaGfsjnE81DvA=
-X-Google-Smtp-Source: ACHHUZ7KYyetJcEHN9RbZJTu8ode90pZ16ABQJQdstGPiG0uMLuxpD3SFIFESNnGNnnCoB/ITa6DRQ==
-X-Received: by 2002:a1c:4b05:0:b0:3f8:f76e:7160 with SMTP id y5-20020a1c4b05000000b003f8f76e7160mr6243161wma.16.1687190589255;
-        Mon, 19 Jun 2023 09:03:09 -0700 (PDT)
+        bh=D9AtVjETMMA0uNeWNvxbxAkGopweBCJnF41QlXnhZiE=;
+        b=QTvL2wZ/U4dxL8QEE3Ni2iXxgDklJm9W5PAnbnxLffpDbK22QuIg42DTU1eCzmOPcS
+         yB9poz2Cre+P+tm5p8PxRkOU91TF8EKYTaLEGSyPZZvsMqk8HN8SHVU5K33Le0qPBchL
+         jInEu0OVTRpwFaHU01baVgRBtE+EtNH0DUQejxyyJL4fdNIxxbc1AllxnNkzq/sWVKFW
+         4auH9qo6C3XshEs4uTV30cELNPtWiiohUY2zxbYp9VwF0Ge4X+5MnZ11/bAls7LrUHVA
+         5EpXuo7gtV0l7WD5sAFp7g/l7tZwtmaBP7jTxry64fhTjcPT2Wwrpo8A51tXrL4ULmOa
+         uKfQ==
+X-Gm-Message-State: AC+VfDwePCfL9/p8Ke4G7DmCsPGjZN4OdtTN2NI/oR3yWreoHpp+pneo
+	4dUQJkxwa7Q6qudqOPeoeKQ=
+X-Google-Smtp-Source: ACHHUZ5pxxEROAXXrcpKG/Rtg2wI89PklYoAn8LH+pZ7DtJJzSFZEF5vcG8YLhRrPdYDjx7bZQfb5A==
+X-Received: by 2002:a05:600c:aca:b0:3f6:4cfc:79cb with SMTP id c10-20020a05600c0aca00b003f64cfc79cbmr7053432wmr.31.1687190648119;
+        Mon, 19 Jun 2023 09:04:08 -0700 (PDT)
 Received: from [10.178.67.29] ([192.19.248.250])
-        by smtp.gmail.com with ESMTPSA id n13-20020a5d67cd000000b003111fd2e33dsm10037519wrw.30.2023.06.19.09.03.07
+        by smtp.gmail.com with ESMTPSA id t13-20020a1c770d000000b003f91e32b1ebsm4680578wmi.17.2023.06.19.09.04.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Jun 2023 09:03:08 -0700 (PDT)
-Message-ID: <dc3f6f27-d9e9-859a-a42e-1ba71db9c860@gmail.com>
-Date: Mon, 19 Jun 2023 17:03:07 +0100
+        Mon, 19 Jun 2023 09:04:07 -0700 (PDT)
+Message-ID: <3889a231-5d26-e12c-748e-9199b37f5bd7@gmail.com>
+Date: Mon, 19 Jun 2023 17:04:06 +0100
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -66,8 +66,7 @@ List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.12.0
-Subject: Re: [PATCH net v6 3/6] net: dsa: mt7530: fix handling of BPDUs on
- MT7530 switch
+Subject: Re: [PATCH net v6 4/6] net: dsa: mt7530: fix handling of LLDP frames
 Content-Language: en-US
 To: arinc9.unal@gmail.com, =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?=
  <arinc.unal@arinc9.com>, Daniel Golle <daniel@makrotopia.org>,
@@ -85,9 +84,9 @@ Cc: Frank Wunderlich <frank-w@public-files.de>,
  netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-mediatek@lists.infradead.org
 References: <20230617062649.28444-1-arinc.unal@arinc9.com>
- <20230617062649.28444-4-arinc.unal@arinc9.com>
+ <20230617062649.28444-5-arinc.unal@arinc9.com>
 From: Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230617062649.28444-4-arinc.unal@arinc9.com>
+In-Reply-To: <20230617062649.28444-5-arinc.unal@arinc9.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -102,11 +101,10 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 On 6/17/2023 7:26 AM, arinc9.unal@gmail.com wrote:
 > From: Arınç ÜNAL <arinc.unal@arinc9.com>
 > 
-> BPDUs are link-local frames, therefore they must be trapped to the CPU
-> port. Currently, the MT7530 switch treats BPDUs as regular multicast
-> frames, therefore flooding them to user ports. To fix this, set BPDUs to be
-> trapped to the CPU port. Group this on mt7530_setup() and
-> mt7531_setup_common() into mt753x_trap_frames() and call that.
+> LLDP frames are link-local frames, therefore they must be trapped to the
+> CPU port. Currently, the MT753X switches treat LLDP frames as regular
+> multicast frames, therefore flooding them to user ports. To fix this, set
+> LLDP frames to be trapped to the CPU port(s).
 > 
 > Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
 > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
