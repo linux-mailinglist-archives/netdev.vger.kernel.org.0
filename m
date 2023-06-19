@@ -1,205 +1,175 @@
-Return-Path: <netdev+bounces-11970-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11971-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 08A5C735891
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 15:30:22 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 26A187358AA
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 15:33:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id A66632810BA
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 13:30:20 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 617031C20B06
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 13:33:41 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8EC2411181;
-	Mon, 19 Jun 2023 13:30:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 05C9511196;
+	Mon, 19 Jun 2023 13:33:37 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 774E7AD3C
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 13:30:18 +0000 (UTC)
-Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2089.outbound.protection.outlook.com [40.107.105.89])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE7A101;
-	Mon, 19 Jun 2023 06:30:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UTBkfBNizI+cn4lKauu03NceYxqCL64xh9vJ7lnA1li2OYmaPGmcaH2QxsGlT6vgRg9pLqdL8BO+7cjGMC1u5jnxi2W1w8ZFilsEkdjF/nPLFskYoAA4PKnFhWbujJJ36V6IbxLKLHGoQvmD8ls77zA8VUfez/6LESXmjafSntEx8W/7l4Jbyszs7Xxe3ev2Wio0CjxYE7tHyyPw9MZaWBg/R+TyPwjtbJhgAPesrSDdXTSfPRwSmhGfr2iTffE0+Nv6pLcsxM5xEOAOvKptkDvPsHFA9XAZj15l1e9R/vnQuQPYqt70D5wwZBpJUYTglCbFAAtGQU427TpuXCSywg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+RIuHTtlFGIWs268JjlMQMTzhH6CEFEaQktnPCA2DfE=;
- b=eBzrnqJHciLeW4AVGnWwWXjkgj8EpjbYYipagfWa1uqA7x34aFIc0Vz2RXbez+kykT3BVA6nTqrRcaDcQrHdYg0OAqhDrsOUgmMeV7BjdeAk05yIuCTgJ1+6uScg+5iQz8BM8AOoW3fSuBnKUpntJ8+vUIH7Z50YxtbCkBirSoEkvYNq2gT0+0z8STrrUBYYLNcBwJEWvZF690nZelnv5IVfsZ96lR1TIvoyzT7+LHkQuthU1y+TNV6PM0hZ/GkcfGiVLkdKzx+ZRPazRdgBGC68ShC0sL1LDFvViUg+c696LFpf6yCgeg1PZ92vR7/sw/2zLlj/vIG1yfsarXJi3g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+RIuHTtlFGIWs268JjlMQMTzhH6CEFEaQktnPCA2DfE=;
- b=Muriv0bqL/ibQ9t/tyImpHJ3AvdseSi9y6yWkvHI/ihoS4ztIkcdF+cZhZvBRsUB0opSN3DyQHprTcm3UMdjNu75pBEhc7+4lKb8CZhlZPRFQPPzfxClT7bACXkgctOGbH8i9C9l32NZqylhARBhKplLKTA7j4wVIVp69IxhvvY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM9PR04MB8954.eurprd04.prod.outlook.com (2603:10a6:20b:409::7)
- by AS8PR04MB9077.eurprd04.prod.outlook.com (2603:10a6:20b:444::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.36; Mon, 19 Jun
- 2023 13:30:12 +0000
-Received: from AM9PR04MB8954.eurprd04.prod.outlook.com
- ([fe80::5356:c79f:ef9f:dc29]) by AM9PR04MB8954.eurprd04.prod.outlook.com
- ([fe80::5356:c79f:ef9f:dc29%4]) with mapi id 15.20.6500.036; Mon, 19 Jun 2023
- 13:30:12 +0000
-From: "Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
-To: andrew@lunn.ch,
-	hkallweit1@gmail.com,
-	linux@armlinux.org.uk,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	richardcochran@gmail.com
-Cc: netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	sebastian.tobuschat@nxp.com,
-	"Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>,
-	stable@vger.kernel.org
-Subject: [PATCH net v3 1/1] net: phy: nxp-c45-tja11xx: fix the PTP interrupt enablig/disabling
-Date: Mon, 19 Jun 2023 16:28:51 +0300
-Message-Id: <20230619132851.233976-1-radu-nicolae.pirea@oss.nxp.com>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AS4P250CA0007.EURP250.PROD.OUTLOOK.COM
- (2603:10a6:20b:5df::11) To AM9PR04MB8954.eurprd04.prod.outlook.com
- (2603:10a6:20b:409::7)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC9BC10799;
+	Mon, 19 Jun 2023 13:33:36 +0000 (UTC)
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F556E59;
+	Mon, 19 Jun 2023 06:33:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1687181614; x=1718717614;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Xqr/3S2/EUn4m71NKoQyh8sBO7P+dlIVRJAQ29FZbC0=;
+  b=CHMk6AhnIWk+Im9wJP6uxwPvsnS397PoajdUdOZD+uPXHZQSm3PSEm6N
+   UUV4EM/5w8PBaOmDV3W97kKshcwAqMTgXsbeFGlqM7sGzTXdwXiWSkDuj
+   7fXlhQ3e7MFC1QHH85P7olXR+v+mFWwyjDfN1/iVmT0EbNR5S7K94ffaj
+   424DwUUqm8RneKoceHc/XVWpUMzbhPmy/Rq0Hj283PAd5GIHp5szHDWbI
+   aRsiF5gT6+cjd7rvwhcdPaejps6j8VhR2Tsy5DRYUOxJePmW+Tnwal2Od
+   c+tX9gA5DqvsK1Lwf0/QQAbt1RAsYJ+Cb/0LL4zxMlRjt892J3k9rrB3e
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="446005346"
+X-IronPort-AV: E=Sophos;i="6.00,254,1681196400"; 
+   d="scan'208";a="446005346"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2023 06:33:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="1043902171"
+X-IronPort-AV: E=Sophos;i="6.00,254,1681196400"; 
+   d="scan'208";a="1043902171"
+Received: from lkp-server01.sh.intel.com (HELO 783282924a45) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 19 Jun 2023 06:33:30 -0700
+Received: from kbuild by 783282924a45 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1qBF0b-0004jw-1i;
+	Mon, 19 Jun 2023 13:33:29 +0000
+Date: Mon, 19 Jun 2023 21:32:46 +0800
+From: kernel test robot <lkp@intel.com>
+To: Heng Qi <hengqi@linux.alibaba.com>, netdev@vger.kernel.org,
+	bpf@vger.kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Alexei Starovoitov <ast@kernel.org>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCH net-next 2/4] virtio-net: reprobe csum related fields for
+ skb passed by XDP
+Message-ID: <202306192151.YMz3NiKw-lkp@intel.com>
+References: <20230619105738.117733-3-hengqi@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM9PR04MB8954:EE_|AS8PR04MB9077:EE_
-X-MS-Office365-Filtering-Correlation-Id: bc18d987-850d-432d-51d0-08db70c94f2a
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	2Oz7j0IM2XAjyoZZSM/Jdlu9pluCayfZ9AEZBF/+odHZS1qmiIUMXuzc+aCyCd50zlnzBHtg60tGdFEaguUFjUckae6jEwu6lO8LHnkIQ2dPyllBF26CMzv4/Sb6NCJu8Wfd3v2QeFMSHDiUldbYmPPXopXTrh4a60aaFGxRGMZR1hm4eBhSrp+kSkPJeP2H76+oW4920V4Yl2Hh56LddmkTlNc6oY0SqOdJAsgC2G1WSRLqsy9rzmqLawORfdbqmQfwUiawRiWUvEp/XK4FE7XnAhidRXu1266cuguHZ6EE3jaXpfhNVVvA6dgaPLqj1aqBFDIgFRndHxQVogEOBV1Z4p7xIGywQiNdkro21JrYu1ug3r3H4KuC8WVLt4scj8o+Me5H3q0xrLl6G5oXgBTIcFx9sHEW7UeVOoQx5DcfZFjlgKcBusmCJ9N25OP7/emoLban13DoTs4mbnoEkFhRKFIhZ1MILFv/7CYzhcN6Nvv/TKmjLf7HpSTve7V85MP10yszoj2wDXxQfxgeh50v/bz/aVw/FEJqgeZTD/YldwemjyzmDUAjvC0bVKv1KytqNyrVjSriZL7mKLJiAZJjU9IRTjTYmTEuoqrUTyI=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8954.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(366004)(39860400002)(396003)(136003)(451199021)(186003)(52116002)(478600001)(966005)(6666004)(6486002)(86362001)(1076003)(6506007)(6512007)(26005)(2616005)(38100700002)(316002)(38350700002)(83380400001)(66946007)(66556008)(66476007)(4326008)(8676002)(8936002)(7416002)(5660300002)(2906002)(41300700001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?DMcrvLHmtU552jKqhsED6+XH28AYQY/9nHXFy3HMOXCWN2S0qJ1Fwf+vO//N?=
- =?us-ascii?Q?hae/GydaPJpoFBvFc/p/ooc12VYCWCaOoC+LCVbPH1kXJpteXl8dyzkiRdkL?=
- =?us-ascii?Q?vQXbtQFMZ9jfBuiUFZWKRl3U+LY71smaS4bCCNvjUbAEV8wQCIdo1RP7WCCd?=
- =?us-ascii?Q?ArG3vaA5yfSXll7bnmEjH1QW846TXdzb2f2A88z55EYiQZww0r/ltwLWMA/c?=
- =?us-ascii?Q?9TaU8ZUVuz/b7cjf/Y+dQy3k+hJKRDA+gDQum3LqbWNZ71ST1EJ5PNPRoXQS?=
- =?us-ascii?Q?wuLE5MLB/JFis3eWmvXnbCK0A/bEyArO9Vt+1sSIkim0CXGGdhZnARyhT1zy?=
- =?us-ascii?Q?ghGeUmkbn//pdFJ8hBtGfOzsPfZcv7VFNGqDv5o7/wxpvWUz3y9m7mm8BUge?=
- =?us-ascii?Q?zAo6UQU066fVarXWL03Bx+ieykWcTnj5hmc1D6gzpllnkgQIA4y3q4iTmmEc?=
- =?us-ascii?Q?Ci9y2gr1EGGTzrLsUH8L9vKj48CQq0G2SqvHPdtpibljilferebMWxFgBAPY?=
- =?us-ascii?Q?BWuskAaokKUDiQp7k0WSHlf2ZV5lLk2ilLkH22cNDqpXjLhQUtoXYIRHBL8r?=
- =?us-ascii?Q?7gG5LFeWdZ/qlc7++gkbPX2kNhIJth33IOE+JSXLGPPmapxSsDvIStvEaF/5?=
- =?us-ascii?Q?LPRUmrsVKiiemJ6Jrcz51ZPCu45u8/a1bdrW39afecOh0HbbQ/33nmZAaaoK?=
- =?us-ascii?Q?HGFjnAhWMJDu7uyysMa8bqAMY7P0+472u/+PmpYTYiQQMSUJTAHi54KANFOX?=
- =?us-ascii?Q?Gz/CzYnl6P3FyfZOYPGp/onrZC6XBTYzKxordj1UBgXVpUlerSSjmZ4JgP62?=
- =?us-ascii?Q?2mxx5RAzLDKNB0p/PlRNSHFpRDGG+cGy9E7Y2bVhXgL2GZ7GxZjIAj7HM8BW?=
- =?us-ascii?Q?If6+QOUABMljS5iQz50TkI7qUXsasi/Do7zUgWMNGcHDd7ZUV6/wny0eR4hh?=
- =?us-ascii?Q?pldGkzWqi3cvwZiWNxwUT0ye/WwNW8R7UGQ6HWhQCQtTBBEspfC33j5p0g5+?=
- =?us-ascii?Q?LVQyd2AHMhUdvxbXiZuCd9oKGZ4cfP3fZV6gZauQNrDMGmIPVEI+FDbDfHvI?=
- =?us-ascii?Q?+l4zoFw2x97xsWIz+YN9cHzHk8EOlDTJw/rStnz3Rjpr6+yTvw8AuSy/Gxda?=
- =?us-ascii?Q?YHdVtbFknxc4IYIVFudMH1DkSHA/C6nC6Id0xbeTgPzJvTPeJHvVzGLvjyDX?=
- =?us-ascii?Q?yHoKwo3/k8mM5RRV0IjgpJec73ldSR+g1c1uS+VfLJOSHBIuEzNEowTQljsy?=
- =?us-ascii?Q?Z73Lz6RD5EbqTdRfMgbQkzF1oun0xfvqBbI49fKRU7rzw2A8pTE0Hcn3C0To?=
- =?us-ascii?Q?HjLkiMiLx8lBup2sfCiRWqY61g0IPQHsV5I3G4Ss0eLrDZppGwqi2y6u73p4?=
- =?us-ascii?Q?4A0RBFBzgsDERjGByHEFg7ogElzJ69yLu6neHRwp6G3pvW5wLiMJXXOPtupS?=
- =?us-ascii?Q?dCcT+9r3WHURVTuTRCp2EBp/VPfJhbHi+zKG3x7FyTQePPDgP85E2jU93Z53?=
- =?us-ascii?Q?sMyPsjRepWkPEtvKocjnKXXgGPyUnt7MluHJ9zg2RN70HZ6iRkimfGfhGKr0?=
- =?us-ascii?Q?8VAL/cO0wOOZYH6Jmd8PKgyi7Xv0tk9P4cW5d/IjRG2nP4tIivs3ogwKclEL?=
- =?us-ascii?Q?9g=3D=3D?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc18d987-850d-432d-51d0-08db70c94f2a
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8954.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2023 13:30:12.3843
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4BV97CH+Cc6hAXWZ2q8tqRT4GMz0zldZhhfMK0fU6VeA4c0cO5iUNSZC0Q8ivmpjDD8BltX1XKpmk558sP5qTkzsXwWDrLh0ZvwiLItwiEQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB9077
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230619105738.117733-3-hengqi@linux.alibaba.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-.config_intr() handles only the link event interrupt and should
-disable/enable the PTP interrupt also.
+Hi Heng,
 
-It's safe to disable/enable the PTP irq even if the egress ts irq
-is disabled. This interrupt, the PTP one, acts as a global switch for all
-PTP irqs.
+kernel test robot noticed the following build warnings:
 
-Fixes: 514def5dd339 ("phy: nxp-c45-tja11xx: add timestamping support")
-CC: stable@vger.kernel.org # 5.15+
-Signed-off-by: Radu Pirea (NXP OSS) <radu-nicolae.pirea@oss.nxp.com>
----
+[auto build test WARNING on net-next/main]
 
-Where is V1?
-https://patchwork.kernel.org/project/netdevbpf/patch/20230410124856.287753-1-radu-nicolae.pirea@oss.nxp.com/
+url:    https://github.com/intel-lab-lkp/linux/commits/Heng-Qi/virtio-net-a-helper-for-probing-the-pseudo-header-checksum/20230619-190212
+base:   net-next/main
+patch link:    https://lore.kernel.org/r/20230619105738.117733-3-hengqi%40linux.alibaba.com
+patch subject: [PATCH net-next 2/4] virtio-net: reprobe csum related fields for skb passed by XDP
+config: x86_64-randconfig-r014-20230619 (https://download.01.org/0day-ci/archive/20230619/202306192151.YMz3NiKw-lkp@intel.com/config)
+compiler: clang version 15.0.7 (https://github.com/llvm/llvm-project.git 8dfdcc7b7bf66834a761bd8de445840ef68e4d1a)
+reproduce: (https://download.01.org/0day-ci/archive/20230619/202306192151.YMz3NiKw-lkp@intel.com/reproduce)
 
-Where is V2?
-https://patchwork.kernel.org/project/netdevbpf/patch/20230616135323
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202306192151.YMz3NiKw-lkp@intel.com/
 
- drivers/net/phy/nxp-c45-tja11xx.c | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+All warnings (new ones prefixed by >>):
 
-diff --git a/drivers/net/phy/nxp-c45-tja11xx.c b/drivers/net/phy/nxp-c45-tja11xx.c
-index 029875a59ff8..f0d047019f33 100644
---- a/drivers/net/phy/nxp-c45-tja11xx.c
-+++ b/drivers/net/phy/nxp-c45-tja11xx.c
-@@ -63,6 +63,9 @@
- #define VEND1_PORT_ABILITIES		0x8046
- #define PTP_ABILITY			BIT(3)
- 
-+#define VEND1_PORT_FUNC_IRQ_EN		0x807A
-+#define PTP_IRQS			BIT(3)
-+
- #define VEND1_PORT_INFRA_CONTROL	0xAC00
- #define PORT_INFRA_CONTROL_EN		BIT(14)
- 
-@@ -890,12 +893,26 @@ static int nxp_c45_start_op(struct phy_device *phydev)
- 
- static int nxp_c45_config_intr(struct phy_device *phydev)
- {
--	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-+	int ret;
-+
-+	/* 0x807A register is not present on SJA1110 PHYs. */
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
-+				       VEND1_PORT_FUNC_IRQ_EN, PTP_IRQS);
-+		if (ret)
-+			return ret;
-+
- 		return phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
- 					VEND1_PHY_IRQ_EN, PHY_IRQ_LINK_EVENT);
--	else
-+	} else {
-+		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1,
-+					 VEND1_PORT_FUNC_IRQ_EN, PTP_IRQS);
-+		if (ret)
-+			return ret;
-+
- 		return phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1,
- 					  VEND1_PHY_IRQ_EN, PHY_IRQ_LINK_EVENT);
-+	}
- }
- 
- static irqreturn_t nxp_c45_handle_interrupt(struct phy_device *phydev)
+   drivers/net/virtio_net.c:1648:17: error: call to undeclared function 'csum_ipv6_magic'; ISO C99 and later do not support implicit function declarations [-Werror,-Wimplicit-function-declaration]
+                           uh->check = ~csum_ipv6_magic((const struct in6_addr *)&ip6h->saddr,
+                                        ^
+   drivers/net/virtio_net.c:1648:17: note: did you mean 'csum_tcpudp_magic'?
+   include/asm-generic/checksum.h:52:1: note: 'csum_tcpudp_magic' declared here
+   csum_tcpudp_magic(__be32 saddr, __be32 daddr, __u32 len,
+   ^
+   drivers/net/virtio_net.c:1657:17: error: call to undeclared function 'csum_ipv6_magic'; ISO C99 and later do not support implicit function declarations [-Werror,-Wimplicit-function-declaration]
+                           th->check = ~csum_ipv6_magic((const struct in6_addr *)&ip6h->saddr,
+                                        ^
+>> drivers/net/virtio_net.c:1695:19: warning: use of logical '&&' with constant operand [-Wconstant-logical-operand]
+           } else if (flags && VIRTIO_NET_HDR_F_DATA_VALID) {
+                            ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/virtio_net.c:1695:19: note: use '&' for a bitwise operation
+           } else if (flags && VIRTIO_NET_HDR_F_DATA_VALID) {
+                            ^~
+                            &
+   drivers/net/virtio_net.c:1695:19: note: remove constant to silence this warning
+           } else if (flags && VIRTIO_NET_HDR_F_DATA_VALID) {
+                           ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   1 warning and 2 errors generated.
+
+
+vim +1695 drivers/net/virtio_net.c
+
+  1667	
+  1668	static int virtnet_set_csum_after_xdp(struct virtnet_info *vi,
+  1669					      struct sk_buff *skb,
+  1670					      __u8 flags)
+  1671	{
+  1672		int err;
+  1673	
+  1674		/* When XDP program is loaded, for example, the vm-vm scenario
+  1675		 * on the same host, packets marked as VIRTIO_NET_HDR_F_NEEDS_CSUM
+  1676		 * will travel. Although these packets are safe from the point of
+  1677		 * view of the vm, to avoid modification by XDP and successful
+  1678		 * forwarding in the upper layer, we re-probe the necessary checksum
+  1679		 * related information: skb->csum_{start, offset}, pseudo-header csum.
+  1680		 *
+  1681		 * This benefits us:
+  1682		 * 1. XDP can be loaded when there's _F_GUEST_CSUM.
+  1683		 * 2. The device verifies the checksum of packets , especially
+  1684		 *    benefiting for large packets.
+  1685		 * 3. In the same-host vm-vm scenario, packets marked as
+  1686		 *    VIRTIO_NET_HDR_F_NEEDS_CSUM are no longer dropped after being
+  1687		 *    processed by XDP.
+  1688		 */
+  1689		if (flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) {
+  1690			err = virtnet_flow_dissect_udp_tcp(vi, skb);
+  1691			if (err < 0)
+  1692				return -EINVAL;
+  1693	
+  1694			skb->ip_summed = CHECKSUM_PARTIAL;
+> 1695		} else if (flags && VIRTIO_NET_HDR_F_DATA_VALID) {
+  1696			/* We want to benefit from this: XDP guarantees that packets marked
+  1697			 * as VIRTIO_NET_HDR_F_DATA_VALID still have correct csum after they
+  1698			 * are processed.
+  1699			 */
+  1700			skb->ip_summed = CHECKSUM_UNNECESSARY;
+  1701		}
+  1702	
+  1703		return 0;
+  1704	}
+  1705	
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
