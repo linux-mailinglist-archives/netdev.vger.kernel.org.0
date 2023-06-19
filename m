@@ -1,179 +1,233 @@
-Return-Path: <netdev+bounces-11967-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11968-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1808A735766
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 14:54:47 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 154D673578D
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 15:04:37 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 49B3E1C20ACC
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 12:54:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id B93F82810FB
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 13:04:35 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D615B10940;
-	Mon, 19 Jun 2023 12:54:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA43D10954;
+	Mon, 19 Jun 2023 13:04:33 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9DFF8BE5
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 12:54:43 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43DD4AB
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 05:54:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1687179281;
-	h=from:from:reply-to:reply-to:subject:subject:date:date:
-	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=IDAKmsTrcdD3l8pnibAcUiFoVMKj0wINSNr7RXPEDVg=;
-	b=L5OBTbPKoNQ5Ma5vM+7ITV7RP5ToxzyExkPQWfVirwgwGgPFzbfsaEhLAR9NC6jLE+1y7V
-	lP8wyYnxGGzMVUkCyfl6zS8/uSLF2WDhuXpuKIOT1w8PqlZMcjV1kdb87p88JupuKV+rMk
-	4ACRHwyQ3phPDuFAXhwQe9cBuxm0T6k=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-209-mtSaC7EsPzKTk30_wqnSkQ-1; Mon, 19 Jun 2023 08:54:39 -0400
-X-MC-Unique: mtSaC7EsPzKTk30_wqnSkQ-1
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-3f8f8e29771so11598855e9.1
-        for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 05:54:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687179278; x=1689771278;
-        h=mime-version:user-agent:content-transfer-encoding:organization
-         :references:in-reply-to:date:cc:to:reply-to:from:subject:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=IDAKmsTrcdD3l8pnibAcUiFoVMKj0wINSNr7RXPEDVg=;
-        b=DcGNj2H5QuSkKajFh+hnnPhd5O8vjjCtTiJqA6N1HIIFmqCwjhyVKxYMGO+EN43j7d
-         8OWIzpdRTmwSbXh1y48cbXI0hYmpjTl3cKmcFn9jWfbddkhklrf7MVdyNpFs5ddAcC+U
-         WcyUI7KQF8hMuWy2dtv0fZjDcB9omkzfib0PwxHaL47SNCCy391RZzqBA9iYNHqS7Cac
-         7wB+SdrUaU9Lq1w6qLWFgCFhLja9SQF2ITxlE0BUO6nBsh6+cCzk1gYPe6B/5nj0AwIv
-         hYuNUfWhEaig7Jn1pKRrwQ0rxhqGoVG6izzpQ/LQBXX22byxkXmC3E3s/y/Go5hDiUpq
-         fhRg==
-X-Gm-Message-State: AC+VfDyfgg4S1HfVv3ClEdcqZiF3Rhm9ddOPk0oDEZ5xZ4WW1dKkLiwc
-	BBDNFWU+xXveLjwRZveHnZPXd11M0tIVdLbdq2W+FFMMajouJn1t7j9H9KBV0nHNsoqkcG51vQa
-	wFgZKgaV2FZ2NKMDl
-X-Received: by 2002:a05:600c:10d1:b0:3f7:a20a:561d with SMTP id l17-20020a05600c10d100b003f7a20a561dmr8414861wmd.8.1687179278479;
-        Mon, 19 Jun 2023 05:54:38 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7160EzcpU6GUnu3WmyfGfY9JI9z/xnbG2RL8pH0QnSQJ+kT4GV87sTRxcO7rsexfS+38fNlA==
-X-Received: by 2002:a05:600c:10d1:b0:3f7:a20a:561d with SMTP id l17-20020a05600c10d100b003f7a20a561dmr8414839wmd.8.1687179278116;
-        Mon, 19 Jun 2023 05:54:38 -0700 (PDT)
-Received: from [192.168.2.56] ([46.175.183.46])
-        by smtp.gmail.com with ESMTPSA id h25-20020a1ccc19000000b003f42158288dsm10653889wmb.20.2023.06.19.05.54.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jun 2023 05:54:37 -0700 (PDT)
-Message-ID: <3fb062e5b86d70dff7a588a641bdc6d93dab4c2a.camel@redhat.com>
-Subject: Re: [Intel-wired-lan] [PATCH net] ice: ice_vsi_release cleanup
-From: Petr Oros <poros@redhat.com>
-Reply-To: poros@redhat.com
-To: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc: netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, 
- jesse.brandeburg@intel.com, linux-kernel@vger.kernel.org,
- edumazet@google.com,  anthony.l.nguyen@intel.com, kuba@kernel.org,
- pabeni@redhat.com,  davem@davemloft.net, michal.swiatkowski@intel.com
-Date: Mon, 19 Jun 2023 14:54:35 +0200
-In-Reply-To: <ZJBMSWygwtovyNgU@boxer>
-References: <20230619084948.360128-1-poros@redhat.com>
-	 <ZJBMSWygwtovyNgU@boxer>
-Organization: Red Hat
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.48.1 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9D4AAD3C
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 13:04:33 +0000 (UTC)
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE7B91;
+	Mon, 19 Jun 2023 06:04:31 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+	by mailout.nyi.internal (Postfix) with ESMTP id 67F665C024E;
+	Mon, 19 Jun 2023 09:04:31 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Mon, 19 Jun 2023 09:04:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm1; t=1687179871; x=1687266271; bh=lo
+	98U6NNyBvPDxCtGn35zLY8FueG6iIEIBGk0drXwXE=; b=z8vAYqIkQbtDax2PKx
+	L8LhGaTy1GhwxG9wqCIXcXXnQHbMUXWvd1Ky5DGeRTcPvxCcSkU/dX55TLC5u+98
+	n5iX7LtYlKFCVnAno9h33SkBL0bqf7V5MAqULGwNc25EEP3fE/N4v5dsNmannGCF
+	E2X+qDPeLkzfy5WmEPJrQHi3Nu5xz8vDN1VhhG4ab6flmW9ZPRKTuuLlphsczOe1
+	BH6L9prVMoy2oJBGr4gl5LFV4ubcdG7F1W1f1WCOtsOXxWGLifmEq+a17giEkF1R
+	Yo5a9JS99/MMRDNZhlrbm+qzhLk2DRCqkFP3t1dS4knzMX7Vdfh/vYe1KZBVXdFx
+	Y4qw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm2; t=1687179871; x=1687266271; bh=lo98U6NNyBvPD
+	xCtGn35zLY8FueG6iIEIBGk0drXwXE=; b=ORVC3oKwUHMuI6QEg2EiPCIznXzPj
+	Wn4rKkey5xpwg/caTm6VFHnI5vlgmDiNKII0YPSFFontMxuwuCbHvD92bnYFjH/B
+	OOjcpwil6c6LQHvn+aREPLlYkdSqgSfRp0xQgvUreH0kZQuvryQivGzEhQpM6/aU
+	qydt4cSAhKKMqcESudu1LAUGff8jhVbDEM26vw+tsd0McXfMgyIFMO39GzC7rPEJ
+	8xu1AqQTmDCoPY1utIim9oDlDh42UJXrkwyeqrQBy7gvbXZOArQDY3qfw27Kme+i
+	ejZUBxKglsYqyRn739fWW7JqQMZAFaYw+qJCA9IvahTe4yaAHuKaGp9jw==
+X-ME-Sender: <xms:XlKQZHfNK5-eJRX4BUTuej2AWe8oyewiqpJEmPh0NNzfQ1HcH4eLzg>
+    <xme:XlKQZNOB6QNODHEJecWl02dhOgXHGl7jHuYEapnX-r8_qemj3gW9zZMh-9wZTXCBA
+    RjfGbHXLAPRf6pb59E>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgeefvddgheejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:XlKQZAgx9BRBvpOmx-m6dFA6dpopv2GUug69HB-WRFh6e3k2QScoPg>
+    <xmx:XlKQZI98SbiQaili2D4ZePuoVRjq3LjmwfyxR-YKlzh-C4LvZmG3bA>
+    <xmx:XlKQZDtHSo_ryleXBPzUB7Y9EYBs4YAYrv4GwV2gmY1nocg7s4A4tA>
+    <xmx:X1KQZM8mU7c0nMRhQDu-uID-Yr9LvmbKnA-sOMeJYeBrZwzm3TUD7Q>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id C840CB60086; Mon, 19 Jun 2023 09:04:30 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-496-g8c46984af0-fm-20230615.001-g8c46984a
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+Mime-Version: 1.0
+Message-Id: <e3e9f246-5bf7-4868-aedb-0e194f52de5b@app.fastmail.com>
+In-Reply-To: <7c448f02-4031-0a90-97e2-0cc663b0cff9@gmail.com>
+References: <20230619091215.2731541-1-arnd@kernel.org>
+ <20230619091215.2731541-3-arnd@kernel.org>
+ <7c448f02-4031-0a90-97e2-0cc663b0cff9@gmail.com>
+Date: Mon, 19 Jun 2023 15:04:10 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Edward Cree" <ecree.xilinx@gmail.com>, "Arnd Bergmann" <arnd@kernel.org>,
+ "Martin Habets" <habetsm.xilinx@gmail.com>,
+ "David S . Miller" <davem@davemloft.net>,
+ "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>,
+ "Paolo Abeni" <pabeni@redhat.com>
+Cc: Netdev <netdev@vger.kernel.org>, linux-net-drivers@amd.com,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] sfc: selftest: fix struct packing
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-TWFjaWVqIEZpamFsa293c2tpIHDDrcWhZSB2IFBvIDE5LiAwNi4gMjAyMyB2IDE0OjM4ICswMjAw
-Ogo+IE9uIE1vbiwgSnVuIDE5LCAyMDIzIGF0IDEwOjQ5OjQ4QU0gKzAyMDAsIFBldHIgT3JvcyB3
-cm90ZToKPiA+IFNpbmNlIGNvbW1pdCA2NjI0ZTc4MGE1NzdmYyAoImljZTogc3BsaXQgaWNlX3Zz
-aV9zZXR1cCBpbnRvIHNtYWxsZXIKPiA+IGZ1bmN0aW9ucyIpIGljZV92c2lfcmVsZWFzZSBkb2Vz
-IHRoaW5ncyB0d2ljZS4gVGhlcmUgaXMgdW5yZWdpc3Rlcgo+ID4gbmV0ZGV2IHdoaWNoIGlzIHVu
-cmVnaXN0ZXJlZCBpbiBpY2VfZGVpbml0X2V0aCBhbHNvLgo+ID4gCj4gPiBJdCBhbHNvIHVucmVn
-aXN0ZXJzIHRoZSBkZXZsaW5rX3BvcnQgdHdpY2Ugd2hpY2ggaXMgYWxzbwo+ID4gdW5yZWdpc3Rl
-cmVkCj4gPiBpbiBpY2VfZGVpbml0X2V0aCgpLiBUaGlzIGRvdWJsZSBkZXJlZ2lzdHJhdGlvbiBp
-cyBoaWRkZW4gYmVjYXVzZQo+ID4gZGV2bF9wb3J0X3VucmVnaXN0ZXIgaWdub3JlcyB0aGUgcmV0
-dXJuIHZhbHVlIG9mIHhhX2VyYXNlLgo+ID4gCj4gPiBbwqDCoCA2OC42NDIxNjddIENhbGwgVHJh
-Y2U6Cj4gPiBbwqDCoCA2OC42NTAzODVdwqAgaWNlX2RldmxpbmtfZGVzdHJveV9wZl9wb3J0KzB4
-ZS8weDIwIFtpY2VdCj4gPiBbwqDCoCA2OC42NTU2NTZdwqAgaWNlX3ZzaV9yZWxlYXNlKzB4NDQ1
-LzB4NjkwIFtpY2VdCj4gPiBbwqDCoCA2OC42NjAxNDddwqAgaWNlX2RlaW5pdCsweDk5LzB4Mjgw
-IFtpY2VdCj4gPiBbwqDCoCA2OC42NjQxMTddwqAgaWNlX3JlbW92ZSsweDFiNi8weDVjMCBbaWNl
-XQo+ID4gCj4gPiBbwqAgMTcxLjEwMzg0MV0gQ2FsbCBUcmFjZToKPiA+IFvCoCAxNzEuMTA5NjA3
-XcKgIGljZV9kZXZsaW5rX2Rlc3Ryb3lfcGZfcG9ydCsweGYvMHgyMCBbaWNlXQo+ID4gW8KgIDE3
-MS4xMTQ4NDFdwqAgaWNlX3JlbW92ZSsweDE1OC8weDI3MCBbaWNlXQo+ID4gW8KgIDE3MS4xMTg4
-NTRdwqAgcGNpX2RldmljZV9yZW1vdmUrMHgzYi8weGMwCj4gPiBbwqAgMTcxLjEyMjc3OV3CoCBk
-ZXZpY2VfcmVsZWFzZV9kcml2ZXJfaW50ZXJuYWwrMHhjNy8weDE3MAo+ID4gW8KgIDE3MS4xMjc5
-MTJdwqAgZHJpdmVyX2RldGFjaCsweDU0LzB4OGMKPiA+IFvCoCAxNzEuMTMxNDkxXcKgIGJ1c19y
-ZW1vdmVfZHJpdmVyKzB4NzcvMHhkMQo+ID4gW8KgIDE3MS4xMzU0MDZdwqAgcGNpX3VucmVnaXN0
-ZXJfZHJpdmVyKzB4MmQvMHhiMAo+ID4gW8KgIDE3MS4xMzk2NzBdwqAgaWNlX21vZHVsZV9leGl0
-KzB4Yy8weDU1ZiBbaWNlXQo+IAo+IEhpIFBldHIsCj4gY2FuIHlvdSB0ZWxsIHVzIHdoZW4gaW4g
-cGFydGljdWxhciB0aGlzIGNhbGwgdHJhY2Ugd2FzIG9ic2VydmVkPwoKSSBmb3VuZCBvdXQgdGhh
-dCB0aGUgZGV2bGluayBwb3J0IGlzIGRlcmVnaXN0ZXJlZCB0d2ljZS4gVGhpcyBjYWxsdHJhY2UK
-d2FzIGdlbmVyYXRlZCBieSBkdW1wX3N0YWNrKCkgcGxhY2VkIGluIGRldmxpbmtfcG9ydF91bnJl
-Z2lzdGVyIC0+IGl0CmlzIHRlc3RpbmcgdHJhY2UsIG5vdCBmcm9tIHByb2R1Y3Rpb24uCgpSZWdh
-cmRzLApQZXRyCgoKPiAKPiBDQzogTWljaGFsIFN3aWF0a293c2tpIDxtaWNoYWwuc3dpYXRrb3dz
-a2lAaW50ZWwuY29tPgo+IAo+ID4gCj4gPiBGaXhlczogNjYyNGU3ODBhNTc3ICgiaWNlOiBzcGxp
-dCBpY2VfdnNpX3NldHVwIGludG8gc21hbGxlcgo+ID4gZnVuY3Rpb25zIikKPiA+IFNpZ25lZC1v
-ZmYtYnk6IFBldHIgT3JvcyA8cG9yb3NAcmVkaGF0LmNvbT4KPiA+IC0tLQo+ID4gwqBkcml2ZXJz
-L25ldC9ldGhlcm5ldC9pbnRlbC9pY2UvaWNlX2xpYi5jIHwgMjcgLS0tLS0tLS0tLS0tLS0tLS0t
-LS0KPiA+IC0tLS0KPiA+IMKgMSBmaWxlIGNoYW5nZWQsIDI3IGRlbGV0aW9ucygtKQo+ID4gCj4g
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaWNlL2ljZV9saWIuYwo+
-ID4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9pY2UvaWNlX2xpYi5jCj4gPiBpbmRleCAx
-MWFlMGU0MWY1MThhMS4uMjg0YTFmMGJmZGI1NDUgMTAwNjQ0Cj4gPiAtLS0gYS9kcml2ZXJzL25l
-dC9ldGhlcm5ldC9pbnRlbC9pY2UvaWNlX2xpYi5jCj4gPiArKysgYi9kcml2ZXJzL25ldC9ldGhl
-cm5ldC9pbnRlbC9pY2UvaWNlX2xpYi5jCj4gPiBAQCAtMzI3MiwzOSArMzI3MiwxMiBAQCBpbnQg
-aWNlX3ZzaV9yZWxlYXNlKHN0cnVjdCBpY2VfdnNpICp2c2kpCj4gPiDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoHJldHVybiAtRU5PREVWOwo+ID4gwqDCoMKgwqDCoMKgwqDCoHBmID0g
-dnNpLT5iYWNrOwo+ID4gwqAKPiA+IC3CoMKgwqDCoMKgwqDCoC8qIGRvIG5vdCB1bnJlZ2lzdGVy
-IHdoaWxlIGRyaXZlciBpcyBpbiB0aGUgcmVzZXQgcmVjb3ZlcnkKPiA+IHBlbmRpbmcKPiA+IC3C
-oMKgwqDCoMKgwqDCoCAqIHN0YXRlLiBTaW5jZSByZXNldC9yZWJ1aWxkIGhhcHBlbnMgdGhyb3Vn
-aCBQRiBzZXJ2aWNlCj4gPiB0YXNrIHdvcmtxdWV1ZSwKPiA+IC3CoMKgwqDCoMKgwqDCoCAqIGl0
-J3Mgbm90IGEgZ29vZCBpZGVhIHRvIHVucmVnaXN0ZXIgbmV0ZGV2IHRoYXQgaXMKPiA+IGFzc29j
-aWF0ZWQgdG8gdGhlCj4gPiAtwqDCoMKgwqDCoMKgwqAgKiBQRiB0aGF0IGlzIHJ1bm5pbmcgdGhl
-IHdvcmsgcXVldWUgaXRlbXMgY3VycmVudGx5LiBUaGlzCj4gPiBpcyBkb25lIHRvCj4gPiAtwqDC
-oMKgwqDCoMKgwqAgKiBhdm9pZCBjaGVja19mbHVzaF9kZXBlbmRlbmN5KCkgd2FybmluZyBvbiB0
-aGlzIHdxCj4gPiAtwqDCoMKgwqDCoMKgwqAgKi8KPiA+IC3CoMKgwqDCoMKgwqDCoGlmICh2c2kt
-Pm5ldGRldiAmJiAhaWNlX2lzX3Jlc2V0X2luX3Byb2dyZXNzKHBmLT5zdGF0ZSkgJiYKPiA+IC3C
-oMKgwqDCoMKgwqDCoMKgwqDCoCAodGVzdF9iaXQoSUNFX1ZTSV9ORVRERVZfUkVHSVNURVJFRCwg
-dnNpLT5zdGF0ZSkpKSB7Cj4gPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgdW5yZWdp
-c3Rlcl9uZXRkZXYodnNpLT5uZXRkZXYpOwo+ID4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoGNsZWFyX2JpdChJQ0VfVlNJX05FVERFVl9SRUdJU1RFUkVELCB2c2ktPnN0YXRlKTsKPiA+
-IC3CoMKgwqDCoMKgwqDCoH0KPiA+IC0KPiA+IC3CoMKgwqDCoMKgwqDCoGlmICh2c2ktPnR5cGUg
-PT0gSUNFX1ZTSV9QRikKPiA+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBpY2VfZGV2
-bGlua19kZXN0cm95X3BmX3BvcnQocGYpOwo+ID4gLQo+ID4gwqDCoMKgwqDCoMKgwqDCoGlmICh0
-ZXN0X2JpdChJQ0VfRkxBR19SU1NfRU5BLCBwZi0+ZmxhZ3MpKQo+ID4gwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqBpY2VfcnNzX2NsZWFuKHZzaSk7Cj4gPiDCoAo+ID4gwqDCoMKgwqDC
-oMKgwqDCoGljZV92c2lfY2xvc2UodnNpKTsKPiA+IMKgwqDCoMKgwqDCoMKgwqBpY2VfdnNpX2Rl
-Y2ZnKHZzaSk7Cj4gPiDCoAo+ID4gLcKgwqDCoMKgwqDCoMKgaWYgKHZzaS0+bmV0ZGV2KSB7Cj4g
-PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaWYgKHRlc3RfYml0KElDRV9WU0lfTkVU
-REVWX1JFR0lTVEVSRUQsIHZzaS0KPiA+ID5zdGF0ZSkpIHsKPiA+IC3CoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgdW5yZWdpc3Rlcl9uZXRkZXYodnNpLT5uZXRk
-ZXYpOwo+ID4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBj
-bGVhcl9iaXQoSUNFX1ZTSV9ORVRERVZfUkVHSVNURVJFRCwgdnNpLQo+ID4gPnN0YXRlKTsKPiA+
-IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB9Cj4gPiAtwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgaWYgKHRlc3RfYml0KElDRV9WU0lfTkVUREVWX0FMTE9DRCwgdnNpLT5zdGF0
-ZSkpIHsKPiA+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-ZnJlZV9uZXRkZXYodnNpLT5uZXRkZXYpOwo+ID4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqB2c2ktPm5ldGRldiA9IE5VTEw7Cj4gPiAtwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGNsZWFyX2JpdChJQ0VfVlNJX05FVERF
-Vl9BTExPQ0QsIHZzaS0KPiA+ID5zdGF0ZSk7Cj4gPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgfQo+ID4gLcKgwqDCoMKgwqDCoMKgfQo+ID4gLQo+ID4gwqDCoMKgwqDCoMKgwqDCoC8q
-IHJldGFpbiBTVyBWU0kgZGF0YSBzdHJ1Y3R1cmUgc2luY2UgaXQgaXMgbmVlZGVkIHRvCj4gPiB1
-bnJlZ2lzdGVyIGFuZAo+ID4gwqDCoMKgwqDCoMKgwqDCoCAqIGZyZWUgVlNJIG5ldGRldiB3aGVu
-IFBGIGlzIG5vdCBpbiByZXNldCByZWNvdmVyeSBwZW5kaW5nCj4gPiBzdGF0ZSxcCj4gPiDCoMKg
-wqDCoMKgwqDCoMKgICogZm9yIGV4OiBkdXJpbmcgcm1tb2QuCj4gPiAtLSAKPiA+IDIuNDEuMAo+
-ID4gCj4gPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+
-ID4gSW50ZWwtd2lyZWQtbGFuIG1haWxpbmcgbGlzdAo+ID4gSW50ZWwtd2lyZWQtbGFuQG9zdW9z
-bC5vcmcKPiA+IGh0dHBzOi8vbGlzdHMub3N1b3NsLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVs
-LXdpcmVkLWxhbgo+IAoK
 
+
+On Mon, Jun 19, 2023, at 12:25, Edward Cree wrote:
+> On 19/06/2023 10:12, Arnd Bergmann wrote:
+>> From: Arnd Bergmann <arnd@arndb.de>
+>> 
+>> Three of the sfc drivers define a packed loopback_payload structure with an
+>> ethernet header followed by an IP header. However, the kernel definition
+>> of iphdr specifies that this is 4-byte aligned, causing a W=1 warning:
+>> 
+>> net/ethernet/sfc/siena/selftest.c:46:15: error: field ip within 'struct efx_loopback_payload' is less aligned than 'struct iphdr' and is usually due to 'struct efx_loopback_payload' being packed, which can lead to unaligned accesses [-Werror,-Wunaligned-access]
+>>         struct iphdr ip;
+>> 
+>> As the iphdr packing is not easily changed without breaking other code,
+>> change the three structures to use a local definition instead.
+>> 
+>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>
+> Duplicating the definition isn't the prettiest thing in the world; it'd
+>  do for a quick fix if needed but I assume W=1 warnings aren't blocking
+>  anyone, so maybe defer this one for now and I'll follow up soon with a
+>  rewrite that fixes this more cleanly?  My idea is to drop the __packed
+>  from the containing struct, make efx_begin_loopback() copy the layers
+>  separately, and efx_loopback_rx_packet() similarly do something less
+>  direct than casting the packet data to the struct.
+>
+> But I don't insist on it; if you want this fix in immediately then I'm
+>  okay with that too.
+>
+>> ---
+>>  drivers/net/ethernet/sfc/falcon/selftest.c | 21 ++++++++++++++++++++-
+>>  drivers/net/ethernet/sfc/selftest.c        | 21 ++++++++++++++++++++-
+>>  drivers/net/ethernet/sfc/siena/selftest.c  | 21 ++++++++++++++++++++-
+>>  3 files changed, 60 insertions(+), 3 deletions(-)
+>> 
+>> diff --git a/drivers/net/ethernet/sfc/falcon/selftest.c b/drivers/net/ethernet/sfc/falcon/selftest.c
+>> index 6a454ac6f8763..fb7fcd27a33a5 100644
+>> --- a/drivers/net/ethernet/sfc/falcon/selftest.c
+>> +++ b/drivers/net/ethernet/sfc/falcon/selftest.c
+>> @@ -40,7 +40,26 @@
+>>   */
+>>  struct ef4_loopback_payload {
+>>  	struct ethhdr header;
+>> -	struct iphdr ip;
+>> +	struct {
+>> +#if defined(__LITTLE_ENDIAN_BITFIELD)
+>> +		__u8	ihl:4,
+>> +			version:4;
+>> +#elif defined (__BIG_ENDIAN_BITFIELD)
+>> +		__u8	version:4,
+>> +			ihl:4;
+>> +#else
+>> +#error	"Please fix <asm/byteorder.h>"
+>> +#endif
+>> +		__u8	tos;
+>> +		__be16	tot_len;
+>> +		__be16	id;
+>> +		__be16	frag_off;
+>> +		__u8	ttl;
+>> +		__u8	protocol;
+>> +		__sum16	check;
+>> +		__be32	saddr;
+>> +		__be32	daddr;
+>> +	} __packed ip; /* unaligned struct iphdr */
+>>  	struct udphdr udp;
+>>  	__be16 iteration;
+>>  	char msg[64];
+>> diff --git a/drivers/net/ethernet/sfc/selftest.c b/drivers/net/ethernet/sfc/selftest.c
+>> index 3c5227afd4977..440a57953779c 100644
+>> --- a/drivers/net/ethernet/sfc/selftest.c
+>> +++ b/drivers/net/ethernet/sfc/selftest.c
+>> @@ -43,7 +43,26 @@
+>>   */
+>>  struct efx_loopback_payload {
+>>  	struct ethhdr header;
+>> -	struct iphdr ip;
+>> +	struct {
+>> +#if defined(__LITTLE_ENDIAN_BITFIELD)
+>> +		__u8	ihl:4,
+>> +			version:4;
+>> +#elif defined (__BIG_ENDIAN_BITFIELD)
+>> +		__u8	version:4,
+>> +			ihl:4;
+>> +#else
+>> +#error	"Please fix <asm/byteorder.h>"
+>> +#endif
+>> +		__u8	tos;
+>> +		__be16	tot_len;
+>> +		__be16	id;
+>> +		__be16	frag_off;
+>> +		__u8	ttl;
+>> +		__u8	protocol;
+>> +		__sum16	check;
+>> +		__be32	saddr;
+>> +		__be32	daddr;
+>> +	} __packed ip; /* unaligned struct iphdr */
+>>  	struct udphdr udp;
+>>  	__be16 iteration;
+>>  	char msg[64];
+>> diff --git a/drivers/net/ethernet/sfc/siena/selftest.c b/drivers/net/ethernet/sfc/siena/selftest.c
+>> index 07715a3d6beab..b8a8b0495f661 100644
+>> --- a/drivers/net/ethernet/sfc/siena/selftest.c
+>> +++ b/drivers/net/ethernet/sfc/siena/selftest.c
+>> @@ -43,7 +43,26 @@
+>>   */
+>>  struct efx_loopback_payload {
+>>  	struct ethhdr header;
+>> -	struct iphdr ip;
+>> +	struct {
+>> +#if defined(__LITTLE_ENDIAN_BITFIELD)
+>> +		__u8	ihl:4,
+>> +			version:4;
+>> +#elif defined (__BIG_ENDIAN_BITFIELD)
+>> +		__u8	version:4,
+>> +			ihl:4;
+>> +#else
+>> +#error	"Please fix <asm/byteorder.h>"
+>> +#endif
+>> +		__u8	tos;
+>> +		__be16	tot_len;
+>> +		__be16	id;
+>> +		__be16	frag_off;
+>> +		__u8	ttl;
+>> +		__u8	protocol;
+>> +		__sum16	check;
+>> +		__be32	saddr;
+>> +		__be32	daddr;
+>> +	} __packed ip; /* unaligned struct iphdr */
+>>  	struct udphdr udp;
+>>  	__be16 iteration;
+>>  	char msg[64];
+>>
 
