@@ -1,51 +1,49 @@
-Return-Path: <netdev+bounces-11865-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11866-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id A05BB734F44
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 11:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 31B26734F50
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 11:13:04 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id D0FA91C20757
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 09:12:44 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 560951C2095A
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 09:13:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DAEF1BE5E;
-	Mon, 19 Jun 2023 09:12:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DB33BBE6C;
+	Mon, 19 Jun 2023 09:12:44 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C4FFBE5A
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 09:12:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36D1EC433C8;
-	Mon, 19 Jun 2023 09:12:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D4045250
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 09:12:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E9ABC433C0;
+	Mon, 19 Jun 2023 09:12:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1687165952;
-	bh=C9Nk9/QP6OPS4jxNq9hz3jeu3Lte1JDyc4vSyqZJLlw=;
+	s=k20201202; t=1687165963;
+	bh=qxfUKz7rm5GuWEeyfp0weQ2JFwovXXhOCgww3LgVweQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=EI4Wja3flSrNux6FdpjGVJbrxdVm96gT6eM4VzNrbswJM0uodSDk5Ny98EBcrTPAX
-	 M+nJCf9Y4F2zYmbmZMFjWR5Ux53L2VGT8pN+U65LD9Qbec8/wLQcrXn5BY2CtpVZ1/
-	 7LRnas0WmzZJjvBIaOtxVE1XfMvucTnC1gxS56itWF8nnJr3YChTrmgs51sA45plAV
-	 EWvlI3oOmInYXr1EEkHJWQCtgQmUQqb54Hs1UMr1olj96m/e613rbUH+fL+wnoO5Yp
-	 81NdcYmSMl36difwuNyajHwFZEq0UZirKi1sjoCOJyePipnlFGL348WmynOogkR6nw
-	 zZFlxlU4VoYbw==
+	b=VRznDpGmTl7br3LipdSczF4mjvDiVoU4H2w2jIJzeS2NRj6AyAwmHlptSVRvcDNws
+	 MS/kogBoz3+GM69Yg/gzsaYVzgbvU3wj1NkYzX41lODZQyu4F9SGzuB+Al1FodFnMU
+	 /BMOQGUCPcpsjORuvNY6D3TpKkbsaBCWzNHN790KzY37Z4+qrDwsS4ixfn1G74C2qq
+	 uYVDCLqZQwTRZ2fWWOlQmZ3gf6rzj/tycq0H34Qom908ygXhnbKf/gePAR+LKkVD7p
+	 vSrcHmoTHx21hnmhZS81Ee1PBuGjDLa1bx/rJkkpJxsV8nIYTUmPxy7d+23reaTtUu
+	 S5g7ojolXdVnw==
 From: Arnd Bergmann <arnd@kernel.org>
 To: Edward Cree <ecree.xilinx@gmail.com>,
 	Martin Habets <habetsm.xilinx@gmail.com>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
 	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
-	Simon Horman <simon.horman@corigine.com>
+	Paolo Abeni <pabeni@redhat.com>
 Cc: Arnd Bergmann <arnd@arndb.de>,
 	netdev@vger.kernel.org,
 	linux-net-drivers@amd.com,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] [v2] sfc: fix uninitialized variable use
-Date: Mon, 19 Jun 2023 11:12:10 +0200
-Message-Id: <20230619091215.2731541-2-arnd@kernel.org>
+Subject: [PATCH 3/3] sfc: selftest: fix struct packing
+Date: Mon, 19 Jun 2023 11:12:11 +0200
+Message-Id: <20230619091215.2731541-3-arnd@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230619091215.2731541-1-arnd@kernel.org>
 References: <20230619091215.2731541-1-arnd@kernel.org>
@@ -59,46 +57,119 @@ Content-Transfer-Encoding: 8bit
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The new efx_bind_neigh() function contains a broken code path when IPV6 is
-disabled:
+Three of the sfc drivers define a packed loopback_payload structure with an
+ethernet header followed by an IP header. However, the kernel definition
+of iphdr specifies that this is 4-byte aligned, causing a W=1 warning:
 
-drivers/net/ethernet/sfc/tc_encap_actions.c:144:7: error: variable 'n' is used uninitialized whenever 'if' condition is true [-Werror,-Wsometimes-uninitialized]
-                if (encap->type & EFX_ENCAP_FLAG_IPV6) {
-                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/sfc/tc_encap_actions.c:184:8: note: uninitialized use occurs here
-                if (!n) {
-                     ^
-drivers/net/ethernet/sfc/tc_encap_actions.c:144:3: note: remove the 'if' if its condition is always false
-                if (encap->type & EFX_ENCAP_FLAG_IPV6) {
-                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/sfc/tc_encap_actions.c:141:22: note: initialize the variable 'n' to silence this warning
-                struct neighbour *n;
-                                   ^
-                                    = NULL
+net/ethernet/sfc/siena/selftest.c:46:15: error: field ip within 'struct efx_loopback_payload' is less aligned than 'struct iphdr' and is usually due to 'struct efx_loopback_payload' being packed, which can lead to unaligned accesses [-Werror,-Wunaligned-access]
+        struct iphdr ip;
 
-Change it to use the existing error handling path here.
+As the iphdr packing is not easily changed without breaking other code,
+change the three structures to use a local definition instead.
 
-Fixes: 7e5e7d800011a ("sfc: neighbour lookup for TC encap action offload")
-Suggested-by: Edward Cree <ecree.xilinx@gmail.com>
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
-v2: use 'goto' instead of incorrectly entering another error path
----
- drivers/net/ethernet/sfc/tc_encap_actions.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/sfc/falcon/selftest.c | 21 ++++++++++++++++++++-
+ drivers/net/ethernet/sfc/selftest.c        | 21 ++++++++++++++++++++-
+ drivers/net/ethernet/sfc/siena/selftest.c  | 21 ++++++++++++++++++++-
+ 3 files changed, 60 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/tc_encap_actions.c b/drivers/net/ethernet/sfc/tc_encap_actions.c
-index aac259528e73e..7e8bcdb222ad1 100644
---- a/drivers/net/ethernet/sfc/tc_encap_actions.c
-+++ b/drivers/net/ethernet/sfc/tc_encap_actions.c
-@@ -164,6 +164,7 @@ static int efx_bind_neigh(struct efx_nic *efx,
- 			 */
- 			rc = -EOPNOTSUPP;
- 			NL_SET_ERR_MSG_MOD(extack, "No IPv6 support (neigh bind)");
-+			goto out_free;
- #endif
- 		} else {
- 			rt = ip_route_output_key(net, &flow4);
+diff --git a/drivers/net/ethernet/sfc/falcon/selftest.c b/drivers/net/ethernet/sfc/falcon/selftest.c
+index 6a454ac6f8763..fb7fcd27a33a5 100644
+--- a/drivers/net/ethernet/sfc/falcon/selftest.c
++++ b/drivers/net/ethernet/sfc/falcon/selftest.c
+@@ -40,7 +40,26 @@
+  */
+ struct ef4_loopback_payload {
+ 	struct ethhdr header;
+-	struct iphdr ip;
++	struct {
++#if defined(__LITTLE_ENDIAN_BITFIELD)
++		__u8	ihl:4,
++			version:4;
++#elif defined (__BIG_ENDIAN_BITFIELD)
++		__u8	version:4,
++			ihl:4;
++#else
++#error	"Please fix <asm/byteorder.h>"
++#endif
++		__u8	tos;
++		__be16	tot_len;
++		__be16	id;
++		__be16	frag_off;
++		__u8	ttl;
++		__u8	protocol;
++		__sum16	check;
++		__be32	saddr;
++		__be32	daddr;
++	} __packed ip; /* unaligned struct iphdr */
+ 	struct udphdr udp;
+ 	__be16 iteration;
+ 	char msg[64];
+diff --git a/drivers/net/ethernet/sfc/selftest.c b/drivers/net/ethernet/sfc/selftest.c
+index 3c5227afd4977..440a57953779c 100644
+--- a/drivers/net/ethernet/sfc/selftest.c
++++ b/drivers/net/ethernet/sfc/selftest.c
+@@ -43,7 +43,26 @@
+  */
+ struct efx_loopback_payload {
+ 	struct ethhdr header;
+-	struct iphdr ip;
++	struct {
++#if defined(__LITTLE_ENDIAN_BITFIELD)
++		__u8	ihl:4,
++			version:4;
++#elif defined (__BIG_ENDIAN_BITFIELD)
++		__u8	version:4,
++			ihl:4;
++#else
++#error	"Please fix <asm/byteorder.h>"
++#endif
++		__u8	tos;
++		__be16	tot_len;
++		__be16	id;
++		__be16	frag_off;
++		__u8	ttl;
++		__u8	protocol;
++		__sum16	check;
++		__be32	saddr;
++		__be32	daddr;
++	} __packed ip; /* unaligned struct iphdr */
+ 	struct udphdr udp;
+ 	__be16 iteration;
+ 	char msg[64];
+diff --git a/drivers/net/ethernet/sfc/siena/selftest.c b/drivers/net/ethernet/sfc/siena/selftest.c
+index 07715a3d6beab..b8a8b0495f661 100644
+--- a/drivers/net/ethernet/sfc/siena/selftest.c
++++ b/drivers/net/ethernet/sfc/siena/selftest.c
+@@ -43,7 +43,26 @@
+  */
+ struct efx_loopback_payload {
+ 	struct ethhdr header;
+-	struct iphdr ip;
++	struct {
++#if defined(__LITTLE_ENDIAN_BITFIELD)
++		__u8	ihl:4,
++			version:4;
++#elif defined (__BIG_ENDIAN_BITFIELD)
++		__u8	version:4,
++			ihl:4;
++#else
++#error	"Please fix <asm/byteorder.h>"
++#endif
++		__u8	tos;
++		__be16	tot_len;
++		__be16	id;
++		__be16	frag_off;
++		__u8	ttl;
++		__u8	protocol;
++		__sum16	check;
++		__be32	saddr;
++		__be32	daddr;
++	} __packed ip; /* unaligned struct iphdr */
+ 	struct udphdr udp;
+ 	__be16 iteration;
+ 	char msg[64];
 -- 
 2.39.2
 
