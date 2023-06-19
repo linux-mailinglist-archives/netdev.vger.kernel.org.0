@@ -1,180 +1,136 @@
-Return-Path: <netdev+bounces-12011-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12012-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 16CB8735ACD
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 17:07:45 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id 67F8B735ADB
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 17:11:28 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C352C281007
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 15:07:43 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 98D241C20755
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 15:11:27 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D01B2125D2;
-	Mon, 19 Jun 2023 15:07:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5B6AA10955;
+	Mon, 19 Jun 2023 15:11:25 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD59B8BE5
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 15:07:41 +0000 (UTC)
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 705E910DC
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 08:07:26 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-3f904dcc1e2so24780875e9.3
-        for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 08:07:26 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C9B612B64
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 15:11:25 +0000 (UTC)
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C99DE;
+	Mon, 19 Jun 2023 08:11:05 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id ffacd0b85a97d-31129591288so1942990f8f.1;
+        Mon, 19 Jun 2023 08:11:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20221208.gappssmtp.com; s=20221208; t=1687187243; x=1689779243;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=bF1I6NOSdp0boAf3cXOANw0nNn9CysmZuzWnMKWJE0I=;
-        b=SrPWQcAEv7ZEoYcC8y8MMQNNWLHc1GpyA6auFe7qqTmoSTdAG4zGOFlWJMGDKWtS5x
-         xWIbPEYVAOeIYpHIyQgMD7aS+RTuzuorwpbw3bHVG1HuI4QbMzrEII71nS/fm1lD2Z+g
-         bxLOHKnGz+27eJo0cqJ+Fd3oJ8PTB1syga2KiQeUNG6x9NxpEYYIyPtdW76Gw/dQQn4y
-         QyqD/x7KbePA1kfEMKvXitvWgcGsKC+TlB3t+1alItQJ7/liWQERVcVdeVSktrnN2v1H
-         Xq97jb7GQjKCqvLSkclRKhfuH4EwWVrgsRPZ7SObpFy02wRLUxgK8sSj7F5N+4NrSWZ5
-         7aYA==
+        d=gmail.com; s=20221208; t=1687187463; x=1689779463;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=b9POIqCEBq0vaZjmAI/TAoIioiW6L0FUvl3hWhodvNk=;
+        b=W7azIsHFSwHwjq6qGftuOgSCwZBt45jUiFAC7cxCmQdG/WlWEIaWpV5JOvzulnmfXI
+         /0lvcscMBRPV1NeL37xyifEvB1iw6G17iKfPkrz5jcWIyRVEbU/bgdb1tcwYIuGbWBYi
+         HJQJWY6Zv/03Z/W/We+E4QDZS71zpQuQONBUkuwaaYAiKm3bMh1L5rq2bPP4sqSkfXcE
+         3V+mAjaPR6dxsJ3UEvE8pi3CmZfKq4NXuByoOf51N3I478Tlc2kaUTLDitW+G8Gz8cXD
+         WbMxCoMrzUE4qyc2U8nrKSMQiDad8krYpwvd6u+alAXdbsWVyYOHZ4ukrlT96bFCcvrW
+         CAVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687187243; x=1689779243;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bF1I6NOSdp0boAf3cXOANw0nNn9CysmZuzWnMKWJE0I=;
-        b=JU2rq4MMG+FTwc5pqCLJifNHfxGWTjBMs3IqytIkn4abpqBqNtkXlI62Io0oBllIPq
-         ddWisOqeYBGo3s39p1NXdBKC5IJdFplBz8ZLK0CYB/c9wtjx2cg3Benixc3cYDGxWMQI
-         2naLne/Q7BjwRo2AcIcWpyKnLFi7ppRZGcq+4/8wWHapz4Ve2rMJVVxNlz/oQnUlkwGO
-         LvxqaKCcqOYCFcsnmsNxvFDGdU6r5YDdQTdJvj96KiVVUKEXlpMM72UNHKApAk9iwVJU
-         ZDuZasEsvQt6vtBn/JrQCVh8Mhsg08EMSQ6pPDYKkUK76wYgImR54VjdQPRo1VsN5eGt
-         CBUg==
-X-Gm-Message-State: AC+VfDyku1Rey4FUxResKg9Tb49iimEaTGYWXysnbJc8/FBIxWl3cx/Q
-	CDJt4bMNVxlETHDo7dmIHZm8SQ==
-X-Google-Smtp-Source: ACHHUZ4QpXrVdOPChzthrRJNQWsZ8TKLv4ekV8Mc6yMvkXImHSiDzCzJNSGfU3pYEHGWIyzBS27jMQ==
-X-Received: by 2002:a05:600c:ad9:b0:3f6:2ee:6993 with SMTP id c25-20020a05600c0ad900b003f602ee6993mr8284670wmr.4.1687187242946;
-        Mon, 19 Jun 2023 08:07:22 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id h22-20020a1ccc16000000b003f7ed463954sm11023934wmb.25.2023.06.19.08.07.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jun 2023 08:07:22 -0700 (PDT)
-Date: Mon, 19 Jun 2023 17:07:21 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: Petr Oros <poros@redhat.com>
-Cc: netdev@vger.kernel.org, jesse.brandeburg@intel.com,
-	anthony.l.nguyen@intel.com, davem@davemloft.net,
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-	michal.swiatkowski@linux.intel.com, jacob.e.keller@intel.com,
-	intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org,
-	pmenzel@molgen.mpg.de
-Subject: Re: [PATCH net v2] ice: Unregister netdev and devlink_port only once
-Message-ID: <ZJBvKVf7Yfh6WpsO@nanopsycho>
-References: <20230619105813.369912-1-poros@redhat.com>
+        d=1e100.net; s=20221208; t=1687187463; x=1689779463;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=b9POIqCEBq0vaZjmAI/TAoIioiW6L0FUvl3hWhodvNk=;
+        b=JfySPECId71i7vTDUPU+ZcfTd/UlqZKYWyniwiOrifiIz1/lUlD0hXJx0mOupSFTUk
+         m2QQEw+k0o307kibTHtVuqVzIhoqcrQYXbsc/VVDMhFTtunjMo6BMPZwhrL1Vt0NZXRP
+         +efZ2sCuGssRe5EiftjUT+t8JSzrEQJFXEipyBV9o8lafrY+eeA/GL+DxMERarhEljk3
+         ZQ/7iLWR99YdJvbBS29I3gIC5UXqlpawdQi3iX6tCz04bv+3IOONQyrrmZVBPXdPURvx
+         rCjqcnZSzRwjAeNstGrTH136CdfuTpMubMj/ZnnyQMP0TtD1w0DRbmLGuZW30CTFQnyo
+         s+jA==
+X-Gm-Message-State: AC+VfDwNR4r9UnjrP/AqRLF7bhjDd1XHuLr7CpFHCH+fwexDYE+7rWIj
+	mApYQ/Wb2jJO5ggiKW3Hdp5YWdZUA3Q=
+X-Google-Smtp-Source: ACHHUZ7C1lu3Bj8TxLBbK3PSpWrHnOnO98bfFdWMSxyL0al9U76SzMZRT/L7iSiRwpVjGCw+VxjbgQ==
+X-Received: by 2002:adf:f5c8:0:b0:30f:c42d:da4f with SMTP id k8-20020adff5c8000000b0030fc42dda4fmr5716366wrp.46.1687187463280;
+        Mon, 19 Jun 2023 08:11:03 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id i1-20020adff301000000b002f28de9f73bsm31803071wro.55.2023.06.19.08.11.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Jun 2023 08:11:01 -0700 (PDT)
+Message-ID: <67c4c526-4a1d-ab3a-c0d9-fec9a6711250@gmail.com>
+Date: Mon, 19 Jun 2023 17:10:59 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230619105813.369912-1-poros@redhat.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: [PATCH net v6 6/6] MAINTAINERS: add me as maintainer of MEDIATEK
+ SWITCH DRIVER
+Content-Language: en-US, ca-ES, es-ES
+To: arinc9.unal@gmail.com, =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?=
+ <arinc.unal@arinc9.com>, Daniel Golle <daniel@makrotopia.org>,
+ Landen Chao <Landen.Chao@mediatek.com>, DENG Qingfang <dqfext@gmail.com>,
+ Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
+ Florian Fainelli <f.fainelli@gmail.com>, Vladimir Oltean
+ <olteanv@gmail.com>, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Russell King <linux@armlinux.org.uk>
+Cc: Frank Wunderlich <frank-w@public-files.de>,
+ Bartel Eerdekens <bartel.eerdekens@constell8.be>, mithat.guner@xeront.com,
+ erkin.bozoglu@xeront.com, linux-kernel@vger.kernel.org,
+ netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org
+References: <20230617062649.28444-1-arinc.unal@arinc9.com>
+ <20230617062649.28444-7-arinc.unal@arinc9.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20230617062649.28444-7-arinc.unal@arinc9.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Mon, Jun 19, 2023 at 12:58:13PM CEST, poros@redhat.com wrote:
->Since commit 6624e780a577fc ("ice: split ice_vsi_setup into smaller
->functions") ice_vsi_release does things twice. There is unregister
->netdev which is unregistered in ice_deinit_eth also.
-
-You need to describe more relationship between ice_vsi_release() and
-ice_deinit_eth(). From a quick look, I don't see that ice_deinit_eth()
-is always called before/afeter ice_vsi_release().
-
-Ice init/release flows are very hard to follow :/
 
 
->
->It also unregisters the devlink_port twice which is also unregistered
->in ice_deinit_eth(). This double deregistration is hidden because
->devl_port_unregister ignores the return value of xa_erase.
-
-This call for another patch, doesn't it? :)
-
-
->
->[   68.642167] Call Trace:
->[   68.650385]  ice_devlink_destroy_pf_port+0xe/0x20 [ice]
->[   68.655656]  ice_vsi_release+0x445/0x690 [ice]
->[   68.660147]  ice_deinit+0x99/0x280 [ice]
->[   68.664117]  ice_remove+0x1b6/0x5c0 [ice]
->
->[  171.103841] Call Trace:
->[  171.109607]  ice_devlink_destroy_pf_port+0xf/0x20 [ice]
->[  171.114841]  ice_remove+0x158/0x270 [ice]
->[  171.118854]  pci_device_remove+0x3b/0xc0
->[  171.122779]  device_release_driver_internal+0xc7/0x170
->[  171.127912]  driver_detach+0x54/0x8c
->[  171.131491]  bus_remove_driver+0x77/0xd1
->[  171.135406]  pci_unregister_driver+0x2d/0xb0
->[  171.139670]  ice_module_exit+0xc/0x55f [ice]
->
->Fixes: 6624e780a577 ("ice: split ice_vsi_setup into smaller functions")
->Signed-off-by: Petr Oros <poros@redhat.com>
->---
->v2: reword subject
->
->v1: https://lore.kernel.org/netdev/20230619084948.360128-1-poros@redhat.com/
->---
-> drivers/net/ethernet/intel/ice/ice_lib.c | 27 ------------------------
-> 1 file changed, 27 deletions(-)
->
->diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
->index 11ae0e41f518a1..284a1f0bfdb545 100644
->--- a/drivers/net/ethernet/intel/ice/ice_lib.c
->+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
->@@ -3272,39 +3272,12 @@ int ice_vsi_release(struct ice_vsi *vsi)
-> 		return -ENODEV;
-> 	pf = vsi->back;
+On 17/06/2023 08:26, arinc9.unal@gmail.com wrote:
+> From: Arınç ÜNAL <arinc.unal@arinc9.com>
 > 
->-	/* do not unregister while driver is in the reset recovery pending
->-	 * state. Since reset/rebuild happens through PF service task workqueue,
->-	 * it's not a good idea to unregister netdev that is associated to the
->-	 * PF that is running the work queue items currently. This is done to
->-	 * avoid check_flush_dependency() warning on this wq
->-	 */
->-	if (vsi->netdev && !ice_is_reset_in_progress(pf->state) &&
->-	    (test_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state))) {
->-		unregister_netdev(vsi->netdev);
->-		clear_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
->-	}
->-
->-	if (vsi->type == ICE_VSI_PF)
->-		ice_devlink_destroy_pf_port(pf);
->-
-> 	if (test_bit(ICE_FLAG_RSS_ENA, pf->flags))
-> 		ice_rss_clean(vsi);
+> Add me as a maintainer of the MediaTek MT7530 DSA subdriver.
 > 
-> 	ice_vsi_close(vsi);
-> 	ice_vsi_decfg(vsi);
+> List maintainers in alphabetical order by first name.
 > 
->-	if (vsi->netdev) {
->-		if (test_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state)) {
->-			unregister_netdev(vsi->netdev);
->-			clear_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
->-		}
->-		if (test_bit(ICE_VSI_NETDEV_ALLOCD, vsi->state)) {
->-			free_netdev(vsi->netdev);
->-			vsi->netdev = NULL;
->-			clear_bit(ICE_VSI_NETDEV_ALLOCD, vsi->state);
->-		}
->-	}
->-
-> 	/* retain SW VSI data structure since it is needed to unregister and
-> 	 * free VSI netdev when PF is not in reset recovery pending state,\
-> 	 * for ex: during rmmod.
->-- 
->2.41.0
->
->
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+
+> ---
+>   MAINTAINERS | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index a73e5a98503a..c58d7fbb40ed 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -13259,10 +13259,11 @@ F:	drivers/memory/mtk-smi.c
+>   F:	include/soc/mediatek/smi.h
+>   
+>   MEDIATEK SWITCH DRIVER
+> -M:	Sean Wang <sean.wang@mediatek.com>
+> +M:	Arınç ÜNAL <arinc.unal@arinc9.com>
+> +M:	Daniel Golle <daniel@makrotopia.org>
+>   M:	Landen Chao <Landen.Chao@mediatek.com>
+>   M:	DENG Qingfang <dqfext@gmail.com>
+> -M:	Daniel Golle <daniel@makrotopia.org>
+> +M:	Sean Wang <sean.wang@mediatek.com>
+>   L:	netdev@vger.kernel.org
+>   S:	Maintained
+>   F:	drivers/net/dsa/mt7530-mdio.c
 
