@@ -1,177 +1,144 @@
-Return-Path: <netdev+bounces-11904-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11905-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id D4AA97350C6
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 11:47:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 50C247350CD
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 11:48:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 17D24280DAC
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 09:47:09 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 0CFB0281030
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 09:48:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 43296C2E0;
-	Mon, 19 Jun 2023 09:46:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D6E1C152;
+	Mon, 19 Jun 2023 09:48:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 301E4BE6C
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 09:46:46 +0000 (UTC)
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43BD01B5;
-	Mon, 19 Jun 2023 02:46:41 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-	by mailout.nyi.internal (Postfix) with ESMTP id 5AE7A5C010E;
-	Mon, 19 Jun 2023 05:46:41 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Mon, 19 Jun 2023 05:46:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-	:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm2; t=1687168001; x=1687254401; bh=6v
-	RC2nFEMSkixfqH22jnDf8VaqJ2zh8vIMgMoTo5Afg=; b=VeoZK6pRuBh2mpGnNx
-	WiCLK3iKEi2+QqabTs6UnDONoXkcUoQYnGHMJVzA7HGVsIGUBdp3XiatzHPsD0bw
-	F7RsRTYPCXKum3kJL4o9mllR282+nBFoQT953M7uPX7Dvpk1Y5+IlGAQvpi3X7m5
-	rI4/4TkJlxQPuw22K2j290KpD5OVDNiv/IcZkS1ZL1TfUAPvANJnB//V8Ac9BXm4
-	qlIw/tje9xyAgfRqIkUsdp50lMrFGxo0/Hde6A5lcun2FmDpaFvOmU4kmLKqbang
-	GYWHIzPjJQQnKoH98HdMaHgGlZX9azum+NUu8GD0mwhEdMfFZHs+/0NOpGC1b4jm
-	MMDA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm2; t=1687168001; x=1687254401; bh=6vRC2nFEMSkix
-	fqH22jnDf8VaqJ2zh8vIMgMoTo5Afg=; b=aBFvPF3v8B++X97DfiAIV6gB5eiFl
-	1PbNKJnR6jPC7zD7dONmxyREoLy6Cksny5+0cyrgdSguNQiZo5aRvYHmr1xAgwZA
-	GQgLR1TQbJMjZ1LNxb4K5slnkAJwhIc51to0IOFLulWgu8pi4mQ2RgrygwsO/8iB
-	G9UGVorH/JcQ2iUpicnLNd/E438uhX48Mw+kSY1/jZviCrtRMH+ZHf3qm+kjZZDI
-	7mkC1VWmAg8pnSDDLvqo4yNBWLaADQj5T4E9lClV+mUkcwZU1KACOd0VZUcLUpzo
-	+QA6Knxp1Nry9IvivPEuhRnDcwX5WnlY1CnPEP6com5qD+hOxbCSN3VoQ==
-X-ME-Sender: <xms:ASSQZK53sDCC7eTuRia2j2_JAINW-VW5Q2Ju0jEUBll53TdNPi5s1g>
-    <xme:ASSQZD5lB8eWuYmR9bmO1Vl1rV0kITIJhReNXvhm7ZW9ujN9dYw1eFj6aooQ0UZbm
-    0QxSLafTLEnUA>
-X-ME-Received: <xmr:ASSQZJcnpHNabsURKG4qeSlSZl9a7rD3MO7tp5NErisNrZtbDp392QBtDCY74a2tKkXgGTQomzD93XghfcuyTrU8Uqm6HTjovRanEBjGJxs>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgeefvddgudekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghg
-    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepheegvd
-    evvdeljeeugfdtudduhfekledtiefhveejkeejuefhtdeufefhgfehkeetnecuvehluhhs
-    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorg
-    hhrdgtohhm
-X-ME-Proxy: <xmx:ASSQZHLxjW5dS-x91oiAcZ2jtwcwACzko0N0i9kupbLbjR2ScR65Bg>
-    <xmx:ASSQZOL9t0azlygppYzwBhH9fsR0to8Bz1cYUuaDv3SVGNPZge_N4w>
-    <xmx:ASSQZIzBrvMooGT53Q2CtJFIIFE6LmFflnVJ6kucY3i69OrhtLyWkQ>
-    <xmx:ASSQZAiLBrvYNyP8MperIXW4wMtIb9zVm6iNaRVmyXD-b5ad7_2-xQ>
-Feedback-ID: i787e41f1:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 19 Jun 2023 05:46:40 -0400 (EDT)
-Date: Mon, 19 Jun 2023 11:46:38 +0200
-From: Greg KH <greg@kroah.com>
-To: FUJITA Tomonori <fujita.tomonori@gmail.com>
-Cc: alice@ryhl.io, andrew@lunn.ch, kuba@kernel.org, netdev@vger.kernel.org,
-	rust-for-linux@vger.kernel.org, aliceryhl@google.com,
-	miguel.ojeda.sandonis@gmail.com
-Subject: Re: [PATCH 0/5] Rust abstractions for network device drivers
-Message-ID: <2023061940-rotting-frequency-765f@gregkh>
-References: <053cb4c3-aab1-23b3-56e3-4f1741e69404@ryhl.io>
- <7dbf3c85-02ca-4c9b-b40d-adcdb85305dd@lunn.ch>
- <c1b23f21-d161-6241-26fb-7a2cbc4c059c@ryhl.io>
- <20230619.175003.876496330266041709.ubuntu@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A60FBE6C
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 09:48:07 +0000 (UTC)
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2056.outbound.protection.outlook.com [40.107.243.56])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE731A8;
+	Mon, 19 Jun 2023 02:48:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ka0WNT+4ULvT+XAqg5J0EMhVcH9IX/N04gYmjs0Q5ck9b8+gL//hBZcERug/YzbVWjbRFYAjRIXippzY76sh2VMfziMwmGxaI+DirKbMBKBBAzaXt5eEQE37j6PfbGaeCbuZOqIFjMjkFc+L11SQUeIY68PsU45P/CckeQozkXxxLYiArHfR7f4R6ouxsBT8fGbjExZe2LQ52a6QvFoFcoRd/0zeF93xUGd2bpT16ngIJJj2AN186W2fOhj+Lm1jSh7BwaX8760InOWiUK/34Z/sn1V2XGp1lxAp1dFLxMnA8KObjlYQbLUvz0yx+q9UvqG0SO6oYOJyaoYtxBW5mw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SgsSS87+1UOGoTbd/wunjfEVKBIg41SFTW/GIOZd+dI=;
+ b=OzQZMerH7khRCzaswlC3gncb9+64L/D8VSquUlq3ATEC1w1OECt6SfdhfEnhiEk2IrRhviZoVHq+GTRbOPKDORPZiypFqKjcTspeCqg/EDASgM1zn31gwSVJiR0pLyfKNdZeDa8RQPUmtD7AfGk5qwIJ1J12KFkOVFdJVy9SrbtLUNinrDM1q8XsEtQmPTzRlmq0IdA583gUVmpDfe3VODUZ5hWrsJPXEfB7N4wextf8I+CPWgwSj6v09Zqd2t/9+8oo9VgkqrU9g/4vR5BJiV/lJ23DkPi8bc1U7FHBODB05kKRgHFZCedZJkHPzReDEqzM25mQ9FWWlihm3hVRcA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SgsSS87+1UOGoTbd/wunjfEVKBIg41SFTW/GIOZd+dI=;
+ b=Ot/QiHUQUvutL8rh+eEAu+h3Jova/DiuvXK+V7z9if342NfLdAUWnwT6Mc0hEIRpfvqFmrRsYnCt/0cF44fU99p289VXcTdWH8kLzUC/DvUD/2qdQCkoym1kjeV2V8UZGTP1RZ7kcl2QnCuv0xYbgnzJCkCA9rJ/RZZEs2GtPBc=
+Received: from BN7PR12MB2835.namprd12.prod.outlook.com (2603:10b6:408:30::31)
+ by IA1PR12MB6044.namprd12.prod.outlook.com (2603:10b6:208:3d4::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.36; Mon, 19 Jun
+ 2023 09:48:04 +0000
+Received: from BN7PR12MB2835.namprd12.prod.outlook.com
+ ([fe80::d277:e70c:5a24:45b6]) by BN7PR12MB2835.namprd12.prod.outlook.com
+ ([fe80::d277:e70c:5a24:45b6%3]) with mapi id 15.20.6500.036; Mon, 19 Jun 2023
+ 09:48:04 +0000
+From: "Maftei, Alex" <alex.maftei@amd.com>
+To: Horatiu Vultur <horatiu.vultur@microchip.com>
+CC: "richardcochran@gmail.com" <richardcochran@gmail.com>, "shuah@kernel.org"
+	<shuah@kernel.org>, "linux-kselftest@vger.kernel.org"
+	<linux-kselftest@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>
+Subject: Re: [PATCH net 1/2] selftests/ptp: Add -x option for testing
+ PTP_SYS_OFFSET_EXTENDED
+Thread-Topic: [PATCH net 1/2] selftests/ptp: Add -x option for testing
+ PTP_SYS_OFFSET_EXTENDED
+Thread-Index: AQHZoKTa8WeRAYs9nkac9J649TkaHa+R4okAgAACEwU=
+Date: Mon, 19 Jun 2023 09:48:04 +0000
+Message-ID:
+ <BN7PR12MB28358D20A59F18F07E031652F15FA@BN7PR12MB2835.namprd12.prod.outlook.com>
+References: <cover.1686955631.git.alex.maftei@amd.com>
+ <e3e14166f0e92065d08a024159e29160b815d2bf.1686955631.git.alex.maftei@amd.com>
+ <20230619093916.xxfkzj576hwz4tjq@soft-dev3-1>
+In-Reply-To: <20230619093916.xxfkzj576hwz4tjq@soft-dev3-1>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN7PR12MB2835:EE_|IA1PR12MB6044:EE_
+x-ms-office365-filtering-correlation-id: f26b8e1c-442d-4bb1-d2e3-08db70aa4733
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ nkD8tG8ZdPYjdYqq411vaV2B5cxaflvSJFW79RQlkdzGoZfvAlAqq0XzoJfL6VPggz/SBj48xN9dZLbX30yMiAWKgbZchIdc5u/RsNBYuP4xPxfkvS7pmtQD2NkQd1GKLQc5FWwKbQZPXdRB/azAtYBHgllnZbClp5SCq/Nn9SugHTs7HzSR6sSvUPEA5TnbQdMbT6oV0vasGqmcr1u6qG0u7Cvr56UwBfzhWmfxftrm6yYZSGzWb2QaFD+0wU57ZjT0HQDvnQxAYYVgWsX3jXyW4m3FD8S256Ny9qvFeKAJSE6CdB52jhqq7cqwUKlp1nil9mrqow2F4BzspZdkm1NaYfE/XejceLNXkc2PHxwjwJzMARK+8y7Av7EJlOEu59Gt3JDCzycuGhqI9Rja77qkgm/wZWMyH4qTg0TB3AiJuQt46k3DS1q4mKhkjNLbqKLCmC837RdkEG+yPjyGrX9Tglec71p81aRkjqRC5AYh18ojTMDJPNL8yLOUEHLCqUTrHFi+IETU3lfQfuEFLCODX6lBmyIWqtKsavzgQ+/EX8S8DQWO4AiBHUJ+Th7NEu5uis+v7/4IsrhnbnY2cJ7df4hOGEnnPDwi7uajS8FNbGByTwrdi6IUx2CZAKgy
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN7PR12MB2835.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(366004)(39860400002)(396003)(376002)(136003)(451199021)(66946007)(8936002)(8676002)(66556008)(64756008)(76116006)(66446008)(66476007)(38070700005)(26005)(186003)(6506007)(9686003)(41300700001)(38100700002)(91956017)(5660300002)(4326008)(6916009)(316002)(52536014)(54906003)(7696005)(558084003)(55016003)(478600001)(2906002)(33656002)(122000001)(71200400001)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?iso-8859-1?Q?SqmzW0AGL+GHAFYVktTnrUeqpcJrsw6FohZi7KiG21KImES1glbZ5F5XWy?=
+ =?iso-8859-1?Q?sgGSVQHNZUE1Swh0er/yGSJMm0ubInCbsa8/CpT+9FnfajUc9/yhfgOtlv?=
+ =?iso-8859-1?Q?7yy8eK1VwF44ZVRlI4/7adKJcVMoHgK3WChKATumVUfa/LQt4aJa5BG/s4?=
+ =?iso-8859-1?Q?Z2LC49phgNkOal/UzZTT9VlthHJ3Q+H8EogUg97t2WRJNfTZQQ6FGYKny7?=
+ =?iso-8859-1?Q?gAPHusLFG2BX5hKK0b2OvZx7FByB/TX165/rlZkPD0thr3SoUktHCeQbwE?=
+ =?iso-8859-1?Q?vSqOnC50ry81N/GRRWZWHrLDkcczxe9U/CFPUjmZbtkNhxjoD/+Z1mN9i8?=
+ =?iso-8859-1?Q?nvWz4hZxNFitQOo4WFaRb/DMsQbb1PDrL6SmKvqHURe3nyeAuAthrl7S2O?=
+ =?iso-8859-1?Q?XZom4zfiI2KHoWGcbb51+KriD8jrAznoCTZ7vL+IZPv7SIn958s5Mft/8K?=
+ =?iso-8859-1?Q?X+QATqwc/v/AeSpU1SzJBNDjRZT0A5zo+d1a6GJ8PC3gA5uWMjR+Cbwgzl?=
+ =?iso-8859-1?Q?4QpGwt8V3fujmkRTwLICnP4erXI99x6hULoq9Sghyoq/P6vCPO2Wi9hZVZ?=
+ =?iso-8859-1?Q?hZfhYLqWQsVDPt77OEwT3L5IdO8VxWg8tY2qGXv2q+7YdXPET7sKOP5f2T?=
+ =?iso-8859-1?Q?pp4jkZMyXRqgcl9HOtUC7ZN2oGXL8bwVdwQ7pPuKKSCHxvgg5mjM1iW27A?=
+ =?iso-8859-1?Q?YbkzJQ8+sFiNPizlm5jP65sDvZ3yu8NZCwcKVsNnsy2rIh0Tu1SyDm4csZ?=
+ =?iso-8859-1?Q?pjlxR24Fc2sOEn+1WTgGqG7bk/F8yOAUOuEhx2/OYCmRbqeCQWOmTE2qNI?=
+ =?iso-8859-1?Q?hNk6q2tGEx327TmJML/cDLC2uHh0sDiuuSj3hWB4gYyIUlTEW82ak3pxih?=
+ =?iso-8859-1?Q?cpMZBYmKpOJ6uWA79U0dtWsa4eTkhzK77NS2/0sNK4QcraMAe0Y/sQQoj+?=
+ =?iso-8859-1?Q?UztVep4J6p4DSirlDtX+M5BWS0MJlkBQkTbtCMtwiOhgNpmCujiZJGO0bH?=
+ =?iso-8859-1?Q?mjYpzgg8BUmtLbz5B/Vmw4Ym1JO4D6s2WR0HeKYIgwWAZan0xqHsLsI8X2?=
+ =?iso-8859-1?Q?BBGW9OFJvZwxHfTTZozWO2jFBX6gsw6Mcr16f/4Fh/5An3TYg9zGqor/ru?=
+ =?iso-8859-1?Q?GmIhPvRABjJS6EWs8YXS5VOCcJemb9i7xJZuF3KcvU8SMyYdi6swH/P3rJ?=
+ =?iso-8859-1?Q?ozSIZvB/uoXENvCfv8cx6/NT6JkgdTOlgaAoLuTY/fFHVC+gz/L6eR+SSw?=
+ =?iso-8859-1?Q?I/+xhmSR71EplyvBkbfgmRdubWU9+AUQYiwjr+KOWKcjZKAGd9ELw72qAY?=
+ =?iso-8859-1?Q?22UIl7mHruqXWGlQKpme32iW9NRv1otRuc62Oe578zsYdDv3viOro6aesf?=
+ =?iso-8859-1?Q?58PtHk2OGS6jbcjrpNNsG+CnWLsWdUFQBc/tTr0x+q72TS9hhd6DWKZr9/?=
+ =?iso-8859-1?Q?hkL2PoWsRfVVJiof8EK0TFNNPEx6G6uOgXIj/iG389uU0RZ/sLGooKQ+ZS?=
+ =?iso-8859-1?Q?O4FMUX4WiYvR7cZkjBSibKybQFGYjOeaWsuz6xcGwAPBI2ywZdRDtKoYAY?=
+ =?iso-8859-1?Q?TjmBgjcjZPDsvR5xh95prx6JfbGMMqb8F0/SfbHvD3pg9LFmDVYRHgg+8b?=
+ =?iso-8859-1?Q?jyhc55TzCCMOU=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230619.175003.876496330266041709.ubuntu@gmail.com>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-	version=3.4.6
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN7PR12MB2835.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f26b8e1c-442d-4bb1-d2e3-08db70aa4733
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jun 2023 09:48:04.3906
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kZ3q9TN1NVJn9WYAH0jSLrO2S3H9hjy9oubemILJBWwlX1HoCdvnuTZ6m1VK+6QA
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6044
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 19, 2023 at 05:50:03PM +0900, FUJITA Tomonori wrote:
-> Hi,
-> 
-> On Sat, 17 Jun 2023 12:08:26 +0200
-> Alice Ryhl <alice@ryhl.io> wrote:
-> 
-> > On 6/16/23 22:04, Andrew Lunn wrote:
-> >>> Yes, you can certainly put a WARN_ON in the destructor.
-> >>>
-> >>> Another possibility is to use a scope to clean up. I don't know
-> >>> anything
-> >>> about these skb objects are used, but you could have the user define a
-> >>> "process this socket" function that you pass a pointer to the skb,
-> >>> then make
-> >>> the return value be something that explains what should be done with
-> >>> the
-> >>> packet. Since you must return a value of the right type, this forces
-> >>> you to
-> >>> choose.
-> >>>
-> >>> Of course, this requires that the processing of packets can be
-> >>> expressed as
-> >>> a function call, where it only inspects the packet for the duration of
-> >>> that
-> >>> function call. (Lifetimes can ensure that the skb pointer does not
-> >>> escape
-> >>> the function.)
-> >>>
-> >>> Would something like that work?
-> >> I don't think so, at least not in the contest of an Rust Ethernet
-> >> driver.
-> >> There are two main flows.
-> >> A packet is received. An skb is allocated and the received packet is
-> >> placed into the skb. The Ethernet driver then hands the packet over to
-> >> the network stack. The network stack is free to do whatever it wants
-> >> with the packet. Things can go wrong within the driver, so at times it
-> >> needs to free the skb rather than pass it to the network stack, which
-> >> would be a drop.
-> >> The second flow is that the network stack has a packet it wants sent
-> >> out an Ethernet port, in the form of an skb. The skb gets passed to
-> >> the Ethernet driver. The driver will do whatever it needs to do to
-> >> pass the contents of the skb to the hardware. Once the hardware has
-> >> it, the driver frees the skb. Again, things can go wrong and it needs
-> >> to free the skb without sending it, which is a drop.
-> >> So the lifetime is not a simple function call.
-> >> The drop reason indicates why the packet was dropped. It should give
-> >> some indication of what problem occurred which caused the drop. So
-> >> ideally we don't want an anonymous drop. The C code does not enforce
-> >> that, but it would be nice if the rust wrapper to dispose of an skb
-> >> did enforce it.
-> > 
-> > It sounds like a destructor with WARN_ON is the best approach right
-> > now.
-> 
-> Better to simply BUG()? We want to make sure that a device driver
-> explicity calls a function that consumes a skb object (on tx path,
-> e.g., napi_consume_skb()). If a device driver doesn't call such, it's
-> a bug that should be found easily and fixed during the development. It
-> would be even better if the compiler could find such though.
-
-No, BUG() means "I have given up all hope here because the hardware is
-broken and beyond repair so the machine will now crash and take all of
-your data with it because I don't know how to properly recover".  That
-should NEVER happen in a device driver, as that's very presumptious of
-it, and means the driver itself is broken.
-
-Report the error back up the chain and handle it properly, that's the
-correct thing to do.
-
-> If Rust bindings for netdev could help device developpers in such way,
-> it's worth an experiments? because looks like netdev subsystem accepts
-> more drivers for new hardware than other subsystems.
-
-Have you looked at the IIO subsystem?  :)
-
-thanks,
-
-greg k-h
+Hi Horatiu,=0A=
+=0A=
+v2 of the series will have that fixed.=0A=
+I've accidentally sent an older revision of this patch series, before I've =
+rebased the changes properly.=0A=
 
