@@ -1,279 +1,452 @@
-Return-Path: <netdev+bounces-12050-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12051-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9B65F735D10
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 19:32:13 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 45040735D1D
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 19:39:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 944BA1C208AF
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 17:32:12 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 710BE2810DB
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 17:39:37 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91D0013AF5;
-	Mon, 19 Jun 2023 17:32:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6D1DB13AF9;
+	Mon, 19 Jun 2023 17:39:35 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D43014265
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 17:32:09 +0000 (UTC)
-Received: from mx0c-0054df01.pphosted.com (mx0c-0054df01.pphosted.com [67.231.159.91])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E330B9D;
-	Mon, 19 Jun 2023 10:32:07 -0700 (PDT)
-Received: from pps.filterd (m0208999.ppops.net [127.0.0.1])
-	by mx0c-0054df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35JAffGm003001;
-	Mon, 19 Jun 2023 13:31:44 -0400
-Received: from can01-yqb-obe.outbound.protection.outlook.com (mail-yqbcan01lp2236.outbound.protection.outlook.com [104.47.75.236])
-	by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3r97xvhj3b-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 19 Jun 2023 13:31:44 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D9qI4BHhe+99btbtShWuXGgx5gVpRY/Hxhkfd4BUf2kAWW1xwfo41IeoCIvRzo2PEqYrNrAzn2NUZYBmTpgRJd+h0gv7b47ljLa3o+D9YQGMBlcslRFNnCoy10C8clRXawVpc009Nxp1JYO8lVSOA/B9NlJ2JTXGZmsrlQBsa63YO12pLiAbwqvnymPN1M56XULDx5XKxgIMELin+YYtxrJZ71tNc+IwQpdKT1s+F0qh1pZWG+nUUnrGg9U9LvNEPSPff+hRaKtgydX3TXOMApGGpE5DoVE2Ml3C6olvoTK4P2Ti62pd5qWydpzWhmzXYMbcL9VUzzK3a1ygA/6GZg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4jQuUZzAlNDeHGPLUQKmE271IDOAs/+SPSy5G1rO6jI=;
- b=KfnizCzfyqHoIBhLix0l+aUcsYOgu3s9m9r3xSfvmlUzT3N848zYHUV0BzyJuI/9W/BefWdhDTrTuKNyWLzNADwFegk3JLk6Zyf4oGSZifKWuUh5g0pf63uoKpBkVaEBQ8lpROJ95w7XHxhPmRCZQobGcfS9prZU1sdiJ8R59Oz11TddQSSlWxDPkEyhuD60qDZgeW5N2yied1Zr42GcwrsFbZifWQiS2gZoKiG6HWkJYPoRAVaqBCvsnZXB3sEiZZabIr/nOgBBPYRUdJIbl0ZBu3IzP8zQIii5K2cef1Jln+yhiDtHqAw0CCAN9S40/LT0jEdX2Ahxk0xM9RrbgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
- dkim=pass header.d=calian.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4jQuUZzAlNDeHGPLUQKmE271IDOAs/+SPSy5G1rO6jI=;
- b=AhbNldcV34/X5K6djpDRkPbBOvSZSHGZBcfsq/56xFjwHZIEX/GI65YQRyLQOTMbeXS7G3HsSk91F8K1PHuaI7nMzSTM7yquBlHuO/lBS0eT2gF+NzE+TEwUwopT8Z/0w8l+ACC/NWUrZwAgIyPUqLyJ7ifdlveFs0hZqGuZLNw=
-Received: from YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:b9::6)
- by YT2PR01MB5307.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:52::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.37; Mon, 19 Jun
- 2023 17:31:41 +0000
-Received: from YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM
- ([fe80::8648:f9aa:dc1d:ba56]) by YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM
- ([fe80::8648:f9aa:dc1d:ba56%6]) with mapi id 15.20.6500.036; Mon, 19 Jun 2023
- 17:31:40 +0000
-From: Robert Hancock <robert.hancock@calian.com>
-To: "andrew@lunn.ch" <andrew@lunn.ch>,
-        "olteanv@gmail.com"
-	<olteanv@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "hancock@sedsystems.ca" <hancock@sedsystems.ca>,
-        "woojung.huh@microchip.com"
-	<woojung.huh@microchip.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "edumazet@google.com"
-	<edumazet@google.com>,
-        "linux@rasmusvillemoes.dk" <linux@rasmusvillemoes.dk>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-CC: "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: dsa: microchip: ksz9477: follow errata
- sheet when applying fixups
-Thread-Topic: [PATCH net-next] net: dsa: microchip: ksz9477: follow errata
- sheet when applying fixups
-Thread-Index: AQHZoobH8rvO4mdk0kaJx9QDPXCcWq+SYr0A
-Date: Mon, 19 Jun 2023 17:31:40 +0000
-Message-ID: <b91cc419988fe21723f948524c1d7e44e3953ee2.camel@calian.com>
-References: <20230619081633.589703-1-linux@rasmusvillemoes.dk>
-In-Reply-To: <20230619081633.589703-1-linux@rasmusvillemoes.dk>
-Accept-Language: en-CA, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.44.4-0ubuntu1 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: YT2PR01MB8838:EE_|YT2PR01MB5307:EE_
-x-ms-office365-filtering-correlation-id: 586809ce-8cab-4bd9-2bcc-08db70eb0aa4
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 
- EcQlLVnr8ce2+Yd7IMyGB8vKX8ZwHG4oEmMf+g/qgeB0iGw1lHvfUvUsLQp0W03QTGios1ZAItQlZw0KNz+oShnFeJdu0vOKaxUie0KtULLO6rDa9sDJSeJGoBPLJUc9VghazjeWhcXKDiCIG+DCAH3YhzfdUQJ9xOp1ilNDJQjybgip0L1FsWIVgcxhJEsQTNYPizbfDrQ7L20NqRkkYf0oOXYZ7eVJ0FayqW3DuJgDFGJYXrymY0ewYslmUywr2tSOk/gQWdLl/Njen7+Mmynp7bk8208J4Jig0s+mau7nMZVg1plMfzsmkxWt2TWIINZSsNHq28R4woTk8kXK5g0DmuTpXMblW0hWf5v+5oR10WjjDGc3GIAlk+36pbcqMlc8h1B2lQlISxR8oQqinQRdKpm5UHRHDciuarl42EnLldCRaPXTBrjHMpAdv+Co/YlDT1QFdPSOVGyNEFzmDqaW1/NMWtlcslFRNxe66Yqepw5bN1Z996+bdG5wtUHDFdTlB3MtVv3macU+uConY7CM3DjAzJv7gOnHYsI5CCoHbvhAvbvKHarooPs9ttbo64NYw11EdUIcMFrakUyMwQU31GYHPehUjZHH07CqgRJreyDN1gS6WYi+QLxig/Er+n3iSSI4GXIZGRfcXd7egw==
-x-forefront-antispam-report: 
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(39860400002)(376002)(366004)(346002)(451199021)(186003)(8936002)(8676002)(66946007)(66556008)(66446008)(66476007)(64756008)(5660300002)(76116006)(110136005)(54906003)(4326008)(6486002)(316002)(38100700002)(41300700001)(478600001)(36756003)(6506007)(6512007)(71200400001)(7416002)(91956017)(921005)(122000001)(38070700005)(86362001)(2906002)(83380400001)(44832011)(2616005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: 
- =?utf-8?B?aWlqWm5URGRmL0cvNk9WbmZuMDdvSFVQSk5tZ2gvc3dEdlNoSHlVVUNQYm4y?=
- =?utf-8?B?YVpDVVZTV3lsd3RvenZqSWpLOE9WNTVEckFsc243TC9sbUJHVFpVVm9NTlZB?=
- =?utf-8?B?Z2NCMm1zMmZNSGtTdlBZQ3grTG1LdC94OXMvTFkvV3hYUmRrSVRVVWxyYzA5?=
- =?utf-8?B?cldTOVA2ZjhCaXAxQTM3TUVJS3gxSnNXWG55dXVtY1RrdmppYXRCS2k2VFNx?=
- =?utf-8?B?YTlhUDJISW1iWTR0RGZGTXFxSmxPZDhaODRUN1A1NENXOGorYUNwR2RIa3Vn?=
- =?utf-8?B?TGJwOGNPclkrY1RYRTMxVFFvaVdJZm5pWGhiVTZQYlRsWFJNOE5YWHpCZEVq?=
- =?utf-8?B?SFdmSjJhZDFmVzV5VTl1UktwNG15Nm8yM2VTS0Y3Z2o1OHFlMDk1UlN3VDlq?=
- =?utf-8?B?dnk0dDVvMjI2Ulp6RkxEbWV5OGlXQlJwU0h2dFZGMzJpSUVWUVFhZDM1VnRn?=
- =?utf-8?B?ZUdUNnlka2VrZjdONmRZSWVwU1QycWIxS1A0UFppZDdsOUNVbHQ4TWRSM2VS?=
- =?utf-8?B?R3hpc3BNT2ZuZmRRVVJqOU5VVEp4TVBKbUkrVHR2eEZsRUtzcmRJazl5eTZN?=
- =?utf-8?B?VU5rUEJyWnNhN2JKQ3hwN2RHTnJ1YWM1NERITCtGakcrNVBaLzZHMTgzUHZ1?=
- =?utf-8?B?NkNBVmhzcUNCVGJsYk5XZEk3eW82NjlrQTNURm5Eb2R0T29GWTlCek81OXhN?=
- =?utf-8?B?M3N2aUY0VEJLT1Q0WnhmblBURjNRbWN6V20vS2NGa09rREVkWHBkVVdpVUIz?=
- =?utf-8?B?MEltbE9NSFczd1RtZURoZ05CVEsyM2lPSThaekVuaTMxQnVlQWVZYVBGSm1w?=
- =?utf-8?B?b1YyS0FZamhtV2Nqdm12eUk0T21hVlIzZ1JBR0kvN25SMjVMVWlzZEtQSndp?=
- =?utf-8?B?WjdsY3R6K3pnYS9OMkRzcGlGb2NHTm5QOFFpd3hKRE1DOTZkeExqRThQVTE1?=
- =?utf-8?B?VGwwQ3NmRTg2QkkzekFCeFlOck5UdFJGYlFLdXlVMTVycXVub0d3b1YzL0o2?=
- =?utf-8?B?YVJZMTdiSWVkKzFuVTJQU3BGcURQMTlyODJsS1ZhWFo4cnNMV0tLam1MQ2xU?=
- =?utf-8?B?R3pub3dQV3RJRHR4bXR0eDVYbUlRWnozSlljZXFXbzZnNDBhQjJBQSt3bVNW?=
- =?utf-8?B?d0pSWEVUamY2VjZCWVVyTzFCK3BNYWx5NkdNa29iVndJYkgvM1VTb21ocVdL?=
- =?utf-8?B?VUg5S0VQbCtFZlRDRXB1Qmw3bFRMS2JEK0tOWVRQeXBrREM5QThvaDEveXRo?=
- =?utf-8?B?QjZWOG1tYmpxTVgrUnVBTVBDcWFjcDEwQml1UFZXa3NKNDlGMHF5ejQrbG9X?=
- =?utf-8?B?WVh3VGpnMnUzZ0luamNaSW41TC9XNFR3MHdnbHFBb0lTS294a2dGakRvYm1X?=
- =?utf-8?B?eWFIdzU0cDZMWTBSWDVpY2crR3pYOCtXOFhsZlZiZXJUdHg0QnNaVTlkcG50?=
- =?utf-8?B?UlprSUswd1ViMVpNSWRGbHo1UTZLQXllSU9hcHlPRTkrVVlHWTlWZVFkejZ5?=
- =?utf-8?B?RDNEejdDLzBsbW40TWdHY25xU05vUFRMNnlidURlekt4VC9aeVV1MXV2Rk1O?=
- =?utf-8?B?N3RKWXd6aVVneExoR0xuaGZIQ1E1L0M3eUp4aGVoWFRYSVVycHRTc2pncEdR?=
- =?utf-8?B?cSt3TEcwVGxVZk9CajNDQmRiWDhKb3ZmamRQcWhoRWgrSHZLT0hwSGJqeHo4?=
- =?utf-8?B?cmVaaGtEb3FhREdYaXFFZ3RIQnNTeTV4d2pMNWpabGZ4b2tJdm56T3cwb0Iz?=
- =?utf-8?B?T2EzdVdoS2VqODg2UzBpS3BlMDcxRTRkbGRlT0tkOUxjanI0VzFPYnF2OHRL?=
- =?utf-8?B?SW9nYVVockJXNHdGWnNxbjNzYm44VG9Fd3pld0w1LzBaZTRScGxobERMY1Rj?=
- =?utf-8?B?WlhCdUh6dlExRERyUEVNTWcrYStCZzZ2S3lMN2drQ04wSFRtbnBMcDZqdUdu?=
- =?utf-8?B?WFZxRmNjZVhHdGg3VWRXMS9UYnU2Q1pCc1VVVjlaMktETlFGTzgrMk5na0hI?=
- =?utf-8?B?OFVKQXZaOGpvQ0k3Qnp4TllUeG5JdWlTYmlyWlZGTkFLZTdnY1lBSy9FdWJE?=
- =?utf-8?B?QW1oeFNRME1RLy94aGxaMlZPc2M4NGNnbitob1Y0bzB1L0dOVjBvblovRXRm?=
- =?utf-8?B?OHJENk9HRlVtZmppUlQxbW92WUpXSHhBaGRNZ3MzckR5MVAzTUZ0SHdPZHAy?=
- =?utf-8?B?QTc0eW1WT0duQ2lhNnpiUmxKZ1plNUhaVDhVaUVabVRVanBIb1oxY2thZHg1?=
- =?utf-8?B?OENlYW93UHFmYkRVdXcwd3FjUlFnPT0=?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <C89BAFE5AE8D2942BE664FE2ABD1CC19@CANPRD01.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 596AA111A9
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 17:39:35 +0000 (UTC)
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21082198
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 10:39:33 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id d75a77b69052e-3ff25ca795eso159981cf.1
+        for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 10:39:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1687196372; x=1689788372;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ayFQ487CT2QWVLe89ol8oaf4LIGITCKdns22LRz/IOM=;
+        b=Rj9+1YIlGspvfIoMsqXyXUHu/gVREXZ5JQk+8lQe5N/2gnaPKb7SOMg6ZpfGxJIqy2
+         2zQDPOCTMiphGT2xFp+d2IpqWhjHnZ3EgTLIp20vo5UmIdXLiam55Q7Sr32ClFODureW
+         Og840jJUpQauEM0yqDEns9Eb/IUZGM02wdT1lXuGGKXhUH72q1zg2+4O6HsA+DK/9Bg8
+         7UImItJghZGXILNpNgelch5LHmU9sTK+6eIeVstIOKBHvsgEetRNeurA9xPOTCWzNmIx
+         MHJm0Sq7gEkNl/xlSsvsJPS/aBBxa5UkprAeZOFnkX2nAi0AhFke82U7c3o0KqMO/7Ag
+         LEpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687196372; x=1689788372;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ayFQ487CT2QWVLe89ol8oaf4LIGITCKdns22LRz/IOM=;
+        b=g9af0otoLSviWDmrrZg9TR4X09yXCP/uDAATx9oYhlezITz5/6rHVEGIpUe6xY0mSB
+         79zKSdy+IrEqvA6Sliubi0MajLFMNUDxuhzkyMlyaNoAnVGnXz3GXEoVlAf4CG39HlZ5
+         arIEyjE9f5MamjhJhY+5B9PlHg6Higqu4jV1KjLKTKL44hN/svMQibFIk4Ew0aGuza2M
+         cSjBq9+0stOWlCOdyCXz9RVUwoRRNGNh/68Qw/2tTQzWTtNEybq5jAxC2EYTfiQYZI7w
+         E/fUwu/c0AtxH6mfrY4/OUyYCphQx2OBW1Bwwhax0EIJcuPfhkzPe/E4FDm1rHnhpzNu
+         H+QQ==
+X-Gm-Message-State: AC+VfDzkM7vR0LfDxYtpynDs9GUO6fXOTfgP1H720Xx4ztlhoWAAsMeI
+	KL/tlCPCG4FZNqWgcH6XwhSurNVxJJfG4ykCi3MNAfWbZBEz12+WQ5U=
+X-Google-Smtp-Source: ACHHUZ50YyrkRcC6nQ0Lj4z90xWO7RSjCup/6bvJMa8KX9+hRkKPSCr3gqg0bwMLD4XPX335JhbVRZskLWfV6R9J60s=
+X-Received: by 2002:a05:622a:2c1:b0:3ef:343b:fe7e with SMTP id
+ a1-20020a05622a02c100b003ef343bfe7emr1034110qtx.2.1687196371936; Mon, 19 Jun
+ 2023 10:39:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	=?utf-8?B?V0R4WCt6THRVaFJBL1A4NFRiQVYrdTJBYVRjemhFSzNyb2tVbnF1SFhvWTFy?=
- =?utf-8?B?NEV1S3hIYW9EU3QxbTQvMFNTVituV05nMnR1UHFTWWo0RDZkdEV2Z0Y1Y2xa?=
- =?utf-8?B?YnZ2RXVLa2RrOGZpZnkxcUFGVnFlZHVJdGRTWFRKb2RzT1creFpWQ1d4QlJ5?=
- =?utf-8?B?cW4yZ2RaK2VoWjlSRGRIVThCaTNYT0dnemsyVS9BYjZzeFJiYjM0aHBRcGJS?=
- =?utf-8?B?SkFacTgrWk1JTnpNZ2tOMmxrVEtnNSswQVB4SDNic0YyR3V0UUhMVjJKa01X?=
- =?utf-8?B?ckJYaC9PQ2YvOWtyTFRmRDlHZWl4RzI2VWp3Q1lPN0xEZ1NheU1yOE5sTlcy?=
- =?utf-8?B?OUZuaWFNcXhvZUh1UmJReHJhM1k1ZHM3aDB3TEdaUWtINWpLMmQzdVlsOEdt?=
- =?utf-8?B?K2hQWXNFVlkrVjBYLzVRc2RkWko3MlZGU0JkR3AyN0JjVmxLbWFhUHV5dll5?=
- =?utf-8?B?WFErTy9kQmRvWXNHQzVHREdTV0lGSDhocE81OVAyY0Q0YWM4NXoyTW9GTy9T?=
- =?utf-8?B?dE13ZDZTUVE2SVJNckY2eXhlRjE2cnoza2Z5L0wvYlczOHJseXUzL0hwWGla?=
- =?utf-8?B?dEtDb29nakNkUEVjbUk2aFppbHdpemY2SEo0SXpHZERCbS9WTXYrekNEN1o2?=
- =?utf-8?B?QzczMllOYVpKOU4rclJobkw2NHk2RkJ0SU8vUnkzd1RVVmZoVkRRUXY5RmFJ?=
- =?utf-8?B?Mk5mcmZVY3g3MkhxYzJNbUVOVWdNRXJVeXd4UkdXTDhoa2FyTnNURnpKa2h4?=
- =?utf-8?B?ZW1PdTlOSmNvYzRxbzNyc2lIOFVQYm45blZ0NCtaZ1ZmcDNYQmU4enI2N1JY?=
- =?utf-8?B?aDhjMlFyNm1GR09LZDhpSGhJbW1sNzlTSk9YL05XZll1cUErZ0ZDczFmVHRh?=
- =?utf-8?B?SnhuUmFhSSttakk0Ym1YUzhRYkNTanpVYS9QSi9PWHk1c0VyaDBUYjVNeEx5?=
- =?utf-8?B?eWtFV2V0WEZEd0ZCZlgwaTk5UTBsOFdUTHFUcmdHZkhGTVZMM2pyUE9FKzQx?=
- =?utf-8?B?NVZFSHV4R0VZMUtHbkxxK29HSURuSFJuYk5SZjRQclF2L0dYSFY5YjhVeStO?=
- =?utf-8?B?Mk5RRGxKdUZTTlBwSEJ0OTBKWkhCaHZ5Z0ZVekJwS2xMbGF5WmxYSDdKWlUw?=
- =?utf-8?B?UTNVUVIyWlVUSWFPbGQ4bUZsZzhkdXRWMzQrZFFMSDRVZnF1ODlFZnNlRDhU?=
- =?utf-8?B?QWZwMkN4S1BjSW42L1BxTU1BK1BoUHZnS0FNak9jUTc5MkErL1V0RUNINjBx?=
- =?utf-8?B?cGR1Q1M4RWJxNXBFeTM0ZFpma280YW5JUlVpejFueUlpNEk4Y29GQXpPQXZC?=
- =?utf-8?B?aEdncjlWYk81bU1qNUNUNnVlQmJtaUpuTTBWZTlEVVRlV1JVdkZOMTBJZFJu?=
- =?utf-8?B?c0tlZHpkUEFUQWhmZTZJcXlRR1dla1gvSW1KVE0rM1dlOERwbGhLcnJtU0xu?=
- =?utf-8?B?RTNNSWRiSUdHV1hJemtRUTFNd1lFZlFLdG9ia0x3PT0=?=
-X-OriginatorOrg: calian.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 586809ce-8cab-4bd9-2bcc-08db70eb0aa4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jun 2023 17:31:40.0609
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: psfyc9/dsFYpa+M7RZ18cIofkFiiWGfxcCvj/SW0QIV6VFrB4SN8VRZ6GOJSPxBiuWYg7MroUmVVK5hj+3kEcaA3hZASXDetteBXzW7yVEs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: YT2PR01MB5307
-X-Proofpoint-GUID: JowCwgdx1ou-hwQzIM2mTfF0L-Hwc_Li
-X-Proofpoint-ORIG-GUID: JowCwgdx1ou-hwQzIM2mTfF0L-Hwc_Li
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-06-19_11,2023-06-16_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 clxscore=1011
- phishscore=0 mlxscore=0 malwarescore=0 mlxlogscore=999 lowpriorityscore=0
- spamscore=0 impostorscore=0 priorityscore=1501 adultscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2305260000
- definitions=main-2306190161
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <CANn89iK8snOz8TYOhhwfimC7ykYA78GA3Nyv8x06SZYa1nKdyA@mail.gmail.com>
+ <20230619170314.42333-1-kuniyu@amazon.com>
+In-Reply-To: <20230619170314.42333-1-kuniyu@amazon.com>
+From: Eric Dumazet <edumazet@google.com>
+Date: Mon, 19 Jun 2023 19:39:20 +0200
+Message-ID: <CANn89iJCWnG0p_5C1ams264_kA97_zaQBSx-akH_SsHFg5gG6A@mail.gmail.com>
+Subject: Re: [PATCH v2] tcp: fix connection reset due to tw hashdance race.
+To: Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc: duanmuquan@baidu.com, davem@davemloft.net, dsahern@kernel.org, 
+	kuba@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
+	pabeni@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-T24gTW9uLCAyMDIzLTA2LTE5IGF0IDEwOjE2ICswMjAwLCBSYXNtdXMgVmlsbGVtb2VzIHdyb3Rl
-Og0KPiBDQVVUSU9OOiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIHRoZSBv
-cmdhbml6YXRpb24uIERvDQo+IG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVu
-bGVzcyB5b3UgcmVjb2duaXplIHRoZSBzZW5kZXINCj4gYW5kIGtub3cgdGhlIGNvbnRlbnQgaXMg
-c2FmZS4NCj4gDQo+IFRoZSBlcnJhdGEgc2hlZXRzIGZvciBib3RoIGtzejk0NzcgYW5kIGtzejk1
-NjcgYmVnaW4gd2l0aA0KPiANCj4gwqAgSU1QT1JUQU5UIE5PVEUNCj4gDQo+IMKgIE11bHRpcGxl
-IGVycmF0YSB3b3JrYXJvdW5kcyBpbiB0aGlzIGRvY3VtZW50IGNhbGwgZm9yIGNoYW5naW5nIFBI
-WQ0KPiDCoCByZWdpc3RlcnMgZm9yIGVhY2ggUEhZIHBvcnQuIFBIWSByZWdpc3RlcnMgMHgwIHRv
-IDB4MUYgYXJlIGluIHRoZQ0KPiDCoCBhZGRyZXNzIHJhbmdlIDB4TjEwMCB0byAweE4xM0YsIHdo
-aWxlIGluZGlyZWN0IChNTUQpIFBIWSByZWdpc3RlcnMNCj4gwqAgYXJlIGFjY2Vzc2VkIHZpYSB0
-aGUgUEhZIE1NRCBTZXR1cCBSZWdpc3RlciBhbmQgdGhlIFBIWSBNTUQgRGF0YQ0KPiDCoCBSZWdp
-c3Rlci4NCj4gDQo+IMKgIEJlZm9yZSBjb25maWd1cmluZyB0aGUgUEhZIE1NRCByZWdpc3RlcnMs
-IGl0IGlzIG5lY2Vzc2FyeSB0byBzZXQNCj4gdGhlDQo+IMKgIFBIWSB0byAxMDAgTWJwcyBzcGVl
-ZCB3aXRoIGF1dG8tbmVnb3RpYXRpb24gZGlzYWJsZWQgYnkgd3JpdGluZyB0bw0KPiDCoCByZWdp
-c3RlciAweE4xMDAtMHhOMTAxLiBBZnRlciB3cml0aW5nIHRoZSBNTUQgcmVnaXN0ZXJzLCBhbmQg
-YWZ0ZXINCj4gwqAgYWxsIGVycmF0YSB3b3JrYXJvdW5kcyB0aGF0IGludm9sdmUgUEhZIHJlZ2lz
-dGVyIHNldHRpbmdzLCB3cml0ZQ0KPiDCoCByZWdpc3RlciAweE4xMDAtMHhOMTAxIGFnYWluIHRv
-IGVuYWJsZSBhbmQgcmVzdGFydCBhdXRvLQ0KPiBuZWdvdGlhdGlvbi4NCj4gDQo+IFdpdGhvdXQg
-dGhhdCBleHBsaWNpdCBhdXRvLW5lZyByZXN0YXJ0LCB3ZSBkbyBzb21ldGltZXMgaGF2ZSBwcm9i
-bGVtcw0KPiBlc3RhYmxpc2hpbmcgbGluay4NCj4gDQo+IFJhdGhlciB0aGFuIHdyaXRpbmcgYmFj
-ayB0aGUgaGFyZGNvZGVkIDB4MTM0MCB2YWx1ZSB0aGUgZXJyYXRhIHNoZWV0DQo+IHN1Z2dlc3Rz
-ICh3aGljaCBsaWtlbHkganVzdCBjb3JyZXNwb25kcyB0byB0aGUgbW9zdCBjb21tb24gc3RyYXAN
-Cj4gY29uZmlndXJhdGlvbiksIHJlc3RvcmUgdGhlIG9yaWdpbmFsIHZhbHVlLCBzZXR0aW5nIHRo
-ZQ0KPiBQT1JUX0FVVE9fTkVHX1JFU1RBUlQgYml0IGlmIFBPUlRfQVVUT19ORUdfRU5BQkxFIGlz
-IHNldC4NCj4gDQo+IEZpeGVzOiAxZmMzMzE5OTE4NWQgKCJuZXQ6IGRzYTogbWljcm9jaGlwOiBB
-ZGQgUEhZIGVycmF0YQ0KPiB3b3JrYXJvdW5kcyIpDQo+IENjOiBzdGFibGVAdmdlci5rZXJuZWwu
-b3JnDQo+IFNpZ25lZC1vZmYtYnk6IFJhc211cyBWaWxsZW1vZXMgPGxpbnV4QHJhc211c3ZpbGxl
-bW9lcy5kaz4NCj4gLS0tDQo+IFdoaWxlIEkgZG8gYmVsaWV2ZSB0aGlzIGlzIGEgZml4LCBJIGRv
-bid0IHRoaW5rIGl0J3MgcG9zdC1yYzcNCj4gbWF0ZXJpYWwsIGhlbmNlIHRhcmdldGluZyBuZXQt
-bmV4dCB3aXRoIGNjIHN0YWJsZS4NCg0KSSBkb24ndCB0aGluayB0aGlzIHdpbGwgYXBwbHkgdG8g
-bmV0LW5leHQgYXMgdGhlIHJlbGV2YW50IGNvZGUgaGFzIGJlZW4NCm1vdmVkIHRvIHRoZSBNaWNy
-ZWwgUEhZIGRyaXZlciBhbmQgcmVtb3ZlZCBmcm9tIHRoaXMgb25lIGluIHRoZQ0KZm9sbG93aW5n
-IGNvbW1pdHMsIGFuZCBlZmZlY3RpdmVseSB0aGUgc2FtZSBjaGFuZ2UgdG8gZGlzYWJsZSBhdXRv
-bmVnDQpiZWZvcmUgdGhlIHJlZ2lzdGVyIHdyaXRlcyBhbmQgcmUtZW5hYmxlIGFmdGVyd2FyZHMg
-d2FzIGluY29ycG9yYXRlZDoNCg0KY29tbWl0IDI2ZGQyOTc0YzViNWNhZWYzNTg3ODQ1MzBjOWU3
-MjcxNWFkYzhmNWINCkF1dGhvcjogUm9iZXJ0IEhhbmNvY2sgPHJvYmVydC5oYW5jb2NrQGNhbGlh
-bi5jb20+DQpEYXRlOiAgIE1vbiBKdW4gNSAwOTozOTo0MiAyMDIzIC0wNjAwDQoNCiAgICBuZXQ6
-IHBoeTogbWljcmVsOiBNb3ZlIEtTWjk0NzcgZXJyYXRhIGZpeGVzIHRvIFBIWSBkcml2ZXINCg0K
-Y29tbWl0IDYwNjhlNmQ3YmE1MDAxZGZiOTZiYjhiN2I5MmUyZWQyYTU4Nzc3ODYNCkF1dGhvcjog
-Um9iZXJ0IEhhbmNvY2sgPHJvYmVydC5oYW5jb2NrQGNhbGlhbi5jb20+DQpEYXRlOiAgIE1vbiBK
-dW4gNSAwOTozOTo0MyAyMDIzIC0wNjAwDQoNCiAgICBuZXQ6IGRzYTogbWljcm9jaGlwOiByZW1v
-dmUgS1NaOTQ3NyBQSFkgZXJyYXRhIGhhbmRsaW5nDQoNCkhvd2V2ZXIsIHlvdXIgcGF0Y2ggbWF5
-IGJlIHJlYXNvbmFibGUgdG8gYXBwbHkgdG8gLXJjNyBvciBzdGFibGUgYXMgYQ0KbW9yZSB0YXJn
-ZXRlZCBjaGFuZ2UgZm9yIHRob3NlIHJlbGVhc2VzLg0KDQo+IA0KPiDCoGRyaXZlcnMvbmV0L2Rz
-YS9taWNyb2NoaXAva3N6OTQ3Ny5jIHwgMTcgKysrKysrKysrKysrKysrKysNCj4gwqAxIGZpbGUg
-Y2hhbmdlZCwgMTcgaW5zZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0
-L2RzYS9taWNyb2NoaXAva3N6OTQ3Ny5jDQo+IGIvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9r
-c3o5NDc3LmMNCj4gaW5kZXggYmYxM2Q0N2MyNmNmLi45YTcxMmVhNzFlZTcgMTAwNjQ0DQo+IC0t
-LSBhL2RyaXZlcnMvbmV0L2RzYS9taWNyb2NoaXAva3N6OTQ3Ny5jDQo+ICsrKyBiL2RyaXZlcnMv
-bmV0L2RzYS9taWNyb2NoaXAva3N6OTQ3Ny5jDQo+IEBAIC05MDIsNiArOTAyLDE2IEBAIHN0YXRp
-YyB2b2lkIGtzejk0NzdfcG9ydF9tbWRfd3JpdGUoc3RydWN0DQo+IGtzel9kZXZpY2UgKmRldiwg
-aW50IHBvcnQsDQo+IA0KPiDCoHN0YXRpYyB2b2lkIGtzejk0NzdfcGh5X2VycmF0YV9zZXR1cChz
-dHJ1Y3Qga3N6X2RldmljZSAqZGV2LCBpbnQNCj4gcG9ydCkNCj4gwqB7DQo+ICvCoMKgwqDCoMKg
-wqAgdTE2IGNyOw0KPiArDQo+ICvCoMKgwqDCoMKgwqAgLyogRXJyYXRhIGRvY3VtZW50IHNheXMg
-dGhlIFBIWSBtdXN0IGJlIGNvbmZpZ3VyZWQgdG8gMTAwTWJwcw0KPiArwqDCoMKgwqDCoMKgwqAg
-KiB3aXRoIGF1dG8tbmVnIGRpc2FibGVkIGJlZm9yZSBjb25maWd1cmluZyB0aGUgUEhZIE1NRA0K
-PiArwqDCoMKgwqDCoMKgwqAgKiByZWdpc3RlcnMuDQo+ICvCoMKgwqDCoMKgwqDCoCAqLw0KPiAr
-wqDCoMKgwqDCoMKgIGtzel9wcmVhZDE2KGRldiwgcG9ydCwgUkVHX1BPUlRfUEhZX0NUUkwsICZj
-cik7DQo+ICvCoMKgwqDCoMKgwqAga3N6X3B3cml0ZTE2KGRldiwgcG9ydCwgUkVHX1BPUlRfUEhZ
-X0NUUkwsDQo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBQT1JUX1NQ
-RUVEXzEwME1CSVQgfCBQT1JUX0ZVTExfRFVQTEVYKTsNCj4gKw0KPiDCoMKgwqDCoMKgwqDCoCAv
-KiBBcHBseSBQSFkgc2V0dGluZ3MgdG8gYWRkcmVzcyBlcnJhdGEgbGlzdGVkIGluDQo+IMKgwqDC
-oMKgwqDCoMKgwqAgKiBLU1o5NDc3LCBLU1o5ODk3LCBLU1o5ODk2LCBLU1o5NTY3LCBLU1o4NTY1
-DQo+IMKgwqDCoMKgwqDCoMKgwqAgKiBTaWxpY29uIEVycmF0YSBhbmQgRGF0YSBTaGVldCBDbGFy
-aWZpY2F0aW9uIGRvY3VtZW50czoNCj4gQEAgLTk0Myw2ICs5NTMsMTMgQEAgc3RhdGljIHZvaWQg
-a3N6OTQ3N19waHlfZXJyYXRhX3NldHVwKHN0cnVjdA0KPiBrc3pfZGV2aWNlICpkZXYsIGludCBw
-b3J0KQ0KPiDCoMKgwqDCoMKgwqDCoCBrc3o5NDc3X3BvcnRfbW1kX3dyaXRlKGRldiwgcG9ydCwg
-MHgxYywgMHgxZCwgMHhlN2ZmKTsNCj4gwqDCoMKgwqDCoMKgwqAga3N6OTQ3N19wb3J0X21tZF93
-cml0ZShkZXYsIHBvcnQsIDB4MWMsIDB4MWUsIDB4ZWZmZik7DQo+IMKgwqDCoMKgwqDCoMKgIGtz
-ejk0NzdfcG9ydF9tbWRfd3JpdGUoZGV2LCBwb3J0LCAweDFjLCAweDIwLCAweGVlZWUpOw0KPiAr
-DQo+ICvCoMKgwqDCoMKgwqAgLyogUmVzdG9yZSBQSFkgQ1RSTCByZWdpc3RlciwgcmVzdGFydCBh
-dXRvLW5lZ290aWF0aW9uIGlmDQo+ICvCoMKgwqDCoMKgwqDCoCAqIGVuYWJsZWQgaW4gdGhlIG9y
-aWdpbmFsIHZhbHVlLg0KPiArwqDCoMKgwqDCoMKgwqAgKi8NCj4gK8KgwqDCoMKgwqDCoCBpZiAo
-Y3IgJiBQT1JUX0FVVE9fTkVHX0VOQUJMRSkNCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgY3IgfD0gUE9SVF9BVVRPX05FR19SRVNUQVJUOw0KPiArwqDCoMKgwqDCoMKgIGtzel9wd3Jp
-dGUxNihkZXYsIHBvcnQsIFJFR19QT1JUX1BIWV9DVFJMLCBjcik7DQo+IMKgfQ0KPiANCj4gwqB2
-b2lkIGtzejk0NzdfZ2V0X2NhcHMoc3RydWN0IGtzel9kZXZpY2UgKmRldiwgaW50IHBvcnQsDQo+
-IC0tDQo+IDIuMzcuMg0KPiANCg0KLS0gDQpSb2JlcnQgSGFuY29jayA8cm9iZXJ0LmhhbmNvY2tA
-Y2FsaWFuLmNvbT4NCg==
+On Mon, Jun 19, 2023 at 7:03=E2=80=AFPM Kuniyuki Iwashima <kuniyu@amazon.co=
+m> wrote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+> Date: Thu, 8 Jun 2023 08:35:20 +0200
+> > On Thu, Jun 8, 2023 at 7:48=E2=80=AFAM Kuniyuki Iwashima <kuniyu@amazon=
+.com> wrote:
+> > >
+> > > From: Eric Dumazet <edumazet@google.com>
+> > > Date: Wed, 7 Jun 2023 15:32:57 +0200
+> > > > On Wed, Jun 7, 2023 at 1:59=E2=80=AFPM Duan,Muquan <duanmuquan@baid=
+u.com> wrote:
+> > > > >
+> > > > > Hi, Eric,
+> > > > >
+> > > > >  Thanks for your comments!
+> > > > >
+> > > > >  About the second lookup, I am sorry that I did not give enough e=
+xplanations about it. Here are some details:
+> > > > >
+> > > > >  1.  The second lookup can find the tw sock and avoid the connect=
+ion refuse error on userland applications:
+> > > > >
+> > > > > If the original sock is found, but when validating its refcnt, it=
+ has been destroyed and sk_refcnt has become 0 after decreased by tcp_time_=
+wait()->tcp_done()->inet_csk_destory_sock()->sock_put().The validation for =
+refcnt fails and the lookup process gets a listener sock.
+> > > > >
+> > > > > When this case occurs, the hashdance has definitely finished=EF=
+=BC=8Cbecause tcp_done() is executed after inet_twsk_hashdance(). Then if l=
+ook up the ehash table again, hashdance has already finished, tw sock will =
+be found.
+> > > > >
+> > > > >  With this fix, logically we can solve the connection reset issue=
+ completely when no established sock is found due to hashdance race.In my r=
+eproducing environment, the connection refuse error will occur about every =
+6 hours with only the fix of bad case (2). But with both of the 2 fixes, I =
+tested it many times, the longest test continues for 10 days, it does not o=
+ccur again,
+> > > > >
+> > > > >
+> > > > >
+> > > > > 2. About the performance impact:
+> > > > >
+> > > > >      A similar scenario is that __inet_lookup_established() will =
+do inet_match() check for the second time, if fails it will look up    the =
+list again. It is the extra effort to reduce the race impact without using =
+reader lock. inet_match() failure occurs with about the same probability wi=
+th refcnt validation failure in my test environment.
+> > > > >
+> > > > >  The second lookup will only be done in the condition that FIN se=
+gment gets a listener sock.
+> > > > >
+> > > > >   About the performance impact:
+> > > > >
+> > > > > 1)  Most of the time, this condition will not met, the added code=
+s introduces at most 3 comparisons for each segment.
+> > > > >
+> > > > > The second inet_match() in __inet_lookup_established()  does leas=
+t 3 comparisons for each segmet.
+> > > > >
+> > > > >
+> > > > > 2)  When this condition is met, the probability is very small. Th=
+e impact is similar to the second try due to inet_match() failure. Since tw=
+ sock can definitely be found in the second try, I think this cost is worth=
+y to avoid connection reused error on userland applications.
+> > > > >
+> > > > >
+> > > > >
+> > > > > My understanding is, current philosophy is avoiding the reader lo=
+ck by tolerating the minor defect which occurs in a small probability.For e=
+xample, if the FIN from passive closer is dropped due to the found sock is =
+destroyed, a retransmission can be tolerated, it only makes the connection =
+termination slower. But I think the bottom line is that it does not affect =
+the userland applications=E2=80=99 functionality. If application fails to c=
+onnect due to the hashdance race, it can=E2=80=99t be tolerated. In fact, g=
+uys from product department push hard on the connection refuse error.
+> > > > >
+> > > > >
+> > > > > About bad case (2):
+> > > > >
+> > > > >  tw sock is found, but its tw_refcnt has not been set to 3, it is=
+ still 0, validating for sk_refcnt will fail.
+> > > > >
+> > > > > I do not know the reason why setting tw_refcnt after adding it in=
+to list, could anyone help point out the reason? It adds  extra race becaus=
+e the new added tw sock may be found and checked in other CPU concurrently =
+before =C6=92setting tw_refcnt to 3.
+> > > > >
+> > > > > By setting tw_refcnt to 3 before adding it into list, this case w=
+ill be solved, and almost no cost. In my reproducing environment, it occurs=
+ more frequently than bad case (1), it appears about every 20 minutes, bad =
+case (1) appears about every 6 hours.
+> > > > >
+> > > > >
+> > > > >
+> > > > > About the bucket spinlock, the original established sock and tw s=
+ock are stored in the ehash table, I concern about the performance when the=
+re are lots of short TCP connections, the reader lock may affect the perfor=
+mance of connection creation and termination. Could you share some details =
+of your idea? Thanks in advance.
+> > > > >
+> > > > >
+> > > >
+> > > > Again, you can write a lot of stuff, the fact is that your patch do=
+es
+> > > > not solve the issue.
+> > > >
+> > > > You could add 10 lookups, and still miss some cases, because they a=
+re
+> > > > all RCU lookups with no barriers.
+> > > >
+> > > > In order to solve the issue of packets for the same 4-tuple being
+> > > > processed by many cpus, the only way to solve races is to add mutua=
+l
+> > > > exclusion.
+> > > >
+> > > > Note that we already have to lock the bucket spinlock every time we
+> > > > transition a request socket to socket, a socket to timewait, or any
+> > > > insert/delete.
+> > > >
+> > > > We need to expand the scope of this lock, and cleanup things that w=
+e
+> > > > added in the past, because we tried too hard to 'detect races'
+> > >
+> > > How about this ?  This is still a workaround though, retry sounds
+> > > better than expanding the scope of the lock given the race is rare.
+> >
+> > The chance of two cpus having to hold the same spinlock is rather small=
+.
+> >
+> > Algo is the following:
+> >
+> > Attempt a lockless/RCU lookup.
+> >
+> > 1) Socket is found, we are good to go. Fast path is still fast.
+> >
+> > 2) Socket  is not found in ehash
+> >    - We lock the bucket spinlock.
+> >    - We retry the lookup
+> >    - If socket found, continue with it (release the spinlock when
+> > appropriate, after all write manipulations in the bucket are done)
+> >    - If socket still not found, we lookup a listener.
+> >       We insert a TCP_NEW_SYN_RECV ....
+> >        Again, we release the spinlock when appropriate, after all
+> > write manipulations in the bucket are done)
+> >
+> > No more races, and the fast path is the same.
+>
+> I was looking around the issue this weekend.  Is this what you were
+> thinking ?  I'm wondering if you were also thinking another races like
+> found_dup_sk/own_req things. e.g.) acquire ehash lock when we start to
+> process reqsk ?
+
+No.
+
+Idea is to hold the bucket lock and keep it until all write operations
+in the bucket have been done.
+
+
+
+>
+> Duan, could you test the diff below ?
+>
+> If this resolves the FIN issue, we can also revert 3f4ca5fafc08 ("tcp:
+> avoid the lookup process failing to get sk in ehash table").
+>
+> ---8<---
+> diff --git a/include/net/inet6_hashtables.h b/include/net/inet6_hashtable=
+s.h
+> index 56f1286583d3..bb8e49a6e80f 100644
+> --- a/include/net/inet6_hashtables.h
+> +++ b/include/net/inet6_hashtables.h
+> @@ -48,6 +48,11 @@ struct sock *__inet6_lookup_established(struct net *ne=
+t,
+>                                         const u16 hnum, const int dif,
+>                                         const int sdif);
+>
+> +struct sock *__inet6_lookup_established_lock(struct net *net, struct ine=
+t_hashinfo *hashinfo,
+> +                                            const struct in6_addr *saddr=
+, const __be16 sport,
+> +                                            const struct in6_addr *daddr=
+, const u16 hnum,
+> +                                            const int dif, const int sdi=
+f);
+> +
+>  struct sock *inet6_lookup_listener(struct net *net,
+>                                    struct inet_hashinfo *hashinfo,
+>                                    struct sk_buff *skb, int doff,
+> @@ -70,9 +75,15 @@ static inline struct sock *__inet6_lookup(struct net *=
+net,
+>         struct sock *sk =3D __inet6_lookup_established(net, hashinfo, sad=
+dr,
+>                                                      sport, daddr, hnum,
+>                                                      dif, sdif);
+> -       *refcounted =3D true;
+> -       if (sk)
+> +
+> +       if (!sk)
+> +               sk =3D __inet6_lookup_established_lock(net, hashinfo, sad=
+dr, sport,
+> +                                                    daddr, hnum, dif, sd=
+if);
+> +       if (sk) {
+> +               *refcounted =3D true;
+>                 return sk;
+> +       }
+> +
+>         *refcounted =3D false;
+>         return inet6_lookup_listener(net, hashinfo, skb, doff, saddr, spo=
+rt,
+>                                      daddr, hnum, dif, sdif);
+> diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.=
+h
+> index 99bd823e97f6..ad97fec63d7a 100644
+> --- a/include/net/inet_hashtables.h
+> +++ b/include/net/inet_hashtables.h
+> @@ -379,6 +379,12 @@ struct sock *__inet_lookup_established(struct net *n=
+et,
+>                                        const __be32 daddr, const u16 hnum=
+,
+>                                        const int dif, const int sdif);
+>
+> +struct sock *__inet_lookup_established_lock(struct net *net,
+> +                                           struct inet_hashinfo *hashinf=
+o,
+> +                                           const __be32 saddr, const __b=
+e16 sport,
+> +                                           const __be32 daddr, const u16=
+ hnum,
+> +                                           const int dif, const int sdif=
+);
+> +
+>  static inline struct sock *
+>         inet_lookup_established(struct net *net, struct inet_hashinfo *ha=
+shinfo,
+>                                 const __be32 saddr, const __be16 sport,
+> @@ -402,9 +408,14 @@ static inline struct sock *__inet_lookup(struct net =
+*net,
+>
+>         sk =3D __inet_lookup_established(net, hashinfo, saddr, sport,
+>                                        daddr, hnum, dif, sdif);
+> -       *refcounted =3D true;
+> -       if (sk)
+> +       if (!sk)
+> +               sk =3D __inet_lookup_established_lock(net, hashinfo, sadd=
+r, sport,
+> +                                                   daddr, hnum, dif, sdi=
+f);
+> +       if (sk) {
+> +               *refcounted =3D true;
+>                 return sk;
+> +       }
+> +
+>         *refcounted =3D false;
+>         return __inet_lookup_listener(net, hashinfo, skb, doff, saddr,
+>                                       sport, daddr, hnum, dif, sdif);
+> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> index e7391bf310a7..1eeadaf1c9f9 100644
+> --- a/net/ipv4/inet_hashtables.c
+> +++ b/net/ipv4/inet_hashtables.c
+> @@ -514,6 +514,41 @@ struct sock *__inet_lookup_established(struct net *n=
+et,
+>  }
+>  EXPORT_SYMBOL_GPL(__inet_lookup_established);
+>
+> +struct sock *__inet_lookup_established_lock(struct net *net, struct inet=
+_hashinfo *hashinfo,
+> +                                           const __be32 saddr, const __b=
+e16 sport,
+> +                                           const __be32 daddr, const u16=
+ hnum,
+> +                                           const int dif, const int sdif=
+)
+> +{
+> +       const __portpair ports =3D INET_COMBINED_PORTS(sport, hnum);
+> +       INET_ADDR_COOKIE(acookie, saddr, daddr);
+> +       const struct hlist_nulls_node *node;
+> +       struct inet_ehash_bucket *head;
+> +       unsigned int hash;
+> +       spinlock_t *lock;
+> +       struct sock *sk;
+> +
+> +       hash =3D inet_ehashfn(net, daddr, hnum, saddr, sport);
+> +       head =3D inet_ehash_bucket(hashinfo, hash);
+> +       lock =3D inet_ehash_lockp(hashinfo, hash);
+> +
+> +       spin_lock(lock);
+> +       sk_nulls_for_each(sk, node, &head->chain) {
+> +               if (sk->sk_hash !=3D hash)
+> +                       continue;
+> +
+> +               if (unlikely(!inet_match(net, sk, acookie, ports, dif, sd=
+if)))
+> +                       continue;
+> +
+> +               sock_hold(sk);
+> +               spin_unlock(lock);
+> +               return sk;
+> +       }
+> +       spin_unlock(lock);
+
+Here we need to keep the lock held, and release it later.
+
+> +
+> +       return NULL;
+> +}
+> +EXPORT_SYMBOL_GPL(__inet_lookup_established_lock);
+> +
+>  /* called with local bh disabled */
+>  static int __inet_check_established(struct inet_timewait_death_row *deat=
+h_row,
+>                                     struct sock *sk, __u16 lport,
+> diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
+> index b64b49012655..1b2c971859c0 100644
+> --- a/net/ipv6/inet6_hashtables.c
+> +++ b/net/ipv6/inet6_hashtables.c
+> @@ -89,6 +89,40 @@ struct sock *__inet6_lookup_established(struct net *ne=
+t,
+>  }
+>  EXPORT_SYMBOL(__inet6_lookup_established);
+>
+> +struct sock *__inet6_lookup_established_lock(struct net *net, struct ine=
+t_hashinfo *hashinfo,
+> +                                            const struct in6_addr *saddr=
+, const __be16 sport,
+> +                                            const struct in6_addr *daddr=
+, const u16 hnum,
+> +                                            const int dif, const int sdi=
+f)
+> +{
+> +       const __portpair ports =3D INET_COMBINED_PORTS(sport, hnum);
+> +       const struct hlist_nulls_node *node;
+> +       struct inet_ehash_bucket *head;
+> +       unsigned int hash;
+> +       spinlock_t *lock;
+> +       struct sock *sk;
+> +
+> +       hash =3D inet6_ehashfn(net, daddr, hnum, saddr, sport);
+> +       head =3D inet_ehash_bucket(hashinfo, hash);
+> +       lock =3D inet_ehash_lockp(hashinfo, hash);
+> +
+> +       spin_lock(lock);
+> +       sk_nulls_for_each(sk, node, &head->chain) {
+> +               if (sk->sk_hash !=3D hash)
+> +                       continue;
+> +
+> +               if (unlikely(!inet6_match(net, sk, saddr, daddr, ports, d=
+if, sdif)))
+> +                       continue;
+> +
+> +               sock_hold(sk);
+> +               spin_unlock(lock);
+> +               return sk;
+> +       }
+> +       spin_unlock(lock);
+
+/* Same here. */
+
+> +
+> +       return NULL;
+> +}
+> +EXPORT_SYMBOL(__inet6_lookup_established_lock);
+> +
+>  static inline int compute_score(struct sock *sk, struct net *net,
+>                                 const unsigned short hnum,
+>                                 const struct in6_addr *daddr,
+> ---8<---
 
