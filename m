@@ -1,117 +1,132 @@
-Return-Path: <netdev+bounces-11851-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11852-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 18EF7734D90
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 10:25:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id DA601734D96
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 10:26:13 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 2EA6A1C20951
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 08:25:45 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1717B1C2095B
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 08:26:13 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F3E6879C1;
-	Mon, 19 Jun 2023 08:25:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE8BC79C3;
+	Mon, 19 Jun 2023 08:26:10 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E727C5393
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 08:25:42 +0000 (UTC)
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1ACF2;
-	Mon, 19 Jun 2023 01:25:39 -0700 (PDT)
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-4f845ca2d92so708317e87.1;
-        Mon, 19 Jun 2023 01:25:39 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D35925393
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 08:26:10 +0000 (UTC)
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5059310EB
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 01:26:03 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id d2e1a72fcca58-6686a05bc66so806484b3a.1
+        for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 01:26:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1687163162; x=1689755162;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=F8yD1wR7/XPi7gwA6elrYpxc4KO0mgxsWGuKssVmyeI=;
+        b=WNEWwE+H7gcDOhV2Dj5pUjomec9Q1dRItxWLOwUse39FDkRFNWtAGNXrSIHa8T7Ll2
+         uN9J8ANpjQCF9tOe8miijYmNYk0nfUdb18wt3+dAj+x3E4mJDQOUgneMkPoDaq6Ub6l8
+         Do22aI1mst4d7HhCqd7pBZn1URcges292+Fru4h5IyfEAIxCnkBm/ekYqZWn7JDoxn+v
+         KVqG7NUu7bL8bWqyMSC7/SmbEQEK+YU47feC1atSjnqmGaHtiGGe80hiBw3P6UpZunWh
+         80o2kuAu9JnmlX2azWCZHoob/dMSrAGoEVEVx/dXvOPv5CQwNZPSH0LnDb/xWz55ffL4
+         a+mQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687163138; x=1689755138;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iX4CLwxuTuO4frE1ZkNfG2gJ9+rD4aADOYrpxzsHz/k=;
-        b=EdQ9pICYHyXo74TlqjHv6RzHvb+U91P3Q5hJulSJEP12ygw8JjIUNKATCLJ9a41fGG
-         AD3aKwfxaBZotTgarEYaB/azS0fe1EZqV5oSWENa3LJpfhxedF7hk575jInBu9EbDp2C
-         A8DhRZTKpsIjH88m3AYypvMvsqp2kPPNXxjev4ftczENBorzfQH7V43yfqoXy3bPZt41
-         Li2QPjil33QUSR2mRiNm1JJUsgekQx9vqvvVzlHS+23V8pF0be/5f3uGGU6GBxnvSBpa
-         J3F34eVZufEzxEyw1e4vxWyRzTyCdNR0T6axuX3tp58zgVxoBYd84SrASRqaPd89KaHX
-         f4sQ==
-X-Gm-Message-State: AC+VfDw408D4c/ive4L2n6kbxWCZe15zwFMfJRsp+RZzsfojHoGD9xja
-	7vgPPyie1MMpenYuMLzNeq0=
-X-Google-Smtp-Source: ACHHUZ44wI+K691se6TLRFSf74cGJkGpEfK4OPsyBLOS0ZdfsAOZc8G8mvYNQR0Th0SgRlbHmYSxDw==
-X-Received: by 2002:a05:6512:25a:b0:4f7:6a87:f16f with SMTP id b26-20020a056512025a00b004f76a87f16fmr3558941lfo.4.1687163137715;
-        Mon, 19 Jun 2023 01:25:37 -0700 (PDT)
-Received: from [192.168.64.192] (bzq-219-42-90.isdn.bezeqint.net. [62.219.42.90])
-        by smtp.gmail.com with ESMTPSA id f13-20020a7bcd0d000000b003f7ba52eeccsm9853963wmj.7.2023.06.19.01.25.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Jun 2023 01:25:37 -0700 (PDT)
-Message-ID: <55e7058b-07d0-3619-3481-2d70e95875ea@grimberg.me>
-Date: Mon, 19 Jun 2023 11:25:34 +0300
+        d=1e100.net; s=20221208; t=1687163162; x=1689755162;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=F8yD1wR7/XPi7gwA6elrYpxc4KO0mgxsWGuKssVmyeI=;
+        b=UdMnzdR/NFAdHNMWFcbZEXEc5bzpist4t1Re/v4vNWc75EEV/2/xnS7qyQKOj6aD7q
+         gJW+m2gccz0rmDw12181aLdZH6xBV6/rVc84COSvo1MXaII8GAF/Cj1uEI2tWCaH4SzN
+         U0oOcXt6RUOWPfiHbRF3meJLjOAKGD1vPdhcjNVg9Ez0KeUPgcxyRuqFxddrg722mePf
+         h0IRKB/1NLBk3mFD+DnKT3eJMJqNXpZGhnO67fPRM+CsrZ1cE6vRC2C9pVWPW87hxnoj
+         7Zj7T7VdfFBtl9A9qZMn+Vw5k+rNcuDQ5zTxDfSh7mIGcPokI6NseBVXpB8xqd94Ds38
+         ZhSA==
+X-Gm-Message-State: AC+VfDxZ+kWiaUqcj14/pN0/5Ck5YAsk6xEjD0164mEKs4t8yGP9xXXR
+	m72j2MzgUG/MbtwVr4YPt9qCoQ==
+X-Google-Smtp-Source: ACHHUZ61SXRvFwz2nwiq7U1Bpd/nBf/vrNF+H3x9Gp8UobOHG9D71Y53Y6gOfu9A/lYKVSKyEcVdyA==
+X-Received: by 2002:a05:6a00:a02:b0:663:f82b:c6d9 with SMTP id p2-20020a056a000a0200b00663f82bc6d9mr10107983pfh.22.1687163162592;
+        Mon, 19 Jun 2023 01:26:02 -0700 (PDT)
+Received: from C02DV8HUMD6R.bytedance.net ([203.208.167.146])
+        by smtp.gmail.com with ESMTPSA id a6-20020aa780c6000000b00634b91326a9sm3060093pfn.143.2023.06.19.01.25.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Jun 2023 01:26:01 -0700 (PDT)
+From: Abel Wu <wuyun.abel@bytedance.com>
+To: "David S. Miller" <davem@davemloft.net>,
+	David Ahern <dsahern@kernel.org>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>
+Cc: Abel Wu <wuyun.abel@bytedance.com>,
+	netdev@vger.kernel.org (open list:NETWORKING [IPv4/IPv6]),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] inet: Save one atomic op if no memcg to charge
+Date: Mon, 19 Jun 2023 16:25:47 +0800
+Message-Id: <20230619082547.73929-1-wuyun.abel@bytedance.com>
+X-Mailer: git-send-email 2.37.3
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH net-next v2 10/17] nvme: Use sendmsg(MSG_SPLICE_PAGES)
- rather then sendpage
-Content-Language: en-US
-To: David Howells <dhowells@redhat.com>,
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: netdev@vger.kernel.org, Alexander Duyck <alexander.duyck@gmail.com>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- David Ahern <dsahern@kernel.org>, Matthew Wilcox <willy@infradead.org>,
- Jens Axboe <axboe@kernel.dk>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
- Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
- Chaitanya Kulkarni <kch@nvidia.com>, linux-nvme@lists.infradead.org
-References: <648f353c55ce8_33cfbc29413@willemb.c.googlers.com.notmuch>
- <20230617121146.716077-1-dhowells@redhat.com>
- <20230617121146.716077-11-dhowells@redhat.com>
- <755077.1687109321@warthog.procyon.org.uk>
-From: Sagi Grimberg <sagi@grimberg.me>
-In-Reply-To: <755077.1687109321@warthog.procyon.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-	version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
+If there is no net-memcg associated with the sock, don't bother
+calculating its memory usage for charge.
 
->>      struct bio_vec bvec;
->>      struct msghdr msg = { .msg_flags = MSG_SPLICE_PAGES | ... };
->>
->>      ..
->>
->>      bvec_set_virt
->>      iov_iter_bvec
->>      sock_sendmsg
->>
->> is a frequent pattern. Does it make sense to define a wrapper? Same for bvec_set_page.
-> 
-> I dunno.  I'm trying to move towards aggregating multiple pages in a bvec
-> before calling sendmsg if possible rather than doing it one page at a time,
-> but it's easier and more obvious in some places than others.
+Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
+---
+ net/ipv4/inet_connection_sock.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-That would be great to do, but nvme needs to calculate a data digest
-and doing that in a separate scan of the payload is not very cache
-friendly...
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index 65ad4251f6fd..73798282c1ef 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -706,20 +706,24 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
+ out:
+ 	release_sock(sk);
+ 	if (newsk && mem_cgroup_sockets_enabled) {
+-		int amt;
++		int amt = 0;
+ 
+ 		/* atomically get the memory usage, set and charge the
+ 		 * newsk->sk_memcg.
+ 		 */
+ 		lock_sock(newsk);
+ 
+-		/* The socket has not been accepted yet, no need to look at
+-		 * newsk->sk_wmem_queued.
+-		 */
+-		amt = sk_mem_pages(newsk->sk_forward_alloc +
+-				   atomic_read(&newsk->sk_rmem_alloc));
+ 		mem_cgroup_sk_alloc(newsk);
+-		if (newsk->sk_memcg && amt)
++		if (newsk->sk_memcg) {
++			/* The socket has not been accepted yet, no need
++			 * to look at newsk->sk_wmem_queued.
++			 */
++			amt = sk_mem_pages(newsk->sk_forward_alloc +
++					   atomic_read(&newsk->sk_rmem_alloc));
++
++		}
++
++		if (amt)
+ 			mem_cgroup_charge_skmem(newsk->sk_memcg, amt,
+ 						GFP_KERNEL | __GFP_NOFAIL);
+ 
+-- 
+2.37.3
 
-There is also the fact that the payload may be sent in portions 
-asynchronously driven by how the controller wants to accept them,
-so there is some complexity there.
-
-But worth looking at for sure.
-
-The patch looks good to me, taking it to run some tests
-(from sendpage-3-frag branch in your kernel.org tree correct?)
-
-For now, you can add:
-Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
 
