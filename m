@@ -1,144 +1,232 @@
-Return-Path: <netdev+bounces-11976-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11979-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id BA35273591C
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 16:04:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 5C78673592E
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 16:10:06 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 884E31C2037C
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 14:04:46 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 3E9E71C206FD
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 14:10:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6095011C8B;
-	Mon, 19 Jun 2023 14:04:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A76911C95;
+	Mon, 19 Jun 2023 14:10:03 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AED31119E
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 14:04:44 +0000 (UTC)
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2124.outbound.protection.outlook.com [40.107.100.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE16FB;
-	Mon, 19 Jun 2023 07:04:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CHcZLDU57uCUmpHFpuA0VdNQLgxWo7iEPPVrKiqP+GRZWFdYjSpcGhTjQfL0qwkL+FUMSUiPe9ycw4t0vf1wKePaUIPfC6DgcXALizmFxYC+0F5KpgQQ0igMPhj/MsOF/DmNHHpdkhKlmTOLxfqZO6lj4UqfHtYE4oS1sQa+zS/KmwvbK85qURKzQBX+4LDvN/QcwY8tqgwHCMnqSte78gsi9VOKzPb7+F7odgC94fSqcOO8bXhQYgmk5DYOgnwJZE0XCLj7Jw8dCIgjuePoKP1hUWQxWME4qRbly2BJ/Gu6qgvPKmjzulPyj7XF6lUWZiS+9yzHi/1pc2+BuQUAow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EyPOyztnqaoTeEkmFDGUawDZaPyUeAJpdHLRbbLSUws=;
- b=nPu4GM/eI/7RI0XdyZ7Rvrx2Gh6IaoWNXVNtzZBMhGyxupUni9V25yNCSjzMr3rO9pNuK4JR5bEsIwMiz/bLmtKplnsX9ZpvzeodVkqP7vy3F4JUZ/ZDquWe9FPtG/Q+k7hmf2bCddSRICGBqh9xRv1OBMt3YE8lnEAa6VAOp+IKlRy4v5yijnEifVE/d608KbnjoYg7++ZTWoAGjsqHo+8sxYP9nxb9x6XKMvK7+mBHbITJeNvHXdEgHx9tYZeN5ibtkQso4fwBjnUzhvsS/t3CzyNwv4YMqBOjXD9eh+YaZ1I9Glf4x2NPtwpoZTe8LLLDAv29c+/MhZnHusuWdg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EyPOyztnqaoTeEkmFDGUawDZaPyUeAJpdHLRbbLSUws=;
- b=b9xHnWNhDWTsDA76DOFDYgES6i42OrElpUsoPUpUDAPWPlVrtHcEC5D55xH95VXEQIdntnPync2+pmXfIPCFP/fOlk82K7v6ZeefwqilMxazZvznQeF4SPT+MlubFc3Opg+KcvXi3/fMCBVHZa/5f2SU45knMTorvE/AAi5+IfA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM6PR13MB4084.namprd13.prod.outlook.com (2603:10b6:5:2a3::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.36; Mon, 19 Jun
- 2023 14:04:39 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb8f:e482:76e0:fe6e%5]) with mapi id 15.20.6500.036; Mon, 19 Jun 2023
- 14:04:39 +0000
-Date: Mon, 19 Jun 2023 16:04:32 +0200
-From: Simon Horman <simon.horman@corigine.com>
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: Jeremy Kerr <jk@codeconstruct.com.au>,
-	Matt Johnston <matt@codeconstruct.com.au>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-	netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] mctp: Reorder fields in 'struct mctp_route'
-Message-ID: <ZJBgcOWNJiSpf+4K@corigine.com>
-References: <393ad1a5aef0aa28d839eeb3d7477da0e0eeb0b0.1687080803.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <393ad1a5aef0aa28d839eeb3d7477da0e0eeb0b0.1687080803.git.christophe.jaillet@wanadoo.fr>
-X-ClientProxiedBy: AM0PR02CA0117.eurprd02.prod.outlook.com
- (2603:10a6:20b:28c::14) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1532010955
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 14:10:02 +0000 (UTC)
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEAF59C
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 07:09:58 -0700 (PDT)
+Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
+	by mailout3.samsung.com (KnoxPortal) with ESMTP id 20230619140956epoutp03f2743a0c441eff0c3447b0b6a387cb7d~qFLkzGK912620426204epoutp03h
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 14:09:56 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20230619140956epoutp03f2743a0c441eff0c3447b0b6a387cb7d~qFLkzGK912620426204epoutp03h
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1687183796;
+	bh=YvsgVpaZfpGJkiQI2ColLEmDJpDQ+dd1lzxFWfaUAjo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=IMn1GN4jxMKbYipCzZnSt0/8tIXopbFS6xM3FEG+0eKocB+bfU8PSv0vV7C6cy9bc
+	 7VyzxmWGkHkeYDPdNeNz8fK7i9QtOjSRuFgNusIotUMtBG64CgvKXufTRip2v71uu9
+	 zGYrKH/vONGlfENfoKPSPv/j0T3fwRORjs4KIy+E=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+	epcas5p3.samsung.com (KnoxPortal) with ESMTP id
+	20230619140955epcas5p3159e71a65610a46d52c23f10880066ca~qFLkBn4Lm0209302093epcas5p3b;
+	Mon, 19 Jun 2023 14:09:55 +0000 (GMT)
+Received: from epsmges5p1new.samsung.com (unknown [182.195.38.174]) by
+	epsnrtp4.localdomain (Postfix) with ESMTP id 4QlBV94Bvlz4x9Pw; Mon, 19 Jun
+	2023 14:09:53 +0000 (GMT)
+Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
+	epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+	05.B5.55522.1B160946; Mon, 19 Jun 2023 23:09:53 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+	epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
+	20230619140952epcas5p2048459ecb5f40666fd5903986647174f~qFLhzlgkM0305803058epcas5p2f;
+	Mon, 19 Jun 2023 14:09:52 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+	epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20230619140952epsmtrp1ebd83c83652cefe3607b1d2db2cbad3f~qFLhxWGiZ1636116361epsmtrp1d;
+	Mon, 19 Jun 2023 14:09:52 +0000 (GMT)
+X-AuditID: b6c32a49-67ffa7000000d8e2-95-649061b19265
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+	epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+	F4.85.34491.0B160946; Mon, 19 Jun 2023 23:09:52 +0900 (KST)
+Received: from green245 (unknown [107.99.41.245]) by epsmtip2.samsung.com
+	(KnoxPortal) with ESMTPA id
+	20230619140947epsmtip2dd41727cf0f3c85379f785461b80a3cf~qFLcjFnLR1393313933epsmtip2S;
+	Mon, 19 Jun 2023 14:09:47 +0000 (GMT)
+Date: Mon, 19 Jun 2023 19:36:35 +0530
+From: Kanchan Joshi <joshi.k@samsung.com>
+To: Pavel Begunkov <asml.silence@gmail.com>
+Cc: David Ahern <dsahern@kernel.org>, Breno Leitao <leitao@debian.org>,
+	io-uring@vger.kernel.org, axboe@kernel.dk, davem@davemloft.net,
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, Matthieu Baerts
+	<matthieu.baerts@tessares.net>, Mat Martineau <martineau@kernel.org>,
+	Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>, Xin Long
+	<lucien.xin@gmail.com>, leit@fb.com, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, dccp@vger.kernel.org, mptcp@lists.linux.dev,
+	linux-sctp@vger.kernel.org, ast@kernel.org, kuniyu@amazon.com,
+	martin.lau@kernel.org, Jason Xing <kernelxing@tencent.com>, Joanne Koong
+	<joannelkoong@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Jason A. Donenfeld" <Jason@zx2c4.com>, Willem de Bruijn
+	<willemb@google.com>, Guillaume Nault <gnault@redhat.com>, Andrea Righi
+	<andrea.righi@canonical.com>
+Subject: Re: [RFC PATCH v2 1/4] net: wire up support for
+ file_operations->uring_cmd()
+Message-ID: <20230619140635.GA4046@green245>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB4084:EE_
-X-MS-Office365-Filtering-Correlation-Id: 114e37fe-341c-40cb-52a1-08db70ce1f3b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	3jQvzoL6DcIj39cgLqxpnlQ+RADg0sSsz20idqaId4yiHk+QRg/5CL1k68Q0LMbFWA6b4AzWg8diFthB0EOuxHJxNVT9Iz+Nbbfj7IwavtLs+hox2x9pKsF2jQ6bwVf0ZtrGaraJOqxDxKerol0AtGcAS94LALwGQOQ63mDSuB5CNj67p4blIORGil9HBHZCQ0CjyFnUSnXih0FkPpMbwlLvlPtMOViB+nJELuFSaeLCXGaAnFgaMPKprjSdULwqRJx4x+pDFVHCHSJ08bIQttQ9WXz+jfxmBxa1tIQLxSwKRdDrRqeXZiREQsIx7kpkx+b/wd7Pg+ZpAU9+Gia5NyGPXA2W6l05XyMfuPIpKBwGVOjCyOC7t8aIK7KJRutfSBU+nbbWVbjlZrtSvCJrnnE+bJwQC2yxxl/qAqoRmN0WAo8gBgUPRZzwbnBBLtd1XPYU09xeeut8qxALO7rp+NvNi8UzyvmmTD5AilAYzHFwbfNSYUeE94YbGq/uXv9Ak/anU1Ui8/yMIEu3rTfogrmr7n2xBy+cms+Eo//KAEJnEOBZCxhW30rGqyQhjDfB3+kDWgcBBGmcIs4anxj4JP6w7ZHpipXqv1hb2MwlzAws375xSegcFzKaRR9mFOKiSLrmXrN8WXp4rLR2yCLB/jpsCfoAjSnWEd+Pc1WBGc4=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(366004)(346002)(396003)(39830400003)(136003)(451199021)(478600001)(2906002)(4744005)(54906003)(6666004)(6486002)(2616005)(86362001)(36756003)(186003)(6506007)(6512007)(8936002)(8676002)(66476007)(66556008)(7416002)(66946007)(5660300002)(38100700002)(44832011)(316002)(6916009)(4326008)(41300700001)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?dP4iNvE+J059zQ2LntOydum8nROveFAlgVKYqsxVosTyuHx8Fouvrh0EHosj?=
- =?us-ascii?Q?KdbcT054YQNj3UcG3+ghMer4CH/qbqzsaubkdEY8bDVPFmnkG8GEIeC6MiLO?=
- =?us-ascii?Q?AyLrpo66NqDBT2EuGtWCjrjmi0SHg8rObV9fJD8zxF10XhIqInpsP+/I8Blq?=
- =?us-ascii?Q?ol1Rh8ag6h1nHgQ4lRiQBTwjAJTu9RU0EOBqxS47s3948yoNrcBGHdnjdxKY?=
- =?us-ascii?Q?gk2tJxeRb5c9dQI+qP13kkM4Cl5YMl9HUi/Jyrs89F8tc13O6MFFSIgj+mnQ?=
- =?us-ascii?Q?cTltFH7YR89ZEdGqfJdP0AgvvvnnrOAvAw5OTMpxMhH2KAVJvbZXtGdczlsr?=
- =?us-ascii?Q?s175YqEHzDk2hOqa0U5OZGezZtd4866pgm8M9eCO9lg3pdZUwiacwnkKm8lt?=
- =?us-ascii?Q?GPJ+nBfvbUtAvQyziTUny3TGRwc7TOjl/mF1qkY45t4tzADPvDYZfTQJbxX8?=
- =?us-ascii?Q?fAgJIJCbcqmYnGZfB2yPylgYK1sXRYog+Y7/F3rozD6ZTj1DLdDZu+mtKIQr?=
- =?us-ascii?Q?m+OxqCMghQjrgVFZFtWUm+eAzjfoxFHwpRjCrxXwuRwghkMhxtZf5wc0LERI?=
- =?us-ascii?Q?uTrCSf5PkC9a5cWOYk+JMnO8Ofl/kyMBNtlOwmsUMBMeqeUCg9uopnjWq82c?=
- =?us-ascii?Q?sPTdnUy7ZvaJVriwyBkgU9y8mkIFfNaMB9Y0pZYocSxaNwBPPza+sPTOoGeq?=
- =?us-ascii?Q?fz/3IGNj0OfImZOnhmBvt6UppAYiGD73h0PrTBBgejoTgSFXfeP4mYgjT1Na?=
- =?us-ascii?Q?t8C0YQ4AkA4T2EQIuBuB7FALcMnerRxthi8uBsZEdfNlO21igbY3MdXF+iV8?=
- =?us-ascii?Q?l4iUdEzJG7tTNkHQy9YvmfEtmzGvKKHcJmS4ibwrZ40wSAzeEcml9fCv0zw2?=
- =?us-ascii?Q?jM9UbYliK4V+KpJ8MRh+h7q14C/KDQ38UQwcwg8k56ZAgFmhJ/mo9xVUevT1?=
- =?us-ascii?Q?skAIm5EZ1kg4VNSl88TbQFenPXSyRh106IMZ5qrbzZoZQ/CyOGsPhuO56NgO?=
- =?us-ascii?Q?ZQyolWEgG6zUF3zbAEeGQeZdni9ugueRlraNyx/df7Rq6o7RpYihz8n4E8VB?=
- =?us-ascii?Q?aSt5fokQM4EiraWZlKBFNd4+lmiLxQL99KRdfzBgIa3LYHzVeKEZFXK/LZXx?=
- =?us-ascii?Q?YI5RTNfFkZzmI8ercs42+cX2gpchMgtq7sF8bTwniNtbNfZF547ROtpJg0XU?=
- =?us-ascii?Q?+Z5r5WzmZcmPtIzuCAMc1M2/gTaEgXygVxeO4MecqhVlWqRs+vCckRTeWeqE?=
- =?us-ascii?Q?Do+0WFYf6WQR6plkFIchn+WAmKl/N1zDINk+zMp/XJ25Xfhr0O6VozaFLWLG?=
- =?us-ascii?Q?z99D3JPDYITcaSuUl+4cbC9g+fZ4Qgm9cOhXq2yKmy7gIBBF3Z0Lev8m9QY1?=
- =?us-ascii?Q?xvOB47EDuiryHyXtU6Mh6m9CuSC1G4uHj5oS2nvgazvaj4GP7M6qXCCsv5WD?=
- =?us-ascii?Q?BFTdRLlVfW07VKNpObcsITh3f0jmV26Upn+lhjtxh/WlN4AH42Ggfx9CTpqx?=
- =?us-ascii?Q?b5VhbL4oQRa/fe/9qJHJdcw/0eKhe4zFi/CdY8s6U+RqPDJDQXZJPdUYtHw6?=
- =?us-ascii?Q?jQ9eAxUoR8qnQQOWU5TAJECXbHu6MVS1xF56EvUnzgbHGOYLnX+f9ubMm6Sz?=
- =?us-ascii?Q?pz75Pjef2j3YimRVgt1VCYWCC1riO+4/bA0qrg0YpoyeI98YOWSKcrMW8P95?=
- =?us-ascii?Q?wDK6mA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 114e37fe-341c-40cb-52a1-08db70ce1f3b
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2023 14:04:39.4028
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: x2b8zGc83HKLV659zBzlxV5OpGagtT6YuSrFJRNNq60WOdEnBPWA9Dg8OWILDJT/cnmHEc2FbjRhp/C0H05TxKZgw8sMjPum/Dv0gPqtqxA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB4084
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <d9c9bd5f-b17e-fbd8-5646-4f51b927cc6b@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Brightmail-Tracker: H4sIAAAAAAAAA02TfzBcVxTHc9/bfW+ls+Z1CTdbVFYzGQS7yuZKaNOSeKEaTdvRkWlkx75Y
+	xdruD01MO6M0UhrxIxFhaFfSQf2IEKERJERWs1UMIYMyqpYQQVUlZWh3s9tO/vucc7/fOeee
+	M4eD86pJPidWrmaUckm8gNjKarzr6upRJ8mRCmfTHNHsd2MsVFzZCNDK36MkqhrLJlBx71cs
+	tPHwGwJdbT6NIYNukkSXlutIlHallkALp3tYaGKQj5629+Goa/g+C/U1nmOjsrM1BKosGsfQ
+	k5wGgAaaiwlk0D5mo8naRQytVXSx0UbmAol6sv7BUUX3NIa6a1NJpNPaodWf5wFaaOgk9zvS
+	FX2ZbLooJYugG34Yxui19BKczk1bIOmbRWMkra3X0AO/aOj6ygyCvl1STdKPrhcCerFtkKC/
+	zB8i6F9TC3D6z3on+vyGAQ+nIuP8ZYxEyiidGXl0ojRWHhMgCH0/KjDKVywUeYj80B6Bs1yS
+	wAQIgt4J9zgYG2+ck8A5SRKvMabCJSqVwOsNf2WiRs04yxJV6gABo5DGK3wUnipJgkojj/GU
+	M+q9IqHQ29coPB4nS8mcZysm+Cerc4UpIMsuE3A4kPKBNU2HM8FWDo+6BWBp3SOWOVgG8Gpq
+	oTGwMgarAOry3U1sMtycTQVmUSuAYyN5Fsc0gB1lM8CkYlE7oX6tCjOVIChX2HdeY0rbUu7w
+	8cMO0qTHKQMB8/P0hOnBhoqA9xa1uEnPpXbDuZKDpjSXehneL5x63oQVFQDz6gowE2+jXOCd
+	xi7M3NCyFRzSeZs5CI5uPCXNbAPnuhoszIez2ekWjob9hT0Wrxr+3tJu4TfhaX02bmKckkFD
+	Z5uFrWHW+hRmnhYXfp3OM8t3wPE8A9vM9vC3S99bmIbNjXrLfC5jsHf+AjsHOBW98J2iF0qY
+	eS/MWEplFxlL4NQrsHyTY0ZXWNvspQXsSrCdUagSYhiVr0IkZz77f8HRiQn14PnZuB36EYxN
+	LHl2AIwDOgDk4AJb7pHWc1IeVyo5lcwoE6OUmnhG1QF8jdvJxfnbohONdydXR4l8/IQ+YrHY
+	x+91sUhgz73bnSXlUTESNRPHMApG+Z8P41jxU7Co41/I1GeTdDXPqtodViPz/cOSu7wy5EdW
+	C7v1DrxPVzzuvXpmI9upv1N9OGH0sovn8h8gweG9gmf7Qjkl+4YuBI+Kr3tc43m0zlWUH/34
+	RJo24lhe/kXffkd77mZTdOStkV3BK9af6GU708vfVoXZCd0rGd9gjPx26kZSy5561Y3Y0ICf
+	gre3jZCDuhBwNCjlwYF6l9deqqT8ws40HaLvfDj1Qd8uw/gp5vNx2mpzR+DihM/6g7Kllr9E
+	H9msu9YemNYt7p+5HbGMU3HqNrTFbcamdPwt26hkpycuKD93sjdkS+DF3c5XZmMiTriXDmeu
+	NrQfy3j32sk1a8HcTIiY3+o9IGCpZBKRG65USf4Flu+GQL8EAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Sf0wTZxzG895d744mNSeofcGgS7ea6BjaKexN0GXESU6XGWc0LM4B1V7w
+	BwXW2omKS0uVaJUfgxLGrWijhpWCMGpXBKI41FYQsMYBI1BFI0K1tlPZHBXQtMTof988n8/z
+	/PWl8cgZIobenb2PU2XLsySkkHBclSz+5Hd5qWLFKasUeU97CGSyOgCamByiUJ2nhESmW0cI
+	ND1wgkQNrUcxNOp8QKFfnjdRSH+2kUT+o70EGumLQS//dOPINdhJILejWIBqTp4nkZW/i6Gn
+	pXaA7rSaSDRqfiJADxoDGApaXAI0bfBTqLfoNY4s3Y8w1N1YQCGneQH676YPIL/9GvVFLGtx
+	GwQsry0iWXvtIMYGC6tx9me9n2JbeA/Fmm0a9k6PhrVZj5Nse3U9xY5fqAJs4HIfyeoq+kl2
+	uKASZ1/YFrHl06P4JmabcLWCy9r9I6da/nmGcBc/YaRyy2Ce6cptgRYMRhlABA2ZVbDFWwAM
+	QEhHMm0A9lkCglkghvr+/6nZOwrWzoxRs9JDAP3HekAIEIwUdgXrMAOgaZJZCt3lmlA8j/kY
+	PhnoCPs485SEUw49EQJRTCq8HjDjIV/ExMHH1Smzm2cwOO31YiFHxMyFnVUPwz7OJMJTF+6H
+	fZxZCH+boUNxBLMGljVVhvX5zIfwisOFlYK5/Htt/r02/65tBrgVRHO5amWmUi3LlWVz++PV
+	cqVak50ZvzNHaQPhF1m29CJotv4T3wEwGnQASOOSeaLNl4oVkSKF/MBBTpWTrtJkceoOsJAm
+	JGKReLxIEclkyvdxezkul1O9pRgdEaPFir8fkqbA4eR2obf+gzHx3wt6DFfHnZVHkmNfX5yK
+	vSx8ue4H9GrM9UyxNmd12zffpS0ZjM7/KOJVM0DcYeXKhMmV/47ofF3lztoa6xzbihO/puYl
+	Oc5t3d5WoxIPDCe573kq0n9Cwr82rnEdmOzvLs7v/8ypmLze3tK5PbWzcPmiM/Tt5A1ld7fJ
+	LEVjXwW+pge+fBx3yPhIShyyT2CW001KXXTQWPIsI5F/PiSVTRTqtKWfmrb40vjxPXhFQ8Li
+	Kar12x1xvvmNDUnrz1JzDpek5Qm7PBn5KaZ0WlN3PnVz754NB0e064/nGO1/lFyzvajXpe/1
+	XdpfcCOzO6g3HmuWEOpdctkyXKWWvwGYOeVpkQMAAA==
+X-CMS-MailID: 20230619140952epcas5p2048459ecb5f40666fd5903986647174f
+X-Msg-Generator: CA
+Content-Type: multipart/mixed;
+	boundary="----PcSJ1RlEyPKfjXIiTsweH-7MCPtMf9v3nlMrb72LWO-fIHxy=_7a99d_"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20230619092935epcas5p26ad065e6c9d339687802b9c26a4f0fbc
+References: <20230614110757.3689731-1-leitao@debian.org>
+	<20230614110757.3689731-2-leitao@debian.org>
+	<6b5e5988-3dc7-f5d6-e447-397696c0d533@kernel.org>
+	<CGME20230619092935epcas5p26ad065e6c9d339687802b9c26a4f0fbc@epcas5p2.samsung.com>
+	<d9c9bd5f-b17e-fbd8-5646-4f51b927cc6b@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Sun, Jun 18, 2023 at 11:33:55AM +0200, Christophe JAILLET wrote:
-> Group some variables based on their sizes to reduce hole and avoid padding.
-> On x86_64, this shrinks the size of 'struct mctp_route'
-> from 72 to 64 bytes.
-> 
-> It saves a few bytes of memory and is more cache-line friendly.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+------PcSJ1RlEyPKfjXIiTsweH-7MCPtMf9v3nlMrb72LWO-fIHxy=_7a99d_
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Disposition: inline
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+On Mon, Jun 19, 2023 at 10:28:30AM +0100, Pavel Begunkov wrote:
+>On 6/14/23 16:15, David Ahern wrote:
+>>On 6/14/23 5:07 AM, Breno Leitao wrote:
+>>>diff --git a/include/linux/net.h b/include/linux/net.h
+>>>index 8defc8f1d82e..58dea87077af 100644
+>>>--- a/include/linux/net.h
+>>>+++ b/include/linux/net.h
+>>>@@ -182,6 +182,8 @@ struct proto_ops {
+>>>  	int	 	(*compat_ioctl) (struct socket *sock, unsigned int cmd,
+>>>  				      unsigned long arg);
+>>>  #endif
+>>>+	int		(*uring_cmd)(struct socket *sock, struct io_uring_cmd *cmd,
+>>>+				     unsigned int issue_flags);
+>>>  	int		(*gettstamp) (struct socket *sock, void __user *userstamp,
+>>>  				      bool timeval, bool time32);
+>>>  	int		(*listen)    (struct socket *sock, int len);
+>>>diff --git a/include/net/sock.h b/include/net/sock.h
+>>>index 62a1b99da349..a49b8b19292b 100644
+>>>--- a/include/net/sock.h
+>>>+++ b/include/net/sock.h
+>>>@@ -111,6 +111,7 @@ typedef struct {
+>>>  struct sock;
+>>>  struct proto;
+>>>  struct net;
+>>>+struct io_uring_cmd;
+>>>  typedef __u32 __bitwise __portpair;
+>>>  typedef __u64 __bitwise __addrpair;
+>>>@@ -1259,6 +1260,9 @@ struct proto {
+>>>  	int			(*ioctl)(struct sock *sk, int cmd,
+>>>  					 int *karg);
+>>>+	int			(*uring_cmd)(struct sock *sk,
+>>>+					     struct io_uring_cmd *cmd,
+>>>+					     unsigned int issue_flags);
+>>>  	int			(*init)(struct sock *sk);
+>>>  	void			(*destroy)(struct sock *sk);
+>>>  	void			(*shutdown)(struct sock *sk, int how);
+>>>@@ -1934,6 +1938,8 @@ int sock_common_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>>>  			int flags);
+>>>  int sock_common_setsockopt(struct socket *sock, int level, int optname,
+>>>  			   sockptr_t optval, unsigned int optlen);
+>>>+int sock_common_uring_cmd(struct socket *sock, struct io_uring_cmd *cmd,
+>>>+			  unsigned int issue_flags);
+>>>  void sk_common_release(struct sock *sk);
+>>>diff --git a/net/core/sock.c b/net/core/sock.c
+>>>index 1df7e432fec5..339fa74db60f 100644
+>>>--- a/net/core/sock.c
+>>>+++ b/net/core/sock.c
+>>>@@ -3668,6 +3668,18 @@ int sock_common_setsockopt(struct socket *sock, int level, int optname,
+>>>  }
+>>>  EXPORT_SYMBOL(sock_common_setsockopt);
+>>>+int sock_common_uring_cmd(struct socket *sock, struct io_uring_cmd *cmd,
+>>>+			  unsigned int issue_flags)
+>>>+{
+>>>+	struct sock *sk = sock->sk;
+>>>+
+>>>+	if (!sk->sk_prot || !sk->sk_prot->uring_cmd)
+>>>+		return -EOPNOTSUPP;
+>>>+
+>>>+	return sk->sk_prot->uring_cmd(sk, cmd, issue_flags);
+>>>+}
+>>>+EXPORT_SYMBOL(sock_common_uring_cmd);
+>>>+
+>>
+>>
+>>io_uring is just another in-kernel user of sockets. There is no reason
+>>for io_uring references to be in core net code. It should be using
+>>exposed in-kernel APIs and doing any translation of its op codes in
+>>io_uring/  code.
+>
+>That callback is all about file dependent operations, just like ioctl.
+>And as the patch in question is doing socket specific stuff, I think
+>architecturally it fits well. 
 
+I also feel that it fits well.
+Other users of uring-cmd (nvme, ublk) follow the same model.
+
+------PcSJ1RlEyPKfjXIiTsweH-7MCPtMf9v3nlMrb72LWO-fIHxy=_7a99d_
+Content-Type: text/plain; charset="utf-8"
+
+
+------PcSJ1RlEyPKfjXIiTsweH-7MCPtMf9v3nlMrb72LWO-fIHxy=_7a99d_--
 
