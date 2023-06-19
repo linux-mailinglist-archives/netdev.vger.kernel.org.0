@@ -1,165 +1,206 @@
-Return-Path: <netdev+bounces-11842-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11843-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 69945734C56
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 09:27:52 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2E70A734CB6
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 09:53:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 1B29A280F6E
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 07:27:51 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 5F7571C208B7
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 07:53:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 56080524C;
-	Mon, 19 Jun 2023 07:27:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 604CF539C;
+	Mon, 19 Jun 2023 07:53:29 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43A6E3C35
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 07:27:49 +0000 (UTC)
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2196DE7D
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 00:27:43 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id 3f1490d57ef6-bd69bb4507eso3783983276.2
-        for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 00:27:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1687159662; x=1689751662;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=S9UyzP2VJo10c54Mi2KWgqzi733xkgqeMtxThUaIwoA=;
-        b=1y+XMFloO6vOAX5y63C4a/HLeiKg5aZD8hL1yN4bMBW7LA0J2Y1iCoG4BxSBLb0yMI
-         jHvDW2eUik1I3gmVJOObh+nXI7xoRhaDcj25xq8J6XHXoUYje03I2/I9ZtBDB9l01Jxf
-         lFAOWWXmSTEa7InUuVILfkEfxMUSyfWiR8IuBj74YwvyQod9CuZosn1WDSBd0zYI8sRl
-         Heqdw9FrliHAKVC6LWhctytsdGQLcajil4rOHI7iUr8l9oqRS4oyz7qozl9iYunzfhNu
-         4lUFEfePbj1OoZ6kYomNhLeXb0L66kn4/VgcySML6VrHrEPr61z2KjXMmA5IEaomUJXI
-         MoPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687159662; x=1689751662;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=S9UyzP2VJo10c54Mi2KWgqzi733xkgqeMtxThUaIwoA=;
-        b=M6T2Qcffbj6RKCU3e5rZIR4VxBAQB3u/Twn1cbe0huLFn5lAPNV0MjjKgRU7eP/0yP
-         eTKatq+bTHVHCcxJndj0o/DQE1RhccM5BfMQ91HSmp6pCI7X3ls4x1rS6Cg9SNvVoTPH
-         1UNXz2wnqKlbu5vXM1YL2mDwcC/w4PZjRsK+TAFEimd60k+vhzKFK4/Sl0adK5S1WoJU
-         RTzD/r6rEvfVseM5tamY1jqUfbwwEJz6kB1cRzpn7GE4jpN/USM7rs/qNyZc3VAlBIU+
-         Hg974A75gr7PmQ7pI3VZuUVt3NGHcBnAiCRb7HLmXjoxoVAlBFnj9+FbdxHjmKDLKiDe
-         IW0A==
-X-Gm-Message-State: AC+VfDx4J0luy8DBb1bxPH5H24iX9IiI8sOgKu9ZnjxHFJoQ06+e9K4d
-	U8l7wBKc+mQKn7RQcOuqB9Z29JuxePMCTA==
-X-Google-Smtp-Source: ACHHUZ7vpxNrAvLZTIyqSJoNHoIOTTm9m8CJymZ+/250HbPVJOqUut8rwMxKU9rGCRrM3fkFdZehK59+Wv0uxg==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:86:b0:bc7:4714:182e with SMTP id
- h6-20020a056902008600b00bc74714182emr769897ybs.3.1687159662131; Mon, 19 Jun
- 2023 00:27:42 -0700 (PDT)
-Date: Mon, 19 Jun 2023 07:27:40 +0000
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 536AB5395
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 07:53:29 +0000 (UTC)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF9CFA;
+	Mon, 19 Jun 2023 00:53:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1687161207; x=1718697207;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MiB/if3MwjUhaxKHqfTF5j5XLIhDj9DbE/a/MWuxAUI=;
+  b=Og9JYVciaH4dGSm2tSYwomtoqTbbDJHSgtlDQzLCELJKym65Kp6gyRMU
+   jxAeBnMgMee9UbaDbCMieWnT9PjWYZBYn8D+TE1xx5dFJhic/lL54m4c0
+   CA7rcKm2mKCBc98S/sw+eUlmu1Woaz9Gd2mW+ZSCajlzdwimyGb3760af
+   Qg4OPG2rCdV2i+Hp1pCj5d0RKyXTiC6JtPlQQYgP0xR6qR4AVfw6uwpiJ
+   VDbc+XzJbmQ0rJTrd4iMt6m8s9dBGvER4bdQnDJQdJ1CncDaJsjnUFCYZ
+   o8SB+PSthiwfXuMPy993XeOvSLEg0eQzdWHQq0PfuulnHAOegmkXVao5/
+   w==;
+X-IronPort-AV: E=Sophos;i="6.00,254,1681196400"; 
+   d="scan'208";a="219214935"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Jun 2023 00:53:27 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 19 Jun 2023 00:53:26 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Mon, 19 Jun 2023 00:53:26 -0700
+Date: Mon, 19 Jun 2023 09:53:25 +0200
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
+To: "Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
+CC: <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+	<davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+	<pabeni@redhat.com>, <richardcochran@gmail.com>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <sebastian.tobuschat@nxp.com>
+Subject: Re: [PATCH net-next v1 05/14] net: phy: nxp-c45-tja11xx: prepare the
+ ground for TJA1120
+Message-ID: <20230619075325.ywg4jv6h2hifqjx4@soft-dev3-1>
+References: <20230616135323.98215-1-radu-nicolae.pirea@oss.nxp.com>
+ <20230616135323.98215-6-radu-nicolae.pirea@oss.nxp.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.41.0.185.g7c58973941-goog
-Message-ID: <20230619072740.464528-1-edumazet@google.com>
-Subject: [PATCH net-next] ipv6: fix a typo in ip6mr_sk_ioctl()
-From: Eric Dumazet <edumazet@google.com>
-To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org, eric.dumazet@gmail.com, 
-	Eric Dumazet <edumazet@google.com>, syzbot <syzkaller@googlegroups.com>, 
-	Breno Leitao <leitao@debian.org>, Willem de Bruijn <willemb@google.com>, David Ahern <dsahern@kernel.org>, 
-	Kuniyuki Iwashima <kuniyu@amazon.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-	autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20230616135323.98215-6-radu-nicolae.pirea@oss.nxp.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-SIOCGETSGCNT_IN6 uses a "struct sioc_sg_req6 buffer".
+The 06/16/2023 16:53, Radu Pirea (NXP OSS) wrote:
 
-Unfortunately the blamed commit made hard to ensure type safety.
+Hi Radu,
 
-syzbot reported:
+> 
+> 
+> -struct nxp_c45_phy_stats {
+> -       const char      *name;
+> -       u8              mmd;
+> -       u16             reg;
+> -       u8              off;
+> -       u16             mask;
+> -};
+> +static inline
 
-BUG: KASAN: stack-out-of-bounds in ip6mr_ioctl+0xba3/0xcb0 net/ipv6/ip6mr.c:1917
-Read of size 16 at addr ffffc900039afb68 by task syz-executor937/5008
+It is recommended not to use inline inside .c files.
 
-CPU: 1 PID: 5008 Comm: syz-executor937 Not tainted 6.4.0-rc6-syzkaller-01304-gc08afcdcf952 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/27/2023
-Call Trace:
-<TASK>
-__dump_stack lib/dump_stack.c:88 [inline]
-dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
-print_address_description.constprop.0+0x2c/0x3c0 mm/kasan/report.c:351
-print_report mm/kasan/report.c:462 [inline]
-kasan_report+0x11c/0x130 mm/kasan/report.c:572
-ip6mr_ioctl+0xba3/0xcb0 net/ipv6/ip6mr.c:1917
-rawv6_ioctl+0x4e/0x1e0 net/ipv6/raw.c:1143
-sock_ioctl_out net/core/sock.c:4186 [inline]
-sk_ioctl+0x151/0x440 net/core/sock.c:4214
-inet6_ioctl+0x1b8/0x290 net/ipv6/af_inet6.c:582
-sock_do_ioctl+0xcc/0x230 net/socket.c:1189
-sock_ioctl+0x1f8/0x680 net/socket.c:1306
-vfs_ioctl fs/ioctl.c:51 [inline]
-__do_sys_ioctl fs/ioctl.c:870 [inline]
-__se_sys_ioctl fs/ioctl.c:856 [inline]
-__x64_sys_ioctl+0x197/0x210 fs/ioctl.c:856
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f255849bad9
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd06792778 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f255849bad9
-RDX: 0000000000000000 RSI: 00000000000089e1 RDI: 0000000000000003
-RBP: 00007f255845fc80 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f255845fd10
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-</TASK>
+> +const struct nxp_c45_phy_data *nxp_c45_get_data(struct phy_device *phydev)
+> +{
+> +       return phydev->drv->driver_data;
+> +}
+> +
+> +static inline
+> +const struct nxp_c45_regmap *nxp_c45_get_regmap(struct phy_device *phydev)
+> +{
+> +       const struct nxp_c45_phy_data *phy_data = nxp_c45_get_data(phydev);
+> +
+> +       return phy_data ? phy_data->regmap : NULL;
 
-The buggy address belongs to stack of task syz-executor937/5008
-and is located at offset 40 in frame:
-sk_ioctl+0x0/0x440 net/core/sock.c:4172
+From what I can see nxp_c45_get_data(phydev) can't return a NULL pointer
+so then I don't think you need the above check. And then maybe you can
+remove more of the checks in the code where you check for data to not be
+NULL.
+The reason why I say nxp_c45_get_data(phydev) can't return a NULL is
+because few lines bellow you have:
 
-This frame has 2 objects:
-[32, 36) 'karg'
-[48, 88) 'buffer'
+.driver_data            = &tja1103_phy_data,
 
-Fixes: e1d001fa5b47 ("net: ioctl: Use kernel memory on protocol ioctl callbacks")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Breno Leitao <leitao@debian.org>
-Cc: Willem de Bruijn <willemb@google.com>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- include/linux/mroute6.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+...
 
-diff --git a/include/linux/mroute6.h b/include/linux/mroute6.h
-index 2f95d5b4e47af6e1a53c9164e1ebca288e0d3d2e..63ef5191cc57908ca6b0da692c9e812875715000 100644
---- a/include/linux/mroute6.h
-+++ b/include/linux/mroute6.h
-@@ -109,13 +109,13 @@ static inline int ip6mr_sk_ioctl(struct sock *sk, unsigned int cmd,
- 		struct sioc_mif_req6 buffer;
- 
- 		return sock_ioctl_inout(sk, cmd, arg, &buffer,
--				      sizeof(buffer));
-+					sizeof(buffer));
- 		}
- 	case SIOCGETSGCNT_IN6: {
--		struct sioc_mif_req6 buffer;
-+		struct sioc_sg_req6 buffer;
- 
- 		return sock_ioctl_inout(sk, cmd, arg, &buffer,
--				      sizeof(buffer));
-+					sizeof(buffer));
- 		}
- 	}
- 
+> +}
+> @@ -806,6 +835,7 @@ static int nxp_c45_hwtstamp(struct mii_timestamper *mii_ts,
+>         struct nxp_c45_phy *priv = container_of(mii_ts, struct nxp_c45_phy,
+>                                                 mii_ts);
+>         struct phy_device *phydev = priv->phydev;
+> +       const struct nxp_c45_phy_data *data;
+>         struct hwtstamp_config cfg;
+> 
+>         if (copy_from_user(&cfg, ifreq->ifr_data, sizeof(cfg)))
+> @@ -814,6 +844,7 @@ static int nxp_c45_hwtstamp(struct mii_timestamper *mii_ts,
+>         if (cfg.tx_type < 0 || cfg.tx_type > HWTSTAMP_TX_ON)
+>                 return -ERANGE;
+> 
+> +       data = nxp_c45_get_data(phydev);
+>         priv->hwts_tx = cfg.tx_type;
+> 
+>         switch (cfg.rx_filter) {
+> @@ -831,27 +862,26 @@ static int nxp_c45_hwtstamp(struct mii_timestamper *mii_ts,
+>         }
+> 
+>         if (priv->hwts_rx || priv->hwts_tx) {
+> -               phy_write_mmd(phydev, MDIO_MMD_VEND1, VEND1_EVENT_MSG_FILT,
+> +               phy_write_mmd(phydev, MDIO_MMD_VEND1,
+> +                             data->regmap->vend1_event_msg_filt,
+>                               EVENT_MSG_FILT_ALL);
+> -               phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1,
+> -                                  VEND1_PORT_PTP_CONTROL,
+> -                                  PORT_PTP_CONTROL_BYPASS);
+> +               if (data && data->ptp_enable)
+
+Like here
+
+> +                       data->ptp_enable(phydev, true);
+>         } else {
+> -               phy_write_mmd(phydev, MDIO_MMD_VEND1, VEND1_EVENT_MSG_FILT,
+> +               phy_write_mmd(phydev, MDIO_MMD_VEND1,
+> +                             data->regmap->vend1_event_msg_filt,
+>                               EVENT_MSG_FILT_NONE);
+> -               phy_set_bits_mmd(phydev, MDIO_MMD_VEND1, VEND1_PORT_PTP_CONTROL,
+> -                                PORT_PTP_CONTROL_BYPASS);
+> +               if (data && data->ptp_enable)
+
+And here and few other places bellow:
+
+> +                       data->ptp_enable(phydev, false);
+>         }
+> 
+>         if (nxp_c45_poll_txts(priv->phydev))
+>                 goto nxp_c45_no_ptp_irq;
+> 
+>         if (priv->hwts_tx)
+> -               phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
+> -                                VEND1_PTP_IRQ_EN, PTP_IRQ_EGR_TS);
+> +               nxp_c45_set_reg_field(phydev, &data->regmap->irq_egr_ts_en);
+>         else
+> -               phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1,
+> -                                  VEND1_PTP_IRQ_EN, PTP_IRQ_EGR_TS);
+> +               nxp_c45_clear_reg_field(phydev, &data->regmap->irq_egr_ts_en);
+> 
+
+...
+
+> 
+> +static const struct nxp_c45_phy_data tja1103_phy_data = {
+> +       .regmap = &tja1103_regmap,
+> +       .stats = tja1103_hw_stats,
+> +       .n_stats = ARRAY_SIZE(tja1103_hw_stats),
+> +       .ptp_clk_period = PTP_CLK_PERIOD_100BT1,
+> +       .counters_enable = tja1103_counters_enable,
+> +       .ptp_init = tja1103_ptp_init,
+> +       .ptp_enable = tja1103_ptp_enable,
+> +};
+> +
+>  static struct phy_driver nxp_c45_driver[] = {
+>         {
+>                 PHY_ID_MATCH_MODEL(PHY_ID_TJA_1103),
+>                 .name                   = "NXP C45 TJA1103",
+>                 .features               = PHY_BASIC_T1_FEATURES,
+> +               .driver_data            = &tja1103_phy_data,
+>                 .probe                  = nxp_c45_probe,
+>                 .soft_reset             = nxp_c45_soft_reset,
+>                 .config_aneg            = genphy_c45_config_aneg,
+> --
+> 2.34.1
+> 
+> 
+
 -- 
-2.41.0.185.g7c58973941-goog
-
+/Horatiu
 
