@@ -1,153 +1,150 @@
-Return-Path: <netdev+bounces-11858-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11859-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id F1D50734E8D
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 10:50:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 3234A734E90
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 10:50:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 58884281021
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 08:50:37 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 6980B2810E0
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 08:50:55 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3FA0ABE47;
-	Mon, 19 Jun 2023 08:50:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1E062BA43;
+	Mon, 19 Jun 2023 08:50:23 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33F50BE45
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 08:50:19 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DBBD1
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 01:49:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1687164596;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=y6jIGo4xTlprhScv166cVpFrTc6t8hh4yqvX6aPSWM0=;
-	b=TEaapDIDZPOPRxn9MTJWwcfzP3UhbaCEc5jqcbAANW8DhysLu8t/h7HrwGj6fvw+40CLdz
-	rBvB/z5o+5dSj2hSsAjAY/ZiVOxlnTMO84Hha5hSmNTztCcygTLe26Hh2V1tJvQ5jhd3t2
-	V32Dk2iulTcdK4Mcg1r4e3cLT+momDU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-623--BO6auxTNqi6EjEutk2LbA-1; Mon, 19 Jun 2023 04:49:52 -0400
-X-MC-Unique: -BO6auxTNqi6EjEutk2LbA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D1F6738173C3;
-	Mon, 19 Jun 2023 08:49:51 +0000 (UTC)
-Received: from swamp.redhat.com (unknown [10.45.224.141])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 57F7CC1604C;
-	Mon, 19 Jun 2023 08:49:49 +0000 (UTC)
-From: Petr Oros <poros@redhat.com>
-To: netdev@vger.kernel.org
-Cc: jesse.brandeburg@intel.com,
-	anthony.l.nguyen@intel.com,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	michal.swiatkowski@linux.intel.com,
-	jacob.e.keller@intel.com,
-	intel-wired-lan@lists.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH net] ice: ice_vsi_release cleanup
-Date: Mon, 19 Jun 2023 10:49:48 +0200
-Message-ID: <20230619084948.360128-1-poros@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12D8CBE45
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 08:50:22 +0000 (UTC)
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71981B4;
+	Mon, 19 Jun 2023 01:50:05 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id d2e1a72fcca58-6668b13c7daso1002959b3a.1;
+        Mon, 19 Jun 2023 01:50:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1687164605; x=1689756605;
+        h=content-transfer-encoding:mime-version:references:in-reply-to:from
+         :subject:cc:to:message-id:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=dX39+CU4/5ysVNF0CJKPL8tEIKfEU4/6ptS92TtYaX4=;
+        b=mnDveZCTFK9TMCYyl5PfZUF+C560poHcX5m+5IU2+TxXKYyymKG0gXvQmyKACX7bER
+         vNqrRKT7P2zcQ3GlU6Yf6+j9ipccdmWuG8wgqIle74sXVTLOY0laZBUhQCcYDiI0Sb/6
+         AYw1eb+Wk9upCJ8h4QJrJW7e40pJWd71AEL03DhGGJnd3xuCXlraPT3pvIzfRyPZaa4q
+         sMRrAuHv4pATcWIJvqYORuF//IwS/mhmf36AC4hT5UihdrTZqda+Vd7ZqkXnLzN5tIRa
+         IZukMUqay8PZDM5TdTdXlxdr6ZG4c0gK/6IsMHjQ3ClMk7ukuMW3kieQXSviRNk2M1U8
+         XBzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687164605; x=1689756605;
+        h=content-transfer-encoding:mime-version:references:in-reply-to:from
+         :subject:cc:to:message-id:date:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=dX39+CU4/5ysVNF0CJKPL8tEIKfEU4/6ptS92TtYaX4=;
+        b=lKmQoFHB0N6V8MVhANKCMvgve0/IfOD6skjc5WQWm5UG2itstXmVEJkGHdlwh1FDcG
+         lnmuj2Ns8vchInB/weh7a41A7E/I9YnjWUTBhCeldpjEjRUw/tofSg1SFmCyb+bapxpU
+         3iP1FAhKPfKLNKX5P9p/8NRm8RV9pZaHDIHScQxDzP8V0nmx4QvNFJX2BPzI3zuvOezH
+         VQI23Plzul0WMVBaIQU9J8VjZnkGY4Ss9t984VOJWxK8aU7/XXq4y5dXEhm9IeE4mUZC
+         Egr2O7fEXzlXz5eX2Rsn2uwsbMzGSZOW/tzERnr12BKTEltmMqsO9SUvfu52lNJOUCkH
+         jL9Q==
+X-Gm-Message-State: AC+VfDx9Ox80v4LahDw4boIigd6XUbqg2ZdPAu8e7snRZvUI8Ip6f2Jg
+	+0nBeLw8gqLVmqiIM3s8Gtg=
+X-Google-Smtp-Source: ACHHUZ5y/SFB8Chp3NOXvZe01fLhPfztc5niTNZEV+vka1rlmFTXw8P0fP35NbM+i07k3BpIgErQRw==
+X-Received: by 2002:a05:6a00:1d95:b0:666:efc7:2463 with SMTP id z21-20020a056a001d9500b00666efc72463mr7533007pfw.2.1687164605056;
+        Mon, 19 Jun 2023 01:50:05 -0700 (PDT)
+Received: from localhost (ec2-54-68-170-188.us-west-2.compute.amazonaws.com. [54.68.170.188])
+        by smtp.gmail.com with ESMTPSA id q18-20020a62e112000000b0064ccfb73cb8sm2000796pfh.46.2023.06.19.01.50.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Jun 2023 01:50:03 -0700 (PDT)
+Date: Mon, 19 Jun 2023 17:50:03 +0900 (JST)
+Message-Id: <20230619.175003.876496330266041709.ubuntu@gmail.com>
+To: alice@ryhl.io
+Cc: andrew@lunn.ch, kuba@kernel.org, fujita.tomonori@gmail.com,
+ netdev@vger.kernel.org, rust-for-linux@vger.kernel.org,
+ aliceryhl@google.com, miguel.ojeda.sandonis@gmail.com
+Subject: Re: [PATCH 0/5] Rust abstractions for network device drivers
+From: FUJITA Tomonori <fujita.tomonori@gmail.com>
+In-Reply-To: <c1b23f21-d161-6241-26fb-7a2cbc4c059c@ryhl.io>
+References: <053cb4c3-aab1-23b3-56e3-4f1741e69404@ryhl.io>
+	<7dbf3c85-02ca-4c9b-b40d-adcdb85305dd@lunn.ch>
+	<c1b23f21-d161-6241-26fb-7a2cbc4c059c@ryhl.io>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-	autolearn_force=no version=3.4.6
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Since commit 6624e780a577fc ("ice: split ice_vsi_setup into smaller
-functions") ice_vsi_release does things twice. There is unregister
-netdev which is unregistered in ice_deinit_eth also.
+Hi,
 
-It also unregisters the devlink_port twice which is also unregistered
-in ice_deinit_eth(). This double deregistration is hidden because
-devl_port_unregister ignores the return value of xa_erase.
+On Sat, 17 Jun 2023 12:08:26 +0200
+Alice Ryhl <alice@ryhl.io> wrote:
 
-[   68.642167] Call Trace:
-[   68.650385]  ice_devlink_destroy_pf_port+0xe/0x20 [ice]
-[   68.655656]  ice_vsi_release+0x445/0x690 [ice]
-[   68.660147]  ice_deinit+0x99/0x280 [ice]
-[   68.664117]  ice_remove+0x1b6/0x5c0 [ice]
+> On 6/16/23 22:04, Andrew Lunn wrote:
+>>> Yes, you can certainly put a WARN_ON in the destructor.
+>>>
+>>> Another possibility is to use a scope to clean up. I don't know
+>>> anything
+>>> about these skb objects are used, but you could have the user define a
+>>> "process this socket" function that you pass a pointer to the skb,
+>>> then make
+>>> the return value be something that explains what should be done with
+>>> the
+>>> packet. Since you must return a value of the right type, this forces
+>>> you to
+>>> choose.
+>>>
+>>> Of course, this requires that the processing of packets can be
+>>> expressed as
+>>> a function call, where it only inspects the packet for the duration of
+>>> that
+>>> function call. (Lifetimes can ensure that the skb pointer does not
+>>> escape
+>>> the function.)
+>>>
+>>> Would something like that work?
+>> I don't think so, at least not in the contest of an Rust Ethernet
+>> driver.
+>> There are two main flows.
+>> A packet is received. An skb is allocated and the received packet is
+>> placed into the skb. The Ethernet driver then hands the packet over to
+>> the network stack. The network stack is free to do whatever it wants
+>> with the packet. Things can go wrong within the driver, so at times it
+>> needs to free the skb rather than pass it to the network stack, which
+>> would be a drop.
+>> The second flow is that the network stack has a packet it wants sent
+>> out an Ethernet port, in the form of an skb. The skb gets passed to
+>> the Ethernet driver. The driver will do whatever it needs to do to
+>> pass the contents of the skb to the hardware. Once the hardware has
+>> it, the driver frees the skb. Again, things can go wrong and it needs
+>> to free the skb without sending it, which is a drop.
+>> So the lifetime is not a simple function call.
+>> The drop reason indicates why the packet was dropped. It should give
+>> some indication of what problem occurred which caused the drop. So
+>> ideally we don't want an anonymous drop. The C code does not enforce
+>> that, but it would be nice if the rust wrapper to dispose of an skb
+>> did enforce it.
+> 
+> It sounds like a destructor with WARN_ON is the best approach right
+> now.
 
-[  171.103841] Call Trace:
-[  171.109607]  ice_devlink_destroy_pf_port+0xf/0x20 [ice]
-[  171.114841]  ice_remove+0x158/0x270 [ice]
-[  171.118854]  pci_device_remove+0x3b/0xc0
-[  171.122779]  device_release_driver_internal+0xc7/0x170
-[  171.127912]  driver_detach+0x54/0x8c
-[  171.131491]  bus_remove_driver+0x77/0xd1
-[  171.135406]  pci_unregister_driver+0x2d/0xb0
-[  171.139670]  ice_module_exit+0xc/0x55f [ice]
+Better to simply BUG()? We want to make sure that a device driver
+explicity calls a function that consumes a skb object (on tx path,
+e.g., napi_consume_skb()). If a device driver doesn't call such, it's
+a bug that should be found easily and fixed during the development. It
+would be even better if the compiler could find such though.
 
-Fixes: 6624e780a577 ("ice: split ice_vsi_setup into smaller functions")
-Signed-off-by: Petr Oros <poros@redhat.com>
----
- drivers/net/ethernet/intel/ice/ice_lib.c | 27 ------------------------
- 1 file changed, 27 deletions(-)
+If Rust bindings for netdev could help device developpers in such way,
+it's worth an experiments? because looks like netdev subsystem accepts
+more drivers for new hardware than other subsystems.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 11ae0e41f518a1..284a1f0bfdb545 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -3272,39 +3272,12 @@ int ice_vsi_release(struct ice_vsi *vsi)
- 		return -ENODEV;
- 	pf = vsi->back;
- 
--	/* do not unregister while driver is in the reset recovery pending
--	 * state. Since reset/rebuild happens through PF service task workqueue,
--	 * it's not a good idea to unregister netdev that is associated to the
--	 * PF that is running the work queue items currently. This is done to
--	 * avoid check_flush_dependency() warning on this wq
--	 */
--	if (vsi->netdev && !ice_is_reset_in_progress(pf->state) &&
--	    (test_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state))) {
--		unregister_netdev(vsi->netdev);
--		clear_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
--	}
--
--	if (vsi->type == ICE_VSI_PF)
--		ice_devlink_destroy_pf_port(pf);
--
- 	if (test_bit(ICE_FLAG_RSS_ENA, pf->flags))
- 		ice_rss_clean(vsi);
- 
- 	ice_vsi_close(vsi);
- 	ice_vsi_decfg(vsi);
- 
--	if (vsi->netdev) {
--		if (test_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state)) {
--			unregister_netdev(vsi->netdev);
--			clear_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
--		}
--		if (test_bit(ICE_VSI_NETDEV_ALLOCD, vsi->state)) {
--			free_netdev(vsi->netdev);
--			vsi->netdev = NULL;
--			clear_bit(ICE_VSI_NETDEV_ALLOCD, vsi->state);
--		}
--	}
--
- 	/* retain SW VSI data structure since it is needed to unregister and
- 	 * free VSI netdev when PF is not in reset recovery pending state,\
- 	 * for ex: during rmmod.
--- 
-2.41.0
-
+thanks,
 
