@@ -1,132 +1,219 @@
-Return-Path: <netdev+bounces-11960-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-11961-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1D476735707
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 14:42:08 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 7C3DA73571C
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 14:44:23 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C59552810FB
-	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 12:42:06 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DEAC82810E2
+	for <lists+netdev@lfdr.de>; Mon, 19 Jun 2023 12:44:21 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CB424C8DC;
-	Mon, 19 Jun 2023 12:42:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 014E5C8DC;
+	Mon, 19 Jun 2023 12:44:20 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF3EF33DC;
-	Mon, 19 Jun 2023 12:42:02 +0000 (UTC)
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B1F91;
-	Mon, 19 Jun 2023 05:41:59 -0700 (PDT)
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VlXETWq_1687178514;
-Received: from localhost(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VlXETWq_1687178514)
-          by smtp.aliyun-inc.com;
-          Mon, 19 Jun 2023 20:41:55 +0800
-Date: Mon, 19 Jun 2023 20:41:54 +0800
-From: Heng Qi <hengqi@linux.alibaba.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: netdev@vger.kernel.org, bpf@vger.kernel.org,
-	Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [PATCH net-next 4/4] virtio-net: remove F_GUEST_CSUM check for
- XDP loading
-Message-ID: <20230619124154.GC74977@h68b04307.sqa.eu95>
-References: <20230619105738.117733-1-hengqi@linux.alibaba.com>
- <20230619105738.117733-5-hengqi@linux.alibaba.com>
- <20230619071347-mutt-send-email-mst@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2686AD3C
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 12:44:19 +0000 (UTC)
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E710810DC
+	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 05:43:51 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id 3f1490d57ef6-bd69bb4507eso3987712276.2
+        for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 05:43:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1687178618; x=1689770618;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=rLmi2Km+946xuyufzEe8kStvuacB84QLE8mQmfgTxuI=;
+        b=TaqTIJ3uYPVCwd2E2n4Rreem6z2GEFIMW/6CJwvMfU/JW9qIa7jCMeGOoCFtTMF4Li
+         /yoqhmm+fXLxqGt7PHM7bH2PZ+sYg7UKeidRT4ogQ+HPhO90jsd3RIEtgEhVC34HiMBC
+         /26E6MGsPX6pLSq9+0uTzPpFgG2LoOyDPayyhPyo61PV0ggDIR9EVO2RJn1RhRYUMiZI
+         3H55tmOtvPaxvFmcsOVWK+okWoVIuFDPznDwhmMKNgiDgB9binuGeJkjNnvfXcrF7ep8
+         lUCoIgokzyq3y9KGTczM34gh4BODxbrcD6NYx2WhqLWgUA32CCESQt8SsJ3C6fWNNcGN
+         MIrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687178618; x=1689770618;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rLmi2Km+946xuyufzEe8kStvuacB84QLE8mQmfgTxuI=;
+        b=g2A8gwXj9JBBYJd6usWt3aao2JgBMpYGMsjXCtZh5ybIzDcyzlrK9NhW5SQJ8Yie90
+         /eK718B5bf22apmwPfd5U6ETuXMrwde8WpB7+wqjyTYuNJYrrjh5A8pw5o+J1Sngd0Eb
+         8QIfF2O8qabCAqcV5dWvZOqz3d+yhb3ih+FsQgzoMSrEvdncT8Ld5mn3SWyoC/rwx2gP
+         NQgnM4ANMhuZzfFQhNxFwfVSCdQCxAxy0CoRfgT7ew01NKOQqVDxM7L9MfIbxalmEjYo
+         oaG37kRJ950u+G74PxtA073SoRUb+FV8U3WA2eOpkOjiID7GS36ol59pmE1WxOx57znO
+         i79w==
+X-Gm-Message-State: AC+VfDzj/HzHmSVhMHPFjB8vnUMA/1l0EiLQczLUH97a2+qgLYB4CGzL
+	zFJFX3bXvzHudGS1M7XXHaJRYyCd+ivMVA==
+X-Google-Smtp-Source: ACHHUZ4h0THtkPLBldSAv3mvIpyS74A9bct+U/E4JLQBgTM8zog7e64zBplBRQLHr6TOI3npYji464mAOWCoew==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a25:ab11:0:b0:be5:3561:513d with SMTP id
+ u17-20020a25ab11000000b00be53561513dmr840070ybi.11.1687178618112; Mon, 19 Jun
+ 2023 05:43:38 -0700 (PDT)
+Date: Mon, 19 Jun 2023 12:43:35 +0000
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230619071347-mutt-send-email-mst@kernel.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-	ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-	T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.41.0.185.g7c58973941-goog
+Message-ID: <20230619124336.651528-1-edumazet@google.com>
+Subject: [PATCH net-next] net: remove sk_is_ipmr() and sk_is_icmpv6() helpers
+From: Eric Dumazet <edumazet@google.com>
+To: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org, eric.dumazet@gmail.com, 
+	Eric Dumazet <edumazet@google.com>, syzbot <syzkaller@googlegroups.com>, 
+	Breno Leitao <leitao@debian.org>, Willem de Bruijn <willemb@google.com>, David Ahern <dsahern@kernel.org>, 
+	Kuniyuki Iwashima <kuniyu@amazon.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 19, 2023 at 07:16:20AM -0400, Michael S. Tsirkin wrote:
-> On Mon, Jun 19, 2023 at 06:57:38PM +0800, Heng Qi wrote:
-> > Lay the foundation for the subsequent patch
-> 
-> which subsequent patch? this is the last one in series.
-> 
-> > to complete the coexistence
-> > of XDP and virtio-net guest csum.
-> > 
-> > Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-> > Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >  drivers/net/virtio_net.c | 4 +---
-> >  1 file changed, 1 insertion(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index 25b486ab74db..79471de64b56 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -60,7 +60,6 @@ static const unsigned long guest_offloads[] = {
-> >  	VIRTIO_NET_F_GUEST_TSO6,
-> >  	VIRTIO_NET_F_GUEST_ECN,
-> >  	VIRTIO_NET_F_GUEST_UFO,
-> > -	VIRTIO_NET_F_GUEST_CSUM,
-> >  	VIRTIO_NET_F_GUEST_USO4,
-> >  	VIRTIO_NET_F_GUEST_USO6,
-> >  	VIRTIO_NET_F_GUEST_HDRLEN
-> 
-> What is this doing? Drop support for VIRTIO_NET_F_GUEST_CSUM? Why?
+Blamed commit added these helpers for sake of detecting RAW
+sockets specific ioctl.
 
-guest_offloads[] is used by the VIRTIO_NET_CTRL_GUEST_OFFLOADS_SET
-command to switch features when XDP is loaded/unloaded.
+syzbot complained about it [1].
 
-If the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is negotiated:
-1. When XDP is loaded, virtnet_xdp_set() uses virtnet_clear_guest_offloads()
-to automatically turn off the features in guest_offloads[].
+Issue here is that RAW sockets could pretend there was no need
+to call ipmr_sk_ioctl()
 
-2. when XDP is unloaded, virtnet_xdp_set() uses virtnet_restore_guest_offloads()
-to automatically restore the features in guest_offloads[].
+Regardless of inet_sk(sk)->inet_num, we must be prepared
+for ipmr_ioctl() being called later. This must happen
+from ipmr_sk_ioctl() context only.
 
-Now, this work no longer makes XDP and _F_GUEST_CSUM mutually
-exclusive, so this patch removed the _F_GUEST_CSUM from guest_offloads[].
+We could add a safety check in ipmr_ioctl() at the risk of breaking
+applications.
 
-> This will disable all of guest offloads I think ..
+Instead, remove sk_is_ipmr() and sk_is_icmpv6() because their
+name would be misleading, once we change their implementation.
 
-No. This doesn't change the dependencies of other features on
-_F_GUEST_CSUM. Removing _F_GUEST_CSUM here does not mean that other
-features that depend on it will be turned off at the same time, such as
-_F_GUEST_TSO{4,6}, F_GUEST_USO{4,6}, etc.
+[1]
+BUG: KASAN: stack-out-of-bounds in ipmr_ioctl+0xb12/0xbd0 net/ipv4/ipmr.c:1654
+Read of size 4 at addr ffffc90003aefae4 by task syz-executor105/5004
 
-Thanks.
+CPU: 0 PID: 5004 Comm: syz-executor105 Not tainted 6.4.0-rc6-syzkaller-01304-gc08afcdcf952 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/27/2023
+Call Trace:
+<TASK>
+__dump_stack lib/dump_stack.c:88 [inline]
+dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
+print_address_description.constprop.0+0x2c/0x3c0 mm/kasan/report.c:351
+print_report mm/kasan/report.c:462 [inline]
+kasan_report+0x11c/0x130 mm/kasan/report.c:572
+ipmr_ioctl+0xb12/0xbd0 net/ipv4/ipmr.c:1654
+raw_ioctl+0x4e/0x1e0 net/ipv4/raw.c:881
+sock_ioctl_out net/core/sock.c:4186 [inline]
+sk_ioctl+0x151/0x440 net/core/sock.c:4214
+inet_ioctl+0x18c/0x380 net/ipv4/af_inet.c:1001
+sock_do_ioctl+0xcc/0x230 net/socket.c:1189
+sock_ioctl+0x1f8/0x680 net/socket.c:1306
+vfs_ioctl fs/ioctl.c:51 [inline]
+__do_sys_ioctl fs/ioctl.c:870 [inline]
+__se_sys_ioctl fs/ioctl.c:856 [inline]
+__x64_sys_ioctl+0x197/0x210 fs/ioctl.c:856
+do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f2944bf6ad9
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffd8897a028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f2944bf6ad9
+RDX: 0000000000000000 RSI: 00000000000089e1 RDI: 0000000000000003
+RBP: 00007f2944bbac80 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f2944bbad10
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+</TASK>
 
-> 
-> 
-> > @@ -3522,10 +3521,9 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
-> >  	        virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO6) ||
-> >  	        virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
-> >  		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO) ||
-> > -		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM) ||
-> >  		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_USO4) ||
-> >  		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_USO6))) {
-> > -		NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing GRO_HW/CSUM, disable GRO_HW/CSUM first");
-> > +		NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing GRO_HW, disable GRO_HW first");
-> >  		return -EOPNOTSUPP;
-> >  	}
-> >  
-> > -- 
-> > 2.19.1.6.gb485710b
+The buggy address belongs to stack of task syz-executor105/5004
+and is located at offset 36 in frame:
+sk_ioctl+0x0/0x440 net/core/sock.c:4172
+
+This frame has 2 objects:
+[32, 36) 'karg'
+[48, 88) 'buffer'
+
+Fixes: e1d001fa5b47 ("net: ioctl: Use kernel memory on protocol ioctl callbacks")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Breno Leitao <leitao@debian.org>
+Cc: Willem de Bruijn <willemb@google.com>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+ include/linux/icmpv6.h |  6 ------
+ include/linux/mroute.h | 11 -----------
+ net/core/sock.c        |  4 ++--
+ 3 files changed, 2 insertions(+), 19 deletions(-)
+
+diff --git a/include/linux/icmpv6.h b/include/linux/icmpv6.h
+index 1fe33e6741cca2685082da214afbc94c7974f4ce..db0f4fcfdaf4f138d75dc6c4073cb286364f2923 100644
+--- a/include/linux/icmpv6.h
++++ b/include/linux/icmpv6.h
+@@ -111,10 +111,4 @@ static inline bool icmpv6_is_err(int type)
+ 	return false;
+ }
+ 
+-static inline int sk_is_icmpv6(struct sock *sk)
+-{
+-	return sk->sk_family == AF_INET6 &&
+-		inet_sk(sk)->inet_num == IPPROTO_ICMPV6;
+-}
+-
+ #endif
+diff --git a/include/linux/mroute.h b/include/linux/mroute.h
+index 94c6e6f549f0a503f6707d1175f1c47a0f0cd887..4c5003afee6c51962bc13879978845bc7daf08fa 100644
+--- a/include/linux/mroute.h
++++ b/include/linux/mroute.h
+@@ -16,12 +16,6 @@ static inline int ip_mroute_opt(int opt)
+ 	return opt >= MRT_BASE && opt <= MRT_MAX;
+ }
+ 
+-static inline int sk_is_ipmr(struct sock *sk)
+-{
+-	return sk->sk_family == AF_INET &&
+-		inet_sk(sk)->inet_num == IPPROTO_IGMP;
+-}
+-
+ int ip_mroute_setsockopt(struct sock *, int, sockptr_t, unsigned int);
+ int ip_mroute_getsockopt(struct sock *, int, sockptr_t, sockptr_t);
+ int ipmr_ioctl(struct sock *sk, int cmd, void *arg);
+@@ -57,11 +51,6 @@ static inline int ip_mroute_opt(int opt)
+ 	return 0;
+ }
+ 
+-static inline int sk_is_ipmr(struct sock *sk)
+-{
+-	return 0;
+-}
+-
+ static inline bool ipmr_rule_default(const struct fib_rule *rule)
+ {
+ 	return true;
+diff --git a/net/core/sock.c b/net/core/sock.c
+index cff3e82514d17513bc96300dc18014083a0d7ea7..8ec8f4c9911f2a6dd3dd946798d512394d62a861 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -4199,9 +4199,9 @@ int sk_ioctl(struct sock *sk, unsigned int cmd, void __user *arg)
+ {
+ 	int rc = 1;
+ 
+-	if (sk_is_ipmr(sk))
++	if (sk->sk_type == SOCK_RAW && sk->sk_family == AF_INET)
+ 		rc = ipmr_sk_ioctl(sk, cmd, arg);
+-	else if (sk_is_icmpv6(sk))
++	else if (sk->sk_type == SOCK_RAW && sk->sk_family == AF_INET6)
+ 		rc = ip6mr_sk_ioctl(sk, cmd, arg);
+ 	else if (sk_is_phonet(sk))
+ 		rc = phonet_sk_ioctl(sk, cmd, arg);
+-- 
+2.41.0.185.g7c58973941-goog
+
 
