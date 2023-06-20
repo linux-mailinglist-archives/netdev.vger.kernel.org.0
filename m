@@ -1,49 +1,49 @@
-Return-Path: <netdev+bounces-12279-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12283-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 599EB736F74
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 16:58:35 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 9307E736F87
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 17:00:01 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 73D571C20319
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 14:58:34 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id C4A251C20CC0
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 15:00:00 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 38F1D171AE;
-	Tue, 20 Jun 2023 14:57:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3640F171CE;
+	Tue, 20 Jun 2023 14:57:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 281B3174E4
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 14:57:26 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E87B1BD6
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 07:56:58 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 254FE17721
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 14:57:50 +0000 (UTC)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55EA1737
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 07:57:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1687273017;
+	s=mimecast20190719; t=1687273041;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=iAUCq6AQpwiSNlqp6e2886GYsbEpCz4tvlCIXkUtiq4=;
-	b=HODaKd9BuC8D4YpnW1nJB32En5fBfBQIGTj7t4OiblYtUVzI3hXUsj40fdZGgcG+QlQKuc
-	xmFrhpiG5kbCWTRhhec8iN4xh75rRSPdCiK/UP7kz5PgeAOpIJT2vDakdo2KSXA3UAh6a3
-	8fSc2Mwp2P0Cg0g+blQQE2/Sjg9/MQk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=LPVmbLfi9bgga9t/1pR/YmjTCDUThBHs3vchY9icGtA=;
+	b=TQAiQiVrDTADOAtnpROiC6W7TxL9Pjao/451jtBsSv4dEHG9mUYMaIwD3Akba/hHLD+4a9
+	Wgx7fy+uPBI4ndTM0nB+tBkz+fdlF7SQCv/krnJoh9esQBL+bJPfrKcdw00GlxB+r5j8zq
+	1TJT7BiJV0uNZgZ6ko5m+YcFvgFW5MA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-269-aatl8iayPtWLIAC2EOAbnw-1; Tue, 20 Jun 2023 10:56:49 -0400
-X-MC-Unique: aatl8iayPtWLIAC2EOAbnw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+ us-mta-572-azJhDjRHOim524o5jKEhlw-1; Tue, 20 Jun 2023 10:57:14 -0400
+X-MC-Unique: azJhDjRHOim524o5jKEhlw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C3B3A8870EA;
-	Tue, 20 Jun 2023 14:54:30 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 543CA3C1A5FB;
+	Tue, 20 Jun 2023 14:54:33 +0000 (UTC)
 Received: from warthog.procyon.org.com (unknown [10.42.28.4])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id B1AD5200A398;
-	Tue, 20 Jun 2023 14:54:28 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 6F4C51400C34;
+	Tue, 20 Jun 2023 14:54:31 +0000 (UTC)
 From: David Howells <dhowells@redhat.com>
 To: netdev@vger.kernel.org
 Cc: David Howells <dhowells@redhat.com>,
@@ -58,16 +58,13 @@ Cc: David Howells <dhowells@redhat.com>,
 	Jens Axboe <axboe@kernel.dk>,
 	linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org,
-	Karsten Graul <kgraul@linux.ibm.com>,
-	Wenjia Zhang <wenjia@linux.ibm.com>,
-	Jan Karcher <jaka@linux.ibm.com>,
-	"D. Wythe" <alibuda@linux.alibaba.com>,
-	Tony Lu <tonylu@linux.alibaba.com>,
-	Wen Gu <guwen@linux.alibaba.com>,
-	linux-s390@vger.kernel.org
-Subject: [PATCH net-next v3 12/18] smc: Drop smc_sendpage() in favour of smc_sendmsg() + MSG_SPLICE_PAGES
-Date: Tue, 20 Jun 2023 15:53:31 +0100
-Message-ID: <20230620145338.1300897-13-dhowells@redhat.com>
+	Mark Fasheh <mark@fasheh.com>,
+	Joel Becker <jlbec@evilplan.org>,
+	Joseph Qi <joseph.qi@linux.alibaba.com>,
+	ocfs2-devel@oss.oracle.com
+Subject: [PATCH net-next v3 13/18] ocfs2: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage()
+Date: Tue, 20 Jun 2023 15:53:32 +0100
+Message-ID: <20230620145338.1300897-14-dhowells@redhat.com>
 In-Reply-To: <20230620145338.1300897-1-dhowells@redhat.com>
 References: <20230620145338.1300897-1-dhowells@redhat.com>
 Precedence: bulk
@@ -77,165 +74,253 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-	autolearn_force=no version=3.4.6
+	RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-Drop the smc_sendpage() code as smc_sendmsg() just passes the call down to
-the underlying TCP socket and smc_tx_sendpage() is just a wrapper around
-its sendmsg implementation.
+Fix ocfs2 to use the page fragment allocator rather than kzalloc in order
+to allocate the buffers for the handshake message and keepalive request and
+reply messages.
+
+Switch from using sendpage() to using sendmsg() + MSG_SPLICE_PAGES so that
+sendpage can be phased out.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Karsten Graul <kgraul@linux.ibm.com>
-cc: Wenjia Zhang <wenjia@linux.ibm.com>
-cc: Jan Karcher <jaka@linux.ibm.com>
-cc: "D. Wythe" <alibuda@linux.alibaba.com>
-cc: Tony Lu <tonylu@linux.alibaba.com>
-cc: Wen Gu <guwen@linux.alibaba.com>
+
+cc: Mark Fasheh <mark@fasheh.com>
+cc: Joel Becker <jlbec@evilplan.org>
+cc: Joseph Qi <joseph.qi@linux.alibaba.com>
 cc: "David S. Miller" <davem@davemloft.net>
 cc: Eric Dumazet <edumazet@google.com>
 cc: Jakub Kicinski <kuba@kernel.org>
 cc: Paolo Abeni <pabeni@redhat.com>
-cc: Jens Axboe <axboe@kernel.dk>
-cc: Matthew Wilcox <willy@infradead.org>
-cc: linux-s390@vger.kernel.org
+cc: ocfs2-devel@oss.oracle.com
 cc: netdev@vger.kernel.org
 ---
- net/smc/af_smc.c    | 29 -----------------------------
- net/smc/smc_stats.c |  2 +-
- net/smc/smc_stats.h |  1 -
- net/smc/smc_tx.c    | 22 +---------------------
- net/smc/smc_tx.h    |  2 --
- 5 files changed, 2 insertions(+), 54 deletions(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 538e9c6ec8c9..a7f887d91d89 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -3133,34 +3133,6 @@ static int smc_ioctl(struct socket *sock, unsigned int cmd,
- 	return put_user(answ, (int __user *)arg);
+Notes:
+    ver #2)
+     - Wrap lines at 80.
+
+ fs/ocfs2/cluster/tcp.c | 109 +++++++++++++++++++++++------------------
+ 1 file changed, 60 insertions(+), 49 deletions(-)
+
+diff --git a/fs/ocfs2/cluster/tcp.c b/fs/ocfs2/cluster/tcp.c
+index aecbd712a00c..969d347ed9fa 100644
+--- a/fs/ocfs2/cluster/tcp.c
++++ b/fs/ocfs2/cluster/tcp.c
+@@ -110,9 +110,6 @@ static struct work_struct o2net_listen_work;
+ static struct o2hb_callback_func o2net_hb_up, o2net_hb_down;
+ #define O2NET_HB_PRI 0x1
+ 
+-static struct o2net_handshake *o2net_hand;
+-static struct o2net_msg *o2net_keep_req, *o2net_keep_resp;
+-
+ static int o2net_sys_err_translations[O2NET_ERR_MAX] =
+ 		{[O2NET_ERR_NONE]	= 0,
+ 		 [O2NET_ERR_NO_HNDLR]	= -ENOPROTOOPT,
+@@ -930,19 +927,22 @@ static int o2net_send_tcp_msg(struct socket *sock, struct kvec *vec,
  }
  
--static ssize_t smc_sendpage(struct socket *sock, struct page *page,
--			    int offset, size_t size, int flags)
--{
--	struct sock *sk = sock->sk;
--	struct smc_sock *smc;
--	int rc = -EPIPE;
+ static void o2net_sendpage(struct o2net_sock_container *sc,
+-			   void *kmalloced_virt,
+-			   size_t size)
++			   void *virt, size_t size)
+ {
+ 	struct o2net_node *nn = o2net_nn_from_num(sc->sc_node->nd_num);
++	struct msghdr msg = {};
++	struct bio_vec bv;
+ 	ssize_t ret;
+ 
++	bvec_set_virt(&bv, virt, size);
++	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bv, 1, size);
++
+ 	while (1) {
++		msg.msg_flags = MSG_DONTWAIT | MSG_SPLICE_PAGES;
+ 		mutex_lock(&sc->sc_send_lock);
+-		ret = sc->sc_sock->ops->sendpage(sc->sc_sock,
+-						 virt_to_page(kmalloced_virt),
+-						 offset_in_page(kmalloced_virt),
+-						 size, MSG_DONTWAIT);
++		ret = sock_sendmsg(sc->sc_sock, &msg);
+ 		mutex_unlock(&sc->sc_send_lock);
++
+ 		if (ret == size)
+ 			break;
+ 		if (ret == (ssize_t)-EAGAIN) {
+@@ -1168,6 +1168,7 @@ static int o2net_process_message(struct o2net_sock_container *sc,
+ 				 struct o2net_msg *hdr)
+ {
+ 	struct o2net_node *nn = o2net_nn_from_num(sc->sc_node->nd_num);
++	struct o2net_msg *keep_resp;
+ 	int ret = 0, handler_status;
+ 	enum  o2net_system_error syserr;
+ 	struct o2net_msg_handler *nmh = NULL;
+@@ -1186,8 +1187,17 @@ static int o2net_process_message(struct o2net_sock_container *sc,
+ 					   be32_to_cpu(hdr->status));
+ 			goto out;
+ 		case O2NET_MSG_KEEP_REQ_MAGIC:
+-			o2net_sendpage(sc, o2net_keep_resp,
+-				       sizeof(*o2net_keep_resp));
++			keep_resp = alloc_skb_frag(sizeof(*keep_resp),
++						   GFP_KERNEL);
++			if (!keep_resp) {
++				ret = -ENOMEM;
++				goto out;
++			}
++			memset(keep_resp, 0, sizeof(*keep_resp));
++			keep_resp->magic =
++				cpu_to_be16(O2NET_MSG_KEEP_RESP_MAGIC);
++			o2net_sendpage(sc, keep_resp, sizeof(*keep_resp));
++			folio_put(virt_to_folio(keep_resp));
+ 			goto out;
+ 		case O2NET_MSG_KEEP_RESP_MAGIC:
+ 			goto out;
+@@ -1439,15 +1449,23 @@ static void o2net_rx_until_empty(struct work_struct *work)
+ 	sc_put(sc);
+ }
+ 
+-static void o2net_initialize_handshake(void)
++static struct o2net_handshake *o2net_initialize_handshake(void)
+ {
+-	o2net_hand->o2hb_heartbeat_timeout_ms = cpu_to_be32(
+-		O2HB_MAX_WRITE_TIMEOUT_MS);
+-	o2net_hand->o2net_idle_timeout_ms = cpu_to_be32(o2net_idle_timeout());
+-	o2net_hand->o2net_keepalive_delay_ms = cpu_to_be32(
+-		o2net_keepalive_delay());
+-	o2net_hand->o2net_reconnect_delay_ms = cpu_to_be32(
+-		o2net_reconnect_delay());
++	struct o2net_handshake *hand;
++
++	hand = alloc_skb_frag(sizeof(*hand), GFP_KERNEL);
++	if (!hand)
++		return NULL;
++
++	memset(hand, 0, sizeof(*hand));
++	hand->protocol_version		= cpu_to_be64(O2NET_PROTOCOL_VERSION);
++	hand->connector_id		= cpu_to_be64(1);
++	hand->o2hb_heartbeat_timeout_ms	=
++		cpu_to_be32(O2HB_MAX_WRITE_TIMEOUT_MS);
++	hand->o2net_idle_timeout_ms	= cpu_to_be32(o2net_idle_timeout());
++	hand->o2net_keepalive_delay_ms	= cpu_to_be32(o2net_keepalive_delay());
++	hand->o2net_reconnect_delay_ms	= cpu_to_be32(o2net_reconnect_delay());
++	return hand;
+ }
+ 
+ /* ------------------------------------------------------------ */
+@@ -1456,16 +1474,22 @@ static void o2net_initialize_handshake(void)
+  * rx path will see the response and mark the sc valid */
+ static void o2net_sc_connect_completed(struct work_struct *work)
+ {
++	struct o2net_handshake *hand;
+ 	struct o2net_sock_container *sc =
+ 		container_of(work, struct o2net_sock_container,
+ 			     sc_connect_work);
+ 
++	hand = o2net_initialize_handshake();
++	if (!hand)
++		goto out;
++
+ 	mlog(ML_MSG, "sc sending handshake with ver %llu id %llx\n",
+               (unsigned long long)O2NET_PROTOCOL_VERSION,
+-	      (unsigned long long)be64_to_cpu(o2net_hand->connector_id));
++	      (unsigned long long)be64_to_cpu(hand->connector_id));
+ 
+-	o2net_initialize_handshake();
+-	o2net_sendpage(sc, o2net_hand, sizeof(*o2net_hand));
++	o2net_sendpage(sc, hand, sizeof(*hand));
++	folio_put(virt_to_folio(hand));
++out:
+ 	sc_put(sc);
+ }
+ 
+@@ -1475,8 +1499,15 @@ static void o2net_sc_send_keep_req(struct work_struct *work)
+ 	struct o2net_sock_container *sc =
+ 		container_of(work, struct o2net_sock_container,
+ 			     sc_keepalive_work.work);
++	struct o2net_msg *keep_req;
+ 
+-	o2net_sendpage(sc, o2net_keep_req, sizeof(*o2net_keep_req));
++	keep_req = alloc_skb_frag(sizeof(*keep_req), GFP_KERNEL);
++	if (keep_req) {
++		memset(keep_req, 0, sizeof(*keep_req));
++		keep_req->magic = cpu_to_be16(O2NET_MSG_KEEP_REQ_MAGIC);
++		o2net_sendpage(sc, keep_req, sizeof(*keep_req));
++		folio_put(virt_to_folio(keep_req));
++	}
+ 	sc_put(sc);
+ }
+ 
+@@ -1780,6 +1811,7 @@ static int o2net_accept_one(struct socket *sock, int *more)
+ 	struct socket *new_sock = NULL;
+ 	struct o2nm_node *node = NULL;
+ 	struct o2nm_node *local_node = NULL;
++	struct o2net_handshake *hand;
+ 	struct o2net_sock_container *sc = NULL;
+ 	struct o2net_node *nn;
+ 	unsigned int nofs_flag;
+@@ -1882,8 +1914,11 @@ static int o2net_accept_one(struct socket *sock, int *more)
+ 	o2net_register_callbacks(sc->sc_sock->sk, sc);
+ 	o2net_sc_queue_work(sc, &sc->sc_rx_work);
+ 
+-	o2net_initialize_handshake();
+-	o2net_sendpage(sc, o2net_hand, sizeof(*o2net_hand));
++	hand = o2net_initialize_handshake();
++	if (hand) {
++		o2net_sendpage(sc, hand, sizeof(*hand));
++		folio_put(virt_to_folio(hand));
++	}
+ 
+ out:
+ 	if (new_sock)
+@@ -2090,21 +2125,8 @@ int o2net_init(void)
+ 	unsigned long i;
+ 
+ 	o2quo_init();
 -
--	smc = smc_sk(sk);
--	lock_sock(sk);
--	if (sk->sk_state != SMC_ACTIVE) {
--		release_sock(sk);
+ 	o2net_debugfs_init();
+ 
+-	o2net_hand = kzalloc(sizeof(struct o2net_handshake), GFP_KERNEL);
+-	o2net_keep_req = kzalloc(sizeof(struct o2net_msg), GFP_KERNEL);
+-	o2net_keep_resp = kzalloc(sizeof(struct o2net_msg), GFP_KERNEL);
+-	if (!o2net_hand || !o2net_keep_req || !o2net_keep_resp)
 -		goto out;
--	}
--	release_sock(sk);
--	if (smc->use_fallback) {
--		rc = kernel_sendpage(smc->clcsock, page, offset,
--				     size, flags);
--	} else {
--		lock_sock(sk);
--		rc = smc_tx_sendpage(smc, page, offset, size, flags);
--		release_sock(sk);
--		SMC_STAT_INC(smc, sendpage_cnt);
--	}
+-
+-	o2net_hand->protocol_version = cpu_to_be64(O2NET_PROTOCOL_VERSION);
+-	o2net_hand->connector_id = cpu_to_be64(1);
+-
+-	o2net_keep_req->magic = cpu_to_be16(O2NET_MSG_KEEP_REQ_MAGIC);
+-	o2net_keep_resp->magic = cpu_to_be16(O2NET_MSG_KEEP_RESP_MAGIC);
+-
+ 	for (i = 0; i < ARRAY_SIZE(o2net_nodes); i++) {
+ 		struct o2net_node *nn = o2net_nn_from_num(i);
+ 
+@@ -2122,21 +2144,10 @@ int o2net_init(void)
+ 	}
+ 
+ 	return 0;
 -
 -out:
--	return rc;
--}
--
- /* Map the affected portions of the rmbe into an spd, note the number of bytes
-  * to splice in conn->splice_pending, and press 'go'. Delays consumer cursor
-  * updates till whenever a respective page has been fully processed.
-@@ -3232,7 +3204,6 @@ static const struct proto_ops smc_sock_ops = {
- 	.sendmsg	= smc_sendmsg,
- 	.recvmsg	= smc_recvmsg,
- 	.mmap		= sock_no_mmap,
--	.sendpage	= smc_sendpage,
- 	.splice_read	= smc_splice_read,
- };
- 
-diff --git a/net/smc/smc_stats.c b/net/smc/smc_stats.c
-index e80e34f7ac15..ca14c0f3a07d 100644
---- a/net/smc/smc_stats.c
-+++ b/net/smc/smc_stats.c
-@@ -227,7 +227,7 @@ static int smc_nl_fill_stats_tech_data(struct sk_buff *skb,
- 			      SMC_NLA_STATS_PAD))
- 		goto errattr;
- 	if (nla_put_u64_64bit(skb, SMC_NLA_STATS_T_SENDPAGE_CNT,
--			      smc_tech->sendpage_cnt,
-+			      0,
- 			      SMC_NLA_STATS_PAD))
- 		goto errattr;
- 	if (nla_put_u64_64bit(skb, SMC_NLA_STATS_T_CORK_CNT,
-diff --git a/net/smc/smc_stats.h b/net/smc/smc_stats.h
-index 84b7ecd8c05c..b60fe1eb37ab 100644
---- a/net/smc/smc_stats.h
-+++ b/net/smc/smc_stats.h
-@@ -71,7 +71,6 @@ struct smc_stats_tech {
- 	u64			clnt_v2_succ_cnt;
- 	u64			srv_v1_succ_cnt;
- 	u64			srv_v2_succ_cnt;
--	u64			sendpage_cnt;
- 	u64			urg_data_cnt;
- 	u64			splice_cnt;
- 	u64			cork_cnt;
-diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
-index 9b9e0a190734..5147207808e5 100644
---- a/net/smc/smc_tx.c
-+++ b/net/smc/smc_tx.c
-@@ -167,8 +167,7 @@ static bool smc_tx_should_cork(struct smc_sock *smc, struct msghdr *msg)
- 	 * sndbuf_space is still available. The applications
- 	 * should known how/when to uncork it.
- 	 */
--	if ((msg->msg_flags & MSG_MORE ||
--	     smc_tx_is_corked(smc)) &&
-+	if ((msg->msg_flags & MSG_MORE || smc_tx_is_corked(smc)) &&
- 	    atomic_read(&conn->sndbuf_space))
- 		return true;
- 
-@@ -297,25 +296,6 @@ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len)
- 	return rc;
+-	kfree(o2net_hand);
+-	kfree(o2net_keep_req);
+-	kfree(o2net_keep_resp);
+-	o2net_debugfs_exit();
+-	o2quo_exit();
+-	return -ENOMEM;
  }
  
--int smc_tx_sendpage(struct smc_sock *smc, struct page *page, int offset,
--		    size_t size, int flags)
--{
--	struct msghdr msg = {.msg_flags = flags};
--	char *kaddr = kmap(page);
--	struct kvec iov;
--	int rc;
--
--	if (flags & MSG_SENDPAGE_NOTLAST)
--		msg.msg_flags |= MSG_MORE;
--
--	iov.iov_base = kaddr + offset;
--	iov.iov_len = size;
--	iov_iter_kvec(&msg.msg_iter, ITER_SOURCE, &iov, 1, size);
--	rc = smc_tx_sendmsg(smc, &msg, size);
--	kunmap(page);
--	return rc;
--}
--
- /***************************** sndbuf consumer *******************************/
- 
- /* sndbuf consumer: actual data transfer of one target chunk with ISM write */
-diff --git a/net/smc/smc_tx.h b/net/smc/smc_tx.h
-index 34b578498b1f..a59f370b8b43 100644
---- a/net/smc/smc_tx.h
-+++ b/net/smc/smc_tx.h
-@@ -31,8 +31,6 @@ void smc_tx_pending(struct smc_connection *conn);
- void smc_tx_work(struct work_struct *work);
- void smc_tx_init(struct smc_sock *smc);
- int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len);
--int smc_tx_sendpage(struct smc_sock *smc, struct page *page, int offset,
--		    size_t size, int flags);
- int smc_tx_sndbuf_nonempty(struct smc_connection *conn);
- void smc_tx_sndbuf_nonfull(struct smc_sock *smc);
- void smc_tx_consumer_update(struct smc_connection *conn, bool force);
+ void o2net_exit(void)
+ {
+ 	o2quo_exit();
+-	kfree(o2net_hand);
+-	kfree(o2net_keep_req);
+-	kfree(o2net_keep_resp);
+ 	o2net_debugfs_exit();
+ }
 
 
