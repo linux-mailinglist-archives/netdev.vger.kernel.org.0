@@ -1,163 +1,112 @@
-Return-Path: <netdev+bounces-12120-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12121-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 654517363E5
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 08:58:47 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id D8CB57363F0
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 09:02:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 933D71C20832
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 06:58:46 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 446B0281035
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 07:02:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A313A1FDD;
-	Tue, 20 Jun 2023 06:58:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9E29046A5;
+	Tue, 20 Jun 2023 07:02:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97DBE1FDC
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 06:58:44 +0000 (UTC)
-Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A43115
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 23:58:43 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-	by mailout.west.internal (Postfix) with ESMTP id 8B9773200564;
-	Tue, 20 Jun 2023 02:58:40 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute6.internal (MEProxy); Tue, 20 Jun 2023 02:58:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm2; t=1687244320; x=1687330720; bh=CQxy3b2FgQkrS
-	QvVrrkHnwn0wImRIghvLbfss956QyY=; b=MmcpL4nIbQqsaO/9UlFELv/CFUY0+
-	flck9Yz4Az0v5G3kozW7npNGRcH0iFTcFAc9dW7/UyTjvzJrLMry8iaInIopEOTM
-	jdkxergd6rrrM8yo6Eu2PAZG3NK0VMcFZL0ZgZZV0X85zSfqW/GKCsTkwOsh6eO6
-	A0s54p2eeKUYdf3OmygZSADtMj45APllmLqBgOnWDR8EdRBIvR05QzkEzQK1eBUy
-	9WsJDqTCnxF9eCEdMHaTooV6PtVaXhkVldGKvrV1fDCuVN8uEFmIU093x6kHE1IX
-	OmBMe6DB/2SajR4WujH2eLyr+FPhkipdpUSEMzK4+HSRlHS3ZIfDDOU2w==
-X-ME-Sender: <xms:H06RZHeWmXK7ENHcs1K2yFrm61CFUCgMv8SBZA1bKQwjU4zn68iugA>
-    <xme:H06RZNMWPviczb2gIzDhnx1kLNLJ1n3CydZuTgNmDuyxwJ1bInmRgtxI_G1lnlU4m
-    uAT9m4Pjq9OSkU>
-X-ME-Received: <xmr:H06RZAii1XYgXowXYyWOdrs_vRXEb154ncFDEd6X0AzMvdhC0IGjHTG1cv4wEH_OLK3pkz-rADjE3WXo-0Z71lAY3WA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgeefgedgjedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepvddufeevkeehueegfedtvdevfefgudeifeduieefgfelkeehgeelgeejjeeg
-    gefhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:H06RZI-ZzBwCWIsDZr67Hf6PgNFOuvQf6osJ-UTBhZie4zBpHq8kLA>
-    <xmx:H06RZDugK-OV9azHPnLlIaRhnoezot0CcmH_iIHK9bibA7SQ_z_uiQ>
-    <xmx:H06RZHHX0kwEZ5CX1liIv7oWgDnMFdGD3rf3y6_CCUefFI0A78cQYw>
-    <xmx:IE6RZJUFzZjYk1eJF7ifmUhG8vPdJs4uKQhXQqh5sAVqKgCKFZUZCw>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 20 Jun 2023 02:58:39 -0400 (EDT)
-Date: Tue, 20 Jun 2023 09:58:35 +0300
-From: Ido Schimmel <idosch@idosch.org>
-To: Zahari Doychev <zahari.doychev@linux.com>
-Cc: netdev@vger.kernel.org, dsahern@gmail.com, stephen@networkplumber.org,
-	hmehrtens@maxlinear.com, aleksander.lobakin@intel.com,
-	simon.horman@corigine.com, Zahari Doychev <zdoychev@maxlinear.com>
-Subject: Re: [PATCH iproute2-next] f_flower: add cfm support
-Message-ID: <ZJFOGws2EcmGxLHZ@shredder>
-References: <20230619213523.520800-1-zahari.doychev@linux.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90D041FDD
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 07:02:46 +0000 (UTC)
+Received: from smtp-fw-9106.amazon.com (smtp-fw-9106.amazon.com [207.171.188.206])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1126810F4
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 00:02:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1687244562; x=1718780562;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=E9KczBmzs1Jeeoqo0xWyHaoD2fZxC2UQWAALYibp6XE=;
+  b=tZs42VM2Tn8Fi5AtNmXUZKWJZKboKlA4ONU81h43jOPfoKON1mtnPKnB
+   l2G2wR61a6N+ilkSV8PSSjwiuuRO5ev1uiIsOmIEkqpth34NZgtHD4wMc
+   IKydwQGiP5gqOaPTpO4ISxbOg/SauHByBrDI4cGye33hvpirJFXkXlFHp
+   I=;
+X-IronPort-AV: E=Sophos;i="6.00,256,1681171200"; 
+   d="scan'208";a="655138340"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-5eae960a.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9106.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2023 07:02:36 +0000
+Received: from EX19MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+	by email-inbound-relay-pdx-2c-m6i4x-5eae960a.us-west-2.amazon.com (Postfix) with ESMTPS id B09E640D6A;
+	Tue, 20 Jun 2023 07:02:35 +0000 (UTC)
+Received: from EX19D021UWC001.ant.amazon.com (10.13.139.226) by
+ EX19MTAUWB002.ant.amazon.com (10.250.64.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Tue, 20 Jun 2023 07:02:31 +0000
+Received: from EX19MTAUWC001.ant.amazon.com (10.250.64.145) by
+ EX19D021UWC001.ant.amazon.com (10.13.139.226) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Tue, 20 Jun 2023 07:02:31 +0000
+Received: from dev-dsk-darinzon-1c-05962a8d.eu-west-1.amazon.com
+ (172.19.80.187) by mail-relay.amazon.com (10.250.64.145) with Microsoft SMTP
+ Server id 15.2.1118.26 via Frontend Transport; Tue, 20 Jun 2023 07:02:28
+ +0000
+From: <darinzon@amazon.com>
+To: David Miller <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+	<netdev@vger.kernel.org>
+CC: David Arinzon <darinzon@amazon.com>, "Woodhouse, David" <dwmw@amazon.com>,
+	"Machulsky, Zorik" <zorik@amazon.com>, "Matushevsky, Alexander"
+	<matua@amazon.com>, Saeed Bshara <saeedb@amazon.com>, "Wilson, Matt"
+	<msw@amazon.com>, "Liguori, Anthony" <aliguori@amazon.com>, "Bshara, Nafea"
+	<nafea@amazon.com>, "Saidi, Ali" <alisaidi@amazon.com>, "Herrenschmidt,
+ Benjamin" <benh@amazon.com>, "Kiyanovski, Arthur" <akiyano@amazon.com>,
+	"Dagan, Noam" <ndagan@amazon.com>, "Agroskin, Shay" <shayagr@amazon.com>,
+	"Itzko, Shahar" <itzko@amazon.com>, "Abboud, Osama" <osamaabb@amazon.com>,
+	kernel test robot <lkp@intel.com>
+Subject: [PATCH v1 net-next] net: ena: Add missing newline after markup
+Date: Tue, 20 Jun 2023 07:02:06 +0000
+Message-ID: <20230620070206.1320-1-darinzon@amazon.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230619213523.520800-1-zahari.doychev@linux.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
-	SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+Precedence: Bulk
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Mon, Jun 19, 2023 at 11:35:23PM +0200, Zahari Doychev wrote:
-> +static int flower_parse_cfm(int *argc_p, char ***argv_p, __be16 eth_type,
-> +			    struct nlmsghdr *n)
-> +{
-> +	struct rtattr *cfm_attr;
-> +	char **argv = *argv_p;
-> +	int argc = *argc_p;
-> +	int ret;
-> +
-> +	if (eth_type != htons(ETH_P_CFM)) {
-> +		fprintf(stderr,
-> +			"Can't set attribute if ethertype isn't CFM\n");
-> +		return -1;
-> +	}
-> +
-> +	cfm_attr = addattr_nest(n, MAX_MSG, TCA_FLOWER_KEY_CFM | NLA_F_NESTED);
-> +
-> +	while (argc > 0) {
-> +		if (matches(*argv, "mdl") == 0) {
+From: David Arinzon <darinzon@amazon.com>
 
-New code is expected to use strcmp() instead of matches(). Looks good
-otherwise.
+This patch fixes a warning in the ena documentation
+file identified by the kernel automatic tools.
 
-> +			__u8 val;
-> +
-> +			NEXT_ARG();
-> +			ret = get_u8(&val, *argv, 10);
-> +			if (ret < 0) {
-> +				fprintf(stderr, "Illegal \"cfm md level\"\n");
-> +				return -1;
-> +			}
-> +			addattr8(n, MAX_MSG, TCA_FLOWER_KEY_CFM_MD_LEVEL, val);
-> +		} else if (matches(*argv, "op") == 0) {
+Signed-off-by: David Arinzon <darinzon@amazon.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202306171804.U7E92zoE-lkp@intel.com/
+---
+ Documentation/networking/device_drivers/ethernet/amazon/ena.rst | 1 +
+ 1 file changed, 1 insertion(+)
 
-Likewise.
+diff --git a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+index 491492677632..00851ec7b4ec 100644
+--- a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
++++ b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+@@ -206,6 +206,7 @@ More information about Adaptive Interrupt Moderation (DIM) can be found in
+ Documentation/networking/net_dim.rst
+ 
+ .. _`RX copybreak`:
++
+ RX copybreak
+ ============
+ The rx_copybreak is initialized by default to ENA_DEFAULT_RX_COPYBREAK
+-- 
+2.40.1
 
-> +			__u8 val;
-> +
-> +			NEXT_ARG();
-> +			ret = get_u8(&val, *argv, 10);
-> +			if (ret < 0) {
-> +				fprintf(stderr, "Illegal \"cfm opcode\"\n");
-> +				return -1;
-> +			}
-> +			addattr8(n, MAX_MSG, TCA_FLOWER_KEY_CFM_OPCODE, val);
-> +		} else {
-> +			break;
-> +		}
-> +		argc--; argv++;
-> +	}
-> +
-> +	addattr_nest_end(n, cfm_attr);
-> +
-> +	*argc_p = argc;
-> +	*argv_p = argv;
-> +
-> +	return 0;
-> +}
-> +
->  static int flower_parse_opt(struct filter_util *qu, char *handle,
->  			    int argc, char **argv, struct nlmsghdr *n)
->  {
-> @@ -2065,6 +2118,12 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
->  				return -1;
->  			}
->  			continue;
-> +		} else if (matches(*argv, "cfm") == 0) {
-
-Likewise.
-
-> +			NEXT_ARG();
-> +			ret = flower_parse_cfm(&argc, &argv, eth_type, n);
-> +			if (ret < 0)
-> +				return -1;
-> +			continue;
->  		} else {
->  			if (strcmp(*argv, "help") != 0)
->  				fprintf(stderr, "What is \"%s\"?\n", *argv);
 
