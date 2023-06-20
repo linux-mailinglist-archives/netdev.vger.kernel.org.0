@@ -1,192 +1,135 @@
-Return-Path: <netdev+bounces-12191-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12192-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id 1A889736971
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 12:37:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 2744D736975
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 12:38:14 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id C9D4B28128C
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 10:37:30 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id D6029280D49
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 10:38:12 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D13BDC13B;
-	Tue, 20 Jun 2023 10:36:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1007AC15A;
+	Tue, 20 Jun 2023 10:38:11 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0C742F5B
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 10:36:46 +0000 (UTC)
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA70D1AC
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 03:36:44 -0700 (PDT)
-Received: by mail-il1-x131.google.com with SMTP id e9e14a558f8ab-343a9a89205so268055ab.1
-        for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 03:36:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mihalicyn.com; s=mihalicyn; t=1687257404; x=1689849404;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/8QOt0Jk8FxtXTGtnYbB+8rPfb+iCUj0sRAGKW2Hgec=;
-        b=NPn6yCWA9d+K/MB9GfGDr4K/EMho6SzZ5j5Ujhz5vaE4+sDtE7mzrIPUdLQQ0cqU5Q
-         eetplrHAYx+2xLxCRixZbIhb0W2NsW3jwAkhzAjxBDX8YKjJiNC7BKjRD67Wu86MdABb
-         AW5qW1mUG1WMPET81MSW3/snWbWoZtiTlhXzY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687257404; x=1689849404;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/8QOt0Jk8FxtXTGtnYbB+8rPfb+iCUj0sRAGKW2Hgec=;
-        b=aGvqiwqj6+wqe3Rgpe4rR25JoBXUIoywwKxyoKn7HDcJT7E8xZ1bxFQ8v9USmJMDSw
-         UGlslNDFDRVZxJ6UA38gPOdZfM6EqORCS0wTvmntwBpjXXk+SVEajcc03kdJupYBq3IU
-         1uvBM3Ry4c/SCl9JnzjiI9sAJQn2GqWFJ00yHBSZ4okkPBfeNU8gf42nAQKa4ixW9Zss
-         e0VeIhGBmWn3qFd/qkKu64E/OAk1CgnSYUXrEQInpSjZIQJ5vaX7eUdEmytmchBilKuO
-         sinS/gqbnrAy/qk12wuW7Z0ssjgdnbvuAI8l5NiaqCQLzW3S5qdrEb+QI/Hl+vIeLakg
-         90Sg==
-X-Gm-Message-State: AC+VfDy7v3EHSQ+kUUzjgkPIbnGtS4f8jb67Eg4cOR9X0KCdvfJwb8Oy
-	O47n+TSmcT+VqYZgwqWyl/K+xSTYpvS3ydaHPKccwA==
-X-Google-Smtp-Source: ACHHUZ5g6yAM58fmDCv9197oAFQtrSLEhplUKo0+KZ1c2Bko1QYjdeKNfvqaC/StdtWI/dMMYiY+9GCtJ4pIfDedUS4=
-X-Received: by 2002:a6b:8d50:0:b0:77e:2763:1f2a with SMTP id
- p77-20020a6b8d50000000b0077e27631f2amr7181318iod.2.1687257403901; Tue, 20 Jun
- 2023 03:36:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03E432F5B
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 10:38:10 +0000 (UTC)
+Received: from baidu.com (mx20.baidu.com [111.202.115.85])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70342A0;
+	Tue, 20 Jun 2023 03:38:06 -0700 (PDT)
+From: "Duan,Muquan" <duanmuquan@baidu.com>
+To: Eric Dumazet <edumazet@google.com>
+CC: "davem@davemloft.net" <davem@davemloft.net>, "dsahern@kernel.org"
+	<dsahern@kernel.org>, "kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] tcp: fix connection reset due to tw hashdance race.
+Thread-Topic: [PATCH v2] tcp: fix connection reset due to tw hashdance race.
+Thread-Index: AQHZmEIvBn0+XWKPJ0K4vDCWGljg2q981HwAgAHkBoCAABoBgIAAHXsAgAACgQCAANIxAIAAA7oAgAB4gQCAAAhSgIALBeGAgAA1TACABxQTAIAAV6MAgAAfqAA=
+Date: Tue, 20 Jun 2023 10:37:27 +0000
+Message-ID: <D984749A-EACD-4408-9C8F-0B3222281C39@baidu.com>
+References: <20230606064306.9192-1-duanmuquan@baidu.com>
+ <CANn89iKwzEtNWME+1Xb57DcT=xpWaBf59hRT4dYrw-jsTdqeLA@mail.gmail.com>
+ <DFBEBE81-34A5-4394-9C5B-1A849A6415F1@baidu.com>
+ <CANn89iLm=UeSLBVjACnqyaLo7oMTrY7Ok8RXP9oGDHVwe8LVng@mail.gmail.com>
+ <D8D0327E-CEF0-4DFC-83AB-BC20EE3DFCDE@baidu.com>
+ <CANn89iKXttFLj4WCVjWNeograv=LHta4erhtqm=fpfiEWscJCA@mail.gmail.com>
+ <8C32A1F5-1160-4863-9201-CF9346290115@baidu.com>
+ <CANn89i+JBhj+g564rfVd9gK7OH48v3N+Ln0vAgJehM5xJh32-g@mail.gmail.com>
+ <7FD2F3ED-A3B5-40EF-A505-E7A642D73208@baidu.com>
+ <CANn89iJ5kHmksR=nGSMVjacuV0uqu5Hs0g1s343gvAM9Yf=+Bg@mail.gmail.com>
+ <FD0FE67D-378D-4DDE-BB35-6FFDE2AD3AA5@baidu.com>
+ <CANn89iK1yo6R4kZneD_1OZYocQCWp1sxviYzjJ+BBn4HeFSNhw@mail.gmail.com>
+ <AF8804B1-D096-4B80-9A1F-37FA03B04123@baidu.com>
+ <CANn89i+fNWbRLYx7gvF7q_AGdQOhRxgFnwMqnpZK91kkEEg=Uw@mail.gmail.com>
+In-Reply-To: <CANn89i+fNWbRLYx7gvF7q_AGdQOhRxgFnwMqnpZK91kkEEg=Uw@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [10.14.117.47]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <BD1E75636C0AB44DA371567B9E8C5AB5@internal.baidu.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20230620000009.9675-1-kuniyu@amazon.com>
-In-Reply-To: <20230620000009.9675-1-kuniyu@amazon.com>
-From: Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Date: Tue, 20 Jun 2023 12:36:32 +0200
-Message-ID: <CAJqdLrrmZGNE3NQ99_+rUkUMAWmWRo04VRhjdzGKBO3zmRmpjg@mail.gmail.com>
-Subject: Re: [PATCH v1 net] af_unix: Call scm_recv() only after scm_set_cred().
-To: Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc: "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Christian Brauner <brauner@kernel.org>, Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org, 
-	syzkaller <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+X-FEAS-Client-IP: 172.31.51.19
+X-FE-Last-Public-Client-IP: 100.100.100.49
+X-FE-Policy-ID: 15:10:21:SYSTEM
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 20, 2023 at 2:00=E2=80=AFAM Kuniyuki Iwashima <kuniyu@amazon.co=
-m> wrote:
->
-> syzkaller hit a WARN_ON_ONCE(!scm->pid) in scm_pidfd_recv().
->
-> In unix_stream_read_generic(), some paths reach scm_recv() without callin=
-g
-> scm_set_cred().
->
-> Let's say unix_stream_read_generic() is blocked in unix_stream_data_wait(=
-).
-> If a concurrent thread calls shutdown(RCV_SHUTDOWN) for the socket itself
-> or its peer calls close(), we bail out the while loop without calling
-> scm_set_cred().
->
-> If the socket is configured with SO_PASSCRED or SO_PASSPIDFD, scm_recv()
-> would populate cmsg with garbage.
->
-> Let's not call scm_recv() unless scm_set_cred() is called.
->
-> WARNING: CPU: 1 PID: 3245 at include/net/scm.h:138 scm_pidfd_recv include=
-/net/scm.h:138 [inline]
-> WARNING: CPU: 1 PID: 3245 at include/net/scm.h:138 scm_recv.constprop.0+0=
-x754/0x850 include/net/scm.h:177
-> Modules linked in:
-> CPU: 1 PID: 3245 Comm: syz-executor.1 Not tainted 6.4.0-rc5-01219-gfa0e21=
-fa4443 #2
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-=
-gd239552ce722-prebuilt.qemu.org 04/01/2014
-> RIP: 0010:scm_pidfd_recv include/net/scm.h:138 [inline]
-> RIP: 0010:scm_recv.constprop.0+0x754/0x850 include/net/scm.h:177
-> Code: 67 fd e9 55 fd ff ff e8 4a 70 67 fd e9 7f fd ff ff e8 40 70 67 fd e=
-9 3e fb ff ff e8 36 70 67 fd e9 02 fd ff ff e8 8c 3a 20 fd <0f> 0b e9 fe fb=
- ff ff e8 50 70 67 fd e9 2e f9 ff ff e8 46 70 67 fd
-> RSP: 0018:ffffc90009af7660 EFLAGS: 00010216
-> RAX: 00000000000000a1 RBX: ffff888041e58a80 RCX: ffffc90003852000
-> RDX: 0000000000040000 RSI: ffffffff842675b4 RDI: 0000000000000007
-> RBP: ffffc90009af7810 R08: 0000000000000007 R09: 0000000000000013
-> R10: 00000000000000f8 R11: 0000000000000001 R12: ffffc90009af7db0
-> R13: 0000000000000000 R14: ffff888041e58a88 R15: 1ffff9200135eecc
-> FS:  00007f6b7113f640(0000) GS:ffff88806cf00000(0000) knlGS:0000000000000=
-000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f6b7111de38 CR3: 0000000012a6e002 CR4: 0000000000770ee0
-> PKRU: 55555554
-> Call Trace:
->  <TASK>
->  unix_stream_read_generic+0x5fe/0x1f50 net/unix/af_unix.c:2830
->  unix_stream_recvmsg+0x194/0x1c0 net/unix/af_unix.c:2880
->  sock_recvmsg_nosec net/socket.c:1019 [inline]
->  sock_recvmsg+0x188/0x1d0 net/socket.c:1040
->  ____sys_recvmsg+0x210/0x610 net/socket.c:2712
->  ___sys_recvmsg+0xff/0x190 net/socket.c:2754
->  do_recvmmsg+0x25d/0x6c0 net/socket.c:2848
->  __sys_recvmmsg net/socket.c:2927 [inline]
->  __do_sys_recvmmsg net/socket.c:2950 [inline]
->  __se_sys_recvmmsg net/socket.c:2943 [inline]
->  __x64_sys_recvmmsg+0x224/0x290 net/socket.c:2943
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x3f/0x90 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x72/0xdc
-> RIP: 0033:0x7f6b71da2e5d
-> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f=
-7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
- ff 73 01 c3 48 8b 0d 73 9f 1b 00 f7 d8 64 89 01 48
-> RSP: 002b:00007f6b7113ecc8 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
-> RAX: ffffffffffffffda RBX: 00000000004bc050 RCX: 00007f6b71da2e5d
-> RDX: 0000000000000007 RSI: 0000000020006600 RDI: 000000000000000b
-> RBP: 00000000004bc050 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000120 R11: 0000000000000246 R12: 0000000000000000
-> R13: 000000000000006e R14: 00007f6b71e03530 R15: 0000000000000000
->  </TASK>
->
-> Fixes: 5e2ff6704a27 ("scm: add SO_PASSPIDFD and SCM_PIDFD")
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Reported-by: syzkaller <syzkaller@googlegroups.com>
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
->  net/unix/af_unix.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-> index e7728b57a8c7..f1b76e0a8192 100644
-> --- a/net/unix/af_unix.c
-> +++ b/net/unix/af_unix.c
-> @@ -2905,7 +2905,7 @@ static int unix_stream_read_generic(struct unix_str=
-eam_read_state *state,
->         } while (size);
->
->         mutex_unlock(&u->iolock);
-> -       if (state->msg)
-> +       if (state->msg && check_creds)
->                 scm_recv(sock, state->msg, &scm, flags);
->         else
->                 scm_destroy(&scm);
-> --
-> 2.30.2
->
-
-Dear Kuniyuki,
-
-Thanks for looking into it!
-
-I'm afraid that this can lead to some regressions from the userspace
-side, because with this change we will stop sending
-SCM_CREDENTIALS, SCM_SECURITY and SCM_RIGHTS in case scm_set_cred wasn't ca=
-lled.
-
-Wouldn't it be safer just to ensure that scm->creds.uid is always
-initialized and skip SCM_PIDFD in case when scm->pid is NULL?
-
-Kind regards,
-Alex
+SGksIEVyaWMsDQoNClRoYW5rcyBmb3IgeW91ciByZXBseSENCg0KDQo+PiBXaHkgbm90IHNwZWFr
+IG9mIHRoZSBGSU46DQo+PiBGb3IgY3VycmVudCBpbXBsZW1lbnRhdGlvbiwgaGFzaGRhbmNlIGNh
+biBiZSBkb25lIG9uIHN0YXRlIEZJTl9XQUlUMiwgIGl0IG1heSByYWNlIHdpdGggdGhlIGVoYXNo
+IGxvb2t1cCBwcm9jZXNzIG9mICBwYXNzaXZlIGNsb3NlcuKAmXMgRklOLiBNeSBuZXcgcGF0Y2gg
+MyBkb2VzIHRoZSB0dyBoYXNoZGFuY2UgdW50aWwgcmVjZWl2aW5nIHBhc3NpdmUgY2xvc2VyJ3Mg
+RklOKHJlYWwgVElNRV9XQUlUKSwgIHNvIHRoaXMgcmFjZSBkb2VzIG5vdCBleGlzdCBhbmQgIHRo
+ZSAnY29ubmVjdGlvbiByZWZ1c2VkJyBpc3N1ZSB3aWxsIG5vdCBvY2N1ciwgc28gSSBkaWQgbm90
+IHNwZWFrIG9mIHRoZSBGSU4gYWdhaW4gd2l0aCB0aGUgbmV3IHBhdGNoLg0KPj4gDQo+IHNoZGFu
+Y2UgYmVnaW5zLCB0aGUgRklOIG1heSBiZSBkcm9wcGVkIGluIGZ1cnRoZXIgcHJvY2VzcyBpZiB0
+aGUgc29jaw0KPiBpcyBkZXN0cm95ZWQgb24gYW5vdGhlciBDUFUgYWZ0ZXIgaGFzaGRhbmNlLg0K
+ICAgDQpXaXRoIG15IHBhdGNoIDMsIHBhc3NpdmUgY2xvc2Vy4oCZcyBGSU4gd2lsbCBmaW5kIG9y
+aWdpbmFsIHNvY2sgYmVjYXVzZSBoYXNoZGFuY2Ugd2lsbCBub3QgYmUgZG9uZSBiZWZvcmUgcmVj
+ZWl2aW5nIGl0LA0KQWZ0ZXIgaGFzaGRhbmNlLCB0aGUgdHcgc29ja+KAmXMgc3RhdGUgaXMgc2V0
+IHRvIFRJTUVfV0FJVCBhbHJlYWR5LCBpdCBjYW4gYWNjZXB0IG5ldyBTWU4gd2l0aCB0aGUgc2Ft
+cGUgNC10dXBsZXMuIA0KSWYgdGhlIG9yaWdpbmFsIHNvY2sgaXMgZGVzdHJveWVkIG9uIGFub3Ro
+ZXIgQ1BVIG9yIHRoZSBGSU4gaXMgZHJvcGVkIGFmdGVyIGhhc2hkYW5jZSwgIGl0IHdpbGwgbm90
+IGFmZmVjdCB0aGUgdHcgc29jay4NCkkgZG9u4oCZdCBrbm93IHdoZXRoZXIgSSBnZXQgeW91ciBw
+b2ludCBjb3JyZWN0bHk/DQoNCg0KPj4gDQo+PiBJIHRvb2sgYSBsb29rIGF0IEZyZWVCU0QsIGl0
+IHVzZXMgaGFzaCB0YWJsZSBsb2NrIGFuZCBwZXIgc29jayBsZXZlbCBsb2NrLkl0IGFsc28gbmVl
+ZHMgc29tZSB0cmlja3MgdG8gcmV0cnkgZm9yIHNvbWUgY2FzZXMsIGZvciBleGFtcGxlLCBzb2Nr
+IGRyb3BwZWQgYnkgYW5vdGhlciB0aHJlYWQgd2hlbiB3YWl0aW5nIGZvciBwZXIgc29jayBsb2Nr
+IGR1cmluZyB0aGUgbG9va3VwOg0KPj4gICAvKg0KPj4gICAgICogV2hpbGUgd2FpdGluZyBmb3Ig
+aW5wIGxvY2sgZHVyaW5nIHRoZSBsb29rdXAsIGFub3RoZXIgdGhyZWFkDQo+PiAgICAgKiBjYW4g
+aGF2ZSBkcm9wcGVkIHRoZSBpbnBjYiwgaW4gd2hpY2ggY2FzZSB3ZSBuZWVkIHRvIGxvb3AgYmFj
+aw0KPj4gICAgICogYW5kIHRyeSB0byBmaW5kIGEgbmV3IGlucGNiIHRvIGRlbGl2ZXIgdG8uDQo+
+PiAgICAgKi8NCj4+ICAgIGlmIChpbnAtPmlucF9mbGFncyAmIElOUF9EUk9QUEVEKSB7DQo+PiAg
+ICAgICAgSU5QX1dVTkxPQ0soaW5wKTsNCj4+ICAgICAgICBpbnAgPSBOVUxMOw0KPj4gICAgICAg
+IGdvdG8gZmluZHBjYjsNCj4+IH0NCj4+IA0KPiANCj4gVGhpcyBpcyB0aGUgbGFzdCB0aW1lIHlv
+dSBicmluZyBGcmVlQlNEIGNvZGUgaGVyZS4NCj4gDQo+IFdlIGRvIG5vdCBjb3B5IEZyZWVCU0Qg
+Y29kZSBmb3Igb2J2aW91cyByZWFzb25zLg0KPiBJIG5ldmVyIGxvb2tlZCBhdCBGcmVlQlNEIGNv
+ZGUgYW5kIG5ldmVyIHdpbGwuDQo+IA0KPiBTdG9wIHRoaXMsIHBsZWFzZSwgb3IgSSB3aWxsIGln
+bm9yZSB5b3VyIGZ1dHVyZSBlbWFpbHMuDQoNCg0KSSBhbSB2ZXJ5IHNvcnJ5LCBJIHdpbGwgbm90
+IGRvIHRoaXMgYWdhaW4uDQoNCg0KDQoNCg0KDQpSZWdhcmRzIQ0KRHVhbm11cXVhbg0KDQo+IDIw
+MjPlubQ25pyIMjDml6Ug5LiL5Y2INDo0NO+8jEVyaWMgRHVtYXpldCA8ZWR1bWF6ZXRAZ29vZ2xl
+LmNvbT4g5YaZ6YGT77yaDQo+IA0KPiBPbiBUdWUsIEp1biAyMCwgMjAyMyBhdCA1OjMw4oCvQU0g
+RHVhbixNdXF1YW4gPGR1YW5tdXF1YW5AYmFpZHUuY29tPiB3cm90ZToNCj4+IA0KPj4gSGksIEVy
+aWMsDQo+PiANCj4+IFRoYW5rcyBmb3IgeW91ciBjb21tZW50cyENCj4+IA0KPj4gV2h5IG5vdCBz
+cGVhayBvZiB0aGUgRklOOg0KPj4gRm9yIGN1cnJlbnQgaW1wbGVtZW50YXRpb24sIGhhc2hkYW5j
+ZSBjYW4gYmUgZG9uZSBvbiBzdGF0ZSBGSU5fV0FJVDIsICBpdCBtYXkgcmFjZSB3aXRoIHRoZSBl
+aGFzaCBsb29rdXAgcHJvY2VzcyBvZiAgcGFzc2l2ZSBjbG9zZXLigJlzIEZJTi4gTXkgbmV3IHBh
+dGNoIDMgZG9lcyB0aGUgdHcgaGFzaGRhbmNlIHVudGlsIHJlY2VpdmluZyBwYXNzaXZlIGNsb3Nl
+cidzIEZJTihyZWFsIFRJTUVfV0FJVCksICBzbyB0aGlzIHJhY2UgZG9lcyBub3QgZXhpc3QgYW5k
+ICB0aGUgJ2Nvbm5lY3Rpb24gcmVmdXNlZCcgaXNzdWUgd2lsbCBub3Qgb2NjdXIsIHNvIEkgZGlk
+IG5vdCBzcGVhayBvZiB0aGUgRklOIGFnYWluIHdpdGggdGhlIG5ldyBwYXRjaC4NCj4+IA0KPiBz
+aGRhbmNlIGJlZ2lucywgdGhlIEZJTiBtYXkgYmUgZHJvcHBlZCBpbiBmdXJ0aGVyIHByb2Nlc3Mg
+aWYgdGhlIHNvY2sNCj4gaXMgZGVzdHJveWVkIG9uIGFub3RoZXIgQ1BVIGFmdGVyIGhhc2hkYW5j
+ZS4NCj4+IA0KPj4gSSB0b29rIGEgbG9vayBhdCBGcmVlQlNELCBpdCB1c2VzIGhhc2ggdGFibGUg
+bG9jayBhbmQgcGVyIHNvY2sgbGV2ZWwgbG9jay5JdCBhbHNvIG5lZWRzIHNvbWUgdHJpY2tzIHRv
+IHJldHJ5IGZvciBzb21lIGNhc2VzLCBmb3IgZXhhbXBsZSwgc29jayBkcm9wcGVkIGJ5IGFub3Ro
+ZXIgdGhyZWFkIHdoZW4gd2FpdGluZyBmb3IgcGVyIHNvY2sgbG9jayBkdXJpbmcgdGhlIGxvb2t1
+cDoNCj4+ICAgLyoNCj4+ICAgICAqIFdoaWxlIHdhaXRpbmcgZm9yIGlucCBsb2NrIGR1cmluZyB0
+aGUgbG9va3VwLCBhbm90aGVyIHRocmVhZA0KPj4gICAgICogY2FuIGhhdmUgZHJvcHBlZCB0aGUg
+aW5wY2IsIGluIHdoaWNoIGNhc2Ugd2UgbmVlZCB0byBsb29wIGJhY2sNCj4+ICAgICAqIGFuZCB0
+cnkgdG8gZmluZCBhIG5ldyBpbnBjYiB0byBkZWxpdmVyIHRvLg0KPj4gICAgICovDQo+PiAgICBp
+ZiAoaW5wLT5pbnBfZmxhZ3MgJiBJTlBfRFJPUFBFRCkgew0KPj4gICAgICAgIElOUF9XVU5MT0NL
+KGlucCk7DQo+PiAgICAgICAgaW5wID0gTlVMTDsNCj4+ICAgICAgICBnb3RvIGZpbmRwY2I7DQo+
+PiB9DQo+PiANCj4gDQo+IFRoaXMgaXMgdGhlIGxhc3QgdGltZSB5b3UgYnJpbmcgRnJlZUJTRCBj
+b2RlIGhlcmUuDQo+IA0KPiBXZSBkbyBub3QgY29weSBGcmVlQlNEIGNvZGUgZm9yIG9idmlvdXMg
+cmVhc29ucy4NCj4gSSBuZXZlciBsb29rZWQgYXQgRnJlZUJTRCBjb2RlIGFuZCBuZXZlciB3aWxs
+Lg0KPiANCj4gU3RvcCB0aGlzLCBwbGVhc2UsIG9yIEkgd2lsbCBpZ25vcmUgeW91ciBmdXR1cmUg
+ZW1haWxzLg0KDQo=
 
