@@ -1,160 +1,127 @@
-Return-Path: <netdev+bounces-12222-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12223-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id F1A9C736C87
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 14:59:28 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 2AEC8736C97
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 15:00:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id CD1311C20C46
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 12:59:27 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id DABCD281283
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 13:00:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2128E154B5;
-	Tue, 20 Jun 2023 12:59:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3B9EE154B5;
+	Tue, 20 Jun 2023 13:00:53 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 109611FA1;
-	Tue, 20 Jun 2023 12:59:22 +0000 (UTC)
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF2810FF;
-	Tue, 20 Jun 2023 05:59:20 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id af79cd13be357-7624e8ceef7so346133885a.2;
-        Tue, 20 Jun 2023 05:59:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1687265960; x=1689857960;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4RvNVFujZzQ9FH/nRDQhxgK8HOnuVe0ilksjI7/FigQ=;
-        b=V7CBqsvwa7HO9941Gx9rU48fbSNnkTARJq3hU0s4FJKqNq7uyQJvuWMi48BFYirjd9
-         Z+CSYTenkWtjPExrbuK55Lr4LajYIvMVcZS1i2H4hkmnnVf92/3eU5+256AdSIU7TTh1
-         xwVepNxy0+wSCXEIn2FLnq5fwolgWObqyrXGJD4a4dArZIDrRTCCQbOXeliLMdRNukOE
-         bfBqEL3D5v18ty2Fda4DTUDINVko/+/f9bRuKWlc9As/MXSXKCsqRSAvjLHgGSN+PYBz
-         OhKP930iRzIK8HICV0ZdtEG/GKM89Wb5av0m6K808diQPwrVMMP/ZUSrK2PjzRbzzuKs
-         Xiqw==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EBA22F5B
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 13:00:52 +0000 (UTC)
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66702170A;
+	Tue, 20 Jun 2023 06:00:36 -0700 (PDT)
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-3f99aa36d18so6098345e9.1;
+        Tue, 20 Jun 2023 06:00:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687265960; x=1689857960;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=4RvNVFujZzQ9FH/nRDQhxgK8HOnuVe0ilksjI7/FigQ=;
-        b=TXgc61V4R/4/uHY2QZsPXgAX2Rf37It/aP8tEzZXkexa1Utxq2r8RE3sBLePmzTuoD
-         Dg/24MZVRUWEeB9qLSuWh9TxnBk3C9xAbLBjodnoCNHP4jSZs14NOCFeN5e5O5/OJJyU
-         9GE1yCOApc5CfQJxBmFnXVMD61xCjgHWd9RJT1do3WkwFPH0npMZTU3gKqWofrJdDGgu
-         qXndaATjAJrGxzyM2onxl5nsbdIT81r60FXCvnzC0rq/1EPneitwbOnIpJbj3rrubQw5
-         xJcJHr54Exltplonli1SVVhaeuevVfouQJAGylb1lVkNVADLArf5jY1csDryORRiJq3/
-         w1pg==
-X-Gm-Message-State: AC+VfDw+AvcpB+kzcrU2tO8dary8v4OzIEJ2EVlGXjUryXMHJcwWKhEV
-	ljMDIV+uw0uRJ28AUUbBK2o=
-X-Google-Smtp-Source: ACHHUZ5DO7ilI0HCjRl4Lbeq4UH3F7W+AS3gn0PcL1py6Hb93MUCpM1EgmXOFtEL5TVj5cEqHyVw6w==
-X-Received: by 2002:a05:6214:1306:b0:628:2e08:78b7 with SMTP id pn6-20020a056214130600b006282e0878b7mr5517848qvb.31.1687265959785;
-        Tue, 20 Jun 2023 05:59:19 -0700 (PDT)
-Received: from localhost (172.174.245.35.bc.googleusercontent.com. [35.245.174.172])
-        by smtp.gmail.com with ESMTPSA id m17-20020a0cf191000000b00631ecb1052esm1216204qvl.74.2023.06.20.05.59.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jun 2023 05:59:19 -0700 (PDT)
-Date: Tue, 20 Jun 2023 08:59:18 -0400
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To: David Howells <dhowells@redhat.com>, 
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: dhowells@redhat.com, 
- netdev@vger.kernel.org, 
- Alexander Duyck <alexander.duyck@gmail.com>, 
- "David S. Miller" <davem@davemloft.net>, 
- Eric Dumazet <edumazet@google.com>, 
- Jakub Kicinski <kuba@kernel.org>, 
- Paolo Abeni <pabeni@redhat.com>, 
- David Ahern <dsahern@kernel.org>, 
- Matthew Wilcox <willy@infradead.org>, 
- Jens Axboe <axboe@kernel.dk>, 
- linux-mm@kvack.org, 
- linux-kernel@vger.kernel.org, 
- bpf@vger.kernel.org, 
- dccp@vger.kernel.org, 
- linux-afs@lists.infradead.org, 
- linux-arm-msm@vger.kernel.org, 
- linux-can@vger.kernel.org, 
- linux-crypto@vger.kernel.org, 
- linux-doc@vger.kernel.org, 
- linux-hams@vger.kernel.org, 
- linux-perf-users@vger.kernel.org, 
- linux-rdma@vger.kernel.org, 
- linux-sctp@vger.kernel.org, 
- linux-wpan@vger.kernel.org, 
- linux-x25@vger.kernel.org, 
- mptcp@lists.linux.dev, 
- rds-devel@oss.oracle.com, 
- tipc-discussion@lists.sourceforge.net, 
- virtualization@lists.linux-foundation.org
-Message-ID: <6491a2a6f1488_3bcfec294d7@willemb.c.googlers.com.notmuch>
-In-Reply-To: <784658.1687176327@warthog.procyon.org.uk>
-References: <648f36d02fe6e_33cfbc2944f@willemb.c.googlers.com.notmuch>
- <20230617121146.716077-1-dhowells@redhat.com>
- <20230617121146.716077-18-dhowells@redhat.com>
- <784658.1687176327@warthog.procyon.org.uk>
-Subject: Re: [PATCH net-next v2 17/17] net: Kill MSG_SENDPAGE_NOTLAST
+        d=1e100.net; s=20221208; t=1687266035; x=1689858035;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=X93F7b0wOWdtuJBRHnqORIf5mXHGdp4ICFY23Klr0r0=;
+        b=OqqDccxaNYK5K3d98pfgNW7/Ll1qR4eLEoPTGluvID+UPYyEF74c6N2P8F8xOTTCQT
+         2YiPn45rdos8PQBzoE8dmEBTNIaijq3QGDjpGmwO3DmEw/IsVnirmNEj444sCrea3R64
+         bvwmuUNkUmUgU5UVdSViqcdUv1hYo1nUyt5a7d+cNT2I3ATFWe19srg/bvgWG3CT923h
+         dFbMAjVKUC0RMrrrjDNZ5lvoCWokJz8yx1S5sfBGAilIRk5B4K1W+/cnkr4jceaWTRvS
+         gtXQiIJ2RVLs5I+F8Heqcx4oL+OmnQ1qBUnNuvhZo3MjqUXkfAdKu26ywf3tiW99YEvv
+         FwXg==
+X-Gm-Message-State: AC+VfDzRQYpLGuaCZHEAio7lqYmhtsyT7Z0+1q/cmWQmQx8X5vEbhMCv
+	6Gnzl+XJ1I0TD4dnfTo/anA=
+X-Google-Smtp-Source: ACHHUZ4fMadoVOeylQzjAgw+8ckeVgibkoIHqT/D3sxLYyMEY5mGEhxW4ZiDHDRruH9UX+wLysw2Mg==
+X-Received: by 2002:a1c:ed17:0:b0:3f5:f543:d81f with SMTP id l23-20020a1ced17000000b003f5f543d81fmr13305521wmh.3.1687266034561;
+        Tue, 20 Jun 2023 06:00:34 -0700 (PDT)
+Received: from [192.168.64.192] (bzq-219-42-90.isdn.bezeqint.net. [62.219.42.90])
+        by smtp.gmail.com with ESMTPSA id z8-20020a05600c220800b003f9b12b1598sm5339723wml.22.2023.06.20.06.00.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Jun 2023 06:00:34 -0700 (PDT)
+Message-ID: <028fd6f1-6fc2-6e8d-3de0-71c2b8f6b754@grimberg.me>
+Date: Tue, 20 Jun 2023 16:00:31 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH net-next v2 10/17] nvme: Use sendmsg(MSG_SPLICE_PAGES)
+ rather then sendpage
+Content-Language: en-US
+From: Sagi Grimberg <sagi@grimberg.me>
+To: David Howells <dhowells@redhat.com>,
+ Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc: netdev@vger.kernel.org, Alexander Duyck <alexander.duyck@gmail.com>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ David Ahern <dsahern@kernel.org>, Matthew Wilcox <willy@infradead.org>,
+ Jens Axboe <axboe@kernel.dk>, linux-mm@kvack.org,
+ linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
+ Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+ Chaitanya Kulkarni <kch@nvidia.com>, linux-nvme@lists.infradead.org
+References: <648f353c55ce8_33cfbc29413@willemb.c.googlers.com.notmuch>
+ <20230617121146.716077-1-dhowells@redhat.com>
+ <20230617121146.716077-11-dhowells@redhat.com>
+ <755077.1687109321@warthog.procyon.org.uk>
+ <55e7058b-07d0-3619-3481-2d70e95875ea@grimberg.me>
+In-Reply-To: <55e7058b-07d0-3619-3481-2d70e95875ea@grimberg.me>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-David Howells wrote:
-> Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+
+>>>      struct bio_vec bvec;
+>>>      struct msghdr msg = { .msg_flags = MSG_SPLICE_PAGES | ... };
+>>>
+>>>      ..
+>>>
+>>>      bvec_set_virt
+>>>      iov_iter_bvec
+>>>      sock_sendmsg
+>>>
+>>> is a frequent pattern. Does it make sense to define a wrapper? Same 
+>>> for bvec_set_page.
+>>
+>> I dunno.  I'm trying to move towards aggregating multiple pages in a bvec
+>> before calling sendmsg if possible rather than doing it one page at a 
+>> time,
+>> but it's easier and more obvious in some places than others.
 > 
-> > Is it intentional to add MSG_MORE here in this patch?
-> > 
-> > I do see that patch 3 removes this branch:
+> That would be great to do, but nvme needs to calculate a data digest
+> and doing that in a separate scan of the payload is not very cache
+> friendly...
 > 
-> Yeah.  I think I may have tcp_bpf a bit wrong with regard to handling
-> MSG_MORE.
+> There is also the fact that the payload may be sent in portions 
+> asynchronously driven by how the controller wants to accept them,
+> so there is some complexity there.
 > 
-> How about the attached version of tcp_bpf_push()?
+> But worth looking at for sure.
 > 
-> I wonder if it's save to move the setting of MSG_SENDPAGE_NOPOLICY out of the
-> loop as I've done here.  The caller holds the socket lock.
+> The patch looks good to me, taking it to run some tests
+> (from sendpage-3-frag branch in your kernel.org tree correct?)
 > 
-> Also, I'm not sure whether to take account of apply/apply_bytes when setting
-> MSG_MORE mid-message, or whether to just go on whether we've reached
-> sge->length yet.  (I'm not sure exactly how tcp_bpf works).
+> For now, you can add:
+> Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
 
-I'm not very familiar with it either.
+Patches seem to hold up.
+Tested-by: Sagi Grimberg <sagi@grimberg.me>
 
-Instead of inferring whether MSG_MORE is safe to set, as below, sufficient to
-rely on the caller to pass it when appropriate?
-
-size = min(apply_bytes, sge->length). I doubt that size < apply_bytes is
-ever intended.
-
-And instead of this former branch
-
-                if (flags & MSG_SENDPAGE_NOTLAST)
-                        msghdr.msg_flags |= MSG_MORE;
-
-update any caller to pass MSG_MORE instead of MSG_SENDPAGE_NOTLAST, if not yet
-done so.
-
-> 		msghdr.msg_flags = flags;
-> 
-> 		/* Determine if we need to set MSG_MORE. */
-> 		if (!(msghdr.msg_flags & MSG_MORE)) {
-> 			if (apply && size < apply_bytes)
-> 				msghdr.msg_flags |= MSG_MORE;
-> 			else if (!apply && size < sge->length &&
-> 				 msg->sg.start != msg->sg.end)
-> 				msghdr.msg_flags |= MSG_MORE;
-> 		}
+However if possible, can you please split nvme/host and nvme/target
+changes? We try to separate host side and target side changes in the
+same patch.
 
