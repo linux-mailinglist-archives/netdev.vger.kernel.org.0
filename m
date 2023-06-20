@@ -1,35 +1,37 @@
-Return-Path: <netdev+bounces-12265-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12266-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id A7AD4736EBC
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 16:35:58 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id AE8A0736EF3
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 16:42:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 66E4528134A
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 14:35:57 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 91D431C20C51
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 14:42:53 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7466A111B7;
-	Tue, 20 Jun 2023 14:35:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7118816421;
+	Tue, 20 Jun 2023 14:42:51 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63557101CA
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 14:35:55 +0000 (UTC)
-Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF3B1706;
-	Tue, 20 Jun 2023 07:35:51 -0700 (PDT)
-Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
-	(No client certificate requested)
-	(Authenticated sender: pmenzel)
-	by mx.molgen.mpg.de (Postfix) with ESMTPSA id 1700B61E5FE06;
-	Tue, 20 Jun 2023 16:34:01 +0200 (CEST)
-Message-ID: <8bfa3000-3391-546d-5c1e-14163de7f782@molgen.mpg.de>
-Date: Tue, 20 Jun 2023 16:34:00 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB0461FA1
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 14:42:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 026CEC433C8;
+	Tue, 20 Jun 2023 14:42:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1687272168;
+	bh=d9XhbkKF96ldZ9ach8pwAa8guYHTrILdiXmV56+jwUA=;
+	h=Date:Subject:To:References:From:In-Reply-To:From;
+	b=OKMk4oSf7cdb9ShuA3Biq9uMMP+qG/gxHGYvOKfPG8tGPXHyqoNvBcW/pY7056XRc
+	 R/Marq5I1gLTUKbTFTBvCar0nrpILFwyYO6/pJGGMgG+0jyLI1RKGxFzQVMqUiR6xd
+	 1Z8qglUt1iDAzm/tHQnkHovPiKyw+M7C/b00mCEtGrauOZTnz1+CXvr7K0dXNpGE+A
+	 yHOkpy7Ecoq+/Bx8RB9/QwIg/NNe2Njim6L0iLQmseGug5CFXuOXFqW3ftMZExIUqI
+	 fj/VIdQK2XvgKKLSy5ftPgvc6DfJmslpRt7rkGqsK6FpQ/JA0wsG8DlZuXiaIqGnbG
+	 M6vTjnaUjCGUg==
+Message-ID: <42e5a04d-d808-e60f-ee31-01b5cf63b5d4@kernel.org>
+Date: Tue, 20 Jun 2023 09:42:45 -0500
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
@@ -37,232 +39,1022 @@ List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [Intel-wired-lan] [PATCH] igc: Ignore AER reset when device is
- suspended
+ Thunderbird/102.11.0
+Subject: Re: [PATCH 3/4] clk: socfpga: agilex5: Add clock driver for Agilex5
+ platform
 Content-Language: en-US
-To: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc: jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
- Tony Luck <tony.luck@intel.com>, Kees Cook <keescook@chromium.org>,
- linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
- "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
- Eric Dumazet <edumazet@google.com>, intel-wired-lan@lists.osuosl.org,
- linux-hardening@vger.kernel.org, netdev@vger.kernel.org,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- "David S. Miller" <davem@davemloft.net>
-References: <20230620123636.1854690-1-kai.heng.feng@canonical.com>
-From: Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20230620123636.1854690-1-kai.heng.feng@canonical.com>
+To: niravkumar.l.rabara@intel.com, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Wen Ping <wen.ping.teh@intel.com>, Richard Cochran
+ <richardcochran@gmail.com>, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+ netdev@vger.kernel.org, Adrian Ng Ho Yin <adrian.ho.yin.ng@intel.com>
+References: <20230618132235.728641-1-niravkumar.l.rabara@intel.com>
+ <20230618132235.728641-4-niravkumar.l.rabara@intel.com>
+From: Dinh Nguyen <dinguyen@kernel.org>
+In-Reply-To: <20230618132235.728641-4-niravkumar.l.rabara@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-	RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+Content-Transfer-Encoding: 7bit
 
-RGVhciBLYWktSGVuZywNCg0KDQpUaGFuayB5b3UgZm9yIHRoZSBwYXRjaC4NCg0KDQpBbSAy
-MC4wNi4yMyB1bSAxNDozNiBzY2hyaWViIEthaS1IZW5nIEZlbmc6DQo+IFdoZW4gYSBzeXN0
-ZW0gdGhhdCBjb25uZWN0cyB0byBhIFRodW5kZXJib2x0IGRvY2sgZXF1aXBwZWQgd2l0aCBJ
-MjI1LA0KPiBJMjI1IHN0b3BzIHdvcmtpbmcgYWZ0ZXIgUzMgcmVzdW1lOg0KPiANCj4gWyAg
-NjA2LjUyNzY0M10gcGNpZXBvcnQgMDAwMDowMDoxZC4wOiBBRVI6IE11bHRpcGxlIENvcnJl
-Y3RlZCBlcnJvciByZWNlaXZlZDogMDAwMDowMDoxZC4wDQo+IFsgIDYwNi41Mjc3OTFdIHBj
-aWVwb3J0IDAwMDA6MDA6MWQuMDogUENJZSBCdXMgRXJyb3I6IHNldmVyaXR5PUNvcnJlY3Rl
-ZCwgdHlwZT1UcmFuc2FjdGlvbiBMYXllciwgKFJlY2VpdmVyIElEKQ0KPiBbICA2MDYuNTI3
-Nzk1XSBwY2llcG9ydCAwMDAwOjAwOjFkLjA6ICAgZGV2aWNlIFs4MDg2OjdhYjBdIGVycm9y
-IHN0YXR1cy9tYXNrPTAwMDA4MDAwLzAwMDAyMDAwDQo+IFsgIDYwNi41Mjc4MDBdIHBjaWVw
-b3J0IDAwMDA6MDA6MWQuMDogICAgWzE1XSBIZWFkZXJPRg0KPiBbICA2MDYuNTI3ODA2XSBw
-Y2llcG9ydCAwMDAwOjAwOjFkLjA6IEFFUjogICBFcnJvciBvZiB0aGlzIEFnZW50IGlzIHJl
-cG9ydGVkIGZpcnN0DQo+IFsgIDYwNi41Mjc4NTNdIHBjaWVwb3J0IDAwMDA6MDc6MDQuMDog
-UENJZSBCdXMgRXJyb3I6IHNldmVyaXR5PUNvcnJlY3RlZCwgdHlwZT1EYXRhIExpbmsgTGF5
-ZXIsIChSZWNlaXZlciBJRCkNCj4gWyAgNjA2LjUyNzg1Nl0gcGNpZXBvcnQgMDAwMDowNzow
-NC4wOiAgIGRldmljZSBbODA4NjowYjI2XSBlcnJvciBzdGF0dXMvbWFzaz0wMDAwMDA4MC8w
-MDAwMjAwMA0KPiBbICA2MDYuNTI3ODYxXSBwY2llcG9ydCAwMDAwOjA3OjA0LjA6ICAgIFsg
-N10gQmFkRExMUA0KPiBbICA2MDYuNTI3OTMxXSBwY2llcG9ydCAwMDAwOjAwOjFkLjA6IEFF
-UjogTXVsdGlwbGUgVW5jb3JyZWN0ZWQgKE5vbi1GYXRhbCkgZXJyb3IgcmVjZWl2ZWQ6IDAw
-MDA6MDA6MWQuMA0KPiBbICA2MDYuNTI4MDY0XSBwY2llcG9ydCAwMDAwOjAwOjFkLjA6IFBD
-SWUgQnVzIEVycm9yOiBzZXZlcml0eT1VbmNvcnJlY3RlZCAoTm9uLUZhdGFsKSwgdHlwZT1U
-cmFuc2FjdGlvbiBMYXllciwgKFJlcXVlc3RlciBJRCkNCj4gWyAgNjA2LjUyODA2OF0gcGNp
-ZXBvcnQgMDAwMDowMDoxZC4wOiAgIGRldmljZSBbODA4Njo3YWIwXSBlcnJvciBzdGF0dXMv
-bWFzaz0wMDEwMDAwMC8wMDAwNDAwMA0KPiBbICA2MDYuNTI4MDcyXSBwY2llcG9ydCAwMDAw
-OjAwOjFkLjA6ICAgIFsyMF0gVW5zdXBSZXEgICAgICAgICAgICAgICAoRmlyc3QpDQo+IFsg
-IDYwNi41MjgwNzVdIHBjaWVwb3J0IDAwMDA6MDA6MWQuMDogQUVSOiAgIFRMUCBIZWFkZXI6
-IDM0MDAwMDAwIDBhMDAwMDUyIDAwMDAwMDAwIDAwMDAwMDAwDQo+IFsgIDYwNi41MjgwNzld
-IHBjaWVwb3J0IDAwMDA6MDA6MWQuMDogQUVSOiAgIEVycm9yIG9mIHRoaXMgQWdlbnQgaXMg
-cmVwb3J0ZWQgZmlyc3QNCj4gWyAgNjA2LjUyODA5OF0gcGNpZXBvcnQgMDAwMDowNDowMS4w
-OiBQQ0llIEJ1cyBFcnJvcjogc2V2ZXJpdHk9VW5jb3JyZWN0ZWQgKE5vbi1GYXRhbCksIHR5
-cGU9VHJhbnNhY3Rpb24gTGF5ZXIsIChSZXF1ZXN0ZXIgSUQpDQo+IFsgIDYwNi41MjgxMDFd
-IHBjaWVwb3J0IDAwMDA6MDQ6MDEuMDogICBkZXZpY2UgWzgwODY6MTEzNl0gZXJyb3Igc3Rh
-dHVzL21hc2s9MDAzMDAwMDAvMDAwMDAwMDANCj4gWyAgNjA2LjUyODEwNV0gcGNpZXBvcnQg
-MDAwMDowNDowMS4wOiAgICBbMjBdIFVuc3VwUmVxICAgICAgICAgICAgICAgKEZpcnN0KQ0K
-PiBbICA2MDYuNTI4MTA3XSBwY2llcG9ydCAwMDAwOjA0OjAxLjA6ICAgIFsyMV0gQUNTVmlv
-bA0KPiBbICA2MDYuNTI4MTEwXSBwY2llcG9ydCAwMDAwOjA0OjAxLjA6IEFFUjogICBUTFAg
-SGVhZGVyOiAzNDAwMDAwMCAwNDAwMDA1MiAwMDAwMDAwMCAwMDAwMDAwMA0KPiBbICA2MDYu
-NTI4MTg3XSB0aHVuZGVyYm9sdCAwMDAwOjA1OjAwLjA6IEFFUjogY2FuJ3QgcmVjb3ZlciAo
-bm8gZXJyb3JfZGV0ZWN0ZWQgY2FsbGJhY2spDQo+IFsgIDYwNi41NTg3MjldIC0tLS0tLS0t
-LS0tLVsgY3V0IGhlcmUgXS0tLS0tLS0tLS0tLQ0KPiBbICA2MDYuNTU4NzI5XSBpZ2MgMDAw
-MDozODowMC4wOiBkaXNhYmxpbmcgYWxyZWFkeS1kaXNhYmxlZCBkZXZpY2UNCj4gWyAgNjA2
-LjU1ODczOF0gV0FSTklORzogQ1BVOiAwIFBJRDogMjA5IGF0IGRyaXZlcnMvcGNpL3BjaS5j
-OjIyNDggcGNpX2Rpc2FibGVfZGV2aWNlKzB4ZjYvMHgxNTANCj4gWyAgNjA2LjU1ODc0M10g
-TW9kdWxlcyBsaW5rZWQgaW46IHJmY29tbSBjY20gY21hYyBhbGdpZl9oYXNoIGFsZ2lmX3Nr
-Y2lwaGVyIGFmX2FsZyB1c2JoaWQgYm5lcCBzbmRfaGRhX2NvZGVjX2hkbWkgc25kX2N0bF9s
-ZWQgc25kX2hkYV9jb2RlY19yZWFsdGVrIGpveWRldiBzbmRfaGRhX2NvZGVjX2dlbmVyaWMg
-bGVkdHJpZ19hdWRpbyBiaW5mbXRfbWlzYyBzbmRfc29mX3BjaV9pbnRlbF90Z2wgc25kX3Nv
-Zl9pbnRlbF9oZGFfY29tbW9uIHNuZF9zb2NfYWNwaV9pbnRlbF9tYXRjaCBzbmRfc29jX2Fj
-cGkgc25kX3NvY19oZGFjX2hkYSBzbmRfc29mX3BjaSBzbmRfc29mX3h0ZW5zYV9kc3AgeDg2
-X3BrZ190ZW1wX3RoZXJtYWwgc25kX3NvZl9pbnRlbF9oZGFfbWxpbmsgaW50ZWxfcG93ZXJj
-bGFtcCBzbmRfc29mX2ludGVsX2hkYSBzbmRfc29mIHNuZF9zb2ZfdXRpbHMgc25kX2hkYV9l
-eHRfY29yZSBzbmRfc29jX2NvcmUgc25kX2NvbXByZXNzIHNuZF9oZGFfaW50ZWwgY29yZXRl
-bXAgc25kX2ludGVsX2RzcGNmZyBzbmRfaGRhX2NvZGVjIHNuZF9od2RlcCBrdm1faW50ZWwg
-c25kX2hkYV9jb3JlIGl3bG12bSBubHNfaXNvODg1OV8xIGk5MTUgc25kX3BjbSBrdm0gbWFj
-ODAyMTEgY3JjdDEwZGlmX3BjbG11bCBjcmMzMl9wY2xtdWwgaTJjX2FsZ29fYml0IHV2Y3Zp
-ZGVvIGdoYXNoX2NsbXVsbmlfaW50ZWwgc25kX3NlcSBtZWlfcHhwIGRybV9idWRkeSB2aWRl
-b2J1ZjJfdm1hbGxvYyBzY2hfZnFfY29kZWwgc2hhNTEyX3Nzc2UzIGxpYmFyYzQgYWVzbmlf
-aW50ZWwgbWVpX2hkY3AgdmlkZW9idWYyX21lbW9wcyBidHVzYiB1dmMgY3J5cHRvX3NpbWQg
-ZHJtX2Rpc3BsYXlfaGVscGVyIHNuZF9zZXFfZGV2aWNlIGJ0cnRsIHZpZGVvYnVmMl92NGwy
-IGNyeXB0ZCBzbmRfdGltZXIgaW50ZWxfcmFwbF9tc3IgYnRiY20gZHJtX2ttc19oZWxwZXIg
-dmlkZW9kZXYgaXdsd2lmaSBzbmQgYnRpbnRlbCByYXBsIGlucHV0X2xlZHMgd21pX2Jtb2Yg
-aGlkX3NlbnNvcl8NCj4gICByb3RhdGlvbiBidG10ayBoaWRfc2Vuc29yX2FjY2VsXzNkDQo+
-IFsgIDYwNi41NTg3NzhdICBoaWRfc2Vuc29yX2d5cm9fM2QgaGlkX3NlbnNvcl9hbHMgc3lz
-Y29weWFyZWEgdmlkZW9idWYyX2NvbW1vbiBpbnRlbF9jc3RhdGUgc2VyaW9fcmF3IHNvdW5k
-Y29yZSBibHVldG9vdGggaGlkX3NlbnNvcl90cmlnZ2VyIHRodW5kZXJib2x0IHN5c2ZpbGxy
-ZWN0IGNmZzgwMjExIG1jIG1laV9tZSBpbmR1c3RyaWFsaW9fdHJpZ2dlcmVkX2J1ZmZlciBz
-eXNpbWdibHQgcHJvY2Vzc29yX3RoZXJtYWxfZGV2aWNlX3BjaSBoaWRfc2Vuc29yX2lpb19j
-b21tb24gaGlkX211bHRpdG91Y2ggZWNkaF9nZW5lcmljIHByb2Nlc3Nvcl90aGVybWFsX2Rl
-dmljZSBrZmlmb19idWYgY2VjIDgyNTBfZHcgbWVpIGVjYyBwcm9jZXNzb3JfdGhlcm1hbF9y
-ZmltIGluZHVzdHJpYWxpbyByY19jb3JlIHByb2Nlc3Nvcl90aGVybWFsX21ib3ggdWNzaV9h
-Y3BpIHByb2Nlc3Nvcl90aGVybWFsX3JhcGwgdHRtIHR5cGVjX3Vjc2kgaW50ZWxfcmFwbF9j
-b21tb24gbXNyIHR5cGVjIHZpZGVvIGludDM0MDNfdGhlcm1hbCBpbnQzNDB4X3RoZXJtYWxf
-em9uZSBpbnQzNDAwX3RoZXJtYWwgaW50ZWxfaGlkIHdtaSBhY3BpX3BhZCBhY3BpX3RoZXJt
-YWxfcmVsIHNwYXJzZV9rZXltYXAgYWNwaV90YWQgbWFjX2hpZCBwYXJwb3J0X3BjIHBwZGV2
-IGxwIHBhcnBvcnQgZHJtIHJhbW9vcHMgcmVlZF9zb2xvbW9uIGVmaV9wc3RvcmUgaXBfdGFi
-bGVzIHhfdGFibGVzIGF1dG9mczQgaGlkX3NlbnNvcl9jdXN0b20gaGlkX3NlbnNvcl9odWIg
-aW50ZWxfaXNodHBfaGlkIHNwaV9weGEyeHhfcGxhdGZvcm0gaGlkX2dlbmVyaWMgZHdfZG1h
-YyBkd19kbWFjX2NvcmUgcnRzeF9wY2lfc2RtbWMgZTEwMDBlIGkyY19pODAxIGlnYyBudm1l
-IGkyY19zbWJ1cyBpbnRlbF9scHNzX3BjaSBydHN4X3BjaSBpbnRlbF9pc2hfaXBjIG52bWVf
-Y29yZSBpbnRlbF9scHNzIHhoY2lfcGNpIGkyY19oaWRfYWNwaSBpbnRlbF9pc2h0cCBpZG1h
-NjQgeGhjaV9wY2lfcmVuZXNhcyBpMmNfaGlkDQo+ICAgIGhpZCBwaW5jdHJsX2FsZGVybGFr
-ZQ0KPiBbICA2MDYuNTU4ODA5XSBDUFU6IDAgUElEOiAyMDkgQ29tbTogaXJxLzEyNC1hZXJk
-cnYgTm90IHRhaW50ZWQgNi40LjAtcmM3KyAjMTE5DQo+IFsgIDYwNi41NTg4MTFdIEhhcmR3
-YXJlIG5hbWU6IEhQIEhQIFpCb29rIEZ1cnkgMTYgRzkgTW9iaWxlIFdvcmtzdGF0aW9uIFBD
-Lzg5QzYsIEJJT1MgVTk2IFZlci4gMDEuMDcuMDEgMDQvMDYvMjAyMw0KPiBbICA2MDYuNTU4
-ODEyXSBSSVA6IDAwMTA6cGNpX2Rpc2FibGVfZGV2aWNlKzB4ZjYvMHgxNTANCj4gWyAgNjA2
-LjU1ODgxNF0gQ29kZTogNGQgODUgZTQgNzUgMDcgNGMgOGIgYTMgZDAgMDAgMDAgMDAgNDgg
-OGQgYmIgZDAgMDAgMDAgMDAgZTggNWMgZjUgMWYgMDAgNGMgODkgZTIgNDggYzcgYzcgZjgg
-ZTYgMzcgYWUgNDggODkgYzYgZTggOWEgM2UgODYgZmYgPDBmPiAwYiBlOSAzYyBmZiBmZiBm
-ZiA0OCA4ZCA1NSBlNiBiZSAwNCAwMCAwMCAwMCA0OCA4OSBkZiBlOCA2MiAwYg0KPiBbICA2
-MDYuNTU4ODE1XSBSU1A6IDAwMTg6ZmZmZmE3MDA0MGE0ZmNhMCBFRkxBR1M6IDAwMDEwMjQ2
-DQo+IFsgIDYwNi41NTg4MTZdIFJBWDogMDAwMDAwMDAwMDAwMDAwMCBSQlg6IGZmZmY4YWM4
-NDM0YjIwMDAgUkNYOiAwMDAwMDAwMDAwMDAwMDAwDQo+IFsgIDYwNi41NTg4MTddIFJEWDog
-MDAwMDAwMDAwMDAwMDAwMCBSU0k6IDAwMDAwMDAwMDAwMDAwMDAgUkRJOiAwMDAwMDAwMDAw
-MDAwMDAwDQo+IFsgIDYwNi41NTg4MThdIFJCUDogZmZmZmE3MDA0MGE0ZmNjMCBSMDg6IDAw
-MDAwMDAwMDAwMDAwMDAgUjA5OiAwMDAwMDAwMDAwMDAwMDAwDQo+IFsgIDYwNi41NTg4MThd
-IFIxMDogMDAwMDAwMDAwMDAwMDAwMCBSMTE6IDAwMDAwMDAwMDAwMDAwMDAgUjEyOiBmZmZm
-OGFjODQzNDM1ZGQwDQo+IFsgIDYwNi41NTg4MThdIFIxMzogZmZmZjhhYzg0Mjc3YzAwMCBS
-MTQ6IDAwMDAwMDAwMDAwMDAwMDEgUjE1OiBmZmZmOGFjODQzNGIyMTUwDQo+IFsgIDYwNi41
-NTg4MTldIEZTOiAgMDAwMDAwMDAwMDAwMDAwMCgwMDAwKSBHUzpmZmZmOGFjYmQ2YTAwMDAw
-KDAwMDApIGtubEdTOjAwMDAwMDAwMDAwMDAwMDANCj4gWyAgNjA2LjU1ODgyMF0gQ1M6ICAw
-MDEwIERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAwMDA4MDA1MDAzMw0KPiBbICA2MDYu
-NTU4ODIxXSBDUjI6IDAwMDA3Zjk3NDBiYTI4ZTggQ1IzOiAwMDAwMDAwMWViNDNhMDAwIENS
-NDogMDAwMDAwMDAwMGY1MGVmMA0KPiBbICA2MDYuNTU4ODIyXSBQS1JVOiA1NTU1NTU1NA0K
-PiBbICA2MDYuNTU4ODIyXSBDYWxsIFRyYWNlOg0KPiBbICA2MDYuNTU4ODIzXSAgPFRBU0s+
-DQo+IFsgIDYwNi41NTg4MjVdICA/IHNob3dfcmVncysweDc2LzB4OTANCj4gWyAgNjA2LjU1
-ODgyOF0gID8gcGNpX2Rpc2FibGVfZGV2aWNlKzB4ZjYvMHgxNTANCj4gWyAgNjA2LjU1ODgz
-MF0gID8gX193YXJuKzB4OTEvMHgxNjANCj4gWyAgNjA2LjU1ODgzMl0gID8gcGNpX2Rpc2Fi
-bGVfZGV2aWNlKzB4ZjYvMHgxNTANCj4gWyAgNjA2LjU1ODgzNF0gID8gcmVwb3J0X2J1Zysw
-eDFiZi8weDFkMA0KPiBbICA2MDYuNTU4ODM4XSBudm1lIG52bWUwOiAyNC8wLzAgZGVmYXVs
-dC9yZWFkL3BvbGwgcXVldWVzDQo+IFsgIDYwNi41NTg4MzddICA/IGhhbmRsZV9idWcrMHg0
-Ni8weDkwDQo+IFsgIDYwNi41NTg4NDFdICA/IGV4Y19pbnZhbGlkX29wKzB4MWQvMHg5MA0K
-PiBbICA2MDYuNTU4ODQzXSAgPyBhc21fZXhjX2ludmFsaWRfb3ArMHgxZi8weDMwDQo+IFsg
-IDYwNi41NTg4NDZdICA/IHBjaV9kaXNhYmxlX2RldmljZSsweGY2LzB4MTUwDQo+IFsgIDYw
-Ni41NTg4NDldICBpZ2NfaW9fZXJyb3JfZGV0ZWN0ZWQrMHg0MC8weDcwIFtpZ2NdDQo+IFsg
-IDYwNi41NTg4NTddICByZXBvcnRfZXJyb3JfZGV0ZWN0ZWQrMHhkYi8weDFkMA0KPiBbICA2
-MDYuNTU4ODYwXSAgPyBfX3BmeF9yZXBvcnRfbm9ybWFsX2RldGVjdGVkKzB4MTAvMHgxMA0K
-PiBbICA2MDYuNTU4ODYyXSAgcmVwb3J0X25vcm1hbF9kZXRlY3RlZCsweDFhLzB4MzANCj4g
-WyAgNjA2LjU1ODg2NF0gIHBjaV93YWxrX2J1cysweDc4LzB4YjANCj4gWyAgNjA2LjU1ODg2
-Nl0gIHBjaWVfZG9fcmVjb3ZlcnkrMHhiYS8weDM0MA0KPiBbICA2MDYuNTU4ODY4XSAgPyBf
-X3BmeF9hZXJfcm9vdF9yZXNldCsweDEwLzB4MTANCj4gWyAgNjA2LjU1ODg3MF0gIGFlcl9w
-cm9jZXNzX2Vycl9kZXZpY2VzKzB4MTY4LzB4MjIwDQo+IFsgIDYwNi41NTg4NzFdICBhZXJf
-aXNyKzB4MWQzLzB4MWYwDQo+IFsgIDYwNi41NTg4NzRdICA/IF9fcGZ4X2lycV90aHJlYWRf
-Zm4rMHgxMC8weDEwDQo+IFsgIDYwNi41NTg4NzZdICBpcnFfdGhyZWFkX2ZuKzB4MjkvMHg3
-MA0KPiBbICA2MDYuNTU4ODc3XSAgaXJxX3RocmVhZCsweGVlLzB4MWMwDQo+IFsgIDYwNi41
-NTg4NzhdICA/IF9fcGZ4X2lycV90aHJlYWRfZHRvcisweDEwLzB4MTANCj4gWyAgNjA2LjU1
-ODg3OV0gID8gX19wZnhfaXJxX3RocmVhZCsweDEwLzB4MTANCj4gWyAgNjA2LjU1ODg4MF0g
-IGt0aHJlYWQrMHhmOC8weDEzMA0KPiBbICA2MDYuNTU4ODgyXSAgPyBfX3BmeF9rdGhyZWFk
-KzB4MTAvMHgxMA0KPiBbICA2MDYuNTU4ODg0XSAgcmV0X2Zyb21fZm9yaysweDI5LzB4NTAN
-Cj4gWyAgNjA2LjU1ODg4N10gIDwvVEFTSz4NCj4gWyAgNjA2LjU1ODg4N10gLS0tWyBlbmQg
-dHJhY2UgMDAwMDAwMDAwMDAwMDAwMCBdLS0tDQo+IFsgIDYwNi41NzAyMjNdIGk5MTUgMDAw
-MDowMDowMi4wOiBbZHJtXSBHVDA6IEh1QzogYXV0aGVudGljYXRlZCENCj4gWyAgNjA2LjU3
-MDIyOF0gaTkxNSAwMDAwOjAwOjAyLjA6IFtkcm1dIEdUMDogR1VDOiBzdWJtaXNzaW9uIGRp
-c2FibGVkDQo+IFsgIDYwNi41NzAyMzFdIGk5MTUgMDAwMDowMDowMi4wOiBbZHJtXSBHVDA6
-IEdVQzogU0xQQyBkaXNhYmxlZA0KPiBbICA2MDYuNjYzMDQyXSB4aGNpX2hjZCAwMDAwOjM5
-OjAwLjA6IEFFUjogY2FuJ3QgcmVjb3ZlciAobm8gZXJyb3JfZGV0ZWN0ZWQgY2FsbGJhY2sp
-DQo+IFsgIDYwNi42NjMxMTFdIHBjaWVwb3J0IDAwMDA6MDA6MWQuMDogQUVSOiBkZXZpY2Ug
-cmVjb3ZlcnkgZmFpbGVkDQo+IFsgIDYwNi43MjE2NDJdIGl3bHdpZmkgMDAwMDowMDoxNC4z
-OiBXRlBNX1VNQUNfUERfTk9USUZJQ0FUSU9OOiAweDFmDQo+IFsgIDYwNi43MjE2NzddIGl3
-bHdpZmkgMDAwMDowMDoxNC4zOiBXRlBNX0xNQUMyX1BEX05PVElGSUNBVElPTjogMHgxZg0K
-PiBbICA2MDYuNzIxNjg3XSBpd2x3aWZpIDAwMDA6MDA6MTQuMzogV0ZQTV9BVVRIX0tFWV8w
-OiAweDkwDQo+IFsgIDYwNi43MjE2OThdIGl3bHdpZmkgMDAwMDowMDoxNC4zOiBDTlZJX1ND
-VV9TRVFfREFUQV9EVzk6IDB4MA0KPiBbICA2MDYuODQyODc3XSB1c2IgMS04OiByZXNldCBo
-aWdoLXNwZWVkIFVTQiBkZXZpY2UgbnVtYmVyIDMgdXNpbmcgeGhjaV9oY2QNCj4gWyAgNjA3
-LjA0ODM0MF0gZ2VuaXJxOiBGbGFncyBtaXNtYXRjaCBpcnEgMTY0LiAwMDAwMDAwMCAoZW5w
-NTZzMCkgdnMuIDAwMDAwMDAwIChlbnA1NnMwKQ0KPiBbICA2MDcuMDUwMzEzXSAtLS0tLS0t
-LS0tLS1bIGN1dCBoZXJlIF0tLS0tLS0tLS0tLS0NCj4gLi4uDQo+IFsgIDYwOS4wNjQxNjBd
-IGlnYyAwMDAwOjM4OjAwLjAgZW5wNTZzMDogUmVnaXN0ZXIgRHVtcA0KPiBbICA2MDkuMDY0
-MTY3XSBpZ2MgMDAwMDozODowMC4wIGVucDU2czA6IFJlZ2lzdGVyIE5hbWUgICBWYWx1ZQ0K
-PiBbICA2MDkuMDY0MTgxXSBpZ2MgMDAwMDozODowMC4wIGVucDU2czA6IENUUkwgICAgICAg
-ICAgICAwODFjMDY0MQ0KPiBbICA2MDkuMDY0MTg4XSBpZ2MgMDAwMDozODowMC4wIGVucDU2
-czA6IFNUQVRVUyAgICAgICAgICA0MDI4MDQwMQ0KPiBbICA2MDkuMDY0MTk1XSBpZ2MgMDAw
-MDozODowMC4wIGVucDU2czA6IENUUkxfRVhUICAgICAgICAxMDAwMDBjMA0KPiBbICA2MDku
-MDY0MjAyXSBpZ2MgMDAwMDozODowMC4wIGVucDU2czA6IE1ESUMgICAgICAgICAgICAxODAx
-Nzk0OQ0KPiBbICA2MDkuMDY0MjA4XSBpZ2MgMDAwMDozODowMC4wIGVucDU2czA6IElDUiAg
-ICAgICAgICAgICA4MDAwMDAxMA0KPiBbICA2MDkuMDY0MjE0XSBpZ2MgMDAwMDozODowMC4w
-IGVucDU2czA6IFJDVEwgICAgICAgICAgICAwNDQwODAyMg0KPiBbICA2MDkuMDY0MjMyXSBp
-Z2MgMDAwMDozODowMC4wIGVucDU2czA6IFJETEVOWzAtM10gICAgICAwMDAwMTAwMCAwMDAw
-MTAwMCAwMDAwMTAwMCAwMDAwMTAwMA0KPiBbICA2MDkuMDY0MjUxXSBpZ2MgMDAwMDozODow
-MC4wIGVucDU2czA6IFJESFswLTNdICAgICAgICAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAw
-MCAwMDAwMDAwMA0KPiBbICA2MDkuMDY0MjcwXSBpZ2MgMDAwMDozODowMC4wIGVucDU2czA6
-IFJEVFswLTNdICAgICAgICAwMDAwMDBmZiAwMDAwMDBmZiAwMDAwMDBmZiAwMDAwMDBmZg0K
-PiBbICA2MDkuMDY0Mjg5XSBpZ2MgMDAwMDozODowMC4wIGVucDU2czA6IFJYRENUTFswLTNd
-ICAgICAwMDA0MDgwOCAwMDA0MDgwOCAwMDA0MDgwOCAwMDA0MDgwOA0KPiBbICA2MDkuMDY0
-MzA4XSBpZ2MgMDAwMDozODowMC4wIGVucDU2czA6IFJEQkFMWzAtM10gICAgICBmZmM2MjAw
-MCBmZmY2YjAwMCBmZmY2YzAwMCBmZmY2ZDAwMA0KPiBbICA2MDkuMDY0MzI2XSBpZ2MgMDAw
-MDozODowMC4wIGVucDU2czA6IFJEQkFIWzAtM10gICAgICAwMDAwMDAwMCAwMDAwMDAwMCAw
-MDAwMDAwMCAwMDAwMDAwMA0KPiBbICA2MDkuMDY0MzMzXSBpZ2MgMDAwMDozODowMC4wIGVu
-cDU2czA6IFRDVEwgICAgICAgICAgICBhNTA0MDBmYQ0KPiBbICA2MDkuMDY0MzUxXSBpZ2Mg
-MDAwMDozODowMC4wIGVucDU2czA6IFREQkFMWzAtM10gICAgICBmZmY2ZDAwMCBmZmNkZjAw
-MCBmZmNlMDAwMCBmZmNlMTAwMA0KPiBbICA2MDkuMDY0MzY5XSBpZ2MgMDAwMDozODowMC4w
-IGVucDU2czA6IFREQkFIWzAtM10gICAgICAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAw
-MDAwMDAwMA0KPiBbICA2MDkuMDY0Mzg3XSBpZ2MgMDAwMDozODowMC4wIGVucDU2czA6IFRE
-TEVOWzAtM10gICAgICAwMDAwMTAwMCAwMDAwMTAwMCAwMDAwMTAwMCAwMDAwMTAwMA0KPiBb
-ICA2MDkuMDY0NDA1XSBpZ2MgMDAwMDozODowMC4wIGVucDU2czA6IFRESFswLTNdICAgICAg
-ICAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMA0KPiBbICA2MDkuMDY0NDIz
-XSBpZ2MgMDAwMDozODowMC4wIGVucDU2czA6IFREVFswLTNdICAgICAgICAwMDAwMDAwNCAw
-MDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMA0KPiBbICA2MDkuMDY0NDQxXSBpZ2MgMDAwMDoz
-ODowMC4wIGVucDU2czA6IFRYRENUTFswLTNdICAgICAwMDEwMDEwOCAwMDEwMDEwOCAwMDEw
-MDEwOCAwMDEwMDEwOA0KPiBbICA2MDkuMDY0NDQ1XSBpZ2MgMDAwMDozODowMC4wIGVucDU2
-czA6IFJlc2V0IGFkYXB0ZXINCj4gDQo+IFRoZSBpc3N1ZSBpcyB0aGF0IHRoZSBQVE0gcmVx
-dWVzdHMgYXJlIHNlbmRpbmcgYmVmb3JlIGRyaXZlciByZXN1bWVzIHRoZQ0KPiBkZXZpY2Uu
-IFNpbmNlIHRoZSBpc3N1ZSBjYW4gYWxzbyBiZSBvYnNlcnZlZCBvbiBXaW5kb3dzLCBpdCdz
-IHF1aXRlDQo+IGxpa2VseSBhIGZpcm13YXJlL2hhcmR3YXIgbGltaXRhdGlvbi4NCg0KaGFy
-ZHdhciplKg0KDQo+IFNvIGF2b2lkIHJlc2V0dGluZyB0aGUgZGV2aWNlIGlmIGl0J3Mgbm90
-IHJlc3VtZWQuIE9uY2UgdGhlIGRldmljZSBpcw0KPiBmdWxseSByZXN1bWVkLCB0aGUgZGV2
-aWNlIGNhbiB3b3JrIG5vcm1hbGx5Lg0KDQpJdOKAmWQgYmUgZ3JlYXQgaWYgeW91IGRvY3Vt
-ZW50ZWQsIHdoYXQgZG9ja2luZyBzdGF0aW9ucyB5b3UgdGVzdGVkIHRoaXMgd2l0aC4NCg0K
-PiBMaW5rOiBodHRwczovL2J1Z3ppbGxhLmtlcm5lbC5vcmcvc2hvd19idWcuY2dpP2lkPTIx
-Njg1MA0KPiBTaWduZWQtb2ZmLWJ5OiBLYWktSGVuZyBGZW5nIDxrYWkuaGVuZy5mZW5nQGNh
-bm9uaWNhbC5jb20+DQo+IC0tLQ0KPiAgIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2ln
-Yy9pZ2NfbWFpbi5jIHwgMyArKysNCj4gICAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25z
-KCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaWdj
-L2lnY19tYWluLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9pZ2MvaWdjX21haW4u
-Yw0KPiBpbmRleCBmYTc2NDE5MGYyNzAuLjZhNDZmODg2ZmY0MyAxMDA2NDQNCj4gLS0tIGEv
-ZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaWdjL2lnY19tYWluLmMNCj4gKysrIGIvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaWdjL2lnY19tYWluLmMNCj4gQEAgLTY5NjIsNiAr
-Njk2Miw5IEBAIHN0YXRpYyBwY2lfZXJzX3Jlc3VsdF90IGlnY19pb19lcnJvcl9kZXRlY3Rl
-ZChzdHJ1Y3QgcGNpX2RldiAqcGRldiwNCj4gICAJc3RydWN0IG5ldF9kZXZpY2UgKm5ldGRl
-diA9IHBjaV9nZXRfZHJ2ZGF0YShwZGV2KTsNCj4gICAJc3RydWN0IGlnY19hZGFwdGVyICph
-ZGFwdGVyID0gbmV0ZGV2X3ByaXYobmV0ZGV2KTsNCj4gICANCj4gKwlpZiAoIXBjaV9pc19l
-bmFibGVkKHBkZXYpKQ0KPiArCQlyZXR1cm4gMDsNCj4gKw0KPiAgIAluZXRpZl9kZXZpY2Vf
-ZGV0YWNoKG5ldGRldik7DQo+ICAgDQo+ICAgCWlmIChzdGF0ZSA9PSBwY2lfY2hhbm5lbF9p
-b19wZXJtX2ZhaWx1cmUpDQoNCg0KS2luZCByZWdhcmRzLA0KDQpQYXVsDQo=
+
+
+On 6/18/23 08:22, niravkumar.l.rabara@intel.com wrote:
+> From: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
+> 
+> The clock manager driver for Agilex5 is very similar to the Agilex
+
+Then why create a whole new driver? Surely there's alot of re-use you 
+can do?
+
+> platform. This patch makes the necessary changes for the driver to
+> differentiate between the Agilex and the Agilex5 platforms.
+> 
+> Signed-off-by: Teh Wen Ping <wen.ping.teh@intel.com>
+> Signed-off-by: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
+> ---
+>   drivers/clk/socfpga/Kconfig         |   4 +-
+>   drivers/clk/socfpga/Makefile        |   2 +-
+>   drivers/clk/socfpga/clk-agilex5.c   | 843 ++++++++++++++++++++++++++++
+>   drivers/clk/socfpga/clk-pll-s10.c   |  48 ++
+>   drivers/clk/socfpga/stratix10-clk.h |   2 +
+>   5 files changed, 896 insertions(+), 3 deletions(-)
+>   create mode 100644 drivers/clk/socfpga/clk-agilex5.c
+> 
+> diff --git a/drivers/clk/socfpga/Kconfig b/drivers/clk/socfpga/Kconfig
+> index 0cf16b894efb..e82c0cda3245 100644
+> --- a/drivers/clk/socfpga/Kconfig
+> +++ b/drivers/clk/socfpga/Kconfig
+> @@ -4,7 +4,7 @@ config CLK_INTEL_SOCFPGA
+>   	default ARCH_INTEL_SOCFPGA
+>   	help
+>   	  Support for the clock controllers present on Intel SoCFPGA and eASIC
+> -	  devices like Aria, Cyclone, Stratix 10, Agilex and N5X eASIC.
+> +	  devices like Aria, Cyclone, Stratix 10, Agilex, N5X eASIC and Agilex5.
+>   
+>   if CLK_INTEL_SOCFPGA
+>   
+> @@ -13,7 +13,7 @@ config CLK_INTEL_SOCFPGA32
+>   	default ARM && ARCH_INTEL_SOCFPGA
+>   
+>   config CLK_INTEL_SOCFPGA64
+> -	bool "Intel Stratix / Agilex / N5X clock controller support" if COMPILE_TEST && (!ARM64 || !ARCH_INTEL_SOCFPGA)
+> +	bool "Intel Stratix / Agilex / N5X clock / Agilex5 controller support" if COMPILE_TEST && (!ARM64 || !ARCH_INTEL_SOCFPGA)
+>   	default ARM64 && ARCH_INTEL_SOCFPGA
+>   
+>   endif # CLK_INTEL_SOCFPGA
+> diff --git a/drivers/clk/socfpga/Makefile b/drivers/clk/socfpga/Makefile
+> index e8dfce339c91..a1ea2b988eaf 100644
+> --- a/drivers/clk/socfpga/Makefile
+> +++ b/drivers/clk/socfpga/Makefile
+> @@ -3,4 +3,4 @@ obj-$(CONFIG_CLK_INTEL_SOCFPGA32) += clk.o clk-gate.o clk-pll.o clk-periph.o \
+>   				     clk-pll-a10.o clk-periph-a10.o clk-gate-a10.o
+>   obj-$(CONFIG_CLK_INTEL_SOCFPGA64) += clk-s10.o \
+>   				     clk-pll-s10.o clk-periph-s10.o clk-gate-s10.o \
+> -				     clk-agilex.o
+> +				     clk-agilex.o clk-agilex5.o
+> diff --git a/drivers/clk/socfpga/clk-agilex5.c b/drivers/clk/socfpga/clk-agilex5.c
+> new file mode 100644
+> index 000000000000..2d597176a98d
+> --- /dev/null
+> +++ b/drivers/clk/socfpga/clk-agilex5.c
+> @@ -0,0 +1,843 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2022, Intel Corporation
+
+It's 2023 now!
+> + */
+> +#include <linux/slab.h>
+> +#include <linux/clk-provider.h>
+> +#include <linux/of_device.h>
+> +#include <linux/of_address.h>
+> +#include <linux/platform_device.h>
+> +
+> +#include <dt-bindings/clock/agilex5-clock.h>
+> +
+> +#include "stratix10-clk.h"
+> +
+> +static const struct clk_parent_data pll_mux[] = {
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data boot_mux[] = {
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data core0_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c1",
+> +		.name = "main_pll_c1",
+> +	},
+> +	{
+> +		.fw_name = "peri_pll_c0",
+> +		.name = "peri_pll_c0",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data core1_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c1",
+> +		.name = "main_pll_c1",
+> +	},
+> +	{
+> +		.fw_name = "peri_pll_c0",
+> +		.name = "peri_pll_c0",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data core2_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c0",
+> +		.name = "main_pll_c0",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data core3_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c0",
+> +		.name = "main_pll_c0",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data dsu_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c2",
+> +		.name = "main_pll_c2",
+> +	},
+> +	{
+> +		.fw_name = "peri_pll_c0",
+> +		.name = "peri_pll_c0",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data noc_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c3",
+> +		.name = "main_pll_c3",
+> +	},
+> +	{
+> +		.fw_name = "peri_pll_c1",
+> +		.name = "peri_pll_c1",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data emaca_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c1",
+> +		.name = "main_pll_c1",
+> +	},
+> +	{
+> +		.fw_name = "peri_pll_c3",
+> +		.name = "peri_pll_c3",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data emacb_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c1",
+> +		.name = "main_pll_c1",
+> +	},
+> +	{
+> +		.fw_name = "peri_pll_c3",
+> +		.name = "peri_pll_c3",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data emac_ptp_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c1",
+> +		.name = "main_pll_c1",
+> +	},
+> +	{
+> +		.fw_name = "peri_pll_c3",
+> +		.name = "peri_pll_c3",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data gpio_db_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c3",
+> +		.name = "main_pll_c3",
+> +	},
+> +	{
+> +		.fw_name = "peri_pll_c1",
+> +		.name = "peri_pll_c1",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data psi_ref_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c1",
+> +		.name = "main_pll_c1",
+> +	},
+> +	{
+> +		.fw_name = "peri_pll_c3",
+> +		.name = "peri_pll_c3",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data usb31_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c3",
+> +		.name = "main_pll_c3",
+> +	},
+> +	{
+> +		.fw_name = "peri_pll_c2",
+> +		.name = "peri_pll_c2",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data s2f_usr0_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c1",
+> +		.name = "main_pll_c1",
+> +	},
+> +	{
+> +		.fw_name = "peri_pll_c3",
+> +		.name = "peri_pll_c3",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data s2f_usr1_free_mux[] = {
+> +	{
+> +		.fw_name = "main_pll_c1",
+> +		.name = "main_pll_c1",
+> +	},
+> +	{
+> +		.fw_name = "peri_pll_c3",
+> +		.name = "peri_pll_c3",
+> +	},
+> +	{
+> +		.fw_name = "osc1",
+> +		.name = "osc1",
+> +	},
+> +	{
+> +		.fw_name = "cb-intosc-hs-div2-clk",
+> +		.name = "cb-intosc-hs-div2-clk",
+> +	},
+> +	{
+> +		.fw_name = "f2s-free-clk",
+> +		.name = "f2s-free-clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data core0_mux[] = {
+> +	{
+> +		.fw_name = "core0_free_clk",
+> +		.name = "core0_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "boot_clk",
+> +		.name = "boot_clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data core1_mux[] = {
+> +	{
+> +		.fw_name = "core1_free_clk",
+> +		.name = "core1_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "boot_clk",
+> +		.name = "boot_clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data core2_mux[] = {
+> +	{
+> +		.fw_name = "core2_free_clk",
+> +		.name = "core2_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "boot_clk",
+> +		.name = "boot_clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data core3_mux[] = {
+> +	{
+> +		.fw_name = "core3_free_clk",
+> +		.name = "core3_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "boot_clk",
+> +		.name = "boot_clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data dsu_mux[] = {
+> +	{
+> +		.fw_name = "dsu_free_clk",
+> +		.name = "dsu_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "boot_clk",
+> +		.name = "boot_clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data emac_mux[] = {
+> +	{
+> +		.fw_name = "emaca_free_clk",
+> +		.name = "emaca_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "emacb_free_clk",
+> +		.name = "emacb_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "boot_clk",
+> +		.name = "boot_clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data noc_mux[] = {
+> +	{
+> +		.fw_name = "noc_free_clk",
+> +		.name = "noc_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "boot_clk",
+> +		.name = "boot_clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data s2f_user0_mux[] = {
+> +	{
+> +		.fw_name = "s2f_user0_free_clk",
+> +		.name = "s2f_user0_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "boot_clk",
+> +		.name = "boot_clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data s2f_user1_mux[] = {
+> +	{
+> +		.fw_name = "s2f_user1_free_clk",
+> +		.name = "s2f_user1_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "boot_clk",
+> +		.name = "boot_clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data psi_mux[] = {
+> +	{
+> +		.fw_name = "psi_ref_free_clk",
+> +		.name = "psi_ref_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "boot_clk",
+> +		.name = "boot_clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data gpio_db_mux[] = {
+> +	{
+> +		.fw_name = "gpio_db_free_clk",
+> +		.name = "gpio_db_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "boot_clk",
+> +		.name = "boot_clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data emac_ptp_mux[] = {
+> +	{
+> +		.fw_name = "emac_ptp_free_clk",
+> +		.name = "emac_ptp_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "boot_clk",
+> +		.name = "boot_clk",
+> +	},
+> +};
+> +
+> +static const struct clk_parent_data usb31_mux[] = {
+> +	{
+> +		.fw_name = "usb31_free_clk",
+> +		.name = "usb31_free_clk",
+> +	},
+> +	{
+> +		.fw_name = "boot_clk",
+> +		.name = "boot_clk",
+> +	},
+> +};
+> +
+> +/*
+> + * TODO - Clocks in AO (always on) controller
+
+Remove your TODO, so did you do it already?
+
+> + * 2 main PLLs only
+> + */
+> +static const struct stratix10_pll_clock agilex5_pll_clks[] = {
+> +	{ AGILEX5_BOOT_CLK, "boot_clk", boot_mux, ARRAY_SIZE(boot_mux), 0,
+> +	  0x0 },
+> +	{ AGILEX5_MAIN_PLL_CLK, "main_pll", pll_mux, ARRAY_SIZE(pll_mux), 0,
+> +	  0x48 },
+> +	{ AGILEX5_PERIPH_PLL_CLK, "periph_pll", pll_mux, ARRAY_SIZE(pll_mux), 0,
+> +	  0x9C },
+> +};
+> +
+> +static const struct stratix10_perip_c_clock agilex5_main_perip_c_clks[] = {
+> +	{ AGILEX5_MAIN_PLL_C0_CLK, "main_pll_c0", "main_pll", NULL, 1, 0,
+> +	  0x5C },
+> +	{ AGILEX5_MAIN_PLL_C1_CLK, "main_pll_c1", "main_pll", NULL, 1, 0,
+> +	  0x60 },
+> +	{ AGILEX5_MAIN_PLL_C2_CLK, "main_pll_c2", "main_pll", NULL, 1, 0,
+> +	  0x64 },
+> +	{ AGILEX5_MAIN_PLL_C3_CLK, "main_pll_c3", "main_pll", NULL, 1, 0,
+> +	  0x68 },
+> +	{ AGILEX5_PERIPH_PLL_C0_CLK, "peri_pll_c0", "periph_pll", NULL, 1, 0,
+> +	  0xB0 },
+> +	{ AGILEX5_PERIPH_PLL_C1_CLK, "peri_pll_c1", "periph_pll", NULL, 1, 0,
+> +	  0xB4 },
+> +	{ AGILEX5_PERIPH_PLL_C2_CLK, "peri_pll_c2", "periph_pll", NULL, 1, 0,
+> +	  0xB8 },
+> +	{ AGILEX5_PERIPH_PLL_C3_CLK, "peri_pll_c3", "periph_pll", NULL, 1, 0,
+> +	  0xBC },
+> +};
+> +
+> +/* Non-SW clock-gated enabled clocks */
+> +static const struct stratix10_perip_cnt_clock agilex5_main_perip_cnt_clks[] = {
+> +	{ AGILEX5_CORE0_FREE_CLK, "core0_free_clk", NULL, core0_free_mux,
+> +	ARRAY_SIZE(core0_free_mux), 0, 0x0104, 0, 0, 0},
+> +	{ AGILEX5_CORE1_FREE_CLK, "core1_free_clk", NULL, core1_free_mux,
+> +	ARRAY_SIZE(core1_free_mux), 0, 0x0104, 0, 0, 0},
+> +	{ AGILEX5_CORE2_FREE_CLK, "core2_free_clk", NULL, core2_free_mux,
+> +	ARRAY_SIZE(core2_free_mux), 0, 0x010C, 0, 0, 0},
+> +	{ AGILEX5_CORE3_FREE_CLK, "core3_free_clk", NULL, core3_free_mux,
+> +	ARRAY_SIZE(core3_free_mux), 0, 0x0110, 0, 0, 0},
+> +	{ AGILEX5_DSU_FREE_CLK, "dsu_free_clk", NULL, dsu_free_mux,
+> +	ARRAY_SIZE(dsu_free_mux), 0, 0x0100, 0, 0, 0},
+> +	{ AGILEX5_NOC_FREE_CLK, "noc_free_clk", NULL, noc_free_mux,
+> +	  ARRAY_SIZE(noc_free_mux), 0, 0x40, 0, 0, 0 },
+> +	{ AGILEX5_EMAC_A_FREE_CLK, "emaca_free_clk", NULL, emaca_free_mux,
+> +	  ARRAY_SIZE(emaca_free_mux), 0, 0xD4, 0, 0x88, 0 },
+> +	{ AGILEX5_EMAC_B_FREE_CLK, "emacb_free_clk", NULL, emacb_free_mux,
+> +	  ARRAY_SIZE(emacb_free_mux), 0, 0xD8, 0, 0x88, 1 },
+> +	{ AGILEX5_EMAC_PTP_FREE_CLK, "emac_ptp_free_clk", NULL,
+> +	  emac_ptp_free_mux, ARRAY_SIZE(emac_ptp_free_mux), 0, 0xDC, 0, 0x88,
+> +	  2 },
+> +	{ AGILEX5_GPIO_DB_FREE_CLK, "gpio_db_free_clk", NULL, gpio_db_free_mux,
+> +	  ARRAY_SIZE(gpio_db_free_mux), 0, 0xE0, 0, 0x88, 3 },
+> +	{ AGILEX5_S2F_USER0_FREE_CLK, "s2f_user0_free_clk", NULL,
+> +	  s2f_usr0_free_mux, ARRAY_SIZE(s2f_usr0_free_mux), 0, 0xE8, 0, 0x30,
+> +	  2 },
+> +	{ AGILEX5_S2F_USER1_FREE_CLK, "s2f_user1_free_clk", NULL,
+> +	  s2f_usr1_free_mux, ARRAY_SIZE(s2f_usr1_free_mux), 0, 0xEC, 0, 0x88,
+> +	  5 },
+> +	{ AGILEX5_PSI_REF_FREE_CLK, "psi_ref_free_clk", NULL, psi_ref_free_mux,
+> +	  ARRAY_SIZE(psi_ref_free_mux), 0, 0xF0, 0, 0x88, 6 },
+> +	{ AGILEX5_USB31_FREE_CLK, "usb31_free_clk", NULL, usb31_free_mux,
+> +	  ARRAY_SIZE(usb31_free_mux), 0, 0xF8, 0, 0x88, 7},
+> +};
+> +
+> +/* SW Clock gate enabled clocks */
+> +static const struct stratix10_gate_clock agilex5_gate_clks[] = {
+> +	/* Main PLL0 Begin */
+> +	/* MPU clocks */
+> +	{ AGILEX5_CORE0_CLK, "core0_clk", NULL, core0_mux,
+> +	  ARRAY_SIZE(core0_mux), 0, 0x24, 8, 0, 0, 0, 0x30, 5, 0 },
+> +	{ AGILEX5_CORE1_CLK, "core1_clk", NULL, core1_mux,
+> +	  ARRAY_SIZE(core1_mux), 0, 0x24, 9, 0, 0, 0, 0x30, 5, 0 },
+> +	{ AGILEX5_CORE2_CLK, "core2_clk", NULL, core2_mux,
+> +	  ARRAY_SIZE(core2_mux), 0, 0x24, 10, 0, 0, 0, 0x30, 6, 0 },
+> +	{ AGILEX5_CORE3_CLK, "core3_clk", NULL, core3_mux,
+> +	  ARRAY_SIZE(core3_mux), 0, 0x24, 11, 0, 0, 0, 0x30, 7, 0 },
+> +	{ AGILEX5_MPU_CLK, "dsu_clk", NULL, dsu_mux, ARRAY_SIZE(dsu_mux), 0, 0,
+> +	  0, 0, 0, 0, 0x34, 4, 0 },
+> +	{ AGILEX5_MPU_PERIPH_CLK, "mpu_periph_clk", NULL, dsu_mux,
+> +	  ARRAY_SIZE(dsu_mux), 0, 0, 0, 0x44, 20, 2, 0x34, 4, 0 },
+> +	{ AGILEX5_MPU_CCU_CLK, "mpu_ccu_clk", NULL, dsu_mux,
+> +	  ARRAY_SIZE(dsu_mux), 0, 0, 0, 0x44, 18, 2, 0x34, 4, 0 },
+> +
+> +	/* l4 main clk has no divider now */
+> +	{ AGILEX5_L4_MAIN_CLK, "l4_main_clk", NULL, noc_mux,
+> +	  ARRAY_SIZE(noc_mux), 0, 0x24, 1, 0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_L4_MP_CLK, "l4_mp_clk", NULL, noc_mux, ARRAY_SIZE(noc_mux), 0,
+> +	  0x24, 2, 0x44, 4, 2, 0x30, 1, 0 },
+> +	{ AGILEX5_L4_SYS_FREE_CLK, "l4_sys_free_clk", NULL, noc_mux,
+> +	  ARRAY_SIZE(noc_mux), 0, 0, 0, 0x44, 2, 2, 0x30, 1, 0 },
+> +	{ AGILEX5_L4_SP_CLK, "l4_sp_clk", NULL, noc_mux, ARRAY_SIZE(noc_mux),
+> +	  CLK_IS_CRITICAL, 0x24, 3, 0x44, 6, 2, 0x30, 1, 0 },
+> +
+> +	/* Core sight clocks*/
+> +	{ AGILEX5_CS_AT_CLK, "cs_at_clk", NULL, noc_mux, ARRAY_SIZE(noc_mux), 0,
+> +	  0x24, 4, 0x44, 24, 2, 0x30, 1, 0 },
+> +	{ AGILEX5_CS_TRACE_CLK, "cs_trace_clk", NULL, noc_mux,
+> +	  ARRAY_SIZE(noc_mux), 0, 0x24, 4, 0x44, 26, 2, 0x30, 1, 0 },
+> +	{ AGILEX5_CS_PDBG_CLK, "cs_pdbg_clk", "cs_at_clk", NULL, 1, 0, 0x24, 4,
+> +	  0x44, 28, 1, 0, 0, 0 },
+> +	/* Main PLL0 End */
+> +
+> +	/* Main Peripheral PLL1 Begin */
+> +	{ AGILEX5_EMAC0_CLK, "emac0_clk", NULL, emac_mux, ARRAY_SIZE(emac_mux),
+> +	  0, 0x7C, 0, 0, 0, 0, 0x94, 26, 0 },
+> +	{ AGILEX5_EMAC1_CLK, "emac1_clk", NULL, emac_mux, ARRAY_SIZE(emac_mux),
+> +	  0, 0x7C, 1, 0, 0, 0, 0x94, 27, 0 },
+> +	{ AGILEX5_EMAC2_CLK, "emac2_clk", NULL, emac_mux, ARRAY_SIZE(emac_mux),
+> +	  0, 0x7C, 2, 0, 0, 0, 0x94, 28, 0 },
+> +	{ AGILEX5_EMAC_PTP_CLK, "emac_ptp_clk", NULL, emac_ptp_mux,
+> +	  ARRAY_SIZE(emac_ptp_mux), 0, 0x7C, 3, 0, 0, 0, 0x88, 2, 0 },
+> +	{ AGILEX5_GPIO_DB_CLK, "gpio_db_clk", NULL, gpio_db_mux,
+> +	  ARRAY_SIZE(gpio_db_mux), 0, 0x7C, 4, 0x98, 0, 16, 0x88, 3, 0 },
+> +	  /* Main Peripheral PLL1 End */
+> +
+> +	  /* Peripheral clocks  */
+> +	{ AGILEX5_S2F_USER0_CLK, "s2f_user0_clk", NULL, s2f_user0_mux,
+> +	  ARRAY_SIZE(s2f_user0_mux), 0, 0x24, 6, 0, 0, 0, 0x30, 2, 0 },
+> +	{ AGILEX5_S2F_USER1_CLK, "s2f_user1_clk", NULL, s2f_user1_mux,
+> +	  ARRAY_SIZE(s2f_user1_mux), 0, 0x7C, 6, 0, 0, 0, 0x88, 5, 0 },
+> +	{ AGILEX5_PSI_REF_CLK, "psi_ref_clk", NULL, psi_mux,
+> +	  ARRAY_SIZE(psi_mux), 0, 0x7C, 7, 0, 0, 0, 0x88, 6, 0 },
+> +	{ AGILEX5_USB31_SUSPEND_CLK, "usb31_suspend_clk", NULL, usb31_mux,
+> +	  ARRAY_SIZE(usb31_mux), 0, 0x7C, 25, 0, 0, 0, 0x88, 7, 0 },
+> +	{ AGILEX5_USB31_BUS_CLK_EARLY, "usb31_bus_clk_early", "l4_main_clk",
+> +	  NULL, 1, 0, 0x7C, 25, 0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_USB2OTG_HCLK, "usb2otg_hclk", "l4_mp_clk", NULL, 1, 0, 0x7C,
+> +	  8, 0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_SPIM_0_CLK, "spim_0_clk", "l4_mp_clk", NULL, 1, 0, 0x7C, 9,
+> +	  0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_SPIM_1_CLK, "spim_1_clk", "l4_mp_clk", NULL, 1, 0, 0x7C, 11,
+> +	  0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_SPIS_0_CLK, "spis_0_clk", "l4_sp_clk", NULL, 1, 0, 0x7C, 12,
+> +	  0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_SPIS_1_CLK, "spis_1_clk", "l4_sp_clk", NULL, 1, 0, 0x7C, 13,
+> +	  0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_DMA_CORE_CLK, "dma_core_clk", "l4_mp_clk", NULL, 1, 0, 0x7C,
+> +	  14, 0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_DMA_HS_CLK, "dma_hs_clk", "l4_mp_clk", NULL, 1, 0, 0x7C, 14,
+> +	  0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_I3C_0_CORE_CLK, "i3c_0_core_clk", "l4_mp_clk", NULL, 1, 0,
+> +	  0x7C, 18, 0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_I3C_1_CORE_CLK, "i3c_1_core_clk", "l4_mp_clk", NULL, 1, 0,
+> +	  0x7C, 19, 0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_I2C_0_PCLK, "i2c_0_pclk", "l4_sp_clk", NULL, 1, 0, 0x7C, 15,
+> +	  0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_I2C_1_PCLK, "i2c_1_pclk", "l4_sp_clk", NULL, 1, 0, 0x7C, 16,
+> +	  0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_I2C_EMAC0_PCLK, "i2c_emac0_pclk", "l4_sp_clk", NULL, 1, 0,
+> +	  0x7C, 17, 0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_I2C_EMAC1_PCLK, "i2c_emac1_pclk", "l4_sp_clk", NULL, 1, 0,
+> +	  0x7C, 22, 0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_I2C_EMAC2_PCLK, "i2c_emac2_pclk", "l4_sp_clk", NULL, 1, 0,
+> +	  0x7C, 27, 0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_UART_0_PCLK, "uart_0_pclk", "l4_sp_clk", NULL, 1, 0, 0x7C, 20,
+> +	  0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_UART_1_PCLK, "uart_1_pclk", "l4_sp_clk", NULL, 1, 0, 0x7C, 21,
+> +	  0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_SPTIMER_0_PCLK, "sptimer_0_pclk", "l4_sp_clk", NULL, 1, 0,
+> +	  0x7C, 23, 0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_SPTIMER_1_PCLK, "sptimer_1_pclk", "l4_sp_clk", NULL, 1, 0,
+> +	  0x7C, 24, 0, 0, 0, 0, 0, 0 },
+> +
+> +	/*NAND, SD/MMC and SoftPHY overall clocking*/
+> +	{ AGILEX5_DFI_CLK, "dfi_clk", "l4_mp_clk", NULL, 1, 0, 0, 0, 0x44, 16,
+> +	  2, 0, 0, 0 },
+> +	{ AGILEX5_NAND_NF_CLK, "nand_nf_clk", "dfi_clk", NULL, 1, 0, 0x7C, 10,
+> +	  0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_NAND_BCH_CLK, "nand_bch_clk", "l4_mp_clk", NULL, 1, 0, 0x7C,
+> +	  10, 0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_SDMMC_SDPHY_REG_CLK, "sdmmc_sdphy_reg_clk", "l4_mp_clk", NULL,
+> +	  1, 0, 0x7C, 5, 0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_SDMCLK, "sdmclk", "dfi_clk", NULL, 1, 0, 0x7C, 5, 0, 0, 0, 0,
+> +	  0, 0 },
+> +	{ AGILEX5_SOFTPHY_REG_PCLK, "softphy_reg_pclk", "l4_mp_clk", NULL, 1, 0,
+> +	  0x7C, 26, 0, 0, 0, 0, 0, 0 },
+> +	{ AGILEX5_SOFTPHY_PHY_CLK, "softphy_phy_clk", "l4_mp_clk", NULL, 1, 0,
+> +	  0x7C, 26, 0x44, 16, 2, 0, 0, 0 },
+> +	{ AGILEX5_SOFTPHY_CTRL_CLK, "softphy_ctrl_clk", "dfi_clk", NULL, 1, 0,
+> +	  0x7C, 26, 0, 0, 0, 0, 0, 0 },
+> +};
+> +
+
+As far as I can tell, there are very little differences between this and 
+Agilex! Please reuse!
+
+> +static int
+> +agilex5_clk_register_c_perip(const struct stratix10_perip_c_clock *clks,
+> +			     int nums, struct stratix10_clock_data *data)
+> +{
+> +	struct clk_hw *hw_clk;
+> +	void __iomem *base = data->base;
+> +	int i;
+> +
+> +	for (i = 0; i < nums; i++) {
+> +		hw_clk = s10_register_periph(&clks[i], base);
+> +		if (IS_ERR(hw_clk)) {
+> +			pr_err("%s: failed to register clock %s\n", __func__,
+> +			       clks[i].name);
+> +			continue;
+> +		}
+> +		data->clk_data.hws[clks[i].id] = hw_clk;
+> +	}
+> +	return 0;
+> +}
+> +
+> +static int
+> +agilex5_clk_register_cnt_perip(const struct stratix10_perip_cnt_clock *clks,
+> +			       int nums, struct stratix10_clock_data *data)
+> +{
+> +	struct clk_hw *hw_clk;
+> +	void __iomem *base = data->base;
+> +	int i;
+> +
+> +	for (i = 0; i < nums; i++) {
+> +		hw_clk = s10_register_cnt_periph(&clks[i], base);
+> +		if (IS_ERR(hw_clk)) {
+> +			pr_err("%s: failed to register clock %s\n", __func__,
+> +			       clks[i].name);
+> +			continue;
+> +		}
+> +		data->clk_data.hws[clks[i].id] = hw_clk;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int agilex5_clk_register_gate(const struct stratix10_gate_clock *clks,
+> +				     int nums,
+> +				     struct stratix10_clock_data *data)
+> +{
+> +	struct clk_hw *hw_clk;
+> +	void __iomem *base = data->base;
+> +	int i;
+> +
+> +	for (i = 0; i < nums; i++) {
+> +		hw_clk = agilex_register_gate(&clks[i], base);
+> +		if (IS_ERR(hw_clk)) {
+> +			pr_err("%s: failed to register clock %s\n", __func__,
+> +			       clks[i].name);
+> +			continue;
+> +		}
+> +		data->clk_data.hws[clks[i].id] = hw_clk;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int agilex5_clk_register_pll(const struct stratix10_pll_clock *clks,
+> +				    int nums, struct stratix10_clock_data *data)
+> +{
+> +	struct clk_hw *hw_clk;
+> +	void __iomem *base = data->base;
+> +	int i;
+> +
+> +	for (i = 0; i < nums; i++) {
+> +		hw_clk = agilex5_register_pll(&clks[i], base);
+> +		if (IS_ERR(hw_clk)) {
+> +			pr_err("%s: failed to register clock %s\n", __func__,
+> +			       clks[i].name);
+> +			continue;
+> +		}
+> +		data->clk_data.hws[clks[i].id] = hw_clk;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int agilex5_clkmgr_init(struct platform_device *pdev)
+> +{
+> +	struct device_node *np = pdev->dev.of_node;
+> +	struct device *dev = &pdev->dev;
+> +	struct stratix10_clock_data *clk_data;
+> +	struct resource *res;
+> +	void __iomem *base;
+> +	int i, num_clks;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	base = devm_ioremap_resource(dev, res);
+> +	if (IS_ERR(base))
+> +		return PTR_ERR(base);
+> +
+> +	num_clks = AGILEX5_NUM_CLKS;
+> +
+> +	clk_data = devm_kzalloc(dev,
+> +				struct_size(clk_data, clk_data.hws, num_clks),
+> +				GFP_KERNEL);
+> +	if (!clk_data)
+> +		return -ENOMEM;
+> +
+> +	for (i = 0; i < num_clks; i++)
+> +		clk_data->clk_data.hws[i] = ERR_PTR(-ENOENT);
+> +
+> +	clk_data->base = base;
+> +	clk_data->clk_data.num = num_clks;
+> +
+> +	agilex5_clk_register_pll(agilex5_pll_clks, ARRAY_SIZE(agilex5_pll_clks),
+> +				 clk_data);
+> +
+> +	agilex5_clk_register_c_perip(agilex5_main_perip_c_clks,
+> +				     ARRAY_SIZE(agilex5_main_perip_c_clks),
+> +				     clk_data);
+> +
+> +	agilex5_clk_register_cnt_perip(agilex5_main_perip_cnt_clks,
+> +				       ARRAY_SIZE(agilex5_main_perip_cnt_clks),
+> +				       clk_data);
+> +
+> +	agilex5_clk_register_gate(agilex5_gate_clks,
+> +				  ARRAY_SIZE(agilex5_gate_clks), clk_data);
+> +
+> +	of_clk_add_hw_provider(np, of_clk_hw_onecell_get, &clk_data->clk_data);
+> +	return 0;
+> +}
+> +
+> +static int agilex5_clkmgr_probe(struct platform_device *pdev)
+> +{
+> +	int (*probe_func)(struct platform_device *init_func);
+> +
+> +	probe_func = of_device_get_match_data(&pdev->dev);
+> +	if (!probe_func)
+> +		return -ENODEV;
+> +	return probe_func(pdev);
+> +}
+> +
+> +static const struct of_device_id agilex5_clkmgr_match_table[] = {
+> +	{ .compatible = "intel,agilex5-clkmgr", .data = agilex5_clkmgr_init },
+> +	{}
+> +};
+> +
+> +static struct platform_driver agilex5_clkmgr_driver = {
+> +	.probe		= agilex5_clkmgr_probe,
+> +	.driver		= {
+> +		.name	= "agilex5-clkmgr",
+> +		.suppress_bind_attrs = true,
+> +		.of_match_table = agilex5_clkmgr_match_table,
+> +	},
+> +};
+> +
+> +static int __init agilex5_clk_init(void)
+> +{
+> +	return platform_driver_register(&agilex5_clkmgr_driver);
+> +}
+> +core_initcall(agilex5_clk_init);
+> diff --git a/drivers/clk/socfpga/clk-pll-s10.c b/drivers/clk/socfpga/clk-pll-s10.c
+> index 1d82737befd3..e3367d34bc55 100644
+> --- a/drivers/clk/socfpga/clk-pll-s10.c
+> +++ b/drivers/clk/socfpga/clk-pll-s10.c
+> @@ -175,6 +175,14 @@ static const struct clk_ops agilex_clk_pll_ops = {
+>   	.prepare = clk_pll_prepare,
+>   };
+>   
+> +/* TODO need to fix, Agilex5 SM requires change */
+> +static const struct clk_ops agilex5_clk_pll_ops = {
+> +	/* TODO This may require a custom Agilex5 implementation */
+> +	.recalc_rate = agilex_clk_pll_recalc_rate,
+> +	.get_parent = clk_pll_get_parent,
+> +	.prepare = clk_pll_prepare,
+> +};
+> +
+>   static const struct clk_ops clk_pll_ops = {
+>   	.recalc_rate = clk_pll_recalc_rate,
+>   	.get_parent = clk_pll_get_parent,
+> @@ -304,3 +312,43 @@ struct clk_hw *n5x_register_pll(const struct stratix10_pll_clock *clks,
+>   	}
+>   	return hw_clk;
+>   }
+> +
+> +struct clk_hw *agilex5_register_pll(const struct stratix10_pll_clock *clks,
+> +				    void __iomem *reg)
+> +{
+> +	struct clk_hw *hw_clk;
+> +	struct socfpga_pll *pll_clk;
+> +	struct clk_init_data init;
+> +	const char *name = clks->name;
+> +	int ret;
+> +
+> +	pll_clk = kzalloc(sizeof(*pll_clk), GFP_KERNEL);
+> +	if (WARN_ON(!pll_clk))
+> +		return NULL;
+> +
+> +	pll_clk->hw.reg = reg + clks->offset;
+> +
+> +	if (streq(name, SOCFPGA_BOOT_CLK))
+> +		init.ops = &clk_boot_ops;
+> +	else
+> +		init.ops = &agilex5_clk_pll_ops;
+> +
+> +	init.name = name;
+> +	init.flags = clks->flags;
+> +
+> +	init.num_parents = clks->num_parents;
+> +	init.parent_names = NULL;
+> +	init.parent_data = clks->parent_data;
+> +	pll_clk->hw.hw.init = &init;
+> +
+> +	pll_clk->hw.bit_idx = SOCFPGA_PLL_POWER;
+> +	hw_clk = &pll_clk->hw.hw;
+> +
+> +	ret = clk_hw_register(NULL, hw_clk);
+> +	if (ret) {
+> +		kfree(pll_clk);
+> +		return ERR_PTR(ret);
+> +	}
+> +	return hw_clk;
+> +}
+
+Both functions are identical to Agilex, so why the need to recreate?
+
+> +
+> diff --git a/drivers/clk/socfpga/stratix10-clk.h b/drivers/clk/socfpga/stratix10-clk.h
+> index 75234e0783e1..468e0f0ab4ab 100644
+> --- a/drivers/clk/socfpga/stratix10-clk.h
+> +++ b/drivers/clk/socfpga/stratix10-clk.h
+> @@ -77,6 +77,8 @@ struct clk_hw *agilex_register_pll(const struct stratix10_pll_clock *clks,
+>   				void __iomem *reg);
+>   struct clk_hw *n5x_register_pll(const struct stratix10_pll_clock *clks,
+>   			     void __iomem *reg);
+> +struct clk_hw *agilex5_register_pll(const struct stratix10_pll_clock *clks,
+> +				    void __iomem *reg);
+>   struct clk_hw *s10_register_periph(const struct stratix10_perip_c_clock *clks,
+>   				void __iomem *reg);
+>   struct clk_hw *n5x_register_periph(const struct n5x_perip_c_clock *clks,
+
+I'd like for you to send this whole patchset for my internal review 
+before you send out a V2!
+
+Dinh
 
