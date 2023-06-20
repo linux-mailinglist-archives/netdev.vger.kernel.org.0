@@ -1,87 +1,99 @@
-Return-Path: <netdev+bounces-12132-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12133-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 840E27365F8
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 10:21:19 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id C16D7736607
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 10:25:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 94E12280FCE
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 08:21:17 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 0829A1C20AED
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 08:25:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A49248498;
-	Tue, 20 Jun 2023 08:21:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 983DB882E;
+	Tue, 20 Jun 2023 08:25:04 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91452848D
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 08:21:15 +0000 (UTC)
-Received: from 167-179-156-38.a7b39c.syd.nbn.aussiebb.net (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B93619B;
-	Tue, 20 Jun 2023 01:21:12 -0700 (PDT)
-Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
-	by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-	id 1qBWbX-0051BY-9M; Tue, 20 Jun 2023 16:20:48 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Tue, 20 Jun 2023 16:20:47 +0800
-Date: Tue, 20 Jun 2023 16:20:47 +0800
-From: Herbert Xu <herbert@gondor.apana.org.au>
-To: David Howells <dhowells@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89CA646A5
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 08:25:04 +0000 (UTC)
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB06DD
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 01:25:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1687249502; x=1718785502;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=iAVElBJATHHVS8jixdg/1VEQURYFyFA0PaU7QYlOOmg=;
+  b=mejPJxdPKLNdFSfQI/3rOCF5TcjASyZjKfzm3Meirjdi6gcblEn9x9FR
+   CyHrXHhMZme6TaGEcp1jZiO5B2exjOtqKOfP+8AhVN1VafzA2WczRYvfb
+   9I93aJZGTmJiube2cVYlh8cNnp+yDfUTtZPvSKu6wzQABt9hghxy83i40
+   IBRia/Vq6XloNORrJgk3aGo53ZIzzf4Wk7DM5DKwOd3Bp04jBuL0rl+GA
+   7SNcpLwJ9lkC6l8CkpoqQ2ccahSNlW1eGqZXqd+0cAk0EuhQeQW2gF5lI
+   K7D7T84dPHNiH0lboDTzAZpfxyDyucVgGDTzYHzccH+S+4N5V4gle2/by
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="357287946"
+X-IronPort-AV: E=Sophos;i="6.00,256,1681196400"; 
+   d="scan'208";a="357287946"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2023 01:25:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="691346033"
+X-IronPort-AV: E=Sophos;i="6.00,256,1681196400"; 
+   d="scan'208";a="691346033"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by orsmga006.jf.intel.com with ESMTP; 20 Jun 2023 01:25:00 -0700
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To: intel-wired-lan@lists.osuosl.org
 Cc: netdev@vger.kernel.org,
-	syzbot+13a08c0bf4d212766c3c@syzkaller.appspotmail.com,
-	syzbot+14234ccf6d0ef629ec1a@syzkaller.appspotmail.com,
-	syzbot+4e2e47f32607d0f72d43@syzkaller.appspotmail.com,
-	syzbot+472626bb5e7c59fb768f@syzkaller.appspotmail.com,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Jens Axboe <axboe@kernel.dk>, Matthew Wilcox <willy@infradead.org>,
-	linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2] crypto: af_alg/hash: Fix recvmsg() after
- sendmsg(MSG_MORE)
-Message-ID: <ZJFhX3RYknrkcN0x@gondor.apana.org.au>
-References: <ZJEwPLudZlrInzYs@gondor.apana.org.au>
- <427646.1686913832@warthog.procyon.org.uk>
- <1220921.1687246935@warthog.procyon.org.uk>
+	anthony.l.nguyen@intel.com,
+	magnus.karlsson@intel.com,
+	michal.swiatkowski@intel.com,
+	Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH iwl-net] ice: add missing napi deletion
+Date: Tue, 20 Jun 2023 10:24:54 +0200
+Message-Id: <20230620082454.377001-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.35.3
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1220921.1687246935@warthog.procyon.org.uk>
-X-Spam-Status: No, score=2.7 required=5.0 tests=BAYES_00,HELO_DYNAMIC_IPADDR2,
-	PDS_RDNS_DYNAMIC_FP,RDNS_DYNAMIC,SPF_HELO_NONE,SPF_PASS,TVD_RCVD_IP,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.6
-X-Spam-Level: **
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On Tue, Jun 20, 2023 at 08:42:15AM +0100, David Howells wrote:
->
-> Not so.  hash_recvmsg() will call crypto_ahash_init() first because ctx->more
-> is false (hence why we came down this branch in hash_sendmsg()) and the result
-> was released on the previous line (which you're objecting to).  If it goes to
-> the "done" label, it will skip setting ctx->more to true if MSG_MORE is
-> passed.
+Error path from ice_probe() is missing ice_napi_del() calls, add it to
+ice_deinit_eth() as ice_init_eth() was the one to add napi instances. It
+is also a good habit to delete napis when removing driver and this also
+addresses that. FWIW ice_napi_del() had no callsites.
 
-I see, yes it should work.
+Fixes: 6624e780a577 ("ice: split ice_vsi_setup into smaller functions")
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> However, given you want sendmsg() to do the init->digest cycle on zero length
-> data, I think we should revert to the previous version of the patch that makes
-> a pass of the loop even with no data.
-
-Let's get this fixed ASAP and we can refine it later.
-
-Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
-
-Thanks,
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index cd562856f23a..f6b041490154 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4485,6 +4485,7 @@ static void ice_deinit_eth(struct ice_pf *pf)
+ 	if (!vsi)
+ 		return;
+ 
++	ice_napi_del(vsi);
+ 	ice_vsi_close(vsi);
+ 	ice_unregister_netdev(vsi);
+ 	ice_devlink_destroy_pf_port(pf);
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.34.1
+
 
