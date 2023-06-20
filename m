@@ -1,189 +1,191 @@
-Return-Path: <netdev+bounces-12219-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12218-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id 77799736C3D
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 14:47:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id B687C736C3B
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 14:47:39 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3256F280E7D
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 12:47:57 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 73052281227
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 12:47:38 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0A489154A8;
-	Tue, 20 Jun 2023 12:47:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7CBEA14286;
+	Tue, 20 Jun 2023 12:47:36 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAF1D154A4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A09110790
 	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 12:47:36 +0000 (UTC)
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2085.outbound.protection.outlook.com [40.107.94.85])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B7010F8;
-	Tue, 20 Jun 2023 05:47:35 -0700 (PDT)
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2122.outbound.protection.outlook.com [40.107.237.122])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B22810F4
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 05:47:35 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l5hKIAw3xv0dIpm5uzBI4KBh+HjjW/Hcj6jbgxFuPv+xvOkIK+giLSL5fCQcKUZtH94W+Lc3HKE9ZStK0+PkfQU+ggNET4kf98sF3phbbLl2G+VklYnLukfHuNHq0F7JDS4J16T5ARPn2JjDRhoK1U/OsBnqsmwz5Y2lRylC5nyHK/BydNvib0/VF0QU0lQxNB5t8DEHqlhl2kaGxPg9ZmMHsXAzd6WuvkkODqH8rhTSW39Eyn5FAe8o5Oeur7u195N3ZVtsrDfF6B9Cvgfm9vTsk0R5qoVOlZxwEc7feWfoK1RImD2Yr8/cX7wBi4K0ON1bpSqyNXFF5EzFZxlUtQ==
+ b=GoeMIkOP5G2WpbK3N6KVjT9ROkKH9pry8pUu+74QXp5QRKiIl8LP/3umCzHBe0eGmSTQ8nZ7CxKQ6DR3dKdcfVv+4zgAo4584QIQwdXzogTQ6RE21uWEvHrlNzPJ1sqOD5mMHj0htsOhwhws8AxwYQiq8l+BZHbBmz3dBQwfFzP00OJHpotLant6AO/4hPUmof6bWT+d3QDrxeUZfEPdLh+KGiwcfNNldtnC7Hwhlczbood91fNjLgTXJCorc5n9fuC8Vx2hoTygiXIdWMsdvEvaGhsEL5Y5uFLkbOL7DW900WfGirNTXa1orj1Nw1b3IvpF36Tb+mi9jiHBbgy8PA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ecB0MEaScDKpI6VFS9sI1CZgZI+wr2BPROOaXHBrcmc=;
- b=WMaw9zHfs91t1VrB6VGyxCTgbLu2m9tOuBz4pgfprdT0MfFpUbfcw75aW+2JZ2Ki7bzt8kQKX2usiwmD4CIKOxj7DOMPoCVuqU+obAffPQ5Zan6/lITRWg6mGWpLbr3EElB4ITInC7a5HQ7oNSwVi3vTy5FVgqqNovrc8ktJhI10MdggQ+V7ZMkVVk7ZGjBuwZ+snO24VNdpqGkgic9WK83VQ4X5R5vJmaOjEdZhljjDfhVhQyJu9bxIslu5NXRLKWlbissOR0q7QG7lEWfsM+FNMh2+86Zk4VqgSe/F6dSmzFFdgrnuHYuGbyWjF3bPaIVXS0HjJoerVNgMk2HaOg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=l4xF5/AQjZaPTwXCgVvQdgLZbQAi3l9S2Yc88ePV9QM=;
+ b=ZXi0iq7za7ALworfmnmyrZ9H9oaf+1jQyRU0t4YSxuUssdJlDgHQ38KjcBLFuCP7C1bad/tO3znVvmT0Ds6mHlLhJabKmZmep1ek7kocABtNpMQCiz5YoywQyJJQyQEMaYQR1B8KyOOb3L5CROz8IJ03jVqgwVDWtMGO6OxhUOiih4xtSCxB8JkOASZ4FPsHMch8Xm+nYYIvTWVidN2TLEVJYyYh7spO2ljnfLjCls9RP0daFybTMK9ozn3GXxzAKP4FQOqS4hzymAX60u5GfFOhFnGznCwALb23N9zkif2BKP6r4wc/SgIBQ1QAhQG9Ga42wE8Z/gxQ5VmseQqGxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ecB0MEaScDKpI6VFS9sI1CZgZI+wr2BPROOaXHBrcmc=;
- b=fK/nqqG0q/dxTHsR44DOfZvoOQ78Z13CriEWYOZIy+zJarJaaO2hpFpBuUqcKrpJZfD3qVZDIm8gjjJ+uuVFPZZ8fOHtfPonW6Ay89bOWTyzv1LsB2dsFr8qvWTZMXEWrUJJ+G+H0KAl8UA4RGyfd7Q53hDLT7H70YVL/OFj/7zqech4WPokdQ1lf4/vxvlGgytExJxsIjY1/qVjiXGhJQW9DwXoSY/cjqVvAprpZ9CbsCswMFcnn16dkljsfZLr3/zvNa3iQFUk4Tf5OvshN/iZUeaT5NjVSWvSook6jMFgI2NPur8g8IduFvO0WrN/+vte0pR9mfP0TRPx8yaGBw==
-Received: from DM6PR11CA0057.namprd11.prod.outlook.com (2603:10b6:5:14c::34)
- by DM6PR12MB4090.namprd12.prod.outlook.com (2603:10b6:5:217::11) with
+ bh=l4xF5/AQjZaPTwXCgVvQdgLZbQAi3l9S2Yc88ePV9QM=;
+ b=kqCqNfd0I02ExLyMMaWkEcuSXtYwM7hGwKAUQZViJoiNyInOCgREdkSJDDxB7QDFWN2PLgeTYWRAkKFMF/zJ1g9OF78SVLLtgPirygac5VK15TwFUfcfCptriMpMJR99ZRSxmfOhy+WvBcS0N/oRb8DogX0RsBydcezZ4+qJDl0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SA1PR13MB4877.namprd13.prod.outlook.com (2603:10b6:806:186::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.37; Tue, 20 Jun
- 2023 12:47:33 +0000
-Received: from CY4PEPF0000EE3B.namprd03.prod.outlook.com
- (2603:10b6:5:14c:cafe::58) by DM6PR11CA0057.outlook.office365.com
- (2603:10b6:5:14c::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.37 via Frontend
- Transport; Tue, 20 Jun 2023 12:47:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CY4PEPF0000EE3B.mail.protection.outlook.com (10.167.242.15) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6521.17 via Frontend Transport; Tue, 20 Jun 2023 12:47:32 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 20 Jun 2023
- 05:47:22 -0700
-Received: from yaviefel.vdiclient.nvidia.com (10.126.231.35) by
- rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Tue, 20 Jun 2023 05:47:18 -0700
-From: Petr Machata <petrm@nvidia.com>
-To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC: Petr Machata <petrm@nvidia.com>, Danielle Ratson <danieller@nvidia.com>,
-	Shuah Khan <shuah@kernel.org>, <linux-kselftest@vger.kernel.org>,
-	<mlxsw@nvidia.com>
-Subject: [PATCH net] selftests: forwarding: Fix race condition in mirror installation
-Date: Tue, 20 Jun 2023 14:45:15 +0200
-Message-ID: <268816ac729cb6028c7a34d4dda6f4ec7af55333.1687264607.git.petrm@nvidia.com>
-X-Mailer: git-send-email 2.40.1
+ 2023 12:47:32 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb8f:e482:76e0:fe6e%5]) with mapi id 15.20.6500.036; Tue, 20 Jun 2023
+ 12:47:32 +0000
+Date: Tue, 20 Jun 2023 14:47:24 +0200
+From: Simon Horman <simon.horman@corigine.com>
+To: darinzon@amazon.com
+Cc: David Miller <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+	netdev@vger.kernel.org, "Woodhouse, David" <dwmw@amazon.com>,
+	"Machulsky, Zorik" <zorik@amazon.com>,
+	"Matushevsky, Alexander" <matua@amazon.com>,
+	Saeed Bshara <saeedb@amazon.com>, "Wilson, Matt" <msw@amazon.com>,
+	"Liguori, Anthony" <aliguori@amazon.com>,
+	"Bshara, Nafea" <nafea@amazon.com>,
+	"Saidi, Ali" <alisaidi@amazon.com>,
+	"Herrenschmidt, Benjamin" <benh@amazon.com>,
+	"Kiyanovski, Arthur" <akiyano@amazon.com>,
+	"Dagan, Noam" <ndagan@amazon.com>,
+	"Agroskin, Shay" <shayagr@amazon.com>,
+	"Itzko, Shahar" <itzko@amazon.com>,
+	"Abboud, Osama" <osamaabb@amazon.com>,
+	kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v1 net-next] net: ena: Add missing newline after markup
+Message-ID: <ZJGf3K+oZ1x6wVYz@corigine.com>
+References: <20230620070206.1320-1-darinzon@amazon.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230620070206.1320-1-darinzon@amazon.com>
+X-ClientProxiedBy: AM8P251CA0013.EURP251.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21b::18) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE3B:EE_|DM6PR12MB4090:EE_
-X-MS-Office365-Filtering-Correlation-Id: ca93189e-9e94-4f47-b452-08db718c8435
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB4877:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0e2ff306-18e5-4be3-8ed0-08db718c8390
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	BO/8vPiKYfHcOyRvnN/GQaHoTvAyQuHh4TT5DNlILx0QdfxtGOGYvVKDubUm3KjwZMMEI+xGuBkUXEM5EANb+7Tp4o6tE0/i/pTuDrc6HdD9TiUW2s3oYO7AY+AUF64tIhs0MqKSp2Dy2Kfh9+w/WnCB1aU047Y87Z0drStlFV1L5dmsBMQgNW/qVKZcuEBs8r9eMci2LjmuHMKnZ58ie2azQ1SH31KjvdYr5cv5u7H16mUUFmvpaZhg9dBt9i+vSR79/Y+VtOk5+WJphxKkd1Wn3nmo5/WrahSuA+1eqzNwKke+bwI4nNb0xnN/g6Nw7ig36psX0CisOFofZF1cqWrGNZLpjZ6RS75jEUXEZqWwCS840c0iD5QXaK0Sl5nwtpnAxDMCdSLRobO0zpOUF9bGZZQ6TuRsal1uNF++1xAExOwPwaahYzHaQxha7Fz7lEVItKc3WQLqPt5yV65lYAW7NAiyelFizSlulDux/Ok53mo9fYiw1adWtAesCmtE2mDIpEKKgBiBeZpsCJapwOzewUKvNdTk6xFSpECh0PQ6J2o8ZeNDRluPQRTA6haDShVAuvHE73c6N2fFkyyksm4xCvLwXQOHwkN/PIDwosFmQQ40zLjvL6uL7On1EFv06fq+k/GBbG4mM2PsfGlVxSLVeA9OCsiLI0dr5CPBT9MkxxlkYgLWhgPKTk0kuViSVOr0Fk6OYNckIK9eNXEkbiGchFuKAr1OtV0vJ71da9UDnMUmysX7mZ7g4+uf8NkY
+	FsrqkJ50hXjln697hrFxapRJSLG6YgFj9PqjEObtISdqvpS0YxiSoVYvG0eOcqSrJfRbOblaBvqJ4M4q6lnZnOVNRh/lGmQRIwcREwX0cY31AMD0bAW2zG2mVZTn/sFej04wFfCGGHjb3sP8FgQ8orkGVG8QE1blnKZrbWsg4nX+Y0/DrHTdDUU+3JPsU/xJxJlSsL19DXOOaTdU/zxppE4BohSKv4qJ2QQOcdI/WCXlC9cmpxtOoTTXRwc4WzykKED+PzqhTY8EtziMhkyuSOUmzFK7kfXaZljPlxGmx4hydpytJObF7dfsW7mQQoB5Vaed0BQ5Q/a+qblhpDv6o13/lHd5QIwANCE3YRZHec0K9Cw3cgwztplwbyK9syn7djufXPqCcblua1AWdXKoAEw3//HWtud96kmPQolEodjnnVRWiksgeeqsV/sHey44SCafO266pMkBknEB2RjpKzSVq7P5j65lNwEwMHg3+jrjpQLhJviyKL6O0B0NSGngPDS0dy1l95JRMR9i+Ua+6oJVQRNu1TBDRAI8cyHbSH+T4rYctkPVlporoovNvcphC5U+bP9o3VQV4fzDTmkYfO9ECKYnQyRj+lqWsiF5aJg4h140J8C3D/YgMUJqSNNAAsw2kYSakmOuRqITZrAu2w==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(136003)(396003)(39860400002)(451199021)(36840700001)(46966006)(40470700004)(8936002)(41300700001)(40460700003)(8676002)(82310400005)(478600001)(82740400003)(16526019)(356005)(7636003)(426003)(336012)(2616005)(6666004)(186003)(26005)(107886003)(36860700001)(7696005)(54906003)(47076005)(40480700001)(110136005)(86362001)(36756003)(316002)(4326008)(70206006)(70586007)(2906002)(5660300002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2023 12:47:32.9123
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(136003)(396003)(346002)(376002)(366004)(451199021)(44832011)(38100700002)(86362001)(83380400001)(41300700001)(8936002)(8676002)(5660300002)(66476007)(6916009)(316002)(66946007)(66556008)(7416002)(2616005)(6506007)(6512007)(966005)(6666004)(186003)(6486002)(478600001)(54906003)(4326008)(2906002)(36756003)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?MQlUDVdvdGv3IatPbDOafPWxJRSGJFKzkt1YgOqie77vNspfuimEf/9gG026?=
+ =?us-ascii?Q?QFDuYaWq8XCoy+PtRB/Jmc4P1AKyNPhT9vpB/xbuklCn9y2uzY1vOWWGax54?=
+ =?us-ascii?Q?P2zhHHNEa8N/zay79zbwOUmhpyON/ZlLw1dhN5iouffiFTuflfCgpYySOXwM?=
+ =?us-ascii?Q?z9fz9J7S9y/gtZp990Z8QQDnd/U1mN/JHx5FAd8ATFJFTCNu4b+vWE0WinkH?=
+ =?us-ascii?Q?VPFZnFrKbwIbSD9WOls44dKrivdLeBck7Yf6mjNxB7sGnwygbqxMi2xCWLIZ?=
+ =?us-ascii?Q?PnHg5G35AG2iTGXHwyzG79rTWyxYR0AVKpu8cvRIOPuEPg9g1zjlf12vJzdA?=
+ =?us-ascii?Q?yGhzV0ctC+zrhpsXQGR3cIXspG+DY1ziAVHrCD0EPJul7GP3wOGRhMkc8ZUR?=
+ =?us-ascii?Q?tFhgjTw3w0Q9k7hF48jxV2Uo4JJSCce5p3eHT5YYfLZqfPO3zbI9mEzkbCye?=
+ =?us-ascii?Q?Xd9w9Z8DKfMGfYgHlgubeuMk+89cbSlhY6Oz/gtBDZurJC541IuvR1/ViN4r?=
+ =?us-ascii?Q?gX444Ae2YTuOe9oQu+qsuoCnS3LZpfhhXlQH/CgbrScqkZjlogP1wyUHA2Qw?=
+ =?us-ascii?Q?GBmPMqqD2V1XTQTd/8Hgs2Sb/EJyC1xOYQ/NSRbU2ip8+P4MVFtSBCjIfQyI?=
+ =?us-ascii?Q?0y9xPzn1Yr69SFLCqDGqsOFQSknw++x8VJsO30aIGDdmes+a/XGC91HFOgvv?=
+ =?us-ascii?Q?0TD8hWkxJi4se5yzhVncAZHjZDgxkETgTfrxVXG7nnkM/XnFjVWU84kIBJqn?=
+ =?us-ascii?Q?Rg75a6luOckNNy5RwFWjpR30BviuMy5jXgeVX4o8TgBLz5jWxmLJL3IbS9I1?=
+ =?us-ascii?Q?milqx8QgILZAjhHU4IciarGmVEu8ENLVq0AOdbL4JEKxGRMYZZXaPNAOh0Ew?=
+ =?us-ascii?Q?G1WkAmB9Qm3/S3JWJ4HvgKjcJX+uYszFAKVhnPC/EiPnWh+Wgbj2PHvTvQvW?=
+ =?us-ascii?Q?M6c8TuLPH/OiRxzbHYxOUrhrN+IhugENfLsaExD+ctv8yRekZXpI2Qo57NBQ?=
+ =?us-ascii?Q?B2Fk2cUoSaXQSLmsTQtOSDv1GohQfQkMM6ZQzba6SoguQJgjITH/0+t3UbbV?=
+ =?us-ascii?Q?qw2eVRiKJKIYvN+8129OeWr99h2m7ukBA/f+4meuWvRAS2xYD0SL/9g26DGX?=
+ =?us-ascii?Q?ZdVF+OQO/KjmVsWleGsVCI9SZ+Xj4E83CuPY5RoTu+RNG2BttXM3XeAsNwQC?=
+ =?us-ascii?Q?MB+Sh2zgbfJ01cK7GJzoAJ4RrTUis+smpve6suIOtu+9rw8vYvOoCllkrUvK?=
+ =?us-ascii?Q?G0N+Q9K7MnJ5w60mUvLe6y3l7ufOmwHdiFLXPTeOusXvSTHkePnssFR+wWxq?=
+ =?us-ascii?Q?psD0e5OSfIyu0Kf7fqEZ99o/pvcGlTHxjMuqGESIgD0shjSXLRQvehc3yqOh?=
+ =?us-ascii?Q?iJxMhi9YCasgGsTShBAfInu5HFQ3JzdRVPnYXkX0blKkZxby+qtka4niaq/O?=
+ =?us-ascii?Q?17apJmmnAOp+40xx1ZkMg5I1R9E5vk6zl7ReniLSSeSXhvfiTVQ2/eHR7umB?=
+ =?us-ascii?Q?2TMSTuL1GAKveOchqEC5juWPkEjFXPl371j8txIk+G8t7rRerqVgbatf3Sth?=
+ =?us-ascii?Q?rU8+F0+zEmMNR+UDHiD7csXccPUVs03RF82bkANrA0mJDXozWuMV1kGmUtMz?=
+ =?us-ascii?Q?+z0Fncv1VoD4ZXKo+XVx1q/NHkUxRjOzGfYzTpPPOmmEjTKU7tla+NpmpmhP?=
+ =?us-ascii?Q?EUvqEg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e2ff306-18e5-4be3-8ed0-08db718c8390
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2023 12:47:32.1388
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ca93189e-9e94-4f47-b452-08db718c8435
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EE3B.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4090
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: BpyawzYxDtu47G5Ahqi677pcAnPW4FdB4QeNaiNEP80jECnylBImxbgyNRuiSycIvvQCdNxfGB8FmuDWfkPkiKrxGaj1YT4mMQ0KusUb7hQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB4877
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: Danielle Ratson <danieller@nvidia.com>
+On Tue, Jun 20, 2023 at 07:02:06AM +0000, darinzon@amazon.com wrote:
+> From: David Arinzon <darinzon@amazon.com>
+> 
+> This patch fixes a warning in the ena documentation
+> file identified by the kernel automatic tools.
+> 
+> Signed-off-by: David Arinzon <darinzon@amazon.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Closes: https://lore.kernel.org/oe-kbuild-all/202306171804.U7E92zoE-lkp@intel.com/
+> ---
+>  Documentation/networking/device_drivers/ethernet/amazon/ena.rst | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+> index 491492677632..00851ec7b4ec 100644
+> --- a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+> +++ b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+> @@ -206,6 +206,7 @@ More information about Adaptive Interrupt Moderation (DIM) can be found in
+>  Documentation/networking/net_dim.rst
+>  
+>  .. _`RX copybreak`:
+> +
+>  RX copybreak
+>  ============
+>  The rx_copybreak is initialized by default to ENA_DEFAULT_RX_COPYBREAK
 
-When mirroring to a gretap in hardware the device expects to be
-programmed with the egress port and all the encapsulating headers. This
-requires the driver to resolve the path the packet will take in the
-software data path and program the device accordingly.
+Thanks David,
 
-If the path cannot be resolved (in this case because of an unresolved
-neighbor), then mirror installation fails until the path is resolved.
-This results in a race that causes the test to sometimes fail.
+this looks good to me.
 
-Fix this by setting the neighbor's state to permanent in a couple of
-tests, so that it is always valid.
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-Fixes: 35c31d5c323f ("selftests: forwarding: Test mirror-to-gretap w/ UL 802.1d")
-Fixes: 239e754af854 ("selftests: forwarding: Test mirror-to-gretap w/ UL 802.1q")
-Signed-off-by: Danielle Ratson <danieller@nvidia.com>
-Reviewed-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
----
- .../testing/selftests/net/forwarding/mirror_gre_bridge_1d.sh  | 4 ++++
- .../testing/selftests/net/forwarding/mirror_gre_bridge_1q.sh  | 4 ++++
- 2 files changed, 8 insertions(+)
+Although it doesn't trigger a warning, the formatting of the
+text updated below doesn't seem right (I used make htmldocs).
+Feel free to take this if it is useful, or say the word and I'll submit
+it formally.
 
-diff --git a/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1d.sh b/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1d.sh
-index c5095da7f6bf..aec752a22e9e 100755
---- a/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1d.sh
-+++ b/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1d.sh
-@@ -93,12 +93,16 @@ cleanup()
+diff --git a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+index 00851ec7b4ec..5eaa3ab6c73e 100644
+--- a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
++++ b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+@@ -38,6 +38,7 @@ debug logs.
  
- test_gretap()
- {
-+	ip neigh replace 192.0.2.130 lladdr $(mac_get $h3) \
-+		 nud permanent dev br2
- 	full_test_span_gre_dir gt4 ingress 8 0 "mirror to gretap"
- 	full_test_span_gre_dir gt4 egress 0 8 "mirror to gretap"
- }
+ Some of the ENA devices support a working mode called Low-latency
+ Queue (LLQ), which saves several more microseconds.
++
+ ENA Source Code Directory Structure
+ ===================================
  
- test_ip6gretap()
- {
-+	ip neigh replace 2001:db8:2::2 lladdr $(mac_get $h3) \
-+		nud permanent dev br2
- 	full_test_span_gre_dir gt6 ingress 8 0 "mirror to ip6gretap"
- 	full_test_span_gre_dir gt6 egress 0 8 "mirror to ip6gretap"
- }
-diff --git a/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q.sh b/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q.sh
-index 9ff22f28032d..0cf4c47a46f9 100755
---- a/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q.sh
-+++ b/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q.sh
-@@ -90,12 +90,16 @@ cleanup()
- 
- test_gretap()
- {
-+	ip neigh replace 192.0.2.130 lladdr $(mac_get $h3) \
-+		 nud permanent dev br1
- 	full_test_span_gre_dir gt4 ingress 8 0 "mirror to gretap"
- 	full_test_span_gre_dir gt4 egress 0 8 "mirror to gretap"
- }
- 
- test_ip6gretap()
- {
-+	ip neigh replace 2001:db8:2::2 lladdr $(mac_get $h3) \
-+		nud permanent dev br1
- 	full_test_span_gre_dir gt6 ingress 8 0 "mirror to ip6gretap"
- 	full_test_span_gre_dir gt6 egress 0 8 "mirror to ip6gretap"
- }
--- 
-2.40.1
 
 
