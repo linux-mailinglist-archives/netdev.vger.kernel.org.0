@@ -1,70 +1,70 @@
-Return-Path: <netdev+bounces-12243-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12244-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 6DA62736E19
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 15:58:34 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id 3DF4C736E1D
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 15:58:54 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 9FBD81C2081C
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 13:58:33 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id ED95228130E
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 13:58:52 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6793A171AE;
-	Tue, 20 Jun 2023 13:57:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F19181642D;
+	Tue, 20 Jun 2023 13:57:13 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 556BD171AD
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 13:57:02 +0000 (UTC)
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2067.outbound.protection.outlook.com [40.107.223.67])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66CDDD3;
-	Tue, 20 Jun 2023 06:57:00 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF4F314293
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 13:57:13 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2071.outbound.protection.outlook.com [40.107.220.71])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B75939D;
+	Tue, 20 Jun 2023 06:57:12 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OJrAmLPfpm7bXTkFBjRbWWdNIr27wc9BZNr7pZIfeQtngulm71lIJlAHrK1g7gZ6QV0JduQgUS0rcNlZlBfRkK3D2xpTkIBiBHJQpvPBpb25oRYuVSnXFcgDgjyWUdEX+uf0ZJQM/0Iw7aHUDl6nZTDsQ5DkeKKt5YtFHHIwHjLAAkVQXmR262sieZmMC4CIykBZhG6hlqql1Swp8hBImi9w2n+j2k2RBGTC5x6t9JKkJyoKJR/2QOi9qjWNnO0BUugFo8wtS3jSZ7OrCHbQ2fqHdcgZo+JQzoWwtso1eDrJQ5hPs306+ap/9Or5bxJSgRLfewh3zyRWXqkVq3dboA==
+ b=he7XYta6kgb5n6VvIfLOtGxzlv62V/MLpSFTDD4djJk6AdIn3inIfcANOdr2O8s1XC8RIZI0iOZxqN2PiUhA6jHeJqbxrjuslyxGrc4c4vO07asNYCPNCh0Xt7lOZyDhXFsXupOG9yg5HugdAOrcvMaVcrDZ/sr+WxPYrI/eIKmrQfC65NqD57gDFDMUflskdwwPkmzs7Hkvxbj0pl57HUVujF98KzS5EWqd04bSDsFNyhY6JaXzhCbtAwM0UX48XNdV2fj0Qpa3qsJWPLXTM3qv9WcI8lSLRg3X0L1s7Q5ZRnKtgw0fmxhgHOPbIFRvxdtsZBjOW5qTW78iutrb7A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GVD+Himn3jxE+9Z5FakfaoQYgmgYX+OPfhpual5AgZw=;
- b=OBfl35wLrYcPGAChVdBE7eZn1QwRI0gY0AdL4f5q6gRs/hmYaTpu1nrgvEw13wNIEhBlIEJxgV/lpjkIlLGetmbMDB3J0jxvFBa0aNairLR7FPc0t6hmV+2D9O+cyaMQsyFOjT5gXOq2IhNP/C3CuqbxbVO25OgL92qkv/nD2urBQeCz2fxbenG0lZLh4wvhCMWaH1ciNFYA6fYTJdQdmcV3W8A5zoSiCXt/FHNYtPrCu3zZTadUObynUTOcNBLrgqFXTxeDqwhq99DNTpnaTvKOwS+8DSsEQiKeWdsVJHYa78K7j/u5WPSJqaWwJC3zxqibazxyGQw/4SwZ2+Uj5A==
+ bh=sQHo8Xc16Y3bI+peSWn6wZV7cZvT1PE48GGYarOPQ+Y=;
+ b=izgE5q0UlKNEDkt2sBO/m8VoXwOG7GWDqP+BEM4cojxUKYLivABLE9VhfiyyvUbN09k2rcBSxQhPzx5Okg6qSbcXO06GDpG8OE47vFLR1sq8VT4NUyiZ1Du7wWSPkGdf9DWWYBHC+RLplpjs/Al2RlQQGvCDLPfmt5ZpRkXgl3G+gf0hcQUN8LSkSR9UN3ZliX87fJCbp//k4VoWW1Dzc+kSb4XQm3whN0n5G1/iG9Us+Wmfr3GitxpJghvWgsi2S2Y4X05RvB5WEdLve6yp7ldcloQd7zn0xQXgVR+kOhCekQoPya/UyTWl8F2wZvAs3qqkfVH3rpeT2q3fLdnqTg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ 216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GVD+Himn3jxE+9Z5FakfaoQYgmgYX+OPfhpual5AgZw=;
- b=BX21g3917lIcuo1HJjgABCPjRKn50XXYPLBhw8FZRgaBG6yHq1UVr8AmnSXbNITLxEoFNkxCOY302fSBl42CpLS3bcTezq/tiHgkWfGCoHpdkg9jWyQ6TKKBltMCd7a+4cpbYlYaYml9hjIvAkeQNyJ/oWGfR9T7JN43fJyQUf5pstZmUVjhybP7Sm0u7/UrAJaXjIPq3OGN0w4SxT5M/ZnbcXDqj/bPYimkFFWlpWORVBRQmRxFeZKMzTL6gemG/Eba6hESxkiRbJQTnrtG+Q51bVN3IVOOezrwMSj33QsWukIE9KUe9Fu2JBqLVMY+YHYTPtcbM/zpDfRnWm2DmQ==
-Received: from BN8PR16CA0014.namprd16.prod.outlook.com (2603:10b6:408:4c::27)
- by PH7PR12MB6420.namprd12.prod.outlook.com (2603:10b6:510:1fc::18) with
+ bh=sQHo8Xc16Y3bI+peSWn6wZV7cZvT1PE48GGYarOPQ+Y=;
+ b=LvBGlXpNhTuKuWbWI/tscn9aGYPxL5SkATtVTbJ3oLQmPP9kU0dC3ionbdJcoGC7ln6J7+ybq+vZ6ly5oXqJQw5qJ0I26pmqG4oeogTM11+PAFp8PbRk9++wGR/mVLLzgMg+88/WBiz9xgh9AShstTnv9kTRaVljpBRLIgfGWilpyrP/u6JGQIJdmIRVD/8gnWMxdl+25f2awiJpiHpS/NSyjWQ4RMWUEqnuDAmQbjHn5ozmzy0u4XxoC5CTtOzsobkDTNR/BT4n4B1qT/TsFzAKdcKNUd+lC63TorjqC8iS8tt2soIZTh/G/Br285tAPBeGn98YVw8Hj61/0HhIRw==
+Received: from BN9PR03CA0844.namprd03.prod.outlook.com (2603:10b6:408:13d::9)
+ by BN9PR12MB5178.namprd12.prod.outlook.com (2603:10b6:408:11b::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.37; Tue, 20 Jun
- 2023 13:56:57 +0000
-Received: from BN8NAM11FT048.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:4c:cafe::63) by BN8PR16CA0014.outlook.office365.com
- (2603:10b6:408:4c::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.37 via Frontend
- Transport; Tue, 20 Jun 2023 13:56:57 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ 2023 13:57:10 +0000
+Received: from BN8NAM11FT035.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13d:cafe::ed) by BN9PR03CA0844.outlook.office365.com
+ (2603:10b6:408:13d::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.21 via Frontend
+ Transport; Tue, 20 Jun 2023 13:57:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BN8NAM11FT048.mail.protection.outlook.com (10.13.177.117) with Microsoft SMTP
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN8NAM11FT035.mail.protection.outlook.com (10.13.177.116) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6500.37 via Frontend Transport; Tue, 20 Jun 2023 13:56:57 +0000
+ 15.20.6500.37 via Frontend Transport; Tue, 20 Jun 2023 13:57:09 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 20 Jun 2023
- 06:56:49 -0700
+ 06:56:53 -0700
 Received: from yaviefel.vdiclient.nvidia.com (10.126.230.35) by
  rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Tue, 20 Jun 2023 06:56:45 -0700
+ 15.2.986.37; Tue, 20 Jun 2023 06:56:49 -0700
 From: Petr Machata <petrm@nvidia.com>
 To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
 	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
@@ -73,9 +73,9 @@ CC: Petr Machata <petrm@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
 	Danielle Ratson <danieller@nvidia.com>, Amit Cohen <amcohen@nvidia.com>,
 	Shuah Khan <shuah@kernel.org>, <linux-kselftest@vger.kernel.org>,
 	<mlxsw@nvidia.com>
-Subject: [PATCH net-next 06/16] selftests: forwarding: mirror_gre_*: Use port MAC for bridge address
-Date: Tue, 20 Jun 2023 15:55:52 +0200
-Message-ID: <9f76a2fd0f89db7ee6e857c2c072db577acc98a9.1687265905.git.petrm@nvidia.com>
+Subject: [PATCH net-next 07/16] selftests: forwarding: router_bridge: Use port MAC for bridge address
+Date: Tue, 20 Jun 2023 15:55:53 +0200
+Message-ID: <74b370bdbb884b37836d2789474879d75aa978c1.1687265905.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <cover.1687265905.git.petrm@nvidia.com>
 References: <cover.1687265905.git.petrm@nvidia.com>
@@ -92,26 +92,26 @@ X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT048:EE_|PH7PR12MB6420:EE_
-X-MS-Office365-Filtering-Correlation-Id: 08549f67-f05c-4cf0-83ed-08db71963660
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT035:EE_|BN9PR12MB5178:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0acf1bab-9cab-42a7-55af-08db71963dc6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	HhSWb+fRp7/bYYcFJ3x3G+Bc94Z7hzj+36nS2YQ2pPqM09CH9eEwnvJGz8Mi8tatPIHfEWsW6iJXWi1qS4OsPHv3X/syXVzteopfg3W4qdKXBn75M3TGkdhsQl8rmOeAMb1busVvnUxjHDbZu7lAO5o8bDNVJcOi6BcbBKS+4hPo2SDEDHMArOIFUmdkIaREsjnC7sXqOXugcgtIpnBeMpXb8xL1koqyU9gf5ioX0CvCRw3GYjmqb0GJYv1FnyU0rVg7pJh2NTfFs/U5w8/ubWCpbCc6afv+5QUChxg2zdds0AXaaRupHfrAOBergOWlwd/63frCe+kAbtyItInEi7nXTelHy1yaZI1gsgKeDX/y5FIUb4V3eWuB7/VtVXJfnPIcugsrcZqpDR7O5MQRZnHdlOEFkiNiRnGZr+BWbS1Yz6S40X82+6vrVylkD7tbtyhAv8qo31rs1QyPiT0v2T3o4DIovrB5XyU70AyqS45pYJB+QW2djgVUCMiDpH9RmqrIDom7lcgudJmXrvFTkfMclHPYRVrynjnsKXRKQdYYS4cshLQeDJM0HoBfLtWAqEVFGSS1mXJJ6t2CCFxUJKgoEPRt4SMxiZVEAoRhCyzG6rEcsjKm4H0T/N736fdM1IePUfGEOUAoRNc3Av/1PMoP/S5TTBzUJ1XMRIzn5twW/Fvq2Ddd3y4bYLXzjtBuWYiJNGC4OzbMVD9Nwv0ID1oq/jMg85/VbUXo25erDlY=
+	pBbpRCDQT9pDDUIyYyBOr6DwZOueRvYX1HpbfS0mt5YdwB8fYcMKlwOE8lUSN0bb5TDXA2H7jYIPC9siWwCU+bjfFa+AxHG2XkNQYDstkJAJD8MXxKP5Zf/Fd4qsZEeEE2Rcn4yNBm2H7KWZxezHYNYLkt2BffizrvOHPKOsGURrQZ0+ocRv73ugFEI/nFTomtX3i/xVTaQbO64wIHz76A2VLcIQgwuC1d8w95vYeKPKJA8uko5QieS+B53gPbxVsRYu9d+9wDtyMI6L+hc/1lN7YJlohtITTS/66oidvYGZcBuvZojKuTtBzSq8rCxUc1oUJhxSJ3GGRfNRw0NHGuzu7s1SD7qiQ+hOfOl70VhQBUZj80xff3d88tX10kFrYh7wqBFEZ3eKTghgbDv4oSsINCrg77kLLoyuT57ULGoZQNLIG4q3+SW9RA+mChYIcK8/HU1NjAlfqfiEZgalNLYqfnBmC0qvFW5Y9ecGxXv4alCEkZY+a1ie0cR982/CfK3irWrX+ADdGAAxSWjtnGJ6QR6zgDyLR2V3TytlXFO2Vn1agBOtJeC+BdfJOJLVsXBZCofUMg63dPzjq9/GhzH6vw2oopLq/iuKAsJUJz+1Fv8vmsxoD1DCzCi2miUPHZZY0CGq4wsoleulSUnX7u5hpkzQ6iDd8m99H0h4qyzqwSZcUeZQcFNgcbmwDApViGWPis+PNgzw7cj7gr8uJztWMc2C39pnc0cs6ZIgdVo=
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(396003)(136003)(376002)(451199021)(46966006)(40470700004)(36840700001)(70206006)(70586007)(40460700003)(426003)(83380400001)(47076005)(6666004)(336012)(86362001)(36860700001)(82310400005)(4326008)(7696005)(186003)(16526019)(316002)(107886003)(26005)(8936002)(41300700001)(2616005)(36756003)(8676002)(40480700001)(356005)(110136005)(5660300002)(7636003)(54906003)(82740400003)(2906002)(478600001);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(346002)(39860400002)(396003)(451199021)(36840700001)(40470700004)(46966006)(478600001)(40480700001)(2906002)(40460700003)(54906003)(6666004)(7696005)(2616005)(356005)(7636003)(110136005)(336012)(86362001)(66574015)(426003)(47076005)(107886003)(36756003)(186003)(26005)(16526019)(8936002)(8676002)(70206006)(70586007)(82310400005)(5660300002)(4326008)(36860700001)(316002)(82740400003)(83380400001)(41300700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2023 13:56:57.2354
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2023 13:57:09.6467
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08549f67-f05c-4cf0-83ed-08db71963660
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0acf1bab-9cab-42a7-55af-08db71963dc6
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT048.eop-nam11.prod.protection.outlook.com
+	BN8NAM11FT035.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6420
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5178
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
 	RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -133,58 +133,28 @@ grounds of the configuration not being offloadable.
 The bridge eventually inherits MAC address from its first member, after the
 enslavement is acked. A number of (mainly VXLAN) selftests already work
 around the problem by setting the MAC address to whatever it will
-eventually be anyway. Do the same for several mirror_gre selftests.
+eventually be anyway. Do the same here.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Reviewed-by: Danielle Ratson <danieller@nvidia.com>
 ---
- tools/testing/selftests/net/forwarding/mirror_gre_bridge_1d.sh | 3 ++-
- .../selftests/net/forwarding/mirror_gre_bridge_1d_vlan.sh      | 3 ++-
- .../selftests/net/forwarding/mirror_gre_bridge_1q_lag.sh       | 3 ++-
- 3 files changed, 6 insertions(+), 3 deletions(-)
+ tools/testing/selftests/net/forwarding/router_bridge.sh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1d.sh b/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1d.sh
-index aec752a22e9e..04fd14b0a9b7 100755
---- a/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1d.sh
-+++ b/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1d.sh
-@@ -65,7 +65,8 @@ setup_prepare()
- 	vrf_prepare
- 	mirror_gre_topo_create
+diff --git a/tools/testing/selftests/net/forwarding/router_bridge.sh b/tools/testing/selftests/net/forwarding/router_bridge.sh
+index ebc596a272f7..8ce0aed54ece 100755
+--- a/tools/testing/selftests/net/forwarding/router_bridge.sh
++++ b/tools/testing/selftests/net/forwarding/router_bridge.sh
+@@ -38,7 +38,8 @@ h2_destroy()
  
--	ip link add name br2 type bridge vlan_filtering 0
-+	ip link add name br2 address $(mac_get $swp3) \
-+		type bridge vlan_filtering 0
- 	ip link set dev br2 up
- 
- 	ip link set dev $swp3 master br2
-diff --git a/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1d_vlan.sh b/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1d_vlan.sh
-index 1b27f2b0f196..f35313c76fac 100755
---- a/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1d_vlan.sh
-+++ b/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1d_vlan.sh
-@@ -35,7 +35,8 @@ setup_prepare()
- 	vrf_prepare
- 	mirror_gre_topo_create
- 
--	ip link add name br2 type bridge vlan_filtering 0
-+	ip link add name br2 address $(mac_get $swp3) \
-+		type bridge vlan_filtering 0
- 	ip link set dev br2 up
- 
- 	vlan_create $swp3 555
-diff --git a/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q_lag.sh b/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q_lag.sh
-index 91e431cd919e..c53148b1dc63 100755
---- a/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q_lag.sh
-+++ b/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q_lag.sh
-@@ -140,7 +140,8 @@ switch_create()
- 	ip link set dev $swp3 up
- 	ip link set dev $swp4 up
- 
+ router_create()
+ {
 -	ip link add name br1 type bridge vlan_filtering 1
-+	ip link add name br1 address $(mac_get $swp3) \
++	ip link add name br1 address $(mac_get $swp1) \
 +		type bridge vlan_filtering 1
+ 	ip link set dev br1 up
  
- 	team_create lag loadbalance $swp3 $swp4
- 	ip link set dev lag master br1
+ 	ip link set dev $swp1 master br1
 -- 
 2.40.1
 
