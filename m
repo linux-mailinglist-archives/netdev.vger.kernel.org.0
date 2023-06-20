@@ -1,356 +1,267 @@
-Return-Path: <netdev+bounces-12152-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12153-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id E4A8E736719
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 11:11:10 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
+	by mail.lfdr.de (Postfix) with ESMTPS id BBF2273675E
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 11:13:48 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 9BA1B280F6F
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 09:11:09 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id ED7351C20A17
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 09:13:45 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7C38EC2C2;
-	Tue, 20 Jun 2023 09:11:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C2746C2CA;
+	Tue, 20 Jun 2023 09:13:43 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69BDBC147
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 09:11:07 +0000 (UTC)
-Received: from smtp-fw-9106.amazon.com (smtp-fw-9106.amazon.com [207.171.188.206])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48788E6C
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 02:11:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1687252265; x=1718788265;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=rN0Esjj2iN51SUWCpDrz20nBPixkjyI7xHbGVIix3HU=;
-  b=vlImYMfhYzJ0xsVnF6WWTrTIcKE1hdTh+8IDkWmUid+WgTwEeJVPzqAk
-   6V0IV7+r6FONwm5NJ6ML0GA3y4LLtoUvIIhKwBnoHsesD10JQUT1q4J8q
-   9erRasBReOkujGZb9+ZgW7O5B+IPKjTJ0oscbFfXPAPEvWWPLbC1DAp6u
-   0=;
-X-IronPort-AV: E=Sophos;i="6.00,256,1681171200"; 
-   d="scan'208";a="655160047"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9106.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2023 09:10:59 +0000
-Received: from EX19MTAUWC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-	by email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com (Postfix) with ESMTPS id C5AD2C05E8;
-	Tue, 20 Jun 2023 09:10:57 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 20 Jun 2023 09:10:51 +0000
-Received: from 88665a182662.ant.amazon.com (10.106.101.48) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 20 Jun 2023 09:10:48 +0000
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
-To: <wangyufen@huawei.com>
-CC: <alex.aring@gmail.com>, <davem@davemloft.net>, <dsahern@kernel.org>,
-	<edumazet@google.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-	<kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>
-Subject: Re: [PATCH v2 net] ipv6: rpl: Fix Route of Death.
-Date: Tue, 20 Jun 2023 02:10:39 -0700
-Message-ID: <20230620091039.86347-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <c41403a9-c2f6-3b7e-0c96-e1901e605cd0@huawei.com>
-References: <c41403a9-c2f6-3b7e-0c96-e1901e605cd0@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B71DAC144
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 09:13:43 +0000 (UTC)
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754931726;
+	Tue, 20 Jun 2023 02:13:20 -0700 (PDT)
+Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
+	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+	id 1qBXPk-0002Rh-OK; Tue, 20 Jun 2023 11:12:40 +0200
+Message-ID: <0826b484-8bbc-d58f-2caf-7015bd30f827@leemhuis.info>
+Date: Tue, 20 Jun 2023 11:12:40 +0200
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.106.101.48]
-X-ClientProxiedBy: EX19D041UWA003.ant.amazon.com (10.13.139.105) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-Precedence: Bulk
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: Fwd: iosm: detected field-spanning write for XMM7360
+Content-Language: en-US, de-DE
+To: Kees Cook <keescook@chromium.org>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux Wireless <linux-wireless@vger.kernel.org>,
+ Linux Networking <netdev@vger.kernel.org>,
+ Linux Regressions <regressions@lists.linux.dev>,
+ Bagas Sanjaya <bagasdotme@gmail.com>,
+ M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
+ "David S. Miller" <davem@davemloft.net>, Florian Klink <flokli@flokli.de>
+References: <dbfa25f5-64c8-5574-4f5d-0151ba95d232@gmail.com>
+From: "Linux regression tracking (Thorsten Leemhuis)"
+ <regressions@leemhuis.info>
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
+In-Reply-To: <dbfa25f5-64c8-5574-4f5d-0151ba95d232@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1687252400;e95200e6;
+X-HE-SMSGID: 1qBXPk-0002Rh-OK
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
 	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-From: wangyufen <wangyufen@huawei.com>
-Date: Tue, 20 Jun 2023 16:12:26 +0800
-> 在 2023/6/6 2:06, Kuniyuki Iwashima 写道:
-> > A remote DoS vulnerability of RPL Source Routing is assigned CVE-2023-2156.
-> > 
-> > The Source Routing Header (SRH) has the following format:
-> > 
-> >    0                   1                   2                   3
-> >    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-> >    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-> >    |  Next Header  |  Hdr Ext Len  | Routing Type  | Segments Left |
-> >    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-> >    | CmprI | CmprE |  Pad  |               Reserved                |
-> >    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-> >    |                                                               |
-> >    .                                                               .
-> >    .                        Addresses[1..n]                        .
-> >    .                                                               .
-> >    |                                                               |
-> >    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-> > 
-> > The originator of an SRH places the first hop's IPv6 address in the IPv6
-> > header's IPv6 Destination Address and the second hop's IPv6 address as
-> > the first address in Addresses[1..n].
-> > 
-> > The CmprI and CmprE fields indicate the number of prefix octets that are
-> > shared with the IPv6 Destination Address.  When CmprI or CmprE is not 0,
-> > Addresses[1..n] are compressed as follows:
-> > 
-> >    1..n-1 : (16 - CmprI) bytes
-> >         n : (16 - CmprE) bytes
-> > 
-> > Segments Left indicates the number of route segments remaining.  When the
-> > value is not zero, the SRH is forwarded to the next hop.  Its address
-> > is extracted from Addresses[n - Segment Left + 1] and swapped with IPv6
-> > Destination Address.
-> > 
-> > When Segment Left is greater than or equal to 2, the size of SRH is not
-> > changed because Addresses[1..n-1] are decompressed and recompressed with
-> > CmprI.
-> > 
-> > OTOH, when Segment Left changes from 1 to 0, the new SRH could have a
-> > different size because Addresses[1..n-1] are decompressed with CmprI and
-> > recompressed with CmprE.
-> > 
-> > Let's say CmprI is 15 and CmprE is 0.  When we receive SRH with Segment
-> > Left >= 2, Addresses[1..n-1] have 1 byte for each, and Addresses[n] has
-> > 16 bytes.  When Segment Left is 1, Addresses[1..n-1] is decompressed to
-> > 16 bytes and not recompressed.  Finally, the new SRH will need more room
-> > in the header, and the size is (16 - 1) * (n - 1) bytes.
-> > 
-> > Here the max value of n is 255 as Segment Left is u8, so in the worst case,
-> > we have to allocate 3825 bytes in the skb headroom.  However, now we only
-> > allocate a small fixed buffer that is IPV6_RPL_SRH_WORST_SWAP_SIZE (16 + 7
-> > bytes).  If the decompressed size overflows the room, skb_push() hits BUG()
-> > below [0].
-> > 
-> > Instead of allocating the fixed buffer for every packet, let's allocate
-> > enough headroom only when we receive SRH with Segment Left 1.
-> > 
-> > [0]:
-> > 
-> > Fixes: 8610c7c6e3bd ("net: ipv6: add support for rpl sr exthdr")
-> > Reported-by: Max VA
-> > Closes: https://www.interruptlabs.co.uk/articles/linux-ipv6-route-of-death
-> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > ---
-> > To maintainers:
-> > Please complement the Reported-by address from the security@ mailing list
-> > if possible, which checkpatch will complain about.
-> > 
-> > v2:
-> >    * Reload oldhdr@ after pskb_expand_head() (Eric Dumazet)
-> > 
-> > v1: https://lore.kernel.org/netdev/20230605144040.39871-1-kuniyu@amazon.com/
-> > ---
-> 
-> When I tested the linux-ipv6-route-of-death issue on Linux 6.4-rc7, I 
-> got the following panic:
-> 
-> [ 2046.147186] BUG: kernel NULL pointer dereference, address: 
-> 0000000000000000
-> [ 2046.147978] #PF: supervisor read access in kernel mode
-> [ 2046.148522] #PF: error_code(0x0000) - not-present page
-> [ 2046.149082] PGD 8000000187886067 P4D 8000000187886067 PUD 187887067 
-> PMD 0
-> [ 2046.149788] Oops: 0000 [#1] PREEMPT SMP PTI
-> [ 2046.150233] CPU: 4 PID: 2093 Comm: python3 Not tainted 6.4.0-rc7 #15
-> [ 2046.150964] Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-> [ 2046.151566] RIP: 0010:icmp6_send+0x691/0x910
-> [ 2046.152029] Code: 78 0f 13 95 48 c7 c7 d0 a0 d4 95 e8 39 e4 ab ff e9 
-> 81 fe ff ff 48 8b 43 58 48 83 e0 fe 0f 84 bf fa ff ff 48 8b 80 d0 00 00 
-> 00 <48> 8b 00 8b 80 e0 00 00 00 89 85 f0 fe ff ff e9 a4 fa ff ff 0f b7
-> [ 2046.153892] RSP: 0018:ffffb463c01b0b90 EFLAGS: 00010286
-> [ 2046.154432] RAX: 0000000000000000 RBX: ffff907d03099700 RCX: 
-> 0000000000000000
-> [ 2046.155160] RDX: 0000000000000021 RSI: 0000000000000000 RDI: 
-> 0000000000000001
-> [ 2046.155881] RBP: ffffb463c01b0cb0 R08: 0000000000020021 R09: 
-> 0000000000000040
-> [ 2046.156611] R10: ffffb463c01b0cd0 R11: 000000000000a600 R12: 
-> ffff907d21a28888
-> [ 2046.157340] R13: ffff907d21a28870 R14: ffff907d21a28878 R15: 
-> ffffffff97b03d00
-> [ 2046.158064] FS:  00007ff3341ba740(0000) GS:ffff908018300000(0000) 
-> knlGS:0000000000000000
-> [ 2046.158895] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 2046.159483] CR2: 0000000000000000 CR3: 0000000109a5a000 CR4: 
-> 00000000000006e0
-> [ 2046.160205] Call Trace:
-> [ 2046.160467]  <IRQ>
-> [ 2046.160693]  ? __die_body+0x1b/0x60
-> [ 2046.161059]  ? page_fault_oops+0x15b/0x470
-> [ 2046.161488]  ? fixup_exception+0x22/0x330
-> [ 2046.161901]  ? exc_page_fault+0x65/0x150
-> [ 2046.162318]  ? asm_exc_page_fault+0x22/0x30
-> [ 2046.162750]  ? icmp6_send+0x691/0x910
-> [ 2046.163137]  ? ip6_route_input+0x187/0x210
-> [ 2046.163560]  ? __pfx_free_object_rcu+0x10/0x10
-> [ 2046.164019]  ? __call_rcu_common.constprop.0+0x10a/0x5a0
-> [ 2046.164568]  ? _raw_spin_lock_irqsave+0x19/0x50
-> [ 2046.165034]  ? __pfx_free_object_rcu+0x10/0x10
-> [ 2046.165499]  ? ip6_pkt_drop+0xf2/0x1c0
-> [ 2046.165890]  ip6_pkt_drop+0xf2/0x1c0
-> [ 2046.166269]  ipv6_rthdr_rcv+0x122d/0x1310
-> [ 2046.166684]  ip6_protocol_deliver_rcu+0x4bc/0x630
-> [ 2046.167173]  ip6_input_finish+0x40/0x60
-> [ 2046.167568]  ip6_input+0x3b/0xd0
-> [ 2046.167905]  ? ip6_rcv_core.isra.0+0x2cb/0x5e0
-> [ 2046.168368]  ipv6_rcv+0x53/0x100
-> [ 2046.168706]  __netif_receive_skb_one_core+0x63/0xa0
-> [ 2046.169231]  process_backlog+0xa8/0x150
-> [ 2046.169626]  __napi_poll+0x2c/0x1b0
-> [ 2046.169991]  net_rx_action+0x260/0x330
-> [ 2046.170385]  ? kvm_sched_clock_read+0x5/0x20
-> [ 2046.170824]  ? kvm_clock_read+0x14/0x30
-> [ 2046.171226]  __do_softirq+0xe6/0x2d1
-> [ 2046.171596]  do_softirq+0x80/0xa0
-> [ 2046.171944]  </IRQ>
-> [ 2046.172178]  <TASK>
-> [ 2046.172406]  __local_bh_enable_ip+0x73/0x80
-> [ 2046.172829]  __dev_queue_xmit+0x331/0xd40
-> [ 2046.173246]  ? __local_bh_enable_ip+0x37/0x80
-> [ 2046.173692]  ? ___neigh_create+0x60b/0x8d0
-> [ 2046.174114]  ? eth_header+0x26/0xc0
-> [ 2046.174489]  ip6_finish_output2+0x1e7/0x680
-> [ 2046.174916]  ? asm_sysvec_apic_timer_interrupt+0x16/0x20
-> [ 2046.175462]  ip6_finish_output+0x1df/0x350
-> [ 2046.175881]  ? nf_hook_slow+0x40/0xc0
-> [ 2046.176274]  ip6_output+0x6e/0x140
-> [ 2046.176627]  ? __pfx_ip6_finish_output+0x10/0x10
-> [ 2046.177096]  rawv6_sendmsg+0x6f9/0x1210
-> [ 2046.177497]  ? dl_cpu_busy+0x2f3/0x300
-> [ 2046.177886]  ? __pfx_dst_output+0x10/0x10
-> [ 2046.178305]  ? _raw_spin_unlock_irqrestore+0x1e/0x40
-> [ 2046.178825]  ? __wake_up_common_lock+0x91/0xd0
-> [ 2046.179339]  ? sock_sendmsg+0x8b/0xa0
-> [ 2046.179791]  ? __pfx_rawv6_sendmsg+0x10/0x10
-> [ 2046.180246]  sock_sendmsg+0x8b/0xa0
-> [ 2046.180610]  __sys_sendto+0xfa/0x170
-> [ 2046.180983]  ? __bitmap_weight+0x4b/0x60
-> [ 2046.181399]  ? task_mm_cid_work+0x183/0x200
-> [ 2046.181827]  __x64_sys_sendto+0x25/0x30
-> [ 2046.182228]  do_syscall_64+0x3b/0x90
-> [ 2046.182599]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
-> [ 2046.183109] RIP: 0033:0x7ff3344a668a
-> [ 2046.183493] Code: 48 c7 c0 ff ff ff ff eb bc 0f 1f 80 00 00 00 00 f3 
-> 0f 1e fa 41 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 15 b8 2c 00 00 00 0f 
-> 05 <48> 3d 00 f0 ff ff 77 76 c3 0f 1f 44 00 00 55 48 83 ec 30 44 89 4c
-> [ 2046.185326] RSP: 002b:00007ffc82a34658 EFLAGS: 00000246 ORIG_RAX: 
-> 000000000000002c
-> [ 2046.186083] RAX: ffffffffffffffda RBX: 00007ffc82a346f0 RCX: 
-> 00007ff3344a668a
-> [ 2046.186799] RDX: 0000000000000060 RSI: 00007ff33112db00 RDI: 
-> 0000000000000003
-> [ 2046.187515] RBP: 000000000159cd90 R08: 00007ffc82a34770 R09: 
-> 000000000000001c
-> [ 2046.188230] R10: 0000000000000000 R11: 0000000000000246 R12: 
-> 0000000000000000
-> [ 2046.188958] R13: 0000000000000000 R14: 00007ffc82a346f0 R15: 
-> 0000000000451072
-> [ 2046.189675]  </TASK>
-> [ 2046.189909] Modules linked in: fuse rfkill binfmt_misc cirrus 
-> drm_shmem_helper joydev drm_kms_helper sg syscopyarea sysfillrect 
-> sysimgblt virtio_balloon serio_raw squashfs parport_pc ppdev lp parport 
-> ramoops reed_solomon drm ip_tables x_tables xfs sd_mod t10_pi 
-> crc64_rocksoft crc64 ata_generic ata_piix virtio_net net_failover 
-> failover libata e1000 i2c_piix4
-> [ 2046.193039] CR2: 0000000000000000
-> [ 2046.193400] ---[ end trace 0000000000000000 ]---
-> [ 2046.193870] RIP: 0010:icmp6_send+0x691/0x910
-> [ 2046.194315] Code: 78 0f 13 95 48 c7 c7 d0 a0 d4 95 e8 39 e4 ab ff e9 
-> 81 fe ff ff 48 8b 43 58 48 83 e0 fe 0f 84 bf fa ff ff 48 8b 80 d0 00 00 
-> 00 <48> 8b 00 8b 80 e0 00 00 00 89 85 f0 fe ff ff e9 a4 fa ff ff 0f b7
-> [ 2046.196146] RSP: 0018:ffffb463c01b0b90 EFLAGS: 00010286
-> [ 2046.196672] RAX: 0000000000000000 RBX: ffff907d03099700 RCX: 
-> 0000000000000000
-> [ 2046.197388] RDX: 0000000000000021 RSI: 0000000000000000 RDI: 
-> 0000000000000001
-> [ 2046.198096] RBP: ffffb463c01b0cb0 R08: 0000000000020021 R09: 
-> 0000000000000040
-> [ 2046.198825] R10: ffffb463c01b0cd0 R11: 000000000000a600 R12: 
-> ffff907d21a28888
-> [ 2046.199537] R13: ffff907d21a28870 R14: ffff907d21a28878 R15: 
-> ffffffff97b03d00
-> [ 2046.200253] FS:  00007ff3341ba740(0000) GS:ffff908018300000(0000) 
-> knlGS:0000000000000000
-> [ 2046.201044] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 2046.201624] CR2: 0000000000000000 CR3: 0000000109a5a000 CR4: 
-> 00000000000006e0
-> [ 2046.202340] Kernel panic - not syncing: Fatal exception in interrupt
-> [ 2046.203655] Kernel Offset: 0x12e00000 from 0xffffffff81000000 
-> (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
-> [ 2046.204731] ---[ end Kernel panic - not syncing: Fatal exception in 
-> interrupt ]---
+On 20.06.23 10:44, Bagas Sanjaya wrote:
+>=20
+> I notice a regression report on Bugzilla [1]. Quoting from it:
 
-Please decode the stack trace.
+Bagas, you can't know this, as we didn't have such a sitaution until
+now, so FYI:
 
-$ cat <<EOF | ./scripts/decode_stacktrace.sh vmlinux
-PASTE YOUR TRACE HERE
-EOF
+Please don't add "field-spanning write" warnings to the regression
+tracking, that's not worth the trouble (at least for the time beeing).
+Just forward them to Kees, who might look into them if the developer in
+question doesn't care. That was the approach we agreed on here:
 
+https://lore.kernel.org/all/f1ca3cea-01ae-998a-2aa8-c3e40cf46975@leemhuis=
+=2Einfo/
 
-> 
-> 
-> The test procedure is as follows:
-> # sysctl -a | grep -i rpl_seg_enabled
-> net.ipv6.conf.all.rpl_seg_enabled = 1
-> net.ipv6.conf.default.rpl_seg_enabled = 1
-> net.ipv6.conf.dummy0.rpl_seg_enabled = 1
-> net.ipv6.conf.ens3.rpl_seg_enabled = 1
-> net.ipv6.conf.ens4.rpl_seg_enabled = 1
-> net.ipv6.conf.erspan0.rpl_seg_enabled = 1
-> net.ipv6.conf.gre0.rpl_seg_enabled = 1
-> net.ipv6.conf.gretap0.rpl_seg_enabled = 1
-> net.ipv6.conf.ip6_vti0.rpl_seg_enabled = 1
-> net.ipv6.conf.ip6gre0.rpl_seg_enabled = 1
-> net.ipv6.conf.ip6tnl0.rpl_seg_enabled = 1
-> net.ipv6.conf.ip_vti0.rpl_seg_enabled = 1
-> net.ipv6.conf.lo.rpl_seg_enabled = 1
-> net.ipv6.conf.sit0.rpl_seg_enabled = 1
-> net.ipv6.conf.tunl0.rpl_seg_enabled = 1
-> 
-> # python3
-> Python 3.8.10 (default, Nov 14 2022, 12:59:47)
-> [GCC 9.4.0] on linux
-> Type "help", "copyright", "credits" or "license" for more information.
->  >>> from scapy.all import *
->  >>> import socket
->  >>> DST_ADDR = "fe80::266:88ff:fe99:7419"
->  >>> SRC_ADDR = DST_ADDR
->  >>> sockfd = socket.socket(socket.AF_INET6, socket.SOCK_RAW, 
-> socket.IPPROTO_RAW)
->  >>> p = IPv6(src=SRC_ADDR, dst=DST_ADDR) / 
-> IPv6ExtHdrSegmentRouting(type=3, addresses=["a8::", "a7::", "a6::"], 
-> segleft=1, lastentry=0xf0)
->  >>> sockfd.sendto(bytes(p), (DST_ADDR, 0))
-> 
-> Is this a new issue?
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+If I did something stupid, please tell me, as explained on that page.
 
-Can you test this ?  I couldn't reproduce the issue on my setup...
+#regzbot inconclusive: a field-spanning write warning
 
----8<---
-diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index 202fc3aaa83c..f2890c391e3b 100644
---- a/net/ipv6/exthdrs.c
-+++ b/net/ipv6/exthdrs.c
-@@ -587,7 +587,7 @@ static int ipv6_rpl_srh_rcv(struct sk_buff *skb)
- 	skb_pull(skb, ((hdr->hdrlen + 1) << 3));
- 	skb_postpull_rcsum(skb, oldhdr,
- 			   sizeof(struct ipv6hdr) + ((hdr->hdrlen + 1) << 3));
--	if (unlikely(!hdr->segments_left)) {
-+	if (unlikely(!hdr->segments_left) || skb_cloned(skb)) {
- 		if (pskb_expand_head(skb, sizeof(struct ipv6hdr) + ((chdr->hdrlen + 1) << 3), 0,
- 				     GFP_ATOMIC)) {
- 			__IP6_INC_STATS(net, ip6_dst_idev(skb_dst(skb)), IPSTATS_MIB_OUTDISCARDS);
----8<---
+>> Hey!
+>>
+>> I'm using Linux 6.3.0 on x86_64. Distro is NixOS.
+>>
+>> I'm using the XMM7360 WWAN device:
+>>
+>> 05:00.0 Wireless controller [0d40]: Intel Corporation XMM7360 LTE Adva=
+nced Modem (rev 01)
+>>
+>> As discussed in https://gitlab.freedesktop.org/mobile-broadband/ModemM=
+anager/-/issues/612, the device currently needs some manual babysitting d=
+ue to broken suspend/resume, and some (slightly patched) python script se=
+nding commands to `/dev/wwan0xmmrpc0`:
+>>
+>> ```
+>> echo 1 > /sys/bus/pci/devices/0000:05:00.0/reset
+>> echo 1 > /sys/bus/pci/devices/0000:05:00.0/remove
+>> echo 1 > /sys/bus/pci/rescan
+>> # wait
+>> open_xdatachannel.py --apn "internet"
+>> ```
+>>
+>>
+>> I saw the following messages in dmesg:
+>> ```
+>> [Sa Jun 17 20:09:42 2023] pci_bus 0000:01: Allocating resources
+>> [Sa Jun 17 20:09:42 2023] pci_bus 0000:02: Allocating resources
+>> [Sa Jun 17 20:09:42 2023] pci_bus 0000:03: Allocating resources
+>> [Sa Jun 17 20:09:42 2023] pci_bus 0000:04: Allocating resources
+>> [Sa Jun 17 20:09:42 2023] pci_bus 0000:05: Allocating resources
+>> [Sa Jun 17 20:09:42 2023] pci_bus 0000:06: Allocating resources
+>> [Sa Jun 17 20:09:42 2023] pci_bus 0000:07: Allocating resources
+>> [Sa Jun 17 20:09:49 2023] iosm 0000:05:00.0: msg timeout
+>> [Sa Jun 17 20:09:49 2023] iosm 0000:05:00.0: msg timeout
+>> [Sa Jun 17 20:09:49 2023] pci 0000:05:00.0: Removing from iommu group =
+15
+>> [Sa Jun 17 20:09:52 2023] pci 0000:05:00.0: [8086:7360] type 00 class =
+0x0d4000
+>> [Sa Jun 17 20:09:52 2023] pci 0000:05:00.0: reg 0x10: [mem 0xfd500000-=
+0xfd500fff 64bit]
+>> [Sa Jun 17 20:09:52 2023] pci 0000:05:00.0: reg 0x18: [mem 0xfd501000-=
+0xfd5013ff 64bit]
+>> [Sa Jun 17 20:09:52 2023] pci 0000:05:00.0: PME# supported from D0 D3h=
+ot D3cold
+>> [Sa Jun 17 20:09:52 2023] pci 0000:05:00.0: Adding to iommu group 15
+>> [Sa Jun 17 20:09:52 2023] pci 0000:05:00.0: BAR 0: assigned [mem 0xfd5=
+00000-0xfd500fff 64bit]
+>> [Sa Jun 17 20:09:52 2023] pci 0000:05:00.0: BAR 2: assigned [mem 0xfd5=
+01000-0xfd5013ff 64bit]
+>> [Sa Jun 17 20:10:09 2023] ------------[ cut here ]------------
+>> [Sa Jun 17 20:10:09 2023] memcpy: detected field-spanning write (size =
+16) of single field "&adth->dg" at drivers/net/wwan/iosm/iosm_ipc_mux_cod=
+ec.c:852 (size 8)
+>> [Sa Jun 17 20:10:09 2023] WARNING: CPU: 11 PID: 0 at drivers/net/wwan/=
+iosm/iosm_ipc_mux_codec.c:852 ipc_mux_ul_adb_finish+0x17e/0x290 [iosm]
+>> [Sa Jun 17 20:10:09 2023] Modules linked in: hid_multitouch qrtr ccm s=
+nd_seq_dummy snd_hrtimer snd_seq snd_seq_device hid_lenovo uhid xt_CHECKS=
+UM xt_MASQUERADE xt_conntrack ipt_REJECT nf_reject_ipv4 xt_tcpudp nft_com=
+pat nft_chain_nat nf_tables nfnetlink af_packet rfcomm cmac algif_hash al=
+gif_skcipher af_alg bnep nls_iso8859_1 nls_cp437 vfat fat joydev mousedev=
+ amdgpu iwlmvm r8153_ecm cdc_ether snd_soc_dmic snd_acp3x_pdm_dma snd_acp=
+3x_rn usbnet snd_sof_amd_rembrandt snd_sof_amd_renoir snd_sof_amd_acp mac=
+80211 snd_sof_pci snd_sof_xtensa_dsp snd_ctl_led snd_sof snd_hda_codec_re=
+altek snd_sof_utils intel_rapl_msr snd_hda_codec_generic libarc4 iommu_v2=
+ snd_hda_codec_hdmi snd_soc_core uvcvideo btusb gpu_sched snd_compress ed=
+ac_mce_amd videobuf2_vmalloc drm_ttm_helper btrtl snd_hda_intel ac97_bus =
+edac_core snd_pcm_dmaengine uvc btbcm videobuf2_memops ttm snd_intel_dspc=
+fg intel_rapl_common videobuf2_v4l2 snd_intel_sdw_acpi crc32_pclmul btint=
+el tps6598x snd_pci_ps polyval_clmulni regmap_i2c snd_hda_codec btmtk snd=
+_rpl_pci_acp6x think_lmi
+>> [Sa Jun 17 20:10:09 2023]  polyval_generic iwlwifi wmi_bmof firmware_a=
+ttributes_class videodev drm_display_helper snd_acp_pci gf128mul snd_hda_=
+core bluetooth ghash_clmulni_intel thinkpad_acpi r8152 r8169 videobuf2_co=
+mmon snd_pci_acp6x snd_hwdep nvram drm_kms_helper cfg80211 snd_pci_acp5x =
+ucsi_acpi mii sp5100_tco rapl ledtrig_audio mc psmouse ecdh_generic snd_p=
+cm drm_buddy platform_profile typec_ucsi snd_rn_pci_acp3x ecc watchdog re=
+altek snd_acp_config snd_timer crc16 agpgart iosm k10temp typec i2c_algo_=
+bit ipmi_devintf snd_soc_acpi mdio_devres syscopyarea snd sysfillrect vid=
+eo snd_pci_acp3x libphy sysimgblt wwan 8250_pci ipmi_msghandler rfkill i2=
+c_piix4 ac soundcore roles thermal battery tiny_power_button serial_multi=
+_instantiate evdev i2c_scmi i2c_designware_platform wmi acpi_cpufreq mac_=
+hid button i2c_designware_core serio_raw sch_cake ctr loop xt_nat nf_nat =
+nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 br_netfilter veth tun tap macv=
+lan bridge stp llc kvm_amd ccp kvm irqbypass tcp_bbr i2c_dev drm fuse bac=
+klight i2c_core deflate
+>> [Sa Jun 17 20:10:09 2023]  efi_pstore configfs efivarfs dmi_sysfs ip_t=
+ables x_tables dm_crypt cbc encrypted_keys trusted asn1_encoder tee hid_g=
+eneric usbhid hid mmc_block dm_mod dax btrfs rtsx_pci_sdmmc nvme mmc_core=
+ nvme_core input_leds led_class xhci_pci atkbd tpm_crb xhci_pci_renesas t=
+10_pi libps2 vivaldi_fmap xhci_hcd sha512_ssse3 ehci_pci crc64_rocksoft e=
+hci_hcd sha512_generic crc64 blake2b_generic crc_t10dif aesni_intel rtsx_=
+pci xor usbcore libaes libcrc32c tpm_tis crct10dif_generic crypto_simd tp=
+m_tis_core cryptd crct10dif_pclmul crc32c_generic crc32c_intel tpm mfd_co=
+re crct10dif_common usb_common i8042 rng_core rtc_cmos serio raid6_pq aut=
+ofs4
+>> [Sa Jun 17 20:10:09 2023] CPU: 11 PID: 0 Comm: swapper/11 Tainted: G  =
+      W          6.3.0 #1-NixOS
+>> [Sa Jun 17 20:10:09 2023] Hardware name: LENOVO 20UF000LGE/20UF000LGE,=
+ BIOS R1CET72W(1.41 ) 06/27/2022
+>> [Sa Jun 17 20:10:09 2023] RIP: 0010:ipc_mux_ul_adb_finish+0x17e/0x290 =
+[iosm]
+>> [Sa Jun 17 20:10:09 2023] Code: 00 00 0f 85 44 ff ff ff b9 08 00 00 00=
+ 48 c7 c2 a8 1d 20 c1 48 89 ee 48 c7 c7 e0 1c 20 c1 c6 05 e8 e9 00 00 01 =
+e8 92 65 ea eb <0f> 0b e9 1b ff ff ff 48 8b 83 b4 02 00 00 c7 00 00 00 00=
+ 00 0f b7
+>> [Sa Jun 17 20:10:09 2023] RSP: 0018:ffff9b9b80424ef0 EFLAGS: 00010282
+>> [Sa Jun 17 20:10:09 2023] RAX: 0000000000000000 RBX: ffff8d1bbe562000 =
+RCX: 0000000000000027
+>> [Sa Jun 17 20:10:09 2023] RDX: ffff8d1e212e14c8 RSI: 0000000000000001 =
+RDI: ffff8d1e212e14c0
+>> [Sa Jun 17 20:10:09 2023] RBP: 0000000000000010 R08: 0000000000000000 =
+R09: ffff9b9b80424d98
+>> [Sa Jun 17 20:10:09 2023] R10: 0000000000000003 R11: ffffffffae938888 =
+R12: 0000000000000000
+>> [Sa Jun 17 20:10:09 2023] R13: 00000000000000d8 R14: ffff8d1bbe5622e4 =
+R15: ffff8d1ba1c40108
+>> [Sa Jun 17 20:10:09 2023] FS:  0000000000000000(0000) GS:ffff8d1e212c0=
+000(0000) knlGS:0000000000000000
+>> [Sa Jun 17 20:10:09 2023] CS:  0010 DS: 0000 ES: 0000 CR0: 00000000800=
+50033
+>> [Sa Jun 17 20:10:09 2023] CR2: 000026180d354000 CR3: 0000000033b0c000 =
+CR4: 0000000000350ee0
+>> [Sa Jun 17 20:10:09 2023] Call Trace:
+>> [Sa Jun 17 20:10:09 2023]  <IRQ>
+>> [Sa Jun 17 20:10:09 2023]  ipc_imem_tq_adb_timer_cb+0x12/0x20 [iosm]
+>> [Sa Jun 17 20:10:09 2023]  ipc_task_queue_handler+0xa1/0x100 [iosm]
+>> [Sa Jun 17 20:10:09 2023]  tasklet_action_common.constprop.0+0x132/0x1=
+40
+>> [Sa Jun 17 20:10:09 2023]  __do_softirq+0xca/0x2ae
+>> [Sa Jun 17 20:10:09 2023]  __irq_exit_rcu+0xab/0xe0
+>> [Sa Jun 17 20:10:09 2023]  sysvec_apic_timer_interrupt+0x72/0x90
+>> [Sa Jun 17 20:10:09 2023]  </IRQ>
+>> [Sa Jun 17 20:10:09 2023]  <TASK>
+>> [Sa Jun 17 20:10:09 2023]  asm_sysvec_apic_timer_interrupt+0x1a/0x20
+>> [Sa Jun 17 20:10:09 2023] RIP: 0010:cpuidle_enter_state+0xcc/0x440
+>> [Sa Jun 17 20:10:09 2023] Code: 2a d8 66 ff e8 25 f2 ff ff 8b 53 04 49=
+ 89 c5 0f 1f 44 00 00 31 ff e8 a3 eb 65 ff 45 84 ff 0f 85 57 02 00 00 fb =
+0f 1f 44 00 00 <45> 85 f6 0f 88 85 01 00 00 49 63 d6 48 8d 04 52 48 8d 04=
+ 82 49 8d
+>> [Sa Jun 17 20:10:09 2023] RSP: 0018:ffff9b9b801d7e90 EFLAGS: 00000246
+>> [Sa Jun 17 20:10:09 2023] RAX: ffff8d1e212f2780 RBX: ffff8d1b83198c00 =
+RCX: 0000000000000000
+>> [Sa Jun 17 20:10:09 2023] RDX: 000000000000000b RSI: 0000000cb4e6e5b9 =
+RDI: 0000000000000000
+>> [Sa Jun 17 20:10:09 2023] RBP: 0000000000000002 R08: 0000000000000004 =
+R09: 000000003d113146
+>> [Sa Jun 17 20:10:09 2023] R10: 0000000000000018 R11: 000000000000055e =
+R12: ffffffffae9b3860
+>> [Sa Jun 17 20:10:09 2023] R13: 0000052a93e6f49a R14: 0000000000000002 =
+R15: 0000000000000000
+>> [Sa Jun 17 20:10:09 2023]  cpuidle_enter+0x2d/0x40
+>> [Sa Jun 17 20:10:09 2023]  do_idle+0x1bf/0x220
+>> [Sa Jun 17 20:10:09 2023]  cpu_startup_entry+0x1d/0x20
+>> [Sa Jun 17 20:10:09 2023]  start_secondary+0x115/0x140
+>> [Sa Jun 17 20:10:09 2023]  secondary_startup_64_no_verify+0xe5/0xeb
+>> [Sa Jun 17 20:10:09 2023]  </TASK>
+>> [Sa Jun 17 20:10:09 2023] ---[ end trace 0000000000000000 ]---
+>> ```
+>>
+>> `drivers/net/wwan/iosm/iosm_ipc_mux_codec.c:852` was introduced in 1f5=
+2d7b622854b8bd7a1be3de095ca2e1f77098e ("net: wwan: iosm: Enable M.2 7360 =
+WWAN card support")
+>=20
+>=20
+> See Bugzilla for the full thread.
+>=20
+> M Chetan Kumar: Can you take a look on this issue please?
+>=20
+> Anyway, to be sure this issue doesn't fall through the cracks unnoticed=
+,
+> I'm adding it to regzbot:
+>=20
+> #regzbot introduced: 1f52d7b622854b https://bugzilla.kernel.org/show_bu=
+g.cgi?id=3D217569
+> #regzbot title: field-spanning write (memcpy) detected on Intel XMM7360=
+
+> #regzbot link: https://gitlab.freedesktop.org/mobile-broadband/ModemMan=
+ager/-/issues/612
+>=20
+> Thanks.
+>=20
+> [1]: https://bugzilla.kernel.org/show_bug.cgi?id=3D217569
 
