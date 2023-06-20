@@ -1,146 +1,278 @@
-Return-Path: <netdev+bounces-12103-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12104-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id 60A547361F1
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 05:04:43 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
+	by mail.lfdr.de (Postfix) with ESMTPS id B1664736208
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 05:10:11 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 7E3AC1C20A2A
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 03:04:42 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 4449F280F2A
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 03:10:10 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1FD0215A8;
-	Tue, 20 Jun 2023 03:04:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7089DED5;
+	Tue, 20 Jun 2023 03:10:08 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 104BFED5
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 03:04:39 +0000 (UTC)
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF18E4A
-	for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 20:04:37 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id 98e67ed59e1d1-25eb9e82a2bso2003460a91.3
-        for <netdev@vger.kernel.org>; Mon, 19 Jun 2023 20:04:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1687230276; x=1689822276;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FWAkX0wvK40L8Asrfp0HwD5G44IXPeP/M4M7zLIxf3U=;
-        b=djRrFrDbBleVZdWXxrOVE2nAKGvwYAf4SY5iAtcImwDM+I6r6WJcylT6f6OEkUtoBV
-         xgbl/pjdRjjbtHc5UotGCivqqLtUAFWTziJfP4qHWqCtF3SY3KH3HJwKpd1WN5JBEG90
-         ng3L0GsmDo5iSLEF2nMA4rY9ABP63GvoZFfSCMxckB4194G8VI6P5u4dtP98jj7qLMf2
-         YzUEmrXwxvwxdwbyzx+rsdyhmdambZrPMuzPZQ5DkaaChocbcjRoKD3NAYMiSqvWhTXT
-         kwwa5Jhcfy1oQ+S8CId5jxKKVoOfz97qM3yf/h8BF4LWcxiXsSjjfx16mVBROj/iokmL
-         33iQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687230276; x=1689822276;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FWAkX0wvK40L8Asrfp0HwD5G44IXPeP/M4M7zLIxf3U=;
-        b=eAipBfOJxl6HT60c4kwmz3PMcUb15Pf2LXFQeagsV6GOAZyeouuxfgJGKqIU3wAKq5
-         4Vqrg9M/qRFKjbhQri/baETJnkjHAIBFOoE9ShIYwve1eOwbMQQA4JK8/Dz/pZ7aoH9Y
-         +kd6QfDEn+KW0IbPMXWA28cytftvITLERFg3WvIny5Ajn4MHWLUuoll5X+v1ATf7vzK5
-         Fb2qbgOV11nJz1JU4AAFYGhhIVaCoeB1x+Ia3hHMKGw1WXAwGvYf/kTLmqSQtPvM2Gvr
-         Qu10ZCULGNKcCm1XeilooibQemBHVlKjNnHfIZAKKA46v/djIaOH5W4QoqE781M4FHyM
-         KFaQ==
-X-Gm-Message-State: AC+VfDzsHo9IEChGl4ZWw7EvCf9yfBFqFQdabwTC9K9NihI1FDpymdtl
-	AHYZkb5YZfltVDCDtxc2mqrnt1APXAv10zcffCs=
-X-Google-Smtp-Source: ACHHUZ4w85QKY83xVfS+cRb6Qqre68nSV3CdsUk24aZ87xP4al2moPQV5NWIu5nneOTpdg6qNbI8Mg==
-X-Received: by 2002:a17:90a:19cb:b0:25e:e211:d300 with SMTP id 11-20020a17090a19cb00b0025ee211d300mr5873247pjj.4.1687230276680;
-        Mon, 19 Jun 2023 20:04:36 -0700 (PDT)
-Received: from [10.94.58.170] ([203.208.167.146])
-        by smtp.gmail.com with ESMTPSA id iz7-20020a170902ef8700b001b0603829a0sm457578plb.199.2023.06.19.20.04.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Jun 2023 20:04:35 -0700 (PDT)
-Message-ID: <6ed78c81-c1ac-dba4-059c-12f6b2bb9c53@bytedance.com>
-Date: Tue, 20 Jun 2023 11:04:30 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64C8415A8
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 03:10:07 +0000 (UTC)
+Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61050119;
+	Mon, 19 Jun 2023 20:10:03 -0700 (PDT)
+Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
+	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+	(Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
+	by fd01.gateway.ufhost.com (Postfix) with ESMTP id 1DB288109;
+	Tue, 20 Jun 2023 11:09:56 +0800 (CST)
+Received: from EXMBX062.cuchost.com (172.16.6.62) by EXMBX165.cuchost.com
+ (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 20 Jun
+ 2023 11:09:56 +0800
+Received: from [192.168.120.43] (171.223.208.138) by EXMBX062.cuchost.com
+ (172.16.6.62) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 20 Jun
+ 2023 11:09:55 +0800
+Message-ID: <15eb4ffe-ea12-9a2c-ae9d-c34860384b60@starfivetech.com>
+Date: Tue, 20 Jun 2023 11:09:52 +0800
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.12.0
-Subject: Re: Re: [PATCH net-next] inet: Save one atomic op if no memcg to
- charge
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v3 1/2] dt-bindings: net: motorcomm: Add pad driver
+ strength cfg
 Content-Language: en-US
-To: Eric Dumazet <edumazet@google.com>
-Cc: "David S. Miller" <davem@davemloft.net>, David Ahern
- <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>,
- "open list:NETWORKING [IPv4/IPv6]" <netdev@vger.kernel.org>,
- open list <linux-kernel@vger.kernel.org>
-References: <20230619082547.73929-1-wuyun.abel@bytedance.com>
- <CANn89i+deprQWB0dmsUD1sRmy1VQCQwKnZUkLu_AEGV=ow=PKQ@mail.gmail.com>
-From: Abel Wu <wuyun.abel@bytedance.com>
-In-Reply-To: <CANn89i+deprQWB0dmsUD1sRmy1VQCQwKnZUkLu_AEGV=ow=PKQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+From: Guo Samin <samin.guo@starfivetech.com>
+To: Andrew Lunn <andrew@lunn.ch>, Conor Dooley <conor@kernel.org>
+CC: <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<netdev@vger.kernel.org>, Peter Geis <pgwipeout@gmail.com>, Frank
+	<Frank.Sae@motor-comm.com>, "David S . Miller" <davem@davemloft.net>, "Eric
+ Dumazet" <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+	<pabeni@redhat.com>, Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Andrew Lunn <andrew@lunn.ch>, "Heiner
+ Kallweit" <hkallweit1@gmail.com>, Russell King <linux@armlinux.org.uk>,
+	Yanhong Wang <yanhong.wang@starfivetech.com>
+References: <20230526090502.29835-1-samin.guo@starfivetech.com>
+ <20230526090502.29835-2-samin.guo@starfivetech.com>
+ <20230526-glutinous-pristine-fed571235b80@spud>
+ <1dbf113c-7592-68bd-6aaf-05ff1d8c538c@starfivetech.com>
+In-Reply-To: <1dbf113c-7592-68bd-6aaf-05ff1d8c538c@starfivetech.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS062.cuchost.com (172.16.6.22) To EXMBX062.cuchost.com
+ (172.16.6.62)
+X-YovoleRuleAgent: yovoleflag
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+	SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+	autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-On 6/19/23 6:08 PM, Eric Dumazet wrote:
-> On Mon, Jun 19, 2023 at 10:26 AM Abel Wu <wuyun.abel@bytedance.com> wrote:
->>
->> If there is no net-memcg associated with the sock, don't bother
->> calculating its memory usage for charge.
->>
->> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
->> ---
->>   net/ipv4/inet_connection_sock.c | 18 +++++++++++-------
->>   1 file changed, 11 insertions(+), 7 deletions(-)
->>
->> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
->> index 65ad4251f6fd..73798282c1ef 100644
->> --- a/net/ipv4/inet_connection_sock.c
->> +++ b/net/ipv4/inet_connection_sock.c
->> @@ -706,20 +706,24 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
->>   out:
->>          release_sock(sk);
->>          if (newsk && mem_cgroup_sockets_enabled) {
->> -               int amt;
->> +               int amt = 0;
->>
->>                  /* atomically get the memory usage, set and charge the
->>                   * newsk->sk_memcg.
->>                   */
->>                  lock_sock(newsk);
->>
->> -               /* The socket has not been accepted yet, no need to look at
->> -                * newsk->sk_wmem_queued.
->> -                */
->> -               amt = sk_mem_pages(newsk->sk_forward_alloc +
->> -                                  atomic_read(&newsk->sk_rmem_alloc));
->>                  mem_cgroup_sk_alloc(newsk);
->> -               if (newsk->sk_memcg && amt)
->> +               if (newsk->sk_memcg) {
->> +                       /* The socket has not been accepted yet, no need
->> +                        * to look at newsk->sk_wmem_queued.
->> +                        */
->> +                       amt = sk_mem_pages(newsk->sk_forward_alloc +
->> +                                          atomic_read(&newsk->sk_rmem_alloc));
->> +
->> +               }
->> +
->> +               if (amt)
->>                          mem_cgroup_charge_skmem(newsk->sk_memcg, amt,
->>                                                  GFP_KERNEL | __GFP_NOFAIL);
-> 
-> This looks correct, but claiming reading an atomic_t is an 'atomic op'
-> is a bit exaggerated.
 
-Yeah, shall I change subject to 'inet: Skip usage calculation if no
-memcg to charge'? Or do you have any suggestions?
+Re: [PATCH v3 1/2] dt-bindings: net: motorcomm: Add pad driver strength c=
+fg
+From: Guo Samin <samin.guo@starfivetech.com>
+to: Conor Dooley <conor@kernel.org>; Andrew Lunn <andrew@lunn.ch>
+data: 2023/5/29
 
-Thanks,
-	Abel
+> Re: [PATCH v3 1/2] dt-bindings: net: motorcomm: Add pad driver strength=
+ cfg
+> From: Conor Dooley <conor@kernel.org>
+> to: Samin Guo <samin.guo@starfivetech.com>
+> data: 2023/5/27
+>=20
+>> On Fri, May 26, 2023 at 05:05:01PM +0800, Samin Guo wrote:
+>>> The motorcomm phy (YT8531) supports the ability to adjust the drive
+>>> strength of the rx_clk/rx_data, the value range of pad driver
+>>> strength is 0 to 7.
+>>>
+>>> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
+>>> ---
+>>>  .../devicetree/bindings/net/motorcomm,yt8xxx.yaml    | 12 ++++++++++=
+++
+>>>  1 file changed, 12 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.y=
+aml b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+>>> index 157e3bbcaf6f..29a1997a1577 100644
+>>> --- a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+>>> +++ b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+>>> @@ -52,6 +52,18 @@ properties:
+>>>        for a timer.
+>>>      type: boolean
+>>> =20
+>>> +  motorcomm,rx-clk-driver-strength:
+>>> +    description: drive strength of rx_clk pad.
+>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>>> +    enum: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+>>
+>> I think you should use minimum & maximum instead of these listed out
+>> enums.
+>=20
+> Thanks Conor, This can be improved in the next version.
+>=20
+>  You have also had this comment since v1 & were reminded of it on
+>> v2 by Krzysztof: "What do the numbers mean? What are the units? mA?"
+>>
+>=20
+>=20
+> The good news is that we just got some data about units from Motorcomm.=
+=20
+> Maybe I can post the data show of the unit later after I get the comple=
+te data.
+>
+
+Hi Andrew & Conor,
+
+Sorry, haven't updated in a while.
+I just got the detailed data of Driver Strength(DS) from Motorcomm , whic=
+h applies to both rx_clk and rx_data.
+
+|----------------------|
+|     ds map table     |
+|----------------------|
+| DS(3b) | Current (mA)|
+|--------|-------------|
+|   000  |     1.20    |
+|   001  |     2.10    |
+|   010  |     2.70    |
+|   011  |     2.91    |
+|   100  |     3.11    |
+|   101  |     3.60    |
+|   110  |     3.97    |
+|   111  |     4.35    |
+|--------|-------------|
+
+Since these currents are not integer values and have no regularity, it is=
+ not very good to use in the drive/dts in my opinion.
+
+Therefore, I tend to continue to use DS(0-7) in dts/driver, and adding a =
+description of the current value corresponding to DS in dt-bindings.=20
+
+Like This:
+
++  motorcomm,rx-clk-driver-strength:
++    description: drive strength of rx_clk pad.
++      |----------------------|
++      | rx_clk ds map table  |
++      |----------------------|
++      | DS(3b) | Current (mA)|
++      |   000  |     1.20    |
++      |   001  |     2.10    |
++      |   010  |     2.70    |
++      |   011  |     2.91    |
++      |   100  |     3.11    |
++      |   101  |     3.60    |
++      |   110  |     3.97    |
++      |   111  |     4.35    |
++      |--------|-------------|
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
++    default: 3
++
++  motorcomm,rx-data-driver-strength:
++    description: drive strength of rx_data/rx_ctl rgmii pad.
++      |----------------------|
++      | rx_data ds map table |
++      |----------------------|
++      | DS(3b) | Current (mA)|
++      |   000  |     1.20    |
++      |   001  |     2.10    |
++      |   010  |     2.70    |
++      |   011  |     2.91    |
++      |   100  |     3.11    |
++      |   101  |     3.60    |
++      |   110  |     3.97    |
++      |   111  |     4.35    |
++      |--------|-------------|
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
++    default: 3
++
+
+
+Or use minimum & maximum instead of these listed out enums(Suggested by C=
+onor)
+
++  motorcomm,rx-clk-driver-strength:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    default: 3
++    minimum: 0
++    maximum: 7
++    description: drive strength of rx_clk pad.
++      |----------------------|
++      | rx_clk ds map table  |
++      |----------------------|
++      | DS(3b) | Current (mA)|
++      |   000  |     1.20    |
++      |   001  |     2.10    |
++      |   010  |     2.70    |
++      |   011  |     2.91    |
++      |   100  |     3.11    |
++      |   101  |     3.60    |
++      |   110  |     3.97    |
++      |   111  |     4.35    |
++      |--------|-------------|
++
++  motorcomm,rx-data-driver-strength:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    default: 3
++    minimum: 0
++    maximum: 7
++    description: drive strength of rx_data/rx_ctl rgmii pad.
++      |----------------------|
++      | rx_data ds map table |
++      |----------------------|
++      | DS(3b) | Current (mA)|
++      |   000  |     1.20    |
++      |   001  |     2.10    |
++      |   010  |     2.70    |
++      |   011  |     2.91    |
++      |   100  |     3.11    |
++      |   101  |     3.60    |
++      |   110  |     3.97    |
++      |   111  |     4.35    |
++      |--------|-------------|
++
+
+
+Looking forward to your suggestions.
+
+
+Best regards,
+Samin
+
+>=20
+>=20
+>> This information should go into the binding, not sit in a thread on a
+>> mailing list that noone will look at when trying to write a DT :(
+>>
+>> Thanks,
+>> Conor.
+>>
+>=20
+> Yes=EF=BC=8Cwhen we have the complete 'unit' data, it will be placed in=
+ DT.
+>=20
+> Best regards,
+> Samin
+> =20
+>>> +    default: 3
+>>> +
+>>> +  motorcomm,rx-data-driver-strength:
+>>> +    description: drive strength of rx_data/rx_ctl rgmii pad.
+>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>>> +    enum: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+>>> +    default: 3
+>>> +
+>>>    motorcomm,tx-clk-adj-enabled:
+>>>      description: |
+>>>        This configuration is mainly to adapt to VF2 with JH7110 SoC.
+>>> --=20
+>>> 2.17.1
+>>>
 
