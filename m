@@ -1,252 +1,151 @@
-Return-Path: <netdev+bounces-12224-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12225-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [139.178.88.99])
-	by mail.lfdr.de (Postfix) with ESMTPS id C4D28736CDA
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 15:15:49 +0200 (CEST)
+Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id E6FAF736D2F
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 15:22:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 7A52928124E
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 13:15:48 +0000 (UTC)
+	by ny.mirrors.kernel.org (Postfix) with ESMTPS id E66961C20B7E
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 13:22:48 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F34F156CA;
-	Tue, 20 Jun 2023 13:15:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C93C6156E6;
+	Tue, 20 Jun 2023 13:22:46 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82F2F14286
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 13:15:46 +0000 (UTC)
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AF57198A
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 06:15:41 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id af79cd13be357-763a3e62ce3so75337185a.0
-        for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 06:15:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1687266940; x=1689858940;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FkONvtHEBX7CiqAjMScRQe3QkJtWDk25tK1krurQgKE=;
-        b=Yn/Uux42PffNygs4cnFs+r6Yk97pauQMOE0Yl+H9nEMGoMtsqa7xJsyiuWtuSeRW2E
-         VyYQMwQwVL2frhYLKltu4SG6/SvKZFWVY8P+jM4UC/4AIIFUVzFQ3rdmOgHOXM9f8rEh
-         gT3RiQdhutGmSG2xTyIi5tdZQ5L8SlMyTjjZMYFuBV8I4X5FLGOkvuKQ0O42H2nG3y+C
-         HcL8+C1FNKPhF2sJJvwEWiWpJjN6uqtVMJ1rPPGbilN1soMiV2ebshranWwUUCIvkZxN
-         +JPqEXSq8pUrmqpiS3Tr19wPHTPNgGOYZ1+O2NfQxdzhiu49Wojsg+4MKomkxKT46Hxe
-         323g==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE12E156D3
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 13:22:46 +0000 (UTC)
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9501FDB
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 06:22:22 -0700 (PDT)
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-3f80b192aecso10819475e9.1
+        for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 06:22:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687266940; x=1689858940;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=FkONvtHEBX7CiqAjMScRQe3QkJtWDk25tK1krurQgKE=;
-        b=glb9PALxXntKo3VexJsgjNlSmiFavhNUqURrGwEkaJ8c0eVoLP05HspPdoW297n2k+
-         F8WKs4xv3X6XDLOPLFvUtsi0sNY30NHpI9T1sPu34xjGJ0TNZhlASuGoINnn0pp7AfkA
-         m7HioM1OaCPlbfh1HZVCWktv4y5M4337xahEppiPJi9tb6OUwW69bXSuNstrycmTNh9E
-         acAHcmGXLa4glUGzO3BoOcYKGPm9QNf9k2rtT+9uVyVLbDmSga3ogA1MOvtpEwu3xcuX
-         xl+gcnwHSbvTx2eI4OF5RbiZXyZ28kNt9YeaHsiKd64Ilh1igDNqGCLdEnboTbW8Dlc6
-         FYWg==
-X-Gm-Message-State: AC+VfDwjWt8r7v2ldrESeZL01shFlKESD9I2vYaj1B/PfTczFkgUWgKa
-	fRxiosAJWNPbQrTED3BjYSc=
-X-Google-Smtp-Source: ACHHUZ6L9X4aQawh4o3A6HbL7vyig07MqLfkyz+WRQ/jmykv/n6FVxGUE4h3FdmmQhvy5XMSckaj6A==
-X-Received: by 2002:a05:620a:28ce:b0:75d:49e6:26c0 with SMTP id l14-20020a05620a28ce00b0075d49e626c0mr13581949qkp.5.1687266940228;
-        Tue, 20 Jun 2023 06:15:40 -0700 (PDT)
-Received: from localhost (172.174.245.35.bc.googleusercontent.com. [35.245.174.172])
-        by smtp.gmail.com with ESMTPSA id x12-20020ae9f80c000000b007623d5d7c59sm1076438qkh.94.2023.06.20.06.15.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jun 2023 06:15:39 -0700 (PDT)
-Date: Tue, 20 Jun 2023 09:15:39 -0400
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To: David Ahern <dsahern@kernel.org>, 
- Eric Dumazet <edumazet@google.com>, 
- "David S . Miller" <davem@davemloft.net>, 
- Jakub Kicinski <kuba@kernel.org>, 
- Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org, 
- eric.dumazet@gmail.com, 
- syzbot <syzkaller@googlegroups.com>, 
- Breno Leitao <leitao@debian.org>, 
- Willem de Bruijn <willemb@google.com>, 
- Kuniyuki Iwashima <kuniyu@amazon.com>
-Message-ID: <6491a67b7b9e1_3bcfec29439@willemb.c.googlers.com.notmuch>
-In-Reply-To: <483161ce-f36b-a0d8-0239-6c68ea34e92f@kernel.org>
-References: <20230619124336.651528-1-edumazet@google.com>
- <483161ce-f36b-a0d8-0239-6c68ea34e92f@kernel.org>
-Subject: Re: [PATCH net-next] net: remove sk_is_ipmr() and sk_is_icmpv6()
- helpers
+        d=1e100.net; s=20221208; t=1687267286; x=1689859286;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=M0gIgvDtcmYiR+ujZPiaQl78n9DjwDyLMnh3WVrRmj8=;
+        b=VX7c8Md5L1IYeHh+NqkcU0nic7CQasvLsqYX7pVvajuxBwE5U+5ueBDHZY1LjLXx8u
+         Kp1rw1R3kWvIveubMZcbISatA1scA0i6jiaQ1970LBMaVZaiaiVvwDu+ctOqWNSzYJCF
+         25+RizwCSR5rHi6RTsEl2qOqMMvqrgvMs2UW2LJXAMv9Qh/otISUnp7wu0BLUC7aE/J6
+         ABGDLBRcruPYO4G/92sVgaGx/iRy+deY/zQteYScaZzg/cL6tI1vC7lj6ce35UvrZwDk
+         5f98Xgz186WE+WefPifrjbdDFHijjdk+7KElId7ZiA5nmfqtlKGhMrVXsK9Wzr/2Wcs9
+         OwcA==
+X-Gm-Message-State: AC+VfDys42zla3GveWCYsliYE/+JMplUNAi4OEwy+SKORNBl4ZP3zsVd
+	9YNoXNtv0RFmgtC4xsbCU5A=
+X-Google-Smtp-Source: ACHHUZ7zg4z9RjgldGtqe8IpCuU8GFLSgMUFIdBFIlkfgwmzKEOXqIww85lq8+Mo0Ec4dDibVER4JA==
+X-Received: by 2002:adf:f7c5:0:b0:30a:f103:1f55 with SMTP id a5-20020adff7c5000000b0030af1031f55mr8724379wrq.0.1687267285850;
+        Tue, 20 Jun 2023 06:21:25 -0700 (PDT)
+Received: from [192.168.64.192] (bzq-219-42-90.isdn.bezeqint.net. [62.219.42.90])
+        by smtp.gmail.com with ESMTPSA id p9-20020adfcc89000000b003113f0ba414sm2006920wrj.65.2023.06.20.06.21.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Jun 2023 06:21:25 -0700 (PDT)
+Message-ID: <5bbb6ce4-a251-a357-3efc-9e899e470b9c@grimberg.me>
+Date: Tue, 20 Jun 2023 16:21:22 +0300
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH 4/4] net/tls: implement ->read_sock()
+Content-Language: en-US
+To: Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>
+Cc: Keith Busch <kbusch@kernel.org>, linux-nvme@lists.infradead.org,
+ Jakub Kicinski <kuba@kernel.org>, Eric Dumazet <edumazet@google.com>,
+ Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+ Boris Pismenny <boris.pismenny@gmail.com>
+References: <20230620102856.56074-1-hare@suse.de>
+ <20230620102856.56074-5-hare@suse.de>
+From: Sagi Grimberg <sagi@grimberg.me>
+In-Reply-To: <20230620102856.56074-5-hare@suse.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+	SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-David Ahern wrote:
-> On 6/19/23 5:43 AM, Eric Dumazet wrote:
-> > Blamed commit added these helpers for sake of detecting RAW
-> > sockets specific ioctl.
-> > 
-> > syzbot complained about it [1].
-> > 
-> > Issue here is that RAW sockets could pretend there was no need
-> > to call ipmr_sk_ioctl()
-> > 
-> > Regardless of inet_sk(sk)->inet_num, we must be prepared
-> > for ipmr_ioctl() being called later. This must happen
-> > from ipmr_sk_ioctl() context only.
-> > 
-> > We could add a safety check in ipmr_ioctl() at the risk of breaking
-> > applications.
-> > 
-> > Instead, remove sk_is_ipmr() and sk_is_icmpv6() because their
-> > name would be misleading, once we change their implementation.
-> > 
-> > [1]
-> > BUG: KASAN: stack-out-of-bounds in ipmr_ioctl+0xb12/0xbd0 net/ipv4/ipmr.c:1654
-> > Read of size 4 at addr ffffc90003aefae4 by task syz-executor105/5004
-> > 
-> > CPU: 0 PID: 5004 Comm: syz-executor105 Not tainted 6.4.0-rc6-syzkaller-01304-gc08afcdcf952 #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/27/2023
-> > Call Trace:
-> > <TASK>
-> > __dump_stack lib/dump_stack.c:88 [inline]
-> > dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
-> > print_address_description.constprop.0+0x2c/0x3c0 mm/kasan/report.c:351
-> > print_report mm/kasan/report.c:462 [inline]
-> > kasan_report+0x11c/0x130 mm/kasan/report.c:572
-> > ipmr_ioctl+0xb12/0xbd0 net/ipv4/ipmr.c:1654
-> > raw_ioctl+0x4e/0x1e0 net/ipv4/raw.c:881
-> > sock_ioctl_out net/core/sock.c:4186 [inline]
-> > sk_ioctl+0x151/0x440 net/core/sock.c:4214
-> > inet_ioctl+0x18c/0x380 net/ipv4/af_inet.c:1001
-> > sock_do_ioctl+0xcc/0x230 net/socket.c:1189
-> > sock_ioctl+0x1f8/0x680 net/socket.c:1306
-> > vfs_ioctl fs/ioctl.c:51 [inline]
-> > __do_sys_ioctl fs/ioctl.c:870 [inline]
-> > __se_sys_ioctl fs/ioctl.c:856 [inline]
-> > __x64_sys_ioctl+0x197/0x210 fs/ioctl.c:856
-> > do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> > do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-> > entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > RIP: 0033:0x7f2944bf6ad9
-> > Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-> > RSP: 002b:00007ffd8897a028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> > RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f2944bf6ad9
-> > RDX: 0000000000000000 RSI: 00000000000089e1 RDI: 0000000000000003
-> > RBP: 00007f2944bbac80 R08: 0000000000000000 R09: 0000000000000000
-> > R10: 0000000000000000 R11: 0000000000000246 R12: 00007f2944bbad10
-> > R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-> > </TASK>
-> > 
-> > The buggy address belongs to stack of task syz-executor105/5004
-> > and is located at offset 36 in frame:
-> > sk_ioctl+0x0/0x440 net/core/sock.c:4172
-> > 
-> > This frame has 2 objects:
-> > [32, 36) 'karg'
-> > [48, 88) 'buffer'
-> > 
-> > Fixes: e1d001fa5b47 ("net: ioctl: Use kernel memory on protocol ioctl callbacks")
-> > Reported-by: syzbot <syzkaller@googlegroups.com>
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > Cc: Breno Leitao <leitao@debian.org>
-> > Cc: Willem de Bruijn <willemb@google.com>
-> > Cc: David Ahern <dsahern@kernel.org>
-> > Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > ---
-> >  include/linux/icmpv6.h |  6 ------
-> >  include/linux/mroute.h | 11 -----------
-> >  net/core/sock.c        |  4 ++--
-> >  3 files changed, 2 insertions(+), 19 deletions(-)
-> > 
-> > diff --git a/include/linux/icmpv6.h b/include/linux/icmpv6.h
-> > index 1fe33e6741cca2685082da214afbc94c7974f4ce..db0f4fcfdaf4f138d75dc6c4073cb286364f2923 100644
-> > --- a/include/linux/icmpv6.h
-> > +++ b/include/linux/icmpv6.h
-> > @@ -111,10 +111,4 @@ static inline bool icmpv6_is_err(int type)
-> >  	return false;
-> >  }
-> >  
-> > -static inline int sk_is_icmpv6(struct sock *sk)
-> > -{
-> > -	return sk->sk_family == AF_INET6 &&
-> > -		inet_sk(sk)->inet_num == IPPROTO_ICMPV6;
-> > -}
-> > -
-> >  #endif
-> > diff --git a/include/linux/mroute.h b/include/linux/mroute.h
-> > index 94c6e6f549f0a503f6707d1175f1c47a0f0cd887..4c5003afee6c51962bc13879978845bc7daf08fa 100644
-> > --- a/include/linux/mroute.h
-> > +++ b/include/linux/mroute.h
-> > @@ -16,12 +16,6 @@ static inline int ip_mroute_opt(int opt)
-> >  	return opt >= MRT_BASE && opt <= MRT_MAX;
-> >  }
-> >  
-> > -static inline int sk_is_ipmr(struct sock *sk)
-> > -{
-> > -	return sk->sk_family == AF_INET &&
-> > -		inet_sk(sk)->inet_num == IPPROTO_IGMP;
-> > -}
-> > -
-> >  int ip_mroute_setsockopt(struct sock *, int, sockptr_t, unsigned int);
-> >  int ip_mroute_getsockopt(struct sock *, int, sockptr_t, sockptr_t);
-> >  int ipmr_ioctl(struct sock *sk, int cmd, void *arg);
-> > @@ -57,11 +51,6 @@ static inline int ip_mroute_opt(int opt)
-> >  	return 0;
-> >  }
-> >  
-> > -static inline int sk_is_ipmr(struct sock *sk)
-> > -{
-> > -	return 0;
-> > -}
-> > -
-> >  static inline bool ipmr_rule_default(const struct fib_rule *rule)
-> >  {
-> >  	return true;
-> > diff --git a/net/core/sock.c b/net/core/sock.c
-> > index cff3e82514d17513bc96300dc18014083a0d7ea7..8ec8f4c9911f2a6dd3dd946798d512394d62a861 100644
-> > --- a/net/core/sock.c
-> > +++ b/net/core/sock.c
-> > @@ -4199,9 +4199,9 @@ int sk_ioctl(struct sock *sk, unsigned int cmd, void __user *arg)
-> >  {
-> >  	int rc = 1;
-> >  
-> > -	if (sk_is_ipmr(sk))
-> > +	if (sk->sk_type == SOCK_RAW && sk->sk_family == AF_INET)
-> >  		rc = ipmr_sk_ioctl(sk, cmd, arg);
-> > -	else if (sk_is_icmpv6(sk))
-> > +	else if (sk->sk_type == SOCK_RAW && sk->sk_family == AF_INET6)
-> >  		rc = ip6mr_sk_ioctl(sk, cmd, arg);
-> >  	else if (sk_is_phonet(sk))
-> >  		rc = phonet_sk_ioctl(sk, cmd, arg);
+
+> Implement ->read_sock() function for use with nvme-tcp.
 > 
-> I was staring at the type when reviewing the original patch; I was
-> expecting to see RAW based on where ipmr_ioctl (and v6 version) is
-> called. That's why I asked about the testing of the patch, so I am not
-> surprised by this followup.
+> Signed-off-by: Hannes Reinecke <hare@suse.de>
+> Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+> Cc: Boris Pismenny <boris.pismenny@gmail.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: netdev@vger.kernel.org
+> ---
+>   net/tls/tls.h      |  2 ++
+>   net/tls/tls_main.c |  2 ++
+>   net/tls/tls_sw.c   | 78 ++++++++++++++++++++++++++++++++++++++++++++++
+>   3 files changed, 82 insertions(+)
 > 
-> Reviewed-by: David Ahern <dsahern@kernel.org>
+> diff --git a/net/tls/tls.h b/net/tls/tls.h
+> index d002c3af1966..ba55cd5c4913 100644
+> --- a/net/tls/tls.h
+> +++ b/net/tls/tls.h
+> @@ -114,6 +114,8 @@ bool tls_sw_sock_is_readable(struct sock *sk);
+>   ssize_t tls_sw_splice_read(struct socket *sock, loff_t *ppos,
+>   			   struct pipe_inode_info *pipe,
+>   			   size_t len, unsigned int flags);
+> +int tls_sw_read_sock(struct sock *sk, read_descriptor_t *desc,
+> +		     sk_read_actor_t read_actor);
+>   
+>   int tls_device_sendmsg(struct sock *sk, struct msghdr *msg, size_t size);
+>   void tls_device_splice_eof(struct socket *sock);
+> diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+> index 7b9c83dd7de2..1a062a8c6d33 100644
+> --- a/net/tls/tls_main.c
+> +++ b/net/tls/tls_main.c
+> @@ -963,10 +963,12 @@ static void build_proto_ops(struct proto_ops ops[TLS_NUM_CONFIG][TLS_NUM_CONFIG]
+>   	ops[TLS_BASE][TLS_SW  ] = ops[TLS_BASE][TLS_BASE];
+>   	ops[TLS_BASE][TLS_SW  ].splice_read	= tls_sw_splice_read;
+>   	ops[TLS_BASE][TLS_SW  ].poll		= tls_sk_poll;
+> +	ops[TLS_BASE][TLS_SW  ].read_sock	= tls_sw_read_sock;
+>   
+>   	ops[TLS_SW  ][TLS_SW  ] = ops[TLS_SW  ][TLS_BASE];
+>   	ops[TLS_SW  ][TLS_SW  ].splice_read	= tls_sw_splice_read;
+>   	ops[TLS_SW  ][TLS_SW  ].poll		= tls_sk_poll;
+> +	ops[TLS_SW  ][TLS_SW  ].read_sock	= tls_sw_read_sock;
+>   
+>   #ifdef CONFIG_TLS_DEVICE
+>   	ops[TLS_HW  ][TLS_BASE] = ops[TLS_BASE][TLS_BASE];
+> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+> index 97379e34c997..e918c98bbeb2 100644
+> --- a/net/tls/tls_sw.c
+> +++ b/net/tls/tls_sw.c
+> @@ -2231,6 +2231,84 @@ ssize_t tls_sw_splice_read(struct socket *sock,  loff_t *ppos,
+>   	goto splice_read_end;
+>   }
+>   
+> +int tls_sw_read_sock(struct sock *sk, read_descriptor_t *desc,
+> +		     sk_read_actor_t read_actor)
+> +{
+> +	struct tls_context *tls_ctx = tls_get_ctx(sk);
+> +	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
+> +	struct strp_msg *rxm = NULL;
+> +	struct tls_msg *tlm;
+> +	struct sk_buff *skb;
+> +	ssize_t copied = 0;
+> +	int err, used;
+> +
+> +	err = tls_rx_reader_lock(sk, ctx, true);
+> +	if (err < 0)
+> +		return err;
 
-ipmr_ioctl is called from raw_ioctl without any additional checks on
-inet_sk(sk)->inet_num too (as are ip6mr_ioctl and ipmr_compat_ioctl),
-and casts to raw_sk(sk) without further checks. So this condition
-lgtm too.
+Unlike recvmsg or splice_read, the caller of read_sock is assumed to
+have the socket locked, and tls_rx_reader_lock also calls lock_sock,
+how is this not a deadlock?
 
-And conversely, interpreting inet_num(sk) as a protocol is only okay
-after testing sk_type == SOCK_RAW.
-
-Thanks for the fix, Eric
-
-Reviewed-by: Willem de Bruijn <willemb@google.com>
-
+I'm not exactly clear why the lock is needed here or what is the subtle
+distinction between tls_rx_reader_lock and what lock_sock provides.
 
