@@ -1,111 +1,137 @@
-Return-Path: <netdev+bounces-12231-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev+bounces-12233-lists+netdev=lfdr.de@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [IPv6:2604:1380:45d1:ec00::1])
-	by mail.lfdr.de (Postfix) with ESMTPS id D84F7736D9B
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 15:43:31 +0200 (CEST)
+Received: from sv.mirrors.kernel.org (sv.mirrors.kernel.org [IPv6:2604:1380:45e3:2400::1])
+	by mail.lfdr.de (Postfix) with ESMTPS id 85D0F736DCE
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 15:49:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id F2FA81C20C37
-	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 13:43:30 +0000 (UTC)
+	by sv.mirrors.kernel.org (Postfix) with ESMTPS id 3FA892812D0
+	for <lists+netdev@lfdr.de>; Tue, 20 Jun 2023 13:49:34 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2093016407;
-	Tue, 20 Jun 2023 13:43:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 750C71640F;
+	Tue, 20 Jun 2023 13:49:31 +0000 (UTC)
 X-Original-To: netdev@vger.kernel.org
 Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14BE32F5B
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 13:43:28 +0000 (UTC)
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A2C1709
-	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 06:43:16 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id ffacd0b85a97d-311394406d0so2271887f8f.2
-        for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 06:43:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1687268594; x=1689860594;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FXEzWvVaTpDBI6VqaBUCaMKU3ESDTmt5tb+GXKM/9lU=;
-        b=jHRzec0TCzelOEc95MtKjmVHQWlHzHZi8Pp8968XHSTBMdl5I7PiaqWG4hV/2tnSpK
-         g7y8+YWM2qNJT6DCoP7+ztfFyG+nPCQrAvRZrO0KqffM5/4lHf03ao/aH6GZ9rqfh4nU
-         TeFKMZzQ5Z9OR1xdQeEphnjZziYE1tz4HhjDJxmI1ikcB9THDn8XCwbTfProloBFFTC2
-         bxKCJFpXs4Ng8uPP/+BhjpdNuR2QqS6ee0Rvs9eZUmckFF1Hooh77PWYFpgylNIbcwdc
-         OxMnPXOqoZCFZBOP/t5eeRa43gDA2Qoet08VWSQu2/y1AEpBo03LWGewnKr0Zk7RHYbs
-         w74g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687268594; x=1689860594;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FXEzWvVaTpDBI6VqaBUCaMKU3ESDTmt5tb+GXKM/9lU=;
-        b=KZQf1GWGZxZQ7DKFC8RMRGmwbC3swHWrMTss1/9/ozafT7ShUUl9PJLSkQievycC31
-         z5h3HheSqzB4PEMLmhW6sjx8riGAbUxBQh8z16bOZrP/E1uFH1OGUWmAmHdRLapgcmuX
-         yOq7BMD3zE7I/1k5ywrJG2FR61YhkAC08bu08ZlFBxqjTC5lukbn3COZDUBDn2V1QNzU
-         ZaaJ3kytZj6qRktCYNre83X3Us2KgnivqD/404kMO/HwBczTrTG9/FCSUav6RL392kJo
-         X4i64alqQ9uTi648gf3n/Jt7gkNIMDKEPLuFOCppk8P1bQE4ia6L2txfJpIMZ9buv62G
-         5fLg==
-X-Gm-Message-State: AC+VfDyKFIeAQwHIP2FbByZsfCl0rS1JgS5271nAW+EHpGJEZwNzVrcH
-	/Kwv7VFbpVy2xWyXlgjt2ou0RA==
-X-Google-Smtp-Source: ACHHUZ6upvLJQp+I/vEd6WG/WBwHY2kcxULaHdzrZEwgyc1/ebxdsp11EH/PEpQ+MbvkNOiJ/2VQ+Q==
-X-Received: by 2002:a5d:45c6:0:b0:30f:c653:b819 with SMTP id b6-20020a5d45c6000000b0030fc653b819mr8616094wrs.14.1687268594450;
-        Tue, 20 Jun 2023 06:43:14 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id c9-20020a056000104900b0030631a599a0sm2023107wrx.24.2023.06.20.06.43.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jun 2023 06:43:12 -0700 (PDT)
-Date: Tue, 20 Jun 2023 16:43:07 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Moshe Shemesh <moshe@nvidia.com>
-Cc: Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68FD91640D
+	for <netdev@vger.kernel.org>; Tue, 20 Jun 2023 13:49:31 +0000 (UTC)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D826119A5;
+	Tue, 20 Jun 2023 06:49:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1687268965; x=1718804965;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=9fQOgHIalZgJ3V/Zn3q60Ze5yodyVi/9g2hTbBkhRQI=;
+  b=JE3TN/RgIgPsu/irsJGc/F6GAzd1yZcbWLPHb2hBtcMZXtUAn2mMf9Yg
+   0ptYxUy5Mr3AmdGi9pNh23JNVBSCUhckKHUbENzHd9J1NXFrwxytFXgVr
+   VVn2Iy3aIQH6K6NXBt4EH1ou6YWIrLxX3snxAsvYnsTimp5UZgkpq9JZq
+   Mv4SxB2G29ULRYdifrLGEc6epuxuCYC9S/kR0ywKYatQNjbWrsK7W3wxf
+   w6sUqA89SK7vs4zyh+mFLPKdEnq+IU/zQYY6BGB/Is5vbt+uufeirkMDm
+   VnZBWV86AFqx4wmVkH7SCzoVaF6Iox0Lh67US7xTgnFcKbRsm8CuNa3gf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10747"; a="362401529"
+X-IronPort-AV: E=Sophos;i="6.00,257,1681196400"; 
+   d="scan'208";a="362401529"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2023 06:47:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10747"; a="827006895"
+X-IronPort-AV: E=Sophos;i="6.00,257,1681196400"; 
+   d="scan'208";a="827006895"
+Received: from eshaanan-mobl.ger.corp.intel.com (HELO ijarvine-mobl2.ger.corp.intel.com) ([10.252.61.137])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2023 06:47:23 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: linux-pci@vger.kernel.org,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+	Rob Herring <robh@kernel.org>,
+	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+	Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Saeed Mahameed <saeedm@nvidia.com>,
+	Leon Romanovsky <leon@kernel.org>,
 	"David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Shay Drory <shayd@nvidia.com>, netdev@vger.kernel.org,
-	linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] net/mlx5: Fix error code in
- mlx5_is_reset_now_capable()
-Message-ID: <53f95829-1a94-4565-aa75-f0335cd64b8a@moroto.mountain>
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Moshe Shemesh <moshe@mellanox.com>,
+	netdev@vger.kernel.org,
+	linux-rdma@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Dean Luick <dean.luick@cornelisnetworks.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Moshe Shemesh <moshe@nvidia.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v3 07/10] net/mlx5: Use RMW accessors for changing LNKCTL
+Date: Tue, 20 Jun 2023 16:46:21 +0300
+Message-Id: <20230620134624.99688-8-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230620134624.99688-1-ilpo.jarvinen@linux.intel.com>
+References: <20230620134624.99688-1-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: netdev@vger.kernel.org
 List-Id: <netdev.vger.kernel.org>
 List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-	SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+	T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 	lindbergh.monkeyblade.net
 
-The mlx5_is_reset_now_capable() function returns bool, not negative
-error codes.  So if fast teardown is not supported it should return
-false instead of -EOPNOTSUPP.
+Don't assume that only the driver would be accessing LNKCTL of the
+upstream bridge. ASPM policy changes can trigger write to LNKCTL
+outside of driver's control.
 
-Fixes: 92501fa6e421 ("net/mlx5: Ack on sync_reset_request only if PF can do reset_now")
-Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
+Use RMW capability accessors which do proper locking to avoid losing
+concurrent updates to the register value.
+
+Fixes: eabe8e5e88f5 ("net/mlx5: Handle sync reset now event")
+Suggested-by: Lukas Wunner <lukas@wunner.de>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Cc: stable@vger.kernel.org
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-index 7af2b14ab5d8..fb7874da3caa 100644
+index 50022e7565f1..f202150a5093 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -327,7 +327,7 @@ static bool mlx5_is_reset_now_capable(struct mlx5_core_dev *dev)
- 
- 	if (!MLX5_CAP_GEN(dev, fast_teardown)) {
- 		mlx5_core_warn(dev, "fast teardown is not supported by firmware\n");
--		return -EOPNOTSUPP;
-+		return false;
+@@ -332,16 +332,11 @@ static int mlx5_pci_link_toggle(struct mlx5_core_dev *dev)
+ 		pci_cfg_access_lock(sdev);
  	}
+ 	/* PCI link toggle */
+-	err = pci_read_config_word(bridge, cap + PCI_EXP_LNKCTL, &reg16);
+-	if (err)
+-		return err;
+-	reg16 |= PCI_EXP_LNKCTL_LD;
+-	err = pci_write_config_word(bridge, cap + PCI_EXP_LNKCTL, reg16);
++	err = pcie_capability_set_word(bridge, PCI_EXP_LNKCTL, PCI_EXP_LNKCTL_LD);
+ 	if (err)
+ 		return err;
+ 	msleep(500);
+-	reg16 &= ~PCI_EXP_LNKCTL_LD;
+-	err = pci_write_config_word(bridge, cap + PCI_EXP_LNKCTL, reg16);
++	err = pcie_capability_clear_word(bridge, PCI_EXP_LNKCTL, PCI_EXP_LNKCTL_LD);
+ 	if (err)
+ 		return err;
  
- 	err = pci_read_config_word(dev->pdev, PCI_DEVICE_ID, &dev_id);
 -- 
-2.39.2
+2.30.2
 
 
